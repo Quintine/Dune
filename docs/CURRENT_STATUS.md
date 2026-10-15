@@ -29,6 +29,22 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Ixian Nexus replacement follows native BG purchases — 16 October.**
+Successful original BG Worthless-as-Karama acquisition/payment now earns the
+same normal purchased-card replacement, after its native counter. Denied
+direct acquisition supplies no purchase; native funded winning-payment
+recovery supplies a paid, not free, receipt. No printed-cost-only flag remains.
+
+Four new behavior cases; affected nine-file74/74, four original-action runtime
+paths and eight legal policy actions pass. Two original-source390px journeys
+replace Hajr with the actual Ghola or keep the winning Shield, preserving
+BG5/Emperor12 and one auction continuation. Width/scroll390; no browser/
+application errors. Counter custody is explicitly controlled in two cases.
+No human server, D1, saved room, deployment or public gate changed.
+[Source and bounded evidence](NEXUS_IXIAN_REPLACEMENT_RULES.md#native-bg-converted-purchases--16-october-2026).
+Final types/lint pass; current source anchor and17 topic evidence paths
+resolve. No production build or broad assurance run for this slice.
+
 **Semuta connects both physical Shrine roles — 16 October.**
 Fresh private `semuta --discoveries` setup retains original Richese/CHOAM,
 optional Ix, unused Tech3+/Advanced Strongholds and original Discovery7/8.

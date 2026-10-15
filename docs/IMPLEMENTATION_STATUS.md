@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 16 October 2026 — Ixian Nexus replacement after native BG conversion
+
+Removed the printed-Karama-only producer flag from normal auction settlement.
+Successful original native BG converted acquisition or winning payment now
+offers the same source-bound purchased-card choice after its native counter.
+Denied direct acquisition supplies none; native funded winning-payment
+recovery still purchases for spice and supplies the original paid receipt.
+No new price, refund, source or Nexus cancellation policy is added.
+
+Four new meaningful cases replace the old guard pin. Affected nine-file74/74,
+four original-action runtime paths, eight legal policy actions and two actual
+styled390px original-source journeys pass. Direct acquisition replaces actual
+Hajr with the next Ghola; winning payment keeps actual Shield and Nexus.
+Both retain BG5/Emperor12 and advance the native auction once. Two counter
+cases explicitly control only conserved counter custody. No human server,
+D1, saved room, deployment or public gate changed.
+[Source and scoped proof](NEXUS_IXIAN_REPLACEMENT_RULES.md#native-bg-converted-purchases--16-october-2026).
+Final types/lint pass; current source anchor and17 topic evidence paths
+resolve without reference parse diagnostics. No build or broad assurance run.
+
 ## 16 October 2026 — Semuta connects physical Shrine-role costs
 
 Fresh private `semuta --discoveries` composes original Richese/CHOAM and

@@ -2,6 +2,45 @@
 
 Source audit: 2026-09-10. Bounded local prototype integration and verification: 2026-10-01. **Partial development verified**, not complete Ixian/Nexus family or expansion acceptance. This document records the source and runtime boundary of the fresh `ixian-replacement` profile. Existing [Nexus release gates](NEXUS_CARD_RUNTIME.md) remain in force.
 
+## Native BG converted purchases — 16 October 2026
+
+Original normal-auction purchases now offer the same independent Ixian
+replacement after native Advanced BG Worthless-as-Karama succeeds, for both
+direct acquisition and winning-bid payment. The original native counter
+resolves first; a converted card is not a printed Karama, but its successful
+purchase is still a purchase under the existing source analysis below.
+The engine no longer carries a printed-cost-only settlement flag.
+
+Canceling direct acquisition leaves the lot unpurchased and offers no Nexus
+replacement. Canceling winning payment preserves native payment recovery:
+when the original bid is funded, ordinary automatic spice payment buys the
+lot and earns a **paid**, not free, replacement opportunity. Original
+payment/income and Nexus discard/draw each finish once. No new cancellation,
+refund, bonus priority, profile or module combination is introduced.
+
+Four new behavior cases and the affected nine-file union pass **74/74**.
+The obsolete guard-pinning substitution test was removed, not re-pinned.
+Four original-action Use/Pass runtime paths and eight legal policy actions
+pass. Genuine setup, actual worm alliance/Nexus deal, paid Worthless purchase
+and first-lot Keep precede the second-lot conversion; no played state is
+staged. Two additional cancellation cases explicitly conserve the unused
+starting Karama into Emperor custody to isolate the native counter.
+
+Two actual styled390×844 original-source table journeys pass. Direct free
+acquisition replaces Hajr with the actual next Ghola, spends Ixian Nexus
+and retains BG spice5/Emperor12. Winning free payment keeps the actual Shield
+and Ixian Nexus, also retaining5/12. Both advance the original auction once,
+with width/scroll390 and no browser/application error. Only an owned
+memory-only loopback host ran; no human server, D1, saved room, deployment
+or public gate changed. Proof remains outside Git:
+`/tmp/dune-bg-ixian-runtime.json`, `/tmp/dune-bg-ixian-ui-proof.json`.
+Broader profiles, Harkonnen bonus priority, special sale origins and final
+assurance remain separate; all five checklist facets remain Partial.
+Final `npm run check:quick` passes; the current source anchor and17 topic
+evidence paths resolve, with no reference parse diagnostics. No production
+build, broad suite or HTTP assurance was run for this bounded rule slice.
+
+
 ## Primary evidence
 
 - **Face:** [photograph of the twelve original GF9 Nexus Cards](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani), independently inspected again at `/tmp/dune-nexus-cards.jpg`. The photographed publisher text is the authority, not commentary by its uploader.
@@ -65,7 +104,7 @@ and never add seats to an admitted game or fabricate Nexus hands.
 
 ### Connected purchase and choice
 
-1. Only an actual normal-auction purchase is connected: paid spice or a genuine printed Karama-paid purchase, including direct printed Karama acquisition before a positive bid is recorded. The free purchase must originate from the actual printed Karama; native Bene Gesserit Worthless/Truthtrance substitutions continue unchanged without this new offer. This is a bounded producer restriction, not a ruling that those acquisitions cease to be purchases. The original source, purchased physical card and native sale continuation are bound after the genuine acquisition. Gifts, bonus draws, Technology swaps, old hand cards and historical purchase IDs cannot create an opportunity.
+1. Only an actual normal-auction purchase is connected: paid spice or genuine Karama acquisition/payment, including direct acquisition before a positive bid. Native Advanced BG Worthless conversion must first complete its existing response; successful free purchases then get the same replacement choice. A canceled direct conversion makes no purchase; canceled winning payment follows its original funded spice-payment recovery and, if purchased, supplies a paid receipt. The original source, purchased physical card and native sale continuation remain bound after genuine acquisition. Gifts, bonus draws, Technology swaps, old hand cards and historical purchase IDs cannot create an opportunity.
 2. A Harkonnen **buyer** and Richese cache, Black Market or special-acquisition origins are guarded, not adjudicated. A Harkonnen rival is allowed and retains its ordinary native play outside this offer. These bounds preserve the unresolved independent Nexus cache scope and Harkonnen bonus priority above; they are not printed prohibitions or imports of the native `ixAllyCard` origin filter.
 3. Every publicly possible supported buyer receives the same event and public buyer identity, regardless of its secret Nexus face. Only that buyer receives Pass and the exact already-owned purchased card for inspection; only a truly eligible unallied holder of the physical Ixian Nexus receives Use. Opponents receive neither the purchased/replacement face nor private price, receipt, deck order or eligibility reason. The buyer may inspect its own actually held Nexus through the existing authorized inspector; the neutral prompt grants no rival entitlement.
 4. **Pass** retains the purchased card and Nexus, closes this opportunity and continues the original sale once. **Use** spends that singleton Nexus once, discards exactly the just-purchased physical Treachery Card, then draws the actual next deck card privately. There is no card selector, arbitrary hand exchange, new Karama counter, refund, repayment or re-auction.

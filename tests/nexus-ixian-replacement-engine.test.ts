@@ -322,24 +322,3 @@ void test('direct printed Karama acquisition preserves the original zero bid and
   inventory(use);
 });
 
-void test('nonprinted Bene Gesserit Karama substitution continues native sale without enabling the bounded offer',() => {
-  const lobby = createGame('BGCONVERT',newPlayer('b','Bene Gesserit','beneGesserit'),true,[]);
-  joinGame(lobby,newPlayer('e','Emperor','emperor'));
-  joinGame(lobby,newPlayer('g','Guild','guild'));
-  const f = createIxianNexusReplacementFixture({initial:lobby});
-  const parent = reload(f.beforePayment);
-  const index = parent.deck.findIndex(c => c.kind === 'worthless');
-  assert.ok(index >= 0);
-  const worthless = parent.deck.splice(index,1)[0];
-  owner(parent,f.buyer).hand.push(worthless);
-  const balance = owner(parent,f.buyer).spice;
-  let game = applyAction(parent,f.buyer,{type:'decision',karama:true,card:worthless.id});
-  game = settleIxianReplacementFixture(game);
-  assert.equal(game.pendingNexusIxianReplacement,null);
-  assert.equal(viewGame(game,f.buyer).nexusIxianReplacement,null);
-  assert.equal(game.nexusCards!.cards!.hands[f.buyer],'ixians');
-  assert.equal(owner(game,f.buyer).spice,balance);
-  assert.ok(owner(game,f.buyer).hand.some(c => c.id === f.purchased.id));
-  assert.equal(game.nexusIxianReplacementHistory!.length,0);
-  inventory(game);
-});

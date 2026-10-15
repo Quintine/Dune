@@ -9979,11 +9979,11 @@ function ixianNexusReplacementIntegrity(g: Game): void {
   nexusRule(() => validateIxianReplacementSource(ixianNexusReplacementContext(g),pending,
     ixianNexusReplacementParent(g)));
 }
-function offerIxianNexusReplacement(g: Game, printedKarama: boolean): boolean {
+function offerIxianNexusReplacement(g: Game): boolean {
   if (!g.nexusIxianReplacementPreview) return false;
   const sale = g.currentAuctionSale;
   const buyer = sale && getPlayer(g,sale.winner);
-  if (!sale || !buyer || sale.origin !== 'normal' || (sale.free && !printedKarama) ||
+  if (!sale || !buyer || sale.origin !== 'normal' ||
     buyer.faction === 'harkonnen' || buyer.ally || !g.nexusCards?.cards?.hands[buyer.id]) return false;
   requireRule(!g.response && !g.phaseOpening && !g.truthtrance && !g.pendingKarama,
     'Finish the original auction priority before offering the purchased-card choice.');
@@ -13218,7 +13218,7 @@ function auctionNext(g: Game) {
   a.active = next.player;
   g.active = a.active;
 }
-function settleAuction(g: Game, free = false, automatic = false, emperorNexus = false, printedKarama = false) {
+function settleAuction(g: Game, free = false, automatic = false, emperorNexus = false) {
   const a = g.auction!;
   const winner = getPlayer(g, a.bidder!);
   if (!free) payWithAlly(g, winner, a.bid, a.allyPayment ?? 0);
@@ -13254,7 +13254,7 @@ function settleAuction(g: Game, free = false, automatic = false, emperorNexus = 
   if (ixians && winner.ally === ixians.id) {
     g.pendingIxAlly = { player: winner.id, card: a.cards[a.index].id, free };
     g.decision = { kind: 'ixAllyCard', player: winner.id };
-  } else if (!offerIxianNexusReplacement(g,printedKarama)) continueAuctionSale(g, free);
+  } else if (!offerIxianNexusReplacement(g)) continueAuctionSale(g, free);
 }
 function currentAuctionContinuationQuote(
   g: Game,
@@ -14630,7 +14630,7 @@ function completeKarama(g: Game, p: Player, use: KaramaUse, card?: Card) {
     );
   } else {
     if (use.kind === 'purchase') g.auction!.bidder = p.id;
-    settleAuction(g, true, false, false, card?.effect === 'karama');
+    settleAuction(g, true);
   }
 }
 function auctionSpicePaymentFunded(g: Game, p: Player) {
