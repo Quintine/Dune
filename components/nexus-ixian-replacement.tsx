@@ -39,6 +39,13 @@ export function NexusIxianReplacement({ game, act, busy }: {
         Only the buyer can choose. The original payment stays paid; this is not another purchase or auction.{' '}
         <a href="/rules?topic=nexus-ixian-replacement#nexus-ixian-replacement">Purchased-card timing and preview limits</a>
       </p>
+      {buyer?.faction === 'harkonnen' && (
+        <p className="fine">
+          Provisional Harkonnen order: choose this replacement before the original income and
+          bonus-card responses. Replacement is not another purchase: it grants no second bonus
+          and does not open a bonus slot at your eight-card limit.
+        </p>
+      )}
       {canRespond && offer.purchased && (
         <article aria-label="Your purchased Treachery Card" className="treachery-card">
           <h4>{offer.purchased.name}</h4>

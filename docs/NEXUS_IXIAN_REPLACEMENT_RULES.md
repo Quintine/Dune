@@ -2,6 +2,53 @@
 
 Source audit: 2026-09-10. Bounded local prototype integration and verification: 2026-10-01. **Partial development verified**, not complete Ixian/Nexus family or expansion acceptance. This document records the source and runtime boundary of the fresh `ixian-replacement` profile. Existing [Nexus release gates](NEXUS_CARD_RUNTIME.md) remain in force.
 
+## Harkonnen purchase and bonus composition — 16 October 2026
+
+Harkonnen buyers now receive the same neutral purchased-card choice in
+the existing original classic Basic/Advanced or Basic Tleilaxu profile.
+The printed one-for-one replacement preserves the purchase-earned bonus,
+its original hand cap and native Karama cancellation; it is not a second
+purchase and earns no extra bonus. The bonus itself is never a replacement
+target.
+
+**Selected provisional ordering:** under the standing choose-recommended
+instruction, preserve the existing native Ixian ally sale pipeline:
+replacement choice → original income response → original Harkonnen bonus
+response → next lot. The Nexus face does not explicitly order these two
+draws; this is conservative product composition, not a publisher ruling or
+an explicit user-selected ordering. The actual table labels it provisional.
+No owner-selected ordering control or bonus-first inspection is introduced.
+
+After Use, the actual next deck card is the replacement; any allowed bonus
+then draws the following card. After Keep, the next card is the bonus.
+Canceling that later bonus cannot undo replacement, restore Nexus, refund
+the purchase or repeat income. At eight held cards after purchase, replacing
+one-for-one still leaves eight and creates no bonus slot.
+
+Three new behavior cases and the affected seven-file union pass **64/64**.
+Eight original-action runtime paths cover both modes, Use/Keep and native
+bonus allow/cancel; eight legal policy actions pass. Genuine setup, actual
+worm/alliance and two Nexus draws, original Atreides purchase/Keep and the
+paid Harkonnen second lot precede every original source. The eight-card
+boundary separately controls only conserved undealt hand acquisition.
+
+Two actual styled390×844 journeys pass. Basic replaces purchased Snooper16
+with Shield11, allows Emperor12→14 and cancels only the bonus: Harkonnen
+keeps three cards/spice8 and spent Nexus. Advanced keeps purchased Chaumas4,
+allows original income and one Snooper16 bonus, retaining four cards/spice10
+and Nexus. Both advance the original lot once. Width/scroll390; no browser/
+application errors. Only an owned memory-only loopback host ran; no human
+server, D1, saved room, deployment or public start changed. Proof is outside
+Git: `/tmp/dune-harkonnen-replacement-runtime.json`,
+`/tmp/dune-harkonnen-replacement-ui-proof.json`.
+Special origins, other modules and final assurance remain separate; all
+five checklist facets stay Partial.
+Final types/lint and production build pass, retaining module-register,
+large-chunk and Unknown-route warnings. Current source anchor and19 topic
+evidence paths resolve with no reference parse diagnostics; all five facets
+remain Partial. No broad suite or HTTP assurance run.
+
+
 ## Native BG converted purchases — 16 October 2026
 
 Original normal-auction purchases now offer the same independent Ixian
@@ -34,8 +81,9 @@ with width/scroll390 and no browser/application error. Only an owned
 memory-only loopback host ran; no human server, D1, saved room, deployment
 or public gate changed. Proof remains outside Git:
 `/tmp/dune-bg-ixian-runtime.json`, `/tmp/dune-bg-ixian-ui-proof.json`.
-Broader profiles, Harkonnen bonus priority, special sale origins and final
-assurance remain separate; all five checklist facets remain Partial.
+Broader profiles, special sale origins and final assurance remain separate;
+the later provisional Harkonnen composition is recorded above. All five
+checklist facets remain Partial.
 Final `npm run check:quick` passes; the current source anchor and17 topic
 evidence paths resolve, with no reference parse diagnostics. No production
 build, broad suite or HTTP assurance was run for this bounded rule slice.
@@ -83,13 +131,13 @@ November's Karama table expressly permits stopping the native Ixian ally from di
 
 ## Ordering and unresolved boundaries
 
-**Harkonnen draw order:** the purchase earns its bonus, and Nexus applies to the just-purchased card. Neither inspected paragraph explicitly orders these two post-purchase draws. Choosing replacement after viewing the bonus can change the informed decision; bonus cancellation can also affect the deck. Preserve separate purchased, replacement and bonus identities and report the priority gap before selecting a fixed order. Owner-selected ordering is a possible implementation proposal, not a retrieved official ruling. The free bonus itself is never an eligible purchased target.
+**Harkonnen draw order:** the purchase earns its original bonus, while Nexus applies only to the purchased card. The inspected source does not explicitly order these draws. Under the standing choose-recommended instruction, the selected provisional composition reuses native Ixian ally ordering: replacement first, then original income and bonus responses. The table labels this policy; it is not publisher timing or an explicit user-selected sequence. Replacement grants no second bonus or extra capacity, and the free bonus is never the purchased target.
 
 **Other immediate disposal effects:** use the ordinary physical-discard pipeline. Applicable Ecaz poison income and Semuta reactions must neither duplicate the discarded card nor cause a second replacement. Precise competing immediate-effect priority is not supplied by this Nexus face. Existing Semuta and occupation source gaps remain separate.
 
 **Nullentropy and custody interruptions:** a paid Box search freezes the searched pile in the existing subsystem. The replacement cannot draw or reshuffle that pile while browsing. Conversely, playing or transferring the just-purchased card cannot leave a live replacement offer pointing at custody it no longer owns. Preserve or settle the exact purchase continuation; do not reopen an expired purchase from an arbitrary historical card ID. Whether a player can interleave a particular anytime power before exercising an immediate purchase right needs an explicit sequencing policy, not an invisible loss of the right. See the [Box audit](NULLENTROPY_BOX_ENGINE_AUDIT.md).
 
-**Private opportunity timing:** a pause offered only to the eligible Ixian-card holder may reveal the secret identity. This bounded prototype instead gives every publicly unallied supported buyer with public held-Nexus presence the same neutral **Purchased card choice**, independently of its hidden face. An irrelevant-face buyer can Pass but cannot Use. This is an inferred development privacy convention, not publisher-prescribed timing, a ruling on all anytime interleavings or approval of every unresolved private-response design. The Harkonnen-buyer and unsupported-origin guards depend on public faction/origin, not secret face.
+**Private opportunity timing:** a pause offered only to the eligible Ixian-card holder may reveal the secret identity. This bounded prototype instead gives every publicly unallied supported buyer with public held-Nexus presence the same neutral **Purchased card choice**, independently of its hidden face. An irrelevant-face buyer can Pass but cannot Use. This is an inferred development privacy convention, not publisher-prescribed timing, a ruling on all anytime interleavings or approval of every unresolved private-response design. Unsupported-origin guards depend on public origin, not secret face.
 
 ## Bounded local runtime contract
 
@@ -105,7 +153,7 @@ and never add seats to an admitted game or fabricate Nexus hands.
 ### Connected purchase and choice
 
 1. Only an actual normal-auction purchase is connected: paid spice or genuine Karama acquisition/payment, including direct acquisition before a positive bid. Native Advanced BG Worthless conversion must first complete its existing response; successful free purchases then get the same replacement choice. A canceled direct conversion makes no purchase; canceled winning payment follows its original funded spice-payment recovery and, if purchased, supplies a paid receipt. The original source, purchased physical card and native sale continuation remain bound after genuine acquisition. Gifts, bonus draws, Technology swaps, old hand cards and historical purchase IDs cannot create an opportunity.
-2. A Harkonnen **buyer** and Richese cache, Black Market or special-acquisition origins are guarded, not adjudicated. A Harkonnen rival is allowed and retains its ordinary native play outside this offer. These bounds preserve the unresolved independent Nexus cache scope and Harkonnen bonus priority above; they are not printed prohibitions or imports of the native `ixAllyCard` origin filter.
+2. Harkonnen buyers use the visibly provisional replacement-before-income/bonus order above, preserving the original cancelable bonus and eight-card limit. Richese cache, Black Market and special-acquisition origins remain guarded under their separate independent Nexus scope; the native `ixAllyCard` origin filter is not imported as authority.
 3. Every publicly possible supported buyer receives the same event and public buyer identity, regardless of its secret Nexus face. Only that buyer receives Pass and the exact already-owned purchased card for inspection; only a truly eligible unallied holder of the physical Ixian Nexus receives Use. Opponents receive neither the purchased/replacement face nor private price, receipt, deck order or eligibility reason. The buyer may inspect its own actually held Nexus through the existing authorized inspector; the neutral prompt grants no rival entitlement.
 4. **Pass** retains the purchased card and Nexus, closes this opportunity and continues the original sale once. **Use** spends that singleton Nexus once, discards exactly the just-purchased physical Treachery Card, then draws the actual next deck card privately. There is no card selector, arbitrary hand exchange, new Karama counter, refund, repayment or re-auction.
 5. The discard opens a full legal hand's slot before the draw. An exhausted deck recycles eligible Treachery discards, including that just-discarded card; drawing the same physical card again is legal. The unsold auction row is not the draw deck. Earlier Atreides auction inspection does not grant a new peek of this replacement.
@@ -160,14 +208,13 @@ Existing base-profile full-hand and genuinely depleted-deck regressions
 already exercise the same discard-first/replenishment path and are retained
 rather than duplicated with an artificially emptied native deck.
 
-This is ordinary composition of the printed replacement and existing native
-setup/auction lifecycle, not a new Nexus ruling or a completed family claim.
-Harkonnen buyers, special sale origins, private opportunity timing,
-Richese cache scope and Harkonnen bonus ordering keep their bounds above.
-No pending timing/cancellation, cache, bonus or combined-module question is
-settled by this added deck/faction admission. Verification of this integration
-is reported with the frozen native payment wave, separately from the earlier
-base-profile evidence below.
+This is ordinary composition of printed replacement and existing native
+setup/auction lifecycle, not a new Nexus ruling or completed family claim.
+Special sale origins, private opportunity timing, cache scope and combined
+modules keep their bounds above. This earlier deck/faction integration did
+not choose Harkonnen ordering; the later explicit provisional composition
+is recorded at the opening of this document. Native verification below
+belongs to the frozen native payment wave, not the newer Harkonnen proof.
 
 Bounded native verification passes four meaningful regressions in the shared
 110-case affected batch; final native/guide26/26, types/lint and build pass.
@@ -224,4 +271,4 @@ custody/history), `tests/nexus-ixian-replacement-engine.test.ts` and genuine
 `tests/prototype-room.test.ts` (fresh profile and exact-version backed-up CLI).
 This evidence is not complete family/module or deployed acceptance.
 
-Native Harkonnen-buyer bonus/cancellation/cap sequencing, independent Richese cache/Black Market/special scope, expansion-card discard reactions, Semuta/Ecaz priority and anytime interleaving remain pending outside this profile. Full Ixian/Nexus families, combined modules, public starts, complete games and live release acceptance remain separate gates.
+Independent Richese cache/Black Market/special scope, expansion-card discard reactions, Semuta/Ecaz priority and anytime interleaving remain outside this profile. Harkonnen's connected replacement-before-bonus sequence is explicitly provisional, not a settled publisher priority. Full Ixian/Nexus families, combined modules, public starts, complete games and live release acceptance remain separate gates.

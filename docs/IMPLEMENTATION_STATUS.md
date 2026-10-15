@@ -1,5 +1,27 @@
 # Dune implementation status
 
+## 16 October 2026 — Harkonnen Ixian replacement and original bonus
+
+Removed the Harkonnen buyer fence from the existing normal-purchase offer
+and pending-source validation. Under the standing choose-recommended
+instruction, selected the native Ixian ally order: replacement choice,
+original income, original cancelable bonus, next lot. The actual table
+labels this provisional; it is not publisher timing or an explicit user
+ordering decision. Replacement earns no second bonus or eight-card slot.
+
+Three meaningful cases replace the old guard pin. Affected seven-file64/64,
+eight original runtime paths, eight legal policy actions and two actual390px
+journeys pass. Basic replaces Snooper16 with Shield11, permits Emperor12→14,
+then denies only the bonus, leaving Harkonnen three cards/spice8/spent Nexus.
+Advanced keeps Chaumas4 and one bonus Snooper16, retaining four cards/
+spice10/Nexus. Both advance once. Eight-card boundary uses explicit conserved
+hand acquisition; original action sources stage no played state. No human
+server, D1, saved room, deployment or public gate changed.
+[Source, selected policy and proof](NEXUS_IXIAN_REPLACEMENT_RULES.md#harkonnen-purchase-and-bonus-composition--16-october-2026).
+Final types/lint and production build pass with module-register, large-chunk
+and Unknown-route warnings. Current source anchor and19 topic paths resolve;
+all five facets remain Partial, without new broad or HTTP assurance.
+
 ## 16 October 2026 — Ixian Nexus replacement after native BG conversion
 
 Removed the printed-Karama-only producer flag from normal auction settlement.

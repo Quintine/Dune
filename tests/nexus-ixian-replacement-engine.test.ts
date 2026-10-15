@@ -270,36 +270,6 @@ void test('a later genuine purchase creates a new source while the closed prior 
   inventory(use);
 });
 
-void test('a genuine Harkonnen buyer holding Ixian Nexus gets native purchase/bonus only, never an unresolved prototype offer',() => {
-  const lobby = createGame('HARKBUYER',newPlayer('a','Atreides','atreides'),false,[]);
-  joinGame(lobby,newPlayer('e','Emperor','emperor'));
-  joinGame(lobby,newPlayer('h','Harkonnen','harkonnen'));
-  joinGame(lobby,newPlayer('g','Guild','guild'));
-  const f = createIxianNexusReplacementFixture({initial:lobby,face:'richese',otherDraw:{player:'h',face:'ixians'}});
-  let game = settleIxianReplacementFixture(applyAction(f.game,f.buyer,{type:'nexusIxianReplacementPass',event:f.event}));
-  assert.equal(game.nexusCards!.cards!.hands.h,'ixians');
-  for (let step = 0; game.auction!.active !== 'h' && step < 20; step++)
-    game = applyAction(game,game.auction!.active,{type:'passBid'});
-  const balance = owner(game,'h').spice;
-  const purchased = game.auction!.cards[game.auction!.index].id;
-  game = applyAction(game,'h',{type:'bid',amount:2});
-  for (let step = 0; game.auction?.bidder === 'h' && !game.currentAuctionSale &&
-    game.auction.index === f.auctionIndex + 1 && step < 30; step++) {
-    if (game.decision?.kind === 'auctionPayment')
-      game = applyAction(game,'h',{type:'decision',karama:false});
-    else game = applyAction(game,game.auction.active,{type:'passBid'});
-  }
-  assert.equal(game.pendingNexusIxianReplacement,null);
-  assert.equal(viewGame(game,'a').nexusIxianReplacement,null);
-  assert.equal(viewGame(game,'h').nexusIxianReplacement,null);
-  game = settleIxianReplacementFixture(game);
-  assert.equal(owner(game,'h').spice,balance - 2);
-  assert.ok(owner(game,'h').hand.some(c => c.id === purchased));
-  assert.equal(owner(game,'h').hand.length,4,'The actual native Harkonnen bonus remains active.');
-  assert.equal(game.nexusCards!.cards!.hands.h,'ixians');
-  assert.equal(game.nexusIxianReplacementHistory!.length,1);
-  inventory(game);
-});
 
 void test('direct printed Karama acquisition preserves the original zero bid and native free continuation',() => {
   const f = createIxianNexusReplacementFixture();

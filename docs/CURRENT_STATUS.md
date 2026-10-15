@@ -29,6 +29,24 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Harkonnen Ixian replacement preserves its native bonus — 16 October.**
+Original purchased-card Use/Keep now precedes income and bonus under a
+visibly provisional order matching the native Ixian ally pipeline. A
+replacement is not a second purchase; the original bonus stays cancelable
+and replacing at eight cards creates no extra slot. No publisher priority
+or explicit user-selected sequence is claimed.
+
+Three new behavior cases; affected seven-file64/64, eight original runtime
+paths and eight legal policy actions pass. Two original390px journeys
+exercise Basic Use/bonus cancellation and Advanced Keep/bonus allowance,
+preserving actual income, wallets, card identities and one next-lot advance.
+The eight-card fixture separately controls conserved hand acquisition.
+Width/scroll390; no browser/application error. No human server, D1, saved
+room, deployment or public gate changed.
+[Selected policy and scoped evidence](NEXUS_IXIAN_REPLACEMENT_RULES.md#harkonnen-purchase-and-bonus-composition--16-october-2026).
+Final types/lint and production build pass with existing warnings. Current
+source anchor and19 topic paths resolve; all five facets remain Partial.
+
 **Ixian Nexus replacement follows native BG purchases — 16 October.**
 Successful original BG Worthless-as-Karama acquisition/payment now earns the
 same normal purchased-card replacement, after its native counter. Denied

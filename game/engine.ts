@@ -9969,7 +9969,7 @@ function ixianNexusReplacementIntegrity(g: Game): void {
     return;
   }
   const buyer = getPlayer(g,pending.buyer);
-  requireRule(!buyer.ally && buyer.faction !== 'harkonnen' && !!g.nexusCards?.cards?.hands[buyer.id] &&
+  requireRule(!buyer.ally && !!g.nexusCards?.cards?.hands[buyer.id] &&
     g.decision?.kind === 'nexusIxianReplacement' && g.decision.player === buyer.id &&
     g.decision.event === pending.event &&
     Object.keys(g.decision).every(key => ['kind','player','event'].includes(key)) &&
@@ -9984,7 +9984,7 @@ function offerIxianNexusReplacement(g: Game): boolean {
   const sale = g.currentAuctionSale;
   const buyer = sale && getPlayer(g,sale.winner);
   if (!sale || !buyer || sale.origin !== 'normal' ||
-    buyer.faction === 'harkonnen' || buyer.ally || !g.nexusCards?.cards?.hands[buyer.id]) return false;
+    buyer.ally || !g.nexusCards?.cards?.hands[buyer.id]) return false;
   requireRule(!g.response && !g.phaseOpening && !g.truthtrance && !g.pendingKarama,
     'Finish the original auction priority before offering the purchased-card choice.');
   const event = ixianReplacementEvent(g.turn,buyer.id,g.nexusIxianReplacementCursor!.sequence,g.auction!.index);
