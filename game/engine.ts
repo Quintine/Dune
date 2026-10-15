@@ -44,8 +44,8 @@ import { quoteNexusMoritaniRetention, nexusMoritaniRetentionSignature, type Nexu
 import { quoteNexusChoamBetrayal, validateNexusChoamBetrayal, nexusChoamBetrayalSignature, type NexusChoamBetrayal } from './nexus-choam-betrayal';
 import { quoteEcazInquiry, ecazInquiryAnswer, ecazInquiryHistory, ecazInquirySignature, validateEcazInquiry, type EcazInquiryReceipt } from './nexus-ecaz-inquiry';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
-import { EMPEROR_NEXUS_REVIVALS, emperorNexusModeSupported, quoteEmperorNexusRevival, createEmperorNexusRevival, settleEmperorNexusRevival, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
-import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, emperorNexusSellerPurchaseModeSupported, quoteEmperorNexusSellerPurchase, createEmperorNexusSellerPurchase, emperorNexusAmbassadorPurchaseModeSupported, quoteEmperorNexusAmbassadorPurchase, createEmperorNexusAmbassadorPurchase, quoteEmperorNexusSpecialPurchase, createEmperorNexusSpecialPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
+import { EMPEROR_NEXUS_REVIVALS, emperorNexusLegacyRevivalModeSupported, quoteEmperorNexusRevival, createEmperorNexusRevival, settleEmperorNexusRevival, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
+import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, emperorNexusBankPurchaseModeSupported, emperorNexusSellerPurchaseModeSupported, quoteEmperorNexusSellerPurchase, createEmperorNexusSellerPurchase, emperorNexusAmbassadorPurchaseModeSupported, quoteEmperorNexusAmbassadorPurchase, createEmperorNexusAmbassadorPurchase, quoteEmperorNexusSpecialPurchase, createEmperorNexusSpecialPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
 import { createEmperorPaymentReceipt, validateEmperorPaymentReceipt, emperorPaymentUseBlock, emperorPaymentSourceQuote, requiredEmperorPaymentResponders, emperorPaymentReceiptSignature, type EmperorPaymentReceipt } from './nexus-emperor-payment';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, createFremenNexusRevival, upgradeFremenNexusRevival, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
 import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningRide, validateFremenCunningSelection, type FremenCunningOccurrence, type FremenCunningRideAuthorization, type FremenCunningSelection } from './nexus-fremen-cunning';
@@ -2735,8 +2735,7 @@ function playNexusBgBetrayal(g: Game, p: Player, action: Action) {
 }
 /** The public payment window must not depend on who privately holds Emperor Nexus. */
 function emperorNexusUniformAuctionPayment(g: Game): boolean {
-  return !!g.nexusCards?.cards && !byFaction(g,'emperor') &&
-    emperorNexusModeSupported(g) && !g.ecazTreachery && !g.sandtrout &&
+  return !!g.nexusCards?.cards && emperorNexusBankPurchaseModeSupported(g) &&
     !!g.auction && !g.currentAuctionSale;
 }
 
@@ -2754,8 +2753,8 @@ function nexusEmperorSecretAllyOffer(g:Game,owner:string) {
   if (purchasing) {
     let purchaseBlock:string|null = null;
     if (p.ally) purchaseBlock = 'Emperor Nexus Secret Ally requires an unallied buyer.';
-    else if (!emperorNexusModeSupported(g) || g.ecazTreachery || g.sandtrout)
-      purchaseBlock = 'Emperor Nexus purchase requires a supported classic Nexus profile; unrelated modules remain unavailable.';
+    else if (!emperorNexusBankPurchaseModeSupported(g))
+      purchaseBlock = 'Emperor Nexus purchase requires its supported original Nexus profile and normal bank auction.';
     else if (g.response || g.truthtrance || g.phaseOpening || g.pendingKarama ||
       g.pendingTreacheryDiscard || g.pendingNullentropy || g.pendingExchange ||
       g.pendingRicheseGift || g.pendingRichesePurchaseIncome || g.pendingAmbassador ||
@@ -2783,7 +2782,7 @@ function nexusEmperorSecretIntegrity(g:Game) {
     for (const [index,record] of history.entries()) {
       nexusRule(() => validateEmperorNexusRevival(g,record));
       if (!('version' in record))
-        requireRule(emperorNexusModeSupported(g),
+        requireRule(emperorNexusLegacyRevivalModeSupported(g),
           'A legacy Emperor return lost its original supported roster.');
       else if (record.stage === 'requested')
         requireRule(index === history.length - 1 && g.pendingRevival?.nexusEmperorEvent === record.event &&
@@ -2807,7 +2806,7 @@ function nexusEmperorSecretIntegrity(g:Game) {
     for (const [index,record] of purchases.entries()) {
       nexusRule(() => validateEmperorNexusPurchase(g,record));
       if (!('version' in record))
-        requireRule(emperorNexusModeSupported(g) && !g.ecazTreachery && !g.sandtrout,
+        requireRule(emperorNexusBankPurchaseModeSupported(g),
           'A normal-bank Emperor purchase lost its original supported profile.');
       else if (record.version === 3)
         requireRule(emperorNexusAmbassadorPurchaseModeSupported(g),

@@ -29,6 +29,24 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Emperor original native bank purchase — 14 October.** Normal bank retention
+now uses original native Nexus roster/module profiles and their own canonical
+optional envelopes, preserving exact prior classic admission. Uniform public
+payment, personally affordable positive price, original acquisition/bonus/
+Atreides next inspection and unchanged bank receipt remain. No bank subsidy or
+Richese seller/cache route is invented; strict legacy physical revival guard
+stays classic and never replays forces.
+Affected16-file union217/217, types/lint/build and thirty-six actual API profiles
+pass: all six natives Basic/Advanced Pay/Use plus Advanced Homeworld/Tech.
+Actual390px Richese5→5/Ecaz12→12 retain modules, Basic Tleilaxu5→5 and wrong-face
+CHOAM Pay14→12 preserve one actual card and index0→1; Atreides sees next card.
+No overflow/errors or saved/deployed room touched. Fixture-only forced-response
+and five-disc Auditor-exclusion pins are deleted. Existing public assets are
+served in QA; this does not certify complete artwork or combinations.
+[Canonical source/proof](NEXUS_EMPEROR_RULES.md#original-native-bank-auction-admission--14-october-2026).
+Broad assurance, AI calibration and deployed/publication gates remain. Proof
+receipts stay outside Git; existing build route/chunk warnings remain.
+
 **Emperor Secret Ally joint native special purchase — 14 October.** Advanced
 Richese may jointly spend its original Karama plus actual Emperor Nexus at
 native purchase commit after proving three own uncommitted spice. Recommended

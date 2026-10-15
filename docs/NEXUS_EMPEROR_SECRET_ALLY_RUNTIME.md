@@ -2,10 +2,10 @@
 
 Updated 14 October 2026. **Prototyped**, with **Partial** rules coverage.
 Revival now uses the independent extra source through original native pending
-continuations and supported Nexus module envelopes. Bank-auction purchase keeps
-its distinct classic-only boundary; original Richese cache/Advanced Black Market,
-the Richese Ambassador and joint Richese special Karama have distinct native
-continuations. Public starts and publication remain gated.
+continuations and supported Nexus module envelopes. Ordinary bank-auction
+purchase now uses existing classic/native Nexus profile admission; Richese
+cache/Advanced Black Market, Ambassador and joint special Karama retain their
+distinct native sources. Public starts and publication remain gated.
 
 ## Rules and connected behavior
 
@@ -52,8 +52,9 @@ cannot use ally contribution. One actual Treachery lot enters their hand,
 their spice remains unchanged, and normal auction/card follow-ups continue.
 The public log announces the price/proof/use without revealing excess spice or
 the Treachery card face. A private signed receipt records the lot, price and
-unchanged balance; independent use markers and physical custody survive JSON
-and in-memory SQLite CAS/restart. Rival seat views omit the offer and receipt.
+unchanged balance; existing classic JSON/SQLite evidence remains historical.
+Native bank cutover has separate changed-path proof below, not a new recovery
+certification. Rival seat views omit the offer and receipt.
 
 **Timing is a provisional privacy choice, not a user or publisher ruling.**
 Every winner in this bounded public auction context receives the same payment
@@ -63,6 +64,16 @@ spice/Karama payment choices stay available; bots use a legal purchase when
 owned and otherwise use the ordinary decision. The recommended confirmation
 is selected under the user's 14 October decision priority; it does not certify
 complete release timing.
+
+The 14 October bank cutover now admits original single/paired/mixed E1/E2 and
+standalone/paired/mixed E3 public Nexus profiles and their canonical optional
+module envelopes, while preserving exact old classic admission. Original Pay,
+personally affordable Use, card/hand limit, native bonus and next inspection
+stay unchanged; no fake money or seller payment. Bank receipt format/event is
+unchanged. Strict old physical revival evidence still uses its explicit classic
+guard, not the new bank profile. Native aliases do not create unsupported starts.
+[Native bank source and proof](NEXUS_EMPEROR_RULES.md#original-native-bank-auction-admission--14-october-2026).
+
 
 Original Richese cache and Advanced Black Market now connect a separate
 uniform winning-buyer confirmation after the original Richese Betrayal window.

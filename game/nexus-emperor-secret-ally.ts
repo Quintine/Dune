@@ -88,7 +88,7 @@ export function emperorNexusEvent(
 export function emperorNexusSignature(record: object): string {
   return JSON.stringify({ ...record, signature: undefined });
 }
-export function emperorNexusModeSupported(g: Game): boolean {
+export function emperorNexusLegacyRevivalModeSupported(g: Game): boolean {
   return (
     !g.expansions.length &&
     g.players.every((p) =>

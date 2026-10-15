@@ -1,17 +1,18 @@
 import { FACTIONS, type FactionId } from './catalog';
 import { handLimit, type Game, type Player } from './engine';
-import { emperorNexusEvent } from './nexus-emperor-secret-ally';
+import { emperorNexusEvent, emperorNexusLegacyRevivalModeSupported } from './nexus-emperor-secret-ally';
 import { nexusCardMode, validateNexusCards } from './nexus-cards';
 import { validAmbassadorResume } from './ambassador-resume';
 import { ambassadorPhaseAllowed } from './ambassador-phase';
 import {
-  pairedNexusModulesProfile, singleE1E2NexusProfile, mixedE1E2NexusProfile, mixedE3NexusProfile,
-  standaloneE3NexusProfile, pairedE3NexusProfile,
+  pairedNexusModulesProfile, singleE1E2NexusProfile,
+  mixedE1E2NexusProfile, mixedE3NexusProfile, standaloneE3NexusProfile, pairedE3NexusProfile,
 } from './nexus-module-profile';
 import {
-  pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile,
-  mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile,
-  standaloneE3NexusLeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile,
+  pairedNexusLeaderSkillsProfile,
+  singleE1E2NexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile,
+  mixedE3NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile,
+  pairedE3NexusLeaderSkillsProfile,
 } from './leader-skill-profile';
 import type { RicheseAuction } from './richese-auction';
 import { quoteRicheseSettlement, type RicheseSettlementQuote } from './richese-settlement';
@@ -343,6 +344,45 @@ export function validateEmperorNexusPurchase(
     throw new EmperorNexusPurchaseError(
       'Emperor Nexus purchase has lost its original bidder, paid price or full reimbursement.',
     );
+}
+
+
+/** Genuine native Nexus envelopes only; the canonical native profiles own their
+ * roster and delegated Discovery/Homeworld/Tech/Stronghold envelopes, and the
+ * separately flagged preview aliases never open one. */
+function nativeBankNexusProfile(g: Game): boolean {
+  if (g.semutaPreview || g.advancedPreview || g.kullPreview || g.nexusKullPreview ||
+    g.guildBetrayalPreview || g.richeseBetrayalPreview ||
+    g.nexusIxianReplacementPreview || g.nexusIxianBetrayalPreview ||
+    g.nexusHarkonnenBetrayalPreview) return false;
+  if (g.leaderSkills)
+    return pairedNexusLeaderSkillsProfile(g) || singleE1E2NexusLeaderSkillsProfile(g) ||
+      mixedE1E2NexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g) ||
+      pairedE3NexusLeaderSkillsProfile(g) || mixedE3NexusLeaderSkillsProfile(g);
+  if (pairedNexusModulesProfile(g) || singleE1E2NexusProfile(g) ||
+    mixedE1E2NexusProfile(g) || standaloneE3NexusProfile(g) ||
+    pairedE3NexusProfile(g) || mixedE3NexusProfile(g)) return true;
+  // Bare paired E1/E2 Nexus without Tech or Strongholds.
+  if (g.techTokens || g.strongholdCards || g.discoveryEnabled || g.discoveries ||
+    g.discoveryStash || g.greatMaker || g.players.length < 2 || g.players.length > 6)
+    return false;
+  for (let i = 0; i < g.players.length; i++)
+    for (let j = 0; j < i; j++)
+      if (g.players[j].faction === g.players[i].faction) return false;
+  if (g.expansions.length !== 1 || !['ix', 'choam'].includes(g.expansions[0])) return false;
+  const expansion = g.expansions[0];
+  return g.players.every(p => FACTIONS.some(f => f.id === p.faction &&
+    (f.expansion === 'base' || f.expansion === expansion))) &&
+    g.players.filter(p => FACTIONS.some(f => f.id === p.faction && f.expansion === expansion)).length === 2;
+}
+
+/** Normal bank-auction admission only: a supported original native Nexus roster
+ * with the Emperor absent, the concealed face and any buyer wallet or hand left
+ * to the caller. */
+export function emperorNexusBankPurchaseModeSupported(g: Game): boolean {
+  if (!g.nexusCards || g.players.some(p => p.faction === 'emperor') ||
+    g.ecazTreachery || g.sandtrout) return false;
+  return emperorNexusLegacyRevivalModeSupported(g) || nativeBankNexusProfile(g);
 }
 
 /** Reuse native Nexus profiles; the existing Richese Betrayal preview composes

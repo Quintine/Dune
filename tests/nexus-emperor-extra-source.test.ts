@@ -10,7 +10,6 @@ import { createHomeworldCustody } from '../game/homeworld-custody';
 import {
   createEmperorNexusRevival,
   emperorNexusEvent,
-  emperorNexusModeSupported,
   emperorNexusPools,
   emperorNexusSignature,
   quoteEmperorNexusRevival,
@@ -97,7 +96,6 @@ void test('native typed Tanks determine exact-three choices and Ix Cyborgs are n
   for (const advanced of [false, true]) {
     const ix = sample('ixians', advanced);
     ix.players[0].elites!.revived = 4;
-    assert.equal(emperorNexusModeSupported(ix), false);
     assert.equal(quoteEmperorNexusRevival(ix, 'owner').blocked, null);
     assert.deepEqual(quoteEmperorNexusRevival(ix, 'owner').eliteOptions, [0, 1, 2, 3]);
     assert.equal(createEmperorNexusRevival(ix, 'owner', 3).elite, 3);
@@ -129,7 +127,6 @@ void test('original native modules allow revival independently of classic purcha
     const before = structuredClone(g);
     createEmperorNexusRevival(g, 'owner', 0);
     assert.deepEqual(g, before);
-    if (faction !== 'atreides') assert.equal(emperorNexusModeSupported(g), false);
     g.homeworlds = { custody: createHomeworldCustody({
       advanced: g.advanced,
       players: g.players.map(p => ({

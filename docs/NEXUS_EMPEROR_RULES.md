@@ -54,15 +54,16 @@ source-bound continuation; do not broaden a generic acquisition hook.
 
 ### Bounded bank-auction purchase prototype (27 September 2026)
 
-In Basic/Advanced classic-faction Nexus-only games with Emperor absent, the
+The initial 27 September prototype admitted Basic/Advanced classic Nexus games.
+The 14 October native cutover below now extends that public bank context. The
 unallied holder can spend the physical card at a normal Bidding winner-payment
 window. The full positive final bid must be affordable from the buyer's own
 spice without ally contribution. The bank receives no spice; the winner keeps
 that balance, receives the one purchased physical Treachery Card and continues
 through normal auction follow-ups. One private signed receipt records the
 original lot, final price and unchanged buyer balance across JSON/SQLite
-recovery. Its classic-only admission remains distinct from the new Richese
-seller continuation; no allied split or generic acquisition hook is inferred.
+recovery in the initial classic scope. Bank purchase remains distinct from
+Richese seller/direct acquisition sources; no allied split is inferred.
 
 Every winner in this bounded public auction context receives the same payment
 confirmation, even without the card or Karama. Otherwise a pause only for the
@@ -71,6 +72,40 @@ privacy-preserving product choice**, not a printed timing rule or a user ruling;
 the recommendation is selected under the user's 14 October decision priority.
 The normal spice and Karama payment choices remain available where legal.
 
+
+### Original native bank-auction admission — 14 October 2026
+
+The same printed purchase now applies in existing original native Nexus
+roster/module envelopes: single/paired/mixed E1/E2 and standalone/paired/mixed
+E3, including each canonical predicate's own Skills/Discovery/Homeworld/Tech/
+Stronghold composition. This removes a prototype classic-only fence, not a
+new operation, timing ruling or permission to create an unsupported packet.
+No native Emperor may be seated; actual holder must be unallied, hold the full
+positive price personally, and meet original source/hand-capacity rules.
+
+Uniform public winner payment remains independent of concealed face. Original
+normal bank lot, paid/Karama choices, one physical acquisition, Harkonnen bonus
+and next-lot Atreides inspection continue; the bank receives nothing on Use.
+Native Richese's ordinary pool is not its cache/Black Market; no seller income
+or extra source is created. Existing bank receipt/event/signature stays unchanged.
+The old classic predicate is explicitly retained/reused for prior admission
+parity and strict **legacy physical revival** evidence. No legacy force replay
+or native return-history broadening follows the new bank admission.
+
+Affected16-file union217/217, types/lint/build and thirty-six actual native API
+profiles pass. Every six expansion natives has Basic/Advanced Pay/Use and
+Advanced Homeworld/Tech Pay/Use, preserving actual wallets/card/module inventory
+and next-lot inspection. Four actual390px surfaces prove Richese5→5 and
+Ecaz12→12 with original Homeworld/Tech unchanged, Basic Tleilaxu5→5, and
+irrelevant-card CHOAM Pay14→12 with Guild Nexus retained. One original card,
+actual Nexus cost and index0→1 remain; Atreides sees the actual next card.
+No overflow/browser errors; no saved/deployed room touched. Full combinations,
+assurance and publication/deployed gates remain.
+
+Fixture-only assumptions requiring a response when nobody can cancel, or a
+universal five-disc CHOAM roster excluding Auditor, are deleted rather than
+re-pinned. Native automatic inspection/bonus remains original. QA now serves
+the existing public asset root; this is not complete artwork acceptance.
 
 ### Recommended Richese seller-unpaid purchase — 14 October 2026
 

@@ -12,6 +12,17 @@ movement, battle geometry and actual casualties stay unchanged. One original
 Karama response cancels the entire physical batch and keeps the Nexus spent.
 [Source, original native proofs and controls](NEXUS_BENE_GESSERIT_RULES.md#recommended-cunning-card-exceptions--14-october-2026).
 
+## Emperor original native bank purchase — 14 October 2026
+
+Normal bank-auction retention now uses existing original native Nexus public
+profiles and their canonical optional envelopes, with exact old classic
+admission preserved. Uniform winner payment does not depend on private face.
+Actual unallied holder proves the positive own price, spends one Nexus and
+acquires one original bank lot without payment; original bonus/next inspection
+remain. Richese ordinary pool is not a cache/seller source. Bank receipt stays
+unchanged; strict legacy physical revival guard is not broadened.
+[Source and actual native proof](NEXUS_EMPEROR_RULES.md#original-native-bank-auction-admission--14-october-2026).
+
 ## Recommended Emperor joint special purchase — 14 October 2026
 
 Original Advanced Richese special Karama now has a private joint option:

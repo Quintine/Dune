@@ -1,5 +1,39 @@
 # Dune implementation status
 
+## 14 October 2026 — Emperor Nexus original native bank admission
+
+Removed the classic-only prototype bank fence in favor of existing canonical
+native Nexus public profile envelopes. Uniform winner payment remains private-
+face independent; actual unallied holder proves its positive full own price,
+spends one real Nexus and receives one original normal bank lot with unchanged
+wallet. Original card capacity, paid/Karama alternatives, native Harkonnen bonus
+and Atreides next inspection stay. No bank-created income or Richese seller/cache
+route is invented. The no-version bank receipt/event/signature stays unchanged.
+
+Exact previously accepted classic condition is reused, not duplicated or
+silently narrowed. The old guard is explicitly named for strict historical
+physical revival evidence; that source never broadens or replays forces.
+New native aliases do not open unsupported packets or combinations. Existing
+minimal bank adapter and production controls are reused without new actions.
+
+Affected16-file union217/217 and types/lint/build pass. Thirty-six actual native
+API profiles cover every six natives in Basic/Advanced Pay/Use plus Advanced
+Homeworld/Tech Pay/Use, retaining original card/module inventory and next-lot
+inspection. Actual390px Richese5→5 and Ecaz12→12 preserve Homeworld/Tech;
+Basic Tleilaxu5→5 and irrelevant Guild-Nexus CHOAM Pay14→12 keep original costs,
+one card and index0→1. Actual Atreides surface sees the next Maula Pistol.
+No overflow/browser errors or saved/deployed rooms touched.
+
+Fixture assumptions forcing a cancellation response with no canceling card
+or a universal five-disc CHOAM roster ignoring native Auditor are removed,
+not re-pinned. Native automatic bonus/inspection remains. Pure field/action/
+default assertions are removed; later actual purchases prove historical receipt
+acceptance. QA static-root omission was corrected to serve existing bundled
+art/fonts; this is not complete presentation acceptance. Proof receipts remain
+outside Git; existing build classification/chunk warnings stay. Full combinations,
+broad assurance, AI calibration and deployed/publication acceptance remain open.
+[Canonical native source/proof](NEXUS_EMPEROR_RULES.md#original-native-bank-auction-admission--14-october-2026).
+
 ## 14 October 2026 — Emperor Nexus joint native special acquisition
 
 Connected original Advanced Richese special Karama purchase to the printed
