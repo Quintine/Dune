@@ -2,6 +2,25 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Moritani permanent markers and live replacements — 15 October 2026
+
+Original Harkonnen Secret Ally now works after Moritani has permanently retired
+a victim Traitor. The canonical snapshot carries optional `removed` cards:
+they remain in its census but cannot be drawn, held or returned. This keeps the
+existing Ecaz Loyalty exclusion. Exchange and Face Dancer history bind their
+own source zone; old absent-zone grammar stays unchanged. Betrayal's serialized
+source and Rihani's before/state also preserve it. No mode gate is widened.
+
+A recorded Mentat replacement remains an ordinary physical card: it may be
+returned and later drawn again without rewriting the older receipt or treating
+two historical references as two live cards. Hero is a legal original Ix
+Traitor replacement, not a physical opposing leader or faction target.
+Actual native Hasimir return, suspended Mori placement, next-turn Guild
+target/Esmar3 retirement and one physical Hasimir redraw are connected.
+[Canonical role/census contract, 134/134 and11 API/policy paths](MORITANI_ASSASSINATE_LEADERS.md#physical-replacement-roles-and-retired-card-zone--15-october-2026).
+Actual390px controls/inspectors pass without overflow/browser errors;
+full combinations, saved/deployed assurance and publication remain open.
+
 ## Canonical Moritani winning discs — 15 October 2026
 
 Existing native Advanced profiles now distinguish the actual surviving played

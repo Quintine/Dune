@@ -2,6 +2,24 @@
 
 Source audit, 10 September 2026. This is a rules contract, not a runtime completion claim. The [common Nexus lifecycle](NEXUS_CARD_RULES.md) and existing expansion release gates still apply. The pending reaction-privacy question remains unresolved; this audit does not authorize a Betrayal reaction policy.
 
+## Permanent markers and legal replacement return — 15 October 2026
+
+Shared Harkonnen exchange snapshots now include Moritani's derived permanent
+`removed` zone in the canonical census. It is not reserve or hand custody and
+cannot fund a draw/return. New source records bind it; old absent-zone tuple
+grammar remains unchanged, and older completed history does not adopt later
+live markers. A historical Moritani replacement can legally return and be
+drawn again; only its actual public victim marker remains permanently out.
+
+This is distinct from Betrayal returning the declared Traitor to reserve,
+which may legitimately be redrawn. Its whole serialized source preserves
+existing permanent markers and cannot use one for replacement. The bounded
+classic-only Betrayal roster is unchanged; no native Moritani/Betrayal
+composition is certified by the pure source/replacement regressions.
+Actual native Secret Ally controls return Hasimir6, keep Esmar3, restore Mori
+placement and preserve historical receipts through a later same-card redraw.
+[Canonical source/role, native evidence and remaining gates](MORITANI_ASSASSINATE_LEADERS.md#physical-replacement-roles-and-retired-card-zone--15-october-2026).
+
 **1 October bounded local follow-up, verified 2 October:** `harkonnen-betrayal`
 connects a separate fresh classic/base-deck/Nexus-only Basic/Advanced preview.
 Native allied Harkonnen counters precede a uniform acknowledgement by public

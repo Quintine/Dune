@@ -10,6 +10,8 @@ export type NexusExchangePlayer = {
 export type NexusTraitorSnapshot = {
   reserve: string[];
   players: NexusExchangePlayer[];
+  /** Physical cards permanently set aside, not available for any draw or return. */
+  removed?: string[];
 };
 export type NexusTraitorExchange = {
   version: 1;
@@ -26,6 +28,7 @@ export type NexusTraitorExchange = {
     ownerFaction: FactionId;
     reserve: string[];
     others: NexusExchangePlayer[];
+    removed?: string[];
   };
   settledReserve?: string[];
   signature: string;
@@ -119,8 +122,9 @@ export function validateNexusTraitorSnapshot(
   requireExchange(
     ids(universe) &&
       universe.length > 0 &&
-      exact(state, ['reserve', 'players']) &&
+      exact(state, ['reserve', 'players', ...(Object.hasOwn(state, 'removed') ? ['removed'] : [])]) &&
       ids(state.reserve) &&
+      (!Object.hasOwn(state, 'removed') || ids(state.removed)) &&
       Array.isArray(state.players) &&
       state.players.length >= 2 &&
       state.players.length <= 6,
@@ -135,6 +139,7 @@ export function validateNexusTraitorSnapshot(
   );
   const physical = [
     ...state.reserve,
+    ...(state.removed ?? []),
     ...state.players.flatMap((p) => [
       ...p.traitors,
       ...(p.faceDancers ?? []).map((c) => c.leader),
@@ -198,6 +203,7 @@ function signature(exchange: Omit<NexusTraitorExchange, 'signature'>): string {
     exchange.source.reserve,
     exchange.source.others.map(playerTuple),
     exchange.settledReserve ?? null,
+    ...(Object.hasOwn(exchange.source, 'removed') ? [exchange.source.removed] : []),
   ]);
 }
 function validateMode(
@@ -252,8 +258,10 @@ export function validateNexusTraitorExchange(
       ids(exchange.drawn) &&
       ids(exchange.returned) &&
       Array.isArray(exchange.before) &&
-      exact(exchange.source, ['ownerFaction', 'reserve', 'others']) &&
+      exact(exchange.source, ['ownerFaction', 'reserve', 'others',
+        ...(Object.hasOwn(exchange.source, 'removed') ? ['removed'] : [])]) &&
       ids(exchange.source.reserve) &&
+      (!Object.hasOwn(exchange.source, 'removed') || ids(exchange.source.removed)) &&
       Array.isArray(exchange.source.others),
     'Invalid saved Nexus traitor exchange.',
   );
@@ -275,6 +283,7 @@ export function validateNexusTraitorExchange(
   validatePlayer(originalOwner);
   const original: NexusTraitorSnapshot = {
     reserve: exchange.source.reserve,
+    ...(Object.hasOwn(exchange.source, 'removed') ? { removed: exchange.source.removed } : {}),
     players: state.players.map((p) =>
       p.id === exchange.owner
         ? originalOwner
@@ -282,7 +291,9 @@ export function validateNexusTraitorExchange(
     ),
   };
   requireExchange(
-    exchange.source.others.length === state.players.length - 1 &&
+    Object.hasOwn(state, 'removed') === Object.hasOwn(exchange.source, 'removed') &&
+      equal(state.removed, exchange.source.removed) &&
+      exchange.source.others.length === state.players.length - 1 &&
       equal(
         exchange.source.others.map(playerTuple),
         state.players.filter((p) => p.id !== exchange.owner).map(playerTuple),
@@ -357,6 +368,7 @@ export function beginNexusTraitorExchange(
     source: {
       ownerFaction: player.faction,
       reserve: [...state.reserve],
+      ...(Object.hasOwn(state, 'removed') ? { removed: [...state.removed!] } : {}),
       others: structuredClone(
         state.players.filter((p) => p.id !== input.owner),
       ),
@@ -454,6 +466,7 @@ export function validateNexusTraitorHistory(
   validateNexusTraitorExchange(
     {
       reserve: exchange.settledReserve!,
+      ...(Object.hasOwn(exchange.source, 'removed') ? { removed: [...exchange.source.removed!] } : {}),
       players: [owner, ...structuredClone(exchange.source.others)],
     },
     universe,

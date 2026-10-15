@@ -61,6 +61,10 @@ export type MixedE3MoritaniOptions = {
   startingCards?: Partial<Record<FactionId, readonly Card['kind'][]>>;
   /** Desired physical opposing-faction card in the original undealt Traitor offer. */
   traitorTarget?: string;
+  /** Original undealt reserve prefix, before any Face Dancer reshuffle. */
+  initialReserveTraitors?: readonly string[];
+  /** Actual Moritani closing Nexus draw, conserving the original undealt deck. */
+  nexusCard?: FactionId;
   /** Reveal Moritani's own held Traitor normally during the loss battle. */
   normalCall?: boolean;
   seatIds?: readonly string[];
@@ -262,7 +266,7 @@ function traitorBlockStart(g: Game, actor: string): number {
 }
 /** Only the original Traitor shuffle is scoped, including the pre-deal Ecaz
  * Loyalty draw when Ecaz itself is seated (five/six-native combined roster). */
-function traitorRolls(g: Game, target: string, moritani: string): number[] {
+function traitorRolls(g: Game, target: string, moritani: string, reserveCards?: readonly string[]): number[] {
   const pool = traitorPool(g);
   const ecazSeated = g.players.some(p => p.faction === 'ecaz');
   const loyal = ecazSeated && g.advanced ? chooseEcazLoyalty(pool, 0xffffffff / 0x100000000) : null;
@@ -270,6 +274,15 @@ function traitorRolls(g: Game, target: string, moritani: string): number[] {
   const desired = [...source];
   const [at, to] = [desired.indexOf(target), traitorBlockStart(g, moritani)];
   assert.ok(at >= 0 && to >= 0); [desired[at], desired[to]] = [desired[to], desired[at]];
+  if (reserveCards?.length) {
+    const reserveAt = g.players.filter(p => p.faction !== 'tleilaxu').length * 4;
+    assert.equal(new Set(reserveCards).size, reserveCards.length);
+    for (const [offset, card] of reserveCards.entries()) {
+      const from = desired.indexOf(card), slot = reserveAt + offset;
+      assert.ok(from >= 0 && slot < desired.length && card !== target);
+      [desired[from], desired[slot]] = [desired[slot], desired[from]];
+    }
+  }
   return [...(loyal ? [0xffffffff] : []), ...permutation(source, desired)];
 }
 /** One requested skill per faction, each genuinely offered; the rest is the
@@ -414,7 +427,7 @@ export function createMixedE3MoritaniSetup(options: MixedE3MoritaniOptions = {})
       const spiceCount = spiceDeck(g.expansions.includes('ix')).length +
         (g.discoveryEnabled ? DISCOVERY_SPICE_CARDS.length + 1 : 0);
       rolls.push(...identity(spiceCount - 1));
-      if (!skills) rolls.push(...traitorRolls(g, target, moritani));
+      if (!skills) rolls.push(...traitorRolls(g, target, moritani, options.initialReserveTraitors));
       g = lottery(rolls, initialize);
     }
   }
@@ -445,7 +458,7 @@ export function createMixedE3MoritaniSetup(options: MixedE3MoritaniOptions = {})
       if (Object.keys(g.leaderSkills!.offers).length === 1) {
         // Original order: the chosen card returns to the physical deck, then the
         // real Traitor deal (and pre-deal Ecaz Loyalty when Ecaz is seated).
-        const rolls = [...identity(g.leaderSkills!.deck.length), ...traitorRolls(g, target, moritani)];
+        const rolls = [...identity(g.leaderSkills!.deck.length), ...traitorRolls(g, target, moritani, options.initialReserveTraitors)];
         actions.push(structuredClone(step));
         g = lottery(rolls, () => applyAction(mixedE3MoritaniReload(g), step.actor, step.action));
       } else g = stepMixedE3Moritani(g, step, actions);
@@ -518,7 +531,7 @@ export function orderMixedE3MoritaniSpice(g: Game, worm = false): void {
 
 /** Real alliance change by two unallied seats, then Moritani's own genuine
  * closing Nexus draw after both Advanced Spice piles have been dealt. */
-export function closeMixedE3Moritani(f: MixedE3MoritaniSetup, state: Game):
+export function closeMixedE3Moritani(f: MixedE3MoritaniSetup, state: Game, card: FactionId = 'moritani'):
 { alliance: Game; drawing: Game; draw: MixedE3MoritaniTransition; game: Game } | null {
   let g = advanceMixedE3Moritani(state, s => !!s.nexus && !s.spiceWindow && !s.spiceResolution && mixedE3MoritaniClean(s), f.actions);
   const others = g.players.filter(p => p.id !== f.moritani && !p.ally); assert.ok(others.length >= 2);
@@ -527,9 +540,9 @@ export function closeMixedE3Moritani(f: MixedE3MoritaniSetup, state: Game):
   const alliance = mixedE3MoritaniReload(g);
   g = advanceMixedE3Moritani(g, s => s.nexusCards?.phase?.stage === 'drawing' && mixedE3MoritaniClean(s), f.actions);
   if (!g.nexusCards!.phase!.eligible.includes(f.moritani)) return null;
-  const cards = g.nexusCards!.cards!, at = cards.deck.indexOf('moritani'); assert.ok(at >= 0);
+  const cards = g.nexusCards!.cards!, at = cards.deck.indexOf(card); assert.ok(at >= 0);
   cards.deck.unshift(cards.deck.splice(at, 1)[0]);
-  f.staging.push('Conserved undealt original Moritani Nexus singleton ordered before its real unallied closing draw.');
+  f.staging.push(`Conserved undealt original ${card} Nexus singleton ordered before its real unallied closing draw.`);
   const drawing = mixedE3MoritaniReload(g), step: MixedE3MoritaniStep = { actor: f.moritani,
     action: { type: 'nexusCardChoice', turn: g.turn, card: cards.hands[f.moritani] ?? null, choice: 'draw', ownRedraws: 0 } };
   g = stepMixedE3Moritani(g, step, f.actions);
@@ -557,7 +570,7 @@ export function createMixedE3MoritaniProgramme(options: MixedE3MoritaniOptions =
   result.firstMentat = firstMentat;
   g = advanceMixedE3Moritani(g, s => s.phase === 1 && mixedE3MoritaniClean(s), f.actions);
   orderMixedE3MoritaniSpice(g, true);
-  const closed = closeMixedE3Moritani(f, g);
+  const closed = closeMixedE3Moritani(f, g, options.nexusCard);
   if (closed) { g = closed.game; result.alliance = closed.alliance; result.drawing = closed.drawing;
     result.draws = [closed.draw]; }
   g = advanceMixedE3Moritani(g, s => s.phase === 5 && mixedE3MoritaniClean(s), f.actions);

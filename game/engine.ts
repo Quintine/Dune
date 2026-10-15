@@ -3282,10 +3282,15 @@ function nexusTraitorUniverse(g: Game) {
   ] })), g.expansions.includes('ix')), g.ecazLoyalty);
 }
 function nexusTraitorSnapshot(g: Game): NexusTraitorSnapshot {
-  return { reserve: [...(g.traitorReserve ?? [])], players: g.players.map(p => ({
+  const snapshot: NexusTraitorSnapshot = { reserve: [...(g.traitorReserve ?? [])], players: g.players.map(p => ({
     id: p.id, faction: p.faction, traitors: [...p.traitors],
     ...(p.faceDancers ? { faceDancers: structuredClone(p.faceDancers) } : {}),
   })) };
+  if (g.moritaniAssassinate) {
+    for (const receipt of g.moritaniAssassinate.opportunities)
+      if (receipt.stage === 'replaced') (snapshot.removed ??= []).push(receipt.card!);
+  }
+  return snapshot;
 }
 function pendingNexusTraitors(g: Game) {
   return g.nexusTraitorExchanges?.find(exchange => exchange.stage === 'return') ?? null;
@@ -3371,6 +3376,7 @@ function nexusTraitorOffer(g: Game, id: string) {
   return { event: JSON.stringify(['nexusTraitors', g.turn, g.phase, g.nexusTraitorExchanges?.length ?? 0, id]), mode, draw, blocked };
 }
 function applyNexusTraitorSnapshot(g: Game, snapshot: NexusTraitorSnapshot) {
+  // Permanently removed cards are derived from original game receipts, not rewritten by an exchange.
   g.traitorReserve = [...snapshot.reserve];
   for (const entry of snapshot.players) {
     const player = getPlayer(g, entry.id);
@@ -8288,16 +8294,8 @@ function moritaniAssassinateIntegrity(g: Game) {
       'Assassination must preserve every physical Traitor Card in hand, deck or face-up set-aside custody.');
     for (const r of state.opportunities.filter(r => r.stage === 'revealed'))
       requireRule(getPlayer(g,r.owner).traitors.includes(r.card!), 'The revealed assassination card must remain held until Mentat replacement.');
-    const replacements = new Set<string>();
-    for (const [index,r] of state.opportunities.entries()) if (r.stage === 'replaced') {
-      const laterUses = state.opportunities.slice(index+1).filter(next => next.card === r.replacement &&
-        (next.stage === 'revealed' || next.stage === 'replaced'));
-      const ownedReplacement = laterUses.length ? laterUses.every(next => next.turn > r.turn)
-        : getPlayer(g,r.owner).traitors.includes(r.replacement!);
-      requireRule(!replacements.has(r.replacement!) && ownedReplacement,
-        'Each assassination replacement must stay with Moritani or be consumed by its later assassination.');
-      replacements.add(r.replacement!);
-    }
+    // Replacement IDs record historical draws, not permanent hand ownership.
+    // Later legal exchanges/recycled draws retain the complete physical census above.
   }
 }
 function syncMoritaniAssassinateReceipt(g: Game, receipt: MoritaniAssassinateReceipt) {

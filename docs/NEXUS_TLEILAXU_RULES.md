@@ -9,6 +9,19 @@ Source audit, 10 September 2026. This document does not certify runtime support 
 - [GF9 Ixians & Tleilaxu, pp.6–7,9 and Karama table](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=7): ordinary Face Dancer cycle, native revival powers, typed Ixian forces and cancellation boundaries.
 - [GF9 base rulebook, pp.9,13,16–19,22](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=9), and [November 2020 FAQ, pp.2,5–9](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=2): ordinary revival, repeated deaths, special forces, Kwisatz, Ghola and special revival permissions. Fresh official indexed excerpts were inspected. Existing Ghola implementation is not substitute authority for this Nexus effect.
 
+## Permanent Traitor markers — 15 October 2026
+
+The shared snapshot's optional `removed` zone accounts for Moritani victim
+cards permanently out of circulation, retaining the canonical census and
+existing Loyalty exclusion. It is **not** Cunning's temporary set-aside group:
+those revealed Face Dancers still return after the replacement draw.
+Cunning draws only active reserve cards, preserves the permanent zone and
+binds its own original source in history. Later markers do not rewrite an
+older completed receipt; absent-zone signatures keep their old grammar.
+Focused Face Dancer/engine regressions and the coupled native exchange
+checkpoint pass, not a new full native Moritani/Face-Dancer combination audit.
+[Physical role/census contract and actual proof](MORITANI_ASSASSINATE_LEADERS.md#physical-replacement-roles-and-retired-card-zone--15-october-2026).
+
 ## Cunning: complete physical operation
 
 Native Tleilaxu sets aside every revealed Face Dancer, privately draws the same number of replacements, and only then shuffles the set-aside identities into the Traitor Deck. Unrevealed dancers remain held. The panel has no phase restriction, no subset choice and no second choice after drawing. [Printed Tleilaxu face](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani)

@@ -309,6 +309,127 @@ void test('pending state binds original reserve order, owner augmented hand and 
     );
   }
 });
+void test('a permanent set-aside zone keeps its cards in the printed universe but out of reserve, hands and returns', () => {
+  const state = fixture();
+  state.reserve.splice(state.reserve.indexOf('e'), 1);
+  state.removed = ['e'];
+  const before = reload(state);
+  const begun = beginNexusTraitorExchange(state, universe, input());
+  assert.deepEqual(state, before);
+  assert.deepEqual(begun.exchange.drawn, ['f']);
+  assert.equal(
+    nexusTraitorReturnChoices(begun.state, universe, begun.exchange).includes('e'),
+    false,
+  );
+  const done = finishNexusTraitorExchange(
+    begun.state,
+    universe,
+    begun.exchange,
+    ['f'],
+    () => 0.999,
+  );
+  assert.deepEqual(done.state.reserve, ['g', 'h', 'f']);
+  assert.deepEqual(done.state.removed, ['e']);
+  assert.equal(done.state.reserve.includes('e'), false);
+  validateNexusTraitorHistory(universe, reload(done.exchange));
+  for (const mutate of [
+    (s: NexusTraitorSnapshot) => {
+      s.reserve.push('e');
+    },
+    (s: NexusTraitorSnapshot) => {
+      s.removed = ['e', 'e'];
+    },
+    (s: NexusTraitorSnapshot) => {
+      s.removed = ['unknown'];
+    },
+    (s: NexusTraitorSnapshot) => {
+      s.removed = [];
+    },
+    (s: NexusTraitorSnapshot) => {
+      s.players[1].traitors = ['d', 'e'];
+    },
+  ]) {
+    const broken = reload(state);
+    mutate(broken);
+    const unchanged = reload(broken);
+    assert.throws(() => validateNexusTraitorSnapshot(broken, universe));
+    assert.deepEqual(broken, unchanged);
+  }
+});
+void test('a pending exchange cannot rewrite the permanent card zone even when the current census is conserved', () => {
+  const paved = fixture();
+  paved.reserve.splice(paved.reserve.indexOf('e'), 1);
+  paved.removed = ['e'];
+  const begun = beginNexusTraitorExchange(paved, universe, input());
+  for (const mutate of [
+    (s: NexusTraitorSnapshot) => {
+      const moved = s.reserve[0];
+      s.reserve[0] = s.removed![0];
+      s.removed = [moved];
+    },
+    (s: NexusTraitorSnapshot) => {
+      delete (s as Partial<NexusTraitorSnapshot>).removed;
+      s.reserve.unshift('e');
+    },
+  ]) {
+    const state = reload(begun.state);
+    mutate(state);
+    validateNexusTraitorSnapshot(state, universe);
+    assert.throws(() =>
+      validateNexusTraitorExchange(state, universe, begun.exchange),
+    );
+  }
+});
+void test('completed exchange history keeps its original zone while later retirement permits another legal exchange', () => {
+  const state = fixture();
+  state.reserve.splice(state.reserve.indexOf('e'), 1);
+  state.removed = ['e'];
+  const begun = beginNexusTraitorExchange(state, universe, input());
+  const done = finishNexusTraitorExchange(
+    begun.state,
+    universe,
+    begun.exchange,
+    ['f'],
+    () => 0.999,
+  );
+  const later = reload(done.state);
+  later.removed!.push(later.reserve.shift()!);
+  assert.deepEqual(later.removed, ['e', 'g']);
+  assert.equal(later.reserve.includes('e'), false);
+  validateNexusTraitorSnapshot(later, universe);
+  validateNexusTraitorHistory(universe, reload(done.exchange));
+  assert.deepEqual(done.exchange.source.removed, ['e']);
+  assert.throws(() =>
+    validateNexusTraitorExchange(later, universe, done.exchange),
+  );
+  const next = beginNexusTraitorExchange(later, universe, { ...input(), event: 'after-second-marker', turn: 3 });
+  const continued = finishNexusTraitorExchange(next.state, universe, next.exchange, [next.exchange.drawn[0]], () => 0.999);
+  assert.deepEqual(continued.state.removed, ['e', 'g']);
+  assert.equal(continued.state.reserve.some(card => later.removed!.includes(card)), false);
+  validateNexusTraitorHistory(universe, done.exchange);
+  validateNexusTraitorHistory(universe, continued.exchange);
+});
+void test('an earlier completed history without a permanent zone is never reinterpreted against later markers', () => {
+  const begun = beginNexusTraitorExchange(fixture(), universe, input());
+  const done = finishNexusTraitorExchange(
+    begun.state,
+    universe,
+    begun.exchange,
+    ['a'],
+    () => 0.999,
+  );
+  const later = reload(done.state);
+  later.removed = [later.reserve.shift()!];
+  validateNexusTraitorSnapshot(later, universe);
+  validateNexusTraitorHistory(universe, reload(done.exchange));
+  const next = beginNexusTraitorExchange(later, universe, { ...input(), event: 'after-first-marker', turn: 3 });
+  const continued = finishNexusTraitorExchange(next.state, universe, next.exchange, [next.exchange.drawn[0]], () => 0.999);
+  assert.equal(continued.state.reserve.includes(later.removed![0]), false);
+  assert.equal(continued.state.players.some(player => player.traitors.includes(later.removed![0]) ||
+    player.faceDancers?.some(card => card.leader === later.removed![0])), false);
+  validateNexusTraitorHistory(universe, done.exchange);
+  validateNexusTraitorHistory(universe, continued.exchange);
+});
 void test('signed completed history rejects alteration but remains valid after later legitimate card custody changes', () => {
   const begun = beginNexusTraitorExchange(fixture(), universe, input());
   const done = finishNexusTraitorExchange(

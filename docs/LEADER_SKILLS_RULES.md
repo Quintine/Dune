@@ -5,6 +5,18 @@ Leader Skills module from *CHOAM & Richese*. The later [first runtime prototype]
 records connected behavior and remaining gaps. This contract does not enable
 the module or certify its combinations.
 
+## Rihani and permanent Traitor markers — 15 October 2026
+
+The shared canonical Traitor snapshot now includes an optional permanent
+`removed` zone derived from Moritani's retired victims. Rihani preserves that
+zone in its full before/state receipt and cannot peek, draw, return or rewrite
+one of those cards. Existing used-card exclusions, native Tleilaxu Face Dancer
+classification and both original skill bands remain. Old absent-zone JSON
+receipts keep their existing body/signature. Focused physical-transition
+coverage verifies this consumer; the coupled native Nexus proof is not a
+claim of a new full native Rihani/Moritani or saved-game assurance campaign.
+[Canonical shared role/census and evidence](MORITANI_ASSASSINATE_LEADERS.md#physical-replacement-roles-and-retired-card-zone--15-october-2026).
+
 ## Sources and local evidence
 
 The governing source is Gale Force Nine's twelve-page English *CHOAM &

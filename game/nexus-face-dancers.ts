@@ -108,6 +108,7 @@ function signature(receipt: Omit<NexusFaceDancerReceipt, 'signature'>): string {
     receipt.replaced,
     receipt.drawn,
     receipt.settledReserve,
+    ...(Object.hasOwn(receipt.source, 'removed') ? [receipt.source.removed] : []),
   ]);
 }
 function resultingState(receipt: NexusFaceDancerReceipt): NexusTraitorSnapshot {

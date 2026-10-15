@@ -1,6 +1,7 @@
 import { CHOAM_AUDITOR_ID, createAuditorLeader, leaders as printedLeaders, type Leader } from './cards';
 import { FACTIONS, type FactionId } from './catalog';
 import { DUKE_VIDAL_ID } from './duke-vidal';
+import { CHEAP_HERO_TRAITOR } from './traitors';
 
 export type MoritaniAssassinateReceipt = {
   event: string;
@@ -267,7 +268,7 @@ export function validateMoritaniAssassinate(
     else
       requireAssassinate(
         identifier(r.replacement) &&
-          printedDiscs.has(r.replacement) &&
+          (printedDiscs.has(r.replacement) || r.replacement === CHEAP_HERO_TRAITOR) &&
           r.replacement !== r.card &&
           (!custody ||
             (custody.removed.includes(r.card!) &&

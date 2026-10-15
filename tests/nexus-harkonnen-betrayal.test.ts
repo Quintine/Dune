@@ -379,6 +379,44 @@ void test('bounded prototype rejects simultaneous replacement obligations but re
   assert.throws(() => validateHarkonnenBetrayalReplacements(history, second.cursor, [secondDrawn]), HarkonnenBetrayalError);
 });
 
+void test('permanent set-aside custody survives Betrayal serialization and can never fund its replacement draw', () => {
+  const ctx = context();
+  const setAside = ctx.traitors.reserve.shift()!;
+  ctx.traitors.removed = [setAside];
+  const native = authority(ctx);
+  const source = createHarkonnenBetrayalSource(ctx, native, parent);
+  validateHarkonnenBetrayalSource(ctx, structuredClone(source), native, parent);
+  const use = closeHarkonnenBetrayalSource(source, 'use', 'a', initialHarkonnenBetrayalCursor());
+  const replacement = createHarkonnenBetrayalReplacement(use.receipt);
+  validateHarkonnenBetrayalReplacement(replacement, [use.receipt], use.cursor, ctx.universe);
+  assert.throws(() => drawHarkonnenBetrayalReplacement(replacement, [use.receipt], use.cursor,
+    setAside, ctx.universe), HarkonnenBetrayalError);
+  const next = later(ctx), nextNative = authority(next);
+  const nextSource = createHarkonnenBetrayalSource(next, nextNative, 'later-native-set-aside-parent');
+  const pass = closeHarkonnenBetrayalSource(nextSource, 'pass', null, use.cursor);
+  const history = [use.receipt, pass.receipt];
+  validateHarkonnenBetrayalHistory(history, pass.cursor, next.universe);
+  validateHarkonnenBetrayalReplacements(history, pass.cursor, [replacement], next.universe);
+  const recycled = next.traitors.reserve[0];
+  const drawn = drawHarkonnenBetrayalReplacement(replacement, history, pass.cursor, recycled, next.universe);
+  assert.equal(drawn.status, 'drawn');
+  assert.equal(replacement.status, 'due');
+});
+void test('Betrayal live custody keeps the permanent zone inside one complete canonical census', () => {
+  const ctx = context();
+  const setAside = ctx.traitors.reserve.shift()!;
+  ctx.traitors.removed = [setAside];
+  const native = authority(ctx);
+  const source = createHarkonnenBetrayalSource(ctx, native, parent);
+  assert.deepEqual(source.required, ['a', 'e']);
+  for (const variant of ['duplicate', 'missing', 'foreign'] as const) {
+    const changed = structuredClone(ctx);
+    if (variant === 'duplicate') changed.traitors.reserve.push(setAside);
+    if (variant === 'missing') changed.traitors.removed = [];
+    if (variant === 'foreign') changed.traitors.removed = ['foreign-identity'];
+    assert.throws(() => createHarkonnenBetrayalSource(changed, native, parent));
+  }
+});
 void test('native attempt history serialization stays linear with nonrecursive current and previous heads', () => {
   const ctx = context(), history: HarkonnenBetrayalReceipt[] = [];
   let cursor = initialHarkonnenBetrayalCursor(), halfway = 0;

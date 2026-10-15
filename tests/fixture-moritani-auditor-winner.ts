@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { CHOAM_AUDITOR_ID } from '../game/choam-auditor';
 import { type Action, type Game } from '../game/engine';
+import type { FactionId } from '../game/catalog';
 import {
   advanceMixedE3Moritani, createMixedE3MoritaniProgramme, mixedE3MoritaniClean,
   mixedE3MoritaniPlayer, mixedE3MoritaniReload, nextMixedE3MoritaniStep,
@@ -22,7 +23,7 @@ export type MoritaniAuditorWinnerFixture = MixedE3MoritaniProgramme & {
  * battle selection are actual actions; no disc, card, wallet or army is staged.
  * Auditor2 beats Vando1 at dial0, so its one genuinely shipped force survives. */
 export function createMoritaniAuditorWinnerFixture(
-  options: { seatIds?: readonly string[]; auditorTarget?: boolean } = {},
+  options: { seatIds?: readonly string[]; auditorTarget?: boolean; nexusCard?: FactionId; initialReserveTraitors?: readonly string[] } = {},
 ): MoritaniAuditorWinnerFixture {
   const f = createMixedE3MoritaniProgramme({
     rules: 'advanced', families: ['choam'], skills: false,

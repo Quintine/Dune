@@ -1,5 +1,71 @@
 # Dune implementation status
 
+## 15 October 2026 — Physical Traitor replacements, retired zone and legal recycling
+
+Original Moritani Mentat replacement accepts the actual Ix Hero Traitor as a
+physical card, not a faction leader disc/target. Native Ix play retires Dominic4
+and draws one Hero; native controlled leaders and five-disc identity stay unchanged.
+The actual owned phase-opening initialization still precedes automatic retirement:
+phase8 alone is not a completed Mentat draw.
+
+Added optional `NexusTraitorSnapshot.removed`, derived only from actual replaced
+Mori victim cards. Full canonical census retains existing Loyalty exclusion;
+removed cards cannot enter reserve/hands/Face Dancers or fund draw/return.
+Exchange sources and Face Dancer receipts conditionally bind this physical zone,
+preserving old absent-field grammar. Betrayal's whole serialized source already
+carries it; replacement rejects a source-permanent card without parsing that
+inventory for a still-due/null draw. Rihani's full before/state preserves the
+zone and rejects rewriting it. No Game marker field is imported from a helper:
+engine application only changes actual reserve/hands/Face Dancers.
+
+Removed the false coupling between a historical replacement ID and permanent
+live ownership/unique historical draw. Original Harkonnen Secret Ally may return
+Hasimir6, keep newly drawn Esmar3 and restore the original Mori placement.
+A real later turn-three paid battle/retirement draws the same physical Hasimir
+again. First receipt/signature and older Nexus source stay unchanged after a
+second public marker; one live card and both permanent victims remain conserved.
+Current actor/card authorization, physical census, revealed-until-Mentat rule,
+native target, once-use and normal-call forfeiture remain.
+
+Three failing-before observations identify the role-only Hero parser, missing
+retired-card census and historical-live-ownership guard in actual native play.
+Shared helper/engine consumers and original native producers are integrated
+without a save-schema migration, second deck or fabricated card.
+Shared fixture options direct only original undealt reserve prefix and actual
+closing Nexus singleton; return-shuffle entropy and conserved unplayed Spice
+ordering are disclosed. No raw played reserve/hand/wallet/forces/leader/phase/
+battle or ledger assignment produces the accepted native paths.
+
+Focused nine-file76/76 passes. The broader affected15-file union exposed obsolete
+old ownership/uniqueness assertions and fixtures skipping original borrowed Voice
+before Prescience/plans. Those fixtures now use the existing canonical native
+preparation actions, leaving requested native Prescience available. No rules or
+bot legality is weakened. Repaired affected15-file **134/134** passes.
+Removed markup/wiring/wording pins, unnecessary casts and their unused imports.
+
+**Eleven original API/policy scenarios** pass: Hero/next Storm, four final
+Ready paths through original owned initialization, real old-card return,
+native repeated draw, and four mandatory-return policies. All four return
+policies keep Hasimir in that position; the human/scripted return gives it back.
+No strategic tuning or calibration claim.
+
+Actual styled390px GameTable performs final Collection readiness and private
+Hero inspection; draws two Secret Ally cards; native checkboxes return Hasimir6
+plus Caid3, keep Esmar3 and restore/pass Mori placement; original continuation
+reaches next Storm. A separate genuine recycled chronology reveals Esmar3 and
+shows one Hasimir6 after second Mentat, with both public markers and unchanged
+older Nexus history. No horizontal overflow/browser errors. The first UI
+return uses live randomness; the separately generated recycled chronology
+discloses its original return-shuffle entropy.
+
+This implements printed card mechanics, not a new privacy/custody/recovery
+campaign. Receipt consistency does not authenticate every alleged past save.
+No saved/deployed rooms, public gates or existing game state are changed;
+full combinations, assurance, exceptional targets and full goal remain open.
+Final types/lint and production build pass after reference integration.
+Existing module.register deprecation, large-chunk and Unknown-route warnings remain.
+[Canonical source, controls and scope](MORITANI_ASSASSINATE_LEADERS.md#physical-replacement-roles-and-retired-card-zone--15-october-2026).
+
 ## 15 October 2026 — Canonical Moritani winning discs, Auditor targets and Guild entry
 
 Separated canonical played-disc identity from the victorious player's printed

@@ -29,6 +29,30 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Physical Traitor replacements and permanent markers — 15 October.**
+Original native Ix play now draws the real Hero Traitor after Dominic4's
+retirement, without turning it into a leader disc or faction target.
+Shared optional permanent-card census preserves retired victims across
+Nexus exchange, Face Dancer, Betrayal source/replacement and Rihani consumers.
+Old absent-zone formats remain; completed source history stays historical.
+A replacement may legally return and be drawn again: native Hasimir6 return,
+retained Esmar3, a real turn-three Guild loss/retirement and one Hasimir6
+redraw now work without rewriting the first receipt or older Nexus history.
+
+Affected15-file134/134, final types/lint/build and11 original API/policy paths pass.
+Existing build deprecation/chunk/Unknown-route warnings remain. Actual styled390px
+controls Ready through owned Mentat initialization, inspect private Hero,
+return Hasimir/Caid, restore/pass Mori placement, reach next Storm and reveal
+Esmar3 before the second draw. One live Hasimir, two permanent markers;
+no overflow/browser errors. All four mandatory-return policies legally keep
+Hasimir; the human/scripted old-card return is distinct, not calibrated strategy.
+Older adjacent fixtures now consume actual borrowed Voice before native
+Prescience/plans; obsolete ownership/uniqueness and wording/markup pins are
+removed, not re-pinned. No wallet/hand/army/leader/phase/battle staging.
+[Canonical roles, exact source and boundaries](MORITANI_ASSASSINATE_LEADERS.md#physical-replacement-roles-and-retired-card-zone--15-october-2026).
+No saved/deployed room touched. Full assurance, optional combinations,
+exceptional targets, public starts and full project completion remain open.
+
 **Canonical Moritani winning discs and ordinary Guild arrival — 15 October.**
 The surviving played disc no longer has to be an ordinary native of its
 victorious player. Original Ecaz/Duke6 opens Sanya Ecaz4; original

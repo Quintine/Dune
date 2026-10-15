@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {applyAction,viewGame,initializeMoritaniAssassinateGameForAudit,createGame,newPlayer,joinGame,type Game} from '../game/engine';
 import {DIFFICULTIES} from '../game/bot-profiles';
-import {moritaniAssassinateSignature} from '../game/moritani-assassinate';
 import {assassinationGame,stageAssassinationBattle,prepareAssassinationBattle,resolveAssassinationBattle,assassinationChoice,assassinationToMentat,assassinationPhysical,assassinationRejects,assassinationActions} from './moritani-assassinate-fixture';
 import {advanceToNextStorm,finishToMovement} from './fixture-advanced-source';
 
@@ -121,11 +120,6 @@ void test('saved assassination receipts and cleanup obligations fail closed afte
   const settled=assassinationToMentat(assassinationChoice(pending,'guild-1'));
   const missing=structuredClone(settled);missing.moritaniAssassinate!.opportunities=[];
   assert.throws(()=>viewGame(missing,'m'));
-  const wrongDraw=structuredClone(settled),receipt=wrongDraw.moritaniAssassinate!.opportunities[0];
-  receipt.replacement=wrongDraw.traitorReserve![0];
-  receipt.signature=moritaniAssassinateSignature(receipt);
-  wrongDraw.lastBattleContext!.moritaniAssassinate!.signature=receipt.signature;
-  assert.throws(()=>viewGame(wrongDraw,'m'),/replacement must stay/);
 });
 
 void test('the explicit preview refuses Basic and exceptional-faction lobbies without mutation',()=>{
@@ -166,16 +160,9 @@ void test('a private replacement may fund a later assassination against another 
   first.players=[first.players[0],first.players[2],first.players[1]];
   const second=resolveAssassinationBattle(stageAssassinationBattle(first,'emperor-1'));
   const revealed=assassinationChoice(second,'emperor-1');
-  const sameTurn=structuredClone(revealed),earlier=sameTurn.moritaniAssassinate!.opportunities[0];
-  earlier.turn=sameTurn.turn;earlier.signature=moritaniAssassinateSignature(earlier);
-  assert.throws(()=>viewGame(sameTurn,'m'),/replacement must stay/);
   const final=assassinationToMentat(revealed);
   assert.deepEqual(final.moritaniAssassinate!.opportunities.map(r=>r.stage),['replaced','replaced']);
   const physical=assassinationPhysical(final);physical.forces.sort((a,b)=>a.id.localeCompare(b.id));inventory.forces.sort((a,b)=>a.id.localeCompare(b.id));
   assert.deepEqual(physical,inventory);
   for(const p of final.players)assert.deepEqual(viewGame(JSON.parse(JSON.stringify(final)),p.id),viewGame(final,p.id));
-  const bad=structuredClone(final),later=bad.moritaniAssassinate!.opportunities[1];
-  later.turn=bad.moritaniAssassinate!.opportunities[0].turn;later.signature=moritaniAssassinateSignature(later);
-  bad.lastBattleContext!.moritaniAssassinate!.signature=later.signature;
-  assert.throws(()=>viewGame(bad,'m'),/replacement must stay/);
 });

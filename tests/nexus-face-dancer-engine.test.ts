@@ -15,6 +15,7 @@ import {
   nexusTraitorBattle,
 } from './fixture-nexus-traitors';
 import { nexusAllow, nexusReload } from './fixture-nexus-cards';
+import { nextStrongholdFactionsNativeStep } from './fixture-stronghold-factions';
 
 function fixture(
   options: {
@@ -121,6 +122,11 @@ function actuallyReveal(): Game {
         type: 'battlePreparationReady',
         event: g.battle!.event,
       });
+  while (g.battle!.preparation) {
+    const step = nextStrongholdFactionsNativeStep(g);
+    assert.ok(step);
+    g = applyAction(g, step.actor, step.action);
+  }
   for (const [id, disc] of [
     ['q', leader.id],
     ['r', opposing.id],

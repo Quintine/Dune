@@ -91,8 +91,9 @@ export function validateRihani(receipt: RihaniReceipt, universe: readonly string
   const old = receipt.before.players.find((p) => p.id === receipt.owner);
   const owner = receipt.state.players.find((p) => p.id === receipt.owner);
   requireRihani(old && owner && owner.faction === old.faction &&
+    same(receipt.before.removed, receipt.state.removed) &&
     same(receipt.before.players.filter((p) => p.id !== receipt.owner), receipt.state.players.filter((p) => p.id !== receipt.owner)),
-    'Rihani changed another player’s physical Traitors.');
+    'Rihani changed immutable physical Traitor custody.');
   requireRihani(Array.isArray(receipt.used) && new Set(receipt.used).size === receipt.used.length &&
     members(receipt.deckAfterPeek, receipt.before.reserve) &&
     (receipt.skill.normal || same(receipt.deckAfterPeek, receipt.before.reserve)) &&

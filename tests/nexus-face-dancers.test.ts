@@ -225,6 +225,78 @@ void test('changed whole-batch history, source statuses, original draw order and
     assert.deepEqual(corrupt, before);
   }
 });
+void test('permanently set-aside cards are never drawn, returned or resurrected as Face Dancer replacements', () => {
+  const state = fixture();
+  const setAside = state.reserve.shift()!;
+  state.removed = [setAside];
+  const before = reload(state);
+  const result = replaceNexusFaceDancers(state, universe, event, () => 0.999);
+  assert.deepEqual(state, before);
+  assert.equal(result.receipt.drawn.includes(setAside), false);
+  assert.equal(result.state.reserve.includes(setAside), false);
+  assert.equal(
+    result.state.players[0].faceDancers!.some((c) => c.leader === setAside),
+    false,
+  );
+  assert.deepEqual(result.state.removed, [setAside]);
+  validateNexusTraitorSnapshot(result.state, universe);
+  validateNexusFaceDancerHistory(universe, reload(result.receipt));
+});
+void test('replacement history validates its recorded permanent zone and rejects a rewritten one', () => {
+  const state = fixture();
+  state.removed = [state.reserve.shift()!];
+  const receipt = replaceNexusFaceDancers(state, universe, event, () => 0.999).receipt;
+  validateNexusFaceDancerHistory(universe, reload(receipt));
+  for (const mutate of [
+    (r: NexusFaceDancerReceipt) => {
+      r.source.removed = [];
+    },
+    (r: NexusFaceDancerReceipt) => {
+      r.source.removed!.push(r.drawn[0]);
+    },
+    (r: NexusFaceDancerReceipt) => {
+      delete (r.source as Partial<NexusTraitorSnapshot>).removed;
+    },
+    (r: NexusFaceDancerReceipt) => {
+      r.replaced = [...r.replaced, r.source.removed![0]];
+    },
+  ]) {
+    const corrupt = reload(receipt);
+    mutate(corrupt);
+    const before = reload(corrupt);
+    assert.throws(() => validateNexusFaceDancerHistory(universe, corrupt));
+    assert.deepEqual(corrupt, before);
+  }
+});
+void test('a permanent zone that duplicates reserve or held Face Dancers or omits physical cards is rejected', () => {
+  for (const mutate of [
+    (s: NexusTraitorSnapshot) => {
+      s.removed = [s.reserve[0]];
+    },
+    (s: NexusTraitorSnapshot) => {
+      s.removed = [s.players[0].faceDancers![0].leader];
+    },
+    (s: NexusTraitorSnapshot) => {
+      s.reserve.pop();
+      s.removed = ['foreign-identity'];
+    },
+    (s: NexusTraitorSnapshot) => {
+      s.removed = [s.reserve.pop()!];
+      s.players[1].traitors.pop();
+    },
+  ]) {
+    const state = fixture();
+    mutate(state);
+    const before = reload(state);
+    assert.throws(() => validateNexusTraitorSnapshot(state, universe));
+    assert.throws(() =>
+      replaceNexusFaceDancers(state, universe, event, () => {
+        throw Error('Corrupt census must not shuffle');
+      }),
+    );
+    assert.deepEqual(state, before);
+  }
+});
 void test('corrupt physical census and invalid event metadata reject without invoking shuffle', () => {
   for (const mutate of [
     (s: NexusTraitorSnapshot) => {

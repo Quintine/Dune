@@ -153,7 +153,7 @@ void test('Harkonnen reveal retains its physical card until one distinct Mentat 
   assert.throws(() => validateMoritaniAssassinate(state, {
     turn: 2, held: ['moritani-0'], removed: ['harkonnen-1'],
   }));
-  for (const replacement of ['harkonnen-1', DUKE_VIDAL_ID, 'cheap-hero-traitor'])
+  for (const replacement of ['harkonnen-1', DUKE_VIDAL_ID])
     assert.throws(() => validateMoritaniAssassinate({
       ...state, opportunities: [revised(revealed, { stage: 'replaced', replacement })],
     }));

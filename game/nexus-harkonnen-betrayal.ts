@@ -440,6 +440,11 @@ function validateReplacement(
     (replacement.drawn === null || receipt.source.universe.includes(replacement.drawn)) &&
     replacement.signature === replacementSignature(replacement),
   'Harkonnen Betrayal replacement lost its exact successful Use obligation or actual drawn identity.');
+  if (replacement.drawn !== null) {
+    const [, originalTraitors] = JSON.parse(receipt.source.inventory) as [unknown, NexusTraitorSnapshot];
+    requireBetrayal(!originalTraitors.removed?.includes(replacement.drawn),
+      'Permanently set-aside Traitor Cards cannot fund a Betrayal replacement.');
+  }
 }
 export function validateHarkonnenBetrayalReplacement(
   replacement: HarkonnenBetrayalReplacement, history: readonly HarkonnenBetrayalReceipt[],
@@ -458,6 +463,7 @@ export function drawHarkonnenBetrayalReplacement(
   'Harkonnen Betrayal replacement draws exactly once from its actual canonical Traitor Deck.');
   const result: HarkonnenBetrayalReplacement = { ...replacement, status: 'drawn', drawn, signature: '' };
   result.signature = replacementSignature(result);
+  validateReplacement(result, history);
   return result;
 }
 export function validateHarkonnenBetrayalReplacements(

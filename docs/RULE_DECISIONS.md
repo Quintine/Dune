@@ -2,6 +2,22 @@
 
 Updated 15 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
 
+## Physical Traitor roles — 15 October 2026
+
+- A Moritani Mentat replacement is an actual Traitor Card, including the one
+  Hero identity when the original Ix deck supplies it. Hero is not a leader
+  disc or printed opposing-faction assassination target; Duke has no Traitor.
+- Public retired victims remain permanently out. A historical replacement ID
+  is not permanent current ownership: the real card may be legally returned
+  and later drawn again, with its old receipt unchanged.
+- The canonical snapshot's optional permanent zone is derived from actual
+  retired victims, retaining existing Loyalty exclusion and all active-custody
+  checks. Old absent-zone formats remain; completed records keep their own
+  source rather than adopting later markers. No new numeric ruling, privilege,
+  mode gate or full save-authenticity claim is introduced.
+
+[Native chronology, controls and current evidence](MORITANI_ASSASSINATE_LEADERS.md#physical-replacement-roles-and-retired-card-zone--15-october-2026).
+
 ## Source-clear interaction cutovers — 15 October 2026
 
 - **Moritani played disc versus target faction:** the surviving actual

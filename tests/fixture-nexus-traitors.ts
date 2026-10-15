@@ -19,6 +19,7 @@ import {
   finishNexusSpice,
   orderNexusSpice,
 } from './fixture-nexus-cards';
+import { nextStrongholdFactionsNativeStep } from './fixture-stronghold-factions';
 
 export function nexusTraitorFixture(
   options: {
@@ -233,11 +234,14 @@ export function nexusTraitorBattle(g: Game, reveal = true): Game {
         type: 'battlePreparationReady',
         event: g.battle!.event,
       });
+  // Consume the original absent-BG opportunity before native Prescience.
+  // When requested, leave that native power for the caller's actual use.
+  while (g.battle!.preparation && (reveal || g.battle!.preparation.kind === 'nexusVoice')) {
+    const step = nextStrongholdFactionsNativeStep(g);
+    assert.ok(step);
+    g = applyAction(g, step.actor, step.action);
+  }
   if (!reveal) return g;
-  while (g.battle!.preparation)
-    g = applyAction(g, g.battle!.preparation.owner, {
-      type: 'declineBattlePower',
-    });
   for (const id of [owner.id, target.id])
     g = applyAction(g, id, {
       type: 'battlePlan',

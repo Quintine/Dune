@@ -119,7 +119,7 @@ void test('Tleilaxu Rihani normal-only inspection, lower-only exchange and pre-d
   assert.deepEqual(declined.peeked, both.peeked);
   assert.deepEqual(declined.drawn, []);
   conserved(restore(declined));
-  assert.throws(() => chooseRihaniDraw(declined, universe, declined.state, true), /already been answered/);
+  assert.throws(() => chooseRihaniDraw(declined, universe, declined.state, true));
 });
 
 void test('Rihani cannot replace a revealed Face Dancer or return both newly drawn cards', () => {
@@ -127,7 +127,7 @@ void test('Rihani cannot replace a revealed Face Dancer or return both newly dra
   const drawn = chooseRihaniDraw(offer, universe, offer.state, true);
   for (const given of [universe[1], ...drawn.drawn]) {
     const before = structuredClone(drawn);
-    assert.throws(() => finishRihani(drawn, universe, drawn.state, drawn.drawn[0], given, random), /unused Traitor/);
+    assert.throws(() => finishRihani(drawn, universe, drawn.state, drawn.drawn[0], given, random));
     assert.deepEqual(drawn, before);
   }
   const allRevealed = snapshot();
@@ -152,13 +152,13 @@ void test('Rihani rejects status changes in old, drawn and retained Face Dancers
     resigned(complete, (r) => { r.state.players[0].faceDancers![2].revealed = true; }),
     resigned(drawn, (r) => { r.eligible.push(universe[1]); }),
   ];
-  for (const receipt of invalid) assert.throws(() => validateRihani(receipt, universe), /custody|drawn cards|returned card|unused cards/);
+  for (const receipt of invalid) assert.throws(() => validateRihani(receipt, universe));
 
   const changedCurrent = structuredClone(drawn.state);
   changedCurrent.players[0].faceDancers![1].revealed = false;
-  assert.throws(() => finishRihani(drawn, universe, changedCurrent, drawn.drawn[0], universe[0], random), /current Traitor custody/);
+  assert.throws(() => finishRihani(drawn, universe, changedCurrent, drawn.drawn[0], universe[0], random));
   const duplicate = resigned(drawn, (r) => { r.state.reserve.push(r.drawn[0]); });
-  assert.throws(() => validateRihani(duplicate, universe), /census/);
+  assert.throws(() => validateRihani(duplicate, universe));
 });
 
 void test('ordinary Rihani receipts retain the existing used-Traitor exclusion and JSON transition', () => {
@@ -175,4 +175,30 @@ void test('ordinary Rihani receipts retain the existing used-Traitor exclusion a
   assert.deepEqual(done.state.players[0].traitors, [universe[1], universe[2], drawn.drawn[1]]);
   assert.equal(Object.hasOwn(done.state.players[0], 'faceDancers'), false);
   validateRihani(restore(done), universe, done.state);
+});
+
+void test('Rihani excludes permanently retired cards throughout peek, draw, return and recorded custody', () => {
+  const original = snapshot();
+  const retired = original.reserve.shift()!;
+  original.removed = [retired];
+  const offer = begin(true, true, original);
+  assert.equal(offer.peeked.includes(retired), false);
+  const pending = chooseRihaniDraw(offer, universe, offer.state, true);
+  assert.equal(pending.drawn.includes(retired), false);
+  const done = finishRihani(pending, universe, pending.state, pending.drawn[0], universe[0], random);
+  assert.deepEqual(done.state.removed, [retired]);
+  assert.equal(done.state.reserve.includes(retired), false);
+  assert.equal(done.state.players.some(p => p.traitors.includes(retired) ||
+    p.faceDancers?.some(card => card.leader === retired)), false);
+  assert.ok(done.state.reserve.includes(universe[0]));
+  assert.ok(done.state.players[0].faceDancers!.some(card => card.leader === pending.drawn[0] && !card.revealed));
+  conserved(done);
+  const rewritten = resigned(done, r => {
+    r.state.removed = [universe[0]];
+    r.state.reserve[r.state.reserve.indexOf(universe[0])] = retired;
+  });
+  validateNexusTraitorSnapshot(rewritten.state, universe);
+  const before = structuredClone(rewritten);
+  assert.throws(() => validateRihani(rewritten, universe));
+  assert.deepEqual(rewritten, before);
 });

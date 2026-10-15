@@ -209,6 +209,62 @@ Exceptional captured/Ghola **targets**, Skills/Harkonnen, private-step UX,
 remaining arrival combinations, full assurance and deployed acceptance remain
 separate. Passing these local native paths does not certify complete modes.
 
+## Physical replacement roles and retired-card zone — 15 October 2026
+
+The original Mentat draw takes a **physical Traitor Card**, not necessarily a
+faction leader-disc identity. With the original Ix deck selected, the single
+Cheap Hero / Heroine Traitor is a legal replacement. It remains a Traitor:
+no physical leader, native-faction assassination target or Duke Traitor is
+manufactured. Original native Ix play kills Dominic Vernius4, retires its real
+held card and draws that original reserve Hero once.
+
+Retired victims remain permanently out of circulation. The shared
+`NexusTraitorSnapshot.removed` zone derives from actual `stage: 'replaced'`
+victim cards, not from historical replacement IDs. It participates in the
+canonical full census, retaining the existing Ecaz Loyalty exclusion, but
+cannot appear in reserve, ordinary hands or Face Dancers. Harkonnen exchange,
+Tleilaxu Cunning, Betrayal source/replacement and Rihani consumers preserve
+that zone. This is distinct from Face Dancers temporarily set aside before
+their own return shuffle, or a Betrayal-declared card returned to the deck.
+
+A replacement's recorded ID is a **historical draw**, not permanent ownership.
+Its real card can later be exchanged, returned and drawn again. Keep the old
+receipt/signature unchanged; count current custody once, not once per past
+reference. Original native CHOAM/Auditor play draws Hasimir6, Harkonnen Secret
+Ally returns that card while keeping Esmar3, then a real turn-three Guild loss
+retires Esmar3 and original Mentat draws the same Hasimir6 again. Both public
+victim markers stay out; one live Hasimir card remains.
+
+New Nexus exchange sources carry/sign the optional permanent zone when present.
+Absent-zone records retain their original grammar/signature; completed history
+validates its recorded physical state rather than adopting later live markers.
+No old receipt is rewritten when a second victim retires. Engine application
+never rewrites the derived Game marker zone from an exchange result. Existing
+actor/card authorization, full current census, native target guards and
+revealed-card reservation remain.
+
+Affected15-file **134/134** passes, including adjacent engine/continuation
+consumers. **Eleven original API/policy paths** cover Hero/next Storm, all four
+Ready paths through actual owned Mentat initialization, legal old-card return,
+the repeated native draw and all four pending-return policies. All four return
+policies legally keep Hasimir; the human/scripted return chooses to give it back.
+This is legal participation, not strategic calibration.
+
+Actual styled390px GameTable completes final Collection readiness, displays
+the private Hero inspector, draws two real Nexus cards, returns Hasimir/Caid
+through the native checkboxes, restores the original Mori placement, passes it
+and reaches the next Storm. A separate original recycled chronology reveals
+Esmar3 and displays one Hasimir6 after the second draw. No overflow/browser
+errors. Only original deal/return-shuffle entropy and conserved unplayed
+Spice/Nexus ordering are directed; no hand, wallet, force, leader, phase or
+battle is staged. No saved/deployed rooms or broad assurance are covered.
+
+The wider consumer run exposed older fixtures skipping the real borrowed-Voice
+opportunity before native Prescience/plans. They now consume the original
+canonical preparation actions; no engine legality is weakened. Old permanent
+replacement-ownership/uniqueness and wording/markup pins were removed, not
+re-pinned. Receipt consistency is not a claim of authenticated past save history.
+
 ## Save and physical custody
 
 The resolved battle binds the opportunity's event, opposing faction and surviving
@@ -217,17 +273,19 @@ the decision opens. Reveal/decline resumes that exact cleanup once. A normal
 traitor call has a separate event ledger; its explanatory log waits until the
 normal public reveal, preserving sealed submissions.
 
-A physical Traitor Card belongs to one of three zones: reserve deck, player hands,
-or this ability's public set-aside markers. Revealed cards stay held until Mentat;
-retired cards never return to the deck in this profile. A replacement remains with
-Moritani or becomes the card consumed by a later-turn assassination against another
-faction. Cross-zone duplication, missing replacements, duplicate draws, forged
-same-turn chains and altered continuation receipts fail validation.
+A physical Traitor Card belongs to reserve, an ordinary/Face Dancer hand,
+or a public permanent marker in the existing canonical census. Revealed
+assassination cards remain held until their actual Mentat retirement.
+Retired victims never return. Historical replacement references may recur
+after legal physical exchanges; they are not additional live cards or a
+permanent hand-ownership constraint. Cross-zone duplication and altered
+pending continuations still reject.
 
-Replacement runs automatically when Mentat begins. In this bounded profile it does
-not compete with other traitor draws, and Terror placement does not alter traitor
-custody. Ordering with Face Dancers, Nexus/Rihani draws, Extortion and other modules
-remains an explicit integration boundary, not an inferred universal ordering.
+Replacement runs during original Mentat initialization, after the owned phase
+opening; merely displaying phase8 does not mean that initialization finished.
+The current native Nexus path can pause/resume original Mori placement without
+repeating retirement, drawing or payment. Complete timing/optional-module and
+save-authenticity assurance remain separate from these exercised local paths.
 
 ## Reproduction and evidence
 
