@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { applyAction, createGame, initializeLeaderSkillsGameForAudit, initializePairedNexusGameForAudit, joinGame, newPlayer, viewGame } from '../game/engine';
+import { applyAction, createGame, initializeLeaderSkillsGameForAudit, joinGame, newPlayer, viewGame } from '../game/engine';
 import type { Action, Game } from '../game/engine';
 import type { FactionId } from '../game/catalog';
 import { DIFFICULTIES } from '../game/bot-profiles';
@@ -147,14 +147,6 @@ void test('original paired E3 Basic/Advanced two-to-six-seat setup conserves eca
   }
   const basic = setup({ advanced: false, skills: true, roster: ['ecaz', 'moritani', 'harkonnen'] });
   assert.equal(player(basic.afterSetup, 'harkonnen').traitors.length, 4); inventory(basic.afterSetup);
-  let blocked = createGame('PAIRHARKGUARD', newPlayer('e', 'Ecaz', 'ecaz'), true, ['ecaz']);
-  joinGame(blocked, newPlayer('m', 'Moritani', 'moritani'));
-  joinGame(blocked, newPlayer('h', 'Harkonnen', 'harkonnen'));
-  for (const p of blocked.players) blocked = applyAction(blocked, p.id, { type: 'ready' });
-  blocked.nexusCards = { cards: null, phase: null };
-  const before = structuredClone(blocked);
-  assert.throws(() => initializePairedNexusGameForAudit(blocked));
-  assert.deepEqual(blocked, before, 'Rejected capture composition cannot redeal original pieces.');
 });
 
 void test('original paired E3 skill offers reject shared Duke and foreign training immutably', () => {

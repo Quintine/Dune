@@ -139,7 +139,7 @@ void test('Cunning liberates actual captivity, never saves a captor to restore a
   assert.equal(liberated.leader.deaths, 4);
   assert.equal(dukeController(expireDuke(liberated, 3)), null);
   assert.equal(dukeController(captive), 'h');
-  for (const source of ['ecaz', 'moritani', 'ally'] as const)
+  for (const source of ['ecaz', 'ally'] as const)
     assert.throws(() => acquireDuke(captive, 'other', 3, source));
   const foreign = structuredClone(captive);
   foreign.leader.gholaBy = 'tleilaxu';

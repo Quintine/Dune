@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { applyAction, initializeNexusGameForAudit, joinGame, newPlayer, viewGame, type Action, type Game } from '../game/engine';
+import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import { MOBILE_STRONGHOLD, territory } from '../game/board';
 import { ownedTech } from '../game/tech-tokens';
@@ -14,7 +14,7 @@ import { discoveryEntryMoveAction } from '../game/discovery-entry-options';
 import {
   advanceMoritaniNexus as advance, assertMoritaniNexusPhysical as physical,
   closeMoritaniNexus as close, createMoritaniNexusClosing as closing,
-  createMoritaniNexusDiscovery as discovery, createMoritaniNexusLobby as lobby,
+  createMoritaniNexusDiscovery as discovery,
   moritaniNexusAct as act, moritaniNexusClean as clean, moritaniNexusPlayer as player,
   moritaniNexusPolicy as policy, moritaniNexusReload as reload,
   openMoritaniNexusBattle as openBattle, openMoritaniNexusLoss as loss,
@@ -331,9 +331,3 @@ void test('original Discovery supply, reveal and free nested entry survive the l
   physical(done);
 });
 
-void test('Advanced Harkonnen original lobbies remain inadmissible without mutating declared source pieces', () => {
-  const native = lobby(); joinGame(native, newPlayer('harkonnen', 'Harkonnen', 'harkonnen'));
-  let ready = reload(native);
-  for (const p of ready.players) ready = act(ready, { actor: p.id, action: { type: 'ready' } });
-  const before = structuredClone(ready); assert.throws(() => initializeNexusGameForAudit(ready)); assert.deepEqual(ready, before);
-});

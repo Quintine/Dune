@@ -78,7 +78,7 @@ export function standaloneE3NexusProfile(game: FactionModuleProfile): boolean {
     game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
     game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
     game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
-  let native: 'ecaz' | 'moritani' | null = null, harkonnen = false;
+  let native: 'ecaz' | 'moritani' | null = null;
   for (let i = 0; i < game.players.length; i++) {
     const player = game.players[i];
     for (let j = 0; j < i; j++) if (player.faction === game.players[j].faction) return false;
@@ -91,9 +91,8 @@ export function standaloneE3NexusProfile(game: FactionModuleProfile): boolean {
         if (faction.id === player.faction) { classic = faction.expansion === 'base'; break; }
       if (!classic) return false;
     }
-    if (player.faction === 'harkonnen') harkonnen = true;
   }
-  return native !== null && !(game.advanced && native === 'moritani' && harkonnen);
+  return native !== null;
 }
 
 /** Exactly one original E1/E2 native/classics without Skills, with optional original modules. */
@@ -170,7 +169,6 @@ export function pairedE3NexusProfile(game: FactionModuleProfile): boolean {
     if (player.faction === 'ecaz') ecaz = true;
     else if (player.faction === 'moritani') moritani = true;
     else {
-      if (game.advanced && player.faction === 'harkonnen') return false;
       let classic = false;
       for (const faction of FACTIONS)
         if (faction.id === player.faction) { classic = faction.expansion === 'base'; break; }

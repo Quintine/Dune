@@ -1,8 +1,10 @@
 # Moritani: Advanced Assassinate Leaders preview
 
-14 September 2026. **Prototyped / Partial**, in an explicitly opted-in local
-preview. Normal game-start and publication gates remain closed. This is the
-battle-loss ability, separate from the random Assassination Terror token.
+Updated 15 October 2026. **Prototyped / Partial**. Original native Advanced
+Moritani play is connected through the supported local entry profiles, including
+the bounded no-Skills E3 Nexus composition below. Normal public game-start and
+publication gates remain closed. This is the battle-loss ability, separate from
+the random Assassination Terror token.
 
 ## Authority and Advanced duration cutover
 
@@ -40,16 +42,19 @@ the independent private-step UX/public-preview gates remain unchanged. See
 
 The captured-own-leader answer preserves original faction identity: a Moritani
 leader used by Harkonnen does not become a Harkonnen-faction assassination card.
-It does not define every other captured or foreign-ghola target interaction.
+Thus a victorious Harkonnen using that captive can permit a reveal of a
+different held **printed Harkonnen** Traitor Card, not the captured Moritani's
+card. The played disc remains Moritani in the battle record. This clarification
+does not define every other captured or foreign-ghola **target** interaction.
 
 ## Connected scope and private information
 
-The preview supports native Moritani with Atreides, Bene Gesserit, Emperor,
-Fremen and Guild opponents, Advanced rules and the Ecaz faction expansion, without
-optional modules. Harkonnen presence is excluded uniformly from public configuration
-so candidate availability cannot reveal secret captures. Other expansion factions,
-Nexus, Stronghold Cards, Homeworlds, Discoveries and other faction combinations
-retain their separate integration boundaries. The
+The original preview supports native Moritani with Atreides, Bene Gesserit,
+Emperor, Fremen and Guild opponents, Advanced rules and the Ecaz faction
+expansion, without optional modules. The later original E3 Nexus compositions
+add Ecaz and, in the bounded no-Skills composition below, Harkonnen. Other
+expansion factions, Skills with Harkonnen, Homeworlds, Discoveries and other
+combinations retain their separate integration boundaries. The
 [bounded all14 native skill composition](MORITANI_LEADER_SKILLS.md#advanced-assassination-composition--4-october-2026)
 now extends this same non-Harkonnen roster without opening public starts.
 Winner Suk rescue and Rihani choice finish first; the unspent assassination
@@ -65,8 +70,9 @@ The classic-only trigger/receipt list was a software scope limit, not
 a printed prohibition. Two real original native Ecaz battle losses reject
 before, then reveal a different actual held Ecaz card, kill its original
 disc for printed bounty and replace it once at Mentat after the shared list
-gains Ecaz. Winning-disc exclusion, game-long normal-call forfeiture,
-shared/captured/Ghola and Advanced Harkonnen guards remain. A foreign
+gains Ecaz. Winning-disc exclusion and game-long normal-call forfeiture
+remain; shared/captured/Ghola and Advanced Harkonnen were still guarded at
+that checkpoint (the no-Skills Harkonnen follow-up is below). A foreign
 Homeworld's normal Traitor prohibition does not prohibit this distinct
 native ability. The no-Skills receipt retains its earlier pause before
 winner casualties; all14 retains its skill-first pause afterward.
@@ -78,8 +84,9 @@ and blocked reason; rivals see the same decision and no private options. This
 requires Continue even for an ineligible hand, conflicting with the user's usual
 automatic-action preference. Moritani's uniform-private-step approval remains
 separate: the 11 October Mentat approval applies only to that card-show flow.
-This ability still requires its explicit development preview; no ordinary
-action or room API enables it.
+The bounded native Nexus composition uses its original entry and original
+postbattle/assassination continuation, not a separate opt-in assassination shim;
+ordinary public starts and room API mode gates remain closed.
 A publicly spent faction or prior normal traitor call can be skipped without consulting hidden eligibility.
 
 All four AI profiles use the same owner-only quote. They choose a legal card or
@@ -92,6 +99,60 @@ sit in that list, and re-drawing it would duplicate a card instead of replacing
 it. When no distinct card remains, the replacement is blocked with an explicit
 reason instead of committing an invalid receipt. (7 October 2026)
 Dead-target inspection retains the printed leader strength despite its zero bounty.
+
+## Native Harkonnen battle identity — 15 October 2026
+
+The bounded **Advanced Moritani/Harkonnen E3 Nexus composition without Leader
+Skills**, including the paired Ecaz/Moritani roster, admits an original normal
+Moritani loss to a victorious Harkonnen. The winning surviving battle disc may
+be one of Harkonnen's own five native discs, an actual captured foreign native
+disc (including Moritani), or the separately controlled/captured Duke Prad
+Vidal. The engine must bind that exact disc to the actual Harkonnen battle
+plan, effective control and survival before creating the opportunity; a helper
+identity check alone is not evidence of captivity or a completed battle.
+
+The supplied Advanced p35 / logical p33 D conditions still govern: normal
+loss, surviving opposing disc, no Traitor revealed in the battle, no earlier
+use against that printed opposing faction, and no prior normal own-card reveal
+this game. The held card must be an ordinary **Harkonnen-faction** Traitor
+identity, different from the actual played disc. A native Harkonnen played
+disc therefore excludes its own card. A captured Atreides or Moritani disc
+does not exclude or become any Harkonnen card. Duke stays the separate Ecaz
+strength-6 disc with no Traitor Card; Cheap Hero cannot open this ability.
+
+The original five native Harkonnen targets pay their printed strength if
+living, or zero with no second death if already in the Tanks. Use is still
+once per printed opposing faction, with the revealed physical card held until
+the original automatic Mentat face-up retirement and one distinct private
+replacement. The normal-call forfeiture is game-long; decline spends no use.
+Karama behavior, private uniform opportunity, casualty cleanup and replacement
+ordering remain the original ability, not new Harkonnen-specific mechanics.
+
+`game/moritani-assassinate.ts` admits the distinct native/captive/Duke battle
+identity while retaining version1 state, receipt shape and the original
+signature. Its target pool remains the opposing faction's native identities,
+not the winner's battle-use pool. Existing missing/altered, captured, concealed,
+foreign-Ghola or foreign-controlled **target** guards remain unchanged;
+admitting Harkonnen's captured **battle disc** is not a general relaxation
+of those policies or a ruling on other profiles.
+
+`tests/moritani-harkonnen-assassinate.test.ts` supplies pure trigger/receipt/
+choice regressions for native, captured foreign/Moritani and Duke identities,
+native-card exclusion, wrong-faction and Cheap Hero rejection, dead bounty,
+once-use, normal-call forfeiture and physical replacement.
+The frozen affected22-file union passes **195/195**, with types/lint/build.
+Original three-seat native play produces Harkonnen's actual capture, original
+Karama cancellation and a real Harkonnen win using captive Duke6. The engine
+binds the original surviving battle reference before its custody release;
+Moritani then reveals its actual held **Beast Rabban4**, receives four Bank
+spice and kills that native disc. Original Mentat retires the card face up and
+draws distinct **Esmar Tuek** privately. Actual styled390px GameTable performs
+the cancellation/reveal and displays the replacement, without overflow or
+browser errors. Four-profile response smoke is legal, not calibrated strategy.
+The separate random Terror pool is not derived from this captured-own FAQ.
+Non-Harkonnen foreign/shared winning discs, exceptional targets, Skills with
+Harkonnen, private-step UX and complete-mode/deployed acceptance remain open.
+
 
 ## Save and physical custody
 

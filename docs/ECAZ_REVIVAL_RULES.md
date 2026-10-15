@@ -87,6 +87,18 @@ This supersedes the repeated-cohort guard above and historical algorithm
 boundary below, not the binding Ecaz-only revival rule, broader profile
 guards or complete-mode/deployed acceptance.
 
+## No-Skills native Nexus scope extension — 15 October 2026
+
+Original standalone, paired and mixed-family E3 Nexus predicates without
+Skills now admit Advanced Harkonnen, within their existing optional-module
+envelopes. This supersedes historical standalone-only Harkonnen scope below.
+**Only Ecaz revives Duke**: paid5 or real Ghola returns the same living
+set-aside disc under its own original costs/allowances. Moritani takeover never
+revives a privately executed or publicly dead disc. Foreign-Ghola Duke,
+shared training, Skills/Harkonnen and unrelated non-Nexus guards remain.
+Native identity-cohort policy above is unchanged.
+[Current capture/takeover policy and actual bounded proof](DUKE_VIDAL_RULES.md#native-moritani-acquisition-from-captivity--15-october-2026).
+
 ## Captured return and legal Ghola composition — 14 October 2026
 
 The original standalone Ecaz/classic no-Skills Nexus envelope now admits

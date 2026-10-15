@@ -82,6 +82,20 @@ historical save authenticity. The bounded Duke Cunning path below is separate;
 Secret Ally's exceptional leader scope and audience remain unsettled beyond
 the bounded runtime below.
 
+## No-Skills native Harkonnen envelope extension — 15 October 2026
+
+The original standalone, paired and mixed-family E3 Nexus predicates without
+Skills now admit Advanced Harkonnen and retain their existing optional-module
+envelopes. This supersedes historical standalone-only/no-paired-Harkonnen scope
+below, not the existing Skills/Harkonnen or shared-training guards.
+Available-Duke Ambassador acquisition/new-ally grant, Ecaz-only revival and
+quiet-phase Cunning retain their distinct original exclusions, costs and tenure.
+Only Cunning and qualifying native Moritani can liberate a living captive;
+Ecaz's Ambassador still cannot acquire one, and foreign-Ghola Duke remains forbidden.
+[Native Moritani takeover, explicit provisional visibility and actual proof](DUKE_VIDAL_RULES.md#native-moritani-acquisition-from-captivity--15-october-2026).
+The affected22-file union195/195, types/lint/build and real390px table pass;
+this is not a new full-combination or deployed/save-assurance claim.
+
 ## Original quiet-phase Cunning timing — 14 October 2026
 
 Printed Cunning says to take Duke **for this turn**, without a Battle-only

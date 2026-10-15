@@ -105,8 +105,7 @@ export function createMoritaniNexusLobby(options: MoritaniNexusOptions = {}): Ga
   assert.equal(g.status, 'lobby'); assert.equal(g.advanced, advanced); assert.deepEqual(g.expansions, ['ecaz']);
   assert.equal(g.players.filter(p => ['ecaz', 'moritani'].includes(p.faction)).length, 1);
   assert.ok(g.players.some(p => p.faction === 'moritani'));
-  assert.ok(g.players.every(p => ['moritani', 'guild', 'emperor', 'atreides', 'fremen', 'beneGesserit',
-    ...(!advanced ? ['harkonnen'] : [])].includes(p.faction)));
+  assert.ok(g.players.every(p => ['moritani', 'guild', 'emperor', 'atreides', 'fremen', 'beneGesserit', 'harkonnen'].includes(p.faction)));
   assert.equal(new Set(g.players.map(p => p.faction)).size, g.players.length);
   assert.ok(g.players.length >= (options.tech ? 3 : 2) && g.players.length <= 6);
   assert.ok(!options.strongholds || advanced); assert.ok(!g.leaderSkills && !g.ecazTreachery);
@@ -120,19 +119,25 @@ export function createMoritaniNexusLobby(options: MoritaniNexusOptions = {}): Ga
   assert.ok(g.nexusCards.cards === null && g.nexusCards.phase === null);
   return g;
 }
-export function createMoritaniNexusSetup(options: MoritaniNexusOptions = {}): MoritaniNexusSetup {
+export function createMoritaniNexusSetup(options: MoritaniNexusOptions & {
+  opponentFaction?: 'guild' | 'harkonnen'; harkonnenKarama?: boolean;
+} = {}): MoritaniNexusSetup {
   let g = createMoritaniNexusLobby(options);
   const initial = moritaniNexusReload(g), actions: MoritaniNexusStep[] = [];
   const owner = g.players.find(p => p.faction === 'moritani')!.id;
-  const opponent = g.players.find(p => p.faction === 'guild')!.id; assert.ok(opponent);
-  const target = leaders('guild').find(l => l.name === (options.normalCall ? 'Staban Tuek' : 'Master Bewt'))!.id;
+  const opponentFaction = options.opponentFaction ?? 'guild';
+  const opponent = g.players.find(p => p.faction === opponentFaction)!.id; assert.ok(opponent);
+  const target = opponentFaction === 'guild'
+    ? leaders('guild').find(l => l.name === (options.normalCall ? 'Staban Tuek' : 'Master Bewt'))!.id
+    : leaders('harkonnen')[1].id;
   for (const p of g.players) if (!p.ready) g = moritaniNexusAct(g, { actor: p.id, action: { type: 'ready' } }, actions);
   if (options.initial) g = initializeNexusGameForAudit(g);
   else {
     const nx = options.nexus ?? 'moritani', cards = treacheryDeck(['ecaz']), remaining = [...cards];
     const front = g.players.flatMap(p => {
-      const kinds = [p.id === opponent ? 'projectile' : 'worthless', ...(p.faction === 'harkonnen' ? ['shield'] : [])];
-      return kinds.map(kind => { const i = remaining.findIndex(c => c.kind === kind); assert.ok(i >= 0); return remaining.splice(i, 1)[0].id; });
+      const kinds = [options.harkonnenKarama && p.faction === 'harkonnen' ? 'karama'
+        : p.id === opponent ? 'projectile' : 'worthless', ...(p.faction === 'harkonnen' ? ['shield'] : [])];
+      return kinds.map(kind => { const i = remaining.findIndex(c => c.kind === kind || c.effect === kind); assert.ok(i >= 0); return remaining.splice(i, 1)[0].id; });
     });
     const traitors = traitorDeck(g.players), desired = [target, ...traitors.filter(c => c !== target)];
     const index = nx === 'harkonnen' ? g.players.length * 4 : g.players.findIndex(p => p.id === owner) * 4;

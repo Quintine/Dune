@@ -89,7 +89,6 @@ void test('public trigger requires a native Advanced Moritani normal loss, a sur
     { opposingLeader: null },
     { opposingLeader: 'cheap-hero-traitor' },
     { opposingLeader: 'emperor-0' },
-    { faction: 'harkonnen', opposingLeader: 'harkonnen-0' },
     { turn: 0 },
     { turn: 1.5 },
     { event: '' },

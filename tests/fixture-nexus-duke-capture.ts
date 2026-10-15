@@ -718,7 +718,8 @@ export function assertNexusDukeCustody(game: Game): void {
   }
   const traitors = [...(game.traitorReserve ?? []),
     ...game.players.flatMap((player) => [...player.traitors, ...player.traitorChoices]),
-    ...(game.ecazLoyalty?.card ? [game.ecazLoyalty.card] : [])];
+    ...(game.ecazLoyalty?.card ? [game.ecazLoyalty.card] : []),
+    ...(game.moritaniAssassinate?.opportunities.filter(record => record.stage === 'replaced').map(record => record.card!) ?? [])];
   assert.deepEqual(traitors.sort(), traitorDeck(game.players).sort());
   assert.ok(!traitors.includes(DUKE_VIDAL_ID), 'The shared disc has no Traitor identity.');
   const physical = [...game.deck, ...game.discard, ...game.players.flatMap((player) => player.hand),

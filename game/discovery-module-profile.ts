@@ -139,7 +139,7 @@ export function standaloneE3DiscoveryNexusProfile(game: FactionModuleProfile): b
     game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
     game.nexusHarkonnenBetrayalPreview) return false;
-  let native: 'ecaz' | 'moritani' | null = null, harkonnen = false;
+  let native: 'ecaz' | 'moritani' | null = null;
   for (let i = 0; i < game.players.length; i++) {
     const player = game.players[i];
     for (let j = 0; j < i; j++) if (player.faction === game.players[j].faction) return false;
@@ -152,9 +152,8 @@ export function standaloneE3DiscoveryNexusProfile(game: FactionModuleProfile): b
         if (faction.id === player.faction) { classic = faction.expansion === 'base'; break; }
       if (!classic) return false;
     }
-    if (player.faction === 'harkonnen') harkonnen = true;
   }
-  return native !== null && !(game.advanced && native === 'moritani' && harkonnen);
+  return native !== null;
 }
 
 /** Exactly one original E1/E2 native/classics with Nexus/Discovery and no Skills. */
@@ -209,7 +208,7 @@ export function mixedE1E2DiscoveryNexusProfile(game: FactionModuleProfile): bool
   return ix && choam;
 }
 
-/** Both original E3 natives with Nexus/Discovery and no Skills; Advanced capture exclusion remains. */
+/** Both original E3 natives with Nexus/Discovery and no Skills. */
 export function pairedE3DiscoveryNexusProfile(game: FactionModuleProfile): boolean {
   if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
     !game.nexusCards || game.expansions.length !== 1 || game.expansions[0] !== 'ecaz' ||
@@ -227,7 +226,6 @@ export function pairedE3DiscoveryNexusProfile(game: FactionModuleProfile): boole
     if (player.faction === 'ecaz') ecaz = true;
     else if (player.faction === 'moritani') moritani = true;
     else {
-      if (game.advanced && player.faction === 'harkonnen') return false;
       let classic = false;
       for (const faction of FACTIONS)
         if (faction.id === player.faction) { classic = faction.expansion === 'base'; break; }

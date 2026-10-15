@@ -2,9 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyAction, normalizeAutomaticGame, viewGame, type Game } from '../game/engine';
 import { acquireDuke } from '../game/duke-vidal';
-import { drawNexusCard } from '../game/nexus-cards';
 import { nexusEcazDukePosition as position } from './fixture-nexus-ecaz-duke';
-import { nexusTraitorFixture, nexusTraitorInventory } from './fixture-nexus-traitors';
+import { nexusTraitorInventory } from './fixture-nexus-traitors';
 import { nexusReady } from './fixture-nexus-cards';
 
 const reload = (game: Game): Game => JSON.parse(JSON.stringify(game)) as Game;
@@ -65,23 +64,6 @@ void test('a stale offer, busy table, invalid retained Tanks custody, captured o
   reject(busy, 'p', action);
 });
 
-void test('Advanced Harkonnen battle lock rejects native Cunning before spending its card', () => {
-  const game = nexusTraitorFixture({ ownerFaction: 'ecaz', opponentFaction: 'moritani',
-    observerFaction: 'harkonnen', advanced: true, phase: 6 });
-  const cards = game.nexusCards!.cards!;
-  const old = cards.hands.p!;
-  cards.hands.p = null;
-  cards.deck.push(old);
-  const index = cards.deck.indexOf('ecaz');
-  assert.ok(index >= 0);
-  cards.deck.unshift(...cards.deck.splice(index, 1));
-  game.nexusCards!.cards = drawNexusCard(cards, 'p', game.players, () => 0);
-  game.dukeVidal = acquireDuke(game.dukeVidal!, 'q', game.turn, 'moritani');
-  const offer = viewGame(game, 'p').nexusEcazDuke!;
-  assert.match(offer.blocked!, /Advanced Harkonnen/);
-  reject(game, 'p', { type: 'nexusEcazDuke', event: offer.event });
-  assert.equal(game.nexusCards!.cards!.hands.p, 'ecaz');
-});
 
 void test('saved Ecaz Duke receipts detect changed historical ownership, event and missing physical spend', () => {
   const { game, action } = position();

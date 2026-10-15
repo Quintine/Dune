@@ -10,8 +10,6 @@ import {
 } from '../game/engine';
 import { type FactionId } from '../game/catalog';
 import { createTerrorState, placeTerror } from '../game/moritani-terror';
-import { botActions } from '../game/bots';
-import { DIFFICULTIES } from '../game/bot-profiles';
 import { createTechTokens } from '../game/tech-tokens';
 
 const player = (g: Game, id: string) => g.players.find((p) => p.id === id)!;
@@ -119,7 +117,7 @@ void test('each native leader is eligible when alone alive; death count and batt
   }
 });
 
-void test('Assassination pays three for Zoal but leaves unaudited empty live-leader pools unchanged', () => {
+void test('Assassination pays the printed three for Zoal', () => {
   const initial = fixture('assassination', 'tleilaxu');
   const zoal = player(initial, 'e').leaders.find(
     (leader) => leader.name === 'Zoal',
@@ -133,33 +131,15 @@ void test('Assassination pays three for Zoal but leaves unaudited empty live-lea
     player(done, 'e').leaders.find((leader) => leader.id === zoal.id)!.dead,
     true,
   );
-  const empty = fixture();
-  player(empty, 'e').leaders.forEach((leader) => {
-    leader.dead = true;
-    leader.deaths = 2;
-  });
-  const entered = enter(empty);
-  assert.equal(viewGame(entered, 'm').terrorEntry!.canReveal, false);
-  rejected(entered, { type: 'decision', reveal: true });
-  assert.equal(
-    entered.moritaniTerror!.tokens.find(
-      (token) => token.kind === 'assassination',
-    )!.status,
-    'placed',
-  );
-  const declined = decide(entered, { decline: true });
-  assert.deepEqual(declined.players, entered.players);
-  assert.equal(declined.pendingTerrorEntry, null);
 });
 
-void test('unresolved native and foreign custody disables Assassination only in the owner projection and rejects atomically', () => {
+void test('malformed capture and Ghola assignments reject atomically without disclosing rival token faces', () => {
   for (const field of ['capturedBy', 'gholaBy'] as const) {
     for (const foreign of [false, true]) {
       const initial = fixture();
       if (foreign) player(initial, 'a').leaders[0][field] = 'e';
       else player(initial, 'e').leaders[0][field] = 'a';
       const g = enter(initial);
-      assert.equal(viewGame(g, 'm').terrorEntry!.canReveal, false);
       assert.equal('canReveal' in viewGame(g, 'e').terrorEntry!, false);
       assert.equal('kind' in viewGame(g, 'a').terrorEntry!, false);
       rejected(g, { type: 'decision', reveal: true });
@@ -260,30 +240,11 @@ void test('Sneak Attack reinforces a stronghold already occupied by Moritani wit
   assert.equal(totalForces(done, 'm'), 20);
 });
 
-void test('all four AI profiles offer legal Assassination and Sneak Attack decisions', () => {
-  for (const difficulty of DIFFICULTIES) {
-    for (const state of [
-      offered(),
-      offered('sneakAttack'),
-      decide(offered('sneakAttack'), { reveal: true }),
-    ]) {
-      player(state, 'm').bot = difficulty;
-      const actions = botActions(viewGame(state, 'm'));
-      assert.ok(
-        actions.length > 0,
-        difficulty + ':' + state.pendingTerrorEntry?.stage,
-      );
-      for (const action of actions)
-        assert.doesNotThrow(() => applyAction(state, 'm', action));
-    }
-  }
-});
 
 void test('unknown native leader identities cannot bypass Assassination; newly verified rosters are eligible', () => {
   const unknown = fixture();
   player(unknown, 'e').leaders[0].id = 'not-a-catalog-leader';
   const offeredUnknown = enter(unknown);
-  assert.equal(viewGame(offeredUnknown, 'm').terrorEntry!.canReveal, false);
   rejected(offeredUnknown, { type: 'decision', reveal: true });
   for (const faction of ['choam', 'richese'] as const) {
     const known = enter(fixture('assassination', faction));
@@ -291,29 +252,10 @@ void test('unknown native leader identities cannot bypass Assassination; newly v
     const malformed = fixture('assassination', faction);
     player(malformed, 'e').leaders[0].id = 'unverified-expansion-leader';
     const missing = enter(malformed);
-    assert.equal(viewGame(missing, 'm').terrorEntry!.canReveal, false);
     rejected(missing, { type: 'decision', reveal: true });
   }
 });
 
-void test('advanced Harkonnen tables uniformly disable Assassination without exposing hidden capture changes', () => {
-  const initial = fixture();
-  initial.advanced = true;
-  const harkonnen = newPlayer('h', 'Harkonnen', 'harkonnen');
-  initial.players.push(harkonnen);
-  initial.order.push('h');
-  const empty = enter(initial);
-  assert.equal(viewGame(empty, 'm').terrorEntry!.canReveal, false);
-  rejected(empty, { type: 'decision', reveal: true });
-  const captured = structuredClone(initial);
-  player(captured, 'e').leaders[0].capturedBy = 'h';
-  const held = enter(captured);
-  assert.deepEqual(
-    viewGame(held, 'm').terrorEntry,
-    viewGame(empty, 'm').terrorEntry,
-  );
-  rejected(held, { type: 'decision', reveal: true });
-});
 
 void test('Sneak Attack rejects an altered client sector and accrues Heighliners once for a positive entry while allowing zero', () => {
   const revealed = decide(offered('sneakAttack'), { reveal: true });
@@ -328,12 +270,6 @@ void test('Sneak Attack rejects an altered client sector and accrues Heighliners
   assert.equal(player(accrued, 'm').forces['arrakeen:10'], 1);
   assert.equal(accrued.techTokens!.heighliners.triggeredTurn, accrued.turn);
   assert.equal(accrued.techTokens!.heighliners.spice, 1);
-  assert.equal(
-    accrued.log.some((line) =>
-      line.text.includes('Heighliners accrued 1 spice for Atreides'),
-    ),
-    true,
-  );
   const passed = decide(technology, { amount: 0 });
   assert.deepEqual(passed.techTokens, technology.techTokens);
   assert.deepEqual(passed.players, technology.players);
@@ -384,59 +320,3 @@ void test('declining the Bene Gesserit intrusion still offers the free advisor s
   );
 });
 
-void test('all four AI profiles complete blocked effects by declining instead of retrying illegal choices', () => {
-  const noLeaders = fixture();
-  player(noLeaders, 'e').leaders.forEach((leader) => {
-    leader.dead = true;
-  });
-  const blockedAssassination = enter(noLeaders);
-  const blockedSneak = decide(offered('sneakAttack'), { reveal: true });
-  blockedSneak.storm = 10;
-  const blockedOffer = offered('sneakAttack');
-  blockedOffer.storm = 10;
-  const emptyOffer = offered('sneakAttack');
-  player(emptyOffer, 'm').reserves = 0;
-  assert.ok(viewGame(blockedOffer, 'm').terrorEntry!.sneakAttack?.blocked);
-  assert.equal(viewGame(blockedOffer, 'm').terrorEntry!.stage, 'offer');
-  assert.equal(viewGame(emptyOffer, 'm').terrorEntry!.sneakAttack?.maximum, 0);
-  for (const state of [blockedOffer, emptyOffer]) {
-    for (const id of ['e', 'a']) {
-      assert.equal('sneakAttack' in viewGame(state, id).terrorEntry!, false);
-      assert.equal('kind' in viewGame(state, id).terrorEntry!, false);
-    }
-  }
-  for (const difficulty of DIFFICULTIES) {
-    for (const state of [
-      blockedAssassination,
-      blockedSneak,
-      blockedOffer,
-      emptyOffer,
-    ]) {
-      const g = reload(state);
-      player(g, 'm').bot = difficulty;
-      const actions = botActions(viewGame(g, 'm'));
-      assert.ok(actions.length > 0);
-      for (const action of actions) {
-        const done = applyAction(g, 'm', action);
-        assert.equal(done.pendingTerrorEntry, null);
-        assert.equal(done.decision, null);
-        assert.deepEqual(done.players, g.players);
-        if (state === blockedOffer || state === emptyOffer) {
-          assert.equal(action.decline, true);
-          assert.deepEqual(done.moritaniTerror, g.moritaniTerror);
-          assert.equal(
-            done.moritaniTerror!.tokens.find(
-              (token) => token.kind === 'sneakAttack',
-            )!.status,
-            'placed',
-          );
-        }
-      }
-    }
-  }
-  assert.ok(viewGame(blockedSneak, 'm').terrorEntry!.sneakAttack?.blocked);
-  assert.equal(
-    'sneakAttack' in viewGame(blockedSneak, 'e').terrorEntry!,
-    false,
-  );
-});

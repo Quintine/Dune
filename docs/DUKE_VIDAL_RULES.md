@@ -32,9 +32,9 @@ The [base Harkonnen capture rules, p. 17](https://www.gf9games.com/dunegame/wp-c
 
 | Combination                                         | Evidence boundary and safe implementation scope                                                                                                                                                                                                                                                                        |
 | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Moritani acquisition from captured or ghola custody | Ecaz’s Ambassador explicitly excludes both; Moritani’s acquisition excludes only Tanks and says to take Duke from any controller. Do not silently copy the Ecaz exclusions as a confirmed Moritani rule. The interaction with concealed capture and the apparent ghola restriction needs an explicit supported policy. |
-| Duke used in a lost battle against Harkonnen | Original standalone Ecaz/no-Skills Nexus now retains the eligible surviving disc in the real capture pool through a validated release witness. This capture-before-final-return composition is provisional; see the current follow-up below. |
-| Returning a captured Duke | Current provisional policy restores an unused valid prior tenure on native early return; used/dead/expired tenure is set aside. Nexus liberation clears captivity rather than restoring the captor later. Broader captured Moritani acquisition remains unresolved. |
+| Moritani acquisition from captured or ghola custody | The 15 October no-Skills native Nexus follow-up below connects living Harkonnen captivity under an explicit provisional takeover policy. Public qualification uses the public snapshot; actual resolution never revives an executed disc. Foreign-Ghola Duke remains forbidden by Ecaz-only revival. |
+| Duke used in a lost battle against Harkonnen | Original no-Skills E3 Nexus retains the eligible surviving disc in the real capture pool through a validated release witness. This capture-before-final-return composition is provisional; see the dated follow-ups below. |
+| Returning a captured Duke | The provisional native return policy restores an unused valid prior tenure on native early return; used/dead/expired tenure is set aside. Nexus liberation and qualifying Moritani acquisition permanently clear captivity, never saving a captor to restore later. |
 | Loan to the new Ecaz ally | Basic has an optional same-disc first version after accepted Ambassador alliance consent. The authorized supplied Advanced PDF, physical p30 Ecaz A, instead adds an available Duke automatically after consent and sets an unused disc aside at turn end; that path is now connected without another acknowledgement. One-battle release is still provisional. Capture and alliance-break interactions remain for refinement. |
 | Ecaz co-occupied battles                            | Ecaz’s Occupy rules distinguish participating forces from the faction chosen to fight. Duke eligibility excludes battles involving Ecaz, but no direct combined example decides every Ecaz-ally designation case. Ordinary faction-pair battle lists alone do not certify the full Occupy interaction.                 |
 | Revival alternatives                                | Ecaz’s Tleilaxu Ambassador effect and sharing an Ambassador benefit may interact with the absolute Ecaz-only restriction. No retrieved specific exception permits another faction to revive Duke. Keep that restriction unless a primary clarification establishes otherwise.                                          |
@@ -46,7 +46,7 @@ The [base Harkonnen capture rules, p. 17](https://www.gf9games.com/dunegame/wp-c
 - `battles(g)` currently calls mutating `settleAdvisors(g)`. Do not use it directly from a pure availability helper or private-view projection. Snapshot after resolved movement/advisor obligations or extract a pure calculation.
 - End-movement acquisition must happen once before battle preparation, with a persisted Karama response. It must not run per player’s movement completion or again after reload.
 - Battle settlement, capture selection, Ghola effects, normal revival, foreign-ghola actions, native-leader counts and turn-end cleanup all currently operate on ordinary rosters. Audit each entry point; one new leader record or UI option does not implement the lifecycle.
-- Keep current exceptional Assassination-pool gates: adding Duke changes a random leader pool and must not silently pass the ordinary five-native-leader validator.
+- Terror Assassination now uses its explicit provisional effective-control pool, not the old ordinary-five-disc gate; see [the pool contract](MORITANI_ASSASSINATION_SNEAK.md#assassination-pool-adopted-provisional-composition-15-october-2026).
 
 No source edits to runtime or live-room mutations were performed. Targeted official GF9 and [designer-site](https://futurepastimes.com/dune-ecaz-moritani) searches did not yield written answers resolving the combinations above. Direct publisher download has previously returned 403; indexed crawler dates are not treated as rule revision dates. Parent owns runtime integration and behavioral validation.
 
@@ -117,3 +117,39 @@ returns set aside; he neither becomes a sixth native leader nor a foreign
 Ghola. Actual ordinary/Ghola returns, native controls and four legal profiles
 are connected. The old repeated-cycle guard above is historical.
 [Current policy, original native proof and remaining gates](ECAZ_REVIVAL_RULES.md#identity-tracked-repeated-cohorts--14-october-2026).
+
+## Native Moritani acquisition from captivity — 15 October 2026
+
+Original standalone, paired and mixed-family **no-Skills E3 Nexus** predicates
+now admit Advanced Harkonnen, retaining their existing optional-module
+envelopes. Skills/Harkonnen, shared-Duke training and unrelated non-Nexus
+guards remain. Ecaz's Ambassador still cannot acquire a captured/dead/Ghola
+disc; only Ecaz may revive Duke. No foreign-Ghola Duke source is introduced.
+
+Under the selected **provisional takeover composition**, qualifying native
+Moritani takes the actual living captive from its current Harkonnen controller.
+Clear captivity and its private snapshot permanently; preserve death and
+battle-use history, native Ecaz identity and the original one-battle/current-turn
+tenure. Use or unused expiry never restores the old captor. This composes the
+printed take-from-current-controller grant; it is not a retrieved capture-priority
+or return FAQ. Ecaz Occupy participation/designation remains a separate boundary.
+
+**Public availability composition:** qualification uses the public shared-disc
+snapshot, not concealed execution status. A privately executed disc therefore
+does not remove or identify the public qualifying response window. Original
+Karama cancellation preserves the capture and private snapshot. If allowed,
+the public acquisition resolves actual availability: a dead executed Duke stays
+dead in Ecaz's Tanks, without a Moritani resurrection, and its unavailable state
+becomes public. This disclosure-at-resolution policy is provisional, distinct
+from promising permanent secrecy for an execution after a public custody effect.
+
+Original native three-seat play supplies the real capture lottery, Keep/Execute,
+two later distinct stronghold battles, original Karama, actual battle use and
+unused expiry. The actual styled390px table completes movement, shows Duke6
+Ready in Moritani's leaders, then removes him after original battle use.
+Another actual Harkonnen win uses captive Duke6 before the existing Moritani
+private ability kills **native Harkonnen** Beast Rabban4 and replaces its
+physical card at Mentat. Random Terror can kill the captive Duke for six.
+See [Assassinate identity](MORITANI_ASSASSINATE_LEADERS.md#native-harkonnen-battle-identity--15-october-2026)
+and [Terror policy/evidence](MORITANI_ASSASSINATION_SNEAK.md#assassination-pool-adopted-provisional-composition-15-october-2026).
+This is local changed-path proof, not saved-room, deployed or complete-mode acceptance.

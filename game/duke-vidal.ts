@@ -197,7 +197,7 @@ export function executeCapturedDuke(
 /**
  * The caller authorizes the faction power and resolves any applicable Karama.
  * Ecaz Nexus Cunning independently revives the set-aside shared disc from Tanks.
- * Ecaz Nexus Cunning liberates an actual captive; no foreign-Ghola source is legal.
+ * Moritani and Ecaz Nexus Cunning liberate a living captive; no foreign-Ghola source is legal.
  */
 export function acquireDuke(
   state: DukeState,
@@ -217,8 +217,8 @@ export function acquireDuke(
   if (state.leader.gholaBy)
     throw new Error('Duke Vidal cannot be acquired from foreign Ghola custody.');
   if (state.leader.capturedBy) {
-    if (source !== 'ecazNexus' || state.leader.dead)
-      throw new Error('Only Ecaz Nexus Cunning can acquire the living captured Duke.');
+    if ((source !== 'ecazNexus' && source !== 'moritani') || state.leader.dead)
+      throw new Error('Only Moritani acquisition or Ecaz Nexus Cunning can take the living captured Duke.');
     validCaptive(state, turn);
   } else if ((state.leader.concealed || state.captureVisibility) &&
     !(source === 'ecazNexus' && returnedDukeCapture(state))) {
@@ -230,7 +230,7 @@ export function acquireDuke(
   if (source === 'ecazNexus' && !state.leader.dead && state.leader.usedAt)
     throw new Error('Duke Vidal has already been used in battle this turn.');
   const acquired = cloneDuke(state);
-  if (source === 'ecazNexus') {
+  if (source === 'ecazNexus' || source === 'moritani') {
     delete acquired.leader.capturedBy;
     delete acquired.leader.concealed;
     delete acquired.captureVisibility;

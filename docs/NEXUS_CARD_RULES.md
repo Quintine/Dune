@@ -2,6 +2,29 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Native Moritani/Harkonnen custody — 15 October 2026
+
+Original standalone, paired and mixed-family **no-Skills E3 Nexus** profiles
+now admit Advanced Harkonnen within their existing optional-module envelopes.
+This supersedes the earlier no-Skills Moritani/paired Harkonnen exclusions,
+not Skills/Harkonnen, shared-Duke training, unrelated non-Nexus profiles or
+public starts. Ecaz's existing available-Duke Ambassador/loan and Ecaz-only
+revival predicates use the same admitted no-Skills envelopes; their actual
+captured/dead/Ghola exclusions and independent costs remain.
+
+Native Moritani's original qualifying end-movement grant can permanently take
+a living captive Duke. Original Karama can cancel it. Public qualification
+uses the public snapshot; allowed resolution reveals actual unavailability
+without reviving an executed disc. These are labelled provisional custody/
+visibility compositions, not a new publisher ruling.
+[Canonical lifecycle](DUKE_VIDAL_RULES.md#native-moritani-acquisition-from-captivity--15-october-2026).
+An actual Harkonnen win with captive Duke6 can open the distinct Advanced
+native-Harkonnen Traitor choice; random Terror separately uses living effective
+control, explicit public victim and spent-empty policies.
+[Original identity/control proof](MORITANI_ASSASSINATE_LEADERS.md#native-harkonnen-battle-identity--15-october-2026).
+Affected22-file union195/195, types/lint/build and actual390px controls pass.
+Broader combinations, private-step UX, assurance and deployed acceptance remain open.
+
 ## Original quiet-phase Ecaz Cunning — 14 October 2026
 
 The artificial Battle-only restriction is removed: printed Cunning lasts

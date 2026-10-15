@@ -1,5 +1,64 @@
 # Dune implementation status
 
+## 15 October 2026 — Native Moritani/Harkonnen and actual captive Duke
+
+Connected original standalone, paired and mixed-family no-Skills E3 Nexus
+Advanced Harkonnen, retaining existing optional-module envelopes. Native
+capture/Keep/Execute and actual later two-stronghold qualification supply
+Moritani's same-disc captive takeover. It clears capture permanently,
+preserves native identity/death/use and original one-battle/current-turn
+tenure; no captor restoration. Original Karama can cancel with the real card.
+Public qualification uses the public snapshot, not hidden execution status.
+Allowed resolution publishes actual unavailability without Moritani revival.
+These custody/visibility choices are labelled provisional compositions.
+
+Advanced Moritani now binds the actual surviving pre-release battle reference:
+Harkonnen can win with its native, captured foreign/Moritani or shared Duke
+disc while the eligible assassination cards stay native Harkonnen identities.
+Game-long normal-call forfeiture, printed/dead bounty, once-per-faction use
+and original distinct physical Mentat replacement remain. Last-native Harkonnen
+death uses original captive cleanup. Non-Harkonnen borrowed/shared winners,
+exceptional targets and private-step UX remain separate.
+
+Random Terror uses a focused canonical living effective-control pool:
+native/captive/ordinary foreign Ghola/shared Duke/optional Advanced Auditor
+once, with capture precedence and no battle-use filter. No pool/count is
+projected or used for offer availability. Actual victim becomes public,
+printed bounty remains Zoal3/Duke6, original death/custody/skills cleanup
+resumes arrival. Empty revelation spends with no RNG/victim/bounty. These are
+provisional product policies, not a publisher exceptional-pool FAQ.
+
+Removed obsolete Harkonnen rejection and hidden-pool availability tests,
+not re-pinned. The affected run exposed a mixed-family fixture probing plans
+before original preparation finished; it now consumes the actual preparation
+sequence rather than cloning a ready-looking posture or weakening legality.
+The captured-disc physical census now includes original face-up retired
+Moritani Traitors, matching the existing canonical zone.
+
+Verification: affected22-file union **195/195**, types/lint and production build
+pass; actual prototype CLI help passes. Fourteen original API/policy paths
+cover takeover/use/expiry, private execution/no resurrection, original
+Karama/captive-Duke winner/native Harkonnen assassination/Mentat replacement,
+Terror Duke death6, controlled empty boundary and all four legal response/
+Terror policies. Easy reveals; other Terror profiles form the accepted
+alliance, and all Harkonnen counter profiles pass. No strategy claim.
+
+Actual styled390px production GameTable completes original final movement,
+shows Duke6 Ready then removes him after original battle use; cancels with
+original Karama, reveals actual Beast Rabban4 for four Bank spice, displays
+original private Esmar Tuek replacement and reveals original Terror against
+captive Duke for six. Actual executed Duke stays dead2 after qualification.
+No overflow/browser errors. The QA host scopes the original Terror permutation,
+not the effect; the client sends no target. Empty-pool preceding Guild deaths
+are explicitly staged, while its actual arrival/token/continuation are original.
+
+Ecaz-only revival, Ambassador captured/dead/Ghola exclusions, native five-disc
+inventory, Skills/Harkonnen/shared-training, unrelated non-Nexus and public
+gates remain. No saved/deployed rooms touched. Existing module.register
+deprecation, large-chunk and Unknown-route warnings remain. Full combinations,
+assurance, administration, calibration and final acceptance remain unfinished.
+[Canonical source/policy](DUKE_VIDAL_RULES.md#native-moritani-acquisition-from-captivity--15-october-2026).
+
 ## 14 October 2026 — Ecaz identity-tracked repeated native cohorts
 
 Replaced the blanket repeated-six-disc guard with explicit provisional native

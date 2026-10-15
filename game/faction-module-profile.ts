@@ -85,7 +85,7 @@ export function mixedE3NexusRosterProfile(game: MixedE3NativeRoster, skills = fa
     if (expansion !== 'ecaz' && expansion !== 'ix' && expansion !== 'choam') return false;
     for (let j = 0; j < i; j++) if (expansion === game.expansions[j]) return false;
   }
-  let ix = false, choam = false, e3 = false, moritani = false, harkonnen = false;
+  let ix = false, choam = false, e3 = false, harkonnen = false;
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
     for (let j = 0; j < i; j++) if (player.faction === players[j].faction) return false;
@@ -96,9 +96,8 @@ export function mixedE3NexusRosterProfile(game: MixedE3NativeRoster, skills = fa
     if (family === 'ix') ix = true;
     if (family === 'choam') choam = true;
     if (family === 'ecaz') e3 = true;
-    if (player.faction === 'moritani') moritani = true;
     if (player.faction === 'harkonnen') harkonnen = true;
   }
   return e3 && ix === game.expansions.includes('ix') && choam === game.expansions.includes('choam') &&
-    !(game.advanced && harkonnen && (skills || moritani));
+    !(game.advanced && harkonnen && skills);
 }

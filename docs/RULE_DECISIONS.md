@@ -1,6 +1,37 @@
 # Rule decision index
 
-Updated 14 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+Updated 15 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+
+## Recommended product compositions — 15 October 2026
+
+Under the user's choose-recommended-option instruction, the following are
+**provisional product policies**, not retrieved publisher FAQs or new
+user-supplied numerical rulings:
+
+- **Native Moritani takes captive Duke:** a qualifying original end-movement
+  acquisition takes the actual living disc from its current Harkonnen captor,
+  permanently clears captivity and preserves death/use history. Original
+  one-battle/current-turn release never restores that captor.
+- **Public qualification / private execution:** qualify from the public Duke
+  snapshot. Original Karama cancellation preserves private custody. If allowed,
+  resolve actual availability publicly: an executed disc stays dead in Ecaz's
+  Tanks, never revived by Moritani. The public qualifying window does not vary
+  with concealed execution; permanent execution secrecy after the public effect
+  is not promised.
+  [Takeover, scope and proof](DUKE_VIDAL_RULES.md#native-moritani-acquisition-from-captivity--15-october-2026).
+- **Terror random pool:** actual living effective control includes native,
+  captive, ordinary foreign Ghola, canonical shared Duke and optional Advanced
+  Auditor once. Battle-use stamps do not exclude living discs. The killed disc
+  becomes public; printed bounty is Zoal3/Duke6. Empty revelation spends the
+  token with no RNG/victim/bounty and resumes original entry. Neither pool nor
+  size is projected or used to gate a private offer.
+  [Separate Terror contract](MORITANI_ASSASSINATION_SNEAK.md#assassination-pool-adopted-provisional-composition-15-october-2026).
+
+The distinct Advanced ability now recognizes an actual victorious Harkonnen's
+native/captive/shared battle identity while still targeting printed Harkonnen
+Traitor identities, never reclassifying a captured Moritani or Duke as native Harkonnen.
+Only original no-Skills E3 Nexus envelopes gain this Harkonnen composition;
+Skills/shared-training, unrelated guards and public/deployment gates remain.
 
 ## User decisions — 14 October 2026
 

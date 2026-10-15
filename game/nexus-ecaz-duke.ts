@@ -122,10 +122,7 @@ export function quoteNexusEcazDuke(g: Game, owner: string, automaticPending = fa
   const eventCustody = masked && duke?.captureVisibility ? duke.captureVisibility : duke;
   const roster = g.players.map(player => player.faction);
   let blocked: string | null = null;
-  if (g.advanced && g.players.some(player => player.faction === 'harkonnen') &&
-    !standaloneE3NexusProfile(g))
-    blocked = 'Duke Vidal battle use is unavailable with Advanced Harkonnen in this profile.';
-  else if (!nexusEcazDukeModeSupported(g) || nexusCardMode('ecaz', holder.faction, roster) !== 'cunning')
+  if (!nexusEcazDukeModeSupported(g) || nexusCardMode('ecaz', holder.faction, roster) !== 'cunning')
     blocked = 'Ecaz Nexus Cunning requires a supported original paired or standalone Ecaz Nexus profile.';
   else if (holder.ally) blocked = 'Use Ecaz Nexus Cunning while unallied.';
   else if (g.status !== 'playing')
@@ -162,8 +159,7 @@ export function quoteNexusEcazDuke(g: Game, owner: string, automaticPending = fa
 export function nexusEcazDukeModeSupported(g: Game): boolean {
   if ((mixedE3NexusProfile(g) || standaloneE3NexusProfile(g) || pairedE3NexusProfile(g)) &&
     g.players.some(player => player.faction === 'ecaz') &&
-    !g.sandtrout && (!(g.advanced && g.players.some(player => player.faction === 'harkonnen')) ||
-      standaloneE3NexusProfile(g)))
+    !g.sandtrout)
     return !!g.nexusCards?.cards && g.players.length >= 3;
   if (g.leaderSkills && (mixedE3NexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g) || pairedE3NexusLeaderSkillsProfile(g)) &&
     g.players.some(player => player.faction === 'ecaz') && !g.sandtrout)

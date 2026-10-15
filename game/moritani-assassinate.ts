@@ -1,5 +1,6 @@
 import { leaders as printedLeaders, type Leader } from './cards';
 import { FACTIONS, type FactionId } from './catalog';
+import { DUKE_VIDAL_ID } from './duke-vidal';
 
 export type MoritaniAssassinateReceipt = {
   event: string;
@@ -63,6 +64,7 @@ const opponents: readonly FactionId[] = [
   'beneGesserit',
   'guild',
   'emperor',
+  'harkonnen',
   'fremen',
   'ecaz',
   'ixians',
@@ -95,6 +97,13 @@ function printed(faction: FactionId, id: string) {
 function ordinaryIdentity(id: string) {
   return FACTIONS.some((f) => printed(f.id, id));
 }
+/** Harkonnen may fight with a captive without changing its printed identity.
+ * Actual control and survival are bound by the engine, not by this receipt. */
+function opposingDiscIdentity(faction: FactionId, id: string) {
+  return !!printed(faction, id) ||
+    (faction === 'harkonnen' &&
+      (id === DUKE_VIDAL_ID || ordinaryIdentity(id)));
+}
 /** Consistency proof only; the engine separately binds the battle event and
  * phase continuation. No secret card identity enters this public trigger. */
 export function moritaniAssassinateTrigger(
@@ -113,7 +122,7 @@ export function moritaniAssassinateTrigger(
     input.turn > 0 &&
     opponents.includes(input.faction) &&
     identifier(input.opposingLeader) &&
-    !!printed(input.faction, input.opposingLeader) &&
+    opposingDiscIdentity(input.faction, input.opposingLeader) &&
     input.opposingLeaderSurvived === true &&
     input.normalBattle === true &&
     input.lostBattle === true &&
@@ -215,7 +224,7 @@ export function validateMoritaniAssassinate(
         (!custody || r.turn <= custody.turn) &&
         (index === 0 || r.turn >= state.opportunities[index - 1].turn) &&
         identifier(r.opposingLeader) &&
-        !!printed(r.faction, r.opposingLeader) &&
+        opposingDiscIdentity(r.faction, r.opposingLeader) &&
         ['skills', 'choice', 'declined', 'revealed', 'replaced'].includes(r.stage) &&
         r.signature === moritaniAssassinateSignature(r),
       'Assassinate has a changed, duplicated or malformed battle opportunity.',

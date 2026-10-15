@@ -608,27 +608,14 @@ export function revealMixedE3MoritaniPlans(g: Game, plans: readonly MixedE3Morit
  * trying the engine's own plan validator. Never assumes a fixed dial or budget. */
 function legalPlan(g: Game, actor: string, leader: string, prefer: 'max' | 'min',
   extra: { weapon?: string; defense?: string } = {}): Action {
-  const steps: MixedE3MoritaniStep[] = [];
-  let base = g;
-  for (let n = 0; n < 6; n++) {
-    const decision = base.decision;
-    if (decision?.kind === 'moritaniPlacement') {
-      const decline: MixedE3MoritaniStep = { actor: decision.player, action: { type: 'decision', decline: true } };
-      steps.push(decline); base = stepMixedE3Moritani(base, decline); continue;
-    }
-    if (decision?.kind !== 'leaderSkillVisibility') break;
-    const posture: MixedE3MoritaniStep = { actor: decision.player,
-      action: { type: 'leaderSkillVisibility', event: decision.event, hide: decision.player === actor } };
-    steps.push(posture); base = stepMixedE3Moritani(base, posture);
-  }
-  const spice = mixedE3MoritaniPlayer(base, actor).spice;
+  const spice = mixedE3MoritaniPlayer(g, actor).spice;
   const supports = prefer === 'max' ? Array.from({ length: spice + 1 }, (_, i) => spice - i) : [0];
   const dials = prefer === 'max' ? Array.from({ length: 13 }, (_, i) => 12 - i) : [0];
   const reasons = new Set<string>();
   for (const support of supports) for (const dial of dials) {
     for (const card of [extra, {}]) {
       const action: Action = { type: 'battlePlan', leader, dial, support, ...card };
-      try { applyAction(mixedE3MoritaniReload(base), actor, action); return action; }
+      try { applyAction(mixedE3MoritaniReload(g), actor, action); return action; }
       catch (error) { reasons.add(error instanceof Error ? error.message : String(error)); }
     }
   }
@@ -643,13 +630,10 @@ export function stageMixedE3MoritaniLoss(f: MixedE3MoritaniSetup, state: Game,
   const arrival = shipMixedE3Moritani(mixedE3MoritaniReload(state), f.native, f.location, 1, 0, f.actions);
   const ready = advanceMixedE3Moritani(arrival.settled, s => !s.decision, f.actions);
   let g = openMixedE3MoritaniBattle(ready, f.moritani, f.native, f.actions);
-  // A pending posture declaration is a real private choice; conceal it first so
-  // both plans are submitted against the same genuine state.
-  for (let n = 0; n < 4 && g.decision?.kind === 'leaderSkillVisibility'; n++) {
-    const posture = g.decision;
-    g = stepMixedE3Moritani(g, { actor: posture.player,
-      action: { type: 'leaderSkillVisibility', event: posture.event, hide: true } }, f.actions);
-  }
+  // Finish original Voice, Mentat/posture and preparation acknowledgements
+  // before either validator probe; never validate against an undispatched clone.
+  g = advanceMixedE3Moritani(g, s => !!s.battle && mixedE3MoritaniClean(s) &&
+    !s.battle.preparation && s.battle.preLeader?.closed !== false, f.actions);
   const arrangements = mixedE3MoritaniReload(g);
   const trained = new Set((g.leaderSkills?.assignments ?? []).map(a => a.leader));
   const ownLeader = mixedE3MoritaniPlayer(g, f.moritani).leaders.filter(l => !l.dead && !trained.has(l.id))

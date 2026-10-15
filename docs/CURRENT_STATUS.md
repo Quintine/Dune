@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 14 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 15 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -28,6 +28,28 @@ This is not complete-mode acceptance: exceptional custody, timing variants,
 optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
+
+**Native Moritani/Harkonnen custody — 15 October.** Original standalone,
+paired and mixed-family no-Skills E3 Nexus now admit Advanced Harkonnen in
+their existing module envelopes. Original capture/Keep/Execute feeds a later
+qualifying Moritani takeover of living captive Duke, preserving physical
+identity/history and original one-battle/current-turn release. Karama cancels
+with the real card. Public qualification uses the public snapshot; allowed
+resolution exposes actual unavailability without reviving private execution.
+Takeover/visibility and Terror effective-control/public-victim/spent-empty
+behavior are explicitly provisional product compositions.
+An actual Harkonnen win using captive Duke6 opens the distinct native-Harkonnen
+Traitor choice: Beast Rabban4 dies for four Bank spice, then its original card
+retires face up and distinct Esmar Tuek arrives privately at Mentat.
+Affected22-file union195/195, types/lint/build and fourteen actual API/policy
+paths pass. Actual styled390px GameTable completes movement, shows Duke Ready,
+uses original Karama/reveal and Terror death6, without overflow/browser errors.
+The empty-pool boundary has staged preceding Guild deaths; it is not a genuine
+five-death chronology. Four-profile decisions are legal, not calibrated.
+Ecaz-only revival, Ambassador exclusions, Skills/Harkonnen/shared-training,
+unrelated non-Nexus and public-start guards remain. No saved/deployed rooms
+touched. Existing build deprecation/chunk/route warnings remain.
+[Canonical lifecycle, source and remaining boundaries](DUKE_VIDAL_RULES.md#native-moritani-acquisition-from-captivity--15-october-2026).
 
 **Ecaz identity-tracked repeated cohorts — 14 October.** The repeated-history
 fence is replaced by provisional native-disc accounting: five Tanks including

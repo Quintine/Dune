@@ -104,7 +104,7 @@ void test('original mixed E3 native Moritani admission conserves decks, marks, t
   }
 });
 
-void test('two-through-six original seats, the combined five/six-native roster and the Harkonnen guards stay original', () => {
+void test('two-through-six original seats and the combined five/six-native roster keep original physical setup', () => {
   const two = setup({ families: ['ix'], roster: ['moritani', 'tleilaxu'] });
   assert.equal(two.afterSetup.players.length, 2); assert.equal(two.partner, null);
   assert.equal(two.afterSetup.nexusCards!.cards!.deck.length, 12);
@@ -123,11 +123,10 @@ void test('two-through-six original seats, the combined five/six-native roster a
   assert.equal(six.entry, 'combined'); assert.equal(six.afterSetup.richeseCache!.length, 10);
   assert.ok(six.afterSetup.expansions.includes('ix'));
   physical(six.afterSetup);
-  // Basic Harkonnen remains a legal classic seat; Advanced retains its guard.
+  // Basic Harkonnen retains its original native setup.
   const basic = setup({ rules: 'basic', families: ['ix'], roster: ['moritani', 'tleilaxu', 'harkonnen'] });
   assert.equal(player(basic.afterSetup, basic.seats.harkonnen!).traitors.length, 4);
   assert.equal(basic.afterSetup.moritaniAssassinate, undefined);
-  assert.throws(() => setup({ rules: 'advanced', families: ['ix'], roster: ['moritani', 'tleilaxu', 'harkonnen'] }));
   assert.throws(() => setup({ rules: 'basic', families: ['ix'], strongholds: true }));
 });
 

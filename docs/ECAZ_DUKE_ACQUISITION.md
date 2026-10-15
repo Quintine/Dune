@@ -4,6 +4,18 @@ Integrated 7 September 2026. Ecaz can now choose **Acquire Duke Vidal for Ecaz**
 
 The direct acquisition and tenure follow the publisher’s [Ecaz & Moritani rules, pp.7–9](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf). Fresh indexed publisher retrieval rechecked eligibility outside Tanks, captured or ghola custody. The prior [Duke source audit](DUKE_VIDAL_RULES.md) and [remaining effects readiness review](ECAZ_REMAINING_EFFECTS_READINESS.md) record the separate unresolved combinations. This implements the direct self-acquisition choice; it does not certify the token’s alliance and loan alternatives, full Ecaz or a complete expansion game.
 
+## No-Skills native Nexus scope extension — 15 October 2026
+
+Original standalone, paired and mixed-family E3 Nexus predicates without
+Skills now admit Advanced Harkonnen, retaining their existing optional-module
+envelopes. The Ambassador's captured/dead/Ghola exclusions still apply; it does
+not inherit Moritani's provisional captive takeover or Nexus liberation.
+Basic optional loan and Advanced automatic new-ally grant keep their original
+tenure. Skills/Harkonnen, shared training and unrelated non-Nexus guards remain.
+[Current native custody/source and bounded verification](DUKE_VIDAL_RULES.md#native-moritani-acquisition-from-captivity--15-october-2026).
+Historical blanket/standalone-only Harkonnen wording below is superseded only
+in those admitted envelopes; no complete-mode or public-start gate opens.
+
 ## Original standalone Advanced Harkonnen follow-up — 14 October 2026
 
 The already admitted standalone Ecaz/classic no-Skills Nexus envelope now

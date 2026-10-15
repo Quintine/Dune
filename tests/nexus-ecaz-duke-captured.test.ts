@@ -150,7 +150,7 @@ void test('a privately executed return remains a Tanks resurrection without leak
   validateNexusEcazDuke(g, receipt, 0);
 });
 
-void test('Advanced Harkonnen admission is only the existing standalone no-Skills profile, not a broader Duke exception', () => {
+void test('Advanced Harkonnen Duke support stays inside original no-Skills E3 profiles rather than lifting Skills guards', () => {
   const g = position();
   assert.equal(nexusEcazDukeModeSupported(g), true);
   assert.equal(quoteEcazDukeAcquisition(g, 'e').source, 'ecaz');
@@ -160,7 +160,6 @@ void test('Advanced Harkonnen admission is only the existing standalone no-Skill
   assert.throws(() => resolveEcazDukeRevival(g, 'h'));
   for (const change of [
     (saved: Game) => { saved.leaderSkills = {} as Game['leaderSkills']; },
-    (saved: Game) => { saved.players[2].faction = 'moritani'; },
   ]) {
     const excluded = structuredClone(g);
     change(excluded);

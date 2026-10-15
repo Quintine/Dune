@@ -52,6 +52,7 @@ import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningR
 import { createNexusFremenProtection, currentNexusFremenProtectionOwner, answerNexusFremenProtection, validateNexusFremenProtection, type NexusFremenProtectionFrame, type NexusFremenProtectionInput } from './nexus-fremen-protection';
 import { truthKnowledgeOf } from './truthtrance-knowledge';
 import { createMoritaniAssassinateOpportunity, moritaniAssassinateTrigger, moritaniAssassinateChoices, quoteMoritaniAssassinate, moritaniAssassinateSignature, validateMoritaniAssassinate, type MoritaniAssassinateState, type MoritaniAssassinateReceipt } from './moritani-assassinate';
+import { moritaniTerrorAssassinationPool, moritaniTerrorAssassinationValue } from './moritani-terror-assassination';
 import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGuildSecretShipment, type NexusGuildSecretAllyReceipt } from './nexus-guild-secret-ally';
 import { shipmentAvailable } from './shipment-opportunity';
 import { createGuildBetrayalInvoice, createGuildBetrayalReceipt, guildBetrayalEligible, guildBetrayalResponders, validateGuildBetrayalInvoice, validateGuildBetrayalHistory, nexusGuildBetrayalSourceReceipt, type GuildBetrayalInvoice, type GuildBetrayalCursor, type GuildBetrayalReceipt, type GuildBetrayalAuthority } from './nexus-guild-betrayal';
@@ -464,6 +465,7 @@ import {
   captureDuke,
   releaseCapturedDuke,
   executeCapturedDuke,
+  returnedDukeCapture,
   type DukeReleasedCaptureWitness,
   DUKE_VIDAL_ID,
   type DukeState,
@@ -8303,11 +8305,12 @@ function syncMoritaniAssassinateReceipt(g: Game, receipt: MoritaniAssassinateRec
   if (g.lastBattleContext?.event === receipt.event)
     g.lastBattleContext.moritaniAssassinate = {...g.lastBattleContext.moritaniAssassinate,event:receipt.event,signature:receipt.signature};
 }
-function recordMoritaniAssassinateOpportunity(g: Game, b: Battle, winner: Player | undefined, loser: Player | null) {
+function recordMoritaniAssassinateOpportunity(g: Game, b: Battle, winner: Player | undefined, loser: Player | null,
+  opposingLeader: Leader | undefined) {
   const state = g.moritaniAssassinate;
   if (!state || state.normalTraitorCall || !winner || loser?.id !== state.owner ||
     state.opportunities.some(r => r.faction === winner.faction && ['revealed','replaced'].includes(r.stage))) return;
-  const opposingLeader = winner.leaders.find(l => l.id === b.plans[winner.id].leader);
+  if (opposingLeader?.id !== b.plans[winner.id].leader) return;
   const trigger = {advanced:g.advanced,owner:state.owner,ownerFaction:loser.faction,opponent:winner.id,
     faction:winner.faction,event:g.lastBattleContext!.event,turn:g.turn,territory:b.territory,
     opposingLeader:opposingLeader?.id ?? null,opposingLeaderSurvived:!!opposingLeader && !opposingLeader.dead,
@@ -8348,7 +8351,13 @@ function actMoritaniAssassinate(g: Game, decision: Extract<Decision,{kind:'morit
     requireRule(Object.keys(action).every(k => ['type','event','card'].includes(k)), 'Choose one assassination Traitor Card or continue.');
     const quote = nexusRule(() => quoteMoritaniAssassinate(moritaniAssassinateContext(g,r),stringField(action.card)));
     const target = getPlayer(g,r.opponent).leaders.find(l => l.id === quote.leader)!;
-    if (quote.kill) {target.dead = true;target.deaths++;delete target.usedAt;}
+    if (quote.kill) {
+      target.dead = true;
+      target.deaths++;
+      delete target.usedAt;
+      if (getPlayer(g, r.opponent).faction === 'harkonnen') returnCaptives(g, getPlayer(g, r.opponent));
+      finishLeaderSkillCustody(g);
+    }
     const owner = getPlayer(g,r.owner);
     requireRule(Number.isSafeInteger(owner.spice + quote.bounty), 'Assassination income exceeds the supported spice balance.');
     owner.spice += quote.bounty;
@@ -17465,8 +17474,9 @@ function ecazAllianceQuote(g: Game, owner: string, entrant: string) {
   }
 }
 function ecazAmbassadorLoanBlock(g: Game, owner: Player, entrant: Player) {
-  if (g.advanced && byFaction(g, 'harkonnen') && !standaloneE3NexusProfile(g))
-    return 'Advanced Duke loans with Harkonnen capture remain guarded.';
+  if (g.advanced && byFaction(g, 'harkonnen') &&
+    !(standaloneE3NexusProfile(g) || pairedE3NexusProfile(g) || mixedE3NexusProfile(g)))
+    return 'Advanced Duke loans with Harkonnen capture remain guarded in this profile.';
   if (owner.ally !== entrant.id || entrant.ally !== owner.id)
     return 'The new Ecaz alliance is no longer current.';
   const duke = g.dukeVidal;
@@ -18021,7 +18031,7 @@ function continueTerrorDiscard(
     };
   } else finishTerrorEntry(g);
 }
-/** Keep unsupported custody out of the random draw, without leaking concealed captures. */
+/** Public effect admission only; the private living-disc pool is quoted at reveal. */
 function terrorRevealBlocked(
   g: Game,
   entry: NonNullable<Game['pendingTerrorEntry']>,
@@ -18040,39 +18050,6 @@ function terrorRevealBlocked(
     return null;
   if (kind !== 'assassination')
     return 'This Terror effect is still being implemented.';
-  if (g.advanced && byFaction(g, 'harkonnen'))
-    return 'Assassination with advanced Harkonnen capture is still being implemented.';
-  const entrant = getPlayer(g, entry.entrant);
-  if (g.dukeVidal?.controller === entrant.id)
-    return 'Assassination with Duke Vidal in the leader pool is still being implemented.';
-  const catalog = leaders(entrant.faction);
-  if (
-    catalog.length !== 5 ||
-    entrant.leaders.length !== catalog.length ||
-    new Set(entrant.leaders.map((leader) => leader.id)).size !==
-      catalog.length ||
-    entrant.leaders.some(
-      (leader) =>
-        !catalog.some(
-          (native) =>
-            native.id === leader.id &&
-            native.faction === leader.faction &&
-            native.strength === leader.strength,
-        ),
-    )
-  )
-    return 'Assassination requires a verified ordinary leader pool; this pool is still being implemented.';
-  if (
-    entrant.leaders.some((leader) => leader.capturedBy || leader.gholaBy) ||
-    g.players.some(
-      (other) =>
-        other.id !== entrant.id &&
-        other.leaders.some((leader) => controlsLeader(entrant, leader)),
-    )
-  )
-    return 'Assassination with captured or foreign ghola leaders is still being implemented.';
-  if (!entrant.leaders.some((leader) => !leader.dead))
-    return 'Assassination with an empty living leader pool needs a verified ruling.';
   return null;
 }
 function sneakAttackOptions(
@@ -18229,6 +18206,8 @@ function decideTerror(g: Game, p: Player, action: Action) {
       'Reveal the Terror token or leave it hidden.',
     );
     const atomics = token.kind === 'atomics' ? currentAtomicsQuote(g, entry) : null;
+    const assassination = token.kind === 'assassination'
+      ? nexusRule(() => moritaniTerrorAssassinationPool(g, entrant.id)) : null;
     const blocked = atomics ? null : terrorRevealBlocked(g, entry, token.kind);
     requireRule(!blocked, blocked ?? 'This Terror effect is unavailable.');
     g.moritaniTerror = revealTerror(g.moritaniTerror!, token.id);
@@ -18241,17 +18220,23 @@ function decideTerror(g: Game, p: Player, action: Action) {
       entry.stage = 'robbery';
       reopen();
     } else if (token.kind === 'assassination') {
-      const victim = shuffle(
-        entrant.leaders.filter((leader) => !leader.dead),
-      )[0];
-      victim.dead = true;
-      victim.deaths++;
-      delete victim.usedAt;
-      p.spice += victim.strength;
-      log(
-        g,
-        `${victim.name} was assassinated; ${p.name} received ${victim.strength} spice.`,
-      );
+      const victim = assassination!.length ? shuffle(assassination!)[0] : null;
+      if (victim) {
+        const bounty = moritaniTerrorAssassinationValue(victim);
+        victim.dead = true;
+        victim.deaths++;
+        delete victim.usedAt;
+        delete victim.capturedBy;
+        delete victim.concealed;
+        if (victim.id === DUKE_VIDAL_ID) g.dukeVidal = consumeDuke(g.dukeVidal!);
+        const harkonnen = byFaction(g, 'harkonnen');
+        if (harkonnen) returnCaptives(g, harkonnen);
+        finishLeaderSkillCustody(g);
+        p.spice += bounty;
+        log(g, `${victim.name} was assassinated; ${p.name} received ${bounty} spice.`);
+      } else {
+        log(g, `${p.name} revealed Assassination, but the entrant controlled no living leader. No leader died and no spice was awarded.`);
+      }
       finishTerrorEntry(g);
     } else if (token.kind === 'sneakAttack') {
       entry.stage = 'sneakAttack';
@@ -18507,14 +18492,13 @@ function offerMoritaniDuke(g: Game) {
   g.dukeAcquisitionTurn = g.turn;
   g.dukeVidal ??= createDukeVidal();
   const duke = g.dukeVidal;
-  if (duke.leader.dead || duke.controller === owner.id) return false;
-  if (duke.leader.capturedBy || duke.leader.gholaBy) {
-    log(
-      g,
-      'Duke Vidal acquisition with exceptional capture or ghola custody is still being implemented.',
-    );
-    return false;
-  }
+  const captor = duke.leader.capturedBy ?? duke.leader.concealed?.captor;
+  requireRule(!captor || (g.advanced && byFaction(g, 'harkonnen')?.id === captor),
+    'Duke acquisition lost its original native Harkonnen capture source.');
+  const publicDuke = projectedSharedDuke(g, '');
+  if (!publicDuke || publicDuke.leader.dead ||
+    (publicDuke.controller === owner.id && publicDuke.acquiredTurn === g.turn) ||
+    duke.leader.gholaBy) return false;
   const strongholds = new Set(
     battles(g)
       .filter(
@@ -20643,7 +20627,7 @@ function leaderHiddenFrom(g: Game, leader: Leader, viewer: string): boolean {
   if (!concealed) return false;
   const owner = g.players.find(player => player.faction === leader.faction);
   return ![concealed.controller ?? owner?.id, concealed.captor].includes(viewer) &&
-    !(getPlayer(g, viewer).faction === 'tleilaxu' && leader.dead && !leader.capturedBy);
+    !(g.players.find(player => player.id === viewer)?.faction === 'tleilaxu' && leader.dead && !leader.capturedBy);
 }
 function projectLeader(g: Game, l: Leader, viewer: string): Leader {
   const { concealed, capturedBy, ...visible } = l;
@@ -23123,7 +23107,7 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
     ...(inspection ? { nexusChoamInspection: inspection } : {}),
     ...(nexusRetention ? { nexusMoritaniRetention: nexusRetention } : {}),
   };
-  recordMoritaniAssassinateOpportunity(g, b, winner, losingPlayer);
+  recordMoritaniAssassinateOpportunity(g, b, winner, losingPlayer, winner === a ? al : dl);
   if (quote.smuggler) {
     const { receipt, amount } = quote.smuggler;
     const collector = getPlayer(g, receipt.player);
@@ -25073,17 +25057,16 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       g.phase === 5 && g.dukeAcquisitionTurn === g.turn && g.dukeVidal,
       'This Duke Vidal acquisition is no longer current.',
     );
-    if (!canceled) {
-      g.dukeVidal = acquireDuke(
-        g.dukeVidal,
-        response.owner,
-        g.turn,
-        'moritani',
-      );
-      log(
-        g,
-        `${getPlayer(g, response.owner).name} acquired Duke Vidal for one battle this turn.`,
-      );
+    if (!canceled && !g.dukeVidal.leader.dead) {
+      g.dukeVidal = acquireDuke(g.dukeVidal, response.owner, g.turn, 'moritani');
+      log(g, `${getPlayer(g, response.owner).name} acquired Duke Vidal for one battle this turn.`);
+    } else if (!canceled) {
+      // A qualified public acquisition resolves the concealed disc's availability;
+      // never revive a privately executed Duke or leak it through a private-only gate.
+      requireRule(returnedDukeCapture(g.dukeVidal),
+        'The unavailable acquisition lost the original executed Duke return.');
+      g.dukeVidal = consumeDuke(g.dukeVidal);
+      log(g, `${getPlayer(g, response.owner).name}'s Duke acquisition resolved with the shared disc in the Tanks. No acquisition occurred.`);
     } else
       log(g, 'Karama prevented Moritani from acquiring Duke Vidal this turn.');
     nextPhase(g);

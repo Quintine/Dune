@@ -1,6 +1,6 @@
 # Terror Assassination and Sneak Attack: source boundary
 
-Reviewed 2026-09-06. Bounded follow-up to `MORITANI_TERROR_RULES.md` and `MORITANI_ENTRY_TIMING.md`. The research phase made no runtime edits; this note distinguishes printed instructions from compositional interpretations.
+Reviewed 15 October 2026. Bounded follow-up to `MORITANI_TERROR_RULES.md` and `MORITANI_ENTRY_TIMING.md`. This note distinguishes printed instructions from explicitly provisional product composition; the original research phase made no runtime edits.
 
 ## Direct Terror instructions
 
@@ -53,30 +53,92 @@ the once-per-turn guard, the unchanged zero-force resolution, the altered-sector
 rejection, the post-entry Intrusion offer and the full decline → advisor →
 placement chain; `docs/COMPONENT_INVENTORY.md` records the reduced boundary.
 
-## Assassination pool: safe ordinary support
+## Assassination pool: adopted provisional composition, 15 October 2026
 
-Ordinary live native discs held by the entrant are the straightforward pool. Killing a disc already in the Tanks again, or awarding its strength again, is not supported. Do not award Moritani a player-chosen victim. Zoal's explicit payout must survive any generic strength calculation.
+The selected product policy is **effective current control**, not native-array
+membership and not battle availability. It includes every actual living native
+disc still controlled by the entrant, its actual captured foreign discs and
+ordinary foreign Gholas, and the one canonical shared Duke when controlled by
+the entrant. A native disc captured or held as a foreign Ghola elsewhere is not
+in its native faction's pool. Harkonnen capture overrides a foreign Ghola's
+underlying Tleilaxu control. Dead discs never enter the pool. An ordinary native
+leader revived normally remains ordinary; its death history alone is not
+foreign-Ghola custody.
 
-Battle availability and physical custody are different facts. The base Harkonnen capture power expressly excludes leaders previously used elsewhere that turn; that is a restriction on **capture**, not a generic definition of all random-leader effects. Importing `captureCandidates` wholesale would add a condition absent from Terror. Ordinary leader rules restrict repeated battle use, not all other effects on that disc. [Base rulebook, pp. 10–11, 17](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf)
+This exceptional-pool definition is **provisional product composition**, not a
+retrieved publisher ruling or a numeric decision supplied by the user. The
+printed Terror instruction supplies no exceptional-custody definition. The
+separate p. 14 **Assassinate Leaders** FAQ does not settle this random Terror
+pool, its visibility, or its bounty.
 
-No targeted primary clarification was found for these pools:
+Battle availability and physical custody remain different facts. Harkonnen's
+restriction on capturing leaders previously used elsewhere that turn is a
+restriction on **capture**, not on Terror. A living `usedAt` disc remains
+eligible; importing `captureCandidates` would silently change probabilities.
+[Base rulebook, pp. 10–11, 17](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf)
 
-- An entrant's native leader held by another faction after capture.
-- Captured foreign leaders controlled by the entrant.
-- Foreign Gholas or native leaders currently controlled as another faction's Gholas.
-- Duke Vidal under his separate custody lifecycle.
-- An empty eligible pool when all relevant leaders are dead or unavailable.
+The focused server quote in `game/moritani-terror-assassination.ts` validates
+original native identity, name and strength, complete five-disc native
+inventories and unique physical custody. It preserves the original rosters:
+foreign discs stay in their native arrays, and Duke remains a separate Ecaz
+strength-six disc with no Traitor. The actual optional Advanced CHOAM Auditor
+is a physical sixth disc and is eligible while living; its capture and
+foreign-Ghola prohibitions do not grant immunity to random Terror.
+Foreign-Ghola Duke is forbidden by binding Ecaz-only revival, not treated as a
+new source. The quote reuses `controlsLeader` and server `dukeController`,
+returns original disc references in a fresh array, and performs no RNG,
+mutation or public projection.
 
-For a limited implementation, reject an unresolved exceptional pool **before** revealing or consuming RNG, while retaining the decline option. Silently filtering special discs out changes selection probabilities and effectively grants immunity; it is not equivalent to leaving their support unimplemented. The check must consider actual ownership/control across the game, not merely the entrant's native leader array. An ordinary native leader revived normally remains an ordinary living disc; a death history alone is not foreign-Ghola custody.
+**Public victim policy:** actual Terror assassination publicly identifies the
+killed disc, including a previously concealed captive, and clears that
+capture's concealment. This is an explicitly provisional public-effect
+interpretation. It does not change ordinary Harkonnen private execution or
+turn unrelated hidden captures into public information. Pay the killed disc's
+native printed bounty, explicitly **Zoal 3** and **Duke 6**, never a copied
+battle strength or skill bonus. Kill once, remove the original dead leader's
+skill if applicable, clear battle-use history, and use original death/custody
+cleanup: a captured ordinary disc returns to its native or underlying Ghola
+custody, while the dead shared Duke is set aside in Ecaz's Tanks rather than
+restoring his former controller.
+
+**Empty-pool policy:** revelation spends/removes the token even when the
+effective-control pool is empty; there is no victim, no bounty and **no random
+draw**. Continue the original committed arrival once. This is provisional
+composition, not a located empty-pool FAQ. Neither the offer nor public/private
+availability may depend on held or concealed leader state: do not project the
+pool, expose its size, or restore the former exceptional-custody/empty-pool
+availability gates. Structural physical-identity validation is not a player
+choice or a hidden-state-dependent offer.
 
 ## Verification and limits
 
 Read the relevant printed pp. 5–6 and 14–16 in `/tmp/dune-rules/ecaz-audit.txt`, the corresponding publisher-indexed expansion passages, base rules, and the Heighliners passage in `/tmp/dune-rules/ix-official-mirror.txt`. Targeted GF9/Future Pastimes searches used Sneak Attack with shipment/advisors/Intrusion, and Assassination with captured/Ghola/Duke. The [designer's expansion page](https://futurepastimes.com/dune-ecaz-moritani) yielded no additional written pool or entry-classification clarification. No community answer or rule for a different Dune game was substituted. Lack of a retrieved ruling is a documented research limit, not proof that none exists.
 
-## Integrated runtime checkpoint
+## Implementation and evidence boundary
 
-The parent integrated ordinary Assassination and bounded Sneak Attack with the above unresolved cases gated. The native catalog, uniqueness and custody checks run before revelation/RNG. Advanced Harkonnen games use a uniform configuration guard to avoid leaking hidden capture state. Empty living pools retain the hidden token and permit decline. Used living discs remain eligible; Zoal pays three.
+The former ordinary-only checkpoint gated exceptional custody and empty pools;
+that policy is superseded by the provisional composition above. Pure behavior
+regressions cover effective native/captive/Ghola custody, capture precedence,
+canonical Duke/Auditor participation, used living discs, dead/empty pools,
+printed values and rejected altered/duplicate physical identities.
+The frozen affected22-file union passes **195/195**, with types/lint/build.
+Original native play supplies a real Harkonnen-captured Duke and a later real
+paid shipment into the placed token. Actual styled390px GameTable reveals the
+original token; a scoped original random permutation selects captive Duke,
+kills him once, pays six, removes the token and resumes the original arrival.
+It does not fake an effect or put a target in the client action. No overflow or
+browser errors were observed. The empty-pool engine/API boundary spends the
+token without bounty/RNG and resumes a genuine Guild arrival; its preceding
+five Guild deaths are **staged**, not an original five-death play chronology.
+All four original policies make accepted reveal or alliance decisions; only
+Easy reveals in that position, while Medium/Hard/Brutal form the accepted
+alliance. This is minimal legal participation, not four Duke kills or strategic
+calibration. No saved/deployed rooms or complete-mode acceptance are covered.
 
-Sneak Attack's owner projection supplies reserve maximum and any blocking reason at the offer and resolution stages. Thus the player can preserve the hidden token before an unsupported positive entry; deliberate zero-force revelation remains possible. AI declines blocked or empty offers. No ordinary action counter or spice payment is consumed. BG followup/Intrusion and phase-five technology combinations remain unsupported pending interpretation/integration; no blanket bypass was inferred.
-
-Validation: fifteen focused force/leader tests; integrated 858-unit and 45-persisted/API suites; typecheck, lint and build. Expansion starts remain gated.
+Sneak Attack's owner projection supplies reserve maximum and any blocking
+reason at the offer and resolution stages. Thus the player can preserve the
+hidden token before an unsupported positive entry; deliberate zero-force
+revelation remains possible. No ordinary action counter or spice payment is
+consumed. The adopted Heighliners and BG shipment compositions are recorded
+above; older blanket unsupported claims are not current policy. Expansion
+starts and full-combination acceptance remain gated.

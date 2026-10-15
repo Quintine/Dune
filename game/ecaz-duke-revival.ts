@@ -2,7 +2,7 @@ import type { Game, Player } from './engine';
 import type { Leader } from './cards';
 import { DUKE_VIDAL_ID, returnedDukeCapture, type DukeState } from './duke-vidal';
 import type { FactionModuleProfile } from './faction-module-profile';
-import { standaloneE3NexusProfile } from './nexus-module-profile';
+import { mixedE3NexusProfile, pairedE3NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 
 export const DUKE_REVIVAL_NORMAL_COST = 5 as const;
 export type EcazDukeRevivalContext = Partial<FactionModuleProfile> & {
@@ -85,7 +85,8 @@ export function resolveEcazDukeRevival(
   );
   requireDuke(
     !(g.advanced && g.players.some((p) => p.faction === 'harkonnen')) ||
-      (!!g.expansions && standaloneE3NexusProfile(g as FactionModuleProfile)),
+      (!!g.expansions && (standaloneE3NexusProfile(g as FactionModuleProfile) ||
+        pairedE3NexusProfile(g as FactionModuleProfile) || mixedE3NexusProfile(g as FactionModuleProfile))),
     'table',
   );
   const duke = g.dukeVidal;
