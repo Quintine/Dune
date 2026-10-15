@@ -113,6 +113,12 @@ would refill reserves. The same owner may still use Harass alone. Token3/
 reserves6 can materialize3, pay original3, then return its undialed counters.
 Preview facts are owner-only and add no persisted Game field.
 
+The [Advanced mixed Occupy extension](RICHESE_NO_FIELD_RULES.md#mixed-native-occupy-pool--16-october-2026)
+also combines original ordinary counters with actual marker materialization.
+Selected Ecaz still returns only its own fixed-pool undialed counters; selected
+Richese returns only its actual ordinary-plus-revealed variable counters.
+Original mandatory Ecaz losses and post-reveal reserve funding do not change.
+
 ### Scoped native proof
 
 The34 new genuine-shipment cases pass; the frozen17-file related union

@@ -264,8 +264,9 @@ Actual reveal precedes original reserve cost and successful return. Richese-held
 Harass returns only its actual variable ordinary counters; Ecaz-held Harass
 returns only its original fixed-pool undialed counters. Neither changes the
 original mandatory Ecaz commitment. Reinforcements checks only its card user's
-post-reveal reserves, not the allied marker's owner's supply. Marker-only
-co-side does not admit same-owner mixed ordinary/marker Occupy.
+post-reveal reserves, not the allied marker's owner's supply. The
+[selected Advanced mixed-pool extension](RICHESE_NO_FIELD_RULES.md#mixed-native-occupy-pool--16-october-2026)
+retains that order, physical owners and fixed Ecaz commitment.
 
 Native/pure67 cases, relevant284-case batch and27 actual native-program
 cases pass, including all four legal policies. Two natural captured games
@@ -305,7 +306,9 @@ The physical Richese owner reveals once after both seals. Dial prescience and
 whole-plan restrictions follow the actual variable-force owner rather than the
 original chooser. Preventing Occupy with Ecaz lead makes only Ecaz's own pool
 inspectable; the unrelated marker stays concealed until original reveal timing.
-Richese's own ordinary-plus-marker dialing and broader disclosure rulings remain.
+Richese's ordinary-plus-marker pool now composes under the separate
+[explicitly provisional native interpretation](RICHESE_NO_FIELD_RULES.md#mixed-native-occupy-pool--16-october-2026).
+Broader disclosure and Basic mixed-co-side/module rulings remain separate.
 
 Stone Burner compares **floor(E/2) + native ally physical undialed tokens** for
 active Occupy, or the **selected lead's own pool only** after prevention.

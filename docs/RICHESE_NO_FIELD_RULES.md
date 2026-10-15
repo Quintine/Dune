@@ -2,6 +2,65 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Mixed native Occupy pool — 16 October 2026
+
+Standing choose-recommended extends the existing explicitly provisional
+ordinary additive pool into the selected Advanced Occupy composition:
+`Richese ordinary counters here + min(token value, current Richese reserves)`.
+Active coalition total adds the original mandatory `ceil(Ecaz/2)` separately;
+only native variable commitment spends support or creates variable losses.
+This composes the earlier mixed-pool interpretation with native coalition
+arithmetic; it does **not** adjudicate the FAQ's ambiguous mixed reserve cap.
+
+Either Ecaz or Richese may form the active allied plan. The selected plan
+actor receives its private mixed variable wheel and explicit provisional
+notice, not Ecaz's own ordinary maximum. Richese as opposing army instead
+uses only its own additive pool. Visible ordinary counters never disclose
+the concealed prospective increment to rivals. Original prescience/full-plan
+restrictions remain attached to the physical force owner.
+
+Original Karama prevention preserves the chosen lead but removes the fixed
+contribution and all unselected ally strength. Selected Ecaz uses only Ecaz
+counters; selected Richese uses its own mixed pool. The original Richese
+marker still reveals once after both seals, even when it no longer supplies
+the plan. Zero creates no new counters; shortage remains reserve-capped.
+Native support, Traitors, original physical losses and token history follow.
+Harass/R uses the materialization-first cost contract below, not a new fee
+order. No persisted field, new Basic coalition or optional-module gate opens.
+
+### Scoped mixed runtime proof
+
+Before-state actual native admission rejected one ordinary counter plus
+marker5/reserves2 for both allied and opposing Richese. Four actual390px
+journeys now finish the original CHOAM market into phase7:
+- Ecaz lead: one ordinary plus capped2 reveals to3; total5/support2 leaves
+  Richese1/Tanks2 and Ecaz2/Tanks3. First seal kept the marker/reserves hidden.
+- Richese lead: ordinary2 plus marker3, original reserves6, total4/support1,
+  H/R together; materialize3, spend original3, return4, lose original variable1.
+  End Richese reserves4/Tanks4, Ecaz2/Tanks3; both actual cards discard once.
+- Opposing Richese: ordinary2 plus marker0 retains original reserves2, wins
+  with its own supported2/real leader, loses only those2 committed counters;
+  the actual combined Ecaz5/Guild4 side is destroyed and zero history remains.
+- Original opposing Karama prevents Ecaz lead. The wheel redials only Ecaz5
+  with fixed0; total2/support2 loses Ecaz2, leaves all3 actual revealed Richese
+  counters untouched and consumes the native Karama once.
+
+Each native marker retains its original last-shipped identity. All surfaces
+have no overflow, post-configuration browser/application error or stalled
+decision. The owned Vite mount initially lacked the native Vinext image alias/
+environment; configuring that existing adapter fixed the harness prerequisite,
+not product code. Owned host/tabs/scaffolds were removed after proof.
+Sixteen fresh native programs accept80 policy actions across Easy/Medium/Hard/
+Brutal, active/prevented allied/opposing roles, through original Collection.
+This is explicit conserved battle staging after genuine setup/Nexus/shipment,
+not unstaged complete-game or new save/deployed acceptance.
+
+The28 new native cases and frozen26-file358/358 related union pass, with
+types/lint/build and existing warnings. The two generated guide topics retain
+Partial coverage;28/22 evidence paths and this source anchor resolve. One
+prevented-opponent fixture needed three real supported Ecaz counters to avoid
+an unintended tied precondition; the exact winner/loss assertion remains.
+
 ## Concealed battle-card composition — 16 October 2026
 
 Harass now composes with own concealed No-Fields in supported Basic/Advanced
@@ -24,7 +83,8 @@ previously sealed, materialized to0 and stalled on Traitor resolution; the
 new first-plan guard rejects that commitment and retains a legal Harass-only
 alternative. Other owners' reserves/markers are not shared. Owner-only preview
 facts are view data, not new saved Game fields or a historical-save migration.
-Existing mode, mixed-co-side, full-plan and optional-module gates remain.
+Existing mode, full-plan and optional-module gates remain; the selected
+Advanced mixed-co-side extension is defined above.
 
 ## Advanced first versions — 8 October 2026
 
@@ -148,7 +208,7 @@ This table records the original adapter contract. The implemented subset and cur
 ## Unresolved or compositional boundaries
 
 1. **Reserve shortage when destroyed.** Voluntary/battle text explicitly caps by reserves; the destruction sentence says to lose the indicated quantity without repeating the shortage clause. The pure model caps materialization to avoid creating physical units, but that is conservation-based composition for storm/worm losses, not an independently answered FAQ. It does not select substitute losses from unrelated board forces.
-2. **Mixed forces and battle dials.** The FAQ forbids dialing more than reserves in a No-Field battle. A territory can also contain ordinary forces (the Smuggler answer demonstrates mixed presence), but no retrieved answer expressly defines that limit with existing forces, multiple sectors, typed units or independently committed reserve uses. Basic and Advanced prototypes use an explicitly provisional additive pool; this does not settle the source question. Same-owner mixed ordinary/marker Occupy remains guarded; the existing marker-only Advanced Occupy profile supports the owner-specific card composition above.
+2. **Mixed forces and battle dials.** The FAQ forbids dialing more than reserves in a No-Field battle. Existing ordinary counters are possible, but no retrieved specific answer defines the cap across those counters, multiple sectors, typed units or independent reserve uses. Basic/Advanced ordinary and the selected Advanced Occupy prototype use the explicitly provisional additive pool above. This does not settle that source question or admit Basic mixed coalition/module profiles.
 3. **Full-plan special Karama and structured Truthtrance.** The ordinary Atreides dial prohibition is explicit. Whether a broader entire-plan power or a particular promise question overrides it was not resolved by a retrieved specific answer. Do not leak the value through private legal-plan previews, public maximum dials, error strings or bot reasoning.
 4. **Homeworld use.** R3 recommends Richese in a Homeworld combination but supplies no retrieved No-Field-specific rule defining off-planet hidden custody, one-on-planet versus off-planet coexistence, or homeworld threshold disclosure. General module availability is not an answer to those lifecycle questions. The isolated model represents a single Arrakis marker and does not authorize Homeworld placement.
 5. **Capturing, transferring or returning a concealed marker as a force.** Movement-as-a-force and Gamont's explicit forced reveal do not establish a general conversion for every card or Guild transport-to-reserves. A generic return helper must not erase a hidden token without a source-backed reveal/custody cause. This module exposes no such automatic escape from last-use history.
@@ -173,13 +233,13 @@ Root integration review also corrected the Polar Sink address: its ordinary boar
 
 `game/force-presence.ts` distinguishes presence from actual units, and map/occupancy, battle discovery, collection and control use that distinction. A marker is one collector even at zero. Storm checks the exact exposed marker sector before materialization/casualties; sheltered Imperial Basin and other sectors are preserved in focused checks. Unprotected worm destruction runs the actual reveal/casualty path, including a real Thumper trigger. Protected-worm and additional removal effects remain bounded by the source interpretations above.
 
-Marker-only battle admission computes the owner's prospective pool from denomination and remaining reserves. The view exposes that pool only to its owning combatant; another player sees its own pool or none. Both plans seal before public reveal materializes the marker. The battle's `noFieldPlayers` flag persists, so zero still has its leader/cards/traitor resolution. Ordinary Atreides dial prescience is rejected on the server and avoided by controls/AI. Basic and Advanced physical-plus-marker admission use the provisional prototype above; combined mixed admission and special whole-plan inspection remain guarded. Broader Truthtrance remains an audit boundary.
+Battle admission computes the reserve-capped prospective counters alongside actual ordinary units. Both plans seal before the original marker materializes. The selected active Occupy plan actor receives its own variable pool/provisional notice; rivals retain no concealed maximum. Prevented Ecaz uses only its own pool, while the marker retains native revelation. Zero keeps leader/cards/Traitor legality and original history. Dial prescience, special whole-plan inspection, broader Truthtrance and profile/module gates remain separate.
 
 **Player controls — Partial.** `components/richese-no-field.tsx` provides concealed board markers plus owner-only denomination inventory, last-use status, token selection, ordinary one-force price/ally-share feedback and authoritative unavailable reasons. The parent table adds explicit marker movement selection and private prospective battle bounds. Token identifiers and hidden values are absent from rival board projections. The separate `components/richese-allied-no-field.tsx` supplies owner opportunity/proposal/payment controls and private recipient accept/decline/typed-force controls. Own shipment, marker movement and invitation/reveal have passed browser checks; an allied owner proposal was checked, but recipient browser acceptance and mobile remain pending.
 
-**AI — Partial.** `game/bots.ts` selects eligible private own denominations, emits one-force shipments with exact funding, moves marker-only groups as `forces: {}` with explicit token/event, and reveals positive materializable tokens before a new shipment or after movement. It keeps a zero or exhausted-reserve marker concealed. Ordinary group candidates avoid combining with the owner's concealed marker while mixed battles are guarded. The battle policy uses the projected private force pool; opponent valuation uses public one-force presence. Responses, decisions and Truthtrance take priority. All four profiles also handle allied opportunity and acceptance from their entitled views, prefer positive safe owner-funded offers, decline unusable offers and avoid repeated automatic offers. Actual scheduling tests cover both seating orders, autopilot and a human supplier holding an AI ally’s shipment until explicit choice. Optimal strategy and complete Richese games are not claimed.
+**AI — Partial.** Existing private own/allied shipment and explicit marker movement policies remain. Ordinary movement candidates still prefer separate physical and marker groups; current native battle policy consumes the private additive own/selected variable quote without exposing its prospective increment to rivals. Sixteen fresh programs across all four policies complete active/prevented allied/opposing mixed battles with80 accepted policy actions through native Collection. This is minimal legal participation, not Richese strategy or complete-game calibration.
 
-**Documentation — Partial.** The in-app `richese-no-field` topic now documents the above controls and five facets. `RICHESE_NO_FIELD_ENGINE_AUDIT.md` retains the hook audit and current resolution notes. Source-confirmed Gamont requires reveal whenever its selected location contains the marker, then returns one actual force if present; the card is still used when zero results. Gamont engine/UI integration now follows that rule even when ordinary units also occupy the selected marker sector; its options label the reveal consequence without a separate target mode. Canceling the CHOAM power keeps the token concealed. Root reports 29 passing focused scenarios: 19 existing Gamont regressions plus the 10-case No-Field engine file, including two new Gamont scenarios covering 0/3/5, colocated zero/two ordinary forces, scarce reserves, cancellation and stale restored events. Allied shipment and typed allocations are integrated; mixed battles, Guild/Karama allied pricing and broader power interactions remain explicit unfinished work. No game-mode gate was opened.
+**Documentation — Partial.** Current source, native lifecycle, allied price/consent and concealed-card/mixed-coalition compositions are recorded above and in the internal reference. Additive mixed caps and effect priority remain explicit provisional interpretations; Homeworld custody, full-plan/Truthtrance, unrelated overlays and complete-mode/final acceptance retain their separate gates. Earlier Gamont/allied proof remains historical, not a freshly repeated assurance campaign.
 
 **Verification — Partial.** Current named focused results: `tests/richese-no-field.test.ts` (13), `tests/richese-no-field-engine.test.ts` (10), `tests/richese-no-field-review.test.ts` (8), `tests/richese-no-field-bots.test.ts` (9). The independent review compares complete opponent projections across 0/3/5 both before and after shipment, and after private plan sealing; checks payment/rates, storm shelter/sectors, actual worm activation, voluntary timing, later physical-token reuse with stale event, atomic BG/Terror entry rejection, stale CHOAM continuation and synthetic inventory validation. AI tests run every profile through Basic/Advanced marker-only zero/3/5 battles, including scarce reserves and repeated JSON restoration, to finite battle completion with conservation. Seven ordinary shipment-budget and four special-acquisition AI regressions also pass, with targeted lint and TypeScript. These focused checks are supplemented by the integrated acceptance updates below; complete Richese-game acceptance is not certified.
 

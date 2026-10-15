@@ -1,5 +1,38 @@
 # Dune implementation status
 
+## 16 October 2026 — Mixed ordinary/No-Field native Occupy
+
+Actual native admission previously rejected both allied and opposing Richese
+with one ordinary counter plus marker5/reserves2. Extend the existing explicitly
+provisional additive pool into selected Advanced Occupy. Fixed Ecaz commitment,
+native payer/support/counter owners, second-seal materialization/history and
+post-reveal reserve-cost-before-return stay. Private mixed metadata follows
+the selected plan's physical force owner; Ecaz gets the actual Richese variable
+pool, while prevention restores only its own army. No new persisted field,
+Basic mixed-co-side, optional-module or public start gate is opened.
+
+Twenty-eight new native cases and26-file358/358 pass, with types/lint/build.
+Existing module-register/chunk-size/route warnings remain. One opposing
+prevention fixture accidentally tied; an actual third supported Ecaz counter
+now guarantees its asserted ordinary win and exact three-counter loss. Old
+blanket-rejection wording tests are deleted, not re-pinned.
+
+Four actual390px journeys clear original CHOAM market into phase7: capped
+Ecaz lead (Richese1/Tanks2, Ecaz2/Tanks3), funded mixed H/R Richese lead
+(Richese reserves4/Tanks4, Ecaz2/Tanks3), opposing zero/ordinary Richese
+victory (own2 committed losses; combined Ecaz5/Guild4 destroyed), and original
+Karama prevention (Ecaz2 losses, all3 real Richese counters stay). All first
+seals retain native concealment. No overflow or post-configuration browser/
+application errors; the owned harness initially needed the existing native
+Vinext image alias/environment, corrected before the actual journeys.
+
+Sixteen fresh native programs/four policies accept80 policy actions through
+Collection. Actual guide import resolves28/22 evidence paths and the new anchor;
+both topic coverages remain Partial. Owned hosts/tabs/scaffolds removed.
+No human game, D1, deployment or broad/HTTP/recovery assurance changed.
+Mixed-cap source ambiguity and complete-mode/final acceptance remain open.
+[Exact interpretation and scope](RICHESE_NO_FIELD_RULES.md#mixed-native-occupy-pool--16-october-2026).
+
 ## 16 October 2026 — Concealed No-Field Harass and original reserve funding
 
 Preserve native materialization before effects. Private owner previews forecast

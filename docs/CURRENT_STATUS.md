@@ -29,7 +29,28 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
-**Concealed No-Field battle cards — 16 October.** Own Harass privately forecasts
+**Mixed ordinary/No-Field native Occupy — 16 October.** The selected Advanced
+profile extends the existing explicitly provisional additive pool to allied
+and opposing Richese. Original fixed Ecaz strength stays separate. The selected
+Ecaz plan now receives its Richese variable-owner mixed warning; prevention
+restores only the selected lead's own pool. Both seals still precede actual
+reserve-capped revelation/history. No new saved field, Basic mixed-co-side,
+public start or optional-module gate opens; the FAQ mixed cap stays unresolved.
+
+Twenty-eight new native cases and the26-file358/358 related union pass, as do
+types/lint and build with existing warnings. Four actual390px journeys finish
+original CHOAM market into phase7: capped Ecaz lead, funded H/R Richese lead,
+opposing zero/ordinary army and actual Karama prevention/redial. First seals
+stay concealed; physical losses, original reserve cost and history hold.
+Sixteen fresh native programs/all four policies accept80 policy actions through
+Collection. Two generated guide topics retain Partial coverage;28/22 evidence
+paths and the new source anchor resolve. One fixture's incidental tie was
+repaired by a real three-counter commitment, not weakening the winner check.
+Owned native-image mount prerequisite fixed, then hosts/tabs/scaffolds removed;
+no human game, D1, deployment or new assurance campaign changed.
+[Exact provisional pool and scoped proof](RICHESE_NO_FIELD_RULES.md#mixed-native-occupy-pool--16-october-2026).
+
+**Preceding concealed No-Field battle-card checkpoint — 16 October.** Own Harass privately forecasts
 native reserve-limited ordinary counters at their actual sector, without moving
 them before both plans seal. Original reveal/history precedes card effects.
 Reinforcements requires three own reserves after projected materialization,

@@ -172,8 +172,7 @@ export function ecazOccupyRicheseFixture(options: EcazOccupyRicheseOptions = {})
   const beforeBattle = structuredClone(game);
   const choice = viewGame(game, game.active!).battleChoices.find(b => b.territory === battleTerritory);
   assert.ok(choice, 'Concealed zero remains actual native battle presence.');
-  // Mixed ownership fixtures stop before admission so rejection is testable.
-  if (!mixed) game = applyAction(game, choice.chooser, { type: 'chooseBattle', territory: battleTerritory,
+  game = applyAction(game, choice.chooser, { type: 'chooseBattle', territory: battleTerritory,
     target: choice.attacker === choice.chooser ? choice.defender : choice.attacker });
   return { initial, afterSetup, beforeBattle, game, ecaz, ally, opponent, richese,
     territory: battleTerritory, location, ecazForces,

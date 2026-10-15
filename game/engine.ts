@@ -8305,16 +8305,18 @@ function occupyArmiesConnected(g: Game, ecaz: Player, ally: Player, t: string): 
   }
   return false;
 }
+/** Active Occupy's plan actor controls its ally's variable physical pool. */
+function battlePhysicalForceOwner(g: Game, id: string): string {
+  const occupy = g.battle?.ecazOccupy;
+  return occupy?.lead === id && !occupy.canceled ? occupy.ally : id;
+}
 /** Inspection follows the selected plan actor; reveal still belongs to the physical marker owner. */
 function battleNoFieldPlan(g: Game, id: string): boolean {
-  const b = g.battle, occupy = b?.ecazOccupy;
-  const owner = occupy?.lead === id ? occupy.canceled ? id : occupy.ally : id;
-  return !!b?.noFieldPlayers?.includes(owner);
+  return !!g.battle?.noFieldPlayers?.includes(battlePhysicalForceOwner(g, id));
 }
 function battleConcealedForces(g: Game, id: string): boolean {
-  const b = g.battle, occupy = b?.ecazOccupy;
-  const owner = occupy?.lead === id ? occupy.canceled ? id : occupy.ally : id;
-  return !!b && getPlayer(g, owner).noField?.deployed?.location.territory === b.territory;
+  const b = g.battle;
+  return !!b && getPlayer(g, battlePhysicalForceOwner(g, id)).noField?.deployed?.location.territory === b.territory;
 }
 function ecazBattleProfile(g: Game): EcazOccupyBattleProfile | null {
   const b = g.battle, occupy = b?.ecazOccupy;
@@ -33663,8 +33665,8 @@ function applyActionInner(
         ([key, n]) => n > 0 && splitLocation(key).territory === choice.territory,
       );
       if (!mixed) continue;
-      requireRule(!combined,
-        'Combined Occupy No-Field battle dialing awaits a ruling. Ordinary mixed battles use the visible provisional pool.');
+      requireRule(!combined || g.advanced,
+        'Combined mixed No-Field dialing requires the selected Advanced Occupy composition.');
       (mixedNoFieldPlayers ??= []).push(playerId);
     }
     if (combined) {
@@ -35185,7 +35187,7 @@ export function viewGame(state: Game, id: string) {
           ) as Record<string, StrongholdId | null>,
           tieWinner: battleTieWinner(g),
           noFieldPlayers: [b.attacker, b.defender].filter(player => battleNoFieldPlan(g, player)),
-          ...(b.mixedNoFieldPlayers?.includes(id) ? { mixedNoField: true as const } : {}),
+          ...(b.mixedNoFieldPlayers?.includes(battlePhysicalForceOwner(g, id)) ? { mixedNoField: true as const } : {}),
           ownForces: [b.attacker, b.defender].includes(id)
             ? planCombatForces(g, me, getPlayer(g, b.attacker === id ? b.defender : b.attacker))
             : null,
