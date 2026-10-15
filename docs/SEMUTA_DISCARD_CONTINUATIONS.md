@@ -2,6 +2,28 @@
 
 Read-only engine audit, 2026-09-07. Read the complete `docs/SEMUTA_DRUG_ENGINE_AUDIT.md`, then inspected every current `discard(...)` call, direct Treachery-discard mutation and `draw(g)` caller in `game/engine.ts`, plus the Truthtrance discard callback and pure Box/Distrans results. Names below are integration anchors; approximate current lines are navigation aids only. This report adopts no additional source ruling and changes no project file.
 
+## Shrine physical-role stages — 16 October 2026
+
+Fresh private `semuta --discoveries` setup retains the original Discovery
+roster/modules; unsupported Skills/Homeworld/Nexus/E3 overlays stay excluded.
+The existing Karama cost continuations accept an entitled physical
+Truthtrance without changing its face. Auction and price resumption carry
+that committed physical card; claim/pass preserves the original owner,
+recipient, lot, payment and once-use. Emperor's post-revival disposal never
+repeats its completed revival.
+
+`truthtranceDiscard` also accepts the already-validated `source: shrine`
+receipt for physical Karama after one definite answer. No fresh occupancy
+check is imposed on that committed Truthtrance role; existing history,
+promise, parent signatures and clean-continuation restrictions remain.
+Semuta recovery changes custody, not the recorded answer or printed face.
+
+[Scoped evidence](SEMUTA_SOURCE_UPDATE_20260907.md#shrine-physical-role-costs--16-october-2026):
+57 affected cases, eight controlled runtime paths,32 legal policy probes and
+two controlled390px journeys. This is not original Discovery acquisition,
+full-combination or saved/deployed assurance.
+
+
 ## Native BG cost and counter stages — 16 October 2026
 
 The actual physical Worthless creates `bgKaramaCostDiscard` before the

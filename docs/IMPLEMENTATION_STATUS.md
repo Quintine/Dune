@@ -1,5 +1,28 @@
 # Dune implementation status
 
+## 16 October 2026 — Semuta connects physical Shrine-role costs
+
+Fresh private `semuta --discoveries` composes original Richese/CHOAM and
+optional Ix Discovery setup, with original unused Tech3+/Advanced Strongholds.
+Live profile validation now retains this admitted composition. Existing
+Karama continuations accept entitled physical Truthtrance; original auction
+resumption retains that physical face rather than a printed-Karama flag.
+Existing clean Truthtrance disposal accepts committed Shrine-source Karama.
+Claim/pass preserves original effects, one recorded answer and post-revival
+Emperor timing, with no manufactured card or repeated effect.
+
+Eight new cases; affected six-file57/57. Eight controlled runtime paths and32
+legal policy probes pass. Two controlled390px actual-table journeys recover
+both faces; original Guild delivery pays bank3 for three forces and the
+reverse path retains one yes answer. Native setup precedes explicitly
+controlled Shrine placement/occupation/acquisition; this is not natural
+Discovery draw/entry or full-game evidence. No human server, D1, saved room,
+deployment or public start gate changed. Existing Skills/Homeworld/Nexus/E3
+and final-assurance boundaries remain.
+[Canonical source and proof](SEMUTA_SOURCE_UPDATE_20260907.md#shrine-physical-role-costs--16-october-2026).
+Final types/lint and actual private CLI help pass. Current source links and55
+Semuta evidence paths resolve; no production build or broad assurance run.
+
 ## 16 October 2026 — Semuta retains native BG role, conversion and counter costs
 
 Added `bgKaramaCostDiscard` for the actual Worthless disposal before native

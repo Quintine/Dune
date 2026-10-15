@@ -23,10 +23,12 @@ export function discoveryModeSupported(game: FactionModuleProfile): boolean {
     (game.techTokens && game.players.length < 3) || game.expansions.length > 2 ||
     (game.strongholdCards && !game.advanced) || game.leaderSkills || game.nexusCards ||
     game.ecazTreachery ||
-    game.semutaPreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
+    game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview)
     return false;
+  if (game.semutaPreview && (game.homeworlds || !game.expansions.includes('choam') ||
+    !game.players.some(player => player.faction === 'richese'))) return false;
   const e3 = game.expansions.length === 1 && game.expansions[0] === 'ecaz';
   for (let i = 0; i < game.expansions.length; i++) {
     const expansion = game.expansions[i];

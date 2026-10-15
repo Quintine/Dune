@@ -904,6 +904,13 @@ conversion was fabricated.
   authorizes Truthtrance as Karama or Karama as Truthtrance in the existing effect
   paths. Cards retain their physical identity and custody. A committed converted
   Truthtrance retains its use receipt through departure, answering and discard.
+  Fresh private `semuta --discoveries` setup now connects both physical-role
+  discards: recover used Truthtrance without replacing its original Karama
+  effect, or recover used Karama after one committed definite Truthtrance
+  answer. Original CHOAM/optional Ix setup, unused Tech3+/Advanced Strongholds
+  remain; Skills/Homeworlds/Nexus/E3 and public starts stay outside this entry.
+  [Scoped controlled proof](SEMUTA_SOURCE_UPDATE_20260907.md#shrine-physical-role-costs--16-october-2026)
+  is not natural draw/entry or complete-module acceptance.
   This does not implement missing special powers or resolve their pending rules.
 
 Great Maker vote/ride, Discovery token/discard, next-turn entry, station and carried

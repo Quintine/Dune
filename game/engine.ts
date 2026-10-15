@@ -5447,6 +5447,11 @@ function semutaEmperorShareKaramaResponse(g: Game, response: ResponseWindow): bo
     response.amount! > 0 && (response.elite === undefined || response.elite === 0 || response.elite === 1) &&
     !g.battle && !g.pendingShipment && !g.pendingGuildTransport;
 }
+/** Preserve physical identity: a Shrine authorizes the role, not a manufactured card. */
+function semutaKaramaRoleCost(g: Game, owner: string, card: Card): boolean {
+  return card.effect === 'karama' || (card.effect === 'truthtrance' &&
+    canUseAsKaramaRole(g, getPlayer(g, owner), card));
+}
 /** Original paid income sources; cancellation never reverses the completed transaction. */
 function semutaIncomeKaramaResponse(g: Game, response: ResponseWindow): boolean {
   if (g.battle || g.pendingShipment || g.pendingGuildTransport ||
@@ -5643,7 +5648,7 @@ function specialKaramaDiscardSignature(g: Game, c: SpecialKaramaDiscardContinuat
 function stageSpecialKaramaCost(
   g: Game, intent: SpecialKaramaIntent, card: Card, complete: boolean,
 ): boolean {
-  if (!g.semutaPreview || card.effect !== 'karama') return false;
+  if (!g.semutaPreview || !semutaKaramaRoleCost(g, intent.owner, card)) return false;
   return stageSpecialKaramaDiscard(g, intent,
     [{ card, discardedBy: intent.owner, publicFace: true }], complete ? 'complete' : 'effect');
 }
@@ -6090,15 +6095,17 @@ function tupileDiscardSignature(g: Game, c: TupileDiscardContinuation) {
   });
 }
 function treacheryDiscardIntegrity(g: Game) {
+  const discovery = g.discoveryEnabled === true && !!g.discoveries && discoveryModeSupported(g);
   requireRule(g.semutaPreview === undefined || g.semutaPreview === true &&
     g.expansions.includes('choam') && !!byFaction(g, 'richese') &&
     (!g.homeworlds || g.homeworldOccupationPreview === true && semutaHomeworldRoster(g)) &&
     (!g.nexusCards || semutaNexusProfile(g)) &&
-    (!g.leaderSkills || ordinaryLeaderSkillModeSupported(g)) && !g.discoveries &&
-    !g.discoveryEnabled && (!g.techTokens || (g.nexusCards
+    (!g.leaderSkills || ordinaryLeaderSkillModeSupported(g)) &&
+    ((!g.discoveries && !g.discoveryEnabled) || discovery) &&
+    (!g.techTokens || discovery || (g.nexusCards
       ? semutaNexusProfile(g) : g.leaderSkills
         ? nativeTechLeaderSkillsProfile(g) : nativeFactionTechProfile(g, true))) &&
-    (!g.strongholdCards || nativeStrongholdFactionRoster(g)),
+    (!g.strongholdCards || discovery || nativeStrongholdFactionRoster(g)),
   'This Semuta preview no longer matches its original Richese profile.');
   const pending = g.pendingTreacheryDiscard;
   const sequence = g.treacheryDiscardSequence ?? 0;
@@ -6487,7 +6494,7 @@ function treacheryDiscardIntegrity(g: Game) {
       batch.cause === `karama:${c.use.response.kind}` &&
       batch.entries.length === 1 &&
       entry.publicFace && entry.discardedBy === c.player &&
-      entry.card.id === c.card && entry.card.effect === 'karama' &&
+      entry.card.id === c.card && semutaKaramaRoleCost(g, c.player, entry.card) &&
       g.players.some(p => p.id === c.player) &&
       c.stateSignature === karamaResponseDiscardSignature(g, c),
       'The spent Karama no longer matches its suspended native cancellation.',
@@ -6529,7 +6536,7 @@ function treacheryDiscardIntegrity(g: Game) {
           batch.entries.every((entry, index) => !entry.publicFace && entry.discardedBy === c.player &&
             entry.card.id === cashout[index] && entry.card.id !== c.card)
         : batch.cause === `specialKarama:${c.intent.kind}` && batch.entries.length === 1 &&
-          entry.card.id === c.card && entry.card.effect === 'karama' &&
+          entry.card.id === c.card && semutaKaramaRoleCost(g, c.player, entry.card) &&
           entry.publicFace && entry.discardedBy === c.player) &&
       c.stateSignature === specialKaramaDiscardSignature(g, c),
       'The spent special Karama no longer matches its original native activation.',
@@ -6543,7 +6550,7 @@ function treacheryDiscardIntegrity(g: Game) {
       c.use.kind === 'shipment' && c.use.card === c.card &&
       batch.cause === 'karama:shipment' && batch.entries.length === 1 &&
       entry.publicFace && entry.discardedBy === c.player &&
-      entry.card.id === c.card && entry.card.effect === 'karama' &&
+      entry.card.id === c.card && semutaKaramaRoleCost(g, c.player, entry.card) &&
       g.players.some(p => p.id === c.player) &&
       c.stateSignature === karamaShipmentPriceDiscardSignature(g, c),
       'The spent Karama no longer matches its original shipment-price purchase.',
@@ -6559,7 +6566,7 @@ function treacheryDiscardIntegrity(g: Game) {
       batch.cause === (c.kind === 'karamaPaymentDiscard' ? 'karama:auctionPayment' : 'karama:purchase') &&
       batch.entries.length === 1 &&
       entry.publicFace && entry.discardedBy === c.player &&
-      entry.card.id === c.card && entry.card.effect === 'karama' &&
+      entry.card.id === c.card && semutaKaramaRoleCost(g, c.player, entry.card) &&
       g.players.some(p => p.id === c.player) &&
       c.stateSignature === karamaAuctionDiscardSignature(g, c),
       'The spent Karama no longer matches its reserved auction settlement.',
@@ -7402,7 +7409,7 @@ function semutaOfferSupported(
           !g.players.some(p => p.faction === 'ecaz' || p.faction === 'moritani') &&
           !g.pendingArrivalOverlap))) &&
     !(continuation.kind === 'truthtranceDiscard' &&
-      continuation.consumed.source === undefined &&
+      (continuation.consumed.source === undefined || continuation.consumed.source === 'shrine') &&
       (continuation.promise === null ||
         continuation.promise.kind === 'shipment' ||
         continuation.promise.kind === 'battle'))) return false;
@@ -7839,7 +7846,7 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
     const claimed = !g.discard.some(card => card.id === next.card);
-    completeKarama(g, getPlayer(g, next.player), next.use);
+    completeKarama(g, getPlayer(g, next.player), next.use, pending.batch.entries[0].card);
     if (claimed) g.karamaShipping!.costClaimed = true;
   } else if (next.kind === 'karamaCharityDiscard' ||
     next.kind === 'karamaInflationDiscard' ||
@@ -7858,7 +7865,7 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.phaseOpening = next.resume.phaseOpening;
     const use: KaramaUse = 'use' in next ? next.use :
       { kind: next.kind === 'karamaPurchaseDiscard' ? 'purchase' : 'auctionPayment' };
-    completeKarama(g, getPlayer(g, next.player), use);
+    completeKarama(g, getPlayer(g, next.player), use, pending.batch.entries[0].card);
   } else if (next.kind === 'amalDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -10501,12 +10508,16 @@ export function initializeSemutaGameForAudit(state: Game, skills = false): Game 
     (state.expansions.every(id => id === 'choam' || id === 'ix') || nativeTerror) &&
     state.players.some(p => p.faction === 'richese'),
   'Semuta needs a fresh Richese faction game: CHOAM with optional Ix and supported original modules/skills; separate exact-CHOAM Homeworld occupation has no other modules, while Basic Moritani uses CHOAM/Ecaz and classics without modules. Other overlays remain excluded.');
+  if (state.discoveryEnabled) requireRule(!nativeTerror && !skills && !state.homeworlds &&
+    !state.nexusCards && discoveryModuleProfile(state),
+  'Semuta Discovery keeps original Richese/CHOAM and optional Ix setup, without Skills, Homeworlds, Nexus or E3 overlays.');
   if (state.nexusCards) requireRule(!nativeTerror && !state.homeworlds &&
     !state.discoveryEnabled && !state.discoveries,
   'Semuta Nexus retains original E1/E2 rosters without Homeworlds, Discovery or E3.');
   if (state.homeworlds) requireRule(!skills && semutaHomeworldRoster(state),
     'Semuta Homeworlds require original Richese/CHOAM and classic factions, exact CHOAM, and no other modules.');
-  const g = state.homeworlds ? initializeHomeworldOccupationGameForAudit(state)
+  const g = state.discoveryEnabled ? initializeDiscoveryGameForAudit(state)
+    : state.homeworlds ? initializeHomeworldOccupationGameForAudit(state)
     : skills ? initializeLeaderSkillsGameForAudit(state)
     : state.nexusCards ? state.expansions.length === 1 && !!byFaction(state, 'choam')
       ? initializePairedNexusGameForAudit(state) : initializeNexusGameForAudit(state)
@@ -14490,11 +14501,12 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
   if (!kullOffered && beginKullAttempt(g, p, card, { kind: 'ordinary', use }, promiseProven)) return;
   if (use.kind === 'shipment') use = { ...use, card: card.id };
   const used = discard(g, p, card.id);
-  const guildShipmentDiscard = g.semutaPreview && card.effect === 'karama' &&
+  const semutaRoleCost = g.semutaPreview && semutaKaramaRoleCost(g, p.id, card);
+  const guildShipmentDiscard = semutaRoleCost &&
     use.kind === 'cancel' && semutaGuildShipmentKaramaResponse(g, use.response);
-  const bgConversionCancelDiscard = g.semutaPreview && card.effect === 'karama' &&
+  const bgConversionCancelDiscard = semutaRoleCost &&
     use.kind === 'cancel' && semutaBgConversionCancelResponse(g, use.response, g.pendingKarama);
-  if (g.semutaPreview && card.effect === 'karama' &&
+  if (semutaRoleCost &&
     use.kind === 'cancel' &&
     (use.response.kind === 'choamCharity' ||
       use.response.kind === 'choamInflation' ||
@@ -14531,7 +14543,7 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
       return;
     }
   }
-  if (g.semutaPreview && card.effect === 'karama' &&
+  if (semutaRoleCost &&
     (use.kind === 'purchase' || use.kind === 'auctionPayment')) {
     const continuation: KaramaAuctionDiscardContinuation = {
       kind: use.kind === 'purchase' ? 'karamaPurchaseDiscard' : 'karamaPaymentDiscard',
@@ -14547,7 +14559,7 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
       return;
     }
   }
-  if (g.semutaPreview && card.effect === 'karama' && use.kind === 'shipment') {
+  if (semutaRoleCost && use.kind === 'shipment') {
     const continuation: KaramaShipmentPriceDiscardContinuation = {
       kind: 'karamaShipmentPriceDiscard', player: p.id, card: used.id, use,
       resume: { response: g.response, decision: g.decision,

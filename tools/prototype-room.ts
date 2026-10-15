@@ -54,7 +54,7 @@ export type PrototypeOptions = {
   ecazTreachery?: boolean;
   /** Independent original Nexus composition with Skills or Semuta, not public activation. */
   nexusCards?: boolean;
-  /** Explicit classic Discovery/Skills composition, not a public activation. */
+  /** Explicit original Discovery composition with Skills, Nexus or Semuta; no public activation. */
   discoveries?: boolean;
   /** Explicit original skills with Semuta, classic occupation or Guild Betrayal. */
   leaderSkills?: boolean;
@@ -103,8 +103,8 @@ export function startPrototypeRoom(
     throw new Error('--ecaz-treachery requires the ecaz-occupy profile.');
   if (options.nexusCards && profile !== 'leader-skills' && profile !== 'semuta' && profile !== 'banker-income')
     throw new Error('--nexus-cards requires the leader-skills, banker-income or semuta profile.');
-  if (options.discoveries && profile !== 'leader-skills' && profile !== 'nexus')
-    throw new Error('--discoveries requires the leader-skills or nexus profile.');
+  if (options.discoveries && profile !== 'leader-skills' && profile !== 'nexus' && profile !== 'semuta')
+    throw new Error('--discoveries requires the leader-skills, nexus or semuta profile.');
   if (options.leaderSkills && profile !== 'semuta' && profile !== 'homeworld-occupation' && profile !== 'guild-betrayal')
     throw new Error('--leader-skills requires the semuta, homeworld-occupation or guild-betrayal profile.');
   if (options.homeworlds && profile !== 'semuta' && profile !== 'banker-income')

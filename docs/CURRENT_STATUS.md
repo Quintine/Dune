@@ -29,6 +29,24 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta connects both physical Shrine roles — 16 October.**
+Fresh private `semuta --discoveries` setup retains original Richese/CHOAM,
+optional Ix, unused Tech3+/Advanced Strongholds and original Discovery7/8.
+Truthtrance spent as Karama is recoverable before the same original effect;
+Karama spent as Truthtrance is recoverable after its single definite answer.
+Neither changes its printed face. Emperor revival does not repeat; original
+price provenance and normal-auction physical identity remain.
+
+Affected six-file57/57, eight controlled runtime paths and32 legal policy
+probes pass. Two controlled390px journeys recover both faces; actual Guild
+shipment then pays bank3 for three counters, while the reverse path retains
+one yes answer. Width/scroll390; no application/browser error after isolated
+host setup repair. No saved room, human server, D1, deployment or public gate
+changed. Skills/Homeworld/Nexus/E3 composition and final assurance remain
+separate. [Source and exact evidence](SEMUTA_SOURCE_UPDATE_20260907.md#shrine-physical-role-costs--16-october-2026).
+Final types/lint and private CLI help pass; current source links and55
+Semuta evidence paths resolve. No build or broad assurance run in this slice.
+
 **Semuta preserves native BG conversion and the separate counter cost — 16 October.**
 Physical Worthless recovery now precedes the same native conversion counter,
 not its effect. The card stays Worthless in its new faction. A later printed

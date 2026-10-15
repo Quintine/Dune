@@ -2,6 +2,54 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Shrine physical-role costs — 16 October 2026
+
+The private `semuta --discoveries` entry now composes original fresh Richese/
+CHOAM and optional Ix setup with Discovery's seven Spice Cards/eight tokens,
+Basic/Advanced2–6, optional unused Tech3+ and Advanced Strongholds. Skills,
+Homeworlds, Nexus and E3 overlays, played-save conversion and public starts
+remain excluded. Live admission uses the same Discovery roster contract.
+
+Existing [Shrine roles](DISCOVERY_PROTOTYPE.md#connected-behavior) and printed
+Semuta recovery compose without changing physical card identity. A current
+revealed-Shrine fighter may spend Truthtrance through the existing Karama
+price, cancellation, normal-auction purchase/payment and special-cost paths.
+The fresh cost retains that physical Truthtrance. Claim/pass resumes the
+original effect, not a BG conversion or a new source owned by the claimant.
+Native Emperor revival remains before its cost disposal and is never repeated.
+Auction continuation receives the committed physical card rather than
+manufacturing a printed-Karama flag.
+
+Conversely, Karama committed as Truthtrance retains its `source: shrine`
+receipt. Its completed definite answer now offers that physical Karama to
+Semuta under the existing clean Truthtrance continuation restrictions.
+Recovery does not ask again, append another answer or reclassify the card.
+This connects existing component rules; it claims no new publisher timing FAQ.
+
+Eight new behavior cases and the six-file affected union pass **57/57**.
+Eight runtime claim/pass paths and32 legal policy probes cover both roles,
+both modes and all four profiles. Fixtures use genuine ready/setup/first
+Movement, then **controlled Shrine placement, occupation and conserved hand
+acquisition**; auction/Revival tests explicitly stage their later clocks.
+These are not natural Discovery draw/entry or complete-game evidence.
+
+Two actual styled390×844 table journeys recover each physical face. The price
+journey then declares three Guild forces, uses its actual Allow shipment
+control and pays bank3: spice5→2, reserves15→12, Wind Pass14 gains3; the grant
+retires while Richese holds physical Truthtrance. The reverse journey keeps
+one yes answer while Richese holds physical Karama. Width/scroll390 and no
+browser/application errors after correcting isolated host setup. Only an
+owned memory-only loopback host ran; no human server, D1, saved room,
+deployment or public gate changed. Proof is outside Git:
+`/tmp/dune-shrine-runtime.json`, `/tmp/dune-shrine-ui-proof.json`.
+Full combinations, recovery/deployed assurance and all five Semuta facets
+remain Partial.
+Final `npm run check:quick` passes. The actual private CLI help runs and
+includes the new composition; five current source links and55 Semuta test
+evidence paths resolve. No production build, broad suite or HTTP assurance
+was run for this bounded rules slice.
+
+
 ## Native BG Worthless and conversion-counter costs — 16 October 2026
 
 `bgKaramaCostDiscard` offers the actual played **Worthless** before the native
