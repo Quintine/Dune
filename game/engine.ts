@@ -1111,6 +1111,7 @@ type KaramaUse =
 type PendingHomeworldShipment = HomeworldShipmentIntent & {
   guildSecretEvent?: string;
   guildNexusEvent?: string;
+  guildRateEvent?: string;
   /** Absent in older world-to-world declarations. */
   route?: 'arrakis';
   event: string;
@@ -8412,9 +8413,13 @@ function leaderSkillsIntegrity(g: Game) {
   }
   if (!noFieldShipment && (g.leaderSkills || g.pendingShipment?.smuggler)) {
     const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'guildShipment');
-    requireRule(decisions.length === (g.pendingShipment ? 1 : 0),
-      'The saved Leader Skills shipment lost its unique Guild interception decision.');
+    const rates = g.pendingShipment?.guildRateEvent
+      ? savedNoFieldResponses(g).filter(response => response.kind === 'guildRate' &&
+        response.guildRateEvent === g.pendingShipment!.guildRateEvent) : [];
+    requireRule(decisions.length + rates.length === (g.pendingShipment ? 1 : 0),
+      'The saved Leader Skills shipment lost its unique Guild interception or rate response.');
     for (const decision of decisions) validateGuildShipmentDecision(g, decision);
+    for (const rate of rates) validateGuildRateResponse(g, rate);
   }
   if (!g.leaderSkills) return;
   requireRule(g.leaderSkills.assignments.every((assignment) =>
@@ -9993,6 +9998,9 @@ function decideGuildBetrayal(g: Game, p: Player, action: Action): void {
       continuation.transport, settlement); break;
   }
   requireRule(getPlayer(g, frame.invoice.shipper).shipped, 'The funded native shipment did not complete.');
+  if (g.guildRateBlocked?.turn === g.turn &&
+    g.guildRateBlocked.player === frame.invoice.shipper)
+    delete g.guildRateBlocked;
   const sourceReceipt = nexusGuildBetrayalSourceReceipt(frame.invoice);
   const receipt = nexusRule(() => createGuildBetrayalReceipt({turn: g.turn, players: g.players},
     frame.invoice, {recipient: settlement.recipient, holderFaction: use ? p.faction : null,
@@ -14444,7 +14452,7 @@ function finishAutomaticDecision(g: Game): boolean {
   if (homeworldShipmentAutomatic(g)) {
     const shipment = g.pendingHomeworldShipment!;
     g.decision = null;
-    commitHomeworldShipment(g, shipment);
+    if (!openHomeworldGuildRate(g, shipment)) commitHomeworldShipment(g, shipment);
     return true;
   }
   const market = g.choamMarket;
@@ -24813,6 +24821,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
   if (response.kind === 'nexusGuildCunning') validateGuildCunningResponse(g,response);
   if (response.kind === 'guildRate') {
     if (g.pendingGuildTransport) validateGuildTransportRateResponse(g, response);
+    else if (g.pendingHomeworldShipment?.guildRateEvent) validateHomeworldGuildRateResponse(g, response);
     else validateGuildRateResponse(g, response);
   }
   if (response.kind === 'moritaniPlacement') {
@@ -24887,6 +24896,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
   }
   if (response.kind === 'guildRate') {
     if (g.pendingGuildTransport) finishGuildTransportRateResponse(g, response, canceled);
+    else if (g.pendingHomeworldShipment?.guildRateEvent) finishHomeworldGuildRateResponse(g, response, canceled);
     else finishGuildRateResponse(g, response, canceled);
     return;
   }
@@ -26141,6 +26151,8 @@ function homeworldShipmentQuote(g: Game, intent: HomeworldShipmentIntent & {rout
   requireRule(g.homeworlds?.custody, 'Homeworld shipment requires saved physical custody.');
   const context = {
     ...homeworldContext(g),
+    nativeGuildRateCanceled: g.guildRateBlocked?.turn === g.turn &&
+      g.guildRateBlocked.player === intent.player,
     players: homeworldContext(g).players.map((seat) => ({...seat, ally: getPlayer(g, seat.id).ally})),
   };
   const order = {player: intent.player, destination: intent.destination, sources: intent.sources};
@@ -26184,6 +26196,13 @@ function homeworldShipmentIntegrity(g: Game) {
   const decisions = homeworldSavedDecisions(g).filter((d) => d.kind === 'homeworldShipmentGuild');
   const shipment = g.pendingHomeworldShipment;
   if (!shipment && !decisions.length) return;
+  if (shipment?.guildRateEvent) {
+    const responses = savedNoFieldResponses(g).filter(response => response.kind === 'guildRate');
+    requireRule(!decisions.length && responses.length === 1 && !g.pendingShipment,
+      'The saved Homeworld rate declaration lost its single response.');
+    validateHomeworldGuildRateResponse(g, responses[0]);
+    return;
+  }
   requireRule(shipment && decisions.length > 0 && !g.pendingShipment,
     'The saved Homeworld shipment needs its original Guild decision.');
   validateHomeworldShipment(g, shipment);
@@ -26243,7 +26262,78 @@ function declareHomeworldShipment(g: Game, p: Player, intent: HomeworldShipmentI
     g.decision = {kind: 'homeworldShipmentGuild', player: guild.id, shipper: p.id,
       destination: intent.destination, amount: quote.amount, event: shipment.event};
     log(g, `${p.name} declared ${quote.amount} physical forces for ${combatLocationName(g, intent.destination)}. Payment and departure await the Guild interception decision.`);
-  } else commitHomeworldShipment(g, shipment);
+  } else if (!openHomeworldGuildRate(g, shipment)) commitHomeworldShipment(g, shipment);
+}
+function homeworldGuildRateFullCost(g: Game, shipment: PendingHomeworldShipment): number | null {
+  const p = getPlayer(g, shipment.player);
+  if (p.faction !== 'guild' || shipment.guildSecretEvent ||
+    g.karamaShipping?.player === p.id ||
+    (g.guildRateBlocked?.turn === g.turn && g.guildRateBlocked.player === p.id))
+    return null;
+  return shipment.cost === Math.ceil(shipment.amount / 2) && shipment.cost < shipment.amount
+    ? shipment.amount : null;
+}
+function openHomeworldGuildRate(g: Game, shipment: PendingHomeworldShipment): boolean {
+  const fullCost = homeworldGuildRateFullCost(g, shipment);
+  if (fullCost === null) return false;
+  validateHomeworldShipment(g, shipment);
+  // The Homeworld validator already authenticated this exact Cunning frame.
+  const cunning = shipment.guildNexusEvent
+    ? currentGuildCunning(g, shipment.player) as ReturnType<typeof validateGuildCunningShipment>
+    : null;
+  const event = crypto.randomUUID();
+  shipment.guildRateEvent = event;
+  if (cunning) {
+    cunning.shipment!.frame = JSON.stringify(shipment);
+    saveGuildCunning(g, cunning);
+  }
+  g.pendingHomeworldShipment = shipment;
+  g.response = { kind: 'guildRate', owner: shipment.player, passed: [], guildRateEvent: event,
+    intent: `${getPlayer(g, shipment.player).name} declared ${shipment.amount} physical forces to ${combatLocationName(g, shipment.destination)} at the native Guild rate of ${shipment.cost} spice. Karama removes only this faction discount, not Junction permission or another Homeworld benefit. The exact typed source and approved payment split must cover the full ${fullCost}; otherwise the declaration returns unused and a replacement this turn uses full price.` };
+  log(g, 'Native Guild Homeworld shipment waits for its rate response before payment or physical departure.');
+  return true;
+}
+function validateHomeworldGuildRateResponse(g: Game, response: ResponseWindow) {
+  const shipment = g.pendingHomeworldShipment;
+  const fullCost = shipment ? homeworldGuildRateFullCost(g, shipment) : null;
+  requireRule(response.kind === 'guildRate' && shipment && fullCost !== null &&
+    response.owner === shipment.player && typeof shipment.guildRateEvent === 'string' &&
+    shipment.guildRateEvent.length > 0 && response.guildRateEvent === shipment.guildRateEvent,
+    'The saved native Homeworld rate lost its original declaration.');
+  validateHomeworldShipment(g, shipment);
+  return { shipment, fullCost };
+}
+function finishHomeworldGuildRateResponse(g: Game, response: ResponseWindow, canceled: boolean) {
+  const { shipment, fullCost } = validateHomeworldGuildRateResponse(g, response);
+  const p = getPlayer(g, shipment.player);
+  // The rate validator already authenticated this exact Cunning frame.
+  const cunning = shipment.guildNexusEvent
+    ? currentGuildCunning(g, p.id) as ReturnType<typeof validateGuildCunningShipment>
+    : null;
+  g.pendingHomeworldShipment = null;
+  delete shipment.guildRateEvent;
+  if (canceled) {
+    g.guildRateBlocked = { turn: g.turn, player: p.id };
+    const bounds = shipmentPaymentBounds(fullCost, p.spice, aidFor(g, p)?.amount ?? 0);
+    if (shipment.allyPayment < bounds.minimum || shipment.allyPayment > bounds.maximum) {
+      if (cunning) {
+        delete cunning.shipment;
+        saveGuildCunning(g, cunning);
+      }
+      log(g, `Karama removed the native Guild discount. ${p.name}'s original Homeworld payment split cannot fund full price; no spice or typed forces moved. A replacement this turn uses full price.`);
+      return;
+    }
+    shipment.cost = fullCost;
+  }
+  if (cunning) {
+    cunning.shipment!.frame = JSON.stringify(shipment);
+    saveGuildCunning(g, cunning);
+  }
+  commitHomeworldShipment(g, shipment);
+  if (canceled && !g.pendingGuildBetrayal) {
+    delete g.guildRateBlocked;
+    log(g, `${p.name} paid the full ${fullCost} spice for the unchanged native Homeworld shipment.`);
+  }
 }
 function noFieldSkillProof(shipment: PendingShipment): string {
   return JSON.stringify({ ...shipment, noFieldSkillProof: undefined });
@@ -26327,7 +26417,8 @@ function leaderSkillNoFieldIntegrity(g: Game): boolean {
   else validateLeaderSkillNoFieldShipment(g, shipment);
   const initial = responses.filter(r => r.kind === 'richeseNoField');
   const guild = decisions.filter(d => d.kind === 'guildShipment');
-  requireRule(initial.length + guild.length === 1 &&
+  const rates = responses.filter(r => r.kind === 'guildRate');
+  requireRule(initial.length + guild.length + rates.length === 1 &&
     responses.every(r => r.noFieldSkillProof === undefined || r.kind === 'richeseNoField') &&
     decisions.every(d => !('noFieldSkillProof' in d) || d.kind === 'guildShipment'),
     'The saved No-Field shipment lost its unique cancellation response or Guild decision.');
@@ -26335,6 +26426,7 @@ function leaderSkillNoFieldIntegrity(g: Game): boolean {
     response.noFieldSkillProof === shipment.noFieldSkillProof,
     'The No-Field response changed its original declaration.');
   for (const decision of guild) validateGuildShipmentDecision(g, decision);
+  for (const rate of rates) validateGuildRateResponse(g, rate);
   return true;
 }
 function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
@@ -26484,24 +26576,20 @@ const CLASSIC_FACTIONS: Partial<Record<FactionId, true>> = {
 };
 
 /** The independent Karama rate is a card benefit, not Guild's cancelable rate. */
-function guildRateModeSupported(g: Game): boolean {
-  return !g.homeworlds && !g.leaderSkills && !g.discoveryEnabled &&
-    !g.techTokens && !g.strongholdCards;
-}
 function ordinaryGuildRateFullCost(g: Game, shipment: PendingShipment): number | null {
   const guild = byFaction(g, 'guild');
   const p = getPlayer(g, shipment.player);
   if (!guild || (p.id !== guild.id && !(p.ally === guild.id && guild.ally === p.id)) ||
-      !guildRateModeSupported(g) ||
       g.karamaShipping?.player === p.id ||
       (g.guildRateBlocked?.turn === g.turn && g.guildRateBlocked.player === p.id) ||
-      shipment.source || shipment.noField || shipment.alliedNoField ||
-      shipment.smuggler || shipment.smugglerCompanion || shipment.guildSecretEvent ||
+      shipment.source || shipment.alliedNoField || shipment.guildSecretEvent ||
       shipment.nexusEvent || shipment.richesePair)
     return null;
   const fullCost = reserveShipmentCost({ faction: p.faction, halfRate: false },
-    territory(shipment.territory).type, shipment.amount);
-  return shipment.cost < fullCost ? fullCost : null;
+    territory(shipment.territory).type, shipment.amount - (shipment.smuggler ? 1 : 0));
+  const halfCost = reserveShipmentCost({ faction: p.faction, halfRate: true },
+    territory(shipment.territory).type, shipment.amount - (shipment.smuggler ? 1 : 0));
+  return shipment.cost === halfCost && shipment.cost < fullCost ? fullCost : null;
 }
 function openGuildRate(g: Game, shipment: PendingShipment): boolean {
   const fullCost = ordinaryGuildRateFullCost(g, shipment);
@@ -26513,6 +26601,8 @@ function openGuildRate(g: Game, shipment: PendingShipment): boolean {
   shipment.turn ??= g.turn;
   const event = crypto.randomUUID();
   shipment.guildRateEvent = event;
+  if (shipment.noFieldSkillProof !== undefined)
+    shipment.noFieldSkillProof = noFieldSkillProof(shipment);
   if (cunning) {
     cunning.shipment!.frame = JSON.stringify(shipment);
     saveGuildCunning(g, cunning);
@@ -26523,7 +26613,7 @@ function openGuildRate(g: Game, shipment: PendingShipment): boolean {
     owner: byFaction(g, 'guild')!.id,
     passed: [],
     guildRateEvent: event,
-    intent: `${getPlayer(g, shipment.player).name} declared ${shipment.amount} reserve forces to ${territory(shipment.territory).name} at the Guild rate of ${shipment.cost} spice. Karama can remove this discount before any payment or arrival. The original forces would cost ${fullCost} at full price; if the original authorized split cannot pay that amount, the declaration returns unused and a replacement this turn uses full price.`,
+    intent: `${getPlayer(g, shipment.player).name} declared ${shipment.noField ? 'one concealed No-Field' : `${shipment.amount} reserve forces`}${shipment.smugglerCompanion ? ' with one free Smuggler companion' : shipment.smuggler ? ' including one free Smuggler companion' : ''} to ${territory(shipment.territory).name} at the Guild rate of ${shipment.cost} spice. Karama can remove this discount before any payment or arrival, but does not remove the independent free companion. The same paid units would cost ${fullCost} at full price; if the original authorized split cannot pay that amount, the declaration returns unused and a replacement this turn uses full price.`,
   };
   log(g, `${getPlayer(g, shipment.player).name} declared a Guild-rate reserve shipment; payment and arrival wait for the rate response.`);
   return true;
@@ -26540,18 +26630,19 @@ function validateGuildRateResponse(g: Game, response: ResponseWindow) {
     response.guildRateEvent === shipment.guildRateEvent &&
     shipment.turn === g.turn && fullCost !== null &&
     shipment.cost === reserveShipmentCost({ faction: p.faction, halfRate: true },
-      territory(shipment.territory).type, shipment.amount),
+      territory(shipment.territory).type, shipment.amount - (shipment.smuggler ? 1 : 0)),
     'The saved Guild-rate response lost its original physical shipment.');
   return { shipment, fullCost };
 }
 function guildRateIntegrity(g: Game) {
   const responses = savedNoFieldResponses(g).filter(response => response.kind === 'guildRate');
   const expected = Number(!!g.pendingShipment?.guildRateEvent) +
-    Number(!!g.pendingGuildTransport);
+    Number(!!g.pendingGuildTransport) + Number(!!g.pendingHomeworldShipment?.guildRateEvent);
   requireRule(expected <= 1 && responses.length === expected,
     'The saved Guild-rate shipment lost its single Karama response.');
   if (responses.length) {
     if (g.pendingGuildTransport) validateGuildTransportRateResponse(g, responses[0]);
+    else if (g.pendingHomeworldShipment?.guildRateEvent) validateHomeworldGuildRateResponse(g, responses[0]);
     else validateGuildRateResponse(g, responses[0]);
   }
   const blocked = g.guildRateBlocked;
@@ -26582,12 +26673,14 @@ function finishGuildRateResponse(g: Game, response: ResponseWindow, canceled: bo
     shipment.cost = fullCost;
     checkShipmentIncomeFunding(g, shipper, fullCost, shipment.allyPayment);
   }
+  if (shipment.noFieldSkillProof !== undefined)
+    shipment.noFieldSkillProof = noFieldSkillProof(shipment);
   if (cunning) {
     cunning.shipment!.frame = JSON.stringify(shipment);
     saveGuildCunning(g, cunning);
   }
   commitShipment(g, shipment);
-  if (canceled) {
+  if (canceled && !g.pendingGuildBetrayal) {
     delete g.guildRateBlocked;
     log(g, `Karama removed Guild's half-price rate. ${shipper.name} paid the full ${fullCost} spice for the unchanged shipment.`);
   }
@@ -26599,7 +26692,7 @@ function guildTransportSignature(intent: PendingGuildTransport): string {
 }
 function ordinaryGuildTransportFullCost(g: Game, p: Player, frame: GuildTransportOrder): number | null {
   const guild = byFaction(g, 'guild');
-  if (!guild || !guildRateModeSupported(g) ||
+  if (!guild ||
       (p.id !== guild.id && !(p.ally === guild.id && guild.ally === p.id)) ||
       g.karamaShipping?.player === p.id ||
       (g.guildRateBlocked?.turn === g.turn && g.guildRateBlocked.player === p.id))
@@ -26796,7 +26889,7 @@ function finishGuildTransportRateResponse(g: Game, response: ResponseWindow, can
     return;
   }
   commitGuildTransport(g, shipper, frame, intent.fromReserves);
-  if (canceled) {
+  if (canceled && !g.pendingGuildBetrayal) {
     delete g.guildRateBlocked;
     log(g, `Karama removed Guild's half-price transport rate. ${shipper.name} paid the full ${fullCost} spice for the unchanged physical transport.`);
   }
@@ -30835,7 +30928,7 @@ function applyActionInner(
         decision.event === shipment.event && decision.shipper === shipment.player &&
         decision.destination === shipment.destination && decision.amount === shipment.amount,
         'The Guild decision no longer matches this Homeworld shipment.');
-      commitHomeworldShipment(g, shipment);
+      if (!openHomeworldGuildRate(g, shipment)) commitHomeworldShipment(g, shipment);
     } else if (decision.kind === 'guildShipment') {
       requireRule(
         action.allow === true,

@@ -137,6 +137,7 @@ const cancellationSources = {
   guildRate: (g) => ({
     pending: g.pendingShipment ?? null,
     ...(g.pendingGuildTransport ? { transport: g.pendingGuildTransport } : {}),
+    ...(g.pendingHomeworldShipment ? { homeworld: g.pendingHomeworldShipment } : {}),
     active: g.active,
     discountedRateBlocked: g.guildRateBlocked ?? null,
     purchasedRate: g.karamaShipping ?? null,

@@ -68,6 +68,7 @@ export function guildHomeworldShipmentChoice(
     const quote = quoteGuildHomeworldShipment(
       {
         advanced: view.advanced,
+        nativeGuildRateCanceled: view.guildRateCanceled,
         storm: view.storm,
         mobileStronghold: view.mobileStronghold?.location ?? null,
         discoveries: view.discoveries,
@@ -225,7 +226,7 @@ export function guildHomeworldShipmentActions(
             );
       const amount = Math.min(
         total - retain,
-        budget * 2,
+        budget * (view.guildRateCanceled ? 1 : 2),
         [3, 5, 7, 9][difficulty],
         desired,
       );

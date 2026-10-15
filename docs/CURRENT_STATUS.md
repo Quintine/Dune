@@ -29,6 +29,27 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Native rate price sources, modules and typed Homeworlds — 15 October.**
+Original price receipts replace blanket module exclusions. Smuggler's free
+companion remains free; own No-Field bills one concealed marker, never its
+hidden value. Native typed world/cross/return and Cunning Homeworld receipts
+retain exact sources, original approved split and prepayment rate control,
+including after automatic Guild interception. Immune Junction and independent
+Nexus prices stay separate. Deferred Betrayal keeps full-price authority
+until actual physical settlement, without replay or false early payment.
+
+Affected18-file198/198 and21 runtime/policy paths pass:17 original-action,
+four explicitly controlled Cunning/No-Field. Four actual390px journeys prove
+composed Smuggler, native return, poor world replacement and controlled
+No-Field reveal; no overflow/browser errors. Original ground movement and
+out-of-order turn resume. Donor escrow is consumed without another wallet debit.
+All four native Homeworld policies pass here; no calibration claim.
+Allied No-Field/special receipts, ordinary permission cancellation, complete
+combinations, assurance and public starts remain open.
+[Canonical source composition and evidence](GUILD_RATE_KARAMA_RULES.md#native-price-source-composition--15-october-2026).
+Final types/lint/build pass with existing warnings; a separate controlled
+Betrayal runtime also completes full3 Use. Current links/evidence resolve.
+
 **Native Guild rate cancellation, including Cunning — 15 October.**
 Expansion/Nexus rosters now retain the prepayment native rate window for
 reserve/cross/return declarations. Original physical group, tariff and approved

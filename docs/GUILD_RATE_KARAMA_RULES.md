@@ -2,6 +2,53 @@
 
 Initial primary-source and engine audit, 2026-09-06. The bounded ordinary-reserve cancellation policy below was selected on 2026-09-28 after a targeted publisher-source search found no affordability procedure; the later original audit remains historical evidence for unfinished transport and module combinations.
 
+## Native price-source composition — 15 October 2026
+
+Native rate eligibility is now determined by the original price/source,
+not global Homeworld/Skills/Discovery/Tech/Stronghold exclusions. Original
+module setup remains intact. A Smuggler ordinary shipment reprices only its
+paid counters; one independently free companion stays free. An own concealed
+No-Field prices one marker, never its hidden value, with any free companion
+still independent. Its existing private proof follows only authenticated
+rate-event and price transitions.
+
+Native Guild world-to-world, Arrakis-to-foreign-world and return-to-Junction
+declarations retain exact typed sources and approved funding. Original manual
+or automatic Guild interception precedes the separate native rate window.
+The canonical quote/context and both actual owner controls honor the canceled
+native tariff. Cunning Homeworld receipts retain their original second
+allowance through allow/cancel or uncommitted release and replacement.
+
+**No immunity or alternate price is canceled by analogy.** Junction-sponsored
+half/full transport keeps its printed Homeworld tariff despite an active
+native cancellation; non-Guild world-to-world remains full price and the
+independent Guild Secret Ally price remains separate. Allied No-Field,
+paired/special price receipts and transport-permission cancellation retain
+their own unfinished boundaries; this is not universal route acceptance.
+
+Guild Betrayal may defer actual payment after a rate cancellation. The
+full-price authorization now remains until its original physical invoice
+settles; it is not cleared when merely queued. Six controlled source cases
+exercise reserve/cross/Homeworld Use or Pass at the full fee without replay.
+Native Skills/No-Field integrity accepts one original rate response as well
+as the preceding cancellation/interception stages. The shared quiet fixture
+also supplies the real Ambassador event when declining; no legality is bypassed.
+
+Affected18-file **198/198**, including32 new source cases, and **21 runtime/
+policy paths** pass. Seventeen runtime paths use original actions; four use
+explicitly controlled Cunning/No-Field sources. All four owner policies
+pass the original native Homeworld rate here; strategy is not calibrated.
+Four actual styled390px journeys prove composed Smuggler shipping, native
+typed return, unaffordable world-to-world replacement and controlled No-Field
+reveal. Payment/transfer once, original movement/turn resumes; no overflow/
+browser errors. Donor escrow was paid when pledged, not debited again.
+No saved/deployed rooms, comprehensive assurance or public gates changed.
+This supersedes the earlier blanket module exclusions below, not the
+standing provisional affordability/return policy or remaining source limits.
+Final types/lint/build pass with existing deprecation/chunk/Unknown-route
+warnings. A separate controlled runtime also settles the original deferred
+Betrayal full3 invoice through actual Use. Current links/evidence resolve.
+
 ## Native expansion and Nexus admission — 15 October 2026
 
 The native prepayment rate window now admits expansion factions and Nexus

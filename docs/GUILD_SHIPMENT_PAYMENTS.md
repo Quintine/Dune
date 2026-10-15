@@ -9,7 +9,7 @@ reserve, cross-planet and Guild-return declarations, including Cunning's
 original second allowance. Affordable full repricing and unaffordable return/
 full-price replacement retain original sources and approved funding.
 Three actual390px journeys prove these controls; income remains distinct.
-[Canonical source, evidence and remaining physical-module gates](GUILD_RATE_KARAMA_RULES.md#native-expansion-and-nexus-admission--15-october-2026).
+[Canonical source, evidence and remaining source-specific boundaries](GUILD_RATE_KARAMA_RULES.md#native-price-source-composition--15-october-2026).
 
 ## Native direct transport continuation — 15 October 2026
 

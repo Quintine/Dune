@@ -63,8 +63,10 @@ export function GuildHomeworldShipment({
         territory. Allied Homeworlds cannot be destinations.
       </p>
       <p className="fine">
-        Pay one spice per two forces, rounded up. This uses your shipment; your
-        normal movement remains available.
+        {g.guildRateCanceled
+          ? 'The native Guild rate is canceled: pay one spice per force.'
+          : 'Pay one spice per two forces, rounded up.'}{' '}
+        This uses your shipment; your normal movement remains available.
       </p>
       {option.blocked && (
         <output className="notice block">{option.blocked}</output>

@@ -33,6 +33,7 @@ export interface PairedE3NexusOptions {
   roster?: readonly FactionId[];
   advanced?: boolean;
   skills?: boolean;
+  training?: Partial<Record<FactionId, LeaderSkillId>>;
   homeworlds?: boolean;
   discovery?: boolean;
   tech?: boolean;
@@ -98,7 +99,9 @@ export function advancePairedE3Nexus(g: Game, until: (g: Game) => boolean,
  * available. Battle choices are not supplied by this traversal. */
 export function quietPairedE3NexusChoice(g: Game): PairedE3NexusStep | null {
   const d = g.decision; if (!d || g.response || g.phaseOpening) return null;
-  if (['moritaniPlacement', 'ecazPlacement', 'ecazAmbassador', 'moritaniAssassinate',
+  if (d.kind === 'ecazAmbassador') return { actor: d.player,
+    action: { type: 'decision', event: g.pendingAmbassador!.event, decline: true } };
+  if (['moritaniPlacement', 'ecazPlacement', 'moritaniAssassinate',
     'homeworldRevivalDeployment'].includes(d.kind))
     return { actor: d.player, action: { type: 'decision', decline: true,
       ...('event' in d ? { event: d.event } : {}) } };
@@ -135,11 +138,11 @@ function lottery<T>(rolls: readonly number[], operation: () => T): T {
     else Reflect.deleteProperty(crypto, 'getRandomValues');
   }
 }
-function selectedSkills(g: Game): LeaderSkillId[] {
+function selectedSkills(g: Game, training?: PairedE3NexusOptions['training']): LeaderSkillId[] {
   const preferred: Partial<Record<FactionId, LeaderSkillId>> = { ecaz: 'warmaster', moritani: 'master-of-assassins',
     guild: 'suk-graduate', emperor: 'swordmaster-of-ginaz', atreides: 'bureaucrat',
     fremen: 'killer-medic', beneGesserit: 'prana-bindu-adept', harkonnen: 'smuggler' };
-  return g.players.map(p => preferred[p.faction]!);
+  return g.players.map(p => training?.[p.faction] ?? preferred[p.faction]!);
 }
 function traitorRolls(g: Game, faction: 'guild' | 'ecaz' = 'guild'): number[] {
   const original = traitorDeck(g.players), loyal = g.advanced ? chooseEcazLoyalty(original, 0xffffffff / 0x100000000) : null;
@@ -182,7 +185,7 @@ export function createPairedE3NexusSetup(options: PairedE3NexusOptions = {}): Pa
     for (const p of g.players) if (!p.ready) g = stepPairedE3Nexus(g, { actor: p.id, action: { type: 'ready' } }, actions);
     if (options.initial) g = skills ? initializeLeaderSkillsGameForAudit(g) : initializePairedNexusGameForAudit(g);
     else {
-      const sourceSkills = LEADER_SKILL_CARDS.map(c => c.id), selected = selectedSkills(g);
+      const sourceSkills = LEADER_SKILL_CARDS.map(c => c.id), selected = selectedSkills(g, options.training);
       const rest = sourceSkills.filter(c => !selected.includes(c));
       const skillOrder = selected.flatMap(c => [c, rest.shift()!]).concat(rest);
       const cards = treacheryDeck(['ecaz']), remaining = [...cards];
@@ -203,7 +206,7 @@ export function createPairedE3NexusSetup(options: PairedE3NexusOptions = {}): Pa
   assert.equal(!!g.leaderSkills, skills); assert.equal(!!g.discoveries, discovery);
   for (const [type, enabled] of Object.entries(modules)) assert.equal(!!g[type as keyof typeof modules], enabled);
   assert.ok(g.nexusCards?.cards);
-  const offered = pairedE3NexusReload(g), selected = selectedSkills(g);
+  const offered = pairedE3NexusReload(g), selected = selectedSkills(g, options.training);
   for (let n = 0; g.status === 'setup' && n < 300; n++) {
     let next: PairedE3NexusStep;
     if (g.setupStage === 'leaderSkills') {

@@ -2,6 +2,18 @@
 
 This checkpoint follows the [Guild source contract](NEXUS_GUILD_RULES.md): native Guild can spend Cunning when finishing its ordinary Shipment and Movement turn to obtain one second shipment. It preserves one combined turn and the actual history of the first shipment and movement. It does not implement Guild Secret Ally, Betrayal or complete Nexus play.
 
+## Typed Homeworld and module rate composition — 15 October 2026
+
+The later native composition removes the blanket physical-module rate
+exclusions and connects Cunning's typed Homeworld second shipment.
+Its exact pending world frame binds the rate event and final price; unaffordable
+release clears only that uncommitted frame and retains the full-price second
+attempt. Original shipped history, first payment and movement never reopen.
+Three controlled Homeworld allow/cancel/unaffordable cases and matching
+runtime paths use the older explicitly staged final-setup fixture; they are
+not represented as an original action-only chronology.
+[Current native composition, source separation and proof](GUILD_RATE_KARAMA_RULES.md#native-price-source-composition--15-october-2026).
+
 ## Native rate response integration — 15 October 2026
 
 Without Homeworlds, Skills, Discovery, Tech or Strongholds, the second native

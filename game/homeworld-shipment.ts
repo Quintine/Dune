@@ -13,6 +13,8 @@ export type HomeworldShipmentContext = Omit<
   'players'
 > & {
   players: (HomeworldReserveSeat & { ally: string | null })[];
+  /** Only the native Guild faction rate; independent transport grants survive. */
+  nativeGuildRateCanceled?: boolean;
 };
 export type HomeworldShipmentIntent = {
   player: string;
@@ -34,7 +36,9 @@ function requireShipment(
  * Guild may also return a foreign garrison to its own world; other own-world
  * exceptions need separately established permission. The caller owns timing, usage,
  * funding, bank payment, responses and arrival effects. Guild's E3 half rate
- * applies to its own shipment; an alliance alone does not grant that rate. */
+ * applies to its own shipment unless its native rate is canceled; an alliance
+ * alone does not grant that rate. Independent transport prices belong to their
+ * own grant, not this native cancellation flag. */
 export function quoteHomeworldShipment(
   context: HomeworldShipmentContext,
   custody: HomeworldCustody,
@@ -128,7 +132,10 @@ export function quoteHomeworldShipment(
     ...transferred,
     amount,
     elite,
-    cost: player.faction === 'guild' ? Math.ceil(amount / 2) : amount,
+    cost:
+      player.faction === 'guild' && !context.nativeGuildRateCanceled
+        ? Math.ceil(amount / 2)
+        : amount,
     sources: transferred.receipts.filter((r) => r.homeworld !== destination.id),
   };
 }

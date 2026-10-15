@@ -79,7 +79,9 @@ export function HomeworldShipment({
         {useNexus
           ? 'Selected Guild Nexus price: one spice per two forces, rounded up.'
           : me.faction === 'guild'
-            ? 'Guild pays one spice per two forces, rounded up.'
+            ? g.guildRateCanceled
+              ? 'The native Guild rate is canceled: pay one spice per force.'
+              : 'Guild pays one spice per two forces, rounded up.'
             : 'Pay one spice per force.'}{' '}
         This uses your shipment; your normal movement remains available.
       </p>

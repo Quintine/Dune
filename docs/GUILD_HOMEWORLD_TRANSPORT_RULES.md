@@ -2,6 +2,29 @@
 
 9 September 2026. Fresh primary-source audit for the next transport integration. This supplements [the transport source update](HOMEWORLD_TRANSPORT_SOURCE_UPDATE.md); it does not resolve the already recorded Junction payment, foreign-garrison departure, or ordinary Karama timing questions.
 
+## Native rate cancellation runtime — 15 October 2026
+
+Original native Guild world-to-world, Arrakis-to-foreign-world and Junction
+return now pause for their separate prepayment rate response after original
+manual/automatic interception. Both canonical typed quotes and owner controls
+charge full one-per-counter only when the native rate is canceled. Exact
+source pools, approved ally split and original allowance persist; unaffordable
+release preserves a full-price replacement without debt or extra donor funds.
+
+Junction-sponsored transport is still an immune Homeworld source, not this
+native faction discount. Actual original half/full offers remain2/3 for three
+counters after native cancellation. Cunning's typed second shipment keeps its
+original history and frame through the same rate stages. Deferred Betrayal
+retains full-price authority until actual settlement, not merely queueing.
+
+Actual390px typed return selects Tuek5 source3 and approved donor1:
+Guild pays own2 at full3, receives its existing donor income1, ends7→6
+with Junction15→18 and Tuek5→2; donor wallet stays11 while escrow1→0.
+A poor original world shipment leaves Guild1/Junction15/escrow1 unchanged
+after cancellation, shows disabled full3, then ships two for full2 with the
+same split and ends Guild1/Junction13/foreign2. No overflow/browser errors.
+[Canonical198-case/runtime evidence and remaining source boundaries](GUILD_RATE_KARAMA_RULES.md#native-price-source-composition--15-october-2026).
+
 ## Route and custody contract
 
 E3 permits Guild shipment from Arrakis to a Homeworld and classifies it as cross-shipment. Guild can return to its own Junction or invade another native faction's world; an allied destination is forbidden. Guild's ordinary alliance grant does not supply this new route to its ally. Junction's separate high-face permission has its own provenance. [GF9 E3, p.10](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=10), [component audit](HOMEWORLD_COMPONENT_AUDIT.md#verified-high-side-effects).

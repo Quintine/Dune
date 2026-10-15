@@ -67,6 +67,7 @@ export function homeworldShipmentChoice(
   }
   const context = {
     advanced: view.advanced,
+    nativeGuildRateCanceled: view.guildRateCanceled,
     players: view.players.map((player) => ({
       id: player.id,
       faction: player.faction,
@@ -231,7 +232,10 @@ export function homeworldShipmentActions(
       const amount = Math.min(
         pools.reduce((sum, pool) => sum + pool.capacity, 0),
         [3, 5, 7, 9][difficulty],
-        budget * (me.faction === 'guild' || useNexus ? 2 : 1),
+        budget *
+          ((me.faction === 'guild' && !view.guildRateCanceled) || useNexus
+            ? 2
+            : 1),
         Math.max([1, 3, 4, 5][difficulty], required),
       );
       if (amount <= 0) continue;

@@ -1,5 +1,56 @@
 # Dune implementation status
 
+## 15 October 2026 — Native rate source composition and typed Homeworlds
+
+Removed blanket physical-module rate exclusions in favor of actual native
+price/source eligibility. Ordinary Smuggler bills paid counters only; own
+No-Field bills one marker, never hidden value, retaining its independent free
+companion and authenticated private proof. Real original training overrides
+select undealt offers and actual training, not played assignments.
+
+Native Guild world-to-world, Arrakis-to-foreign-world and Junction return use
+their existing typed quote/settlement with optional native cancellation context.
+Actual owner quotes, bot budgets and conditional instructions follow full
+tariff after cancellation. Original manual **and automatic** interception feed
+the prepayment rate window. Cunning's typed frame retains its exact event,
+price and second allowance through allow/cancel/unaffordable replacement.
+
+Source immunity remains explicit: genuine Junction-sponsored half/full
+transport survives native cancellation; non-Guild world-to-world stays full
+and independent Guild Secret Ally stays half. Deferred Guild Betrayal
+exposed premature rate cleanup: retain full-price authorization until payment/
+delivery, then release it. Six controlled reserve/cross/world Use/Pass cases
+verify one actual full invoice without replay or a false early-paid log.
+Skills/No-Field validators now accept their real rate continuation; the shared
+quiet fixture supplies the original Ambassador event instead of an invalid
+eventless decline. A new donor expectation was corrected: pledge already
+debited its wallet, so settlement consumes escrow without another debit.
+
+Affected18-file **198/198**, including32 new source cases, passes. **21 actual
+runtime/policy paths** pass:17 original-action paths and four explicitly
+controlled Cunning/No-Field paths. All four actual original Homeworld policies
+pass in this position, not cancel. Redundant quote-forwarding/default pins and
+a new unrelated private-projection loop were removed, not re-pinned.
+
+Four actual styled390px GameTable journeys pass: original composed Smuggler
+pays4 for three physical/two paid counters then moves once; original native
+return preserves donor1 and deposits3 into Junction; poor original world
+invoice preserves all sources/escrow on cancellation then ships2 at full2;
+controlled No-Field pays2 for one marker plus its free companion, then reveals
+five into six board/14 reserves without another payment. Original turn
+ownership resumes, with no overflow/browser errors. Three original scenes
+and one explicitly controlled scene, not worker/D1/authenticated saved rooms.
+
+No real saved/deployed game, database, mode/publication gate or provider
+permission changed. Allied No-Field/special receipt and native permission
+cancellation integration, full combinations and final assurance remain open.
+[Canonical current contract](GUILD_RATE_KARAMA_RULES.md#native-price-source-composition--15-october-2026).
+Final `npm run check:quick` and production build pass; existing module-register,
+chunk-size and Unknown-route warnings remain. The frozen21 runtime paths pass
+again after final source typing, plus a separate controlled deferred full3
+Betrayal Use completion. Seven current local links and five-facet evidence
+targets resolve. Owned QA host/tab are closed; proof remains outside Git.
+
 ## 15 October 2026 — Native Guild rate admission and Cunning receipts
 
 Removed classic-only expansion/Nexus exclusions from native rate admission,

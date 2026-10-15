@@ -5,6 +5,29 @@ Normal mode starts and publication remain gated. The [source contract](LEADER_SK
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
 records the fresh publisher/designer search requested by the user.
 
+## Native Guild rate with independent Smuggler — 15 October 2026
+
+Original module selection no longer suppresses native rate cancellation.
+Moritani actually selects an originally offered Smuggler through the shared
+undealt permutation and normal training action. Three physical reserves into
+empty desert contain two paid counters: half2 becomes full4, never6, while
+the free companion remains independent. An unaffordable cancellation releases
+the uncommitted group and a smaller full-price replacement keeps that companion.
+
+The own No-Field/companion case is explicitly controlled, not an original
+action-only game: the older fixture stages phase/army/wallets, then this
+extension conserves one real Karama and a mutual alliance. Hidden0/5 both
+price one marker1→2; only the companion initially withdraws. Actual390px
+reveal of the five-counter marker produces six at Wind Pass and14 reserves,
+with the already paid two unchanged. The original composed Smuggler UI
+instead pays Mori12→8, moves all three, then makes a legal ground move.
+
+Skills/No-Field receipts now recognize their original rate stage rather than
+requiring only Guild interception. Private proof follows authenticated event/
+price changes; no hidden value enters billing. Canonical source cases, runtime
+provenance and remaining limits are in [the rate contract](GUILD_RATE_KARAMA_RULES.md#native-price-source-composition--15-october-2026).
+No full-module, recovery or strategic-AI certification is claimed.
+
 ## Explicit Semuta composition — 11 October 2026
 
 `--profile semuta --leader-skills` reuses original all14 native setup for Basic

@@ -5,13 +5,13 @@ import {
   advancePairedE3Nexus, createPairedE3NexusSetup, nextPairedE3NexusStep,
   pairedE3NexusClean, pairedE3NexusInventory, pairedE3NexusPlayer,
   pairedE3NexusReload, quietPairedE3NexusChoice, stepPairedE3Nexus,
-  type PairedE3NexusStep, type PairedE3NexusTransition,
+  type PairedE3NexusOptions, type PairedE3NexusStep, type PairedE3NexusTransition,
 } from './fixture-paired-e3-nexus-modules';
 import { orderE3NexusEcazSpice } from './fixture-e3-nexus-ecaz';
 import { quietPlan } from './fixture-nexus-duke-capture';
 
 
-/** Original Advanced Ecaz/Moritani/Guild, without optional physical modules.
+/** Original Ecaz/Moritani/Guild, with explicit original setup module choices.
  * The shared setup selects only original undealt entropy. Here the original
  * unplayed Treachery deck puts a Karama in the first real auction; Ecaz buys
  * that physical card for one spice. Only the conserved, unplayed Spice deck
@@ -21,10 +21,11 @@ import { quietPlan } from './fixture-nexus-duke-capture';
  * A one-force stronghold arrival has no rounded native-rate discount to
  * cancel (half/full both cost one). Larger native shipments retain the
  * separate prepayment rate window before this fixture's income path. */
-export function createGuildAmbassadorIncomeArrival() {
+export function createGuildAmbassadorIncomeArrival(options: Pick<PairedE3NexusOptions,
+  'advanced' | 'skills' | 'training' | 'homeworlds' | 'discovery' | 'tech' | 'strongholds'> = {}) {
   const setup = createPairedE3NexusSetup({ roster: ['ecaz', 'moritani', 'guild'],
     advanced: true, skills: false, homeworlds: false, discovery: false,
-    tech: false, strongholds: false });
+    tech: false, strongholds: false, ...options });
   const actions = setup.actions;
   const ecaz = setup.ecaz, entrant = setup.moritani;
   const guild = setup.afterSetup.players.find(p => p.faction === 'guild')!.id;
