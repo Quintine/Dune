@@ -1034,6 +1034,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'The map shows a concealed marker without its denomination to everyone. Richese privately sees its token values, last-use restriction and reveal control. Movement selection keeps the marker separate from physical forces. No hidden denomination or physical token identity is included in another player’s projected board state.',
       'Marker-only battles use the owner’s private reserve-limited force pool. Both plans must be sealed before the token materializes. A zero-token battle still resolves with its leader, cards and traitor decisions. Ordinary Atreides prescience cannot request this opponent’s dial; other eligible plan elements remain available.',
       'Advanced Atreides special Karama is provisionally distinct from ordinary Prescience: it may privately inspect the complete committed No-Field plan, including dial/support and actual played faces. The target seals first; only Atreides receives that inspection, not automatic allies or observers. This is not a token inventory/maximum disclosure or early physical reveal. Both combatants still seal before native materialization. Ordinary dial Prescience remains prohibited.',
+      'Truthtrance may separately ask whether you currently have a concealed No-Field with printed value0,3 or5. No deployed token, including a revealed last-used token, is No even for value0; concealed5 remains5 with empty reserves. Only the respondent sees the expected answer before public reply. AND/OR publishes one aggregate. Asking/answering does not reveal the physical marker, move counters or bind future use. Physical-force facts still exclude markers.',
       'Basic and Advanced ordinary mixed battles have a provisional private pool: physical forces already here plus the token value capped by current reserves. The Battle Wheel labels that interpretation explicitly. Both plans seal before materialization, then native support, casualties and aftermath use actual forces. This first version does not adjudicate the FAQ mixed dial cap.',
       'In supported card profiles, provisional materialization-first order forecasts the own marker privately without moving forces early. Both plans seal, the original token reveals and materializes its reserve-limited ordinary counters at its sector, then Harass selects/returns actual undialed counters. Reinforcements must leave three original reserves after that reveal and before any future Harass return; an unfunded card cannot seal a plan. Marker0, last-used identity and original reveal-event history remain native.',
       'Concealed collection, occupancy and control use one-force presence. Exposed storm sectors and unprotected worm destruction reveal and remove the resulting actual forces. Storm shelter and other sectors remain separate. Trip to Gamont at a location with a marker reveals it, even if ordinary forces also occupy that sector, then returns one actual force if present. It is still used if zero forces remain. Canceling the CHOAM power leaves the marker concealed.',
@@ -1043,6 +1044,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     related: [
       'richese-cards',
       'richese-acquisition',
+      'card-truthtrance',
       'movement',
       'battle',
       'implementation-checklist',
@@ -1052,35 +1054,35 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Native lifecycle, allied pricing, private additive pools and card funding remain. The distinct Advanced full-plan special now reads the complete sealed plan while ordinary dial Prescience stays barred; private reading never materializes the token early. Original both-seals reveal, fixed/variable owners, fees, returns and history stay.',
-        evidence: ['game/shipment-price.ts', 'game/engine.ts'],
+          'Native lifecycle, additive pools, card funding and distinct special inspection remain. Current printed-value Truthtrance now reads only the respondent’s original concealed token, never reserves, allied variable armies or last-used history. Existing physical-force facts remain separate; card disposal resumes the original parent without model/event mutation.',
+        evidence: ['game/shipment-price.ts', 'game/engine.ts', 'game/truthtrance.ts', 'game/truthtrance-no-field-value.ts'],
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Original inventory/shipment/movement/card controls remain. Before spending and during the entitled private read, the provisional special-power distinction is explicit. Four actual390px journeys show zero/card legality, fractional dial versus support, capped Ecaz-variable plan and actual H/R faces, then original card cleanup/market into Collection.',
-        evidence: ['components/richese-allied-no-field.tsx', 'components/richese-no-field.tsx', 'components/harass-withdraw.tsx', 'components/game-table.tsx', 'components/private-battle-plan.tsx'],
+          'Original inventory/card/inspection controls remain. The shared current-fact selector adds static0/3/5 printed-value controls with explicit absent-versus-zero and printed-versus-materialized explanation. Four actual390px query journeys include concealed0, exhausted5 AND physical0, undeployed0 and revealed5; native public reply/disposal returns to the same Shipment turn.',
+        evidence: ['components/richese-allied-no-field.tsx', 'components/richese-no-field.tsx', 'components/harass-withdraw.tsx', 'components/game-table.tsx', 'components/private-battle-plan.tsx', 'components/mixed-shipment-fields.tsx', 'components/truthtrance-no-field-value.tsx'],
       },
       {
         area: 'AI',
         status: 'Partial',
         detail:
-          'Own/allied policies remain. All four profiles spend the actual special once, privately inspect the original first seal and complete native reveal/declared outcomes. Sixteen current ordinary/active/prevented coalition programs accept92 policy actions through Collection. Strategy and calibration stay deferred.',
+          'Existing own/allied and special-inspection policies remain. All four profiles pass native Truthtrance priority and use the owner-only aggregate truthAnswer. Sixteen current programs accept48 policy actions, then continue original shipment, voluntary reveal or full-plan/battle into Collection. Question strategy and calibration remain deferred.',
         evidence: ['game/bots.ts'],
       },
       {
         area: 'Documentation',
         status: 'Partial',
         detail:
-          'Supplied p27 C/F and p36 B ground the explicitly provisional ordinary-versus-special distinction and private-read-versus-public-token-reveal timing. Original additive caps, cost-before-return and remaining Truthtrance/module boundaries stay separately qualified.',
-        evidence: ['docs/RICHESE_ALLIED_SHIPMENT_AUDIT.md', 'docs/GUILD_RATE_KARAMA_RULES.md', 'docs/RICHESE_NO_FIELD_RULES.md', 'docs/ATREIDES_FULL_PLAN_TIMING.md'],
+          'The broad game-related yes/no authority and explicit current-observation/information-versus-component-revelation composition are recorded. Printed value, reserve cap, physical counter exclusion, ordinary Prescience, distinct special inspection and remaining future/module boundaries stay separate.',
+        evidence: ['docs/RICHESE_ALLIED_SHIPMENT_AUDIT.md', 'docs/GUILD_RATE_KARAMA_RULES.md', 'docs/RICHESE_NO_FIELD_RULES.md', 'docs/ATREIDES_FULL_PLAN_TIMING.md', 'docs/TRUTHTRANCE_FORCE_FACTS.md'],
       },
       {
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Eighteen new actual-shipment inspection cases and the29-file393/393 union cover zero/caps, mixed sectors, native target-first read, ordinary commitments, real Traitors and original costs/history. Four mobile and16 policy continuations are scoped current proof; earlier recovery/allied evidence remains historical, not new assurance or complete-mode/deployed acceptance.',
+          'Twenty-three new focused/native fact cases and the23-file228/228 union cover0/3/5, empty/capped reserves, absence/history, actual allied owner isolation, truthful/compound replies and original continuation. Four mobile and16 policy programs are scoped current proof. Earlier inspection/allied/recovery evidence remains historical; no new complete-mode/deployed assurance.',
         evidence: [
           'tests/richese-no-field.test.ts',
           'tests/richese-no-field-engine.test.ts',
@@ -1104,6 +1106,9 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/fixture-no-field-full-plan.ts',
           'tests/no-field-full-plan-occupy.test.ts',
           'tests/fixture-no-field-full-plan-occupy.ts',
+          'tests/truthtrance-no-field-value.test.ts',
+          'tests/truthtrance-no-field-engine.test.ts',
+          'tests/fixture-truthtrance-no-field.ts',
         ],
       },
     ],
@@ -2631,10 +2636,11 @@ export const RULE_TOPICS: RuleTopic[] = [
     steps: [
       'Choose Current physical forces, then the pool, counter type and an Exactly, At least or At most comparison. A board question names both territory and sector. Available HMS interiors and revealed Discovery locations are separate from their outside territories.',
       'Every physical counter counts once, including advisors. The total includes elites, and the normal count excludes them. Combat bonuses, concealed No-Field markers and their hidden force values do not enter the count.',
+      'Use the separate Current concealed No-Field printed value question for a token denomination. Concealed5 can coexist with exactly zero physical counters at its sector and zero reserves; this still is not five materialized forces. Public Yes/No does not itself reveal or materialize the marker.',
       'Reserves includes the native Homeworld reserve breakdown. These controls do not query individual Homeworld populations. A Basic faction whose starred counters are not tracked separately supports only the aggregate total.',
       'Combine the question with another supported fact using AND or OR. Only the respondent sees the expected answer; the published result does not identify which clause matched. Later legal movement or revival does not change this historical answer or break a promise.',
     ],
-    related: ['card-truthtrance', 'force-counters', 'truthtrance-spice', 'privacy'],
+    related: ['card-truthtrance', 'force-counters', 'truthtrance-spice', 'richese-no-field', 'privacy'],
     checklist: [
       { area: 'Implementation', status: 'Implemented', detail: 'Physical pool comparisons, exact live locations, typed-counter availability and saved fact revalidation are connected.', evidence: ['game/truthtrance-force-count.ts', 'game/truthtrance.ts'] },
       { area: 'Player controls', status: 'Implemented', detail: 'Pool, territory/sector, counter type and numeric comparison share validation with the server.', evidence: ['components/truthtrance-force-count.tsx', 'components/truthtrance.tsx'] },
@@ -2905,6 +2911,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Declare the card from your hand at any time after cards are dealt. Other players may declare a competing Truthtrance or pass; questions are then asked in storm order. The interrupted phase, response, or battle decision resumes afterward.',
       'Ask a game-related yes/no question. Named-card, selected-traitor and current personal-spice questions are checked by the server. AND and OR combine facts; only the combined answer is published, with no extra inventory details or separate answer for each clause.',
       'For current spice, choose Exactly, At least or At most and a nonnegative whole amount. This counts spice personally held when answering, excluding separately pledged aid and incoming payments. It does not ask whether a particular action is affordable or promise that the balance will stay unchanged. A true current-spice answer does not prevent later legal spending.',
+      'For a concealed No-Field, choose its current printed value0,3 or5, not the prospective force pool. A missing or already revealed marker answers No, including for0; a concealed5 with empty reserves still answers Yes to5. Only the respondent sees the expected aggregate before public reply. Neither question nor answer turns up the physical token or commits later use; current-force facts continue to exclude markers.',
       'The questioned player answers publicly. A definite answer discards the card. If the answer cannot be known, the holder may ask a different question or save Truthtrance for later.',
       'A saved definite answer resumes automatically: its public answer, binding promise and consumed card are recorded once, then the next queued question or interrupted action resumes. Private answer and preparation guidance is unavailable during this automatic recovery.',
       'Freeform questions also accept public Yes, No, or I don’t know answers. Their truthfulness relies on the players. AI answers structured facts and battle-plan questions; it cannot yet interpret freeform questions.',
@@ -2921,6 +2928,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'truthtrance-card-count',
       'truthtrance-hand-inventory',
       'truthtrance-shipment',
+      'richese-no-field',
     ],
   },
   ...FACTIONS.map(

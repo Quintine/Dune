@@ -33,6 +33,22 @@ aggregate total is answerable; typed comparisons are unavailable rather than
 inventing a distribution. Ordinary factions without special counters have zero
 elite counters. The same public guard feeds parsing and controls.
 
+## Separate concealed-marker value fact — 16 October 2026
+
+Choose **Current concealed No-Field printed value** to ask the distinct
+existence/value predicate for0/3/5. This never changes physical-force counts:
+a marker contributes no physical counters, and its printed5 remains5 even
+when reserves can materialize only0 or2. No current concealed token is No,
+including for value0; last-used faceup history is not current custody.
+
+The private expected-answer and public aggregate/one-card-disposal path is the
+same as other facts. Asking/answering reveals information, not the physical
+component, and does not commit later use. Original root state and native
+opportunities remain. This uses the existing broad game-fact authority and,
+for Advanced, supplied physical p39; no dedicated No-Field FAQ is claimed.
+[Exact scope and source composition](RICHESE_NO_FIELD_RULES.md#current-concealed-value-truthtrance--16-october-2026).
+
+
 ## Connected flow and saved behavior
 
 Choose **Current physical forces**, then the pool, optional board location,

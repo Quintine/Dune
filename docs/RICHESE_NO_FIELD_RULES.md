@@ -2,6 +2,57 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Current concealed-value Truthtrance — 16 October 2026
+
+The separate current-fact question asks whether the respondent **currently has
+a concealed No-Field with printed value 0,3 or5**. It reads that player's actual
+deployed physical token, not an ally's variable army, a pending declaration,
+last-used history or prospective reserve-capped counters. No deployed token,
+including one already revealed, answers No even for value0. A concealed5 with
+zero reserves still has printed value5, not0.
+
+Basic uses the existing GF9 November2020 p8 game-related yes/no-fact authority;
+Advanced also uses the supplied physical p39 Truthtrance text. The p27 C/
+p36 B ordinary Prescience exception does not name this distinct card. This
+current-observation/information-versus-component-revelation composition is
+explicit, not a newly retrieved No-Field-specific FAQ.
+
+Only the respondent sees the expected answer before replying. The final
+public Yes/No can convey information but does not turn up a marker, materialize
+counters, debit reserves, rotate its event or reset shipment history. Existing
+AND/OR publishes only the aggregate. Native physical Truthtrance disposal
+resumes the same shipment/power/battle; a historical fact does not become a
+future token-use promise. Physical-force count questions still exclude markers
+and denomination. No new Game root field, module gate or generic natural-
+language/future-No-Field promise enforcement is introduced.
+
+### Scoped current-fact proof
+
+The23 new focused/native cases and frozen23-file228/228 related union pass.
+Actual current-fact declaration, priority, truthful/compound answer, physical
+discard and original opportunity continue without marker/model/event changes.
+The allied negative case uses the original native Ecaz/Richese Nexus alliance,
+not a copied alliance. An Advanced fixture now finishes its real Guild
+interception before expecting the declared shipment to deploy; no guard changes.
+
+Four actual390px question journeys publish one original reply/card each:
+concealed0 → Yes; concealed5 with empty reserves AND physical0 at its sector
+→ Yes; undeployed0 → No; revealed5 → No. Each returns to original phase5/
+Richese activity without changing token model, event, forces, reserves or spice.
+No overflow/application exception. Initial Vite optimization reload aborted
+four old dependency requests; the rendered journeys completed afterward.
+Owned host/tab/scaffolds were removed.
+
+Sixteen fresh programs across all four legal policies accept48 priority/reply
+actions, then continue original shipment, actual voluntary reveal or full-plan
+offer/battle into Collection. Historical replies remain observations through
+those later actions. Actual generated guide import resolves42 evidence paths/
+source anchor; five No-Field facets and all three topic coverages stay Partial.
+These are genuine setup/shipment plus labelled conserved controls, not full
+unstaged games, new recovery/privacy/custody or deployed acceptance.
+Types/lint and application build also pass, retaining the existing module-
+register/chunk-size/route warnings. Complete mode/combination assurance remains.
+
 ## Atreides special inspection — 16 October 2026
 
 The supplied p27 C ordinary Prescience dial exception remains. Its distinct

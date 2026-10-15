@@ -13,6 +13,8 @@ import { CardCountFields } from './truthtrance-card-count';
 import { KnowledgeFactFields } from './truthtrance-knowledge';
 import { ForceCountFields, forceCountInputError } from './truthtrance-force-count';
 import { ShipmentClauseFields, invalidShipmentClause } from './shipment-claim-fields';
+import { NoFieldValueFields } from './truthtrance-no-field-value';
+import { parseNoFieldValueFact } from '@/game/truthtrance-no-field-value';
 
 export function invalidTruthFact(fact: TruthFact, game: GameView, target: string): boolean {
   if (fact.kind === 'and' || fact.kind === 'or') {
@@ -20,6 +22,10 @@ export function invalidTruthFact(fact: TruthFact, game: GameView, target: string
   }
   if (fact.kind === 'spice' || fact.kind === 'handCount' || fact.kind === 'handInventory') {
     return !Number.isSafeInteger(fact.value) || fact.value < 0;
+  }
+  if (fact.kind === 'noFieldValue') {
+    try { parseNoFieldValueFact(fact); return false; }
+    catch { return true; }
   }
   if (isKnowledgeFact(fact)) return !!knowledgeFactInputError(fact);
   if (fact.kind === 'forceCount') {
@@ -47,6 +53,7 @@ export function TruthFactFields({ value: fact, game, target, onChange }: {
     stormForecast: { kind: 'stormForecast', compare: 'gte', value: 1 },
     spice: { kind: 'spice', compare: 'gte', value: 6 },
     forceCount: { kind: 'forceCount', zone: { kind: 'reserves' }, counter: 'total', compare: 'gte', value: 6 },
+    noFieldValue: { kind: 'noFieldValue', value: 3 },
   };
   return <>
     <label>
@@ -63,6 +70,7 @@ export function TruthFactFields({ value: fact, game, target, onChange }: {
         <option value="stormForecast">Known storm forecast</option>
         <option value="spice">Current personal spice</option>
         <option value="forceCount">Current physical forces</option>
+        <option value="noFieldValue">Current concealed No-Field printed value</option>
       </select>
     </label>
     {fact.kind === 'hand' ? <label>
@@ -71,8 +79,9 @@ export function TruthFactFields({ value: fact, game, target, onChange }: {
         {TRUTH_CARD_NAMES.map(name => <option key={name}>{name}</option>)}
       </select>
     </label> : fact.kind === 'handCount' || fact.kind === 'handInventory' ?
-      <CardCountFields value={fact} onChange={onChange} /> : fact.kind === 'forceCount' ?
-        <ForceCountFields value={fact} game={game} player={game.players.find(player => player.id === target)!} onChange={onChange} /> :
+      <CardCountFields value={fact} onChange={onChange} /> : fact.kind === 'noFieldValue' ?
+        <NoFieldValueFields value={fact} onChange={onChange} /> : fact.kind === 'forceCount' ?
+          <ForceCountFields value={fact} game={game} player={game.players.find(player => player.id === target)!} onChange={onChange} /> :
         fact.kind === 'prediction' || fact.kind === 'stormDial' || fact.kind === 'stormForecast' ?
           <KnowledgeFactFields value={fact} onChange={onChange} /> : fact.kind === 'spice' ? <>
             <label>

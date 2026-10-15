@@ -38,12 +38,14 @@ import { CHEAP_HERO_TRAITOR } from './traitors';
 import { DUKE_VIDAL_ID } from './duke-vidal';
 import { canUseAsTruthtranceRole } from './shrine';
 import { isKnowledgeFact, parseKnowledgeFact, knowledgeFactAnswer, knowledgeFactText, truthKnowledgeOf, type KnowledgeFact, type TruthKnowledge } from './truthtrance-knowledge';
+import { parseNoFieldValueFact, noFieldValueFactMatches, noFieldValueFactText, type NoFieldValueFact } from './truthtrance-no-field-value';
 
 export type TruthFact =
   | KnowledgeFact
   | CardCountFact
   | HandInventoryFact
   | ForceCountFact
+  | NoFieldValueFact
   | { kind: 'hand'; name: string }
   | { kind: 'traitor'; leader: string }
   | { kind: 'spice'; compare: 'eq' | 'gte' | 'lte'; value: number }
@@ -115,6 +117,10 @@ function parseFact(
     } catch (error) {
       throw new TruthError(error instanceof Error ? error.message : String(error));
     }
+  }
+  if (v.kind === 'noFieldValue') {
+    try { return parseNoFieldValueFact(v); }
+    catch (error) { throw new TruthError(error instanceof Error ? error.message : String(error)); }
   }
   if (isKnowledgeFact(v)) {
     try { return parseKnowledgeFact(v); }
@@ -338,11 +344,13 @@ export function queuedTruthCardMatches(
 }
 /** A fact answer never returns which disjunct matched or any underlying private cards. */
 export function truthFactAnswer(
-  p: Pick<Player, 'hand' | 'traitors' | 'traitorChoices' | 'spice'> & Partial<ForceCountPlayer>,
+  p: Pick<Player, 'hand' | 'traitors' | 'traitorChoices' | 'spice' | 'noField'> & Partial<ForceCountPlayer>,
   fact: TruthFact,
   knowledge?: TruthKnowledge,
 ): TruthAnswer {
   if (isKnowledgeFact(fact)) return knowledgeFactAnswer(fact, knowledge);
+  if (fact.kind === 'noFieldValue')
+    return noFieldValueFactMatches(p.noField, fact) ? 'yes' : 'no';
   if (fact.kind === 'forceCount')
     return forceCountFactMatches(p as ForceCountPlayer, fact) ? 'yes' : 'no';
   if (fact.kind === 'handInventory')
@@ -400,6 +408,7 @@ export function truthQuestionText(
     return `In this battle in ${territory(q.territory).name}, will it be true that ${planClaimText(q.claim, leaderName)}?`;
   const clause = (f: TruthFact): string => {
     if (isKnowledgeFact(f)) return knowledgeFactText(f);
+    if (f.kind === 'noFieldValue') return noFieldValueFactText(f);
     if (f.kind === 'forceCount') return forceCountFactText(f);
     if (f.kind === 'handInventory') return handInventoryFactText(f);
     if (f.kind === 'handCount') return cardCountFactText(f);

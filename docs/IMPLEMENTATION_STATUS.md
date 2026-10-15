@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 16 October 2026 — Current concealed No-Field Truthtrance values
+
+Native before-state rejected a real current-value question during an actual
+Advanced full-plan offer as an unsupported AND/OR clause. Add the strict
+two-key `{kind:'noFieldValue',value:0|3|5}` leaf, shared static selector and
+same-owner truthful answer/text integration. No marker/revealed history is No
+even for0; concealed5 with no reserves remains printed5, not prospective0.
+Physical-force facts and native token custody/event/costs remain separate.
+No new saved root field, synthetic alliance, module or public gate.
+
+Broad publisher game-fact authority and supplied physical p39 ground this
+explicit current-observation/information-versus-physical-revelation composition,
+not a retrieved dedicated No-Field FAQ. Ordinary Prescience's exception is not
+this card. Original Truthtrance priority/aggregate/private answer/disposal and
+native shipment/power/battle parent continue; historical observations do not
+become future token-use promises.
+
+Twenty-three new cases and23-file228/228 related union pass, with types/lint
+and build; existing module-register/chunk-size/route warnings remain. One
+fixture initially asserted an Advanced shipment before its original Guild
+interception finished; native continuation now precedes the deployment check.
+The allied no-borrow case uses genuine Ecaz/Richese Nexus/coalition, not copied
+alliance metadata. Bot tests assert accepted native replies/public outcomes,
+not exact forwarding-array/default pins.
+
+Four actual390px journeys publish one reply/card and resume original phase5/
+Richese activity: concealed0 Yes; concealed5/empty reserves AND board physical0
+Yes; undeployed0 No; revealed5 No. Token model/event, force arrays, reserves
+and spice remain unchanged. No overflow/application exceptions. Initial Vite
+optimization reload aborted four old dependency requests; the rendered flows
+completed afterward. Owned host/tab/scaffolds removed.
+
+Sixteen fresh native programs/all four profiles accept48 priority/reply actions,
+then original shipment, actual voluntary reveal or full-plan/battle/Collection
+continues. Guide import resolves42 evidence paths/source anchor; five No-Field
+facets and all three topic coverages remain Partial. No human game, D1,
+deployment or new broad/HTTP/recovery/privacy/custody assurance changed.
+[Canonical semantics/source](RICHESE_NO_FIELD_RULES.md#current-concealed-value-truthtrance--16-october-2026).
+
 ## 16 October 2026 — Distinct Advanced special inspection against No-Fields
 
 Read the supplied authorized revision's physical p27 C/F and p36 B. Ordinary

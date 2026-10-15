@@ -29,6 +29,29 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Current concealed No-Field value facts — 16 October.** Truthtrance can ask
+whether the respondent currently has a concealed printed0/3/5. Absent or
+revealed is No even for0; concealed5 with exhausted reserves remains5. Read
+only that player's original model, never allied pools, prospective counters
+or shipment intent. The private expected/public aggregate path leaves token,
+event, forces, reserves and history untouched; original card disposal resumes
+the parent. This broad game-fact/source composition is explicit, not a dedicated
+No-Field FAQ. Physical-force facts remain separate; no new saved root or mode.
+
+Twenty-three new cases and23-file228/228 related union pass; types/lint/build
+pass with existing warnings. One Advanced fixture now completes original Guild
+interception before expecting deployment; no product guard changes. The allied
+negative case uses actual native Ecaz/Richese Nexus, not staged ally metadata.
+Four actual390px queries publish one reply/card and return to original phase5/
+Richese activity: concealed0 Yes, exhausted5 AND physical0 Yes, undeployed0 No,
+revealed5 No. No overflow/application exception; four initial Vite dependency
+requests were aborted by startup optimization reload before completed journeys.
+Sixteen fresh programs/four policies accept48 priority/reply actions, then legal
+shipment/reveal or full-plan/battle continuation. Guide import resolves42 paths/
+source anchor; five No-Field facets and all three coverages stay Partial.
+Owned host/tab/scaffolds removed; no human game, D1 or deployment changed.
+[Exact question semantics and scoped proof](RICHESE_NO_FIELD_RULES.md#current-concealed-value-truthtrance--16-october-2026).
+
 **Distinct Advanced special Karama / No-Field — 16 October.** Supplied p27 C
 and p36 B bar ordinary dial Prescience; distinct p27 F grants an entire-plan
 special. Standing choose-recommended provisionally keeps them separate.
