@@ -2,6 +2,29 @@
 
 Read-only engine audit, 2026-09-07. Read the complete `docs/SEMUTA_DRUG_ENGINE_AUDIT.md`, then inspected every current `discard(...)` call, direct Treachery-discard mutation and `draw(g)` caller in `game/engine.ts`, plus the Truthtrance discard callback and pure Box/Distrans results. Names below are integration anchors; approximate current lines are navigation aids only. This report adopts no additional source ruling and changes no project file.
 
+## Native Guild cancellation cost family — 16 October 2026
+
+`karamaShipmentDiscard` now suspends a printed cancellation cost for original
+native permission/rate responses. Pending reserve, cross/return or typed
+Homeworld frames remain in their own custody while the response is parked.
+Existing response collectors see that saved response; an admitted Semuta
+claim or all-seat decline restores it and finishes the cancellation once.
+
+Unlike the already-paid income family, no shipment payment or physical
+departure has happened. Recovering the cost cannot create a route, keep
+half price, finance the unfunded group or repeat a delivery. Signature and
+existing native validators bind the original group, approved split, source
+books, allowance and any independent price grant. Ordinary permission and
+affordability interpretations are unchanged.
+
+The [current source/runtime checkpoint](SEMUTA_SOURCE_UPDATE_20260907.md#native-guild-permission-and-rate-costs--16-october-2026)
+records158 affected cases,32 original runtime/policy paths and four actual
+mobile cancellation/continuation journeys. These are changed-rule proofs,
+not a new broad save/privacy/custody campaign or complete-mode acceptance.
+Shipment-price activation disposal and special-stop refund composition
+remain separate work.
+
+
 Update: the exchange producers, three battle producers, Sabotage, Robbery overflow and completed Nullentropy Box searches, Ornithopter escrow retirement, definite Truthtrance answers and the five ordinary completed-card effects below now have production automatic continuation frames; see [exchange checkpoint](TREACHERY_DISCARD_CONTINUATIONS.md), [battle checkpoint](BATTLE_DISCARD_CONTINUATIONS.md), [forced Terror checkpoint](TERROR_DISCARD_CONTINUATIONS.md), [Box checkpoint](BOX_DISCARD_CONTINUATIONS.md), [Ornithopter checkpoint](ORNITHOPTER_DISCARD_CONTINUATIONS.md), [Truthtrance checkpoint](TRUTHTRANCE_DISCARD_CONTINUATIONS.md) and [ordinary-card checkpoint](ORDINARY_CARD_DISCARD_CONTINUATIONS.md). The remaining table is an implementation inventory, not a claim that Semuta is active.
 
 30 September 2026 checkpoint: the explicit Semuta development preview

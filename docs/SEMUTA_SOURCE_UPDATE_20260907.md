@@ -2,6 +2,58 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Native Guild permission and rate costs — 16 October 2026
+
+Printed Karama cancellation of native `guildTransportPermission` or
+`guildRate` now offers its exact public cost through the existing neutral
+Semuta mechanism. This covers original reserve shipping, cross/return and
+typed Homeworld parents. The three physical parent frames remain unpaid
+while another player claims the cost or every seat declines.
+
+The dedicated `karamaShipmentDiscard` continuation binds the original
+response, source group, allowance, approved payment, native cancellation
+state, physical pools and independent purchased-price grant. Claim/pass
+restores that response and applies the original cancellation once. Recovering
+Karama neither restores denied transport nor removes the full-price invoice,
+finances an unfunded group, changes typed sources or repeats shipment.
+The existing permission-scope and no-debt policies are unchanged.
+
+Affected thirteen-file **158/158** passes, including twelve new behavior
+cases. Thirty-two original-action runtime/policy paths pass, including
+Basic/Advanced, six rate routes, four permission routes, unaffordable
+release and all four profiles for each native family. Original setup selects
+only undealt entropy/deck order; Guild buys Semuta in a real cache auction
+and Emperor buys the physical Karama in a real normal auction. No played
+hand, wallet, army, phase or response is assigned.
+Two additional **controlled** probes conserve a second physical card into
+Atreides custody, then actually activate its price and use the original
+cross/typed permission, cancellation and claim. Both retain that exact
+independent grant without payment or restoring native permission. They do
+not verify the separate shipment-price activation discard producer.
+Proof: `/tmp/dune-semuta-native-active-price-20261016.json`.
+
+Four actual styled390×844 GameTable journeys begin at those original-action
+unpaid responses: reserve-rate claim/full4, cross-permission claim then
+ordinary1, typed world-rate all-seat decline/full2, and poor2/full4 release
+then a new one-force full2 replacement. The recovered card remains held,
+not automatically replayed. Viewport/scroll width390, no browser error or
+application exception. One transient stale-node browser-tool error was
+followed by fresh authoritative state/accessibility, never action replay.
+
+Only an owned memory-only loopback host ran; no worker, D1, authenticated
+saved room, human server, deployment or mode gate was changed. Source/API/
+table proof and four initial scenes remain outside Git under
+`/tmp/dune-semuta-guild-native-*20261016*`.
+Shipment-price activation costs and their provisional special-stop refund
+binding remain separate; this does not certify complete Semuta/module play.
+[Continuation inventory](SEMUTA_DISCARD_CONTINUATIONS.md#native-guild-cancellation-cost-family--16-october-2026).
+Final types/lint and production build pass; existing module-register,
+large-chunk and Unknown-route warnings remain. The twelve new behavior
+cases pass again after the fixture-only TypeScript narrowing repair.
+Six current local links and51 Semuta evidence paths resolve; all five
+Semuta facets remain Partial. No final recovery or deployed claim is made.
+
+
 ## User-selected full-hand exchange — 30 September 2026
 
 The user selected **Allow exchange**: treat the acquisition and

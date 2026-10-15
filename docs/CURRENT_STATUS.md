@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 15 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 16 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -28,6 +28,26 @@ This is not complete-mode acceptance: exceptional custody, timing variants,
 optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
+
+**Semuta recovers native Guild cancellation costs — 16 October.**
+Printed permission/rate costs now offer the exact public Karama while the
+original reserve, cross/return or typed Homeworld parent stays unpaid.
+Claim/pass applies the same native cancellation once: no restored route,
+retained discount, invented funding or repeated shipment. Original paid
+cache/normal auctions provide both physical cards without played-state staging.
+
+Affected thirteen-file158/158 and32 original-action runtime/policy paths pass,
+including both modes and all four profiles for both native families.
+Four actual390px cancellation/continuation journeys prove reserve full4,
+denied cross plus ordinary1, typed full2 all-seat decline, and unfunded2/full4
+then one-force full2. No overflow, browser error or application exception.
+One transient stale-node tool error was followed by fresh evidence, not replay.
+No worker/D1/real room, human server, deployment or public gate changed.
+Shipment-price activation disposal/refund binding remains separate.
+[Canonical source and scoped proof](SEMUTA_SOURCE_UPDATE_20260907.md#native-guild-permission-and-rate-costs--16-october-2026).
+Final types/lint and production build pass with existing warnings; the
+twelve new cases pass again after fixture-only type narrowing. Current
+source links and all five still-partial Semuta facets resolve.
 
 **Native Guild rate with Richese Secret Ally — 15 October.**
 The original unpaid counter now preserves one billed counter and all five

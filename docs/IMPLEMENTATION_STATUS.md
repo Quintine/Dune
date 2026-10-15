@@ -1,5 +1,57 @@
 # Dune implementation status
 
+## 16 October 2026 — Semuta retains native Guild permission/rate cancellation
+
+Added the dedicated `karamaShipmentDiscard` family using the existing
+neutral all-seat Semuta offer, original private claimant choice and native
+Karama completion. Original unpaid reserve, cross/return and typed Homeworld
+frames persist through cost recovery or decline, bound to the exact response,
+physical group, approved payment, allowance and independent price source.
+Recovering Karama does not undo permission denial or native repricing,
+finance an unfunded group, mutate typed sources or repeat shipment.
+Existing original-opportunity/no-debt policies are unchanged.
+
+Original setup selects only conserved undealt lottery/deck order. Actual
+Guild public cache purchase pays1 for Semuta; actual Emperor normal auction
+pays1 for the original physical Karama. Original native turns and optional
+outgoing bribes follow as actions; no played hands, wallets, armies, phases
+or decisions are staged.
+
+Affected thirteen-file **158/158** passes, including twelve new behavior
+cases. Thirty-two original-action runtime/policy paths pass: six rate routes,
+four permission routes, claim/decline, unaffordable release, both modes and
+all four original profiles for both native families. No tuning/calibration.
+Two additional explicitly controlled second-card acquisition probes exercise
+actual cross/typed permission cancellation and claim with an independent
+price active; both preserve its original grant. They do not certify the
+separate unfinished shipment-price activation discard producer.
+
+Four actual styled390×844 GameTable cancellation/continuation journeys begin
+at those original-action unpaid responses. Reserve-rate claim pays full4
+for two real counters and retains the recovered cost card. Cross-permission
+claim leaves original five-counter source/spice4 unchanged and still denies
+that route; a new ordinary1 then leaves Guild3. Typed world all-seat decline
+keeps Semuta held and delivers two native counters for full2 once. Poor2
+cannot finance original full4 even after cost recovery, but a new one-force
+full2 shipment remains legal. Original turn completion is observed.
+Viewport/scroll width390, no browser error or application exception.
+One transient stale-node tool error after successful cancellation was
+resolved with fresh authoritative state/accessibility without replay.
+
+Only an owned memory-only host started/stopped. No worker, D1, authenticated
+saved room, human server, deployed revision or gate was exercised or changed.
+Outside-Git source/API/table proof and four initial scenes remain under
+`/tmp/dune-semuta-guild-native-*20261016*`. Shipment-price activation disposal
+and provisional special-stop refund binding remain separate. The full goal
+and final assurance remain unfinished.
+[Source/runtime checkpoint](SEMUTA_SOURCE_UPDATE_20260907.md#native-guild-permission-and-rate-costs--16-october-2026),
+[continuation contract](SEMUTA_DISCARD_CONTINUATIONS.md#native-guild-cancellation-cost-family--16-october-2026).
+Final `npm run check:quick` and production build pass with existing
+module-register, large-chunk and Unknown-route warnings. The twelve new
+cases pass again after a fixture-only captured-reaction narrowing repair.
+Six current local links and51 evidence paths resolve; all five Semuta
+facets stay Partial, without recovery/deployed or complete-mode claims.
+
 ## 15 October 2026 — Native Guild price counter retains Richese one-counter source
 
 Removed the explicit Richese Secret Ally exclusion from native rate
