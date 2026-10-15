@@ -147,7 +147,7 @@ void test('Original concealed Richese presence permits a zero prospective pool, 
 });
 
 
-for (const lead of ['ecaz', 'ally'] as const) void test(`Atreides cannot inspect concealed partner's ${lead} plan dial or whole plan`, () => {
+for (const lead of ['ecaz', 'ally'] as const) void test(`Atreides ordinary Prescience cannot inspect concealed partner's ${lead} plan dial`, () => {
   const fixture = ecazOccupyRicheseFixture({ opponentFaction: 'atreides', marker: 5, richeseReserves: 2 });
   const actor = lead === 'ecaz' ? fixture.ecaz : fixture.ally;
   assert.ok(fixture.game.decision?.kind === 'ecazBattleLead');
@@ -167,15 +167,6 @@ for (const lead of ['ecaz', 'ally'] as const) void test(`Atreides cannot inspect
   saved = structuredClone(game);
   assert.throws(() => applyAction(game, fixture.opponent, { type: 'prescience', field: 'dial' }), /may not inspect/);
   assert.deepEqual(game, saved);
-  game = applyAction(game, fixture.opponent, { type: 'declineBattlePower' });
-  for (let attempt = 0; attempt < 100 && game.decision?.kind !== 'fullPlanOffer'; attempt++) game = nextOccupyRichese(game);
-  assert.equal(game.decision!.kind, 'fullPlanOffer');
-  const karama = occupyRicheseSeat(game, fixture.opponent).hand.find(c => c.effect === 'karama')!;
-  saved = structuredClone(game);
-  assert.throws(() => applyAction(game, fixture.opponent, { type: 'card', mode: 'special', card: karama.id, target: actor }),
-    /Whole-plan special prescience against a No-Field/);
-  assert.deepEqual(game, saved);
-  assert.ok(occupyRicheseSeat(game, fixture.richese).noField!.deployed);
 });
 
 for (const marker of [0, 5] as const) for (const lead of ['ecaz', 'ally'] as const)

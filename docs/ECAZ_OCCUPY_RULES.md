@@ -302,13 +302,18 @@ only available reserves, and reveals with Battle Plans. A marker-only Richese
 ally therefore remains original battle presence even with a zero prospective
 pool. The selected plan actor receives its private variable pool; rivals do
 not receive that pool or an Occupy profile containing the secret denomination.
-The physical Richese owner reveals once after both seals. Dial prescience and
-whole-plan restrictions follow the actual variable-force owner rather than the
+The physical Richese owner reveals once after both seals. Ordinary dial
+Prescience restrictions follow the actual variable-force owner rather than the
 original chooser. Preventing Occupy with Ecaz lead makes only Ecaz's own pool
 inspectable; the unrelated marker stays concealed until original reveal timing.
 Richese's ordinary-plus-marker pool now composes under the separate
 [explicitly provisional native interpretation](RICHESE_NO_FIELD_RULES.md#mixed-native-occupy-pool--16-october-2026).
 Broader disclosure and Basic mixed-co-side/module rulings remain separate.
+The distinct Advanced special Karama may privately inspect the actual complete
+No-Field plan under the
+[provisional supplied-source distinction](ATREIDES_FULL_PLAN_TIMING.md#supplied-source-no-field-composition--16-october-2026);
+the private read neither reveals the token early nor recalculates fixed losses.
+
 
 Stone Burner compares **floor(E/2) + native ally physical undialed tokens** for
 active Occupy, or the **selected lead's own pool only** after prevention.

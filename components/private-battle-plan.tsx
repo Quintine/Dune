@@ -36,6 +36,15 @@ export function PrivateBattlePlan({ game }: { game: GameView }) {
         other combatant can prepare and seal their plan without an inspection
         confirmation.
       </p>
+      {game.battle?.noFieldPlayers.includes(insight.target) && (
+        <p className="notice">
+          Provisional special-power interpretation: this is the actual committed
+          dial and support, not the concealed token inventory. Ordinary dial
+          Prescience remains prohibited. The original marker materializes only
+          at the public two-plan reveal; this private inspection is not a
+          voluntary token reveal.
+        </p>
+      )}
       <dl>
         <div>
           <dt>Dial</dt>

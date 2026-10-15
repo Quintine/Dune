@@ -4,6 +4,61 @@
 paths without promoting an implementation timing choice to an official ruling.
 The public Advanced and unfinished expansion gates remain closed.
 
+## Supplied-source No-Field composition — 16 October 2026
+
+The authorized supplied revision, physical **p27 C**, restricts the ordinary
+one-element Battle Prescience dial choice against a No-Field. The distinct
+**p27 F** special Karama says to look at any one player's **entire Battle
+Plan** before public revelation. Physical **p36 B** names Prescience in its
+No-Field dial exception; it does not separately name this special power.
+
+Under standing choose-recommended, the prototype provisionally keeps those
+powers distinct: ordinary dial Prescience stays prohibited, but native
+Advanced special Karama may inspect the actual complete committed plan.
+This is explicit textual composition, not a newly retrieved combined FAQ or
+a newly answered user question. Other native special-use/counter/mode limits
+and the provisional original target-first offer order remain.
+
+The actual target commits first. Only Atreides receives that plan's dial,
+support, leader and physical played faces. This entitlement does not expose
+the token inventory or a prospective maximum to other seats. Private reading
+is not public token revelation: reserves, marker and original event remain
+unchanged until both combatants seal, then the native zero/capped materialization
+and card/cost/loss history run once. This private-read-versus-public-reveal
+composition is provisional as well. No saved field, Basic power or public
+expansion start is added.
+
+The same distinction follows native mixed Occupy: an active Ecaz plan uses
+the original fixed increment plus Richese variable dial; prevention restores
+only the chosen lead's own pool. It does not erase the unrelated marker's
+original revelation or alter original card-user funding/physical losses.
+
+### Scoped native proof
+
+Eighteen new actual-shipment inspection cases and the frozen29-file393/393
+related union pass, with types/lint/build and existing warnings. A final
+type-narrowed real-Traitor case passes1/1. Fixture repairs preserve real shared
+preleader readiness and test an actually legal alternate leader's ordinary
+commitment; no product preparation or target-first guard is weakened.
+
+Four actual390px journeys finish original battle-card cleanup/CHOAM market
+into phase7: zero with real leader/cards; mixed ordinary dial3.5/support2;
+Ecaz total5/support0 with marker5 capped to2; Richese H/R total6/support3.
+Each actual private read leaves the native marker, reserves and force arrays
+unchanged. Ordinary Prescience controls still offer only leader/weapon/defense.
+The mixed defeat loses6 real counters. The capped co-side loses4 Richese and3
+Ecaz counters; H/R spends its original3 after materialization, returns2 and
+ends Richese reserves2/Tanks6, Ecaz Tanks3. Native token history remains.
+
+Sixteen fresh native programs across all four profiles accept92 policy actions
+through Collection, including original active/prevented owners and actual
+Traitor outcomes. The guide imports with34 evidence paths/source anchor valid;
+five No-Field facets and both topic coverages stay Partial. No overflow/browser/
+application error; owned host/tab/scaffolds removed. Native controls here use
+explicit conserved battle staging after genuine setup/shipment, not complete
+unstaged games, new save assurance or deployed acceptance.
+
+
 ## Published requirements and remaining interpretation
 
 The [GF9 base rulebook, printed p14](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf)

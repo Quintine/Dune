@@ -76,7 +76,7 @@ export const HELP = {
   choamCombat:
     'CHOAM may reserve spice for an ally’s advanced battle support. The ally chooses the payment split when sealing. A traitor victory costs the winner no support; any revealed traitor prevents CHOAM force-payment income.',
   fullPlan:
-    'Atreides may spend its special Karama once per game to inspect a full battle plan. The chosen combatant commits dial, leader, weapon, defense, spice support and KH before the private inspection. Only Atreides receives this view. The private panel stays available while the other combatant plans, without an inspection confirmation.',
+    'Atreides may spend its Advanced special Karama once per game to inspect the full committed plan. Only Atreides receives dial, leader, actual played faces, support and KH while the other combatant plans; no inspection confirmation. The provisional No-Field distinction permits this separate special power while ordinary dial Prescience stays barred. A private read does not reveal or materialize the token before both plans seal.',
   guildShipment:
     'The Guild may spend its special Karama once per game to stop a declared off-planet shipment before payment or arrival. The shipper keeps its forces and spice and may still move. Fremen’s southern reinforcements are on-planet.',
   specialKarama:
@@ -1033,11 +1033,12 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Development tables support your own concealed shipment, movement of a marker alone or with a physical group, voluntary reveal and one-force board presence. Physical reserves remain unchanged until reveal. Karama can prevent the No-Field shipment, with Guild shipment prevention and payment handled separately. Price and chosen allied funding are shown before shipment.',
       'The map shows a concealed marker without its denomination to everyone. Richese privately sees its token values, last-use restriction and reveal control. Movement selection keeps the marker separate from physical forces. No hidden denomination or physical token identity is included in another player’s projected board state.',
       'Marker-only battles use the owner’s private reserve-limited force pool. Both plans must be sealed before the token materializes. A zero-token battle still resolves with its leader, cards and traitor decisions. Ordinary Atreides prescience cannot request this opponent’s dial; other eligible plan elements remain available.',
+      'Advanced Atreides special Karama is provisionally distinct from ordinary Prescience: it may privately inspect the complete committed No-Field plan, including dial/support and actual played faces. The target seals first; only Atreides receives that inspection, not automatic allies or observers. This is not a token inventory/maximum disclosure or early physical reveal. Both combatants still seal before native materialization. Ordinary dial Prescience remains prohibited.',
       'Basic and Advanced ordinary mixed battles have a provisional private pool: physical forces already here plus the token value capped by current reserves. The Battle Wheel labels that interpretation explicitly. Both plans seal before materialization, then native support, casualties and aftermath use actual forces. This first version does not adjudicate the FAQ mixed dial cap.',
       'In supported card profiles, provisional materialization-first order forecasts the own marker privately without moving forces early. Both plans seal, the original token reveals and materializes its reserve-limited ordinary counters at its sector, then Harass selects/returns actual undialed counters. Reinforcements must leave three original reserves after that reveal and before any future Harass return; an unfunded card cannot seal a plan. Marker0, last-used identity and original reveal-event history remain native.',
       'Concealed collection, occupancy and control use one-force presence. Exposed storm sectors and unprotected worm destruction reveal and remove the resulting actual forces. Storm shelter and other sectors remain separate. Trip to Gamont at a location with a marker reveals it, even if ordinary forces also occupy that sector, then returns one actual force if present. It is still used if zero forces remain. Canceling the CHOAM power leaves the marker concealed.',
       'All four AI profiles choose from their own private token inventory, pay only the one-force shipment price, move the marker explicitly and reveal positive tokens when useful. They retain zero-token presence and use only public information to assess opponents. They also offer safe positive tokens from their own inventory during the allied opportunity, fund them with their own spice and accept or decline private offers using their own force and payment information. A human Richese player’s offer window holds an AI ally’s shipment. Pending responses, decisions and Truthtrance retain priority.',
-      'Marker-only and ordinary-plus-marker No-Fields compose with the selected Advanced Occupy profile under the same provisional additive pool. Either selected lead gets its actual variable-owner quote; original fixed Ecaz strength stays separate. Prevention restores only the chosen lead’s own pool. Basic mixed co-side, entire-plan special Karama, Homeworld custody, wider Truthtrance and other profile/module boundaries remain. Complete Richese starts and final acceptance stay gated.',
+      'Marker-only and ordinary-plus-marker No-Fields compose with the selected Advanced Occupy profile under the same provisional additive pool. Either selected lead gets its actual variable-owner quote; original fixed Ecaz strength stays separate. Prevention restores only the chosen lead’s own pool. Basic mixed co-side, Homeworld custody, wider Truthtrance and other profile/module boundaries remain. Complete Richese starts and final acceptance stay gated.',
     ],
     related: [
       'richese-cards',
@@ -1051,35 +1052,35 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Native lifecycle, hazards and authorized allied pricing remain. Own concealed Harass now forecasts actual materialization and sector counters without moving them before both seals. Reinforcements checks original post-reveal reserves before allowing a plan, preventing the accepted-plan funding deadlock. Marker history, physical owners, fixed Ecaz commitment and other profile gates remain separate.',
+          'Native lifecycle, allied pricing, private additive pools and card funding remain. The distinct Advanced full-plan special now reads the complete sealed plan while ordinary dial Prescience stays barred; private reading never materializes the token early. Original both-seals reveal, fixed/variable owners, fees, returns and history stay.',
         evidence: ['game/shipment-price.ts', 'game/engine.ts'],
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Private inventory, movement/reveal and original loan controls remain. Owner-only Harass and reserve-cost previews explain projected materialization and post-reveal funding. Actual mixed-sector selection occurs after native revelation; invalid partial returns disable confirmation. Four mobile card journeys include zero marker, early blocked cost/legal fallback and funded native Occupy through original CHOAM market.',
-        evidence: ['components/richese-allied-no-field.tsx', 'components/richese-no-field.tsx', 'components/harass-withdraw.tsx', 'components/game-table.tsx'],
+          'Original inventory/shipment/movement/card controls remain. Before spending and during the entitled private read, the provisional special-power distinction is explicit. Four actual390px journeys show zero/card legality, fractional dial versus support, capped Ecaz-variable plan and actual H/R faces, then original card cleanup/market into Collection.',
+        evidence: ['components/richese-allied-no-field.tsx', 'components/richese-no-field.tsx', 'components/harass-withdraw.tsx', 'components/game-table.tsx', 'components/private-battle-plan.tsx'],
       },
       {
         area: 'AI',
         status: 'Partial',
         detail:
-          'Own/allied pricing participation remains. All four profiles use private own/selected variable materialization, original reserve funding and physical return quotes. Sixteen current native programs accept80 policy actions across active/prevented allied/opposing mixed battles; no strategic tuning or calibration is claimed.',
+          'Own/allied policies remain. All four profiles spend the actual special once, privately inspect the original first seal and complete native reveal/declared outcomes. Sixteen current ordinary/active/prevented coalition programs accept92 policy actions through Collection. Strategy and calibration stay deferred.',
         evidence: ['game/bots.ts'],
       },
       {
         area: 'Documentation',
         status: 'Partial',
         detail:
-          'Source, original loan consent/pricing and current controls remain documented. The provisional materialize-then-original-reserve-cost-then-Harass sequence is explicit, not a new publisher FAQ or user ruling. Token history and remaining mixed/inspection/module boundaries remain separate.',
-        evidence: ['docs/RICHESE_ALLIED_SHIPMENT_AUDIT.md', 'docs/GUILD_RATE_KARAMA_RULES.md', 'docs/RICHESE_NO_FIELD_RULES.md'],
+          'Supplied p27 C/F and p36 B ground the explicitly provisional ordinary-versus-special distinction and private-read-versus-public-token-reveal timing. Original additive caps, cost-before-return and remaining Truthtrance/module boundaries stay separately qualified.',
+        evidence: ['docs/RICHESE_ALLIED_SHIPMENT_AUDIT.md', 'docs/GUILD_RATE_KARAMA_RULES.md', 'docs/RICHESE_NO_FIELD_RULES.md', 'docs/ATREIDES_FULL_PLAN_TIMING.md'],
       },
       {
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Earlier allied/native/recovery proof remains historical. New actual-shipment card regressions cover zero/caps, mixed sectors, original funding, typed physical custody, Traitor cancellation and marker history; mobile and four-profile continuations are bounded current evidence. No new saved/deployed or complete-mode assurance is claimed.',
+          'Eighteen new actual-shipment inspection cases and the29-file393/393 union cover zero/caps, mixed sectors, native target-first read, ordinary commitments, real Traitors and original costs/history. Four mobile and16 policy continuations are scoped current proof; earlier recovery/allied evidence remains historical, not new assurance or complete-mode/deployed acceptance.',
         evidence: [
           'tests/richese-no-field.test.ts',
           'tests/richese-no-field-engine.test.ts',
@@ -1099,6 +1100,10 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/ecaz-occupy-mixed-no-field.test.ts',
           'tests/fixture-ecaz-occupy-mixed-no-field.ts',
           'tests/ecaz-occupy-mixed-no-field-opponent.test.ts',
+          'tests/no-field-full-plan.test.ts',
+          'tests/fixture-no-field-full-plan.ts',
+          'tests/no-field-full-plan-occupy.test.ts',
+          'tests/fixture-no-field-full-plan-occupy.ts',
         ],
       },
     ],
@@ -1391,7 +1396,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Eligible Karama can prevent Occupy after the lead choice and before powers/plans. The chosen lead remains lead and dials its own army; the other ally contributes zero. The plan editor then uses the new force pool and no fixed Ecaz strength.',
       'An Ixian variable army takes its own typed losses and chooses native surviving-Suboid substitution, including when Ecaz formed the plan. Actual Ixians own the exchange/counter; the selected lead still owns winner cards and continuation. CHOAM support income uses original eligible payer/donor shares, not the free fixed contribution.',
       'A Tleilaxu winning co-side cannot Face Dance itself. External Face Dance returns both actual winning allied armies with a combined survivor maximum, while the selected winner keeps original rewards and card cleanup. Reserve/board zero/partial/full replacements remain native choices, not a copied player.',
-      'A native Richese ally may supply ordinary counters, a concealed No-Field, or both under the selected Advanced provisional additive pool. The selected plan actor gets that private variable pool and mixed-pool notice; rivals do not. The original Richese owner materializes once after both seals, including zero/caps. Prescience/whole-plan restrictions follow the physical force owner. Preventing Occupy restores only the selected lead’s own army; selected Ecaz neither borrows Richese counters nor exposes its hidden maximum.',
+      'A native Richese ally may supply ordinary counters, a concealed No-Field, or both under the selected Advanced provisional additive pool. The selected actor gets its private variable pool/mixed notice; rivals do not. Richese materializes once after both seals, including zero/caps. Ordinary dial Prescience follows the actual force owner; distinct Advanced special Karama may privately inspect its complete sealed plan under the provisional power distinction. Prevented Ecaz uses only its own pool; neither private read nor prevention reveals the marker early.',
       'Stone Burner compares physical undialed counters, not total dial or paid strength: active Occupy contributes floor(Ecaz forces / 2) plus the ally’s native undialed tokens. Canceled Occupy compares only the selected lead’s own pool. Physical Mirror copies use the same comparison and retain their original cleanup. Hidden opposing No-Field preflight uses public possible pools, not its actual denomination; genuinely winner-changing typed allocations remain blocked.',
       'With the independent variant, Harass returns only the actual card user’s undialed forces. An Ecaz user keeps the original mandatory ceil contribution committed at free full strength while its floor count returns; ally support is separate. An allied user subtracts fixed strength before choosing its native typed commitment. Canceled Occupy uses its selected lead’s own pool. Returned reserves are outside later casualties/explosion/Face Dance.',
       'Reinforcements consumes three card-user reserves normal-first and adds +2 normal score, never support or physical arrivals. Under the provisional native order, an own No-Field materializes before that original reserve fee and successful Harass returns; three reserves must remain after reveal before this plan may seal. Original/copied Stone ignores +2 score but not the fee. Existing all-revealed-outcome cost/disposal remains provisional. Basic/unprofiled co-side cards stay guarded.',
@@ -3551,9 +3556,9 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Native faction special powers have connected first versions, including Ecaz’s unarmed disc-difference and Moritani’s winner-card disposal; timing and combination refinement remain.',
     steps: [
       'Spend an actual Karama card to activate your faction’s special power once per game. The usage remains spent on later turns, but you may still use other Karama cards normally. These powers resolve directly without a normal faction cancellation window.',
-      'After Voice and ordinary prescience are resolved or declined, Atreides may spend its special Karama to inspect either combatant’s entire plan, including in a battle it is not fighting. The target commits first; Atreides receives the dial, leader, weapon, defense, spice support and KH selection privately. Its ally does not automatically receive this view.',
+      'After Voice and ordinary Prescience finish, Atreides may spend its Advanced special Karama to inspect either combatant’s entire committed plan, even outside its own battle. Target seals first; only Atreides gets actual dial, leader, physical played cards, support and KH. The provisional supplied-source distinction includes No-Field plans: ordinary dial Prescience is still barred, but the separate special reads the sealed plan without revealing/materializing its marker early. Allies receive no automatic inspection.',
       'The inspected plan remains privately visible in Atreides’ action panel while the other combatant prepares a plan. No inspection acknowledgement is required. This also applies when Atreides is outside the battle helping an ally; that ally does not receive the inspection automatically. Both committed plans trigger the public reveal, which ends the private inspection. The inspected plan stays committed. Atreides may retain the power by declining this battle’s offer. A canceled ordinary prescience request does not remove the special power.',
-      'The full-plan commitment order is an implementation timing choice awaiting the remaining card-interaction audit; it must not be treated as proof that every pre-reveal Karama or expansion timing interaction is complete.',
+      'The after-preparation offer, target-first commitment and private-read-versus-public-No-Field-reveal order remain explicit provisional timing interpretations, not a newly retrieved combined FAQ or certification of complete Karama/expansion interactions.',
       'During Revival, Emperor may revive up to three of its own forces or one of its own dead leaders for free. This is separate from normal revival allowances. The shared one-Sardaukar-per-turn limit still applies.',
       'During Bidding, Harkonnen chooses another player and takes up to four unseen cards. Inspect the combined hand, then return exactly the same number of cards. Newly taken cards may be included in the return.',
       'Harkonnen may temporarily exceed eight cards during this choice. The return restores normal limits. Other players see the exchange count, but only each hand’s owner sees its cards.',

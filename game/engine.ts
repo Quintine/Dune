@@ -28981,10 +28981,7 @@ export function prepareSpecialKaramaIntent(
       [b.attacker, b.defender].includes(target),
       'Choose a player in this battle.',
     );
-    requireRule(
-      !battleNoFieldPlan(g, target),
-      'Whole-plan special prescience against a No-Field awaits its disclosure ruling. Ordinary permitted elements remain available.',
-    );
+    // Distinct special Karama inspects the sealed plan, not the token inventory.
     return {
       ...base,
       kind: 'atreides',

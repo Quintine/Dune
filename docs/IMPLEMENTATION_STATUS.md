@@ -1,5 +1,43 @@
 # Dune implementation status
 
+## 16 October 2026 — Distinct Advanced special inspection against No-Fields
+
+Read the supplied authorized revision's physical p27 C/F and p36 B. Ordinary
+dial Prescience's explicit exception is distinct from F's entire-plan special
+Karama. Standing choose-recommended provisionally permits the special's exact
+sealed-plan read while retaining ordinary dial prohibition. This textual
+distinction and private-read-versus-public-reveal order are explicit composition,
+not a new combined publisher FAQ or answered user question.
+
+Before-state genuine mixed Occupy with either lead rejected the actual special
+at its original offer. Remove only that guard. Existing native card/once-use,
+target-first/private entitlement, ordinary commitments and actual both-seals
+marker materialization/history remain. No saved field, Basic power/profile,
+module or public start gate changes. Offer and private panel explain timing.
+
+Eighteen new actual-shipment cases plus29-file393/393 pass. Types/lint/build
+pass; existing module-register/chunk-size/route warnings remain. Final narrowed
+real-Traitor case passes1/1. The new fixture first stopped before native shared
+preleader readiness; it now completes the actual controls before powers. An
+ordinary-commitment probe now selects a different legal leader instead of
+failing earlier for no leader. Action.leader is explicitly type-narrowed.
+These repair test preconditions/types, not product guards or error suppression.
+
+Four actual390px journeys pass: marker0 with physical cards, ordinary mixed
+dial3.5/support2, capped Ecaz total5/support0, and real Richese H/R total6/
+support3. Private reads show exact faces/numbers with native marker/reserves
+untouched. Subsequent original reveal/Traitors/cleanup/market reach phase7;
+ordinary prescience still omits dial. Mixed defeat loses6 real Richese counters;
+capped coalition loses4 Richese/3 Ecaz; inspected H/R ends Richese reserves2/
+Tanks6 and Ecaz Tanks3, with both cards discarded once. No overflow/browser/
+application errors. Owned host/tab/scaffolds removed.
+
+Sixteen fresh native programs/four profiles accept92 policy actions through
+Collection. Actual generated guide import resolves34 evidence paths/source
+anchor; five No-Field facets and both topic coverages remain Partial. No human
+game, D1, deployment or new broad/HTTP/recovery assurance changed.
+[Canonical source/priority distinction](ATREIDES_FULL_PLAN_TIMING.md#supplied-source-no-field-composition--16-october-2026).
+
 ## 16 October 2026 — Mixed ordinary/No-Field native Occupy
 
 Actual native admission previously rejected both allied and opposing Richese

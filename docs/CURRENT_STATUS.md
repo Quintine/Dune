@@ -29,6 +29,29 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Distinct Advanced special Karama / No-Field — 16 October.** Supplied p27 C
+and p36 B bar ordinary dial Prescience; distinct p27 F grants an entire-plan
+special. Standing choose-recommended provisionally keeps them separate.
+Native special Karama now reads the complete committed No-Field plan while
+ordinary dial remains barred. Private target-first reading is not public
+token revelation; both seals still materialize once, then original fees,
+returns, support/losses and history run. No new saved field, Basic power,
+mode or module gate. This is explicit composition, not a new combined FAQ.
+
+Eighteen new actual-shipment cases and29-file393/393 related union pass.
+Types/lint and build pass with existing warnings; the final narrowed real
+Traitor case also passes1/1. Four actual390px journeys show zero with real
+cards, ordinary mixed3.5/support2, capped Ecaz5/support0 and Richese H/R6/
+support3 private reads, followed by native cleanup/market into phase7.
+First reads retain concealed marker/force/reserve custody; ordinary UI still
+offers no dial request. Sixteen fresh native programs/all four policies accept
+92 policy actions through Collection. Actual guide import resolves34 evidence
+paths/source anchor; five No-Field facets and both topic coverages stay Partial.
+Fixture-only fixes complete real preleader readiness, test a different legal
+leader's broken commitment, and narrow Action.leader. No product guard weakened.
+Owned host/tab/scaffolds removed; no human game, D1 or deployment changed.
+[Exact supplied-source distinction and proof](ATREIDES_FULL_PLAN_TIMING.md#supplied-source-no-field-composition--16-october-2026).
+
 **Mixed ordinary/No-Field native Occupy — 16 October.** The selected Advanced
 profile extends the existing explicitly provisional additive pool to allied
 and opposing Richese. Original fixed Ecaz strength stays separate. The selected

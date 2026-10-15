@@ -3186,6 +3186,15 @@ export function GameTable({
                     either combatant’s full plan. The chosen player commits
                     first, then only you receive the inspection.
                   </p>
+                  {!!g.battle?.noFieldPlayers.length && (
+                    <p className="notice">
+                      Provisional power distinction: special Karama reads the
+                      complete committed No-Field plan, including dial and
+                      support. Ordinary Prescience still cannot request its dial.
+                      This private read does not reveal or materialize the marker
+                      before both plans seal.
+                    </p>
+                  )}
                   <HelpTip topic="fullPlan" />
                   {me.hand
                     ?.filter(canActivateKarama)

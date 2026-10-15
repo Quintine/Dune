@@ -2,6 +2,17 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Atreides special inspection — 16 October 2026
+
+The supplied p27 C ordinary Prescience dial exception remains. Its distinct
+p27 F entire-plan special Karama now follows the
+[explicit provisional power/read distinction](ATREIDES_FULL_PLAN_TIMING.md#supplied-source-no-field-composition--16-october-2026):
+Atreides may privately read the complete sealed No-Field plan, including dial/
+support, without a premature token reveal or reserve transfer. Both original
+plans must still seal before native materialization and public history.
+This supersedes older whole-plan guard notes below, not the unrelated
+structured Truthtrance, Basic/module or complete-mode boundaries.
+
 ## Mixed native Occupy pool — 16 October 2026
 
 Standing choose-recommended extends the existing explicitly provisional
@@ -16,8 +27,8 @@ Either Ecaz or Richese may form the active allied plan. The selected plan
 actor receives its private mixed variable wheel and explicit provisional
 notice, not Ecaz's own ordinary maximum. Richese as opposing army instead
 uses only its own additive pool. Visible ordinary counters never disclose
-the concealed prospective increment to rivals. Original prescience/full-plan
-restrictions remain attached to the physical force owner.
+the concealed prospective increment to rivals outside a distinct authorized
+special plan read. Ordinary Prescience restrictions follow the physical owner.
 
 Original Karama prevention preserves the chosen lead but removes the fixed
 contribution and all unselected ally strength. Selected Ecaz uses only Ecaz
@@ -92,8 +103,9 @@ Advanced ordinary mixed battles and discounted allied shipments now reuse
 the explicitly provisional policies below. Supplied physical p36 B gives
 reserve-limited materialization and p36 D permits allied off-planet forces;
 p37 C gives the rounded Guild fee. These passages do not specifically
-adjudicate the mixed dial cap or price/payee precedence. Combined Ecaz
-Occupy and whole-plan inspection remain guarded; mode gates are unchanged.
+adjudicate the mixed dial cap or price/payee precedence. At that checkpoint,
+combined Occupy and whole-plan inspection were guarded; current cutovers above
+retain their explicit provisional interpretations and mode gates.
 
 `Battle.mixedNoFieldPlayers` and the owner-only `battle.mixedNoField` notice
 apply in both modes. Native Advanced support is committed separately and
@@ -209,7 +221,7 @@ This table records the original adapter contract. The implemented subset and cur
 
 1. **Reserve shortage when destroyed.** Voluntary/battle text explicitly caps by reserves; the destruction sentence says to lose the indicated quantity without repeating the shortage clause. The pure model caps materialization to avoid creating physical units, but that is conservation-based composition for storm/worm losses, not an independently answered FAQ. It does not select substitute losses from unrelated board forces.
 2. **Mixed forces and battle dials.** The FAQ forbids dialing more than reserves in a No-Field battle. Existing ordinary counters are possible, but no retrieved specific answer defines the cap across those counters, multiple sectors, typed units or independent reserve uses. Basic/Advanced ordinary and the selected Advanced Occupy prototype use the explicitly provisional additive pool above. This does not settle that source question or admit Basic mixed coalition/module profiles.
-3. **Full-plan special Karama and structured Truthtrance.** The ordinary Atreides dial prohibition is explicit. Whether a broader entire-plan power or a particular promise question overrides it was not resolved by a retrieved specific answer. Do not leak the value through private legal-plan previews, public maximum dials, error strings or bot reasoning.
+3. **Full-plan special Karama and structured Truthtrance.** The current prototype distinguishes supplied p27 F's special entire-plan power from p27 C/p36 B ordinary Prescience under the explicit provisional contract above; private reading does not reveal the physical token. No retrieved dedicated combined FAQ adjudicates that distinction or broader promise questions. Structured Truthtrance, public maxima, other-player legal previews and reasoning retain their original entitled boundaries.
 4. **Homeworld use.** R3 recommends Richese in a Homeworld combination but supplies no retrieved No-Field-specific rule defining off-planet hidden custody, one-on-planet versus off-planet coexistence, or homeworld threshold disclosure. General module availability is not an answer to those lifecycle questions. The isolated model represents a single Arrakis marker and does not authorize Homeworld placement.
 5. **Capturing, transferring or returning a concealed marker as a force.** Movement-as-a-force and Gamont's explicit forced reveal do not establish a general conversion for every card or Guild transport-to-reserves. A generic return helper must not erase a hidden token without a source-backed reveal/custody cause. This module exposes no such automatic escape from last-use history.
 6. **Allied discounts and reserve source.** Ordinary consent, typed allocation and funding are integrated. Guild-recipient and already-active Karama price/payee use the explicitly provisional prototype in both modes. Ordinary Fremen reserves are on-planet and remain ineligible for this off-planet method. See `RICHESE_ALLIED_SHIPMENT_AUDIT.md`.
