@@ -295,24 +295,6 @@ void test('unused Duke expires at turn end and a later eligible turn can acquire
   assert.equal(reacquired.dukeVidal!.leader.id, DUKE_VIDAL_ID);
 });
 
-void test('advanced Harkonnen configurations uniformly gate unresolved Duke capture before acquiring', () => {
-  for (const hasCaptive of [false, true]) {
-    const g = fixture('harkonnen');
-    g.advanced = true;
-    if (hasCaptive) {
-      g.dukeVidal!.leader.capturedBy = 'e';
-      g.dukeVidal!.leader.concealed = {
-        captor: 'e',
-        controller: 'm',
-        dead: false,
-        deaths: 0,
-      };
-    }
-    const done = finishMovement(g);
-    assert.notEqual(done.response?.kind, 'moritaniDuke');
-    assert.equal(done.dukeVidal!.controller, null);
-  }
-});
 
 void test('every AI profile can legally plan with its shared Duke when no native leader remains alive', () => {
   for (const difficulty of DIFFICULTIES) {

@@ -1,8 +1,10 @@
 import type { Game } from './engine';
 import type { FactionId } from './catalog';
 import { acquireDuke, DUKE_VIDAL_ID, type DukeState } from './duke-vidal';
+import type { FactionModuleProfile } from './faction-module-profile';
+import { standaloneE3NexusProfile } from './nexus-module-profile';
 
-export type EcazDukeContext = {
+export type EcazDukeContext = Partial<FactionModuleProfile> & {
   status: Game['status'];
   turn: number;
   advanced: boolean;
@@ -54,7 +56,8 @@ export function quoteEcazDukeAcquisition(
     'context',
   );
   requireDuke(
-    !(g.advanced && g.players.some((p) => p.faction === 'harkonnen')),
+    !(g.advanced && g.players.some((p) => p.faction === 'harkonnen')) ||
+      (!!g.expansions && standaloneE3NexusProfile(g as FactionModuleProfile)),
     tableBlock,
     'table',
   );

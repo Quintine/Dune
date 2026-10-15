@@ -33,8 +33,8 @@ The [base Harkonnen capture rules, p. 17](https://www.gf9games.com/dunegame/wp-c
 | Combination                                         | Evidence boundary and safe implementation scope                                                                                                                                                                                                                                                                        |
 | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Moritani acquisition from captured or ghola custody | Ecaz’s Ambassador explicitly excludes both; Moritani’s acquisition excludes only Tanks and says to take Duke from any controller. Do not silently copy the Ecaz exclusions as a confirmed Moritani rule. The interaction with concealed capture and the apparent ghola restriction needs an explicit supported policy. |
-| Duke used in a lost battle against Harkonnen        | One-battle tenure and postbattle capture both apply. No retrieved Duke-specific text orders release versus selection into the capture pool. Removing him first changes the random pool; keeping him first can change custody. Gate this combination until resolved rather than choosing by handler order.              |
-| Returning a captured Duke                           | Native identity is Ecaz, but temporary prior custody may be Moritani or a loaned ally. Base capture return plus Duke’s special acquisition restrictions do not explicitly settle active-control versus set-aside destination in every combination. Preserve prior custody rather than discarding that information.     |
+| Duke used in a lost battle against Harkonnen | Original standalone Ecaz/no-Skills Nexus now retains the eligible surviving disc in the real capture pool through a validated release witness. This capture-before-final-return composition is provisional; see the current follow-up below. |
+| Returning a captured Duke | Current provisional policy restores an unused valid prior tenure on native early return; used/dead/expired tenure is set aside. Nexus liberation clears captivity rather than restoring the captor later. Broader captured Moritani acquisition remains unresolved. |
 | Loan to the new Ecaz ally | Basic has an optional same-disc first version after accepted Ambassador alliance consent. The authorized supplied Advanced PDF, physical p30 Ecaz A, instead adds an available Duke automatically after consent and sets an unused disc aside at turn end; that path is now connected without another acknowledgement. One-battle release is still provisional. Capture and alliance-break interactions remain for refinement. |
 | Ecaz co-occupied battles                            | Ecaz’s Occupy rules distinguish participating forces from the faction chosen to fight. Duke eligibility excludes battles involving Ecaz, but no direct combined example decides every Ecaz-ally designation case. Ordinary faction-pair battle lists alone do not certify the full Occupy interaction.                 |
 | Revival alternatives                                | Ecaz’s Tleilaxu Ambassador effect and sharing an Ambassador benefit may interact with the absolute Ecaz-only restriction. No retrieved specific exception permits another faction to revive Duke. Keep that restriction unless a primary clarification establishes otherwise.                                          |
@@ -76,3 +76,32 @@ accounting, ordinary slot and one physical death history remain separate from
 the Ghola card's free return. Native first-cohort five-in-Tanks eligibility is
 supported; repeated six-disc cycles and exceptional custody stay guarded.
 See [Ecaz revival](ECAZ_REVIVAL_RULES.md#selected-product-interpretation-28-september-2026).
+
+## Original capture and legal Ghola composition — 14 October 2026
+
+The standalone Ecaz/classic Nexus envelope without Skills now includes
+original Advanced Harkonnen capture, Keep/Execute, captive battle use and
+all-native-Harkonnen-dead return for the separate disc. This supersedes the
+historical blanket exclusion above only within that already admitted profile.
+The original Ambassador acquisition and Ecaz-only revival use the same scope;
+paired Moritani/Harkonnen, shared-disc training and unrelated combinations
+are not opened.
+
+The original capture pool retains a surviving just-used losing Duke through
+a validated battle-release witness. Prior tenure is retained underneath
+captivity; private selection/execution remains concealed from unrelated seats.
+Execution pays two spice, records at least two deaths and returns the dead
+disc to Ecaz's Tanks. A real public use/return, Nexus liberation or revival
+clears the private snapshot rather than exposing server-only custody fields.
+
+The selected **provisional** native return policy restores only unused,
+unexpired prior control; otherwise the disc is set aside. Actual Nexus
+liberation removes captivity permanently and ends after one battle or the
+turn, never returning Duke to the old captor. This is a recommended product
+composition, not an inspected publisher priority/return ruling.
+
+Ecaz's actual Ghola returns Duke alive and set aside, without ordinary slot
+use; separate Cunning can then acquire him. Only Ecaz revives him: no
+Tleilaxu-owned foreign Ghola is manufactured. Native identity, strength6,
+five-disc faction rosters, absent Traitor card and death history remain.
+[Current controls, verification and remaining gates](NEXUS_ECAZ_RULES.md#original-captured-duke-and-ecaz-ghola-composition--14-october-2026).

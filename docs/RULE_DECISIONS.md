@@ -66,6 +66,25 @@ These decisions do not open public module/faction or complete-mode gates.
 
 These decisions do not open public module/faction or complete-mode gates.
 
+## Recommended shared-Duke capture composition — 14 October 2026
+
+Use original Advanced Harkonnen capture for the existing standalone
+Ecaz/classic no-Skills Nexus profile. Preserve the eligible surviving
+just-used losing Duke in the lottery across temporary one-battle release.
+Retain prior tenure underneath capture; original early return restores it
+only while unused and valid, otherwise sets the disc aside. Nexus liberation
+clears captivity permanently, with one-battle/current-turn tenure and no
+later captor restoration. These ordering/return choices are **provisional
+product composition**, not newly retrieved publisher rulings or numeric
+user decisions.
+
+Keep the binding Ecaz-only revival rule. An actual Ecaz Ghola returns Duke
+alive and set aside; a separate Cunning may claim it. Do not manufacture a
+Tleilaxu-owned foreign-Ghola Duke to exercise an illegal source. Preserve
+original secret capture/execution visibility, two-spice bounty and death
+history. Broader roster/Skills/phase boundaries remain.
+[Source, native lifecycle and verification](NEXUS_ECAZ_RULES.md#original-captured-duke-and-ecaz-ghola-composition--14-october-2026).
+
 ## Emperor original native bank admission — 14 October 2026
 
 Apply the existing printed retained-price purchase to original normal bank
@@ -653,7 +672,7 @@ These are unresolved in the cited records. Do not infer an answer from elapsed t
 | CHOAM Secret Ally battle timing | The printed after-victory inspection is optional and the Nexus identity stays secret. The connected prototype chooses a uniform use-or-continue window for every winner when Nexus is enabled and CHOAM absent; nonholders pass, while a holder may decide after the result. This privacy-preserving prompt is a product inference, not publisher text. A holder-only pause would reveal custody and a precommitment would remove the printed choice. Ordinary Karama cancellation remains unestablished by retrieved sources; no response is invented. | [After-victory inspection boundary](NEXUS_CHOAM_SECRET_ALLY.md#after-victory-inspection-audit) |
 | Moritani Secret Ally battle timing | The printed after-loss retention is optional and the Nexus card remains secret. The connected prototype offers the same choice to every loser when Moritani is absent and at least one publicly revealed played card is retainable; a loser with no eligible public card has no useful choice, independent of hidden custody. Only an unallied holder may spend the physical card. This prompt is a privacy-preserving product inference, not publisher timing text. Native Moritani alliance retention and its Karama response remain separate; no generic Secret Ally counter is invented. | [Nexus retention boundary](NEXUS_CARD_RULES.md#moritani-secret-ally-retention-timing) |
 | Ecaz Secret Ally traitor inquiry | The printed panel asks one selected player whether they hold any of the holder's leaders as Traitors, without identifying a leader; it specifies neither native-versus-controlled scope nor answer audience. The connected prototype chooses native printed faction leaders (including dead/captured), ordinary Traitor Cards rather than Face Dancers, and a holder-only historical yes/no. This is a privacy-preserving product interpretation, **not** a publisher ruling. Foreign Ghola/captive scope and table-wide disclosure remain release boundaries. | [Ecaz inquiry source and bounded runtime](NEXUS_ECAZ_RULES.md#bounded-secret-ally-traitor-inquiry-runtime) |
-| Ecaz native Nexus Cunning timing | The printed Cunning takes Duke for this turn even from capture, Tanks or Ghola, without a phase. The quiet Battle prototype now covers living control or set-aside Tanks. Tanks preserve deaths and reset use under a provisional independent-resurrection policy; this is not a numerical user ruling. Captured/Ghola return destinations and Advanced Harkonnen remain guarded; ordinary Ambassador and paid-revival custody are unchanged. | [Source and bounded runtime](NEXUS_ECAZ_RULES.md#bounded-native-cunning-duke-vidal) |
+| Ecaz native Nexus Cunning timing | Printed Cunning takes Duke for this turn even from capture, Tanks or Ghola, without a phase. Quiet Battle remains a product boundary. Original standalone Ecaz/no-Skills Advanced-Harkonnen capture and liberation now use provisional capture-before-final-release and no-captor-restoration policies. Tanks preserve deaths and independently reset use. Actual Ecaz Ghola returns set aside before separate Cunning; foreign-Ghola revival remains forbidden by Ecaz-only permission. Paired/Skills and broader timing stay guarded. | [Current source and bounded runtime](NEXUS_ECAZ_RULES.md#original-captured-duke-and-ecaz-ghola-composition--14-october-2026) |
 | Emperor Secret Ally purchase timing | Uniform buyer/committed-beneficiary confirmation prevents a holder-only pause disclosing hidden eligibility; no beneficiary veto. Original classic/native bank admission, Richese cache/Advanced Black Market, Ambassador and joint special Karama keep distinct sources. Uniform timing and seller/direct compositions remain visibly provisional recommendations, not publisher timing rulings. Old bank receipt stays unchanged; strict legacy physical revival never broadens. Full combinations remain open; CHOAM closing sales/trades are not direct purchases. | [Native bank source](NEXUS_EMPEROR_RULES.md#original-native-bank-auction-admission--14-october-2026), [Ambassador](NEXUS_EMPEROR_RULES.md#recommended-original-ambassador-purchase--14-october-2026), [seller](NEXUS_EMPEROR_RULES.md#recommended-richese-seller-unpaid-purchase--14-october-2026), [joint special](NEXUS_EMPEROR_RULES.md#recommended-joint-richese-special-purchase--14-october-2026) |
 | Discovery prototype inferences | Free entry uses storm order and ordinary source-storm restrictions; these are general-rule inferences. Great Maker currently follows ordinary first-turn worm skipping and Sandtrout suppression; an exhausted token type creates no replacement token. These preserve current source interpretation and physical inventory but are not separately confirmed rulings or complete combined-module certification. | [Interpretations for refinement](DISCOVERY_PROTOTYPE.md#interpretations-retained-for-refinement) |
 | Other Homeworld combinations | Population/force splitting, removal custody, replacement shortages, income accounting and placement ordering remain local to their detailed contracts. | [Homeworld rules](HOMEWORLD_RULES.md), [occupation](HOMEWORLD_OCCUPATION_RULES.md) and the effect documents above |

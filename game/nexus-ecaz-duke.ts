@@ -1,6 +1,6 @@
 import type { FactionId } from './catalog';
 import type { Game } from './engine';
-import { acquireDuke, DUKE_VIDAL_ID, type DukeSource } from './duke-vidal';
+import { acquireDuke, dukeController, DUKE_VIDAL_ID, type DukeSource } from './duke-vidal';
 import { nexusCardMode } from './nexus-cards';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
 import { mixedE3NexusLeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile } from './leader-skill-profile';
@@ -19,7 +19,7 @@ type DukeBefore = {
 };
 
 /** A completed physical card play, not a second copy of the Duke's current custody. */
-export type NexusEcazDukeReceipt = {
+type NexusEcazDukeLivingReceipt = {
   event: string;
   owner: string;
   ownerFaction: 'ecaz';
@@ -35,6 +35,31 @@ export type NexusEcazDukeReceipt = {
   signature: string;
 };
 
+/** Version two exists only for a real captive, retaining its private original underlay. */
+export type NexusEcazDukeCapturedReceipt = Omit<NexusEcazDukeLivingReceipt, 'before' | 'after'> & {
+  version: 2;
+  before: Omit<DukeBefore, 'leader'> & {
+    leader: {
+      id: typeof DUKE_VIDAL_ID;
+      dead: false;
+      deaths: number;
+      usedAt: null;
+      capturedBy: string;
+      gholaBy: null;
+      concealed: {
+        captor: string; controller: string; dead: false; deaths: number; usedAt: string | null;
+      } | null;
+    };
+  };
+  after: NexusEcazDukeLivingReceipt['after'] & {
+    leader: {
+      id: typeof DUKE_VIDAL_ID; dead: false; deaths: number; usedAt: null;
+      capturedBy: null; gholaBy: null; concealed: null;
+    };
+  };
+};
+export type NexusEcazDukeReceipt = NexusEcazDukeLivingReceipt | NexusEcazDukeCapturedReceipt;
+
 export function nexusEcazDukeEvent(
   turn: number, phase: number, owner: string, sequence: number,
   beforeController: string | null, beforeAcquiredTurn: number | null,
@@ -44,6 +69,20 @@ export function nexusEcazDukeEvent(
 }
 
 export function nexusEcazDukeSignature(receipt: NexusEcazDukeReceipt): string {
+  if ('version' in receipt) {
+    const leader = receipt.before.leader;
+    const hidden = leader.concealed;
+    const after = receipt.after;
+    return JSON.stringify(['nexusEcazDukeCapturedReceipt', receipt.version,
+      receipt.event, receipt.owner, receipt.ownerFaction, receipt.card, receipt.mode,
+      receipt.roster, receipt.advanced, receipt.turn, receipt.phase, receipt.sequence,
+      receipt.before.controller, receipt.before.acquiredTurn, receipt.before.source,
+      leader.id, leader.dead, leader.deaths, leader.usedAt, leader.capturedBy, leader.gholaBy,
+      hidden && [hidden.captor, hidden.controller, hidden.dead, hidden.deaths, hidden.usedAt],
+      after.controller, after.acquiredTurn, after.source,
+      after.leader.id, after.leader.dead, after.leader.deaths, after.leader.usedAt,
+      after.leader.capturedBy, after.leader.gholaBy, after.leader.concealed]);
+  }
   return JSON.stringify(['nexusEcazDukeReceipt', receipt.event, receipt.owner,
     receipt.ownerFaction, receipt.card, receipt.mode, receipt.roster,
     receipt.advanced, receipt.turn, receipt.phase, receipt.sequence,
@@ -61,10 +100,14 @@ export function quoteNexusEcazDuke(g: Game, owner: string, automaticPending = fa
   if (!holder || holder.faction !== 'ecaz' ||
     g.nexusCards?.cards?.hands[owner] !== 'ecaz') return null;
   const duke = g.dukeVidal;
+  const hidden = duke?.leader.concealed;
+  const masked = !!hidden && owner !== hidden.captor && owner !== hidden.controller;
+  const eventCustody = masked && duke?.captureVisibility ? duke.captureVisibility : duke;
   const roster = g.players.map(player => player.faction);
   let blocked: string | null = null;
-  if (g.advanced && g.players.some(player => player.faction === 'harkonnen'))
-    blocked = 'Duke Vidal battle use is unavailable with Advanced Harkonnen.';
+  if (g.advanced && g.players.some(player => player.faction === 'harkonnen') &&
+    !standaloneE3NexusProfile(g))
+    blocked = 'Duke Vidal battle use is unavailable with Advanced Harkonnen in this profile.';
   else if (!nexusEcazDukeModeSupported(g) || nexusCardMode('ecaz', holder.faction, roster) !== 'cunning')
     blocked = 'Ecaz Nexus Cunning requires a supported original paired or standalone Ecaz Nexus profile.';
   else if (holder.ally) blocked = 'Use Ecaz Nexus Cunning while unallied.';
@@ -72,28 +115,38 @@ export function quoteNexusEcazDuke(g: Game, owner: string, automaticPending = fa
     blocked = 'Use Ecaz Nexus Cunning at the Battle phase boundary.';
   else if (nexusCleanPlayBlocked(g, automaticPending))
     blocked = 'Finish the current interaction before using Ecaz Nexus Cunning.';
-  else if (!duke || duke.leader.id !== DUKE_VIDAL_ID ||
-    duke.leader.capturedBy || duke.leader.gholaBy)
-    blocked = 'Only an uncaptured, non-Ghola Duke Vidal can be acquired.';
-  else if (duke.leader.dead &&
-    (duke.controller !== null || duke.acquiredTurn !== null || duke.source !== null))
-    blocked = 'Duke Vidal must be set aside in the Tanks before Ecaz Nexus acquisition.';
-  else if (!duke.leader.dead && duke.leader.usedAt)
-    blocked = 'Duke Vidal has already been used in battle this turn.';
-  else if (duke.controller === owner)
-    blocked = 'Ecaz already controls Duke Vidal.';
+  else if (!duke || duke.leader.id !== DUKE_VIDAL_ID || duke.leader.gholaBy)
+    blocked = 'Only the shared non-Ghola Duke Vidal can be acquired.';
+  else if (duke.leader.capturedBy && (!g.advanced ||
+    !g.players.some(player => player.id === duke.leader.capturedBy && player.faction === 'harkonnen')))
+    blocked = 'Duke Vidal lacks an original Harkonnen capture source.';
+  else {
+    try {
+      acquireDuke(duke, owner, g.turn, 'ecazNexus');
+      if (dukeController(duke) === owner) blocked = 'Ecaz already controls Duke Vidal.';
+    } catch {
+      blocked = duke.leader.usedAt && !duke.leader.dead
+        ? 'Duke Vidal has already been used in battle this turn.'
+        : 'Duke Vidal is unavailable for Ecaz Nexus acquisition.';
+    }
+  }
   return {
     event: nexusEcazDukeEvent(g.turn, 6, owner, g.nexusEcazDukeHistory?.length ?? 0,
-      duke?.controller ?? null, duke?.acquiredTurn ?? null),
+      eventCustody?.controller ?? null, eventCustody?.acquiredTurn ?? null),
     blocked,
-    dukeController: duke?.controller ?? null,
+    dukeController: duke
+      ? masked
+        ? hidden!.controller ?? duke.controller
+        : dukeController(duke)
+      : null,
   };
 }
 
 export function nexusEcazDukeModeSupported(g: Game): boolean {
   if ((mixedE3NexusProfile(g) || standaloneE3NexusProfile(g) || pairedE3NexusProfile(g)) &&
     g.players.some(player => player.faction === 'ecaz') &&
-    !g.sandtrout && !(g.advanced && g.players.some(player => player.faction === 'harkonnen')))
+    !g.sandtrout && (!(g.advanced && g.players.some(player => player.faction === 'harkonnen')) ||
+      standaloneE3NexusProfile(g)))
     return !!g.nexusCards?.cards && g.players.length >= 3;
   if (g.leaderSkills && (mixedE3NexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g) || pairedE3NexusLeaderSkillsProfile(g)) &&
     g.players.some(player => player.faction === 'ecaz') && !g.sandtrout)
@@ -118,9 +171,41 @@ export function createNexusEcazDukeReceipt(
   if (!offer || offer.blocked || sequence !== (g.nexusEcazDukeHistory?.length ?? 0))
     throw new Error(offer?.blocked ?? 'Ecaz Nexus Cunning is unavailable.');
   const duke = g.dukeVidal!;
+  // History records actual server custody, not an unrelated owner's masked action token.
+  const event = nexusEcazDukeEvent(g.turn, 6, owner, sequence, duke.controller, duke.acquiredTurn);
   const after = acquireDuke(duke, owner, g.turn, 'ecazNexus');
+  if (duke.leader.capturedBy) {
+    const hidden = duke.leader.concealed;
+    const receipt: NexusEcazDukeCapturedReceipt = {
+      version: 2,
+      event, owner, ownerFaction: 'ecaz', card: 'ecaz', mode: 'cunning',
+      roster: g.players.map(player => player.faction), advanced: g.advanced,
+      turn: g.turn, phase: 6, sequence,
+      before: {
+        controller: duke.controller, acquiredTurn: duke.acquiredTurn, source: duke.source,
+        leader: {
+          id: DUKE_VIDAL_ID, dead: false, deaths: duke.leader.deaths, usedAt: null,
+          capturedBy: duke.leader.capturedBy, gholaBy: null,
+          concealed: hidden ? {
+            captor: hidden.captor, controller: hidden.controller!, dead: false,
+            deaths: hidden.deaths, usedAt: hidden.usedAt ?? null,
+          } : null,
+        },
+      },
+      after: {
+        controller: after.controller!, acquiredTurn: after.acquiredTurn!, source: 'ecazNexus',
+        leader: {
+          id: DUKE_VIDAL_ID, dead: false, deaths: after.leader.deaths, usedAt: null,
+          capturedBy: null, gholaBy: null, concealed: null,
+        },
+      },
+      signature: '',
+    };
+    receipt.signature = nexusEcazDukeSignature(receipt);
+    return receipt;
+  }
   const receipt: NexusEcazDukeReceipt = {
-    event: offer.event, owner, ownerFaction: 'ecaz', card: 'ecaz', mode: 'cunning',
+    event, owner, ownerFaction: 'ecaz', card: 'ecaz', mode: 'cunning',
     roster: g.players.map(player => player.faction), advanced: g.advanced,
     turn: g.turn, phase: 6, sequence,
     before: {
@@ -146,6 +231,10 @@ const turn = (value: unknown): value is number =>
 export function validateNexusEcazDuke(
   g: Game, receipt: NexusEcazDukeReceipt, index: number,
 ): void {
+  if (object(receipt) && 'version' in receipt) {
+    validateCapturedReceipt(g, receipt as NexusEcazDukeCapturedReceipt, index);
+    return;
+  }
   const before = receipt?.before;
   const after = receipt?.after;
   const leader = before?.leader;
@@ -187,4 +276,57 @@ export function validateNexusEcazDuke(
       receipt.owner, receipt.sequence, before.controller, before.acquiredTurn) ||
     receipt.signature !== nexusEcazDukeSignature(receipt))
     throw new Error('Ecaz Nexus Cunning lost its original Duke custody or physical play.');
+}
+
+function validateCapturedReceipt(g: Game, receipt: NexusEcazDukeCapturedReceipt, index: number): void {
+  const before = receipt.before;
+  const leader = before?.leader;
+  const hidden = leader?.concealed;
+  const after = receipt.after;
+  const returned = after?.leader;
+  const controller = g.players.find(player => player.id === before?.controller);
+  const captor = g.players.find(player => player.id === leader?.capturedBy);
+  if (!keys(receipt, 'advanced,after,before,card,event,mode,owner,ownerFaction,phase,roster,sequence,signature,turn,version') ||
+    receipt.version !== 2 ||
+    !object(before) || !keys(before, 'acquiredTurn,controller,leader,source') ||
+    !object(leader) || !keys(leader, 'capturedBy,concealed,dead,deaths,gholaBy,id,usedAt') ||
+    !object(after) || !keys(after, 'acquiredTurn,controller,leader,source') ||
+    !object(returned) || !keys(returned, 'capturedBy,concealed,dead,deaths,gholaBy,id,usedAt') ||
+    !nexusEcazDukeModeSupported(g) ||
+    !g.players.some(player => player.id === receipt.owner && player.faction === 'ecaz') ||
+    receipt.ownerFaction !== 'ecaz' || receipt.card !== 'ecaz' || receipt.mode !== 'cunning' ||
+    !Array.isArray(receipt.roster) || receipt.roster.length !== g.players.length ||
+    receipt.roster.some((faction, position) => faction !== g.players[position]?.faction) ||
+    nexusCardMode('ecaz', receipt.ownerFaction, receipt.roster) !== 'cunning' ||
+    typeof receipt.advanced !== 'boolean' || receipt.advanced !== g.advanced ||
+    !turn(receipt.turn) || receipt.turn > g.turn ||
+    receipt.phase !== 6 || (receipt.turn === g.turn && g.phase < 6) ||
+    !Number.isSafeInteger(index) || index < 0 || receipt.sequence !== index ||
+    leader.id !== DUKE_VIDAL_ID || leader.dead !== false ||
+    !Number.isSafeInteger(leader.deaths) || leader.deaths < 0 ||
+    leader.usedAt !== null || leader.gholaBy !== null ||
+    !captor || captor.faction !== 'harkonnen' || !receipt.advanced ||
+    leader.capturedBy === receipt.owner || leader.capturedBy === before.controller ||
+    (before.controller === null
+      ? before.acquiredTurn !== null || before.source !== null
+      : !controller || !turn(before.acquiredTurn) || before.acquiredTurn > receipt.turn ||
+        !['moritani', 'ecaz', 'ecazNexus', 'ally'].includes(before.source as string) ||
+        (before.source === 'moritani' && controller.faction !== 'moritani') ||
+        ((before.source === 'ecaz' || before.source === 'ecazNexus') && controller.faction !== 'ecaz')) ||
+    !(hidden === null || (object(hidden) &&
+      keys(hidden, 'captor,controller,dead,deaths,usedAt') &&
+      hidden.captor === leader.capturedBy && hidden.dead === false &&
+      hidden.deaths === leader.deaths &&
+      (hidden.usedAt === null || (typeof hidden.usedAt === 'string' && hidden.usedAt.length > 0)) &&
+      hidden.controller !== hidden.captor &&
+      g.players.some(player => player.id === hidden.controller) &&
+      (before.controller === null || hidden.controller === before.controller))) ||
+    returned.id !== DUKE_VIDAL_ID || returned.dead !== false ||
+    returned.deaths !== leader.deaths || returned.usedAt !== null ||
+    returned.capturedBy !== null || returned.gholaBy !== null || returned.concealed !== null ||
+    after.controller !== receipt.owner || after.acquiredTurn !== receipt.turn || after.source !== 'ecazNexus' ||
+    receipt.event !== nexusEcazDukeEvent(receipt.turn, receipt.phase, receipt.owner, receipt.sequence,
+      before.controller, before.acquiredTurn) ||
+    receipt.signature !== nexusEcazDukeSignature(receipt))
+    throw new Error('Ecaz Nexus Cunning lost its original captured Duke custody or physical play.');
 }

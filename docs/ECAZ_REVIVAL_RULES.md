@@ -24,6 +24,24 @@ available, without making a repeated six-disc algorithm up. Captured, Ghola
 or concealed shared-disc custody and Advanced Harkonnen combinations retain
 their existing uniform boundary.
 
+## Captured return and legal Ghola composition — 14 October 2026
+
+The original standalone Ecaz/classic no-Skills Nexus envelope now admits
+Advanced Harkonnen. A real executed captive Duke returns dead to Ecaz's
+Tanks with at least two deaths; only the exact validated returned-dead
+private capture snapshot is accepted, not arbitrary concealed live custody.
+Normal Ecaz-only revival and a separate actual Cunning can use that returned
+disc under their own original costs and allowances.
+
+Actual Ecaz Ghola returns the same Duke alive and set aside, preserves deaths,
+clears prior use and spends no ordinary leader slot. A separate quiet Cunning
+can acquire it. Tleilaxu foreign-Ghola revival remains expressly forbidden;
+no foreign custody is staged to pretend that the printed exceptional source
+has a legal producer. Repeated six-disc cycles, shared training and broader
+roster/optional combinations remain separate. This supersedes only the
+historical blanket captured-return/Advanced-Harkonnen boundary in that scope.
+[Actual native and 390px proof](NEXUS_ECAZ_RULES.md#original-captured-duke-and-ecaz-ghola-composition--14-october-2026).
+
 ## Explicit expansion rules
 
 Ecaz may revive Duke for **5 spice regardless of how many leaders are dead**. Its ordinary leaders become revivable with **five leaders in the Tanks, including Duke**. The clarification expressly permits this while Ecaz still holds one living leader, regardless of which leader that is. Only Ecaz may revive Duke, including through the Ghola Treachery Card. [GF9 Ecaz & Moritani, printed pp. 8–9](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf)

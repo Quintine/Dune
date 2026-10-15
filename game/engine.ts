@@ -460,6 +460,11 @@ import {
   acquireDuke,
   consumeDuke,
   expireDuke,
+  dukeController,
+  captureDuke,
+  releaseCapturedDuke,
+  executeCapturedDuke,
+  type DukeReleasedCaptureWitness,
   DUKE_VIDAL_ID,
   type DukeState,
 } from './duke-vidal';
@@ -2186,7 +2191,7 @@ export type Game = {
   } | null;
   hajr: string[];
   decision: Decision | null;
-  pendingCapture: { player: string; loser: string; territory: string } | null;
+  pendingCapture: { player: string; loser: string; territory: string; duke?: DukeReleasedCaptureWitness } | null;
   moritaniRetention?: MoritaniRetention | null;
   response: ResponseWindow | null;
   wormRides: string[];
@@ -17452,7 +17457,7 @@ function ecazAllianceQuote(g: Game, owner: string, entrant: string) {
   }
 }
 function ecazAmbassadorLoanBlock(g: Game, owner: Player, entrant: Player) {
-  if (g.advanced && byFaction(g, 'harkonnen'))
+  if (g.advanced && byFaction(g, 'harkonnen') && !standaloneE3NexusProfile(g))
     return 'Advanced Duke loans with Harkonnen capture remain guarded.';
   if (owner.ally !== entrant.id || entrant.ally !== owner.id)
     return 'The new Ecaz alliance is no longer current.';
@@ -18494,11 +18499,7 @@ function offerMoritaniDuke(g: Game) {
   g.dukeVidal ??= createDukeVidal();
   const duke = g.dukeVidal;
   if (duke.leader.dead || duke.controller === owner.id) return false;
-  if (
-    duke.leader.capturedBy ||
-    duke.leader.gholaBy ||
-    (g.advanced && byFaction(g, 'harkonnen'))
-  ) {
+  if (duke.leader.capturedBy || duke.leader.gholaBy) {
     log(
       g,
       'Duke Vidal acquisition with exceptional capture or ghola custody is still being implemented.',
@@ -20583,13 +20584,7 @@ function controlledLeaders(g: Game, p: Player) {
     owner.leaders.filter((l) => controlsLeader(p, l)),
   );
   const duke = g.dukeVidal;
-  if (
-    duke &&
-    duke.controller === p.id &&
-    !duke.leader.capturedBy &&
-    !duke.leader.gholaBy &&
-    !(g.advanced && byFaction(g, 'harkonnen'))
-  )
+  if (duke && !duke.leader.gholaBy && dukeController(duke) === p.id)
     native.push(duke.leader);
   return native;
 }
@@ -20603,25 +20598,47 @@ function returnCaptives(g: Game, captor: Player) {
         delete l.concealed;
         returned++;
       }
+  if (g.dukeVidal?.leader.capturedBy === captor.id) {
+    g.dukeVidal = releaseCapturedDuke(g.dukeVidal, captor.id, g.turn);
+    returned++;
+  }
   if (returned)
     log(
       g,
       `${captor.name} returned ${returned} captive leaders because all native leaders are dead.`,
     );
 }
-function captureCandidates(g: Game, loser: string, t: string) {
-  return controlledLeaders(g, getPlayer(g, loser)).filter(
-    (l) => !isAuditorLeader(l) && !l.dead && (!l.usedAt || l.usedAt === t),
-  );
+/** Original random pool; the optional witness preserves a just-used living
+ * losing Duke after his separate one-battle release, never a second disc. */
+export function captureCandidates(g: Game, loser: string, t: string,
+  released?: DukeReleasedCaptureWitness): Leader[] {
+  const candidates = controlledLeaders(g, getPlayer(g, loser)).filter(
+    (leader) => !isAuditorLeader(leader) && !leader.dead && (!leader.usedAt || leader.usedAt === t));
+  if (released) {
+    const duke = g.dukeVidal;
+    requireRule(duke && Object.keys(released).sort().join(',') === 'deaths,usedAt' &&
+      Number.isSafeInteger(released.deaths) && released.deaths >= 0 &&
+      released.usedAt === t && duke.leader.id === DUKE_VIDAL_ID && !duke.leader.dead &&
+      !duke.leader.capturedBy && !duke.leader.gholaBy &&
+      duke.leader.deaths === released.deaths && duke.leader.usedAt === released.usedAt &&
+      duke.controller === null && duke.acquiredTurn === null && duke.source === null,
+    'The original released Duke capture source changed before selection.');
+    requireRule(!candidates.some(leader => leader.id === DUKE_VIDAL_ID),
+      'The original shared Duke cannot occupy two capture slots.');
+    candidates.push(duke.leader);
+  }
+  return candidates;
+}
+function leaderHiddenFrom(g: Game, leader: Leader, viewer: string): boolean {
+  const concealed = leader.concealed;
+  if (!concealed) return false;
+  const owner = g.players.find(player => player.faction === leader.faction);
+  return ![concealed.controller ?? owner?.id, concealed.captor].includes(viewer) &&
+    !(getPlayer(g, viewer).faction === 'tleilaxu' && leader.dead && !leader.capturedBy);
 }
 function projectLeader(g: Game, l: Leader, viewer: string): Leader {
   const { concealed, capturedBy, ...visible } = l;
-  const owner = g.players.find((p) => p.faction === l.faction);
-  if (
-    concealed &&
-    ![concealed.controller ?? owner?.id, concealed.captor].includes(viewer) &&
-    !(getPlayer(g, viewer).faction === 'tleilaxu' && l.dead && !l.capturedBy)
-  ) {
+  if (concealed && leaderHiddenFrom(g, l, viewer)) {
     const result = {
       ...visible,
       dead: concealed.dead,
@@ -20632,6 +20649,16 @@ function projectLeader(g: Game, l: Leader, viewer: string): Leader {
     return result;
   }
   return { ...visible, ...(capturedBy ? { capturedBy } : {}) };
+}
+function projectedSharedDuke(g: Game, viewer: string):
+  Pick<DukeState, 'leader' | 'controller' | 'acquiredTurn' | 'source'> | null {
+  const duke = g.dukeVidal;
+  if (!duke) return null;
+  const leader = projectLeader(g, duke.leader, viewer);
+  const visibility = leaderHiddenFrom(g, duke.leader, viewer) ? duke.captureVisibility : undefined;
+  const controller = visibility ? visibility.controller : leader.capturedBy ?? leader.gholaBy ?? duke.controller;
+  return { controller, acquiredTurn: visibility ? visibility.acquiredTurn : duke.acquiredTurn,
+    source: visibility ? visibility.source : duke.source, leader: { ...leader, controller } };
 }
 /** Public alternatives deliberately never read a foreign No-Field token value. */
 function stonePublicPools(
@@ -23001,8 +23028,12 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
   ] as [Player, Plan, Leader | undefined][]) {
     if (l && !l.dead) l.usedAt = b.territory;
     if (l?.capturedBy === p.id) {
-      delete l.capturedBy;
-      delete l.concealed;
+      if (l.id === DUKE_VIDAL_ID && g.dukeVidal)
+        g.dukeVidal = releaseCapturedDuke(g.dukeVidal, p.id, g.turn);
+      else {
+        delete l.capturedBy;
+        delete l.concealed;
+      }
     }
     if (plan.kwisatz) {
       p.kwisatz ??= { dead: false };
@@ -23021,12 +23052,18 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
   if (harkonnen) returnCaptives(g, harkonnen);
   if (g.advanced && winner?.faction === 'harkonnen') {
     const loser = winner.id === a.id ? d : a;
-    if (captureCandidates(g, loser.id, b.territory).length)
+    const candidates = captureCandidates(g, loser.id, b.territory);
+    if (candidates.length) {
+      const losingPlan = winner.id === a.id ? dp : ap;
       g.pendingCapture = {
         player: winner.id,
         loser: loser.id,
         territory: b.territory,
+        ...(losingPlan.leader === DUKE_VIDAL_ID &&
+          candidates.some(leader => leader.id === DUKE_VIDAL_ID)
+          ? { duke: { deaths: g.dukeVidal!.leader.deaths, usedAt: b.territory } } : {}),
       };
+    }
   }
   if (winner) {
     const loser = winner.id === a.id ? d : a;
@@ -25631,21 +25668,27 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
     g.pendingCapture = null;
     if (canceled) finishBattle(g);
     else {
-      const candidates = captureCandidates(g, capture.loser, capture.territory);
-      const l = shuffle(candidates)[0];
+      const candidates = captureCandidates(g, capture.loser, capture.territory, capture.duke);
+      const selected = shuffle(candidates)[0];
+      const l = selected?.id === DUKE_VIDAL_ID
+        ? (g.dukeVidal = captureDuke(g.dukeVidal!, capture.player, capture.loser,
+          g.turn, capture.territory, capture.duke)).leader : selected;
       if (!l) {
         finishBattle(g);
         return;
       }
-      const owner = g.players.find((p) => p.leaders.includes(l))!;
-      l.concealed = {
-        captor: capture.player,
-        controller: capture.loser,
-        dead: l.dead,
-        deaths: l.deaths,
-        usedAt: l.usedAt,
-      };
-      l.capturedBy = capture.player;
+      const owner = l.id === DUKE_VIDAL_ID ? getPlayer(g, capture.loser) :
+        g.players.find((player) => player.leaders.includes(l))!;
+      if (l.id !== DUKE_VIDAL_ID) {
+        l.concealed = {
+          captor: capture.player,
+          controller: capture.loser,
+          dead: l.dead,
+          deaths: l.deaths,
+          usedAt: l.usedAt,
+        };
+        l.capturedBy = capture.player;
+      }
       const capturedSkill = g.leaderSkills?.assignments.find((a) => a.leader === l.id);
       // This unique card and its leader were publicly assigned. The expansion
       // requires the card to accompany the captive, identifying that capture.
@@ -30840,13 +30883,19 @@ function applyActionInner(
         action.mode === 'keep' || action.mode === 'execute',
         'Choose keep or execute for the captured leader.',
       );
-      const owner = getPlayer(g, decision.owner),
-        l = owner.leaders.find((l) => l.id === decision.leader)!;
+      const owner = getPlayer(g, decision.owner);
+      const l = decision.leader === DUKE_VIDAL_ID ? g.dukeVidal?.leader :
+        owner.leaders.find((leader) => leader.id === decision.leader);
+      requireRule(l?.capturedBy === p.id, 'This captive is no longer controlled by its original captor.');
       if (action.mode === 'execute') {
-        l.dead = true;
-        l.deaths = Math.max(2, l.deaths + 1);
-        delete l.usedAt;
-        delete l.capturedBy;
+        if (l.id === DUKE_VIDAL_ID && g.dukeVidal)
+          g.dukeVidal = executeCapturedDuke(g.dukeVidal, p.id, g.turn);
+        else {
+          l.dead = true;
+          l.deaths = Math.max(2, l.deaths + 1);
+          delete l.usedAt;
+          delete l.capturedBy;
+        }
         p.spice += 2;
         log(g, `${p.name} executed a captive for 2 spice.`);
       } else {
@@ -33365,6 +33414,7 @@ export function viewGame(state: Game, id: string) {
   settleAdvisors(g);
   normalizeBattle(g);
   const me = getPlayer(g, id);
+  const sharedDuke = projectedSharedDuke(g, id);
   const choamPlayer = byFaction(g, 'choam');
   let victoryProgress: StrongholdProgress[] = [];
   let fremenVictory: FremenVictoryProgress | null = null;
@@ -33480,9 +33530,7 @@ export function viewGame(state: Game, id: string) {
     rihani: projectedRihani(g, id),
     advanced: g.advanced,
     advancedPreview: g.advancedPreview === true,
-    dukeVidal: g.dukeVidal
-      ? { ...g.dukeVidal, leader: projectLeader(g, g.dukeVidal.leader, id) }
-      : null,
+    dukeVidal: sharedDuke,
     moritaniTerror: g.moritaniTerror
       ? projectTerror(g.moritaniTerror, me.faction === 'moritani')
       : null,
@@ -34189,12 +34237,9 @@ export function viewGame(state: Game, id: string) {
         .filter((c) => c.revealed)
         .map((c) => c.leader),
       leaders: [
-        ...(g.dukeVidal?.controller === p.id &&
-        !g.dukeVidal.leader.capturedBy &&
-        !g.dukeVidal.leader.gholaBy &&
-        !(g.advanced && byFaction(g, 'harkonnen'))
-          ? [{ ...g.dukeVidal.leader, controller: p.id }]
-          : []),
+        ...(sharedDuke?.controller === p.id &&
+          (!sharedDuke.leader.capturedBy || p.id === id) && !sharedDuke.leader.gholaBy
+          ? [{ ...sharedDuke.leader, controller: p.id }] : []),
         ...p.leaders.map((l) => projectLeader(g, l, id)),
         ...g.players
           .filter((owner) => owner.id !== p.id)

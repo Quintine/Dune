@@ -1,5 +1,46 @@
 # Dune implementation status
 
+## 14 October 2026 — Original captured Duke and legal Ecaz Ghola composition
+
+Connected the existing standalone Ecaz/classic no-Skills Nexus profile to
+Advanced Harkonnen's real capture lottery, including an eligible surviving
+just-used losing Duke across one-battle release. Keep preserves prior tenure;
+Execute pays original two spice and returns the same dead disc to Ecaz Tanks
+with at least two deaths. Real captive battle use and all-native-Harkonnen-dead
+return are connected. Original private capture/execution snapshots stay
+server-only; projected custody and private action tokens retain native secrecy.
+
+Actual Cunning liberates the shared captive or returns the Tanked disc,
+spending one physical Nexus without spice, forces or ordinary revival slot.
+Provisional return policy removes captivity permanently, then sets aside on
+one-battle use or unused turn expiry. Original early captive return restores
+only unused valid prior tenure. Capture ordering/return are recommended
+product composition, not newly retrieved publisher or numerical user rulings.
+
+Binding Ecaz-only revival remains. Actual Ecaz Ghola returns the same Duke
+alive and set aside before a separate Cunning acquisition; no forbidden
+Tleilaxu-owned foreign Ghola is manufactured. Native five-disc rosters, no
+Duke Traitor, strength6 and physical death history remain. No broader paired,
+Skills/training, arbitrary-phase or mode gate is opened.
+
+Frozen related13-file union127/127, types/lint/build pass. Actual production
+GameTable at390px retains a real captive, spends Cunning, seals Duke6 and
+resolves the original battle/inspection suffix into Collection with Duke
+set aside once. Used-captive Execute pays2; actual Ghola controls return
+the dead Duke before separate Cunning. No overflow/browser errors or saved/
+deployed room mutation. Initial smoke assumptions about automatic empty
+Battle closure were corrected with real pending battles, not engine pauses.
+Thirteen actual native API scenarios pass: unused/just-used Keep/Execute
+and subsequent Cunning, liberated battle use, unused expiry, captive use,
+all-five-native-dead return and real Ecaz Ghola then separate Cunning.
+Smoke assertions distinguish original execution bounty from later Collection
+income and choose a genuinely unrelated audience, not the captor.
+Obsolete SSR wording/action-copy, incidental defaults and obsolete blanket
+capture gates are deleted, not re-pinned. Proof receipts remain outside Git;
+existing build warnings remain. Broad assurance, calibration and complete
+combination/deployed/publication acceptance stay open.
+[Canonical current source and evidence](NEXUS_ECAZ_RULES.md#original-captured-duke-and-ecaz-ghola-composition--14-october-2026).
+
 ## 14 October 2026 — Emperor Nexus original native bank admission
 
 Removed the classic-only prototype bank fence in favor of existing canonical

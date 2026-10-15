@@ -82,6 +82,59 @@ historical save authenticity. The bounded Duke Cunning path below is separate;
 Secret Ally's exceptional leader scope and audience remain unsettled beyond
 the bounded runtime below.
 
+## Original captured Duke and Ecaz Ghola composition — 14 October 2026
+
+The existing standalone Ecaz/classic, no-Skills Nexus envelope now connects
+Advanced Harkonnen's actual postbattle lottery to the one shared Duke. This
+does not open paired Moritani/Harkonnen or shared-Duke training. The original
+Ecaz Ambassador can first acquire an available living Duke in that envelope;
+it still cannot take a captive or Ghola.
+
+The lottery includes an eligible unused Duke and a surviving Duke just used
+in the losing battle. A validated battle witness preserves that candidate
+across the original one-battle release. **This ordering is provisional
+composition**, not a publisher-specific priority ruling. Keeping the captive
+overlays its prior tenure rather than duplicating a disc or native roster.
+Execution pays the original two spice and returns the dead disc to Ecaz's
+Tanks with at least two deaths. Original secret capture/execution visibility
+remains; the retained underlay snapshot is server-only, not a projected field
+or a private-offer token leak.
+
+At the existing quiet Battle boundary, actual Cunning liberates a captured
+living Duke or revives the returned Tanked disc. The physical Nexus is spent
+once, without spice, forces or an ordinary leader-revival allowance. The
+**provisional return policy** clears captivity permanently: one battle or
+unused turn expiry sets Nexus custody aside, never back to the captor.
+Original captive use likewise releases the disc; when all native Harkonnen
+leaders die, an unused, still-valid prior tenure is restored, otherwise it
+is set aside. A living already-used disc gains no fresh same-turn use.
+
+Only Ecaz may revive Duke, including with the actual Ghola Treachery Card.
+The native Ghola returns that same disc alive and set aside, retaining deaths
+and clearing prior use; a separate actual Cunning may then acquire it.
+**No foreign-Ghola Duke is produced or admitted.** This legal composition does
+not claim implementation of a forbidden Tleilaxu-owned Ghola source.
+
+The frozen thirteen-file related union passes **127/127**, with types, lint
+and production build. Actual production GameTable controls at **390px** retain
+the captive, spend Cunning, select Duke6, resolve a real battle and release
+once into Collection; a separate used-captive execution pays two spice.
+Actual Ghola controls return the dead Duke before a separate Nexus spend.
+No horizontal overflow or browser errors were observed. These are isolated
+in-memory paths, not saved-room, deployed, full-combination or recovery
+acceptance. Existing build warnings remain; broad assurance stays deferred.
+Thirteen additional actual native API scenarios pass: unused/just-used
+Keep and Execute, Cunning after each, liberated battle use, unused turn
+expiry, captive use, all-five-native-dead return and actual Ecaz Ghola
+then separate Cunning. They verify original action costs separately from
+later Collection, one identity, no native/Traitor duplication and actual
+returned-dead privacy. Proof JSON remains outside Git.
+See [native scenario regressions](../tests/nexus-duke-capture-runtime.test.ts),
+[custody transitions](../tests/duke-captured-custody.test.ts) and
+[receipt/privacy boundaries](../tests/nexus-ecaz-duke-captured.test.ts).
+The older checkpoints below retain their historical scope; their capture
+and standalone no-Skills Advanced-Harkonnen exclusions are superseded here.
+
 ## Bounded native Cunning: Duke Vidal
 
 When Ecaz and Moritani are both seated in a three-to-six-player Basic or
@@ -176,9 +229,10 @@ of the Tanks follow-up:
 genuine Ecaz/Moritani setup, physical draw/spend, Basic and Advanced transfer,
 ordinary leader projection, actual end-turn expiry, blocked custody,
 Advanced-Harkonnen rejection, stale commands and historical integrity.
-[Owner/bot controls](../tests/nexus-ecaz-duke-controls.test.ts) and
-[in-memory SQLite recovery](../tests/nexus-ecaz-duke-recovery.test.ts) cover
-private availability, four legal AI profiles, restart and competing writes.
+The historical [in-memory SQLite recovery](../tests/nexus-ecaz-duke-recovery.test.ts)
+records restart and competing-write coverage. The old SSR wording/action-copy
+control test has been removed, not re-pinned; current custody controls are
+proved through the actual GameTable and native engine paths above.
 A local read-only browser fixture displayed the owner action and no rival
 offer; no room was written. The final offline suite passed 5,623 tests across
 712 files; scoped lint, isolated type diagnostics outside the concurrent

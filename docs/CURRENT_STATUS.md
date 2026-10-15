@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Original captured Duke and legal Ghola composition — 14 October.**
+Standalone Ecaz/classic no-Skills Nexus now connects the actual Advanced
+Harkonnen lottery, including the surviving just-used losing Duke, Keep/Execute,
+captive use/all-native-dead returns and Cunning liberation of the same disc.
+Capture priority and return destinations are labelled provisional; native
+secret capture/execution remains private. Actual Ecaz Ghola returns Duke
+set aside before separate Cunning; foreign-Ghola revival stays forbidden.
+Related13-file union127/127, types/lint/build pass. Actual390px controls retain,
+liberate, select Duke6 and resolve once into Collection; used Execute pays2.
+Real Ghola then separate Cunning retains death history and no ordinary slot.
+Thirteen actual API scenarios also pass, including Cunning after both
+retention/execution variants, original captive returns and unused expiry.
+No overflow/errors or saved/deployed room touched. Obsolete SSR/wiring/wording
+pins are removed, not re-pinned. Broader Skills/paired/timing, assurance,
+calibration and publication remain open; existing build warnings remain.
+[Current source, return policy and proof](NEXUS_ECAZ_RULES.md#original-captured-duke-and-ecaz-ghola-composition--14-october-2026).
+
 **Emperor original native bank purchase — 14 October.** Normal bank retention
 now uses original native Nexus roster/module profiles and their own canonical
 optional envelopes, preserving exact prior classic admission. Uniform public

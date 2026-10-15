@@ -2,6 +2,19 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Original captured Duke Cunning — 14 October 2026
+
+Standalone Ecaz/classic no-Skills Nexus now connects the real Advanced
+Harkonnen capture lottery, Keep/Execute, captive use/native-death returns
+and Cunning liberation for the same shared disc. Capture priority and return
+destinations are explicit provisional recommendations. Actual Ecaz Ghola
+returns Duke set aside before separate Cunning; the binding Ecaz-only revival
+rule still forbids a Tleilaxu-owned foreign Ghola. Quiet Battle timing,
+paired Moritani/Harkonnen and shared training gates are not broadened.
+[Source, actual controls and changed-path proof](NEXUS_ECAZ_RULES.md#original-captured-duke-and-ecaz-ghola-composition--14-october-2026).
+Historical standalone no-Skills Duke exclusions below are superseded only
+within this scope, not for Skills or other guarded combinations.
+
 ## Recommended BG Cunning card exceptions — 14 October 2026
 
 The printed any/all conversion now permits fresh accompanied and storm-bound

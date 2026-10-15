@@ -3352,6 +3352,15 @@ export function GameTable({
                     your own leaders are dead, a retained captive returns
                     immediately.
                   </p>
+                  {g.decision.leader === 'duke-vidal' && (
+                    <p className="fine">
+                      Duke remains the one shared Ecaz disc. A surviving captive
+                      battle use sets him aside; execution sends him to Ecaz’s
+                      Tanks. Only Ecaz may revive him. The provisional captured
+                      return policy preserves unused, unexpired prior custody
+                      on an early release. Ecaz Nexus reclaim ends captivity.
+                    </p>
+                  )}
                   {actionButton('Retain captive', {
                     type: 'decision',
                     mode: 'keep',

@@ -9,6 +9,7 @@ import {
 import type { MoritaniRetention } from './moritani-retention';
 import { TECH_TOKENS, type TechId, type TechState } from './tech-tokens';
 import { CHEAP_HERO_TRAITOR } from './traitors';
+import { DUKE_VIDAL_ID, type DukeReleasedCaptureWitness } from './duke-vidal';
 
 export class BattleAftermathQuoteError extends Error {
   constructor(message: string) {
@@ -67,6 +68,7 @@ export type AftermathCapture = {
   player: string;
   loser: string;
   territory: string;
+  duke?: DukeReleasedCaptureWitness;
 };
 export type AftermathAuditor = {
   owner: string;
@@ -374,10 +376,20 @@ function calculate(input: BattleAftermathInput): BattleAftermathQuote {
       'Only the winning Harkonnen combatant may capture from this loser.',
     );
     winner(captor.id);
+    let duke: DukeReleasedCaptureWitness | undefined;
+    if (value.duke !== undefined) {
+      requireAftermath(record(value.duke) &&
+        Object.keys(value.duke).sort().join(',') === 'deaths,usedAt' &&
+        whole(value.duke.deaths) && value.duke.usedAt === value.territory &&
+        context.kind === 'modern' && input.leaderIds.includes(DUKE_VIDAL_ID),
+      'The capture opportunity lost its original released shared Duke.');
+      duke = { deaths: value.duke.deaths, usedAt: value.duke.usedAt as string };
+    }
     return {
       player: captor.id,
       loser: loser.id,
       territory: territory(value.territory),
+      ...(duke ? { duke } : {}),
     };
   }
   function auditor(
