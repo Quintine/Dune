@@ -29,6 +29,25 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta keeps the purchased price, not a duplicated refund — 16 October.**
+Printed shipment-price costs now offer their exact fresh card before the
+same original price activates. Recovery changes physical custody, not the
+beneficiary/creator or bank invoice. A claimed cost no longer qualifies for
+the provisional special-stop refund—even if its new holder later discards
+that very card to pay the stop. Unclaimed original refunds remain unchanged.
+
+Affected eighteen-file234/234 passes, including eight new cases. Fourteen
+original-action runtime/policy paths and two explicitly controlled extra-card
+refund probes pass. Four actual390px journeys exercise ordinary bank3,
+same-card reserve stop, typed bank2 after all-seat decline, and same-card
+typed stop followed by ordinary movement. No overflow/browser/application
+error; two transient tool-only stale-node errors were handled without replay.
+No real room, worker/D1, human server, deployment or mode gate changed.
+Converted/special-cost producers and final assurance remain separate.
+[Canonical source, policy and proof](SEMUTA_SOURCE_UPDATE_20260907.md#shipment-price-cost-and-claimed-card-refund--16-october-2026).
+Final types/lint and production build pass with existing warnings.
+Current source links and all five still-partial Semuta facets resolve.
+
 **Semuta recovers native Guild cancellation costs — 16 October.**
 Printed permission/rate costs now offer the exact public Karama while the
 original reserve, cross/return or typed Homeworld parent stays unpaid.

@@ -1,5 +1,59 @@
 # Dune implementation status
 
+## 16 October 2026 — Semuta preserves purchased price and claimed-cost custody
+
+Added `karamaShipmentPriceDiscard` for a printed ordinary Karama's original
+shipment-price cost. The neutral fresh-discard offer precedes activation
+of the same original beneficiary/creator/card grant. Claim or decline neither
+repeats purchase nor transfers the price benefit to the physical claimant.
+Its half-normal tariff and entire bank invoice remain independent.
+
+Selected nonduplication composition extends the prior provisional Guild-stop
+refund policy: a claimed cost records `costClaimed: true` and cannot also be
+refunded to its former owner, even after a later rediscard. Guild may
+actually spend that very recovered physical card for its special stop.
+The stopped shipper retains resources and movement while shipment is used;
+no card is duplicated or pulled back from the claimant. Unclaimed costs
+retain the existing exact original refund. This is a product composition,
+not a newly found publisher worked example.
+
+Original setup, paid public Semuta cache purchase and paid normal Karama
+auction supply both physical cards. Real progression forks from the completed
+auction to Atreides' original unused shipment. No played hand, force, wallet,
+phase or decision is assigned in the original sources.
+
+Affected eighteen-file **234/234** passes, including eight new behavior cases.
+Fourteen original-action runtime/policy paths cover Basic/Advanced reserve
+and typed worlds, claim/decline, two same-card stops and all four original
+profiles. Two additional refund probes explicitly conserve a second stop
+card into Guild custody; those acquisitions are controlled, not original.
+No strategy tuning or calibration was added.
+
+Four actual styled390×844 GameTable journeys start before activation.
+Original Emperor→Atreides price, Guild cost claim and reserve shipment pay
+bank3 once while Guild retains the recovered card. Spending that exact card
+for native stop instead leaves Atreides10 spice/10 reserves and both used
+cards singly discarded, without a former-owner refund. Typed all-seat
+decline keeps Semuta held and delivers Caladan3→Kaitain for bank2. Typed
+claim/same-card stop moves no funds/forces and permits the original ordinary
+Arrakeen→Imperial Basin move. Original automatic/manual interception stays
+source-dependent, not synthesized.
+Viewport/scroll width390, no browser/application error; two transient
+stale-node tool errors were resolved from fresh evidence without replay.
+
+Only an owned memory-only host started/stopped. No worker, D1, authenticated
+saved room, human server, deployed revision or public gate was exercised
+or changed. Outside-Git original/API/table JSON and four initial scenes
+remain under `/tmp/dune-semuta-price-*20261016*`. Converted and other
+special-Karama discard producers, complete combinations and final assurance
+remain unfinished; the full goal stays active.
+[Source and selected policy](SEMUTA_SOURCE_UPDATE_20260907.md#shipment-price-cost-and-claimed-card-refund--16-october-2026),
+[continuation](SEMUTA_DISCARD_CONTINUATIONS.md#shipment-price-activation-cost--16-october-2026).
+Final `npm run check:quick` and production build pass with existing
+module-register, large-chunk and Unknown-route warnings. Nine current
+local links and52 Semuta evidence paths resolve; all five facets remain
+Partial without complete-mode or deployed assurance.
+
 ## 16 October 2026 — Semuta retains native Guild permission/rate cancellation
 
 Added the dedicated `karamaShipmentDiscard` family using the existing

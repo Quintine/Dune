@@ -2,6 +2,18 @@
 
 Initial primary-source and engine audit, 2026-09-06. The bounded ordinary-reserve cancellation policy below was selected on 2026-09-28 after a targeted publisher-source search found no affordability procedure; the later original audit remains historical evidence for unfinished transport and module combinations.
 
+## Recovered purchase cost and stop refund — 16 October 2026
+
+Semuta now offers an original printed shipment-price activation cost.
+Recovery changes physical card custody, not the grant's original creator,
+beneficiary, half-normal price or bank-only routing. The selected extension
+to the older provisional special-stop refund policy preserves that grant
+but ends refund eligibility for the claimed cost, even if later rediscarded.
+Thus the same recovered card can legally pay Guild's stop without also being
+returned to its former owner. Unclaimed costs retain the existing refund.
+[Canonical policy and original/controlled proof](SEMUTA_SOURCE_UPDATE_20260907.md#shipment-price-cost-and-claimed-card-refund--16-october-2026).
+
+
 ## Native price with Richese Secret Ally — 15 October 2026
 
 The original Guild holder's Richese source now keeps its one-counter bill

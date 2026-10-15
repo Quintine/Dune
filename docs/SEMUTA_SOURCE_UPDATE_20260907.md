@@ -2,6 +2,52 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Shipment-price cost and claimed-card refund — 16 October 2026
+
+An ordinary **printed Karama** spent for the active player's shipment price
+now offers its exact public cost through `karamaShipmentPriceDiscard`.
+The dedicated continuation retains the original unused opportunity,
+beneficiary, creator and physical card. Claim or all-seat decline activates
+that same half-normal, bank-paid benefit once; it does not transfer the
+benefit to the physical card's new holder or repeat the purchase.
+
+**Selected nonduplication composition, not a publisher worked example:**
+Semuta recovery ends the older provisional special-stop refund eligibility
+for that cost, not the price benefit. Internal `costClaimed: true` retains
+that fact even if the card is subsequently discarded again. Guild may
+legally spend the **very same recovered card** for its original special
+stop, but cannot also refund that later discard to the former cost owner.
+Unclaimed costs keep the existing exact-card refund policy; completed
+shipments still consume only their original grant.
+
+Affected eighteen-file **234/234** passes, including eight new behavior
+cases. Fourteen original-action runtime/policy paths cover Basic/Advanced
+reserve and typed world prices, claim/decline, both same-card stops and all
+four existing profiles. Two additional refund probes explicitly conserve a
+second stop card into Guild custody after an actual original decline; they
+are **controlled acquisition**, not original-action acquisition proof.
+
+Four actual styled390×844 GameTable journeys start before price activation:
+Emperor's real original card grants Atreides bank3 while Guild holds its
+recovered cost; the same recovered card instead stops that reserve shipment
+without refund; typed all-seat decline delivers Caladan3→Kaitain for bank2;
+and typed claim/same-card stop preserves both native pools/wallets, followed
+by an actual ordinary Atreides move. Original source-dependent manual/
+automatic interception remains. Viewport/scroll width390 and no browser/
+application errors; two transient tool-only stale-node errors were handled
+with fresh evidence and no replay.
+
+Only an owned memory-only loopback host ran. No worker, D1, authenticated
+saved room, human server, deployment or mode gate changed. Original/API/table
+JSON and four initial scenes remain outside Git under
+`/tmp/dune-semuta-price-*20261016*`. Converted costs, other special-Karama
+discard producers, full combinations and final assurance remain separate.
+[Continuation contract](SEMUTA_DISCARD_CONTINUATIONS.md#shipment-price-activation-cost--16-october-2026).
+Final `npm run check:quick` (types/lint) and production build pass; existing
+module-register, large-chunk and Unknown-route warnings remain. Nine current
+local links and52 Semuta evidence paths resolve; all five facets stay Partial.
+
+
 ## Native Guild permission and rate costs — 16 October 2026
 
 Printed Karama cancellation of native `guildTransportPermission` or

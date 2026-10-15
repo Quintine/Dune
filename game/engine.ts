@@ -1402,6 +1402,14 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'karamaShipmentPriceDiscard';
+          player: string;
+          card: string;
+          use: Extract<KaramaUse, { kind: 'shipment' }>;
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
           kind: 'karamaPurchaseDiscard' | 'karamaPaymentDiscard';
           player: string;
           card: string;
@@ -2155,7 +2163,11 @@ export type Game = {
     protected?: boolean;
     choamProtected?: string[];
   } | null;
-  karamaShipping: { player: string; owner: string; card?: string } | null;
+  karamaShipping: {
+    player: string; owner: string; card?: string;
+    /** A recovered cost cannot be refunded again, even if later discarded. */
+    costClaimed?: true;
+  } | null;
   stormDialers: string[];
   lastBattle: string[];
   homeworldBattleLoss?: {
@@ -5532,6 +5544,17 @@ function karamaAuctionDiscardSignature(g: Game, c: KaramaAuctionDiscardContinuat
     })),
   });
 }
+type KaramaShipmentPriceDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'karamaShipmentPriceDiscard' }
+>;
+function karamaShipmentPriceDiscardSignature(g: Game, c: KaramaShipmentPriceDiscardContinuation) {
+  return JSON.stringify({
+    player: c.player, card: c.card, use: c.use,
+    parent: nullentropyParentSignature(g, c.resume, `karama:shipment:${c.card}`),
+    opportunity: karamaOpportunitySignature(g, { owner: c.player, use: c.use }),
+  });
+}
 type ChoamSaleDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'choamSaleDiscard' }
@@ -6363,6 +6386,21 @@ function treacheryDiscardIntegrity(g: Game) {
         throw error;
       }
     }
+  } else if (continuation?.kind === 'karamaShipmentPriceDiscard') {
+    const c = continuation, entry = batch.entries[0];
+    requireRule(
+      g.phase === 5 && !g.response && !g.decision && !g.pendingKarama &&
+      !g.phaseOpening && !c.resume.response && !c.resume.decision &&
+      !c.resume.pendingKarama && !c.resume.phaseOpening &&
+      c.use.kind === 'shipment' && c.use.card === c.card &&
+      batch.cause === 'karama:shipment' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.player &&
+      entry.card.id === c.card && entry.card.effect === 'karama' &&
+      g.players.some(p => p.id === c.player) &&
+      c.stateSignature === karamaShipmentPriceDiscardSignature(g, c),
+      'The spent Karama no longer matches its original shipment-price purchase.',
+    );
+    validateKaramaUse(g, getPlayer(g, c.player), c.use);
   } else if (continuation?.kind === 'karamaPurchaseDiscard' ||
     continuation?.kind === 'karamaPaymentDiscard') {
     const c = continuation, entry = batch.entries[0];
@@ -7184,6 +7222,7 @@ function semutaOfferSupported(
     continuation.kind !== 'karamaEmperorShareDiscard' &&
     continuation.kind !== 'karamaIncomeDiscard' &&
     continuation.kind !== 'karamaShipmentDiscard' &&
+    continuation.kind !== 'karamaShipmentPriceDiscard' &&
     continuation.kind !== 'kaitainDiscard' &&
     continuation.kind !== 'tupileCleanupDiscard' &&
     continuation.kind !== 'karamaPurchaseDiscard' &&
@@ -7217,6 +7256,7 @@ function semutaOfferSupported(
       continuation.kind !== 'tupileCleanupDiscard' &&
       continuation.kind !== 'karamaIncomeDiscard' &&
       continuation.kind !== 'karamaShipmentDiscard' &&
+      continuation.kind !== 'karamaShipmentPriceDiscard' &&
       continuation.kind !== 'ordinaryCardDiscard' &&
       continuation.kind !== 'nullentropyDiscard' &&
       continuation.kind !== 'distransDiscard' &&
@@ -7616,6 +7656,14 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     const battle = g.battle!;
     if (battle.preLeader && !battle.preLeader.closed)
       battle.preLeader.ready = battle.preLeader.ready.filter(id => id !== next.player);
+  } else if (next.kind === 'karamaShipmentPriceDiscard') {
+    g.response = next.resume.response;
+    g.decision = next.resume.decision;
+    g.pendingKarama = next.resume.pendingKarama;
+    g.phaseOpening = next.resume.phaseOpening;
+    const claimed = !g.discard.some(card => card.id === next.card);
+    completeKarama(g, getPlayer(g, next.player), next.use);
+    if (claimed) g.karamaShipping!.costClaimed = true;
   } else if (next.kind === 'karamaCharityDiscard' ||
     next.kind === 'karamaInflationDiscard' ||
     next.kind === 'karamaBgCharityDiscard' ||
@@ -14262,6 +14310,7 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
   requireRule(!g.pendingKull || promiseProven,
     'Kull preview cannot accept this unproven Truthtrance counter continuation.');
   if (!kullOffered && beginKullAttempt(g, p, card, { kind: 'ordinary', use }, promiseProven)) return;
+  if (use.kind === 'shipment') use = { ...use, card: card.id };
   const used = discard(g, p, card.id);
   const guildShipmentDiscard = g.semutaPreview && card.effect === 'karama' &&
     use.kind === 'cancel' && semutaGuildShipmentKaramaResponse(g, use.response);
@@ -14314,7 +14363,20 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
       return;
     }
   }
-  if (use.kind === 'shipment') use = { ...use, card: card.id };
+  if (g.semutaPreview && card.effect === 'karama' && use.kind === 'shipment') {
+    const continuation: KaramaShipmentPriceDiscardContinuation = {
+      kind: 'karamaShipmentPriceDiscard', player: p.id, card: used.id, use,
+      resume: { response: g.response, decision: g.decision,
+        pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
+      stateSignature: '',
+    };
+    const entries = [{ card: used, discardedBy: p.id, publicFace: true }];
+    if (semutaOfferSupported(g, continuation, entries)) {
+      continuation.stateSignature = karamaShipmentPriceDiscardSignature(g, continuation);
+      stageTreacheryDiscard(g, 'karama:shipment', entries, continuation);
+      return;
+    }
+  }
   if (card.kind === 'worthless') {
     requireRule(!g.pendingKarama, 'A Worthless conversion is already pending.');
     g.pendingKarama = { owner: p.id, use };
@@ -28769,11 +28831,11 @@ function specialKaramaAction(intent: SpecialKaramaIntent): Action {
   }
 }
 
-/** Existing provisional special-stop policy: return only the original purchased card. */
+/** Existing provisional stop refund applies only to the unclaimed original cost. */
 function refundStoppedShipmentKarama(g: Game, shipper: Player) {
   const benefit = g.karamaShipping;
   if (benefit?.player !== shipper.id) return;
-  if (benefit.card) {
+  if (benefit.card && !benefit.costClaimed) {
     const index = g.discard.findIndex(card => card.id === benefit.card);
     if (index >= 0)
       getPlayer(g, benefit.owner).hand.push(...g.discard.splice(index, 1));

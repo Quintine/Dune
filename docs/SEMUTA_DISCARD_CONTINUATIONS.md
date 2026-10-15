@@ -2,6 +2,28 @@
 
 Read-only engine audit, 2026-09-07. Read the complete `docs/SEMUTA_DRUG_ENGINE_AUDIT.md`, then inspected every current `discard(...)` call, direct Treachery-discard mutation and `draw(g)` caller in `game/engine.ts`, plus the Truthtrance discard callback and pure Box/Distrans results. Names below are integration anchors; approximate current lines are navigation aids only. This report adopts no additional source ruling and changes no project file.
 
+## Shipment-price activation cost — 16 October 2026
+
+`karamaShipmentPriceDiscard` offers the exact public printed cost before
+activating its original other-player price. The unused opportunity,
+beneficiary, creator and cost identity stay bound. Claim/decline creates the
+same grant once; no shipping payment or counter departure occurs at this
+boundary. The physical claimant does not become the benefit's creator.
+
+After a claim, the grant records `costClaimed: true`. The selected extension
+to the provisional Guild-stop refund policy does not return a claimed cost,
+even if its new holder later discards it again as the special-stop cost.
+The same physical card can pay that new legal use, but is not also refunded
+to its former owner. An unclaimed cost retains its older exact-card refund.
+This is source/nonduplication composition, not a publisher worked example.
+
+[Current source and scoped proof](SEMUTA_SOURCE_UPDATE_20260907.md#shipment-price-cost-and-claimed-card-refund--16-october-2026)
+records234 affected cases, fourteen original runtime/policy paths, two
+controlled extra-card refund probes and four actual mobile journeys.
+Converted costs and other special-Karama disposal sources remain unfinished;
+full Semuta/module certification and final assurance are not implied.
+
+
 ## Native Guild cancellation cost family — 16 October 2026
 
 `karamaShipmentDiscard` now suspends a printed cancellation cost for original

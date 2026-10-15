@@ -16,9 +16,11 @@ any player’s Force Shipment at half normal price, paid to bank. Both typed
 quotes, actual controls and minimal budgets now honor that independent
 price and do not stack it with explicit Guild Nexus. Whole donor/own payment
 goes to bank, with no ordinary Guild receipt. Original manual/automatic
-interception and exact typed custody remain. Special-stop returns the
-original purchase card under the existing provisional reserve-stop policy;
-actual completion consumes its grant and preserves movement.
+interception and exact typed custody remain. Special-stop returns only an
+unclaimed original purchase cost under the existing provisional policy;
+actual completion consumes its grant and preserves movement. A cost
+[recovered through Semuta](SEMUTA_SOURCE_UPDATE_20260907.md#shipment-price-cost-and-claimed-card-refund--16-october-2026)
+keeps the price effect but cannot also be refunded, even after rediscard.
 
 Actual390px original controls gift the auctioned Ecaz card to Moritani,
 ship three from Grumman to Ecaz for two bank spice, preserve Guild6 and
