@@ -1,5 +1,18 @@
 # Dune implementation status
 
+## 16 October 2026 — Advanced native Tleilaxu Ixian replacement
+
+Removed the Basic-only producer fence from original native Ix47/Tleilaxu
+replacement setup. Existing native behavior cases now exercise both modes:
+7/7 native and47/47 affected pass. Four original Advanced Use/Keep runtime
+paths and eight legal policy actions preserve actual setup/Nexus acquisition,
+Thumper/Amal, payment/income and next/final-lot continuation. Actual CLI help
+names both modes and prior provisional Harkonnen ordering. No new UI, saved
+room, human server, D1, deployment or public gate changed.
+[Source and evidence](NEXUS_IXIAN_REPLACEMENT_RULES.md#advanced-native-tleilaxu-admission--16-october-2026).
+Final types/lint and actual CLI help pass; source anchor and19 topic evidence
+paths resolve. No new build, browser, broad suite or HTTP assurance run.
+
 ## 16 October 2026 — Harkonnen Ixian replacement and original bonus
 
 Removed the Harkonnen buyer fence from the existing normal-purchase offer

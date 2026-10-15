@@ -20,10 +20,11 @@ function reject(game: Game, id: string, action: Action): void {
   assert.deepEqual(game, before);
 }
 
+for (const advanced of [false, true])
 for (const buyerFaction of ['atreides', 'tleilaxu'] as const)
-  void test(`Basic native ${buyerFaction} paid Ix special replacement preserves its purchase and settles the real suffix once`, () => {
+  void test(`${advanced ? 'Advanced' : 'Basic'} native ${buyerFaction} paid Ix special replacement preserves its purchase and settles the real suffix once`, () => {
     const endingAuction = buyerFaction === 'tleilaxu';
-    const f = createNativeIxianReplacementFixture({ buyerFaction, endingAuction });
+    const f = createNativeIxianReplacementFixture({ advanced, buyerFaction, endingAuction });
     assert.equal(f.beforeNexusDraw.nexusCards!.cards!.hands[f.buyer], null);
     assert.equal(owner(f.beforeNexusDraw, f.buyer).ally, null);
     const partners = f.beforeNexusDraw.players.filter(player => player.id !== f.buyer);
@@ -62,8 +63,9 @@ for (const buyerFaction of ['atreides', 'tleilaxu'] as const)
     reject(use, f.buyer, { type: 'nexusIxianReplacementPass', event: f.event });
   });
 
-void test('native Pass keeps the purchased Ix special and genuinely acquired Nexus without a draw or repayment', () => {
-  const f = createNativeIxianReplacementFixture();
+for (const advanced of [false, true])
+void test(`${advanced ? 'Advanced' : 'Basic'} native Pass keeps the purchased Ix special and acquired Nexus without another draw or payment`, () => {
+  const f = createNativeIxianReplacementFixture({ advanced });
   const offer = viewGame(f.game, f.buyer).nexusIxianReplacement!;
   const pass = settleIxianReplacementFixture(applyAction(reload(f.game), f.buyer,
     { type: 'nexusIxianReplacementPass', event: offer.event }));

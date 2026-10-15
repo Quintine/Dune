@@ -2,10 +2,35 @@
 
 Source audit: 2026-09-10. Bounded local prototype integration and verification: 2026-10-01. **Partial development verified**, not complete Ixian/Nexus family or expansion acceptance. This document records the source and runtime boundary of the fresh `ixian-replacement` profile. Existing [Nexus release gates](NEXUS_CARD_RUNTIME.md) remain in force.
 
+## Advanced native Tleilaxu admission — 16 October 2026
+
+The existing fresh Ix47/Tleilaxu-plus-classics profile now admits Advanced
+as well as Basic. This removes a producer fence, not a printed rule: the
+Nexus replacement face has no Advanced exclusion. Original staged setup,
+three Face Dancers, qualifying alliance/Nexus deal, paid purchase, private
+Use/Keep and exact native income/next-lot continuation remain original.
+Sandtrout is still omitted only at fresh setup; other optional modules,
+native Ixians, E2/E3 and public starts stay excluded.
+
+The existing native behavior cases now exercise both modes: seven native
+cases and affected six-file **47/47** pass. Four original Advanced runtime
+Use/Keep paths cover Atreides and Tleilaxu buyers; eight legal policy actions
+pass. Original Thumper/Amal, payment and Emperor income are preserved,
+including final-lot completion. No played cards, wallets, clocks or Nexus
+hands are staged. Proof: `/tmp/dune-advanced-tleilaxu-replacement-runtime.json`.
+Actual CLI help now names both modes and the prior provisional Harkonnen
+order. No new UI, saved-room, human-server, D1, deployment or public gate
+changed; this is not full-family or combined-module acceptance.
+
+
+Final types/lint pass; current source anchor and19 topic evidence paths
+resolve without reference parse diagnostics. All five facets remain Partial.
+No new build, broad suite, browser or HTTP assurance run for this admission.
+
 ## Harkonnen purchase and bonus composition — 16 October 2026
 
 Harkonnen buyers now receive the same neutral purchased-card choice in
-the existing original classic Basic/Advanced or Basic Tleilaxu profile.
+the existing original classic or native Tleilaxu Basic/Advanced profile.
 The printed one-for-one replacement preserves the purchase-earned bonus,
 its original hand cap and native Karama cancellation; it is not a second
 purchase and earns no extra bonus. The bonus itself is never a replacement
@@ -141,7 +166,7 @@ November's Karama table expressly permits stopping the native Ixian ally from di
 
 ## Bounded local runtime contract
 
-The original classic branch of the fresh `ixian-replacement` profile admits two through six unique classic factions in Basic or Advanced with base Treachery and Nexus alone. The native section below adds Basic Tleilaxu/classic Ix47. Native Ixians, other expansion families, Leader Skills, Homeworlds, Semuta, Discoveries, Ecaz variants and other overlays remain excluded. Neither branch retrofits an in-play game, enables a public start, resets a saved room or changes existing native Ixian allied replacement.
+The fresh `ixian-replacement` profile admits two through six unique classic factions in Basic/Advanced with base Treachery, or native Tleilaxu plus classics in either mode with original Ix47, always with Nexus alone. Native Ixians, other expansion families, Leader Skills, Homeworlds, Semuta, Discoveries, Ecaz variants and other overlays remain excluded. Neither branch retrofits an in-play game, enables a public start, resets a saved room or changes existing native Ixian allied replacement.
 
 There is no starting Nexus deal. Native draws require a qualifying closing
 Nexus with a settled alliance, so a two-seat profile can continue its base
@@ -171,13 +196,12 @@ and never add seats to an admitted game or fabricate Nexus hands.
 
 ## Native Basic Tleilaxu integration — 2 October 2026
 
-The additional fresh admission is **Basic Tleilaxu plus unique classic
-opponents, exactly the original Ix47 Treachery Deck, and Nexus alone**.
-Ixians are absent. This adds to the classic base33 Basic/Advanced profile
-above; it does not admit Advanced Tleilaxu, native CHOAM/Richese, mixed
-expansions or other overlays. Its fresh setup omits the optional physical
-Sandtrout Spice Card, following the existing bounded Ixian Betrayal setup
-convention; existing games and their cards are not changed.
+The 2 October native integration originally admitted **Basic Tleilaxu plus
+unique classic opponents, Ix47 and Nexus alone**, with Ixians absent.
+The 16 October addition above extends that same native profile to Advanced;
+native CHOAM/Richese, mixed expansions and other overlays remain excluded.
+Fresh setup still omits optional Sandtrout under the existing bounded
+native setup convention; existing games and their cards are not changed.
 
 `game/nexus-ixian-replacement.ts` uses the original
 `treacheryDeck(['ix'])` catalogue for exact descriptors. Original base33

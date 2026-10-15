@@ -13,6 +13,7 @@ import {
 
 export type NativeIxianReplacementOptions = {
   initial?: Game;
+  advanced?: boolean;
   buyerFaction?: 'atreides' | 'tleilaxu';
   purchasedId?: string;
   replacementId?: string;
@@ -78,7 +79,7 @@ function orderStartingCards(game: Game, buyer: string, reserved: readonly string
     ...pool.filter(card => reserved.includes(card.id))];
 }
 
-/** Basic native Tleilaxu + classic setup, a full first turn, an actual alliance-
+/** Native Tleilaxu + classic setup, a full first turn, an actual alliance-
  * qualified closing Nexus draw, and an original paid normal-auction purchase.
  * The unplayed deck is ordered before native auction allocation, not the row. */
 export function createNativeIxianReplacementFixture(
@@ -91,11 +92,11 @@ export function createNativeIxianReplacementFixture(
       game.nexusIxianReplacementPreview === true && game.turn === 1 && game.phase === 0 &&
       game.players.every(player => player.hand.length === 0)));
   } else {
-    game = createGame('NATIXREP', newPlayer('a', 'Atreides', 'atreides'), false, ['ix']);
+    game = createGame('NATIXREP', newPlayer('a', 'Atreides', 'atreides'), options.advanced ?? false, ['ix']);
     joinGame(game, newPlayer('e', 'Emperor', 'emperor'));
     joinGame(game, newPlayer('t', 'Tleilaxu', 'tleilaxu'));
   }
-  assert.equal(game.advanced, false);
+  if (options.advanced !== undefined) assert.equal(game.advanced, options.advanced);
   assert.deepEqual(game.expansions, ['ix']);
   assert.ok(game.players.some(player => player.faction === 'tleilaxu'));
   const buyer = game.players.find(player => player.faction === (options.buyerFaction ?? 'atreides'))!.id;

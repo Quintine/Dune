@@ -9910,12 +9910,12 @@ function decideIxianNexusBetrayal(g: Game,id: string,action: Action): void {
   if (use) log(g,`${getPlayer(g,id).name} spent Ixian Nexus Betrayal to prevent the original native ${frame.source.kind} attempt.`);
   finishIxianNativeAttempt(g,frame.continuation,use);
 }
-/** Fresh classic or Basic native Tleilaxu profile; no public start or retrofit. */
+/** Fresh classic or native Tleilaxu profile; no public start or retrofit. */
 export function initializeIxianNexusReplacementGameForAudit(state: Game): Game {
   requireRule(!state.nexusIxianReplacementPreview && !state.pendingNexusIxianReplacement &&
     state.nexusIxianReplacementHistory === undefined && state.nexusIxianReplacementCursor === undefined &&
     ixianNexusReplacementModeSupported(state),
-  'Ixian Nexus replacement needs a fresh classic/base or Basic Tleilaxu/Ix lobby with Nexus alone.');
+  'Ixian Nexus replacement needs a fresh classic/base or Tleilaxu/Ix lobby with Nexus alone.');
   const g = initializeNexusGameForAudit(state);
   // Ix supplies Treachery here, not the optional Sandtrout Spice card.
   if (g.expansions.length) g.spiceDeck = shuffle(spiceDeck());
@@ -9929,7 +9929,7 @@ function ixianNexusReplacementModeSupported(g: Game): boolean {
   return !!g.nexusCards && g.players.length >= 2 && g.players.length <= 6 &&
     new Set(g.players.map(p => p.faction)).size === g.players.length &&
     ((!g.expansions.length && g.players.every(p => CLASSIC_FACTIONS[p.faction] === true)) ||
-      (!g.advanced && g.expansions.length === 1 && g.expansions[0] === 'ix' &&
+      (g.expansions.length === 1 && g.expansions[0] === 'ix' &&
         g.players.some(p => p.faction === 'tleilaxu') &&
         g.players.every(p => p.faction === 'tleilaxu' || CLASSIC_FACTIONS[p.faction] === true))) &&
     !g.homeworlds && !g.leaderSkills && !g.discoveryEnabled && !g.discoveries &&

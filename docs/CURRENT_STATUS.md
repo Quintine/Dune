@@ -29,39 +29,22 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
-**Harkonnen Ixian replacement preserves its native bonus — 16 October.**
-Original purchased-card Use/Keep now precedes income and bonus under a
-visibly provisional order matching the native Ixian ally pipeline. A
-replacement is not a second purchase; the original bonus stays cancelable
-and replacing at eight cards creates no extra slot. No publisher priority
-or explicit user-selected sequence is claimed.
+**Ixian Nexus purchased-card interaction wave — 16 October.**
+Normal purchased-card replacement now composes:
+- successful native BG Karama conversion, after its original counter;
+- Harkonnen's original cancelable bonus and eight-card limit under a visibly
+  provisional replacement → income → bonus order matching the native ally path;
+- original Tleilaxu/Ix47 setup and native purchases in Basic **and Advanced**.
 
-Three new behavior cases; affected seven-file64/64, eight original runtime
-paths and eight legal policy actions pass. Two original390px journeys
-exercise Basic Use/bonus cancellation and Advanced Keep/bonus allowance,
-preserving actual income, wallets, card identities and one next-lot advance.
-The eight-card fixture separately controls conserved hand acquisition.
-Width/scroll390; no browser/application error. No human server, D1, saved
-room, deployment or public gate changed.
-[Selected policy and scoped evidence](NEXUS_IXIAN_REPLACEMENT_RULES.md#harkonnen-purchase-and-bonus-composition--16-october-2026).
-Final types/lint and production build pass with existing warnings. Current
-source anchor and19 topic paths resolve; all five facets remain Partial.
-
-**Ixian Nexus replacement follows native BG purchases — 16 October.**
-Successful original BG Worthless-as-Karama acquisition/payment now earns the
-same normal purchased-card replacement, after its native counter. Denied
-direct acquisition supplies no purchase; native funded winning-payment
-recovery supplies a paid, not free, receipt. No printed-cost-only flag remains.
-
-Four new behavior cases; affected nine-file74/74, four original-action runtime
-paths and eight legal policy actions pass. Two original-source390px journeys
-replace Hajr with the actual Ghola or keep the winning Shield, preserving
-BG5/Emperor12 and one auction continuation. Width/scroll390; no browser/
-application errors. Counter custody is explicitly controlled in two cases.
-No human server, D1, saved room, deployment or public gate changed.
-[Source and bounded evidence](NEXUS_IXIAN_REPLACEMENT_RULES.md#native-bg-converted-purchases--16-october-2026).
-Final types/lint pass; current source anchor and17 topic evidence paths
-resolve. No production build or broad assurance run for this slice.
+Latest native cases7/7 and affected six-file47/47 pass; four original Advanced
+runtime paths, eight legal policy actions and actual CLI help pass. Earlier
+BG/Harkonnen rule and mobile-control evidence remains separately source-bound
+in the [canonical contract](NEXUS_IXIAN_REPLACEMENT_RULES.md), including the
+selected provisional policy and explicit controlled fixtures. All five
+facets remain Partial. Special origins/other modules and final assurance
+stay separate. No saved room, human server, D1, deployment or public gate
+changed. The latest admission slice adds no UI.
+Final types/lint pass; current source anchor and19 topic paths resolve.
 
 **Semuta connects both physical Shrine roles — 16 October.**
 Fresh private `semuta --discoveries` setup retains original Richese/CHOAM,
