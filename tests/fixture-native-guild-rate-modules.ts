@@ -3,7 +3,7 @@ import { viewGame, type Action, type Game } from '../game/engine';
 import { distance, TERRITORIES } from '../game/board';
 import { presenceAt } from '../game/force-presence';
 import { quoteSmugglerShipment } from '../game/smuggler-shipment';
-import { createGuildAmbassadorIncomeArrival } from './fixture-guild-ambassador-income-arrival';
+import { createGuildAmbassadorIncomeArrival, passNativeGuildTransportPermission } from './fixture-guild-ambassador-income-arrival';
 import {
   nextPairedE3NexusStep, pairedE3NexusClean, pairedE3NexusPlayer,
   pairedE3NexusReload, quietPairedE3NexusChoice, stepPairedE3Nexus,
@@ -50,6 +50,8 @@ export function declareNativeGuildRateModules(fixture: {
   if (game.decision?.kind === 'guildShipment')
     game = stepPairedE3Nexus(game, { actor: fixture.guild,
       action: { type: 'decision', allow: true } }, actions);
+  const permission = passNativeGuildTransportPermission(game);
+  game = permission.game; actions.push(...permission.actions);
   assert.equal(game.response?.kind, 'guildRate');
   return { before, actions, game };
 }

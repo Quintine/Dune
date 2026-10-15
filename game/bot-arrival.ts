@@ -22,6 +22,9 @@ import { quoteSmugglerShipment } from './smuggler-shipment';
  * are never treated as rejected candidates.
  */
 export function botArrivalBlock(g: GameView, action: Action): string | null {
+  if (g.status === 'playing' && g.phase === 5 && g.active === g.me &&
+    action.type === 'guildShip' && action.nexus === undefined && g.guildTransportCanceled)
+    return 'Karama prevents native Guild cross/return transport for this shipment opportunity.';
   if (
     g.status !== 'playing' ||
     g.phase !== 5 ||

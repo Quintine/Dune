@@ -2,6 +2,32 @@
 
 9 September 2026. Fresh primary-source audit for the next transport integration. This supplements [the transport source update](HOMEWORLD_TRANSPORT_SOURCE_UPDATE.md); it does not resolve the already recorded Junction payment, foreign-garrison departure, or ordinary Karama timing questions.
 
+## Separate permission and purchased price — 15 October 2026
+
+Native Guild Arrakis-to-world and native own-world returns now have an
+unpaid transport-permission response before the separate rate counter.
+Denial preserves exact sources, funds and legal alternatives; a purchased
+price never restores the denied route. Common world-to-foreign-world
+permission remains independently available. Junction sponsorship keeps its
+immune Homeworld source rather than using native cross/return permission.
+
+The supplied authorized Advanced Karama section, PDF physical16, permits
+any player’s Force Shipment at half normal price, paid to bank. Both typed
+quotes, actual controls and minimal budgets now honor that independent
+price and do not stack it with explicit Guild Nexus. Whole donor/own payment
+goes to bank, with no ordinary Guild receipt. Original manual/automatic
+interception and exact typed custody remain. Special-stop returns the
+original purchase card under the existing provisional reserve-stop policy;
+actual completion consumes its grant and preserves movement.
+
+Actual390px original controls gift the auctioned Ecaz card to Moritani,
+ship three from Grumman to Ecaz for two bank spice, preserve Guild6 and
+finish the original turn. A separate original typed return allows native
+permission, then cancels rate: fee3, approved donor1, Guild7→6 after existing
+donor income, Junction15→18 and Tuek5→2. Controlled second-card special-stop
+instead returns the original gifted card without any departure/payment.
+[Current authority, policy distinction and remaining sponsored-price gate](GUILD_RATE_KARAMA_RULES.md#permission-purchase-and-allied-marker-composition--15-october-2026).
+
 ## Native rate cancellation runtime — 15 October 2026
 
 Original native Guild world-to-world, Arrakis-to-foreign-world and Junction

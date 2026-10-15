@@ -2,6 +2,28 @@
 
 Primary-source audit, 2026-09-06. This narrows the broad integration warnings in the earlier No-Field audits. Ordinary turn ownership, consent and typed force selection can be composed without inventing extra faction powers. The genuinely unresolved payment and interruption intersections below remain distinct. The ordinary contract is now implemented in development fixtures as recorded below; this document does not activate a mode or certify all combinations.
 
+## Native rate cancellation and fresh approval — 15 October 2026
+
+Guild-recipient loans now expose native discount cancellation before any
+payment or compulsory old-marker reveal. Desert half1 becomes full2 for one
+marker, not zero/five materialized forces. The standing provisional bank-only
+payee is retained. An independent played Karama price still takes precedence.
+
+Supplier whole-price approval1 cannot become2 automatically. Release keeps
+both wallets, recipient allowance and prior deployed three-marker unchanged;
+a new full-price offer and recipient consent authorize the replacement.
+Actual390px controls then spend Richese10→8, materialize its prior three
+at Red Chasm and five Guild forces at Imperial Basin10, while Guild wallet10
+stays unchanged. This scene is explicitly controlled, not original action-only.
+
+The actual surface found a missing quote bridge: fresh lender UI/AI offers
+previously used their own view and displayed1 after the recipient’s rate was
+canceled. They now consume the authoritative authorized-pair `allyPricing`
+descriptor, with full2 and bank-only policy; no recipient wallet is projected.
+The canonical price helper requires explicit independent/native source
+booleans, preventing accidental use of an incomplete GameView as server state.
+[Current permission/price/loan source contract and proof](GUILD_RATE_KARAMA_RULES.md#permission-purchase-and-allied-marker-composition--15-october-2026).
+
 ## Advanced discounted shipment follow-up — 8 October 2026
 
 The Basic prototype below now also applies in Advanced. Supplied physical

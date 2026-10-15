@@ -58,8 +58,8 @@ function printedSector(key: string) {
 
 /** Guild's own special shipment from one Arrakis territory to a Homeworld.
  * The caller owns timing, payment, alliance funding, responses and arrival
- * effects. Native rate cancellation changes only the half tariff to full price.
- * No private card, concealed-force value or transport usage is read.
+ * effects. An independently purchased ordinary Karama price survives native
+ * rate cancellation. No private card, concealed-force value or usage is read.
  * The mobile stronghold's interior remains protected when its pointer is in
  * storm. A Homeworld destination never becomes a fabricated Arrakis sector. */
 export function quoteGuildHomeworldShipment(
@@ -207,7 +207,10 @@ export function quoteGuildHomeworldShipment(
     ...transferred,
     amount,
     elite: 0,
-    cost: context.nativeGuildRateCanceled ? amount : Math.ceil(amount / 2),
+    cost:
+      context.purchasedGuildRate || !context.nativeGuildRateCanceled
+        ? Math.ceil(amount / 2)
+        : amount,
     origin: origin!,
     boardSources,
     boardForces,

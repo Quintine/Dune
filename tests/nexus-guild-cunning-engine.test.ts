@@ -7,6 +7,7 @@ import {
   type Game,
   type Action,
 } from '../game/engine';
+import { passNativeGuildTransportPermission } from './fixture-guild-ambassador-income-arrival';
 import {
   nexusGuildCunningFixture,
   originalGuildCunningTurn,
@@ -503,6 +504,7 @@ for (const route of ['reserve', 'transport'] as const) {
         assert.equal(g.decision?.kind, 'guildShipment');
         g = applyAction(g, f.owner, { type: 'decision', allow: true });
       }
+      g = passNativeGuildTransportPermission(g).game;
       assert.equal(g.response?.kind, 'guildRate');
       assert.equal(g.players[0].shipped, true);
       assert.equal(g.nexusGuildCunningLast?.stage, 'secondShipment');

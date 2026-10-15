@@ -53,6 +53,11 @@ export function guildHomeworldShipmentChoice(
     result.blocked = option.blocked;
     return result;
   }
+  if (view.guildTransportCanceled) {
+    result.blocked =
+      'The native Guild transport permission is canceled; a purchased price cannot restore this route.';
+    return result;
+  }
   const custody: HomeworldCustody = { salusa: null, visitors: {} };
   for (const world of worlds) {
     if (world.secondary) custody.salusa = { ...world.forces[world.native] };
@@ -69,6 +74,7 @@ export function guildHomeworldShipmentChoice(
       {
         advanced: view.advanced,
         nativeGuildRateCanceled: view.guildRateCanceled,
+        purchasedGuildRate: view.karamaShipping?.player === view.me,
         storm: view.storm,
         mobileStronghold: view.mobileStronghold?.location ?? null,
         discoveries: view.discoveries,
@@ -151,6 +157,7 @@ export function guildHomeworldShipmentActions(
     me.faction !== 'guild' ||
     !view.guildHomeworldShipment ||
     view.guildHomeworldShipment.blocked ||
+    view.guildTransportCanceled ||
     !nexusGuildShipmentAvailable(view) ||
     view.phase !== 5 ||
     view.active !== me.id
@@ -226,7 +233,10 @@ export function guildHomeworldShipmentActions(
             );
       const amount = Math.min(
         total - retain,
-        budget * (view.guildRateCanceled ? 1 : 2),
+        budget *
+          (view.karamaShipping?.player === view.me || !view.guildRateCanceled
+            ? 2
+            : 1),
         [3, 5, 7, 9][difficulty],
         desired,
       );

@@ -3,7 +3,6 @@
 import { useId, useState } from 'react';
 import type { Action, GameView } from '@/game/engine';
 import { territory, MOBILE_STRONGHOLD } from '@/game/board';
-import { alliedNoFieldShipmentPricing } from '@/game/shipment-price';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
@@ -28,7 +27,7 @@ export function RicheseAlliedNoFieldControls({
   const info = game.richeseNoField;
   const me = game.players.find((player) => player.id === game.me);
   const ally = game.players.find((player) => player.id === me?.ally);
-  if (!info || info.owner !== game.me || !info.private || !me || !ally)
+  if (!info || info.owner !== game.me || !info.private || !info.allyPricing || !me || !ally)
     return null;
   const offer = info.allyOffer;
   if (offer?.blocked)
@@ -57,7 +56,7 @@ export function RicheseAlliedNoFieldControls({
   const selected =
     available.find((candidate) => candidate.id === token) ?? available[0];
   const target = territory(destination);
-  const pricing = alliedNoFieldShipmentPricing(game, ally);
+  const pricing = info.allyPricing;
   const cost = target.type === 'stronghold' ? pricing.stronghold : pricing.other;
   const selectedPayer =
     payer === 'both' && cost === 2

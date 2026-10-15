@@ -3,7 +3,7 @@ import { viewGame, type Action, type Game } from '../game/engine';
 import { homeworldShipmentChoice, type HomeworldShipmentSources } from '../game/homeworld-shipment-options';
 import { guildHomeworldShipmentChoice } from '../game/guild-homeworld-shipment-options';
 import { junctionTransportChoice } from '../game/junction-transport-options';
-import { createGuildAmbassadorIncomeArrival } from './fixture-guild-ambassador-income-arrival';
+import { createGuildAmbassadorIncomeArrival, passNativeGuildTransportPermission } from './fixture-guild-ambassador-income-arrival';
 import {
   advancePairedE3Nexus, nextPairedE3NexusStep, pairedE3NexusClean,
   pairedE3NexusPlayer, pairedE3NexusReload, quietPairedE3NexusChoice,
@@ -91,6 +91,8 @@ export function declareNativeGuildHomeworldRate(f: NativeGuildHomeworldRateFixtu
     game = stepPairedE3Nexus(game, { actor: f.guild,
       action: { type: 'decision', event: game.decision.event, allow: true } }, actions);
   }
+  const permission = passNativeGuildTransportPermission(game);
+  game = permission.game; actions.push(...permission.actions);
   assert.equal(game.response?.kind, 'guildRate');
   assert.ok(viewGame(game, f.ecaz).responseControls?.cancelCards.includes(f.karama));
   return { game, actions };
@@ -133,6 +135,8 @@ export function createNativeImmuneJunctionRate(rate: 'half' | 'full' = 'half') {
     action: { type: 'bribe', target: base.ecaz, amount: excess } }, actions);
   game = stepPairedE3Nexus(game, { actor: base.entrant,
     action: { ...base.action, amount: 6 } }, actions);
+  const permission = passNativeGuildTransportPermission(game);
+  game = permission.game; actions.push(...permission.actions);
   assert.equal(game.response?.kind, 'guildRate');
   game = stepPairedE3Nexus(game, { actor: base.ecaz,
     action: { type: 'card', mode: 'cancel', card: base.karama } }, actions);

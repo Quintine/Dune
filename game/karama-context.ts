@@ -134,6 +134,13 @@ const cancellationSources = {
     calls: g.battle?.traitorCalls ?? null,
   }),
   guildIncome: () => null,
+  guildTransportPermission: g => ({
+    ...(g.pendingGuildTransport ? { transport: g.pendingGuildTransport } : {}),
+    ...(g.pendingHomeworldShipment ? { homeworld: g.pendingHomeworldShipment } : {}),
+    active: g.active,
+    blocked: g.guildTransportBlocked ?? null,
+    purchasedRate: g.karamaShipping ?? null,
+  }),
   guildRate: (g) => ({
     pending: g.pendingShipment ?? null,
     ...(g.pendingGuildTransport ? { transport: g.pendingGuildTransport } : {}),

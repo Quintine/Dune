@@ -1,5 +1,67 @@
 # Dune implementation status
 
+## 15 October 2026 — Separate native permission, independent typed price and loan approval
+
+Native cross/return now uses a distinct unpaid `guildTransportPermission`
+response before rate/payment, with original exact groups and typed world
+sources. The conservative provisional denial scope is that original shipment
+opportunity; signed Cunning second opportunity is distinct. Ordinary reserve/
+movement and common World→foreign World remain legal alternatives; immune
+Junction transport does not inherit the native ban. Existing rate-only saved
+receipts retain their original absent-field signature and do not replay a
+new earlier window. No recovery certification is implied.
+
+The authorized supplied Advanced PDF physical16 Karama section permits any
+player’s half-normal Force Shipment paid to bank. Native typed routes now
+honor the independent played price without granting a route or stacking
+explicit Nexus. Original own/donor invoice goes wholly to bank; actual
+completion consumes the grant. Shared existing provisional special-stop refund
+returns the exact physical purchase card to its owner and preserves resources/
+movement while using shipment. No unrelated grant is cleared.
+
+Allied Richese native price cancellation bills one marker, never zero/five
+materialized units. Recipient-funded full2 is distinct from supplier whole-fee1
+approval: even a wealthy supplier needs a new full-price offer and recipient
+consent. Controlled release preserves its prior three-marker and both wallets.
+Real reapproval then materializes old Richese3 and Guild5, spending only the
+new supplier2 under existing provisional bank-only precedence.
+
+Mobile smoke found fresh lender UI/AI still inferred its recipient’s price
+from its own view. Both now use authorized-pair `richeseNoField.allyPricing`;
+the shared pure helper takes explicit source booleans, not an ambiguous
+whole Game/View. No private wallet is added. Implementation/default tactical
+first-candidate and flag-cleanup pins were removed rather than re-pinned;
+optional reoffer was not forced or strategically tuned.
+
+Twenty main runtime/policy paths pass:15 original-action and five controlled,
+including exact source denial/alternatives, permission then rate cancellation,
+four original gifted routes, loan reapproval, refund and Cunning. Four additional
+controlled planning probes choose no optional reoffer here but execute legal
+recipient shipments. Actual minimum AI remains legal, not calibrated.
+
+Five styled390px GameTable journeys pass: original native prevention then immune
+Junction2 and ground move; original actual Ecaz gift→three-force world purchase2
+with Guild6 unchanged; controlled supplier1 release→fresh full2 offer/consent;
+controlled second-card special-stop/refund then movement; original typed return
+permission allowed then full3 rate cancellation with approved donor1 unchanged.
+No horizontal overflow/application exception; one initial Vite dependency fetch
+aborted. The owned in-memory QA reload retained exact captured synthetic states
+to exercise the corrected projection; no real room, D1, human server or deployed
+revision was restarted or changed.
+
+An already-purchased card with Junction sponsorship retains its prior separate
+composition gate and an explicit next task. Complete combinations, source
+refinement, comprehensive assurance and public starts remain open.
+[Canonical contract](GUILD_RATE_KARAMA_RULES.md#permission-purchase-and-allied-marker-composition--15-october-2026).
+Affected25-file **263/263** passes on the corrected quote bridge: the237-case
+related selection plus26 module/typed producer cases on the same frozen
+implementation. The earlier tactical/default assumptions were deleted, not
+re-pinned; no broad persistence/privacy campaign was added.
+Final `npm run check:quick`, production build and the20+4 runtime probes pass
+on the final source. Existing module-register deprecation, chunk-size and
+Unknown-route warnings remain. Eleven current links and both canonical
+five-facet evidence sets resolve; owned QA services/tab are stopped.
+
 ## 15 October 2026 — Native rate source composition and typed Homeworlds
 
 Removed blanket physical-module rate exclusions in favor of actual native

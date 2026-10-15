@@ -90,17 +90,30 @@ export function createGuildAmbassadorIncomeArrival(options: Pick<PairedE3NexusOp
     ] };
 }
 
-/** Stop at the real income/counter window, after physical transport but before entry. */
+/** Retain the actual unpaid native permission declaration as one engine transition. */
 export function declareGuildAmbassadorIncomeArrival(fixture: {
   beforeAction: Game; entrant: string; action: Action;
 }): PairedE3NexusTransition {
   const before = pairedE3NexusReload(fixture.beforeAction);
   const step = { actor: fixture.entrant, action: fixture.action };
   const after = stepPairedE3Nexus(before, step);
-  assert.equal(after.response?.kind, 'guildIncome');
-  assert.equal(after.pendingArrivalReaction?.length, 1);
+  assert.equal(after.response?.kind, 'guildTransportPermission');
+  assert.ok(!after.pendingArrivalReaction);
   assert.ok(!after.pendingAmbassador);
   return { before, step, after };
+}
+
+/** Pass only the actual native permission window; rate/income choices stay separate. */
+export function passNativeGuildTransportPermission(state: Game) {
+  let game = pairedE3NexusReload(state);
+  const actions: PairedE3NexusStep[] = [];
+  for (let n = 0; game.response?.kind === 'guildTransportPermission' && n < 20; n++) {
+    const step = nextPairedE3NexusStep(game); assert.ok(step);
+    assert.equal(step.action.type, 'passResponse');
+    game = stepPairedE3Nexus(game, step, actions);
+  }
+  assert.notEqual(game.response?.kind, 'guildTransportPermission');
+  return { game, actions };
 }
 
 /** Pass the actual persisted income queue; do not synthesize or clear controls. */

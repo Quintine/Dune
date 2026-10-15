@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import {
   createGuildAmbassadorIncomeArrival, allowGuildAmbassadorIncomeArrival,
-  completeGuildAmbassadorIncomeArrival,
+  completeGuildAmbassadorIncomeArrival, passNativeGuildTransportPermission,
 } from './fixture-guild-ambassador-income-arrival';
 import {
   advancePairedE3Nexus, nextPairedE3NexusStep, pairedE3NexusClean,
@@ -23,7 +23,7 @@ function declare(f: NativeFixture, before: Game, route: 'reserve' | 'transport',
     assert.deepEqual(player(g, f.entrant).forces, player(before, f.entrant).forces);
     g = act(g, f.guild, { type: 'decision', allow: true });
   }
-  return g;
+  return passNativeGuildTransportPermission(g).game;
 }
 function allowRate(state: Game) {
   let g = state;
@@ -117,8 +117,9 @@ void test('original expansion/Nexus Guild return has its own prepayment rate win
   const p = player(before, f.guild);
   const source = Object.keys(p.forces).find(key => p.forces[key] >= 3)!;
   assert.ok(source);
-  const offered = act(before, f.guild, { type: 'guildShip', from: source,
+  const permission = act(before, f.guild, { type: 'guildShip', from: source,
     territory: 'reserves', amount: 3, elite: 0, allyPayment: 0 });
+  const offered = passNativeGuildTransportPermission(permission).game;
   assert.equal(offered.response?.kind, 'guildRate');
   assert.deepEqual(player(offered, f.guild).forces, p.forces);
   const done = act(offered, f.ecaz, { type: 'card', mode: 'cancel', card: f.karama });

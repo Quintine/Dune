@@ -29,6 +29,31 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Separate transport permission, purchased typed price and allied marker — 15 October.**
+Native cross/return now has its own unpaid counter before price. Denial
+preserves legal alternatives and half price; the bounded original-opportunity
+scope is provisional and does not remove a signed Cunning second opportunity
+or immune Junction permission. Purchased ordinary Karama halves original
+typed routes without granting a route and sends the whole invoice to bank.
+Existing special-stop returns the original purchase card under its prior
+provisional policy. Allied marker cancellation never charges materialized
+zero/five forces or silently increases a supplier’s approved whole fee.
+
+Five actual390px journeys pass, including fresh full2 supplier reoffer/consent.
+That surface caught and fixed lender UI/AI quote drift using an authorized
+recipient-specific price descriptor, not private wallet data. Twenty main
+runtime/policy paths pass (15 original-action/five controlled), plus four
+controlled optional-offer/recipient continuations. No overflow/application
+exception; one initial Vite dependency fetch aborted. Only the owned
+memory-only QA engine reloaded, retaining its exact synthetic states.
+Purchased-price/Junction sponsorship remains a separately tracked source
+composition; full combinations, assurance, public starts and full goal remain open.
+[Current authority and explicit interpretation](GUILD_RATE_KARAMA_RULES.md#permission-purchase-and-allied-marker-composition--15-october-2026).
+Affected25-file263/263 passes across frozen237+26 selections; final saved/
+deployed assurance is deliberately not claimed by these source checks.
+Final types/lint/build and repeated20+4 source smoke pass; existing build
+warnings remain. Current links and both partial five-facet checklists resolve.
+
 **Native rate price sources, modules and typed Homeworlds — 15 October.**
 Original price receipts replace blanket module exclusions. Smuggler's free
 companion remains free; own No-Field bills one concealed marker, never its

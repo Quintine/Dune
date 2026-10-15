@@ -2,6 +2,16 @@
 
 Integrated checkpoint, 2026-09-07 local date. This closes the contributor-routing defect and adds transport price controls; ordinary rate/permission Karama cancellation and nonbattle Truthtrance commitments remain incomplete.
 
+## Distinct permission and independent typed pricing — 15 October 2026
+
+Native cross/return permission now has its own unpaid counter before native
+rate. Ordinary purchased Karama price remains independent on original typed
+routes, with the whole approved donor/own invoice paid to bank and no ordinary
+Guild income. Original special-stop card-return policy is reused rather than
+leaving a spent grant active. Allied marker reapproval and authoritative fresh
+supplier/AI prices preserve each original approval without reading other wallets.
+[Current source contract and explicit remaining Junction/purchased-price gate](GUILD_RATE_KARAMA_RULES.md#permission-purchase-and-allied-marker-composition--15-october-2026).
+
 ## Native rate admission follow-up — 15 October 2026
 
 The separate prepayment **rate** window now also admits expansion/Nexus native

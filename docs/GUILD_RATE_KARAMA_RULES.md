@@ -2,6 +2,69 @@
 
 Initial primary-source and engine audit, 2026-09-06. The bounded ordinary-reserve cancellation policy below was selected on 2026-09-28 after a targeted publisher-source search found no affordability procedure; the later original audit remains historical evidence for unfinished transport and module combinations.
 
+## Permission purchase and allied marker composition — 15 October 2026
+
+Three distinct sources now remain distinct end to end:
+
+- **Native cross/return permission:** a separate `guildTransportPermission`
+  response holds the exact original group before payment/departure. Denial
+  leaves a legal different shipment or movement and does not cancel native
+  half price. The conservative **provisional** interpretation prevents
+  immediate cross/return redeclaration for that original shipment opportunity;
+  a signed Cunning second opportunity is distinct. It is not a new publisher
+  example or a ban on an independent Junction Homeworld permission.
+- **Purchased ordinary Karama price:** the authorized supplied Advanced
+  rulebook, **PDF physical page16, Karama Cards**, says “Purchase any player’s
+  Force Shipment at Guild rates (½ normal), paid to the Spice Bank.”
+  Original typed world-to-world and independently eligible Guild Arrakis/
+  return routes now use that source without granting new transport rights.
+  The entire approved invoice goes to bank, including donor shares; native
+  rate cancellation cannot erase the independent card. Actual completion
+  consumes only its grant. Guild special-stop reuses the older provisional
+  policy: return the exact physical purchase card to its original owner,
+  clear that grant, use shipment, and preserve movement/resources.
+- **Allied Richese marker price:** charge one paid marker, never materialized
+  zero/five forces. A recipient-funded half1 can become full2; a supplier’s
+  original whole-price approval1 cannot silently become2, even when wealthy.
+  Return it unchanged and require a new explicit full-price offer/consent.
+  The existing Guild-recipient bank-only payee precedence remains provisional.
+
+Selected prepayment composition is original Guild special interception →
+native transport permission → native rate → original settlement. Common
+Guild world-to-foreign-world permission does not depend on cross/return and
+has no extra permission counter. This ordering is a bounded product choice,
+not a newly located comprehensive timing FAQ. Legacy rate-only receipts keep
+their absent-field signature and do not reopen an earlier permission stage.
+
+Mobile smoke caught stale lender UI/AI pricing: a lender’s own view could not
+infer its recipient’s canceled rate. Both now use the same authorized
+recipient-specific `richeseNoField.allyPricing` quote. Canonical pricing takes
+explicit source booleans rather than accepting an ambiguous whole Game/View;
+no private recipient wallet is added.
+
+Twenty main runtime/policy paths pass:15 original-action and five explicitly
+controlled. Four additional controlled planning probes permit optional
+non-reoffer and prove executable recipient continuations, not strategic tuning.
+Five actual styled390px journeys cover prevention plus immune Junction,
+actual gifted world price, fresh supplier full2 consent, controlled special
+stop/refund, and separate typed permission allowance then rate cancellation.
+No overflow/application exception; one initial Vite dependency request aborted.
+The owned memory-only QA reload retained exact synthetic states; no real room,
+database, human server, deployed revision or publication gate changed.
+
+An already-purchased price combined with a Junction-sponsored offer retains
+its prior separate-composition gate and is tracked next. Other specialized
+sources, complete combinations and final assurance remain unfinished.
+[Source authority](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026),
+[loan policy and consent](RICHESE_ALLIED_SHIPMENT_AUDIT.md).
+Affected25-file **263/263** passes across the frozen237-case related selection
+and26 additional module/typed producers. This is targeted rules evidence,
+not a full suite, recovery campaign or complete-mode certification.
+Final `npm run check:quick` and production build pass; the20 main runtime
+paths and four controlled continuation probes pass again on the final source.
+Existing module-register/chunk/Unknown-route warnings remain. Eleven current
+local links and both five-facet evidence sets resolve.
+
 ## Native price-source composition — 15 October 2026
 
 Native rate eligibility is now determined by the original price/source,

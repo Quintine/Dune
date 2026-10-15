@@ -2319,6 +2319,7 @@ export function GameTable({
                     harkonnenTraitor: 'Harkonnen ally traitor',
                     guildIncome: 'Guild shipment income',
                     guildRate: 'Guild half-price shipment rate',
+                    guildTransportPermission: 'Guild cross/return transport permission',
                     richeseNoField: 'Richese No-Field shipment',
                     advisor: 'Spiritual advisor',
                     emperorGift: 'Emperor spice gift',

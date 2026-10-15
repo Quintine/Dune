@@ -65,9 +65,24 @@ export function homeworldShipmentChoice(
     result.blocked = option.blocked;
     return result;
   }
+  if (
+    view.guildTransportCanceled &&
+    me.faction === 'guild' &&
+    destination === 'homeworld:guild'
+  ) {
+    result.blocked =
+      'The native Guild return permission is canceled; a purchased price cannot restore this route.';
+    return result;
+  }
+  if (nexus !== undefined && view.karamaShipping?.player === view.me) {
+    result.blocked =
+      'A purchased Karama price is already active; do not combine it with Guild Nexus Secret Ally.';
+    return result;
+  }
   const context = {
     advanced: view.advanced,
     nativeGuildRateCanceled: view.guildRateCanceled,
+    purchasedGuildRate: view.karamaShipping?.player === view.me,
     players: view.players.map((player) => ({
       id: player.id,
       faction: player.faction,
@@ -154,7 +169,9 @@ export function homeworldShipmentActions(
     !nexusGuildShipmentAvailable(view)
   )
     return [];
-  const useNexus = nexusGuildSecretAllyCanAct(view);
+  const useNexus =
+    view.karamaShipping?.player !== view.me &&
+    nexusGuildSecretAllyCanAct(view);
   const difficulty = Math.max(0, Math.min(3, level));
   const budget = Math.max(
     0,
@@ -169,6 +186,11 @@ export function homeworldShipmentActions(
     .filter(
       (world) =>
         (world.native !== me.id || me.faction === 'guild') &&
+        !(
+          view.guildTransportCanceled &&
+          me.faction === 'guild' &&
+          world.native === me.id
+        ) &&
         world.native !== me.ally,
     )
     .map((world) => {
@@ -233,7 +255,9 @@ export function homeworldShipmentActions(
         pools.reduce((sum, pool) => sum + pool.capacity, 0),
         [3, 5, 7, 9][difficulty],
         budget *
-          ((me.faction === 'guild' && !view.guildRateCanceled) || useNexus
+          ((me.faction === 'guild' && !view.guildRateCanceled) ||
+          view.karamaShipping?.player === view.me ||
+          useNexus
             ? 2
             : 1),
         Math.max([1, 3, 4, 5][difficulty], required),

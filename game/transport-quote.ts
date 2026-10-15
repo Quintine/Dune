@@ -18,6 +18,8 @@ export function guildTransportQuote(g: GameView, action: Action) {
     action.nexus === g.nexusGuildSecretAlly?.event;
   if (nexus && !nexusAllowed)
     unavailableReasons.push('Choose a current Guild Secret Ally offer.');
+  if (g.guildTransportCanceled && !nexusAllowed)
+    unavailableReasons.push('Karama prevents native Guild cross/return transport for this shipment opportunity.');
   const fromReserves = action.from === 'reserves';
   let total = 0;
   let origin: string | undefined;

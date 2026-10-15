@@ -15,6 +15,8 @@ export type HomeworldShipmentContext = Omit<
   players: (HomeworldReserveSeat & { ally: string | null })[];
   /** Only the native Guild faction rate; independent transport grants survive. */
   nativeGuildRateCanceled?: boolean;
+  /** Independently purchased ordinary Karama price; never a route permission. */
+  purchasedGuildRate?: boolean;
 };
 export type HomeworldShipmentIntent = {
   player: string;
@@ -35,10 +37,10 @@ function requireShipment(
 /** E3 world-to-world transport: use the actual native or foreign source pool.
  * Guild may also return a foreign garrison to its own world; other own-world
  * exceptions need separately established permission. The caller owns timing, usage,
- * funding, bank payment, responses and arrival effects. Guild's E3 half rate
- * applies to its own shipment unless its native rate is canceled; an alliance
- * alone does not grant that rate. Independent transport prices belong to their
- * own grant, not this native cancellation flag. */
+ * funding, bank payment, responses and arrival effects. A purchased ordinary
+ * Karama price takes precedence over the native Guild half rate or its
+ * cancellation; an alliance alone does not grant either price. Independent
+ * Nexus and Junction prices belong to their own grants. */
 export function quoteHomeworldShipment(
   context: HomeworldShipmentContext,
   custody: HomeworldCustody,
@@ -133,7 +135,8 @@ export function quoteHomeworldShipment(
     amount,
     elite,
     cost:
-      player.faction === 'guild' && !context.nativeGuildRateCanceled
+      context.purchasedGuildRate ||
+      (player.faction === 'guild' && !context.nativeGuildRateCanceled)
         ? Math.ceil(amount / 2)
         : amount,
     sources: transferred.receipts.filter((r) => r.homeworld !== destination.id),

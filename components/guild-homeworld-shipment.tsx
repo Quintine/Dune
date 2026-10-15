@@ -61,11 +61,14 @@ export function GuildHomeworldShipment({
         Ship forces from one Arrakis territory to Junction or another faction’s
         Homeworld. You may combine forces in different sectors of that
         territory. Allied Homeworlds cannot be destinations.
+        {' '}A purchased price does not restore canceled native transport permission.
       </p>
       <p className="fine">
-        {g.guildRateCanceled
-          ? 'The native Guild rate is canceled: pay one spice per force.'
-          : 'Pay one spice per two forces, rounded up.'}{' '}
+        {g.karamaShipping?.player === g.me
+          ? 'Purchased Karama price: one spice per two forces, rounded up, paid entirely to the bank even if the native Guild rate is canceled.'
+          : g.guildRateCanceled
+            ? 'The native Guild rate is canceled: pay one spice per force.'
+            : 'Pay one spice per two forces, rounded up.'}{' '}
         This uses your shipment; your normal movement remains available.
       </p>
       {option.blocked && (

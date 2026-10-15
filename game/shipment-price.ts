@@ -32,13 +32,24 @@ const discountedAlliedNoFieldPricing = Object.freeze({
   policy: 'Provisional pricing: a Guild recipient or already-active Karama rate uses the rounded one-force Guild fee (1 spice), paid entirely to the bank. This price/payee precedence is not an adjudicated publisher ruling.',
 });
 
+const canceledGuildAlliedNoFieldPricing = Object.freeze({
+  stronghold: 1, other: 2, bankOnly: true,
+  policy: 'Provisional pricing: canceling a Guild recipient’s native rate charges the full one-force fee, still paid entirely to the bank. This price/payee precedence is not an adjudicated publisher ruling.',
+});
+
 /** Shared first-version price/payee policy for Basic and Advanced. */
 export function alliedNoFieldShipmentPricing(
-  context: { advanced: boolean; karamaShipping?: { player: string } | null },
-  recipient: { id: string; faction: FactionId },
+  context: {
+    purchasedGuildRate: boolean;
+    nativeGuildRateCanceled: boolean;
+  },
+  recipient: { faction: FactionId },
 ) {
-  return recipient.faction === 'guild' || context.karamaShipping?.player === recipient.id
-    ? discountedAlliedNoFieldPricing : ordinaryAlliedNoFieldPricing;
+  if (context.purchasedGuildRate)
+    return discountedAlliedNoFieldPricing;
+  if (recipient.faction !== 'guild') return ordinaryAlliedNoFieldPricing;
+  return context.nativeGuildRateCanceled
+    ? canceledGuildAlliedNoFieldPricing : discountedAlliedNoFieldPricing;
 }
 
 /** A pledge is already escrowed. Selecting a share never spends a donor's

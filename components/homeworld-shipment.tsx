@@ -29,6 +29,7 @@ export function HomeworldShipment({
   const targets = worlds.filter(
     (world) =>
       (world.native !== g.me || me.faction === 'guild') &&
+      !(g.guildTransportCanceled && me.faction === 'guild' && world.native === me.id) &&
       world.native !== me.ally,
   );
   const [origin, setOrigin] = useState(available[0]?.id ?? '');
@@ -39,7 +40,9 @@ export function HomeworldShipment({
   const [allyPayment, setAllyPayment] = useState(0);
   const [nexusEvent, setNexusEvent] = useState('');
   const useNexus =
-    !!g.nexusGuildSecretAlly && nexusEvent === g.nexusGuildSecretAlly.event;
+    g.karamaShipping?.player !== g.me &&
+    !!g.nexusGuildSecretAlly &&
+    nexusEvent === g.nexusGuildSecretAlly.event;
   const option = g.homeworldShipment;
   if (!option) return null;
   const imperial = g.advanced && me.faction === 'emperor';
@@ -71,18 +74,22 @@ export function HomeworldShipment({
         Use your shipment to send forces from one Homeworld to another. Native
         reserves and foreign garrisons have separate source pools.{' '}
         {me.faction === 'guild'
-          ? 'Guild may also return a foreign garrison to Junction.'
+          ? g.guildTransportCanceled
+            ? 'The native Guild return permission is canceled: Junction cannot be a destination, even with a purchased price.'
+            : 'Guild may also return a foreign garrison to Junction.'
           : 'Your own Homeworld cannot be a destination.'}{' '}
         Allied Homeworlds cannot be destinations.
       </p>
       <p className="fine">
         {useNexus
           ? 'Selected Guild Nexus price: one spice per two forces, rounded up.'
-          : me.faction === 'guild'
-            ? g.guildRateCanceled
-              ? 'The native Guild rate is canceled: pay one spice per force.'
-              : 'Guild pays one spice per two forces, rounded up.'
-            : 'Pay one spice per force.'}{' '}
+          : g.karamaShipping?.player === g.me
+            ? 'Purchased Karama price: one spice per two forces, rounded up, paid entirely to the bank even if the native Guild rate is canceled.'
+            : me.faction === 'guild'
+              ? g.guildRateCanceled
+                ? 'The native Guild rate is canceled: pay one spice per force.'
+                : 'Guild pays one spice per two forces, rounded up.'
+              : 'Pay one spice per force.'}{' '}
         This uses your shipment; your normal movement remains available.
       </p>
       {g.nexusGuildSecretAlly && (
@@ -91,7 +98,11 @@ export function HomeworldShipment({
             <input
               type="checkbox"
               checked={useNexus}
-              disabled={busy || !!g.nexusGuildSecretAlly.blocked}
+              disabled={
+                busy ||
+                !!g.nexusGuildSecretAlly.blocked ||
+                g.karamaShipping?.player === g.me
+              }
               onChange={(event) =>
                 setNexusEvent(
                   event.target.checked ? g.nexusGuildSecretAlly!.event : '',
@@ -101,7 +112,8 @@ export function HomeworldShipment({
             Use Guild Nexus Secret Ally for Homeworld shipment
           </label>
           <p>
-            Spend the Nexus to pay one spice per two forces, rounded up.
+            Spend the Nexus for its independent price of one spice per two
+            forces, rounded up; it does not stack with a purchased Karama price.
             Existing source and destination restrictions still apply.
           </p>
           {g.nexusGuildSecretAlly.blocked && (

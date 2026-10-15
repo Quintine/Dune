@@ -7,7 +7,7 @@ import {
   allowGuildAmbassadorIncomeArrival, cancelGuildAmbassadorIncomeArrival,
   completeGuildAmbassadorIncomeArrival,
   createGuildAmbassadorIncomeArrival, declareGuildAmbassadorIncomeArrival,
-  guildAmbassadorIncomeChoice,
+  guildAmbassadorIncomeChoice, passNativeGuildTransportPermission,
 } from './fixture-guild-ambassador-income-arrival';
 import { pairedE3NexusPolicy, pairedE3NexusInventory as guildAmbassadorIncomeInventory,
   pairedE3NexusPlayer as player, pairedE3NexusReload as reload } from './fixture-paired-e3-nexus-modules';
@@ -46,9 +46,9 @@ for (const trigger of [true, false]) {
       assert.equal(botArrivalBlock(view, f.action), null,
         'A future earned receipt is not an already-active arrival response');
 
-      // This original engine path already commits; owner previews must agree.
+      // Permission is a distinct unpaid window; income follows actual allowance.
       const declaration = declareGuildAmbassadorIncomeArrival(f);
-      const paid = declaration.after;
+      const paid = passNativeGuildTransportPermission(declaration.after).game;
       assert.ok(!paid.pendingGuildTransport);
       assert.equal(paid.response?.kind, 'guildIncome');
       assert.equal(paid.response?.amount, 1);
@@ -131,7 +131,7 @@ for (const trigger of [true, false]) {
 
 void test('actual Ecaz owner-view policies complete the queued native Guild entry without replaying payment or counters', () => {
   const f = createGuildAmbassadorIncomeArrival();
-  const paid = declareGuildAmbassadorIncomeArrival(f).after;
+  const paid = passNativeGuildTransportPermission(declareGuildAmbassadorIncomeArrival(f).after).game;
   const offered = allowGuildAmbassadorIncomeArrival(paid).game;
   for (const difficulty of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) {
     const action = pairedE3NexusPolicy(reload(offered), f.ecaz, difficulty)[0];

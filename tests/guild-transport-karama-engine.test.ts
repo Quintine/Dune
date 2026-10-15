@@ -11,6 +11,8 @@ import {
 } from '../game/engine';
 import { baseDeck } from '../game/cards';
 import { botActions } from '../game/bots';
+import { territory } from '../game/board';
+import { passNativeGuildTransportPermission } from './fixture-guild-ambassador-income-arrival';
 
 const player = (g: Game, id: string) => g.players.find(seat => seat.id === id)!;
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
@@ -52,9 +54,10 @@ function declare(g: Game, id: string, sources: Record<string, number> | 'reserve
   const selection = sources === 'reserves'
     ? { from: 'reserves', amount: 3 }
     : { forces: sources, ...(eliteForces ? { eliteForces } : {}) };
-  return applyAction(g, id, {
+  const permission = applyAction(g, id, {
     type: 'guildShip', ...selection, territory: destination, sector, allyPayment,
   });
+  return passNativeGuildTransportPermission(permission).game;
 }
 function canceled(g: Game, card: string): Game {
   assert.equal(g.response?.kind, 'guildRate');
@@ -350,3 +353,59 @@ void test('all AI profiles pass pending transport and a blocked ally still selec
   assert.equal(player(done, 'e').shipped, true);
   assert.ok(player(done, 'e').spice < 2);
 });
+
+void test('controlled southern-reserve permission denial preserves typed Fremen counters and their separate free reinforcement', () => {
+  const { g: initial, karama } = fixture('f', true);
+  player(initial, 'f').elites = { reserves: 3, tanks: 0, forces: {}, revived: 0 };
+  const offered = applyAction(reload(initial), 'f', { type: 'guildShip', from: 'reserves',
+    territory: 'carthag', sector: 11, amount: 3, elite: 1, allyPayment: 0 });
+  assert.equal(offered.response?.kind, 'guildTransportPermission');
+  const denied = applyAction(offered, 'a', { type: 'card', mode: 'cancel', card: karama.id });
+  assert.deepEqual(physical(denied, 'f'), physical(initial, 'f'));
+  assert.equal(viewGame(denied, 'f').guildTransportCanceled, true);
+  assert.equal(viewGame(denied, 'f').guildRateCanceled, false);
+  const sector = territory('the_great_flat').sectors.find(value => value !== denied.storm)!;
+  const done = applyAction(denied, 'f', { type: 'ship', territory: 'the_great_flat',
+    sector, amount: 3, elite: 1, allyPayment: 0 });
+  assert.equal(player(done, 'f').spice, player(initial, 'f').spice);
+  assert.equal(player(done, 'g').spice, player(initial, 'g').spice);
+  assert.equal(player(done, 'f').reserves, 17);
+  assert.equal(player(done, 'f').elites?.reserves, 2);
+  assert.equal(player(done, 'f').forces[`the_great_flat:${sector}`], 3);
+  assert.equal(player(done, 'f').elites?.forces[`the_great_flat:${sector}`], 1);
+  assert.equal(player(done, 'f').shipped, true);
+});
+
+for (const counterConversion of [false, true]) {
+  void test(`controlled BG conversion ${counterConversion ? 'countered' : 'allowed'} keeps the original native permission source and physical group`, () => {
+    const { g: initial, karama } = fixture('g', true);
+    stationed(initial, 'g', { 'pasty_mesa:5': 5 });
+    initial.players.push(newPlayer('b', 'Bene Gesserit', 'beneGesserit'));
+    initial.order.push('b'); initial.movementRemaining!.push('b');
+    const index = initial.deck.findIndex(card => card.kind === 'worthless');
+    assert.ok(index >= 0);
+    const worthless = initial.deck.splice(index, 1)[0];
+    player(initial, 'b').hand.push(worthless);
+    let g = applyAction(reload(initial), 'g', { type: 'guildShip', from: 'pasty_mesa:5',
+      territory: 'carthag', sector: 11, amount: 3, elite: 0, allyPayment: 0 });
+    assert.equal(g.response?.kind, 'guildTransportPermission');
+    g = applyAction(g, 'b', { type: 'card', mode: 'cancel', card: worthless.id });
+    assert.equal(g.response?.kind, 'worthlessKarama');
+    assert.deepEqual(physical(g, 'g'), physical(initial, 'g'));
+    g = applyAction(g, 'a', counterConversion
+      ? { type: 'card', mode: 'cancel', card: karama.id } : { type: 'passResponse' });
+    if (counterConversion) {
+      assert.equal(player(g, 'g').spice, 18);
+      assert.equal(player(g, 'g').forces['pasty_mesa:5'], 2);
+      assert.equal(player(g, 'g').forces['carthag:11'], 3);
+      assert.equal(player(g, 'g').shipped, true);
+      assert.ok(!viewGame(g, 'g').guildTransportCanceled);
+    } else {
+      assert.deepEqual(physical(g, 'g'), physical(initial, 'g'));
+      assert.equal(viewGame(g, 'g').guildTransportCanceled, true);
+      assert.ok(player(g, 'a').hand.some(card => card.id === karama.id));
+    }
+    assert.equal(g.discard.filter(card => card.id === worthless.id).length, 1);
+    assert.equal(g.discard.filter(card => card.id === karama.id).length, counterConversion ? 1 : 0);
+  });
+}

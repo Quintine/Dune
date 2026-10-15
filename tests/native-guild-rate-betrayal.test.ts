@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyAction, type Game } from '../game/engine';
 import { createGuildBetrayalFixture, settleGuildBetrayalFixture } from './fixture-nexus-guild-betrayal';
+import { passNativeGuildTransportPermission } from './fixture-guild-ambassador-income-arrival';
 const player = (g: Game, id: string) => g.players.find(p => p.id === id)!;
 
 for (const source of ['reserve', 'guildTransport', 'homeworld'] as const) {
@@ -19,6 +20,7 @@ for (const source of ['reserve', 'guildTransport', 'homeworld'] as const) {
       if (g.decision?.kind === 'guildShipment' || g.decision?.kind === 'homeworldShipmentGuild')
         g = applyAction(g, f.guild, { type: 'decision', allow: true,
           ...(g.decision.kind === 'homeworldShipmentGuild' ? { event: g.decision.event } : {}) });
+      g = passNativeGuildTransportPermission(g).game;
       assert.equal(g.response?.kind, 'guildRate');
       const amount = g.pendingShipment?.amount ?? g.pendingGuildTransport?.amount ?? g.pendingHomeworldShipment!.amount;
       assert.ok(amount > 1);

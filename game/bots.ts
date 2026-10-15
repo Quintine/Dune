@@ -81,7 +81,7 @@ import {
   canUseAsKaramaRole,
   shrineTruthtranceBotAction,
 } from './shrine';
-import { reserveShipmentCost, alliedNoFieldShipmentPricing } from './shipment-price';
+import { reserveShipmentCost } from './shipment-price';
 import { moritaniSpecialKaramaBotAction } from './moritani-special-karama-options';
 import { quoteSmugglerShipment } from './smuggler-shipment';
 import { quoteSmugglerNoField } from './smuggler-no-field';
@@ -160,10 +160,10 @@ function alliedNoFieldOffer(g: GameView): Action | null {
     alliedNoField?.owner === me.id &&
     alliedNoField.canOfferAlly &&
     !alliedNoField.allyDeclined &&
-    alliedNoField.private && ally
+    alliedNoField.private && alliedNoField.allyPricing && ally
   ) {
     const inventory = alliedNoField.private;
-    const pricing = alliedNoFieldShipmentPricing(g, ally);
+    const pricing = alliedNoField.allyPricing;
     const oldMarker = inventory.deployed;
     const oldValue =
       inventory.tokens.find((token) => token.id === oldMarker?.tokenId)

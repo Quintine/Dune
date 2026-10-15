@@ -2,6 +2,19 @@
 
 This checkpoint follows the [Guild source contract](NEXUS_GUILD_RULES.md): native Guild can spend Cunning when finishing its ordinary Shipment and Movement turn to obtain one second shipment. It preserves one combined turn and the actual history of the first shipment and movement. It does not implement Guild Secret Ally, Betrayal or complete Nexus play.
 
+## Native permission opportunity scope — 15 October 2026
+
+Cross/return permission is now a separate prepayment counter before native
+price. Its conservative provisional denial scope is the original shipment
+opportunity, not every later turn or signed Cunning grant. A denied second
+opportunity retains original shipped history and first payment, permits a
+legal ordinary reserve replacement, and grants no ordinary extra movement.
+Conversely, an ordinary denial followed by an actual paid ordinary replacement
+does not revoke the newly earned Cunning opportunity.
+Two controlled source transitions and an actual controlled runtime prove
+these distinctions; they are not original action-only histories.
+[Current source contract](GUILD_RATE_KARAMA_RULES.md#permission-purchase-and-allied-marker-composition--15-october-2026).
+
 ## Typed Homeworld and module rate composition — 15 October 2026
 
 The later native composition removes the blanket physical-module rate
