@@ -29,6 +29,28 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Harass / Stone Burner interaction — 16 October.** Richese-family Harass now
+uses visibly provisional post-withdrawal physical comparison under the standing
+choose-recommended priority; the earlier source question remains unanswered.
+Same-plan, opposing and Mirror-resolved Stone preserve Traitor precedence,
+original support and mandatory disposal. Active Occupy removes only its
+actual card user's fixed or variable undialed pool, preserving the original
+mandatory Ecaz commitment. Public preflight considers possible fixed withdrawal
+without reading hidden cards. No persisted game field is added.
+
+Affected thirteen-file161/161, types/lint and build pass. Eight same-plan
+policy programs/all four profiles accept24 continuation actions. Two actual
+390px native-control journeys prove Basic winner reversal and Advanced typed
+return/support/leader-death/bounty through retention and collection. No root
+overflow or application/browser error in the corrected host's journeys.
+Original Richese lot and shared-preparation fixture drivers were corrected;
+incidental collection-wallet expectations were removed. Current guide parse,
+policy anchor and33 evidence paths resolve; both topics' five facets stay
+Partial. [Policy and scoped proof](HARASS_WITHDRAW_RUNTIME.md#provisional-stone-burner-timing--16-october-2026).
+Ix/Poison Tooth, same-plan Harass/Reinforcements, Reinforcements/Stone, own
+concealed No-Field Harass and other module gates remain. No human server,
+saved room, D1, deployment or public gate changed; final assurance stays due.
+
 **Ixian Nexus purchased-card interaction wave — 16 October.**
 Purchased-card replacement now composes:
 - successful native BG Karama conversion, after its original counter;

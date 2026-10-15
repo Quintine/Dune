@@ -2,7 +2,7 @@ import type { GameView } from '@/game/engine';
 import { faction } from '@/game/catalog';
 import { leaderStrengthLabel } from '@/game/cards';
 import { isStoneBurner } from '@/game/battle-cards';
-import { stoneBurnerComparison } from '@/game/stone-burner';
+import { stoneBurnerComparison, stoneBurnerWithdrawalContext } from '@/game/stone-burner';
 import { RevealedPlanPieces } from './revealed-plan-pieces';
 import { KwisatzInspector } from './kwisatz-inspector';
 export function RevealedBattle({ game }: { game: GameView }) {
@@ -10,6 +10,18 @@ export function RevealedBattle({ game }: { game: GameView }) {
   if (!battle?.revealed) return null;
   const attackerPlan = battle.plans[battle.attacker];
   const defenderPlan = battle.plans[battle.defender];
+  let stoneContext = battle.stoneBurnerContext?.occupy;
+  const withdrawing = [battle.attacker, battle.defender].filter(id => {
+    const plan = battle.plans[id];
+    return plan && [plan.weapon, plan.defense].includes('ecaz-harass-withdraw');
+  });
+  for (const id of withdrawing) {
+    const occupy = battle.ecazOccupy?.lead === id ? {
+      cardUser: id, ecaz: battle.ecazOccupy.ecaz, canceled: battle.ecazOccupy.canceled,
+    } : undefined;
+    stoneContext = stoneBurnerWithdrawalContext(stoneContext,
+      id === battle.attacker ? 'attacker' : 'defender', occupy);
+  }
   const comparisons =
     battle.cards.some(isStoneBurner) &&
     battle.ownForces &&
@@ -23,6 +35,8 @@ export function RevealedBattle({ game }: { game: GameView }) {
             game.me === battle.defender ? battle.ownForces! : opponent,
             defenderPlan.dial,
             defenderPlan.support,
+            battle.tieWinner === battle.attacker ? 'attacker' : 'defender',
+            stoneContext,
           ),
         )
       : [];
@@ -37,6 +51,13 @@ export function RevealedBattle({ game }: { game: GameView }) {
       <h3>Revealed battle plans</h3>
       <a className="battle-display-link" href="#table-decisions">Return to battle decisions</a>
       <p className="revealed-plans-help">Both plans are public. Inspect any played component; use the decision controls to resolve the battle. <a href="/rules?topic=revealed-battle-components#revealed-battle-components">Component guide</a> · <a href="/rules?topic=battle#battle">Battle rules</a></p>
+      {comparisons.length > 0 && withdrawing.length > 0 && (
+        <p className="fine">
+          Provisional Stone Burner counts below assume Harass &amp; Withdraw
+          succeeds. An opposing successful Traitor cancels withdrawal and decides
+          the battle instead.
+        </p>
+      )}
       <div className="revealed-plan-pair">
       {[battle.attacker, battle.defender].map((id) => {
         const plan = battle.plans[id];

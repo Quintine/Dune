@@ -378,7 +378,7 @@ import {
   auditCount,
   sampleAuditCards,
 } from './choam-auditor';
-import { stoneBurnerPlanBlock, type StoneBurnerContext } from './stone-burner';
+import { stoneBurnerPlanBlock, stoneBurnerWithdrawalContext, type StoneBurnerContext } from './stone-burner';
 import {
   STRONGHOLD_CARDS,
   createStrongholdCards,
@@ -20692,21 +20692,20 @@ function inspectedPlanMatches(p: Player, field: PlanField, fixed: unknown, candi
   return fixedBattleInspectionMatches(field, fixed as string | number | null, candidate,
     (field === 'weapon' || field === 'defense') && typeof candidate === 'string' ? cardOf(p, candidate) : undefined);
 }
+function harassModuleBlock(g: Game): string | null {
+  if (!g.ecazTreachery)
+    return 'Enable the independent Ecaz Treachery Cards variant before using Harass & Withdraw.';
+  if (g.homeworlds || g.nexusCards || g.leaderSkills || g.techTokens || g.strongholdCards || g.discoveryEnabled)
+    return 'Harass & Withdraw with other optional modules, including Homeworlds, is still being implemented.';
+  return combinedCardBattleBlock(g);
+}
 function harassWithdrawContext(g: Game, p: Player): HarassWithdrawContext {
   const b = g.battle!;
   const other = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
-  const combinedBlock = combinedCardBattleBlock(g);
-  let blocked: string | null = null;
-  if (!g.ecazTreachery) blocked = 'Enable the independent Ecaz Treachery Cards variant before using Harass & Withdraw.';
-  else if (g.status !== 'playing' || g.phase !== 6 || ![b.attacker, b.defender].includes(p.id))
+  let blocked = harassModuleBlock(g);
+  if (!blocked && (g.status !== 'playing' || g.phase !== 6 || ![b.attacker, b.defender].includes(p.id)))
     blocked = 'Use Harass & Withdraw in your own battle.';
-  else if (g.homeworlds || g.nexusCards || g.leaderSkills || g.techTokens || g.strongholdCards || g.discoveryEnabled)
-    blocked = 'Harass & Withdraw with other optional modules, including Homeworlds, is still being implemented.';
-  else if (g.players.some(player => player.faction === 'richese') || g.richeseCache !== undefined || g.richeseRemoved !== undefined)
-    blocked = 'Harass & Withdraw with the Richese card family awaits the Stone Burner timing ruling.';
-  else if (combinedBlock)
-    blocked = combinedBlock;
-  else if (p.noField?.deployed?.location.territory === b.territory)
+  if (!blocked && p.noField?.deployed?.location.territory === b.territory)
     blocked = 'Reveal your No-Field before using Harass & Withdraw.';
   const locations = Object.fromEntries(Object.entries(p.forces)
     .filter(([key, amount]) => amount > 0 && splitLocation(key).territory === b.territory)
@@ -21049,26 +21048,36 @@ function stoneTimingBlock(g: Game): string | null {
 function stoneOccupyContext(g: Game): StoneBurnerContext | undefined {
   const b = g.battle!, profile = ecazBattleProfile(g);
   if (!profile || profile.canceled) return undefined;
-  const side = { fixedEcazDial: profile.fixedEcazDial, ecazUndialed: Math.floor(profile.ecazForces.normal / 2) };
+  const side = {
+    fixedEcazDial: profile.fixedEcazDial,
+    ecazUndialed: Math.floor(profile.ecazForces.normal / 2),
+    // Configuration and selected lead are public; never inspect the sealed
+    // opponent card to decide whether its fixed undialed Ecaz forces may return.
+    ...(profile.lead === profile.ecaz && !harassModuleBlock(g)
+      ? { possibleEcazWithdrawal: true } : {}),
+  };
   return profile.lead === b.attacker ? { attacker: side } : { defender: side };
 }
 function stonePlanBlock(
   g: Game,
   p: Player,
-  dial: number,
-  support: number,
+  plan: Pick<Plan, 'dial' | 'support' | 'weapon' | 'defense'>,
 ): string | null {
   const b = g.battle!;
   const opponent = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
-  const context = stoneOccupyContext(g);
+  const baseContext = stoneOccupyContext(g);
+  const context = [plan.weapon, plan.defense].includes(HARASS_WITHDRAW_CARD)
+    ? stoneBurnerWithdrawalContext(baseContext, b.attacker === p.id ? 'attacker' : 'defender',
+        harassWithdrawContext(g, p).occupy)
+    : baseContext;
   return (
     stoneTimingBlock(g) ??
     stonePublicPools(g, opponent, p)
       .map((pool) =>
         stoneBurnerPlanBlock(
           planCombatForces(g, p, opponent),
-          dial,
-          support,
+          plan.dial,
+          plan.support,
           pool,
           b.attacker === p.id ? 'attacker' : 'defender',
           battleTieWinner(g) === b.attacker ? 'attacker' : 'defender',
@@ -21249,11 +21258,11 @@ function validatePlan(
   }
   if ([w, d].some(isHarassWithdraw)) currentHarassWithdrawQuote(g, p, plan);
   if (isMirrorWeapon(w)) {
-    const blocked = mirrorWeaponModeBlock(g) ?? stonePlanBlock(g, p, dial, support);
+    const blocked = mirrorWeaponModeBlock(g) ?? stonePlanBlock(g, p, plan);
     requireRule(!blocked, blocked ?? 'Mirror Weapon cannot resolve this commitment.');
   }
   if (isStoneBurner(w)) {
-    const blocked = stonePlanBlock(g, p, dial, support);
+    const blocked = stonePlanBlock(g, p, plan);
     requireRule(
       !blocked,
       blocked ?? 'Stone Burner cannot resolve this commitment.',

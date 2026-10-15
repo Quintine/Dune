@@ -249,8 +249,9 @@ Reinforcements uses the card user's own three normal-first reserve counters
 and existing +2 score-only modifier, not ally reserves, extra physical dial
 losses or support. Existing provisional all-revealed-outcome cost/disposal
 is unchanged and remains explicitly not a publisher ruling. Both slots and
-opposing holders work; own same-plan Harass/Reinforcements and Stone/optional
-module guards stay. Basic/unprofiled co-side card battles remain rejected.
+opposing holders work; own same-plan Harass/Reinforcements and Reinforcements
+with Stone/optional modules remain guarded. Basic/unprofiled co-side card
+battles remain rejected.
 
 Native/pure67 cases, relevant284-case batch and27 actual native-program
 cases pass, including all four legal policies. Two natural captured games
@@ -297,8 +298,12 @@ active Occupy, or the **selected lead's own pool only** after prevention.
 Its total dial offset is removed before native typed casualty enumeration.
 Mirror copies use the same comparison and original physical-card retention.
 Public opposing No-Field preflight enumerates possible native pools, never the
-actual secret denomination. Ix Stone/Poison Tooth timing, Harass/Stone and
-genuinely winner-changing typed allocations retain their existing guards.
+actual secret denomination. Ix Stone/Poison Tooth timing and genuinely
+winner-changing typed allocations retain their existing guards.
+Harass/Stone now uses the explicitly
+[provisional post-withdrawal policy](HARASS_WITHDRAW_RUNTIME.md#provisional-stone-burner-timing--16-october-2026):
+remove only the actual card user's undialed pool, never recompute original
+fixed commitment and never inspect concealed opposing cards for preflight.
 Native Ecaz/Moritani Mirror admission is Advanced only; Basic is unchanged.
 
 The affected rule batch passes **363/363**, with types/lint and build passing.

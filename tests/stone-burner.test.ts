@@ -5,6 +5,7 @@ import {
   stoneBurnerComparison,
   stoneBurnerPlanBlock,
   stoneBurnerCompulsionBlock,
+  stoneBurnerWithdrawalContext,
   type StoneBurnerSide,
 } from '../game/stone-burner';
 
@@ -315,4 +316,71 @@ void test('public compulsion matches existence of a supported zero-spice plan wi
     )!,
     /physical force pools/,
   );
+});
+
+void test('post-withdrawal comparison resolves original typed ambiguity without skipping original plan legality', () => {
+  assert.equal(stoneBurnerComparison(emperor, 3, 1, ordinary(3), 1, 0).winner, null);
+  const context = stoneBurnerWithdrawalContext(undefined, 'attacker');
+  assert.deepEqual(stoneBurnerComparison(emperor, 3, 1, ordinary(3), 1, 0, 'attacker', context), {
+    winner: 'defender', attacker: [0], defender: [2],
+  });
+  assert.equal(stoneBurnerPlanBlock(emperor, 3, 1, ordinary(3), 'attacker', 'defender', context), null);
+  for (const [dial, support] of [[9, 0], [3, 7], [0.25, 0], [0, 1]]) {
+    assert.deepEqual(stoneBurnerComparison(emperor, dial, support, ordinary(1), 0, 0, 'attacker', context).attacker, []);
+    assert.notEqual(stoneBurnerPlanBlock(emperor, dial, support, ordinary(1), 'attacker', 'attacker', context), null);
+  }
+});
+
+void test('both returned undialed pools tie at zero for the actual aggressor', () => {
+  const context = stoneBurnerWithdrawalContext(
+    stoneBurnerWithdrawalContext(undefined, 'attacker'), 'defender',
+  );
+  for (const aggressor of ['attacker', 'defender'] as const)
+    assert.deepEqual(stoneBurnerComparison(ordinary(5), 3, 0, ordinary(3), 1, 0, aggressor, context), {
+      winner: aggressor, attacker: [0], defender: [0],
+    });
+});
+
+void test('active Occupy withdrawal removes only the named owner contribution and preserves the original fixed dial', () => {
+  const original = { attacker: { fixedEcazDial: 3, ecazUndialed: 2 } };
+  const before = structuredClone(original);
+  const ecaz = stoneBurnerWithdrawalContext(original, 'attacker', {
+    canceled: false, cardUser: 'ecaz', ecaz: 'ecaz',
+  });
+  const variable = stoneBurnerWithdrawalContext(original, 'attacker', {
+    canceled: false, cardUser: 'ally', ecaz: 'ecaz',
+  });
+  assert.deepEqual(stoneBurnerComparison(emperor, 6, 1, ordinary(3), 1, 0, 'attacker', ecaz).attacker, [1, 2, 3]);
+  assert.deepEqual(stoneBurnerComparison(emperor, 6, 1, ordinary(3), 1, 0, 'attacker', variable).attacker, [2]);
+  assert.deepEqual(stoneBurnerComparison(emperor, 2, 0, ordinary(3), 1, 0, 'attacker', variable).attacker, []);
+  const canceled = stoneBurnerWithdrawalContext(undefined, 'attacker', {
+    canceled: true, cardUser: 'ecaz', ecaz: 'ecaz',
+  });
+  assert.deepEqual(stoneBurnerComparison(emperor, 3, 1, ordinary(3), 1, 0, 'attacker', canceled).attacker, [0]);
+  assert.deepEqual(original, before);
+});
+
+void test('public possible opposing Ecaz withdrawal checks both scenarios without conflating their winners or cached totals', () => {
+  for (const side of ['attacker', 'defender'] as const) {
+    const opposingSide = side === 'attacker' ? 'defender' : 'attacker';
+    const fixed = { fixedEcazDial: 4, ecazUndialed: 4 };
+    const context = { [opposingSide]: fixed };
+    assert.equal(stoneBurnerPlanBlock(emperor, 3, 1, ordinary(2), side, side, context), null);
+    assert.notEqual(stoneBurnerPlanBlock(emperor, 3, 1, ordinary(2), side, side, {
+      [opposingSide]: { ...fixed, possibleEcazWithdrawal: true },
+    }), null);
+    assert.notEqual(stoneBurnerPlanBlock(emperor, 3, 1, ordinary(2), side, side,
+      stoneBurnerWithdrawalContext(context, opposingSide, { canceled: false, cardUser: 'ecaz', ecaz: 'ecaz' }),
+    ), null);
+    assert.equal(stoneBurnerPlanBlock(emperor, 3, 1, ordinary(2), side, side,
+      stoneBurnerWithdrawalContext(context, opposingSide),
+    ), null);
+    // Populate/use the original cache again after the actual withdrawal modes.
+    assert.equal(stoneBurnerPlanBlock(emperor, 3, 1, ordinary(2), side, side, context), null);
+    // A revealed return can change the winner, but neither scenario has an
+    // unresolved physical allocation when both sides have deterministic totals.
+    assert.equal(stoneBurnerPlanBlock(ordinary(2), 0, 0, ordinary(0), side, side, {
+      [opposingSide]: { ...fixed, possibleEcazWithdrawal: true },
+    }), null);
+  }
 });

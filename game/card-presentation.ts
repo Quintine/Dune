@@ -120,7 +120,7 @@ export function cardPresentation(card: VisibleCard): CardPresentation {
       availability: ecaz.card.effect === 'recruits'
         ? 'Recruits has development controls during Revival. Earlier paid revivals, pending transactions, later free-rate changes and repeated use this turn remain guarded pending their rulings.'
         : ecaz.card.effect === 'harassWithdraw'
-          ? 'Harass & Withdraw has development controls in either battle-card slot, with physical allocation choices after reveal. Richese card combinations and additional optional modules remain guarded.'
+          ? 'Harass & Withdraw has development controls in either battle-card slot, with physical allocation choices after reveal. Stone Burner provisionally compares undialed forces remaining after successful withdrawal; additional optional modules remain guarded.'
           : 'Reinforcements has development controls in either battle-card slot, including the explicit Advanced Occupy card variant. It spends three of the card user’s own reserve forces and adds +2 battle score without extra spice support. Charging that cost on every revealed outcome is provisional; same-plan Harass & Withdraw, Stone Burner and other optional modules remain guarded.',
       topics: RULE_TOPICS.filter((topic) => topic.id === (ecaz.card.effect === 'harassWithdraw' ? 'card-harass-withdraw' : ecaz.card.effect === 'reinforcements' ? 'card-reinforcements' : 'card-recruits')),
     };

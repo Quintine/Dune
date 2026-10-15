@@ -81,6 +81,11 @@ export function HarassWithdrawGuide({
         Your leader can still die. An opponent’s successful traitor call cancels
         the withdrawal. Discard this card after use.
       </p>
+      <p className="fine">
+        Provisional Stone Burner timing: compare undialed forces remaining after
+        a successful withdrawal, not the forces already returned to reserves.
+        In Occupy, the other ally’s undialed forces still count.
+      </p>
     </section>
   );
 }

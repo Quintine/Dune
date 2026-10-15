@@ -163,7 +163,7 @@ import {
   isMirrorWeapon,
 } from '@/game/battle-cards';
 import { validBattleSlotPair } from '@/game/battle-card-slots';
-import { stoneBurnerPlanBlock } from '@/game/stone-burner';
+import { stoneBurnerPlanBlock, stoneBurnerWithdrawalContext } from '@/game/stone-burner';
 import { mirrorWeaponModeBlock } from '@/game/mirror-weapon-mode';
 import { TECH_TOKENS, ownedTech } from '@/game/tech-tokens';
 import {
@@ -577,6 +577,11 @@ export function GameTable({
   );
   const mirrorSelected = isMirrorWeapon(selectedSpecialWeapon);
   const stoneContext = g.battle?.stoneBurnerContext;
+  const stoneCandidateContext = selectedSpecialWeapon &&
+    (selectedWeaponId === 'ecaz-harass-withdraw' || selectedDefenseId === 'ecaz-harass-withdraw')
+    ? stoneBurnerWithdrawalContext(stoneContext?.occupy,
+        g.battle!.attacker === me.id ? 'attacker' : 'defender', g.battle?.harassWithdraw?.occupy)
+    : stoneContext?.occupy;
   const stonePlanReason = !selectedSpecialWeapon
     ? null
     : ((mirrorSelected ? mirrorWeaponModeBlock(g) : null) ?? stoneContext?.blocked ??
@@ -595,7 +600,7 @@ export function GameTable({
                 g.battle!.tieWinner === g.battle!.attacker
                   ? 'attacker'
                   : 'defender',
-                stoneContext.occupy,
+                stoneCandidateContext,
               ),
             )
             .find((reason) => reason !== null) ?? null)));
@@ -3083,6 +3088,11 @@ export function GameTable({
                     still apply.
                   </p>
                   {g.decision.copiedFrom && <p className="fine">Your physical Mirror Weapon copied the opposing Stone Burner. Your choice is independent of its owner’s; winning retains Mirror as Mirror.</p>}
+                  <p className="fine">
+                    Provisional Harass &amp; Withdraw timing: compare undialed
+                    forces remaining after a successful withdrawal. An opposing
+                    successful Traitor cancels that withdrawal.
+                  </p>
                   <a href="/rules?topic=stone-burner">
                     Read Stone Burner rules
                   </a>

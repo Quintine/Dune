@@ -5,7 +5,7 @@ import { richeseCards } from '../game/richese-cards';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from '../game/combat';
 import { quoteEcazOccupyBattle, type EcazOccupyBattleProfile } from '../game/ecaz-occupy-battle';
 import { quoteBattleResolution, BattleResolutionQuoteError, type BattleResolutionInput, type ResolutionCombatant } from '../game/battle-resolution-quote';
-import { stoneBurnerComparison, stoneBurnerPlanBlock, stoneBurnerCompulsionBlock, type StoneBurnerContext, type StoneBurnerOccupyContext, type StoneBurnerSide } from '../game/stone-burner';
+import { stoneBurnerComparison, stoneBurnerPlanBlock, stoneBurnerCompulsionBlock, type StoneBurnerContext, type StoneBurnerOccupyContext, type StoneBurnerSideContext, type StoneBurnerSide } from '../game/stone-burner';
 
 const ordinary = (normal: number): CombatForces => ({
   normal, elite: 0, eliteStrength: 1, freeSupport: false,
@@ -79,12 +79,12 @@ void test('public hypothetical native pools remain authoritative under the same 
   assert.deepEqual(stoneBurnerComparison(ordinary(4), 0, 0, concealedNormals, 3, 0, 'attacker', context).defender, [9]);
 });
 
-function physicalChoices(pool: CombatForces, dial: number, support: number, p?: StoneBurnerOccupyContext): number[] {
+function physicalChoices(pool: CombatForces, dial: number, support: number, p?: StoneBurnerSideContext): number[] {
   const offset = p?.ecazUndialed ?? 0;
   return casualtyOptions(pool, dial - (p?.fixedEcazDial ?? 0), support)
     .map(loss => offset + pool.normal + pool.elite - loss.normal - loss.elite);
 }
-function publicPlans(pool: CombatForces, p?: StoneBurnerOccupyContext): { dial: number; support: number; totals: number[] }[] {
+function publicPlans(pool: CombatForces, p?: StoneBurnerSideContext): { dial: number; support: number; totals: number[] }[] {
   const plans: { dial: number; support: number; totals: number[] }[] = [];
   for (let half = 0; half <= maxCombatDial(pool) * 2; half++)
     for (let support = 0; support <= maxCombatSupport(pool); support++) {

@@ -16,6 +16,24 @@ Audit: 2026-09-06. Scope: the canonical weapon, its revealed-plan choice and phy
 
 The complete integrated validation checkpoint is recorded in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
 
+## Harass timing follow-up — 16 October 2026
+
+The independent Ecaz-card variant now uses the explicitly
+[provisional post-withdrawal comparison](HARASS_WITHDRAW_RUNTIME.md#provisional-stone-burner-timing--16-october-2026).
+Returned reserves are outside Stone's undialed pool; same-plan, opposing and
+Mirror-resolved Stone share that rule. Opposing successful Traitor cancels the
+return before comparison, with normal Traitor outcome precedence intact.
+Active Occupy removes only the actual card user's fixed or variable undialed
+contribution and preserves the original mandatory Ecaz dial. Public preflight
+checks possible fixed Ecaz withdrawal without inspecting hidden cards.
+
+The earlier question remains unanswered. This is an interpretation selected
+under the standing choose-recommended priority, not newly retrieved publisher
+authority. Ix/Poison Tooth, Reinforcements/Stone, own concealed No-Field Harass
+and other module boundaries remain separate. The 6 September evidence above
+is historical; the current checkpoint has its own bounded proof.
+
+
 ## Primary evidence and exact effect
 
 The physical publisher face was visually read at `/tmp/dune-rules/choam-stone-reading.png`, enlarged from the [component photograph](https://cdn.anyfinder.eu/assets/QsUJtVktEC87xwK08oLlwnKyaozUWfuaLzG0LFEn67ENEEVgNrDGoITy3608Dqe7) linked by the [product gallery](https://www.tabletopfinder.eu/en/boardgame/32692/dune-choam-richese). Photograph provenance/hash are recorded in `RICHESE_ACQUISITION_RULES.md`. The visible publisher wording is the evidence; uploader printing/date remains unverified.

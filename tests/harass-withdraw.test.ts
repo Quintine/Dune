@@ -659,15 +659,7 @@ void test('Basic and Advanced Ixian half-dial withdrawal preserves all seven phy
   }
 });
 
-void test('public Richese and optional-module contexts remain guarded', () => {
-  const richese = harassWithdrawGame({
-    factions: ['emperor', 'atreides', 'richese'],
-  });
-  assert.match(
-    viewGame(richese, 'a').battle!.harassWithdraw!.blocked!,
-    /Richese card family/,
-  );
-  reject(richese, 'a', ownPlan(richese), /Richese card family/);
+void test('additional optional-module contexts remain guarded', () => {
   const g = harassWithdrawGame({ factions: ['emperor', 'atreides', 'choam'] });
   assert.equal(viewGame(g, 'a').battle!.harassWithdraw!.blocked, null);
   const forged = structuredClone(g);

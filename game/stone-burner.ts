@@ -5,6 +5,7 @@ import {
   maxCombatSupport,
   type CombatForces,
 } from './combat';
+import type { HarassWithdrawOccupyContext } from './harass-withdraw';
 
 export type StoneBurnerSide = 'attacker' | 'defender';
 export type StoneBurnerComparison = {
@@ -17,11 +18,32 @@ export type StoneBurnerOccupyContext = {
   fixedEcazDial: number;
   ecazUndialed: number;
 };
+export type StoneBurnerSideContext = Partial<StoneBurnerOccupyContext> & {
+  withdrawal?: 'variable' | 'ecaz';
+  /** Public precommit possibility only; never inferred from a hidden hand. */
+  possibleEcazWithdrawal?: boolean;
+};
 /** Context belongs to physical battle slots, not the card holder or aggressor. */
 export type StoneBurnerContext = {
-  attacker?: StoneBurnerOccupyContext;
-  defender?: StoneBurnerOccupyContext;
+  attacker?: StoneBurnerSideContext;
+  defender?: StoneBurnerSideContext;
 };
+
+/** Only the card user's own undialed counters leave the physical battle. */
+export function stoneBurnerWithdrawalContext(
+  context: StoneBurnerContext | undefined,
+  side: StoneBurnerSide,
+  occupy?: Pick<HarassWithdrawOccupyContext, 'canceled' | 'cardUser' | 'ecaz'>,
+): StoneBurnerContext {
+  return {
+    ...context,
+    [side]: {
+      ...context?.[side],
+      withdrawal: occupy && !occupy.canceled && occupy.cardUser === occupy.ecaz
+        ? 'ecaz' : 'variable',
+    },
+  };
+}
 
 const opposingChoices = new Map<string, readonly (readonly number[])[]>();
 const MAX_CACHED_POOLS = 128;
@@ -36,10 +58,10 @@ function totals(
   forces: CombatForces,
   dial: number,
   support: number,
-  occupy?: StoneBurnerOccupyContext,
+  context?: StoneBurnerSideContext,
 ): number[] {
-  dial -= occupy?.fixedEcazDial ?? 0;
-  const fixedUndialed = occupy?.ecazUndialed ?? 0;
+  dial -= context?.fixedEcazDial ?? 0;
+  const fixedUndialed = context?.withdrawal === 'ecaz' ? 0 : context?.ecazUndialed ?? 0;
   if (
     !validCombatForces(forces) ||
     !Number.isFinite(dial) ||
@@ -50,8 +72,12 @@ function totals(
     support > maxCombatSupport(forces)
   )
     return [];
+  // Validate the original commitment before removing its undialed complement.
+  const losses = casualtyOptions(forces, dial, support);
+  if (!losses.length) return [];
+  if (context?.withdrawal === 'variable') return [fixedUndialed];
   return sorted(
-    casualtyOptions(forces, dial, support).map(
+    losses.map(
       (loss) => fixedUndialed + forces.normal + forces.elite - loss.normal - loss.elite,
     ),
   );
@@ -62,13 +88,15 @@ function invariantWinner(
   attacker: readonly number[],
   defender: readonly number[],
   aggressor: StoneBurnerSide,
+  attackerOffset = 0,
+  defenderOffset = 0,
 ): StoneBurnerSide | null {
   if (!attacker.length || !defender.length || !validSide(aggressor))
     return null;
-  const aMin = attacker[0],
-    aMax = attacker[attacker.length - 1];
-  const dMin = defender[0],
-    dMax = defender[defender.length - 1];
+  const aMin = attacker[0] + attackerOffset,
+    aMax = attacker[attacker.length - 1] + attackerOffset;
+  const dMin = defender[0] + defenderOffset,
+    dMax = defender[defender.length - 1] + defenderOffset;
   if (aMin > dMax || (aMin === dMax && aggressor === 'attacker'))
     return 'attacker';
   if (dMin > aMax || (dMin === aMax && aggressor === 'defender'))
@@ -103,10 +131,10 @@ export function stoneBurnerComparison(
  */
 function allOpposingTotals(
   forces: CombatForces,
-  occupy?: StoneBurnerOccupyContext,
+  context?: StoneBurnerSideContext,
 ): readonly (readonly number[])[] {
-  const fixedUndialed = occupy?.ecazUndialed ?? 0;
-  const key = [
+  const fixedUndialed = context?.withdrawal === 'ecaz' ? 0 : context?.ecazUndialed ?? 0;
+  const key = context?.withdrawal === 'variable' ? `variable:${fixedUndialed}` : [
     forces.normal,
     forces.elite,
     forces.eliteStrength,
@@ -116,24 +144,25 @@ function allOpposingTotals(
     forces.freeSupport,
     !!forces.eliteFreeSupport,
     fixedUndialed,
+    context?.withdrawal ?? '',
   ].join(':');
   const cached = opposingChoices.get(key);
   if (cached) return cached;
   const result: number[][] = [];
-  const maximumHalfDial = maxCombatDial(forces) * 2;
-  const maximumSupport = maxCombatSupport(forces);
-  // Use the same legality and typed-support arithmetic as sealed plans. Cache
-  // public pool results so repeated preflights do not repeat this enumeration.
-  for (let halfDial = 0; halfDial <= maximumHalfDial; halfDial++)
-    for (let support = 0; support <= maximumSupport; support++) {
-      const choices = totals(forces, halfDial / 2, support);
-      if (choices.length) {
-        if (fixedUndialed)
-          for (let index = 0; index < choices.length; index++)
-            choices[index] += fixedUndialed;
-        result.push(choices);
+  // Once the variable pool has withdrawn, every feasible original commitment
+  // leaves the same undialed total, regardless of its dial or support.
+  if (context?.withdrawal === 'variable') result.push([fixedUndialed]);
+  else {
+    const maximumHalfDial = maxCombatDial(forces) * 2;
+    const maximumSupport = maxCombatSupport(forces);
+    // Use the same legality and typed-support arithmetic as sealed plans. Cache
+    // public pool results so repeated preflights do not repeat this enumeration.
+    for (let halfDial = 0; halfDial <= maximumHalfDial; halfDial++)
+      for (let support = 0; support <= maximumSupport; support++) {
+        const choices = totals(forces, halfDial / 2 + (context?.fixedEcazDial ?? 0), support, context);
+        if (choices.length) result.push(choices);
       }
-    }
+  }
   if (opposingChoices.size >= MAX_CACHED_POOLS)
     opposingChoices.delete(opposingChoices.keys().next().value!);
   opposingChoices.set(key, result);
@@ -162,12 +191,18 @@ export function stoneBurnerPlanBlock(
   const ownTotals = totals(own, dial, support, ownOccupy);
   if (!ownTotals.length)
     return 'Your dial and support do not permit a legal Stone Burner force allocation.';
+  const possibleFixedReturn = opponentOccupy?.possibleEcazWithdrawal &&
+    opponentOccupy.withdrawal !== 'ecaz' ? opponentOccupy.ecazUndialed ?? 0 : 0;
   for (const otherTotals of allOpposingTotals(opponent, opponentOccupy)) {
     const winner =
       side === 'attacker'
         ? invariantWinner(ownTotals, otherTotals, aggressor)
         : invariantWinner(otherTotals, ownTotals, aggressor);
-    if (winner === null)
+    const withdrawnWinner = !possibleFixedReturn ? winner :
+      side === 'attacker'
+        ? invariantWinner(ownTotals, otherTotals, aggressor, 0, -possibleFixedReturn)
+        : invariantWinner(otherTotals, ownTotals, aggressor, -possibleFixedReturn, 0);
+    if (winner === null || withdrawnWinner === null)
       return 'Stone Burner can change the winner with different legal force allocations; this combined allocation timing is not yet supported.';
   }
   return null;

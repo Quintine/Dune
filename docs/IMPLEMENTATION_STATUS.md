@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 16 October 2026 — Provisional post-Harass Stone comparison
+
+Removed only the public Richese-family Harass guard. Under standing
+choose-recommended, Stone provisionally compares undialed counters remaining
+after successful withdrawal; the earlier question is still unanswered, not
+a new publisher ruling. Same-plan/opposing/Mirror Stone and active fixed or
+variable Occupy preserve original commitments, support, Traitor cancellation,
+mandatory Harass disposal and native winner retention. Public precommit checks
+possible fixed Ecaz withdrawal without hidden-card reads; no game field added.
+
+Affected thirteen-file **161/161**, types/lint and build pass (module-register,
+large-chunk/Unknown-route warnings). Eight original same-plan policy programs
+exercise all four profiles and24 accepted continuation actions. Two styled390px
+actual native-control journeys pass: Basic0-vs1 winner reversal with3 returned/
+2 Tanks; Advanced typed one-elite commitment returns3 ordinary, costs one
+support, kills both leaders and awards11 bounty. Winner retention clears the
+original battle/decision and reaches collection. Conditional counts and warning
+are visible, without root overflow or journey application/browser errors.
+
+Repaired two real fixture driver assumptions, rather than suppressing native
+windows: Richese Bidding without a normal row, and shared preparation ready
+actions. Bounty assertions compare paired modes instead of incidental
+pre-collection wallet values. Current reference parse/policy anchor and33
+topic evidence paths resolve; all ten facets stay Partial. Other module and
+concealed-marker/relative-timing gates remain. No human server, D1, saved room,
+deployment/public start or broad/HTTP/recovery assurance campaign changed.
+[Interpretation and bounded proof](HARASS_WITHDRAW_RUNTIME.md#provisional-stone-burner-timing--16-october-2026).
+
 ## 16 October 2026 — Direct Richese special purchase and paid-bid funding
 
 Connected actual Advanced special-Karama cache acquisition during Bidding

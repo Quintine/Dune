@@ -112,7 +112,7 @@ import { botNexusHarkonnenBetrayalActions } from './bot-nexus-harkonnen-betrayal
 import { validateCohortSelection, type OrnithopterMode } from './ornithopter';
 import { fighterCount, isAdvisor } from './advisors';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from './combat';
-import { stoneBurnerPlanBlock, stoneBurnerComparison } from './stone-burner';
+import { stoneBurnerPlanBlock, stoneBurnerComparison, stoneBurnerWithdrawalContext } from './stone-burner';
 import {
   applyAction,
   normalizeAutomaticGame,
@@ -956,6 +956,11 @@ function plans(g: GameView): Action[] {
           const stonePlan = isStoneBurner(me.hand?.find((c) => c.id === action.weapon)) ||
             isMirrorWeapon(me.hand?.find((c) => c.id === action.weapon));
           if (stonePlan && !action.leader) continue;
+          const harass = weapon === 'ecaz-harass-withdraw' || defense === 'ecaz-harass-withdraw';
+          const stoneContext = stonePlan && harass
+            ? stoneBurnerWithdrawalContext(b.stoneBurnerContext?.occupy,
+                b.attacker === me.id ? 'attacker' : 'defender', b.harassWithdraw?.occupy)
+            : b.stoneBurnerContext?.occupy;
           if (
             stonePlan &&
             (!b.stoneBurnerContext ||
@@ -969,13 +974,12 @@ function plans(g: GameView): Action[] {
                   pool,
                   b.attacker === me.id ? 'attacker' : 'defender',
                   b.tieWinner === b.attacker ? 'attacker' : 'defender',
-                  b.stoneBurnerContext?.occupy,
+                  stoneContext,
                 ),
               ))
           )
             continue;
           let withdrawn = 0;
-          const harass = weapon === 'ecaz-harass-withdraw' || defense === 'ecaz-harass-withdraw';
           if (harass) {
             if (!b.harassWithdraw) continue;
             try {
@@ -2406,6 +2410,16 @@ function policyActions(g: GameView): Action[] {
         !!matchingTraitor(me.traitors ?? [], other.leader, card(other.leader));
       const side = me.id === b.attacker ? 'attacker' : 'defender';
       const pools = b.stoneBurnerContext?.opponentPools ?? [];
+      let context = b.stoneBurnerContext?.occupy;
+      for (const player of [b.attacker, b.defender]) {
+        const plan = b.plans[player];
+        if (![plan.weapon, plan.defense].includes('ecaz-harass-withdraw')) continue;
+        const occupy = b.ecazOccupy?.lead === player ? {
+          cardUser: player, ecaz: b.ecazOccupy.ecaz, canceled: b.ecazOccupy.canceled,
+        } : undefined;
+        context = stoneBurnerWithdrawalContext(context,
+          player === b.attacker ? 'attacker' : 'defender', occupy);
+      }
       const winners = b.ownForces
         ? pools.map((pool) =>
             side === 'attacker'
@@ -2417,6 +2431,7 @@ function policyActions(g: GameView): Action[] {
                   other.dial,
                   other.support,
                   b.tieWinner === b.attacker ? 'attacker' : 'defender',
+                  context,
                 ).winner
               : stoneBurnerComparison(
                   pool,
@@ -2426,6 +2441,7 @@ function policyActions(g: GameView): Action[] {
                   own.dial,
                   own.support,
                   b.tieWinner === b.attacker ? 'attacker' : 'defender',
+                  context,
                 ).winner,
           )
         : [];

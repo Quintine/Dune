@@ -26,6 +26,8 @@ import {
 } from './moritani-retention';
 import {
   stoneBurnerComparison,
+  stoneBurnerWithdrawalContext,
+  type StoneBurnerContext,
   type StoneBurnerComparison,
 } from './stone-burner';
 import { matchingTraitor } from './traitors';
@@ -423,8 +425,8 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     if (harass) {
       requireQuote(validBattleSlotPair(slots[0], slots[1]),
         'The Harass & Withdraw plan has an invalid weapon and defense pair.');
-      requireQuote(side.harassWithdraw && !input.homeworld && !hasStone,
-        'Harass & Withdraw needs its supported physical context; Homeworld and Stone Burner combinations remain unfinished.');
+      requireQuote(side.harassWithdraw && !input.homeworld,
+        'Harass & Withdraw needs its supported physical context and cannot combine with Homeworld battles.');
       const profile = input.ecazOccupy?.lead === side.id ? input.ecazOccupy : undefined;
       const normalization = side.harassWithdraw.occupy;
       if (profile) {
@@ -444,43 +446,6 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       }
       withdrawals.set(side.id, quoteHarassWithdraw(side.harassWithdraw, side.plan.dial, side.plan.support, side.harassSelection));
     }
-  }
-  const tie = battleTieOwner(a.id, d.id, input.aggressor ?? a.id,
-    [a, d].filter(side => side.stronghold === 'habbanya_ridge_sietch').map(side => side.id)) === a.id
-    ? 'attacker' : 'defender';
-  const stoneOccupy = hasStone && input.ecazOccupy ? {
-    fixedEcazDial: input.ecazOccupy.fixedEcazDial,
-    ecazUndialed: input.ecazOccupy.canceled ? 0 : Math.floor(input.ecazOccupy.ecazForces.normal / 2),
-  } : undefined;
-  const stone = hasStone
-    ? stoneBurnerComparison(
-        a.forces,
-        a.plan.dial,
-        a.plan.support,
-        d.forces,
-        d.plan.dial,
-        d.plan.support,
-        tie,
-        input.ecazOccupy ? {
-          attacker: input.ecazOccupy.lead === a.id ? stoneOccupy : undefined,
-          defender: input.ecazOccupy.lead === d.id ? stoneOccupy : undefined,
-        } : undefined,
-      )
-    : null;
-  if (stone) {
-    requireQuote(
-      !!stone.winner,
-      'Stone Burner has an unresolved physical casualty allocation. No battle resources were spent.',
-    );
-    for (const [side, weapon] of [
-      [a, weapons.attacker],
-      [d, weapons.defender],
-    ] as const)
-      requireQuote(
-        weapon.kind !== 'stoneBurner' ||
-          ['kill', 'ignore'].includes(side.stoneMode ?? ''),
-        'Choose Stone Burner’s revealed mode before resolving battle.',
-      );
   }
   requireQuote(
     Array.isArray(input.voters) &&
@@ -528,6 +493,51 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     return withdrawal && !(side === a ? dc : ac)
       ? [{ ...withdrawal, player: side.id, card: HARASS_WITHDRAW_CARD }] : [];
   });
+  const tie = battleTieOwner(a.id, d.id, input.aggressor ?? a.id,
+    [a, d].filter(side => side.stronghold === 'habbanya_ridge_sietch').map(side => side.id)) === a.id
+    ? 'attacker' : 'defender';
+  const stoneOccupy = hasStone && input.ecazOccupy ? {
+    fixedEcazDial: input.ecazOccupy.fixedEcazDial,
+    ecazUndialed: input.ecazOccupy.canceled ? 0 : Math.floor(input.ecazOccupy.ecazForces.normal / 2),
+  } : undefined;
+  let stoneContext: StoneBurnerContext | undefined = stoneOccupy ? {
+    attacker: input.ecazOccupy!.lead === a.id ? stoneOccupy : undefined,
+    defender: input.ecazOccupy!.lead === d.id ? stoneOccupy : undefined,
+  } : undefined;
+  if (hasStone)
+    for (const side of [a, d])
+      if (harassWithdraw.some(withdrawal => withdrawal.player === side.id))
+        stoneContext = stoneBurnerWithdrawalContext(
+          stoneContext, side === a ? 'attacker' : 'defender', side.harassWithdraw?.occupy,
+        );
+  const stone = hasStone
+    ? stoneBurnerComparison(
+        a.forces,
+        a.plan.dial,
+        a.plan.support,
+        d.forces,
+        d.plan.dial,
+        d.plan.support,
+        tie,
+        stoneContext,
+      )
+    : null;
+  if (stone) {
+    requireQuote(
+      stone.attacker.length > 0 && stone.defender.length > 0 &&
+        (!!stone.winner || ac || dc),
+      'Stone Burner has an unresolved physical casualty allocation. No battle resources were spent.',
+    );
+    for (const [side, weapon] of [
+      [a, weapons.attacker],
+      [d, weapons.defender],
+    ] as const)
+      requireQuote(
+        weapon.kind !== 'stoneBurner' ||
+          ['kill', 'ignore'].includes(side.stoneMode ?? ''),
+        'Choose Stone Burner’s revealed mode before resolving battle.',
+      );
+  }
   const spiceBankerPayments = [a, d].filter(side => (side.plan.bankerSpice ?? 0) > 0).map(side => {
     const waivedByTraitor = side === a ? ac && !dc : dc && !ac;
     return { player: side.id, amount: waivedByTraitor ? 0 : side.plan.bankerSpice!, waivedByTraitor };

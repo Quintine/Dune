@@ -72,7 +72,8 @@ function nativeStep(game: Game): Game {
     }
     if (game.phase === 3 && game.auction) return applyAction(game, game.auction.active, {type: 'passBid'});
     if (game.phase === 5) return applyAction(game, game.active!, {type: 'endMovement'});
-    if (game.phase !== 6 || !game.active) {
+    // A native Richese lot can own Bidding without an ordinary auction row.
+    if (game.phase !== 3 && (game.phase !== 6 || !game.active)) {
       const seat = game.players.find(p => !game.ready.includes(p.id));
       if (seat) return applyAction(game, seat.id, {type: 'ready'});
     }

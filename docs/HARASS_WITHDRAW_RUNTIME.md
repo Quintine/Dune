@@ -1,6 +1,6 @@
 # Harass & Withdraw development prototype
 
-Updated 14 September 2026. This connects the physical card to battle plans,
+Updated 16 October 2026. This connects the physical card to battle plans,
 private inspections, force returns, controls, AI and saved continuation. It does
 not complete the independent three-card variant or open public mode gates.
 
@@ -30,6 +30,34 @@ Two implementation inferences are explicit:
 Planetologist's existing inspection answers remain unchanged. Ecaz's explicit
 instruction to report no weapon/defense is not silently extended to other
 slot substitutions.
+
+## Provisional Stone Burner timing — 16 October 2026
+
+The standing 14 October choose-recommended instruction selects the
+post-withdrawal comparison for the development prototype. The earlier question
+remains unanswered; this is an implementation interpretation, not a new
+publisher ruling or a user answer. The Harass face/designer reveal timing above
+and [Stone's physical undialed-token instruction](STONE_BURNER_ENGINE_AUDIT.md#primary-evidence-and-exact-effect)
+support treating returned reserves as no longer in the battle. A fresh text
+lookup in the supplied Advanced PDF found no named Harass/Stone combined rule.
+
+Normal Stone resolution compares counters left after successful Harass,
+including same-plan and opposing holders and Mirror-copied Stone. A successful
+opposing Traitor cancels the withdrawal; its validated outcome still wins before
+Stone scoring. Allocation choices and original dial/support legality remain
+mandatory. No return, fee, casualty or card disposal executes twice.
+
+Active Occupy returns only the actual card user's pool. Ecaz Harass removes
+the original fixed undialed `floor(E/2)`, leaving the ally variable remainder;
+ally Harass removes variable undialed counters, leaving fixed Ecaz undialed
+forces. Original mandatory `ceil(E/2)` commitment and native ally support stay.
+Canceled Occupy uses its lead's ordinary own pool.
+
+Precommit checks use public configuration and selected lead, never a hidden
+opponent Harass/Stone card. If an opposing Ecaz lead may withdraw its fixed
+remainder, each revealed alternative must have an allocation-invariant winner;
+different alternatives may legitimately have different winners. Actual controls
+label post-withdrawal counts as conditional on no opposing successful Traitor.
 
 ## Connected behavior
 
@@ -71,11 +99,12 @@ This is a legal strategy path, not strength calibration.
   Leader Skills, Tech Tokens, Stronghold Cards and Discoveries. This includes
   the printed own-Homeworld prohibition without claiming other Homeworld
   battles are already implemented for this card.
-- Richese card-family configurations remain gated because Stone Burner may
-  compare original or post-withdrawal undialed forces, which can reverse the
-  winner. A user question has been sent; no answer is assumed. The guard uses
-  public configuration, never Stone Burner's hidden custody. CHOAM without
-  Richese remains eligible. This is a development boundary, not a printed ban.
+- Richese card-family configurations now admit Harass under the
+  [provisional post-withdrawal policy](#provisional-stone-burner-timing--16-october-2026).
+  The ordinary invariant-allocation guard and separate Ix/Poison Tooth timing
+  boundary remain. No public expansion start or played-game retrofit is added.
+  A card user's own still-concealed No-Field remains guarded until its original
+  reveal; this wave does not certify Harass on a concealed native marker.
 - Co-present armies remain guarded in Basic or without the supported Advanced
   Occupy profile. The [combined-army follow-up](ECAZ_OCCUPY_RULES.md#independent-cards-with-combined-armies--2-october-2026)
   returns only actual card-user forces: original fixed Ecaz commitment or the
@@ -87,7 +116,36 @@ This is a legal strategy path, not strength calibration.
   unresolved. Both prototypes retain their separate provisional cost and
   outcome interpretations.
 
-## Verification and preservation
+## Scoped interaction proof — 16 October 2026
+
+- The affected thirteen-file offline union passes **161/161**, including
+  Stone/Harass pure and native battle cases, original fixed/variable Occupy,
+  typed/sector returns, Mirror retention and Traitor cancellation. Types/lint
+  and production build pass; build retains module-register, large-chunk and
+  Unknown-route warnings.
+- Eight genuine Richese/classic Basic/Advanced same-plan policy programs
+  exercised all four profiles and24 accepted continuation actions. This is
+  minimal legal participation, not strategic calibration.
+- Two actual styled390px table journeys used original native controls from
+  before plan commitment through winner retention and collection. Basic
+  Harass dial2 returns3, leaving0 versus Stone dial4's1: defender wins, the
+  two committed attackers reach Tanks, and Harass discards once. Advanced
+  dial2/support1 exposes the actual typed choice; selecting one elite
+  commitment returns three ordinary counters, charges support once30→29,
+  kills both original leaders and awards bounty11. Stone winner keeps its
+  physical card and the original battle/decision clears. Conditional revealed
+  counts and the provisional warning are visible; no root overflow or
+  application/browser error occurred in the corrected host's journeys.
+- Native fixtures exposed two driver assumptions: a Richese Bidding lot can
+  exist without an ordinary row, and shared preparation still needs its actual
+  ready actions. Both now follow native controls. Bounty is compared between
+  paired modes rather than pinning a wallet before automatic collection.
+- Current reference parses;33 evidence paths across both topics resolve and
+  all ten checklist facets remain Partial. Runtime artifacts stay outside Git.
+  No human server, saved room, D1, deployment or public start changed. No new
+  broad, HTTP, recovery/privacy/custody assurance campaign ran.
+
+## Historical verification and preservation — 14 September 2026
 
 Focused rules, controls, AI and authenticated recovery suites record the exact
 supported paths. Fixtures explicitly distinguish genuine variant setup from

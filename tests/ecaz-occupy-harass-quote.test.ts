@@ -14,6 +14,11 @@ import {
   type HarassWithdrawContext,
   type HarassWithdrawSelection,
 } from '../game/harass-withdraw';
+import { leaders } from '../game/cards';
+import { richeseCards } from '../game/richese-cards';
+import { ecazTreacheryCards } from '../game/ecaz-cards';
+import { quoteBattleResolution, type BattleResolutionInput, type ResolutionCombatant } from '../game/battle-resolution-quote';
+import type { StoneBurnerSide } from '../game/stone-burner';
 
 const native = (normal: number): CombatForces => ({
   normal,
@@ -193,4 +198,89 @@ void test('owner and funding boundary rejects invalid total plans before quoting
     ...context, occupy: { ...context.occupy, canceled: true },
   };
   assert.throws(() => quoteHarassWithdraw(canceledWithFixed, 4, 1), HarassWithdrawError);
+});
+
+function stoneResolution(p: EcazOccupyBattleProfile, slot: StoneBurnerSide, otherUndialed: number): BattleResolutionInput {
+  const side = (id: string, faction: 'ecaz' | 'ixians' | 'guild', forces: CombatForces, dial: number): ResolutionCombatant => {
+    const leader = { ...leaders(faction)[0], strength: 0 };
+    return { id, faction, forces, leader, spice: 10, hand: [],
+      plan: { dial, support: 1, leader: leader.id, weapon: null, defense: null } };
+  };
+  const own = side(p.lead, p.lead === p.ecaz ? 'ecaz' : 'ixians', p.forces, p.fixedEcazDial + 1);
+  own.ally = p.lead === p.ecaz ? p.ally : p.ecaz;
+  const other = side('opponent', 'guild', native(otherUndialed + 1), 1);
+  const stone = richeseCards().find(card => card.effect === 'stoneBurner')!;
+  const harass = ecazTreacheryCards().find(card => card.effect === 'harassWithdraw')!;
+  own.hand = [stone, harass];
+  own.plan.weapon = stone.id;
+  own.plan.defense = harass.id;
+  own.stoneMode = 'ignore';
+  own.harassWithdraw = contextFor(p);
+  return {
+    ecazOccupy: p, advanced: true, turn: 2, territory: 'carthag', aggressor: p.lead,
+    attacker: slot === 'attacker' ? own : other,
+    defender: slot === 'defender' ? own : other,
+    participants: [
+      { id: p.ecaz, faction: 'ecaz', ally: p.ally },
+      { id: p.ally, faction: 'ixians', ally: p.ecaz },
+      { id: other.id, faction: other.faction },
+    ],
+    voters: [p.ecaz, p.ally].map(id => ({ id, beneficiary: p.lead, called: false, traitors: [] as string[] }))
+      .concat([{ id: other.id, beneficiary: other.id, called: false, traitors: [] }]),
+    physicalCards: [stone, harass], pendingAuditorPresent: false, pendingRetentionPresent: false,
+  };
+}
+
+void test('Stone and active Occupy Harass remove only the Ecaz or variable card user undialed pool while preserving original fixed costs', () => {
+  for (const ecazNormal of [5, 6])
+    for (const lead of ['ecaz-user', 'ally-user'])
+      for (const slot of ['attacker', 'defender'] as const) {
+        const p = profile(ecazNormal, lead);
+        const remainingUndialed = lead === p.ecaz ? 3 : Math.floor(ecazNormal / 2);
+        const input = stoneResolution(p, slot, remainingUndialed);
+        const before = structuredClone(input);
+        const quote = quoteBattleResolution(input);
+        assert.equal(quote.winner, p.lead);
+        assert.deepEqual(quote.stone, {
+          winner: slot, attacker: [remainingUndialed], defender: [remainingUndialed],
+        });
+        assert.deepEqual(quote.harassWithdraw?.[0].returned, {
+          normal: lead === p.ecaz ? Math.floor(ecazNormal / 2) : 3, elite: 0,
+        });
+        assert.deepEqual(quote.fixedLosses, [{ owner: p.ecaz, normal: Math.ceil(ecazNormal / 2), elite: 0 }]);
+        assert.equal(quote.casualties?.owner, p.ally);
+        assert.equal(quote.casualties?.fullyCommitted, lead === p.ally ? true : undefined);
+        assert.deepEqual(quote.casualties?.options, [{ normal: 1, elite: 0, paidNormal: 1, paidElite: 0 }]);
+        assert.deepEqual(quote.payments.map(payment => payment.ownPayment), [1, 1]);
+        assert.deepEqual(quote.winnerCards, [input[slot].plan.weapon]);
+        assert.deepEqual(quote.discarded, [{ player: p.lead, card: input[slot].plan.defense }]);
+        assert.deepEqual(input, before);
+        // The opposite successful call cancels Harass before comparing physical
+        // remainders, without reducing either original Occupy contribution.
+        const voter = input.voters.find(voter => voter.id === 'opponent')!;
+        voter.called = true;
+        voter.traitors = [input[slot].plan.leader!];
+        const canceled = quoteBattleResolution(input);
+        assert.equal(canceled.winner, 'opponent');
+        assert.equal(canceled.harassWithdraw, undefined);
+        assert.deepEqual(canceled.stone?.[slot], [Math.floor(ecazNormal / 2) + 3]);
+        assert.deepEqual(canceled.fixedLosses, []);
+      }
+});
+
+void test('canceled Occupy Harass uses the selected lead native pool with no fixed remainder or recomputed commitment', () => {
+  for (const lead of ['ecaz-user', 'ally-user'])
+    for (const slot of ['attacker', 'defender'] as const) {
+      const p = profile(5, lead, true);
+      const input = stoneResolution(p, slot, 0);
+      const quote = quoteBattleResolution(input);
+      assert.equal(quote.winner, p.lead);
+      assert.deepEqual(quote.stone, { winner: slot, attacker: [0], defender: [0] });
+      assert.deepEqual(quote.harassWithdraw?.[0].returned, { normal: p.forces.normal - 1, elite: 0 });
+      assert.deepEqual(quote.fixedLosses, []);
+      assert.equal(quote.casualties?.owner, p.lead);
+      assert.equal(quote.casualties?.forces.normal, 1);
+      assert.equal(quote.casualties?.fullyCommitted, true);
+      assert.deepEqual(quote.casualties?.options, [{ normal: 1, elite: 0, paidNormal: 1, paidElite: 0 }]);
+    }
 });
