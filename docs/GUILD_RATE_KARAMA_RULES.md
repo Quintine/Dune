@@ -2,6 +2,21 @@
 
 Initial primary-source and engine audit, 2026-09-06. The bounded ordinary-reserve cancellation policy below was selected on 2026-09-28 after a targeted publisher-source search found no affordability procedure; the later original audit remains historical evidence for unfinished transport and module combinations.
 
+## Purchased price with immune sponsorship — 15 October 2026
+
+The subsequent Junction cutover removes the separate purchased-price/
+sponsorship gate recorded below. The offered Homeworld tariff remains immune
+and normal payment routing is unchanged: no quarter price or borrowed bank-only rule.
+Choosing it with a purchased ordinary grant requires an explicit unused-price
+acknowledgment, no card refund, and actual delivery before grant consumption.
+Failed, declined or deferred acceptance retains the grant; the ordinary
+purchased route remains an alternative. This is a selected conservative
+product composition, not a new publisher worked example.
+[Canonical source choice](JUNCTION_TRANSPORT_RULES.md#purchased-price-and-immune-offer--15-october-2026)
+and [131-case, fourteen-path, four-mobile-journey evidence](JUNCTION_TRANSPORT_RUNTIME.md#purchased-price-source-choice--15-october-2026)
+distinguish eleven original runtime paths from three controlled continuations.
+
+
 ## Permission purchase and allied marker composition — 15 October 2026
 
 Three distinct sources now remain distinct end to end:

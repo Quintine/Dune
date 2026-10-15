@@ -1,5 +1,49 @@
 # Dune implementation status
 
+## 15 October 2026 — Explicit purchased-price choice for immune Junction
+
+Removed the earlier purchased-price/Junction composition fence without
+canceling or repricing the Homeworld source. Original half/full fee and
+normal payees remain: no quarter price and no card bank-only overlay.
+Accepting with a separate grant requires `forfeitPurchasedRate: true`;
+actual controls explain that it ends unused and its played card is not
+refunded. The independently legal ordinary purchased route stays available.
+This is a conservative selected product composition, not a publisher
+worked timing example.
+
+Original card-first/offer-first orders bind the active grant in their
+existing declaration identity. Missing/false/stale acknowledgment rejects
+without mutation. Unfunded, declined and deferred acceptance preserves the
+grant; only actual delivery consumes it. Existing Guild Betrayal keeps the
+same offered invoice through Use/Pass. Original movement remains available.
+Pure Junction tariff and offer rules are intentionally unchanged.
+
+Affected eleven-file **131/131** passes, including twelve new meaningful
+regressions. Fourteen actual runtime/policy paths pass: eleven original-action,
+three explicitly controlled (second physical card native denial plus
+existing Betrayal Use/Pass). All four original policies execute the immune
+full quote without strategic tuning or calibration.
+
+Four real styled390×844 GameTable journeys use original-action scenes:
+full3; poor2 rejecting full3 then actual sponsor replacement half2;
+ordinary purchased2 instead; full6 native arrival with Guild6→12 and
+subsequent ordinary movement. Exact counters and the original spent card
+remain, no refund; successful shipment consumes the grant once.
+Viewport and scroll width390, no application exception; one initial
+Vite dependency fetch aborted during optimization.
+
+Only an owned memory-only host was started/stopped. No worker, D1,
+authenticated saved room, human server, deployment or publication gate
+was exercised or changed. Outside-Git source/API/table JSON and four initial
+scenes are retained under `/tmp/dune-junction-purchased-*20261015*`.
+The full goal, remaining rule combinations and final assurance remain open.
+[Source choice](JUNCTION_TRANSPORT_RULES.md#purchased-price-and-immune-offer--15-october-2026),
+[runtime contract and scope](JUNCTION_TRANSPORT_RUNTIME.md#purchased-price-source-choice--15-october-2026).
+Final `npm run check:quick` and production build pass; existing
+module-register, large-chunk and Unknown-route warnings remain.
+Sixteen current local links and429 evidence paths resolve; both
+five-facet checklists remain Partial, with no complete-mode claim.
+
 ## 15 October 2026 — Separate native permission, independent typed price and loan approval
 
 Native cross/return now uses a distinct unpaid `guildTransportPermission`

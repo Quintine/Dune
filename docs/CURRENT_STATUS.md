@@ -29,6 +29,25 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Purchased price and immune Junction source choice — 15 October.**
+The original offered half/full tariff remains immune; normal payees are unchanged.
+An already played ordinary price no longer blocks the panel; acceptance
+explicitly acknowledges that it ends unused, with no card refund.
+Only actual delivery consumes it, including deferred Betrayal. Failed,
+unfunded or stale actions preserve it; an ordinary purchased route remains
+an alternative. This is a conservative product composition, not a publisher
+worked example.
+
+Affected eleven-file131/131 and fourteen actual runtime/policy paths pass
+(eleven original-action/three controlled). Four actual390px original-action
+journeys prove full3, poor2/full3 then replacement half2, ordinary purchased2,
+and normal full6 Guild income plus movement. No overflow/application
+exception; one initial Vite dependency request aborted. No real room,
+database, human server, deployment or public-start gate changed.
+[Canonical policy and scoped evidence](JUNCTION_TRANSPORT_RUNTIME.md#purchased-price-source-choice--15-october-2026).
+Final types/lint and production build pass with existing warnings.
+Current local links and both still-partial five-facet evidence sets resolve.
+
 **Separate transport permission, purchased typed price and allied marker — 15 October.**
 Native cross/return now has its own unpaid counter before price. Denial
 preserves legal alternatives and half price; the bounded original-opportunity
@@ -46,9 +65,10 @@ runtime/policy paths pass (15 original-action/five controlled), plus four
 controlled optional-offer/recipient continuations. No overflow/application
 exception; one initial Vite dependency fetch aborted. Only the owned
 memory-only QA engine reloaded, retaining its exact synthetic states.
-Purchased-price/Junction sponsorship remains a separately tracked source
-composition; full combinations, assurance, public starts and full goal remain open.
-[Current authority and explicit interpretation](GUILD_RATE_KARAMA_RULES.md#permission-purchase-and-allied-marker-composition--15-october-2026).
+The separately tracked purchased-price/Junction source composition is
+connected by the newer checkpoint above; full combinations, assurance,
+public starts and full goal remain open.
+[Earlier authority and explicit interpretation](GUILD_RATE_KARAMA_RULES.md#permission-purchase-and-allied-marker-composition--15-october-2026).
 Affected25-file263/263 passes across frozen237+26 selections; final saved/
 deployed assurance is deliberately not claimed by these source checks.
 Final types/lint/build and repeated20+4 source smoke pass; existing build

@@ -42,6 +42,13 @@ export function JunctionTransport({
           cross-shipment at half or full price, including travel to and from
           Homeworlds. They choose whether to use it for their shipment.
         </p>
+        {g.karamaShipping?.player === option.recipient && (
+          <p className="fine">
+            Junction’s permission and offered tariff resist Karama. If the
+            recipient uses this offer, their separate purchased price ends
+            unused; its played card is not refunded.
+          </p>
+        )}
         {option.offer && (
           <p className="fine">Current offer: {option.offer.rate} price.</p>
         )}
@@ -99,6 +106,14 @@ export function JunctionTransport({
             elsewhere. The Guild’s {option.offer.rate}-price offer applies to
             the total; fractions round up.
           </p>
+          {quote.forfeitPurchasedRate && (
+            <p className="notice" role="note">
+              This immune Junction offer keeps its {option.offer.rate} tariff
+              and normal payment recipients. Your separate purchased Karama
+              price will end unused if you accept; its played card is not
+              refunded. You may instead choose an ordinary purchased-price route.
+            </p>
+          )}
           {option.blocked && (
             <output className="notice block">{option.blocked}</output>
           )}
@@ -220,7 +235,9 @@ export function JunctionTransport({
                 if (quote.action) act(quote.action);
               }}
             >
-              Use Junction transport
+              {quote.forfeitPurchasedRate
+                ? 'Use Junction transport · purchased price ends unused'
+                : 'Use Junction transport'}
             </Button>
           </fieldset>
         </>

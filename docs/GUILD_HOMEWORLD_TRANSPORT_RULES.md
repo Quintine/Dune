@@ -26,7 +26,10 @@ finish the original turn. A separate original typed return allows native
 permission, then cancels rate: fee3, approved donor1, Guild7→6 after existing
 donor income, Junction15→18 and Tuek5→2. Controlled second-card special-stop
 instead returns the original gifted card without any departure/payment.
-[Current authority, policy distinction and remaining sponsored-price gate](GUILD_RATE_KARAMA_RULES.md#permission-purchase-and-allied-marker-composition--15-october-2026).
+[Current authority and explicit interpretation](GUILD_RATE_KARAMA_RULES.md#permission-purchase-and-allied-marker-composition--15-october-2026).
+The subsequent [immune Junction source choice](JUNCTION_TRANSPORT_RULES.md#purchased-price-and-immune-offer--15-october-2026)
+keeps its original tariff/payees and explicitly acknowledges that a separately
+purchased price ends unused only upon actual delivery, without a card refund.
 
 ## Native rate cancellation runtime — 15 October 2026
 

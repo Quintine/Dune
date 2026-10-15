@@ -1179,6 +1179,8 @@ type JunctionTransportDeclaration = {
   destination: string;
   sources: HomeworldShipmentIntent['sources'];
   allyPayment: number;
+  /** Explicit acceptance that the independent purchased price ends unused. */
+  forfeitPurchasedRate?: true;
 };
 type GuildBetrayalContinuation =
   | {source: 'reserve'; shipment: PendingShipment}
@@ -9891,7 +9893,9 @@ function guildBetrayalAuthority(g: Game, continuation: GuildBetrayalContinuation
     case 'junction': {
       const declaration = continuation.transport;
       requireRule(declaration && Object.keys(declaration).sort().join(',') ===
-        'allyPayment,destination,event,offer,player,sources,turn',
+        (declaration.forfeitPurchasedRate === undefined
+          ? 'allyPayment,destination,event,offer,player,sources,turn'
+          : 'allyPayment,destination,event,forfeitPurchasedRate,offer,player,sources,turn'),
       'The saved Junction declaration is malformed.');
       const quote = quoteJunctionDeclaration(g, getPlayer(g, declaration.player), declaration);
       shipper = declaration.player; price = quote.quote.cost; allyPayment = declaration.allyPayment;
@@ -26054,9 +26058,7 @@ function junctionTransportWindow(g: Game) {
   if (!owner || !recipient || owner === recipient.id || g.phase !== 5 ||
       g.status !== 'playing' || recipient.shipped) return null;
   const offer = currentJunctionOffer(g);
-  const blocked = g.karamaShipping?.player === recipient.id
-    ? 'Junction transport with a purchased Karama price awaits its separate source composition.'
-    : homeworldShipmentBlock(g, recipient, false);
+  const blocked = homeworldShipmentBlock(g, recipient, false);
   return {owner, recipient: recipient.id, offer, blocked,
     canOffer: !blocked, offerEvent: junctionOfferEvent(g),
     event: JSON.stringify([homeworldShipmentEvent(g, recipient, 'arrakis'), offer])};
@@ -26070,6 +26072,10 @@ function quoteJunctionDeclaration(g: Game, p: Player, declaration: JunctionTrans
     option?.blocked ?? 'Wait for Guild to offer Junction transport during your unused shipment.');
   requireRule(action.event === option.event && action.offer === option.offer.event,
     'This Junction offer or physical source selection has changed.');
+  const purchasedRate = g.karamaShipping?.player === p.id;
+  requireRule(purchasedRate ? declaration.forfeitPurchasedRate === true
+    : declaration.forfeitPurchasedRate === undefined,
+    'Explicitly accept the immune Junction tariff and that the purchased price ends unused.');
   const rate = option.offer.rate;
   const destination = stringField(action.destination);
   const context = {...homeworldContext(g), storm: g.storm, discoveries:g.discoveries,
@@ -26130,6 +26136,7 @@ function commitJunctionTransport(g: Game, p: Player, declaration: JunctionTransp
     } else if (p.advisors) delete p.advisors[arrival.territory];
   }
   p.shipped = true;
+  if (declaration.forfeitPurchasedRate) g.karamaShipping = null;
   g.junctionOffer = null;
   finishShipmentPromises(g, p, promise);
   // Native Fremen reinforcement is on Arrakis; all other world departures
@@ -26147,7 +26154,7 @@ function commitJunctionTransport(g: Game, p: Player, declaration: JunctionTransp
     { own: ordinaryIncome && p.id !== option.owner, ally: p.ally !== option.owner });
   const sourceName = quote.originKind === 'arrakis' ? territory(quote.origin).name :
     quote.sources.map((s) => combatLocationName(g, s.key)).join(' and ');
-  log(g, `${p.name} accepted ${getPlayer(g, option.owner).name}’s Junction ${rate}-price offer and transported ${quote.amount} physical forces (${quote.elite} special) from ${sourceName} to ${arrival ? `${territory(arrival.territory).name}, sector ${arrival.sector}` : combatLocationName(g, destination)} for ${quote.cost} spice (${quote.cost - allyPayment} own, ${allyPayment} pledged). The shipment is used; movement remains available.`,
+  log(g, `${p.name} accepted ${getPlayer(g, option.owner).name}’s Junction ${rate}-price offer and transported ${quote.amount} physical forces (${quote.elite} special) from ${sourceName} to ${arrival ? `${territory(arrival.territory).name}, sector ${arrival.sector}` : combatLocationName(g, destination)} for ${quote.cost} spice (${quote.cost - allyPayment} own, ${allyPayment} pledged). The shipment is used; movement remains available.${declaration.forfeitPurchasedRate ? ' The separate purchased Karama price ended unused; no card is refunded.' : ''}`,
     {faction: 'guild', name: 'Junction transport'});
   if (arrival) {
     const bg = byFaction(g, 'beneGesserit');
@@ -26160,7 +26167,7 @@ function commitJunctionTransport(g: Game, p: Player, declaration: JunctionTransp
 }
 function performJunctionTransport(g: Game, p: Player, action: Action) {
   requireRule(Object.keys(action).every(key =>
-    ['type', 'event', 'offer', 'destination', 'sources', 'allyPayment'].includes(key)),
+    ['type', 'event', 'offer', 'destination', 'sources', 'allyPayment', 'forfeitPurchasedRate'].includes(key)),
   'Use the offered tariff and explicit physical forces without concealed tokens.');
   // Decode once into a source-specific declaration. Saved continuations are
   // never actions and never dispatch through the action engine.
@@ -26169,6 +26176,11 @@ function performJunctionTransport(g: Game, p: Player, action: Action) {
     destination: stringField(action.destination), sources: action.sources as HomeworldShipmentIntent['sources'],
     allyPayment: typeof action.allyPayment === 'number' ? action.allyPayment : 0,
   };
+  if (action.forfeitPurchasedRate !== undefined) {
+    requireRule(action.forfeitPurchasedRate === true,
+      'Accept only the explicit unused-purchased-price choice.');
+    declaration.forfeitPurchasedRate = true;
+  }
   const quote = quoteJunctionDeclaration(g, p, declaration, action.allyPayment === undefined);
   declaration.allyPayment = action.allyPayment === undefined ? quote.allyPayment :
     contribution(g, p, quote.quote.cost, action.allyPayment);

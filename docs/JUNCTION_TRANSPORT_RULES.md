@@ -2,6 +2,30 @@
 
 9 September 2026. Implementation contract for Junction's high-face transport advantage. This is a source audit, not certification of a completed transport module. It supplements [the component audit](HOMEWORLD_COMPONENT_AUDIT.md), [invasion rules](HOMEWORLD_INVASION_RULES.md), and [transport source update](HOMEWORLD_TRANSPORT_SOURCE_UPDATE.md).
 
+## Purchased price and immune offer — 15 October 2026
+
+The accepted Junction source keeps its printed half/full tariff and normal
+payment recipients. An already purchased ordinary Karama price does not
+reprice that immune Homeworld advantage, stack into quarter price or impose
+its bank-only payment rule. The recipient may instead choose an independently
+legal ordinary purchased-price route.
+
+**Selected product composition, not a publisher worked example:** accepting
+Junction with that separate grant active requires an explicit
+`forfeitPurchasedRate: true` acknowledgment. The controls explain that the
+price ends unused and its already played card is not refunded. Only actual
+delivery consumes the grant; an unfunded, rejected, stale or declined offer
+does not. Deferred Guild Betrayal retains it until the original shipment
+settles. Its fee remains the original immune offered fee.
+
+The existing declaration identity binds the active grant as well as the
+original offer and opportunity. An older quote cannot acknowledge a later
+purchase. No extra shipment, permission counter or special-stop choice is
+created. This conservative source choice replaces the old purchased-price/
+Junction composition gate, not the remaining complete-module gates.
+[Connected engine, controls and scoped proof](JUNCTION_TRANSPORT_RUNTIME.md#purchased-price-source-choice--15-october-2026).
+
+
 ## Evidence and precedence
 
 Fresh publisher-indexed passages were retrieved from the [GF9 E3 rulebook, pp.10 and 15](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=10), [base rulebook, pp.9 and 19](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=19), [November 2020 FAQ, pp.2 and 5](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=2), and [E1 cancellation table, p.12](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=12). Direct publisher PDF opens returned HTTP 403. This review does not claim a new binary download or new visual inspection of the physical card: the previously inspected research images under `/tmp/dune-rules` are absent in the current environment.

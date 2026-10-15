@@ -2,6 +2,39 @@
 
 9 September 2026. [Source contract and adjudicated compositions](JUNCTION_TRANSPORT_RULES.md). This extends [Guild transport](GUILD_HOMEWORLD_TRANSPORT_RUNTIME.md) with Junction's distinct high-population grant. Homeworld game starts remain disabled pending completion of the entire module.
 
+## Purchased price source choice — 15 October 2026
+
+An active purchased ordinary price no longer blocks the original Junction
+panel. Its offered half/full tariff remains immune and normal payment routing
+is unchanged: no quarter price or bank-only overlay. The recipient can use the ordinary
+purchased route instead. Accepting the sponsored source explicitly says
+**“purchased price ends unused”**, with no refund of the already played card.
+The server requires that acknowledgment and consumes the grant only after
+actual delivery, including deferred Betrayal. Failed/unfunded/stale actions
+retain it. This is an explicit [product source composition](JUNCTION_TRANSPORT_RULES.md#purchased-price-and-immune-offer--15-october-2026),
+not a newly located publisher timing example.
+
+The affected eleven-file selection passes **131/131**, including twelve new
+consumer-visible cases. Fourteen actual runtime/policy paths pass: eleven
+original-action and three explicitly controlled (second-card native denial
+and existing Betrayal Use/Pass continuations). All four original AI policies
+execute the same full offered quote; no strategy or calibration changed.
+
+Four actual styled390×844 GameTable journeys use original-action scenes:
+full3 acceptance; poor2/full3 rejection then fresh half2 replacement; ordinary
+purchased2 instead of full3; and full6 native-to-sand arrival preserving
+Guild6→12. Physical counters/card custody, unused grant lifetime, original
+movement and turn completion are observed. Viewport/scroll width remain390.
+One initial Vite dependency request aborted; no application exception.
+The host was owned and memory-only: no worker, D1, authenticated saved room,
+human server, deployed revision or public-start gate was exercised or changed.
+Proof is retained outside Git under `/tmp/dune-junction-purchased-*20261015*`.
+Final `npm run check:quick` (types/lint) and production build pass.
+Existing module-register, large-chunk and Unknown-route warnings remain.
+Sixteen current local links and both five-facet evidence sets resolve;
+all ten facets remain Partial. Complete rules and deployed acceptance remain open.
+
+
 ## Offers and routes
 
 Guild can offer half or full price to the faction currently taking its unused shipment. Offers are optional: the recipient can use one or continue ordinary actions. A replacement has a new identity; the old proposal cannot authorize a shipment. Current actor, turn, unused shipment, native high population, typed source custody, funding and destination legality are revalidated before acceptance. Expired offers cannot be reused in a later opportunity. The grant gives no extra shipment or movement.

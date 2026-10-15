@@ -125,6 +125,7 @@ export function junctionTransportChoice(
     allyPayment: number;
     advisors: boolean;
     action: Action | null;
+    forfeitPurchasedRate: boolean;
   } = {
     blocked: null,
     cost: 0,
@@ -134,6 +135,7 @@ export function junctionTransportChoice(
     allyPayment,
     advisors: false,
     action: null,
+    forfeitPurchasedRate: false,
   };
   const me = view.players.find((player) => player.id === view.me);
   const option = view.junctionTransport;
@@ -155,6 +157,7 @@ export function junctionTransportChoice(
       'Guild must offer Junction transport during your unused shipment turn.';
     return result;
   }
+  result.forfeitPurchasedRate = view.karamaShipping?.player === me.id;
   if (option.blocked) {
     result.blocked = option.blocked;
     return result;
@@ -270,7 +273,7 @@ export function junctionTransportChoice(
     if (!result.blocked && result.ownPayment > (me.spice ?? 0))
       result.blocked =
         'Your spice and selected allied contribution cannot pay this transport.';
-    if (!result.blocked)
+    if (!result.blocked) {
       result.action = {
         type: 'junctionShip',
         event: option.event,
@@ -279,6 +282,8 @@ export function junctionTransportChoice(
         sources,
         allyPayment,
       };
+      if (result.forfeitPurchasedRate) result.action.forfeitPurchasedRate = true;
+    }
   } catch (error) {
     if (!(error instanceof HomeworldCustodyError)) throw error;
     result.blocked = error.message;
