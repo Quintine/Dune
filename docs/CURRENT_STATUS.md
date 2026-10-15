@@ -29,6 +29,32 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Canonical Moritani winning discs and ordinary Guild arrival — 15 October.**
+The surviving played disc no longer has to be an ordinary native of its
+victorious player. Original Ecaz/Duke6 opens Sanya Ecaz4; original
+projectile deaths and paid foreign return let Tleilaxu win with Guild's
+Staban Tuek5, then expose native Zoal3. Actual optional CHOAM Auditor2 opens
+Frankos4, and its real matching Traitor is itself a different native target
+for two. The played Auditor's card stays excluded, with original private
+Continue and no spend. Printed faction, death/use/custody, original
+Mentat retirement/replacement, once-use and game-long forfeiture remain.
+
+The native producer found a stale future-Guild-income preflight. Ordinary
+shipment now uses existing income-before-queued-Ambassador sequencing;
+the bot adapter matches. Actual390px controls ship/permit one
+(Moritani12→11, reserves14→13, Guild6→7), acquire Duke and reveal the
+native target. Actual Sanya4, Zoal3 and both Auditor reveal/Continue paths
+reach original physical replacement or no-spend decline.
+Affected15-file134/134, types/lint, production build and25 original API/policy
+paths pass. Existing module.register, large-chunk and Unknown-route warnings remain.
+Final Guild/Ghola surfaces have no overflow/browser errors; an earlier
+temporary QA-client metadata-error handler was repaired before final proof.
+No hands, wallets, armies, leaders, phases or battles are staged.
+[Canonical source, controls and boundaries](MORITANI_ASSASSINATE_LEADERS.md#canonical-winning-discs-and-native-targets--15-october-2026).
+Exceptional targets, direct Guild transport, BG/other arrival combinations,
+private-step UX, full assurance, calibration and deployed acceptance remain open.
+No saved/deployed rooms touched; public starts remain gated.
+
 **Native Moritani/Harkonnen custody — 15 October.** Original standalone,
 paired and mixed-family no-Skills E3 Nexus now admit Advanced Harkonnen in
 their existing module envelopes. Original capture/Keep/Execute feeds a later

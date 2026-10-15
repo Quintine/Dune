@@ -173,7 +173,7 @@ void test('Harkonnen reveal retains its physical card until one distinct Mentat 
   }));
 });
 
-void test('admitting Harkonnen battle captives does not relax exceptional target custody or other factions battle identities', () => {
+void test('admitting Harkonnen battle captives does not relax exceptional target custody', () => {
   for (const patch of [
     { capturedBy: 'other' },
     { gholaBy: 'other' },
@@ -185,6 +185,4 @@ void test('admitting Harkonnen battle captives does not relax exceptional target
     assert.deepEqual(moritaniAssassinateChoices(context).cards.map(c => c.card), ['harkonnen-0']);
     assert.throws(() => quoteMoritaniAssassinate(context, 'harkonnen-1'));
   }
-  for (const battleDisc of ['harkonnen-0', 'moritani-0', DUKE_VIDAL_ID])
-    assert.equal(moritaniAssassinateTrigger({ ...trigger(battleDisc), faction: 'atreides' }), false);
 });

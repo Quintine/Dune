@@ -2,6 +2,27 @@
 
 Updated 15 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
 
+## Source-clear interaction cutovers — 15 October 2026
+
+- **Moritani played disc versus target faction:** the surviving actual
+  controlled disc need not be an ordinary native of its victorious player.
+  Original Ecaz/Duke6, Tleilaxu/foreign Guild5 and CHOAM/Auditor2 now reach
+  their original printed-faction target choices. Duke has no Traitor; Auditor
+  has a real matching Traitor outside CHOAM's ordinary five and may itself
+  be a different native target for printed two, never the disc just played.
+  This composes the authorized Advanced p35 conditions and canonical components,
+  not the separate provisional Terror pool or a new numeric user ruling.
+  [Authority and native proof](MORITANI_ASSASSINATE_LEADERS.md#canonical-winning-discs-and-native-targets--15-october-2026).
+- **Ordinary Guild-paid Ambassador entry:** future earned shipment income is
+  not an already-pending arrival control. Reuse original committed income/
+  counter resolution, then the existing deferred entry queue; do not replay
+  payment, forces or token handling. This retains the documented queue order,
+  not a new comprehensive simultaneous-effects FAQ.
+  [Current native contract and remaining arrival gates](DEFERRED_SHIPMENT_ARRIVAL.md#ordinary-guild-income-before-ambassador-entry--15-october-2026).
+
+Existing profiles, target-custody guards, private-step UX and publication gates
+remain separate. No saved-game or deployed acceptance is inferred.
+
 ## Recommended product compositions — 15 October 2026
 
 Under the user's choose-recommended-option instruction, the following are

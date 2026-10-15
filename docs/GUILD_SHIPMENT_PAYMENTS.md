@@ -2,6 +2,23 @@
 
 Integrated checkpoint, 2026-09-07 local date. This closes the contributor-routing defect and adds transport price controls; ordinary rate/permission Karama cancellation and nonbattle Truthtrance commitments remain incomplete.
 
+## Ordinary income then Ambassador arrival — 15 October 2026
+
+Original ordinary reserve shipment may now proceed into a placed Ambassador
+when it earns Guild income. The stale preflight predicted that **future**
+receipt as an already-busy arrival control; the commit's existing income/
+counter-then-deferred-entry sequence already handles it. No tariff,
+contributor destination, pledge, cancellation or physical transfer changes.
+The ordinary bot preflight matches this distinction; direct `guildShip`
+transport and other unresolved arrival combinations remain separate.
+
+Actual styled390px native controls ship one Moritani counter, use original
+Guild permission, settle Moritani12→11 and Guild6→7, then open Ecaz's real
+Ambassador/Duke acquisition. The same invoice and force never repeat.
+Affected15-file134/134, types/lint and original engine/API proof pass;
+this is not new saved-room, deployed, cancellation-matrix or full-mode evidence.
+[Canonical current entry contract](DEFERRED_SHIPMENT_ARRIVAL.md#ordinary-guild-income-before-ambassador-entry--15-october-2026).
+
 ## Publisher contract and precedence
 
 The November 2020 FAQ, printed page 2, directs an ally's shipment contribution to the Guild (bank if absent) and sends the Guild's own contribution to the bank. This replaces April's instruction to transfer funding to the shipper first. The implementation therefore routes payment by contributor identity, including a non-Guild ally funding Guild's own shipment. The Guild's personal share still goes to the bank. The FAQ supplies a general funding rule, not an explicit Guild-as-shipper worked example; this application of the later funding-specific wording is the coordinating review's source adjudication. No old-edition or tournament rule was adopted. [November FAQ](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=2), [superseded April FAQ](https://www.gf9games.com/dune/wp-content/uploads/2020/04/Dune-FAQ.pdf#page=1).

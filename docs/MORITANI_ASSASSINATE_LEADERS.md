@@ -150,9 +150,64 @@ draws distinct **Esmar Tuek** privately. Actual styled390px GameTable performs
 the cancellation/reveal and displays the replacement, without overflow or
 browser errors. Four-profile response smoke is legal, not calibrated strategy.
 The separate random Terror pool is not derived from this captured-own FAQ.
-Non-Harkonnen foreign/shared winning discs, exceptional targets, Skills with
-Harkonnen, private-step UX and complete-mode/deployed acceptance remain open.
+At that checkpoint, non-Harkonnen foreign/shared winning discs remained
+unconnected; the following native-disc cutover supersedes that boundary.
 
+
+## Canonical winning discs and native targets — 15 October 2026
+
+Played physical identity and victorious player's printed faction are separate.
+The existing engine binds the actual surviving controlled disc to the winner's
+real plan **before** its battle-use release. The shared helper now recognizes
+canonical ordinary discs, shared Duke and CHOAM's actual optional Auditor,
+without requiring an ordinary native disc of that victor. The cached printed
+catalog also includes Auditor's matching physical Traitor and printed two.
+Auditor still cannot be captured or acquired as a foreign Ghola; its played
+identity is CHOAM-only. Cheap Hero does not become a physical leader disc,
+and Duke still has no Traitor Card.
+
+Targets remain the victorious player's printed faction, different from the
+played disc. Original native examples now connect:
+
+- **Ecaz / Duke6:** original paid reusable Ambassador acquisition, real native
+  battle and surviving Duke produce a native Ecaz choice. Actual Sanya Ecaz4
+  dies for four, while the same used Duke remains alive and set aside.
+- **Tleilaxu / foreign Guild5:** original projectiles kill Guild's Staban Tuek
+  and a different native Tleilaxu disc; the real next Revival buys that foreign
+  disc for three. Its later Tleilaxu victory opens **Zoal3**, not a Guild target
+  or copied five-spice bounty. The surviving ghola retains Guild identity,
+  its death history and actual Tleilaxu custody.
+- **CHOAM / Auditor2:** a real Auditor victory opens Frankos Aru4. Conversely,
+  a different surviving CHOAM disc permits the actual held Auditor Traitor
+  for two. If Auditor itself was played, its card is excluded and the original
+  private Continue spends no card, death, bounty or faction use.
+
+Every real reveal retains the original physical card until automatic Mentat
+face-up retirement and one distinct private replacement. Once-use and
+game-long normal-call forfeiture are unchanged. No state/signature-version
+cutover, target-custody relaxation or new public pause is introduced.
+
+The genuine Ecaz producer also exposed an obsolete **future Guild income**
+arrival guard. Ordinary reserve shipment now uses the existing income-then-entry
+queue, rather than rejecting before Guild permission. Human controls ship one
+for Moritani12→11/reserves14→13, Guild6→7, then offer the actual Ambassador
+and Duke acquisition. This changes no tariff, funding, payment or token rule.
+[Arrival contract and remaining gates](DEFERRED_SHIPMENT_ARRIVAL.md#ordinary-guild-income-before-ambassador-entry--15-october-2026).
+
+Affected15-file union **134/134** and types/lint pass. **Twenty-five original
+API/policy scenarios** cover the three Auditor positions, Ecaz/shared Duke,
+Tleilaxu/foreign Ghola and all four legal owner policies in each. Actual
+styled390px GameTable performs the three Auditor controls, paid
+Guild→Ambassador→Duke acquisition, Sanya4 and Zoal3 reveals and physical
+Mentat replacement. Final Guild/Ghola surfaces have no overflow or browser
+errors. An earlier rejected Guild fixture also exposed a temporary QA-client
+error handling invalid metadata; that handling was repaired before final proof.
+Only original undealt entropy and conserved unplayed Spice/Nexus ordering
+are directed; no wallet, hand, force, leader, phase or battle is staged.
+
+Exceptional captured/Ghola **targets**, Skills/Harkonnen, private-step UX,
+remaining arrival combinations, full assurance and deployed acceptance remain
+separate. Passing these local native paths does not certify complete modes.
 
 ## Save and physical custody
 

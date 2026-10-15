@@ -4,6 +4,38 @@
 exposed an already accepted shipment whose Guild allowance could not finish.
 This continuation repair preserves the existing unfinished arrival-order gates.
 
+## Ordinary Guild income before Ambassador entry — 15 October 2026
+
+The original native Ecaz/Moritani/Guild producer exposed a stale preflight:
+`quoteShipmentArrival` treated its **future** earned Guild receipt as an
+already-busy arrival response. Yet `commitShipment` already records that
+income/counter window, and `openTerritoryEntry` queues the committed entry
+until the original response/decision finishes. Rejecting the paid shipment
+before Guild permission therefore fenced an existing executable continuation.
+
+Ordinary reserve shipment no longer predicts Guild income as a busy control.
+The original physical/price/funding validation, Guild permission, payment,
+income/cancellation and deferred-entry queue remain unchanged. The shared
+ordinary bot adapter follows that same distinction, without reading hidden
+funding or rival hands. Actual in-flight controls, BG accompaniment/Intrusion,
+Fremen storm protection and unsupported paired-reaction gates are not removed.
+Direct Guild cross-planet transport retains its separate adapter boundary.
+This reuses the documented income-before-entry order, not a new comprehensive
+publisher priority table or an exception to paying for entry.
+
+Actual styled390px GameTable chooses the placed Ecaz token's stronghold,
+ships one, receives original Guild permission, debits Moritani12→11/
+reserves14→13 and credits Guild6→7 **before** the Ecaz Ambassador prompt.
+The real acquisition button grants Duke6; no payment or reserve transfer repeats.
+Original battle then opens Moritani's Sanya4 reveal and physical Mentat
+replacement. Affected15-file union134/134, types/lint and original API proof
+pass; final surface has no overflow/browser errors. No saved/deployed rooms
+were touched, and no new cancellation/recovery or full-combination claim is made.
+[Native disc/target integration](MORITANI_ASSASSINATE_LEADERS.md#canonical-winning-discs-and-native-targets--15-october-2026).
+
+This supersedes only the historical prospective-Guild-income rejection below.
+The historical BG/other-arrival return and safeguards remain distinct.
+
 ## Reproduced failure
 
 The fixed seed `202609146` stopped on turn one after 90 accepted actions. Guild

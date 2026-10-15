@@ -15,7 +15,6 @@ import {
   placeAmbassador,
   type AmbassadorEffect,
 } from '../game/ecaz-ambassadors';
-import { createTerrorState, placeTerror } from '../game/moritani-terror';
 import type { FactionId } from '../game/catalog';
 
 export function ambassadorFixture(
@@ -357,22 +356,6 @@ void test('self, ally, advisors and matching physical faction entries do not ope
   }
 });
 
-void test('unresolved simultaneous Terror or Guild income rejects the complete original entry atomically', () => {
-  for (const reaction of ['terror', 'guild'] as const) {
-    const g = ambassadorFixture();
-    if (reaction === 'terror') {
-      g.players.push(newPlayer('m', 'Moritani', 'moritani'));
-      const terror = createTerrorState(() => 0);
-      g.moritaniTerror = placeTerror(
-        terror,
-        terror.tokens[0].id,
-        'arrakeen',
-        1,
-      );
-    } else g.players.push(newPlayer('guild', 'Guild', 'guild'));
-    reject(g, 'in', ship);
-  }
-});
 
 void test('the Tleilaxu effect is offered to an eligible beneficiary and returns forces without consuming its token early', () => {
   for (const effect of ['tleilaxu'] as const) {

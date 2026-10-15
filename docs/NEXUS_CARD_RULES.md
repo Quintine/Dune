@@ -2,6 +2,25 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Canonical Moritani winning discs — 15 October 2026
+
+Existing native Advanced profiles now distinguish the actual surviving played
+disc from its victorious controller's printed-faction assassination targets.
+Original no-Skills runtime proof covers Ecaz winning with Duke6, Tleilaxu
+winning with an actually purchased foreign Guild ghola5, CHOAM winning with
+Auditor2 and the Auditor's real matching Traitor as a different native target2.
+Original signature/state grammar, once-use, game-long forfeiture, target
+custody guards and physical Mentat replacement remain. Cheap Hero is not a
+physical opposing disc; Duke has no Traitor. Auditor capture/Ghola and shared
+training exclusions stay intact.
+
+Ordinary Guild-funded Ambassador arrival also uses the existing
+income-before-queued-entry continuation. The actual table ships/permits,
+settles the one-spice receipt, acquires Duke, reveals the native target and
+replaces the physical card. No Nexus draw/card effect or mode gate changes.
+[Native chronologies, controls, 134/134 affected tests and25 API/policy cases](MORITANI_ASSASSINATE_LEADERS.md#canonical-winning-discs-and-native-targets--15-october-2026).
+Full combinations, assurance, private-step UX and deployed acceptance remain open.
+
 ## Native Moritani/Harkonnen custody — 15 October 2026
 
 Original standalone, paired and mixed-family **no-Skills E3 Nexus** profiles

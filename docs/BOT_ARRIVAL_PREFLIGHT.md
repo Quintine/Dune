@@ -4,6 +4,27 @@
 arrival guard. It does not choose an order for simultaneous reactions or lift
 an unfinished expansion gate.
 
+## Ordinary Guild-paid Ambassador candidate — 15 October 2026
+
+Ordinary reserve shipment no longer treats **future Guild income** as an
+already-pending arrival response. The authoritative commit already queues
+entry behind its actual income/counter continuation. The bot adapter removes
+only that stale ordinary-shipment prediction; own funding bounds/tariff,
+No-Field price independence, current busy controls, prospective BG
+accompaniment/Intrusion and Fremen storm checks remain.
+Direct `guildShip` transport retains its separate predictive boundary.
+
+The original native Ecaz/Moritani/Guild paid Ambassador shipment now has a
+clear owner-view quote and real committed permission/payment/entry path.
+All four profiles also legally consume its later actual native Ecaz
+assassination choice. Actual390px controls prove shipment1, Guild income1,
+Ecaz Duke acquisition and the original native target/replacement.
+The affected15-file union134/134 and types/lint pass. Obsolete future-Guild
+rejection and wording/bare-not-throw test pins were removed, not re-pinned.
+This is minimal legal participation, not strategic tuning or full arrival
+combination acceptance.
+[Current authoritative contract](DEFERRED_SHIPMENT_ARRIVAL.md#ordinary-guild-income-before-ambassador-entry--15-october-2026).
+
 ## Reproduction
 
 The genuine combined-expansion samples with base seed `20260914` completed on

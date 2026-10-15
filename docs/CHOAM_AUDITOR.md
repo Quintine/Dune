@@ -33,6 +33,36 @@ store or deployed game was targeted. Full CHOAM/Semuta acceptance remains open.
 Types/lint and 152 affected unit cases across twelve files pass.
 
 
+## Native Moritani battle identity and Auditor target — 15 October 2026
+
+The actual optional Auditor is both a physical strength-two CHOAM disc and
+an identity with a matching Traitor Card; it is not in `leaders('choam')`'s
+ordinary five. Original no-Skills E2/E3 Nexus Advanced play now recognizes
+its surviving win as an actual opposing disc for Moritani's distinct
+Assassinate Leaders ability. Eligible targets remain printed CHOAM identities,
+not the strength or native identity of the disc just played.
+
+Conversely, when a different CHOAM disc survives, Moritani may reveal its real
+held **Auditor Traitor**, kill the Auditor for printed two and use the original
+face-up retirement/distinct private replacement at Mentat. If the Auditor
+itself was played, its matching held card is excluded; the uniform private
+opportunity still exists and can be declined without a death, bounty or use.
+The printed capture/foreign-Ghola and skill-assignment prohibitions remain.
+This follows the component/matching-Traitor authority below and the
+[separate Advanced ability contract](MORITANI_ASSASSINATE_LEADERS.md), not
+Terror's provisional random-pool composition.
+
+Fifteen original engine/API scenarios pass: Auditor winner, different-disc
+Auditor target, played-Auditor exclusion, and all four legal owner policies
+in each actual position. These use original setup/held card, paid native
+shipment, real sealed battle and original Mentat; no wallet/hand/force/leader
+staging. The affected15-file union134/134 and types/lint pass. Actual styled390px
+GameTable reveals Frankos4 after Auditor2 wins, reveals Auditor for two after
+a different CHOAM disc wins, and gives the played-Auditor hand only its original
+private Continue. Original Mentat displays distinct private Hasimir Fenring
+replacement. No full CHOAM/optional-module, saved-room or deployed acceptance
+is claimed; the broader native-disc integration is recorded in the linked guide.
+
 ## Advanced revival follow-up — 8 October 2026
 
 The authorized supplied PDF, physical **p29 CHOAM E**, says the Auditor is

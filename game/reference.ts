@@ -1394,7 +1394,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Destroyed tokens return to supply; triggered regular tokens are set aside, Bene Gesserit is permanently removed, and replenishment waits for all five random tokens. Storm/explosion destruction remains separate. The reusable Ecaz token returns to supply after acquisition or alliance proposal. Basic has an optional new-ally Duke loan; the supplied Advanced p30 automatically grants an available Duke after accepted consent.',
       'When an eligible entrant reaches the reusable Ecaz token, Ecaz may acquire the available shared Duke. The token returns to supply and its companions are unchanged. Unused Ecaz control persists until battle use or Moritani acquisition. Basic optional and Advanced automatic new-ally grants are connected; standing ally assignment and wider captured-loan combinations remain for refinement.',
       'Unallied Ecaz may propose an alliance to an unallied entrant. Acceptance activates alliance abilities immediately. Basic then offers an optional Duke loan; Advanced automatically adds an available Duke under supplied PDF p30, without another acknowledgement. The first version releases a surviving loan after one battle, provisionally; an unused living loan is set aside at turn end. Unavailable Duke never prevents consent.',
-      'When another eligible faction enters a marked stronghold, Ecaz may trigger its Ambassador for itself or its current ally, or leave the token in place. Ecaz itself, its ally, advisors and the faction matching the physical Ambassador do not trigger it. Entries with competing arrival reactions remain blocked until their ordering is implemented; a rejected entry does not spend or move its pieces.',
+      'When another eligible faction enters a marked stronghold, Ecaz may trigger its Ambassador for itself or its current ally, or leave it in place. Ecaz itself, its ally, advisors and the faction matching the physical Ambassador do not trigger it. Ordinary Guild-paid shipment now settles its original income/counter window before the queued Ambassador prompt, without replaying payment or forces. Actual busy controls and unresolved BG/other arrival combinations retain their guards.',
       'Emperor grants five bank spice. Atreides records the entrant’s current Treachery hand privately for the beneficiary; Harkonnen records one randomly selected held Traitor identity, or Face Dancer identity for a Tleilaxu entrant. These snapshots remain in the recipient’s private inspection history, identify when they were taken, and do not become a live view of later changes. Opening, enlarging or closing them needs no game acknowledgement.',
       'CHOAM lets the beneficiary choose any available hand cards, including none, for three spice each. Ixians require one available card to discard before drawing its replacement. Card controls respect projected reservations. After committing an Ixian exchange, a voluntary interruption must leave a card available for its required discard; a queued Truthtrance counts as already committed. A Bene Gesserit trigger permanently removes its token, then the beneficiary chooses an available effect outside the original supply for this group; unsupported copies remain visibly blocked.',
       'The Richese Ambassador purchases the top Treachery Card for three of the chosen beneficiary’s own spice when executable. Normally this is automatic; in supported Emperor-absent Nexus tables, the committed trigger instead offers uniform beneficiary Pay or eligible Emperor Nexus Use, with no new decline. Under the provisional purchase composition, an actual unallied holder may prove/retain that price, with no bank payment or reimbursement. Original private inability still consumes the token without payment/draw and does not disclose the reason. Native Emperor income and Harkonnen bonus remain applicable to their original sources, with hand limits and Karama; original movement/worm continuation runs once. Ixian replacement still requires Bidding.',
@@ -1411,35 +1411,40 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Inventory, placement and eight entry effects plus their Bene Gesserit copies and direct Ecaz Duke acquisition or consensual alliance are integrated. Storm/explosion token returns are integrated. A Terror entry now defers behind competing Intrusion, Guild income and BG advisor windows; Ambassador-created child arrivals and remaining effects remain unfinished.',
+          'Original effects, copies, direct Duke acquisition, consent and storm/explosion returns remain integrated. Ordinary reserve shipment now distinguishes future Guild income from an actually busy control and uses the existing income-then-entry queue. Original price/funding and permission remain. Terror deferral stays connected; other Ambassador/arrival compositions remain partial.',
+        evidence: ['game/engine.ts', 'game/bot-arrival.ts'],
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Placement and entry controls show valid destinations, beneficiaries, copies and card choices with blocked reasons. Ecaz can offer an alliance to an eligible entrant, whose separate accept/refuse controls preserve decision ownership. Relocation controls select physical and elite forces by source sector, concealed markers and eligible advisor flips. Independent Guild shipment controls select typed reserve counts, destination sector or zero; BG accompaniment controls show source-specific blocked reasons. Public token guides and recipient-only historical card/identity inspectors remain available without acknowledgement.',
+          'Existing placement, beneficiary, copied effect, private inspection, relocation and independent Guild grant controls remain. Actual390px ordinary Ship from reserves, Guild Allow shipment and Ecaz Acquire Duke controls debit Moritani12 to11/reserves14 to13 and credit Guild6 to7 before Ambassador resolution. The original subsequent Duke6 win opens Sanya4 reveal and physical Mentat replacement.',
       },
       {
         area: 'AI',
         status: 'Partial',
         detail:
-          'All four profiles handle placement, supported trigger/beneficiary choices, copied effects, legal CHOAM/Ixian card selection, Fremen relocation, Guild reserve shipment and its BG accompaniment from their own projections. They prefer an available Ecaz alliance offer and accept a valid owned reply; direct Duke acquisition remains the fallback when a new alliance is unavailable. Unsupported effects are declined; remaining effect policies are unfinished.',
+          'All four profiles retain owner-view placement, trigger, beneficiary, copy, card, consent, movement and grant decisions. Ordinary positive-Guild-income Ambassador shipment is no longer filtered solely by a predicted future response; actual control and other reaction gates remain. All four consume the later native Ecaz target. Minimal legal participation only, not calibrated strategy.',
       },
       {
         area: 'Documentation',
         status: 'Partial',
         detail:
-          'Placement, entry choices, private inspections and all eleven guides are available. Basic optional new-ally loan and source-ordered Advanced automatic Duke grant are distinguished from exceptional custody and provisional one-battle tenure. Complete timing/interaction refinement remains open.',
+          'Source-bound placement/effect/inspection and Basic optional versus Advanced automatic new-ally Duke guides remain. The ordinary Guild income-before-queued-Ambassador contract explicitly preserves tariffs, funding, counters and remaining arrival gates; it is not a new comprehensive priority FAQ.',
+        evidence: ['docs/ECAZ_AMBASSADORS_RULES.md', 'docs/DEFERRED_SHIPMENT_ARRIVAL.md', 'docs/BOT_ARRIVAL_PREFLIGHT.md'],
       },
       {
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Focused tests cover custody, placement payment, entry continuation, private snapshots, effect choices, destruction and all four bot profiles. Persisted tests cover concurrent triggers, private snapshot restoration, and stale-event rejection; browser checks verified entry and enlarged private cards. Guild-focused tests cover physical quotes, historical continuations, cancellation, resume provenance, actual engine journeys and all four AI profiles. Guild multiplayer and browser verification are pending at this documentation checkpoint. Ecaz alliance tests cover both consent outcomes, real arrival and worm continuations, card suspension, private-state preservation and racing replies; browser checks confirm keyboard proposal and AI acceptance. Complete expansion games and competing arrivals remain.',
+          'Current affected15-file134/134, types/lint and original native API proof pass. Actual390px paid shipment and Guild permission settle income1, then Ecaz acquires Duke6 and original native Sanya4 reveal/replacement follows; final surface has no overflow/browser errors. Earlier effect/copy/consent/inspection and persisted evidence remains source-bound, not new saved/deployed assurance. Other arrival combinations and full acceptance remain open.',
         evidence: [
           'tests/ecaz-ambassadors.test.ts',
           'tests/ecaz-placement.test.ts',
           'tests/ecaz-entry.test.ts',
+          'tests/moritani-ecaz-duke-winner.test.ts',
+          'tests/bot-arrival.test.ts',
+          'tests/deferred-shipment-arrival.test.ts',
           'tests/ecaz-duke-acquisition.test.ts',
           'tests/ecaz-duke-bots.test.ts',
           'tests/ecaz-duke-recovery.test.ts',
@@ -2923,18 +2928,20 @@ export const RULE_TOPICS: RuleTopic[] = [
       'An unallied native Ecaz holder may spend its actual Ecaz Nexus at a quiet boundary in any phase to take Duke for the current turn, including original captured custody or the set-aside disc in Tanks. Finish committed interactions first. One battle or unused turn expiry sets him aside. Nexus liberation permanently clears captivity; it does not return him to a former captor. Actual Ecaz Ghola returns him alive and set aside before a separate Cunning play.',
       'Original standalone, paired and mixed-family no-Skills E3 Nexus connects Advanced Harkonnen capture of the same shared disc, surviving just-used losing Duke, Keep/Execute and captive returns. Qualifying Moritani can take a living captive permanently, preserving native identity and death/use history; one battle or unused expiry never restores the captor. Takeover, capture priority and return destinations are provisional compositions.',
       'Public Moritani qualification uses the public Duke snapshot, not secret execution status. Karama preserves existing capture if it cancels the grant. Allowed resolution publishes actual unavailability: an executed Duke stays dead in Ecaz Tanks, never revived by Moritani. This provisional public-effect policy does not promise permanent execution secrecy. Ecaz-only revival, Ambassador exclusions, Skills/Harkonnen and shared-training guards remain; complete modes are not certified.',
+      'After an actual surviving Duke win against Moritani, the distinct Advanced assassination advantage uses the victorious player’s printed-faction Traitor identities, never a Duke Traitor. Original native Ecaz/Duke6 now opens Sanya Ecaz4 while the same used shared disc stays alive and set aside.',
     ],
     checklist: [
-      { area: 'Implementation', status: 'Partial', detail: 'Native Ecaz identity cohorts and independent Duke return remain connected. Original no-Skills E3 Nexus admits Harkonnen; qualifying Moritani takes living captive Duke without restoring the captor after use/expiry. Public snapshot qualification resolves actual execution availability without resurrection. Native five-disc identity, Ecaz-only revival, costs and Skills/shared-training guards remain.', evidence: ['game/ecaz-revival-cohort.ts', 'game/revival.ts', 'game/ecaz-duke-revival.ts', 'game/duke-vidal.ts', 'game/nexus-ecaz-duke.ts', 'game/engine.ts'] },
-      { area: 'Player controls', status: 'Partial', detail: 'Actual styled390px table finishes original movement, shows reclaimed Duke6 Ready and removes him after actual battle use. Original Karama cancels takeover; a real captive-Duke winner opens native Harkonnen Traitor reveal4 and Mentat replacement. Earlier original cohort11 to8/12 to10 controls remain. No overflow/browser errors; full journeys open.', evidence: ['components/game-table.tsx', 'components/duke-vidal.tsx', 'components/moritani-assassinate.tsx'] },
-      { area: 'AI', status: 'Partial', detail: 'All four original Harkonnen response policies legally pass the native acquisition window; Terror policies legally reveal or form an accepted alliance. Earlier four-profile cohort returns remain. These are minimal legal paths, not optimal counterplay, four Duke kills or strategic calibration.', evidence: ['game/bots.ts', 'game/nexus-ecaz-duke-options.ts', 'game/revival.ts'] },
-      { area: 'Documentation', status: 'Partial', detail: 'Printed native identity, take-from-controller and Ecaz-only Duke5/set-aside remain distinct from provisional takeover/return, public availability and identity-cohort compositions. Moritani never revives execution; Ambassador captive exclusion remains. No missing publisher priority FAQ or numerical user ruling is claimed.', evidence: ['docs/ECAZ_REVIVAL_RULES.md', 'docs/DUKE_VIDAL_RULES.md', 'docs/MORITANI_ASSASSINATION_SNEAK.md', 'docs/RULE_DECISIONS.md'] },
-      { area: 'Verification', status: 'Partial', detail: 'Current affected22-file union195/195, types/lint/build and14 actual API/policy paths pass. Real native capture, takeover/use/expiry, private execution, original Karama, captive-Duke winning identity and Terror death6 have actual390px proof. Empty Terror boundary stages preceding Guild deaths. Earlier cohort19-file230/230 proof remains historical. No saved/deployed rooms touched; combinations, assurance and full acceptance remain open.', evidence: ['tests/moritani-duke-custody.test.ts', 'tests/fixture-moritani-duke-capture.ts', 'tests/moritani-duke-captured-runtime.test.ts', 'tests/moritani-terror-assassination-runtime.test.ts', 'tests/ecaz-revival-cohort-runtime.test.ts', 'tests/ecaz-duke-revival.test.ts'] },
+      { area: 'Implementation', status: 'Partial', detail: 'Native Ecaz cohorts, independent Duke return and original Harkonnen captive takeover remain connected. Actual surviving shared-disc wins now bind the victorious player’s native assassination targets rather than requiring a disc in that native array. Ordinary Guild income settles before queued Ambassador acquisition. Native identity, Ecaz-only revival and custody/training guards remain.', evidence: ['game/ecaz-revival-cohort.ts', 'game/ecaz-duke-revival.ts', 'game/duke-vidal.ts', 'game/moritani-assassinate.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Actual390px original paid shipment, Guild permission and Ecaz acquisition lead to Duke6 victory, Sanya4 reveal and original private Mentat replacement. Earlier living captive reclamation, Karama, one-battle release and cohort11 to8/12 to10 controls remain bounded evidence; full journeys open.', evidence: ['components/game-table.tsx', 'components/duke-vidal.tsx', 'components/moritani-assassinate.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'All four owner profiles choose legal native targets after actual shared/foreign/Auditor wins or Continue when the played Auditor is the only held card. Ordinary Guild-paid Ambassador quote stays eligible. Earlier native capture/cohort policies remain; strategic calibration is deferred.', evidence: ['game/bots.ts', 'game/bot-arrival.ts', 'game/nexus-ecaz-duke-options.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'Shared played-disc identity, victor printed-faction targets and no Duke Traitor are explicit. Original Ecaz-only Duke5/set-aside and Ambassador exclusions remain distinct from provisional takeover/return, public availability and native-cohort policies. No new numerical user ruling or full priority FAQ is claimed.', evidence: ['docs/ECAZ_REVIVAL_RULES.md', 'docs/DUKE_VIDAL_RULES.md', 'docs/MORITANI_ASSASSINATE_LEADERS.md', 'docs/DEFERRED_SHIPMENT_ARRIVAL.md', 'docs/RULE_DECISIONS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Current affected15-file134/134, types/lint and25 original API/policy paths pass. Actual390px Guild-paid Ambassador acquisition, shared Duke6/Sanya4, foreign Guild5/Zoal3 and three Auditor choices/Continue have physical replacement proof. Earlier capture195/195 and cohort230/230 checkpoints remain historical, not full combinations or saved/deployed assurance.', evidence: ['tests/fixture-moritani-ecaz-duke-winner.ts', 'tests/moritani-ecaz-duke-winner.test.ts', 'tests/moritani-foreign-ghola-winner.test.ts', 'tests/moritani-auditor-winner.test.ts', 'tests/moritani-duke-captured-runtime.test.ts', 'tests/ecaz-revival-cohort-runtime.test.ts'] },
     ],
     related: [
       'faction-ecaz',
       'faction-moritani',
       'battle',
+      'moritani-assassinate-leaders',
       'revival',
       'captured-leaders',
       'card-karama',
@@ -3144,15 +3151,15 @@ export const RULE_TOPICS: RuleTopic[] = [
       'You may reveal a Traitor Card for that opposing faction, but it must name a different leader from the one you just fought. If that named leader is not in the Tanks, kill it and collect spice for its value.',
       'An already-dead named leader remains a legal reveal, awarding no death or spice. During Mentat Pause, set the revealed card aside face up as a marker and draw a new Traitor Card. You can use this advantage only once against each faction in the game.',
       'The authorized revised Advanced PDF, physical page35, requires that you have not revealed your Traitor Card normally this game. A normal own-card reveal therefore forfeits Assassinate Leaders for the rest of this game, across turns and opponents. Existing state preserves that forfeiture; Karama has no effect against the ability. This is the authorized source, not a new GF9 erratum.',
-      'A victorious Harkonnen may have played its own native disc, a captured foreign native disc including Moritani, or shared Duke. In the original no-Skills E3 Nexus composition, a surviving actual Harkonnen battle disc opens the original private ability, but eligible cards remain printed Harkonnen identities. Captivity never changes a Moritani disc or Ecaz Duke into native Harkonnen; Duke has no Traitor Card. Non-Harkonnen borrowed/shared winners and exceptional targets remain separate.',
+      'The surviving actual played disc need not be native to its victorious controller. Native Ecaz/Duke6, Tleilaxu/foreign Guild5, CHOAM/Auditor2 and Harkonnen captives use the winner’s printed-faction targets. Captivity or Ghola control never rewrites native identity. Auditor has a matching Traitor outside CHOAM’s ordinary five; it can be a different native target for two but not the disc just played. Duke has no Traitor, and Cheap Hero is not a physical opposing disc. Exceptional captured/Ghola targets remain separate.',
       'Terror Assassination chooses a random leader when its token is triggered. It does not use this battle-loss condition, different-leader Traitor Card or once-per-faction allowance. Moritani starts remain unavailable in Basic and Advanced.',
     ],
     checklist: [
-      {area:'Implementation',status:'Partial',detail:'Original native Advanced loss uses surviving pre-release battle identity, including Harkonnen captive/Duke winners in no-Skills E3 Nexus. Targets remain native opposing printed-faction Traitors; game-long normal-call forfeiture, printed/dead bounty and distinct physical Mentat replacement remain.',evidence:['game/moritani-assassinate.ts','game/engine.ts']},
-      {area:'Player controls',status:'Partial',detail:'Actual390px original Karama cancellation preserves capture; after real Harkonnen Duke6 victory, actual Reveal Beast Rabban pays4 and original Mentat shows distinct private Esmar Tuek. Uniform private choice/decline remains; private-step UX decision is separate.',evidence:['components/moritani-assassinate.tsx','components/game-table.tsx']},
-      {area:'AI',status:'Partial',detail:'All four profiles use the owner-only choice or decline; original four-profile Harkonnen response smoke is legal pass. No optimal strategy or strength-calibration claim.',evidence:['game/bots.ts','tests/moritani-assassinate-engine.test.ts']},
-      {area:'Documentation',status:'Partial',detail:'Authorized Advanced game-long forfeiture, printed battle-disc identity versus target faction and distinct random Terror policy are explicit. Exceptional targets, non-Harkonnen borrowed/shared winners, private-step UX and Skills/Harkonnen remain open.',evidence:['docs/MORITANI_ASSASSINATE_LEADERS.md','docs/RULE_DECISIONS.md']},
-      {area:'Verification',status:'Partial',detail:'Affected22-file195/195, types/lint/build and original native capture/cancel/Duke winner/reveal4/Mentat replacement plus actual390px controls pass. Pure native/foreign/Moritani/Duke identity and dead/once-use boundaries remain. No saved/deployed or complete-faction acceptance claim.',evidence:['tests/moritani-harkonnen-assassinate.test.ts','tests/moritani-duke-captured-runtime.test.ts','tests/moritani-assassinate-quote.test.ts','tests/moritani-assassinate-engine.test.ts']},
+      {area:'Implementation',status:'Partial',detail:'Cached canonical printed discs including actual Auditor distinguish played identity from victorious faction. Actual pre-release surviving control/plan binds the opportunity; native target lookup includes Auditor2 but excludes the played disc. State/signature, once-use, game-long forfeiture, custody guards and original physical Mentat replacement remain.',evidence:['game/moritani-assassinate.ts','game/engine.ts']},
+      {area:'Player controls',status:'Partial',detail:'Actual390px Sanya4 after Duke6, Zoal3 after foreign Guild5, Frankos4 after Auditor2, Auditor target2 and played-Auditor private Continue are usable. Original Mentat replacement remains private. Native Guild-funded Ambassador shipment/permission/acquisition also connects; private-step UX remains separate.',evidence:['components/moritani-assassinate.tsx','components/game-table.tsx']},
+      {area:'AI',status:'Partial',detail:'All four owner profiles make accepted target/decline decisions in all five original positions; ordinary Guild-income Ambassador candidate quote is clear. Minimal legal participation, no strategic tuning or calibration claim.',evidence:['game/bots.ts','game/bot-arrival.ts']},
+      {area:'Documentation',status:'Partial',detail:'Authorized p35 conditions, native component identity, Auditor matching Traitor and printed bounty are explicit. Separate provisional Terror policies do not define this ability. Exceptional targets, private-step UX, Skills/Harkonnen and broader arrival gates remain open.',evidence:['docs/MORITANI_ASSASSINATE_LEADERS.md','docs/CHOAM_AUDITOR.md','docs/RULE_DECISIONS.md']},
+      {area:'Verification',status:'Partial',detail:'Affected15-file134/134, types/lint and25 original API/policy cases pass. Real acquisition, projectile deaths/foreign return, native battles, public reveal/private replacement and actual390px controls are exercised. No wallet/hand/army/leader/phase/battle staging; only original entropy and conserved unplayed ordering. No saved/deployed or full-mode acceptance.',evidence:['tests/moritani-ecaz-duke-winner.test.ts','tests/moritani-foreign-ghola-winner.test.ts','tests/moritani-auditor-winner.test.ts','tests/moritani-harkonnen-assassinate.test.ts','tests/moritani-assassinate-quote.test.ts']},
     ],
     related: [
       'faction-moritani',
@@ -3733,6 +3740,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'If the opponent cannot afford the full payment, inspection proceeds automatically. An empty eligible hand needs no decision. Sampling happens once after cancellation choices; no card is transferred or discarded.',
       'Only CHOAM receives the inspected faces. Its private snapshot survives refresh and the transition out of Battle, and expires at the next battle or turn. It does not track later changes in the opposing hand and needs no confirmation to continue.',
       'The Auditor cannot be captured, acquired as a foreign ghola by Tleilaxu, or receive a leader skill. CHOAM’s own Ghola card can revive it. Supplied Advanced p29 permits ordinary revival each turn even after repeated deaths, for two spice before discounts, using the usual one-leader allowance.',
+      'Against Moritani, a surviving actual Auditor2 win can open the distinct Advanced native-CHOAM assassination choice. Conversely its matching held Traitor may target Auditor for printed two when a different CHOAM disc survived. The played Auditor is excluded from its own card, while the uniform private opportunity still permits Continue with no spend. Original Mentat retires a revealed card face up and draws one distinct private replacement.',
       'The ordinary-cycle first version explicitly excludes Auditor from the five ordinary CHOAM discs: its life or repeated deaths neither delay nor open that cohort. This is a visibly provisional policy, not a publisher clarification or numerical user ruling. Full expansion starts remain disabled.',
     ],
     example:
@@ -3742,6 +3750,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'choam-combat',
       'choam-revival',
       'battle',
+      'moritani-assassinate-leaders',
       'card-karama',
     ],
     checklist: [
@@ -3749,10 +3758,11 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Setup identity, inspection, payment, Karama and capture/foreign-ghola exclusions are integrated. Supplied each-turn Auditor revival and provisional five-ordinary-disc cycles are connected; wider combinations remain open.',
+          'Original identity, inspection, payment, Karama, each-turn revival and provisional ordinary cycles remain. Canonical Moritani played-disc and native-target lookup now includes the actual Auditor and matching Traitor2, excluding its played identity. Capture, foreign-Ghola and skill-assignment prohibitions remain.',
         evidence: [
           'game/choam-auditor.ts',
           'game/engine.ts',
+          'game/moritani-assassinate.ts',
           'game/revival.ts',
         ],
       },
@@ -3760,29 +3770,29 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Player controls',
         status: 'Implemented',
         detail:
-          'Auditor offer, exact cancellation payment and private inspectable card results have dedicated controls. Owned Revival lists repeat-death Auditor and eligible ordinary discs with an explicit provisional cycle warning.',
-        evidence: ['components/choam-auditor.tsx', 'components/game-table.tsx'],
+          'Original offer/payment/private inspection and owned Revival controls remain. Actual390px native Moritani controls reveal Frankos4 after Auditor2 wins, reveal a different Auditor target2, or Continue without killing the played Auditor. Original private Hasimir replacement appears at Mentat.',
+        evidence: ['components/choam-auditor.tsx', 'components/game-table.tsx', 'components/moritani-assassinate.tsx'],
       },
       {
         area: 'AI',
         status: 'Partial',
         detail:
-          'All four profiles use public facts and their own hand to handle the decisions; complete faction-game calibration remains open.',
+          'All four profiles retain original audit choices and use actual owner-only Moritani target or Continue in all three real Auditor positions. Fifteen accepted API/policy paths are minimal legal participation, not full faction strategy or calibration.',
         evidence: ['game/bots.ts'],
       },
       {
         area: 'Documentation',
         status: 'Implemented',
         detail:
-          'Internal instructions, source precedence and remaining interpretation boundaries are recorded.',
-        evidence: ['docs/CHOAM_AUDITOR.md'],
+          'Printed matching Traitor, strength2 and absolute capture/Ghola/training exclusions remain distinct from provisional ordinary revival cycles. Moritani played-disc exclusion and native target/replacement are linked to their own source contract.',
+        evidence: ['docs/CHOAM_AUDITOR.md', 'docs/MORITANI_ASSASSINATE_LEADERS.md'],
       },
       {
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Two before/after native Easy revival smokes, two focused cycle regressions and isolated GameTable SSR Chromium surfaces pass. Earlier identity/sampling evidence remains; full expansion combinations and deployed acceptance remain uncertified.',
-        evidence: ['tests/choam-auditor.test.ts', 'tests/choam-auditor-lifecycle.test.ts'],
+          'Current affected15-file134/134, types/lint, fifteen original Auditor API/policy cases and actual390px reveal/Continue/replacement controls pass. Earlier native revival, sampling and persistence evidence stays historical; no full combinations, saved-room or deployed acceptance claim.',
+        evidence: ['tests/choam-auditor.test.ts', 'tests/choam-auditor-lifecycle.test.ts', 'tests/moritani-auditor-winner.test.ts'],
       },
     ],
   },

@@ -57,6 +57,10 @@ export type MixedE3MoritaniOptions = {
   strongholds?: boolean;
   /** Requested skill for the trained opposing disc of the Advanced loss. */
   opponentSkill?: LeaderSkillId;
+  /** Select original starting-deal entropy; never replace a played hand. */
+  startingCards?: Partial<Record<FactionId, readonly Card['kind'][]>>;
+  /** Desired physical opposing-faction card in the original undealt Traitor offer. */
+  traitorTarget?: string;
   /** Reveal Moritani's own held Traitor normally during the loss battle. */
   normalCall?: boolean;
   seatIds?: readonly string[];
@@ -364,7 +368,7 @@ export function createMixedE3MoritaniSetup(options: MixedE3MoritaniOptions = {})
     ? (options.natives?.[families[1]] ?? (families[1] === 'ix' ? 'tleilaxu' : 'choam')) : null;
   const secondNative = secondFaction ? g.players.find(p => p.faction === secondFaction)?.id ?? null : null;
   let location = '';
-  const target = leaders(nativeFaction)[0].id;
+  const target = options.traitorTarget ?? leaders(nativeFaction)[0].id;
   const requested: Partial<Record<FactionId, LeaderSkillId>> = {};
   if (skills) {
     requested[nativeFaction] = options.opponentSkill ?? 'suk-graduate';
@@ -397,7 +401,8 @@ export function createMixedE3MoritaniSetup(options: MixedE3MoritaniOptions = {})
       const row: string[] = [];
       for (const p of order) {
         const quantity = ixPlayer ? 1 : p.faction === 'harkonnen' ? 2 : 1;
-        for (let i = 0; i < quantity; i++) row.push(p.id === native.id ? take('projectile') : take('worthless'));
+        for (let i = 0; i < quantity; i++)
+          row.push(take(options.startingCards?.[p.faction]?.[i] ?? (p.id === native.id ? 'projectile' : 'worthless')));
       }
       if (ixPlayer && g.players.some(p => p.faction === 'harkonnen')) row.push(take('worthless'));
       if (ixPlayer) ixSeatCard = row[0];
@@ -488,7 +493,8 @@ export function createMixedE3MoritaniSetup(options: MixedE3MoritaniOptions = {})
   assert.equal(g.status, 'playing', 'Original mixed E3 setup must complete into play.');
   const own = mixedE3MoritaniPlayer(g, moritani);
   assert.equal(own.forces[location], 6, 'Moritani placed its real six starting counters.');
-  const held = own.traitors.find(c => leaders(nativeFaction).some(l => l.id === c));
+  const held = own.traitors.find(c => c === target) ??
+    own.traitors.find(c => leaders(nativeFaction).some(l => l.id === c));
   assert.ok(held, 'The original Traitor deal must place one selected-family card in Moritani\'s hand.');
   const seats: Partial<Record<FactionId, string>> = {};
   for (const p of g.players) seats[p.faction] = p.id;

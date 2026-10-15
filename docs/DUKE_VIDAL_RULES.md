@@ -153,3 +153,15 @@ physical card at Mentat. Random Terror can kill the captive Duke for six.
 See [Assassinate identity](MORITANI_ASSASSINATE_LEADERS.md#native-harkonnen-battle-identity--15-october-2026)
 and [Terror policy/evidence](MORITANI_ASSASSINATION_SNEAK.md#assassination-pool-adopted-provisional-composition-15-october-2026).
 This is local changed-path proof, not saved-room, deployed or complete-mode acceptance.
+
+## Native Moritani loss to Ecaz's shared disc — 15 October 2026
+
+An actual original Ecaz Ambassador acquisition and surviving Duke6 win now open
+Moritani's distinct Advanced native-Ecaz Traitor choice. Actual Sanya Ecaz4
+pays four, not Duke's six; Duke stays alive, used and set aside, with no new
+Traitor or native-roster copy. Original Guild-paid arrival now settles income
+before the queued Ambassador rather than being rejected by a prospective
+busy-control prediction. Native counts, exclusive Ecaz revival, original
+tenure and all remaining custody/source gates stay separate.
+[Canonical played-disc/target distinction, original controls and evidence](MORITANI_ASSASSINATE_LEADERS.md#canonical-winning-discs-and-native-targets--15-october-2026).
+

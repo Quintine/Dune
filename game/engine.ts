@@ -15354,14 +15354,6 @@ function quoteShipmentArrival(
     ? Math.max(1, shipment.amount)
     : shipment.amount + (shipment.smugglerCompanion ? 1 : 0);
   const guild = byFaction(g, 'guild');
-  const guildPayment = guildShipmentIncome({
-    guild: guild?.id,
-    shipper: p.id,
-    ally: p.ally,
-    cost: shipment.cost,
-    allyPayment: shipment.allyPayment,
-    bankOnly: g.karamaShipping?.player === p.id,
-  });
   const bg = byFaction(g, 'beneGesserit');
   const advisorFollowup = !!(
     p.faction !== 'fremen' &&
@@ -15396,9 +15388,10 @@ function quoteShipmentArrival(
       ? []
       : (g.moritaniTerror?.tokens ?? []),
     controls: {
+      // Committed shipment income settles before the queued territory entry.
+      // A future Guild payment is not an already-busy arrival control.
       response:
         !!g.response ||
-        guildPayment > 0 ||
         (g.advanced && p.faction === 'fremen' && shipment.sector === g.storm),
       decision: currentDecision || advisorFollowup,
       pendingTerror: !!g.pendingTerrorEntry,

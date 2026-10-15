@@ -88,7 +88,6 @@ void test('public trigger requires a native Advanced Moritani normal loss, a sur
     { traitorCalled: true },
     { opposingLeader: null },
     { opposingLeader: 'cheap-hero-traitor' },
-    { opposingLeader: 'emperor-0' },
     { turn: 0 },
     { turn: 1.5 },
     { event: '' },

@@ -1,4 +1,4 @@
-import { leaders as printedLeaders, type Leader } from './cards';
+import { CHOAM_AUDITOR_ID, createAuditorLeader, leaders as printedLeaders, type Leader } from './cards';
 import { FACTIONS, type FactionId } from './catalog';
 import { DUKE_VIDAL_ID } from './duke-vidal';
 
@@ -89,20 +89,20 @@ const identities = (value: unknown): value is string[] =>
 function requireAssassinate(value: unknown, message: string): asserts value {
   if (!value) throw new Error(message);
 }
+const printedDiscs = new Map(
+  [...FACTIONS.flatMap((faction) => printedLeaders(faction.id)), createAuditorLeader()]
+    .map((leader) => [leader.id, leader] as const),
+);
 function printed(faction: FactionId, id: string) {
-  return FACTIONS.some((f) => f.id === faction)
-    ? printedLeaders(faction).find((l) => l.id === id)
-    : undefined;
+  const leader = printedDiscs.get(id);
+  return leader?.faction === faction ? leader : undefined;
 }
-function ordinaryIdentity(id: string) {
-  return FACTIONS.some((f) => printed(f.id, id));
-}
-/** Harkonnen may fight with a captive without changing its printed identity.
- * Actual control and survival are bound by the engine, not by this receipt. */
+/** Physical disc identity is distinct from the victorious player's faction.
+ * The engine binds actual plan, effective control and survival before release.
+ * Auditor is CHOAM-only: its printed capture/foreign-Ghola exclusions remain. */
 function opposingDiscIdentity(faction: FactionId, id: string) {
-  return !!printed(faction, id) ||
-    (faction === 'harkonnen' &&
-      (id === DUKE_VIDAL_ID || ordinaryIdentity(id)));
+  return id === DUKE_VIDAL_ID ||
+    (printedDiscs.has(id) && (id !== CHOAM_AUDITOR_ID || faction === 'choam'));
 }
 /** Consistency proof only; the engine separately binds the battle event and
  * phase continuation. No secret card identity enters this public trigger. */
@@ -267,7 +267,7 @@ export function validateMoritaniAssassinate(
     else
       requireAssassinate(
         identifier(r.replacement) &&
-          ordinaryIdentity(r.replacement) &&
+          printedDiscs.has(r.replacement) &&
           r.replacement !== r.card &&
           (!custody ||
             (custody.removed.includes(r.card!) &&

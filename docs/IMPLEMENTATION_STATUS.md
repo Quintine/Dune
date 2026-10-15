@@ -1,5 +1,72 @@
 # Dune implementation status
 
+## 15 October 2026 — Canonical Moritani winning discs, Auditor targets and Guild entry
+
+Separated canonical played-disc identity from the victorious player's printed
+faction. The engine's existing actual surviving pre-release leader reference
+still binds the real plan/control/outcome; the shared helper no longer insists
+on that victor's ordinary native disc. A cached printed catalog avoids repeated
+leader construction/scans and includes the actual optional Auditor and its
+matching physical Traitor. Targets remain native opposing printed-faction
+identities, different from the played disc; captured/Ghola target guards remain.
+Shared Duke still has no Traitor, Auditor remains CHOAM-only/not capturable or
+foreign-Ghola eligible, and Cheap Hero is not a physical opposing leader disc.
+Original signature/state version, once-use, game-long normal-call forfeiture
+and physical automatic Mentat retirement/distinct replacement remain.
+
+Three original native producers and seven consumer regressions cover:
+
+- Ecaz/Moritani/Guild: paid reusable Ambassador, actual Guild-funded shipments,
+  Ecaz Duke6 acquisition/win, native Sanya Ecaz4 reveal and original replacement.
+- E1/E3 Moritani/Tleilaxu/Guild/Emperor: original projectiles kill Staban Tuek5
+  and a different Tleilaxu native; the real next Revival returns that foreign
+  Guild disc for three. Its later Tleilaxu win opens native Zoal3, never a Guild
+  target/copied-five bounty; the surviving ghola retains actual Tleilaxu custody.
+- E2/E3 CHOAM: Auditor2 winner → Frankos4; different CHOAM winner → actual
+  held Auditor Traitor2; played-Auditor card excluded → private Continue without
+  card/death/bounty/faction use. Real Mentat draws distinct Hasimir privately.
+
+The original Ecaz producer reproduced a stale Guild-income preflight exception.
+`quoteShipmentArrival` predicted an earned future receipt as a busy control,
+although commit already queues entry behind its original income/counter window.
+Removed that prediction and its dead calculation, not any payment or actual
+busy-control validation. The ordinary bot preflight matches; native Guild
+transport, BG/other reactions and unsupported composition guards remain separate.
+No new queue, receipt, action, persistence field or general priority ruling.
+
+Removed old native-only/other-faction and future-Guild rejection pins rather
+than re-pinning them. Removed wording/forwarding/bare-not-throw coverage.
+One new fixture assertion confused a declared shipment's intermediate `after`
+with its actual settled transfer; deleted the incidental assertion while
+retaining real resulting army and physical-custody checks. Rejected real
+played-Auditor/foreign targets preserve the input.
+
+Verification: affected15-file **134/134**, types/lint and **25 original
+engine/API/policy scenarios** pass, including all four owner profiles in
+all five actual positions. Actual styled390px GameTable completes original
+Ship from reserves → Guild Allow shipment → income1 → Ecaz Duke acquisition;
+Moritani12→11/reserves14→13, Guild6→7, queue clears once. Actual original
+Duke6/Sanya4, foreign Guild5/Zoal3, Auditor2/Frankos4, Auditor target2 and
+played-Auditor Continue controls are exercised. Original physical Mentat
+replacements remain private, and the surviving borrowed/shared discs retain
+their own original return/custody behavior.
+
+Final Guild/Ghola surfaces have390px scrollWidth and no browser errors.
+An earlier rejected Guild fixture exposed a temporary QA-client `.seats.map`
+failure on invalid metadata; response handling was repaired before final
+surface proof. A separately admitted Emperor-third-seat witness also passed,
+but was not substituted for the ultimately fixed original Guild composition.
+Only original undealt entropy and conserved unplayed Spice/Nexus order are
+directed. No hand, wallet, force, leader, phase or battle is staged.
+
+No saved/deployed rooms touched; no new recovery/privacy/custody campaign,
+strategic tuning, public mode enablement or complete-faction acceptance.
+Exceptional targets, direct Guild transport/BG arrival gates, private-step UX
+and the full project goal remain unfinished.
+Final types/lint and production build pass after reference integration.
+Existing module.register deprecation, large-chunk and Unknown-route warnings remain.
+[Source and canonical behavior](MORITANI_ASSASSINATE_LEADERS.md#canonical-winning-discs-and-native-targets--15-october-2026).
+
 ## 15 October 2026 — Native Moritani/Harkonnen and actual captive Duke
 
 Connected original standalone, paired and mixed-family no-Skills E3 Nexus

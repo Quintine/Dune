@@ -121,20 +121,12 @@ export function botArrivalBlock(g: GameView, action: Action): string | null {
       allyPayment > bounds.maximum
     )
       return null;
-    const income = guildShipmentIncome({
-      guild: guild?.id,
-      shipper: me.id,
-      ally: me.ally,
-      cost,
-      allyPayment,
-      bankOnly: g.karamaShipping?.player === me.id,
-    });
     const bg = g.players.find((p) => p.faction === 'beneGesserit');
     // Without Homeworlds, a positive public reserve pool grants accompaniment.
     const accompaniment =
       me.faction !== 'fremen' && !!bg && bg.id !== me.id && bg.reserves > 0;
+    // Ordinary shipment income settles before its deferred territory entry.
     controls.response ||=
-      income > 0 ||
       (g.advanced && me.faction === 'fremen' && action.sector === g.storm);
     controls.decision ||= accompaniment;
     order = {

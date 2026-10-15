@@ -9,6 +9,22 @@ Audit: 2026-09-06. Scope: ambassador inventory, setup, placement, triggering, ef
 - **Designer clarification:** Jack Reda (@The Warp), 26 August 2023, on his [Ecaz and Moritani rulebook upload](https://boardgamegeek.com/filepage/263742/ecaz-and-moritani-rules), explicitly confirms Ambassador placement face up. This is the designer speaking directly, not a community interpretation. The publisher-indexed file-page comment was verified in the follow-up audit below.
 - No community amendment, fan implementation, or tournament rule was used. No separately dated official ambassador errata resolving the remaining open questions was found in this bounded pass. Use applicable official corrections/FAQ over general text; record conflicts rather than silently resolving them.
 
+## Ordinary Guild-paid entry follow-up — 15 October 2026
+
+Original reserve shipment now settles its actual Guild income/counter window
+before the already queued Ambassador entry, instead of rejecting because of
+a predicted future receipt. Price/funding, physical transfer, token handling
+and original caller resumption do not change. Actual current controls and
+unresolved BG/other-arrival combinations remain guarded; this is not a new
+comprehensive printed priority rule.
+
+The actual390px native table ships/permits one for Moritani12→11 and
+Guild6→7, opens the Ecaz Ambassador, acquires Duke6, then resolves a real
+Ecaz Duke win and native Sanya4 assassination/physical Mentat replacement.
+Affected15-file134/134, types/lint and original API proof pass. All public,
+complete-mode, saved-game and deployed acceptance gates remain.
+[Current authoritative queue contract](DEFERRED_SHIPMENT_ARRIVAL.md#ordinary-guild-income-before-ambassador-entry--15-october-2026).
+
 ## Compact authoritative rule map
 
 **Inventory/setup (E3 pp.4,7):** 11 ambassadors. Ecaz takes its token plus five random others. Start: six forces in Imperial Basin, 14 reserves, 12 spice; two free revivals.
