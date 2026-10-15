@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { baseDeck, type Card } from '../game/cards';
+import { baseDeck, choamDeck, ixDeck, treacheryDeck, type Card } from '../game/cards';
+import { richeseCards } from '../game/richese-cards';
 import {
   IxianReplacementError,
   closeIxianReplacementSource,
@@ -19,6 +20,7 @@ const parent = 'original-native-paid-sale-parent';
 function context(): IxianReplacementContext {
   return {
     status: 'playing', phase: 3, turn: 1, sequence: 0,
+    expansions: [], richese: false,
     auction: { cards: [{ ...purchased }, { ...unsold }], index: 0, bidder: 'buyer', bid: 4 },
     sale: { winner: 'buyer', amount: 4, free: false, origin: 'normal', seller: null },
     players: [
@@ -27,6 +29,17 @@ function context(): IxianReplacementContext {
     ],
     physicalCards: [{ ...older }, { ...purchased }, { ...top }, { ...unsold }],
   };
+}
+function purchaseContext(
+  card: Card, expansions: readonly string[], richese = false,
+): IxianReplacementContext {
+  const ctx = context();
+  ctx.expansions = expansions;
+  ctx.richese = richese;
+  ctx.auction!.cards = [{ ...card }];
+  ctx.players = [{ ...ctx.players[0], hand: [{ ...card }] }, ctx.players[1]];
+  ctx.physicalCards = [{ ...card }];
+  return ctx;
 }
 function source(ctx: IxianReplacementContext = context()) {
   return createIxianReplacementSource(
@@ -82,6 +95,115 @@ void test('canonical descriptors cannot be redefined by a matching auction row a
     ctx.physicalCards = [older, corrupt, top, unsold];
     assert.throws(() => source(ctx), IxianReplacementError);
   }
+});
+
+void test('selected CHOAM retains all original 35 faces alongside separate native Richese custody', () => {
+  const deck = treacheryDeck(['choam']);
+  const cache = richeseCards();
+  assert.equal(deck.length, 35);
+  assert.equal(cache.length, 10);
+  assert.deepEqual(choamDeck().map(card => card.id).sort(), ['ix-artillery', 'ix-poison-tooth']);
+  for (const card of deck) {
+    const ctx = purchaseContext(card, ['choam'], true);
+    ctx.physicalCards = [...deck, ...cache];
+    assert.deepEqual(source(ctx).card, card);
+  }
+});
+
+void test('base and Ix families remain selected by actual membership, including shared CHOAM identities', () => {
+  for (const card of baseDeck()) {
+    assert.deepEqual(source(purchaseContext(card, [])).card, card);
+    assert.deepEqual(source(purchaseContext(card, ['choam'])).card, card);
+  }
+  const shared = choamDeck();
+  for (const card of ixDeck()) {
+    assert.deepEqual(source(purchaseContext(card, ['ix'])).card, card);
+    assert.deepEqual(source(purchaseContext(card, ['ix', 'choam'])).card, card);
+    assert.throws(() => source(purchaseContext(card, [])), IxianReplacementError);
+    const choamOnly = purchaseContext(card, ['choam']);
+    if (shared.some(member => member.id === card.id))
+      assert.deepEqual(source(choamOnly).card, card);
+    else
+      assert.throws(() => source(choamOnly), IxianReplacementError);
+  }
+});
+
+void test('every original cache face requires both selected CHOAM and native Richese even after normal recycling', () => {
+  for (const card of richeseCards()) {
+    const ctx = purchaseContext(card, ['choam'], true);
+    assert.deepEqual(source(ctx).card, card);
+    for (const expansions of [[], ['ix'], ['choam'], ['ix', 'choam']]) {
+      for (const richese of [false, true]) {
+        if (expansions.includes('choam') && richese) continue;
+        assert.throws(() => source(purchaseContext(card, expansions, richese)), IxianReplacementError);
+      }
+    }
+    for (const origin of ['cache', 'blackMarket'] as const) {
+      const special = purchaseContext(card, ['choam'], true);
+      special.sale = { ...special.sale!, origin };
+      assert.throws(() => source(special), IxianReplacementError);
+    }
+  }
+});
+
+void test('an ordinary purchase cannot hide unsupported card families elsewhere in live custody', () => {
+  for (const card of [...ixDeck(), ...richeseCards()]) {
+    const ctx = context();
+    ctx.physicalCards = [...ctx.physicalCards, card];
+    assert.throws(() => source(ctx), IxianReplacementError);
+  }
+  for (const card of richeseCards()) {
+    for (const [expansions, richese] of [
+      [['choam'], false], [['ix'], true], [[], true],
+    ] as const) {
+      const ctx = context();
+      ctx.expansions = expansions;
+      ctx.richese = richese;
+      ctx.players = [ctx.players[0], { ...ctx.players[1], hand: [card] }];
+      ctx.physicalCards = [...ctx.physicalCards, card];
+      assert.throws(() => source(ctx), IxianReplacementError);
+    }
+  }
+});
+
+void test('CHOAM and cache faces reject altered descriptors even with matching row, hand and custody', () => {
+  for (const card of [...treacheryDeck(['choam']), ...richeseCards()]) {
+    const altered: Card[] = [
+      { ...card, name: `${card.name} altered` },
+      { ...card, kind: card.kind === 'special' ? 'projectile' : 'special' },
+      { ...card, effect: 'fabricated' },
+      { ...card, id: `${card.id}-copy` },
+      { ...card, extra: true } as Card,
+    ];
+    if (card.effect !== undefined) {
+      const missingEffect = { ...card };
+      delete missingEffect.effect;
+      altered.push(missingEffect);
+    }
+    for (const corrupt of altered)
+      assert.throws(() => source(purchaseContext(corrupt, ['choam'], true)), IxianReplacementError);
+  }
+});
+
+void test('historical receipts admit the full canonical union without weakening live family gates', () => {
+  const [shared] = choamDeck();
+  const [cache] = richeseCards();
+  const original = source(purchaseContext(shared, ['choam'], true));
+  const first = closeIxianReplacementSource(original, 'use', cache, initialIxianReplacementCursor());
+  const later = purchaseContext(cache, ['choam'], true);
+  later.turn = 2;
+  later.sequence = first.cursor.sequence;
+  const cacheSource = source(later);
+  const second = closeIxianReplacementSource(cacheSource, 'use', cache, first.cursor);
+  const history = JSON.parse(JSON.stringify([first.receipt, second.receipt]));
+  validateIxianReplacementHistory(history, second.cursor, [...treacheryDeck(['ix']), ...richeseCards()]);
+  assert.equal(second.receipt.replacement?.id, cacheSource.card.id);
+  assert.throws(() => validateIxianReplacementSource(
+    { ...later, richese: false }, cacheSource, parent,
+  ), IxianReplacementError);
+  assert.throws(() => validateIxianReplacementHistory(history, second.cursor, [
+    ...treacheryDeck(['ix']), ...richeseCards(), { ...cache },
+  ]), IxianReplacementError);
 });
 
 void test('duplicate physical cards reject even when the purchased hand itself looks legal', () => {

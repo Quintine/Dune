@@ -9910,15 +9910,15 @@ function decideIxianNexusBetrayal(g: Game,id: string,action: Action): void {
   if (use) log(g,`${getPlayer(g,id).name} spent Ixian Nexus Betrayal to prevent the original native ${frame.source.kind} attempt.`);
   finishIxianNativeAttempt(g,frame.continuation,use);
 }
-/** Fresh classic or native Tleilaxu profile; no public start or retrofit. */
+/** Fresh classic, Tleilaxu or Richese profile; no public start or retrofit. */
 export function initializeIxianNexusReplacementGameForAudit(state: Game): Game {
   requireRule(!state.nexusIxianReplacementPreview && !state.pendingNexusIxianReplacement &&
     state.nexusIxianReplacementHistory === undefined && state.nexusIxianReplacementCursor === undefined &&
     ixianNexusReplacementModeSupported(state),
-  'Ixian Nexus replacement needs a fresh classic/base or Tleilaxu/Ix lobby with Nexus alone.');
+  'Ixian Nexus replacement needs a fresh classic/base, Tleilaxu/Ix or Richese/CHOAM lobby with Nexus alone.');
   const g = initializeNexusGameForAudit(state);
   // Ix supplies Treachery here, not the optional Sandtrout Spice card.
-  if (g.expansions.length) g.spiceDeck = shuffle(spiceDeck());
+  if (g.expansions.includes('ix')) g.spiceDeck = shuffle(spiceDeck());
   g.nexusIxianReplacementPreview = true;
   g.pendingNexusIxianReplacement = null;
   g.nexusIxianReplacementHistory = [];
@@ -9931,7 +9931,10 @@ function ixianNexusReplacementModeSupported(g: Game): boolean {
     ((!g.expansions.length && g.players.every(p => CLASSIC_FACTIONS[p.faction] === true)) ||
       (g.expansions.length === 1 && g.expansions[0] === 'ix' &&
         g.players.some(p => p.faction === 'tleilaxu') &&
-        g.players.every(p => p.faction === 'tleilaxu' || CLASSIC_FACTIONS[p.faction] === true))) &&
+        g.players.every(p => p.faction === 'tleilaxu' || CLASSIC_FACTIONS[p.faction] === true)) ||
+      (g.expansions.length === 1 && g.expansions[0] === 'choam' &&
+        g.players.some(p => p.faction === 'richese') &&
+        g.players.every(p => p.faction === 'richese' || CLASSIC_FACTIONS[p.faction] === true))) &&
     !g.homeworlds && !g.leaderSkills && !g.discoveryEnabled && !g.discoveries &&
     !g.techTokens && !g.strongholdCards && !g.ecazTreachery && !g.mobileStronghold && !g.sandtrout &&
     !g.kullPreview && !g.nexusKullPreview && !g.semutaPreview && !g.richeseBetrayalPreview &&
@@ -9942,11 +9945,14 @@ function ixianNexusReplacementParent(g: Game): string {
     order:g.order,active:g.active,auction:g.auction,sale:g.currentAuctionSale,
     players:g.players.map(p => ({id:p.id,faction:p.faction,ally:p.ally,spice:p.spice,hand:p.hand})),
     deck:g.deck,discard:g.discard,aid:g.aid,nexus:g.nexusCards,
+    ...(byFaction(g, 'richese') ? { richeseBidding:g.richeseBidding,
+      richeseCache:g.richeseCache,richeseRemoved:g.richeseRemoved } : {}),
     decision:g.decision,response:g.response,phaseOpening:g.phaseOpening});
 }
 function ixianNexusReplacementContext(g: Game) {
   requireRule(g.auction, 'The Nexus purchased-card choice lost its normal auction.');
   return {status:g.status,phase:g.phase,turn:g.turn,sequence:g.nexusIxianReplacementCursor!.sequence,
+    expansions:g.expansions,richese:!!byFaction(g,'richese'),
     auction:g.auction,sale:g.currentAuctionSale ?? null,
     players:g.players.map(p => ({id:p.id,hand:p.hand,handLimit:handLimit(p)})),
     physicalCards:physicalTreacheryCards(g)};

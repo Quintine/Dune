@@ -1,5 +1,27 @@
 # Dune implementation status
 
+## 16 October 2026 — Native Richese normal-purchase Ixian replacement
+
+Admitted fresh Richese/classics, exact CHOAM35 plus original cache, both modes
+and Nexus alone. Precomputed selected-family validation admits shared original
+CHOAM identities and native cache custody, but rejects unrelated families and
+altered faces. Live context now receives selected expansions/native Richese;
+source/receipt shapes remain unchanged, with Richese's original round/cache
+bound only in its new native parent. Cache/Black Market/special origins remain
+gated; the same holder's real cache purchase proves the distinction.
+
+Six catalogue and twelve native cases pass in affected65/65. Eight original
+runtime paths, sixteen legal policy actions and two original390px journeys
+preserve paid Poison Tooth/Artillery outcomes, native income, unchanged cache
+and next/final-lot suffix. The fixture orders undealt cards before automatic
+row allocation; no native response is forced open. Final types/lint and CLI
+help pass after two fixture-only typing fixes. Two tool-only stale-node races
+were recovered without action replay. No human server, D1, saved room,
+deployment, public gate, new build, broad suite or HTTP assurance changed/run.
+[Canonical source and scoped proof](NEXUS_IXIAN_REPLACEMENT_RULES.md#native-richese-normal-purchases--16-october-2026).
+Seven current source anchors and21 topic evidence paths resolve; all five
+checklist facets remain Partial without full-family/deployed certification.
+
 ## 16 October 2026 — Advanced native Tleilaxu Ixian replacement
 
 Removed the Basic-only producer fence from original native Ix47/Tleilaxu

@@ -1,4 +1,5 @@
-import { treacheryDeck, type Card } from './cards';
+import { baseDeck, choamDeck, ixDeck, type Card } from './cards';
+import { richeseCards } from './richese-cards';
 
 export class IxianReplacementError extends Error {}
 
@@ -7,6 +8,8 @@ export type IxianReplacementContext = {
   phase: number;
   turn: number;
   sequence: number;
+  expansions: readonly string[];
+  richese: boolean;
   auction: {
     cards: readonly Card[];
     index: number;
@@ -51,8 +54,16 @@ export type IxianReplacementReceipt = {
   signature: string;
 };
 
-const canonical: Readonly<Record<string, Card>> =
-  Object.fromEntries(treacheryDeck(['ix']).map(card => [card.id, card]));
+// CHOAM shares two physical Ix identities; family membership follows the actual
+// catalogues rather than identity prefixes. Build these once, never per card.
+function catalogue(cards: readonly Card[]): Readonly<Record<string, Card>> {
+  return Object.fromEntries(cards.map(card => [card.id, card]));
+}
+const base = catalogue(baseDeck());
+const ix = catalogue(ixDeck());
+const choam = catalogue(choamDeck());
+const cache = catalogue(richeseCards());
+const canonical: Readonly<Record<string, Card>> = { ...base, ...ix, ...choam, ...cache };
 const genesis = 'ixian-replacement:0';
 const plain = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === 'object' && !Array.isArray(value) &&
@@ -75,6 +86,14 @@ function canonicalCard(value: unknown): value is Card {
     exact(value, ['id', 'name', 'kind', ...(expected.effect === undefined ? [] : ['effect'])]) &&
     value.name === expected.name && value.kind === expected.kind &&
     value.effect === expected.effect;
+}
+function selectedCard(value: unknown, ctx: IxianReplacementContext): value is Card {
+  return canonicalCard(value) && (
+    Object.hasOwn(base, value.id) ||
+    (Object.hasOwn(ix, value.id) && ctx.expansions.includes('ix')) ||
+    (Object.hasOwn(choam, value.id) && ctx.expansions.includes('choam')) ||
+    (Object.hasOwn(cache, value.id) && ctx.expansions.includes('choam') && ctx.richese)
+  );
 }
 function sameCard(one: Card, two: Card): boolean {
   return one.id === two.id && one.name === two.name &&
@@ -116,9 +135,9 @@ function validateSavedSource(value: unknown): asserts value is IxianReplacementS
     'The replacement purchase receipt changed its original source.',
   );
 }
-function validatePhysical(physical: readonly Card[]): void {
+function validatePhysical(physical: readonly Card[], ctx?: IxianReplacementContext): void {
   requireReplacement(
-    Array.isArray(physical) && physical.every(canonicalCard) &&
+    Array.isArray(physical) && physical.every(card => ctx ? selectedCard(card, ctx) : canonicalCard(card)) &&
       new Set(physical.map(card => card.id)).size === physical.length,
     'Replacement requires canonical cards with single physical custody.',
   );
@@ -143,14 +162,14 @@ export function validateIxianReplacementSource(
       sale.winner === source.buyer && sale.amount === source.amount && sale.free === source.free &&
       auction.bidder === source.buyer && auction.bid === source.amount &&
       whole(auction.index) && auction.index === source.auctionIndex && Array.isArray(auction.cards) &&
-      canonicalCard(auction.cards[auction.index]) && sameCard(auction.cards[auction.index], source.card),
+      selectedCard(auction.cards[auction.index], ctx) && sameCard(auction.cards[auction.index], source.card),
     'Replacement must retain its exact original normal auction purchase.',
   );
-  validatePhysical(ctx.physicalCards);
+  validatePhysical(ctx.physicalCards, ctx);
   requireReplacement(
     array(ctx.players) && ctx.players.every(player =>
       plain(player) && text(player.id) && whole(player.handLimit) && player.handLimit > 0 &&
-      Array.isArray(player.hand) && player.hand.every(canonicalCard)) &&
+      Array.isArray(player.hand) && player.hand.every(card => selectedCard(card, ctx))) &&
       new Set(ctx.players.map(player => player.id)).size === ctx.players.length,
     'Replacement needs its original buyer and canonical hand custody.',
   );

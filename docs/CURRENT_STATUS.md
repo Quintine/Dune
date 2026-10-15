@@ -34,17 +34,20 @@ Normal purchased-card replacement now composes:
 - successful native BG Karama conversion, after its original counter;
 - Harkonnen's original cancelable bonus and eight-card limit under a visibly
   provisional replacement → income → bonus order matching the native ally path;
-- original Tleilaxu/Ix47 setup and native purchases in Basic **and Advanced**.
+- original Tleilaxu/Ix47 setup and native purchases in Basic **and Advanced**;
+- native Richese/classics normal purchases with CHOAM35 and separate cache,
+  using selected-family card validation without enabling special-origin sales.
 
-Latest native cases7/7 and affected six-file47/47 pass; four original Advanced
-runtime paths, eight legal policy actions and actual CLI help pass. Earlier
-BG/Harkonnen rule and mobile-control evidence remains separately source-bound
-in the [canonical contract](NEXUS_IXIAN_REPLACEMENT_RULES.md), including the
-selected provisional policy and explicit controlled fixtures. All five
-facets remain Partial. Special origins/other modules and final assurance
-stay separate. No saved room, human server, D1, deployment or public gate
-changed. The latest admission slice adds no UI.
-Final types/lint pass; current source anchor and19 topic paths resolve.
+Latest affected seven-file65/65, eight original Richese runtime paths,
+sixteen legal policy actions and two390px original-source journeys pass.
+They preserve real payment/income, unchanged cache and one next-lot advance;
+real final-lot/cache continuation retains the cache-origin gate. Types/lint
+and actual CLI help pass. Two tool-only stale-node races were recovered
+without replay; no application error or overflow. Earlier evidence and
+explicit policies remain in the [canonical contract](NEXUS_IXIAN_REPLACEMENT_RULES.md).
+All five facets stay Partial. No saved room, human server, D1, deployment or
+public gate changed; full modules and final assurance remain separate.
+Current source anchors and21 topic evidence paths resolve.
 
 **Semuta connects both physical Shrine roles — 16 October.**
 Fresh private `semuta --discoveries` setup retains original Richese/CHOAM,

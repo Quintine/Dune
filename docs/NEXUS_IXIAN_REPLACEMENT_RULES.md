@@ -2,6 +2,51 @@
 
 Source audit: 2026-09-10. Bounded local prototype integration and verification: 2026-10-01. **Partial development verified**, not complete Ixian/Nexus family or expansion acceptance. This document records the source and runtime boundary of the fresh `ixian-replacement` profile. Existing [Nexus release gates](NEXUS_CARD_RUNTIME.md) remain in force.
 
+## Native Richese normal purchases — 16 October 2026
+
+The fresh private profile additionally admits native Richese plus classic
+opponents in Basic/Advanced with exact CHOAM35, its separate original
+ten-card cache and Nexus alone. Original cache auctions and qualifying
+Nexus acquisition precede any normal purchased-card choice. Only a genuine
+**normal-auction** purchase is connected; cache, Black Market and special
+purchase replacement stay excluded under their separate source boundaries.
+
+Live card validation now receives selected `expansions` and native `richese`
+presence. Exact base, Ix, CHOAM and cache membership is precomputed from the
+original catalogues: shared Poison Tooth/Artillery identities qualify under
+CHOAM, but other Ix-only cards do not. Cache custody requires both selected
+CHOAM and actual Richese. A cache face later recycled into the normal deck
+does not become a cache-origin sale merely because of its printed family.
+Historical receipts retain their original shape and canonical identities.
+The native source binds its original round/cache, not a replacement Game.
+
+
+Six new selected-catalogue cases and twelve original Richese behavior cases
+pass in the affected seven-file **65/65** union. Eight original-action
+Use/Keep runtime paths cover both modes and native Richese/Atreides buyers;
+sixteen legal policy actions pass. Actual final-normal-lot continuation
+opens the original cache offer, and a subsequent real cache purchase by the
+same retained Nexus holder still creates no replacement.
+
+Two styled390×844 original-source journeys pass: Basic Atreides replaces
+Poison Tooth with actual deck-top Artillery (spice10→8, Emperor10→12);
+Advanced Richese keeps Poison Tooth and Nexus (spice5→3, Emperor10→12).
+The nine remaining cache cards stay untouched and each original lot advances
+once. Width/scroll390; no application/browser error. Two tool-only stale-node
+races were reported and recovered from authoritative state without replay.
+The producer was repaired to order its still-undealt cards **before** the
+declaration can automatically allocate its row; no native response is
+artificially held open. Two fixture-only typing annotations preserve behavior.
+
+Final types/lint and actual CLI help pass. Only an owned memory-only loopback
+host ran; no human server, D1, saved room, deployment or public start changed.
+Proof is outside Git: `/tmp/dune-richese-ixian-runtime.json`,
+`/tmp/dune-richese-ixian-ui-proof.json`. No new production build, broad suite,
+HTTP or saved-game assurance was run; all five facets remain Partial.
+
+Seven current source anchors and21 topic evidence paths resolve with no
+reference parse diagnostics; all five checklist facets remain Partial.
+
 ## Advanced native Tleilaxu admission — 16 October 2026
 
 The existing fresh Ix47/Tleilaxu-plus-classics profile now admits Advanced
@@ -166,7 +211,7 @@ November's Karama table expressly permits stopping the native Ixian ally from di
 
 ## Bounded local runtime contract
 
-The fresh `ixian-replacement` profile admits two through six unique classic factions in Basic/Advanced with base Treachery, or native Tleilaxu plus classics in either mode with original Ix47, always with Nexus alone. Native Ixians, other expansion families, Leader Skills, Homeworlds, Semuta, Discoveries, Ecaz variants and other overlays remain excluded. Neither branch retrofits an in-play game, enables a public start, resets a saved room or changes existing native Ixian allied replacement.
+The fresh `ixian-replacement` profile admits two through six unique seats in Basic/Advanced: classics/base33, Tleilaxu plus classics/Ix47, or Richese plus classics/CHOAM35 with the separate original cache, always with Nexus alone. Native Ixians, other native families, Leader Skills, Homeworlds, Semuta, Discoveries, Ecaz variants and other overlays remain excluded. No branch retrofits an in-play game, enables a public start, resets a saved room or changes native Ixian allied replacement.
 
 There is no starting Nexus deal. Native draws require a qualifying closing
 Nexus with a settled alliance, so a two-seat profile can continue its base
