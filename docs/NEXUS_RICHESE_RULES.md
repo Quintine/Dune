@@ -2,6 +2,36 @@
 
 Audited 10 September 2026, with a bounded Betrayal implementation contract added 30 September. This separates the ordinary Secret Ally shipment, native Cunning's two-marker operation and Betrayal's two auction outcomes. It does not certify full-family implementation or open the Nexus release gate. See [common Nexus rules](NEXUS_CARD_RULES.md), [auction custody and source boundaries](RICHESE_AUCTION_RULES.md), [No-Field custody](RICHESE_NO_FIELD_RULES.md), and [allied No-Field distinctions](RICHESE_ALLIED_SHIPMENT_AUDIT.md).
 
+## Native Guild rate composition — 15 October 2026
+
+Secret Ally retains its printed **one charged counter / up to five physical
+forces** distinction. A native Guild holder with Richese absent is expressly
+eligible under the source contract below. Ordinary Karama can prevent Guild's
+independent native discount, not the absent Richese advantage: desert price
+changes from1 to2, not to ten for five forces. The original group, Nexus cost,
+native reserve source and ordinary movement remain unchanged.
+
+The original Advanced Guild interception precedes this separate unpaid rate
+response. A stronghold's rounded one-counter half/full prices are both1,
+so it has no actual discount to cancel. An independently purchased ordinary
+Karama price remains1, bank-paid, and is not the native rate. A still-held
+Richese card also honors an earlier native cancellation: sand costs2, while
+the legal stronghold alternative costs1.
+
+**Selected affordability composition:** reuse the existing no-debt withdrawal
+policy when full2 cannot be paid. The already declared Nexus remains spent,
+without a card refund or a reusable one-counter grant; no forces or shipping
+spice depart, and the ordinary shipment remains available at its full rate.
+This extends the existing spent-card declaration contract, not a newly found
+publisher worked timing example. A card that has not yet been declared stays
+held. This is distinct from special Guild prevention, which retains its own
+existing shipment-usage policy.
+
+The unallied native Richese two-marker Cunning holder has no native/allied
+Guild rate to cancel; this cutover does not manufacture one.
+[Connected runtime and scoped evidence](NEXUS_RICHESE_RUNTIME.md#native-guild-rate-followup--15-october-2026).
+
+
 ## Printed effects and source status
 
 The Richese panel was freshly read from the [original photographed GF9 cards](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani), cached at `/tmp/dune-nexus-cards.jpg`. Secret Ally replaces a normal shipment: choose up to five actual reserve forces and ship them at the price of one. It creates no hidden marker and grants none of Richese's auctions or other advantages. Cunning uses two No-Field tokens for a single shipment, still priced as one force; one token is immediately revealed and placed faceup in front of the shield.

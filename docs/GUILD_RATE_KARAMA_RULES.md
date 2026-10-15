@@ -2,6 +2,21 @@
 
 Initial primary-source and engine audit, 2026-09-06. The bounded ordinary-reserve cancellation policy below was selected on 2026-09-28 after a targeted publisher-source search found no affordability procedure; the later original audit remains historical evidence for unfinished transport and module combinations.
 
+## Native price with Richese Secret Ally — 15 October 2026
+
+The original Guild holder's Richese source now keeps its one-counter bill
+through native rate cancellation: sand1→2 while five actual counters remain
+five. Its spent Nexus and unchanged ordinary movement are independent.
+An unfunded full2 abandons that declaration with no refund or reusable coupon,
+but preserves the ordinary full-price shipment. This is the selected existing
+no-debt/spent-card composition, not a new publisher worked example.
+A still-held source quotes the canceled rate correctly; an independent
+purchased ordinary price remains separate.
+[Canonical source policy](NEXUS_RICHESE_RULES.md#native-guild-rate-composition--15-october-2026)
+and [92-case/eleven-original-path/four-mobile-journey proof](NEXUS_RICHESE_RUNTIME.md#native-guild-rate-followup--15-october-2026)
+retain the distinction from native Richese Cunning, which has no Guild rate.
+
+
 ## Purchased price with immune sponsorship — 15 October 2026
 
 The subsequent Junction cutover removes the separate purchased-price/

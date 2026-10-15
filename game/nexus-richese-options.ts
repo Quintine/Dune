@@ -50,7 +50,7 @@ export function nexusRicheseQuote(
   return quoteNexusRicheseShipment(
     {
       faction: me.faction,
-      halfRate: me.faction === 'guild' || g.karamaShipping?.player === g.me,
+      halfRate: (me.faction === 'guild' && !g.guildRateCanceled) || g.karamaShipping?.player === g.me,
     },
     destination.type,
     amount,

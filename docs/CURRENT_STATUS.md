@@ -29,6 +29,25 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Native Guild rate with Richese Secret Ally — 15 October.**
+The original unpaid counter now preserves one billed counter and all five
+physical forces: sand1→2, not ten. Unfunded full2 keeps forces/spice and the
+ordinary full-price shipment, but its declared Nexus stays spent without a
+refund/reusable coupon under the explicit selected affordability policy.
+A still-held card quotes an earlier canceled rate correctly; an independent
+purchased price remains separate.
+
+Affected thirteen-file92/92 and eleven original-action runtime/policy paths
+pass, including all four existing profiles. Four actual390px journeys prove
+typed Junction5/fee2, unfunded release/ordinary replacement, corrected held
+source2 then legal stronghold1, and independent purchased1. No overflow,
+browser error or application exception. Two transient browser-tool stale-node
+errors were followed by fresh evidence, not replay. No worker/D1/real room,
+human server, deployment or mode gate changed.
+[Canonical source choice and scoped proof](NEXUS_RICHESE_RUNTIME.md#native-guild-rate-followup--15-october-2026).
+Final types/lint and production build pass with existing warnings.
+Current links and both still-partial five-facet evidence sets resolve.
+
 **Purchased price and immune Junction source choice — 15 October.**
 The original offered half/full tariff remains immune; normal payees are unchanged.
 An already played ordinary price no longer blocks the panel; acceptance

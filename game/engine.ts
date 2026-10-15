@@ -26693,13 +26693,12 @@ const CLASSIC_FACTIONS: Partial<Record<FactionId, true>> = {
 function ordinaryGuildRateFullCost(g: Game, shipment: PendingShipment): number | null {
   const guild = byFaction(g, 'guild');
   const p = getPlayer(g, shipment.player);
-  const pricedAmount = shipment.noField || shipment.alliedNoField ? 1
+  const pricedAmount = shipment.noField || shipment.alliedNoField || shipment.nexusEvent ? 1
     : shipment.amount - (shipment.smuggler ? 1 : 0);
   if (!guild || (p.id !== guild.id && !(p.ally === guild.id && guild.ally === p.id)) ||
       g.karamaShipping?.player === p.id ||
       (g.guildRateBlocked?.turn === g.turn && g.guildRateBlocked.player === p.id) ||
-      shipment.source || shipment.guildSecretEvent ||
-      shipment.nexusEvent || shipment.richesePair)
+      shipment.source || shipment.guildSecretEvent || shipment.richesePair)
     return null;
   const fullCost = reserveShipmentCost({ faction: p.faction, halfRate: false },
     territory(shipment.territory).type, pricedAmount);
@@ -26713,6 +26712,7 @@ function openGuildRate(g: Game, shipment: PendingShipment): boolean {
   const cunning = shipment.guildNexusEvent
     ? validateGuildCunningShipment(g, shipment.player, shipment.guildNexusEvent, 'reserve', shipment)
     : null;
+  const richese = shipment.nexusEvent ? currentNexusRicheseShipment(g, shipment) : null;
   // A validated older Guild-stop declaration may lack this newer turn stamp.
   shipment.turn ??= g.turn;
   const event = crypto.randomUUID();
@@ -26723,13 +26723,14 @@ function openGuildRate(g: Game, shipment: PendingShipment): boolean {
     cunning.shipment!.frame = JSON.stringify(shipment);
     saveGuildCunning(g, cunning);
   }
+  if (richese) saveNexusRicheseShipment(richese, shipment);
   g.pendingShipment = shipment;
   g.response = {
     kind: 'guildRate',
     owner: byFaction(g, 'guild')!.id,
     passed: [],
     guildRateEvent: event,
-    intent: `${getPlayer(g, shipment.player).name} declared ${shipment.alliedNoField ? 'one allied No-Field shipment' : shipment.noField ? 'one concealed No-Field' : `${shipment.amount} reserve forces`}${shipment.smugglerCompanion ? ' with one free Smuggler companion' : shipment.smuggler ? ' including one free Smuggler companion' : ''} to ${territory(shipment.territory).name} at the Guild rate of ${shipment.cost} spice. Karama can remove this discount before any payment or arrival.${shipment.smuggler || shipment.smugglerCompanion ? ' The independent free companion remains free.' : ''} The same paid units would cost ${fullCost} at full price; if the original authorized split cannot pay that amount, the declaration returns unused and a replacement this turn uses full price.`,
+    intent: `${getPlayer(g, shipment.player).name} declared ${shipment.alliedNoField ? 'one allied No-Field shipment' : shipment.noField ? 'one concealed No-Field' : shipment.nexusEvent ? `${shipment.amount} physical reserve forces priced as one by Richese Secret Ally` : `${shipment.amount} reserve forces`}${shipment.smugglerCompanion ? ' with one free Smuggler companion' : shipment.smuggler ? ' including one free Smuggler companion' : ''} to ${territory(shipment.territory).name} at the Guild rate of ${shipment.cost} spice. Karama can remove this discount before any payment or arrival.${shipment.smuggler || shipment.smugglerCompanion ? ' The independent free companion remains free.' : ''} The same paid units would cost ${fullCost} at full price; if the original authorized split cannot pay that amount, the declaration returns unused and a replacement this turn uses the full rate.${shipment.nexusEvent ? ' Richese still prices only one counter, not the actual force count. Its Nexus is already spent: an unaffordable declaration ends without delivery or a card refund, while the ordinary shipment remains available.' : ''}`,
   };
   log(g, `${getPlayer(g, shipment.player).name} declared a Guild-rate reserve shipment; payment and arrival wait for the rate response.`);
   return true;
@@ -26791,6 +26792,7 @@ function finishGuildRateResponse(g: Game, response: ResponseWindow, canceled: bo
   const cunning = shipment.guildNexusEvent
     ? validateGuildCunningShipment(g, shipper.id, shipment.guildNexusEvent, 'reserve', shipment)
     : null;
+  const richese = shipment.nexusEvent ? currentNexusRicheseShipment(g, shipment) : null;
   g.pendingShipment = null;
   delete shipment.guildRateEvent;
   if (canceled) {
@@ -26805,6 +26807,10 @@ function finishGuildRateResponse(g: Game, response: ResponseWindow, canceled: bo
         delete cunning.shipment;
         saveGuildCunning(g, cunning);
       }
+      if (richese) {
+        saveNexusRicheseShipment(richese, shipment);
+        finishNexusRicheseShipment(g, shipment, 'stopped');
+      }
       log(g, `Karama removed Guild's half-price rate from ${shipper.name}'s declaration. Its original approved payment split cannot fund the full price, so no spice or forces were spent and shipment remains available at full price this turn.`);
       return;
     }
@@ -26817,6 +26823,7 @@ function finishGuildRateResponse(g: Game, response: ResponseWindow, canceled: bo
     cunning.shipment!.frame = JSON.stringify(shipment);
     saveGuildCunning(g, cunning);
   }
+  if (richese) saveNexusRicheseShipment(richese, shipment, shipmentHalfRate(g, shipper));
   commitShipment(g, shipment);
   if (canceled && shipper.shipped && !g.pendingGuildBetrayal) {
     delete g.guildRateBlocked;
@@ -27770,6 +27777,15 @@ function shipmentHalfRate(g: Game, p: Player) {
 function nexusRicheseSignature(record: NonNullable<Game['nexusRicheseHistory']>[number]) {
   return JSON.stringify([record.receipt.signature,record.stage,record.frame,record.halfRate]);
 }
+function saveNexusRicheseShipment(
+  record: NonNullable<Game['nexusRicheseHistory']>[number],
+  shipment: PendingShipment,
+  halfRate = record.halfRate,
+) {
+  record.frame = JSON.stringify(shipment);
+  record.halfRate = halfRate;
+  record.signature = nexusRicheseSignature(record);
+}
 function currentNexusRicheseShipment(g: Game, shipment: PendingShipment) {
   const record = g.nexusRicheseHistory?.find(r => r.receipt.event === shipment.nexusEvent);
   requireRule(record?.stage === 'pending' && record.frame === JSON.stringify(shipment) &&
@@ -27816,7 +27832,9 @@ function nexusRicheseIntegrity(g: Game) {
     const frame = nexusRule(() => JSON.parse(record.frame)) as PendingShipment;
     requireRule(frame && frame.nexusEvent === record.receipt.event && frame.player === record.receipt.owner &&
       frame.turn === record.receipt.turn && !frame.noField && !frame.alliedNoField && !frame.source &&
-      Object.keys(frame).every(k => ['nexusEvent','turn','player','territory','sector','amount','elite','cost','allyPayment','advisors','homeworldSources'].includes(k)),
+      Object.keys(frame).every(k => ['nexusEvent','turn','player','territory','sector','amount','elite','cost','allyPayment','advisors','homeworldSources','guildRateEvent'].includes(k)) &&
+      (frame.guildRateEvent === undefined || (record.stage === 'pending' &&
+        typeof frame.guildRateEvent === 'string' && frame.guildRateEvent.length > 0)),
       'Richese Secret Ally has changed its original shipment source.');
     const quote = nexusRule(() => quoteNexusRicheseShipment({faction:getPlayer(g,frame.player).faction,halfRate:record.halfRate},territory(frame.territory).type,frame.amount));
     requireRule(frame.cost === quote.cost && frame.allyPayment === 0 && Number.isSafeInteger(frame.elite) &&
@@ -27833,8 +27851,11 @@ function nexusRicheseIntegrity(g: Game) {
       'Richese Secret Ally has lost its pending shipment or spent Nexus card.');
     currentNexusRicheseShipment(g,pending);
     const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'guildShipment');
-    requireRule(decisions.length > 0, 'Richese Secret Ally has lost its Guild interception decision.');
+    const rates = savedNoFieldResponses(g).filter(response => response.kind === 'guildRate');
+    requireRule(decisions.length + rates.length === 1,
+      'Richese Secret Ally has lost its unique Guild interception or native-rate response.');
     for (const decision of decisions) validateGuildShipmentDecision(g,decision);
+    for (const response of rates) validateGuildRateResponse(g,response);
   }
 }
 function nexusMoritaniOffer(g: Game, owner: string, decision: Game['decision'] = g.decision) {

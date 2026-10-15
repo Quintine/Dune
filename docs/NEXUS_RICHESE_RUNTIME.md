@@ -2,6 +2,50 @@
 
 This checkpoint adds the [source-audited Secret Ally](NEXUS_RICHESE_RULES.md) to an unallied holder's unused ordinary reserve shipment when Richese is absent. Choose one to five actual forces and price the group as one force. The physical force count, starred identity, destination and arrival restrictions remain ordinary shipment rules. It creates no concealed No-Field and no second shipment.
 
+## Native Guild rate followup — 15 October 2026
+
+Original Guild/Richese Secret Ally declarations now admit the distinct unpaid
+native rate response after original interception. The signed pending receipt
+retains all five physical counters while billing one: allowing costs1 on
+sand; cancellation costs2. Actual completion preserves movement and consumes
+each original physical card once. No marker or force is invented.
+
+With only1 available, cancellation ends the already spent Nexus declaration
+without delivery, debt or refund and leaves an ordinary full-price shipment
+available. The controls explain that consequence before cancellation. This is
+the selected [affordability source composition](NEXUS_RICHESE_RULES.md#native-guild-rate-composition--15-october-2026),
+not new publisher worked-example authority. A still-held card survives an
+earlier cancellation and now quotes sand2 rather than falsely affordable1;
+it can instead ship five to a stronghold for1. An independent purchased price
+continues to charge1 to bank without a native-rate response.
+
+Affected thirteen-file **92/92** passes, including seven new behavior cases.
+Eleven actual runtime/policy paths use original-action sources, including
+all four existing profiles executing a legal full-rate one-counter alternative.
+No strategic first-candidate pin, tuning or calibration was introduced.
+Setup selects conserved undealt entropy, then real paid Karama acquisition,
+Ecaz/Moritani alliance and Guild's real Richese Nexus draw. No played hand,
+wallet, army, phase or response is assigned.
+
+Four real styled390×844 GameTable journeys prove native Junction5/fee2;
+poor1/full2 release followed by an ordinary1/one-force replacement;
+still-held card's disabled sand2 then five-force stronghold1; and independent
+purchased1. Shipment/turn and card/force outcomes are observed; viewport and
+scroll width remain390, with no browser error or application exception.
+Two transient browser-tool stale-node errors after successful transitions
+were handled by fresh state/accessibility, never replay.
+
+Only an owned memory-only loopback host ran: no worker, D1, authenticated
+saved room, human server or deployed revision was exercised or changed.
+Proof and four initial scenes remain outside Git under
+`/tmp/dune-richese-native-rate-*20261015*`. Full rules, final assurance and
+public expansion/module starts remain unfinished.
+Final `npm run check:quick` and production build pass with the existing
+module-register, large-chunk and Unknown-route warnings. Thirteen current
+local links and430 checklist evidence paths resolve; all ten checked
+Homeworld/Nexus facets remain Partial.
+
+
 ## Price and physical custody
 
 The shared [source quote](../game/nexus-richese.ts) separates `physicalAmount` from `pricedAmount: 1`. The whole group costs one spice to a stronghold or two elsewhere; native Guild and an active ordinary Karama rate keep their existing half-price rounding. Karama bank routing remains separate from the Nexus source. Fremen retain free reinforcement and their Great Flat range; this is retained-native-rules composition, not a named faction-specific FAQ ruling.

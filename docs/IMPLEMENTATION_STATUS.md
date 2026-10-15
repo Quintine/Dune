@@ -1,5 +1,51 @@
 # Dune implementation status
 
+## 15 October 2026 — Native Guild price counter retains Richese one-counter source
+
+Removed the explicit Richese Secret Ally exclusion from native rate
+cancellation, without canceling the absent faction's Nexus advantage.
+The original signed receipt now retains the unpaid rate frame and actual
+settled tariff. Five physical native counters cost one billed counter:
+sand1 if allowed, full2 if canceled. Original Advanced interception stays
+first; no rounded stronghold discount or independent purchased price is
+invented as a native cancelable saving.
+
+The selected existing no-debt/spent-card policy releases an unfunded full2
+without delivery or payment, leaves ordinary full-price shipment/movement
+available and keeps the declared Nexus spent without refund/reusable coupon.
+A still-held card survives an earlier rate cancellation. Its shared human/
+AI quote now honors that cancellation instead of showing false affordability;
+five can still use the legal stronghold1 alternative. No strategic tuning.
+
+All source scenarios start with printed original setup, conserved undealt
+Spice/Nexus entropy, a real paid Ecaz Karama and an actual Ecaz/Moritani
+alliance leaving Guild unallied for its real Richese draw. No played hands,
+wallets, armies, phases or decisions are staged. Actual optional bribes
+reduce only their original sender's available wallet.
+
+Affected thirteen-file **92/92** passes, including seven new behavior cases.
+Eleven actual original-action runtime/policy paths pass, including four
+existing profiles spending the held card on a legal full-rate alternative.
+Four real styled390×844 GameTable journeys prove Junction5/fee2, unfunded
+release then ordinary one-counter replacement, still-held source sand2
+disabled then five-force stronghold1, and independent purchased1. Exact
+physical counters/card costs and original turn completion are observed.
+Viewport/scroll width390, no browser error or application exception.
+Two transient stale-node tool errors after successful transitions were
+resolved with fresh state/accessibility without replay.
+
+Only an owned memory-only host started/stopped. No worker, D1, authenticated
+saved room, human server, deployed revision or mode gate was exercised or
+changed. Outside-Git source/runtime/table proof and four initial scenes
+remain under `/tmp/dune-richese-native-rate-*20261015*`.
+The full goal and final assurance remain unfinished.
+[Source and selected policy](NEXUS_RICHESE_RULES.md#native-guild-rate-composition--15-october-2026),
+[runtime and limitations](NEXUS_RICHESE_RUNTIME.md#native-guild-rate-followup--15-october-2026).
+Final `npm run check:quick` and production build pass, with existing
+module-register, large-chunk and Unknown-route warnings. Thirteen current
+local links and430 checklist evidence paths resolve; both five-facet
+Homeworld/Nexus checklists remain Partial.
+
 ## 15 October 2026 — Explicit purchased-price choice for immune Junction
 
 Removed the earlier purchased-price/Junction composition fence without
