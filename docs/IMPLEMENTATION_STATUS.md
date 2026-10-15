@@ -1,5 +1,39 @@
 # Dune implementation status
 
+## 14 October 2026 — Emperor Nexus joint native special acquisition
+
+Connected original Advanced Richese special Karama purchase to the printed
+Emperor Nexus purchase panel without adding a Bidding qualifier. Private joint
+action carries exact flags/event through the native normalized intent; actual
+purchase commit spends original Karama plus Nexus, retains three own
+uncommitted spice, transfers one exact unreserved cache card and sets native
+once-use. No bank payment, reimbursement, ally bonus, fake auction or automatic
+public pause. Original timing/enclosing controls, full-hand exchange and
+final-cache continuation stay native. Version-four signed source history binds
+both physical IDs, actual phase/price and unchanged wallet; future state is
+not compared to old snapshots. Ordinary paid special acquisition is unchanged.
+
+Genuine native setup deals Richese Karama, real other-seat pact and closing
+draw supply Emperor, and original paid/unbid acquisitions produce full-hand/
+final-cache sources. Last-cache chronology now records actual physical stock
+removal, including original automatic unbid disposal when hand is full, instead
+of pinning a nonexistent extra acknowledgement. Easy's existing six-spice
+budget is reached by a real one-spice seller sale; no money or strategy is
+changed. Source fixture types reflect native Homeworld shape and actual
+transition snapshots. Receipt/action/chronology/default echo pins are deleted.
+Existing native Kull producer excludes Richese; no unsupported frame is staged.
+
+Affected13-file union112/112 and types/lint/build pass. Twelve actual API profiles
+cover phases2/4/5, paid/joint paths, full hand, final cache and intersection;
+depletion reaches original ordinary Bidding without an empty compulsory lot.
+Four actual390px surfaces prove keep5→5, full-hand4→4 at spice3, final-cache1→0
+at turn9 and paid5→2 with Guild Nexus retained. One original Karama cost,
+actual Nexus cost, one cache card and once-use remain; no overflow/errors.
+No saved/deployed room touched. Proof receipts stay outside Git; existing
+build route/chunk warnings remain. Full combinations, broad assurance,
+AI calibration and deployed/publication acceptance stay unfinished.
+[Canonical composition/proof](NEXUS_EMPEROR_RULES.md#recommended-joint-richese-special-purchase--14-october-2026).
+
 ## 14 October 2026 — Emperor Nexus original Ambassador purchase
 
 Connected the existing fixed-three Richese Ambassador purchase classification

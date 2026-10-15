@@ -16,6 +16,7 @@ import {
 import type { RicheseAuction } from './richese-auction';
 import { quoteRicheseSettlement, type RicheseSettlementQuote } from './richese-settlement';
 import { quoteRicheseBetrayalInvoice } from './nexus-richese-betrayal';
+import { RICHESE_CARD_DEFINITIONS, richeseCardDefinition } from './richese-cards';
 
 export type EmperorNexusBankPurchase = {
   kind: 'purchase';
@@ -62,10 +63,29 @@ export type EmperorNexusAmbassadorPurchase = {
   token: string;
   entrant: string;
 };
+export type EmperorNexusSpecialPurchase = {
+  version: 4;
+  kind: 'purchase';
+  event: string;
+  owner: string;
+  turn: number;
+  phase: number;
+  sequence: number;
+  faction: 'richese';
+  advanced: true;
+  origin: 'specialKarama';
+  price: 3;
+  card: string;
+  activation: string;
+  beforeSpice: number;
+  afterSpice: number;
+  signature: string;
+};
 export type EmperorNexusPurchase =
   | EmperorNexusBankPurchase
   | EmperorNexusSellerPurchase
-  | EmperorNexusAmbassadorPurchase;
+  | EmperorNexusAmbassadorPurchase
+  | EmperorNexusSpecialPurchase;
 export type EmperorNexusSellerPurchaseInput = {
   round: string;
   lot: RicheseAuction;
@@ -121,8 +141,25 @@ export function emperorNexusAmbassadorPurchaseEvent(
   return JSON.stringify(['nexusEmperorAmbassadorPurchase', turn, phase, owner, sequence, entry]);
 }
 
+/** Native once-per-game source identity; neither privately selected card face
+ * belongs in the offer shown before the original special purchase commits. */
+export function emperorNexusSpecialPurchaseEvent(
+  turn: number, phase: number, owner: string, sequence: number,
+): string {
+  return JSON.stringify([
+    'nexusEmperorSpecialPurchase', turn, phase, owner, sequence, 'richeseSpecialKarama',
+  ]);
+}
+
 /** Consistency signature, not cryptographic authentication; field order is fixed. */
 export function signEmperorNexusPurchase(record: EmperorNexusPurchase): string {
+  if ('version' in record && record.version === 4)
+    return JSON.stringify([
+      'emperorNexusSpecialPurchase', record.version, record.kind, record.event,
+      record.owner, record.turn, record.phase, record.sequence, record.faction,
+      record.advanced, record.origin, record.price, record.card, record.activation,
+      record.beforeSpice, record.afterSpice,
+    ]);
   if ('version' in record && record.version === 3)
     return JSON.stringify([
       'emperorNexusAmbassadorPurchase', record.version, record.kind, record.event,
@@ -191,6 +228,34 @@ export function validateEmperorNexusPurchase(
       context.players.length &&
     new Set(context.players.map((player) => player.faction)).size ===
       context.players.length;
+  if (plain(record) && 'version' in record && record.version === 4) {
+    if (
+      !validContext ||
+      Object.keys(record).sort().join(',') !==
+        'activation,advanced,afterSpice,beforeSpice,card,event,faction,kind,origin,owner,phase,price,sequence,signature,turn,version' ||
+      record.kind !== 'purchase' || record.origin !== 'specialKarama' ||
+      record.faction !== 'richese' || record.advanced !== true ||
+      record.advanced !== context.advanced ||
+      context.players.some(player => player.faction === 'emperor') ||
+      context.players.find(player => player.id === record.owner)?.faction !== 'richese' ||
+      !whole(record.turn) || record.turn < 1 || record.turn > context.turn ||
+      !whole(record.phase) || record.phase < 1 || record.phase > 8 ||
+      !whole(record.sequence) || !text(record.owner) ||
+      !text(record.activation) || record.activation === record.card ||
+      !RICHESE_CARD_DEFINITIONS.some(({ card }) => card.id === record.card) ||
+      record.price !== 3 ||
+      !whole(record.beforeSpice) || record.beforeSpice < record.price ||
+      !whole(record.afterSpice) || record.afterSpice !== record.beforeSpice ||
+      record.event !== emperorNexusSpecialPurchaseEvent(
+        record.turn, record.phase, record.owner, record.sequence,
+      ) ||
+      record.signature !== signEmperorNexusPurchase(record)
+    )
+      throw new EmperorNexusPurchaseError(
+        'Emperor Nexus special purchase has lost its original Richese source, activation, price or retained spice.',
+      );
+    return;
+  }
   if (plain(record) && 'version' in record && record.version === 3) {
     if (
       !validContext ||
@@ -535,6 +600,80 @@ export function createEmperorNexusAmbassadorPurchase(
     faction: buyer.faction, advanced: g.advanced, origin: 'ambassador', price: 3,
     card, beforeSpice: buyer.spice, afterSpice: buyer.spice, signature: '',
     entry: entry.event, token: entry.token, entrant: entry.entrant,
+  };
+  receipt.signature = signEmperorNexusPurchase(receipt);
+  validateEmperorNexusPurchase(g, receipt);
+  return receipt;
+}
+
+/** The original special-purchase validator owns timing, uncommitted spice,
+ * capacity, once-per-game use and card roles. This is only Nexus entitlement. */
+export function quoteEmperorNexusSpecialPurchase(
+  g: Game, owner: string,
+): { event: string; price: 3; blocked: string | null } {
+  const buyer = text(owner) ? g.players.find(p => p.id === owner) : undefined;
+  let blocked: string | null = null;
+  if (!emperorNexusSellerPurchaseModeSupported(g))
+    blocked = 'Emperor Nexus special purchase requires a supported native Richese Nexus profile with Emperor absent.';
+  else if (g.status !== 'playing' || !whole(g.turn) || g.turn < 1 ||
+    !whole(g.phase) || g.phase < 1 || g.phase > 8)
+    blocked = 'Emperor Nexus special purchase needs the original game still in progress.';
+  else if (!g.advanced || buyer?.faction !== 'richese')
+    blocked = 'Only native Advanced Richese can retain its special Karama purchase price.';
+  else if (buyer.ally)
+    blocked = 'Emperor Nexus Secret Ally requires an unallied buyer.';
+  else if (!g.nexusCards?.cards)
+    blocked = 'Hold the real Emperor Nexus Secret Ally card to retain your purchase price.';
+  else {
+    try {
+      validateNexusCards(g.nexusCards.cards, g.players);
+      if (g.nexusCards.cards.hands[owner] !== 'emperor' ||
+        nexusCardMode('emperor', buyer.faction, g.players.map(p => p.faction)) !== 'secretAlly')
+        blocked = 'Hold the real Emperor Nexus Secret Ally card to retain your purchase price.';
+      else if (!whole(buyer.spice) || buyer.spice < 3)
+        blocked = 'The special Karama purchase needs the three-spice price held in Richese’s own spice.';
+    } catch (error) {
+      blocked = error instanceof Error ? error.message
+        : 'Hold the real Emperor Nexus Secret Ally card to retain your purchase price.';
+    }
+  }
+  return {
+    event: emperorNexusSpecialPurchaseEvent(
+      g.turn, g.phase, owner, g.nexusEmperorPurchaseHistory?.length ?? 0,
+    ),
+    price: 3, blocked,
+  };
+}
+
+/** Called after original preparation, before either activation is discarded or
+ * the cache card moves. Bind both exact physical cards without paying/refunding. */
+export function createEmperorNexusSpecialPurchase(
+  g: Game, owner: string, activation: string, acquire: string,
+): EmperorNexusSpecialPurchase {
+  const quote = quoteEmperorNexusSpecialPurchase(g, owner);
+  if (quote.blocked) throw new EmperorNexusPurchaseError(quote.blocked);
+  const buyer = g.players.find(p => p.id === owner)!;
+  const chosen = g.richeseCache?.find(card => card.id === acquire);
+  const physical = [
+    ...g.players.flatMap(p => p.hand), ...g.deck, ...g.discard,
+    ...(g.richeseCache ?? []), ...(g.richeseRemoved ?? []),
+    ...(g.ixSetupCards ?? []), ...(g.ixAuction?.cards ?? []),
+    ...(g.ornithopter ? [g.ornithopter.card] : []),
+  ];
+  if (!text(activation) || !text(acquire) || activation === acquire ||
+    !chosen || !richeseCardDefinition(chosen) ||
+    buyer.hand.filter(card => card.id === activation).length !== 1 ||
+    physical.filter(card => card.id === activation).length !== 1 ||
+    physical.filter(card => card.id === acquire).length !== 1)
+    throw new EmperorNexusPurchaseError(
+      'Emperor Nexus special purchase needs one exact native cache card and its single held Karama activation.',
+    );
+  const receipt: EmperorNexusSpecialPurchase = {
+    version: 4, kind: 'purchase', event: quote.event, owner: buyer.id,
+    turn: g.turn, phase: g.phase, sequence: g.nexusEmperorPurchaseHistory?.length ?? 0,
+    faction: 'richese', advanced: true, origin: 'specialKarama', price: 3,
+    card: acquire, activation, beforeSpice: buyer.spice, afterSpice: buyer.spice,
+    signature: '',
   };
   receipt.signature = signEmperorNexusPurchase(receipt);
   validateEmperorNexusPurchase(g, receipt);

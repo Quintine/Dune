@@ -3,9 +3,9 @@
 Updated 14 October 2026. **Prototyped**, with **Partial** rules coverage.
 Revival now uses the independent extra source through original native pending
 continuations and supported Nexus module envelopes. Bank-auction purchase keeps
-its distinct classic-only boundary; original Richese cache/Advanced Black Market
-and the Richese Ambassador have distinct native continuations. Public starts
-and publication remain gated.
+its distinct classic-only boundary; original Richese cache/Advanced Black Market,
+the Richese Ambassador and joint Richese special Karama have distinct native
+continuations. Public starts and publication remain gated.
 
 ## Rules and connected behavior
 
@@ -87,6 +87,17 @@ CHOAM closing sales/trades are not direct purchase producers. Other real
 purchase sources, allied splits and full combinations retain separate contracts.
 Normal-auction forced Emperor-payment Betrayal has its separate
 [provisional full-price funding path](NEXUS_EMPEROR_RULES.md#recommended-original-full-price-funding--14-october-2026).
+
+The original Advanced Richese special Karama now has a private joint option:
+spend its actual Karama and Emperor Nexus, prove/retain three own uncommitted
+spice, and acquire one original cache card. Original once-use, capacity,
+reserved-card guards, enclosing controls and final-cache continuation remain.
+No bank payment, reimbursement, ally bonus or fake auction is created. The
+normalized intent and version-four receipt bind both actual physical cards;
+ordinary paid use remains unchanged. This is visibly provisional purchase
+composition, not publisher clarification or a new automatic public pause.
+[Joint special source/proof](NEXUS_EMPEROR_RULES.md#recommended-joint-richese-special-purchase--14-october-2026).
+
 
 ## Prototype entry and evidence
 

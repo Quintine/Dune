@@ -13,6 +13,28 @@ Targeted searches found discussion titles concerning full hands and alliance can
 
 ## 1. Advanced special Karama purchase
 
+### Emperor Nexus joint purchase composition — 14 October 2026
+
+The original source explicitly calls this a purchase; the printed Emperor
+Nexus panel has no Bidding qualifier. Selected visibly provisional composition
+adds a private joint option for an actual unallied holder with Emperor absent:
+spend the original Karama plus Nexus at purchase commit, prove and retain three
+own uncommitted spice, acquire one exact native cache card and set original
+once-use. No new public automatic pause, bank payment/reimbursement, Hark ally
+bonus, Ixian replacement or fake auction. Ordinary Pay3 is unchanged.
+Original full-hand/final-cache policy, reservations, timing and enclosing
+continuation remain. Version-four receipt binds original activation/acquisition,
+phase/price and retained wallet; preparation/projecting spends neither card.
+Native Kull with Richese remains outside existing producer admission, not
+fabricated to claim combined coverage.
+
+Affected13-file union112/112, types/lint/build and twelve native API profiles
+pass. Four actual390px surfaces prove normal retain5→5, full-hand4→4/spice3,
+final-cache1→0/turn9 and ordinary paid5→2 with an irrelevant Nexus retained.
+Both real costs and original once-use commit once; depleted cache proceeds to
+ordinary Bidding. No overflow/errors or saved/deployed rooms touched.
+[Canonical composition and evidence](NEXUS_EMPEROR_RULES.md#recommended-joint-richese-special-purchase--14-october-2026).
+
 ### Full-hand/final-cache follow-up — 8 October 2026
 
 The 7 October exhausted-cache ruling also permits spending special Karama

@@ -45,7 +45,7 @@ import { quoteNexusChoamBetrayal, validateNexusChoamBetrayal, nexusChoamBetrayal
 import { quoteEcazInquiry, ecazInquiryAnswer, ecazInquiryHistory, ecazInquirySignature, validateEcazInquiry, type EcazInquiryReceipt } from './nexus-ecaz-inquiry';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusModeSupported, quoteEmperorNexusRevival, createEmperorNexusRevival, settleEmperorNexusRevival, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
-import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, emperorNexusSellerPurchaseModeSupported, quoteEmperorNexusSellerPurchase, createEmperorNexusSellerPurchase, emperorNexusAmbassadorPurchaseModeSupported, quoteEmperorNexusAmbassadorPurchase, createEmperorNexusAmbassadorPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
+import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, emperorNexusSellerPurchaseModeSupported, quoteEmperorNexusSellerPurchase, createEmperorNexusSellerPurchase, emperorNexusAmbassadorPurchaseModeSupported, quoteEmperorNexusAmbassadorPurchase, createEmperorNexusAmbassadorPurchase, quoteEmperorNexusSpecialPurchase, createEmperorNexusSpecialPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
 import { createEmperorPaymentReceipt, validateEmperorPaymentReceipt, emperorPaymentUseBlock, emperorPaymentSourceQuote, requiredEmperorPaymentResponders, emperorPaymentReceiptSignature, type EmperorPaymentReceipt } from './nexus-emperor-payment';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, createFremenNexusRevival, upgradeFremenNexusRevival, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
 import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningRide, validateFremenCunningSelection, type FremenCunningOccurrence, type FremenCunningRideAuthorization, type FremenCunningSelection } from './nexus-fremen-cunning';
@@ -2812,6 +2812,9 @@ function nexusEmperorSecretIntegrity(g:Game) {
       else if (record.version === 3)
         requireRule(emperorNexusAmbassadorPurchaseModeSupported(g),
           'An Emperor Ambassador purchase lost its original supported native profile.');
+      else if (record.version === 4)
+        requireRule(g.advanced && emperorNexusSellerPurchaseModeSupported(g),
+          'An Emperor special purchase lost its original supported native profile.');
       requireRule(record.sequence === index && purchaseEvents[index] === record.event,
         'Emperor Nexus purchase has duplicated or reordered a completed use.');
     }
@@ -28022,7 +28025,7 @@ export type SpecialKaramaIntent = {
   phase: number;
 } & (
   | { kind: 'choam'; cards: string[] }
-  | { kind: 'richese'; acquire: string }
+  | { kind: 'richese'; acquire: string; nexusEvent?: string }
   | { kind: 'ixians'; route: string[]; collect: boolean; sandmasterPiles?: string[] }
   | { kind: 'tleilaxu'; target: string; revival: PendingRevival }
   | { kind: 'fremen'; territory: string }
@@ -28047,6 +28050,8 @@ export function prepareSpecialKaramaIntent(
   action: Action,
 ): SpecialKaramaIntent {
   const p = getPlayer(g, playerId);
+  requireRule(action.emperorNexus === undefined || p.faction === 'richese',
+    'Emperor Nexus retention is only available on the original Richese special purchase.');
   // Delayed execution must respect the same enclosing windows as dispatch.
   // CHOAM's early cash-in bypasses the later gates, but never Truthtrance.
   requireRule(!g.truthtrance, 'Resolve the current Truthtrance first.');
@@ -28134,6 +28139,18 @@ export function prepareSpecialKaramaIntent(
         g.richeseAuction.cardId !== acquire,
       'The card already offered for auction must remain in that auction.',
     );
+    requireRule(action.emperorNexus === undefined || action.emperorNexus === true,
+      'Choose the joint Emperor Nexus purchase explicitly, without coercion.');
+    if (action.emperorNexus === true) {
+      const quote = nexusRule(() => quoteEmperorNexusSpecialPurchase(g, p.id));
+      requireRule(!quote.blocked, quote.blocked ?? 'This Emperor Nexus purchase is unavailable.');
+      requireRule(typeof action.nexusEvent === 'string' && action.nexusEvent === quote.event &&
+        Object.keys(action).sort().join(',') === 'acquire,card,emperorNexus,mode,nexusEvent,type',
+      'Use only the current original special-purchase event and exact joint costs.');
+      return { ...base, kind: 'richese', acquire, nexusEvent: quote.event };
+    }
+    requireRule(action.nexusEvent === undefined,
+      'A Nexus event requires the explicit joint Emperor Nexus purchase.');
     return { ...base, kind: 'richese', acquire };
   } else if (p.faction === 'choam') {
     requireRule(
@@ -28343,7 +28360,8 @@ function specialKaramaAction(intent: SpecialKaramaIntent): Action {
     case 'moritani':
       return { ...action, event: intent.source.event, keep: [...intent.keep], discard: [...intent.discard] };
     case 'richese':
-      return { ...action, acquire: intent.acquire };
+      return { ...action, acquire: intent.acquire,
+        ...(intent.nexusEvent ? { emperorNexus: true, nexusEvent: intent.nexusEvent } : {}) };
     case 'choam':
       return { ...action, cards: [...intent.cards] };
     case 'ixians':
@@ -28424,6 +28442,9 @@ export function executeSpecialKaramaIntent(
       JSON.stringify(intent.keep) === JSON.stringify(prepared.keep) &&
       JSON.stringify(intent.discard) === JSON.stringify(prepared.discard),
       'The original Moritani card selection changed before execution.');
+  if (intent.kind === 'richese' && prepared.kind === 'richese')
+    requireRule(intent.nexusEvent === prepared.nexusEvent,
+      'The original Emperor Nexus special-purchase event changed before execution.');
   const p = getPlayer(g, intent.owner);
   const card = p.hand.find((candidate) => candidate.id === intent.card)!;
   const converted = card.effect === 'truthtrance';
@@ -28458,13 +28479,23 @@ export function executeSpecialKaramaIntent(
     } else resumeMoritaniSpecialKarama(g);
   } else if (intent.kind === 'richese') {
     const selected = g.richeseCache!.findIndex((c) => c.id === intent.acquire);
+    if (intent.nexusEvent) {
+      const receipt = nexusRule(() => createEmperorNexusSpecialPurchase(g, p.id, card.id, intent.acquire));
+      requireRule(receipt.event === intent.nexusEvent,
+        'The original joint special-purchase source changed before disposal.');
+      g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+      (g.nexusEmperorPurchaseHistory ??= []).push(receipt);
+      (g.nexusEmperorPurchaseEvents ??= []).push(receipt.event);
+    }
     discard(g, p, card.id);
-    p.spice -= 3;
+    if (!intent.nexusEvent) p.spice -= 3;
     p.hand.push(...g.richeseCache!.splice(selected, 1));
     p.specialKaramaUsed = true;
     log(
       g,
-      `${p.name} spent Karama and 3 spice to buy one secretly chosen card from the Richese cache. This once-per-game special power cannot be canceled.`,
+      intent.nexusEvent
+        ? `${p.name} spent Karama and Emperor Nexus after proving three own spice, retained it and acquired one privately chosen Richese cache card. No bank payment, reimbursement or extra bonus is created. Provisional purchase composition; the original once-use still applies.`
+        : `${p.name} spent Karama and 3 spice to buy one secretly chosen card from the Richese cache. This once-per-game special power cannot be canceled.`,
       { faction: 'richese', name: 'Special Karama purchase' },
     );
     const emperor = byFaction(g, 'emperor');
@@ -28707,11 +28738,14 @@ function richeseSpecialKaramaView(g: Game, p: Player) {
         blocked ??= error.message;
       }
     }
+  const nexus = nexusRule(() => quoteEmperorNexusSpecialPurchase(g, p.id));
   return {
     cards,
     karamas,
     blocked: cards.length ? null : blocked,
     payee: byFaction(g, 'emperor')?.id ?? null,
+    emperorNexus: { ...nexus, canUse: !nexus.blocked,
+      policy: 'Provisional purchase composition: spend the original Karama and Emperor Nexus together, after proving three own uncommitted spice. Keep that spice; no bank payment, reimbursement or fake auction is created. Native capacity, once-use, reserved cards and enclosing continuation remain unchanged.' },
   };
 }
 

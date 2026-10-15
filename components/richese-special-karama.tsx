@@ -36,6 +36,8 @@ export function RicheseSpecialKarama({
       : !acquired
         ? 'No cache card is available for this purchase.'
         : null);
+  const nexus = purchase.emperorNexus;
+  const nexusReason = reason ?? nexus.blocked;
   return (
     <details className="my-4">
       <summary className="min-h-11 cursor-pointer py-3">
@@ -52,6 +54,15 @@ export function RicheseSpecialKarama({
           its separate response. The remaining Richese card effects are still
           being implemented; inspect a card before choosing it.
         </p>
+        {nexus.canUse && (
+          <p className="notice">
+            Provisional purchase composition: spend your Emperor Nexus with the
+            held Karama to retain the original 3-spice price. You still need 3
+            uncommitted spice, and this still uses your once-per-game special
+            power. This creates no bank income, subsidy or refund and does not
+            protect the original Karama attempt from prevention.
+          </p>
+        )}
         {me && me.hand?.length === me.handLimit && (
           <p className="notice">
             Provisional full-hand exchange: spending the held Karama frees the
@@ -125,6 +136,26 @@ export function RicheseSpecialKarama({
         >
           Spend Karama and 3 spice to buy {acquired?.name ?? 'a cache card'}
         </Button>
+        {nexus.canUse && (
+          <Button
+            className="min-h-11 whitespace-normal"
+            disabled={busy || !!nexusReason}
+            aria-describedby={reason ? `${id}-reason` : undefined}
+            onClick={() => {
+              if (!busy && !nexusReason && karama && acquired)
+                act({
+                  type: 'card',
+                  mode: 'special',
+                  card: karama.id,
+                  acquire: acquired.id,
+                  emperorNexus: true,
+                  nexusEvent: nexus.event,
+                });
+            }}
+          >
+            Spend Karama + Emperor Nexus · keep 3 spice
+          </Button>
+        )}
       </div>
     </details>
   );

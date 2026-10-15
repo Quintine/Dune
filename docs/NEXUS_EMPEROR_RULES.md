@@ -1,6 +1,6 @@
 # Emperor Nexus: battle strength, purchase and revival
 
-Primary-source audit, 10 September 2026, with a bounded purchase-runtime note added 27 September. The source contract does not certify the full mode. The [common Nexus rules](NEXUS_CARD_RULES.md) and current release gates remain in force; no new user ruling is assumed.
+Primary-source audit, 10 September 2026, with bounded purchase/revival runtime amendments through 14 October. The source contract does not certify the full mode. The [common Nexus rules](NEXUS_CARD_RULES.md) and release gates remain; recommended compositions are not publisher clarification or separately answered numerical rulings.
 
 ## Authority
 
@@ -141,6 +141,41 @@ alliance disposal is retained. Full combination/assurance/deployed gates stay sh
 CHOAM's original closing market only sells to the bank or trades held cards;
 it is not a missing direct purchase producer. Do not invent an Emperor Nexus
 purchase there. Other real purchase sources retain their separate contracts.
+
+### Recommended joint Richese special purchase — 14 October 2026
+
+The [original special Karama source](RICHESE_ACQUISITION_RULES.md#1-advanced-special-karama-purchase)
+explicitly purchases one secretly chosen cache card for three own spice.
+The Emperor Nexus purchase panel has no Bidding qualifier. Recommended
+provisional composition therefore lets the actual unallied Emperor holder,
+with native Emperor absent, retain those three personally affordable,
+uncommitted spice on this original Advanced Richese purchase.
+
+This is an owner-initiated joint option, not a new public automatic pause.
+The original held Karama and Emperor Nexus both spend at the actual purchase
+commit, the native once-per-game flag sets once, and one exact unreserved cache
+card enters Richese's hand. Original capacity/full-hand exchange, final-cache
+exhaustion, enclosing controls and source phase remain. No bank payment,
+reimbursement, Harkonnen ally bonus, Ixian replacement or fake auction is made.
+Ordinary paid special purchase remains unchanged. No Nexus cost is committed
+merely by projecting/preparing the option.
+
+Normalized intent carries the exact original Nexus event through native
+special-intent handling. Version-four receipts bind activation/acquired physical
+IDs, actual phase, price and unchanged wallet without comparing later snapshots
+to future hands. Joint flags/event/coercion and stale/foreign selections reject
+before either cost. Native Kull with Richese is not an admitted original producer;
+this cutover does not invent that profile or certify its combinations.
+
+Affected13-file union112/112 and types/lint/build pass. Twelve original API
+profiles cover phases2/4/5, Pay3/retain3, genuine full hand, final cache and their
+intersection; depleted cache reaches ordinary Bidding without a compulsory
+empty lot. Four actual390px surfaces prove retained5→5, full-hand4→4 at spice3,
+final-cache1→0 at turn9 and ordinary paid5→2 with the irrelevant Nexus held.
+Both actual costs, one acquired card and native once-use remain; no overflow/
+browser errors. Easy's unchanged six-spice budget is met by one real seller
+income, not fixture money or strategy changes. Broad combinations, assurance
+and deployed/publication acceptance remain open; no saved/deployed rooms touched.
 
 ## Secret Ally: three additional free revivals
 

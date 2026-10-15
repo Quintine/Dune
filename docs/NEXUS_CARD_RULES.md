@@ -12,6 +12,18 @@ movement, battle geometry and actual casualties stay unchanged. One original
 Karama response cancels the entire physical batch and keeps the Nexus spent.
 [Source, original native proofs and controls](NEXUS_BENE_GESSERIT_RULES.md#recommended-cunning-card-exceptions--14-october-2026).
 
+## Recommended Emperor joint special purchase — 14 October 2026
+
+Original Advanced Richese special Karama now has a private joint option:
+spend its actual activation and Emperor Nexus at commit, prove/retain three
+own uncommitted spice and acquire one exact cache card. Native once-use,
+capacity/full-hand exchange, reservations, enclosing controls and final-cache
+continuation stay original. No bank payment/reimbursement, ally bonus, fake
+auction or automatic public pause. Version-four receipts bind both physical
+IDs and retained wallet. Visibly provisional purchase composition; existing
+Richese/Kull admission is not broadened and complete combinations remain open.
+[Source policy and changed-path evidence](NEXUS_EMPEROR_RULES.md#recommended-joint-richese-special-purchase--14-october-2026).
+
 ## Recommended Emperor original Ambassador purchase — 14 October 2026
 
 Original Richese Ambassador trigger now offers uniform beneficiary Pay or

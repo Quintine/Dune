@@ -2953,6 +2953,8 @@ function policyActions(g: GameView): Action[] {
           mode: 'special',
           card: richesePurchase.karamas[0].id,
           acquire: choice.id,
+          ...(richesePurchase.emperorNexus?.canUse && !richesePurchase.emperorNexus.blocked
+            ? { emperorNexus: true, nexusEvent: richesePurchase.emperorNexus.event } : {}),
         },
       ];
   }

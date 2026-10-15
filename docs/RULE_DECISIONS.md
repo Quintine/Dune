@@ -66,6 +66,19 @@ These decisions do not open public module/faction or complete-mode gates.
 
 These decisions do not open public module/faction or complete-mode gates.
 
+## Recommended Emperor joint special acquisition — 14 October 2026
+
+Apply the printed purchase panel to original Advanced Richese special Karama,
+which the existing source explicitly calls a purchase. Actual unallied holder
+with Emperor absent proves/retains three own uncommitted spice and spends the
+original Karama plus Nexus at native purchase commit. Once-use, capacity,
+reserved card, original enclosing continuation and final-cache policy remain.
+No reimbursement, bank income, ally bonus, fake auction or new public pause.
+Visibly provisional composition, not publisher clarification or a separately
+answered numerical ruling. Existing native Kull producer excludes Richese;
+this amendment does not invent combined admission.
+[Canonical policy/proof](NEXUS_EMPEROR_RULES.md#recommended-joint-richese-special-purchase--14-october-2026).
+
 ## Recommended Emperor Ambassador retention — 14 October 2026
 
 Select the original Richese Ambassador purchase classification and printed

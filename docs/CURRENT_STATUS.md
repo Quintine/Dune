@@ -29,6 +29,22 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Emperor Secret Ally joint native special purchase — 14 October.** Advanced
+Richese may jointly spend its original Karama plus actual Emperor Nexus at
+native purchase commit after proving three own uncommitted spice. Recommended
+provisional composition keeps price, one private cache acquisition, native
+once-use/full-hand/final-cache and original enclosing controls; no bank money,
+reimbursement, ally bonus, fake auction or automatic public pause.
+Affected13-file union112/112, types/lint/build and twelve native API profiles
+pass. Actual390px retain5→5, full-hand4→4/spice3, final-cache1→0/turn9 and normal
+Pay5→2 preserve both costs/one acquisition/once-use without overflow/errors.
+Final depletion reaches ordinary Bidding; Easy keeps its native budget and
+uses one real seller-income path. No fixture money or Kull admission invented.
+[Canonical source/proof](NEXUS_EMPEROR_RULES.md#recommended-joint-richese-special-purchase--14-october-2026).
+Full combinations, assurance and deployed/publication gates remain. No saved
+or deployed room touched; proof receipts stay outside Git. Existing build
+route-classification/chunk-size warnings remain.
+
 **Emperor Secret Ally original Ambassador purchase — 14 October.** Original
 Richese trigger now offers uniform beneficiary Pay/eligible Use under visibly
 provisional outside-Bidding purchase composition. No new decline, bank payment,
