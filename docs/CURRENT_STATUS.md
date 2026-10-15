@@ -29,38 +29,41 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
-**Independent Ecaz battle-card interaction wave — 16 October.**
-- Richese-family Harass/Stone uses visibly provisional post-withdrawal counts,
-  including own/opposing/copied Stone and Traitor-canceled returns.
-- Same-plan Harass/Reinforcements pays the original typed reserve quote before
-  any return; future returns cannot fund or change it.
-- In the existing native Advanced Occupy envelope, Reinforcements composes
-  with original or Mirror-copied Stone. Its +2 normal score adds no physical
-  undialed tokens, but the original own-reserve cost still pays.
+**Selected Richese weapon/card interaction wave — 16 October.**
+- Clean selected CHOAM/Ix profiles now admit Stone/Mirror with native
+  Ixians/Tleilaxu in Basic/Advanced; Ecaz/Moritani stays Advanced-only.
+  Original Stone-first then uncopied Tooth reuses existing CHOAM priority
+  under explicitly provisional choose-recommended interpretation. Printed
+  Mirror copy-first and the user's physical-Mirror retention stay independent.
+- Richese-family Harass/Stone uses provisional post-withdrawal counts.
+  Same-plan Harass/Reinforcements pays its original reserve quote before returns.
+  Native Advanced Occupy Reinforcements/Stone adds no physical +2 tokens.
 
-Original fixed Ecaz commitment, variable ally casualties, support, Traitor
-precedence and mandatory utility-card disposal stay separate. The earlier
-questions remain unanswered; explicit product interpretations are not publisher
-rulings. No state field, new profile or public start is added.
+Original fixed Ecaz commitment, native variable counters, support, Traitor
+precedence, reserve cost and physical-card disposal/retention remain native.
+Earlier questions remain unanswered; no new publisher ruling, state field,
+public start or played-game conversion is implied. New Ix Tech/Stronghold,
+other module bands and winner-changing allocation boundaries remain guarded.
 
-Latest affected sixteen-file167/167, types/lint and build pass. Eight fresh
-Node programs/all four profiles cover both leads/original or Mirror attacks
-with36 accepted continuation actions. The corrected390px native-control journey
-starts within hand capacity: physical5-vs4 wins, Ecaz reserves15→12/Tanks6,
-Guild Tanks1, original support9→8, Ecaz2/Guild3 remain. Reinforcements discards
-once; Stone retention clears battle/decision into collection, without overflow
-or browser/application error. An overfull initial fixture was corrected by
-returning unselected cards to the conserved deck; that initial hand is not
-legal-hand evidence.
+Latest affected thirteen-file99/99, TypeScript, lint and build pass. Eight fresh
+Node native programs/all four policies accept42 continuation actions; two
+original47/10-cache programs also complete without independent Ecaz cards.
+Two real390px control journeys prove Advanced copied Tooth activation versus
+unused original (both deaths, actual cyborg losses, physical Mirror kept,
+spice34) and Basic Stone-before-Tooth (four-vs-zero, army/Stone kept, spice39).
+Both clear battle/decision into the original Ix Collection opening, with legal
+hands and no overflow/browser/application error. These use genuine setup with
+explicit conserved battle staging, not unstaged complete-game acceptance.
 
-Current parse/composition anchor and23 topic paths resolve; all ten relevant
-facets remain Partial. Exact policies and earlier bounded human/policy proof:
+Actual generated guide import, policy anchor and23 Stone/Mirror evidence paths
+resolve; all ten facets stay Partial. Exact policies/earlier bounded proof:
+[clean Ix](MIRROR_WEAPON_ENGINE_AUDIT.md#clean-selected-ix-composition--16-october-2026),
 [Harass/Stone](HARASS_WITHDRAW_RUNTIME.md#provisional-stone-burner-timing--16-october-2026),
 [Harass/Reinforcements](REINFORCEMENTS_RUNTIME.md#combined-utility-plan--16-october-2026),
 [Reinforcements/Stone](REINFORCEMENTS_RUNTIME.md#native-stone-composition--16-october-2026).
-Ix/Poison Tooth, own concealed No-Field Harass and other profile/module limits
-remain. No human server, saved room, D1, deployment or new assurance campaign
-changed; final assurance follows all rules.
+Own concealed No-Field Harass and other profile/module limits remain. No human
+server, saved room, D1, deployment or new assurance campaign changed; final
+assurance follows all rules.
 
 **Ixian Nexus purchased-card interaction wave — 16 October.**
 Purchased-card replacement now composes:

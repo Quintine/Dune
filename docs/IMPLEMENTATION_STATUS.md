@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 16 October 2026 — Clean selected Ix Stone and physical Mirror
+
+Replaced the blanket Ix guard only for clean selected CHOAM/Ix profiles,
+including native Ixians/Tleilaxu Basic/Advanced and Advanced Ecaz combinations.
+Reuse existing CHOAM original Stone-first/uncopied-Tooth priority; standing
+choose-recommended selects it provisionally while the earlier question remains
+unanswered. Printed Mirror copy-first and the user's28 September physical
+retention are unchanged. Public typed-allocation and new Ix Tech/Stronghold/
+other module boundaries stay; no state field or public start added.
+
+Thirteen-file99/99, TypeScript, lint and build pass with the existing
+module-register/large-chunk/Unknown-route warnings. Natural Storm can change
+tie priority: the native Occupy fixture now picks a public-safe original Stone
+commitment, rather than relying on an already sealed zero dial or weakening
+the guard. Six new cases include fixed/variable reserve-cost composition.
+
+Eight fresh Node native programs/all four policies accept42 continuation actions.
+Two original47/10-cache programs additionally complete without independent Ecaz
+cards. Two actual390px journeys pass: Advanced copied Tooth activates before
+the unused original, kills both leaders once, loses two actual cyborgs and keeps
+winning physical Mirror at spice34; Basic mixed Ix Stone chooses kill before
+unused Tooth, wins physical4-vs0, retains army/Stone and reaches spice39.
+Both original battles/decisions clear into the unchanged Ix Collection opening.
+No overflow/browser/application error or over-capacity hand. These are original
+native setups with explicit conserved battle staging, not unstaged full games.
+
+Actual generated guide import/policy anchor and23 topic evidence paths resolve;
+all ten facets stay Partial. Obsolete blanket-Ix rejection removed, not re-pinned.
+No human server, D1, saved room, deployment/public start or broad/HTTP/recovery
+assurance campaign changed. Owned hosts/scripts removed.
+[Source, profile and scoped proof](MIRROR_WEAPON_ENGINE_AUDIT.md#clean-selected-ix-composition--16-october-2026).
+
 ## 16 October 2026 — Native Occupy Stone and Reinforcements
 
 Removed the same-plan/opposing Stone rejection while keeping existing mode

@@ -101,8 +101,9 @@ This is a legal strategy path, not strength calibration.
   battles are already implemented for this card.
 - Richese card-family configurations now admit Harass under the
   [provisional post-withdrawal policy](#provisional-stone-burner-timing--16-october-2026).
-  The ordinary invariant-allocation guard and separate Ix/Poison Tooth timing
-  boundary remain. No public expansion start or played-game retrofit is added.
+  The ordinary invariant-allocation guard remains. Clean selected Ix follows
+  the [separate priority contract](MIRROR_WEAPON_ENGINE_AUDIT.md#clean-selected-ix-composition--16-october-2026);
+  other profile/module limits, public starts and played-game retrofit stay gated.
   A card user's own still-concealed No-Field remains guarded until its original
   reveal; this wave does not certify Harass on a concealed native marker.
 - Co-present armies remain guarded in Basic or without the supported Advanced

@@ -21041,8 +21041,9 @@ function stonePublicPools(
     : [pool];
 }
 function stoneTimingBlock(g: Game): string | null {
-  return g.expansions.includes('ix')
-    ? 'Stone Burner with the Ix expansion is awaiting a ruling on its simultaneous revealed choice with Poison Tooth. This implementation boundary applies before either hidden plan is submitted.'
+  if (!g.expansions.includes('ix')) return null;
+  return mirrorWeaponModeBlock(g)
+    ? 'Stone Burner with Ix needs the clean selected CHOAM/Ix profile without combined optional modules; the public allocation guard still applies.'
     : null;
 }
 function stoneOccupyContext(g: Game): StoneBurnerContext | undefined {

@@ -4,6 +4,70 @@ Audited 6 September 2026 as a proposed contract. The 28 September bounded runtim
 
 **28 September ruling and runtime:** the user selected ordinary winner retention for the physical Mirror even when its copy activates Tooth or Artillery. This is an explicit product interpretation, not a located GF9 clarification. `game/effective-weapons.ts` keeps physical identity apart from copied attacks; the engine now connects copied Tooth/Stone choices, Stone comparison, custody, battle controls and legal AI in the bounded configuration.
 
+## Clean selected Ix composition — 16 October 2026
+
+Clean CHOAM/Ix profiles now admit original Stone and physical Mirror with
+native Ixians/Tleilaxu and classics in Basic or Advanced. Existing native
+Ecaz/Moritani combinations remain Advanced-only. This preserves the original
+selected47-card deck plus separate Richese10; choosing the independent Ecaz
+cards instead adds its genuine three cards for50, never a trimmed substitute.
+Fresh/public start gates and actual physical card ownership remain unchanged.
+
+**Existing policy, not a newly invented queue:** CHOAM's ordinary deck already
+contains Tooth without Ix. Before this cutover, an actual original CHOAM setup
+proved uncopied Stone chooses first, then Tooth. The standing 14 October
+choose-recommended instruction extends that existing prototype policy to clean
+Ix. The earlier priority question remains unanswered; Stone-before-Tooth is
+visibly provisional, not a new publisher ruling or a user answer. Mirror
+copy-first is separately printed on its physical face and remains unchanged.
+
+The public profile and physical allocation guards never inspect an opposing
+hand or sealed plan. Winner-changing typed allocation remains blocked, even
+when the actual hidden plan would happen to make it finishable. New clean-Ix
+admission excludes Homeworlds, Nexus, Leader Skills, Discoveries, active
+Sandtrout, Tech Tokens and Stronghold Cards. The existing non-Ix Tech/Stronghold
+band is intentionally unchanged. Other combinations remain separate.
+
+Physical Mirror retention still follows the user's28 September interpretation;
+the original Tooth/Artillery retain their actual mandatory-discard rules.
+Original fixed Ecaz commitment, native variable counters and same-plan reserve
+fees stay separate in Advanced Occupy.
+### Scoped clean-Ix proof
+
+The affected thirteen-file offline union passes **99/99**. TypeScript, lint and
+production build pass; build retains module-register, large-chunk and
+Unknown-route warnings. Six new behavioral cases cover both natives/modes/
+physical slots, independent copied answers, original priority, retention,
+public allocation ambiguity and native fixed/variable Occupy reserve cost.
+Natural Storm tie priority required a public-safe original Stone fixture plan;
+the allocation guard was preserved, not bypassed using the sealed zero dial.
+
+Eight fresh Node programs/all four profiles use genuine native setup with
+explicit conserved rule staging and42 accepted continuation actions. Two
+additional fresh original47-card/10-cache programs, without the independent
+Ecaz variant, complete copied Stone in Basic and Advanced. These are native
+setup plus staged battle evidence, not unstaged complete-game certification.
+
+Two actual390px journeys start before commitment with legal hands:
+- Advanced Mirror activates copied Tooth first; original Tooth independently
+  stays unused. Both leaders die once, Ix loses four actual counters including
+  two cyborgs, ordinary dial5/support5 wins, bounty9 leaves spice34, and the
+  physical Mirror is retained.
+- Basic mixed Ix Stone compares four undialed counters with zero, chooses kill
+  before the original unused Tooth, keeps its four-counter army and physical
+  Stone, and receives bounty9/spice39. Neither typed strength nor leader value
+  replaces the physical comparison.
+
+Both original battles/decisions clear into the unchanged Ix Spice Collection
+opening. Provisional priority is visible to Stone, Mirror and original Tooth
+before commitment and in revealed controls. No root overflow or browser/
+application error; all hands remain within capacity. Actual generated Mirror
+and Stone guidance imports, the policy anchor and23 evidence paths resolve;
+all ten facets stay Partial. No human server, saved room, D1, deployment,
+public start or new broad/HTTP/recovery/privacy/custody assurance campaign
+changed. Owned hosts/scripts are removed; private artifacts stay outside Git.
+
+
 ## Primary evidence and a retention correction
 
 The actual face was visually reread at `/tmp/dune-rules/choam-mirror-reading.png`, alongside Stone Burner at `choam-stone-reading.png`. Both derive from the [physical-component photograph](https://cdn.anyfinder.eu/assets/QsUJtVktEC87xwK08oLlwnKyaozUWfuaLzG0LFEn67ENEEVgNrDGoITy3608Dqe7) recorded with its hash and limitations in `RICHESE_COMPONENTS.md`. This is publisher text visible on a physical component; the photographer, publication date and complete printing history remain unverified. No photograph is imported into the application.

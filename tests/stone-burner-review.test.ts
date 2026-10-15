@@ -128,7 +128,7 @@ const inventory = (g: Game) =>
     .map((c) => c.id)
     .sort();
 
-void test('forged Stone role and public Ix timing reject before any hidden plan commitment', () => {
+void test('forged Stone roles reject before any hidden plan commitment', () => {
   for (const patch of [
     { id: 'forged-stone' },
     { name: 'Other Stone' },
@@ -145,11 +145,6 @@ void test('forged Stone role and public Ix timing reject before any hidden plan 
     );
     assert.deepEqual(g, before);
   }
-  let ix = fixture();
-  ix.expansions.push('ix');
-  ix = prepare(start(ix));
-  assert.throws(() => plan(ix, 'r'), /Ix expansion/);
-  assert.deepEqual(ix.battle!.plans, {});
 });
 
 void test('Advanced Emperor outcome-changing allocation is rejected identically before or after an unrelated hidden opposing plan', () => {

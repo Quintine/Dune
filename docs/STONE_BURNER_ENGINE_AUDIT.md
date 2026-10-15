@@ -29,8 +29,10 @@ checks possible fixed Ecaz withdrawal without inspecting hidden cards.
 
 The earlier question remains unanswered. This is an interpretation selected
 under the standing choose-recommended priority, not newly retrieved publisher
-authority. Ix/Poison Tooth, own concealed No-Field Harass and other profile/
-module boundaries remain separate. The 6 September evidence above
+authority. Clean Ix now follows the separate
+[selected-deck priority contract](MIRROR_WEAPON_ENGINE_AUDIT.md#clean-selected-ix-composition--16-october-2026);
+own concealed No-Field Harass and other profile/module boundaries remain.
+The 6 September evidence above
 is historical; the current checkpoint has its own bounded proof.
 
 
@@ -43,6 +45,20 @@ The original three-own-reserve fee pays once; +2 normal score adds no physical
 undialed tokens or support. Original fixed Ecaz commitment, variable ally losses,
 mode choices, Traitor precedence and physical Stone/Mirror retention stay.
 Other profile/module gates and the explicit reserve-cost interpretation remain.
+
+## Clean Ix priority cutover — 16 October 2026
+
+The blanket Ix timing guard is replaced only for the clean selected CHOAM/Ix
+profile. It reuses the already connected original Stone-first/uncopied-Tooth
+order, while printed Mirror copy-first remains independent. The earlier
+priority question is unanswered; standing choose-recommended selects the
+existing prototype order provisionally, not a new publisher ruling.
+See the [exact profile and source distinction](MIRROR_WEAPON_ENGINE_AUDIT.md#clean-selected-ix-composition--16-october-2026).
+
+Public precommit still quantifies over every feasible opposing force/dial/
+support possibility, never a hidden already-sealed plan. Original typed force,
+support, death, bounty, substitution and retention paths remain native.
+New Ix Tech/Stronghold and other combined-module bands remain guarded.
 
 ## Primary evidence and exact effect
 

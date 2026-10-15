@@ -78,7 +78,7 @@ export function stoneHarassCustody(game: Game): void {
       ...(player.faceDancers ?? []).map(card => card.leader)]),
   ].sort(), traitorDeck(game.players, game.expansions.includes('ix')).sort());
   for (const player of game.players) {
-    // Both native fixture rosters use four-card hands.
+    // All admitted native fixture rosters use four-card hands.
     assert.ok(player.hand.length <= 4, 'Conserved card staging must also respect native hand capacity.');
     assert.equal(player.reserves + player.tanks +
       Object.values(player.forces).reduce((sum, amount) => sum + amount, 0), 20);
@@ -273,6 +273,7 @@ export function finishStoneHarassBattle(state: Game, options: {
 
 export type StoneHarassOccupyOptions = {
   lead?: 'ecaz' | 'ally';
+  allyFaction?: 'guild' | 'ixians' | 'tleilaxu';
   /** Stage Harass in the selected lead's plan; false keeps the same card in hand. */
   harass?: boolean;
   stone?: 'opponent' | 'harass';
@@ -281,6 +282,7 @@ export type StoneHarassOccupyOptions = {
   support?: number;
   ecazForces?: number;
   allyForces?: number;
+  allyElite?: number;
   opponentForces?: number;
   opponentElite?: number;
   opponentDial?: number;
@@ -301,17 +303,20 @@ export function stoneHarassOccupyFixture(
   options: StoneHarassOccupyOptions = {},
 ): StoneHarassOccupyCase {
   const lead: 'ecaz' | 'ally' = options.lead ?? 'ecaz';
+  const allyFaction = options.allyFaction ?? 'guild';
+  const expansions: Game['expansions'] = ['ecaz', 'choam', ...(allyFaction === 'guild' ? [] : ['ix'] as const)];
   // The original four-seat advanced lobby supplies Ecaz, its real ally, a
   // classic opponent and Richese's own card cache; every later step is native.
-  let initial = createGame('STONEOCCUPY', newPlayer('ecaz', 'ecaz', 'ecaz'), true, ['ecaz', 'choam']);
-  for (const faction of ['guild', 'emperor', 'richese'] as const)
+  let initial = createGame('STONEOCCUPY', newPlayer('ecaz', 'ecaz', 'ecaz'), true, expansions);
+  for (const faction of [allyFaction, 'emperor', 'richese'] as const)
     joinGame(initial, newPlayer(faction, faction, faction));
   for (const player of initial.players) initial = applyAction(initial, player.id, { type: 'ready' });
   initial.ecazTreachery = true;
   initial = initializeEcazOccupyGameForAudit(initial);
-  const occupy = ecazOccupyFixture({ initial, expansions: ['ecaz', 'choam'], ecazTreachery: true,
-    allyFaction: 'guild', opponentFaction: 'emperor',
+  const occupy = ecazOccupyFixture({ initial, expansions, ecazTreachery: true,
+    allyFaction, opponentFaction: 'emperor',
     ecazForces: options.ecazForces ?? 5, allyForces: options.allyForces ?? 4,
+    ...(options.allyElite === undefined ? {} : { allyElite: options.allyElite }),
     ...(options.opponentForces === undefined ? {} : { opponentForces: options.opponentForces }),
     ...(options.opponentElite === undefined ? {} : { opponentElite: options.opponentElite }) });
   // Isolate selected battle cards after genuine setup/auctions, before the

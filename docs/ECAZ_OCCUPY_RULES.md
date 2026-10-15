@@ -303,8 +303,9 @@ active Occupy, or the **selected lead's own pool only** after prevention.
 Its total dial offset is removed before native typed casualty enumeration.
 Mirror copies use the same comparison and original physical-card retention.
 Public opposing No-Field preflight enumerates possible native pools, never the
-actual secret denomination. Ix Stone/Poison Tooth timing and genuinely
-winner-changing typed allocations retain their existing guards.
+actual secret denomination. Clean selected CHOAM/Ix now uses the
+[existing provisional original/copy priority](MIRROR_WEAPON_ENGINE_AUDIT.md#clean-selected-ix-composition--16-october-2026);
+winner-changing allocations and Ix combined modules retain their guards.
 Harass/Stone now uses the explicitly
 [provisional post-withdrawal policy](HARASS_WITHDRAW_RUNTIME.md#provisional-stone-burner-timing--16-october-2026):
 remove only the actual card user's undialed pool, never recompute original

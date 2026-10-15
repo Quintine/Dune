@@ -1108,7 +1108,8 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Compare the number of physical force tokens not dialed into battle. The aggressor wins a tie. Dialed losses and spice support still follow their normal rules; elite strength is not an extra physical token.',
       'With Harass & Withdraw, this prototype provisionally compares undialed tokens remaining after successful withdrawal. An opposing successful Traitor cancels the return and decides the outcome instead. In Occupy, only the card user’s pool returns; original fixed Ecaz commitment and the other ally’s undialed counters remain. This timing is an explicit implementation interpretation, not a publisher ruling.',
       'In the existing native Advanced Occupy prototype, Reinforcements still pays its original own-reserve cost with same-plan, opposing or Mirror-copied Stone. Its +2 normal-score bonus adds no physical undialed tokens, dial, support or on-board casualties. Original mode choices, Traitor precedence and physical Stone/Mirror retention remain unchanged; other profile/module boundaries stay.',
-      'The plan editor checks the chosen dial and support against every projected public opposing force possibility. If legal force allocations could change the winner, commitment is blocked until that combined timing is supported. Ix expansion timing involving Poison Tooth also remains guarded pending its ordering ruling. Opposing hidden No-Field values are not inspected.',
+      'The plan editor checks dial/support against every public opposing force possibility, never a hidden plan or No-Field value. Winner-changing physical allocations remain guarded. Clean selected CHOAM/Ix profiles now reuse the existing provisional original Stone-first, then uncopied Tooth order; Mirror copies still choose before their originals as printed. The earlier priority question remains unanswered.',
+      'Clean Ix admission excludes Homeworlds, Nexus, Leader Skills, Discoveries, active Sandtrout, Tech Tokens and Stronghold Cards. Native Ecaz/Moritani combinations remain Advanced-only. Other non-Ix profile behavior and full expansion/public-start gates are unchanged.',
       'Traitor and Lasgun–shield explosion precedence remain intact. Ordinary bounty applies unless another effect suppresses it. Stone Burner uses the general winning battle-card retention rule: a winner may keep it, and a losing played card is discarded. Normal Moritani ally retention may apply.',
       'The post-reveal choice is bound to the current battle event and cannot be repeated after refresh. Review both revealed plans and select one mode; there is no separate victim or death confirmation.',
     ],
@@ -1158,6 +1159,8 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/stone-harass-runtime.test.ts',
           'tests/ecaz-occupy-harass-quote.test.ts',
           'tests/stone-reinforcements.test.ts',
+          'tests/ix-revealed-weapons.test.ts',
+          'tests/fixture-ix-revealed-weapons.ts',
         ],
       },
     ],
@@ -1184,9 +1187,9 @@ export const RULE_TOPICS: RuleTopic[] = [
                   : definition.card.effect === 'residualPoison'
                     ? 'Use the Residual Poison panel before either combatant commits a leader. A shared preparation step provides an opportunity regardless of hand contents; advanced Harkonnen tables remain guarded pending the secret-captive ruling. In the explicit Semuta preview, a clean death with no readiness or inspection commitments pauses after public disposal for the neutral offer, then resumes the same preparation.'
                     : definition.card.effect === 'stoneBurner'
-                      ? 'Use Stone Burner in the battle weapon selector and review the chosen dial/support guard before sealing. Choose the leader effect after revelation; combined timing remains guarded.'
+                      ? 'Use Stone Burner in the weapon selector and review public dial/support feasibility before sealing. Clean selected CHOAM/Ix now uses visibly provisional original Stone-first then uncopied Tooth order; copy-first and physical allocation guards remain.'
                       : definition.card.effect === 'mirrorWeapon'
-                        ? 'Choose Mirror Weapon in the battle weapon slot in a supported CHOAM/Richese-deck table. Its attack copies the opposing revealed weapon; copied Tooth or Stone choices resolve first and independently. Under the user-selected interpretation, a winning physical Mirror may be retained even after a copied Tooth or Artillery attack. Full Richese starts and combined modules remain guarded.'
+                        ? 'Choose physical Mirror in a supported CHOAM/Richese-deck table, including clean selected Ix and Advanced Ecaz/Moritani. Copied Tooth or Stone chooses before its original. The user-selected winning physical-Mirror retention still applies after copied Tooth or Artillery. Original Stone/Tooth provisionally uses Stone-first order. Other profile/module and public-start gates remain.'
                       : definition.card.effect === 'portableSnooper'
                         ? 'Choose Portable Snooper as your ordinary poison defense, or use the late-defense panel after reveal before your own traitor decision. It uses ordinary winner retention and cannot stop Poison Tooth.'
                         : definition.card.effect === 'semutaDrug'
@@ -1321,7 +1324,25 @@ export const RULE_TOPICS: RuleTopic[] = [
               },
             ],
           }
-        : {}),
+        : definition.card.effect === 'mirrorWeapon'
+          ? { checklist: [
+              { area: 'Implementation' as const, status: 'Partial' as const,
+                detail: 'Canonical physical Mirror, copy-first answers and physical retention compose with clean selected Ixian/Tleilaxu pools and original Advanced Occupy. Public feasibility and other profile/module boundaries remain.',
+                evidence: ['game/mirror-weapon-mode.ts', 'game/effective-weapons.ts', 'game/engine.ts'] },
+              { area: 'Player controls' as const, status: 'Partial' as const,
+                detail: 'Actual weapon selectors, independent copied choices and original retention are usable. Ix original Stone/Tooth priority is visibly provisional before commitment and during revelation.',
+                evidence: ['components/battle-preparation.tsx', 'components/game-table.tsx'] },
+              { area: 'AI' as const, status: 'Partial' as const,
+                detail: 'All four profiles have legal clean-Ix candidate and original/copy continuation paths. This is not strategy or difficulty calibration.',
+                evidence: ['game/bots.ts', 'tests/ix-revealed-weapons.test.ts'] },
+              { area: 'Documentation' as const, status: 'Partial' as const,
+                detail: 'Printed copy-first, user-selected physical retention and provisional original Stone/Tooth priority are distinguished. Combined modules and full-mode acceptance remain separate.',
+                evidence: ['docs/MIRROR_WEAPON_ENGINE_AUDIT.md', 'docs/STONE_BURNER_ENGINE_AUDIT.md'] },
+              { area: 'Verification' as const, status: 'Partial' as const,
+                detail: 'Original Matrix/engine proof plus genuine native setup with explicit conserved battle staging covers Basic/Advanced, both native force pools, original/copy modes, public ambiguity and Advanced fixed/variable Occupy. Mobile and policy proof is bounded, not unstaged complete-game or final assurance certification.',
+                evidence: ['tests/ix-revealed-weapons.test.ts', 'tests/fixture-ix-revealed-weapons.ts', 'tests/mirror-weapon-engine.test.ts'] },
+            ] }
+          : {}),
       related: [
         'richese-cards',
         'choam-modules',

@@ -3096,6 +3096,11 @@ export function GameTable({
                       tokens or change Stone Burner’s comparison.
                     </p>
                   )}
+                  {g.expansions.includes('ix') && <p className="fine">
+                    Provisional original Stone/Tooth order: Stone chooses first,
+                    then uncopied Tooth. A Mirror copy still chooses before its
+                    original, as printed. Traitor decisions follow all choices.
+                  </p>}
                   <a href="/rules?topic=stone-burner">
                     Read Stone Burner rules
                   </a>
@@ -3135,6 +3140,11 @@ export function GameTable({
                     leaders, including yours. Chemistry as a defense protects;
                     Snoopers do not. Traitor decisions follow.
                   </p>
+                  {g.expansions.includes('ix') && <p className="fine">
+                    A Mirror copy chooses before the original Tooth.
+                    With uncopied Stone and Tooth, this prototype provisionally
+                    chooses Stone first. Both answers precede Traitor decisions.
+                  </p>}
                   {actionButton('Activate Poison Tooth', {
                     type: 'decision',
                     event: g.decision.event,
@@ -5368,6 +5378,12 @@ export function GameTable({
                                 Discard it after this battle, even if you win.
                               </p>
                             )}
+                            {g.expansions.includes('ix') &&
+                              (selectedSpecialWeapon || selectedBattleWeapon?.kind === 'poisonTooth') && <p className="fine">
+                              Provisional original Stone/Tooth order: Stone chooses
+                              first, then uncopied Tooth. Mirror copies still choose
+                              before their originals, as printed.
+                            </p>}
                             {selectedSpecialWeapon && (
                               <div className="my-3 flex flex-col gap-3">
                                 <p>
