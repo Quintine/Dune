@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 16 October 2026 — Native Occupy Stone and Reinforcements
+
+Removed the same-plan/opposing Stone rejection while keeping existing mode
+eligibility. Original/copy Stone compares physical undialed counters, not +2
+normal score; the reserve fee still pays its original own typed quote under the
+existing provisional all-outcome policy. Fixed Ecaz and variable ally losses,
+mode choices, Traitor precedence and physical Stone/Mirror retention stay.
+No profile/state-field/public-start widening.
+
+Sixteen-file167/167, types/lint and build pass (module-register/large-chunk/
+Unknown-route warnings). Pure/native cases cover physical victory despite +2,
+same/opposing costs, typed reserves, both leads, copied kill and Traitor override.
+Eight fresh Node programs/all four profiles accept36 continuation actions.
+
+The first native fixture held five cards after adding Reinforcements. Corrected
+by returning unselected physical hands to the conserved deck before lead choice,
+then enforcing four-card capacity. Repeated actual390px controls start at three
+cards, seal dial4/support1, choose ignore and decline all three native votes:
+physical5-vs4 wins; Ecaz reserves15→12/Tanks6/support9→8, Guild Tanks1,
+Ecaz2/Guild3 remain. Reinforcements discards once, Stone retains, battle/decision
+clear into collection. No corrected-journey overflow/browser/application error;
+the overfull initial hand is not accepted legal-hand evidence.
+
+Current parse/anchor and23 topic paths resolve; all ten facets remain Partial.
+Owned hosts/scripts removed. No human server, D1, saved room, deployment or
+broad/HTTP/recovery assurance campaign changed.
+[Composition and scoped proof](REINFORCEMENTS_RUNTIME.md#native-stone-composition--16-october-2026).
+
 ## 16 October 2026 — Same-plan Harass and Reinforcements
 
 Connected both physical slot orders without adding a new settlement mechanism

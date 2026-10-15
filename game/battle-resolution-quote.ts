@@ -410,9 +410,8 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       requireQuote(validBattleSlotPair(slots[0], slots[1]) &&
         !(side === d && reinforcements.length),
       'Reinforcements needs a unique physical card and valid weapon and defense slot pair.');
-      requireQuote(!input.homeworld && !(side.leaderSkills?.length || (side === a ? d : a).leaderSkills?.length) &&
-        !hasStone,
-      'Reinforcements cannot combine with Homeworld, leader skills or Stone Burner.');
+      requireQuote(!input.homeworld && !(side.leaderSkills?.length || (side === a ? d : a).leaderSkills?.length),
+      'Reinforcements cannot combine with Homeworld or leader skills.');
       const reserves = side.reinforcementsReserves!;
       requireQuote(!!reserves && typeof reserves === 'object' && !Array.isArray(reserves),
         'Reinforcements needs own typed reserves.');
@@ -686,7 +685,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       attacker:
         a.plan.dial - attackerPenalty +
         (a.ecazSpecialKarama ? ecazSpecialKaramaBonus(strengths.attacker, strengths.defender) : 0) +
-        (reinforcements[0]?.player === a.id ? 2 : 0) +
+        (!stone && reinforcements[0]?.player === a.id ? 2 : 0) +
         (a.id === homeworld?.native ? homeworld.strength : 0) +
         (deaths.attacker || effects.stunned
           ? 0
@@ -696,7 +695,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       defender:
         d.plan.dial - defenderPenalty +
         (d.ecazSpecialKarama ? ecazSpecialKaramaBonus(strengths.defender, strengths.attacker) : 0) +
-        (reinforcements[0]?.player === d.id ? 2 : 0) +
+        (!stone && reinforcements[0]?.player === d.id ? 2 : 0) +
         (d.id === homeworld?.native ? homeworld.strength : 0) +
         (deaths.defender || effects.stunned
           ? 0

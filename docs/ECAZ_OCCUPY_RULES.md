@@ -252,8 +252,11 @@ is unchanged and remains explicitly not a publisher ruling. Both slots and
 opposing holders work. Same-plan Harass/Reinforcements now follows the
 [provisional original-reserve-cost-first policy](REINFORCEMENTS_RUNTIME.md#combined-utility-plan--16-october-2026),
 preserving actual card-user ownership and original fixed losses.
-Reinforcements with Stone/optional modules and Basic/unprofiled co-side
-card battles remain guarded.
+Original or copied Stone now composes with same-plan/opposing Reinforcements
+under the [physical-token contract](REINFORCEMENTS_RUNTIME.md#native-stone-composition--16-october-2026).
+Its +2 normal score adds no undialed counters; original reserve cost and fixed
+versus variable on-board losses stay separate. Other optional modules and
+Basic/unprofiled co-side card battles remain guarded.
 
 Native/pure67 cases, relevant284-case batch and27 actual native-program
 cases pass, including all four legal policies. Two natural captured games

@@ -29,46 +29,38 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
-**Same-plan Harass / Reinforcements — 16 October.** Both slot orders now follow
-the existing original-reserve-cost-before-return order under explicit
-choose-recommended interpretation. Future returns cannot fund deficient reserves
-or replace the original normal/elite quote. Original score-only +2, fixed Ecaz
-commitment, variable ally losses, all-outcome reserve cost and Traitor-canceled
-Harass remain separate; both physical cards discard once.
+**Independent Ecaz battle-card interaction wave — 16 October.**
+- Richese-family Harass/Stone uses visibly provisional post-withdrawal counts,
+  including own/opposing/copied Stone and Traitor-canceled returns.
+- Same-plan Harass/Reinforcements pays the original typed reserve quote before
+  any return; future returns cannot fund or change it.
+- In the existing native Advanced Occupy envelope, Reinforcements composes
+  with original or Mirror-copied Stone. Its +2 normal score adds no physical
+  undialed tokens, but the original own-reserve cost still pays.
 
-Affected eleven-file134/134, types/lint and build pass. Six new behavioral
-regressions, eight fresh Node policy programs/all four profiles with16 accepted
-continuation actions and a real390px typed-cost journey pass. Original2-normal/
-1-elite reserve payment survives the later4-normal return; owner finishes
-reserves4/Tanks16/elite Tanks5/spice29, both cards discarded and collection open.
-No root overflow or browser/application error. Current parse/policy anchor and38
-topic evidence paths resolve; all ten facets remain Partial.
-[Policy and scoped proof](REINFORCEMENTS_RUNTIME.md#combined-utility-plan--16-october-2026).
-Stone/Reinforcements, other profile/module limits and final assurance remain
-separate. No human server, saved room, D1, deployment or public gate changed.
+Original fixed Ecaz commitment, variable ally casualties, support, Traitor
+precedence and mandatory utility-card disposal stay separate. The earlier
+questions remain unanswered; explicit product interpretations are not publisher
+rulings. No state field, new profile or public start is added.
 
+Latest affected sixteen-file167/167, types/lint and build pass. Eight fresh
+Node programs/all four profiles cover both leads/original or Mirror attacks
+with36 accepted continuation actions. The corrected390px native-control journey
+starts within hand capacity: physical5-vs4 wins, Ecaz reserves15→12/Tanks6,
+Guild Tanks1, original support9→8, Ecaz2/Guild3 remain. Reinforcements discards
+once; Stone retention clears battle/decision into collection, without overflow
+or browser/application error. An overfull initial fixture was corrected by
+returning unselected cards to the conserved deck; that initial hand is not
+legal-hand evidence.
 
-**Harass / Stone Burner interaction — 16 October.** Richese-family Harass now
-uses visibly provisional post-withdrawal physical comparison under the standing
-choose-recommended priority; the earlier source question remains unanswered.
-Same-plan, opposing and Mirror-resolved Stone preserve Traitor precedence,
-original support and mandatory disposal. Active Occupy removes only its
-actual card user's fixed or variable undialed pool, preserving the original
-mandatory Ecaz commitment. Public preflight considers possible fixed withdrawal
-without reading hidden cards. No persisted game field is added.
-
-Affected thirteen-file161/161, types/lint and build pass. Eight same-plan
-policy programs/all four profiles accept24 continuation actions. Two actual
-390px native-control journeys prove Basic winner reversal and Advanced typed
-return/support/leader-death/bounty through retention and collection. No root
-overflow or application/browser error in the corrected host's journeys.
-Original Richese lot and shared-preparation fixture drivers were corrected;
-incidental collection-wallet expectations were removed. Current guide parse,
-policy anchor and33 evidence paths resolve; both topics' five facets stay
-Partial. [Policy and scoped proof](HARASS_WITHDRAW_RUNTIME.md#provisional-stone-burner-timing--16-october-2026).
-Ix/Poison Tooth, Reinforcements/Stone and own
-concealed No-Field Harass and other module gates remain. No human server,
-saved room, D1, deployment or public gate changed; final assurance stays due.
+Current parse/composition anchor and23 topic paths resolve; all ten relevant
+facets remain Partial. Exact policies and earlier bounded human/policy proof:
+[Harass/Stone](HARASS_WITHDRAW_RUNTIME.md#provisional-stone-burner-timing--16-october-2026),
+[Harass/Reinforcements](REINFORCEMENTS_RUNTIME.md#combined-utility-plan--16-october-2026),
+[Reinforcements/Stone](REINFORCEMENTS_RUNTIME.md#native-stone-composition--16-october-2026).
+Ix/Poison Tooth, own concealed No-Field Harass and other profile/module limits
+remain. No human server, saved room, D1, deployment or new assurance campaign
+changed; final assurance follows all rules.
 
 **Ixian Nexus purchased-card interaction wave — 16 October.**
 Purchased-card replacement now composes:

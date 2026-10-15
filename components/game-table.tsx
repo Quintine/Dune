@@ -550,9 +550,7 @@ export function GameTable({
     selectedDefenseId === 'ecaz-reinforcements';
   const reinforcementsPlanReason = !reinforcementsSelected ? null :
     !g.battle?.reinforcements ? 'Reinforcements is unavailable in this battle.' :
-    g.battle.reinforcements.blocked ??
-    ((!!selectedBattleWeapon && isStoneBurner(selectedBattleWeapon))
-      ? 'Reinforcements cannot share this plan with Stone Burner.' : null);
+    g.battle.reinforcements.blocked;
   const selectedBattleKwisatz = kwisatz && !!me.kwisatz?.active &&
     !me.kwisatz.dead && !g.battle?.kwisatzBlocked &&
     (!me.kwisatz.usedAt || me.kwisatz.usedAt === g.battle?.territory);
@@ -3091,6 +3089,13 @@ export function GameTable({
                     forces remaining after a successful withdrawal. An opposing
                     successful Traitor cancels that withdrawal.
                   </p>
+                  {g.battle?.cards.some(card => card.id === 'ecaz-reinforcements') && (
+                    <p className="fine">
+                      Reinforcements still pays its original three-reserve cost.
+                      Its +2 normal-score bonus does not add undialed physical
+                      tokens or change Stone Burner’s comparison.
+                    </p>
+                  )}
                   <a href="/rules?topic=stone-burner">
                     Read Stone Burner rules
                   </a>
@@ -5370,6 +5375,13 @@ export function GameTable({
                                     ? 'Mirror Weapon copies the opposing revealed weapon attack, not its physical card. If the copied attack is Stone Burner, it uses undialed physical tokens; any copied post-reveal choice is yours. A winning Mirror remains physical Mirror, even if it copies activated Poison Tooth or Artillery.'
                                     : 'Stone Burner compares undialed physical tokens, not dialed strength. Its leader effect is chosen after both plans are revealed.'}
                                 </p>
+                                {reinforcementsSelected && (
+                                  <p className="fine">
+                                    Reinforcements still spends three original reserves.
+                                    Its +2 normal-score bonus cannot increase the undialed
+                                    physical tokens compared by original or copied Stone Burner.
+                                  </p>
+                                )}
                                 <CardInspector card={selectedSpecialWeapon} />
                                 {stonePlanReason && (
                                   <p className="notice" role="status">

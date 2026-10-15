@@ -21251,11 +21251,7 @@ function validatePlan(
     validBattleSlotPair(w, d, planetologistWeapon),
     'Chemistry as a weapon needs another defense; Weirding Way as a defense needs another weapon.',
   );
-  if ([w, d].some(isReinforcements)) {
-    requireRule(![w, d].some(isStoneBurner),
-      'Reinforcements cannot share this bounded plan with Stone Burner.');
-    currentReinforcementsCost(g, p);
-  }
+  if ([w, d].some(isReinforcements)) currentReinforcementsCost(g, p);
   if ([w, d].some(isHarassWithdraw)) currentHarassWithdrawQuote(g, p, plan);
   if (isMirrorWeapon(w)) {
     const blocked = mirrorWeaponModeBlock(g) ?? stonePlanBlock(g, p, plan);

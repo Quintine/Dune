@@ -78,6 +78,8 @@ export function stoneHarassCustody(game: Game): void {
       ...(player.faceDancers ?? []).map(card => card.leader)]),
   ].sort(), traitorDeck(game.players, game.expansions.includes('ix')).sort());
   for (const player of game.players) {
+    // Both native fixture rosters use four-card hands.
+    assert.ok(player.hand.length <= 4, 'Conserved card staging must also respect native hand capacity.');
     assert.equal(player.reserves + player.tanks +
       Object.values(player.forces).reduce((sum, amount) => sum + amount, 0), 20);
     assert.ok([player.reserves, player.tanks, ...Object.values(player.forces)]
@@ -312,6 +314,13 @@ export function stoneHarassOccupyFixture(
     ecazForces: options.ecazForces ?? 5, allyForces: options.allyForces ?? 4,
     ...(options.opponentForces === undefined ? {} : { opponentForces: options.opponentForces }),
     ...(options.opponentElite === undefined ? {} : { opponentElite: options.opponentElite }) });
+  // Isolate selected battle cards after genuine setup/auctions, before the
+  // lead choice reserves any plan. Return real unselected hands to the deck;
+  // adding Stone, Harass and a paired reserve card must not create a fifth card.
+  for (const player of occupy.game.players) {
+    occupy.game.deck.push(...player.hand);
+    player.hand = [];
+  }
   const owner = lead === 'ecaz' ? occupy.ecaz : occupy.ally;
   const harassOwner = options.harass === false ? null : owner;
   const stoneOwner = options.stone === 'harass' ? owner : occupy.opponent;

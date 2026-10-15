@@ -1107,6 +1107,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'After both plans reveal, choose to kill both leaders or ignore the strength of leaders who otherwise survive. Neither leader strength nor Kwisatz Haderach strength determines this battle. The choice affects deaths and bounty, not which undialed-force comparison is used. Ignoring strength supplies no protection against another weapon.',
       'Compare the number of physical force tokens not dialed into battle. The aggressor wins a tie. Dialed losses and spice support still follow their normal rules; elite strength is not an extra physical token.',
       'With Harass & Withdraw, this prototype provisionally compares undialed tokens remaining after successful withdrawal. An opposing successful Traitor cancels the return and decides the outcome instead. In Occupy, only the card user’s pool returns; original fixed Ecaz commitment and the other ally’s undialed counters remain. This timing is an explicit implementation interpretation, not a publisher ruling.',
+      'In the existing native Advanced Occupy prototype, Reinforcements still pays its original own-reserve cost with same-plan, opposing or Mirror-copied Stone. Its +2 normal-score bonus adds no physical undialed tokens, dial, support or on-board casualties. Original mode choices, Traitor precedence and physical Stone/Mirror retention remain unchanged; other profile/module boundaries stay.',
       'The plan editor checks the chosen dial and support against every projected public opposing force possibility. If legal force allocations could change the winner, commitment is blocked until that combined timing is supported. Ix expansion timing involving Poison Tooth also remains guarded pending its ordering ruling. Opposing hidden No-Field values are not inspected.',
       'Traitor and Lasgun–shield explosion precedence remain intact. Ordinary bounty applies unless another effect suppresses it. Stone Burner uses the general winning battle-card retention rule: a winner may keep it, and a losing played card is discarded. Normal Moritani ally retention may apply.',
       'The post-reveal choice is bound to the current battle event and cannot be repeated after refresh. Review both revealed plans and select one mode; there is no separate victim or death confirmation.',
@@ -1156,6 +1157,7 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/stone-harass-quote.test.ts',
           'tests/stone-harass-runtime.test.ts',
           'tests/ecaz-occupy-harass-quote.test.ts',
+          'tests/stone-reinforcements.test.ts',
         ],
       },
     ],
@@ -4950,7 +4952,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'In the independent Ecaz Treachery Cards variant, place your held Reinforcements card in either battle-card slot; it is neither a weapon nor a defense. A category Prescience answer is None, not the name of this card. One physical card cannot fill both slots.',
       'Have three own forces in reserves when sealing. Classic/paired Ecaz/Moritani Basic/Advanced and explicitly selected native Advanced Occupy prototypes spend ordinary reserves first and then elite reserves, moving exactly three to corresponding Tanks subpools at resolution. These are the actual card holder’s reserves, not the variable ally’s pool; no extra forces arrive.',
       'The normal-outcome score gains 2 without adding to the physical dial, spice support or on-board casualties. The card and its reserve cost are consumed even on a Traitor victory, a mutual Traitor result or a Lasgun/Shield explosion; successful Traitor calls still decide the outcome directly.',
-      'All-outcome payment, normal-first selection and reserve transfer counting as battle losses remain provisional interpretations, not publisher rulings. Same-plan Harass & Withdraw provisionally pays the original three-reserve cost before undialed forces return; returned reserves cannot fund or change that quote. Basic/unprofiled co-side, Stone Burner and other optional modules remain guarded.',
+      'All-outcome payment, normal-first selection and reserve transfer counting as battle losses remain provisional interpretations, not publisher rulings. Same-plan Harass pays the original three-reserve cost before returns; returned reserves cannot fund or change it. In native Advanced Occupy, original or copied Stone ignores +2 normal score but still charges the reserve cost. Basic/unprofiled co-side and other profile/module limits remain guarded.',
     ],
     related: ['battle-cards', 'battle', 'card-recruits', 'card-harass-withdraw', 'implementation-checklist'],
     checklist: [
@@ -4958,7 +4960,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       { area: 'Player controls', status: 'Partial', detail: 'Owner-only availability, exact cost guidance and both battle selectors support the card; private category answers remain None.', evidence: ['components/battle-preparation.tsx', 'components/game-table.tsx'] },
       { area: 'AI', status: 'Partial', detail: 'Four profiles consider legal physical slot candidates and the normal score bonus; strategy and calibration remain unfinished.', evidence: ['game/bots.ts'] },
       { area: 'Documentation', status: 'Partial', detail: 'The printed effect and unresolved Traitor, explosion, type-selection and accounting interpretations are distinguished from this temporary prototype.', evidence: ['docs/ECAZ_TREACHERY_RULES.md', 'docs/REINFORCEMENTS_RUNTIME.md'] },
-      { area: 'Verification', status: 'Partial', detail: 'Original rule/control proof and same-plan Harass regressions cover both slots, unfunded original reserves, typed cost-before-return, Traitor/explosion and fixed/variable Occupy. Actual mobile control and legal four-profile smoke are bounded evidence; complete modes, calibration and final assurance remain open.', evidence: ['tests/harass-reinforcements.test.ts', 'tests/reinforcements.test.ts', 'tests/reinforcements-engine.test.ts', 'tests/ecaz-occupy-cards-runtime.test.ts', 'docs/ECAZ_OCCUPY_RULES.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Original proof plus same-plan Harass and native Stone/Mirror cases cover original typed costs, physical-token victory, fixed/variable Occupy, Traitor/explosion and retention. Actual mobile controls and legal four-profile smoke are bounded evidence; complete modes, calibration and final assurance remain open.', evidence: ['tests/stone-reinforcements.test.ts', 'tests/harass-reinforcements.test.ts', 'tests/reinforcements.test.ts', 'tests/reinforcements-engine.test.ts', 'tests/ecaz-occupy-cards-runtime.test.ts', 'docs/ECAZ_OCCUPY_RULES.md'] },
     ],
   },
   {

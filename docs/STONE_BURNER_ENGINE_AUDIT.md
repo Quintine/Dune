@@ -29,10 +29,20 @@ checks possible fixed Ecaz withdrawal without inspecting hidden cards.
 
 The earlier question remains unanswered. This is an interpretation selected
 under the standing choose-recommended priority, not newly retrieved publisher
-authority. Ix/Poison Tooth, Reinforcements/Stone, own concealed No-Field Harass
-and other module boundaries remain separate. The 6 September evidence above
+authority. Ix/Poison Tooth, own concealed No-Field Harass and other profile/
+module boundaries remain separate. The 6 September evidence above
 is historical; the current checkpoint has its own bounded proof.
 
+
+## Reinforcements composition — 16 October 2026
+
+Within the existing native Advanced Occupy envelope, same-plan/opposing
+Reinforcements and original/Mirror-copied Stone now share the
+[physical-token composition](REINFORCEMENTS_RUNTIME.md#native-stone-composition--16-october-2026).
+The original three-own-reserve fee pays once; +2 normal score adds no physical
+undialed tokens or support. Original fixed Ecaz commitment, variable ally losses,
+mode choices, Traitor precedence and physical Stone/Mirror retention stay.
+Other profile/module gates and the explicit reserve-cost interpretation remain.
 
 ## Primary evidence and exact effect
 

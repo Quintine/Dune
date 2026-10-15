@@ -121,7 +121,7 @@ void test('the losing card cannot enter a Moritani Nexus retention window', () =
   assert.deepEqual(q.discarded, [{ player: 'a', card: REINFORCEMENTS_CARD }]);
 });
 
-void test('selected card requires own funded typed reserves and rejects malformed cards, pairs and unsupported combinations', () => {
+void test('selected card requires own funded typed reserves and rejects malformed or duplicate commitments', () => {
   const missing = fixture();
   delete missing.attacker.reinforcementsReserves;
   assert.throws(() => quoteBattleResolution(missing), BattleResolutionQuoteError);
@@ -139,7 +139,17 @@ void test('selected card requires own funded typed reserves and rejects malforme
   const duplicate = fixture();
   duplicate.attacker.plan.defense = reinforcement.id;
   assert.throws(() => quoteBattleResolution(duplicate), BattleResolutionQuoteError);
-  const stone = fixture();
-  putCard(stone, 'defender', 'weapon', 'stoneBurner');
-  assert.throws(() => quoteBattleResolution(stone), BattleResolutionQuoteError);
+});
+
+void test('Stone ignores the Reinforcements score bonus but still charges its original typed reserve cost', () => {
+  const g = fixture();
+  putCard(g, 'defender', 'weapon', 'stoneBurner');
+  g.defender.stoneMode = 'ignore';
+  g.defender.plan.dial = 1;
+  g.defender.plan.support = 1;
+  const q = quoteBattleResolution(g);
+  assert.equal(q.winner, 'd', 'three undialed attacker counters lose to four; +2 is not a physical token bonus');
+  assert.deepEqual(q.stone, {winner: 'defender', attacker: [3], defender: [4]});
+  assert.deepEqual(q.reinforcements, [{player: 'a', card: REINFORCEMENTS_CARD, normal: 1, elite: 2}]);
+  assert.deepEqual(q.discarded, [{player: 'a', card: REINFORCEMENTS_CARD}]);
 });
