@@ -1394,7 +1394,8 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Destroyed tokens return to supply; triggered regular tokens are set aside, Bene Gesserit is permanently removed, and replenishment waits for all five random tokens. Storm/explosion destruction remains separate. The reusable Ecaz token returns to supply after acquisition or alliance proposal. Basic has an optional new-ally Duke loan; the supplied Advanced p30 automatically grants an available Duke after accepted consent.',
       'When an eligible entrant reaches the reusable Ecaz token, Ecaz may acquire the available shared Duke. The token returns to supply and its companions are unchanged. Unused Ecaz control persists until battle use or Moritani acquisition. Basic optional and Advanced automatic new-ally grants are connected; standing ally assignment and wider captured-loan combinations remain for refinement.',
       'Unallied Ecaz may propose an alliance to an unallied entrant. Acceptance activates alliance abilities immediately. Basic then offers an optional Duke loan; Advanced automatically adds an available Duke under supplied PDF p30, without another acknowledgement. The first version releases a surviving loan after one battle, provisionally; an unused living loan is set aside at turn end. Unavailable Duke never prevents consent.',
-      'When another eligible faction enters a marked stronghold, Ecaz may trigger its Ambassador for itself or its current ally, or leave it in place. Ecaz itself, its ally, advisors and the faction matching the physical Ambassador do not trigger it. Ordinary Guild-paid shipment now settles its original income/counter window before the queued Ambassador prompt, without replaying payment or forces. Actual busy controls and unresolved BG/other arrival combinations retain their guards.',
+      'When another eligible faction enters a marked stronghold, Ecaz may trigger its Ambassador for itself or its current ally, or leave it in place. Ecaz itself, its ally, advisors and the faction matching the physical Ambassador do not trigger it. Ordinary shipment and native Guild transport settle their own income, BG Intrusion and accompaniment controls before queued entry, without replaying payment or forces. Actual busy controls and unsupported paired or module combinations remain guarded.',
+      'Accompaniment joining retained BG fighters creates a distinct eligible child entry before the original shipper. Declining the child leaves the live token for the original entry; consuming it does not create a token to offer again. Advisors remain exempt. This existing child-first, live-token composition is explicitly provisional, not a publisher priority ruling.',
       'Emperor grants five bank spice. Atreides records the entrant’s current Treachery hand privately for the beneficiary; Harkonnen records one randomly selected held Traitor identity, or Face Dancer identity for a Tleilaxu entrant. These snapshots remain in the recipient’s private inspection history, identify when they were taken, and do not become a live view of later changes. Opening, enlarging or closing them needs no game acknowledgement.',
       'CHOAM lets the beneficiary choose any available hand cards, including none, for three spice each. Ixians require one available card to discard before drawing its replacement. Card controls respect projected reservations. After committing an Ixian exchange, a voluntary interruption must leave a card available for its required discard; a queued Truthtrance counts as already committed. A Bene Gesserit trigger permanently removes its token, then the beneficiary chooses an available effect outside the original supply for this group; unsupported copies remain visibly blocked.',
       'The Richese Ambassador purchases the top Treachery Card for three of the chosen beneficiary’s own spice when executable. Normally this is automatic; in supported Emperor-absent Nexus tables, the committed trigger instead offers uniform beneficiary Pay or eligible Emperor Nexus Use, with no new decline. Under the provisional purchase composition, an actual unallied holder may prove/retain that price, with no bank payment or reimbursement. Original private inability still consumes the token without payment/draw and does not disclose the reason. Native Emperor income and Harkonnen bonus remain applicable to their original sources, with hand limits and Karama; original movement/worm continuation runs once. Ixian replacement still requires Bidding.',
@@ -1411,33 +1412,33 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Original effects, copies, direct Duke acquisition, consent and storm/explosion returns remain integrated. Ordinary reserve shipment now distinguishes future Guild income from an actually busy control and uses the existing income-then-entry queue. Original price/funding and permission remain. Terror deferral stays connected; other Ambassador/arrival compositions remain partial.',
+          'Original effects, copies, Duke acquisition, consent and token returns remain integrated. Ordinary shipment and native Guild transport distinguish future own income/BG controls from actual busy state; the existing committed-entry queue handles settlement. A legitimate fighter companion has its own child entry. Original prices, funding, payment, forces and movement remain; unsupported paired/module combinations stay partial.',
         evidence: ['game/engine.ts', 'game/bot-arrival.ts'],
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Existing placement, beneficiary, copied effect, private inspection, relocation and independent Guild grant controls remain. Actual390px ordinary Ship from reserves, Guild Allow shipment and Ecaz Acquire Duke controls debit Moritani12 to11/reserves14 to13 and credit Guild6 to7 before Ambassador resolution. The original subsequent Duke6 win opens Sanya4 reveal and physical Mentat replacement.',
+          'Existing placement, effect, consent and movement controls remain. Four actual390px native journeys use Guild transport and income cancellation, peaceful accompaniment, accepted Intrusion, and retained fighters with distinct child/original offers. Original entrant resumes actual movement after once-only payment and transfer; advisors do not create a bogus fighter offer.',
       },
       {
         area: 'AI',
         status: 'Partial',
         detail:
-          'All four profiles retain owner-view placement, trigger, beneficiary, copy, card, consent, movement and grant decisions. Ordinary positive-Guild-income Ambassador shipment is no longer filtered solely by a predicted future response; actual control and other reaction gates remain. All four consume the later native Ecaz target. Minimal legal participation only, not calibrated strategy.',
+          'All four profiles retain private legal placement, effect, consent and arrival decisions. Native transport future income and ordinary future accompaniment no longer block a candidate solely as predicted busy controls. All four Ecaz policies acquire Duke after income; all four BG policies legally convert and accompany. The retained-fighter child path is separate human/scripted proof. No strategy calibration.',
       },
       {
         area: 'Documentation',
         status: 'Partial',
         detail:
-          'Source-bound placement/effect/inspection and Basic optional versus Advanced automatic new-ally Duke guides remain. The ordinary Guild income-before-queued-Ambassador contract explicitly preserves tariffs, funding, counters and remaining arrival gates; it is not a new comprehensive priority FAQ.',
+          'Source-bound effects, copies and Duke guides remain. Native own-arrival continuation explicitly records existing child-first/live-token order as provisional, preserving actual controls, original tariffs and unsupported paired/module guards. Guild native rate-Karama expansion/Nexus admission is separate unfinished work, not a printed prohibition.',
         evidence: ['docs/ECAZ_AMBASSADORS_RULES.md', 'docs/DEFERRED_SHIPMENT_ARRIVAL.md', 'docs/BOT_ARRIVAL_PREFLIGHT.md'],
       },
       {
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Current affected15-file134/134, types/lint and original native API proof pass. Actual390px paid shipment and Guild permission settle income1, then Ecaz acquires Duke6 and original native Sanya4 reveal/replacement follows; final surface has no overflow/browser errors. Earlier effect/copy/consent/inspection and persisted evidence remains source-bound, not new saved/deployed assurance. Other arrival combinations and full acceptance remain open.',
+          'Affected six-file55/55,20 original API/policy paths and four actual390px journeys pass: income allow/cancel, accompaniment and Intrusion accept/decline/cancel, legitimate fighter child, token consumption and original movement. No overflow/application browser errors. Genuine original-action fixtures do not stage played hands, wallets, armies or phase. Existing saved/deployed evidence stays historical; full acceptance remains open.',
         evidence: [
           'tests/ecaz-ambassadors.test.ts',
           'tests/ecaz-placement.test.ts',
@@ -1445,6 +1446,8 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/moritani-ecaz-duke-winner.test.ts',
           'tests/bot-arrival.test.ts',
           'tests/deferred-shipment-arrival.test.ts',
+          'tests/guild-ambassador-income-arrival.test.ts',
+          'tests/bg-ambassador-arrival.test.ts',
           'tests/ecaz-duke-acquisition.test.ts',
           'tests/ecaz-duke-bots.test.ts',
           'tests/ecaz-duke-recovery.test.ts',

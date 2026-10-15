@@ -120,7 +120,9 @@ export function quoteCompletedMovementArrival(
     input.terror.some((t) => t.status === 'placed' && t.location === order.to)
   );
   const response = controls.response || order.wantsFighters;
-  const decision = controls.decision || intrusion;
+  // Intrusion is a resulting own-arrival choice, not an already active control.
+  // The committed entry waits for it in the existing arrival continuation.
+  const decision = controls.decision;
   if (
     triggersAmbassador &&
     triggersTerror &&

@@ -3,6 +3,20 @@
 13 September 2026. This work repairs a development-game deadlock without
 assigning an unverified order to simultaneous expansion reactions.
 
+## Native Intrusion classification — 15 October 2026
+
+Shared preflight no longer treats **resulting** BG Intrusion as an already
+active decision. Actual busy controls and the pre-entry fighter choice
+remain blocking. The existing committed-entry queue waits for Intrusion
+and accompaniment before offering the original Ambassador entry.
+An accompanying counter joining retained fighters is a distinct child:
+existing child-first/live-token order remains an explicit provisional
+composition, not a new publisher priority. Advisors are exempt.
+Original actions, cancellation paths and actual movement continuation pass
+in the [native shipment follow-up](DEFERRED_SHIPMENT_ARRIVAL.md#native-own-arrival-continuations--15-october-2026).
+This supersedes the historical blanket Intrusion exclusion below, not
+unsupported competing-reaction/module guards or public acceptance gates.
+
 ## Reproduced failure and source boundary
 
 The all-three-expansion Advanced sample from checkpoint `cab2f1c` stopped on

@@ -4,6 +4,42 @@
 exposed an already accepted shipment whose Guild allowance could not finish.
 This continuation repair preserves the existing unfinished arrival-order gates.
 
+## Native own-arrival continuations — 15 October 2026
+
+Direct native Guild transport now has the same clear owner-view candidate
+as its already executable engine path: future earned income is not a current
+busy control. Ordinary shipment likewise stops predicting its own future BG
+accompaniment as an active decision. Shared movement preflight distinguishes
+resulting Intrusion from an actual pending decision. The existing committed
+entry queue, not a second timing adapter, waits for those native controls.
+
+Original price, funding, payment, source group, reserve transfer and movement
+ownership stay unchanged. Actual response/decision/Terror/Ambassador controls,
+pre-entry fighter choice, Fremen storm protection and unsupported paired
+reaction/profile guards remain. The separate Guild **rate** Karama profile
+gate is unchanged and remains follow-up work; income cancellation is not
+rate cancellation.
+
+**Provisional composition, not publisher priority:** finish the arrival's
+own controls before its deferred entry. Accompaniment joining existing BG
+fighters creates a distinct eligible child entry before the original shipper.
+Declining that child leaves a live token for the original entry; consuming
+it leaves no token to offer again. Advisors remain exempt. This retains the
+existing callback/queue order; it does not invent FIFO or suppress a BG choice.
+
+Two original-action fixtures cover Guild income allow/cancel and Ambassador
+trigger/decline, BG accompaniment accept/decline/cancel, Intrusion flip/decline/
+cancel, the fighter child and original movement. No played hand, wallet,
+army, phase or decision is staged. Affected six-file **55/55** and **20**
+original API/policy paths pass. Four actual styled390px GameTable journeys
+exercise Guild transport/income cancellation, advisor accompaniment, accepted
+Intrusion, and declined Intrusion with child-then-original offers. Payment
+and transfers occur once; original movement resumes; no overflow/browser
+errors. In-memory loopback proof only, not saved-room or deployed acceptance.
+
+This supersedes the BG/direct-transport exclusions in the earlier checkpoint
+below and obsolete rejection-test pins, not its remaining recovery safeguards.
+
 ## Ordinary Guild income before Ambassador entry — 15 October 2026
 
 The original native Ecaz/Moritani/Guild producer exposed a stale preflight:
@@ -17,9 +53,9 @@ Ordinary reserve shipment no longer predicts Guild income as a busy control.
 The original physical/price/funding validation, Guild permission, payment,
 income/cancellation and deferred-entry queue remain unchanged. The shared
 ordinary bot adapter follows that same distinction, without reading hidden
-funding or rival hands. Actual in-flight controls, BG accompaniment/Intrusion,
-Fremen storm protection and unsupported paired-reaction gates are not removed.
-Direct Guild cross-planet transport retains its separate adapter boundary.
+funding or rival hands. Actual in-flight controls, Fremen storm protection
+and unsupported paired-reaction gates remain. The native own-arrival
+follow-up above also connects direct transport and BG's resulting choices.
 This reuses the documented income-before-entry order, not a new comprehensive
 publisher priority table or an exception to paying for entry.
 

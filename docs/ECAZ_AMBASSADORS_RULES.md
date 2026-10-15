@@ -9,14 +9,29 @@ Audit: 2026-09-06. Scope: ambassador inventory, setup, placement, triggering, ef
 - **Designer clarification:** Jack Reda (@The Warp), 26 August 2023, on his [Ecaz and Moritani rulebook upload](https://boardgamegeek.com/filepage/263742/ecaz-and-moritani-rules), explicitly confirms Ambassador placement face up. This is the designer speaking directly, not a community interpretation. The publisher-indexed file-page comment was verified in the follow-up audit below.
 - No community amendment, fan implementation, or tournament rule was used. No separately dated official ambassador errata resolving the remaining open questions was found in this bounded pass. Use applicable official corrections/FAQ over general text; record conflicts rather than silently resolving them.
 
+## Native own-arrival follow-up — 15 October 2026
+
+Native Guild transport and ordinary BG accompaniment/Intrusion now use the
+existing committed-entry continuation rather than treating future controls
+as already busy. Original income can be allowed or canceled; BG choices
+retain their actual Karama windows and stance. An accepted accompanying
+counter joining fighters creates a distinct child offer before the original
+shipper; consuming the live token at the child prevents a second offer.
+Advisors remain exempt. This existing child-first/live-token composition is
+explicitly provisional, not a publisher priority ruling.
+Affected six-file55/55,20 original API/policy paths and four actual390px
+journeys pass without replaying payment/forces or losing original movement.
+Actual controls, unsupported overlaps, public starts and final assurance remain.
+[Canonical continuation and remaining rate-window boundary](DEFERRED_SHIPMENT_ARRIVAL.md#native-own-arrival-continuations--15-october-2026).
+
 ## Ordinary Guild-paid entry follow-up — 15 October 2026
 
 Original reserve shipment now settles its actual Guild income/counter window
 before the already queued Ambassador entry, instead of rejecting because of
 a predicted future receipt. Price/funding, physical transfer, token handling
-and original caller resumption do not change. Actual current controls and
-unresolved BG/other-arrival combinations remain guarded; this is not a new
-comprehensive printed priority rule.
+and original caller resumption do not change. The later native follow-up
+above supersedes the BG/direct-transport exclusion; actual current controls
+and unsupported combinations remain guarded.
 
 The actual390px native table ships/permits one for Moritani12→11 and
 Guild6→7, opens the Ecaz Ambassador, acquires Duke6, then resolves a real

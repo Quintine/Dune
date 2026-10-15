@@ -15352,13 +15352,6 @@ function quoteShipmentArrival(
     ? Math.max(1, shipment.amount)
     : shipment.amount + (shipment.smugglerCompanion ? 1 : 0);
   const guild = byFaction(g, 'guild');
-  const bg = byFaction(g, 'beneGesserit');
-  const advisorFollowup = !!(
-    p.faction !== 'fremen' &&
-    bg &&
-    bg.id !== p.id &&
-    spiritualAdvisorMaximum(g, bg.id) > 0
-  );
   const currentDecision = !!(
     g.decision &&
     !(
@@ -15391,7 +15384,7 @@ function quoteShipmentArrival(
       response:
         !!g.response ||
         (g.advanced && p.faction === 'fremen' && shipment.sector === g.storm),
-      decision: currentDecision || advisorFollowup,
+      decision: currentDecision,
       pendingTerror: !!g.pendingTerrorEntry,
       pendingAmbassador: !!g.pendingAmbassador,
       paidBox: !!g.pendingNullentropy,

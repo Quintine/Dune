@@ -4,15 +4,33 @@
 arrival guard. It does not choose an order for simultaneous reactions or lift
 an unfinished expansion gate.
 
+## Native transport and BG own controls — 15 October 2026
+
+`guildShip` no longer predicts its future positive Guild receipt as a busy
+response; ordinary `ship` no longer predicts future accompaniment as a busy
+decision. Shared preflight still reports resulting Intrusion but does not
+confuse it with an actual pending decision. Original funding/tariff, actual
+controls, pre-entry fighter choice, Fremen storm and paired-overlap gates
+remain. The engine's existing queue owns settlement, not bot-specific rules.
+
+Genuine original native producers prove the Guild candidate and executable
+BG branches. All four owner policies legally acquire Duke after Guild income;
+all four BG policies legally convert fighters and accompany as advisors.
+The human/scripted retained-fighter child path is separate evidence, not a
+claim that every profile chose it. Affected six-file55/55,20 API/policy paths
+and four actual390px journeys pass. Obsolete predicted-reaction rejection
+and wording pins are removed. Minimal legal play only; no calibration or
+complete combination claim.
+[Current authoritative contract](DEFERRED_SHIPMENT_ARRIVAL.md#native-own-arrival-continuations--15-october-2026).
+
 ## Ordinary Guild-paid Ambassador candidate — 15 October 2026
 
 Ordinary reserve shipment no longer treats **future Guild income** as an
 already-pending arrival response. The authoritative commit already queues
 entry behind its actual income/counter continuation. The bot adapter removes
-only that stale ordinary-shipment prediction; own funding bounds/tariff,
-No-Field price independence, current busy controls, prospective BG
-accompaniment/Intrusion and Fremen storm checks remain.
-Direct `guildShip` transport retains its separate predictive boundary.
+only that stale ordinary-shipment prediction at that checkpoint. The later
+native continuation above also removes direct transport's future-income and
+ordinary shipment's future-BG predictions; current busy controls remain.
 
 The original native Ecaz/Moritani/Guild paid Ambassador shipment now has a
 clear owner-view quote and real committed permission/payment/entry path.
@@ -44,8 +62,8 @@ or infer a new rule from token co-location.
 
 The quote preserves same-territory movement, single reactions, own-faction and
 allied exemptions, matching Ambassador immunity and Bene Gesserit stance.
-Shipment additionally includes the prospective Guild income and Spiritual
-Advisor opportunities. It uses the actual ordinary tariff and selected or
+Shipment uses actual current controls rather than predicting future income or
+Spiritual Advisor choices as already busy. It uses the actual ordinary tariff and selected or
 minimum necessary allied contribution. A Guild-funded payment that creates no
 Guild income is kept. An owned No-Field is priced as one component without
 reading its concealed value. Advanced Fremen storm arrival keeps its existing

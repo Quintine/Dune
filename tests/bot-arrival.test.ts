@@ -12,10 +12,8 @@ import {
   movementArrivalGame,
 } from './deferred-movement-arrival-fixture';
 import {
-  addShipmentArrivalAmbassador,
   shipmentArrivalAction,
   shipmentArrivalGame,
-  richeseNoFieldArrivalAction,
 } from './fixture-deferred-shipment-arrival';
 
 const profiles = ['Easy', 'Medium', 'Hard', 'Brutal'] as const;
@@ -134,44 +132,6 @@ void test('single reactions and matching-faction Ambassador immunity remain play
   }
 });
 
-void test('shipment detects prospective BG accompaniment including a concealed No-Field without inspecting its denomination', () => {
-  const game = shipmentArrivalGame();
-  addShipmentArrivalAmbassador(game);
-  assert.throws(() => applyAction(game, game.active!, shipmentArrivalAction));
-  game.active = 'richese';
-  arrivalPlayer(game, 'richese').shipped = false;
-  const marker = richeseNoFieldArrivalAction(game);
-  assert.throws(() => applyAction(game, 'richese', marker));
-});
-
-
-void test('Advanced BG fighter intrusion is distinguished from advisor presence', () => {
-  const game = shipmentArrivalGame();
-  addShipmentArrivalAmbassador(game);
-  const guild = arrivalPlayer(game, 'guild');
-  guild.forces = { 'arrakeen:10': 3 };
-  guild.reserves = 17;
-  guild.shipped = true;
-  const bg = arrivalPlayer(game, 'bg');
-  bg.forces = { 'carthag:11': 1 };
-  bg.reserves = 19;
-  const move = {
-    type: 'move',
-    from: 'arrakeen:10',
-    territory: 'carthag',
-    sector: 11,
-    amount: 3,
-  };
-  assert.throws(() => applyAction(game, guild.id, move));
-  bg.advisors = { carthag: {} };
-  // Advisors need another faction present or automatic stance settlement
-  // correctly makes this lone group fighters before either quote.
-  const moritani = arrivalPlayer(game, 'moritani');
-  moritani.forces = { 'carthag:11': 1 };
-  moritani.reserves = 19;
-  assert.equal(botArrivalBlock(ownView(game), move), null);
-  assert.equal(applyAction(game, guild.id, move).pendingAmbassador?.entrant, guild.id);
-});
 
 void test('arrival filtering never reads hidden rival resources or Terror faces and does not mutate the view', () => {
   const game = movementArrivalGame();

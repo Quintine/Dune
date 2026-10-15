@@ -1,5 +1,46 @@
 # Dune implementation status
 
+## 15 October 2026 — Native Guild/BG own-arrival continuations
+
+Direct native Guild transport's engine already committed income before queued
+entry, but its bot candidate predicted that future income as busy. The native
+original owner view now agrees with the executable path. Ordinary shipment
+also stops predicting its future BG accompaniment as an active decision;
+shared movement preflight retains resulting Intrusion without calling it an
+already-pending control. No second queue, timing adapter or price/state schema.
+
+Existing settlement handles income allow/cancel, Intrusion accept/decline/
+cancel, and accompaniment accept/decline/cancel before the original entry.
+A real companion joining retained BG fighters creates its own child offer:
+decline keeps the live token for the original entrant; trigger consumes it
+without recreating an offer. Advisors remain exempt. Existing child-first/
+live-token composition is provisional, not a publisher priority ruling.
+Actual response/decision/Terror/Ambassador controls, pre-entry fighter choice,
+storm protection and unsupported paired/profile guards remain.
+
+Two genuine original-action fixtures use original setup, actual Guild alliance,
+paid token placement, real Karama custody, and prior BG movement/stance.
+No played wallet, hand, army, leader, phase or decision is assigned. Obsolete
+predicted-control rejection/fallback and wording pins were removed, not re-pinned.
+Affected six-file **55/55** and **20 original API/policy scenarios** pass.
+All four Ecaz policies acquire Duke after Guild income; all four BG policies
+convert then accompany. Retained-fighter human/scripted evidence is distinct.
+
+Four actual styled390px GameTable journeys use original controls for native
+transport with income canceled, peaceful accompaniment, accepted Intrusion,
+and declined Intrusion with distinct BG-child then Emperor offers. Original
+payment/force transfers happen once; original movement resumes, including
+actual Carthag→Arsunt moves. No horizontal overflow/application browser errors.
+A browser observation node race occurred after the final action committed;
+fresh state confirmed it and no action was replayed.
+Proof is in-memory loopback, not worker/D1/authenticated saved-room/deployed
+acceptance. The separate Guild native-rate Karama expansion/Nexus admission
+gate remains tracked next work. No reset, real-game write or public gate change.
+Final `npm run check:quick` and production build pass; existing module-register
+deprecation, chunk-size and Unknown-route warnings remain. Ten current-section
+local links and canonical checklist evidence targets resolve.
+[Canonical contract](DEFERRED_SHIPMENT_ARRIVAL.md#native-own-arrival-continuations--15-october-2026).
+
 ## 15 October 2026 — Physical Traitor replacements, retired zone and legal recycling
 
 Original Moritani Mentat replacement accepts the actual Ix Hero Traitor as a

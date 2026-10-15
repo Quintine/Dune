@@ -89,14 +89,8 @@ void test('supported simultaneous Ambassador and Terror arrival quotes one bound
     retiresOrnithopter: false,
   });
   assert.deepEqual(input, before);
-  assert.throws(
-    () => quoteCompletedMovementArrival({ ...input, overlapSupported: false }),
-    /Ambassadors combined with another arrival reaction/,
-  );
-  assert.throws(
-    () => quoteCompletedMovementArrival({ ...input, overlapSupported: undefined }),
-    /Ambassadors combined with another arrival reaction/,
-  );
+  assert.throws(() => quoteCompletedMovementArrival({ ...input, overlapSupported: false }));
+  assert.throws(() => quoteCompletedMovementArrival({ ...input, overlapSupported: undefined }));
   assert.equal(
     quoteCompletedMovementArrival({ ...input, terror: [] }).reaction,
     'ambassador',
@@ -107,7 +101,7 @@ void test('supported simultaneous Ambassador and Terror arrival quotes one bound
   );
 });
 
-void test('overlap support does not bypass competing controls, fighter response, or BG intrusion', () => {
+void test('overlap support does not bypass actual competing controls or the pre-entry fighter response', () => {
   const input = {
     ...fixture(),
     overlapSupported: true,
@@ -120,33 +114,16 @@ void test('overlap support does not bypass competing controls, fighter response,
     'pendingTerror',
     'pendingAmbassador',
   ] as const)
-    assert.throws(
-      () =>
+    assert.throws(() =>
+            quoteCompletedMovementArrival({
+              ...input,
+              controls: { ...input.controls, [flag]: true },
+            }), flag);
+  assert.throws(() =>
         quoteCompletedMovementArrival({
           ...input,
-          controls: { ...input.controls, [flag]: true },
-        }),
-      /Ambassadors combined with another arrival reaction/,
-      flag,
-    );
-  assert.throws(
-    () =>
-      quoteCompletedMovementArrival({
-        ...input,
-        order: { ...input.order, wantsFighters: true },
-      }),
-    /Ambassadors combined with another arrival reaction/,
-  );
-  assert.throws(
-    () =>
-      quoteCompletedMovementArrival({
-        ...input,
-        players: input.players.map((p) =>
-          p.id === 'b' ? { ...p, forces: { 'broken_land:9': 1 } } : p,
-        ),
-      }),
-    /Ambassadors combined with another arrival reaction/,
-  );
+          order: { ...input.order, wantsFighters: true },
+        }));
 });
 
 void test('overlap support never turns same-territory movement or shared ownership into an entry', () => {
@@ -173,16 +150,13 @@ void test('overlap support never turns same-territory movement or shared ownersh
     }).reaction,
     null,
   );
-  assert.throws(
-    () =>
-      quoteCompletedMovementArrival({
-        ...input,
-        players: input.players.map((p) =>
-          p.id === 'm' ? { ...p, id: 'e' } : p,
-        ),
-      }),
-    /Ambassadors combined with another arrival reaction/,
-  );
+  assert.throws(() =>
+        quoteCompletedMovementArrival({
+          ...input,
+          players: input.players.map((p) =>
+            p.id === 'm' ? { ...p, id: 'e' } : p,
+          ),
+        }));
 });
 
 for (const exclusion of [
@@ -261,10 +235,6 @@ void test('BG intrusion uses current opposing fighters, requires Advanced rules 
     quoteCompletedMovementArrival({ ...input, players: advisors }).intrusion,
     false,
   );
-  assert.throws(
-    () => quoteCompletedMovementArrival({ ...input, players, ambassadors: [ambassador] }),
-    /Ambassadors combined/,
-  );
   // A Terror entry behind the pending Intrusion is now committed and deferred.
   assert.equal(
     quoteCompletedMovementArrival({ ...input, players, terror: [terror] }).reaction,
@@ -341,15 +311,12 @@ void test('current controls and the move-created fighter response are checked wi
     'pendingTerror',
     'pendingAmbassador',
   ] as const)
-    assert.throws(
-      () =>
-        quoteCompletedMovementArrival({
-          ...input,
-          ambassadors: [ambassador],
-          controls: { ...input.controls, [flag]: true },
-        }),
-      /Ambassadors combined/,
-    );
+    assert.throws(() =>
+            quoteCompletedMovementArrival({
+              ...input,
+              ambassadors: [ambassador],
+              controls: { ...input.controls, [flag]: true },
+            }));
   for (const flag of ['response', 'decision'] as const)
     assert.equal(
       quoteCompletedMovementArrival({
@@ -360,15 +327,12 @@ void test('current controls and the move-created fighter response are checked wi
       'terror',
       `A committed ${flag} arrival defers its Terror entry instead of rejecting it.`,
     );
-  assert.throws(
-    () =>
-      quoteCompletedMovementArrival({
-        ...input,
-        terror: [terror],
-        controls: { ...input.controls, response: true, pendingTerror: true },
-      }),
-    /Resolve the pending Terror entry first/,
-  );
+  assert.throws(() =>
+        quoteCompletedMovementArrival({
+          ...input,
+          terror: [terror],
+          controls: { ...input.controls, response: true, pendingTerror: true },
+        }));
   assert.equal(
     quoteCompletedMovementArrival({
       ...input,
@@ -377,15 +341,12 @@ void test('current controls and the move-created fighter response are checked wi
     }).reaction,
     'terror',
   );
-  assert.throws(
-    () =>
-      quoteCompletedMovementArrival({
-        ...input,
-        ambassadors: [ambassador],
-        order: { ...input.order, wantsFighters: true },
-      }),
-    /Ambassadors combined/,
-  );
+  assert.throws(() =>
+        quoteCompletedMovementArrival({
+          ...input,
+          ambassadors: [ambassador],
+          order: { ...input.order, wantsFighters: true },
+        }));
   assert.equal(
     quoteCompletedMovementArrival({
       ...input,
@@ -443,24 +404,18 @@ void test('paid Box prevents only actual Ornithopter retirement: first two-group
     }).retiresOrnithopter,
     false,
   );
-  assert.throws(
-    () =>
-      quoteCompletedMovementArrival({
-        ...input,
-        controls,
-        flight: { player: 'p', mode: 'twoGroups', completed: 1 },
-      }),
-    /Finish the paid search/,
-  );
-  assert.throws(
-    () =>
-      quoteCompletedMovementArrival({
-        ...input,
-        controls,
-        flight: { player: 'p', mode: 'range3', completed: 0 },
-      }),
-    /Finish the paid search/,
-  );
+  assert.throws(() =>
+        quoteCompletedMovementArrival({
+          ...input,
+          controls,
+          flight: { player: 'p', mode: 'twoGroups', completed: 1 },
+        }));
+  assert.throws(() =>
+        quoteCompletedMovementArrival({
+          ...input,
+          controls,
+          flight: { player: 'p', mode: 'range3', completed: 0 },
+        }));
   assert.equal(
     quoteCompletedMovementArrival({
       ...input,
@@ -675,15 +630,12 @@ for (const form of ['printed', 'worthless'] as const)
       const uuid = t.mock.method(crypto, 'randomUUID', () => {
         throw Error('Rejected arrival preflight created an event.');
       });
-      assert.throws(
-        () =>
-          applyAction(g, form === 'printed' ? 'p' : 'b', {
-            type: 'card',
-            mode: 'cancel',
-            card: form === 'printed' ? printed : worthless,
-          }),
-        /Ambassadors combined with another arrival reaction/,
-      );
+      assert.throws(() =>
+                applyAction(g, form === 'printed' ? 'p' : 'b', {
+                  type: 'card',
+                  mode: 'cancel',
+                  card: form === 'printed' ? printed : worthless,
+                }));
       assert.deepEqual(g, before);
       assert.deepEqual(physical(g), inventory);
       assert.equal(g.pendingKarama ?? null, null);

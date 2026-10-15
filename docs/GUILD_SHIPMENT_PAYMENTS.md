@@ -2,6 +2,18 @@
 
 Integrated checkpoint, 2026-09-07 local date. This closes the contributor-routing defect and adds transport price controls; ordinary rate/permission Karama cancellation and nonbattle Truthtrance commitments remain incomplete.
 
+## Native direct transport continuation — 15 October 2026
+
+Direct `guildShip` already committed positive Guild income before queued
+Ambassador entry; its stale owner-view candidate now accepts that same path.
+Original on-board source6→5 plus destination1 costs one to the shipper without
+using reserves. Real Karama income cancellation prevents Guild's receipt
+without refunding the shipper or repeating transport; the original Ecaz
+offer and next movement owner follow. Allow/decline and cancellation variants
+pass in the [native arrival contract](DEFERRED_SHIPMENT_ARRIVAL.md#native-own-arrival-continuations--15-october-2026).
+The separate native **rate** Karama expansion/Nexus profile gate is unchanged
+and remains implementation work, not a printed prohibition or exercised path.
+
 ## Ordinary income then Ambassador arrival — 15 October 2026
 
 Original ordinary reserve shipment may now proceed into a placed Ambassador
@@ -9,8 +21,8 @@ when it earns Guild income. The stale preflight predicted that **future**
 receipt as an already-busy arrival control; the commit's existing income/
 counter-then-deferred-entry sequence already handles it. No tariff,
 contributor destination, pledge, cancellation or physical transfer changes.
-The ordinary bot preflight matches this distinction; direct `guildShip`
-transport and other unresolved arrival combinations remain separate.
+The ordinary bot preflight matches this distinction. The later direct
+transport follow-up above supersedes its earlier separate candidate boundary.
 
 Actual styled390px native controls ship one Moritani counter, use original
 Guild permission, settle Moritani12→11 and Guild6→7, then open Ecaz's real

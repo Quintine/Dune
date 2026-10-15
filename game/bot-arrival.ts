@@ -8,7 +8,6 @@ import {
 } from './karama-movement-preflight';
 import {
   guildShipmentCost,
-  guildShipmentIncome,
   reserveShipmentCost,
   shipmentPaymentBounds,
 } from './shipment-price';
@@ -59,7 +58,6 @@ export function botArrivalBlock(g: GameView, action: Action): string | null {
     const origin = action.from === 'reserves' ? 'reserves' : splitLocation(action.from);
     if (origin !== 'reserves' && !validLocation(origin.territory, origin.sector))
       return null;
-    const guild = g.players.find((p) => p.faction === 'guild');
     const cost = guildShipmentCost(territory(to).type, action.amount,
       g.karamaShipping?.player === me.id || !g.guildRateCanceled);
     const bounds = shipmentPaymentBounds(cost, me.spice ?? 0, g.aid.available);
@@ -67,10 +65,6 @@ export function botArrivalBlock(g: GameView, action: Action): string | null {
     if (typeof allyPayment !== 'number' || !Number.isSafeInteger(allyPayment) ||
       allyPayment < bounds.minimum || allyPayment > bounds.maximum)
       return null;
-    controls.response ||= guildShipmentIncome({
-      guild: guild?.id, shipper: me.id, ally: me.ally, cost, allyPayment,
-      bankOnly: g.karamaShipping?.player === me.id,
-    }) > 0;
     order = {
       player: me.id,
       origin: origin === 'reserves' ? origin : origin.territory,
@@ -121,14 +115,9 @@ export function botArrivalBlock(g: GameView, action: Action): string | null {
       allyPayment > bounds.maximum
     )
       return null;
-    const bg = g.players.find((p) => p.faction === 'beneGesserit');
-    // Without Homeworlds, a positive public reserve pool grants accompaniment.
-    const accompaniment =
-      me.faction !== 'fremen' && !!bg && bg.id !== me.id && bg.reserves > 0;
     // Ordinary shipment income settles before its deferred territory entry.
     controls.response ||=
       (g.advanced && me.faction === 'fremen' && action.sector === g.storm);
-    controls.decision ||= accompaniment;
     order = {
       player: me.id,
       origin: 'reserves',

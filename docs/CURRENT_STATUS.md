@@ -29,6 +29,27 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Native Guild/BG own-arrival continuations — 15 October.**
+Direct Guild transport's owner-view candidate now matches its executable
+income-before-queued-Ambassador path. Ordinary shipment stops predicting its
+own BG accompaniment as busy; shared preflight distinguishes resulting
+Intrusion from an actual decision. Existing controls/queue own settlement,
+with unchanged prices, payments, physical groups and original movement.
+Actual busy/pre-entry fighter/storm and unsupported paired/profile guards remain.
+
+Original-action fixtures and six-file55/55 plus20 API/policy paths pass,
+including income/accompaniment/flip cancellation and all four legal policies.
+Four actual styled390px journeys prove Guild transport with income canceled,
+advisor accompaniment, accepted Intrusion, and retained fighters with a
+distinct child then original offer. No replay, overflow or browser errors.
+Existing child-first/live-token ordering is explicitly provisional, not a
+publisher priority. No played wallet/hand/army/phase/decision staging or real
+saved/deployed room. Guild rate-Karama expansion/Nexus admission remains a
+separate tracked gap; public starts and full-goal acceptance remain closed.
+[Canonical contract and evidence](DEFERRED_SHIPMENT_ARRIVAL.md#native-own-arrival-continuations--15-october-2026).
+Final types/lint and production build pass; existing deprecation/chunk/
+Unknown-route warnings remain. Canonical changed links/evidence resolve.
+
 **Physical Traitor replacements and permanent markers — 15 October.**
 Original native Ix play now draws the real Hero Traitor after Dominic4's
 retirement, without turning it into a leader disc or faction target.
