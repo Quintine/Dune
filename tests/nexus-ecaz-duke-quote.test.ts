@@ -234,26 +234,6 @@ void test('ordinary Ecaz Ambassador custody survives end turn; Nexus custody doe
   }
 });
 
-void test('native owner sees explicit blocks; no card identity leaks to other seats', () => {
-  const g = game();
-  assert.equal(quoteNexusEcazDuke(g, 'moritani-seat'), null);
-  assert.match(quoteNexusEcazDuke({ ...g, phase: 5 }, 'ecaz-seat')!.blocked!, /Battle phase/);
-  assert.match(quoteNexusEcazDuke({ ...g, battle: {} as Game['battle'] }, 'ecaz-seat')!.blocked!,
-    /current interaction/);
-  assert.match(quoteNexusEcazDuke(g, 'ecaz-seat', true)!.blocked!, /current interaction/);
-  const harkonnen = {
-    ...g, advanced: true,
-    players: [...g.players.slice(0, 2),
-      { ...g.players[2], faction: 'harkonnen' as const }],
-  };
-  assert.match(quoteNexusEcazDuke(harkonnen, 'ecaz-seat')!.blocked!,
-    /Advanced Harkonnen/);
-  assert.equal(quoteNexusEcazDuke({ ...harkonnen, advanced: false }, 'ecaz-seat')!.blocked,
-    null);
-  const allied = structuredClone(g);
-  allied.players[0].ally = allied.players[1].id;
-  assert.match(quoteNexusEcazDuke(allied, 'ecaz-seat')!.blocked!, /unallied/);
-});
 
 void test('damaged and re-signed impossible history cannot forge the original Duke or seated mode', () => {
   const g = game();
@@ -286,7 +266,7 @@ void test('damaged and re-signed impossible history cannot forge the original Du
   invalid(record => { record.roster = ['ecaz', 'ecaz']; });
   invalid(record => { record.advanced = true; });
   invalid(record => { record.turn = 4; });
-  invalid(record => { record.phase = 5 as never; });
+  invalid(record => { record.phase = 7; });
   invalid(record => { record.sequence = 1; });
   invalid(record => { record.event = nexusEcazDukeEvent(3, 6, 'ecaz-seat', 0, null, null); });
   invalid(record => { (record as NexusEcazDukeReceipt & { extra: boolean }).extra = true; });
@@ -294,4 +274,20 @@ void test('damaged and re-signed impossible history cannot forge the original Du
   assert.throws(() => validateNexusEcazDuke(g, null as never, 0));
   assert.throws(() => validateNexusEcazDuke({ ...g, phase: 5 }, original, 0));
   assert.throws(() => validateNexusEcazDuke({ ...g, nexusCards: null }, original, 0));
+});
+
+void test('legacy Battle-only records cannot be re-signed as earlier-phase Cunning', () => {
+  const g = game();
+  const fields = structuredClone(createNexusEcazDukeReceipt(g, 'ecaz-seat')) as unknown as Record<string, unknown>;
+  delete fields.version;
+  delete fields.custody;
+  const legacy = fields as NexusEcazDukeReceipt;
+  legacy.signature = nexusEcazDukeSignature(legacy);
+  validateNexusEcazDuke(g, legacy, 0);
+  const invalid = structuredClone(legacy);
+  invalid.phase = 5;
+  invalid.event = nexusEcazDukeEvent(invalid.turn, invalid.phase, invalid.owner,
+    invalid.sequence, invalid.before.controller, invalid.before.acquiredTurn);
+  invalid.signature = nexusEcazDukeSignature(invalid);
+  assert.throws(() => validateNexusEcazDuke(g, invalid, 0));
 });

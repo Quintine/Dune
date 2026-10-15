@@ -328,7 +328,6 @@ void test('quiet-boundary Cunning revives the set-aside Duke from Tanks while in
     { ...g, dukeVidal: { ...duke, leader: { ...duke.leader, usedAt: f.territory } } },
     { ...g, dukeVidal: { ...duke, controller: f.owner } },
     { ...g, players: g.players.map(p => p.id === f.owner ? { ...p, ally: f.opponent } : p) },
-    { ...g, phase: 5 },
     { ...g, battle: f.game.battle },
   ];
   for (const input of alternatives) {

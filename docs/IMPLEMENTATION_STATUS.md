@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 14 October 2026 — Original quiet-phase Ecaz Cunning
+
+Removed the artificial Battle-only availability fence from printed
+current-turn Cunning. The original shared no-phase Nexus guard still blocks
+auctions, Battle, responses, Ambassador placement/arrival, revival and
+pending physical continuations; no public pause or interrupt is introduced.
+Private owner action, minimal legal bot adapter and actual table now reuse
+that source quote in any original quiet phase. Current chooser, phase,
+wallet, forces, ordinary leader slot and native continuation stay unchanged.
+
+New physical plays use strict version3 ordinary/captured custody with actual
+phase-bound events/history. Earlier unversioned/version2 Battle-only records
+retain exact keys, signature and phase grammar. Two actual prior native QA
+receipt formats are accepted unchanged. This is contract compatibility, not
+a new saved-room/recovery assurance campaign. Current-turn unused expiry,
+one-battle release, provisional return policy and Ecaz-only revival remain;
+no new roster/Skills/foreign-Ghola gate is opened.
+
+The actual Revival rejection fails before and passes after. Affected19-file
+union189/189, types/lint/build and thirty-one native API scenarios pass: both
+captured/returned-Tanks sources at actual Storm, Charity, Revival, Shipment,
+Collection and Mentat boundaries, all four minimal profiles in Revival/
+Shipment, native unused expiries and real Revival→Shipment→Battle release.
+Actual canonical-styled390px controls spend in Revival10→10, revive the
+executed Duke at deaths2 without an ordinary slot, and act during Harkonnen's
+Shipment without stealing it. Original Ecaz placement and Guild timing must
+finish through their own controls first. Native suffix reaches Collection
+or unused turn expiry once. No overflow/browser errors or saved/deployed
+room mutation.
+
+Deleted obsolete phase-only/blanket Harkonnen and incidental retained-hand
+pins rather than preventing newly legal early AI play. Initial smoke
+placement expectation was corrected to original end-Revival, not an invented
+Shipment decision. Isolated QA host mirrors real PostCSS/public assets and
+registers routing before the SPA fallback; initial host omissions were
+corrected, not application rules suppressed. Proof JSON remains outside Git.
+Final shared-Duke/capture/Ambassador internal guidance matches the bounded
+support. Final build retains existing module-deprecation, chunk-size and
+route-classification warnings.
+Broader combination/recovery review, calibration and deployed/publication
+acceptance remain open.
+[Canonical source and actual proof](NEXUS_ECAZ_RULES.md#original-quiet-phase-cunning-timing--14-october-2026).
+
 ## 14 October 2026 — Original captured Duke and legal Ecaz Ghola composition
 
 Connected the existing standalone Ecaz/classic no-Skills Nexus profile to

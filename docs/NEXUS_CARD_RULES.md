@@ -2,6 +2,18 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Original quiet-phase Ecaz Cunning — 14 October 2026
+
+The artificial Battle-only restriction is removed: printed Cunning lasts
+for the current turn and may now be played at any original quiet boundary
+in supported profiles. Existing in-flight decisions, auctions, Battle,
+responses and physical continuations still block it. No chooser or phase
+is stolen. New version3 records bind actual phase and ordinary/captured
+custody; old ordinary/version2 Battle history stays strict and unchanged.
+[Source, native scenarios and actual controls](NEXUS_ECAZ_RULES.md#original-quiet-phase-cunning-timing--14-october-2026).
+Historical Battle-only boundaries below are superseded, not roster,
+shared-training or foreign-Ghola exclusions.
+
 ## Original captured Duke Cunning — 14 October 2026
 
 Standalone Ecaz/classic no-Skills Nexus now connects the real Advanced

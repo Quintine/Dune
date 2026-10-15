@@ -5,7 +5,7 @@ import type { Action, GameView } from './engine';
 export function nexusEcazDukeAction(game: GameView): Action | null {
   const offer = game.nexusEcazDuke;
   if (!offer || !offer.event || offer.blocked || game.status !== 'playing' ||
-    game.phase !== 6 || game.phaseOpening || game.battle ||
+    game.phaseOpening || game.battle ||
     game.automaticContinuationPending || game.truthtrance || game.response ||
     game.decision || game.nexusTraitors?.pending || game.nexusCards?.waiting.length ||
     game.roomControl?.paused || game.roomControl?.closed ||

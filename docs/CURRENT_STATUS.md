@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Original quiet-phase Ecaz Cunning — 14 October.** Printed current-turn
+tenure no longer has an artificial Battle-only fence. Existing quiet
+boundaries preserve committed decisions, native chooser/phase, costs and
+one-battle/turn expiry. New version3 binds actual phase/custody; historical
+ordinary/version2 Battle records remain strict and actual prior QA receipts
+are accepted unchanged. No roster, shared-training or foreign-Ghola widening.
+Affected19-file union189/189, types/lint/build and thirty-one native scenarios pass,
+including six original phases, all four legal profiles in Revival/Shipment,
+both native expiry sources and actual battle release. Actual styled390px
+Revival10→10, other-player Shipment and returned Tanks preserve original
+allowances/turn; Ambassador placement and Guild timing keep their own controls.
+No overflow/browser errors or saved/deployed room touched. Obsolete phase/
+blanket Harkonnen and held-hand pins are removed, not re-pinned.
+[Canonical timing/source proof](NEXUS_ECAZ_RULES.md#original-quiet-phase-cunning-timing--14-october-2026).
+Broad assurance, calibration and complete-mode/deployed gates remain.
+Existing build deprecation/chunk/route warnings remain; no release gate opens.
+
 **Original captured Duke and legal Ghola composition — 14 October.**
 Standalone Ecaz/classic no-Skills Nexus now connects the actual Advanced
 Harkonnen lottery, including the surviving just-used losing Duke, Keep/Execute,

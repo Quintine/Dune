@@ -17,6 +17,7 @@ export function NexusEcazDuke({ game, act, busy }: Props) {
       <h3>Ecaz Nexus · Cunning · Duke Prad Vidal</h3>
       <p>Known controller: {offer.dukeController ? controller?.name ?? 'another player' : 'none'}.</p>
       <p>Spend your physical Ecaz Nexus card to take the one shared Duke this turn, including from actual capture or the Tanks. Capture reclaim ends captivity. A Tanked acquisition preserves his death history without payment or an ordinary revival slot. Battle use or unused turn expiry sets him aside.</p>
+      <p className="fine">Use at a quiet play boundary in any phase. Finish the current auction, battle, response or other committed interaction first; Cunning does not interrupt it or extend Duke custody beyond this turn.</p>
       <p className="fine">Provisional return policy: no previous captor is restored after Nexus use. Independent Tanks resurrection clears prior battle use; taking a living Duke does not. Only Ecaz may revive him, including with a real Ghola card; that return is set aside before a separate Cunning play. Foreign-Ghola custody is not created. Wider profile and combination gates remain.</p>
       {offer.blocked && <p className="notice">{offer.blocked}</p>}
       <Button className="game-action min-h-11 whitespace-normal" disabled={busy || !action}

@@ -82,6 +82,56 @@ historical save authenticity. The bounded Duke Cunning path below is separate;
 Secret Ally's exceptional leader scope and audience remain unsettled beyond
 the bounded runtime below.
 
+## Original quiet-phase Cunning timing — 14 October 2026
+
+Printed Cunning says to take Duke **for this turn**, without a Battle-only
+restriction. The original supported profiles now permit the private action
+at a quiet boundary in any phase. This removes the artificial phase-six
+fence; it does not open new rosters, modules, shared training, foreign-Ghola
+revival or an interrupt inside a committed parent.
+
+The existing shared no-phase Nexus guard still blocks original auctions,
+Battle, responses, Ambassador placement/arrival, revival, pending physical
+returns and other in-flight interactions. A new public pause is not created.
+The current chooser, phase, payment, force counters and native continuation
+remain unchanged by Cunning. One battle or unused **current-turn** expiry
+still sets Duke aside, without restoring an old captor.
+
+New physical plays use strict **version3**, with ordinary/captured custody
+and the actual phase in their private event/history. A command carried
+across phases is stale. Earlier unversioned ordinary and version2 captured
+records keep their exact Battle-only grammar and signature, rather than
+being reinterpreted as earlier-phase permission. Existing actual native QA
+receipts in both historical formats remain accepted. Future-phase history,
+invalid custody and invalid physical sources still reject.
+
+The original Revival rejection was reproduced, then the real same-disc
+Revival → Shipment → Battle/use path passes. The frozen affected nineteen-file
+union passes **189/189**, with types/lint/build. **Thirty-one native API scenarios**
+pass: captured/returned-Tanks Cunning in actual Storm, Charity, Revival,
+Shipment, Collection and Mentat windows; all four minimal legal profiles
+in Revival/Shipment; both native turn expiries; and original battle release.
+Actual production GameTable at **390px**, using the canonical stylesheet
+pipeline, spends Cunning in Revival and during another faction's Shipment,
+and returns a truly executed Duke from Tanks before Battle. Real Ambassador
+placement and Guild timing remain blocking until their own controls resolve.
+Wallet10→10, ordinary leader slot and Harkonnen's shipment turn remain;
+native battle release and unused expiry follow. No overflow/browser errors
+were observed in those working surfaces.
+The final production build retains existing module-deprecation, chunk-size
+and route-classification warnings. Shared-Duke, capture and Ambassador
+internal guidance now identifies this bounded support rather than a blanket
+capture exclusion.
+
+Obsolete phase-only and blanket Advanced-Harkonnen rejection pins, SSR
+wording and an incidental retained-hand assumption are deleted, not re-pinned.
+An ordinary legal AI may now spend the card earlier; that is not a printed
+requirement to retain it until Battle. No saved/deployed room is touched.
+This is not broader recovery, combination or complete-mode acceptance.
+[Actual timing regressions](../tests/nexus-duke-timing-runtime.test.ts).
+Older quiet-Battle timing below is historical and superseded by this section;
+the captured-return and Ecaz-only revival policies themselves are unchanged.
+
 ## Original captured Duke and Ecaz Ghola composition — 14 October 2026
 
 The existing standalone Ecaz/classic, no-Skills Nexus envelope now connects

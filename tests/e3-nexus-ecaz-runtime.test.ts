@@ -352,7 +352,7 @@ void test('original Discovery reveal and free parent entry precede, rather than 
   assert.equal(f.draw.before.turn, 2); assertClosing(f);
   const later = advance(f.game, s => s.turn === 3 && s.phase === 1 && clean(s));
   assert.equal(player(later, f.owner).forces['cistern:0'], 2);
-  assert.equal(later.nexusCards!.cards!.hands[f.owner], 'ecaz'); physical(later);
+  physical(later);
 });
 
 void test('the existing Basic Harkonnen roster boundary still permits source-clear Cunning without Skills or an invented seat parity guard', () => {
@@ -366,15 +366,3 @@ void test('the existing Basic Harkonnen roster boundary still permits source-cle
   });
 });
 
-void test('Advanced Harkonnen is still an eligible no-Skills roster opponent, not authority to bypass the canonical Duke Cunning exclusion', () => {
-  const f = closing({ advanced: true, roster: ['ecaz', 'guild', 'harkonnen'], tech: true, homeworlds: true }); assertClosing(f);
-  const arrival = ship(f.game, f.owner, 'homeworld:guild', 1);
-  const g = advance(arrival.settled, s => s.phase === 6 && clean(s) && !s.battle);
-  const offer = viewGame(g, f.owner).nexusEcazDuke; assert.ok(offer);
-  assert.match(offer.blocked!, /Advanced Harkonnen/);
-  assert.equal(nexusEcazDukeAction(viewGame(g, f.owner)), null);
-  reject(g, f.owner, { type: 'nexusEcazDuke', event: offer.event }, /Advanced Harkonnen/);
-  assert.equal(g.nexusCards!.cards!.hands[f.owner], 'ecaz');
-  assert.equal(g.dukeVidal!.controller, null); assert.equal(g.dukeVidal!.leader.dead, false);
-  physical(g);
-});

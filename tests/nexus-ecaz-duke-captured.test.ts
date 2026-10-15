@@ -11,7 +11,7 @@ import { resolveEcazDukeRevival } from '../game/ecaz-duke-revival';
 import {
   createNexusEcazDukeReceipt, nexusEcazDukeEvent, nexusEcazDukeModeSupported,
   nexusEcazDukeSignature, quoteNexusEcazDuke, validateNexusEcazDuke,
-  type NexusEcazDukeCapturedReceipt,
+  type NexusEcazDukeReceipt,
 } from '../game/nexus-ecaz-duke';
 import { createNexusDukeDeathFixture } from './fixture-nexus-duke-capture';
 
@@ -96,12 +96,12 @@ void test('a released witness captive stays unavailable while used but can be li
   assert.equal(dukeController(expireDuke(liberated, 4)), null);
 });
 
-void test('captured v2 receipts reject impossible custody and return transitions even after a fresh signature', () => {
+void test('captured receipts reject impossible custody and return transitions even after a fresh signature', () => {
   const g = position();
   g.dukeVidal = captureDuke(acquireDuke(g.dukeVidal!, 'g', 3, 'ally'), 'h', 'g', 3, 'carthag');
-  const receipt = createNexusEcazDukeReceipt(g, 'e');
-  assert.ok('version' in receipt);
-  const mutations: ((saved: NexusEcazDukeCapturedReceipt) => void)[] = [
+  type Captured = Extract<NexusEcazDukeReceipt, { custody: 'captured' }>;
+  const receipt = createNexusEcazDukeReceipt(g, 'e') as Captured;
+  const mutations: ((saved: Captured) => void)[] = [
     saved => { saved.before.leader.capturedBy = 'g'; },
     saved => { saved.before.leader.concealed!.controller = 'h'; },
     saved => { saved.before.leader.concealed!.deaths++; },
@@ -112,7 +112,6 @@ void test('captured v2 receipts reject impossible custody and return transitions
     saved => { Object.assign(saved.after.leader, { capturedBy: 'h' }); },
     saved => { Object.assign(saved.before.leader, { gholaBy: 'g' }); },
     saved => { Object.assign(saved.before.leader.concealed!, { extra: 1 }); },
-    saved => { Object.assign(saved, { version: 3 }); },
   ];
   for (const mutate of mutations) {
     const saved = structuredClone(receipt);
@@ -129,7 +128,7 @@ void test('captured v2 receipts reject impossible custody and return transitions
 });
 
 
-void test('a privately executed return remains a Tanks resurrection with the unchanged old receipt schema', () => {
+void test('a privately executed return remains a Tanks resurrection without leaking actual prior custody', () => {
   const g = position();
   const captured = captureDuke(acquireDuke(g.dukeVidal!, 'g', 3, 'ally'), 'h', 'g', 3, 'arrakeen');
   g.dukeVidal = captured;
@@ -170,11 +169,6 @@ void test('Advanced Harkonnen admission is only the existing standalone no-Skill
     assert.throws(() => resolveEcazDukeRevival(excluded, 'e'));
     excluded.dukeVidal!.leader.dead = false;
     assert.throws(() => quoteEcazDukeAcquisition(excluded, 'e'));
-  }
-  for (const phase of [4, 5, 7]) {
-    const outside = position();
-    outside.phase = phase;
-    assert.notEqual(quoteNexusEcazDuke(outside, 'e')!.blocked, null);
   }
 });
 
@@ -228,6 +222,22 @@ void test('the actual Ecaz Ghola Treachery return sets the shared disc aside bef
   assert.equal(g.nexusCards!.cards!.hands[owner], null);
   assert.equal(g.nexusCards!.cards!.discard.filter(card => card === 'ecaz').length, 1);
   const receipt = g.nexusEcazDukeHistory!.at(-1)!;
-  assert.equal('version' in receipt, false, 'ordinary Ecaz Ghola return is not a foreign-Ghola or captive producer');
   validateNexusEcazDuke(g, receipt, g.nexusEcazDukeHistory!.length - 1);
+});
+
+void test('legacy captured Battle records cannot be re-signed as earlier-phase liberation', () => {
+  const g = position();
+  g.dukeVidal = captureDuke(acquireDuke(g.dukeVidal!, 'g', 3, 'ally'), 'h', 'g', 3, 'carthag');
+  const fields = structuredClone(createNexusEcazDukeReceipt(g, 'e')) as unknown as Record<string, unknown>;
+  fields.version = 2;
+  delete fields.custody;
+  const legacy = fields as NexusEcazDukeReceipt;
+  legacy.signature = nexusEcazDukeSignature(legacy);
+  validateNexusEcazDuke(g, legacy, 0);
+  const invalid = structuredClone(legacy);
+  invalid.phase = 5;
+  invalid.event = nexusEcazDukeEvent(invalid.turn, invalid.phase, invalid.owner,
+    invalid.sequence, invalid.before.controller, invalid.before.acquiredTurn);
+  invalid.signature = nexusEcazDukeSignature(invalid);
+  assert.throws(() => validateNexusEcazDuke(g, invalid, 0));
 });
