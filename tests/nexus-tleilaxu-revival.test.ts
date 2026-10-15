@@ -152,6 +152,23 @@ void test('the roster waiver belongs to the card alone and never opens the ordin
   );
 });
 
+void test('the Tleilaxu waiver reaches an unopened saved Ecaz cohort without reopening a previously returned disc', () => {
+  const g = fixture(false, 'ecaz'), p = g.players[0];
+  g.dukeVidal = createDukeVidal();
+  kill(p, [0], 2);
+  kill(p, [1]);
+  p.ecazRevivalCohort = { cycle: 0, returned: [p.leaders[0].id] };
+  const before = structuredClone(g);
+  assert.deepEqual(leaderRevivalOptions(g, p).leaders, []);
+  assert.deepEqual(tleilaxuSecretAllyOptions(g, p).leaders.map(l => l.id), [p.leaders[1].id]);
+  const quote = quoteTleilaxuSecretAlly(g, p, { leader: p.leaders[1].id, amount: 0, elite: 0 });
+  assert.equal(quote.kind, 'leader');
+  assert.equal(quote.cost, 0);
+  assert.throws(() => quoteTleilaxuSecretAlly(g, p, { leader: p.leaders[0].id, amount: 0, elite: 0 }));
+  assert.deepEqual(leaderRevivalOptions(g, p).leaders, []);
+  assert.deepEqual(g, before);
+});
+
 void test('an opened ordinary cohort keeps canonical eligibility and is never marked early', () => {
   const g = fixture();
   const p = g.players[0];

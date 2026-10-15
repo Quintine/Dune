@@ -4430,11 +4430,10 @@ export function GameTable({
                               ? 'Tleilaxu prevented your normal revivals this turn.'
                               : g.revival.dukeBlocked && me.faction === 'ecaz' && g.dukeVidal?.leader.dead
                                 ? g.revival.dukeBlocked
-                                : g.revival.cycleBlock
-                                  ? g.revival.cycleBlock
-                                  : 'No leader is currently eligible for normal revival.'}
+                                : 'No leader is currently eligible for normal revival.'}
                         </p>
                       )}
+                  {g.revival.ecazCyclePolicy && <p className="fine">{g.revival.ecazCyclePolicy}</p>}
                 </>
               )}
               {g.phase === 5 && (

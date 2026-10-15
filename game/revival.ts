@@ -1,10 +1,15 @@
 import type { Game, Player } from './engine';
+import type { Leader } from './cards';
 import { faction, type FactionId } from './catalog';
 import { isAuditorLeader } from './choam-auditor';
 import { homeworldLowBonus } from './homeworld-benefits';
 import { recruitsRevivalAllowance } from './recruits';
 import { DUKE_VIDAL_ID } from './duke-vidal';
 import { ecazDukeRevivalBlock, quoteEcazDukeRevival } from './ecaz-duke-revival';
+import {
+  quoteEcazRevivalCohort, completeEcazRevivalCohortUse,
+  recordEcazRevivalOpening, recordEcazFirstExecution,
+} from './ecaz-revival-cohort';
 type RevivalRateContext = Pick<
   Game,
   | 'advanced'
@@ -159,9 +164,8 @@ export function normalRevivalCycle(
   return cycle;
 }
 
-/** The five-disc Ecaz opening is recorded in revivalCycle on the first
- * accepted ordinary return. Later six-disc cohorts are not established by E3:
- * keep their native returns gated rather than guessing from death counters. */
+/** Ordinary Ecaz cohorts keep native identity separate from independent Duke deaths.
+ * Only the absent-Tleilaxu card quote may waive the unopened first cohort. */
 export function leaderRevivalOptions(
   g: Pick<
     Game,
@@ -180,26 +184,20 @@ export function leaderRevivalOptions(
     | 'faction'
     | 'leaders'
     | 'revivalCycle'
+    | 'ecazRevivalCohort'
     | 'leaderRevived'
     | 'spice'
     | 'kwisatz'
   >,
+  waiveOpening = false,
 ) {
   const shared = p.faction === 'ecaz' && g.dukeVidal;
   const dukeContext = shared && g.status === 'playing' ? g : null;
   const dukeBlocked = dukeContext ? ecazDukeRevivalBlock(dukeContext, p.id) : null;
   const dukeAvailable = !!dukeContext && !dukeBlocked;
-  const repeatHistory = !!shared &&
-    (g.dukeVidal!.leader.deaths > 1 || p.leaders.some((l) => l.deaths > 1) ||
-      p.revivalCycle > 1);
-  const firstOpening = !!shared && !repeatHistory &&
-    (p.leaders.filter((l) => l.dead && !l.capturedBy && !l.gholaBy && l.deaths === 1).length +
-      (g.dukeVidal!.leader.dead && dukeAvailable &&
-      g.dukeVidal!.leader.deaths === 1 ? 1 : 0) >= 5 ||
-      p.leaders.every((l) => l.dead || l.capturedBy || l.gholaBy));
-  const cycle = shared
-    ? (!repeatHistory && (p.revivalCycle === 1 || firstOpening) ? 1 : 0)
-    : normalRevivalCycle(p);
+  const cohort = shared ? quoteEcazRevivalCohort(p, dukeAvailable, waiveOpening) : null;
+  let cycle = cohort?.cycle ?? normalRevivalCycle(p);
+  if (waiveOpening && !cohort) cycle = Math.max(1, cycle);
   const enabled = g.phase === 4 && !revivalPrevented(g, p.id);
   const discount = revivalDiscount(g, p);
   const leaders = p.leaders.flatMap((leader) => {
@@ -213,7 +211,8 @@ export function leaderRevivalOptions(
       isAuditorLeader(leader);
     const normal =
       !p.leaderRevived &&
-      (auditorReturn || (cycle > 0 && leader.deaths === cycle));
+      (auditorReturn || (cycle > 0 && (cohort
+        ? !cohort.returned.includes(leader.id) : leader.deaths === cycle)));
     if (
       !normal &&
       (p.faction !== 'tleilaxu' ||
@@ -257,8 +256,32 @@ export function leaderRevivalOptions(
     ...(g.advanced && p.faction === 'choam' && p.leaders.some(isAuditorLeader)
       ? { auditorCyclePolicy: 'Supplied Advanced p29 permits Auditor revival each turn. Provisional ordinary-cycle policy: only the five ordinary CHOAM discs determine revival cycles; a living or repeatedly killed Auditor neither delays nor opens them. Auditor still uses the normal one-leader allowance.' }
       : {}),
-    cycleBlock: repeatHistory
-      ? 'Ecaz six-disc repeated revival cycles are not yet resolved.' : null };
+    ...(shared ? { ecazCyclePolicy: 'Provisional Ecaz cohort policy: five physical leaders in Tanks, including Duke, or no available native leaders opens ordinary returns. A completed native return waits for the remaining native cohort and another opening. A late first death may join the current cohort; independent Duke deaths do not set ordinary cohort numbers.' } : {}) };
+}
+
+function ecazCohortOwner(g: Game, leader: string): Player | null {
+  if (!g.dukeVidal) return null;
+  const owner = g.players.find(player => player.faction === 'ecaz');
+  return owner && (leader === DUKE_VIDAL_ID || owner.leaders.some(l => l.id === leader))
+    ? owner : null;
+}
+
+/** Every actual native return, including independent Ghola/Ambassador/foreign
+ * return, consumes that disc's current ordinary cohort, never an extra slot. */
+export function recordEcazLeaderReturn(g: Game, leader: Pick<Leader, 'id'>): void {
+  const owner = ecazCohortOwner(g, leader.id);
+  if (!owner) return;
+  const dukeInTanks = g.dukeVidal!.leader.dead && !ecazDukeRevivalBlock(g, owner.id);
+  if (leader.id === DUKE_VIDAL_ID) recordEcazRevivalOpening(owner, dukeInTanks);
+  else completeEcazRevivalCohortUse(owner, dukeInTanks, leader.id);
+}
+
+/** Only the first execution skips the first ordinary death cohort. */
+export function recordEcazLeaderExecution(g: Game, leader: Pick<Leader, 'id'>): void {
+  if (leader.id === DUKE_VIDAL_ID) return;
+  const owner = ecazCohortOwner(g, leader.id);
+  if (owner) recordEcazFirstExecution(owner,
+    g.dukeVidal!.leader.dead && !ecazDukeRevivalBlock(g, owner.id), leader.id);
 }
 export type PendingRevival = {
   player: string;

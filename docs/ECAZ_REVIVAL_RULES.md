@@ -24,6 +24,69 @@ available, without making a repeated six-disc algorithm up. Captured, Ghola
 or concealed shared-disc custody and Advanced Harkonnen combinations retain
 their existing uniform boundary.
 
+## Identity-tracked repeated cohorts — 14 October 2026
+
+The blanket repeated-history gate is replaced by an explicit **provisional
+product composition**, chosen under the recommendation-first instruction:
+
+- Five actual leaders in Tanks, including Duke, open ordinary Ecaz returns.
+  The existing no-available-native-leader captured/foreign-custody exception
+  remains distinct from counting a living captive as physically dead.
+- Each opened cohort records completed **native disc identities**, not equality
+  between every disc's death count and one global counter. Unreturned native
+  deaths remain eligible after another native is revived and killed again.
+  A late first death can join a later open cohort without being misclassified
+  as a repeat. An already returned identity waits for the remaining native
+  cohort and another legal opening.
+- Duke remains outside the five ordinary discs. His actual presence in Tanks
+  can open a cohort, but his independent death counter does not number or hold
+  the native cohort. An independent Duke resurrection preserves an already
+  satisfied opening before removing that fifth Tanked disc.
+- Actual normal, Ghola, first-death Ambassador and foreign-ghola native returns
+  record the identity only when the physical return commits. A first capture
+  execution retains the original face-down first-cohort exclusion; it does
+  not create a permanent native-disc ban.
+- One ordinary leader allowance, printed native price, Duke5/discount3,
+  prevention, payment/income and original return custody remain unchanged.
+  Ghola and Nexus Cunning keep their own physical-card costs and allowances.
+  The absent-Tleilaxu waiver explicitly quotes the unopened first cohort
+  without opening ordinary permission or reusing a consumed identity.
+
+The optional server-only `Player.ecazRevivalCohort` stores the current cohort
+and native returned IDs. Valid older first-cohort states seed their existing
+face-down/revived identities lazily; no disc is recreated, no death history
+is rewritten, and no database migration/reset is needed. Its new state is
+included conditionally in the related ordinary-discard signature; absence
+preserves the old grammar. This is not historical-save certification.
+
+The original mixed-death rejection fails before and passes after. The affected
+nineteen-file union passes **230/230**, with types/lint/build. Actual native setup
+and weapon battles produce two consumer boundaries: five native deaths plus
+a paid return/repeat, and four native returns (three paid, one real Ghola)
+followed by four real repeat deaths while the never-killed fifth native lives
+and the original dead Duke remains at deaths1. The second cohort is used
+inside the original ten-turn game. Funding is an actual private15/25-spice
+bribe held until Mentat, not assigned wallet credit.
+
+Actual API paths pay11→8 for an unreturned first-cohort disc and12→10 for a
+second-cohort return. All four legal profiles in both positions perform
+original Cunning, ordinary forces and a paid native return, preserving cohort
+permission even when Cunning resurrects Duke. Actual canonical-styled390px
+GameTable selectors and revival buttons reach the same prices, one ordinary
+slot and retained death history; the repeat stays dead in the first path,
+and Whitmore remains alive at deaths0 in the second. No overflow/browser
+errors or saved/deployed room mutation. The native smoke chooses its next
+battlefield after the real Storm rather than silently skipping past turn ten.
+The final build retains existing module-deprecation, large-chunk and route
+classification warnings; no complete-mode or publication gate is opened.
+
+See [cohort rules](../game/ecaz-revival-cohort.ts),
+[boundary regressions](../tests/ecaz-revival-cohort.test.ts) and
+[original native runtime](../tests/ecaz-revival-cohort-runtime.test.ts).
+This supersedes the repeated-cohort guard above and historical algorithm
+boundary below, not the binding Ecaz-only revival rule, broader profile
+guards or complete-mode/deployed acceptance.
+
 ## Captured return and legal Ghola composition — 14 October 2026
 
 The original standalone Ecaz/classic no-Skills Nexus envelope now admits

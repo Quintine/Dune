@@ -185,12 +185,9 @@ function ownDisc(p: Player, id: string) {
 function leaderCandidates(
   g: Game,
   p: Player,
-): { leaders: TleilaxuSecretAllyLeader[]; dukeBlocked: string | null; cycleBlock: string | null } {
+): { leaders: TleilaxuSecretAllyLeader[]; dukeBlocked: string | null } {
   const canonical = leaderRevivalOptions(g, p);
-  const waived = leaderRevivalOptions(g, {
-    ...p,
-    revivalCycle: Math.max(1, p.revivalCycle),
-  });
+  const waived = leaderRevivalOptions(g, p, true);
   const canonicalIds = new Set(canonical.leaders.map((option) => option.id));
   const blockedEarly = (id: string) =>
     !!g.revivalRules?.earlyBlocked?.includes(`${p.id}:${id}`);
@@ -221,7 +218,6 @@ function leaderCandidates(
   return {
     leaders,
     dukeBlocked: canonical.dukeBlocked,
-    cycleBlock: canonical.cycleBlock,
   };
 }
 
@@ -275,12 +271,12 @@ export function tleilaxuSecretAllyOptions(
       policy: NEXUS_TLEILAXU_POLICY,
     };
   const bounds = tleilaxuSecretAllyForceBounds(g, p);
-  const { leaders, dukeBlocked, cycleBlock } = leaderCandidates(g, p);
+  const { leaders, dukeBlocked } = leaderCandidates(g, p);
   return {
     event,
     blocked: leaders.length
       ? null
-      : dukeBlocked ?? cycleBlock ?? leaderBlock,
+      : dukeBlocked ?? leaderBlock,
     leaders,
     maxForces: bounds.maxForces,
     maxElite: bounds.maxElite,
@@ -301,11 +297,11 @@ export function quoteTleilaxuSecretAlly(
 ): TleilaxuSecretAllyQuote {
   const source = sourceState(g, p);
   if (source) throw new TleilaxuSecretAllyError(source.message, source.reason);
-  const { leaders, dukeBlocked, cycleBlock } = leaderCandidates(g, p);
+  const { leaders, dukeBlocked } = leaderCandidates(g, p);
   const chosen = leaders.find((leader) => leader.id === selection?.leader);
   if (!chosen)
     throw new TleilaxuSecretAllyError(
-      leaders.length ? 'Choose one offered own leader.' : dukeBlocked ?? cycleBlock ?? leaderBlock,
+      leaders.length ? 'Choose one offered own leader.' : dukeBlocked ?? leaderBlock,
       'leader',
     );
   const amount = selection.amount;

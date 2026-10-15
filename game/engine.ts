@@ -533,6 +533,7 @@ import {
 } from './truthtrance';
 import type { MixedShipmentExpression } from './mixed-shipment-question';
 import { controlsLeader, nativeAvailable } from './leader-control';
+import type { EcazRevivalCohort } from './ecaz-revival-cohort';
 import {
   newRevivalRules,
   eliteRevivalRemaining,
@@ -546,6 +547,8 @@ import {
   freeRevivalRemaining,
   normalRevivalAllowance,
   leaderRevivalOptions,
+  recordEcazLeaderReturn,
+  recordEcazLeaderExecution,
   type RevivalRules,
   type PendingRevival,
 } from './revival';
@@ -662,6 +665,8 @@ export type Player = {
   freeForcesRevived?: number;
   leaderRevived: boolean;
   revivalCycle: number;
+  /** Completed native disc identities in the current ordinary Ecaz cohort. */
+  ecazRevivalCohort?: EcazRevivalCohort;
   shipped: boolean;
   moved: number;
   battleLosses: number;
@@ -3138,6 +3143,7 @@ function playNexusEcazDuke(g: Game, p: Player, action: Action) {
     offer?.blocked ?? 'Choose the current Ecaz Nexus Duke acquisition.');
   const index = g.nexusEcazDukeHistory?.length ?? 0;
   const receipt = nexusRule(() => createNexusEcazDukeReceipt(g, p.id, index));
+  if (g.dukeVidal!.leader.dead) recordEcazLeaderReturn(g, g.dukeVidal!.leader);
   g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
   g.dukeVidal = nexusRule(() => acquireDuke(g.dukeVidal!, p.id, g.turn, 'ecazNexus'));
   nexusRule(() => validateNexusEcazDuke(g, receipt, index));
@@ -3477,7 +3483,8 @@ function playNexusTleilaxuRevival(g: Game, p: Player, action: Action) {
   g.nexusCards!.cards=nexusRule(()=>discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
   g.revivalRules??=newRevivalRules();
   (g.revivalRules.nexusTleilaxu??=[]).push(p.id);
-  if(quote.kind!=='duke'||ordinary.cycle>p.revivalCycle)p.revivalCycle=ordinary.cycle;
+  if (p.faction !== 'ecaz' && (quote.kind !== 'duke' || ordinary.cycle > p.revivalCycle))
+    p.revivalCycle = ordinary.cycle;
   // The card quote establishes a free own return; the original mutation keeps
   // Kwisatz/Duke custody, one-leader usage and skill revival lifecycle.
   finishRevival(g,{
@@ -5213,6 +5220,7 @@ function ordinaryDiscardSignature(g: Game, next: OrdinaryDiscardContinuation) {
       shipped: p.shipped,
       revived: p.revived,
       revivalCycle: p.revivalCycle,
+      ...(p.ecazRevivalCohort === undefined ? {} : { ecazRevivalCohort: p.ecazRevivalCohort }),
       leaderRevived: p.leaderRevived,
       leaders: p.leaders,
       kwisatz: p.kwisatz,
@@ -17612,6 +17620,7 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
         kwisatz.revivalCycle = Math.max(p.revivalCycle, kwisatz.revivalCycle ?? 1) + 1;
         name = 'Kwisatz Haderach';
       } else {
+        recordEcazLeaderReturn(g, selected);
         selected.dead = false;
         delete selected.usedAt;
         name = selected.name;
@@ -21288,6 +21297,7 @@ function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
     );
     const l = gholaLeaders(g, p).find((l) => l.id === action.leader);
     requireRule(l?.dead && !l.capturedBy, 'Choose a dead leader in your pool.');
+    recordEcazLeaderReturn(g, l);
     l.dead = false;
     delete l.concealed;
     // Ghola permits a return in another battle this turn (GF9 FAQ p.9).
@@ -24565,6 +24575,7 @@ function finishRevival(
       const leader = sharedDuke
         ? g.dukeVidal!.leader
         : g.players.flatMap((owner) => owner.leaders).find((l) => l.id === revival.leader)!;
+      recordEcazLeaderReturn(g, leader);
       if (revival.kind === 'foreignGhola') leader.gholaBy = p.id;
       else delete leader.gholaBy;
       leader.dead = false;
@@ -30891,10 +30902,12 @@ function applyActionInner(
         if (l.id === DUKE_VIDAL_ID && g.dukeVidal)
           g.dukeVidal = executeCapturedDuke(g.dukeVidal, p.id, g.turn);
         else {
+          const firstDeath = l.deaths === 0;
           l.dead = true;
           l.deaths = Math.max(2, l.deaths + 1);
           delete l.usedAt;
           delete l.capturedBy;
+          if (firstDeath) recordEcazLeaderExecution(g, l);
         }
         p.spice += 2;
         log(g, `${p.name} executed a captive for 2 spice.`);
@@ -32296,9 +32309,8 @@ function applyActionInner(
     const cost = dukeQuote?.cost ?? (revivalDiscount(g, p) ? Math.ceil(normalCost / 2) : normalCost);
     requireRule(p.spice >= cost, 'Not enough spice.');
     if (cost < normalCost) checks.push('revivalDiscount');
-    // Duke may be revived independently even while later six-disc native
-    // cycles are gated; that request must not erase an opened first cohort.
-    if (!duke || options.cycle > p.revivalCycle)
+    // Ecaz records its physical cohort only after the return actually commits.
+    if (p.faction !== 'ecaz' && (!duke || options.cycle > p.revivalCycle))
       p.revivalCycle = options.cycle;
     beginRevival(g, {
       player: id,
@@ -34179,8 +34191,8 @@ export function viewGame(state: Game, id: string) {
           : null,
       leaders: leaderRevivals.leaders,
       kwisatz: leaderRevivals.kwisatz,
-      cycleBlock: leaderRevivals.cycleBlock,
       ...(leaderRevivals.auditorCyclePolicy ? { auditorCyclePolicy: leaderRevivals.auditorCyclePolicy } : {}),
+      ...(leaderRevivals.ecazCyclePolicy ? { ecazCyclePolicy: leaderRevivals.ecazCyclePolicy } : {}),
       dukeBlocked: leaderRevivals.dukeBlocked,
       prevented: revivalPrevented(g, me.id),
       eliteRemaining: eliteRevivalRemaining(me, g.advanced),

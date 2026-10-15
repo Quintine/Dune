@@ -105,3 +105,15 @@ use; separate Cunning can then acquire him. Only Ecaz revives him: no
 Tleilaxu-owned foreign Ghola is manufactured. Native identity, strength6,
 five-disc faction rosters, absent Traitor card and death history remain.
 [Current controls, verification and remaining gates](NEXUS_ECAZ_RULES.md#original-captured-duke-and-ecaz-ghola-composition--14-october-2026).
+
+## Native repeated revival cohorts — 14 October 2026
+
+Ecaz's normal native returns no longer stop merely because any shared or
+native disc has died more than once. A provisional identity-tracked cohort
+preserves five-Tanks opening, native unavailable-roster exceptions and
+remaining ordinary returns without equating Duke's independent death history
+to the native cohort number. Duke remains separate, costs5 normally and
+returns set aside; he neither becomes a sixth native leader nor a foreign
+Ghola. Actual ordinary/Ghola returns, native controls and four legal profiles
+are connected. The old repeated-cycle guard above is historical.
+[Current policy, original native proof and remaining gates](ECAZ_REVIVAL_RULES.md#identity-tracked-repeated-cohorts--14-october-2026).

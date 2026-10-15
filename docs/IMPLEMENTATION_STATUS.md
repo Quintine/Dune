@@ -1,5 +1,51 @@
 # Dune implementation status
 
+## 14 October 2026 — Ecaz identity-tracked repeated native cohorts
+
+Replaced the blanket repeated-six-disc guard with explicit provisional native
+identity accounting. Actual five-Tanks opening includes Duke; the original
+unavailable-native-roster exception stays separate. Completed native returns
+preserve the remaining cohort, a late first death need not equal its global
+generation, and a returned identity waits for completion plus another opening.
+Duke's independent death counter neither indexes nor holds native cohorts.
+
+Paid completion, own/foreign Ghola and first-death Ambassador returns record
+actual native use; a first capture execution retains its face-down exclusion.
+Independent Duke normal/Ghola/Nexus resurrection preserves a satisfied opening.
+Pending normal requests do not commit the new cohort. The absent-Tleilaxu
+waiver is explicit and local rather than a fabricated copied cycle. Removed
+obsolete cycleBlock producer/UI/caller and its guard test, not re-pinned.
+Ordinary slot, printed prices, prevention/payment/income, separate card costs,
+native five-disc identity, Duke history and Ecaz-only set-aside return remain.
+
+The optional server-only cohort field preserves exact old ordinary-discard
+signature grammar when absent. No schema migration, saved-room reset or
+historical assurance campaign is introduced. Provisional accounting is labelled,
+not presented as a publisher's missing six-disc example or user numeric ruling.
+
+The mixed-death rejection fails before/passes after. Affected19-file union
+230/230 and types/lint/build pass. Original native setup, physical shipments and
+poison battles create five native deaths, a paid return and its repeat, then
+an independently completed four-native cohort with original Ghola, four repeat
+deaths and the same Tanked Duke. The never-killed fifth native survives and
+the second cohort is used inside turn ten. Original private15/25-spice bribes
+become spendable at Mentat; no wallet/death/history assignment funds this proof.
+The fixture selects its next battlefield after the actual Storm to avoid
+running a skipped-battle chronology past the original game end.
+
+Actual API and canonical-styled390px production controls pay11→8 for the
+unreturned native while the repeat stays dead, and12→10 in the second cohort
+while Whitmore stays alive/deaths0 and Duke stays Tanked/deaths1. One ordinary
+leader slot is spent. All four policies in both original positions use
+actual Cunning, ordinary force revival and a paid native return; Cunning's
+independent Duke resurrection retains the open native permission.
+No overflow/browser errors or saved/deployed room mutation. Proof JSON stays
+outside Git; broader combination/recovery review, calibration and deployed/
+publication acceptance remain open.
+Final build retains the existing module-deprecation, chunk-size and route
+classification warnings.
+[Canonical policy, source and current evidence](ECAZ_REVIVAL_RULES.md#identity-tracked-repeated-cohorts--14-october-2026).
+
 ## 14 October 2026 — Original quiet-phase Ecaz Cunning
 
 Removed the artificial Battle-only availability fence from printed

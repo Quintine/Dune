@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Ecaz identity-tracked repeated cohorts — 14 October.** The repeated-history
+fence is replaced by provisional native-disc accounting: five Tanks including
+Duke or the existing unavailable-roster exception opens ordinary returns;
+completed native IDs preserve the remainder and later first deaths do not
+need to match a global death number. Duke stays physically separate and
+independently revivable. Actual paid, Ghola/Ambassador/foreign returns record
+completion, not requests; the absent-Tleilaxu waiver remains local.
+Affected19-file union230/230 and types/lint/build pass. Two original native
+chronologies, both four-profile paths and actual styled390px controls prove
+first-cohort11→8 and second-cohort12→10, one normal slot and original death
+history. The fifth native can remain alive at deaths0; Duke stays dead1
+without holding the native cohort. Actual bribes fund QA, not wallet staging.
+No overflow/browser errors or saved/deployed room touched.
+[Current policy/source and proof](ECAZ_REVIVAL_RULES.md#identity-tracked-repeated-cohorts--14-october-2026).
+Full combinations, assurance, calibration and publication remain open.
+Existing build deprecation/chunk/route warnings remain.
+
 **Original quiet-phase Ecaz Cunning — 14 October.** Printed current-turn
 tenure no longer has an artificial Battle-only fence. Existing quiet
 boundaries preserve committed decisions, native chooser/phase, costs and

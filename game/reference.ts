@@ -136,6 +136,7 @@ const phaseDetails = [
     'In the base game, Fremen can take their available free force revivals but cannot buy normal force revivals. When the Tleilaxu faction is in the game, Fremen may also pay for normal returns within the current limit. The limit remains three unless Tleilaxu permits five; merely enabling the Ix expansion does not grant this exception. Emperor-funded extras and Ghola use separate rules.',
     'An allied Fremen player can grant three free force revivals during this phase.',
     'Use the leader selector to choose a dead leader. Revival cycles determine whether it is eligible; strength determines its normal cost.',
+    'Ecaz ordinary revival uses a provisional native-identity cohort: five actual Tanks including Duke, or no available native leaders, opens it. Remaining native returns stay legal after another native dies again. Late first deaths do not need to match a global death count; Duke remains independently revivable outside the five native discs.',
     'In development Ecaz fixtures, finishing Revival opens Ambassador placement after any CHOAM closing market. See Ecaz Ambassadors for the supported placement controls and remaining effects. Full expansion starts remain disabled.',
   ],
   [
@@ -2480,6 +2481,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Choose a dead leader for leader revival, or leave the leader choice empty to return up to five forces. A card pays for one of these choices; it cannot revive both a leader and the Kwisatz Haderach.',
       'A binding battle answer or prescience commitment may require this preparation. The private guide identifies a Ghola play that can fulfill the answer, without spending or revealing the card until you choose to play it. Resolve any revival-income response before using that income to support a battle.',
       'Returned forces go to reserves. A leader revived with this card can fight again this turn, including in another territory. Atreides can also select a dead Kwisatz Haderach; revive it separately from its accompanying leader. Returning a controlled foreign ghola does not transfer it back to its original faction. Additional advanced and expansion interactions remain under audit.',
+      'An actual Ecaz native Ghola return uses that disc in its current ordinary cohort without consuming the ordinary phase slot. A repeat waits for the remaining native cohort and another opening. Independent Duke Ghola preserves a satisfied five-Tanks opening and returns him set aside; only Ecaz may revive him.',
       'A saved play preserves the revived pieces, any earned technology income and the discarded card. Recovery restores any pending Tleilaxu income response without reviving or paying twice. Private preparation guidance waits for recovery to finish.',
     ],
     checklist: [
@@ -2487,8 +2489,8 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Ordinary and typed forces, controlled leaders and Kwisatz return with conserved usage and recovery. Ecaz-only dead shared Duke paid revival and physical Ghola return the same living set-aside disc; exceptional custody and broader expansion combinations remain unfinished.',
-        evidence: ['game/engine.ts', 'game/ecaz-duke-revival.ts'],
+          'Ordinary and typed forces, controlled leaders and Kwisatz retain original use and custody. Actual Ecaz native Ghola/foreign returns now record completed native cohort identity; independent Duke resurrection preserves its five-Tanks opening without aligning death counters. Ecaz-only living set-aside custody remains; broader combinations and assurance stay unfinished.',
+        evidence: ['game/engine.ts', 'game/ecaz-duke-revival.ts', 'game/ecaz-revival-cohort.ts', 'game/revival.ts'],
       },
       {
         area: 'Player controls',
@@ -2908,6 +2910,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     title: 'Duke Prad Vidal: shared leader',
     category: 'Advanced & expansions',
     coverage: 'Partial',
+    developmentStage: 'Prototyped',
     summary:
       'A separate Ecaz leader disc of strength six, with changing control and no Traitor Card.',
     steps: [
@@ -2916,9 +2919,17 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Karama can prevent Moritani from acquiring Vidal. That cancellation does not remove him once Moritani already controls him.',
       'Ecaz acquires Vidal through its Ambassador outside Tanks/captured/ghola custody. The alternative forms a consensual alliance while both factions are unallied. Basic can then lend Duke optionally; the supplied Advanced physical p30 adds an available Duke to the new ally automatically and sets an unused disc aside at turn end.',
       'Only Ecaz may revive Vidal, including with Ghola Treachery. Ecaz may revive him for five spice regardless of how many of its leaders are in the Tanks. Five spice is his special revival cost; his printed battle strength is six. Ecaz may begin ordinary leader revival when five leaders are in the Tanks, counting Vidal, even if it still holds another leader.',
+      'Ordinary Ecaz returns now use an explicit provisional native cohort. Five actual Tanked discs including Duke, or the existing unavailable-native-roster exception, opens it; completed native IDs preserve the remainder and later openings. A late first death can join a later cohort. Independent Duke deaths do not set or hold its ordinary number, and a real Duke resurrection preserves an already satisfied opening. Original native prices and one ordinary leader slot remain.',
       'An unallied native Ecaz holder may spend its actual Ecaz Nexus at a quiet boundary in any phase to take Duke for the current turn, including original captured custody or the set-aside disc in Tanks. Finish committed interactions first. One battle or unused turn expiry sets him aside. Nexus liberation permanently clears captivity; it does not return him to a former captor. Actual Ecaz Ghola returns him alive and set aside before a separate Cunning play.',
       'Standalone Ecaz/classic no-Skills Nexus connects Advanced Harkonnen capture of the same shared disc, including a surviving just-used losing Duke, original Keep/Execute and captive returns. Capture priority and restoring only valid unused prior tenure are provisional compositions. Five native discs, no Duke Traitor, strength six and physical death history remain.',
       'Development support also includes Moritani acquisition, Ecaz self-acquisition, consensual alliances, Basic optional loan, Advanced automatic new-ally grant, one-battle use and Ecaz-only revival to living set-aside custody. Loan release is provisional. Native ordinary-disc skills coexist without assigning Duke a skill. Broader captured acquisition, shared training, paired Advanced Harkonnen and wider interactions remain for refinement; complete modes are not certified.',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Explicit native Ecaz cohort tracks completed disc identities instead of freezing repeat history or equating independent Duke deaths. Paid, Ghola, Ambassador/foreign returns and first-execution exclusion connect; Duke normal/Ghola/Nexus resurrection preserves opening. Native five-disc identity, Ecaz-only set-aside return, prices, slots and existing guards remain. Wider interactions/assurance are open.', evidence: ['game/ecaz-revival-cohort.ts', 'game/revival.ts', 'game/ecaz-duke-revival.ts', 'game/duke-vidal.ts', 'game/nexus-ecaz-duke.ts', 'game/nexus-tleilaxu-revival.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Original native Revival selector/buttons show remaining and second-cohort candidates with visible provisional policy. Actual styled390px Ilesa11 to8 leaves the repeat dead; Bindikk12 to10 preserves Whitmore alive/deaths0 and Duke Tanked/deaths1. One ordinary slot and original histories remain; no overflow/browser errors. Full journeys remain open.', evidence: ['components/game-table.tsx', 'components/duke-vidal.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'All four minimal legal profiles in both original cohort positions use actual Cunning, ordinary force revival and a paid native return. Independent Duke resurrection retains open cohort permission. No hidden rival data or native duplication is used; strategic calibration remains deferred.', evidence: ['game/bots.ts', 'game/nexus-ecaz-duke-options.ts', 'game/revival.ts', 'tests/ecaz-duke-bots.test.ts', 'tests/normal-revival-bots.test.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'Printed five-Tanks/own unavailable-roster opening and Ecaz-only Duke5/set-aside are separate from the provisional identity-cohort interpretation. Pending requests do not consume new history; independent card costs/allowances remain distinct. No publisher six-disc example or new numerical user ruling is claimed.', evidence: ['docs/ECAZ_REVIVAL_RULES.md', 'docs/DUKE_VIDAL_RULES.md', 'docs/RULE_DECISIONS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Affected19-file union230/230 and types/lint pass. Two original native death/return chronologies plus all four profiles in each and actual390px11 to8/12 to10 prove unreturned and second-cohort use. Actual Ghola completes a cohort inside the original ten-turn game; bribes, not wallet staging, fund proof. Late first-death boundary and local Tleilaxu waiver regressions remain. No saved/deployed rooms touched; broad assurance/full acceptance remain open.', evidence: ['tests/ecaz-revival-cohort.test.ts', 'tests/fixture-ecaz-revival-cohort.ts', 'tests/ecaz-revival-cohort-runtime.test.ts', 'tests/ecaz-duke-revival.test.ts', 'tests/nexus-tleilaxu-revival.test.ts', 'tests/tleilaxu-ambassador-engine.test.ts', 'tests/foreign-gholas.test.ts'] },
     ],
     related: [
       'faction-ecaz',

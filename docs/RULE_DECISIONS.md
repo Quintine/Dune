@@ -66,6 +66,24 @@ These decisions do not open public module/faction or complete-mode gates.
 
 These decisions do not open public module/faction or complete-mode gates.
 
+## Recommended Ecaz repeated native cohorts — 14 October 2026
+
+Choose explicit native-disc cohort accounting instead of the unresolved
+blanket repeated-history gate or equality with a global death count.
+Five physical Tanks including Duke, or the existing unavailable-native-roster
+exception, opens ordinary permission. Completed native identities determine
+the remainder; another legal opening follows completion. A late first death
+may join the current cohort. Duke's independent deaths do not index or hold
+the native cohort, while his actual presence can satisfy its opening.
+
+This is **provisional product composition**, not a publisher-specific
+six-disc example or a new numerical user ruling. Preserve native five-disc
+identity, ordinary one-leader use, native prices and Duke5/discount3,
+Ecaz-only revival/set-aside custody, printed first-execution exclusion and
+separate Ghola/Nexus allowances. Record actual returns rather than pending
+requests. Broader rule/privacy/persistence review remains deferred.
+[Source, exact policy and current runtime proof](ECAZ_REVIVAL_RULES.md#identity-tracked-repeated-cohorts--14-october-2026).
+
 ## Recommended quiet-phase Duke Cunning — 14 October 2026
 
 Remove the prototype's Battle-only fence: the printed face specifies
@@ -630,7 +648,7 @@ dedicated retrieved worked FAQs. [Contract and remaining limits](HOMEWORLD_OCCUP
 | Guild Secret Ally | One explicit Guild-priced ordinary shipment; borrowed prices/routes preserve native identity. Free Fremen reinforcement remains a separate choice. | [Route contract](NEXUS_GUILD_SECRET_ALLY_RULES.md), [verified runtime](NEXUS_GUILD_SECRET_ALLY_RUNTIME.md) |
 | Homeworld custody and mobility | Physical home/visitor groups, population thresholds, tariffs and transport permissions retain distinct sources; Homeworld immunity is not universal immunity. | [Homeworld rules](HOMEWORLD_RULES.md), [benefits](HOMEWORLD_BENEFITS_RULES.md), [mobility](HOMEWORLD_MOBILITY_RULES.md), [invasion](HOMEWORLD_INVASION_RULES.md), [Guild transport](GUILD_HOMEWORLD_TRANSPORT_RULES.md) |
 | Homeworld effects | Keep original payment/revival/placement identities and qualification observations; observations alone do not choose an occupied-benefit owner. | [Payments](HOMEWORLD_PAYMENT_INCOME_RULES.md), [card economy](HOMEWORLD_CARD_ECONOMY_RULES.md), [Collection](HOMEWORLD_COLLECTION_RULES.md), [revival deployment](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md), [victory reinforcement](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md), [replacement](HOMEWORLD_REPLACEMENT_RULES.md), [Tupile](HOMEWORLD_TUPILE_INTELLIGENCE_RULES.md) |
-| Duke Vidal revival custody | The user selected set-aside custody after Ecaz revives the shared disc: revival clears the Tanks but does not itself grant battle control. Ecaz still needs a separate Ambassador or Nexus acquisition; only Ecaz may revive Duke, including by Ghola. This resolves one post-revival product interpretation, **not** the separate six-disc repeated-cycle, exceptional capture or battle-used Ghola questions. No publisher clarification assigning a post-revival controller was located. | [Publisher Ecaz/Moritani pp. 7–9](https://gamers-hq.de/media/pdf/0f/7a/86/Dune_EcazMoritani_Rulebook_EN.pdf#page=9), [revival readiness](ECAZ_DUKE_REVIVAL_READINESS.md) |
+| Duke Vidal revival custody | The user selected living set-aside custody after Ecaz revives Duke; a separate Ambassador/Nexus acquisition grants battle control. Only Ecaz may revive him, including Ghola. Native repeated returns now use the separately labelled provisional identity-cohort policy, not a new publisher example or user number. Captured scope and broad combinations remain separately bounded. | [Selected custody](ECAZ_REVIVAL_RULES.md#selected-product-interpretation-28-september-2026), [current cohort policy](ECAZ_REVIVAL_RULES.md#identity-tracked-repeated-cohorts--14-october-2026) |
 | Mirror Weapon copied-card cleanup | The user selected ordinary winner retention for the physical Mirror even if its effective copy activates Tooth or Artillery. The original Tooth/Artillery cards retain their named mandatory-discard exceptions. This is a product interpretation, **not** a located publisher ruling. Independent copy-first Tooth/Stone choices and physical cleanup now have a bounded CHOAM/Richese-deck battle runtime; combined modules and full Richese games remain gated. | [Printed Mirror face and source audit](MIRROR_WEAPON_ENGINE_AUDIT.md#user-selected-cleanup-interpretation-28-september-2026) |
 | Kull Wahad preview timing | User selected a **distinct eligible counter** while the interrupted physical card stays reserved, and BG Worthless interception **before conversion/discard**. Pending declaration is not a ban; only success stamps turn/phase and retains original/special once-use. Decline or prevention resumes the original once. Old `kull` stays printed-only; fresh `nexus-kull` admits native CHOAM plus classic Basic/Advanced seats, CHOAM/Ix Treachery and Nexus alone, without physical Sandtrout. Nexus Use needs actual unallied CHOAM Nexus and canonical eligible own fuel: accepted declaration spends Nexus even if prevented, fuel stays held until success. Use requires source/event/card, with no old-source action shim or proactive Kull. Verified prior printed counter saves migrate only their selection binding; no new-choice retrofit. Reservations, promises and remaining winning-payment coverage constrain fuel/counters; ordinary retained Karama payment is not a canceled Cunning effect. Priority/custody/overbid are user policy; neutral timing/spend conventions are application policy. Bounded checks/CLI/runtime/phone cases pass; broader verification is Partial and no full/public/deployed gate opens. | [Selected preview policy](CHOAM_KULL_SOURCE_UPDATE.md#user-selected-preview-timing--30-september-2026), [source/cost boundary](NEXUS_CHOAM_RULES.md#kull-source-cost-and-action-boundary), [runtime and remaining limits](CHOAM_KULL_DESIGN.md), [new evidence](NEXUS_CHOAM_RUNTIME.md#five-part-status-for-the-new-interaction) |
 | Semuta full-hand exchange | User selected **Allow exchange**: acquisition followed by Semuta disposal is an atomic net-zero hand exchange at the faction limit. Existing incoming reservations still consume capacity; this does not permit an already overfull hand or settle Box/Richese purchase timing. | [Selected capacity policy](SEMUTA_SOURCE_UPDATE_20260907.md#user-selected-full-hand-exchange--30-september-2026) |

@@ -422,20 +422,6 @@ void test('four native deaths plus Duke open Ecaz first cohort, which stays open
   assert.equal(p(g, 'ec').leaders[4].dead, false);
   assert.equal(g.dukeVidal!.controller, null);
 });
-void test('Ecaz native repeated six-disc cycles stay gated while Duke remains independently revivable', () => {
-  const g = fixture();
-  p(g, 'ec').leaders.forEach((l) => { l.dead = true; l.deaths = 1; });
-  p(g, 'ec').leaders[0].deaths = 2;
-  p(g, 'ec').spice = 10;
-  p(g, 'ec').revivalCycle = 1;
-  const options = viewGame(g, 'ec').revival;
-  assert.match(options.cycleBlock!, /six-disc repeated/);
-  assert.deepEqual(options.leaders.map((l) => l.id), [DUKE_VIDAL_ID]);
-  assert.equal(options.leaders[0].cost, 5);
-  const returned = applyAction(g, 'ec', { type: 'reviveLeader', leader: DUKE_VIDAL_ID });
-  assert.equal(p(returned, 'ec').revivalCycle, 1);
-  assert.equal(returned.dukeVidal!.leader.deaths, 1);
-});
 void test('saved discounted Duke request can be canceled back to five and paid once with income', () => {
   let g = fixture(true);
   g.players.push(newPlayer('t', 'Tleilaxu', 'tleilaxu'));
