@@ -2,6 +2,15 @@
 
 Integrated checkpoint, 2026-09-07 local date. This closes the contributor-routing defect and adds transport price controls; ordinary rate/permission Karama cancellation and nonbattle Truthtrance commitments remain incomplete.
 
+## Native rate admission follow-up — 15 October 2026
+
+The separate prepayment **rate** window now also admits expansion/Nexus native
+reserve, cross-planet and Guild-return declarations, including Cunning's
+original second allowance. Affordable full repricing and unaffordable return/
+full-price replacement retain original sources and approved funding.
+Three actual390px journeys prove these controls; income remains distinct.
+[Canonical source, evidence and remaining physical-module gates](GUILD_RATE_KARAMA_RULES.md#native-expansion-and-nexus-admission--15-october-2026).
+
 ## Native direct transport continuation — 15 October 2026
 
 Direct `guildShip` already committed positive Guild income before queued
@@ -11,8 +20,8 @@ using reserves. Real Karama income cancellation prevents Guild's receipt
 without refunding the shipper or repeating transport; the original Ecaz
 offer and next movement owner follow. Allow/decline and cancellation variants
 pass in the [native arrival contract](DEFERRED_SHIPMENT_ARRIVAL.md#native-own-arrival-continuations--15-october-2026).
-The separate native **rate** Karama expansion/Nexus profile gate is unchanged
-and remains implementation work, not a printed prohibition or exercised path.
+The subsequent native rate follow-up above supersedes this checkpoint's
+expansion/Nexus exclusion; income cancellation itself is still not repricing.
 
 ## Ordinary income then Ambassador arrival — 15 October 2026
 

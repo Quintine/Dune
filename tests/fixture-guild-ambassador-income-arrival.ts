@@ -18,9 +18,9 @@ import { quietPlan } from './fixture-nexus-duke-capture';
  * is ordered for land blows on turn one and an actual Nexus on turn two.
  * No hand, wallet, army, leader, phase, alliance or response is staged.
  *
- * The expansion/Nexus admission guard deliberately excludes the classic-only
- * Guild rate-cancellation window. Actual native half price and its separate
- * income/counter window are retained, not widened by this fixture. */
+ * A one-force stronghold arrival has no rounded native-rate discount to
+ * cancel (half/full both cost one). Larger native shipments retain the
+ * separate prepayment rate window before this fixture's income path. */
 export function createGuildAmbassadorIncomeArrival() {
   const setup = createPairedE3NexusSetup({ roster: ['ecaz', 'moritani', 'guild'],
     advanced: true, skills: false, homeworlds: false, discovery: false,

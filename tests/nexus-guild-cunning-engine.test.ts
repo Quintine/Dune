@@ -480,3 +480,59 @@ void test('Advanced Guild Cunning finishes within a genuinely granted out-of-ord
   assert.equal(new Set(g.movementRemaining).size, g.movementRemaining!.length);
   stable(g);
 });
+
+for (const route of ['reserve', 'transport'] as const) {
+  for (const outcome of ['allow', 'cancel', 'unaffordable'] as const) {
+    void test(`Guild Cunning ${route} preserves its second allowance through native rate ${outcome}`, () => {
+      // Existing controlled final-setup fixture; distinct from the original
+      // action-only expansion/Nexus producer in native-guild-rate-karama.
+      const f = nexusGuildCunningFixture({ advanced: true, karama: true });
+      let g = originalGuildCunningTurn(f, false);
+      g = nexusGuildCunningAllow(
+        applyAction(g, f.owner, nexusGuildCunningRequest(f, g)),
+      );
+      if (outcome === 'unaffordable')
+        g = applyAction(g, f.owner, { type: 'bribe', target: f.observer,
+          amount: g.players[0].spice - 2 });
+      const before = structuredClone(g.players[0]);
+      const shipment: Action = route === 'reserve'
+        ? { type: 'ship', territory: 'carthag', sector: 11, amount: 3 }
+        : { type: 'guildShip', from: 'arrakeen:10', territory: 'carthag', sector: 11, amount: 3 };
+      g = applyAction(g, f.owner, shipment);
+      if (route === 'reserve') {
+        assert.equal(g.decision?.kind, 'guildShipment');
+        g = applyAction(g, f.owner, { type: 'decision', allow: true });
+      }
+      assert.equal(g.response?.kind, 'guildRate');
+      assert.equal(g.players[0].shipped, true);
+      assert.equal(g.nexusGuildCunningLast?.stage, 'secondShipment');
+      assert.equal(g.players[0].spice, before.spice);
+      assert.equal(g.players[0].reserves, before.reserves);
+      assert.deepEqual(g.players[0].forces, before.forces);
+      g = outcome === 'allow' ? nexusGuildCunningAllow(g)
+        : applyAction(g, f.target, { type: 'card', mode: 'cancel', card: f.karama! });
+      let amount = 3, cost = outcome === 'allow' ? 2 : 3;
+      if (outcome === 'unaffordable') {
+        assert.equal(g.nexusGuildCunningLast?.stage, 'secondShipment');
+        assert.ok(!g.nexusGuildCunningHistory!.at(-1)!.shipment);
+        assert.equal(g.players[0].spice, before.spice);
+        assert.equal(g.players[0].reserves, before.reserves);
+        assert.deepEqual(g.players[0].forces, before.forces);
+        assert.equal(viewGame(g, f.owner).guildRateCanceled, true);
+        g = settleGuildCunningShipment(applyAction(g, f.owner, { ...shipment, amount: 2 }));
+        amount = cost = 2;
+      }
+      assert.equal(g.nexusGuildCunningLast?.stage, 'extraMove');
+      assert.equal(g.nexusGuildCunningHistory!.at(-1)!.shipment!.stage, 'complete');
+      assert.equal(g.players[0].spice, before.spice - cost);
+      assert.equal(g.players[0].reserves, before.reserves - (route === 'reserve' ? amount : 0));
+      assert.equal(g.players[0].forces['arrakeen:10'],
+        before.forces['arrakeen:10'] - (route === 'transport' ? amount : 0));
+      assert.equal(g.players[0].forces['carthag:11'], amount);
+      assert.equal(g.discard.filter(card => card.id === f.karama).length, outcome === 'allow' ? 0 : 1);
+      g = applyAction(g, f.owner, { type: 'endMovement' });
+      assert.notEqual(g.active, f.owner);
+      assert.equal(g.nexusGuildCunningLast?.stage, 'completed');
+    });
+  }
+}

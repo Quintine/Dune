@@ -16,9 +16,9 @@ entry queue, not a second timing adapter, waits for those native controls.
 Original price, funding, payment, source group, reserve transfer and movement
 ownership stay unchanged. Actual response/decision/Terror/Ambassador controls,
 pre-entry fighter choice, Fremen storm protection and unsupported paired
-reaction/profile guards remain. The separate Guild **rate** Karama profile
-gate is unchanged and remains follow-up work; income cancellation is not
-rate cancellation.
+reaction/profile guards remain. The subsequent [native rate follow-up](GUILD_RATE_KARAMA_RULES.md#native-expansion-and-nexus-admission--15-october-2026)
+also admits expansion/Nexus rate responses while retaining original price
+and unaffordable-return policies. Income cancellation itself is not repricing.
 
 **Provisional composition, not publisher priority:** finish the arrival's
 own controls before its deferred entry. Accompaniment joining existing BG

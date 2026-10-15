@@ -2,6 +2,46 @@
 
 Initial primary-source and engine audit, 2026-09-06. The bounded ordinary-reserve cancellation policy below was selected on 2026-09-28 after a targeted publisher-source search found no affordability procedure; the later original audit remains historical evidence for unfinished transport and module combinations.
 
+## Native expansion and Nexus admission — 15 October 2026
+
+The native prepayment rate window now admits expansion factions and Nexus
+without requiring a classic-only roster/deck. Homeworlds, Leader Skills,
+Discovery, Tech Tokens and Stronghold Cards retain separate rate integration
+gates. Special source/No-Field/Smuggler/borrowed-price receipts remain distinct.
+An actual discount must exist: one force to a stronghold costs one at either
+rounded rate and has no discount to remove.
+
+Original Ecaz/Moritani/Guild setup, real Karama auction, paid token and actual
+Moritani/Guild alliance reproduce the missing window: transport3 previously
+paid two and moved immediately into income. Now the exact group waits at
+half2/full3 before any debit or transfer. Allow retains two; a real Karama
+charges three or, if unaffordable, spends only that card and returns the
+uncommitted attempt. A full-price replacement cannot regain the discount.
+The existing approved contribution split and provisional no-debt/return
+policies are unchanged; rate, permission and income remain separate.
+
+**Cunning uses the same opportunity, not a cleared flag.** Its original
+`shipped` history remains true. Both rate validators use source-aware
+`shipmentAvailable`. The pending reserve receipt binds its temporary rate
+event and later settled price; rate allowance/cancellation reaches the
+original second-shipment completion. Unaffordable release removes only the
+uncommitted frame, retaining that second allowance for a full-price replacement.
+The first shipment, ordinary movement and spent Nexus never reopen.
+
+Affected nine-file **101/101** passes, including seven action-only native
+reserve/cross/return cases and six Cunning reserve/cross allow/cancel/
+unaffordable cases using its existing explicitly controlled fixture.
+Five action-only original API/policy paths pass; all four policies pass
+the native window and pay two in this position. A separate controlled
+Cunning declaration proves the originally failing true-`shipped` transition.
+
+Three actual styled390px GameTable journeys perform full-price cancellation,
+unaffordable withdrawal/replacement and Cunning reserve repricing through
+Finish Guild turn. The first two use the action-only native producer; the
+Cunning scene explicitly uses its older controlled final-setup fixture.
+No overflow/browser errors. Loopback/in-memory only: no saved/deployed
+room, recovery certification, module/public gate or full-mode claim.
+
 ## Implemented payment follow-up
 
 The shared contributor-income calculation and private Guild transport quotes were integrated in the earlier payment checkpoint. November 2020 direct contribution routing credits a non-Guild ally’s contribution when Guild ships; Guild’s own contribution still goes to the bank. The source adjudication, earlier 1,600-check checkpoint and browser evidence are in [GUILD_SHIPMENT_PAYMENTS.md](GUILD_SHIPMENT_PAYMENTS.md). That checkpoint preceded the bounded rate-cancellation path below.

@@ -2,6 +2,23 @@
 
 This checkpoint follows the [Guild source contract](NEXUS_GUILD_RULES.md): native Guild can spend Cunning when finishing its ordinary Shipment and Movement turn to obtain one second shipment. It preserves one combined turn and the actual history of the first shipment and movement. It does not implement Guild Secret Ally, Betrayal or complete Nexus play.
 
+## Native rate response integration — 15 October 2026
+
+Without Homeworlds, Skills, Discovery, Tech or Strongholds, the second native
+reserve/cross shipment now retains ordinary Guild rate cancellation in
+expansion/Nexus games. Its original `shipped` history stays true; the shared
+source-aware allowance validates both rate paths. The reserve frame follows
+its exact pending rate event and actual settled price. Unaffordable cancellation
+releases only that uncommitted attempt, permitting a full-price second attempt
+without granting another first turn, ordinary move or Nexus.
+
+Six controlled original-grant engine cases cover reserve/cross allow, cancel
+and unaffordable replacement in the existing final-setup fixture. The actual
+390px reserve journey allows Guild's own interception, cancels half2 to full3,
+retains the first five at Arrakeen, places three at Carthag and finishes the
+original Guild turn at14 spice/12 reserves. No overflow/browser errors.
+[Current rate contract, provenance and remaining module gates](GUILD_RATE_KARAMA_RULES.md#native-expansion-and-nexus-admission--15-october-2026).
+
 ## Opportunity and controls
 
 The [shared consumer helper](../game/nexus-guild-cunning-options.ts) binds the private native holder, unallied card, current turn, actor and projected event. The [table](../components/game-table.tsx) offers an explicit “Finish ordinary turn and declare Guild Cunning” action alongside ordinary finishing. It spends the card and opens the existing Karama response mechanism. A cancellation ends the original turn without undoing its committed shipment or movement; allowance offers the separate shipment.

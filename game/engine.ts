@@ -26485,9 +26485,8 @@ const CLASSIC_FACTIONS: Partial<Record<FactionId, true>> = {
 
 /** The independent Karama rate is a card benefit, not Guild's cancelable rate. */
 function guildRateModeSupported(g: Game): boolean {
-  return !g.expansions.length && !g.homeworlds && !g.leaderSkills &&
-    !g.nexusCards && !g.discoveryEnabled && !g.techTokens && !g.strongholdCards &&
-    g.players.every(player => CLASSIC_FACTIONS[player.faction] === true);
+  return !g.homeworlds && !g.leaderSkills && !g.discoveryEnabled &&
+    !g.techTokens && !g.strongholdCards;
 }
 function ordinaryGuildRateFullCost(g: Game, shipment: PendingShipment): number | null {
   const guild = byFaction(g, 'guild');
@@ -26498,7 +26497,7 @@ function ordinaryGuildRateFullCost(g: Game, shipment: PendingShipment): number |
       (g.guildRateBlocked?.turn === g.turn && g.guildRateBlocked.player === p.id) ||
       shipment.source || shipment.noField || shipment.alliedNoField ||
       shipment.smuggler || shipment.smugglerCompanion || shipment.guildSecretEvent ||
-      shipment.guildNexusEvent || shipment.nexusEvent || shipment.richesePair)
+      shipment.nexusEvent || shipment.richesePair)
     return null;
   const fullCost = reserveShipmentCost({ faction: p.faction, halfRate: false },
     territory(shipment.territory).type, shipment.amount);
@@ -26507,10 +26506,17 @@ function ordinaryGuildRateFullCost(g: Game, shipment: PendingShipment): number |
 function openGuildRate(g: Game, shipment: PendingShipment): boolean {
   const fullCost = ordinaryGuildRateFullCost(g, shipment);
   if (fullCost === null) return false;
+  const cunning = shipment.guildNexusEvent
+    ? validateGuildCunningShipment(g, shipment.player, shipment.guildNexusEvent, 'reserve', shipment)
+    : null;
   // A validated older Guild-stop declaration may lack this newer turn stamp.
   shipment.turn ??= g.turn;
   const event = crypto.randomUUID();
   shipment.guildRateEvent = event;
+  if (cunning) {
+    cunning.shipment!.frame = JSON.stringify(shipment);
+    saveGuildCunning(g, cunning);
+  }
   g.pendingShipment = shipment;
   g.response = {
     kind: 'guildRate',
@@ -26528,7 +26534,7 @@ function validateGuildRateResponse(g: Game, response: ResponseWindow) {
   const p = shipment && getPlayer(g, shipment.player);
   const fullCost = shipment ? ordinaryGuildRateFullCost(g, shipment) : null;
   requireRule(response.kind === 'guildRate' && guild && p && shipment &&
-    g.status === 'playing' && g.phase === 5 && g.active === p.id && !p.shipped &&
+    g.status === 'playing' && g.phase === 5 && g.active === p.id && shipmentAvailable(g, p) &&
     response.owner === guild.id && typeof shipment.guildRateEvent === 'string' &&
     shipment.guildRateEvent.length > 0 &&
     response.guildRateEvent === shipment.guildRateEvent &&
@@ -26556,24 +26562,35 @@ function guildRateIntegrity(g: Game) {
 function finishGuildRateResponse(g: Game, response: ResponseWindow, canceled: boolean) {
   const { shipment, fullCost } = validateGuildRateResponse(g, response);
   const shipper = getPlayer(g, shipment.player);
+  const cunning = shipment.guildNexusEvent
+    ? validateGuildCunningShipment(g, shipper.id, shipment.guildNexusEvent, 'reserve', shipment)
+    : null;
   g.pendingShipment = null;
   delete shipment.guildRateEvent;
-  if (!canceled) {
-    commitShipment(g, shipment);
-    return;
+  if (canceled) {
+    g.guildRateBlocked = { turn: g.turn, player: shipper.id };
+    const bounds = shipmentPaymentBounds(fullCost, shipper.spice,
+      aidFor(g, shipper)?.amount ?? 0);
+    if (shipment.allyPayment < bounds.minimum || shipment.allyPayment > bounds.maximum) {
+      if (cunning) {
+        delete cunning.shipment;
+        saveGuildCunning(g, cunning);
+      }
+      log(g, `Karama removed Guild's half-price rate from ${shipper.name}'s declaration. Its original approved payment split cannot fund the full price, so no spice or forces were spent and shipment remains available at full price this turn.`);
+      return;
+    }
+    shipment.cost = fullCost;
+    checkShipmentIncomeFunding(g, shipper, fullCost, shipment.allyPayment);
   }
-  g.guildRateBlocked = { turn: g.turn, player: shipper.id };
-  const bounds = shipmentPaymentBounds(fullCost, shipper.spice,
-    aidFor(g, shipper)?.amount ?? 0);
-  if (shipment.allyPayment < bounds.minimum || shipment.allyPayment > bounds.maximum) {
-    log(g, `Karama removed Guild's half-price rate from ${shipper.name}'s declaration. Its original approved payment split cannot fund the full price, so no spice or forces were spent and shipment remains available at full price this turn.`);
-    return;
+  if (cunning) {
+    cunning.shipment!.frame = JSON.stringify(shipment);
+    saveGuildCunning(g, cunning);
   }
-  shipment.cost = fullCost;
-  checkShipmentIncomeFunding(g, shipper, fullCost, shipment.allyPayment);
   commitShipment(g, shipment);
-  delete g.guildRateBlocked;
-  log(g, `Karama removed Guild's half-price rate. ${shipper.name} paid the full ${fullCost} spice for the unchanged shipment.`);
+  if (canceled) {
+    delete g.guildRateBlocked;
+    log(g, `Karama removed Guild's half-price rate. ${shipper.name} paid the full ${fullCost} spice for the unchanged shipment.`);
+  }
 }
 function guildTransportSignature(intent: PendingGuildTransport): string {
   return JSON.stringify([intent.event, intent.turn, intent.player, intent.fromReserves,
@@ -26618,7 +26635,7 @@ function validateGuildTransportRateResponse(g: Game, response: ResponseWindow) {
     ? ordinaryGuildTransportFullCost(g, shipper, intent) : null;
   requireRule(response.kind === 'guildRate' && intent && guild && shipper &&
     g.status === 'playing' && g.phase === 5 && g.active === shipper.id &&
-    !shipper.shipped && intent.turn === g.turn &&
+    shipmentAvailable(g, shipper) && intent.turn === g.turn &&
     typeof intent.event === 'string' && intent.event.length > 0 &&
     response.owner === guild.id && response.guildRateEvent === intent.event &&
     typeof intent.fromReserves === 'boolean' &&
@@ -27165,7 +27182,10 @@ function validateGuildCunningShipment(g: Game, owner: string, event: string, kin
   const record = currentGuildCunning(g,owner);
   requireRule(record?.stage === 'secondShipment' && record.receipt.event === event && record.shipment?.stage === 'pending' &&
     record.shipment.kind === kind && record.shipment.frame === JSON.stringify(frame), 'Guild Cunning has lost its original second shipment.');
-  return record;
+  // The validated kind excludes a declined (nonphysical) second shipment.
+  return record as typeof record & {
+    shipment?: Exclude<NonNullable<typeof record.shipment>, {kind: 'declined'}>;
+  };
 }
 function finishGuildCunningShipment(g: Game, owner: string, kind: 'reserve'|'guild'|'homeworld', frame: unknown, outcome:'complete'|'stopped' = 'complete') {
   const record = currentGuildCunning(g,owner);
@@ -27227,8 +27247,11 @@ function nexusGuildCunningIntegrity(g: Game) {
       requireRule(g.pendingShipment?.guildNexusEvent === active.receipt.event, 'Guild Cunning lost its pending reserve shipment.');
       validateGuildCunningShipment(g,owner.id,active.receipt.event,'reserve',g.pendingShipment);
       const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'guildShipment');
-      requireRule(decisions.length > 0,'Guild Cunning lost its shipment interception decision.');
+      const rates = savedNoFieldResponses(g).filter(response => response.kind === 'guildRate');
+      requireRule(decisions.length > 0 || rates.length === 1,
+        'Guild Cunning lost its shipment interception or rate response.');
       for (const d of decisions) validateGuildShipmentDecision(g,d);
+      for (const rate of rates) validateGuildRateResponse(g,rate);
     } else if (active.shipment.kind === 'homeworld') {
       requireRule(g.pendingHomeworldShipment?.guildNexusEvent === active.receipt.event,'Guild Cunning lost its pending Homeworld shipment.');
       validateGuildCunningShipment(g,owner.id,active.receipt.event,'homeworld',g.pendingHomeworldShipment);

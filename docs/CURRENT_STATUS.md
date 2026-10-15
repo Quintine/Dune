@@ -29,6 +29,26 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Native Guild rate cancellation, including Cunning — 15 October.**
+Expansion/Nexus rosters now retain the prepayment native rate window for
+reserve/cross/return declarations. Original physical group, tariff and approved
+funding remain fixed. Affordable cancellation pays full price once; unaffordable
+cancellation spends only Karama and preserves a full-price replacement.
+Cunning retains its true original shipped history and second allowance;
+its reserve receipt follows the pending rate event and settled price.
+No first shipment, ordinary movement or Nexus reopens.
+
+Affected nine-file101/101 and five action-only original API/policy paths pass.
+All four policies pass the native rate response and pay two for three here.
+Three actual390px journeys prove full-price transport, no-debt withdrawal/
+replacement and Cunning reserve repricing through turn completion; no overflow
+or browser errors. Two scenes are action-only native; Cunning is its explicitly
+controlled existing fixture. Homeworld/Skills/Discovery/Tech/Stronghold rate
+composition, full assurance and public starts remain open, not silently certified.
+[Current contract and original/controlled evidence distinction](GUILD_RATE_KARAMA_RULES.md#native-expansion-and-nexus-admission--15-october-2026).
+Final types/lint and production build pass, with existing deprecation/chunk/
+Unknown-route warnings. Current contract links and checklist evidence resolve.
+
 **Native Guild/BG own-arrival continuations — 15 October.**
 Direct Guild transport's owner-view candidate now matches its executable
 income-before-queued-Ambassador path. Ordinary shipment stops predicting its

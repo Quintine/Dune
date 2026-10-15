@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 15 October 2026 — Native Guild rate admission and Cunning receipts
+
+Removed classic-only expansion/Nexus exclusions from native rate admission,
+retaining physical-module and special price/source gates. The action-only
+Ecaz/Moritani/Guild producer demonstrates the old immediate paid transport3
+and new prepayment half2/full3 response. Original contribution and price
+validation, provisional no-debt withdrawal and full-price replacement remain.
+
+Expanded admission exposed Cunning's old `!shipped` rate guard: its original
+first shipment is rightly still recorded. Both rate validators now reuse
+`shipmentAvailable`. Cunning's reserve frame binds the temporary rate event
+and actual settlement; unaffordable cancellation releases only the current
+uncommitted frame. Existing interception and rate windows are recognized,
+without reopening the first shipment, ordinary movement or spent Nexus.
+
+Affected nine-file **101/101** passes: seven action-only native reserve/cross/
+return cases, six controlled Cunning reserve/cross allow/cancel/unaffordable
+cases and existing rate/transport/Cunning/Betrayal/own-arrival regressions.
+Five original API/policy paths pass. All four actual policies pass the new
+native rate window and pay rounded two in this position, not cancel.
+A separate controlled Cunning smoke reproduces/fixes the true-shipped failure.
+
+Three actual styled390px GameTable journeys exercise full-price cancellation,
+unaffordable withdrawal/full-price replacement and Cunning reserve repricing
+through Finish Guild turn. First transport pays Mori12→9/Guild6→9; the
+poor source stays6/spice3 until its replacement3 pays full3. Cunning retains
+first Arrakeen5, adds Carthag3 and ends at14 spice/12 reserves. No overflow/
+browser errors. Two scenes use the original action-only native fixture;
+Cunning uses its explicitly controlled older final-setup fixture.
+
+Homeworlds, Skills, Discovery, Tech, Strongholds and special borrowed/free
+sources remain separately bounded. No saved/deployed room, reset, provider
+permission, comprehensive assurance or public-start gate changed.
+[Canonical contract](GUILD_RATE_KARAMA_RULES.md#native-expansion-and-nexus-admission--15-october-2026).
+Final `npm run check:quick` and production build pass after expressing the
+validated non-declined receipt type without removing optional release.
+Existing module-register/chunk/Unknown-route warnings remain; six current
+local links and the five-facet canonical evidence targets resolve.
+
 ## 15 October 2026 — Native Guild/BG own-arrival continuations
 
 Direct native Guild transport's engine already committed income before queued
