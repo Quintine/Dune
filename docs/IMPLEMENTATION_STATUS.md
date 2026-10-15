@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 16 October 2026 — Genuine Richese cache and Black Market Ixian replacement
+
+Connected the actual positive sold native lot after buyer debit/card delivery
+but before original eligible credit/continuation. A native lot keeps index0
+in unchanged v1 receipts; normal parent JSON is unchanged. Original shared
+quotes bind native authority; no normal row, price or Game is manufactured.
+Cache uses the visibly provisional independent-Nexus interpretation under
+choose-recommended, leaving the printed native Ixian ally exclusion intact.
+Cache supports both modes; Black Market remains Advanced-only. Unbid owner
+retention is not a purchase; direct special-Karama sources stay separate.
+
+Affected nine-file98/98, types/lint and production build pass with the
+module-register/large-chunk/Unknown-route warnings. Six original runtime
+paths, twelve legal policy actions and two actual390px journeys pass:
+cache Residual Poison→Artillery, single buyer8→7/seller5→6 and Revival;
+Advanced Black Market Ornithopter Keep, buyer12→11/seller5→6 and original
+first/last declaration controls. Emperor income stays unchanged in these
+specific other-buyer scenarios. No overflow or browser/application error.
+
+The fixture now resolves actual responses before bidding; no native window
+was suppressed. The obsolete exact DTO pin was deleted while meaningful
+rival-private-card/eligibility assertions remain. A callback annotation is
+type-only. No human server, D1, saved room, deployment/public gate or new
+broad/HTTP/saved-game assurance changed/run.
+[Source, selected interpretation and proof](NEXUS_IXIAN_REPLACEMENT_RULES.md#genuine-cache-and-black-market-purchases--16-october-2026).
+Five current source anchors and23 topic evidence paths resolve; all five
+facets remain Partial without full-family or deployed certification.
+
 ## 16 October 2026 — Native Richese normal-purchase Ixian replacement
 
 Admitted fresh Richese/classics, exact CHOAM35 plus original cache, both modes

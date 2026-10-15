@@ -30,24 +30,29 @@ Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
 **Ixian Nexus purchased-card interaction wave — 16 October.**
-Normal purchased-card replacement now composes:
+Purchased-card replacement now composes:
 - successful native BG Karama conversion, after its original counter;
 - Harkonnen's original cancelable bonus and eight-card limit under a visibly
   provisional replacement → income → bonus order matching the native ally path;
 - original Tleilaxu/Ix47 setup and native purchases in Basic **and Advanced**;
-- native Richese/classics normal purchases with CHOAM35 and separate cache,
-  using selected-family card validation without enabling special-origin sales.
+- native Richese/classics normal purchases with CHOAM35 and separate cache;
+- actual positive native cache purchases in both modes and Black Market in
+  Advanced, using the real sold lot and original price/continuation.
 
-Latest affected seven-file65/65, eight original Richese runtime paths,
-sixteen legal policy actions and two390px original-source journeys pass.
-They preserve real payment/income, unchanged cache and one next-lot advance;
-real final-lot/cache continuation retains the cache-origin gate. Types/lint
-and actual CLI help pass. Two tool-only stale-node races were recovered
-without replay; no application error or overflow. Earlier evidence and
-explicit policies remain in the [canonical contract](NEXUS_IXIAN_REPLACEMENT_RULES.md).
-All five facets stay Partial. No saved room, human server, D1, deployment or
-public gate changed; full modules and final assurance remain separate.
-Current source anchors and21 topic evidence paths resolve.
+Cache provisionally uses the independent-Nexus grant under the standing
+choose-recommended priority; the native ally cache exclusion is unchanged.
+Actual controls show that policy. Latest nine-file98/98, types/lint/build,
+six original native runtime paths, twelve legal policy actions and two390px
+journeys pass. Unbid owner retention is not a purchase. The original seller
+credit and phase/declaration suffix finish once, with no synthetic normal
+row or extra payment. Source/receipt v1 shapes and normal parents remain.
+Earlier evidence and exact policies are in the
+[canonical contract](NEXUS_IXIAN_REPLACEMENT_RULES.md).
+All five facets stay Partial. Direct special-Karama sources, other modules
+and final assurance remain separate. No human server, saved room, D1,
+deployment or public gate changed.
+Current source anchors and23 topic evidence paths resolve; all five facets
+remain Partial.
 
 **Semuta connects both physical Shrine roles — 16 October.**
 Fresh private `semuta --discoveries` setup retains original Richese/CHOAM,

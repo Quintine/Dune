@@ -4,7 +4,7 @@ import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import { richeseCards } from '../game/richese-cards';
 import { settleIxianReplacementFixture } from './fixture-nexus-ixian-replacement';
 import {
-  createRicheseIxianReplacementFixture, nextRicheseIxianReplacementNativeStep,
+  createRicheseIxianReplacementFixture,
   type RicheseIxianReplacementFixture,
 } from './fixture-richese-ixian-replacement';
 
@@ -121,52 +121,3 @@ void test(`${advanced ? 'Advanced' : 'Basic'} native final-lot CHOAM purchase cl
   assert.equal(use.nexusCards!.cards!.hands[f.buyer], null);
 });
 
-for (const advanced of [false, true])
-void test(`${advanced ? 'Advanced' : 'Basic'} Richese cache lot keeps the Nexus replacement gated to normal purchases`, () => {
-  const f = fixtureFor(advanced, 'atreides', true);
-  const offer = viewGame(f.game, f.buyer).nexusIxianReplacement!;
-  const richese = f.game.players.find(player => player.faction === 'richese')!.id;
-  // Keep the purchased card and the unallied Nexus card, so the buyer is still
-  // an eligible Nexus holder when the round reaches its own compulsory cache lot.
-  let game = settleIxianReplacementFixture(applyAction(reload(f.game), f.buyer,
-    { type: 'nexusIxianReplacementPass', event: offer.event }));
-  assert.equal(game.nexusCards!.cards!.hands[f.buyer], 'ixians');
-  assert.equal(game.auction, null);
-  assert.equal(game.richeseBidding!.stage, 'cacheOffer');
-  assert.deepEqual(game.decision, { kind: 'richeseCache', player: richese });
-  assert.equal(game.pendingNexusIxianReplacement, null);
-  const cacheCard = game.richeseCache![0];
-  const before = { buyer: owner(game, f.buyer).spice, richese: owner(game, richese).spice,
-    emperor: owner(game, f.emperor!).spice };
-  game = applyAction(game, richese, { type: 'decision', event: game.richeseBidding!.event,
-    card: cacheCard.id, method: 'onceAround', direction: 'clockwise' });
-  assert.equal(game.richeseAuction?.source, 'cache');
-  assert.equal(game.richeseAuction?.cardId, cacheCard.id);
-  assert.equal(game.richeseAuction?.owner, richese);
-  // A real Once Around: the native policy declines for every other seat, the
-  // unallied Nexus holder buys the cache card with its own spice.
-  for (let count = 0; game.richeseAuction && !game.richeseAuction.outcome && count < 20; count++) {
-    const lot: NonNullable<Game['richeseAuction']> = game.richeseAuction;
-    const next = nextRicheseIxianReplacementNativeStep(game);
-    assert.equal(next.actor, lot.active);
-    assert.equal(game.pendingNexusIxianReplacement, null);
-    game = next.actor === f.buyer
-      ? applyAction(game, f.buyer, { type: 'richeseBid', event: lot.event,
-        amount: lot.bid === 0 ? 1 : null })
-      : applyAction(game, next.actor, next.action);
-  }
-  // The cache purchase retires its own lot with no replacement frame, while the
-  // same buyer's normal purchase above did open one.
-  assert.equal(game.richeseAuction, null);
-  assert.equal(game.pendingNexusIxianReplacement, null);
-  assert.equal(game.decision, null);
-  assert.equal(game.currentAuctionSale, null);
-  assert.ok(owner(game, f.buyer).hand.some(card => card.id === cacheCard.id));
-  assert.ok(!game.richeseCache!.some(card => card.id === cacheCard.id));
-  assert.equal(owner(game, f.buyer).spice, before.buyer - 1);
-  assert.equal(owner(game, richese).spice, before.richese + 1);
-  assert.equal(owner(game, f.emperor!).spice, before.emperor);
-  assert.equal(game.nexusCards!.cards!.hands[f.buyer], 'ixians');
-  assert.equal(game.richeseBidding!.stage, 'complete');
-  assert.equal(game.phase, 4);
-});

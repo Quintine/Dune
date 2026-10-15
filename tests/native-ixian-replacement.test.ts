@@ -94,6 +94,7 @@ void test('native descriptor admission rejects forged Ix effects and unrelated R
     const ctx: IxianReplacementContext = {
       status: f.game.status, phase: f.game.phase, turn: f.game.turn, sequence: source.sequence,
       expansions: f.game.expansions, richese: false,
+      advanced: f.game.advanced, richeseAuction: null,
       auction: { ...f.game.auction!, cards: f.game.auction!.cards.map((card, index) =>
         index === f.auctionIndex ? corrupt : card) },
       sale: f.game.currentAuctionSale!,

@@ -1,5 +1,6 @@
 import { baseDeck, choamDeck, ixDeck, type Card } from './cards';
 import { richeseCards } from './richese-cards';
+import type { RicheseAuction } from './richese-auction';
 
 export class IxianReplacementError extends Error {}
 
@@ -10,12 +11,15 @@ export type IxianReplacementContext = {
   sequence: number;
   expansions: readonly string[];
   richese: boolean;
+  /** Native Black Market bidding only opens in Advanced play. */
+  advanced: boolean;
   auction: {
     cards: readonly Card[];
     index: number;
     bidder: string | null;
     bid: number;
   } | null;
+  richeseAuction: Pick<RicheseAuction, 'event' | 'cardId' | 'source' | 'owner' | 'outcome'> | null;
   sale: {
     winner: string;
     amount: number;
@@ -128,7 +132,7 @@ function savedSource(value: unknown): value is IxianReplacementSource {
     text(value.parent) && text(value.signature);
 }
 function validateSavedSource(value: unknown): asserts value is IxianReplacementSource {
-  requireReplacement(savedSource(value), 'The replacement lost its canonical normal purchase receipt.');
+  requireReplacement(savedSource(value), 'The replacement lost its canonical purchase receipt.');
   requireReplacement(
     value.event === ixianReplacementEvent(value.turn, value.buyer, value.sequence, value.auctionIndex) &&
       value.signature === sourceSignature(value),
@@ -143,7 +147,48 @@ function validatePhysical(physical: readonly Card[], ctx?: IxianReplacementConte
   );
 }
 
-/** Authorize the original paid/Karama NORMAL sale, not an arbitrary held card.
+/** Select only a delivered card backed by the current native sale authority. */
+function purchasedCard(ctx: IxianReplacementContext): Card {
+  const sale = ctx.sale;
+  requireReplacement(sale, 'Replacement needs its original auction sale.');
+  if (sale.origin === 'normal') {
+    const auction = ctx.auction;
+    requireReplacement(
+      auction && ctx.richeseAuction === null && sale.seller === null &&
+        auction.bidder === sale.winner && auction.bid === sale.amount &&
+        whole(auction.index) && Array.isArray(auction.cards) &&
+        selectedCard(auction.cards[auction.index], ctx),
+      'Replacement must retain its exact original normal auction purchase.',
+    );
+    return auction.cards[auction.index];
+  }
+  const lot = ctx.richeseAuction;
+  requireReplacement(
+    ctx.auction === null && ctx.richese && ctx.expansions.includes('choam') &&
+      lot && text(lot.event) && text(lot.cardId) &&
+      (lot.source === 'cache' || (lot.source === 'blackMarket' && ctx.advanced)) &&
+      lot.source === sale.origin &&
+      text(lot.owner) && lot.owner === sale.seller &&
+      Array.isArray(ctx.players) && ctx.players.some(player => plain(player) && player.id === lot.owner),
+    'Replacement needs its exact native Richese lot and seated owner.',
+  );
+  const outcome = lot.outcome;
+  requireReplacement(
+    outcome !== null && outcome.kind === 'sold' &&
+      whole(outcome.amount) && outcome.amount > 0 && sale.free === false &&
+      outcome.winner === sale.winner && outcome.amount === sale.amount,
+    'The native Richese lot must have been sold to the buyer at the recorded price.',
+  );
+  const buyer = ctx.players.find(player => plain(player) && player.id === sale.winner);
+  requireReplacement(buyer && Array.isArray(buyer.hand),
+    'Replacement needs the native lot in its original buyer hand.');
+  const card = buyer.hand.find((card: Card) => card?.id === lot.cardId);
+  requireReplacement(selectedCard(card, ctx),
+    'Replacement needs the exact canonical delivered native Richese card.');
+  return card;
+}
+
+/** Authorize the original normal or native Richese purchase, not an arbitrary held card.
  * The engine supplies its current source-specific parent and live custody census.
  * Neither payment nor draw allocation is reconstructed here. */
 export function validateIxianReplacementSource(
@@ -156,14 +201,11 @@ export function validateIxianReplacementSource(
       text(parent) && source.parent === parent,
     'The purchased card choice has lost its current parent or cursor.',
   );
-  const auction = ctx.auction, sale = ctx.sale;
+  const card = purchasedCard(ctx), sale = ctx.sale!;
   requireReplacement(
-    auction && sale && sale.origin === 'normal' && sale.seller === null &&
-      sale.winner === source.buyer && sale.amount === source.amount && sale.free === source.free &&
-      auction.bidder === source.buyer && auction.bid === source.amount &&
-      whole(auction.index) && auction.index === source.auctionIndex && Array.isArray(auction.cards) &&
-      selectedCard(auction.cards[auction.index], ctx) && sameCard(auction.cards[auction.index], source.card),
-    'Replacement must retain its exact original normal auction purchase.',
+    sale.winner === source.buyer && sale.amount === source.amount && sale.free === source.free &&
+      source.auctionIndex === (ctx.auction?.index ?? 0) && sameCard(card, source.card),
+    'Replacement must retain its exact original auction purchase.',
   );
   validatePhysical(ctx.physicalCards, ctx);
   requireReplacement(
@@ -191,16 +233,11 @@ export function validateIxianReplacementSource(
 export function createIxianReplacementSource(
   ctx: IxianReplacementContext, event: string, parent: string,
 ): IxianReplacementSource {
-  const auction = ctx.auction, sale = ctx.sale;
-  requireReplacement(
-    auction && sale && Array.isArray(auction.cards) && whole(auction.index) &&
-      canonicalCard(auction.cards[auction.index]),
-    'Replacement needs an actual canonical purchased auction card.',
-  );
+  const card = purchasedCard(ctx), sale = ctx.sale!;
   const source: IxianReplacementSource = {
     version: 1, event, buyer: sale.winner, turn: ctx.turn, sequence: ctx.sequence,
-    auctionIndex: auction.index, amount: sale.amount, free: sale.free,
-    card: { ...auction.cards[auction.index] }, parent, signature: '',
+    auctionIndex: ctx.auction?.index ?? 0, amount: sale.amount, free: sale.free,
+    card: { ...card }, parent, signature: '',
   };
   source.signature = sourceSignature(source);
   validateIxianReplacementSource(ctx, source, parent);

@@ -173,13 +173,12 @@ void test('public neutral offer is independent of secret held face and rivals se
   const irrelevant = createIxianNexusReplacementFixture({face:'richese'});
   const rival = ix.game.players.find(p => p.id !== ix.buyer)!.id;
   assert.deepEqual(viewGame(ix.game,rival).nexusIxianReplacement,viewGame(irrelevant.game,rival).nexusIxianReplacement);
-  assert.deepEqual(viewGame(ix.game,rival).nexusIxianReplacement,
-    {event:ix.event,buyer:ix.buyer,canPass:false,canUse:false,blocked:null,purchased:null});
+  assert.equal(viewGame(ix.game,rival).nexusIxianReplacement!.purchased,null);
+  assert.equal(viewGame(ix.game,rival).nexusIxianReplacement!.canUse,false);
   assert.equal(viewGame(ix.game,ix.buyer).nexusIxianReplacement!.canUse,true);
   const otherOffer = viewGame(irrelevant.game,irrelevant.buyer).nexusIxianReplacement!;
   assert.equal(otherOffer.canPass,true);
   assert.equal(otherOffer.canUse,false);
-  assert.equal(otherOffer.blocked,null);
   reject(irrelevant.game,irrelevant.buyer,{type:'nexusIxianReplacementUse',event:irrelevant.event});
   const pass = applyAction(irrelevant.game,irrelevant.buyer,{type:'nexusIxianReplacementPass',event:irrelevant.event});
   assert.equal(pass.nexusCards!.cards!.hands[irrelevant.buyer],'richese');

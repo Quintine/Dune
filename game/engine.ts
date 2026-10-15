@@ -9946,14 +9946,15 @@ function ixianNexusReplacementParent(g: Game): string {
     players:g.players.map(p => ({id:p.id,faction:p.faction,ally:p.ally,spice:p.spice,hand:p.hand})),
     deck:g.deck,discard:g.discard,aid:g.aid,nexus:g.nexusCards,
     ...(byFaction(g, 'richese') ? { richeseBidding:g.richeseBidding,
-      richeseCache:g.richeseCache,richeseRemoved:g.richeseRemoved } : {}),
+      richeseCache:g.richeseCache,richeseRemoved:g.richeseRemoved,
+      ...(g.richeseAuction ? { richeseAuction:g.richeseAuction } : {}) } : {}),
     decision:g.decision,response:g.response,phaseOpening:g.phaseOpening});
 }
 function ixianNexusReplacementContext(g: Game) {
-  requireRule(g.auction, 'The Nexus purchased-card choice lost its normal auction.');
+  requireRule(g.auction || g.richeseAuction, 'The Nexus purchased-card choice lost its original auction.');
   return {status:g.status,phase:g.phase,turn:g.turn,sequence:g.nexusIxianReplacementCursor!.sequence,
-    expansions:g.expansions,richese:!!byFaction(g,'richese'),
-    auction:g.auction,sale:g.currentAuctionSale ?? null,
+    advanced:g.advanced,expansions:g.expansions,richese:!!byFaction(g,'richese'),
+    auction:g.auction,richeseAuction:g.richeseAuction ?? null,sale:g.currentAuctionSale ?? null,
     players:g.players.map(p => ({id:p.id,hand:p.hand,handLimit:handLimit(p)})),
     physicalCards:physicalTreacheryCards(g)};
 }
@@ -9980,7 +9981,8 @@ function ixianNexusReplacementIntegrity(g: Game): void {
     g.decision.event === pending.event &&
     Object.keys(g.decision).every(key => ['kind','player','event'].includes(key)) &&
     !g.response && !g.phaseOpening && !g.truthtrance && !g.pendingKarama && !g.pendingNullentropy &&
-    !g.pendingTreacheryDiscard && !g.richeseAuction,
+    !g.pendingTreacheryDiscard && (g.currentAuctionSale?.origin === 'normal'
+      ? !g.richeseAuction : !g.auction && !!g.richeseAuction),
   'The purchased-card choice lost its buyer or native decision priority.');
   nexusRule(() => validateIxianReplacementSource(ixianNexusReplacementContext(g),pending,
     ixianNexusReplacementParent(g)));
@@ -9989,11 +9991,11 @@ function offerIxianNexusReplacement(g: Game): boolean {
   if (!g.nexusIxianReplacementPreview) return false;
   const sale = g.currentAuctionSale;
   const buyer = sale && getPlayer(g,sale.winner);
-  if (!sale || !buyer || sale.origin !== 'normal' ||
-    buyer.ally || !g.nexusCards?.cards?.hands[buyer.id]) return false;
+  if (!sale || !buyer || buyer.ally || !g.nexusCards?.cards?.hands[buyer.id]) return false;
   requireRule(!g.response && !g.phaseOpening && !g.truthtrance && !g.pendingKarama,
     'Finish the original auction priority before offering the purchased-card choice.');
-  const event = ixianReplacementEvent(g.turn,buyer.id,g.nexusIxianReplacementCursor!.sequence,g.auction!.index);
+  if (sale.origin !== 'normal') currentAuctionContinuationQuote(g, { kind: 'sale', free: sale.free });
+  const event = ixianReplacementEvent(g.turn,buyer.id,g.nexusIxianReplacementCursor!.sequence,g.auction?.index ?? 0);
   g.decision = {kind:'nexusIxianReplacement',player:buyer.id,event};
   g.active = buyer.id;
   g.pendingNexusIxianReplacement = nexusRule(() => createIxianReplacementSource(
@@ -10004,7 +10006,7 @@ function ixianNexusReplacementView(g: Game,id: string) {
   const source = g.pendingNexusIxianReplacement;
   if (!source) return null;
   const own = source.buyer === id;
-  return {event:source.event,buyer:source.buyer,canPass:own,
+  return {event:source.event,buyer:source.buyer,origin:g.currentAuctionSale!.origin,canPass:own,
     canUse:own && g.nexusCards?.cards?.hands[id] === 'ixians',
     blocked:null as string | null,purchased:own ? structuredClone(source.card) : null};
 }
@@ -12348,7 +12350,7 @@ function settleRicheseSoldLot(g: Game, quote: Extract<RicheseSettlementQuote,{ki
   if (lot.source === 'blackMarket' && ixians && winner.ally === ixians.id) {
     g.pendingIxAlly = { player: winner.id, card: card.id, free };
     g.decision = { kind: 'ixAllyCard', player: winner.id };
-  } else continueAuctionSale(g, free);
+  } else if (!offerIxianNexusReplacement(g)) continueAuctionSale(g, free);
 }
 function beginRicheseLot(
   g: Game,

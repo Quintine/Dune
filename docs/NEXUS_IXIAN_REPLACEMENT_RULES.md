@@ -2,14 +2,67 @@
 
 Source audit: 2026-09-10. Bounded local prototype integration and verification: 2026-10-01. **Partial development verified**, not complete Ixian/Nexus family or expansion acceptance. This document records the source and runtime boundary of the fresh `ixian-replacement` profile. Existing [Nexus release gates](NEXUS_CARD_RUNTIME.md) remain in force.
 
+## Genuine cache and Black Market purchases — 16 October 2026
+
+The existing fresh Richese/CHOAM profile now binds actual positive sold
+cache lots in Basic/Advanced and actual Black Market lots in Advanced.
+Basic Black Market is not granted. The card is already delivered and its
+original bid debited before the independent purchased-card choice; Use/Keep
+then resumes the same eligible recipient, income, bonus and lot continuation.
+Unbid owner keeps/retains are not purchases and never create this choice.
+
+**Selected provisional cache scope:** under the standing choose-recommended
+instruction, use the photographed Nexus face's independent grant for a
+genuine cache purchase. It does not name the actual native Ixian alliance
+advantage or repeat E2's cache exclusion. The interface labels this literal
+composition provisional; no new publisher FAQ or explicit user-selected
+cache ruling is claimed. Native Ixian allies still cannot replace a cache
+purchase. Direct Richese special-Karama acquisitions remain a separate
+implementation gap, not a ruling that they are not purchases.
+
+The source uses the real sold native lot, owner, target and quoted price;
+no normal row or replacement Game is fabricated. Its single lot has index0
+in the existing v1 receipt. Normal source/receipt shapes and parent strings
+remain unchanged; a live native lot enters the parent only when present.
+Shared native continuation quotes retain original authority. The projected
+origin is public source category only, not a new price or card disclosure.
+
+Affected nine-file **98/98**, types/lint and production build pass, retaining
+module-register, large-chunk and Unknown-route warnings. Six original native
+Use/Keep runtime paths and twelve legal policy actions cover cache in both
+modes and Advanced Black Market. Eleven actual native scenario cases cover
+already-paid timing, both outcomes and genuine unbid retention; pure source
+cases reject mismatched/open/unbid/competing lots and Basic Black Market.
+The fixture now respects real response priority before bidding. An obsolete
+exact projection-object pin was removed while semantic rival privacy checks
+remain; a callback typing annotation changes no behavior.
+
+Two styled390×844 original-source journeys pass. Basic cache Use exchanges
+Residual Poison for the real deck-top Artillery, spends Nexus, retains the
+single price8→7 and seller5→6, and reaches Revival. Advanced Black Market
+Keep retains purchased Ornithopter and Nexus, price12→11/seller5→6, then
+returns to Richese's actual first/last declaration controls. Emperor income
+is unchanged in both specific other-buyer scenarios. Width/scroll390 and no
+browser/application errors. Current CLI help names exact mode/scope bounds.
+
+Only an owned memory-only loopback host ran. No human server, D1, saved room,
+deployment or public gate changed. Proof:
+`/tmp/dune-richese-seller-ixian-runtime.json`,
+`/tmp/dune-richese-seller-ixian-ui-proof.json`. No broad suite or new HTTP/
+saved-game assurance ran; all five checklist facets remain Partial.
+
+
+Five current source anchors and23 topic evidence paths resolve without
+reference parse diagnostics; all five checklist facets remain Partial.
+
 ## Native Richese normal purchases — 16 October 2026
 
-The fresh private profile additionally admits native Richese plus classic
-opponents in Basic/Advanced with exact CHOAM35, its separate original
-ten-card cache and Nexus alone. Original cache auctions and qualifying
-Nexus acquisition precede any normal purchased-card choice. Only a genuine
-**normal-auction** purchase is connected; cache, Black Market and special
-purchase replacement stay excluded under their separate source boundaries.
+This earlier normal-purchase checkpoint admitted Richese plus classics,
+Basic/Advanced, with CHOAM35, the separate original cache and Nexus alone.
+Original cache auctions and qualifying Nexus acquisition preceded each
+normal choice. Genuine cache and Advanced Black Market replacement were
+added afterward in the composition above; direct special purchases remain
+separate.
 
 Live card validation now receives selected `expansions` and native `richese`
 presence. Exact base, Ix, CHOAM and cache membership is precomputed from the
@@ -195,7 +248,7 @@ An ordinary Karama acquisition is described by November's FAQ as purchasing with
 
 E2 explicitly excludes a direct Richese cache purchase from the **Ixian ally** replacement, while allowing Black Market purchases, including a Richese-family card. It also awards Harkonnen's normal bonus for both sale kinds. The restriction follows purchase origin, not card family. [E2 pp.10–11](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf#page=10)
 
-That question names an ally of Ixians. The later Nexus face independently grants the operation when Ixians are absent and does not name the native alliance advantage or repeat the cache exclusion. The literal independent-grant reading includes genuine cache purchases during Bidding. Extending the older exception to the new card is an alternative interpretation; no retrieved primary clarification selects it. Do not silently reuse an existing native `ixAllyCard` origin filter as though it settled this distinction. The same analysis matters for Richese's genuine special-Karama cache purchase during Bidding; its other timing and hand-cap boundaries remain in the [acquisition audit](RICHESE_ACQUISITION_RULES.md).
+That question names an ally of Ixians. The later Nexus face independently grants the operation when Ixians are absent and does not name the native alliance advantage or repeat the cache exclusion. The selected 16 October provisional interpretation therefore includes genuine cache purchases during Bidding under the standing choose-recommended instruction. Extending the older exception is an alternative reading, but no retrieved primary clarification selects it; the actual native `ixAllyCard` cache filter remains unchanged, not imported as Nexus authority. This interpretation is visibly labelled product composition, not a publisher ruling. The same source analysis applies to genuine special-Karama purchases during Bidding, whose direct source is not yet connected; other timing/cap boundaries remain in the [acquisition audit](RICHESE_ACQUISITION_RULES.md).
 
 November's Karama table expressly permits stopping the native Ixian ally from discarding a purchased card. For this separately worded Nexus grant, Ixians are absent and the holder is not using a present faction's native or actual alliance advantage. Treating it as a direct card effect without that native cancellation window is the supported category composition used for Atreides Secret Ally; it is not an express general Nexus-immunity ruling. Unlike Bene Gesserit Secret Ally, this face does not say to use a named faction advantage. [FAQ p.7](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=7), [Face](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani)
 
@@ -222,8 +275,8 @@ and never add seats to an admitted game or fabricate Nexus hands.
 
 ### Connected purchase and choice
 
-1. Only an actual normal-auction purchase is connected: paid spice or genuine Karama acquisition/payment, including direct acquisition before a positive bid. Native Advanced BG Worthless conversion must first complete its existing response; successful free purchases then get the same replacement choice. A canceled direct conversion makes no purchase; canceled winning payment follows its original funded spice-payment recovery and, if purchased, supplies a paid receipt. The original source, purchased physical card and native sale continuation remain bound after genuine acquisition. Gifts, bonus draws, Technology swaps, old hand cards and historical purchase IDs cannot create an opportunity.
-2. Harkonnen buyers use the visibly provisional replacement-before-income/bonus order above, preserving the original cancelable bonus and eight-card limit. Richese cache, Black Market and special-acquisition origins remain guarded under their separate independent Nexus scope; the native `ixAllyCard` origin filter is not imported as authority.
+1. Connect actual normal-auction purchases, including successful native BG conversion after its original counter, and actual positive sold Richese cache lots (Basic/Advanced) or Black Market lots (Advanced only). Native buyer debit and card delivery precede the source-bound choice; original recipient/income/bonus/lot continuation follows once. Unbid keeps/retains, gifts, bonus draws, Technology swaps, old hand cards and historical IDs supply no purchase. Direct Richese special-Karama acquisition remains separate.
+2. Cache uses the visibly provisional independent-Nexus interpretation above, not the actual native ally advantage excluded by E2. Harkonnen retains the visibly provisional replacement-before-income/bonus order, original cancelable bonus and eight-card limit. Neither selected composition is a located publisher timing FAQ.
 3. Every publicly possible supported buyer receives the same event and public buyer identity, regardless of its secret Nexus face. Only that buyer receives Pass and the exact already-owned purchased card for inspection; only a truly eligible unallied holder of the physical Ixian Nexus receives Use. Opponents receive neither the purchased/replacement face nor private price, receipt, deck order or eligibility reason. The buyer may inspect its own actually held Nexus through the existing authorized inspector; the neutral prompt grants no rival entitlement.
 4. **Pass** retains the purchased card and Nexus, closes this opportunity and continues the original sale once. **Use** spends that singleton Nexus once, discards exactly the just-purchased physical Treachery Card, then draws the actual next deck card privately. There is no card selector, arbitrary hand exchange, new Karama counter, refund, repayment or re-auction.
 5. The discard opens a full legal hand's slot before the draw. An exhausted deck recycles eligible Treachery discards, including that just-discarded card; drawing the same physical card again is legal. The unsold auction row is not the draw deck. Earlier Atreides auction inspection does not grant a new peek of this replacement.
@@ -340,4 +393,4 @@ custody/history), `tests/nexus-ixian-replacement-engine.test.ts` and genuine
 `tests/prototype-room.test.ts` (fresh profile and exact-version backed-up CLI).
 This evidence is not complete family/module or deployed acceptance.
 
-Independent Richese cache/Black Market/special scope, expansion-card discard reactions, Semuta/Ecaz priority and anytime interleaving remain outside this profile. Harkonnen's connected replacement-before-bonus sequence is explicitly provisional, not a settled publisher priority. Full Ixian/Nexus families, combined modules, public starts, complete games and live release acceptance remain separate gates.
+Direct Richese special-Karama sources, expansion-card discard reactions, Semuta/Ecaz priority and anytime interleaving remain outside this profile. Cache's independent-grant scope and Harkonnen's replacement-before-bonus order are explicitly provisional, not settled publisher priority. Full Ixian/Nexus families, combined modules, public starts, complete games and live release acceptance remain separate gates.

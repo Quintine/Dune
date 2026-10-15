@@ -79,7 +79,7 @@ export function nextRicheseIxianReplacementNativeStep(
       keep: owner.hand.length < handLimit(owner) } };
   }
   const lot = game.richeseAuction;
-  if (!decision && lot && !lot.outcome) {
+  if (!decision && !game.response && lot && !lot.outcome) {
     const actor = lot.method === 'silent'
       ? lot.order.find(id => lot.eligible.includes(id) && !Object.hasOwn(lot.sealed, id))
       : lot.active;

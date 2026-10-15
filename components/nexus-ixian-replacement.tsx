@@ -39,6 +39,12 @@ export function NexusIxianReplacement({ game, act, busy }: {
         Only the buyer can choose. The original payment stays paid; this is not another purchase or auction.{' '}
         <a href="/rules?topic=nexus-ixian-replacement#nexus-ixian-replacement">Purchased-card timing and preview limits</a>
       </p>
+      {offer.origin === 'cache' && (
+        <p className="fine">
+          Provisional cache scope: this independent absent-Ixian Nexus grant applies to a genuine
+          cache purchase. The separate exclusion for the native Ixian ally advantage is unchanged.
+        </p>
+      )}
       {buyer?.faction === 'harkonnen' && (
         <p className="fine">
           Provisional Harkonnen order: choose this replacement before the original income and

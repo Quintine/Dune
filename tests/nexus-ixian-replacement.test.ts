@@ -20,8 +20,9 @@ const parent = 'original-native-paid-sale-parent';
 function context(): IxianReplacementContext {
   return {
     status: 'playing', phase: 3, turn: 1, sequence: 0,
-    expansions: [], richese: false,
+    expansions: [], richese: false, advanced: false,
     auction: { cards: [{ ...purchased }, { ...unsold }], index: 0, bidder: 'buyer', bid: 4 },
+    richeseAuction: null,
     sale: { winner: 'buyer', amount: 4, free: false, origin: 'normal', seller: null },
     players: [
       { id: 'buyer', hand: [{ ...older }, { ...purchased }], handLimit: 4 },
@@ -46,6 +47,117 @@ function source(ctx: IxianReplacementContext = context()) {
     ctx, ixianReplacementEvent(ctx.turn, 'buyer', ctx.sequence, 0), parent,
   );
 }
+
+function nativeContext(origin: 'cache' | 'blackMarket'): IxianReplacementContext {
+  const card = origin === 'cache' ? richeseCards()[0] : purchased;
+  const ctx = context();
+  ctx.expansions = ['choam'];
+  ctx.richese = true;
+  ctx.advanced = origin === 'blackMarket';
+  ctx.auction = null;
+  ctx.richeseAuction = {
+    event: `native-${origin}-auction`, cardId: card.id, source: origin, owner: 'rival',
+    outcome: { kind: 'sold', winner: 'buyer', amount: 7 },
+  };
+  ctx.sale = { winner: 'buyer', amount: 7, free: false, origin, seller: 'rival' };
+  ctx.players = [{ ...ctx.players[0], hand: [{ ...older }, { ...card }] }, ctx.players[1]];
+  ctx.physicalCards = [{ ...older }, { ...card }, { ...top }];
+  return ctx;
+}
+
+void test('native cache and Black Market purchases close exact delivered cards once for Use or Pass', () => {
+  for (const origin of ['cache', 'blackMarket'] as const) {
+    const ctx = nativeContext(origin);
+    const original = source(ctx);
+    const delivered = ctx.players[0].hand.find(card => card.id === ctx.richeseAuction!.cardId)!;
+    assert.deepEqual(original.card, delivered);
+    assert.equal(original.amount, 7);
+    assert.equal(original.free, false);
+    assert.equal(original.auctionIndex, 0);
+    validateIxianReplacementSource(ctx, JSON.parse(JSON.stringify(original)), parent);
+    for (const outcome of ['use', 'pass'] as const) {
+      const closed = closeIxianReplacementSource(
+        original, outcome, outcome === 'use' ? top : null, initialIxianReplacementCursor(),
+      );
+      assert.equal(closed.receipt.outcome, outcome);
+      assert.deepEqual(closed.receipt.replacement, outcome === 'use' ? top : null);
+      assert.throws(() => closeIxianReplacementSource(original, 'pass', null, closed.cursor), IxianReplacementError);
+      assert.throws(() => closeIxianReplacementSource(original, 'use', top, closed.cursor), IxianReplacementError);
+      // A later census need not retain the purchased or drawn card at its old location.
+      validateIxianReplacementHistory(
+        JSON.parse(JSON.stringify([closed.receipt])), closed.cursor, [older],
+      );
+    }
+  }
+});
+
+void test('successive single native lots use the independent sequence without inventing normal rows', () => {
+  const cache = nativeContext('cache');
+  const first = closeIxianReplacementSource(source(cache), 'pass', null, initialIxianReplacementCursor());
+  const blackMarket = nativeContext('blackMarket');
+  blackMarket.sequence = first.cursor.sequence;
+  const second = closeIxianReplacementSource(source(blackMarket), 'use', top, first.cursor);
+  assert.equal(first.receipt.source.auctionIndex, 0);
+  assert.equal(second.receipt.source.auctionIndex, 0);
+  assert.notEqual(first.receipt.source.event, second.receipt.source.event);
+  validateIxianReplacementHistory([first.receipt, second.receipt], second.cursor);
+});
+
+void test('native purchase authority rejects missing, open, unbid, mismatched and competing lots', () => {
+  for (const origin of ['cache', 'blackMarket'] as const) {
+    const ctx = nativeContext(origin);
+    const lot = ctx.richeseAuction!;
+    const original = source(ctx);
+    const variants: IxianReplacementContext[] = [
+      { ...ctx, richeseAuction: null },
+      { ...ctx, richeseAuction: { ...lot, outcome: null } },
+      { ...ctx, richeseAuction: { ...lot, outcome: { kind: 'unbid' } } },
+      { ...ctx, richeseAuction: { ...lot, outcome: { kind: 'sold', winner: 'buyer', amount: 0 } } },
+      { ...ctx, richeseAuction: { ...lot, outcome: { kind: 'sold', winner: 'rival', amount: 7 } } },
+      { ...ctx, richeseAuction: { ...lot, outcome: { kind: 'sold', winner: 'buyer', amount: 8 } } },
+      { ...ctx, richeseAuction: { ...lot, source: origin === 'cache' ? 'blackMarket' : 'cache' } },
+      { ...ctx, richeseAuction: { ...lot, cardId: unsold.id } },
+      { ...ctx, richeseAuction: { ...lot, owner: 'unseated' }, sale: { ...ctx.sale!, seller: 'unseated' } },
+      { ...ctx, sale: { ...ctx.sale!, seller: null } },
+      { ...ctx, sale: { ...ctx.sale!, seller: 'buyer' } },
+      { ...ctx, sale: { ...ctx.sale!, amount: 8 } },
+      { ...ctx, sale: { ...ctx.sale!, free: true } },
+      { ...ctx, sale: { ...ctx.sale!, origin: 'normal', seller: null } },
+      { ...ctx, sale: null },
+      { ...ctx, auction: context().auction },
+      { ...ctx, expansions: [] },
+      { ...ctx, richese: false },
+      ...(origin === 'blackMarket' ? [{ ...ctx, advanced: false }] : []),
+    ];
+    for (const invalid of variants) {
+      assert.throws(() => source(invalid), IxianReplacementError);
+      assert.throws(() => validateIxianReplacementSource(invalid, original, parent), IxianReplacementError);
+    }
+    // Another canonical card already in the hand cannot replace the actual lot.
+    const swapped = { ...ctx, richeseAuction: { ...lot, cardId: older.id } };
+    assert.throws(() => validateIxianReplacementSource(swapped, original, parent), IxianReplacementError);
+    const absent = {
+      ...ctx, players: [{ ...ctx.players[0], hand: [older] }, ctx.players[1]],
+    };
+    assert.throws(() => source(absent), IxianReplacementError);
+    const duplicate = {
+      ...ctx, players: [{ ...ctx.players[0], hand: [...ctx.players[0].hand, original.card] }, ctx.players[1]],
+    };
+    assert.throws(() => source(duplicate), IxianReplacementError);
+  }
+});
+
+void test('normal purchases preserve their actual nonzero lot index and saved continuation', () => {
+  const ctx = context();
+  ctx.auction = { ...ctx.auction!, cards: [unsold, purchased], index: 1 };
+  const original = createIxianReplacementSource(
+    ctx, ixianReplacementEvent(ctx.turn, 'buyer', ctx.sequence, 1), parent,
+  );
+  assert.equal(original.auctionIndex, 1);
+  validateIxianReplacementSource(ctx, JSON.parse(JSON.stringify(original)), parent);
+  const closed = closeIxianReplacementSource(original, 'pass', null, initialIxianReplacementCursor());
+  validateIxianReplacementHistory(JSON.parse(JSON.stringify([closed.receipt])), closed.cursor);
+});
 
 void test('retained purchases keep saved receipt history linear through the game horizon', () => {
   const physical = baseDeck();
