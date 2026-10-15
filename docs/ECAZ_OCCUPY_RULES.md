@@ -258,6 +258,15 @@ Its +2 normal score adds no undialed counters; original reserve cost and fixed
 versus variable on-board losses stay separate. Other optional modules and
 Basic/unprofiled co-side card battles remain guarded.
 
+Own concealed markers use the
+[provisional materialization-first card contract](HARASS_WITHDRAW_RUNTIME.md#own-no-field-composition--16-october-2026).
+Actual reveal precedes original reserve cost and successful return. Richese-held
+Harass returns only its actual variable ordinary counters; Ecaz-held Harass
+returns only its original fixed-pool undialed counters. Neither changes the
+original mandatory Ecaz commitment. Reinforcements checks only its card user's
+post-reveal reserves, not the allied marker's owner's supply. Marker-only
+co-side does not admit same-owner mixed ordinary/marker Occupy.
+
 Native/pure67 cases, relevant284-case batch and27 actual native-program
 cases pass, including all four legal policies. Two natural captured games
 exposed an existing mandatory-discard callback comparing casualties to the

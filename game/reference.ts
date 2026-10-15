@@ -1034,9 +1034,10 @@ export const RULE_TOPICS: RuleTopic[] = [
       'The map shows a concealed marker without its denomination to everyone. Richese privately sees its token values, last-use restriction and reveal control. Movement selection keeps the marker separate from physical forces. No hidden denomination or physical token identity is included in another player’s projected board state.',
       'Marker-only battles use the owner’s private reserve-limited force pool. Both plans must be sealed before the token materializes. A zero-token battle still resolves with its leader, cards and traitor decisions. Ordinary Atreides prescience cannot request this opponent’s dial; other eligible plan elements remain available.',
       'Basic and Advanced ordinary mixed battles have a provisional private pool: physical forces already here plus the token value capped by current reserves. The Battle Wheel labels that interpretation explicitly. Both plans seal before materialization, then native support, casualties and aftermath use actual forces. This first version does not adjudicate the FAQ mixed dial cap.',
+      'In supported card profiles, provisional materialization-first order forecasts the own marker privately without moving forces early. Both plans seal, the original token reveals and materializes its reserve-limited ordinary counters at its sector, then Harass selects/returns actual undialed counters. Reinforcements must leave three original reserves after that reveal and before any future Harass return; an unfunded card cannot seal a plan. Marker0, last-used identity and original reveal-event history remain native.',
       'Concealed collection, occupancy and control use one-force presence. Exposed storm sectors and unprotected worm destruction reveal and remove the resulting actual forces. Storm shelter and other sectors remain separate. Trip to Gamont at a location with a marker reveals it, even if ordinary forces also occupy that sector, then returns one actual force if present. It is still used if zero forces remain. Canceling the CHOAM power leaves the marker concealed.',
       'All four AI profiles choose from their own private token inventory, pay only the one-force shipment price, move the marker explicitly and reveal positive tokens when useful. They retain zero-token presence and use only public information to assess opponents. They also offer safe positive tokens from their own inventory during the allied opportunity, fund them with their own spice and accept or decline private offers using their own force and payment information. A human Richese player’s offer window holds an AI ally’s shipment. Pending responses, decisions and Truthtrance retain priority.',
-      'Combined Ecaz Occupy and entire-plan special Karama inspection against a No-Field remain guarded. Homeworld custody, broader Truthtrance and interrupted compositions remain unfinished. Mixed-pool and discounted-price prototypes in both modes are not publisher-adjudicated formulas. Richese starts remain disabled.',
+      'Marker-only No-Fields compose with the existing Advanced Occupy profile, including card-user-specific Harass and reserve costs. Same-owner mixed ordinary/marker Occupy and entire-plan special Karama inspection remain guarded. Homeworld custody, wider Truthtrance, other modules and complete Richese starts remain unfinished; mixed-pool, price and card-effect sequencing are explicit prototype interpretations.',
     ],
     related: [
       'richese-cards',
@@ -1050,35 +1051,35 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Existing own lifecycle, hazards and battle bounds remain. Native allied Guild rate cancellation bills one marker and preserves the existing provisional bank payee. Exact supplier approval cannot increase; release retains original token/army and a new full-price offer needs fresh consent. Engine, fresh lender controls and AI share authorized recipient pricing rather than inferring another player’s state from a personal view. Wider source combinations remain partial.',
+          'Native lifecycle, hazards and authorized allied pricing remain. Own concealed Harass now forecasts actual materialization and sector counters without moving them before both seals. Reinforcements checks original post-reveal reserves before allowing a plan, preventing the accepted-plan funding deadlock. Marker history, physical owners, fixed Ecaz commitment and other profile gates remain separate.',
         evidence: ['game/shipment-price.ts', 'game/engine.ts'],
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Existing private inventory, movement, reveal and battle controls remain. Actual390px controlled supplier loan cancels half1 without spending or revealing its prior three-marker, shows authoritative full2, makes a new five-token offer, obtains Guild consent and original interception, then spends supplier2/materializes Richese3 plus Guild5 once. No recipient wallet is exposed. Earlier saved-room evidence remains historical, not new assurance.',
-        evidence: ['components/richese-allied-no-field.tsx', 'components/richese-no-field.tsx'],
+          'Private inventory, movement/reveal and original loan controls remain. Owner-only Harass and reserve-cost previews explain projected materialization and post-reveal funding. Actual mixed-sector selection occurs after native revelation; invalid partial returns disable confirmation. Four mobile card journeys include zero marker, early blocked cost/legal fallback and funded native Occupy through original CHOAM market.',
+        evidence: ['components/richese-allied-no-field.tsx', 'components/richese-no-field.tsx', 'components/harass-withdraw.tsx', 'components/game-table.tsx'],
       },
       {
         area: 'AI',
         status: 'Partial',
         detail:
-          'Own and allied legal participation remains. Fresh offer calculations consume the same authorized recipient quote as human controls; no inferred rival wallet or exact strategic first-candidate pin. Four controlled low-budget probes choose no optional reoffer here while the recipient executes a legal ordinary shipment. Full Richese strategy/calibration stays deferred.',
+          'Own/allied pricing participation remains. All four profiles use private own materialization, original reserve funding and physical return quotes; unfunded Reinforcements is excluded while Harass remains legal. Sixteen native programs exercise ordinary, funded and fallback paths without strategic tuning or calibration.',
         evidence: ['game/bots.ts'],
       },
       {
         area: 'Documentation',
         status: 'Partial',
         detail:
-          'Source distinctions, lifecycle, typed loan consent and current controls remain documented. Guild-recipient bank payee and one-marker price precedence stay provisional. Full2 supplier reapproval and the authoritative fresh-quote bridge are explicit; original versus controlled evidence and remaining sponsored/card combinations are not conflated.',
-        evidence: ['docs/RICHESE_ALLIED_SHIPMENT_AUDIT.md', 'docs/GUILD_RATE_KARAMA_RULES.md'],
+          'Source, original loan consent/pricing and current controls remain documented. The provisional materialize-then-original-reserve-cost-then-Harass sequence is explicit, not a new publisher FAQ or user ruling. Token history and remaining mixed/inspection/module boundaries remain separate.',
+        evidence: ['docs/RICHESE_ALLIED_SHIPMENT_AUDIT.md', 'docs/GUILD_RATE_KARAMA_RULES.md', 'docs/RICHESE_NO_FIELD_RULES.md'],
       },
       {
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Current affected25-file263/263 passes across frozen237+26 selections. Seven controlled allied source cases cover zero/five, recipient full price, supplier release/reapproval, poverty and independent price. Actual390px complete supplier reoffer/consent fixes observed fresh-quote drift; API and four controlled continuation probes pass. Earlier own/battle/persisted evidence remains historical. No new saved/deployed or complete-mode acceptance.',
+          'Earlier allied/native/recovery proof remains historical. New actual-shipment card regressions cover zero/caps, mixed sectors, original funding, typed physical custody, Traitor cancellation and marker history; mobile and four-profile continuations are bounded current evidence. No new saved/deployed or complete-mode assurance is claimed.',
         evidence: [
           'tests/richese-no-field.test.ts',
           'tests/richese-no-field-engine.test.ts',
@@ -1091,6 +1092,10 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/richese-allied-no-field-bots.test.ts',
           'tests/richese-allied-no-field-recovery.test.ts',
           'tests/allied-marker-guild-rate.test.ts',
+          'tests/harass-no-field.test.ts',
+          'tests/fixture-harass-no-field.ts',
+          'tests/no-field-reinforcements.test.ts',
+          'tests/fixture-no-field-reinforcements.ts',
         ],
       },
     ],
@@ -4974,6 +4979,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Have three own forces in reserves when sealing. Classic/paired Ecaz/Moritani Basic/Advanced and explicitly selected native Advanced Occupy prototypes spend ordinary reserves first and then elite reserves, moving exactly three to corresponding Tanks subpools at resolution. These are the actual card holder’s reserves, not the variable ally’s pool; no extra forces arrive.',
       'The normal-outcome score gains 2 without adding to the physical dial, spice support or on-board casualties. The card and its reserve cost are consumed even on a Traitor victory, a mutual Traitor result or a Lasgun/Shield explosion; successful Traitor calls still decide the outcome directly.',
       'All-outcome payment, normal-first selection and reserve transfer counting as battle losses remain provisional interpretations, not publisher rulings. Same-plan Harass pays the original three-reserve cost before returns; returned reserves cannot fund or change it. In native Advanced Occupy, original or copied Stone ignores +2 normal score but still charges the reserve cost. Basic/unprofiled co-side and other profile/module limits remain guarded.',
+      'With your own concealed No-Field, the provisional native order materializes its reserve-limited counters before this cost. At least three own reserves must remain after that reveal, before any future Harass return; otherwise Reinforcements is unavailable before the first plan seals. This checks only the actual card user, never its ally’s marker or reserves.',
     ],
     related: ['battle-cards', 'battle', 'card-recruits', 'card-harass-withdraw', 'implementation-checklist'],
     checklist: [
@@ -4981,7 +4987,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       { area: 'Player controls', status: 'Partial', detail: 'Owner-only availability, exact cost guidance and both battle selectors support the card; private category answers remain None.', evidence: ['components/battle-preparation.tsx', 'components/game-table.tsx'] },
       { area: 'AI', status: 'Partial', detail: 'Four profiles consider legal physical slot candidates and the normal score bonus; strategy and calibration remain unfinished.', evidence: ['game/bots.ts'] },
       { area: 'Documentation', status: 'Partial', detail: 'The printed effect and unresolved Traitor, explosion, type-selection and accounting interpretations are distinguished from this temporary prototype.', evidence: ['docs/ECAZ_TREACHERY_RULES.md', 'docs/REINFORCEMENTS_RUNTIME.md'] },
-      { area: 'Verification', status: 'Partial', detail: 'Original proof plus same-plan Harass and native Stone/Mirror cases cover original typed costs, physical-token victory, fixed/variable Occupy, Traitor/explosion and retention. Actual mobile controls and legal four-profile smoke are bounded evidence; complete modes, calibration and final assurance remain open.', evidence: ['tests/stone-reinforcements.test.ts', 'tests/harass-reinforcements.test.ts', 'tests/reinforcements.test.ts', 'tests/reinforcements-engine.test.ts', 'tests/ecaz-occupy-cards-runtime.test.ts', 'docs/ECAZ_OCCUPY_RULES.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Original typed cost, Stone/Mirror and same-plan Harass proof now includes actual No-Field first-plan funding rejection, legal fallback, zero/funded costs, Traitor cancellation and actual Occupy owners. Mobile and four-profile continuations are bounded; complete modes/calibration/final assurance remain open.', evidence: ['tests/no-field-reinforcements.test.ts', 'tests/fixture-no-field-reinforcements.ts', 'tests/stone-reinforcements.test.ts', 'tests/harass-reinforcements.test.ts', 'tests/reinforcements.test.ts', 'tests/reinforcements-engine.test.ts', 'tests/ecaz-occupy-cards-runtime.test.ts', 'docs/ECAZ_OCCUPY_RULES.md'] },
     ],
   },
   {
@@ -4999,14 +5005,15 @@ export const RULE_TOPICS: RuleTopic[] = [
       'For multiple legal physical allocations, choose all undialed ordinary and elite counters by sector after both plans reveal and before traitor declarations. Unique returns are automatic. The selected return is public; it is not an extra sealed plan element. Stone Burner provisionally compares the undialed forces remaining after successful withdrawal, including same-plan, opposing and copied Stone. Additional optional modules remain guarded. The printed card forbids use on your own Homeworld.',
       'In explicitly selected Advanced Occupy, only the actual card user’s undialed forces return. An Ecaz user preserves its original mandatory fixed count at free full strength; an allied user uses its native variable commitment, while canceled Occupy uses its selected lead’s ordinary own pool. Returned reserves remain outside losses and Face Dance. Basic/unprofiled co-side, public starts and full acceptance remain gated.',
       'In supported same-plan Reinforcements, the provisional order pays three original own reserves before Harass returns undialed counters. Future returns cannot fund or change that reserve quote; neither the +2 score bonus nor that cost adds to the physical commitment. Both cards discard after use. An opposing successful Traitor cancels Harass but not the provisional Reinforcements cost.',
+      'With an own concealed No-Field, this prototype provisionally uses the original materialization-first order. Before sealing, privately forecast its actual ordinary counters at the original marker sector; do not move them early. Both plans seal before native revelation, then any return allocation uses actual counters. Marker0 remains legal with a leader/cards, reserve shortage caps materialization, and withdrawal does not return/reset the token. Opposing successful Traitor cancels Harass, not that native reveal.',
     ],
     related: ['battle-cards', 'battle', 'card-recruits', 'ecaz-modules', 'implementation-checklist'],
     checklist: [
-      { area: 'Implementation', status: 'Partial', detail: 'Physical slot commitment, category inspection, revealed typed/sector returns, exact committed losses, opponent-Traitor cancellation, mandatory disposal and continuation are connected. Richese/Stone uses provisional post-withdrawal comparison with original fixed Occupy costs; other optional modules remain gated.', evidence: ['game/harass-withdraw.ts', 'game/stone-burner.ts', 'game/battle-card-slots.ts', 'game/battle-resolution-quote.ts', 'game/engine.ts'] },
-      { area: 'Player controls', status: 'Partial', detail: 'Either slot, compatible pair selection, category-null commitment and card inspection are usable. Owners select typed/sector returns after reveal; Stone guidance and revealed counts visibly explain provisional post-withdrawal timing and Traitor cancellation.', evidence: ['components/battle-preparation.tsx', 'components/harass-withdraw.tsx', 'components/revealed-battle.tsx', 'components/game-table.tsx'] },
+      { area: 'Implementation', status: 'Partial', detail: 'Physical slots, private category answers, typed/sector return, committed losses, Traitor cancellation and mandatory disposal remain. Own No-Field now projects reserve-limited sector counters before commitment and uses actual native revelation/history. Same-plan cost cannot be funded by future returns. Other module/profile boundaries remain.', evidence: ['game/harass-withdraw.ts', 'game/stone-burner.ts', 'game/battle-card-slots.ts', 'game/battle-resolution-quote.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Either slot and after-reveal typed/sector choices remain. Owner-only No-Field forecasts and post-reveal reserve notices distinguish virtual marker from actual counters; zero marker, mixed-sector full return, blocked-cost fallback and funded card controls are usable.', evidence: ['components/battle-preparation.tsx', 'components/harass-withdraw.tsx', 'components/revealed-battle.tsx', 'components/game-table.tsx'] },
       { area: 'AI', status: 'Partial', detail: 'All four profiles have a legal shared-quote path and preserve inspection secrecy. Retreat strategy and combined-game strength remain uncalibrated.', evidence: ['game/bots.ts', 'tests/ecaz-battle-bots.test.ts'] },
-      { area: 'Documentation', status: 'Partial', detail: 'The guide distinguishes printed effects, explicit inference, provisional post-withdrawal Stone timing and remaining module boundaries.', evidence: ['docs/HARASS_WITHDRAW_RUNTIME.md', 'docs/ECAZ_TREACHERY_RULES.md', 'docs/STONE_BURNER_ENGINE_AUDIT.md'] },
-      { area: 'Verification', status: 'Partial', detail: 'Focused Stone/Harass and Occupy quote/native regressions cover winner reversal, original costs, typed returns, Mirror retention and Traitor precedence. Two actual mobile native-control journeys and legal four-profile smoke are bounded evidence, not full combination or deployed acceptance. Historical recovery proof is separate.', evidence: ['tests/stone-harass-quote.test.ts', 'tests/stone-harass-runtime.test.ts', 'tests/fixture-stone-harass.ts', 'tests/ecaz-occupy-harass-quote.test.ts', 'tests/harass-allocation-engine.test.ts', 'tests/harass-allocation-recovery.test.ts', 'tests/harass-withdraw-choice-controls.test.tsx', 'tests/harass-withdraw.test.ts', 'tests/ecaz-battle-controls.test.tsx', 'tests/ecaz-battle-bots.test.ts', 'tests/ecaz-battle-recovery.test.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'Printed effects, provisional materialization-first and Stone/withdrawal timing are distinguished from remaining profile/module limits and final assurance.', evidence: ['docs/HARASS_WITHDRAW_RUNTIME.md', 'docs/ECAZ_TREACHERY_RULES.md', 'docs/STONE_BURNER_ENGINE_AUDIT.md', 'docs/RICHESE_NO_FIELD_RULES.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Original Stone/Harass/Occupy proof plus actual No-Field shipment/reveal cases cover zero, caps, mixed sectors, original costs, history and Traitor cancellation. Current mobile/legal-policy proof remains bounded, not full combination/deployed or new recovery certification.', evidence: ['tests/harass-no-field.test.ts', 'tests/fixture-harass-no-field.ts', 'tests/no-field-reinforcements.test.ts', 'tests/stone-harass-quote.test.ts', 'tests/stone-harass-runtime.test.ts', 'tests/fixture-stone-harass.ts', 'tests/ecaz-occupy-harass-quote.test.ts', 'tests/harass-allocation-engine.test.ts', 'tests/harass-allocation-recovery.test.ts', 'tests/harass-withdraw-choice-controls.test.tsx', 'tests/harass-withdraw.test.ts', 'tests/ecaz-battle-controls.test.tsx', 'tests/ecaz-battle-bots.test.ts', 'tests/ecaz-battle-recovery.test.ts'] },
     ],
   },
   {

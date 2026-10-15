@@ -29,6 +29,25 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Concealed No-Field battle cards — 16 October.** Own Harass privately forecasts
+native reserve-limited ordinary counters at their actual sector, without moving
+them before both plans seal. Original reveal/history precedes card effects.
+Reinforcements requires three own reserves after projected materialization,
+before future Harass returns; token3/reserves3 now rejects the first fee plan
+instead of sealing a battle that stalls at Traitor resolution. Harass-only stays
+legal. Owner-only optional previews add no saved Game field or new mode gate.
+This existing-order composition is explicitly provisional, not a new FAQ.
+
+New genuine-shipment tests34/34; related17-file210/210, types/lint and build pass
+with existing warnings. Sixteen fresh programs/all four policies accept48
+continuation actions. Four actual390px journeys cover mixed-sector full return,
+zero marker, blocked fee/legal fallback and funded native Occupy. Co-side cases
+finish original CHOAM market into phase7 with original fixed/variable losses;
+no overflow/browser/application error. Three guide topics import with all15
+facets Partial; their25/16/28 evidence paths and three new anchors resolve.
+Owned QA hosts/tabs/scaffolds removed; no human game/D1/deployment changed.
+[Exact order, boundaries and scoped proof](HARASS_WITHDRAW_RUNTIME.md#own-no-field-composition--16-october-2026).
+
 **Selected Richese weapon/card interaction wave — 16 October.**
 - Clean selected CHOAM/Ix profiles now admit Stone/Mirror with native
   Ixians/Tleilaxu in Basic/Advanced; Ecaz/Moritani stays Advanced-only.
@@ -45,8 +64,8 @@ Earlier questions remain unanswered; no new publisher ruling, state field,
 public start or played-game conversion is implied. New Ix Tech/Stronghold,
 other module bands and winner-changing allocation boundaries remain guarded.
 
-Latest affected thirteen-file99/99, TypeScript, lint and build pass. Eight fresh
-Node native programs/all four policies accept42 continuation actions; two
+The preceding clean-Ix affected thirteen-file99/99, TypeScript, lint and build pass.
+Eight fresh Node native programs/all four policies accept42 continuation actions; two
 original47/10-cache programs also complete without independent Ecaz cards.
 Two real390px control journeys prove Advanced copied Tooth activation versus
 unused original (both deaths, actual cyborg losses, physical Mirror kept,
@@ -61,9 +80,9 @@ resolve; all ten facets stay Partial. Exact policies/earlier bounded proof:
 [Harass/Stone](HARASS_WITHDRAW_RUNTIME.md#provisional-stone-burner-timing--16-october-2026),
 [Harass/Reinforcements](REINFORCEMENTS_RUNTIME.md#combined-utility-plan--16-october-2026),
 [Reinforcements/Stone](REINFORCEMENTS_RUNTIME.md#native-stone-composition--16-october-2026).
-Own concealed No-Field Harass and other profile/module limits remain. No human
-server, saved room, D1, deployment or new assurance campaign changed; final
-assurance follows all rules.
+Other profile/module limits remain. Own concealed No-Field Harass follows the
+separate checkpoint above. No human server, saved room, D1, deployment or new
+assurance campaign changed; final assurance follows all rules.
 
 **Ixian Nexus purchased-card interaction wave — 16 October.**
 Purchased-card replacement now composes:

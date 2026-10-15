@@ -5354,12 +5354,20 @@ export function GameTable({
                               <p className="notice">
                                 Reinforcements may occupy either card slot but is neither a weapon nor a defense.
                                 It adds 2 to battle strength without changing the physical dial or spice support.
-                                The cost is three reserve forces ({g.battle.reinforcements.normal} normal,{' '}
-                                {g.battle.reinforcements.elite} elite) sent to the Tanks on any revealed outcome;
-                                the card is discarded even after a traitor call or explosion.
+                                The cost is three reserve forces sent to the Tanks on any revealed outcome.
+                                Available for that quote: {g.battle.reinforcements.normal} normal,{' '}
+                                {g.battle.reinforcements.elite} elite.
+                                The card is discarded even after a traitor call or explosion.
                                 {g.battle.reinforcements.blocked && ` ${g.battle.reinforcements.blocked}`}
                               </p>
                             )}
+                            {g.battle.reinforcements?.noField && <p className="fine">
+                              Provisional native order: your No-Field first materializes{' '}
+                              {g.battle.reinforcements.noField.materializes} forces, leaving{' '}
+                              {g.battle.reinforcements.noField.reservesAfterReveal} own reserves.
+                              Three must remain after that reveal for Reinforcements;
+                              a later Harass return cannot fund or change its original cost.
+                            </p>}
                             {reinforcementsSelected &&
                               (selectedWeaponId === 'ecaz-harass-withdraw' || selectedDefenseId === 'ecaz-harass-withdraw') && (
                               <p className="fine">

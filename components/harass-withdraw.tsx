@@ -51,6 +51,15 @@ export function HarassWithdrawGuide({
       className="notice space-y-2"
     >
       <h4>Harass &amp; Withdraw</h4>
+      {preview.noField && <p>
+        Provisional materialization-first timing: your No-Field stays concealed
+        until both plans are sealed. Its native
+        reveal materializes {preview.noField.materializes} ordinary forces at
+        the marker’s sector, leaving {preview.noField.reservesAfterReveal} own
+        reserves before card effects. Harass returns only actual undialed
+        counters after that reveal; it never returns a concealed marker or
+        resets its used-token history.
+      </p>}
       {preview.occupy && <p>
         Occupy returns only the card user’s own undialed fighters, not their
         ally’s army. {preview.occupy.cardUser === preview.occupy.ecaz && !preview.occupy.canceled

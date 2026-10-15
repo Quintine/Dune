@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 16 October 2026 — Concealed No-Field Harass and original reserve funding
+
+Preserve native materialization before effects. Private owner previews forecast
+the actual reserve-capped ordinary counters at the marker sector, without an
+early force/token transfer. Harass then selects/returns actual undialed counters,
+never a virtual marker or reset history. Zero, caps, mixed sectors, original
+fixed Ecaz/variable ally owners and Traitor cancellation remain connected.
+
+Reproduced actual Advanced token3/reserves3 acceptance followed by native
+materialization to0 and a failing first Traitor action. Reinforcements now
+requires three own reserves after projected reveal, before any future return,
+and rejects the first unfunded plan immutably while retaining legal Harass-only.
+This materialize → original fee → successful return composition is explicitly
+provisional, not a new publisher FAQ. No Basic Richese fee profile or other
+optional module is admitted; no persisted Game field is added.
+
+New genuine-shipment regressions34/34; frozen17-file210/210, types/lint and
+build pass with existing module-register/chunk-size/route warnings. Sixteen
+fresh native programs across four policies accept48 continuation actions.
+Four real390px journeys cover mixed Basic complete-sector allocation, Advanced
+zero/card legality, blocked native co-side fee/kept card and funded original
+fee before return. The latter ends Richese reserves2/Tanks4 and Ecaz Tanks3;
+both co-side controls finish original CHOAM market into phase7. No overflow,
+browser/application error or original component-history loss was observed.
+
+Actual generated guide import,25/16/28 topic evidence paths and three anchors
+resolve; all15 facets remain Partial. Owned QA scaffolds/hosts/tabs removed.
+No human game, D1, deployment or new broad/HTTP/recovery assurance changed.
+Full rules, optional interactions and final acceptance remain unfinished.
+[Canonical order and proof](HARASS_WITHDRAW_RUNTIME.md#own-no-field-composition--16-october-2026).
+
 ## 16 October 2026 — Clean selected Ix Stone and physical Mirror
 
 Replaced the blanket Ix guard only for clean selected CHOAM/Ix profiles,

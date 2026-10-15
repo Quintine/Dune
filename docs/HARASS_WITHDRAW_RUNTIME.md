@@ -90,6 +90,48 @@ the card adds no fictitious weapon or defense value. Stronger profiles value
 saved forces when expecting defeat and discourage use when expecting to win.
 This is a legal strategy path, not strength calibration.
 
+## Own No-Field composition — 16 October 2026
+
+Under standing choose-recommended, this prototype preserves the existing native
+materialization-first order: both plans seal, the original No-Field reveals at
+its actual sector and materializes `min(value, current reserves)`, then Harass
+chooses/returns actual undialed ordinary counters. It never returns a concealed
+marker or resets token/last-shipment history. This is an explicit composition
+of reveal-time instructions, not a newly retrieved combined publisher FAQ.
+
+Before commitment, the owner's private force and location quote includes those
+prospective ordinary counters without mutating reserves, board or token. Marker0
+still permits leader/cards; reserve shortage caps the actual materialization.
+Mixed ordinary/marker sectors choose a complete return only after revelation.
+An opposing successful Traitor cancels Harass, not the native marker reveal.
+Original fixed Ecaz and variable ally pools remain owner-labelled.
+
+In a supported same-plan Reinforcements profile, the original reserve fee must
+remain funded **after native marker materialization and before Harass returns**.
+Token3/reserves3 therefore cannot seal Reinforcements, even if a later return
+would refill reserves. The same owner may still use Harass alone. Token3/
+reserves6 can materialize3, pay original3, then return its undialed counters.
+Preview facts are owner-only and add no persisted Game field.
+
+### Scoped native proof
+
+The34 new genuine-shipment cases pass; the frozen17-file related union
+passes210/210, with types/lint and application build. Zero and reserve-capped
+markers, both slots, mixed-sector full allocations, real Traitors, original
+fixed/variable owners, first-plan funding rejection and component history are
+covered. Build retains existing module-register, chunk-size and route warnings.
+
+Sixteen fresh native programs across all four policies accept48 continuation
+actions. Four styled390px journeys pass without overflow or browser/application
+errors: mixed Basic returns3 marker-sector plus1 other-sector counters and
+loses2; Advanced zero plays the card without invented counters; deficient
+Occupy keeps Reinforcements and legally returns3 with Harass; funded Occupy
+materializes3, pays3, returns2 and loses its original1 variable counter.
+The latter has Richese reserves2/Tanks4 and Ecaz Tanks3, preserving original
+fixed losses. Both co-side journeys finish the actual CHOAM market and clear
+battle/decision into phase7. Owned hosts/tabs/scaffolds were removed; no human
+game, D1, deployment or new recovery campaign changed. Full acceptance remains.
+
 ## Current boundaries
 
 - Basic and Advanced now support explicit ordinary/elite and sector allocation
@@ -104,8 +146,9 @@ This is a legal strategy path, not strength calibration.
   The ordinary invariant-allocation guard remains. Clean selected Ix follows
   the [separate priority contract](MIRROR_WEAPON_ENGINE_AUDIT.md#clean-selected-ix-composition--16-october-2026);
   other profile/module limits, public starts and played-game retrofit stay gated.
-  A card user's own still-concealed No-Field remains guarded until its original
-  reveal; this wave does not certify Harass on a concealed native marker.
+  Own concealed No-Field use follows the
+  [materialization-first contract](#own-no-field-composition--16-october-2026).
+  Other profile/module boundaries remain unchanged.
 - Co-present armies remain guarded in Basic or without the supported Advanced
   Occupy profile. The [combined-army follow-up](ECAZ_OCCUPY_RULES.md#independent-cards-with-combined-armies--2-october-2026)
   returns only actual card-user forces: original fixed Ecaz commitment or the

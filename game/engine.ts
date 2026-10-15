@@ -8250,20 +8250,21 @@ function killTerritory(
     n -= lost;
   }
 }
+/** Private planning forecast; public alternatives remove the foreign marker
+ * before requesting a pool. Actual reveal remains the native component action. */
+function prospectiveNoFieldForces(p: Player, territory: string): number {
+  const marker = p.noField?.deployed;
+  return marker?.location.territory === territory
+    ? Math.min(p.reserves, p.noField!.tokens.find(token => token.id === marker.tokenId)!.value)
+    : 0;
+}
 function combatForces(
   g: Game,
   p: Player,
   t: string,
   opponent: Player,
 ): CombatForces {
-  const marker = p.noField?.deployed;
-  const prospective =
-    marker?.location.territory === t
-      ? Math.min(
-          p.reserves,
-          p.noField!.tokens.find((token) => token.id === marker.tokenId)!.value,
-        )
-      : 0;
+  const prospective = prospectiveNoFieldForces(p, t);
   const army = combatArmy(g, p.id, t);
   const physical = army.normal + army.elite;
   const elite = army.elite;
@@ -13753,7 +13754,8 @@ function currentReinforcementsCost(g: Game, p: Player) {
   const combinedBlock = combinedCardBattleBlock(g);
   requireRule(!combinedBlock, combinedBlock ?? 'This combined card battle is unavailable.');
   try {
-    return quoteReinforcements(p.reserves - (p.elites?.reserves ?? 0), p.elites?.reserves ?? 0);
+    const materializes = prospectiveNoFieldForces(p, g.battle?.territory ?? '');
+    return quoteReinforcements(p.reserves - materializes - (p.elites?.reserves ?? 0), p.elites?.reserves ?? 0);
   } catch (error) {
     if (error instanceof ReinforcementsError) throw new RuleError(error.message);
     throw error;
@@ -13763,7 +13765,9 @@ function reinforcementsPreview(g: Game, p: Player) {
   const battle = g.battle;
   if (!battle || ![battle.attacker, battle.defender].includes(p.id) ||
     !p.hand.some(isReinforcements)) return null;
-  const normal = Math.min(3, Math.max(0, p.reserves - (p.elites?.reserves ?? 0)));
+  const materializes = prospectiveNoFieldForces(p, battle.territory);
+  const reservesAfterReveal = p.reserves - materializes;
+  const normal = Math.min(3, Math.max(0, reservesAfterReveal - (p.elites?.reserves ?? 0)));
   const elite = Math.min(3 - normal, Math.max(0, p.elites?.reserves ?? 0));
   const combinedBlock = combinedCardBattleBlock(g);
   let blocked: string | null = null;
@@ -13774,8 +13778,12 @@ function reinforcementsPreview(g: Game, p: Player) {
   else if (combinedBlock)
     blocked = combinedBlock;
   else if (normal + elite < 3)
-    blocked = 'Reinforcements needs three physical forces in your reserves.';
-  return { blocked, normal, elite };
+    blocked = materializes
+      ? 'Your No-Field reveals before Reinforcements; three own reserves must remain after materialization.'
+      : 'Reinforcements needs three physical forces in your reserves.';
+  return { blocked, normal, elite,
+    ...(p.noField?.deployed?.location.territory === battle.territory
+      ? { noField: { materializes, reservesAfterReveal } } : {}) };
 }
 
 function recruitsInteractionPending(g: Game) {
@@ -20705,11 +20713,16 @@ function harassWithdrawContext(g: Game, p: Player): HarassWithdrawContext {
   let blocked = harassModuleBlock(g);
   if (!blocked && (g.status !== 'playing' || g.phase !== 6 || ![b.attacker, b.defender].includes(p.id)))
     blocked = 'Use Harass & Withdraw in your own battle.';
-  if (!blocked && p.noField?.deployed?.location.territory === b.territory)
-    blocked = 'Reveal your No-Field before using Harass & Withdraw.';
   const locations = Object.fromEntries(Object.entries(p.forces)
     .filter(([key, amount]) => amount > 0 && splitLocation(key).territory === b.territory)
     .map(([key, amount]) => [key, { normal: amount - (p.elites?.forces[key] ?? 0), elite: p.elites?.forces[key] ?? 0 }]));
+  const materializes = prospectiveNoFieldForces(p, b.territory);
+  if (materializes) {
+    const marker = p.noField!.deployed!;
+    const key = location(marker.location.territory, marker.location.sector);
+    if (locations[key]) locations[key].normal += materializes;
+    else locations[key] = { normal: materializes, elite: 0 };
+  }
   const profile = ecazBattleProfile(g);
   const forces = profile?.lead === p.id
     ? p.id === profile.ecaz ? profile.ecazForces : profile.allyForces
@@ -20744,8 +20757,11 @@ function harassWithdrawPreview(g: Game, p: Player): HarassWithdrawPreview | null
   const b = g.battle;
   if (!b || ![b.attacker, b.defender].includes(p.id) || !p.hand.some(isHarassWithdraw)) return null;
   const context = harassWithdrawContext(g, p);
+  const materializes = prospectiveNoFieldForces(p, b.territory);
   return { ...context, card: HARASS_WITHDRAW_CARD, allowAllocation: b.harassAllocationVersion === 1,
-    blocked: context.blocked ?? (b.revealed || b.plans[p.id] ? 'Your Battle Plan is already sealed.' : null) };
+    blocked: context.blocked ?? (b.revealed || b.plans[p.id] ? 'Your Battle Plan is already sealed.' : null),
+    ...(p.noField?.deployed?.location.territory === b.territory
+      ? { noField: { materializes, reservesAfterReveal: p.reserves - materializes } } : {}) };
 }
 function validateResidualPoison(
   g: Game,

@@ -31,7 +31,9 @@ The earlier question remains unanswered. This is an interpretation selected
 under the standing choose-recommended priority, not newly retrieved publisher
 authority. Clean Ix now follows the separate
 [selected-deck priority contract](MIRROR_WEAPON_ENGINE_AUDIT.md#clean-selected-ix-composition--16-october-2026);
-own concealed No-Field Harass and other profile/module boundaries remain.
+own concealed No-Field Harass follows its
+[materialization-first contract](HARASS_WITHDRAW_RUNTIME.md#own-no-field-composition--16-october-2026).
+Other profile/module boundaries remain.
 The 6 September evidence above
 is historical; the current checkpoint has its own bounded proof.
 

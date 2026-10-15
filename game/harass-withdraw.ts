@@ -33,6 +33,8 @@ export type HarassWithdrawPreview = HarassWithdrawContext &
     card: typeof HARASS_WITHDRAW_CARD;
     /** New battle protocol allows the physical return to be chosen after reveal. */
     allowAllocation?: boolean;
+    /** Owner-only forecast; actual marker reveal still precedes card effects. */
+    noField?: Readonly<{ materializes: number; reservesAfterReveal: number }>;
   }>;
 export type HarassWithdrawQuote = {
   returned: { normal: number; elite: number };

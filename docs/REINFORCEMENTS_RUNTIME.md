@@ -35,8 +35,9 @@ This is an implementation interpretation, not a newly retrieved publisher FAQ
 or an answer to the earlier reserve-payment question. The source audit's printed
 effects and original provisional all-outcome/normal-first cost are unchanged.
 
-Three reserves must exist at commitment. A future return cannot fund a deficient
-plan or change its quoted normal/elite mix. For example, two original ordinary
+Three original own reserves must remain funded at commitment after projecting
+any own No-Field revelation. A future return cannot fund a deficient plan or
+change its quoted normal/elite mix. For example, two original ordinary
 and one elite reserve are spent even when Harass subsequently returns four
 ordinary counters. Both cards discard once. The +2 remains normal-score-only,
 not extra physical dial, support or winner casualties. Opposing successful
@@ -49,6 +50,23 @@ original fixed Ecaz commitment and the other ally's pool stay separate.
 Basic/unprofiled co-side and other module gates stay; Stone uses the
 [physical-token composition below](#native-stone-composition--16-october-2026).
 No persisted state or fresh/public profile is added.
+
+### Own concealed No-Field funding
+
+The existing native battle path materializes a No-Field after both seals and
+before card costs. Precommit availability now forecasts that same owner's
+remaining reserves. Three must remain at that point, before any future Harass
+return; another player's marker/reserves cannot affect or fund this card.
+This is the explicitly provisional existing-order composition, not a new
+publisher ruling or a waiver of the original fee.
+
+Before-state token3/reserves3 accepted Reinforcements, revealed into reserves0
+and then failed the first Traitor action. The new first-plan check rejects that
+unfunded commitment without reserving cards or revealing a token; Harass alone
+remains legal. Token0/reserves3 remains funded. Native actual revelation,
+reserve-cap, token identity/history, support and fixed/variable losses stay.
+No Basic Richese Reinforcements or other new mode is admitted.
+
 
 ### Scoped proof
 
