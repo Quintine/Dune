@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 16 October 2026 — Same-plan Harass and Reinforcements
+
+Connected both physical slot orders without adding a new settlement mechanism
+or state field. Existing native order pays the original three-reserve quote
+before Harass returns undialed fighters. Future returns cannot fund deficient
+reserves or change quoted elite cost. This is explicitly provisional under
+choose-recommended, not a new source ruling; original all-outcome fee and
+score-only +2 remain. Own fixed/variable Occupy pools and Traitor cancellation
+stay separate. Both physical cards discard once.
+
+Eleven-file134/134, types/lint and production build pass with the existing
+module-register/large-chunk/Unknown-route warnings. Six new behavioral cases
+cover original typed reserve cost, eligibility, both slots, Traitor/explosion
+and fixed/variable Occupy. Eight fresh Node programs exercise all four legal
+policies/both modes and16 accepted continuation actions.
+
+Actual390px controls seal original2-normal/1-elite payment and dial1/support1.
+The +2 decisively beats opposing leader4; four ordinary forces return, but
+the original elite cost still pays. Final reserves4/Tanks16/elite Tanks5,
+spice29, both cards discarded and collection open. No root overflow or
+browser/application error. Current parse/anchor and38 topic paths resolve;
+all ten facets stay Partial. Obsolete pair rejection and absent-card pin
+removed. Other gates remain; no human server, D1, saved room, deployment or
+broad/HTTP/recovery assurance campaign changed.
+[Combined policy and proof](REINFORCEMENTS_RUNTIME.md#combined-utility-plan--16-october-2026).
+
 ## 16 October 2026 — Provisional post-Harass Stone comparison
 
 Removed only the public Richese-family Harass guard. Under standing

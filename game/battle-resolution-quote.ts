@@ -411,9 +411,8 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         !(side === d && reinforcements.length),
       'Reinforcements needs a unique physical card and valid weapon and defense slot pair.');
       requireQuote(!input.homeworld && !(side.leaderSkills?.length || (side === a ? d : a).leaderSkills?.length) &&
-        !slots.some(isHarassWithdraw) &&
         !hasStone,
-      'Reinforcements cannot combine with Homeworld, leader skills, own Harass & Withdraw or Stone Burner.');
+      'Reinforcements cannot combine with Homeworld, leader skills or Stone Burner.');
       const reserves = side.reinforcementsReserves!;
       requireQuote(!!reserves && typeof reserves === 'object' && !Array.isArray(reserves),
         'Reinforcements needs own typed reserves.');

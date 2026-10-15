@@ -823,8 +823,7 @@ function plans(g: GameView): Action[] {
         if ((!leader && (weapon || defense)) || !validBattleSlotPair(w, d, specialForLeader(w,leader)))
           continue;
         const reinforcements = weapon === 'ecaz-reinforcements' || defense === 'ecaz-reinforcements';
-        if (reinforcements && (weapon === 'ecaz-harass-withdraw' ||
-          defense === 'ecaz-harass-withdraw' || isStoneBurner(w))) continue;
+        if (reinforcements && isStoneBurner(w)) continue;
         if (voice) {
           const used =
             playedVoiceMatch(

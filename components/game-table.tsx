@@ -551,10 +551,8 @@ export function GameTable({
   const reinforcementsPlanReason = !reinforcementsSelected ? null :
     !g.battle?.reinforcements ? 'Reinforcements is unavailable in this battle.' :
     g.battle.reinforcements.blocked ??
-    ((selectedBattleWeapon?.id === 'ecaz-harass-withdraw' ||
-      selectedBattleDefense?.id === 'ecaz-harass-withdraw' ||
-      (!!selectedBattleWeapon && isStoneBurner(selectedBattleWeapon)))
-      ? 'Reinforcements cannot share this plan with Harass & Withdraw or Stone Burner.' : null);
+    ((!!selectedBattleWeapon && isStoneBurner(selectedBattleWeapon))
+      ? 'Reinforcements cannot share this plan with Stone Burner.' : null);
   const selectedBattleKwisatz = kwisatz && !!me.kwisatz?.active &&
     !me.kwisatz.dead && !g.battle?.kwisatzBlocked &&
     (!me.kwisatz.usedAt || me.kwisatz.usedAt === g.battle?.territory);
@@ -5345,6 +5343,15 @@ export function GameTable({
                                 {g.battle.reinforcements.elite} elite) sent to the Tanks on any revealed outcome;
                                 the card is discarded even after a traitor call or explosion.
                                 {g.battle.reinforcements.blocked && ` ${g.battle.reinforcements.blocked}`}
+                              </p>
+                            )}
+                            {reinforcementsSelected &&
+                              (selectedWeaponId === 'ecaz-harass-withdraw' || selectedDefenseId === 'ecaz-harass-withdraw') && (
+                              <p className="fine">
+                                Provisional combined timing: pay the original three-reserve
+                                Reinforcements cost before Harass &amp; Withdraw returns any
+                                undialed forces. Returned reserves cannot fund or change that
+                                cost. Both physical cards are discarded after use.
                               </p>
                             )}
                             {reinforcementsPlanReason && <p role="status" className="notice">{reinforcementsPlanReason}</p>}

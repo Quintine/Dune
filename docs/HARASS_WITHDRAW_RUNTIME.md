@@ -110,11 +110,12 @@ This is a legal strategy path, not strength calibration.
   returns only actual card-user forces: original fixed Ecaz commitment or the
   selected ally's native variable commitment. It never returns the other ally
   or recomputes mandatory fixed losses from the diminished board.
-- [Bounded Reinforcements](REINFORCEMENTS_RUNTIME.md) can appear in the
-  opposing Battle Plan in classic-faction Basic/Advanced games. The two cards
-  cannot share one player's plan; their relative same-plan timing remains
-  unresolved. Both prototypes retain their separate provisional cost and
-  outcome interpretations.
+- [Bounded Reinforcements](REINFORCEMENTS_RUNTIME.md) may appear in the opposing
+  or the same supported Battle Plan. Same-plan use provisionally pays the
+  original reserve quote before returning undialed counters; a future return
+  cannot fund or change that cost. Both prototypes retain their separate
+  provisional outcome interpretations. See the
+  [combined policy](REINFORCEMENTS_RUNTIME.md#combined-utility-plan--16-october-2026).
 
 ## Scoped interaction proof — 16 October 2026
 

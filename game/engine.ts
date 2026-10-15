@@ -21252,8 +21252,8 @@ function validatePlan(
     'Chemistry as a weapon needs another defense; Weirding Way as a defense needs another weapon.',
   );
   if ([w, d].some(isReinforcements)) {
-    requireRule(![w, d].some(card => isHarassWithdraw(card) || isStoneBurner(card)),
-      'Reinforcements cannot share this bounded plan with Harass & Withdraw or Stone Burner.');
+    requireRule(![w, d].some(isStoneBurner),
+      'Reinforcements cannot share this bounded plan with Stone Burner.');
     currentReinforcementsCost(g, p);
   }
   if ([w, d].some(isHarassWithdraw)) currentHarassWithdrawQuote(g, p, plan);

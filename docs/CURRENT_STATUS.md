@@ -29,6 +29,25 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Same-plan Harass / Reinforcements — 16 October.** Both slot orders now follow
+the existing original-reserve-cost-before-return order under explicit
+choose-recommended interpretation. Future returns cannot fund deficient reserves
+or replace the original normal/elite quote. Original score-only +2, fixed Ecaz
+commitment, variable ally losses, all-outcome reserve cost and Traitor-canceled
+Harass remain separate; both physical cards discard once.
+
+Affected eleven-file134/134, types/lint and build pass. Six new behavioral
+regressions, eight fresh Node policy programs/all four profiles with16 accepted
+continuation actions and a real390px typed-cost journey pass. Original2-normal/
+1-elite reserve payment survives the later4-normal return; owner finishes
+reserves4/Tanks16/elite Tanks5/spice29, both cards discarded and collection open.
+No root overflow or browser/application error. Current parse/policy anchor and38
+topic evidence paths resolve; all ten facets remain Partial.
+[Policy and scoped proof](REINFORCEMENTS_RUNTIME.md#combined-utility-plan--16-october-2026).
+Stone/Reinforcements, other profile/module limits and final assurance remain
+separate. No human server, saved room, D1, deployment or public gate changed.
+
+
 **Harass / Stone Burner interaction — 16 October.** Richese-family Harass now
 uses visibly provisional post-withdrawal physical comparison under the standing
 choose-recommended priority; the earlier source question remains unanswered.
@@ -47,7 +66,7 @@ Original Richese lot and shared-preparation fixture drivers were corrected;
 incidental collection-wallet expectations were removed. Current guide parse,
 policy anchor and33 evidence paths resolve; both topics' five facets stay
 Partial. [Policy and scoped proof](HARASS_WITHDRAW_RUNTIME.md#provisional-stone-burner-timing--16-october-2026).
-Ix/Poison Tooth, same-plan Harass/Reinforcements, Reinforcements/Stone, own
+Ix/Poison Tooth, Reinforcements/Stone and own
 concealed No-Field Harass and other module gates remain. No human server,
 saved room, D1, deployment or public gate changed; final assurance stays due.
 

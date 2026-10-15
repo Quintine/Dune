@@ -30,7 +30,6 @@ void test('each AI profile can commit Harass in either slot through genuine Basi
       assert.equal(sealed.battle!.plans.a[slot], 'ecaz-harass-withdraw');
       harassCustody(sealed);
     }
-    assert.ok(candidates.every(action => action.weapon !== 'ecaz-reinforcements' && action.defense !== 'ecaz-reinforcements'));
   }
 });
 

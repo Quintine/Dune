@@ -249,9 +249,11 @@ Reinforcements uses the card user's own three normal-first reserve counters
 and existing +2 score-only modifier, not ally reserves, extra physical dial
 losses or support. Existing provisional all-revealed-outcome cost/disposal
 is unchanged and remains explicitly not a publisher ruling. Both slots and
-opposing holders work; own same-plan Harass/Reinforcements and Reinforcements
-with Stone/optional modules remain guarded. Basic/unprofiled co-side card
-battles remain rejected.
+opposing holders work. Same-plan Harass/Reinforcements now follows the
+[provisional original-reserve-cost-first policy](REINFORCEMENTS_RUNTIME.md#combined-utility-plan--16-october-2026),
+preserving actual card-user ownership and original fixed losses.
+Reinforcements with Stone/optional modules and Basic/unprofiled co-side
+card battles remain guarded.
 
 Native/pure67 cases, relevant284-case batch and27 actual native-program
 cases pass, including all four legal policies. Two natural captured games

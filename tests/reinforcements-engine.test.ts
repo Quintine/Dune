@@ -143,7 +143,7 @@ void test('Reinforcements normal-first cost preserves elite subpool and is paid 
   assert.equal(done.discard.filter(c => c.id === cardId).length, 1);
 });
 
-void test('insufficient reserves, unsupported module, and a paired special reject without mutating the original game', () => {
+void test('insufficient reserves and unsupported modules reject without mutating the original game', () => {
   const g = fixture(true);
   const p = g.players[0];
   p.reserves = 2;
@@ -157,8 +157,6 @@ void test('insufficient reserves, unsupported module, and a paired special rejec
   p.tanks = 0;
   p.elites!.reserves = 5;
   p.elites!.tanks = 0;
-  reject(g, 'a', { type: 'battlePlan', dial: 1, leader: 'emperor-0', weapon: cardId,
-    defense: 'ecaz-harass-withdraw' }, /cannot share/);
   g.sandtrout = {} as Game['sandtrout'];
   assert.throws(() => applyAction(g, 'a',
     { type: 'battlePlan', dial: 1, leader: 'emperor-0', weapon: cardId }), RuleError);
