@@ -37,22 +37,24 @@ Purchased-card replacement now composes:
 - original Tleilaxu/Ix47 setup and native purchases in Basic **and Advanced**;
 - native Richese/classics normal purchases with CHOAM35 and separate cache;
 - actual positive native cache purchases in both modes and Black Market in
-  Advanced, using the real sold lot and original price/continuation.
+  Advanced, using the real sold lot and original price/continuation;
+- Advanced direct special-Karama acquisition during Bidding, using its own
+  committed price3/cache target rather than an unrelated row or older income.
 
 Cache provisionally uses the independent-Nexus grant under the standing
 choose-recommended priority; the native ally cache exclusion is unchanged.
-Actual controls show that policy. Latest nine-file98/98, types/lint/build,
-six original native runtime paths, twelve legal policy actions and two390px
-journeys pass. Unbid owner retention is not a purchase. The original seller
-credit and phase/declaration suffix finish once, with no synthetic normal
-row or extra payment. Source/receipt v1 shapes and normal parents remain.
-Earlier evidence and exact policies are in the
-[canonical contract](NEXUS_IXIAN_REPLACEMENT_RULES.md).
-All five facets stay Partial. Direct special-Karama sources, other modules
-and final assurance remain separate. No human server, saved room, D1,
-deployment or public gate changed.
-Current source anchors and23 topic evidence paths resolve; all five facets
-remain Partial.
+Actual controls show that policy. Latest eleven-file107/107, types/lint/build,
+ten original direct runtime paths, sixteen legal policy actions and two390px
+native-action journeys pass. An already-paid bid no longer holds spice twice;
+genuinely unpaid commitments stay reserved. Direct Use/Keep preserves original
+cost/once-use, active player, income and suspended controls. Native automatic
+payment may open a distinct following normal offer, not replay the old source.
+Other-phase special acquisition keeps its native behavior without Nexus.
+Receipt v1 shapes and ordinary parents remain unchanged. Earlier evidence
+and exact policies are in the [canonical contract](NEXUS_IXIAN_REPLACEMENT_RULES.md).
+All five facets stay Partial. Other modules and final assurance remain
+separate. No human server, saved room, D1, deployment or public gate changed.
+Current CLI help, source anchors and26 topic evidence paths resolve.
 
 **Semuta connects both physical Shrine roles — 16 October.**
 Fresh private `semuta --discoveries` setup retains original Richese/CHOAM,

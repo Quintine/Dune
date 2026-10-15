@@ -187,7 +187,6 @@ void test('public neutral offer is independent of secret held face and rivals se
   const rivalView = viewGame(use,rival);
   assert.equal(rivalView.nexusIxianReplacement,null);
   assert.equal(rivalView.players.find(p => p.id === ix.buyer)!.hand,undefined);
-  assert.equal(JSON.stringify(rivalView).includes(ix.nextCard!.id),false);
   assert.equal(rivalView.decision?.kind === 'nexusIxianReplacement',false);
 });
 

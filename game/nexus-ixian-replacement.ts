@@ -4,6 +4,15 @@ import type { RicheseAuction } from './richese-auction';
 
 export class IxianReplacementError extends Error {}
 
+export type RicheseSpecialPurchaseReceipt = {
+  buyer: string;
+  cardId: string;
+  karama: string;
+  amount: 3;
+  turn: number;
+  phase: 3;
+};
+
 export type IxianReplacementContext = {
   status: string;
   phase: number;
@@ -11,7 +20,7 @@ export type IxianReplacementContext = {
   sequence: number;
   expansions: readonly string[];
   richese: boolean;
-  /** Native Black Market bidding only opens in Advanced play. */
+  /** Native Black Market bidding and Richese special Karama require Advanced play. */
   advanced: boolean;
   auction: {
     cards: readonly Card[];
@@ -27,6 +36,7 @@ export type IxianReplacementContext = {
     origin: 'normal' | 'cache' | 'blackMarket';
     seller: string | null;
   } | null;
+  specialPurchase: RicheseSpecialPurchaseReceipt | null;
   players: readonly {
     id: string;
     hand: readonly Card[];
@@ -147,6 +157,51 @@ function validatePhysical(physical: readonly Card[], ctx?: IxianReplacementConte
   );
 }
 
+type PurchaseTerms = {
+  card: Card;
+  buyer: string;
+  amount: number;
+  free: boolean;
+  auctionIndex: number;
+};
+
+/** The committed direct receipt takes authority without consulting older auctions. */
+function specialPurchaseTerms(ctx: IxianReplacementContext): PurchaseTerms {
+  const purchase = ctx.specialPurchase;
+  requireReplacement(
+    plain(purchase) && ctx.advanced && ctx.richese && ctx.expansions.includes('choam') &&
+      ctx.phase === 3 && purchase.phase === 3 && purchase.turn === ctx.turn &&
+      whole(purchase.turn) && purchase.turn > 0 && purchase.amount === 3 &&
+      text(purchase.buyer) && text(purchase.cardId) && text(purchase.karama) &&
+      purchase.cardId !== purchase.karama && Object.hasOwn(cache, purchase.cardId),
+    'Replacement needs its committed Advanced Richese special Karama purchase.',
+  );
+  const buyer = Array.isArray(ctx.players) &&
+    ctx.players.find(player => plain(player) && player.id === purchase.buyer);
+  requireReplacement(buyer && Array.isArray(buyer.hand),
+    'Replacement needs the special purchase in its original buyer hand.');
+  const card = buyer.hand.find((held: Card) => held?.id === purchase.cardId);
+  requireReplacement(selectedCard(card, ctx),
+    'Replacement needs the exact canonical delivered Richese cache card.');
+  const cost = Array.isArray(ctx.physicalCards) &&
+    ctx.physicalCards.find(physical => physical?.id === purchase.karama);
+  requireReplacement(
+    selectedCard(cost, ctx) && cost.effect === 'karama' &&
+      !buyer.hand.some((held: Card) => held?.id === purchase.karama),
+    'The special purchase must retain its spent canonical printed Karama cost.',
+  );
+  return { card, buyer: purchase.buyer, amount: 3, free: false, auctionIndex: 0 };
+}
+
+function purchaseTerms(ctx: IxianReplacementContext): PurchaseTerms {
+  if (ctx.specialPurchase !== null) return specialPurchaseTerms(ctx);
+  const card = purchasedCard(ctx), sale = ctx.sale!;
+  return {
+    card, buyer: sale.winner, amount: sale.amount, free: sale.free,
+    auctionIndex: ctx.auction?.index ?? 0,
+  };
+}
+
 /** Select only a delivered card backed by the current native sale authority. */
 function purchasedCard(ctx: IxianReplacementContext): Card {
   const sale = ctx.sale;
@@ -188,7 +243,7 @@ function purchasedCard(ctx: IxianReplacementContext): Card {
   return card;
 }
 
-/** Authorize the original normal or native Richese purchase, not an arbitrary held card.
+/** Authorize the original normal, native lot or direct Richese purchase.
  * The engine supplies its current source-specific parent and live custody census.
  * Neither payment nor draw allocation is reconstructed here. */
 export function validateIxianReplacementSource(
@@ -201,11 +256,11 @@ export function validateIxianReplacementSource(
       text(parent) && source.parent === parent,
     'The purchased card choice has lost its current parent or cursor.',
   );
-  const card = purchasedCard(ctx), sale = ctx.sale!;
+  const terms = purchaseTerms(ctx);
   requireReplacement(
-    sale.winner === source.buyer && sale.amount === source.amount && sale.free === source.free &&
-      source.auctionIndex === (ctx.auction?.index ?? 0) && sameCard(card, source.card),
-    'Replacement must retain its exact original auction purchase.',
+    terms.buyer === source.buyer && terms.amount === source.amount && terms.free === source.free &&
+      source.auctionIndex === terms.auctionIndex && sameCard(terms.card, source.card),
+    'Replacement must retain its exact original purchase.',
   );
   validatePhysical(ctx.physicalCards, ctx);
   requireReplacement(
@@ -233,11 +288,11 @@ export function validateIxianReplacementSource(
 export function createIxianReplacementSource(
   ctx: IxianReplacementContext, event: string, parent: string,
 ): IxianReplacementSource {
-  const card = purchasedCard(ctx), sale = ctx.sale!;
+  const terms = purchaseTerms(ctx);
   const source: IxianReplacementSource = {
-    version: 1, event, buyer: sale.winner, turn: ctx.turn, sequence: ctx.sequence,
-    auctionIndex: ctx.auction?.index ?? 0, amount: sale.amount, free: sale.free,
-    card: { ...card }, parent, signature: '',
+    version: 1, event, buyer: terms.buyer, turn: ctx.turn, sequence: ctx.sequence,
+    auctionIndex: terms.auctionIndex, amount: terms.amount, free: terms.free,
+    card: { ...terms.card }, parent, signature: '',
   };
   source.signature = sourceSignature(source);
   validateIxianReplacementSource(ctx, source, parent);

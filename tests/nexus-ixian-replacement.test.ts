@@ -24,6 +24,7 @@ function context(): IxianReplacementContext {
     auction: { cards: [{ ...purchased }, { ...unsold }], index: 0, bidder: 'buyer', bid: 4 },
     richeseAuction: null,
     sale: { winner: 'buyer', amount: 4, free: false, origin: 'normal', seller: null },
+    specialPurchase: null,
     players: [
       { id: 'buyer', hand: [{ ...older }, { ...purchased }], handLimit: 4 },
       { id: 'rival', hand: [], handLimit: 4 },
@@ -44,7 +45,8 @@ function purchaseContext(
 }
 function source(ctx: IxianReplacementContext = context()) {
   return createIxianReplacementSource(
-    ctx, ixianReplacementEvent(ctx.turn, 'buyer', ctx.sequence, 0), parent,
+    ctx, ixianReplacementEvent(ctx.turn, ctx.specialPurchase?.buyer ?? 'buyer',
+      ctx.sequence, ctx.specialPurchase ? 0 : ctx.auction?.index ?? 0), parent,
   );
 }
 
@@ -64,6 +66,133 @@ function nativeContext(origin: 'cache' | 'blackMarket'): IxianReplacementContext
   ctx.physicalCards = [{ ...older }, { ...card }, { ...top }];
   return ctx;
 }
+
+const printedKarama = baseDeck().find(card => card.effect === 'karama')!;
+const directTarget = richeseCards()[1];
+
+function specialContext(ctx: IxianReplacementContext = context()): IxianReplacementContext {
+  ctx.expansions = ['choam'];
+  ctx.richese = true;
+  ctx.advanced = true;
+  ctx.specialPurchase = {
+    buyer: 'rival', cardId: directTarget.id, karama: printedKarama.id,
+    amount: 3, turn: ctx.turn, phase: 3,
+  };
+  ctx.players = ctx.players.map(player => player.id === 'rival'
+    ? { ...player, hand: [...player.hand, directTarget] } : player);
+  // The delivered target is held; the already-spent printed Karama remains in discard custody.
+  ctx.physicalCards = [...ctx.physicalCards, directTarget, printedKarama];
+  return ctx;
+}
+
+void test('committed direct Richese purchase with no auction closes the exact paid cache card', () => {
+  const ctx = specialContext();
+  ctx.auction = null;
+  ctx.sale = null;
+  const original = source(ctx);
+  assert.equal(original.buyer, 'rival');
+  assert.deepEqual(original.card, directTarget);
+  assert.equal(original.amount, 3);
+  assert.equal(original.free, false);
+  assert.equal(original.auctionIndex, 0);
+  validateIxianReplacementSource(ctx, JSON.parse(JSON.stringify(original)), parent);
+  for (const outcome of ['use', 'pass'] as const) {
+    const closed = closeIxianReplacementSource(
+      original, outcome, outcome === 'use' ? top : null, initialIxianReplacementCursor(),
+    );
+    assert.equal(closed.receipt.outcome, outcome);
+    assert.deepEqual(closed.receipt.replacement, outcome === 'use' ? top : null);
+    assert.throws(() => closeIxianReplacementSource(original, 'pass', null, closed.cursor), IxianReplacementError);
+    validateIxianReplacementHistory(JSON.parse(JSON.stringify([closed.receipt])), closed.cursor, [older]);
+  }
+});
+
+void test('direct receipt outranks unrelated delivered normal and native lots without changing their sources', () => {
+  for (const origin of ['normal', 'cache', 'blackMarket'] as const) {
+    const ctx = origin === 'normal' ? context() : nativeContext(origin);
+    if (ctx.auction) ctx.auction = { ...ctx.auction, cards: [unsold, purchased], index: 1 };
+    const olderSource = source(ctx);
+    specialContext(ctx);
+    const direct = source(ctx);
+    assert.equal(direct.buyer, 'rival');
+    assert.equal(direct.card.id, directTarget.id);
+    assert.equal(direct.amount, 3);
+    assert.equal(direct.free, false);
+    assert.equal(direct.auctionIndex, 0);
+    assert.throws(() => validateIxianReplacementSource(ctx, olderSource, parent), IxianReplacementError);
+    ctx.specialPurchase = null;
+    // Restoring the suspended authority still validates its original price, target and index.
+    validateIxianReplacementSource(ctx, olderSource, parent);
+    assert.throws(() => validateIxianReplacementSource(ctx, direct, parent), IxianReplacementError);
+  }
+  const priorFree = context();
+  priorFree.auction = { ...priorFree.auction!, bid: 0 };
+  priorFree.sale = { ...priorFree.sale!, amount: 0, free: true };
+  const oldFreeSource = source(priorFree);
+  specialContext(priorFree);
+  assert.equal(source(priorFree).amount, 3);
+  assert.equal(source(priorFree).free, false);
+  priorFree.specialPurchase = null;
+  validateIxianReplacementSource(priorFree, oldFreeSource, parent);
+});
+
+void test('direct purchase rejects stale authority, wrong mode, noncache targets and unspent or false costs', () => {
+  const ctx = specialContext();
+  const purchase = ctx.specialPurchase!;
+  const original = source(ctx);
+  const variants: IxianReplacementContext[] = [
+    { ...ctx, status: 'finished' },
+    { ...ctx, phase: 4 },
+    { ...ctx, turn: 2 },
+    { ...ctx, specialPurchase: { ...purchase, turn: 2 } },
+    { ...ctx, specialPurchase: { ...purchase, phase: 4 as never } },
+    { ...ctx, advanced: false },
+    { ...ctx, richese: false },
+    { ...ctx, expansions: [] },
+    { ...ctx, specialPurchase: { ...purchase, amount: 0 as never } },
+    { ...ctx, specialPurchase: { ...purchase, amount: 4 as never } },
+    { ...ctx, specialPurchase: { ...purchase, buyer: 'unseated' } },
+    { ...ctx, specialPurchase: { ...purchase, cardId: older.id } },
+    { ...ctx, specialPurchase: { ...purchase, cardId: richeseCards()[0].id } },
+    { ...ctx, specialPurchase: { ...purchase, karama: purchased.id } },
+    { ...ctx, specialPurchase: { ...purchase, karama: directTarget.id } },
+    { ...ctx, physicalCards: ctx.physicalCards.filter(card => card.id !== printedKarama.id) },
+    { ...ctx, physicalCards: ctx.physicalCards.filter(card => card.id !== directTarget.id) },
+    { ...ctx, physicalCards: [...ctx.physicalCards, printedKarama] },
+    { ...ctx, physicalCards: ctx.physicalCards.map(card =>
+      card.id === printedKarama.id ? { ...card, effect: 'fabricated' } : card) },
+    { ...ctx, players: ctx.players.map(player => player.id === 'rival'
+      ? { ...player, hand: [...player.hand, printedKarama] } : player) },
+    { ...ctx, players: ctx.players.map(player => player.id === 'rival'
+      ? { ...player, hand: [] } : { ...player, hand: [...player.hand, directTarget] }) },
+    { ...ctx, players: ctx.players.map(player => player.id === 'buyer'
+      ? { ...player, hand: [...player.hand, directTarget] } : player) },
+    { ...ctx, players: ctx.players.map(player => player.id === 'rival'
+      ? { ...player, hand: [{ ...directTarget, name: 'Altered cache card' }] } : player),
+      physicalCards: ctx.physicalCards.map(card => card.id === directTarget.id
+        ? { ...card, name: 'Altered cache card' } : card) },
+  ];
+  for (const invalid of variants) {
+    assert.throws(() => source(invalid), IxianReplacementError);
+    assert.throws(() => validateIxianReplacementSource(invalid, original, parent), IxianReplacementError);
+  }
+  assert.throws(() => validateIxianReplacementSource(
+    { ...ctx, sequence: 1 }, original, parent,
+  ), IxianReplacementError);
+  assert.throws(() => validateIxianReplacementSource(ctx, original, 'changed-parent'), IxianReplacementError);
+  assert.throws(() => createIxianReplacementSource(ctx, 'stale-direct-event', parent), IxianReplacementError);
+});
+
+void test('a different owned cache card cannot retarget an existing direct receipt', () => {
+  const ctx = specialContext();
+  const original = source(ctx);
+  const another = richeseCards()[0];
+  ctx.players = ctx.players.map(player => player.id === 'rival'
+    ? { ...player, hand: [...player.hand, another] } : player);
+  ctx.physicalCards = [...ctx.physicalCards, another];
+  ctx.specialPurchase = { ...ctx.specialPurchase!, cardId: another.id };
+  assert.throws(() => validateIxianReplacementSource(ctx, original, parent), IxianReplacementError);
+});
 
 void test('native cache and Black Market purchases close exact delivered cards once for Use or Pass', () => {
   for (const origin of ['cache', 'blackMarket'] as const) {

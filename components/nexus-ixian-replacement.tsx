@@ -33,16 +33,22 @@ export function NexusIxianReplacement({ game, act, busy }: {
   return (
     <section aria-label="Purchased card choice" data-testid="nexus-ixian-replacement" className="notice min-w-0 space-y-3">
       <h3>Purchased card choice</h3>
-      <p>{buyer?.name ?? 'The buyer'} chooses whether to keep the completed purchase before the auction continues.</p>
+      <p>{buyer?.name ?? 'The buyer'} chooses whether to keep the completed purchase before the original continuation resumes.</p>
       <p className="fine">
         This neutral development-preview boundary is offered independently of the buyer’s private Nexus face.
         Only the buyer can choose. The original payment stays paid; this is not another purchase or auction.{' '}
         <a href="/rules?topic=nexus-ixian-replacement#nexus-ixian-replacement">Purchased-card timing and preview limits</a>
       </p>
-      {offer.origin === 'cache' && (
+      {(offer.origin === 'cache' || offer.origin === 'richeseSpecial') && (
         <p className="fine">
           Provisional cache scope: this independent absent-Ixian Nexus grant applies to a genuine
           cache purchase. The separate exclusion for the native Ixian ally advantage is unchanged.
+        </p>
+      )}
+      {offer.origin === 'richeseSpecial' && (
+        <p className="fine">
+          The original Karama cost, three-spice payment and once-game power are already committed.
+          This choice resumes the original income and controls; it creates no new auction or payment.
         </p>
       )}
       {buyer?.faction === 'harkonnen' && (

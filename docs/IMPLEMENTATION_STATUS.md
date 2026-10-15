@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 16 October 2026 — Direct Richese special purchase and paid-bid funding
+
+Connected actual Advanced special-Karama cache acquisition during Bidding
+through its own committed price3/target/Karama/once-use receipt. An unrelated
+row, sale or older income supplies no substitute authority. Native active
+player and controls suspend/restore exactly; existing v1 receipts/ordinary
+parents remain unchanged. Other phases keep native acquisition without a
+Bidding Nexus offer. No auction, payment or original quote is recreated.
+
+The genuine nested-income path found a pre-existing defect: uncommittedSpice
+reserved a normal bid again after currentAuctionSale had consumed it.
+Only unpaid bids are now held. Ten new direct scenarios and the affected
+eleven-file107/107 pass, with existing Karama/bribe funding consumers,
+types/lint and production build (module-register/chunk/Unknown-route warnings).
+Ten original runtime paths and sixteen legal policy actions pass.
+
+Two actual390px native-action journeys pass. At remaining wallet3, direct
+Use buys/replaces Residual Poison with Artillery and preserves the older
+Poison Tooth, wallet0/Emperor10→15/one row advance. With wallet5/unpaid bid2,
+direct Keep pays3 then allows the original only-funded bid2 automatically:
+its distinct normal Nexus offer targets Poison Tooth/price2; keeping that
+offer completes wallet0/Emperor15 with Nexus retained. Cost/once-use occur
+once and direct/income buffers clear. No overflow/browser/application error.
+
+Removed an obsolete serialization substring pin without losing semantic
+rival-frame/hand checks. No human server, D1, saved room, deployment/public
+gate or broad/HTTP/saved-game assurance changed/run.
+[Source, funding defect and scoped proof](NEXUS_IXIAN_REPLACEMENT_RULES.md#direct-richese-special-purchase-during-bidding--16-october-2026).
+Current CLI help, four source anchors and26 topic evidence paths resolve;
+all five facets remain Partial without full-family/deployed certification.
+
 ## 16 October 2026 — Genuine Richese cache and Black Market Ixian replacement
 
 Connected the actual positive sold native lot after buyer debit/card delivery

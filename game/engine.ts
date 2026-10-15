@@ -56,7 +56,7 @@ import { moritaniTerrorAssassinationPool, moritaniTerrorAssassinationValue } fro
 import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGuildSecretShipment, type NexusGuildSecretAllyReceipt } from './nexus-guild-secret-ally';
 import { shipmentAvailable } from './shipment-opportunity';
 import { createGuildBetrayalInvoice, createGuildBetrayalReceipt, guildBetrayalEligible, guildBetrayalResponders, validateGuildBetrayalInvoice, validateGuildBetrayalHistory, nexusGuildBetrayalSourceReceipt, type GuildBetrayalInvoice, type GuildBetrayalCursor, type GuildBetrayalReceipt, type GuildBetrayalAuthority } from './nexus-guild-betrayal';
-import { createIxianReplacementSource, validateIxianReplacementSource, closeIxianReplacementSource, validateIxianReplacementHistory, initialIxianReplacementCursor, ixianReplacementEvent, type IxianReplacementSource, type IxianReplacementReceipt, type IxianReplacementCursor } from './nexus-ixian-replacement';
+import { createIxianReplacementSource, validateIxianReplacementSource, closeIxianReplacementSource, validateIxianReplacementHistory, initialIxianReplacementCursor, ixianReplacementEvent, type IxianReplacementSource, type IxianReplacementReceipt, type IxianReplacementCursor, type RicheseSpecialPurchaseReceipt } from './nexus-ixian-replacement';
 import { createIxianBetrayalSource, validateIxianBetrayalFrame, initialIxianBetrayalCursor, closeIxianBetrayalSource, validateIxianBetrayalHistory, ixianBetrayalResponders, ixianBetrayalEligible, type IxianBetrayalSource, type IxianBetrayalCursor, type IxianBetrayalReceipt } from './nexus-ixian-betrayal';
 import { createHarkonnenBetrayalSource, validateHarkonnenBetrayalFrame, initialHarkonnenBetrayalCursor, closeHarkonnenBetrayalSource, validateHarkonnenBetrayalHistory, harkonnenBetrayalResponders, harkonnenBetrayalEligible, createHarkonnenBetrayalReplacement, validateHarkonnenBetrayalReplacements, drawHarkonnenBetrayalReplacement, type HarkonnenBetrayalSource, type HarkonnenBetrayalCursor, type HarkonnenBetrayalReceipt, type HarkonnenBetrayalReplacement, type HarkonnenBetrayalAuthority } from './nexus-harkonnen-betrayal';
 import { createNexusGuildCunning, validateNexusGuildCunning, nexusGuildCunningMoves, type NexusGuildCunningReceipt } from './nexus-guild-cunning';
@@ -1232,9 +1232,12 @@ export type Game = {
   /** Explicit development profile; never enabled by a public start or player action. */
   kullPreview?: boolean;
   nexusKullPreview?: boolean;
-  /** Fresh bounded classic Nexus purchased-card prototype; never inferred for old saves. */
+  /** Fresh bounded Nexus purchased-card prototype; never inferred for old saves. */
   nexusIxianReplacementPreview?: true;
   pendingNexusIxianReplacement?: IxianReplacementSource | null;
+  pendingNexusIxianSpecialPurchase?: (RicheseSpecialPurchaseReceipt & {
+    resume: Pick<Game, 'active' | 'response' | 'decision' | 'pendingKarama'>;
+  }) | null;
   nexusIxianReplacementHistory?: IxianReplacementReceipt[];
   nexusIxianReplacementCursor?: IxianReplacementCursor;
   /** Fresh native Ixian attempt prevention; never inferred from held cards. */
@@ -9913,6 +9916,7 @@ function decideIxianNexusBetrayal(g: Game,id: string,action: Action): void {
 /** Fresh classic, Tleilaxu or Richese profile; no public start or retrofit. */
 export function initializeIxianNexusReplacementGameForAudit(state: Game): Game {
   requireRule(!state.nexusIxianReplacementPreview && !state.pendingNexusIxianReplacement &&
+    !state.pendingNexusIxianSpecialPurchase &&
     state.nexusIxianReplacementHistory === undefined && state.nexusIxianReplacementCursor === undefined &&
     ixianNexusReplacementModeSupported(state),
   'Ixian Nexus replacement needs a fresh classic/base, Tleilaxu/Ix or Richese/CHOAM lobby with Nexus alone.');
@@ -9948,20 +9952,25 @@ function ixianNexusReplacementParent(g: Game): string {
     ...(byFaction(g, 'richese') ? { richeseBidding:g.richeseBidding,
       richeseCache:g.richeseCache,richeseRemoved:g.richeseRemoved,
       ...(g.richeseAuction ? { richeseAuction:g.richeseAuction } : {}) } : {}),
+    ...(g.pendingNexusIxianSpecialPurchase ? { specialPurchase:g.pendingNexusIxianSpecialPurchase,
+      purchaseIncome:g.pendingRichesePurchaseIncome } : {}),
     decision:g.decision,response:g.response,phaseOpening:g.phaseOpening});
 }
 function ixianNexusReplacementContext(g: Game) {
-  requireRule(g.auction || g.richeseAuction, 'The Nexus purchased-card choice lost its original auction.');
+  requireRule(g.pendingNexusIxianSpecialPurchase || g.auction || g.richeseAuction,
+    'The Nexus purchased-card choice lost its original purchase.');
   return {status:g.status,phase:g.phase,turn:g.turn,sequence:g.nexusIxianReplacementCursor!.sequence,
     advanced:g.advanced,expansions:g.expansions,richese:!!byFaction(g,'richese'),
     auction:g.auction,richeseAuction:g.richeseAuction ?? null,sale:g.currentAuctionSale ?? null,
+    specialPurchase:g.pendingNexusIxianSpecialPurchase ?? null,
     players:g.players.map(p => ({id:p.id,hand:p.hand,handLimit:handLimit(p)})),
     physicalCards:physicalTreacheryCards(g)};
 }
 function ixianNexusReplacementIntegrity(g: Game): void {
   const pending = g.pendingNexusIxianReplacement;
+  const special = g.pendingNexusIxianSpecialPurchase;
   if (!g.nexusIxianReplacementPreview) {
-    requireRule(g.nexusIxianReplacementPreview === undefined && !pending &&
+    requireRule(g.nexusIxianReplacementPreview === undefined && !pending && !special &&
       g.nexusIxianReplacementHistory === undefined && g.nexusIxianReplacementCursor === undefined &&
       g.decision?.kind !== 'nexusIxianReplacement',
     'The Ixian Nexus replacement lost its explicit fresh profile.');
@@ -9972,47 +9981,72 @@ function ixianNexusReplacementIntegrity(g: Game): void {
   nexusRule(() => validateIxianReplacementHistory(g.nexusIxianReplacementHistory!,
     g.nexusIxianReplacementCursor!,physicalTreacheryCards(g)));
   if (!pending) {
-    requireRule(g.decision?.kind !== 'nexusIxianReplacement', 'The purchased-card choice lost its source.');
+    requireRule(!special && g.decision?.kind !== 'nexusIxianReplacement', 'The purchased-card choice lost its source.');
     return;
   }
   const buyer = getPlayer(g,pending.buyer);
+  if (special) requireRule(special.buyer === buyer.id && buyer.faction === 'richese' &&
+    buyer.specialKaramaUsed === true && special.resume && typeof special.resume === 'object',
+  'The direct Richese purchase lost its committed native buyer, once-use or original controls.');
   requireRule(!buyer.ally && !!g.nexusCards?.cards?.hands[buyer.id] &&
     g.decision?.kind === 'nexusIxianReplacement' && g.decision.player === buyer.id &&
     g.decision.event === pending.event &&
     Object.keys(g.decision).every(key => ['kind','player','event'].includes(key)) &&
     !g.response && !g.phaseOpening && !g.truthtrance && !g.pendingKarama && !g.pendingNullentropy &&
-    !g.pendingTreacheryDiscard && (g.currentAuctionSale?.origin === 'normal'
-      ? !g.richeseAuction : !g.auction && !!g.richeseAuction),
+    !g.pendingTreacheryDiscard && (special || (g.currentAuctionSale?.origin === 'normal'
+      ? !g.richeseAuction : !g.auction && !!g.richeseAuction)),
   'The purchased-card choice lost its buyer or native decision priority.');
   nexusRule(() => validateIxianReplacementSource(ixianNexusReplacementContext(g),pending,
     ixianNexusReplacementParent(g)));
 }
 function offerIxianNexusReplacement(g: Game): boolean {
   if (!g.nexusIxianReplacementPreview) return false;
+  const special = g.pendingNexusIxianSpecialPurchase;
   const sale = g.currentAuctionSale;
-  const buyer = sale && getPlayer(g,sale.winner);
-  if (!sale || !buyer || buyer.ally || !g.nexusCards?.cards?.hands[buyer.id]) return false;
+  const buyer = special ? getPlayer(g,special.buyer) : sale ? getPlayer(g,sale.winner) : null;
+  if (!buyer || buyer.ally || !g.nexusCards?.cards?.hands[buyer.id]) return false;
   requireRule(!g.response && !g.phaseOpening && !g.truthtrance && !g.pendingKarama,
     'Finish the original auction priority before offering the purchased-card choice.');
-  if (sale.origin !== 'normal') currentAuctionContinuationQuote(g, { kind: 'sale', free: sale.free });
-  const event = ixianReplacementEvent(g.turn,buyer.id,g.nexusIxianReplacementCursor!.sequence,g.auction?.index ?? 0);
+  if (!special && sale && sale.origin !== 'normal')
+    currentAuctionContinuationQuote(g, { kind: 'sale', free: sale.free });
+  const event = ixianReplacementEvent(g.turn,buyer.id,g.nexusIxianReplacementCursor!.sequence,
+    special ? 0 : g.auction?.index ?? 0);
   g.decision = {kind:'nexusIxianReplacement',player:buyer.id,event};
   g.active = buyer.id;
   g.pendingNexusIxianReplacement = nexusRule(() => createIxianReplacementSource(
     ixianNexusReplacementContext(g),event,ixianNexusReplacementParent(g)));
   return true;
 }
+/** The native direct purchase has already paid, delivered and spent its power. */
+function offerRicheseSpecialReplacement(g: Game, buyer: Player, karama: Card, cardId: string): boolean {
+  if (!g.nexusIxianReplacementPreview || !g.advanced || g.phase !== 3 ||
+    buyer.ally || !g.nexusCards?.cards?.hands[buyer.id]) return false;
+  requireRule(!g.pendingNexusIxianReplacement && !g.pendingNexusIxianSpecialPurchase &&
+    buyer.faction === 'richese' && buyer.specialKaramaUsed === true,
+  'Finish the original purchase before opening another purchased-card choice.');
+  g.pendingNexusIxianSpecialPurchase = {
+    buyer:buyer.id,cardId,karama:karama.id,amount:3,turn:g.turn,phase:3,
+    resume:{active:g.active,response:g.response,decision:g.decision,pendingKarama:g.pendingKarama},
+  };
+  g.response = null;
+  g.decision = null;
+  g.pendingKarama = null;
+  requireRule(offerIxianNexusReplacement(g), 'The committed special purchase lost its original Nexus opportunity.');
+  return true;
+}
 function ixianNexusReplacementView(g: Game,id: string) {
   const source = g.pendingNexusIxianReplacement;
   if (!source) return null;
   const own = source.buyer === id;
-  return {event:source.event,buyer:source.buyer,origin:g.currentAuctionSale!.origin,canPass:own,
+  return {event:source.event,buyer:source.buyer,
+    origin:g.pendingNexusIxianSpecialPurchase ? 'richeseSpecial' as const : g.currentAuctionSale!.origin,canPass:own,
     canUse:own && g.nexusCards?.cards?.hands[id] === 'ixians',
     blocked:null as string | null,purchased:own ? structuredClone(source.card) : null};
 }
 function decideIxianNexusReplacement(g: Game,id: string,action: Action): void {
   ixianNexusReplacementIntegrity(g);
   const source = g.pendingNexusIxianReplacement!;
+  const special = g.pendingNexusIxianSpecialPurchase;
   requireRule(source.buyer === id && action.event === source.event &&
     ['nexusIxianReplacementPass','nexusIxianReplacementUse'].includes(action.type) &&
     Object.keys(action).length === 2 && Object.keys(action).every(key => ['type','event'].includes(key)),
@@ -10037,7 +10071,13 @@ function decideIxianNexusReplacement(g: Game,id: string,action: Action): void {
   g.decision = null;
   if (use) log(g,`${getPlayer(g,id).name} spent Ixian Nexus Secret Ally to discard the purchased Treachery Card and draw a private replacement.`,
     {faction:getPlayer(g,id).faction,name:'Nexus purchased-card replacement'});
-  continueAuctionSale(g,source.free);
+  if (special) {
+    g.pendingNexusIxianSpecialPurchase = null;
+    g.active = special.resume.active;
+    g.response = special.resume.response;
+    g.decision = special.resume.decision;
+    g.pendingKarama = special.resume.pendingKarama;
+  } else continueAuctionSale(g,source.free);
 }
 /** Opt-in fresh classic setup through the real physical Nexus/Homeworld setup. */
 export function initializeGuildBetrayalGameForAudit(state: Game): Game {
@@ -13057,7 +13097,8 @@ function uncommittedSpice(g: Game, p: Player) {
   return (
     p.spice -
     richeseOwnCommitment(g.richeseAuction, g.richeseFunding ?? {}, p.id) -
-    (g.auction?.bidder === p.id
+    // A current sale already consumed the bid; only an unpaid bid stays reserved.
+    (g.auction?.bidder === p.id && !g.currentAuctionSale
       ? g.auction.bid - (g.auction.allyPayment ?? 0)
       : 0) -
     (battleSupportCost(g, p, g.battle?.plans[p.id]?.support ?? 0) -
@@ -29204,6 +29245,7 @@ function resolveSpecialKaramaEffect(g: Game, p: Player, card: Card, intent: Spec
         passed: [],
       };
     }
+    if (!intent.nexusEvent) offerRicheseSpecialReplacement(g, p, card, intent.acquire);
   } else if (intent.kind === 'choam') {
     const selected = intent.cards;
     const entries: FreshDiscardBatch['entries'][number][] | null = g.semutaPreview ? [] : null;
