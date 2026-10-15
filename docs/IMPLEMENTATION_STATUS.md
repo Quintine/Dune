@@ -1,5 +1,56 @@
 # Dune implementation status
 
+## 16 October 2026 — Semuta resumes printed native specials and private CHOAM cashout
+
+Separated validated native activation cost from the single native effect
+body. Original public intent validation and Kull callers retain their
+contract. Eleven pre-effect disposal sites use the committed-cost path;
+Emperor's existing post-revival disposal remains afterward. Joint Richese/
+Nexus receipt/card ordering remains before the actual Treachery cost.
+No native cost or effect is duplicated, and recovery does not require the
+discarded card to remain in its original hand.
+
+`specialKaramaDiscard` binds the original intent, controls, phase, stock,
+books, hand/custody and once-use. Its `effect` stage resumes the original
+native suffix; `complete` retires an already-earned Emperor return.
+CHOAM's selected cards now form a distinct private `cashout` batch after
+one three-spice-each credit. Commit before inspection, select one fresh
+physical card; the old activation is excluded and no payout repeats.
+
+Affected sixteen-file **224/224** passes, including thirteen new behavior
+cases. Twenty-six runtime/policy paths pass: eight original-action Guild
+paths including four existing policies, and eighteen explicitly controlled
+native-effect paths. Controlled cases cover Emperor forces/leader, CHOAM,
+Richese, Ixians, Tleilaxu, Fremen, Atreides and Harkonnen. Ordinary original
+Guild proof uses actual paid cache/normal auctions and native shipping.
+Controlled acquisitions/stocks/phase are explicitly disclosed, not original
+acquisition or full-game evidence.
+
+Four actual styled390×844 GameTable journeys pass: original reserve stop
+cost claim plus real Atreides movement; original typed stop cost all-seat
+decline; controlled CHOAM initial cost decline then private Kulon claim
+after20→26 credit; controlled Emperor cost claim after native17→19 reserves/
+3→1 Tanks, with no second return. Public inspectors show native pools.
+Two scenes are original-action and two controlled. Viewport/scroll width390,
+no browser/application errors. Existing income and refund fixtures now
+perform actual neutral cost passes. Removed a crypto-call-count assertion
+while retaining the real private-identity and hand-transfer outcomes;
+no implementation/tactical pin was added.
+
+Only an owned memory-only host started/stopped. No worker, D1, authenticated
+saved room, human server, deployed revision or gate was exercised or changed.
+Outside-Git source/API/table proof and four initial scenes remain under
+`/tmp/dune-semuta-special-*20261016*`. Advanced Ecaz/Moritani Semuta entries
+retain their original gates; converted costs, wider combinations and final
+assurance remain unfinished. The full goal remains active.
+[Source/stages and scoped evidence](SEMUTA_SOURCE_UPDATE_20260907.md#printed-native-special-costs-and-choam-cashout--16-october-2026),
+[continuations](SEMUTA_DISCARD_CONTINUATIONS.md#printed-special-activation-and-cashout-stages--16-october-2026).
+Final `npm run check:quick` and production build pass, retaining existing
+module-register, large-chunk and Unknown-route warnings. Both affected
+CHOAM paths pass again after a type-only mutable collection annotation
+repair. Six current local links and53 Semuta evidence paths resolve;
+all five facets remain Partial without final/deployed assurance.
+
 ## 16 October 2026 — Semuta preserves purchased price and claimed-cost custody
 
 Added `karamaShipmentPriceDiscard` for a printed ordinary Karama's original

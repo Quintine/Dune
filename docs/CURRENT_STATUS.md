@@ -29,6 +29,26 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta preserves native special effects and separate CHOAM cashout — 16 October.**
+Printed special costs now pause at their native disposal point, then resume
+one original effect with the committed card even after recovery. Emperor's
+existing post-revival disposal remains post-revival and cannot return the
+same counters again. CHOAM's later selected hand cards are a separate private
+simultaneous batch after one earned credit; only one fresh card is recoverable.
+
+Affected sixteen-file224/224 passes, including thirteen new cases.
+Twenty-six runtime/policy paths pass: eight original-action/eighteen
+controlled. Four actual390px journeys pass: two original Guild source
+claim/decline/prevention and two controlled CHOAM/Emperor sources, with real
+movement, private selection and public force inspectors. No overflow/browser/
+application error. No worker/D1/real room, human server, deployment or gate
+changed. Advanced E3 Semuta entries, converted costs and final assurance
+remain separate.
+[Canonical stages, evidence and scope](SEMUTA_SOURCE_UPDATE_20260907.md#printed-native-special-costs-and-choam-cashout--16-october-2026).
+Final types/lint and production build pass with existing warnings.
+The two affected CHOAM paths pass again after a type-only repair; current
+links and all five still-partial Semuta evidence facets resolve.
+
 **Semuta keeps the purchased price, not a duplicated refund — 16 October.**
 Printed shipment-price costs now offer their exact fresh card before the
 same original price activates. Recovery changes physical custody, not the

@@ -2,6 +2,61 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Printed native special costs and CHOAM cashout — 16 October 2026
+
+`specialKaramaDiscard` now offers a printed special-Karama activation cost
+at its native disposal point. A single native effect implementation serves
+direct activation and the authenticated committed-cost continuation; recovery
+does not require the cost to remain in its former owner's hand. Original
+source controls, resources, selections, once-use and pending obligations stay
+bound, not restored from a replacement Game.
+
+For the native pre-effect costs, claim/pass resumes the original effect once:
+Guild prevention (reserve/typed), Richese acquisition, Ix movement, Tleilaxu
+prevention, Fremen worm, Atreides inspection and Harkonnen draw/return retain
+their sources. Original Emperor force/leader revival already precedes its
+cost disposal; its `complete` stage offers recovery **after** that earned
+return and never revives again. Existing joint Richese/Nexus cost ordering
+remains before Treachery disposal; its native contract is unchanged.
+
+CHOAM has two different events. Its public activation cost precedes cashout.
+The selected ordinary hand cards then form one **private simultaneous batch**
+after their existing three-spice-each credit. Declining the cost may retain
+Semuta to commit and inspect that later batch; select only one fresh card,
+never the old activation or one per discarded card. Claim/pass cannot credit
+again. These are the existing printed/native orders, not a newly found
+publisher timing FAQ.
+
+Affected sixteen-file **224/224** passes, including thirteen new behavior
+cases. Twenty-six runtime/policy paths pass: eight original-action Guild
+paths (including four existing profiles) and eighteen explicitly controlled
+native-effect paths across the nine other admitted kind variants. Original
+Guild/Atreides cards are bought through real normal/cache auctions.
+Controlled sources disclose conserved later hands/armies/wallets/phase,
+then use actual native declarations and reactions; they are not original
+acquisition or full-game proof.
+
+Four actual styled390×844 GameTable journeys pass: original Guild reserve
+cost claim/prevention plus ordinary movement; original typed cost all-seat
+decline/prevention; controlled CHOAM cost decline then private Kulon selection
+after credit20→26; controlled Emperor cost claim after reserves17→19/Tanks3→1,
+with the same19/1 afterward. Public force inspectors show the native pools.
+Two journeys are original-action and two controlled. Viewport/scroll width390,
+no browser/application errors. Only an owned memory-only loopback host ran;
+no worker, D1, authenticated saved room, human server, deployment or mode
+gate changed. Proof/scenes remain outside Git under
+`/tmp/dune-semuta-special-*20261016*`.
+
+The existing Advanced Ecaz/Moritani Semuta entry gates remain unchanged;
+this is not original combined E3 acceptance. Converted Worthless/Shrine
+costs, wider combinations and final assurance remain unfinished.
+[Continuation stages](SEMUTA_DISCARD_CONTINUATIONS.md#printed-special-activation-and-cashout-stages--16-october-2026).
+Final `npm run check:quick` and production build pass with existing
+module-register, large-chunk and Unknown-route warnings. Both affected
+CHOAM paths pass again after a collection type-only repair. Six current
+local links and53 Semuta evidence paths resolve; all five facets stay Partial.
+
+
 ## Shipment-price cost and claimed-card refund — 16 October 2026
 
 An ordinary **printed Karama** spent for the active player's shipment price

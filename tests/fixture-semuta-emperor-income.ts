@@ -7,7 +7,7 @@ import type { Card } from '../game/cards';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { nextRicheseSkillsTechNativeStep } from './fixture-richese-skills-tech';
 import {
-  moveSemutaEmperorCard, semutaEmperorCardId, semutaEmperorPlayer,
+  moveSemutaEmperorCard, semutaEmperorCardId, semutaEmperorPlayer, passSemutaSpecialDiscards,
 } from './fixture-semuta-emperor-share';
 
 export type SemutaEmperorIncomeKind = 'emperorIncome' | 'richesePurchaseIncome';
@@ -138,6 +138,7 @@ export function createSemutaEmperorIncomeFixture(
     const purchase: Action = { type: 'card', mode: 'special', card: special!, acquire: acquired };
     sourceActions.push({ actor: 'r', action: purchase });
     game = applyAction(game, 'r', purchase);
+    game = passSemutaSpecialDiscards(game, sourceActions);
   } else {
     if (!options.acquiredKarama) {
       const first = game.deck.find(card => card.effect !== 'karama');

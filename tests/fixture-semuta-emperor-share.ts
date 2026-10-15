@@ -127,3 +127,23 @@ export function semutaEmperorSharePhysical(game: Game) {
 export function semutaEmperorShareViews(game: Game): void {
   for (const player of game.players) viewGame(game, player.id);
 }
+
+/** Pass only original special costs/results; never skip a committed private selection. */
+export function passSemutaSpecialDiscards(
+  state: Game, actions?: { actor: string; action: Action }[],
+): Game {
+  let game = state;
+  for (let n = 0; game.pendingTreacheryDiscard?.batch.cause.startsWith('specialKarama:') && n < 20; n++) {
+    const pending = game.pendingTreacheryDiscard;
+    const reaction = pending.reaction; assert.ok(reaction?.stage === 'offer');
+    const event = pending.batch.event;
+    for (const seat of game.players.filter(p => !reaction.passed.includes(p.id))) {
+      const action: Action = { type: 'semutaPass', event };
+      actions?.push({ actor: seat.id, action });
+      game = applyAction(game, seat.id, action);
+    }
+  }
+  assert.ok(!game.pendingTreacheryDiscard?.batch.cause.startsWith('specialKarama:'),
+    'The native special discard continuation must actually retire.');
+  return game;
+}

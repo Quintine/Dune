@@ -5,6 +5,7 @@ import {
   createSemutaShipmentPrice, reactSemutaShipmentPrice,
   semutaPurchasedShipment, allowSemutaPurchasedShipment,
 } from './fixture-semuta-shipment-price';
+import { passSemutaSpecialDiscards } from './fixture-semuta-emperor-share';
 
 const player = (game: Game, actor: string) => game.players.find(p => p.id === actor)!;
 function reject(game: Game, actor: string, action: Action) {
@@ -54,6 +55,8 @@ for (const homeworlds of [false, true])
     const shipment = semutaPurchasedShipment(game, homeworlds);
     game = applyAction(game, f.beneficiary, shipment.action);
     game = applyAction(game, f.guild, { type: 'card', card: f.karama, mode: 'special' });
+    assert.equal(player(game, f.beneficiary).shipped, false);
+    game = passSemutaSpecialDiscards(game);
     const shipper = player(game, f.beneficiary);
     assert.equal(shipper.spice, original.spice);
     assert.equal(shipper.reserves, original.reserves);
@@ -83,6 +86,7 @@ void test('declining the price cost retains its existing exact-card refund when 
     const shipment = semutaPurchasedShipment(game, homeworlds);
     game = applyAction(game, f.beneficiary, shipment.action);
     game = applyAction(game, f.guild, { type: 'card', card: stop.id, mode: 'special' });
+    game = passSemutaSpecialDiscards(game);
     assert.equal(player(game, f.beneficiary).spice, before.spice);
     assert.equal(player(game, f.beneficiary).reserves, before.reserves);
     assert.equal(player(game, f.beneficiary).shipped, true);

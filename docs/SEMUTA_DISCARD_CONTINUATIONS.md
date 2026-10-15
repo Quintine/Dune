@@ -2,6 +2,33 @@
 
 Read-only engine audit, 2026-09-07. Read the complete `docs/SEMUTA_DRUG_ENGINE_AUDIT.md`, then inspected every current `discard(...)` call, direct Treachery-discard mutation and `draw(g)` caller in `game/engine.ts`, plus the Truthtrance discard callback and pure Box/Distrans results. Names below are integration anchors; approximate current lines are navigation aids only. This report adopts no additional source ruling and changes no project file.
 
+## Printed special activation and cashout stages — 16 October 2026
+
+`specialKaramaDiscard` retains the validated original native intent, cost,
+controls and signature. The original activation pays its cost once; the
+authenticated saved discard can invoke the single native effect body with
+that committed canonical card even after it moves to the claimant.
+
+- `effect`: the native pre-effect printed cost is fresh; resume its original
+  selection/permission/prevention/purchase/movement once.
+- `complete`: native Emperor revival and its original ledger already
+  committed before disposal. Retire the cost event without another return.
+- `cashout`: CHOAM's selected hand cards are one private simultaneous batch
+  after the original credit. Commit before inspection, choose one fresh
+  other-player card, and never repeat credit or include the earlier cost.
+
+Original joint Richese/Nexus cost ordering, once-use, original typed source,
+refund and queued parent remain native. The source signature binds outcomes
+and obligations, not a stale replacement Game. Existing paid purchase-income
+fixtures and price-stop consumers now issue actual neutral passes before
+their native suffix rather than assuming direct completion.
+
+[Scoped source/runtime proof](SEMUTA_SOURCE_UPDATE_20260907.md#printed-native-special-costs-and-choam-cashout--16-october-2026)
+distinguishes eight original and eighteen controlled paths plus two original/
+two controlled mobile journeys. Advanced E3 entry gates, converted costs
+and full assurance remain separate.
+
+
 ## Shipment-price activation cost — 16 October 2026
 
 `karamaShipmentPriceDiscard` offers the exact public printed cost before

@@ -1417,6 +1417,15 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'specialKaramaDiscard';
+          player: string;
+          card: string;
+          intent: SpecialKaramaIntent;
+          stage: 'effect' | 'complete' | 'cashout';
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
           kind: 'choamSaleDiscard';
           owner: string;
           card: string;
@@ -5555,6 +5564,64 @@ function karamaShipmentPriceDiscardSignature(g: Game, c: KaramaShipmentPriceDisc
     opportunity: karamaOpportunitySignature(g, { owner: c.player, use: c.use }),
   });
 }
+type SpecialKaramaDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'specialKaramaDiscard' }
+>;
+function specialKaramaDiscardSignature(g: Game, c: SpecialKaramaDiscardContinuation) {
+  return JSON.stringify({
+    player: c.player, card: c.card, intent: c.intent, stage: c.stage,
+    parent: nullentropyParentSignature(g, c.resume, `specialKarama:${c.intent.kind}:${c.card}`),
+    status: g.status, turn: g.turn, phase: g.phase, advanced: g.advanced,
+    active: g.active, order: g.order, ready: g.ready,
+    movementRemaining: g.movementRemaining, battle: g.battle,
+    lastBattle: g.lastBattleContext, homeworlds: g.homeworlds,
+    occupation: g.homeworldOccupationHistory, mobile: g.mobileStronghold,
+    tech: g.techTokens, skills: g.leaderSkills, strongholds: g.strongholdCards,
+    price: g.karamaShipping, spice: g.spice, storm: g.storm,
+    stormResolution: g.stormResolution, spiceWindow: g.spiceWindow,
+    spiceResolution: g.spiceResolution, summoned: g.summonedWorm,
+    rides: g.wormRides, nexus: g.nexusCards,
+    emperorPurchases: g.nexusEmperorPurchaseHistory,
+    auction: g.auction, sale: g.currentAuctionSale,
+    richeseAuction: g.richeseAuction, richeseBidding: g.richeseBidding,
+    cache: g.richeseCache?.map(card => card.id),
+    deck: g.deck.map(card => card.id), revivalPrevention: g.revivalPrevention,
+    players: g.players.map(p => ({
+      id: p.id, faction: p.faction, ally: p.ally,
+      hand: p.hand.map(card => card.id), spice: p.spice,
+      forces: p.forces, reserves: p.reserves, tanks: p.tanks,
+      elites: p.elites, leaders: p.leaders, noField: p.noField,
+      noFieldEvent: p.noFieldEvent, advisors: p.advisors,
+      shipped: p.shipped, moved: p.moved, revived: p.revived,
+      specialKaramaUsed: p.specialKaramaUsed,
+    })),
+  });
+}
+function stageSpecialKaramaCost(
+  g: Game, intent: SpecialKaramaIntent, card: Card, complete: boolean,
+): boolean {
+  if (!g.semutaPreview || card.effect !== 'karama') return false;
+  return stageSpecialKaramaDiscard(g, intent,
+    [{ card, discardedBy: intent.owner, publicFace: true }], complete ? 'complete' : 'effect');
+}
+function stageSpecialKaramaDiscard(
+  g: Game, intent: SpecialKaramaIntent, entries: FreshDiscardBatch['entries'],
+  stage: SpecialKaramaDiscardContinuation['stage'],
+): boolean {
+  const continuation: SpecialKaramaDiscardContinuation = {
+    kind: 'specialKaramaDiscard', player: intent.owner, card: intent.card, intent, stage,
+    resume: { response: g.response, decision: g.decision,
+      pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
+    stateSignature: '',
+  };
+  if (!semutaOfferSupported(g, continuation, entries)) return false;
+  g.response = null; g.decision = null; g.pendingKarama = null; g.phaseOpening = null;
+  continuation.stateSignature = specialKaramaDiscardSignature(g, continuation);
+  stageTreacheryDiscard(g, stage === 'cashout' ? 'specialKarama:choamCashout'
+    : `specialKarama:${intent.kind}`, entries, continuation);
+  return true;
+}
 type ChoamSaleDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'choamSaleDiscard' }
@@ -6386,6 +6453,28 @@ function treacheryDiscardIntegrity(g: Game) {
         throw error;
       }
     }
+  } else if (continuation?.kind === 'specialKaramaDiscard') {
+    const c = continuation, entry = batch.entries[0], owner = getPlayer(g, c.player);
+    const emperor = c.intent.kind === 'emperorLeader' || c.intent.kind === 'emperorForces';
+    const faction = emperor ? 'emperor' : c.intent.kind === 'guildHomeworld' ? 'guild' : c.intent.kind;
+    const cashout = c.stage === 'cashout' && c.intent.kind === 'choam' ? c.intent.cards : null;
+    requireRule(
+      g.advanced && !g.response && !g.decision && !g.pendingKarama && !g.phaseOpening &&
+      c.player === c.intent.owner && c.card === c.intent.card &&
+      c.intent.turn === g.turn && c.intent.phase === g.phase &&
+      owner.faction === faction &&
+      (c.stage === 'complete' ? emperor && owner.specialKaramaUsed === true
+        : cashout ? owner.specialKaramaUsed === true : c.stage === 'effect' && !emperor && !owner.specialKaramaUsed) &&
+      (cashout
+        ? batch.cause === 'specialKarama:choamCashout' && batch.entries.length === cashout.length &&
+          batch.entries.every((entry, index) => !entry.publicFace && entry.discardedBy === c.player &&
+            entry.card.id === cashout[index] && entry.card.id !== c.card)
+        : batch.cause === `specialKarama:${c.intent.kind}` && batch.entries.length === 1 &&
+          entry.card.id === c.card && entry.card.effect === 'karama' &&
+          entry.publicFace && entry.discardedBy === c.player) &&
+      c.stateSignature === specialKaramaDiscardSignature(g, c),
+      'The spent special Karama no longer matches its original native activation.',
+    );
   } else if (continuation?.kind === 'karamaShipmentPriceDiscard') {
     const c = continuation, entry = batch.entries[0];
     requireRule(
@@ -7223,6 +7312,7 @@ function semutaOfferSupported(
     continuation.kind !== 'karamaIncomeDiscard' &&
     continuation.kind !== 'karamaShipmentDiscard' &&
     continuation.kind !== 'karamaShipmentPriceDiscard' &&
+    continuation.kind !== 'specialKaramaDiscard' &&
     continuation.kind !== 'kaitainDiscard' &&
     continuation.kind !== 'tupileCleanupDiscard' &&
     continuation.kind !== 'karamaPurchaseDiscard' &&
@@ -7257,6 +7347,7 @@ function semutaOfferSupported(
       continuation.kind !== 'karamaIncomeDiscard' &&
       continuation.kind !== 'karamaShipmentDiscard' &&
       continuation.kind !== 'karamaShipmentPriceDiscard' &&
+      continuation.kind !== 'specialKaramaDiscard' &&
       continuation.kind !== 'ordinaryCardDiscard' &&
       continuation.kind !== 'nullentropyDiscard' &&
       continuation.kind !== 'distransDiscard' &&
@@ -7325,7 +7416,8 @@ function semutaOfferSupported(
   return g.semutaPreview === true && g.status === 'playing' &&
     g.players.some(p => p.faction === 'richese') &&
     entries.length > 0 &&
-    (continuation.kind === 'kaitainDiscard' || continuation.kind === 'tupileCleanupDiscard'
+    (continuation.kind === 'kaitainDiscard' || continuation.kind === 'tupileCleanupDiscard' ||
+      (continuation.kind === 'specialKaramaDiscard' && continuation.stage === 'cashout')
       ? entries.every(entry => !entry.publicFace)
       : continuation.kind === 'ixAllyCard' || continuation.kind === 'terrorDiscard' ||
       continuation.kind === 'nexusChoamBetrayal' || choamCunningDiscard(continuation)
@@ -7359,6 +7451,7 @@ function semutaOfferSupported(
         (!g.response || JSON.stringify(g.response) === JSON.stringify(continuation.resume.response))
       : true) &&
     (continuation.kind === 'battleCleanup' ||
+      continuation.kind === 'specialKaramaDiscard' ||
       continuation.kind === 'winnerMandatoryDiscard' ||
       continuation.kind === 'battleResolved' ||
       continuation.kind === 'kaitainDiscard' ||
@@ -7386,8 +7479,9 @@ function semutaOfferSupported(
           (continuation.kind === 'amalDiscard'
             ? continuation.resume.phaseOpening?.passed.length === 0
             : !continuation.resume.phaseOpening)))) &&
-    (continuation.kind === 'karamaShipmentDiscard' || !g.karamaShipping) &&
-    (continuation.kind === 'ixAllyCard'
+    (continuation.kind === 'karamaShipmentDiscard' ||
+      continuation.kind === 'specialKaramaDiscard' || !g.karamaShipping) &&
+    (continuation.kind === 'specialKaramaDiscard' || (continuation.kind === 'ixAllyCard'
       ? !!g.currentAuctionSale && continuation.sale.origin === g.currentAuctionSale.origin &&
         (continuation.sale.origin === 'normal'
           ? !!g.auction && !g.richeseAuction
@@ -7400,12 +7494,13 @@ function semutaOfferSupported(
           continuation.use.response.kind === 'emperorIncome'
           ? !!g.currentAuctionSale && (g.currentAuctionSale.origin === 'normal'
             ? !!g.auction && !g.richeseAuction : !!g.richeseAuction && !g.auction)
-          : !g.auction) &&
-    (continuation.kind === 'saphoAuctionDiscard' ||
+          : !g.auction)) &&
+    (continuation.kind === 'specialKaramaDiscard' || continuation.kind === 'saphoAuctionDiscard' ||
       continuation.kind === 'ixAllyCard' ||
       (continuation.kind === 'karamaIncomeDiscard' &&
         continuation.use.response.kind === 'emperorIncome') || !g.richeseAuction) &&
     (continuation.kind === 'saphoAggressorDiscard' ||
+      continuation.kind === 'specialKaramaDiscard' ||
       continuation.kind === 'residualPoisonDiscard' ||
       continuation.kind === 'truthtranceDiscard' ||
       continuation.kind === 'nullentropyDiscard' ||
@@ -7429,6 +7524,7 @@ function semutaOfferSupported(
     !g.pendingExchange && !g.pendingIxAlly && !g.pendingNullentropy &&
     !g.pendingAmbassador && !g.pendingTerrorEntry &&
     (continuation.kind === 'karamaShipmentDiscard' ||
+      continuation.kind === 'specialKaramaDiscard' ||
       (!g.pendingShipment && !g.pendingHomeworldShipment)) &&
     !g.pendingRicheseGift &&
     ((continuation.kind === 'karamaIncomeDiscard' &&
@@ -7656,6 +7752,13 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     const battle = g.battle!;
     if (battle.preLeader && !battle.preLeader.closed)
       battle.preLeader.ready = battle.preLeader.ready.filter(id => id !== next.player);
+  } else if (next.kind === 'specialKaramaDiscard') {
+    g.response = next.resume.response;
+    g.decision = next.resume.decision;
+    g.pendingKarama = next.resume.pendingKarama;
+    g.phaseOpening = next.resume.phaseOpening;
+    if (next.stage === 'effect')
+      resolveSpecialKaramaEffect(g, getPlayer(g, next.player), pending.batch.entries[0].card, next.intent);
   } else if (next.kind === 'karamaShipmentPriceDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -28913,15 +29016,30 @@ export function executeSpecialKaramaIntent(
       g,
       `${p.name} used the physical Truthtrance as Karama for their special faction power.`,
     );
-  if (intent.kind === 'ecaz') {
+  if (intent.kind !== 'emperorLeader' && intent.kind !== 'emperorForces') {
+    if (intent.kind === 'richese' && intent.nexusEvent) {
+      const receipt = nexusRule(() => createEmperorNexusSpecialPurchase(g, p.id, card.id, intent.acquire));
+      requireRule(receipt.event === intent.nexusEvent,
+        'The original joint special-purchase source changed before disposal.');
+      g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+      (g.nexusEmperorPurchaseHistory ??= []).push(receipt);
+      (g.nexusEmperorPurchaseEvents ??= []).push(receipt.event);
+    }
     discard(g, p, card.id);
+    if (stageSpecialKaramaCost(g, intent, card, false)) return;
+  }
+  resolveSpecialKaramaEffect(g, p, card, intent);
+}
+
+/** Only the validated original activation or its authenticated cost receipt calls this. */
+function resolveSpecialKaramaEffect(g: Game, p: Player, card: Card, intent: SpecialKaramaIntent): void {
+  if (intent.kind === 'ecaz') {
     p.specialKaramaUsed = true;
     g.battle!.ecazSpecialKarama = { owner: p.id, card: card.id, event: intent.event };
     log(g, `${p.name} declared the once-game unarmed Ecaz special Karama. The revealed disc-value difference adds provisional virtual dial strength, without additional physical losses.`,
       { faction: 'ecaz', name: 'Special Karama' });
   } else if (intent.kind === 'moritani') {
     const pending = g.moritaniSpecialKarama!;
-    discard(g, p, card.id);
     p.specialKaramaUsed = true;
     const winner = getPlayer(g, intent.source.opponent);
     pending.optional = pending.cards.filter(id => !intent.keep.includes(id) && !intent.discard.includes(id));
@@ -28939,15 +29057,6 @@ export function executeSpecialKaramaIntent(
     } else resumeMoritaniSpecialKarama(g);
   } else if (intent.kind === 'richese') {
     const selected = g.richeseCache!.findIndex((c) => c.id === intent.acquire);
-    if (intent.nexusEvent) {
-      const receipt = nexusRule(() => createEmperorNexusSpecialPurchase(g, p.id, card.id, intent.acquire));
-      requireRule(receipt.event === intent.nexusEvent,
-        'The original joint special-purchase source changed before disposal.');
-      g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
-      (g.nexusEmperorPurchaseHistory ??= []).push(receipt);
-      (g.nexusEmperorPurchaseEvents ??= []).push(receipt.event);
-    }
-    discard(g, p, card.id);
     if (!intent.nexusEvent) p.spice -= 3;
     p.hand.push(...g.richeseCache!.splice(selected, 1));
     p.specialKaramaUsed = true;
@@ -28982,17 +29091,20 @@ export function executeSpecialKaramaIntent(
     }
   } else if (intent.kind === 'choam') {
     const selected = intent.cards;
-    discard(g, p, card.id);
-    for (const id of selected) discard(g, p, id);
+    const entries: FreshDiscardBatch['entries'][number][] | null = g.semutaPreview ? [] : null;
+    for (const id of selected) {
+      const used = discard(g, p, id);
+      entries?.push({ card: used, discardedBy: p.id, publicFace: false });
+    }
     p.spice += selected.length * 3;
     p.specialKaramaUsed = true;
     log(
       g,
       `${p.name} used special Karama to discard ${selected.length} cards and gain ${selected.length * 3} spice.`,
     );
+    if (entries?.length) stageSpecialKaramaDiscard(g, intent, entries, 'cashout');
   } else if (intent.kind === 'ixians') {
     const route = intent.route;
-    discard(g, p, card.id);
     p.specialKaramaUsed = true;
     relocateMobileStronghold(g, {
       player: p.id,
@@ -29002,7 +29114,6 @@ export function executeSpecialKaramaIntent(
     });
   } else if (intent.kind === 'tleilaxu') {
     const target = intent.target;
-    discard(g, p, card.id);
     p.specialKaramaUsed = true;
     g.revivalPrevention = { player: target, turn: g.turn };
     if (g.pendingRevival?.nexusEmperorEvent)
@@ -29017,7 +29128,6 @@ export function executeSpecialKaramaIntent(
     );
   } else if (intent.kind === 'fremen') {
     const t = intent.territory;
-    discard(g, p, card.id);
     p.specialKaramaUsed = true;
     g.summonedWorm = {
       territory: t,
@@ -29051,7 +29161,6 @@ export function executeSpecialKaramaIntent(
   } else if (intent.kind === 'atreides') {
     const b = g.battle!,
       target = intent.target;
-    discard(g, p, card.id);
     p.specialKaramaUsed = true;
     b.fullPlan = { owner: p.id, target };
     g.decision = null;
@@ -29061,7 +29170,6 @@ export function executeSpecialKaramaIntent(
     );
   } else if (intent.kind === 'guildHomeworld') {
     const shipper = getPlayer(g, intent.target);
-    discard(g, p, card.id);
     p.specialKaramaUsed = true;
     if (g.pendingHomeworldShipment?.guildNexusEvent) finishGuildCunningShipment(g,shipper.id,'homeworld',g.pendingHomeworldShipment,'stopped');
     shipper.shipped = true;
@@ -29072,7 +29180,6 @@ export function executeSpecialKaramaIntent(
     log(g, `${p.name} used special Karama to stop ${shipper.name}’s interplanetary shipment. No forces arrive or spice is paid; their shipment is used and movement remains available.`);
   } else if (intent.kind === 'guild') {
     const shipper = getPlayer(g, intent.target);
-    discard(g, p, card.id);
     p.specialKaramaUsed = true;
     if (g.pendingShipment?.source === 'ambassador') {
       currentGuildAmbassador(g, g.pendingShipment.ambassadorEvent);
@@ -29119,10 +29226,10 @@ export function executeSpecialKaramaIntent(
     techIncome(g, 'axlotl', p);
     discard(g, p, card.id);
     p.specialKaramaUsed = true;
+    stageSpecialKaramaCost(g, intent, card, true);
   } else if (intent.kind === 'harkonnen') {
     const target = getPlayer(g, intent.target),
       count = intent.amount;
-    discard(g, p, card.id);
     p.specialKaramaUsed = true;
     const taken = shuffle(target.hand).slice(0, count);
     target.hand = target.hand.filter((c) => !taken.some((t) => t.id === c.id));

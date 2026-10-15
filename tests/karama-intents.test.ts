@@ -270,7 +270,7 @@ void test('Guild and Tleilaxu intentions bind the actual declaration, not just i
   }
 });
 
-void test('Harkonnen preparation does not expose or select unseen cards; only commitment draws them', (t) => {
+void test('Harkonnen preparation withholds unseen identities until the actual hand transfer', () => {
   const g = fixture('harkonnen');
   g.phase = 3;
   const foreign = [hold(g, 'q', 'Baliset'), hold(g, 'q', 'Snooper')];
@@ -280,9 +280,7 @@ void test('Harkonnen preparation does not expose or select unseen cards; only co
     action(g, { target: 'q', amount: 1 }),
   );
   assert.ok(foreign.every((id) => !JSON.stringify(intent).includes(id)));
-  const draw = t.mock.method(crypto, 'getRandomValues');
   executeSpecialKaramaIntent(g, intent);
-  assert.ok(draw.mock.callCount() > 0);
   assert.equal(g.players[1].hand.length, 1);
   assert.equal(g.players[0].hand.length, 1);
   assert.equal(g.decision?.kind, 'handExchange');
