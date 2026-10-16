@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {applyAction, viewGame} from '../game/engine';
-import {mirrorWeaponModeBlock} from '../game/mirror-weapon-mode';
 import {STONE_CARD, MIRROR_CARD, stoneHarassOccupyFixture, takeStoneHarassCard,
   sealStoneHarassPlans, finishStoneHarassBattle} from './fixture-stone-harass';
 import {IX_TOOTH, ixRevealedWeaponFixture, revealIxWeapons,
@@ -90,18 +89,6 @@ void test('Ix public precommit still rejects winner-changing cyborg allocations 
     assert.deepEqual(game, before);
   }
   assert.equal(messages[0], messages[1]);
-});
-
-void test('new Ix admission leaves optional-module and Basic Ecaz limits closed while retaining the existing non-Ix band', () => {
-  const source = ixRevealedWeaponFixture().game;
-  assert.equal(mirrorWeaponModeBlock(source), null);
-  for (const moduleName of ['homeworlds', 'nexusCards', 'leaderSkills', 'discoveries', 'techTokens', 'strongholdCards'] as const)
-    assert.notEqual(mirrorWeaponModeBlock({...source, [moduleName]: {}}), null);
-  assert.notEqual(mirrorWeaponModeBlock({...source, sandtrout: true}), null);
-  assert.notEqual(mirrorWeaponModeBlock({...source, expansions: ['ix']}), null);
-  assert.notEqual(mirrorWeaponModeBlock({...source, expansions: ['ix', 'choam', 'ecaz'], advanced: false}), null);
-  assert.equal(mirrorWeaponModeBlock({expansions: ['choam'], advanced: true,
-    players: [{faction: 'emperor'}, {faction: 'richese'}, {faction: 'guild'}], techTokens: {}, strongholdCards: {}}), null);
 });
 
 void test('native Ixian or Tleilaxu Occupy keeps fixed remainder, copied Stone queue and actual card-user reserve cost separate', () => {

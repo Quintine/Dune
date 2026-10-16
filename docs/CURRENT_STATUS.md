@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Native Stone/Mirror with phase modules — 16 October.** Selected Ix/CHOAM
+retains original Tech/Advanced Strongholds in ordinary47 or independent50
+setups; mixed E3 with these modules and Homeworlds/Skills/Nexus/Discovery/
+Sandtrout remain guarded. Keep public allocation safety and the existing
+provisional Stone-before-Tooth, printed copy-first and physical retention.
+Genuine cache acquisition, paid marker shipment, earned Habbanya and next-turn
+typed attack precede each new battle; no force/wallet/owner/phase is assigned.
+Two actual mobile journeys/20 actions reach Collection with native typed losses,
+one reserve fee and physical Stone/Mirror retention. Habbanya alone decides
+the Advanced3-versus3 physical tie; without it, +2 R cannot save the same game.
+Four policies complete32 original47/independent50 programmes,870 validated
+candidates and256 continuations. All take a naturally held Traitor; normal
+physical results are separate Node/UI proof. Related18-file union passes115/115;
+final three rule cases also pass after fixture decision narrowing. Types/lint,
+build and actual prototype help pass, with existing build warnings. No
+complete-mode, calibration or deployed claim.
+
 **Independent cards with original phase modules — 16 October.** Fresh clean
 classic/selected Ix/CHOAM profiles retain original unused Tech3–6 Basic/Advanced
 and/or Strongholds2–6 Advanced, with independent cards before genuine setup.

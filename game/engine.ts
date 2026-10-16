@@ -21143,7 +21143,7 @@ function stonePublicPools(
 function stoneTimingBlock(g: Game): string | null {
   if (!g.expansions.includes('ix')) return null;
   return mirrorWeaponModeBlock(g)
-    ? 'Stone Burner with Ix needs the clean selected CHOAM/Ix profile without combined optional modules; the public allocation guard still applies.'
+    ? 'Stone Burner with Ix needs a supported selected CHOAM/Ix family and module profile; the public allocation guard still applies.'
     : null;
 }
 function stoneOccupyContext(g: Game): StoneBurnerContext | undefined {

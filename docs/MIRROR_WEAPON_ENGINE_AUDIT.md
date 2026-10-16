@@ -4,6 +4,47 @@ Audited 6 September 2026 as a proposed contract. The 28 September bounded runtim
 
 **28 September ruling and runtime:** the user selected ordinary winner retention for the physical Mirror even when its copy activates Tooth or Artillery. This is an explicit product interpretation, not a located GF9 clarification. `game/effective-weapons.ts` keeps physical identity apart from copied attacks; the engine now connects copied Tooth/Stone choices, Stone comparison, custody, battle controls and legal AI in the bounded configuration.
 
+## Original phase-module composition — 16 October 2026
+
+Selected Ix/CHOAM now preserves original Tech3+ and/or Advanced Strongholds2+
+for original Stone and physical Mirror, in ordinary47 or independently selected
+50-card setups with the separate ten-card cache. Reuse the existing public
+physical-allocation guard, provisional original Stone-before-Tooth, printed
+copy-first and user-selected winning physical retention. This closes a profile
+gap, not a new publisher priority or a reason to inspect a hidden plan.
+
+Keep Homeworlds, Nexus, Skills, Discovery, Sandtrout and mixed E3 with these
+phase modules guarded. Existing non-Ix bands and public/played-save gates stay.
+Original setup, first-Storm Tech, delayed income and actual end-Mentat custody
+remain; no module owner, force, wallet, phase or history is assigned.
+
+The genuine programme acquires Stone through its original unbid-cache producer,
+pays a concealed marker shipment, earns Habbanya at end-Mentat, then receives a
+real next-turn typed Ixian attack. Legal opening dials3+3 keep Ix before Richese;
+the later native Storm Deck remains original. Tooth/Mirror/Reinforcements and
+the acquired Stone transfer for the Mirror case are explicit conserved physical
+staging, not a claimed natural card trade.
+
+Normal Node/UI outcomes compare4 versus3 in Basic and an earned3-versus3
+Advanced tie. Without the held Habbanya in a separate genuine Tech-only game,
+the same tie loses despite +2 Reinforcements. The original fee still pays once:
+Richese reserves12/Tanks4 or5 with R, versus15/Tanks1 or2 in original47.
+Ix loses three actual counters including one cyborg; original HMS6/elite3 stays.
+Winning Stone/Mirror stays physical, both selected leaders die once in kill
+programmes, and original Tech reward/Collection continue. Strongholds-only
+original47 Mirror also reaches Collection without creating Tech.
+
+Two actual390px journeys/20 actions complete ordinary Stone-before-Tooth and
+earned-Habbanya copied Stone, independent choices, Traitor declines and owner
+retention into Collection. No horizontal overflow or browser app error observed.
+Four policies complete32 programmes/870 validated candidates/256 continuations
+across original47/independent50 and both modes. All naturally use a held Traitor;
+normal physical results are separate human/Node evidence. No Tleilaxu/Face Dance,
+new elite-revival, complete mode, strategy/calibration or deployed proof is claimed.
+Frozen related18-file union passes115/115; final three cases pass after fixture
+decision narrowing. Types/lint, build and actual prototype help pass, with
+existing Node deprecation, chunk-size and dynamic-route classification warnings.
+
 ## Clean selected Ix composition — 16 October 2026
 
 Clean CHOAM/Ix profiles now admit original Stone and physical Mirror with
@@ -24,9 +65,9 @@ copy-first is separately printed on its physical face and remains unchanged.
 The public profile and physical allocation guards never inspect an opposing
 hand or sealed plan. Winner-changing typed allocation remains blocked, even
 when the actual hidden plan would happen to make it finishable. New clean-Ix
-admission excludes Homeworlds, Nexus, Leader Skills, Discoveries, active
-Sandtrout, Tech Tokens and Stronghold Cards. The existing non-Ix Tech/Stronghold
-band is intentionally unchanged. Other combinations remain separate.
+admission excludes Homeworlds, Nexus, Leader Skills, Discoveries and active
+Sandtrout. Original Tech/Advanced Strongholds use the phase-module composition
+above; mixed E3 with those modules remains guarded. Other bands stay separate.
 
 Physical Mirror retention still follows the user's28 September interpretation;
 the original Tooth/Artillery retain their actual mandatory-discard rules.

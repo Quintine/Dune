@@ -24,8 +24,8 @@ export function mirrorWeaponModeBlock(g: {
       (g.expansions.includes('ecaz') && g.advanced !== true) ||
       g.players.some((p) => !supported.has(p.faction)))
     return 'Mirror Weapon needs selected CHOAM/Richese with supported native factions; Ecaz/Moritani combinations require Advanced.';
-  if (g.expansions.includes('ix') && (g.techTokens || g.strongholdCards))
-    return 'Ix-deck Stone/Mirror with Tech Tokens or Stronghold Cards remains outside this clean profile.';
+  if (g.expansions.includes('ix') && g.expansions.includes('ecaz') && (g.techTokens || g.strongholdCards))
+    return 'Mixed E3 Stone/Mirror with Tech Tokens or Stronghold Cards remains outside this profile.';
   if (g.homeworlds || g.nexusCards || g.leaderSkills || g.discoveries || g.sandtrout)
     return 'Mirror Weapon with combined optional modules is still being integrated.';
   return null;

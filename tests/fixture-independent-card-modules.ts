@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {
-  applyAction, createGame, initializeEcazTreacheryGameForAudit, joinGame, newPlayer,
-  type Action, type Game,
+  applyAction, createGame, initializeEcazTreacheryGameForAudit, initializeFactionExpansionsGameForAudit,
+  initializeStrongholdFactionsGameForAudit, joinGame, newPlayer, type Action, type Game,
 } from '../game/engine';
 import type { FactionId } from '../game/catalog';
 import { createTechTokens } from '../game/tech-tokens';
@@ -15,6 +15,8 @@ export type IndependentCardModulesOptions = {
   expansions?: Game['expansions'];
   tech?: boolean;
   strongholds?: boolean;
+  /** False keeps the original native deck for revealed-card comparisons. */
+  independent?: boolean;
 };
 
 /** Select original modules and independent cards before the undealt native setup.
@@ -40,7 +42,10 @@ export function createIndependentCardModulesFixture(options: IndependentCardModu
     new Uint8Array(array.buffer, array.byteOffset, array.byteLength).fill(255);
     return array;
   };
-  try { game = initializeEcazTreacheryGameForAudit(game); }
+  try {
+    game = options.independent !== false ? initializeEcazTreacheryGameForAudit(game) :
+      options.strongholds ? initializeStrongholdFactionsGameForAudit(game) : initializeFactionExpansionsGameForAudit(game);
+  }
   finally {
     if (descriptor) Object.defineProperty(crypto, 'getRandomValues', descriptor);
     else Reflect.deleteProperty(crypto, 'getRandomValues');

@@ -60,7 +60,9 @@ See the [exact profile and source distinction](MIRROR_WEAPON_ENGINE_AUDIT.md#cle
 Public precommit still quantifies over every feasible opposing force/dial/
 support possibility, never a hidden already-sealed plan. Original typed force,
 support, death, bounty, substitution and retention paths remain native.
-New Ix Tech/Stronghold and other combined-module bands remain guarded.
+Original selected Ix/CHOAM Tech and Advanced Strongholds now follow the
+[genuine phase-module composition](MIRROR_WEAPON_ENGINE_AUDIT.md#original-phase-module-composition--16-october-2026).
+Public typed allocation, mixed E3 phase-module and other overlay guards stay.
 
 ## Primary evidence and exact effect
 

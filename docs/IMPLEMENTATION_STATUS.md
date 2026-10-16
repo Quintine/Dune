@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 16 October 2026 — Native Stone/Mirror with original phase modules
+
+Genuine cache/earned-Habbanya programmes reproduced the blanket Ix Tech/
+Stronghold rejection before a plan changed. Extend only selected Ix/CHOAM;
+retain mixed E3 plus these modules and existing Homeworld/Nexus/Skills/
+Discovery/Sandtrout guards. No optional module is retrofitted or public start
+opened. Existing public typed allocation and original/uncopied/copy ordering
+remain: provisional original Stone-first, printed copy-first and user-selected
+winning physical retention, not a new priority ruling.
+
+New programme uses genuine original47 or independent50 setup, native HMS,
+original unbid-cache acquisition, paid marker shipment, actual end-Mentat
+Habbanya and a paid next-turn typed attack. Only physical card positioning is
+explicit conserved staging. Real opening3+3 dials fix Ix-before-Richese order;
+the native later Storm Deck remains original. No board, wallet, module owner,
+phase or history assignments. Shared setup helper selects the original native
+initializer when independent cards are absent, never a flag removal after setup.
+
+Three behavioral cases cover original Stone-before-Tooth, independent copied/
+original choices and retention, and earned-Habbanya versus genuine Tech-only
+counterfactual. Remove the obsolete blanket module-profile table rather than
+re-pinning it. Public winner-changing allocation rejection remains exercised.
+
+Two actual390px journeys/20 actions reach Collection. Original Basic Stone
+compares4 against3, pays R once into reserves12/Tanks4, keeps physical Stone
+and bounty6/spice10. Advanced copied Stone ignores first, original independently
+kills; actual Habbanya wins3-versus3, reserves12/Tanks5/spice8 and physical Mirror
+retained. Both native selected leaders die once, Ix loses three including one
+cyborg, HMS6/elite3 stays, original winner Tech and phase opening finish.
+Browser app-error query empty; no horizontal overflow. Owned host/tab/scaffolds
+removed; evidence is under `/tmp/dune-native-stone-modules-*-proof.json`.
+
+Original47 programmes retain15 reserves/Tanks1 or2 without inventing an R fee.
+Strongholds-only original47 Mirror also finishes without Tech. Four policies
+complete32 programmes/870 validated candidates/256 continuations. Every policy
+uses its naturally held Traitor; normal physical results are separate Node/UI
+evidence. No Tleilaxu/Face Dance route, complete mode, strategy/calibration,
+broader assurance or deployed acceptance is claimed.
+Related18-file union passes115/115; final three physical rule cases also pass
+after adding real decision discriminants for TypeScript and removing redundant
+fixture assertions. Types/lint, build and actual prototype help pass. Existing
+module-register deprecation, large-chunk and dynamic-route warnings remain.
+
 ## 16 October 2026 — Independent cards with original phase modules
 
 Original valid three-seat native ready lobbies rejected independent cards plus

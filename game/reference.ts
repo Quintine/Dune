@@ -1123,11 +1123,11 @@ export const RULE_TOPICS: RuleTopic[] = [
     steps: [
       'Any faction holding canonical Stone Burner may commit it as a Weapon / Special. It is a named special weapon for Voice, not a poison or projectile weapon. Prescience reveals its actual card identity while other plan elements stay private.',
       'After both plans reveal, choose to kill both leaders or ignore the strength of leaders who otherwise survive. Neither leader strength nor Kwisatz Haderach strength determines this battle. The choice affects deaths and bounty, not which undialed-force comparison is used. Ignoring strength supplies no protection against another weapon.',
-      'Compare the number of physical force tokens not dialed into battle. The aggressor wins a tie. Dialed losses and spice support still follow their normal rules; elite strength is not an extra physical token.',
+      'Compare the number of physical force tokens not dialed into battle. The aggressor wins a tie unless the actual held Habbanya Ridge Sietch advantage decides it. Dialed losses and spice support still follow their normal rules; elite strength is not an extra physical token.',
       'With Harass & Withdraw, this prototype provisionally compares undialed tokens remaining after successful withdrawal. An opposing successful Traitor cancels the return and decides the outcome instead. In Occupy, only the card user’s pool returns; original fixed Ecaz commitment and the other ally’s undialed counters remain. This timing is an explicit implementation interpretation, not a publisher ruling.',
       'In the existing native Advanced Occupy prototype, Reinforcements still pays its original own-reserve cost with same-plan, opposing or Mirror-copied Stone. Its +2 normal-score bonus adds no physical undialed tokens, dial, support or on-board casualties. Original mode choices, Traitor precedence and physical Stone/Mirror retention remain unchanged; other profile/module boundaries stay.',
       'The plan editor checks dial/support against every public opposing force possibility, never a hidden plan or No-Field value. Winner-changing physical allocations remain guarded. Clean selected CHOAM/Ix profiles now reuse the existing provisional original Stone-first, then uncopied Tooth order; Mirror copies still choose before their originals as printed. The earlier priority question remains unanswered.',
-      'Clean Ix admission excludes Homeworlds, Nexus, Leader Skills, Discoveries, active Sandtrout, Tech Tokens and Stronghold Cards. Native Ecaz/Moritani combinations remain Advanced-only. Other non-Ix profile behavior and full expansion/public-start gates are unchanged.',
+      'Clean selected Ix/CHOAM retains original Tech3+ and/or Advanced Strongholds2+, using genuine setup, delayed income and earned end-Mentat custody. Original47 and independent50 decks keep the separate Richese cache. Homeworlds, Nexus, Skills, Discoveries, active Sandtrout and mixed E3 with these phase modules stay guarded. Native Ecaz/Moritani combinations remain Advanced-only; other non-Ix behavior and public starts are unchanged.',
       'Traitor and Lasgun–shield explosion precedence remain intact. Ordinary bounty applies unless another effect suppresses it. Stone Burner uses the general winning battle-card retention rule: a winner may keep it, and a losing played card is discarded. Normal Moritani ally retention may apply.',
       'The post-reveal choice is bound to the current battle event and cannot be repeated after refresh. Review both revealed plans and select one mode; there is no separate victim or death confirmation.',
     ],
@@ -1166,7 +1166,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Pure, engine, independent review, bot and recovery scenarios cover the supported slice; browser and complete expansion-game certification are separate.',
+          'Earlier pure/engine/review/recovery evidence remains separate. Genuine native cache acquisition, paid marker/typed attack and earned Habbanya now cover physical fees/losses and original/copied retention. Two mobile journeys/20 actions reach Collection;32 legal policy programmes validate870 candidates/256 continuations. All32 naturally call a held Traitor; normal physical outcomes are separate Node/UI proof, not complete modes or calibration.',
         evidence: [
           'tests/stone-burner.test.ts',
           'tests/stone-burner-engine.test.ts',
@@ -1179,6 +1179,9 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/stone-reinforcements.test.ts',
           'tests/ix-revealed-weapons.test.ts',
           'tests/fixture-ix-revealed-weapons.ts',
+          'tests/native-stone-modules.test.ts',
+          'tests/fixture-native-stone-modules.ts',
+          'tests/fixture-independent-card-modules.ts',
         ],
       },
     ],
