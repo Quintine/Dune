@@ -3,9 +3,10 @@
 The separate Ecaz Treachery Cards variant shuffles one physical Reinforcements
 card independently of choosing the Ecaz faction. Its bounded handler supports
 Basic/Advanced classic-faction tables, clean selected Ix and/or CHOAM native/base
-rosters, and clean Ecaz/Moritani expansion tables. Fresh clean classic Homeworlds
-use native sources below. Original Tech/Advanced Strongholds separately use the
-[phase-module contract](ECAZ_TREACHERY_RULES.md#original-phase-module-composition--16-october-2026).
+rosters, and clean Ecaz/Moritani expansion tables. Classic and selected E1/E2
+Worlds use native sources below; native selected-family Worlds add no other
+modules. Classic base36 separately uses the
+[phase-module contract](ECAZ_TREACHERY_RULES.md#classic-world-phase-module-composition--16-october-2026).
 The selected Advanced Occupy profile separately composes co-present armies.
 The holder may commit it in either Battle Plan card slot. It is neither a weapon
 nor a defense: Prescience of a category receives **None**, while the physical
@@ -113,6 +114,14 @@ reserve-cap, token identity/history, support and fixed/variable losses stay.
 That earlier checkpoint did not admit Basic Richese. The clean selected-family
 composition above now admits it without changing this funding order.
 
+Selected native Worlds now compose the same funding order. A real marker3/
+reserves5 owner preview correctly left2 and blocked, but the newly reachable
+native-source API path accepted its first R plan. It now rejects unchanged
+before source quotation and still permits H-only. Richese's ordinary primary
+World pool debits at the actual reveal; the three-counter native fee remains
+separate. See the [native World contract](ECAZ_TREACHERY_RULES.md#native-selected-family-world-composition--17-october-2026).
+
+
 
 ### Scoped proof
 
@@ -198,7 +207,8 @@ and all three independent physical cards (base33+3). Reinforcements may be
 used on Arrakis, a foreign World **or an own World**; it does not inherit
 Harass's printed own-World ban. Original Tech/Advanced Strongholds now follow
 the [classic World phase contract](ECAZ_TREACHERY_RULES.md#classic-world-phase-module-composition--16-october-2026).
-Expansion rosters, other overlays, public starts and save conversion stay gated.
+Selected native E1/E2 Worlds now use the [separate no-phase-module contract](ECAZ_TREACHERY_RULES.md#native-selected-family-world-composition--17-october-2026);
+other rosters/overlays, public starts and save conversion remain gated.
 
 ### Sources, physical pool and original quote
 

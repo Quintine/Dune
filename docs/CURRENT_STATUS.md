@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 16 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 17 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -28,6 +28,27 @@ This is not complete-mode acceptance: exceptional custody, timing variants,
 optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
+
+**Native E1/E2 World independent cards — 17 October.** Clean selected Ix/CHOAM
+native/base Basic/Advanced Worlds retain original38/50 setup without phase
+modules; classic base36 Tech/Strongholds stays separate. Shared roster checks
+and renamed World profile have no alias. No E3, Skills, Nexus, Discovery,
+Sandtrout or other preview/public-start/played-save gate opens.
+Ten native setups and genuine fee/aftercare, marker-budget and revival programmes
+preserve actual stock. Marker3/reserves5 preview/API now agree on rejection
+before sealing; H-only remains legal and no early marker reveal is introduced.
+Five390px journeys/42 actions complete native H fallback,1N2E fee before7N return,
+one actual board-Cyborg exchange/native Face Dance, unlimited11-force revival
+and real native Auditor inspection. Other native queues remain original.
+Four policies finish28 battle programmes/112 continuations/2230 R-or-H proposals,
+24 marker programmes/120 continuations/3050 proposals and40 useful native Revival
+programmes/300 actions. Conserved card/identity staging is explicit. Parent
+consolidated marker slots and removed fixture/text echoes. Frozen21-file union
+passes251/251; types/lint, build and actual prototype help pass. The direct
+marker3/reserves5 runtime probe confirms unchanged rejection and legal H-only.
+Test cleanup removes transient-window/starting-wallet pins and observes audit
+payment before unrelated Collection income. Existing build warnings remain.
+Full modes, calibration and deployed proof stay open.
 
 **Classic World cards with phase modules — 16 October.** Original independent36
 Basic/Advanced Homeworlds now retains unused Tech3+ and Advanced Strongholds2+.

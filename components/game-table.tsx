@@ -5396,7 +5396,7 @@ export function GameTable({
                             <HarassWithdrawGuide preview={g.battle.harassWithdraw} state={harassControl} />
                             {g.homeworlds && g.battle.harassWithdraw && (
                               <p className="notice">
-                                Classic Homeworld timing: actual undialed counters
+                                Homeworld timing: actual undialed counters
                                 return to your native reserve Homeworlds, never to
                                 the Tanks. In Advanced, Emperor normal forces return
                                 to Kaitain and Sardaukar to Salusa; Basic retains

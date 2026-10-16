@@ -1,5 +1,67 @@
 # Dune implementation status
 
+## 17 October 2026 — Selected native E1/E2 World independent cards
+
+Actual ready Ix/Tleilaxu/CHOAM/Richese World lobbies rejected the classic-only
+gate before setup. Admit only clean selected Ix/CHOAM native/base2–6 Basic/
+Advanced, original38/50 plus separate Richese cache when seated, without other
+modules. Original HMS/Cyborg7, Face Dancers, Auditor and marker custody remain.
+Classic base36 World Tech/Strongholds stays separate; no E3, Skills, Nexus,
+Discovery/Sandtrout/other preview, normal start or played-save conversion opens.
+
+Share one selected-family roster rule; rename the private World profile and
+migrate every caller without an alias. Existing native typed sources, own-World
+fee/dial disjointness, traits/face, native-only declarations, aftercare, current
+rates and unlimited allowances remain. Materialization-before-fee-before-H,
+normal-first/all-outcome payment and separate-request rate timing are inherited
+provisional policies, not new publisher rulings.
+
+Parent reproduced a real native World marker3/reserves5: preview blocked2
+remaining, but the raw first R plan sealed. Central cost validation now rejects
+that exact unchanged position before source quoting and permits H-only.
+Richese ordinary primary reserves debit only at real reveal. No early force/
+marker/history move or saved field; no future H or allied pool can fund the fee.
+Artifacts preserve exact before/after source position and result.
+
+Three disjoint contributors supplied genuine native battle, marker and Revival
+programmes. Parent reviewed all, consolidated marker slot matrices, removed
+fixture/receipt/text echoes and compared physical card IDs rather than wording.
+Native current-rate/prices, typed/unlimited/cap cases and real aftercare remain
+observable; no bank, army, World face, phase, owner or receipt is assigned.
+Ten setup, seven battle/aftercare, six marker and ten Revival Node programmes
+exercise the changed paths. All card/identity/closed-deck staging is explicit.
+
+Five390px journeys/42 actions: short native marker H preserves unused R and ends
+primary3/Tanks2; nine paid Suboids pay1N2E before7N return, ending native7N2E/
+reserves9/Tanks5 including2E. One board Cyborg alone is eligible for exchange
+despite three Cyborgs in Tanks; recovery1/Face Dance returns8N1E to native Ix,
+ending8N2E/reserves10/Tanks4 including2E and one dead winning leader.
+Native Tleilaxu returns11: six free, invoice5, separate own-income1, reserves11/
+Tanks9/spice1, retaining unlimited instead of a seven cap. Original deployment,
+Guild timing and phase openings remain. Native CHOAM pays its normal3-reserve
+fee, retains17; original Auditor response/payment/inspection/market finishes
+with the actual unused Chaumurky still owned by Guild.
+
+A wait for a transient Karama response timed out after native UI automatically
+advanced to Face Dance. Restore390px before further interaction; no accepted
+exchange was replayed. All accepted controls/final surfaces are390px, no root
+overflow/app error. Owned host/tab/scaffolds removed. Artifacts live under
+`/tmp/dune-native-world-*-proof.json`; actual rooms/DBs were never touched.
+
+Four policies finish28 battle programmes/2230 R-or-H proposals/112 continuations,
+24 marker programmes/3050 proposals/120 continuations and40 useful native
+Revival programmes/300 actions. Policy-only useful R holders are explicit
+conserved-card staging. This is not full modes/strategy/calibration, broader
+assurance or deployed evidence.
+Frozen related21-file union passes251/251. Types/lint, build and actual prototype
+help pass; existing deprecation, chunk-size and route-classification warnings
+remain. The direct original marker3/reserves5 smoke again observes unchanged
+first-seal rejection plus legal H-only. Remove contributed transient-window,
+shipment-price and starting-wallet pins; inspect Auditor payment before later
+Collection income, retaining cancellation, inspection and physical aftercare
+assertions. No HTTP/database boundary or broad assurance campaign was run.
+
+
 ## 16 October 2026 — Classic World independent cards with phase modules
 
 Real fresh classic World+Tech/Stronghold lobbies rejected the blanket profile

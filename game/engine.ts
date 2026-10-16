@@ -10697,31 +10697,39 @@ export function initializeSpiceBankerIncomeGameForAudit(state: Game): Game {
   if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
 }
-function classicEcazHomeworldProfile(g: Game): boolean {
-  return !!g.homeworlds && g.ecazTreachery === true && g.expansions.length === 0 &&
+/** Independent cards keep the actual selected base/E1/E2 physical families. */
+function independentCardRoster(g: Game): boolean {
+  if (g.expansions.length > 2 ||
+      (g.expansions.length === 2 && g.expansions[0] === g.expansions[1]) ||
+      g.expansions.some(expansion => expansion !== 'ix' && expansion !== 'choam')) return false;
+  return g.players.every(player => {
+    const family = faction(player.faction).expansion;
+    return family === 'base' || ((family === 'ix' || family === 'choam') && g.expansions.includes(family));
+  });
+}
+function ecazHomeworldProfile(g: Game): boolean {
+  return !!g.homeworlds && g.ecazTreachery === true && independentCardRoster(g) &&
     g.players.length >= 2 && g.players.length <= 6 &&
-    g.players.every(p => CLASSIC_FACTIONS[p.faction]) &&
     !g.nexusCards && !g.leaderSkills &&
     ((!g.techTokens && !g.strongholdCards) || independentCardModulesProfile(g)) &&
-    !g.discoveryEnabled && !g.discoveries && !g.discoveryStash && !g.greatMaker && !g.sandtrout;
+    !g.discoveryEnabled && !g.discoveries && !g.discoveryStash && !g.greatMaker && !g.sandtrout &&
+    !g.ecazOccupyPreview && !g.semutaPreview && !g.kullPreview && !g.nexusKullPreview &&
+    !g.richeseBetrayalPreview && !g.guildBetrayalPreview && !g.moritaniAssassinatePreview &&
+    !g.spiceBankerIncomePreview && !g.nexusIxianReplacementPreview &&
+    !g.nexusIxianBetrayalPreview && !g.nexusHarkonnenBetrayalPreview;
 }
 /** Independent cards compose original phase modules, not unrelated previews. */
 function independentCardModulesProfile(g: Game): boolean {
-  if (!g.ecazTreachery || (!g.techTokens && !g.strongholdCards) ||
+  if (!g.ecazTreachery || (!g.techTokens && !g.strongholdCards) || !independentCardRoster(g) ||
       g.players.length < (g.techTokens ? 3 : 2) || g.players.length > 6 ||
-      (g.strongholdCards && !g.advanced) || g.expansions.length > 2 ||
-      (g.expansions.length === 2 && g.expansions[0] === g.expansions[1]) ||
-      g.expansions.some(expansion => expansion !== 'ix' && expansion !== 'choam') ||
+      (g.strongholdCards && !g.advanced) ||
       (g.homeworlds && g.expansions.length !== 0) || g.nexusCards || g.leaderSkills ||
       g.discoveryEnabled || g.discoveries || g.discoveryStash || g.greatMaker || g.sandtrout ||
       g.ecazOccupyPreview || g.semutaPreview || g.kullPreview || g.nexusKullPreview ||
       g.richeseBetrayalPreview || g.guildBetrayalPreview || g.moritaniAssassinatePreview ||
       g.spiceBankerIncomePreview || g.nexusIxianReplacementPreview ||
       g.nexusIxianBetrayalPreview || g.nexusHarkonnenBetrayalPreview) return false;
-  return g.players.every(player => {
-    const family = faction(player.faction).expansion;
-    return family === 'base' || ((family === 'ix' || family === 'choam') && g.expansions.includes(family));
-  });
+  return true;
 }
 /** Gated development setup for the independent three-card Ecaz variant. */
 export function initializeEcazTreacheryGameForAudit(state: Game): Game {
@@ -10729,8 +10737,8 @@ export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   const g = structuredClone(state);
   g.ecazTreachery = true;
   const homeworlds = !!g.homeworlds;
-  requireRule(!homeworlds || classicEcazHomeworldProfile(g),
-    'Independent cards with Homeworlds require a fresh classic roster with only supported original Tech or Advanced Strongholds.');
+  requireRule(!homeworlds || ecazHomeworldProfile(g),
+    'Independent cards with Homeworlds need a fresh classic or selected Ix/CHOAM roster; phase modules remain classic-only.');
   return initializeSetupGameForAudit(g, homeworlds, false, false, false, false, false, true, true);
 }
 function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false, factions = false, ecazTreachery = false, strongholdFactions = false): Game {
@@ -13777,7 +13785,7 @@ function ecazTreacheryIntegrity(g: Game) {
 function recruitsModeSupported(g: Game) {
   const modules = independentCardModulesProfile(g);
   return (
-    (!g.homeworlds || classicEcazHomeworldProfile(g)) &&
+    (!g.homeworlds || ecazHomeworldProfile(g)) &&
     !g.nexusCards &&
     !g.leaderSkills &&
     (!g.techTokens || modules) &&
@@ -13800,13 +13808,9 @@ function combinedCardBattleBlock(g: Game): string | null {
 }
 function reinforcementsModeSupported(g: Game) {
   const pairedEcaz = g.expansions.length === 1 && g.expansions[0] === 'ecaz';
-  const nativeFamilies = !g.homeworlds && !g.discoveries && !g.discoveryStash && !g.greatMaker &&
+  const nativeFamilies = !g.discoveries && !g.discoveryStash && !g.greatMaker &&
     !g.semutaPreview && !g.kullPreview && !g.ecazOccupyPreview &&
-    g.expansions.length > 0 && g.expansions.every(expansion => expansion === 'ix' || expansion === 'choam') &&
-    g.players.every(player => {
-      const family = faction(player.faction).expansion;
-      return family === 'base' || ((family === 'ix' || family === 'choam') && g.expansions.includes(family));
-    });
+    g.expansions.length > 0 && independentCardRoster(g);
   return !!g.ecazTreachery && recruitsModeSupported(g) && !g.sandtrout &&
     (nativeFamilies || (g.ecazOccupyPreview === true && ecazOccupyCompositionSupported(g)) ||
       ((g.expansions.length === 0 || pairedEcaz) && g.players.every(player => {
@@ -13827,12 +13831,15 @@ function currentReinforcementsCost(g: Game, p: Player,
   requireRule(selections === undefined || g.homeworlds,
     'Native Reinforcements sources require the original Homeworld module.');
   try {
+    const materializes = prospectiveNoFieldForces(p, g.battle?.territory ?? '');
     if (g.homeworlds) {
       requireRule(g.homeworlds.custody, 'Reinforcements needs its original native reserve custody.');
+      // Richese materializes ordinary primary-World reserves before this fee.
+      if (materializes)
+        quoteReinforcements(p.reserves - materializes - (p.elites?.reserves ?? 0), p.elites?.reserves ?? 0);
       return homeworldRule(() => quoteReinforcementsHomeworldCost(
         homeworldContext(g), g.homeworlds!.custody!, p.id, selections));
     }
-    const materializes = prospectiveNoFieldForces(p, g.battle?.territory ?? '');
     return quoteReinforcements(p.reserves - materializes - (p.elites?.reserves ?? 0), p.elites?.reserves ?? 0);
   } catch (error) {
     if (error instanceof ReinforcementsError) throw new RuleError(error.message);

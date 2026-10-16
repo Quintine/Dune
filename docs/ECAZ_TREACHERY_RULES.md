@@ -222,3 +222,39 @@ Revivals/156 actions and24 battle/native-aftercare programmes/48 continuations,
 validating7609 R-or-H proposals. Useful policy card holders are explicit conserved
 staging. These are not complete modes, calibration, broad assurance or deployment.
 
+## Native selected-family World composition — 17 October 2026
+
+Clean selected Ix and/or CHOAM native/base Basic/Advanced2–6 Worlds now compose
+the independent cards before original setup: selected38/50, with Richese's
+ten-card cache separate when present. Original HMS/seven Cyborgs, Face Dancers,
+Auditor, marker identities and native typed custody remain. These selected-family
+Worlds do not add phase modules, Skills, Nexus, Discovery, Sandtrout, E3 or other
+previews; classic base36 World Tech/Strongholds remains its separate profile.
+Public starts and played-game conversion stay gated.
+
+One shared selected-family roster rule replaces duplicate checks. The renamed
+private World profile retains no classic-name alias. Use original current native
+revival rates/bonuses, special-force caps and unlimited Tleilaxu/CHOAM allowance;
+Recruits does not reduce an unlimited allowance to seven. Native/foreign World
+R fees remain normal-first, source-bearing and disjoint from own-World physical
+dials, with original traits/printed face. H remains forbidden on every own World
+and returns actual normal/elite counters through native original custody.
+
+Richese forecasts its own No-Field before R funding, not before physical reveal.
+An actual native marker3/reserves5 position displayed a blocked2-reserve owner
+preview but accepted the raw first plan after profile admission. The central
+native-cost check now rejects the same position unchanged and permits H alone.
+Actual reveal later debits ordinary primary-World reserves once; no early
+counter move, source/marker/history reset or new saved field is introduced.
+Future H returns cannot fund that fee. Existing provisional all-outcome payment,
+current-rate request timing and aftercare/retention interpretations are inherited,
+not new publisher rulings; other card-specific profile guards stay.
+
+Bounded proof: frozen related21-file union251/251, types/lint, build and actual
+prototype help pass. Five390px journeys/42 actions exercise native typed fees,
+board-only Cyborg exchange/Face Dance, marker fallback, unlimited revival and
+Auditor inspection. Direct marker3/reserves5 execution rejects unchanged while
+H-only seals. Four-policy programmes retain useful conserved-card staging,
+not strategy/calibration. Existing build warnings, complete modes and deployed
+acceptance remain open; no saved-game/database assurance campaign was run.
+
