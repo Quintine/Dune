@@ -1,5 +1,50 @@
 # Dune implementation status
 
+## 16 October 2026 — Independent cards with original phase modules
+
+Original valid three-seat native ready lobbies rejected independent cards plus
+Tech, Strongholds or both before setup. Compose only clean classic/selected
+Ix/CHOAM native/base profiles with original unused Tech3–6 Basic/Advanced and/or
+Strongholds2–6 Advanced. Original first-Storm token assignment, phase accrual,
+delayed income and actual end-Mentat card custody remain. No Homeworlds,
+Skills, Nexus, Discovery, mixed E3, other previews, public starts or played-save
+cutover. Existing original/copied Stone profile/allocation guards stay.
+
+One private profile gates original setup and all three card handlers; Harass
+reuses the common mode check instead of maintaining a second module list.
+Printed E3 variant independence supplies combination authority. Existing
+normal-first/all-outcome fee-before-Harass remains explicitly provisional.
+No new state/action, fake owner, wallet, force, phase or history is introduced.
+
+Real paid battles fill Revival Tanks and earn held cards. Original remaining
+Tech randomness is fixed only at first Storm for deterministic Revival proof;
+custody still comes from the original engine. Physical card/identity positioning
+is explicit conserved staging. Consolidated four Revival regressions retain
+economic transitions, removing fixture/DTO/wording assertions; five battle
+regressions retain earned subsidy, typed fee/return, Traitors and Tech rewards.
+
+Five actual390×844 journeys/35 actions reach original continuation: Storm/HMS,
+Arrakeen bank2/personal1, native mixed-fee Tabr, and two doubled-rate Revivals.
+Axlotl holds2 through two free returns, then pays exactly2 at the phase boundary.
+QA-only header wrapping/client keys isolate the harness; no production workaround.
+Final browser error query is empty and all five accepted surfaces have no
+horizontal overflow. Owned tab/host/scaffolds removed; artifacts under
+`/tmp/dune-independent-card-modules-*-proof.json`.
+
+Four policies finish20 battle programmes/52 after-seal continuations and validate
+9564 R-or-H proposals, plus16 useful Recruits programmes/120 actions. Human
+normal outcomes and policy sole/mutual-Traitor outcomes are separate evidence.
+No native Face Dance route, new elite revival, complete mode, strategy,
+calibration or deployed acceptance is claimed. Actual rooms/DBs remain untouched.
+An additional genuine prior-win programme gives the next loser two actual Tech
+tokens; all four policies select one and finish Collection at reserves14/Tanks6
+without replaying fee/return. This is Node continuation proof, not mobile proof.
+Frozen related30-file union passes325/325. Types/lint, build and actual prototype
+help pass. Repair two fixture type errors/remove an unused import; delete the
+incorrect blanket pending-Guild assertion (Basic commits immediately) and replace
+the malformed decisive-Basic setup with an actual without-R loss/with-R victory.
+Existing Node deprecation, large-chunk and dynamic-route build warnings remain.
+
 ## 16 October 2026 — Clean selected-family Reinforcements
 
 Original independent setup supplied the physical card, but plain native

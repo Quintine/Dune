@@ -10704,6 +10704,24 @@ function classicEcazHomeworldProfile(g: Game): boolean {
     !g.nexusCards && !g.leaderSkills && !g.techTokens && !g.strongholdCards &&
     !g.discoveryEnabled && !g.discoveries && !g.discoveryStash && !g.greatMaker && !g.sandtrout;
 }
+/** Independent cards compose original phase modules, not unrelated previews. */
+function independentCardModulesProfile(g: Game): boolean {
+  if (!g.ecazTreachery || (!g.techTokens && !g.strongholdCards) ||
+      g.players.length < (g.techTokens ? 3 : 2) || g.players.length > 6 ||
+      (g.strongholdCards && !g.advanced) || g.expansions.length > 2 ||
+      (g.expansions.length === 2 && g.expansions[0] === g.expansions[1]) ||
+      g.expansions.some(expansion => expansion !== 'ix' && expansion !== 'choam') ||
+      g.homeworlds || g.nexusCards || g.leaderSkills ||
+      g.discoveryEnabled || g.discoveries || g.discoveryStash || g.greatMaker || g.sandtrout ||
+      g.ecazOccupyPreview || g.semutaPreview || g.kullPreview || g.nexusKullPreview ||
+      g.richeseBetrayalPreview || g.guildBetrayalPreview || g.moritaniAssassinatePreview ||
+      g.spiceBankerIncomePreview || g.nexusIxianReplacementPreview ||
+      g.nexusIxianBetrayalPreview || g.nexusHarkonnenBetrayalPreview) return false;
+  return g.players.every(player => {
+    const family = faction(player.faction).expansion;
+    return family === 'base' || ((family === 'ix' || family === 'choam') && g.expansions.includes(family));
+  });
+}
 /** Gated development setup for the independent three-card Ecaz variant. */
 export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   requireRule(!state.ecazTreachery, 'Ecaz Treachery Cards cannot redeal an existing inventory.');
@@ -10736,10 +10754,11 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
     (leaderSkills && (classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) ||
       mixedE3NexusLeaderSkillsProfile(g) || singleE1E2NexusLeaderSkillsProfile(g) || mixedE1E2NexusLeaderSkillsProfile(g) ||
       pairedE3NexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g))));
-  requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules || discoveryComposition) &&
+  const independentModules = ecazTreachery && independentCardModulesProfile(g);
+  requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules || discoveryComposition || independentModules) &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
   'Tech Tokens require a fresh supported three-through-six-seat lobby with unused tokens.');
-  requireRule(!g.strongholdCards || strongholdFactions || ((skillStronghold || homeworldSkills || nexusModules || discoveryComposition) &&
+  requireRule(!g.strongholdCards || strongholdFactions || ((skillStronghold || homeworldSkills || nexusModules || discoveryComposition || independentModules) &&
     JSON.stringify(g.strongholdCards) === JSON.stringify(createStrongholdCards())),
   'Stronghold Cards require a fresh supported Advanced lobby with unused cards.');
   requireRule(
@@ -10750,8 +10769,8 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       (discovery || !g.discoveryEnabled) &&
       (nexus || !g.nexusCards) &&
       (ecazTreachery || !g.ecazTreachery) &&
-      (!g.techTokens || skillTech || nativeTech || nexusModules || discoveryComposition) &&
-      (strongholdFactions || skillStronghold || homeworldSkills || nexusModules || discoveryComposition || !g.strongholdCards) &&
+      (!g.techTokens || skillTech || nativeTech || nexusModules || discoveryComposition || independentModules) &&
+      (strongholdFactions || skillStronghold || homeworldSkills || nexusModules || discoveryComposition || independentModules || !g.strongholdCards) &&
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
         FACTIONS.some(
@@ -13755,12 +13774,13 @@ function ecazTreacheryIntegrity(g: Game) {
   }
 }
 function recruitsModeSupported(g: Game) {
+  const modules = independentCardModulesProfile(g);
   return (
     (!g.homeworlds || classicEcazHomeworldProfile(g)) &&
     !g.nexusCards &&
     !g.leaderSkills &&
-    !g.techTokens &&
-    !g.strongholdCards &&
+    (!g.techTokens || modules) &&
+    (!g.strongholdCards || modules) &&
     !g.discoveryEnabled
   );
 }
@@ -13867,7 +13887,7 @@ function recruitsPlayBlock(g: Game, owner: Player, card: Card): string | null {
   if (!g.ecazTreachery || !ecazTreacheryDefinition(card) || card.id !== RECRUITS_CARD_ID)
     return 'Choose the physical Recruits card from the enabled Ecaz Treachery Cards variant.';
   if (!recruitsModeSupported(g))
-    return 'This Recruits prototype requires a faction-only game or clean classic Homeworlds, without other optional modules.';
+    return 'Recruits requires a supported independent-card profile: faction-only, clean classic Homeworlds, or clean classic/Ix/CHOAM with original Tech and Advanced Strongholds.';
   if (g.status !== 'playing' || g.phase !== 4)
     return 'Play Recruits during Revival.';
   if (g.recruits?.turn === g.turn)
@@ -20762,8 +20782,7 @@ function inspectedPlanMatches(p: Player, field: PlanField, fixed: unknown, candi
 function harassModuleBlock(g: Game): string | null {
   if (!g.ecazTreachery)
     return 'Enable the independent Ecaz Treachery Cards variant before using Harass & Withdraw.';
-  if ((g.homeworlds && !classicEcazHomeworldProfile(g)) ||
-      g.nexusCards || g.leaderSkills || g.techTokens || g.strongholdCards || g.discoveryEnabled)
+  if (!recruitsModeSupported(g))
     return 'Harass & Withdraw with these other optional modules is still being implemented.';
   return combinedCardBattleBlock(g);
 }

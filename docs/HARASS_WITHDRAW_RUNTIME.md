@@ -222,9 +222,10 @@ route warnings remain; no HTTP or database boundary changed.
   after reveal. Unique returns are automatic; previously valid legacy battles
   retain unique-only derivation. See the [allocation contract](HARASS_ALLOCATION.md).
 - Clean classic Homeworlds use the [native reserve-routing contract](#classic-homeworld-reserve-routing--16-october-2026).
-  Other optional modules remain gated, including Nexus, Leader Skills, Tech
-  Tokens, Stronghold Cards and Discoveries; broader World/faction composition
-  and full-mode acceptance stay open.
+  Without Homeworlds, clean classic/selected Ix/CHOAM rosters may separately retain
+  [original Tech3+ and Advanced Strongholds2+](ECAZ_TREACHERY_RULES.md#original-phase-module-composition--16-october-2026).
+  Nexus, Skills, Discoveries, broader World/faction composition and full-mode
+  acceptance remain guarded.
 - Richese card-family configurations now admit Harass under the
   [provisional post-withdrawal policy](#provisional-stone-burner-timing--16-october-2026).
   The ordinary invariant-allocation guard remains. Clean selected Ix follows

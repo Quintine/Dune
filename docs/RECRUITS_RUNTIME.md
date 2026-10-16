@@ -98,8 +98,10 @@ source review. No newly retrieved late-paid ruling is claimed.
 The scope permits activation before returns or after consistently recorded
 free/paid normal returns, once priority windows and transactions finish.
 Unknown legacy usage, later Fremen grants, same-turn replay after recovery
-and other optional modules remain guarded, apart from the clean classic
-Homeworld composition above. These are boundaries, not printed timing rules.
+and other optional modules remain guarded, apart from clean classic Homeworlds
+above or the separate clean classic/Ix/CHOAM
+[Tech/Advanced Stronghold composition](ECAZ_TREACHERY_RULES.md#original-phase-module-composition--16-october-2026).
+These are boundaries, not printed timing rules.
 Already-ready players retain their Revival opportunity while phase four is open.
 
 Atreides doubles two to four, Fremen three to six, and Guild one to two. Native

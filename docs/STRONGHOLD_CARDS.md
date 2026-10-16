@@ -2,6 +2,17 @@
 
 Historical development module checkpoint, 7 September 2026: the six printed effects, public card custody, mobile declaration, support accounting, AI choices and readable faces are integrated. The later user-authorized [classic Advanced preview](ADVANCED_PREVIEW.md) already permits Stronghold Cards; preserve that access. Complete Advanced/expansion release and arbitrary combinations remain gated.
 
+## Independent Treachery composition — 16 October 2026
+
+The fresh independent-card entry retains original unused Advanced Strongholds
+at2–6 seats and optional Tech3–6, with clean classic/selected Ix/CHOAM native/base
+rosters and no Homeworlds. Actual end-Mentat earns ownership; no card is assigned
+by a battle fixture. Earned Arrakeen funds only actual support (bank2/personal1
+for support3); native Ix earns Tabr before a real next-turn attack and mixed
+Reinforcements fee/Harass return. Original token rewards/held effects stay.
+No Stone/Mirror profile guard, other overlay, public start or played-save
+conversion is widened. See the [shared source-bound contract](ECAZ_TREACHERY_RULES.md#original-phase-module-composition--16-october-2026).
+
 ## Semuta composition — 11 October 2026
 
 The fresh `semuta` entry with native Richese, CHOAM and optional Ix decks now

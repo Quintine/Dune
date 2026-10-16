@@ -146,3 +146,48 @@ optional modules remain gated. The [runtime boundary](REINFORCEMENTS_RUNTIME.md)
 and [checkpoint](IMPLEMENTATION_STATUS.md#29-september-2026--reinforcements-in-paired-ecazmoritani-battles)
 record the exact evidence; the 27 September classic-only statement above is
 historical.
+
+## Original phase-module composition — 16 October 2026
+
+The printed shared rule above permits the independent cards with other variants.
+The fresh `ecaz-treachery` entry now retains original unused Tech Tokens at3–6
+Basic/Advanced seats and/or Stronghold Cards at2–6 Advanced seats, with clean
+classic or selected Ix/CHOAM native/base rosters. Both modules requires3–6
+Advanced. Base33, CHOAM35 or Ix/union47 gains exactly three physical cards;
+the original Richese cache remains separate.
+
+Use original setup and native ownership: remaining Tech after first Storm,
+Stronghold Cards only at actual end-Mentat. No owned module receipt, bank spice,
+forces, phase or history is injected. This does not compose Homeworlds, Nexus,
+Skills, Discovery, Sandtrout, mixed E3 or unrelated previews, convert played
+games, or open public starts. Existing Stone/Mirror profile and allocation
+guards are not widened.
+
+Recruits changes current free rates/ordinary allowance, not the original Axlotl
+once-per-phase trigger or delayed income. Eligible actual free revival triggers
+that token once; Harass reserve deposits and the Reinforcements fee are not
+free revival or off-planet shipment. Original Heighliners payment stays at
+Shipment/Movement end, never available as anticipated spending money.
+
+An earned held Stronghold still affects its original holder's actual plan.
+Arrakeen pays up to two actual support from the bank, not two personal spice
+or support for the score-only bonus. Tabr uses the actual opposing dial.
+Reinforcements keeps the existing provisional normal-first/all-outcome fee
+before Harass returns; typed fee and board casualties remain separate.
+Original winner cleanup/Tech reward and native aftercare keep their order.
+These inherited payment/order interpretations do not become publisher rulings.
+
+Accepted runtime evidence and limits are recorded in the
+[current checkpoint](CURRENT_STATUS.md#current-checkpoint-and-work); detailed
+[Revival](RECRUITS_RUNTIME.md), [withdrawal](HARASS_WITHDRAW_RUNTIME.md) and
+[reserve-fee](REINFORCEMENTS_RUNTIME.md) contracts remain applicable.
+
+Bounded local proof: nine new behavioral cases and the frozen related30-file
+union pass325/325; types/lint, build and actual prototype help pass. Five mobile
+journeys/35 actions cover original Storm/HMS, earned Arrakeen bank2/personal1,
+native Tabr fee/return and two doubled-rate Revivals with one delayed Axlotl
+payment. Four policies complete20 battles/52 continuations/9564 R-or-H proposals,
+16 useful Recruits programmes/120 actions, and four additional mandatory
+two-token selections. No Face Dance route, new elite revival, complete mode,
+calibration, broad assurance or deployed acceptance is claimed.
+

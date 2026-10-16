@@ -29,6 +29,28 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Independent cards with original phase modules — 16 October.** Fresh clean
+classic/selected Ix/CHOAM profiles retain original unused Tech3–6 Basic/Advanced
+and/or Strongholds2–6 Advanced, with independent cards before genuine setup.
+Original first-Storm assignment, phase triggers/delayed income and earned
+end-Mentat custody remain. R keeps normal-first/all-outcome fee before Harass;
+returned counters are not free Revival/shipment, and +2 is not supported force.
+No Homeworlds, Skills, Nexus, Discovery, E3 mixture or unrelated overlay is added;
+Stone/Mirror guards, public starts and played-save conversion remain separate.
+
+Genuine battles fill Revival Tanks and earn actual held cards. Five mobile
+journeys/35 actions prove original Storm/HMS setup, bank2/personal1 Arrakeen,
+native mixed-fee Tabr return and two doubled-rate Revivals. Axlotl holds2
+through both free returns, then pays exactly2 at phase end. Four policies
+complete20 battles/52 continuations and9564 validated R-or-H proposals plus16
+useful Recruits programmes/120 actions. No Face Dance or special-counter revival
+is claimed. Original first-Storm randomness is controlled in Revival fixtures;
+no force/wallet/module-owner/phase/history is assigned. A genuine two-token loser
+also completes its mandatory winner selection through four policies without
+replaying fee/return. Frozen related30-file union passes325/325, including nine
+new behavioral cases; types/lint, build and actual prototype help pass.
+Existing build deprecation/chunk/route warnings remain. No deployment ran.
+
 **Clean selected-family Reinforcements — 16 October.** Plain selected Ix and/or
 CHOAM native/base rosters now reuse original independent38/50-card setup in
 Basic/Advanced. Original normal-first typed/all-outcome payment, score-only +2,

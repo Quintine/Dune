@@ -4,7 +4,8 @@ The separate Ecaz Treachery Cards variant shuffles one physical Reinforcements
 card independently of choosing the Ecaz faction. Its bounded handler supports
 Basic/Advanced classic-faction tables, clean selected Ix and/or CHOAM native/base
 rosters, and clean Ecaz/Moritani expansion tables. Fresh clean classic Homeworlds
-use the native-source composition below; other optional modules retain guards.
+use native sources below. Original Tech/Advanced Strongholds separately use the
+[phase-module contract](ECAZ_TREACHERY_RULES.md#original-phase-module-composition--16-october-2026).
 The selected Advanced Occupy profile separately composes co-present armies.
 The holder may commit it in either Battle Plan card slot. It is neither a weapon
 nor a defense: Prescience of a category receives **None**, while the physical
@@ -21,9 +22,10 @@ rosters in Basic and Advanced. This closes a profile-admission gap: original
 independent pre-setup cards were present, but the plan rejected the profile.
 Original setup keeps selected35/47 plus three physical cards (38/50 total),
 native HMS/cyborgs, Face Dancers, Auditor and the separate ten-card Richese cache.
-No Homeworlds, Nexus, Skills, Tech, Strongholds, Discovery, Sandtrout, mixed E3
-or unrelated preview is added. Existing classic, paired E3 and selected Advanced
-Occupy branches remain separate; public starts and played-save conversion stay gated.
+No Homeworlds, Nexus, Skills, Discovery, Sandtrout, mixed E3 or unrelated preview
+is added. Original Tech/Advanced Strongholds separately use the phase-module
+contract above. Classic, paired E3 and selected Advanced Occupy remain separate;
+public starts and played-save conversion stay gated.
 
 Reuse the existing explicitly provisional normal-first, all-outcome fee and
 fee-before-Harass order, not a new publisher ruling. Native casualty origins
