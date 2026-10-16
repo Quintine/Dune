@@ -1,5 +1,60 @@
 # Dune implementation status
 
+## 16 October 2026 — Recruits with current native Homeworld rates
+
+Final types/lint pass after narrowing the test helper's nullable World view;
+the corrected native10-case file also passes. Related18-file167/167 and build
+proof below used unchanged production behavior; no redundant broad rerun.
+
+Before-state a genuine classic Homeworld Revival with the physical Recruits
+owned rejects at its blanket module gate. Reuse the clean classic2–6
+Basic/Advanced independent36-card profile. The shared revival calculation
+already doubles current native free rates, retains accepted group prices and
+deposits actual typed counters. Admit that path; keep an explicit independent
+Reinforcements World guard so relaxing the shared prerequisite does not open
+its unimplemented native fee/source behavior.
+
+Publisher E3 pp11/16 directly gives low Fremen4 doubled but capped7. The
+standing choose-recommended instruction selects existing separate-request
+population observations as visibly provisional timing: one group7 is free;
+one first crossing native2→3 leaves5 more, total6. No Tleilaxu means no paid
+seventh. This is not a new publisher timing answer or phase-wide snapshot.
+Original special limits, native destinations/deployment eligibility, unknown
+ledger/pending/late-Fremen-grant/replay and other overlay/roster guards remain.
+
+Two new fixture/test files exercise10 meaningful native cases in both modes.
+Original setup/physical shipment and two zero-dial losses create Fremen18 and
+Atreides10 dead, not assigned Tanks/populations/wallets/phases. Physical hands
+and unopened first-Blow cards are positioned; an existing Recruits is moved to
+its explicit holder, not claimed as an unstaged draw. Actual Emperor mixed
+losses use the prior native Harass programme. Basic preserves star identity;
+Advanced keeps one-per-turn special limits and Salusa deposits. Already-ready
+Atreides' actual3 prior returns retain2 paid spice and allow2 further free,
+total5/free4; no refund or readiness bypass is invented.
+
+Four actual390px GameTable paths observe Basic bulk7, Advanced typed1+5,
+ready/paid Atreides and mixed Emperor return. Actual first Fedaykin revival
+revealed an enabled stale elite1 selection despite remaining0. The button now
+disables that over-cap selection and displays the remaining limit; fresh AX
+and screenshot prove the disabled action, then normal5 returns complete.
+Server caps remain unchanged. All four surfaces preserve native custody,
+once-only discard and original prices, without overflow/application exception.
+
+Sixteen fresh programmes/four policies accept104 actual card/Revival/readiness
+actions into original phase5, including useful owned activation while already
+ready. Related18-file offline union167/167 and build pass. A new test helper
+needed explicit nullable-world view narrowing; no production rule was changed
+for that compiler finding. Actual CLI help executes; guide import checks207
+unique evidence paths and the new source anchor. Both coverages remain Partial.
+Existing build register/large-chunk/route-classification warnings remain.
+
+Eight old Vite dependency requests abort during startup. The initial owned
+host had a QA-only middleware ordering error, corrected before successful
+journeys; stale browser node handles were re-observed without replaying accepted
+actions. No zero-diagnostic claim. Proof artifacts remain outside Git; owned
+hosts/tab/scaffolds removed. Existing games/DBs/human services, public starts,
+deployment and recovery/privacy/custody certification are unchanged.
+
 ## 16 October 2026 — Native Homeworld Harass return custody
 
 Before-state fresh classic Homeworlds plus independent cards rejected before

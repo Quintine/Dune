@@ -13735,7 +13735,7 @@ function ecazTreacheryIntegrity(g: Game) {
 }
 function recruitsModeSupported(g: Game) {
   return (
-    !g.homeworlds &&
+    (!g.homeworlds || classicEcazHomeworldProfile(g)) &&
     !g.nexusCards &&
     !g.leaderSkills &&
     !g.techTokens &&
@@ -13758,7 +13758,7 @@ function combinedCardBattleBlock(g: Game): string | null {
 }
 function reinforcementsModeSupported(g: Game) {
   const pairedEcaz = g.expansions.length === 1 && g.expansions[0] === 'ecaz';
-  return !!g.ecazTreachery && recruitsModeSupported(g) && !g.sandtrout &&
+  return !!g.ecazTreachery && !g.homeworlds && recruitsModeSupported(g) && !g.sandtrout &&
     ((g.ecazOccupyPreview === true && ecazOccupyCompositionSupported(g)) ||
       ((g.expansions.length === 0 || pairedEcaz) && g.players.every(player => {
         const expansion = faction(player.faction).expansion;
@@ -13825,7 +13825,7 @@ function recruitsPlayBlock(g: Game, owner: Player, card: Card): string | null {
   if (!g.ecazTreachery || !ecazTreacheryDefinition(card) || card.id !== RECRUITS_CARD_ID)
     return 'Choose the physical Recruits card from the enabled Ecaz Treachery Cards variant.';
   if (!recruitsModeSupported(g))
-    return 'This Recruits prototype currently requires a faction-only game without other optional modules.';
+    return 'This Recruits prototype requires a faction-only game or clean classic Homeworlds, without other optional modules.';
   if (g.status !== 'playing' || g.phase !== 4)
     return 'Play Recruits during Revival.';
   if (g.recruits?.turn === g.turn)

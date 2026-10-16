@@ -8,6 +8,14 @@ returns without refund. This is an explicitly provisional implementation choice,
 not an answer to the publisher/user question below. See [the current runtime
 contract](RECRUITS_RUNTIME.md#provisional-late-paid-activation--8-october-2026).
 
+**Native Homeworld follow-up — 16 October 2026:** the clean classic prototype
+composes the original separate-request threshold calculation with doubled
+current rates. One accepted low-Fremen group may take7;1 first reaching high
+leaves5 further free. Prior accepted prices/free classifications remain; no
+phase-wide snapshot or paid Fremen permission is added. This timing is visibly
+provisional, not a new FAQ or resolution of all later-rate questions. See the
+[native contract](RECRUITS_RUNTIME.md#classic-homeworld-composition--16-october-2026).
+
 
 ## Primary evidence
 

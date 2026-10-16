@@ -4373,8 +4373,15 @@ export function GameTable({
                     },
                     g.revival.prevented ||
                       !me.tanks ||
+                      eliteAmount > g.revival.eliteRemaining ||
                       amount > g.revival.forcesRemaining ||
                       !!homeworldRevivalActionBlock(g, { type: 'revive', amount, elite: eliteAmount }),
+                  )}
+                  {eliteAmount > g.revival.eliteRemaining && (
+                    <p className="fine" aria-live="polite">
+                      {g.revival.eliteRemaining} special-force revivals remain this turn.
+                      Reduce the selected elite count.
+                    </p>
                   )}
                   {homeworldRevivalActionBlock(g, { type: 'revive', amount, elite: eliteAmount }) && (
                     <p className="fine" aria-live="polite">

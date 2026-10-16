@@ -28,6 +28,62 @@ controls in Chromium produce the same available2/remaining4 quote and preserve
 spice18/total3/free2 at activation. No broad suite, recovery or deployed proof.
 
 
+## Classic Homeworld composition — 16 October 2026
+
+The fresh `ecaz-treachery --homeworlds` entry now admits Recruits during
+original classic2–6 Basic/Advanced Revival, with its original36-card inventory.
+Reuse native current free rates and typed revival deposits. No rate snapshot,
+new saved field, seven extra counters, automatic refund, generic module
+activation or played-save conversion is added. Reinforcements keeps its own
+explicit Homeworld gate; other optional overlays and expansion rosters stay
+outside this clean composition.
+
+Publisher Ecaz & Moritani printed pp11/16 specifically gives low Fremen4,
+doubled but capped at7. Under the standing choose-recommended instruction,
+compose the existing native separate-request population rule: quote against
+current population when each request is accepted, retaining that group's
+accepted free/paid classification. Later separate requests observe the
+resulting population and actual recorded free usage. This changing-threshold
+timing is visibly provisional, not a new publisher worked example or answer
+to the earlier late-rate question.
+
+Thus low Fremen at2 native counters can accept7 free together. If it accepts1
+first, reaching high3, the next native rate is3→6 and only5 free remain. With
+Tleilaxu absent it cannot buy a seventh after those six. The total card cap
+is still7, not an independent paid-revival permission. Original special-force
+limits remain: Advanced one Fedaykin/Sardaukar per turn; Basic preserves
+physical star identities without adding the Advanced one-per-turn rule.
+Original destination/deployment eligibility remains native, not guaranteed
+merely because Recruits increased a rate.
+
+Atreides with actual3 prior returns (2 free/1 paid) can accept2 further free
+after play, even if already ready while phase4 remains open. Its payment
+stays2 spice, total5/free4. A native mixed Emperor return deposits normal on
+Kaitain and Sardaukar on Salusa in Advanced; Basic retains its primary World.
+The new panel names the provisional current-rate policy. An actual Advanced
+Fedaykin return exposed an enabled repeat with stale selected elite1 against
+remaining0: the button now disables that over-cap selection and explains the
+remaining special limit, without altering authoritative revival rules.
+
+Four actual390px GameTable journeys cover Basic bulk7, Advanced typed1+5,
+already-ready paid Atreides and Advanced mixed Emperor revival. Native low→high
+quotes, physical custody, no refund and exact once-only discard are observed.
+Sixteen fresh programmes/four minimal policies accept104 card/Revival/readiness
+actions through original phase5, including useful activation by an already-ready
+Atreides. Real setup/shipments/zero-dial losses produce the dead counters;
+only physical hands/unopened first-Blow cards are positioned, with the existing
+Recruits moved to the selected holder explicitly. These are not unstaged
+full-game card draws. Eight startup Vite dependency aborts and a corrected
+QA-only middleware ordering issue precede successful surfaces; no overflow
+or application exception. Owned hosts/tab/scaffolds removed; proof outside Git.
+
+Final checks:10 new cases pass, related18 offline files167/167, types/lint and
+app build pass. A test-only nullable-view narrowing is followed by a passing
+10-case rerun; production behavior is unchanged. CLI help executes and guide
+import resolves207 unique evidence paths/source anchor, with both coverages
+Partial. Existing build register/large-chunk/route-classification warnings
+remain; no HTTP/DB boundary changed or new recovery assurance ran.
+
 ## Rules contract
 
 [The source audit](RECRUITS_RULES.md) records publisher Ecaz & Moritani pages 11
@@ -42,8 +98,8 @@ source review. No newly retrieved late-paid ruling is claimed.
 The scope permits activation before returns or after consistently recorded
 free/paid normal returns, once priority windows and transactions finish.
 Unknown legacy usage, later Fremen grants, same-turn replay after recovery
-and additional optional modules remain guarded. These are unfinished cases,
-not new printed timing rules.
+and other optional modules remain guarded, apart from the clean classic
+Homeworld composition above. These are boundaries, not printed timing rules.
 Already-ready players retain their Revival opportunity while phase four is open.
 
 Atreides doubles two to four, Fremen three to six, and Guild one to two. Native

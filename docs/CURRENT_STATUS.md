@@ -29,11 +29,34 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Current-rate Homeworld Recruits — 16 October.** Clean classic2–6 Basic and
+Advanced independent36-card setup now admits native Revival. Reuse current
+free rates/low bonuses, recorded usage and typed deposits, not a new saved
+snapshot. Publisher E3 pp11/16 gives low Fremen4 doubled but capped7.
+Separate-request population timing is explicitly provisional: bulk7 is free;
+1 first crossing native2→3 leaves5 further free, total6, with no paid seventh
+without Tleilaxu. Accepted prices/classifications remain. Special-force caps,
+already-ready opportunity and no-refund prior paid accounting stay native.
+
+Four actual mobile journeys prove bulk7, typed1+5, ready/paid Atreides and
+mixed Emperor return. A stale elite1/remaining0 selection now disables the
+invalid repeat with a limit notice; ordinary counters remain selectable.
+16 fresh programmes/four minimal policies accept104 card/Revival/readiness
+actions into phase5. Ten new regressions pass; related18-file167/167,
+types/lint and build pass. The test-only nullable-world narrowing is followed
+by a passing10-case rerun. CLI help and207 guide evidence paths/source anchor
+pass. Initial QA middleware ordering and eight Vite dependency aborts are
+recorded, not called zero diagnostics. No overflow/application exception.
+Owned hosts/tab/scaffolds removed; no games/DBs/human services touched.
+Reinforcements retains its explicit Homeworld gate. Other overlays/rosters,
+public starts, whole-mode/final assurance and deployment remain gated.
+
 **Classic Homeworld Harass — 16 October.** Fresh classic2–6 Basic/Advanced
 Homeworlds can compose the original independent36-card variant. Harass works
 on Arrakis or a foreign World, never any own World, including both Emperor
-Worlds in Advanced. Other two variant cards retain their World guards; no other
-overlays, expansion rosters, public starts or played-save conversion open.
+Worlds in Advanced. Recruits uses the separate native-rate composition above;
+Reinforcements keeps its World guard. No other overlays, expansion rosters,
+public starts or played-save conversion open.
 
 Actual undialed counters return through one native custody quote: Basic
 original primary retains typed elites; Advanced normal→Kaitain/elite→Salusa.
