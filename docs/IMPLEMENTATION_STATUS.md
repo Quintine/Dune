@@ -1,5 +1,54 @@
 # Dune implementation status
 
+## 16 October 2026 — Classic World independent cards with phase modules
+
+Real fresh classic World+Tech/Stronghold lobbies rejected the blanket profile
+gate before setup. Reuse original independent36-card Basic/Advanced Homeworld
+setup with unused Tech3+ and/or Advanced Strongholds2+. Classic-only Worlds
+remain; no expansion Worlds, Skills, Nexus, Discovery or unrelated overlay.
+Keep exact sources, native custody/rates, printed own-World H ban, original
+traits/face, fee/dial disjointness and inherited provisional fee/rate timing.
+
+Two genuine programmes use original typed shipments, battles, actual end-Mentat
+and native current-rate/aftercare. First-Storm entropy and unopened non-worm
+cards are explicitly controlled; later Storm entropy stays original. Physical
+card positioning is conserved staging, not a natural purchase/trade. No force,
+wallet, module owner, phase, threshold or receipt/history assignment.
+
+Parent reviewed both contributions, removed fixture/DTO/log wording assertions
+and an unsupported causal Guild-wallet claim. Correct the contributed
+`combatArmy` calls to use actual battle territory, not the Arrakeen sector key.
+Preserve real eight-scenario battle smoke, including source/own-World checks,
+and three Revival programmes. Twelve focused cases retain physical outcomes
+and economics rather than echoes of fixture action logs.
+
+Three actual390px journeys/17 actions: Atreides pays2 for prior three returns,
+readies, then takes two additional free after R without refund; Fremen's one
+Fedaykin crosses high and leaves five further free, finishing6/reserves8/Tanks12.
+Axlotl stays2 on Emperor while wallet7 is unchanged, then pays2 only at phase end.
+Arrakeen14/Caladan6 pays R3 before H11, ends reserves14/Tanks6/personal7 after
+bank2/personal1 support; original Heighliners transfers after settled income.
+An actual second paid Junction conflict stays available, not silently consumed.
+Visitor UI seals fee1K/2S, chooses committed1N1E/return2N3E, ends K11N/S4E,
+reserves15/Tanks5 including1E, with native Guild alone getting Traitor controls.
+
+The browser harness reset viewport after a failed QA text wait; report to tool
+QA, discard that mixed-viewport record and replace it with verified390px proof.
+All three accepted surfaces have no horizontal overflow and no app errors.
+Owned hosts/tabs/scaffolds removed; `/tmp/dune-world-phase-*-proof.json`.
+
+Four policies complete24 useful World Revival programmes/156 actions with
+explicitly conserved useful R holders, plus24 normal battle/native-aftercare
+programmes/48 continuations and7609 valid R-or-H proposals. Actual Caladan
+one-counter deployment crosses native6→5 without a second shipment/payment.
+This is bounded legal participation, not strategy/calibration or full mode,
+assurance, persistence or deployed acceptance. Actual rooms/DBs untouched.
+Frozen related20-file union passes192/192; final12 new cases pass after
+correcting nullable World-table projections and preserving the native Crypto
+method’s generic return type through binding. Types/lint, build and actual
+prototype help pass. Existing Node deprecation, large-chunk and dynamic-route
+classification warnings remain. No HTTP/database boundary or assurance campaign.
+
 ## 16 October 2026 — Native Stone/Mirror with original phase modules
 
 Genuine cache/earned-Habbanya programmes reproduced the blanket Ix Tech/

@@ -117,8 +117,8 @@ function initialize(game: Game): Game {
   }
 }
 
-/** Homeworlds selected before the independent 33+3 physical setup. No expansion
- * roster, other optional module, preselected variant flag or synthetic phase. */
+/** Homeworlds selected before the independent 33+3 physical setup. Original
+ * Tech/Advanced Strongholds may be configured in a fresh classic initial lobby. */
 export function createHarassHomeworldSetup(options: HarassHomeworldOptions = {}): HarassHomeworldSetup {
   const ids = options.seatIds ?? ['emperor', 'guild', 'atreides'];
   let game = options.initial ? structuredClone(options.initial)
@@ -130,8 +130,8 @@ export function createHarassHomeworldSetup(options: HarassHomeworldOptions = {})
   assert.equal(game.status, 'lobby'); assert.equal(game.advanced, options.advanced ?? game.advanced);
   assert.deepEqual(game.expansions, []);
   assert.deepEqual(game.players.map(p => p.faction).sort(), ['atreides', 'emperor', 'guild']);
-  assert.ok(!game.ecazTreachery && !game.nexusCards && !game.leaderSkills && !game.techTokens &&
-    !game.strongholdCards && !game.discoveryEnabled && !game.discoveries && !game.greatMaker);
+  assert.ok(!game.ecazTreachery && !game.nexusCards && !game.leaderSkills &&
+    !game.discoveryEnabled && !game.discoveries && !game.greatMaker);
   if (!game.homeworlds) game = applyAction(game, game.host, { type: 'homeworlds', enabled: true });
   assert.deepEqual(game.homeworlds, { custody: null });
   const nativeSteps: HarassHomeworldStep[] = [];

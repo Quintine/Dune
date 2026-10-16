@@ -10701,7 +10701,8 @@ function classicEcazHomeworldProfile(g: Game): boolean {
   return !!g.homeworlds && g.ecazTreachery === true && g.expansions.length === 0 &&
     g.players.length >= 2 && g.players.length <= 6 &&
     g.players.every(p => CLASSIC_FACTIONS[p.faction]) &&
-    !g.nexusCards && !g.leaderSkills && !g.techTokens && !g.strongholdCards &&
+    !g.nexusCards && !g.leaderSkills &&
+    ((!g.techTokens && !g.strongholdCards) || independentCardModulesProfile(g)) &&
     !g.discoveryEnabled && !g.discoveries && !g.discoveryStash && !g.greatMaker && !g.sandtrout;
 }
 /** Independent cards compose original phase modules, not unrelated previews. */
@@ -10711,7 +10712,7 @@ function independentCardModulesProfile(g: Game): boolean {
       (g.strongholdCards && !g.advanced) || g.expansions.length > 2 ||
       (g.expansions.length === 2 && g.expansions[0] === g.expansions[1]) ||
       g.expansions.some(expansion => expansion !== 'ix' && expansion !== 'choam') ||
-      g.homeworlds || g.nexusCards || g.leaderSkills ||
+      (g.homeworlds && g.expansions.length !== 0) || g.nexusCards || g.leaderSkills ||
       g.discoveryEnabled || g.discoveries || g.discoveryStash || g.greatMaker || g.sandtrout ||
       g.ecazOccupyPreview || g.semutaPreview || g.kullPreview || g.nexusKullPreview ||
       g.richeseBetrayalPreview || g.guildBetrayalPreview || g.moritaniAssassinatePreview ||
@@ -10729,7 +10730,7 @@ export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   g.ecazTreachery = true;
   const homeworlds = !!g.homeworlds;
   requireRule(!homeworlds || classicEcazHomeworldProfile(g),
-    'Independent cards with Homeworlds require a fresh classic roster without other modules.');
+    'Independent cards with Homeworlds require a fresh classic roster with only supported original Tech or Advanced Strongholds.');
   return initializeSetupGameForAudit(g, homeworlds, false, false, false, false, false, true, true);
 }
 function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false, factions = false, ecazTreachery = false, strongholdFactions = false): Game {

@@ -158,10 +158,10 @@ the original Richese cache remains separate.
 
 Use original setup and native ownership: remaining Tech after first Storm,
 Stronghold Cards only at actual end-Mentat. No owned module receipt, bank spice,
-forces, phase or history is injected. This does not compose Homeworlds, Nexus,
-Skills, Discovery, Sandtrout, mixed E3 or unrelated previews, convert played
-games, or open public starts. Existing Stone/Mirror profile and allocation
-guards are not widened.
+forces, phase or history is injected. Classic Homeworlds separately compose the
+same original phase modules below. Expansion Worlds, Nexus, Skills, Discovery,
+Sandtrout, mixed E3 and unrelated previews, played-game conversion and public
+starts stay gated. Stone/Mirror retains its separate selected-family contract.
 
 Recruits changes current free rates/ordinary allowance, not the original Axlotl
 once-per-phase trigger or delayed income. Eligible actual free revival triggers
@@ -190,4 +190,35 @@ payment. Four policies complete20 battles/52 continuations/9564 R-or-H proposals
 16 useful Recruits programmes/120 actions, and four additional mandatory
 two-token selections. No Face Dance route, new elite revival, complete mode,
 calibration, broad assurance or deployed acceptance is claimed.
+
+## Classic World phase-module composition — 16 October 2026
+
+The fresh classic independent36-card Homeworld entry now retains original unused
+Tech3–6 Basic/Advanced and/or Strongholds2–6 Advanced; both requires Advanced3–6.
+This composes the existing native-pool and phase-module handlers, not new printed
+cost/rate arithmetic or a new public start. Expansion Worlds, Skills, Nexus,
+Discovery, Sandtrout and unrelated overlays stay separate.
+
+Original setup creates native typed custody; first Storm assigns remaining Tech
+and actual end-Mentat earns held cards. Axlotl/Heighliners retain once-per-phase
+triggers and delayed income. A reserve fee or Harass deposit is not a free
+revival/shipment. Earned Arrakeen funds actual support only, not +2 R or personal
+cash. Original reward/cleanup and native optional aftercare retain their queues.
+
+Keep the existing provisional current native rate on each separate accepted
+Revival request, prior free/paid classification and special-force/total caps.
+Keep exact normal-first source-bearing R fees, original traits/printed face,
+own-World fee/dial disjointness and fee-before-Harass. Native typed returns go
+through their original destinations; Harass remains forbidden on every own
+World, including both Emperor Worlds. No visitor/ally/future return funds R.
+
+Bounded World proof: related20-file union192/192 and final12 focused cases pass;
+types/lint, build and actual prototype help pass with existing build warnings.
+Three verified390px journeys/17 actions exercise prior-paid reopening, one typed
+Fremen return plus five normals, one delayed Axlotl payout, earned bank2/personal1
+support, exact split fee and typed visitor return. Original next Guild timing/
+second paid conflict/Collection remain usable. Four policies finish24 World
+Revivals/156 actions and24 battle/native-aftercare programmes/48 continuations,
+validating7609 R-or-H proposals. Useful policy card holders are explicit conserved
+staging. These are not complete modes, calibration, broad assurance or deployment.
 

@@ -196,8 +196,9 @@ artifacts stay outside Git.
 Fresh `ecaz-treachery --homeworlds` composes original classic2–6 Basic/Advanced
 and all three independent physical cards (base33+3). Reinforcements may be
 used on Arrakis, a foreign World **or an own World**; it does not inherit
-Harass's printed own-World ban. Expansion rosters, other overlays, public
-starts and played-save conversion remain outside this entry.
+Harass's printed own-World ban. Original Tech/Advanced Strongholds now follow
+the [classic World phase contract](ECAZ_TREACHERY_RULES.md#classic-world-phase-module-composition--16-october-2026).
+Expansion rosters, other overlays, public starts and save conversion stay gated.
 
 ### Sources, physical pool and original quote
 

@@ -36,7 +36,9 @@ Reuse native current free rates and typed revival deposits. No rate snapshot,
 new saved field, seven extra counters, automatic refund, generic module
 activation or played-save conversion is added. Reinforcements has a separate
 [native-source fee composition](REINFORCEMENTS_RUNTIME.md#classic-homeworld-reserve-fees--16-october-2026);
-other optional overlays and expansion rosters stay outside this clean entry.
+original Tech/Advanced Strongholds now follow the separate
+[classic World phase contract](ECAZ_TREACHERY_RULES.md#classic-world-phase-module-composition--16-october-2026).
+Expansion rosters and other overlays stay outside this entry.
 
 Publisher Ecaz & Moritani printed pp11/16 specifically gives low Fremen4,
 doubled but capped at7. Under the standing choose-recommended instruction,

@@ -29,6 +29,25 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Classic World cards with phase modules — 16 October.** Original independent36
+Basic/Advanced Homeworlds now retains unused Tech3+ and Advanced Strongholds2+.
+Native sources/rates, own-World H prohibition and existing provisional fee/rate
+timing stay. No expansion Worlds, Skills, Nexus, Discovery or other overlay opens.
+Real typed battles produce the Revival stock; actual Mentat earns held cards.
+Three390px journeys/17 actions prove paid-return reopening, Fedaykin threshold,
+one delayed Axlotl payment, bank2/personal1 support, exact split fee/typed return
+and native-only Traitors. Revival reaches actual Guild timing, Arrakeen preserves
+the next genuine Junction conflict, and the visitor battle reaches Collection.
+Four policies finish24 useful World Revivals/156 actions and24 native battle/
+aftercare programmes/48 continuations with7609 validated R-or-H proposals.
+Conserved card/closed-deck staging and controlled original first-Storm entropy
+remain explicit; no force/wallet/owner/phase/history assigned. Parent corrected
+the contributed fixture’s board-sector versus combat-territory API mismatch.
+Frozen related20-file union passes192/192, and final12 new cases pass after
+fixture projection/generic-entropy typing fixes. Types/lint, build and actual
+prototype help pass; existing build warnings remain. No complete-mode,
+calibration, broad assurance or deployed acceptance is claimed.
+
 **Native Stone/Mirror with phase modules — 16 October.** Selected Ix/CHOAM
 retains original Tech/Advanced Strongholds in ordinary47 or independent50
 setups; mixed E3 with these modules and Homeworlds/Skills/Nexus/Discovery/

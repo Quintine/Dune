@@ -143,8 +143,9 @@ game, D1, deployment or new recovery campaign changed. Full acceptance remains.
 Fresh `--profile ecaz-treachery --homeworlds` selects the independent three
 physical cards before original classic2–6 Basic/Advanced setup: base33+3.
 Harass composes on Arrakis and foreign Homeworlds. The printed own-World
-prohibition remains, including both Advanced Emperor Worlds. Expansion
-rosters, other overlays, public starts and played-game conversion stay closed.
+prohibition remains, including both Advanced Emperor Worlds. Original
+Tech/Advanced Strongholds now follow the [classic World phase contract](ECAZ_TREACHERY_RULES.md#classic-world-phase-module-composition--16-october-2026).
+Expansion rosters, other overlays, public starts and save conversion stay closed.
 Recruits has a separate
 [native current-rate composition](RECRUITS_RUNTIME.md#classic-homeworld-composition--16-october-2026);
 Reinforcements now uses an
@@ -222,8 +223,8 @@ route warnings remain; no HTTP or database boundary changed.
   after reveal. Unique returns are automatic; previously valid legacy battles
   retain unique-only derivation. See the [allocation contract](HARASS_ALLOCATION.md).
 - Clean classic Homeworlds use the [native reserve-routing contract](#classic-homeworld-reserve-routing--16-october-2026).
-  Without Homeworlds, clean classic/selected Ix/CHOAM rosters may separately retain
-  [original Tech3+ and Advanced Strongholds2+](ECAZ_TREACHERY_RULES.md#original-phase-module-composition--16-october-2026).
+  Classic World rosters or selected Ix/CHOAM without Worlds may retain
+  [original Tech3+ and Advanced Strongholds2+](ECAZ_TREACHERY_RULES.md#classic-world-phase-module-composition--16-october-2026).
   Nexus, Skills, Discoveries, broader World/faction composition and full-mode
   acceptance remain guarded.
 - Richese card-family configurations now admit Harass under the

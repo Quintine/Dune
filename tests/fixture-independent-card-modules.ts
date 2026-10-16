@@ -17,6 +17,7 @@ export type IndependentCardModulesOptions = {
   strongholds?: boolean;
   /** False keeps the original native deck for revealed-card comparisons. */
   independent?: boolean;
+  homeworlds?: boolean;
 };
 
 /** Select original modules and independent cards before the undealt native setup.
@@ -28,6 +29,7 @@ export function createIndependentCardModulesFixture(options: IndependentCardModu
   let game = createGame('INDEPENDENTCARDMODULES', newPlayer(factions[0], factions[0], factions[0]),
     advanced, options.expansions ?? []);
   for (const faction of factions.slice(1)) joinGame(game, newPlayer(faction, faction, faction));
+  if (options.homeworlds) game = applyAction(game, game.host, { type: 'homeworlds', enabled: true });
   if (options.tech ?? true) game.techTokens = createTechTokens();
   if (options.strongholds) game.strongholdCards = createStrongholdCards();
   const steps: IndependentCardModulesStep[] = [];
