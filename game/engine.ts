@@ -10723,7 +10723,7 @@ function independentCardModulesProfile(g: Game): boolean {
   if (!g.ecazTreachery || (!g.techTokens && !g.strongholdCards) || !independentCardRoster(g) ||
       g.players.length < (g.techTokens ? 3 : 2) || g.players.length > 6 ||
       (g.strongholdCards && !g.advanced) ||
-      (g.homeworlds && g.expansions.length !== 0) || g.nexusCards || g.leaderSkills ||
+      g.nexusCards || g.leaderSkills ||
       g.discoveryEnabled || g.discoveries || g.discoveryStash || g.greatMaker || g.sandtrout ||
       g.ecazOccupyPreview || g.semutaPreview || g.kullPreview || g.nexusKullPreview ||
       g.richeseBetrayalPreview || g.guildBetrayalPreview || g.moritaniAssassinatePreview ||
@@ -10738,7 +10738,7 @@ export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   g.ecazTreachery = true;
   const homeworlds = !!g.homeworlds;
   requireRule(!homeworlds || ecazHomeworldProfile(g),
-    'Independent cards with Homeworlds need a fresh classic or selected Ix/CHOAM roster; phase modules remain classic-only.');
+    'Independent cards with Homeworlds need a fresh classic or selected Ix/CHOAM roster with only original Tech or Advanced Strongholds.');
   return initializeSetupGameForAudit(g, homeworlds, false, false, false, false, false, true, true);
 }
 function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false, factions = false, ecazTreachery = false, strongholdFactions = false): Game {

@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 17 October 2026 — Native World independent cards with phase modules
+
+Original independent-card variant authority permits composition; fresh selected
+Ix/CHOAM native/base Worlds still rejected original Tech/Advanced Strongholds.
+Remove that single roster/module barrier while preserving Tech3–6 Basic/
+Advanced and Strongholds2–6 Advanced, all other overlays/public/save gates and
+original38/50 inventory/cache. Native rates, unlimited allowances, exact fee
+sources, own-World disjointness/H ban, marker funding and aftercare remain.
+
+Two disjoint contributors supplied native Revival and earned battle programmes.
+Fifteen module setups enter. Original first Storm assigns tokens; actual
+end-Mentat earns Arrakeen. No live owner/army/wallet/phase/receipt is assigned.
+Ix prior-paid reopening keeps prices3/0/5 and current population observations;
+native CHOAM retains unlimited twelve returns at prices7/0/3. One Axlotl
+accrual stays unspendable until the real phase end, including CHOAM's ending
+market. All later original Shipment continuations retain their timing.
+
+Real turn-one paid6=3N3E Arrakeen placement earns the local card before a paid
+turn-two Guild attack. Support0/1/3 costs bank0/1/2 and personal0/0/1. Native
+Ix pays3N before Harass returns3N; three original board Cyborgs die separately.
+Printed Stronghold benefits are territory-local, not foreign-World subsidies.
+Parent replaced a nondeterministic extra-conflict fixture with an original
+conserved optional Face Dance before Collection; its decline retains actual
+cleanup and phase opening. Native initiative/later Storms are not overwritten.
+Log-wording and redundant setup-forwarding assertions were removed.
+
+Three actual390px journeys/23 actions verify typed reopening, unlimited CHOAM
+with original market/Guild timing and earned bank2/personal1 plus native fees.
+Final surfaces have no root overflow or app alert. Isolated host setup initially
+needed real Vinext image/environment/middleware configuration; its selector and
+polling were corrected. Stale-node browser observations were read afresh without
+replaying accepted controls. Owned host/tab/scaffolds are removed; actual rooms,
+databases, human server and deployment were untouched.
+
+Four legal policies finish16 useful Revivals/112 actions and12 native battles/
+82 actions. Conserved useful-card/identity staging is explicit, not production
+acquisition or AI strategy/calibration. Node support0/1/3 and marker-budget smoke
+reach actual original continuations. Related18-file union225/225, types/lint,
+build and actual prototype help pass; existing build warnings remain. Initial
+QA-only lint/type errors disappeared with the removed throwaway surface.
+Private artifacts: `/tmp/dune-native-world-phase-*-proof.json`. Complete modes,
+other combinations and deployed/broad assurance acceptance remain open.
+
 ## 17 October 2026 — Selected native E1/E2 World independent cards
 
 Actual ready Ix/Tleilaxu/CHOAM/Richese World lobbies rejected the classic-only

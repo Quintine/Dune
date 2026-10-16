@@ -18,6 +18,9 @@ export { REINFORCEMENTS_CARD, HARASS_WITHDRAW_CARD };
 export type NativeWorldBattleStep = HarassHomeworldStep;
 export type NativeWorldBattleOptions = {
   advanced?: boolean;
+  /** Original unused phase modules selected before native setup. */
+  tech?: boolean;
+  strongholds?: boolean;
   route?: 'ix-visitor' | 'ix-native' | 'choam-native';
   /** Actual first-turn export, not a reserve assignment. */
   exportNormal?: number;
@@ -76,7 +79,7 @@ function conserveCard(game: Game, actor: string, id: string, staging: string[]):
   owner.hand.push(game.deck.splice(at, 1)[0]);
   staging.push(`Conserved original ${id}: undealt deck → ${actor}; not a purchase.`);
 }
-function conserveDancer(game: Game, identity: string, staging: string[]): void {
+export function conserveDancer(game: Game, identity: string, staging: string[]): void {
   const tleilaxu = nativeWorldBattlePlayer(game, 'tleilaxu');
   if (tleilaxu.faceDancers!.some(d => d.leader === identity)) return;
   const dancer = tleilaxu.faceDancers!.find(d => !d.revealed); assert.ok(dancer);
@@ -96,7 +99,8 @@ function conserveDancer(game: Game, identity: string, staging: string[]): void {
 export function createNativeWorldBattleFixture(options: NativeWorldBattleOptions = {}): NativeWorldBattleFixture {
   const route = options.route ?? 'ix-visitor';
   const advanced = options.advanced ?? false;
-  const setup = createIndependentCardModulesFixture({ advanced, homeworlds: true, tech: false, strongholds: false,
+  const setup = createIndependentCardModulesFixture({ advanced, homeworlds: true,
+    tech: options.tech ?? false, strongholds: options.strongholds ?? false,
     factions: route === 'choam-native' ? ['choam', 'guild', 'tleilaxu', 'ixians'] : ['ixians', 'tleilaxu', 'guild'],
     expansions: route === 'choam-native' ? ['ix', 'choam'] : ['ix'] });
   let game = setup.game;

@@ -29,6 +29,25 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Native World phase modules — 17 October.** Selected E1/E2 native/base Worlds
+now retain original Tech3+ Basic/Advanced and/or Advanced Strongholds2+ through
+the independent-card entry. Original38/50 decks, native fees/custody, current
+rates/unlimited allowances, marker funding and own-World H bans stay.
+Fifteen genuine module setups enter. Three390px journeys/23 actions exercise
+paid Cyborg reopening/thresholds, unlimited12-force CHOAM with its actual ending
+market, one delayed Axlotl payout and genuinely earned Arrakeen bank2/personal1
+support. Arrakeen applies only in its original territory, not on a foreign World.
+Native fee3N precedes return3N; three actual Cyborgs alone become board casualties.
+An original conserved optional Face Dance holds the invoice before Collection;
+no initiative, army, wallet, owner or phase is assigned. Other native own/foreign
+fees and board-only aftercare retain their paths. Parent removed a nondeterministic
+second-conflict fixture and log-wording assertions rather than freezing later Storms.
+Four policies finish16 useful Revivals/112 actions and12 native battles/82 actions.
+Conserved cards/identities remain explicit staging. Related18-file union225/225,
+types/lint, build and actual prototype help pass; existing build warnings remain.
+Skills, Nexus, Discovery, E3 and other overlays stay gated; full-mode and
+deployed acceptance remain open.
+
 **Native E1/E2 World independent cards — 17 October.** Clean selected Ix/CHOAM
 native/base Basic/Advanced Worlds retain original38/50 setup without phase
 modules; classic base36 Tech/Strongholds stays separate. Shared roster checks

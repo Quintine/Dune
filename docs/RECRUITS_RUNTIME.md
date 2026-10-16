@@ -38,7 +38,8 @@ activation or played-save conversion is added. Reinforcements has a separate
 [native-source fee composition](REINFORCEMENTS_RUNTIME.md#classic-homeworld-reserve-fees--16-october-2026);
 original Tech/Advanced Strongholds now follow the separate
 [classic World phase contract](ECAZ_TREACHERY_RULES.md#classic-world-phase-module-composition--16-october-2026).
-Selected E1/E2 Worlds now use a [separate native no-phase-module contract](ECAZ_TREACHERY_RULES.md#native-selected-family-world-composition--17-october-2026);
+Selected E1/E2 Worlds use the [native setup contract](ECAZ_TREACHERY_RULES.md#native-selected-family-world-composition--17-october-2026)
+and [original phase-module composition](ECAZ_TREACHERY_RULES.md#native-world-phase-modules--17-october-2026);
 other rosters and overlays remain separate.
 
 Publisher Ecaz & Moritani printed pp11/16 specifically gives low Fremen4,

@@ -207,7 +207,8 @@ and all three independent physical cards (base33+3). Reinforcements may be
 used on Arrakis, a foreign World **or an own World**; it does not inherit
 Harass's printed own-World ban. Original Tech/Advanced Strongholds now follow
 the [classic World phase contract](ECAZ_TREACHERY_RULES.md#classic-world-phase-module-composition--16-october-2026).
-Selected native E1/E2 Worlds now use the [separate no-phase-module contract](ECAZ_TREACHERY_RULES.md#native-selected-family-world-composition--17-october-2026);
+Selected native E1/E2 Worlds use the [native setup contract](ECAZ_TREACHERY_RULES.md#native-selected-family-world-composition--17-october-2026)
+and [original phase-module composition](ECAZ_TREACHERY_RULES.md#native-world-phase-modules--17-october-2026);
 other rosters/overlays, public starts and save conversion remain gated.
 
 ### Sources, physical pool and original quote

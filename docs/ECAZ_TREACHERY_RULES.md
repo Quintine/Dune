@@ -158,10 +158,10 @@ the original Richese cache remains separate.
 
 Use original setup and native ownership: remaining Tech after first Storm,
 Stronghold Cards only at actual end-Mentat. No owned module receipt, bank spice,
-forces, phase or history is injected. Classic Homeworlds separately compose the
-same original phase modules below. Expansion Worlds, Nexus, Skills, Discovery,
-Sandtrout, mixed E3 and unrelated previews, played-game conversion and public
-starts stay gated. Stone/Mirror retains its separate selected-family contract.
+forces, phase or history is injected. Classic and selected native Homeworlds
+compose the same original phase modules in the contracts below. Nexus, Skills,
+Discovery, Sandtrout, mixed E3 and unrelated previews, played-game conversion and
+public starts stay gated. Stone/Mirror retains its separate selected-family contract.
 
 Recruits changes current free rates/ordinary allowance, not the original Axlotl
 once-per-phase trigger or delayed income. Eligible actual free revival triggers
@@ -196,8 +196,8 @@ calibration, broad assurance or deployed acceptance is claimed.
 The fresh classic independent36-card Homeworld entry now retains original unused
 Tech3–6 Basic/Advanced and/or Strongholds2–6 Advanced; both requires Advanced3–6.
 This composes the existing native-pool and phase-module handlers, not new printed
-cost/rate arithmetic or a new public start. Expansion Worlds, Skills, Nexus,
-Discovery, Sandtrout and unrelated overlays stay separate.
+cost/rate arithmetic or a new public start. Selected native Worlds follow the
+later composition below; Skills, Nexus, Discovery, Sandtrout and other overlays stay separate.
 
 Original setup creates native typed custody; first Storm assigns remaining Tech
 and actual end-Mentat earns held cards. Axlotl/Heighliners retain once-per-phase
@@ -227,9 +227,9 @@ staging. These are not complete modes, calibration, broad assurance or deploymen
 Clean selected Ix and/or CHOAM native/base Basic/Advanced2–6 Worlds now compose
 the independent cards before original setup: selected38/50, with Richese's
 ten-card cache separate when present. Original HMS/seven Cyborgs, Face Dancers,
-Auditor, marker identities and native typed custody remain. These selected-family
-Worlds do not add phase modules, Skills, Nexus, Discovery, Sandtrout, E3 or other
-previews; classic base36 World Tech/Strongholds remains its separate profile.
+Auditor, marker identities and native typed custody remain. Original Tech3+
+and Advanced Strongholds2+ follow the later native phase contract below.
+Skills, Nexus, Discovery, Sandtrout, E3 and other previews remain gated.
 Public starts and played-game conversion stay gated.
 
 One shared selected-family roster rule replaces duplicate checks. The renamed
@@ -257,4 +257,45 @@ Auditor inspection. Direct marker3/reserves5 execution rejects unchanged while
 H-only seals. Four-policy programmes retain useful conserved-card staging,
 not strategy/calibration. Existing build warnings, complete modes and deployed
 acceptance remain open; no saved-game/database assurance campaign was run.
+
+## Native World phase modules — 17 October 2026
+
+The selected Ix/CHOAM native/base World independent-card entry now retains
+original unused Tech Tokens3–6 Basic/Advanced and/or Stronghold Cards2–6
+Advanced; both requires Advanced3–6. This removes the remaining composition
+barrier, not a new rate, payment or card-effect ruling. Original38/50 inventory,
+Richese cache, HMS/Cyborgs, native-only World declarations and custody stay.
+Keep exact source-bearing normal-first fees, own-World fee/dial disjointness,
+printed traits/face, fee-before-Harass and every own-World Harass prohibition.
+Richese must still fund R after projected original marker materialization.
+
+First Storm assigns remaining tokens; actual end-Mentat earns held cards.
+Axlotl keeps its once-per-phase trigger and delayed income. Recruits does not
+refund accepted paid returns or reduce native unlimited allowances. Harass
+deposits and reserve fees are neither free revival nor off-planet shipment.
+Held Arrakeen funds only actual support in Arrakeen, never a foreign World,
+personal spice or the score-only +2. A real Arrakeen plan may still pay its
+reserve fee from native Ix. Original winner cleanup/rewards and aftercare remain.
+Skills, Nexus, Discovery, Sandtrout, E3, unrelated previews, public starts and
+played-save conversion remain guarded.
+
+Bounded proof:15 fresh native module setups and three390px journeys/23 actions.
+Ix pays3/0/5 across prior-paid reopening, current population threshold and native
+Cyborg deposits; native CHOAM returns12 without imposing seven, finishes its own
+market and then original Guild timing. Axlotl accrues once and pays only when
+Revival really ends. Real first-turn paid3N3E Arrakeen placement earns its card
+at actual end-Mentat; next-turn support3 costs bank2/personal1. Native fee3N
+precedes Harass3N; three board Cyborgs die separately. An original conserved
+Face Dancer offers its real continuation before Collection can mask the invoice.
+Its decline reaches Collection without changing initiative or freezing later
+Storms. Original own-World fee/dial/H restrictions, mixed fees/typed aftercare
+and marker-short rejection/H fallback also compose.
+
+Behavioral evidence: `tests/native-world-phase-recruits.test.ts`,
+`tests/native-world-phase-battle.test.ts`, `tests/native-world-phase-marker.test.ts`,
+`tests/fixture-native-world-phase-battle.ts` and the extended canonical native
+fixtures. Four policies finish16 useful Revival programmes/112 actions and12
+native battle programmes/82 actions, not strategic calibration. Related18-file
+union225/225, types/lint, build and actual prototype help pass with existing
+warnings. No full-mode, deployed, HTTP/database or broad assurance claim.
 

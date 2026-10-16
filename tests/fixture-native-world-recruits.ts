@@ -88,10 +88,15 @@ export function createNativeWorldRecruitsFixture(options: {
   advanced?: boolean;
   faction?: NativeWorldRecruitsFaction;
   imperialCasualties?: boolean;
+  tech?: boolean;
+  strongholds?: boolean;
 } = {}): NativeWorldRecruitsFixture {
   const native = options.faction ?? 'ixians';
-  const setup = createIndependentCardModulesFixture({ advanced: options.advanced ?? false,
-    homeworlds: true, tech: false, strongholds: false, factions: ['emperor', native, 'guild'],
+  const advanced = options.advanced ?? false;
+  const tech = options.tech ?? false, strongholds = options.strongholds ?? false;
+  assert.ok(!strongholds || advanced, 'Original Stronghold Cards require Advanced');
+  const setup = createIndependentCardModulesFixture({ advanced,
+    homeworlds: true, tech, strongholds, factions: ['emperor', native, 'guild'],
     expansions: native === 'ixians' || native === 'tleilaxu' ? ['ix'] : ['choam'] });
   let game = setup.game;
   const afterSetup = structuredClone(game), steps = [...setup.steps];
@@ -99,8 +104,12 @@ export function createNativeWorldRecruitsFixture(options: {
   assert.ok(setup.initial.homeworlds, 'The undealt ready lobby must have Homeworlds selected');
   assert.deepEqual(game.expansions, native === 'ixians' || native === 'tleilaxu' ? ['ix'] : ['choam']);
   assert.equal(game.status, 'playing');
-  for (const [name, value] of [['Tech Tokens', game.techTokens], ['Stronghold Cards', game.strongholdCards],
-    ['Nexus Cards', game.nexusCards], ['Leader Skills', game.leaderSkills],
+  if (game.strongholdCards) {
+    assert.equal(game.strongholdCards.claimedTurn, 0);
+    assert.ok(Object.values(game.strongholdCards.owners).every(owner => owner === null),
+      'Only original end-Mentat may earn Stronghold Cards');
+  }
+  for (const [name, value] of [['Nexus Cards', game.nexusCards], ['Leader Skills', game.leaderSkills],
     ['Discovery', game.discoveryEnabled]] as const)
     assert.equal(value, undefined, `${name} must stay outside a native World Recruits programme`);
   const visitor = 'emperor', owner = visitor;
@@ -110,6 +119,8 @@ export function createNativeWorldRecruitsFixture(options: {
   assert.ok(home);
   const location = home.id;
   const staging = ['Return original setup hands to the unopened Treachery deck; no weapon or defense is used.'];
+  if (tech || strongholds)
+    staging.push('Select requested unused original Tech/Advanced Strongholds before readiness; native first Storm assigns tokens and actual end-Mentat earns cards. No owner or income receipt is assigned.');
   for (const player of game.players) { game.deck.push(...player.hand); player.hand = []; }
   for (let i = 0; i < (game.advanced ? 4 : 2); i++) {
     const at = game.spiceDeck.findIndex((card, index) => index >= i && 'territory' in card && !card.discovery);

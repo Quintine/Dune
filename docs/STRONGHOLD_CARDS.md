@@ -6,14 +6,14 @@ Historical development module checkpoint, 7 September 2026: the six printed effe
 
 The fresh independent-card entry retains original unused Advanced Strongholds
 at2–6 seats and optional Tech3–6, with clean classic/selected Ix/CHOAM native/base
-rosters. Classic Homeworlds now compose the same original phase modules;
-selected native families remain without Worlds. Actual end-Mentat earns
+rosters. Classic and selected native Homeworlds compose the same original phase
+modules. Actual end-Mentat earns
 ownership; no card is assigned by a fixture. Arrakeen funds actual support (bank2/personal1
 for support3); native Ix earns Tabr before a real next-turn attack and mixed
 Reinforcements fee/Harass return. Original token rewards/held effects stay.
 Stone/Mirror uses its separate selected-family contract. Other overlays, public
 starts and save conversion remain gated. See the [shared phase contract](ECAZ_TREACHERY_RULES.md#original-phase-module-composition--16-october-2026)
-and [classic World composition](ECAZ_TREACHERY_RULES.md#classic-world-phase-module-composition--16-october-2026).
+and [World composition](ECAZ_TREACHERY_RULES.md#native-world-phase-modules--17-october-2026).
 
 ## Semuta composition — 11 October 2026
 
