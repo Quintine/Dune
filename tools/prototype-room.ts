@@ -58,7 +58,7 @@ export type PrototypeOptions = {
   discoveries?: boolean;
   /** Explicit original skills with Semuta, classic occupation or Guild Betrayal. */
   leaderSkills?: boolean;
-  /** Original Richese/CHOAM and classic Homeworld occupation with Semuta only. */
+  /** Original Semuta/Banker composition or classic independent-card Homeworlds. */
   homeworlds?: boolean;
 };
 export function isPrototypeProfile(value: string): value is PrototypeProfile {
@@ -107,8 +107,8 @@ export function startPrototypeRoom(
     throw new Error('--discoveries requires the leader-skills, nexus or semuta profile.');
   if (options.leaderSkills && profile !== 'semuta' && profile !== 'homeworld-occupation' && profile !== 'guild-betrayal')
     throw new Error('--leader-skills requires the semuta, homeworld-occupation or guild-betrayal profile.');
-  if (options.homeworlds && profile !== 'semuta' && profile !== 'banker-income')
-    throw new Error('--homeworlds requires the semuta or banker-income profile.');
+  if (options.homeworlds && profile !== 'semuta' && profile !== 'banker-income' && profile !== 'ecaz-treachery')
+    throw new Error('--homeworlds requires the semuta, banker-income or ecaz-treachery profile.');
   if (options.ecazTreachery) initial.ecazTreachery = true;
   if ((profile === 'nexus' || options.nexusCards) && !initial.nexusCards)
     initial.nexusCards = { cards: null, phase: null };

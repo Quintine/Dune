@@ -215,7 +215,7 @@ void test('KH prevents an invalid stored true call and adds two only to an unstu
   assert.equal(q.scores!.defender, 2);
   assert.equal(q.bounty, null);
 });
-void test('Stone validates physical ambiguity and mode before traitors, and uses undialed tokens rather than leader scores', () => {
+void test('Stone validates revealed mode before traitors and uses undialed tokens rather than leader scores', () => {
   const g = input();
   play(g, 'attacker', 'weapon', (c) => c.effect === 'stoneBurner');
   g.attacker.stoneMode = 'ignore';
@@ -235,19 +235,6 @@ void test('Stone validates physical ambiguity and mode before traitors, and uses
   delete g.attacker.stoneMode;
   call(g, 'attacker');
   reject(g, /revealed mode/);
-  g.attacker.stoneMode = 'ignore';
-  g.attacker.forces = {
-    normal: 5,
-    elite: 1,
-    eliteStrength: 2,
-    freeSupport: false,
-  };
-  g.attacker.plan.dial = 3;
-  g.attacker.plan.support = 1;
-  g.defender.forces.normal = 3;
-  g.defender.plan.dial = 1;
-  g.defender.plan.support = 1;
-  reject(g, /unresolved physical casualty/);
 });
 void test('copied Stone needs each revealed mode and keeps physical Mirror custody on victory', () => {
   const g = input();

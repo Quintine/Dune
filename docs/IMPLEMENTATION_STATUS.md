@@ -1,5 +1,50 @@
 # Dune implementation status
 
+## 16 October 2026 — Native Homeworld Harass return custody
+
+Before-state fresh classic Homeworlds plus independent cards rejected before
+dealing. Admit only clean classic2–6 Basic/Advanced with the original36-card
+variant. Harass's printed own-Homeworld prohibition applies to both Emperor
+Worlds; foreign Worlds are not a blanket ban. Recruits/Reinforcements retain
+their Homeworld guards. All other overlays, rosters, public starts and
+played-save conversion stay closed.
+
+Add one atomic source-withdrawal/native-deposit custody quote, reusing original
+Basic primary and Advanced Emperor typed destinations. No fake World force
+keys, deaths or revival. Existing original sealed physical commitment/support
+does not rescore when returned Sardaukar restore high Salusa. World loss
+receipts retain optional nested `fullyCommitted` and filter original complete
+complements, fixing the observed winning-Harass ambiguity stall; no game root
+field. Native-only voting is now reflected in revealed UI rather than offering
+an invader a button the original engine rejects.
+
+Four new fixture/test files add23 behavior cases: original setup, actual typed
+shipments, win/loss, both card slots, own primary/secondary prohibition, native
+Traitor cancellation, mutual/sole Trait support, native explosion, threshold
+changes and next-turn returned-counter shipment. Remove incidental fixture/
+receipt/log-text pins and the old Stone test tail expecting an already validated
+Traitor to reject an ambiguous winner. Keep its meaningful mode and physical
+token comparisons. The first frozen union exposed that stale expectation and
+an optional-RegExp test-helper type error; repair both without production
+special cases.
+
+Final related27 offline files246/246; types/lint and build pass. Build retains
+existing register deprecation/large-chunk/Unknown-route warnings. Four actual
+390px native GameTable journeys complete Collection: Basic foreign loss,
+Advanced foreign winner, Arrakis Salusa1→4, and own-Salusa legal plain plan.
+Typed labels/mandatory card discard/original commitment are observed; no
+invader vote after the UI fix. Sixteen fresh programs/four minimal policies
+accept36 continuation actions and validate16 native precommit proposals.
+CLI help executes; guide evidence/source anchor import passes. Four startup
+Vite dependency aborts precede the successful rendered journeys, not zero
+browser diagnostics. Proof artifacts remain outside Git; owned scaffolds,
+services and tab removed. No saved games or databases touched.
+
+`HARASS_WITHDRAW_RUNTIME.md`, source decisions, CLI/card/guide descriptions and
+status reflect explicit native-return composition, not a newly invented
+Harass-specific FAQ. Both coverage topics remain Partial. No deployment,
+complete mode, expansion gate or recovery/custody certification.
+
 ## 16 October 2026 — Current concealed No-Field Truthtrance values
 
 Native before-state rejected a real current-value question during an actual

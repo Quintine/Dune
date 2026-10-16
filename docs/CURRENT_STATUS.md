@@ -29,6 +29,27 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Classic Homeworld Harass — 16 October.** Fresh classic2–6 Basic/Advanced
+Homeworlds can compose the original independent36-card variant. Harass works
+on Arrakis or a foreign World, never any own World, including both Emperor
+Worlds in Advanced. Other two variant cards retain their World guards; no other
+overlays, expansion rosters, public starts or played-save conversion open.
+
+Actual undialed counters return through one native custody quote: Basic
+original primary retains typed elites; Advanced normal→Kaitain/elite→Salusa.
+Original commitment/support stays fixed as returned population changes later
+observations. Native-only voters, Traitor/explosion and card disposal remain;
+the UI no longer offers invader votes. Preserve the full Harass complement in
+the World loss receipt with an optional nested `fullyCommitted` bit, not a new
+game root, fake board key or delayed rescore.
+
+23 new regressions; related27-file246/246, types/lint and build pass. Four actual
+mobile journeys complete native Collection;16 native programs/four policies
+accept36 continuation actions and validate precommit proposals. CLI help and
+guide evidence import pass. Initial Vite optimization aborted four old dependency
+requests; no overflow/application exception. Partial prototype, no deployed,
+whole-mode, recovery/custody certification or original-Ghola gate change.
+
 **Current concealed No-Field value facts — 16 October.** Truthtrance can ask
 whether the respondent currently has a concealed printed0/3/5. Absent or
 revealed is No even for0; concealed5 with exhausted reserves remains5. Read

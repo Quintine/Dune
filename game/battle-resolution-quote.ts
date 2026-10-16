@@ -423,8 +423,10 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     if (harass) {
       requireQuote(validBattleSlotPair(slots[0], slots[1]),
         'The Harass & Withdraw plan has an invalid weapon and defense pair.');
-      requireQuote(side.harassWithdraw && !input.homeworld,
-        'Harass & Withdraw needs its supported physical context and cannot combine with Homeworld battles.');
+      requireQuote(side.harassWithdraw,
+        'Harass & Withdraw needs its supported physical context.');
+      requireQuote(!homeworld || homeworld.native !== side.id,
+        'Harass & Withdraw cannot be used on your own Homeworld.');
       const profile = input.ecazOccupy?.lead === side.id ? input.ecazOccupy : undefined;
       const normalization = side.harassWithdraw.occupy;
       if (profile) {

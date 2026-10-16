@@ -139,6 +139,29 @@ export function quoteNativeReserveWithdrawal(
   });
 }
 
+function nativeReserveDeposits(
+  context: HomeworldCustodyContext,
+  custody: HomeworldCustody,
+  actor: string,
+  forces: HomeworldForces,
+): HomeworldCustodyChange[] {
+  const homes = nativeHomes(context, custody, actor);
+  typed(forces);
+  const primary = homes.find((home) => !home.secondary)!;
+  const secondary = homes.find((home) => home.secondary);
+  const placements: [string, HomeworldForces][] = secondary
+    ? [
+        [primary.id, { normal: forces.normal, elite: 0 }],
+        [secondary.id, { normal: 0, elite: forces.elite }],
+      ]
+    : [[primary.id, { normal: forces.normal, elite: forces.elite }]];
+  return placements.flatMap(([homeworld, deposit]) =>
+    deposit.normal + deposit.elite > 0
+      ? [{ homeworld, player: actor, withdraw: empty(), deposit }]
+      : [],
+  );
+}
+
 /** Authorized native-reserve deposits: E3 p.10 restores Advanced Emperor's
  * normal forces to Kaitain and Sardaukar to Salusa. Used by revival and by the
  * Nexus Secret Ally reserve return (user ruling 7 October 2026); it does not
@@ -149,25 +172,22 @@ export function quoteNativeReserveDeposit(
   actor: string,
   forces: HomeworldForces,
 ) {
-  return checked(() => {
-    const homes = nativeHomes(context, custody, actor);
-    typed(forces);
-    const primary = homes.find((home) => !home.secondary)!;
-    const secondary = homes.find((home) => home.secondary);
-    const placements: [string, HomeworldForces][] = secondary
-      ? [
-          [primary.id, { normal: forces.normal, elite: 0 }],
-          [secondary.id, { normal: 0, elite: forces.elite }],
-        ]
-      : [[primary.id, { normal: forces.normal, elite: forces.elite }]];
-    return quoteHomeworldCustody(
-      context,
-      custody,
-      placements.flatMap(([homeworld, deposit]) =>
-        deposit.normal + deposit.elite > 0
-          ? [{ homeworld, player: actor, withdraw: empty(), deposit }]
-          : [],
-      ),
-    );
-  });
+  return checked(() => quoteHomeworldCustody(
+    context, custody, nativeReserveDeposits(context, custody, actor, forces),
+  ));
+}
+
+/** A separately authorized force return: remove the exact source pool and
+ * deposit into native reserves in one custody quote, never as deaths. */
+export function quoteHomeworldReserveReturn(
+  context: HomeworldCustodyContext,
+  custody: HomeworldCustody,
+  actor: string,
+  source: string,
+  forces: HomeworldForces,
+) {
+  return checked(() => quoteHomeworldCustody(context, custody, [
+    { homeworld: source, player: actor, withdraw: forces, deposit: empty() },
+    ...nativeReserveDeposits(context, custody, actor, forces),
+  ]));
 }

@@ -170,6 +170,7 @@ import {
 import {
   quoteNativeReserveWithdrawal,
   quoteNativeReserveDeposit,
+  quoteHomeworldReserveReturn,
   NativeReserveError,
   type NativeReserveSelections,
 } from './homeworld-native-reserves';
@@ -2199,7 +2200,7 @@ export type Game = {
     kind: 'winner' | 'explosion';
     pool: HomeworldForces;
     options: HomeworldForces[];
-    commitment?: { forces: CombatForces; dial: number; support: number };
+    commitment?: { forces: CombatForces; dial: number; support: number; fullyCommitted?: true };
   } | null;
   lastBattleContext?: {
     event: string;
@@ -7984,23 +7985,23 @@ function withdrawNativeReserves(
   observeOccupation(g);
   return result.receipts;
 }
-/** Adds counters to a faction's reserves, depositing into the native Homeworld
- * custody when Homeworlds are enabled. Used by revival and by the authorized
- * Nexus Secret Ally reserve return (user ruling 7 October 2026). */
-function addNativeReserves(g: Game, p: Player, amount: number, elite: number) {
+/** Adds counters to native reserves. A Homeworld source returns its exact
+ * visitor pool and deposits in the same quote; route permission is external. */
+function addNativeReserves(g: Game, p: Player, amount: number, elite: number, sourceHomeworld?: string) {
+  requireRule(sourceHomeworld === undefined || g.homeworlds?.custody,
+    'Returning Homeworld forces requires their original physical custody.');
   if (!g.homeworlds?.custody) {
     p.reserves += amount;
     if (p.elites) p.elites.reserves += elite;
     return;
   }
-  const result = homeworldRule(() =>
-    quoteNativeReserveDeposit(
-      homeworldContext(g),
-      g.homeworlds!.custody!,
-      p.id,
-      { normal: amount - elite, elite },
-    ),
-  );
+  const result = homeworldRule(() => {
+    const context = homeworldContext(g);
+    const forces = { normal: amount - elite, elite };
+    return sourceHomeworld === undefined
+      ? quoteNativeReserveDeposit(context, g.homeworlds!.custody!, p.id, forces)
+      : quoteHomeworldReserveReturn(context, g.homeworlds!.custody!, p.id, sourceHomeworld, forces);
+  });
   const changed = result.players.find((seat) => seat.id === p.id)!;
   p.reserves = changed.reserves;
   if (p.elites) p.elites.reserves = changed.eliteReserves;
@@ -8191,9 +8192,13 @@ function homeworldBattleLossIntegrity(g: Game) {
     options = quoteHomeworldBattleRules(pending.territory, g.players, rules).explosion.options;
   } else {
     const commitment = pending.commitment;
-    requireRule(commitment && commitment.forces.normal === pool.normal && commitment.forces.elite === pool.elite,
+    requireRule(commitment && commitment.forces.normal === pool.normal && commitment.forces.elite === pool.elite &&
+      (commitment.fullyCommitted === undefined || commitment.fullyCommitted === true),
       'The Homeworld winner needs its committed physical forces.');
-    options = casualtyOptions(commitment.forces, commitment.dial, commitment.support).map(({normal, elite}) => ({normal, elite}));
+    options = casualtyOptions(commitment.forces, commitment.dial, commitment.support)
+      .filter(choice => !commitment.fullyCommitted ||
+        choice.normal === commitment.forces.normal && choice.elite === commitment.forces.elite)
+      .map(({normal, elite}) => ({normal, elite}));
   }
   requireRule(options.length > 0 && JSON.stringify(options) === JSON.stringify(pending.options),
     'The Homeworld casualty choices do not match the committed outcome.');
@@ -10674,12 +10679,22 @@ export function initializeSpiceBankerIncomeGameForAudit(state: Game): Game {
   if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
 }
+function classicEcazHomeworldProfile(g: Game): boolean {
+  return !!g.homeworlds && g.ecazTreachery === true && g.expansions.length === 0 &&
+    g.players.length >= 2 && g.players.length <= 6 &&
+    g.players.every(p => CLASSIC_FACTIONS[p.faction]) &&
+    !g.nexusCards && !g.leaderSkills && !g.techTokens && !g.strongholdCards &&
+    !g.discoveryEnabled && !g.discoveries && !g.discoveryStash && !g.greatMaker && !g.sandtrout;
+}
 /** Gated development setup for the independent three-card Ecaz variant. */
 export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   requireRule(!state.ecazTreachery, 'Ecaz Treachery Cards cannot redeal an existing inventory.');
   const g = structuredClone(state);
   g.ecazTreachery = true;
-  return initializeSetupGameForAudit(g, false, false, false, false, false, false, true, true);
+  const homeworlds = !!g.homeworlds;
+  requireRule(!homeworlds || classicEcazHomeworldProfile(g),
+    'Independent cards with Homeworlds require a fresh classic roster without other modules.');
+  return initializeSetupGameForAudit(g, homeworlds, false, false, false, false, false, true, true);
 }
 function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false, factions = false, ecazTreachery = false, strongholdFactions = false): Game {
   nexusCardsIntegrity(state);
@@ -20705,19 +20720,25 @@ function inspectedPlanMatches(p: Player, field: PlanField, fixed: unknown, candi
 function harassModuleBlock(g: Game): string | null {
   if (!g.ecazTreachery)
     return 'Enable the independent Ecaz Treachery Cards variant before using Harass & Withdraw.';
-  if (g.homeworlds || g.nexusCards || g.leaderSkills || g.techTokens || g.strongholdCards || g.discoveryEnabled)
-    return 'Harass & Withdraw with other optional modules, including Homeworlds, is still being implemented.';
+  if ((g.homeworlds && !classicEcazHomeworldProfile(g)) ||
+      g.nexusCards || g.leaderSkills || g.techTokens || g.strongholdCards || g.discoveryEnabled)
+    return 'Harass & Withdraw with these other optional modules is still being implemented.';
   return combinedCardBattleBlock(g);
 }
 function harassWithdrawContext(g: Game, p: Player): HarassWithdrawContext {
   const b = g.battle!;
   const other = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
   let blocked = harassModuleBlock(g);
+  const home = homeworldBattleLocation(g, b.territory);
   if (!blocked && (g.status !== 'playing' || g.phase !== 6 || ![b.attacker, b.defender].includes(p.id)))
     blocked = 'Use Harass & Withdraw in your own battle.';
-  const locations = Object.fromEntries(Object.entries(p.forces)
-    .filter(([key, amount]) => amount > 0 && splitLocation(key).territory === b.territory)
-    .map(([key, amount]) => [key, { normal: amount - (p.elites?.forces[key] ?? 0), elite: p.elites?.forces[key] ?? 0 }]));
+  if (!blocked && home?.native === p.id)
+    blocked = 'Harass & Withdraw cannot be used on your own Homeworld.';
+  const locations = home
+    ? { [b.territory]: combatArmy(g, p.id, b.territory) }
+    : Object.fromEntries(Object.entries(p.forces)
+      .filter(([key, amount]) => amount > 0 && splitLocation(key).territory === b.territory)
+      .map(([key, amount]) => [key, { normal: amount - (p.elites?.forces[key] ?? 0), elite: p.elites?.forces[key] ?? 0 }]));
   const materializes = prospectiveNoFieldForces(p, b.territory);
   if (materializes) {
     const marker = p.noField!.deployed!;
@@ -23238,7 +23259,8 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
       log(g, `${player.name}'s Harass & Withdraw was canceled by an opposing traitor. No forces returned through this card.`);
   for (const withdrawal of quote.harassWithdraw ?? []) {
     const player = getPlayer(g, withdrawal.player);
-    for (const [key, group] of Object.entries(withdrawal.locations)) {
+    const sourceHomeworld = g.battle!.territory.startsWith('homeworld:') ? g.battle!.territory : undefined;
+    if (!sourceHomeworld) for (const [key, group] of Object.entries(withdrawal.locations)) {
       player.forces[key] -= group.normal + group.elite;
       if (!player.forces[key]) delete player.forces[key];
       if (group.elite && player.elites) {
@@ -23246,11 +23268,10 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
         if (!player.elites.forces[key]) delete player.elites.forces[key];
       }
     }
-    player.reserves += withdrawal.returned.normal + withdrawal.returned.elite;
-    if (player.elites) player.elites.reserves += withdrawal.returned.elite;
+    addNativeReserves(g, player, withdrawal.returned.normal + withdrawal.returned.elite,
+      withdrawal.returned.elite, sourceHomeworld);
     log(g, `${player.name} used Harass & Withdraw to return ${withdrawal.returned.normal + withdrawal.returned.elite} undialed physical forces (${withdrawal.returned.elite} elite) to reserves before battle losses. Their leader still resolves normally.`);
   }
-  if (quote.harassWithdraw?.length) observeOccupation(g);
   const explosion = quote.explosion;
   if (ac && dc) {
     dead(al);
@@ -23579,7 +23600,8 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
       kind: quote.homeworldExplosion ? 'explosion' : 'winner',
       pool: combatArmy(g, owner, b.territory),
       options: (quote.homeworldExplosion?.options ?? casualtyCommitment!.options).map(({normal, elite}) => ({normal, elite})),
-      ...(casualtyCommitment ? { commitment: { forces: {...casualtyCommitment.forces}, dial: casualtyCommitment.dial, support: casualtyCommitment.support } } : {}),
+      ...(casualtyCommitment ? { commitment: { forces: {...casualtyCommitment.forces}, dial: casualtyCommitment.dial, support: casualtyCommitment.support,
+        ...(casualtyCommitment.fullyCommitted ? { fullyCommitted: true as const } : {}) } } : {}),
     };
   }
   if (discarded.length) {

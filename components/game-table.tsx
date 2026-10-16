@@ -5129,7 +5129,14 @@ export function GameTable({
                           {g.players.find(p => p.id === g.battle!.smugglerCollection!.player)?.name}’s Smuggler has {g.battle.smugglerCollection.amount} spice pending from the reveal-time piles.
                           If the leader survives, collection resolves before battle settlement, even after defeat. A partial collection across several piles requires its owner’s sector choice. That spice is not yet spendable.
                         </p>}
-                        {!g.battle.traitorSubmitted.includes(me.id) && (
+                        {!g.battle.traitorVoters.includes(me.id) && (
+                          <p className="notice">
+                            Only the native faction may declare Traitors here.
+                            Wait for that decision; any legal invader late defense
+                            follows through its own original control.
+                          </p>
+                        )}
+                        {g.battle.traitorVoters.includes(me.id) && !g.battle.traitorSubmitted.includes(me.id) && (
                           <>
                             {actionButton(
                               'Reveal traitor',
@@ -5358,6 +5365,17 @@ export function GameTable({
                               </label>
                             ))}
                             <HarassWithdrawGuide preview={g.battle.harassWithdraw} state={harassControl} />
+                            {g.homeworlds && g.battle.harassWithdraw && (
+                              <p className="notice">
+                                Classic Homeworld timing: actual undialed counters
+                                return to your native reserve Homeworlds, never to
+                                the Tanks. In Advanced, Emperor normal forces return
+                                to Kaitain and Sardaukar to Salusa; Basic retains
+                                its original single primary World. Your original
+                                dial/support stay committed across population
+                                thresholds. Harass cannot be played on any own World.
+                              </p>
+                            )}
                             {g.battle.reinforcements && (
                               <p className="notice">
                                 Reinforcements may occupy either card slot but is neither a weapon nor a defense.

@@ -138,15 +138,90 @@ fixed losses. Both co-side journeys finish the actual CHOAM market and clear
 battle/decision into phase7. Owned hosts/tabs/scaffolds were removed; no human
 game, D1, deployment or new recovery campaign changed. Full acceptance remains.
 
+## Classic Homeworld reserve routing — 16 October 2026
+
+Fresh `--profile ecaz-treachery --homeworlds` selects the independent three
+physical cards before original classic2–6 Basic/Advanced setup: base33+3.
+Harass composes on Arrakis and foreign Homeworlds. The printed own-World
+prohibition remains, including both Advanced Emperor Worlds. Expansion
+rosters, other overlays, public starts and played-game conversion stay closed.
+Recruits/Reinforcements retain their existing Homeworld module guards; this
+is not certification of the entire three-card variant.
+
+Arrakis returns remove exact ordinary/elite board counters and use the
+existing native reserve deposit quote. Foreign-World returns atomically
+withdraw the selected visitor pool and deposit into the actor's native
+reserves, rather than inventing `Player.forces` World keys or counting deaths.
+Basic keeps original typed counters at its one primary World. Advanced
+Emperor ordinary counters go to Kaitain and Sardaukar to Salusa; other actors
+use their primary. Reusing that native destination rule for Harass is explicit
+composition, not a new Harass-specific FAQ or a new answer to the earlier
+separate Nexus reserve-placement question.
+
+The sealed physical commitment/support and original force-role snapshot
+remain fixed. Returning population updates subsequent native observations,
+not this battle's score or support. The existing Homeworld loss commitment
+now retains Harass's `fullyCommitted` bit: no smaller strength-equivalent
+casualty group can be selected after its complement already returned. The
+remaining physical pool is still validated. This adds no Game root field;
+old non-Harass commitments remain unchanged. Other mid-battle population
+guards, including the separate Ghola threshold question, remain.
+
+Original native-only Traitor/Face Dancer authority and late-defense/explosion
+controls remain. Invaders no longer receive an illegal Traitor button; their
+owned late defense still follows the native decision. Successful opposing
+Traitor cancels the return. Returned counters stay outside native casualties,
+revival ledgers and subsequent Face Dance; mandatory card disposal remains.
+Canonical World names label the after-reveal typed allocation.
+
+### Scoped Homeworld proof
+
+Both modes complete original independent36-card setup with native custody and
+five physical Sardaukar; the custody appears after the real setup decisions,
+not at the earlier undealt snapshot. The foreign-World regression fixture ships
+3 normal plus4 elite, leaving low Salusa and an ambiguous paid typed dial.
+This avoids pretending a unique free-Sardaukar commitment needs a manual choice.
+
+Four actual390px journeys reach original Collection with battle/decision/loss
+frames clear: Basic foreign loss, Advanced foreign win, Advanced Arrakis
+Salusa1→4 and own-Salusa prohibition with a plain legal plan. The first three
+select2 normal/3 elite returns, preserve the original2-counter commitment and
+end Emperor reserves18/Tanks2, elite reserves4/Tanks1. Basic deposits both
+types on Kaitain; Advanced splits14 normal Kaitain/4 Sardaukar Salusa. Original
+Advanced support1 still costs1. Own-Salusa offers no Harass slot, keeps its card
+unplayed, and completes the native-only vote without an invader action.
+
+The World winner regression exposed a lost `fullyCommitted` receipt bit:
+revalidating all smaller strength-equivalent loss groups stalled the accepted
+selected complement. Retaining/filtering the original commitment fixes that
+path without weakening physical-pool checks. Fixture wallets now distinguish
+original advanced Collection income and losing/mutual-Traitor support from a
+sole winner's waiver. Incidental receipt/default/log-text assertions and an
+older obsolete Stone/validated-Traitor ambiguity expectation are removed, not
+re-pinned.
+
+Sixteen fresh programs/four policies accept36 allocation/vote/own-plan
+continuation actions and validate native precommit proposals; normal, explosion
+and own-World alternatives reach phase7. CLI help executes and the generated
+guide imports with36 evidence paths/source anchor valid; five Harass facets and
+both coverages remain Partial. No overflow/application exception; initial Vite
+optimization aborted four old dependency requests before rendered journeys.
+Owned hosts/tab/scaffolds were removed. These are native setup/shipment/control
+programs, not full unstaged modes, new recovery assurance or deployed proof.
+
+Final frozen proof:23 new regressions, related27 offline files246/246,
+types/lint and app build pass. Existing build deprecation/large-chunk/Unknown
+route warnings remain; no HTTP or database boundary changed.
+
 ## Current boundaries
 
 - Basic and Advanced now support explicit ordinary/elite and sector allocation
   after reveal. Unique returns are automatic; previously valid legacy battles
   retain unique-only derivation. See the [allocation contract](HARASS_ALLOCATION.md).
-- Additional optional modules remain gated, including Homeworlds, Nexus,
-  Leader Skills, Tech Tokens, Stronghold Cards and Discoveries. This includes
-  the printed own-Homeworld prohibition without claiming other Homeworld
-  battles are already implemented for this card.
+- Clean classic Homeworlds use the [native reserve-routing contract](#classic-homeworld-reserve-routing--16-october-2026).
+  Other optional modules remain gated, including Nexus, Leader Skills, Tech
+  Tokens, Stronghold Cards and Discoveries; broader World/faction composition
+  and full-mode acceptance stay open.
 - Richese card-family configurations now admit Harass under the
   [provisional post-withdrawal policy](#provisional-stone-burner-timing--16-october-2026).
   The ordinary invariant-allocation guard remains. Clean selected Ix follows

@@ -47,7 +47,9 @@ export function harassWithdrawChoiceState(
   }
 }
 
-function locationLabel(key: string) {
+function locationLabel(g: GameView, key: string) {
+  if (key.startsWith('homeworld:'))
+    return g.combatLocations?.find(place => place.id === key)?.name ?? key;
   const location = splitLocation(key);
   return `${territory(location.territory).name} · sector ${location.sector}`;
 }
@@ -118,6 +120,14 @@ export function HarassWithdrawChoice({
         Your Battle Plan is revealed. Choose the exact undialed counters that
         return to reserves before the Traitor decision.
       </p>
+      {g.homeworlds && (
+        <p className="fine">
+          These counters return to native Homeworld reserves. Advanced Emperor
+          ordinary counters go to Kaitain and Sardaukar to Salusa; Basic keeps
+          both types on its original primary World. Original commitment/support
+          does not change when that population rises.
+        </p>
+      )}
       <label htmlFor={`${id}-commitment`}>Dialed physical commitment</label>
       <select
         id={`${id}-commitment`}
@@ -156,7 +166,7 @@ export function HarassWithdrawChoice({
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([key, available]) => (
           <fieldset key={key} className="grid gap-2 rounded-lg border p-3">
-            <legend>{locationLabel(key)}</legend>
+            <legend>{locationLabel(g, key)}</legend>
             {(['normal', 'elite'] as const).map((kind) => (
               <label key={kind}>
                 Return {kind === 'normal' ? 'ordinary' : 'elite'} (0–
