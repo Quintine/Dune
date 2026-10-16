@@ -81,7 +81,8 @@ export type ResolutionParticipant = {
   noFieldAtTerritory?: boolean;
 };
 export type ResolutionCombatant = ResolutionParticipant & {
-  /** Own physical reserve counters available before battle casualties. */
+  /** Own typed reserves before card costs. The caller excludes an on-World fee
+   * from the native combat pool/rules while retaining original combat traits. */
   reinforcementsReserves?: { normal: number; elite: number };
   harassWithdraw?: HarassWithdrawContext;
   harassSelection?: HarassWithdrawSelection;
@@ -410,8 +411,8 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       requireQuote(validBattleSlotPair(slots[0], slots[1]) &&
         !(side === d && reinforcements.length),
       'Reinforcements needs a unique physical card and valid weapon and defense slot pair.');
-      requireQuote(!input.homeworld && !(side.leaderSkills?.length || (side === a ? d : a).leaderSkills?.length),
-      'Reinforcements cannot combine with Homeworld or leader skills.');
+      requireQuote(!(side.leaderSkills?.length || (side === a ? d : a).leaderSkills?.length),
+      'Reinforcements cannot combine with leader skills.');
       const reserves = side.reinforcementsReserves!;
       requireQuote(!!reserves && typeof reserves === 'object' && !Array.isArray(reserves),
         'Reinforcements needs own typed reserves.');

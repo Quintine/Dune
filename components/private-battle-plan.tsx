@@ -4,6 +4,7 @@ import { HelpTip } from './help-tip';
 import { faction } from '@/game/catalog';
 import { leaderStrengthLabel } from '@/game/cards';
 import { BattleComponentInspection } from './battle-component-inspection';
+import { reinforcementsSourceLabel } from './reinforcements-sources';
 
 export function PrivateBattlePlan({ game }: { game: GameView }) {
   const insight = game.battle?.fullPlanInsight;
@@ -74,6 +75,12 @@ export function PrivateBattlePlan({ game }: { game: GameView }) {
           <dt>Kwisatz Haderach</dt>
           <dd>{insight.plan.kwisatz ? 'Included' : 'Not included'}</dd>
         </div>
+        {insight.plan.reinforcementsSources && (
+          <div>
+            <dt>Native Reinforcements fee</dt>
+            <dd>{reinforcementsSourceLabel(game, insight.plan.reinforcementsSources)}</dd>
+          </div>
+        )}
       </dl>
       <BattleComponentInspection
         playerName={

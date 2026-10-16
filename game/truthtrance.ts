@@ -18,7 +18,6 @@ import {
   cardCountFactText,
   type CardCountFact,
 } from './truthtrance-card-count';
-import { richeseCards } from './richese-cards';
 import {
   parseHandInventoryFact,
   handInventoryFactMatches,
@@ -30,10 +29,11 @@ import {
   planClaimText,
   type PlanClaim,
 } from './battle-promises';
-import { gameTerritories, territory } from './board';
+import { gameTerritories } from './board';
+import { combatLocationName } from './combat-location';
 import { parseForceCountFact, forceCountFactMatches, forceCountFactText, forceCountCounterError, type ForceCountFact, type ForceCountPlayer } from './truthtrance-force-count';
 import type { Action, Game, Player } from './engine';
-import { treacheryDeck } from './cards';
+import { TRUTH_CARD_NAMES } from './truthtrance-card-names';
 import { CHEAP_HERO_TRAITOR } from './traitors';
 import { DUKE_VIDAL_ID } from './duke-vidal';
 import { canUseAsTruthtranceRole } from './shrine';
@@ -85,9 +85,6 @@ export class TruthError extends Error {}
 function check(value: unknown, message: string): asserts value {
   if (!value) throw new TruthError(message);
 }
-export const TRUTH_CARD_NAMES = [
-  ...new Set([...treacheryDeck(['ix']), ...richeseCards()].map((c) => c.name)),
-].sort();
 const record = (value: unknown): Record<string, unknown> => {
   check(
     value && typeof value === 'object' && !Array.isArray(value),
@@ -400,12 +397,13 @@ export function truthShipmentClaim(
 export function truthQuestionText(
   q: TruthQuestion,
   leaderName: (id: string) => string,
+  locationName: (id: string) => string,
 ): string {
   if (q.kind === 'freeform') return q.text;
   if (q.kind === 'shipment')
     return `Will you ${shipmentClaimText(q)} this turn?`;
   if (q.kind === 'battlePlan')
-    return `In this battle in ${territory(q.territory).name}, will it be true that ${planClaimText(q.claim, leaderName)}?`;
+    return `In this battle in ${locationName(q.territory)}, will it be true that ${planClaimText(q.claim, leaderName)}?`;
   const clause = (f: TruthFact): string => {
     if (isKnowledgeFact(f)) return knowledgeFactText(f);
     if (f.kind === 'noFieldValue') return noFieldValueFactText(f);
@@ -564,7 +562,7 @@ export function resolveTruthAction(
         )!;
         effects.log(
           g,
-          `${p.name} asks ${target.name}: ${truthQuestionText(w.question, (id) => (id === CHEAP_HERO_TRAITOR ? 'Cheap Hero / Heroine' : battleLeaderIdentities(g).find((leader) => leader.id === id)!.name))}`,
+          `${p.name} asks ${target.name}: ${truthQuestionText(w.question, (id) => (id === CHEAP_HERO_TRAITOR ? 'Cheap Hero / Heroine' : battleLeaderIdentities(g).find((leader) => leader.id === id)!.name), id => combatLocationName(g, id))}`,
         );
       } else if (a.type === 'truthSave') {
         check(

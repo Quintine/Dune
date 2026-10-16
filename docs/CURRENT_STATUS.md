@@ -29,6 +29,31 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Exact native Homeworld Reinforcements — 16 October.** Clean classic2–6
+Basic/Advanced independent36-card setup now connects the native fee on Arrakis,
+foreign Worlds and own Worlds. Exact normal-first source allocations seal in
+the plan; ambiguous omission rejects and a unique source may derive. Reserve
+fees never borrow visitors, allies or future Harass returns. On an own World,
+exclude its fee from the physical dial/casualty pool while retaining original
+pre-fee face/support. Nested plan sources and explosion-face receipt preserve
+the actual allocation without a new game root or an invented own-World ban.
+
+Canonical independent card names now work in existing current/named-slot
+Truthtrance controls. Native question logging/preview/history no longer calls
+an Arrakis-only lookup. A real named R+dial3 promise finds the needed off-World
+fee, and private reviews/form filling preserve it. Six actual390px journeys
+finish Collection, including physical0 own defense, threshold explosion,
+three-Fedaykin fee before15 Harass returns and entitled whole-plan source read.
+32 fresh four-policy programmes accept114 continuations and separately
+validate1682 R candidates against the actual engine.
+
+Frozen41-file464/464, types/lint and build pass. CLI help executes;218 evidence
+paths/source anchors/related IDs resolve, with three coverage topics Partial.
+Eight initial Vite dependency aborts and automation selector limitations are
+recorded; no overflow/application exception. Owned hosts/tabs/scaffolds removed.
+Other rosters/overlays, saved-game conversion, public/deploy gates, calibration,
+whole-mode and final recovery/privacy/custody certification remain open.
+
 **Current-rate Homeworld Recruits — 16 October.** Clean classic2–6 Basic and
 Advanced independent36-card setup now admits native Revival. Reuse current
 free rates/low bonuses, recorded usage and typed deposits, not a new saved
@@ -48,15 +73,15 @@ by a passing10-case rerun. CLI help and207 guide evidence paths/source anchor
 pass. Initial QA middleware ordering and eight Vite dependency aborts are
 recorded, not called zero diagnostics. No overflow/application exception.
 Owned hosts/tab/scaffolds removed; no games/DBs/human services touched.
-Reinforcements retains its explicit Homeworld gate. Other overlays/rosters,
-public starts, whole-mode/final assurance and deployment remain gated.
+Reinforcements uses its separate exact native-source composition above. Other
+overlays/rosters, public starts, whole-mode/final assurance and deployment stay gated.
 
 **Classic Homeworld Harass — 16 October.** Fresh classic2–6 Basic/Advanced
 Homeworlds can compose the original independent36-card variant. Harass works
 on Arrakis or a foreign World, never any own World, including both Emperor
 Worlds in Advanced. Recruits uses the separate native-rate composition above;
-Reinforcements keeps its World guard. No other overlays, expansion rosters,
-public starts or played-save conversion open.
+Reinforcements uses its separate native fee contract. No other overlays,
+expansion rosters, public starts or played-save conversion open.
 
 Actual undialed counters return through one native custody quote: Basic
 original primary retains typed elites; Advanced normal→Kaitain/elite→Salusa.

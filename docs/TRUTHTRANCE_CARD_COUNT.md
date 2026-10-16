@@ -18,6 +18,15 @@ The new leaf inside the existing fact question is:
 
 `value` must be a nonnegative safe integer. Thresholds are not artificially limited by a current hand limit or battle dial. Names use the same exact canonical `TRUTH_CARD_NAMES` membership as existing hand facts. Case variants and unknown names are rejected; no new alias or combat-role inference is introduced. Shield Snooper and Portable Snooper do not count as Shield or Snooper.
 
+The 16 October canonical registry lives in `game/truthtrance-card-names.ts`.
+Ordinary/Ix, separate Richese cache and all three independent Ecaz names feed
+the same exact current-fact and named-slot condition controls. Recognizing a
+name does not select/deal its family or reclassify a special as a weapon.
+The actual named Reinforcements/native-dial continuation is recorded in the
+[native fee contract](REINFORCEMENTS_RUNTIME.md#canonical-named-questions-and-native-locations).
+Native battle question previews, answers/history and server logs receive
+canonical combat-location labels, not an Arrakis-only territory lookup.
+
 `game/truthtrance-card-count.ts` provides the pure parser, matcher and sentence formatter. The engine adapter catches parser failures as `TruthError`, preserving the existing rejected-action path. It evaluates physical entries in the respondent's actual current hand when answering. A used card retained in hand counts; cards already in a deck, discard or on-table effect do not. The helper relies on the engine's physical inventory contract rather than deduplicating or repairing corrupted hands.
 
 The shared Truthtrance engine handles priority, ownership, answer validation, exact single discard, history and interrupted-state continuation. A dishonest or unknown answer to this knowable leaf is rejected. In composed expressions, existing three-valued AND/OR rules still apply when another clause is unknown. Only the aggregate expected answer is projected to the target; other seats get no matching-card IDs, counts or per-clause answers. The published question and answer intentionally reveal their logical consequence.

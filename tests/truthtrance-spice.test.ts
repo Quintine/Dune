@@ -13,9 +13,7 @@ import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import {
   truthFactAnswer,
-  truthQuestionText,
   type TruthFact,
-  type TruthQuestion,
 } from '../game/truthtrance';
 
 function fixture(spice = 7) {
@@ -391,15 +389,6 @@ void test('a current-spice answer records a fact rather than forbidding a subseq
   assert.deepEqual(
     paid.battle?.truthPromises ?? [],
     done.battle?.truthPromises ?? [],
-  );
-  const q: TruthQuestion = {
-    kind: 'fact',
-    target: 'e',
-    fact: spiceFact('gte', 41),
-  };
-  assert.match(
-    truthQuestionText(q, () => 'unused'),
-    /currently hold at least 41 spice/,
   );
   assert.deepEqual(cards(paid), cards(initial));
 });

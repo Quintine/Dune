@@ -112,6 +112,8 @@ import { botNexusHarkonnenBetrayalActions } from './bot-nexus-harkonnen-betrayal
 import { validateCohortSelection, type OrnithopterMode } from './ornithopter';
 import { fighterCount, isAdvisor } from './advisors';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from './combat';
+import { reinforcementsBattleForces } from './reinforcements-homeworld';
+import type { NativeReserveSelections } from './homeworld-native-reserves';
 import { stoneBurnerPlanBlock, stoneBurnerComparison, stoneBurnerWithdrawalContext } from './stone-burner';
 import {
   applyAction,
@@ -586,7 +588,7 @@ function ornithopterMoves(g: GameView): Action[] {
   return result;
 }
 function candidatePlan(a: Action): Plan {
-  return {
+  const plan: Plan = {
     ...(Number(a.bankerSpice ?? 0)
       ? { bankerSpice: Number(a.bankerSpice) }
       : {}),
@@ -597,6 +599,9 @@ function candidatePlan(a: Action): Plan {
     defense: typeof a.defense === 'string' ? a.defense : null,
     kwisatz: a.kwisatz === true,
   };
+  if (a.reinforcementsSources !== undefined)
+    plan.reinforcementsSources = a.reinforcementsSources as NativeReserveSelections;
+  return plan;
 }
 function plans(g: GameView): Action[] {
   const me = g.players.find((p) => p.id === g.me)!;
@@ -630,18 +635,16 @@ function plans(g: GameView): Action[] {
   const ownStrength = occupyProfile?.maxDial ?? (typedForces
     ? maxCombatDial(forces)
     : own);
-  const supportCache = new Map<
-    number,
-    { support: number; cost: number } | null
-  >();
-  const supporting = (dial: number) => {
-    if (supportCache.has(dial)) return supportCache.get(dial)!;
+  type SupportChoice = { support: number; cost: number };
+  const supportCache = new Map<number, SupportChoice | null>();
+  const supporting = (dial: number, pool = forces, cache = supportCache) => {
+    if (cache.has(dial)) return cache.get(dial)!;
     const choices = Array.from(
       {
         length:
           (g.advanced
             ? Math.min(
-                maxCombatSupport(forces),
+                maxCombatSupport(pool),
                 (me.spice ?? 0) +
                   g.aid.available +
                   (b.strongholdEffects[me.id] === 'arrakeen' ? 2 : 0),
@@ -652,7 +655,7 @@ function plans(g: GameView): Action[] {
         (occupyProfile
           ? occupyDials.some((option) => option.dial === dial && option.support === support)
             ? quoteEcazOccupyDial(occupyProfile, dial, support).options : []
-          : casualtyOptions(forces, dial, support)).map((loss) => ({
+          : casualtyOptions(pool, dial, support)).map((loss) => ({
           support,
           cost:
             Math.max(
@@ -667,9 +670,14 @@ function plans(g: GameView): Action[] {
       .flat()
       .sort((a, b) => a.cost - b.cost);
     const result = choices[0] ?? null;
-    supportCache.set(dial, result);
+    cache.set(dial, result);
     return result;
   };
+  const reservePools = b.reinforcements?.homeworldSources?.map(sources => {
+    const pool = b.native === me.id
+      ? reinforcementsBattleForces(forces, sources[b.territory]) : forces;
+    return { sources, pool, cache: pool === forces ? supportCache : new Map<number, SupportChoice | null>() };
+  });
   // Include affordable bank-supported dials even when the estimated winning
   // dial exceeds the budget; otherwise a large army can miss its free support.
   const bankSupportedDials =
@@ -920,9 +928,24 @@ function plans(g: GameView): Action[] {
           );
           if (committedDial) action.dial = committedDial.value;
           if (!fixed('dial', Number(action.dial))) continue;
-          const commitment = typedForces
-            ? supporting(Number(action.dial))
-            : null;
+          let commitment = typedForces && !(reinforcements && g.homeworlds)
+            ? supporting(Number(action.dial)) : null;
+          if (reinforcements && g.homeworlds) {
+            if (!reservePools?.length) continue;
+            let selectedSources: NativeReserveSelections | undefined;
+            let selectedCommitment: SupportChoice | null = null;
+            for (const variant of reservePools) {
+              if (!typedForces && Number(action.dial) > variant.pool.normal + variant.pool.elite) continue;
+              const supported = typedForces ? supporting(Number(action.dial), variant.pool, variant.cache) : null;
+              if (typedForces && !supported) continue;
+              if (selectedSources && (selectedCommitment?.cost ?? 0) <= (supported?.cost ?? 0)) continue;
+              selectedSources = variant.sources;
+              selectedCommitment = supported;
+            }
+            if (!selectedSources) continue;
+            action.reinforcementsSources = selectedSources;
+            commitment = selectedCommitment;
+          }
           if (typedForces && !commitment) continue;
           if (commitment) action.support = commitment.support;
           const supportCost = Math.max(

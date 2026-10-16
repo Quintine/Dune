@@ -3,8 +3,9 @@ import { useId } from 'react';
 import { HelpTip } from './help-tip';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { TRUTH_CARD_NAMES } from '@/game/truthtrance';
+import { TRUTH_CARD_NAMES } from '@/game/truthtrance-card-names';
 import { planClaimText, type PlanClaim } from '@/game/battle-promises';
+import { reinforcementsSourceLabel } from './reinforcements-sources';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
 import type { Action, GameView, Plan } from '@/game/engine';
 
@@ -229,6 +230,9 @@ export function BattlePromises({
             <br />
             Kwisatz: {plan.kwisatz ? 'Included' : 'Not included'}
           </p>
+          {plan.reinforcementsSources && (
+            <p className="fine">Native reserve fee: {reinforcementsSourceLabel(g, plan.reinforcementsSources)}</p>
+          )}
           <p className="fine">
             These choices satisfy your current commitments. Review and change
             the other elements before sealing your plan.

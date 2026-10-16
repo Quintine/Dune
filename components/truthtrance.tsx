@@ -95,6 +95,7 @@ export function Truthtrance({
       ? 'Cheap Hero / Heroine'
       : (g.allLeaders.find((l) => l.id === id)?.name ?? id);
   const name = (id: string) => g.players.find((p) => p.id === id)!.name;
+  const locationName = (id: string) => g.combatLocations.find(place => place.id === id)!.name;
   const question: TruthQuestion =
     kind === 'fact'
       ? {
@@ -183,7 +184,7 @@ export function Truthtrance({
           </p>
           {w.question && (
             <blockquote>
-              <p>{truthQuestionText(w.question, leaderName)}</p>
+              <p>{truthQuestionText(w.question, leaderName, locationName)}</p>
               <p className="fine">Asked of {name(w.question.target)}</p>
             </blockquote>
           )}
@@ -366,10 +367,10 @@ export function Truthtrance({
                   )}
                   <p className="notice" aria-label="Public grouped question preview">
                     {kind === 'mixedShipment'
-                      ? invalidMixed ?? truthQuestionText(question, leaderName)
+                      ? invalidMixed ?? truthQuestionText(question, leaderName, locationName)
                       : invalidShipment
                         ? 'Enter a whole minimum of one to twenty forces.'
-                        : truthQuestionText(question, leaderName)}
+                        : truthQuestionText(question, leaderName, locationName)}
                   </p>
                 </>
               ) : kind === 'battlePlan' ? (
@@ -404,7 +405,7 @@ export function Truthtrance({
                       </fieldset>
                     ))}
                   <p className="notice">
-                    {truthQuestionText(question, leaderName)}
+                    {truthQuestionText(question, leaderName, locationName)}
                   </p>
                   {g.battle &&
                     ![g.battle.attacker, g.battle.defender].includes(
@@ -436,7 +437,7 @@ export function Truthtrance({
                   <p className="notice">
                     {invalidFact
                       ? 'Resolve the marked fields before asking this question.'
-                      : truthQuestionText(question, leaderName)}
+                      : truthQuestionText(question, leaderName, locationName)}
                   </p>
                 </>
               ) : (
@@ -514,6 +515,7 @@ export function TruthHistory({ game: g }: { game: GameView }) {
                 id === CHEAP_HERO_TRAITOR
                   ? 'Cheap Hero / Heroine'
                   : (g.allLeaders.find((l) => l.id === id)?.name ?? id),
+                id => g.combatLocations.find(place => place.id === id)!.name,
               )}
             </p>
             <strong>

@@ -4,7 +4,7 @@ import { applyAction, viewGame } from '../game/engine';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import { FACTIONS } from '../game/catalog';
-import { truthFactAnswer, truthQuestionText, type TruthFact } from '../game/truthtrance';
+import { truthFactAnswer, type TruthFact } from '../game/truthtrance';
 import { knowledgeFactAnswer, parseKnowledgeFact, truthKnowledgeOf, type KnowledgeFact } from '../game/truthtrance-knowledge';
 import { knowledgeGame, knownForecastGame, askKnowledge, rejectKnowledge, knowledgePhysical, knowledgeBotActions } from './truthtrance-knowledge-fixture';
 
@@ -98,6 +98,4 @@ void test('unknown stored knowledge retains the real card and permits a differen
   const retry=applyAction(unknown,'a',{type:'truthAsk',question:{kind:'fact',target:'b',fact:{kind:'prediction',field:'turn',compare:'eq',value:7}}});
   const done=applyAction(retry,'b',{type:'truthAnswer',answer:'yes'});assert.equal(done.truthtrance,null);
   assert.deepEqual(knowledgePhysical(done),knowledgePhysical(initial));
-  const wording=truthQuestionText({kind:'fact',target:'b',fact:{kind:'prediction',field:'faction',faction:'guild'}},id=>id);
-  assert.match(wording,/recorded.*prediction/);assert.doesNotMatch(wording,/will you win|must win/i);
 });

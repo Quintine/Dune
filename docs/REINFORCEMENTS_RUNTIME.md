@@ -2,17 +2,17 @@
 
 The separate Ecaz Treachery Cards variant shuffles one physical Reinforcements
 card independently of choosing the Ecaz faction. Its bounded handler supports
-Basic or Advanced classic-faction tables and clean Ecaz/Moritani expansion
-tables without other optional modules. The fresh opted-in Advanced Occupy
-profile additionally composes co-present armies and native Ixian/Tleilaxu/CHOAM
-families; Basic/unprofiled co-side use stays guarded. The
-holder may commit it in either Battle Plan card slot. It is neither a weapon
+Basic/Advanced classic-faction tables and clean Ecaz/Moritani expansion tables.
+Fresh clean classic Homeworlds use the native-source composition below; other
+optional modules retain their guards. The selected Advanced Occupy profile also
+composes co-present armies and native Ixian/Tleilaxu/CHOAM families.
+The holder may commit it in either Battle Plan card slot. It is neither a weapon
 nor a defense: Prescience of a category receives **None**, while the physical
 slot stays occupied and hidden until reveal. A named-card inspection still
 fixes the exact card. Harass & Withdraw may share the plan under the
 [provisional original-cost-first policy](#combined-utility-plan--16-october-2026).
 Original or copied Stone Burner composes in the existing native Advanced Occupy
-envelope; Homeworld, other profile and optional-module boundaries remain.
+envelope. Other roster/profile/optional-module boundaries remain.
 
 The [combined-army follow-up](ECAZ_OCCUPY_RULES.md#independent-cards-with-combined-armies--2-october-2026)
 retains own-holder reserve cost and selected lead card/payment ownership.
@@ -144,3 +144,97 @@ D1, deployment, public profile or new broad/HTTP/recovery/privacy/custody
 assurance campaign changed. Owned hosts/scripts are removed; private proof
 artifacts stay outside Git.
 
+
+## Classic Homeworld reserve fees — 16 October 2026
+
+Fresh `ecaz-treachery --homeworlds` composes original classic2–6 Basic/Advanced
+and all three independent physical cards (base33+3). Reinforcements may be
+used on Arrakis, a foreign World **or an own World**; it does not inherit
+Harass's printed own-World ban. Expansion rosters, other overlays, public
+starts and played-save conversion remain outside this entry.
+
+### Sources, physical pool and original quote
+
+The existing provisional normal-first/all-outcome fee still consumes exactly3
+own native reserve counters into matching normal/special Tanks subpools before
+Harass returns and battle casualties. Visitors, an ally and future returns
+cannot pay. Canonical native withdrawal updates World custody and aggregate
+reserves together, not fake board keys or revival. Population observation
+follows the complete typed fee. The +2 remains score-only.
+
+An owner-only finite source list exposes every exact legal split, including
+real normal counters moved between Kaitain/Salusa. A unique source may derive;
+ambiguous omission, foreign IDs, wrong types, nonphysical counts and overdraw
+reject. `Plan.reinforcementsSources` records the chosen fee before both seals;
+sealing pays nothing early. Sources are not a new ordinary Prescience element.
+Named full-plan inspection receives the actual committed sources privately.
+
+On an own World, native reserves and the battle army are the same physical
+counters. Under the explicit choose-recommended composition, reserve the
+on-location fee from the physical dial/support/casualty pool while retaining
+the original pre-fee printed face and combat traits. An off-World fee does
+not shrink that army. This is provisional composition, not a newly retrieved
+card-specific FAQ or permission to spend one counter twice.
+
+For example, Kaitain3 paying3 here can still play its printed-strength/leader
+plan at physical dial0, but not dial1. Taking3 normal from Salusa instead
+leaves those three Kaitain natives available. With Kaitain5, a split1 Kaitain/
+2 Salusa fee crosses low at4; its explosion still loses the original high2,
+not the later low3. The optional nested World-loss `faceAtResolution` keeps
+that exact original choice through mandatory disposal. No new game root is
+added; the new nested source/face fields are not described as no saved fields.
+
+Controls show exact allocations and a wrapped selected-fee caption, project
+the own-World physical maximum, retain sealed source guidance, and carry the
+whole source choice when filling a legal completion. Private full-plan and
+compliant-plan reviews display the same real source map. Four minimal policies
+generate explicit legal source-bearing plans and native-only continuations.
+
+### Canonical named questions and native locations
+
+The constrained-plan smoke found the old whitelist omitted the independent
+cards. `game/truthtrance-card-names.ts` now supplies canonical ordinary/Ix,
+Richese-cache and independent names to current hand/count controls and named
+battle conditions. Every consumer moved; no obsolete re-export remains.
+Names do not select/deal a family or change a utility card into a weapon.
+
+A real Reinforcements-and-dial3 question then exposed the formatter's
+Arrakis-only lookup. Server logging, active preview/answer and history now
+provide canonical combat-location names explicitly. A real Kaitain promise
+can answer Yes, find the necessary off-World Salusa fee and execute it. Its
+legal-completion button replaces an invalid own-World fee draft as well as
+the dial/support/cards. Old copied-registry and incidental wording assertions
+are deleted, not re-pinned; native action/physical-outcome regressions replace
+that evidence.
+
+### Scoped native proof
+
+Six actual390px GameTable journeys reach Collection with no battle/decision/
+World-loss frame: foreign split2K/1S, scarce own3K/physical0, split1K/2S
+threshold explosion, Fremen three-Fedaykin fee before15 normal Harass returns,
+entitled full-plan source inspection, and the named R+dial3 Kaitain promise.
+The source review/selection stays readable; its current metadata never pays
+early. Native-only votes, original support, exact Tanks and mandatory discard
+are observed.
+
+Thirty-two fresh programmes/four policies validate1682 generated R candidates
+against the actual engine and accept114 plan/vote/loss continuation actions,
+including the underfunded-card fallback. These are separate counts, not1682
+continuations. Actual setup, shipment, native movement and battles produce
+the positions; only conserved hands/Traitors/unopened first-Blow cards are
+positioned explicitly. This is not unstaged full-game card acquisition.
+
+The original inspection probe initially stopped before native elite-strength
+priority passed; completing that original response fixed the probe without
+changing timing rules. The named-question failures above were real runtime
+gaps and are repaired. Across two owned Vite startups, eight old dependency
+requests abort before rendered journeys; no overflow/application exception.
+Owned hosts/tabs/scaffolds are removed and proof artifacts remain outside Git.
+No saved game, DB, human service, public gate or deployment changed. Whole
+mode/variant acceptance, calibration and final assurance remain unfinished.
+
+Frozen related41 offline files464/464, types/lint and production build pass.
+Existing module-register/large-chunk/Unknown-route warnings remain. CLI help
+executes;218 unique guide evidence paths, both new anchors and related IDs
+resolve. Homeworlds, Reinforcements and Truthtrance coverage remains Partial.
+No HTTP route or DB boundary changed; no broad/final assurance campaign ran.

@@ -1,5 +1,75 @@
 # Dune implementation status
 
+## 16 October 2026 — Exact native Homeworld Reinforcements fees
+
+Original fresh own-Salusa play rejects the blanket R module gate before a
+plan, reserve or card changes. Extend only clean classic2–6 Basic/Advanced
+Homeworlds with independent36-card setup. All three bounded effects now compose;
+this does not certify the whole variant or open other overlays, expansion
+rosters, public starts or played-save conversion.
+
+One focused native quote enumerates exact normal-first World source choices
+and validates the selected three counters through original custody. Visitors,
+other players and later Harass returns do not fund it. A unique source may
+derive; ambiguous omission and malformed/foreign/wrong-type/overdraw source
+maps reject. Seal `Plan.reinforcementsSources`, excluded from ordinary
+Prescience fields; no early payment or game root. Source ownership remains
+the actual card user, not a selected leader/ally.
+
+On an own World, fee counters and native army overlap physically. Explicitly
+choose the disjoint pre-fee reserved-pool interpretation: subtract the on-World
+fee from physical dial/casualties, not original face/support traits. An off-World
+fee leaves that army. Native explosion receipts keep optional nested
+`faceAtResolution`; split1K/2S at Kaitain5 crosses low at4 but still loses the
+original2, not post-fee3. Exact typed fee commits before Harass/casualties and
+counts existing battle losses on every revealed outcome. No own-World ban,
+support/bonus pawn, waiver or retroactive rescore is invented. These are visibly
+provisional compositions of the printed reserve cost and original native rules,
+not newly retrieved FAQ answers.
+
+Both slot controls display finite exact native choices and a wrapping selected
+caption. Own-World dial/support bounds, sealed guidance, earned full-plan read,
+private compliant review and fill carry source metadata. Four policies generate
+legal source-bearing actions; unchanged normal-score strategy is not calibrated.
+Two workers supplied independent genuine Arrakis/World fixture/regression
+slices; parent reviewed all bodies, removed incidental stage/default/DTO-copy
+pins and integrated alone. Actual setup/shipment/native movement produces
+normal/mixed/star fee pools without counter/wallet/phase/history assignment.
+Hands, original Traitors and unopened first-Blow cards are positioned explicitly.
+
+Constrained-plan smoke exposed two real pre-existing blockers: independent
+names omitted from the old whitelist, then battle question formatting calling
+Arrakis `territory()` for a World. Move the single canonical registry to
+`truthtrance-card-names.ts` and migrate every consumer without re-export;
+ordinary/Ix/cache/independent names do not select/deal a family or reclassify a
+utility. Require explicit canonical location resolution for logging, active
+preview/answer and history. A real named R+dial3 promise now answers Yes, finds
+the off-World source and executes it. Its completion fill replaces the invalid
+on-World fee draft too. Delete obsolete registry/parse echoes and incidental
+spice/knowledge wording assertions, preserving their actual action outcomes.
+
+Six real390px GameTable journeys reach phase7 with battle/decision/World loss
+clear: foreign split2K/1S, native3K/physical0, split1K/2S threshold explosion,
+Fremen3E fee before15N Harass returns, private Atreides source inspection, and
+the actual compound named-card promise. Physical0 bounds are both0. Private
+inspection leaves opponent unsealed, shows complete fee only to its entitled
+reader, then continues normally. The named legal-plan fill changes stale source3
+to0 and physical max0 to3, completing reserves14/Tanks6/spice7 with Salusa9N5E.
+Thirty-two fresh programmes/four policies accept114 plan/vote/loss actions and
+separately engine-validate1682 generated R candidates; no false continuation
+count. Initial inspection probe needed original elite-strength priority passes,
+not a timing-rule change.
+
+Frozen41 offline files464/464; types/lint and production build pass. Existing
+module-register/large-chunk/Unknown-route warnings remain. Actual CLI help
+executes; guide import resolves218 unique evidence paths, source anchors and
+related IDs. All three topic coverages remain Partial. Eight Vite startup
+dependency aborts and selector limitations are retained in private proof,
+not called zero diagnostics; no overflow/application exception. Fresh screenshot
+after the fade is the accepted private-panel visual proof. Owned hosts/tabs/
+scaffolds removed. Games/DBs/human services remain untouched. No deployment or
+whole-mode, recovery/privacy/custody certification is claimed.
+
 ## 16 October 2026 — Recruits with current native Homeworld rates
 
 Final types/lint pass after narrowing the test helper's nullable World view;

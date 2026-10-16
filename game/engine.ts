@@ -600,7 +600,9 @@ import {
   type SpiceCard,
 } from './cards';
 import { ecazTreacheryCards, ecazTreacheryDefinition } from './ecaz-cards';
-import { isReinforcements, quoteReinforcements, ReinforcementsError } from './reinforcements';
+import { REINFORCEMENTS_CARD, isReinforcements, quoteReinforcements, ReinforcementsError } from './reinforcements';
+import { quoteReinforcementsHomeworldCost, reinforcementsHomeworldSources,
+  reinforcementsBattleForces } from './reinforcements-homeworld';
 import {
   RECRUITS_CARD_ID,
   type RecruitsPreview,
@@ -686,10 +688,12 @@ export type Plan = {
   support: number;
   allyPayment?: number;
   kwisatz?: boolean;
+  /** Exact native reserve fee sources; only a Homeworld Reinforcements plan. */
+  reinforcementsSources?: NativeReserveSelections;
 };
 export type PlanField = Exclude<
   keyof Plan,
-  'support' | 'kwisatz' | 'allyPayment' | 'bankerSpice'
+  'support' | 'kwisatz' | 'allyPayment' | 'bankerSpice' | 'reinforcementsSources'
 >;
 export type DiplomatDefenseReceipt = DiplomatDefenseQuote & {
   event: string;
@@ -2200,6 +2204,8 @@ export type Game = {
     kind: 'winner' | 'explosion';
     pool: HomeworldForces;
     options: HomeworldForces[];
+    /** Original printed face; reserve-card fees cannot reprice this explosion. */
+    faceAtResolution?: 'high' | 'low';
     commitment?: { forces: CombatForces; dial: number; support: number; fullyCommitted?: true };
   } | null;
   lastBattleContext?: {
@@ -8184,12 +8190,16 @@ function homeworldBattleLossIntegrity(g: Game) {
   requireRule(pending.pool && Object.keys(pending.pool).length === 2 &&
     pool.normal === pending.pool.normal && pool.elite === pending.pool.elite,
     'The Homeworld casualty receipt does not match its exact physical pool.');
+  requireRule(pending.faceAtResolution === undefined ||
+    (pending.kind === 'explosion' && ['high', 'low'].includes(pending.faceAtResolution)),
+  'The native explosion receipt needs its original printed face.');
   let options: HomeworldForces[];
   if (pending.kind === 'explosion') {
     const rules = currentHomeworldBattleRules(g, pending.territory)!;
     requireRule(rules.native === pending.player && !pending.commitment,
       'Native explosion casualties belong to this Homeworld’s native faction.');
-    options = quoteHomeworldBattleRules(pending.territory, g.players, rules).explosion.options;
+    options = quoteHomeworldBattleRules(pending.territory, g.players,
+      pending.faceAtResolution ? { ...rules, side: pending.faceAtResolution } : rules).explosion.options;
   } else {
     const commitment = pending.commitment;
     requireRule(commitment && commitment.forces.normal === pool.normal && commitment.forces.elite === pool.elite &&
@@ -8346,10 +8356,18 @@ function ecazBattleProfile(g: Game): EcazOccupyBattleProfile | null {
     lead, canceled: occupy.canceled,
   }));
 }
-function planCombatForces(g: Game, p: Player, opponent: Player): CombatForces {
+function planCombatForces(g: Game, p: Player, opponent: Player,
+  reserveCost?: ReinforcementsCost): CombatForces {
   const profile = ecazBattleProfile(g);
-  return profile?.lead === p.id ? profile.forces :
+  const forces = profile?.lead === p.id ? profile.forces :
     combatForces(g, p, g.battle!.territory, profile?.lead === opponent.id ? getPlayer(g, profile.forceOwner) : opponent);
+  if (!g.homeworlds || !g.battle!.territory.startsWith('homeworld:')) return forces;
+  const home = homeworldBattleLocation(g, g.battle!.territory);
+  if (!home || home.native !== p.id) return forces;
+  const plan = g.battle!.plans[p.id];
+  const cost = reserveCost ?? (plan && (plan.weapon === REINFORCEMENTS_CARD || plan.defense === REINFORCEMENTS_CARD)
+    ? currentReinforcementsCost(g, p, plan.reinforcementsSources) : undefined);
+  return reinforcementsBattleForces(forces, cost?.sources?.[home.id]);
 }
 function takeBattleLosses(g: Game, p: Player, t: string, losses: Casualties) {
   if (t.startsWith('homeworld:')) {
@@ -13697,8 +13715,11 @@ function ecazTreacheryIntegrity(g: Game) {
         [plan.weapon, plan.defense].every(id => id === null || !!cardOf(owner, id)) &&
         validBattleSlotPair(cardOf(owner, plan.weapon), cardOf(owner, plan.defense)),
         'The sealed Reinforcements plan lost its physical card or legal slot.');
-      currentReinforcementsCost(g, owner);
+      currentReinforcementsCost(g, owner, plan.reinforcementsSources);
     }
+    requireRule(plan.reinforcementsSources === undefined ||
+      (g.homeworlds && (plan.weapon === REINFORCEMENTS_CARD || plan.defense === REINFORCEMENTS_CARD)),
+    'Native reserve fee sources require the physical Reinforcements card in a Homeworld plan.');
     requireRule(plan.leader !== HARASS_WITHDRAW_CARD && g.battle?.lateDefense?.[player] !== HARASS_WITHDRAW_CARD &&
       !(plan.weapon === HARASS_WITHDRAW_CARD && plan.defense === HARASS_WITHDRAW_CARD),
       'Harass & Withdraw occupies exactly one ordinary Battle Plan card slot.');
@@ -13758,19 +13779,31 @@ function combinedCardBattleBlock(g: Game): string | null {
 }
 function reinforcementsModeSupported(g: Game) {
   const pairedEcaz = g.expansions.length === 1 && g.expansions[0] === 'ecaz';
-  return !!g.ecazTreachery && !g.homeworlds && recruitsModeSupported(g) && !g.sandtrout &&
+  return !!g.ecazTreachery && recruitsModeSupported(g) && !g.sandtrout &&
     ((g.ecazOccupyPreview === true && ecazOccupyCompositionSupported(g)) ||
       ((g.expansions.length === 0 || pairedEcaz) && g.players.every(player => {
         const expansion = faction(player.faction).expansion;
         return expansion === 'base' || (pairedEcaz && expansion === 'ecaz');
       })));
 }
-function currentReinforcementsCost(g: Game, p: Player) {
+type ReinforcementsCost = ReturnType<typeof quoteReinforcements> & {
+  sources?: NativeReserveSelections;
+  native?: ReturnType<typeof quoteNativeReserveWithdrawal>;
+};
+function currentReinforcementsCost(g: Game, p: Player,
+  selections?: NativeReserveSelections): ReinforcementsCost {
   requireRule(reinforcementsModeSupported(g),
     'Reinforcements requires the independent Ecaz card variant in a supported native faction composition.');
   const combinedBlock = combinedCardBattleBlock(g);
   requireRule(!combinedBlock, combinedBlock ?? 'This combined card battle is unavailable.');
+  requireRule(selections === undefined || g.homeworlds,
+    'Native Reinforcements sources require the original Homeworld module.');
   try {
+    if (g.homeworlds) {
+      requireRule(g.homeworlds.custody, 'Reinforcements needs its original native reserve custody.');
+      return homeworldRule(() => quoteReinforcementsHomeworldCost(
+        homeworldContext(g), g.homeworlds!.custody!, p.id, selections));
+    }
     const materializes = prospectiveNoFieldForces(p, g.battle?.territory ?? '');
     return quoteReinforcements(p.reserves - materializes - (p.elites?.reserves ?? 0), p.elites?.reserves ?? 0);
   } catch (error) {
@@ -13799,6 +13832,8 @@ function reinforcementsPreview(g: Game, p: Player) {
       ? 'Your No-Field reveals before Reinforcements; three own reserves must remain after materialization.'
       : 'Reinforcements needs three physical forces in your reserves.';
   return { blocked, normal, elite,
+    ...(!blocked && g.homeworlds?.custody ? { homeworldSources: homeworldRule(() =>
+      reinforcementsHomeworldSources(homeworldContext(g), g.homeworlds!.custody!, p.id)) } : {}),
     ...(p.noField?.deployed?.location.territory === battle.territory
       ? { noField: { materializes, reservesAfterReveal } } : {}) };
 }
@@ -21172,7 +21207,13 @@ function validatePlan(
 ): Plan {
   const b = g.battle!;
   const opponent = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
-  const forces = planCombatForces(g, p, opponent);
+  const selectedReinforcements = input.weapon === REINFORCEMENTS_CARD || input.defense === REINFORCEMENTS_CARD;
+  requireRule(input.reinforcementsSources === undefined || selectedReinforcements,
+    'Native reserve fee sources require the physical Reinforcements card.');
+  const reserveCost = selectedReinforcements
+    ? currentReinforcementsCost(g, p, input.reinforcementsSources as NativeReserveSelections | undefined)
+    : undefined;
+  const forces = planCombatForces(g, p, opponent, reserveCost);
   const profile = ecazBattleProfile(g);
   const occupy = profile?.lead === p.id ? profile : null;
   const typedForces = g.advanced || p.faction === 'ixians' || !!occupy;
@@ -21201,6 +21242,7 @@ function validatePlan(
   const plan: Plan = {
     ...(bankerSpice ? { bankerSpice } : {}),
     ...(allyPayment ? { allyPayment } : {}),
+    ...(reserveCost?.sources ? { reinforcementsSources: structuredClone(reserveCost.sources) } : {}),
     dial,
     leader:
       typeof input.leader === 'string' && input.leader ? input.leader : null,
@@ -21291,7 +21333,6 @@ function validatePlan(
     validBattleSlotPair(w, d, planetologistWeapon),
     'Chemistry as a weapon needs another defense; Weirding Way as a defense needs another weapon.',
   );
-  if ([w, d].some(isReinforcements)) currentReinforcementsCost(g, p);
   if ([w, d].some(isHarassWithdraw)) currentHarassWithdrawQuote(g, p, plan);
   if (isMirrorWeapon(w)) {
     const blocked = mirrorWeaponModeBlock(g) ?? stonePlanBlock(g, p, plan);
@@ -21771,6 +21812,7 @@ function findLegalBattlePlan(
   const fixedDial = profile?.lead === p.id ? profile.fixedEcazDial : 0;
   const typed = g.advanced || p.faction === 'ixians';
   const maxDial = fixedDial + (typed ? maxCombatDial(forces) : forces.normal + forces.elite);
+  const nativeSources = g.homeworlds ? reinforcementsPreview(g, p)?.homeworldSources : undefined;
   const numerical: { dial: number; support: number }[] = [];
   for (let dial = fixedDial; dial <= maxDial; dial += typed ? 0.5 : 1)
     for (
@@ -21826,13 +21868,18 @@ function findLegalBattlePlan(
         for (const kwisatz of [false, true]) {
           const partial = { leader, weapon, defense, kwisatz };
           if (!accepts(partial)) continue;
-          for (const n of numerical) {
-            const candidate = { ...partial, ...n };
-            if (!accepts(candidate)) continue;
-            try {
-              return validatePlan(g, p, candidate, promises);
-            } catch (error) {
-              if (!(error instanceof RuleError)) throw error;
+          const nativeFee = !!g.homeworlds &&
+            (weapon === REINFORCEMENTS_CARD || defense === REINFORCEMENTS_CARD);
+          for (let source = 0; source < (nativeFee ? nativeSources?.length ?? 0 : 1); source++) {
+            for (const n of numerical) {
+              const candidate: Partial<Plan> = { ...partial, ...n };
+              if (nativeFee) candidate.reinforcementsSources = nativeSources![source];
+              if (!accepts(candidate)) continue;
+              try {
+                return validatePlan(g, p, candidate, promises);
+              } catch (error) {
+                if (!(error instanceof RuleError)) throw error;
+              }
             }
           }
         }
@@ -22920,16 +22967,24 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
     };
   };
   try {
+    const attacker = combatant(b.attacker, b.defender);
+    const defender = combatant(b.defender, b.attacker);
+    const homeworld = currentHomeworldBattleRules(g, b.territory);
+    if (homeworld) {
+      const native = homeworld.native === attacker.id ? attacker :
+        homeworld.native === defender.id ? defender : null;
+      if (native) homeworld.nativeForces = { normal: native.forces.normal, elite: native.forces.elite };
+    }
     const quote = quoteBattleResolution({
       advanced: g.advanced,
       ...(b.ecazOccupy ? { ecazOccupy: ecazBattleProfile(g)! } : {}),
       aggressor: battleAggressor(g),
       typedCasualties: !!g.homeworlds,
-      ...(homeworldBattleLocation(g, b.territory) ? { homeworld: currentHomeworldBattleRules(g, b.territory)! } : {}),
+      ...(homeworld ? { homeworld } : {}),
       turn: g.turn,
       territory: b.territory,
-      attacker: combatant(b.attacker, b.defender),
-      defender: combatant(b.defender, b.attacker),
+      attacker,
+      defender,
       voters: traitorVoters(g, b).map((id) => ({
         id,
         beneficiary: traitorBeneficiary(g, b, id)!,
@@ -23003,7 +23058,7 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       validateBattleForceLoss(getPlayer(g, loss.owner), b.territory, loss.normal + loss.elite);
     if (quote.homeworldExplosion)
       for (const losses of quote.homeworldExplosion.options) quoteHomeworldLoss(g, quote.homeworldExplosion.player, b.territory, losses);
-    return { ...quote, smuggler, smugglerAllocation, sandmasterSelection };
+    return { ...quote, homeworldFace: homeworld?.side, smuggler, smugglerAllocation, sandmasterSelection };
   } catch (error) {
     if (
       error instanceof BattleResolutionQuoteError ||
@@ -23239,17 +23294,23 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
   }
   for (const cost of quote.reinforcements ?? []) {
     const player = getPlayer(g, cost.player);
-    const current = currentReinforcementsCost(g, player);
+    const current = currentReinforcementsCost(g, player, b.plans[player.id].reinforcementsSources);
     requireRule(cost.normal === current.normal && cost.elite === current.elite,
       'Reinforcements lost its original physical reserve cost.');
-    player.reserves -= cost.normal + cost.elite;
+    if (current.native) {
+      const owner = current.native.players.find(seat => seat.id === player.id)!;
+      player.reserves = owner.reserves;
+      if (player.elites) player.elites.reserves = owner.eliteReserves;
+      g.homeworlds!.custody = current.native.state;
+    } else player.reserves -= cost.normal + cost.elite;
     player.tanks += cost.normal + cost.elite;
     player.battleLosses += cost.normal + cost.elite;
     if (cost.elite) {
       requireRule(player.elites, 'Reinforcements lost its elite reserve custody.');
-      player.elites.reserves -= cost.elite;
+      if (!current.native) player.elites.reserves -= cost.elite;
       player.elites.tanks += cost.elite;
     }
+    observeOccupation(g);
     log(g, `${player.name} used Reinforcements: three reserve forces (${cost.elite} elite) went to the Tanks, and the dialed battle strength gained 2 without adding on-board forces or spice support.`,
       { faction: player.faction, name: 'Reinforcements' });
   }
@@ -23598,6 +23659,7 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
     g.homeworldBattleLoss = {
       event: g.lastBattleContext.event, territory: b.territory, player: owner,
       kind: quote.homeworldExplosion ? 'explosion' : 'winner',
+      ...(quote.homeworldExplosion ? { faceAtResolution: quote.homeworldFace! } : {}),
       pool: combatArmy(g, owner, b.territory),
       options: (quote.homeworldExplosion?.options ?? casualtyCommitment!.options).map(({normal, elite}) => ({normal, elite})),
       ...(casualtyCommitment ? { commitment: { forces: {...casualtyCommitment.forces}, dial: casualtyCommitment.dial, support: casualtyCommitment.support,

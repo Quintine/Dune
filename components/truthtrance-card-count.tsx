@@ -2,7 +2,7 @@
 
 import { useId } from 'react';
 import { Input } from '@/components/ui/input';
-import { TRUTH_CARD_NAMES } from '@/game/truthtrance';
+import { TRUTH_CARD_NAMES } from '@/game/truthtrance-card-names';
 import type { CardCountFact } from '@/game/truthtrance-card-count';
 import {
   HAND_INVENTORY_LABELS,

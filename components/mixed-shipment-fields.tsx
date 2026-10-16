@@ -3,7 +3,8 @@
 import { useId, type ReactElement } from 'react';
 import type { GameView } from '@/game/engine';
 import type { MixedShipmentExpression } from '@/game/mixed-shipment-question';
-import { TRUTH_CARD_NAMES, type TruthFact } from '@/game/truthtrance';
+import type { TruthFact } from '@/game/truthtrance';
+import { TRUTH_CARD_NAMES } from '@/game/truthtrance-card-names';
 import { SHIPMENT_EXPRESSION_MAX_DEPTH, SHIPMENT_EXPRESSION_MAX_LEAVES } from '@/game/shipment-promises';
 import { isKnowledgeFact, knowledgeFactInputError } from '@/game/truthtrance-knowledge';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';

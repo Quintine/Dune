@@ -72,6 +72,7 @@ export function ShipmentPromises({
                   id => id === CHEAP_HERO_TRAITOR
                     ? 'Cheap Hero / Heroine'
                     : g.allLeaders.find(leader => leader.id === id)?.name ?? id,
+                  id => g.combatLocations.find(place => place.id === id)!.name,
                 )
               : `Will you ${shipmentClaimText(p)} this turn?`}
           </li>

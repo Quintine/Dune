@@ -61,6 +61,8 @@ import { nativeShipmentSources } from '@/game/homeworld-options';
 import { botBattleChoices } from '@/game/bot-battle-choices';
 import { specialForceName, maxCombatDial, maxCombatSupport } from '@/game/combat';
 import type { NativeReserveSelections } from '@/game/homeworld-native-reserves';
+import { reinforcementsBattleForces } from '@/game/reinforcements-homeworld';
+import { ReinforcementsSources, reinforcementsSourceLabel } from './reinforcements-sources';
 import {
   StrongholdCardGallery,
   StrongholdCopyChoice,
@@ -436,7 +438,26 @@ export function GameTable({
       Number.isFinite(stormDial) ? Math.trunc(stormDial) : 0,
     ),
   );
-  const ownBattleForces = g.battle?.ownForces;
+  const selectedWeaponId = battlePlanCardValue(g, 'weapon', weapon);
+  const selectedDefenseId = battlePlanCardValue(g, 'defense', defense);
+  const selectedBattleWeapon = me.hand?.find(c => c.id === selectedWeaponId);
+  const selectedBattleDefense = me.hand?.find(c => c.id === selectedDefenseId);
+  const reinforcementsSelected = selectedWeaponId === 'ecaz-reinforcements' ||
+    selectedDefenseId === 'ecaz-reinforcements';
+  const [reinforcementsSourceDraft, setReinforcementsSourceDraft] = useState<{
+    key: string; index: number;
+  } | null>(null);
+  const reinforcementsSourceChoices = g.battle?.reinforcements?.homeworldSources;
+  const reinforcementsSourceKey = reinforcementsSourceChoices
+    ? `${g.code}:${me.id}:${g.battle?.event ?? ''}:${JSON.stringify(reinforcementsSourceChoices)}` : '';
+  const reinforcementsSourceIndex = reinforcementsSourceDraft?.key === reinforcementsSourceKey
+    ? Math.min(reinforcementsSourceDraft.index, Math.max(0, (reinforcementsSourceChoices?.length ?? 1) - 1)) : 0;
+  const selectedReserveSource = reinforcementsSourceChoices?.[reinforcementsSourceIndex];
+  const rawOwnBattleForces = g.battle?.ownForces;
+  const ownBattleForces = rawOwnBattleForces && reinforcementsSelected &&
+    selectedReserveSource && g.battle?.native === me.id
+    ? reinforcementsBattleForces(rawOwnBattleForces, selectedReserveSource[g.battle!.territory])
+    : rawOwnBattleForces;
   const occupyProfile = ecazOccupyOwnProfile(g);
   const battleDialMinimum = occupyProfile?.fixedEcazDial ?? 0;
   const battleFreeSupport = ownBattleForces?.freeSupport ??
@@ -542,15 +563,10 @@ export function GameTable({
     selectedLeader: committed.leader ? String(committed.leader.value ?? '') : leader,
     card,
   });
-  const selectedWeaponId = battlePlanCardValue(g, 'weapon', weapon);
-  const selectedDefenseId = battlePlanCardValue(g, 'defense', defense);
-  const selectedBattleWeapon = me.hand?.find(c => c.id === selectedWeaponId);
-  const selectedBattleDefense = me.hand?.find(c => c.id === selectedDefenseId);
-  const reinforcementsSelected = selectedWeaponId === 'ecaz-reinforcements' ||
-    selectedDefenseId === 'ecaz-reinforcements';
   const reinforcementsPlanReason = !reinforcementsSelected ? null :
     !g.battle?.reinforcements ? 'Reinforcements is unavailable in this battle.' :
-    g.battle.reinforcements.blocked;
+    g.battle.reinforcements.blocked ??
+      (g.homeworlds && !selectedReserveSource ? 'Choose the exact native Reinforcements reserve sources.' : null);
   const selectedBattleKwisatz = kwisatz && !!me.kwisatz?.active &&
     !me.kwisatz.dead && !g.battle?.kwisatzBlocked &&
     (!me.kwisatz.usedAt || me.kwisatz.usedAt === g.battle?.territory);
@@ -5105,6 +5121,12 @@ export function GameTable({
                         setWeapon(plan.weapon ?? '');
                         setDefense(plan.defense ?? '');
                         setKwisatz(!!plan.kwisatz);
+                        if (plan.reinforcementsSources) {
+                          const chosen = JSON.stringify(plan.reinforcementsSources);
+                          const index = reinforcementsSourceChoices?.findIndex(choice => JSON.stringify(choice) === chosen);
+                          if (index !== undefined && index >= 0)
+                            setReinforcementsSourceDraft({ key: reinforcementsSourceKey, index });
+                        }
                       }}
                     />
                   )}
@@ -5394,6 +5416,11 @@ export function GameTable({
                                 {g.battle.reinforcements.blocked && ` ${g.battle.reinforcements.blocked}`}
                               </p>
                             )}
+                            {reinforcementsSelected && reinforcementsSourceChoices && (
+                              <ReinforcementsSources game={g} choices={reinforcementsSourceChoices}
+                                selected={reinforcementsSourceIndex} busy={busy}
+                                onChange={index => setReinforcementsSourceDraft({ key: reinforcementsSourceKey, index })} />
+                            )}
                             {g.battle.reinforcements?.noField && <p className="fine">
                               Provisional native order: your No-Field first materializes{' '}
                               {g.battle.reinforcements.noField.materializes} forces, leaving{' '}
@@ -5505,6 +5532,8 @@ export function GameTable({
                                 leader,
                                 weapon,
                                 defense,
+                                ...(reinforcementsSelected && selectedReserveSource
+                                  ? { reinforcementsSources: selectedReserveSource } : {}),
                               }),
                               !!occupyControl?.blocked || !!stonePlanReason || !!harassControl.blocked || !!smugglerPlanReason || !!reinforcementsPlanReason || !battlePairValid,
                             )}
@@ -5519,6 +5548,9 @@ export function GameTable({
                                 Spice Banker: {g.battle.plans[me.id].bankerSpice}{' '}
                                 spice committed.
                               </p>
+                            )}
+                            {g.battle.plans[me.id]?.reinforcementsSources && (
+                              <p className="fine">Sealed reserve fee: {reinforcementsSourceLabel(g, g.battle.plans[me.id].reinforcementsSources!)}</p>
                             )}
                           </>
                         )}

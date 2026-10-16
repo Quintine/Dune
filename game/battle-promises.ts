@@ -1,6 +1,6 @@
-import { richeseCards } from './richese-cards';
+import { TRUTH_CARD_NAMES } from './truthtrance-card-names';
 import type { Plan } from './engine';
-import { treacheryDeck, type Card } from './cards';
+import type { Card } from './cards';
 import { CHEAP_HERO_TRAITOR } from './traitors';
 
 export type PlanClaim =
@@ -67,7 +67,7 @@ export function parsePlanClaim(
     if (
       v.name !== null &&
       (typeof v.name !== 'string' ||
-        ![...treacheryDeck(['ix']), ...richeseCards()].some((c) => c.name === v.name))
+        !TRUTH_CARD_NAMES.includes(v.name))
     )
       return fail();
     return { kind: v.kind, name: v.name };

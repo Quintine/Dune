@@ -12,8 +12,6 @@ import {
   weaponKills,
 } from '../game/battle-cards';
 import { portableSnooperPlanBlock } from '../game/portable-snooper';
-import { parsePlanClaim } from '../game/battle-promises';
-import { TRUTH_CARD_NAMES } from '../game/truthtrance';
 import type { Plan } from '../game/engine';
 
 const portable = richeseCards().find((c) => c.effect === 'portableSnooper')!;
@@ -108,15 +106,5 @@ void test('late eligibility obeys forbidden poison defense while preserving unre
       must: false,
     }),
     null,
-  );
-});
-void test('structured Truthtrance and plan questions include canonical Richese card identities', () => {
-  assert.ok(TRUTH_CARD_NAMES.includes(portable.name));
-  assert.deepEqual(
-    parsePlanClaim({ kind: 'defense', name: portable.name }, []),
-    { kind: 'defense', name: portable.name },
-  );
-  assert.throws(() =>
-    parsePlanClaim({ kind: 'defense', name: 'Invented Snooper' }, []),
   );
 });

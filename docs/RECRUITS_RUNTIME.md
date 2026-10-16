@@ -34,9 +34,9 @@ The fresh `ecaz-treachery --homeworlds` entry now admits Recruits during
 original classic2–6 Basic/Advanced Revival, with its original36-card inventory.
 Reuse native current free rates and typed revival deposits. No rate snapshot,
 new saved field, seven extra counters, automatic refund, generic module
-activation or played-save conversion is added. Reinforcements keeps its own
-explicit Homeworld gate; other optional overlays and expansion rosters stay
-outside this clean composition.
+activation or played-save conversion is added. Reinforcements has a separate
+[native-source fee composition](REINFORCEMENTS_RUNTIME.md#classic-homeworld-reserve-fees--16-october-2026);
+other optional overlays and expansion rosters stay outside this clean entry.
 
 Publisher Ecaz & Moritani printed pp11/16 specifically gives low Fremen4,
 doubled but capped at7. Under the standing choose-recommended instruction,

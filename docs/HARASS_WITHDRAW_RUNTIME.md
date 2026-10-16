@@ -145,8 +145,10 @@ physical cards before original classic2–6 Basic/Advanced setup: base33+3.
 Harass composes on Arrakis and foreign Homeworlds. The printed own-World
 prohibition remains, including both Advanced Emperor Worlds. Expansion
 rosters, other overlays, public starts and played-game conversion stay closed.
-Reinforcements retains its Homeworld guard; Recruits has a separate
-[native current-rate composition](RECRUITS_RUNTIME.md#classic-homeworld-composition--16-october-2026).
+Recruits has a separate
+[native current-rate composition](RECRUITS_RUNTIME.md#classic-homeworld-composition--16-october-2026);
+Reinforcements now uses an
+[exact native fee before these returns](REINFORCEMENTS_RUNTIME.md#classic-homeworld-reserve-fees--16-october-2026).
 This is not certification of the entire three-card variant.
 
 Arrakis returns remove exact ordinary/elite board counters and use the
