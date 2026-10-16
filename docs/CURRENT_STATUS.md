@@ -29,6 +29,22 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Clean selected-family Reinforcements — 16 October.** Plain selected Ix and/or
+CHOAM native/base rosters now reuse original independent38/50-card setup in
+Basic/Advanced. Original normal-first typed/all-outcome payment, score-only +2,
+No-Field funding and fee-before-Harass order remain explicitly provisional.
+Other overlays, mixed E3 and public/played-save gates stay separate.
+Genuine paid-shipment programmes exercise Ixian normal/mixed fees, native
+Face Dance and Auditor aftercare; Richese Basic four-turn collection/shipment
+programmes reach funded/short marker budgets without invented wallets/armies.
+Advanced markers0/3/5 use funded original turn-one reserves, not a later-storm
+matrix. Conserved card/identity positioning remains labeled staging.
+Seven actual mobile journeys reach Collection;48 four-policy programmes
+validate3022 R candidates and194 continuations. Frozen related20-file union
+passes262/262 after removing two obsolete profile-rejection tests; types/lint,
+build and actual prototype help pass. This is not complete faction/mode
+acceptance, calibration or deployment.
+
 **Exact native Homeworld Reinforcements — 16 October.** Clean classic2–6
 Basic/Advanced independent36-card setup now connects the native fee on Arrakis,
 foreign Worlds and own Worlds. Exact normal-first source allocations seal in

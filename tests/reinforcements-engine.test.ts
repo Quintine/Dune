@@ -161,13 +161,3 @@ void test('insufficient reserves and unsupported modules reject without mutating
   assert.throws(() => applyAction(g, 'a',
     { type: 'battlePlan', dial: 1, leader: 'emperor-0', weapon: cardId }), RuleError);
 });
-
-void test('other expansion factions remain ineligible for the paired Ecaz card prototype', () => {
-  for (const owner of ['ixians', 'choam'] as const) {
-    const g = harassWithdrawGame({ advanced: true, factions: [owner, 'atreides', 'harkonnen'] });
-    takeHarassCard(g, 'a', cardId);
-    assert.throws(() => applyAction(g, 'a', {
-      type: 'battlePlan', dial: 0, support: 0, leader: `${owner}-0`, weapon: cardId,
-    }), RuleError);
-  }
-});

@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 16 October 2026 — Clean selected-family Reinforcements
+
+Original independent setup supplied the physical card, but plain native
+Ix/Tleilaxu/CHOAM/Richese plans rejected its profile. Admit only clean selected
+Ix and/or CHOAM native/base Basic/Advanced rosters. Keep exact original
+38/50-card decks, separate Richese cache, native force pools and setup choices.
+No mixed E3, optional modules/overlays, public starts or played-save cutover.
+Classic/paired E3, classic Homeworlds and selected Advanced Occupy stay separate.
+
+Reuse explicitly provisional normal-first/all-outcome payment, score-only +2,
+materialize-before-fee and fee-before-Harass. Native casualty origins, not a
+duplicate fee, feed cyborg substitution; native Face Dance/Auditor/market
+continuations remain. Original/copied Stone compares physical counters.
+
+New genuine programmes retain actual setup, paid shipment and native aftercare.
+Basic Richese reaches low/capped reserves through four turns of original
+collection and shipment. Reject and replace the initial contributed board-reset
+fixture before accepting evidence. Conserved card/identity positioning remains
+labeled staging; do not claim every Stone was purchased naturally.
+Advanced marker0/3/5 uses funded original turn-one reserves; no later-storm
+low-budget matrix or full expansion acceptance is claimed.
+
+Seven actual390×844 control journeys finish Collection, including mixed
+cyborg fee, Face Dance decline, Auditor inspection, short-marker Harass,
+copy-first Stone and Advanced union-family fee/return. No app exception or
+horizontal overflow; eight startup Vite dependency aborts across two hosts.
+Four policies complete32 native programmes/1594 validated R proposals/136
+continuations plus16 Richese programmes/1428 proposals/58 continuations.
+Artifacts live under `/tmp/dune-*-reinforcements-*-proof.json`; owned QA hosts,
+tabs and scaffolds removed. No actual room/database changed or deployment ran.
+Frozen related20-file union passes262/262 after deleting two obsolete native
+profile-rejection tests rather than re-pinning implementation behavior.
+`npm run check:quick`, build and actual prototype `--help` pass. Build retains
+existing Node deprecation, large-chunk and dynamic-route classification warnings.
+
 ## 16 October 2026 — Exact native Homeworld Reinforcements fees
 
 Original fresh own-Salusa play rejects the blanket R module gate before a

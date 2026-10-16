@@ -13779,8 +13779,15 @@ function combinedCardBattleBlock(g: Game): string | null {
 }
 function reinforcementsModeSupported(g: Game) {
   const pairedEcaz = g.expansions.length === 1 && g.expansions[0] === 'ecaz';
+  const nativeFamilies = !g.homeworlds && !g.discoveries && !g.discoveryStash && !g.greatMaker &&
+    !g.semutaPreview && !g.kullPreview && !g.ecazOccupyPreview &&
+    g.expansions.length > 0 && g.expansions.every(expansion => expansion === 'ix' || expansion === 'choam') &&
+    g.players.every(player => {
+      const family = faction(player.faction).expansion;
+      return family === 'base' || ((family === 'ix' || family === 'choam') && g.expansions.includes(family));
+    });
   return !!g.ecazTreachery && recruitsModeSupported(g) && !g.sandtrout &&
-    ((g.ecazOccupyPreview === true && ecazOccupyCompositionSupported(g)) ||
+    (nativeFamilies || (g.ecazOccupyPreview === true && ecazOccupyCompositionSupported(g)) ||
       ((g.expansions.length === 0 || pairedEcaz) && g.players.every(player => {
         const expansion = faction(player.faction).expansion;
         return expansion === 'base' || (pairedEcaz && expansion === 'ecaz');

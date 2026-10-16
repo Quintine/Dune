@@ -2,17 +2,60 @@
 
 The separate Ecaz Treachery Cards variant shuffles one physical Reinforcements
 card independently of choosing the Ecaz faction. Its bounded handler supports
-Basic/Advanced classic-faction tables and clean Ecaz/Moritani expansion tables.
-Fresh clean classic Homeworlds use the native-source composition below; other
-optional modules retain their guards. The selected Advanced Occupy profile also
-composes co-present armies and native Ixian/Tleilaxu/CHOAM families.
+Basic/Advanced classic-faction tables, clean selected Ix and/or CHOAM native/base
+rosters, and clean Ecaz/Moritani expansion tables. Fresh clean classic Homeworlds
+use the native-source composition below; other optional modules retain guards.
+The selected Advanced Occupy profile separately composes co-present armies.
 The holder may commit it in either Battle Plan card slot. It is neither a weapon
 nor a defense: Prescience of a category receives **None**, while the physical
 slot stays occupied and hidden until reveal. A named-card inspection still
 fixes the exact card. Harass & Withdraw may share the plan under the
 [provisional original-cost-first policy](#combined-utility-plan--16-october-2026).
-Original or copied Stone Burner composes in the existing native Advanced Occupy
-envelope. Other roster/profile/optional-module boundaries remain.
+Original or copied Stone Burner composes in clean selected Ix/CHOAM families
+and the existing native Advanced Occupy envelope. Other profile boundaries remain.
+
+## Clean selected Ix/CHOAM families — 16 October 2026
+
+Plain selected `ix`, `choam`, or both now admit Reinforcements with native/base
+rosters in Basic and Advanced. This closes a profile-admission gap: original
+independent pre-setup cards were present, but the plan rejected the profile.
+Original setup keeps selected35/47 plus three physical cards (38/50 total),
+native HMS/cyborgs, Face Dancers, Auditor and the separate ten-card Richese cache.
+No Homeworlds, Nexus, Skills, Tech, Strongholds, Discovery, Sandtrout, mixed E3
+or unrelated preview is added. Existing classic, paired E3 and selected Advanced
+Occupy branches remain separate; public starts and played-save conversion stay gated.
+
+Reuse the existing explicitly provisional normal-first, all-outcome fee and
+fee-before-Harass order, not a new publisher ruling. Native casualty origins
+alone feed Ixian substitution; do not substitute a second copy of the fee.
+Tleilaxu Face Dance and Advanced Auditor/CHOAM phase opening remain native.
+Richese first materializes its own No-Field, then pays three original remaining
+reserves, then returns successful Harass counters. Marker0/3/5, insufficient
+funding and physical original/copied Stone reuse those same rules.
+
+Two fixture programmes retain genuine setup, paid shipments, physical armies,
+wallets and native continuations. The Richese Basic route funds actual tuning
+shipments through original collection over four turns, not assigned spice or
+board counters. An initial contributed board-reset fixture was rejected and
+rewritten before accepted proof. Physical card/identity positioning is explicit,
+conserved staging; a Stone cache-to-hand move is not claimed as a natural purchase.
+Advanced Richese uses its funded turn-one route at20 reserves for markers0/3/5;
+the low/capped multi-turn tuning evidence is Basic, not an Advanced storm matrix.
+
+Changed-path runtime proof: seven actual390×844 control journeys reach Collection
+with native aftercare: mixed Ixian payment, Tleilaxu loss/Face Dance decline,
+Advanced Auditor inspection, funded Richese marker, short-budget Harass fallback,
+copy-first Mirror/Stone, and Advanced union-family fee/return. No horizontal
+overflow or app exception was observed; initial Vite dependency aborts are separate.
+Four legal policies exercise32 native programmes/1594 engine-validated reserve
+proposals/136 continuations and16 Richese programmes/1428 proposals/58 continuations.
+Policy proof is bounded legal participation, not strategy or calibration.
+Frozen related20-file union passes262/262 after removing two obsolete profile
+rejections; types/lint, build and actual prototype help pass. Build retains
+Node deprecation, large-chunk and dynamic-route classification warnings.
+No HTTP/database boundary changed or deployed evidence is claimed.
+
+
 
 The [combined-army follow-up](ECAZ_OCCUPY_RULES.md#independent-cards-with-combined-armies--2-october-2026)
 retains own-holder reserve cost and selected lead card/payment ownership.
@@ -65,7 +108,8 @@ and then failed the first Traitor action. The new first-plan check rejects that
 unfunded commitment without reserving cards or revealing a token; Harass alone
 remains legal. Token0/reserves3 remains funded. Native actual revelation,
 reserve-cap, token identity/history, support and fixed/variable losses stay.
-No Basic Richese Reinforcements or other new mode is admitted.
+That earlier checkpoint did not admit Basic Richese. The clean selected-family
+composition above now admits it without changing this funding order.
 
 
 ### Scoped proof

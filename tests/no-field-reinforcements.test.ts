@@ -2,8 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyAction, viewGame, RuleError, type Game } from '../game/engine';
 import { occupyRicheseSeat } from './fixture-ecaz-occupy-richese';
-import { stageEcazOccupyCard } from './fixture-ecaz-occupy';
-import { createHarassNoFieldFixture, sealHarassNoFieldPlan } from './fixture-harass-no-field';
 import {
   noFieldReinforcementsFixture, sealNoFieldReinforcements, finishNoFieldReinforcements,
   NO_FIELD_REINFORCEMENTS, NO_FIELD_HARASS, type NoFieldReinforcementsFixture,
@@ -185,24 +183,4 @@ void test('Original Advanced native inventory without the selected Occupy profil
   assert.throws(() => applyAction(before, fixture.owner, fixture.plans.reinforcements), RuleError);
   assert.deepEqual(before, fixture.game);
   assertConserved(fixture, before);
-});
-
-void test('Ordinary Basic Richese Harass with a real concealed marker does not widen Reinforcements composition support', () => {
-  const fixture = createHarassNoFieldFixture({ advanced: false, marker: 3, reserves: 6 });
-  stageEcazOccupyCard(fixture.game, fixture.owner, card => card.id === NO_FIELD_REINFORCEMENTS);
-  const before = structuredClone(fixture.game);
-  const preview = viewGame(before, fixture.owner).battle!;
-  assert.equal(before.advanced, false);
-  assert.equal(preview.harassWithdraw!.blocked, null);
-  assert.ok(preview.reinforcements!.blocked);
-  assert.throws(() => applyAction(before, fixture.owner, {
-    ...fixture.planActions[0].action, weapon: NO_FIELD_REINFORCEMENTS, defense: null,
-  }), RuleError);
-  assert.deepEqual(before, fixture.game);
-  const legal = sealHarassNoFieldPlan(before, fixture.planActions[0]);
-  assert.ok(legal.battle!.plans[fixture.owner]);
-  assert.equal(legal.battle!.revealed, false);
-  assert.equal(occupyRicheseSeat(legal, fixture.owner).reserves, 6);
-  assert.deepEqual(occupyRicheseSeat(legal, fixture.owner).noField,
-    occupyRicheseSeat(before, fixture.owner).noField);
 });
