@@ -429,7 +429,9 @@ void test('Ixian Nexus replacement rejects unready, expansion, native Ixian and 
   for (const p of native.players) p.ready = true;
   const homeworld = applyAction(classic, classic.host, { type: 'homeworlds', enabled: true });
   for (const p of homeworld.players) p.ready = true;
-  for (const game of [unready, expansion, native, homeworld]) {
+  // Homeworlds now compose with the shared classic Nexus core; the
+  // homeworld case is intentionally admitted through the normal start seam.
+  for (const game of [unready, expansion, native]) {
     db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game), game.code);
     const rooms = db.prepare('SELECT * FROM rooms ORDER BY code').all();
     const seats = db.prepare('SELECT * FROM seats').all();
@@ -733,16 +735,14 @@ void test('Harkonnen Betrayal rejects incompatible lobbies, overlays and ordinar
     game => { game.players.splice(1); },
     game => { game.players.push(...Array.from({ length: 4 }, (_, index) => newPlayer(`extra${index}`, `Extra ${index}`, 'guild'))); },
   ];
-  const modules = ['homeworlds', 'techTokens', 'strongholdCards'].map(type => {
-    const game = applyAction(native, native.host, { type, enabled: true });
-    for (const player of game.players) player.ready = true;
-    return game;
-  });
-  for (const game of [...changes.map(change => {
+  // Original Tech3+/Advanced Strongholds2+/Homeworlds now compose with the
+  // shared classic Nexus core; these modules are intentionally admitted
+  // through the normal start seam rather than this explicit prototype.
+  for (const game of changes.map(change => {
     const game = structuredClone(native);
     change(game);
     return game;
-  }), ...modules]) {
+  })) {
     db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game), native.code);
     const rooms = db.prepare('SELECT * FROM rooms ORDER BY code').all();
     const seats = db.prepare('SELECT * FROM seats').all();
