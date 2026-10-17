@@ -2,6 +2,69 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Selected E1/E2 independent Nexus — 18 October 2026
+
+**Prototyped / Partial.** Fresh selected Ixian, CHOAM or combined decks now
+compose the independent three-card variant with Nexus12, optionally all14 Skills,
+Homeworlds, Tech3+ and Advanced Strongholds2+. Registered classic and selected
+native seats are allowed, without requiring a native from every selected deck.
+Normal lobby selections retain ordinary38 (CHOAM) or50 (Ix/combined); a seated
+Richese keeps the separate original ten-card cache. Existing games are not
+reflagged. This extends the classic-only boundary recorded below.
+
+The composition follows the existing E3 independent-module contract (original
+pp4/9/11) and each native effect's linked source; no new printed amount is added.
+Fresh reaction state follows actual faction presence: native Ixians get Betrayal,
+and their absence permits Secret Ally purchased-card replacement. A native Ixian
+holding its own card cannot use that absent-faction effect. Native cancellation
+validates the selected canonical deck and any actual Richese cache, retaining
+the existing receipt grammar and provisional acknowledgement order.
+
+Actual card paths include Suboid Cunning with mixed ordinary/Cyborg reserve fees,
+Harass returns before residual native Cyborg substitution and Face Dance; CHOAM
+Cunning treats an independent card as ordinary fuel without executing its printed
+effect. Its explicit conversion mode routes before printed-card handlers, so
+Recruits cannot intercept the fuel action. Richese's original Cunning pair retains its signed shipment through the
+Guild invoice, then materializes concealed forces before quoting Reinforcements.
+The original fee/support/face traits and no-extra-prompt rule for a unique Harass
+allocation remain. Local World fee priority keeps the earlier explicit
+provisional interpretation, rather than creating a new timing ruling.
+
+Guild invoices validate original own/allied No-Field sources and their approved
+payment legs; supplier-funded loans use their actual approval, not a fabricated
+ally pledge. The acceptance preflight tests native arrival without opening an
+invoice inside its still-owned decision. Live payment reactions follow native
+counters. The original allied Guild bank tariff remains authoritative.
+
+Implementation and usable controls share `nexusCoreProfile` /
+`independentNexusProfile`, original engine continuations, existing source/card
+controls and legal policies. Evidence paths are
+`tests/selected-independent-nexus-entry.test.ts`,
+`tests/selected-independent-nexus-battles.test.ts`,
+`tests/selected-independent-nexus-cards.test.ts` and
+`tests/selected-independent-ixian-betrayal.test.ts`, with their original-action
+fixtures. Other E3/Discovery/Semuta envelopes and remaining Nexus timing variants
+are separate; this is not complete Nexus, combination or release acceptance.
+Owner frozen19-file **194/194**, types/lint/build pass. Seven finite original-action
+programmes complete normal selected entry/training19, Suboid mixed-fee/Harass181,
+Cyborg substitution plus genuine matching Face Dance188, Richese pair/reveal/fee160,
+real bribe/paid-shipment two-reserve refusal199, CHOAM fuel140 and original cache
+replacement129 actions. Rendered entry, plan and refusal controls retain actual
+choices; SSR aliases framework imports and stubs CSS, so this is not visual or
+browser acceptance. Four minimal legal policies pass the focused batch.
+
+Iteration exposed the native/absent Ixian role mixup, printed Recruits intercepting
+CHOAM conversion and an invoice-owned Richese continuation. Those runtime defects
+are repaired. Fixture repairs retain printed native Tech ownership, actual wallet
+limits, canonical markers0/3/5, legal Storm dials and original unopened Face Dancer
+lotteries. The poor source is now a real nine-spice bribe and paid ten-force
+shipment before turn-three Cunning, not an invented marker. No game numerical
+rule was changed to satisfy fixtures. Bounded source review fixed native allied
+invoice preflight and its original bank-only tariff. Earlier diagnostics are
+retained outside Git. No saved room/database, reset, restart or deployment;
+comprehensive combinations, custody/privacy/recovery and deployed acceptance
+remain open.
+
 ## Classic independent World Nexus — 18 October 2026
 
 **Prototyped / Partial.** Fresh classic2–6 Homeworlds + Nexus12 now also

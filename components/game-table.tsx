@@ -14,7 +14,7 @@ import { AdvancedPreviewNotice, RulesetControls } from './ruleset-controls';
 import { EcazOccupyLeadChoice, EcazOccupyBattleSummary, EcazOccupyDialExplanation } from './ecaz-occupy';
 import { ecazOccupyOwnProfile, ecazOccupyPlanControl } from '@/game/ecaz-occupy-options';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from '@/game/nexus-guild-cunning-options';
-import { classicNexusCoreProfile } from '@/game/faction-module-profile';
+import { nexusCoreProfile } from '@/game/faction-module-profile';
 import {
   matchesShipment,
   liveShipmentPromises,
@@ -262,8 +262,8 @@ export function GameTable({
   const movementAvailable = nexusGuildMovementAvailable(g);
   const guildCunning = nexusGuildCunningActive(g);
   const guildCunningAction = g.nexusGuildCunning?.offer ? nexusGuildCunningAction(g, g.nexusGuildCunning.offer.event) : null;
-  const classicNexusPreview = classicNexusCoreProfile(g) &&
-    (g.guildBetrayalPreview || g.nexusIxianReplacementPreview || g.nexusHarkonnenBetrayalPreview);
+  const coreNexusPreview = nexusCoreProfile(g) &&
+    (g.guildBetrayalPreview || g.nexusIxianReplacementPreview || g.nexusHarkonnenBetrayalPreview || g.nexusIxianBetrayalPreview);
   const combatName = (id: string) =>
     g.combatLocations?.find((place) => place.id === id)?.name ??
     gameTerritories(g).find((place) => place.id === id)?.name ??
@@ -1290,10 +1290,12 @@ export function GameTable({
           <a href="/rules?topic=nexus-richese-betrayal#nexus-richese-betrayal">Preview rules and limits</a>
         </p>
       )}
-      {classicNexusPreview && (
+      {coreNexusPreview && (
         <p className="notice" role="status">
-          Classic Nexus reactions preview · Basic/Advanced classic factions, original base33
-          or selected independent36 Treachery, optionally all14 Leader Skills and Homeworlds.
+          Nexus core reactions preview · Basic/Advanced classic factions with base33 or
+          independent36, or selected Ixian/CHOAM decks with the independent three-card
+          variant, permitting registered classic and selected native seats. Optional all14
+          Leader Skills and Homeworlds compose.
           Own-World Reinforcements fees provisionally spend ordinary non-role counters first,
           reducing temporary Sardaukar roles only when converted counters pay.
           Original Tech (3+ seats) and Advanced Strongholds (2+ seats) may compose. Native reactions
@@ -1303,7 +1305,7 @@ export function GameTable({
           <a href="/rules?topic=nexus-cards#nexus-cards">Preview rules and limits</a>
         </p>
       )}
-      {g.guildBetrayalPreview && !classicNexusPreview && (
+      {g.guildBetrayalPreview && !coreNexusPreview && (
         <p className="notice" role="status">
           Guild Nexus Betrayal development preview · whole funded shipment
           payment replacement, including your own payment and occupied Junction.
@@ -1312,7 +1314,7 @@ export function GameTable({
           <a href="/rules?topic=nexus-guild-betrayal#nexus-guild-betrayal">Preview rules and limits</a>
         </p>
       )}
-      {g.nexusIxianReplacementPreview && !classicNexusPreview && (
+      {g.nexusIxianReplacementPreview && !coreNexusPreview && (
         <p className="notice" role="status">
           Ixian Nexus purchased-card replacement development preview · original supported
           standalone Tleilaxu or Richese entries. Normal paid/Karama and supported native
@@ -1321,7 +1323,7 @@ export function GameTable({
           <a href="/rules?topic=nexus-ixian-replacement#nexus-ixian-replacement">Preview rules and limits</a>
         </p>
       )}
-      {g.nexusIxianBetrayalPreview && (
+      {g.nexusIxianBetrayalPreview && !coreNexusPreview && (
         <p className="notice" role="status">
           Ixian Nexus Betrayal development preview · native Ixian Bidding extra-card
           inspection/draw and Advanced Technology exchange prevention. Native Ixians,
@@ -1330,7 +1332,7 @@ export function GameTable({
           <a href="/rules?topic=nexus-ixian-betrayal#nexus-ixian-betrayal">Preview rules and limits</a>
         </p>
       )}
-      {g.nexusHarkonnenBetrayalPreview && !classicNexusPreview && (
+      {g.nexusHarkonnenBetrayalPreview && !coreNexusPreview && (
         <p className="notice" role="status">
           Harkonnen Nexus Betrayal development preview · cancel an actually declared native Harkonnen
           traitor call, return that physical card to the Traitor Deck, and draw one private replacement

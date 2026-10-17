@@ -1,4 +1,7 @@
 import { treacheryDeck, type Card } from './cards';
+import { FACTIONS } from './catalog';
+import { ecazTreacheryCards } from './ecaz-cards';
+import { richeseCards } from './richese-cards';
 import {
   nexusCardMode, validateNexusCards, validateNexusPlayers,
   type NexusPlayer, type NexusState,
@@ -15,7 +18,17 @@ export type IxianBetrayalAuthority = {
   nativeRequired: readonly string[];
   nativePassed: readonly string[];
 };
-export type IxianBetrayalContext = {
+/** Public selections, never inferred from a hidden hand or a historical receipt.
+ * Omission retains the original native Ixian deck and roster contract. */
+export type IxianBetrayalSelection = {
+  expansions?: readonly string[];
+  ecazTreachery?: boolean;
+};
+export type IxianBetrayalPhysicalSelection = IxianBetrayalSelection & {
+  /** History has no live roster; its caller supplies public native Richese presence. */
+  richese?: boolean;
+};
+export type IxianBetrayalContext = IxianBetrayalSelection & {
   status: string;
   phase: number;
   turn: number;
@@ -52,12 +65,7 @@ export class IxianBetrayalError extends Error {
     this.name = 'IxianBetrayalError';
   }
 }
-const canonical = new Map(treacheryDeck(['ix']).map(card => [card.id, card]));
 const genesis = 'ixian-betrayal:0';
-const permitted: Readonly<Record<string, true>> = {
-  atreides: true, harkonnen: true, emperor: true, fremen: true, guild: true,
-  beneGesserit: true, ixians: true, tleilaxu: true,
-};
 const plain = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === 'object' && !Array.isArray(value) &&
   [Object.prototype, null].includes(Object.getPrototypeOf(value));
@@ -79,36 +87,59 @@ function members(value: unknown): value is readonly string[] {
 function sameMembers(one: readonly string[], two: readonly string[]): boolean {
   return one.length === two.length && one.every((id, index) => id === two[index]);
 }
-function canonicalCard(value: unknown): value is Card {
+function selectedExpansions(selection: IxianBetrayalSelection): readonly string[] {
+  const expansions = selection.expansions ?? ['ix'];
+  requireBetrayal(Array.isArray(expansions) && expansions.length >= 1 && expansions.length <= 2 &&
+    expansions.includes('ix') && expansions.every((expansion, index) =>
+      (expansion === 'ix' || expansion === 'choam') && expansions.indexOf(expansion) === index) &&
+    (selection.ecazTreachery === undefined || typeof selection.ecazTreachery === 'boolean'),
+  'Ixian Betrayal requires an original selected Ixian deck, optionally CHOAM and independent cards.');
+  return expansions;
+}
+function canonicalCard(value: unknown, canonical: ReadonlyMap<string, Card>): value is Card {
   if (!plain(value) || !text(value.id)) return false;
   const expected = canonical.get(value.id);
   return !!expected && exact(value, ['id', 'name', 'kind',
     ...(expected.effect === undefined ? [] : ['effect'])]) &&
     value.name === expected.name && value.kind === expected.kind && value.effect === expected.effect;
 }
-function validatePhysical(cards: readonly Card[]): void {
+function validatePhysical(cards: readonly Card[], selection: IxianBetrayalPhysicalSelection = {}): void {
+  const expansions = selectedExpansions(selection);
+  requireBetrayal((selection.richese === undefined || typeof selection.richese === 'boolean') &&
+    (!selection.richese || expansions.includes('choam')),
+  'Ixian Betrayal needs the selected CHOAM deck for its native Richese cache.');
+  const canonical = new Map([
+    ...treacheryDeck(expansions),
+    ...(selection.ecazTreachery ? ecazTreacheryCards() : []),
+    ...(selection.richese ? richeseCards() : []),
+  ].map(card => [card.id, card]));
   requireBetrayal(Array.isArray(cards) && cards.length === canonical.size &&
-    cards.every(canonicalCard) && new Set(cards.map(card => card.id)).size === canonical.size,
-  'Ixian Betrayal requires the complete canonical Ixian deck in unique physical custody.');
+    cards.every(card => canonicalCard(card, canonical)) && new Set(cards.map(card => card.id)).size === canonical.size,
+  'Ixian Betrayal requires the complete canonical selected deck and native cache in unique physical custody.');
 }
-function validateRoster(players: readonly NexusPlayer[]): void {
+function validateRoster(players: readonly NexusPlayer[], selection: IxianBetrayalPhysicalSelection = {}): void {
+  const expansions = selectedExpansions(selection);
   validateNexusPlayers(players);
-  requireBetrayal(players.every(player => Object.hasOwn(permitted, player.faction)) &&
-    players.filter(player => player.faction === 'ixians').length === 1,
-  'Ixian Betrayal needs its native Ixian and permitted classic or Tleilaxu seats.');
+  requireBetrayal(players.every(player => FACTIONS.some(faction => faction.id === player.faction &&
+    (faction.expansion === 'base' || expansions.includes(faction.expansion)))) &&
+    players.filter(player => player.faction === 'ixians').length === 1 &&
+    (selection.richese === undefined || selection.richese === players.some(player => player.faction === 'richese')),
+  'Ixian Betrayal needs its native Ixian and registered classic or selected E1/E2 seats.');
 }
 
 /** A neutral acknowledgment depends on public held-card presence, never its face. */
-export function ixianBetrayalResponders(cards: NexusState, players: readonly NexusPlayer[]): string[] {
-  validateRoster(players);
+export function ixianBetrayalResponders(cards: NexusState, players: readonly NexusPlayer[],
+  selection: IxianBetrayalPhysicalSelection = {}): string[] {
+  validateRoster(players, selection);
   validateNexusCards(cards, players);
   return players.filter(player => !player.ally && player.faction !== 'ixians' &&
     cards.hands[player.id] !== null).map(player => player.id);
 }
 export function ixianBetrayalEligible(
   cards: NexusState, players: readonly NexusPlayer[], holder: string,
+  selection: IxianBetrayalPhysicalSelection = {},
 ): boolean {
-  validateRoster(players);
+  validateRoster(players, selection);
   validateNexusCards(cards, players);
   const seat = players.find(player => player.id === holder);
   return !!seat && !seat.ally && seat.faction !== 'ixians' && cards.hands[holder] === 'ixians' &&
@@ -167,9 +198,9 @@ function validateContext(ctx: IxianBetrayalContext): void {
   requireBetrayal(plain(ctx) && ctx.status === 'playing' && ctx.phase === 3 && whole(ctx.turn) &&
     ctx.turn > 0 && whole(ctx.sequence) && typeof ctx.advanced === 'boolean',
   'Ixian Betrayal needs its current Bidding phase and independent cursor.');
-  validateRoster(ctx.players);
+  validateRoster(ctx.players, ctx);
   validateNexusCards(ctx.cards, ctx.players);
-  validatePhysical(ctx.physicalCards);
+  validatePhysical(ctx.physicalCards, {...ctx, richese: ctx.players.some(player => player.faction === 'richese')});
 }
 export function validateIxianBetrayalSource(
   ctx: IxianBetrayalContext, source: IxianBetrayalSource,
@@ -187,7 +218,7 @@ export function validateIxianBetrayalSource(
     source.nativeWindow === authority.nativeWindow && source.nativeContext === authority.nativeContext &&
     sameMembers(source.nativeRequired, authority.nativeRequired) &&
     sameMembers(source.nativePassed, authority.nativePassed) &&
-    sameMembers(source.required, ixianBetrayalResponders(ctx.cards, ctx.players)) &&
+    sameMembers(source.required, ixianBetrayalResponders(ctx.cards, ctx.players, ctx)) &&
     source.eligible === (ctx.players.find(player => !player.ally && player.faction !== 'ixians' &&
       ctx.cards.hands[player.id] === 'ixians')?.id ?? null),
   'Ixian Betrayal no longer matches its current native attempt, parent or public responders.');
@@ -201,7 +232,7 @@ export function createIxianBetrayalSource(
     ...authority, nativeRequired: [...authority.nativeRequired], nativePassed: [...authority.nativePassed],
     version: 1, event: ixianBetrayalEvent(ctx.turn, ctx.sequence, authority.kind, authority.provider),
     turn: ctx.turn, phase: 3, advanced: ctx.advanced, sequence: ctx.sequence,
-    required: ixianBetrayalResponders(ctx.cards, ctx.players),
+    required: ixianBetrayalResponders(ctx.cards, ctx.players, ctx),
     eligible: ctx.players.find(player => !player.ally && player.faction !== 'ixians' &&
       ctx.cards.hands[player.id] === 'ixians')?.id ?? null,
     parent, signature: '',
@@ -262,11 +293,12 @@ export function closeIxianBetrayalSource(
 export function validateIxianBetrayalHistory(
   history: readonly IxianBetrayalReceipt[], cursor: IxianBetrayalCursor,
   physical?: readonly Card[],
+  selection: IxianBetrayalPhysicalSelection = {},
 ): void {
   validateCursor(cursor);
   requireBetrayal(array(history) && history.length === cursor.sequence,
     'Ixian Betrayal history has missing or duplicate closed attempts.');
-  if (physical !== undefined) validatePhysical(physical);
+  if (physical !== undefined) validatePhysical(physical, selection);
   let previous = genesis, turn = 0;
   const events = new Set<string>();
   for (const [index, receipt] of history.entries()) {

@@ -16,6 +16,32 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Selected-deck independent Nexus — 18 October. Prototyped / Partial.**
+Original selected Ixian/CHOAM/combined decks now compose independent three-card
+selection and Nexus12, optional all14/World/Tech3+/Advanced Strongholds2+.
+Normal host entry retains selected stock38/50 and native Richese cache10 without
+requiring a native from each selected family. Fresh Ixian reactions distinguish
+native Betrayal from absent-faction Secret Ally replacement. Explicit CHOAM
+conversion cannot execute its fuel card’s printed effect. Real No-Field pairs
+retain their signed continuation through Guild payment acknowledgements.
+
+Frozen19-file **194/194**, types/lint/build pass. Seven finite original-action
+programmes pass: normal host/training19, mixed-fee Cunning/Harass181,
+Cyborg substitution/matching Face Dance188, Richese pair/reveal/fee160,
+actual bribe/paid-shipment two-reserve refusal199, CHOAM fuel140 and native
+cache/replacement129 actions. Rendered entry, selected-plan and refusal controls
+retain their real choices; framework aliases/CSS stubs mean no visual/browser
+acceptance is claimed. Four minimal legal policies pass the affected batch.
+
+Iteration fixed real role/dispatch/continuation defects and corrected fixture
+assumptions about native Tech ownership, actual wallet limits, canonical0/3/5
+markers, legal Storm dials and unopened Face Dancer lotteries. No printed
+numeric rule was changed for a fixture. Bounded native invoice review also
+fixed preflight priority and the original allied Guild bank tariff. No saved
+room/database, reset, restart or deployment. Wider envelopes, comprehensive
+assurance and deployed acceptance remain open.
+[Source, controls and boundaries](NEXUS_CARD_RULES.md#selected-e1e2-independent-nexus--18-october-2026).
+
 **Readable room confirmations — 18 October.** The user-requested create/join
 confirmation stays above the table until local Continue, independently of
 polling and game actions. Shared toasts default to no timeout and a visible

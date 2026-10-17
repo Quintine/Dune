@@ -18,7 +18,7 @@ import type { RicheseAuction } from './richese-auction';
 import { quoteRicheseSettlement, type RicheseSettlementQuote } from './richese-settlement';
 import { quoteRicheseBetrayalInvoice } from './nexus-richese-betrayal';
 import { RICHESE_CARD_DEFINITIONS, richeseCardDefinition } from './richese-cards';
-import { classicNexusCoreProfile } from './faction-module-profile';
+import { nexusCoreProfile } from './faction-module-profile';
 
 export type EmperorNexusBankPurchase = {
   kind: 'purchase';
@@ -381,7 +381,7 @@ function nativeBankNexusProfile(g: Game): boolean {
  * with the Emperor absent, the concealed face and any buyer wallet or hand left
  * to the caller. */
 export function emperorNexusBankPurchaseModeSupported(g: Game): boolean {
-  if (classicNexusCoreProfile(g))
+  if (nexusCoreProfile(g))
     return !g.players.some(p => p.faction === 'emperor') && !g.sandtrout;
   if (!g.nexusCards || g.players.some(p => p.faction === 'emperor') ||
     g.ecazTreachery || g.sandtrout) return false;
@@ -391,6 +391,8 @@ export function emperorNexusBankPurchaseModeSupported(g: Game): boolean {
 /** Reuse native Nexus profiles; the existing Richese Betrayal preview composes
  * only on its original bare paired CHOAM/Richese roster, not arbitrary overlays. */
 export function emperorNexusSellerPurchaseModeSupported(g: Game): boolean {
+  if (nexusCoreProfile(g))
+    return !g.players.some(p => p.faction === 'emperor') && g.players.some(p => p.faction === 'richese');
   if (!g.nexusCards || g.players.some(p => p.faction === 'emperor') ||
     !g.players.some(p => p.faction === 'richese') || g.ecazTreachery || g.sandtrout)
     return false;

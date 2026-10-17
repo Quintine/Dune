@@ -22,6 +22,7 @@ export type IndependentCardModulesOptions = {
   /** False keeps the original native deck for revealed-card comparisons. */
   independent?: boolean;
   homeworlds?: boolean;
+  nexus?: boolean;
 };
 
 /** Select only the original undealt fourteen-card lottery, never assignments. */
@@ -56,6 +57,7 @@ export function createIndependentCardModulesFixture(options: IndependentCardModu
     advanced, options.expansions ?? []);
   for (const faction of factions.slice(1)) joinGame(game, newPlayer(faction, faction, faction));
   if (options.homeworlds) game = applyAction(game, game.host, { type: 'homeworlds', enabled: true });
+  if (options.nexus) game = applyAction(game, game.host, { type: 'moduleOption', module: 'nexusCards', enabled: true });
   if (options.tech ?? true) game.techTokens = createTechTokens();
   if (options.strongholds) game.strongholdCards = createStrongholdCards();
   const steps: IndependentCardModulesStep[] = [];
@@ -106,6 +108,13 @@ export function createIndependentCardModulesFixture(options: IndependentCardModu
 
 /** Reuse original native choices, including all phase/module windows. */
 export function nextIndependentCardModulesStep(game: Game): IndependentCardModulesStep | null {
+  if (!game.response && !game.phaseOpening && !game.decision && game.nexusCards?.phase?.stage === 'drawing') {
+    const phase = game.nexusCards.phase;
+    const actor = phase.eligible.find(id => !phase.done.includes(id));
+    assert.ok(actor);
+    return { actor, action: { type: 'nexusCardChoice', turn: game.turn,
+      card: game.nexusCards.cards!.hands[actor] ?? null, choice: 'keep', ownRedraws: 0 } };
+  }
   return nextStrongholdFactionsNativeStep(game);
 }
 

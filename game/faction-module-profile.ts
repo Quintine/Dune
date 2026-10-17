@@ -26,34 +26,63 @@ export type FactionModuleProfile = {
   nexusHarkonnenBetrayalPreview?: unknown;
 };
 
-type ClassicNexusProfile = Partial<FactionModuleProfile> & Pick<FactionModuleProfile, 'expansions'> & {
+type NexusCoreConfiguration = Partial<FactionModuleProfile> & Pick<FactionModuleProfile, 'expansions'> & {
   sandtrout?: unknown; moritaniAssassinatePreview?: unknown;
 };
 
 /** Classic Nexus12 with selected base33/independent36, optional all14, original
  * Homeworlds and phase modules. Native effect stamps are not selected overlays. */
-export function classicNexusCoreProfile(game: ClassicNexusProfile): boolean {
+export function classicNexusCoreProfile(game: NexusCoreConfiguration): boolean {
+  return nexusCoreRosterProfile(game, false);
+}
+
+/** Selected E1/E2 decks with the independent three-card variant. A deck selection
+ * does not require seating its native faction. Original optional modules compose. */
+export function selectedIndependentNexusProfile(game: NexusCoreConfiguration): boolean {
+  return game.ecazTreachery === true && game.expansions.length > 0 && nexusCoreRosterProfile(game, true);
+}
+
+/** Common consumers of the classic and selected-independent fresh Nexus core. */
+export function nexusCoreProfile(game: NexusCoreConfiguration): boolean {
+  return classicNexusCoreProfile(game) || selectedIndependentNexusProfile(game);
+}
+
+function nexusCoreRosterProfile(game: NexusCoreConfiguration, selectedDecks: boolean): boolean {
   const players = game.players;
   if (typeof game.advanced !== 'boolean' || !game.nexusCards ||
-    game.expansions.length !== 0 || !players || players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
+    !players || players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
     (game.strongholdCards && !game.advanced) || game.sandtrout ||
     game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
     game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.richeseBetrayalPreview ||
-    game.nexusIxianBetrayalPreview) return false;
+    (game.nexusIxianBetrayalPreview && (!selectedDecks || !players.some(player => player.faction === 'ixians')))) return false;
+  if (selectedDecks) {
+    if (game.expansions.length > 2) return false;
+    for (let i = 0; i < game.expansions.length; i++) {
+      if (game.expansions[i] !== 'ix' && game.expansions[i] !== 'choam') return false;
+      for (let j = 0; j < i; j++) if (game.expansions[j] === game.expansions[i]) return false;
+    }
+  } else if (game.expansions.length !== 0) return false;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
-    let classic = false;
+    let permitted = false;
     for (const faction of FACTIONS)
-      if (faction.id === players[i].faction) { classic = faction.expansion === 'base'; break; }
-    if (!classic) return false;
+      if (faction.id === players[i].faction) {
+        permitted = faction.expansion === 'base' || (selectedDecks && game.expansions.includes(faction.expansion));
+        break;
+      }
+    if (!permitted) return false;
   }
   return true;
 }
 
 /** Card consumers require the actual independent-variant selection. */
-export function classicIndependentNexusProfile(game: ClassicNexusProfile): boolean {
+export function classicIndependentNexusProfile(game: NexusCoreConfiguration): boolean {
   return game.ecazTreachery === true && classicNexusCoreProfile(game);
+}
+
+export function independentNexusProfile(game: NexusCoreConfiguration): boolean {
+  return game.ecazTreachery === true && nexusCoreProfile(game);
 }
 
 /** Original E1/E2 families or standalone Ecaz/Moritani; explicit Semuta context only. */

@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 18 October 2026 — Selected E1/E2 independent Nexus
+
+Selected Ixian/CHOAM/combined38/50 composes independent cards and Nexus12 with
+original optional modules through normal host setup. Native Ix gets Betrayal;
+only absence gets purchased-card Secret Ally. CHOAM conversion bypasses printed
+fuel effects. Native typed fees/Harass/substitution/Face Dance and Richese
+pair/reveal/cache/Guild continuations use original sources and controls.
+
+Three disjoint helper/fixture lanes were integrated by one owner; bounded native
+invoice review found preflight and tariff issues, now repaired. Frozen19-file
+194/194, types/lint/build and seven finite original-action/rendered-control
+programmes pass. Fixture corrections preserve actual marker values, native
+ownership, affordability and unopened lotteries; no printed arithmetic changed.
+[Canonical proof and remaining boundaries](NEXUS_CARD_RULES.md#selected-e1e2-independent-nexus--18-october-2026).
+No saved-room/reset/restart/deployment; full modes and final assurance remain open.
+
 ## 18 October 2026 — Persistent room entry confirmations
 
 Successful create/join now shows the room code and concise invitation/seat

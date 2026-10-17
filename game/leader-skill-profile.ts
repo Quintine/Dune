@@ -1,5 +1,5 @@
 import { FACTIONS } from './catalog';
-import { classicIndependentNexusProfile, classicNexusCoreProfile, mixedE3NexusRosterProfile } from './faction-module-profile';
+import { independentNexusProfile, classicNexusCoreProfile, nexusCoreProfile, mixedE3NexusRosterProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile } from './discovery-module-profile';
 
 /** Public configuration only; never gate a skill on a hidden card or random deal. */
@@ -68,7 +68,7 @@ export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boole
 
 /** Fresh classic Nexus/Skills composed only with the bounded Guild Betrayal preview. */
 export function guildBetrayalNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (game.guildBetrayalPreview && classicNexusCoreProfile(game))
+  if (game.guildBetrayalPreview && nexusCoreProfile(game))
     return game.players!.some(player => player.faction === 'guild');
   if (game.expansions.length || !game.guildBetrayalPreview || game.homeworlds ||
     game.techTokens || game.strongholdCards || game.semutaPreview ||
@@ -463,7 +463,7 @@ function homeworldLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
 /** Original Homeworld/Skills under the existing classic or native Nexus roster contracts. */
 export function homeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (!game.homeworlds) return false;
-  if (classicNexusCoreProfile(game)) return true;
+  if (nexusCoreProfile(game)) return true;
   if (game.expansions.length) return nativeExpansionLeaderSkillsProfile(game);
   if (!homeworldLeaderSkillModulesSupported(game)) return false;
   const players = game.players!;
@@ -479,7 +479,7 @@ export function homeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean 
 
 /** Independent cards with registered selected-family all14 setup and original module/role guards. */
 export function independentTreacheryLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (classicIndependentNexusProfile(game)) return true;
+  if (independentNexusProfile(game)) return true;
   if (game.ecazTreachery !== true || game.expansions.length > 3 ||
       typeof game.advanced !== 'boolean' || !game.players ||
       game.players.length < (game.techTokens ? 3 : 2) || game.players.length > 6 ||

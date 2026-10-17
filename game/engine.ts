@@ -1,5 +1,5 @@
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
-import { classicIndependentNexusProfile, classicNexusCoreProfile, nativeFactionTechProfile } from './faction-module-profile';
+import { independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
@@ -9674,7 +9674,7 @@ export function initializeHarkonnenNexusBetrayalGameForAudit(state: Game): Game 
   return initializeNexusGameForAudit(state);
 }
 function harkonnenNexusBetrayalModeSupported(g: Game): boolean {
-  if (classicNexusCoreProfile(g)) return !!byFaction(g, 'harkonnen');
+  if (nexusCoreProfile(g)) return !!byFaction(g, 'harkonnen');
   return typeof g.advanced === 'boolean' && !!g.nexusCards && g.expansions.length === 0 &&
     g.players.length >= 2 && g.players.length <= 6 && !!byFaction(g,'harkonnen') &&
     new Set(g.players.map(p => p.faction)).size === g.players.length &&
@@ -9883,6 +9883,7 @@ export function initializeIxianNexusBetrayalGameForAudit(state: Game): Game {
   return g;
 }
 function ixianNexusBetrayalModeSupported(g: Game): boolean {
+  if (nexusCoreProfile(g)) return !!byFaction(g, 'ixians');
   return typeof g.advanced === 'boolean' && !!g.nexusCards &&
     g.expansions.length === 1 && g.expansions[0] === 'ix' &&
     g.players.length >= 2 && g.players.length <= 6 &&
@@ -9898,7 +9899,11 @@ function ixianNexusBetrayalModeSupported(g: Game): boolean {
 function ixianNexusBetrayalContext(g: Game) {
   return {status:g.status,phase:g.phase,turn:g.turn,advanced:g.advanced,
     sequence:g.nexusIxianBetrayalCursor!.sequence,players:g.players,
+    ...(g.ecazTreachery ? {expansions:g.expansions,ecazTreachery:true} : {}),
     cards:g.nexusCards!.cards!,physicalCards:physicalTreacheryCards(g)};
+}
+function ixianNexusCardConfiguration(g: Game) {
+  return g.ecazTreachery ? {expansions:g.expansions,ecazTreachery:true,richese:!!byFaction(g,'richese')} : undefined;
 }
 function ixianNexusBetrayalAuthority(g: Game, response: ResponseWindow) {
   requireRule(response.kind === 'ixAuction' || response.kind === 'ixTechnology',
@@ -9926,6 +9931,9 @@ function ixianNexusBetrayalParent(g: Game, response: ResponseWindow): string {
       forces:p.forces,reserves:p.reserves,tanks:p.tanks,elites:p.elites,advisors:p.advisors})),
     deck:g.deck,discard:g.discard,aid:g.aid,nexus:g.nexusCards,decision:g.decision,response:g.response,
     phaseOpening:g.phaseOpening,truthtrance:g.truthtrance,pendingKarama:g.pendingKarama,
+    ...(g.ecazTreachery ? {selectedDecks:g.expansions,ecazTreachery:true,
+      richeseCache:g.richeseCache,richeseRemoved:g.richeseRemoved,richeseAuction:g.richeseAuction,
+      homeworlds:g.homeworlds} : {}),
     pendingNullentropy:g.pendingNullentropy,pendingTreacheryDiscard:g.pendingTreacheryDiscard});
 }
 function ixianNexusBetrayalIntegrity(g: Game): void {
@@ -9940,7 +9948,7 @@ function ixianNexusBetrayalIntegrity(g: Game): void {
     Array.isArray(g.nexusIxianBetrayalHistory), 'The native Ixian Nexus profile lost its history or cursor.');
   nexusCardsIntegrity(g);
   nexusRule(() => validateIxianBetrayalHistory(g.nexusIxianBetrayalHistory!,
-    g.nexusIxianBetrayalCursor!,physicalTreacheryCards(g)));
+    g.nexusIxianBetrayalCursor!,physicalTreacheryCards(g),ixianNexusCardConfiguration(g)));
   if (!frame) {
     if (g.ixAuction?.cards.length === 0 || g.pendingIxTechnology) {
       const continuation = g.pendingTreacheryDiscard?.continuation;
@@ -9978,7 +9986,7 @@ function offerIxianNexusBetrayal(g: Game,response: ResponseWindow): boolean {
     // finish. That spent attempt fizzles without exposing a Nexus offer.
     if (!getPlayer(g, response.owner).hand.some(c => c.id === g.pendingIxTechnology!.card)) return false;
   }
-  const required = nexusRule(() => ixianBetrayalResponders(g.nexusCards!.cards!,g.players));
+  const required = nexusRule(() => ixianBetrayalResponders(g.nexusCards!.cards!,g.players,ixianNexusCardConfiguration(g)));
   if (!required.length) return false;
   const source = nexusRule(() => createIxianBetrayalSource(ixianNexusBetrayalContext(g),
     ixianNexusBetrayalAuthority(g,response),ixianNexusBetrayalParent(g,response)));
@@ -9989,7 +9997,7 @@ function ixianNexusBetrayalView(g: Game,id: string) {
   const frame = g.pendingNexusIxianBetrayal;
   if (!frame) return null;
   const hasPassed = frame.passed.includes(id), canPass = frame.required.includes(id) && !hasPassed;
-  const eligible = canPass && nexusRule(() => ixianBetrayalEligible(g.nexusCards!.cards!,g.players,id));
+  const eligible = canPass && nexusRule(() => ixianBetrayalEligible(g.nexusCards!.cards!,g.players,id,ixianNexusCardConfiguration(g)));
   return {event:frame.source.event,kind:frame.source.kind,provider:frame.source.provider,
     canPass,hasPassed,canUse:eligible,blocked:null as string | null};
 }
@@ -10002,7 +10010,7 @@ function decideIxianNexusBetrayal(g: Game,id: string,action: Action): void {
     frame.required.includes(id) && !frame.passed.includes(id),
   'A current required seat must acknowledge only the original Ixian event.');
   const use = action.type === 'nexusIxianBetrayalUse';
-  if (use) requireRule(nexusRule(() => ixianBetrayalEligible(g.nexusCards!.cards!,g.players,id)),
+  if (use) requireRule(nexusRule(() => ixianBetrayalEligible(g.nexusCards!.cards!,g.players,id,ixianNexusCardConfiguration(g))),
     'You do not own an eligible unallied Ixian Nexus card.');
   if (!use) {
     frame.passed.push(id);
@@ -10037,7 +10045,7 @@ export function initializeIxianNexusReplacementGameForAudit(state: Game): Game {
   return g;
 }
 function ixianNexusReplacementModeSupported(g: Game): boolean {
-  if (classicNexusCoreProfile(g)) return true;
+  if (nexusCoreProfile(g)) return !byFaction(g, 'ixians');
   return !!g.nexusCards && g.players.length >= 2 && g.players.length <= 6 &&
     new Set(g.players.map(p => p.faction)).size === g.players.length &&
     ((!g.expansions.length && g.players.every(p => CLASSIC_FACTIONS[p.faction] === true)) ||
@@ -10221,7 +10229,7 @@ export function initializeGuildBetrayalLeaderSkillsGameForAudit(state: Game): Ga
   return initializeLeaderSkillsGameForAudit(g);
 }
 function guildBetrayalModeSupported(g: Game): boolean {
-  if (classicNexusCoreProfile(g)) return !!byFaction(g, 'guild');
+  if (nexusCoreProfile(g)) return !!byFaction(g, 'guild');
   return !!g.nexusCards && g.expansions.length === 0 && g.players.length >= 2 &&
     g.players.length <= 6 && !!byFaction(g, 'guild') &&
     g.players.every(p => CLASSIC_FACTIONS[p.faction] === true) &&
@@ -10248,6 +10256,11 @@ function guildBetrayalParentSignature(g: Game, continuation: GuildBetrayalContin
     pendingGuildTransport: g.pendingGuildTransport,
     ...(cunning ? { nexusGuildCunning: cunning } : {}),
     ...(richese ? { nexusRichese: richese } : {}),
+    ...(g.ecazTreachery && g.expansions.length ? {
+      nativeMarkers:g.players.map(p => ({id:p.id,noField:p.noField,noFieldEvent:p.noFieldEvent,
+        noFieldBlockedTurn:p.noFieldBlockedTurn})),
+      richeseCunning:g.nexusRicheseCunningHistory, richeseAllyOffer:g.richeseAllyOffer,
+    } : {}),
     ...(g.techTokens ? { techTokens: g.techTokens } : {}),
     ...(g.strongholdCards ? { strongholdCards: g.strongholdCards } : {}),
   });
@@ -10273,6 +10286,7 @@ function guildBetrayalAuthority(g: Game, continuation: GuildBetrayalContinuation
     Object.keys(continuation).sort().join(',') === producerKeys[continuation.source],
   'The saved Guild shipment producer contains foreign action fields.');
   let shipper: string, price: number, allyPayment: number, originalReceiver: string | null;
+  let approvedSupplier: {donor:string; amount:number} | null = null;
   const guild = byFaction(g, 'guild')!;
   switch (continuation.source) {
     case 'reserve': {
@@ -10283,19 +10297,44 @@ function guildBetrayalAuthority(g: Game, continuation: GuildBetrayalContinuation
           'smuggler', 'smugglerCompanion', 'guildSecretEvent', 'guildNexusEvent', 'nexusEvent',
           'richesePair', 'noField', 'alliedNoField', 'noFieldSkillProof'].includes(key)),
       'The saved reserve shipment contains foreign source fields.');
-      requireRule(!shipment.source && !shipment.noField && !shipment.alliedNoField &&
-        !shipment.richesePair && !shipment.guildSecretEvent &&
-        ((shipment.smuggler && classicNexusCoreProfile(g)) || (!shipment.smuggler && !shipment.smugglerCompanion)) &&
-        ((!shipment.guildNexusEvent && !shipment.nexusEvent) || classicNexusCoreProfile(g)),
+      requireRule(!shipment.source && !shipment.guildSecretEvent &&
+        ((!shipment.noField && !shipment.alliedNoField && !shipment.richesePair) || nexusCoreProfile(g)) &&
+        (nexusCoreProfile(g) || (!shipment.smuggler && !shipment.smugglerCompanion)) &&
+        ((!shipment.guildNexusEvent && !shipment.nexusEvent) || nexusCoreProfile(g)),
       'This Guild Betrayal profile requires a supported original physical shipment source.');
       validatePhysicalShipment(g, shipment);
       validateShipmentArrival(g, shipment);
-      checkShipmentIncomeFunding(g, getPlayer(g, shipment.player), shipment.cost, shipment.allyPayment);
+      const p = getPlayer(g, shipment.player);
+      if (shipment.noField) {
+        requireRule(!shipment.alliedNoField && !shipment.nexusEvent && !shipment.guildNexusEvent &&
+          p.faction === 'richese' && p.noField && p.noFieldEvent === shipment.noField.event &&
+          !p.noField.deployed && g.active === p.id && shipmentAvailable(g,p) && shipment.amount === 1 &&
+          shipment.elite === 0 && shipment.advisors === false,
+        'The funded No-Field invoice needs its original unused native marker.');
+        noFieldRule(() => deployRicheseNoField(p.noField!, {tokenId:shipment.noField!.tokenId,
+          controller:p.id,location:{territory:shipment.territory,sector:shipment.sector}}));
+        const cost = reserveShipmentCost({faction:p.faction,halfRate:shipmentHalfRate(g,p)},
+          territory(shipment.territory).type,1);
+        requireRule(shipment.cost === cost, 'The native No-Field invoice changed its one-marker price.');
+      } else if (shipment.alliedNoField) {
+        requireRule(!shipment.nexusEvent && !shipment.guildNexusEvent && !shipment.richesePair &&
+          !shipment.smuggler && !shipment.smugglerCompanion && shipment.allyPayment === 0 &&
+          g.active === p.id && shipmentAvailable(g,p),
+        'An allied No-Field invoice needs its original supplier-approved source.');
+        const quote = alliedNoFieldQuote(g,shipment.alliedNoField);
+        requireRule(quote.amount === shipment.amount && quote.cost === shipment.cost &&
+          shipment.elite >= quote.eliteMin && shipment.elite <= quote.eliteMax &&
+          shipment.advisors === quote.advisors,
+        'The allied No-Field allocation changed before funded payment.');
+        approvedSupplier = {donor:shipment.alliedNoField.owner,amount:quote.ownerPayment};
+      }
+      if (!approvedSupplier) checkShipmentIncomeFunding(g, p, shipment.cost, shipment.allyPayment);
       checkShipmentPromises(g, getPlayer(g, shipment.player), shipment);
-      shipper = shipment.player; price = shipment.cost; allyPayment = shipment.allyPayment;
-      const p = getPlayer(g, shipper);
+      shipper = shipment.player; price = shipment.cost;
+      allyPayment = approvedSupplier?.amount ?? shipment.allyPayment;
       originalReceiver = guildShipmentIncome({guild: guild.id, shipper, ally: p.ally,
-        cost: price, allyPayment, bankOnly: g.karamaShipping?.player === shipper}) > 0 ? guild.id : null;
+        cost: price, allyPayment, bankOnly: g.karamaShipping?.player === shipper ||
+          (!!shipment.alliedNoField && alliedNoFieldPricing(g,p).bankOnly)}) > 0 ? guild.id : null;
       break;
     }
     case 'guildTransport': {
@@ -10317,7 +10356,7 @@ function guildBetrayalAuthority(g: Game, continuation: GuildBetrayalContinuation
         ['player', 'destination', 'sources', 'route', 'event', 'turn', 'amount', 'elite', 'cost',
           'allyPayment', 'pools', 'guildSecretEvent', 'guildNexusEvent'].includes(key)),
       'The saved Homeworld shipment contains foreign source fields.');
-      requireRule(!shipment.guildSecretEvent && (!shipment.guildNexusEvent || classicNexusCoreProfile(g)),
+      requireRule(!shipment.guildSecretEvent && (!shipment.guildNexusEvent || nexusCoreProfile(g)),
         'This Guild Betrayal profile requires a supported original Homeworld shipment source.');
       const quote = validateHomeworldShipment(g, shipment);
       shipper = shipment.player; price = quote.cost; allyPayment = shipment.allyPayment;
@@ -10341,10 +10380,11 @@ function guildBetrayalAuthority(g: Game, continuation: GuildBetrayalContinuation
     default: throw new RuleError('The saved Guild Betrayal producer is unsupported.');
   }
   const p = getPlayer(g, shipper);
-  contribution(g, p, price, allyPayment);
+  if (!approvedSupplier) contribution(g, p, price, allyPayment);
   return {source: continuation.source, sourceSignature: guildBetrayalParentSignature(g, continuation),
-    shipper, price, allyPayment, ownSpice: p.spice, allyEscrow: aidFor(g, p)?.amount ?? 0,
-    donor: allyPayment ? p.ally! : null, originalReceiver};
+    shipper, price, allyPayment, ownSpice: p.spice,
+    allyEscrow: approvedSupplier?.amount ?? aidFor(g, p)?.amount ?? 0,
+    donor: allyPayment ? (approvedSupplier?.donor ?? p.ally!) : null, originalReceiver};
 }
 function guildBetrayalFrameSignature(frame: NonNullable<Game['pendingGuildBetrayal']>): string {
   return JSON.stringify([frame.invoice.signature, frame.invoice.sourceSignature, frame.required, frame.passed]);
@@ -10755,7 +10795,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const homeworlds = homeworldLeaderSkillsProfile(state);
   const independent = independentTreacheryLeaderSkillsProfile(state);
   if (state.ecazTreachery) {
-    requireRule(independent, 'Independent Skills cards require supported selected decks with original World/phase modules, or classic Nexus with original World/phase modules; unrelated preview contexts remain gated.');
+    requireRule(independent, 'Independent Skills cards require supported selected decks with original World/phase modules and supported Nexus selections; unrelated preview contexts remain gated.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -10775,7 +10815,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const classicNexus = classicNexusLeaderSkillsProfile(g);
   const pairedE3 = pairedE3NexusLeaderSkillsProfile(g);
   const mixedE3 = mixedE3NexusLeaderSkillsProfile(g);
-  const initialized = initializeSetupGameForAudit(g, homeworlds, classicNexus || pairedNexusLeaderSkillsProfile(g) ||
+  const initialized = initializeSetupGameForAudit(g, homeworlds, nexusCoreProfile(g) || classicNexus || pairedNexusLeaderSkillsProfile(g) ||
     singleE1E2NexusLeaderSkillsProfile(g) || mixedE1E2NexusLeaderSkillsProfile(g) ||
     mixedE3 || standaloneE3NexusLeaderSkillsProfile(g) || pairedE3 || guildBetrayalNexusLeaderSkillsProfile(g), false,
     classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g) || (g.discoveryEnabled === true && classicNexus), true,
@@ -10802,7 +10842,7 @@ function independentCardModuleRoster(g: Game): boolean {
       (g.expansions.length === 1 && g.expansions[0] === 'ecaz'));
 }
 function ecazHomeworldProfile(g: Game): boolean {
-  if (g.homeworlds && classicIndependentNexusProfile(g)) return true;
+  if (g.homeworlds && independentNexusProfile(g)) return true;
   if (g.homeworlds && g.leaderSkills && !g.sandtrout && independentTreacheryLeaderSkillsProfile(g)) return true;
   return !!g.homeworlds && g.ecazTreachery === true && independentCardModuleRoster(g) &&
     g.players.length >= 2 && g.players.length <= 6 &&
@@ -10818,7 +10858,7 @@ function ecazHomeworldProfile(g: Game): boolean {
 }
 /** Independent cards compose original phase modules, not unrelated previews. */
 function independentCardModulesProfile(g: Game): boolean {
-  if ((g.techTokens || g.strongholdCards) && classicIndependentNexusProfile(g)) return true;
+  if ((g.techTokens || g.strongholdCards) && independentNexusProfile(g)) return true;
   if ((g.techTokens || g.strongholdCards) && g.leaderSkills && !g.sandtrout &&
       independentTreacheryLeaderSkillsProfile(g)) return true;
   if (!g.ecazTreachery || (!g.techTokens && !g.strongholdCards) || !independentCardModuleRoster(g) ||
@@ -10842,8 +10882,8 @@ export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   g.ecazTreachery = true;
   const homeworlds = !!g.homeworlds;
   requireRule(!homeworlds || ecazHomeworldProfile(g),
-    'Independent World cards need a supported selected-deck roster and original phase modules, or classic Nexus with original phase modules.');
-  const initialized = initializeSetupGameForAudit(g, homeworlds, classicIndependentNexusProfile(g), false, false, false, false, true, true);
+    'Independent World cards need a supported selected-deck roster with original phase modules and supported Nexus selections.');
+  const initialized = initializeSetupGameForAudit(g, homeworlds, independentNexusProfile(g), false, false, false, false, true, true);
   if (byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   if (moritaniAssassinateModeSupported(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
@@ -10865,7 +10905,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
     classicDiscoveryNexusProfile(g) || pairedDiscoveryNexusProfile(g) ||
     mixedE3DiscoveryNexusProfile(g) || mixedE1E2DiscoveryNexusProfile(g) || pairedE3DiscoveryNexusProfile(g) ||
     (leaderSkills && (classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g) || classicNexusLeaderSkillsProfile(g))));
-  const nexusModules = nexus && (classicNexusModulesProfile(g) || pairedNexusModulesProfile(g) ||
+  const nexusModules = nexus && (nexusCoreProfile(g) || classicNexusModulesProfile(g) || pairedNexusModulesProfile(g) ||
     mixedE3NexusProfile(g) || singleE1E2NexusProfile(g) || mixedE1E2NexusProfile(g) || pairedE3NexusProfile(g) || standaloneE3NexusProfile(g) ||
     (leaderSkills && (classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) ||
       mixedE3NexusLeaderSkillsProfile(g) || singleE1E2NexusLeaderSkillsProfile(g) || mixedE1E2NexusLeaderSkillsProfile(g) ||
@@ -10915,7 +10955,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
     g.spiceBankerIncomePreview = true;
     g.spiceBankerIncome = bankerIncomeRule(() => createBankerIncomeState(bankerIncomeContext(g)));
   }
-  if (classicNexusCoreProfile(g)) {
+  if (nexusCoreProfile(g)) {
     requireRule(g.nexusIxianReplacementPreview === undefined &&
       g.nexusIxianReplacementHistory === undefined && g.nexusIxianReplacementCursor === undefined &&
       !g.pendingNexusIxianReplacement && !g.pendingNexusIxianSpecialPurchase &&
@@ -10925,11 +10965,22 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       g.guildBetrayalPreview === undefined && g.guildBetrayal === undefined &&
       g.nexusGuildBetrayalHistory === undefined && g.guildBetrayalSourceReceipts === undefined &&
       !g.pendingGuildBetrayal,
-    'Native Nexus reactions initialize only with fresh classic setup.');
-    g.nexusIxianReplacementPreview = true;
-    g.pendingNexusIxianReplacement = null;
-    g.nexusIxianReplacementHistory = [];
-    g.nexusIxianReplacementCursor = initialIxianReplacementCursor();
+    'Native Nexus reactions initialize only with fresh supported core setup.');
+    requireRule(g.nexusIxianBetrayalPreview === undefined && g.nexusIxianBetrayalHistory === undefined &&
+      g.nexusIxianBetrayalCursor === undefined && !g.pendingNexusIxianBetrayal,
+    'Native Ixian Nexus reactions require original undealt effect state.');
+    if (!byFaction(g, 'ixians')) {
+      g.nexusIxianReplacementPreview = true;
+      g.pendingNexusIxianReplacement = null;
+      g.nexusIxianReplacementHistory = [];
+      g.nexusIxianReplacementCursor = initialIxianReplacementCursor();
+    }
+    if (byFaction(g, 'ixians')) {
+      g.nexusIxianBetrayalPreview = true;
+      g.pendingNexusIxianBetrayal = null;
+      g.nexusIxianBetrayalHistory = [];
+      g.nexusIxianBetrayalCursor = initialIxianBetrayalCursor();
+    }
     if (byFaction(g, 'harkonnen')) {
       g.nexusHarkonnenBetrayalPreview = true;
       g.pendingNexusHarkonnenBetrayal = null;
@@ -13942,7 +13993,7 @@ function recruitsModeSupported(g: Game) {
   const modules = independentCardModulesProfile(g);
   return (
     (!g.homeworlds || ecazHomeworldProfile(g)) &&
-    (!g.nexusCards || classicIndependentNexusProfile(g)) &&
+    (!g.nexusCards || independentNexusProfile(g)) &&
     (!g.leaderSkills || independentTreacheryLeaderSkillsProfile(g)) &&
     (!g.techTokens || modules) &&
     (!g.strongholdCards || modules) &&
@@ -28136,7 +28187,7 @@ function projectedNexusGuildCunning(g: Game, owner: string) {
     hajrAvailable:record.stage !== 'pending' && !g.hajr.includes(owner)}};
   if (g.nexusCards?.cards?.hands[owner] !== 'guild') return null;
   let blocked: string | null = null;
-  if (g.guildBetrayalPreview && !classicNexusCoreProfile(g)) blocked = 'This payment audit profile supports the original native shipment, not a Cunning second-shipment overlay.';
+  if (g.guildBetrayalPreview && !nexusCoreProfile(g)) blocked = 'This payment audit profile supports the original native shipment, not a Cunning second-shipment overlay.';
   else if (p.ally) blocked = 'Guild Cunning requires an unallied native Guild player.';
   else if (g.status !== 'playing' || g.phase !== 5 || g.active !== owner)
     blocked = 'Use Cunning when finishing your own Shipment and Movement turn.';
@@ -28338,7 +28389,7 @@ function nexusRicheseOffer(g: Game, owner: string) {
   const p = g.players.find(p => p.id === owner);
   if (!p || g.nexusCards?.cards?.hands[owner] !== 'richese' || byFaction(g,'richese')) return null;
   let blocked: string | null = null;
-  if (g.guildBetrayalPreview && !classicNexusCoreProfile(g)) blocked = 'This payment audit profile supports the original native shipment, not a Richese Secret Ally shipment overlay.';
+  if (g.guildBetrayalPreview && !nexusCoreProfile(g)) blocked = 'This payment audit profile supports the original native shipment, not a Richese Secret Ally shipment overlay.';
   else if (p.ally) blocked = 'Richese Secret Ally requires an unallied holder.';
   else if (g.status !== 'playing' || g.phase !== 5 || g.active !== owner || p.shipped)
     blocked = 'Use Secret Ally for your unused reserve shipment before moving.';
@@ -28353,6 +28404,7 @@ const RICHESE_CUNNING_ROSTER: Partial<Record<FactionId, true>> = {
   beneGesserit: true, guild: true, richese: true, choam: true,
 };
 function richeseCunningModeSupported(g: Game) {
+  if (nexusCoreProfile(g)) return !!byFaction(g, 'richese');
   const mixed = mixedE3NexusProfile(g) || mixedE1E2NexusProfile(g) ||
     (!!g.leaderSkills && (mixedE3NexusLeaderSkillsProfile(g) || mixedE1E2NexusLeaderSkillsProfile(g)));
   if (mixed) return !g.sandtrout;
@@ -28441,7 +28493,10 @@ function finishRichesePairShipment(g: Game, shipment: PendingShipment, stage: 's
 }
 function richesePairIntegrity(g: Game) {
   const history = g.nexusRicheseCunningHistory;
-  const pending = g.pendingShipment;
+  const invoice = g.pendingGuildBetrayal?.continuation;
+  const invoicedPair = invoice?.source === 'reserve' && invoice.shipment.richesePair ? invoice.shipment : null;
+  const pending = g.pendingShipment ?? invoicedPair;
+  requireRule(!g.pendingShipment || !invoicedPair, 'Richese Cunning cannot own two shipment continuations.');
   if (history === undefined) {
     requireRule(!g.nexusRicheseCunningLast && !pending?.richesePair,
       'Richese Cunning lost its saved shipment history.');
@@ -28483,8 +28538,8 @@ function richesePairIntegrity(g: Game) {
     currentRichesePairShipment(g, pending);
     const responses = savedNoFieldResponses(g).filter(response => response.kind === 'richeseNoField');
     const decisions = homeworldSavedDecisions(g).filter(decision => decision.kind === 'guildShipment');
-    requireRule(responses.length + decisions.length === 1,
-      'Richese Cunning lost its unique Karama response or Guild interception decision.');
+    requireRule(responses.length + decisions.length + Number(!!invoicedPair) === 1,
+      'Richese Cunning lost its unique Karama, native Guild interception or funded invoice continuation.');
     for (const response of responses)
       requireRule(response.owner === pending.player && response.noFieldSkillProof === undefined,
         'Richese Cunning changed its native No-Field response.');
@@ -30606,6 +30661,12 @@ function applyActionInner(
     decideNexusEmperorAmbassadorPurchase(g, p, action);
     return g;
   }
+  // Conversion spends the selected card as fuel; its printed effect must not
+  // intercept that explicit mode (including Recruits and other special faces).
+  if (t === 'card' && action.mode === 'choam') {
+    playChoamWorthless(g, p, action);
+    return g;
+  }
   if (t === 'card' && action.card === RECRUITS_CARD_ID) {
     requireRule(
       Object.keys(action).sort().join(',') === 'card,type',
@@ -30843,10 +30904,6 @@ function applyActionInner(
         }
       }
     }
-    return g;
-  }
-  if (t === 'card' && action.mode === 'choam') {
-    playChoamWorthless(g, p, action);
     return g;
   }
   if (t === 'card' && action.mode === 'special') {
@@ -31196,7 +31253,9 @@ function applyActionInner(
         // Verify the entire arrival continuation before the recipient commits.
         // Unsupported simultaneous reactions leave this offer declineable.
         const trial = structuredClone(g);
-        commitShipment(trial, trial.pendingShipment!);
+        // Preflight the native arrival, not an invoice inside this still-owned
+        // acceptance decision. The real commit opens its invoice after counters.
+        commitShipment(trial, trial.pendingShipment!, {recipient:null});
         g.richeseAllyOffer = null;
         g.response = { kind: 'richeseNoField', owner: offer.owner, passed: [] };
         log(
