@@ -2,6 +2,68 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Selected E3 independent Nexus — 18 October 2026
+
+**Prototyped / Partial.** Fresh selected Ecaz/Moritani
+cards, optionally selected Ixian/CHOAM or both, compose the independent three-card
+variant and Nexus12 with registered classic/selected native seats2–6. Original
+all14 Skills, Homeworlds, Tech3+ and Advanced Strongholds2+ retain their own
+prerequisites. Selecting a deck does not require seating its native faction.
+Ordinary selected stock remains36/38/50, plus an actual Richese cache10.
+The existing Advanced actual-Ecaz/Moritani + Harkonnen + Skills exclusion stays;
+merely selecting unused E3 cards does not introduce that capture/training case.
+Discovery, Semuta and other independent reaction envelopes remain separate.
+
+The shared public capability now continues through native Ecaz Occupy, native
+Advanced Moritani Assassinate, simultaneous Ambassador/Terror arrival, Duke
+acquisition/revival table permission, Ecaz Nexus Cunning and selected native
+Ixian cancellation catalogues. Fresh setup installs the original native powers;
+their own generated stamps remain valid afterward. No played game is reflagged,
+and no new card, force, payment or disc is supplied by the capability check.
+
+Original paid auctions/shipments, actual worm/alliance/closing draws and native
+six-counter starting armies supply the focused programmes. Occupy retains the
+[own-card fee, fixed Ecaz commitment and own-only typed return](ECAZ_OCCUPY_RULES.md#independent-cards-with-combined-armies--2-october-2026)
+contract; no new rounding or fee timing is invented. A real losing Moritani
+plan reaches its held unused opposing Traitor, original bounty/training removal
+and Mentat replacement; Recruits subsequently revives actual physical losses.
+Ecaz Cunning acquires the one shared Duke, then original battle use or unused
+expiry sets him aside without adding a sixth native disc.
+
+Two seats may select the module but cannot earn an unallied Nexus hand while
+retaining the printed at-least-one-alliance requirement. The initial two-seat
+fixture incorrectly waited for an impossible closing draw; repair the fixture,
+not that rule. Separate original no-alliance programmes retain the empty hands.
+
+Evidence paths: `tests/selected-independent-nexus-entry.test.ts`,
+`tests/selected-independent-ixian-betrayal.test.ts`,
+`tests/e3-independent-nexus-occupy.test.ts`,
+`tests/e3-independent-nexus-cards.test.ts`,
+`tests/e3-independent-nexus-duke.test.ts` and
+`tests/e3-independent-nexus-arrival.test.ts`, with their original-action fixtures.
+Ecaz Betrayal and Moritani Atomics remain distinct required effects with
+substantive unimplemented envelopes; this delivery does not certify all Nexus
+effects, complete factions, combinations or final release. Comprehensive
+assurance, full AI and deployed acceptance remain open.
+
+Owner frozen17-file **168/168**, types/lint/build pass. Seven finite original-
+action programmes complete six-native host entry27, Ecaz/ally Occupy leads157/
+158, actual card loss/Assassinate/replacement/Recruits210, Duke battle142 plus
+separate unused expiry42, and Basic/Advanced original overlapping arrival68/
+127 actions. Actual table SSR retains lead/plan, assassination/revival, Duke
+and arrival choices. Next imports are aliased to Vinext and CSS stubbed; this
+is not visual/browser or deployed acceptance. Four legal policies each finish
+43 Cunning/expiry choices, with no tuning/calibration claim.
+
+The initial fixture wrongly assumed a two-seat draw and paid an unwanted
+Ambassador placement before its supported Duke battle, exhausting actual spice.
+Fixtures now retain the printed alliance gate and decline that optional spend.
+Initial lint also caught a reserved loop binding. Earlier diagnostic reports
+remain outside Git; the final source-bound report is the passed four-step
+checkpoint. No engine numeric rule changed for fixtures. Bounded shared-profile
+review found no material defect. No saved room/database, reset, restart or
+deployment was involved.
+
 ## Selected E1/E2 independent Nexus — 18 October 2026
 
 **Prototyped / Partial.** Fresh selected Ixian, CHOAM or combined decks now

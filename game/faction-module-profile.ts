@@ -36,7 +36,7 @@ export function classicNexusCoreProfile(game: NexusCoreConfiguration): boolean {
   return nexusCoreRosterProfile(game, false);
 }
 
-/** Selected E1/E2 decks with the independent three-card variant. A deck selection
+/** Selected expansion decks with the independent three-card variant. A deck selection
  * does not require seating its native faction. Original optional modules compose. */
 export function selectedIndependentNexusProfile(game: NexusCoreConfiguration): boolean {
   return game.ecazTreachery === true && game.expansions.length > 0 && nexusCoreRosterProfile(game, true);
@@ -53,15 +53,21 @@ function nexusCoreRosterProfile(game: NexusCoreConfiguration, selectedDecks: boo
     !players || players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
     (game.strongholdCards && !game.advanced) || game.sandtrout ||
     game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
-    game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
+    game.semutaPreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.richeseBetrayalPreview ||
+    (game.moritaniAssassinatePreview && (!selectedDecks || !game.advanced ||
+      !players.some(player => player.faction === 'moritani'))) ||
     (game.nexusIxianBetrayalPreview && (!selectedDecks || !players.some(player => player.faction === 'ixians')))) return false;
   if (selectedDecks) {
-    if (game.expansions.length > 2) return false;
+    if (game.expansions.length > 3) return false;
     for (let i = 0; i < game.expansions.length; i++) {
-      if (game.expansions[i] !== 'ix' && game.expansions[i] !== 'choam') return false;
+      if (game.expansions[i] !== 'ix' && game.expansions[i] !== 'choam' && game.expansions[i] !== 'ecaz') return false;
       for (let j = 0; j < i; j++) if (game.expansions[j] === game.expansions[i]) return false;
     }
+    // Public training and hidden Harkonnen capture still need their own native
+    // E3 custody composition. Selecting unused E3 cards does not add that case.
+    if (game.advanced && game.leaderSkills && players.some(player => player.faction === 'harkonnen') &&
+      players.some(player => player.faction === 'ecaz' || player.faction === 'moritani')) return false;
   } else if (game.expansions.length !== 0) return false;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;

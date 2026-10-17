@@ -1293,7 +1293,7 @@ export function GameTable({
       {coreNexusPreview && (
         <p className="notice" role="status">
           Nexus core reactions preview · Basic/Advanced classic factions with base33 or
-          independent36, or selected Ixian/CHOAM decks with the independent three-card
+          independent36, or selected expansion decks with the independent three-card
           variant, permitting registered classic and selected native seats. Optional all14
           Leader Skills and Homeworlds compose.
           Own-World Reinforcements fees provisionally spend ordinary non-role counters first,

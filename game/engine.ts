@@ -8591,6 +8591,7 @@ function e3StrongholdFactionProfile(g: Game): boolean {
   return native !== null && (native !== 'moritani' || !byFaction(g, 'harkonnen'));
 }
 function moritaniAssassinateModeSupported(g: Game) {
+  if (independentNexusProfile(g)) return g.advanced && !!byFaction(g, 'moritani');
   if (mixedE3NexusProfile(g) || mixedE3NexusLeaderSkillsProfile(g) ||
     standaloneE3NexusProfile(g) || pairedE3NexusProfile(g) || pairedE3NexusLeaderSkillsProfile(g))
     return g.advanced && g.players.some(player => player.faction === 'moritani');
@@ -10607,6 +10608,7 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
   return initialized;
 }
 function ecazOccupyCompositionSupported(g: Game): boolean {
+  if (independentNexusProfile(g) && byFaction(g, 'ecaz')) return true;
   if (g.leaderSkills && nativeEcazLeaderSkillsProfile(g)) return true;
   if (g.ecazOccupyPreview === true && (mixedE3NexusProfile(g) || standaloneE3NexusProfile(g) || pairedE3NexusProfile(g)) &&
     g.players.some(player => player.faction === 'ecaz')) return true;
@@ -10820,9 +10822,9 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
     mixedE3 || standaloneE3NexusLeaderSkillsProfile(g) || pairedE3 || guildBetrayalNexusLeaderSkillsProfile(g), false,
     classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g) || (g.discoveryEnabled === true && classicNexus), true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g), independent);
-  if (advancedMoritaniLeaderSkillsProfile(initialized) || ((mixedE3 || pairedE3) && initialized.advanced &&
+  if (advancedMoritaniLeaderSkillsProfile(initialized) || ((independentNexusProfile(initialized) || mixedE3 || pairedE3) && initialized.advanced &&
     byFaction(initialized, 'moritani'))) initializeMoritaniAssassinateState(initialized);
-  if ((nativeEcazLeaderSkillsProfile(initialized) || mixedE3 || homeworlds || nativeDiscoveryLeaderSkillsProfile(initialized) || pairedE3) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
+  if ((independentNexusProfile(initialized) || nativeEcazLeaderSkillsProfile(initialized) || mixedE3 || homeworlds || nativeDiscoveryLeaderSkillsProfile(initialized) || pairedE3) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   return initialized;
 }
 /** Independent cards keep every selected native family's physical counters. */
@@ -16421,6 +16423,7 @@ function ambassadorEffectBlock(
   return null;
 }
 function arrivalOverlapModeSupported(g: Game): boolean {
+  if (independentNexusProfile(g) && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if ((mixedE3NexusLeaderSkillsProfile(g) || mixedE3NexusProfile(g)) &&
     byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if (g.ecazTreachery && byFaction(g, 'ecaz') && byFaction(g, 'moritani') &&
@@ -18149,7 +18152,7 @@ function ecazAllianceQuote(g: Game, owner: string, entrant: string) {
 }
 function ecazAmbassadorLoanBlock(g: Game, owner: Player, entrant: Player) {
   if (g.advanced && byFaction(g, 'harkonnen') &&
-    !(standaloneE3NexusProfile(g) || pairedE3NexusProfile(g) || mixedE3NexusProfile(g)))
+    !(independentNexusProfile(g) || standaloneE3NexusProfile(g) || pairedE3NexusProfile(g) || mixedE3NexusProfile(g)))
     return 'Advanced Duke loans with Harkonnen capture remain guarded in this profile.';
   if (owner.ally !== entrant.id || entrant.ally !== owner.id)
     return 'The new Ecaz alliance is no longer current.';

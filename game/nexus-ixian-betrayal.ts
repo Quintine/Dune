@@ -89,11 +89,12 @@ function sameMembers(one: readonly string[], two: readonly string[]): boolean {
 }
 function selectedExpansions(selection: IxianBetrayalSelection): readonly string[] {
   const expansions = selection.expansions ?? ['ix'];
-  requireBetrayal(Array.isArray(expansions) && expansions.length >= 1 && expansions.length <= 2 &&
+  requireBetrayal(Array.isArray(expansions) && expansions.length >= 1 && expansions.length <= 3 &&
     expansions.includes('ix') && expansions.every((expansion, index) =>
-      (expansion === 'ix' || expansion === 'choam') && expansions.indexOf(expansion) === index) &&
+      (expansion === 'ix' || expansion === 'choam' ||
+        (expansion === 'ecaz' && selection.ecazTreachery === true)) && expansions.indexOf(expansion) === index) &&
     (selection.ecazTreachery === undefined || typeof selection.ecazTreachery === 'boolean'),
-  'Ixian Betrayal requires an original selected Ixian deck, optionally CHOAM and independent cards.');
+  'Ixian Betrayal requires an original selected Ixian deck, optionally CHOAM or independent Ecaz cards and factions.');
   return expansions;
 }
 function canonicalCard(value: unknown, canonical: ReadonlyMap<string, Card>): value is Card {
@@ -124,7 +125,7 @@ function validateRoster(players: readonly NexusPlayer[], selection: IxianBetraya
     (faction.expansion === 'base' || expansions.includes(faction.expansion)))) &&
     players.filter(player => player.faction === 'ixians').length === 1 &&
     (selection.richese === undefined || selection.richese === players.some(player => player.faction === 'richese')),
-  'Ixian Betrayal needs its native Ixian and registered classic or selected E1/E2 seats.');
+  'Ixian Betrayal needs its native Ixian and registered classic or selected family seats.');
 }
 
 /** A neutral acknowledgment depends on public held-card presence, never its face. */

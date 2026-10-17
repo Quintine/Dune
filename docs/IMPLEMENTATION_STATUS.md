@@ -1,5 +1,22 @@
 # Dune implementation status
 
+## 18 October 2026 — Selected E3 independent Nexus
+
+Selected E3, optionally Ix/CHOAM/both, now composes independent cards/Nexus12
+and original all14/World/phase modules. Shared native consumers retain Occupy,
+Advanced Assassinate, Ambassador/Terror queue order, Duke Cunning and selected
+Ixian catalogues; no native-per-selected-family requirement or played-save
+conversion. Existing trained E3/Harkonnen capture boundary remains.
+
+Three exclusive helper/fixture lanes and owner entry/arrival integration pass
+frozen17-file168/168, types/lint/build, seven finite original-action/table-SSR
+programmes and four legal Cunning/expiry policies. Fixtures corrected impossible
+two-seat draw and unwanted optional Ambassador spending; lint corrected a loop
+binding. No printed numerical rule changed. Bounded shared-profile review found
+no material defect. [Source-bound proof and remaining work](NEXUS_CARD_RULES.md#selected-e3-independent-nexus--18-october-2026).
+Ecaz Betrayal, Moritani Atomics and wider envelopes remain required; no saved
+room/reset/restart/deployment or complete-mode assurance claim.
+
 ## 18 October 2026 — Selected E1/E2 independent Nexus
 
 Selected Ixian/CHOAM/combined38/50 composes independent cards and Nexus12 with

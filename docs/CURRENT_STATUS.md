@@ -16,6 +16,30 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Selected E3 independent Nexus — 18 October. Prototyped / Partial.**
+Fresh selected E3, optionally Ix/CHOAM/both, now composes independent cards,
+Nexus and original World/phase/all14 modules. Native Occupy, Advanced
+Assassinate, Ambassador/Terror arrival order and shared-Duke Cunning continue
+through the same public capability. Selected stock36/38/50 and actual cache10
+remain. Existing Advanced actual-E3/Harkonnen/Skills exclusion stays.
+
+Three disjoint helper/fixture lanes plus owner entry/arrival integration are
+frozen. **17 files168/168**, types/lint/build and seven finite original-action
+programmes pass: six-native host entry27; Ecaz/ally coalition leads157/158;
+assassination/replacement/Recruits210; Duke battle142 (separate unused expiry42);
+Basic/Advanced overlapping arrivals68/127 actions. Actual table SSR shows
+lead/plan, assassination, revival, Duke and arrival controls; framework aliases/
+CSS stubs mean no visual/browser acceptance. Four legal policies each complete
+43 owned Cunning/expiry choices; no strength calibration.
+
+Fixture corrections retain the real at-least-one-alliance draw gate and decline
+unwanted paid Ambassador placement before the Duke invasion. Initial lint caught
+a reserved loop binding. No printed numeric rule changed. Bounded shared-profile
+review found no material defect. No saved room/database, reset, restart or
+deployment. **Next required rules:** Ecaz Betrayal and Moritani Atomics envelopes,
+then remaining optional combinations; comprehensive assurance stays deferred.
+[Contract, evidence and boundaries](NEXUS_CARD_RULES.md#selected-e3-independent-nexus--18-october-2026).
+
 **Selected-deck independent Nexus — 18 October. Prototyped / Partial.**
 Original selected Ixian/CHOAM/combined decks now compose independent three-card
 selection and Nexus12, optional all14/World/Tech3+/Advanced Strongholds2+.

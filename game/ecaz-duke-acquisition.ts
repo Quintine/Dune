@@ -1,7 +1,7 @@
 import type { Game } from './engine';
 import type { FactionId } from './catalog';
 import { acquireDuke, DUKE_VIDAL_ID, type DukeState } from './duke-vidal';
-import type { FactionModuleProfile } from './faction-module-profile';
+import { nexusCoreProfile, type FactionModuleProfile } from './faction-module-profile';
 import { mixedE3NexusProfile, pairedE3NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 
 export type EcazDukeContext = Partial<FactionModuleProfile> & {
@@ -57,7 +57,7 @@ export function quoteEcazDukeAcquisition(
   );
   requireDuke(
     !(g.advanced && g.players.some((p) => p.faction === 'harkonnen')) ||
-      (!!g.expansions && (standaloneE3NexusProfile(g as FactionModuleProfile) ||
+      (!!g.expansions && (nexusCoreProfile(g as FactionModuleProfile) || standaloneE3NexusProfile(g as FactionModuleProfile) ||
         pairedE3NexusProfile(g as FactionModuleProfile) || mixedE3NexusProfile(g as FactionModuleProfile))),
     tableBlock,
     'table',

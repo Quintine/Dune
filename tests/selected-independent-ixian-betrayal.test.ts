@@ -108,7 +108,7 @@ void test('selected physical inventories require all three independent faces and
   assert.deepEqual(ctx, before);
 });
 
-void test('public selected families authorize native responders without admitting unselected or E3 seats', () => {
+void test('public selected families authorize native responders without admitting unselected native seats', () => {
   const ctx = fixture();
   for (const expansions of [['choam'], ['ix', 'ix'], ['ix', 'ecaz'], []])
     assert.throws(() => createIxianBetrayalSource({ ...ctx, expansions }, authority(),
@@ -123,6 +123,26 @@ void test('public selected families authorize native responders without admittin
     ? { ...player, ally: 'observer' } : player.id === 'observer' ? { ...player, ally: 'holder' } : player) };
   assert.deepEqual(ixianBetrayalResponders(allied.cards, allied.players, selection(allied)), []);
   assert.equal(ixianBetrayalEligible(allied.cards, allied.players, 'holder', selection(allied)), false);
+});
+
+for (const mixed of [false, true]) void test(`selected E3/${mixed ? 'Ix/CHOAM cache' : 'Ix'} native responders preserve original cancellation and physical cards`, () => {
+  const original = fixture(mixed);
+  const expansions = [...original.expansions!, 'ecaz'];
+  const players: NexusPlayer[] = [...original.players.map(player => player.id === 'observer'
+    ? {...player, faction:'ecaz' as const} : player), {id:'moritani', faction:'moritani'}];
+  const ctx: IxianBetrayalContext = {...original, expansions, players,
+    cards:{...original.cards, hands:{...original.cards.hands, moritani:null}},
+    physicalCards:[...treacheryDeck(expansions), ...ecazTreacheryCards(), ...(mixed ? richeseCards() : [])]};
+  const before = structuredClone(ctx);
+  const source = createIxianBetrayalSource(ctx, authority(), 'original-selected-e3-native-pool');
+  assert.equal(source.eligible, 'holder');
+  assert.deepEqual(ixianBetrayalResponders(ctx.cards, players, selection(ctx)), source.required);
+  const closed = closeIxianBetrayalSource(source, 'use', 'holder', initialIxianBetrayalCursor());
+  validateIxianBetrayalHistory([closed.receipt], closed.cursor, ctx.physicalCards, selection(ctx));
+  assert.equal(ctx.physicalCards.length, mixed ? 60 : 50);
+  assert.deepEqual(ctx, before, 'Neither the native E3 presence nor cancellation changes the selected catalogue.');
+  assert.throws(() => createIxianBetrayalSource({...ctx, ecazTreachery:false}, authority(),
+    source.parent), IxianBetrayalError, 'This new selected E3 lane requires its real independent-card selection.');
 });
 
 void test('omitted selection preserves original Ix47 source and receipt grammar and rejects silent new card inventory', () => {
