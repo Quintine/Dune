@@ -90,11 +90,11 @@ kills a living winning leader without a bounty and returns its skill once.
 Older receipts without the new boundary retain their original signature shape.
 
 Shared profile checks extend the existing ordinary movement, shipment, payment
-and battle effects. Zoal's unmodified Smuggler collection uses the opposing
-disc's printed value from the two revealed plans, including zero against Cheap
-Hero; it does not use Zoal's revival value or copy the opponent's skill bonus.
-This follows the existing [Zoal and skill contract](LEADER_SKILLS_RULES.md) and
-[Smuggler boundary](SMUGGLER_BATTLE.md), without settling modified-strength cases.
+and battle effects. Zoal's Smuggler base uses the opposing disc's printed value
+from the two revealed plans, including zero against Cheap Hero; it does not use
+Zoal's revival value or copy the opponent's skill bonus. The controller's own
+declared modifiers follow the later [provisional Smuggler policy](SMUGGLER_BATTLE.md#provisional-modifier-policy--17-october-2026).
+This preserves the existing [Zoal and skill contract](LEADER_SKILLS_RULES.md).
 
 ## Entry and checks
 
@@ -124,9 +124,10 @@ Private source-bound reports record final checks, game samples and browser work.
 
 ## Remaining work
 
-Normal Banker income, ordinary Mentat questioning, modified Smuggler collection,
-captured replacement entitlement and other recorded skill questions remain
-incomplete. The [bounded Diplomat retreat](LEADER_SKILLS_RUNTIME.md) is connected
+Normal Banker income, ordinary Mentat questioning, captured replacement
+entitlement and other recorded skill questions retain their stated boundaries.
+Modified Smuggler collection follows the linked provisional policy above.
+The [bounded Diplomat retreat](LEADER_SKILLS_RUNTIME.md) is connected
 for supported battles, not modified or simultaneous effects. See the
 [runtime boundaries](LEADER_SKILLS_RUNTIME.md) and
 [rule decisions](RULE_DECISIONS.md). Full AI implementation and tuning wait

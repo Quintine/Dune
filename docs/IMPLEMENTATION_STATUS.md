@@ -1,5 +1,54 @@
 # Dune implementation status
 
+## 17 October 2026 — Provisional modified Smuggler collection
+
+The original raw KH/trainer plans reject unchanged at the modifier guard.
+Under the later standing choose-recommended instruction, use a visibly
+provisional reveal cap: copied/printed disc plus existing declared skill bonus
+and KH2. No publisher modifier ruling or numerical user answer is claimed.
+General skill survival/card-role rules are in supplied Advanced physical p21;
+p40 permits KH immediately after its seventh actual loss, not this cap formula.
+The old question named Stunner, but the base Stunner is a projectile. Reuse
+actual shared Artillery zeroing: it voids collection even for a shielded survivor,
+without a pile choice; a sole own Traitor bypasses weapons and retains collection.
+
+Keep signed reveal-time piles/cap, pending spending prohibition, controller
+custody, delayed survival settlement, native bounties and existing profile gates.
+No saved field/schema/migration/reset is added. Bots no longer suppress legal KH
+for this skill; table uses the original projected module admission, as bots do.
+Guide, pending notice, reference/checklist and source contracts name the policy.
+
+Two disjoint contributors supplied real native programmes. Actual Atreides
+training, three paid shipments and seven supported first-battle casualties
+produce legally active KH. The second paid conflict uses original6/8-spice
+Wind Pass North/Broken Land blows: cap7 collects6/7, wallet3 stays3 at reveal,
+then becomes9/10 before original winner cleanup. Ordinary Collection remains
+separate. A captured Smuggler's normal trainer bonus is a controlled unit case,
+not claimed natural capture history.
+
+Actual first-turn Emperor/Guild shipments to South Mesa and movement into Red
+Chasm precede shielded Artillery, sole own-Traitor and ordinary Stunner battles.
+At payout Artillery leaves a living Smuggler, wallet5 after support and pile8;
+own Traitor gives wallet13 including original one-spice bounty/pile2; ordinary
+shielded Stunner gives wallet11/pile2. Each retains original winner cleanup,
+card retention and native Collection. No force/wallet/phase/order/loss/KH/
+receipt is assigned. Unopened skill/Spice order and conserved physical card/
+traitor swaps are explicitly disclosed rather than claimed purchases.
+
+Four actual390px journeys/32 actions verify original controls, pending7 without
+credit, zeroing, traitor precedence, Stunner and separate Collection. Final roots
+are390px with no app alert/page error. Eight original four-policy programmes/
+64 actions use offered trained KH plans and finish Collection. Parent removed
+contributed setup/forwarding pins and the obsolete guard expectation; an unused
+bot import found by lint is removed. Owned host/tab/scaffolds are removed;
+human server, real rooms/DBs and deployment were untouched.
+
+Focused23 and final related9-file union86/86, types/lint and build pass. Existing
+deprecation/chunk-size/route-classification warnings remain. Proof artifacts:
+`/tmp/dune-smuggler-modifier-*-proof.json`. No full mode, strategic calibration,
+HTTP/database or comprehensive assurance claim; remaining exceptional bands
+and final deployed acceptance stay open.
+
 ## 17 October 2026 — Native World independent cards with phase modules
 
 Original independent-card variant authority permits composition; fresh selected

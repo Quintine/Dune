@@ -267,3 +267,22 @@ at plan reveal, transfer Spice Banker escrow on capture, or issue a replacement
 skill while the original card is captured. This
 source contract supports the bounded [runtime prototype](LEADER_SKILLS_RUNTIME.md);
 it is not evidence that the optional module can be enabled publicly.
+
+## Smuggler modifier policy — 17 October 2026
+
+The older numerical question remains unanswered. Under the later standing
+choose-recommended instruction, prototype the reveal-time cap as copied/printed
+disc value plus existing declared Leader Skill bonuses and Kwisatz +2. Only the
+surviving controller collects, and an actual resolved zero-strength weapon
+effect voids collection. This is a provisional interpretation, not a new FAQ.
+The supplied Advanced physical p21 states skill survival and played-card-role
+rules; physical p40 permits KH after the seventh actual loss. Neither passage
+supplies a specific Smuggler modifier calculation.
+
+The old question named Stunner. The canonical base Stunner is a projectile
+weapon; the existing zero-strength effect is Artillery Strike. Use the actual
+shared weapon resolution, not either card's name: a sole own Traitor bypasses
+Artillery, while a surviving shielded leader is still zeroed in an ordinary
+Artillery result. No base weapon or bounty rule changes.
+See [collection timing and policy](SMUGGLER_BATTLE.md#provisional-modifier-policy--17-october-2026).
+

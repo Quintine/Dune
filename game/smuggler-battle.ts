@@ -39,10 +39,6 @@ export function smugglerBattlePlanBlock(plan: SmugglerBattlePlan, supported: boo
   pile?: { territory: string; spice: Readonly<Record<string, number>> }): string | null {
   if (!usesSurvivingSkilledLeader(plan.assignments, 'smuggler', plan.leader?.id, true)) return null;
   if (!supported) return 'Smuggler battle collection with expansion factions or other optional modules is still being integrated.';
-  if (plan.kwisatz || leaderSkillBattleBonus({ assignments: plan.assignments,
-    selectedLeader: { id: plan.leader!.id, kind: 'disc' }, weapon: plan.weapon,
-    defense: plan.defense, skilledLeaderSurvives: true }).bonus)
-    return 'Smuggler collection with modified leader strength awaits its ruling. Choose an unmodified plan or another leader.';
   if (pile) {
     try { smugglerBattlePile(pile.territory, pile.spice); }
     catch (error) { return error instanceof Error ? error.message : 'Smuggler spice is unavailable.'; }
@@ -74,9 +70,15 @@ export function createSmugglerBattle(input: {
   if (!usesSurvivingSkilledLeader(input.plan.assignments, 'smuggler', input.plan.leader?.id, true)) return null;
   const blocked = smugglerBattlePlanBlock(input.plan, input.supported);
   if (blocked) throw new Error(blocked);
-  const strength = input.plan.leader!.strength;
+  // Provisional reveal-time cap: copied disc value plus the existing leader
+  // bonuses and Kwisatz. Actual weapon zeroing is applied with survival.
+  const strength = input.plan.leader!.strength + leaderSkillBattleBonus({
+    assignments: input.plan.assignments,
+    selectedLeader: { id: input.plan.leader!.id, kind: 'disc' },
+    weapon: input.plan.weapon, defense: input.plan.defense, skilledLeaderSurvives: true,
+  }).bonus + (input.plan.kwisatz ? 2 : 0);
   if (!input.event || !input.player || !Number.isSafeInteger(input.turn) || input.turn < 1 ||
-    !Number.isSafeInteger(strength) || strength < 0) throw new Error('Smuggler needs the current battle and an unmodified leader.');
+    !Number.isSafeInteger(strength) || strength < 0) throw new Error('Smuggler needs the current battle and a valid leader strength.');
   const pile = smugglerBattlePile(input.territory, input.spice);
   const receipt: SmugglerBattleReceipt = { event: input.event, turn: input.turn,
     territory: input.territory, player: input.player, leader: input.plan.leader!.id,
@@ -116,9 +118,9 @@ function normalizeSmugglerBattleAllocation(receipt: SmugglerBattleReceipt,
   return Object.fromEntries(Object.entries(allocations).filter(([, amount]) => amount > 0)
     .sort(([a], [b]) => a.localeCompare(b)));
 }
-/** Only a surviving leader's partial collection from multiple piles needs an owner choice. */
-export function smugglerBattleAllocationRequired(receipt: SmugglerBattleReceipt, survives: boolean): boolean {
-  return survives && receipt.stage === 'pending' && receipt.allocations === undefined &&
+/** A partial multi-pile collection needs a choice only when collection is eligible. */
+export function smugglerBattleAllocationRequired(receipt: SmugglerBattleReceipt, eligible: boolean): boolean {
+  return eligible && receipt.stage === 'pending' && receipt.allocations === undefined &&
     Object.keys(recordedPiles(receipt)).length > 1 && receipt.amount > 0 && receipt.amount < receipt.before;
 }
 export function chooseSmugglerBattleAllocation(receipt: SmugglerBattleReceipt,
@@ -130,21 +132,21 @@ export function chooseSmugglerBattleAllocation(receipt: SmugglerBattleReceipt,
   chosen.signature = smugglerBattleSignature(chosen);
   return chosen;
 }
-/** Survival controls both winning and losing leaders; this is not bank/player income. */
-export function settleSmugglerBattle(receipt: SmugglerBattleReceipt, survives: boolean, spice: Readonly<Record<string, number>>) {
+/** Eligibility requires survival without a resolved zero-strength weapon effect. */
+export function settleSmugglerBattle(receipt: SmugglerBattleReceipt, eligible: boolean, spice: Readonly<Record<string, number>>) {
   validateSmugglerBattleReceipt(receipt);
   const snapshot = smugglerBattlePile(receipt.territory, spice);
   const expected = smugglerBattlePile(receipt.territory, recordedPiles(receipt));
   if (JSON.stringify(snapshot) !== JSON.stringify(expected))
     throw new Error('The saved Smuggler collection changed its reveal-time spice or receipt.');
-  if (smugglerBattleAllocationRequired(receipt, survives))
+  if (smugglerBattleAllocationRequired(receipt, eligible))
     throw new Error('Choose the Smuggler collection sectors before settling the surviving leader.');
-  const amount = survives ? receipt.amount : 0;
-  const allocations = !survives || !amount ? {} : receipt.allocations ??
+  const amount = eligible ? receipt.amount : 0;
+  const allocations = !eligible || !amount ? {} : receipt.allocations ??
     (receipt.key ? { [receipt.key]: amount } : recordedPiles(receipt));
   const remaining = { ...spice };
   for (const [key, collected] of Object.entries(allocations)) remaining[key] -= collected;
-  const settled: SmugglerBattleReceipt = { ...receipt, stage: survives ? 'collected' : 'void', signature: '' };
+  const settled: SmugglerBattleReceipt = { ...receipt, stage: eligible ? 'collected' : 'void', signature: '' };
   settled.signature = smugglerBattleSignature(settled);
   return { receipt: settled, amount, spice: remaining };
 }

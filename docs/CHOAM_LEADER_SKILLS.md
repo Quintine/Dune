@@ -97,9 +97,11 @@ remains open.
 
 ## Remaining scope
 
-Normal Banker income, ordinary Mentat questioning, modified Smuggler collection,
-captured replacement entitlement and other recorded skill questions remain
-unfinished. The [bounded Diplomat retreat](LEADER_SKILLS_RUNTIME.md) is connected
+Normal Banker income, ordinary Mentat questioning, captured replacement
+entitlement and other recorded skill questions retain their stated boundaries.
+Modified Smuggler collection follows the later
+[provisional policy](SMUGGLER_BATTLE.md#provisional-modifier-policy--17-october-2026).
+The [bounded Diplomat retreat](LEADER_SKILLS_RUNTIME.md) is connected
 for supported battles, not a ruling for modified or simultaneous effects. Mixed
 Richese/other faction or optional-module combinations remain separate work. See the
 [runtime boundaries](LEADER_SKILLS_RUNTIME.md) and [decision register](RULE_DECISIONS.md).

@@ -115,7 +115,7 @@ export function LeaderSkillsPanel({
           Special-card battle use, Suk Graduate force rescue, Mentat’s private
           weapon question and battle bonus, Bureaucrat payment redirection and battle scores, Sandmaster ground-route collection and
           victory spice, Rihani inspections and exchanges, optional Smuggler
-          reserve shipping, Spice Banker battle spending, and Diplomat copying
+          reserve shipping and provisional modifier-inclusive battle collection, Spice Banker battle spending, and Diplomat copying
           an opposing canonical printed defensive role with a committed Worthless card
           after plans are revealed. Source-specific timing and combinations remain
           guarded; complete mode acceptance is unfinished.

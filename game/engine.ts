@@ -23048,16 +23048,16 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       (nativeExpansionLeaderSkillsProfile(g) || g.players.every((p) => faction(p.faction).expansion === 'base')),
       'These Leader Skill victory effects with expansion factions or other optional modules are still being integrated.');
     const collection = b.smugglerCollection;
-    const survives = !!collection &&
+    const collects = !!collection && !quote.effects?.stunned &&
       !(collection.player === b.attacker ? quote.leaderDeaths.attacker : quote.leaderDeaths.defender);
     const smugglerAllocation: Extract<Decision, {kind: 'smugglerCollection'}> | null =
-      collection && smugglerBattleAllocationRequired(collection, survives)
+      collection && smugglerBattleAllocationRequired(collection, collects)
         ? { kind: 'smugglerCollection', event: b.event!, player: collection.player,
             territory: b.territory, amount: collection.amount, piles: collection.piles! }
         : null;
     const smuggler = collection && !smugglerAllocation
-      ? nexusRule(() => settleSmugglerBattle(collection, survives, g.spice)) : null;
-    if (collection && survives)
+      ? nexusRule(() => settleSmugglerBattle(collection, collects, g.spice)) : null;
+    if (collection && collects)
       requireRule(Number.isSafeInteger(getPlayer(g, collection.player).spice + collection.amount),
         'Smuggler collection would overflow the spice balance.');
     const afterCollection = smuggler?.spice ?? g.spice;

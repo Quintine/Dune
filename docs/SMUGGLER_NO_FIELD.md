@@ -83,6 +83,7 @@ traitor remained unchanged through the final refresh.
 
 Allied free-companion composition, Homeworlds, Nexus, Discoveries, Stronghold
 Cards, Tech Tokens and other combined modes remain outside this prototype.
-Unmodified Smuggler battle collection now has its separate native reveal/
-survival contract; the existing [Leader Skills material questions](LEADER_SKILLS_RULES.md#material-boundaries-not-settled-by-the-sources)
+Smuggler battle collection has its separate native reveal/survival contract,
+now including the explicit [modifier policy](SMUGGLER_BATTLE.md#provisional-modifier-policy--17-october-2026).
+Other [Leader Skills material questions](LEADER_SKILLS_RULES.md#material-boundaries-not-settled-by-the-sources)
 remain pending.

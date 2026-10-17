@@ -86,6 +86,8 @@ These are playability checks, not AI strength studies.
 
 Additional faction/module combinations, unresolved Sandmaster eligibility during
 native HMS relocation and other missing Leader Skill effects remain
-separate work. Existing Banker, Mentat, Diplomat and modified-Smuggler questions
-remain in the [decision register](RULE_DECISIONS.md). Full AI implementation and
+separate work. Existing Banker, Mentat and Diplomat questions remain in the
+[decision register](RULE_DECISIONS.md); Smuggler uses the later
+[provisional modifier policy](SMUGGLER_BATTLE.md#provisional-modifier-policy--17-october-2026).
+Full AI implementation and
 difficulty tuning wait until all non-AI game features are complete.

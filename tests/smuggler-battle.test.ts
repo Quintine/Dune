@@ -178,13 +178,34 @@ void test('changed reveal receipts, spice, plans or skill identity are rejected 
   assert.equal(viewGame(smugglerBattle(), 'd').battle!.smugglerCollection, null);
   assert.equal('frame' in viewGame(pending, 'd').battle!.smugglerCollection!, false);
 });
-void test('own modified plans fail before sealing without changing any resources', () => {
-  const game = smugglerBattle({ advanced: true, atreides: true });
-  game.players[0].battleLosses = 7;
-  reject(game, { type: 'battlePlan', leader: 'atreides-0', dial: 0, support: 0, kwisatz: true });
-  const trainer = smugglerBattle({ captured: true, hide: false });
-  setOtherSkill(trainer, 'warmaster', 'a');
-  reject(trainer, { type: 'battlePlan', leader: 'guild-0', dial: 0, weapon: trainer.players[0].hand[0].id });
+void test('Kwisatz increases the reveal-bound Smuggler cap without crediting pending spice', () => {
+  for (const amount of [8, 3]) {
+    const game = smugglerBattle({ advanced: true, atreides: true, amount });
+    game.players[0].battleLosses = 7;
+    const strength = game.players[0].leaders[0].strength + 2;
+    const expected = Math.min(strength, amount);
+    const pending = revealSmuggler(game, { dial: 0, enemyDial: 5, kwisatz: true });
+    assert.equal(pending.battle!.smugglerCollection!.strength, strength);
+    assert.equal(pending.battle!.smugglerCollection!.amount, expected);
+    assert.equal(pending.players[0].spice, 20);
+    assert.equal(pending.spice['wind_pass:14'], amount);
+    const done = finishSmuggler(pending);
+    assert.equal(done.players[0].spice, 20 + expected);
+    assert.equal(done.spice['wind_pass:14'], amount - expected);
+    assert.equal(done.lastBattleContext!.smugglerCollection!.stage, 'collected');
+  }
+});
+void test('a captured Smuggler collects its normal trainer bonus for its controller, not its original owner', () => {
+  const game = smugglerBattle({ captured: true, hide: false });
+  setOtherSkill(game, 'warmaster', 'a');
+  const strength = game.players[1].leaders[0].strength + 1;
+  const pending = revealSmuggler(game, { dial: 0, enemyDial: 5, weapon: game.players[0].hand[0].id });
+  assert.equal(pending.battle!.smugglerCollection!.strength, strength);
+  assert.equal(pending.players[0].spice, 20);
+  const done = finishSmuggler(pending);
+  assert.equal(done.players[0].spice, 20 + strength);
+  assert.equal(done.players[1].spice, 20);
+  assert.equal(done.spice['wind_pass:14'], 8 - strength);
 });
 void test('the independent Ecaz card variant is gated before a Smuggler plan is sealed', () => {
   // The Smuggler battle lives in the Leader Skills profile, which never admits
@@ -200,7 +221,7 @@ void test('the independent Ecaz card variant is gated before a Smuggler plan is 
   assert.throws(() => viewGame(staged, 'a'));
   reject(staged, { type: 'battlePlan' as const, leader: 'emperor-0', dial: 0 });
 });
-void test('all four actual bot profiles retain a legal unmodified path and finish pending collection', () => {
+void test('all four actual bot profiles finish collection with the available modified leader plans', () => {
   for (const difficulty of DIFFICULTIES) {
     let game = smugglerBattle({ advanced: true, atreides: true });
     game.players[0].battleLosses = 7;
@@ -213,7 +234,6 @@ void test('all four actual bot profiles retain a legal unmodified path and finis
       });
       assert.ok(candidates.length, difficulty);
       const { id, action } = candidates[0];
-      if (id === 'a' && action.type === 'battlePlan') assert.ok(!action.kwisatz);
       game = applyAction(game, id, action);
       game = JSON.parse(JSON.stringify(game));
     }

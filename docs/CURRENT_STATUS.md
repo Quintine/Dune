@@ -29,6 +29,26 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Smuggler modifier band — 17 October.** Under the standing recommended-choice
+instruction, provisionally cap by copied/printed disc plus declared skill bonuses
+and KH2. Actual Artillery zeroing voids collection; ordinary Stunner stays a
+projectile. Sole own Traitor bypasses weapons and retains collection. This is
+not a publisher FAQ or a numerical answer to the old question. Original piles,
+survival, spending, bounties and other mode guards stay.
+Both prior raw KH/trainer plans rejected unchanged; they now seal. Genuine
+Atreides training and seven supported casualties unlock KH before the second
+paid conflict: cap7 collects6/7 from actual6/8 piles, never before outcome.
+Shielded Artillery leaves the leader alive but transfers0; own Traitor bypass
+and shielded Stunner transfer6. Winner cleanup precedes ordinary Collection.
+Four390px journeys/32 actions retain those controls, zero overflow/app errors;
+eight four-policy programmes/64 actions use actually offered modified KH plans.
+Conserved unopened decks/cards/identities are explicit; no live army, wallet,
+phase, order, loss count, KH or receipt is assigned. Table admission now uses
+the same original server projection as bots. Parent removed forwarding/default
+pins, the obsolete modifier guard and its unused import. Focused23 cases and
+frozen9-file union86/86, types/lint and build pass; existing build warnings remain.
+Full modes, other exceptional combinations, calibration and deployment stay open.
+
 **Native World phase modules — 17 October.** Selected E1/E2 native/base Worlds
 now retain original Tech3+ Basic/Advanced and/or Advanced Strongholds2+ through
 the independent-card entry. Original38/50 decks, native fees/custody, current

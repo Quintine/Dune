@@ -891,8 +891,9 @@ Worthless card copying a canonical base Shield or Snooper. Its bounded lower
 selected undialed normal/elite counters to an empty adjacent non-stronghold
 after a surviving trained leader loses. Modified-defense inheritance remains
 guarded. [Smuggler battle collection](SMUGGLER_BATTLE.md)
-now connects reveal-bound, unmodified collection after survival, including
-losers and captives. Modified strength and combined modules remain guarded.
+now connects reveal-bound collection after survival, including losers/captives.
+The [17 October modifier policy](SMUGGLER_BATTLE.md#provisional-modifier-policy--17-october-2026)
+includes declared bonuses/KH and actual Artillery zeroing; other combinations stay guarded.
 Planetologist and Suk Graduate have the connected
 prototypes described below.
 

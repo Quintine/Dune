@@ -3,7 +3,7 @@ import { ecazOccupyDialChoices, ecazOccupyOwnProfile, ecazOccupyPolicyActions } 
 import { quoteEcazOccupyDial } from './ecaz-occupy-battle';
 import { recruitsPlayAction } from './recruits';
 import type { Card } from './cards';
-import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus, usesSurvivingSkilledLeader } from './leader-skill-combat';
+import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus } from './leader-skill-combat';
 import { defaultSmugglerBattleAllocation, smugglerBattlePlanBlock } from './smuggler-battle';
 import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair, type BattlePlanInspectionField } from './battle-card-slots';
 import { mirrorWeaponModeBlock } from './mirror-weapon-mode';
@@ -791,7 +791,6 @@ function plans(g: GameView): Action[] {
       for (const defense of defenses) {
         const kwisatz =
           !!leader &&
-          !(b.smugglerCollectionEnabled && usesSurvivingSkilledLeader(battleSkills, 'smuggler', leader, true)) &&
           !!me.kwisatz?.active &&
           !me.kwisatz.dead &&
           !b.kwisatzBlocked &&

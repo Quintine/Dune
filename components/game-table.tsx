@@ -78,7 +78,7 @@ import { Distrans } from './distrans';
 import { JuiceOfSapho } from './juice-of-sapho';
 import { LeaderSkillsPanel } from './leader-skills';
 import { LeaderSkillBattleGuide } from './leader-skill-battle-guide';
-import { smugglerBattleModeSupported, smugglerBattlePlanBlock } from '@/game/smuggler-battle';
+import { smugglerBattlePlanBlock } from '@/game/smuggler-battle';
 import { SmugglerBattleCollection } from './smuggler-battle-collection';
 import { SandmasterVictorySpice } from './sandmaster-victory-spice';
 import { RihaniChoice, RihaniHistory } from './rihani-decipherer';
@@ -574,7 +574,7 @@ export function GameTable({
     assignments: g.leaderSkills?.assignments.filter(a => a.controller === me.id) ?? [],
     leader: me.leaders.find(l => l.id === selectedBattleLeader), weapon: selectedBattleWeapon,
     defense: selectedBattleDefense, kwisatz: selectedBattleKwisatz,
-  }, smugglerBattleModeSupported(g), { territory: g.battle.territory, spice: g.spice }) : null;
+  }, g.battle.smugglerCollectionSupported, { territory: g.battle.territory, spice: g.spice }) : null;
   const occupyControl = ecazOccupyPlanControl(g,
     committed.dial ? Number(committed.dial.value) : battleDial,
     battleFreeSupport ? 0 : battleSupport);
@@ -5156,7 +5156,7 @@ export function GameTable({
                       <>
                         {g.battle.smugglerCollection && <p className="notice">
                           {g.players.find(p => p.id === g.battle!.smugglerCollection!.player)?.name}’s Smuggler has {g.battle.smugglerCollection.amount} spice pending from the reveal-time piles.
-                          If the leader survives, collection resolves before battle settlement, even after defeat. A partial collection across several piles requires its owner’s sector choice. That spice is not yet spendable.
+                          A surviving leader collects unless an actual zero-strength weapon effect resolves. Collection settles before other battle cleanup, even after defeat; a partial collection across several piles requires its owner’s sector choice. This reveal-time cap is not yet spendable.
                         </p>}
                         {!g.battle.traitorVoters.includes(me.id) && (
                           <p className="notice">
