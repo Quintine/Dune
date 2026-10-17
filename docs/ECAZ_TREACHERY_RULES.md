@@ -457,3 +457,25 @@ are recorded in the [canonical current composition](LEADER_SKILLS_RUNTIME.md#wor
 Controlled lotteries/physical card positioning are labelled; no printed-number
 ruling, save retrofit, full-mode or deployed certification follows.
 
+## Native E3 World cards — 17 October 2026
+
+The printed independent-variant permission now also composes original
+standalone/paired Ecaz/Moritani/classic Worlds with cards, with or without
+all14 Skills, and original Tech3+/Advanced Strongholds2+. Paired plain World
+Skills no longer needs Nexus or cards. Exact ecaz33/36, native6/6, five-disc
+training, shared Duke and Advanced role limits remain; mixed E3 and
+Nexus/Discovery card contexts stay separate. No new numeric ruling is adopted.
+
+Actual native World sources fund paid shipments and the card user's R fee,
+never an ally's pool or rescued fee. Native Eca fixed/variable losses, typed
+Suk/H returns, earned held support and winner Tech remain distinct.
+Skill-first Moritani kills the different unused trained target, returns its
+one technique and gets one actual Mentat replacement. Every own-World H ban
+remains; a real native Ecaz attempt rejects unchanged. Original battle deaths
+then permit actual free Recruits returns into Junction.
+
+Frozen39-file459/459, types/lint/build, original rule/arrival programmes and
+actual390px normal native World setup pass their changed paths.
+[Current scope, controls and qualified evidence](LEADER_SKILLS_RUNTIME.md#native-e3-worlds-with-independent-cards--17-october-2026).
+No save conversion, full combinations, calibration or deployed acceptance claim.
+

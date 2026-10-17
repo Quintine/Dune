@@ -8589,12 +8589,13 @@ function moritaniAssassinateModeSupported(g: Game) {
       (f.expansion === 'base' || g.expansions.includes(f.expansion)))) &&
     (!g.nexusCards || (!!g.leaderSkills && standaloneE3NexusLeaderSkillsProfile(g))) &&
     (!g.leaderSkills || advancedMoritaniLeaderSkillsProfile(g)) &&
-    (!g.strongholdCards || e3StrongholdFactionProfile(g) ||
+    (!g.strongholdCards || e3StrongholdFactionProfile(g) || independentCardModulesProfile(g) ||
       (!!g.leaderSkills && strongholdLeaderSkillsProfile(g))) &&
-    (!g.homeworlds || g.homeworldOccupationPreview === true ||
+    (!g.homeworlds || g.homeworldOccupationPreview === true || ecazHomeworldProfile(g) ||
       (!!g.leaderSkills && homeworldLeaderSkillsProfile(g))) &&
     !g.discoveryEnabled && !g.discoveries &&
-    (!g.techTokens || nativeFactionTechProfile(g) || (!!g.leaderSkills && nativeTechLeaderSkillsProfile(g)));
+    (!g.techTokens || nativeFactionTechProfile(g) || independentCardModulesProfile(g) ||
+      (!!g.leaderSkills && nativeTechLeaderSkillsProfile(g)));
 }
 function moritaniAssassinateContext(g: Game, receipt: MoritaniAssassinateReceipt) {
   const p = getPlayer(g,receipt.owner), opponent = getPlayer(g,receipt.opponent);
@@ -10532,6 +10533,8 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
       g.players.some(p => p.faction === 'ecaz')) return true;
   if (g.discoveries && nativeDiscoveryLeaderSkillsProfile(g) &&
       g.players.some(p => p.faction === 'ecaz')) return true;
+  if (g.homeworlds && !g.leaderSkills && g.ecazOccupyPreview === true &&
+      ecazHomeworldProfile(g) && byFaction(g, 'ecaz')) return true;
   // Native World reserve/threshold rules do not replace the ordinary Arrakis
   // coalition. Reuse that battle only within the original Ecaz/classic setups.
   if (g.homeworlds && g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
@@ -10554,8 +10557,9 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
       (['ecaz', 'moritani', 'ixians', 'tleilaxu', 'choam', 'richese'].includes(p.faction) &&
         g.expansions.includes(faction(p.faction).expansion))) &&
     !g.homeworlds && !g.nexusCards && !g.leaderSkills &&
-    (!g.strongholdCards || e3StrongholdFactionProfile(g)) &&
-    (!g.techTokens || nativeFactionTechProfile(g)) && !g.discoveryEnabled && !g.discoveries &&
+    (!g.strongholdCards || e3StrongholdFactionProfile(g) || independentCardModulesProfile(g)) &&
+    (!g.techTokens || nativeFactionTechProfile(g) || independentCardModulesProfile(g)) &&
+    !g.discoveryEnabled && !g.discoveries &&
     !g.discoveryStash && !g.greatMaker &&
     (g.ecazTreachery === undefined || g.ecazTreachery === true);
 }
@@ -10708,13 +10712,13 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const homeworlds = homeworldLeaderSkillsProfile(state);
   const independent = independentTreacheryLeaderSkillsProfile(state);
   if (state.ecazTreachery) {
-    requireRule(independent, 'Independent cards with Skills require a fresh supported selected-deck roster with original Homeworlds/Tech/Advanced Strongholds; Nexus/Discovery and native E3 Worlds remain gated.');
+    requireRule(independent, 'Independent cards with Skills require a fresh supported selected-deck roster with original Homeworlds/Tech/Advanced Strongholds; Nexus/Discovery and mixed E3 remain gated.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
   if (state.homeworlds) {
     requireRule(homeworlds && state.homeworlds.custody === null,
-      'Homeworld Leader Skills require a fresh supported classic or native E1/E2/standalone E3 lobby with original modules and undealt custody.');
+      'Homeworld Leader Skills require a fresh supported classic or native roster with original modules and undealt custody.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -10748,16 +10752,23 @@ function independentCardRoster(g: Game): boolean {
     return family === 'base' || g.expansions.includes(family);
   });
 }
+/** World/phase compositions retain the original one-family native E3 envelope. */
+function independentCardModuleRoster(g: Game): boolean {
+  return independentCardRoster(g) &&
+    (!g.players.some(player => player.faction === 'ecaz' || player.faction === 'moritani') ||
+      (g.expansions.length === 1 && g.expansions[0] === 'ecaz'));
+}
 function ecazHomeworldProfile(g: Game): boolean {
   if (g.homeworlds && g.leaderSkills && !g.sandtrout && independentTreacheryLeaderSkillsProfile(g)) return true;
-  return !!g.homeworlds && g.ecazTreachery === true && independentCardRoster(g) &&
-    !g.players.some(player => player.faction === 'ecaz' || player.faction === 'moritani') &&
+  return !!g.homeworlds && g.ecazTreachery === true && independentCardModuleRoster(g) &&
     g.players.length >= 2 && g.players.length <= 6 &&
     !g.nexusCards && !g.leaderSkills &&
     ((!g.techTokens && !g.strongholdCards) || independentCardModulesProfile(g)) &&
     !g.discoveryEnabled && !g.discoveries && !g.discoveryStash && !g.greatMaker && !g.sandtrout &&
-    !g.ecazOccupyPreview && !g.semutaPreview && !g.kullPreview && !g.nexusKullPreview &&
-    !g.richeseBetrayalPreview && !g.guildBetrayalPreview && !g.moritaniAssassinatePreview &&
+    (!g.ecazOccupyPreview || !!byFaction(g, 'ecaz')) &&
+    (!g.moritaniAssassinatePreview || (g.advanced && !!byFaction(g, 'moritani'))) &&
+    !g.semutaPreview && !g.kullPreview && !g.nexusKullPreview &&
+    !g.richeseBetrayalPreview && !g.guildBetrayalPreview &&
     !g.spiceBankerIncomePreview && !g.nexusIxianReplacementPreview &&
     !g.nexusIxianBetrayalPreview && !g.nexusHarkonnenBetrayalPreview;
 }
@@ -10765,14 +10776,16 @@ function ecazHomeworldProfile(g: Game): boolean {
 function independentCardModulesProfile(g: Game): boolean {
   if ((g.techTokens || g.strongholdCards) && g.leaderSkills && !g.sandtrout &&
       independentTreacheryLeaderSkillsProfile(g)) return true;
-  if (!g.ecazTreachery || (!g.techTokens && !g.strongholdCards) || !independentCardRoster(g) ||
-      g.players.some(player => player.faction === 'ecaz' || player.faction === 'moritani') ||
+  if (!g.ecazTreachery || (!g.techTokens && !g.strongholdCards) || !independentCardModuleRoster(g) ||
       g.players.length < (g.techTokens ? 3 : 2) || g.players.length > 6 ||
       (g.strongholdCards && !g.advanced) ||
+      (g.advanced && !!byFaction(g, 'moritani') && !!byFaction(g, 'harkonnen')) ||
       g.nexusCards || g.leaderSkills ||
       g.discoveryEnabled || g.discoveries || g.discoveryStash || g.greatMaker || g.sandtrout ||
-      g.ecazOccupyPreview || g.semutaPreview || g.kullPreview || g.nexusKullPreview ||
-      g.richeseBetrayalPreview || g.guildBetrayalPreview || g.moritaniAssassinatePreview ||
+      (g.ecazOccupyPreview && !byFaction(g, 'ecaz')) ||
+      (g.moritaniAssassinatePreview && (!g.advanced || !byFaction(g, 'moritani'))) ||
+      g.semutaPreview || g.kullPreview || g.nexusKullPreview ||
+      g.richeseBetrayalPreview || g.guildBetrayalPreview ||
       g.spiceBankerIncomePreview || g.nexusIxianReplacementPreview ||
       g.nexusIxianBetrayalPreview || g.nexusHarkonnenBetrayalPreview) return false;
   return true;
@@ -10784,7 +10797,7 @@ export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   g.ecazTreachery = true;
   const homeworlds = !!g.homeworlds;
   requireRule(!homeworlds || ecazHomeworldProfile(g),
-    'Independent cards with Homeworlds need a fresh classic or selected Ix/CHOAM roster with only original Tech or Advanced Strongholds.');
+    'Independent cards with Homeworlds need a fresh supported selected-deck roster with original Tech or Advanced Strongholds.');
   const initialized = initializeSetupGameForAudit(g, homeworlds, false, false, false, false, false, true, true);
   if (byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   if (moritaniAssassinateModeSupported(initialized)) initializeMoritaniAssassinateState(initialized);
@@ -16269,6 +16282,8 @@ function ambassadorEffectBlock(
 function arrivalOverlapModeSupported(g: Game): boolean {
   if ((mixedE3NexusLeaderSkillsProfile(g) || mixedE3NexusProfile(g)) &&
     byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
+  if (g.ecazTreachery && byFaction(g, 'ecaz') && byFaction(g, 'moritani') &&
+      (ecazHomeworldProfile(g) || independentCardModulesProfile(g))) return true;
   return (!!g.leaderSkills && pairedE3LeaderSkillsProfile(g)) || pairedE3NexusLeaderSkillsProfile(g) || pairedE3NexusProfile(g) ||
     (!!byFaction(g, 'ecaz') && !!byFaction(g, 'moritani') &&
     g.players.every(player => CLASSIC_FACTIONS[player.faction] === true ||

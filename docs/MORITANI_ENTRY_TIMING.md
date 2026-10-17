@@ -2,6 +2,17 @@
 
 Reviewed 2026-09-06. This supplements `MORITANI_TERROR_RULES.md`; it does not enable combined-faction play or certify an implementation order.
 
+## Paired World card entries — 17 October 2026
+
+Original paired native World/cards now retains the same queue with or without
+Skills and original Tech/Advanced Strongholds. Real Basic no-Skills and
+Advanced all14 World programmes place original Ecaz/Robbery tokens, pay once
+for one Guild counter from native Junction and resolve both storm-order
+branches. Duke6 stays untrained; Robbery transfers2/3 after the separate
+one-spice shipment. One counter remains, both effects finish and movement
+resumes. This extends capability, not the provisional priority below.
+[Current459/459 envelope and qualified proof](LEADER_SKILLS_RUNTIME.md#native-e3-worlds-with-independent-cards--17-october-2026).
+
 ## Paired Skills and independent-card entries — 17 October 2026
 
 The existing serialized native queue now admits paired Ecaz/Moritani/classic

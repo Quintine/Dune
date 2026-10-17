@@ -2,6 +2,17 @@
 
 Historical primary-source audit, 2026-09-07, corrected after independent verification. The publisher/designer odd-force conflict remains unresolved as a publisher correction. Under the 8 October Basic-first prototype instruction, Basic now provisionally uses the main p8 paragraph: ceiling contribution/loss and floor survivors, with a visible control warning. This is not a numerical ruling by the user or designer. Advanced retains its separately authorized source. The earlier false attribution to Jack Reda remains withdrawn.
 
+## Native World cards and Skills — 17 October 2026
+
+Standalone/paired Ecaz/Moritani Worlds now composes independent cards with or
+without Skills and original Tech/Advanced Strongholds. Paired plain World
+Skills also needs neither Nexus nor cards. Original World source-bearing
+shipments/fees feed the same Arrakis coalition: selected-holder bank support,
+card-user fee/H, committed-only Suk and separate fixed/variable losses remain.
+Actual Emperor-led World H returns native Sardaukar to Salusa. This adds no
+Occupy to World locations, Duke training or new printed arithmetic.
+[Current source envelope and459/459 proof](LEADER_SKILLS_RUNTIME.md#native-e3-worlds-with-independent-cards--17-october-2026).
+
 ## Paired native Skills — 17 October 2026
 
 Native Ecaz/Moritani/classics now retains ordinary all14 Skills without Nexus,

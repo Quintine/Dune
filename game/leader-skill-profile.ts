@@ -188,12 +188,12 @@ function pairedE3LeaderSkillRoster(game: LeaderSkillProfile): boolean {
   return ecaz && moritani;
 }
 
-/** Both original E3 natives with original phase modules; independent cards are optional. */
+/** Both original E3 natives with original World/phase modules; cards are optional. */
 export function pairedE3LeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (game.expansions.length !== 1 || game.expansions[0] !== 'ecaz' ||
       typeof game.advanced !== 'boolean' || !game.players ||
       game.players.length < 2 || game.players.length > 6 ||
-      game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
+      game.nexusCards || game.discoveries || game.discoveryEnabled ||
       !e3LeaderSkillModulesSupported(game) ||
       game.discoveryStash || game.greatMaker || game.semutaPreview || game.advancedPreview ||
       (game.moritaniAssassinatePreview && !game.advanced) ||
@@ -504,8 +504,8 @@ export function independentTreacheryLeaderSkillsProfile(game: LeaderSkillProfile
       }
     if (!selected) return false;
   }
-  // Actual E3 seats retain their one-family, non-World and Advanced Harkonnen boundaries.
-  if (nativeE3 && (!e3 || game.homeworlds ||
+  // Actual E3 seats retain their one-family and Advanced Harkonnen boundaries.
+  if (nativeE3 && (!e3 ||
       (game.advanced && players.some(player => player.faction === 'harkonnen')))) return false;
   if (game.moritaniAssassinatePreview && (!e3 || !game.advanced ||
       !players.some(player => player.faction === 'moritani'))) return false;

@@ -5,6 +5,16 @@ or paired native Ecaz/Moritani/classic Basic/Advanced profiles use all fourteen
 Leader Skills. Normal-lobby access is a labelled preview; original roster and
 module guards remain, and complete rules/publication acceptance is unfinished.
 
+## Native World continuation — 17 October 2026
+
+Standalone/paired World Skills now retains optional independent cards and
+original phase modules without a Nexus dependency; bare native World cards
+also work without Skills. Real World-origin shipments, separate native fee/H
+returns, different unused trained-disc assassination and one Mentat replacement
+retain original custody. Basic gains no assassination; shared Duke and
+Advanced role restrictions remain.
+[Current World contract and459/459 proof](LEADER_SKILLS_RUNTIME.md#native-e3-worlds-with-independent-cards--17-october-2026).
+
 ## Paired native E3 Skills — 17 October 2026
 
 Both native factions now compose ordinary all14 Skills without Nexus,

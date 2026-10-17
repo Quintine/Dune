@@ -7,6 +7,14 @@ access is a labelled preview, not complete-mode or publication acceptance.
 This battle-loss ability is separate from the random Assassination Terror token.
 Played saves are not assigned fabricated prior-call or opportunity history.
 
+**17 October World continuation:** native World/card/phase starts now retain
+the same Advanced power with or without Skills. Real paid World shipments
+and own reserve fees/typed H returns precede a normal loss; a different unused
+trained native target dies once, returns its skill once and yields one actual
+Mentat replacement. Basic, normal-call forfeiture, shared Duke and original
+Advanced role boundaries remain.
+[Current World scope and459/459 proof](LEADER_SKILLS_RUNTIME.md#native-e3-worlds-with-independent-cards--17-october-2026).
+
 ## Authority and Advanced duration cutover
 
 The [GF9 Ecaz & Moritani rulebook](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf),

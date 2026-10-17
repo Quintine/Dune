@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 17 October 2026 — Native E3 World Skills/cards
+
+Fourteen of18 normal World/phase starts rejected before; all18 now start.
+Original standalone/paired Ecaz/Moritani/classic Worlds retains all14,
+independent cards and original Tech/Advanced Strongholds without incidental
+Nexus, card or Skills dependencies. Exact ecaz family, native6/6, shared Duke,
+Advanced role and mixed-E3/Nexus/Discovery-card guards stay.
+
+Genuine World-origin programmes preserve earned selected-holder support,
+source-labelled card fees/H and committed-only Suk with separate allied
+losses; no-Skills Emperor returns2E to Salusa. Paired Advanced Moritani kills
+a different unused trained Whitmore Bludd4 once, returns Killer Medic once
+and gets one actual Mentat replacement. Own-Ecaz-World H rejects unchanged;
+real battle deaths then enable free Recruits2 into Junction. Both original
+arrival branches consume one paid source-bearing entry, Duke6/Robbery and
+resume movement without replay or a new priority ruling.
+
+Frozen39-file **459/459**, types/lint/build and actual programmes pass.
+The external-seat fixture now recognizes real pending lobbyOptions; the
+incorrect extra charge for a free ground move was deleted. Three bounded
+native World tables reach turn3/earlier wins with seven battles and all four
+legal policies represented. Actual390px normal paired five-module setup
+trains offered Prana Bindu Adept, keeps a Traitor, deploys native6 and reaches
+Storm with Grumman14, no browser errors/root overflow. Controlled cards/
+Traitors/lotteries and unopened Spice ordering remain labelled. No reset,
+save/schema conversion, full-mode, deployed or deferred assurance claim.
+[Canonical current composition](LEADER_SKILLS_RUNTIME.md#native-e3-worlds-with-independent-cards--17-october-2026).
+
 ## 17 October 2026 — World Skills/cards and selected ordinary decks
 
 Eight actual World/card/Skills phase starts and five bare selected-deck starts

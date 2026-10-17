@@ -29,6 +29,30 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Native E3 World Skills/cards — 17 October.** Fourteen of18 original normal
+World/phase starts rejected before; all18 now start. Standalone/paired
+Ecaz/Moritani/classic Worlds retains optional all14/cards and original phase
+modules. Paired plain World Skills needs no Nexus/card; bare World cards needs
+no Skills. Native6/6, exact one-family roster, shared Duke, Advanced role and
+mixed-E3/Nexus/Discovery-card guards remain. No played save is converted.
+
+Genuine Ecaz programmes preserve paid native World sources, earned Arrakeen,
+separate fixed/variable armies, card-user fee/H and committed-only Suk. Genuine
+paired Moritani loses, assassinates different unused trained Ecaz4, returns one
+skill and gets one actual Mentat replacement. Real native Ecaz own-World H
+rejects unchanged; real later Recruits returns2 free into Junction. Both World
+arrival branches pay once, acquire untrained Duke6/Robbery and resume movement.
+
+Frozen39-file **459/459**, types/lint/build and actual programmes pass. The
+external-ID fixture now reads pending `lobbyOptions` rather than initialized
+Skills/cards; an incorrect charge for an ordinary free ground move is deleted.
+Three bounded World tables exercise all four legal policies (seven battles),
+reaching turn3/earlier wins. Actual390px paired five-module normal entry
+completes skill/Traitor/native6 into Storm; Grumman14 and native inspectors
+render without browser errors/root overflow. Local working-tree evidence is
+not deployed revision-matched, full-mode, calibration or deferred assurance.
+[Current source envelope and evidence](LEADER_SKILLS_RUNTIME.md#native-e3-worlds-with-independent-cards--17-october-2026).
+
 **World Skills and selected decks — 17 October.** Eight original World/card/
 Skills phase starts and five bare selected-deck starts rejected before; one
 selected-deck roster capability now serves Basic/Advanced without a required

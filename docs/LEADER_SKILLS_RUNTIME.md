@@ -7,6 +7,61 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Native E3 Worlds with independent cards — 17 October 2026
+
+This supersedes the earlier17 October non-World E3 card boundary below.
+Fresh standalone or paired Ecaz/Moritani/classic Worlds now retains all14,
+optionally independent cards and original Tech3+/Advanced Strongholds2+.
+Paired plain World Skills needs neither Nexus nor these three cards. Original
+native E3 World/card/phase starts also work without Skills. Exact ecaz33/36,
+two through six distinct seats, printed6/6 and original setup remain; actual
+mixed E3, Nexus/Discovery card contexts and unrelated roles/effects stay separate.
+Advanced Skills/Harkonnen, bare Moritani phase/Harkonnen and shared-Duke
+training guards remain. No new state shape or played-save retrofit.
+
+One original native module capability feeds live World cards and native powers,
+including mandatory fresh Banker or native Ecaz/Moritani markers. Original
+Worlds supply actual shipped/fee/rescue counters; they do not replace the
+ordinary Arrakis coalition or create Occupy on a Homeworld. Card fees and
+separate fixed Ecaz/variable allied losses retain their own sources. Every
+own-World Harass ban, original pre-fee traits and committed-only Suk remain.
+Native skill-first assassination, normal-call forfeiture, unused-disc bounty
+and one real Mentat replacement retain their original handlers.
+
+Existing Ecaz/Moritani independent fixture/test pairs add default-off
+`homeworlds`, source-bearing original shipments/fees and six distinct World
+consumer cases. Shared setup uses actual native shipment selections, including
+Kaitain/Salusa. Fresh external lobby selections use their real `lobbyOptions`,
+not already initialized Skills/card fields; original seat IDs remain.
+Conserved cards/Traitors and undealt lotteries are explicit inputs, never
+fabricated counters, money, module owners or elapsed phases.
+
+Frozen39-file **459/459**, types/lint/build and actual programmes pass. Fourteen
+of18 scoped normal World/phase starts rejected before; all18 start afterward.
+Actual earned Arrakeen pays Bank2/own0; native Ecaz fee3 stays in Tanks while
+H returns2 and Suk saves only committed2 (keep1/return1). Allied Moritani loses
+its own2. Plain paired World Skills lets Moritani lead without cards/Nexus.
+No-Skills Emperor lead withdraws2E to native Salusa after a separate3N fee.
+
+Actual paired Advanced World Moritani loses, returns2N, pays its own3N fee
+and assassinates a different unused trained Whitmore Bludd4: one death,
+one returned Killer Medic and one actual Mentat replacement. Actual native
+Ecaz own-World H rejects without mutation; subsequent original battle deaths
+let Guild play Recruits and revive2 free into native Junction (13→15).
+
+Actual Basic no-Skills card and Advanced all14 World phase entries also retain
+the [original arrival queue](MORITANI_ENTRY_TIMING.md#paired-world-card-entries--17-october-2026):
+one source-labelled paid Guild arrival, both storm-order branches, untrained
+Duke6/Robbery and resumed movement, without inventing Nexus or a new priority.
+Three bounded normal World tables exercise all four legal policies through
+turn3 or earlier wins (seven battles); targeted programmes supply the detailed
+card/power proof, not natural acquisition claims. Real390px paired five-module
+normal entry assigns offered Prana Bindu Adept, keeps a Traitor, places native6
+and reaches Storm with Grumman14 and Ecaz/Junction/Stronghold inspectors,
+no browser errors/root overflow. Local working-tree evidence is not deployed
+revision-matched, full-mode, calibration or deferred assurance acceptance.
+
+
 ## World Skills and selected decks — 17 October 2026
 
 Fresh ordinary all14 setup now validates selected ordinary decks and actual

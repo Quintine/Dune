@@ -3,6 +3,7 @@ import { applyAction, createGame, joinGame, newPlayer, viewGame, type Action, ty
 import { botActions } from '../game/bots';
 import { territory } from '../game/board';
 import { finishEcazOccupySetup, type EcazOccupyFixture } from './fixture-ecaz-occupy';
+import { nativeShipmentSources } from '../game/homeworld-options';
 
 export type HomeworldEcazStep = { actor: string; action: Action };
 export type HomeworldEcazOccupyFixture = EcazOccupyFixture & {
@@ -58,6 +59,14 @@ export function createHomeworldEcazOccupyFixture(options: {
     actions.push({ actor, action: structuredClone(action) });
     game = applyAction(game, actor, action);
   };
+  const ship = (actor: string, action: Action) => {
+    if (homeworlds) {
+      const sources = nativeShipmentSources(viewGame(game, actor), Number(action.amount), Number(action.elite ?? 0));
+      assert.ok(sources, 'The original native World pools must fund the typed shipment');
+      action.homeworldSources = sources;
+    }
+    act(actor, action);
+  };
   if (homeworlds) act('ecaz', { type: 'homeworlds', enabled: true });
   if (options.tech) act('ecaz', { type: 'techTokens', enabled: true });
   if (options.strongholds) act('ecaz', { type: 'strongholdCards', enabled: true });
@@ -92,7 +101,7 @@ export function createHomeworldEcazOccupyFixture(options: {
     if (!homeworldEcazClean(game)) { step(); continue; }
     const actor = game.active!;
     if (strongholdTerritory && actor === 'ecaz' && !game.players.find(player => player.id === actor)!.shipped) {
-      act(actor, { type: 'ship', territory: strongholdTerritory,
+      ship(actor, { type: 'ship', territory: strongholdTerritory,
         sector: territory(strongholdTerritory).sectors[0], amount: 4, elite: 0, allyPayment: 0, smuggler: false });
       reach(homeworldEcazClean);
     }
@@ -118,7 +127,7 @@ export function createHomeworldEcazOccupyFixture(options: {
     if (!homeworldEcazClean(game)) { step(); continue; }
     const actor = game.active!;
     if (!shipped.has(actor) && !(strongholdTerritory && actor === 'ecaz')) {
-      act(actor, { type: 'ship', territory: battleTerritory, sector,
+      ship(actor, { type: 'ship', territory: battleTerritory, sector,
         amount: actor === 'guild' ? 2 : 4,
         elite: actor === ally && ally === 'emperor' && (advanced || homeworlds) ? 2 : 0, allyPayment: 0 });
       shipped.add(actor);

@@ -13,6 +13,7 @@ import {
 import { REINFORCEMENTS_CARD } from '../game/reinforcements';
 import type { SukRescueOption } from '../game/suk-graduate';
 import { quoteBattleResolution, type ResolutionCombatant } from '../game/battle-resolution-quote';
+import { homeworldGameIntegrity } from '../game/homeworld-game';
 import { nextStrongholdFactionsNativeStep } from './fixture-stronghold-factions';
 import { chooseEcazOccupyLead, finishEcazOccupySetup, stageEcazOccupyCard } from './fixture-ecaz-occupy';
 import { createHomeworldEcazOccupyFixture } from './fixture-homeworld-ecaz-occupy';
@@ -32,6 +33,8 @@ export type EcazIndependentSkillsOptions = {
   skills?: boolean;
   /** The independent physical three-card variant; `false` is the printed no-card control. */
   independent?: boolean;
+  /** Original native World setup, selected before start; off by default. */
+  homeworlds?: boolean;
   /** Original optional modules, both off by default; Strongholds require Advanced. */
   tech?: boolean;
   strongholds?: boolean;
@@ -143,6 +146,7 @@ export function stageEcazIndependentSkillsCard(game: Game, actor: string,
 /** The admitted original card source (thirty-six with the independent variant),
  * all14 skills and ordinary counters. */
 export function assertEcazIndependentSkillsCustody(game: Game): void {
+  if (game.homeworlds) homeworldGameIntegrity(game);
   if (game.leaderSkills) validateLeaderSkills(game.leaderSkills, game.players);
   const sum = (values: Record<string, number>) => Object.values(values).reduce((a, b) => a + b, 0);
   for (const player of game.players) {
@@ -263,7 +267,7 @@ export function createEcazIndependentSkillsFixture(
     ...LEADER_SKILL_CARDS.map(card => card.id).filter(id => id !== 'suk-graduate')];
   const draws = skills ? permutationDraws(LEADER_SKILL_CARDS.map(card => card.id), order) : [];
   const shared = entropy(() => createHomeworldEcazOccupyFixture({
-    advanced, skills, independent, homeworlds: false,
+    advanced, skills, independent, homeworlds: options.homeworlds ?? false,
     tech: options.tech ?? false, strongholds: options.strongholds ?? false,
     ...(options.paired ? { allyFaction: 'moritani' as const } : {}),
     ...(skills ? { finishSetup: (initial: Game) => trainEcazSeat(initial, picks) } : {}),
@@ -295,7 +299,6 @@ export function createEcazIndependentSkillsFixture(
     state => !!state.battle && ecazIndependentSkillsClean(state) && !state.battle.preparation &&
       state.battle.preLeader?.closed !== false, actions, policy);
   const afterLead = structuredClone(game);
-  const beforePlans = structuredClone(game);
   const cardUser = lead === 'ecaz' ? shared.ecaz : shared.ally;
   const cardIds = cardKinds.map(kind => stageEcazIndependentSkillsCard(game, cardUser,
     ECAZ_INDEPENDENT_SKILLS_CARD_IDS[kind], staging));
@@ -318,12 +321,18 @@ export function createEcazIndependentSkillsFixture(
     conserveTraitor(game, shared.opponent, traitor, staging);
     callers.push(shared.opponent);
   }
+  const feeSources = cardKinds.includes('reinforcements') && game.homeworlds
+    ? viewGame(game, cardUser).battle?.reinforcements?.homeworldSources?.[0] : undefined;
+  if (cardKinds.includes('reinforcements') && game.homeworlds)
+    assert.ok(feeSources, 'Choose an actual offered native World source for the card user’s fee');
   const plans: EcazIndependentSkillsStep[] = [
     { actor: cardUser, action: { type: 'battlePlan', dial: profile.fixedEcazDial + variable,
-      support, allyPayment: 0, leader: planLeader, ...own } },
+      support, allyPayment: 0, leader: planLeader, ...own,
+      ...(feeSources ? { reinforcementsSources: structuredClone(feeSources) } : {}) } },
     { actor: shared.opponent, action: { type: 'battlePlan', dial: 0, support: 0,
       leader: defender, weapon: null, defense: null } },
   ];
+  const beforePlans = structuredClone(game);
   for (const plan of plans) {
     actions.push(structuredClone(plan));
     game = stepEcazIndependentSkills(game, plan);

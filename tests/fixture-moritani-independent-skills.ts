@@ -8,7 +8,7 @@ import { botActions } from '../game/bots';
 import type { Difficulty } from '../game/bot-profiles';
 import { ecazTreacheryCards } from '../game/ecaz-cards';
 import { withoutEcazLoyalty } from '../game/ecaz-loyalty';
-import { LEADER_SKILL_CARDS, type LeaderSkillId } from '../game/leader-skill-cards';
+import type { LeaderSkillId } from '../game/leader-skill-cards';
 import { validateLeaderSkills } from '../game/leader-skills';
 import { traitorDeck } from '../game/traitors';
 import {
@@ -19,6 +19,9 @@ import { REINFORCEMENTS_CARD } from '../game/reinforcements';
 import { quoteIndependentSkillsBattle } from './fixture-independent-skills-battle';
 import { holdMoritaniStrongholdsTraitor } from './fixture-moritani-strongholds';
 import { nextStrongholdFactionsNativeStep } from './fixture-stronghold-factions';
+import { skillOfferRolls } from './fixture-independent-card-modules';
+import { homeworldGameIntegrity } from '../game/homeworld-game';
+import { nativeShipmentSources } from '../game/homeworld-options';
 
 export type MoritaniIndependentSkillsStep = { actor: string; action: Action };
 /** 'guild' keeps the classic Heighliner opponent; 'harkonnen' is the native
@@ -31,6 +34,8 @@ export type MoritaniIndependentSkillsOptions = {
   skills?: boolean;
   /** The independent three-card Ecaz Treachery variant of printed p. 18. */
   cards?: boolean;
+  /** Original native World custody, selected before the ordinary lobby start. */
+  homeworlds?: boolean;
   /** Original optional modules, both off by default; Strongholds require Advanced. */
   tech?: boolean;
   strongholds?: boolean;
@@ -65,6 +70,8 @@ export type MoritaniIndependentSkillsFixture = {
   beforeSplit: Game;
   split: MoritaniIndependentSkillsStep;
   afterSplit: Game;
+  /** A paid native-pool shipment before the original opposing board move. */
+  shipment: { before: Game; step: MoritaniIndependentSkillsStep; after: Game } | null;
   entry: MoritaniIndependentSkillsStep;
   afterEntry: Game;
   beforeBattle: Game;
@@ -122,21 +129,6 @@ function entropy<T>(run: () => T, rolls: readonly number[] = []): T {
     else Reflect.deleteProperty(crypto, 'getRandomValues');
   }
 }
-/** Only the original fourteen-card lottery is solved; later native draws keep
- * a fixed maximum value, and every roll is restored afterwards. */
-function skillRolls(chosen: readonly LeaderSkillId[]): number[] {
-  const source = LEADER_SKILL_CARDS.map((card) => card.id);
-  const rest = source.filter((id) => !chosen.includes(id));
-  const desired = chosen.flatMap((id) => [id, rest.shift()!]).concat(rest);
-  const work = [...source], rolls: number[] = [];
-  for (let index = work.length - 1; index > 0; index--) {
-    const from = work.indexOf(desired[index]);
-    assert.ok(from >= 0 && from <= index);
-    rolls.push(Math.floor((from + 0.5) * 0x100000000 / (index + 1)));
-    [work[index], work[from]] = [work[from], work[index]];
-  }
-  return rolls;
-}
 export function stepMoritaniIndependentSkills(game: Game, step: MoritaniIndependentSkillsStep): Game {
   return entropy(() => applyAction(game, step.actor, step.action));
 }
@@ -167,6 +159,10 @@ export function nextMoritaniIndependentSkillsStep(
       return { actor: decision.player, action: { type: 'leaderSkillVisibility',
         event: decision.event, hide: policy.hide?.[decision.player] ?? false } };
     if (decision?.kind === 'mentatQuestion')
+      return { actor: decision.player, action: { type: 'decision', event: decision.event, decline: true } };
+    if (decision?.kind === 'homeworldDefense')
+      return { actor: decision.player, action: { type: 'decision', event: decision.event, use: false } };
+    if (decision?.kind === 'homeworldRevivalDeployment')
       return { actor: decision.player, action: { type: 'decision', event: decision.event, decline: true } };
     if (decision?.kind === 'rihani')
       return { actor: decision.player, action: { type: 'decision', event: decision.event, draw: false } };
@@ -212,6 +208,7 @@ const counterTotal = (forces: Record<string, number>) =>
 /** Conserved physical custody: counters, the real 33/36-card inventory, all
  * fourteen skills and every Traitor identity, including Assassinate removal. */
 export function assertMoritaniIndependentSkillsCustody(game: Game): void {
+  if (game.homeworlds) homeworldGameIntegrity(game);
   if (game.leaderSkills) validateLeaderSkills(game.leaderSkills, game.players);
   const removed = (game.moritaniAssassinate?.opportunities ?? [])
     .filter((receipt) => receipt.stage === 'replaced').map((receipt) => receipt.card!);
@@ -266,10 +263,13 @@ function board(opponent: MoritaniIndependentSkillsOpponent | 'ecaz') {
 export function createMoritaniIndependentSkillsFixture(
   options: MoritaniIndependentSkillsOptions = {},
 ): MoritaniIndependentSkillsFixture {
-  const advanced = (options.rules ?? 'advanced') === 'advanced';
-  const skills = options.skills ?? false;
-  const cards = options.cards ?? false;
-  const opponentFaction = options.paired ? 'ecaz' : (options.opponent ?? 'guild');
+  const advanced = (options.rules ?? (options.initial?.advanced === false ? 'basic' : 'advanced')) === 'advanced';
+  const skills = options.skills || !!options.initial?.lobbyOptions?.leaderSkills || !!options.initial?.leaderSkills;
+  const cards = options.cards || !!options.initial?.lobbyOptions?.ecazTreachery || !!options.initial?.ecazTreachery;
+  const worlds = options.homeworlds || !!options.initial?.homeworlds;
+  const paired = options.paired || !!options.initial?.players.some((seat) => seat.faction === 'ecaz');
+  const opponentFaction = paired ? 'ecaz' : (options.opponent ??
+    (options.initial?.players.some((seat) => seat.faction === 'harkonnen') ? 'harkonnen' : 'guild'));
   assert.ok(!skills || opponentFaction !== 'harkonnen',
     'Leader Skills keep the Harkonnen native roster out of this composition.');
   const plan = board(opponentFaction);
@@ -292,12 +292,13 @@ export function createMoritaniIndependentSkillsFixture(
   assert.equal(game.advanced, advanced);
   assert.deepEqual(game.expansions, ['ecaz']);
   assert.equal(game.status, 'lobby', 'Continue only a fresh lobby of this exact composition.');
-  assert.ok(!game.homeworlds && !game.nexusCards && !game.discoveryEnabled,
-    'Only the original E3/classic composition and optional Tech/Strongholds are accepted.');
-  assert.ok(!game.techTokens || options.tech,
-    'A preselected original Tech module needs tech:true.');
-  assert.ok(!game.strongholdCards || options.strongholds,
-    'A preselected original Stronghold module needs strongholds:true.');
+  assert.ok(!game.nexusCards && !game.discoveryEnabled,
+    'Only the original E3/classic composition and optional World/Tech/Stronghold modules are accepted.');
+  assert.deepEqual(game.players.map((seat) => seat.faction).sort(), ['moritani', opponentFaction, 'emperor'].sort(),
+    'Preserve the original native three-faction roster.');
+  const moritani = game.players.find((seat) => seat.faction === 'moritani')!.id;
+  const opponent = game.players.find((seat) => seat.faction === opponentFaction)!.id;
+  const third = game.players.find((seat) => seat.faction === 'emperor')!.id;
   const actions: MoritaniIndependentSkillsStep[] = [], staging: string[] = [];
   const act = (actor: string, action: Action) => {
     actions.push({ actor, action: structuredClone(action) });
@@ -305,40 +306,44 @@ export function createMoritaniIndependentSkillsFixture(
     return game;
   };
   const initial = structuredClone(game);
-  if (skills) act('moritani', { type: 'moduleOption', module: 'leaderSkills', enabled: true });
-  if (cards) act('moritani', { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
-  if (options.tech && !game.techTokens) act('moritani', { type: 'techTokens', enabled: true });
-  if (options.strongholds && !game.strongholdCards) act('moritani', { type: 'strongholdCards', enabled: true });
+  if (worlds && !game.homeworlds) act(game.host, { type: 'homeworlds', enabled: true });
+  if (skills && !game.lobbyOptions?.leaderSkills && !game.leaderSkills)
+    act(game.host, { type: 'moduleOption', module: 'leaderSkills', enabled: true });
+  if (cards && !game.lobbyOptions?.ecazTreachery && !game.ecazTreachery)
+    act(game.host, { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
+  if (options.tech && !game.techTokens) act(game.host, { type: 'techTokens', enabled: true });
+  if (options.strongholds && !game.strongholdCards) act(game.host, { type: 'strongholdCards', enabled: true });
   for (const player of game.players) if (!player.ready) act(player.id, { type: 'ready' });
-  const start: MoritaniIndependentSkillsStep = { actor: 'moritani',
+  const start: MoritaniIndependentSkillsStep = { actor: game.host,
     action: { type: 'start', ...(advanced ? { advancedPreview: true as const } : {}) } };
   actions.push(structuredClone(start));
   game = entropy(() => applyAction(game, start.actor, start.action),
-    skills ? skillRolls([chosen.moritani, chosen[opponentFaction], chosen.emperor]) : []);
+    skills ? skillOfferRolls(game, chosen) : []);
   staging.push('Normal lobby start through the real module options; the Advanced opt-in is the ordinary lobby action, never a development profile.');
   if (skills) staging.push('Solved only the original fourteen-card Leader Skill lottery with real Fisher-Yates draws; offers, deck and later native shuffles are untouched.');
   const offered = structuredClone(game);
   for (let count = 0; game.status === 'setup' && count < 200; count++) {
     if (game.setupStage === 'leaderSkills') {
       const actor = Object.keys(game.leaderSkills!.offers)[0];
+      const faction = moritaniIndependentSkillsPlayer(game, actor).faction;
       const offer = game.leaderSkills!.offers[actor];
       const view = viewGame(game, actor).leaderSkills!;
       const leader = moritaniIndependentSkillsPlayer(game, actor).leaders
-        .filter((disc) => disc.id === trainedLeader[actor] &&
+        .filter((disc) => disc.id === trainedLeader[faction] &&
           view.eligibleLeaders.some((eligible) => eligible.id === disc.id))[0];
       assert.ok(leader, 'The requested original leader must be eligible for this offer');
-      assert.ok(offer.cards.includes(chosen[actor]), 'The requested original skill must be in the real offer');
-      act(actor, { type: 'leaderSkill', event: offer.event, skill: chosen[actor], leader: leader.id });
+      assert.ok(offer.cards.includes(chosen[faction]), 'The requested original skill must be in the real offer');
+      act(actor, { type: 'leaderSkill', event: offer.event, skill: chosen[faction], leader: leader.id });
       continue;
     }
     if (game.setupStage === 'forces' && opponentFaction === 'ecaz' &&
-      viewGame(game, 'ecaz').setupPending.includes('ecaz')) {
-      act('ecaz', { type: 'ecazSetup', placements: { [plan.from]: 6 } });
+      viewGame(game, opponent).setupPending.includes(opponent)) {
+      act(opponent, { type: 'ecazSetup', placements: { [plan.from]: 6 } });
       continue;
     }
     if (game.setupStage === 'traitors' || game.players.some((player) => player.traitorChoices.length)) {
       const player = game.players.find((seat) => seat.traitorChoices.length)!;
-      const keep = player.id === 'moritani'
+      const keep = player.id === moritani
         ? (player.traitorChoices.find((id) => id.startsWith(`${opponentFaction}-`)) ?? player.traitorChoices[0])
         : player.traitorChoices[0];
       act(player.id, { type: 'traitor', leader: keep });
@@ -354,9 +359,6 @@ export function createMoritaniIndependentSkillsFixture(
     act(step.actor, step.action);
   }
   assert.equal(game.status, 'playing');
-  const moritani = 'moritani';
-  const opponent = game.players.find((seat) => seat.faction === opponentFaction)!.id;
-  const third = game.players.find((seat) => seat.faction === 'emperor')!.id;
   assert.equal(moritaniIndependentSkillsPlayer(game, moritani).reserves, 14);
   assert.equal(!!game.moritaniAssassinate, advanced,
     'The printed Advanced assassination producer follows the real rules mode alone.');
@@ -390,6 +392,22 @@ export function createMoritaniIndependentSkillsFixture(
   const afterSplit = structuredClone(game);
   game = advanceMoritaniIndependentSkills(game,
     (state) => state.phase === 5 && state.active === opponent && moritaniIndependentSkillsClean(state), actions);
+  let shipment: MoritaniIndependentSkillsFixture['shipment'] = null;
+  if (worlds) {
+    const before = structuredClone(game);
+    const sources = nativeShipmentSources(viewGame(game, opponent), 1, 0);
+    assert.ok(sources, 'The opponent ships its own real native World normal counter.');
+    const step: MoritaniIndependentSkillsStep = { actor: opponent, action: {
+      type: 'ship', territory: plan.battle, sector: plan.sectors[1], amount: 1, elite: 0,
+      allyPayment: 0, homeworldSources: sources } };
+    game = stepMoritaniIndependentSkills(game, step);
+    actions.push(structuredClone(step));
+    game = advanceMoritaniIndependentSkills(game,
+      (state) => state.phase === 5 && state.active === opponent && !state.pendingShipment &&
+        !state.pendingHomeworldShipment && moritaniIndependentSkillsClean(state), actions);
+    shipment = { before, step, after: structuredClone(game) };
+    staging.push('The opponent paid for a real normal-counter shipment from its original native World before moving its original starting army.');
+  }
   const entrySector = plan.sectors[1];
   assert.notEqual(game.storm, entrySector, 'The real opponent entry must not enter the storm sector.');
   const entry: MoritaniIndependentSkillsStep = { actor: opponent, action: {
@@ -417,10 +435,11 @@ export function createMoritaniIndependentSkillsFixture(
   const winnerWeapon = conserveCard(game, opponent, (card) => card.kind === 'worthless', staging);
   const plans: MoritaniIndependentSkillsStep[] = [
     { actor: moritani, action: { type: 'battlePlan', dial: 2, support: 0, leader: loser,
-      ...(reinforcements && harass ? { weapon: REINFORCEMENTS_CARD, defense: HARASS_WITHDRAW_CARD } : {}) } },
+      ...(reinforcements && harass ? { weapon: REINFORCEMENTS_CARD, defense: HARASS_WITHDRAW_CARD,
+        ...(worlds ? { reinforcementsSources: { 'homeworld:moritani': { normal: 3, elite: 0 } } } : {}) } : {}) } },
     { actor: opponent, action: { type: 'battlePlan',
-      dial: options.paired ? (cards ? 4 : 2) : (cards ? 1 : 0),
-      support: options.paired && advanced ? (cards ? 4 : 2) : 0,
+      dial: paired ? (cards ? 4 : 2) : (cards ? 1 : 0),
+      support: paired && advanced ? (cards ? 4 : 2) : 0,
       leader: winner, weapon: winnerWeapon.id } },
   ];
   const window = structuredClone(game);
@@ -436,7 +455,7 @@ export function createMoritaniIndependentSkillsFixture(
   assert.ok(!cards || footer, 'The committed Reinforcements fee plus Harass return must be a real physical choice');
   const returns = footer ? defaultHarassWithdrawAllocation(footer.context, footer.dial, footer.support) : null;
   const fixture: MoritaniIndependentSkillsFixture = {
-    initial, offered, afterSetup, beforeSplit, split, afterSplit, entry, afterEntry, beforeBattle,
+    initial, offered, afterSetup, beforeSplit, split, afterSplit, shipment, entry, afterEntry, beforeBattle,
     battleStep, game: window, plans, revealed, returns, returnsContext: footer?.context ?? null,
     pending: structuredClone(revealed), moritani, opponent, third, territory: plan.battle,
     first: `${plan.battle}:${plan.sectors[0]}`, second: `${plan.battle}:${plan.sectors[1]}`,

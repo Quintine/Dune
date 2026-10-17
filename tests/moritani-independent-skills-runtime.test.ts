@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { applyAction, viewGame, type Action, type Game } from '../game/engine';
+import { applyAction, createGame, joinGame, newPlayer, viewGame, type Action, type Game } from '../game/engine';
 import { HARASS_WITHDRAW_CARD } from '../game/harass-withdraw';
 import { REINFORCEMENTS_CARD } from '../game/reinforcements';
 import { ownedTech } from '../game/tech-tokens';
+import { homeworldContext } from '../game/homeworld-game';
+import { homeworldForceGroups } from '../game/homeworld-custody';
 import {
   advanceMoritaniIndependentSkills,
   assertMoritaniIndependentSkillsCustody,
@@ -28,6 +30,9 @@ const owned = (fixture: MoritaniIndependentSkillsFixture, game: Game, identity: 
   player(game, fixture.opponent).leaders.find((leader) => leader.id === identity)!;
 const choiceOf = (game: Game, viewer: string) =>
   viewGame(game, viewer).moritaniAssassinate!.pending!;
+const pool = (game: Game, actor: string) =>
+  homeworldForceGroups(homeworldContext(game), game.homeworlds!.custody!)
+    .find((home) => home.native === actor)!.forces[actor];
 
 void test('Advanced standalone Moritani keeps the printed Assassinate power through the real lobby, the real loss and one held unused Traitor', () => {
   const f = createMoritaniIndependentSkillsFixture({ rules: 'advanced', cards: true, skills: true });
@@ -40,7 +45,6 @@ void test('Advanced standalone Moritani keeps the printed Assassinate power thro
   assert.deepEqual(f.afterSetup.moritaniAssassinateCallEvents, []);
   assert.deepEqual(f.afterSetup.expansions, ['ecaz']);
   assert.equal(f.afterSetup.ecazTreachery, true);
-  assert.equal(f.afterSetup.homeworlds, undefined);
   assert.equal(f.afterSetup.leaderSkills!.assignments.length, 3);
   assert.equal(moritani.spice, 12);
   assert.equal(moritani.reserves, 14);
@@ -449,7 +453,6 @@ void test('paired Advanced Skills with original phase modules pays the printed E
   const f = createMoritaniIndependentSkillsFixture({ paired: true, rules: 'advanced', skills: true,
     tech: true, strongholds: true });
   assert.equal(f.pending.lastBattleContext!.winner, f.opponent);
-  assert.equal(f.initial.nexusCards, undefined);
   assert.equal(f.returns, null);
   assert.equal(f.cards.reinforcements, null);
   assert.equal(f.cards.harass, null);
@@ -474,5 +477,122 @@ void test('paired Advanced Skills with original phase modules pays the printed E
   assert.equal(settled.traitorReserve!.length, f.pending.traitorReserve!.length - 1);
   assert.equal(Object.entries(settled.techTokens!).filter(([id, token]) =>
     defeatedTokens.includes(id) && token.owner === f.opponent).length, 1);
+  assertMoritaniIndependentSkillsCustody(settled);
+});
+
+void test('Advanced native World cards pay their real normal source fee and assassinate a different unused trained disc before one Mentat replacement', () => {
+  let initial = createGame('WORLDASSASSINATE', newPlayer('native-owner', 'Moritani', 'moritani'), true, ['ecaz']);
+  joinGame(initial, newPlayer('native-rival', 'Guild', 'guild'));
+  joinGame(initial, newPlayer('native-court', 'Emperor', 'emperor'));
+  for (const action of [
+    { type: 'homeworlds', enabled: true },
+    { type: 'moduleOption', module: 'leaderSkills', enabled: true },
+    { type: 'moduleOption', module: 'ecazTreachery', enabled: true },
+    { type: 'techTokens', enabled: true },
+    { type: 'strongholdCards', enabled: true },
+  ] as const) initial = applyAction(initial, initial.host, action);
+  const f = createMoritaniIndependentSkillsFixture({ initial });
+  const shipment = f.shipment!;
+  assert.deepEqual(pool(shipment.after, f.opponent),
+    { normal: pool(shipment.before, f.opponent).normal - 1, elite: 0 });
+  assert.equal(player(shipment.after, f.opponent).spice, player(shipment.before, f.opponent).spice - 1);
+  assert.equal(player(f.afterEntry, f.opponent).forces[f.second], 6);
+  const plan = f.plans.find((step) => step.actor === f.moritani)!;
+  if (plan.action.type !== 'battlePlan') throw new Error('Expected the real Moritani plan.');
+  reject(f.game, f.moritani, { ...plan.action,
+    reinforcementsSources: { 'homeworld:guild': { normal: 3, elite: 0 } } });
+  reject(f.game, f.moritani, { ...plan.action,
+    reinforcementsSources: { 'homeworld:moritani': { normal: 2, elite: 0 } } });
+  assert.equal(f.pending.lastBattleContext!.winner, f.opponent);
+  assert.equal(f.pending.lastBattleContext!.result, 'normal');
+  assert.deepEqual(pool(f.pending, f.moritani),
+    { normal: pool(f.revealed, f.moritani).normal - 3 + 2, elite: 0 });
+  assert.equal(player(f.pending, f.moritani).tanks, 7);
+  assert.deepEqual(player(f.pending, f.moritani).forces, {});
+  assert.deepEqual(player(f.pending, f.opponent).forces, { [f.second]: 4 });
+  assert.deepEqual(f.returns, { [f.first]: { normal: 2, elite: 0 } });
+  const assignment = f.pending.leaderSkills!.assignments.find((entry) => entry.leader === f.traitorTarget)!;
+  assert.ok(assignment);
+  assert.notEqual(f.traitorTarget, f.winnerLeader);
+  assert.equal(owned(f, f.pending, f.traitorTarget).usedAt, undefined);
+  const spent = chooseMoritaniIndependentSkillsAssassination(f.pending, f.traitorTarget);
+  const target = owned(f, spent, f.traitorTarget);
+  assert.equal(target.dead, true);
+  assert.equal(target.deaths, 1);
+  assert.equal(target.usedAt, undefined);
+  assert.equal(owned(f, spent, f.winnerLeader).dead, false);
+  assert.deepEqual(spent.leaderSkills!.deck, [...f.pending.leaderSkills!.deck, assignment.skill]);
+  assert.equal(spent.leaderSkills!.assignments.some((entry) => entry.leader === target.id), false);
+  assert.equal(player(spent, f.moritani).spice, player(f.pending, f.moritani).spice + target.strength);
+  assert.deepEqual(player(spent, f.moritani).traitors, [f.traitorTarget]);
+  const beforeMentat = finishMoritaniIndependentSkillsBattle(spent, { winnerDiscard: 'played' },
+    (game) => game.phase === 7 && moritaniIndependentSkillsClean(game));
+  assert.equal(beforeMentat.moritaniAssassinate!.opportunities[0].stage, 'revealed');
+  const settled = finishMoritaniIndependentSkillsBattle(beforeMentat);
+  const receipt = settled.moritaniAssassinate!.opportunities[0];
+  assert.equal(receipt.stage, 'replaced');
+  assert.equal(receipt.bounty, target.strength);
+  assert.ok(receipt.replacement && receipt.replacement !== f.traitorTarget);
+  assert.deepEqual(player(settled, f.moritani).traitors, [receipt.replacement]);
+  assert.equal(settled.traitorReserve!.length, f.pending.traitorReserve!.length - 1);
+  assert.equal(settled.leaderSkills!.deck.filter((skill) => skill === assignment.skill).length, 1);
+  assert.deepEqual(pool(settled, f.moritani), pool(f.pending, f.moritani));
+  assertMoritaniIndependentSkillsCustody(settled);
+});
+
+void test('paired native Worlds keep Ecaz Loyalty and the shared Duke outside an unused trained-target assassination', () => {
+  const f = createMoritaniIndependentSkillsFixture({ paired: true, homeworlds: true,
+    rules: 'advanced', skills: true, cards: true, tech: true, strongholds: true });
+  const loyalty = f.afterSetup.ecazLoyalty!;
+  assert.notEqual(f.traitorTarget, loyalty.card);
+  assert.notEqual(f.traitorTarget, f.winnerLeader);
+  assert.notEqual(f.traitorTarget, 'duke-vidal');
+  assert.equal(f.pending.leaderSkills!.assignments.some((entry) => entry.leader === 'duke-vidal'), false);
+  assert.deepEqual(pool(f.shipment!.after, f.opponent),
+    { normal: pool(f.shipment!.before, f.opponent).normal - 1, elite: 0 });
+  assert.equal(player(f.shipment!.after, f.opponent).spice,
+    player(f.shipment!.before, f.opponent).spice - 2);
+  assert.equal(player(f.afterEntry, f.opponent).forces[f.second], 7);
+  assert.deepEqual(player(f.pending, f.opponent).forces, { [f.second]: 3 });
+  assert.equal(player(f.pending, f.opponent).spice, player(f.game, f.opponent).spice - 4,
+    'support uses the real prebattle wallet after original optional phase income');
+  const assignment = f.pending.leaderSkills!.assignments.find((entry) => entry.leader === f.traitorTarget)!;
+  const spent = chooseMoritaniIndependentSkillsAssassination(f.pending, f.traitorTarget);
+  assert.equal(owned(f, spent, f.traitorTarget).usedAt, undefined);
+  assert.equal(owned(f, spent, f.traitorTarget).dead, true);
+  assert.equal(owned(f, spent, f.winnerLeader).dead, false);
+  assert.equal(spent.moritaniAssassinate!.opportunities[0].bounty, 4);
+  assert.equal(player(spent, f.moritani).spice, player(f.pending, f.moritani).spice + 4);
+  assert.deepEqual(spent.leaderSkills!.deck, [...f.pending.leaderSkills!.deck, assignment.skill]);
+  const settled = finishMoritaniIndependentSkillsBattle(spent, { winnerDiscard: 'played' });
+  const receipt = settled.moritaniAssassinate!.opportunities[0];
+  assert.equal(receipt.stage, 'replaced');
+  assert.notEqual(receipt.replacement, loyalty.card);
+  assert.equal(settled.traitorReserve!.length, f.pending.traitorReserve!.length - 1);
+  assert.equal(settled.leaderSkills!.deck.filter((skill) => skill === assignment.skill).length, 1);
+  assert.deepEqual(settled.ecazLoyalty, loyalty);
+  assert.deepEqual(settled.dukeVidal, f.afterSetup.dukeVidal);
+  assertMoritaniIndependentSkillsCustody(settled);
+});
+
+void test('Basic native Worlds return the typed Harass survivors but cannot assassinate the unused trained Ecaz target', () => {
+  const f = createMoritaniIndependentSkillsFixture({ paired: true, homeworlds: true,
+    rules: 'basic', skills: true, cards: true });
+  assert.equal(f.pending.lastBattleContext!.winner, f.opponent);
+  assert.equal(f.pending.lastBattleContext!.result, 'normal');
+  assert.deepEqual(f.returns, { [f.first]: { normal: 4, elite: 0 } });
+  assert.deepEqual(pool(f.pending, f.moritani),
+    { normal: pool(f.revealed, f.moritani).normal - 3 + 4, elite: 0 });
+  assert.equal(player(f.pending, f.moritani).tanks, 5);
+  assert.deepEqual(player(f.pending, f.moritani).forces, {});
+  assert.deepEqual(player(f.pending, f.opponent).forces, { [f.second]: 3 });
+  assert.equal(f.pending.moritaniAssassinate, undefined);
+  reject(f.pending, f.moritani, { type: 'decision', card: f.traitorTarget });
+  const settled = finishMoritaniIndependentSkillsBattle(f.pending);
+  assert.equal(owned(f, settled, f.traitorTarget).dead, false);
+  assert.equal(owned(f, settled, f.traitorTarget).usedAt, undefined);
+  assert.deepEqual(settled.leaderSkills, f.pending.leaderSkills);
+  assert.deepEqual(player(settled, f.moritani).traitors, [f.traitorTarget]);
+  assert.deepEqual(pool(settled, f.moritani), pool(f.pending, f.moritani));
   assertMoritaniIndependentSkillsCustody(settled);
 });

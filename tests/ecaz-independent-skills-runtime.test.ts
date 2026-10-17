@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import type { Game } from '../game/engine';
+import { applyAction, type Game } from '../game/engine';
 import { treacheryDeck } from '../game/cards';
 import { ecazTreacheryCards } from '../game/ecaz-cards';
 import { HARASS_WITHDRAW_CARD } from '../game/harass-withdraw';
 import { REINFORCEMENTS_CARD } from '../game/reinforcements';
 import { ownedTech } from '../game/tech-tokens';
+import { homeworldContext } from '../game/homeworld-game';
+import { homeworldForceGroups } from '../game/homeworld-custody';
+import { DUKE_VIDAL_ID } from '../game/duke-vidal';
 import {
   assertEcazIndependentSkillsCustody,
   createEcazIndependentSkillsFixture, ecazIndependentSkillsPlayer as player,
@@ -410,3 +413,117 @@ for (const lead of ['ecaz', 'ally'] as const) {
     assertEcazIndependentSkillsCustody(end);
   });
 }
+
+void test('native World coalition pays Ecaz’s source-labelled fee before committed-only Suk rescue and settles earned Arrakeen and Tech', () => {
+  const f = createEcazIndependentSkillsFixture({
+    homeworlds: true, paired: true, tech: true, strongholds: true,
+  });
+  const native = (game: Game) => homeworldForceGroups(homeworldContext(game), game.homeworlds!.custody!)
+    .find(home => home.native === f.ecaz)!.forces[f.ecaz];
+  const plan = f.plans[0];
+  assert.deepEqual(plan.action.reinforcementsSources,
+    { 'homeworld:ecaz': { normal: 3, elite: 0 } });
+  const before = structuredClone(f.beforePlans);
+  assert.throws(() => applyAction(f.beforePlans, f.ecaz, {
+    ...plan.action, reinforcementsSources: { 'homeworld:moritani': { normal: 3, elite: 0 } },
+  }), 'A coalition partner’s native World cannot fund the Ecaz card user’s fee');
+  assert.deepEqual(f.beforePlans, before);
+  const shipment = f.actions.find(step => step.actor === f.ecaz && step.action.type === 'ship')!;
+  assert.deepEqual(shipment.action.homeworldSources,
+    { 'homeworld:ecaz': { normal: 4, elite: 0 } });
+  assert.equal(native(f.afterFirstMentat!).normal, native(f.afterSetup).normal - 4,
+    'The four real paid native counters hold Arrakeen through END Mentat');
+  assert.equal(f.afterFirstMentat!.strongholdCards!.owners.arrakeen, f.ecaz);
+  const quote = quoteEcazIndependentSkillsBattle(f);
+  const payment = quote.payments.find(item => item.player === f.ecaz)!;
+  assert.equal(payment.bankSupport, 2);
+  assert.equal(payment.ownPayment, 0, 'The earned Arrakeen card actually supports the selected lead');
+  assert.deepEqual(quote.harassWithdraw![0].returned, { normal: 2, elite: 0 });
+  const rescue = settleEcazIndependentSkillsBattle(f, { stop: 'rescue' });
+  assert.ok(rescue.decision?.kind === 'sukRescue');
+  assert.equal(rescue.decision.player, f.ecaz);
+  assert.deepEqual(rescue.decision.options.filter(option => option.kept),
+    [{ normal: 1, elite: 0, kept: { key: f.location, kind: 'normal' } },
+      { normal: 2, elite: 0, kept: { key: f.location, kind: 'normal' } }]);
+  assert.equal(player(rescue, f.ecaz).tanks - player(f.game, f.ecaz).tanks, 3,
+    'The source-labelled fee is already in Tanks and never joins the two committed rescue losses');
+  assert.equal(native(rescue).normal, native(f.game).normal - 1,
+    'Three native fee counters leave before the two undialed counters return to the same World');
+  assert.equal(player(rescue, f.ally).tanks - player(f.game, f.ally).tanks, 2,
+    'Moritani’s variable army losses cannot enter Ecaz’s rescue');
+  assert.equal(player(rescue, f.ecaz).spice, player(f.game, f.ecaz).spice,
+    'Held-card bank support settles before Collection, without charging Ecaz');
+  const end = settleEcazIndependentSkillsBattle(f, { state: rescue });
+  assert.equal(end.phase, 7);
+  assert.equal(end.lastBattleContext?.winner, f.ecaz);
+  assert.equal(end.lastBattleContext?.sukRescue?.completed, true);
+  assert.deepEqual(end.lastBattleContext?.sukRescue?.physical, {
+    player: f.ecaz, territory: f.territory, source: 'arrakis',
+    saved: { normal: 2, elite: 0 }, kept: { key: f.location, kind: 'normal' },
+    destinations: { 'homeworld:ecaz': { normal: 1, elite: 0 } }, tanks: { normal: 0, elite: 0 },
+  });
+  assert.equal(native(end).normal, native(f.game).normal);
+  assert.equal(at(end, f.ecaz, f.location), 1);
+  assert.equal(player(end, f.ecaz).tanks - player(f.game, f.ecaz).tanks, 3);
+  const enemyTokens = ownedTech(f.game.techTokens, f.opponent);
+  assert.equal(enemyTokens.length, 1);
+  assert.equal(end.techTokens![enemyTokens[0]].owner, f.ecaz);
+  disposedLeadCards(f, end);
+  pairedArmies(f, end);
+  physicalSource(end, 36);
+  assertEcazIndependentSkillsCustody(end);
+});
+
+void test('paired plain World all14 keeps the native Moritani lead and separate Ecaz fixed army through battle continuation', () => {
+  const f = createEcazIndependentSkillsFixture({
+    homeworlds: true, paired: true, independent: false, cards: [], lead: 'ally',
+  });
+  assert.equal(f.beforeLead.decision?.kind, 'ecazBattleLead');
+  assert.equal(f.plans[0].actor, f.ally);
+  assert.equal(player(f.beforeLead, f.ecaz).ally, f.ally);
+  const quote = quoteEcazIndependentSkillsBattle(f);
+  assert.deepEqual(quote.fixedLosses, [{ owner: f.ecaz, normal: 2, elite: 0 }]);
+  assert.equal(quote.casualties?.owner, f.ally);
+  assert.equal(quote.sukGraduate, undefined,
+    'Ecaz’s native skill cannot rescue its fixed army while Moritani leads');
+  assert.ok(f.game.leaderSkills!.assignments.every(assignment => assignment.leader !== DUKE_VIDAL_ID));
+  const end = settleEcazIndependentSkillsBattle(f);
+  assert.equal(end.phase, 7);
+  assert.equal(end.lastBattleContext?.winner, f.ally);
+  assert.equal(end.lastBattleContext?.sukRescue, undefined);
+  for (const actor of [f.ecaz, f.ally]) {
+    assert.equal(player(end, actor).tanks - player(f.game, actor).tanks, 2);
+    assert.equal(player(end, actor).reserves, player(f.game, actor).reserves);
+    assert.equal(at(end, actor, f.location), 2);
+  }
+  pairedArmies(f, end);
+  physicalSource(end, 33);
+  assertEcazIndependentSkillsCustody(end);
+});
+
+void test('no-Skills World independent cards retain the native Emperor-led coalition and typed Sardaukar withdrawal', () => {
+  const f = createEcazIndependentSkillsFixture({ homeworlds: true, skills: false, lead: 'ally' });
+  assert.equal(f.beforeLead.decision?.kind, 'ecazBattleLead');
+  assert.equal(f.plans[0].actor, f.ally);
+  const sources = f.game.battle!.plans[f.cardUser].reinforcementsSources!;
+  assert.ok(Object.keys(sources).every(world => world === 'homeworld:emperor' || world === 'homeworld:emperor:salusa'));
+  assert.equal(Object.values(sources).reduce((sum, forces) => sum + forces.normal, 0), 3);
+  const quote = quoteEcazIndependentSkillsBattle(f);
+  assert.deepEqual(quote.harassWithdraw![0].returned, { normal: 0, elite: 2 });
+  assert.deepEqual(quote.harassWithdraw![0].locations, { [f.location]: { normal: 0, elite: 2 } });
+  assert.equal(quote.sukGraduate, undefined);
+  const end = settleEcazIndependentSkillsBattle(f);
+  assert.equal(end.phase, 7);
+  assert.equal(end.lastBattleContext?.winner, f.ally);
+  assert.equal(end.lastBattleContext?.sukRescue, undefined);
+  assert.equal(player(end, f.ally).reserves - player(f.game, f.ally).reserves, -1);
+  assert.equal(player(end, f.ally).tanks - player(f.game, f.ally).tanks, 5,
+    'Three own native fee counters and two variable commitment losses remain distinct from Ecaz');
+  assert.equal(player(end, f.ally).elites!.reserves - player(f.game, f.ally).elites!.reserves, 2);
+  assert.equal(player(end, f.ally).elites!.tanks, player(f.game, f.ally).elites!.tanks);
+  assert.equal(player(end, f.ecaz).tanks - player(f.game, f.ecaz).tanks, 2);
+  assert.equal(at(end, f.ecaz, f.location), 2);
+  disposedLeadCards(f, end);
+  physicalSource(end, 36);
+  assertEcazIndependentSkillsCustody(end);
+});
