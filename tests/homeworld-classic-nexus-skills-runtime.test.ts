@@ -164,6 +164,12 @@ for (const kind of ['native-suk', 'visitor-suk'] as const) {
 for (const advanced of [false, true]) {
   void test(`${advanced ? 'Advanced typed' : 'Basic ordinary'} real zero-save Suk losses return through the Fremen quota and normal Homeworld revival at the next actual Revival`, () => {
     const f = fixture({ advanced, discovery: advanced, tech: true, strongholds: advanced });
+    const shipper = f.shipment.actor;
+    assert.equal(f.afterShipment.pendingGuildBetrayal ?? null, null);
+    assert.equal(player(f.afterShipment, shipper).spice, player(f.beforeShipment, shipper).spice - 4);
+    assert.equal(player(f.afterShipment, shipper).reserves, player(f.beforeShipment, shipper).reserves - 4);
+    assert.deepEqual(pool(f.afterShipment, shipper, f.territory),
+      { normal: advanced ? 3 : 4, elite: advanced ? 1 : 0 });
     const pending = settle(reveal(f), 'suk'); assert.ok(pending.decision?.kind === 'sukRescue');
     const choice = pending.decision.options.findIndex(option => !option.normal && !option.elite && !option.kept);
     assert.ok(choice >= 0, 'The skilled original human option may genuinely decline all rescue.');

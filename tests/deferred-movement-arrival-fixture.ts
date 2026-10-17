@@ -3,6 +3,7 @@ import {
   applyAction,
   createGame,
   initializeFactionExpansionsGameForAudit,
+  initializeHomeworldOccupationGameForAudit,
   joinGame,
   newPlayer,
   viewGame,
@@ -69,10 +70,12 @@ export function holdArrivalCard(g: Game, id: string, name: string) {
   arrivalPlayer(g, id).hand.push(card);
   return card.id;
 }
-/** Real expansion setup inventories, then the saved failure's focused movement topology. */
+/** Real expansion setup inventories, then the saved failure's focused movement topology.
+ * Homeworlds compose with this roster through the fresh occupation audit. */
 export function movementArrivalGame(
   mover: FactionId = 'tleilaxu',
   tokens: 'both' | 'ambassador' | 'terror' | 'none' = 'both',
+  homeworlds = false,
 ) {
   let g = createGame('DEFERRED', newPlayer('ecaz', 'Ecaz', 'ecaz'), true, [
     'ix',
@@ -82,8 +85,11 @@ export function movementArrivalGame(
   for (const faction of [mover, 'choam', 'moritani', 'richese'] as FactionId[])
     joinGame(g, newPlayer(faction, faction, faction));
   if (mover !== 'ixians') joinGame(g, newPlayer('ixians', 'Ixians', 'ixians'));
+  if (homeworlds) g.homeworlds = { custody: null };
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
-  g = initializeFactionExpansionsGameForAudit(g);
+  g = homeworlds
+    ? initializeHomeworldOccupationGameForAudit(g)
+    : initializeFactionExpansionsGameForAudit(g);
   for (let step = 0; g.status === 'setup' && step < 30; step++) {
     let next: Game | undefined;
     for (const p of g.players) {

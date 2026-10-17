@@ -38,7 +38,8 @@ export type NexusAdvisorFreshFixture = {
     undealtOrder: string[];
   };
 };
-const clean = (game: Game) => !game.phaseOpening && !game.response && !game.decision;
+const clean = (game: Game) => !game.phaseOpening && !game.response && !game.decision &&
+  !game.pendingGuildBetrayal;
 export function nexusAdvisorFreshPlayer(game: Game, actor: string) {
   const player = game.players.find(p => p.id === actor);
   assert.ok(player, `Missing original advisor seat ${actor}`);
@@ -58,8 +59,18 @@ function entropy<T>(producer: () => T): T {
   }
 }
 function nativeStep(game: Game): StrongholdFactionsNativeStep {
+  // Native reaction states now initialize at fresh setup for classic core games:
+  // finish the real Guild Betrayal acknowledgement and purchased-card windows.
+  const betrayal = game.pendingGuildBetrayal;
+  if (betrayal) {
+    const seat = betrayal.required.find(id => !betrayal.passed.includes(id));
+    assert.ok(seat, 'The pending Guild Betrayal window must retain an unfinished responder');
+    return { actor: seat, action: { type: 'guildBetrayalPass', event: betrayal.invoice.event } };
+  }
   if (!game.phaseOpening && !game.response) {
     const decision = game.decision;
+    if (decision?.kind === 'nexusIxianReplacement')
+      return { actor: decision.player, action: { type: 'nexusIxianReplacementPass', event: decision.event } };
     if (decision?.kind === 'guildTiming')
       return { actor: decision.player, action: { type: 'decision', take: game.turn === 2 } };
     // Preserve original advisors through the earlier mandatory declaration.

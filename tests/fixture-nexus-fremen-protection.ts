@@ -54,7 +54,7 @@ export function nexusFremenProtectionPlayer(game: Game, id: string): Player {
 }
 export const nexusFremenProtectionClean = (game: Game): boolean =>
   !game.phaseOpening && !game.response && !game.decision && !game.truthtrance &&
-  !game.pendingTreacheryDiscard;
+  !game.pendingTreacheryDiscard && !game.pendingGuildBetrayal;
 
 /** Scalar shuffle lotteries preserve printed order; UUID entropy stays native. */
 function producerEntropy<T>(run: () => T): T {
@@ -79,12 +79,23 @@ function producerEntropy<T>(run: () => T): T {
  * so no seat ever needs an invented sealed plan. */
 export function nextNexusFremenProtectionNativeStep(game: Game): NexusFremenProtectionStep | null {
   if (game.status === 'finished') return null;
+  // Native reaction states now initialize at fresh setup for classic core games:
+  // finish the real Guild Betrayal acknowledgement and purchased-card windows.
+  const betrayal = game.pendingGuildBetrayal;
+  if (betrayal) {
+    const seat = betrayal.required.find(id => !betrayal.passed.includes(id));
+    assert.ok(seat, 'The pending Guild Betrayal window must retain an unfinished responder');
+    return { actor: seat, action: { type: 'guildBetrayalPass', event: betrayal.invoice.event } };
+  }
   if (game.phaseOpening || game.response || game.truthtrance || game.pendingTreacheryDiscard)
     return nextStrongholdFactionsNativeStep(game);
   const decision = game.decision;
   if (decision?.kind === 'nexusFremenProtection')
     return { actor: decision.player, action: {
       type: 'nexusFremenProtection', event: decision.event, use: false } };
+  if (decision?.kind === 'nexusIxianReplacement')
+    return { actor: decision.player,
+      action: { type: 'nexusIxianReplacementPass', event: decision.event } };
   if (decision?.kind === 'advisor' || decision?.kind === 'intrusion' ||
     decision?.kind === 'advisorBattle')
     return { actor: decision.player, action: { type: 'decision', accept: false } };

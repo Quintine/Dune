@@ -69,7 +69,11 @@ void test('a prior normal purchase cannot authorize spending Emperor Nexus on a 
   reject(revised, owner, first, /current Emperor Nexus/i);
   g = applyAction(g, owner, { type: 'decision', karama: false });
   for (let i = 0; g.decision?.kind !== 'auctionPayment' && i < 20; i++) {
-    if (g.auction?.active === owner && !g.auction.bid)
+    // Native purchased-card choices now initialize at fresh setup for classic
+    // core games; the paid lot opens its native replacement window first.
+    if (g.decision?.kind === 'nexusIxianReplacement')
+      g = applyAction(g, g.decision.player, { type: 'nexusIxianReplacementPass', event: g.decision.event });
+    else if (g.auction?.active === owner && !g.auction.bid)
       g = applyAction(g, owner, { type: 'bid', amount: 2 });
     else if (g.auction)
       g = applyAction(g, g.auction.active, { type: 'passBid' });
@@ -90,8 +94,10 @@ void test('invalid normal-lot custody and full winning hand cannot spend the phy
   const action = { type: 'nexusEmperorPurchase', event: viewGame(g, owner).nexusEmperorSecretAlly!.event };
   const duplicate = nexusReload(g);
   duplicate.deck.push(structuredClone(g.auction!.cards[g.auction!.index]));
-  assert.match(viewGame(duplicate, owner).nexusEmperorSecretAlly!.purchase!.blocked!, /conflicting physical custody/);
-  reject(duplicate, owner, action, /conflicting physical custody/);
+  // Duplicate card custody is now rejected by the native purchased-card
+  // integrity check before the Emperor purchase gate is even consulted.
+  assert.throws(() => viewGame(duplicate, owner), /single physical custody/);
+  reject(duplicate, owner, action, /single physical custody/);
   const full = nexusReload(g);
   full.players.find(p => p.id === owner)!.hand.push(...full.deck.splice(0, 4));
   assert.match(viewGame(full, owner).nexusEmperorSecretAlly!.purchase!.blocked!, /room for the committed/);

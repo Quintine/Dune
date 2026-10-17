@@ -28,6 +28,14 @@ function resources(game: Game) {
 }
 function settle(game: Game): Game {
   for (let count = 0; count < 80; count++) {
+    // Native Guild Betrayal now initializes at fresh setup; the paid polar
+    // sink shipment opens its acknowledgement window before it may commit.
+    const betrayal = game.pendingGuildBetrayal;
+    if (betrayal) {
+      const seat = betrayal.required.find(id => !betrayal.passed.includes(id))!;
+      game = applyAction(game, seat, { type: 'guildBetrayalPass', event: betrayal.invoice.event });
+      continue;
+    }
     if (!game.response && !game.decision && !game.phaseOpening) return game;
     const step = nextStrongholdFactionsNativeStep(game);
     assert.ok(step, 'Only original responses and decisions may settle the declaration');

@@ -15,6 +15,7 @@ import { join } from 'node:path';
 
 import type { Game } from '../game/engine';
 import { createTechTokens } from '../game/tech-tokens';
+import { sampleInventory, verifySampleCustody } from '../tools/sample-custody';
 const root = new URL('../', import.meta.url).pathname;
 const cli = new URL('../tools/faction-games.ts', import.meta.url).pathname;
 type CliResult = {
@@ -141,21 +142,85 @@ void test('Ecaz card samples keep all three physical identities through saved re
   assert.equal(result.status, 1);
   assertFailedEvidence(out, 'ecaz-treachery-2-advanced', 1137, false);
   const snapshot = join(out, 'failed-ecaz-treachery-2-advanced.json');
-  const game = json<{
-    ecazTreachery: boolean;
-    deck: { id: string }[];
-    discard: { id: string }[];
-    players: { hand: { id: string }[] }[];
-  }>(snapshot);
-  assert.equal(game.ecazTreachery, true);
+  const game = json<Game>(snapshot);
   assert.deepEqual(
     [...game.deck, ...game.discard, ...game.players.flatMap(player => player.hand)]
       .map(card => card.id).filter(id => id.startsWith('ecaz-')).sort(),
     ['ecaz-harass-withdraw', 'ecaz-recruits', 'ecaz-reinforcements'],
   );
-  const resumed = join(area, 'resumed');
-  assert.equal(run(resumed, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
-  assertFailedEvidence(resumed, 'ecaz-treachery-2-advanced', 1137, true);
+  const continued = join(area, 'ecaz-cards-resumed');
+  assert.equal(run(continued, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
+  assertFailedEvidence(continued, 'ecaz-treachery-2-advanced', 1137, true);
+  const continuedGame = json<Game>(join(continued, 'failed-ecaz-treachery-2-advanced.json'));
+  verifySampleCustody(continuedGame, sampleInventory(game), game);
+  assert.deepEqual(
+    [...continuedGame.deck, ...continuedGame.discard, ...continuedGame.players.flatMap(player => player.hand)]
+      .map(card => card.id).filter(id => id.startsWith('ecaz-')).sort(),
+    ['ecaz-harass-withdraw', 'ecaz-recruits', 'ecaz-reinforcements'],
+  );
+  // Compatibility fixture for older samples: no native-power state or history
+  // existed at this setup point. Resume must preserve that absence, not retrofit it.
+  const older = structuredClone(game);
+  delete older.ecazOccupyPreview;
+  delete older.moritaniAssassinatePreview;
+  delete older.moritaniAssassinate;
+  delete older.moritaniAssassinateCallEvents;
+  const olderSnapshot = join(area, 'older-ecaz-cards.json');
+  writeFileSync(olderSnapshot, JSON.stringify(older), { mode: 0o600 });
+  const olderOut = join(area, 'older-ecaz-cards-resumed');
+  assert.equal(run(olderOut, '--resume', olderSnapshot, '--seed', '1000', '--max-actions', '1').status, 1);
+  assertFailedEvidence(olderOut, 'ecaz-treachery-2-advanced', 1137, true);
+  const olderContinued = json<Game>(join(olderOut, 'failed-ecaz-treachery-2-advanced.json'));
+  for (const field of ['ecazOccupyPreview', 'moritaniAssassinatePreview', 'moritaniAssassinate',
+    'moritaniAssassinateResume', 'moritaniAssassinateCallEvents'] as const)
+    assert.equal(olderContinued[field], undefined);
+  verifySampleCustody(olderContinued, sampleInventory(older), older);
+});
+
+void test('original Ecaz snapshots continue played state with native custody, not fresh setup', (t) => {
+  const area = temporary(t);
+  for (const [profile, players, seed] of [
+    ['ecaz-treachery', '2', '1000'], ['ecaz-roster', '4', '20260927'],
+  ] as const) {
+    const name = `${profile}-${players}-advanced`;
+    const initial = join(area, `${profile}-initial`);
+    assert.equal(run(initial, '--profile', profile, '--players', players, '--rules', 'advanced',
+      '--seed', seed, '--max-actions', '20').status, 1);
+    const snapshot = join(initial, `failed-${name}.json`);
+    const saved = json<Game>(snapshot);
+    const original = readFileSync(snapshot, 'utf8');
+    assert.equal(saved.status, 'playing');
+    assert.ok(saved.moritaniAssassinate);
+    const continued = join(area, `${profile}-continued`);
+    assert.equal(run(continued, '--resume', snapshot, '--seed', seed, '--max-actions', '1').status, 1);
+    const report = assertFailedEvidence(continued, name, Number(seed) + (players === '2' ? 137 : 83), true);
+    assert.equal(report.options.profile, profile);
+    assert.equal(report.options.players, Number(players));
+    assert.equal(report.options.resume?.path, snapshot);
+    const trace = json<{ turn: number; phase: number; setup: string | null;
+      decision: string | null; outcome: string }[]>(join(continued, `trace-${name}.json`));
+    assert.equal(trace[0].turn, saved.turn);
+    assert.equal(trace[0].phase, saved.phase);
+    assert.equal(trace[0].setup, saved.setupStage ?? null);
+    assert.equal(trace[0].decision, saved.decision?.kind ?? null);
+    assert.equal(trace[0].outcome, 'accepted');
+    const after = json<Game>(join(continued, `failed-${name}.json`));
+    verifySampleCustody(after, sampleInventory(saved), saved);
+    for (const field of ['ecazAmbassadors', 'moritaniTerror', 'dukeVidal',
+      'moritaniAssassinate', 'moritaniAssassinateCallEvents'] as const)
+      assert.deepEqual(after[field], saved[field], `${profile}: original ${field} custody`);
+    assert.equal(readFileSync(snapshot, 'utf8'), original);
+
+    for (const field of ['ecazOccupyPreview', 'moritaniAssassinatePreview', 'moritaniAssassinate'] as const) {
+      const partial = structuredClone(saved);
+      delete partial[field];
+      const path = join(area, `${profile}-missing-${field}.json`);
+      writeFileSync(path, JSON.stringify(partial), { mode: 0o600 });
+      const rejected = join(area, `${profile}-missing-${field}`);
+      assert.equal(run(rejected, '--resume', path, '--max-actions', '1').status, 1);
+      assert.equal(existsSync(rejected), false);
+    }
+  }
 });
 
 void test('Advanced Moritani assassination samples retain their preview and physical Traitor pool on resume', (t) => {
@@ -402,7 +467,7 @@ void test('expansion-roster snapshots resume their own Advanced games rather tha
     const snapshot = join(initial, `failed-${name}.json`);
     const continued = join(area, `${profile}-continued`);
     const resumed = run(continued, '--resume', snapshot, '--seed', seed);
-    assert.equal(resumed.status, 0, resumed.stderr);
+    assert.equal(resumed.status, 0, `${profile}: ${resumed.stderr}\n${resumed.stdout}`);
     const report = json<CliReport>(join(continued, 'report.json'));
     const result = json<{ results: (CliResult & { restores: number; rejected: Record<string, number> })[] }>(join(continued, 'results.json')).results[0];
     assert.equal(report.status, 'passed');

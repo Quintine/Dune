@@ -78,13 +78,20 @@ function markup(game: Game, viewer = 'p', busy = false) {
   );
 }
 
-void test('Sandmaster controls remain absent from other seats and unsupported module profiles', () => {
+void test('Sandmaster controls stay absent from other seats and unsupported overlays while the combined ix deck renders', () => {
   const game = fixture();
   assert.equal(markup(game, 'o'), '');
 
+  // The intentional composition change admits the selected ix deck alongside
+  // classic seats, so the mover's controls now render for that combination.
   const combined = fixture();
   combined.expansions = ['ix'];
-  assert.equal(markup(combined), '');
+  assert.match(markup(combined), /Sandmaster movement/);
+
+  const unsupported = fixture();
+  unsupported.expansions = ['ix'];
+  unsupported.kullPreview = true;
+  assert.equal(markup(unsupported), '');
 });
 
 void test('drafts preserve the ordinary move, accept a connected alternate and allow collecting or declining', () => {
@@ -124,7 +131,7 @@ void test('drafts preserve the ordinary move, accept a connected alternate and a
   );
 });
 
-void test('all four bot profiles add legal collection only to ordinary single-source candidates', () => {
+void test('all four bot profiles add legal collection to ordinary and admitted combined-deck candidates', () => {
   for (const difficulty of DIFFICULTIES) {
     const game = fixture();
     const view = viewGame(game, 'p');
@@ -148,12 +155,30 @@ void test('all four bot profiles add legal collection only to ordinary single-so
     assert.equal(completed.players[0].spice, game.players[0].spice + selected.length, difficulty);
     for (const key of selected) assert.equal(completed.spice[key], game.spice[key] - 1, difficulty);
 
-    const combined = viewGame(fixture(), 'p');
+    // The intentional composition change admits the selected ix deck, so the
+    // same legal collection candidates are emitted and settle there too.
+    const combinedGame = fixture();
+    combinedGame.expansions = ['ix'];
+    const combined = viewGame(combinedGame, 'p');
     combined.players.find((player) => player.id === 'p')!.bot = difficulty;
-    combined.expansions = ['ix'];
-    assert.ok(
-      botActions(combined).every((action) => !action.sandmaster),
-      `${difficulty} emitted Sandmaster in a gated module combination`,
+    const combinedCandidates = botActions(combined).filter(
+      (action) => action.type === 'move' && action.sandmaster,
     );
+    assert.ok(
+      combinedCandidates.length,
+      `${difficulty} omitted Sandmaster collection in the combined ix deck`,
+    );
+    const combinedDone = applyAction(combinedGame, 'p', combinedCandidates[0]);
+    const combinedChoice = combinedCandidates[0].sandmaster;
+    assert.ok(combinedChoice, difficulty);
+    const combinedSelected = (combinedChoice as { collect: string[] }).collect;
+    assert.equal(combinedDone.players[0].moved, 1, difficulty);
+    assert.equal(
+      combinedDone.players[0].spice,
+      combinedGame.players[0].spice + combinedSelected.length,
+      difficulty,
+    );
+    for (const key of combinedSelected)
+      assert.equal(combinedDone.spice[key], combinedGame.spice[key] - 1, difficulty);
   }
 });

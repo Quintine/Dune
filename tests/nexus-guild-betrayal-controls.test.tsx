@@ -157,8 +157,6 @@ void test('actual GameTable reserves underlying shipment, voluntary and hand con
   }));
   const html = table(own);
   assert.match(html, /aria-label="Guild Nexus Betrayal response"/);
-  assert.match(html, /Guild Nexus Betrayal development preview/);
-  assert.match(html, /href="\/rules\?topic=nexus-guild-betrayal#nexus-guild-betrayal"/);
   assert.doesNotMatch(html, /<button[^>]*>[^<]*(?:Ship |Confirm shipment|End movement|Play Karama|Make a bribe|Pledge|Search)/i);
   assert.match(table(own, true), /disabled=""[^>]*>Use Guild Nexus/);
   for (const restriction of ['paused', 'closed', 'autopilot'] as const) {

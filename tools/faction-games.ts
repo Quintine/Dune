@@ -814,6 +814,19 @@ const assassinationScenario = (scenario: Scenario) => scenario.rules === 'advanc
   scenario.roster.includes('moritani') &&
   (mixedE3NexusSampleProfile(scenario.profile) || pairedE3NexusSampleProfile(scenario.profile) || e3NexusSampleProfile(scenario.profile) || scenario.profile === 'moritani-assassinate' || discoveryProfile(scenario.profile) || nativeStrongholdProfile(scenario.profile) || nativeTechProfile(scenario.profile) || skillProfile(scenario.profile));
 
+function originalNativeFactionStateMatches(game: Game, scenario: Scenario) {
+  const noAssassination = game.moritaniAssassinatePreview === undefined &&
+    game.moritaniAssassinate === undefined && game.moritaniAssassinateResume === undefined &&
+    game.moritaniAssassinateCallEvents === undefined;
+  // Older fixed samples had neither native power. Preserve that saved absence;
+  // current setup supplies Occupy plus Advanced Moritani's original ability state.
+  return (game.ecazOccupyPreview === undefined && noAssassination) ||
+    (game.ecazOccupyPreview === true &&
+      (scenario.rules === 'advanced' && scenario.roster.includes('moritani')
+        ? game.moritaniAssassinatePreview === true && !!game.moritaniAssassinate
+        : noAssassination));
+}
+
 type TraceEntry = {
   attempt: number;
   accepted: number;
@@ -1102,12 +1115,14 @@ function resumedGame(path: string) {
       (homeworldTechSampleProfile(candidate.profile) || discoveryTechProfile(candidate.profile) || candidate.profile === 'skills-tech' || candidate.profile === 'skills-stronghold-tech' || nativeTechProfile(candidate.profile) || nexusTechProfile(candidate.profile)) === !!game.techTokens &&
       (homeworldStrongholdSampleProfile(candidate.profile) || discoveryStrongholdProfile(candidate.profile) || nativeStrongholdProfile(candidate.profile) || strongholdSkillProfile(candidate.profile) || nexusStrongholdProfile(candidate.profile)) === !!game.strongholdCards &&
       (candidate.profile === 'ecaz-treachery' || candidate.ecazTreachery === true) === !!game.ecazTreachery &&
-      (originalNativeNexusSampleProfile(candidate.profile)
-        ? !!game.moritaniAssassinatePreview === !!game.moritaniAssassinate
-        : assassinationScenario(candidate) === !!game.moritaniAssassinatePreview &&
-          assassinationScenario(candidate) === !!game.moritaniAssassinate) &&
-      (originalNativeNexusSampleProfile(candidate.profile) ||
-        (candidate.profile === 'ecaz-occupy' || ((mixedE3NexusSampleProfile(candidate.profile) || pairedE3NexusSampleProfile(candidate.profile) || e3NexusSampleProfile(candidate.profile) || homeworldModuleSampleProfile(candidate.profile) || nativeDiscoveryNexusSkillsProfile(candidate.profile) || nativeDiscoverySkillsProfile(candidate.profile) || nativeTechProfile(candidate.profile) || discoveryProfile(candidate.profile)) && candidate.roster.includes('ecaz'))) === !!game.ecazOccupyPreview) &&
+      (['ecaz', 'combined', 'ecaz-roster', 'ecaz-treachery'].includes(candidate.profile)
+        ? originalNativeFactionStateMatches(game, candidate)
+        : (originalNativeNexusSampleProfile(candidate.profile)
+          ? !!game.moritaniAssassinatePreview === !!game.moritaniAssassinate
+          : assassinationScenario(candidate) === !!game.moritaniAssassinatePreview &&
+            assassinationScenario(candidate) === !!game.moritaniAssassinate) &&
+          (originalNativeNexusSampleProfile(candidate.profile) ||
+            (candidate.profile === 'ecaz-occupy' || ((mixedE3NexusSampleProfile(candidate.profile) || pairedE3NexusSampleProfile(candidate.profile) || e3NexusSampleProfile(candidate.profile) || homeworldModuleSampleProfile(candidate.profile) || nativeDiscoveryNexusSkillsProfile(candidate.profile) || nativeDiscoverySkillsProfile(candidate.profile) || nativeTechProfile(candidate.profile) || discoveryProfile(candidate.profile)) && candidate.roster.includes('ecaz'))) === !!game.ecazOccupyPreview)) &&
       candidate.rules === (game.advanced ? 'advanced' : 'basic') &&
       JSON.stringify(candidate.expansions) ===
         JSON.stringify(game.expansions) &&

@@ -1,10 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { botArrivalBlock } from '../game/bot-arrival';
-import { botActions } from '../game/bots';
 import { applyAction, viewGame, type Action, type Game } from '../game/engine';
-import { createHomeworldCustody } from '../game/homeworld-custody';
-import { homeworldContext } from '../game/homeworld-game';
+import { botActions } from '../game/bots';
+import { botArrivalBlock } from '../game/bot-arrival';
 import { createTerrorState, placeTerror } from '../game/moritani-terror';
 import {
   arrivalMove,
@@ -49,8 +47,9 @@ void test('all four profiles avoid unsupported paired Ambassador and Terror entr
 });
 
 void test('Homeworld-sourced AI shipments avoid unsupported paired entry reactions', () => {
-  const game = movementArrivalGame();
-  game.homeworlds = { custody: createHomeworldCustody(homeworldContext(game)) };
+  // Homeworlds now compose with this faction roster through the fresh
+  // occupation audit, so the custody comes from real setup instead of a graft.
+  const game = movementArrivalGame('tleilaxu', 'both', true);
   arrivalPlayer(game, 'tleilaxu').shipped = false;
   const action: Action = {
     type: 'ship',

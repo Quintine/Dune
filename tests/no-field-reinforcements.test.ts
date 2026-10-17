@@ -176,11 +176,16 @@ void test('An Ecaz card user cannot fund Reinforcements from its Richese ally af
   assertConserved(fixture, before);
 });
 
-void test('Original Advanced native inventory without the selected Occupy profile still cannot use Reinforcements', () => {
+void test('Original Advanced native inventory without the selected Occupy profile now uses Reinforcements', () => {
+  // The intentional composition change admits that original inventory on its
+  // own, so Reinforcements no longer requires the selected Occupy label.
   const fixture = noFieldReinforcementsFixture({ marker: 3, richeseReserves: 6, omitPreview: true });
   const before = structuredClone(fixture.game);
-  assert.ok(viewGame(before, fixture.owner).battle!.reinforcements!.blocked);
-  assert.throws(() => applyAction(before, fixture.owner, fixture.plans.reinforcements), RuleError);
+  const preview = viewGame(before, fixture.owner).battle!.reinforcements!;
+  assert.equal(preview.blocked, null);
+  assert.equal(preview.normal, 3);
+  const sealed = applyAction(before, fixture.owner, fixture.plans.reinforcements);
+  assert.deepEqual(Object.keys(sealed.battle!.plans!), [fixture.owner]);
   assert.deepEqual(before, fixture.game);
   assertConserved(fixture, before);
 });

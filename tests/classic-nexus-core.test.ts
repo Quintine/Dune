@@ -2,11 +2,79 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { viewGame } from '../game/engine';
 import { createIndependentHarkonnenCall, createIndependentIxianPurchase,
-  reactionAction, reactionPlayer } from './fixture-classic-independent-nexus-reactions';
+  drawClassicNexusReaction, reactionAction, reactionPlayer } from './fixture-classic-independent-nexus-reactions';
 import { advanceClassicIndependentNexus } from './fixture-classic-independent-nexus';
 import { classicDiscoveryNexusClean } from './fixture-discovery-classic-nexus';
 import { createClassicNexusGuildPayment, createClassicNexusCunning,
   submitClassicNexusSecondShipment } from './fixture-classic-nexus-core';
+import { TERRITORIES } from '../game/board';
+import { nativeShipmentSources } from '../game/homeworld-options';
+
+function smugglerFeeGame(homeworlds: boolean) {
+  const fixture = drawClassicNexusReaction('harkonnen', 'atreides', {
+    advanced: true, skills: true, independent: false, homeworlds,
+    roster: ['atreides', 'guild', 'harkonnen', 'emperor'],
+    training: { atreides: 'smuggler', guild: 'mentat', harkonnen: 'bureaucrat', emperor: 'sandmaster' },
+  });
+  let game = fixture.game;
+  const cards = game.nexusCards!.cards!, index = cards.deck.indexOf('guild');
+  assert.ok(index >= 0);
+  cards.deck.unshift(cards.deck.splice(index, 1)[0]);
+  game = reactionAction(game, 'emperor', { type: 'nexusCardChoice', turn: game.turn,
+    card: cards.hands.emperor, choice: 'draw', ownRedraws: 0 });
+  game = advanceClassicIndependentNexus(game, state => state.phase === 5 &&
+    state.active === 'atreides' && classicDiscoveryNexusClean(state));
+  const destination = TERRITORIES.find(place => place.type === 'stronghold' &&
+    !place.sectors.includes(game.storm) && game.players.every(player =>
+      Object.keys(player.forces).every(key => !key.startsWith(`${place.id}:`))));
+  assert.ok(destination);
+  const before = structuredClone(game), key = `${destination.id}:${destination.sectors[0]}`;
+  const sources = homeworlds ? nativeShipmentSources(viewGame(game, 'atreides'), 2, 0) : undefined;
+  if (homeworlds) assert.ok(sources);
+  game = reactionAction(game, 'atreides', { type: 'ship', territory: destination.id,
+    sector: destination.sectors[0], amount: 2, elite: 0, allyPayment: 0, smuggler: true,
+    ...(sources ? { homeworldSources: sources } : {}) });
+  game = advanceClassicIndependentNexus(game, state => !!state.pendingGuildBetrayal &&
+    classicDiscoveryNexusClean(state));
+  return { game, before, key };
+}
+
+void test('ordinary Smuggler ships two physical counters for one spice through the distinct Guild holder claim', () => {
+  const f = smugglerFeeGame(false), before = reactionPlayer(f.before, 'atreides');
+  assert.equal(f.game.pendingGuildBetrayal!.invoice.price, 1);
+  assert.equal(reactionPlayer(f.game, 'atreides').reserves, before.reserves);
+  assert.equal(reactionPlayer(f.game, 'atreides').forces[f.key] ?? 0, 0);
+  const game = reactionAction(f.game, 'emperor', { type: 'guildBetrayalUse',
+    event: f.game.pendingGuildBetrayal!.invoice.event });
+  assert.equal(reactionPlayer(game, 'atreides').spice, before.spice - 1);
+  assert.equal(reactionPlayer(game, 'atreides').reserves, before.reserves - 2);
+  assert.equal(reactionPlayer(game, 'atreides').forces[f.key], 2);
+  assert.equal(reactionPlayer(game, 'emperor').spice, reactionPlayer(f.before, 'emperor').spice + 1);
+  assert.equal(reactionPlayer(game, 'guild').spice, reactionPlayer(f.before, 'guild').spice);
+  assert.deepEqual(game.nexusCards!.cards!.discard, ['guild']);
+});
+
+void test('Homeworld Smuggler withdraws both Caladan counters only after Pass and pays the original discounted Guild invoice', () => {
+  const f = smugglerFeeGame(true), before = reactionPlayer(f.before, 'atreides');
+  const caladan = (game: typeof f.game) => viewGame(game, 'atreides').homeworlds!.worlds!
+    .find(world => world.id === 'homeworld:atreides')!.forces.atreides;
+  assert.deepEqual(caladan(f.game), { normal: 10, elite: 0 });
+  assert.equal(f.game.pendingGuildBetrayal!.invoice.price, 1);
+  let game = reactionAction(f.game, 'emperor', { type: 'guildBetrayalPass',
+    event: f.game.pendingGuildBetrayal!.invoice.event });
+  assert.deepEqual(caladan(game), { normal: 10, elite: 0 });
+  assert.equal(reactionPlayer(game, 'atreides').forces[f.key] ?? 0, 0);
+  game = reactionAction(game, 'atreides', { type: 'guildBetrayalPass',
+    event: game.pendingGuildBetrayal!.invoice.event });
+  assert.deepEqual(caladan(game), { normal: 8, elite: 0 });
+  assert.equal(reactionPlayer(game, 'atreides').reserves, before.reserves - 2);
+  assert.equal(reactionPlayer(game, 'atreides').forces[f.key], 2);
+  assert.equal(reactionPlayer(game, 'atreides').spice, before.spice - 1);
+  assert.equal(reactionPlayer(game, 'guild').spice, reactionPlayer(f.before, 'guild').spice + 1);
+  assert.equal(reactionPlayer(game, 'emperor').spice, reactionPlayer(f.before, 'emperor').spice);
+  assert.equal(game.nexusCards!.cards!.hands.emperor, 'guild');
+  assert.deepEqual(game.nexusCards!.cards!.discard, []);
+});
 
 void test('ordinary base33 all14 supports the native declared-Traitor cancellation and real Mentat draw', () => {
   const f = createIndependentHarkonnenCall({ independent: false, advanced: true, skills: true });

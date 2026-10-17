@@ -261,12 +261,18 @@ void test('Advanced Moritani after-loss assassination kills the actual unused tr
   const reserve = [...pending.traitorReserve!], held = [...player(pending, f.owner).traitors];
   const quote = viewGame(pending, f.owner).moritaniAssassinate!.pending!.cards.find(c => c.card === target.id)!;
   assert.equal(quote.bounty, 3);
-  const killed = step(pending, { actor: f.owner, action });
+  let killed = step(pending, { actor: f.owner, action });
   assert.equal(player(killed, f.opponent).leaders.find(l => l.id === target.id)!.dead, true);
   assert.equal(player(killed, f.opponent).leaders.find(l => l.id === target.id)!.deaths, target.deaths + 1);
   assert.equal(player(killed, f.owner).spice, player(pending, f.owner).spice + 3);
   assert.equal(killed.leaderSkills!.assignments.some(a => a.leader === target.id), false);
   assert.equal(killed.leaderSkills!.deck.filter(s => s === originalSkill).length, 1);
+  // The originally dealt hand may hold a Karama, so the after-loss window legally
+  // offers the native special denial before the winner cleanup; decline it through
+  // the real current decision exactly like the printed opportunity.
+  if (killed.decision?.kind === 'moritaniSpecialKarama')
+    killed = step(killed, { actor: killed.decision.player,
+      action: { type: 'decision', event: killed.decision.event, decline: true } });
   assert.equal(killed.decision?.kind, 'battleCards'); assert.equal(killed.decision!.player, f.opponent);
   assert.deepEqual(killed.techTokens, pending.techTokens);
   let done = finish(step(killed, { actor: f.opponent, action: { type: 'decision', discard: [battle.enemyCard!] } }));
@@ -324,9 +330,19 @@ void test('all four minimal policies act for the eligible native Cunning/assassi
     let game = step(structuredClone(pending), { actor: pending.decision!.player, action });
     assert.equal(player(game, moritani.opponent).leaders.find(l => l.id === moritani.target)!.dead, true);
     assert.equal(player(game, moritani.owner).spice, player(pending, moritani.owner).spice + 3);
-    assert.equal(game.decision?.kind, 'battleCards');
-    const cleanupActor = game.decision!.player, cleanup = policy(game, cleanupActor, difficulty)[0]; assert.ok(cleanup);
-    game = finish(step(game, { actor: cleanupActor, action: cleanup }));
+    // A dealt Karama may open the native denial before cleanup. Follow the
+    // actual owned policy choice without pinning an incidental decline shape.
+    if (game.decision?.kind === 'moritaniSpecialKarama') {
+      const karamaActor = game.decision.player;
+      const karama = policy(game, karamaActor, difficulty)[0]; assert.ok(karama);
+      game = step(game, { actor: karamaActor, action: karama });
+    }
+    if (game.decision?.kind === 'battleCards') {
+      const cleanupActor = game.decision.player, cleanup = policy(game, cleanupActor, difficulty)[0];
+      assert.ok(cleanup);
+      game = step(game, { actor: cleanupActor, action: cleanup });
+    }
+    game = finish(game);
     assert.equal(game.battle, null); assert.equal(player(game, moritani.owner).hand.some(c => c.id === battle.card), false);
     game = advance(game, g => g.decision?.kind === 'moritaniPlacement');
     assert.equal(player(game, moritani.owner).traitors.includes(moritani.target!), false);

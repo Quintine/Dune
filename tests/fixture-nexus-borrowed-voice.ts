@@ -60,7 +60,7 @@ export function nexusBorrowedVoicePlayer(game: Game, id: string): Player {
   return player;
 }
 export const nexusBorrowedVoiceClean = (game: Game): boolean =>
-  !game.phaseOpening && !game.response && !game.decision;
+  !game.phaseOpening && !game.response && !game.decision && !game.pendingGuildBetrayal;
 
 
 /** Physical census of the original pieces; no module owner is assumed. */
@@ -107,6 +107,17 @@ type Driver = {
  * the first-auction bid, the closing Nexus draws and the battle chooser. */
 function nextStep(game: Game, driver: Driver): NexusBorrowedVoiceStep | null {
   if (game.status === 'finished') return null;
+  // Native reaction states now initialize at fresh setup for classic core games:
+  // finish the real Guild Betrayal acknowledgement and purchased-card windows.
+  const betrayal = game.pendingGuildBetrayal;
+  if (betrayal) {
+    const seat = betrayal.required.find(id => !betrayal.passed.includes(id));
+    assert.ok(seat, 'The pending Guild Betrayal window must retain an unfinished responder');
+    return { actor: seat, action: { type: 'guildBetrayalPass', event: betrayal.invoice.event } };
+  }
+  if (game.decision?.kind === 'nexusIxianReplacement')
+    return { actor: game.decision.player,
+      action: { type: 'nexusIxianReplacementPass', event: game.decision.event } };
   if (!nexusBorrowedVoiceClean(game)) return nextStrongholdFactionsNativeStep(game);
   // The closing Nexus card choice is private; the fixture draws the staged physical card.
   if (nexusBorrowedVoiceClean(game) && game.nexusCards?.phase?.stage === 'drawing') {

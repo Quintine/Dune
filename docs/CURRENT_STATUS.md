@@ -29,17 +29,25 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
-**Non-AI checklist closure — 18 October.** A full `game/reference.ts`
-scan confirms no topic carries a Planned/Missing/Not-started development
-stage and no Partial detail names an unimplemented non-AI feature. The only
-remaining Planned area is table-discussion AI negotiation, explicitly deferred
-until after non-AI completion per the AI plan. All fourteen skill bands have
-connected controls; the combined-expansion envelopes (classic core + base33/
-independent36 + Nexus12 + optional14 + Tech3+ + Strongholds2+ + base33 Worlds)
-were progressively composed across this session's checkpoints. Remaining
-Partial areas describe bounded contracts awaiting full-mode acceptance, not
-absent functionality. Rules-first prototype delivery is complete; interaction
-refinement, comprehensive review and deferred assurance follow.
+**Integration review — 18 October.** The earlier non-AI checklist closure
+was unsupported: a topic marked Prototyped/Partial does not prove every
+rules-permitted combination works. Independent36 World/Nexus and other named
+interaction boundaries remain open. Rules delivery is not complete, and the
+deferred comprehensive multiplayer/privacy/custody gate has not been opened.
+
+The regression repair now admits original Ecaz CLI snapshots with their actual
+native Occupy/Advanced assassination state. Resume preserves the saved scenario
+and continues play; older snapshots with both powers absent retain that absence.
+The focused Ecaz cases pass, including complete expansion-roster continuation.
+Independent bounded review found no rule-contract blocker in the other repaired
+fixtures. Banker controls retain their rules guidance, and all four legal policies
+must actually fund a positive commitment in both original and combined-deck play.
+Original city Collection and the selected deck's phase-opening window remain
+separate from the battle payment. Frozen16-file **173/173**, types/lint and a direct original Ecaz CLI
+resume-to-completion smoke (178 accepted actions) pass. Bounded source review
+found no remaining blocker; no worker remains assigned to these files. The prior
+recovery902/902 and HTTP55/55 are bounded historical evidence, not complete rules,
+multiplayer or deployed acceptance. Comprehensive assurance remains deferred.
 
 **Original World Nexus core — 18 October. Prototyped / Partial.**
 Plain base33 World/Nexus lacked native reaction states; one public capability

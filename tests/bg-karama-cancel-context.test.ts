@@ -260,7 +260,10 @@ void test('paid auction income cancellation survives a real Harkonnen exchange a
     auction = structuredClone(g.auction),
     ids = inventory(g);
   g = beginCancel(g, f);
-  const stamped = structuredClone(g.pendingKarama);
+  // The paid auction income response now stamps optional Bureaucrat fields
+  // whose absent values are JSON-invisible; the Box suspension serializes, so
+  // compare the pending acknowledgement through the same serialization.
+  const stamped = JSON.parse(JSON.stringify(g.pendingKarama));
   g = action(g, 'h', {
     type: 'card',
     mode: 'special',
@@ -270,7 +273,7 @@ void test('paid auction income cancellation survives a real Harkonnen exchange a
   });
   assert.equal(g.decision?.kind, 'handExchange');
   assert.equal(g.pendingExchange?.response?.kind, 'worthlessKarama');
-  assert.deepEqual(g.pendingKarama, stamped);
+  assert.deepEqual(JSON.parse(JSON.stringify(g.pendingKarama)), stamped);
   const sampled = structuredClone(g.players.map((p) => p.hand));
   g = finishBox(paidBox(g, f));
   assert.deepEqual(g.pendingKarama, stamped);

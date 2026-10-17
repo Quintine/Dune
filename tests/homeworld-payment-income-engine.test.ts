@@ -181,7 +181,9 @@ function settle(g: Game, responder: string, karama: string, cancel: boolean) {
       ? { type: 'card', mode: 'cancel', card: karama }
       : { type: 'passResponse' },
   );
-  assert.deepEqual(g, original);
+  // The auction income response now stamps optional Bureaucrat fields whose
+  // absent values are JSON-invisible; compare the serialized forms.
+  assert.deepEqual(reload(g), original);
   inventory(done);
   for (
     let n = 0;

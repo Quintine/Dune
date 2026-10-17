@@ -109,10 +109,14 @@ void test('Bureaucrat eligibility stays recipient-specific and a saved payment o
   });
   assert.equal(options(settled, 'e').incoming, 3);
   assert.equal(options(settled, 'p').available, 25);
-  const unsupported = structuredClone(g);
-  unsupported.expansions.push('ix');
-  assert.throws(() => options(unsupported, 'p'));
-  reject(unsupported, 'p', { type: 'bribe', target: 'e', amount: 5 });
+  // The intentional composition change admits the selected ix deck alongside
+  // Skills, so the same payment stays available and offers its decision there.
+  const combined = structuredClone(g);
+  combined.expansions.push('ix');
+  const combinedQuote = options(combined, 'p');
+  assert.equal(combinedQuote.blocked, null);
+  const combinedPaid = applyAction(combined, 'p', bribeAction(combinedQuote, 'e', 5)!);
+  assert.equal(combinedPaid.decision?.kind, 'bureaucratPayment');
 });
 
 void test('bribe controls render recipient choices, private escrow and disabled unselected or busy payment', () => {

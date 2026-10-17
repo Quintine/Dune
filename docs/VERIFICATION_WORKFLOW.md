@@ -172,7 +172,13 @@ fixed four-seat samples. Their seed offsets are 68–77, 78–87 and 88–97.
 independent three-card Treachery variant instead of Nexus Cards. Basic and
 Advanced seed offsets are 136–145; default/all keeps its original six games.
 The runner counts all three physical cards and resume requires the variant
-marker and exact roster. This is still a gated development profile.
+marker and exact roster. Original `ecaz-treachery` and `ecaz-roster` snapshots
+retain their native Ecaz Occupy and, in Advanced, Moritani assassination state
+under their own scenario names. Older snapshots with both native powers absent
+remain resumable without adding them or inventing ability history; partial native
+state and unrelated module overlays are not admitted. Resume continues the saved
+turn, phase and custody rather than running setup again. These are still gated
+development profiles.
 `moritani-assassinate` runs only Advanced with Moritani followed by Atreides,
 Emperor, Fremen, Guild and Bene Gesserit as seats are added. Harkonnen and
 other optional modules remain outside this explicit development preview.

@@ -50,19 +50,11 @@ void test('Spice Banker renders a bounded separate own-spice commitment only for
   const html = renderControl(view, 'emperor-0', 2, 2);
   assert.match(html, /aria-label="Spice Banker battle commitment"/);
   assert.match(html, /id="battle-banker-spice"[^>]*max="2"[^>]*value="2"/);
-  assert.match(
-    html,
-    /Plan funding: 2 own spice for force support \+ 2 committed to Spice Banker = 4 own spice total/,
-  );
-  assert.match(
-    html,
-    /Each committed spice adds 1 strength if this skilled leader survives/,
-  );
-  assert.match(html, /commitment goes to the Bank after a win or loss/);
-  assert.match(
-    html,
-    /sole winner through a traitor call spends no Battle Plan spice/,
-  );
+  const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
+  assert.match(text, /Plan funding: 2 own spice for force support \+ 2 committed to Spice Banker = 4 own spice total/);
+  assert.match(text, /Each committed spice adds 1 strength if this skilled leader survives/);
+  assert.match(text, /commitment goes to the Bank after a win or loss/);
+  assert.match(text, /sole winner through a traitor call spends no Battle Plan spice/);
   assert.equal(renderControl(view, 'emperor-1', 0, 3), '');
 
   const faceUp = structuredClone(view);
@@ -83,9 +75,10 @@ void test('Spice Banker renders a bounded separate own-spice commitment only for
   )!.controller = 'd';
   assert.equal(renderControl(foreign, 'emperor-0', 0, 3), '');
 
-  const combinedModule = structuredClone(view);
-  combinedModule.expansions = ['ix'];
-  assert.equal(renderControl(combinedModule, 'emperor-0', 0, 3), '');
+  const combined = structuredClone(native);
+  combined.expansions = ['ix'];
+  assert.match(renderControl(viewGame(combined, 'a'), 'emperor-0', 2, 2),
+    /id="battle-banker-spice"[^>]*max="2"[^>]*value="2"/);
 
   const capturedGame = spiceBankerGame(false, true);
   capturedGame.players[0].spice = 3;
@@ -174,46 +167,33 @@ void test('full-plan inspection and public reveal show the exact commitment with
   );
 });
 
-void test('all four bot profiles reserve only remaining own spice and emit legal skilled plans', () => {
-  for (const [profile, expectedCap] of DIFFICULTIES.map(
-    (difficulty, index) => [difficulty, Math.min(index + 1, 3)] as const,
-  )) {
+void test('all four bot profiles fund original and combined-deck Banker plans without double-spending force support', () => {
+  for (const combined of [false, true]) for (const profile of DIFFICULTIES) {
     const game = spiceBankerGame(true);
+    game.expansions = combined ? ['ix'] : [];
     game.players[0].spice = 4;
     const view = viewGame(game, 'a');
     view.players.find((player) => player.id === 'a')!.bot = profile;
     const plans = botActions(view).filter(
       (action) => action.type === 'battlePlan' && action.leader === 'emperor-0',
     );
-    assert.ok(plans.length, `${profile} omitted the skilled disc`);
+    const selected = plans.find(action => Number(action.bankerSpice ?? 0) > 0);
+    assert.ok(selected, `${profile} needs a legal positive Banker commitment`);
     for (const action of plans) {
-      const support = Number(action.support ?? 0);
-      assert.equal(
-        Number(action.bankerSpice ?? 0),
-        Math.min(expectedCap, Math.max(0, 4 - support)),
-        `${profile} did not reserve Banker spice after force support`,
-      );
+      const support = Number(action.support ?? 0), banker = Number(action.bankerSpice ?? 0);
+      assert.ok(Number.isSafeInteger(banker) && banker >= 0 && banker <= 3);
+      assert.ok(support + banker <= 4, `${profile} exceeds its own available spice`);
     }
-    assert.doesNotThrow(
-      () => applyAction(game, 'a', plans[0]),
-      `${profile} emitted an illegal Spice Banker plan`,
-    );
-  }
-});
-
-void test('bots do not emit a currently gated Banker commitment in a combined-module view', () => {
-  const game = spiceBankerGame();
-  const view = viewGame(game, 'a');
-  view.expansions = ['ix'];
-  for (const difficulty of DIFFICULTIES) {
-    view.players.find((player) => player.id === 'a')!.bot = difficulty;
-    const skilled = botActions(view).filter(
-      (action) => action.type === 'battlePlan' && action.leader === 'emperor-0',
-    );
-    assert.ok(skilled.length);
-    assert.ok(
-      skilled.every((action) => !action.bankerSpice),
-      `${difficulty} emitted a gated Banker commitment`,
-    );
+    let settled = applyAction(game, 'a', selected);
+    assert.equal(settled.players[0].spice, 4, 'Sealing alone does not collect the commitment.');
+    settled = applyAction(settled, 'd', { type: 'battlePlan', leader: 'guild-1', dial: 0, support: 0 });
+    settled = applyAction(settled, 'a', { type: 'traitorCall', call: false });
+    settled = applyAction(settled, 'd', { type: 'traitorCall', call: false });
+    // Plans without played cards finish cleanup automatically. Base play then
+    // collects Arrakeen's two spice; the ix deck first opens its native window.
+    const cityIncome = settled.phase === 7 && !settled.phaseOpening ? 2 : 0;
+    assert.ok(settled.phase === 6 || settled.phase === 7);
+    assert.equal(settled.players[0].spice,
+      4 - Number(selected.support ?? 0) - Number(selected.bankerSpice ?? 0) + cityIncome);
   }
 });

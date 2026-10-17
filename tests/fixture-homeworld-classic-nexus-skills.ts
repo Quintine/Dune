@@ -44,7 +44,8 @@ export type ClassicHomeworldNexusSkillsFixture = ClassicHomeworldSkillsSetup & {
 };
 export const classicHomeworldNexusSkillsPlayer = classicHomeworldSkillsPlayer;
 export const classicHomeworldNexusSkillsClean = (game: Game) =>
-  !game.phaseOpening && !game.response && !game.decision && !game.pendingTreacheryDiscard;
+  !game.phaseOpening && !game.response && !game.decision && !game.pendingTreacheryDiscard &&
+  !game.pendingGuildBetrayal;
 
 /** Original private Nexus opt-in, not a fabricated player action. The returned
  * lobby is also usable by the integration owner's original private QA route. */
@@ -91,6 +92,16 @@ export function assertClassicHomeworldNexusSkillsInventory(game: Game): void {
 }
 export function nextClassicHomeworldNexusSkillsStep(game: Game): ClassicHomeworldNexusSkillsStep | null {
   if (!game.phaseOpening && !game.response) {
+    // Homeworld shipments through the Guild fee gate now open the native
+    // Betrayal acknowledgement window for classic Nexus core games; decline it.
+    const betrayal = game.pendingGuildBetrayal;
+    if (betrayal) {
+      const actor = betrayal.required.find(id => !betrayal.passed.includes(id))!;
+      return {
+        actor,
+        action: { type: 'guildBetrayalPass', event: betrayal.invoice.event },
+      };
+    }
     const decision = game.decision;
     if (decision?.kind === 'guildShipment') return { actor: decision.player, action: { type: 'decision', allow: true } };
     if (decision?.kind === 'homeworldShipmentGuild') return { actor: decision.player, action: { type: 'decision', event: decision.event, allow: true } };

@@ -137,12 +137,14 @@ void test('genuine ready Ix lobbies initialize the supported native module profi
       'The supported native module profile initializes.');
     assert.deepEqual(g, before, 'The authoritative lobby is never mutated.');
   }
-  // A combined CHOAM expansion still rejects.
+  // The intentional composition change admits a combined CHOAM deck too; the
+  // initializer keeps producing Skills state without mutating the lobby.
   const combined = lobby();
   combined.expansions.push('choam');
   const before = structuredClone(combined);
-  assert.throws(() => initializeLeaderSkillsGameForAudit(combined));
-  assert.deepEqual(combined, before);
+  assert.ok(initializeLeaderSkillsGameForAudit(combined).leaderSkills,
+    'The combined selected-deck profile initializes.');
+  assert.deepEqual(combined, before, 'The authoritative lobby is never mutated.');
 });
 
 void test('Planetologist gives selected suboids range two independently and cyborg range three through saved native permission', () => {
