@@ -10233,6 +10233,8 @@ function guildBetrayalParentSignature(g: Game, continuation: GuildBetrayalContin
     pendingGuildTransport: g.pendingGuildTransport,
     ...(cunning ? { nexusGuildCunning: cunning } : {}),
     ...(richese ? { nexusRichese: richese } : {}),
+    ...(g.techTokens ? { techTokens: g.techTokens } : {}),
+    ...(g.strongholdCards ? { strongholdCards: g.strongholdCards } : {}),
   });
 }
 function guildBetrayalCleanParent(g: Game): void {
@@ -10738,7 +10740,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const homeworlds = homeworldLeaderSkillsProfile(state);
   const independent = independentTreacheryLeaderSkillsProfile(state);
   if (state.ecazTreachery) {
-    requireRule(independent, 'Independent Skills cards require supported selected decks with original World/phase modules, or classic Nexus without other overlays; Discovery and unrelated preview contexts remain gated.');
+    requireRule(independent, 'Independent Skills cards require supported selected decks with original World/phase modules, or classic Nexus with original phase modules; Discovery and unrelated preview contexts remain gated.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -10800,6 +10802,7 @@ function ecazHomeworldProfile(g: Game): boolean {
 }
 /** Independent cards compose original phase modules, not unrelated previews. */
 function independentCardModulesProfile(g: Game): boolean {
+  if ((g.techTokens || g.strongholdCards) && classicIndependentNexusProfile(g)) return true;
   if ((g.techTokens || g.strongholdCards) && g.leaderSkills && !g.sandtrout &&
       independentTreacheryLeaderSkillsProfile(g)) return true;
   if (!g.ecazTreachery || (!g.techTokens && !g.strongholdCards) || !independentCardModuleRoster(g) ||

@@ -2,6 +2,17 @@
 
 Source audit, 10 September 2026. This is a rules contract, not a runtime completion claim. The [common Nexus lifecycle](NEXUS_CARD_RULES.md) and existing expansion release gates still apply. The pending reaction-privacy question remains unresolved; this audit does not authorize a Betrayal reaction policy.
 
+## Earned phase cards and original replacement — 18 October 2026
+
+Fresh classic core now retains Tech3+ and Advanced Strongholds2+ with
+selected33/36, optionally14. Actual all14 base33 Carthag controls reveal the
+native matching call, spend the genuinely drawn Nexus, preserve physical
+Shield poison survival, finish original card/retention/capture/inspection
+priority and draw one private actual replacement at Mentat. The separate
+held module card is never added to the Treachery census or transferred early.
+Harass return and native winner token transfer create no free-Revival income.
+[Exact bounded proof](NEXUS_CARD_RULES.md#classic-nexus-original-phase-modules--18-october-2026).
+
 ## Original base33 core without card dependency — 18 October 2026
 
 Fresh classic2–6 Basic/Advanced Nexus now initializes the original native

@@ -30,13 +30,13 @@ type ClassicNexusProfile = Partial<FactionModuleProfile> & Pick<FactionModulePro
   sandtrout?: unknown; moritaniAssassinatePreview?: unknown;
 };
 
-/** Classic Nexus12 with selected base33/independent36 and optional all14 Skills.
+/** Classic Nexus12 with selected base33/independent36, optional all14 and original phase modules.
  * Native Guild/Harkonnen/Ixian effect stamps are not additional selected modules. */
 export function classicNexusCoreProfile(game: ClassicNexusProfile): boolean {
   const players = game.players;
   if (typeof game.advanced !== 'boolean' || !game.nexusCards ||
-    game.expansions.length !== 0 || !players || players.length < 2 || players.length > 6 ||
-    game.homeworlds || game.techTokens || game.strongholdCards || game.sandtrout ||
+    game.expansions.length !== 0 || !players || players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
+    game.homeworlds || (game.strongholdCards && !game.advanced) || game.sandtrout ||
     game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
     game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.richeseBetrayalPreview ||

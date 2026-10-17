@@ -14,6 +14,8 @@ export type ClassicIndependentNexusOptions = {
   skills?: boolean;
   /** False exercises the original base33 without selecting the independent variant. */
   independent?: boolean;
+  tech?: boolean;
+  strongholds?: boolean;
   roster?: readonly FactionId[];
   training?: Partial<Record<FactionId, LeaderSkillId>>;
   /** Only original, still-undealt starting Treachery slots are ordered. */
@@ -36,6 +38,8 @@ export function createClassicIndependentNexusFixture(options: ClassicIndependent
   };
   for (const option of [...(independent ? ['ecazTreachery'] : []), 'nexusCards', ...(options.skills ? ['leaderSkills'] : [])])
     act(game.host, { type: 'moduleOption', module: option, enabled: true });
+  if (options.tech) act(game.host, { type: 'techTokens', enabled: true });
+  if (options.strongholds) act(game.host, { type: 'strongholdCards', enabled: true });
   for (const player of game.players) act(player.id, { type: 'ready' });
   const lobby = structuredClone(game);
   const rolls = options.skills ? skillOfferRolls(game, options.training) : [];

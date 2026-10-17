@@ -7,7 +7,7 @@ import { drawClassicNexusReaction, reactionAction, reactionPlayer } from './fixt
 import { advanceClassicIndependentNexus, type ClassicIndependentNexusOptions, type ClassicIndependentNexusStep } from './fixture-classic-independent-nexus';
 import { classicDiscoveryNexusClean } from './fixture-discovery-classic-nexus';
 
-export type ClassicNexusCoreOptions = Pick<ClassicIndependentNexusOptions, 'advanced' | 'skills' | 'independent' | 'training'>;
+export type ClassicNexusCoreOptions = Pick<ClassicIndependentNexusOptions, 'advanced' | 'skills' | 'independent' | 'training' | 'tech' | 'strongholds'>;
 function drawSecondFace(game: Game, owner: string, face: FactionId, actions: ClassicIndependentNexusStep[]) {
   assert.equal(game.nexusCards!.phase!.stage, 'drawing');
   const cards = game.nexusCards!.cards!, index = cards.deck.indexOf(face);

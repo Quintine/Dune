@@ -2,6 +2,16 @@
 
 Source audit: 2026-09-10. Bounded local prototype integration and verification: 2026-10-01. **Partial development verified**, not complete Ixian/Nexus family or expansion acceptance. This document records the source and runtime boundary of the fresh `ixian-replacement` profile. Existing [Nexus release gates](NEXUS_CARD_RUNTIME.md) remain in force.
 
+## Original phase-module purchased-card source — 18 October 2026
+
+Classic core retains Tech3+ and Advanced Strongholds2+, selected33/36 and
+optional14, through original setup/owner timing. Actual paid2 replacement
+with both earned modules keeps wallet10, discards only bought Reinforcements
+for the real deck top, spends Ixian Nexus once and reaches following lot1.
+Original module holders/piles remain; neither creates an extra purchase,
+card, subsidy or source alias. Other native/module envelopes stay separate.
+[Current source and evidence](NEXUS_CARD_RULES.md#classic-nexus-original-phase-modules--18-october-2026).
+
 ## Original base33 core without card dependency — 18 October 2026
 
 Fresh classic2–6 Basic/Advanced Nexus initializes original purchase replacement

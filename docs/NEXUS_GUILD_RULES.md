@@ -4,6 +4,17 @@
 
 Source audit, 10 September 2026. This documents the three printed panels and their integration boundaries. It does not implement them or certify complete Guild, Homeworld, Nexus or expansion compliance. [Common Nexus lifecycle](NEXUS_CARD_RULES.md) and existing release gates continue to apply. No user question was sent during this audit.
 
+## Classic original phase-module funding — 18 October 2026
+
+The classic core entry now retains original Tech3+ and Advanced Strongholds2+,
+base33 or selected36 and optional14. Guild fee parents bind only genuinely
+enabled module state; original bare-parent grammar remains. Real token/card
+owners are earned at their original boundaries. Actual combined paid5/
+Guild-card receipt/Bureaucrat2 leaves payer7/recipient13/Guild6 while one
+Heighliners spice waits; actual phase5 close pays its owner Guild7, independent
+of the diverted shipping receiver. No phase income finances earlier fees.
+[Source and complete bounded evidence](NEXUS_CARD_RULES.md#classic-nexus-original-phase-modules--18-october-2026).
+
 ## Classic core funded card shipments — 18 October 2026
 
 Fresh classic2–6 Basic/Advanced Nexus uses original base33 or selected

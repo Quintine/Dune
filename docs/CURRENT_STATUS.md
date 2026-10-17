@@ -29,6 +29,29 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Classic core phase modules — 18 October. Prototyped / Partial.**
+Fresh classic Nexus now composes original Tech3+ and Advanced Strongholds2+
+with selected33/36 and optional14. Normal host controls retain all five
+requested modules through actual training/Traitors into first Storm. Real
+first-Storm ownership, phase payout and first-Mentat claims are not assigned
+or retrofitted; other native/World/Discovery/Semuta envelopes stay separate.
+
+Earned Arrakeen support3 uses bank2/personal1 beside real reserve fees;
+trained base33 Carthag Shield survives poison after native call cancellation
+and reaches original cleanup/private replacement. Fixed paid5 then ordinary
+free2 retains Axlotl pending2 at purse8 until actual phase4 close pays10.
+Combined phase funding/payout and paid2 replacement preserve original owners.
+
+Frozen43-file **439/439**, focused1/1 and repaired Arrakeen2/2, types/lint/
+build pass. Fixture corrections preserve original Guild-ally3 tariff and
+separate city Collection2; no game calculation changed. Four actual390px
+journeys and four legal policies/66 owned choices finish; no calibration claim.
+No gameplay/application exception or overflow. Two DELETE204 cleanup fetches
+logged ERR_ABORTED and an idle wait timed out; tool diagnostics are preserved.
+Temporary memory/routes/executable scripts removed/released204, no stored room/
+reset/restart/deployment. Full modes, universal timing and assurance stay open.
+[Source-bound owner verification](NEXUS_CARD_RULES.md#classic-nexus-original-phase-modules--18-october-2026).
+
 **Classic Nexus core — 18 October. Prototyped / Partial.**
 Ordinary base33 all14 native calls/purchases lacked reaction prompts. One
 public capability now admits original33 or selected36 with Nexus12 and

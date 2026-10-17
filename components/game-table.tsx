@@ -1293,9 +1293,10 @@ export function GameTable({
       {classicNexusPreview && (
         <p className="notice" role="status">
           Classic Nexus reactions preview · Basic/Advanced classic factions, original base33
-          or selected independent36 Treachery, optionally all14 Leader Skills. Enabled native
-          reactions retain original card, force and payment authority. Acknowledgement timing
-          and purchase/bonus ordering remain provisional. Other modules and complete Nexus
+          or selected independent36 Treachery, optionally all14 Leader Skills. Original
+          Tech (3+ seats) and Advanced Strongholds (2+ seats) may compose. Native reactions
+          retain original card, force and payment authority. Acknowledgement timing and
+          purchase/bonus ordering remain provisional. Other modules and complete Nexus
           acceptance remain separate.{' '}
           <a href="/rules?topic=nexus-cards#nexus-cards">Preview rules and limits</a>
         </p>

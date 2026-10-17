@@ -2,6 +2,66 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Classic Nexus original phase modules — 18 October 2026
+
+**Prototyped / Partial.** Fresh classic Nexus core now retains original
+Tech3–6 Basic/Advanced and/or Strongholds2–6 Advanced with base33 or explicitly
+selected independent36, optionally all14 Skills. The shared public predicate
+keeps the printed player-count/rules prerequisites. Other native families,
+Worlds, Discovery/Semuta and reaction envelopes remain separate. No played
+state is reflagged or assigned a token/card holder.
+
+Actual host controls retain all five requested modules through original
+readiness, starting cards, four private skill assignments and native Traitor
+selection into first Storm. Stock36/Nexus12 remain; Tech owners are still
+unassigned and Stronghold claim0 until their original earning boundaries.
+Only original setup lotteries/unopened decks select fixture sources.
+
+Original Guild fee parents conditionally bind the real Tech/Stronghold state;
+bare ordinary parents gain no unconditional new keys. Existing signed card
+shipments, native counters, original currency and physical continuation remain.
+The combined original-action payment reaches payer7/recipient13 after Bank2,
+Heighliners pending1 while Guild stays6, then actual phase5 close pays Guild7.
+Actual first-Mentat holders remain unchanged through that contested arrival.
+Paid2 Ixian replacement likewise preserves both earned module states, exact
+discard/draw, wallet10 and one following lot.
+
+New original-action consumer evidence:
+- Tech: real first-Storm owner/count, funded five-for-one delivery, matching
+  phase-end Heighliners income, fixed Tleilaxu paid5 versus ordinary free
+  returns, a second genuine free request without another pile, pending-spice
+  affordability and native winner transfer after Harass.
+- Earned Arrakeen: temporary5 support3 uses bank2/personal1, while independent
+  Reinforcements pays three actual reserves. Observed board2/Tanks6/reserves12
+  and purse6 before separate Collection2→8; real starred reserves stay unchanged.
+- Earned Carthag: an actual all14 trained disc behind the shield survives
+  poison with its physical Shield after the original call is canceled.
+  Nine forces survive; original winner card choices, losing retention,
+  capture decline, inspection and one private actual Mentat replacement remain.
+  Empty defense still loses the disc/army and held custody changes only at Mentat.
+
+Frozen43-file **439/439**, focused second-free1/1 and repaired Arrakeen2/2,
+types/lint/build pass. Initial437/439 exposed two new fixture assumptions:
+the real Guild ally pays rounded3 for five counters, and later native
+Carthag Collection2 is separate from support1. Assertions now preserve those
+existing rules; no tariff/income calculation changed. Setup/wiring and
+same-snapshot replay pins were removed in favor of actual consumer transitions.
+Tech now has canonical helper/consumer/check evidence in the existing checklist.
+
+Four original-control390px journeys finish normal five-module setup,
+Arrakeen support/fees, trained Carthag defense/Mentat and fixed5+free2 Axlotl.
+The last preserves purse8 while token2 waits, then actual phase4 close pays10.
+Four legal policies execute66 owned choices through original income, Revival
+and battles; outcomes vary and are not strength calibration.
+All gameplay requests/controls complete without application exceptions or
+horizontal overflow. Two isolated DELETE cleanup fetches returned204 but
+browser diagnostics logged `ERR_ABORTED`; a cleanup network-idle wait timed
+out. These tool/lifecycle diagnostics are retained, not erased or represented
+as failed gameplay. Temporary routes, memory and executable smoke scripts are
+removed/released204; no stored room/reset/restart/deployment.
+Source-bound proof: `/tmp/dune-classic-nexus-phase-18oct.json`. Complete modes,
+all combinations, universal timing and deferred assurance remain unfinished.
+
 ## Classic Nexus core and funded card shipments — 18 October 2026
 
 **Prototyped / Partial.** Original E3 pp4/9/11 permits Nexus independently of

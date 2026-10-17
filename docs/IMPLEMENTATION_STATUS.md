@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 18 October 2026 — Classic Nexus with earned phase modules
+
+Original independent36/Nexus+Tech and all14/phase starts rejected through
+native lobby actions; plain33/all14/phase started without reaction states.
+The public classic core now composes original Tech3+ and Advanced Strongholds2+,
+preserving Basic/Advanced prerequisites, selected33/36 and optional14. Bare
+independent-card consumers share that phase capability. Fee source snapshots
+bind only present modules; no played state, token/card owner or history is
+fabricated. Other native/World/Discovery/Semuta and reaction envelopes stay.
+
+Two disjoint lanes add original-action Tech and held-Stronghold sources plus
+eleven meaningful regressions. Real first-Storm owners and first-Mentat cards
+precede actual death, Revival, funded delivery and battle. Parent removed
+setup/wiring and same-prestate replay pins, kept real error/cost boundaries,
+added a second genuine free return for one-pile behavior and removed an unused
+copied drain snapshot. The Tech worker ran its four-case file twice despite
+the freeze instruction; those repeated lane checks are not owner certification.
+
+Parent frozen43-file **439/439**, focused second-free1/1, repaired native
+Arrakeen2/2, types/lint/build pass. Initial437/439 and the narrow repair exposed
+incorrect fixture expectations for real Guild-ally shipping (five cost3) and
+later Carthag Collection2; the original game calculations are unchanged.
+Four legal policies perform66 owned choices through native income/Revival
+and earned battles, with varying outcomes rather than a calibration claim.
+
+Four actual390px journeys finish original five-option lobby readiness/
+training/Traitors/Storm (stock36/Nexus12, no premature owners), earned Arrakeen
+support3 bank2/personal1 with three reserve fees and separate Collection2,
+trained base33 Carthag Shield survival/native call cancellation/cleanup/private
+Mentat replacement, and fixed paid5/free2 Axlotl pending2→actual phase-end
+purse8→10. Combined original paid5/Bureaucrat2 also retains claimedTurn1 cards
+and Heighliners pending1 until Guild6→7 at native phase5 close. Actual paid2
+Ixian replacement with both earned modules preserves holders/piles/wallet10.
+
+No application/gameplay exception or horizontal overflow. Two isolated cleanup
+DELETEs returned204 but browser diagnostics reported ERR_ABORTED; a network-idle
+wait timed out. Diagnostics are preserved and reported, not replayed away.
+Temporary routes/memory/executable programmes removed/released204; no saved room,
+reset, server restart or deployment. Existing build warnings and full-mode/
+universal-timing/assurance gates remain. Tech now has canonical helper/consumer
+evidence in the existing checklist instead of another broad history lookup.
+[Canonical current source and proof](NEXUS_CARD_RULES.md#classic-nexus-original-phase-modules--18-october-2026).
+
 ## 18 October 2026 — Classic Nexus core and funded native card shipments
 
 Ordinary base33 all14 genuine Harkonnen call and Ixian purchase still lacked

@@ -2,6 +2,54 @@
 
 Historical development module checkpoint, 7 September 2026: the six printed effects, public card custody, mobile declaration, support accounting, AI choices and readable faces are integrated. The later user-authorized [classic Advanced preview](ADVANCED_PREVIEW.md) already permits Stronghold Cards; preserve that access. Complete Advanced/expansion release and arbitrary combinations remain gated.
 
+## Classic original Nexus composition — 18 October 2026
+
+The rules-first classic Advanced Nexus12 entry retains original Strongholds2–6,
+base33 or explicitly selected independent36, and optional all14 Skills. The six
+printed effects and original custody timing remain unchanged. This effect
+proof keeps Tech off; the shared core also composes original Tech3+. No
+World/Discovery/native-family envelope, numerical rule or universal timing
+ruling is added, and complete public-release acceptance remains gated.
+
+`tests/fixture-nexus-core-strongholds.ts` exports
+`createNexusCoreArrakeenFixture`, `createNexusCoreCarthagFixture`,
+`revealNexusCoreStrongholdBattle`, `callNexusCoreCarthagTraitor` and
+`finishNexusCoreStrongholdBattle`. Both scenes stop at an original pre-plan
+boundary after genuine first-end-Mentat claims. Arrakeen is earned by an actual
+turn-one five-reserve shipment; Carthag is retained from actual setup forces.
+Only unopened decks and original deal lotteries select source cards. No
+holders, hands, forces, deaths, clocks or wallets are assigned. Shared native
+controls handle legal participation; the fixture supplies its explicit plans.
+
+The worker's finite original-action programme was exercised locally; its
+source and reported branches are preserved with the parent's actual control
+proof in `/tmp/dune-classic-nexus-phase-18oct.json`. The executable throwaway
+was removed. Observed base33/independent Arrakeen results: five physical counters
+for dial6/support3, bank2/personal1; wallet7→8 includes the separate Collection2,
+with two board survivors. Independent Reinforcements additionally spends three
+real reserves (15→12), producing six total ordinary Tanks counters rather than
+three and never adding supported fighters. Without Cunning, dial5/support5
+costs personal3, consumes all five board counters plus three reserve fees, and
+keeps the now-empty city's card until actual next Mentat sets it aside.
+
+Actual Carthag runs cancel the original Harkonnen call with the genuinely drawn
+Harkonnen Nexus. The physical Shield protects its holder from poison: nine
+forces and the leader survive, and the Shield stays in the original hand.
+All14 uses the actually trained Prana Bindu disc after the original
+behind-shield choice. Omitting that defense kills the disc and all ten forces;
+Atreides controls Carthag immediately, but the old holder keeps the module card
+until Mentat transfers it. Original cancellation replaces one Harkonnen
+Traitor at Mentat; Pass instead preserves the single-traitor win, no ordinary
+winner dial casualty, unspent Nexus and no replacement.
+
+`tests/nexus-core-strongholds-runtime.test.ts` records payment, physical-counter,
+defense, custody and cleanup regressions. Parent frozen43-file439/439,
+types/lint/build and actual390px Arrakeen plus trained base33 Carthag controls
+pass. Initial fixture pricing/Collection assumptions were repaired against
+the original Guild-ally3 tariff and separate native city2 income. No all-six
+combined, full-mode, strategic or deployed acceptance claim.
+[Shared current proof and cleanup limitations](NEXUS_CARD_RULES.md#classic-nexus-original-phase-modules--18-october-2026).
+
 ## All14 Skills with independent cards — 17 October 2026
 
 Supported original classic, selected E1/E2 and standalone/paired E3 all14

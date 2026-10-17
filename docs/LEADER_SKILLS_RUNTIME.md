@@ -7,6 +7,18 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Classic Nexus with original phase modules — 18 October 2026
+
+Classic base33/selected36 Nexus now retains optional all14 with original
+Tech3+ and Advanced Strongholds2+. Public capability and original setup
+preserve actual first-Storm tokens/end-Mentat cards; none is assigned by a
+fixture or retrofitted into played state. Native bank subsidy funds actual
+holder support, not reserve fees or personal money. Actual trained Carthag
+Shield defense, original call/cancellation, winner cleanup and private Mentat
+replacement remain. Fixed paid groups/free returns and phase Tech income
+stay separate from mandatory normal Banker.
+[439/439, actual normal controls and legal policies](NEXUS_CARD_RULES.md#classic-nexus-original-phase-modules--18-october-2026).
+
 ## Classic Nexus core without card dependency — 18 October 2026
 
 Original base33 or explicitly selected independent36 Nexus core admits

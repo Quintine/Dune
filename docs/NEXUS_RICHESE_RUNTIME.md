@@ -2,6 +2,16 @@
 
 This checkpoint adds the [source-audited Secret Ally](NEXUS_RICHESE_RULES.md) to an unallied holder's unused ordinary reserve shipment when Richese is absent. Choose one to five actual forces and price the group as one force. The physical force count, starred identity, destination and arrival restrictions remain ordinary shipment rules. It creates no concealed No-Field and no second shipment.
 
+## Original Tech and Stronghold composition — 18 October 2026
+
+Classic Nexus core retains the original phase modules with selected33/36
+and optional14. A real funded five-for-one arrival still delivers five and
+uses the one-counter invoice; original Heighliners accrues its actual owner's
+token count only after delivery and pays only at phase end. Neither the fee
+claim nor a held Stronghold card invents another trigger or personal subsidy.
+No other native/World/Discovery envelope or numerical rule changes.
+[Current phase consumers and controls](NEXUS_CARD_RULES.md#classic-nexus-original-phase-modules--18-october-2026).
+
 ## Classic core Guild fee composition — 18 October 2026
 
 Classic base33 or selected independent36 Nexus, optionally all14, now retains
