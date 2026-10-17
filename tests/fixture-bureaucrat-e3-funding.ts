@@ -4,6 +4,7 @@ import {
   advancePairedE3Nexus, createPairedE3NexusSetup, pairedE3NexusClean,
   pairedE3NexusInventory, pairedE3NexusPlayer, pairedE3NexusReload,
   quietPairedE3NexusChoice, stepPairedE3Nexus,
+  type PairedE3NexusOptions,
 } from './fixture-paired-e3-nexus-modules';
 
 export type BureaucratE3FundingStep = { actor: string; action: Action };
@@ -13,10 +14,12 @@ export const BUREAUCRAT_E3_ROSTER = ['ecaz', 'moritani', 'guild', 'atreides', 'e
 /** The single classic seat trained with the native Bureaucrat skill. */
 export const BUREAUCRAT_E3_TRAINER = 'atreides';
 
+export type BureaucratE3FundingOptions = Pick<PairedE3NexusOptions,
+  'advanced' | 'nexus' | 'families' | 'tech' | 'strongholds'>;
 export interface BureaucratE3FundingBase {
   actions: BureaucratE3FundingStep[];
   staging: string[];
-  /** Turn-2 Spice blow Nexus window: real alliances may still form here. */
+  /** Turn-2 real worm alliance window, independent of optional Nexus Cards. */
   worm: Game;
   /** Turn-2 Bidding boundary with the requested real mutual alliance formed. */
   game: Game;
@@ -61,14 +64,14 @@ function holdE3Card(
   return incoming.id;
 }
 
-/** Genuine paired E3 setup with skills, a real turn-2 worm Nexus and a real
+/** Genuine paired E3 setup with skills, a real turn-2 worm alliance window and a
  * mutual alliance between the payer and the requested donor. Never assigns
  * wallets, armies, phase, assignment or alliance state. */
 export function createBureaucratE3FundingBase(
-  { advanced = false, donor = 'moritani' }: { advanced?: boolean; donor?: string } = {},
+  { donor = 'moritani', ...options }: BureaucratE3FundingOptions & { donor?: string } = {},
 ): BureaucratE3FundingBase {
-  const options = { roster: [...BUREAUCRAT_E3_ROSTER], advanced, skills: true };
-  const setup = createPairedE3NexusSetup(options);
+  const advanced = options.advanced ?? false;
+  const setup = createPairedE3NexusSetup({ ...options, advanced, roster: [...BUREAUCRAT_E3_ROSTER], skills: true });
   assert.ok(setup.afterSetup.leaderSkills!.assignments.some(
     (a) => a.owner === BUREAUCRAT_E3_TRAINER && a.skill === 'bureaucrat' && a.leader,
   ));
@@ -145,11 +148,11 @@ export function bureaucratE3PhysicalCards(game: Game): string[] {
 }
 
 export function createBureaucratE3AuctionFixture({
-  advanced = false, payerShare = 5, donorShare = 3, donor = 'moritani', counter = false,
-}: {
-  advanced?: boolean; payerShare?: number; donorShare?: number; donor?: string; counter?: boolean;
+  payerShare = 5, donorShare = 3, donor = 'moritani', counter = false, ...options
+}: BureaucratE3FundingOptions & {
+  payerShare?: number; donorShare?: number; donor?: string; counter?: boolean;
 } = {}): BureaucratE3AuctionFixture {
-  const base = createBureaucratE3FundingBase({ advanced, donor });
+  const base = createBureaucratE3FundingBase({ ...options, donor });
   const actions = [...base.actions];
   const staging = [...base.staging];
   let game = pairedE3NexusReload(base.game);
@@ -208,33 +211,38 @@ export interface BureaucratE3ShipmentFixture extends BureaucratE3FundingBase {
   donorAmount: number;
   amount: number;
   payee: string;
+  cost: number;
+  counterCard?: string;
   physical: string[];
 }
 
 export function createBureaucratE3ShipmentFixture({
-  advanced = false, primary = 5, partner = 'moritani', pledge = 3,
-}: {
-  advanced?: boolean; primary?: number; partner?: string; pledge?: number;
+  primary = 5, partner = 'moritani', pledge = 3, target = 'habbanya_ridge_sietch', counter = false, ...options
+}: BureaucratE3FundingOptions & {
+  primary?: number; partner?: string; pledge?: number;
+  target?: 'habbanya_ridge_sietch' | 'habbanya_erg'; counter?: boolean;
 } = {}): BureaucratE3ShipmentFixture {
-  const base = createBureaucratE3FundingBase({ advanced, donor: partner });
+  const base = createBureaucratE3FundingBase({ ...options, donor: partner });
   const actions = [...base.actions];
   const staging = [...base.staging];
   let game = pairedE3NexusReload(base.game);
   game = advancePairedE3Nexus(game, (s) => s.turn === 2 && s.phase === 5 && s.active === base.payer && pairedE3NexusClean(s), actions, quietPairedE3NexusChoice);
   assert.equal(game.turn, 2);
-  const target = 'habbanya_ridge_sietch';
   assert.ok(game.players.every((p) => !Object.keys(p.forces).some((key) => key.startsWith(target))));
   const physical = bureaucratE3PhysicalCards(game);
+  const counterCard = counter ? holdE3Card(game, base.trainer, (card) => card.effect === 'karama', staging) : undefined;
   const beforePledge = pairedE3NexusReload(game);
   const aid: Action = { type: 'pledgeAid', amount: pledge };
   actions.push({ actor: partner, action: aid });
   game = applyAction(game, partner, aid);
   assert.equal(game.aid[partner].amount, pledge);
   const beforeAction = pairedE3NexusReload(game);
-  const amount = primary + pledge;
+  const cost = primary + pledge;
+  const amount = cost / (target === 'habbanya_erg' ? 2 : 1);
+  assert.ok(Number.isInteger(amount) && amount > 0, 'The declared shares pay the exact original shipment cost');
   const action: Action = { type: 'ship', territory: target, sector: 17, amount, elite: 0, allyPayment: pledge };
-  return { ...base, actions, staging, game, physical,
-    beforePledge, beforeAction, target, action, primary, donorAmount: pledge, amount, payee: base.guild };
+  return { ...base, actions, staging, game, physical, counterCard,
+    beforePledge, beforeAction, target, action, primary, donorAmount: pledge, amount, cost, payee: base.guild };
 }
 
 /** Declare once. In Advanced the original Guild interception commits the ship. */

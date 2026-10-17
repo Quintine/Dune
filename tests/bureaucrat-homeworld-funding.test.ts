@@ -3,7 +3,6 @@ import test from 'node:test';
 import { applyAction, initializeHomeworldOccupationGameForAudit, viewGame, type Action, type Game } from '../game/engine';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
-import { bureaucratAlliedFundingModeSupported } from '../game/bureaucrat-payment';
 import { assertClassicHomeworldSkillsCustody } from './fixture-homeworld-classic-skills';
 import {
   advanceHomeworldFunding, allowHomeworldFundingResponses as allow, chooseHomeworldFunding as choose,
@@ -60,7 +59,6 @@ for (const advanced of [false, true]) for (const kind of ['auction', 'shipment']
   for (const [payerShare, donorShare] of [[5, 3], [3, 5], [5, 5], [0, 5]]) for (const redirect of [false, true]) {
     void test(`${advanced ? 'Advanced' : 'Basic'} Homeworld ${kind} ${payerShare}+${donorShare} ${redirect ? 'redirects two' : 'declines'} with full debits and original continuation`, () => {
       const f = fixture({ kind, advanced, payerShare, donorShare });
-      assert.equal(bureaucratAlliedFundingModeSupported(f.game), true);
       assert.equal(player(f.alliance, f.payer).ally, f.donor);
       assert.equal(player(f.alliance, f.donor).ally, f.payer);
       assert.equal(player(f.beforeAction, f.donor).spice, player(f.beforePledge, f.donor).spice - donorShare);

@@ -50,13 +50,6 @@ export function bureaucratPaymentModeSupported(game: LeaderSkillProfile): boolea
       (game.expansions.length === 1 && game.expansions[0] === 'choam') ||
       nativeExpansionLeaderSkillsProfile(game))) || homeworldLeaderSkillsProfile(game) || classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) || strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) || classicDiscoveryLeaderSkillsProfile(game) || nativeDiscoveryLeaderSkillsProfile(game);
 }
-export function bureaucratAlliedFundingModeSupported(game: LeaderSkillProfile): boolean {
-  if (!bureaucratPaymentModeSupported(game)) return false;
-  if (game.homeworlds) return homeworldLeaderSkillsProfile(game);
-  if (game.expansions.length === 1 && (game.expansions[0] === 'ecaz' || game.expansions[0] === 'ix'))
-    return pairedNexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game);
-  return !game.expansions.length || game.expansions.length === 1 && game.expansions[0] === 'choam';
-}
 export function bureaucratUsed(
   used: readonly BureaucratPaymentUse[],
   turn: number,

@@ -3,11 +3,8 @@ import test from 'node:test';
 import { applyAction, normalizeAutomaticGame, viewGame, type Action, type Game } from '../game/engine';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
-import { bureaucratAlliedFundingModeSupported, bureaucratPaymentModeSupported, bureaucratPaymentSignature } from '../game/bureaucrat-payment';
-import { guildBetrayalNexusLeaderSkillsProfile } from '../game/leader-skill-profile';
-import { validateLeaderSkills } from '../game/leader-skills';
+import { bureaucratPaymentSignature } from '../game/bureaucrat-payment';
 import { validateNexusCards } from '../game/nexus-cards';
-import { LEADER_SKILL_CARDS } from '../game/leader-skill-cards';
 import { createGuildBetrayalFixture } from './fixture-nexus-guild-betrayal';
 import {
   betrayalFundingSeat as seat, chooseBetrayalFunding, createBureaucratBetrayalFundingFixture,
@@ -80,21 +77,6 @@ function proveReceipt(f: BureaucratBetrayalFundingFixture, done: Game, diverted:
   rejectUnchanged(ended, f.shipper, { type: 'endMovement' });
 }
 
-void test('Fresh native Guild classic setup genuinely trains its distinct Bureaucrat and preserves all14 custody', () => {
-  const f = createBureaucratBetrayalFundingFixture({ donorAmount: 3 });
-  assert.equal(f.initial.status, 'setup');
-  assert.equal(f.initial.leaderSkills!.assignments.length, 0);
-  assert.equal(f.trained.status, 'setup');
-  assert.equal(f.trained.leaderSkills!.assignments.find(a => a.skill === 'bureaucrat')?.owner, f.trainer);
-  assert.ok(![f.shipper, f.holder, f.guild, f.donor].includes(f.trainer));
-  validateLeaderSkills(f.trained.leaderSkills!, f.trained.players);
-  const skills = f.trained.leaderSkills!;
-  assert.deepEqual([...skills.deck, ...Object.values(skills.offers).flatMap(o => o.cards), ...skills.assignments.map(a => a.skill)].sort(),
-    LEADER_SKILL_CARDS.map(c => c.id).sort());
-  assert.equal(guildBetrayalNexusLeaderSkillsProfile(f.game), true);
-  assert.equal(bureaucratPaymentModeSupported(f.game), true);
-  assert.equal(bureaucratAlliedFundingModeSupported(f.game), true);
-});
 
 for (const advanced of [false, true]) {
   for (const [primary, donorAmount] of [[5, 0], [5, 3], [3, 5], [5, 5], [0, 5]]) {

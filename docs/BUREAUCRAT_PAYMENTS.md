@@ -33,12 +33,13 @@ A verbal promise alone transfers no spice.
 
 ## Connected boundary and explicit interpretations
 
-The connected paths are ordinary paid auctions, Guild shipment income, direct
-Richese auction proceeds and actual bribe transfers in the base or CHOAM-only
-skill profile. Basic Tleilaxu with Leader Skills and base opponents additionally
-supports a single payer's actual paid revival price to Tleilaxu. Other expansion
-payment sources remain outside this batch. Emperor gifts are excluded because
-the user ruled on 11 October that gifts are not payments.
+The connected sources are ordinary paid auctions, native Emperor/Guild and
+Richese seller receipts, actual bribe transfers and the original paid Tleilaxu
+revival price in admitted Leader Skills compositions. A separate free-revival
+award is not part of that price. Registered all14 setups use the same receipt
+capability for single and allied payers; optional-module and Advanced role
+admission remains separate. Emperor gifts are excluded because the user ruled
+on 11 October that gifts are not payments.
 
 
 ### User ruling — 11 October 2026
@@ -93,10 +94,12 @@ Allied funding is evaluated per actual payer, not by adding different payers'
 shares to create the five-spice trigger. A three-plus-three payment, or
 four-plus-three, has no eligible payer and proceeds through original funding,
 payment, card/force commitment and recipient income without a Bureaucrat offer.
-In supported classic, E1, E2 and E3 profiles without Homeworlds, individually
-qualifying allied-funded auction and shipment receipts now offer one optional
-redirection:
-five-plus-three, three-plus-five, five-plus-five and fully ally-funded five.
+In admitted classic and native E1/E2/E3 Skills compositions, individually
+qualifying allied-funded auction and shipment receipts offer one optional
+redirection: five-plus-three, three-plus-five, five-plus-five and fully
+ally-funded five. This does not require incidental Nexus Cards or one exact
+selected family. Original World and phase-module receipts retain their native
+allocation and callbacks.
 The receipt loses exactly two, never two per contributing payer. A share paid
 by the trainer or recipient cannot qualify, but does not mask a different
 eligible payer. Homeworld allied and split-recipient income is connected under
@@ -448,3 +451,55 @@ unchanged, and only the redirection consumes the skill. This is explicitly stage
 UI evidence. After the reported outage, all 699 opening rooms and their original
 seat/recovery records matched the private backup; database integrity and foreign
 keys passed. The healthy server was reused.
+
+## Registered native allied receipts — 18 October 2026
+
+The ordinary Skills receipt capability now governs both single and allied
+funding. The separate allied-only classifier is removed, not aliased. Registered
+selected-family all14 tables no longer need incidental Nexus Cards or one exact
+family to use an otherwise supported auction or shipment receipt. Original
+World/phase allocation, module admission and Advanced role limits stay separate.
+This supersedes the narrower **dated 13 October scope bounds** above, not the
+printed card, explicit user rulings or original economic callbacks.
+
+Before repair, a genuine Basic Ecaz/Moritani/Guild/Atreides/Emperor plain-Skills
+table formed a real turn-two worm alliance. Moritani pledged five from twelve;
+Ecaz's five-force nonstronghold shipment cost ten, paid five plus that escrow.
+The extra allied guard rejected it byte-identically. After repair, Ecaz and
+Moritani retain seven each, five forces arrive once, Ecaz reserves are nine,
+and the escrow is consumed once. Redirecting gives Guild eight, from five to
+thirteen; the Atreides trainer gains nothing and original Movement resumes.
+
+The shared individual-payer threshold, trainer/payee exclusions, private
+contribution legs, two-spice Bank diversion and once-per-phase use are unchanged.
+Native income cancellation still resolves first and creates no Bureaucrat
+offer/use. Declining keeps the later phase opportunity. No revival price,
+free-revival award, Banker invoice, gift classification or occupied split changes.
+
+The new E1 plain producer retains actual starting armies before funding:
+HMS six, Carthag ten, Arrakeen ten and Tuek's five. Its older Nexus battle
+producer's conserved board-return staging is retained only in that legacy path;
+it is not claimed as natural native movement. A real Advanced no-Nexus shipment
+still opens native Guild interception. An eight-force shipment paid three plus
+Ixian escrow five leaves Harkonnen nine spice/two reserves with Carthag ten
+untouched, and Ixians five spice/HMS six untouched. All four legal policies
+redirect the eligible receipt, give Guild six (six to twelve), and resume the
+next real movement seat.
+
+Three actual390px GameTable flows use isolated memory-only original producers:
+Basic cost-ten/five-force shipment passes native Karama allowance and redirects
+two, then reaches Collection; Advanced extra-selected-CHOAM auction three-plus-five
+allows the full eight (Emperor ten to eighteen, no use, original next lot at
+Guild); a fresh original counter branch cancels that income (Emperor stays ten,
+no offer/use, original next lot, original Karama consumed). Prompts show gross,
+recipient and payer-null without contribution legs. Browser errors and horizontal
+overflow are absent. Temporary routes were removed and their memory released204;
+no stored room, dev-server restart, deployment or assurance campaign is involved.
+
+Frozen17-file **442/442**, focused original nonstronghold1/1 and parent-owned
+types/lint/build pass. New consumer boundaries live in
+`tests/bureaucrat-e1-funding.test.ts` and `tests/bureaucrat-e3-funding.test.ts`;
+default Nexus, classic/World/occupied/Betrayal and original phase payment
+consumers remain in that union. Earlier fixture/helper/profile-only pins are
+deleted rather than repinned. This is scoped local rule/control proof, not
+complete Skills, module-combination, save/recovery or deployed acceptance.

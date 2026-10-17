@@ -6,10 +6,11 @@ import {
 import { territory } from '../game/board';
 import type { Card } from '../game/cards';
 import { LEADER_SKILL_CARDS, type LeaderSkillId } from '../game/leader-skill-cards';
-import { pairedNexusLeaderSkillsProfile } from '../game/leader-skill-profile';
+import { pairedNexusLeaderSkillsProfile, selectedDeckLeaderSkillsProfile } from '../game/leader-skill-profile';
 import { quoteBattleResolution, type ResolutionCombatant } from '../game/battle-resolution-quote';
 import { traitorDeck } from '../game/traitors';
 import { nextStrongholdFactionsNativeStep } from './fixture-stronghold-factions';
+import { skillOfferRolls } from './fixture-independent-card-modules';
 
 export type PairedIxNexusSkillsStep = { actor: string; action: Action };
 export type PairedIxNexusSkillsOptions = {
@@ -17,6 +18,9 @@ export type PairedIxNexusSkillsOptions = {
    * Existing first hands, offers, actor IDs and stock are authoritative. */
   initial?: Game;
   advanced?: boolean;
+  /** Default selects the original Nexus Cards module; `false` starts the same
+   * roster and all14 lottery from the plain Leader Skills module instead. */
+  nexus?: boolean;
   program?: 'suboids' | 'faceDance';
   skill?: LeaderSkillId;
   band?: 'normal' | 'skilled';
@@ -56,6 +60,9 @@ export type PairedIxNexusSkillsFixture = {
   actions: PairedIxNexusSkillsStep[];
   staging: string[];
 };
+/** The no-Nexus producer has no drawing frame at all: the three Nexus-draw
+ * fields are genuinely absent rather than empty or fabricated. */
+export type PairedIxSkillsFixture = Omit<PairedIxNexusSkillsFixture, 'beforeNexusDraw' | 'drawActions' | 'afterNexusDraw'>;
 export function pairedIxNexusSkillsPlayer(game: Game, actor: string): Player {
   const player = game.players.find(p => p.id === actor);
   assert.ok(player, `Missing original E1 seat ${actor}`);
@@ -174,10 +181,17 @@ function orderSpice(game: Game, kinds: ('land' | 'worm')[], staging: string[]): 
   staging.push(`Conserved original undealt Spice order: ${kinds.join(', ')}; not natural shuffle history`);
 }
 /** Original 47/14/12 native setup → Storm → real Mentat → conserved worm →
- * real alliance → real closing native draws. Board/card relocation is explicit;
- * wallets, phases, turns, effects, stock and sealed plans are never assigned. */
-export function createPairedIxNexusSkillsFixture(options: PairedIxNexusSkillsOptions = {}): PairedIxNexusSkillsFixture {
+ * real alliance → real closing native draws. The original Nexus Cards module is
+ * selected by default; `nexus: false` starts the identical roster and all14
+ * lottery from the plain module, so no Nexus state is fabricated or erased.
+ * Board/card relocation is explicit; wallets, phases, turns, effects, stock and
+ * sealed plans are never assigned. */
+export function createPairedIxNexusSkillsFixture(options?: PairedIxNexusSkillsOptions & { nexus?: true }): PairedIxNexusSkillsFixture;
+export function createPairedIxNexusSkillsFixture(options: PairedIxNexusSkillsOptions & { nexus: false }): PairedIxSkillsFixture;
+export function createPairedIxNexusSkillsFixture(options: PairedIxNexusSkillsOptions): PairedIxSkillsFixture;
+export function createPairedIxNexusSkillsFixture(options: PairedIxNexusSkillsOptions = {}): PairedIxSkillsFixture {
   const advanced = options.advanced ?? options.initial?.advanced ?? true;
+  const nexus = options.nexus ?? true;
   const program = options.program ?? 'suboids', band = options.band ?? 'skilled';
   let game = options.initial ? structuredClone(options.initial)
     : createGame('PAIREDIXNEXUSSKILLS', newPlayer('ixians', 'Ixians', 'ixians'), advanced, ['ix']);
@@ -202,16 +216,30 @@ export function createPairedIxNexusSkillsFixture(options: PairedIxNexusSkillsOpt
   const initial = structuredClone(game);
   if (game.status === 'lobby') {
     assert.ok(!game.leaderSkills, 'Original all14 custody cannot be replaced');
-    game.nexusCards ??= { cards: null, phase: null };
-    assert.deepEqual(game.nexusCards, { cards: null, phase: null });
+    if (nexus) {
+      game.nexusCards ??= { cards: null, phase: null };
+      assert.deepEqual(game.nexusCards, { cards: null, phase: null });
+    } else {
+      assert.equal(game.nexusCards, undefined, 'A no-Nexus programme must begin without selected or played Nexus Cards');
+      const step: PairedIxNexusSkillsStep = { actor: game.host,
+        action: { type: 'moduleOption', module: 'leaderSkills', enabled: true } };
+      actions.push(step); game = applyAction(game, step.actor, step.action);
+    }
     for (const p of game.players) if (!p.ready) {
       const step: PairedIxNexusSkillsStep = { actor: p.id, action: { type: 'ready' } };
       actions.push(step); game = stepPairedIxNexusSkills(game, step);
     }
-    game = entropy(() => initializeLeaderSkillsGameForAudit(game), skillRolls(selected));
+    if (nexus) game = entropy(() => initializeLeaderSkillsGameForAudit(game), skillRolls(selected));
+    else {
+      const training = Object.fromEntries(game.players.map((p, index) => [p.faction, selected[index]]));
+      const step: PairedIxNexusSkillsStep = { actor: game.host,
+        action: advanced ? { type: 'start', advancedPreview: true } : { type: 'start' } };
+      actions.push(step); game = entropy(() => applyAction(game, step.actor, step.action), skillOfferRolls(game, training));
+    }
     staging.push('Scoped original all14 shuffle selects native offers before starting Treachery deals; no offers are replaced');
   }
-  assert.ok(pairedNexusLeaderSkillsProfile(game));
+  assert.ok(nexus ? pairedNexusLeaderSkillsProfile(game) : selectedDeckLeaderSkillsProfile(game));
+  if (!nexus) assert.equal(game.nexusCards, undefined);
   assert.equal(game.status, 'setup'); assert.equal(game.turn, 1); assert.equal(game.phase, 0);
   assert.equal(game.leaderSkills!.assignments.length, 0);
   let offered = structuredClone(game), trainer = '';
@@ -255,7 +283,9 @@ export function createPairedIxNexusSkillsFixture(options: PairedIxNexusSkillsOpt
   const afterFirstStorm = structuredClone(game);
   orderSpice(game, ['land', 'land'], staging);
   game = advancePairedIxNexusSkills(game, g => g.phase === 5 && clean(g), actions);
-  reserveBoard(game); staging.push('After native starting placements: conserved board counters returned to original reserves before first movement completion');
+  if (nexus) {
+    reserveBoard(game); staging.push('After native starting placements: conserved board counters returned to original reserves before first movement completion');
+  }
   game = advancePairedIxNexusSkills(game, g => g.phase === 8 && clean(g), actions);
   let beforeFirstMentat!: Game, firstMentatStep!: PairedIxNexusSkillsStep;
   while (game.turn === 1) {
@@ -270,17 +300,20 @@ export function createPairedIxNexusSkillsFixture(options: PairedIxNexusSkillsOpt
   const beforeAlliance = structuredClone(game);
   const allianceActions: PairedIxNexusSkillsStep[] = partners.map((actor, i) => ({ actor, action: { type: 'alliance', target: partners[1 - i] } }));
   for (const step of allianceActions) { actions.push(step); game = stepPairedIxNexusSkills(game, step); }
-  game = advancePairedIxNexusSkills(game, g => g.nexusCards?.phase?.stage === 'drawing', actions);
-  const cards = game.nexusCards!.cards!;
-  assert.ok(cards.deck.includes('ixians') && cards.deck.includes('tleilaxu'));
-  cards.deck = ['ixians', 'tleilaxu', ...cards.deck.filter(c => c !== 'ixians' && c !== 'tleilaxu')];
-  staging.push('Order conserved unused Ix/Tleilaxu Nexus singletons; only real closing draws grant the two native hands');
-  const beforeNexusDraw = structuredClone(game);
-  const drawActions: PairedIxNexusSkillsStep[] = [ixians, tleilaxu].map(actor => ({ actor,
-    action: { type: 'nexusCardChoice', turn: game.turn, card: cards.hands[actor], choice: 'draw', ownRedraws: 0 } }));
-  for (const step of drawActions) { actions.push(step); game = stepPairedIxNexusSkills(game, step); }
-  game = advancePairedIxNexusSkills(game, g => g.nexusCards?.phase?.stage !== 'drawing', actions);
-  const afterNexusDraw = structuredClone(game);
+  let drawing: Pick<PairedIxNexusSkillsFixture, 'beforeNexusDraw' | 'drawActions' | 'afterNexusDraw'> | undefined;
+  if (nexus) {
+    game = advancePairedIxNexusSkills(game, g => g.nexusCards?.phase?.stage === 'drawing', actions);
+    const cards = game.nexusCards!.cards!;
+    assert.ok(cards.deck.includes('ixians') && cards.deck.includes('tleilaxu'));
+    cards.deck = ['ixians', 'tleilaxu', ...cards.deck.filter(c => c !== 'ixians' && c !== 'tleilaxu')];
+    staging.push('Order conserved unused Ix/Tleilaxu Nexus singletons; only real closing draws grant the two native hands');
+    const beforeNexusDraw = structuredClone(game);
+    const drawActions: PairedIxNexusSkillsStep[] = [ixians, tleilaxu].map(actor => ({ actor,
+      action: { type: 'nexusCardChoice', turn: game.turn, card: cards.hands[actor], choice: 'draw', ownRedraws: 0 } }));
+    for (const step of drawActions) { actions.push(step); game = stepPairedIxNexusSkills(game, step); }
+    game = advancePairedIxNexusSkills(game, g => g.nexusCards?.phase?.stage !== 'drawing', actions);
+    drawing = { beforeNexusDraw, drawActions, afterNexusDraw: structuredClone(game) };
+  }
   game = advancePairedIxNexusSkills(game, g => g.phase === 5 && clean(g), actions);
   reserveBoard(game);
   const kind = program === 'faceDance' ? 'sietch_tabr' : 'arrakeen';
@@ -311,11 +344,11 @@ export function createPairedIxNexusSkillsFixture(options: PairedIxNexusSkillsOpt
     { actor: opponent, action: { type: 'battlePlan', leader: enemy.id, dial: 0, support: 0, weapon: null, defense: null } },
   ];
   return { initial, offered, afterSetup, afterFirstStorm, beforeFirstMentat, firstMentatStep, afterFirstMentat,
-    beforeAlliance, allianceActions, beforeNexusDraw, drawActions, afterNexusDraw, beforeBattle, battleStep,
+    beforeAlliance, allianceActions, ...drawing, beforeBattle, battleStep,
     game, ixians, tleilaxu, opponent, partners, trainer, skill, band, program, kind, location, replacementSource,
     secondLocation, planActions, actions, staging };
 }
-export function preparePairedIxNexusSkillsBattle(f: PairedIxNexusSkillsFixture, state = f.game): Game {
+export function preparePairedIxNexusSkillsBattle(f: PairedIxSkillsFixture, state = f.game): Game {
   let game = structuredClone(state);
   for (let i = 0; i < 160; i++) {
     const step = nextPairedIxNexusSkillsStep(game);
@@ -325,12 +358,12 @@ export function preparePairedIxNexusSkillsBattle(f: PairedIxNexusSkillsFixture, 
   }
   throw Error('Paired E1 native skill posture did not reach private plans');
 }
-export function beginPairedIxNexusSkillsCunning(f: PairedIxNexusSkillsFixture, state = preparePairedIxNexusSkillsBattle(f)): Game {
+export function beginPairedIxNexusSkillsCunning(f: PairedIxSkillsFixture, state = preparePairedIxNexusSkillsBattle(f)): Game {
   const offer = viewGame(state, f.ixians).nexusSuboids?.offer;
   assert.ok(offer); assert.equal(offer.blocked, null);
   return stepPairedIxNexusSkills(state, { actor: f.ixians, action: { type: 'nexusSuboids', event: offer.event } });
 }
-export function revealPairedIxNexusSkillsBattle(f: PairedIxNexusSkillsFixture,
+export function revealPairedIxNexusSkillsBattle(f: PairedIxSkillsFixture,
   options: { state?: Game; cunning?: boolean; plans?: PairedIxNexusSkillsStep[] } = {}): Game {
   let game = preparePairedIxNexusSkillsBattle(f, options.state ?? f.game);
   if (options.cunning) game = advancePairedIxNexusSkills(beginPairedIxNexusSkillsCunning(f, game), clean);
@@ -348,14 +381,14 @@ export function finishPairedIxNexusSkillsBattle(state: Game,
 export function finishPairedIxNexusSkillsTurn(state: Game): Game {
   return advancePairedIxNexusSkills(state, g => g.turn > state.turn);
 }
-export function choosePairedIxNexusSkillsSecondBattle(f: PairedIxNexusSkillsFixture, state: Game): Game {
+export function choosePairedIxNexusSkillsSecondBattle(f: PairedIxSkillsFixture, state: Game): Game {
   assert.ok(f.secondLocation);
   let game = advancePairedIxNexusSkills(state, g => g.phase === 6 && clean(g) && !!g.active);
   const actor = game.active!; assert.ok(actor === f.ixians || actor === f.opponent);
   game = stepPairedIxNexusSkills(game, { actor, action: { type: 'chooseBattle', territory: 'carthag', target: actor === f.ixians ? f.opponent : f.ixians } });
   return preparePairedIxNexusSkillsBattle(f, game);
 }
-export function preparePairedIxNexusSkillsExpiryBattle(f: PairedIxNexusSkillsFixture, state: Game): Game {
+export function preparePairedIxNexusSkillsExpiryBattle(f: PairedIxSkillsFixture, state: Game): Game {
   let game = advancePairedIxNexusSkills(state, g => g.phase === 5 && clean(g));
   reserveBoard(game); place(game, f.ixians, f.location, 3); place(game, f.tleilaxu, f.location, 2);
   game = advancePairedIxNexusSkills(game, g => g.phase === 6 && clean(g));

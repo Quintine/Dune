@@ -4,7 +4,6 @@ import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import { territory } from '../game/board';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
-import { bureaucratAlliedFundingModeSupported, bureaucratPaymentModeSupported } from '../game/bureaucrat-payment';
 import { advancePairedIxNexusSkills } from './fixture-paired-ix-nexus-skills';
 import {
   allowE1Responses, bureaucratE1PhysicalCards, chooseBureaucratE1Payment,
@@ -66,21 +65,6 @@ function assertShipmentCosts(f: BureaucratE1ShipmentFixture, game: Game): void {
   }
   assert.deepEqual(bureaucratE1PhysicalCards(game), f.physical);
 }
-
-void test('paired E1 no-Homeworlds nexus skills admit both Bureaucrat mode gates and nothing broader', () => {
-  const base = createBureaucratE1FundingBase({});
-  assert.deepEqual(base.game.expansions, ['ix']);
-  assert.equal(base.game.homeworlds, undefined);
-  assert.equal(bureaucratPaymentModeSupported(base.game), true);
-  assert.equal(bureaucratAlliedFundingModeSupported(base.game), true);
-  const single = structuredClone(base.game);
-  single.players = single.players.filter(p => p.id !== 'tleilaxu');
-  assert.equal(bureaucratPaymentModeSupported(single), false);
-  const multi = structuredClone(base.game);
-  multi.expansions = ['ix', 'choam'];
-  assert.equal(bureaucratPaymentModeSupported(multi), false);
-  assert.equal(bureaucratAlliedFundingModeSupported(multi), false);
-});
 
 for (const advanced of [false, true])
   for (const [payerShare, donorShare] of [[5, 3], [3, 5], [5, 5], [0, 5]])
@@ -400,4 +384,63 @@ void test('paired E1 Nexus Guild route: Guild Cunning is the Guild\'s own card a
   assert.equal(seat(paid, base.guild).reserves, seat(before, base.guild).reserves - 5);
   assert.deepEqual(seat(paid, base.guild).forces,
     { ...seat(before, base.guild).forces, [`${target}:${sector}`]: 5 });
+});
+
+// ---------------------------------------------------------------------------
+// The same genuine paired E1 roster selected without its Nexus Cards module:
+// no Nexus state is fabricated, and the real turn-two worm window and native
+// alliance remain the only route to an allied auction/shipment receipt.
+// ---------------------------------------------------------------------------
+
+
+for (const redirect of [false, true]) {
+  void test(`Basic no-Nexus paired E1 allied auction 5+3: ${redirect ? 'Bank two' : 'full Emperor income'} once, one card of record and the original next lot`, () => {
+    const f = createBureaucratE1AuctionFixture({ nexus: false, payerShare: 5, donorShare: 3 });
+    assert.equal(seat(f.beforeAction, f.donor).spice, seat(f.beforePledge, f.donor).spice - f.donorShare);
+    assert.equal(seat(f.beforeAction, f.payer).spice, seat(f.beforePledge, f.payer).spice);
+    const paid = payBureaucratE1Auction(f);
+    const pending = allowE1Responses(paid);
+    assert.equal(pending.decision?.kind, 'bureaucratPayment');
+    assert.equal(pending.bureaucratPayments?.pending?.source.payee, f.emperor);
+    assert.equal(pending.bureaucratPayments?.pending?.source.payer, f.payer);
+    assert.equal(pending.bureaucratPayments?.pending?.source.amount, f.amount);
+    const done = allowE1Responses(chooseBureaucratE1Payment(pending, redirect));
+    assertAuctionOutcome(f, done, redirect ? 2 : 0);
+    assert.equal(done.bureaucratPayments?.pending, undefined);
+  });
+
+  void test(`Basic no-Nexus paired E1 allied shipment 5+3: ${redirect ? 'Bank two' : 'full Guild income'} once, one army commitment and real Movement continuation`, () => {
+    const f = createBureaucratE1ShipmentFixture({ nexus: false, primary: 5, pledge: 3 });
+    const { game: paid } = declareBureaucratE1Shipment(f);
+    const pending = allowE1Responses(paid);
+    assert.equal(pending.decision?.kind, 'bureaucratPayment');
+    assert.equal(pending.bureaucratPayments?.pending?.source.payee, f.guild);
+    assert.equal(pending.bureaucratPayments?.pending?.source.payer, f.payer);
+    assert.equal(pending.bureaucratPayments?.pending?.source.amount, f.amount);
+    const done = allowE1Responses(chooseBureaucratE1Payment(pending, redirect));
+    assert.equal(seat(done, f.guild).spice, seat(f.beforePledge, f.guild).spice + f.amount - (redirect ? 2 : 0));
+    assert.equal(done.bureaucratPayments?.used.length ?? 0, redirect ? 1 : 0);
+    assertShipmentCosts(f, done);
+    assert.equal(done.phase, 5);
+    assert.equal(done.active, f.payer);
+    const ended = applyAction(structuredClone(done), f.payer, { type: 'endMovement' });
+    assert.notEqual(ended.active, f.payer);
+    assert.deepEqual(counters(ended), counters(done));
+  });
+}
+
+void test('Basic no-Nexus paired E1 receipts never pool two sub-five shares and never mint a card', () => {
+  const auction = createBureaucratE1AuctionFixture({ nexus: false, payerShare: 3, donorShare: 3 });
+  const auctionDone = allowE1Responses(payBureaucratE1Auction(auction));
+  assert.notEqual(auctionDone.decision?.kind, 'bureaucratPayment');
+  assert.equal(auctionDone.bureaucratPayments?.pending, undefined);
+  assert.equal(auctionDone.bureaucratPayments?.used.length ?? 0, 0);
+  assert.equal(seat(auctionDone, auction.emperor).spice, seat(auction.beforePledge, auction.emperor).spice + 6);
+  assertAuctionOutcome(auction, auctionDone, 0);
+  const shipment = createBureaucratE1ShipmentFixture({ nexus: false, primary: 3, pledge: 3 });
+  const shipmentDone = allowE1Responses(declareBureaucratE1Shipment(shipment).paid);
+  assert.notEqual(shipmentDone.decision?.kind, 'bureaucratPayment');
+  assert.equal(shipmentDone.bureaucratPayments?.used.length ?? 0, 0);
+  assert.equal(seat(shipmentDone, shipment.guild).spice, seat(shipment.beforePledge, shipment.guild).spice + 6);
+  assertShipmentCosts(shipment, shipmentDone);
 });

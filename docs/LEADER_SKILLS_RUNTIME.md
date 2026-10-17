@@ -7,6 +7,22 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Registered native allied Bureaucrat receipts — 18 October 2026
+
+Single and actual allied receipts now share the ordinary Skills capability.
+Registered all14 selected-family tables need no incidental Nexus Cards or exact
+single family for otherwise supported auction/shipment funding. Original
+module/Advanced role admission, individual payer thresholds, private shares,
+native income cancellation, full costs and Bank2 remain. No new ruling or
+played-save conversion occurs.
+
+Real no-Nexus E1/E3 normal starts, actual Advanced Guild interception and an
+unused selected CHOAM deck retain original armies, escrow and continuation.
+Frozen17-file442/442, types/lint/build and three actual390px native controls
+pass. All four legal policies settle the genuine Advanced E1 receipt without
+changing Carthag10/HMS6. Full-mode/AI calibration and deferred assurance remain.
+[Source, exact receipts and limits](BUREAUCRAT_PAYMENTS.md#registered-native-allied-receipts--18-october-2026).
+
 ## Registered native E3 selected decks — 18 October 2026
 
 Fresh all14 now validates every registered actual seat against its selected

@@ -32,6 +32,9 @@ export interface PairedE3NexusOptions {
   initial?: Game;
   roster?: readonly FactionId[];
   advanced?: boolean;
+  nexus?: boolean;
+  /** Additional ordinary decks selected before setup; no extra faction seat. */
+  families?: readonly ('ix' | 'choam')[];
   skills?: boolean;
   training?: Partial<Record<FactionId, LeaderSkillId>>;
   homeworlds?: boolean;
@@ -145,7 +148,7 @@ function selectedSkills(g: Game, training?: PairedE3NexusOptions['training']): L
   return g.players.map(p => training?.[p.faction] ?? preferred[p.faction]!);
 }
 function traitorRolls(g: Game, faction: 'guild' | 'ecaz' = 'guild'): number[] {
-  const original = traitorDeck(g.players), loyal = g.advanced ? chooseEcazLoyalty(original, 0xffffffff / 0x100000000) : null;
+  const original = traitorDeck(g.players, g.expansions.includes('ix')), loyal = g.advanced ? chooseEcazLoyalty(original, 0xffffffff / 0x100000000) : null;
   const source = original.filter(c => c !== loyal), desired = [...source];
   const target = faction === 'ecaz' ? source.find(card => leaders('ecaz').some(l => l.id === card))
     : leaders('guild').find(l => l.name === 'Master Bewt')?.id;
@@ -160,16 +163,20 @@ function traitorRolls(g: Game, faction: 'guild' | 'ecaz' = 'guild'): number[] {
 export function createPairedE3NexusSetup(options: PairedE3NexusOptions = {}): PairedE3NexusSetup {
   const roster = options.roster ?? options.initial?.players.map(p => p.faction) ?? ['ecaz', 'moritani', 'guild', 'emperor'];
   const advanced = options.advanced ?? options.initial?.advanced ?? true;
+  const nexus = options.nexus ?? true;
+  const families = options.families ?? options.initial?.expansions.filter((e): e is 'ix' | 'choam' => e === 'ix' || e === 'choam') ?? [];
   let g = options.initial ? pairedE3NexusReload(options.initial)
-    : createGame('PAIREDE3NEXUS', newPlayer(roster[0], roster[0], roster[0]), advanced, ['ecaz']);
+    : createGame('PAIREDE3NEXUS', newPlayer(roster[0], roster[0], roster[0]), advanced, ['ecaz', ...families]);
   if (!options.initial) for (const faction of roster.slice(1)) joinGame(g, newPlayer(faction, faction, faction));
-  assert.equal(g.advanced, advanced); assert.deepEqual(g.expansions, ['ecaz']);
+  assert.equal(g.advanced, advanced); assert.deepEqual([...g.expansions].sort(), ['ecaz', ...families].sort());
+  assert.equal(new Set(families).size, families.length);
   assert.deepEqual(g.players.map(p => p.faction), roster);
   assert.ok(g.players.length >= 2 && g.players.length <= 6 && new Set(roster).size === roster.length);
   assert.ok(roster.includes('ecaz') && roster.includes('moritani'));
   assert.ok(roster.every(f => ['ecaz', 'moritani', 'guild', 'emperor', 'atreides', 'fremen', 'beneGesserit',
     ...(advanced ? [] : ['harkonnen'])].includes(f)));
   const skills = options.skills ?? (options.initial ? !!g.leaderSkills : false);
+  assert.ok(nexus || skills, 'The no-Nexus route keeps the original all14 Skills module');
   const discovery = options.discovery ?? !!g.discoveryEnabled;
   const modules = { homeworlds: options.homeworlds ?? !!g.homeworlds,
     techTokens: options.tech ?? !!g.techTokens, strongholdCards: options.strongholds ?? !!g.strongholdCards };
@@ -181,14 +188,27 @@ export function createPairedE3NexusSetup(options: PairedE3NexusOptions = {}): Pa
   if (g.status === 'lobby') {
     for (const [type, enabled] of Object.entries(modules)) if (!!g[type as keyof typeof modules] !== enabled)
       g = stepPairedE3Nexus(g, { actor: g.host, action: { type, enabled } }, actions);
-    g.discoveryEnabled = discovery; g.nexusCards ??= { cards: null, phase: null };
+    g.discoveryEnabled = discovery;
+    if (nexus) g.nexusCards ??= { cards: null, phase: null };
+    else {
+      assert.equal(g.nexusCards, undefined, 'Never erase a selected or played Nexus component');
+      g = stepPairedE3Nexus(g, { actor: g.host,
+        action: { type: 'moduleOption', module: 'leaderSkills', enabled: true } }, actions);
+    }
     for (const p of g.players) if (!p.ready) g = stepPairedE3Nexus(g, { actor: p.id, action: { type: 'ready' } }, actions);
-    if (options.initial) g = skills ? initializeLeaderSkillsGameForAudit(g) : initializePairedNexusGameForAudit(g);
+    const initialize = () => {
+      if (nexus) return skills ? initializeLeaderSkillsGameForAudit(g) : initializePairedNexusGameForAudit(g);
+      const step: PairedE3NexusStep = { actor: g.host,
+        action: advanced ? { type: 'start', advancedPreview: true } : { type: 'start' } };
+      actions.push(structuredClone(step));
+      return applyAction(pairedE3NexusReload(g), step.actor, step.action);
+    };
+    if (options.initial) g = initialize();
     else {
       const sourceSkills = LEADER_SKILL_CARDS.map(c => c.id), selected = selectedSkills(g, options.training);
       const rest = sourceSkills.filter(c => !selected.includes(c));
       const skillOrder = selected.flatMap(c => [c, rest.shift()!]).concat(rest);
-      const cards = treacheryDeck(['ecaz']), remaining = [...cards];
+      const cards = treacheryDeck(g.expansions), remaining = [...cards];
       const prefix = g.players.flatMap(p => Array.from({ length: p.faction === 'harkonnen' ? 2 : 1 }, () => {
         const worthless = remaining.findIndex(c => c.kind === 'worthless');
         const at = worthless >= 0 ? worthless : remaining.findIndex(c => c.kind === 'shield'); assert.ok(at >= 0);
@@ -196,16 +216,17 @@ export function createPairedE3NexusSetup(options: PairedE3NexusOptions = {}): Pa
       }));
       const rolls = [...(skills ? permutation(sourceSkills, skillOrder) : []),
         ...(discovery ? Array<number>(7).fill(0xffffffff) : []),
-        ...Array<number>(NEXUS_FACTIONS.length - 1).fill(0xffffffff),
+        ...(nexus ? Array<number>(NEXUS_FACTIONS.length - 1).fill(0xffffffff) : []),
         ...permutation(cards.map(c => c.id), [...prefix, ...remaining.map(c => c.id)]),
-        ...Array<number>(spiceDeck().length + (discovery ? DISCOVERY_SPICE_CARDS.length + 1 : 0) - 1).fill(0xffffffff),
+        ...Array<number>(spiceDeck(g.expansions.includes('ix')).length + (discovery ? DISCOVERY_SPICE_CARDS.length + 1 : 0) - 1).fill(0xffffffff),
         ...(!skills && !roster.includes('beneGesserit') ? traitorRolls(g, options.assassinationFaction) : [])];
-      g = lottery(rolls, () => skills ? initializeLeaderSkillsGameForAudit(g) : initializePairedNexusGameForAudit(g));
+      g = lottery(rolls, initialize);
     }
   }
   assert.equal(!!g.leaderSkills, skills); assert.equal(!!g.discoveries, discovery);
   for (const [type, enabled] of Object.entries(modules)) assert.equal(!!g[type as keyof typeof modules], enabled);
-  assert.ok(g.nexusCards?.cards);
+  if (nexus) assert.ok(g.nexusCards?.cards);
+  else assert.equal(g.nexusCards, undefined);
   const offered = pairedE3NexusReload(g), selected = selectedSkills(g, options.training);
   for (let n = 0; g.status === 'setup' && n < 300; n++) {
     let next: PairedE3NexusStep;
@@ -279,6 +300,11 @@ export function createPairedE3NexusProgramme(options: PairedE3NexusOptions = {})
   for (const [actor, target] of [[f.others[0], f.others[1]], [f.others[1], f.others[0]]])
     g = stepPairedE3Nexus(g, { actor, action: { type: 'alliance', target } }, f.actions);
   const alliance = pairedE3NexusReload(g);
+  if (!g.nexusCards) {
+    g = advancePairedE3Nexus(g, s => s.phase === 5 && pairedE3NexusClean(s), f.actions, quietPairedE3NexusChoice);
+    pairedE3NexusInventory(g);
+    return { ...f, game: g, alliance, drawing: null, draws: [], maker, claim, firstMentat };
+  }
   g = advancePairedE3Nexus(g, s => s.nexusCards?.phase?.stage === 'drawing' && pairedE3NexusClean(s), f.actions, quietPairedE3NexusChoice);
   const cards = g.nexusCards!.cards!;
   cards.deck = ['ecaz', 'moritani', ...cards.deck.filter(c => c !== 'ecaz' && c !== 'moritani')];
@@ -350,10 +376,12 @@ export function quotePairedE3NexusBattle(g: Game): BattleResolutionQuote {
     pendingAuditorPresent: false, pendingRetentionPresent: false, nexusMoritani: true });
 }
 export function pairedE3NexusInventory(g: Game): void {
-  const nx = g.nexusCards!.cards!; validateNexusCards(nx, g.players);
-  assert.deepEqual([...nx.deck, ...nx.discard, ...Object.values(nx.hands).filter(c => c !== null)].sort(), [...NEXUS_FACTIONS].sort());
+  if (g.nexusCards) {
+    const nx = g.nexusCards.cards!; validateNexusCards(nx, g.players);
+    assert.deepEqual([...nx.deck, ...nx.discard, ...Object.values(nx.hands).filter(c => c !== null)].sort(), [...NEXUS_FACTIONS].sort());
+  }
   const auction = g.auction?.cards.slice(g.auction.index + (g.currentAuctionSale ? 1 : 0)) ?? [];
-  assert.deepEqual([...g.deck, ...g.discard, ...g.players.flatMap(p => p.hand), ...auction].map(c => c.id).sort(), treacheryDeck(['ecaz']).map(c => c.id).sort());
+  assert.deepEqual([...g.deck, ...g.discard, ...g.players.flatMap(p => p.hand), ...auction].map(c => c.id).sort(), treacheryDeck(g.expansions).map(c => c.id).sort());
   assert.equal(g.richeseCache?.length ?? 0, 0);
   if (g.leaderSkills) {
     validateLeaderSkills(g.leaderSkills, g.players);
@@ -372,7 +400,7 @@ export function pairedE3NexusInventory(g: Game): void {
   }
   const retired = g.moritaniAssassinate?.opportunities.filter(r => r.stage === 'replaced').map(r => r.card!) ?? [];
   assert.deepEqual([...g.traitorReserve!, ...g.players.flatMap(p => [...p.traitors, ...p.traitorChoices]), ...retired,
-    ...(g.ecazLoyalty?.card ? [g.ecazLoyalty.card] : [])].sort(), traitorDeck(g.players).sort());
+    ...(g.ecazLoyalty?.card ? [g.ecazLoyalty.card] : [])].sort(), traitorDeck(g.players, g.expansions.includes('ix')).sort());
   assert.equal(pairedE3NexusPlayer(g, g.players.find(p => p.faction === 'ecaz')!.id).leaders.length, 5);
   assert.equal(g.dukeVidal!.leader.id, DUKE_VIDAL_ID); validateAmbassadors(g.ecazAmbassadors!);
   assert.deepEqual(g.moritaniTerror!.tokens.map(t => t.kind).sort(), [...TERROR_KINDS].sort());

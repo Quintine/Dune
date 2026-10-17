@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 18 October 2026 — Registered native allied Bureaucrat receipts
+
+A genuine Basic no-Nexus Eca/Mori all14 table, real worm alliance and original
+Mori pledge5 reproduced an unchanged rejection of the cost10/five-force shipment.
+The extra allied-only classifier is deleted; all engine guard/stamp/validation
+callers use the existing ordinary receipt capability, with no alias. Obsolete
+private guard arguments and profile-only tests are removed, not re-pinned.
+Thresholds, private contribution legs, original native costs/callbacks, Bank2,
+once-per-phase use and module/Advanced role admission stay.
+
+Default-preserving E1/E3 original producers add no-Nexus normal starts and an
+unused selected CHOAM deck. New plain E1 funding preserves native starting
+armies rather than inheriting the older Nexus battle producer's board-return
+staging. Actual Advanced native Guild interception still precedes the receipt.
+Four legal policies preserve Carthag10/HMS6, settle3+5 once and resume Ixian
+movement. No physical source, income award or phase is invented.
+
+Frozen17-file **442/442**, focused original nonstronghold1/1, types/lint/build and
+actual controllers pass. Three390px original GameTable flows prove native
+allowance→Bank2/Collection, full Advanced extra-deck auction income→next lot,
+and original Karama cancellation→no offer/use with one acquired card. Errors
+and overflow are absent. Temporary routes/memory are removed/released204;
+existing games and server are untouched. Existing build warnings remain.
+No new source ruling, full-mode, deployed, calibration or assurance claim.
+[Current scope/evidence](BUREAUCRAT_PAYMENTS.md#registered-native-allied-receipts--18-october-2026).
+
 ## 18 October 2026 — Registered native E3 selected-deck Skills
 
 Sixteen normal mixed-native/unused-deck/plain/card starts reject before.
@@ -3078,8 +3104,8 @@ receives the fee minus two and exactly two goes to the Bank. Neither printed car
 addresses the other, so this is an explicit ruling rather than a source
 derivation. A new bounded composition implements it:
 `guildBetrayalNexusLeaderSkillsProfile` (classic Nexus plus Leader Skills plus
-the Betrayal preview) is admitted by `bureaucratPaymentModeSupported`,
-`bureaucratAlliedFundingModeSupported` and `guildBetrayalModeSupported`, and
+the Betrayal preview) is admitted by the ordinary Bureaucrat receipt capability
+and `guildBetrayalModeSupported`, and
 `initializeGuildBetrayalLeaderSkillsGameForAudit` deals the composition from a
 fresh classic native-Guild lobby. No other Betrayal or preview composition is
 admitted, and existing no-skills Betrayal behavior is unchanged.
@@ -3122,9 +3148,9 @@ save/deployed or full-mode claim is opened by this bounded proof.
 
 ## 13 October 2026 — Homeworld allied income and two Bureaucrat rulings
 
-`bureaucratAlliedFundingModeSupported` now returns `homeworldLeaderSkillsProfile`
-for Homeworlds games, so qualifying allied-funded ordinary auction and
-Guild-shipment income in Homeworlds + Leader Skills compositions offer the
+The Homeworld Skills capability now connects qualifying allied-funded
+ordinary auction and Guild-shipment income in Homeworlds + Leader Skills
+compositions to the
 one-time two-spice redirection. Nothing broader opened: multi-expansion,
 preview overlays and the occupation/Betrayal previews remain excluded.
 

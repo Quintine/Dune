@@ -9,8 +9,9 @@ import { territory } from '../game/board';
 import {
   advancePairedIxNexusSkills, createPairedIxNexusSkillsFixture,
   finishPairedIxNexusSkillsBattle, pairedIxNexusSkillsPlayer,
-  revealPairedIxNexusSkillsBattle, type PairedIxNexusSkillsFixture,
+  revealPairedIxNexusSkillsBattle, type PairedIxSkillsFixture,
 } from './fixture-paired-ix-nexus-skills';
+import { skillOfferRolls } from './fixture-independent-card-modules';
 
 export type BureaucratE1FundingStep = { actor: string; action: Action };
 const clean = (game: Game) => !game.phaseOpening && !game.response && !game.decision;
@@ -25,8 +26,9 @@ export const BUREAUCRAT_E1_REVIVAL_ROSTER = ['ixians', 'tleilaxu', 'atreides', '
 export const BUREAUCRAT_E1_REVIVAL_TRAINER = 'harkonnen';
 
 /** Original 47/14/12 setup → real Storm → real Mentat → conserved worm →
- * real alliance → real closing draws. Only the native all14 shuffle is scoped;
- * wallets, phases, assignments and armies are never assigned. */
+ * real alliance and, unless the Nexus Cards module is omitted, its real closing
+ * native draws. Only the native all14 shuffle is scoped; wallets, phases,
+ * assignments and armies are never assigned. */
 function entropy<T>(operation: () => T, rolls: number[] = []): T {
   const descriptor = Object.getOwnPropertyDescriptor(crypto, 'getRandomValues');
   const original = crypto.getRandomValues.bind(crypto);
@@ -60,33 +62,39 @@ function skillRolls(selected: LeaderSkillId[]): number[] {
   return shuffleRolls(source, [...desired, ...remainder]);
 }
 /** Only the native all14 shuffle order is scoped, so the named classic seat can
- * genuinely select the Bureaucrat card from its own original offer. */
+ * genuinely select the Bureaucrat card from its own original offer. The default
+ * selects the original Nexus Cards module; `nexus: false` instead selects the
+ * ordinary Leader Skills module in the real lobby and starts it normally. */
 function pairedE1Initial(
   code: string,
   factions: readonly string[],
   trainer: string,
   skills: Record<string, LeaderSkillId>,
   advanced: boolean,
+  nexus: boolean,
 ): Game {
   let game = createGame(code, newPlayer('ixians', 'Ixians', 'ixians'), advanced, ['ix']);
   for (const faction of factions.slice(1)) joinGame(game, newPlayer(faction, faction, faction as FactionId));
-  game.nexusCards ??= { cards: null, phase: null };
+  if (nexus) game.nexusCards ??= { cards: null, phase: null };
+  else game = applyAction(game, game.host, { type: 'moduleOption', module: 'leaderSkills', enabled: true });
   for (const p of game.players) if (!p.ready) game = applyAction(game, p.id, { type: 'ready' });
   assert.ok(factions.includes(trainer) && skills[trainer] === 'bureaucrat' && skills.ixians === 'suk-graduate');
   const selected = game.players.map(p => skills[p.faction]);
-  return entropy(() => initializeLeaderSkillsGameForAudit(game), skillRolls(selected));
+  return nexus ? entropy(() => initializeLeaderSkillsGameForAudit(game), skillRolls(selected))
+    : entropy(() => applyAction(game, game.host, advanced ? { type: 'start', advancedPreview: true } : { type: 'start' }),
+      skillOfferRolls(game, skills));
 }
 /** Build the shared paired E1 fixture with the native skills requested. The
  * shared helper assigns each seat the first card of its genuine offer. */
-function pairedE1Skills(factions: readonly string[], trainer: string, advanced: boolean): PairedIxNexusSkillsFixture {
+function pairedE1Skills(factions: readonly string[], trainer: string, advanced: boolean, nexus = true): PairedIxSkillsFixture {
   const skills: Record<string, LeaderSkillId> = {
     ixians: 'suk-graduate', tleilaxu: 'sandmaster', guild: 'smuggler',
     emperor: 'rihani-decipherer', atreides: 'prana-bindu-adept', harkonnen: 'killer-medic',
     [trainer]: 'bureaucrat',
   };
   const fixture = createPairedIxNexusSkillsFixture({
-    initial: pairedE1Initial(`BUREAUCRATE1${factions.length}${advanced ? 'A' : 'B'}`, factions, trainer, skills, advanced),
-    advanced, skill: 'suk-graduate',
+    initial: pairedE1Initial(`BUREAUCRATE1${factions.length}${advanced ? 'A' : 'B'}`, factions, trainer, skills, advanced, nexus),
+    advanced, nexus, skill: 'suk-graduate',
   });
   assert.equal(fixture.afterSetup.leaderSkills!.assignments.find(a => a.skill === 'bureaucrat')?.owner, trainer);
   return fixture;
@@ -107,9 +115,9 @@ export function chooseBureaucratE1Payment(game: Game, redirect = true): Game {
 }
 
 export interface BureaucratE1FundingBase {
-  fixture: PairedIxNexusSkillsFixture;
+  fixture: PairedIxSkillsFixture;
   actions: BureaucratE1FundingStep[];
-  /** Turn-2 Nexus window before the requested real alliance forms. */
+  /** Turn-2 worm spice-blow window before the requested real alliance forms. */
   worm: Game;
   /** Genuine mutual alliance between the payer and the requested donor. */
   alliance: Game;
@@ -123,14 +131,15 @@ export interface BureaucratE1FundingBase {
   guild: string;
   emperor: string;
 }
-/** Genuine paired E1 setup with skills, a real worm Nexus and a real mutual
- * alliance between the payer and the requested donor. Never assigns wallets,
- * armies, phase, assignment or alliance state. */
+/** Genuine paired E1 setup with skills, the real turn-two worm window and a real
+ * mutual alliance between the payer and the requested donor; the original Nexus
+ * Cards module is selected by default and omitted by `nexus: false`. Never
+ * assigns wallets, armies, phase, assignment or alliance state. */
 export function createBureaucratE1FundingBase({
-  advanced = false, payer = 'harkonnen', donor = 'ixians',
-}: { advanced?: boolean; payer?: string; donor?: string } = {}): BureaucratE1FundingBase {
+  advanced = false, nexus = true, payer = 'harkonnen', donor = 'ixians',
+}: { advanced?: boolean; nexus?: boolean; payer?: string; donor?: string } = {}): BureaucratE1FundingBase {
   assert.notEqual(payer, donor);
-  const fixture = pairedE1Skills(BUREAUCRAT_E1_ROSTER, BUREAUCRAT_E1_TRAINER, advanced);
+  const fixture = pairedE1Skills(BUREAUCRAT_E1_ROSTER, BUREAUCRAT_E1_TRAINER, advanced, nexus);
   const actions: BureaucratE1FundingStep[] = [];
   let game = structuredClone(fixture.beforeAlliance);
   assert.equal(game.turn, 2); assert.equal(game.phase, 1);
@@ -178,9 +187,9 @@ export function bureaucratE1PhysicalCards(game: Game): string[] {
 }
 
 export function createBureaucratE1AuctionFixture({
-  advanced = false, payerShare = 5, donorShare = 3, donor = 'ixians',
-}: { advanced?: boolean; payerShare?: number; donorShare?: number; donor?: string } = {}): BureaucratE1AuctionFixture {
-  const base = createBureaucratE1FundingBase({ advanced, donor });
+  advanced = false, nexus = true, payerShare = 5, donorShare = 3, donor = 'ixians',
+}: { advanced?: boolean; nexus?: boolean; payerShare?: number; donorShare?: number; donor?: string } = {}): BureaucratE1AuctionFixture {
+  const base = createBureaucratE1FundingBase({ advanced, nexus, donor });
   const actions = [...base.actions];
   let game = structuredClone(base.game);
   for (let n = 0; game.auction!.active !== base.payer && n < game.players.length + 2; n++) {
@@ -239,9 +248,9 @@ export interface BureaucratE1ShipmentFixture extends BureaucratE1FundingBase {
 }
 
 export function createBureaucratE1ShipmentFixture({
-  advanced = false, primary = 5, donor = 'ixians', pledge = 3,
-}: { advanced?: boolean; primary?: number; donor?: string; pledge?: number } = {}): BureaucratE1ShipmentFixture {
-  const base = createBureaucratE1FundingBase({ advanced, donor });
+  advanced = false, nexus = true, primary = 5, donor = 'ixians', pledge = 3,
+}: { advanced?: boolean; nexus?: boolean; primary?: number; donor?: string; pledge?: number } = {}): BureaucratE1ShipmentFixture {
+  const base = createBureaucratE1FundingBase({ advanced, nexus, donor });
   const actions = [...base.actions];
   let game = structuredClone(base.game);
   const payer = base.payer;
@@ -285,7 +294,7 @@ export function declareBureaucratE1Shipment(
 // ---------------------------------------------------------------------------
 
 export interface BureaucratE1RevivalFixture {
-  fixture: PairedIxNexusSkillsFixture;
+  fixture: PairedIxSkillsFixture;
   actions: BureaucratE1FundingStep[];
   staging: string[];
   game: Game;
@@ -318,9 +327,9 @@ function holdE1Card(
  * to the tanks, then Tleilaxu's native expanded-limit benefit genuinely lets a
  * five-force paid revival exceed five spice. Never assigns wallets or tanks. */
 export function createBureaucratE1RevivalFixture({
-  advanced = false, payer = 'atreides', amount = 5, counter = false,
-}: { advanced?: boolean; payer?: string; amount?: number; counter?: boolean } = {}): BureaucratE1RevivalFixture {
-  const fixture = pairedE1Skills(BUREAUCRAT_E1_REVIVAL_ROSTER, BUREAUCRAT_E1_REVIVAL_TRAINER, advanced);
+  advanced = false, nexus = true, payer = 'atreides', amount = 5, counter = false,
+}: { advanced?: boolean; nexus?: boolean; payer?: string; amount?: number; counter?: boolean } = {}): BureaucratE1RevivalFixture {
+  const fixture = pairedE1Skills(BUREAUCRAT_E1_REVIVAL_ROSTER, BUREAUCRAT_E1_REVIVAL_TRAINER, advanced, nexus);
   const actions: BureaucratE1FundingStep[] = [];
   const staging: string[] = [];
   assert.notEqual(payer, BUREAUCRAT_E1_REVIVAL_TRAINER);

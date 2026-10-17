@@ -7,7 +7,7 @@ import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsu
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
 import { leaderSkillCard } from './leader-skill-cards';
-import { bureaucratAlliedFundingModeSupported, bureaucratPaymentModeSupported, bureaucratPaymentSignature, bureaucratUsed, quoteBureaucratPayment, type BureaucratPaymentSource, type BureaucratPaymentUse, type BureaucratPaymentView } from './bureaucrat-payment';
+import { bureaucratPaymentModeSupported, bureaucratPaymentSignature, bureaucratUsed, quoteBureaucratPayment, type BureaucratPaymentSource, type BureaucratPaymentUse, type BureaucratPaymentView } from './bureaucrat-payment';
 import { MENTAT_EMPTY_HAND, MentatQuestionError, mentatQuestionModeSupported, mentatWeaponNames, mentatHand, quoteMentatReveal, mentatSignature, type MentatQuestionReceipt, type MentatObservation, type MentatView } from './mentat-question';
 import {
   usesPlanetologistBattleSpecial, planetologistSpecialNeedsChoice,
@@ -9079,15 +9079,13 @@ function bureaucratPaymentQuote(g: Game,source: Pick<BureaucratPaymentSource,'pa
   const owner = nativeBureaucrat(g)?.owner ?? null;
   return quoteBureaucratPayment({...source,owner,turn:g.turn,phase:g.phase,used:g.bureaucratPayments?.used ?? []});
 }
-function checkBureaucratContributors(g: Game,payee:string|undefined,shares:{payer:string;amount:number}[],privateFunding=false) {
+function checkBureaucratContributors(g: Game,payee:string|undefined,shares:{payer:string;amount:number}[]) {
   if (!g.leaderSkills || !payee) return;
   const paid = shares.filter(share => share.amount > 0);
   const owner = nativeBureaucrat(g)?.owner;
   if (!owner || owner === payee || bureaucratUsed(g.bureaucratPayments?.used ?? [],g.turn,g.phase) ||
     !paid.some(share => share.amount >= 5 && share.payer !== owner && share.payer !== payee)) return;
   requireRule(bureaucratPaymentModeSupported(g),'Bureaucrat with other optional modules is still being integrated.');
-  requireRule(paid.length === 1 && !privateFunding || bureaucratAlliedFundingModeSupported(g),
-    'Bureaucrat on allied funding or multiple payer contributions in this module composition is awaiting integration.');
 }
 function stampBureaucratPayment(g: Game,kind:BureaucratPaymentSource['kind'],payer:string,payee:string,amount:number,
   contributions?:BureaucratPaymentSource['contributions']):
@@ -9103,7 +9101,7 @@ function stampBureaucratContributors(g:Game,kind:'auction'|'shipment',payee:stri
   const paid = shares.filter(share => share.amount > 0);
   if (!privateFunding && paid.length === 1)
     return stampBureaucratPayment(g,kind,paid[0].payer,payee,paid[0].amount);
-  if (!bureaucratAlliedFundingModeSupported(g)) return {};
+  if (!bureaucratPaymentModeSupported(g)) return {};
   const owner = nativeBureaucrat(g)?.owner;
   const qualifying = paid.find(share => share.amount >= 5 && share.payer !== owner && share.payer !== payee);
   return qualifying ? stampBureaucratPayment(g,kind,qualifying.payer,payee,
@@ -9125,7 +9123,7 @@ function validateBureaucratSource(g: Game,source:BureaucratPaymentSource) {
     Number.isSafeInteger(source.amount) && source.amount >= 5 && source.signature === bureaucratPaymentSignature(source),
     'The saved Bureaucrat payment changed its actual payer, payee, amount or event.');
   if (source.contributions) {
-    requireRule(bureaucratAlliedFundingModeSupported(g) && source.privateFunding === true &&
+    requireRule(bureaucratPaymentModeSupported(g) && source.privateFunding === true &&
       (source.kind === 'auction' || source.kind === 'shipment') &&
       source.contributions.length >= 1 && source.contributions.length <= 2 &&
       source.contributions.every(share => g.players.some(player => player.id === share.payer)) &&
@@ -17854,7 +17852,7 @@ function checkShipmentIncomeFunding(g: Game, p: Player, cost: number, allyPaymen
   if (!guild) return;
   const amounts = shipmentIncomeContributions(g, p, cost, allyPayment);
   checkBureaucratContributors(g,g.karamaShipping?.player === p.id ? undefined : guild.id,[{payer:p.id,amount:p.id === guild.id ? 0 : cost-allyPayment},
-    ...(allyPayment ? [{payer:p.ally!,amount:p.ally === guild.id ? 0 : allyPayment}] : [])],allyPayment > 0);
+    ...(allyPayment ? [{payer:p.ally!,amount:p.ally === guild.id ? 0 : allyPayment}] : [])]);
   validateGuildPaymentContributions(g, amounts.reduce((sum, amount) => sum + amount, 0), amounts);
 }
 function guildPaymentResponse(g: Game, owner: string, amounts: number[],payer?:string,
@@ -32834,7 +32832,7 @@ function applyActionInner(
       validateRicheseFunding(amount, allyPayment, ownAvailable, allyAvailable);
     if (amount !== null) {
       const parties = auctionBureaucratParties(g,p,amount,allyPayment,lot.owner);
-      checkBureaucratContributors(g,parties.payee,parties.shares,allyPayment > 0);
+      checkBureaucratContributors(g,parties.payee,parties.shares);
     }
     g.richeseAuction = submitRicheseBid(
       lot,
@@ -32888,7 +32886,7 @@ function applyActionInner(
           ? contribution(g, p, a.bid, action.allyPayment)
           : 0;
       const parties = auctionBureaucratParties(g,p,a.bid,a.allyPayment);
-      checkBureaucratContributors(g,parties.payee,parties.shares,a.allyPayment > 0);
+      checkBureaucratContributors(g,parties.payee,parties.shares);
       a.bidder = id;
       a.passed = [];
     } else if (!a.passed.includes(id)) a.passed.push(id);

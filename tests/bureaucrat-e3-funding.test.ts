@@ -3,7 +3,8 @@ import test from 'node:test';
 import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
-import { advancePairedE3Nexus, quietPairedE3NexusChoice, pairedE3NexusClean } from './fixture-paired-e3-nexus-modules';
+import { advancePairedE3Nexus, quietPairedE3NexusChoice, pairedE3NexusClean,
+  pairedE3NexusInventory } from './fixture-paired-e3-nexus-modules';
 import {
   allowE3Responses, bureaucratE3PhysicalCards, chooseBureaucratE3Payment,
   createBureaucratE3AuctionFixture, createBureaucratE3ShipmentFixture,
@@ -304,3 +305,112 @@ for (const advanced of [false, true]) {
     }
   });
 }
+
+void test('Basic no-Nexus E3 allied nonstronghold shipment pays ten for five physical forces; native cancellation precedes one Bank diversion', () => {
+  const f = createBureaucratE3ShipmentFixture({
+    nexus: false, primary: 5, pledge: 5, target: 'habbanya_erg', counter: true,
+  });
+  assert.equal(seat(f.beforeAction, f.donor).spice, seat(f.beforePledge, f.donor).spice - 5);
+  assert.equal(f.beforeAction.aid[f.donor].amount, 5);
+  assert.deepEqual(counters(f.beforeAction), counters(f.beforePledge));
+  const { paid } = declareBureaucratE3Shipment(f);
+  assert.equal(paid.response?.kind, 'guildIncome');
+  assert.equal(paid.response?.amount, 10);
+  assert.equal(viewGame(paid, f.trainer).responseControls?.cancelCards.includes(f.counterCard!), true);
+  assertShipmentCosts(f, paid);
+  assert.equal(seat(paid, f.payer).forces[`${f.target}:17`], 5);
+  const canceled = allowE3Responses(applyAction(structuredClone(paid), f.trainer,
+    { type: 'card', card: f.counterCard!, mode: 'cancel' }));
+  assert.equal(seat(canceled, f.guild).spice, seat(f.beforePledge, f.guild).spice);
+  assert.equal(canceled.bureaucratPayments?.used.length ?? 0, 0);
+  assert.equal(viewGame(canceled, f.trainer).bureaucrat.pending, null);
+  assert.notEqual(canceled.decision?.kind, 'bureaucratPayment');
+  assert.equal(canceled.discard.filter((card) => card.id === f.counterCard).length, 1);
+  assertShipmentCosts(f, canceled);
+  assert.equal(canceled.phase, 5);
+  assert.equal(canceled.active, f.payer);
+
+  const pending = allowE3Responses(structuredClone(paid));
+  assert.equal(pending.decision?.kind, 'bureaucratPayment');
+  assert.equal(pending.decision?.player, f.trainer);
+  for (const viewer of [f.trainer, f.emperor]) {
+    const invoice = viewGame(pending, viewer).bureaucrat.pending!;
+    assert.equal(invoice.payer, null);
+    assert.equal(invoice.amount, 10);
+    assert.equal(invoice.payee, f.guild);
+    assert.equal('contributions' in invoice, false);
+    assert.equal('signature' in invoice, false);
+  }
+  const done = allowE3Responses(chooseBureaucratE3Payment(pending));
+  assertShipmentCosts(f, done);
+  assert.equal(seat(done, f.guild).spice, seat(f.beforePledge, f.guild).spice + 8);
+  assert.equal(done.bureaucratPayments?.used.length, 1);
+  assert.deepEqual(hand(done, f.trainer), hand(f.beforeAction, f.trainer));
+  assert.equal(done.decision, null);
+  assert.equal(done.phase, 5);
+  assert.equal(done.active, f.payer);
+  pairedE3NexusInventory(done);
+  const moved = applyAction(structuredClone(done), f.payer, { type: 'endMovement' });
+  assert.equal(moved.active, null);
+  assert.equal(moved.phase, 7);
+  assert.equal(moved.decision, null);
+  assert.deepEqual(counters(moved), counters(done));
+});
+
+void test('Advanced no-Nexus E3 auction with an unused selected CHOAM deck qualifies the donor alone and resumes the original lot after native allowance', () => {
+  const f = createBureaucratE3AuctionFixture({
+    advanced: true, nexus: false, families: ['choam'], payerShare: 3, donorShare: 5, counter: true,
+  });
+  assert.equal(f.worm.nexus, true);
+  assert.ok(f.worm.players.every((p) => p.ally === null));
+  assert.equal(seat(f.alliance, f.payer).ally, f.donor);
+  assert.equal(seat(f.alliance, f.donor).ally, f.payer);
+  assert.equal(seat(f.beforeAction, f.donor).spice, seat(f.beforePledge, f.donor).spice - 5);
+  assert.equal(f.beforeAction.aid[f.donor].amount, 5);
+  const paid = payBureaucratE3Auction(f);
+  assert.equal(paid.response?.kind, 'emperorIncome');
+  assert.equal(viewGame(paid, f.trainer).responseControls?.cancelCards.includes(f.counterCard!), true);
+  assertAuctionCosts(f, paid);
+  const canceled = allowE3Responses(applyAction(structuredClone(paid), f.trainer,
+    { type: 'card', card: f.counterCard!, mode: 'cancel' }));
+  assert.equal(seat(canceled, f.emperor).spice, seat(f.beforePledge, f.emperor).spice);
+  assert.equal(canceled.bureaucratPayments?.used.length ?? 0, 0);
+  assert.equal(viewGame(canceled, f.trainer).bureaucrat.pending, null);
+  assert.notEqual(canceled.decision?.kind, 'bureaucratPayment');
+  assert.equal(canceled.discard.filter((card) => card.id === f.counterCard).length, 1);
+  assertAuctionCosts(f, canceled);
+  assert.deepEqual(hand(canceled, f.payer), [...hand(f.beforeAction, f.payer), f.card]);
+  assert.equal(canceled.currentAuctionSale, null);
+  assert.equal(canceled.auction!.index, f.beforeAction.auction!.index + 1);
+
+  const pending = allowE3Responses(structuredClone(paid));
+  assert.equal(pending.decision?.kind, 'bureaucratPayment');
+  for (const viewer of [f.trainer, f.guild]) {
+    const invoice = viewGame(pending, viewer).bureaucrat.pending!;
+    assert.equal(invoice.payer, null);
+    assert.equal(invoice.amount, 8);
+    assert.equal(invoice.payee, f.emperor);
+    assert.equal('contributions' in invoice, false);
+    assert.equal('signature' in invoice, false);
+  }
+  const done = allowE3Responses(chooseBureaucratE3Payment(pending));
+  assertAuctionOutcome(f, done, 2);
+  assert.deepEqual(counters(done), counters(f.beforeAction));
+  assert.deepEqual(hand(done, f.trainer), hand(f.beforeAction, f.trainer));
+  assert.equal(done.auction!.active, canceled.auction!.active);
+  assert.equal(done.auction!.cards[done.auction!.index].id, canceled.auction!.cards[canceled.auction!.index].id);
+  pairedE3NexusInventory(done);
+});
+
+void test('No-Nexus E3 actual auction shares neither pool sub-five amounts nor qualify the trainer or native payee', () => {
+  for (const [donor, payerShare, donorShare] of [
+    ['moritani', 4, 4], [ALLIANCE.trainer, 3, 5], [ALLIANCE.auctionPayee, 3, 5],
+  ] as const) {
+    const f = createBureaucratE3AuctionFixture({ nexus: false, donor, payerShare, donorShare });
+    const done = allowE3Responses(payBureaucratE3Auction(f));
+    assert.notEqual(done.decision?.kind, 'bureaucratPayment');
+    assert.equal(viewGame(done, f.trainer).bureaucrat.pending, null);
+    assertAuctionOutcome(f, done, 0);
+    assert.deepEqual(counters(done), counters(f.beforeAction));
+  }
+});

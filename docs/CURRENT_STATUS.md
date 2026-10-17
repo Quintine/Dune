@@ -29,6 +29,28 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Native allied Bureaucrat receipts — 18 October. Prototyped / Partial.**
+An original no-Nexus Eca/Mori all14 five-own/five-allied shipment rejected
+unchanged before repair. Single and allied receipts now share the existing
+ordinary Skills capability; the extra classifier is removed without an alias.
+Registered selected families need no incidental Nexus or exact single family.
+Individual thresholds, private shares, full costs/escrow, native cancellation,
+Bank diversion and module/Advanced role admission remain.
+
+Real Basic cost10/five-force shipping leaves Eca/Mori seven each, Guild13,
+Atreides10 and consumed escrow, then resumes Movement/Collection. New E1 plain
+funding retains all native starting armies. Actual Advanced no-Nexus Guild
+interception and all four policies settle an original3+5 receipt, preserve
+Carthag10/HMS6 and continue to Ixian movement.
+
+Three actual390px flows cover native allowance→redirect, Advanced unused-CHOAM
+auction allowance→full income/next lot and native cancellation→no offer/use.
+No browser errors/overflow. Temporary memory-only routes were removed/released;
+no stored room or server restart. Frozen17-file **442/442**, focused1/1,
+types/lint/build pass; existing build warnings remain. No new source/ruling,
+complete-mode, deployed, calibration or deferred-assurance claim.
+[Current contract and evidence](BUREAUCRAT_PAYMENTS.md#registered-native-allied-receipts--18-october-2026).
+
 **Registered native E3 selected decks — 18 October. Prototyped / Partial.**
 Sixteen ordinary plain/card all14 starts rejected before; all16 now reach
 native setup. Registered seats simply require their selected ordinary family;
@@ -1509,9 +1531,9 @@ types/lint and build pass. No deployed, save/recovery or full-mode claim follows
 
 **Bureaucrat / Homeworld allied income and two 13 October rulings — 13 October.**
 Homeworlds + Leader Skills games now connect qualifying allied-funded ordinary
-auction and Guild-shipment income (`bureaucratAlliedFundingModeSupported` returns
-`homeworldLeaderSkillsProfile` for Homeworlds). Genuine Basic/Advanced classic
-Homeworld Skills games train Bureaucrat on Atreides and seat native Guild;
+auction and Guild-shipment income through the admitted Homeworld Skills
+capability. Genuine Basic/Advanced classic Homeworld Skills games train
+Bureaucrat on Atreides and seat native Guild;
 53 consumer cases cover 5+3/3+5/5+5/fully donor-funded five, decline/redirect,
 sub-five nonpooling, owner/payee exclusion without masking an eligible payer,
 private gross-only invoices with payer null, stale/cross-actor rejection, four
