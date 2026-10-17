@@ -7,6 +7,30 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Native independent Treachery composition — 17 October 2026
+
+Fresh all14 Skills with the independent Ecaz cards now admits original selected
+Ixians/Tleilaxu and/or CHOAM/Richese with classics, Basic/Advanced2–6, without
+other modules. Source-ordered native hands, Ix card-before-training, Richese's
+separate cache, Auditor exclusion and actual typed force/revival rules remain.
+The public lobby and existing prototype command use the same setup.
+
+One shared independent profile now feeds both ordinary and native skill
+capabilities. Smuggler marker shipment/collection, Planetologist and native
+Suk/Rihani/Sandmaster quotes no longer disagree with admitted setup. The
+independent-card blanket block on normal Sandmaster worm collection is removed;
+its actual native trainer, destination, phase and physical pickup rules remain.
+No old predicate alias or played-game conversion is retained.
+
+Frozen22-file223/223, types/lint and build pass. Original Ix typed fees/Harass/
+Suk and next-Recruits pricing, Richese funded/capped marker plans, Mentat margin
+and Harass fallback execute through their native sources. Six bounded native/
+mixed-family games reach turn3 or an earlier win; actual390px Ix initial card
+selection then training has no browser errors or overflow. Those are changed-path
+development proofs, not full-rule/combination acceptance or calibration.
+
+[Card-source boundaries and native physical programme](ECAZ_TREACHERY_RULES.md#native-e1e2-leader-skills-composition--17-october-2026).
+
 ## Standalone Ecaz coalition — 17 October 2026
 
 Native Ecaz/classic all-fourteen Skills no longer needs Nexus Cards or

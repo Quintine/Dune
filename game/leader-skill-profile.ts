@@ -455,7 +455,8 @@ export function advancedNativeLeaderSkillsProfile(game: LeaderSkillProfile): boo
 }
 
 export function nativeExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  return mixedE3NexusLeaderSkillsProfile(game) || mixedE1E2NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game) ||
+  return (game.expansions.length > 0 && independentTreacheryLeaderSkillsProfile(game)) ||
+    mixedE3NexusLeaderSkillsProfile(game) || mixedE1E2NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game) ||
     basicExpansionLeaderSkillsProfile(game) || advancedNativeLeaderSkillsProfile(game) ||
     advancedMoritaniLeaderSkillsProfile(game) || nativeEcazLeaderSkillsProfile(game);
 }
@@ -507,9 +508,9 @@ export function homeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean 
   return true;
 }
 
-/** Independent utility cards with original classic all14 setup, without other modules. */
-export function classicIndependentLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (game.ecazTreachery !== true || game.expansions.length ||
+/** Independent utility cards with original classic or selected E1/E2 all14 setup. */
+export function independentTreacheryLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (game.ecazTreachery !== true || game.expansions.length > 2 ||
       typeof game.advanced !== 'boolean' || !game.players ||
       game.players.length < 2 || game.players.length > 6 ||
       game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
@@ -518,20 +519,27 @@ export function classicIndependentLeaderSkillsProfile(game: LeaderSkillProfile):
       game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
       game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
       game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
+  for (let i = 0; i < game.expansions.length; i++) {
+    if (game.expansions[i] !== 'ix' && game.expansions[i] !== 'choam') return false;
+    for (let j = 0; j < i; j++) if (game.expansions[j] === game.expansions[i]) return false;
+  }
   const players = game.players;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
-    let classic = false;
+    let selected = false;
     for (const faction of FACTIONS)
-      if (faction.id === players[i].faction) { classic = faction.expansion === 'base'; break; }
-    if (!classic) return false;
+      if (faction.id === players[i].faction) {
+        selected = faction.expansion === 'base' || game.expansions.includes(faction.expansion);
+        break;
+      }
+    if (!selected) return false;
   }
   return true;
 }
 
 /** Shared by rule quotes, controls and minimal legal bot participation. */
 export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): boolean {
-  return classicIndependentLeaderSkillsProfile(game) || (noOtherLeaderSkillModules(game) &&
+  return independentTreacheryLeaderSkillsProfile(game) || (noOtherLeaderSkillModules(game) &&
     (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game) ||
       (game.expansions.length === 1 && game.expansions[0] === 'choam'))) ||
     classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) ||

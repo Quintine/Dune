@@ -299,3 +299,53 @@ native battle programmes/82 actions, not strategic calibration. Related18-file
 union225/225, types/lint, build and actual prototype help pass with existing
 warnings. No full-mode, deployed, HTTP/database or broad assurance claim.
 
+
+## Native E1/E2 Leader Skills composition — 17 October 2026
+
+The independent three-card variant now composes fresh classic or selected
+Ix/CHOAM native/base all-fourteen Skills in Basic/Advanced2–6. Original ordinary
+inventories are36/38/50 cards; a seated Richese retains its separate cache.
+This follows the printed faction-independent variant permission above and
+reuses the existing native setup, not an extra physical card or faction power.
+
+The shared `independentTreacheryLeaderSkillsProfile` replaces the old
+classic-only predicate. Its selected-family native form feeds
+`nativeExpansionLeaderSkillsProfile`, so No-Field shipment, Planetologist,
+Smuggler, Suk, Rihani and Sandmaster consumers use one coherent capability
+instead of local bypasses. Recruits and Bureaucrat use the same admission.
+Original home/foreign custody, printed free rates, Cyborg prices and native
+unlimited revival exceptions remain; no revival recipient is reassigned.
+
+An actual Ix/Cyborg/Suboid programme pays the three normal-first reserve fee,
+returns the typed undialed army, then applies trained Suk only to committed
+casualties. The next real Revival counts a prior free return: Recruits leaves
+one extra free Suboid and a three-counter request costs5 (paid Suboid2 plus
+paid Cyborg3), reaching Tleilaxu. Fee counters are not rescued. Sandmaster's
+ordinary worm destination pickup also remains available with this independent
+variant: one spice from the actual destination, not another move or source gain.
+
+Existing fee-before-return, native reserve-capped No-Field materialization,
+green Planetologist substitution and after-use disposal interpretations remain.
+Worlds, Nexus, Discovery, Tech/Strongholds, E3 natives and unrelated previews
+stay outside this fresh Skills/independent envelope. No played-save conversion,
+new numerical ruling, complete-mode or publication certification follows.
+
+Evidence: `tests/ix-independent-skills-runtime.test.ts`,
+`tests/fixture-ix-independent-skills.ts`,
+`tests/choam-independent-skills-runtime.test.ts` and
+`tests/fixture-choam-independent-skills.ts`. Original native card timing and
+funding controls were exercised directly, including marker5 capped to3 with
+zero reserves left for the fee: the refused seal changes no state; legal Harass
+returns one and loses two committed counters. Funded Basic/Advanced marker3
+plans win by one with the trained Mentat bonus, not an invented support bonus.
+The existing conserved post-Nexus Sandmaster fixture with the independent
+variant transfers exactly one destination spice and preserves movement allowance.
+
+Frozen22-file223/223, types/lint/build and actual prototype help pass. Six
+bounded native/mixed-family games reach turn3 or an earlier win. Real390px
+normal-lobby native Ix starting-card choice precedes its actual skill offer,
+with no app errors or root overflow. Ix/CHOAM setup entropy and conserved
+physical card staging are explicit; their armies, paid receipts and phases
+follow native actions. This does not certify all combinations, strategic AI,
+persistence/privacy assurance or a deployed revision.
+

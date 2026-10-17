@@ -20,6 +20,7 @@ export function smugglerShipmentGame(
   skill: 'smuggler' | 'sandmaster' = 'smuggler',
   opponentFaction?: FactionId,
   expansions: readonly string[] = [],
+  independent = false,
 ): Game {
   let g = createGame('SMUGSHIP', newPlayer('p', 'Smuggler', faction), advanced, [...expansions]);
   joinGame(
@@ -27,6 +28,7 @@ export function smugglerShipmentGame(
     newPlayer('h', 'Opponent', opponentFaction ?? (faction === 'guild' ? 'emperor' : 'guild')),
   );
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
+  if (independent) g.ecazTreachery = true;
   const index = LEADER_SKILL_CARDS.findIndex((c) => c.id === skill);
   let cursor = LEADER_SKILL_CARDS.length - 1;
   mock.method(globalThis.crypto, 'getRandomValues', (array: Uint32Array) => {

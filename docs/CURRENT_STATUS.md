@@ -29,6 +29,29 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Native Ix/CHOAM independent cards + Skills — 17 October.** Fresh
+classic or selected E1/E2 native/base all14 Skills now admits the three
+independent cards without other modules. Original36/38/50 ordinary decks and
+separate Richese cache remain. One shared independent profile feeds native
+capabilities, avoiding setup/No-Field/Suk/Planetologist/Smuggler mismatches.
+Original normal Sandmaster worm pickup also accepts this independent variant.
+
+The frozen22-file set passes **223/223**, types/lint and build. Genuine Ix
+programmes retain normal-first fees, typed returns, trained rescue and the
+paid Cyborg revival price; Richese programmes retain funded/capped marker
+materialization, trained Mentat scoring, mandatory disposal and legal Harass
+fallback without spending a refused seal. All six bounded native/mixed-family
+table smokes reach turn3 or an earlier win. Real390px native Ix card selection
+then skill offer has no browser errors or overflow. Source entropy and conserved
+physical card staging remain explicit, not invented armies/payments.
+
+Evidence: `tests/fixture-ix-independent-skills.ts`,
+`tests/ix-independent-skills-runtime.test.ts`,
+`tests/fixture-choam-independent-skills.ts` and
+`tests/choam-independent-skills-runtime.test.ts`.
+Existing action/view shapes, profile exclusions and printed native components
+are retained; no full-mode, calibration or deployed claim follows.
+
 **Standalone Ecaz Skills coalition — 17 October.** Native Ecaz/classic all14
 Skills now reaches ordinary allied Arrakis battles without Nexus or Worlds.
 Fresh Basic participation and the existing native profile feed the same lead,

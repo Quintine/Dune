@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 17 October 2026 — Native independent cards with all14 Skills
+
+The former classic-only independent-card Skills profile now admits selected
+Ix/CHOAM native/base Basic/Advanced2–6, without unrelated modules. Rename it to
+`independentTreacheryLeaderSkillsProfile` and migrate every caller without an
+alias. Its native form feeds the existing native capability once, fixing
+setup/No-Field/Suk/Planetologist/Smuggler disagreement without per-producer
+bypasses. Native decks36/38/50, separate Richese cache, normal Banker income,
+native prices, skill assignment and revival exceptions remain original.
+
+Disjoint native programmes cover real Ix card-before-training, paid typed
+shipment, normal-first reserve fee, sector-specific Harass, committed-only Suk
+rescue and the next real Recruits revival. The Cyborg request pays5 to Tleilaxu
+after one prior free return; fee counters are never rescued. Richese marker
+materialization precedes the fee, trained Mentat gives the real one-point
+winning margin, and an unfunded capped marker rejects unchanged before legal
+Harass fallback. Normal Sandmaster worm pickup now accepts the independent
+variant under its original trainer/phase/destination rules.
+
+The frozen22-file **223/223**, types/lint and build pass. Six bounded
+Basic/Advanced native and mixed-family games reach turn3 or an earlier win;
+explicit native rule/control programmes also run outside the test runner.
+Actual390px native Ix normal-lobby card choice then training has no browser
+errors or overflow. Existing build warnings remain. Ix/CHOAM fixture setup
+entropy and conserved physical card positioning are labelled; no armies,
+wallets, phases or receipts are manufactured. No deployment or old-game
+conversion occurs; full modes/combinations and final assurance remain open.
+Sandmaster uses the existing conserved post-Nexus fixture rather than a claim
+of an additional naturally encountered worm.
+[Current source/scope and evidence](ECAZ_TREACHERY_RULES.md#native-e1e2-leader-skills-composition--17-october-2026).
+
 ## 17 October 2026 — Independent native Ecaz Skills coalition
 
 Both Basic and Advanced normal Ecaz/classic Skills-only starts were rejected

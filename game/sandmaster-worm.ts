@@ -19,7 +19,7 @@ export function sandmasterWormCollection(
       game.players.find(p => p.id === player)?.faction !== 'fremen') return null;
   const blocked = (reason: string): SandmasterDestinationCollection =>
     ({ leader, key: null, before: 0, piles: [], blocked: reason });
-  if (!sandmasterModeSupported(game) || game.ecazTreachery ||
+  if (!sandmasterModeSupported(game) ||
       !(nativeExpansionLeaderSkillsProfile(game) ||
         game.players.every(p => faction(p.faction).expansion === 'base')))
     return blocked('Sandmaster worm collection with other optional modules is still being integrated.');

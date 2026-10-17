@@ -2,8 +2,8 @@ import { smugglerShipmentGame } from './smuggler-shipment-fixture';
 import type { Action } from '../game/engine';
 
 /** Genuine Leader Skills setup, followed by a conserved post-Nexus ride position. */
-export function sandmasterWormGame(advanced = false, intrusion = false) {
-  const g = smugglerShipmentGame('fremen', advanced, 'sandmaster', intrusion ? 'beneGesserit' : 'guild');
+export function sandmasterWormGame(advanced = false, intrusion = false, independent = false) {
+  const g = smugglerShipmentGame('fremen', advanced, 'sandmaster', intrusion ? 'beneGesserit' : 'guild', [], independent);
   const own = g.players[0];
   own.name = 'Sandmaster rider';
   own.forces = { 'wind_pass:14': 2, 'wind_pass:15': 2 };

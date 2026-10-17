@@ -17,9 +17,9 @@ function conserved(g: Game) {
     if (p.elites) assert.equal(p.elites.reserves + p.elites.tanks + Object.values(p.elites.forces).reduce((s, n) => s + n, 0), 3);
   }
 }
-void test('Sandmaster collects once at a worm destination for multiple source sectors and preserves normal movement', () => {
-  for (const advanced of [false, true]) {
-    const g = sandmasterWormGame(advanced);
+void test('Sandmaster collects once at a worm destination with multiple sources, with or without independent cards', () => {
+  for (const advanced of [false, true]) for (const independent of [false, true]) {
+    const g = sandmasterWormGame(advanced, false, independent);
     const action = sandmasterRide();
     if (!advanced) delete action.eliteForces;
     const next = applyAction(JSON.parse(JSON.stringify(g)), 'p', action);
@@ -122,7 +122,6 @@ void test('Sandmaster requires the owned living native trainer and the supported
     assert.equal(sandmasterWormCollection(bad, 'p', 'red_chasm', 7), null);
   }
   for (const mutate of [
-    (g: typeof view) => { g.ecazTreachery = true; },
     (g: typeof view) => { g.players[1].faction = 'richese'; },
   ]) {
     const unsupported = structuredClone(view); mutate(unsupported);
