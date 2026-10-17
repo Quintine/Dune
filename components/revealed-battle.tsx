@@ -2,6 +2,7 @@ import type { GameView } from '@/game/engine';
 import { faction } from '@/game/catalog';
 import { leaderStrengthLabel } from '@/game/cards';
 import { isStoneBurner } from '@/game/battle-cards';
+import { usesNativeBattleSpecial } from '@/game/battle-card-slots';
 import { stoneBurnerComparison, stoneBurnerWithdrawalContext } from '@/game/stone-burner';
 import { RevealedPlanPieces } from './revealed-plan-pieces';
 import { KwisatzInspector } from './kwisatz-inspector';
@@ -13,7 +14,7 @@ export function RevealedBattle({ game }: { game: GameView }) {
   let stoneContext = battle.stoneBurnerContext?.occupy;
   const withdrawing = [battle.attacker, battle.defender].filter(id => {
     const plan = battle.plans[id];
-    return plan && [plan.weapon, plan.defense].includes('ecaz-harass-withdraw');
+    return plan && usesNativeBattleSpecial(plan, 'ecaz-harass-withdraw');
   });
   for (const id of withdrawing) {
     const occupy = battle.ecazOccupy?.lead === id ? {
@@ -83,6 +84,9 @@ export function RevealedBattle({ game }: { game: GameView }) {
             </span>
             {!!plan.bankerSpice && (
               <span className="revealed-plan-detail">Spice Banker: {plan.bankerSpice} spice committed</span>
+            )}
+            {plan.planetologistSpecial && (
+              <span className="revealed-plan-detail">Planetologist alternate Special · +2 if leader survives · no normal card effect</span>
             )}
             {battle.native === id && !battle.cards.some(isStoneBurner) && (
               <span className="revealed-plan-detail">

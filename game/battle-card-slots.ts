@@ -59,6 +59,14 @@ export function validBattleSlotPair(
   );
 }
 
+/** A Planetologist substitution suppresses only the selected weapon's native effect. */
+export function usesNativeBattleSpecial(
+  plan: Readonly<{ weapon?: unknown; defense?: unknown; planetologistSpecial?: unknown }>,
+  card: 'ecaz-reinforcements' | 'ecaz-harass-withdraw',
+): boolean {
+  return plan.defense === card || (plan.weapon === card && plan.planetologistSpecial !== true);
+}
+
 /**
  * Prescience asks for the selected category rather than physical slot
  * occupancy. Exact Ecaz battle specials answer null without revealing their

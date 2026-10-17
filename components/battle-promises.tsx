@@ -233,6 +233,9 @@ export function BattlePromises({
           {plan.reinforcementsSources && (
             <p className="fine">Native reserve fee: {reinforcementsSourceLabel(g, plan.reinforcementsSources)}</p>
           )}
+          {plan.planetologistSpecial && (
+            <p className="fine">Planetologist alternate Special: +2 if the leader survives; no normal card effect.</p>
+          )}
           <p className="fine">
             These choices satisfy your current commitments. Review and change
             the other elements before sealing your plan.

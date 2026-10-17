@@ -164,7 +164,7 @@ import {
   isStoneBurner,
   isMirrorWeapon,
 } from '@/game/battle-cards';
-import { validBattleSlotPair } from '@/game/battle-card-slots';
+import { validBattleSlotPair, usesNativeBattleSpecial } from '@/game/battle-card-slots';
 import { stoneBurnerPlanBlock, stoneBurnerWithdrawalContext } from '@/game/stone-burner';
 import { mirrorWeaponModeBlock } from '@/game/mirror-weapon-mode';
 import { TECH_TOKENS, ownedTech } from '@/game/tech-tokens';
@@ -203,7 +203,7 @@ import { HarassWithdrawChoice } from './harass-withdraw-choice';
 import { PrivateBattlePlan } from './private-battle-plan';
 import { SpiceBankerControl, spiceBankerControlState } from './spice-banker';
 import { SpiceBankerIncome } from './spice-banker-income';
-import { canUsePlanetologistBattleSpecial } from '../game/leader-skill-combat';
+import { canUsePlanetologistBattleSpecial, planetologistSpecialNeedsChoice } from '../game/leader-skill-combat';
 import type { Card } from '../game/cards';
 import { RevealedBattle } from './revealed-battle';
 import { DiplomatDefense } from './diplomat-defense';
@@ -428,6 +428,7 @@ export function GameTable({
   const [target, setTarget] = useState('');
   const [leader, setLeader] = useState('');
   const [weapon, setWeapon] = useState('');
+  const [planetologistDraft, setPlanetologistDraft] = useState<{ key: string; enabled: boolean } | null>(null);
   const [defense, setDefense] = useState('');
   const [dial, setDial] = useState(0);
   const [stormDial, setStormDial] = useState(0);
@@ -442,8 +443,22 @@ export function GameTable({
   const selectedDefenseId = battlePlanCardValue(g, 'defense', defense);
   const selectedBattleWeapon = me.hand?.find(c => c.id === selectedWeaponId);
   const selectedBattleDefense = me.hand?.find(c => c.id === selectedDefenseId);
-  const reinforcementsSelected = selectedWeaponId === 'ecaz-reinforcements' ||
+  const committed = battlePlanCommitments(g);
+  const selectedBattleLeader = committed.leader ? String(committed.leader.value ?? '') : leader;
+  const battleSkills = g.leaderSkills?.assignments.filter(a => a.controller === me.id) ?? [];
+  const planetologistSpecial = (card: Card) => canUsePlanetologistBattleSpecial({
+    assignments: battleSkills, selectedLeader: selectedBattleLeader, card,
+  });
+  const planetologistRoleKey = `${g.battle?.event ?? ''}:${selectedBattleLeader}:${selectedWeaponId}`;
+  const planetologistEligible = !!selectedBattleWeapon && planetologistSpecial(selectedBattleWeapon);
+  const planetologistRoleChoice = planetologistEligible && planetologistSpecialNeedsChoice(selectedBattleWeapon);
+  const planetologistAlternate = planetologistRoleChoice &&
+    planetologistDraft?.key === planetologistRoleKey && planetologistDraft.enabled;
+  const planetologistWeapon = planetologistEligible && (!planetologistRoleChoice || planetologistAlternate);
+  const reinforcementsSelected = (selectedWeaponId === 'ecaz-reinforcements' && !planetologistWeapon) ||
     selectedDefenseId === 'ecaz-reinforcements';
+  const harassSelected = (selectedWeaponId === 'ecaz-harass-withdraw' && !planetologistWeapon) ||
+    selectedDefenseId === 'ecaz-harass-withdraw';
   const [reinforcementsSourceDraft, setReinforcementsSourceDraft] = useState<{
     key: string; index: number;
   } | null>(null);
@@ -529,10 +544,6 @@ export function GameTable({
   );
   const [discardCards, setDiscardCards] = useState<Record<string, boolean>>({});
   const stormLosses = g.decision?.kind === 'stormLosses' ? g.decision : null;
-  const committed = battlePlanCommitments(g);
-  const selectedBattleLeader = committed.leader
-    ? String(committed.leader.value ?? '')
-    : leader;
   const paidBattleSupport = Math.max(0, battleSupport - strongholdBankSupport);
   const selectedBattleAllyPayment =
     allyPayment === ''
@@ -558,11 +569,6 @@ export function GameTable({
     0,
     Math.min(Math.trunc(bankerSpice), bankerControl.maximum),
   );
-  const planetologistSpecial = (card: Card) => canUsePlanetologistBattleSpecial({
-    assignments: g.leaderSkills?.assignments.filter(a => a.controller === me.id) ?? [],
-    selectedLeader: committed.leader ? String(committed.leader.value ?? '') : leader,
-    card,
-  });
   const reinforcementsPlanReason = !reinforcementsSelected ? null :
     !g.battle?.reinforcements ? 'Reinforcements is unavailable in this battle.' :
     g.battle.reinforcements.blocked ??
@@ -579,9 +585,9 @@ export function GameTable({
     committed.dial ? Number(committed.dial.value) : battleDial,
     battleFreeSupport ? 0 : battleSupport);
   const battlePairValid = validBattleSlotPair(selectedBattleWeapon, selectedBattleDefense,
-    !!selectedBattleWeapon && planetologistSpecial(selectedBattleWeapon));
+    planetologistWeapon);
   const harassControl = harassWithdrawControlState(g.battle?.harassWithdraw,
-    selectedWeaponId === 'ecaz-harass-withdraw' || selectedDefenseId === 'ecaz-harass-withdraw',
+    harassSelected,
     committed.dial ? Number(committed.dial.value) : battleDial,
     battleFreeSupport ? 0 : battleSupport);
   const selectedSpecialWeapon = me.hand?.find(
@@ -590,7 +596,7 @@ export function GameTable({
   const mirrorSelected = isMirrorWeapon(selectedSpecialWeapon);
   const stoneContext = g.battle?.stoneBurnerContext;
   const stoneCandidateContext = selectedSpecialWeapon &&
-    (selectedWeaponId === 'ecaz-harass-withdraw' || selectedDefenseId === 'ecaz-harass-withdraw')
+    harassSelected
     ? stoneBurnerWithdrawalContext(stoneContext?.occupy,
         g.battle!.attacker === me.id ? 'attacker' : 'defender', g.battle?.harassWithdraw?.occupy)
     : stoneContext?.occupy;
@@ -3105,7 +3111,7 @@ export function GameTable({
                     forces remaining after a successful withdrawal. An opposing
                     successful Traitor cancels that withdrawal.
                   </p>
-                  {g.battle?.cards.some(card => card.id === 'ecaz-reinforcements') && (
+                  {Object.values(g.battle?.plans ?? {}).some(plan => plan && usesNativeBattleSpecial(plan, 'ecaz-reinforcements')) && (
                     <p className="fine">
                       Reinforcements still pays its original three-reserve cost.
                       Its +2 normal-score bonus does not add undialed physical
@@ -5120,6 +5126,10 @@ export function GameTable({
                         setLeader(plan.leader ?? '');
                         setWeapon(plan.weapon ?? '');
                         setDefense(plan.defense ?? '');
+                        setPlanetologistDraft({
+                          key: `${g.battle?.event ?? ''}:${plan.leader ?? ''}:${plan.weapon ?? ''}`,
+                          enabled: plan.planetologistSpecial === true,
+                        });
                         setKwisatz(!!plan.kwisatz);
                         if (plan.reinforcementsSources) {
                           const chosen = JSON.stringify(plan.reinforcementsSources);
@@ -5387,14 +5397,24 @@ export function GameTable({
                                     selectedBattleLeader, selectedWeaponId, selectedDefenseId)
                                     .map((c) => (
                                       <option key={c.id} value={c.id}>
-                                        {c.name}{name === 'Weapon' && planetologistSpecial(c) ? ' · Planetologist +2, discard after battle' : ''}
+                                        {c.name}{name === 'Weapon' && planetologistSpecial(c)
+                                          ? planetologistSpecialNeedsChoice(c) ? ' · normal or Planetologist role' : ' · Planetologist +2, discard after battle'
+                                          : ''}
                                       </option>
                                     ))}
                                 </select>
                               </label>
                             ))}
-                            <HarassWithdrawGuide preview={g.battle.harassWithdraw} state={harassControl} />
-                            {g.homeworlds && g.battle.harassWithdraw && (
+                            {planetologistRoleChoice && (
+                              <label className="my-3 flex items-start gap-3">
+                                <input type="checkbox" checked={!!planetologistAlternate}
+                                  onChange={event => setPlanetologistDraft({ key: planetologistRoleKey, enabled: event.target.checked })} />
+                                <span>Use {selectedBattleWeapon!.name} as Planetologist Special (+2 leader; no normal card effect)</span>
+                              </label>
+                            )}
+                            {!(planetologistWeapon && selectedWeaponId === 'ecaz-harass-withdraw') &&
+                              <HarassWithdrawGuide preview={g.battle.harassWithdraw} state={harassControl} />}
+                            {g.homeworlds && g.battle.harassWithdraw && !(planetologistWeapon && selectedWeaponId === 'ecaz-harass-withdraw') && (
                               <p className="notice">
                                 Homeworld timing: actual undialed counters
                                 return to your native reserve Homeworlds, never to
@@ -5405,7 +5425,7 @@ export function GameTable({
                                 thresholds. Harass cannot be played on any own World.
                               </p>
                             )}
-                            {g.battle.reinforcements && (
+                            {g.battle.reinforcements && !(planetologistWeapon && selectedWeaponId === 'ecaz-reinforcements') && (
                               <p className="notice">
                                 Reinforcements may occupy either card slot but is neither a weapon nor a defense.
                                 It adds 2 to battle strength without changing the physical dial or spice support.
@@ -5421,7 +5441,7 @@ export function GameTable({
                                 selected={reinforcementsSourceIndex} busy={busy}
                                 onChange={index => setReinforcementsSourceDraft({ key: reinforcementsSourceKey, index })} />
                             )}
-                            {g.battle.reinforcements?.noField && <p className="fine">
+                            {g.battle.reinforcements?.noField && !(planetologistWeapon && selectedWeaponId === 'ecaz-reinforcements') && <p className="fine">
                               Provisional native order: your No-Field first materializes{' '}
                               {g.battle.reinforcements.noField.materializes} forces, leaving{' '}
                               {g.battle.reinforcements.noField.reservesAfterReveal} own reserves.
@@ -5429,7 +5449,7 @@ export function GameTable({
                               a later Harass return cannot fund or change its original cost.
                             </p>}
                             {reinforcementsSelected &&
-                              (selectedWeaponId === 'ecaz-harass-withdraw' || selectedDefenseId === 'ecaz-harass-withdraw') && (
+                              harassSelected && (
                               <p className="fine">
                                 Provisional combined timing: pay the original three-reserve
                                 Reinforcements cost before Harass &amp; Withdraw returns any
@@ -5439,7 +5459,7 @@ export function GameTable({
                             )}
                             {reinforcementsPlanReason && <p role="status" className="notice">{reinforcementsPlanReason}</p>}
                             {!battlePairValid && <p role="status" className="notice">Choose two compatible battle cards. A single physical card cannot fill both slots.</p>}
-                            {selectedBattleWeapon && planetologistSpecial(selectedBattleWeapon) && (
+                            {selectedBattleWeapon && planetologistWeapon && (
                               <p className="notice">
                                 {selectedBattleWeapon.name} adds 2 to the surviving Planetologist leader.
                                 It makes no weapon attack and does not use its normal effect.
@@ -5517,6 +5537,7 @@ export function GameTable({
                                 : 'Seal battle plan',
                               bindBattlePlanCommitments(g, {
                                 type: 'battlePlan',
+                                ...(planetologistAlternate ? { planetologistSpecial: true } : {}),
                                 ...(battleBankerSpice
                                   ? { bankerSpice: battleBankerSpice }
                                   : {}),
@@ -5548,6 +5569,9 @@ export function GameTable({
                                 Spice Banker: {g.battle.plans[me.id].bankerSpice}{' '}
                                 spice committed.
                               </p>
+                            )}
+                            {g.battle.plans[me.id]?.planetologistSpecial && (
+                              <p className="fine">Planetologist alternate Special: +2 if the leader survives; no normal card effect.</p>
                             )}
                             {g.battle.plans[me.id]?.reinforcementsSources && (
                               <p className="fine">Sealed reserve fee: {reinforcementsSourceLabel(g, g.battle.plans[me.id].reinforcementsSources!)}</p>

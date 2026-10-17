@@ -46,7 +46,7 @@ import {
 } from './homeworld-battle-rules';
 import {
   PLANETOLOGIST_BASE_SPECIALS,
-  canUsePlanetologistBattleSpecial,
+  usesPlanetologistBattleSpecial,
   isPlanetologistBattleSpecialCard,
   leaderSkillBattleBonus,
   bureaucratBattlePenalty,
@@ -65,6 +65,7 @@ export class BattleResolutionQuoteError extends Error {
 }
 export type ResolutionPlan = {
   bankerSpice?: number;
+  planetologistSpecial?: true;
   dial: number;
   support: number;
   allyPayment?: number;
@@ -240,6 +241,10 @@ function validateCombatant(
   } catch (error) {
     throw new BattleResolutionQuoteError(error instanceof Error ? error.message : 'Invalid Spice Banker commitment.');
   }
+  requireQuote(p.planetologistSpecial === undefined || (p.planetologistSpecial === true &&
+    usesPlanetologistBattleSpecial({ assignments: side.leaderSkills ?? [],
+      selectedLeader: p.leader, card: side.hand.find(card => card.id === p.weapon), planetologistSpecial: true })),
+  'The alternate Special role needs the actual Planetologist weapon substitution.');
   const selected = [p.weapon, p.defense, p.leader, side.lateDefense].filter(
     (value): value is string => value != null,
   );
@@ -277,9 +282,8 @@ function validateCombatant(
   ].filter(
     (selectedId): selectedId is string =>
       !!selectedId &&
-      PLANETOLOGIST_BASE_SPECIALS.some(
-        (card) => card.id === selectedId,
-      ),
+      (PLANETOLOGIST_BASE_SPECIALS.some((card) => card.id === selectedId) ||
+        selectedId === 'ecaz-recruits' || (p.planetologistSpecial === true && selectedId === p.weapon)),
   );
   requireQuote(
     selectedPlanetologistCards.every((selectedId) => {
@@ -289,10 +293,11 @@ function validateCombatant(
         side.leader?.id === p.leader &&
         !side.leader.dead &&
         isPlanetologistBattleSpecialCard(selectedCard) &&
-        canUsePlanetologistBattleSpecial({
+        usesPlanetologistBattleSpecial({
           assignments: side.leaderSkills ?? [],
           selectedLeader: p.leader,
           card: selectedCard,
+          planetologistSpecial: p.planetologistSpecial,
         })
       );
     }),
@@ -405,29 +410,33 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   const reinforcements: NonNullable<BattleResolutionQuote['reinforcements']> = [];
   for (const side of [a, d]) {
     const slots = [card(side, side.plan.weapon), card(side, side.plan.defense)];
+    const planetologistWeapon = usesPlanetologistBattleSpecial({
+      assignments: side.leaderSkills ?? [], selectedLeader: side.plan.leader,
+      card: slots[0], planetologistSpecial: side.plan.planetologistSpecial,
+    });
     const selectedIds = [side.plan.weapon, side.plan.defense, side.plan.leader, side.lateDefense];
     requireQuote(selectedIds.every((selectedId) =>
       selectedId !== REINFORCEMENTS_CARD || slots.some(c => c?.id === selectedId && isReinforcements(c))),
     'Reinforcements must be a canonical physical card in exactly one battle-card slot.');
-    const selected = slots.filter(isReinforcements);
+    const selected = slots.filter((selectedCard, slot) =>
+      isReinforcements(selectedCard) && !(slot === 0 && planetologistWeapon));
     requireQuote(selected.length <= 1 && (selected.length === 0) === (side.reinforcementsReserves === undefined),
       'Reinforcements requires its own reserve counts exactly when selected.');
     if (selected.length) {
-      requireQuote(validBattleSlotPair(slots[0], slots[1]) &&
+      requireQuote(validBattleSlotPair(slots[0], slots[1], planetologistWeapon) &&
         !(side === d && reinforcements.length),
       'Reinforcements needs a unique physical card and valid weapon and defense slot pair.');
-      requireQuote(!(side.leaderSkills?.length || (side === a ? d : a).leaderSkills?.length),
-      'Reinforcements cannot combine with leader skills.');
       const reserves = side.reinforcementsReserves!;
       requireQuote(!!reserves && typeof reserves === 'object' && !Array.isArray(reserves),
         'Reinforcements needs own typed reserves.');
       const cost = quoteReinforcements(reserves.normal, reserves.elite);
       reinforcements.push({ player: side.id, card: REINFORCEMENTS_CARD, normal: cost.normal, elite: cost.elite });
     }
-    const harass = slots.some(isHarassWithdraw);
+    const harass = slots.some((selectedCard, slot) =>
+      isHarassWithdraw(selectedCard) && !(slot === 0 && planetologistWeapon));
     requireQuote((!side.harassWithdraw && side.harassSelection === undefined) || harass, 'The withdrawal context requires the physical Harass & Withdraw card.');
     if (harass) {
-      requireQuote(validBattleSlotPair(slots[0], slots[1]),
+      requireQuote(validBattleSlotPair(slots[0], slots[1], planetologistWeapon),
         'The Harass & Withdraw plan has an invalid weapon and defense pair.');
       requireQuote(side.harassWithdraw,
         'Harass & Withdraw needs its supported physical context.');
@@ -672,6 +681,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         effectiveDefense: effectiveAd,
         skilledLeaderSurvives: !deaths.attacker,
         bankerSpice: a.plan.bankerSpice,
+        planetologistSpecial: a.plan.planetologistSpecial,
       }),
       defender: leaderSkillBattleBonus({
         assignments: d.leaderSkills ?? [],
@@ -681,6 +691,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         effectiveDefense: effectiveDd,
         skilledLeaderSurvives: !deaths.defender,
         bankerSpice: d.plan.bankerSpice,
+        planetologistSpecial: d.plan.planetologistSpecial,
       }),
     };
     const attackerPenalty = bureaucratBattlePenalty(d.leaderSkills ?? [], d.leader?.id,
@@ -860,10 +871,11 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     selected: string,
   ) =>
     selected === side.plan.weapon &&
-    canUsePlanetologistBattleSpecial({
+    usesPlanetologistBattleSpecial({
       assignments: side.leaderSkills ?? [],
       selectedLeader: side.plan.leader,
       card: card(side, selected),
+      planetologistSpecial: side.plan.planetologistSpecial,
     });
   // The explicit after-use instruction also applies to a successful own traitor
   // call, using the same specificity inference as Planetologist's discard.

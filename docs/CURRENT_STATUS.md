@@ -29,6 +29,19 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Independent36/all14 Skills composition — 17 October.** Fresh ready classic
+Basic/Advanced all14 now admits the printed independent three-card variant
+(original36, no other modules, no played-game conversion). Real Recruits after a
+prior free return prices4 as free1+paid3=6 to Bank and defers one Banker spice to
+actual Mentat. R+H keep fee-before-return with opposing Warmaster (Worthless
+required) and owner Suk rescue. All three cards print green Special headers:
+Planetologist substitutes Recruits automatically; R/H need explicit
+`planetologistSpecial` and then skip their native fee/return. Zero reserves block
+native R but permit that substitution; a truthful named promise finds it and all
+four policies execute it. Bureaucrat redirection is admitted. Frozen16-file 167/167,
+types/lint and build pass; actual390px zero-reserve journey (5 UI actions) reaches
+Collection with no errors/overflow. Combined-role choice is provisional.
+
 **Mandatory normal Banker default — 17 October.** Fresh supported ordinary all14
 Skills now creates the existing deferred-income ledger automatically, including
 its original module/native overlay envelopes. Separate initializer/CLI profile

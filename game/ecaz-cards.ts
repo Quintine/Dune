@@ -118,7 +118,7 @@ export const ECAZ_TREACHERY_DEFINITIONS: readonly EcazTreacheryDefinition[] =
       verification: {
         inventory: 'verified',
         sourceRules: 'verified',
-        runtime: 'not-implemented',
+        runtime: 'prototype',
         combinedInteractions: 'incomplete',
         unresolved: [
           'Reserve-cost timing when either side calls a traitor and in explosion or instant-outcome battles.',

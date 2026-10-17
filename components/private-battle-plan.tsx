@@ -75,6 +75,12 @@ export function PrivateBattlePlan({ game }: { game: GameView }) {
           <dt>Kwisatz Haderach</dt>
           <dd>{insight.plan.kwisatz ? 'Included' : 'Not included'}</dd>
         </div>
+        {insight.plan.planetologistSpecial && (
+          <div>
+            <dt>Planetologist alternate Special</dt>
+            <dd>+2 if the leader survives; the normal card effect is not used.</dd>
+          </div>
+        )}
         {insight.plan.reinforcementsSources && (
           <div>
             <dt>Native Reinforcements fee</dt>

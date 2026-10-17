@@ -97,8 +97,8 @@ export function startPrototypeRoom(
     throw new Error('The room identity is inconsistent.');
   if (!isPrototypeProfile(profile))
     throw new Error('Unknown prototype profile.');
-  if (options.ecazTreachery && profile !== 'ecaz-occupy')
-    throw new Error('--ecaz-treachery requires the ecaz-occupy profile.');
+  if (options.ecazTreachery && profile !== 'ecaz-occupy' && profile !== 'leader-skills')
+    throw new Error('--ecaz-treachery requires the ecaz-occupy or leader-skills profile.');
   if (options.nexusCards && profile !== 'leader-skills' && profile !== 'semuta')
     throw new Error('--nexus-cards requires the leader-skills or semuta profile.');
   if (options.discoveries && profile !== 'leader-skills' && profile !== 'nexus' && profile !== 'semuta')

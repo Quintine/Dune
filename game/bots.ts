@@ -3,7 +3,7 @@ import { ecazOccupyDialChoices, ecazOccupyOwnProfile, ecazOccupyPolicyActions } 
 import { quoteEcazOccupyDial } from './ecaz-occupy-battle';
 import { recruitsPlayAction } from './recruits';
 import type { Card } from './cards';
-import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus } from './leader-skill-combat';
+import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, planetologistSpecialNeedsChoice, leaderSkillBattleBonus } from './leader-skill-combat';
 import { defaultSmugglerBattleAllocation, smugglerBattlePlanBlock } from './smuggler-battle';
 import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair, type BattlePlanInspectionField } from './battle-card-slots';
 import { mirrorWeaponModeBlock } from './mirror-weapon-mode';
@@ -732,19 +732,24 @@ function plans(g: GameView): Action[] {
   const bankerPrototypeAvailable = spiceBankerModeSupported(g);
   const specialForLeader = (card: Card | undefined, leader: string | null) =>
     canUsePlanetologistBattleSpecial({assignments:battleSkills, selectedLeader:leader, card});
-  const prototypeCardAllowed = (card: Card) =>
-    (!isMirrorWeapon(card) || !mirrorWeaponModeBlock(g)) &&
-    (card.id !== 'ecaz-reinforcements' || (!!b.reinforcements && !b.reinforcements.blocked)) &&
-    (card.id !== 'ecaz-harass-withdraw' || (!!b.harassWithdraw && !b.harassWithdraw.blocked));
+  const prototypeCardAllowed = (card: Card, slot: 'weapon' | 'defense') => {
+    const native = (!isMirrorWeapon(card) || !mirrorWeaponModeBlock(g)) &&
+      (card.id !== 'ecaz-reinforcements' || (!!b.reinforcements && !b.reinforcements.blocked)) &&
+      (card.id !== 'ecaz-harass-withdraw' || (!!b.harassWithdraw && !b.harassWithdraw.blocked));
+    return native || (slot === 'weapon' && planetologistSpecialNeedsChoice(card) &&
+      me.leaders.some(l => !l.dead && controlsLeader(me, l) &&
+        (!l.usedAt || l.usedAt === b.territory) && specialForLeader(card, l.id)));
+  };
   const weapons = [
     null,
-    ...(me.hand ?? []).filter(c => prototypeCardAllowed(c) && battleCardSlotEligible('weapon', c, {
-      planetologistWeapon: me.leaders.some(l => !l.dead && controlsLeader(me,l) && (!l.usedAt || l.usedAt === b.territory) && specialForLeader(c,l.id)),
-    })).map(c => c.id),
+    ...(me.hand ?? []).filter(c => prototypeCardAllowed(c, 'weapon') &&
+      (battleCardSlotEligible('weapon', c) ||
+        me.leaders.some(l => !l.dead && controlsLeader(me, l) &&
+          (!l.usedAt || l.usedAt === b.territory) && specialForLeader(c, l.id)))).map(c => c.id),
   ].filter((id) => fixed('weapon', id));
   const defenses = [
     null,
-    ...(me.hand ?? []).filter(c => prototypeCardAllowed(c) && battleCardSlotEligible('defense', c)).map((c) => c.id),
+    ...(me.hand ?? []).filter(c => prototypeCardAllowed(c, 'defense') && battleCardSlotEligible('defense', c)).map((c) => c.id),
   ].filter((id) => fixed('defense', id));
   const availableLeaders = me.leaders.filter(
     (l) =>
@@ -829,7 +834,11 @@ function plans(g: GameView): Action[] {
           isStoneBurner(w) || (inspected && isStoneBurner(enemyWeapon));
         if ((!leader && (weapon || defense)) || !validBattleSlotPair(w, d, specialForLeader(w,leader)))
           continue;
-        const reinforcements = weapon === 'ecaz-reinforcements' || defense === 'ecaz-reinforcements';
+        const planetologistSpecial = planetologistSpecialNeedsChoice(w) && specialForLeader(w, leader);
+        const reinforcements = (weapon === 'ecaz-reinforcements' && !planetologistSpecial) || defense === 'ecaz-reinforcements';
+        const harass = (weapon === 'ecaz-harass-withdraw' && !planetologistSpecial) || defense === 'ecaz-harass-withdraw';
+        if (reinforcements && (!b.reinforcements || b.reinforcements.blocked)) continue;
+        if (harass && (!b.harassWithdraw || b.harassWithdraw.blocked)) continue;
         if (voice) {
           const used =
             playedVoiceMatch(
@@ -878,6 +887,7 @@ function plans(g: GameView): Action[] {
             assignments:battleSkills,
             selectedLeader:leader ? {id:leader,kind:myLeader?'disc':'hero'} : undefined,
             weapon:w,defense:d,skilledLeaderSurvives:true,
+            planetologistSpecial: planetologistSpecial ? true : undefined,
           }).bonus;
         const enemySurvivingStrength =
           effects.stunned || (inspected && effects.defenderDead)
@@ -916,6 +926,7 @@ function plans(g: GameView): Action[] {
         ])) {
           const action: Action = {
             type: 'battlePlan',
+            ...(planetologistSpecial ? { planetologistSpecial: true } : {}),
             kwisatz,
             dial,
             leader,
@@ -976,7 +987,6 @@ function plans(g: GameView): Action[] {
           const stonePlan = isStoneBurner(me.hand?.find((c) => c.id === action.weapon)) ||
             isMirrorWeapon(me.hand?.find((c) => c.id === action.weapon));
           if (stonePlan && !action.leader) continue;
-          const harass = weapon === 'ecaz-harass-withdraw' || defense === 'ecaz-harass-withdraw';
           const stoneContext = stonePlan && harass
             ? stoneBurnerWithdrawalContext(b.stoneBurnerContext?.occupy,
                 b.attacker === me.id ? 'attacker' : 'defender', b.harassWithdraw?.occupy)

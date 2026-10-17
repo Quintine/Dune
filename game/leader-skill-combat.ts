@@ -7,6 +7,7 @@ import {
 } from './battle-cards';
 import type { LeaderSkillId } from './leader-skill-cards';
 import { RICHESE_CARD_DEFINITIONS } from './richese-cards';
+import { ECAZ_TREACHERY_DEFINITIONS } from './ecaz-cards';
 
 export type DirectLeaderSkillId =
   | 'warmaster'
@@ -80,6 +81,8 @@ for (const definition of RICHESE_CARD_DEFINITIONS) {
   )
     planetologistSpecialById[definition.card.id] = definition.card;
 }
+for (const definition of ECAZ_TREACHERY_DEFINITIONS)
+  planetologistSpecialById[definition.card.id] = definition.card;
 
 /** Shared engine/UI/bot eligibility: exact printed green component, no native use. */
 export function isPlanetologistBattleSpecialCard(
@@ -109,6 +112,20 @@ export function canUsePlanetologistBattleSpecial(input: {
         (!assignment.faceUp || assignment.captured),
     )
   );
+}
+
+/** These green Specials also have a native battle-slot use, so the role is explicit. */
+export function planetologistSpecialNeedsChoice(card: Card | undefined): boolean {
+  return isPlanetologistBattleSpecialCard(card) &&
+    (card?.effect === 'reinforcements' || card?.effect === 'harassWithdraw');
+}
+
+/** Base/ordinary green Specials imply substitution; dual-use utility cards do not. */
+export function usesPlanetologistBattleSpecial(input: Parameters<typeof canUsePlanetologistBattleSpecial>[0] & {
+  planetologistSpecial?: true;
+}): boolean {
+  return canUsePlanetologistBattleSpecial(input) &&
+    (!planetologistSpecialNeedsChoice(input.card) || input.planetologistSpecial === true);
 }
 
 /** Planetologist fills the slot without becoming an actual Weapon card. */
@@ -183,6 +200,7 @@ export function leaderSkillBattleBonus(input: {
   effectiveDefense?: Card;
   skilledLeaderSurvives: boolean;
   bankerSpice?: number;
+  planetologistSpecial?: true;
 }): LeaderSkillBattleBonus {
   if (!input.selectedLeader) return { bonus: 0, applied: [] };
   const applied: AppliedLeaderSkill[] = [];
@@ -195,10 +213,11 @@ export function leaderSkillBattleBonus(input: {
   if (
     input.selectedLeader.kind === 'disc' &&
     input.skilledLeaderSurvives &&
-    canUsePlanetologistBattleSpecial({
+    usesPlanetologistBattleSpecial({
       assignments: input.assignments,
       selectedLeader: input.selectedLeader.id,
       card: input.weapon,
+      planetologistSpecial: input.planetologistSpecial,
     })
   )
     applied.push({

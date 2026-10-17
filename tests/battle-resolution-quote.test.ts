@@ -15,6 +15,7 @@ import {
 } from '../game/cards';
 import { richeseCards } from '../game/richese-cards';
 import { CHEAP_HERO_TRAITOR } from '../game/traitors';
+import { ecazTreacheryCards } from '../game/ecaz-cards';
 import {
   createRicheseNoField,
   deployRicheseNoField,
@@ -1155,4 +1156,76 @@ void test('canceling an allied traitor into a real explosion checks uninvolved f
     }
   assert.equal(random.mock.callCount(), 0);
   assert.equal(uuid.mock.callCount(), 0);
+});
+
+function independentPlanetologistRole(
+  effect: 'reinforcements' | 'harassWithdraw' | 'recruits', alternate = false,
+): BattleResolutionInput {
+  const game = input(), cards = ecazTreacheryCards();
+  const weapon = cards.find(card => card.effect === effect)!;
+  const defense = cards.find(card => card.effect === (effect === 'harassWithdraw' ? 'reinforcements' : 'harassWithdraw'))!;
+  game.physicalCards = [...baseDeck(), ...cards];
+  game.attacker.hand = [weapon, defense];
+  game.attacker.plan.weapon = weapon.id;
+  game.attacker.plan.defense = defense.id;
+  if (alternate) game.attacker.plan.planetologistSpecial = true;
+  game.attacker.leaderSkills = [{
+    skill: 'planetologist', leader: game.attacker.leader!.id, faceUp: false, captured: false,
+  }];
+  if ((effect === 'reinforcements' && !alternate) || defense.effect === 'reinforcements')
+    game.attacker.reinforcementsReserves = { normal: 3, elite: 0 };
+  if ((effect === 'harassWithdraw' && !alternate) || defense.effect === 'harassWithdraw')
+    game.attacker.harassWithdraw = { blocked: null, forces: game.attacker.forces,
+      locations: { 'arrakeen:10': { normal: 5, elite: 0 } } };
+  return game;
+}
+
+void test('Planetologist chooses between native Reinforcements and its green Special role without combining fees or bonuses', () => {
+  const native = quoteBattleResolution(independentPlanetologistRole('reinforcements'));
+  const alternate = quoteBattleResolution(independentPlanetologistRole('reinforcements', true));
+  assert.equal(native.scores!.attacker, 7);
+  assert.equal(alternate.scores!.attacker, 7);
+  assert.deepEqual(native.reinforcements, [{ player: 'a', card: 'ecaz-reinforcements', normal: 3, elite: 0 }]);
+  assert.deepEqual(alternate.reinforcements ?? [], []);
+  assert.equal(native.leaderSkillBonuses?.attacker.bonus ?? 0, 0);
+  assert.equal(alternate.leaderSkillBonuses!.attacker.bonus, 2);
+  for (const quote of [native, alternate]) {
+    assert.deepEqual(quote.harassWithdraw![0].returned, { normal: 3, elite: 0 });
+    assert.equal(quote.payments.find(payment => payment.player === 'a')!.ownPayment, 2);
+    assert.deepEqual(quote.casualties!.options, [{ normal: 2, elite: 0, paidNormal: 2, paidElite: 0 }]);
+    assert.ok(quote.discarded.some(card => card.player === 'a' && card.card === 'ecaz-reinforcements'));
+  }
+});
+
+void test('Planetologist Harass substitution suppresses withdrawal but leaves a distinct defense-slot Reinforcements native', () => {
+  const quote = quoteBattleResolution(independentPlanetologistRole('harassWithdraw', true));
+  assert.equal(quote.scores!.attacker, 9);
+  assert.equal(quote.leaderSkillBonuses!.attacker.bonus, 2);
+  assert.deepEqual(quote.harassWithdraw ?? [], []);
+  assert.deepEqual(quote.reinforcements, [{ player: 'a', card: 'ecaz-reinforcements', normal: 3, elite: 0 }]);
+  assert.deepEqual(quote.casualties!.options, [{ normal: 2, elite: 0, paidNormal: 2, paidElite: 0 }]);
+});
+
+void test('green Recruits uses the ordinary Planetologist substitution and a killed trainer gains no alternate strength', () => {
+  const recruits = quoteBattleResolution(independentPlanetologistRole('recruits'));
+  assert.equal(recruits.leaderSkillBonuses!.attacker.bonus, 2);
+  assert.equal(recruits.scores!.attacker, 7);
+  assert.ok(recruits.discarded.some(card => card.card === 'ecaz-recruits'));
+  const doomed = independentPlanetologistRole('reinforcements', true);
+  play(doomed, 'defender', 'weapon', card => card.kind === 'poison');
+  const death = quoteBattleResolution(doomed);
+  assert.equal(death.leaderDeaths.attacker, true);
+  assert.equal(death.leaderSkillBonuses?.attacker.bonus ?? 0, 0);
+  assert.equal(death.scores!.attacker, 2);
+  assert.deepEqual(death.reinforcements ?? [], []);
+  assert.deepEqual(death.harassWithdraw![0].returned, { normal: 3, elite: 0 });
+});
+
+void test('an explicit Planetologist alternate role cannot be forged without its actual trainer', () => {
+  const game = independentPlanetologistRole('reinforcements', true);
+  game.attacker.leaderSkills = [];
+  reject(game);
+  const malformed = independentPlanetologistRole('reinforcements', true);
+  Object.assign(malformed.attacker.plan, { planetologistSpecial: false });
+  reject(malformed);
 });

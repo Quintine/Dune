@@ -27,15 +27,16 @@ import { mirrorWeaponModeBlock } from '@/game/mirror-weapon-mode';
 export function battlePlanCardOptions(game: GameView, slot: BattleCardSlot, leader: string, weapon: string, defense: string) {
   const me = game.players.find(player => player.id === game.me)!;
   const fixed = battlePlanCommitments(game)[slot];
+  const assignments = game.leaderSkills?.assignments.filter(a => a.controller === game.me) ?? [];
   return (me.hand ?? []).filter(card => {
     const w = slot === 'weapon' ? card : me.hand?.find(c => c.id === weapon);
     const d = slot === 'defense' ? card : me.hand?.find(c => c.id === defense);
     const planetologistWeapon = canUsePlanetologistBattleSpecial({
-      assignments: game.leaderSkills?.assignments.filter(a => a.controller === game.me) ?? [],
+      assignments,
       selectedLeader: leader, card: w,
     });
-    return (card.id !== 'ecaz-reinforcements' || (!!game.battle?.reinforcements && !game.battle.reinforcements.blocked)) &&
-      (card.id !== 'ecaz-harass-withdraw' || (!!game.battle?.harassWithdraw && !game.battle.harassWithdraw.blocked)) &&
+    return (card.id !== 'ecaz-reinforcements' || (!!game.battle?.reinforcements && !game.battle.reinforcements.blocked) || (slot === 'weapon' && planetologistWeapon)) &&
+      (card.id !== 'ecaz-harass-withdraw' || (!!game.battle?.harassWithdraw && !game.battle.harassWithdraw.blocked) || (slot === 'weapon' && planetologistWeapon)) &&
       (!isMirrorWeapon(card) || !mirrorWeaponModeBlock(game)) &&
       battleCardSlotEligible(slot, card, { planetologistWeapon }) &&
       (!fixed || fixedBattleInspectionMatches(slot, fixed.value, card.id, card)) &&

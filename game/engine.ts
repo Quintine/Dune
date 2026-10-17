@@ -1,7 +1,7 @@
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
-import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, homeworldLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
+import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, homeworldLeaderSkillsProfile, classicIndependentLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -10,7 +10,7 @@ import { leaderSkillCard } from './leader-skill-cards';
 import { bureaucratAlliedFundingModeSupported, bureaucratPaymentModeSupported, bureaucratPaymentSignature, bureaucratUsed, quoteBureaucratPayment, type BureaucratPaymentSource, type BureaucratPaymentUse, type BureaucratPaymentView } from './bureaucrat-payment';
 import { MENTAT_EMPTY_HAND, MentatQuestionError, mentatQuestionModeSupported, mentatWeaponNames, mentatHand, quoteMentatReveal, mentatSignature, type MentatQuestionReceipt, type MentatObservation, type MentatView } from './mentat-question';
 import {
-  canUsePlanetologistBattleSpecial,
+  usesPlanetologistBattleSpecial, planetologistSpecialNeedsChoice,
   type BattleLeaderSkill,
 } from './leader-skill-combat';
 import { quoteSukPhysicalRescue, quoteSukRescue, SukPhysicalRescueError, sukReceiptSignature, sukRescueOptions, type SukForceGroup, type SukPhysicalRescueQuote, type SukPhysicalRescueReceipt, type SukReserveDestinations, type SukRescueOption, type SukRescueReceipt } from './suk-graduate';
@@ -29,7 +29,7 @@ import { BankerIncomeError, createBankerIncomeState, validateBankerIncomeState, 
 import { quoteDiplomatDefense, diplomatDefenseModeSupported, diplomatDefenseLabel, type DiplomatDefenseQuote } from './diplomat-defense';
 import { diplomatRetreatChoices, type DiplomatRetreatSelection, type DiplomatRetreatDestination } from './diplomat-retreat';
 import { ECAZ_START_FORCES, quoteEcazStartingForces } from './ecaz-setup';
-import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair } from './battle-card-slots';
+import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair, usesNativeBattleSpecial } from './battle-card-slots';
 import { HARASS_WITHDRAW_CARD, HarassWithdrawError, isHarassWithdraw, quoteHarassWithdraw, defaultHarassWithdrawAllocation, harassWithdrawNeedsAllocation, type HarassWithdrawSelection, type HarassWithdrawContext, type HarassWithdrawPreview } from './harass-withdraw';
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
 import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, discoveryStormDistance, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
@@ -681,6 +681,8 @@ export type Player = {
 export type Plan = {
   /** Separate own-spice commitment for the selected Spice Banker; absent is zero. */
   bankerSpice?: number;
+  /** Explicit alternate weapon use for a green Special with its own battle effect. */
+  planetologistSpecial?: true;
   dial: number;
   leader: string | null;
   weapon: string | null;
@@ -693,7 +695,7 @@ export type Plan = {
 };
 export type PlanField = Exclude<
   keyof Plan,
-  'support' | 'kwisatz' | 'allyPayment' | 'bankerSpice' | 'reinforcementsSources'
+  'support' | 'kwisatz' | 'allyPayment' | 'bankerSpice' | 'reinforcementsSources' | 'planetologistSpecial'
 >;
 export type DiplomatDefenseReceipt = DiplomatDefenseQuote & {
   event: string;
@@ -8365,7 +8367,7 @@ function planCombatForces(g: Game, p: Player, opponent: Player,
   const home = homeworldBattleLocation(g, g.battle!.territory);
   if (!home || home.native !== p.id) return forces;
   const plan = g.battle!.plans[p.id];
-  const cost = reserveCost ?? (plan && (plan.weapon === REINFORCEMENTS_CARD || plan.defense === REINFORCEMENTS_CARD)
+  const cost = reserveCost ?? (plan && usesNativeBattleSpecial(plan, REINFORCEMENTS_CARD)
     ? currentReinforcementsCost(g, p, plan.reinforcementsSources) : undefined);
   return reinforcementsBattleForces(forces, cost?.sources?.[home.id]);
 }
@@ -8831,11 +8833,13 @@ function canUsePlanetologistWeapon(
   player: Player,
   leader: string | null,
   card: Card | undefined,
+  planetologistSpecial?: true,
 ) {
-  return canUsePlanetologistBattleSpecial({
+  return usesPlanetologistBattleSpecial({
     assignments: battleLeaderSkills(g, player),
     selectedLeader: leader,
     card,
+    planetologistSpecial,
   });
 }
 function nativeLeaderSkill(g: Game, owner: string) {
@@ -10634,6 +10638,12 @@ export function initializeDiscoveryGameForAudit(state: Game): Game {
 export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
   const homeworlds = homeworldLeaderSkillsProfile(state);
+  const independent = classicIndependentLeaderSkillsProfile(state);
+  if (state.ecazTreachery) {
+    requireRule(independent, 'Independent Treachery with Leader Skills requires a fresh classic lobby without other modules.');
+    requireFreshBaseRuntime(state);
+    requireFreshFactionInventory(state);
+  }
   if (state.homeworlds) {
     requireRule(homeworlds && state.homeworlds.custody === null,
       'Homeworld Leader Skills require a fresh supported classic or native E1/E2/standalone E3 lobby with original modules and undealt custody.');
@@ -10654,7 +10664,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
     singleE1E2NexusLeaderSkillsProfile(g) || mixedE1E2NexusLeaderSkillsProfile(g) ||
     mixedE3 || standaloneE3NexusLeaderSkillsProfile(g) || pairedE3 || guildBetrayalNexusLeaderSkillsProfile(g), false,
     classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g) || (g.discoveryEnabled === true && classicNexus), true,
-    g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g));
+    g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g), independent);
   if (advancedMoritaniLeaderSkillsProfile(initialized) || ((mixedE3 || pairedE3) && initialized.advanced &&
     byFaction(initialized, 'moritani'))) initializeMoritaniAssassinateState(initialized);
   if ((mixedE3 || homeworlds || nativeDiscoveryLeaderSkillsProfile(initialized) || pairedE3) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
@@ -13703,29 +13713,29 @@ function ecazTreacheryIntegrity(g: Game) {
     'The Ecaz Treachery Cards inventory contains an unknown physical card.',
   );
   for (const [player, plan] of Object.entries(g.battle?.plans ?? {})) {
-    if ([plan.weapon, plan.defense].includes('ecaz-reinforcements')) {
+    if (usesNativeBattleSpecial(plan, REINFORCEMENTS_CARD)) {
       const owner = getPlayer(g, player);
       requireRule(plan.leader !== 'ecaz-reinforcements' &&
         g.battle?.lateDefense?.[player] !== 'ecaz-reinforcements' &&
         plan.weapon !== plan.defense &&
         owner.hand.some(isReinforcements) &&
         [plan.weapon, plan.defense].every(id => id === null || !!cardOf(owner, id)) &&
-        validBattleSlotPair(cardOf(owner, plan.weapon), cardOf(owner, plan.defense)),
+        validBattleSlotPair(cardOf(owner, plan.weapon), cardOf(owner, plan.defense), true),
         'The sealed Reinforcements plan lost its physical card or legal slot.');
       currentReinforcementsCost(g, owner, plan.reinforcementsSources);
     }
     requireRule(plan.reinforcementsSources === undefined ||
-      (g.homeworlds && (plan.weapon === REINFORCEMENTS_CARD || plan.defense === REINFORCEMENTS_CARD)),
+      (g.homeworlds && usesNativeBattleSpecial(plan, REINFORCEMENTS_CARD)),
     'Native reserve fee sources require the physical Reinforcements card in a Homeworld plan.');
     requireRule(plan.leader !== HARASS_WITHDRAW_CARD && g.battle?.lateDefense?.[player] !== HARASS_WITHDRAW_CARD &&
       !(plan.weapon === HARASS_WITHDRAW_CARD && plan.defense === HARASS_WITHDRAW_CARD),
       'Harass & Withdraw occupies exactly one ordinary Battle Plan card slot.');
-    if ([plan.weapon, plan.defense].includes(HARASS_WITHDRAW_CARD)) {
+    if (usesNativeBattleSpecial(plan, HARASS_WITHDRAW_CARD)) {
       const owner = getPlayer(g, player);
       requireRule(owner.hand.some(isHarassWithdraw),
         'The sealed Harass & Withdraw card must remain in its owner’s hand.');
       requireRule([plan.weapon, plan.defense].every(id => id === null || !!cardOf(owner, id)) &&
-        validBattleSlotPair(cardOf(owner, plan.weapon), cardOf(owner, plan.defense)),
+        validBattleSlotPair(cardOf(owner, plan.weapon), cardOf(owner, plan.defense), true),
         'The sealed Harass & Withdraw plan has an invalid weapon and defense pair.');
       currentHarassWithdrawQuote(g, owner, plan);
     }
@@ -13756,7 +13766,7 @@ function recruitsModeSupported(g: Game) {
   return (
     (!g.homeworlds || ecazHomeworldProfile(g)) &&
     !g.nexusCards &&
-    !g.leaderSkills &&
+    (!g.leaderSkills || classicIndependentLeaderSkillsProfile(g)) &&
     (!g.techTokens || modules) &&
     (!g.strongholdCards || modules) &&
     !g.discoveryEnabled
@@ -13864,7 +13874,7 @@ function recruitsPlayBlock(g: Game, owner: Player, card: Card): string | null {
   if (!g.ecazTreachery || !ecazTreacheryDefinition(card) || card.id !== RECRUITS_CARD_ID)
     return 'Choose the physical Recruits card from the enabled Ecaz Treachery Cards variant.';
   if (!recruitsModeSupported(g))
-    return 'Recruits requires a supported independent-card profile: faction-only, clean classic Homeworlds, or clean classic/Ix/CHOAM with original Tech and Advanced Strongholds.';
+    return 'Recruits requires a supported independent-card profile: faction-only, classic all14 Skills without other modules, or the existing native Homeworld and phase-module compositions.';
   if (g.status !== 'playing' || g.phase !== 4)
     return 'Play Recruits during Revival.';
   if (g.recruits?.turn === g.turn)
@@ -21139,12 +21149,12 @@ function stoneOccupyContext(g: Game): StoneBurnerContext | undefined {
 function stonePlanBlock(
   g: Game,
   p: Player,
-  plan: Pick<Plan, 'dial' | 'support' | 'weapon' | 'defense'>,
+  plan: Pick<Plan, 'dial' | 'support' | 'weapon' | 'defense' | 'planetologistSpecial'>,
 ): string | null {
   const b = g.battle!;
   const opponent = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
   const baseContext = stoneOccupyContext(g);
-  const context = [plan.weapon, plan.defense].includes(HARASS_WITHDRAW_CARD)
+  const context = usesNativeBattleSpecial(plan, HARASS_WITHDRAW_CARD)
     ? stoneBurnerWithdrawalContext(baseContext, b.attacker === p.id ? 'attacker' : 'defender',
         harassWithdrawContext(g, p).occupy)
     : baseContext;
@@ -21210,7 +21220,15 @@ function validatePlan(
 ): Plan {
   const b = g.battle!;
   const opponent = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
-  const selectedReinforcements = input.weapon === REINFORCEMENTS_CARD || input.defense === REINFORCEMENTS_CARD;
+  requireRule(input.planetologistSpecial === undefined || typeof input.planetologistSpecial === 'boolean',
+    'Choose whether to use the Planetologist alternate Special role.');
+  const planetologistWeapon = canUsePlanetologistWeapon(g, p,
+    typeof input.leader === 'string' ? input.leader : null,
+    typeof input.weapon === 'string' ? cardOf(p, input.weapon) : undefined,
+    input.planetologistSpecial === true ? true : undefined);
+  requireRule(input.planetologistSpecial !== true || planetologistWeapon,
+    'The alternate Special role requires the actual Planetologist leader and a green Special in the weapon slot.');
+  const selectedReinforcements = usesNativeBattleSpecial(input, REINFORCEMENTS_CARD);
   requireRule(input.reinforcementsSources === undefined || selectedReinforcements,
     'Native reserve fee sources require the physical Reinforcements card.');
   const reserveCost = selectedReinforcements
@@ -21244,6 +21262,7 @@ function validatePlan(
   );
   const plan: Plan = {
     ...(bankerSpice ? { bankerSpice } : {}),
+    ...(input.planetologistSpecial === true ? { planetologistSpecial: true as const } : {}),
     ...(allyPayment ? { allyPayment } : {}),
     ...(reserveCost?.sources ? { reinforcementsSources: structuredClone(reserveCost.sources) } : {}),
     dial,
@@ -21310,12 +21329,6 @@ function validatePlan(
     if (smugglerPlan.assignments.some(a => a.skill === 'smuggler' && a.leader === l?.id))
       nexusRule(() => smugglerBattlePile(b.territory, g.spice));
   }
-  const planetologistWeapon = canUsePlanetologistWeapon(
-    g,
-    p,
-    plan.leader,
-    w,
-  );
   requireRule(
     !plan.weapon || (w && battleCardSlotEligible('weapon', w, { planetologistWeapon })),
     'Choose a weapon, Worthless card, eligible Planetologist Special, Harass & Withdraw, or Reinforcements.',
@@ -21336,7 +21349,7 @@ function validatePlan(
     validBattleSlotPair(w, d, planetologistWeapon),
     'Chemistry as a weapon needs another defense; Weirding Way as a defense needs another weapon.',
   );
-  if ([w, d].some(isHarassWithdraw)) currentHarassWithdrawQuote(g, p, plan);
+  if (usesNativeBattleSpecial(plan, HARASS_WITHDRAW_CARD)) currentHarassWithdrawQuote(g, p, plan);
   if (isMirrorWeapon(w)) {
     const blocked = mirrorWeaponModeBlock(g) ?? stonePlanBlock(g, p, plan);
     requireRule(!blocked, blocked ?? 'Mirror Weapon cannot resolve this commitment.');
@@ -21858,6 +21871,8 @@ function findLegalBattlePlan(
     if (!accepts({ leader })) continue;
     for (const weapon of weapons) {
       if (!accepts({ leader, weapon })) continue;
+      const alternateSpecial = planetologistSpecialNeedsChoice(cardOf(p, weapon)) &&
+        canUsePlanetologistWeapon(g, p, leader, cardOf(p, weapon), true);
       for (const defense of defenses) {
         if (
           !accepts({ leader, weapon, defense }) ||
@@ -21882,6 +21897,15 @@ function findLegalBattlePlan(
                 return validatePlan(g, p, candidate, promises);
               } catch (error) {
                 if (!(error instanceof RuleError)) throw error;
+              }
+              if (alternateSpecial) {
+                candidate.planetologistSpecial = true;
+                delete candidate.reinforcementsSources;
+                try {
+                  return validatePlan(g, p, candidate, promises);
+                } catch (error) {
+                  if (!(error instanceof RuleError)) throw error;
+                }
               }
             }
           }
@@ -22782,7 +22806,7 @@ function harassAllocationOffer(g: Game) {
   if (!b?.revealed || b.harassAllocationVersion !== 1) return null;
   for (const id of [b.attacker, b.defender]) {
     const p = getPlayer(g, id), plan = b.plans[id];
-    if (![plan.weapon, plan.defense].includes(HARASS_WITHDRAW_CARD)) continue;
+    if (!usesNativeBattleSpecial(plan, HARASS_WITHDRAW_CARD)) continue;
     const context = harassWithdrawContext(g, p);
     try {
       if (harassWithdrawNeedsAllocation(context, plan.dial, plan.support))
@@ -22968,11 +22992,11 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       leaderSkills: battleLeaderSkills(g, p),
       occupiedStrongholds: leaderSkillStrongholdCount(g, p),
       forces: planCombatForces(g, p, opponent),
-      ...([cardOf(p, plan.weapon), cardOf(p, plan.defense)].some(isReinforcements)
+      ...(usesNativeBattleSpecial(plan, REINFORCEMENTS_CARD)
         ? { reinforcementsReserves: {
           normal: p.reserves - (p.elites?.reserves ?? 0), elite: p.elites?.reserves ?? 0,
         } } : {}),
-      ...([cardOf(p, plan.weapon), cardOf(p, plan.defense)].some(isHarassWithdraw)
+      ...(usesNativeBattleSpecial(plan, HARASS_WITHDRAW_CARD)
         ? { harassWithdraw: harassWithdrawContext(g, p),
           ...(b.harassAllocation?.player === p.id && b.harassAllocation.stage === 'selected'
             ? { harassSelection: b.harassAllocation.selection! } : {}) } : {}),
@@ -23337,7 +23361,7 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
   }
   if (quote.choamIncome) g.pendingChoamBattleIncome = { ...quote.choamIncome };
   for (const [player, plan, canceled] of [[a, ap, dc], [d, dp, ac]] as const)
-    if (canceled && [cardOf(player, plan.weapon), cardOf(player, plan.defense)].some(isHarassWithdraw))
+    if (canceled && usesNativeBattleSpecial(plan, HARASS_WITHDRAW_CARD))
       log(g, `${player.name}'s Harass & Withdraw was canceled by an opposing traitor. No forces returned through this card.`);
   for (const withdrawal of quote.harassWithdraw ?? []) {
     const player = getPlayer(g, withdrawal.player);

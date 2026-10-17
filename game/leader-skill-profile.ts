@@ -507,9 +507,31 @@ export function homeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean 
   return true;
 }
 
+/** Independent utility cards with original classic all14 setup, without other modules. */
+export function classicIndependentLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (game.ecazTreachery !== true || game.expansions.length ||
+      typeof game.advanced !== 'boolean' || !game.players ||
+      game.players.length < 2 || game.players.length > 6 ||
+      game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
+      game.discoveryStash || game.greatMaker || game.techTokens || game.strongholdCards ||
+      game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview ||
+      game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
+      game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
+      game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
+  const players = game.players;
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+    let classic = false;
+    for (const faction of FACTIONS)
+      if (faction.id === players[i].faction) { classic = faction.expansion === 'base'; break; }
+    if (!classic) return false;
+  }
+  return true;
+}
+
 /** Shared by rule quotes, controls and minimal legal bot participation. */
 export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): boolean {
-  return (noOtherLeaderSkillModules(game) &&
+  return classicIndependentLeaderSkillsProfile(game) || (noOtherLeaderSkillModules(game) &&
     (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game))) ||
     classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) ||
     strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) ||
