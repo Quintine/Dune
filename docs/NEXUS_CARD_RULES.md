@@ -2,6 +2,39 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Classic selected-card reactions — 18 October 2026
+
+Frozen16-file **156/156**, focused new6/6, final types/lint and build pass.
+Initial type feedback required an explicit string-keyed canonical map; its
+type-only correction changes no runtime behavior. Build retains existing
+module-register/large-chunk/route-classification warnings and no QA routes.
+
+The independent36/Nexus12 entry below, optionally all14 Skills, now initializes
+the existing Ixian purchased-card and actually seated Harkonnen declared-Traitor
+effect stamps at fresh setup. Played games without those stamps keep their
+existing behavior. Both protocols are reused, not a second reaction mechanism;
+their original neutral acknowledgement and Harkonnen replacement-before-bonus
+timing remain explicitly provisional. Other reaction overlays stay separate.
+
+Real closing draws supply Harkonnen/Ixian faces. Genuine paid shipment and
+original skilled-disc posture precede Harass plans and the actual native call.
+Personal Use, all-pass, allied Karama preemption/allowance and one actual Mentat
+replacement are connected. Original paid2 independent-card Use/Keep preserves
+wallet/physical delivery and native Harkonnen's one bonus. Public selection
+binds canonical independent identities; no hidden-hand inference or new rules.
+
+New `tests/classic-independent-nexus-reactions.test.ts` has six consumer cases.
+Its named producer uses original unused setup/post-training lotteries,
+alliance/draw, shipment, paid auction and battle actions, not staged played
+state. Three390px journeys reach actual private replacement inspection or the
+next original lot, with no errors/overflow. Four legal policies exercise
+eight native choices and four real Mentat replacements; no strategy claim.
+Temporary routes/memory are removed/released204, with no stored room, reset,
+server restart or deployment. Full modes, wider combinations, universal timing
+and deferred assurance remain open.
+[Harkonnen source/census](NEXUS_HARKONNEN_RULES.md#classic-independent-card-native-reactions--18-october-2026)
+· [Ixian selected-card authority](NEXUS_IXIAN_REPLACEMENT_RULES.md#classic-independent-card-native-reactions--18-october-2026).
+
 ## Classic independent Treachery composition — 18 October 2026
 
 **Prototyped / Partial.** Publisher E3 pp4/9/11 permits the three-card

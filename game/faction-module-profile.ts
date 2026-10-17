@@ -27,7 +27,7 @@ export type FactionModuleProfile = {
 };
 
 /** Independent36 + original Nexus12 in classic tables, optionally all14 Skills.
- * Initializers own undealt component freshness; other overlays stay separate. */
+ * Fresh native Harkonnen/Ixian effect stamps are not additional selected modules. */
 export function classicIndependentNexusProfile(
   game: Partial<FactionModuleProfile> & Pick<FactionModuleProfile, 'expansions'> & {
     sandtrout?: unknown; moritaniAssassinatePreview?: unknown;
@@ -39,8 +39,8 @@ export function classicIndependentNexusProfile(
     game.homeworlds || game.techTokens || game.strongholdCards || game.sandtrout ||
     game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
     game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
-    game.guildBetrayalPreview || game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
-    game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
+    game.guildBetrayalPreview || game.richeseBetrayalPreview ||
+    game.nexusIxianBetrayalPreview) return false;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
     let classic = false;

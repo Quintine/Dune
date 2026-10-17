@@ -2,6 +2,47 @@
 
 Source audit, 10 September 2026. This is a rules contract, not a runtime completion claim. The [common Nexus lifecycle](NEXUS_CARD_RULES.md) and existing expansion release gates still apply. The pending reaction-privacy question remains unresolved; this audit does not authorize a Betrayal reaction policy.
 
+## Classic independent-card native reactions — 18 October 2026
+
+**Prototyped / Partial.** Fresh normal classic2–6 Basic/Advanced
+independent36/Nexus12, optionally all14 Skills, now initializes the existing
+Harkonnen effect state when Harkonnen is actually seated. Ixian replacement
+initializes alongside it. These are native fresh capability stamps, not
+another selected module or a played-save retrofit. Native selected families,
+Worlds, phase modules, Discovery/Semuta and other reaction envelopes remain
+separate. Original standalone base33 admission is unchanged.
+
+The original printed effect below and independent-variant authority compose
+through the same declared-Traitor protocol. Under standing choose-recommended
+authority, inherit the existing visibly provisional native-counter-first /
+public-possible-holder acknowledgement convention for this bounded entry.
+This is not a new publisher ruling or an answer to the universal policy
+outside it. Personal calls gain no new native counter; allied calls retain
+their actual printed Karama allowance first.
+
+The current physical census uses the public independent-card selection, never
+a held face or inferred deck length. Its historical inventory adds a true
+selection marker only for independent36; original three-element inventories
+and signatures retain their grammar. Card identities/names/effects and the
+actual classic Traitor universe remain exact. Starting training and the real
+closing Nexus draw precede the battle; no force, hand, death or clock is staged.
+
+Actual personal Use preserves Harass's one undialed return and the living
+target, returns only the declared Traitor, then draws the real private reserve
+top once at Mentat. All14 Pass retains the actual call: leader death, one
+physical Tank loss and canceled Harass. A real allied printed counter prevents
+the call before any Nexus cost; allowing it opens the same acknowledgement
+with Guild as actual combatant beneficiary. Native skilled-disc shield choices
+are made through their original controls.
+
+Six combined consumer regressions pass in
+`tests/classic-independent-nexus-reactions.test.ts`, backed by its original
+action producer. The actual390px allied scene passes native allowance→owned
+Nexus Use→Harass→original winner inspection→Collection→private Mentat draw,
+including the new actual Traitor inspector. Four legal policies reach Mentat
+with one replacement each. Broader source, assurance and deployed gates remain.
+[Combined current evidence](NEXUS_CARD_RULES.md#classic-selected-card-reactions--18-october-2026).
+
 ## Permanent markers and legal replacement return — 15 October 2026
 
 Shared Harkonnen exchange snapshots now include Moritani's derived permanent

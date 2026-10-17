@@ -29,6 +29,27 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Selected-card native reactions — 18 October. Prototyped / Partial.**
+Real Harkonnen call/Nexus and paid Reinforcements/Ixian purchase exposed absent
+original effect prompts. Fresh classic2–6 independent36/Nexus12 optional14 now
+initializes both native effect stamps; Harkonnen only if seated. Played games
+without stamps keep their behavior. Public selection binds canonical36 and
+retains original base33/history grammar; other overlays remain separate.
+
+Personal/allied native allowance or Karama, actual Harass cancellation/return,
+one private real Mentat replacement and paid-card Use/Keep/bonus pass. Three
+actual390px journeys reach original Mentat inspector or next lot; no errors/
+overflow. Four legal policies execute eight choices/four real replacements.
+Inherited neutral acknowledgement and replacement-before-bonus timing remain
+visibly provisional, not universal/publisher rulings.
+
+Frozen16-file **156/156**, focused6/6, final types/lint/build pass. Fixture
+post-training randomness and trained-disc posture use native controls; an
+inferred Map key needed only a type annotation. Temporary memory/routes
+removed/released204; no stored room/reset/restart/deployment. Other modes,
+universal timing and deferred assurance remain open.
+[Exact source and original quantities](NEXUS_CARD_RULES.md#classic-selected-card-reactions--18-october-2026).
+
 **Classic independent Nexus — 18 October. Prototyped / Partial.**
 Original classic3 normal start rejected unchanged. One public configuration
 capability now composes fresh classic2–6 Basic/Advanced independent36/Nexus12,

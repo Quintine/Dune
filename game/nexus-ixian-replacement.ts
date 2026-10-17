@@ -1,4 +1,5 @@
 import { baseDeck, choamDeck, ixDeck, type Card } from './cards';
+import { ecazTreacheryCards } from './ecaz-cards';
 import { richeseCards } from './richese-cards';
 import type { RicheseAuction } from './richese-auction';
 
@@ -19,6 +20,8 @@ export type IxianReplacementContext = {
   turn: number;
   sequence: number;
   expansions: readonly string[];
+  /** Original independent three-card selection, never inferred from a hand. */
+  ecazTreachery?: boolean;
   richese: boolean;
   /** Native Black Market bidding and Richese special Karama require Advanced play. */
   advanced: boolean;
@@ -77,7 +80,8 @@ const base = catalogue(baseDeck());
 const ix = catalogue(ixDeck());
 const choam = catalogue(choamDeck());
 const cache = catalogue(richeseCards());
-const canonical: Readonly<Record<string, Card>> = { ...base, ...ix, ...choam, ...cache };
+const independent = catalogue(ecazTreacheryCards());
+const canonical: Readonly<Record<string, Card>> = { ...base, ...ix, ...choam, ...cache, ...independent };
 const genesis = 'ixian-replacement:0';
 const plain = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === 'object' && !Array.isArray(value) &&
@@ -104,6 +108,7 @@ function canonicalCard(value: unknown): value is Card {
 function selectedCard(value: unknown, ctx: IxianReplacementContext): value is Card {
   return canonicalCard(value) && (
     Object.hasOwn(base, value.id) ||
+    (ctx.ecazTreachery === true && Object.hasOwn(independent, value.id)) ||
     (Object.hasOwn(ix, value.id) && ctx.expansions.includes('ix')) ||
     (Object.hasOwn(choam, value.id) && ctx.expansions.includes('choam')) ||
     (Object.hasOwn(cache, value.id) && ctx.expansions.includes('choam') && ctx.richese)

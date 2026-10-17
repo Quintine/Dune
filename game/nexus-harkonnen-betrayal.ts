@@ -1,4 +1,5 @@
 import { baseDeck, leaders, type Card } from './cards';
+import { ecazTreacheryCards } from './ecaz-cards';
 import {
   nexusCardMode, validateNexusCards, validateNexusPlayers,
   type NexusPlayer, type NexusState,
@@ -24,6 +25,8 @@ export type HarkonnenBetrayalContext = {
   turn: number;
   advanced: boolean;
   sequence: number;
+  /** Public selection; absence retains the original base33 census. */
+  ecazTreachery?: boolean;
   players: readonly NexusPlayer[];
   cards: NexusState;
   physicalCards: readonly Card[];
@@ -80,6 +83,7 @@ const classic: Readonly<Record<string, true>> = {
   atreides: true, harkonnen: true, emperor: true, fremen: true, guild: true, beneGesserit: true,
 };
 const canonicalCards = new Map(baseDeck().map(card => [card.id, card]));
+const independentCards = new Map<string, Card>(ecazTreacheryCards().map(card => [card.id, card]));
 const declarationKeys = ['event', 'voter', 'beneficiary', 'target', 'leader', 'identity', 'signature'] as const;
 const plain = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === 'object' && !Array.isArray(value) &&
@@ -117,15 +121,16 @@ function validateUniverse(universe: readonly string[], players: readonly NexusPl
     universe.every(identity => expected.includes(identity)),
   'Harkonnen Betrayal needs the original complete canonical classic Traitor universe.');
 }
-function validatePhysical(cards: readonly Card[]): void {
-  requireBetrayal(Array.isArray(cards) && cards.length === canonicalCards.size &&
-    new Set(cards.map(card => card?.id)).size === canonicalCards.size && cards.every(card => {
+function validatePhysical(cards: readonly Card[], independent = false): void {
+  const count = canonicalCards.size + (independent ? independentCards.size : 0);
+  requireBetrayal(Array.isArray(cards) && cards.length === count &&
+    new Set(cards.map(card => card?.id)).size === count && cards.every(card => {
       if (!plain(card) || !text(card.id)) return false;
-      const expected = canonicalCards.get(card.id);
+      const expected = canonicalCards.get(card.id) ?? (independent ? independentCards.get(card.id) : undefined);
       return !!expected && exact(card, ['id', 'name', 'kind',
         ...(expected.effect === undefined ? [] : ['effect'])]) && card.name === expected.name &&
         card.kind === expected.kind && card.effect === expected.effect;
-    }), 'Harkonnen Betrayal requires complete unique canonical base33 Treachery custody.');
+    }), 'Harkonnen Betrayal requires complete unique canonical selected Treachery custody.');
 }
 function validateBattle(battle: Battle): void {
   requireBetrayal(exact(battle, ['event', 'attacker', 'defender', 'plans', 'heroLeaderIds']) &&
@@ -196,11 +201,12 @@ export function harkonnenBetrayalEvent(
 }
 function validateContext(ctx: HarkonnenBetrayalContext): void {
   requireBetrayal(plain(ctx) && ctx.status === 'playing' && ctx.phase === 6 &&
-    whole(ctx.turn) && ctx.turn > 0 && whole(ctx.sequence) && typeof ctx.advanced === 'boolean',
+    whole(ctx.turn) && ctx.turn > 0 && whole(ctx.sequence) && typeof ctx.advanced === 'boolean' &&
+    (ctx.ecazTreachery === undefined || typeof ctx.ecazTreachery === 'boolean'),
   'Harkonnen Betrayal requires its current Battle phase and independent cursor.');
   validateRoster(ctx.players);
   validateNexusCards(ctx.cards, ctx.players);
-  validatePhysical(ctx.physicalCards);
+  validatePhysical(ctx.physicalCards, ctx.ecazTreachery);
   validateUniverse(ctx.universe, ctx.players);
   validateNexusTraitorSnapshot(ctx.traitors, ctx.universe);
   requireBetrayal(ctx.traitors.players.length === ctx.players.length &&
@@ -214,7 +220,9 @@ function sourceAuthority(source: HarkonnenBetrayalSource): HarkonnenBetrayalAuth
     nativeContext: source.nativeContext, nativeRequired: source.nativeRequired, nativePassed: source.nativePassed };
 }
 function inventory(ctx: HarkonnenBetrayalContext): string {
-  return JSON.stringify([ctx.cards, ctx.traitors, ctx.physicalCards]);
+  const census: unknown[] = [ctx.cards, ctx.traitors, ctx.physicalCards];
+  if (ctx.ecazTreachery) census.push(true);
+  return JSON.stringify(census);
 }
 function sourceSignature(source: HarkonnenBetrayalSource): string {
   return JSON.stringify(['harkonnenBetrayalSource', source.version, source.event, source.turn,
@@ -247,13 +255,13 @@ function validateSavedSource(value: unknown): asserts value is HarkonnenBetrayal
   } catch {
     throw new HarkonnenBetrayalError('Harkonnen Betrayal lost its original physical census.');
   }
-  requireBetrayal(Array.isArray(stored) && stored.length === 3,
+  requireBetrayal(Array.isArray(stored) && (stored.length === 3 || (stored.length === 4 && stored[3] === true)),
     'Harkonnen Betrayal lost its original physical census.');
-  type SavedInventory = [NexusState, NexusTraitorSnapshot, readonly Card[]];
-  const [cards, traitors, physicalCards] = stored as SavedInventory;
+  type SavedInventory = [NexusState, NexusTraitorSnapshot, readonly Card[], true?];
+  const [cards, traitors, physicalCards, independent] = stored as SavedInventory;
   validateNexusCards(cards, source.players);
   validateNexusTraitorSnapshot(traitors, source.universe);
-  validatePhysical(physicalCards);
+  validatePhysical(physicalCards, independent);
   requireBetrayal(traitors.players.length === source.players.length &&
     source.players.every(player => traitors.players.some(seat =>
       seat.id === player.id && seat.faction === player.faction)) &&

@@ -2,6 +2,33 @@
 
 Source audit: 2026-09-10. Bounded local prototype integration and verification: 2026-10-01. **Partial development verified**, not complete Ixian/Nexus family or expansion acceptance. This document records the source and runtime boundary of the fresh `ixian-replacement` profile. Existing [Nexus release gates](NEXUS_CARD_RUNTIME.md) remain in force.
 
+## Classic independent-card native reactions — 18 October 2026
+
+Fresh normal classic2–6 Basic/Advanced independent36/Nexus12 now initializes
+the original purchased-card effect, optionally all14 Skills, alongside native
+Harkonnen cancellation where that faction is seated. No played game receives
+a new capability stamp. Original standalone classic/Tleilaxu/Richese entries
+and other roster/module boundaries remain; no separate overlay is selected.
+
+The canonical catalogue recognizes the three original independent faces, but
+current sources admit them only from the explicit public selection. Other
+families/cache still require their original selected native context. Historical
+v1 receipts keep their existing shape. This extends physical recognition and
+fresh admission, not printed effect, pricing or universal response timing.
+
+Actual paid2 delivers Reinforcements before the original private buyer choice.
+Use spends one Ixian Nexus, discards only that just-purchased card and draws
+the actual unused deck top, with the same hand size/wallet and one lot advance.
+Pass keeps purchase/Nexus and lets native Harkonnen receive one bonus card:
+actual Basic purse8, hand3→4 and next lot1. Original replacement-before-bonus
+order and neutral wrong-face acknowledgement remain visibly provisional.
+
+Six combined consumer regressions pass. Two actual390px purchase journeys
+exercise all14 Use and native Harkonnen Keep, including original action notices
+and physical hand inspectors; no errors/overflow. Four legal policies retain
+this valuable independent lot with Pass and the original paid wallet.
+[Combined source-bound proof and remaining gates](NEXUS_CARD_RULES.md#classic-selected-card-reactions--18-october-2026).
+
 ## Direct Richese special purchase during Bidding — 16 October 2026
 
 An actual Advanced Richese special-Karama cache acquisition during Bidding

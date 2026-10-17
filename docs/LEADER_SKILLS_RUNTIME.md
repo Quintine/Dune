@@ -7,6 +7,19 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Classic selected-card native reactions — 18 October 2026
+
+The fresh independent36/Nexus12 optional14 entry now initializes original
+Ixian purchase replacement and actual native Harkonnen call cancellation,
+without retrofitting played games. Native skilled-disc shield choices precede
+real plans; public selection binds the physical catalogue/census. The same
+provisional neutral acknowledgement and original replacement-before-bonus
+protocols are inherited, not a new universal timing policy.
+Actual allied native counter/Use→Harass→Mentat and paid-card Use/Keep controls,
+six combined regressions and four legal policies pass. Other overlays, full
+combinations, strategy and assurance remain separate.
+[Source and exact current proof](NEXUS_CARD_RULES.md#classic-selected-card-reactions--18-october-2026).
+
 ## Classic independent Nexus composition — 18 October 2026
 
 Fresh classic2–6 Basic/Advanced all14 may now select independent36 plus

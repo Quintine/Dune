@@ -9648,7 +9648,7 @@ export function initializeNexusGameForAudit(state: Game): Game {
 }
 /** Fresh audit admission only; ordinary games and public starts never opt in. */
 export function initializeHarkonnenNexusBetrayalGameForAudit(state: Game): Game {
-  requireRule(harkonnenNexusBetrayalModeSupported(state) &&
+  requireRule(!state.ecazTreachery && !state.leaderSkills && harkonnenNexusBetrayalModeSupported(state) &&
     state.nexusCards?.cards === null && state.nexusCards.phase === null &&
     state.nexusHarkonnenBetrayalPreview === undefined &&
     state.pendingNexusHarkonnenBetrayal === undefined &&
@@ -9668,6 +9668,7 @@ export function initializeHarkonnenNexusBetrayalGameForAudit(state: Game): Game 
   return g;
 }
 function harkonnenNexusBetrayalModeSupported(g: Game): boolean {
+  if (classicIndependentNexusProfile(g)) return !!byFaction(g, 'harkonnen');
   return typeof g.advanced === 'boolean' && !!g.nexusCards && g.expansions.length === 0 &&
     g.players.length >= 2 && g.players.length <= 6 && !!byFaction(g,'harkonnen') &&
     new Set(g.players.map(p => p.faction)).size === g.players.length &&
@@ -9684,7 +9685,7 @@ function harkonnenNexusBetrayalContext(g: Game) {
     leader:b.plans[id].leader,...(b.plans[id].kwisatz === undefined ? {} : {kwisatz:b.plans[id].kwisatz}),
   }]));
   const battle = {event:b.event!,attacker:b.attacker,defender:b.defender,plans,heroLeaderIds:[]};
-  return {status:g.status,phase:g.phase,turn:g.turn,advanced:g.advanced,
+  return {status:g.status,phase:g.phase,turn:g.turn,advanced:g.advanced,ecazTreachery:g.ecazTreachery === true,
     sequence:g.nexusHarkonnenBetrayalCursor!.sequence,players:g.players,
     cards:g.nexusCards!.cards!,physicalCards:physicalTreacheryCards(g),
     traitors:nexusTraitorSnapshot(g),universe:nexusTraitorUniverse(g),battle};
@@ -10012,7 +10013,7 @@ function decideIxianNexusBetrayal(g: Game,id: string,action: Action): void {
 }
 /** Fresh classic, Tleilaxu or Richese profile; no public start or retrofit. */
 export function initializeIxianNexusReplacementGameForAudit(state: Game): Game {
-  requireRule(!state.nexusIxianReplacementPreview && !state.pendingNexusIxianReplacement &&
+  requireRule(!state.ecazTreachery && !state.leaderSkills && !state.nexusIxianReplacementPreview && !state.pendingNexusIxianReplacement &&
     !state.pendingNexusIxianSpecialPurchase &&
     state.nexusIxianReplacementHistory === undefined && state.nexusIxianReplacementCursor === undefined &&
     ixianNexusReplacementModeSupported(state),
@@ -10027,6 +10028,7 @@ export function initializeIxianNexusReplacementGameForAudit(state: Game): Game {
   return g;
 }
 function ixianNexusReplacementModeSupported(g: Game): boolean {
+  if (classicIndependentNexusProfile(g)) return true;
   return !!g.nexusCards && g.players.length >= 2 && g.players.length <= 6 &&
     new Set(g.players.map(p => p.faction)).size === g.players.length &&
     ((!g.expansions.length && g.players.every(p => CLASSIC_FACTIONS[p.faction] === true)) ||
@@ -10057,7 +10059,7 @@ function ixianNexusReplacementContext(g: Game) {
   requireRule(g.pendingNexusIxianSpecialPurchase || g.auction || g.richeseAuction,
     'The Nexus purchased-card choice lost its original purchase.');
   return {status:g.status,phase:g.phase,turn:g.turn,sequence:g.nexusIxianReplacementCursor!.sequence,
-    advanced:g.advanced,expansions:g.expansions,richese:!!byFaction(g,'richese'),
+    advanced:g.advanced,expansions:g.expansions,richese:!!byFaction(g,'richese'),ecazTreachery:g.ecazTreachery === true,
     auction:g.auction,richeseAuction:g.richeseAuction ?? null,sale:g.currentAuctionSale ?? null,
     specialPurchase:g.pendingNexusIxianSpecialPurchase ?? null,
     players:g.players.map(p => ({id:p.id,hand:p.hand,handLimit:handLimit(p)})),
@@ -10893,6 +10895,27 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       'Normal Spice Banker income starts only with fresh Leader Skills setup.');
     g.spiceBankerIncomePreview = true;
     g.spiceBankerIncome = bankerIncomeRule(() => createBankerIncomeState(bankerIncomeContext(g)));
+  }
+  if (classicIndependentNexusProfile(g)) {
+    requireRule(g.nexusIxianReplacementPreview === undefined &&
+      g.nexusIxianReplacementHistory === undefined && g.nexusIxianReplacementCursor === undefined &&
+      !g.pendingNexusIxianReplacement && !g.pendingNexusIxianSpecialPurchase &&
+      g.nexusHarkonnenBetrayalPreview === undefined && g.nexusHarkonnenBetrayalHistory === undefined &&
+      g.nexusHarkonnenBetrayalCursor === undefined && !g.pendingNexusHarkonnenBetrayal &&
+      !g.pendingNexusHarkonnenReplacement && g.nexusHarkonnenReplacementHistory === undefined,
+    'Native Nexus reactions initialize only with fresh independent-card setup.');
+    g.nexusIxianReplacementPreview = true;
+    g.pendingNexusIxianReplacement = null;
+    g.nexusIxianReplacementHistory = [];
+    g.nexusIxianReplacementCursor = initialIxianReplacementCursor();
+    if (byFaction(g, 'harkonnen')) {
+      g.nexusHarkonnenBetrayalPreview = true;
+      g.pendingNexusHarkonnenBetrayal = null;
+      g.nexusHarkonnenBetrayalHistory = [];
+      g.nexusHarkonnenBetrayalCursor = initialHarkonnenBetrayalCursor();
+      g.pendingNexusHarkonnenReplacement = null;
+      g.nexusHarkonnenReplacementHistory = [];
+    }
   }
   initializeSetup(g, strongholdFactions || !!g.strongholdCards);
   if (nativeTech && byFaction(g, 'ecaz')) g.ecazOccupyPreview = true;

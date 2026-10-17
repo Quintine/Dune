@@ -25,7 +25,12 @@ export function createClassicIndependentNexusFixture(options: ClassicIndependent
   let game = createGame('CLASSICINDEPENDENTNEXUS', newPlayer(roster[0], roster[0], roster[0]), advanced, []);
   for (const faction of roster.slice(1)) joinGame(game, newPlayer(faction, faction, faction));
   const actions: ClassicIndependentNexusStep[] = [], staging: string[] = [];
-  const act = (actor: string, action: Action) => { actions.push({ actor, action }); game = applyAction(game, actor, action); };
+  const act = (actor: string, action: Action) => {
+    actions.push({ actor, action });
+    game = game.status === 'setup'
+      ? applyClassicDiscoveryNexusStep(game, { actor, action })
+      : applyAction(game, actor, action);
+  };
   for (const option of ['ecazTreachery', 'nexusCards', ...(options.skills ? ['leaderSkills'] : [])])
     act(game.host, { type: 'moduleOption', module: option, enabled: true });
   for (const player of game.players) act(player.id, { type: 'ready' });

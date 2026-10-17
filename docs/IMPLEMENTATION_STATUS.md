@@ -1,5 +1,39 @@
 # Dune implementation status
 
+## 18 October 2026 — Native classic independent-card Nexus reactions
+
+Real Harkonnen call with an actually drawn Harkonnen Nexus resolved without
+acknowledgement; actual paid Reinforcements purchase with Ixian Nexus exposed
+no replacement. Fresh classic2–6 Basic/Advanced independent36/Nexus12 optional14
+now initializes both original effect states, Harkonnen only if actually seated.
+Public configuration accepts those intrinsic stamps without admitting other
+overlays. Existing played games without stamps retain their behavior.
+
+Harkonnen physical source recognizes the explicit independent selection and
+retains original three-element historical inventories; selected36 adds one
+true marker. Ixian canonical recognition admits the three original cards only
+in the selected current context, retaining v1 receipt shape. The same neutral
+acknowledgement/native-counter and replacement-before-bonus conventions remain
+visibly provisional. No numeric rule or universal policy is added.
+
+Six new consumer cases exercise personal Use/actual Mentat draw, all14 Pass/
+Traitor-canceled Harass, allied printed counter and allowance, paid replacement
+and original Harkonnen Keep/bonus. The original producer selects unused setup
+and post-training lottery inputs and submits actual skilled-disc shield choices;
+no played card/force/death/clock is assigned. Initial stochastic traitor offers
+and an unhidden trained disc were fixture defects, corrected with native inputs.
+
+Frozen16-file **156/156**, focused6/6, final types/lint and build pass. An
+inferred literal-key Map needed an explicit string key; the type-only correction
+passes final checks without changing runtime. Three actual390px journeys reach
+private real Mentat Traitor inspection, paid2 replacement/next lot, or Basic
+Harkonnen purse8/hand3→4 with purchase/Nexus retained and one bonus. No errors/
+overflow. Four legal policies execute eight native choices and four real Mentat
+draws; Ixian Pass is a legal retention decision, not a calibration result.
+Temporary routes/memory removed/released204, no stored room/reset/restart/deploy.
+Existing build warnings, wider modes, universal timing and assurance stay open.
+[Canonical source and current boundary](NEXUS_CARD_RULES.md#classic-selected-card-reactions--18-october-2026).
+
 ## 18 October 2026 — Classic independent Treachery and Nexus
 
 Original normal classic3 independent+Nexus start rejected unchanged. One public
