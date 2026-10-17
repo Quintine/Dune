@@ -2060,8 +2060,8 @@ export function GameTable({
                     !g.players.every((p) => p.ready),
                 )}
               <p className="development-note">
-                Playable core under development. Advanced is available as an
-                unfinished preview. Expansion games are not yet available.
+                Playable core under development. Advanced and expansion factions
+                are unfinished previews; some interactions may still need fixes.
               </p>
             </>
           ) : g.status === 'setup' && !g.decision ? (

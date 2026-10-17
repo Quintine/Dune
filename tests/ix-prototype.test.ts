@@ -299,18 +299,7 @@ for (const [advanced, seed] of [
       );
     }));
 
-void test('the Ix prototype keeps public gates and rejects unsupported or nonempty lobbies without mutation', () => {
-  const publicLobby = lobby(false, [
-    ['a', 'atreides'],
-    ['h', 'harkonnen'],
-  ]);
-  const publicBefore = structuredClone(publicLobby);
-  assert.throws(
-    () => applyAction(publicLobby, publicLobby.host, { type: 'start' }),
-    /Expansion rules are still being implemented/,
-  );
-  assert.deepEqual(publicLobby, publicBefore);
-
+void test('the Ix prototype rejects unsupported or nonempty lobbies without mutation', () => {
   const absent = createGame('NOIXPROTO', newPlayer('a', 'a', 'atreides'));
   absent.players.push(newPlayer('h', 'h', 'harkonnen'));
   absent.players.forEach((p) => (p.ready = true));

@@ -11,7 +11,6 @@ import {
   newPlayer,
   joinGame,
   viewGame,
-  initializeBaseGameForAudit,
   type Game,
 } from '../game/engine';
 import { baseDeck, createAuditorLeader, CHOAM_AUDITOR_ID } from '../game/cards';
@@ -97,7 +96,7 @@ function setupModule() {
   return exports.initializeSetup!;
 }
 
-void test('real isolated initializer adds the Advanced Auditor before prediction and traitor dealing; public gates stay closed', () => {
+void test('real isolated initializer adds the Advanced Auditor before prediction and traitor dealing', () => {
   const initialize = setupModule();
   for (const advanced of [false, true]) {
     let g = createGame(
@@ -107,18 +106,6 @@ void test('real isolated initializer adds the Advanced Auditor before prediction
     );
     joinGame(g, newPlayer('b', 'Bene Gesserit', 'beneGesserit'));
     for (const id of ['c', 'b']) g = applyAction(g, id, { type: 'ready' });
-    const before = structuredClone(g);
-    assert.throws(
-      () => applyAction(g, 'c', { type: 'start' }),
-      advanced ? /Advanced preview/ : /still being implemented/,
-    );
-    if (advanced)
-      assert.throws(
-        () => applyAction(g, 'c', { type: 'start', advancedPreview: true }),
-        /Expansion factions are still being implemented/,
-      );
-    assert.throws(() => initializeBaseGameForAudit(g), /base factions/);
-    assert.deepEqual(g, before);
     initialize(g);
     assert.equal(g.setupStage, 'prediction');
     assert.equal(

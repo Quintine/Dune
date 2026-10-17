@@ -532,7 +532,8 @@ export function classicIndependentLeaderSkillsProfile(game: LeaderSkillProfile):
 /** Shared by rule quotes, controls and minimal legal bot participation. */
 export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): boolean {
   return classicIndependentLeaderSkillsProfile(game) || (noOtherLeaderSkillModules(game) &&
-    (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game))) ||
+    (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game) ||
+      (game.expansions.length === 1 && game.expansions[0] === 'choam'))) ||
     classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) ||
     strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) ||
     guildBetrayalNexusLeaderSkillsProfile(game) ||

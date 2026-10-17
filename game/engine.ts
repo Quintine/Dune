@@ -8404,9 +8404,12 @@ function baseStartProfileBlock(g: Game): string | null {
   if (g.ecazTreachery) return 'Ecaz Treachery Cards are still being implemented.';
   if (g.moritaniAssassinatePreview || g.moritaniAssassinate)
     return 'Separate development profiles cannot be enabled by a normal start.';
-  if (!g.players.every(p => FACTIONS.some(entry => entry.id === p.faction && entry.expansion === 'base')))
-    return 'Expansion factions are still being implemented.';
-  if (g.expansions.length !== 0) return 'Expansion rules are still being implemented.';
+  const expansionFactions = g.expansions.length > 0 ||
+    !g.players.every(p => FACTIONS.some(entry => entry.id === p.faction && entry.expansion === 'base'));
+  if (expansionFactions && g.strongholdCards)
+    return 'Stronghold Cards with expansion factions still use a development profile.';
+  if (expansionFactions && g.techTokens && !nativeFactionTechProfile(g))
+    return 'Tech Tokens with expansion factions need a supported three-through-six-seat native roster.';
   return null;
 }
 function advancedPreviewIntegrity(g: Game) {
@@ -8465,7 +8468,7 @@ function requireFreshBaseRuntime(g: Game) {
     JSON.stringify(g[key]) === JSON.stringify(fresh[key])),
   'Starting a base table cannot retain existing game resources, histories or continuations.');
 }
-function start(g: Game, advancedPreview = false) {
+function start(g: Game, advancedPreview = false): Game {
   requireRule(g.players.length >= 2, 'At least two players are needed.');
   requireRule(
     g.players.every((p) => p.ready),
@@ -8476,6 +8479,12 @@ function start(g: Game, advancedPreview = false) {
   requireRule(!advancedPreview || g.advanced, 'Choose Advanced preview rules before starting that preview.');
   const blocked = baseStartProfileBlock(g);
   requireRule(!blocked, blocked ?? 'This rules profile is unavailable.');
+  if (g.expansions.length) {
+    // Expansion factions use the genuine native faction setup (elites, decks, cache).
+    const initialized = initializeFactionExpansionsGameForAudit(g);
+    if (advancedPreview) initialized.advancedPreview = true;
+    return initialized;
+  }
   requireFreshSetup(g);
   requireRule(!g.techTokens || JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens()),
     'Start with unused Tech Tokens before assigning their initial owners.');
@@ -8484,6 +8493,7 @@ function start(g: Game, advancedPreview = false) {
   requireFreshBaseRuntime(g);
   initializeSetup(g);
   if (advancedPreview) g.advancedPreview = true;
+  return g;
 }
 function skillRule<T>(operation: () => T): T {
   try {
@@ -32324,8 +32334,7 @@ function applyActionInner(
       requireRule(Object.keys(action).every(key => key === 'type' || key === 'advancedPreview') &&
         (action.advancedPreview === undefined || action.advancedPreview === true),
       'Start this table, or explicitly choose Advanced preview.');
-      start(g, action.advancedPreview === true);
-      return g;
+      return start(g, action.advancedPreview === true);
     }
     if (t === 'faction') {
       const f = action.faction as FactionId;

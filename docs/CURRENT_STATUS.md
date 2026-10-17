@@ -29,6 +29,18 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Expansion-faction lobby starts open — 17 October (user-directed speed pass).**
+Hosts may now start Basic or Advanced-preview games with Ix, CHOAM and/or Ecaz
+factions from the normal lobby; the start routes through the existing native
+faction setup. Optional Tech Tokens follow the native profile; Stronghold Cards,
+Homeworlds, Nexus, Discovery, Skills and independent cards keep their dev entries.
+Eight all-AI 10-turn games (Basic/Advanced × Ix, CHOAM, Ecaz, all-three six-seat)
+finished with no stuck or rejected actions. The lobby note warns of unfinished
+interactions. **Known regression (fix later):** the full suite shows133/9868
+failures, mostly Nexus inspection/Cunning/Sardaukar and Bureaucrat suites; they
+began between `bc09ac3` (14 Oct, passing) and `82f1aae` (15 Oct) and predate
+this change. Not yet triaged.
+
 **Independent36/all14 Skills composition — 17 October.** Fresh ready classic
 Basic/Advanced all14 now admits the printed independent three-card variant
 (original36, no other modules, no played-game conversion). Real Recruits after a

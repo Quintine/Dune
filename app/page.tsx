@@ -1085,10 +1085,7 @@ export default function Home() {
             disabled={busy || claimUncertain}
             onChange={(value) => {
               setAdvanced(value);
-              if (value) {
-                setExpansions([]);
-                if (f.expansion !== 'base') setSelected('atreides');
-              }
+              if (value && f.expansion !== 'base' && !expansions.includes(f.expansion)) setSelected('atreides');
             }}
           />
           <p className="fine">2–6 players · up to 10 turns</p>
@@ -1101,7 +1098,7 @@ export default function Home() {
               <label className="expansion" key={x.id}>
                 <input
                   type="checkbox"
-                  disabled={busy || claimUncertain || advanced}
+                  disabled={busy || claimUncertain}
                   checked={expansions.includes(x.id)}
                   onChange={(e) => {
                     setExpansions(
