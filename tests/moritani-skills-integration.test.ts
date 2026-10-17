@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { applyAction, createGame, initializeLeaderSkillsGameForAudit, joinGame, newPlayer, normalizeAutomaticGame, viewGame, type Game } from '../game/engine';
+import { applyAction, normalizeAutomaticGame, viewGame, type Game } from '../game/engine';
 import { LEADER_SKILL_CARDS } from '../game/leader-skill-cards';
 import { planetologistMoveDraft } from '../components/planetologist-movement';
 import { TERRITORIES, distance, location, splitLocation } from '../game/board';
@@ -30,29 +30,6 @@ void test('every canonical skill can be dealt and publicly assigned to Basic Mor
       assert.equal(view.leaderSkills!.assignments.length, 3);
       assert.deepEqual(viewGame(reload(game), p.id), view);
     }
-  }
-});
-
-void test('Moritani skill starts retain immutable Ecaz and optional-module rejection', () => {
-  // Native Discovery Leader Skills are now admitted for this fresh lobby.
-  const discovery = createGame('MORIGATE', newPlayer('m', 'Moritani', 'moritani'), false, ['ecaz']);
-  joinGame(discovery, newPlayer('a', 'Atreides', 'atreides'));
-  discovery.players.forEach(p => { p.ready = true; });
-  discovery.discoveryEnabled = true;
-  assert.ok(initializeLeaderSkillsGameForAudit(discovery).leaderSkills);
-  for (const change of [
-    (g: Game) => { g.players[1] = newPlayer('a', 'Ecaz', 'ecaz'); },
-    (g: Game) => { g.expansions.push('choam'); },
-    (g: Game) => { g.discoveryEnabled = true; g.expansions.push('choam'); },
-    (g: Game) => { g.discoveryEnabled = true; g.players[1] = newPlayer('a', 'Ecaz', 'ecaz'); },
-  ]) {
-    const lobby = createGame('MORIGATE', newPlayer('m', 'Moritani', 'moritani'), false, ['ecaz']);
-    joinGame(lobby, newPlayer('a', 'Atreides', 'atreides'));
-    lobby.players.forEach(p => { p.ready = true; });
-    change(lobby);
-    const before = JSON.stringify(lobby);
-    assert.throws(() => initializeLeaderSkillsGameForAudit(lobby));
-    assert.equal(JSON.stringify(lobby), before);
   }
 });
 

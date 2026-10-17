@@ -55,10 +55,10 @@ advantage with their actual distinct Ix/CHOAM/Ecaz family decks, including
 Harkonnen, the Ecaz pair and existing Homeworld occupation. Existing module
 profiles still govern Nexus, Discovery, Tech and Strongholds. Independent cards
 do not require an unrelated Nexus module or suppress assassination.
-With Skills, the original standalone Moritani/classic roster still excludes
-Advanced Harkonnen and mixed/pair E3. It now also permits the independent
-three-card variant without other modules; see
-[the all14 native composition](MORITANI_LEADER_SKILLS.md#independent-treachery-composition--17-october-2026).
+With Skills, standalone or paired native Ecaz/Moritani/classic setups now work
+without Nexus, optionally the independent three-card variant and no other
+modules. Advanced Harkonnen, mixed families and other module envelopes retain
+their guards; see [the paired native composition](MORITANI_LEADER_SKILLS.md#paired-native-e3-skills--17-october-2026).
 Winner Suk rescue and Rihani choice finish first; the unspent assassination
 receipt waits, then opens its original private choice. Already completed
 casualties cannot replay after reveal/decline. A different eligible trained

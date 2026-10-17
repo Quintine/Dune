@@ -1,9 +1,20 @@
 # Moritani with Leader Skills
 
 Connected development prototype, updated 17 October 2026. Supported standalone
-Moritani/classic Basic/Advanced two–six-seat profiles use all fourteen physical
+or paired native Ecaz/Moritani/classic Basic/Advanced profiles use all fourteen
 Leader Skills. Normal-lobby access is a labelled preview; original roster and
 module guards remain, and complete rules/publication acceptance is unfinished.
+
+## Paired native E3 Skills — 17 October 2026
+
+Both native factions now compose ordinary all14 Skills without Nexus,
+optionally independent cards only. Genuine native6/6 and Ecaz Loyalty precede
+the actual battle. Moritani loses against Ecaz, reveals unused trained Ecaz4,
+returns its exact skill once and receives one physical replacement at Mentat.
+The existing fixture/runtime pair exposes `paired:true`; standalone defaults,
+Basic without assassination and original Advanced Harkonnen/Duke guards stay.
+[Current scope, controls and323/323 proof](LEADER_SKILLS_RUNTIME.md#paired-e3-without-nexus--17-october-2026).
+
 
 ## Independent Treachery composition — 17 October 2026
 
@@ -12,7 +23,7 @@ Recruits, Reinforcements and Harass & Withdraw variant, Basic/Advanced2–6,
 without other modules. Original36-card setup, five eligible assignment discs,
 private offers, Traitors and six-force placement remain. Advanced initializes
 the native assassination advantage; Basic does not. The original Advanced
-Harkonnen, shared-Duke, mixed-family and paired-E3 Skills guards remain.
+Harkonnen, shared-Duke and mixed-family Skills guards remain.
 
 Card fees/returns and winner skills continue before native assassination.
 The fee is three card-user reserves, never rescued battle dial; a successful

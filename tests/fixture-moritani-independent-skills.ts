@@ -7,6 +7,7 @@ import { treacheryDeck, type Card } from '../game/cards';
 import { botActions } from '../game/bots';
 import type { Difficulty } from '../game/bot-profiles';
 import { ecazTreacheryCards } from '../game/ecaz-cards';
+import { withoutEcazLoyalty } from '../game/ecaz-loyalty';
 import { LEADER_SKILL_CARDS, type LeaderSkillId } from '../game/leader-skill-cards';
 import { validateLeaderSkills } from '../game/leader-skills';
 import { traitorDeck } from '../game/traitors';
@@ -31,6 +32,9 @@ export type MoritaniIndependentSkillsOptions = {
   /** The independent three-card Ecaz Treachery variant of printed p. 18. */
   cards?: boolean;
   opponent?: MoritaniIndependentSkillsOpponent;
+  /** Native Ecaz replaces the classic opponent; both factions keep printed setup.
+   * `opponent` remains the standalone-only Guild/Harkonnen selector. */
+  paired?: boolean;
   /** Conserved Traitor identity Moritani really holds: the unused target disc
    * (default) or the winning committed disc, for a real normal Traitor call. */
   traitor?: 'target' | 'winner';
@@ -174,7 +178,7 @@ export function nextMoritaniIndependentSkillsStep(
     if (decision?.kind === 'capturedLeader')
       return { actor: decision.player,
         action: { type: 'decision', mode: policy.capture?.captured ?? 'keep' } };
-    if (decision?.kind === 'moritaniPlacement')
+    if (decision?.kind === 'moritaniPlacement' || decision?.kind === 'ecazPlacement')
       return { actor: decision.player, action: { type: 'decision', decline: true } };
     if (decision?.kind === 'moritaniSpecialKarama')
       return { actor: decision.player, action: { type: 'decision', event: decision.event, decline: true } };
@@ -222,7 +226,8 @@ export function assertMoritaniIndependentSkillsCustody(game: Game): void {
       .map((card) => card.id).sort(),
     'Every physical Treachery Card must stay in one known zone.');
   assert.deepEqual([...(game.traitorReserve ?? []), ...game.players.flatMap((player) => player.traitors), ...removed].sort(),
-    traitorDeck(game.players).sort(), 'Every physical Traitor Card must stay in one known zone.');
+    withoutEcazLoyalty(traitorDeck(game.players), game.ecazLoyalty).sort(),
+    'Every circulating or assassinated Traitor stays physical; Loyalty remains outside the deck.');
 }
 /** Conserved physical card custody; no purchase, adoption or minted identity. */
 function conserveCard(game: Game, actor: string, match: (card: Card) => boolean, staging: string[]): Card {
@@ -244,25 +249,27 @@ function conserveCard(game: Game, actor: string, match: (card: Card) => boolean,
   staging.push(`Conserved original ${card.id}: ${source.label} → ${actor} hand; not a purchase or native deal`);
   return card;
 }
-function board(opponent: MoritaniIndependentSkillsOpponent) {
+function board(opponent: MoritaniIndependentSkillsOpponent | 'ecaz') {
+  if (opponent === 'ecaz')
+    return { battle: 'false_wall_east', from: 'imperial_basin:9', amount: 6, sectors: [8, 9] };
   return opponent === 'guild'
     ? { battle: 'pasty_mesa', from: 'tueks_sietch:5', amount: 5, sectors: [5, 6] }
     : { battle: 'imperial_basin', from: 'carthag:11', amount: 10, sectors: [11, 10] };
 }
-/** Genuine normal lobby start (no audit profile seam) for a standalone
- * Moritani/classic independent three-card app with optional all-fourteen skills. */
+/** Genuine normal lobby start (no audit profile seam) for a standalone or native
+ * paired E3/classic composition with optional all-fourteen skills and cards. */
 export function createMoritaniIndependentSkillsFixture(
   options: MoritaniIndependentSkillsOptions = {},
 ): MoritaniIndependentSkillsFixture {
   const advanced = (options.rules ?? 'advanced') === 'advanced';
   const skills = options.skills ?? false;
   const cards = options.cards ?? false;
-  const opponentFaction = options.opponent ?? 'guild';
-  assert.ok(!skills || opponentFaction === 'guild',
+  const opponentFaction = options.paired ? 'ecaz' : (options.opponent ?? 'guild');
+  assert.ok(!skills || opponentFaction !== 'harkonnen',
     'Leader Skills keep the Harkonnen native roster out of this composition.');
   const plan = board(opponentFaction);
-  const target = opponentFaction === 'guild' ? 'guild-1' : 'harkonnen-1';
-  const winner = opponentFaction === 'guild' ? 'guild-0' : 'harkonnen-0';
+  const target = `${opponentFaction}-1`;
+  const winner = `${opponentFaction}-0`;
   const loser = 'moritani-4';
   const heldIdentity = (options.traitor ?? 'target') === 'winner' ? winner : target;
   const chosen: Record<string, LeaderSkillId> = {
@@ -314,6 +321,11 @@ export function createMoritaniIndependentSkillsFixture(
       act(actor, { type: 'leaderSkill', event: offer.event, skill: chosen[actor], leader: leader.id });
       continue;
     }
+    if (game.setupStage === 'forces' && opponentFaction === 'ecaz' &&
+      viewGame(game, 'ecaz').setupPending.includes('ecaz')) {
+      act('ecaz', { type: 'ecazSetup', placements: { [plan.from]: 6 } });
+      continue;
+    }
     if (game.setupStage === 'traitors' || game.players.some((player) => player.traitorChoices.length)) {
       const player = game.players.find((seat) => seat.traitorChoices.length)!;
       const keep = player.id === 'moritani'
@@ -339,6 +351,15 @@ export function createMoritaniIndependentSkillsFixture(
   assert.equal(!!game.moritaniAssassinate, advanced,
     'The printed Advanced assassination producer follows the real rules mode alone.');
   if (skills) assert.equal(game.leaderSkills!.assignments.find((entry) => entry.owner === opponent)!.leader, target);
+  if (opponentFaction === 'ecaz') {
+    const ecaz = moritaniIndependentSkillsPlayer(game, opponent);
+    assert.equal(ecaz.reserves, 14);
+    assert.deepEqual(ecaz.forces, { [plan.from]: 6 });
+    assert.notEqual(game.ecazLoyalty?.card, target,
+      'The trained unused native target must have a circulating physical Traitor.');
+    assert.notEqual(game.ecazLoyalty?.card, heldIdentity,
+      'Never exchange the face-up Loyalty card into a hand.');
+  }
   holdMoritaniStrongholdsTraitor(game, moritani, heldIdentity, staging);
   const afterSetup = structuredClone(game);
   game = advanceMoritaniIndependentSkills(game,
@@ -387,7 +408,9 @@ export function createMoritaniIndependentSkillsFixture(
   const plans: MoritaniIndependentSkillsStep[] = [
     { actor: moritani, action: { type: 'battlePlan', dial: 2, support: 0, leader: loser,
       ...(reinforcements && harass ? { weapon: REINFORCEMENTS_CARD, defense: HARASS_WITHDRAW_CARD } : {}) } },
-    { actor: opponent, action: { type: 'battlePlan', dial: cards ? 1 : 0, support: 0,
+    { actor: opponent, action: { type: 'battlePlan',
+      dial: options.paired ? (cards ? 4 : 2) : (cards ? 1 : 0),
+      support: options.paired && advanced ? (cards ? 4 : 2) : 0,
       leader: winner, weapon: winnerWeapon.id } },
   ];
   const window = structuredClone(game);

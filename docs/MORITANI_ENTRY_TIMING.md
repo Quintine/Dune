@@ -2,6 +2,27 @@
 
 Reviewed 2026-09-06. This supplements `MORITANI_TERROR_RULES.md`; it does not enable combined-faction play or certify an implementation order.
 
+## Paired Skills and independent-card entries — 17 October 2026
+
+The existing serialized native queue now admits paired Ecaz/Moritani/classic
+all14 Skills without Nexus, optionally independent cards and no other modules.
+Bare faction/card-only entries also retain it; selecting the printed independent
+variant does not require selecting Skills or suppress native reactions.
+This extends software capability, not the provisional storm-order policy below.
+Original in-flight control and effect-specific guards remain.
+
+`tests/paired-e3-skills-arrival.test.ts` branches from genuine normal setup,
+uses actual native placements and one paid Guild arrival, then triggers
+untrained Duke6 and Robbery in the original queue. Basic encounters Terror
+first and Advanced Ambassador first; both settle each originally eligible
+effect once, retain one arrived counter and resume movement. Card-only Basic
+was reproduced rejecting before the guard repair and now follows that same
+physical continuation. After its one-spice shipment, Basic Guild4 transfers2
+or Advanced Guild5 transfers3 to Moritani; payment never replays. Actors and
+printed effects are not inferred from the active player. Frozen29-file323/323,
+types/lint/build and runtime programmes pass; no saved/deployed/full-priority acceptance follows.
+
+
 ## Finding
 
 **The examined primary sources do not establish a complete priority order for Terror, Intrusion, accompanying advisors, shipment income and arrival storm losses.** No retrieved classic-game rule assigns these conflicts to storm order or to the moving player. This is a bounded research result, not a claim that no designer clarification exists anywhere.

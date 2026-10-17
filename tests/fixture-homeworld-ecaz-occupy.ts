@@ -15,6 +15,8 @@ export function nextHomeworldEcazStep(game: Game): HomeworldEcazStep | null {
     action: { type: 'passResponse' } };
   if (game.decision?.kind === 'ecazPlacement')
     return { actor: game.decision.player, action: { type: 'decision', decline: true } };
+  if (game.decision?.kind === 'moritaniPlacement')
+    return { actor: game.decision.player, action: { type: 'decision', decline: true } };
   if (!game.phaseOpening && !game.decision && game.phase === 0 && game.stormPending === null) {
     const actor = game.stormDialers.find(id => game.stormDials[id] === undefined);
     if (actor) return { actor, action: { type: 'stormDial', amount: game.turn === 1 ? 0 : 1 } };
@@ -36,6 +38,7 @@ export function nextHomeworldEcazStep(game: Game): HomeworldEcazStep | null {
  * phases, alliances, World custody and offered skills follow the real actions. */
 export function createHomeworldEcazOccupyFixture(options: {
   advanced?: boolean; skills?: boolean; independent?: boolean;
+  allyFaction?: 'emperor' | 'moritani';
   /** No-World control uses the same genuine alliance/Arrakis route. */
   homeworlds?: boolean;
   /** Select only actual offered setup choices; the captured initial stays untouched. */
@@ -43,8 +46,9 @@ export function createHomeworldEcazOccupyFixture(options: {
 } = {}): HomeworldEcazOccupyFixture {
   const advanced = options.advanced ?? true;
   const homeworlds = options.homeworlds ?? true;
+  const ally = options.allyFaction ?? 'emperor';
   let game = createGame('WORLDECAZOCCUPY', newPlayer('ecaz', 'Ecaz', 'ecaz'), advanced, ['ecaz']);
-  joinGame(game, newPlayer('emperor', 'Emperor', 'emperor'));
+  joinGame(game, newPlayer(ally, ally === 'emperor' ? 'Emperor' : 'Moritani', ally));
   joinGame(game, newPlayer('guild', 'Guild', 'guild'));
   const actions: HomeworldEcazStep[] = [];
   const act = (actor: string, action: Action) => {
@@ -86,11 +90,13 @@ export function createHomeworldEcazOccupyFixture(options: {
   orderBlow(false, 1);
   if (advanced) orderBlow(false, 2);
   reach(g => g.phase === 1 && g.nexus && !g.spiceWindow && !g.spiceResolution && homeworldEcazClean(g));
-  act('ecaz', { type: 'alliance', target: 'emperor' });
-  act('emperor', { type: 'alliance', target: 'ecaz' });
+  act('ecaz', { type: 'alliance', target: ally });
+  act(ally, { type: 'alliance', target: 'ecaz' });
   reach(g => g.phase === 5 && homeworldEcazClean(g));
   const battleTerritory = ['arrakeen', 'sietch_tabr', 'habbanya_ridge_sietch']
-    .find(id => territory(id).sectors[0] !== game.storm)!;
+    .find(id => territory(id).sectors[0] !== game.storm &&
+      !game.players.some(player => Object.entries(player.forces).some(([key, amount]) =>
+        amount > 0 && key.startsWith(`${id}:`))))!;
   const sector = territory(battleTerritory).sectors[0];
   const location = `${battleTerritory}:${sector}`;
   const shipped = new Set<string>();
@@ -100,7 +106,7 @@ export function createHomeworldEcazOccupyFixture(options: {
     if (!shipped.has(actor)) {
       act(actor, { type: 'ship', territory: battleTerritory, sector,
         amount: actor === 'guild' ? 2 : 4,
-        elite: actor === 'emperor' && (advanced || homeworlds) ? 2 : 0, allyPayment: 0 });
+        elite: actor === ally && ally === 'emperor' && (advanced || homeworlds) ? 2 : 0, allyPayment: 0 });
       shipped.add(actor);
       reach(homeworldEcazClean);
     }
@@ -112,6 +118,6 @@ export function createHomeworldEcazOccupyFixture(options: {
   act(choice.chooser, { type: 'chooseBattle', territory: battleTerritory,
     target: choice.attacker === choice.chooser ? choice.defender : choice.attacker });
   if (!options.skills) assert.equal(game.decision?.kind, 'ecazBattleLead');
-  return { game, initial, afterSetup, actions, ecaz: 'ecaz', ally: 'emperor', opponent: 'guild',
+  return { game, initial, afterSetup, actions, ecaz: 'ecaz', ally, opponent: 'guild',
     territory: battleTerritory, location, ecazForces: 4 };
 }

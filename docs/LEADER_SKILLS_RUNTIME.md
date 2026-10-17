@@ -7,6 +7,40 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Paired E3 without Nexus — 17 October 2026
+
+Fresh native Ecaz+Moritani/classics all14 Skills now uses its original setup
+without an artificial Nexus dependency, Basic/Advanced2–6, optionally independent
+cards (ecaz33/36) and no other modules. One physical-roster validator serves
+both original paired Nexus and plain Skills predicates. No Nexus hand is
+created; native6/6, Loyalty, ordinary assignment discs, mandatory Banker and
+native powers remain. Shared Duke never trains. Advanced Harkonnen, mixed
+families and other plain-pair module combinations retain their guards.
+
+The existing Ecaz programme now uses native Moritani as its actual variable
+army/optional lead: native normal counters, own fee/returns and separate fixed
+Ecaz losses remain. Trained Ecaz Suk rescues committed own losses, never reserve
+fees or the ally. The Moritani programme now loses against actual Ecaz, reveals
+one different held unused trained Ecaz4, returns one skill and replaces the
+actual Traitor once at Mentat. Basic and no-card controls remain native.
+
+Existing fixtures/tests `fixture-ecaz-independent-skills.ts`,
+`ecaz-independent-skills-runtime.test.ts`,
+`fixture-moritani-independent-skills.ts` and
+`moritani-independent-skills-runtime.test.ts` extend `paired:true`; original
+standalone defaults stay. `tests/paired-e3-skills-arrival.test.ts` additionally
+uses genuine placements/paid entry for both native reactions, including
+card-only factions without Skills. See the
+[unchanged provisional queue policy](MORITANI_ENTRY_TIMING.md#paired-skills-and-independent-card-entries--17-october-2026).
+
+Frozen29-file323/323, types/lint/build, paired runtime programmes and four-policy
+lead/assassination actions pass. Four bounded paired all14 tables reach turn3
+or earlier wins; targeted programmes supply assassination/overlap proof.
+Actual390px normal paired training, Loyalty/Traitors and both native force
+setups reach Storm without errors/overflow. No played-game conversion,
+calibration, complete-mode, deployed or deferred assurance claim follows.
+
+
 ## Standalone E3 independent cards — 17 October 2026
 
 Fresh native Ecaz OR Moritani/classic all14 Skills now also admits independent
@@ -14,7 +48,7 @@ Recruits, Reinforcements and Harass & Withdraw, Basic/Advanced2–6, exact ecaz3
 and no other modules. The shared independent/native capability feeds setup,
 card previews, skill effects, ordinary bankers and legal AI. Original native
 offers, five assignment discs, Loyalty/Traitors and starting forces remain;
-Advanced Harkonnen, E3 pairs/mixed families and shared-Duke training stay guarded.
+Advanced Harkonnen, mixed families and shared-Duke training stay guarded.
 
 Ecaz retains real allied Arrakis lead selection and separate fixed/variable
 armies. Advanced Moritani keeps skill-first winner outcomes, printed unused-disc

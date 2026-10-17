@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 17 October 2026 — Paired native E3 Skills without Nexus
+
+Four actual paired Basic/Advanced plain/card Skills starts rejected before the
+cutover. One original Ecaz/Moritani roster validator now serves Nexus and plain
+paired capability; native Basic/Advanced predicates and ordinary consumers reuse
+it without manufacturing Nexus state. Native6/6, Loyalty, five-disc assignment,
+untrained Duke, original module envelopes and Advanced Harkonnen guards remain.
+
+Existing genuine programmes now cover native Moritani as variable coalition
+army/card user and Ecaz as the actual winning assassination faction. Card
+fees/returns/committed-only Suk stay separate; unused trained Ecaz4 returns one
+skill, pays printed4 and yields one actual Mentat replacement. Original source
+entropy and conserved cards/Traitors are explicit, not fabricated armies/payments.
+
+Genuine native token placements also exercise the existing Ambassador/Terror
+queue without Nexus. Both storm-order branches commit one Guild shipment,
+acquire untrained Duke6, resolve Robbery and resume movement without replay.
+Card-only Basic entry separately rejected before, then passes after removing
+the unrelated variant guard. No new priority/numeric ruling or receipt exists.
+
+Frozen29-file **323/323**, types/lint/build, actual native programmes and four
+legal policies pass. Four bounded paired all14 tables reach turn3 or earlier
+wins; their ten natural battles contain no assassination, so targeted programmes
+supply that proof. Actual390px normal paired entry completes training,
+Loyalty/Traitors/native6+6 into Storm without browser errors/root overflow.
+Obsolete software exclusion pins are deleted, not re-pinned. Existing build
+warnings and complete-mode/deployed/deferred assurance limits remain.
+[Current scope](LEADER_SKILLS_RUNTIME.md#paired-e3-without-nexus--17-october-2026),
+[existing provisional arrival order](MORITANI_ENTRY_TIMING.md#paired-skills-and-independent-card-entries--17-october-2026).
+
 ## 17 October 2026 — Native E3 independent Skills and printed defaults
 
 Fresh standalone Ecaz OR Moritani/classic all14 Skills admits the independent

@@ -354,8 +354,8 @@ persistence/privacy assurance or a deployed revision.
 The same printed independent-variant permission now composes original Ecaz OR
 Moritani/classic all14 Skills, Basic/Advanced2–6, exact ecaz36, without other
 modules. Native offers/assignment, Loyalty, Traitors, starting forces and card
-custody stay source-ordered. Advanced Harkonnen, E3 native pairs/mixed families,
-shared-Duke training and other module combinations retain their Skills guards.
+custody stay source-ordered. Advanced Harkonnen, mixed families, shared-Duke
+training and other module combinations retain their Skills guards.
 
 Fresh plain/card Ecaz starts mark native coalition participation in Basic as
 well as Advanced. Basic no longer rejects Occupy merely because cards were
@@ -403,3 +403,19 @@ private fallback cards, not named weapons. Both normal/trained postures preserve
 the hand and seal a legal plan in declared conserved positions. See the
 [inventory contract](MENTAT_QUESTION.md#selected-independent-card-inventory--17-october-2026).
 No deployed, full-module, strategic calibration or deferred assurance claim follows.
+
+## Paired E3 Skills and native arrival independence — 17 October 2026
+
+Ecaz+Moritani/classics now also uses all14 Skills without Nexus, optionally
+independent cards, Basic/Advanced2–6 and no other modules. Original native6/6,
+Loyalty, assignment, separate card-user costs/armies and one native Mentat
+replacement remain; Advanced Harkonnen/shared-Duke/mixed-family guards stay.
+[Canonical paired programme and323/323 evidence](LEADER_SKILLS_RUNTIME.md#paired-e3-without-nexus--17-october-2026).
+
+The printed variant independence also removes the unrelated card-only
+Ambassador/Terror entry guard. Actual Basic paid entry was rejected before;
+native placements now reach both reactions and original movement without
+requiring Skills. The earlier storm-order policy, actual control/effect-specific
+guards and physical payment/force rules are unchanged, not newly adjudicated.
+[Native queue and genuine proof](MORITANI_ENTRY_TIMING.md#paired-skills-and-independent-card-entries--17-october-2026).
+

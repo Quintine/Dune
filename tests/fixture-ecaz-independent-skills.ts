@@ -18,14 +18,16 @@ import { chooseEcazOccupyLead, finishEcazOccupySetup, stageEcazOccupyCard } from
 import { createHomeworldEcazOccupyFixture } from './fixture-homeworld-ecaz-occupy';
 
 /** Printed E3 shared rule (docs/ECAZ_TREACHERY_RULES.md): the three-card variant
- * is independent of faction selection and other variants, so a standalone Ecaz
- * seat with classic opponents keeps it; all14 Leader Skills is the separate
+ * is independent of faction selection and other variants, so standalone Ecaz
+ * and the native Ecaz/Moritani pair keep it; all14 Leader Skills is the separate
  * optional module documented in docs/LEADER_SKILLS_RULES.md. Card timings and the
  * fee-before-return order stay provisional as recorded there, not new rulings. */
 export type EcazIndependentSkillsStep = { actor: string; action: Action };
 export type EcazIndependentSkillsCard = 'reinforcements' | 'harass';
 export type EcazIndependentSkillsOptions = {
   advanced?: boolean;
+  /** Native Ecaz/Moritani seats; the default keeps the standalone Emperor ally. */
+  paired?: boolean;
   /** All14 skills; Basic and Advanced are both genuine native bands. */
   skills?: boolean;
   /** The independent physical three-card variant; `false` is the printed no-card control. */
@@ -255,6 +257,7 @@ export function createEcazIndependentSkillsFixture(
   const draws = skills ? permutationDraws(LEADER_SKILL_CARDS.map(card => card.id), order) : [];
   const shared = entropy(() => createHomeworldEcazOccupyFixture({
     advanced, skills, independent, homeworlds: false,
+    ...(options.paired ? { allyFaction: 'moritani' as const } : {}),
     ...(skills ? { finishSetup: (initial: Game) => trainEcazSeat(initial, picks) } : {}),
   }), draws);
   if (skills) {

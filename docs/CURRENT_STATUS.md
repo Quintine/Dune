@@ -29,10 +29,31 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Paired E3 Skills and native arrivals — 17 October.** Native Ecaz+Moritani/
+classics all14 Skills no longer requires Nexus Cards, Basic/Advanced2–6,
+optionally independent cards only. Four normal plain/card starts failed before
+the profile cutover. Shared original roster validation retains native6/6,
+Loyalty, five-disc assignment, untrained Duke and Advanced Harkonnen/mixed-family
+guards. No World/phase-module envelope or played-save history is fabricated.
+
+Actual paired coalitions retain card-user fees/returns, separate native armies
+and committed-only Suk; actual Moritani loss reveals unused trained Ecaz4,
+returns one skill and gets one Mentat replacement. Four policies choose legal
+native leads and assassination. Native Ambassador/Terror overlap also works
+without Nexus for these Skills profiles and card-only factions: real placements,
+one paid arrival, both storm-order branches, Duke6/Robbery and resumed movement.
+
+Frozen29-file **323/323**, types/lint/build and genuine runtime programmes pass.
+Four paired all14 table smokes reach turn3 or an earlier win; targeted programmes
+supply assassination/overlap proof. Actual390px paired normal entry completes
+training, Loyalty/Traitors and both native setups into Storm without errors or
+overflow. Existing provisional arithmetic/timing and final acceptance limits remain.
+[Paired scope and evidence](LEADER_SKILLS_RUNTIME.md#paired-e3-without-nexus--17-october-2026).
+
 **Standalone E3 independent cards/native defaults — 17 October.** Fresh
 standalone Ecaz OR Moritani/classic all14 Skills now retains the three
 independent cards without other modules. Original Advanced Skills/Harkonnen,
-E3 pair/mixed Skills and shared-Duke guards remain. Plain/card Ecaz initializes
+E3 mixed-family Skills and shared-Duke guards remain. Plain/card Ecaz initializes
 printed Basic/Advanced coalition participation; supported native Advanced
 Moritani initializes assassination without an artificial Nexus dependency.
 No played-save history is synthesized.

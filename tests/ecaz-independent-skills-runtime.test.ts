@@ -9,6 +9,7 @@ import {
   assertEcazIndependentSkillsCustody,
   createEcazIndependentSkillsFixture, ecazIndependentSkillsPlayer as player,
   quoteEcazIndependentSkillsBattle, settleEcazIndependentSkillsBattle,
+  type EcazIndependentSkillsFixture,
 } from './fixture-ecaz-independent-skills';
 
 const at = (game: Game, id: string, key: string) => player(game, id).forces[key] ?? 0;
@@ -21,6 +22,26 @@ function physicalSource(game: Game, count: number): void {
   assert.equal(source.length, count);
   assert.deepEqual(source.map(card => card.id).sort(), [...treacheryDeck(game.expansions),
     ...(game.ecazTreachery ? ecazTreacheryCards() : [])].map(card => card.id).sort());
+}
+
+/** Both native starting armies stay physical outside the genuinely shipped battle. */
+function pairedArmies(f: EcazIndependentSkillsFixture, end: Game): void {
+  for (const game of [f.afterSetup, f.game, end]) {
+    assert.equal(at(game, f.ecaz, 'imperial_basin:9'), 6);
+    assert.equal(at(game, f.ally, 'polar_sink:0'), 6);
+  }
+  assert.equal(at(f.game, f.ally, f.location), 4);
+  assert.equal(player(f.game, f.ally).reserves, player(f.afterSetup, f.ally).reserves - 4,
+    'Moritani ships four of its own reserves, not its original six or Imperial elites');
+}
+
+function disposedLeadCards(f: EcazIndependentSkillsFixture, end: Game): void {
+  assert.equal(end.lastBattleContext?.winnerDiscards?.completed, true);
+  assert.deepEqual(end.lastBattleContext?.winnerDiscards?.cards.slice().sort(), f.cardIds.slice().sort());
+  for (const id of f.cardIds) {
+    assert.equal(player(end, f.cardUser).hand.some(card => card.id === id), false);
+    assert.equal(end.discard.filter(card => card.id === id).length, 1);
+  }
 }
 
 for (const advanced of [false, true]) {
@@ -242,3 +263,99 @@ for (const advanced of [false, true]) {
   });
 }
 
+
+for (const advanced of [false, true]) {
+  void test(`native paired no-card all14 ${advanced ? 'Advanced Moritani lead keeps Ecaz losses separate' : 'Basic Ecaz lead rescues its fixed commitment'} through coalition cleanup`, () => {
+    const f = createEcazIndependentSkillsFixture({
+      paired: true, advanced, independent: false, cards: [], lead: advanced ? 'ally' : 'ecaz',
+    });
+    physicalSource(f.initial, 33);
+    physicalSource(f.game, 33);
+    const quote = quoteEcazIndependentSkillsBattle(f);
+    assert.deepEqual(quote.fixedLosses, [{ owner: f.ecaz, normal: 2, elite: 0 }]);
+    assert.equal(quote.casualties?.owner, f.ally);
+    assert.equal(quote.reinforcements, undefined);
+    assert.equal(quote.harassWithdraw, undefined);
+    const end = settleEcazIndependentSkillsBattle(f);
+    assert.equal(end.phase, 7);
+    assert.equal(end.lastBattleContext?.winner, f.cardUser);
+    assert.equal(end.lastBattleContext?.result, 'normal');
+    assert.equal(end.lastBattleContext?.sukRescue?.completed, advanced ? undefined : true);
+    assert.equal(change(player(f.game, f.ecaz).tanks, player(end, f.ecaz).tanks), advanced ? 2 : 0);
+    assert.equal(change(player(f.game, f.ecaz).reserves, player(end, f.ecaz).reserves), advanced ? 0 : 1);
+    assert.equal(at(end, f.ecaz, f.location), advanced ? 2 : 3);
+    assert.equal(change(player(f.game, f.ally).tanks, player(end, f.ally).tanks), 2);
+    assert.equal(change(player(f.game, f.ally).reserves, player(end, f.ally).reserves), 0);
+    assert.equal(at(end, f.ally, f.location), 2);
+    assert.equal(change(player(f.game, f.opponent).tanks, player(end, f.opponent).tanks), 2);
+    assert.equal(at(end, f.opponent, f.location), 0);
+    pairedArmies(f, end);
+    assertEcazIndependentSkillsCustody(end);
+  });
+}
+
+void test('native paired Ecaz lead pays its own fee, returns its undialed fixed army and rescues only its committed losses', () => {
+  const f = createEcazIndependentSkillsFixture({ paired: true });
+  physicalSource(f.initial, 36);
+  const quote = quoteEcazIndependentSkillsBattle(f);
+  assert.deepEqual(quote.reinforcements,
+    [{ player: f.ecaz, card: REINFORCEMENTS_CARD, normal: 3, elite: 0 }]);
+  assert.deepEqual(quote.harassWithdraw![0].returned, { normal: 2, elite: 0 });
+  assert.deepEqual(quote.harassWithdraw![0].locations, { [f.location]: { normal: 2, elite: 0 } });
+  assert.equal(quote.casualties?.owner, f.ally);
+  const rescue = settleEcazIndependentSkillsBattle(f, { stop: 'rescue' });
+  assert.ok(rescue.decision?.kind === 'sukRescue');
+  assert.equal(rescue.decision.player, f.ecaz);
+  assert.equal(rescue.decision.mode, 'skilled');
+  assert.deepEqual(rescue.decision.options.filter(option => option.kept),
+    [{ normal: 1, elite: 0, kept: { key: f.location, kind: 'normal' } },
+      { normal: 2, elite: 0, kept: { key: f.location, kind: 'normal' } }]);
+  // Fee is already in Ecaz's Tanks; its undialed pair is already home. Neither
+  // the fee nor Moritani's two casualties enter this actual rescue offer.
+  assert.equal(change(player(f.game, f.ecaz).tanks, player(rescue, f.ecaz).tanks), 3);
+  assert.equal(change(player(f.game, f.ecaz).reserves, player(rescue, f.ecaz).reserves), -1);
+  assert.equal(at(rescue, f.ecaz, f.location), 2, 'only the committed pair awaits the rescue choice');
+  assert.equal(change(player(f.game, f.ally).tanks, player(rescue, f.ally).tanks), 2);
+  const end = settleEcazIndependentSkillsBattle(f, { state: rescue });
+  assert.equal(end.phase, 7);
+  assert.equal(end.lastBattleContext?.winner, f.ecaz);
+  assert.equal(end.lastBattleContext?.sukRescue?.completed, true);
+  assert.equal(change(player(f.game, f.ecaz).tanks, player(end, f.ecaz).tanks), 3);
+  assert.equal(change(player(f.game, f.ecaz).reserves, player(end, f.ecaz).reserves), 0);
+  assert.equal(at(end, f.ecaz, f.location), 1);
+  assert.equal(change(player(f.game, f.ally).tanks, player(end, f.ally).tanks), 2);
+  assert.equal(change(player(f.game, f.ally).reserves, player(end, f.ally).reserves), 0);
+  assert.equal(at(end, f.ally, f.location), 2);
+  assert.equal(change(player(f.game, f.opponent).tanks, player(end, f.opponent).tanks), 2);
+  disposedLeadCards(f, end);
+  pairedArmies(f, end);
+  physicalSource(end, 36);
+  assertEcazIndependentSkillsCustody(end);
+});
+
+void test('native paired Basic Moritani lead pays and withdraws its normal variable army without merging Ecaz fixed losses', () => {
+  const f = createEcazIndependentSkillsFixture({ paired: true, advanced: false, lead: 'ally' });
+  const quote = quoteEcazIndependentSkillsBattle(f);
+  assert.deepEqual(quote.reinforcements,
+    [{ player: f.ally, card: REINFORCEMENTS_CARD, normal: 3, elite: 0 }]);
+  assert.deepEqual(quote.harassWithdraw![0].returned, { normal: 2, elite: 0 });
+  assert.deepEqual(quote.harassWithdraw![0].locations, { [f.location]: { normal: 2, elite: 0 } });
+  assert.deepEqual(quote.fixedLosses, [{ owner: f.ecaz, normal: 2, elite: 0 }]);
+  assert.equal(quote.sukGraduate, undefined);
+  const end = settleEcazIndependentSkillsBattle(f);
+  assert.equal(end.phase, 7);
+  assert.equal(end.lastBattleContext?.winner, f.ally);
+  assert.equal(end.lastBattleContext?.sukRescue, undefined);
+  assert.equal(change(player(f.game, f.ally).reserves, player(end, f.ally).reserves), -1);
+  assert.equal(change(player(f.game, f.ally).tanks, player(end, f.ally).tanks), 5);
+  assert.equal(at(end, f.ally, f.location), 0);
+  assert.equal(change(player(f.game, f.ecaz).reserves, player(end, f.ecaz).reserves), 0);
+  assert.equal(change(player(f.game, f.ecaz).tanks, player(end, f.ecaz).tanks), 2);
+  assert.equal(at(end, f.ecaz, f.location), 2);
+  assert.equal(player(end, f.ecaz).leaders.find(leader => leader.id === f.trainer)!.dead, false);
+  assert.equal(change(player(f.game, f.opponent).tanks, player(end, f.opponent).tanks), 2);
+  disposedLeadCards(f, end);
+  pairedArmies(f, end);
+  physicalSource(end, 36);
+  assertEcazIndependentSkillsCustody(end);
+});

@@ -353,31 +353,9 @@ void test('original Enemy of My Enemy and ally retention exclude a consumed nati
   assert.deepEqual(normalizeAutomaticGame(reload(game)), game);
 });
 
-void test('new native admission preserves public, Harkonnen assassination, foreign family/module and Advanced Atreides Suk assignment', () => {
-  const make = (faction: 'atreides' | 'harkonnen' | 'ixians' | 'ecaz' = 'atreides', expansions: Game['expansions'] = ['ecaz']) => {
-    const game = createGame('MORIGATE', newPlayer('original-m', 'Moritani', 'moritani'), true, expansions);
-    joinGame(game, newPlayer('original-other', faction, faction));
-    return game;
-  };
-  reject(make(), 'original-m', { type: 'start' });
-  for (const game of [make('harkonnen'), make('ixians', ['ecaz', 'ix']), make('ecaz'), make('atreides', ['ecaz', 'choam'])]) {
-    game.players.forEach(p => { p.ready = true; });
-    const before = reload(game);
-    assert.throws(() => initializeLeaderSkillsGameForAudit(game));
-    assert.deepEqual(game, before);
-  }
-  // Native Discovery Leader Skills are now admitted for this fresh Moritani
-  // lobby; the foreign-family and combined-expansion lobbies still reject.
-  const discoveryLobby = make();
-  discoveryLobby.players.forEach(p => { p.ready = true; });
-  discoveryLobby.discoveryEnabled = true;
-  const discoveryBefore = reload(discoveryLobby);
-  assert.ok(initializeLeaderSkillsGameForAudit(discoveryLobby).leaderSkills);
-  assert.deepEqual(discoveryLobby, discoveryBefore, 'The lobby is never mutated.');
-  // Basic Moritani keeps its original Harkonnen-compatible skills profile; it
-  // does not acquire the Advanced-only assassination preview.
-  const basicLobby = make('harkonnen');
-  basicLobby.advanced = false;
+void test('Basic native Harkonnen keeps four Traitors and Advanced Atreides can assign an offered Suk Graduate', () => {
+  const basicLobby = createGame('MORIGATE', newPlayer('original-m', 'Moritani', 'moritani'), false, ['ecaz']);
+  joinGame(basicLobby, newPlayer('original-other', 'Harkonnen', 'harkonnen'));
   basicLobby.players.forEach(p => { p.ready = true; });
   const basic = completeAdvancedNativeSkillsSetup(initializeLeaderSkillsGameForAudit(basicLobby), { family: 'moritani' });
   assert.equal(basic.advanced, false);

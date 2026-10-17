@@ -2,6 +2,15 @@
 
 Historical primary-source audit, 2026-09-07, corrected after independent verification. The publisher/designer odd-force conflict remains unresolved as a publisher correction. Under the 8 October Basic-first prototype instruction, Basic now provisionally uses the main p8 paragraph: ceiling contribution/loss and floor survivors, with a visible control warning. This is not a numerical ruling by the user or designer. Advanced retains its separately authorized source. The earlier false attribution to Jack Reda remains withdrawn.
 
+## Paired native Skills — 17 October 2026
+
+Native Ecaz/Moritani/classics now retains ordinary all14 Skills without Nexus,
+optionally independent cards only, in Basic/Advanced. Actual native6/6,
+selected lead, card-user fee/return and fixed versus variable losses remain
+separate; trained Ecaz Suk rescues only its committed own losses. Native
+Moritani contributes normal counters rather than invented Imperial elites.
+[Paired source scope and323/323 proof](LEADER_SKILLS_RUNTIME.md#paired-e3-without-nexus--17-october-2026).
+
 ## Standalone Ecaz Leader Skills — 17 October 2026
 
 The original native Ecaz/classic Skills profile now reaches the same Arrakis
