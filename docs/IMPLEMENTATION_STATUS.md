@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 18 October 2026 — Registered native E3 selected-deck Skills
+
+Sixteen normal mixed-native/unused-deck/plain/card starts reject before.
+Registered actual seats now use selected ordinary decks without an incidental
+Nexus, exact E3 family or independent-card dependency. Actual native Eca/Mori
+predicates reuse the shared capability; original World/phase modules remain.
+Advanced E3/Harkonnen, shared Duke, original Nexus/Discovery/Semuta and bare
+no-Skills mixed World/phase guards stay. No state/schema or played-save retrofit.
+
+Actual earned Tabr receipt1, support2, own source3/H2 and committed-only Suk3
+settle separately in the mixed World coalition; the ally loses2. Native
+Mori/CHOAM/Richese/Guild loss spends CHOAM’s own World3, kills different unused
+trained Frankos Aru4 once, returns one skill and receives one Mentat replacement.
+Unused selected Ix/CHOAM decks retain native Eca Duke6/one paid Guild arrival
+with no such faction seats and ordinary47 stock.
+
+Frozen53-file **609/609**, types/lint/build and independent controller smokes
+pass. World stock counts the selected independent three cards; plan allocation
+uses the native reserve type. Incidental setup/helper-copy pins are removed.
+A four-seat loser legally has no Tech token; that assumption is deleted,
+not re-pinned, while real Tabr income and Basic three-seat token transfer stay.
+Three bounded original tables reach turn3/earlier wins through nine battles.
+Actual390px four-seat five-module entry retains Ix draft-before-training,
+native stock and Amal opening into Storm without errors/overflow. Existing
+build warnings and provisional numeric/timing interpretations remain. No
+full-mode, calibration, deployed or deferred assurance claim; no game reset.
+[Canonical current scope](LEADER_SKILLS_RUNTIME.md#registered-native-e3-selected-decks--18-october-2026).
+
 ## 18 October 2026 — Mixed Bene Gesserit Planetologist gather
 
 An original turn-two Carthag fighter plus older Imperial Basin advisor cannot

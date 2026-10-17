@@ -4,6 +4,10 @@ import { viewGame, type Action, type Game } from '../game/engine';
 import type { FactionId } from '../game/catalog';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import { leaders } from '../game/cards';
+import { DUKE_VIDAL_ID } from '../game/duke-vidal';
+import { homeworldContext } from '../game/homeworld-game';
+import { homeworldForceGroups } from '../game/homeworld-custody';
+import { REINFORCEMENTS_CARD } from '../game/reinforcements';
 import { territory } from '../game/board';
 import { TERROR_KINDS } from '../game/moritani-terror';
 import {
@@ -12,7 +16,7 @@ import {
   createMixedE3MoritaniSetup as setup, mixedE3MoritaniClean as clean,
   mixedE3MoritaniCunningRequest as cunning, mixedE3MoritaniInventory as inventory,
   mixedE3MoritaniPlayer as player, mixedE3MoritaniPolicy as policy, mixedE3MoritaniReload as reload,
-  mixedE3MoritaniToken as token, nextMixedE3MoritaniStep as next, quoteMixedE3MoritaniBattle as quote,
+  mixedE3MoritaniToken as token, quoteMixedE3MoritaniBattle as quote,
   settleMixedE3MoritaniBoundary as boundary,
   stageMixedE3MoritaniLoss as loss, stepMixedE3Moritani as step,
   type MixedE3MoritaniBoundary, type MixedE3MoritaniOptions,
@@ -295,5 +299,92 @@ void test('all four original policies consume the real private assassination win
     assert.ok(['revealed', 'declined'].includes(after.moritaniAssassinate!.opportunities.at(-1)!.stage));
     assert.deepEqual(g, original, 'A rejected rival action cannot spend the original opportunity.');
   }
-  assert.equal(next(g) ?? null, null, 'The private choice is never auto-consumed by the controller.');
+});
+
+void test('no-Nexus all14 mixed Advanced Moritani loss against a native CHOAM keeps its World-sourced Reinforcements fee, technique return, bounty and single Mentat replacement', () => {
+  const options: MixedE3MoritaniOptions = { rules: 'advanced', families: ['choam'], natives: { choam: 'choam' },
+    skills: true, nexus: false, independent: true, homeworlds: true, tech: true, strongholds: true,
+    roster: ['moritani', 'choam', 'richese', 'guild'], startingCards: { choam: [REINFORCEMENTS_CARD] } };
+  const f = programme(options);
+  assert.equal(f.afterSetup.leaderSkills!.assignments.some(a => a.leader === DUKE_VIDAL_ID), false);
+  assert.equal(f.afterSetup.leaderSkills!.assignments.find(a => a.owner === f.native)!.leader, f.target,
+    'The trained disc the loss will assassinate is the real held Traitor target.');
+  physical(f.afterSetup);
+  assert.deepEqual(f.afterSetup.moritaniTerror!.tokens.map(t => t.kind).sort(), [...TERROR_KINDS].sort(),
+    'The printed Terror supply stays physical without Nexus.');
+
+  const battle = loss(f, f.game, { enemyCard: REINFORCEMENTS_CARD });
+  assert.equal(quote(battle.revealed).winner, f.native);
+  const plan = battle.plans[1].action; assert.ok(plan.type === 'battlePlan');
+  assert.deepEqual(plan.reinforcementsSources, { 'homeworld:choam': { normal: 3, elite: 0 } },
+    'The fee is declared from the payer’s own native World, exactly as offered.');
+  const native = (state: Game) => homeworldForceGroups(homeworldContext(state), state.homeworlds!.custody!)
+    .find(home => home.native === f.native)!.forces[f.native] ?? { normal: 0, elite: 0 };
+  const arrangements = battle.arrangements;
+  let chosen: Game | undefined;
+  const walk = aftermath(battle.revealed, null, boundaryGame => {
+    const d = boundaryGame.decision; assert.ok(d?.kind === 'moritaniAssassinate');
+    const action: Action = { type: 'decision', event: d.event, card: f.target };
+    rejects(boundaryGame, f.native, action);
+    rejects(boundaryGame, f.moritani, { type: 'decision', event: d.event, card: battle.enemyLeader });
+    const at = player(boundaryGame, f.native), own = player(boundaryGame, f.moritani);
+    chosen = step(boundaryGame, { actor: d.player, action });
+    assert.equal(player(chosen, f.native).leaders.find(l => l.id === f.target)!.dead, true);
+    assert.equal(player(chosen, f.native).leaders.find(l => l.id === f.target)!.deaths,
+      at.leaders.find(l => l.id === f.target)!.deaths + 1);
+    assert.equal(player(chosen, f.moritani).spice, own.spice + at.leaders.find(l => l.id === f.target)!.strength,
+      'The printed bounty is paid once from the bank.');
+    assert.equal(player(chosen, f.native).spice, at.spice);
+    assert.equal(player(chosen, f.native).reserves, player(arrangements, f.native).reserves - 3,
+      'The card user pays the printed three-reserve fee before any rescue.');
+    assert.equal(player(chosen, f.moritani).reserves, player(arrangements, f.moritani).reserves,
+      'The defeated opponent pays nothing towards the winner’s card fee.');
+    assert.equal(native(chosen).normal, native(arrangements).normal - 3,
+      'Exactly three counters leave the payer’s own native World reserve.');
+    assert.equal(player(chosen, f.native).tanks, player(arrangements, f.native).tanks +
+      3 + (player(arrangements, f.native).forces[f.location] ?? 0),
+    'The fee and the payer’s surviving committed counter are the only Tanks arrivals.');
+    const skill = f.afterSetup.leaderSkills!.assignments.find(a => a.leader === f.target)!.skill;
+    assert.equal(chosen.leaderSkills!.assignments.some(a => a.leader === f.target), false);
+    assert.equal(chosen.leaderSkills!.deck.filter(c => c === skill).length, 1,
+      'The assassinated trained disc returns its physical skill exactly once.');
+    assert.equal(totalCounters(chosen, f.native), totalCounters(boundaryGame, f.native));
+    assert.equal(totalCounters(chosen, f.moritani), totalCounters(boundaryGame, f.moritani));
+    return chosen;
+  });
+  assert.ok(chosen, 'The Advanced native loss must open its private reveal choice.');
+  assert.ok(walk.order.includes('assassination'), walk.order.join(','));
+  assert.equal(walk.order.at(-1), 'settled');
+  const feeTanks = player(chosen, f.native).tanks;
+  const settled = advance(walk.game, s => s.decision?.kind === 'moritaniPlacement', f.actions);
+  const receipt = settled.moritaniAssassinate!.opportunities.at(-1)!;
+  assert.equal(receipt.stage, 'replaced'); assert.equal(receipt.card, f.target);
+  assert.equal(receipt.replacement, chosen.traitorReserve![0]);
+  assert.equal(settled.traitorReserve!.length, chosen.traitorReserve!.length - 1,
+    'Exactly one private Mentat replacement.');
+  assert.ok(player(settled, f.moritani).traitors.includes(receipt.replacement!));
+  assert.equal(player(settled, f.native).tanks, feeTanks,
+    'The already-paid fee stays in the payer’s Tanks through the settled battle.');
+  assert.equal(Object.hasOwn(viewGame(settled, f.native).moritaniAssassinate!.history.at(-1)!, 'replacement'), false);
+  physical(settled);
+});
+
+void test('the same no-Nexus mixed roster without independent cards keeps a real Basic continuation and grants no Advanced assassination window', () => {
+  const options: MixedE3MoritaniOptions = { rules: 'basic', families: ['choam'], natives: { choam: 'choam' },
+    skills: true, nexus: false, roster: ['moritani', 'choam', 'guild'] };
+  const f = programme(options);
+  assert.equal([...f.afterSetup.deck, ...f.afterSetup.discard,
+    ...f.afterSetup.players.flatMap(p => p.hand)].some(c => c.id.startsWith('ecaz-')), false,
+  'Unselected independent cards stay out of the physical pool.');
+  physical(f.afterSetup);
+
+  const battle = loss(f, f.game);
+  assert.equal(quote(battle.revealed).winner, f.native);
+  const walk = aftermath(battle.revealed, null);
+  assert.equal(walk.order.at(-1), 'settled');
+  assert.equal(walk.order.includes('assassination'), false, walk.order.join(','));
+  assert.equal(walk.game.moritaniAssassinate, undefined);
+  assert.equal(walk.game.traitorReserve!.length, battle.revealed.traitorReserve!.length,
+    'No Traitor is consumed or replaced without the Advanced window.');
+  physical(walk.game);
 });

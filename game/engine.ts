@@ -10715,7 +10715,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const homeworlds = homeworldLeaderSkillsProfile(state);
   const independent = independentTreacheryLeaderSkillsProfile(state);
   if (state.ecazTreachery) {
-    requireRule(independent, 'Independent cards with Skills require a fresh supported selected-deck roster with original Homeworlds/Tech/Advanced Strongholds; Nexus/Discovery and mixed E3 remain gated.');
+    requireRule(independent, 'Independent cards with Skills require a fresh supported selected-deck roster with original Homeworlds/Tech/Advanced Strongholds; Nexus/Discovery and unrelated preview contexts remain gated.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -10755,7 +10755,7 @@ function independentCardRoster(g: Game): boolean {
     return family === 'base' || g.expansions.includes(family);
   });
 }
-/** World/phase compositions retain the original one-family native E3 envelope. */
+/** Bare card World/phase rosters keep their E3 envelope; Skills uses the shared registered capability. */
 function independentCardModuleRoster(g: Game): boolean {
   return independentCardRoster(g) &&
     (!g.players.some(player => player.faction === 'ecaz' || player.faction === 'moritani') ||

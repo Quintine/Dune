@@ -2,6 +2,16 @@
 
 Historical primary-source audit, 2026-09-07, corrected after independent verification. The publisher/designer odd-force conflict remains unresolved as a publisher correction. Under the 8 October Basic-first prototype instruction, Basic now provisionally uses the main p8 paragraph: ceiling contribution/loss and floor survivors, with a visible control warning. This is not a numerical ruling by the user or designer. Advanced retains its separately authorized source. The earlier false attribution to Jack Reda remains withdrawn.
 
+## Registered mixed Skills — 18 October 2026
+
+Actual Eca and registered selected E1/E2/classic seats now use all14 without
+Nexus or an exact single family, optionally original Worlds/phase/cards.
+Basic typed coalition losses and actual three-seat Tech transfer remain;
+Advanced earned Tabr1, support2, own source3/H2 and committed-only Suk3 stay
+separate from allied2 losses. Unused selected decks also retain actual native
+Duke6 acquisition without creating a faction seat. No new printed arithmetic.
+[Current scope, role guards and609/609 proof](LEADER_SKILLS_RUNTIME.md#registered-native-e3-selected-decks--18-october-2026).
+
 ## Native World cards and Skills — 17 October 2026
 
 Standalone/paired Ecaz/Moritani Worlds now composes independent cards with or

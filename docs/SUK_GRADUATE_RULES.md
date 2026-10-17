@@ -4,6 +4,14 @@
 bands to real battle resolution, player choices, AI and saved continuation.
 Complete module, faction and publication gates remain closed.
 
+**Current18 October scope:** registered mixed selected-family all14 now keeps
+original Worlds/phase and independent cards without Nexus or one E3 family.
+Actual Eca source3 fee/H2 leaves only its committed3 for trained Suk, keeping1
+and returning2 while the ally loses its own2. The following dated admission
+limits are historical; Atreides’ loss-count guard was already resolved on
+7 October below. Other role/effect limits and complete-mode gates remain.
+[Current609/609 source-bound proof](LEADER_SKILLS_RUNTIME.md#registered-native-e3-selected-decks--18-october-2026).
+
 ## Classic Homeworld Nexus composition — 6 October 2026
 
 Only fresh classic Homeworld skill entries additionally compose Nexus with

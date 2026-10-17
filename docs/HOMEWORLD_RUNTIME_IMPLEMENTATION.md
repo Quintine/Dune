@@ -5,16 +5,16 @@ the authoritative game, player table and AI. Normal Homeworld starts are now
 labelled previews, not complete Advanced/expansion acceptance. The earlier
 component checkpoint remains in [HOMEWORLD_IMPLEMENTATION.md](HOMEWORLD_IMPLEMENTATION.md).
 
-**17 October World Skills/cards:** original classic/selected E1/E2 and
-standalone/paired E3 Worlds now compose all14 and independent cards, optionally
-original Tech/Advanced Strongholds. Native E3 World cards also work without
-Skills; paired plain World Skills needs no Nexus/card. Original typed sources,
-own-World fee/dial disjointness, committed-only Suk, current-rate revival and
-every own-World Harass ban remain. Nexus/Discovery card contexts, mixed E3 and
-existing roles/effect guards stay separate. No World/counter/wallet or played
-history is manufactured.
-[Latest native E3 scope and459/459 proof](LEADER_SKILLS_RUNTIME.md#native-e3-worlds-with-independent-cards--17-october-2026);
-[prior selected-deck/World683/683 proof](LEADER_SKILLS_RUNTIME.md#world-skills-and-selected-decks--17-october-2026).
+**18 October registered World all14:** every registered actual seat uses its
+selected ordinary family, including mixed E3/E1/E2 and unused extra decks,
+without a Nexus, single-family or independent-card requirement. Original
+Tech/Advanced Strongholds and optional independent cards retain native sources,
+pre-fee traits, fee/dial disjointness, committed-only Suk and every own-World
+Harass ban. Bare native E3 cards keep their original roster envelope without
+Skills. Original Nexus/Discovery/Semuta, Advanced role and effect guards remain;
+no World, counter, wallet, owner or played history is manufactured.
+[Latest registered scope and609/609 proof](LEADER_SKILLS_RUNTIME.md#registered-native-e3-selected-decks--18-october-2026);
+[prior standalone/paired World459/459 proof](LEADER_SKILLS_RUNTIME.md#native-e3-worlds-with-independent-cards--17-october-2026).
 
 ## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
 

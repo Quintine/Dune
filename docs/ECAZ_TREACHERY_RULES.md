@@ -479,3 +479,13 @@ actual390px normal native World setup pass their changed paths.
 [Current scope, controls and qualified evidence](LEADER_SKILLS_RUNTIME.md#native-e3-worlds-with-independent-cards--17-october-2026).
 No save conversion, full combinations, calibration or deployed acceptance claim.
 
+## Registered mixed E3 Skills — 18 October 2026
+
+Printed variant independence now also composes all14 across registered actual
+selected-family seats, including mixed E3/E1/E2 and unused ordinary decks,
+without an artificial Nexus or exact-family dependency. Original World/phase,
+native setup/decks/cache and source-bearing R/H mechanics remain. Bare mixed
+E3 World/phase cards, original Nexus/Discovery/Semuta, Advanced role and
+effect-specific limits stay separate. No numeric or timing ruling changes.
+[Actual native coalition/assassination, controls and609/609 proof](LEADER_SKILLS_RUNTIME.md#registered-native-e3-selected-decks--18-october-2026).
+

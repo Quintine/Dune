@@ -29,6 +29,30 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Registered native E3 selected decks — 18 October. Prototyped / Partial.**
+Sixteen ordinary plain/card all14 starts rejected before; all16 now reach
+native setup. Registered seats simply require their selected ordinary family;
+mixed E3 and unused extra decks need no incidental Nexus/single-family/card.
+Original World/phase modules and native power bindings remain; Advanced
+E3/Harkonnen, shared Duke, original Nexus/Discovery/Semuta and bare no-Skills
+mixed World/phase guards stay separate. No played save is converted.
+
+Genuine mixed Eca World play retains earned Tabr1, support2, fee3/H2 and
+committed-only Suk3, separate allied losses and physical cards. Genuine native
+Mori/CHOAM loss pays CHOAM’s source3, kills different unused trained Frankos4,
+returns one skill and draws one Mentat replacement. Unused selected Ix/CHOAM
+decks still permit actual Eca Duke6 without creating those faction seats.
+
+Frozen53-file **609/609**, types/lint/build and actual controllers pass.
+Old fixture shape/flag/helper-echo pins are deleted. The four-seat case no
+longer assumes every player owns one of only three Tech tokens; its real Tabr
+receipt remains, while the Basic three-seat case proves actual Tech transfer.
+Three bounded normal tables reach turn3/earlier wins (nine battles). Real390px
+four-seat five-module entry completes Ix card-before-training, native setup
+and the Amal opening into Storm with no errors/overflow. Local prototype
+evidence is not full-mode, calibration, deployed or deferred assurance acceptance.
+[Current registered scope and source-bound evidence](LEADER_SKILLS_RUNTIME.md#registered-native-e3-selected-decks--18-october-2026).
+
 **Planetologist mixed advisor gather — 18 October. Prototyped / Partial.**
 A genuine turn-two Carthag fighter plus older Imperial Basin advisor reproduced
 the enemy-Arrakeen guard despite ordinary city range. The explicit recommended

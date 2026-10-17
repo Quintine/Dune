@@ -15,10 +15,10 @@ Other Richese/module compositions below retain their separate guards.
 ## Configuration and components
 
 Fresh Basic/Advanced2–6 uses the shared selected-deck roster contract: select
-CHOAM for a CHOAM/Richese seat, with other selected E1/E2/classic seats allowed.
+CHOAM for a CHOAM/Richese seat, with other registered selected factions allowed.
 Neither a seated CHOAM nor independent cards is required just to select that
 ordinary deck. Existing World/all14/card/Tech/Advanced Stronghold compositions
-follow the [17 October current scope](LEADER_SKILLS_RUNTIME.md#world-skills-and-selected-decks--17-october-2026),
+follow the [18 October registered scope](LEADER_SKILLS_RUNTIME.md#registered-native-e3-selected-decks--18-october-2026),
 not the original single-family/no-module software restriction.
 
 Setup keeps all fourteen physical skill cards and the real 35-card Treachery

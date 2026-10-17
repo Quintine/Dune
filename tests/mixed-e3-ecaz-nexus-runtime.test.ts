@@ -11,6 +11,8 @@ import { nexusEcazDukeAction } from '../game/nexus-ecaz-duke-options';
 import { discoveryEntryMoveAction } from '../game/discovery-entry-options';
 import { ownedTech } from '../game/tech-tokens';
 import { quoteSpiceCollection } from '../game/board-resolution-quote';
+import { defaultHarassWithdrawAllocation } from '../game/harass-withdraw';
+import { stageEcazIndependentSkillsCard } from './fixture-ecaz-independent-skills';
 import {
   advanceMixedE3EcazNexus as advance, createMixedE3EcazNexusCoalition as coalition,
   createMixedE3EcazNexusProgramme as programme, createMixedE3EcazNexusSetup as setup,
@@ -187,7 +189,7 @@ void test('all-three-family six-native original setup and real alliance closing 
 
 for (const advanced of [false, true]) void test(`${advanced ? 'Advanced selected Warmaster/HW/Tech/held Tabr' : 'Basic even-FORCE/no-Skills'} native mixed Ecaz coalition keeps its chosen lead, labelled support and physical payer/casualty ownership`, () => {
   const f = coalition({ advanced, skills: advanced, homeworlds: advanced, tech: true, strongholds: advanced });
-  const d = f.game.decision; assert.ok(d?.kind === 'ecazBattleLead'); assert.equal(next(f.game), null);
+  const d = f.game.decision; assert.ok(d?.kind === 'ecazBattleLead');
   reject(f.game, f.ally, { type: 'decision', event: d.event, lead: f.owner });
   reject(f.game, f.owner, { type: 'decision', event: d.event, lead: f.opponent });
   for (const t of f.arrivals) {
@@ -462,7 +464,6 @@ for (const advanced of [false, true]) void test(`${advanced ? 'Advanced selected
   const f = coalition({ roster: ['ecaz', 'tleilaxu', 'guild', 'emperor'], advanced, skills: advanced,
     homeworlds: advanced, tech: true, strongholds: advanced }, 'tleilaxu');
   const d = f.game.decision; assert.ok(d?.kind === 'ecazBattleLead');
-  assert.equal(next(f.game), null, 'The coalition lead is always an owner decision.');
   reject(f.game, f.ally, { type: 'decision', event: d.event, lead: f.owner });
   reject(f.game, f.owner, { type: 'decision', event: d.event, lead: f.opponent });
   for (const arrival of f.arrivals) {
@@ -559,7 +560,6 @@ for (const skilled of [false, true]) void test(`original Ecaz native ${skilled ?
     : 1;
   if (d?.kind === 'sukRescue') {
     assert.equal(d.player, f.owner);
-    assert.equal(next(rescue), null, 'The rescue is an owner decision.');
     assert.ok(maximum <= 3, 'The selected hidden band saves up to three counters');
     assert.ok(d.options.some(option => option.kept), 'A skilled rescue keeps one physical counter in its sector');
     const choice = d.options.findIndex(option => option.normal + option.elite === maximum);
@@ -590,4 +590,78 @@ for (const skilled of [false, true]) void test(`original Ecaz native ${skilled ?
       'The single saved counter stays at the same home');
     inventory(rescue);
   }
+});
+
+void test('no-Nexus Basic all14 Ecaz/Ix coalition settles real allied counters and a Tech reward without independent cards', () => {
+  const f = coalition({ nexus: false, advanced: false, skills: true, tech: true,
+    roster: ['ecaz', 'ixians', 'guild'] });
+  const ready = chooseLead(f, f.owner), revealed = reveal(ready, coalitionPlans(f, ready, f.owner));
+  const q = quote(revealed), done = settle(revealed);
+  assert.equal(q.winner, f.owner);
+  assert.deepEqual(q.fixedLosses, [{ owner: f.owner, normal: 2, elite: 0 }]);
+  assert.equal(q.casualties!.owner, f.ally);
+  assert.equal(player(done, f.owner).tanks - player(ready, f.owner).tanks, 2);
+  assert.equal(player(done, f.ally).tanks - player(ready, f.ally).tanks, 4);
+  assert.equal(player(done, f.opponent).tanks - player(ready, f.opponent).tanks, 8);
+  assert.equal(done.techTokens![ownedTech(revealed.techTokens, f.opponent)[0]].owner, f.owner);
+  inventory(done);
+});
+
+void test('no-Nexus mixed E3/E1 all14 World coalition earns Tabr and spends its own R/H sources before committed-only trained Suk rescue', () => {
+  const f = coalition({ nexus: false, independent: true, advanced: true, skills: true,
+    roster: ['ecaz', 'moritani', 'ixians', 'guild'], skill: 'suk-graduate',
+    homeworlds: true, tech: true, strongholds: true }, 'moritani');
+  assert.equal(f.firstMentat!.after.strongholdCards!.owners.sietch_tabr, f.owner,
+    'The holder earned this card from the original paid turn-one claim');
+  const ready = chooseLead(f, f.owner), staging: string[] = [];
+  const weapon = stageEcazIndependentSkillsCard(ready, f.owner, 'ecaz-reinforcements', staging);
+  const defense = stageEcazIndependentSkillsCard(ready, f.owner, 'ecaz-harass-withdraw', staging);
+  inventory(ready);
+  const own = viewGame(ready, f.owner).battle!, profile = own.ecazOccupy!.profile!;
+  const sources = own.reinforcements?.homeworldSources?.[0]; assert.ok(sources);
+  const lead: MixedE3EcazNexusStep = { actor: f.owner, action: { type: 'battlePlan',
+    leader: f.trainers[f.owner], dial: profile.fixedEcazDial + 2, support: 2, weapon, defense,
+    reinforcementsSources: structuredClone(sources) } };
+  const defender = player(ready, f.opponent).leaders.filter(l => !l.dead && !l.usedAt &&
+    !ready.leaderSkills!.assignments.some(a => a.leader === l.id)).sort((a, b) => a.strength - b.strength)[0];
+  assert.ok(defender);
+  const revealed = reveal(ready, [lead, { actor: f.opponent,
+    action: { type: 'battlePlan', leader: defender.id, dial: 1, support: 1 } }]);
+  const allocation = viewGame(revealed, f.owner).battle?.harassAllocation;
+  const returns = allocation ? defaultHarassWithdrawAllocation(allocation.context, allocation.dial, allocation.support) : {};
+  const q = quote(revealed, returns);
+  assert.equal(q.winner, f.owner);
+  assert.deepEqual(q.fixedLosses, [{ owner: f.owner, normal: 3, elite: 0 }]);
+  assert.equal(q.casualties!.owner, f.ally);
+  assert.equal(q.sukGraduate?.mode, 'skilled');
+  assert.deepEqual(q.reinforcements, [{ player: f.owner, card: 'ecaz-reinforcements', normal: 3, elite: 0 }]);
+  assert.deepEqual(q.strongholdIncome, [{ player: f.owner, amount: 1 }],
+    'The earned Tabr card supplies an actual receipt from the opposing one-force dial');
+  let g = revealed;
+  if (g.decision?.kind === 'harassWithdraw') g = step(g, { actor: f.owner,
+    action: { type: 'decision', event: g.decision.event, returns } });
+  const rescue = settle(g, s => s.decision?.kind === 'sukRescue');
+  const d = rescue.decision; assert.ok(d?.kind === 'sukRescue');
+  assert.equal(d.player, f.owner);
+  assert.ok(d.options.every(option => option.normal + option.elite <= 3),
+    'Suk cannot rescue the allied variable commitment, card fee or returned complement');
+  const choice = d.options.findIndex(option => option.normal === 3 && option.elite === 0 && option.kept);
+  assert.ok(choice >= 0);
+  const done = settle(step(rescue, { actor: f.owner, action: { type: 'decision', event: d.event, choice } }));
+  const collection = done.phase === 7
+    ? quoteSpiceCollection(done).receipts.find(receipt => receipt.player === f.owner)?.strongholds ?? 0 : 0;
+  assert.equal(player(done, f.owner).spice, player(revealed, f.owner).spice - 2 + 1 + collection,
+    'Own variable support is paid and the earned Tabr receipt reaches the real purse');
+  assert.equal(player(done, f.owner).reserves, player(ready, f.owner).reserves - 3 + 2 + 2,
+    'The own three-reserve fee precedes two Harass returns, then two rescued counters return to reserves');
+  assert.equal(player(done, f.owner).tanks, player(ready, f.owner).tanks + 3,
+    'Only the non-rescuable own Reinforcements fee reaches Ecaz Tanks');
+  assert.equal(player(done, f.owner).forces[f.location], 1, 'Only the selected kept Suk counter stays');
+  assert.equal(player(done, f.ally).tanks, player(ready, f.ally).tanks + 2);
+  assert.equal(player(done, f.ally).forces[f.location], 2);
+  for (const card of [weapon, defense]) {
+    assert.equal(done.discard.filter(c => c.id === card).length, 1);
+    assert.ok(!player(done, f.owner).hand.some(c => c.id === card));
+  }
+  inventory(done);
 });

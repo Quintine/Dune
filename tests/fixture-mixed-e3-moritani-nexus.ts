@@ -6,6 +6,8 @@ import {
 } from '../game/engine';
 import type { FactionId } from '../game/catalog';
 import { leaders, spiceDeck, treacheryDeck, type Card } from '../game/cards';
+import { ecazTreacheryCards, type EcazTreacheryCardId } from '../game/ecaz-cards';
+import { REINFORCEMENTS_CARD } from '../game/reinforcements';
 import { isDefenseCard, isWeaponCard } from '../game/battle-cards';
 import { territory } from '../game/board';
 import { CHOAM_AUDITOR_ID } from '../game/choam-auditor';
@@ -23,6 +25,7 @@ import { homeworldGameIntegrity } from '../game/homeworld-game';
 import { homeworldBattleLocation } from '../game/combat-location';
 import { nativeShipmentSources } from '../game/homeworld-options';
 import { homeworldShipmentChoice } from '../game/homeworld-shipment-options';
+import type { NativeReserveSelections } from '../game/homeworld-native-reserves';
 import { quoteBattleResolution, type BattleResolutionQuote, type ResolutionCombatant } from '../game/battle-resolution-quote';
 import type { Difficulty } from '../game/bot-profiles';
 import { botActions } from '../game/bots';
@@ -51,6 +54,10 @@ export type MixedE3MoritaniOptions = {
   roster?: readonly FactionId[];
   classics?: readonly FactionId[];
   skills?: boolean;
+  /** Original Nexus remains selected unless explicitly disabled for all14. */
+  nexus?: boolean;
+  /** Independent three-card variant; only the no-Nexus all14 route selects it. */
+  independent?: boolean;
   homeworlds?: boolean;
   discovery?: boolean;
   tech?: boolean;
@@ -58,7 +65,7 @@ export type MixedE3MoritaniOptions = {
   /** Requested skill for the trained opposing disc of the Advanced loss. */
   opponentSkill?: LeaderSkillId;
   /** Select original starting-deal entropy; never replace a played hand. */
-  startingCards?: Partial<Record<FactionId, readonly Card['kind'][]>>;
+  startingCards?: Partial<Record<FactionId, readonly (Card['kind'] | EcazTreacheryCardId)[]>>;
   /** Desired physical opposing-faction card in the original undealt Traitor offer. */
   traitorTarget?: string;
   /** Original undealt reserve prefix, before any Face Dancer reshuffle. */
@@ -174,16 +181,18 @@ export function mixedE3MoritaniInventory(g: Game): void {
   const auction = g.auction?.cards.slice(g.auction.index + (g.currentAuctionSale ? 1 : 0)) ?? [];
   const cards = [...g.deck, ...g.discard, ...g.players.flatMap(p => p.hand), ...(g.ixSetupCards ?? []), ...auction];
   assert.deepEqual(cards.filter(c => !c.id.startsWith('richese-')).map(c => c.id).sort(),
-    treacheryDeck(g.expansions).map(c => c.id).sort());
+    [...treacheryDeck(g.expansions), ...(g.ecazTreachery ? ecazTreacheryCards() : [])].map(c => c.id).sort());
   if (g.players.some(p => p.faction === 'richese')) {
     const owned = [...(g.richeseCache ?? []), ...(g.richeseRemoved ?? []),
       ...cards.filter(c => c.id.startsWith('richese-'))];
     assert.deepEqual(owned.map(c => c.id).sort(), richeseCards().map(c => c.id).sort());
   }
-  validateNexusCards(g.nexusCards!.cards!, g.players);
-  const nexus = g.nexusCards!.cards!;
-  assert.deepEqual([...nexus.deck, ...nexus.discard, ...Object.values(nexus.hands).filter((c): c is FactionId => c !== null)].sort(),
-    [...NEXUS_FACTIONS].sort());
+  if (g.nexusCards) {
+    validateNexusCards(g.nexusCards.cards!, g.players);
+    const nexus = g.nexusCards.cards!;
+    assert.deepEqual([...nexus.deck, ...nexus.discard,
+      ...Object.values(nexus.hands).filter((c): c is FactionId => c !== null)].sort(), [...NEXUS_FACTIONS].sort());
+  }
   if (g.moritaniTerror) {
     assert.deepEqual(g.moritaniTerror.tokens.map(t => t.kind).sort(), [...TERROR_KINDS].sort());
     assert.equal(new Set(g.moritaniTerror.tokens.map(t => t.id)).size, TERROR_KINDS.length);
@@ -335,19 +344,27 @@ export function createMixedE3MoritaniLobby(options: MixedE3MoritaniOptions = {})
   assert.ok(!modules.strongholdCards || advanced);
   const discovery = options.discovery ?? !!g.discoveryEnabled;
   const skills = options.skills ?? (options.initial?.status === 'setup' ? !!g.leaderSkills : false);
+  const nexus = options.nexus ?? true, independent = options.independent ?? false;
+  assert.ok(nexus || skills, 'The no-Nexus mixed route requires the original all14 entry.');
+  assert.ok(!independent || !nexus && skills, 'Independent cards belong to the no-Nexus all14 route.');
   assert.ok(g.status === 'lobby' || g.status === 'setup' && g.turn === 1 && g.phase === 0,
     'Continue only an original fresh lobby or its undealt first-turn setup.');
   if (g.status === 'lobby') {
     for (const [type, enabled] of Object.entries(modules)) if (!!g[type as keyof typeof modules] !== enabled)
       g = applyAction(g, g.host, { type, enabled });
-    g.discoveryEnabled = discovery; g.nexusCards ??= { cards: null, phase: null };
-    assert.deepEqual(g.nexusCards, { cards: null, phase: null });
-    assert.ok(!g.ecazTreachery && !g.advancedPreview && !g.semutaPreview && !g.leaderSkills);
+    g.discoveryEnabled = discovery;
+    if (nexus) {
+      g.nexusCards ??= { cards: null, phase: null };
+      assert.deepEqual(g.nexusCards, { cards: null, phase: null });
+    } else assert.ok(!g.nexusCards, 'Never erase an already selected Nexus module.');
+    assert.ok(!g.advancedPreview && !g.semutaPreview && !g.leaderSkills && !g.ecazTreachery,
+      'A fresh lobby selects neither Skills nor independent cards before its real initializer.');
   } else {
     for (const [type, enabled] of Object.entries(modules)) assert.equal(!!g[type as keyof typeof modules], enabled);
     assert.equal(!!g.discoveryEnabled, discovery);
     assert.equal(!!g.leaderSkills, skills);
-    assert.ok(g.nexusCards?.cards, 'A supplied original deal never acquires a new Nexus deck.');
+    assert.equal(!!g.nexusCards?.cards, nexus, 'A supplied original deal keeps its selected Nexus deck or real absence.');
+    assert.equal(!!g.ecazTreachery, independent);
   }
   return g;
 }
@@ -371,7 +388,9 @@ export function createMixedE3MoritaniSetup(options: MixedE3MoritaniOptions = {})
   let g = createMixedE3MoritaniLobby(options);
   const actions: MixedE3MoritaniStep[] = [], staging: string[] = [];
   const skills = g.status === 'lobby' ? options.skills ?? false : !!g.leaderSkills;
+  const independent = options.independent ?? false;
   const entry = mixedE3MoritaniEntry(options, g, skills);
+  assert.ok(options.nexus !== false || entry === 'leaderSkills', 'The no-Nexus route uses the all14 initializer.');
   const families = (options.families ?? ['ix', 'choam']).filter(f => g.expansions.includes(f));
   const moritani = g.players.find(p => p.faction === 'moritani')!.id;
   const nativeFaction = options.natives?.[families[0]] ?? (families[0] === 'ix' ? 'tleilaxu' : 'choam');
@@ -393,15 +412,17 @@ export function createMixedE3MoritaniSetup(options: MixedE3MoritaniOptions = {})
   let ixSeatCard: string | null = null;
   if (g.status === 'lobby') {
     for (const p of g.players) if (!p.ready) g = applyAction(g, p.id, { type: 'ready' });
+    // The real initializer is the only selector of the independent variant.
+    if (independent) { assert.ok(!g.ecazTreachery); g.ecazTreachery = true; }
     const initialize = () => entry === 'combined' ? initializeCombinedNexusGameForAudit(g, !!g.homeworlds)
       : skills ? initializeLeaderSkillsGameForAudit(g) : initializeNexusGameForAudit(g);
     if (options.initial) g = initialize();
     else {
       assert.ok(!g.players.some(p => p.faction === 'beneGesserit'),
         'A fresh crafted deal keeps the original prediction stage out of its named shuffle list; supply a Bene Gesserit lobby as `initial`.');
-      const deck = treacheryDeck(g.expansions), remaining = [...deck];
-      const take = (kind: Card['kind']) => {
-        const at = remaining.findIndex(c => c.kind === kind);
+      const deck = [...treacheryDeck(g.expansions), ...(g.ecazTreachery ? ecazTreacheryCards() : [])], remaining = [...deck];
+      const take = (kind: Card['kind'] | EcazTreacheryCardId) => {
+        const at = remaining.findIndex(c => c.id === kind || c.kind === kind);
         assert.ok(at >= 0, `The original deck must hold a ${kind}.`);
         return remaining.splice(at, 1)[0].id;
       };
@@ -422,7 +443,7 @@ export function createMixedE3MoritaniSetup(options: MixedE3MoritaniOptions = {})
       const rolls: number[] = [];
       if (skills) rolls.push(...permutation(LEADER_SKILL_CARDS.map(c => c.id), skillOrderFor(g, requested)));
       if (g.discoveryEnabled) rolls.push(...identity(7));
-      rolls.push(...identity(NEXUS_FACTIONS.length - 1));
+      if (g.nexusCards) rolls.push(...identity(NEXUS_FACTIONS.length - 1));
       rolls.push(...permutation(deck.map(c => c.id), [...row, ...remaining.map(c => c.id)]));
       const spiceCount = spiceDeck(g.expansions.includes('ix')).length +
         (g.discoveryEnabled ? DISCOVERY_SPICE_CARDS.length + 1 : 0);
@@ -570,7 +591,7 @@ export function createMixedE3MoritaniProgramme(options: MixedE3MoritaniOptions =
   result.firstMentat = firstMentat;
   g = advanceMixedE3Moritani(g, s => s.phase === 1 && mixedE3MoritaniClean(s), f.actions);
   orderMixedE3MoritaniSpice(g, true);
-  const closed = closeMixedE3Moritani(f, g, options.nexusCard);
+  const closed = g.nexusCards ? closeMixedE3Moritani(f, g, options.nexusCard) : null;
   if (closed) { g = closed.game; result.alliance = closed.alliance; result.drawing = closed.drawing;
     result.draws = [closed.draw]; }
   g = advanceMixedE3Moritani(g, s => s.phase === 5 && mixedE3MoritaniClean(s), f.actions);
@@ -626,7 +647,7 @@ export function revealMixedE3MoritaniPlans(g: Game, plans: readonly MixedE3Morit
 /** Highest- or lowest-strength legal commitment for one combatant, chosen by
  * trying the engine's own plan validator. Never assumes a fixed dial or budget. */
 function legalPlan(g: Game, actor: string, leader: string, prefer: 'max' | 'min',
-  extra: { weapon?: string; defense?: string } = {}): Action {
+  extra: { weapon?: string; defense?: string; reinforcementsSources?: NativeReserveSelections } = {}): Action {
   const spice = mixedE3MoritaniPlayer(g, actor).spice;
   const supports = prefer === 'max' ? Array.from({ length: spice + 1 }, (_, i) => spice - i) : [0];
   const dials = prefer === 'max' ? Array.from({ length: 13 }, (_, i) => 12 - i) : [0];
@@ -645,7 +666,7 @@ function legalPlan(g: Game, actor: string, leader: string, prefer: 'max' | 'min'
  * `disc: 'held'` the native opposes with the very disc Moritani holds, which is
  * the only legal normal own-card Traitor declaration. */
 export function stageMixedE3MoritaniLoss(f: MixedE3MoritaniSetup, state: Game,
-  options: { disc?: 'strongest' | 'held' } = {}): MixedE3MoritaniBattle {
+  options: { disc?: 'strongest' | 'held'; enemyCard?: string } = {}): MixedE3MoritaniBattle {
   const arrival = shipMixedE3Moritani(mixedE3MoritaniReload(state), f.native, f.location, 1, 0, f.actions);
   const ready = advanceMixedE3Moritani(arrival.settled, s => !s.decision, f.actions);
   let g = openMixedE3MoritaniBattle(ready, f.moritani, f.native, f.actions);
@@ -662,14 +683,25 @@ export function stageMixedE3MoritaniLoss(f: MixedE3MoritaniSetup, state: Game,
     : mixedE3MoritaniPlayer(g, f.native).leaders
       .filter(l => !l.dead && l.id !== f.target && !trained.has(l.id)).sort((a, b) => b.strength - a.strength)[0];
   const ownCard = mixedE3MoritaniPlayer(g, f.moritani).hand.find(c => isDefenseCard(c));
-  const enemyCard = mixedE3MoritaniPlayer(g, f.native).hand.find(c => isWeaponCard(c));
+  const enemyCard = options.enemyCard
+    ? mixedE3MoritaniPlayer(g, f.native).hand.find(c => c.id === options.enemyCard)
+    : mixedE3MoritaniPlayer(g, f.native).hand.find(c => isWeaponCard(c));
+  assert.ok(!options.enemyCard || enemyCard, 'An explicitly selected card must be in the native’s original hand.');
+  const feeSources = enemyCard?.id === REINFORCEMENTS_CARD && g.homeworlds
+    ? viewGame(g, f.native).battle?.reinforcements?.homeworldSources?.[0] : undefined;
+  if (enemyCard?.id === REINFORCEMENTS_CARD && g.homeworlds)
+    assert.ok(feeSources, 'The native must pay from its actual offered World source.');
   assert.ok(ownLeader && enemyLeader, 'The original deal must supply the loss discs.');
   const plans: MixedE3MoritaniStep[] = [
     { actor: f.moritani, action: legalPlan(g, f.moritani, ownLeader.id, 'min',
       ownCard ? { defense: ownCard.id } : {}) },
     { actor: f.native, action: legalPlan(g, f.native, enemyLeader.id, 'max',
-      enemyCard ? { weapon: enemyCard.id } : {}) },
+      enemyCard ? { weapon: enemyCard.id, ...(feeSources ? { reinforcementsSources: structuredClone(feeSources) } : {}) } : {}) },
   ];
+  if (options.enemyCard) {
+    const plan = plans[1].action; assert.ok(plan.type === 'battlePlan');
+    assert.equal(plan.weapon, options.enemyCard, 'Never silently drop the selected consumer card.');
+  }
   const revealed = revealMixedE3MoritaniPlans(mixedE3MoritaniReload(g), plans, f.actions);
   return { arrangements, location: f.location, arrival, plans, revealed,
     ownLeader: ownLeader.id, enemyLeader: enemyLeader.id, target: f.target,
@@ -715,7 +747,9 @@ export function quoteMixedE3MoritaniBattle(g: Game): BattleResolutionQuote {
       plan: b.plans[actor], leader: p.leaders.find(l => l.id === b.plans[actor].leader) ??
         (g.dukeVidal?.controller === actor ? g.dukeVidal.leader : undefined), forces: view.ownForces,
       stronghold: view.strongholdEffects[actor], leaderSkills: (g.leaderSkills?.assignments ?? []).filter(a => a.owner === actor)
-        .map(a => ({ skill: a.skill, leader: a.leader, faceUp: !b.leaderSkillHidden?.[actor], captured: false })) };
+        .map(a => ({ skill: a.skill, leader: a.leader, faceUp: !b.leaderSkillHidden?.[actor], captured: false })),
+      ...(view.reinforcements ? { reinforcementsReserves: {
+        normal: p.reserves - (p.elites?.reserves ?? 0), elite: p.elites?.reserves ?? 0 } } : {}) };
   };
   const publicBattle = viewGame(g, g.host).battle!;
   const home = homeworldBattleLocation(g, b.territory);
@@ -726,7 +760,7 @@ export function quoteMixedE3MoritaniBattle(g: Game): BattleResolutionQuote {
       beneficiary: [b.attacker, b.defender].includes(actor) ? actor : mixedE3MoritaniPlayer(g, actor).ally!,
       called: b.traitorCalls[actor] ?? false, traitors: mixedE3MoritaniPlayer(g, actor).traitors })),
     participants: g.players, physicalCards: [...g.deck, ...g.discard, ...g.players.flatMap(p => p.hand)],
-    pendingAuditorPresent: false, pendingRetentionPresent: false, nexusMoritani: true });
+    pendingAuditorPresent: false, pendingRetentionPresent: false, nexusMoritani: !!g.nexusCards });
 }
 
 /** True printed Horror/Extortion/… token identities from the actual supply. */

@@ -1,11 +1,18 @@
 # Moritani: Advanced Assassinate Leaders preview
 
-Updated 17 October 2026. **Prototyped / Partial**. Supported fresh native
+Updated18 October2026. **Prototyped / Partial**. Supported fresh native
 Advanced Moritani starts initialize this printed advantage automatically,
 including plain faction starts and the independent-card profile. Normal lobby
 access is a labelled preview, not complete-mode or publication acceptance.
 This battle-loss ability is separate from the random Assassination Terror token.
 Played saves are not assigned fabricated prior-call or opportunity history.
+
+**18 October registered Skills:** mixed native E1/E2/E3 seats and unused
+selected decks no longer need Nexus or one exact E3 family for all14. Actual
+Mori binds its original Advanced producer; a CHOAM native-source fee and normal
+loss reach unused trained Frankos4, one skill return and one real replacement.
+Basic, normal-call forfeiture, shared Duke and Advanced role limits remain.
+[Current609/609 evidence and preserved original module guards](LEADER_SKILLS_RUNTIME.md#registered-native-e3-selected-decks--18-october-2026).
 
 **17 October World continuation:** native World/card/phase starts now retain
 the same Advanced power with or without Skills. Real paid World shipments

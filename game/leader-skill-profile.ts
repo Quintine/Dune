@@ -188,19 +188,11 @@ function pairedE3LeaderSkillRoster(game: LeaderSkillProfile): boolean {
   return ecaz && moritani;
 }
 
-/** Both original E3 natives with original World/phase modules; cards are optional. */
+/** Both seated E3 natives share selected-deck Skills; original Nexus stays separate. */
 export function pairedE3LeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (game.expansions.length !== 1 || game.expansions[0] !== 'ecaz' ||
-      typeof game.advanced !== 'boolean' || !game.players ||
-      game.players.length < 2 || game.players.length > 6 ||
-      game.nexusCards || game.discoveries || game.discoveryEnabled ||
-      !e3LeaderSkillModulesSupported(game) ||
-      game.discoveryStash || game.greatMaker || game.semutaPreview || game.advancedPreview ||
-      (game.moritaniAssassinatePreview && !game.advanced) ||
-      game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
-      game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
-      game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
-  return pairedE3LeaderSkillRoster(game);
+  return selectedDeckLeaderSkillsProfile(game) &&
+    game.players!.some(player => player.faction === 'ecaz') &&
+    game.players!.some(player => player.faction === 'moritani');
 }
 
 /** Original two/three selected families with native E3, Nexus and optional original modules. */
@@ -233,7 +225,7 @@ function semutaLeaderSkillContext(game: LeaderSkillProfile): boolean {
     game.expansions.includes('choam') && !!game.players?.some(p => p.faction === 'richese');
 }
 
-/** Selected ordinary decks retain original module envelopes; actual E3 seats are separate. */
+/** Selected decks retain original World/phase modules and explicitly supported overlays. */
 function selectedDeckLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   if (game.homeworlds) return homeworldLeaderSkillModulesSupported(game);
   if (noOtherLeaderSkillModules(game) || independentTreacheryLeaderSkillsProfile(game) || pairedNexusLeaderSkillsProfile(game) ||
@@ -246,7 +238,7 @@ function selectedDeckLeaderSkillModulesSupported(game: LeaderSkillProfile): bool
     game.expansions.length < 1 || game.expansions.length > 3 ||
     game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
     game.ecazTreachery || (game.semutaPreview && !semutaLeaderSkillContext(game)) ||
-    game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview ||
+    game.advancedPreview || game.kullPreview ||
     game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
     game.nexusHarkonnenBetrayalPreview) return false;
@@ -325,7 +317,8 @@ export function strongholdLeaderSkillsProfile(game: LeaderSkillProfile): boolean
 
 /** Bounded integration of the ordinary Moritani roster, not Advanced assassination. */
 export function basicMoritaniLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (game.advanced === false && pairedE3LeaderSkillsProfile(game)) return true;
+  if (game.advanced === false && game.players?.some(player => player.faction === 'moritani') &&
+      selectedDeckLeaderSkillsProfile(game)) return true;
   return game.advanced === false && game.expansions.length === 1 &&
     game.expansions[0] === 'ecaz' && e3LeaderSkillModulesSupported(game) &&
     !!game.players?.some(player => player.faction === 'moritani') &&
@@ -335,7 +328,8 @@ export function basicMoritaniLeaderSkillsProfile(game: LeaderSkillProfile): bool
 
 /** Existing bounded Advanced assassination roster, composed with native skills. */
 export function advancedMoritaniLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (game.advanced === true && pairedE3LeaderSkillsProfile(game)) return true;
+  if (game.advanced === true && game.players?.some(player => player.faction === 'moritani') &&
+      selectedDeckLeaderSkillsProfile(game)) return true;
   const players = game.players;
   if (game.advanced !== true || game.expansions.length !== 1 ||
     game.expansions[0] !== 'ecaz' || !players || players.length < 2 || players.length > 6 ||
@@ -361,7 +355,7 @@ export function advancedMoritaniLeaderSkillsProfile(game: LeaderSkillProfile): b
 
 /** Ecaz's five native discs; the separate temporarily controlled Duke is not an assignment disc. */
 export function nativeEcazLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (pairedE3LeaderSkillsProfile(game)) return true;
+  if (game.players?.some(player => player.faction === 'ecaz') && selectedDeckLeaderSkillsProfile(game)) return true;
   const players = game.players;
   if (typeof game.advanced !== 'boolean' || game.expansions.length !== 1 ||
     game.expansions[0] !== 'ecaz' || !players || players.length < 2 || players.length > 6 ||
@@ -387,15 +381,14 @@ export function nativeEcazLeaderSkillsProfile(game: LeaderSkillProfile): boolean
 }
 
 
-/** Base/E1/E2 seats with selected ordinary decks, Basic or Advanced; no faction prerequisite. */
+/** Every registered seat uses its selected ordinary family; no faction or Nexus prerequisite. */
 export function selectedDeckLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   const players = game.players;
   if (typeof game.advanced !== 'boolean' || !players || players.length < 2 || players.length > 6 ||
     game.expansions.length < 1 || game.expansions.length > 3 ||
     !selectedDeckLeaderSkillModulesSupported(game) ||
     (game.semutaPreview && !semutaLeaderSkillContext(game)) ||
-    game.moritaniAssassinatePreview || game.advancedPreview ||
-    game.kullPreview || game.nexusKullPreview ||
+    game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
     game.nexusHarkonnenBetrayalPreview) return false;
@@ -404,20 +397,26 @@ export function selectedDeckLeaderSkillsProfile(game: LeaderSkillProfile): boole
     if (expansion !== 'ix' && expansion !== 'choam' && expansion !== 'ecaz') return false;
     for (let j = 0; j < i; j++) if (game.expansions[j] === expansion) return false;
   }
+  let nativeE3 = false, moritani = false, harkonnen = false;
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
     for (let j = 0; j < i; j++) if (players[j].faction === player.faction) return false;
     let selected = false;
     for (const faction of FACTIONS)
       if (faction.id === player.faction) {
-        selected = faction.expansion === 'base' ||
-          ((faction.expansion === 'ix' || faction.expansion === 'choam') &&
-            game.expansions.includes(faction.expansion));
+        selected = faction.expansion === 'base' || game.expansions.includes(faction.expansion);
+        if (faction.expansion === 'ecaz') nativeE3 = true;
         break;
       }
     if (!selected) return false;
+    if (player.faction === 'moritani') moritani = true;
+    if (player.faction === 'harkonnen') harkonnen = true;
   }
-  return true;
+  // E3's existing Nexus/Discovery/preview envelopes retain their original predicates.
+  if (nativeE3 && ((game.advanced && harkonnen) || game.nexusCards ||
+      game.discoveries || game.discoveryEnabled || game.discoveryStash ||
+      game.greatMaker || game.semutaPreview)) return false;
+  return !game.moritaniAssassinatePreview || (game.advanced && moritani);
 }
 
 export function nativeExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
@@ -450,8 +449,8 @@ function homeworldLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
     (game.techTokens && players.length < 3) || (game.strongholdCards && !game.advanced) ||
     (game.ecazTreachery && !independentTreacheryLeaderSkillsProfile(game)) ||
     game.semutaPreview || game.advancedPreview ||
-    (game.moritaniAssassinatePreview && (!game.advanced || game.expansions.length !== 1 ||
-      game.expansions[0] !== 'ecaz' || !players.some(player => player.faction === 'moritani'))) ||
+    (game.moritaniAssassinatePreview && (!game.advanced || !game.expansions.includes('ecaz') ||
+      !players.some(player => player.faction === 'moritani'))) ||
     game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
     game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
     game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
@@ -474,9 +473,8 @@ export function homeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean 
   return true;
 }
 
-/** Independent cards with classic, selected E1/E2 or standalone/paired E3 all14 setup. */
+/** Independent cards with registered selected-family all14 setup and original module/role guards. */
 export function independentTreacheryLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  const e3 = game.expansions.length === 1 && game.expansions[0] === 'ecaz';
   if (game.ecazTreachery !== true || game.expansions.length > 3 ||
       typeof game.advanced !== 'boolean' || !game.players ||
       game.players.length < (game.techTokens ? 3 : 2) || game.players.length > 6 ||
@@ -504,10 +502,8 @@ export function independentTreacheryLeaderSkillsProfile(game: LeaderSkillProfile
       }
     if (!selected) return false;
   }
-  // Actual E3 seats retain their one-family and Advanced Harkonnen boundaries.
-  if (nativeE3 && (!e3 ||
-      (game.advanced && players.some(player => player.faction === 'harkonnen')))) return false;
-  if (game.moritaniAssassinatePreview && (!e3 || !game.advanced ||
+  if (nativeE3 && game.advanced && players.some(player => player.faction === 'harkonnen')) return false;
+  if (game.moritaniAssassinatePreview && (!game.advanced ||
       !players.some(player => player.faction === 'moritani'))) return false;
   return true;
 }

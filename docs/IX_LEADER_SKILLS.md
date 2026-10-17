@@ -3,20 +3,20 @@
 Connected development prototype, 21 September 2026. Genuine Basic Ixian setup
 supports all fourteen Skills; normal starts are labelled previews, while
 complete-mode/publication acceptance remains gated. The
-[17 October selected-deck/World cutover](LEADER_SKILLS_RUNTIME.md#world-skills-and-selected-decks--17-october-2026)
-supersedes the old single-family/no-module admission below, not printed powers.
+[18 October registered selected-deck/World scope](LEADER_SKILLS_RUNTIME.md#registered-native-e3-selected-decks--18-october-2026)
+supersedes the old single-family/no-module admission, not printed powers.
 
 **4 October Advanced continuation:** native Ixians and/or CHOAM with classic
 opponents, distinct required family decks and all fourteen skills now compose
 under the [bounded native contract](LEADER_SKILLS_RUNTIME.md#advanced-native-ixian-and-choam-composition--4-october-2026).
 Advanced Ixian support, skilled Suk rescue and subsequent native substitution
 use original physical counters. Foreign-ghola revival remains Advanced-only
-under native Tleilaxu conditions; current optional scope follows17 October above.
+under native Tleilaxu conditions; current optional scope follows18 October above.
 
 ## Setup and configuration
 
-Use Basic or Advanced2–6 with the selected Ix deck; other selected E1/E2 and
-classic seats follow the shared selected-deck contract. A native Ixian seat is
+Use Basic or Advanced2–6 with the selected Ix deck; other registered selected
+factions, including native Ecaz/Moritani, follow the shared contract. An Ixian seat is
 not required merely to select its ordinary deck. Existing supported World,
 Tech/Advanced Strongholds and independent-card combinations use the canonical
 scope above. The real private Ixian starting-card choice still precedes skill

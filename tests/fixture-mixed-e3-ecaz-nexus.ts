@@ -6,7 +6,9 @@ import type { FactionId } from '../game/catalog';
 import type { Difficulty } from '../game/bot-profiles';
 import { botActions } from '../game/bots';
 import { spiceDeck, treacheryDeck } from '../game/cards';
+import { ecazTreacheryCards } from '../game/ecaz-cards';
 import type { SpiceCard } from '../game/cards';
+import type { HarassWithdrawSelection } from '../game/harass-withdraw';
 import { DUKE_VIDAL_ID } from '../game/duke-vidal';
 import { LEADER_SKILL_CARDS } from '../game/leader-skill-cards';
 import type { LeaderSkillId } from '../game/leader-skill-cards';
@@ -41,6 +43,10 @@ export interface MixedE3EcazNexusOptions {
   families?: readonly ('ix' | 'choam')[];
   roster?: readonly FactionId[];
   advanced?: boolean;
+  /** False selects the original all14 path without a Nexus Cards component. */
+  nexus?: boolean;
+  /** Original independent three-card variant; only the no-Nexus all14 path. */
+  independent?: boolean;
   skills?: boolean;
   homeworlds?: boolean;
   discovery?: boolean;
@@ -84,7 +90,7 @@ export function nextMixedE3EcazNexusStep(g: Game): MixedE3EcazNexusStep | null {
     if (g.decision && ['ecazBattleLead', 'leaderSkillVisibility', 'moritaniPlacement',
       'moritaniAssassinate', 'moritaniTerror', 'ecazPlacement', 'ecazAmbassador', 'battleLosses',
       'battleCards', 'techToken', 'sukRescue', 'ixSubstitution', 'faceDance', 'strongholdCopy',
-      'discoveryEntry', 'greatMakerVote', 'greatMakerRide', 'homeworldDefense',
+      'discoveryEntry', 'greatMakerVote', 'greatMakerRide', 'homeworldDefense', 'harassWithdraw',
       'homeworldRevivalDeployment', 'moritaniRetention', 'choamBattleFunding'].includes(g.decision.kind)) return null;
     if (g.decision?.kind === 'richeseUnbid') return { actor: g.decision.player,
       action: { type: 'decision', event: g.richeseBidding!.event, keep: false } };
@@ -186,6 +192,7 @@ export function createMixedE3EcazNexusSetup(options: MixedE3EcazNexusOptions = {
   const roster: readonly FactionId[] = options.roster ?? options.initial?.players.map(p => p.faction) ??
     ['ecaz', ...(families.includes('ix') ? ['ixians' as const] : []),
       ...(families.includes('choam') ? ['choam' as const] : []), 'guild', options.discovery ? 'fremen' : 'emperor'];
+  const nexus = options.nexus ?? true, independent = options.independent ?? false;
   const advanced = options.advanced ?? options.initial?.advanced ?? true;
   let g = options.initial ? mixedE3EcazNexusReload(options.initial)
     : createGame('MIXEDE3ECAZNEXUS', newPlayer(roster[0], roster[0], roster[0]), advanced, ['ecaz', ...families]);
@@ -194,14 +201,18 @@ export function createMixedE3EcazNexusSetup(options: MixedE3EcazNexusOptions = {
   assert.ok(roster.length >= 2 && roster.length <= 6 && new Set(roster).size === roster.length);
   assert.ok(roster.includes('ecaz') && families.length >= 1 && families.length <= 2 && new Set(families).size === families.length);
   assert.deepEqual([...g.expansions].sort(), ['ecaz', ...families].sort());
-  for (const family of families) assert.ok(roster.some(f => (family === 'ix' ? ['ixians', 'tleilaxu'] : ['choam', 'richese']).includes(f)));
-  assert.ok(!g.ecazTreachery);
+  if (nexus) for (const family of families)
+    assert.ok(roster.some(f => (family === 'ix' ? ['ixians', 'tleilaxu'] : ['choam', 'richese']).includes(f)));
+  assert.equal(!!g.ecazTreachery, options.initial?.status === 'setup' ? independent : false);
   assert.ok(g.status === 'lobby' || g.status === 'setup' && g.turn === 1 && g.phase === 0,
     'Continue only original lobby/setup, never convert a played save');
   const skills = options.skills ?? (options.initial ? !!g.leaderSkills : true);
   const flags = { homeworlds: options.homeworlds ?? !!g.homeworlds, techTokens: options.tech ?? !!g.techTokens,
     strongholdCards: options.strongholds ?? !!g.strongholdCards };
   const discovery = options.discovery ?? !!g.discoveryEnabled;
+  assert.ok(nexus || skills, 'The no-Nexus route is the original all14 module, not bare mixed Worlds');
+  assert.ok(!independent || !nexus, 'Independent cards retain their no-Nexus all14 scope');
+  assert.ok(nexus || !discovery, 'Existing Discovery/Nexus composition stays separate');
   assert.ok(!flags.techTokens || roster.length >= 3); assert.ok(!flags.strongholdCards || advanced);
   assert.ok(!advanced || !roster.includes('harkonnen') || !skills && !roster.includes('moritani'),
     'Original Advanced E3 capture exclusion is not weakened');
@@ -211,18 +222,27 @@ export function createMixedE3EcazNexusSetup(options: MixedE3EcazNexusOptions = {
   if (g.status === 'lobby') {
     for (const [type, enabled] of Object.entries(flags)) if (!!g[type as keyof typeof flags] !== enabled)
       g = stepMixedE3EcazNexus(g, { actor: g.host, action: { type, enabled } }, actions);
-    g.discoveryEnabled = discovery; g.nexusCards ??= { cards: null, phase: null };
+    g.discoveryEnabled = discovery;
+    if (nexus) g.nexusCards ??= { cards: null, phase: null };
+    else {
+      assert.equal(g.nexusCards, undefined, 'Never erase a selected or played Nexus component');
+      if (!independent) g = stepMixedE3EcazNexus(g, { actor: g.host,
+        action: { type: 'moduleOption', module: 'leaderSkills', enabled: true } }, actions);
+    }
   } else {
     for (const [type, enabled] of Object.entries(flags)) assert.equal(!!g[type as keyof typeof flags], enabled);
     assert.equal(!!g.discoveryEnabled, discovery); assert.equal(!!g.leaderSkills, skills);
-    assert.ok(g.nexusCards?.cards, 'An existing deal cannot acquire another Nexus deck');
+    if (nexus) assert.ok(g.nexusCards?.cards, 'An existing deal cannot acquire another Nexus deck');
+    else assert.equal(g.nexusCards, undefined);
   }
   const initial = mixedE3EcazNexusReload(g);
   if (g.status === 'lobby') {
     for (const p of g.players) if (!p.ready) g = stepMixedE3EcazNexus(g, { actor: p.id, action: { type: 'ready' } }, actions);
+    if (independent) g.ecazTreachery = true;
     const skillSource = LEADER_SKILL_CARDS.map(c => c.id), rest = skillSource.filter(c => !wanted.includes(c));
     const skillOrder = wanted.flatMap(c => [c, rest.shift()!]).concat(rest);
-    const deck = treacheryDeck(g.expansions), remaining = [...deck], front: string[] = [];
+    const deck = [...treacheryDeck(g.expansions), ...(independent ? ecazTreacheryCards() : [])],
+      remaining = [...deck], front: string[] = [];
     for (let n = 0; n < g.players.length + (roster.includes('harkonnen') ? 1 : 0); n++) {
       const worthless = remaining.findIndex(c => c.kind === 'worthless');
       const at = worthless >= 0 ? worthless : remaining.findIndex(c => c.kind === 'shield');
@@ -230,9 +250,12 @@ export function createMixedE3EcazNexusSetup(options: MixedE3EcazNexusOptions = {
     }
     const rolls = [...(skills ? permutation(skillSource, skillOrder) : []),
       ...(discovery ? Array<number>(7).fill(0xffffffff) : []),
-      ...permutation(NEXUS_FACTIONS, ['ecaz', ...NEXUS_FACTIONS.filter(f => f !== 'ecaz')]),
+      ...(nexus ? permutation(NEXUS_FACTIONS, ['ecaz', ...NEXUS_FACTIONS.filter(f => f !== 'ecaz')]) : []),
       ...permutation(deck.map(c => c.id), [...front, ...remaining.map(c => c.id)]), ...spiceRolls(g)];
-    const initialize = () => skills ? initializeLeaderSkillsGameForAudit(g) : initializeNexusGameForAudit(g);
+    const initialize = () => !nexus && !independent
+      ? stepMixedE3EcazNexus(g, { actor: g.host,
+        action: advanced ? { type: 'start', advancedPreview: true } : { type: 'start' } }, actions)
+      : skills ? initializeLeaderSkillsGameForAudit(g) : initializeNexusGameForAudit(g);
     g = options.initial ? initialize() : originalLottery(rolls, initialize);
   }
   const offered = mixedE3EcazNexusReload(g), trainers: Record<string, string> = {};
@@ -279,8 +302,11 @@ export function createMixedE3EcazNexusSetup(options: MixedE3EcazNexusOptions = {
   return { initial, offered, afterSetup: mixedE3EcazNexusReload(g), owner, seats, trainers, ixOffer, actions };
 }
 export function mixedE3EcazNexusInventory(g: Game): void {
-  const nx = g.nexusCards!.cards!; validateNexusCards(nx, g.players);
-  assert.deepEqual([...nx.deck, ...nx.discard, ...Object.values(nx.hands).filter(c => c !== null)].sort(), [...NEXUS_FACTIONS].sort());
+  const nx = g.nexusCards?.cards;
+  if (nx) {
+    validateNexusCards(nx, g.players);
+    assert.deepEqual([...nx.deck, ...nx.discard, ...Object.values(nx.hands).filter(c => c !== null)].sort(), [...NEXUS_FACTIONS].sort());
+  }
   if (g.homeworlds) homeworldGameIntegrity(g);
   if (g.discoveries) validateDiscoveryState(g.discoveries);
   if (g.leaderSkills) {
@@ -291,6 +317,7 @@ export function mixedE3EcazNexusInventory(g: Game): void {
     ...(g.ixAuction?.cards ?? []), ...(g.richeseCache ?? []), ...(g.richeseRemoved ?? []),
     ...(g.auction?.cards.slice(g.auction.index + (g.currentAuctionSale ? 1 : 0)) ?? [])];
   assert.deepEqual(cards.map(c => c.id).sort(), [...treacheryDeck(g.expansions),
+    ...(g.ecazTreachery ? ecazTreacheryCards() : []),
     ...(g.players.some(p => p.faction === 'richese') ? richeseCards() : [])].map(c => c.id).sort());
   const homes = g.homeworlds?.custody ? homeworldForceGroups(homeworldContext(g), g.homeworlds.custody) : [];
   for (const p of g.players) {
@@ -389,13 +416,15 @@ export function createMixedE3EcazNexusProgramme(options: MixedE3EcazNexusOptions
   for (const [actor, target] of [[pair[0], pair[1]], [pair[1], pair[0]]])
     g = stepMixedE3EcazNexus(g, { actor, action: { type: 'alliance', target } }, actions);
   result.alliance = mixedE3EcazNexusReload(g);
-  g = advanceMixedE3EcazNexus(g, s => s.nexusCards?.phase?.stage === 'drawing' && mixedE3EcazNexusClean(s), actions, quietMixedE3EcazNexusChoice);
-  result.drawing = mixedE3EcazNexusReload(g);
-  assert.ok(g.nexusCards!.phase!.eligible.includes(f.owner));
-  // The Ecaz face was selected before original Nexus creation, never reordered here.
-  const draw = mixedE3EcazNexusTransition(g, { actor: f.owner, action: { type: 'nexusCardChoice', turn: g.turn,
-    card: g.nexusCards!.cards!.hands[f.owner], choice: 'draw', ownRedraws: 0 } }, actions);
-  result.draws.push(draw); g = draw.after;
+  if (g.nexusCards) {
+    g = advanceMixedE3EcazNexus(g, s => s.nexusCards?.phase?.stage === 'drawing' && mixedE3EcazNexusClean(s), actions, quietMixedE3EcazNexusChoice);
+    result.drawing = mixedE3EcazNexusReload(g);
+    assert.ok(g.nexusCards!.phase!.eligible.includes(f.owner));
+    // The Ecaz face was selected before original Nexus creation, never reordered here.
+    const draw = mixedE3EcazNexusTransition(g, { actor: f.owner, action: { type: 'nexusCardChoice', turn: g.turn,
+      card: g.nexusCards!.cards!.hands[f.owner], choice: 'draw', ownRedraws: 0 } }, actions);
+    result.draws.push(draw); g = draw.after;
+  }
   g = advanceMixedE3EcazNexus(g, s => s.phase === 5 && mixedE3EcazNexusClean(s), actions, quietMixedE3EcazNexusChoice);
   mixedE3EcazNexusInventory(g); result.game = g; return result;
 }
@@ -427,16 +456,25 @@ export function createMixedE3EcazNexusCoalition(options: MixedE3EcazNexusOptions
   if (g.advanced || amount % 2 === 0) g = stepMixedE3EcazNexus(g, choice, f.actions);
   return { ...f, game: g, ally, opponent, location, ecazForces: amount, arrivals, beforeBattle, choice };
 }
-export function quoteMixedE3EcazNexusBattle(g: Game): BattleResolutionQuote {
+export function quoteMixedE3EcazNexusBattle(g: Game, returns?: HarassWithdrawSelection): BattleResolutionQuote {
   const b = g.battle!, publicBattle = viewGame(g, g.host).battle!; assert.ok(b?.revealed);
   const side = (actor: string): ResolutionCombatant => {
-    const p = mixedE3EcazNexusPlayer(g, actor), view = viewGame(g, actor).battle!; assert.ok(view.ownForces);
-    return { id: actor, faction: p.faction, ally: p.ally, spice: p.spice, hand: p.hand, plan: b.plans[actor],
-      leader: p.leaders.find(l => l.id === b.plans[actor].leader) ??
-        (g.dukeVidal?.controller === actor && b.plans[actor].leader === DUKE_VIDAL_ID ? g.dukeVidal.leader : undefined),
+    const p = mixedE3EcazNexusPlayer(g, actor), view = viewGame(g, actor).battle!, plan = b.plans[actor];
+    assert.ok(view.ownForces);
+    return { id: actor, faction: p.faction, ally: p.ally, spice: p.spice, hand: p.hand, plan,
+      leader: p.leaders.find(l => l.id === plan.leader) ??
+        (g.dukeVidal?.controller === actor && plan.leader === DUKE_VIDAL_ID ? g.dukeVidal.leader : undefined),
       forces: view.ownForces, stronghold: view.strongholdEffects[actor],
       leaderSkills: g.leaderSkills?.assignments.filter(a => a.owner === actor).map(a => ({ skill: a.skill,
-        leader: a.leader, faceUp: !b.leaderSkillHidden?.[actor], captured: false })) };
+        leader: a.leader, faceUp: !b.leaderSkillHidden?.[actor], captured: false })),
+      ...(view.reinforcements && (plan.weapon === 'ecaz-reinforcements' || plan.defense === 'ecaz-reinforcements')
+        ? { reinforcementsReserves: {
+        normal: p.reserves - (p.elites?.reserves ?? 0), elite: p.elites?.reserves ?? 0 } } : {}),
+      ...(view.harassWithdraw && (plan.weapon === 'ecaz-harass-withdraw' || plan.defense === 'ecaz-harass-withdraw')
+        ? { harassWithdraw: { blocked: null, forces: view.harassWithdraw.forces,
+        locations: view.harassWithdraw.locations,
+        ...(view.harassWithdraw.occupy ? { occupy: view.harassWithdraw.occupy } : {}) },
+        ...(returns && Object.keys(returns).length ? { harassSelection: returns } : {}) } : {}) };
   };
   const context = homeworldContext(g), home = b.territory.startsWith('homeworld:')
     ? homeworldCombatLocation({ ...context, players: context.players.map(p => ({ ...p,

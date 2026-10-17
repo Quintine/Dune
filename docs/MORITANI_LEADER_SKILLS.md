@@ -1,9 +1,16 @@
 # Moritani with Leader Skills
 
-Connected development prototype, updated 17 October 2026. Supported standalone
-or paired native Ecaz/Moritani/classic Basic/Advanced profiles use all fourteen
-Leader Skills. Normal-lobby access is a labelled preview; original roster and
-module guards remain, and complete rules/publication acceptance is unfinished.
+Connected development prototype, updated18 October2026. Registered selected
+native Ecaz/Moritani with E1/E2/classic Basic/Advanced seats use all14 without an
+incidental Nexus or single-family dependency. Original Worlds/phase/independent
+cards compose; normal access is a preview, not full rules/publication acceptance.
+
+**Current mixed-native continuation:** actual CHOAM World source3/commit1
+remains in Tanks after the normal win; Mori pays no partner fee. Different unused
+trained Frankos Aru4 dies once and gets one physical Mentat replacement.
+Basic gains no assassination. Original Nexus/Discovery/Semuta, shared Duke and
+Advanced role guards remain.
+[Registered scope and609/609 proof](LEADER_SKILLS_RUNTIME.md#registered-native-e3-selected-decks--18-october-2026).
 
 ## Native World continuation — 17 October 2026
 

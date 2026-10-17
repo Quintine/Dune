@@ -3,7 +3,7 @@
 Connected development prototype, 21 September 2026. Genuine Tleilaxu setup uses
 all fourteen physical skills. Normal starts are labelled previews, not complete
 mode/publication acceptance. The
-[17 October selected-deck/World scope](LEADER_SKILLS_RUNTIME.md#world-skills-and-selected-decks--17-october-2026)
+[18 October registered selected-deck/World scope](LEADER_SKILLS_RUNTIME.md#registered-native-e3-selected-decks--18-october-2026)
 supersedes the original single-family/no-module admission, not native powers.
 
 ## Advanced native composition — 4 October 2026
@@ -53,7 +53,7 @@ board counters after refresh; the detailed guide is visually readable at390px.
 ## Configuration and physical setup
 
 The ordinary `leader-skills` setup accepts Basic/Advanced2–6 with the selected
-Ix deck and Tleilaxu, optionally other selected E1/E2/classic seats. Independent
+Ix deck and Tleilaxu, optionally other registered selected factions. Independent
 cards are not required. The current shared contract above records supported
 World/Tech/Advanced Strongholds/card combinations. It retains the original Ix
 Treachery/Spice decks, Cheap Hero Traitor identity and native three Face Dancers.

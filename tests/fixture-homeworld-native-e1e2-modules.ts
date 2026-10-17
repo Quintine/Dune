@@ -5,6 +5,7 @@ import {
 } from '../game/engine';
 import type { FactionId } from '../game/catalog';
 import { treacheryDeck, type Card, type SpiceCard } from '../game/cards';
+import { ecazTreacheryCards } from '../game/ecaz-cards';
 import { LEADER_SKILL_CARDS, type LeaderSkillId } from '../game/leader-skill-cards';
 import { validateLeaderSkills } from '../game/leader-skills';
 import { homeworldContext, homeworldGameIntegrity } from '../game/homeworld-game';
@@ -72,7 +73,8 @@ export function nativeHomeworldInventory(game: Game): void {
   const cards = [...game.deck, ...game.discard, ...game.players.flatMap(p => p.hand),
     ...(game.ixSetupCards ?? []), ...(game.auction?.cards.slice(game.auction.index) ?? [])];
   const ordinary = cards.filter(c => !c.id.startsWith('richese-'));
-  assert.deepEqual(ordinary.map(c => c.id).sort(), treacheryDeck(game.expansions).map(c => c.id).sort());
+  const expected = [...treacheryDeck(game.expansions), ...(game.ecazTreachery ? ecazTreacheryCards() : [])];
+  assert.deepEqual(ordinary.map(c => c.id).sort(), expected.map(c => c.id).sort());
   const homes = homeworldForceGroups(homeworldContext(game), game.homeworlds!.custody!);
   for (const p of game.players) {
     const visitors = homes.filter(h => h.native !== p.id).map(h => h.forces[p.id] ?? { normal: 0, elite: 0 });

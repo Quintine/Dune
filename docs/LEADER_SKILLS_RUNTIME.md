@@ -7,6 +7,58 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Registered native E3 selected decks — 18 October 2026
+
+Fresh all14 now validates every registered actual seat against its selected
+ordinary family, Basic/Advanced2–6. Ecaz/Moritani may coexist with selected
+E1/E2 natives; unused selected decks need no native seat. No Nexus, exact
+single E3 family or independent-card dependency is invented. Original Worlds,
+Tech3+ and Advanced Strongholds2+ remain optional; independent36/38/50 reuses
+the same capability and separate Richese cache.
+
+Actual Eca/Mori role predicates bind the seated factions to this capability,
+retaining printed setup, mandatory normal Banker and native powers. Original
+Nexus/Discovery/Semuta envelopes retain their existing predicates; independent
+Nexus/Discovery, bare no-Skills mixed E3 World/phase, Advanced E3/Harkonnen,
+shared Duke and effect-specific exclusions remain. Foreign-ghola custody still
+explicitly requires Advanced. No numeric ruling, new state or save retrofit.
+
+Sixteen normal starts rejected before and now reach actual native setup.
+Actual unused Ecaz+Emperor+Guild with all three families keeps ordinary47,
+no Nx/cards, a paid1 Guild arrival and untrained native Duke6 acquisition.
+It creates neither an Ixian nor a CHOAM seat. Normal original Nx/Nx+Discovery
+starts remain; unselected mixed Discovery and independent Nx reject unchanged.
+
+Existing mixed-Nexus Ecaz/Mori fixture/runtime pairs add default-preserving
+`nexus:false` and optional `independent:true` at original setup. Null drawing/
+alliance fields are real absences, never synthetic phases or played-card
+removal. World sources, original source entropy and labelled conserved cards
+remain. The shared World stock guard now counts the selected original three
+cards; the plan helper uses the actual native source type, not an impossible
+literal-Action extraction.
+
+Actual turn3 mixed Eca/Mori/Ix/Guild World coalition earns Tabr and its receipt1.
+Support2, own R fee3, H return2 and committed-only Suk3 (keep1/return2) settle
+separately: Eca reserves9→10/Tanks0→3/board5→1/purse7→6; ally loses only2.
+The four-seat loser owns no Tech token in this programme; the separate Basic
+three-seat no-card case proves its actual transfer. No token is fabricated.
+Actual Moritani/CHOAM/Richese/Guild World loss uses CHOAM’s original R:
+native reserves19→16/Tanks0→4 (fee3+commit1), while Mori reserves14 stay.
+Different unused trained Frankos Aru4 dies once, returns one technique and
+yields one actual Mentat replacement. This route has no rescue window;
+the Eca programme supplies the committed-only rescue proof.
+
+Frozen53-file **609/609**, types/lint/build and independent actual controllers
+pass. Three bounded ordinary tables reach turn3/earlier wins through nine
+battles with all four legal policies represented, not calibrated strategy.
+Real390px four-seat Ix/Eca/Mori/Guild five-module normal entry chooses the
+original Ix Shield draft before offered Smuggler/Dominic training, completes
+Traitors/native setup and the Amal opening into Storm, with Ix10N4C/native14,
+no browser errors/root overflow. Detailed targeted programmes, not those
+natural tables, prove fees, income and assassination. No full-mode, deployed
+or deferred assurance acceptance follows.
+
+
 ## Mixed BG Planetologist gather — 18 October 2026
 
 The actual checklist gap now has a connected prototype: mixed advisor/fighter
