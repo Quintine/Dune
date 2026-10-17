@@ -7,18 +7,19 @@ the rules-completion or publication criteria.
 ## Select and start
 
 1. On the home page, choose **Rules → Advanced preview**, then **Create a room**.
-2. Invite players or add AI seats. The preview supports two through six of the
-   six classic factions: Atreides, Harkonnen, Fremen, Emperor, Guild and Bene Gesserit.
-3. Optionally enable **Tech Tokens** with at least three players, or
-   **Stronghold Cards** in the lobby.
+2. Choose the desired expansion families, then invite players or add AI seats.
+   Games support two through six players from the selected families and classics.
+3. Optionally choose **Leader Skills**, **Ecaz Treachery Cards**, **Nexus Cards**,
+   **Discoveries**, **Homeworlds**, **Tech Tokens** (three or more players) or
+   **Stronghold Cards**. Supported module/roster combinations use their existing
+   setup; unsupported selections reject at start with a reason.
 4. Each human chooses **Ready for Advanced preview**. The host chooses
    **Begin Advanced preview**.
 
-The host can also change **Rules** in an existing base-game lobby. Changing modes
-clears human readiness; native AI seats remain ready. Switching to Basic removes
-unused Stronghold Cards and keeps Tech Tokens. Rules cannot change after setup
-starts. Selecting Advanced on the home page clears expansion selections, which
-are outside this preview. Joining a room uses that room's existing rules.
+The host can also change **Rules** in an existing lobby. Changing modes or module
+selections clears human readiness; native AI seats remain ready. Switching to
+Basic removes unused Stronghold Cards and keeps Tech Tokens. Rules cannot change
+after setup starts. Joining a room uses that room's existing rules.
 
 The warning remains visible throughout Advanced play, including older Advanced
 development saves. Games use the existing room save, reconnect and private seat
@@ -30,23 +31,28 @@ Normal room creation already stores `advanced: boolean`; the same request format
 and exact tab retry are retained. The host-only lobby action
 `{type: 'rules', advanced: boolean}` changes the mode. The ordinary start action
 must contain `advancedPreview: true` for Advanced; a bare start remains rejected.
-Only a successful explicit start writes `Game.advancedPreview: true`.
-`GameView.advancedPreview` projects the marker as a boolean.
+Core Advanced starts record `Game.advancedPreview: true`, projected as a boolean.
+Expansion/module starts retain their own setup markers instead: some module
+profiles deliberately exclude the core-only marker. The explicit Advanced
+opt-in remains required for every Advanced start.
 
 Start calls the genuine shared setup pipeline, including prediction, Traitors,
 starting forces, advisors, elites and the starting Treachery deal at their normal
-stages. The live API never dispatches a test/audit initializer. Fresh-lobby and
-unused-module checks prevent accidental redealing. Restored preview markers must
-still match their supported mode and roster. Mode changes, starts and ordinary
+stages. Public starts now call the same genuine setup entries as development
+tools; this is not permission to dispatch arbitrary initializer/profile names.
+Fresh-lobby and unused-module checks still prevent accidental redealing. Restored
+core preview markers must match their mode and roster. Mode changes and ordinary
 continuation retain the existing version/CAS fence and private views.
 
-Expansion factions/decks, Homeworlds, Nexus, Discoveries, Leader Skills, the Ecaz
-Treachery variant and separate audit profiles remain rejected by normal starts.
-Enabling Advanced cannot bypass those gates. For compatibility with exact older
-create retries, the create API still accepts the pre-existing expansion lobby
-format; those unsupported lobbies cannot start and have no expansion-removal
-control yet. The preview creation UI prevents that combination. No pending ruling is resolved by
-this access change; see the [decision index](RULE_DECISIONS.md).
+The 17 October lobby-access pass opens expansion factions and supported optional
+modules as previews; it does not remove their existing composition guards.
+Skills and the independent Ecaz cards use lobby-only selections consumed during
+start; the other modules retain their existing undealt lobby shape. Every
+selected module must be honoured or the start rejected. Ecaz with Homeworlds
+alone remains unavailable because its combined Occupy battle is not supported.
+Special development profiles remain separate. No pending rules ruling or
+complete-mode/publication gate is resolved by opening these controls; see the
+[decision index](RULE_DECISIONS.md).
 
 ## Evidence and limits
 

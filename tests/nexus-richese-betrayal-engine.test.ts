@@ -170,7 +170,7 @@ void test('orphaned/corrupt source receipts fail before projection, normalizatio
   }
 });
 
-void test('initializer admits only explicit fresh CHOAM/Richese Nexus composition and does not bypass public starts', () => {
+void test('initializer admits only explicit fresh CHOAM/Richese Nexus composition', () => {
   function lobby() {
     let g = createGame('RICHESEADMISSION',newPlayer('r','Richese','richese'),false,['choam']);
     joinGame(g,newPlayer('c','CHOAM','choam'));
@@ -194,7 +194,6 @@ void test('initializer admits only explicit fresh CHOAM/Richese Nexus compositio
   const fresh = lobby(), initialized = initializeRicheseBetrayalGameForAudit(fresh);
   assert.equal(initialized.richeseBetrayalPreview,true);
   assert.deepEqual(initialized.richeseBetrayal,{sequence:0,current:null,completed:[]});
-  reject(fresh,'r',{type:'start'});
 });
 
 void test('diversion keeps native bonus cancellation and paid-sale ownership through JSON restore without replaying payment', () => {

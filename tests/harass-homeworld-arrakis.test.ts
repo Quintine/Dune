@@ -144,16 +144,19 @@ void test('Advanced Salusa low→high return does not retroactively rescore seal
     g => g.turn === 2 && g.phase === 5 && g.active === f.owner && harassHomeworldArrakisClean(g));
   assert.ok(viewGame(next, f.owner).homeworldMove, 'The native next movement control remains available');
   const before = structuredClone(next);
-  next = applyAction(next, f.owner, { type: 'ship', territory: f.territory,
-    sector: Number(f.location.split(':').at(-1)), amount: 1, elite: 1, allyPayment: 0,
+  // The next real Storm can cover the original battle sector. Polar Sink is a
+  // legal storm-independent destination; the assertion here is native reserve use.
+  const destination = 'polar_sink:0';
+  next = applyAction(next, f.owner, { type: 'ship', territory: 'polar_sink',
+    sector: 0, amount: 1, elite: 1, allyPayment: 0,
     homeworldSources: { 'homeworld:emperor:salusa': { normal: 0, elite: 1 } } });
   next = advanceHarassHomeworldArrakis(next, harassHomeworldArrakisClean);
   assert.equal(player(next, f.owner).reserves, player(before, f.owner).reserves - 1);
   assert.equal(player(next, f.owner).elites!.reserves, player(before, f.owner).elites!.reserves - 1);
   assert.deepEqual(pool(next, f.owner, 'homeworld:emperor'), pool(before, f.owner, 'homeworld:emperor'));
   assert.deepEqual(pool(next, f.owner, 'homeworld:emperor:salusa'), { normal: 0, elite: 3 });
-  assert.equal(player(next, f.owner).forces[f.location], 1);
-  assert.equal(player(next, f.owner).elites!.forces[f.location], 1);
+  assert.equal(player(next, f.owner).forces[destination], 1);
+  assert.equal(player(next, f.owner).elites!.forces[destination], 1);
   assert.equal(player(next, f.owner).tanks, player(before, f.owner).tanks);
   assertHarassHomeworldArrakisCustody(next);
 });

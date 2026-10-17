@@ -2046,6 +2046,31 @@ export function GameTable({
                 />
                 Stronghold Cards · Advanced rules required
               </label>
+              {g.lobbyModules && ([
+                ['leaderSkills', 'Leader Skills · all fourteen skill cards'],
+                ['ecazTreachery', 'Ecaz Treachery Cards · Recruits, Reinforcements, Harass & Withdraw'],
+                ['nexusCards', 'Nexus Cards'],
+                ['discoveries', 'Discoveries'],
+              ] as const).map(([module, label]) => (
+                <label className="checkbox-row" key={module}>
+                  <input
+                    type="checkbox"
+                    checked={g.lobbyModules![module]}
+                    disabled={busy || g.host !== me.id}
+                    onChange={(e) => act({ type: 'moduleOption', module, enabled: e.target.checked })}
+                  />
+                  {label} · preview
+                </label>
+              ))}
+              <label className="checkbox-row">
+                <input
+                  type="checkbox"
+                  checked={!!g.homeworlds}
+                  disabled={busy || g.host !== me.id}
+                  onChange={(e) => act({ type: 'homeworlds', enabled: e.target.checked })}
+                />
+                Homeworlds · preview
+              </label>
               {actionButton(
                 me.ready ? 'Not ready' : g.advanced ? 'Ready for Advanced preview' : 'Ready to play',
                 { type: 'ready' },

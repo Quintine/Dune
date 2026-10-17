@@ -1,8 +1,8 @@
 # Current development status
 
 Updated 17 October 2026. **The full twelve-faction goal is unfinished. Basic
-is playable and the six classic factions have a user-authorized Advanced preview.
-Expansion starts and full rules/publication acceptance remain gated.**
+is playable. Advanced, expansion-faction and supported optional-module starts
+are labelled previews; complete rules/publication acceptance remains gated.**
 
 The user-supplied `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf` is now
 an [authorized Advanced source of truth](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026),
@@ -25,15 +25,37 @@ Advanced standalone core-function inventories are closed at prototype level.
 Bounded classic/expansion mapping plus the connected follow-ups below found
 no further absent standalone faction primitive in the examined paths.
 This is not complete-mode acceptance: exceptional custody, timing variants,
-optional skill bands, combinations and public expansion starts remain open.
+optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
+
+**Optional modules from the normal lobby — 17 October (user-directed speed pass).**
+The host can now tick Leader Skills, Ecaz Treachery Cards, Nexus Cards,
+Discoveries and Homeworlds as labelled previews alongside Tech Tokens and
+Stronghold Cards. A normal start routes to the existing genuine setup for that
+selection; each module's own admission still decides what combinations are
+supported, and an unsupported choice is rejected at start with its reason. Ecaz
+with Homeworlds alone stays unavailable (no combined Occupy composition yet).
+Lobby choices for Skills and the independent cards live in `lobbyOptions` and
+are consumed at start. A 240-start sweep (Basic/Advanced × classic/Ix/CHOAM/Ecaz
+× ten selections, repeated three times) exercised 183 all-AI games to turn 3 or
+an earlier win; the other 57 starts were explicit admission rejections. It found
+no runtime crash after two fixes: Basic won Ecaz Occupy carries variable-army
+casualties through mandatory card disposal, and bots with untyped forces round
+fractional target dials to legal whole counters. Unsupported independent-card
+combinations now reject the whole start instead of dropping the card selection.
+Final proof: types/lint, **9,866/9,866 offline tests** and build pass. Seven
+post-integration gameplay samples reach turn 3 or an earlier win with selected
+modules active. Real390px lobby rejection/correction/start/skill assignment has
+no browser errors or overflow. Ecaz setup now checks its existing combined
+Occupy admission before starting, including World+Skills choices. Local QA only;
+no deployed claim or full-combination certification.
 
 **Expansion-faction lobby starts open — 17 October (user-directed speed pass).**
 Hosts may now start Basic or Advanced-preview games with Ix, CHOAM and/or Ecaz
 factions from the normal lobby; the start routes through the existing native
-faction setup. Optional Tech Tokens follow the native profile; Stronghold Cards,
-Homeworlds, Nexus, Discovery, Skills and independent cards keep their dev entries.
+faction setup. Optional modules now use the labelled lobby controls described
+above, retaining each native setup's supported roster and composition limits.
 Eight all-AI 10-turn games (Basic/Advanced × Ix, CHOAM, Ecaz, all-three six-seat)
 finished with no stuck or rejected actions. The lobby note warns of unfinished
 interactions. **Regression triage (17 October):** the 133 failures that began

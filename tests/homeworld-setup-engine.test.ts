@@ -207,7 +207,7 @@ function assertCardCustody(g: Game) {
   assert.equal(g.ixSetupCards ?? null, null);
 }
 
-void test('Homeworld lobby choice belongs to the host, resets readiness, and preserves both public start gates', () => {
+void test('Homeworld lobby choice belongs to the host, resets readiness, and opens the genuine Homeworld start', () => {
   let g = lobby(['atreides', 'emperor'], false, false);
   rejectUnchanged(g, 'emperor', { type: 'homeworlds', enabled: true });
   rejectUnchanged(g, g.host, { type: 'homeworlds', enabled: 1 });
@@ -215,7 +215,7 @@ void test('Homeworld lobby choice belongs to the host, resets readiness, and pre
   assert.deepEqual(g.homeworlds, { custody: null });
   assert.ok(g.players.every((p) => !p.ready));
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
-  rejectUnchanged(g, g.host, { type: 'start' });
+  assert.ok(applyAction(g, g.host, { type: 'start' }).homeworlds, 'A normal start keeps the selected Homeworld module');
   const before = structuredClone(g);
   assert.throws(() => initializeBaseGameForAudit(g));
   assert.deepEqual(g, before);

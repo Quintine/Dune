@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 17 October 2026 — Normal-lobby module previews and legal continuation
+
+Hosts can select Leader Skills, the independent three-card Ecaz variant,
+Nexus Cards, Discoveries and Homeworlds beside Tech Tokens and Stronghold
+Cards. Normal starts reuse the genuine fresh setup entries and retain their
+roster/module constraints; Advanced still requires explicit preview opt-in.
+Lobby-only Skills/card selections are consumed at start rather than saved as
+dealt components. Unsupported combined selections reject without dropping an
+option. Ecaz admission also checks that the selected setup can resolve its
+mandatory allied Occupy battle before committing setup.
+
+Changed-path gameplay exposed two real defects: a Basic Occupy winner's named
+variable-army casualties were missing from mandatory card-disposal validation,
+and ordinary Basic bots could copy a fractional target dial into an illegal
+whole-counter plan. Both now continue legally. A next-turn Salusa shipment test
+now uses Polar Sink rather than a sector which the genuine next Storm may block.
+
+Earlier bounded sweep: 183 played runs and 57 explicit admission rejections
+across 240 attempts. Final seven-game lobby smoke reaches turn 3 or an earlier
+win with every requested module active. A real 390px local browser journey
+rejects incompatible cards+Nexus with both checkboxes retained, clears readiness
+on correction, starts Skills+independent cards and assigns a real offered skill
+before reaching Traitor selection. No browser errors or horizontal overflow.
+
+Final types/lint, all **9,866 offline tests** and production build pass. Existing
+Node deprecation, client chunk-size and Vinext route-classification warnings
+remain. The full suite is a justified integration check for the newly opened
+start paths, not a new per-prototype schedule. Only dedicated local QA rooms
+were created/advanced; no game was reset or deleted and nothing was deployed.
+Complete combinations, custody/recovery assurance and release acceptance remain
+open. See [lobby access and limits](ADVANCED_PREVIEW.md).
+
 ## 17 October 2026 — Mandatory normal Banker default
 
 An ordinary supported all14 Skills setup previously completed a Bank-four

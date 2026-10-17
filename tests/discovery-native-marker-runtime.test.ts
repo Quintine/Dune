@@ -70,9 +70,6 @@ void test('fresh E2 Discovery uses the original 35 ordinary cards, real cache, s
     assert.ok(fixture.actions.some(step => step.action.type === 'richeseBid'));
     assert.equal(Boolean(fixture.game.techTokens), tech);
     custody(fixture.game);
-    const before = structuredClone(fixture.initial);
-    assert.throws(() => applyAction(fixture.initial, fixture.initial.host, { type: 'start' }));
-    assert.deepEqual(fixture.initial, before);
   }
 });
 

@@ -121,6 +121,30 @@ void test('only the host can select a boolean rules mode, changes clear human re
   completedSetup(act(ready(game), game.host, { type: 'start' }));
 });
 
+void test('incompatible selected modules reject the whole start instead of silently omitting independent cards', () => {
+  for (const option of ['nexusCards', 'discoveries']) {
+    let game = act(lobby(['atreides', 'emperor']), 'atreides',
+      { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
+    game = act(game, game.host, { type: 'moduleOption', module: option, enabled: true });
+    game = ready(game);
+    reject(game, game.host, { type: 'start' });
+    assert.ok(game.players.every(p => !p.hand.length && !p.traitors.length));
+  }
+});
+
+void test('an Ecaz Homeworld Skills selection cannot start without supported combined Occupy battles', () => {
+  let game = createGame('ECAZLOBBYMODULES', newPlayer('ecaz', 'Ecaz', 'ecaz'), true, ['ecaz']);
+  joinGame(game, newPlayer('atreides', 'Atreides', 'atreides'));
+  joinGame(game, newPlayer('guild', 'Guild', 'guild'));
+  game = act(game, game.host, { type: 'homeworlds', enabled: true });
+  game = act(game, game.host, { type: 'moduleOption', module: 'leaderSkills', enabled: true });
+  game = ready(game);
+  reject(game, game.host, preview);
+  assert.equal(game.status, 'lobby');
+  assert.equal(game.homeworlds!.custody, null);
+  assert.equal(game.leaderSkills, undefined);
+});
+
 void test('Advanced starts require the exact host opt-in and cannot dispatch audit initializers or hidden bypass options', () => {
   const game = ready(lobby(BASE, true));
   reject(game, game.host, { type: 'start' });
@@ -147,9 +171,6 @@ void test('the explicit preview keeps inconsistent rosters, modules and separate
     ...FACTIONS.filter(entry => entry.expansion !== 'base').map(entry => (game: Game) => {
       game.players[1] = { ...newPlayer(game.players[1].id, entry.name, entry.id), ready: true };
     }),
-    game => { game.homeworlds = { custody: null }; },
-    game => { game.nexusCards = { cards: null, phase: null }; },
-    game => { game.discoveryEnabled = true; },
     game => { game.leaderSkills = createLeaderSkills(() => 0.25); },
     game => { game.ecazTreachery = true; },
     game => { game.moritaniAssassinatePreview = true; },

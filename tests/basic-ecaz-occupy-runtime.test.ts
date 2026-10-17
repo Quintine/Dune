@@ -122,6 +122,36 @@ for (const ecazForces of [2, 4]) for (const lead of ['ecaz', 'ally'] as const)
     assert.equal(game.phase, 7, 'Surviving allies coexist into original Collection without resettlement.');
   });
 
+for (const lead of ['ecaz', 'ally'] as const)
+  void test(`Basic ${lead} lead resolves a mandatory Hero discard before its variable-army casualties`, () => {
+    const fixture = basicEcazOccupyFixture({ ecazForces: 4 });
+    const actor = lead === 'ecaz' ? fixture.ecaz : fixture.ally;
+    let game = openEcazOccupyPlans(chooseEcazOccupyLead(fixture, lead));
+    const hero = stageEcazOccupyCard(game, fixture.opponent, card => card.kind === 'hero');
+    const before = structuredClone(game);
+    game = applyAction(game, actor, {
+      type: 'battlePlan', dial: 4, leader: leader(game, actor, true),
+    });
+    game = applyAction(game, fixture.opponent, { type: 'battlePlan', dial: 0, leader: hero });
+    while (game.battle) {
+      const view = viewGame(game, actor).battle!;
+      const voter = view.traitorVoters.find(id => !view.traitorSubmitted.includes(id));
+      assert.ok(voter, 'The real revealed battle must retain its Traitor voters.');
+      game = applyAction(game, voter, { type: 'traitorCall', call: false });
+    }
+    game = aftermath(game);
+    assert.equal(game.lastBattleContext!.winner, actor);
+    assert.equal(game.lastBattleContext!.result, 'normal');
+    assert.equal(game.discard.filter(card => card.id === hero).length, 1);
+    assert.equal(seat(game, fixture.opponent).hand.some(card => card.id === hero), false);
+    for (const id of [fixture.ecaz, fixture.ally]) {
+      assert.equal(forces(game, fixture, id), 2);
+      assert.equal(seat(game, id).tanks - seat(before, id).tanks, 2);
+    }
+    assert.equal(forces(game, fixture, fixture.opponent), 0);
+    assert.equal(game.phase, 7);
+  });
+
 for (const allyFaction of ['emperor', 'fremen'] as const) for (const lead of ['ecaz', 'ally'] as const)
   void test(`Basic ${allyFaction} ${lead} lead uses native ordinary inventory without Advanced elite strength`, () => {
     const fixture = basicEcazOccupyFixture({ allyFaction, ecazForces: 4 });

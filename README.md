@@ -1,6 +1,6 @@
 # Dune — Arrakis Table
 
-An unofficial multiplayer adaptation of Gale Force Nine’s classic 2019 Dune, built with React, TypeScript, Vinext, and Cloudflare Workers/D1. **Development is ongoing; this is not yet a complete rules implementation.** The six classic factions can use a clearly labeled **Advanced preview**; unfinished expansion starts remain disabled. Start with [current status](docs/CURRENT_STATUS.md) for implemented systems, remaining requirements and release gates; detailed historical evidence remains in the [implementation log](docs/IMPLEMENTATION_STATUS.md).
+An unofficial multiplayer adaptation of Gale Force Nine’s classic 2019 Dune, built with React, TypeScript, Vinext, and Cloudflare Workers/D1. **Development is ongoing; this is not yet a complete rules implementation.** Basic and clearly labelled Advanced-preview games can start with selected expansion factions and supported optional modules. Unsupported module combinations still reject at start. Start with [current status](docs/CURRENT_STATUS.md) for implemented systems, remaining requirements and release gates; detailed historical evidence remains in the [implementation log](docs/IMPLEMENTATION_STATUS.md).
 
 ## Run locally
 
@@ -15,9 +15,18 @@ npm run dev -- --host 0.0.0.0
 Open `http://localhost:3000`. Create a room, share its eight-character invitation, and add human or AI seats. The host can configure Easy, Medium, Hard and Brutal AI opponents. Current calibration demonstrates a substantially weaker Easy policy; it does not yet demonstrate a consistent ordering among the upper three levels.
 
 For Advanced play, choose **Rules → Advanced preview** before creating a room,
-or use the same selector as host in an existing base-game lobby. Everyone must
+or use the same selector as host in an existing lobby. Everyone must
 ready again after changing rules, then the host chooses **Begin Advanced preview**.
 This mode is unfinished; see [preview scope and limits](docs/ADVANCED_PREVIEW.md).
+
+Choose expansion families when creating the room. Before starting, the host can
+select **Leader Skills**, **Ecaz Treachery Cards** (the independent three-card
+variant), **Nexus Cards**, **Discoveries**, **Homeworlds**, **Tech Tokens** or
+**Stronghold Cards** in the lobby. These are unfinished previews, not complete
+combination support: setup rejects unsupported selections rather than silently
+dropping an option. Tech Tokens require three or more seats; Stronghold Cards
+require Advanced. Changing a selection clears human readiness. Existing games
+are not converted.
 
 Advanced uses the user-authorized revised rules: every newly opened Storm
 after the first draws the Storm Deck, even without Fremen. Finishing your

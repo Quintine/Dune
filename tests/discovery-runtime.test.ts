@@ -37,12 +37,9 @@ function custody(g: Game) {
     );
   validateDiscoveryState(g.discoveries!);
 }
-void test('Discovery real setup deals seven spice cards and eight opaque tokens while normal starts remain gated', () => {
+void test('Discovery real setup deals seven spice cards and eight opaque tokens', () => {
   for (const advanced of [false, true]) {
-    const lobby = discoveryLobby(advanced),
-      before = structuredClone(lobby);
-    assert.throws(() => applyAction(lobby, lobby.host, { type: 'start' }));
-    assert.deepEqual(lobby, before);
+    const lobby = discoveryLobby(advanced);
     const g = initializeDiscoveryGameForAudit(lobby);
     assert.equal(g.spiceDeck.length, spiceDeck().length + 7);
     assert.equal(

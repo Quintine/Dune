@@ -897,7 +897,7 @@ function plans(g: GameView): Action[] {
           battleSkills, myLeader?.id, !effects.attackerDead,
           leaderSkillStrongholdCount(g, other),
         );
-        const ideal = stoneBattle
+        const rawIdeal = stoneBattle
           ? 0
           : level === 0
             ? Math.floor(variation(g, `${leader}-${weapon}`) * (own + 1))
@@ -913,6 +913,8 @@ function plans(g: GameView): Action[] {
                     (b.tieWinner === me.id ? 0 : typedForces ? 0.5 : 1),
                 ),
               );
+        // Untyped forces dial whole counters even against a half-strength opponent.
+        const ideal = typedForces ? rawIdeal : Math.min(ownStrength, Math.ceil(rawIdeal));
         for (const dial of new Set([
           ideal,
           ...bankSupportedDials,

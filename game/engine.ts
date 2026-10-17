@@ -2261,6 +2261,8 @@ export type Game = {
   freeRevival: string[];
   /** Presence enables the independently selected three-card Ecaz variant. */
   ecazTreachery?: true;
+  /** Lobby-only module selections; consumed by the genuine setup at start. */
+  lobbyOptions?: LobbyOptions;
   /** Public, turn-scoped receipt for the discarded Recruits card. */
   recruits?: {
     turn: number;
@@ -7245,6 +7247,8 @@ function treacheryDiscardIntegrity(g: Game) {
               (g.advanced ||
                 !!g.pendingSukRescue ||
                 !!g.homeworlds ||
+                // A won Basic Ecaz Occupy assigns losses to its named variable-army owner.
+                (!!c.casualties?.owner && byFaction(g, 'ecaz') !== undefined) ||
                 g.players.find((p) => p.id === c.winner)?.faction ===
                   'ixians')),
         'The mandatory battle discard cause is inconsistent.',
@@ -8395,25 +8399,53 @@ function takeBattleLosses(g: Game, p: Player, t: string, losses: Casualties) {
   );
   return lostCyborgs;
 }
+/** Lobby-only selections whose saved setup shape is created at start. */
+type LobbyOptions = { leaderSkills?: true; ecazTreachery?: true };
+function lobbyOptionsIntegrity(g: Game) {
+  const options = g.lobbyOptions;
+  if (options === undefined) return;
+  requireRule(g.status === 'lobby' && !!options && typeof options === 'object' && !Array.isArray(options) &&
+    Object.entries(options).every(([key, value]) => ['leaderSkills', 'ecazTreachery'].includes(key) && value === true),
+  'Invalid lobby module options.');
+}
+function lobbyModulesSelected(g: Game): boolean {
+  return !!g.lobbyOptions?.leaderSkills || !!g.lobbyOptions?.ecazTreachery ||
+    !!g.nexusCards || g.discoveryEnabled === true || !!g.homeworlds;
+}
+/** Route a normal start through the existing genuine setup for the selected modules. */
+function startModules(state: Game): Game {
+  const options = state.lobbyOptions ?? {};
+  const g = structuredClone(state);
+  delete g.lobbyOptions;
+  if (options.ecazTreachery && options.leaderSkills) g.ecazTreachery = true;
+  if (options.leaderSkills) return initializeLeaderSkillsGameForAudit(g);
+  // Keep this selection visible to its initializer even when another module was
+  // also selected; unsupported combinations must reject, not silently omit cards.
+  if (options.ecazTreachery) return initializeEcazTreacheryGameForAudit(g);
+  if (g.nexusCards) {
+    const natives: Record<string, [string, string]> = { ix: ['ixians', 'tleilaxu'], choam: ['choam', 'richese'], ecaz: ['ecaz', 'moritani'] };
+    const pair = g.expansions.length === 1 ? natives[g.expansions[0]] : undefined;
+    return pair && pair.every(id => g.players.some(p => p.faction === id))
+      ? initializePairedNexusGameForAudit(g) : initializeNexusGameForAudit(g);
+  }
+  if (g.discoveryEnabled) return initializeDiscoveryGameForAudit(g);
+  if (g.homeworlds)
+    return g.expansions.length ? initializeHomeworldOccupationGameForAudit(g) : initializeHomeworldGameForAudit(g);
+  if (g.strongholdCards) return initializeStrongholdFactionsGameForAudit(g);
+  return initializeFactionExpansionsGameForAudit(g);
+}
+/** Public consistency only; each module's genuine initializer validates its own envelope. */
 function baseStartProfileBlock(g: Game): string | null {
-  if (g.homeworlds) return 'Homeworld gameplay is still being implemented.';
-  if (g.nexusCards) return 'Nexus card effects are still being implemented.';
-  if (g.discoveryEnabled || g.discoveries || g.discoveryStash || g.greatMaker)
-    return 'Discoveries are still being implemented.';
-  if (g.leaderSkills) return 'Leader Skills are still being implemented.';
-  if (g.ecazTreachery) return 'Ecaz Treachery Cards are still being implemented.';
-  if (g.moritaniAssassinatePreview || g.moritaniAssassinate)
+  if (g.status === 'lobby' && (g.moritaniAssassinatePreview || g.moritaniAssassinate))
     return 'Separate development profiles cannot be enabled by a normal start.';
+  if (g.status === 'lobby' && (g.leaderSkills || g.ecazTreachery))
+    return 'Choose Leader Skills or Ecaz Treachery Cards with the lobby option; a lobby cannot carry dealt module state.';
   const expansionFactions = g.expansions.length > 0 ||
     !g.players.every(p => FACTIONS.some(entry => entry.id === p.faction && entry.expansion === 'base'));
   if (expansionFactions && !g.players.every(p => {
     const family = FACTIONS.find(entry => entry.id === p.faction)?.expansion;
     return family === 'base' || (!!family && g.expansions.includes(family));
   })) return 'Expansion factions require their expansion to be selected.';
-  if (expansionFactions && g.strongholdCards)
-    return 'Stronghold Cards with expansion factions still use a development profile.';
-  if (expansionFactions && g.techTokens && !nativeFactionTechProfile(g))
-    return 'Tech Tokens with expansion factions need a supported three-through-six-seat native roster.';
   return null;
 }
 function advancedPreviewIntegrity(g: Game) {
@@ -8483,10 +8515,14 @@ function start(g: Game, advancedPreview = false): Game {
   requireRule(!advancedPreview || g.advanced, 'Choose Advanced preview rules before starting that preview.');
   const blocked = baseStartProfileBlock(g);
   requireRule(!blocked, blocked ?? 'This rules profile is unavailable.');
-  if (g.expansions.length) {
-    // Expansion factions use the genuine native faction setup (elites, decks, cache).
-    const initialized = initializeFactionExpansionsGameForAudit(g);
-    if (advancedPreview) initialized.advancedPreview = true;
+  if (g.expansions.length || lobbyModulesSelected(g)) {
+    // Expansions and optional modules use their existing genuine setup paths. The explicit
+    // Advanced opt-in was checked above; their own profiles define the saved marker set.
+    const initialized = startModules(g);
+    // An admitted Ecaz setup must also be able to resolve its mandatory allied
+    // battle. Some development setups still exclude that module composition.
+    requireRule(!byFaction(initialized, 'ecaz') || ecazOccupyCompositionSupported(initialized),
+      'This Ecaz module selection does not yet support combined Occupy battles. Change the selected modules before starting.');
     return initialized;
   }
   requireFreshSetup(g);
@@ -9515,7 +9551,7 @@ function advanceSetup(g: Game) {
 export function initializeBaseGameForAudit(state: Game): Game {
   return initializeSetupGameForAudit(state, false);
 }
-/** Offline-only seam through the real setup pipeline. Public Homeworld starts remain gated. */
+/** Shared genuine Homeworld setup for lobby previews and offline development. */
 export function initializeHomeworldGameForAudit(state: Game): Game {
   requireRule(
     !!state.homeworlds,
@@ -9555,7 +9591,7 @@ export function initializeHomeworldOccupationGameForAudit(state: Game, leaderSki
   if (byFaction(g, 'ecaz')) g.homeworldEcazVictoryPreview = true;
   return g;
 }
-/** Original classic and supported native Nexus setup; public starts remain gated. */
+/** Shared classic/supported-native Nexus setup; existing composition guards apply. */
 export function initializeNexusGameForAudit(state: Game): Game {
   requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null,
     'Enable Nexus cards in a fresh audit lobby first.');
@@ -10387,7 +10423,7 @@ function decideGuildBetrayal(g: Game, p: Player, action: Action): void {
       recipient: settlement.recipient, amount: frame.invoice.price})) return;
   }
 }
-/** Offline paired-faction Nexus setup; public expansion/module starts remain gated. */
+/** Shared paired-faction Nexus setup for supported lobby and development previews. */
 export function initializePairedNexusGameForAudit(state: Game): Game {
   const expansion = state.expansions[0];
   requireRule(state.expansions.length === 1 &&
@@ -10525,7 +10561,7 @@ function nativeStrongholdFactionRoster(g: Game): boolean {
     g.players.every(p => faction(p.faction).expansion === 'base' ||
       g.expansions.includes(faction(p.faction).expansion));
 }
-/** Fresh native Stronghold composition; other overlays and public starts stay gated. */
+/** Shared fresh native Stronghold setup; other overlays retain their own admission. */
 export function initializeStrongholdFactionsGameForAudit(state: Game): Game {
   requireRule(e3StrongholdFactionProfile(state) || nativeStrongholdFactionRoster(state),
     'Stronghold factions require supported Advanced native factions, classic opponents and their selected distinct decks.');
@@ -10648,7 +10684,7 @@ export function initializeDiscoveryGameForAudit(state: Game): Game {
   if (g.advanced && byFaction(g, 'moritani')) initializeMoritaniAssassinateState(g);
   return g;
 }
-/** Gated development setup; never dispatched by a player action or room route. */
+/** Shared fresh Leader Skills setup, including supported independent module selections. */
 export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
   const homeworlds = homeworldLeaderSkillsProfile(state);
@@ -10718,7 +10754,7 @@ function independentCardModulesProfile(g: Game): boolean {
       g.nexusIxianBetrayalPreview || g.nexusHarkonnenBetrayalPreview) return false;
   return true;
 }
-/** Gated development setup for the independent three-card Ecaz variant. */
+/** Shared fresh setup for the independent three-card Ecaz variant. */
 export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   requireRule(!state.ecazTreachery, 'Ecaz Treachery Cards cannot redeal an existing inventory.');
   const g = structuredClone(state);
@@ -29691,6 +29727,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
+  lobbyOptionsIntegrity(state);
   leaderSkillsIntegrity(state);
   moritaniExtortionIntegrity(state);
   guildRateIntegrity(state);
@@ -30096,6 +30133,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
+  lobbyOptionsIntegrity(state);
   leaderSkillsIntegrity(state);
   moritaniExtortionIntegrity(state);
   guildRateIntegrity(state);
@@ -32303,6 +32341,24 @@ function applyActionInner(
       g.players.forEach((player) => (player.ready = !!player.bot));
       return g;
     }
+    if (t === 'moduleOption') {
+      requireRule(id === g.host, 'Only the host can change optional rules.');
+      const option = action.module;
+      requireRule(['leaderSkills', 'ecazTreachery', 'nexusCards', 'discoveries'].includes(option as string) &&
+        typeof action.enabled === 'boolean' && Object.keys(action).every(key => ['type', 'module', 'enabled'].includes(key)),
+      'Choose an optional module to enable or disable.');
+      if (option === 'nexusCards') g.nexusCards = action.enabled ? { cards: null, phase: null } : null;
+      else if (option === 'discoveries') {
+        if (action.enabled) g.discoveryEnabled = true; else delete g.discoveryEnabled;
+      } else {
+        const options: LobbyOptions = { ...g.lobbyOptions };
+        if (action.enabled) options[option as keyof LobbyOptions] = true;
+        else delete options[option as keyof LobbyOptions];
+        if (Object.keys(options).length) g.lobbyOptions = options; else delete g.lobbyOptions;
+      }
+      g.players.forEach((player) => (player.ready = !!player.bot));
+      return g;
+    }
     if (t === 'addBot' || t === 'removeBot') {
       requireRule(id === g.host, 'Only the host can manage AI seats.');
       if (t === 'addBot') {
@@ -34214,6 +34270,7 @@ export function viewGame(state: Game, id: string) {
   harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
+  lobbyOptionsIntegrity(state);
   leaderSkillsIntegrity(state);
   moritaniExtortionIntegrity(state);
   guildRateIntegrity(state);
@@ -34619,6 +34676,10 @@ export function viewGame(state: Game, id: string) {
         }
       : null,
     techTokens: g.techTokens ?? null,
+    lobbyModules: g.status === 'lobby' ? {
+      leaderSkills: !!g.lobbyOptions?.leaderSkills, ecazTreachery: !!g.lobbyOptions?.ecazTreachery,
+      nexusCards: !!g.nexusCards, discoveries: g.discoveryEnabled === true,
+    } : null,
     ecazLoyalty: g.ecazLoyalty?.card ? { player: g.ecazLoyalty.player, card: g.ecazLoyalty.card } : null,
     ecazOccupyPreview: !!g.ecazOccupyPreview,
     strongholdCards: g.strongholdCards ?? null,

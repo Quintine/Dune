@@ -205,10 +205,6 @@ for (const [advanced, seed] of [
   void test(`genuine ${advanced ? 'Advanced' : 'Basic'} Discovery seed ${seed} completes through JSON bot batches with conserved pieces`, () =>
     withEngineSeed(seed, () => {
       const lobby = discoveryLobby(advanced);
-      const publicBefore = structuredClone(lobby);
-      assert.throws(() => applyAction(lobby, lobby.host, { type: 'start' }));
-      assert.deepEqual(lobby, publicBefore);
-
       let game = initializeDiscoveryGameForAudit(lobby);
       game.players.forEach((player, index) => {
         player.bot = DIFFICULTIES[index];

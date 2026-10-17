@@ -45,7 +45,7 @@ function settle(state: Game): Game {
 
 void test('fresh E1 Discovery uses original 47-card setup, Sandtrout, seven cards/eight tokens, HMS and native private deals', () => {
   for (const advanced of [false, true]) for (const tech of [false, true]) {
-    const { game, initialized, lobby } = nativeTypedSetup({ advanced, tech });
+    const { game, initialized } = nativeTypedSetup({ advanced, tech });
     assert.equal(game.discoveryEnabled, true);
     assert.equal(game.leaderSkills, undefined);
     assert.equal(game.strongholdCards, undefined);
@@ -63,9 +63,6 @@ void test('fresh E1 Discovery uses original 47-card setup, Sandtrout, seven card
       assert.equal(game.techTokens!.axlotl.owner, 't');
       assert.equal(game.techTokens!.production.owner, 'f');
     } else assert.equal(game.techTokens, undefined);
-    const before = nativeTypedReload(lobby);
-    assert.throws(() => applyAction(lobby, lobby.host, { type: 'start' }));
-    assert.deepEqual(lobby, before);
     nativeTypedCustody(game);
   }
 });
