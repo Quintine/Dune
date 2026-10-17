@@ -2,6 +2,59 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Classic Nexus core and funded card shipments — 18 October 2026
+
+**Prototyped / Partial.** Original E3 pp4/9/11 permits Nexus independently of
+other variants. Fresh classic2–6 Basic/Advanced Nexus core now keeps base33
+or explicitly selected independent36, optionally all14 Skills. The three-card
+variant is not required for native reactions and is never silently added.
+`classicNexusCoreProfile` owns this public envelope; the narrower independent
+predicate still requires the actual card selection. Other native families,
+World/phase/Discovery/Semuta and reaction envelopes retain their own bounds.
+
+Fresh setup initializes original actual-Guild fee replacement, actual-Harkonnen
+call cancellation and absent-Ixian purchase replacement through their existing
+protocols. Original offers/deals, canonical census and mandatory normal Banker
+remain. No played game is reflagged or given invented history. Original
+standalone admission APIs keep their narrower roles and reuse fresh state.
+
+The funded Guild gate now binds the actual signed Cunning or Richese shipment
+grant as well as its original typed continuation. Suspended reserve/cross
+frames remain the original producer's current pending frame; no extra pending
+alias, card spend, fee or movement is created. Ordinary parents/old v1 receipts
+gain no unconditional new fields. Native stop, route and rate controls precede
+the fee. Existing bounded acknowledgement/order conventions remain provisional.
+
+- Distinct real Richese/Guild draws compose five physical counters at a
+  stronghold's one-counter price1. The Richese card is spent at declaration;
+  Guild Use redirects only that actual1 and spends the distinct Guild card.
+  Pass instead pays original Guild1 and retains Guild Nexus.
+- Cunning preserves its first paid1 shipment. Native allowance then reserve,
+  cross or return second shipment retains its original fee1, group and queue.
+  A rival cannot hold a second Guild singleton after Cunning spent it; the
+  actual irrelevant face has only neutral Pass. Native Karama cancellation
+  keeps the first shipment/payment and spent Nexus, without a second grant.
+- Original paid5 can go to the real Nexus recipient, then a third-party living
+  Bureaucrat diverts2: payer12→7, recipient10→13, Guild6 unchanged, physical5
+  delivered once. The paying Bureaucrat cannot redirect its own transaction.
+
+New `tests/classic-nexus-core.test.ts` and its named original-action producer
+cover ten consumer cases. Frozen31-file **304/304**, focused10/10, types/lint
+and build pass. Three obsolete producer-exclusion cases are removed, not
+re-pinned; other native permission/source regressions remain.
+Four legal policies execute28 actual choices through private Mentat, purchase,
+discounted claim, third-party redirection and Cunning return/turn closure.
+These are playability paths, not calibration or full-combination games.
+
+Three actual390px journeys exercise the original five-for-one form and Guild
+interception/claim, Cunning declaration/native Karama/return permission/
+wrong-face Pass/turn finish, and ordinary5→Nexus claim→Bureaucrat2. The updated
+single classic notice replaces contradictory standalone-only warning stacks.
+Completed notices are explicitly dismissed; no rule action is replayed.
+No browser/application errors or horizontal overflow. Memory/routes removed/
+released204; no stored room, reset, restart or deployment. Existing build
+warnings and complete-mode, universal-timing and assurance gates remain.
+
 ## Classic selected-card reactions — 18 October 2026
 
 Frozen16-file **156/156**, focused new6/6, final types/lint and build pass.

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { viewGame, type Action, type Game } from '../game/engine';
 import { baseDeck } from '../game/cards';
+import type { FactionId } from '../game/catalog';
 import { territory } from '../game/board';
 import { HARASS_WITHDRAW_CARD } from '../game/harass-withdraw';
 import { REINFORCEMENTS_CARD } from '../game/reinforcements';
@@ -20,10 +21,10 @@ export function reactionAction(game: Game, actor: string, action: Action, action
 
 /** Original setup and turn-one play, followed by a real worm, reciprocal
  * alliance and closing draw. Only unused original deck singletons move. */
-function drawIndependentReaction(face: 'harkonnen' | 'ixians', owner: string,
+export function drawClassicNexusReaction(face: FactionId, owner: string,
   options: ClassicIndependentNexusOptions) {
   const fixture = createClassicIndependentNexusFixture({ ...options,
-    roster: ['atreides', 'harkonnen', 'guild'] });
+    roster: options.roster ?? ['atreides', 'harkonnen', 'guild'] });
   const actions = fixture.actions;
   let game = fixture.game;
   const take = (worm: boolean) => {
@@ -48,10 +49,11 @@ function drawIndependentReaction(face: 'harkonnen' | 'ixians', owner: string,
   return { ...fixture, game, owner, actions, beforeDraw, afterDraw: structuredClone(game) };
 }
 
-export function createIndependentHarkonnenCall(options: { advanced?: boolean; skills?: boolean; remote?: boolean } = {}) {
+export function createIndependentHarkonnenCall(options: { advanced?: boolean; skills?: boolean; remote?: boolean; independent?: boolean } = {}) {
   const counter = baseDeck().find(card => card.effect === 'karama')!.id;
-  const fixture = drawIndependentReaction('harkonnen', 'atreides', { ...options,
-    startingCards: { atreides: [HARASS_WITHDRAW_CARD], guild: [counter] } });
+  const starting = options.independent === false ? baseDeck().find(card => card.kind === 'worthless')!.id : HARASS_WITHDRAW_CARD;
+  const fixture = drawClassicNexusReaction('harkonnen', 'atreides', { ...options,
+    startingCards: { atreides: [starting], guild: [counter] } });
   const actions = fixture.actions;
   let game = advanceClassicIndependentNexus(fixture.game, state => state.phase === 5 &&
     state.active === 'atreides' && classicDiscoveryNexusClean(state), actions);
@@ -81,7 +83,7 @@ export function createIndependentHarkonnenCall(options: { advanced?: boolean; sk
   for (const actor of [game.battle!.attacker, game.battle!.defender]) {
     game = reactionAction(game, actor, { type: 'battlePlan', dial: 0, support: 0,
       leader: actor === 'atreides' ? identity : opponentLeader,
-      weapon: actor === 'atreides' ? HARASS_WITHDRAW_CARD : null, defense: null }, actions);
+      weapon: actor === 'atreides' && options.independent !== false ? HARASS_WITHDRAW_CARD : null, defense: null }, actions);
     while (game.response || game.phaseOpening || game.decision?.kind === 'fullPlanOffer') {
       const step = nextClassicDiscoveryNexusStep(game); assert.ok(step);
       game = applyClassicDiscoveryNexusStep(game, step, actions);
@@ -96,13 +98,17 @@ export function createIndependentHarkonnenCall(options: { advanced?: boolean; sk
   return { ...fixture, game, beforeCall, beforeShipment, afterShipment, identity, opponent, key, counter };
 }
 
-export function createIndependentIxianPurchase(options: { advanced?: boolean; skills?: boolean; owner?: 'atreides' | 'harkonnen' } = {}) {
+export function createIndependentIxianPurchase(options: { advanced?: boolean; skills?: boolean; owner?: 'atreides' | 'harkonnen'; independent?: boolean } = {}) {
   const owner = options.owner ?? 'atreides';
-  const fixture = drawIndependentReaction('ixians', owner, { ...options,
-    startingCards: { [owner]: ['ecaz-recruits'] } });
+  const starting = options.independent === false ? baseDeck().find(card => card.kind === 'worthless')!.id : 'ecaz-recruits';
+  const fixture = drawClassicNexusReaction('ixians', owner, { ...options,
+    startingCards: { [owner]: [starting] } });
   const actions = fixture.actions;
   let game = advanceClassicIndependentNexus(fixture.game, state => state.phase === 2 && classicDiscoveryNexusClean(state), actions);
-  const ordered = [REINFORCEMENTS_CARD, HARASS_WITHDRAW_CARD].map(id => {
+  const lots = options.independent === false
+    ? [baseDeck().find(card => card.kind === 'poison')!.id, baseDeck().find(card => card.kind === 'shield')!.id]
+    : [REINFORCEMENTS_CARD, HARASS_WITHDRAW_CARD];
+  const ordered = lots.map(id => {
     const index = game.deck.findIndex(card => card.id === id); assert.ok(index >= 0);
     return game.deck.splice(index, 1)[0];
   });

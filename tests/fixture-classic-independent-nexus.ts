@@ -12,6 +12,8 @@ import { nextClassicDiscoveryNexusStep, applyClassicDiscoveryNexusStep } from '.
 export type ClassicIndependentNexusOptions = {
   advanced?: boolean;
   skills?: boolean;
+  /** False exercises the original base33 without selecting the independent variant. */
+  independent?: boolean;
   roster?: readonly FactionId[];
   training?: Partial<Record<FactionId, LeaderSkillId>>;
   /** Only original, still-undealt starting Treachery slots are ordered. */
@@ -22,6 +24,7 @@ export type ClassicIndependentNexusStep = { actor: string; action: Action };
 export function createClassicIndependentNexusFixture(options: ClassicIndependentNexusOptions = {}) {
   const roster = options.roster ?? ['atreides', 'guild', 'emperor'];
   const advanced = options.advanced ?? false;
+  const independent = options.independent ?? true;
   let game = createGame('CLASSICINDEPENDENTNEXUS', newPlayer(roster[0], roster[0], roster[0]), advanced, []);
   for (const faction of roster.slice(1)) joinGame(game, newPlayer(faction, faction, faction));
   const actions: ClassicIndependentNexusStep[] = [], staging: string[] = [];
@@ -31,14 +34,14 @@ export function createClassicIndependentNexusFixture(options: ClassicIndependent
       ? applyClassicDiscoveryNexusStep(game, { actor, action })
       : applyAction(game, actor, action);
   };
-  for (const option of ['ecazTreachery', 'nexusCards', ...(options.skills ? ['leaderSkills'] : [])])
+  for (const option of [...(independent ? ['ecazTreachery'] : []), 'nexusCards', ...(options.skills ? ['leaderSkills'] : [])])
     act(game.host, { type: 'moduleOption', module: option, enabled: true });
   for (const player of game.players) act(player.id, { type: 'ready' });
   const lobby = structuredClone(game);
   const rolls = options.skills ? skillOfferRolls(game, options.training) : [];
   rolls.push(...Array<number>(NEXUS_FACTIONS.length - 1).fill(0xffffffff));
   if (options.startingCards) {
-    const source = [...treacheryDeck([]), ...ecazTreacheryCards()].map(card => card.id);
+    const source = [...treacheryDeck([]), ...(independent ? ecazTreacheryCards() : [])].map(card => card.id);
     const used = new Set<string>(), prefix: string[] = [];
     const reserved = new Set(Object.values(options.startingCards).flatMap(cards => cards ?? []));
     for (const player of game.players) {
@@ -109,7 +112,16 @@ export function advanceClassicIndependentNexus(game: Game, until: (state: Game) 
   actions?: ClassicIndependentNexusStep[], max = 1200): Game {
   for (let count = 0; !until(game) && count < max; count++) {
     assert.notEqual(game.status, 'finished', 'Original lifecycle ended before requested continuation');
-    const step = nextClassicDiscoveryNexusStep(game);
+    let step: ClassicIndependentNexusStep | null;
+    if (game.pendingGuildBetrayal) {
+      const actor = game.pendingGuildBetrayal.required.find(id => !game.pendingGuildBetrayal!.passed.includes(id));
+      assert.ok(actor);
+      const view = viewGame(game, actor);
+      view.players.find(player => player.id === actor)!.bot = 'Easy';
+      const action = botActions(view)[0];
+      assert.ok(action && ['guildBetrayalUse', 'guildBetrayalPass'].includes(action.type));
+      step = { actor, action };
+    } else step = nextClassicDiscoveryNexusStep(game);
     assert.ok(step, `Use the real sealed control at ${game.turn}/${game.phase}/${game.decision?.kind}`);
     game = applyClassicDiscoveryNexusStep(game, step, actions);
   }

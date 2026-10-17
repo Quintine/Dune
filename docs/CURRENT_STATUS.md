@@ -29,6 +29,28 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Classic Nexus core — 18 October. Prototyped / Partial.**
+Ordinary base33 all14 native calls/purchases lacked reaction prompts. One
+public capability now admits original33 or selected36 with Nexus12 and
+optional14, initializing actual Guild/Harkonnen/Ixian reaction states at fresh
+setup. Independent cards are neither required nor silently added; no played
+game is reflagged or supplied invented history. Other envelopes stay separate.
+
+Original signed Cunning reserve/cross/return and Richese five-for-one groups
+retain funded fee and physical continuation through the same acknowledgement.
+Native counters and actual third-party Bureaucrat remain; one spent Guild
+singleton cannot also authorize rival Use. Timing remains inherited/provisional.
+
+Frozen31-file **304/304**, focused10/10, types/lint/build pass. Three390px
+original-control journeys reach whole1 claim, Cunning return/turn finish and
+third-party5→recipient3/Bank2, with no errors/overflow. Four legal policies
+execute28 actual choices, not calibration or full games. One accurate classic
+notice replaces contradictory standalone stacks. Three old exclusion cases
+are deleted, not re-pinned; the driver honors actual owned fee acknowledgement.
+Temporary memory/routes removed/released204, no stored room/reset/restart/
+deployment. Other modes, universal timing and deferred assurance remain open.
+[Exact source and current proof](NEXUS_CARD_RULES.md#classic-nexus-core-and-funded-card-shipments--18-october-2026).
+
 **Selected-card native reactions — 18 October. Prototyped / Partial.**
 Real Harkonnen call/Nexus and paid Reinforcements/Ixian purchase exposed absent
 original effect prompts. Fresh classic2–6 independent36/Nexus12 optional14 now

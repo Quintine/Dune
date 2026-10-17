@@ -2,6 +2,23 @@
 
 This checkpoint follows the [Guild source contract](NEXUS_GUILD_RULES.md): native Guild can spend Cunning when finishing its ordinary Shipment and Movement turn to obtain one second shipment. It preserves one combined turn and the actual history of the first shipment and movement. It does not implement Guild Secret Ally, Betrayal or complete Nexus play.
 
+## Classic core payment acknowledgement — 18 October 2026
+
+Original classic base33 or selected independent36 Nexus, optionally all14,
+now preserves Cunning through the same original Guild fee gate. A pending
+second reserve/cross frame remains the actual signed Cunning shipment while
+the fee waits; first payment, movement and queue never reopen. The card is
+already spent, so an actual rival holds another face and has only neutral Pass,
+not a fabricated second Guild card. Native cancellation still preserves the
+first shipment and consumes its attempted Cunning card.
+
+Genuine reserve/cross/return groups each pay1 once in the new core producer.
+Actual390px declaration, original Karama allowance, separate native return
+permission, wrong-face Pass and Finish Guild turn end at spice4/reserves15
+without ordinary movement. Other native/module and physical Ornithopter
+boundaries remain separate.
+[Source-bound combined proof](NEXUS_CARD_RULES.md#classic-nexus-core-and-funded-card-shipments--18-october-2026).
+
 ## Native permission opportunity scope — 15 October 2026
 
 Cross/return permission is now a separate prepayment counter before native

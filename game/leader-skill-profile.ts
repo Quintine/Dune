@@ -1,5 +1,5 @@
 import { FACTIONS } from './catalog';
-import { classicIndependentNexusProfile, mixedE3NexusRosterProfile } from './faction-module-profile';
+import { classicIndependentNexusProfile, classicNexusCoreProfile, mixedE3NexusRosterProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile } from './discovery-module-profile';
 
 /** Public configuration only; never gate a skill on a hidden card or random deal. */
@@ -53,7 +53,7 @@ function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassinatio
 
 /** Fresh classic Nexus/Skills, optionally Homeworlds/Discovery/Tech/Advanced Strongholds. */
 export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (classicIndependentNexusProfile(game)) return true;
+  if (classicNexusCoreProfile(game)) return true;
   if (game.expansions.length || !nexusLeaderSkillModulesSupported(game, false, true, false)) return false;
   const players = game.players!;
   for (let i = 0; i < players.length; i++) {
@@ -68,6 +68,8 @@ export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boole
 
 /** Fresh classic Nexus/Skills composed only with the bounded Guild Betrayal preview. */
 export function guildBetrayalNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (game.guildBetrayalPreview && classicNexusCoreProfile(game))
+    return game.players!.some(player => player.faction === 'guild');
   if (game.expansions.length || !game.guildBetrayalPreview || game.homeworlds ||
     game.techTokens || game.strongholdCards || game.semutaPreview ||
     !nexusLeaderSkillModulesSupported(game, false, false, true)) return false;

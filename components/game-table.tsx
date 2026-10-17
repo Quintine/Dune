@@ -14,6 +14,7 @@ import { AdvancedPreviewNotice, RulesetControls } from './ruleset-controls';
 import { EcazOccupyLeadChoice, EcazOccupyBattleSummary, EcazOccupyDialExplanation } from './ecaz-occupy';
 import { ecazOccupyOwnProfile, ecazOccupyPlanControl } from '@/game/ecaz-occupy-options';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from '@/game/nexus-guild-cunning-options';
+import { classicNexusCoreProfile } from '@/game/faction-module-profile';
 import {
   matchesShipment,
   liveShipmentPromises,
@@ -261,6 +262,8 @@ export function GameTable({
   const movementAvailable = nexusGuildMovementAvailable(g);
   const guildCunning = nexusGuildCunningActive(g);
   const guildCunningAction = g.nexusGuildCunning?.offer ? nexusGuildCunningAction(g, g.nexusGuildCunning.offer.event) : null;
+  const classicNexusPreview = classicNexusCoreProfile(g) &&
+    (g.guildBetrayalPreview || g.nexusIxianReplacementPreview || g.nexusHarkonnenBetrayalPreview);
   const combatName = (id: string) =>
     g.combatLocations?.find((place) => place.id === id)?.name ??
     gameTerritories(g).find((place) => place.id === id)?.name ??
@@ -1287,7 +1290,17 @@ export function GameTable({
           <a href="/rules?topic=nexus-richese-betrayal#nexus-richese-betrayal">Preview rules and limits</a>
         </p>
       )}
-      {g.guildBetrayalPreview && (
+      {classicNexusPreview && (
+        <p className="notice" role="status">
+          Classic Nexus reactions preview · Basic/Advanced classic factions, original base33
+          or selected independent36 Treachery, optionally all14 Leader Skills. Enabled native
+          reactions retain original card, force and payment authority. Acknowledgement timing
+          and purchase/bonus ordering remain provisional. Other modules and complete Nexus
+          acceptance remain separate.{' '}
+          <a href="/rules?topic=nexus-cards#nexus-cards">Preview rules and limits</a>
+        </p>
+      )}
+      {g.guildBetrayalPreview && !classicNexusPreview && (
         <p className="notice" role="status">
           Guild Nexus Betrayal development preview · whole funded shipment
           payment replacement, including your own payment and occupied Junction.
@@ -1296,12 +1309,12 @@ export function GameTable({
           <a href="/rules?topic=nexus-guild-betrayal#nexus-guild-betrayal">Preview rules and limits</a>
         </p>
       )}
-      {g.nexusIxianReplacementPreview && (
+      {g.nexusIxianReplacementPreview && !classicNexusPreview && (
         <p className="notice" role="status">
-          Ixian Nexus purchased-card replacement development preview · classic Basic/Advanced
-          with base Treachery, or Basic Tleilaxu/classic with Ixian Treachery; Nexus alone.
-          Ixians are absent. Normal paid and printed Karama purchases are supported;
-          Harkonnen buyers and special auctions are guarded. Not complete Ixian or certified Nexus rules.{' '}
+          Ixian Nexus purchased-card replacement development preview · original supported
+          standalone Tleilaxu or Richese entries. Normal paid/Karama and supported native
+          Richese purchases retain their exact source; replacement-before-bonus and cache
+          interpretations remain provisional. Not complete Ixian or certified Nexus rules.{' '}
           <a href="/rules?topic=nexus-ixian-replacement#nexus-ixian-replacement">Preview rules and limits</a>
         </p>
       )}
@@ -1314,7 +1327,7 @@ export function GameTable({
           <a href="/rules?topic=nexus-ixian-betrayal#nexus-ixian-betrayal">Preview rules and limits</a>
         </p>
       )}
-      {g.nexusHarkonnenBetrayalPreview && (
+      {g.nexusHarkonnenBetrayalPreview && !classicNexusPreview && (
         <p className="notice" role="status">
           Harkonnen Nexus Betrayal development preview · cancel an actually declared native Harkonnen
           traitor call, return that physical card to the Traitor Deck, and draw one private replacement

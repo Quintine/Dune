@@ -7,6 +7,18 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Classic Nexus core without card dependency — 18 October 2026
+
+Original base33 or explicitly selected independent36 Nexus core admits
+optional all14 in classic2–6 Basic/Advanced starts. Native offers/deal order,
+mandatory normal Banker and actual role/card sources remain. Fresh reaction
+states do not require the three-card variant or reflag a played game.
+Real paid5 redirected by Guild Nexus names the actual recipient; a different
+living Bureaucrat diverts2, while the paying trainer remains ineligible.
+Native Cunning and Richese grants retain their signed physical/payment
+continuations through the same fee gate. No new numerical or universal rule.
+[304/304, native phone controls and four legal policies](NEXUS_CARD_RULES.md#classic-nexus-core-and-funded-card-shipments--18-october-2026).
+
 ## Classic selected-card native reactions — 18 October 2026
 
 The fresh independent36/Nexus12 optional14 entry now initializes original

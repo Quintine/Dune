@@ -1,6 +1,6 @@
 import type { Game } from './engine';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
-import { classicIndependentNexusProfile } from './faction-module-profile';
+import { classicNexusCoreProfile } from './faction-module-profile';
 
 export type FremenNexusBetrayal = {
   event: string;
@@ -40,7 +40,7 @@ export function fremenBetrayalOffer(
   if (holder.ally) blocked = 'An allied player cannot use a Nexus card.';
   else if (g.status !== 'playing' || (g.phase !== 1 && g.phase !== 5))
     blocked = 'Use Fremen Betrayal before the first Spice Blow or before Fremen movement.';
-  else if (!classicIndependentNexusProfile(g) &&
+  else if (!classicNexusCoreProfile(g) &&
     (g.expansions.length || g.homeworlds || g.leaderSkills || g.discoveryEnabled ||
     g.discoveries || g.discoveryStash || g.greatMaker || g.ecazTreachery ||
     g.techTokens || g.strongholdCards ||

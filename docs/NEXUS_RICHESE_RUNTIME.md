@@ -2,6 +2,22 @@
 
 This checkpoint adds the [source-audited Secret Ally](NEXUS_RICHESE_RULES.md) to an unallied holder's unused ordinary reserve shipment when Richese is absent. Choose one to five actual forces and price the group as one force. The physical force count, starred identity, destination and arrival restrictions remain ordinary shipment rules. It creates no concealed No-Field and no second shipment.
 
+## Classic core Guild fee composition — 18 October 2026
+
+Classic base33 or selected independent36 Nexus, optionally all14, now retains
+the original signed Secret Ally declaration through actual native Guild fee
+acknowledgement. Original Guild interception/rate rules precede that fee.
+The declared five-for-one group remains pending, without moving counters or
+charging spice early, while its actual Richese card stays spent.
+
+Real distinct Richese/Guild draws permit a rival's full fee claim: five
+physical counters to Carthag cost the ordinary one-counter stronghold price1.
+Actual mobile controls complete native Guild Allow then rival Use: shipper
+12→11/reserves10→5, recipient10→11, both distinct Nexus cards discarded once.
+Pass instead retains Guild Nexus and credits native Guild1. No concealed
+marker, extra shipment or change to original rate/affordability policy.
+[Exact core source, tests and controls](NEXUS_CARD_RULES.md#classic-nexus-core-and-funded-card-shipments--18-october-2026).
+
 ## Native Guild rate followup — 15 October 2026
 
 Original Guild/Richese Secret Ally declarations now admit the distinct unpaid

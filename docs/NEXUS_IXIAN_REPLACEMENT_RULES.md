@@ -2,6 +2,17 @@
 
 Source audit: 2026-09-10. Bounded local prototype integration and verification: 2026-10-01. **Partial development verified**, not complete Ixian/Nexus family or expansion acceptance. This document records the source and runtime boundary of the fresh `ixian-replacement` profile. Existing [Nexus release gates](NEXUS_CARD_RUNTIME.md) remain in force.
 
+## Original base33 core without card dependency — 18 October 2026
+
+Fresh classic2–6 Basic/Advanced Nexus initializes original purchase replacement
+with base33 or selected independent36, optionally all14. Actual base-card
+paid2 now reaches the same own event-only choice without requiring the
+three-card variant: one original invoice, exact purchased discard and real
+deck-top draw. Original normal Banker, native bonus and existing standalone
+family/special-purchase contracts remain. No played game gains a new stamp
+and no independent Treachery Card is silently inserted.
+[Current core source and actual consumer proof](NEXUS_CARD_RULES.md#classic-nexus-core-and-funded-card-shipments--18-october-2026).
+
 ## Classic independent-card native reactions — 18 October 2026
 
 Fresh normal classic2–6 Basic/Advanced independent36/Nexus12 now initializes

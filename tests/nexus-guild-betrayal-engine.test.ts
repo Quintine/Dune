@@ -249,18 +249,6 @@ void test('No publicly possible holder auto-settles the native fee without a fab
   validateNexusCards(done.nexusCards!.cards!, done.players);
 });
 
-void test('Unsupported Cunning producer is visibly blocked before its singleton is spent in the bounded payment profile', () => {
-  const fixture = createGuildBetrayalFixture({payer: 'guild'});
-  const before = structuredClone(fixture.before);
-  const cards = before.nexusCards!.cards!;
-  cards.hands[fixture.holder] = cards.hands[fixture.guild];
-  cards.hands[fixture.guild] = 'guild';
-  const offer = viewGame(before, fixture.guild).nexusGuildCunning!.offer!;
-  assert.match(offer.blocked!, /second-shipment overlay/);
-  rejects(before, fixture.guild, {type: 'endMovement', nexus: offer.event});
-  assert.equal(before.nexusCards!.cards!.hands[fixture.guild], 'guild');
-  assert.equal(before.nexusGuildCunningHistory, undefined);
-});
 
 function outsidePaymentProfile(game: Game): Game {
   const native = structuredClone(game);
@@ -272,47 +260,6 @@ function outsidePaymentProfile(game: Game): Game {
   return native;
 }
 
-for (const advanced of [false, true]) {
-  void test(`${advanced ? 'Advanced' : 'Basic'} Richese overlay rejects before spend while ordinary and outside-profile shipments finish`, () => {
-    const fixture = createGuildBetrayalFixture({advanced, payer: 'holder'});
-    const before = structuredClone(fixture.before);
-    const cards = before.nexusCards!.cards!;
-    const index = cards.deck.indexOf('richese');
-    assert.ok(index >= 0);
-    cards.deck[index] = cards.hands[fixture.holder]!;
-    cards.hands[fixture.holder] = 'richese';
-    validateNexusCards(cards, before.players);
-    const offer = viewGame(before, fixture.holder).nexusRichese!;
-    assert.match(offer.blocked!, /Richese Secret Ally shipment overlay/);
-    const action: Action = {...fixture.declaration, amount: 3, nexus: offer.event};
-    const saved = structuredClone(before);
-    assert.throws(() => applyAction(before, fixture.holder, action), /Richese Secret Ally shipment overlay/);
-    assert.deepEqual(before, saved, 'No singleton spend, parent, history, fee or forces change on rejection.');
-    assert.equal(before.nexusRicheseHistory, undefined);
-
-    const ordinary = settleGuildBetrayalFixture(applyAction(before, fixture.holder,
-      {...fixture.declaration, amount: 3}));
-    const prior = before.players.find(p => p.id === fixture.holder)!;
-    const shipped = ordinary.players.find(p => p.id === fixture.holder)!;
-    assert.equal(shipped.reserves, prior.reserves - 3);
-    assert.equal(shipped.spice, prior.spice - 3);
-    assert.equal(shipped.shipped, true);
-    assert.equal(ordinary.nexusCards!.cards!.hands[fixture.holder], 'richese');
-
-    const native = outsidePaymentProfile(before);
-    const nativeOffer = viewGame(native, fixture.holder).nexusRichese!;
-    assert.equal(nativeOffer.blocked, null);
-    const done = settleGuildBetrayalFixture(applyAction(native, fixture.holder,
-      {...action, nexus: nativeOffer.event}));
-    const recipient = done.players.find(p => p.id === fixture.holder)!;
-    assert.equal(recipient.reserves, prior.reserves - 3);
-    assert.equal(recipient.spice, prior.spice - 1);
-    assert.equal(recipient.shipped, true);
-    assert.equal(done.nexusCards!.cards!.hands[fixture.holder], null);
-    assert.equal(done.nexusRicheseHistory!.at(-1)!.stage, 'shipped');
-    assert.equal(done.nexusCards!.cards!.discard.filter(face => face === 'richese').length, 1);
-  });
-}
 
 void test('Saved native cross permission is independently required even for a self-consistent paid frame or purchased Karama rate', () => {
   for (const purchasedRate of [false, true]) {

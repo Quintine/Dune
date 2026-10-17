@@ -4,6 +4,24 @@
 
 Source audit, 10 September 2026. This documents the three printed panels and their integration boundaries. It does not implement them or certify complete Guild, Homeworld, Nexus or expansion compliance. [Common Nexus lifecycle](NEXUS_CARD_RULES.md) and existing release gates continue to apply. No user question was sent during this audit.
 
+## Classic core funded card shipments — 18 October 2026
+
+Fresh classic2–6 Basic/Advanced Nexus uses original base33 or selected
+independent36, optionally all14 Skills, with actual native Guild payment
+replacement initialized through the shared public core capability. No card
+variant or separate public reaction selector is required. Original standalone
+Homeworld and other native envelopes remain separate; played games are not
+reflagged or supplied fabricated history.
+
+Within this core entry, the earlier Cunning/Richese producer exclusions below
+are superseded. Original signed reserve/cross/return Cunning and one-counter
+Richese shipments retain their actual funded invoice, native counters and
+physical continuation through the existing fee acknowledgement. The actual
+Guild singleton spent for Cunning cannot also be held for rival Betrayal Use.
+Existing neutral wrong-face Pass and provisional timing remain unchanged.
+Actual5/price1 and third-party5→recipient3/Bank2 retain their original rules.
+[Current source, 304/304, controls and legal policies](NEXUS_CARD_RULES.md#classic-nexus-core-and-funded-card-shipments--18-october-2026).
+
 ## Primary evidence
 
 The Guild face was freshly inspected in the [original photograph of GF9's twelve Nexus cards](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani), local inspection copy `/tmp/dune-nexus-cards.jpg`:

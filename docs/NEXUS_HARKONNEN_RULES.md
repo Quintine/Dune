@@ -2,6 +2,17 @@
 
 Source audit, 10 September 2026. This is a rules contract, not a runtime completion claim. The [common Nexus lifecycle](NEXUS_CARD_RULES.md) and existing expansion release gates still apply. The pending reaction-privacy question remains unresolved; this audit does not authorize a Betrayal reaction policy.
 
+## Original base33 core without card dependency — 18 October 2026
+
+Fresh classic2–6 Basic/Advanced Nexus now initializes the original native
+call protocol with base33 or selected independent36, optionally all14. The
+independent three-card variant is not required. A genuine base33 all14 call
+can be canceled and reaches one actual private Mentat replacement; without
+Harass, its ordinary losing board counter still goes to Tanks. Public
+selection preserves the original base33 census/three-element history grammar.
+Original counter/acknowledgement policy and other module envelopes remain.
+[Shared current core proof](NEXUS_CARD_RULES.md#classic-nexus-core-and-funded-card-shipments--18-october-2026).
+
 ## Classic independent-card native reactions — 18 October 2026
 
 **Prototyped / Partial.** Fresh normal classic2–6 Basic/Advanced

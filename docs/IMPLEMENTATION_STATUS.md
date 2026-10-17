@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 18 October 2026 — Classic Nexus core and funded native card shipments
+
+Ordinary base33 all14 genuine Harkonnen call and Ixian purchase still lacked
+native prompts. One public core capability now admits original33 or selected36
+with Nexus12, optionally14, initializing native Guild/Harkonnen/Ixian states
+only at fresh setup. The independent predicate still requires its actual
+selection; no three cards, faction role or played history are invented.
+
+Guild Cunning and Richese Secret Ally retain their real signed producer and
+funded original invoice through Guild fee acknowledgement. Actual pending
+reserve/cross frames remain their original grant's frame; conditional source
+bindings leave ordinary/old receipt shape unchanged. Native interception,
+Karama and return/rate authority remain separate. A Cunning-spent Guild
+singleton cannot simultaneously be a rival's usable card.
+
+Ten meaningful consumers cover ordinary all14 Mentat replacement/purchase,
+discounted5 at stronghold1 with Use/Pass, own-payer Bureaucrat exclusion,
+actual third-party5→recipient3/Bank2, Cunning's three native routes and native
+cancellation preserving the paid first shipment. Shared original driver now
+uses the actual pending holder's canonical policy instead of bypassing the
+new fee acknowledgement. Three obsolete producer-exclusion cases are deleted,
+not re-pinned; other original native source/permission checks remain.
+
+Frozen31-file **304/304**, focused10/10, types/lint/build pass. Four legal
+policies perform28 actual choices, including private real Mentat replacement,
+purchase, discounted claim, Bureaucrat diversion and Cunning return/turn
+closure. No calibration or full-combination claim.
+
+Three390px original-control journeys pass: five-for-one→Guild interception/
+whole1 claim; paid first shipment→Cunning/native allowance→separate return
+permission→wrong-face Pass→spice4/reserves15/turn finish; ordinary5→whole
+claim→actual third-party Bank2 with payer7/recipient13/Guild6. One accurate
+classic notice replaces three contradictory standalone warning stacks.
+Completed notices are explicitly dismissed, never used to replay a rule
+action; no browser/application errors or overflow. Temporary routes/memory
+removed/released204, no stored room/reset/server restart/deployment. Existing
+build warnings, wider modes, universal timing and assurance remain open.
+[Canonical source and boundary](NEXUS_CARD_RULES.md#classic-nexus-core-and-funded-card-shipments--18-october-2026).
+
 ## 18 October 2026 — Native classic independent-card Nexus reactions
 
 Real Harkonnen call with an actually drawn Harkonnen Nexus resolved without

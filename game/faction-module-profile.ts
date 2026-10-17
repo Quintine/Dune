@@ -26,20 +26,20 @@ export type FactionModuleProfile = {
   nexusHarkonnenBetrayalPreview?: unknown;
 };
 
-/** Independent36 + original Nexus12 in classic tables, optionally all14 Skills.
- * Fresh native Harkonnen/Ixian effect stamps are not additional selected modules. */
-export function classicIndependentNexusProfile(
-  game: Partial<FactionModuleProfile> & Pick<FactionModuleProfile, 'expansions'> & {
-    sandtrout?: unknown; moritaniAssassinatePreview?: unknown;
-  },
-): boolean {
+type ClassicNexusProfile = Partial<FactionModuleProfile> & Pick<FactionModuleProfile, 'expansions'> & {
+  sandtrout?: unknown; moritaniAssassinatePreview?: unknown;
+};
+
+/** Classic Nexus12 with selected base33/independent36 and optional all14 Skills.
+ * Native Guild/Harkonnen/Ixian effect stamps are not additional selected modules. */
+export function classicNexusCoreProfile(game: ClassicNexusProfile): boolean {
   const players = game.players;
-  if (typeof game.advanced !== 'boolean' || game.ecazTreachery !== true || !game.nexusCards ||
+  if (typeof game.advanced !== 'boolean' || !game.nexusCards ||
     game.expansions.length !== 0 || !players || players.length < 2 || players.length > 6 ||
     game.homeworlds || game.techTokens || game.strongholdCards || game.sandtrout ||
     game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
     game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
-    game.guildBetrayalPreview || game.richeseBetrayalPreview ||
+    game.richeseBetrayalPreview ||
     game.nexusIxianBetrayalPreview) return false;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
@@ -49,6 +49,11 @@ export function classicIndependentNexusProfile(
     if (!classic) return false;
   }
   return true;
+}
+
+/** Card consumers require the actual independent-variant selection. */
+export function classicIndependentNexusProfile(game: ClassicNexusProfile): boolean {
+  return game.ecazTreachery === true && classicNexusCoreProfile(game);
 }
 
 /** Original E1/E2 families or standalone Ecaz/Moritani; explicit Semuta context only. */

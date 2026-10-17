@@ -1,5 +1,5 @@
 import { FACTIONS } from './catalog';
-import { classicIndependentNexusProfile, mixedE3NexusRosterProfile, type FactionModuleProfile } from './faction-module-profile';
+import { classicNexusCoreProfile, mixedE3NexusRosterProfile, type FactionModuleProfile } from './faction-module-profile';
 import { classicDiscoveryNexusProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 
 /** Explicit Richese composition only; original predicates still own roster and module legality. */
@@ -11,7 +11,7 @@ function semutaNexusContext(game: FactionModuleProfile): boolean {
 
 /** Original classic Nexus modules, optionally Homeworlds; initializer checks undealt components. */
 export function classicNexusModulesProfile(game: FactionModuleProfile): boolean {
-  if (classicIndependentNexusProfile(game)) return true;
+  if (classicNexusCoreProfile(game)) return true;
   if (game.discoveryEnabled || game.discoveries) return classicDiscoveryNexusProfile(game);
   if (typeof game.advanced !== 'boolean' || !game.nexusCards ||
     (!game.techTokens && !game.strongholdCards) || game.expansions.length !== 0 ||
