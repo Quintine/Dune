@@ -34,7 +34,7 @@ export function DiplomatDefense({
   return (
     <div className="flex flex-col gap-3" aria-label="Diplomat defense choice">
       <p>
-        The opposing committed defense,{' '}
+        The opposing used defense,{' '}
         <strong>{source?.name ?? decision.source}</strong>, provides{' '}
         <strong>{copiedDefense}</strong> protection. Diplomat can copy that
         protection onto one of your committed Worthless cards.

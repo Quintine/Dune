@@ -29,6 +29,26 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Diplomat used-defense contexts — 17 October.** Fresh capability3 copies the
+canonical role actually used, including late Portable Snooper after a prior
+false traitor choice; the recorded vote is never reopened. Native World-only
+votes and original invader late-defense choices remain. A true declaration
+prevents a fresh offer; a declined copy permits a legal own late defense, while
+a selected copy cannot add a second defense. Old1/2 source windows stay.
+World strength and held effects coexist independently, never imported by the
+copy. Real first end-Mentat earns Carthag: its own original Snooper protects
+a copied Shield from poison; no opposing source means no invented defense.
+Genuine paid Arrakis copy/decline and native Kaitain programmes retain actual
+survival/death, one selected Worthless disposal, source retention and typed
+custody (Kaitain15N/Salusa5E; three visiting Guild counters reach Tanks).
+Four390px journeys/25 actions reach original Collection with clean roots and
+no app errors. Twelve four-policy programmes/40 actions remain legal; the held
+Carthag policies decline and their context strategy remains deferred.
+Conserved cards/decks and controlled context scalar entropy are explicit.
+Parent removed forwarding and unrelated Guild-income pins. Frozen12-file union
+86/86 and final10 cases pass after nullable-source/end-Mentat typing fixes;
+types/lint/build pass with existing warnings. No full/deployed acceptance claimed.
+
 **Smuggler modifier band — 17 October.** Under the standing recommended-choice
 instruction, provisionally cap by copied/printed disc plus declared skill bonuses
 and KH2. Actual Artillery zeroing voids collection; ordinary Stunner stays a

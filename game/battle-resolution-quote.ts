@@ -86,7 +86,11 @@ export type ResolutionCombatant = ResolutionParticipant & {
   reinforcementsReserves?: { normal: number; elite: number };
   harassWithdraw?: HarassWithdrawContext;
   harassSelection?: HarassWithdrawSelection;
-  diplomatDefense?: Pick<DiplomatDefenseQuote, 'leader' | 'source' | 'kind'> & { card: string };
+  diplomatDefense?: Pick<DiplomatDefenseQuote, 'leader' | 'source' | 'kind'> & {
+    card: string;
+    /** Authoritative current battle opted into used-defense contexts. */
+    contextual?: true;
+  };
   spice: number;
   hand: readonly Card[];
   plan: ResolutionPlan;
@@ -381,10 +385,11 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     if (copy === undefined) return defense;
     const quote = quoteDiplomatDefense({ assignments: side.leaderSkills ?? [], selectedLeader: side.plan.leader,
       weapon: card(side, side.plan.weapon), defense: card(side, side.plan.defense),
-      opposingDefense: card(other, other.plan.defense), opposingWeapon: card(other, other.plan.weapon),
+      opposingDefense: card(other, copy?.contextual ? other.lateDefense ?? other.plan.defense : other.plan.defense),
+      opposingWeapon: card(other, other.plan.weapon),
       expandedDefenses: true });
-    requireQuote(copy && quote && !side.lateDefense && !other.lateDefense &&
-      !side.stronghold && !other.stronghold && !input.homeworld &&
+    requireQuote(copy && quote && !side.lateDefense &&
+      (copy.contextual || (!other.lateDefense && !side.stronghold && !other.stronghold && !input.homeworld)) &&
       copy.leader === quote.leader && copy.source === quote.source && copy.kind === quote.kind && quote.cards.includes(copy.card),
       'The copied Diplomat defense lost its native trainer, committed Worthless or opposing printed defense.');
     return copiedDiplomatDefense(quote, copy.card);

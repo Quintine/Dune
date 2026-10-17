@@ -1,12 +1,12 @@
 # Diplomat copied-defense prototype
 
-13 September 2026. **Prototyped**, with **Partial** rules coverage. This connects
-the Diplomat's normal band for the canonical printed defenses that the opponent
-actually used: Shield, Snooper, Shield Snooper, defensive Weirding Way,
-defensive Chemistry and Portable Snooper sealed in the defense slot. The lower
+Updated 17 October 2026. **Prototyped**, with **Partial** rules coverage. The
+normal band copies canonical defenses actually used: Shield, Snooper, Shield
+Snooper, defensive Weirding Way/Chemistry and sealed or actually late-played
+Portable Snooper. Current battles compose original Homeworld/held-card contexts
+without inheriting the opponent's modifiers. The lower
 [retreat prototype](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation)
-is now connected separately; combined modules and other defense sources remain
-unfinished. Public Leader Skills starts and publication remain gated.
+remains separate. Public starts, full modes and publication remain gated.
 
 ## Source and interpretation
 
@@ -29,14 +29,14 @@ face supplies nothing to copy. Canonical identity is matched by physical ID with
 printed kind, name and effect, so a tampered card cannot inherit a role by
 claiming a printed name.
 
-The copied role is the role the opponent actually used in the defense slot, and
+The copied role is the role the opponent actually used as a defense, and
 each printed distinction survives: a Shield Snooper protects against both
 projectile and poison weapons and still counts as a Shield for the lasgun
 explosion; a defensive Weirding Way stops a projectile weapon but is **not** a
 Shield and triggers no explosion; Chemistry stops Poison Tooth, which a Snooper
-copy does not; a Portable Snooper sealed in the defense slot copies only its
-poison-defense role. The shared battle-card role helpers supply
-these distinctions rather than a binary Shield/Snooper substitution.
+copy does not; a sealed or actually played late Portable Snooper copies only
+its poison-defense role. The shared battle-card role helpers supply these
+distinctions rather than a binary Shield/Snooper substitution.
 
 **First-version interpretation.** Copying the opponent's already-used defensive
 role does not copy its activation, its late-play opportunity or its own-slot
@@ -44,39 +44,37 @@ prerequisite. Two consequences are explicit implementation inferences. A
 defensive Weirding Way keeps its printed requirement that another weapon or
 Worthless card occupy the weapon slot of the plan it was played in, so the
 opponent's real plan weapon is validated before any copy is offered; our own
-plan needs no weapon to receive that copied role. A copied Portable Snooper does
-not gain the original card's after-reveal play, which the prototype already
-excludes for every late defense. The copied role protects exactly like that
+plan needs no weapon to receive that copied role. A copied Portable Snooper
+does not gain the original card's after-reveal activation: the opponent must
+actually play its card before a late-source offer exists. The copied role protects exactly like that
 defense without changing the Worthless card's identity or either revealed plan,
 and the copied defense is resolved first so that the common surviving-trainer
 rule is evaluated afterwards. If the copied type does not stop the weapon,
 removing the dead trainer's skill does not change that outcome.
 
-Two timing and cleanup rules are explicit implementation inferences. The
-optional public choice occurs after both plans reveal and before traitor calls,
-because the copied defense cannot be known when the Worthless card is sealed.
-The chosen Worthless is always discarded after resolution, including when a
-successful traitor call preempts ordinary weapon effects. This combines the
-card's explicit discard instruction with the chosen scheduling point; the
-publisher sources do not separately address Diplomat versus traitor timing.
+Timing and cleanup remain explicit implementation interpretations. Sealed
+sources offer the public choice after reveal and before traitor calls as before.
+An actually played late source may offer it before the unresolved outcome,
+including after false traitor choices. Those submitted choices are not reopened.
+A successful traitor declaration prevents a fresh late-source offer. The selected
+Worthless always discards after resolution, including when a later successful
+traitor preempts ordinary weapon effects; this is not a publisher priority FAQ.
 The [November 2020 GF9 FAQ](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf),
 page 8, supplies the general winner-retention rule, which the chosen card's
 specific discard instruction overrides in this prototype.
 
 ## Connected behavior
 
-New supported battles carry a version marker and an independent event-bound
-receipt. The marker also records which copied sources that battle admits: a
-newly stamped battle admits every canonical printed defense above, while an
-already-open older battle keeps its original canonical base Shield and Snooper
-sources only, so widening the quote cannot invent a retroactive choice for a
-pending plan that never had one. After reveal, the server derives the eligible
-physical Worthless IDs,
-opposing defense and live native assignment from current custody. Choosing one
-records its copied kind; declining records that choice. Either result preserves
-the original plans and leaves every card in its hand until battle resolution.
-Legacy battles without the new marker keep their existing continuation and do
-not gain a retroactive Diplomat opportunity.
+New supported battles carry capability3 and an independent event-bound receipt.
+They admit canonical used sources, including actually played late Portable,
+within their original World/Stronghold skill profile. Capabilities1/2 retain
+their old base/printed-only source windows; unversioned battles are not reopened.
+The frame binds original plans, trainer and opposing used physical source.
+It does not confuse an unrelated later own defense with a historical decline.
+Choosing a committed Worthless records its copied kind; declining ends that
+opportunity without discarding it. Both preserve plans and cards until outcome.
+A copied defense bars a second actual defense through the late slot; a declined
+copy may still use an independently legal own Portable Snooper.
 
 The copied printed role feeds ordinary weapon survival and existing Poison or
 Projectile Defense skill checks through the shared battle-card role helpers.
@@ -129,11 +127,50 @@ checkpoint commit and private source-bound report.
 
 The bounded [lower retreat](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation)
 now follows a documented conservative strength and outcome order; this does not
-settle a publisher priority ruling. Carthag-added protection, mirror and
-numeric or Stronghold strength modifiers, late Portable Snooper play, and any
-future copied or modified defense still need a separate contract for whether
-generic roles or named exceptions are inherited; the copied role never imports
-a modifier, an activation or a late-play window. Canonical additional Ix Shield
-and Snooper faces use those same printed roles in new battles. Homeworlds, Nexus,
-Discoveries, Stronghold Cards, Tech Tokens and other combined modules remain
-guarded. These limits preserve the existing public gates.
+settle a publisher priority ruling. Current used-defense copying coexists with
+original World strength and held-card effects; it never imports the opponent's
+virtual/numeric protection, activation or late-play right. Own earned Carthag
+may independently add its original Snooper to a copied Shield when its conditions
+hold. Carthag does not invent a defense for a physical Worthless with no copied
+source. Mirror/numeric inheritance and other exceptional interpretations remain
+separate; existing module envelopes and public gates are not widened.
+
+## Used-defense contexts — 17 October 2026
+
+Capability3 binds the role only after a real late defense is played. Prior false
+traitor decisions stay submitted; a native Homeworld vote may already be closed
+before the invader uses the original late-defense choice. Copy or decline then
+resumes that same original battle, never a replayed vote or re-sealed plan.
+A true declaration prevents a fresh opportunity; an earlier selected copy keeps
+its existing mandatory-discard contract. The same used-role quote supplies
+shared weapon survival, while original World/Stronghold modifiers remain local.
+
+The normal controlled reproduction had a real late Portable recorded after a
+false vote but no capability2 copy offer. Capability3 now offers its canonical
+poison role. Controlled boundaries also cover historical decline followed by
+own late defense, unchanged rejection of a second defense after copying, true
+traitor precedence and original printed-only legacy continuation.
+
+Genuine source-bound programmes use paid shipments/movement, native all14
+training and actual END Mentat ownership. Unopened deck/physical-card staging
+is disclosed; World/held-card scalar entropy is controlled, not claimed random.
+No live armies, wallets, clocks, initiative, owners or receipts are assigned.
+Five genuine programme branches reach original Collection: paid Arrakis copy
+and decline after a preserved false vote, native-only World late-copy timing,
+actual earned Carthag protection layered on a copied Shield, and the no-source
+negative. Kaitain15 normals and Salusa5 Sardaukar stay native while three real
+Guild visitors become casualties. Selected Worthless/source custody and original
+winner retention remain separate from the copy.
+
+Four390px control journeys/25 actions and twelve four-policy programmes/40
+actions exercise those paths. The held-Carthag policies legally decline; full
+context strategy is deferred, not claimed. Frozen related12-file union86/86
+and final10 used-defense cases pass after nullable lookup/state-narrowing fixes.
+Types/lint/build pass with existing warnings. New evidence:
+`tests/diplomat-used-defense.test.ts`,
+`tests/diplomat-late-journey.test.ts`,
+`tests/fixture-diplomat-late-journey.ts`,
+`tests/diplomat-context-journey.test.ts` and
+`tests/fixture-diplomat-context-journey.ts`.
+No HTTP/database, comprehensive assurance, full-mode or deployed proof is claimed.
+

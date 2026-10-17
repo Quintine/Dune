@@ -733,7 +733,7 @@ export type Battle = {
   mentatQuestionEvent?: string;
   mentatQuestion?: MentatQuestionReceipt;
   /** New battles opt into the revealed Diplomat step; legacy battles are not reopened. */
-  diplomatDefenseVersion?: 1 | 2;
+  diplomatDefenseVersion?: 1 | 2 | 3;
   diplomatDefenseEvent?: string;
   diplomatDefense?: DiplomatDefenseReceipt;
   /** New battles may pause after the outcome is known, before loser losses. */
@@ -22573,6 +22573,10 @@ function validatePortableSnooper(
     !b.lateDefense?.[owner.id],
     'You have already added Portable Snooper to this battle.',
   );
+  requireRule(
+    b.diplomatDefense?.player !== owner.id || b.diplomatDefense.stage !== 'copied',
+    'Your copied Diplomat card already supplies a defense.',
+  );
   const card = owner.hand.find((c) => c.id === cardId);
   requireRule(
     card && isPortableSnooper(card),
@@ -22705,10 +22709,15 @@ function battleSpecialWeaponIntegrity(g: Game) {
 }
 function diplomatDefenseOffer(g: Game): (DiplomatDefenseQuote & { player: string }) | null {
   const b = g.battle;
-  if (!b?.revealed || !g.leaderSkills || !diplomatDefenseModeSupported(g) ||
-    b.lateDefense && Object.keys(b.lateDefense).length) return null;
+  if (!b?.revealed || !g.leaderSkills || !diplomatDefenseModeSupported(g)) return null;
+  const contextual = b.diplomatDefenseVersion === 3;
+  if (!contextual && b.lateDefense && Object.keys(b.lateDefense).length) return null;
+  if (contextual && !b.diplomatDefense && traitorVoters(g, b).some(id => b.traitorCalls[id] === true)) return null;
   for (const player of [b.attacker, b.defender]) {
     const p = getPlayer(g, player), plan = b.plans[player];
+    // A decline remains historical if its owner later adds a real defense.
+    // Only a fresh copy opportunity needs the owner's unused defense role.
+    if (contextual && b.lateDefense?.[player] && !b.diplomatDefense) continue;
     const other = getPlayer(g, b.attacker === player ? b.defender : b.attacker);
     const opposingPlan = b.plans[other.id];
     if (!plan || !opposingPlan) continue;
@@ -22718,9 +22727,9 @@ function diplomatDefenseOffer(g: Game): (DiplomatDefenseQuote & { player: string
         .map(a => ({ skill: a.skill, leader: a.leader, faceUp: !b.leaderSkillHidden?.[player], captured: false })),
       selectedLeader: plan.leader,
       weapon: cardOf(p, plan.weapon), defense: cardOf(p, plan.defense),
-      opposingDefense: cardOf(other, opposingPlan.defense),
+      opposingDefense: cardOf(other, contextual ? b.lateDefense?.[other.id] ?? opposingPlan.defense : opposingPlan.defense),
       opposingWeapon: cardOf(other, opposingPlan.weapon),
-      expandedDefenses: b.diplomatDefenseVersion === 2,
+      expandedDefenses: b.diplomatDefenseVersion === 2 || contextual,
     });
     if (quote) return { ...quote, player };
   }
@@ -22728,8 +22737,14 @@ function diplomatDefenseOffer(g: Game): (DiplomatDefenseQuote & { player: string
 }
 function diplomatDefenseFrame(g: Game): string {
   const b = g.battle!;
+  // Bind the opponent's used source, not a later own defense after declining.
+  const player = b.diplomatDefenseVersion === 3
+    ? b.diplomatDefense?.player ?? diplomatDefenseOffer(g)?.player : null;
+  const opponent = player ? getPlayer(g, player === b.attacker ? b.defender : b.attacker) : null;
   return JSON.stringify({ event: b.event, turn: g.turn, territory: b.territory,
     attacker: b.attacker, defender: b.defender, plans: b.plans, hidden: b.leaderSkillHidden,
+    ...(b.diplomatDefenseVersion === 3
+      ? { lateSource: opponent ? cardOf(opponent, b.lateDefense?.[opponent.id] ?? null) ?? null : null } : {}),
     cards: [b.attacker, b.defender].map(id => {
       const p = getPlayer(g, id), plan = b.plans[id];
       return [plan.weapon, plan.defense, plan.leader].map(selected => cardOf(p, selected) ?? null);
@@ -22743,7 +22758,7 @@ function diplomatDefenseIntegrity(g: Game) {
   const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'diplomatDefense');
   if (b?.diplomatDefenseVersion === undefined && b?.diplomatDefense === undefined &&
     b?.diplomatDefenseEvent === undefined && !decisions.length) return;
-  requireRule(b && (b.diplomatDefenseVersion === 1 || b.diplomatDefenseVersion === 2),
+  requireRule(b && (b.diplomatDefenseVersion === 1 || b.diplomatDefenseVersion === 2 || b.diplomatDefenseVersion === 3),
     'The saved Diplomat choice lost its original battle version.');
   const receipt = b.diplomatDefense;
   const offer = diplomatDefenseOffer(g);
@@ -22766,8 +22781,10 @@ function diplomatDefenseIntegrity(g: Game) {
     'The committed Diplomat cards must retain unique physical custody.');
   requireRule(decisions.length === (receipt.stage === 'offered' ? 1 : 0),
     'The saved Diplomat defense lost or reopened its unique public decision.');
-  if (receipt.stage === 'offered') requireRule(Object.keys(b.traitorCalls).length === 0,
-    'Diplomat defense must be chosen before any traitor decisions.');
+  if (receipt.stage === 'offered') requireRule(b.diplomatDefenseVersion === 3
+    ? traitorVoters(g, b).every(id => b.traitorCalls[id] !== true)
+    : Object.keys(b.traitorCalls).length === 0,
+    'Choose Diplomat defense before a successful traitor declaration or battle outcome.');
   for (const decision of decisions) requireRule(decision.player === receipt.player &&
     decision.event === receipt.event && decision.source === receipt.source &&
     JSON.stringify(decision.cards) === JSON.stringify(receipt.cards),
@@ -22775,11 +22792,11 @@ function diplomatDefenseIntegrity(g: Game) {
 }
 function offerDiplomatDefense(g: Game): boolean {
   const b = g.battle!;
-  if ((b.diplomatDefenseVersion !== 1 && b.diplomatDefenseVersion !== 2) || b.diplomatDefense) return false;
+  if ((b.diplomatDefenseVersion !== 1 && b.diplomatDefenseVersion !== 2 && b.diplomatDefenseVersion !== 3) || b.diplomatDefense) return false;
   const offer = diplomatDefenseOffer(g);
   if (!offer) return false;
-  requireRule(b.event && !Object.keys(b.traitorCalls).length,
-    'Diplomat defense needs the current revealed battle before traitor decisions.');
+  requireRule(b.event && (b.diplomatDefenseVersion === 3 || !Object.keys(b.traitorCalls).length),
+    'Diplomat defense needs the current revealed battle before its unresolved outcome.');
   const event = crypto.randomUUID();
   const receipt: DiplomatDefenseReceipt = { ...offer, event, battle: b.event, turn: g.turn,
     territory: b.territory, frame: diplomatDefenseFrame(g), stage: 'offered', card: null, signature: '' };
@@ -22787,7 +22804,7 @@ function offerDiplomatDefense(g: Game): boolean {
   b.diplomatDefense = receipt;
   b.diplomatDefenseEvent = event;
   g.decision = { kind: 'diplomatDefense', player: offer.player, event, cards: [...offer.cards], source: offer.source };
-  log(g, `${getPlayer(g, offer.player).name} may use Diplomat to make one committed Worthless card copy the opposing ${diplomatDefenseLabel(offer.kind)} before traitor decisions.`,
+  log(g, `${getPlayer(g, offer.player).name} may use Diplomat to make one committed Worthless card copy the opposing ${diplomatDefenseLabel(offer.kind)} before battle resolution.`,
     { faction: getPlayer(g, offer.player).faction, name: 'Diplomat defense' });
   return true;
 }
@@ -22994,7 +23011,8 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       lateDefense: b.lateDefense?.[p.id],
       ...(b.diplomatDefense?.stage === 'copied' && b.diplomatDefense.player === p.id
         ? { diplomatDefense: { leader: b.diplomatDefense.leader, card: b.diplomatDefense.card!,
-          source: b.diplomatDefense.source, kind: b.diplomatDefense.kind } } : {}),
+          source: b.diplomatDefense.source, kind: b.diplomatDefense.kind,
+          ...(b.diplomatDefenseVersion === 3 ? { contextual: true as const } : {}) } } : {}),
       poisonTooth: b.poisonTooth?.[p.id],
       stoneMode: b.stoneBurner?.[p.id],
       ...(aid ? { aid: { donor: p.ally!, amount: aid.amount } } : {}),
@@ -30444,6 +30462,7 @@ function applyActionInner(
       `${p.name} played Portable Snooper after revealing their battle plan. It protects against ordinary poison without changing the original plan. Battle and traitor decisions continue.`,
       { faction: p.faction, name: 'Portable Snooper' },
     );
+    offerDiplomatDefense(g);
     return g;
   }
   if (t === 'battlePreparationReady') {
@@ -31760,7 +31779,7 @@ function applyActionInner(
         log(g, `${p.name} added Portable Snooper after the Homeworld battle plans were revealed.`, {faction: p.faction, name: 'Portable Snooper'});
       }
       (b.homeworldDefensePassed ??= []).push(id);
-      advanceHomeworldReveal(g);
+      if (!offerDiplomatDefense(g)) advanceHomeworldReveal(g);
     } else if (decision.kind === 'homeworldExplosion') {
       homeworldBattleLossIntegrity(g);
   homeworldSubstitutionIntegrity(g);
@@ -33795,7 +33814,7 @@ function applyActionInner(
       event: battleEvent,
       ...(g.leaderSkills ? { smugglerCollectionVersion: 1 as const } : {}),
       ...(g.leaderSkills && mentatQuestionModeSupported(g) ? { mentatQuestionVersion: 1 as const } : {}),
-      ...(g.leaderSkills && diplomatDefenseModeSupported(g) ? { diplomatDefenseVersion: 2 as const } : {}),
+      ...(g.leaderSkills && diplomatDefenseModeSupported(g) ? { diplomatDefenseVersion: 3 as const } : {}),
       ...(g.leaderSkills && ordinaryLeaderSkillModeSupported(g) ? { diplomatRetreatVersion: 1 as const } : {}),
       ...(g.ecazTreachery ? { harassAllocationVersion: 1 as const } : {}),
       ...(byFaction(g, 'richese')

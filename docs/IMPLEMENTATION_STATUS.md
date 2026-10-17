@@ -1,5 +1,59 @@
 # Dune implementation status
 
+## 17 October 2026 — Diplomat used-defense contexts
+
+An actual capability2 late Portable after Emperor's false traitor vote recorded
+the defense but offered no Diplomat copy. Fresh capability3 now binds that
+actually used canonical poison role before the unresolved outcome, preserving
+the submitted false vote. No fresh offer follows a true declaration. Existing
+capability1/2 base/printed source windows and unversioned continuations stay.
+No profile/public gate or database migration is added.
+
+The event-bound frame includes the opposing used late physical card, not an
+unrelated later own defense after a historical decline. Declining the copy
+preserves an otherwise legal own late Portable; an already selected copied
+defense bars a second actual defense. Canonical identity, original plans and
+mandatory selected-Worthless disposal remain. The pure resolution adapter's
+new-context bit is authoritative/transient, not a client action or imported
+modifier. World strength and original held-card effects remain independent.
+
+Two disjoint contributors supplied genuine native all14 programmes. Paid
+two-counter South Mesa shipment and Red Chasm movement precede two poison
+plans. Emperor's earlier false vote stays submitted; actual Guild Portable
+creates the copy/decline choice and only Guild submits the remaining vote.
+Copy keeps the trainer alive, sends Guild2 to Tanks and discards the selected
+Worthless/source once. Decline kills the trainer, loses Emperor2, and the
+winning Guild may retain its real Portable/poison. Original winner cleanup
+and Collection continue without manufacturing a second conflict.
+
+Real paid Guild invasion of Kaitain uses the native-only vote and original
+invader late-defense decision. Copy preserves Kaitain15N/Salusa5E, both
+leaders and native stock; visiting Guild3 go to Tanks. Real first-turn paid
+Carthag placement earns its card at actual END Mentat; a copied physical
+Shield then gains the holder's own original Snooper protection and survives
+poison. Carthag adds Snooper, not a virtual Shield. A physical Worthless with
+no opposing used defense gets neither copy nor invented protection and dies.
+
+Scalar context shuffle/Storm entropy and unopened decks/physical card/cache
+transfers are explicitly staged; no live army/wallet/phase/order/owner/receipt
+is assigned. Parent removed setup/forwarding and unrelated Guild-Collection
+income pins rather than changing or re-pinning that original income.
+
+Four actual390px journeys/25 actions prove late Copy/Decline, native World
+timing and independently earned Carthag protection; final roots have no
+overflow/app alerts/page errors. Twelve four-policy programmes/40 actions
+finish Collection; held-Carthag policies decline, so no context strategy is
+claimed. Owned tab/host/scaffolds are removed; real rooms/DBs, human server
+and deployment were untouched.
+
+Frozen related12-file union86/86 and final10 used-defense cases pass. Parent
+corrected nullable used-source lookup and callback-return state narrowing
+found by typecheck; final types/lint/build pass. Existing deprecation,
+chunk-size and route-classification warnings remain. Artifacts:
+`/tmp/dune-diplomat-used-*-proof.json`. No full-mode, calibrated AI, broad
+assurance or deployed acceptance is claimed; copied/numeric inheritance
+outside this printed-role context remains separately bounded.
+
 ## 17 October 2026 — Provisional modified Smuggler collection
 
 The original raw KH/trainer plans reject unchanged at the modifier guard.

@@ -885,9 +885,10 @@ the bounded Advanced Ixian/CHOAM `banker-income` profile; ordinary/default start
 [Banker battle spending](SPICE_BANKER_RUNTIME.md) retains its separate
 sealed funds and survivor strength. [Smuggler shipping](SMUGGLER_SHIPMENT.md)
 connects its optional normal reserve bonus and the [owned No-Field companion](SMUGGLER_NO_FIELD.md).
-[Diplomat defense](DIPLOMAT_DEFENSE.md) connects its normal band for a physical
-Worthless card copying a canonical base Shield or Snooper. Its bounded lower
-[retreat](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation) now moves
+[Diplomat defense](DIPLOMAT_DEFENSE.md#used-defense-contexts--17-october-2026)
+connects a physical committed Worthless to the canonical printed role actually
+used, including current late Portable and original World/held-card contexts.
+The separate [retreat](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation) now moves
 selected undialed normal/elite counters to an empty adjacent non-stronghold
 after a surviving trained leader loses. Modified-defense inheritance remains
 guarded. [Smuggler battle collection](SMUGGLER_BATTLE.md)
