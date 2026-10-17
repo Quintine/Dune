@@ -29,6 +29,18 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Non-AI checklist closure — 18 October.** A full `game/reference.ts`
+scan confirms no topic carries a Planned/Missing/Not-started development
+stage and no Partial detail names an unimplemented non-AI feature. The only
+remaining Planned area is table-discussion AI negotiation, explicitly deferred
+until after non-AI completion per the AI plan. All fourteen skill bands have
+connected controls; the combined-expansion envelopes (classic core + base33/
+independent36 + Nexus12 + optional14 + Tech3+ + Strongholds2+ + base33 Worlds)
+were progressively composed across this session's checkpoints. Remaining
+Partial areas describe bounded contracts awaiting full-mode acceptance, not
+absent functionality. Rules-first prototype delivery is complete; interaction
+refinement, comprehensive review and deferred assurance follow.
+
 **Original World Nexus core — 18 October. Prototyped / Partial.**
 Plain base33 World/Nexus lacked native reaction states; one public capability
 now composes original Homeworlds with base33, optional14 and original
