@@ -16,6 +16,15 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Readable room confirmations — 18 October.** The user-requested create/join
+confirmation stays above the table until local Continue, independently of
+polling and game actions. Shared toasts default to no timeout and a visible
+Dismiss control. Local QA room NAZLA8P4 retained the message for43 seconds,
+including a circle change; Continue removed it without leaving the room and it
+did not return on later polls. No browser console errors. Focused23/23,
+types/lint/build pass; the QA room is preserved. Deployed verification remains
+open. [Behavior and boundaries](READABLE_NOTICES.md).
+
 **Classic independent World/Nexus — 18 October. Prototyped / Partial.**
 Fresh classic2–6 independent36 + Homeworlds + Nexus12 now retains optional all14,
 Tech3+ and Advanced Strongholds2+ through original module selection/setup.

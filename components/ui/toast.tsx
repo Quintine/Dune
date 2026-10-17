@@ -16,8 +16,9 @@ import {
 
 const toast = ToastPrimitive.createToastManager();
 
-function ToastProvider({ ...props }: ToastPrimitive.Provider.Props) {
-  return <ToastPrimitive.Provider {...props} />;
+function ToastProvider({ timeout = 0, ...props }: ToastPrimitive.Provider.Props) {
+  // Text stays readable until the player dismisses it; progress can update in place.
+  return <ToastPrimitive.Provider timeout={timeout} {...props} />;
 }
 
 function ToastPortal({ ...props }: ToastPrimitive.Portal.Props) {
@@ -186,7 +187,7 @@ function ToastList() {
           <ToastDescription />
         </div>
         <ToastAction />
-        <ToastClose />
+        <ToastClose aria-label="Dismiss message" render={<Button type="button" variant="outline" className="min-h-11" />}>Dismiss</ToastClose>
       </ToastContent>
     </Toast>
   ));

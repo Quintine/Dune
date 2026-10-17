@@ -7,8 +7,13 @@ then removed it immediately, making actionable recovery instructions appear to
 flash on screen even when nothing had gone wrong.
 
 First submissions now show only **Creating your room…** or **Joining the room…**
-and a short progress message. Successful responses still open the confirmed
-table. A lost/uncertain response, saved request after refresh, or storage problem
+and a short progress message. Successful responses open the confirmed
+table with a **Room created** or **Room joined** confirmation above it. The
+confirmation shows the room code and invitation/seat-protection guidance, and
+stays until **Continue**. Polling, reconnecting and ordinary game actions do not
+dismiss it. Continue acknowledges only local text, without submitting a game
+action. Leaving, reloading or claiming a different seat clears the local notice.
+A lost/uncertain response, saved request after refresh, or storage problem
 shows the existing persistent recovery panel. Its exact retry, deliberate
 abandonment and saved-kit recovery controls remain available until the player
 resolves the request. The private retry proof is still saved before submission;
@@ -37,10 +42,21 @@ it. Continue dismisses only the message. Leaving or reloading the page clears th
 local confirmation, without changing the recovered seat.
 
 Errors and recovery prompts have explicit controls; component inspectors have
-close buttons. Network progress, polling deadlines and permission-expiry
+close buttons. The shared toast provider also defaults to no automatic timeout;
+its standard notice list provides a visible **Dismiss** button. Network
+progress, polling deadlines and permission-expiry
 countdowns keep their existing behavior.
 
 ## Verification
+
+18 October follow-up: local QA room NAZLA8P4 kept its unread confirmation for
+43 seconds through background polling and a normal player-circle change.
+Continue removed only the notice; the same room stayed open and subsequent
+polls did not restore the notice. The screenshot and browser record are kept
+outside Git. No console errors; focused23/23 existing entry/notice/seat tests,
+types/lint and production build pass. The dedicated QA room is preserved.
+This is local evidence; deployed verification remains open.
+
 
 Browser QA uses dedicated rooms and a temporary local transport that delays the
 first response and can lose one successful create response. This verifies actual

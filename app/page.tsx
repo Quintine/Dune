@@ -4,6 +4,7 @@ import { TableTalk } from '@/components/table-talk';
 import { RemovedRoomNotice } from '@/components/removed-room-notice';
 import { GameTable } from '@/components/game-table';
 import { SeatConfirmation, type SeatConfirmationKind } from '@/components/seat-confirmation';
+import { RoomEntryConfirmation } from '@/components/room-entry-confirmation';
 import { RulesetControls } from '@/components/ruleset-controls';
 import {
   SeatHandoverSetup,
@@ -81,6 +82,7 @@ export default function Home() {
   const [code, setCode] = useState('');
   const [notice, setNotice] = useState('');
   const [seatConfirmation, setSeatConfirmation] = useState<SeatConfirmationKind | null>(null);
+  const [entryConfirmation, setEntryConfirmation] = useState<{ kind: 'create' | 'join'; code: string } | null>(null);
   const seatClaimUncertain = useRef(false);
   const [claimUncertain, setClaimUncertain] = useState(false);
   const pendingEntry = useRef<RoomEntryAttempt | null>(null);
@@ -406,6 +408,7 @@ export default function Home() {
       setNeedsReconcile(false);
       setShowEntryRecovery(false);
       setAbandonAcknowledged(false);
+      setEntryConfirmation({ kind: attempt.kind, code: data.code });
       setGame(data);
       window.history.replaceState(null, '', `/?room=${data.code}`);
     } catch (error) {
@@ -498,6 +501,7 @@ export default function Home() {
     setConnection('');
     setGame(null);
     setSeatConfirmation(null);
+    setEntryConfirmation(null);
     setRemovedRoom(null);
     setRestoreFailed(false);
     setNotice('');
@@ -639,6 +643,7 @@ export default function Home() {
     )
       return;
     if (claim) {
+      setEntryConfirmation(null);
       setSeatConfirmation(confirmation ?? null);
       setHandoverPending(true);
       setAiPermissionPending(true);
@@ -714,6 +719,9 @@ export default function Home() {
   if (game)
     return (
       <>
+        {entryConfirmation?.code === game.code && !roomUnavailable && <div className="table-shell">
+          <RoomEntryConfirmation {...entryConfirmation} onContinue={() => setEntryConfirmation(null)} />
+        </div>}
         {seatConfirmation && !roomUnavailable && <div className="table-shell">
           <SeatConfirmation kind={seatConfirmation} onContinue={() => setSeatConfirmation(null)} />
         </div>}

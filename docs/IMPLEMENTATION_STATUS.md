@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 18 October 2026 — Persistent room entry confirmations
+
+Successful create/join now shows the room code and concise invitation/seat
+protection guidance above the table until Continue. Polls and ordinary actions
+cannot replace this local acknowledgement. The shared toast provider defaults
+to no automatic dismissal and its standard list has a visible Dismiss button.
+Existing persistent recovery/action controls and concise first-request progress
+remain. Focused23/23, types/lint/build and a real local room creation pass:
+43-second retention, circle change, Continue and later polling, no browser
+console errors. QA room preserved; deployed acceptance remains open.
+See [readable notices](READABLE_NOTICES.md).
+
 ## 18 October 2026 — Classic independent World/Nexus
 
 Fresh classic independent36/World/Nexus now retains optional14 and original
