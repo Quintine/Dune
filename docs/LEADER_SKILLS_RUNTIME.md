@@ -7,6 +7,48 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Mixed BG Planetologist gather — 18 October 2026
+
+The actual checklist gap now has a connected prototype: mixed advisor/fighter
+origins entering an otherwise enemy-held territory declare one common fighter
+arrival before either group moves. Original native Karama may cancel that
+flip. Both source groups, spice, shipment and movement remain unchanged while
+waiting and after cancellation; the native flip stays blocked for the current
+movement opportunity. A legal non-flipping replacement remains available.
+Fresh advisors, ordinary route/range/occupancy and existing destination stances
+retain their rules. Old single-origin and ordinary flip windows keep their timing.
+
+This is an explicit [recommended provisional timing policy](PLANETOLOGIST_RULES.md#mixed-advisor-and-fighter-gather--18-october-2026),
+not a newly retrieved combined FAQ. The original response carries the exact
+living trainer and two-origin movement; its public current-slot block feeds
+shared human/bot quotes. No selected source, ordinary range or physical counter
+is replaced by a synthetic force. Existing game windows are not reopened.
+
+`tests/fixture-planetologist-advisor-gather.ts` reaches its source position
+through normal module/ready/start, actual training, paid Carthag shipping,
+Imperial Basin accompaniment and a later native movement turn. The only card
+positioning conserves one original Karama. Three meaningful consumer cases
+exercise advisor-first allowance, whole-declaration cancellation/replacement
+and an actual fresh arrival-turn lock. Old exclusion, wording and action-copy
+pins are deleted, not re-pinned.
+
+The related20-file **191/191**, types/lint/build pass. Actual original
+controllers produce Arrakeen2 fighters/one movement when allowed, or unchanged
+sources/zero movement plus one spent Karama when canceled; a normal fighter
+replacement leaves its original advisor behind. All four bot profiles submit
+legal actions; three choose mixed gathering into an empty destination, not the
+new contested-entry response. That is participation proof, not calibration.
+
+Actual390px GameTable proof uses the same original fixture and real engine
+actions in isolated memory, not staged stored rooms: select both sources,
+read the provisional warning, declare, allow/cancel with native controls,
+observe a blocked retry and perform the ordinary replacement. Fresh-advisor
+rejection also renders. No browser errors or root overflow; all owned QA
+memory/routes are released and the healthy existing dev server is reused.
+This is changed-surface proof, not normal HTTP/storage, deployed,
+complete-mode or deferred assurance acceptance.
+
+
 ## Native E3 Worlds with independent cards — 17 October 2026
 
 This supersedes the earlier17 October non-World E3 card boundary below.

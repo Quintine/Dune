@@ -97,7 +97,7 @@ import {
   fremenReserveEntry,
   guildTransportCost,
 } from './bot-mobility';
-import { planetologistMovementModeSupported, planetologistLeader } from './planetologist-movement';
+import { planetologistMovementModeSupported, planetologistLeader, planetologistGatherAdvisorEntry } from './planetologist-movement';
 import { quoteSandmasterStronghold, sandmasterDefaultChoice, sandmasterDestinationCollection } from './sandmaster-movement';
 import { sandmasterWormCollection } from './sandmaster-worm';
 import { richeseCardDefinition } from './richese-cards';
@@ -3681,13 +3681,7 @@ function policyActions(g: GameView): Action[] {
             b = gatherSources[second],
             aTerritory = splitLocation(a.from).territory,
             bTerritory = splitLocation(b.from).territory;
-          if (
-            aTerritory === bTerritory ||
-            (g.advanced &&
-              me.faction === 'beneGesserit' &&
-              isAdvisor(me, aTerritory) !== isAdvisor(me, bTerritory))
-          )
-            continue;
+          if (aTerritory === bTerritory) continue;
           for (const to of usefulTargets
             .filter(
               (target) =>
@@ -3709,10 +3703,13 @@ function policyActions(g: GameView): Action[] {
                 ),
             )
             .slice(0, 24)) {
+            const entry = planetologistGatherAdvisorEntry(g, me, [aTerritory, bTerritory], to.t);
+            if (entry.blocked) continue;
             groundMoves.push({
               action: {
                 type: 'move',
                 planetologist: 'gather',
+                ...(entry.requiresFlip ? { fighters: true } : {}),
                 forces: { [a.from]: a.amount, [b.from]: b.amount },
                 ...(me.elites
                   ? {

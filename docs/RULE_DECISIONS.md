@@ -1,6 +1,19 @@
 # Rule decision index
 
-Updated 17 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+Updated 18 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+
+## Recommended mixed Planetologist advisor gather — 18 October 2026
+
+The supplied authorized revision, physical28/logical26 and physical17/logical15,
+requires one BG stance and permits a native token-group flip counter, but gives
+no simultaneous mixed-origin gather order. Under choose-recommended, declare
+one common fighter arrival before either source moves. Allow revalidates and
+commits one ordinary movement; cancel preserves both original groups/postures,
+spice, shipment and movement, while blocking another flip for that movement
+opportunity. A legal non-flipping replacement remains. Fresh advisors still
+cannot flip; existing destination stances and ordinary windows remain.
+This is explicit provisional composition, not a new publisher FAQ/user number.
+[Detailed authority, timing and limits](PLANETOLOGIST_RULES.md#mixed-advisor-and-fighter-gather--18-october-2026).
 
 ## Physical Traitor roles — 15 October 2026
 

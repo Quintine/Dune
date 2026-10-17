@@ -6,6 +6,7 @@ import {
   planetologistLeader,
   planetologistMovementModeSupported,
   selectedOriginElites,
+  planetologistGatherAdvisorEntry,
   type PlanetologistMoveMode,
 } from '@/game/planetologist-movement';
 import { botGroundMoveAllowed } from '@/game/bot-mobility';
@@ -15,8 +16,6 @@ import {
   splitLocation,
   territory,
 } from '@/game/board';
-import { isAdvisor } from '@/game/advisors';
-import { presenceAt } from '@/game/force-presence';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
@@ -76,20 +75,8 @@ export function planetologistMoveDraft(
           ? 'Select forces from one territory.'
           : 'Select forces from exactly two different territories.',
     };
-  if (
-    game.advanced &&
-    me.faction === 'beneGesserit' &&
-    new Set([...origins].map((origin) => isAdvisor(me, origin))).size > 1 &&
-    !presenceAt(me, destination) &&
-    game.players.some(
-      (player) => player.id !== me.id && presenceAt(player, destination),
-    )
-  )
-    return {
-      action: null,
-      blocked:
-        'Gathering advisors and fighters into an enemy-only territory is still being implemented.',
-    };
+  const entry = planetologistGatherAdvisorEntry(game, me, [...origins], destination);
+  if (entry.blocked) return { action: null, blocked: entry.blocked };
   const target = location(destination, sector);
   if (
     selected.some(
@@ -109,6 +96,7 @@ export function planetologistMoveDraft(
     action: {
       type: 'move',
       planetologist: mode,
+      ...(entry.requiresFlip ? { fighters: true } : {}),
       forces: Object.fromEntries(selected),
       ...(me.elites
         ? {
@@ -196,6 +184,14 @@ export function PlanetologistMovement({
         Destination: {territory(destination).name}, sector {sector}. Select the
         physical forces to move below.
       </p>
+      {draft.action?.fighters === true && (
+        <p className="notice">
+          Provisional mixed-gather policy: both groups arrive as fighters. The
+          advisor flip is declared before either group moves. If canceled, both
+          groups stay in place and no movement is spent; flipping remains blocked
+          for that movement opportunity.
+        </p>
+      )}
       {me.faction === 'ixians' && (
         <p className="fine">
           Each origin uses its own selected cyborgs for movement range. Cyborgs

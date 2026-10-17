@@ -15,7 +15,7 @@ import {
   MOBILE_STRONGHOLD,
 } from './board';
 import { presenceAt } from './force-presence';
-import { planetologistLeader } from './planetologist-movement';
+import { planetologistLeader, planetologistGatherAdvisorEntry } from './planetologist-movement';
 import { validateAmbassadors } from './ecaz-ambassadors';
 import {
   homeworldMobileStrongholdMovementBlock,
@@ -53,7 +53,8 @@ export type MovementCancellationQuote =
         | 'advisorBattle'
         | 'movementTurn'
         | 'discoveryEntry'
-        | 'ambassador';
+        | 'ambassador'
+        | 'planetologistGather';
     };
 
 function sectorKey(g: Game, value: unknown): value is string {
@@ -87,6 +88,7 @@ function movementDeclaration(
   g: Game,
   response: ResponseWindow,
   move: Move | null | undefined,
+  territoryOnly = false,
 ) {
   const owner = g.players.find((p) => p.id === response.owner)!;
   requireContext(
@@ -97,7 +99,7 @@ function movementDeclaration(
       move.player === owner.id &&
       sectorKey(g, location(move.to, move.sector)) &&
       territoryId(g, move.origin) &&
-      response.location === location(move.to, move.sector) &&
+      response.location === (territoryOnly ? move.to : location(move.to, move.sector)) &&
       response.amount === move.total &&
       integer(move.total) &&
       move.total > 0 &&
@@ -421,9 +423,28 @@ export function quoteMovementCancellation(
         response.advisorResume === 'declaration' ||
         response.advisorResume === 'wormRide' ||
         response.advisorResume === 'discoveryEntry' ||
+        response.advisorResume === 'planetologistGather' ||
         response.advisorResume === 'ambassador'),
     'This advisor cancellation has no valid owner, territory or continuation.',
   );
+  if (response.advisorResume === 'planetologistGather') {
+    const pending = response.advisorGatherMove;
+    requireContext(pending && record(pending) && pending.turn === g.turn &&
+      pending.move === owner.moved && pending.order?.planetologist?.mode === 'gather' &&
+      response.advisors === false && pending.order.advisors === false &&
+      pending.order.wantsFighters === false && response.advisorFollowup === undefined &&
+      response.advisorRemaining === undefined && response.advisorAmbassadorEvent === undefined &&
+      response.discoveryEntry === undefined,
+      'The mixed advisor gather has lost its original movement and flip declaration.');
+    movementDeclaration(g, response, pending.order, true);
+    const entry = planetologistGatherAdvisorEntry(g, owner, pending.order.origins!, pending.order.to);
+    requireContext(entry.requiresFlip && !entry.blocked &&
+      pending.order.group.every(([key, count]) => count <= (owner.forces[key] ?? 0)),
+      entry.blocked ?? 'The mixed advisor gather no longer matches its original physical groups.');
+    return { kind: 'advisorFlip', successor: 'planetologistGather' };
+  }
+  requireContext(response.advisorGatherMove === undefined,
+    'Only the declared Planetologist gather may carry its original movement.');
   if (response.advisorResume === 'discoveryEntry') {
     requireContext(g.phase === 0 && g.discoveryEnabled && g.discoveries && g.discoveryEntry &&
       response.discoveryEntry && response.advisors === true &&

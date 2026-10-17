@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 17 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 18 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable. Advanced, expansion-faction and supported optional-module starts
 are labelled previews; complete rules/publication acceptance remains gated.**
 
@@ -28,6 +28,28 @@ This is not complete-mode acceptance: exceptional custody, timing variants,
 optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
+
+**Planetologist mixed advisor gather — 18 October. Prototyped / Partial.**
+A genuine turn-two Carthag fighter plus older Imperial Basin advisor reproduced
+the enemy-Arrakeen guard despite ordinary city range. The explicit recommended
+policy now declares one common fighter arrival before either source moves.
+One native flip response carries the exact movement; allow commits once,
+cancel leaves both groups/postures, spice, shipment and movement unchanged.
+The current movement’s flip block prevents an immediate bypass; a legal
+fighter-only replacement works. Fresh-advisor locks and original range,
+occupancy, uniform/determined stances and old windows remain.
+
+Related20-file **191/191**, types/lint/build and genuine controller programmes
+pass. Original normal setup/shipments/accompaniment supply three regressions;
+the only positioned card is one conserved original Karama. Four bot profiles
+submit legal actions; three use mixed gathering into an empty destination,
+not the new contested response. Actual390px GameTable controls execute the
+declaration, native Allow/Cancel, blocked retry, ordinary replacement and fresh
+lock against real engine actions in isolated memory, with no errors/overflow.
+Owned QA routes/memory are released; no stored room/DB change or dev restart.
+This is local changed-surface proof, not deployed, full-mode, calibrated AI or
+deferred assurance acceptance.
+[Source, provisional policy and current evidence](PLANETOLOGIST_RULES.md#mixed-advisor-and-fighter-gather--18-october-2026).
 
 **Native E3 World Skills/cards — 17 October.** Fourteen of18 original normal
 World/phase starts rejected before; all18 now start. Standalone/paired

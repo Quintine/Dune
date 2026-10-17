@@ -97,7 +97,7 @@ import { NexusHarkonnenBetrayal } from './nexus-harkonnen-betrayal';
 import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
 import { PlanetologistMovement } from './planetologist-movement';
-import { selectedOriginElites } from '@/game/planetologist-movement';
+import { selectedOriginElites, advisorFlipMovementBlocked } from '@/game/planetologist-movement';
 import { SandmasterMovement } from './sandmaster-movement';
 import { SandmasterWormChoice } from './sandmaster-worm';
 import { sandmasterWormCollection } from '@/game/sandmaster-worm';
@@ -796,6 +796,7 @@ export function GameTable({
     sector,
     ...(includesNoField ? {} : { amount }),
   };
+  const advisorFlipRouteBlocked = ordinaryMovementAction.fighters === true && advisorFlipMovementBlocked(g, me);
   const transportAction: Action = {
     type: 'guildShip',
     ...(useGuildSecret ? {nexus: guildSecretEvent} : {}),
@@ -2581,6 +2582,14 @@ export function GameTable({
                   The Richese Ambassador purchase is already paid and its card
                   has been drawn. Canceling this benefit leaves that purchase
                   unchanged.
+                </p>
+              )}
+              {g.response.kind === 'advisorFlip' && g.response.advisorResume === 'planetologistGather' && (
+                <p className="notice">
+                  Provisional mixed Planetologist gather: allow one common fighter
+                  arrival before either group moves, or cancel the native advisor
+                  flip. Cancellation keeps both groups and the movement allowance
+                  unchanged, with flipping blocked for that movement opportunity.
                 </p>
               )}
               {g.response.kind === 'nexusGuildCunning' && <p className="notice">
@@ -4792,6 +4801,12 @@ export function GameTable({
                           territory
                         </label>
                       )}
+                    {advisorFlipRouteBlocked && (
+                      <p className="notice" id="movement-advisor-flip-unavailable">
+                        Advisor flipping was canceled for this movement. Turn off
+                        the fighter request or choose a group that is already fighting.
+                      </p>
+                    )}
                     {!g.ornithopter?.active && (
                       <>
                         {actionButton(
@@ -4802,18 +4817,21 @@ export function GameTable({
                           !source ||
                             canceledFremenRouteBlocked ||
                             ordinaryMovementRouteBlocked ||
+                            advisorFlipRouteBlocked ||
                             selectedDestinationInStorm ||
                             (me.moved ?? 0) >= (me.movesAllowed ?? 1) ||
                             (includesNoField
                               ? !validMarkerGroup
                               : (me.forces[source] ?? 0) === 0),
-                          selectedDestinationInStorm
-                            ? 'movement-storm-unavailable'
-                            : ordinaryMovementRouteBlocked
-                              ? 'movement-route-unavailable'
-                              : canceledFremenRouteBlocked
-                                ? 'movement-range-unavailable'
-                                : undefined,
+                          advisorFlipRouteBlocked
+                            ? 'movement-advisor-flip-unavailable'
+                            : selectedDestinationInStorm
+                              ? 'movement-storm-unavailable'
+                              : ordinaryMovementRouteBlocked
+                                ? 'movement-route-unavailable'
+                                : canceledFremenRouteBlocked
+                                  ? 'movement-range-unavailable'
+                                  : undefined,
                         )}
                         {canceledFremenRouteBlocked &&
                           !selectedDestinationInStorm && (
@@ -4879,6 +4897,7 @@ export function GameTable({
                       move={
                         !source ||
                         !movementAvailable ||
+                        advisorFlipRouteBlocked ||
                         (me.moved ?? 0) >= (me.movesAllowed ?? 1) ||
                         (includesNoField
                           ? !validMarkerGroup
@@ -4901,7 +4920,7 @@ export function GameTable({
                       act={act}
                       busy={busy}
                       move={
-                        !source || !movementAvailable ||
+                        !source || !movementAvailable || advisorFlipRouteBlocked ||
                         (includesNoField ? !validMarkerGroup : (me.forces[source] ?? 0) === 0)
                           ? null
                           : {

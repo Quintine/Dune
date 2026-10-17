@@ -380,12 +380,6 @@ void test('Bene Gesserit gather resolves determined mixed-source stances and pre
     assert.equal(next.players[0].forces[second], 1);
     custody(next);
   }
-  const mixed = fixture('beneGesserit', true);
-  const { a, first, to } = gather(mixed);
-  mixed.players[0].advisors = { [splitLocation(first).territory]: {} };
-  mixed.players[1].forces = { [first]: 1, [to]: 1 };
-  mixed.players[1].reserves = 18;
-  unchanged(mixed, a, /combined flip response/);
   const uniform = fixture('beneGesserit', true);
   const draft = gather(uniform);
   uniform.players[0].advisors = {

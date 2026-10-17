@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 18 October 2026 — Mixed Bene Gesserit Planetologist gather
+
+An original turn-two Carthag fighter plus older Imperial Basin advisor cannot
+gather into enemy Arrakeen before this change. Source requires one stance and
+allows native flip cancellation but gives no simultaneous mixed-origin order.
+Under choose-recommended, the explicitly provisional common-fighter gather
+declares one native flip before either source moves.
+
+The response carries exact original trainer/groups/turn/movement. Allow
+revalidates and commits one movement; one original Karama cancellation keeps
+both sources/postures, spice, shipment and movement unchanged. A current-slot
+native flip stamp prevents immediate replay while a fighter-only replacement
+remains legal. Fresh advisors, existing destination stances and old ordinary
+flip windows retain their rules. Shared controls/bot candidates use the quote;
+wording, action-copy and obsolete software-exclusion pins are removed.
+
+Related20-file **191/191**, types/lint/build and actual controllers pass. Three new
+meaningful regressions use genuine normal setup and native shipments/
+accompaniment, with one labelled original Karama input. All four policies act
+legally; three mixed gathers reach empty destinations, not the contested flip
+window. Actual390px GameTable controls execute declaration, native Allow/
+Cancel, blocked retry, ordinary replacement and fresh lock against the real
+engine in isolated memory with no browser errors/overflow. Owned routes/memory
+are removed, without any stored-room/DB mutation or dev restart. Shared movement
+types avoid a recursive inferred GameView dependency. No full-mode, deployed,
+calibration or deferred assurance claim.
+[Detailed authority and interpretation](PLANETOLOGIST_RULES.md#mixed-advisor-and-fighter-gather--18-october-2026),
+[runtime scope](LEADER_SKILLS_RUNTIME.md#mixed-bg-planetologist-gather--18-october-2026).
+
 ## 17 October 2026 — Native E3 World Skills/cards
 
 Fourteen of18 normal World/phase starts rejected before; all18 now start.

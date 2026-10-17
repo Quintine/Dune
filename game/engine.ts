@@ -18,7 +18,7 @@ import { quoteTleilaxuAmbassadorForces, TleilaxuAmbassadorForceError } from './t
 import { tleilaxuAmbassadorLeaderChoices, tleilaxuAmbassadorLeaderSelection } from './tleilaxu-ambassador-leaders';
 import { leaderSkillStrongholdCount, sandmasterVictorySpice, sandmasterVictoryPiles, type SandmasterVictorySpiceOffer } from './leader-skill-battle-board';
 import { beginRihani, chooseRihaniDraw, finishRihani, validateRihani, type RihaniReceipt, type RihaniSkill } from './rihani-decipherer';
-import { planetologistMovementModeSupported, planetologistLeader, planetologistRange, selectedOriginElites, groundMovementRange, type PlanetologistMovement } from './planetologist-movement';
+import { planetologistMovementModeSupported, planetologistLeader, planetologistRange, selectedOriginElites, groundMovementRange, planetologistGatherAdvisorEntry, advisorFlipMovementBlocked, type PlanetologistMovement } from './planetologist-movement';
 import { quoteSmugglerNoField, smugglerNoFieldModeSupported, type SmugglerNoFieldCompanion } from './smuggler-no-field';
 import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
 import { createSmugglerBattle, settleSmugglerBattle, smugglerBattleModeSupported, smugglerBattlePlanBlock, smugglerBattlePile, smugglerBattleSignature, smugglerBattleAllocationRequired, chooseSmugglerBattleAllocation, type SmugglerBattleReceipt, type SmugglerBattleCollectionOffer } from './smuggler-battle';
@@ -642,6 +642,7 @@ export type Player = {
   gholaBlocked?: Record<string, number>;
   ixMovementBlocked?: { turn: number; move: number };
   fremenMovementBlocked?: { turn: number; move: number };
+  advisorFlipMovementBlocked?: { turn: number; move: number };
   fremenNexusMovementBlockedTurn?: number;
   fremenNexusWormBlockedTurn?: number;
   /** Permanent printed one-card reduction after Atomics; bound to its Aftermath receipt. */
@@ -1032,7 +1033,8 @@ export type ResponseWindow = {
   /** Saved exact ordinary Guild-rate response; not the independent Karama rate. */
   guildRateEvent?: string;
   guildTransportEvent?: string;
-  advisorResume?: 'wormRide' | 'declaration' | 'ambassador' | 'discoveryEntry';
+  advisorResume?: 'wormRide' | 'declaration' | 'ambassador' | 'discoveryEntry' | 'planetologistGather';
+  advisorGatherMove?: { turn: number; move: number; order: MovementOrder };
   discoveryEntry?: DiscoveryEntryArrivalChild;
   advisorAmbassadorEvent?: string;
   advisorRemaining?: string[];
@@ -8481,7 +8483,8 @@ function requireFreshSetup(g: Game, allowIxElites = false) {
       !p.specialKaramaUsed && p.kwisatz === undefined && p.charityTurn === undefined &&
       p.noField === undefined && p.noFieldEvent === undefined && p.noFieldBlockedTurn === undefined &&
       p.advisors === undefined && p.gholaBlocked === undefined && p.ixMovementBlocked === undefined &&
-      p.fremenMovementBlocked === undefined && p.fremenNexusMovementBlockedTurn === undefined &&
+      p.fremenMovementBlocked === undefined && p.advisorFlipMovementBlocked === undefined &&
+      p.fremenNexusMovementBlockedTurn === undefined &&
       p.fremenNexusWormBlockedTurn === undefined &&
       p.atomicsHandLimitPenalty === undefined && p.tupileHandSlot === undefined && p.faceDancers === undefined &&
       p.faceDancerReplacedTurn === undefined && p.revealedTraitors === undefined;
@@ -15623,20 +15626,22 @@ function movementOrigins(move: Pick<MovementOrder, 'origin' | 'origins'>): strin
   return move.origins ?? [move.origin];
 }
 function movementStance(g: Game, p: Player, origins: string[], to: string, fighters: boolean) {
-  requireRule(!g.advanced || p.faction !== 'beneGesserit' ||
-    at(p, to) > 0 || !g.players.some(other => other.id !== p.id && at(other, to)) ||
-    origins.every(origin => isAdvisor(p, origin) === isAdvisor(p, origins[0])),
-    'Gathering advisors and fighters into an enemy-only territory still needs the combined flip response. Choose sources with the same stance or a destination with a determined stance.');
-  const advisors = arrivalAsAdvisor(g, p, to, origins[0]);
+  const gather = planetologistGatherAdvisorEntry(g, p, origins, to);
+  requireRule(!gather.blocked, gather.blocked ?? 'The mixed gather cannot flip its advisors.');
+  requireRule(!gather.requiresFlip || fighters,
+    'Declare a common fighter arrival for a mixed advisor/fighter gather.');
+  const advisors = !gather.requiresFlip && arrivalAsAdvisor(g, p, to, origins[0]);
   const lockedTurn = Math.max(0, ...origins.map(origin => p.advisors?.[origin]?.lockedTurn ?? 0)) || undefined;
   requireRule(advisors || lockedTurn !== g.turn ||
     !g.players.some(other => other.id !== p.id && at(other, to)),
     'New advisors cannot become fighters this turn.');
   const wantsFighters = advisors && fighters;
+  requireRule(!wantsFighters || !advisorFlipMovementBlocked(g, p),
+    'Advisor flipping was canceled for this movement. Choose a legal replacement without flipping advisors.');
   requireRule(!wantsFighters || (lockedTurn !== g.turn && !at(p, to) &&
     (!(p.ally && at(getPlayer(g, p.ally), to)) || sharesEcazOccupation(g, p, to))),
     'These advisors cannot flip to fighters on arrival.');
-  return {advisors, lockedTurn, wantsFighters};
+  return {advisors, lockedTurn, wantsFighters, advisorGather: gather.requiresFlip};
 }
 function validateFlightSelection(g: Game, p: Player, move: MovementOrder) {
   if (move.discoveryFlight)
@@ -15772,7 +15777,8 @@ function validateMovementOrder(g: Game, p: Player, move: MovementOrder) {
     'The declared force group no longer matches its movement.',
   );
   if (move.planetologist) {
-    const stance = movementStance(g, p, selected.origins, move.to, move.wantsFighters);
+    const stance = movementStance(g, p, selected.origins, move.to, move.wantsFighters ||
+      planetologistGatherAdvisorEntry(g, p, selected.origins, move.to).requiresFlip);
     requireRule(stance.advisors === move.advisors && stance.wantsFighters === move.wantsFighters &&
       stance.lockedTurn === move.lockedTurn, 'The declared Planetologist arrival stance is no longer current.');
   }
@@ -19452,7 +19458,7 @@ function beginAdvisorBattle(g: Game, remaining = advisorBattleOptions(g)) {
 function finishAdvisorReaction(
   g: Game,
   details: {
-    advisorResume?: 'wormRide' | 'declaration' | 'ambassador' | 'discoveryEntry';
+    advisorResume?: ResponseWindow['advisorResume'];
     discoveryEntry?: DiscoveryEntryArrivalChild;
     advisorAmbassadorEvent?: string;
     advisorRemaining?: string[];
@@ -26271,19 +26277,31 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
         response.charityHomeworld ?? 0,
       );
   } else if (response.kind === 'advisorFlip') {
-    if (canceled) movementCancellationQuote(g, response);
-    const bg = getPlayer(g, response.owner),
-      to = response.location!;
-    if (!canceled) {
-      bg.advisors ??= {};
-      if (response.advisors) bg.advisors[to] = {};
-      else delete bg.advisors[to];
-      log(
-        g,
-        `${bg.name} changed all forces in ${territory(to).name} to ${response.advisors ? 'advisors' : 'fighters'}.`,
-      );
+    const bg = getPlayer(g, response.owner);
+    if (response.advisorResume === 'planetologistGather') {
+      movementCancellationQuote(g, response);
+      const pending = response.advisorGatherMove!;
+      if (canceled) {
+        bg.advisorFlipMovementBlocked = { turn: pending.turn, move: pending.move };
+        log(g, `${bg.name}'s mixed advisor/fighter gather was canceled before movement. Both groups remain in place and no movement was spent; advisor flipping is blocked for this movement opportunity.`);
+      } else {
+        validateMovementOrder(g, bg, pending.order);
+        completeMove(g, pending.order);
+      }
+    } else {
+      if (canceled) movementCancellationQuote(g, response);
+      const to = response.location!;
+      if (!canceled) {
+        bg.advisors ??= {};
+        if (response.advisors) bg.advisors[to] = {};
+        else delete bg.advisors[to];
+        log(
+          g,
+          `${bg.name} changed all forces in ${territory(to).name} to ${response.advisors ? 'advisors' : 'fighters'}.`,
+        );
+      }
+      finishAdvisorReaction(g, response);
     }
-    finishAdvisorReaction(g, response);
   } else if (response.kind === 'capture') {
     const capture = g.pendingCapture!;
     g.pendingCapture = null;
@@ -33676,7 +33694,7 @@ function applyActionInner(
     } = forceGroup(g, p, action, planetologist?.mode === 'gather' ? 2 : 1);
     const to = stringField(action.territory),
       s = integer(action.sector, 0, 18, 'Sector');
-    const {advisors, lockedTurn, wantsFighters} = movementStance(g, p, origins, to, action.fighters === true);
+    const {advisors, lockedTurn, wantsFighters, advisorGather} = movementStance(g, p, origins, to, action.fighters === true);
     requireRule(
       origins.every(source => !balisetPrevents(g, id, source, to)),
       'Baliset prevents movement into this CHOAM territory; shipment remains possible.',
@@ -33784,7 +33802,12 @@ function applyActionInner(
         : `That destination is blocked or more than ${speed} territories away.`,
     );
     validateFlightSelection(g, p, move);
-    if (
+    if (advisorGather) {
+      g.response = {
+        kind: 'advisorFlip', owner: id, location: to, advisors: false, amount: n, passed: [],
+        advisorResume: 'planetologistGather', advisorGatherMove: { turn: g.turn, move: p.moved, order: move },
+      };
+    } else if (
       !move.ornithopterRange && !move.discoveryFlight &&
       p.faction === 'ixians' &&
       elite > 0 &&
@@ -35167,6 +35190,7 @@ export function viewGame(state: Game, id: string) {
       ixMovementBlocked:
         p.ixMovementBlocked?.turn === g.turn &&
         p.ixMovementBlocked.move === p.moved,
+      advisorFlipMovementBlocked: advisorFlipMovementBlocked(g, p),
       revealedTraitors: p.revealedTraitors ?? [],
       revealedFaceDancers: (p.faceDancers ?? [])
         .filter((c) => c.revealed)

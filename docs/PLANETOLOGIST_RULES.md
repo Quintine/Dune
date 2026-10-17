@@ -1,6 +1,6 @@
 # Planetologist rule contract
 
-Updated 13 September 2026. This note audits the movement and battle effects of the
+Updated 18 October 2026. This note audits the movement and battle effects of the
 Planetologist Leader Skill against its physical card, the common Leader Skills
 rules, the GF9 base battle rules and designer Jack Reda's walkthrough. The connected prototype is described below; other Leader Skill effects remain separate work.
 
@@ -169,15 +169,46 @@ retains that response, with both origins saved and revalidated before continuati
 This applies the [existing cancellation contract](FREMEN_MOVEMENT_KARAMA_RULES.md),
 not a new phase-wide restriction or an automatic shortened destination.
 
-The [November 2020 FAQ, p. 4](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf)
-and [base rules, p. 18](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf)
-determine a common Bene Gesserit arrival stance when no other faction is present,
-or when existing BG forces determine the stance. The prototype supports mixed
-advisor/fighter origins in those cases, and uniform origins generally. Source
-advisor locks carry forward. Mixed origins entering an enemy-only territory need
-a combined advisor-flip/cancellation continuation and remain explicitly guarded;
-this is an implementation gap, not a rule that forbids every mixed move. No source
-was found granting a chosen group order that makes fighters arrive as advisors.
+### Mixed advisor and fighter gather — 18 October 2026
+
+The earlier [November FAQ](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf)
+and [base rules](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf)
+review supplies the original determined-destination stance. The authorized
+local revision `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf`, physical28 /
+logical26, likewise requires one BG stance per territory, matching existing
+BG forces, and permits moved advisors to flip in an otherwise enemy-held
+territory. Physical17 / logical15 permits Karama against one token-group
+flip; physical16 / logical14 permits a legal modified action after cancellation.
+The current publisher FAQ URL redirects rather than returning that PDF;
+no fresh web summary substitutes for the authorized local text.
+
+Neither examined passage specifies an arrival order for a simultaneous mixed
+Planetologist gather. Under the standing choose-recommended instruction,
+the prototype adopts an explicit **common-fighter, precommit flip** policy:
+
+- With no existing BG group and another faction present, mixed origins require
+  a declared fighter arrival. Before either group moves, open one original
+  native advisor-flip response. This grants no chosen order that turns incoming
+  fighters into advisors.
+- Allowing revalidates the living original trainer, both groups, ordinary
+  ranges and destination, then moves them together as fighters for one
+  movement. Source positions and usage remain unchanged while the response waits.
+- Canceling spends the original counter, leaves both groups and their postures
+  untouched and spends no movement or shipment. A turn/movement stamp prevents
+  repeating the canceled flip for the same opportunity. A legal replacement
+  without that flip remains available; this is not a phase-wide movement ban.
+- Fresh accompanying advisors still cannot become fighters that turn. Empty
+  destinations and an existing BG destination group retain their original
+  compulsory common stance. Uniform origins and already-opened ordinary
+  flip windows keep their existing timing.
+
+This is visibly provisional product composition, not a retrieved combined
+FAQ or a separately answered numerical ruling. The shared quote drives the
+engine, human gather control and legal bot candidates. The exact original
+movement is carried by the native response; no counters or private cards are
+duplicated. Original normal-lobby setup, paid Carthag shipment and Imperial
+Basin accompaniment produce a genuine source-bound regression position.
+
 
 The runtime now follows the [shared native skill profiles](LEADER_SKILLS_RUNTIME.md),
 including per-origin Ixian cyborg range and its independent cancellation window.
@@ -197,6 +228,25 @@ The weapon selector exposes eligible Specials only for the selected skilled lead
 and explains +2 and mandatory discard. Bot candidates use that same eligibility and
 pair validation. This is a connected prototype with partial combination coverage,
 not complete Leader Skills compliance or a publication gate.
+
+## Changed-path evidence — 18 October 2026
+
+Related20-file191/191 and types/lint/build pass. Original controllers and three
+source-bound regressions cover common-fighter allowance before either source
+moves, one-Karama whole-gather cancellation, a blocked immediate retry, a
+legal fighter-only replacement and a fresh accompanying-advisor rejection.
+The actual normal lobby/shipments/turns are not fabricated; one original
+Karama is conserved from its deck and labelled, not called a natural purchase.
+
+Actual390px GameTable source counts, provisional notice, native Allow/Cancel,
+disabled retry/reason, ordinary replacement and fresh lock render and execute
+against real engine actions in isolated memory, with no errors/root overflow.
+Owned routes/memory are removed, with no stored room/DB change or dev restart.
+Four legal bot-policy programmes include three mixed gathers into empty
+destinations; they do not exercise the new contested response or certify
+calibrated strategy. Compiler/lint and checkpoint evidence are recorded in
+[current status](CURRENT_STATUS.md) and [runtime scope](LEADER_SKILLS_RUNTIME.md#mixed-bg-planetologist-gather--18-october-2026).
+No full-mode, combination, deployed or deferred assurance claim follows.
 
 ## Verification evidence, 13 September 2026
 
