@@ -7,6 +7,24 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Classic independent Nexus composition — 18 October 2026
+
+Fresh classic2–6 Basic/Advanced all14 may now select independent36 plus
+original Nexus12 without any other overlay. One public configuration
+predicate joins the original initializers and effect quotes; native offers,
+starting-card-before-training order and mandatory normal Banker remain.
+An unused expansion selection is not part of this entry. Native selected
+families, World/phase/Discovery/Semuta and reaction-preview envelopes retain
+their existing separate limits; no played save is converted.
+
+Actual normal module selection completes original training and first Storm.
+Real Nexus draws then exercise Recruits/fixed Tleilaxu revival, a selected
+ordinary bank purchase and native Cunning with separate Reinforcements fees
+and Harass returns. Frozen25-file249/249, types/lint/build, three390px
+surfaces and four legal all14 policies pass. Broader effect bounds, full
+combinations, strategy, deferred assurance and deployed acceptance stay open.
+[Exact source, native quantities and proof](NEXUS_CARD_RULES.md#classic-independent-treachery-composition--18-october-2026).
+
 ## Provisional paid Richese retention — 18 October 2026
 
 Positive Black Market seller wins now retain the same held card/order and pay

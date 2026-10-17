@@ -121,15 +121,13 @@ void test('only the host can select a boolean rules mode, changes clear human re
   completedSetup(act(ready(game), game.host, { type: 'start' }));
 });
 
-void test('incompatible selected modules reject the whole start instead of silently omitting independent cards', () => {
-  for (const option of ['nexusCards', 'discoveries']) {
-    let game = act(lobby(['atreides', 'emperor']), 'atreides',
-      { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
-    game = act(game, game.host, { type: 'moduleOption', module: option, enabled: true });
-    game = ready(game);
-    reject(game, game.host, { type: 'start' });
-    assert.ok(game.players.every(p => !p.hand.length && !p.traitors.length));
-  }
+void test('unsupported independent cards and Discovery reject the whole start without silently dropping a module', () => {
+  let game = act(lobby(['atreides', 'emperor']), 'atreides',
+    { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
+  game = act(game, game.host, { type: 'moduleOption', module: 'discoveries', enabled: true });
+  game = ready(game);
+  reject(game, game.host, { type: 'start' });
+  assert.ok(game.players.every(p => !p.hand.length && !p.traitors.length));
 });
 
 void test('Advanced starts require the exact host opt-in and cannot dispatch audit initializers or hidden bypass options', () => {

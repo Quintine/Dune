@@ -1,6 +1,7 @@
 import type { Game, Player } from './engine';
 import { eliteRevivalRemaining, revivalPrevented } from './revival';
 import { FACTIONS } from './catalog';
+import { classicIndependentNexusProfile } from './faction-module-profile';
 import {
   classicNexusModulesProfile,
   pairedNexusModulesProfile,
@@ -205,6 +206,7 @@ export function validateEmperorNexusRevival(
 
 /** Reuse original fresh roster/module predicates, independently of purchase admission. */
 function revivalModeSupported(g: Game): boolean {
+  if (classicIndependentNexusProfile(g)) return true;
   if (g.semutaPreview || g.advancedPreview || g.kullPreview || g.nexusKullPreview ||
     g.guildBetrayalPreview || g.richeseBetrayalPreview || g.nexusIxianReplacementPreview ||
     g.nexusIxianBetrayalPreview || g.nexusHarkonnenBetrayalPreview || g.ecazTreachery)

@@ -18,6 +18,7 @@ import type { RicheseAuction } from './richese-auction';
 import { quoteRicheseSettlement, type RicheseSettlementQuote } from './richese-settlement';
 import { quoteRicheseBetrayalInvoice } from './nexus-richese-betrayal';
 import { RICHESE_CARD_DEFINITIONS, richeseCardDefinition } from './richese-cards';
+import { classicIndependentNexusProfile } from './faction-module-profile';
 
 export type EmperorNexusBankPurchase = {
   kind: 'purchase';
@@ -380,6 +381,8 @@ function nativeBankNexusProfile(g: Game): boolean {
  * with the Emperor absent, the concealed face and any buyer wallet or hand left
  * to the caller. */
 export function emperorNexusBankPurchaseModeSupported(g: Game): boolean {
+  if (classicIndependentNexusProfile(g))
+    return !g.players.some(p => p.faction === 'emperor') && !g.sandtrout;
   if (!g.nexusCards || g.players.some(p => p.faction === 'emperor') ||
     g.ecazTreachery || g.sandtrout) return false;
   return emperorNexusLegacyRevivalModeSupported(g) || nativeBankNexusProfile(g);

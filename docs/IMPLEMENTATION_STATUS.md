@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 18 October 2026 — Classic independent Treachery and Nexus
+
+Original normal classic3 independent+Nexus start rejected unchanged. One public
+configuration predicate now composes fresh classic2–6 Basic/Advanced36/12,
+optionally all14; original setup/deal/training and effect consumers remain.
+No selected expansion families, World/phase/Discovery/Semuta or extra reaction
+preview is admitted by this entry. Unsupported normal starts still retain flags
+and reject unchanged. No played game is reflagged.
+
+Actual original Recruits/fixed Tleilaxu5/free2 revival, selected bank-card
+purchase and native Emperor Cunning with three-reserve Reinforcements fees
+and physical Harass returns are connected. Native cancellation and Basic
+power rejection retain card spending/support/loss behavior. The producer
+orders unused original lotteries before original all14 starting deals and
+reserves requested future slots; it stages no played hand, force or death.
+
+Frozen25-file **249/249**, types, final lint and build pass. Initial248/249
+exposed a legacy paired Reinforcements helper stopping at a real Moritani
+assassination choice; it now submits the original decline before custody
+checks. The obsolete exact log-wording pin is removed. Initial lint found
+a reserved fixture variable name; renaming it clears the actual lint error.
+
+Three actual390px surfaces pass: normal lobby through all14 training/Storm,
+Recruits paid5/free leader plus ordinary free2 into Shipment, and paid native
+Cunning/Reinforcements/Harass through original inspection into Collection.
+No errors/overflow. Four legal all14 policies perform575 actions/12 battles;
+this is not calibration or full-combination proof. Temporary routes/memory
+are removed/released204 and the dedicated normal QA room is preserved.
+No reset/restart/deployment; existing build warnings remain. Other effect
+bounds, full modes and deferred assurance remain open.
+[Canonical source and quantities](NEXUS_CARD_RULES.md#classic-independent-treachery-composition--18-october-2026).
+
 ## 18 October 2026 — Provisional paid Black Market retention
 
 Original funded seller bid1 rejected unchanged. Under standing choose-recommended

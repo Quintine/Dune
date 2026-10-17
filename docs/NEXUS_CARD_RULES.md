@@ -2,6 +2,57 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Classic independent Treachery composition — 18 October 2026
+
+**Prototyped / Partial.** Publisher E3 pp4/9/11 permits the three-card
+variant and original twelve Nexus Cards independently of other variants and
+faction selection. Fresh classic two-through-six-seat Basic/Advanced lobbies
+now compose independent36/Nexus12, optionally all14 Skills. No new numeric
+rule is introduced. Native selected families, Worlds, Tech/Strongholds,
+Discoveries, Semuta and extra reaction-preview envelopes remain outside this
+entry; original no-independent-card entries retain their own bounds.
+
+`classicIndependentNexusProfile` is the shared public configuration predicate.
+Original initializers still own physical inventories, skill offers, starting
+hands and setup order. All14 starts deal their original starting cards before
+training completes. The shared producer orders only unused original lottery
+inputs, reserving all requested future slots; it never replaces a played hand,
+reflags a played game or assigns a held Nexus face. A real turn-two worm,
+reciprocal alliance and unallied closing draw supply the exercised cards.
+
+- Native Recruits doubles the ordinary rate and raises its total ceiling to7.
+  Tleilaxu Secret Ally remains a separate one-spice-per-force fixed group:
+  paid5 then ordinary free2 returns7, revives the actual dead Yueh once and
+  leaves one of the original eight dead forces in Tanks. Ordinary5 before
+  Nexus2 also retains its already-paid price; no refund or extra group.
+- Absent-Emperor Secret Ally admits the selected independent ordinary lot at
+  its original fully affordable bank invoice, paying or consuming the one
+  Nexus Card once and delivering the original physical Treachery Card once.
+- Advanced Emperor Cunning still converts five existing ordinary counters
+  temporarily. A real paid shipment supplies the army; dial4/support2 plus
+  Reinforcements consumes three separate reserves, loses two actual board
+  counters, and Harass returns the opponent's nine undialed counters. Original
+  Karama cancellation restores normal support/losses without refunding Nexus.
+  Basic retains its original Advanced-power rejection and unspent card.
+
+New consumer regressions:
+`tests/classic-independent-nexus-utility.test.ts` and
+`tests/classic-independent-nexus-battle.test.ts`, with the shared
+`tests/fixture-classic-independent-nexus.ts` and their named utility/battle
+producers. Frozen25-file **249/249**, types, lint and build pass. The original
+paired Reinforcements helper now answers its actual pending Moritani choice
+before checking disposal; an obsolete log-wording pin is removed.
+
+Three actual390px surfaces pass: normal lobby→original all14 setup/Storm,
+Recruits→fixed paid5/free leader→ordinary free2→Shipment, and paid native
+Cunning/Reinforcements/Harass→Traitors→original inspection→Collection.
+No errors/overflow. Four all14 legal policies execute575 actions and12 actual
+battles; these are playability smokes, not strength calibration or full games
+for every combination. Temporary memory/routes are removed and released204;
+the dedicated normal QA room is preserved. No reset/restart/deployment.
+Other effect-specific face/custody bounds and complete-module, comprehensive
+assurance and deployed acceptance remain open.
+
 ## Moritani permanent markers and live replacements — 15 October 2026
 
 Original Harkonnen Secret Ally now works after Moritani has permanently retired

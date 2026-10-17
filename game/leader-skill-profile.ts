@@ -1,5 +1,5 @@
 import { FACTIONS } from './catalog';
-import { mixedE3NexusRosterProfile } from './faction-module-profile';
+import { classicIndependentNexusProfile, mixedE3NexusRosterProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile } from './discovery-module-profile';
 
 /** Public configuration only; never gate a skill on a hidden card or random deal. */
@@ -53,6 +53,7 @@ function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassinatio
 
 /** Fresh classic Nexus/Skills, optionally Homeworlds/Discovery/Tech/Advanced Strongholds. */
 export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (classicIndependentNexusProfile(game)) return true;
   if (game.expansions.length || !nexusLeaderSkillModulesSupported(game, false, true, false)) return false;
   const players = game.players!;
   for (let i = 0; i < players.length; i++) {
@@ -475,6 +476,7 @@ export function homeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean 
 
 /** Independent cards with registered selected-family all14 setup and original module/role guards. */
 export function independentTreacheryLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (classicIndependentNexusProfile(game)) return true;
   if (game.ecazTreachery !== true || game.expansions.length > 3 ||
       typeof game.advanced !== 'boolean' || !game.players ||
       game.players.length < (game.techTokens ? 3 : 2) || game.players.length > 6 ||

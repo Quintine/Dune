@@ -26,6 +26,31 @@ export type FactionModuleProfile = {
   nexusHarkonnenBetrayalPreview?: unknown;
 };
 
+/** Independent36 + original Nexus12 in classic tables, optionally all14 Skills.
+ * Initializers own undealt component freshness; other overlays stay separate. */
+export function classicIndependentNexusProfile(
+  game: Partial<FactionModuleProfile> & Pick<FactionModuleProfile, 'expansions'> & {
+    sandtrout?: unknown; moritaniAssassinatePreview?: unknown;
+  },
+): boolean {
+  const players = game.players;
+  if (typeof game.advanced !== 'boolean' || game.ecazTreachery !== true || !game.nexusCards ||
+    game.expansions.length !== 0 || !players || players.length < 2 || players.length > 6 ||
+    game.homeworlds || game.techTokens || game.strongholdCards || game.sandtrout ||
+    game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
+    game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
+    game.guildBetrayalPreview || game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
+    game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+    let classic = false;
+    for (const faction of FACTIONS)
+      if (faction.id === players[i].faction) { classic = faction.expansion === 'base'; break; }
+    if (!classic) return false;
+  }
+  return true;
+}
+
 /** Original E1/E2 families or standalone Ecaz/Moritani; explicit Semuta context only. */
 export function nativeFactionTechProfile(game: FactionModuleProfile, semuta = false): boolean {
   if (typeof game.advanced !== 'boolean' || !game.techTokens ||

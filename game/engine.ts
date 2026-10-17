@@ -1,5 +1,5 @@
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
-import { nativeFactionTechProfile } from './faction-module-profile';
+import { classicIndependentNexusProfile, nativeFactionTechProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
@@ -10736,7 +10736,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const homeworlds = homeworldLeaderSkillsProfile(state);
   const independent = independentTreacheryLeaderSkillsProfile(state);
   if (state.ecazTreachery) {
-    requireRule(independent, 'Independent cards with Skills require a fresh supported selected-deck roster with original Homeworlds/Tech/Advanced Strongholds; Nexus/Discovery and unrelated preview contexts remain gated.');
+    requireRule(independent, 'Independent Skills cards require supported selected decks with original World/phase modules, or classic Nexus without other overlays; Discovery and unrelated preview contexts remain gated.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -10822,7 +10822,7 @@ export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   const homeworlds = !!g.homeworlds;
   requireRule(!homeworlds || ecazHomeworldProfile(g),
     'Independent cards with Homeworlds need a fresh supported selected-deck roster with original Tech or Advanced Strongholds.');
-  const initialized = initializeSetupGameForAudit(g, homeworlds, false, false, false, false, false, true, true);
+  const initialized = initializeSetupGameForAudit(g, homeworlds, classicIndependentNexusProfile(g), false, false, false, false, true, true);
   if (byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   if (moritaniAssassinateModeSupported(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
@@ -13896,7 +13896,7 @@ function recruitsModeSupported(g: Game) {
   const modules = independentCardModulesProfile(g);
   return (
     (!g.homeworlds || ecazHomeworldProfile(g)) &&
-    !g.nexusCards &&
+    (!g.nexusCards || classicIndependentNexusProfile(g)) &&
     (!g.leaderSkills || independentTreacheryLeaderSkillsProfile(g)) &&
     (!g.techTokens || modules) &&
     (!g.strongholdCards || modules) &&

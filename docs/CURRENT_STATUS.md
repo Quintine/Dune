@@ -29,6 +29,28 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Classic independent Nexus — 18 October. Prototyped / Partial.**
+Original classic3 normal start rejected unchanged. One public configuration
+capability now composes fresh classic2–6 Basic/Advanced independent36/Nexus12,
+optionally all14, through original setup and effect consumers. Native selected
+families, World/phase/Discovery/Semuta and extra reaction-preview envelopes stay
+separate. No played game is reflagged.
+
+Actual original Recruits/fixed paid Tleilaxu5/free2, selected bank purchase and
+native Cunning with separate Reinforcements reserves/physical Harass returns
+pass, including cancellation and Basic power rejection. Three390px surfaces
+cover normal all14 lobby/setup, full Revival into Shipment, and native paid
+battle into Collection; no errors/overflow. Four legal all14 policies execute
+575 actions/12 battles, not calibration or full-combination acceptance.
+
+Frozen25-file **249/249**, types, final lint and build pass. A stale paired
+Reinforcements helper now answers the actual Moritani choice before disposal;
+its obsolete log-wording pin is deleted. Initial fixture-name lint is fixed.
+Temporary routes/memory removed/released204; dedicated normal QA room preserved.
+No reset/restart/deployment. Other effect bounds, complete modes and deferred
+assurance remain open.
+[Source, original quantities and exact proof](NEXUS_CARD_RULES.md#classic-independent-treachery-composition--18-october-2026).
+
 **Paid Black Market retention — 18 October. Prototyped / Partial.**
 Under the recorded choose-recommended policy, a positive seller win retains the
 same card/order, pays native Emperor/Bank income and counts one sale. Zero/unbid

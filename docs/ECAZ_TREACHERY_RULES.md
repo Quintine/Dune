@@ -2,6 +2,26 @@
 
 Audit: 2026-09-06. Scope: Reinforcements, Recruits, and Harass & Withdraw. This document records component evidence and implementation boundaries; it does not certify an implemented expansion. No runtime files were changed.
 
+## Classic independent Nexus composition — 18 October 2026
+
+The original independent-variant authority below now also connects fresh
+classic2–6 Basic/Advanced independent36/Nexus12, optionally all14 Skills,
+without other overlays. One public configuration predicate feeds the original
+setup and native effect consumers. Original lottery/deal/training order,
+physical twelve-card Nexus inventory and actual alliance/draw are retained;
+no played hands, deaths, forces or phase clocks are staged.
+
+Real Recruits plus fixed paid Tleilaxu5/free ordinary2 and native Emperor
+Cunning/Reinforcements/Harass retain original prices, ordinary limits, reserve
+versus board custody and cancellation. This is configuration composition,
+not a new numerical ruling; inherited provisional fee/reveal timings remain
+labelled in their original contracts. Native selected families, Worlds,
+phase modules, Discovery/Semuta and reaction-preview envelopes stay separate.
+Frozen25-file249/249, types/lint/build, three actual390px surfaces and four
+legal all14 policies pass. This does not certify every Nexus effect, complete
+modes, saved/deployed assurance or strategy.
+[Source, cases and remaining boundaries](NEXUS_CARD_RULES.md#classic-independent-treachery-composition--18-october-2026).
+
 ## Sources and reproducible visual anchors
 
 - **E3:** [GF9 Ecaz & Moritani rulebook](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf), printed pp. 4, 9, 11, 16. Publisher-indexed text was retrieved. Printed pp. 4 and 11 were also visually inspected in the [publisher-authored PDF mirror](https://gamers-hq.de/media/pdf/0f/7a/86/Dune_EcazMoritani_Rulebook_EN.pdf). The mirror is not assumed to resolve revision conflicts elsewhere in this expansion.

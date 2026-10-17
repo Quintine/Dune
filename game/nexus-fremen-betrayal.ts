@@ -1,5 +1,6 @@
 import type { Game } from './engine';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
+import { classicIndependentNexusProfile } from './faction-module-profile';
 
 export type FremenNexusBetrayal = {
   event: string;
@@ -39,10 +40,11 @@ export function fremenBetrayalOffer(
   if (holder.ally) blocked = 'An allied player cannot use a Nexus card.';
   else if (g.status !== 'playing' || (g.phase !== 1 && g.phase !== 5))
     blocked = 'Use Fremen Betrayal before the first Spice Blow or before Fremen movement.';
-  else if (g.expansions.length || g.homeworlds || g.leaderSkills || g.discoveryEnabled ||
+  else if (!classicIndependentNexusProfile(g) &&
+    (g.expansions.length || g.homeworlds || g.leaderSkills || g.discoveryEnabled ||
     g.discoveries || g.discoveryStash || g.greatMaker || g.ecazTreachery ||
     g.techTokens || g.strongholdCards ||
-    g.players.some(p => !['atreides','harkonnen','emperor','fremen','guild','beneGesserit'].includes(p.faction)))
+    g.players.some(p => !['atreides','harkonnen','emperor','fremen','guild','beneGesserit'].includes(p.faction))))
     blocked = 'Combined expansion and module interactions remain unavailable.';
   else if (nexusCleanPlayBlocked(g, automaticPending))
     blocked = 'Finish the current interaction before using Fremen Betrayal.';
