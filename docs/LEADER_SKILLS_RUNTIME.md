@@ -7,6 +7,23 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Advanced Richese portions — 18 October 2026
+
+Bureaucrat now evaluates buyer-to-Richese and Richese-donor-to-Emperor receipts
+separately in original cache/Black Market sales. Real donor5 no longer vanishes
+as a fictitious self-payment to Richese. Basic keeps its original seller receipt.
+The inherited seller-first/native-Emperor-counter sequence is visibly
+provisional; one physical phase use survives both distinct source events.
+Private exact portions stay private: controls show original public price and
+recipient portion, not an invented whole-price-minus-two credit.
+
+Frozen18-file413/413 and focused donor1/1 pass. Two actual390px flows reach the
+next original ordinary bid or native cache selection, and all four legal
+policies settle a real donor receipt with the buyer as trainer. Original card,
+escrow, deferred Banker and native counter callbacks remain. No new module
+admission, complete-mode, deployed or assurance claim.
+[Source, precise receipts and limits](BUREAUCRAT_PAYMENTS.md#advanced-richese-portions--18-october-2026).
+
 ## Registered native allied Bureaucrat receipts — 18 October 2026
 
 Single and actual allied receipts now share the ordinary Skills capability.

@@ -503,3 +503,61 @@ default Nexus, classic/World/occupied/Betrayal and original phase payment
 consumers remain in that union. Earlier fixture/helper/profile-only pins are
 deleted rather than repinned. This is scoped local rule/control proof, not
 complete Skills, module-combination, save/recovery or deployed acceptance.
+
+## Advanced Richese portions — 18 October 2026
+
+The [authorized Advanced contribution rule](RICHESE_AUCTION_RULES.md#authorized-advanced-contribution-recipients--4-october-2026)
+sends the buyer's own share to Richese and Richese's funded donor share to
+Emperor or Bank. These are different payer/recipient receipts, not one payment
+to Richese. Basic retains its publisher seller receipt. Bureaucrat applies the
+printed third-party/five-spice condition separately to each actual receipt.
+Neither two sub-five parts nor a Bank-directed part can create a player trigger.
+The exact supplied-file passage is physical **p36**, printed **p34**, Richese A;
+the following Black Market clause C supplies its original hidden-hand sale.
+
+A genuine no-Nexus native all14 table reproduced the missing donor opportunity:
+Atreides11 pays3, Richese5 pledges5, Richese receives3, and Emperor11 receives5.
+Living Alia's unused Bureaucrat offered nothing because the original source
+incorrectly classified the donor share as Richese-to-itself. Original setup,
+one actual bribe collected at first Mentat, turn-two worm/alliance, cache/card
+and silent bids remain. No wallet, force, assignment or phase is invented.
+
+New seller sources contain only the actual buyer share. The original Emperor
+response stamps a separate donor source/event when that receipt opens. The
+existing **seller credit → native Emperor Karama → Emperor income** callback
+order is retained: seller Bureaucrat may precede the later recipient's counter.
+This is a visibly **provisional sequencing policy**, not a new printed timing
+ruling. Declining the seller preserves a later eligible donor choice; using
+either consumes the one physical phase use. A stale seller event cannot answer
+the donor offer. Cancellation banks only the original donor share, leaves
+seller credit/card delivery intact and creates no donor Bureaucrat use.
+
+The internal `richeseSaleAmount` binds the original public price to a signed
+private one-recipient source. Projection emits that public price, payer-null,
+actual recipient and `richeseAllocation:true`, never the private portion,
+contributions, qualifying payer or signature. Controls say the recipient's
+**portion** is reduced by two, not that the whole price minus two goes there.
+The redirection log likewise uses the public sale price. Original native
+income/allocation, Banker donor legs, escrow and card continuation remain.
+Buyer Bank2 cannot pool with a different donor to manufacture Banker4.
+
+Actual donor-only3+5 now offers public8/private5 and gives Emperor3, not5:
+Emperor11→14, Richese3, Atreides8 and trainer9, then an actual ordinary pass
+continues. Two390px GameTable flows prove a5+5 cache seller decline, native
+allowance, distinct donor event, Bank2 and next ordinary bid; and a5+3 concealed
+Black Market seller diversion, retained native Emperor3 income and original
+cache declaration/selection. No errors or overflow. The temporary memory-only
+routes are removed and memory released204; no stored room or server restart.
+
+Four legal policies also settle an actual Black Market donor receipt with the
+buyer as trainer: own buyer leg is excluded, donor5 remains eligible, original
+public10 is shown, one use occurs and the next native cache control remains.
+New cache/market regressions cover native cancellation and deferred original
+Banker collection, all three trainer roles, Emperor as buyer, Basic and absent
+Emperor. Frozen18-file **413/413**, focused donor1/1 pass. No complete-mode,
+new module admission, calibration, deployed or deferred-assurance claim.
+
+Types and build pass; final lint and focused donor1/1 pass after removing one
+unnecessary fixture iterator copy. The eighteen-file413/413 consumer union
+preceded that lint-only change. Existing build warnings remain. No recovery,
+whole-database, seat-restoration or calibration campaign was added.

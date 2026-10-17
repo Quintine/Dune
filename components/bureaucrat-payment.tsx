@@ -24,17 +24,25 @@ export function BureaucratPayment({
     return null;
   const payer = game.players.find((player) => player.id === pending.payer)?.name ?? pending.payer;
   const payee = game.players.find((player) => player.id === pending.payee)?.name ?? pending.payee;
-  const redirectAmount = pending.amount - pending.redirect;
   return (
     <section className="min-w-0 space-y-3" aria-label="Bureaucrat payment">
       <h3 className="font-serif text-xl">Bureaucrat payment</h3>
       <p className="text-base leading-7">
-        {payer ? <>The payment from {payer} to {payee}</> : <>The qualifying allied-funded payment to {payee}</>}{' '}
-        is {pending.amount} spice. You may redirect {pending.redirect} spice to the Bank.{' '}
-        {pending.homeworldAllocation
-          ? <>{redirectAmount} spice then follows the original Homeworld income allocation, including any occupied share.</>
-          : <>{payee} receives {redirectAmount} spice and the Bank receives {pending.redirect}.</>}{' '}
-        {payer ? `${payer} still pays the full amount` : 'Each contributor still pays their full original share'}.
+        {pending.richeseAllocation ? <>
+          The original Richese sale costs {pending.amount} spice. A qualifying portion goes to {payee}.
+          You may redirect {pending.redirect} spice from that portion to the Bank.{' '}
+          {pending.homeworldAllocation
+            ? <>The remaining portion follows the original Homeworld income allocation.</>
+            : <>{payee} receives {pending.redirect} less than their original portion.</>}{' '}
+          Each contributor still pays their full original share.
+        </> : <>
+          {payer ? <>The payment from {payer} to {payee}</> : <>The qualifying allied-funded payment to {payee}</>}{' '}
+          is {pending.amount} spice. You may redirect {pending.redirect} spice to the Bank.{' '}
+          {pending.homeworldAllocation
+            ? <>{pending.amount - pending.redirect} spice then follows the original Homeworld income allocation, including any occupied share.</>
+            : <>{payee} receives {pending.amount - pending.redirect} spice and the Bank receives {pending.redirect}.</>}{' '}
+          {payer ? `${payer} still pays the full amount` : 'Each contributor still pays their full original share'}.
+        </>}
       </p>
       {pending.kind === 'bribe' && (
         <p className="text-base leading-7">
@@ -68,7 +76,7 @@ export function BureaucratPayment({
             !busy && act({ type: 'decision', event: pending.event, redirect: false })
           }
         >
-          Allow full {pending.amount}-spice payment
+          {pending.richeseAllocation ? 'Allow original portion' : `Allow full ${pending.amount}-spice payment`}
         </Button>
       </div>
     </section>

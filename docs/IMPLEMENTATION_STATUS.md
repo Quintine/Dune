@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 18 October 2026 — Actual Advanced Richese Bureaucrat portions
+
+A real native all14 first turn, deferred bribe1, turn-two worm alliance and
+silent cache sale reproduced buyer3/Richese donor5 completing without the
+unused living Bureaucrat's donor opportunity. The source incorrectly treated
+the donor's actual Emperor payment as seller self-payment.
+
+Seller sources now contain only buyer-to-Richese money; the original native
+Emperor response creates a separate donor source/event. Original seller-first,
+then Emperor Karama/income ordering stays visibly provisional. One physical
+phase use survives both events; declining seller permits donor use. Native
+cancellation, full costs/escrow/card, Basic and Bank/owner exclusions remain.
+Public price/portion controls and redirection logs do not print a private
+one-recipient amount or claim that the whole price minus two goes to one payee.
+
+Frozen18-file **413/413**, types/build and final lint/focused1/1 pass. One
+unnecessary fixture loop copy is removed after lint feedback; the consumer
+rerun passes. Actual donor3+5 yields Emperor11→14, Richese3/Atreides8/trainer9,
+one card, then an ordinary pass. Two390px flows prove separate5+5 events and
+hidden5+3 original cache continuation without errors/overflow. Four policies
+settle actual donor income with buyer as trainer; eleven new consumer cases
+retain actual role, native Banker, cancellation and Basic/no-recipient bounds.
+Temporary QA routes/memory are removed/released204; games/server untouched.
+Existing build warnings, full-mode/deployed/calibration and assurance gates stay.
+[Source and current contract](BUREAUCRAT_PAYMENTS.md#advanced-richese-portions--18-october-2026).
+
 ## 18 October 2026 — Registered native allied Bureaucrat receipts
 
 A genuine Basic no-Nexus Eca/Mori all14 table, real worm alliance and original

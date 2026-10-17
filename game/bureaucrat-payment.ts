@@ -12,6 +12,8 @@ export type BureaucratPaymentSource = {
   /** Exact internal allied-payer receipts; never projected as public shares. */
   contributions?: readonly { payer: string; amount: number }[];
   privateFunding?: true;
+  /** Original public price; the qualifying Richese recipient portion stays private. */
+  richeseSaleAmount?: number;
   signature: string;
 };
 /** The one physical skill card's use survives death, redraw and controller changes. */
@@ -32,6 +34,7 @@ export type BureaucratPaymentView = {
     kind: BureaucratPaymentKind;
     redirect: 2;
     homeworldAllocation?: true;
+    richeseAllocation?: true;
   };
   usedThisPhase: boolean;
 };

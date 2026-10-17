@@ -30,12 +30,15 @@ already-debited donor escrow again. Emperor cancellation sends only its4 to
 the Bank, not the unrelated buyer-to-Richese share, and does not replay credit
 or physical card transfer. The existing whole-bank recipient override remains.
 
-Mandatory normal Banker income in fresh supported ordinary Skills setups
-counts only actual Bank-routed original payer legs. It never treats allowed Emperor income or ordinary seller
-credit as a bank payment, aggregates separate payers to four, or spends its
-new front-shield grant before actual Mentat. Original Bureaucrat split-funding,
-positive Black Market self-bidding, exhausted-cache counts and special-lot
-Ixian Technology remain their recorded boundaries.
+Mandatory normal Banker income in fresh supported ordinary Skills setups counts
+only actual Bank-routed original payer legs. It never treats allowed Emperor
+income or ordinary seller credit as Bank payments, pools different payers to
+four, or spends its new front-shield grant before actual Mentat. Advanced
+[Bureaucrat portions](BUREAUCRAT_PAYMENTS.md#advanced-richese-portions--18-october-2026)
+now follow the actual separate seller and donor receipts, retaining Basic and
+the original native counter/card continuation. Positive Black Market
+self-bidding, exhausted-cache counts and other special-lot boundaries remain;
+the supplied source excludes Richese lots from Ixian Technology.
 
 ## Printed rules, by checkpoint
 

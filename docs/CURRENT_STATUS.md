@@ -29,6 +29,27 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Advanced Richese split receipts — 18 October. Prototyped / Partial.**
+Original buyer3/Richese donor5 wrongly supplied no Bureaucrat opportunity.
+New signed seller sources use only the buyer share; the original Emperor
+response stamps a distinct actual donor source/event. Native seller credit
+first, then Emperor Karama/income remains a visibly provisional sequence.
+Either use consumes the physical phase opportunity; declining the first
+preserves the second. Basic, Bank exclusion, full costs/card/escrow stay.
+
+Public portion guidance shows original price/payer-null, never a private
+recipient amount or false whole-price-minus-two credit. Actual donor3+5 gives
+Emperor3 (11→14), Richese3, Atreides8 and trainer9, then a real ordinary pass.
+Two390px flows exercise dual5+5 seller decline→native allowance→donor diversion
+and hidden5+3 seller diversion→native Emperor3→original cache selection.
+Four policies legally settle the donor receipt with buyer as trainer.
+
+Frozen18-file **413/413**, types/build and final lint/focused1/1 pass. Lint's one
+unnecessary fixture iterator copy is removed; no production rule changed.
+Temporary QA routes/memory removed/released204, no errors/overflow, no stored
+rooms or restart. No new module admission, full-mode/deployed/assurance claim.
+[Source and provisional sequencing](BUREAUCRAT_PAYMENTS.md#advanced-richese-portions--18-october-2026).
+
 **Native allied Bureaucrat receipts — 18 October. Prototyped / Partial.**
 An original no-Nexus Eca/Mori all14 five-own/five-allied shipment rejected
 unchanged before repair. Single and allied receipts now share the existing
