@@ -16,6 +16,29 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Classic independent World/Nexus — 18 October. Prototyped / Partial.**
+Fresh classic2–6 independent36 + Homeworlds + Nexus12 now retains optional all14,
+Tech3+ and Advanced Strongholds2+ through original module selection/setup.
+Actual Recruits returns recheck Fremen population; foreign-World Harass returns
+typed visitors and own-World Harass stays forbidden. Local Reinforcements fees
+provisionally spend non-role normals before converted counters: Kaitain7 paying3
+leaves normal4/temporary4, while the original Cunning declaration remains5.
+Real Salusa stars, pre-fee face/support traits and physical fee/loss separation
+remain. Shared engine, human selected-source limits and legal bot pools agree;
+active/preview captions now explain declaration versus remaining roles.
+
+Frozen15-file **128/128**, types/lint/build pass. Direct original-action smoke
+finishes the local-fee battle (97 actions), Recruits (101), typed Harass (59),
+and four legal policies' card plans within 89-action programmes each. Rendered
+source/active controls retain the real choices and provisional explanation.
+The first typecheck exposed a nullable test-view field; two setup assertions
+were corrected to actual lobby selections/deal chronology. A smoke caption
+assertion was corrected to the actual text; diagnostic logs are retained.
+No saved room/database, server restart or deployment was involved. Browser,
+full combinations and comprehensive assurance remain deferred. Other native
+families, Discovery and unrelated preview envelopes remain separate.
+[Canonical source, implementation and limits](NEXUS_CARD_RULES.md#classic-independent-world-nexus--18-october-2026).
+
 **Current priority — Basic → Advanced → interaction refinement.** The user
 requests usable first versions for every faction before refinement. Administration
 is deferred. Broad suites and capture-resumption campaigns are deferred; rule
@@ -31,8 +54,7 @@ remain deferred until all rules are implemented.
 
 **Integration review — 18 October.** The earlier non-AI checklist closure
 was unsupported: a topic marked Prototyped/Partial does not prove every
-rules-permitted combination works. Independent36 World/Nexus and other named
-interaction boundaries remain open. Rules delivery is not complete, and the
+rules-permitted combination works. Specific module envelopes and named interaction boundaries remain open. Rules delivery is not complete, and the
 deferred comprehensive multiplayer/privacy/custody gate has not been opened.
 
 The regression repair now admits original Ecaz CLI snapshots with their actual
@@ -54,8 +76,8 @@ Plain base33 World/Nexus lacked native reaction states; one public capability
 now composes original Homeworlds with base33, optional14 and original
 Tech3+/Advanced Strongholds2+. Actual host controls retain every selected
 module through private training/Traitors into first Storm; salusa elite5 and
-unassigned tokens/cards prove no premature owners. Independent36 World/Nexus
-stays a named pending gate; other envelopes remain separate.
+unassigned tokens/cards prove no premature owners. Independent36 World/Nexus was left pending at that checkpoint; its current
+composition is the active delivery above. Other envelopes remain separate.
 
 Real World fee sources pass their original gates: Guild Junction→Giedi
 departure2, Cunning visitor return through native permission/rate/fee2;

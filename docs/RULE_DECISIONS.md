@@ -2,6 +2,23 @@
 
 Updated 18 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
 
+## Provisional own-World temporary-role reserve fee — 18 October 2026
+
+Under the 14 October choose-recommended direction, an own-World Reinforcements
+fee spends physical ordinary counters without a temporary Sardaukar role first.
+If that is insufficient, paying converted counters removes their temporary role
+from the combat pool. The original Emperor Cunning declaration still records
+five converted ordinary counters. Seven Kaitain normals paying three here leave
+four normals with four temporary roles; paying on Salusa leaves the Kaitain
+group unchanged. Real starred-counter custody and pre-fee support/face traits
+remain separate.
+
+The printed five-counter Cunning group, three-reserve fee and independent
+modules are sourced in the existing contracts. Their overlap does not specify
+which converted counters pay. This is an explicit provisional composition,
+not a publisher FAQ or a newly supplied user numerical ruling.
+[Physical fee and scope](REINFORCEMENTS_RUNTIME.md#independent-worldnexus-temporary-roles--18-october-2026).
+
 ## Provisional paid Black Market retention — 18 October 2026
 
 The supplied revision physical36/printed34, Richese A/C, gives the shared

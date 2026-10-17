@@ -2001,7 +2001,8 @@ export type Game = {
   nexusAdvisorHistory?: { receipt: NexusAdvisorReceipt; stage: 'pending' | 'completed' | 'canceled'; frame: string; signature: string }[];
   nexusAdvisorLast?: { event: string; stage: 'pending' | 'completed' | 'canceled' };
   nexusSardaukarHistory?: {receipt: NexusSardaukarReceipt; stage: 'pending' | 'active' | 'canceled'; parent: string; signature: string;
-    casualties?: {forces: CombatForces; dial: number; support: number; options: Casualties[]; outcome: 'pending' | 'complete'}}[];
+    casualties?: {forces: CombatForces; dial: number; support: number; options: Casualties[]; outcome: 'pending' | 'complete';
+      reserveFee?: {normal: number; elite: number}}}[];
   nexusSardaukarLast?: {event: string; stage: 'pending' | 'active' | 'canceled'};
   nexusChoamHistory?: {receipt: NexusChoamReceipt; stage: 'pending' | 'canceled' | 'complete' | 'fizzled'; frame: string; parent: string; signature: string}[];
   nexusMoritaniHistory?: {receipt:NexusMoritaniReceipt;stage:'pending'|'complete'|'canceled';before:string;frame:string;signature:string}[];
@@ -3795,9 +3796,21 @@ function nexusSardaukarIntegrity(g: Game) {
     nexusRule(() => validateNexusSardaukar(g, record.receipt));
     const losses = record.casualties;
     if (losses) {
+      const fee = losses.reserveFee;
+      if (fee) {
+        const home = g.homeworlds && homeworldBattleLocation(g,record.receipt.territory);
+        const original = {...losses.forces,normal:record.receipt.normal,temporaryElite:record.receipt.count};
+        requireRule(g.ecazTreachery && home && home.native === record.receipt.owner &&
+          Object.keys(fee).sort().join(',') === 'elite,normal' && fee.elite === 0 &&
+          Number.isSafeInteger(fee.normal) && fee.normal >= 1 && fee.normal <= 3 &&
+          losses.forces.normal === record.receipt.normal-fee.normal &&
+          validCombatForces(original) && Number(losses.forces.temporaryElite) < record.receipt.count &&
+          JSON.stringify(reinforcementsBattleForces(original,fee)) === JSON.stringify(losses.forces),
+        'The reduced temporary Sardaukar need their original own-World reserve fee.');
+      }
       requireRule(record.stage === 'active' && ['pending','complete'].includes(losses.outcome) &&
-        Object.keys(losses).sort().join(',') === 'dial,forces,options,outcome,support' &&
-        validCombatForces(losses.forces) && losses.forces.temporaryElite === 5 &&
+        Object.keys(losses).sort().join(',') === (fee ? 'dial,forces,options,outcome,reserveFee,support' : 'dial,forces,options,outcome,support') &&
+        validCombatForces(losses.forces) && (fee ? Number(losses.forces.temporaryElite) >= 2 : losses.forces.temporaryElite === 5) &&
         Array.isArray(losses.options) && losses.options.length > 0 &&
         JSON.stringify(losses.options) === JSON.stringify(casualtyOptions(losses.forces,losses.dial,losses.support)),
         'The Nexus Sardaukar casualties have lost their committed force allocation.');
@@ -10742,7 +10755,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const homeworlds = homeworldLeaderSkillsProfile(state);
   const independent = independentTreacheryLeaderSkillsProfile(state);
   if (state.ecazTreachery) {
-    requireRule(independent, 'Independent Skills cards require supported selected decks with original World/phase modules, or classic Nexus with original phase modules without Homeworlds; independent World/Nexus and unrelated preview contexts remain gated.');
+    requireRule(independent, 'Independent Skills cards require supported selected decks with original World/phase modules, or classic Nexus with original World/phase modules; unrelated preview contexts remain gated.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -10789,6 +10802,7 @@ function independentCardModuleRoster(g: Game): boolean {
       (g.expansions.length === 1 && g.expansions[0] === 'ecaz'));
 }
 function ecazHomeworldProfile(g: Game): boolean {
+  if (g.homeworlds && classicIndependentNexusProfile(g)) return true;
   if (g.homeworlds && g.leaderSkills && !g.sandtrout && independentTreacheryLeaderSkillsProfile(g)) return true;
   return !!g.homeworlds && g.ecazTreachery === true && independentCardModuleRoster(g) &&
     g.players.length >= 2 && g.players.length <= 6 &&
@@ -10828,7 +10842,7 @@ export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   g.ecazTreachery = true;
   const homeworlds = !!g.homeworlds;
   requireRule(!homeworlds || ecazHomeworldProfile(g),
-    'Independent World cards need a supported selected-deck roster and original phase modules without Nexus; independent World/Nexus remains a separate pending interaction.');
+    'Independent World cards need a supported selected-deck roster and original phase modules, or classic Nexus with original phase modules.');
   const initialized = initializeSetupGameForAudit(g, homeworlds, classicIndependentNexusProfile(g), false, false, false, false, true, true);
   if (byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   if (moritaniAssassinateModeSupported(initialized)) initializeMoritaniAssassinateState(initialized);
@@ -23481,7 +23495,14 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
     ? quote.fixedLosses?.find(loss => loss.owner === winner.id) : undefined;
   const sardaukar = currentNexusSardaukar(g);
   if (sardaukar?.stage === 'active' && casualtyCommitment && winner?.id === sardaukar.receipt.owner) {
-    sardaukar.casualties = {...structuredClone(casualtyCommitment),outcome:'pending'};
+    const reduced = casualtyCommitment.forces.temporaryElite !== sardaukar.receipt.count;
+    const plan = b.plans[winner.id];
+    const fee = reduced && usesNativeBattleSpecial(plan,REINFORCEMENTS_CARD)
+      ? currentReinforcementsCost(g,winner,plan.reinforcementsSources).sources?.[b.territory] : undefined;
+    requireRule(!reduced || (fee && g.homeworlds && homeworldBattleLocation(g,b.territory)?.native === winner.id),
+      'Reduced temporary Sardaukar require the original native Reinforcements fee.');
+    sardaukar.casualties = {...structuredClone(casualtyCommitment),
+      ...(fee ? {reserveFee:structuredClone(fee)} : {}),outcome:'pending'};
     sardaukar.signature = nexusSardaukarSignature(sardaukar);
   }
   for (const payment of quote.payments) {

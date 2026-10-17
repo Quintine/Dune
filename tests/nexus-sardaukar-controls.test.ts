@@ -137,7 +137,8 @@ void test('public pending and active notices avoid private hands and identify or
   const allowed = allowNexusSardaukar(g);
   const observer = viewGame(allowed, 'q');
   assert.equal(observer.battle!.opponentForces?.temporaryElite, 5);
-  assert.match(html(observer), /Five ordinary Emperor counters/);
+  assert.match(html(observer), /Cunning declared five ordinary Emperor counters/);
+  assert.match(html(observer), /own-Homeworld reserve fee can reduce that group/);
   assert.match(html(observer), /ordinary Tanks/);
   assert.doesNotMatch(html(observer), /<button/);
 });

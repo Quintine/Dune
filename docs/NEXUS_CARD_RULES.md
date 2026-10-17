@@ -2,6 +2,49 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Classic independent World Nexus — 18 October 2026
+
+**Prototyped / Partial.** Fresh classic2–6 Homeworlds + Nexus12 now also
+retains explicitly selected independent36, optional all14 Skills, Tech3+ and
+Advanced Strongholds2+. The public core capability and original setup own
+admission and actual Guild/Harkonnen/Ixian reaction initialization; no played
+game is reflagged and no card or power is silently added. This supersedes the
+base33-only admission boundary in the earlier checkpoint below. Other native
+families, Discovery/Semuta and unrelated reaction envelopes remain separate.
+
+Recruits uses actual current native population/rates and the original typed
+revival destination. Foreign-World Harass returns real normal/special visitors
+to their native Worlds; own-World Harass stays forbidden. These are the existing
+card effects through the newly composed selection, not new numerical rules.
+
+The substantive battle fix is local Reinforcements fees with Emperor Cunning.
+Ordinary counters without the temporary role provisionally pay first; converted
+fee counters then lose that role. Kaitain7 paying local3 leaves a legal combat
+pool normal4/temporary4, preserving the original count5 declaration, pre-fee face
+and support traits, and real Salusa stars. Off-World fees leave the original
+Kaitain role pool. This overlap is an explicit
+[recommended provisional composition](RULE_DECISIONS.md#provisional-own-world-temporary-role-reserve-fee--18-october-2026),
+not a retrieved publisher ruling.
+
+Implementation: [core capability](../game/faction-module-profile.ts),
+[shared fee pool](../game/reinforcements-homeworld.ts), existing engine/actions,
+selected-source controls and legal bot source pools. Original-action fixtures
+and cases are `tests/fixture-nexus-world-independent-cards.ts`,
+`tests/nexus-world-independent-cards.test.ts` and
+`tests/nexus-world-independent-battles.test.ts`. Comprehensive rules/combination,
+save/privacy/custody and final deployed acceptance remain open.
+
+Owner frozen15-file **128/128**, types/lint/build pass. A finite original-action
+programme completes the local fee/Cunning battle (97 actions), Recruits (101)
+and typed foreign Harass (59), plus four legal policies' source-bearing card
+plans within 89-action programmes each. Rendered selected-source and active
+Cunning controls retain the real choices and distinguish original declaration
+from the remaining pool. Initial nullable-view/lobby chronology assertions and
+one smoke caption matcher were corrected; no game numeric rule was changed to
+satisfy those assertions. Logs remain outside Git. No saved room/database,
+server restart or deployment was involved; browser/deployed and full
+combination/assurance acceptance remain deferred.
+
 ## Original World Nexus core — 18 October 2026
 
 **Prototyped / Partial.** Fresh original base33 classic Homeworld+Nexus now

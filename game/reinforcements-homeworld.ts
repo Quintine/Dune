@@ -1,4 +1,4 @@
-import type { CombatForces } from './combat';
+import { validCombatForces, type CombatForces } from './combat';
 import {
   homeworldForceGroups, type HomeworldCustody, type HomeworldCustodyContext,
   type HomeworldForces,
@@ -63,14 +63,18 @@ export function quoteReinforcementsHomeworldCost(context: HomeworldCustodyContex
 
 /** On an own World the reserve fee and combat army share physical counters.
  * Reserve the fee first, but retain the original sealed support/strength traits.
+ * Provisionally spend ordinary counters without a temporary role first, then
+ * remove that role only from converted counters actually used to pay the fee.
  * Foreign-World and Arrakis callers pass no on-location cost. */
 export function reinforcementsBattleForces(forces: CombatForces,
   onLocationCost?: HomeworldForces): CombatForces {
   if (!onLocationCost) return forces;
   const { normal, elite } = onLocationCost;
-  if (!Number.isSafeInteger(normal) || normal < 0 || !Number.isSafeInteger(elite) || elite < 0 ||
+  if (!validCombatForces(forces) || !Number.isSafeInteger(normal) || normal < 0 || !Number.isSafeInteger(elite) || elite < 0 ||
     normal > forces.normal || elite > forces.elite)
     throw new ReinforcementsError('The reserve fee cannot also fund the physical Homeworld dial.');
   if (normal + elite === 0) return forces;
-  return { ...forces, normal: forces.normal - normal, elite: forces.elite - elite };
+  const remainingNormal = forces.normal - normal;
+  return { ...forces, normal: remainingNormal, elite: forces.elite - elite,
+    ...(forces.temporaryElite === undefined ? {} : {temporaryElite: Math.min(forces.temporaryElite, remainingNormal)}) };
 }

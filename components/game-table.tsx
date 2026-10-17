@@ -1293,8 +1293,9 @@ export function GameTable({
       {classicNexusPreview && (
         <p className="notice" role="status">
           Classic Nexus reactions preview · Basic/Advanced classic factions, original base33
-          or selected independent36 Treachery, optionally all14 Leader Skills. Homeworld/Nexus
-          core currently keeps base33; independent World cards remain a separate preview boundary.
+          or selected independent36 Treachery, optionally all14 Leader Skills and Homeworlds.
+          Own-World Reinforcements fees provisionally spend ordinary non-role counters first,
+          reducing temporary Sardaukar roles only when converted counters pay.
           Original Tech (3+ seats) and Advanced Strongholds (2+ seats) may compose. Native reactions
           retain original card, force and payment authority. Acknowledgement timing and
           purchase/bonus ordering remain provisional. Other modules and complete Nexus

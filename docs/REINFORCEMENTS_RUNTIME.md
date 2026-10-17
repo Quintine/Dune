@@ -16,6 +16,37 @@ fixes the exact card. Harass & Withdraw may share the plan under the
 Original or copied Stone Burner composes in clean selected Ix/CHOAM families
 and the existing native Advanced Occupy envelope. Other profile boundaries remain.
 
+## Independent World/Nexus temporary roles — 18 October 2026
+
+Fresh classic independent36 + Homeworlds + Nexus12 now composes in Basic and
+Advanced, retaining optional all14, Tech3+ and Advanced Strongholds2+. Original
+host controls select these modules before readiness and native setup. Other
+native-family, Discovery and unrelated preview envelopes retain their limits.
+This is prototype integration, not complete-mode certification.
+
+The shared own-World fee pool now removes a temporary role only when its
+physical normal counter pays the fee. Provisionally, ordinary non-role counters
+pay first. Kaitain7 with five Cunning roles paying three here leaves normal4 /
+temporary4, a valid physical pool with maximum dial8. A fee on the other native
+World leaves all seven Kaitain counters and five roles. Pre-fee printed face and
+support traits remain; the reserve fee cannot enter dial casualties or Suk rescue.
+The original Cunning receipt retains count5. A reduced-role casualty record
+additionally identifies its local reserve fee; unchanged historical five-role
+records keep their existing form.
+
+This extends the existing provisional fee-exclusion policy, using the user's
+choose-recommended direction. The sources establish the original three-counter
+fee and five-counter declaration, not the ordering of this overlap. It is not a
+new publisher ruling. Engine, human selected-source maximum and minimal bot
+source pools all use [the same physical quote](../game/reinforcements-homeworld.ts).
+The source selector explains the policy and the table displays the remaining
+temporary count.
+
+Original-action cases: [native battles](../tests/nexus-world-independent-battles.test.ts),
+[Recruits/Harass and setup](../tests/nexus-world-independent-cards.test.ts), and
+[physical role quote](../tests/reinforcements-temporary-role.test.ts).
+Full combinations and comprehensive assurance remain deferred.
+
 ## Original Skills/phase composition — 17 October 2026
 
 Supported original all14/card profiles retain Tech3–6 Basic/Advanced and

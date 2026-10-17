@@ -5,12 +5,20 @@ import { combatArmy } from '../game/combat-location';
 import { nativeShipmentSources } from '../game/homeworld-options';
 import { homeworldShipmentChoice } from '../game/homeworld-shipment-options';
 import { homeworldGameIntegrity } from '../game/homeworld-game';
+import { REINFORCEMENTS_CARD } from '../game/reinforcements';
 import { drawClassicNexusReaction, reactionAction, reactionPlayer } from './fixture-classic-independent-nexus-reactions';
 import { advanceClassicIndependentNexus, type ClassicIndependentNexusStep } from './fixture-classic-independent-nexus';
 import { classicDiscoveryNexusClean, nextClassicDiscoveryNexusStep } from './fixture-discovery-classic-nexus';
 
 export type WorldNexusBattleStep = ClassicIndependentNexusStep;
-export type WorldNexusBattleOptions = { advanced?: boolean; skills?: boolean; tech?: boolean; strongholds?: boolean };
+export type WorldNexusBattleOptions = {
+  advanced?: boolean;
+  skills?: boolean;
+  tech?: boolean;
+  strongholds?: boolean;
+  /** Opt in before the original deal; default fixtures retain base33. */
+  independent?: boolean;
+};
 type WorldNexusInvasion = { before: Game; action: Action; cost: number; after: Game };
 export const worldNexusClean = (game: Game) => classicDiscoveryNexusClean(game) &&
   !game.pendingGuildBetrayal && !game.pendingNexusHarkonnenBetrayal && !game.pendingNexusIxianBetrayal;
@@ -59,7 +67,8 @@ function invade(game: Game, actor: string, location: string, amount: number, act
  * route exports four actual stars to an empty desert, never converts them. */
 export function createWorldNexusEmperorBattle(options: WorldNexusBattleOptions & { salusa?: 'high' | 'low' } = {}) {
   const fixture = drawClassicNexusReaction('emperor', 'emperor', { ...options, advanced: true,
-    independent: false, homeworlds: true, roster: ['atreides', 'guild', 'emperor'],
+    independent: options.independent ?? false, homeworlds: true, roster: ['atreides', 'guild', 'emperor'],
+    startingCards: options.independent ? { emperor: [REINFORCEMENTS_CARD] } : undefined,
     training: options.skills ? { emperor: 'planetologist', atreides: 'warmaster', guild: 'sandmaster' } : undefined });
   const actions = fixture.actions, location = 'homeworld:emperor', trained = options.skills ? ['emperor'] : [];
   let game = advanceWorldNexusBattle(fixture.game, state => state.phase === 5 && worldNexusClean(state), actions);
@@ -114,7 +123,7 @@ export function createWorldNexusEmperorBattle(options: WorldNexusBattleOptions &
  * ordinary call, while the invader owns the independently drawn cancel card. */
 export function createWorldNexusHarkonnenBattle(options: WorldNexusBattleOptions = {}) {
   const fixture = drawClassicNexusReaction('harkonnen', 'atreides', { ...options,
-    independent: false, homeworlds: true, roster: ['atreides', 'harkonnen', 'guild'],
+    independent: options.independent ?? false, homeworlds: true, roster: ['atreides', 'harkonnen', 'guild'],
     training: options.skills ? { harkonnen: 'planetologist', atreides: 'warmaster', guild: 'sandmaster' } : undefined });
   const actions = fixture.actions, location = 'homeworld:harkonnen';
   let game = advanceWorldNexusBattle(fixture.game, state => state.phase === 5 && state.active === 'atreides' &&

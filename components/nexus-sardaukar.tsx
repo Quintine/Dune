@@ -23,9 +23,11 @@ export function NexusSardaukar({ game, act, busy }: Props) {
     return (
       <section aria-label="Emperor Nexus active" className="notice">
         <p>
-          Five ordinary Emperor counters count as Sardaukar for this battle.
-          They remain ordinary physical counters; any losses go to the ordinary
-          Tanks.
+          Cunning declared five ordinary Emperor counters as Sardaukar for this
+          battle. An own-Homeworld reserve fee can reduce that group;
+          the selected plan shows the remaining combat pool. These counters
+          retain their ordinary physical identity and go to the ordinary Tanks
+          when lost.
         </p>
       </section>
     );

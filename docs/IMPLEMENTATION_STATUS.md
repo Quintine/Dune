@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 18 October 2026 — Classic independent World/Nexus
+
+Fresh classic independent36/World/Nexus now retains optional14 and original
+phase modules through native setup. Actual Recruits, foreign Harass and
+own-Kaitain Reinforcements/Cunning use the original card/actions. Local fees
+provisionally spend non-role normals first; the shared physical quote reduces
+only paid temporary roles, retaining the original five-counter declaration and
+real Salusa custody. Human/bot source pools and active captions use that split.
+
+Two disjoint fixture lanes and bounded source review were integrated by one
+owner. Frozen15-file128/128, types/lint/build and finite original-action/
+rendered-control smoke pass. Source assertion/type corrections and limitations
+are recorded in the [canonical contract](NEXUS_CARD_RULES.md#classic-independent-world-nexus--18-october-2026).
+No stored room/reset/restart/deployment; complete modes and comprehensive
+assurance remain open.
+
 ## 18 October 2026 — Original World Nexus core
 
 Plain base33 World/Nexus started without native reaction states, and

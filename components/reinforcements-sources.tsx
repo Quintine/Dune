@@ -31,6 +31,6 @@ export function ReinforcementsSources({ game, choices, selected, onChange, busy 
     {choices.length > 1 && <p className="fine" aria-live="polite">
       Selected fee: {reinforcementsSourceLabel(game, choices[selected])}.
     </p>}
-    <p className="notice">Provisional own-World composition: counters paying the fee cannot also fund your physical dial. The original printed face and support traits stay fixed; the bonus adds no physical counters.</p>
+    <p className="notice">Provisional own-World composition: counters paying the fee cannot also fund your physical dial. Ordinary counters without a temporary Sardaukar role pay first; if needed, paying converted counters reduces that role. The original printed face and support traits stay fixed; the bonus adds no physical counters.</p>
   </fieldset>;
 }
