@@ -31,11 +31,16 @@ export function nextHomeworldEcazStep(game: Game): HomeworldEcazStep | null {
   return null;
 }
 
-/** Fresh native World setup, a real worm alliance and paid Arrakis shipments.
- * Only the unopened Spice order is staged; no armies, wallets, phases, alliances
- * or World custody are assigned. The selected skill offers remain the real deal. */
-export function createHomeworldEcazOccupyFixture(options: { advanced?: boolean; skills?: boolean } = {}): HomeworldEcazOccupyFixture {
+/** Fresh native setup (Worlds enabled by default), a real worm alliance and paid
+ * Arrakis shipments. Only unopened Spice order is staged; armies, wallets,
+ * phases, alliances, World custody and offered skills follow the real actions. */
+export function createHomeworldEcazOccupyFixture(options: {
+  advanced?: boolean; skills?: boolean;
+  /** No-World control uses the same genuine alliance/Arrakis route. */
+  homeworlds?: boolean;
+} = {}): HomeworldEcazOccupyFixture {
   const advanced = options.advanced ?? true;
+  const homeworlds = options.homeworlds ?? true;
   let game = createGame('WORLDECAZOCCUPY', newPlayer('ecaz', 'Ecaz', 'ecaz'), advanced, ['ecaz']);
   joinGame(game, newPlayer('emperor', 'Emperor', 'emperor'));
   joinGame(game, newPlayer('guild', 'Guild', 'guild'));
@@ -44,7 +49,7 @@ export function createHomeworldEcazOccupyFixture(options: { advanced?: boolean; 
     actions.push({ actor, action: structuredClone(action) });
     game = applyAction(game, actor, action);
   };
-  act('ecaz', { type: 'homeworlds', enabled: true });
+  if (homeworlds) act('ecaz', { type: 'homeworlds', enabled: true });
   if (options.skills) act('ecaz', { type: 'moduleOption', module: 'leaderSkills', enabled: true });
   for (const player of game.players) act(player.id, { type: 'ready' });
   act('ecaz', advanced ? { type: 'start', advancedPreview: true } : { type: 'start' });
@@ -91,7 +96,8 @@ export function createHomeworldEcazOccupyFixture(options: { advanced?: boolean; 
     const actor = game.active!;
     if (!shipped.has(actor)) {
       act(actor, { type: 'ship', territory: battleTerritory, sector,
-        amount: actor === 'guild' ? 2 : 4, elite: actor === 'emperor' ? 2 : 0, allyPayment: 0 });
+        amount: actor === 'guild' ? 2 : 4,
+        elite: actor === 'emperor' && (advanced || homeworlds) ? 2 : 0, allyPayment: 0 });
       shipped.add(actor);
       reach(homeworldEcazClean);
     }

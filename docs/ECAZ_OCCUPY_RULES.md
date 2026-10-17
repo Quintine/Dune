@@ -2,6 +2,15 @@
 
 Historical primary-source audit, 2026-09-07, corrected after independent verification. The publisher/designer odd-force conflict remains unresolved as a publisher correction. Under the 8 October Basic-first prototype instruction, Basic now provisionally uses the main p8 paragraph: ceiling contribution/loss and floor survivors, with a visible control warning. This is not a numerical ruling by the user or designer. Advanced retains its separately authorized source. The earlier false attribution to Jack Reda remains withdrawn.
 
+## Standalone Ecaz Leader Skills — 17 October 2026
+
+The original native Ecaz/classic Skills profile now reaches the same Arrakis
+coalition without an artificial Nexus or Homeworld dependency. Fresh Basic
+setup records Ecaz participation, while both rules bands reuse the selected
+plan-owner/skill and fixed-versus-variable army rules. The source profile's
+Advanced Harkonnen, Duke assignment and other roster restrictions remain.
+[Current standalone scope and evidence](LEADER_SKILLS_RUNTIME.md#standalone-ecaz-coalition--17-october-2026).
+
 ## Native World reserves with Arrakis Occupy — 17 October 2026
 
 Fresh Ecaz/classic Homeworld games now retain their ordinary Arrakis coalition
@@ -28,7 +37,8 @@ and build pass; four standalone original-action smokes reach Collection.
 Real390px normal-lobby Ecaz + Homeworlds + Skills setup reaches its offered
 skill controls with no app errors or horizontal overflow. That is entry/control
 proof, not a browser-played coalition battle or complete combination acceptance.
-Unopened Spice order is controlled in the fixture; armies, wallets, alliances,
+The fixture reorders unopened Spice; regression shuffles use fixed, scoped
+entropy restored after each case. Runtime smokes retain native entropy. Armies, wallets, alliances,
 World custody and phases follow native actions. Other E3/mixed module envelopes,
 World-location coalition rules and final assurance remain separate.
 

@@ -29,6 +29,18 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Standalone Ecaz Skills coalition — 17 October.** Native Ecaz/classic all14
+Skills now reaches ordinary allied Arrakis battles without Nexus or Worlds.
+Fresh Basic participation and the existing native profile feed the same lead,
+skill and separate-army continuation. Both normal starts were reproduced
+blocked before repair. Actual Basic/Advanced Skills-only programmes reach
+Collection, with no Nexus hand or World state added; all four policies work in
+both modes with/without Worlds and retain physical counters. The affected
+seven-file73/73, types/lint and build pass. Actual390px Skills-only entry has
+no browser errors/overflow. Advanced Harkonnen/shared-Duke and other profile
+guards remain; no complete-mode or deployed claim.
+[Contract](LEADER_SKILLS_RUNTIME.md#standalone-ecaz-coalition--17-october-2026).
+
 **Native World Ecaz Arrakis Occupy — 17 October.** Fresh Ecaz/classic
 Homeworld games no longer need Nexus Cards for their ordinary Arrakis
 coalition, including the supported native Skills entry. Basic setup now marks

@@ -1,5 +1,26 @@
 # Dune implementation status
 
+## 17 October 2026 — Independent native Ecaz Skills coalition
+
+Both Basic and Advanced normal Ecaz/classic Skills-only starts were rejected
+because coalition admission required an unrelated Nexus/World composition.
+The existing native Ecaz Skills profile now admits the original Arrakis
+coalition; fresh setup marks Basic participation. No new skill arithmetic,
+alliance, army, card source, Nexus hand or World custody is invented.
+Advanced Harkonnen/shared-Duke and other profile guards remain.
+
+The original World coalition programme supplies a no-World control using
+genuine setup, worm alliance and paid shipments. Both Skills-only runtime
+smokes reach Collection; four policies in each mode with/without Worlds retain
+all normal and starred counters. The affected seven-file73/73, types/lint and
+build pass. Final deterministic ten-case rerun and types/lint pass after
+scoping/restoring regression entropy; the runtime smokes use native randomness.
+Actual390px normal-lobby Skills-only Ecaz setup presents its real
+offer with no browser errors or overflow. Coalition behaviour is engine proof,
+not a browser-played battle. Final assurance/calibration/combination acceptance
+remain open; no deployment or saved-game conversion occurs.
+[Current native Skills scope](LEADER_SKILLS_RUNTIME.md#standalone-ecaz-coalition--17-october-2026).
+
 ## 17 October 2026 — Native World Ecaz Arrakis coalition
 
 The existing native World occupation and World/Skills setups could deal Ecaz

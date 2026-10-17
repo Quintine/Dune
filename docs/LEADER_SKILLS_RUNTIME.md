@@ -7,8 +7,33 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Standalone Ecaz coalition — 17 October 2026
+
+Native Ecaz/classic all-fourteen Skills no longer needs Nexus Cards or
+Homeworlds to resolve its ordinary allied Arrakis battle. The original native
+profile now feeds the existing coalition and fresh setup marks participation in
+Basic as well as Advanced. The selected lead supplies its own plan/skill; fixed
+Ecaz and variable allied armies keep separate physical losses, cancellation,
+normal skill effects and mandatory card cleanup.
+
+This removes an artificial setup dependency, not the native profile's source
+boundaries: Advanced Harkonnen, shared-Duke assignment and unsupported
+roster/module combinations remain guarded. No starting Nexus hand or World
+custody is created for Skills-only games, and no played table is redealt.
+
+Both actual Skills-only normal starts failed at coalition admission before the
+change; Basic and Advanced now reach Collection through original setup, a real
+worm alliance and paid shipments. Four policies are exercised in each mode
+with and without Worlds, retaining all physical counters. The affected
+seven-file73/73, types/lint and build pass. Regression entropy is scoped and
+restored per case; the final deterministic ten-case file also passes. Standalone
+runtime smokes retain native randomness. A390px normal-lobby Skills-only
+Ecaz start shows its actual offered cards with Nexus/Worlds unchecked and no
+app errors or overflow. Browser evidence is entry/controls, not a played
+coalition battle or final acceptance.
+
 13 September 2026. This is **Prototyped**, with **Partial** rules coverage.
-Normal mode starts and publication remain gated. The [source contract](LEADER_SKILLS_RULES.md)
+Normal lobby access now exposes supported previews; full rules-mode acceptance and publication remain gated. The [source contract](LEADER_SKILLS_RULES.md)
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
 records the fresh publisher/designer search requested by the user.
 

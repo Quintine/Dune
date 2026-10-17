@@ -10,6 +10,15 @@ import { createHomeworldEcazOccupyFixture, homeworldEcazClean, nextHomeworldEcaz
 const player = (game: Game, id: string) => game.players.find(p => p.id === id)!;
 const leader = (game: Game, id: string, strongest: boolean) => player(game, id).leaders
   .filter(l => !l.dead && !l.usedAt).sort((a, b) => strongest ? b.strength - a.strength : a.strength - b.strength)[0].id;
+/** Keep the real shuffles deterministic; node:test restores the crypto method
+ * after each case, including failures. Event UUIDs do not affect bot variation. */
+function fixedEntropy(t: test.TestContext): void {
+  t.mock.method(crypto, 'getRandomValues', <T extends ArrayBufferView | null>(array: T): T => {
+    assert.ok(array instanceof Uint32Array);
+    array.fill(0);
+    return array;
+  });
+}
 function revealAndFinish(state: Game, mixedLoss = false): Game {
   let game = state;
   while (game.battle) {
@@ -35,7 +44,8 @@ function revealAndFinish(state: Game, mixedLoss = false): Game {
 }
 
 for (const advanced of [false, true]) for (const lead of ['ecaz', 'ally'] as const)
-  void test(`${advanced ? 'Advanced' : 'Basic'} native Worlds ${lead} lead keeps separate typed Arrakis Occupy losses and original World custody`, () => {
+  void test(`${advanced ? 'Advanced' : 'Basic'} native Worlds ${lead} lead keeps separate typed Arrakis Occupy losses and original World custody`, t => {
+    fixedEntropy(t);
     const f = createHomeworldEcazOccupyFixture({ advanced });
     const actor = lead === 'ecaz' ? f.ecaz : f.ally;
     let game = openEcazOccupyPlans(chooseEcazOccupyLead(f, lead));
@@ -62,7 +72,8 @@ for (const advanced of [false, true]) for (const lead of ['ecaz', 'ally'] as con
   });
 
 for (const lead of ['ecaz', 'ally'] as const)
-  void test(`native World Karama prevention keeps ${lead} as lead and spares the excluded allied army`, () => {
+  void test(`native World Karama prevention keeps ${lead} as lead and spares the excluded allied army`, t => {
+    fixedEntropy(t);
     const f = createHomeworldEcazOccupyFixture();
     const actor = lead === 'ecaz' ? f.ecaz : f.ally;
     const excluded = actor === f.ecaz ? f.ally : f.ecaz;
@@ -88,9 +99,11 @@ for (const lead of ['ecaz', 'ally'] as const)
     assert.deepEqual(game.homeworlds!.custody, before.homeworlds!.custody);
   });
 
-void test('all four legal profiles complete the native World Skills coalition and retain physical source integrity', () => {
+for (const advanced of [false, true]) for (const homeworlds of [false, true])
+  void test(`all four ${advanced ? 'Advanced' : 'Basic'} Ecaz Skills profiles complete a coalition ${homeworlds ? 'with' : 'without'} Worlds`, t => {
+  fixedEntropy(t);
   for (const difficulty of DIFFICULTIES) {
-    const f = createHomeworldEcazOccupyFixture({ skills: true });
+    const f = createHomeworldEcazOccupyFixture({ advanced, skills: true, homeworlds });
     let game = f.game;
     for (let n = 0; n < 150 && game.phase === 6; n++) {
       let next;
@@ -106,6 +119,11 @@ void test('all four legal profiles complete the native World Skills coalition an
     assert.equal(game.phase, 7, difficulty);
     assert.ok(game.lastBattleContext!.combatants.includes(f.opponent));
     assert.equal(game.battle, null);
-    homeworldGameIntegrity(game);
+    for (const p of game.players) {
+      assert.equal(p.reserves + p.tanks + Object.values(p.forces).reduce((sum, n) => sum + n, 0), 20);
+      if (p.elites) assert.equal(p.elites.reserves + p.elites.tanks +
+        Object.values(p.elites.forces).reduce((sum, n) => sum + n, 0), 5);
+    }
+    if (homeworlds) homeworldGameIntegrity(game);
   }
 });

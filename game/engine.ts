@@ -1,7 +1,7 @@
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
-import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, homeworldLeaderSkillsProfile, classicIndependentLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
+import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, homeworldLeaderSkillsProfile, classicIndependentLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -10518,6 +10518,7 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
   return initialized;
 }
 function ecazOccupyCompositionSupported(g: Game): boolean {
+  if (g.leaderSkills && nativeEcazLeaderSkillsProfile(g)) return true;
   if (g.ecazOccupyPreview === true && (mixedE3NexusProfile(g) || standaloneE3NexusProfile(g) || pairedE3NexusProfile(g)) &&
     g.players.some(player => player.faction === 'ecaz')) return true;
   if (g.leaderSkills && (mixedE3NexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g) || pairedE3NexusLeaderSkillsProfile(g)) &&
@@ -10729,7 +10730,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g), independent);
   if (advancedMoritaniLeaderSkillsProfile(initialized) || ((mixedE3 || pairedE3) && initialized.advanced &&
     byFaction(initialized, 'moritani'))) initializeMoritaniAssassinateState(initialized);
-  if ((mixedE3 || homeworlds || nativeDiscoveryLeaderSkillsProfile(initialized) || pairedE3) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
+  if ((nativeEcazLeaderSkillsProfile(initialized) || mixedE3 || homeworlds || nativeDiscoveryLeaderSkillsProfile(initialized) || pairedE3) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   return initialized;
 }
 /** Independent cards keep the actual selected base/E1/E2 physical families. */
