@@ -111,8 +111,7 @@ void test('Bureaucrat eligibility stays recipient-specific and a saved payment o
   assert.equal(options(settled, 'p').available, 25);
   const unsupported = structuredClone(g);
   unsupported.expansions.push('ix');
-  assert.equal(options(unsupported, 'p').targets.find(p => p.id === 'e')!.maximum, 4);
-  assert.equal(options(unsupported, 'p').targets.find(p => p.id === 'b')!.maximum, 30);
+  assert.throws(() => options(unsupported, 'p'));
   reject(unsupported, 'p', { type: 'bribe', target: 'e', amount: 5 });
 });
 

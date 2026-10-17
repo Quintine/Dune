@@ -163,7 +163,7 @@ async function restored(f: Fixture, g: Game) {
     }
     if (view.nexusIxianReplacement) {
       const offer = view.nexusIxianReplacement;
-      assert.deepEqual(Object.keys(offer).sort(), ['event', 'buyer', 'canPass', 'canUse', 'blocked', 'purchased'].sort());
+      assert.deepEqual(Object.keys(offer).sort(), ['event', 'buyer', 'canPass', 'canUse', 'blocked', 'purchased', 'origin'].sort());
       assert.equal(offer.event, f.event);
       assert.equal(offer.buyer, f.buyer);
       assert.equal(offer.canPass, auth.playerId === f.buyer);

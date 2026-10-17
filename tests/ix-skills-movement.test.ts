@@ -114,7 +114,7 @@ void test('all fourteen physical skills reach genuine Ix card selection, Traitor
   assert.equal(player(offers, 't').faceDancers, undefined);
 });
 
-void test('genuine ready Ix lobbies keep public starts closed and initialize the supported native module profiles', () => {
+void test('genuine ready Ix lobbies initialize the supported native module profiles', () => {
   const lobby = () => {
     let g = createGame('IXGATED', newPlayer('i', 'Ixians', 'ixians'), false, ['ix']);
     joinGame(g, newPlayer('t', 'Tleilaxu', 'tleilaxu'));
@@ -122,7 +122,6 @@ void test('genuine ready Ix lobbies keep public starts closed and initialize the
     for (const p of g.players) g = act(g, p.id, {type: 'ready'});
     return g;
   };
-  reject(lobby(), 'i', {type: 'start'});
   // The supported native Advanced, Discovery, Tech Token and Homeworld
   // profiles now initialize for a fresh Ix lobby without mutating it.
   for (const change of [

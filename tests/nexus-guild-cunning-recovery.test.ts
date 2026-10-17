@@ -84,6 +84,13 @@ async function act(f: Fixture, seat: number, action: Action) {
   await f.restart().act(f.code, f.auths[seat], g.version, action, clock);
   return f.restart().readRoom(f.code);
 }
+async function allowShipment(f: Fixture, g: Game): Promise<Game> {
+  while (g.response && ['guildTransportPermission', 'guildRate'].includes(g.response.kind)) {
+    const voter = g.players.find(p => p.id !== g.response!.owner && !g.response!.passed.includes(p.id))!;
+    g = await act(f, f.ids.indexOf(voter.id), { type: 'passResponse' });
+  }
+  return g;
+}
 async function restored(f: Fixture, g: Game) {
   const before = row(f),
     rooms = f.restart();
@@ -366,7 +373,9 @@ void test('SQLite restores the first Guild turn and lost Cunning declaration the
       amount: 3,
     };
     await compete(f, allowed.version, shipment);
-    const done = await f.restart().readRoom(f.code);
+    const waiting = await f.restart().readRoom(f.code);
+    await restored(f, waiting);
+    const done = await allowShipment(f, waiting);
     assert.equal(done.players[0].spice, 15);
     assert.equal(done.players[0].reserves, 12);
     assert.equal(done.players[0].forces['carthag:11'], 3);
@@ -436,6 +445,8 @@ void test('SQLite late Hajr restores one extra move after the second shipment wi
       amount: 3,
     });
     await restored(f, shipped);
+    const settled = await allowShipment(f, shipped);
+    await restored(f, settled);
     const extra = await act(f, 0, { type: 'card', card: f.hajr });
     await restored(f, extra);
     const done = await act(f, 0, {

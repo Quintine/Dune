@@ -78,11 +78,19 @@ void test('Suboid effect survives a second battle in the same turn and expires w
   g = applyAction(g, 'p', { type: 'chooseBattle', territory: 'hagga_basin', target: 'q' });
   assert.notEqual(g.battle!.event, first);
   assert.equal(viewGame(g, 'p').battle!.ownForces!.normalFreeSupport, true);
-  // Advancing only the public turn tests the receipt's lifetime independently
-  // of this staged second battle; no result or previous casualty is recomputed.
-  g.turn++;
+  const turn = g.turn;
+  for (let i = 0; g.turn === turn && i < 150; i++) {
+    let acted = false;
+    for (const p of g.players) {
+      const view = viewGame(g, p.id); view.players.find(x => x.id === p.id)!.bot = 'Easy';
+      const action = botActions(view)[0];
+      if (action) { g = applyAction(g, p.id, action); acted = true; break; }
+    }
+    assert.ok(acted, `Next-turn continuation stalled at ${g.phase}/${g.decision?.kind}/${g.response?.kind}`);
+  }
+  assert.equal(g.turn, turn + 1);
   assert.equal(viewGame(nexusReload(g), 'p').nexusSuboids!.active, false);
-  assert.equal(viewGame(g, 'p').battle!.ownForces!.normalFixedHalf, true);
+  assert.equal(g.battle, null);
   assert.equal(g.nexusSuboidHistory!.length, 1);
 });
 void test('stale, foreign, repeated and post-submission Cunning attempts reject unchanged', () => {

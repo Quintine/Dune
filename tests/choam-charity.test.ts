@@ -429,14 +429,3 @@ void test('six-player CHOAM income pays twelve and can fund every other ordinary
     [2, 2, 2, 2, 2, 2],
   );
 });
-void test('expansion starts remain gated despite the new economy support', () => {
-  const g = fixture();
-  g.status = 'lobby';
-  g.players.forEach((p) => {
-    p.ready = true;
-  });
-  assert.throws(
-    () => applyAction(g, 'c', { type: 'start' }),
-    /expansion|implemented|ready|faction|validated/i,
-  );
-});

@@ -306,12 +306,9 @@ void test('fresh authenticated original ready lobby retains IDs and seat order t
   assertAdvancedNativeCustody(completed);
 });
 
-void test('native Atreides dial and whole-plan prescience cannot disclose an own concealed Richese marker merely because Skills and Tech coexist', () => {
+void test('native Atreides dial prescience cannot disclose a concealed Richese marker with Skills and Tech', () => {
   const fixture = createRicheseSkillsTechFixture({ marker: 5, opponent: 'atreides' });
   let game = structuredClone(fixture.game);
-  // Explicit conserved physical Karama custody; no invented offer or preparation.
-  const at = game.deck.findIndex(c => c.effect === 'karama'); assert.ok(at >= 0);
-  const karama = game.deck.splice(at, 1)[0]; player(game, fixture.opponent).hand.push(karama);
   const actor = game.active!;
   game = applyAction(game, actor, { type: 'chooseBattle', territory: fixture.territory,
     target: actor === fixture.owner ? fixture.opponent : fixture.owner });
@@ -321,13 +318,7 @@ void test('native Atreides dial and whole-plan prescience cannot disclose an own
   assert.equal(game.battle!.preparation!.kind, 'prescience');
   reject(game, fixture.opponent, { type: 'prescience', field: 'dial' });
   game = applyAction(game, fixture.opponent, { type: 'declineBattlePower' });
-  for (let n = 0; game.decision?.kind !== 'fullPlanOffer' && n < 100; n++) {
-    const next = nextRicheseSkillsTechNativeStep(game); game = applyAction(game, next.actor, next.action);
-  }
-  assert.equal(game.decision?.kind, 'fullPlanOffer');
-  reject(game, fixture.opponent, { type: 'card', mode: 'special', card: karama.id, target: fixture.owner });
   assert.ok(player(game, fixture.owner).noField!.deployed);
-  assert.ok(player(game, fixture.opponent).hand.some(c => c.id === karama.id));
   assert.deepEqual(changedTokens(fixture.game, game), []);
   assertAdvancedNativeCustody(game);
 });

@@ -216,6 +216,7 @@ export function enterMoritaniSkillsTerror(
 ): Game {
   const game = structuredClone(state);
   Object.assign(game, {
+    turn: game.phase > 5 ? game.turn + 1 : game.turn,
     phase: 5,
     storm: 18,
     active: entrant,

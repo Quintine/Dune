@@ -104,6 +104,9 @@ void test('human event-bound Use and Pass handlers settle real saved purchases a
         }
       }
       assert.equal(viewGame(game, fixture.holder).richeseBetrayalReaction, null);
+      const purchase = game.pendingNexusEmperorSellerPurchase;
+      if (purchase) game = applyAction(game, purchase.winner,
+        { type: 'nexusEmperorSellerPurchase', event: purchase.event, use: false });
       const buyer = game.players.find(player => player.id === fixture.buyer)!;
       const vetoed = use && kind === 'purchase';
       assert.equal(buyer.hand.some(card => card.id === fixture.card), !vetoed);

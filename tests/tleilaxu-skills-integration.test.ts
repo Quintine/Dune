@@ -55,7 +55,7 @@ function exchange(g: Game, owner: string) {
   return act(g, owner, { type: 'decision', event, cards: [r.drawn[0], r.eligible[0]] });
 }
 
-void test('all fourteen skills admit genuine Basic Tleilaxu setup while public, Richese and module gates remain closed', () => {
+void test('all fourteen skills admit genuine Basic Tleilaxu setup while Richese and module gates remain closed', () => {
   for (const card of LEADER_SKILL_CARDS) {
     const game = completedTleilaxuSkillsGame({ requestedSkill: card.id });
     assert.equal(game.leaderSkills!.assignments.find(a => a.owner === 't')!.skill, card.id);
@@ -77,8 +77,6 @@ void test('all fourteen skills admit genuine Basic Tleilaxu setup while public, 
     joinGame(g,newPlayer('e','Emperor','emperor'));g.players.forEach(p => {p.ready = true;});mutate(g);
     const before = JSON.stringify(g);assert.throws(() => initializeLeaderSkillsGameForAudit(g));assert.equal(JSON.stringify(g),before);
   }
-  const lobby = createGame('TLEIPUBL',newPlayer('t','Tleilaxu','tleilaxu'),false,['ix']);
-  joinGame(lobby,newPlayer('e','Emperor','emperor'));lobby.players.forEach(p => {p.ready = true;});reject(lobby,'t',{type:'start'});
 });
 
 void test('native Rihani keeps a private Face Dancer, returns only an old unrevealed card and survives JSON across every choice', () => {

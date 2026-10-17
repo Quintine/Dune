@@ -115,6 +115,7 @@ void test('full-plan inspection and public reveal show the exact commitment with
     allLeaders: [],
     battle: {
       revealed: false,
+      noFieldPlayers: [],
       fullPlan: { owner: 'atreides', target: 'emperor' },
       fullPlanInsight: { target: 'emperor', plan, cards: [] },
     },

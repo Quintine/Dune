@@ -117,6 +117,7 @@ void test('Terror Assassination returns exactly the killed leader skill once and
 
   const restored = reloadMoritaniSkillsGame(killed);
   Object.assign(restored, {
+    turn: restored.turn + 1,
     phase: 4,
     active: null,
     ready: [],

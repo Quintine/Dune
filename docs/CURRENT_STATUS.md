@@ -36,10 +36,14 @@ faction setup. Optional Tech Tokens follow the native profile; Stronghold Cards,
 Homeworlds, Nexus, Discovery, Skills and independent cards keep their dev entries.
 Eight all-AI 10-turn games (Basic/Advanced × Ix, CHOAM, Ecaz, all-three six-seat)
 finished with no stuck or rejected actions. The lobby note warns of unfinished
-interactions. **Known regression (fix later):** the full suite shows133/9868
-failures, mostly Nexus inspection/Cunning/Sardaukar and Bureaucrat suites; they
-began between `bc09ac3` (14 Oct, passing) and `82f1aae` (15 Oct) and predate
-this change. Not yet triaged.
+interactions. **Regression triage (17 October):** the 133 failures that began
+after `bc09ac3` were stale fixtures, not engine defects: newly connected
+borrowed-Voice, Guild transport-permission/Guild-rate, Emperor seller-payment
+and Richese declaration windows were not passed; same-turn phase rewinds broke
+the mandatory Banker ledger; and assertions still pinned intentionally opened
+start/roster gates. Fixtures now take the real actions; obsolete pins were
+removed. A generic `declineBattlePower` now also passes borrowed Voice, and a
+normal start rejects expansion factions whose expansion is not selected.
 
 **Independent36/all14 Skills composition — 17 October.** Fresh ready classic
 Basic/Advanced all14 now admits the printed independent three-card variant

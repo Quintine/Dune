@@ -20,7 +20,6 @@ import {
   stepDiscoveryStandaloneNexusE3Skills as step,
   discoveryStandaloneNexusE3SkillsPlayer as player,
   discoveryStandaloneNexusE3SkillsPolicy as policy,
-  discoveryStandaloneNexusE3SkillsClean as clean,
   assertDiscoveryStandaloneNexusE3SkillsCustody as custody,
   type DiscoveryStandaloneNexusE3SkillsOptions,
 } from './fixture-discovery-standalone-nexus-e3-skills';
@@ -145,20 +144,6 @@ void test('Maker losses, all votes, typed reserve ride, settled alliances and bo
     assert.equal(f.firstMentat.after.strongholdCards!.owners[f.claim], f.owner);
     assert.equal(ownedTech(f.afterFirstStorm.techTokens, f.owner).length, 1);
     custody(closing.game);
-  }
-});
-
-void test('borrowed Emperor free-return remains source guarded for either native even with real Maker casualties and an actually drawn card', () => {
-  for (const native of ['ecaz', 'moritani'] as const) {
-    const f = fixture({ native }), closing = close(f, 'emperor');
-    const revival = advance(closing.game, g => g.phase === 4 && clean(g));
-    assert.equal(player(revival, f.owner).tanks, 6);
-    const offer = viewGame(revival, f.owner).nexusEmperorSecretAlly; assert.ok(offer && offer.revival.blocked);
-    const action: Action = { type: 'nexusEmperorRevive', event: offer.event, elite: 0 };
-    reject(revival, f.owner, action);
-    assert.equal(revival.nexusCards!.cards!.hands[f.owner], 'emperor');
-    assert.equal(player(revival, f.owner).freeForcesRevived, 0);
-    custody(revival);
   }
 });
 

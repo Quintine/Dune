@@ -78,7 +78,12 @@ for (const kind of ['emperorIncome', 'richesePurchaseIncome'] as SemutaEmperorIn
         const next = nextSemutaEmperorIncomeStep(done);
         assert.equal(next.actor, f.buyer);
         assert.throws(() => applyAction(done, f.owner, next.action), 'Emperor cannot answer the original Richese decision');
-        const resumed = applyAction(done, next.actor, next.action);
+        let resumed = applyAction(done, next.actor, next.action);
+        // Seats still holding an eligible Karama answer the declaration window explicitly.
+        for (let n = 0; resumed.response?.kind === 'richeseAuction' && n < resumed.players.length; n++) {
+          const passer = resumed.players.find(seat => !resumed.response!.passed.includes(seat.id) && seat.id !== resumed.response!.owner)!;
+          resumed = applyAction(resumed, passer.id, { type: 'passResponse' });
+        }
         assert.equal(resumed.decision!.kind, 'richeseCache');
         assert.equal(resumed.decision!.player, f.buyer,
           'Native declaration opens its actual cache choice, after automatic uncanceled acknowledgements');

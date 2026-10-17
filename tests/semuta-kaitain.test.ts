@@ -117,7 +117,9 @@ for (const advanced of [false, true]) {
     assert.equal(resumed.choamMarket?.owner, f.choam);
     assert.equal(resumed.choamMarket?.resume, 'phase');
     assert.equal(viewGame(resumed, f.choam).biddingEnd?.canAct, true);
-    const choamFinished = applyAction(resumed, f.choam, { type: 'biddingEnd', event: f.event, mode: 'ready' });
+    // A card-less CHOAM may already have finished automatically; Emperor must still re-acknowledge.
+    const choamFinished = resumed.biddingEnd!.ready.includes(f.choam) ? resumed
+      : applyAction(resumed, f.choam, { type: 'biddingEnd', event: f.event, mode: 'ready' });
     assert.equal(choamFinished.phase, 3, 'Earlier Emperor readiness cannot finish a changed closing window');
     const finished = applyAction(choamFinished, f.owner, { type: 'biddingEnd', event: f.event, mode: 'ready' });
     assert.equal(finished.phase, 4);

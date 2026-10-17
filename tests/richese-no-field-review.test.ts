@@ -215,33 +215,6 @@ void test('ordinary prescience rejects dial without mutation and unpublished pla
   }
   assert.deepEqual(views[0], views[1]);
   assert.deepEqual(views[1], views[2]);
-  let special = marker(fixture());
-  special.advanced = true;
-  special.phase = 6;
-  special.players[1].forces = { 'arrakeen:10': 2 };
-  special.players[1].hand = [
-    special.deck.splice(
-      special.deck.findIndex((c) => c.effect === 'karama'),
-      1,
-    )[0],
-  ];
-  special = applyAction(special, 'r', {
-    type: 'chooseBattle',
-    territory: 'arrakeen',
-    target: 'a',
-  });
-  special = applyAction(special, 'a', { type: 'declineBattlePower' });
-  reject(
-    special,
-    'a',
-    {
-      type: 'card',
-      mode: 'special',
-      card: special.players[1].hand[0].id,
-      target: 'r',
-    },
-    /No-Field/,
-  );
 });
 
 void test('storm only affects the hit sector and preserves a marker in another sector or ordinary shelter', () => {

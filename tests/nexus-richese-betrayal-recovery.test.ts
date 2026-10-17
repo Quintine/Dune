@@ -118,6 +118,11 @@ async function act(f: Fixture, id: string, action: Action) {
   await rooms.act(f.code, await authenticate(f, id), current.version, action, clock);
   return f.restart().readRoom(f.code);
 }
+/** Original Emperor-retention seller payment: the winning buyer explicitly pays. */
+async function paySeller(f: Fixture, g: Game) {
+  const frame = g.pendingNexusEmperorSellerPurchase;
+  return frame ? act(f, frame.winner, { type: 'nexusEmperorSellerPurchase', event: frame.event, use: false }) : g;
+}
 const pass = (event: string): Action => ({ type: 'richeseBetrayalPass', event });
 const use = (event: string): Action => ({ type: 'richeseBetrayalUse', event });
 function publicReaction(g: Game, id: string) {
@@ -178,7 +183,7 @@ async function passOthers(f: Fixture, g: Game) {
 async function allPass(f: Fixture, g: Game) {
   g = await passOthers(f, g);
   await restored(f, g);
-  return act(f, f.holder, pass(f.event));
+  return paySeller(f, await act(f, f.holder, pass(f.event)));
 }
 function spentOnce(f: Fixture, g: Game) {
   assert.equal(g.nexusCards!.cards!.hands[f.holder], null);
@@ -249,7 +254,7 @@ for (const scenario of [
   void test(`SQLite saved ${scenario.advanced ? 'Advanced' : 'Basic'} ${scenario.source} sale diversion preserves original payers, card and one Harkonnen bonus`, async t => {
     const f = await fixture(t, 'sale', scenario);
     await restored(f, f.initial);
-    const done = await act(f, f.holder, use(f.event));
+    const done = await paySeller(f, await act(f, f.holder, use(f.event)));
     spentOnce(f, done);
     sold(f, done, true, scenario.allyPayment);
     await restored(f, done);
@@ -315,8 +320,9 @@ for (const kind of ['purchase', 'sale'] as const) {
     assert.equal(results.filter(result => result.status === 'fulfilled').length, 1);
     assert.equal(results.filter(result => result.status === 'rejected').length, 1);
     assert.deepEqual(f.writes.map(write => write.changes).sort((a,b) => a - b), [0, 1]);
-    const done = await f.restart().readRoom(f.code);
-    assert.equal(done.version, pending.version + 1);
+    const committed = await f.restart().readRoom(f.code);
+    assert.equal(committed.version, pending.version + 1);
+    const done = await paySeller(f, committed);
     const used = results[1].status === 'fulfilled';
     assert.equal(done.nexusCards!.cards!.hands[f.holder], used ? null : 'richese');
     assert.equal(done.richeseBetrayal!.completed.length, 1);

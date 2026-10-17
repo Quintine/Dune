@@ -9,6 +9,11 @@ import { createRicheseBetrayalFixture } from './fixture-richese-betrayal';
 function saved(game: Game): Game {
   return JSON.parse(JSON.stringify(game));
 }
+function payOriginalSeller(game: Game): Game {
+  const purchase = game.pendingNexusEmperorSellerPurchase;
+  return purchase ? applyAction(game, purchase.winner,
+    { type: 'nexusEmperorSellerPurchase', event: purchase.event, use: false }) : game;
+}
 
 void test('all four profiles commit the saved purchase veto and sale diversion from their private projection', () => {
   for (const profile of DIFFICULTIES) {
@@ -30,7 +35,7 @@ void test('all four profiles commit the saved purchase veto and sale diversion f
       assert.deepEqual(actions, [{ type: 'richeseBetrayalUse', event: reaction.event }]);
       const balances = game.players.map(player => player.spice);
       const buyerCount = game.players.find(player => player.id === fixture.buyer)!.hand.length;
-      const result = saved(applyAction(game, fixture.holder, actions[0]));
+      const result = saved(payOriginalSeller(applyAction(game, fixture.holder, actions[0])));
       assert.equal(viewGame(result, fixture.holder).richeseBetrayalReaction, null);
       assert.ok(result.nexusCards?.cards?.discard.includes('richese'));
       if (kind === 'purchase') {
@@ -71,6 +76,7 @@ void test('all profiles pass publicly possible nonholder boundaries through save
         }
       }
       assert.equal(viewGame(game, fixture.holder).richeseBetrayalReaction, null);
+      game = saved(payOriginalSeller(game));
       assert.ok(game.players.find(player => player.id === fixture.buyer)!.hand.some(card => card.id === fixture.card));
       assert.equal(game.players.find(player => player.id === fixture.buyer)!.spice,
         fixture.game.players.find(player => player.id === fixture.buyer)!.spice - original.price);

@@ -289,7 +289,6 @@ for (const advanced of [false, true]) {
     const f = fixture(advanced);
     const game = reload(f.game);
     reject(game, f.atreides, { type: 'prescience', field: 'weapon' });
-    reject(game, f.atreides, { type: 'declineBattlePower' });
     reject(game, f.atreides, { type: 'battlePlan', leader: player(game, f.atreides).leaders[0].id,
       dial: 0, support: 0, weapon: null, defense: null });
     const inspection = viewGame(game, f.atreides).nexusAtreides;
