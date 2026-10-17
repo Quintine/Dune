@@ -297,7 +297,10 @@ for (const cancel of [false, true])
     for (const route of ['reserve', 'cross'] as const) {
       const f = await fixture(route, true);
       try {
-        const announced = await f.action(0, f.shipment);
+        let announced = await f.action(0, f.shipment);
+        // Native cross-planet transport first opens its permission window.
+        if (announced.response?.kind === 'guildTransportPermission')
+          announced = await f.action(2, { type: 'passResponse' });
         assert.equal(announced.response?.kind, 'guildRate');
         assert.equal(announced.players[0].spice, 20);
         assert.equal(announced.players[0].shipped, false);

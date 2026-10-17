@@ -164,7 +164,13 @@ function movement(g: Game, actor: string) {
 }
 function allowShipment(g: Game) {
   assert.equal(g.decision?.kind, 'guildShipment');
-  return applyAction(reload(g), 'g', { type: 'decision', allow: true });
+  let done = applyAction(reload(g), 'g', { type: 'decision', allow: true });
+  // Native Guild-rate shipments first offer the discount to Karama; pass it.
+  while (done.response?.kind === 'guildRate') {
+    const passer = done.players.find(p => !done.response!.passed.includes(p.id) && p.id !== done.response!.owner)!;
+    done = applyAction(reload(done), passer.id, { type: 'passResponse' });
+  }
+  return done;
 }
 function settle(g: Game, responder: string, karama: string, cancel: boolean) {
   const original = reload(g);

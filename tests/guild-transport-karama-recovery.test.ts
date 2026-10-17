@@ -46,8 +46,16 @@ void test('a restarted room resolves exactly one canceled multi-sector Guild tra
       type: 'guildShip', forces: { 'pasty_mesa:5': 1, 'pasty_mesa:6': 2 },
       territory: 'carthag', sector: 11, allyPayment: 0,
     }, clock);
-    const offered = await store.restart().readRoom(code);
-    assert.equal(offered.version, g.version + 1);
+    // Native cross-planet transport first opens its permission window; pass it.
+    let permission = await store.restart().readRoom(code), passes = 0;
+    while (permission.response?.kind === 'guildTransportPermission') {
+      const index = ids.findIndex(id => id !== permission.response!.owner && !permission.response!.passed.includes(id));
+      await store.restart().act(code, seats[index], permission.version, { type: 'passResponse' }, clock);
+      permission = await store.restart().readRoom(code);
+      passes++;
+    }
+    const offered = permission;
+    assert.equal(offered.version, g.version + 1 + passes);
     assert.equal(offered.response?.kind, 'guildRate');
     assert.equal(offered.pendingGuildTransport?.cost, 2);
     assert.equal(offered.players[0].spice, 20);

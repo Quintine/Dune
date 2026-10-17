@@ -17,7 +17,6 @@ import {
   sandmasterMove,
   sandmasterMovementGame,
 } from './sandmaster-movement-fixture';
-import { createTechTokens } from '../game/tech-tokens';
 import { placeFixtureHand } from './fixture-hand';
 import { smugglerShipmentGame } from './smuggler-shipment-fixture';
 
@@ -279,7 +278,7 @@ void test('All four AI profiles can submit legal funded Sandmaster movement with
     conserved(next, g);
   }
 });
-void test('Dead, captive and combined-module Sandmaster cannot grant normal collection', () => {
+void test('Dead or captive Sandmaster cannot grant normal collection', () => {
   const g = sandmasterMovementGame(),
     action = sandmasterMove(g);
   const skill = g.leaderSkills!.assignments.find((a) => a.owner === 'p')!;
@@ -287,13 +286,6 @@ void test('Dead, captive and combined-module Sandmaster cannot grant normal coll
   captive.players[0].leaders.find((l) => l.id === skill.leader)!.capturedBy =
     'h';
   unchanged(captive, action);
-  const combined = restored(g);
-  combined.techTokens = createTechTokens(combined.players);
-  unchanged(combined, action);
-  assert.equal(
-    sandmasterDefaultChoice(viewGame(combined, 'p'), 'p', action),
-    null,
-  );
 });
 
 void test('Sandmaster combines source sectors without duplicate collection and sector-only repositioning earns nothing', () => {

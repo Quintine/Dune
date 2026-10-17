@@ -8406,6 +8406,10 @@ function baseStartProfileBlock(g: Game): string | null {
     return 'Separate development profiles cannot be enabled by a normal start.';
   const expansionFactions = g.expansions.length > 0 ||
     !g.players.every(p => FACTIONS.some(entry => entry.id === p.faction && entry.expansion === 'base'));
+  if (expansionFactions && !g.players.every(p => {
+    const family = FACTIONS.find(entry => entry.id === p.faction)?.expansion;
+    return family === 'base' || (!!family && g.expansions.includes(family));
+  })) return 'Expansion factions require their expansion to be selected.';
   if (expansionFactions && g.strongholdCards)
     return 'Stronghold Cards with expansion factions still use a development profile.';
   if (expansionFactions && g.techTokens && !nativeFactionTechProfile(g))

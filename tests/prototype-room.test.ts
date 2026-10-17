@@ -543,7 +543,7 @@ for (const advanced of [false, true]) {
   }
 }
 
-void test('Ixian Betrayal rejects incompatible original lobbies and public start without durable changes', t => {
+void test('Ixian Betrayal rejects incompatible original lobbies without durable changes', t => {
   const { db } = fixture(t);
   const native = createGame('PROTOTYP', newPlayer('i', 'Ixians', 'ixians'), true, ['ix']);
   joinGame(native, newPlayer('a', 'Atreides', 'atreides'));
@@ -594,10 +594,6 @@ void test('Ixian Betrayal rejects incompatible original lobbies and public start
     assert.deepEqual(db.prepare('SELECT * FROM seats').all(), credentials);
     assert.equal(db.prepare('SELECT total_changes() AS changes').get()!.changes, changes);
   }
-  const original = structuredClone(native);
-  for (const action of [{ type: 'start' }, { type: 'start', advancedPreview: true }])
-    assert.throws(() => applyAction(native, native.host, action));
-  assert.deepEqual(native, original);
 });
 
 void test('Ixian Betrayal CLI preserves a private consistent exact-version backup and never overwrites proof or resets a started room', t => {

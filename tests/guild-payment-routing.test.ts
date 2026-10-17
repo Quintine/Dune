@@ -169,6 +169,9 @@ void test('Guild income from either contributor direction can be allowed or canc
         const card = holdKarama(g, 'a');
         const beforeGuild = player(g, 'g').spice;
         let pending = applyAction(g, shipper, shipment(route, 1));
+        // Native cross-planet transport first opens its permission window.
+        if (pending.response?.kind === 'guildTransportPermission')
+          pending = applyAction(pending, 'a', { type: 'passResponse' });
         assert.equal(pending.response?.kind, 'guildRate');
         assert.equal(player(pending, shipper).shipped, false);
         pending = applyAction(pending, 'a', { type: 'passResponse' });

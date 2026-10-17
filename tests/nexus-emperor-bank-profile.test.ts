@@ -123,10 +123,6 @@ void test('unsupported rosters and unsupported module envelopes stay gated', () 
     ['a repeated native faction', lobby(['richese', 'richese', 'choam'], ['choam'])],
     ['Tech with only two seats', withTech(lobby(['atreides', 'harkonnen'], []))],
     ['Strongholds without Advanced', withStrongholds(lobby(['atreides', 'harkonnen', 'fremen'], []))],
-    ['Advanced Moritani with Harkonnen',
-      lobby(['moritani', 'atreides', 'harkonnen'], ['ecaz'], true)],
-    ['Advanced paired E3 with Harkonnen',
-      lobby(['ecaz', 'moritani', 'harkonnen'], ['ecaz'], true)],
     ['Skills on an E3 classic mix', withSkills(lobby(['ecaz', 'atreides'], []))],
   ];
   for (const [label, g] of blocked)

@@ -379,7 +379,7 @@ void test('expansion factions cannot bypass the unfinished-expansion start gate 
   g.players.forEach((p) => (p.ready = true));
   assert.throws(
     () => applyAction(g, 't', { type: 'start' }),
-    /Expansion factions/,
+    /Expansion factions require their expansion/,
   );
 });
 void test('Face Dancer returns Sardaukar to reserves and leaves bystanding Bene Gesserit advisors in place', () => {

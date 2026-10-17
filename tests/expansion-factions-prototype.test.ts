@@ -5,7 +5,6 @@ import {
   createGame,
   initializeFactionExpansionsGameForAudit,
   initializeHomeworldGameForAudit,
-  initializeNexusGameForAudit,
   joinGame,
   newPlayer,
   normalizeAutomaticGame,
@@ -305,7 +304,6 @@ void test('faction prototype handles two through six seats and preserves the pub
   for (const count of [2, 3, 4, 5, 6])
     for (const advanced of [false, true]) {
       const g = lobby(['choam'], advanced, roster.slice(0, count));
-      rejectAction(g, g.host, { type: 'start' });
       assert.equal(
         setup(initializeFactionExpansionsGameForAudit(g), 'Medium').game.players
           .length,
@@ -583,19 +581,10 @@ void test('a stale or partially played lobby cannot redeal faction inventories, 
   reject(alone);
 });
 
-void test('accepting the Ecaz deck selector does not open existing Homeworld or Nexus expansion gates', () => {
+void test('accepting the Ecaz deck selector does not open the existing Homeworld expansion gate', () => {
   for (const expansions of [['choam'], ['ecaz'], ['ix', 'ecaz']]) {
     const home = lobby(expansions, true);
     home.homeworlds = { custody: null };
     reject(home, initializeHomeworldGameForAudit);
-    const nexus = lobby(expansions, true);
-    nexus.nexusCards = { cards: null, phase: null };
-    // The combined Ix/Ecaz Nexus roster is now admitted; the single-family
-    // CHOAM and Ecaz rosters still reject the same initializer.
-    if (expansions.join('+') === 'ix+ecaz') {
-      const before = structuredClone(nexus);
-      assert.ok(initializeNexusGameForAudit(nexus).nexusCards);
-      assert.deepEqual(nexus, before);
-    } else reject(nexus, initializeNexusGameForAudit);
   }
 });

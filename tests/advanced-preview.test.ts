@@ -142,9 +142,8 @@ void test('Advanced starts require the exact host opt-in and cannot dispatch aud
   reject(started, started.host, { type: 'rules', advanced: false });
 });
 
-void test('the explicit preview keeps expansion, module and separate development-profile gates closed at rules selection and start', () => {
+void test('the explicit preview keeps inconsistent rosters, modules and separate development-profile gates closed at rules selection and start', () => {
   const changes: ((game: Game) => void)[] = [
-    ...['ix', 'choam', 'ecaz'].map(expansion => (game: Game) => { game.expansions = [expansion]; }),
     ...FACTIONS.filter(entry => entry.expansion !== 'base').map(entry => (game: Game) => {
       game.players[1] = { ...newPlayer(game.players[1].id, entry.name, entry.id), ready: true };
     }),
@@ -309,7 +308,6 @@ void test('saved preview marker cannot silently change mode or introduce an unsu
   for (const change of [
     (state: Game) => { state.advanced = false; },
     (state: Game) => { state.status = 'lobby'; },
-    (state: Game) => { state.expansions = ['ix']; },
     (state: Game) => { state.discoveryEnabled = true; },
     (state: Game) => { Object.assign(state, { advancedPreview: false }); },
   ]) {

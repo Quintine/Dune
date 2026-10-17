@@ -138,7 +138,7 @@ function opportunity(
       accompany: true,
     });
   }
-  while (g.response?.kind === 'advisor') {
+  while (['advisor', 'guildTransportPermission', 'guildRate'].includes(g.response?.kind ?? '')) {
     const passer = g.players.find((p) => !g.response!.passed.includes(p.id))!;
     g = applyAction(g, passer.id, { type: 'passResponse' });
   }
@@ -465,7 +465,8 @@ void test('saved paid BG cancellation preserves changed board and leader custody
   assert.deepEqual(g.players, players);
   assert.deepEqual(g.moritaniTerror, terror);
   assert.equal(g.discard.filter((c) => c.id === card.id).length, 1);
-  assert.equal(viewGame(g, 'm').terrorEntry!.canReveal, false);
+  // A public no-effect reveal remains available; the private disc pool is quoted at reveal.
+  assert.equal(viewGame(g, 'm').terrorEntry!.canReveal, true);
   assert.equal('canReveal' in viewGame(g, 'e').terrorEntry!, false);
   assert.doesNotThrow(() =>
     applyAction(g, 'm', { type: 'decision', decline: true }),

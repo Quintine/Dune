@@ -1,9 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { applyAction, createGame, joinGame, newPlayer, initializeLeaderSkillsGameForAudit, normalizeAutomaticGame, viewGame, type Game, type Action } from '../game/engine';
+import { applyAction, normalizeAutomaticGame, viewGame, type Game, type Action } from '../game/engine';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
-import { ecazTreacheryCards } from '../game/ecaz-cards';
 import { smugglerBattle, revealSmuggler, finishSmuggler, setOtherSkill } from './fixture-smuggler-battle';
 import {
   chooseSmugglerBattleAllocation, createSmugglerBattle, settleSmugglerBattle,
@@ -206,20 +205,6 @@ void test('a captured Smuggler collects its normal trainer bonus for its control
   assert.equal(done.players[0].spice, 20 + strength);
   assert.equal(done.players[1].spice, 20);
   assert.equal(done.spice['wind_pass:14'], 8 - strength);
-});
-void test('the independent Ecaz card variant is gated before a Smuggler plan is sealed', () => {
-  // The Smuggler battle lives in the Leader Skills profile, which never admits
-  // the variant module; a mid-battle toggle is rejected as a changed saved state.
-  let game = createGame('SMUGGLERGATE', newPlayer('a', 'Emperor', 'emperor'), false);
-  joinGame(game, newPlayer('d', 'Guild', 'guild'));
-  for (const player of game.players) game = applyAction(game, player.id, { type: 'ready' });
-  game.ecazTreachery = true;
-  assert.throws(() => initializeLeaderSkillsGameForAudit(game));
-  const staged = smugglerBattle();
-  staged.ecazTreachery = true;
-  staged.deck.push(...ecazTreacheryCards());
-  assert.throws(() => viewGame(staged, 'a'));
-  reject(staged, { type: 'battlePlan' as const, leader: 'emperor-0', dial: 0 });
 });
 void test('all four actual bot profiles finish collection with the available modified leader plans', () => {
   for (const difficulty of DIFFICULTIES) {

@@ -71,7 +71,9 @@ function placeTerror(state: Game, kind: 'assassination' | 'robbery'): Game {
 
 function enterTerror(state: Game, actor: string): Game {
   const game = reload(state);
-  Object.assign(game, { phase: 5, storm: 18, active: actor, ready: [], decision: null,
+  // Placement ends a turn; entering the next Shipment phase starts a later turn,
+  // keeping the mandatory Banker income ledger chronological.
+  Object.assign(game, { turn: game.phase > 5 ? game.turn + 1 : game.turn, phase: 5, storm: 18, active: actor, ready: [], decision: null,
     response: null, phaseOpening: null, movementRemaining: [...game.order] });
   const entrant = game.players.find(p => p.id === actor)!;
   entrant.shipped = false;
@@ -177,8 +179,8 @@ void test('native Terror kills a real trained disc, returns only its card, and e
   custody(game);
   reject(game, owner, { type: 'decision', reveal: true });
 
-  // Explicit conserved Revival phase; retain real post-shipment money and Tanks.
-  Object.assign(game, { phase: 4, active: null, ready: [], decision: null, response: null,
+  // Explicit conserved Revival phase of the next turn; retain real post-shipment money and Tanks.
+  Object.assign(game, { turn: game.turn + 1, phase: 4, active: null, ready: [], decision: null, response: null,
     phaseOpening: null, revivalRules: newRevivalRules() });
   const paidBefore = wallets(game);
   const offered = act(game, actor, { type: 'reviveLeader', leader: assignment.leader });
