@@ -16,6 +16,33 @@ no World, counter, wallet, owner or played history is manufactured.
 [Latest registered scope and609/609 proof](LEADER_SKILLS_RUNTIME.md#registered-native-e3-selected-decks--18-october-2026);
 [prior standalone/paired World459/459 proof](LEADER_SKILLS_RUNTIME.md#native-e3-worlds-with-independent-cards--17-october-2026).
 
+
+## Original World Nexus payment chronologies — 18 October 2026
+
+Two focused chronologies now exercise genuine original World card-granted
+shipment sources against unchanged shared engine helpers. The Basic base33
+scene ships Guild's first three native Junction counters to Giedi Prime,
+spends the actual Cunning singleton, then returns the same three typed
+visitors home: the second declaration opens the real native return permission
+and native rate windows before the funded Guild fee gate, and the rival
+Harkonnen-face holder cannot Use a second Guild payment. The Advanced
+all14/Tech/Strongholds scene ships five actual selected Caladan counters into
+Carthag under the original Richese Secret Ally discount and once without it;
+the distinct Emperor holder of the real Guild singleton claims the one-spice
+discounted fee or the full five-spice ordinary fee, and typed visitor/native
+custody, source pools and unrelated seats stay untouched throughout.
+
+Observed through the finite original-action programme
+`/tmp/dune-world-nexus-payments-smoke.mts` (`node --import tsx`, exit0):
+permission→rate gate kinds, invoice prices 2/1/5 with `originalReceiver`
+guild, wallet and reserve deltas only at the owner acknowledgement, the
+visitor pool leaving Giedi Prime for Junction without any counter creation,
+and the once-only rejection of a repeated `homeworldShip`. New files are
+`tests/fixture-nexus-core-world-payments.ts` and
+`tests/nexus-core-world-payments-runtime.test.ts`; no shared engine, fixture
+or profile file changed. Test runners, types, lint, build, formatters and git
+were not run here; the frozen-suite verification remains with the parent.
+
 ## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
 
 Original Homeworld/Nexus now composes natives from both selected Ix+CHOAM

@@ -9714,6 +9714,7 @@ function harkonnenNexusBetrayalParent(g: Game): string {
       hand:p.hand,traitors:p.traitors,revealedTraitors:p.revealedTraitors,leaders:p.leaders,
       forces:p.forces,reserves:p.reserves,tanks:p.tanks,elites:p.elites,advisors:p.advisors})),
     deck:g.deck,discard:g.discard,traitorReserve:g.traitorReserve,nexus:g.nexusCards,
+    ...(g.homeworlds ? {homeworlds:g.homeworlds} : {}),
     response:g.response,decision:g.decision,truthtrance:g.truthtrance,
     phaseOpening:g.phaseOpening,pendingKarama:g.pendingKarama,
     pendingNullentropy:g.pendingNullentropy,pendingTreacheryDiscard:g.pendingTreacheryDiscard,
@@ -10043,6 +10044,7 @@ function ixianNexusReplacementParent(g: Game): string {
     order:g.order,active:g.active,auction:g.auction,sale:g.currentAuctionSale,
     players:g.players.map(p => ({id:p.id,faction:p.faction,ally:p.ally,spice:p.spice,hand:p.hand})),
     deck:g.deck,discard:g.discard,aid:g.aid,nexus:g.nexusCards,
+    ...(g.homeworlds ? {homeworlds:g.homeworlds} : {}),
     ...(byFaction(g, 'richese') ? { richeseBidding:g.richeseBidding,
       richeseCache:g.richeseCache,richeseRemoved:g.richeseRemoved,
       ...(g.richeseAuction ? { richeseAuction:g.richeseAuction } : {}) } : {}),
@@ -10269,8 +10271,8 @@ function guildBetrayalAuthority(g: Game, continuation: GuildBetrayalContinuation
           'richesePair', 'noField', 'alliedNoField', 'noFieldSkillProof'].includes(key)),
       'The saved reserve shipment contains foreign source fields.');
       requireRule(!shipment.source && !shipment.noField && !shipment.alliedNoField &&
-        !shipment.smuggler && !shipment.smugglerCompanion && !shipment.richesePair &&
-        !shipment.guildSecretEvent &&
+        !shipment.richesePair && !shipment.guildSecretEvent &&
+        ((shipment.smuggler && classicNexusCoreProfile(g)) || (!shipment.smuggler && !shipment.smugglerCompanion)) &&
         ((!shipment.guildNexusEvent && !shipment.nexusEvent) || classicNexusCoreProfile(g)),
       'This Guild Betrayal profile requires a supported original physical shipment source.');
       validatePhysicalShipment(g, shipment);
@@ -10302,8 +10304,8 @@ function guildBetrayalAuthority(g: Game, continuation: GuildBetrayalContinuation
         ['player', 'destination', 'sources', 'route', 'event', 'turn', 'amount', 'elite', 'cost',
           'allyPayment', 'pools', 'guildSecretEvent', 'guildNexusEvent'].includes(key)),
       'The saved Homeworld shipment contains foreign source fields.');
-      requireRule(!shipment.guildSecretEvent && !shipment.guildNexusEvent,
-        'This Guild Betrayal profile supports native Homeworld shipment routes only.');
+      requireRule(!shipment.guildSecretEvent && (!shipment.guildNexusEvent || classicNexusCoreProfile(g)),
+        'This Guild Betrayal profile requires a supported original Homeworld shipment source.');
       const quote = validateHomeworldShipment(g, shipment);
       shipper = shipment.player; price = quote.cost; allyPayment = shipment.allyPayment;
       originalReceiver = getPlayer(g, shipper).ally !== guild.id && allyPayment > 0 ? guild.id : null;
@@ -10740,7 +10742,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const homeworlds = homeworldLeaderSkillsProfile(state);
   const independent = independentTreacheryLeaderSkillsProfile(state);
   if (state.ecazTreachery) {
-    requireRule(independent, 'Independent Skills cards require supported selected decks with original World/phase modules, or classic Nexus with original phase modules; Discovery and unrelated preview contexts remain gated.');
+    requireRule(independent, 'Independent Skills cards require supported selected decks with original World/phase modules, or classic Nexus with original phase modules without Homeworlds; independent World/Nexus and unrelated preview contexts remain gated.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -10826,7 +10828,7 @@ export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   g.ecazTreachery = true;
   const homeworlds = !!g.homeworlds;
   requireRule(!homeworlds || ecazHomeworldProfile(g),
-    'Independent cards with Homeworlds need a fresh supported selected-deck roster with original Tech or Advanced Strongholds.');
+    'Independent World cards need a supported selected-deck roster and original phase modules without Nexus; independent World/Nexus remains a separate pending interaction.');
   const initialized = initializeSetupGameForAudit(g, homeworlds, classicIndependentNexusProfile(g), false, false, false, false, true, true);
   if (byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   if (moritaniAssassinateModeSupported(initialized)) initializeMoritaniAssassinateState(initialized);
@@ -28236,8 +28238,9 @@ function nexusGuildCunningIntegrity(g: Game) {
       for (const d of decisions) validateGuildShipmentDecision(g,d);
       for (const rate of rates) validateGuildRateResponse(g,rate);
     } else if (active.shipment.kind === 'homeworld') {
-      requireRule(g.pendingHomeworldShipment?.guildNexusEvent === active.receipt.event,'Guild Cunning lost its pending Homeworld shipment.');
-      validateGuildCunningShipment(g,owner.id,active.receipt.event,'homeworld',g.pendingHomeworldShipment);
+      const pending = g.pendingHomeworldShipment ?? (suspended?.source === 'homeworld' ? suspended.shipment : null);
+      requireRule(pending?.guildNexusEvent === active.receipt.event,'Guild Cunning lost its pending Homeworld shipment.');
+      validateGuildCunningShipment(g,owner.id,active.receipt.event,'homeworld',pending);
       homeworldShipmentIntegrity(g);
     } else if (active.shipment.kind === 'guild') {
       requireRule(suspended?.source === 'guildTransport', 'Guild Cunning lost its original transport payment acknowledgement.');

@@ -16,6 +16,7 @@ export type ClassicIndependentNexusOptions = {
   independent?: boolean;
   tech?: boolean;
   strongholds?: boolean;
+  homeworlds?: boolean;
   roster?: readonly FactionId[];
   training?: Partial<Record<FactionId, LeaderSkillId>>;
   /** Only original, still-undealt starting Treachery slots are ordered. */
@@ -40,6 +41,7 @@ export function createClassicIndependentNexusFixture(options: ClassicIndependent
     act(game.host, { type: 'moduleOption', module: option, enabled: true });
   if (options.tech) act(game.host, { type: 'techTokens', enabled: true });
   if (options.strongholds) act(game.host, { type: 'strongholdCards', enabled: true });
+  if (options.homeworlds) act(game.host, { type: 'homeworlds', enabled: true });
   for (const player of game.players) act(player.id, { type: 'ready' });
   const lobby = structuredClone(game);
   const rolls = options.skills ? skillOfferRolls(game, options.training) : [];

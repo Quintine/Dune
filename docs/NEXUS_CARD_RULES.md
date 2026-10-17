@@ -2,6 +2,69 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Original World Nexus core — 18 October 2026
+
+**Prototyped / Partial.** Fresh original base33 classic Homeworld+Nexus now
+initializes the actual Guild/Harkonnen/Ixian reaction states through the public
+core capability, optionally all14 Skills and original Tech3+/Advanced
+Strongholds2+. Printed module independence composes; no independent36 cards or
+native expansion families are admitted. Independent World/Nexus remains a
+separate pending own-World fee/conversion interaction, and public guidance now
+says so. Other Discovery/Semuta/reaction envelopes remain separate.
+
+Harkonnen/Ixian pending parents bind only genuinely present World custody; bare
+ordinary parents gain no unconditional new keys. Signed Guild Cunning World
+frames are admitted at the funded Guild fee gate, reading the actual suspended
+frame rather than an invented alias. Normal Smuggler companions also supply the
+funded fee: classic core permits the genuine discounted physical invoice while
+the original standalone profiles retain their narrower sources. No smuggled
+companion can ride a No-Field or card-granted route.
+
+- Basic base33 Guild: real native Junction departure3 to Giedi Prime (printed2)
+  uses the shipment; real Cunning then returns the same three typed visitors
+  home through native return permission, native rate and the Guild fee gate.
+  Wrong-face Emperor cannot Use a second Guild payment; Pass pays the actual2
+  once, removes the visitor pool and preserves every physical Guild counter.
+- Advanced all14+Tech+Strongholds: five actual selected Caladan counters enter
+  Carthag. The Richese-discounted fee1 and ordinary fee5 both settle to the
+  distinct actual Guild-card holder; typed custody waits at the gate, and the
+  used singleton leaves its holder once.
+- Own-Kaitain battles: paid Guild invasion plus legal Emperor inter-World
+  movement leave seven ordinary defenders. Cunning keeps its five-ordinary/
+  no-actual-Sardaukar rule; temporary-role counters pay support (high Salusa's
+  real stars support free) but only ordinary counters die, and true Salusa
+  custody never changes. Low Salusa keeps the shared cap at7 while the wallet
+  bounds the live plan; a genuine desert star export shows why.
+- Giedi Prime: the native pool defends with its actual offered Traitor. Only
+  Harkonnen receives an ordinary call; the invader's independently drawn
+  Harkonnen Nexus may cancel it. Original capture/execution, printed bounty,
+  cleanup and one private actual Mentat replacement follow. Earned
+  Arrakeen/Carthag/Tuek cards confer no generic World effects.
+
+New original-action files: `tests/fixture-nexus-core-world-payments.ts`,
+`tests/nexus-core-world-payments-runtime.test.ts`,
+`tests/fixture-nexus-core-world-battles.ts`,
+`tests/nexus-core-world-battles-runtime.test.ts`. Frozen45-file **448/448**,
+types/lint/build pass. Initial9/9 exposed a fixture-only low-Salusa bound
+mistake; the shared cap(7)/wallet(2) distinction is now asserted honestly and
+no engine calculation changed. Two workers exercised finite programmes; their
+sources/results are preserved in owner proof and removed. Normal Smuggler fee
+gates were reproduced then integrated by the owner.
+
+Two actual390px journeys finish the original module-selected Advanced lobby
+through genuine training/Traitor/World stock into first Storm (salusa elite5,
+no premature token/card owners), and the borrowed Caladan fee mirror:
+live Richese offer→guildShipment gate→Emperor Use→payer11/holder11/Guild6,
+carthag5, Caladan10→5, discard [richese,guild], Heighliners pending1. Four
+legal policies complete13–20 owned choices each across fee and battle paths
+with varying winners; no calibration. One browser cleanup DELETE204 was again
+diagnosed ERR_ABORTED after HMR route changes, and a route-invalidation reset
+was re-entered through its original scene button; diagnostics are reported,
+not erased. Temporary routes/memory/programmes removed/released204; no saved
+room/reset/restart/deployment. Owner proof:
+`/tmp/dune-world-nexus-core-18oct.json`. Full combinations, remaining
+occupation variants and deferred assurance remain open.
+
 ## Classic Nexus original phase modules — 18 October 2026
 
 **Prototyped / Partial.** Fresh classic Nexus core now retains original

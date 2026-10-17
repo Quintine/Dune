@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 18 October 2026 — Original World Nexus core
+
+Plain base33 World/Nexus started without native reaction states, and
+independent36 World/Nexus rejected without an explicit boundary message. The
+public core now composes original Homeworlds with base33, optional14 and
+original Tech/Strongholds; the narrower independent predicate excludes
+Homeworlds and both boundary errors now name the pending interaction. Actual
+host controls retain all selected modules through original readiness, private
+training, Traitor selection and World stock into first Storm (salusa elite5,
+no premature owners). Ixian paid2 replacement preserves real World/phase
+custody and the following lot.
+
+Two disjoint lanes delivered original World fee and battle sources: a Basic
+Guild Junction→Giedi→Cunning-return chronology through native
+permission/rate/fee gates, Advanced Caladan→Carthag borrowed fee1/fee5 to the
+distinct holder, own-Kaitain temporary-Sardaukar battles with high/low Salusa
+support and ordinary-only casualties, and Giedi native-call cancellation with
+original capture/execution/cleanup/replacement. Parent integrated pending
+World custody bindings, suspended Cunning frame reuse, the Smuggler funded-fee
+source and narrower independent messaging; no engine numeric rule changed.
+
+Frozen45-file **448/448**, types/lint/build pass. Initial9/9 failed on a
+fixture-only low-Salusa bound assumption (shared cap7 vs wallet2); the worker's
+restored high3/low8 rejection assertion and honest comment were accepted.
+Nullable World descriptor typing in two new files was corrected after parent
+type feedback. Two actual390px journeys and four legal policies (13–20 owned
+choices each) cover the lobby, borrowed Caladan fee and both battle families
+with varying outcomes; no calibration claim.
+
+One mirror HMR route invalidation reset the isolated scene; it was re-entered
+through its original button and completed without gameplay exceptions. A
+cleanup DELETE204 was again diagnosed ERR_ABORTED. Temporary routes, memory
+and executable programmes are removed/released204; no saved room/reset/
+restart/deployment. Existing build warnings, independent World/Nexus,
+occupation variants, full combinations and deferred assurance remain open.
+[Canonical source and owner proof](NEXUS_CARD_RULES.md#original-world-nexus-core--18-october-2026).
+
 ## 18 October 2026 — Classic Nexus with earned phase modules
 
 Original independent36/Nexus+Tech and all14/phase starts rejected through

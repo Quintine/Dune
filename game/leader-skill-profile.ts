@@ -463,6 +463,7 @@ function homeworldLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
 /** Original Homeworld/Skills under the existing classic or native Nexus roster contracts. */
 export function homeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (!game.homeworlds) return false;
+  if (classicNexusCoreProfile(game)) return true;
   if (game.expansions.length) return nativeExpansionLeaderSkillsProfile(game);
   if (!homeworldLeaderSkillModulesSupported(game)) return false;
   const players = game.players!;

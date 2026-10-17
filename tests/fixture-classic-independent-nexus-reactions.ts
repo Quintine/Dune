@@ -49,7 +49,10 @@ export function drawClassicNexusReaction(face: FactionId, owner: string,
   return { ...fixture, game, owner, actions, beforeDraw, afterDraw: structuredClone(game) };
 }
 
-export function createIndependentHarkonnenCall(options: { advanced?: boolean; skills?: boolean; remote?: boolean; independent?: boolean; tech?: boolean; strongholds?: boolean } = {}) {
+type ClassicNexusReactionOptions = Pick<ClassicIndependentNexusOptions,
+  'advanced' | 'skills' | 'independent' | 'tech' | 'strongholds' | 'homeworlds'>;
+
+export function createIndependentHarkonnenCall(options: ClassicNexusReactionOptions & { remote?: boolean } = {}) {
   const counter = baseDeck().find(card => card.effect === 'karama')!.id;
   const starting = options.independent === false ? baseDeck().find(card => card.kind === 'worthless')!.id : HARASS_WITHDRAW_CARD;
   const fixture = drawClassicNexusReaction('harkonnen', 'atreides', { ...options,
@@ -98,7 +101,7 @@ export function createIndependentHarkonnenCall(options: { advanced?: boolean; sk
   return { ...fixture, game, beforeCall, beforeShipment, afterShipment, identity, opponent, key, counter };
 }
 
-export function createIndependentIxianPurchase(options: { advanced?: boolean; skills?: boolean; owner?: 'atreides' | 'harkonnen'; independent?: boolean; tech?: boolean; strongholds?: boolean } = {}) {
+export function createIndependentIxianPurchase(options: ClassicNexusReactionOptions & { owner?: 'atreides' | 'harkonnen' } = {}) {
   const owner = options.owner ?? 'atreides';
   const starting = options.independent === false ? baseDeck().find(card => card.kind === 'worthless')!.id : 'ecaz-recruits';
   const fixture = drawClassicNexusReaction('ixians', owner, { ...options,

@@ -29,6 +29,32 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Original World Nexus core — 18 October. Prototyped / Partial.**
+Plain base33 World/Nexus lacked native reaction states; one public capability
+now composes original Homeworlds with base33, optional14 and original
+Tech3+/Advanced Strongholds2+. Actual host controls retain every selected
+module through private training/Traitors into first Storm; salusa elite5 and
+unassigned tokens/cards prove no premature owners. Independent36 World/Nexus
+stays a named pending gate; other envelopes remain separate.
+
+Real World fee sources pass their original gates: Guild Junction→Giedi
+departure2, Cunning visitor return through native permission/rate/fee2;
+Caladan→Carthag borrowed fee1/fee5 settles to the distinct holder with typed
+custody waiting. Own-Kaitain temporary-Sardaukar battles keep ordinary-only
+casualties and true Salusa custody across high/low support; Giedi native-call
+cancellation follows original capture/execution/cleanup and one private
+replacement. Normal Smuggler companions now also supply the funded fee in core.
+
+Frozen45-file **448/448**, types/lint/build pass. The initial low-Salusa bound
+failure was fixture-only (cap7 vs wallet2) and is asserted honestly; no engine
+rule changed. Two actual390px journeys and four legal policies with 13–20
+owned choices each pass; no calibration. One HMR route invalidation was
+re-entered through its original scene and a DELETE204 cleanup was diagnosed
+ERR_ABORTED—diagnostics preserved. Temporary memory/routes/programmes
+removed/released204, no saved room/reset/restart/deployment. Independent
+World/Nexus, occupation variants, full combinations and assurance stay open.
+[Source, scenes and limits](NEXUS_CARD_RULES.md#original-world-nexus-core--18-october-2026).
+
 **Classic core phase modules — 18 October. Prototyped / Partial.**
 Fresh classic Nexus now composes original Tech3+ and Advanced Strongholds2+
 with selected33/36 and optional14. Normal host controls retain all five
