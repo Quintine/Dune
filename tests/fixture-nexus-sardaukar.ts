@@ -80,6 +80,8 @@ export function nexusSardaukarFixture(
         type: 'battlePreparationReady',
         event: g.battle!.event,
       });
+  while (g.battle?.preparation?.kind === 'nexusVoice')
+    g = applyAction(g, g.battle.preparation.owner, { type: 'declineBattlePower' });
   nexusSardaukarInventory(g);
   return g;
 }

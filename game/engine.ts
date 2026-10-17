@@ -33830,6 +33830,11 @@ function applyActionInner(
   }
   if (t === 'declineBattlePower') {
     const b = g.battle;
+    if (b?.preparation?.kind === 'nexusVoice' && b.preparation.owner === id && b.nexusBorrowedVoice) {
+      // A generic decline is the same as continuing without the borrowed command.
+      playNexusBorrowedVoice(g, p, { type: 'nexusBorrowedVoice', event: b.nexusBorrowedVoice.event, use: false });
+      return g;
+    }
     requireRule(
       b?.preparation?.owner === id && !['nexusVoice', 'prescienceAnswer', 'nexusPrescienceAnswer'].includes(b.preparation.kind),
       'You do not own this battle power decision.',

@@ -19,6 +19,8 @@ export function suboidFixture(advanced = true, atreides = false) {
   g = applyAction(g, 'p', { type: 'chooseBattle', territory: 'pasty_mesa', target: 'q' });
   for (const id of ['p', 'q']) if (g.battle!.preLeader && !g.battle!.preLeader.closed)
     g = applyAction(g, id, { type: 'battlePreparationReady', event: g.battle!.event });
+  while (g.battle?.preparation?.kind === 'nexusVoice')
+    g = applyAction(g, g.battle.preparation.owner, { type: 'declineBattlePower' });
   validateNexusCards(g.nexusCards!.cards!, g.players);
   return g;
 }

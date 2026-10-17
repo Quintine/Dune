@@ -126,6 +126,9 @@ export function nexusInspectionFixture(
         type: 'battlePreparationReady',
         event: g.battle!.event,
       });
+  // Pass the absent-BG borrowed Voice opportunity that precedes native Prescience.
+  while (g.battle?.preparation?.kind === 'nexusVoice')
+    g = applyAction(g, g.battle.preparation.owner, { type: 'declineBattlePower' });
   return g;
 }
 export function inspectionHold(g: Game, id: string, kind: Card['kind']): Card {
