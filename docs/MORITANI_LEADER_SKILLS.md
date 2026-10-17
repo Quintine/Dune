@@ -8,19 +8,23 @@ module guards remain, and complete rules/publication acceptance is unfinished.
 ## Paired native E3 Skills — 17 October 2026
 
 Both native factions now compose ordinary all14 Skills without Nexus,
-optionally independent cards only. Genuine native6/6 and Ecaz Loyalty precede
+optionally independent cards and original Tech3+/Advanced Strongholds2+. Native6/6 and Loyalty precede
 the actual battle. Moritani loses against Ecaz, reveals unused trained Ecaz4,
 returns its exact skill once and receives one physical replacement at Mentat.
 The existing fixture/runtime pair exposes `paired:true`; standalone defaults,
 Basic without assassination and original Advanced Harkonnen/Duke guards stay.
 [Current scope, controls and323/323 proof](LEADER_SKILLS_RUNTIME.md#paired-e3-without-nexus--17-october-2026).
+[Current phase composition and471/471 proof](LEADER_SKILLS_RUNTIME.md#independent-cards-with-original-phase-modules--17-october-2026)
+also exercises a plain paired no-card phase loss through winner Tech and one
+actual Mentat replacement, without inventing an extra module dependency.
+
 
 
 ## Independent Treachery composition — 17 October 2026
 
 Fresh standalone Moritani/classic all14 Skills now retains the independent
 Recruits, Reinforcements and Harass & Withdraw variant, Basic/Advanced2–6,
-without other modules. Original36-card setup, five eligible assignment discs,
+with optional original Tech3+/Advanced Strongholds2+. Original36-card setup and five eligible assignment discs,
 private offers, Traitors and six-force placement remain. Advanced initializes
 the native assassination advantage; Basic does not. The original Advanced
 Harkonnen, shared-Duke and mixed-family Skills guards remain.

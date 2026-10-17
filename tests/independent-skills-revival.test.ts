@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { applyAction, viewGame, type Game } from '../game/engine';
 import { forceRevivalQuote } from '../game/revival';
+import { ownedTech } from '../game/tech-tokens';
 import {
   assertIndependentSkillsRevivalInventory, createIndependentSkillsRevivalFixture,
   independentSkillsRevivalPlayer,
@@ -99,4 +100,56 @@ void test('the Advanced programme preserves real paid revival and deferred Banke
     spiceOf(advanced.atMentat2, advanced.owner), advanced.grant.deferred);
   assert.deepEqual(viewGame(advanced.afterMentat, advanced.owner).spiceBankerIncome?.deferred, []);
   assertIndependentSkillsRevivalInventory(advanced.afterMentat);
+});
+
+void test('Basic Tech Recruits reopens exhausted genuine Tanks without repeating payment, Axlotl accrual or normal Banker income', () => {
+  const f = createIndependentSkillsRevivalFixture({ tech: true });
+  let game = structuredClone(f.atRevival);
+  const tokenOwner = game.techTokens!.axlotl.owner!;
+  const accrual = ownedTech(game.techTokens, tokenOwner).length;
+  const payerSpice = spiceOf(game, f.payer);
+  const tokenSpice = spiceOf(game, tokenOwner);
+  const bankerSpice = spiceOf(game, f.owner);
+  assert.ok(tokenOwner && accrual > 0);
+  // These are the same five genuine battle losses, not a supplied Tanks pool.
+  assert.equal(independentSkillsRevivalPlayer(game, f.payer).tanks, 5);
+  game = applyAction(game, f.payer, { type: 'revive', amount: 3 });
+  assert.equal(spiceOf(game, f.payer), payerSpice - 4);
+  assert.equal(viewGame(game, f.payer).revival.forcesRemaining, 0);
+  assert.equal(game.techTokens!.axlotl.spice, accrual);
+  assert.equal(spiceOf(game, tokenOwner), tokenSpice - (tokenOwner === f.payer ? 4 : 0),
+    'Axlotl is accrued, not spendable, regardless of the actual original custodian');
+  game = applyAction(game, f.payer, f.playAction.action);
+  assert.equal(independentSkillsRevivalPlayer(game, f.payer).revived, 3);
+  assert.equal(independentSkillsRevivalPlayer(game, f.payer).freeForcesRevived, 1);
+  assert.equal(spiceOf(game, f.payer), payerSpice - 4, 'Activation does not replay the previous charge');
+  const activated = structuredClone(game);
+  assert.throws(() => applyAction(game, f.payer, { type: 'revive', amount: 3 }),
+    'Only two actual Tanks remain, even though the increased ordinary allowance is larger');
+  assert.deepEqual(game, activated);
+  game = applyAction(game, f.payer, { type: 'revive', amount: 2 });
+  assert.equal(spiceOf(game, f.payer), payerSpice - 6, 'Only the new two-spice quote is charged');
+  const returned = independentSkillsRevivalPlayer(game, f.payer);
+  assert.equal(returned.tanks, 0);
+  assert.equal(returned.reserves, 20);
+  assert.equal(returned.revived, 5);
+  assert.equal(returned.freeForcesRevived, 2);
+  assert.equal(game.techTokens!.axlotl.spice, accrual, 'The second real revival cannot accrue again');
+  assert.equal(game.techTokens!.axlotl.triggeredTurn, 2);
+  assert.equal(spiceOf(game, tokenOwner), tokenSpice - (tokenOwner === f.payer ? 6 : 0));
+  const grants = game.spiceBankerIncome!.sources.filter(source => source.grant);
+  assert.equal(grants.length, 1, 'Normal Banker keeps its four-spice threshold; the second two-spice payment does not qualify');
+  assert.equal(grants[0].source.kind, 'force-revival');
+  assert.deepEqual(grants[0].source.bankLegs, [{ payer: f.payer, amount: 4 }]);
+  assert.deepEqual(viewGame(game, f.owner).spiceBankerIncome?.deferred, [{ owner: f.owner, amount: 1 }]);
+  assert.equal(spiceOf(game, f.owner), bankerSpice);
+  const shipment = f.advanceUntil(game, state => state.turn === 2 && state.phase === 5 &&
+    !state.phaseOpening && !state.response && !state.decision);
+  assert.equal(shipment.techTokens!.axlotl.spice, 0);
+  assert.equal(spiceOf(shipment, tokenOwner), tokenSpice - (tokenOwner === f.payer ? 6 : 0) + accrual,
+    'The original phase end alone pays Axlotl once');
+  assert.equal(spiceOf(shipment, f.owner), bankerSpice + (tokenOwner === f.owner ? accrual : 0),
+    'Only actual Tech custody pays now; Banker remains deferred until Mentat');
+  assert.equal(shipment.discard.filter(card => card.id === f.card).length, 1);
+  assertIndependentSkillsRevivalInventory(shipment);
 });

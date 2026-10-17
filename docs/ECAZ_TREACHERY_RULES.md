@@ -407,8 +407,8 @@ No deployed, full-module, strategic calibration or deferred assurance claim foll
 ## Paired E3 Skills and native arrival independence — 17 October 2026
 
 Ecaz+Moritani/classics now also uses all14 Skills without Nexus, optionally
-independent cards, Basic/Advanced2–6 and no other modules. Original native6/6,
-Loyalty, assignment, separate card-user costs/armies and one native Mentat
+independent cards, Basic/Advanced2–6, plus original Tech3+/Advanced Strongholds2+.
+Original native6/6, Loyalty, assignment, separate card-user costs/armies and one native Mentat
 replacement remain; Advanced Harkonnen/shared-Duke/mixed-family guards stay.
 [Canonical paired programme and323/323 evidence](LEADER_SKILLS_RUNTIME.md#paired-e3-without-nexus--17-october-2026).
 
@@ -418,4 +418,21 @@ native placements now reach both reactions and original movement without
 requiring Skills. The earlier storm-order policy, actual control/effect-specific
 guards and physical payment/force rules are unchanged, not newly adjudicated.
 [Native queue and genuine proof](MORITANI_ENTRY_TIMING.md#paired-skills-and-independent-card-entries--17-october-2026).
+
+## All14 Skills and original phase modules — 17 October 2026
+
+The printed variant independence now composes original all14 with Tech3–6
+Basic/Advanced and/or Strongholds2–6 Advanced across existing classic, selected
+E1/E2 and standalone/paired E3 rosters, without World/Nexus/Discovery or
+unrelated previews. Plain paired E3 phase Skills does not require these cards.
+Native setup, decks/cache, card-user source/fees and unchanged provisional
+timing remain. Original phase-end Tech and real-Mentat Banker are separate;
+earned support is not money or reserve-fee funding, and R/H are not Revival.
+
+Frozen44-file471/471, types/lint/build, actual rule programmes and eight bounded
+natural tables pass their changed paths. Real390px four-module normal entry
+reaches Storm after actual skill/Traitor choices without errors/overflow.
+Controlled physical card staging is labelled; the Richese second R is not a
+claimed natural reacquisition. No complete-mode or deployed acceptance follows.
+[Canonical composition/evidence](LEADER_SKILLS_RUNTIME.md#independent-cards-with-original-phase-modules--17-october-2026).
 

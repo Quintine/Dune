@@ -32,6 +32,9 @@ export type EcazIndependentSkillsOptions = {
   skills?: boolean;
   /** The independent physical three-card variant; `false` is the printed no-card control. */
   independent?: boolean;
+  /** Original optional modules, both off by default; Strongholds require Advanced. */
+  tech?: boolean;
+  strongholds?: boolean;
   /** Real native Battle Plan cards in the lead's own plan. */
   cards?: readonly EcazIndependentSkillsCard[];
   lead?: 'ecaz' | 'ally';
@@ -111,6 +114,8 @@ export function nextEcazIndependentSkillsStep(game: Game,
       return { actor: decision.player, action: { type: 'decision', event: decision.event, draw: false } };
     if (decision?.kind === 'faceDance')
       return { actor: decision.player, action: { type: 'decision', reveal: false } };
+    if (decision?.kind === 'techToken')
+      return { actor: decision.player, action: { type: 'decision', token: decision.choices[0] } };
     if (['sukRescue', 'harassWithdraw', 'battleLosses'].includes(decision?.kind ?? '')) return null;
   }
   return nextStrongholdFactionsNativeStep(game);
@@ -167,6 +172,8 @@ export function assertEcazIndependentSkillsCustody(game: Game): void {
 export type EcazIndependentSkillsFixture = {
   /** Original fresh lobby/setup snapshots taken by the shared genuine programme. */
   initial: Game; afterSetup: Game;
+  /** Real turn-one Mentat acquisition, before the worm alliance and battle. */
+  afterFirstMentat?: Game; strongholdTerritory?: string;
   /** Original before-lead window and the recorded native lead choice. */
   beforeLead: Game; leadStep: EcazIndependentSkillsStep; afterLead: Game;
   /** Clean before-plan window (both plans still unsealed) and the real plans. */
@@ -257,6 +264,7 @@ export function createEcazIndependentSkillsFixture(
   const draws = skills ? permutationDraws(LEADER_SKILL_CARDS.map(card => card.id), order) : [];
   const shared = entropy(() => createHomeworldEcazOccupyFixture({
     advanced, skills, independent, homeworlds: false,
+    tech: options.tech ?? false, strongholds: options.strongholds ?? false,
     ...(options.paired ? { allyFaction: 'moritani' as const } : {}),
     ...(skills ? { finishSetup: (initial: Game) => trainEcazSeat(initial, picks) } : {}),
   }), draws);
@@ -330,7 +338,9 @@ export function createEcazIndependentSkillsFixture(
     returns = defaultHarassWithdrawAllocation(offer.context, offer.dial, offer.support);
   }
   const fixture: EcazIndependentSkillsFixture = {
-    initial: shared.initial, afterSetup: shared.afterSetup, beforeLead, leadStep, afterLead,
+    initial: shared.initial, afterSetup: shared.afterSetup,
+    afterFirstMentat: shared.afterFirstMentat, strongholdTerritory: shared.strongholdTerritory,
+    beforeLead, leadStep, afterLead,
     beforePlans, plans, game, returns, ecaz: shared.ecaz, ally: shared.ally, opponent: shared.opponent,
     territory: shared.territory, location: shared.location, fixedEcazDial: profile.fixedEcazDial,
     planDial: profile.fixedEcazDial + variable, support, cardUser, cardIds, cardKinds, trainer,
@@ -355,6 +365,7 @@ export function quoteEcazIndependentSkillsBattle(f: EcazIndependentSkillsFixture
     return { id: actor, faction: player.faction, spice: player.spice, hand: player.hand, plan,
       leader: player.leaders.find(leader => leader.id === plan.leader),
       forces: own.ownForces!,
+      stronghold: own.strongholdEffects[actor],
       leaderSkills: (game.leaderSkills?.assignments ?? []).filter(a => a.owner === actor)
         .map(a => ({ skill: a.skill, leader: a.leader,
           faceUp: battle.leaderSkillHidden?.[actor] !== true, captured: false })),

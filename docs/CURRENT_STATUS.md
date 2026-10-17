@@ -29,6 +29,29 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Skills/cards with original phase modules — 17 October.** Fresh all14 Skills
+and independent cards now retains original Tech3+ Basic/Advanced and
+Strongholds2+ Advanced, optionally both, across existing classic, selected
+E1/E2 and standalone/paired E3 rosters. Paired plain E3 Skills also retains
+that phase envelope without requiring Nexus or cards. World/Nexus/Discovery,
+mixed-E3 and existing special-role guards remain; no rules arithmetic or saved
+history is invented.
+
+Real revival preserves prior payment, one Axlotl accrual/phase-end payout and
+the separate normal Banker threshold/Mentat grant. Real held Arrakeen support
+is Bank contribution, not personal money or reserve-fee funding. Typed fees,
+Harass/Suk, native prices, selected-holder versus ally, winner Tech and native
+assassination/Mentat retain physical sources and original continuation.
+
+Frozen44-file **471/471**, types/lint/build and actual programmes pass.
+Eight natural composed tables reach turn3 or earlier wins; real390px normal
+lobby selects all four modules, trains an offered Smuggler and reaches Storm
+with no browser errors/root overflow. Targeted programmes, not those natural
+tables, supply the detailed fee/income/claim evidence. Native controlled-card
+positioning is labelled, including a repeated Richese R input; no natural
+reacquisition or full-mode/deployed/deferred assurance claim follows.
+[Current phase scope and evidence](LEADER_SKILLS_RUNTIME.md#independent-cards-with-original-phase-modules--17-october-2026).
+
 **Paired E3 Skills and native arrivals — 17 October.** Native Ecaz+Moritani/
 classics all14 Skills no longer requires Nexus Cards, Basic/Advanced2–6,
 optionally independent cards only. Four normal plain/card starts failed before

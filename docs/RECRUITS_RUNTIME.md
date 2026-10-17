@@ -4,7 +4,19 @@
 Ecaz & Moritani Treachery Cards variant is included before genuine Basic or
 Advanced faction setup. All three physical cards are present exactly once.
 Recruits, bounded Reinforcements and Harass & Withdraw have connected controls,
-AI and saved continuation; full interactions and public starts remain gated.
+AI and saved continuation; full interactions and publication remain gated.
+
+## Original Skills/phase composition — 17 October 2026
+
+Supported classic, selected E1/E2 and standalone/paired E3 all14/card profiles
+retain original Tech3–6 Basic/Advanced and Advanced Strongholds2–6, without
+World/Nexus/Discovery. One genuine five-Tanks programme returns3 for4, then2
+for2 after Recruits, preserving prior payment and free/ordinary usage. The
+larger allowance cannot create a third counter when only two actual Tanks
+remain. Axlotl accrues once/pays at phase end; normal Banker keeps its actual
+Bank-payer threshold and deferred Mentat grant. Native prices/caps/recipients
+and provisional late-paid policy remain unchanged.
+[Current471/471 programme and limits](LEADER_SKILLS_RUNTIME.md#independent-cards-with-original-phase-modules--17-october-2026).
 
 ## Provisional late-paid activation — 8 October 2026
 

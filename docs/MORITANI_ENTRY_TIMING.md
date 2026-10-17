@@ -5,11 +5,16 @@ Reviewed 2026-09-06. This supplements `MORITANI_TERROR_RULES.md`; it does not en
 ## Paired Skills and independent-card entries — 17 October 2026
 
 The existing serialized native queue now admits paired Ecaz/Moritani/classic
-all14 Skills without Nexus, optionally independent cards and no other modules.
+all14 Skills without Nexus, optionally independent cards and original Tech3+/Advanced Strongholds2+.
 Bare faction/card-only entries also retain it; selecting the printed independent
 variant does not require selecting Skills or suppress native reactions.
 This extends software capability, not the provisional storm-order policy below.
 Original in-flight control and effect-specific guards remain.
+Actual Basic Tech and Advanced combined-module entries also complete Duke6,
+Robbery and the original paid one-counter arrival/movement through this queue.
+[Current471/471 envelope and runtime proof](LEADER_SKILLS_RUNTIME.md#independent-cards-with-original-phase-modules--17-october-2026)
+does not change its selected priority or certify other effect-specific combinations.
+
 
 `tests/paired-e3-skills-arrival.test.ts` branches from genuine normal setup,
 uses actual native placements and one paid Guild arrival, then triggers

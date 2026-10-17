@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 17 October 2026 — Skills/cards with original phase modules
+
+Eight original normal card/Skills phase starts and two plain paired starts
+rejected before; the shared independent profile now retains original Tech3+
+Basic/Advanced and Strongholds2+ Advanced, optionally both. Classic, selected
+E1/E2 and standalone/paired E3 keep their existing roster/source limits.
+Live card consumers reuse that same profile despite mandatory Banker/native
+markers. Plain paired E3 no longer requires a card or Nexus for these original
+modules. World/Nexus/Discovery and unrelated guards remain.
+
+Disjoint genuine programmes preserve paid/free revival ledgers, Axlotl once at
+phase end and normal Banker separately at Mentat; real earned Arrakeen funds
+only selected-holder support. Ix retains typed fee/Harass/Suk and native
+Cyborg5 paid to Tleilaxu. Richese retains reserve-limited materialization and
+actual held support. E3 retains separate armies/selected reward, unused native
+trained-disc death and one Mentat replacement. No owner, wallet or phase is
+assigned to simulate earned effects; controlled card positioning is explicit.
+The Richese second battle restages the original physical R, not a natural draw.
+
+Frozen44-file **471/471**, types/lint/build and actual rule programmes pass.
+Support assertions now observe payment before printed Collection income;
+Recruits tests actual remaining Tanks rather than a larger abstract allowance.
+An old charity fixture now conserves printed Karama from its actual hand/deck/
+discard instead of assuming it remains undealt. Eight natural composed tables
+reach turn3 or earlier wins with29 battles/eight Mentat decision steps.
+Real390px normal lobby selects all four modules, assigns offered Smuggler and
+reaches Storm without browser errors/root overflow. Existing build warnings,
+provisional card/Basic arithmetic and full-mode/deployed/deferred assurance
+limits remain. No game reset or saved-game conversion occurs.
+[Canonical current envelope](LEADER_SKILLS_RUNTIME.md#independent-cards-with-original-phase-modules--17-october-2026).
+
 ## 17 October 2026 — Paired native E3 Skills without Nexus
 
 Four actual paired Basic/Advanced plain/card Skills starts rejected before the

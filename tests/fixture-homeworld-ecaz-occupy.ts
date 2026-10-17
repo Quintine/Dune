@@ -5,7 +5,9 @@ import { territory } from '../game/board';
 import { finishEcazOccupySetup, type EcazOccupyFixture } from './fixture-ecaz-occupy';
 
 export type HomeworldEcazStep = { actor: string; action: Action };
-export type HomeworldEcazOccupyFixture = EcazOccupyFixture & { actions: HomeworldEcazStep[] };
+export type HomeworldEcazOccupyFixture = EcazOccupyFixture & {
+  actions: HomeworldEcazStep[]; afterFirstMentat?: Game; strongholdTerritory?: string;
+};
 export const homeworldEcazClean = (game: Game) =>
   !game.phaseOpening && !game.response && !game.decision && !game.pendingTreacheryDiscard;
 
@@ -39,6 +41,7 @@ export function nextHomeworldEcazStep(game: Game): HomeworldEcazStep | null {
 export function createHomeworldEcazOccupyFixture(options: {
   advanced?: boolean; skills?: boolean; independent?: boolean;
   allyFaction?: 'emperor' | 'moritani';
+  tech?: boolean; strongholds?: boolean;
   /** No-World control uses the same genuine alliance/Arrakis route. */
   homeworlds?: boolean;
   /** Select only actual offered setup choices; the captured initial stays untouched. */
@@ -56,6 +59,8 @@ export function createHomeworldEcazOccupyFixture(options: {
     game = applyAction(game, actor, action);
   };
   if (homeworlds) act('ecaz', { type: 'homeworlds', enabled: true });
+  if (options.tech) act('ecaz', { type: 'techTokens', enabled: true });
+  if (options.strongholds) act('ecaz', { type: 'strongholdCards', enabled: true });
   if (options.independent) act('ecaz', { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
   if (options.skills) act('ecaz', { type: 'moduleOption', module: 'leaderSkills', enabled: true });
   for (const player of game.players) act(player.id, { type: 'ready' });
@@ -82,10 +87,19 @@ export function createHomeworldEcazOccupyFixture(options: {
   orderBlow(false, 0);
   if (advanced) orderBlow(false, 1);
   reach(g => g.phase === 5 && homeworldEcazClean(g));
+  const strongholdTerritory = options.strongholds ? 'arrakeen' : undefined;
   while (game.phase === 5) {
-    if (homeworldEcazClean(game)) act(game.active!, { type: 'endMovement' }); else step();
+    if (!homeworldEcazClean(game)) { step(); continue; }
+    const actor = game.active!;
+    if (strongholdTerritory && actor === 'ecaz' && !game.players.find(player => player.id === actor)!.shipped) {
+      act(actor, { type: 'ship', territory: strongholdTerritory,
+        sector: territory(strongholdTerritory).sectors[0], amount: 4, elite: 0, allyPayment: 0, smuggler: false });
+      reach(homeworldEcazClean);
+    }
+    act(actor, { type: 'endMovement' });
   }
   reach(g => g.turn === 2 && g.phase === 0 && !g.phaseOpening);
+  const afterFirstMentat = options.tech || options.strongholds ? structuredClone(game) : undefined;
   orderBlow(true, 0);
   orderBlow(false, 1);
   if (advanced) orderBlow(false, 2);
@@ -93,7 +107,7 @@ export function createHomeworldEcazOccupyFixture(options: {
   act('ecaz', { type: 'alliance', target: ally });
   act(ally, { type: 'alliance', target: 'ecaz' });
   reach(g => g.phase === 5 && homeworldEcazClean(g));
-  const battleTerritory = ['arrakeen', 'sietch_tabr', 'habbanya_ridge_sietch']
+  const battleTerritory = strongholdTerritory ?? ['arrakeen', 'sietch_tabr', 'habbanya_ridge_sietch']
     .find(id => territory(id).sectors[0] !== game.storm &&
       !game.players.some(player => Object.entries(player.forces).some(([key, amount]) =>
         amount > 0 && key.startsWith(`${id}:`))))!;
@@ -103,7 +117,7 @@ export function createHomeworldEcazOccupyFixture(options: {
   while (game.phase === 5) {
     if (!homeworldEcazClean(game)) { step(); continue; }
     const actor = game.active!;
-    if (!shipped.has(actor)) {
+    if (!shipped.has(actor) && !(strongholdTerritory && actor === 'ecaz')) {
       act(actor, { type: 'ship', territory: battleTerritory, sector,
         amount: actor === 'guild' ? 2 : 4,
         elite: actor === ally && ally === 'emperor' && (advanced || homeworlds) ? 2 : 0, allyPayment: 0 });
@@ -118,6 +132,7 @@ export function createHomeworldEcazOccupyFixture(options: {
   act(choice.chooser, { type: 'chooseBattle', territory: battleTerritory,
     target: choice.attacker === choice.chooser ? choice.defender : choice.attacker });
   if (!options.skills) assert.equal(game.decision?.kind, 'ecazBattleLead');
-  return { game, initial, afterSetup, actions, ecaz: 'ecaz', ally, opponent: 'guild',
+  return { game, initial, afterSetup, actions, afterFirstMentat, strongholdTerritory,
+    ecaz: 'ecaz', ally, opponent: 'guild',
     territory: battleTerritory, location, ecazForces: 4 };
 }

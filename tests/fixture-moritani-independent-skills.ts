@@ -31,6 +31,9 @@ export type MoritaniIndependentSkillsOptions = {
   skills?: boolean;
   /** The independent three-card Ecaz Treachery variant of printed p. 18. */
   cards?: boolean;
+  /** Original optional modules, both off by default; Strongholds require Advanced. */
+  tech?: boolean;
+  strongholds?: boolean;
   opponent?: MoritaniIndependentSkillsOpponent;
   /** Native Ecaz replaces the classic opponent; both factions keep printed setup.
    * `opponent` remains the standalone-only Guild/Harkonnen selector. */
@@ -172,6 +175,8 @@ export function nextMoritaniIndependentSkillsStep(
     if (decision?.kind === 'battleCards')
       return { actor: decision.player, action: { type: 'decision',
         discard: policy.winnerDiscard === 'none' ? [] : [...decision.cards] } };
+    if (decision?.kind === 'techToken')
+      return { actor: decision.player, action: { type: 'decision', token: decision.choices[0] } };
     if (decision?.kind === 'captureOffer')
       return { actor: decision.player,
         action: { type: 'decision', accept: policy.capture?.accept ?? false } };
@@ -287,9 +292,12 @@ export function createMoritaniIndependentSkillsFixture(
   assert.equal(game.advanced, advanced);
   assert.deepEqual(game.expansions, ['ecaz']);
   assert.equal(game.status, 'lobby', 'Continue only a fresh lobby of this exact composition.');
-  assert.ok(!game.homeworlds && !game.nexusCards && !game.discoveryEnabled &&
-    !game.techTokens && !game.strongholdCards,
-    'Only the standalone E3/classic composition without other modules is accepted.');
+  assert.ok(!game.homeworlds && !game.nexusCards && !game.discoveryEnabled,
+    'Only the original E3/classic composition and optional Tech/Strongholds are accepted.');
+  assert.ok(!game.techTokens || options.tech,
+    'A preselected original Tech module needs tech:true.');
+  assert.ok(!game.strongholdCards || options.strongholds,
+    'A preselected original Stronghold module needs strongholds:true.');
   const actions: MoritaniIndependentSkillsStep[] = [], staging: string[] = [];
   const act = (actor: string, action: Action) => {
     actions.push({ actor, action: structuredClone(action) });
@@ -299,6 +307,8 @@ export function createMoritaniIndependentSkillsFixture(
   const initial = structuredClone(game);
   if (skills) act('moritani', { type: 'moduleOption', module: 'leaderSkills', enabled: true });
   if (cards) act('moritani', { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
+  if (options.tech && !game.techTokens) act('moritani', { type: 'techTokens', enabled: true });
+  if (options.strongholds && !game.strongholdCards) act('moritani', { type: 'strongholdCards', enabled: true });
   for (const player of game.players) if (!player.ready) act(player.id, { type: 'ready' });
   const start: MoritaniIndependentSkillsStep = { actor: 'moritani',
     action: { type: 'start', ...(advanced ? { advancedPreview: true as const } : {}) } };

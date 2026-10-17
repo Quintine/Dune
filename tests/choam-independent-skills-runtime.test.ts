@@ -8,7 +8,7 @@ import type { BattleResolutionQuote } from '../game/battle-resolution-quote';
 import { quoteIndependentSkillsBattle } from './fixture-independent-skills-battle';
 import {
   assertChoamIndependentSkillsCustody, choamIndependentSkillsPlayer,
-  createChoamIndependentSkillsFixture,
+  createChoamIndependentSkillsFixture, createChoamIndependentSkillsHeldSupportFixture,
   finishChoamIndependentSkillsBattle, openChoamIndependentSkillsBattle,
   sealChoamIndependentSkillsBoth, type ChoamIndependentSkillsFixture,
 } from './fixture-choam-independent-skills';
@@ -158,4 +158,55 @@ void test('The independent CHOAM/Richese setup keeps the separate cache and each
   assert.equal(rival(fixture, done).tanks, rival(fixture, fixture.beforePlans).tanks +
     (rival(fixture, fixture.beforePlans).forces[fixture.location] ?? 0),
   'The defeated garrison, not armies elsewhere, reached the Tanks');
+});
+
+void test('the first real Richese Mentat claim supports a funded second marker without paying or refunding its reserve fee', () => {
+  const f = createChoamIndependentSkillsHeldSupportFixture({ tech: true, strongholds: true });
+  const { first } = f;
+  assert.equal(first.offered.richeseCache!.length, 10);
+  assert.notEqual(first.trainers[first.choam], 'choam-auditor');
+  assert.equal(f.firstAfterBattle.strongholdCards!.owners.arrakeen, null);
+  assert.equal(owner(first, f.firstAfterBattle).forces[first.location], 2,
+    'The first machine winner really keeps the two undialed marker counters');
+  assert.equal(f.afterFirstMentat.strongholdCards!.claimedTurn, 1);
+  assert.equal(f.afterFirstMentat.strongholdCards!.owners.arrakeen, first.richese);
+  assert.equal(owner(first, f.afterFirstMentat).forces[first.location], 2);
+  const shipped = owner(first, f.afterMarkerShipment), beforeShipment = owner(first, f.beforeMarkerShipment);
+  assert.equal(shipped.reserves, beforeShipment.reserves,
+    'The different concealed token does not borrow physical counters before reveal');
+  assert.notEqual(shipped.noField!.lastShipped, owner(first, first.afterShipment).noField!.lastShipped,
+    'The original same-token consecutive-shipment limit remains in force');
+  assert.equal(owner(first, f.beforePlans).forces[first.location], 2);
+  assert.equal(rival(first, f.beforePlans).reserves, rival(first, f.beforeEnemyShipment).reserves - 4);
+  assert.equal(rival(first, f.beforePlans).spice, rival(first, f.beforeEnemyShipment).spice - 4,
+    'The returning enemy army paid its real four-force stronghold invoice');
+  const preview = viewGame(f.beforePlans, first.richese).battle!;
+  assert.equal(preview.strongholdEffects![first.richese], 'arrakeen');
+  assert.equal(preview.reinforcements!.noField!.materializes, 5);
+  assert.equal(preview.reinforcements!.noField!.reservesAfterReveal, 9);
+  assert.equal(preview.reinforcements!.normal, 3);
+  assert.equal(owner(first, f.revealed).forces[first.location], 7);
+  assert.equal(owner(first, f.revealed).reserves, 9);
+  const quote = quoteIndependentSkillsBattle(f.revealed, { returns: f.returns });
+  const payment = quote.payments.find(entry => entry.player === first.richese)!;
+  assert.equal(payment.bankSupport, 2);
+  assert.equal(payment.ownPayment, 0);
+  assert.equal(payment.cost, 0);
+  assert.deepEqual(bonusOf(f.revealed, quote, first.richese),
+    { bonus: 2, applied: [{ skill: 'mentat', amount: 2, mode: 'skilled' }] });
+  assert.deepEqual(quote.reinforcements,
+    [{ player: first.richese, card: REINFORCEMENTS_CARD, normal: 3, elite: 0 }]);
+  assert.equal(quote.auditor, null, 'The native Auditor never becomes an ordinary trained battle leader');
+  const after = owner(first, f.afterBattle), revealed = owner(first, f.revealed);
+  assert.equal(f.afterBattle.lastBattleContext!.winner, first.richese);
+  assert.equal(after.spice, revealed.spice, 'Held bank support is a discount, never personal income');
+  assert.equal(after.reserves, revealed.reserves - 3 + 5,
+    'The three-reserve card fee is still paid before the five real undialed forces return');
+  assert.equal(after.tanks, revealed.tanks + 3 + 2,
+    'Free support neither funds extra reserve counters nor rescues the fee from Tanks');
+  assert.equal(after.forces[first.location] ?? 0, 0);
+  assert.equal(rival(first, f.afterBattle).tanks, rival(first, f.revealed).tanks + 4);
+  for (const id of [REINFORCEMENTS_CARD, HARASS_WITHDRAW_CARD])
+    assert.equal(f.afterBattle.discard.filter(card => card.id === id).length, 1);
+  assertChoamIndependentSkillsCustody(first, f.afterBattle);
 });

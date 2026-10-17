@@ -5,6 +5,7 @@ import { treacheryDeck } from '../game/cards';
 import { ecazTreacheryCards } from '../game/ecaz-cards';
 import { HARASS_WITHDRAW_CARD } from '../game/harass-withdraw';
 import { REINFORCEMENTS_CARD } from '../game/reinforcements';
+import { ownedTech } from '../game/tech-tokens';
 import {
   assertEcazIndependentSkillsCustody,
   createEcazIndependentSkillsFixture, ecazIndependentSkillsPlayer as player,
@@ -45,8 +46,8 @@ function disposedLeadCards(f: EcazIndependentSkillsFixture, end: Game): void {
 }
 
 for (const advanced of [false, true]) {
-  void test(`original independent cards with all14 ${advanced ? 'Advanced' : 'Basic'} reach the printed lead choice, and the trained Ecaz Suk rescues only its own committed losses`, () => {
-    const f = createEcazIndependentSkillsFixture({ advanced, lead: 'ecaz' });
+  void test(`original independent cards with all14 ${advanced ? 'Advanced' : 'Basic Tech'} reach the printed lead choice, and the trained Ecaz Suk rescues only its own committed losses`, () => {
+    const f = createEcazIndependentSkillsFixture({ advanced, lead: 'ecaz', tech: !advanced });
     physicalSource(f.initial, 36);
     physicalSource(f.game, 36);
     assert.equal(f.beforeLead.decision?.kind, 'ecazBattleLead');
@@ -110,6 +111,13 @@ for (const advanced of [false, true]) {
     assert.equal(change(player(f.game, f.opponent).tanks, player(end, f.opponent).tanks), 2);
     assert.equal(at(end, f.opponent, f.location), 0);
     assert.equal(change(player(f.game, f.opponent).reserves, player(end, f.opponent).reserves), 0);
+    if (!advanced) {
+      const tokens = ownedTech(f.game.techTokens, f.opponent);
+      assert.equal(tokens.length, 1, 'the actual defeated Guild carries one original token');
+      assert.equal(end.techTokens![tokens[0]].owner, f.ecaz,
+        'original winner Tech cleanup credits the selected Ecaz plan, after its own card fee and rescue');
+      disposedLeadCards(f, end);
+    }
     assertEcazIndependentSkillsCustody(end);
   });
 }
@@ -333,8 +341,8 @@ void test('native paired Ecaz lead pays its own fee, returns its undialed fixed 
   assertEcazIndependentSkillsCustody(end);
 });
 
-void test('native paired Basic Moritani lead pays and withdraws its normal variable army without merging Ecaz fixed losses', () => {
-  const f = createEcazIndependentSkillsFixture({ paired: true, advanced: false, lead: 'ally' });
+void test('native paired Basic Tech Moritani lead pays and withdraws its normal variable army without merging Ecaz fixed losses', () => {
+  const f = createEcazIndependentSkillsFixture({ paired: true, advanced: false, lead: 'ally', tech: true });
   const quote = quoteEcazIndependentSkillsBattle(f);
   assert.deepEqual(quote.reinforcements,
     [{ player: f.ally, card: REINFORCEMENTS_CARD, normal: 3, elite: 0 }]);
@@ -354,8 +362,51 @@ void test('native paired Basic Moritani lead pays and withdraws its normal varia
   assert.equal(at(end, f.ecaz, f.location), 2);
   assert.equal(player(end, f.ecaz).leaders.find(leader => leader.id === f.trainer)!.dead, false);
   assert.equal(change(player(f.game, f.opponent).tanks, player(end, f.opponent).tanks), 2);
+  const tokens = ownedTech(f.game.techTokens, f.opponent);
+  assert.equal(tokens.length, 1);
+  assert.equal(end.techTokens![tokens[0]].owner, f.ally,
+    'the selected Moritani winner, not its Ecaz coalition partner, inherits the defeated Guild token');
   disposedLeadCards(f, end);
   pairedArmies(f, end);
   physicalSource(end, 36);
   assertEcazIndependentSkillsCustody(end);
 });
+
+for (const lead of ['ecaz', 'ally'] as const) {
+  void test(`earned Arrakeen supports only its Ecaz holder's selected plan: paired ${lead === 'ecaz' ? 'holder' : 'Moritani'} lead keeps card fees, losses and Tech separate`, () => {
+    const f = createEcazIndependentSkillsFixture({ paired: true, tech: true, strongholds: true, lead });
+    const claim = f.afterFirstMentat!;
+    assert.equal(claim.strongholdCards!.claimedTurn, 1);
+    assert.equal(claim.strongholdCards!.owners.arrakeen, f.ecaz);
+    assert.equal(at(claim, f.ecaz, f.location), 4);
+    assert.equal(f.actions.filter(step => step.actor === f.ecaz && step.action.type === 'ship').length, 1,
+      'the same four paid turn-one counters remain through the claim and real worm alliance');
+    const quote = quoteEcazIndependentSkillsBattle(f);
+    const payment = quote.payments.find(payment => payment.player === f.cardUser)!;
+    assert.equal(payment.bankSupport, lead === 'ecaz' ? 2 : 0);
+    assert.equal(payment.ownPayment, lead === 'ecaz' ? 0 : 2,
+      'Moritani does not inherit the Ecaz-held card when Ecaz selects its ally to lead');
+    assert.deepEqual(quote.reinforcements,
+      [{ player: f.cardUser, card: REINFORCEMENTS_CARD, normal: 3, elite: 0 }]);
+    assert.deepEqual(quote.harassWithdraw![0].returned, { normal: 2, elite: 0 });
+    assert.deepEqual(quote.fixedLosses, [{ owner: f.ecaz, normal: 2, elite: 0 }]);
+    assert.equal(quote.casualties?.owner, f.ally);
+    const paid = settleEcazIndependentSkillsBattle(f, { stop: 'rescue' });
+    assert.equal(player(paid, f.cardUser).spice, player(f.game, f.cardUser).spice - payment.ownPayment,
+      'support settles before the Ecaz rescue and the separate Collection income');
+    const end = settleEcazIndependentSkillsBattle(f, { state: paid });
+    assert.equal(end.phase, 7);
+    assert.equal(end.lastBattleContext?.winner, f.cardUser);
+    assert.equal(change(player(f.game, f.ecaz).tanks, player(end, f.ecaz).tanks), lead === 'ecaz' ? 3 : 2);
+    assert.equal(change(player(f.game, f.ally).tanks, player(end, f.ally).tanks), lead === 'ecaz' ? 2 : 5);
+    assert.equal(end.lastBattleContext?.sukRescue?.completed, lead === 'ecaz' ? true : undefined);
+    const lostTokens = ownedTech(f.game.techTokens, f.opponent);
+    assert.equal(lostTokens.length, 1);
+    assert.equal(end.techTokens![lostTokens[0]].owner, f.cardUser);
+    disposedLeadCards(f, end);
+    pairedArmies(f, end);
+    physicalSource(end, 36);
+    assert.deepEqual(end.ecazLoyalty, f.afterSetup.ecazLoyalty);
+    assertEcazIndependentSkillsCustody(end);
+  });
+}

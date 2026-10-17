@@ -10708,7 +10708,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const homeworlds = homeworldLeaderSkillsProfile(state);
   const independent = independentTreacheryLeaderSkillsProfile(state);
   if (state.ecazTreachery) {
-    requireRule(independent, 'Independent Treachery with Leader Skills requires a fresh classic, selected Ix/CHOAM or standalone Ecaz/Moritani lobby without other modules.');
+    requireRule(independent, 'Independent Treachery with Leader Skills requires a fresh supported classic or native lobby with only optional original Tech Tokens and Advanced Stronghold Cards.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -10761,6 +10761,8 @@ function ecazHomeworldProfile(g: Game): boolean {
 }
 /** Independent cards compose original phase modules, not unrelated previews. */
 function independentCardModulesProfile(g: Game): boolean {
+  if ((g.techTokens || g.strongholdCards) && g.leaderSkills && !g.sandtrout &&
+      independentTreacheryLeaderSkillsProfile(g)) return true;
   if (!g.ecazTreachery || (!g.techTokens && !g.strongholdCards) || !independentCardRoster(g) || g.expansions.includes('ecaz') ||
       g.players.length < (g.techTokens ? 3 : 2) || g.players.length > 6 ||
       (g.strongholdCards && !g.advanced) ||
@@ -13945,7 +13947,7 @@ function recruitsPlayBlock(g: Game, owner: Player, card: Card): string | null {
   if (!g.ecazTreachery || !ecazTreacheryDefinition(card) || card.id !== RECRUITS_CARD_ID)
     return 'Choose the physical Recruits card from the enabled Ecaz Treachery Cards variant.';
   if (!recruitsModeSupported(g))
-    return 'Recruits requires a supported independent-card profile: faction-only, supported all14 Skills without other modules, or the existing native Homeworld and phase-module compositions.';
+    return 'Recruits requires a supported independent-card profile: faction-only, all14 Skills with optional original phase modules, or the existing native Homeworld compositions.';
   if (g.status !== 'playing' || g.phase !== 4)
     return 'Play Recruits during Revival.';
   if (g.recruits?.turn === g.turn)

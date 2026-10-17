@@ -18,7 +18,7 @@ import { nextStrongholdFactionsNativeStep } from './fixture-stronghold-factions'
 import { quoteIndependentSkillsBattle } from './fixture-independent-skills-battle';
 
 export type IxIndependentSkillsStep = { actor: string; action: Action };
-export type IxIndependentSkillsOptions = { advanced?: boolean };
+export type IxIndependentSkillsOptions = { advanced?: boolean; tech?: boolean; strongholds?: boolean };
 export const ixIndependentSkillsPlayer = (game: Game, actor: string): Player => {
   const player = game.players.find(p => p.id === actor); assert.ok(player); return player;
 };
@@ -67,6 +67,8 @@ export function ixIndependentSkillsPolicyActions(game: Game, actor: string, diff
 export function nextIxIndependentSkillsStep(game: Game): IxIndependentSkillsStep | null {
   if (!game.phaseOpening && !game.response) {
     const d = game.decision;
+    if (d?.kind === 'techToken') return { actor: d.player,
+      action: { type: 'decision', token: d.choices[0] } };
     if (d?.kind === 'leaderSkillVisibility') return { actor: d.player,
       action: { type: 'leaderSkillVisibility', event: d.event, hide: d.player === 'ixians' } };
     if (d?.kind === 'guildTiming') return { actor: d.player, action: { type: 'decision', take: false } };
@@ -153,6 +155,9 @@ export function createIxIndependentSkillsFixture(options: IxIndependentSkillsOpt
     actions.push(structuredClone(step)); game = stepIxIndependentSkills(game, step);
     return game;
   };
+  for (const [type, enabled] of [
+    ['techTokens', options.tech ?? false], ['strongholdCards', options.strongholds ?? false],
+  ] as const) if (enabled) record({ actor: game.host, action: { type, enabled } });
   for (const option of ['leaderSkills', 'ecazTreachery'] as const)
     record({ actor: game.host, action: { type: 'moduleOption', module: option, enabled: true } });
   for (const p of game.players) record({ actor: p.id, action: { type: 'ready' } });

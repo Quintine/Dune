@@ -228,9 +228,16 @@ export function createIxChoamSkillsTechFixture(options: IxChoamSkillsTechOptions
     for (let i = 0; (game.response || game.decision || game.pendingShipment) && i < 200; i++) game = step(game, actions);
     // Actual ten-spice desert invoice exhausts Emperor's original bank wallet.
     // Any native Heighliners payout can add at most one; no Collection at this pile.
-    const counter = game.deck.findIndex(card => card.effect === 'karama');
-    assert.ok(counter >= 0);
-    ixChoamSkillsTechPlayer(game, actor).hand.push(game.deck.splice(counter, 1)[0]);
+    const hand = ixChoamSkillsTechPlayer(game, actor).hand;
+    if (!hand.some(card => card.effect === 'karama')) {
+      // A real starting deal can put both printed counters in hands, not the deck.
+      const source = [game.deck, game.discard,
+        ...game.players.filter(player => player.id !== actor).map(player => player.hand)]
+        .find(zone => zone.some(card => card.effect === 'karama'));
+      assert.ok(source, 'Conserve an original printed Karama from its actual physical zone');
+      const counter = source.findIndex(card => card.effect === 'karama');
+      hand.push(source.splice(counter, 1)[0]);
+    }
     let beforeCharityIncome: Game | undefined;
     let afterCharityIncome: Game | undefined;
     for (let i = 0; (game.turn !== 2 || game.phase !== 2 || game.phaseOpening || game.response || game.decision)

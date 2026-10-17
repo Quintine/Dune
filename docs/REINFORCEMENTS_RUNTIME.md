@@ -4,10 +4,10 @@ The separate Ecaz Treachery Cards variant shuffles one physical Reinforcements
 card independently of choosing the Ecaz faction. Its bounded handler supports
 Basic/Advanced classic-faction tables, clean selected Ix and/or CHOAM native/base
 rosters, and clean Ecaz/Moritani expansion tables. Classic and selected E1/E2
-Worlds use native sources below; native selected-family Worlds add no other
-modules. Classic base36 separately uses the
-[phase-module contract](ECAZ_TREACHERY_RULES.md#classic-world-phase-module-composition--16-october-2026).
-The selected Advanced Occupy profile separately composes co-present armies.
+Worlds retain native sources and their original Tech/Stronghold envelope;
+see the [World phase contract](ECAZ_TREACHERY_RULES.md#native-world-phase-modules--17-october-2026).
+Supported native Basic/Advanced Occupy retains its own co-present armies;
+Basic mixed-marker and other unprofiled co-sides stay guarded.
 The holder may commit it in either Battle Plan card slot. It is neither a weapon
 nor a defense: Prescience of a category receives **None**, while the physical
 slot stays occupied and hidden until reveal. A named-card inspection still
@@ -15,6 +15,15 @@ fixes the exact card. Harass & Withdraw may share the plan under the
 [provisional original-cost-first policy](#combined-utility-plan--16-october-2026).
 Original or copied Stone Burner composes in clean selected Ix/CHOAM families
 and the existing native Advanced Occupy envelope. Other profile boundaries remain.
+
+## Original Skills/phase composition — 17 October 2026
+
+Supported original all14/card profiles retain Tech3–6 Basic/Advanced and
+Strongholds2–6 Advanced without World/Nexus/Discovery. Original reserve-fee
+funding stays separate from earned support: Bank2/personal0 cannot finance
+three missing reserve counters. Suk rescues only actual committed losses,
+never the fee; native marker materialization and mandatory disposal remain.
+[Current471/471 composition and physical programmes](LEADER_SKILLS_RUNTIME.md#independent-cards-with-original-phase-modules--17-october-2026).
 
 ## Clean selected Ix/CHOAM families — 16 October 2026
 

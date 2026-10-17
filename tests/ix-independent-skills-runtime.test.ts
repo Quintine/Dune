@@ -145,3 +145,41 @@ void test('all four minimal policies can seal native paid plans and execute proj
     assertIxIndependentSkillsCustody(done);
   }
 });
+
+void test('original native Tech and Stronghold phases keep the typed Suboid fee outside Suk and carry the winner into paid Recruits', () => {
+  const f = createIxIndependentSkillsRevivalFixture({ advanced: true, tech: true, strongholds: true });
+  const revealed = revealIxIndependentSkillsBattle(f);
+  const quote = quoteIxIndependentSkillsBattle(f, revealed);
+  assert.deepEqual(quote.reinforcements,
+    [{ player: f.ixians, card: REINFORCEMENTS_CARD, normal: 3, elite: 0 }]);
+  assert.deepEqual(quote.harassWithdraw![0].locations, f.returns);
+  const rescue = finishIxIndependentSkillsBattle(f, { state: revealed, stop: 'rescue' });
+  const initial = player(f.game, f.ixians), charged = player(rescue, f.ixians);
+  assert.equal(charged.reserves, initial.reserves - 3 + 2,
+    'Three actual Suboids pay before the physical Suboid and Cyborg return');
+  assert.equal(charged.elites!.reserves, initial.elites!.reserves + 1);
+  assert.equal(charged.tanks, 3);
+  assert.equal(charged.elites!.tanks, 0);
+  const saved = finishIxIndependentSkillsBattle(f, { state: rescue });
+  assert.equal(saved.lastBattleContext!.sukRescue!.completed, true);
+  assert.equal(player(saved, f.ixians).tanks, 3, 'Suk cannot rescue the reserve fee');
+  assert.equal(player(saved, f.ixians).elites!.tanks, 0);
+  assert.equal(f.afterBattle.techTokens!.production.owner, f.ixians,
+    'The real winner takes the original unowned token, not a staged claim');
+  assert.equal(f.beforeRevival.strongholdCards!.claimedTurn, 1);
+  assert.equal(f.beforeRevival.strongholdCards!.owners.hidden_mobile_stronghold, f.ixians);
+  assert.deepEqual(f.price, { free: 1, normalCost: 5, cost: 5 });
+  const before = player(f.beforeRevival, f.ixians), after = player(f.afterRevival, f.ixians);
+  assert.equal(after.spice, before.spice - 5);
+  assert.equal(player(f.afterRevival, f.tleilaxu).spice, player(f.beforeRevival, f.tleilaxu).spice + 5,
+    'Native paid Cyborg/Suboid revival still pays the real Tleilaxu recipient');
+  assert.equal(after.reserves, before.reserves + 3);
+  assert.equal(after.elites!.reserves, before.elites!.reserves + 1);
+  assert.equal(after.tanks, before.tanks - 3);
+  assert.equal(after.elites!.tanks, 0);
+  assert.equal(viewGame(f.afterRevival, f.ixians).revival.freeRemaining, 0);
+  for (const id of [REINFORCEMENTS_CARD, HARASS_WITHDRAW_CARD, RECRUITS_CARD_ID])
+    assert.equal(f.afterRevival.discard.filter(card => card.id === id).length, 1);
+  assertIxIndependentSkillsCustody(saved);
+  assertIxIndependentSkillsCustody(f.afterRevival);
+});

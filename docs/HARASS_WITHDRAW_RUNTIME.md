@@ -1,8 +1,19 @@
 # Harass & Withdraw development prototype
 
-Updated 16 October 2026. This connects the physical card to battle plans,
+Updated 17 October 2026. This connects the physical card to battle plans,
 private inspections, force returns, controls, AI and saved continuation. It does
-not complete the independent three-card variant or open public mode gates.
+not certify the complete independent card variant or a complete rules mode.
+
+## Original Skills/phase composition — 17 October 2026
+
+Supported classic, selected E1/E2 and standalone/paired E3 all14/card profiles
+retain original Tech3–6 Basic/Advanced and Advanced Strongholds2–6 without
+World/Nexus/Discovery. Exact typed undialed returns, fixed/variable ownership,
+fee-before-return funding and committed-only Suk stay. An earned Stronghold
+funds eligible support, not personal cash or reserve fees; Harass is neither
+free revival nor off-planet shipment and cannot accrue technology that way.
+[Current471/471 composition and evidence](LEADER_SKILLS_RUNTIME.md#independent-cards-with-original-phase-modules--17-october-2026).
+
 
 ## Authority and interpretation
 
@@ -227,8 +238,8 @@ route warnings remain; no HTTP or database boundary changed.
 - Clean classic Homeworlds use the [native reserve-routing contract](#classic-homeworld-reserve-routing--16-october-2026).
   Classic or selected Ix/CHOAM rosters, including Worlds, may retain
   [original Tech3+ and Advanced Strongholds2+](ECAZ_TREACHERY_RULES.md#native-world-phase-modules--17-october-2026).
-  Nexus, Skills, Discoveries, broader World/faction composition and full-mode
-  acceptance remain guarded.
+  All14/card profiles without Worlds now retain those original phase modules.
+  World+Skills, Nexus/Discovery and broader combinations retain their guards.
 - Richese card-family configurations now admit Harass under the
   [provisional post-withdrawal policy](#provisional-stone-burner-timing--16-october-2026).
   The ordinary invariant-allocation guard remains. Clean selected Ix follows
@@ -237,8 +248,8 @@ route warnings remain; no HTTP or database boundary changed.
   Own concealed No-Field use follows the
   [materialization-first contract](#own-no-field-composition--16-october-2026).
   Other profile/module boundaries remain unchanged.
-- Co-present armies remain guarded in Basic or without the supported Advanced
-  Occupy profile. The [combined-army follow-up](ECAZ_OCCUPY_RULES.md#independent-cards-with-combined-armies--2-october-2026)
+- Unsupported co-present armies and Basic mixed markers remain guarded.
+  Supported native Basic/Advanced [Occupy](ECAZ_OCCUPY_RULES.md#paired-native-skills--17-october-2026)
   returns only actual card-user forces: original fixed Ecaz commitment or the
   selected ally's native variable commitment. It never returns the other ally
   or recomputes mandatory fixed losses from the diminished board.

@@ -16,6 +16,8 @@ import { traitorDeck } from '../game/traitors';
 import { quoteBattleResolution, type ResolutionCombatant } from '../game/battle-resolution-quote';
 import { usesNativeBattleSpecial } from '../game/battle-card-slots';
 import { nextStrongholdFactionsNativeStep } from './fixture-stronghold-factions';
+import { createTechTokens } from '../game/tech-tokens';
+import { createStrongholdCards, strongholdBenefit } from '../game/stronghold-cards';
 
 export type IndependentSkillsBattleStep = { actor: string; action: Action };
 /** 'same-plan' trains the opposing Warmaster; 'traitor-cancel' adds its real
@@ -30,6 +32,9 @@ export type IndependentSkillsBattleOptions = {
   /** Continue only the original fresh classic lobby built by this fixture. */
   initial?: Game;
   advanced?: boolean;
+  /** Select original unused phase modules before admission; both default off. */
+  tech?: boolean;
+  strongholds?: boolean;
   seatIds?: readonly string[];
   case?: IndependentSkillsBattleCase;
   /** Construction hook: request exact original skill cards for one seat. */
@@ -53,6 +58,8 @@ export type IndependentSkillsBattleFixture = IndependentSkillsBattleSetup & {
   location: string;
   first: string;
   second: string;
+  /** Present only when a genuine turn-one occupation earned the Arrakeen card. */
+  afterFirstMentat?: Game;
   beforeShipment: Game;
   shipment: IndependentSkillsBattleStep;
   afterShipment: Game;
@@ -61,6 +68,7 @@ export type IndependentSkillsBattleFixture = IndependentSkillsBattleSetup & {
   opponentMove: IndependentSkillsBattleStep;
   beforeBattle: Game;
   battleStep: IndependentSkillsBattleStep;
+  beforePlans: Game;
   /** Revealed window: both original plans sealed, postures committed. */
   game: Game;
   plans: IndependentSkillsBattleStep[];
@@ -162,8 +170,11 @@ export function createIndependentSkillsBattleSetup(
     joinGame(game, newPlayer(ids[index], ids[index], factions[index]));
   assert.equal(game.advanced, options.advanced ?? game.advanced);
   assert.deepEqual(game.expansions, []);
-  assert.ok(!game.leaderSkills && !game.homeworlds && !game.nexusCards && !game.discoveryEnabled &&
-    !game.techTokens && !game.strongholdCards, 'Only the original classic composition is accepted.');
+  assert.ok(!game.leaderSkills && !game.homeworlds && !game.nexusCards && !game.discoveryEnabled,
+    'Only the original classic phase modules are accepted.');
+  assert.ok(!options.strongholds || game.advanced, 'Original Stronghold Cards require Advanced');
+  if (options.tech && !game.techTokens) game.techTokens = createTechTokens();
+  if (options.strongholds && !game.strongholdCards) game.strongholdCards = createStrongholdCards();
   assert.equal(game.status, 'lobby', 'Continue only an original fresh classic lobby.');
   const staging: string[] = [];
   const actions: IndependentSkillsBattleStep[] = [];
@@ -295,8 +306,10 @@ function strongestOther(game: Game, actor: string, excluded: string): string {
   return leader.id;
 }
 
-/** Real training, a paid native shipment, real within-territory movement and both
- * original Battle Plans. Only card and Traitor custody is staged. */
+/** Real training, a paid native shipment and both original Battle Plans. With
+ * Strongholds, that shipment earns Arrakeen at genuine first END Mentat and a
+ * paid turn-two Guild shipment challenges it; otherwise the original Pasty Mesa
+ * split movement remains unchanged. Only card and Traitor custody is staged. */
 export function createIndependentSkillsBattleFixture(
   options: IndependentSkillsBattleOptions = {},
 ): IndependentSkillsBattleFixture {
@@ -306,55 +319,79 @@ export function createIndependentSkillsBattleFixture(
   const staging = [...setup.staging];
   const actions = [...setup.actions];
   const { owner, opponent, trainers } = setup;
-  const location = 'pasty_mesa', first = 'pasty_mesa:5', second = 'pasty_mesa:6';
-  assert.deepEqual(territory(location).sectors, [5, 6, 7, 8]);
+  const strongholds = !!setup.afterSetup.strongholdCards;
+  const location = strongholds ? 'arrakeen' : 'pasty_mesa';
+  const first = `${location}:${strongholds ? 10 : 5}`;
+  const second = strongholds ? first : 'pasty_mesa:6';
+  if (!strongholds) assert.deepEqual(territory(location).sectors, [5, 6, 7, 8]);
   let game = advanceIndependentSkillsBattle(setup.afterSetup,
     (state) => state.phase === 5 && state.active === owner && independentSkillsBattleClean(state), actions);
   const beforeShipment = structuredClone(game);
   assert.equal(independentSkillsBattlePlayer(game, owner).reserves, 20);
-  assert.equal(independentSkillsBattlePlayer(game, owner).spice, 10);
   const shipment: IndependentSkillsBattleStep = { actor: owner, action: {
-    type: 'ship', territory: location, sector: 5, amount: 4, elite: 0, allyPayment: 0 } };
+    type: 'ship', territory: location, sector: strongholds ? 10 : 5, amount: 4, elite: 0, allyPayment: 0 } };
   actions.push(structuredClone(shipment));
   game = applyAction(game, owner, shipment.action);
   game = advanceIndependentSkillsBattle(game, (state) => independentSkillsBattleClean(state) &&
     !state.pendingShipment && state.phase === 5 && state.active === owner, actions);
   const afterShipment = structuredClone(game);
-  assert.equal(independentSkillsBattlePlayer(game, owner).spice, 2);
   assert.equal(independentSkillsBattlePlayer(game, owner).reserves, 16);
   assert.equal(independentSkillsBattlePlayer(game, owner).forces[first], 4);
-  assert.equal(independentSkillsBattlePlayer(game, opponent).spice, 5 + 8);
-  staging.push('The Emperor paid the original eight-spice desert shipment of four reserves into Pasty Mesa; that payment reached the Guild as printed shipping income.');
-  const move: IndependentSkillsBattleStep = { actor: owner, action: {
-    type: 'move', from: first, amount: 2, territory: location, sector: 6 } };
+  staging.push(`The Emperor paid its original ${strongholds ? 'four-spice stronghold' : 'eight-spice desert'} shipment of four reserves; the real payment reached the Guild.`);
+  const move: IndependentSkillsBattleStep = { actor: owner, action: strongholds
+    ? { type: 'endMovement' }
+    : { type: 'move', from: first, amount: 2, territory: location, sector: 6 } };
   actions.push(structuredClone(move));
   game = applyAction(game, owner, move.action);
-  game = advanceIndependentSkillsBattle(game, (state) => independentSkillsBattleClean(state) &&
-    state.phase === 5 && state.active === owner, actions);
-  assert.deepEqual(independentSkillsBattlePlayer(game, owner).forces, { [first]: 2, [second]: 2 });
+  let afterFirstMentat: Game | undefined;
+  if (strongholds) {
+    game = advanceIndependentSkillsBattle(game, state => state.turn === 2 && state.phase === 0, actions);
+    afterFirstMentat = structuredClone(game);
+    assert.equal(game.strongholdCards!.claimedTurn, 1);
+    assert.equal(game.strongholdCards!.owners.arrakeen, owner);
+    staging.push('The four originally shipped Emperor counters held empty Arrakeen through genuine first END Mentat and earned its card; no owner or army was assigned.');
+    game = advanceIndependentSkillsBattle(game, state => state.turn === 2 && state.phase === 5 &&
+      state.active === owner && independentSkillsBattleClean(state), actions);
+  } else {
+    game = advanceIndependentSkillsBattle(game, (state) => independentSkillsBattleClean(state) &&
+      state.phase === 5 && state.active === owner, actions);
+    assert.deepEqual(independentSkillsBattlePlayer(game, owner).forces, { [first]: 2, [second]: 2 });
+    staging.push('The Emperor moved two originally shipped counters to sector 6, leaving two physical Harass return locations.');
+  }
   const afterMove = structuredClone(game);
-  staging.push('The Emperor then moved two of those four counters from sector 5 to sector 6 in the same movement turn, so the Harass & Withdraw return allocation is genuinely ambiguous between two physical sectors.');
   const endMove: IndependentSkillsBattleStep = { actor: owner, action: { type: 'endMovement' } };
+  actions.push(structuredClone(endMove));
   game = applyAction(game, owner, endMove.action);
   game = advanceIndependentSkillsBattle(game, (state) => independentSkillsBattleClean(state) &&
     state.phase === 5 && state.active === opponent, actions);
-  assert.equal(independentSkillsBattlePlayer(game, opponent).forces['tueks_sietch:5'], 5);
-  const opponentMove: IndependentSkillsBattleStep = { actor: opponent, action: {
-    type: 'move', from: 'tueks_sietch:5', amount: 5, territory: location, sector: 6 } };
+  const opponentMove: IndependentSkillsBattleStep = { actor: opponent, action: strongholds
+    ? { type: 'ship', territory: location, sector: 10, amount: 5, elite: 0 }
+    : { type: 'move', from: 'tueks_sietch:5', amount: 5, territory: location, sector: 6 } };
   actions.push(structuredClone(opponentMove));
   game = applyAction(game, opponent, opponentMove.action);
   game = advanceIndependentSkillsBattle(game, (state) => independentSkillsBattleClean(state) &&
-    state.phase === 5 && state.active === opponent, actions);
-  assert.deepEqual(independentSkillsBattlePlayer(game, opponent).forces, { [second]: 5 });
-  staging.push('The Guild declined the first Advanced movement slot (a real legal Guild choice) and moved its whole army from Tuek’s Sietch into Pasty Mesa sector 6 during its own movement turn.');
+    !state.pendingShipment && state.phase === 5 && state.active === opponent, actions);
+  assert.equal(independentSkillsBattlePlayer(game, opponent).forces[second], 5);
+  staging.push(`The Guild declined its first Advanced movement slot and ${strongholds ? 'paid to ship five original reserves into the held Arrakeen' : 'marched its original five-counter army into Pasty Mesa'}.`);
   const endOpponent: IndependentSkillsBattleStep = { actor: opponent, action: { type: 'endMovement' } };
+  actions.push(structuredClone(endOpponent));
   game = applyAction(game, opponent, endOpponent.action);
   game = advanceIndependentSkillsBattle(game, (state) => state.phase === 6 && independentSkillsBattleClean(state), actions);
+  if (strongholds) {
+    const amount = independentSkillsBattlePlayer(game, owner).spice;
+    if (amount) {
+      const bribe: IndependentSkillsBattleStep = { actor: owner,
+        action: { type: 'bribe', target: setup.observer, amount } };
+      actions.push(structuredClone(bribe));
+      game = applyAction(game, owner, bribe.action);
+    }
+    staging.push('The Emperor actually bribed its entire remaining wallet to the observer before plans; the held Arrakeen contribution is support budget, never personal spice.');
+  }
   for (const player of game.players) game.deck.push(...player.hand.splice(0));
   staging.push('At the real Battle window every original hand returned to the undealt deck before the physical Reinforcements and Harass & Withdraw cards were conserved to the Emperor.');
   hold(game, owner, (card) => card.id === REINFORCEMENTS_CARD, staging);
   hold(game, owner, (card) => card.id === HARASS_WITHDRAW_CARD, staging);
-  const worthless = caseKind === 'suk' ? null : hold(game, opponent, (card) => card.kind === 'worthless', staging);
+  const worthless = caseKind === 'suk' && !strongholds ? null : hold(game, opponent, (card) => card.kind === 'worthless', staging);
   const hide: Record<string, boolean> = { [owner]: true, [opponent]: caseKind !== 'suk' };
   // The trained leader must be committed (so Warmaster/Suk take effect) exactly
   // when the owner's posture decision hides it behind the shield.
@@ -369,15 +406,20 @@ export function createIndependentSkillsBattleFixture(
   const beforeBattle = structuredClone(game);
   const choice = viewGame(game, game.active!).battleChoices.find((candidate) => candidate.territory === location);
   assert.ok(choice);
-  assert.equal(choice.attacker, owner);
-  assert.equal(choice.chooser, owner);
+  if (!strongholds) {
+    assert.equal(choice.attacker, owner);
+    assert.equal(choice.chooser, owner);
+  }
+  assert.ok(choice.chooser);
   const battleStep: IndependentSkillsBattleStep = { actor: choice.chooser, action: {
-    type: 'chooseBattle', territory: location, target: choice.defender } };
+    type: 'chooseBattle', territory: location,
+    target: choice.chooser === choice.attacker ? choice.defender : choice.attacker } };
   actions.push(structuredClone(battleStep));
   game = applyAction(game, choice.chooser, battleStep.action);
   game = advanceIndependentSkillsBattle(game,
     (state) => !!state.battle && !state.battle.revealed && independentSkillsBattleClean(state),
     actions, { hide });
+  const beforePlans = structuredClone(game);
   const support = advanced ? 2 : 0;
   const plans: IndependentSkillsBattleStep[] = [
     { actor: owner, action: { type: 'battlePlan', dial: 2, support, leader: ownerLeader,
@@ -391,10 +433,12 @@ export function createIndependentSkillsBattleFixture(
   }
   assert.ok(game.battle?.revealed);
   staging.push(`Both combatants made their real posture decisions before sealing: the Emperor hid its skilled leader behind the shield, the Guild ${caseKind === 'suk' ? 'kept its skilled leader face up and therefore committed another leader' : 'hid its skilled leader so that the committed Warmaster could resolve'}.`);
-  const returns: HarassWithdrawSelection = { [first]: { normal: 1, elite: 0 }, [second]: { normal: 1, elite: 0 } };
+  const returns: HarassWithdrawSelection = strongholds
+    ? { [first]: { normal: 2, elite: 0 } }
+    : { [first]: { normal: 1, elite: 0 }, [second]: { normal: 1, elite: 0 } };
   const fixture: IndependentSkillsBattleFixture = { ...setup, case: caseKind, advanced, location, first, second,
-    beforeShipment, shipment, afterShipment, move, afterMove, opponentMove, beforeBattle, battleStep,
-    game, plans, returns, hide, traitor, actions, staging };
+    afterFirstMentat, beforeShipment, shipment, afterShipment, move, afterMove, opponentMove, beforeBattle, battleStep,
+    beforePlans, game, plans, returns, hide, traitor, actions, staging };
   assertIndependentSkillsBattleCustody(game);
   return fixture;
 }
@@ -409,6 +453,7 @@ export function quoteIndependentSkillsBattle(game: Game,
     const player = independentSkillsBattlePlayer(game, actor);
     const view = viewGame(game, actor).battle!;
     return { id: actor, faction: player.faction, spice: player.spice, hand: player.hand,
+      stronghold: game.advanced ? strongholdBenefit(game.strongholdCards, actor, battle.territory, battle.strongholdCopy) : null,
       plan: battle.plans[actor],
       leader: player.leaders.find((leader) => leader.id === battle.plans[actor].leader),
       forces: view.ownForces!,

@@ -188,12 +188,13 @@ function pairedE3LeaderSkillRoster(game: LeaderSkillProfile): boolean {
   return ecaz && moritani;
 }
 
-/** Both original E3 natives without an unrelated module; independent cards are optional. */
+/** Both original E3 natives with original phase modules; independent cards are optional. */
 export function pairedE3LeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (game.expansions.length !== 1 || game.expansions[0] !== 'ecaz' ||
       typeof game.advanced !== 'boolean' || !game.players ||
       game.players.length < 2 || game.players.length > 6 ||
-      (!noOtherLeaderSkillModules(game) && !independentTreacheryLeaderSkillsProfile(game)) ||
+      game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
+      !e3LeaderSkillModulesSupported(game) ||
       game.discoveryStash || game.greatMaker || game.semutaPreview || game.advancedPreview ||
       (game.moritaniAssassinatePreview && !game.advanced) ||
       game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
@@ -278,6 +279,7 @@ function e3LeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
 
 /** Classic three-to-six-seat Skills/Tech composition; native and other modules stay separate. */
 export function classicTechLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (game.techTokens && !game.expansions.length && independentTreacheryLeaderSkillsProfile(game)) return true;
   const players = game.players;
   if (!game.techTokens || typeof game.advanced !== 'boolean' || game.expansions.length ||
     !players || players.length < 3 || players.length > 6 ||
@@ -300,6 +302,7 @@ export function classicTechLeaderSkillsProfile(game: LeaderSkillProfile): boolea
 /** Original Advanced Strongholds, with optional Tech, for classic or supported native skills. */
 export function strongholdLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (!game.strongholdCards || game.advanced !== true) return false;
+  if (independentTreacheryLeaderSkillsProfile(game)) return true;
   if (game.expansions.length) return advancedNativeLeaderSkillsProfile(game) ||
     advancedMoritaniLeaderSkillsProfile(game) || nativeEcazLeaderSkillsProfile(game);
   const players = game.players;
@@ -534,9 +537,10 @@ export function independentTreacheryLeaderSkillsProfile(game: LeaderSkillProfile
   const e3 = game.expansions.length === 1 && game.expansions[0] === 'ecaz';
   if (game.ecazTreachery !== true || game.expansions.length > 2 ||
       typeof game.advanced !== 'boolean' || !game.players ||
-      game.players.length < 2 || game.players.length > 6 ||
+      game.players.length < (game.techTokens ? 3 : 2) || game.players.length > 6 ||
+      (game.strongholdCards && game.advanced !== true) ||
       game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
-      game.discoveryStash || game.greatMaker || game.techTokens || game.strongholdCards ||
+      game.discoveryStash || game.greatMaker ||
       game.semutaPreview || game.advancedPreview ||
       game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
       game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||

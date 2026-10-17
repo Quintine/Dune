@@ -9,6 +9,8 @@ import { RECRUITS_CARD_ID } from '../game/recruits';
 import { forceRevivalQuote } from '../game/revival';
 import { ecazTreacheryCards } from '../game/ecaz-cards';
 import { TERRITORIES } from '../game/board';
+import { createTechTokens } from '../game/tech-tokens';
+import { createStrongholdCards } from '../game/stronghold-cards';
 import type { Card } from '../game/cards';
 import {
   nextIndependentCardModulesStep, type IndependentCardModulesStep,
@@ -18,6 +20,9 @@ export type IndependentSkillsRevivalStep = IndependentCardModulesStep;
 export type IndependentSkillsRevivalOptions = {
   /** Original Basic or Advanced rules; the independent composition is the same. */
   advanced?: boolean;
+  /** Select original unused phase modules before admission; both default off. */
+  tech?: boolean;
+  strongholds?: boolean;
   seatIds?: readonly string[];
 };
 
@@ -63,6 +68,8 @@ export type IndependentSkillsRevivalFixture = {
   beforeMainRevival: Game;
   /** After the payer's real revival: Bank income is deferred and unpaid. */
   afterRevival: Game;
+  /** Original Shipment boundary after Revival pays and resets its Tech income. */
+  afterPhaseEnd: Game;
   /** Turn-two Spice Collection settled, immediately before the Mentat settlement. */
   atMentat2: Game;
   /** Turn-two Mentat Pause after the deferred income was credited exactly once. */
@@ -224,6 +231,7 @@ export function createIndependentSkillsRevivalFixture(
   options: IndependentSkillsRevivalOptions = {},
 ): IndependentSkillsRevivalFixture {
   const advanced = options.advanced ?? false;
+  assert.ok(!options.strongholds || advanced, 'Original Stronghold Cards require Advanced');
   const ids = options.seatIds ?? ['p0', 'p1', 'p2'];
   assert.equal(ids.length, 3, 'The revival programme uses the Banker, payer and battle opponent seats');
   const [owner, payer, opponent] = ids;
@@ -241,6 +249,8 @@ export function createIndependentSkillsRevivalFixture(
   let game = createGame('INDEPENDENTSKILLSREVIVAL', newPlayer(owner, 'Banker', BANKER), advanced);
   joinGame(game, newPlayer(payer, 'Payer', PAYER));
   joinGame(game, newPlayer(opponent, 'Opponent', OPPONENT));
+  if (options.tech) game.techTokens = createTechTokens();
+  if (options.strongholds) game.strongholdCards = createStrongholdCards();
   for (const player of game.players) game = record(game, { actor: player.id, action: { type: 'ready' } });
   // The marker is set after every lobby action, before the ordinary initializer.
   game.ecazTreachery = true;
@@ -495,13 +505,14 @@ export function createIndependentSkillsRevivalFixture(
     assert.deepEqual(viewGame(entry.game, owner).spiceBankerIncome?.deferred, [],
       `${entry.label} must not earn Bank income`);
 
-  const atMentat2 = advanceUntil(game, state => state.turn === 2 && state.phase === 7 && clean(state));
+  const afterPhaseEnd = advanceUntil(game, state => state.turn === 2 && state.phase === 5 && clean(state));
+  const atMentat2 = advanceUntil(afterPhaseEnd, state => state.turn === 2 && state.phase === 7 && clean(state));
   assert.deepEqual(viewGame(atMentat2, owner).spiceBankerIncome?.deferred, [{ owner, amount: 1 }],
     'The deferred Bank income survives until the actual Mentat settlement');
   const afterMentat = advanceUntil(atMentat2, state => state.turn === 2 && state.phase === 8 && clean(state));
   return {
     initial, offered, afterSetup, afterBattle, afterBribe, atMentat1, atRevival,
-    beforeRecruits, beforeMainRevival, afterRevival, atMentat2, afterMentat,
+    beforeRecruits, beforeMainRevival, afterRevival, afterPhaseEnd, atMentat2, afterMentat,
     owner, payer, opponent, bankerLeader, card: RECRUITS_CARD_ID,
     territory: { id: TERRITORY_ID, sector: TERRITORY_SECTOR, type: 'sand' },
     battle: {

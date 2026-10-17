@@ -5,11 +5,15 @@ Historical primary-source audit, 2026-09-07, corrected after independent verific
 ## Paired native Skills — 17 October 2026
 
 Native Ecaz/Moritani/classics now retains ordinary all14 Skills without Nexus,
-optionally independent cards only, in Basic/Advanced. Actual native6/6,
+optionally independent cards and original Tech3+/Advanced Strongholds2+. Actual native6/6,
 selected lead, card-user fee/return and fixed versus variable losses remain
 separate; trained Ecaz Suk rescues only its committed own losses. Native
 Moritani contributes normal counters rather than invented Imperial elites.
 [Paired source scope and323/323 proof](LEADER_SKILLS_RUNTIME.md#paired-e3-without-nexus--17-october-2026).
+[Current phase programme and471/471 proof](LEADER_SKILLS_RUNTIME.md#independent-cards-with-original-phase-modules--17-october-2026)
+uses actual turn1 paid4/earned Arrakeen before the real worm coalition. Ecaz
+support is Bank2/personal0; an allied Moritani plan does not inherit it.
+
 
 ## Standalone Ecaz Leader Skills — 17 October 2026
 

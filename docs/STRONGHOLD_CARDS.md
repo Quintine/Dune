@@ -2,6 +2,17 @@
 
 Historical development module checkpoint, 7 September 2026: the six printed effects, public card custody, mobile declaration, support accounting, AI choices and readable faces are integrated. The later user-authorized [classic Advanced preview](ADVANCED_PREVIEW.md) already permits Stronghold Cards; preserve that access. Complete Advanced/expansion release and arbitrary combinations remain gated.
 
+## All14 Skills with independent cards — 17 October 2026
+
+Supported original classic, selected E1/E2 and standalone/paired E3 all14
+profiles now retain independent cards with Strongholds2–6 Advanced, optionally
+Tech3–6, without World/Nexus/Discovery. Claims are actual end-Mentat play, not
+fixture owners. Earned Arrakeen funds only its selected holder-plan, not the
+ally, personal cash or a three-reserve card fee. Rescue/cleanup/winner Tech
+and native powers retain their original physical order.
+[Current471/471 scope and evidence](LEADER_SKILLS_RUNTIME.md#independent-cards-with-original-phase-modules--17-october-2026).
+
+
 ## Independent Treachery composition — 16 October 2026
 
 The fresh independent-card entry retains original unused Advanced Strongholds

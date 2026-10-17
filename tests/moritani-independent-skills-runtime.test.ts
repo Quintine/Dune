@@ -3,6 +3,7 @@ import test from 'node:test';
 import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import { HARASS_WITHDRAW_CARD } from '../game/harass-withdraw';
 import { REINFORCEMENTS_CARD } from '../game/reinforcements';
+import { ownedTech } from '../game/tech-tokens';
 import {
   advanceMoritaniIndependentSkills,
   assertMoritaniIndependentSkillsCustody,
@@ -342,8 +343,10 @@ void test('a real normal Traitor call forfeits the printed power for the game an
 });
 
 
-void test('Advanced paired Skills/cards loss returns selected sectors, then assassinates one unused native Ecaz disc before Mentat replacement', () => {
-  const f = createMoritaniIndependentSkillsFixture({ paired: true, rules: 'advanced', skills: true, cards: true });
+void test('Advanced paired Skills/cards with original Tech/Strongholds return selected sectors, then assassinate one unused native Ecaz disc before Mentat replacement', () => {
+  const f = createMoritaniIndependentSkillsFixture({
+    paired: true, rules: 'advanced', skills: true, cards: true, tech: true, strongholds: true,
+  });
   const loyal = f.afterSetup.ecazLoyalty!.card!;
   assert.notEqual(f.traitorTarget, loyal);
   assert.notEqual(f.traitorTarget, f.winnerLeader);
@@ -401,6 +404,12 @@ void test('Advanced paired Skills/cards loss returns selected sectors, then assa
   const beforeMentat = finishMoritaniIndependentSkillsBattle(spent, { winnerDiscard: 'played' },
     (game) => game.phase === 7 && moritaniIndependentSkillsClean(game));
   assert.equal(beforeMentat.discard.filter((card) => card.id === f.cards.winnerWeapon).length, 1);
+  const lostTokens = ownedTech(f.game.techTokens, f.moritani);
+  assert.equal(lostTokens.length, 1, 'the actual losing Moritani army entered with one original token');
+  assert.equal(beforeMentat.techTokens![lostTokens[0]].owner, f.opponent,
+    'Assassinate preserves the original winner cleanup and its automatic single-token transfer');
+  assert.equal(beforeMentat.strongholdCards!.claimedTurn, 0,
+    'no Stronghold Card is fabricated before the first genuine Mentat acquisition');
   assert.equal(beforeMentat.moritaniAssassinate!.opportunities[0].stage, 'revealed');
   assert.deepEqual(player(beforeMentat, f.moritani).traitors, [f.traitorTarget]);
   const settled = finishMoritaniIndependentSkillsBattle(beforeMentat);
@@ -436,9 +445,11 @@ void test('Basic paired Skills/cards loss leaves the unused trained Ecaz disc an
   assertMoritaniIndependentSkillsCustody(settled);
 });
 
-void test('paired Advanced Skills without independent cards still pays the printed Ecaz assassination bounty', () => {
-  const f = createMoritaniIndependentSkillsFixture({ paired: true, rules: 'advanced', skills: true });
+void test('paired Advanced Skills with original phase modules pays the printed Ecaz bounty and winner Tech without independent cards', () => {
+  const f = createMoritaniIndependentSkillsFixture({ paired: true, rules: 'advanced', skills: true,
+    tech: true, strongholds: true });
   assert.equal(f.pending.lastBattleContext!.winner, f.opponent);
+  assert.equal(f.initial.nexusCards, undefined);
   assert.equal(f.returns, null);
   assert.equal(f.cards.reinforcements, null);
   assert.equal(f.cards.harass, null);
@@ -447,10 +458,21 @@ void test('paired Advanced Skills without independent cards still pays the print
   const physical = [...f.pending.deck, ...f.pending.discard, ...f.pending.players.flatMap((seat) => seat.hand)];
   assert.equal(physical.length, 33);
   assert.equal(physical.some((card) => card.id === REINFORCEMENTS_CARD || card.id === HARASS_WITHDRAW_CARD), false);
+  const defeatedTokens = Object.entries(f.pending.techTokens!).filter(([, token]) =>
+    token.owner === f.moritani).map(([id]) => id);
   const spent = chooseMoritaniIndependentSkillsAssassination(f.pending, f.traitorTarget);
   assert.equal(owned(f, spent, f.traitorTarget).dead, true);
   assert.equal(spent.moritaniAssassinate!.opportunities[0].bounty, 4);
   assert.equal(player(spent, f.moritani).spice, player(f.pending, f.moritani).spice + 4);
   assert.equal(spent.leaderSkills!.assignments.some((entry) => entry.leader === f.traitorTarget), false);
   assertMoritaniIndependentSkillsCustody(spent);
+  const settled = finishMoritaniIndependentSkillsBattle(spent, { winnerDiscard: 'played' });
+  assert.equal(settled.phase, 8, 'plain paired Skills keeps the original phase envelope without a card-module dependency');
+  assert.equal(settled.discard.filter(card => card.id === f.cards.winnerWeapon).length, 1);
+  assert.equal(settled.moritaniAssassinate!.opportunities.length, 1);
+  assert.equal(settled.moritaniAssassinate!.opportunities[0].stage, 'replaced');
+  assert.equal(settled.traitorReserve!.length, f.pending.traitorReserve!.length - 1);
+  assert.equal(Object.entries(settled.techTokens!).filter(([id, token]) =>
+    defeatedTokens.includes(id) && token.owner === f.opponent).length, 1);
+  assertMoritaniIndependentSkillsCustody(settled);
 });

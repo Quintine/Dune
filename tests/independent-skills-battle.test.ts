@@ -156,3 +156,54 @@ void test('normal Bureaucrat remains available in independent all14 play and div
   assert.equal(independentSkillsBattlePlayer(game, f.opponent).bribes, 3);
   assert.equal(viewGame(game, f.observer).bureaucrat!.usedThisPhase, true);
 });
+
+void test('earned Advanced Arrakeen funds support without personal spice, changing neither the fee, the real Suk commitment nor mandatory disposal', () => {
+  const f = createIndependentSkillsBattleFixture({ advanced: true, tech: true, strongholds: true, case: 'suk' });
+  assert.equal(f.afterFirstMentat!.strongholdCards!.claimedTurn, 1);
+  assert.equal(f.afterFirstMentat!.strongholdCards!.owners.arrakeen, f.owner);
+  assert.equal(owner(f, f.afterFirstMentat!).forces[f.first], 4, 'The original paid shipment earned and held the card');
+  assert.equal(owner(f, f.beforePlans).spice, 0, 'A real bribe emptied the wallet before support was sealed');
+  assert.equal(f.plans[0].action.support, 2);
+  assert.throws(() => applyAction(structuredClone(f.beforePlans), f.owner,
+    { ...f.plans[0].action, dial: 3, support: 3 }),
+  'The funded two-spice support budget cannot become a third personal spice');
+  const quote = quoteIndependentSkillsBattle(f.game, { returns: f.returns });
+  assert.deepEqual(quote.payments.find(payment => payment.player === f.owner),
+    { player: f.owner, cost: 0, ownPayment: 0, allyPayment: 0, donor: null, bankSupport: 2, freeByTraitor: false });
+  assert.deepEqual(quote.reinforcements,
+    [{ player: f.owner, card: REINFORCEMENTS_CARD, normal: 3, elite: 0 }]);
+  assert.deepEqual(quote.harassWithdraw?.[0].returned, { normal: 2, elite: 0 });
+  const fee = finishIndependentSkillsBattle(f.game,
+    { return: f.returns, until: state => state.decision?.kind === 'sukRescue' });
+  assert.equal(owner(f, fee).spice, 0, 'The Bank paid support directly, never to the wallet');
+  assert.equal(owner(f, fee).reserves, 15);
+  assert.equal(owner(f, fee).tanks, 3, 'The three physical Reinforcements fee counters are not rescue income');
+  assert.deepEqual(owner(f, fee).forces, { [f.first]: 2 }, 'Only the two dialed casualties remain after Harass');
+  assert.equal(fee.techTokens!.axlotl.spice, 0, 'A physical fee and Harass return are not a Revival-phase income trigger');
+  assert.equal(fee.decision?.kind, 'sukRescue');
+  const rescue = fee.decision!;
+  const options = rescue.kind === 'sukRescue' ? rescue.options : [];
+  assert.equal(Math.max(...options.map(option => option.normal + option.elite)), 2,
+    'Suk can rescue the committed casualties, never the three-counter fee');
+  const done = finishIndependentSkillsBattle(fee, { return: f.returns });
+  assert.equal(done.turn, 2);
+  assert.equal(done.phase, 7);
+  assert.equal(done.lastBattleContext?.winner, f.owner);
+  assert.equal(done.lastBattleContext?.sukRescue?.completed, true);
+  assert.equal(done.pendingSukRescue, null);
+  assert.equal(owner(f, done).reserves, 16);
+  assert.equal(owner(f, done).tanks, 3);
+  assert.deepEqual(owner(f, done).forces, { [f.first]: 1 });
+  assert.equal(owner(f, done).spice, 2, 'Only the original Collection income arrives after the battle');
+  assert.equal(opponent(f, done).tanks, 5);
+  assert.equal(opponent(f, done).reserves, 10);
+  assert.deepEqual(opponent(f, done).forces, { 'tueks_sietch:5': 5 }, 'The native army was not replaced to build this battle');
+  const worthless = f.plans[1].action.weapon;
+  assert.ok(typeof worthless === 'string');
+  assert.deepEqual(done.lastBattleContext?.mandatoryDiscard?.entries, [{ card: worthless, owner: f.opponent }]);
+  for (const card of [REINFORCEMENTS_CARD, HARASS_WITHDRAW_CARD, worthless]) {
+    assert.equal(held(done, card).length, 1);
+    assert.equal(done.discard.filter(entry => entry.id === card).length, 1);
+  }
+  assertIndependentSkillsBattleCustody(done);
+});

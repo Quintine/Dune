@@ -32,6 +32,8 @@ export type ChoamIndependentSkillsOptions = {
   /** Continue only the original fresh undealt lobby or its own post-start setup. */
   initial?: Game;
   advanced?: boolean;
+  tech?: boolean;
+  strongholds?: boolean;
   route?: ChoamIndependentSkillsRoute;
   marker?: NoFieldValue;
   /** Own physical reserves the Basic 'tuning' route must leave before shipping. */
@@ -251,6 +253,13 @@ export function createChoamIndependentSkillsSetup(
     assert.ok(!game.lobbyOptions && !game.deck.length && !game.richeseCache &&
       game.players.every((player) => !player.hand.length),
     'Only the original fresh undealt lobby accepts the two module selections.');
+    for (const [type, enabled] of [
+      ['techTokens', options.tech ?? false], ['strongholdCards', options.strongholds ?? false],
+    ] as const) if (enabled) {
+      const action: Action = { type, enabled };
+      actions.push({ actor: game.host, action });
+      game = applyAction(game, game.host, action);
+    }
     for (const option of ['leaderSkills', 'ecazTreachery'] as const) {
       const action: Action = { type: 'moduleOption', module: option, enabled: true };
       actions.push({ actor: game.host, action });
@@ -329,6 +338,8 @@ export function nextChoamIndependentSkillsStep(
 ): ChoamIndependentSkillsStep | null {
   if (!game.response && !game.phaseOpening && game.decision) {
     const decision = game.decision;
+    if (decision.kind === 'techToken')
+      return { actor: decision.player, action: { type: 'decision', token: decision.choices[0] } };
     if (decision.kind === 'leaderSkillVisibility')
       return { actor: decision.player, action: { type: 'leaderSkillVisibility', event: decision.event,
         hide: policy.hide?.[decision.player] ?? false } };
@@ -628,4 +639,96 @@ export function finishChoamIndependentSkillsBattle(
     game = applyAction(game, step.actor, step.action);
   }
   throw Error('The original independent-card battle aftermath did not reach Collection');
+}
+
+/**
+ * Keep the original turn-one machine winner's two undialed forces in Arrakeen,
+ * earn its card at the first real Mentat, then ship a different native marker
+ * into that held city before the original Atreides seat pays to return there.
+ * No owner, army, wallet, marker or phase receipt is assigned.
+ */
+export function createChoamIndependentSkillsHeldSupportFixture(
+  options: Pick<ChoamIndependentSkillsOptions, 'tech' | 'strongholds'> = {},
+) {
+  assert.equal(options.strongholds, true, 'The held-support programme needs original Stronghold Cards');
+  const first = createChoamIndependentSkillsFixture({
+    ...options, advanced: true, route: 'immediate', stopBeforePlans: true,
+  });
+  assert.equal(first.location, 'arrakeen:10');
+  const actions: ChoamIndependentSkillsStep[] = [];
+  const firstAfterBattle = finishChoamIndependentSkillsBattle(
+    sealChoamIndependentSkillsBoth(first, 'reinforcements'), { actions });
+  let game = firstAfterBattle;
+  const act = (step: ChoamIndependentSkillsStep) => {
+    actions.push(structuredClone(step));
+    game = applyAction(game, step.actor, step.action);
+  };
+  const advance = (until: (state: Game) => boolean) => {
+    for (let count = 0; count < 1600; count++) {
+      if (until(game)) return;
+      const step = nextChoamIndependentSkillsStep(game, { hide: first.hide });
+      assert.ok(step, 'A real native continuation must reach the next held-city action');
+      act(step);
+    }
+    throw Error('Held Arrakeen programme did not reach its next native action');
+  };
+  advance(state => state.turn === 2 && state.phase === 0 && choamIndependentSkillsClean(state));
+  const afterFirstMentat = structuredClone(game);
+  let beforeMarkerShipment: Game | undefined, afterMarkerShipment: Game | undefined;
+  let beforeEnemyShipment: Game | undefined, markerShipment: ChoamIndependentSkillsStep | undefined;
+  const enemyShipment: ChoamIndependentSkillsStep = { actor: first.opponent, action: {
+    type: 'ship', territory: 'arrakeen', sector: 10, amount: 4,
+  } };
+  const waiting = new Set([first.richese, first.opponent]);
+  while (waiting.size) {
+    advance(state => state.turn === 2 && state.phase === 5 && !!state.active &&
+      waiting.has(state.active) && choamIndependentSkillsClean(state));
+    const actor = game.active!;
+    if (actor === first.richese) {
+      beforeMarkerShipment = structuredClone(game);
+      const richese = choamIndependentSkillsPlayer(game, actor);
+      const marker = richese.noField!.tokens.find(token => token.value === 5)!;
+      markerShipment = { actor, action: { type: 'ship', noField: marker.id,
+        event: richese.noFieldEvent, territory: 'arrakeen', sector: 10 } };
+      act(markerShipment);
+    } else {
+      beforeEnemyShipment = structuredClone(game);
+      act(enemyShipment);
+    }
+    advance(state => state.active === actor && choamIndependentSkillsClean(state) && !state.pendingShipment);
+    if (actor === first.richese) afterMarkerShipment = structuredClone(game);
+    act({ actor, action: { type: 'endMovement' } });
+    waiting.delete(actor);
+  }
+  assert.ok(beforeMarkerShipment && afterMarkerShipment && beforeEnemyShipment && markerShipment);
+  advance(state => state.turn === 2 && state.phase === 6 && choamIndependentSkillsClean(state));
+  const staging = [...first.staging];
+  positionCard(game, first.richese, REINFORCEMENTS_CARD, staging);
+  const beforeBattle = structuredClone(game);
+  const choice = viewGame(game, first.richese).battleChoices.find(candidate => candidate.territory === 'arrakeen');
+  assert.ok(choice);
+  const battleStep: ChoamIndependentSkillsStep = { actor: choice.chooser, action: {
+    type: 'chooseBattle', territory: 'arrakeen',
+    target: choice.attacker === choice.chooser ? choice.defender : choice.attacker,
+  } };
+  act(battleStep);
+  advance(state => !!state.battle && !state.battle.revealed && choamIndependentSkillsClean(state) &&
+    !!state.battle.preLeader?.closed && !state.battle.preparation);
+  const beforePlans = structuredClone(game);
+  const plans: ChoamIndependentSkillsStep[] = [
+    { actor: first.richese, action: { type: 'battlePlan', dial: 2, support: 2,
+      leader: first.trainers[first.richese], weapon: REINFORCEMENTS_CARD, defense: HARASS_WITHDRAW_CARD } },
+    { actor: first.opponent, action: { type: 'battlePlan', dial: 0, support: 0,
+      leader: availableLeaders(game, first.opponent, 'arrakeen')[0].id } },
+  ];
+  for (const plan of plans) {
+    actions.push(structuredClone(plan));
+    game = sealChoamIndependentSkillsPlan(game, plan, { hide: first.hide });
+  }
+  const revealed = structuredClone(game);
+  const returns: HarassWithdrawSelection = { [first.location]: { normal: 5, elite: 0 } };
+  const afterBattle = finishChoamIndependentSkillsBattle(game, { return: returns, actions });
+  return { first, firstAfterBattle, afterFirstMentat, beforeMarkerShipment, markerShipment,
+    afterMarkerShipment, beforeEnemyShipment, enemyShipment, beforeBattle, battleStep, beforePlans,
+    plans, revealed, returns, afterBattle, actions, staging };
 }

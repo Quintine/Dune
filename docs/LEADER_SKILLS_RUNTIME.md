@@ -7,11 +7,50 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Independent cards with original phase modules — 17 October 2026
+
+Fresh original all14 Skills plus independent Recruits/Reinforcements/Harass now
+retains Tech3–6 Basic/Advanced and/or Strongholds2–6 Advanced (both3–6).
+Existing classic, selected Ix/CHOAM native/base and standalone/paired E3
+ecaz rosters/decks36/38/50 remain; the Richese cache stays separate. Plain
+paired E3 Skills also uses these original modules without a card dependency.
+World/Nexus/Discovery, mixed E3, Advanced E3/Harkonnen, shared-Duke training and
+effect-specific guards are unchanged. No new state shape or save retrofit.
+
+One shared independent profile feeds setup, native skills and live card
+availability, including mandatory normal Banker and native markers. Real
+claims and first-Storm owners remain authoritative. Arrakeen funds only actual
+selected-holder support; it creates neither personal cash nor reserve fees.
+Source-labelled R/H/Suk, typed aftercare, winner Tech and native assassination
+retain existing order and provisional interpretations.
+
+The existing classic independent-Skills fixture/test pairs add actual revival/
+income and zero-personal-spice held-support programmes; the Ix/CHOAM pairs add
+typed reward/revival and real native marker/earned support. The Ecaz/Moritani
+pairs add selected-holder versus ally and plain no-card phase continuation.
+Original defaults remain off. Shared module setup controls undealt lotteries;
+the coalition helper actually ships4 in turn1, earns Arrakeen at real Mentat
+and retains the same4 for turn2. No module owner, money, army or phase is faked.
+Conserved card inputs remain explicit: the native Richese held case restages
+the original R between battles without claiming a natural reacquisition.
+
+Frozen44-file471/471, types/lint/build and actual programmes pass. A real
+five-Tanks revival returns3 for4, then2 for2 after Recruits: one Axlotl pending2
+pays only at phase end, one normal Banker grant stays deferred. Earned Ecaz
+support is Bank2/personal0, fee-only3 Tanks, one rescued survivor and separate
+ally2 losses; its later Collection2 is not a support rebate. Native prices and
+single Mentat replacement retain their original recipients/custody.
+Eight natural composed tables reach turn3 or earlier wins; real390px normal
+four-module selection/training reaches Storm without errors/overflow.
+These are prototype changed-path proofs, not full combinations, strategic
+calibration, deployed or deferred assurance acceptance.
+
+
 ## Paired E3 without Nexus — 17 October 2026
 
 Fresh native Ecaz+Moritani/classics all14 Skills now uses its original setup
 without an artificial Nexus dependency, Basic/Advanced2–6, optionally independent
-cards (ecaz33/36) and no other modules. One physical-roster validator serves
+cards (ecaz33/36), original Tech3+ and/or Advanced Strongholds2+. One roster validator serves
 both original paired Nexus and plain Skills predicates. No Nexus hand is
 created; native6/6, Loyalty, ordinary assignment discs, mandatory Banker and
 native powers remain. Shared Duke never trains. Advanced Harkonnen, mixed
