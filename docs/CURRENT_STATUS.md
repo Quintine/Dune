@@ -29,6 +29,32 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**World Skills and selected decks — 17 October.** Eight original World/card/
+Skills phase starts and five bare selected-deck starts rejected before; one
+selected-deck roster capability now serves Basic/Advanced without a required
+native seat or independent cards. Explicit Advanced foreign-ghola authorization
+remains. Unused Ecaz metadata is not a native E3 seat. Original classic/E1/E2
+Worlds now retain all14/cards and original Tech/Advanced Strongholds; actual
+E3 World cards, Nexus/Discovery and unrelated role/effect guards remain separate.
+
+Genuine World revival keeps accepted invoices, native unlimited allowances and
+separate Axlotl/normal Banker stores. Own-World fees cannot also be dialed or
+rescued; visitor H/Suk keeps original typed destinations and every own-World
+Harass ban remains. Marker funding is still checked after projected
+materialization, before withdrawal. Earned support and skills supply no fee
+subsidy. No counter, owner, wallet, phase or played-save history is fabricated.
+
+Frozen61-file **683/683**, types/lint/build and actual rule programmes pass.
+The harness now consumes optional Mentat naming and includes the original
+pre-training three-card Ix draft in its stock count; null-preview/profile-copy
+pins are removed. Two normal World tables exercise all four legal policies
+through turn3 or an earlier win. Actual390px five-module normal entry completes
+training/Traitor choice into Storm with Kaitain/Salusa/Stronghold inspectors,
+no browser errors or root overflow. Detailed targeted programmes, not these
+natural tables, prove fees, income and rescue. No complete-mode, calibration,
+deployed or deferred assurance claim follows.
+[Current envelope and source-bound evidence](LEADER_SKILLS_RUNTIME.md#world-skills-and-selected-decks--17-october-2026).
+
 **Skills/cards with original phase modules — 17 October.** Fresh all14 Skills
 and independent cards now retains original Tech3+ Basic/Advanced and
 Strongholds2+ Advanced, optionally both, across existing classic, selected

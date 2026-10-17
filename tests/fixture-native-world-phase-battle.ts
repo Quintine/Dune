@@ -4,7 +4,7 @@ import { combatArmy } from '../game/combat-location';
 import { nativeShipmentSources } from '../game/homeworld-options';
 import type { NativeReserveSelections } from '../game/homeworld-native-reserves';
 import type { HomeworldForces } from '../game/homeworld-custody';
-import { createIndependentCardModulesFixture } from './fixture-independent-card-modules';
+import { createIndependentCardModulesFixture, type IndependentCardModulesOptions } from './fixture-independent-card-modules';
 import { actWorldPhaseBattle, advanceWorldPhaseBattle } from './fixture-world-phase-battle';
 import { harassHomeworldClean, nextHarassHomeworldStep } from './fixture-harass-homeworld';
 import { takeHarassCard } from './fixture-harass-withdraw';
@@ -18,6 +18,10 @@ export type NativeWorldPhaseBattleOptions = {
   advanced?: boolean;
   tech?: boolean;
   strongholds?: boolean;
+  skills?: boolean;
+  training?: IndependentCardModulesOptions['training'];
+  skilled?: boolean;
+  harass?: boolean;
   /** Actual Cyborg support, never support for Reinforcements' score-only +2. */
   support?: 0 | 1 | 3;
 };
@@ -57,6 +61,7 @@ export function createNativeWorldPhaseBattleFixture(
   const advanced = options.advanced ?? true;
   const setup = createIndependentCardModulesFixture({ advanced, homeworlds: true,
     tech: options.tech ?? true, strongholds: options.strongholds ?? advanced,
+    skills: options.skills, training: options.training,
     factions: ['ixians', 'tleilaxu', 'guild'], expansions: ['ix'] });
   let game = setup.game;
   const afterSetup = structuredClone(game), nativeSteps = [...setup.steps];
@@ -108,17 +113,23 @@ export function createNativeWorldPhaseBattleFixture(
   reach(g => g.phase === 6 && !!g.active && harassHomeworldClean(g));
   for (const player of game.players) game.deck.push(...player.hand.splice(0));
   takeHarassCard(game, owner, REINFORCEMENTS_CARD);
-  takeHarassCard(game, owner, HARASS_WITHDRAW_CARD);
-  staging.push('Return all original hands, including Ix setup stock, to undealt stock; conserve original R/H into Ix’s two real slots. This is not a purchase.');
+  if (options.harass ?? true) takeHarassCard(game, owner, HARASS_WITHDRAW_CARD);
+  staging.push('Return all original hands, including Ix setup stock, to undealt stock; conserve original R and optional H into Ix’s real slots. This is not a purchase.');
   const beforeBattle = structuredClone(game);
   const choice = viewGame(game, game.active!).battleChoices.find(c => c.territory === 'arrakeen'); assert.ok(choice);
   const battleStep: NativeWorldBattleStep = { actor: choice.chooser, action: { type: 'chooseBattle', territory: 'arrakeen',
     target: choice.attacker === choice.chooser ? choice.defender : choice.attacker } };
   act(battleStep);
-  reach(g => !!g.battle && harassHomeworldClean(g) && !g.battle.preparation && g.battle.preLeader?.closed !== false);
-  const living = (actor: string) => nativeWorldBattlePlayer(game, actor).leaders.filter(l => !l.dead && !l.usedAt)
+  game = advanceNativeWorldBattle(game, g => !!g.battle && harassHomeworldClean(g) &&
+    !g.battle.preparation && g.battle.preLeader?.closed !== false, nativeSteps,
+    { skilled: options.skilled ? [owner] : [] });
+  const living = (actor: string) => nativeWorldBattlePlayer(game, actor).leaders.filter(l => !l.dead && !l.usedAt &&
+    (!game.leaderSkills?.assignments.some(a => a.owner === actor && a.leader === l.id) || actor === owner && options.skilled))
     .sort((a, b) => a.strength - b.strength || a.id.localeCompare(b.id));
-  const ownLeader = living(owner).at(-1)!, otherLeader = living(opponent)[0];
+  const trainer = options.skilled ? game.leaderSkills?.assignments.find(a => a.owner === owner) : null;
+  assert.ok(!options.skilled || trainer, 'Select Skills before native setup to use its real trainer');
+  const ownLeader = trainer ? living(owner).find(l => l.id === trainer.leader)! : living(owner).at(-1)!;
+  const otherLeader = living(opponent)[0];
   assert.ok(ownLeader && otherLeader);
   conserveDancer(game, ownLeader.id, staging);
   const support = advanced ? options.support ?? 3 : 0;
@@ -127,7 +138,8 @@ export function createNativeWorldPhaseBattleFixture(
   // they dial three; each actually supported Cyborg adds one, not another token.
   const planActions: NativeWorldPhaseBattleFixture['planActions'] = [
     { actor: owner, action: { type: 'battlePlan', dial: advanced ? 3 + support : 6, support,
-      leader: ownLeader.id, weapon: REINFORCEMENTS_CARD, defense: HARASS_WITHDRAW_CARD, reinforcementsSources: sources } },
+      leader: ownLeader.id, weapon: REINFORCEMENTS_CARD, defense: (options.harass ?? true) ? HARASS_WITHDRAW_CARD : null,
+      reinforcementsSources: sources } },
     { actor: opponent, action: { type: 'battlePlan', dial: 0, support: 0, leader: otherLeader.id } },
   ];
   const returns = { [location]: { normal: 3, elite: 0 } };
@@ -165,13 +177,16 @@ export function finishNativeWorldPhaseBattle(game: Game, fixture: NativeWorldPha
  * Cyborg/Face Dance aftercare; own Ix retains its original H prohibition.
  */
 export function createNativeWorldPhaseForeignBattleFixture(options: {
-  advanced?: boolean; typedAftercare?: boolean;
+  advanced?: boolean; typedAftercare?: boolean; skills?: boolean;
+  training?: IndependentCardModulesOptions['training']; skilled?: boolean;
 } = {}): NativeWorldBattleFixture {
   const advanced = options.advanced ?? true;
   return createNativeWorldBattleFixture({ advanced, tech: true, strongholds: advanced,
+    skills: options.skills, training: options.training, skilled: options.skilled,
     ...(options.typedAftercare ? { exportNormal: 9, exportElite: 1, ownerDial: advanced ? 1 : 2,
       harass: false, outcome: 'win' as const, faceDancer: true } : {}) });
 }
-export function createNativeWorldPhaseOwnBattleFixture(advanced = true): NativeWorldBattleFixture {
-  return createNativeWorldBattleFixture({ advanced, tech: true, strongholds: advanced, route: 'ix-native' });
+export function createNativeWorldPhaseOwnBattleFixture(advanced = true,
+  options: Pick<NativeWorldPhaseBattleOptions, 'skills' | 'training' | 'skilled'> = {}): NativeWorldBattleFixture {
+  return createNativeWorldBattleFixture({ advanced, tech: true, strongholds: advanced, route: 'ix-native', ...options });
 }

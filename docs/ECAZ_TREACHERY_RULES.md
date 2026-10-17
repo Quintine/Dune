@@ -436,3 +436,24 @@ Controlled physical card staging is labelled; the Richese second R is not a
 claimed natural reacquisition. No complete-mode or deployed acceptance follows.
 [Canonical composition/evidence](LEADER_SKILLS_RUNTIME.md#independent-cards-with-original-phase-modules--17-october-2026).
 
+## World Skills and selected decks — 17 October 2026
+
+The existing printed variant independence now composes original classic or
+selected E1/E2 World/card starts with all14 Skills, including original Tech3+
+and Advanced Strongholds2+. Selected unused Ecaz metadata is not an actual
+Ecaz/Moritani seat; actual E3 World/card rosters, Nexus/Discovery and unrelated
+effect guards remain separate. Bare ordinary all14 selected-deck starts also
+need neither a native seat nor these three cards.
+
+Original current-population revival invoices, native unlimited allowances and
+separate Axlotl/Banker income remain. R seals actual normal-first native sources;
+own-World fee and dial cannot overlap, Suk saves only committed losses and H
+keeps its printed own-World ban and typed visitor destinations. Richese still
+materializes before its three-reserve fee, then returns only real undialed H
+survivors. Earned support and skill strength cannot fund that fee.
+
+The frozen61-file683/683, compiler/lint/build and genuine rule/control proofs
+are recorded in the [canonical current composition](LEADER_SKILLS_RUNTIME.md#world-skills-and-selected-decks--17-october-2026).
+Controlled lotteries/physical card positioning are labelled; no printed-number
+ruling, save retrofit, full-mode or deployed certification follows.
+

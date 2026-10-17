@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {
-  applyAction, createGame, initializeEcazTreacheryGameForAudit, joinGame,
-  newPlayer, viewGame, type Action, type Game,
+  applyAction, createGame, initializeEcazTreacheryGameForAudit, initializeLeaderSkillsGameForAudit,
+  joinGame, newPlayer, viewGame, type Action, type Game,
 } from '../game/engine';
 import { treacheryDeck } from '../game/cards';
 import { ecazTreacheryCards } from '../game/ecaz-cards';
@@ -9,7 +9,9 @@ import { homeworldGameIntegrity } from '../game/homeworld-game';
 import { nativeShipmentSources } from '../game/homeworld-options';
 import { RECRUITS_CARD_ID } from '../game/recruits';
 import { nextHarassHomeworldStep } from './fixture-harass-homeworld';
-import { finishHarassPreparation, takeHarassCard } from './fixture-harass-withdraw';
+import { takeHarassCard } from './fixture-harass-withdraw';
+import { skillOfferRolls,
+  type IndependentCardModulesOptions } from './fixture-independent-card-modules';
 
 export type RecruitsHomeworldStep = { actor: string; action: Action };
 export type RecruitsHomeworldFixture = {
@@ -57,6 +59,8 @@ export function createRecruitsHomeworldFixture(options: {
   advanced?: boolean;
   seatIds?: readonly [string, string, string, string];
   initial?: Game;
+  skills?: boolean;
+  training?: IndependentCardModulesOptions['training'];
 } = {}): RecruitsHomeworldFixture {
   const ids = options.seatIds ?? ['emperor', 'fremen', 'atreides', 'guild'];
   let game = options.initial ? structuredClone(options.initial) :
@@ -72,18 +76,44 @@ export function createRecruitsHomeworldFixture(options: {
   };
   for (const p of game.players) if (!p.ready) act(p.id, { type: 'ready' });
   const initial = structuredClone(game);
+  const rolls = options.skills ? skillOfferRolls(game, options.training) : [];
+  let cursor = 0;
   const descriptor = Object.getOwnPropertyDescriptor(crypto, 'getRandomValues');
   crypto.getRandomValues = <T extends ArrayBufferView | null>(array: T): T => {
-    assert.ok(array); new Uint8Array(array.buffer, array.byteOffset, array.byteLength).fill(255); return array;
+    assert.ok(array);
+    if (array instanceof Uint32Array && array.length === 1 && cursor < rolls.length)
+      array[0] = rolls[cursor++];
+    else new Uint8Array(array.buffer, array.byteOffset, array.byteLength).fill(255);
+    return array;
   };
-  try { game = initializeEcazTreacheryGameForAudit(game); }
+  try {
+    if (options.skills) {
+      game.ecazTreachery = true;
+      game = initializeLeaderSkillsGameForAudit(game);
+    } else game = initializeEcazTreacheryGameForAudit(game);
+  }
   finally {
     if (descriptor) Object.defineProperty(crypto, 'getRandomValues', descriptor);
     else Reflect.deleteProperty(crypto, 'getRandomValues');
   }
-  game = advanceRecruitsHomeworld(game, g => g.status === 'playing', nativeSteps);
+  for (let count = 0; game.status === 'setup' && count < 300; count++) {
+    if (game.setupStage === 'leaderSkills') {
+      const actor = Object.keys(game.leaderSkills!.offers)[0], offer = game.leaderSkills!.offers[actor];
+      const own = viewGame(game, actor).leaderSkills!, player = recruitsHomeworldPlayer(game, actor);
+      const skill = options.training?.[player.faction] ?? offer.cards.find(card => !own.unavailableSkills?.[card]);
+      const leader = own.eligibleLeaders[0];
+      assert.ok(skill && offer.cards.includes(skill) && !own.unavailableSkills?.[skill] && leader);
+      act(actor, { type: 'leaderSkill', event: offer.event, skill, leader: leader.id });
+    } else {
+      const step = nextHarassHomeworldStep(game); assert.ok(step);
+      act(step.actor, step.action);
+    }
+  }
+  assert.equal(game.status, 'playing');
   const afterSetup = structuredClone(game);
   const staging = ['Return initial real hands to the unopened deck; no battle weapons, fake counters or wallet assignments.'];
+  if (options.skills)
+    staging.push('Select original all14 Skills before initialization of the supplied undealt lobby; assign actual offers without replacing seat identities, Worlds or original phase modules.');
   for (const p of game.players) { game.deck.push(...p.hand); p.hand = []; }
   // Original non-worm cards keep the first Blow away from an unrelated riding
   // decision. This is not a fabricated Spice Card or phase assignment.
@@ -119,7 +149,8 @@ export function createRecruitsHomeworldFixture(options: {
         target: choice.attacker === choice.chooser ? choice.defender : choice.attacker });
     }
     if (game.battle && !game.battle.revealed) {
-      game = finishHarassPreparation(game);
+      game = advanceRecruitsHomeworld(game, g => recruitsHomeworldClean(g) &&
+        !g.battle?.preparation && g.battle?.preLeader?.closed !== false, nativeSteps);
       const battle = game.battle!;
       for (const actor of [battle.attacker, battle.defender]) {
         if (game.battle!.plans[actor]) continue;
@@ -127,7 +158,8 @@ export function createRecruitsHomeworldFixture(options: {
         const leaders = p.leaders.filter(l => !l.dead && !l.usedAt).sort((a, b) => a.strength - b.strength);
         const leader = actor === ids[0] || actor === ids[3] ? leaders.at(-1) : leaders[0]; assert.ok(leader);
         act(actor, { type: 'battlePlan', leader: leader.id, dial: 0, support: 0 });
-        game = finishHarassPreparation(game);
+        game = advanceRecruitsHomeworld(game, g => recruitsHomeworldClean(g) &&
+          !g.battle?.preparation && g.battle?.preLeader?.closed !== false, nativeSteps);
       }
     } else {
       const step = nextHarassHomeworldStep(game); assert.ok(step); act(step.actor, step.action);

@@ -3,7 +3,7 @@
 Development integration, 21 September 2026. Genuine CHOAM/Skills setup already
 existed. This follow-up connects the ordinary skill action paths for Basic CHOAM
 with base opponents and checks native card sales and revival interruptions.
-It does not certify the full expansion or open public starts/publication.
+Normal starts are labelled previews, not full-expansion/publication acceptance.
 
 **4 October Advanced continuation:** native CHOAM and/or Ixians with classic
 opponents now compose under the
@@ -14,11 +14,12 @@ Other Richese/module compositions below retain their separate guards.
 
 ## Configuration and components
 
-The shared ordinary-skill profile requires Basic rules, exactly CHOAM & Richese,
-two through six players including CHOAM, and no other optional modules. Other
-seats belong to the six base factions. The existing initializer's wider Richese
-and Advanced development admission is retained; those action combinations keep
-their separate implementation boundaries.
+Fresh Basic/Advanced2–6 uses the shared selected-deck roster contract: select
+CHOAM for a CHOAM/Richese seat, with other selected E1/E2/classic seats allowed.
+Neither a seated CHOAM nor independent cards is required just to select that
+ordinary deck. Existing World/all14/card/Tech/Advanced Stronghold compositions
+follow the [17 October current scope](LEADER_SKILLS_RUNTIME.md#world-skills-and-selected-decks--17-october-2026),
+not the original single-family/no-module software restriction.
 
 Setup keeps all fourteen physical skill cards and the real 35-card Treachery
 deck: the base cards plus Poison Tooth and Artillery. Neither added battle card

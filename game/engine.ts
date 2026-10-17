@@ -1,7 +1,7 @@
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
-import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
+import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -8805,7 +8805,7 @@ function leaderSkillsIntegrity(g: Game) {
       if (leader.gholaBy === undefined) continue;
       const controller = g.players.find((p) => p.id === leader.gholaBy);
       requireRule(
-        (foreignProfileAllowed ??= advancedNativeLeaderSkillsProfile(g)) &&
+        (foreignProfileAllowed ??= g.advanced && selectedDeckLeaderSkillsProfile(g)) &&
           controller?.faction === 'tleilaxu' &&
           controller.id !== owner.id &&
           leader.faction === owner.faction &&
@@ -10708,7 +10708,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const homeworlds = homeworldLeaderSkillsProfile(state);
   const independent = independentTreacheryLeaderSkillsProfile(state);
   if (state.ecazTreachery) {
-    requireRule(independent, 'Independent Treachery with Leader Skills requires a fresh supported classic or native lobby with only optional original Tech Tokens and Advanced Stronghold Cards.');
+    requireRule(independent, 'Independent cards with Skills require a fresh supported selected-deck roster with original Homeworlds/Tech/Advanced Strongholds; Nexus/Discovery and native E3 Worlds remain gated.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -10749,8 +10749,10 @@ function independentCardRoster(g: Game): boolean {
   });
 }
 function ecazHomeworldProfile(g: Game): boolean {
+  if (g.homeworlds && g.leaderSkills && !g.sandtrout && independentTreacheryLeaderSkillsProfile(g)) return true;
   return !!g.homeworlds && g.ecazTreachery === true && independentCardRoster(g) &&
-    !g.expansions.includes('ecaz') && g.players.length >= 2 && g.players.length <= 6 &&
+    !g.players.some(player => player.faction === 'ecaz' || player.faction === 'moritani') &&
+    g.players.length >= 2 && g.players.length <= 6 &&
     !g.nexusCards && !g.leaderSkills &&
     ((!g.techTokens && !g.strongholdCards) || independentCardModulesProfile(g)) &&
     !g.discoveryEnabled && !g.discoveries && !g.discoveryStash && !g.greatMaker && !g.sandtrout &&
@@ -10763,7 +10765,8 @@ function ecazHomeworldProfile(g: Game): boolean {
 function independentCardModulesProfile(g: Game): boolean {
   if ((g.techTokens || g.strongholdCards) && g.leaderSkills && !g.sandtrout &&
       independentTreacheryLeaderSkillsProfile(g)) return true;
-  if (!g.ecazTreachery || (!g.techTokens && !g.strongholdCards) || !independentCardRoster(g) || g.expansions.includes('ecaz') ||
+  if (!g.ecazTreachery || (!g.techTokens && !g.strongholdCards) || !independentCardRoster(g) ||
+      g.players.some(player => player.faction === 'ecaz' || player.faction === 'moritani') ||
       g.players.length < (g.techTokens ? 3 : 2) || g.players.length > 6 ||
       (g.strongholdCards && !g.advanced) ||
       g.nexusCards || g.leaderSkills ||
@@ -13947,7 +13950,7 @@ function recruitsPlayBlock(g: Game, owner: Player, card: Card): string | null {
   if (!g.ecazTreachery || !ecazTreacheryDefinition(card) || card.id !== RECRUITS_CARD_ID)
     return 'Choose the physical Recruits card from the enabled Ecaz Treachery Cards variant.';
   if (!recruitsModeSupported(g))
-    return 'Recruits requires a supported independent-card profile: faction-only, all14 Skills with optional original phase modules, or the existing native Homeworld compositions.';
+    return 'Recruits requires a supported independent-card profile: faction-only, all14 Skills with original World/phase modules, or existing native Homeworld compositions.';
   if (g.status !== 'playing' || g.phase !== 4)
     return 'Play Recruits during Revival.';
   if (g.recruits?.turn === g.turn)

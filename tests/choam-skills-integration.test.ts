@@ -5,13 +5,8 @@ import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import { isPlanetologistBattleSpecialCard } from '../game/leader-skill-combat';
 import { LEADER_SKILL_CARDS } from '../game/leader-skill-cards';
-import { basicChoamLeaderSkillsProfile } from '../game/leader-skill-profile';
 import {
   applyAction,
-  createGame,
-  initializeLeaderSkillsGameForAudit,
-  joinGame,
-  newPlayer,
   normalizeAutomaticGame,
   viewGame,
   type Action,
@@ -83,7 +78,6 @@ void test('all fourteen production skill faces deal through genuine Basic CHOAM 
       player(game, 'c').leaders.some((leader) => leader.id === 'choam-auditor'),
       false,
     );
-    assert.equal(basicChoamLeaderSkillsProfile(game), true);
     for (const participant of game.players) {
       const view = viewGame(game, participant.id);
       assert.equal(view.leaderSkills!.offer, null);
@@ -95,35 +89,6 @@ void test('all fourteen production skill faces deal through genuine Basic CHOAM 
 });
 
 
-void test('Advanced CHOAM and Basic Richese retain audit admission without entering the exact normal profile', () => {
-  for (const variant of ['advanced', 'richese'] as const) {
-    let game = createGame(
-      variant === 'advanced' ? 'CHOADVAN' : 'CHORICHE',
-      newPlayer('c', 'CHOAM', 'choam'),
-      variant === 'advanced',
-      ['choam'],
-    );
-    joinGame(
-      game,
-      variant === 'richese'
-        ? newPlayer('r', 'Richese', 'richese')
-        : newPlayer('a', 'Atreides', 'atreides'),
-    );
-    joinGame(game, newPlayer('e', 'Emperor', 'emperor'));
-    for (const participant of game.players)
-      game = applyAction(game, participant.id, { type: 'ready' });
-    game = initializeLeaderSkillsGameForAudit(game);
-    assert.equal(game.setupStage, 'leaderSkills');
-    assert.equal(basicChoamLeaderSkillsProfile(game), false);
-    if (variant === 'advanced')
-      assert.equal(
-        player(game, 'c').leaders.some(
-          (leader) => leader.id === 'choam-auditor',
-        ),
-        true,
-      );
-  }
-});
 
 void test('CHOAM Planetologist and Sandmaster controls and bots submit legal shared movement actions', () => {
   let game = movementPosition(

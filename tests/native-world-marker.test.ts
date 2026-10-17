@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyAction, RuleError, viewGame, type Game } from '../game/engine';
+import { spiceBankerControlState } from '../components/spice-banker';
 import {
   createNativeWorldMarkerFixture, nativeWorldMarkerInventory, nativeWorldMarkerPlan,
   type NativeWorldMarkerFixture,
@@ -13,7 +14,7 @@ import {
 
 function physicalCards(game: Game) {
   return [...game.deck, ...game.discard, ...(game.richeseCache ?? []), ...(game.richeseRemoved ?? []),
-    ...game.players.flatMap(player => player.hand)].map(card => card.id).sort();
+    ...(game.ixSetupCards ?? []), ...game.players.flatMap(player => player.hand)].map(card => card.id).sort();
 }
 
 function primaryPool(game: Game, fixture: NativeWorldMarkerFixture) {
@@ -216,3 +217,69 @@ for (const family of ['choam', 'ix+choam'] as const) {
   });
 
 }
+
+void test('all14 mixed native World marker keeps Banker funding private and separate from R fee and H return', () => {
+  const f = createNativeWorldMarkerFixture({ family: 'ix+choam', advanced: true, marker: 5,
+    skills: true, skilled: true, training: { richese: 'spice-banker' }, bankerSpice: 1, opponentDial: 8 });
+  const view = viewGame(f.game, f.richese), owner = richeseReinforcementsPlayer(f.game, f.richese);
+  const leader = String(f.plans.plain.action.leader);
+  assert.deepEqual(spiceBankerControlState(view, leader, 1), { eligible: true, maximum: 3 });
+  assert.deepEqual(spiceBankerControlState(view, leader, 2), { eligible: true, maximum: 2 });
+  assert.deepEqual(spiceBankerControlState(viewGame(f.game, f.opponent), leader, 1),
+    { eligible: false, maximum: 0 }, 'Another viewer cannot commit the native owner’s skill or wallet.');
+  assert.deepEqual(view.battle!.reinforcements!.noField, { materializes: 5, reservesAfterReveal: 15 });
+  const plan = nativeWorldMarkerPlan(f, 'both', 'defense');
+  assert.deepEqual(plan.action.reinforcementsSources,
+    { [f.source.homeworld]: { normal: 3, elite: 0 } });
+  const before = structuredClone(f.game);
+  assert.throws(() => applyAction(f.game, f.richese,
+    { ...plan.action, dial: 2, support: 2, bankerSpice: 3 }), RuleError);
+  assert.deepEqual(f.game, before, 'Reserve funding and later H returns do not pay an overcommitted own-spice budget.');
+  const first = prepareRicheseReinforcementsPlan(f.game, plan);
+  assertStillConcealed(f, first);
+  assert.equal(richeseReinforcementsPlayer(first, f.richese).spice, owner.spice);
+  assert.equal(viewGame(first, f.richese).battle!.plans[f.richese].bankerSpice, 1);
+  assert.deepEqual(viewGame(first, f.observer).battle!.plans, {});
+  const revealed = sealRicheseReinforcementsPlan(first, f.plans.opponent);
+  assert.deepEqual(primaryPool(revealed, f), { normal: 15, elite: 0 });
+  const done = finishRicheseReinforcementsBattle(revealed);
+  const after = richeseReinforcementsPlayer(done, f.richese);
+  assert.equal(done.lastBattleContext!.winner, f.opponent);
+  assert.deepEqual(primaryPool(done, f), { normal: 16, elite: 0 },
+    'Five materialize, three pay R, then four actual undialed H survivors return to the same primary World.');
+  assert.equal(after.reserves, 16);
+  assert.equal(after.tanks, 4);
+  assert.equal(after.spice, owner.spice - 2, 'One own support plus one Banker commitment, not a reserve-fee subsidy.');
+  assert.equal(done.phase, 7, 'The original battle continues into collection with no synthetic history.');
+  assertSpent(done, RICHESE_REINFORCEMENTS);
+  assertSpent(done, RICHESE_HARASS);
+  assertConserved(f, done);
+});
+
+void test('all14 capped World marker refuses R before a skilled Mentat or future H return, then uses legal H', () => {
+  const f = createNativeWorldMarkerFixture({ marker: 5, reserves: 3, skills: true, skilled: true,
+    training: { richese: 'mentat' }, opponentDial: 8 });
+  const before = structuredClone(f.game), preview = viewGame(f.game, f.richese).battle!;
+  assert.equal(f.game.battle!.leaderSkillHidden![f.richese], true);
+  assert.deepEqual(preview.reinforcements!.noField, { materializes: 3, reservesAfterReveal: 0 });
+  assert.ok(preview.reinforcements!.blocked);
+  const raw = nativeWorldMarkerPlan(f);
+  delete raw.action.reinforcementsSources;
+  for (const plan of [raw, nativeWorldMarkerPlan(f, 'both')]) {
+    assert.throws(() => applyAction(f.game, f.richese, plan.action), RuleError);
+    assert.deepEqual(f.game, before, 'The refused first seal spends no skill, cards, token, wallet or native stock.');
+  }
+  const first = prepareRicheseReinforcementsPlan(f.game, nativeWorldMarkerPlan(f, 'harass'));
+  assertStillConcealed(f, first);
+  const revealed = sealRicheseReinforcementsPlan(first, f.plans.opponent);
+  assert.deepEqual(primaryPool(revealed, f), { normal: 0, elite: 0 });
+  assert.equal(richeseReinforcementsPlayer(revealed, f.richese).forces[f.location], 3,
+    'The actual five-token reveal is capped by its three original native counters.');
+  const done = finishRicheseReinforcementsBattle(revealed);
+  assert.equal(done.lastBattleContext!.winner, f.opponent);
+  assert.deepEqual(primaryPool(done, f), { normal: 1, elite: 0 });
+  assert.equal(richeseReinforcementsPlayer(done, f.richese).tanks, 2);
+  assert.ok(richeseReinforcementsPlayer(done, f.richese).hand.some(card => card.id === RICHESE_REINFORCEMENTS));
+  assertSpent(done, RICHESE_HARASS);
+  assertConserved(f, done);
+});

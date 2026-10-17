@@ -11,7 +11,7 @@ import {
   harassHomeworldClean, harassHomeworldPlayer, nextHarassHomeworldStep,
   type HarassHomeworldStep,
 } from './fixture-harass-homeworld';
-import { createIndependentCardModulesFixture } from './fixture-independent-card-modules';
+import { createIndependentCardModulesFixture, type IndependentCardModulesOptions } from './fixture-independent-card-modules';
 import { takeHarassCard } from './fixture-harass-withdraw';
 import {
   createReinforcementsHomeworldFixture, type ReinforcementsHomeworldFixture,
@@ -23,6 +23,9 @@ export type WorldPhaseBattleOptions = {
   advanced?: boolean;
   tech?: boolean;
   strongholds?: boolean;
+  skills?: boolean;
+  training?: IndependentCardModulesOptions['training'];
+  skilled?: boolean;
   support?: number;
 };
 export type WorldPhaseBattleFixture = {
@@ -68,12 +71,13 @@ export function actWorldPhaseBattle(game: Game, step: WorldPhaseBattleStep,
   actions?.push(structuredClone(step)); return firstStormAction(game, step);
 }
 export function advanceWorldPhaseBattle(game: Game, until: (state: Game) => boolean,
-  actions?: WorldPhaseBattleStep[]): Game {
+  actions?: WorldPhaseBattleStep[], skilled: readonly string[] = []): Game {
   for (let n = 0; n < 1800; n++) {
     if (until(game)) return game;
     assert.notEqual(game.status, 'finished');
     const step = nextHarassHomeworldStep(game);
     assert.ok(step, 'Supply the genuine human plan or physical return allocation');
+    if (step.action.type === 'leaderSkillVisibility') step.action.hide = skilled.includes(step.actor);
     game = actWorldPhaseBattle(game, step, actions);
   }
   throw Error('Original World/phase-module programme did not reach its requested boundary');
@@ -87,10 +91,11 @@ export function advanceWorldPhaseBattle(game: Game, until: (state: Game) => bool
  * Existing provisional utility/Stronghold timing is inherited, not a new ruling. */
 export function createWorldPhaseBattleFixture(options: WorldPhaseBattleOptions = {}): WorldPhaseBattleFixture {
   const advanced = options.advanced ?? options.initial?.advanced ?? true;
-  const base = options.initial ? createHarassHomeworldSetup({ advanced, initial: options.initial }) : null;
+  const base = options.initial ? createHarassHomeworldSetup({ ...options, advanced, initial: options.initial }) : null;
   const original = base ? { initial: base.initial, game: base.afterSetup, steps: base.nativeSteps }
     : createIndependentCardModulesFixture({ advanced, homeworlds: true,
       tech: options.tech ?? true, strongholds: options.strongholds ?? advanced,
+      skills: options.skills, training: options.training,
       factions: ['emperor', 'guild', 'atreides'] });
   let game = structuredClone(original.game);
   const actions = [...original.steps], initial = structuredClone(original.initial);
@@ -153,10 +158,15 @@ export function createWorldPhaseBattleFixture(options: WorldPhaseBattleOptions =
   const battleStep: WorldPhaseBattleStep = { actor: choice.chooser, action: { type: 'chooseBattle', territory: 'arrakeen',
     target: choice.attacker === choice.chooser ? choice.defender : choice.attacker } };
   act(battleStep);
-  reach(g => !!g.battle && harassHomeworldClean(g) && !g.battle.preparation && g.battle.preLeader?.closed !== false);
-  const living = (actor: string) => harassHomeworldPlayer(game, actor).leaders.filter(l => !l.dead && !l.usedAt)
+  game = advanceWorldPhaseBattle(game, g => !!g.battle && harassHomeworldClean(g) &&
+    !g.battle.preparation && g.battle.preLeader?.closed !== false, actions, options.skilled ? [owner] : []);
+  const living = (actor: string) => harassHomeworldPlayer(game, actor).leaders.filter(l => !l.dead && !l.usedAt &&
+    (!game.leaderSkills?.assignments.some(a => a.owner === actor && a.leader === l.id) || actor === owner && options.skilled))
     .sort((a, b) => a.strength - b.strength || a.id.localeCompare(b.id));
-  const leader = living(owner).at(-1)!, opponentLeader = living(opponent)[0];
+  const trainer = options.skilled ? game.leaderSkills?.assignments.find(a => a.owner === owner) : null;
+  assert.ok(!options.skilled || trainer, 'Select Skills before native setup to use its real trainer');
+  const leader = trainer ? living(owner).find(l => l.id === trainer.leader)! : living(owner).at(-1)!;
+  const opponentLeader = living(opponent)[0];
   const support = advanced ? options.support ?? 3 : 0;
   const sources = { 'homeworld:atreides': { normal: 3, elite: 0 } };
   const plans: WorldPhaseBattleFixture['plans'] = [
@@ -176,10 +186,12 @@ export function createWorldPhaseBattleFixture(options: WorldPhaseBattleOptions =
 /** Exposes exactly the original source-key controls for a genuine own-World
  * battle: ten normal Kaitain reserves move to Salusa; Guild pays to invade
  * Kaitain. The three fee counters may come from either real normal pool. */
-export function createWorldPhaseOwnBattleFixture(options: { initial?: Game; tech?: boolean } = {}): ReinforcementsHomeworldFixture {
+export function createWorldPhaseOwnBattleFixture(options: Pick<WorldPhaseBattleOptions,
+  'initial' | 'tech' | 'skills' | 'training' | 'skilled'> = {}): ReinforcementsHomeworldFixture {
   const initial = options.initial ?? createIndependentCardModulesFixture({ advanced: true, homeworlds: true,
     tech: options.tech ?? true, strongholds: true, factions: ['emperor', 'guild', 'atreides'] }).initial;
   const fixture = createReinforcementsHomeworldFixture({ advanced: true, initial, role: 'native', outcome: 'win',
+    skills: options.skills, training: options.training, skilled: options.skilled,
     nativeTransfer: 10, sources: { 'homeworld:emperor:salusa': { normal: 3, elite: 0 } }, ownerDial: 2, ownerSupport: 2 });
   takeHarassCard(fixture.game, fixture.owner, HARASS_WITHDRAW_CARD);
   fixture.staging.push('Conserve original Harass & Withdraw from undealt stock into Emperor’s hand solely to exercise the native own-World ban; never seal it in the legal plan.');
@@ -190,10 +202,12 @@ export function createWorldPhaseOwnBattleFixture(options: { initial?: Game; tech
 /** Seven original Emperor visitors invade Junction (3N4E), then two normal
  * reserves move Kaitain → Salusa. R pays 1N Kaitain + 2N Salusa before H returns
  * 2N to Kaitain and 3E to Salusa. Both modules start original and unused. */
-export function createWorldPhaseVisitorBattleFixture(options: { initial?: Game } = {}): ReinforcementsHomeworldFixture {
+export function createWorldPhaseVisitorBattleFixture(options: Pick<WorldPhaseBattleOptions,
+  'initial' | 'skills' | 'training' | 'skilled'> = {}): ReinforcementsHomeworldFixture {
   const initial = options.initial ?? createIndependentCardModulesFixture({ advanced: true, homeworlds: true,
     tech: true, strongholds: true, factions: ['emperor', 'guild', 'atreides'] }).initial;
   const fixture = createReinforcementsHomeworldFixture({ advanced: true, initial, role: 'visitor', outcome: 'win',
+    skills: options.skills, training: options.training, skilled: options.skilled,
     slot: 'weapon', nativeTransfer: 2, ownerDial: 2, ownerSupport: 1,
     sources: { 'homeworld:emperor': { normal: 1, elite: 0 }, 'homeworld:emperor:salusa': { normal: 2, elite: 0 } } });
   takeHarassCard(fixture.game, fixture.owner, HARASS_WITHDRAW_CARD);

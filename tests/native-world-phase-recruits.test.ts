@@ -174,3 +174,79 @@ void test('Advanced native CHOAM + Tech: unlimited paid/free returns retain thei
   const completed = programme.finish(game);
   assert.equal(player(completed.afterPhaseEnd, native).spice, player(f.game, native).spice - 10);
 });
+
+void test('Basic all14 native Ix: actual paid cyborgs accrue Banker separately from once-only phase-end Axlotl', () => {
+  const f = createNativeWorldRecruitsFixture({ skills: true, tech: true, faction: 'ixians',
+    training: { emperor: 'mentat', ixians: 'swordmaster-of-ginaz', guild: 'spice-banker' } });
+  const native = f.native, banker = 'guild';
+  const programme = axlotlProgramme(f.game, native);
+  const deferred = (game: Game) => viewGame(game, banker).spiceBankerIncome!.deferred
+    .find(row => row.owner === banker)?.amount ?? 0;
+  const originalBankerWallet = player(f.game, banker).spice;
+  const paid = requestNativeWorldRecruits(f.game, native, 3, 1, 0);
+  assert.deepEqual({ cost: paid.price, wallet: paid.walletDelta, free: paid.free },
+    { cost: 3, wallet: 3, free: 2 });
+  assert.equal(deferred(paid.game), 0, 'The actual three-spice bank payment is below Banker threshold');
+  let game = applyAction(paid.game, native, { type: 'ready' });
+  game = applyAction(game, f.owner, play);
+  assert.equal(player(game, native).spice, player(f.game, native).spice - 3);
+  assert.equal(player(game, native).revived, 3);
+  assert.equal(player(game, native).freeForcesRevived, 2);
+  const crossing = requestNativeWorldRecruits(game, native, 2, 2, 2);
+  assert.deepEqual(crossing.nativeAfter, { normal: 2, elite: 3 });
+  assert.equal(crossing.price, 0);
+  assert.equal(deferred(crossing.game), 0, 'Typed free deposits are not qualifying bank payments');
+  assert.equal(viewGame(crossing.game, native).revival.homeworldBonus, 0);
+  assert.equal(viewGame(crossing.game, native).revival.freeRemaining, 0);
+  rejectsUnchanged(crossing.game, native, { type: 'revive', amount: 2, elite: 2 });
+  const last = requestNativeWorldRecruits(crossing.game, native, 2, 1, 0);
+  assert.deepEqual({ cost: last.price, wallet: last.walletDelta, free: last.free },
+    { cost: 5, wallet: 5, free: 0 });
+  assert.deepEqual(last.nativeAfter, { normal: 3, elite: 4 });
+  assert.equal(player(last.game, native).revived, 7);
+  assert.equal(player(last.game, native).freeForcesRevived, 4);
+  assert.equal(player(last.game, native).tanks, 7);
+  assert.equal(player(last.game, native).elites!.tanks, 0);
+  assert.equal(deferred(last.game), 1);
+  const receipt = last.game.spiceBankerIncome!.sources.at(-1)!;
+  assert.equal(receipt.source.kind, 'force-revival');
+  assert.deepEqual(receipt.source.bankLegs, [{ payer: native, amount: 5 }]);
+  assert.equal(receipt.grant?.owner, banker);
+  assert.equal(player(last.game, banker).spice, originalBankerWallet,
+    'Normal Banker income stays in front of the shield until Mentat');
+  const completed = programme.finish(last.game);
+  assert.equal(deferred(completed.afterPhaseEnd), 1, 'Revival end pays Axlotl, not Banker');
+  assert.equal(deferred(completed.afterShipment), 1);
+  assert.equal(player(completed.afterPhaseEnd, native).spice, player(f.game, native).spice - 8);
+  assert.equal(player(completed.afterPhaseEnd, banker).spice,
+    originalBankerWallet + (programme.owner === banker ? programme.income : 0));
+  game = completed.afterShipment;
+  for (let count = 0; count < 300 && !(game.phase === 7 && nativeWorldRecruitsClean(game)); count++) {
+    if (!game.battle && game.phase === 6 && nativeWorldRecruitsClean(game)) {
+      const choice = viewGame(game, game.active!).battleChoices[0]; assert.ok(choice);
+      game = applyAction(game, choice.chooser, { type: 'chooseBattle', territory: choice.territory,
+        target: choice.attacker === choice.chooser ? choice.defender : choice.attacker });
+    } else if (game.battle && !game.battle.revealed && nativeWorldRecruitsClean(game) &&
+      !game.battle.preparation && game.battle.preLeader?.closed !== false) {
+      const actor = [game.battle.attacker, game.battle.defender].find(id => !game.battle!.plans[id]);
+      assert.ok(actor);
+      const leader = player(game, actor).leaders.filter(disc => !disc.dead && !disc.usedAt)
+        .sort((a, b) => b.strength - a.strength || a.id.localeCompare(b.id))[0];
+      assert.ok(leader);
+      game = applyAction(game, actor, { type: 'battlePlan', leader: leader.id, dial: 0, support: 0 });
+    } else {
+      const step = nextNativeWorldRecruitsStep(game); assert.ok(step);
+      game = applyAction(game, step.actor, step.action);
+    }
+  }
+  assert.equal(game.phase, 7);
+  assert.equal(deferred(game), 1);
+  const beforeMentatWallet = player(game, banker).spice;
+  const mentat = advanceNativeWorldRecruits(game, state => state.phase === 8 && nativeWorldRecruitsClean(state));
+  assert.equal(deferred(mentat), 0);
+  assert.equal(player(mentat, banker).spice, beforeMentatWallet + 1,
+    'The one actual qualifying bank invoice is collected only at original Mentat');
+  assert.equal(mentat.techTokens!.axlotl.spice, 0);
+  assert.equal(mentat.techTokens!.axlotl.triggeredTurn, 2);
+  assertNativeWorldRecruitsInventory(mentat);
+});

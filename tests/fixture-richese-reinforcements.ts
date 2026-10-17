@@ -1,12 +1,15 @@
 import assert from 'node:assert/strict';
 import {
-  applyAction, createGame, initializeEcazTreacheryGameForAudit, joinGame, newPlayer,
+  applyAction, createGame, initializeEcazTreacheryGameForAudit, initializeLeaderSkillsGameForAudit,
+  joinGame, newPlayer,
   viewGame, type Action, type Game,
 } from '../game/engine';
 import { botActions } from '../game/bots';
 import type { Card } from '../game/cards';
 import type { FactionId } from '../game/catalog';
 import type { NoFieldValue } from '../game/richese-no-field';
+import type { LeaderSkillId } from '../game/leader-skill-cards';
+import { skillOfferRolls } from './fixture-independent-card-modules';
 import { nextRicheseStrongholdsNativeStep } from './fixture-richese-strongholds';
 
 export const RICHESE_REINFORCEMENTS = 'ecaz-reinforcements';
@@ -40,6 +43,13 @@ export const RICHESE_ARMIES = [
 export type RicheseReinforcementsOptions = {
   advanced?: boolean;
   family?: RicheseFamily;
+  /** Original all-fourteen setup, off unless selected before initialization. */
+  skills?: boolean;
+  training?: Partial<Record<FactionId, LeaderSkillId>>;
+  /** The Richese owner actually moves its trained disc behind the shield. */
+  skilled?: boolean;
+  /** Separate own-spice commitment, never reserve-fee or support funding. */
+  bankerSpice?: number;
   /**
    * Natural multi-turn route. 'tuning' is the deterministic Basic route: two
    * real No-Field reveals plus one real tuning shipment reach a low reserve
@@ -103,7 +113,9 @@ export type RicheseReinforcementsFixture = {
     plain: RicheseReinforcementsStep;
     opponent: RicheseReinforcementsStep;
   };
-  /** Every real native action the programme took, in order. */
+  /** Original dealt setup choices, including ordinary-disc training when selected. */
+  setupSteps: RicheseReinforcementsStep[];
+  /** Every real native action after setup, in order. */
   nativeSteps: RicheseReinforcementsStep[];
   /** Every conserved card exchange the programme staged, in order. */
   staging: string[];
@@ -130,6 +142,9 @@ export function nextRicheseReinforcementsStep(
   game: Game,
   stoneMode: 'kill' | 'ignore' = 'ignore',
 ): RicheseReinforcementsStep | null {
+  const d = !game.response && !game.phaseOpening ? game.decision : null;
+  if (d?.kind === 'mentatQuestion' && d.stage === 'name')
+    return { actor: d.player, action: { type: 'decision', event: d.event, decline: true } };
   const step = nextRicheseStrongholdsNativeStep(game);
   if (step && game.decision?.kind === 'stoneBurner' &&
     step.action.type === 'decision' && step.action.mode !== undefined)
@@ -138,14 +153,23 @@ export function nextRicheseReinforcementsStep(
 }
 
 /** Determinism is scoped to the original native initializer only. */
-function initialize(game: Game): Game {
+function initialize(game: Game, options: RicheseReinforcementsOptions): Game {
+  const rolls = options.skills ? skillOfferRolls(game, options.training) : [];
+  let cursor = 0;
   const descriptor = Object.getOwnPropertyDescriptor(crypto, 'getRandomValues');
   crypto.getRandomValues = <T extends ArrayBufferView | null>(array: T): T => {
     assert.ok(array);
-    new Uint8Array(array.buffer, array.byteOffset, array.byteLength).fill(255);
+    if (array instanceof Uint32Array && array.length === 1 && cursor < rolls.length) array[0] = rolls[cursor++];
+    else new Uint8Array(array.buffer, array.byteOffset, array.byteLength).fill(255);
     return array;
   };
-  try { return initializeEcazTreacheryGameForAudit(game); }
+  try {
+    if (options.skills) {
+      game.ecazTreachery = true;
+      return initializeLeaderSkillsGameForAudit(game);
+    }
+    return initializeEcazTreacheryGameForAudit(game);
+  }
   finally {
     if (descriptor) Object.defineProperty(crypto, 'getRandomValues', descriptor);
     else Reflect.deleteProperty(crypto, 'getRandomValues');
@@ -204,8 +228,10 @@ function transferCard(game: Game, actor: string, cardId: string, staging: string
 }
 
 function availableLeaders(game: Game, actor: string, battleTerritory: string) {
+  const assignment = game.leaderSkills?.assignments.find(skill => skill.owner === actor);
   return richeseReinforcementsPlayer(game, actor).leaders
-    .filter(leader => !leader.dead && (!leader.usedAt || leader.usedAt === battleTerritory))
+    .filter(leader => !leader.dead && (!leader.usedAt || leader.usedAt === battleTerritory) &&
+      (leader.id !== assignment?.leader || game.battle?.leaderSkillHidden?.[actor] === true))
     .sort((a, b) => b.strength - a.strength || a.id.localeCompare(b.id));
 }
 
@@ -232,6 +258,8 @@ export function createRicheseReinforcementsFixture(
     assert.deepEqual([...game.expansions].sort(), family === 'choam' ? ['choam'] : ['choam', 'ix']);
     assert.ok(game.players.some(player => player.faction === 'richese'));
     if (game.status === 'setup') assert.equal(game.ecazTreachery, true);
+    if (game.status === 'setup' && options.skills)
+      assert.ok(game.leaderSkills, 'Skills must be selected in the original initializer, never retrofitted into setup');
   } else {
     const roster: FactionId[] = family === 'choam'
       ? ['richese', 'guild', 'atreides'] : ['richese', 'ixians', 'atreides'];
@@ -243,18 +271,30 @@ export function createRicheseReinforcementsFixture(
   }
   if (game.status === 'lobby') {
     for (const player of game.players) if (!player.ready) game = applyAction(game, player.id, { type: 'ready' });
-    game = initialize(game);
+    game = initialize(game, options);
   }
   const initial = structuredClone(game);
+  const setupSteps: RicheseReinforcementsStep[] = [];
   for (let count = 0; game.status === 'setup' && count < 300; count++) {
     let next: RicheseReinforcementsStep | undefined;
-    for (const player of game.players) {
-      const view = viewGame(game, player.id);
-      view.players.find(p => p.id === player.id)!.bot = 'Easy';
-      const action = botActions(view)[0];
-      if (action) { next = { actor: player.id, action }; break; }
+    if (game.setupStage === 'leaderSkills') {
+      const actor = Object.keys(game.leaderSkills!.offers)[0], offer = game.leaderSkills!.offers[actor];
+      const view = viewGame(game, actor).leaderSkills!, player = richeseReinforcementsPlayer(game, actor);
+      const skill = options.training?.[player.faction] ?? offer.cards.find(card => !view.unavailableSkills?.[card]);
+      const leader = player.leaders.filter(disc => view.eligibleLeaders.some(eligible => eligible.id === disc.id))
+        .sort((a, b) => b.strength - a.strength || a.id.localeCompare(b.id))[0];
+      assert.ok(skill && offer.cards.includes(skill) && !view.unavailableSkills?.[skill] && leader);
+      next = { actor, action: { type: 'leaderSkill', event: offer.event, skill, leader: leader.id } };
+    } else {
+      for (const player of game.players) {
+        const view = viewGame(game, player.id);
+        view.players.find(p => p.id === player.id)!.bot = 'Easy';
+        const action = botActions(view)[0];
+        if (action) { next = { actor: player.id, action }; break; }
+      }
     }
     assert.ok(next, `Original independent-card setup stalled at ${game.setupStage}/${game.decision?.kind}`);
+    setupSteps.push(structuredClone(next));
     game = applyAction(game, next.actor, next.action);
   }
   assert.equal(game.status, 'playing');
@@ -387,7 +427,11 @@ export function createRicheseReinforcementsFixture(
   assert.ok(beforeShipment && afterShipment && shipmentStep && beforeBattle && battleStep &&
     reservesBefore && army, 'The timeline must record its final shipment, army and battle admission');
   for (let count = 0; count < 120; count++) {
-    const step = nextRicheseReinforcementsStep(game);
+    const visibility = game.decision?.kind === 'leaderSkillVisibility' && !game.response && !game.phaseOpening
+      ? game.decision : null;
+    const step = visibility ? { actor: visibility.player, action: { type: 'leaderSkillVisibility',
+      event: visibility.event, hide: visibility.player === richese && !!options.skilled } } satisfies RicheseReinforcementsStep
+      : nextRicheseReinforcementsStep(game);
     if (!step) break;
     act(step);
   }
@@ -429,6 +473,7 @@ export function createRicheseReinforcementsFixture(
     RicheseReinforcementsStep => ({
       actor: richese,
       action: { type: 'battlePlan', dial: ownDial, support: advanced ? ownDial : 0,
+        ...(options.bankerSpice ? { bankerSpice: options.bankerSpice } : {}),
         leader: ownLeader.id, weapon: machineSlot(weapon), defense: machineSlot(defense) },
     });
   const plans = {
@@ -443,7 +488,7 @@ export function createRicheseReinforcementsFixture(
     initial, afterSetup, beforeShipment, shipmentStep, afterShipment, beforeBattle, battleStep,
     game, richese, opponent, observer, family, advanced, route, location, city,
     token: structuredClone(tokenOf(marker)), materializes, tuning, reservesBefore,
-    machines, hand, plans, nativeSteps, staging,
+    machines, hand, plans, setupSteps, nativeSteps, staging,
   };
 }
 

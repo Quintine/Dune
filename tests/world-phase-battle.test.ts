@@ -5,6 +5,7 @@ import { combatArmy } from '../game/combat-location';
 import { REINFORCEMENTS_CARD } from '../game/reinforcements';
 import { HARASS_WITHDRAW_CARD } from '../game/harass-withdraw';
 import { harassHomeworldPool as pool, finishHarassHomeworldBattle } from './fixture-harass-homeworld';
+import { advanceNativeWorldBattle } from './fixture-native-world-battle';
 import {
   finishReinforcementsHomeworldBattle, revealReinforcementsHomeworldBattle,
 } from './fixture-reinforcements-homeworld';
@@ -187,4 +188,68 @@ void test('foreign World R+H: original split normal fee precedes exact normal/el
   for (const id of [REINFORCEMENTS_CARD, HARASS_WITHDRAW_CARD]) assert.equal(done.discard.filter(c => c.id === id).length, 1);
   assert.equal(done.battle, null); assert.ok(worldPhaseBattleClean(done));
   assertWorldPhaseBattleInventory(done);
+});
+
+void test('all14 Emperor visitor chooses original typed H returns or committed-only Suk rescue after the same split normal fee', () => {
+  const f = createWorldPhaseVisitorBattleFixture({ skills: true, skilled: true,
+    training: { emperor: 'suk-graduate', guild: 'swordmaster-of-ginaz', atreides: 'sandmaster' } });
+  assert.deepEqual(f.sources, {
+    'homeworld:emperor': { normal: 1, elite: 0 }, 'homeworld:emperor:salusa': { normal: 2, elite: 0 },
+  });
+  assert.equal(viewGame(f.game, f.owner).battle!.strongholdEffects[f.owner], null,
+    'Original unused modules never subsidize a foreign World');
+  const trainer = f.planActions[0].action.leader;
+  const untrained = player(f.game, f.owner).leaders.filter(l => !l.dead && !l.usedAt && l.id !== trainer)
+    .sort((a, b) => b.strength - a.strength || a.id.localeCompare(b.id))[0];
+  assert.ok(untrained);
+  f.planActions[0].action.leader = untrained.id;
+  const withdrawn = finishHarassHomeworldBattle(revealReinforcementsHomeworldBattle(f),
+    { returns: { [f.location]: { normal: 2, elite: 3 } } });
+  assert.deepEqual(pool(withdrawn, f.owner, 'homeworld:emperor'), { normal: 11, elite: 0 });
+  assert.deepEqual(pool(withdrawn, f.owner, 'homeworld:emperor:salusa'), { normal: 0, elite: 4 });
+  assert.equal(player(withdrawn, f.owner).tanks, 5);
+  assert.equal(player(withdrawn, f.owner).elites!.tanks, 1);
+  assert.equal(withdrawn.lastBattleContext!.sukRescue, undefined,
+    'A concealed native trainer used as a bluff grants neither normal nor skilled Suk rescue');
+  assert.deepEqual(viewGame(f.game, f.owner).battle!.traitorVoters, [f.opponent]);
+  assertWorldPhaseBattleInventory(withdrawn);
+
+  // The real alternative keeps H in hand and lets the selected surviving disc
+  // rescue only the two actually committed visitor casualties.
+  f.planActions[0].action.defense = null;
+  f.planActions[0].action.leader = trainer;
+  let game = advanceNativeWorldBattle(revealReinforcementsHomeworldBattle(f), g => g.decision?.kind === 'sukRescue', [],
+    { casualties: { normal: 1, elite: 1 } });
+  assert.ok(game.decision?.kind === 'sukRescue');
+  assert.deepEqual(game.pendingSukRescue!.pool, [{ key: f.location, normal: 3, elite: 4 }]);
+  assert.deepEqual(game.pendingSukRescue!.losses, { normal: 1, elite: 1, paidNormal: 1, paidElite: 0 });
+  assert.equal(player(game, f.owner).tanks, 3);
+  assert.equal(player(game, f.owner).elites!.tanks, 0);
+  assert.ok(game.decision.options.every(o => o.normal + o.elite <= 2), 'The original fee3N cannot enlarge the rescue');
+  const choice = game.decision.options.findIndex(o => o.normal === 1 && o.elite === 1 && o.kept?.kind === 'normal');
+  assert.ok(choice >= 0);
+  const action = { type: 'decision', event: game.decision.event, choice };
+  const before = structuredClone(game);
+  assert.throws(() => applyAction(game, f.owner, action), 'Two native homes need a sealed typed rescue allocation');
+  assert.throws(() => applyAction(game, f.owner, { ...action,
+    destinations: { [f.location]: { normal: 0, elite: 1 } } }), 'Foreign visitor custody is never a reserve return destination');
+  assert.deepEqual(game, before);
+  game = applyAction(game, f.owner, { ...action,
+    destinations: { 'homeworld:emperor:salusa': { normal: 0, elite: 1 } } });
+  game = finishReinforcementsHomeworldBattle(game);
+  assert.equal(game.lastBattleContext!.winner, f.owner);
+  assert.equal(game.lastBattleContext!.sukRescue!.physical!.source, 'visitor-homeworld');
+  assert.deepEqual(game.lastBattleContext!.sukRescue!.physical!.destinations,
+    { 'homeworld:emperor:salusa': { normal: 0, elite: 1 } });
+  assert.deepEqual(pool(game, f.owner, 'homeworld:emperor'), { normal: 9, elite: 0 });
+  assert.deepEqual(pool(game, f.owner, 'homeworld:emperor:salusa'), { normal: 0, elite: 2 });
+  assert.deepEqual(pool(game, f.owner, f.location), { normal: 3, elite: 3 });
+  assert.equal(player(game, f.owner).tanks, 3);
+  assert.equal(player(game, f.owner).elites!.tanks, 0);
+  assert.equal(player(game, f.owner).battleLosses, 5);
+  assert.equal(player(game, f.owner).spice, player(f.game, f.owner).spice - 1,
+    'Native Worlds cannot borrow Arrakeen support or refund the original paid support');
+  assert.equal(game.discard.filter(c => c.id === REINFORCEMENTS_CARD).length, 1);
+  assert.ok(player(game, f.owner).hand.some(c => c.id === HARASS_WITHDRAW_CARD));
+  assertWorldPhaseBattleInventory(game);
 });

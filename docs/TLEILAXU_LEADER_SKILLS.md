@@ -1,17 +1,18 @@
 # Tleilaxu with Leader Skills
 
-Connected development prototype, 21 September 2026. Basic Tleilaxu with base
-opponents now uses all fourteen physical skills through genuine setup. Public
-starts, complete-mode acceptance and publication remain gated. Existing missing
-skill effects are still explicit; this is not complete expansion certification.
+Connected development prototype, 21 September 2026. Genuine Tleilaxu setup uses
+all fourteen physical skills. Normal starts are labelled previews, not complete
+mode/publication acceptance. The
+[17 October selected-deck/World scope](LEADER_SKILLS_RUNTIME.md#world-skills-and-selected-decks--17-october-2026)
+supersedes the original single-family/no-module admission, not native powers.
 
 ## Advanced native composition — 4 October 2026
 
 Fresh local Advanced `leader-skills` tables now admit native Tleilaxu, optionally
 Ixians and/or CHOAM, with classic opponents and distinct required `ix`/`choam`
 decks. Two through six unique seats retain all fourteen physical skills,
-starting-card choices, real Face Dancers and native setup. Existing Basic
-entries below remain unchanged; public starts and unrelated overlays stay gated.
+starting-card choices, real Face Dancers and native setup. The current shared
+selected-deck contract also serves Basic; foreign gholas remain Advanced-only.
 
 Actual half-price foreign revival fills the controlled living pool only up to
 five. The original faction retains the sole physical disc; `gholaBy` records
@@ -51,14 +52,14 @@ board counters after refresh; the detailed guide is visually readable at390px.
 
 ## Configuration and physical setup
 
-The existing `leader-skills` local initializer accepts Basic rules, exactly the
-Ixians & Tleilaxu expansion, Tleilaxu plus base factions, two through six seats,
-and no other optional modules. It keeps the real Ix Treachery/Spice decks and
-the Cheap Hero Traitor identity. Starting Treachery precedes simultaneous
-private two-card skill offers; public assignments and ordinary Traitor choices
-precede the native three Face Dancers. No hidden card controls profile admission.
-Ixians have a separate [integration](IX_LEADER_SKILLS.md); the Advanced native
-composition above supersedes the earlier admission boundary, not other modules.
+The ordinary `leader-skills` setup accepts Basic/Advanced2–6 with the selected
+Ix deck and Tleilaxu, optionally other selected E1/E2/classic seats. Independent
+cards are not required. The current shared contract above records supported
+World/Tech/Advanced Strongholds/card combinations. It retains the original Ix
+Treachery/Spice decks, Cheap Hero Traitor identity and native three Face Dancers.
+Starting Treachery precedes private skill offers, assignments and Traitors;
+no hidden card determines admission. Ixians keep their
+[native integration](IX_LEADER_SKILLS.md); Basic never gains foreign revival.
 
 ## Connected interactions
 

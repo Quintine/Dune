@@ -1,21 +1,21 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { applyAction, RuleError, viewGame } from '../game/engine';
-import { createIndependentCardModulesFixture } from './fixture-independent-card-modules';
+import { createNativeWorldMarkerFixture, nativeWorldMarkerPlan } from './fixture-native-world-marker';
 import {
-  createRicheseReinforcementsFixture, finishRicheseReinforcementsBattle,
+  finishRicheseReinforcementsBattle,
   prepareRicheseReinforcementsPlan, RICHESE_REINFORCEMENTS,
   richeseReinforcementsPlayer, sealRicheseReinforcementsPlan,
 } from './fixture-richese-reinforcements';
 
 function markerFixture(advanced: boolean) {
-  const setup = createIndependentCardModulesFixture({ advanced, homeworlds: true,
-    tech: true, strongholds: advanced, expansions: ['choam'], factions: ['richese', 'guild', 'atreides'] });
-  return createRicheseReinforcementsFixture({ advanced, family: 'choam', marker: 3,
-    ...(advanced ? {} : { reserves: 5 }), initial: setup.initial });
+  return createNativeWorldMarkerFixture({ advanced, tech: true, strongholds: advanced,
+    family: 'choam', marker: 3, skills: true, skilled: true, opponentDial: 8,
+    training: { richese: advanced ? 'spice-banker' : 'mentat' },
+    ...(advanced ? { bankerSpice: 1 } : { reserves: 5 }) });
 }
 
-void test('Basic native World Tech income cannot fund a marker fee from future withdrawal counters', () => {
+void test('Basic all14 native World Tech income and Mentat strength cannot fund a marker fee from future withdrawal counters', () => {
   const f = markerFixture(false);
   const before = structuredClone(f.game);
   const preview = viewGame(f.game, f.richese).battle!.reinforcements!;
@@ -25,7 +25,7 @@ void test('Basic native World Tech income cannot fund a marker fee from future w
   delete raw.reinforcementsSources;
   assert.throws(() => applyAction(f.game, f.richese, raw), RuleError);
   assert.deepEqual(f.game, before);
-  const first = prepareRicheseReinforcementsPlan(f.game, f.plans.harass);
+  const first = prepareRicheseReinforcementsPlan(f.game, nativeWorldMarkerPlan(f, 'harass'));
   const done = finishRicheseReinforcementsBattle(sealRicheseReinforcementsPlan(first, f.plans.opponent));
   const owner = richeseReinforcementsPlayer(done, f.richese);
   assert.equal(owner.reserves, 3);
@@ -33,9 +33,12 @@ void test('Basic native World Tech income cannot fund a marker fee from future w
   assert.ok(owner.hand.some(card => card.id === RICHESE_REINFORCEMENTS));
 });
 
-void test('Advanced native World Tech and Strongholds keep marker materialization and the later reserve fee disjoint', () => {
+void test('Advanced all14 native World Tech and Strongholds keep Banker support, marker materialization and reserve fee disjoint', () => {
   const f = markerFixture(true);
-  const first = prepareRicheseReinforcementsPlan(f.game, f.plans.reinforcements);
+  const beforeSpice = richeseReinforcementsPlayer(f.game, f.richese).spice;
+  const plan = nativeWorldMarkerPlan(f);
+  assert.deepEqual(plan.action.reinforcementsSources, { [f.source.homeworld]: { normal: 3, elite: 0 } });
+  const first = prepareRicheseReinforcementsPlan(f.game, plan);
   assert.equal(richeseReinforcementsPlayer(first, f.richese).reserves, 20);
   assert.ok(richeseReinforcementsPlayer(first, f.richese).noField!.deployed);
   const revealed = sealRicheseReinforcementsPlan(first, f.plans.opponent);
@@ -45,6 +48,7 @@ void test('Advanced native World Tech and Strongholds keep marker materializatio
   const owner = richeseReinforcementsPlayer(done, f.richese);
   assert.equal(owner.reserves, 14);
   assert.equal(owner.tanks, 6);
+  assert.equal(owner.spice, beforeSpice - 2, 'One actual force support and one own Banker commitment settle separately.');
   const home = viewGame(done, f.richese).homeworlds?.worlds?.find(world => world.native === f.richese);
   assert.deepEqual(home?.forces[f.richese], { normal: 14, elite: 0 });
   assert.equal(done.discard.filter(card => card.id === RICHESE_REINFORCEMENTS).length, 1);

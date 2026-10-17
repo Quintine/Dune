@@ -7,6 +7,63 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## World Skills and selected decks — 17 October 2026
+
+Fresh ordinary all14 setup now validates selected ordinary decks and actual
+seats once for Basic/Advanced2–6. Registered classic/E1/E2 seats retain their
+required family selection; neither a native expansion seat nor independent
+cards is required. Unused selected Ecaz metadata creates no Ecaz/Moritani power.
+`selectedDeckLeaderSkillsProfile` replaces the separate Basic-family and
+Advanced-native aliases. Foreign-ghola custody still explicitly requires
+Advanced and the original native revival conditions; Basic gains no such power.
+
+The independent three-card variant now composes classic or selected E1/E2
+Homeworlds/all14, optionally original Tech3+ and/or Advanced Strongholds2+.
+All selected known family decks remain authoritative, including unused Ecaz
+metadata; actual E3 natives with World cards, Nexus/Discovery and unrelated
+role/effect guards remain outside this new envelope. Original hand/draft/cache,
+training, typed counters, mandatory normal Banker and phase-module owners stay.
+No new saved state, printed arithmetic or played-game conversion is introduced.
+
+World revival uses the accepted current-population invoice and recorded prior
+returns. Recruits does not double a separate income ledger or cap native
+Tleilaxu at seven. Normal Banker qualifies on the accepted payer contribution,
+not a wallet delta after separate native income; Axlotl pays only at phase end,
+while Banker waits for actual Mentat. Bulk/split repricing keeps its existing
+explicit provisional timing.
+
+Own-World fee counters cannot also fund the dial or Suk rescue. Original
+pre-fee traits remain sealed; only committed battle losses can be rescued,
+and visitor Harass returns retain their native typed destinations. Every
+own-World Harass ban remains. Earned Arrakeen support and Banker strength
+create no reserve-fee subsidy. Richese must still retain three actual reserves
+after projected materialization and before any later withdrawal.
+
+`tests/selected-deck-skills-runtime.test.ts` uses actual moduleOption/ready/start,
+paid shipment and battle, including both real poisoned-disc deaths before
+Basic-forbidden/Advanced-legal foreign revival. Existing native/classic World
+Recruits, battle and marker fixture/test pairs add default-off original setup
+training and meaningful income/source/return cases. Custom seat IDs are retained;
+only undealt lotteries and explicitly conserved original card inputs are
+controlled, never counters, money, owners or elapsed phases.
+
+Frozen61-file **683/683**, types/lint/build and actual rule programmes pass.
+Eight World card/Skills phase starts and five bare selected-deck starts rejected
+before and pass after. Actual own-Ix Suk returns only its two committed Cyborgs;
+fee1N2E stays in Tanks and exported troops stay separate. Actual Richese funded
+marker5 pays three then returns four; capped5/stock3 rejects R and legal H
+returns one/loses two. A Basic Ix return programme preserves separate Axlotl and
+Banker stores. The regressions additionally cover accepted Tleilaxu invoice5
+versus net wallet4, unlimited11 returns and original typed visitor aftercare.
+
+Two unstaged normal World tables exercise Easy/Medium/Hard/Brutal participation:
+Basic Ix reaches turn3; Advanced classic wins at turn1 after two battles.
+Actual390px normal five-module entry trains an offered disc, keeps a Traitor
+and reaches Storm with Kaitain/Salusa and Stronghold inspectors, no app errors
+or root overflow. These are changed-path proofs, not full combinations,
+strategic calibration, complete-mode, deployed or deferred assurance acceptance.
+
+
 ## Independent cards with original phase modules — 17 October 2026
 
 Fresh original all14 Skills plus independent Recruits/Reinforcements/Harass now

@@ -1,10 +1,17 @@
 # Homeworld setup and native reserve runtime
 
-9 September 2026. This checkpoint connects the physical Homeworld model to
-the authoritative game, player table and AI. **Public Homeworld starts remain
-disabled.** It does not certify Homeworld battles, occupation, card effects or
-complete Advanced/expansion games. The earlier component checkpoint remains
-in [HOMEWORLD_IMPLEMENTATION.md](HOMEWORLD_IMPLEMENTATION.md).
+The original 9 September checkpoint connects the physical Homeworld model to
+the authoritative game, player table and AI. Normal Homeworld starts are now
+labelled previews, not complete Advanced/expansion acceptance. The earlier
+component checkpoint remains in [HOMEWORLD_IMPLEMENTATION.md](HOMEWORLD_IMPLEMENTATION.md).
+
+**17 October World Skills/cards:** original classic/selected E1/E2 World starts
+now compose all14 and independent cards, optionally original Tech/Advanced
+Strongholds. Actual E3 World cards and Nexus/Discovery remain separate. Original
+typed sources, own-World fee/dial disjointness, committed-only Suk, current-rate
+revival and every own-World Harass prohibition remain. No World/counter/wallet
+or played history is manufactured.
+[Current scope and683/683 proof](LEADER_SKILLS_RUNTIME.md#world-skills-and-selected-decks--17-october-2026).
 
 ## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
 

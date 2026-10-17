@@ -7,7 +7,7 @@ import { nativeShipmentSources } from '../game/homeworld-options';
 import { homeworldShipmentChoice } from '../game/homeworld-shipment-options';
 import { REINFORCEMENTS_CARD } from '../game/reinforcements';
 import { HARASS_WITHDRAW_CARD } from '../game/harass-withdraw';
-import { createIndependentCardModulesFixture } from './fixture-independent-card-modules';
+import { createIndependentCardModulesFixture, type IndependentCardModulesOptions } from './fixture-independent-card-modules';
 import type { NativeReserveSelections } from '../game/homeworld-native-reserves';
 import {
   advanceHarassHomeworld, harassHomeworldClean, nextHarassHomeworldStep,
@@ -21,6 +21,10 @@ export type NativeWorldBattleOptions = {
   /** Original unused phase modules selected before native setup. */
   tech?: boolean;
   strongholds?: boolean;
+  skills?: boolean;
+  training?: IndependentCardModulesOptions['training'];
+  /** Conceal and actually select the owner's originally trained native disc. */
+  skilled?: boolean;
   route?: 'ix-visitor' | 'ix-native' | 'choam-native';
   /** Actual first-turn export, not a reserve assignment. */
   exportNormal?: number;
@@ -101,6 +105,7 @@ export function createNativeWorldBattleFixture(options: NativeWorldBattleOptions
   const advanced = options.advanced ?? false;
   const setup = createIndependentCardModulesFixture({ advanced, homeworlds: true,
     tech: options.tech ?? false, strongholds: options.strongholds ?? false,
+    skills: options.skills, training: options.training,
     factions: route === 'choam-native' ? ['choam', 'guild', 'tleilaxu', 'ixians'] : ['ixians', 'tleilaxu', 'guild'],
     expansions: route === 'choam-native' ? ['ix', 'choam'] : ['ix'] });
   let game = setup.game;
@@ -147,11 +152,15 @@ export function createNativeWorldBattleFixture(options: NativeWorldBattleOptions
     const unused = game.deck.find(c => c.id !== REINFORCEMENTS_CARD && c.id !== HARASS_WITHDRAW_CARD);
     assert.ok(unused); conserveCard(game, opponent, unused.id, staging);
   }
-  const living = (actor: string) => nativeWorldBattlePlayer(game, actor).leaders.filter(l => !l.dead && !l.usedAt && !isAuditorLeader(l))
+  const living = (actor: string) => nativeWorldBattlePlayer(game, actor).leaders.filter(l => !l.dead && !l.usedAt && !isAuditorLeader(l) &&
+    (!game.leaderSkills?.assignments.some(a => a.owner === actor && a.leader === l.id) || actor === owner && options.skilled))
     .sort((a, b) => a.strength - b.strength || a.id.localeCompare(b.id));
   const win = options.outcome === 'win';
-  const ownLeader = route === 'choam-native' && advanced ? nativeWorldBattlePlayer(game, owner).leaders.find(isAuditorLeader)!
-    : win ? living(owner).at(-1)! : living(owner)[0];
+  const trainer = options.skilled ? game.leaderSkills?.assignments.find(a => a.owner === owner) : null;
+  assert.ok(!options.skilled || trainer, 'Select Skills before native setup to use its real trainer');
+  const ownLeader = trainer ? living(owner).find(l => l.id === trainer.leader)!
+    : route === 'choam-native' && advanced ? nativeWorldBattlePlayer(game, owner).leaders.find(isAuditorLeader)!
+      : win ? living(owner).at(-1)! : living(owner)[0];
   const otherLeader = win ? living(opponent)[0] : living(opponent).at(-1)!;
   assert.ok(ownLeader && otherLeader);
   if (options.faceDancer) {
@@ -162,7 +171,9 @@ export function createNativeWorldBattleFixture(options: NativeWorldBattleOptions
   const battleStep: NativeWorldBattleStep = { actor: choice.chooser, action: { type: 'chooseBattle', territory: location,
     target: choice.attacker === choice.chooser ? choice.defender : choice.attacker } };
   act(battleStep);
-  reach(g => !!g.battle && harassHomeworldClean(g) && !g.battle.preparation && g.battle.preLeader?.closed !== false);
+  game = advanceNativeWorldBattle(game, g => !!g.battle && harassHomeworldClean(g) &&
+    !g.battle.preparation && g.battle.preLeader?.closed !== false, nativeSteps,
+    { skilled: options.skilled ? [owner] : [] });
   const preview = viewGame(game, owner).battle!.reinforcements; assert.ok(preview && !preview.blocked);
   const positiveSources = preview.homeworldSources?.[0]; assert.ok(positiveSources);
   const dial = options.ownerDial ?? (route === 'choam-native' ? 0 : route === 'ix-native' ? 2 : 1);
@@ -185,7 +196,7 @@ export function createNativeWorldBattleFixture(options: NativeWorldBattleOptions
  * silently decline the native Face Dance, Auditor or Cyborg exchange. */
 export function advanceNativeWorldBattle(game: Game, until: (g: Game) => boolean,
   steps: NativeWorldBattleStep[] = [], options: { returns?: Record<string, HomeworldForces>; callers?: string[];
-    casualties?: HomeworldForces } = {}): Game {
+    casualties?: HomeworldForces; skilled?: readonly string[] } = {}): Game {
   for (let n = 0; n < 300; n++) {
     if (until(game)) return game;
     assert.ok(game.battle || game.homeworldBattleLoss || game.decision || game.response || game.phaseOpening,
@@ -201,6 +212,7 @@ export function advanceNativeWorldBattle(game: Game, until: (g: Game) => boolean
       step = { actor: d.player, action: { type: 'decision', choice } };
     } else step = nextHarassHomeworldStep(game);
     assert.ok(step, 'Seal actual human plans before continuing');
+    if (step.action.type === 'leaderSkillVisibility') step.action.hide = options.skilled?.includes(step.actor) ?? false;
     if (step.action.type === 'traitorCall') step.action.call = options.callers?.includes(step.actor) ?? false;
     steps.push(structuredClone(step)); game = applyAction(game, step.actor, step.action);
   }

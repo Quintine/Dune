@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 17 October 2026 — World Skills/cards and selected ordinary decks
+
+Eight actual World/card/Skills phase starts and five bare selected-deck starts
+rejected before. One selected-deck roster capability now serves Basic/Advanced
+without incidental native-seat/card dependencies; explicit Advanced foreign-ghola
+authorization stays. Actual poisoned-disc deaths precede the Basic rejection
+and Advanced paid revival. Unused Ecaz metadata creates no native E3 power.
+
+Classic/E1/E2 World cards now compose all14 and original Tech/Advanced
+Strongholds. Genuine native programmes retain accepted revival invoices,
+separate Axlotl/Banker stores, own-World fee/dial disjointness, committed-only
+Suk, typed visitor returns and every own-World H ban. Original marker
+materialization must still leave three fee counters before later H returns;
+skill strength/earned support is no fee subsidy. Actual E3 World cards,
+Nexus/Discovery, unrelated guards and existing provisional timing stay separate.
+
+Frozen61-file **683/683**, types/lint/build and actual rule programmes pass.
+Three initial failures were fixture expectations/continuations: consume only
+optional Mentat naming, delete null-preview pins and count the three real Ix
+draft cards before training. Actual capped5/stock3 rejects R; legal H returns
+one/loses two. Actual own-Ix Suk saves committed2E, never fee1N2E; funded Richese
+marker5 pays3 then returns4. Normal World policies reach turn3/earlier win;
+390px normal five-module entry reaches Storm with native Emperor World and
+Stronghold inspectors, no browser errors/overflow. No natural card-reacquisition,
+calibration, full-mode/deployed or deferred assurance claim. No game reset,
+played-save conversion or schema change.
+[Canonical current contract](LEADER_SKILLS_RUNTIME.md#world-skills-and-selected-decks--17-october-2026).
+
 ## 17 October 2026 — Skills/cards with original phase modules
 
 Eight original normal card/Skills phase starts and two plain paired starts

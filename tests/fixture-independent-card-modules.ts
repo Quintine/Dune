@@ -25,7 +25,7 @@ export type IndependentCardModulesOptions = {
 };
 
 /** Select only the original undealt fourteen-card lottery, never assignments. */
-function skillOfferRolls(game: Game, training: IndependentCardModulesOptions['training']): number[] {
+export function skillOfferRolls(game: Game, training: IndependentCardModulesOptions['training']): number[] {
   const source = LEADER_SKILL_CARDS.map(card => card.id), selected: LeaderSkillId[] = [];
   for (const player of game.players) {
     const skill = training?.[player.faction] ?? source.find(card => !selected.includes(card))!;

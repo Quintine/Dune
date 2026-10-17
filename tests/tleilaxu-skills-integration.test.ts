@@ -2,9 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { createElement } from 'react';
-import { applyAction, createGame, initializeLeaderSkillsGameForAudit, joinGame, newPlayer, normalizeAutomaticGame, viewGame, type Action, type Game } from '../game/engine';
+import { applyAction, normalizeAutomaticGame, viewGame, type Action, type Game } from '../game/engine';
 import { LEADER_SKILL_CARDS } from '../game/leader-skill-cards';
-import { basicTleilaxuLeaderSkillsProfile } from '../game/leader-skill-profile';
 import { registerHooks } from 'node:module';
 const aliases = registerHooks({resolve(specifier,context,next){return next(specifier === 'next/image' ? 'vinext/shims/image' : specifier,context);}});
 const { RihaniChoice } = await import('../components/rihani-decipherer');
@@ -55,27 +54,11 @@ function exchange(g: Game, owner: string) {
   return act(g, owner, { type: 'decision', event, cards: [r.drawn[0], r.eligible[0]] });
 }
 
-void test('all fourteen skills admit genuine Basic Tleilaxu setup while Richese and module gates remain closed', () => {
+void test('all fourteen skills assign genuine Basic Tleilaxu discs through original setup', () => {
   for (const card of LEADER_SKILL_CARDS) {
     const game = completedTleilaxuSkillsGame({ requestedSkill: card.id });
     assert.equal(game.leaderSkills!.assignments.find(a => a.owner === 't')!.skill, card.id);
-    assert.equal(basicTleilaxuLeaderSkillsProfile(game), true);
-    assert.equal(basicTleilaxuLeaderSkillsProfile(viewGame(game, 'a')), true);
     stable(game);
-  }
-  // Native E1 Discovery Leader Skills are now admitted for this fresh lobby;
-  // unsupported Discovery overlays still reject.
-  const discovery = createGame('TLEIGATE',newPlayer('t','Tleilaxu','tleilaxu'),false,['ix']);
-  joinGame(discovery,newPlayer('e','Emperor','emperor'));discovery.players.forEach(p => {p.ready = true;});
-  discovery.discoveryEnabled = true;
-  assert.equal(basicTleilaxuLeaderSkillsProfile(initializeLeaderSkillsGameForAudit(discovery)), true);
-  for (const mutate of [(g: Game) => {g.players[1] = newPlayer('x','Richese','richese');},
-    (g: Game) => {g.expansions.push('choam');},
-    (g: Game) => {g.discoveryEnabled = true; g.players[1] = newPlayer('x','Richese','richese');},
-    (g: Game) => {g.discoveryEnabled = true; g.expansions.push('choam');}]) {
-    const g = createGame('TLEIGATE',newPlayer('t','Tleilaxu','tleilaxu'),false,['ix']);
-    joinGame(g,newPlayer('e','Emperor','emperor'));g.players.forEach(p => {p.ready = true;});mutate(g);
-    const before = JSON.stringify(g);assert.throws(() => initializeLeaderSkillsGameForAudit(g));assert.equal(JSON.stringify(g),before);
   }
 });
 

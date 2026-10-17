@@ -158,3 +158,47 @@ void test('Advanced: native CHOAM Reinforcements preserves the original Auditor 
   game = advanceNativeWorldBattle(game, nativeWorldBattleFinished);
   assertNativeWorldBattleInventory(game, f.afterSetup);
 });
+
+void test('all14 native Ix Suk saves only the post-fee committed Cyborgs, never the reserve fee or exported garrison', () => {
+  const f = createNativeWorldBattleFixture({ advanced: true, route: 'ix-native', skills: true, skilled: true,
+    tech: true, strongholds: true,
+    training: { ixians: 'suk-graduate', tleilaxu: 'killer-medic', guild: 'sandmaster' } });
+  const original = structuredClone(f.game);
+  assert.deepEqual(f.sources, { 'homeworld:ixians': { normal: 1, elite: 2 } });
+  assert.equal(viewGame(f.game, f.owner).battle!.strongholdEffects[f.owner], null,
+    'Original unused Strongholds never funds support on its owner’s World');
+  assert.throws(() => applyAction(f.game, f.owner, { ...f.planActions[0].action, dial: 4.5 }), RuleError);
+  assert.throws(() => applyAction(f.game, f.owner, { ...f.planActions[0].action, defense: HARASS_WITHDRAW_CARD }), RuleError);
+  assert.deepEqual(f.game, original);
+  const revealed = revealNativeWorldBattle(f), forces = viewGame(revealed, f.owner).battle!.ownForces!;
+  assert.equal(forces.normal, 0); assert.equal(forces.elite, 2);
+  assert.equal(forces.normalFixedHalf, true); assert.equal(forces.eliteStrength, 2);
+  assert.equal(forces.freeSupport, false);
+  assert.deepEqual(viewGame(revealed, f.owner).battle!.traitorVoters, [f.owner]);
+  let game = advanceNativeWorldBattle(revealed, g => g.decision?.kind === 'sukRescue');
+  assert.ok(game.decision?.kind === 'sukRescue');
+  assert.deepEqual(game.pendingSukRescue!.pool, [{ key: f.location, normal: 0, elite: 2 }]);
+  assert.deepEqual(game.pendingSukRescue!.losses, { normal: 0, elite: 2, paidNormal: 0, paidElite: 0 });
+  assert.equal(nativeWorldBattlePlayer(game, f.owner).tanks, 3);
+  assert.equal(nativeWorldBattlePlayer(game, f.owner).elites!.tanks, 2);
+  assert.ok(game.decision.options.every(o => o.normal === 0 && o.elite <= 2),
+    'The normal fee and two fee Cyborgs are not Suk casualties');
+  const choice = game.decision.options.findIndex(o => o.elite === 2 && o.kept?.kind === 'elite');
+  assert.ok(choice >= 0);
+  const event = game.decision.event;
+  game = applyAction(game, f.owner, { type: 'decision', event, choice });
+  game = advanceNativeWorldBattle(game, nativeWorldBattleFinished);
+  assert.equal(game.lastBattleContext!.winner, f.owner);
+  assert.deepEqual(game.lastBattleContext!.sukRescue!.physical, {
+    player: f.owner, territory: f.location, source: 'native-homeworld', saved: { normal: 0, elite: 2 },
+    kept: { key: f.location, kind: 'elite' }, destinations: {}, tanks: { normal: 0, elite: 0 },
+  });
+  assert.deepEqual(nativeWorldBattlePool(game, f.owner, f.location), { normal: 0, elite: 2 });
+  assert.deepEqual(combatArmy(game, f.owner, 'homeworld:tleilaxu'), { normal: 9, elite: 0 });
+  assert.equal(nativeWorldBattlePlayer(game, f.owner).tanks, 3);
+  assert.equal(nativeWorldBattlePlayer(game, f.owner).elites!.tanks, 2);
+  assert.equal(nativeWorldBattlePlayer(game, f.owner).battleLosses, 5);
+  assert.equal(game.discard.filter(c => c.id === REINFORCEMENTS_CARD).length, 1);
+  assert.ok(nativeWorldBattlePlayer(game, f.owner).hand.some(c => c.id === HARASS_WITHDRAW_CARD));
+  assertNativeWorldBattleInventory(game, f.afterSetup);
+});

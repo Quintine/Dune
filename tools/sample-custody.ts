@@ -4,7 +4,7 @@ import type { Game } from '../game/engine';
 import { richeseCards } from '../game/richese-cards';
 import { ecazTreacheryCards } from '../game/ecaz-cards';
 import { traitorDeck } from '../game/traitors';
-import { basicExpansionLeaderSkillsProfile } from '../game/leader-skill-profile';
+import { basicMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile } from '../game/leader-skill-profile';
 import { validateLeaderSkills } from '../game/leader-skills';
 import { ownedStrongholdCards, STRONGHOLD_CARDS } from '../game/stronghold-cards';
 
@@ -25,7 +25,8 @@ export function sampleInventory(game: Game) {
       .map((card) => card.id)
       .sort(),
     // The bounded Moritani preview has a separate public retired-card zone.
-    traitors: game.expansions.length && !basicExpansionLeaderSkillsProfile(game) &&
+    traitors: game.expansions.length && !(game.advanced === false &&
+      (basicMoritaniLeaderSkillsProfile(game) || selectedDeckLeaderSkillsProfile(game))) &&
       !game.moritaniAssassinatePreview
       ? null
       : traitorDeck(

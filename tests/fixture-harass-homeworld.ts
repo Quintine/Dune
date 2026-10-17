@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  applyAction, createGame, initializeEcazTreacheryGameForAudit, joinGame,
+  applyAction, createGame, initializeEcazTreacheryGameForAudit, initializeLeaderSkillsGameForAudit, joinGame,
   newPlayer, viewGame, type Action, type Game, type Player,
 } from '../game/engine';
 import { treacheryDeck } from '../game/cards';
@@ -13,11 +13,18 @@ import { nativeShipmentSources } from '../game/homeworld-options';
 import { homeworldShipmentChoice } from '../game/homeworld-shipment-options';
 import { finishHarassPreparation, takeHarassCard } from './fixture-harass-withdraw';
 import { nextStrongholdFactionsNativeStep } from './fixture-stronghold-factions';
+import { skillOfferRolls } from './fixture-independent-card-modules';
+import type { FactionId } from '../game/catalog';
+import type { LeaderSkillId } from '../game/leader-skill-cards';
 
 export const HARASS_HOMEWORLD_CARD = 'ecaz-harass-withdraw';
 export type HarassHomeworldStep = { actor: string; action: Action };
 export type HarassHomeworldOptions = {
   advanced?: boolean;
+  skills?: boolean;
+  training?: Partial<Record<FactionId, LeaderSkillId>>;
+  tech?: boolean;
+  strongholds?: boolean;
   slot?: 'weapon' | 'defense';
   role?: 'visitor' | 'native';
   /** Salusa is an Advanced own-World rejection case, not a second faction. */
@@ -84,7 +91,18 @@ export function actHarassHomeworld(game: Game, step: HarassHomeworldStep, action
 /** Never invent a plan, native vote or late-defense permission. */
 export function nextHarassHomeworldStep(game: Game): HarassHomeworldStep | null {
   if (!game.response && !game.phaseOpening) {
+    if (game.status === 'setup' && game.setupStage === 'leaderSkills') {
+      const actor = Object.keys(game.leaderSkills!.offers)[0], offer = game.leaderSkills!.offers[actor];
+      const own = viewGame(game, actor).leaderSkills!;
+      const skill = offer.cards.find(card => !own.unavailableSkills?.[card]), leader = own.eligibleLeaders[0];
+      assert.ok(skill && leader, 'Choose an original offered skill and eligible native disc');
+      return { actor, action: { type: 'leaderSkill', event: offer.event, skill, leader: leader.id } };
+    }
     const d = game.decision;
+    if (d?.kind === 'mentatQuestion' && d.stage === 'name')
+      return { actor: d.player, action: { type: 'decision', event: d.event, decline: true } };
+    if (d?.kind === 'leaderSkillVisibility')
+      return { actor: d.player, action: { type: 'leaderSkillVisibility', event: d.event, hide: true } };
     if (d?.kind === 'harassWithdraw') return null;
     if (d?.kind === 'homeworldDefense') return { actor: d.player, action: { type: 'decision', event: d.event, use: false } };
     if (d?.kind === 'homeworldExplosion') return { actor: d.player, action: { type: 'decision', event: d.event, choice: 0 } };
@@ -105,12 +123,23 @@ export function advanceHarassHomeworld(game: Game, until: (game: Game) => boolea
   }
   throw Error('Original Harass Homeworld programme did not reach its boundary');
 }
-function initialize(game: Game): Game {
+function initialize(game: Game, options: Pick<HarassHomeworldOptions, 'skills' | 'training'>): Game {
+  const rolls = options.skills ? skillOfferRolls(game, options.training) : [];
+  let cursor = 0;
   const descriptor = Object.getOwnPropertyDescriptor(crypto, 'getRandomValues');
   crypto.getRandomValues = <T extends ArrayBufferView | null>(array: T): T => {
-    assert.ok(array); new Uint8Array(array.buffer, array.byteOffset, array.byteLength).fill(255); return array;
+    assert.ok(array);
+    if (array instanceof Uint32Array && array.length === 1 && cursor < rolls.length) array[0] = rolls[cursor++];
+    else new Uint8Array(array.buffer, array.byteOffset, array.byteLength).fill(255);
+    return array;
   };
-  try { return initializeEcazTreacheryGameForAudit(game); }
+  try {
+    if (options.skills) {
+      game.ecazTreachery = true;
+      return initializeLeaderSkillsGameForAudit(game);
+    }
+    return initializeEcazTreacheryGameForAudit(game);
+  }
   finally {
     if (descriptor) Object.defineProperty(crypto, 'getRandomValues', descriptor);
     else Reflect.deleteProperty(crypto, 'getRandomValues');
@@ -134,11 +163,15 @@ export function createHarassHomeworldSetup(options: HarassHomeworldOptions = {})
     !game.discoveryEnabled && !game.discoveries && !game.greatMaker);
   if (!game.homeworlds) game = applyAction(game, game.host, { type: 'homeworlds', enabled: true });
   assert.deepEqual(game.homeworlds, { custody: null });
+  if (options.tech !== undefined && !!game.techTokens !== options.tech)
+    game = applyAction(game, game.host, { type: 'techTokens', enabled: options.tech });
+  if (options.strongholds !== undefined && !!game.strongholdCards !== options.strongholds)
+    game = applyAction(game, game.host, { type: 'strongholdCards', enabled: options.strongholds });
   const nativeSteps: HarassHomeworldStep[] = [];
   for (const p of game.players) if (!p.ready)
     game = actHarassHomeworld(game, { actor: p.id, action: { type: 'ready' } }, nativeSteps);
   const initial = structuredClone(game);
-  game = initialize(game);
+  game = initialize(game, options);
   const initialized = structuredClone(game);
   game = advanceHarassHomeworld(game, g => g.status === 'playing', nativeSteps);
   const owner = game.players.find(p => p.faction === 'emperor')!.id;

@@ -227,3 +227,32 @@ for (const advanced of [false, true]) {
     continueToShipment(game);
   });
 }
+
+void test('Advanced all14 native Tleilaxu keeps its unlimited return, accepted low-World invoice and separate own free income', () => {
+  const f = createNativeWorldRecruitsFixture({ advanced: true, skills: true, faction: 'tleilaxu',
+    training: { emperor: 'mentat', tleilaxu: 'swordmaster-of-ginaz', guild: 'spice-banker' } });
+  const active = applyAction(f.game, f.owner, play);
+  const returned = requestNativeWorldRecruits(active, f.native, 11);
+  assert.deepEqual({ price: returned.price, free: returned.free, wallet: returned.walletDelta },
+    { price: 5, free: 6, wallet: 4 });
+  assert.deepEqual(returned.nativeAfter, { normal: 11, elite: 0 });
+  assert.equal(nativeWorldRecruitsPlayer(returned.game, f.native).spice, 1);
+  assert.equal(nativeWorldRecruitsPlayer(returned.game, f.native).revived, 11);
+  assert.equal(nativeWorldRecruitsPlayer(returned.game, f.native).freeForcesRevived, 6);
+  assert.equal(nativeWorldRecruitsPlayer(returned.game, f.native).tanks, 9);
+  const current = viewGame(returned.game, f.native).revival;
+  assert.deepEqual({ limit: current.limit, remaining: current.forcesRemaining,
+    free: current.freeRemaining, bonus: current.homeworldBonus },
+  { limit: 20, remaining: 9, free: 0, bonus: 0 });
+  const receipt = returned.game.spiceBankerIncome!.sources.at(-1)!;
+  assert.equal(receipt.source.kind, 'force-revival');
+  assert.deepEqual(receipt.source.bankLegs, [{ payer: f.native, amount: 5 }],
+    'The actual paid invoice, not its net four-spice wallet delta, is the bank leg');
+  assert.equal(receipt.grant?.owner, 'guild');
+  const next = continueToShipment(returned.game);
+  assert.equal(nativeWorldRecruitsPlayer(next, f.native).spice, 1);
+  assert.equal(nativeWorldRecruitsPlayer(next, f.native).revived, 11);
+  assert.equal(nativeWorldRecruitsPlayer(next, f.native).freeForcesRevived, 6);
+  assert.equal(viewGame(next, 'guild').spiceBankerIncome!.deferred
+    .find(row => row.owner === 'guild')?.amount, 1, 'Banker is not paid at Revival end');
+});

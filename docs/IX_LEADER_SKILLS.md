@@ -1,24 +1,27 @@
 # Basic Ixians with Leader Skills
 
 Connected development prototype, 21 September 2026. Genuine Basic Ixian setup
-now supports the full fourteen-card Leader Skills deck, optionally alongside
-Tleilaxu and base factions. Public starts and completion/publication gates remain
-closed. Existing missing skill bands are not certified by this admission.
+supports all fourteen Skills; normal starts are labelled previews, while
+complete-mode/publication acceptance remains gated. The
+[17 October selected-deck/World cutover](LEADER_SKILLS_RUNTIME.md#world-skills-and-selected-decks--17-october-2026)
+supersedes the old single-family/no-module admission below, not printed powers.
 
 **4 October Advanced continuation:** native Ixians and/or CHOAM with classic
 opponents, distinct required family decks and all fourteen skills now compose
 under the [bounded native contract](LEADER_SKILLS_RUNTIME.md#advanced-native-ixian-and-choam-composition--4-october-2026).
 Advanced Ixian support, skilled Suk rescue and subsequent native substitution
-use original physical counters. Basic Tleilaxu admission below is unchanged;
-this Advanced subset does not admit foreign gholas or optional overlays.
+use original physical counters. Foreign-ghola revival remains Advanced-only
+under native Tleilaxu conditions; current optional scope follows17 October above.
 
 ## Setup and configuration
 
-Use Basic rules, exactly Ixians & Tleilaxu, two through six players including
-Ixians, and no other optional modules. The real private Ixian starting-card
-choice precedes simultaneous private skill offers, then public assignments,
-Traitors and native Face Dancers. The first Storm retains actual HMS placement
-and all seven cyborgs/thirteen suboids. No dealt card determines admission.
+Use Basic or Advanced2–6 with the selected Ix deck; other selected E1/E2 and
+classic seats follow the shared selected-deck contract. A native Ixian seat is
+not required merely to select its ordinary deck. Existing supported World,
+Tech/Advanced Strongholds and independent-card combinations use the canonical
+scope above. The real private Ixian starting-card choice still precedes skill
+offers/assignments, Traitors and Face Dancers; the first Storm retains actual
+HMS placement and all seven Cyborgs/thirteen Suboids.
 
 Create and ready a fresh local lobby, then follow the backed-up version-checked
 [prototype entry](IX_PROTOTYPE.md) using profile `leader-skills`.

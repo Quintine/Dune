@@ -10,11 +10,14 @@ import {
   recruitsHomeworldClean, recruitsHomeworldPlayer, type RecruitsHomeworldFixture, type RecruitsHomeworldStep,
 } from './fixture-recruits-homeworld';
 import { nextHarassHomeworldStep } from './fixture-harass-homeworld';
+import type { IndependentCardModulesOptions } from './fixture-independent-card-modules';
 
 export type WorldPhaseRecruitsOptions = {
   advanced?: boolean;
   strongholds?: boolean;
   seatIds?: readonly [string, string, string, string];
+  skills?: boolean;
+  training?: IndependentCardModulesOptions['training'];
 };
 
 export type WorldPhaseRecruitsFixture = {
@@ -72,7 +75,8 @@ export function createWorldPhaseRecruitsFixture(options: WorldPhaseRecruitsOptio
     return array;
   };
   let source: RecruitsHomeworldFixture;
-  try { source = createRecruitsHomeworldFixture({ advanced, initial: lobby, seatIds: ids }); }
+  try { source = createRecruitsHomeworldFixture({ advanced, initial: lobby, seatIds: ids,
+    skills: options.skills, training: options.training }); }
   finally {
     if (descriptor) Object.defineProperty(crypto, 'getRandomValues', descriptor);
     else Reflect.deleteProperty(crypto, 'getRandomValues');

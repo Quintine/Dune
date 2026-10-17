@@ -11,7 +11,10 @@ import {
   type RicheseReinforcementsStep,
 } from './fixture-richese-reinforcements';
 
-export type NativeWorldMarkerOptions = Omit<RicheseReinforcementsOptions, 'initial' | 'seatIds'>;
+export type NativeWorldMarkerOptions = Omit<RicheseReinforcementsOptions, 'initial' | 'seatIds'> & {
+  tech?: boolean;
+  strongholds?: boolean;
+};
 export type NativeWorldMarkerFixture = RicheseReinforcementsFixture & {
   /** Ready but undealt: the original initializer seam for controls/policies. */
   readyLobby: Game;
@@ -26,10 +29,12 @@ export type NativeWorldMarkerFixture = RicheseReinforcementsFixture & {
   };
 };
 
-/** Genuine selected-family World programme. Only the original initializer's
- * randomness is scoped. Basic low budgets come from two reveals, real Spice
- * Blow collection and an ordinary paid shipment over four turns. Advanced uses
- * its funded turn-one route, never a staged low budget or frozen later Storm.
+/** Genuine selected-family World programme, with optional all14 training and
+ * original Tech/Advanced Strongholds selected before the original initializer.
+ * Only that initializer's randomness is scoped. Basic low budgets come from
+ * two reveals, real Spice Blow collection and an ordinary paid shipment over
+ * four turns. Advanced uses its funded turn-one route, never a staged low budget
+ * or frozen later Storm.
  * The inherited staging log explicitly labels conserved physical card moves;
  * none of those moves is represented as a natural purchase. */
 export function createNativeWorldMarkerFixture(
@@ -39,8 +44,10 @@ export function createNativeWorldMarkerFixture(
   const selected = createIndependentCardModulesFixture({
     advanced: options.advanced ?? false,
     homeworlds: true,
-    tech: false,
-    strongholds: false,
+    tech: options.tech ?? false,
+    strongholds: options.strongholds ?? false,
+    skills: options.skills,
+    training: options.training,
     expansions: family === 'choam' ? ['choam'] : ['ix', 'choam'],
     factions: family === 'choam' ? ['richese', 'guild', 'atreides'] : ['richese', 'ixians', 'atreides'],
   });

@@ -233,17 +233,17 @@ function semutaLeaderSkillContext(game: LeaderSkillProfile): boolean {
     game.expansions.includes('choam') && !!game.players?.some(p => p.faction === 'richese');
 }
 
-/** E1/E2 native skills may add Tech and Advanced Strongholds; original roster/decks remain. */
-function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
+/** Selected ordinary decks retain original module envelopes; actual E3 seats are separate. */
+function selectedDeckLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   if (game.homeworlds) return homeworldLeaderSkillModulesSupported(game);
-  if (noOtherLeaderSkillModules(game) || pairedNexusLeaderSkillsProfile(game) ||
+  if (noOtherLeaderSkillModules(game) || independentTreacheryLeaderSkillsProfile(game) || pairedNexusLeaderSkillsProfile(game) ||
     singleE1E2NexusLeaderSkillsProfile(game) || mixedE1E2NexusLeaderSkillsProfile(game)) return true;
   if (game.discoveryEnabled || game.discoveries) return discoveryLeaderSkillModulesSupported(game);
   const players = game.players;
   if ((!game.techTokens && !game.strongholdCards) || !players ||
     players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
     (game.strongholdCards && game.advanced !== true) ||
-    game.expansions.length < 1 || game.expansions.length > 2 ||
+    game.expansions.length < 1 || game.expansions.length > 3 ||
     game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
     game.ecazTreachery || (game.semutaPreview && !semutaLeaderSkillContext(game)) ||
     game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview ||
@@ -251,7 +251,7 @@ function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
     game.nexusHarkonnenBetrayalPreview) return false;
   for (const expansion of game.expansions)
-    if (expansion !== 'ix' && expansion !== 'choam') return false;
+    if (expansion !== 'ix' && expansion !== 'choam' && expansion !== 'ecaz') return false;
   for (let i = 0; i < players.length; i++)
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
   return true;
@@ -303,7 +303,7 @@ export function classicTechLeaderSkillsProfile(game: LeaderSkillProfile): boolea
 export function strongholdLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (!game.strongholdCards || game.advanced !== true) return false;
   if (independentTreacheryLeaderSkillsProfile(game)) return true;
-  if (game.expansions.length) return advancedNativeLeaderSkillsProfile(game) ||
+  if (game.expansions.length) return selectedDeckLeaderSkillsProfile(game) ||
     advancedMoritaniLeaderSkillsProfile(game) || nativeEcazLeaderSkillsProfile(game);
   const players = game.players;
   if (!players || players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
@@ -386,102 +386,44 @@ export function nativeEcazLeaderSkillsProfile(game: LeaderSkillProfile): boolean
   return native;
 }
 
-/** Native Basic Tleilaxu, including Face Dancers; foreign gholas are Advanced. */
-export function basicTleilaxuLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  return game.advanced === false && game.expansions.length === 1 &&
-    game.expansions[0] === 'ix' && nativeLeaderSkillModulesSupported(game) &&
-    !!game.players?.some(player => player.faction === 'tleilaxu') &&
-    game.players.every(player => player.faction === 'tleilaxu' ||
-      FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
-}
 
-/** Basic Ixians, optionally with native Tleilaxu, keep the ordinary Ix inventories. */
-export function basicIxLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  return game.advanced === false && game.expansions.length === 1 &&
-    game.expansions[0] === 'ix' && nativeLeaderSkillModulesSupported(game) &&
-    !!game.players?.some(player => player.faction === 'ixians') &&
-    game.players.every(player => ['ixians', 'tleilaxu'].includes(player.faction) ||
-      FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
-}
-
-/** Basic CHOAM's ordinary leaders and economy; Auditor belongs to Advanced. */
-export function basicChoamLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  return game.advanced === false && game.expansions.length === 1 &&
-    game.expansions[0] === 'choam' && nativeLeaderSkillModulesSupported(game) &&
-    !!game.players?.some(player => player.faction === 'choam') &&
-    game.players.every(player => player.faction === 'choam' ||
-      FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
-}
-
-/** Native Basic Richese/CHOAM setup, without unrelated optional overlays. */
-export function basicRicheseLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+/** Base/E1/E2 seats with selected ordinary decks, Basic or Advanced; no faction prerequisite. */
+export function selectedDeckLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   const players = game.players;
-  if (game.advanced !== false || game.expansions.length !== 1 ||
-    game.expansions[0] !== 'choam' || !players || players.length < 2 || players.length > 6 ||
-    !nativeLeaderSkillModulesSupported(game) ||
-    (game.semutaPreview && !semutaLeaderSkillContext(game)) || game.moritaniAssassinatePreview ||
-    game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
-    game.guildBetrayalPreview || game.richeseBetrayalPreview ||
-    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
-    game.nexusHarkonnenBetrayalPreview) return false;
-  let native = false;
-  for (let i = 0; i < players.length; i++) {
-    const player = players[i];
-    for (let j = 0; j < i; j++) if (players[j].faction === player.faction) return false;
-    if (player.faction === 'richese') native = true;
-    else if (player.faction !== 'choam') {
-      let classic = false;
-      for (const faction of FACTIONS)
-        if (faction.id === player.faction && faction.expansion === 'base') { classic = true; break; }
-      if (!classic) return false;
-    }
-  }
-  return native;
-}
-
-export function basicExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  return basicMoritaniLeaderSkillsProfile(game) || basicTleilaxuLeaderSkillsProfile(game) ||
-    basicIxLeaderSkillsProfile(game) || basicChoamLeaderSkillsProfile(game) || basicRicheseLeaderSkillsProfile(game);
-}
-
-/** Source-clear Advanced native factions; optional decks never imply a seated faction. */
-export function advancedNativeLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  const players = game.players;
-  if (game.advanced !== true || !players || players.length < 2 || players.length > 6 ||
-    game.expansions.length < 1 || game.expansions.length > 2 ||
-    (game.expansions.length === 2 && game.expansions[0] === game.expansions[1]) ||
-    !nativeLeaderSkillModulesSupported(game) ||
+  if (typeof game.advanced !== 'boolean' || !players || players.length < 2 || players.length > 6 ||
+    game.expansions.length < 1 || game.expansions.length > 3 ||
+    !selectedDeckLeaderSkillModulesSupported(game) ||
     (game.semutaPreview && !semutaLeaderSkillContext(game)) ||
     game.moritaniAssassinatePreview || game.advancedPreview ||
     game.kullPreview || game.nexusKullPreview ||
     game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
     game.nexusHarkonnenBetrayalPreview) return false;
-  for (const expansion of game.expansions)
-    if (expansion !== 'ix' && expansion !== 'choam') return false;
-  let native = false;
+  for (let i = 0; i < game.expansions.length; i++) {
+    const expansion = game.expansions[i];
+    if (expansion !== 'ix' && expansion !== 'choam' && expansion !== 'ecaz') return false;
+    for (let j = 0; j < i; j++) if (game.expansions[j] === expansion) return false;
+  }
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
-    // Six seats at most: check prior seats without allocating per-rule quote sets.
     for (let j = 0; j < i; j++) if (players[j].faction === player.faction) return false;
-    if (player.faction === 'ixians' || player.faction === 'tleilaxu' ||
-      player.faction === 'choam' || player.faction === 'richese') {
-      if (!game.expansions.includes(player.faction === 'choam' || player.faction === 'richese' ? 'choam' : 'ix')) return false;
-      native = true;
-    } else {
-      let classic = false;
-      for (const faction of FACTIONS)
-        if (faction.id === player.faction && faction.expansion === 'base') { classic = true; break; }
-      if (!classic) return false;
-    }
+    let selected = false;
+    for (const faction of FACTIONS)
+      if (faction.id === player.faction) {
+        selected = faction.expansion === 'base' ||
+          ((faction.expansion === 'ix' || faction.expansion === 'choam') &&
+            game.expansions.includes(faction.expansion));
+        break;
+      }
+    if (!selected) return false;
   }
-  return native;
+  return true;
 }
 
 export function nativeExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   return (game.expansions.length > 0 && independentTreacheryLeaderSkillsProfile(game)) ||
     mixedE3NexusLeaderSkillsProfile(game) || mixedE1E2NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game) ||
-    basicExpansionLeaderSkillsProfile(game) || advancedNativeLeaderSkillsProfile(game) ||
+    basicMoritaniLeaderSkillsProfile(game) || selectedDeckLeaderSkillsProfile(game) ||
     advancedMoritaniLeaderSkillsProfile(game) || nativeEcazLeaderSkillsProfile(game);
 }
 
@@ -506,7 +448,7 @@ function homeworldLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
       !standaloneE3NexusLeaderSkillsProfile(game)) ||
     (game.discoveryEnabled !== true && (game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker)) ||
     (game.techTokens && players.length < 3) || (game.strongholdCards && !game.advanced) ||
-    game.ecazTreachery ||
+    (game.ecazTreachery && !independentTreacheryLeaderSkillsProfile(game)) ||
     game.semutaPreview || game.advancedPreview ||
     (game.moritaniAssassinatePreview && (!game.advanced || game.expansions.length !== 1 ||
       game.expansions[0] !== 'ecaz' || !players.some(player => player.faction === 'moritani'))) ||
@@ -535,18 +477,18 @@ export function homeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean 
 /** Independent cards with classic, selected E1/E2 or standalone/paired E3 all14 setup. */
 export function independentTreacheryLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   const e3 = game.expansions.length === 1 && game.expansions[0] === 'ecaz';
-  if (game.ecazTreachery !== true || game.expansions.length > 2 ||
+  if (game.ecazTreachery !== true || game.expansions.length > 3 ||
       typeof game.advanced !== 'boolean' || !game.players ||
       game.players.length < (game.techTokens ? 3 : 2) || game.players.length > 6 ||
       (game.strongholdCards && game.advanced !== true) ||
-      game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
+      game.nexusCards || game.discoveries || game.discoveryEnabled ||
       game.discoveryStash || game.greatMaker ||
       game.semutaPreview || game.advancedPreview ||
       game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
       game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
       game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
   for (let i = 0; i < game.expansions.length; i++) {
-    if (!e3 && game.expansions[i] !== 'ix' && game.expansions[i] !== 'choam') return false;
+    if (game.expansions[i] !== 'ix' && game.expansions[i] !== 'choam' && game.expansions[i] !== 'ecaz') return false;
     for (let j = 0; j < i; j++) if (game.expansions[j] === game.expansions[i]) return false;
   }
   const players = game.players;
@@ -562,9 +504,9 @@ export function independentTreacheryLeaderSkillsProfile(game: LeaderSkillProfile
       }
     if (!selected) return false;
   }
-  // Preserve the native Advanced Skills/Harkonnen and shared-Duke boundaries.
-  if (e3 && nativeE3 && game.advanced &&
-      players.some(player => player.faction === 'harkonnen')) return false;
+  // Actual E3 seats retain their one-family, non-World and Advanced Harkonnen boundaries.
+  if (nativeE3 && (!e3 || game.homeworlds ||
+      (game.advanced && players.some(player => player.faction === 'harkonnen')))) return false;
   if (game.moritaniAssassinatePreview && (!e3 || !game.advanced ||
       !players.some(player => player.faction === 'moritani'))) return false;
   return true;

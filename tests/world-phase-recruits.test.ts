@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import { ownedTech } from '../game/tech-tokens';
 import { RECRUITS_CARD_ID } from '../game/recruits';
-import { assertRecruitsHomeworldInventory } from './fixture-recruits-homeworld';
+import { advanceRecruitsHomeworld, assertRecruitsHomeworldInventory,
+  recruitsHomeworldClean } from './fixture-recruits-homeworld';
 import {
   createWorldPhaseRecruitsFixture, worldPhaseRecruitsNativePool as pool,
   worldPhaseRecruitsPlayer as player,
@@ -108,9 +109,12 @@ for (const options of cases) {
   });
 }
 
-void test('A bulk native low-population request locks its quoted seven, unlike the six separate typed returns', () => {
-  const f = createWorldPhaseRecruitsFixture();
-  const { fremen } = f.actors;
+void test('Advanced all14 Worlds + Tech + earned Strongholds: a bulk low-World seven differs from separate typed six through phase settlement', () => {
+  const f = createWorldPhaseRecruitsFixture({ advanced: true, strongholds: true, skills: true,
+    seatIds: ['world-emperor', 'world-fremen', 'world-atreides', 'world-guild'],
+    training: { emperor: 'swordmaster-of-ginaz', fremen: 'mentat',
+      atreides: 'warmaster', guild: 'spice-banker' } });
+  const { fremen, atreides, owner, guild } = f.actors;
   const bulk = applyAction(f.beforeFremen, fremen, { type: 'revive', amount: 7, elite: 0 });
   assert.equal(player(bulk, fremen).revived, 7);
   assert.equal(player(bulk, fremen).freeForcesRevived, 7);
@@ -120,5 +124,28 @@ void test('A bulk native low-population request locks its quoted seven, unlike t
   assert.deepEqual(pool(bulk, fremen), { normal: 9, elite: 0 });
   assert.equal(bulk.techTokens!.axlotl.spice, f.expected.income,
     'Another eligible bulk return cannot accrue a second payment in the same original phase');
+  assert.equal(player(f.afterReturns, fremen).revived, 6,
+    'The separate typed request crosses the native population threshold before its followup');
+  assert.equal(player(f.afterReturns, fremen).elites!.reserves, 1);
+  assert.equal(viewGame(f.afterTypedReturn, fremen).revival.eliteRemaining, 0);
+  rejectsUnchanged(f.afterTypedReturn, fremen, { type: 'revive', amount: 1, elite: 1 });
+  const next = advanceRecruitsHomeworld(bulk,
+    game => game.phase === 5 && recruitsHomeworldClean(game));
+  assert.equal(next.turn, 2);
+  assert.equal(player(next, fremen).revived, 7);
+  assert.equal(player(next, fremen).freeForcesRevived, 7);
+  assert.deepEqual(pool(next, fremen), { normal: 9, elite: 0 });
+  assert.equal(player(next, fremen).spice, player(f.beforeFremen, fremen).spice);
+  assert.equal(player(next, atreides).revived, 5);
+  assert.equal(player(next, atreides).freeForcesRevived, 4);
+  assert.equal(player(next, atreides).spice, player(f.game, atreides).spice - 2,
+    'Bulk free return and phase end do not refund the original paid reopening ledger');
+  assert.equal(next.techTokens!.axlotl.spice, 0);
+  assert.equal(next.techTokens!.axlotl.triggeredTurn, 2);
+  assert.equal(player(next, owner).spice, player(bulk, owner).spice + f.expected.income);
+  assert.equal(viewGame(next, guild).spiceBankerIncome!.deferred.length, 0,
+    'Free typed or bulk deposits and the two-spice invoice never qualify normal Banker');
+  assert.deepEqual(next.strongholdCards, f.game.strongholdCards);
+  assertRecruitsHomeworldInventory(next);
   assertRecruitsHomeworldInventory(bulk);
 });

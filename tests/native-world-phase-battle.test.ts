@@ -148,3 +148,72 @@ void test('Advanced original phase modules: native board-only Cyborg substitutio
     'The genuine native typed casualty decision precedes the separate substitution and Face Dance queues');
   assertNativeWorldBattleInventory(game, f.afterSetup);
 });
+
+void test('all14 earned Arrakeen funds actual Cyborg support while selected Suk rescues board losses before original Face Dance', () => {
+  const f = createNativeWorldPhaseBattleFixture({ skills: true, skilled: true, harass: false, support: 3,
+    training: { ixians: 'suk-graduate', tleilaxu: 'killer-medic', guild: 'sandmaster' } });
+  assert.equal(f.beforeFirstMentat.strongholdCards!.owners.arrakeen, null);
+  assert.equal(f.afterFirstMentat.strongholdCards!.owners.arrakeen, f.owner);
+  assert.equal(viewGame(f.game, f.owner).battle!.strongholdEffects[f.owner], 'arrakeen');
+  let game = advanceNativeWorldBattle(revealNativeWorldPhaseBattle(f), g => g.decision?.kind === 'sukRescue', [],
+    { casualties: { normal: 0, elite: 3 } });
+  assert.ok(game.decision?.kind === 'sukRescue');
+  assert.deepEqual(game.pendingSukRescue!.pool, [{ key: f.location, normal: 3, elite: 3 }]);
+  assert.deepEqual(game.pendingSukRescue!.losses, { normal: 0, elite: 3, paidNormal: 0, paidElite: 3 });
+  assert.equal(player(game, f.owner).spice, player(f.game, f.owner).spice - 1,
+    'Only the real earned Arrakeen benefit covers two of the three selected support');
+  assert.equal(player(game, f.owner).tanks, 3);
+  assert.equal(player(game, f.owner).elites!.tanks, 0);
+  assert.ok(game.decision.options.every(o => o.normal === 0), 'The three original native fee normals are not rescuable');
+  const choice = game.decision.options.findIndex(o => o.elite === 3 && o.kept?.key === f.location && o.kept.kind === 'elite');
+  assert.ok(choice >= 0);
+  game = applyAction(game, f.owner, { type: 'decision', event: game.decision.event, choice });
+  game = settleNativeWorldPhaseBattle(game, f);
+  assert.equal(game.decision?.kind, 'faceDance', 'The actual native spectator continuation resumes after Suk and card disposal');
+  assert.deepEqual(pool(game, f.owner, 'homeworld:ixians'), { normal: 4, elite: 3 });
+  assert.deepEqual(combatArmy(game, f.owner, 'arrakeen'), { normal: 3, elite: 1 });
+  assert.equal(game.lastBattleContext!.sukRescue!.physical!.source, 'arrakis');
+  assert.deepEqual(game.lastBattleContext!.sukRescue!.physical!.destinations,
+    { 'homeworld:ixians': { normal: 0, elite: 2 } });
+  const done = finishNativeWorldPhaseBattle(game, f);
+  assert.equal(done.lastBattleContext!.winner, f.owner);
+  assert.equal(done.lastBattleContext!.sukRescue!.completed, true);
+  assert.equal(player(done, f.owner).tanks, 3);
+  assert.equal(player(done, f.owner).elites!.tanks, 0);
+  assert.equal(player(done, f.owner).battleLosses, 6);
+  assert.equal(done.discard.filter(c => c.id === REINFORCEMENTS_CARD).length, 1);
+  assert.equal(done.strongholdCards!.owners.arrakeen, f.owner);
+  assert.ok(done.techTokens);
+  assertNativeWorldBattleInventory(done, f.afterSetup);
+});
+
+void test('Basic all14 visitor Suk keeps the only committed Cyborg before native Face Dance returns it and kills the trained disc', () => {
+  const f = createNativeWorldPhaseForeignBattleFixture({ advanced: false, skills: true, skilled: true, typedAftercare: true,
+    training: { ixians: 'suk-graduate', tleilaxu: 'killer-medic', guild: 'sandmaster' } });
+  assert.equal(viewGame(f.game, f.owner).battle!.strongholdEffects[f.owner], null);
+  let game = advanceNativeWorldBattle(revealNativeWorldBattle(f), g => g.decision?.kind === 'sukRescue', [],
+    { casualties: { normal: 0, elite: 1 } });
+  assert.ok(game.decision?.kind === 'sukRescue');
+  assert.deepEqual(game.pendingSukRescue!.losses, { normal: 0, elite: 1, paidNormal: 0, paidElite: 0 });
+  assert.equal(player(game, f.owner).tanks, 3);
+  assert.equal(player(game, f.owner).elites!.tanks, 2);
+  const choice = game.decision.options.findIndex(o => o.elite === 1 && o.kept?.key === f.location && o.kept.kind === 'elite');
+  assert.ok(choice >= 0);
+  game = applyAction(game, f.owner, { type: 'decision', event: game.decision.event, choice });
+  game = advanceNativeWorldBattle(game, g => g.decision?.kind === 'faceDance');
+  assert.equal(game.pendingIxSubstitution, undefined, 'The single board Cyborg was saved, while the two fee Cyborgs cannot supply substitution');
+  assert.deepEqual(combatArmy(game, f.owner, f.location), { normal: 9, elite: 1 });
+  assert.equal(game.decision!.player, f.opponent);
+  assert.equal(game.discard.filter(c => c.id === REINFORCEMENTS_CARD).length, 1);
+  game = applyAction(game, f.opponent, { type: 'decision', reveal: true, sources: {} });
+  game = advanceNativeWorldBattle(game, nativeWorldBattleFinished);
+  assert.deepEqual(combatArmy(game, f.owner, f.location), { normal: 0, elite: 0 });
+  assert.deepEqual(pool(game, f.owner, 'homeworld:ixians'), { normal: 9, elite: 2 });
+  assert.equal(player(game, f.owner).tanks, 3);
+  assert.equal(player(game, f.owner).elites!.tanks, 2);
+  assert.equal(player(game, f.owner).leaders.find(l => l.id === f.planActions[0].action.leader)!.dead, true);
+  assert.ok(!game.leaderSkills!.assignments.some(a => a.leader === f.planActions[0].action.leader));
+  assert.equal(game.leaderSkills!.deck.filter(skill => skill === 'suk-graduate').length, 1,
+    'Original native Face Dance death returns the singleton trained card instead of retaining a dead assignment');
+  assertNativeWorldBattleInventory(game, f.afterSetup);
+});

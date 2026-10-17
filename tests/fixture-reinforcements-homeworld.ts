@@ -7,6 +7,7 @@ import { nativeShipmentSources } from '../game/homeworld-options';
 import { homeworldShipmentChoice } from '../game/homeworld-shipment-options';
 import { REINFORCEMENTS_CARD } from '../game/reinforcements';
 import { takeHarassCard } from './fixture-harass-withdraw';
+import type { IndependentCardModulesOptions } from './fixture-independent-card-modules';
 import {
   actHarassHomeworld, advanceHarassHomeworld, assertHarassHomeworldCustody,
   createHarassHomeworldSetup, harassHomeworldClean, harassHomeworldPlayer,
@@ -21,6 +22,12 @@ export type ReinforcementsHomeworldStep = HarassHomeworldStep;
 export type ReinforcementsHomeworldOptions = {
   advanced?: boolean;
   initial?: Game;
+  skills?: boolean;
+  training?: IndependentCardModulesOptions['training'];
+  tech?: boolean;
+  strongholds?: boolean;
+  /** Use the genuinely assigned trainer after the original visibility choice. */
+  skilled?: boolean;
   seatIds?: [string, string, string];
   role?: 'visitor' | 'native';
   secondary?: boolean;
@@ -148,9 +155,13 @@ export function createReinforcementsHomeworldFixture(
     takeHarassCard(game, setup.owner, laser); takeHarassCard(game, setup.opponent, shield);
   }
   staging.push('Return original hands to undealt stock, then conserve the physical Reinforcements and (explosion only) Lasgun/Shield into their owners’ hands; no card is manufactured.');
-  const living = (actor: string) => harassHomeworldPlayer(game, actor).leaders.filter(l => !l.dead && !l.usedAt)
+  const living = (actor: string) => harassHomeworldPlayer(game, actor).leaders.filter(l => !l.dead && !l.usedAt &&
+    (!game.leaderSkills?.assignments.some(a => a.owner === actor && a.leader === l.id) || actor === setup.owner && options.skilled))
     .sort((a, b) => a.strength - b.strength || a.id.localeCompare(b.id));
-  const ownLeader = outcome === 'win' ? living(setup.owner).at(-1)! : living(setup.owner)[0];
+  const trainer = options.skilled ? game.leaderSkills?.assignments.find(a => a.owner === setup.owner) : null;
+  assert.ok(!options.skilled || trainer, 'Select Skills before native setup to use its real trainer');
+  const ownLeader = trainer ? living(setup.owner).find(l => l.id === trainer.leader)!
+    : outcome === 'win' ? living(setup.owner).at(-1)! : living(setup.owner)[0];
   const otherLeader = outcome === 'win' ? living(setup.opponent)[0] : living(setup.opponent).at(-1)!;
   if (outcome === 'traitor') conserveTraitor(game, native,
     native === setup.owner ? otherLeader.id : ownLeader.id, staging);
@@ -161,7 +172,13 @@ export function createReinforcementsHomeworldFixture(
     action: { type: 'chooseBattle', territory: location,
       target: battleChoice.attacker === battleChoice.chooser ? battleChoice.defender : battleChoice.attacker } };
   act(battleStep);
-  reach(g => !!g.battle && harassHomeworldClean(g) && !g.battle.preparation && g.battle.preLeader?.closed !== false);
+  for (let n = 0; n < 300; n++) {
+    if (game.battle && harassHomeworldClean(game) && !game.battle.preparation && game.battle.preLeader?.closed !== false) break;
+    const step = nextHarassHomeworldStep(game); assert.ok(step, 'Complete the original battle preparation');
+    if (step.action.type === 'leaderSkillVisibility') step.action.hide = step.actor === setup.owner && !!options.skilled;
+    act(step);
+  }
+  assert.ok(game.battle && harassHomeworldClean(game) && !game.battle.preparation && game.battle.preLeader?.closed !== false);
   assert.equal(Object.keys(game.battle!.plans).length, 0);
   const sources = structuredClone(options.sources ?? reinforcementsHomeworldSources());
   const dial = options.ownerDial ?? (role === 'visitor' || outcome === 'win' ? 2 : 0);
