@@ -7,6 +7,33 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Standalone E3 independent cards — 17 October 2026
+
+Fresh native Ecaz OR Moritani/classic all14 Skills now also admits independent
+Recruits, Reinforcements and Harass & Withdraw, Basic/Advanced2–6, exact ecaz36
+and no other modules. The shared independent/native capability feeds setup,
+card previews, skill effects, ordinary bankers and legal AI. Original native
+offers, five assignment discs, Loyalty/Traitors and starting forces remain;
+Advanced Harkonnen, E3 pairs/mixed families and shared-Duke training stay guarded.
+
+Ecaz retains real allied Arrakis lead selection and separate fixed/variable
+armies. Advanced Moritani keeps skill-first winner outcomes, printed unused-disc
+assassination and one actual Mentat replacement; Basic does not gain that power.
+Card fees/returns and existing provisional timing/Basic rounding do not change.
+No played-save conversion or complete-mode acceptance follows.
+
+Frozen25-file274/274, types/lint/build and genuine native programmes pass.
+Ecaz fee/withdrawal/Suk reaches Collection; Moritani unused-disc assassination,
+one skill return, winner disposal and one Mentat replacement stay physical.
+Four policies choose legal native leads and assassination cards. Actual390px
+normal Moritani entry completes training/Traitors/native6 into Storm without
+errors/overflow. A discovered Mentat hand-validation deadlock is also fixed:
+selected independent Specials are valid private fallback disclosures, never
+nameable weapons. Normal/trained question continuations retain actual custody.
+
+[Card-source scope](ECAZ_TREACHERY_RULES.md#standalone-e3-leader-skills-composition--17-october-2026).
+
+
 ## Native independent Treachery composition — 17 October 2026
 
 Fresh all14 Skills with the independent Ecaz cards now admits original selected

@@ -1,9 +1,36 @@
 # Moritani with Leader Skills
 
-Connected development prototype, 21 September 2026. Basic rules, Moritani and
-two through six total seats with base-faction opponents now use the full
-fourteen-card Leader Skills deck. Public starts and publication remain gated;
-this integrates existing effects, not complete Leader Skills compliance.
+Connected development prototype, updated 17 October 2026. Supported standalone
+Moritani/classic Basic/Advanced two–six-seat profiles use all fourteen physical
+Leader Skills. Normal-lobby access is a labelled preview; original roster and
+module guards remain, and complete rules/publication acceptance is unfinished.
+
+## Independent Treachery composition — 17 October 2026
+
+Fresh standalone Moritani/classic all14 Skills now retains the independent
+Recruits, Reinforcements and Harass & Withdraw variant, Basic/Advanced2–6,
+without other modules. Original36-card setup, five eligible assignment discs,
+private offers, Traitors and six-force placement remain. Advanced initializes
+the native assassination advantage; Basic does not. The original Advanced
+Harkonnen, shared-Duke, mixed-family and paired-E3 Skills guards remain.
+
+Card fees/returns and winner skills continue before native assassination.
+The fee is three card-user reserves, never rescued battle dial; a successful
+Harass returns only that user's actual undialed forces. An eligible unused
+opposing trained disc returns its skill once on assassination, pays printed
+bounty and retains the original single Mentat replacement. Source timing
+interpretations remain provisional as documented in the card contracts.
+
+Evidence: `tests/fixture-moritani-independent-skills.ts` and
+`tests/moritani-independent-skills-runtime.test.ts`. The genuine normal-start
+programme pays the native fee, returns exact sectors, loses, reveals unused
+Master Bewt3, returns his trained skill once and draws one replacement at
+actual Mentat. Four real policies choose that same legal card. Basic resolves
+without assassination; plain no-card/no-Skills Harkonnen retains printed4 and
+native capture. Frozen25-file274/274, types/lint/build and actual390px original
+module setup pass. Conserved hands/Traitors and scoped entropy are labelled;
+no full-game, calibration, deployed or played-save assurance claim follows.
+
 
 ## Standalone module composition — 4 October 2026
 

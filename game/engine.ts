@@ -8581,14 +8581,18 @@ function moritaniAssassinateModeSupported(g: Game) {
     return g.advanced && !!g.discoveries &&
       (discoveryModeSupported(g) || nativeDiscoveryLeaderSkillsProfile(g)) &&
       g.players.some(player => player.faction === 'moritani');
-  return g.advanced && g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
+  return g.advanced && g.expansions.includes('ecaz') && g.expansions.length <= 3 &&
+    g.expansions.every((id, index) => (id === 'ix' || id === 'choam' || id === 'ecaz') &&
+      g.expansions.indexOf(id) === index) &&
     g.players.some(p => p.faction === 'moritani') &&
-    g.players.every(p => p.faction === 'moritani' || (p.faction !== 'harkonnen' && CLASSIC_FACTIONS[p.faction] === true)) &&
+    g.players.every(p => FACTIONS.some(f => f.id === p.faction &&
+      (f.expansion === 'base' || g.expansions.includes(f.expansion)))) &&
     (!g.nexusCards || (!!g.leaderSkills && standaloneE3NexusLeaderSkillsProfile(g))) &&
     (!g.leaderSkills || advancedMoritaniLeaderSkillsProfile(g)) &&
     (!g.strongholdCards || e3StrongholdFactionProfile(g) ||
       (!!g.leaderSkills && strongholdLeaderSkillsProfile(g))) &&
-    (!g.homeworlds || (!!g.leaderSkills && homeworldLeaderSkillsProfile(g))) &&
+    (!g.homeworlds || g.homeworldOccupationPreview === true ||
+      (!!g.leaderSkills && homeworldLeaderSkillsProfile(g))) &&
     !g.discoveryEnabled && !g.discoveries &&
     (!g.techTokens || nativeFactionTechProfile(g) || (!!g.leaderSkills && nativeTechLeaderSkillsProfile(g)));
 }
@@ -9592,6 +9596,7 @@ export function initializeHomeworldOccupationGameForAudit(state: Game, leaderSki
     g.homeworldEcazVictoryPreview = true;
     g.ecazOccupyPreview = true;
   }
+  if (moritaniAssassinateModeSupported(g)) initializeMoritaniAssassinateState(g);
   return g;
 }
 /** Shared classic/supported-native Nexus setup; existing composition guards apply. */
@@ -10513,8 +10518,8 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
     'The faction prototype excludes other optional modules; Tech Tokens require a supported native three-through-six-seat lobby.');
   requireFreshFactionInventory(state);
   const initialized = initializeSetupGameForAudit(state, false, false, false, false, false, false, true);
-  if (initialized.advanced && nativeFactionTechProfile(initialized) && byFaction(initialized, 'moritani'))
-    initializeMoritaniAssassinateState(initialized);
+  if (byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
+  if (moritaniAssassinateModeSupported(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
 }
 function ecazOccupyCompositionSupported(g: Game): boolean {
@@ -10541,7 +10546,7 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
     g.expansions.every(id => ['ecaz', 'ix', 'choam'].includes(id)) &&
     new Set(g.expansions).size === g.expansions.length &&
     (g.advanced || (g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
-      !g.ecazTreachery && g.players.every(p => p.faction === 'ecaz' ||
+      g.players.every(p => p.faction === 'ecaz' ||
         p.faction === 'moritani' || CLASSIC_FACTIONS[p.faction]))) &&
     g.players.length >= 2 && g.players.length <= 6 &&
     g.players.some(p => p.faction === 'ecaz') &&
@@ -10557,11 +10562,12 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
 /** Fresh native Occupy profile; Basic odd counts use the main printed rule provisionally. */
 export function initializeEcazOccupyGameForAudit(state: Game): Game {
   requireRule(ecazOccupyCompositionSupported(state),
-    'Occupy requires supported native factions and their distinct selected decks; Basic uses Ecaz/classic/optional Moritani without optional modules.');
+    'Occupy requires supported native factions and their selected decks; Basic uses Ecaz/classic/optional Moritani and may include the independent cards.');
   requireFreshBaseRuntime(state);
   requireFreshFactionInventory(state);
   const g = initializeSetupGameForAudit(state, false, false, false, false, false, false, true, state.ecazTreachery === true);
   g.ecazOccupyPreview = true;
+  if (moritaniAssassinateModeSupported(g)) initializeMoritaniAssassinateState(g);
   return g;
 }
 /** Original E1/E2 Stronghold roster; shared by fresh setup and Semuta validation. */
@@ -10611,14 +10617,13 @@ function initializeMoritaniAssassinateState(g: Game): void {
   g.moritaniAssassinate = {version:1,owner:byFaction(g,'moritani')!.id,normalTraitorCall:false,opportunities:[]};
   g.moritaniAssassinateCallEvents = [];
 }
-/** Genuine, explicitly opted-in preview; no player action enables this profile. */
+/** Focused fresh native Moritani entry through the same printed-power setup. */
 export function initializeMoritaniAssassinateGameForAudit(state: Game): Game {
   requireRule(!state.moritaniAssassinatePreview && !state.moritaniAssassinate && !state.moritaniAssassinateResume && !state.moritaniAssassinateCallEvents,
     'The assassination preview starts only from a fresh lobby.');
-  requireRule(moritaniAssassinateModeSupported(state), 'The assassination preview needs Advanced Moritani with ordinary base opponents except Harkonnen, the Ecaz expansion and no optional modules.');
-  const g = initializeFactionExpansionsGameForAudit(state);
-  initializeMoritaniAssassinateState(g);
-  return g;
+  requireRule(moritaniAssassinateModeSupported(state),
+    'Assassination requires Advanced Moritani in a supported selected native roster and module composition.');
+  return initializeFactionExpansionsGameForAudit(state);
 }
 /** Development-only Semuta with original native modules/skills, separate bounded
  * Homeworld occupation, or Basic Moritani/E3. Public starts stay gated. */
@@ -10703,7 +10708,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const homeworlds = homeworldLeaderSkillsProfile(state);
   const independent = independentTreacheryLeaderSkillsProfile(state);
   if (state.ecazTreachery) {
-    requireRule(independent, 'Independent Treachery with Leader Skills requires a fresh classic or selected Ix/CHOAM lobby without other modules.');
+    requireRule(independent, 'Independent Treachery with Leader Skills requires a fresh classic, selected Ix/CHOAM or standalone Ecaz/Moritani lobby without other modules.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -10733,19 +10738,19 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   if ((nativeEcazLeaderSkillsProfile(initialized) || mixedE3 || homeworlds || nativeDiscoveryLeaderSkillsProfile(initialized) || pairedE3) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   return initialized;
 }
-/** Independent cards keep the actual selected base/E1/E2 physical families. */
+/** Independent cards keep every selected native family's physical counters. */
 function independentCardRoster(g: Game): boolean {
-  if (g.expansions.length > 2 ||
-      (g.expansions.length === 2 && g.expansions[0] === g.expansions[1]) ||
-      g.expansions.some(expansion => expansion !== 'ix' && expansion !== 'choam')) return false;
+  if (g.expansions.length > 3 || g.expansions.some((expansion, index) =>
+      (expansion !== 'ix' && expansion !== 'choam' && expansion !== 'ecaz') ||
+      g.expansions.indexOf(expansion) !== index)) return false;
   return g.players.every(player => {
     const family = faction(player.faction).expansion;
-    return family === 'base' || ((family === 'ix' || family === 'choam') && g.expansions.includes(family));
+    return family === 'base' || g.expansions.includes(family);
   });
 }
 function ecazHomeworldProfile(g: Game): boolean {
   return !!g.homeworlds && g.ecazTreachery === true && independentCardRoster(g) &&
-    g.players.length >= 2 && g.players.length <= 6 &&
+    !g.expansions.includes('ecaz') && g.players.length >= 2 && g.players.length <= 6 &&
     !g.nexusCards && !g.leaderSkills &&
     ((!g.techTokens && !g.strongholdCards) || independentCardModulesProfile(g)) &&
     !g.discoveryEnabled && !g.discoveries && !g.discoveryStash && !g.greatMaker && !g.sandtrout &&
@@ -10756,7 +10761,7 @@ function ecazHomeworldProfile(g: Game): boolean {
 }
 /** Independent cards compose original phase modules, not unrelated previews. */
 function independentCardModulesProfile(g: Game): boolean {
-  if (!g.ecazTreachery || (!g.techTokens && !g.strongholdCards) || !independentCardRoster(g) ||
+  if (!g.ecazTreachery || (!g.techTokens && !g.strongholdCards) || !independentCardRoster(g) || g.expansions.includes('ecaz') ||
       g.players.length < (g.techTokens ? 3 : 2) || g.players.length > 6 ||
       (g.strongholdCards && !g.advanced) ||
       g.nexusCards || g.leaderSkills ||
@@ -10775,7 +10780,10 @@ export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   const homeworlds = !!g.homeworlds;
   requireRule(!homeworlds || ecazHomeworldProfile(g),
     'Independent cards with Homeworlds need a fresh classic or selected Ix/CHOAM roster with only original Tech or Advanced Strongholds.');
-  return initializeSetupGameForAudit(g, homeworlds, false, false, false, false, false, true, true);
+  const initialized = initializeSetupGameForAudit(g, homeworlds, false, false, false, false, false, true, true);
+  if (byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
+  if (moritaniAssassinateModeSupported(initialized)) initializeMoritaniAssassinateState(initialized);
+  return initialized;
 }
 function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false, factions = false, ecazTreachery = false, strongholdFactions = false): Game {
   nexusCardsIntegrity(state);
@@ -12836,7 +12844,7 @@ function createMentatQuestion(g: Game) {
   const event = crypto.randomUUID();
   const receipt: MentatQuestionReceipt = {event,battle:b.event!,turn:g.turn,territory:b.territory,
     owner,target,leader:trained.leader,stage:'name',weapon:null,card:null,
-    hand:mentatRule(() => mentatHand(getPlayer(g,target).hand,g.expansions)),signature:''};
+    hand:mentatRule(() => mentatHand(getPlayer(g,target).hand,g.expansions,g.ecazTreachery === true)),signature:''};
   if (!receipt.hand.length) {receipt.stage = 'unavailable';log(g,MENTAT_EMPTY_HAND,{faction:getPlayer(g,owner).faction,name:'Mentat'});}
   receipt.signature = mentatSignature(receipt);
   b.mentatQuestion = receipt;
@@ -12857,7 +12865,7 @@ function mentatQuestionIntegrity(g: Game) {
       g.players.some(p => p.id === observation.owner && p.leaders.some(l => l.id === observation.leader)) &&
       mentatWeaponNames(g.expansions).includes(observation.weapon) && observation.signature === mentatSignature(observation),
       'The saved Mentat observation changed its question, audience or event.');
-    mentatRule(() => mentatHand([observation.card],g.expansions));
+    mentatRule(() => mentatHand([observation.card],g.expansions,g.ecazTreachery === true));
   }
   const b = g.battle, receipt = b?.mentatQuestion;
   const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'mentatQuestion');
@@ -12874,7 +12882,7 @@ function mentatQuestionIntegrity(g: Game) {
     [b.attacker,b.defender].includes(receipt.owner) && [b.attacker,b.defender].includes(receipt.target) && receipt.owner !== receipt.target &&
     receipt.signature === mentatSignature(receipt),
     'The saved Mentat question changed its battle, audience or original event.');
-  mentatRule(() => mentatHand(receipt.hand,g.expansions));
+  mentatRule(() => mentatHand(receipt.hand,g.expansions,g.ecazTreachery === true));
   requireRule(['name','reveal','answered','declined','unavailable'].includes(receipt.stage), 'The saved Mentat question has an invalid stage.');
   requireRule(receipt.stage === 'unavailable' ? receipt.hand.length === 0 : receipt.hand.length > 0,
     'The saved Mentat opportunity changed its empty-hand boundary.');
@@ -12882,7 +12890,7 @@ function mentatQuestionIntegrity(g: Game) {
     requireRule(receipt.weapon === null && receipt.card === null, 'The unasked Mentat question cannot contain an answer.');
   else {
     requireRule(typeof receipt.weapon === 'string', 'The saved Mentat weapon question is missing.');
-    const quote = mentatRule(() => quoteMentatReveal(receipt.hand,receipt.weapon!,g.expansions));
+    const quote = mentatRule(() => quoteMentatReveal(receipt.hand,receipt.weapon!,g.expansions,g.ecazTreachery === true));
     requireRule(receipt.stage === 'reveal' ? receipt.card === null :
       receipt.card && quote.cards.some(card => JSON.stringify(card) === JSON.stringify(receipt.card)),
       'The saved Mentat disclosure does not answer its exact original question.');
@@ -12919,7 +12927,7 @@ function projectedMentat(g: Game, viewer: string): MentatView {
     player:pending.stage === 'name' ? pending.owner : pending.target,stage:pending.stage as 'name'|'reveal',weapon:pending.weapon,
     weapons:pending.stage === 'name' && viewer === pending.owner && pending.hand.length ? mentatWeaponNames(g.expansions) : [],
     cards:pending.stage === 'reveal' && viewer === pending.target ?
-      mentatRule(() => quoteMentatReveal(pending.hand,pending.weapon!,g.expansions)).cards : [],
+      mentatRule(() => quoteMentatReveal(pending.hand,pending.weapon!,g.expansions,g.ecazTreachery === true)).cards : [],
     blocked:pending.stage === 'name' && !pending.hand.length ? MENTAT_EMPTY_HAND : null} : null,
     history:(g.mentatHistory ?? []).filter(observation => [observation.owner,observation.target].includes(viewer))
       .map(({signature: _signature,...observation}) => structuredClone(observation))};
@@ -12935,7 +12943,7 @@ function actMentatQuestion(g: Game, decision: Extract<Decision,{kind:'mentatQues
     } else {
       requireRule(Object.keys(action).every(key => ['type','event','weapon'].includes(key)), 'Name only one specific Mentat weapon.');
       const weapon = stringField(action.weapon);
-      mentatRule(() => quoteMentatReveal(receipt.hand,weapon,g.expansions));
+      mentatRule(() => quoteMentatReveal(receipt.hand,weapon,g.expansions,g.ecazTreachery === true));
       receipt.weapon = weapon;
       log(g,`${getPlayer(g,receipt.owner).name} asked ${getPlayer(g,receipt.target).name} about ${weapon} with Mentat. The card shown is private and need not be played.`);
       // Every question uses the same target-owned response, so public timing
@@ -12944,7 +12952,7 @@ function actMentatQuestion(g: Game, decision: Extract<Decision,{kind:'mentatQues
     }
   } else {
     requireRule(Object.keys(action).every(key => ['type','event','card'].includes(key)), 'Show exactly one held Treachery Card for Mentat.');
-    const quote = mentatRule(() => quoteMentatReveal(receipt.hand,receipt.weapon!,g.expansions));
+    const quote = mentatRule(() => quoteMentatReveal(receipt.hand,receipt.weapon!,g.expansions,g.ecazTreachery === true));
     const card = quote.cards.find(card => card.id === action.card);
     requireRule(card, 'Choose a held card that answers this Mentat question.');
     receipt.card = {...card}; receipt.stage = 'answered';
@@ -13845,7 +13853,7 @@ function combinedCardBattleBlock(g: Game): string | null {
     (battle.attacker === ecaz.id || battle.defender === ecaz.id ||
       battle.attacker === ally.id || battle.defender === ally.id) &&
     fighterCount(ecaz, battle.territory) > 0 && fighterCount(ally, battle.territory) > 0)
-    return 'Combined card armies require the supported Advanced Occupy battle profile.';
+    return 'Combined card armies require the supported native Occupy battle profile.';
   return null;
 }
 function reinforcementsModeSupported(g: Game) {
@@ -13937,7 +13945,7 @@ function recruitsPlayBlock(g: Game, owner: Player, card: Card): string | null {
   if (!g.ecazTreachery || !ecazTreacheryDefinition(card) || card.id !== RECRUITS_CARD_ID)
     return 'Choose the physical Recruits card from the enabled Ecaz Treachery Cards variant.';
   if (!recruitsModeSupported(g))
-    return 'Recruits requires a supported independent-card profile: faction-only, classic all14 Skills without other modules, or the existing native Homeworld and phase-module compositions.';
+    return 'Recruits requires a supported independent-card profile: faction-only, supported all14 Skills without other modules, or the existing native Homeworld and phase-module compositions.';
   if (g.status !== 'playing' || g.phase !== 4)
     return 'Play Recruits during Revival.';
   if (g.recruits?.turn === g.turn)

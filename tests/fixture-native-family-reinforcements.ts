@@ -14,7 +14,7 @@ export type NativeFamilyReinforcementsStep = { actor: string; action: Action };
 export type NativeFamilyReinforcementsOptions = {
   faction?: 'ixians' | 'tleilaxu' | 'choam';
   advanced?: boolean;
-  expansions?: ('ix' | 'choam')[];
+  expansions?: ('ix' | 'choam' | 'ecaz')[];
   slot?: 'weapon' | 'defense';
   outcome?: 'winner' | 'loser' | 'traitor' | 'explosion';
   /** Nine legally paid suboids leave one suboid and four cyborgs in reserve. */
@@ -98,7 +98,7 @@ export function createNativeFamilyReinforcementsFixture(
 ): NativeFamilyReinforcementsFixture {
   const faction = options.faction ?? 'ixians', advanced = options.advanced ?? options.initial?.advanced ?? false;
   const expansions = options.expansions ?? options.initial?.expansions ?? [faction === 'choam' ? 'choam' : 'ix'];
-  assert.ok(expansions.length > 0 && expansions.every(id => id === 'ix' || id === 'choam'));
+  assert.ok(expansions.length > 0 && expansions.every(id => id === 'ix' || id === 'choam' || id === 'ecaz'));
   assert.equal(new Set(expansions).size, expansions.length);
   assert.ok(expansions.includes(faction === 'choam' ? 'choam' : 'ix'));
   assert.ok(!options.mixedFee || faction === 'ixians');

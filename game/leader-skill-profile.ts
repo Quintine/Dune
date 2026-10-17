@@ -241,8 +241,8 @@ function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
 /** Standalone E3 native predicates retain their own roster, Duke and assassination limits. */
 function e3LeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   if (game.homeworlds) return homeworldLeaderSkillModulesSupported(game);
-  if (noOtherLeaderSkillModules(game) || standaloneE3NexusLeaderSkillsProfile(game) ||
-    pairedE3NexusLeaderSkillsProfile(game)) return true;
+  if (noOtherLeaderSkillModules(game) || independentTreacheryLeaderSkillsProfile(game) ||
+    standaloneE3NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game)) return true;
   if (game.discoveryEnabled || game.discoveries) return discoveryLeaderSkillModulesSupported(game);
   const players = game.players;
   if ((!game.techTokens && !game.strongholdCards) || !players ||
@@ -508,32 +508,40 @@ export function homeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean 
   return true;
 }
 
-/** Independent utility cards with original classic or selected E1/E2 all14 setup. */
+/** Independent cards with classic, selected E1/E2 or standalone E3 all14 setup. */
 export function independentTreacheryLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  const e3 = game.expansions.length === 1 && game.expansions[0] === 'ecaz';
   if (game.ecazTreachery !== true || game.expansions.length > 2 ||
       typeof game.advanced !== 'boolean' || !game.players ||
       game.players.length < 2 || game.players.length > 6 ||
       game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
       game.discoveryStash || game.greatMaker || game.techTokens || game.strongholdCards ||
-      game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview ||
+      game.semutaPreview || game.advancedPreview ||
       game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
       game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
       game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
   for (let i = 0; i < game.expansions.length; i++) {
-    if (game.expansions[i] !== 'ix' && game.expansions[i] !== 'choam') return false;
+    if (!e3 && game.expansions[i] !== 'ix' && game.expansions[i] !== 'choam') return false;
     for (let j = 0; j < i; j++) if (game.expansions[j] === game.expansions[i]) return false;
   }
   const players = game.players;
+  let e3Natives = 0;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
     let selected = false;
     for (const faction of FACTIONS)
       if (faction.id === players[i].faction) {
         selected = faction.expansion === 'base' || game.expansions.includes(faction.expansion);
+        if (faction.expansion === 'ecaz') e3Natives++;
         break;
       }
     if (!selected) return false;
   }
+  // Preserve the original standalone native Skills/Duke roster boundaries.
+  if (e3 && (e3Natives > 1 || (e3Natives > 0 && game.advanced &&
+      players.some(player => player.faction === 'harkonnen')))) return false;
+  if (game.moritaniAssassinatePreview && (!e3 || !game.advanced ||
+      !players.some(player => player.faction === 'moritani'))) return false;
   return true;
 }
 

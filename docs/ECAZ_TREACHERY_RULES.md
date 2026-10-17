@@ -349,3 +349,57 @@ physical card staging are explicit; their armies, paid receipts and phases
 follow native actions. This does not certify all combinations, strategic AI,
 persistence/privacy assurance or a deployed revision.
 
+## Standalone E3 Leader Skills composition — 17 October 2026
+
+The same printed independent-variant permission now composes original Ecaz OR
+Moritani/classic all14 Skills, Basic/Advanced2–6, exact ecaz36, without other
+modules. Native offers/assignment, Loyalty, Traitors, starting forces and card
+custody stay source-ordered. Advanced Harkonnen, E3 native pairs/mixed families,
+shared-Duke training and other module combinations retain their Skills guards.
+
+Fresh plain/card Ecaz starts mark native coalition participation in Basic as
+well as Advanced. Basic no longer rejects Occupy merely because cards were
+selected. Native fixed Ecaz and variable allied armies remain separate: the
+chosen plan user supplies the three-reserve fee and only that user's undialed
+counters return through Harass. Suk rescues actual committed losses, not that
+reserve fee. Existing Basic rounding and all-outcome fee/return interpretations
+remain provisional, not new user or publisher rulings.
+
+Fresh supported native Advanced Moritani starts initialize printed
+Assassinate Leaders, including cards with/without Skills; Basic does not gain
+it. Normal-call game-long forfeiture, skill-first winner continuation, unused
+opposing disc, printed bounty, mandatory card disposal and one actual Mentat
+replacement retain their original handlers. No played save is retrofitted.
+
+Bare independent-card rosters also use every actual selected known family
+even without Ecaz seated. A conserved Mori/Richese before-plan preview was
+blocked before this roster repair and is now available. Actual Basic/Advanced
+Ix/Guild with all three selected families reaches Collection: nine paid
+Suboids leave one Suboid/two Cyborgs to fund the fee; +2 adds no physical
+arrival or support. World and phase-module E3 boundaries are not widened.
+
+Evidence: `tests/fixture-ecaz-independent-skills.ts`,
+`tests/ecaz-independent-skills-runtime.test.ts`,
+`tests/fixture-moritani-independent-skills.ts`,
+`tests/moritani-independent-skills-runtime.test.ts` and
+`tests/mentat-question.test.ts`. Native fixtures label scoped entropy and
+conserved physical cards/Traitors; armies, payments and phases follow native
+actions. The Mori/Richese preview above is a reduced conserved before-plan probe,
+not a natural phase trajectory.
+
+Frozen25-file274/274, types/lint and build pass. Actual Basic/Advanced Ecaz
+fee/Harass/Suk programmes reach Collection with fee-only3 Tanks, one rescued
+counter kept and separate allied2 losses. Four policies select legal leads in
+both modes; four native Moritani policies reveal Master Bewt3 and reach one
+actual Mentat replacement. Plain no-card/no-Skills Harkonnen gives printed4
+assassination and one native captive. Four bounded all14/card tables reach
+turn3 or an earlier win, but targeted programmes—not those natural games—prove
+assassination. Actual390px normal Moritani entry reaches Storm through genuine
+training, Traitor choice and native6 setup without browser errors/root overflow.
+
+The discovered Mentat legal-hand rejection is fixed through explicit selected
+inventory in every current/history/reveal consumer. All three Specials remain
+private fallback cards, not named weapons. Both normal/trained postures preserve
+the hand and seal a legal plan in declared conserved positions. See the
+[inventory contract](MENTAT_QUESTION.md#selected-independent-card-inventory--17-october-2026).
+No deployed, full-module, strategic calibration or deferred assurance claim follows.

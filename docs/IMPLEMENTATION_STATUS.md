@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 17 October 2026 — Native E3 independent Skills and printed defaults
+
+Fresh standalone Ecaz OR Moritani/classic all14 Skills admits the independent
+three-card variant without other modules. Fresh plain/card Ecaz now marks
+printed Basic/Advanced coalition participation; supported native Advanced
+Moritani starts initialize assassination without a Nexus dependency, including
+no-Skills Harkonnen, selected-family and Homeworld occupation compositions.
+Existing Skills roster/module guards remain; no played save gains fabricated
+normal-call or opportunity history. Bare card rosters retain every selected
+known family without requiring Ecaz seated; World/phase-module E3 guards stay.
+
+Disjoint genuine programmes exercise Ecaz selected lead, separate fixed and
+variable armies, own reserve fees, typed Harass and trained committed-only Suk.
+Moritani's real loss reveals a different held unused native disc, returns its
+physical skill once, pays printed bounty and replaces the actual Traitor once
+at Mentat. Plain no-card/no-Skills Harkonnen also completes native capture.
+Real normal-call forfeiture and a second actual same-faction loss retain their
+original once-per-game/faction restrictions.
+
+A real random-hand probe exposed Mentat rejecting independent Specials during
+battle creation. Canonical hand validation now receives explicit variant
+selection through every question/reveal/history caller. All three cards are
+legal private fallback disclosures, never nameable weapons or silently enabled
+inventory. Normal and trained continuations preserve custody and seal legal
+plans; empty-hand handling and receipt shapes are unchanged.
+
+Frozen25-file **274/274**, types/lint and build pass; seven narrowly selected
+Mentat cases and actual control programmes also pass. Four bounded native
+all14/card games reach turn3 or an earlier win, with17 battles but no natural
+assassination/normal-Mentat disclosure: targeted programmes supply those proofs.
+Nine bounded no-Skills native defaults also continue. Actual390px normal
+Moritani Skills/cards training, Traitor choice and six-force placement reaches
+Storm with no browser errors/root overflow. Native fixtures label scoped
+entropy and conserved card/Traitor staging; the Mentat rule position is reduced.
+Obsolete Basic exclusion/wording pins and duplicate fixture-forwarding rows are
+deleted rather than reworded. Existing build warnings remain. No deployment,
+reset, saved-game assurance campaign or complete-mode certification occurs.
+[Source, scope and runtime evidence](ECAZ_TREACHERY_RULES.md#standalone-e3-leader-skills-composition--17-october-2026).
+
 ## 17 October 2026 — Native independent cards with all14 Skills
 
 The former classic-only independent-card Skills profile now admits selected

@@ -35,9 +35,11 @@ export function nextHomeworldEcazStep(game: Game): HomeworldEcazStep | null {
  * Arrakis shipments. Only unopened Spice order is staged; armies, wallets,
  * phases, alliances, World custody and offered skills follow the real actions. */
 export function createHomeworldEcazOccupyFixture(options: {
-  advanced?: boolean; skills?: boolean;
+  advanced?: boolean; skills?: boolean; independent?: boolean;
   /** No-World control uses the same genuine alliance/Arrakis route. */
   homeworlds?: boolean;
+  /** Select only actual offered setup choices; the captured initial stays untouched. */
+  finishSetup?: (initial: Game) => Game;
 } = {}): HomeworldEcazOccupyFixture {
   const advanced = options.advanced ?? true;
   const homeworlds = options.homeworlds ?? true;
@@ -50,11 +52,12 @@ export function createHomeworldEcazOccupyFixture(options: {
     game = applyAction(game, actor, action);
   };
   if (homeworlds) act('ecaz', { type: 'homeworlds', enabled: true });
+  if (options.independent) act('ecaz', { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
   if (options.skills) act('ecaz', { type: 'moduleOption', module: 'leaderSkills', enabled: true });
   for (const player of game.players) act(player.id, { type: 'ready' });
   act('ecaz', advanced ? { type: 'start', advancedPreview: true } : { type: 'start' });
   const initial = structuredClone(game);
-  game = finishEcazOccupySetup(game);
+  game = (options.finishSetup ?? finishEcazOccupySetup)(game);
   const afterSetup = structuredClone(game);
   const step = () => {
     const next = nextHomeworldEcazStep(game);

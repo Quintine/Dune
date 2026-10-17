@@ -6,6 +6,25 @@ New supported Leader Skills battles now offer the normal Mentat question
 without a separate preview flag. Public module/mode acceptance remains partial.
 [Common skill rules](LEADER_SKILLS_RULES.md) govern assignment, capture, death and the right to conceal a skilled leader.
 
+## Selected independent card inventory — 17 October 2026
+
+A legal independent Special in the opponent's hand could reject battle creation
+with a physical-hand error. Canonical validation now receives the actual
+independent-variant selection, including current question, private reveal and
+historical observation callers. Recruits, Reinforcements and Harass & Withdraw
+are legitimate fallback cards when the named weapon is absent; none becomes a
+nameable weapon. Selecting the Ecaz faction alone never activates those cards.
+Duplicate/forged/unselected cards still reject; empty-hand behavior is unchanged.
+
+`tests/mentat-question.test.ts` covers selected-versus-unselected identities,
+private fallback custody/history and normal/trained posture into real sealed
+plans. Its setup uses normal lobby module actions; the following conserved
+battle position is explicitly staged. Both runtime programmes preserve all
+three held Specials and disclose only to the participants. Seven focused
+selected cases and the related25-file274/274 pass with types/lint/build.
+This is a physical-inventory fix, not a new empty-hand ruling or receipt schema.
+
+
 ## Normal activation and approved UX — 11 October 2026
 
 Normal questions use the existing admitted Leader Skills envelope. Naming

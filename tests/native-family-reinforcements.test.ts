@@ -122,9 +122,9 @@ for (const advanced of [false, true]) {
     });
   }
 
-  void test(`${advanced ? 'Advanced' : 'Basic'} selected Ix+CHOAM: nine paid suboids leave a real one-suboid/two-cyborg fee`, () => {
+  void test(`${advanced ? 'Advanced' : 'Basic'} selected Ix+CHOAM+Ecaz cards: nine paid suboids leave a real one-suboid/two-cyborg fee`, () => {
     const f = createNativeFamilyReinforcementsFixture({ advanced, faction: 'ixians', mixedFee: true,
-      expansions: ['ix', 'choam'], slot: advanced ? 'weapon' : 'defense' });
+      expansions: ['ix', 'choam', 'ecaz'], slot: advanced ? 'weapon' : 'defense' });
     const own = player(f.game, f.owner);
     assert.equal(own.reserves, 5);
     assert.equal(own.elites!.reserves, 4);

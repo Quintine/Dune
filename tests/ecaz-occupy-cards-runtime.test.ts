@@ -13,7 +13,6 @@ import {
   ecazOccupyCardsCase, finishOccupyCardsAftermath, occupyCardsPlayer as seat,
   type OccupyCardsCase,
 } from './fixture-ecaz-occupy-cards';
-import { harassWithdrawGame, takeHarassCard } from './fixture-harass-withdraw';
 
 const forces = (result: OccupyCardsCase, id: string, game = result.game) =>
   ecazOccupyTerritoryForces(game, id, result.fixture.territory);
@@ -361,19 +360,3 @@ void test('selected typed Harass losses survive an opposing mandatory Reinforcem
   collection(result.game);
 });
 
-void test('Basic co-present Ecaz card armies remain unsupported instead of admitting an ordinary single-army outcome', () => {
-  for (const card of ['ecaz-harass-withdraw', 'ecaz-reinforcements']) {
-    const game = harassWithdrawGame({ advanced: false, factions: ['guild', 'emperor', 'ecaz'] });
-    const guild = game.players[0], ecaz = game.players[2];
-    // Labelled co-side rule-unit staging on the genuine ordinary variant setup.
-    guild.ally = ecaz.id;
-    ecaz.ally = guild.id;
-    ecaz.forces = { 'arrakeen:10': 2 };
-    ecaz.reserves -= 2;
-    takeHarassCard(game, guild.id, card);
-    assert.throws(() => applyAction(game, guild.id,
-      { type: 'battlePlan', dial: 1, leader: 'guild-0', weapon: card }),
-    /supported Advanced Occupy battle profile/);
-    assert.equal(game.battle?.plans[guild.id], undefined);
-  }
-});

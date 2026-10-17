@@ -1,5 +1,6 @@
 import { treacheryDeck, type Card } from './cards';
 import { richeseCards } from './richese-cards';
+import { ecazTreacheryCards } from './ecaz-cards';
 import { quoteTupileIntelligenceAnswer } from './tupile-intelligence-answer';
 import { ordinaryLeaderSkillModeSupported, type LeaderSkillProfile } from './leader-skill-profile';
 
@@ -42,17 +43,18 @@ export type MentatView = {
 export function mentatQuestionModeSupported(game: LeaderSkillProfile): boolean {
   return ordinaryLeaderSkillModeSupported(game);
 }
-function inventory(expansions: readonly string[]): Card[] {
+function inventory(expansions: readonly string[], ecazTreachery: boolean): Card[] {
   return [
     ...treacheryDeck(expansions),
     ...(expansions.includes('choam') ? richeseCards() : []),
+    ...(ecazTreachery ? ecazTreacheryCards() : []),
   ];
 }
 /** Printed/default held-card roles, shared with Tupile; never battle-slot legality. */
 export function mentatWeaponNames(expansions: readonly string[]): string[] {
   return [
     ...new Set(
-      inventory(expansions)
+      inventory(expansions, false)
         .filter(
           (card) =>
             quoteTupileIntelligenceAnswer([card], 0, 'weapons').count === 1,
@@ -64,9 +66,10 @@ export function mentatWeaponNames(expansions: readonly string[]): string[] {
 export function mentatHand(
   hand: readonly Card[],
   expansions: readonly string[],
+  ecazTreachery: boolean,
 ): Card[] {
   const canonical = new Map(
-    inventory(expansions).map((card) => [card.id, card]),
+    inventory(expansions, ecazTreachery).map((card) => [card.id, card]),
   );
   if (
     !Array.isArray(hand) ||
@@ -87,10 +90,11 @@ export function quoteMentatReveal(
   hand: readonly Card[],
   weapon: string,
   expansions: readonly string[],
+  ecazTreachery: boolean,
 ): { cards: Card[] } {
   if (!mentatWeaponNames(expansions).includes(weapon))
     throw new MentatQuestionError('Name one specific canonical weapon.');
-  const held = mentatHand(hand, expansions);
+  const held = mentatHand(hand, expansions, ecazTreachery);
   if (!held.length) throw new MentatQuestionError(MENTAT_EMPTY_HAND);
   const matching = held.filter((card) => card.name === weapon);
   return {

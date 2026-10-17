@@ -45,7 +45,6 @@ void test('Moritani skill starts retain immutable Ecaz and optional-module rejec
     (g: Game) => { g.expansions.push('choam'); },
     (g: Game) => { g.discoveryEnabled = true; g.expansions.push('choam'); },
     (g: Game) => { g.discoveryEnabled = true; g.players[1] = newPlayer('a', 'Ecaz', 'ecaz'); },
-    (g: Game) => { g.ecazTreachery = true; },
   ]) {
     const lobby = createGame('MORIGATE', newPlayer('m', 'Moritani', 'moritani'), false, ['ecaz']);
     joinGame(lobby, newPlayer('a', 'Atreides', 'atreides'));

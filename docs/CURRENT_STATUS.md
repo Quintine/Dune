@@ -29,6 +29,32 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Standalone E3 independent cards/native defaults — 17 October.** Fresh
+standalone Ecaz OR Moritani/classic all14 Skills now retains the three
+independent cards without other modules. Original Advanced Skills/Harkonnen,
+E3 pair/mixed Skills and shared-Duke guards remain. Plain/card Ecaz initializes
+printed Basic/Advanced coalition participation; supported native Advanced
+Moritani initializes assassination without an artificial Nexus dependency.
+No played-save history is synthesized.
+
+Genuine Ecaz programmes settle fixed/variable armies, card-user fees/returns and
+trained Suk into Collection. Genuine Moritani loses, assassinates a different
+held unused trained disc, returns one skill and gets one actual Mentat replacement;
+plain no-card/no-Skills Harkonnen also retains native capture. Four policies
+choose legal native leads/assassination. The same integration exposed and fixed
+Mentat rejecting legal independent Specials: selected physical cards now work
+as private fallback disclosures, never named weapons or automatic variant activation.
+
+Frozen25-file **274/274**, types/lint, build and targeted runtime programmes pass.
+Four native all14/card table smokes reach turn3 or an earlier win; nine no-Skills
+native roster/default smokes also continue. Those natural games do not supply
+the targeted assassination proof. Actual390px normal Moritani Skills/card entry
+passes training, Traitor choice and native six-force setup into Storm without
+browser errors/root overflow. Entropy/conserved card staging is explicit; the
+Mentat-specific battle position is reduced, not a natural phase history.
+No complete-mode, deployment, calibration or deferred assurance claim.
+[Card scope and evidence](ECAZ_TREACHERY_RULES.md#standalone-e3-leader-skills-composition--17-october-2026).
+
 **Native Ix/CHOAM independent cards + Skills — 17 October.** Fresh
 classic or selected E1/E2 native/base all14 Skills now admits the three
 independent cards without other modules. Original36/38/50 ordinary decks and

@@ -13,6 +13,7 @@ import {
   quoteMentatReveal,
 } from '../game/mentat-question';
 import { baseDeck, ixDeck } from '../game/cards';
+import { ecazTreacheryCards } from '../game/ecaz-cards';
 import {
   finishMentatPosture,
   mentatPlayer,
@@ -100,12 +101,47 @@ void test('Mentat names exact printed/default weapons and validates physical han
   ]) {
     assert.ok(!choam.includes(name));
     assert.ok(!ix.includes(name));
-    assert.throws(() => quoteMentatReveal(baseDeck().slice(0, 1), name, []));
+    assert.throws(() => quoteMentatReveal(baseDeck().slice(0, 1), name, [], false));
   }
-  assert.throws(() => mentatHand([baseDeck()[0], baseDeck()[0]], []));
-  assert.throws(() => mentatHand([{ ...baseDeck()[0], name: 'Lasgun' }], []));
-  assert.throws(() => mentatHand(ixDeck().slice(0, 1), []));
+  assert.throws(() => mentatHand([baseDeck()[0], baseDeck()[0]], [], false));
+  assert.throws(() => mentatHand([{ ...baseDeck()[0], name: 'Lasgun' }], [], false));
+  assert.throws(() => mentatHand(ixDeck().slice(0, 1), [], false));
 });
+
+void test('Mentat accepts selected independent Specials as fallback disclosures, never as named weapons or unselected cards', () => {
+  const specials = ecazTreacheryCards();
+  const names = mentatWeaponNames(['ecaz']);
+  for (const card of specials) {
+    assert.ok(!names.includes(card.name));
+    assert.deepEqual(quoteMentatReveal([card], 'Lasgun', ['ecaz'], true).cards, [card]);
+    assert.throws(() => quoteMentatReveal([card], 'Lasgun', ['ecaz'], false));
+  }
+});
+
+for (const hide of [false, true])
+  void test(`independent-card Mentat disclosure keeps physical custody and resumes ${hide ? 'trained' : 'normal'} posture`, () => {
+    let game = mentatQuestionGame({ independent: true, cards: ecazTreacheryCards().map(card => card.name) });
+    const before = resources(game);
+    game = nameWeapon(game, 'Lasgun');
+    const pending = viewGame(game, 'd').mentat.pending!;
+    assert.deepEqual(pending.cards.map(card => card.id), ecazTreacheryCards().map(card => card.id));
+    assert.deepEqual(viewGame(game, 'a').mentat.pending!.cards, []);
+    assert.deepEqual(viewGame(game, 'o').mentat.pending!.cards, []);
+    const shown = pending.cards.find(card => card.effect === 'harassWithdraw')!;
+    game = applyAction(game, 'd', { type: 'decision', event: pending.event, card: shown.id });
+    assert.deepEqual(resources(game), before, 'Showing a card neither transfers nor reserves it');
+    assert.deepEqual(viewGame(game, 'a').mentat.history[0].card, shown);
+    assert.deepEqual(viewGame(game, 'o').mentat.history, []);
+    game = finishMentatPosture(game, hide);
+    assert.equal(game.battle!.leaderSkillHidden!.a, hide);
+    game = finishPowers(game);
+    game = applyAction(game, 'a', {
+      type: 'battlePlan', dial: 0, leader: hide ? 'emperor-0' : 'emperor-1',
+    });
+    assert.equal(game.battle!.plans.a.leader, hide ? 'emperor-0' : 'emperor-1');
+    assert.equal(game.battle!.plans.d, undefined, 'The other combatant still owns its unsealed plan');
+    assert.ok(mentatPlayer(game, 'd').hand.some(card => card.id === shown.id));
+  });
 
 void test('fresh supported Leader Skills battles offer a private Mentat question without a separate opt-in', () => {
   for (const advanced of [false, true])

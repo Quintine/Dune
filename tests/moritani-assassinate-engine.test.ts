@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {applyAction,viewGame,initializeMoritaniAssassinateGameForAudit,createGame,newPlayer,joinGame,type Game} from '../game/engine';
+import {applyAction,viewGame,type Game} from '../game/engine';
 import {DIFFICULTIES} from '../game/bot-profiles';
 import {assassinationGame,stageAssassinationBattle,prepareAssassinationBattle,resolveAssassinationBattle,assassinationChoice,assassinationToMentat,assassinationPhysical,assassinationRejects,assassinationActions} from './moritani-assassinate-fixture';
 import {advanceToNextStorm,finishToMovement} from './fixture-advanced-source';
@@ -120,14 +120,6 @@ void test('saved assassination receipts and cleanup obligations fail closed afte
   const settled=assassinationToMentat(assassinationChoice(pending,'guild-1'));
   const missing=structuredClone(settled);missing.moritaniAssassinate!.opportunities=[];
   assert.throws(()=>viewGame(missing,'m'));
-});
-
-void test('the explicit preview refuses Basic and exceptional-faction lobbies without mutation',()=>{
-  for(const [advanced,opponent] of [[false,'guild'],[true,'harkonnen'],[true,'ecaz']] as const){
-    const g=createGame('ASSAINIT',newPlayer('m','Moritani','moritani'),advanced,['ecaz']);
-    joinGame(g,newPlayer('x','Opponent',opponent));for(const p of g.players)p.ready=true;
-    const before=structuredClone(g);assert.throws(()=>initializeMoritaniAssassinateGameForAudit(g));assert.deepEqual(g,before);
-  }
 });
 
 void test('a sealed normal traitor call does not publish the assassination guard before the other voter replies',()=>{

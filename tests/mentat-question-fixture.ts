@@ -3,7 +3,6 @@ import { mock } from 'node:test';
 import {
   applyAction,
   createGame,
-  initializeLeaderSkillsGameForAudit,
   joinGame,
   newPlayer,
   viewGame,
@@ -31,12 +30,14 @@ export function takeMentatCard(game: Game, player: string, name: string) {
 export function mentatQuestionGame({
   advanced = false,
   choam = false,
+  independent = false,
   cards = ['Crysknife', 'Snooper'],
   begin = true,
   captured = false,
 }: {
   advanced?: boolean;
   choam?: boolean;
+  independent?: boolean;
   cards?: string[];
   begin?: boolean;
   captured?: boolean;
@@ -53,6 +54,9 @@ export function mentatQuestionGame({
     newPlayer('d', 'Questioned opponent', captured ? 'harkonnen' : 'atreides'),
   );
   joinGame(game, newPlayer('o', 'Observer', 'guild'));
+  game = applyAction(game, game.host, { type: 'moduleOption', module: 'leaderSkills', enabled: true });
+  if (independent)
+    game = applyAction(game, game.host, { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
   for (const player of game.players)
     game = applyAction(game, player.id, { type: 'ready' });
   const index = LEADER_SKILL_CARDS.findIndex((card) => card.id === 'mentat');
@@ -62,7 +66,7 @@ export function mentatQuestionGame({
     return array;
   });
   try {
-    game = initializeLeaderSkillsGameForAudit(game);
+    game = applyAction(game, game.host, advanced ? { type: 'start', advancedPreview: true } : { type: 'start' });
   } finally {
     mock.restoreAll();
   }

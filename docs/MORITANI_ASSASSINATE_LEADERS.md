@@ -1,10 +1,11 @@
 # Moritani: Advanced Assassinate Leaders preview
 
-Updated 15 October 2026. **Prototyped / Partial**. Original native Advanced
-Moritani play is connected through the supported local entry profiles, including
-the bounded no-Skills E3 Nexus composition below. Normal public game-start and
-publication gates remain closed. This is the battle-loss ability, separate from
-the random Assassination Terror token.
+Updated 17 October 2026. **Prototyped / Partial**. Supported fresh native
+Advanced Moritani starts initialize this printed advantage automatically,
+including plain faction starts and the independent-card profile. Normal lobby
+access is a labelled preview, not complete-mode or publication acceptance.
+This battle-loss ability is separate from the random Assassination Terror token.
+Played saves are not assigned fabricated prior-call or opportunity history.
 
 ## Authority and Advanced duration cutover
 
@@ -49,14 +50,15 @@ does not define every other captured or foreign-ghola **target** interaction.
 
 ## Connected scope and private information
 
-The original preview supports native Moritani with Atreides, Bene Gesserit,
-Emperor, Fremen and Guild opponents, Advanced rules and the Ecaz faction
-expansion, without optional modules. The later original E3 Nexus compositions
-add Ecaz and, in the bounded no-Skills composition below, Harkonnen. Other
-expansion factions, Skills with Harkonnen, Homeworlds, Discoveries and other
-combinations retain their separate integration boundaries. The
-[bounded all14 native skill composition](MORITANI_LEADER_SKILLS.md#advanced-assassination-composition--4-october-2026)
-now extends this same non-Harkonnen roster without opening public starts.
+Without Skills, fresh selected native rosters containing Moritani retain this
+advantage with their actual distinct Ix/CHOAM/Ecaz family decks, including
+Harkonnen, the Ecaz pair and existing Homeworld occupation. Existing module
+profiles still govern Nexus, Discovery, Tech and Strongholds. Independent cards
+do not require an unrelated Nexus module or suppress assassination.
+With Skills, the original standalone Moritani/classic roster still excludes
+Advanced Harkonnen and mixed/pair E3. It now also permits the independent
+three-card variant without other modules; see
+[the all14 native composition](MORITANI_LEADER_SKILLS.md#independent-treachery-composition--17-october-2026).
 Winner Suk rescue and Rihani choice finish first; the unspent assassination
 receipt waits, then opens its original private choice. Already completed
 casualties cannot replay after reveal/decline. A different eligible trained
@@ -85,8 +87,8 @@ requires Continue even for an ineligible hand, conflicting with the user's usual
 automatic-action preference. Moritani's uniform-private-step approval remains
 separate: the 11 October Mentat approval applies only to that card-show flow.
 The bounded native Nexus composition uses its original entry and original
-postbattle/assassination continuation, not a separate opt-in assassination shim;
-ordinary public starts and room API mode gates remain closed.
+postbattle/assassination continuation, not a separate opt-in assassination shim.
+Supported normal-lobby previews use the same constructors; complete modes remain gated.
 A publicly spent faction or prior normal traitor call can be skipped without consulting hidden eligibility.
 
 All four AI profiles use the same owner-only quote. They choose a legal card or

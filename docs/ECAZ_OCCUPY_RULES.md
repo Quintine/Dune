@@ -10,6 +10,13 @@ setup records Ecaz participation, while both rules bands reuse the selected
 plan-owner/skill and fixed-versus-variable army rules. The source profile's
 Advanced Harkonnen, Duke assignment and other roster restrictions remain.
 [Current standalone scope and evidence](LEADER_SKILLS_RUNTIME.md#standalone-ecaz-coalition--17-october-2026).
+Fresh plain and independent-card faction constructors now mark the same
+printed Ecaz participation in Basic and Advanced, not only Tech/Nexus/Skills
+entries. Basic independent cards no longer reject that mandatory coalition.
+Plain no-card/no-Skills Basic and Advanced programmes complete actual setup,
+worm alliance, paid shipments and battle cleanup into Collection, conserving
+all20 counters per faction. Existing played saves are not retrofitted.
+
 
 ## Native World reserves with Arrakis Occupy — 17 October 2026
 
