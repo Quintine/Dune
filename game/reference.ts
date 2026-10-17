@@ -2176,7 +2176,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Base setup enforces prediction, traitors, forces and automatic dealing in order, with private choices and preserved saved tables. Advanced starting advisors and elite forces share the same setup logic. The normal lobby now starts selected expansions and the Leader Skills, Ecaz Treachery Card, Nexus, Discovery, Homeworld, Tech and Stronghold modules through their existing genuine setups as labelled previews; each module still rejects unsupported combinations at start, and Ecaz with Homeworlds alone remains unavailable.',
+          'Base setup enforces prediction, traitors, forces and automatic dealing in order, with private choices and preserved saved tables. Advanced starting advisors and elite forces share the same setup logic. The normal lobby now starts selected expansions and the Leader Skills, Ecaz Treachery Card, Nexus, Discovery, Homeworld, Tech and Stronghold modules through their existing genuine setups as labelled previews; unsupported combinations still reject at start. Fresh native Ecaz/classic World games retain ordinary Arrakis Occupy, with or without supported Skills.',
       },
       {
         area: 'Player controls',

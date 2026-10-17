@@ -1,6 +1,6 @@
 # Rule decision index
 
-Updated 15 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+Updated 17 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
 
 ## Physical Traitor roles — 15 October 2026
 
@@ -616,13 +616,15 @@ Discovery, Tech and Strongholds together/separately irrespective of faction
 selection. The bounded fresh native composition therefore reuses supported
 E1/E2 and standalone Ecaz OR Moritani/classic setup predicates, not a new
 rule model. Original skill-before-faction ordering applies to typed Suk and
-residual Cyborg substitution; Homeworlds remain outside Arrakis Occupy and
-Intrusion. Existing CHOAM low-opening-income, Basic odd Ecaz and exhausted
+residual Cyborg substitution. The 17 October follow-up connects original
+Homeworld reserves to Ecaz's Arrakis Occupy; World locations themselves do not
+gain Occupy or Intrusion. Existing CHOAM low-opening-income, Basic odd Ecaz and exhausted
 Richese-cache guards remain visible in original game captures. The external
 Imperial Suk split is still an implementation interpretation, not ordinary
 revival placement or a new user/publisher ruling. Native Face Dance,
 Diplomat retreat and other pending interpretations remain separate.
 [Exact scope and evidence](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-optional-module-compositions--6-october-2026).
+[Native World Arrakis coalition follow-up](ECAZ_OCCUPY_RULES.md#native-world-reserves-with-arrakis-occupy--17-october-2026).
 
 ## Advanced Homeworld occupation source cutover — 5 October 2026
 

@@ -132,19 +132,6 @@ void test('incompatible selected modules reject the whole start instead of silen
   }
 });
 
-void test('an Ecaz Homeworld Skills selection cannot start without supported combined Occupy battles', () => {
-  let game = createGame('ECAZLOBBYMODULES', newPlayer('ecaz', 'Ecaz', 'ecaz'), true, ['ecaz']);
-  joinGame(game, newPlayer('atreides', 'Atreides', 'atreides'));
-  joinGame(game, newPlayer('guild', 'Guild', 'guild'));
-  game = act(game, game.host, { type: 'homeworlds', enabled: true });
-  game = act(game, game.host, { type: 'moduleOption', module: 'leaderSkills', enabled: true });
-  game = ready(game);
-  reject(game, game.host, preview);
-  assert.equal(game.status, 'lobby');
-  assert.equal(game.homeworlds!.custody, null);
-  assert.equal(game.leaderSkills, undefined);
-});
-
 void test('Advanced starts require the exact host opt-in and cannot dispatch audit initializers or hidden bypass options', () => {
   const game = ready(lobby(BASE, true));
   reject(game, game.host, { type: 'start' });

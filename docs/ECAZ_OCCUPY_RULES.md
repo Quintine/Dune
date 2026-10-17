@@ -2,6 +2,36 @@
 
 Historical primary-source audit, 2026-09-07, corrected after independent verification. The publisher/designer odd-force conflict remains unresolved as a publisher correction. Under the 8 October Basic-first prototype instruction, Basic now provisionally uses the main p8 paragraph: ceiling contribution/loss and floor survivors, with a visible control warning. This is not a numerical ruling by the user or designer. Advanced retains its separately authorized source. The earlier false attribution to Jack Reda remains withdrawn.
 
+## Native World reserves with Arrakis Occupy — 17 October 2026
+
+Fresh Ecaz/classic Homeworld games now retain their ordinary Arrakis coalition
+without needing Nexus Cards. The original Homeworld occupation entry marks
+Ecaz participation in Basic as well as Advanced; the supported native
+Homeworld/Leader Skills entry keeps the same lead, skill posture and
+owner-labelled army path. This composes the supplied revision's physical
+pages21–23 optional-module permission with the existing printed/authorized
+Occupy arithmetic, not a new combat formula.
+
+Homeworlds change the source of shipped reserves and native benefits, not the
+identity of an Arrakis army. A real worm alliance and native shipments produce
+four Ecaz and four Emperor fighters (two Sardaukar) against two Guild fighters.
+Both lead choices preserve fixed Ecaz losses and the allied typed commitment;
+Advanced Salusa's unpaid full-strength Sardaukar still compose with paid
+ordinary support. Karama keeps the selected lead and spares the excluded
+co-side. Arrakis casualties never remove another copy of those forces from a
+Homeworld pool. Actual World battles remain ordinary separate-army battles:
+this does not add Occupy or Intrusion to Homeworld locations.
+
+Seven new cases cover both modes/leads, explicit typed losses, cancellation
+and four legal Skills policies. The affected eight-file union91/91, types/lint
+and build pass; four standalone original-action smokes reach Collection.
+Real390px normal-lobby Ecaz + Homeworlds + Skills setup reaches its offered
+skill controls with no app errors or horizontal overflow. That is entry/control
+proof, not a browser-played coalition battle or complete combination acceptance.
+Unopened Spice order is controlled in the fixture; armies, wallets, alliances,
+World custody and phases follow native actions. Other E3/mixed module envelopes,
+World-location coalition rules and final assurance remain separate.
+
 ## Advanced Ecaz special Karama first version — 8 October 2026
 
 The authorized supplied revision, physical **p30, Ecaz G**, permits Karama

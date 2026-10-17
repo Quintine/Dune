@@ -48,8 +48,9 @@ The 17 October lobby-access pass opens expansion factions and supported optional
 modules as previews; it does not remove their existing composition guards.
 Skills and the independent Ecaz cards use lobby-only selections consumed during
 start; the other modules retain their existing undealt lobby shape. Every
-selected module must be honoured or the start rejected. Ecaz with Homeworlds
-alone remains unavailable because its combined Occupy battle is not supported.
+selected module must be honoured or the start rejected. Ecaz selections must
+also support their mandatory allied Arrakis Occupy battle; fresh Ecaz/classic
+Homeworlds now compose that path, with or without the supported Skills entry.
 Special development profiles remain separate. No pending rules ruling or
 complete-mode/publication gate is resolved by opening these controls; see the
 [decision index](RULE_DECISIONS.md).

@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 17 October 2026 — Native World Ecaz Arrakis coalition
+
+The existing native World occupation and World/Skills setups could deal Ecaz
+but still rejected the mandatory allied Arrakis battle. Fresh Ecaz/classic
+World compositions now reuse the ordinary coalition instead of requiring Nexus
+Cards; the original World occupation entry also marks Basic participation.
+World locations remain outside Occupy/Intrusion. No army merger, new support
+rule, World loss adapter, played-game conversion or numerical ruling is added.
+
+Genuine setup, original worm alliance and native paid shipments put Ecaz4,
+Emperor4 (two Sardaukar) and Guild2 into a clear Arrakis stronghold. Both leads
+retain fixed Ecaz losses, exact allied normal/starred losses and unchanged
+native World custody. Advanced Salusa and paid ordinary support compose through
+the original physical quote; native Karama keeps the lead and excludes its
+co-side. The existing Skills disclosure/lead controls and four legal policies
+reach original Collection. Only unopened Spice order is controlled.
+
+The affected eight-file union **91/91**, types/lint and build pass; four separate
+runtime smokes reach Collection without rejected actions. Actual390px Ecaz
+World+Skills normal-lobby start reaches the real skill offers with no app errors
+or overflow. Coalition arithmetic is engine proof, not a browser-played battle.
+The broader9866-case pass belongs to preceding lobby checkpoint `210aa04`, not
+this follow-up. Other roster/module compositions and final assurance remain
+open. [Source and detailed boundaries](ECAZ_OCCUPY_RULES.md#native-world-reserves-with-arrakis-occupy--17-october-2026).
+
 ## 17 October 2026 — Normal-lobby module previews and legal continuation
 
 Hosts can select Leader Skills, the independent three-card Ecaz variant,

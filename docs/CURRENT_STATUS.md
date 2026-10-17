@@ -29,13 +29,25 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Native World Ecaz Arrakis Occupy — 17 October.** Fresh Ecaz/classic
+Homeworld games no longer need Nexus Cards for their ordinary Arrakis
+coalition, including the supported native Skills entry. Basic setup now marks
+Ecaz participation before shared movement/battle enumeration. Actual World
+shipments, four Ecaz/four Imperial counters, selected lead, fixed losses,
+Sardaukar/support and Karama use the existing physical rule paths. World
+locations themselves do not gain Occupy or Intrusion. Seven new cases and the
+affected91/91 union, types/lint and build pass; four native-action smokes reach
+Collection. Actual390px Ecaz World+Skills lobby entry has no browser errors or
+overflow; coalition arithmetic is engine evidence, not a browser-played battle.
+[Source and limits](ECAZ_OCCUPY_RULES.md#native-world-reserves-with-arrakis-occupy--17-october-2026).
+
 **Optional modules from the normal lobby — 17 October (user-directed speed pass).**
 The host can now tick Leader Skills, Ecaz Treachery Cards, Nexus Cards,
 Discoveries and Homeworlds as labelled previews alongside Tech Tokens and
 Stronghold Cards. A normal start routes to the existing genuine setup for that
 selection; each module's own admission still decides what combinations are
-supported, and an unsupported choice is rejected at start with its reason. Ecaz
-with Homeworlds alone stays unavailable (no combined Occupy composition yet).
+supported, and an unsupported choice is rejected at start with its reason.
+Ecaz's native World Arrakis coalition is connected in the follow-up above.
 Lobby choices for Skills and the independent cards live in `lobbyOptions` and
 are consumed at start. A 240-start sweep (Basic/Advanced × classic/Ix/CHOAM/Ecaz
 × ten selections, repeated three times) exercised 183 all-AI games to turn 3 or

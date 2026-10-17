@@ -9588,7 +9588,10 @@ export function initializeHomeworldOccupationGameForAudit(state: Game, leaderSki
     g.homeworldTupileState = createOccupiedTupileState();
     g.pendingHomeworldTupileCleanup = null;
   }
-  if (byFaction(g, 'ecaz')) g.homeworldEcazVictoryPreview = true;
+  if (byFaction(g, 'ecaz')) {
+    g.homeworldEcazVictoryPreview = true;
+    g.ecazOccupyPreview = true;
+  }
   return g;
 }
 /** Shared classic/supported-native Nexus setup; existing composition guards apply. */
@@ -10523,6 +10526,15 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
       g.players.some(p => p.faction === 'ecaz')) return true;
   if (g.discoveries && nativeDiscoveryLeaderSkillsProfile(g) &&
       g.players.some(p => p.faction === 'ecaz')) return true;
+  // Native World reserve/threshold rules do not replace the ordinary Arrakis
+  // coalition. Reuse that battle only within the original Ecaz/classic setups.
+  if (g.homeworlds && g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
+      g.players.some(p => p.faction === 'ecaz') &&
+      g.players.every(p => p.faction === 'ecaz' || CLASSIC_FACTIONS[p.faction]) &&
+      ((g.homeworldOccupationPreview === true && !g.leaderSkills &&
+        !g.nexusCards && !g.techTokens && !g.strongholdCards && !g.discoveryEnabled) ||
+       (g.ecazOccupyPreview === true && !!g.leaderSkills && homeworldLeaderSkillsProfile(g))))
+    return true;
   return typeof g.advanced === 'boolean' && Array.isArray(g.expansions) &&
     g.expansions.includes('ecaz') &&
     g.expansions.every(id => ['ecaz', 'ix', 'choam'].includes(id)) &&
