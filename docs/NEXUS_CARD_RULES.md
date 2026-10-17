@@ -224,14 +224,14 @@ No publisher ruling, new cancellation window or complete-mode gate is claimed.
 
 ## Classic Nexus with normal Banker income — 13 October 2026
 
-Fresh `banker-income --nexus-cards` now composes the existing deferred normal
-Skill band with classic Basic/Advanced all14/all12 setup, optionally original
-Tech3+ and Advanced Strongholds2+. Actual bank payer legs still qualify once
-per phase; player income and phase-end Tech payouts do not qualify, and the
-original Mentat opening collects automatically. No Nexus hand is dealt at
-setup, no new collect action is added, and no played game is converted.
-Homeworlds, Discovery, native-family Nexus and Betrayal previews remain
-outside this entry. [Source, original costs and runtime proof](SPICE_BANKER_RUNTIME.md#classic-nexus-income-composition--13-october-2026).
+Fresh `leader-skills --nexus-cards` now includes mandatory normal Banker income
+automatically. The 13 October classic Basic/Advanced all14/all12 checkpoint
+covered optional original Tech3+ and Advanced Strongholds2+. Actual Bank payer
+legs still qualify once per phase; player income and phase-end Tech payouts do
+not qualify, and original Mentat collects automatically. No starting Nexus hand,
+new collect action or played-game conversion is added. Existing supported
+ordinary module/native envelopes now inherit the same normal band; no new
+combination is admitted. [Current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
 ## Semuta with original native Nexus — 11 October 2026
 

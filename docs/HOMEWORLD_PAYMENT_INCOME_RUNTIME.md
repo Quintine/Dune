@@ -1,6 +1,6 @@
 # Homeworld payment income runtime
 
-The 14 October 2026 user ruling resolves allied rounding: low native income is `ceil(total eligible invoice / 2)` once, not a sum of rounded contributor legs. Original payer costs and eligibility stay unchanged. Fresh classic `banker-income --homeworlds` additionally connects actual final Bank portions to original Mentat; occupation receipts remain authoritative. See [the current Banker contract](SPICE_BANKER_RUNTIME.md#classic-homeworld-final-bank-income--14-october-2026). This is not complete Homeworld or deployed acceptance.
+The 14 October 2026 user ruling resolves allied rounding: low native income is `ceil(total eligible invoice / 2)` once, not a sum of rounded contributor legs. Original payer costs and eligibility stay unchanged. Fresh classic `homeworld-occupation --leader-skills` now includes mandatory normal Banker income automatically; actual occupation receipts remain authoritative through original Mentat. See [the current Banker contract](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026). This is not complete Homeworld or deployed acceptance.
 
 ## Calculation and settlement
 

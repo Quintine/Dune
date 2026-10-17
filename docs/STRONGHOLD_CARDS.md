@@ -113,7 +113,7 @@ Full-module/public/deployed acceptance remains open.
 
 ## Advanced Leader Skills composition — 4 October 2026
 
-Fresh local `leader-skills` and separate `banker-income` preserve unused six
+Fresh local `leader-skills`, now including mandatory normal Banker income, preserves unused six
 Stronghold Cards with all14 skills in Advanced classic or supported E1/E2
 native2..6-seat rosters. Optional original Tech requires3..6; native wallets,
 decks/cache, setup and actual end-Mentat claims remain. The supplied authorized

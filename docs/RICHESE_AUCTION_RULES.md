@@ -30,8 +30,8 @@ already-debited donor escrow again. Emperor cancellation sends only its4 to
 the Bank, not the unrelated buyer-to-Richese share, and does not replay credit
 or physical card transfer. The existing whole-bank recipient override remains.
 
-The separate native `banker-income` opt-in counts only actual bank-routed
-original payer legs. It never treats allowed Emperor income or ordinary seller
+Mandatory normal Banker income in fresh supported ordinary Skills setups
+counts only actual Bank-routed original payer legs. It never treats allowed Emperor income or ordinary seller
 credit as a bank payment, aggregates separate payers to four, or spends its
 new front-shield grant before actual Mentat. Original Bureaucrat split-funding,
 positive Black Market self-bidding, exhausted-cache counts and special-lot

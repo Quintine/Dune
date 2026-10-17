@@ -471,7 +471,7 @@ are removed; rooms/store, private metadata and original captures remain.
 
 ## Advanced Stronghold composition — 4 October 2026
 
-Fresh Advanced `leader-skills` and separate `banker-income` entries preserve
+Fresh Advanced `leader-skills`, including mandatory normal Banker income, preserves
 canonical unused Stronghold Cards with all fourteen skills in classic or
 already-supported E1/E2 native two-through-six-seat lobbies. Optional original
 Tech Tokens requires three-through-six seats. Original deck/roster restrictions,
@@ -540,8 +540,8 @@ removed; rooms/store, private metadata and original captures remain.
 
 ## Native E1/E2 Tech Tokens composition — 4 October 2026
 
-Fresh three-through-six-seat Basic/Advanced `leader-skills` and separate
-`banker-income` entries now preserve canonical unused Tech Tokens for the
+Fresh three-through-six-seat Basic/Advanced `leader-skills` setups, including
+mandatory normal Banker income, preserve canonical unused Tech Tokens for the
 already-supported native Ixian, Tleilaxu, CHOAM and Richese skill rosters.
 Original family/deck restrictions remain: Basic uses its single supported
 family; Advanced admits distinct selected E1/E2 decks and their eligible native
@@ -549,7 +549,7 @@ seats. All fourteen skills, ordinary33/35/47 cards, Richese's original ten-card
 cache, native setup, wallets and printed Tech owners remain genuine.
 An extra selected Ix deck never implies a native Ixian seat.
 E3, other overlays, public starts and played-game conversion remain excluded.
-Existing Banker and private Mentat opt-ins do not become ordinary activation.
+Normal Banker and the user-approved normal Mentat step now activate in fresh supported Skills setups.
 
 The authorized supplied Advanced PDF, physical page21 (printed19), permits
 variants together irrespective of factions and gives native Tech assignment,
@@ -609,13 +609,13 @@ metadata and original game captures remain.
 
 ## Classic Tech Tokens composition — 4 October 2026
 
-Fresh `leader-skills` and separate `banker-income` preserve canonical unused
+Fresh `leader-skills`, including mandatory normal Banker income, preserves canonical unused
 Tech Tokens selected in a three-through-six-seat classic Basic/Advanced lobby.
 Original base33/all14 setup, first-Storm token assignment and native wallets
 remain; no token owner, income, phase or battle receipt is fabricated.
-Native E1/E2 rosters now compose Tech in the section above; other overlays remain separate. The existing
-private Mentat opt-in retains its UX/empty-hand boundary; normal Banker retains
-its original earned-custody and separate-payer policies.
+Native E1/E2 rosters compose Tech in the section above; other overlays retain
+their own admission. The user-approved normal Mentat step and mandatory normal
+Banker income preserve their existing disclosure, custody and payment policies.
 
 Tech piles collect at their original phase end; Banker front-shield grants wait
 for actual Mentat. A Tech credit is not another player's bank-payment producer.
@@ -682,7 +682,7 @@ Ordinary native role scores, physical Suk rescue and trained-disc death compose
 with original handlers. Eligible own normal-disc revival through paid first
 cohort or a physical Ghola retains optional decline/draw/assignment. Native
 Ambassador placement, bank grants and original entrant continuation preserve
-training. Explicit Mentat and separate Banker opt-ins retain current questions;
+training. Normal Mentat and mandatory normal Banker retain their source boundaries;
 an Ambassador bank grant is not another player's bank payment.
 
 Real Ecaz Ambassador acquisition gives one temporary Duke6. A separate living
@@ -770,7 +770,7 @@ Winner Suk rescue and Rihani choice finish before post-loss assassination.
 A saved unspent receipt advances only after those skills, preserving the actual
 winner, original excluded battle disc, printed bounty, card return and one
 private native Mentat replacement without repeating casualties.
-Explicit Mentat/Banker opt-ins remain separate; shared-Duke assignment, further
+Normal Mentat and mandatory normal Banker retain their source boundaries; shared-Duke assignment, further
 native rosters, public activation and unrelated optional modules stay guarded.
 
 ## Advanced Tleilaxu foreign-ghola composition — 4 October 2026
@@ -805,8 +805,8 @@ Sandmaster, Mentat, Bureaucrat and Banker helpers share this admitted native
 profile rather than independently accepting a different roster.
 The 11 October user-approved normal Mentat question now shares this admitted
 skill envelope; the obsolete timing opt-in is removed. Empty-hand
-interpretation remains separate. The `banker-income` profile retains its
-existing deferred front-shield custody and actual-Mentat spendability.
+interpretation remains separate. Mandatory normal Banker income retains its
+deferred front-shield custody and actual-Mentat spendability in fresh ordinary setups.
 
 Bounded Development Verified: affected122/122, types/lint/build, ten actual
 controlled native programs (five Ixian rescue/policy cases, one CHOAM collection,
@@ -879,13 +879,13 @@ publisher instruction to announce a name.
 ## Missing and guarded work
 
 [Battle-effects follow-up](LEADER_BATTLE_EFFECTS.md) connects both Rihani bands
-and the lower Mentat, Bureaucrat and Sandmaster effects. A separate
-[Mentat question preview](MENTAT_QUESTION.md) connects private naming/disclosure,
-posture and saved history under an explicit private opt-in. The uniform mandatory
-response step awaits the user's UX decision; ordinary activation remains disabled.
-[Bureaucrat payment redirection](BUREAUCRAT_PAYMENTS.md) connects the ordinary
-auction, shipment, Richese sale and paid-bribe families within its recorded
-boundary. Other Bureaucrat payments and split funding remain incomplete.
+and the lower Mentat, Bureaucrat and Sandmaster effects.
+[Normal Mentat questions](MENTAT_QUESTION.md) use the 11 October user-approved
+uniform private card-show step in new supported battles; already-opened older
+battles retain their original continuation.
+[Bureaucrat payment redirection](BUREAUCRAT_PAYMENTS.md) connects auction,
+shipment, revival, Richese sale, paid bribes, individual allied payer legs and
+ruled gross-first World/Betrayal receipts within their existing profile bounds.
 [Banker normal income](SPICE_BANKER_RUNTIME.md#normal-income-local-contract--2-october-2026)
 is automatic in fresh supported ordinary all-fourteen Skills setups, without
 a separate profile or toggle. Existing games and public start gates stay unchanged.

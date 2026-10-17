@@ -47,6 +47,10 @@ final25/25 in affected3 files; the other157 passed initially. Actual CLI1/1 and
 final types/lint/build pass with existing build warnings. Scratch proof host/files
 are removed; no live room, database or deployment changed. See
 [current contract and evidence](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
+Companion payment/Nexus/Stronghold and global Skills guidance now reflects this
+default. The older Bureaucrat and normal-Mentat absence claims were stale, not
+new implementation gaps; current source contracts supersede them. Follow-up
+reference loading and current link/command checks pass without gameplay changes.
 
 **Diplomat used-defense contexts — 17 October.** Fresh capability3 copies the
 canonical role actually used, including late Portable Snooper after a prior

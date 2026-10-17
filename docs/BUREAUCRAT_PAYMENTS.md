@@ -129,9 +129,9 @@ rounds the whole remaining eligible invoice once. Both5+3 and3+5 are admitted.
 The internal diversion payer is the first individually eligible contribution:
 declared payer first, ally second, never pooled. Final Bank parts of that same
 payer/invoice combine for Banker; no funding or eligibility identity is disclosed.
-The separate fresh `banker-income --homeworlds` entry retains these original
-receipts and automatically collects earned Bank income at native Mentat. See
-[current accounting and proof](SPICE_BANKER_RUNTIME.md#classic-homeworld-final-bank-income--14-october-2026).
+Fresh classic `homeworld-occupation --leader-skills` retains these original
+receipts and now includes mandatory normal Banker income automatically.
+See [current activation, accounting and proof](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
 The new consumers are `tests/bureaucrat-occupied-guild.test.ts` and
 `tests/bureaucrat-occupied-emperor.test.ts`, with original-army fixtures of the

@@ -35,6 +35,16 @@ and host are removed. No live room/database/service or deployment is changed.
 Comprehensive assurance, full modes and deployed acceptance remain open.
 See [current source/runtime contract](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+Companion Bureaucrat, Homeworld payment, Nexus, Richese, Stronghold and global
+Skills guidance now uses the ordinary default rather than the retired income
+entry. The Bureaucrat family's old missing-work sentence was stale: its current
+contract already records the qualifying allied, occupied and Betrayal paths.
+Normal Mentat's approved ordinary activation is also reflected in those older
+composition notes. No additional economic mechanism or admission is added.
+The updated reference module loads; current CLI profiles and the linked default
+section pass a throwaway link/command check. Runtime evidence above belongs to
+checkpoint `3ed9856`; this follow-up changes guidance only.
+
 ## 17 October 2026 — Diplomat used-defense contexts
 
 An actual capability2 late Portable after Emperor's false traitor vote recorded
