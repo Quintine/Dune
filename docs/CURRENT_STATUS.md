@@ -29,6 +29,25 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Mandatory normal Banker default — 17 October.** Fresh supported ordinary all14
+Skills now creates the existing deferred-income ledger automatically, including
+its original module/native overlay envelopes. Separate initializer/CLI profile
+and fixture opt-ins are removed without aliases; existing played games are not
+retrofitted. Original payment, per-payer/phase, trainer and earned-faction custody
+rules remain; custody is still explicitly provisional.
+The ordinary native World/Nexus/Discovery/Tech/Stronghold and Semuta/Skills
+programmes both pay Bank4, retain Richese wallet5/front1, and collect wallet6/front0
+only at actual Mentat1. Real Hajr→Semuta recovery creates no second invoice.
+Below-band/player-recipient controls and a simulated legacy played save retain
+their correct behavior. Two390px journeys/18 original actions include8 native
+UI submissions, with no app errors or root overflow; all four legal policies
+continue both contexts. Controlled setup entropy and conserved card staging are
+explicit. The182-case related set exposed fixture-only issues, repaired with
+final25/25 in affected3 files; the other157 passed initially. Actual CLI1/1 and
+final types/lint/build pass with existing build warnings. Scratch proof host/files
+are removed; no live room, database or deployment changed. See
+[current contract and evidence](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
+
 **Diplomat used-defense contexts — 17 October.** Fresh capability3 copies the
 canonical role actually used, including late Portable Snooper after a prior
 false traitor choice; the recorded vote is never reopened. Native World-only

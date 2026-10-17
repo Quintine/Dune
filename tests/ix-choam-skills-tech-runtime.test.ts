@@ -33,7 +33,7 @@ for (const advanced of [false, true]) {
   const rules = advanced ? 'Advanced' : 'Basic';
   for (const family of ['ixians', 'choam'] as const) {
     for (const smuggler of [true, false]) void test(`${rules} ${family}: real typed four-counter invoice ${smuggler ? 'includes the free companion' : 'declines it'} and pays only native Heighliners at phase end`, () => {
-      const fixture = createIxChoamSkillsTechFixture({ advanced, family, amount: 4, smuggler, bankerIncome: true });
+      const fixture = createIxChoamSkillsTechFixture({ advanced, family, amount: 4, smuggler });
       const before = fixture.game;
       const payer = player(before, fixture.actor);
       const tokenOwner = before.techTokens!.heighliners.owner!;
@@ -144,7 +144,7 @@ for (const advanced of [false, true]) {
   }
 
   void test(`${rules} CHOAM: real exhausted Emperor shipment makes next-turn charity eligible; only original Spice Production accrues, never Axlotl`, () => {
-    const fixture = createIxChoamSkillsTechFixture({ advanced, family: 'choam', kind: 'charity', bankerIncome: true });
+    const fixture = createIxChoamSkillsTechFixture({ advanced, family: 'choam', kind: 'charity' });
     const before = fixture.game;
     assert.ok(fixture.actions.some(step => step.actor === fixture.actor && step.action.type === 'ship'
       && step.action.amount === 5), 'Eligibility comes from an actual original ten-spice desert invoice.');

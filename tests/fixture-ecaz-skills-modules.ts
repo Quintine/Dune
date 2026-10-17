@@ -22,8 +22,6 @@ export type EcazSkillsModulesOptions = {
   skill?: LeaderSkillId;
   band?: 'normal' | 'skilled';
   strongholdKind?: Exclude<StrongholdId, 'hidden_mobile_stronghold'>;
-  /** Separate existing native Banker income opt-in, not a skill-module default. */
-  bankerIncome?: boolean;
   poison?: boolean;
   defense?: boolean;
   opponentDial?: number;
@@ -147,7 +145,7 @@ export function createEcazSkillsModulesFixture(options: EcazSkillsModulesOptions
   if (!!game.techTokens !== tech) game = applyAction(game, game.host, { type: 'techTokens', enabled: tech });
   if (!!game.strongholdCards !== stronghold) game = applyAction(game, game.host, { type: 'strongholdCards', enabled: stronghold });
   const initial = structuredClone(game), actions: StrongholdFactionsNativeStep[] = [], staging: string[] = [];
-  game = initializeAdvancedNativeSkillsSetup({ family: 'ecaz', rules, requestedSkill: requested, bankerIncome: options.bankerIncome, initial: game });
+  game = initializeAdvancedNativeSkillsSetup({ family: 'ecaz', rules, requestedSkill: requested, initial: game });
   const offered = structuredClone(game);
   for (let i = 0; game.status === 'setup' && i < 200; i++) {
     if (game.setupStage === 'leaderSkills') {

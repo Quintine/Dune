@@ -217,7 +217,7 @@ export function createDiscoveryNativeE2SkillsFixture(options: DiscoveryNativeE2S
     joinGame(game, newPlayer(faction, faction, faction));
   assert.deepEqual(game.expansions, ['choam']);
   if (options.advanced !== undefined) assert.equal(game.advanced, options.advanced);
-  assert.ok(!game.homeworlds && !game.nexusCards && !game.spiceBankerIncomePreview);
+  assert.ok(!game.homeworlds && !game.nexusCards);
   assert.ok(game.status === 'lobby' || game.status === 'setup' && game.turn === 1 && game.phase === 0 &&
     game.leaderSkills?.assignments.length === 0 && game.players.every(p =>
       p.hand.length <= (p.faction === 'harkonnen' ? 2 : 1) && p.traitors.length === 0 && p.traitorChoices.length === 0),

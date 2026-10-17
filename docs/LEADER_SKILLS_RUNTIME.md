@@ -1,5 +1,12 @@
 # Leader Skills first functional prototype
 
+**17 October default cutover:** normal Spice Banker income is mandatory in
+fresh supported ordinary all-fourteen Skills setups, including their existing
+module and native-overlay envelopes. The separate income initializer/profile
+and fixture opt-ins are removed; existing games are not retrofitted.
+Earlier dated references to a separate entry describe historical checkpoints.
+See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
+
 13 September 2026. This is **Prototyped**, with **Partial** rules coverage.
 Normal mode starts and publication remain gated. The [source contract](LEADER_SKILLS_RULES.md)
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
@@ -880,8 +887,8 @@ response step awaits the user's UX decision; ordinary activation remains disable
 auction, shipment, Richese sale and paid-bribe families within its recorded
 boundary. Other Bureaucrat payments and split funding remain incomplete.
 [Banker normal income](SPICE_BANKER_RUNTIME.md#normal-income-local-contract--2-october-2026)
-is connected only in its separate fresh classic, supported Basic native or
-the bounded Advanced Ixian/CHOAM `banker-income` profile; ordinary/default starts gain no activation.
+is automatic in fresh supported ordinary all-fourteen Skills setups, without
+a separate profile or toggle. Existing games and public start gates stay unchanged.
 [Banker battle spending](SPICE_BANKER_RUNTIME.md) retains its separate
 sealed funds and survivor strength. [Smuggler shipping](SMUGGLER_SHIPMENT.md)
 connects its optional normal reserve bonus and the [owned No-Field companion](SMUGGLER_NO_FIELD.md).

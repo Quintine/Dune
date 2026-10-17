@@ -148,9 +148,6 @@ for (const config of configurations) {
     assert.equal(receipt.beforeSpice, buyer.spice); assert.equal(receipt.afterSpice, buyer.spice);
     assert.equal(paid.nexusEmperorPurchaseHistory!.length, 1);
     assert.deepEqual(paid.techTokens, f.game.techTokens);
-    assert.equal(viewGame(paid, f.actor).spiceBankerIncome, null);
-    assert.equal(paid.spiceBankerIncome, undefined);
-    assert.equal(paid.currentAuctionSale?.spiceBankerIncomePayment, undefined);
     custody(f.game, paid); rejected(paid, f.actor, f.paymentAction);
     const continued = advanceNexusSkillsModulesPaymentsToPhase(paid, 4);
     assert.equal(nexusSkillsModulesPaymentsPlayer(continued, f.actor).hand.filter(card => card.id === lot.id).length, 1);

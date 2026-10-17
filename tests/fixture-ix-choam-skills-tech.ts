@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  applyAction, createGame, initializeLeaderSkillsGameForAudit, initializeSpiceBankerIncomeGameForAudit,
+  applyAction, createGame, initializeLeaderSkillsGameForAudit,
   joinGame, newPlayer, viewGame, type Action, type Game, type Player,
 } from '../game/engine';
 import { TERRITORIES } from '../game/board';
@@ -19,8 +19,6 @@ export type IxChoamSkillsTechOptions = {
   amount?: number;
   elite?: number;
   smuggler?: boolean;
-  /** Separate normal-income audit opt-in; needs an actual Atreides seat. */
-  bankerIncome?: boolean;
 };
 export type IxChoamSkillsTechStep = { actor: string; action: Action };
 export type IxChoamSkillsTechFixture = {
@@ -108,7 +106,7 @@ export function initializeIxChoamSkillsTechSetup(options: IxChoamSkillsTechOptio
   if (!options.initial) {
     joinGame(game, newPlayer('emperor', 'Emperor', 'emperor'));
     joinGame(game, newPlayer('fremen', 'Fremen', 'fremen'));
-    if (options.bankerIncome) joinGame(game, newPlayer('banker', 'Banker', 'atreides'));
+    joinGame(game, newPlayer('banker', 'Banker', 'atreides'));
   }
   assert.equal(game.status, 'lobby', 'Only the original fresh undealt lobby is accepted.');
   assert.ok(game.expansions.includes(expansion));
@@ -116,16 +114,14 @@ export function initializeIxChoamSkillsTechSetup(options: IxChoamSkillsTechOptio
   if (options.advanced !== undefined) assert.equal(game.advanced, options.advanced);
   assert.ok(game.players.some(p => p.faction === family));
   assert.ok(game.players.some(p => p.faction === 'emperor'));
-  if (options.bankerIncome) assert.ok(game.players.some(p => p.faction === 'atreides'));
   if (!game.techTokens) game = applyAction(game, game.host, { type: 'techTokens', enabled: true });
   assert.deepEqual(game.techTokens, createTechTokens());
   for (const p of game.players) if (!p.ready) game = applyAction(game, p.id, { type: 'ready' });
   const passive: LeaderSkillId[] = ['warmaster', 'swordmaster-of-ginaz', 'killer-medic', 'prana-bindu-adept', 'master-of-assassins', 'planetologist'];
   const selected = game.players.map(p => p.faction === family
     ? options.kind === 'suk-battle' ? 'suk-graduate' : 'smuggler'
-    : options.bankerIncome && p.faction === 'atreides' ? 'spice-banker' : passive.shift()!);
-  return withOffers(selected, () => options.bankerIncome
-    ? initializeSpiceBankerIncomeGameForAudit(game) : initializeLeaderSkillsGameForAudit(game));
+    : p.faction === 'atreides' ? 'spice-banker' : passive.shift()!);
+  return withOffers(selected, () => initializeLeaderSkillsGameForAudit(game));
 }
 
 export function completeIxChoamSkillsTechSetup(state: Game, options: IxChoamSkillsTechOptions = {}, actions?: IxChoamSkillsTechStep[]): Game {
@@ -138,7 +134,7 @@ export function completeIxChoamSkillsTechSetup(state: Game, options: IxChoamSkil
       const faction = ixChoamSkillsTechPlayer(game, actor).faction;
       const skill = faction === (options.family ?? 'ixians')
         ? options.kind === 'suk-battle' ? 'suk-graduate' : 'smuggler'
-        : options.bankerIncome && faction === 'atreides' ? 'spice-banker' : offer.cards[0];
+        : faction === 'atreides' ? 'spice-banker' : offer.cards[0];
       assert.ok(offer.cards.includes(skill) && !view.unavailableSkills?.[skill]);
       const eligible = new Set(view.eligibleLeaders.map(l => l.id));
       const leader = ixChoamSkillsTechPlayer(game, actor).leaders.filter(l => eligible.has(l.id))
@@ -166,7 +162,7 @@ export function createIxChoamSkillsTechFixture(options: IxChoamSkillsTechOptions
   let game = completeIxChoamSkillsTechSetup(setup, options, actions);
   const owner = game.players.find(p => p.faction === family)!.id;
   const opponent = game.players.find(p => p.faction === 'emperor')!.id;
-  const banker = options.bankerIncome ? game.players.find(p => p.faction === 'atreides')!.id : undefined;
+  const banker = game.players.find(p => p.faction === 'atreides')?.id;
   const trainer = game.leaderSkills!.assignments.find(a => a.owner === owner)!.leader;
   // Four conserved non-worm cards avoid optional riders during the two-turn
   // charity continuation. They are not asserted to be a natural shuffle history.

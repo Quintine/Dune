@@ -5,7 +5,6 @@ import {
   initializeDiscoveryGameForAudit,
   initializeHomeworldOccupationGameForAudit,
   initializeLeaderSkillsGameForAudit,
-  initializeSpiceBankerIncomeGameForAudit,
   initializeFactionExpansionsGameForAudit,
   initializeStrongholdFactionsGameForAudit,
   initializeNexusGameForAudit,
@@ -31,7 +30,6 @@ export const PROTOTYPE_PROFILES = [
   'discovery',
   'homeworld-occupation',
   'leader-skills',
-  'banker-income',
   'factions',
   // Advanced selected native families or standalone E3; optional Tech requires 3+ seats.
   'stronghold-factions',
@@ -58,7 +56,7 @@ export type PrototypeOptions = {
   discoveries?: boolean;
   /** Explicit original skills with Semuta, classic occupation or Guild Betrayal. */
   leaderSkills?: boolean;
-  /** Original Semuta/Banker composition or classic independent-card Homeworlds. */
+  /** Original Skills/Semuta composition or classic independent-card Homeworlds. */
   homeworlds?: boolean;
 };
 export function isPrototypeProfile(value: string): value is PrototypeProfile {
@@ -101,14 +99,14 @@ export function startPrototypeRoom(
     throw new Error('Unknown prototype profile.');
   if (options.ecazTreachery && profile !== 'ecaz-occupy')
     throw new Error('--ecaz-treachery requires the ecaz-occupy profile.');
-  if (options.nexusCards && profile !== 'leader-skills' && profile !== 'semuta' && profile !== 'banker-income')
-    throw new Error('--nexus-cards requires the leader-skills, banker-income or semuta profile.');
+  if (options.nexusCards && profile !== 'leader-skills' && profile !== 'semuta')
+    throw new Error('--nexus-cards requires the leader-skills or semuta profile.');
   if (options.discoveries && profile !== 'leader-skills' && profile !== 'nexus' && profile !== 'semuta')
     throw new Error('--discoveries requires the leader-skills, nexus or semuta profile.');
   if (options.leaderSkills && profile !== 'semuta' && profile !== 'homeworld-occupation' && profile !== 'guild-betrayal')
     throw new Error('--leader-skills requires the semuta, homeworld-occupation or guild-betrayal profile.');
-  if (options.homeworlds && profile !== 'semuta' && profile !== 'banker-income' && profile !== 'ecaz-treachery')
-    throw new Error('--homeworlds requires the semuta, banker-income or ecaz-treachery profile.');
+  if (options.homeworlds && profile !== 'semuta' && profile !== 'leader-skills' && profile !== 'ecaz-treachery')
+    throw new Error('--homeworlds requires the semuta, leader-skills or ecaz-treachery profile.');
   if (options.ecazTreachery) initial.ecazTreachery = true;
   if ((profile === 'nexus' || options.nexusCards) && !initial.nexusCards)
     initial.nexusCards = { cards: null, phase: null };
@@ -172,8 +170,6 @@ export function startPrototypeRoom(
             : initializeNexusGameForAudit(initial)
           : profile === 'leader-skills'
             ? initializeLeaderSkillsGameForAudit(initial)
-          : profile === 'banker-income'
-            ? initializeSpiceBankerIncomeGameForAudit(initial)
             : initializeDiscoveryGameForAudit({
                 ...initial,
                 discoveryEnabled: true,

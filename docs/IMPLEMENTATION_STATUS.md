@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 17 October 2026 — Mandatory normal Banker default
+
+An ordinary supported all14 Skills setup previously completed a Bank-four
+shipment with no income ledger or grant. Fresh ordinary setup now initializes
+the existing ledger automatically, including supported original World, Nexus,
+Discovery, Tech, Stronghold and native overlay envelopes. Remove the separate
+initializer/CLI profile and fixture opt-ins without aliases. Classic occupied
+World callers retain their original occupation entry, delegating ordinary Skills.
+Played games lacking the metadata are not converted.
+
+Original final Bank legs, distinct payer thresholds, living trainer, physical
+card phase stamp, unavailable front-shield currency and actual Mentat collection
+remain. Earned-faction custody is still provisional, not a new source ruling.
+Genuine native Richese/Emperor/Guild World+modules and Richese/Guild/Atreides
+Semuta+Skills programmes both pay Bank4 and retain wallet5/front1 until original
+Mentat1 yields wallet6/front0. Real Hajr discard/Semuta recovery neither repeats
+payment nor creates another grant. Bank-three/player-recipient controls, actual
+spendability boundaries and a legacy played-state shape retain their behavior.
+Initial scalar entropy and conserved closed Spice Cards/printed hand staging are
+explicit; no armies, wallets, phase clocks, ownership or receipts are assigned.
+
+Two390px journeys complete18 original actions, including8 native UI submissions,
+with no app errors/root overflow. All four minimal policies legally move the
+paid World army, commit actual Semuta and continue native collection; no strategy
+calibration is claimed. Private local proof: `/tmp/dune-banker-default-ui-proof.json`.
+The182-case related batch initially passed176 and exposed6 fixture failures.
+Remove incidental null/absence and staging-text pins; restrict Hajr to its
+designated holder, honor response priority and fix setup entropy. A physical
+Karama swap preserves the donor's Black Market eligibility. Final affected3-file
+union25/25 passes; the unchanged157 cases passed initially. Actual fresh Skills
+CLI1/1, final types/lint and build pass with existing warnings. Scratch UI files
+and host are removed. No live room/database/service or deployment is changed.
+Comprehensive assurance, full modes and deployed acceptance remain open.
+See [current source/runtime contract](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
+
 ## 17 October 2026 — Diplomat used-defense contexts
 
 An actual capability2 late Portable after Emperor's false traitor vote recorded

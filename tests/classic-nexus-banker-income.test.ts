@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { applyAction, initializeSpiceBankerIncomeGameForAudit, viewGame } from '../game/engine';
+import { applyAction, initializeLeaderSkillsGameForAudit, viewGame } from '../game/engine';
 import { botActions } from '../game/bots';
 import { validateLeaderSkills } from '../game/leader-skills';
 import { quoteSpiceCollection } from '../game/board-resolution-quote';
@@ -84,7 +84,7 @@ void test('Nexus Banker keeps available wallet budgets and existing legal policy
   assert.equal(nexusBankerPlayer(next, f.owner).spice, nexusBankerPlayer(f.paid, f.owner).spice);
   assert.deepEqual(viewGame(next, f.owner).spiceBankerIncome!.deferred, [{owner:'a',amount:1}]);
   const snapshot = structuredClone(f.paid);
-  assert.throws(()=>initializeSpiceBankerIncomeGameForAudit(f.paid));
+  assert.throws(()=>initializeLeaderSkillsGameForAudit(f.paid));
   assert.deepEqual(f.paid,snapshot);
   assert.throws(()=>applyAction(f.paid,f.owner,{type:'collectSpiceBankerIncome'}));
   assert.deepEqual(f.paid,snapshot);

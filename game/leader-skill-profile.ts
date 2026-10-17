@@ -34,7 +34,7 @@ export function noOtherLeaderSkillModules(game: LeaderSkillProfile): boolean {
     !game.discoveryEnabled && !game.strongholdCards && !game.techTokens && !game.ecazTreachery;
 }
 
-function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassination = false, discovery = false, betrayal = false, bankerIncome = false): boolean {
+function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassination = false, discovery = false, betrayal = false): boolean {
   return !!game.nexusCards && typeof game.advanced === 'boolean' &&
     !!game.players && game.players.length >= 2 && game.players.length <= 6 &&
     ((discovery && game.discoveryEnabled === true) ||
@@ -48,15 +48,12 @@ function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassinatio
     !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
     (!game.guildBetrayalPreview || betrayal) && !game.richeseBetrayalPreview &&
     !game.nexusIxianReplacementPreview && !game.nexusIxianBetrayalPreview &&
-    !game.nexusHarkonnenBetrayalPreview &&
-    (!game.spiceBankerIncomePreview || bankerIncome);
+    !game.nexusHarkonnenBetrayalPreview;
 }
 
 /** Fresh classic Nexus/Skills, optionally Homeworlds/Discovery/Tech/Advanced Strongholds. */
 export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (game.expansions.length || !nexusLeaderSkillModulesSupported(game, false, true, false, true)) return false;
-  if (game.spiceBankerIncomePreview && (game.homeworlds || game.discoveryEnabled ||
-    game.discoveries || game.discoveryStash || game.greatMaker)) return false;
+  if (game.expansions.length || !nexusLeaderSkillModulesSupported(game, false, true, false)) return false;
   const players = game.players!;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
@@ -208,13 +205,12 @@ function discoveryLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
     !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
     !game.guildBetrayalPreview && !game.richeseBetrayalPreview &&
     !game.nexusIxianReplacementPreview && !game.nexusIxianBetrayalPreview &&
-    !game.nexusHarkonnenBetrayalPreview &&
-    !game.spiceBankerIncomePreview;
+    !game.nexusHarkonnenBetrayalPreview;
 }
 
 /** Recognize only the explicit overlay; native predicates still own roster/module legality. */
 function semutaLeaderSkillContext(game: LeaderSkillProfile): boolean {
-  return game.semutaPreview === true && !game.spiceBankerIncomePreview &&
+  return game.semutaPreview === true &&
     game.expansions.includes('choam') && !!game.players?.some(p => p.faction === 'richese');
 }
 
@@ -491,10 +487,7 @@ function homeworldLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
       game.expansions[0] !== 'ecaz' || !players.some(player => player.faction === 'moritani'))) ||
     game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
     game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
-    game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview ||
-    (game.spiceBankerIncomePreview && (game.expansions.length || game.nexusCards ||
-      game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
-      game.techTokens || game.strongholdCards))) return false;
+    game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
   return true;
 }
 

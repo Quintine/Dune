@@ -102,8 +102,8 @@ void test('all four real legal policies rescue trained native Ecaz counters and 
   }
 });
 
-void test('real Arrakeen subsidy and separately opted-in normal Banker count only the opposing paid Bank leg', () => {
-  const f = fixture({ kind: 'income', band: 'normal', bankerIncome: true, tech: true, stronghold: true, opponentDial: 4, defense: true });
+void test('real Arrakeen subsidy and ordinary normal Banker count only the opposing paid Bank leg', () => {
+  const f = fixture({ kind: 'income', band: 'normal', tech: true, stronghold: true, opponentDial: 4, defense: true });
   const before = reveal(f), sources = before.spiceBankerIncome!.sources.length;
   const game = settle(before, 'cards');
   assert.equal(game.lastBattleContext!.winner, f.owner);

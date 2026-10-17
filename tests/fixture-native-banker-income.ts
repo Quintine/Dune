@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  applyAction, createGame, initializeSpiceBankerIncomeGameForAudit,
+  applyAction, createGame, initializeLeaderSkillsGameForAudit,
   joinGame, newPlayer, viewGame, type Game,
 } from '../game/engine';
 import type { FactionId } from '../game/catalog';
@@ -78,7 +78,7 @@ export function initializeNativeBankerIncomeSetup(options: NativeBankerIncomeOpt
     assert.equal(game.status, 'lobby');
   } else for (const faction of factions.slice(1)) joinGame(game, newPlayer(faction, faction, faction));
   for (const player of game.players) if (!player.ready) game = applyAction(game, player.id, { type: 'ready' });
-  return withNativeBankerSkillShuffle(() => initializeSpiceBankerIncomeGameForAudit(game));
+  return withNativeBankerSkillShuffle(() => initializeLeaderSkillsGameForAudit(game));
 }
 
 function step(game: Game): Game {

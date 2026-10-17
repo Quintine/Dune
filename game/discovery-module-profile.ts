@@ -65,8 +65,7 @@ export function classicDiscoveryLeaderSkillsProfile(game: LeaderSkillProfile): b
     game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview ||
     game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
-    game.nexusHarkonnenBetrayalPreview ||
-    game.spiceBankerIncomePreview) return false;
+    game.nexusHarkonnenBetrayalPreview) return false;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
     let classic = false;

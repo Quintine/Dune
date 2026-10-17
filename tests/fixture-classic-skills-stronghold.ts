@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {
   applyAction, createGame, handLimit, initializeLeaderSkillsGameForAudit,
-  initializeSpiceBankerIncomeGameForAudit, joinGame, newPlayer, viewGame,
+  joinGame, newPlayer, viewGame,
   type Action, type Game, type Player,
 } from '../game/engine';
 import { territory } from '../game/board';
@@ -20,7 +20,6 @@ export type ClassicSkillsStrongholdOptions = {
   initial?: Game;
   seatIds?: string[];
   optionalTech?: boolean;
-  bankerIncome?: boolean;
   kind?: Exclude<StrongholdId, 'hidden_mobile_stronghold'>;
   skill?: LeaderSkillId;
   band?: 'normal' | 'skilled';
@@ -200,8 +199,7 @@ export function createClassicSkillsStrongholdFixture(options: ClassicSkillsStron
   const owner = game.players.find(p => p.faction === (options.ownerFaction ?? 'guild'))?.id;
   const opponent = game.players.find(p => p.faction === (options.opponentFaction ?? 'emperor'))?.id;
   assert.ok(owner && opponent && owner !== opponent);
-  const banker = options.bankerIncome ? game.players.find(p => p.faction === 'atreides')?.id : undefined;
-  if (options.bankerIncome) assert.ok(banker && banker !== owner && banker !== opponent && game.players.length >= 3);
+  const banker = game.players.find(p => p.faction === 'atreides' && p.id !== owner && p.id !== opponent)?.id;
   if (!game.strongholdCards) game = applyAction(game, game.host, { type: 'strongholdCards', enabled: true });
   assert.deepEqual(game.strongholdCards, createStrongholdCards());
   if (options.optionalTech) {
@@ -213,8 +211,7 @@ export function createClassicSkillsStrongholdFixture(options: ClassicSkillsStron
   const passive: LeaderSkillId[] = (['sandmaster', 'smuggler', 'rihani-decipherer', 'prana-bindu-adept', 'killer-medic', 'master-of-assassins'] as const)
     .filter(candidate => candidate !== skill);
   const selected = game.players.map(player => player.id === owner ? skill : player.id === banker ? 'spice-banker' as const : passive.shift()!);
-  game = withOffers(selected, () => options.bankerIncome
-    ? initializeSpiceBankerIncomeGameForAudit(game) : initializeLeaderSkillsGameForAudit(game));
+  game = withOffers(selected, () => initializeLeaderSkillsGameForAudit(game));
   const initial = structuredClone(game);
   for (let count = 0; game.status === 'setup' && count < 200; count++) {
     if (game.setupStage === 'leaderSkills') {

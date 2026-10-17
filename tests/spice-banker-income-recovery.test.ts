@@ -90,7 +90,7 @@ async function fixture(t: test.TestContext, options: Options = {}): Promise<Fixt
   }
   // BG keeps the entry's actual native setup undealt. The fixture consumes that
   // original setup; it cannot reset already dealt cards or replace an offer.
-  withSpiceBankerIncomeSetupRandomness(() => startPrototypeRoom(store.sqlite, code, lobby.version, 'banker-income'));
+  withSpiceBankerIncomeSetupRandomness(() => startPrototypeRoom(store.sqlite, code, lobby.version, 'leader-skills'));
   const setup = await store.rooms.readRoom(code);
   const native = createSpiceBankerIncomeFixture({ ...options, initial: setup });
   assert.equal(native.beforePayment.code, code);

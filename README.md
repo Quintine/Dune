@@ -224,11 +224,11 @@ exchange. This is a bounded provisional local timing/privacy convention;
 bounded verification is Partial/Development Verified; the universal reaction-policy question stays open.
 See the [source contract and excluded modes](docs/NEXUS_HARKONNEN_RULES.md#bounded-betrayal-preview-contract--1-october-2026).
 
-For local **normal Spice Banker income**, use
-`node --import tsx tools/start-prototype.ts --profile banker-income`
-on a fresh ready classic Basic/Advanced base-deck lobby, or an already-supported
-Basic Ixian/Tleilaxu/CHOAM/Moritani skill roster with its single required deck.
-All fourteen Leader Skills remain. Exact-version/private-backup safeguards
+Normal **Spice Banker income** is mandatory in fresh supported all-fourteen
+Leader Skills setups. Use the ordinary
+`node --import tsx tools/start-prototype.ts --profile leader-skills`
+entry with the lobby's supported original modules; there is no separate
+income profile or toggle. Exact-version/private-backup safeguards
 apply; public starts and existing games are unchanged. Another payer's one
 actual bank payment of at least four gains one mandatory front-shield spice
 once per phase; it stays unspendable until automatic native Mentat collection.
@@ -236,9 +236,9 @@ Original payment, recipient and separate payer legs stay intact.
 Tleilaxu's own paid revival is a bank payment; another faction's payment to
 Tleilaxu is not, unless its income is canceled. The separate free-revival
 bank reward never adds to the original payer's qualifying amount.
-Earned original-faction retention after death/capture/reassignment is provisional
-in this profile; bounded verification is Partial/Development Verified and the existing question stays open.
-See the [normal-band source and scope](docs/SPICE_BANKER_RUNTIME.md#normal-income-local-contract--2-october-2026).
+Earned original-faction retention after death/capture/reassignment remains
+provisional; existing games are not retrofitted and complete-mode acceptance
+remains open. See the [default setup and source contract](docs/SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
 For local **expansion factions + Stronghold Cards**, use
 `node --import tsx tools/start-prototype.ts --profile stronghold-factions`

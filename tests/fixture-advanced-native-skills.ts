@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  applyAction, createGame, initializeLeaderSkillsGameForAudit, initializeSpiceBankerIncomeGameForAudit, joinGame, newPlayer,
+  applyAction, createGame, initializeLeaderSkillsGameForAudit, joinGame, newPlayer,
   viewGame, type Action, type Game, type Player,
 } from '../game/engine';
 import type { FactionId } from '../game/catalog';
@@ -14,7 +14,6 @@ export type AdvancedNativeSkillsOptions = {
   requestedSkill?: LeaderSkillId;
   skillOwner?: FactionId;
   opponents?: readonly FactionId[];
-  bankerIncome?: boolean;
   /** Richese and Ecaz also exercise their Basic native rule bands. */
   rules?: 'basic' | 'advanced';
   /** Continue this actual authenticated lobby/setup without replacing its seats. */
@@ -76,7 +75,7 @@ export function initializeAdvancedNativeSkillsSetup(options: AdvancedNativeSkill
   assert.equal(game.status, 'lobby');
   for (const player of game.players) if (!player.ready) game = applyAction(game, player.id, { type: 'ready' });
   return withSkillShuffle(options.requestedSkill ?? 'suk-graduate', game.players.findIndex(p => p.id === owner.id),
-    () => options.bankerIncome ? initializeSpiceBankerIncomeGameForAudit(game) : initializeLeaderSkillsGameForAudit(game));
+    () => initializeLeaderSkillsGameForAudit(game));
 }
 
 /** Finish original setup decisions from the actual own-seat projections. */

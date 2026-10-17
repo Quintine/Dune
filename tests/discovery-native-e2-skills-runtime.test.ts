@@ -68,7 +68,6 @@ for (const advanced of [false, true]) for (const tech of [false, true]) {
     assert.ok(player(f.game, f.richese).hand.some(c => c.id === f.green));
     assert.equal(f.game.richeseCache!.some(c => c.id === f.green), false);
     assert.ok(f.game.richeseCache!.length > 0, 'Two-turn bounded recipes do not bypass the exhausted-cache ruling.');
-    assert.equal(f.game.spiceBankerIncomePreview, undefined);
     if (tech) {
       assert.deepEqual(f.setup.techTokens, createTechTokens());
       assert.ok(TECH_TOKENS.every(token => f.afterFirstStorm.techTokens![token.id].owner !== null));

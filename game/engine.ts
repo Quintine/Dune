@@ -2119,7 +2119,7 @@ export type Game = {
   /** Absent on legacy rooms whose starting cards were already dealt. */
   setupStage?: 'prediction' | 'skillTreachery' | 'leaderSkills' | 'traitors' | 'forces';
   leaderSkills?: LeaderSkillsState;
-  /** Fresh local classic profile; earned custody remains with its original faction. */
+  /** Fresh Skills normal income; already-earned spice stays with its original faction. */
   spiceBankerIncomePreview?: true;
   spiceBankerIncome?: BankerIncomeState;
   bureaucratPayments?: {used:BureaucratPaymentUse[];pending?:{
@@ -8857,22 +8857,6 @@ function bankerIncomeContext(g: Game): BankerIncomeContext {
     }))})),
     assignments: g.leaderSkills?.assignments ?? []};
 }
-function bankerIncomeProfile(g: Game): boolean {
-  const classicNexus = classicNexusLeaderSkillsProfile(g);
-  const homeworlds = !!g.homeworlds && !g.expansions.length && !g.nexusCards &&
-    !g.techTokens && !g.strongholdCards && homeworldLeaderSkillsProfile(g);
-  return g.players.length >= 2 && g.players.length <= 6 &&
-    new Set(g.players.map(p => p.faction)).size === g.players.length &&
-    ((!g.expansions.length && g.players.every(p => FACTIONS.some(f => f.id === p.faction && f.expansion === 'base'))) ||
-      nativeExpansionLeaderSkillsProfile(g)) &&
-    (!g.nexusCards || classicNexus) && (!g.homeworlds || homeworlds) &&
-    (!g.techTokens || classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || strongholdLeaderSkillsProfile(g) || classicNexus) &&
-    (!g.strongholdCards || strongholdLeaderSkillsProfile(g) || classicNexus) && !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
-    !g.greatMaker && !g.ecazTreachery && !g.semutaPreview &&
-    ((!g.moritaniAssassinatePreview && !g.moritaniAssassinate) || advancedMoritaniLeaderSkillsProfile(g)) && !g.advancedPreview &&
-    !g.kullPreview && !g.nexusKullPreview && !g.guildBetrayalPreview && !g.richeseBetrayalPreview &&
-    !g.nexusIxianReplacementPreview && !g.nexusIxianBetrayalPreview && !g.nexusHarkonnenBetrayalPreview;
-}
 function bankerIncomePaymentSignature(payment: SpiceBankerIncomePayment): string {
   return JSON.stringify([payment.event, payment.turn, payment.phase, payment.kind, payment.legs]);
 }
@@ -8882,8 +8866,8 @@ function spiceBankerIncomeIntegrity(g: Game): void {
       'Deferred Spice Banker income requires its fresh local profile.');
     return;
   }
-  requireRule(g.spiceBankerIncomePreview === true && bankerIncomeProfile(g) && !!g.leaderSkills && !!g.spiceBankerIncome,
-    'The saved Spice Banker income profile lost its supported physical setup.');
+  requireRule(g.spiceBankerIncomePreview === true && ordinaryLeaderSkillModeSupported(g) && !!g.leaderSkills && !!g.spiceBankerIncome,
+    'The saved Spice Banker income lost its supported Leader Skills setup.');
   bankerIncomeRule(() => validateBankerIncomeState(g.spiceBankerIncome!, bankerIncomeContext(g)));
   const continuation = g.pendingTreacheryDiscard?.continuation;
   const responses = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
@@ -10676,27 +10660,6 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   if ((mixedE3 || homeworlds || nativeDiscoveryLeaderSkillsProfile(initialized) || pairedE3) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   return initialized;
 }
-/** Fresh all-fourteen-card classic or supported native skills; no public income toggle. */
-export function initializeSpiceBankerIncomeGameForAudit(state: Game): Game {
-  requireRule(bankerIncomeProfile(state) && !state.leaderSkills &&
-    !state.spiceBankerIncomePreview && state.spiceBankerIncome === undefined,
-    'Spice Banker income requires a fresh classic or supported native skill lobby without unsupported optional modules.');
-  requireFreshSetup(state, state.expansions.length > 0);
-  if (state.homeworlds) {
-    const initialized = initializeHomeworldOccupationGameForAudit(state, true);
-    initialized.spiceBankerIncomePreview = true;
-    initialized.spiceBankerIncome = bankerIncomeRule(() => createBankerIncomeState(bankerIncomeContext(initialized)));
-    return initialized;
-  }
-  const g = structuredClone(state);
-  g.leaderSkills = createLeaderSkills(random);
-  g.spiceBankerIncomePreview = true;
-  g.spiceBankerIncome = bankerIncomeRule(() => createBankerIncomeState(bankerIncomeContext(g)));
-  const initialized = initializeSetupGameForAudit(g, false, classicNexusLeaderSkillsProfile(g), false, false, true,
-    g.expansions.length === 1 && g.expansions[0] === 'choam', g.expansions.length > 0);
-  if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
-  return initialized;
-}
 /** Independent cards keep the actual selected base/E1/E2 physical families. */
 function independentCardRoster(g: Game): boolean {
   if (g.expansions.length > 2 ||
@@ -10802,6 +10765,12 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       ? 'Discovery supports fresh classic, selected E1/E2 or standalone E3 factions with optional original Tech or Advanced Strongholds and no other overlays.'
       : 'The audit initializer supports base factions without expansions or optional modules.',
   );
+  if (leaderSkills) {
+    requireRule(g.leaderSkills && g.spiceBankerIncomePreview === undefined && g.spiceBankerIncome === undefined,
+      'Normal Spice Banker income starts only with fresh Leader Skills setup.');
+    g.spiceBankerIncomePreview = true;
+    g.spiceBankerIncome = bankerIncomeRule(() => createBankerIncomeState(bankerIncomeContext(g)));
+  }
   initializeSetup(g, strongholdFactions || !!g.strongholdCards);
   if (nativeTech && byFaction(g, 'ecaz')) g.ecazOccupyPreview = true;
   return normalizeAutomaticGame(g);
@@ -17600,8 +17569,8 @@ function occupiedPercentageIntegrity(g: Game) {
       g.pendingHomeworldOccupiedBonus === undefined, 'Occupied source receipts require their original fresh profile.');
     return;
   }
-  requireRule(!g.spiceBankerIncomePreview || bankerIncomeProfile(g),
-    'Occupied percentage and deferred Banker routing require their supported classic Homeworld source profile.');
+  requireRule(!g.spiceBankerIncomePreview || ordinaryLeaderSkillModeSupported(g),
+    'Occupied percentage and deferred Banker routing require their supported Leader Skills source context.');
   if (!g.homeworldOccupiedPercentageLedger) {
     requireRule(!g.pendingHomeworldOccupiedPercentage && !g.pendingHomeworldOccupiedBonus,
       'The original occupied percentage ledger is missing.');
@@ -29667,20 +29636,6 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
   if (state.spiceBankerIncomePreview) {
-    const keysBySource: Record<string, readonly string[]> = {
-      bid: ['type','amount','allyPayment'], passBid: ['type'],
-      ship: ['type','territory','sector','amount','elite','allyPayment','smuggler'],
-      guildShip: ['type','from','forces','eliteForces','territory','sector','amount','elite','allyPayment'],
-      revive: ['type','amount','elite'], reviveLeader: ['type','leader'], reviveKwisatz: ['type'],
-      emperorRevival: ['type','amount','elite'], passResponse: ['type'],
-      traitorCall: ['type','call','leader'],
-    };
-    const allowed = action.type === 'ship' && action.noField !== undefined && getPlayer(state, id).faction === 'richese'
-      ? ['type','territory','sector','amount','elite','allyPayment','smuggler','noField','event']
-      : action.type === 'decision' && state.decision?.kind === 'auctionPayment'
-        ? ['type','karama','card'] : keysBySource[action.type];
-    requireRule(!allowed || Object.keys(action).every(key => allowed.includes(key)),
-      'Use only the original native payment fields; Spice Banker income is automatic.');
     requireRule(!Object.keys(action).some(key => ['actor','bankerIncome','paymentSource','spiceBankerIncome','bankLegs','trainer'].includes(key)),
       'Spice Banker payment authority comes only from the original native transaction.');
   }

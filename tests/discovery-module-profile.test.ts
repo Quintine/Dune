@@ -54,10 +54,9 @@ void test('Discovery cannot redeal started components or silently remove another
 void test('Discovery Skills cannot silently drop unsupported native families or unrelated modules and previews', () => {
   const unsupported = lobby(['ixians', 'ecaz', 'guild'], ['ix', 'ecaz']);
   assert.throws(() => initializeLeaderSkillsGameForAudit(unsupported), RuleError);
-  const overlays = Array.from({ length: 2 }, () => lobby(['guild', 'emperor', 'harkonnen'], []));
-  overlays[0].advanced = false; overlays[0].strongholdCards = createStrongholdCards();
-  overlays[1].spiceBankerIncomePreview = true;
-  for (const game of overlays) assert.throws(() => initializeLeaderSkillsGameForAudit(game), RuleError);
+  const basicStrongholds = lobby(['guild', 'emperor', 'harkonnen'], []);
+  basicStrongholds.advanced = false; basicStrongholds.strongholdCards = createStrongholdCards();
+  assert.throws(() => initializeLeaderSkillsGameForAudit(basicStrongholds), RuleError);
   const two = lobby(['guild', 'emperor'], []); two.techTokens = createTechTokens();
   assert.throws(() => initializeLeaderSkillsGameForAudit(two), RuleError);
 });

@@ -51,10 +51,10 @@ function holdPhysicalTraitor(game: Game, identity: string): void {
 
 /** All14 and the original assassination state come from the fresh production
  * initializer. Only board/card positions are controlled after native setup. */
-function stagedGame(bankerIncome = false) {
+function stagedGame() {
   const native = completedAdvancedNativeSkillsGame({
     family: 'moritani', skillOwner: 'guild', requestedSkill: 'warmaster',
-    opponents: ['guild', 'emperor'], bankerIncome,
+    opponents: ['guild', 'emperor'],
   });
   assert.equal(assignment(native, player(native, 'guild').id).skill, 'warmaster');
   assert.ok(native.moritaniAssassinate);
@@ -332,8 +332,8 @@ void test('an actual normal Moritani loss cannot assassinate when the winning tr
   custody(game);
 });
 
-void test('the fresh private Banker wrapper retains normal-traitor ENTIRE-GAME forfeiture through a later native turn loss', () => {
-  let game = stagedGame(true);
+void test('ordinary Skills retain normal-traitor ENTIRE-GAME forfeiture through a later native turn loss', () => {
+  let game = stagedGame();
   const guild = player(game, 'guild').id;
   const moritani = player(game, 'moritani').id;
   const trainer = assignment(game, guild).leader;

@@ -810,71 +810,13 @@ void test('Harkonnen Betrayal CLI backs up every room and seat privately before 
   assert.deepEqual(current.prepare('SELECT * FROM seats ORDER BY player_id').all(), seats);
 });
 
-for (const advanced of [false, true]) {
-  for (const seats of [2, 3, 4, 5, 6]) {
-    void test(`Banker income ${advanced ? 'Advanced' : 'Basic'} ${seats}-seat entry conserves the original base and skill inventories without changing credentials`, t => {
-      const { db } = fixture(t);
-      const lobby = harkonnenLobby(advanced, seats);
-      db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(lobby), lobby.code);
-      const credentials = db.prepare('SELECT * FROM seats').all();
-      const other = db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00');
-      const before = db.prepare('SELECT * FROM rooms ORDER BY code').all();
-      assert.throws(() => startPrototypeRoom(db, lobby.code, 6, 'banker-income'));
-      assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), before);
-      startPrototypeRoom(db, lobby.code, 7, 'banker-income');
-      const saved = JSON.parse(db.prepare('SELECT state FROM rooms WHERE code=?').get(lobby.code)!.state as string) as Game;
-      assert.equal(saved.version, 8);
-      assert.equal(saved.status, 'setup');
-      assert.equal(saved.spiceBankerIncomePreview, true);
-      assert.equal(saved.advanced, advanced);
-      assert.equal(saved.host, lobby.host);
-      assert.deepEqual(saved.playerPositions, lobby.playerPositions);
-      assert.deepEqual(saved.players.map(p => [p.id, p.name, p.faction]), lobby.players.map(p => [p.id, p.name, p.faction]));
-      const stock = [...saved.deck, ...saved.discard, ...saved.players.flatMap(p => p.hand)];
-      assert.equal(stock.length, 33);
-      assert.equal(new Set(stock.map(card => card.id)).size, 33);
-      assert.ok(saved.leaderSkills);
-      const skills = [...saved.leaderSkills.deck, ...Object.values(saved.leaderSkills.offers).flatMap(offer => offer.cards),
-        ...saved.leaderSkills.assignments.map(assignment => assignment.skill)];
-      assert.deepEqual(skills.sort(), createLeaderSkills(() => 0.5).deck.sort());
-      for (const player of saved.players) {
-        const view = viewGame(saved, player.id);
-        assert.deepEqual(view.spiceBankerIncome, { deferred: [], usedThisPhase: [] });
-        assert.equal(view.spiceBankerIncomePreview, true);
-      }
-      const started = db.prepare('SELECT * FROM rooms ORDER BY code').all();
-      for (const profile of ['banker-income', 'leader-skills', 'nexus'] as const)
-        assert.throws(() => startPrototypeRoom(db, lobby.code, 8, profile));
-      assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), started);
-      assert.deepEqual(db.prepare('SELECT * FROM seats').all(), credentials);
-      assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
-    });
-  }
-}
-
-void test('Banker income rejects incompatible profiles and public activation without modifying any saved room or credential', t => {
+void test('Leader Skills rejects invalid or already-dealt lobbies and forged public activation without changing saved rooms or credentials', t => {
   const { db } = fixture(t);
   const native = harkonnenLobby();
   const changes: ((game: Game) => void)[] = [
     game => { game.players[0].ready = false; },
     game => { game.code = 'NOTMATCH'; },
     game => { game.players[1].faction = game.players[0].faction; },
-    ...(['ixians', 'tleilaxu', 'choam', 'richese', 'ecaz', 'moritani'] as const).map(faction =>
-      (game: Game) => { game.players[1].faction = faction; }),
-    ...(['ix', 'choam', 'ecaz'] as const).map(expansion =>
-      (game: Game) => { game.expansions = [expansion]; }),
-    game => { game.discoveryEnabled = true; },
-    game => { game.ecazTreachery = true; },
-    game => { game.semutaPreview = true; },
-    game => { game.nexusIxianReplacementPreview = true; },
-    game => { game.nexusIxianBetrayalPreview = true; },
-    game => { game.nexusHarkonnenBetrayalPreview = true; },
-    game => { game.kullPreview = true; },
-    game => { game.nexusKullPreview = true; },
-    game => { game.guildBetrayalPreview = true; },
-    game => { game.richeseBetrayalPreview = true; },
-    game => { game.moritaniAssassinatePreview = true; },
-    game => { game.spiceBankerIncomePreview = true; },
     game => { game.leaderSkills = createLeaderSkills(() => 0.5); },
     game => { game.players.splice(1); },
     game => { game.players.push(...Array.from({ length: 4 }, (_, index) => newPlayer(`extra${index}`, `Extra ${index}`, 'guild'))); },
@@ -887,7 +829,7 @@ void test('Banker income rejects incompatible profiles and public activation wit
     db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game), native.code);
     const rooms = db.prepare('SELECT * FROM rooms ORDER BY code').all();
     const credentials = db.prepare('SELECT * FROM seats').all();
-    assert.throws(() => startPrototypeRoom(db, native.code, 7, 'banker-income'));
+    assert.throws(() => startPrototypeRoom(db, native.code, 7, 'leader-skills'));
     assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), rooms);
     assert.deepEqual(db.prepare('SELECT * FROM seats').all(), credentials);
   }
@@ -898,8 +840,8 @@ void test('Banker income rejects incompatible profiles and public activation wit
   assert.deepEqual(native, original);
 });
 
-void test('Banker income CLI requires a fresh exact-version private backup and preserves native setup, old rooms and credentials', t => {
-  const directory = mkdtempSync(join(tmpdir(), 'dune-banker-income-'));
+void test('Leader Skills CLI requires a fresh exact-version private backup and preserves native setup, old rooms and credentials', t => {
+  const directory = mkdtempSync(join(tmpdir(), 'dune-leader-skills-'));
   t.after(() => rmSync(directory, { recursive: true, force: true }));
   const database = join(directory, 'rooms.sqlite');
   const db = new DatabaseSync(database);
@@ -918,7 +860,7 @@ void test('Banker income CLI requires a fresh exact-version private backup and p
   const output = join(directory, 'private-proof');
   const invoke = (version: number, out: string) => spawnSync(process.execPath, [
     '--import', 'tsx', fileURLToPath(new URL('../tools/start-prototype.ts', import.meta.url)),
-    '--profile', 'banker-income', '--db', database, '--room', lobby.code,
+    '--profile', 'leader-skills', '--db', database, '--room', lobby.code,
     '--version', String(version), '--out', out,
   ], { encoding: 'utf8', timeout: 120000 });
   const result = invoke(7, output);

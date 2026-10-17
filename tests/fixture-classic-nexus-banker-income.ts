@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  applyAction, createGame, initializeSpiceBankerIncomeGameForAudit,
+  applyAction, createGame, initializeLeaderSkillsGameForAudit,
   joinGame, newPlayer, viewGame, type Game, type Action,
 } from '../game/engine';
 import { validateLeaderSkills } from '../game/leader-skills';
@@ -45,7 +45,7 @@ export function createClassicNexusBankerFixture(options: {
   if (strongholds) game.strongholdCards = createStrongholdCards();
   for (const player of game.players) game = applyAction(game, player.id, { type: 'ready' });
   const lobby = structuredClone(game);
-  game = withSpiceBankerIncomeSetupRandomness(() => initializeSpiceBankerIncomeGameForAudit(game));
+  game = withSpiceBankerIncomeSetupRandomness(() => initializeLeaderSkillsGameForAudit(game));
   const started = structuredClone(game);
   while (game.status === 'setup') {
     if (game.setupStage === 'leaderSkills') {

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {applyAction,createGame,handLimit,initializeSpiceBankerIncomeGameForAudit,joinGame,newPlayer,viewGame,type Action,type Game} from '../game/engine';
+import {applyAction,createGame,handLimit,initializeLeaderSkillsGameForAudit,joinGame,newPlayer,viewGame,type Action,type Game} from '../game/engine';
 import {botActions} from '../game/bots';
 import {TERRITORIES} from '../game/board';
 import {LEADER_SKILL_CARDS} from '../game/leader-skill-cards';
@@ -80,7 +80,7 @@ function setup(initial:Game):Game {
   let game=structuredClone(initial);
   if(game.status==='lobby') {
     for(const p of game.players) if(!p.ready) game=applyAction(game,p.id,{type:'ready'});
-    game=withSpiceBankerIncomeSetupRandomness(()=>initializeSpiceBankerIncomeGameForAudit(game));
+    game=withSpiceBankerIncomeSetupRandomness(()=>initializeLeaderSkillsGameForAudit(game));
   } else assert.ok(game.status==='setup'&&game.spiceBankerIncomePreview&&game.turn===1&&game.phase===0,'Only the original fresh admitted setup can continue.');
   for(let i=0;game.status==='setup'&&i<200;i++) {
     if(game.setupStage==='leaderSkills') {

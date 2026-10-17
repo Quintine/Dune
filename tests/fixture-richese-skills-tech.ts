@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  applyAction, createGame, initializeSpiceBankerIncomeGameForAudit, joinGame, newPlayer,
+  applyAction, createGame, initializeLeaderSkillsGameForAudit, joinGame, newPlayer,
   viewGame, type Action, type Game, type Player,
 } from '../game/engine';
 import { TERRITORIES } from '../game/board';
@@ -185,7 +185,7 @@ export function createRicheseSkillsTechFixture(options: RicheseSkillsTechOptions
   const safe: LeaderSkillId[] = ['prana-bindu-adept', 'swordmaster-of-ginaz', 'warmaster', 'killer-medic'];
   const selected = game.players.map(p => p.id === owner ? skill : p.id === banker ? 'spice-banker' as const : safe.shift()!);
   const bySeat: Record<string, LeaderSkillId> = Object.fromEntries(game.players.map((p, i) => [p.id, selected[i]]));
-  game = withOffers(selected, () => initializeSpiceBankerIncomeGameForAudit(game));
+  game = withOffers(selected, () => initializeLeaderSkillsGameForAudit(game));
   const setup = structuredClone(game);
   for (let n = 0; game.status === 'setup' && n < 200; n++) {
     if (game.setupStage === 'leaderSkills') {

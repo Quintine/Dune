@@ -121,7 +121,7 @@ export function createClassicDiscoverySkillsFixture(options: ClassicDiscoverySki
   assert.ok(game.status === 'lobby' || (game.status === 'setup' && game.turn === 1 && game.phase === 0));
   const controlledOffers = game.status === 'lobby';
   assert.deepEqual(game.expansions, []);
-  assert.ok(!game.homeworlds && !game.nexusCards && !game.spiceBankerIncomePreview);
+  assert.ok(!game.homeworlds && !game.nexusCards);
   if (options.strongholdCards || game.strongholdCards) {
     assert.equal(game.advanced, true);
     if (!game.strongholdCards) {

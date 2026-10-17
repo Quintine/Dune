@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  applyAction, createGame, initializeSpiceBankerIncomeGameForAudit,
+  applyAction, createGame, initializeLeaderSkillsGameForAudit,
   joinGame, newPlayer, viewGame, type Action, type Game,
 } from '../game/engine';
 import { TERRITORIES } from '../game/board';
@@ -107,7 +107,7 @@ export function initializeSkillsTechPaymentsSetup(options: SkillsTechPaymentsOpt
   // setup/first Storm alone assign ownership; never retrofit a played game.
   if (!game.techTokens) game = applyAction(game, game.host, { type: 'techTokens', enabled: true });
   for (const player of game.players) if (!player.ready) game = applyAction(game, player.id, { type: 'ready' });
-  return withPaymentSkillOffers(game, () => initializeSpiceBankerIncomeGameForAudit(game));
+  return withPaymentSkillOffers(game, () => initializeLeaderSkillsGameForAudit(game));
 }
 
 export function completeSkillsTechPaymentsSetup(state: Game, actions?: SkillsTechPaymentsStep[]): Game {

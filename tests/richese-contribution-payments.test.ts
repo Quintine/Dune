@@ -37,7 +37,7 @@ function prepare(options: Options = {}): NativeRichesePaymentFixture {
   let game = initializeAdvancedNativeSkillsSetup({
     family: 'richese', rules: options.rules ?? 'advanced', opponents,
     requestedSkill: options.banker ? 'spice-banker' : 'suk-graduate',
-    skillOwner: options.banker ? 'beneGesserit' : 'richese', bankerIncome: options.banker,
+    skillOwner: options.banker ? 'beneGesserit' : 'richese',
   });
   const skillOwner = advancedNativePlayer(game, options.banker ? 'beneGesserit' : 'richese').id;
   const requested = options.banker ? 'spice-banker' : 'suk-graduate';
@@ -72,7 +72,9 @@ function prepare(options: Options = {}): NativeRichesePaymentFixture {
       else {
         const holder = game.players.find(p => p.id !== observer && p.hand.some(c => c.effect === 'karama'))!;
         assert.ok(holder, 'Transfer an existing original physical Karama, never manufacture one.');
-        card = holder.hand.splice(holder.hand.findIndex(c => c.effect === 'karama'), 1)[0];
+        const returned = owner.hand.pop();
+        assert.ok(returned, 'Exchange an original held card so donor auction eligibility is preserved.');
+        card = holder.hand.splice(holder.hand.findIndex(c => c.effect === 'karama'), 1, returned)[0];
       }
       owner.hand.push(card);
     }
@@ -187,7 +189,7 @@ for (const rules of ['basic', 'advanced'] as const) {
 }
 
 for (const source of ['cache', 'blackMarket'] as const) {
-  void test(`Advanced native ${source}: only Richese bank-routed contribution qualifies separate Banker, deferred until native Mentat`, () => {
+  void test(`Advanced native ${source}: only Richese bank-routed contribution qualifies Banker, deferred until native Mentat`, () => {
     const f = prepare({ source, emperor: false, banker: true });
     const ownerBalance = balance(f.game, f.observer);
     let game = finishResponses(purchase(f));

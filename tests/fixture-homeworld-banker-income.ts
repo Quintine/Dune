@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  applyAction, createGame, initializeSpiceBankerIncomeGameForAudit, joinGame, newPlayer,
+  applyAction, createGame, initializeHomeworldOccupationGameForAudit, joinGame, newPlayer,
   viewGame, type Action, type Game, type Player,
 } from '../game/engine';
 import { territory } from '../game/board';
@@ -102,9 +102,8 @@ export const homeworldBankerSector = (game: Game, target: string): number => {
 };
 
 /** Genuine ordinary reserve shipment out of a faction's own Homeworld reserves
- * into an empty printed board location. The Banker profile allows only the
- * original native payment fields, so the withdrawal keeps its default own-home
- * allocation and no force, wallet, phase or receipt was assigned. */
+ * into an empty printed board location. The withdrawal keeps its default
+ * own-home allocation; no force, wallet, phase or receipt is assigned. */
 export function homeworldBankerShipment(game: Game, actor: string, target: string,
   amount: number, allyPayment = 0): Action {
   assert.ok(game.players.every(player => !Object.keys(player.forces).some(key => key.startsWith(`${target}:`))),
@@ -201,7 +200,7 @@ function admitHomeworldBankerGame(): Game {
   const canonical = LEADER_SKILL_CARDS.map(card => card.id);
   const rest = canonical.filter(id => !REQUESTED_SKILLS.includes(id));
   const desired = REQUESTED_SKILLS.flatMap(id => [id, rest.shift()!]).concat(rest);
-  return originalLottery(permutationDraws(canonical, desired), () => initializeSpiceBankerIncomeGameForAudit(game));
+  return originalLottery(permutationDraws(canonical, desired), () => initializeHomeworldOccupationGameForAudit(game, true));
 }
 
 /** Genuine setup selections: each requested skill is chosen from its real

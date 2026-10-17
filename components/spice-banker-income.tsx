@@ -17,7 +17,7 @@ export function SpiceBankerIncome({ game }: { game: GameView }) {
         This earned spice is not spendable yet. The original gaining faction collects it automatically
         at the current Mentat opening; it cannot fund a bid, shipment, revival or Battle Plan beforehand.
       </p>
-      <a href="/rules?topic=spice-banker-income#spice-banker-income">Income timing and preview limits</a>
+      <a href="/rules?topic=spice-banker-income#spice-banker-income">Income timing and skill limits</a>
     </section>
   );
 }

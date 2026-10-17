@@ -80,7 +80,7 @@ void test('a fresh authenticated original lobby retains human IDs and input stat
   lobby = applyAction(lobby, lobby.host, { type: 'strongholdCards', enabled: true });
   lobby = applyAction(lobby, lobby.host, { type: 'techTokens', enabled: true });
   const original = structuredClone(lobby);
-  const fixture = createClassicSkillsStrongholdFixture({ initial: lobby, optionalTech: true, bankerIncome: true, ownerDial: 6, support: 6 });
+  const fixture = createClassicSkillsStrongholdFixture({ initial: lobby, optionalTech: true, ownerDial: 6, support: 6 });
   assert.deepEqual(lobby, original);
   assert.deepEqual(fixture.initial.players.map(seat => seat.id), original.players.map(seat => seat.id));
   assert.equal(fixture.owner, 'human-guild');
@@ -99,7 +99,7 @@ for (const scenario of [
   { support: 6, dial: 6, own: 4, casualties: 6 },
 ]) {
   void test(`Arrakeen original support ${scenario.support}: actual own ${scenario.own}, not bank-funded support, controls Banker while trained Suk rescues physical losses`, () => {
-    const fixture = createClassicSkillsStrongholdFixture({ bankerIncome: true, skill: 'suk-graduate', band: 'skilled',
+    const fixture = createClassicSkillsStrongholdFixture({ skill: 'suk-graduate', band: 'skilled',
       ownerDial: scenario.dial, support: scenario.support, ownerWeapon: 'projectile', ownerDefense: 'shield', opponentWeapon: 'projectile' });
     const revealed = revealClassicSkillsStrongholdBattle(fixture);
     const quote = quoteClassicSkillsStrongholdBattle(revealed);
@@ -138,7 +138,7 @@ for (const scenario of [
 }
 
 void test('four real policies physically choose original Suk rescue before winner-card cleanup and the actual losing-owner Tech reward', () => {
-  const fixture = createClassicSkillsStrongholdFixture({ optionalTech: true, bankerIncome: true, skill: 'suk-graduate', band: 'skilled',
+  const fixture = createClassicSkillsStrongholdFixture({ optionalTech: true, skill: 'suk-graduate', band: 'skilled',
     ownerDial: 6, support: 6, ownerWeapon: 'projectile', ownerDefense: 'shield', opponentWeapon: 'projectile' });
   const revealed = revealClassicSkillsStrongholdBattle(fixture);
   const originalTokens = ownedTech(revealed.techTokens, fixture.opponent);

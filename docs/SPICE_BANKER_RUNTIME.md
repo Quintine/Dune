@@ -1,12 +1,67 @@
 # Spice Banker battle commitment and normal income prototypes
 
+## Mandatory ordinary Skills default — 17 October 2026
+
+Fresh supported all-fourteen Leader Skills setups now include normal Banker
+income automatically. Use `--profile leader-skills` with the original supported
+lobby modules, or the existing `homeworld-occupation --leader-skills` entry for
+classic occupation. The separate income initializer, `banker-income` CLI profile
+and fixture opt-in options are removed, without aliases. Existing played games
+are not retrofitted. Public starts and unfinished mode gates remain unchanged.
+
+The ordinary setup creates the existing version-one income ledger. Its final
+Bank payment legs, living trainer, physical-card once-per-phase stamp,
+unspendable front-shield pile and actual Mentat collection are unchanged.
+Earned-faction custody remains explicitly provisional; default activation
+does not settle the outstanding source question.
+
+Ordinary Advanced native Richese/Emperor/Guild setup retains original
+Homeworlds, Nexus, Discovery, Tech and Strongholds. Real Banker training and
+an explicit four-counter Junction withdrawal precede the Guild's completed
+Bank-four shipment: Guild5→1, Richese wallet5/front1. Original Collection
+leaves Richese5; the final Guild Ready opens Mentat1 and yields wallet6/front0
+with one collection credit. No armies, wallets, ownership or phase clocks
+are assigned; controlled setup entropy and conserved closed Spice Card order
+are disclosed in `tests/fixture-banker-world-default.ts`.
+Actual390px Ship/Allow/Ready controls reproduce that path in an isolated
+in-memory host, with root width390 and no app errors. Private local proof:
+`/tmp/dune-banker-default-ui-proof.json`. Four minimal policies legally move
+the paid Guild army and use the original final Ready to collect; this is
+not strategic calibration, deployed evidence or complete-mode acceptance.
+
+The Semuta overlay retains the same ordinary default in Basic and Advanced,
+including its original Tech/Stronghold envelopes. A completed Guild Bank-four
+shipment grants front1 without changing Richese wallet5. Atreides then plays
+its conserved printed Hajr; Richese commits the real Semuta, discards it once
+and privately acquires Hajr, without another Bank invoice or income grant.
+The final original Collection Ready credits Richese5→6 at Mentat1. A Bank-three
+shipment and a four-spice shipment paid to Guild grant nothing.
+Initial setup scalar entropy is controlled, UUIDs remain native, and two
+original closed Spice Cards plus conserved Semuta/Hajr hand staging are explicit.
+No armies, balances, clocks, owners or receipts are assigned.
+
+Two390px journeys complete18 original actions, including8 native UI submissions;
+both have no app errors or root overflow. Four legal policies commit Semuta and
+continue to the same single Mentat credit. The182-case related set initially
+exposed fixture-only null/absence, Hajr/response ordering and donor-hand issues.
+After repairs, the final affected3-file union passes25/25; the remaining157
+passed in the initial batch. The actual fresh Skills CLI case passes1/1.
+Final types/lint and build pass, with existing module-registration, chunk-size
+and route-classification warnings. Scratch UI files and host are removed.
+Evidence: `tests/banker-world-default.test.ts`,
+`tests/banker-overlay-default.test.ts`, their fixture modules, and the existing
+payment/module consumers. Full assurance and deployed acceptance remain open.
+
+The dated checkpoints below describe their original verification scope.
+References to the former separate entry are historical, not current commands.
+
 ## Classic Homeworld final Bank income — 14 October 2026
 
-Fresh classic Basic/Advanced `banker-income --homeworlds` composes original
-occupation setup and all14 Skills with income-v1. This branch excludes Nexus,
-Discovery, Tech, Strongholds and native expansion/Betrayal overlays. Other
-existing Banker entries remain unchanged; no public activation or played-game
-conversion is added.
+At the 14 October checkpoint, a separate classic Basic/Advanced income entry
+composed original occupation setup and all14 Skills with income-v1.
+That branch excluded Nexus, Discovery, Tech, Strongholds and native overlays.
+The ordinary-default cutover above supersedes its activation mechanism;
+the accounting and original occupation behavior below remain.
 
 Three user rulings define accounting: combine only the same payer’s final Bank
 portions of one original invoice; attribute Bureaucrat’s two to the first
@@ -46,19 +101,19 @@ Evidence: `tests/fixture-homeworld-banker-income.ts`,
 combinations, public starts and deployed acceptance remain open.
 
 ```sh
-node --import tsx tools/start-prototype.ts --profile banker-income --homeworlds \
+node --import tsx tools/start-prototype.ts --profile homeworld-occupation --leader-skills \
   --db /private/local.sqlite --room ROOMCODE --version 7 \
   --out /private/new-homeworld-banker-entry
 ```
 
 ## Classic Nexus income composition — 13 October 2026
 
-`banker-income --nexus-cards` now connects the existing mandatory normal band
-to fresh classic Basic/Advanced Nexus Skills games. Original Tech requires3+;
-Strongholds require Advanced2+, optionally both. This does not admit Homeworlds,
-Discovery, expansion-family Nexus, Semuta or Betrayal previews, change ordinary
-skill defaults, or retrofit played games. All33 Treachery, all14 Skills and
-all12 undealt Nexus remain native. There is no fabricated starting Nexus hand.
+The 13 October separate income composition connected the mandatory normal band
+to fresh classic Basic/Advanced Nexus Skills games. Original Tech required3+;
+Strongholds required Advanced2+, optionally both. That checkpoint excluded
+Homeworlds, Discovery, expansion-family Nexus, Semuta and Betrayal previews.
+All33 Treachery, all14 Skills and all12 undealt Nexus remained native.
+There was no fabricated starting Nexus hand.
 
 The previous entry rejected this fresh composition before offers. The shared
 classic Nexus skill predicate now recognizes the explicit income overlay, and
@@ -84,7 +139,7 @@ Original earned-custody and per-payer policies remain provisional; wider
 printed effects, combination and deployed acceptance are not certified.
 
 ```sh
-node --import tsx tools/start-prototype.ts --profile banker-income --nexus-cards \
+node --import tsx tools/start-prototype.ts --profile leader-skills --nexus-cards \
   --db /private/local.sqlite --room ROOMCODE --version 7 \
   --out /private/new-classic-nexus-banker-entry
 ```
@@ -251,7 +306,7 @@ starts and old-game retrofit remain outside this boundary. The classic
 Basic/Advanced base33 contract above is retained.
 
 `tests/fixture-native-banker-income.ts` creates ready fresh native lobbies and
-calls `initializeSpiceBankerIncomeGameForAudit`, never setting the income flag on
+calls `initializeLeaderSkillsGameForAudit`, never setting the income flag on
 a played game. Only the original skill shuffle is controlled to obtain a real
 Banker offer; native Treachery, Traitor/Face Dancer and Terror shuffles retain
 their original entropy. Original Ix starting-card selection, skill assignment,
@@ -335,8 +390,8 @@ Mentat Pause. Neither publisher nor designer material located in the renewed
 search settles custody of that accumulated income if the trainer dies or is
 captured first. The user has been asked whether to retain the pending boundary
 or rule that already-earned spice stays with the original faction. No answer
-is assumed; only the explicitly provisional fresh profile above implements
-normal income. This historical question remains open outside that profile.
+is assumed: the explicitly provisional earned-faction policy now applies in
+fresh ordinary Skills setups. Default activation does not settle that question.
 
 ## Connected behavior
 
@@ -381,6 +436,6 @@ values and the same private Crysknife, Baliset and Burseg while card cleanup
 awaited the player. This targeted scenario is not a complete human game.
 Required broad results are recorded with the checkpoint.
 
-Remaining work includes normal income, all economic trigger routes and ordering,
-its public deferred custody, combined modules, wider full-game interaction and
-strategy refinement. The existing development gates remain unchanged.
+Remaining work includes exhaustive economic-trigger and ordering integration,
+wider full-game interactions and strategy refinement. Normal income is no longer
+a separate activation path; complete-mode and deployment gates remain unchanged.
