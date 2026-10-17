@@ -440,6 +440,7 @@ import {
 } from './richese-funding';
 import {
   quoteRicheseSettlement,
+  richeseBidFitsHand,
   requireRicheseDeclarationCache,
   RicheseSettlementError,
   type RicheseSettlementQuote,
@@ -12337,6 +12338,8 @@ function richeseBetrayalIntegrity(g: Game): void {
   }
 }
 function beginRicheseBetrayal(g: Game, quote: Extract<RicheseSettlementQuote,{kind:'sold'}>): boolean {
+  // Already-held retention supplies neither a cache acquisition nor seller income.
+  if (g.richeseAuction?.source === 'blackMarket' && quote.winner === g.richeseAuction.owner) return false;
   if (!g.richeseBetrayalPreview) return false;
   richeseBetrayalSourcePreflight(g,quote);
   const required = richeseBetrayalResponders(g);
@@ -12464,6 +12467,8 @@ function nexusEmperorSellerOffer(g: Game, id: string) {
   return { ...quote, blocked, canUse: !blocked, policy: EMPEROR_SELLER_POLICY };
 }
 function beginNexusEmperorSellerPurchase(g: Game, quote: Extract<RicheseSettlementQuote, {kind:'sold'}>, bank: boolean): boolean {
+  // The seller/free-acquisition source cannot waive an already-held card's price.
+  if (g.richeseAuction?.source === 'blackMarket' && quote.winner === g.richeseAuction.owner) return false;
   if (quote.amount <= 0 || !emperorNexusSellerPurchaseModeSupported(g)) return false;
   requireRule(!g.pendingNexusEmperorSellerPurchase && !g.pendingRicheseBetrayal &&
     !g.response && !g.decision && !g.truthtrance && !g.phaseOpening &&
@@ -12517,10 +12522,13 @@ function settleRicheseSoldLot(g: Game, quote: Extract<RicheseSettlementQuote,{ki
       : [{payer:owner.id,amount:richeseContribution,recipient:emperor ? 'player' : 'bank'}]) : undefined;
   if (!free) payWithAlly(g, winner, quote.amount, quote.allyPayment);
   g.richeseFunding = {};
-  if (lot.source === 'cache')
-    g.richeseCache = g.richeseCache!.filter((c) => c.id !== card.id);
-  else owner.hand = owner.hand.filter((c) => c.id !== card.id);
-  winner.hand.push(card);
+  const retained = lot.source === 'blackMarket' && winner.id === owner.id;
+  if (!retained) {
+    if (lot.source === 'cache')
+      g.richeseCache = g.richeseCache!.filter((c) => c.id !== card.id);
+    else owner.hand = owner.hand.filter((c) => c.id !== card.id);
+    winner.hand.push(card);
+  }
   g.currentAuctionSale = {
     ...(g.homeworldOccupationPreview ? { occupiedEvent: lot.event,
       occupiedContributions: free ? [] : [{ payer: winner.id, amount: quote.ownPayment },
@@ -12538,7 +12546,7 @@ function settleRicheseSoldLot(g: Game, quote: Extract<RicheseSettlementQuote,{ki
   if (bank || !emperor) awardBankerIncome(g, incomePayment);
   log(
     g,
-    `${winner.name} bought ${lot.source === 'cache' ? card.name : 'the concealed Black Market card'} for ${quote.amount} spice.${free ? ' Emperor Nexus retained the proven price; no seller or bank payment occurred.' : ' The funded bid was paid automatically.'}`,
+    `${winner.name} ${retained ? 'retained their own Black Market card under provisional paid self-purchase' : `bought ${lot.source === 'cache' ? card.name : 'the concealed Black Market card'}`} for ${quote.amount} spice.${free ? ' Emperor Nexus retained the proven price; no seller or bank payment occurred.' : ' The funded bid was paid automatically.'}`,
     { faction: winner.faction, name: 'Auction payment' },
   );
   const ixians = byFaction(g, 'ixians');
@@ -12591,7 +12599,10 @@ function beginRicheseLot(
     source,
     owner: owner.id,
     method: action.method as RicheseAuction['method'],
-    eligible: auctionEligible(g),
+    eligible: g.order.filter(id => {
+      const bidder = getPlayer(g, id);
+      return richeseBidFitsHand(source, owner.id, id, bidder.hand.length, handLimit(bidder));
+    }),
     order,
     tieOrder: g.order,
   });
@@ -15141,17 +15152,16 @@ function finishAutomaticDecision(g: Game): boolean {
     return true;
   }
   if (g.phase === 3 && !decision && lot && !lot.outcome) {
+    const active = lot.active ? getPlayer(g, lot.active) : null;
     const full =
       lot.method === 'silent'
-        ? lot.eligible.find(
-            (id) =>
-              !Object.hasOwn(lot.sealed, id) &&
-              getPlayer(g, id).hand.length >= handLimit(getPlayer(g, id)),
-          )
-        : lot.active &&
-            getPlayer(g, lot.active).hand.length >=
-              handLimit(getPlayer(g, lot.active))
-          ? lot.active
+        ? lot.eligible.find(id => {
+            const bidder = getPlayer(g, id);
+            return !Object.hasOwn(lot.sealed, id) &&
+              !richeseBidFitsHand(lot.source, lot.owner, id, bidder.hand.length, handLimit(bidder));
+          })
+        : active && !richeseBidFitsHand(lot.source, lot.owner, active.id, active.hand.length, handLimit(active))
+          ? active.id
           : null;
     if (full) {
       g.richeseAuction = submitRicheseBid(
@@ -29995,7 +30005,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
           : lot.bidder === bidder.id;
       if (hasWinningCommitment)
         requireRule(
-          bidder.hand.length < handLimit(bidder),
+          richeseBidFitsHand(lot.source, lot.owner, bidder.id, bidder.hand.length, handLimit(bidder)),
           'Leave room for the card in your committed auction.',
         );
     }
@@ -32833,14 +32843,7 @@ function applyActionInner(
       g.phase === 3 && lot && !lot.outcome,
       'There is no open Richese auction.',
     );
-    requireRule(p.hand.length < handLimit(p), 'Your hand is full.');
-    requireRule(
-      lot.source !== 'blackMarket' ||
-        p.id !== lot.owner ||
-        action.amount === null ||
-        action.amount === 0,
-      'A positive Black Market self-bid is awaiting a ruling on payment and sale counting.',
-    );
+    requireRule(richeseBidFitsHand(lot.source, lot.owner, p.id, p.hand.length, handLimit(p)), 'Your hand is full.');
     const amount =
       action.amount === null
         ? null

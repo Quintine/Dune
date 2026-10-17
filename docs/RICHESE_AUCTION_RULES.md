@@ -10,7 +10,61 @@ Audit: 2026-09-06. This document covers the complete core bidding pipeline: the 
 - **I20**: [GF9 Ixian & Tleilaxu rulebook](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf), pp.8–9,12: pool preparation, Technology, allied replacement, cancellation. Local `ix-official-mirror.txt` supplies the full paragraphs; publisher-indexed text corroborates the relevant cancellation table.
 - **F20**: [GF9 November 2020 FAQ](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf), pp.3,6–7: once-per-game special powers and ordinary acquisition/alliance clarifications. It predates Richese and supplies no Richese-specific exception.
 
-Targeted searches did not yield a newer applicable publisher/designer ruling resolving the edge cases below. This is not a claim that none exists. Tournament rewrites and community compilations are not authority for these cases. Search-result dates do not date a printing.
+The September publisher/designer searches did not resolve every edge case below. The user's 1 October amendment now authorizes the supplied revision, including its identified unofficial rulings; see the [source amendment](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026). Its own remaining ambiguity is distinguished from the explicit provisional policies below. Other community/retailer interpretations are not automatically promoted to authority.
+
+## Provisional paid Black Market retention — 18 October 2026
+
+The authorized supplied revision's physical **p36**, printed **p34**, Richese
+A/C, gives the shared Emperor/Bank payment rule and Black Market auction
+methods, but no explicit answer to positive seller participation, self-payment
+or sale counting. The older official-only uncertainty below remains a source
+uncertainty. Under the user's 14 October choose-recommended direction, the
+prototype now explicitly adopts **paid retention**, not a publisher ruling:
+
+- A positive seller win retains the same already-held card in place. Pay the
+  actual original price to Emperor, or Bank if absent, including only original
+  authorized ally escrow. No self-refund, duplicate card or new acquisition.
+- Count that completed positive payment as one Black Market sale. Zero/unbid
+  retention is still free and unsold. Once Around keeps its original
+  all-other-pass shortcut rather than inventing another seller opportunity.
+- An already-held full hand needs no extra slot. Shared current-hand legality
+  governs initial eligibility, automatic zero/pass, positive bid, committed
+  reservation and terminal quote. Other full bidders and cache acquisition
+  retain their existing limits.
+- Reuse native Emperor Karama, eligible Bureaucrat, actual Banker legs and
+  original declaration/pool continuation. Retention supplies neither a cache
+  acquisition nor seller-income invoice to the separate Richese veto/Emperor
+  free-seller sources. Existing Nexus cards are not spent on a fabricated gain.
+
+Before repair, an original silent seller bid1 with five real spice rejected
+unchanged. A genuinely earned full hand then exposed two additional generic
+assumptions: automatic zero submission and a reserved extra-slot invariant.
+Both now use the same rule, not special-cased saved data. A real original
+no-Emperor Nexus table also exposed an acquisition-only source call; it now
+pays1 to Bank, retains its original card/Nexus state and resumes declaration.
+
+The full-hand producer buys an original cache card1 and two ordinary cards1
+each during turn1; a real bribe4 waits for Mentat, leaving Richese6 and four
+held cards. Actual all14 paid5 retention leaves one spice and the identical
+four IDs/order; bare no-Skills paid1 leaves five. All four legal seller policies
+may still submit zero, leaving free unsold retention and no price/count change.
+
+Three actual390px controls exercise: full Silent paid5 with native allowance
+and Bank2 (Emperor13→16, same4/4 hand, one normal lot); Normal5+3 after a real
+competing1, original income cancellation (Emperor stays11, both costs/escrow
+paid once, same two cards, no Bureaucrat use); and Once Around final8 after
+another player's1, full original income (Emperor11→19, same two cards, no use).
+The notice is visibly provisional before positive bidding. Card stock45,
+native starting armies, private sealed projection and original continuation
+remain. No browser errors/overflow. Temporary routes/memory are removed and
+released204, with no stored-room mutation or server restart.
+
+Meaningful native regressions live in `tests/richese-self-purchase-rounds.test.ts`
+and `tests/richese-self-purchase-silent.test.ts`, with original producers in
+`tests/fixture-richese-self-purchase.ts` and
+`tests/fixture-richese-self-purchase-full-hand.ts`. Old exclusion, error-wording,
+strategy-choice and fixture-copy pins are removed, not re-pinned. This remains
+local prototype evidence, not full Richese/mode, deployed or final assurance.
 
 ## Authorized Advanced contribution recipients — 4 October 2026
 
@@ -71,8 +125,8 @@ These questions cannot be silently represented as settled FAQ compliance:
 
 1. **Canceled compulsory lot and an exhausted cache — resolved 7 October 2026 by user ruling; connected 8 October.** When no cache lot can run, the ordinary pool retains its full declared count without the cache deduction. Printed Karama can now cancel the declared cache opportunity in Basic or Advanced; Advanced Bene Gesserit conversion retains its separate response. Cancellation leaves every cached card in place and skips both first- and last-position offers. The before-cache count is frozen at declaration, so spending a cancellation card cannot recount live hand capacity, and the independent completed-Black-Market deduction remains. Five direct engine smoke scenarios cover first/last, printed/BG cancellation and countered conversion; no broad suite was run for this change.
 2. **Black Market count wording.** Its specific rule conditions reduction on a sale. The embedded Ixian answer refers more broadly to cards put up for auction. The more specific sale condition supports no reduction for an unsold/canceled Black Market offer. Record that composition explicitly; do not decrement merely on declaration.
-3. **Self-purchase of a Black Market card.** The generic alternative methods include Richese, but Black Market says Richese receives all payments and already owns the card. No retrieved paragraph specifies seller exclusion, a self-payment loop, an Emperor payment, or whether self-retention is a sale reducing the normal pool. Do not borrow the cache self-payment exception without a ruling.
-4. **Ixian advanced Technology on special lots.** I20 p.9 broadly applies before bidding on a card and before Atreides inspection. R2's explicit restriction concerns the _ally's post-purchase replacement_, not Technology. Consequently that FAQ cannot justify disabling Technology on special lots. No retrieved Richese paragraph explains an exchanged cache lot's new public face, or the custody of a substituted Black Market lot if nobody bids. This is a genuine interaction to resolve before certifying the combined implementation.
+3. **Self-purchase of a Black Market card — source unresolved, provisional policy connected 18 October.** The generic methods include Richese, while Black Market already has an owned seller card and no explicit self-payment/count answer. Under choose-recommended, the visibly labelled prototype inherits native Emperor/Bank payment for positive paid retention, keeps the same card without another slot, and counts one sale. Zero/unbid remains unsold. This is the recorded product interpretation above, not a retrieved ruling or free self-refund.
+4. **Ixian advanced Technology on special lots — superseded 8 October.** The authorized supplied revision, physical p34 Ixians D, expressly excludes Richese auctions. Cache/Black Market lots therefore open directly and retain the Technology use for ordinary lots. The older publisher-only uncertainty below is historical evidence, not a current replacement-custody permission.
 5. **Economic interruptions during Silent.** Printed simultaneous physical offers do not specify asynchronous network reservation or what to do when a later effect changes funds. Internal reservations are necessary to reproduce simultaneous commitment, but a policy allowing players to revise already revealed information or silently reducing bids would be an extra rule. Use immutable hidden submissions and prevent double-spending without exposing reserved amounts.
 6. **Separate Richese income cancellation.** The R2 table specifies preventing the sale/auction. It does not expressly create an additional post-sale cancel-income window. Reusing Emperor's income response for a sale paid to Richese would invent that window and potentially misroute money. General Karama composition may require further review; do not assume two independent chances from one listed power.
 7. **Mandatory last lot after a normal all-pass ending.** Mandatory cache auction plus its last-position FAQ supports running it after the ordinary pool ends. This is a defensible composition, not a directly answered all-pass example. Store this boundary explicitly and test it.
@@ -196,3 +250,13 @@ three focused test files were deleted; `tests/richese-engine-review.test.ts`
 now asserts the direct lot opening. Historical absence claims about ordinary
 Richese technology cards above are superseded by their later runtime contracts,
 including [Juice of Sapho](JUICE_OF_SAPHO_RUNTIME.md).
+
+## Paid-retention frozen verification
+
+The affected seventeen-file union151/151, focused full-hand1/1 and repaired
+old-exclusion1/1 pass, with parent-owned types/lint and app build. The former
+native exclusion assertion inside the Emperor source test is deleted; actual
+free-acquisition corruption boundaries remain. Seven meaningful native
+regressions cover the new methods/full-hand/bare/payment/source behavior.
+Existing build warnings remain. No recovery/whole-database/seat campaign or
+AI calibration/deployed acceptance is claimed.

@@ -163,21 +163,6 @@ void test('all profiles skip optional Black Market and legally complete its norm
   }
 });
 
-void test('seller policies never emit the unsupported positive Black Market self-bid', () => {
-  for (const difficulty of DIFFICULTIES)
-    for (const method of ['normal', 'onceAround', 'silent'] as const) {
-      const g = offer(method, 'blackMarket', true);
-      if (method !== 'silent') g.richeseAuction!.active = 'r';
-      const action = botActions(projected(g, 'r', difficulty))[0];
-      assert.deepEqual(action, {
-        type: 'richeseBid',
-        event: g.richeseAuction!.event,
-        amount: method === 'silent' ? 0 : null,
-        allyPayment: 0,
-      });
-      assert.doesNotThrow(() => applyAction(g, 'r', action));
-    }
-});
 
 void test('unfunded bidders pass, sealed bidders act once, and hidden opponent state cannot affect the bid', () => {
   for (const difficulty of DIFFICULTIES) {

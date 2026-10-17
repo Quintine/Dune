@@ -29,6 +29,27 @@ optional skill bands and combinations remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Paid Black Market retention — 18 October. Prototyped / Partial.**
+Under the recorded choose-recommended policy, a positive seller win retains the
+same card/order, pays native Emperor/Bank income and counts one sale. Zero/unbid
+retention stays free/unsold. The supplied physical36/printed34 source ambiguity
+remains explicit; this is not a publisher ruling or full-mode gate opening.
+
+One shared current-hand rule now covers original eligibility, automatic
+zero/pass, bid/commitment and settlement. Real earned4/4 hands need no extra
+slot. Native Nexus retention supplies no new-acquisition/free-seller invoice;
+the original paid path continues without spending a card or inventing a gain.
+Actual bare/full/all14/Nexus programmes preserve card IDs/order and native fees.
+
+Three390px flows exercise Silent full5→Bank2/one normal lot, Normal5+3 with
+native cancellation and Once Around real1→final8/full income. No errors or
+overflow. All four legal full-hand seller policies may retain free/unsold
+through zero; strategy remains deferred. Frozen17-file **151/151**, focused1/1
+and repaired old-exclusion1/1, types/lint/build pass. Initial native full-hand
+auto-zero/slot failures are fixed through the shared rule; old pins are deleted.
+Temporary routes/memory removed/released204, no rooms/reset/restart/deployment.
+[Source, policy and evidence](RICHESE_AUCTION_RULES.md#provisional-paid-black-market-retention--18-october-2026).
+
 **Advanced Richese split receipts — 18 October. Prototyped / Partial.**
 Original buyer3/Richese donor5 wrongly supplied no Bureaucrat opportunity.
 New signed seller sources use only the buyer share; the original Emperor

@@ -7,6 +7,21 @@ and fixture opt-ins are removed; existing games are not retrofitted.
 Earlier dated references to a separate entry describe historical checkpoints.
 See [current activation and limits](SPICE_BANKER_RUNTIME.md#mandatory-ordinary-skills-default--17-october-2026).
 
+## Provisional paid Richese retention — 18 October 2026
+
+Positive Black Market seller wins now retain the same held card/order and pay
+the original Emperor/Bank invoice. This visibly provisional policy is not a
+retrieved ruling; zero/unbid stays free and unsold. All14 is not required:
+real bare full-hand and original Nexus starts also complete native paid retention.
+Owned full hands need no new slot. Bureaucrat sees one whole eligible Emperor
+payment, not a private Richese portion; cancellation/Banker keep original legs.
+
+Frozen17-file151/151, types/lint/build, three actual390px methods and four legal
+full-hand seller policies pass. Native original cards, deferred bribe/acquisitions
+and physical counter sources are retained. No new acquisition/free-seller frame,
+spurious Nexus spend, full-mode or assurance claim.
+[Source, exact receipts and scope](RICHESE_AUCTION_RULES.md#provisional-paid-black-market-retention--18-october-2026).
+
 ## Advanced Richese portions — 18 October 2026
 
 Bureaucrat now evaluates buyer-to-Richese and Richese-donor-to-Emperor receipts

@@ -109,13 +109,14 @@ the existing public asset root; this is not complete artwork acceptance.
 
 ### Recommended Richese seller-unpaid purchase — 14 October 2026
 
-Original positive Richese cache and Advanced-only Black Market sales now offer
-every winning buyer the same Pay confirmation, independently of hidden Nexus
+Original positive Richese cache acquisitions and other-buyer Advanced Black
+Market sales offer each winning buyer the same Pay confirmation, independently of hidden Nexus
 face. Only an actual unallied Emperor-card holder, with native Emperor absent
 and the full price personally affordable, can retain that price. Basic cache
-and legally offered self-cache are included; original Black Market self-purchase
-remains prohibited. Allied funding and ordinary bank-purchase admission are
-unchanged.
+and legally offered self-cache are included. Already-held Black Market paid
+retention supplies no acquisition/free-seller source, so its native price is
+paid without inventing this confirmation or spending a Nexus. Allied funding
+and ordinary bank-purchase admission remain unchanged.
 
 **Provisional recommendation: the seller is unpaid.** The printed card tells
 the buyer to keep spice and prints no bank reimbursement. Do not invent seller

@@ -272,7 +272,7 @@ void test('Atreides inspection grants only its entitled view and survives JSON b
   assert.equal(viewGame(g, 'e').richeseAuction!.cardId, null);
   assert.equal(g.players[0].hand[0].id, card.id);
 });
-void test('connected cache-cancel restores the ordinary pool while seller self-bid rejects atomically', () => {
+void test('connected cache cancellation restores the ordinary pool', () => {
   const before = fixture();
   const k = before.deck.find((c) => c.effect === 'karama')!;
   before.players[2].hand = [k];
@@ -288,13 +288,6 @@ void test('connected cache-cancel restores the ordinary pool while seller self-b
   assert.equal(canceled.players[2].hand.some((c) => c.id === k.id), false);
   assert.equal(canceled.discard.filter((c) => c.id === k.id).length, 1);
   assert.deepEqual(g, snapshot, 'the source declaration is unchanged by the trial cancellation');
-  const bm = fixture(true);
-  bm.players[0].hand = [bm.deck.shift()!];
-  g = begin(bm);
-  g = decision(g, { card: g.players[0].hand[0].id, method: 'silent' });
-  const exact = structuredClone(g);
-  assert.throws(() => bid(g, 'r', 1), /self-bid/);
-  assert.deepEqual(g, exact);
 });
 
 void test('an outbid ally-funded player whose hand fills is automatically skipped without reserving losing credit', () => {

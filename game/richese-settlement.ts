@@ -42,6 +42,16 @@ export type RicheseSettlementQuote =
       allyPayment: number;
     };
 
+/** A Black Market seller already holds the offered card. Provisional paid
+ * retention therefore needs no additional hand slot; other wins still do. */
+export function richeseBidFitsHand(
+  source: RicheseAuction['source'], owner: string, bidder: string,
+  handCount: number, handLimit: number,
+): boolean {
+  return handCount < handLimit ||
+    source === 'blackMarket' && owner === bidder && handCount === handLimit;
+}
+
 function requireSettlement(
   condition: unknown,
   message: string,
@@ -106,12 +116,8 @@ export function quoteRicheseSettlement(
   const card = reservedCard(input);
   validHand(winner);
   requireSettlement(
-    winner.handCount < winner.handLimit,
+    richeseBidFitsHand(lot.source, lot.owner, winner.id, winner.handCount, winner.handLimit),
     'The winning hand has no room for this card.',
-  );
-  requireSettlement(
-    lot.source !== 'blackMarket' || winner.id !== owner.id,
-    'Black Market self-purchase is awaiting a ruling on payment and sale counting.',
   );
   const { funding } = input;
   requireSettlement(

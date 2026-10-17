@@ -144,31 +144,6 @@ void test('an open lot performs no settlement or future availability checks', ()
   assert.deepEqual(value, before);
 });
 
-void test('sold validation retains reserved-card, hand-capacity, self-purchase and exact-funding precedence', () => {
-  const value = input('blackMarket');
-  value.winner = { id: 'r', handCount: 4, handLimit: 4, spice: 0 };
-  value.lot = {
-    ...value.lot,
-    outcome: { kind: 'sold', winner: 'r', amount: 6 },
-  };
-  value.card = null;
-  value.funding = null;
-  reject(value, /reserved auction card/);
-  value.card = richeseCards()[0];
-  reject(value, /winning hand has no room/);
-  value.winner = { ...value.winner, handCount: 3 };
-  reject(value, /Black Market self-purchase/);
-  value.lot = { ...value.lot, source: 'cache' };
-  reject(value, /exact funding commitment/);
-  value.funding = { amount: 6, allyPayment: 2, donor: 'a' };
-  reject(value, /no longer funded/);
-  value.winner = { ...value.winner, spice: 4 };
-  assert.equal(
-    quoteRicheseSettlement(value).kind,
-    'sold',
-    'cache owner purchase remains accepted',
-  );
-});
 
 void test('server-supplied faction hand limits preserve last-slot purchases and reject full winners', () => {
   for (const limit of [4, 5, 8]) {

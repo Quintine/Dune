@@ -274,8 +274,9 @@ function calculate(
       'The paid Richese lot has a stale declaration round.',
     );
     requireAuction(
-      lot.source !== 'blackMarket' || (input.advanced && s.seller !== s.winner),
-      'Black Market requires an Advanced sale to another buyer; self-purchase awaits a payment and sale-counting ruling.',
+      lot.source !== 'blackMarket' || (input.advanced &&
+        (s.seller !== s.winner || !s.free && s.amount > 0)),
+      'Black Market requires Advanced play; paid seller retention needs a positive actual price.',
     );
     requireAuction(
       !s.free || (

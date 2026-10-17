@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 18 October 2026 — Provisional paid Black Market retention
+
+Original funded seller bid1 rejected unchanged. Under standing choose-recommended
+authority, explicitly adopt paid retention of the same owned card: full original
+price goes to Emperor/Bank, positive paid retention counts one sale, zero/unbid
+keeps its unsold/free result. Supplied physical36/printed34 A/C does not explicitly
+settle this self-purchase, so the rule and UI remain visibly provisional.
+
+Shared current-hand legality covers eligibility, automatic skips, actor bid,
+reserved commitments and terminal quote. A real full4/4 producer exposed old
+auto-zero and extra-slot assumptions; both are repaired, not bypassed with a
+hand edit. Cache1 + ordinary1 + ordinary1, then real deferred bribe4, earns that
+hand/spice6. Retention neither removes/reappends the card nor creates acquisition.
+An original Nexus table exposed an acquisition-only invoice call: already-held
+retention now supplies no false veto/free-seller source and pays its native fee.
+
+Frozen17-file **151/151**, focused full-hand1/1, repaired old-exclusion1/1,
+types/lint/build and actual Normal/full/bare/Nexus programmes pass. One stale
+Nexus test asserted the former native exclusion; it is deleted, not re-pinned.
+Obsolete seller strategy, error precedence and fixture-copy pins are also removed.
+Three390px controls cover full Silent5 with Bank2/one normal lot, Normal5+3
+native cancellation, and Once Around real1→final8/full Emperor income. Same
+owned cards, original armies/escrow and stock45 remain; no errors/overflow.
+Four policies legally choose zero for free unsold full-hand retention.
+Temporary routes/memory removed/released204; games/server untouched. Existing
+build warnings and complete-mode/deployed/calibration/assurance gates remain.
+[Canonical current source/policy](RICHESE_AUCTION_RULES.md#provisional-paid-black-market-retention--18-october-2026).
+
 ## 18 October 2026 — Actual Advanced Richese Bureaucrat portions
 
 A real native all14 first turn, deferred bribe1, turn-two worm alliance and

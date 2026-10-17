@@ -132,7 +132,6 @@ void test('personal-price, exact source, full hand and physical singleton corrup
   const { g, input } = original('blackMarket');
   g.advanced = false;
   assert.throws(() => createEmperorNexusSellerPurchase(g, input), EmperorNexusPurchaseError);
-  assert.throws(() => original('blackMarket', true), /Black Market self-purchase/);
 });
 
 void test('private card entitlement and alliances cannot authorize retention, even with enough visible spice', () => {

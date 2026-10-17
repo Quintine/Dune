@@ -561,3 +561,16 @@ Types and build pass; final lint and focused donor1/1 pass after removing one
 unnecessary fixture iterator copy. The eighteen-file413/413 consumer union
 preceded that lint-only change. Existing build warnings remain. No recovery,
 whole-database, seat-restoration or calibration campaign was added.
+
+## Original paid Black Market retention — 18 October 2026
+
+[Provisional paid seller retention](RICHESE_AUCTION_RULES.md#provisional-paid-black-market-retention--18-october-2026)
+keeps the already-held card and pays Emperor/Bank. This is one whole native
+invoice, not the other-buyer Richese portion described above: own5/ally3 pays
+Emperor8; allowed Bureaucrat sends Bank2 and Emperor6 without trainer income
+or a self-refund. Native Karama still precedes that reaction and retains the
+full original payer legs for Banker. Already-held full hands need no extra
+slot and no new-acquisition/free-seller source is fabricated.
+Native controls exercise own5 full-hand diversion, funded8 cancellation and
+funded8 full income. The related frozen17-file151/151, types/lint/build pass;
+complete modes, original source ambiguity and deferred assurance remain open.

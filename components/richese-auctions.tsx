@@ -310,8 +310,6 @@ export function RicheseAuctionLot({ game, act, busy }: Props) {
       ...part,
     });
   const ownPayment = amount - allyPayment;
-  const sellerBlocked =
-    auction.source === 'blackMarket' && auction.owner === me;
   const allowedTurn =
     !auction.outcome &&
     auction.eligible.includes(me) &&
@@ -324,8 +322,7 @@ export function RicheseAuctionLot({ game, act, busy }: Props) {
     allyPayment >= 0 &&
     allyPayment <= auction.allyAvailable &&
     ownPayment >= 0 &&
-    ownPayment <= auction.ownAvailable &&
-    (!sellerBlocked || amount === 0);
+    ownPayment <= auction.ownAvailable;
   const name = (player: string | null) =>
     game.players.find((p) => p.id === player)?.name ?? 'Player';
   const send = (bid: number | null, ally: number) => {
@@ -367,6 +364,14 @@ export function RicheseAuctionLot({ game, act, busy }: Props) {
       <p className="fine">
         {name(auction.owner)} is selling. Karama cannot acquire this card.
       </p>
+      {auction.source === 'blackMarket' && (
+        <p className="notice">
+          Provisional paid self-purchase: if the seller wins a positive bid, they
+          retain this same card and pay the Emperor, or the Bank if absent. It
+          counts as one sale and needs no additional hand space. An unbid card
+          stays free and unsold.
+        </p>
+      )}
       {auction.claim && (
         <p className="notice">Seller’s public claim: {auction.claim}</p>
       )}
@@ -404,59 +409,49 @@ export function RicheseAuctionLot({ game, act, busy }: Props) {
             Available funding: {auction.ownAvailable} own spice and{' '}
             {auction.allyAvailable} pledged spice.
           </p>
-          {sellerBlocked && (
-            <p className="notice">
-              Positive Black Market bids by the seller are not supported.{' '}
-              {silent ? 'Submit zero to continue.' : 'Pass to continue.'}
-            </p>
-          )}
-          {!sellerBlocked && (
+          <label htmlFor={`${id}-bid`}>
+            {silent ? 'Sealed bid' : 'Your bid'} (minimum {minimum})
+          </label>
+          <Input
+            id={`${id}-bid`}
+            type="number"
+            min={minimum}
+            step={1}
+            max={auction.ownAvailable + auction.allyAvailable}
+            value={amountText}
+            disabled={busy}
+            onChange={(event) => update({ amount: event.target.value })}
+          />
+          {auction.allyAvailable > 0 && (
             <>
-              <label htmlFor={`${id}-bid`}>
-                {silent ? 'Sealed bid' : 'Your bid'} (minimum {minimum})
-              </label>
+              <label htmlFor={`${id}-ally`}>Pay from ally’s pledge</label>
               <Input
-                id={`${id}-bid`}
+                id={`${id}-ally`}
                 type="number"
-                min={minimum}
+                min={0}
                 step={1}
-                max={auction.ownAvailable + auction.allyAvailable}
-                value={amountText}
+                max={Number.isFinite(amount) ? Math.min(amount, auction.allyAvailable) : auction.allyAvailable}
+                value={allyText}
                 disabled={busy}
-                onChange={(event) => update({ amount: event.target.value })}
+                onChange={(event) => update({ ally: event.target.value })}
               />
-              {auction.allyAvailable > 0 && (
-                <>
-                  <label htmlFor={`${id}-ally`}>Pay from ally’s pledge</label>
-                  <Input
-                    id={`${id}-ally`}
-                    type="number"
-                    min={0}
-                    step={1}
-                    max={Number.isFinite(amount) ? Math.min(amount, auction.allyAvailable) : auction.allyAvailable}
-                    value={allyText}
-                    disabled={busy}
-                    onChange={(event) => update({ ally: event.target.value })}
-                  />
-                </>
-              )}
-              <p className="fine">
-                {canBid
-                  ? `Payment if you win: ${ownPayment} own spice + ${allyPayment} ally spice.`
-                  : 'Choose a valid bid and funding split within the available spice.'}{' '}
-                {silent
-                  ? 'Your submitted amount stays private until all bids are in and cannot be changed.'
-                  : 'Raise the current bid or pass.'}
-              </p>
-              <Button
-                className={buttonClass}
-                disabled={busy || !canBid}
-                onClick={() => send(amount, allyPayment)}
-              >
-                {silent ? 'Seal bid' : 'Raise bid'}
-              </Button>
             </>
           )}
+          <p className="fine">
+            {canBid
+              ? `Payment if you win: ${ownPayment} own spice + ${allyPayment} ally spice.`
+              : 'Choose a valid bid and funding split within the available spice.'}{' '}
+            {silent
+              ? 'Your submitted amount stays private until all bids are in and cannot be changed.'
+              : 'Raise the current bid or pass.'}
+          </p>
+          <Button
+            className={buttonClass}
+            disabled={busy || !canBid}
+            onClick={() => send(amount, allyPayment)}
+          >
+            {silent ? 'Seal bid' : 'Raise bid'}
+          </Button>
           <Button
             className={buttonClass}
             variant="outline"

@@ -2,6 +2,25 @@
 
 Updated 18 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
 
+## Provisional paid Black Market retention — 18 October 2026
+
+The supplied revision physical36/printed34, Richese A/C, gives the shared
+Richese payment rule and Black Market methods but does not explicitly settle
+positive seller participation or sale counting. Under the 14 October
+choose-recommended direction, provisionally permit a positive seller win as
+**paid retention**: keep the same held card, pay the actual original bid to
+Emperor/Bank, and count one completed sale. No self-refund or new acquisition;
+full hands need no extra slot. Zero/unbid retention remains free and unsold,
+including the original Once Around all-other-pass shortcut.
+
+Native counters, actual allied escrow, Bureaucrat/Banker and original phase
+continuation remain. Already-held retention provides neither the cache
+acquisition nor seller-income invoice required by the separate Richese veto
+and Emperor free-seller acquisition sources; those frames are not invented.
+This is an explicit provisional product interpretation, not publisher/user
+clarification of the remaining source ambiguity.
+[Source, controls and scope](RICHESE_AUCTION_RULES.md#provisional-paid-black-market-retention--18-october-2026).
+
 ## Recommended mixed Planetologist advisor gather — 18 October 2026
 
 The supplied authorized revision, physical28/logical26 and physical17/logical15,
@@ -245,9 +264,10 @@ Original Richese cache/Advanced Black Market now use uniform buyer confirmation
 after original Richese Betrayal. Self-discard precludes acquisition/Nexus spend;
 bank diversion preserves provenance but receives nothing on zero-payment Use.
 Original stock, hand limits, bonus and successor continue. Basic/Advanced cache,
-legal self-cache and Advanced Black Market are covered; self-Black remains
-prohibited. The distinct original Ambassador path follows the current recommendation;
-other real purchase sources and full combinations retain separate contracts.
+legal self-cache and other-buyer Advanced Black Market are covered. Already-held
+Black Market retention supplies no acquisition/free-seller source; its native
+paid path follows the separate 18 October policy above. The distinct original
+Ambassador path and other real purchase sources retain separate contracts.
 Visibly provisional source composition selected under decision priority, not
 publisher clarification or a separately answered numerical ruling.
 [Canonical policy/proof](NEXUS_EMPEROR_RULES.md#recommended-richese-seller-unpaid-purchase--14-october-2026).
@@ -720,7 +740,7 @@ dedicated retrieved worked FAQs. [Contract and remaining limits](HOMEWORLD_OCCUP
 | Nexus lifecycle | Twelve physical cards, phase draw/replacement and alliance forfeiture; native Cunning, absent-faction Secret Ally and Betrayal have separate effects. No blanket Karama immunity. | [Common source contract](NEXUS_CARD_RULES.md), [lifecycle runtime](NEXUS_CARD_RUNTIME.md) |
 | Nexus faction effects | Preserve physical custody, original faction identity and durable effect receipts; use each printed family instead of borrowing another faction's rules by analogy. | [Atreides](NEXUS_ATREIDES_RULES.md), [Harkonnen](NEXUS_HARKONNEN_RULES.md), [BG](NEXUS_BENE_GESSERIT_RULES.md), [Emperor](NEXUS_EMPEROR_RULES.md), [Fremen](NEXUS_FREMEN_RULES.md), [Guild](NEXUS_GUILD_RULES.md) |
 | Expansion Nexus families | Source audit coverage does not imply every panel is playable; consult later runtime records in the status log. | [Ixian Cunning](NEXUS_IXIAN_CUNNING_RULES.md), [Ixian replacement](NEXUS_IXIAN_REPLACEMENT_RULES.md), [Tleilaxu](NEXUS_TLEILAXU_RULES.md), [CHOAM](NEXUS_CHOAM_RULES.md), [Richese](NEXUS_RICHESE_RULES.md), [Ecaz](NEXUS_ECAZ_RULES.md), [Moritani](NEXUS_MORITANI_RULES.md) |
-| Advanced Richese ally contribution | The authorized supplied Advanced Richese Bidding clause routes Richese's contribution to its ally's cache/Black Market purchase to Emperor or bank, even when Emperor buys. Preserve the original donor leg separately from buyer-to-Richese credit; cancellation redirects only the Emperor leg without paying twice. Basic retains R2's earlier receipt. Native Banker counts only final bank legs; exhausted-cache counts, positive Black Market self-bidding and Technology custody remain unresolved. | [Source distinction and recipient contract](RICHESE_AUCTION_RULES.md#authorized-advanced-contribution-recipients--4-october-2026) |
+| Advanced Richese ally contribution | The authorized supplied Advanced Richese Bidding clause routes Richese's contribution to its ally's cache/Black Market purchase to Emperor or Bank, even when Emperor buys. Preserve that donor leg separately from buyer-to-Richese credit; cancellation redirects only original Emperor income. Basic retains its earlier receipt. Bureaucrat follows the actual separate receipts and normal Banker counts final payer Bank legs. Positive seller retention follows the explicit 18 October provisional policy above; ordinary cache counting and the supplied exclusion of special-lot Ixian Technology remain separate. | [Recipient contract](RICHESE_AUCTION_RULES.md#authorized-advanced-contribution-recipients--4-october-2026), [paid-retention policy](RICHESE_AUCTION_RULES.md#provisional-paid-black-market-retention--18-october-2026) |
 | Richese Nexus Betrayal auctions | Pause at a valid original prepayment quote. Public self-cache veto discards the exact card without debit/acquisition; another buyer's positive cache/Black Market invoice keeps price/contributions/delivery and earned Harkonnen bonus while overriding the recipient to bank. All publicly possible unallied other-faction held-Nexus seats acknowledge uniformly; private identity controls only own Use. This neutral protocol is an application choice, not publisher timing. Normal hidden-family self-purchases, special-Karama veto and unsupported overlays remain excluded; no native Karama exception certifies them. Bounded engine/SQL/bot/phone scenarios are verified locally; broader verification remains Partial and public starts/full Nexus gates stay closed. | [Printed face, profile, API and saved continuation](NEXUS_RICHESE_RULES.md#bounded-betrayal-auction-contract--30-september-2026), [common privacy protocol](NEXUS_CARD_RULES.md#richese-betrayal-prepayment-protocol), [auction source boundaries](RICHESE_AUCTION_RULES.md) |
 | Guild Nexus Betrayal shipment payment | Replace one original funded positive fee in full, including own pre-funded payment and the printed full occupied-Junction override; preserve original payer/contributions, consume already-debited donor escrow once and deliver the original physical shipment once. Native applicable stop/rate responses precede the bounded gate; zero/stopped shipments supply no award or Nexus cost. Public possible held-Nexus seats acknowledge uniformly; private Use changes no public price/source disclosure. Fresh classic/native-Guild/Nexus with optional genuinely seeded Homeworlds only; unsupported native Cunning/Richese shipment overlays block before card/parent commitment, and restored transport independently requires the native Guild grant. Bounded engine/SQL/bot/CLI/phone custody and refresh are locally verified; no new priority/immunity, ordinary occupation/rounding ruling or extra shipment. Broad/public/live gates remain closed. | [Printed source and bounded contract](NEXUS_GUILD_RULES.md#nexus-guild-betrayal), [common protocol](NEXUS_CARD_RULES.md#guild-betrayal-funded-payment-protocol), [internal checklist](../game/reference.ts) |
 | Ixian Nexus Secret Ally replacement | Fresh classic/Tleilaxu/Richese profiles, Ixians absent, unallied buyer and Nexus alone. Normal purchases, positive Richese cache/Advanced Black Market sales and genuine Advanced special-Karama cache acquisition during Bidding bind actual target/payment and original continuation. A direct price3 receipt outranks unrelated rows/income, preserving active player, once-use and suspended controls without an auction. Outside Bidding it adds no offer. Only unpaid bids remain reserved; delivered sale commitments are not charged twice. Cache uses the visible provisional independent-Nexus interpretation; native ally exclusion and BG/Harkonnen source rules remain. Other modules and full acceptance stay separate. | [Current contract](NEXUS_IXIAN_REPLACEMENT_RULES.md#bounded-local-runtime-contract), [actual direct receipt, funding fix and proof](NEXUS_IXIAN_REPLACEMENT_RULES.md#direct-richese-special-purchase-during-bidding--16-october-2026) |

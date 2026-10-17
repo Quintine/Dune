@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import type { FactionId } from '../game/catalog';
 import type { LeaderSkillId } from '../game/leader-skill-cards';
+import type { RicheseAuctionMethod } from '../game/richese-auction';
 import { createIndependentCardModulesFixture } from './fixture-independent-card-modules';
 import { homeworldEcazClean, nextHomeworldEcazStep } from './fixture-homeworld-ecaz-occupy';
 
@@ -14,6 +15,8 @@ export type RicheseBureaucratOptions = {
   owner?: 'beneGesserit' | 'atreides' | 'emperor' | 'richese';
   emperor?: boolean;
   counter?: boolean;
+  method?: RicheseAuctionMethod;
+  direction?: 'clockwise' | 'counterclockwise';
 };
 export type RicheseBureaucratStep = { actor: string; action: Action };
 export function richeseBureaucratPlayer(game: Game, id: string) {
@@ -89,7 +92,8 @@ export function createRicheseBureaucratFixture(options: RicheseBureaucratOptions
   const choose = (values: Record<string, unknown>) => act(donor,
     { type: 'decision', event: game.richeseBidding!.event, ...values } as Action);
   if (advanced) {
-    if (source === 'blackMarket') choose({ card: richeseBureaucratPlayer(game, donor).hand[0].id, method: 'silent' });
+    if (source === 'blackMarket') choose({ card: richeseBureaucratPlayer(game, donor).hand[0].id,
+      method: options.method ?? 'silent', direction: options.direction ?? 'clockwise' });
     else choose({ decline: true });
   }
   if (source === 'cache') {
