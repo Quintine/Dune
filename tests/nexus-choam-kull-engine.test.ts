@@ -404,7 +404,7 @@ for (const source of ['printed', 'nexus'] as const)
     assert.equal(paid.players[0].spice, 1);
   });
 
-void test('the Nexus-only Kull profile keeps unsupported Fremen remote Cunning behind its existing pre-offer guard', () => {
+void test('a declined Kull resumes the original Fremen special into its native Cunning offer', () => {
   const f = createNexusChoamKullFixture({ actorFaction: 'fremen', fuel: 'weapon', counter: false });
   const game = applyAction(f.game, f.choam, { type: 'kullDecision', event: f.event, decline: true });
   game.players[1].hand.push(takeKullCard(game, f.original));
@@ -435,12 +435,19 @@ void test('the Nexus-only Kull profile keeps unsupported Fremen remote Cunning b
   const summoned = applyAction(reload(offered), f.choam, {
     type: 'kullDecision', event: offered.pendingKull!.event, decline: true });
   assert.equal(summoned.players[1].specialKaramaUsed, true);
-  assert.equal(summoned.nexusFremenCunningOffer ?? null, null);
+  assert.ok(summoned.nexusFremenCunningOffer);
+  assert.equal(summoned.nexusFremenCunningOffer.occurrence.parent, summoned.summonedWorm?.event);
+  assert.equal(summoned.decision?.kind, 'nexusFremenCunningOffer');
   assert.equal(summoned.nexusFremenCunningRides ?? null, null);
   assert.equal(summoned.nexusCards!.cards!.hands[f.actor], 'fremen');
   assert.equal(summoned.discard.filter(card => card.id === f.original).length, 1);
   reject(summoned, f.actor, { type: 'decision', event: 'unsupported-remote-ride', accept: true });
   viewGame(reload(summoned), f.actor);
+  const declined = applyAction(summoned, f.actor, {type:'decision',
+    event:summoned.nexusFremenCunningOffer.occurrence.event, accept:false});
+  assert.equal(declined.nexusFremenCunningOffer ?? null, null);
+  assert.equal(declined.nexusCards!.cards!.hands[f.actor], 'fremen');
+  assert.equal(declined.discard.filter(card => card.id === f.original).length, 1);
 });
 
 void test('a canceled CHOAM-effect block does not remove ordinary Karama auction-payment coverage', () => {

@@ -508,6 +508,7 @@ import { reserveExtortion, collectExtortion, answerExtortion, validateExtortionS
 import { STORM_START_SECTOR, PLAYER_CIRCLE_SECTORS } from './player-positions';
 import { cashInCards } from './choam-karama';
 import { kullBlocksKarama, activeKullRestrictions, validateKullPhaseRestrictions, validateKullAttemptStamp, kullNativeCostCards, kullNexusCostCards, kullCounterCards, type KullPhaseRestriction } from './choam-kull';
+import { kullCancellationPurpose, kullSpecialPurpose, kullPurposeLabel, type KullPurpose } from './kull-purpose';
 import { quoteRicheseBetrayalInvoice, requiredRicheseBetrayalResponders, richeseBetrayalEligibility, richeseBetrayalEvent, createRicheseBetrayalReceipt, validateRicheseBetrayalCursor, type RicheseBetrayalCursor, type RicheseBetrayalReceipt } from './nexus-richese-betrayal';
 import { saleOptions, quoteSale, type ChoamMarket } from './choam-market';
 import { highKaitainDiscardsAvailable, quoteKaitainDiscards, homeworldWorthlessSaleBlock } from './homeworld-card-economy';
@@ -1302,6 +1303,8 @@ export type Game = {
     turn: number;
     phase: number;
     form: 'printed' | 'substitution';
+    /** New Advanced attempts restrict this effect; absent preserves original phase scope. */
+    purpose?: KullPurpose;
     stage: 'offer' | 'counter';
     selection?: { source: 'printed' | 'nexus'; card: string; nexusEvent?: string };
     intent: { kind: 'ordinary'; use: KaramaUse } | { kind: 'special'; use: SpecialKaramaIntent };
@@ -13769,10 +13772,29 @@ function nextAuction(g: Game) {
     currentAuctionContinuationQuote(g, { kind: 'next' }),
   );
 }
-/** Physical custody only: promise feasibility remains conservatively checked at commit. */
-function karamaSpendingBlock(g: Game, p: Player, card: Card): string | null {
-  if (g.kullPreview && kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, p.id))
-    return 'Kull Wahad prevents your Karama activations for this phase.';
+/** Semantic effects exclude card identity, amounts, beneficiaries and route choices. */
+function karamaUsePurpose(g: Game, use: KaramaUse): KullPurpose {
+  if (use.kind === 'shipment') return 'shipment-price';
+  if (use.kind !== 'cancel') return 'auction-free-purchase';
+  const response = use.response;
+  return kullCancellationPurpose(response.kind,
+    response.kind === 'choamWorthless' ? g.pendingChoamWorthless?.effect
+      : response.kind === 'eliteStrength' ? getPlayer(g, response.owner).faction : undefined);
+}
+function kullIntentPurpose(g: Game, intent: NonNullable<Game['pendingKull']>['intent']): KullPurpose {
+  return intent.kind === 'ordinary' ? karamaUsePurpose(g, intent.use)
+    : kullSpecialPurpose(getPlayer(g, intent.use.owner).faction);
+}
+function kullKaramaBlock(g: Game, p: Player, purpose?: KullPurpose): string | null {
+  if (!g.kullPreview || !kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, p.id, purpose)) return null;
+  return kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, p.id)
+    ? 'Kull Wahad prevents your Karama activations for this phase.'
+    : `Kull Wahad prevents ${kullPurposeLabel(purpose!)} for this phase. Other Karama effects remain available.`;
+}
+/** Physical custody plus the intended effect; promise feasibility is checked at commit. */
+function karamaSpendingBlock(g: Game, p: Player, card: Card, purpose?: KullPurpose): string | null {
+  const kullBlock = kullKaramaBlock(g, p, purpose);
+  if (kullBlock) return kullBlock;
   if (g.pendingKull?.stage === 'counter' &&
     (g.pendingKull.card === card.id || g.pendingChoamWorthless?.card === card.id ||
       g.pendingKull.worthless?.card === card.id))
@@ -13797,12 +13819,12 @@ function karamaSpendingBlock(g: Game, p: Player, card: Card): string | null {
     return 'A Worthless conversion is already pending.';
   return null;
 }
-function karamaCard(g: Game, p: Player, id?: unknown) {
+function karamaCard(g: Game, p: Player, id?: unknown, purpose?: KullPurpose) {
   // Explicit selections retain the specific custody error from spendKarama.
   const available = p.hand.filter(
     (c) =>
       canUseAsKaramaRole(g, p, c) &&
-      (id === undefined ? !karamaSpendingBlock(g, p, c) : c.id === id),
+      (id === undefined ? !karamaSpendingBlock(g, p, c, purpose) : c.id === id),
   );
   return available.find((c) => c.effect === 'karama') ?? available[0];
 }
@@ -13815,7 +13837,7 @@ function responseCancelCards(
   if (g.pendingKull?.stage === 'counter')
     return kullCounterCards(p.hand, physicalTreacheryCards(g), g.pendingKull.card,
       card => {
-        if (!canUseAsKaramaRole(g, p, card) || karamaSpendingBlock(g, p, card)) return false;
+        if (!canUseAsKaramaRole(g, p, card) || karamaSpendingBlock(g, p, card, karamaUsePurpose(g, {kind:'cancel', response}))) return false;
         try {
           return assertKaramaPromiseFeasibility(g, p, { kind: 'cancel', response }, card);
         } catch (error) {
@@ -13827,7 +13849,7 @@ function responseCancelCards(
   // A physically spendable card whose Truthtrance feasibility is not proven
   // remains a possible choice; the authoritative action still checks promises.
   return p.hand
-    .filter((card) => !karamaSpendingBlock(g, p, card))
+    .filter((card) => !karamaSpendingBlock(g, p, card, karamaUsePurpose(g, {kind:'cancel', response})))
     .map((card) => card.id);
 }
 /** The same conversion can be suspended by an independent private interaction. */
@@ -14445,6 +14467,8 @@ function validateKaramaUse(
   use: KaramaUse,
   spendingCard?: Card,
 ) {
+  const kullBlock = kullKaramaBlock(g, p, karamaUsePurpose(g, use));
+  requireRule(!kullBlock, kullBlock ?? 'Kull Wahad prevents this Karama effect.');
   if (use.kind === 'cancel') {
     requireRule(
       use.response && use.response.owner !== p.id,
@@ -14652,6 +14676,10 @@ function assertKaramaPromiseFeasibility(
   return true;
 }
 type KullFrame = NonNullable<Game['pendingKull']>;
+function kullSettledRestriction(g: Game, frame: KullFrame): KullPhaseRestriction {
+  return { player: frame.owner, turn: g.turn, phase: g.phase,
+    ...(frame.purpose === undefined ? {} : { purpose: frame.purpose }) };
+}
 // Independent printed descriptors, assembled once rather than trusting a saved
 // hand to define its own identity or rebuilding the physical deck per quote.
 const kullCanonicalCards: Readonly<Record<string, Card>> =
@@ -14665,7 +14693,7 @@ function kullCostRetainsAuctionPayment(g: Game, p: Player, card: Card, physical:
   return !g.auction || g.auction.bidder !== p.id || auctionSpicePaymentFunded(g, p) ||
     p.hand.some(held => held.id !== card.id && canonicalKullCard(held) &&
       physical.reduce((count, candidate) => count + Number(candidate.id === held.id), 0) === 1 &&
-      !karamaSpendingBlock(g, p, held));
+      !karamaSpendingBlock(g, p, held, 'auction-free-purchase'));
 }
 function kullCostPromisesAllow(g: Game, p: Player, card: Card, fuelSource: 'printed' | 'nexus'): boolean {
   const source = g.pendingKull ? kullSource(g, g.pendingKull) : g;
@@ -14686,7 +14714,7 @@ function kullCostPromisesAllow(g: Game, p: Player, card: Card, fuelSource: 'prin
       if (g.pendingKull)
         projected.kullRestrictions = [
           ...activeKullRestrictions(projected.kullRestrictions, projected.turn, projected.phase),
-          { player: g.pendingKull.owner, turn: projected.turn, phase: projected.phase },
+          kullSettledRestriction(projected, g.pendingKull),
         ];
     }
     projected.response = null;
@@ -14731,7 +14759,7 @@ function kullSignature(g: Game, frame: KullFrame): string {
   return JSON.stringify({
     event: frame.event, player: frame.player, owner: frame.owner, card: frame.card,
     turn: frame.turn, phase: frame.phase, form: frame.form, intent: frame.intent,
-    selection: frame.selection,
+    selection: frame.selection, purpose: frame.purpose,
     controls: nullentropyParentSignature(source, frame.resume, frame.event),
     status: source.status, advanced: source.advanced, active: source.active,
     order: source.order, ready: source.ready, hajr: source.hajr, choamMarket: source.choamMarket,
@@ -14790,6 +14818,8 @@ function kullIntegrity(g: Game): void {
     requireRule(frame.signature === kullSignature(g, frame),
       'The saved Kull attempt no longer matches its original controls and opportunity.');
     const source = kullSource(g, frame), owner = getPlayer(source, frame.owner);
+    requireRule(frame.purpose === undefined || (g.advanced && frame.purpose === kullIntentPurpose(source, frame.intent)),
+      'The Advanced Kull restriction no longer matches the original Karama effect.');
     if (frame.worthless) {
       const parentOwner = getPlayer(source, frame.worthless.owner);
       requireRule(kullNexusCostCards(parentOwner.hand, physicalTreacheryCards(g))
@@ -14800,7 +14830,7 @@ function kullIntegrity(g: Game): void {
     requireRule(card, 'The original attempted Karama must remain in its owner’s hand.');
     requireRule(frame.form === (card.kind === 'worthless' ? 'substitution' : 'printed'),
       'The Kull attempt no longer matches its original physical card form.');
-    requireRule(!karamaSpendingBlock(source, owner, card), 'The original Karama activation is no longer legal.');
+    requireRule(!karamaSpendingBlock(source, owner, card, kullIntentPurpose(source, frame.intent)), 'The original Karama activation is no longer legal.');
     if (frame.intent?.kind === 'ordinary') {
       validateKaramaUse(source, owner, frame.intent.use, card);
       requireRule(assertKaramaPromiseFeasibility(source, owner, frame.intent.use, card),
@@ -14860,6 +14890,7 @@ function beginKullAttempt(g: Game, p: Player, card: Card, intent: KullFrame['int
     player: choam.id, owner: p.id, card: card.id,
     turn: g.turn, phase: g.phase, form: card.kind === 'worthless' ? 'substitution' : 'printed',
     stage: 'offer', intent: structuredClone(intent), resume: structuredClone(resume),
+    ...(g.advanced ? { purpose: kullIntentPurpose(g, intent) } : {}),
     worthless: structuredClone(g.pendingChoamWorthless ?? null), signature: '',
   };
   // Payment dispatch removed this control before entering its native branch.
@@ -14918,7 +14949,7 @@ function decideKull(g: Game, p: Player, action: Action): void {
   log(g, `${p.name} declared Kull Wahad. Only a different Karama can prevent it.`);
 }
 function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered = false) {
-  const blocked = karamaSpendingBlock(g, p, card);
+  const blocked = karamaSpendingBlock(g, p, card, karamaUsePurpose(g, use));
   requireRule(!blocked, blocked ?? 'This card cannot be spent as Karama.');
   validateKaramaUse(g, p, use, card);
   const promiseProven = assertKaramaPromiseFeasibility(g, p, use, card);
@@ -15402,7 +15433,7 @@ function finishAutomaticDecision(g: Game): boolean {
     // split or consume a card on behalf of a player, including a BG conversion.
     if (
       auctionSpicePaymentFunded(g, p) &&
-      !p.hand.some((card) => !karamaSpendingBlock(g, p, card)) &&
+      !p.hand.some((card) => !karamaSpendingBlock(g, p, card, 'auction-free-purchase')) &&
       !emperorNexusUniformAuctionPayment(g)
     ) {
       g.decision = null;
@@ -15414,7 +15445,7 @@ function finishAutomaticDecision(g: Game): boolean {
 }
 function recoverAuctionPayment(g: Game, p: Player) {
   const a = g.auction!;
-  if (a.bid <= p.spice + (aidFor(g, p)?.amount ?? 0) || karamaCard(g, p)) {
+  if (a.bid <= p.spice + (aidFor(g, p)?.amount ?? 0) || karamaCard(g, p, undefined, 'auction-free-purchase')) {
     g.decision = { kind: 'auctionPayment', player: p.id };
     return;
   }
@@ -26159,9 +26190,11 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       const used = discard(g, choam, pending.card);
       finishNexusChoam(g,pending,'complete');
       if (pending.effect === 'kull') {
+        const restriction = kullSettledRestriction(g, g.pendingKull!);
         g.kullRestrictions = [...activeKullRestrictions(g.kullRestrictions, g.turn, g.phase),
-          { player: g.pendingKull!.owner, turn: g.turn, phase: g.phase }];
-        log(g, `${getPlayer(g, g.pendingKull!.owner).name} cannot activate Karama for this phase. The attempted card stays held.`);
+          restriction];
+        log(g, `${getPlayer(g, g.pendingKull!.owner).name} cannot activate ${restriction.purpose
+          ? kullPurposeLabel(restriction.purpose) : 'Karama'} for this phase. The attempted card stays held.`);
         resumeKullAttempt(g, true);
         return;
       }
@@ -29286,7 +29319,7 @@ function expansionSpecialKaramaRule<T>(calculate: () => T): T {
 }
 function actualSpecialKaramaCards(g: Game, p: Player) {
   return p.hand.filter(card => card.kind === 'special' && card.effect === 'karama' &&
-    !karamaSpendingBlock(g, p, card));
+    !karamaSpendingBlock(g, p, card, kullSpecialPurpose(p.faction)));
 }
 function ecazSpecialKaramaContext(g: Game, p: Player) {
   const b = g.battle;
@@ -29399,7 +29432,7 @@ export function prepareSpecialKaramaIntent(
     (c) => c.id === action.card && canUseAsKaramaRole(g, p, c),
   );
   requireRule(card, 'Choose a Karama card in your hand.');
-  const activationBlock = karamaSpendingBlock(g, p, card);
+  const activationBlock = karamaSpendingBlock(g, p, card, kullSpecialPurpose(p.faction));
   requireRule(!activationBlock, activationBlock ?? 'This Karama is committed elsewhere.');
   const base = { owner: p.id, card: card.id, turn: g.turn, phase: g.phase };
   if (p.faction === 'ecaz') {
@@ -29421,7 +29454,7 @@ export function prepareSpecialKaramaIntent(
     return { ...base, kind: 'moritani', source: choice.source, keep: choice.keep, discard: choice.discard };
   }
   if (p.faction === 'richese') {
-    const blocked = karamaSpendingBlock(g, p, card);
+    const blocked = karamaSpendingBlock(g, p, card, kullSpecialPurpose(p.faction));
     requireRule(!blocked, blocked ?? 'This Karama is committed elsewhere.');
     requireRule(
       !(
@@ -30032,7 +30065,7 @@ function richeseSpecialKaramaView(g: Game, p: Player) {
   const karamas = p.hand.filter(
     (c) =>
       canUseAsKaramaRole(g, p, c) &&
-      !karamaSpendingBlock(g, p, c) &&
+      !karamaSpendingBlock(g, p, c, kullSpecialPurpose(p.faction)) &&
       !(
         g.richeseAuction?.source === 'blackMarket' &&
         !g.currentAuctionSale &&
@@ -31136,7 +31169,7 @@ function applyActionInner(
         id !== response.owner,
         'Karama cancels another faction’s power.',
       );
-      const card = karamaCard(g, p, action.card);
+      const card = karamaCard(g, p, action.card, karamaUsePurpose(g, {kind:'cancel', response}));
       requireRule(card, 'Choose a Karama in your hand.');
       spendKarama(g, p, card, { kind: 'cancel', response });
     }
@@ -32273,7 +32306,7 @@ function applyActionInner(
         'Choose spice payment or Karama.',
       );
       if (action.karama) {
-        const card = karamaCard(g, p, action.card);
+        const card = karamaCard(g, p, action.card, 'auction-free-purchase');
         requireRule(card, 'You do not hold a Karama card.');
         spendKarama(g, p, card, { kind: 'auctionPayment' });
       } else settleAuction(g, false);
@@ -33265,7 +33298,7 @@ function applyActionInner(
       if (!quotedBid.ok) throw new RuleError(quotedBid.reason);
       requireRule(!g.kullPreview ||
         (p.id === byFaction(g, 'choam')?.id &&
-          !kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, p.id)) ||
+          !kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, p.id, 'auction-free-purchase')) ||
         quotedBid.amount <= p.spice + (aidFor(g, p)?.amount ?? 0),
       'Kull preview defers an unfunded Karama-dependent overbid before acceptance.');
       a.bid = quotedBid.amount;
@@ -35325,9 +35358,16 @@ export function viewGame(state: Game, id: string) {
     kullCounterEvent: g.pendingKull?.stage === 'counter' ? g.pendingKull.event : null,
     karamaBlocked: g.kullPreview && kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, id)
       ? 'Kull Wahad prevents your Karama activations for this phase.' : null,
+    karamaPurposeBlocks: (g.kullPreview ? activeKullRestrictions(g.kullRestrictions, g.turn, g.phase) : [])
+      .filter((restriction): restriction is KullPhaseRestriction & {purpose: KullPurpose} =>
+        restriction.player === id && restriction.purpose !== undefined)
+      .map(({purpose}) => ({purpose, label: kullPurposeLabel(purpose),
+        message: kullKaramaBlock(g, me, purpose)!})),
     kullReaction: g.pendingKull?.stage === 'offer'
       ? { event: g.pendingKull.event, player: g.pendingKull.player, target: g.pendingKull.owner,
           intent: g.pendingKull.intent.kind === 'ordinary' ? g.pendingKull.intent.use.kind : 'special',
+          scope: g.pendingKull.purpose === undefined ? 'phase' as const : 'effect' as const,
+          effect: kullPurposeLabel(kullIntentPurpose(kullSource(g, g.pendingKull), g.pendingKull.intent)),
           plays: id === g.pendingKull.player ? kullPlays(g, me) : [],
           canDecline: id === g.pendingKull.player, blocked: null as string | null }
       : null,
@@ -35404,7 +35444,7 @@ export function viewGame(state: Game, id: string) {
         ? {
             cards: cashInCards(g, me),
             karamas: cashInCards(g, me).filter((c) =>
-              canUseAsKaramaRole(g, me, c),
+              canUseAsKaramaRole(g, me, c) && !karamaSpendingBlock(g, me, c, kullSpecialPurpose(me.faction)),
             ),
           }
         : null,

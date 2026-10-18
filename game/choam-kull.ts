@@ -1,9 +1,12 @@
 import type { Card } from './cards';
+import { isKullPurpose, type KullPurpose } from './kull-purpose';
 
 export type KullPhaseRestriction = Readonly<{
   player: string;
   turn: number;
   phase: number;
+  /** Absent preserves the original Basic/legacy all-purpose phase ban. */
+  purpose?: KullPurpose;
 }>;
 
 export type KullContext = Readonly<{
@@ -41,7 +44,8 @@ function plainRecord(value: unknown): value is Record<string, unknown> {
 
 function validRestriction(value: unknown): value is KullPhaseRestriction {
   return plainRecord(value) &&
-    Object.keys(value).sort().join(',') === 'phase,player,turn' &&
+    (Object.keys(value).sort().join(',') === 'phase,player,turn' ||
+      Object.keys(value).sort().join(',') === 'phase,player,purpose,turn' && isKullPurpose(value.purpose)) &&
     identifier(value.player) && stamp(value.turn, value.phase);
 }
 
@@ -62,8 +66,8 @@ export function activeKullRestrictions(
   return (restrictions ?? [])
     .filter(restriction => validRestriction(restriction) &&
       restriction.turn === turn && restriction.phase === phase)
-    .map(({ player, turn: savedTurn, phase: savedPhase }) =>
-      ({ player, turn: savedTurn, phase: savedPhase }));
+    .map(({ player, turn: savedTurn, phase: savedPhase, purpose }) =>
+      ({ player, turn: savedTurn, phase: savedPhase, ...(purpose !== undefined ? { purpose } : {}) }));
 }
 
 export function kullBlocksKarama(
@@ -71,10 +75,12 @@ export function kullBlocksKarama(
   turn: number,
   phase: number,
   player: string,
+  purpose?: KullPurpose,
 ): boolean {
-  return identifier(player) && stamp(turn, phase) &&
+  return identifier(player) && stamp(turn, phase) && (purpose === undefined || isKullPurpose(purpose)) &&
     !!restrictions?.some(restriction => validRestriction(restriction) &&
-      restriction.player === player && restriction.turn === turn && restriction.phase === phase);
+      restriction.player === player && restriction.turn === turn && restriction.phase === phase &&
+      (restriction.purpose === undefined || purpose !== undefined && restriction.purpose === purpose));
 }
 
 /** Saved history may expire, but malformed, duplicate or future bans are not history. */
@@ -91,7 +97,7 @@ export function validateKullPhaseRestrictions(
       restriction.turn > context.turn ||
       (restriction.turn === context.turn && restriction.phase > context.phase))
       throw new Error('Kull Wahad has lost its phase restriction history.');
-    const key = JSON.stringify([restriction.player, restriction.turn, restriction.phase]);
+    const key = JSON.stringify([restriction.player, restriction.turn, restriction.phase, restriction.purpose ?? null]);
     if (seen.has(key)) throw new Error('Kull Wahad has duplicate phase restrictions.');
     seen.add(key);
   }

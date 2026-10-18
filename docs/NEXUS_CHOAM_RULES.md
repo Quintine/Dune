@@ -76,7 +76,12 @@ The API uses `kullReaction.plays`, not a bare `cards` list. Each private choice 
 
 **Source is required on every Use, including printed Kull.** There is no omitted-source fallback and no client-selected effect, target, price or Nexus ID. The generic any-time Nexus action does not play Kull: the validated pending Karama opportunity is required. Reject stale/foreign events, malformed costs or broken saved ownership before costs or writes.
 
-The accepted-declaration Nexus spend and retained pending fuel reuse the existing native Cunning application convention. E3 establishes that a played Nexus is discarded; it does not prescribe this internal transaction boundary or a Kull nested-response priority. A distinct eligible counter acts before the stamped phase ban; the original remains reserved. Success discards fuel once, keeps the original printed/BG card unplayed and special once-use unspent, and restricts its activating player for the current turn and phase. Prevention retains fuel under the existing exact-cost phase policy, leaves Nexus spent and resumes the saved original once. Decline spends neither cost and resumes it once. BG interception is before conversion; the original ordinary conversion and its FAQ disposal rules resume only after decline or prevention.
+New Advanced Kull attempts adopt the supplied specific-effect scope with
+provisional phase expiry. Basic and unstamped older attempts/restrictions retain
+phase-wide scope. Cunning changes fuel, not the selected effect’s scope. See the
+[18 October source cutover](CHOAM_KULL_SOURCE_UPDATE.md#advanced-specific-effect-scope--18-october-2026).
+
+The accepted-declaration Nexus spend and retained pending fuel reuse the existing native Cunning application convention. E3 establishes that a played Nexus is discarded; it does not prescribe this internal transaction boundary or a Kull nested-response priority. A distinct eligible counter acts before the stamped phase ban; the original remains reserved. Success discards fuel once, keeps the original printed/BG card unplayed and special once-use unspent, and restricts its activating player for the current turn and phase using the Basic/legacy broad or new Advanced effect scope above. Prevention retains fuel under the existing exact-cost phase policy, leaves Nexus spent and resumes the saved original once. Decline spends neither cost and resumes it once. BG interception is before conversion; the original ordinary conversion and its FAQ disposal rules resume only after decline or prevention.
 
 ## Pure saved receipt and integration contract
 

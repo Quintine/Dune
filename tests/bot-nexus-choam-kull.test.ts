@@ -30,7 +30,8 @@ void test('all four profiles settle saved Basic and Advanced Nexus Kull with onl
         assert.equal(settled.karamaShipping, null);
         assert.equal(settled.discard.filter(card => card.id === fixture.fuel).length, 1);
         assert.ok(settled.players.find(player => player.id === fixture.actor)!.hand.some(card => card.id === fixture.original));
-        assert.ok(viewGame(settled, fixture.actor).karamaBlocked);
+        assert.equal(!!viewGame(settled, fixture.actor).karamaBlocked, !advanced);
+        assert.deepEqual(viewGame(settled, fixture.actor).karamaPurposeBlocks.map(rule => rule.purpose), advanced ? ['shipment-price'] : []);
         assert.equal(settled.nexusCards!.cards!.hands[fixture.choam], null);
         assert.equal(settled.nexusCards!.cards!.discard.filter(face => face === 'choam').length, 1);
         assert.equal(settled.nexusChoamHistory!.at(-1)!.stage, 'complete');
@@ -91,7 +92,8 @@ void test('all profiles leave the interrupted BG Worthless card unconverted when
     const original = settled.players.find(player => player.id === fixture.actor)!.hand.find(card => card.id === fixture.original);
     assert.equal(original?.kind, 'worthless');
     assert.ok(!settled.discard.some(card => card.id === fixture.original));
-    assert.ok(viewGame(settled, fixture.actor).karamaBlocked);
+    assert.equal(viewGame(settled, fixture.actor).karamaBlocked, null);
+    assert.deepEqual(viewGame(settled, fixture.actor).karamaPurposeBlocks.map(rule => rule.purpose), ['shipment-price']);
   }
 });
 

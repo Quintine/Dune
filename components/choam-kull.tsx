@@ -44,8 +44,9 @@ export function ChoamKull({
             Decline to continue the original play, or choose a listed physical
             cost for Kull Wahad. Printed Kull uses its own Worthless Card;
             CHOAM Nexus Cunning can use any eligible Treachery Card.
-            Successful Kull retains the attempted card and prevents that
-            player’s Karama activations for this phase. A different eligible
+            Successful Kull retains the attempted card and prevents {reaction.scope === 'effect'
+              ? <>that player from using {reaction.effect} again this phase; other Karama effects remain available.</>
+              : <>that player’s Karama activations for this phase.</>} A different eligible
             Karama can prevent Kull before that restriction takes effect.
           </p>
           {reaction.blocked && <p className="fine">{reaction.blocked}</p>}

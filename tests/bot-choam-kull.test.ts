@@ -35,7 +35,8 @@ void test('every profile uses the projected physical Kull and cannot act from a 
     assert.equal(settled.karamaShipping, null);
     assert.ok(settled.players[1].hand.some(card => card.id === attemptedCard));
     assert.ok(settled.discard.some(card => card.id === 'ix-kull-wahad'));
-    assert.ok(viewGame(settled, 'e').karamaBlocked);
+    assert.equal(viewGame(settled, 'e').karamaBlocked, null);
+    assert.deepEqual(viewGame(settled, 'e').karamaPurposeBlocks.map(rule => rule.purpose), ['shipment-price']);
   }
 });
 

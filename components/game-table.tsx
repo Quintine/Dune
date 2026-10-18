@@ -175,6 +175,7 @@ import {
   canUseAsKaramaRole,
   canUseAsTruthtranceRole,
 } from '@/game/shrine';
+import { kullPurposeBlock, kullSpecialPurpose, type KullPurpose } from '@/game/kull-purpose';
 import { LeaderPortrait } from './leader-portrait';
 import { ShipmentQuote } from './shipment-quote';
 import { reserveShipmentCost } from '@/game/shipment-price';
@@ -337,8 +338,9 @@ export function GameTable({
     !g.automaticContinuationPending && !g.nexusCards?.waiting.length && !g.nexusTraitors?.pending;
   const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls || harkonnenBetrayalOwnsControls;
   const reactionOwnsControls = !!g.kullReaction || !!g.kullCounterEvent || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls || harkonnenBetrayalOwnsControls;
-  const canActivateKarama = (card: Card) =>
-    !g.karamaBlocked && canUseAsKaramaRole(g, me, card);
+  const canSpendKarama = (card: Card, purpose: KullPurpose) =>
+    !kullPurposeBlock(g, purpose) && canUseAsKaramaRole(g, me, card);
+  const canActivateKarama = (card: Card) => canSpendKarama(card, kullSpecialPurpose(me.faction));
   const traitorBattle = g.battle;
   const traitorBeneficiary =
     traitorBattle &&
@@ -1949,6 +1951,7 @@ export function GameTable({
           <PrivateBattlePlan game={g} />
           {!reactionOwnsControls && g.semutaReaction && <SemutaReaction game={g} act={act} busy={reactionBusy} />}
           {g.karamaBlocked && <p className="notice" role="status">{g.karamaBlocked}</p>}
+          {g.karamaPurposeBlocks?.map(({purpose, message}) => <p key={purpose} className="notice" role="status">{message}</p>)}
           {!reactionOwnsControls && <>
           <NexusCards game={g} act={act} busy={busy} />
           <Recruits game={g} act={act} busy={busy} />
@@ -3663,7 +3666,7 @@ export function GameTable({
                     (g.auction?.bid ?? 0) > (me.spice ?? 0) + g.aid.available,
                   )}
                   {me.hand
-                    ?.filter(canActivateKarama)
+                    ?.filter((card) => canSpendKarama(card, 'auction-free-purchase'))
                     .map((c) => (
                       <div key={c.id}>
                         {actionButton(
@@ -5813,6 +5816,8 @@ export function GameTable({
                           : null
                       : g.decision
                         ? 'Finish the pending decision before taking an auction card.'
+                        : kullPurposeBlock(g, 'auction-free-purchase')
+                          ? kullPurposeBlock(g, 'auction-free-purchase')
                         : g.phase !== 3 || !g.auction || g.richeseAuction
                           ? 'The Karama purchase option needs an ordinary auction in progress.'
                           : (me.hand?.length ?? 0) >= me.handLimit
@@ -6226,7 +6231,7 @@ export function GameTable({
                         />
                       </label>
                     )}
-                    {canActivateKarama(c) &&
+                    {canSpendKarama(c, 'shipment-price') &&
                       g.phase === 5 &&
                       g.active &&
                       (g.active === me.id ? shipmentAvailable : !g.players.find((p) => p.id === g.active)?.shipped) && (

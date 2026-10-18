@@ -2,6 +2,64 @@
 
 Source audit: 2026-09-06; opt-in preview contract updated 30 September 2026. This is an engineering and product-policy record, not a rules-completion claim. The source audit in [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md) remains applicable. The user-approved counter and BG choices supersede the original proposal; publisher-source uncertainty and full expansion gates remain.
 
+## Advanced effect scope — 18 October 2026
+
+New Advanced attempts use the supplied rulebook’s specific-effect scope;
+[exact source and duration interpretation](CHOAM_KULL_SOURCE_UPDATE.md#advanced-specific-effect-scope--18-october-2026).
+Basic and previously unstamped pending/settled frames retain all-purpose phase
+scope. The older phase-wide descriptions below apply to that path.
+
+`game/kull-purpose.ts` defines finite semantic keys and readable labels.
+`KullPhaseRestriction.purpose` and the signed pending frame’s optional `purpose`
+select the new scope. Omission retains the original meaning. Four-argument
+`kullBlocksKarama` asks only about an all-purpose ban; a fifth key checks that
+ban or the matching effect. Active restriction copies retain keys and exact
+same-effect duplicates reject. Source feasibility and final settlement use the
+same restriction factory; all committed activations check the intended effect.
+
+`GameView.karamaBlocked` remains only the all-purpose message. Its own
+`karamaPurposeBlocks` lists `{purpose,label,message}` for active scoped effects.
+`kullReaction` adds public `scope: effect | phase` and a readable effect name,
+without exposing the private intent payload. Response controls, auction payment,
+shipment pricing and faction specials consult the same scope. No restriction
+removes physical ownership or legal nonactivation transfers/discards.
+
+Genuine-action fixtures select the unopened original deal and unopened Baliset/
+Spice positions explicitly, then use real setup, normal1 purchase, CHOAM1
+shipment, Kull, normal desert shipment and ground movement. No postdeal hand,
+wallet, force or clock is installed. Advanced can use the retained original to
+cancel native Baliset in the same phase; Basic keeps its broad ban. Separate
+controlled intent tests check Emperor variants, purchase/payment and original
+unstamped semantics. These are not full combinations or persistence assurance.
+
+Frozen **12 files111/111**, types/lint/build and two original-action/rendered-table
+programmes pass. Basic uses62 source+8 continuation actions; Advanced70+14.
+Actual Baliset1 purchase, CHOAM1 city shipment and normal desert2 shipment lead
+to the real Baliset response. Advanced’s retained original cancels it, while
+Basic’s unavailable control stays disabled. All four minimal policies legally
+pass that response; no strategy calibration. Controlled intent tests also prove
+shared purchase/payment and Emperor variants, different special/cancellation
+use, and the original unstamped frame behavior.
+
+The source-bound aggregate is outside Git at
+`~/.local/share/dune/checkpoints/20261018-kull-purpose/frozen-integrated-final/report.json`:
+base `b82441c834ebf6c59a3b09a22a4e8821f4b7ccf8`, source tree
+`7624106ac78c036d15c74ef3a226b4dfea52e51cfebe7b36f378c10736fea177`.
+All passed checks bind that exact source. The first union exposed two fixture
+expectations (forced Harkonnen return and an obsolete Fremen Cunning fence);
+those repaired cases passed before the frozen union. The initial native case
+also corrected a final active-seat assumption at CHOAM’s real phase-end market.
+Types caught one nullable fixture guard. The external table smoke’s Basic
+expectation and enabled-button matcher were then corrected; only that smoke was
+rerun on the unchanged tree, preserving the earlier successful check reports.
+Only checkpoint prose/reference evidence changed afterward.
+
+Recovery schema expectations were maintained but SQL assurance was not run.
+Runtime table rendering uses framework aliases/CSS stubs and does not establish
+visual/browser/deployed behavior. Original Nexus/alias programmes, wider
+combinations, full modes and comprehensive assurance remain due. No saved-game/
+database/reset/restart or deployment operation occurred.
+
 ## Authoritative boundary
 
 [GF9 CHOAM & Richese rulebook](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf), printed p. 7: Kull reacts to an attempted Karama play and prevents that player from playing Karama for the phase. Printed p. 12 permits Karama to prevent CHOAM's special-effect discard of a Worthless card during that phase. These clauses establish both directions of interaction, but do not specify a nested-response protocol.
@@ -65,7 +123,7 @@ The pure [Kull module](../game/choam-kull.ts) owns `KullPhaseRestriction`, `acti
 
 The original and counter cards have different obligations. The original stays reserved until Kull settles; ordinary counter eligibility excludes that exact physical ID. A different printed Karama or eligible BG substitution may counter while Kull is pending. A BG counter's own conversion response must not overwrite the original intent or its suspended response.
 
-The consumer interface is `GameView.kullReaction`: `null` or `{ event, player, target, intent, plays, canDecline, blocked }`. The old `cards` array is removed. Each private play is `{ source: 'printed' | 'nexus', effect: 'kull', card: Card, event: string, blocked: string | null }`, separating the real selected fuel from the effect and source. It is present during the offer stage; the counter stage uses existing `responseControls`. `player` is the public CHOAM reactor, `target` the attempted activating player, and `intent` the ordinary purpose kind or generic `special` label, never a special selection. All viewers see the same event/actors/intent; only CHOAM receives its plays and `canDecline: true`; others get empty plays. The offer remains declinable with no legal cost. Countering reuses ordinary `card/mode: cancel` or `passResponse`. Never project special choices, saved secrets, signatures, funding or hidden hands, and never derive public opportunity timing from a secret Nexus or cost.
+The consumer interface is `GameView.kullReaction`: `null` or `{ event, player, target, intent, scope, effect, plays, canDecline, blocked }`. The old `cards` array is removed. Each private play is `{ source: 'printed' | 'nexus', effect: 'kull', card: Card, event: string, blocked: string | null }`, separating the real selected fuel from the effect and source. It is present during the offer stage; the counter stage uses existing `responseControls`. `player` is the public CHOAM reactor, `target` the attempted activating player, and `intent` the ordinary purpose kind or generic `special` label, never a special selection. All viewers see the same event/actors/intent; only CHOAM receives its plays and `canDecline: true`; others get empty plays. The offer remains declinable with no legal cost. Countering reuses ordinary `card/mode: cancel` or `passResponse`. Never project special choices, saved secrets, signatures, funding or hidden hands, and never derive public opportunity timing from a secret Nexus or cost.
 
 `GameView.kullCounterEvent` is `null` or the same opaque public attempt event while the distinct-counter stage owns control, including a BG `worthlessKarama` overlay. Controls and bots use it only for precedence; legal physical choices still come from native `responseControls`. It reveals no original card, Kull cost or saved response payload. `GameView.karamaBlocked` is the current viewer's stamped activation-block reason or `null`, separate from a pending declaration; `kullPreview` supplies the shared interception warning and `nexusKullPreview` identifies the new source capability.
 

@@ -286,8 +286,9 @@ for (const advanced of [false, true])
       assert.equal(done.nexusChoamHistory![0].stage, 'complete');
       assert.deepEqual(done.nexusChoamLast, { event: nexusEvent, stage: 'complete' });
       assert.deepEqual((done.kullRestrictions ?? []).filter(rule => rule.player === actor),
-        [{ player: actor, turn: done.turn, phase: done.phase }]);
-      assert.ok(viewGame(done, actor).karamaBlocked, 'the stamped phase ban is publicly visible');
+        [{ player: actor, turn: done.turn, phase: done.phase, ...(advanced ? {purpose: 'shipment-price'} : {}) }]);
+      assert.equal(!!viewGame(done, actor).karamaBlocked, !advanced);
+      assert.deepEqual(viewGame(done, actor).karamaPurposeBlocks.map(rule => rule.purpose), advanced ? ['shipment-price'] : []);
       assert.equal(viewGame(done, choam).kullReaction, null);
       await restored(f, done);
 
@@ -590,7 +591,8 @@ void test('SQLite completed Nexus Kull history stays intrinsic after later physi
   f.writes.length = 0;
   const views = await restored(f, later);
   assert.equal(views[0].kullReaction ?? null, null, 'a settled opportunity is never reopened by recycling');
-  assert.ok(views[1].karamaBlocked, 'the stamped phase ban survives the later card movement');
+  assert.equal(views[1].karamaBlocked, null);
+  assert.deepEqual(views[1].karamaPurposeBlocks.map(rule => rule.purpose), ['shipment-price'], 'the effect restriction survives the later card movement');
   assert.equal(later.nexusChoamHistory!.length, 1, 'history never duplicates an event');
   assert.equal(later.nexusChoamHistory![0].stage, 'complete');
   assert.deepEqual(later.nexusChoamLast, { event: nexusEvent, stage: 'complete' });

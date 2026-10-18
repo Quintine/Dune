@@ -77,6 +77,7 @@ import {
 import { ownedTech } from './tech-tokens';
 import type { StrongholdProgress } from './victory-progress';
 import { canUseAsKarama } from './karama';
+import { kullPurposeBlock, kullSpecialPurpose } from './kull-purpose';
 import {
   canUseAsKaramaRole,
   shrineTruthtranceBotAction,
@@ -1410,7 +1411,7 @@ function policyActions(g: GameView): Action[] {
   }
   if (
     !g.battle &&
-    !g.karamaBlocked &&
+    !kullPurposeBlock(g, kullSpecialPurpose(me.faction)) &&
     g.choamCashIn?.karamas.length &&
     (me.spice ?? 0) < (level === 0 ? 2 : 5)
   ) {
@@ -1457,7 +1458,7 @@ function policyActions(g: GameView): Action[] {
   const sapho = saphoAction(g);
   if (sapho) return [sapho];
   const specialCard =
-    !g.karamaBlocked &&
+    !kullPurposeBlock(g, kullSpecialPurpose(me.faction)) &&
     !g.choamMarket &&
     (!g.revival.pending ||
       (me.faction === 'tleilaxu' && g.decision?.kind === 'revivalStop')) &&
@@ -2849,7 +2850,7 @@ function policyActions(g: GameView): Action[] {
     }
     if (d.kind === 'auctionPayment') {
       const karama = me.hand?.find((c) =>
-        !g.karamaBlocked && canUseAsKaramaRole(g, me, c),
+        !kullPurposeBlock(g, 'auction-free-purchase') && canUseAsKaramaRole(g, me, c),
       );
       const use =
         !!karama &&

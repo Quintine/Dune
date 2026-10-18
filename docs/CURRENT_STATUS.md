@@ -16,6 +16,32 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Advanced Kull effect scope — 18 October. Prototyped / Partial.** New
+Advanced attempts adopt the supplied specific-effect wording. Basic and
+unstamped older pending/settled restrictions remain all-purpose. Semantic keys
+keep another effect available, normalize purchase/payment and native variants,
+and bind the original CHOAM parent rather than its temporary Kull counter.
+Retaining phase expiry is explicitly provisional; prior counter/BG/deferred
+winning-overbid choices remain.
+
+Two disjoint implementation lanes, bounded source review and owner integration
+pass **12 files111/111**, types/lint/build and two original-action/rendered-table
+programmes. Selected unopened deal/auction/Spice positions use62 Basic/70
+Advanced source actions plus8/14 continuations: actual Baliset1 purchase,
+CHOAM1 city shipment, Kull, normal desert2 shipment and real movement. Advanced
+cancels Baliset with the retained original; Basic keeps it unavailable. Four
+minimal policies legally pass the different-effect response; no tuning.
+
+Feedback corrected fixture assumptions about automatic Harkonnen return,
+CHOAM’s phase-end market and already-supported Fremen Cunning, plus one nullable
+fixture guard. The external smoke was repaired to distinguish disabled actions
+from enabled ones and CSS classes from actual attributes; only that smoke was
+rerun after types/lint/build, against identical source. Recovery expectations
+were updated without running deferred SQL assurance. Original Nexus/alias/wider
+combinations, full modes, final assurance and browser/deployed acceptance remain
+open. No saved-room/database/reset/restart/deployment operation.
+[Source cutover and exact proof](CHOAM_KULL_DESIGN.md#advanced-effect-scope--18-october-2026).
+
 **Recovered Hajr replay — 18 October. Prototyped / Partial.** The deck contains
 one Hajr. Real paid Box recovery now permits playing that same held card again,
 counting one extra allowance per accepted use. Advanced needs a fresh completed

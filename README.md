@@ -169,8 +169,9 @@ on a fresh ready Basic/Advanced CHOAM-plus-classic lobby with `choam,ix` decks
 and no optional modules, following the [safe prototype workflow](docs/DEVELOPMENT.md).
 The tool requires the exact room/version and a private backup output directory.
 The preview reserves the interrupted Karama and permits only a different eligible
-counter; BG interception is before conversion. Unpayable overbid recovery remains
-guarded. See the [selected policy and boundaries](docs/CHOAM_KULL_SOURCE_UPDATE.md).
+counter; BG interception is before conversion. New Advanced attempts restrict
+the specific Karama effect; Basic retains phase-wide prevention. Advanced phase
+expiry is provisional. Unpayable overbid recovery remains guarded. See the [selected policy and boundaries](docs/CHOAM_KULL_SOURCE_UPDATE.md).
 This does not enable public expansion starts or certify full CHOAM.
 
 For local **CHOAM Nexus Cunning Kull**, use `node --import tsx tools/start-prototype.ts --profile nexus-kull`

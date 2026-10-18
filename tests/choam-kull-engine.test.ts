@@ -378,7 +378,8 @@ void test('a canceled BG counter does not release the original card or premature
   assert.equal(result.karamaShipping, null);
   assert.equal(result.discard.filter(card => card.id === bg).length, 1);
   assert.equal(result.discard.filter(card => card.id === 'ix-kull-wahad').length, 1);
-  assert.equal(viewGame(result, 'e').karamaBlocked !== null, true);
+  assert.equal(viewGame(result, 'e').karamaBlocked, null);
+  assert.deepEqual(viewGame(result, 'e').karamaPurposeBlocks.map(rule => rule.purpose), ['shipment-price']);
 });
 
 void test('nonopted games keep native Karama execution and no Kull opportunity', () => {

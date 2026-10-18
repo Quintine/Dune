@@ -1,5 +1,28 @@
 # Dune implementation status
 
+## 18 October 2026 — Advanced Kull specific-effect scope
+
+New Advanced attempts now restrict the semantic Karama effect named by the
+supplied source; Basic/unstamped frames retain their original broad phase scope.
+Other effects remain usable through connected engine validation, counters,
+feasibility, own guidance, human controls and legal bots. Purpose keys normalize
+purchase/payment and native variants without binding private card/route/amount
+choices. Phase expiry remains an explicit provisional composition; previous
+counter/BG/deferred-overbid selections and preview/publication gates stay.
+
+Two disjoint lanes plus bounded source review and owner integration pass12-file
+111/111, types/lint/build and two real-action/rendered-table programmes.
+Selected unopened deal/auction/Spice order uses62 Basic/70 Advanced source plus
+8/14 continuation actions, with actual Baliset1 purchase and paid shipments.
+Advanced’s retained original cancels Baliset; Basic keeps cancellation blocked.
+Four minimal policies legally pass. Feedback corrected stale/automatic fixture
+expectations and nullable typing; the external enabled-control matcher was
+repaired and rerun alone on the same verified source. No code changed afterward.
+[Canonical source, exact proof and limits](CHOAM_KULL_DESIGN.md#advanced-effect-scope--18-october-2026).
+Recovery schema assertions were maintained without running deferred SQL audits.
+Original Nexus/alias programmes, wider combinations, full modes/assurance and
+browser/deployed acceptance stay open. No saved-room/reset/restart/deployment.
+
 ## 18 October 2026 — Recovered physical Hajr replay
 
 The original inventory has one Hajr; genuine paid Box retrieval now allows that

@@ -83,7 +83,7 @@ void test('the real saved table mounts the offer instead of shipment and volunta
   assert.match(disabled, /disabled=""[^>]*>Use Kull Wahad/);
 });
 
-void test('a successful phase ban removes the retained Karama shipment-rate control', () => {
+void test('a successful effect restriction removes the retained Karama shipment-rate control', () => {
   const initial = choamKullGame();
   let g = applyAction(initial, 'e', kullShipmentAttempt(initial));
   g = applyAction(g, 'c', {
@@ -102,9 +102,10 @@ void test('a successful phase ban removes the retained Karama shipment-rate cont
   const render = (game: GameView) => renderToStaticMarkup(createElement(GameTable, {
     game, send: async () => { assert.fail('Rendering must not submit gameplay.'); }, busy: false, onExit() {},
   }));
-  assert.ok(blocked.karamaBlocked);
+  assert.equal(blocked.karamaBlocked, null);
+  assert.deepEqual(blocked.karamaPurposeBlocks.map(rule => rule.purpose), ['shipment-price']);
   assert.doesNotMatch(render(blocked), />Guild rates for/);
-  const available = { ...blocked, karamaBlocked: null };
+  const available = { ...blocked, karamaPurposeBlocks: [] };
   assert.match(render(available), />Guild rates for/);
 });
 

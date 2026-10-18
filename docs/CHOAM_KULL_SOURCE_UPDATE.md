@@ -2,6 +2,47 @@
 
 Checked 2026-09-07 for classic GF9 Dune and CHOAM & Richese; preview policy and source-aware Nexus cost boundary updated 30 September 2026. This supplements [CHOAM_KULL_DESIGN.md](CHOAM_KULL_DESIGN.md), [native CHOAM Cunning](NEXUS_CHOAM_RULES.md) and the Kull section of [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md). The source audit itself did not change runtime behavior; later opt-in development implementations follow the explicit selections below. This update does not claim a newly fetched publisher ruling.
 
+## Advanced specific-effect scope — 18 October 2026
+
+The authorized supplied Advanced rulebook, physical29/logical27, describes
+preventing the attempted Karama for a **specific effect**, with a reference to
+physical16/logical14. It omits the publisher CHOAM rule’s phase-wide wording.
+The referenced Karama rules distinguish advantage cancellation, shipment pricing,
+free Treachery purchase and a faction special. This is a supplied-source cutover,
+not a newly located GF9 clarification. Basic retains the publisher-wide scope.
+
+New Advanced Kull attempts bind the interrupted semantic purpose. Successful
+settlement restricts that purpose for the remainder of the turn/phase; another
+Karama purpose remains usable. **Effect-specific scope is sourced; phase expiry
+is provisional**, composed with the publisher duration under the 14 October
+choose-recommended policy. No text was found that specifies a replacement expiry.
+
+| Attempt | Bound effect |
+| --- | --- |
+| Guild-price shipment | `shipment-price`, independent of beneficiary, amount and route |
+| Immediate free purchase / winning Karama payment | Shared `auction-free-purchase` |
+| Faction special | `special:<actual faction>`; Emperor force/leader and Guild route variants share one key |
+| Cancel a native ability | Canonical response power; native/enhanced Prescience and advisor conversion share keys |
+| Cancel a CHOAM Worthless ability | The actual effect, so Baliset and Kull are distinct |
+| Cancel special-force strength | The affected faction’s strength advantage |
+
+Guild price and cross/return permission remain distinct powers; so do advisor
+accompaniment/conversion and own/allied worm protection. No key contains a
+physical card, hidden plan, price, force quantity, route or recipient. Substituted
+and printed Karama for the same effect share the restriction.
+
+Each new Advanced pending frame signs its purpose before costs; original CHOAM
+parents are derived through the saved original context, not the temporary Kull
+counter declaration. Existing unstamped pending frames and restrictions retain
+the original all-purpose scope. No played save is rewritten. Own table guidance
+names scoped restrictions; unrelated controls and legal minimal policies remain
+available. Neutral offers still appear without an eligible Kull cost.
+
+The explicit distinct-counter, BG-before-conversion and **Defer interaction**
+overbid selections remain. This does not open any profile, module, full-faction
+or publication gate. [Current implementation/proof boundary](CHOAM_KULL_DESIGN.md#advanced-effect-scope--18-october-2026)
+tracks the connected function separately from historical broad assurance.
+
 ## Native fixture integration maintenance — 16 October 2026
 
 The BG Semuta-cost integration selection exposed three stale Nexus Kull
