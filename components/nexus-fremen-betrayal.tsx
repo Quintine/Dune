@@ -21,6 +21,10 @@ export function NexusFremenBetrayal({ game, act, busy }: Props) {
           ? `Declare before the first spice blow: ${fremen.name} cannot take ordinary or Cunning worm rides this turn. Worm destruction, survival, protection and Nexus still resolve.`
           : `This use suppresses ${fremen.name}’s native two-territory movement advantage for the rest of this turn. Independent ornithopters remain available.`}
       </p>}
+      {offer.mode === 'worm' && game.discoveries && <p className="fine">
+        Provisional Great Maker interpretation: its reserve ride is also prevented;
+        the original vote, worm effects and Nexus continue.
+      </p>}
       {offer.blocked && <p className="notice">{offer.blocked}</p>}
       <Button className="game-action min-h-11 whitespace-normal" disabled={busy || !action}
         onClick={() => { if (!busy && action) act(action); }}>

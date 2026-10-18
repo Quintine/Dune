@@ -16,6 +16,35 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Native Fremen Nexus modules — 18 October. Prototyped / Partial.**
+Cunning and Betrayal now retain the original registered Nexus roster and selected
+modules. Actual drawn Cunning, original Karama allowance/cancellation and the
+typed post-negotiation ride keep their source and normal allowances. A living
+native Sandmaster may collect one earned destination spice. Original HMS entry
+requires its actual pointer to target the selected desert; Discovery destinations
+have focused quote coverage, with their actual arrival smoke still due.
+
+Great Maker reserve riding now respects the predeclared worm restriction under
+the explicit source composition. Votes, original casualties and Nexus continue;
+the completed Maker no longer blocks a later ordinary empty-worm offer. Native
+movement suppression leaves ordinary range1 and earned city range3 available.
+
+Three disjoint lanes plus owner integration pass frozen **14 files86/86**,
+types/lint/build and nine finite original-action/rendered-control programmes.
+Basic selected Ix/CHOAM rides use160/100 actions; six-seat World/all14/phase
+Sandmaster and actual HMS each373. Movement Basic/Advanced uses120+29/127+27,
+earned city129+27; Maker source95 plus20 prevented/21 unspent, and a separate
+later empty appearance95+21. Four policies retain legal Cunning and both
+Betrayal declarations; no tuning/calibration. Framework aliases/CSS stubs and
+a directly rendered actual Sandmaster quote mean no visual/browser acceptance.
+
+Iteration fixed the cleared-decision Sandmaster adapter and corrected fixtures
+to buy a real Karama, distinguish negotiations from the closing card draw,
+and retain the subsequent Advanced pile. No printed numeric rule changed.
+No saved room/database, reset, restart or deployment. Remaining dynamic arrival,
+Nexus/Discovery/Semuta interactions, full modes and comprehensive assurance stay
+open. [Source-bound proof and limits](NEXUS_CARD_RULES.md#native-fremen-nexus-modules--18-october-2026).
+
 **Native Ecaz Betrayal / Moritani Atomics — 18 October. Prototyped / Partial.**
 Selected modules now retain typed native returns, advisors, actual shared HMS,
 face-down concealed recall and original paid Karama cancellation. Guild first/

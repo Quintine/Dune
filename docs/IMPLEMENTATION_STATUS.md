@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 18 October 2026 — Native Fremen Nexus modules
+
+Original registered Nexus rosters now retain Cunning/Betrayal with selected
+modules. Actual empty appearances, paid Karama, typed remote riding, native
+Sandmaster and source-parent HMS entry use original sources and controls.
+Great Maker respects predeclared worm prevention while its votes/casualties/
+Nexus continue; a completed encounter no longer blocks a later ordinary offer.
+Native range suppression preserves ordinary movement and earned city flight.
+
+Three exclusive lanes plus owner integration pass frozen14-file86/86,
+types/lint/build, nine finite original-action/rendered-control programmes and
+four legal policies. Fixed a cleared-decision Sandmaster adapter; corrected
+actual counter acquisition, Nexus timing, coalition and subsequent-blow test
+assumptions without changing printed numeric rules.
+[Source-bound evidence and limits](NEXUS_CARD_RULES.md#native-fremen-nexus-modules--18-october-2026).
+Discovery destinations remain quote evidence pending actual arrival acceptance;
+no complete modes, broad assurance, calibration or deployment claim.
+
 ## 18 October 2026 — Native Betrayal and Atomics composition
 
 Ecaz Betrayal now retains selected native modules, typed World returns,

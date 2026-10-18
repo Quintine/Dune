@@ -99,7 +99,8 @@ import {
 } from './bot-mobility';
 import { planetologistMovementModeSupported, planetologistLeader, planetologistGatherAdvisorEntry } from './planetologist-movement';
 import { quoteSandmasterStronghold, sandmasterDefaultChoice, sandmasterDestinationCollection } from './sandmaster-movement';
-import { sandmasterWormCollection } from './sandmaster-worm';
+import { sandmasterWormCollection, sandmasterCunningCollection } from './sandmaster-worm';
+import { fremenCunningPublicDestinationBlock } from './nexus-fremen-cunning';
 import { richeseCardDefinition } from './richese-cards';
 import { presenceAt } from './force-presence';
 import { botArrivalBlock, botWormRideArrivalBlock } from './bot-arrival';
@@ -2763,10 +2764,13 @@ function policyActions(g: GameView): Action[] {
         const elite = me.elites?.forces[key] ?? 0;
         const forces = { [key]: { normal: count - elite, elite } };
         for (const to of destinations(g)) {
-          if (to.t === source || !botEntryAllowed(g, me, to.t, to.s, 'move') ||
-            territoryEntryBlock(g.players, me.id, to.t)) continue;
+          if (fremenCunningPublicDestinationBlock(g, me.id, source,
+            { territory: to.t, sector: to.s }) || !botEntryAllowed(g, me, to.t, to.s, 'move')) continue;
+          const sandmaster = sandmasterCunningCollection(g, me.id, source, to.t, to.s);
           candidates.push({ type: 'decision', event: d.event, accept: true,
-            source, forces, territory: to.t, sector: to.s });
+            source, forces, territory: to.t, sector: to.s,
+            ...(sandmaster?.blocked === null && sandmaster.key
+              ? { sandmasterCollect: true, sandmasterPile: sandmaster.key } : {}) });
           if (candidates.length >= 16) return [...candidates, decline];
         }
       }

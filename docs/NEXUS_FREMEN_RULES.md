@@ -2,6 +2,58 @@
 
 Primary-source and integration audit, 10 September 2026, with dated Secret Ally revival, protection and native Cunning prototypes. These bounded paths do not certify complete Fremen/Nexus effects or open a release gate. The [common Nexus rules](NEXUS_CARD_RULES.md) apply.
 
+## Native modules, remote riding and Great Maker — 18 October 2026
+
+**Prototyped / Partial.** Native Fremen Nexus
+effects now use the original initialized card module and registered selected
+roster rather than a classic-only configuration gate. Original host setup and
+module prerequisites still apply; no played game is converted or given a card.
+Worlds, training, phase modules and selected independent decks retain the same
+actual appearance, physical card cost, Betrayal declaration and typed ride.
+
+An ordinary initially empty worm offers the same public native Cunning choice
+whether Fremen holds the card or not. Actual entitlement controls spending;
+the original worm, applicable Nexus and ordinary rides finish before the
+authenticated remote ride. All selected normal/Fedaykin counters come from one
+printed desert; reserves, Homeworlds and Discovery strongholds are not desert
+sources. Room-local revealed Discovery destinations use their actual locations.
+HMS entry requires its actual pointer's parent to match the chosen source
+territory; its structure is not moved by the ride. Hidden/unplaced destinations,
+storm and occupancy retain their own entry restrictions.
+
+A living available native Sandmaster can collect one spice at the remote ride's
+destination. Collection is optional and uses the original shared destination-
+pile quote; multiple source sectors do not multiply it. No source or imagined
+intermediate territory supplies spice. The same multi-pile choice convention
+as ordinary worm riding remains provisional. This still uses neither ordinary
+movement nor a reserve shipment.
+
+The [publisher E3 rules, printed12](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=12)
+and supplied revision physical23/logical21 replace ordinary board-origin
+riding with Great Maker reserve riding; native Karama killing the board group
+does not cancel that reserve ride.
+Under the recommended source composition, predeclared turn-long Fremen Nexus
+worm-riding prevention therefore also suppresses the reserve ride; votes,
+destruction, spice and the actual Nexus continue. This is not a newly located
+Nexus/Great Maker FAQ or a Karama cancellation. The replacement encounter itself
+does not invent another Cunning board ride. Its completed historical frame does
+not suppress a later ordinary empty-worm appearance.
+
+Source and pure helpers: `game/fremen-nexus-profile.ts`,
+`game/nexus-fremen-cunning.ts`, `game/nexus-fremen-betrayal.ts`,
+`game/sandmaster-worm.ts`. Original-action fixtures and focused module cases
+accompany these helpers; complete combinations, comprehensive assurance,
+full AI and deployed acceptance remain open.
+
+The owner-frozen **14 files86/86**, types/lint/build and nine finite original-
+action/table-SSR programmes pass. Original paid Karama supplies a real response;
+typed World/all14 riding, Sandmaster, HMS and both Betrayal modes use actual
+setup/actions. A genuine Maker/second-pile sequence proves the completed-frame
+fix. Four legal policies retain Cunning and both declarations. Discovery
+destinations have focused pure quote evidence; their genuine arrival and
+comprehensive combinations remain due. [Shared checkpoint](NEXUS_CARD_RULES.md#native-fremen-nexus-modules--18-october-2026)
+records counts, fixture corrections and render/deployment limits.
+
 ## Evidence
 
 The Fremen panel was freshly read from the [photograph of the printed GF9 cards](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani), cached as `/tmp/dune-nexus-cards.jpg`. Cunning permits a remote ride when a sandworm appears in a territory containing no forces: the player may take forces from one desert territory to a destination respecting storm and occupancy rules. Secret Ally offers either protection against a sandworm or a total of three free force revivals during Revival. The latter does **not** use Emperor's additional/beyond-limits wording. Neither option grants the absent faction's other advantages.
@@ -13,6 +65,10 @@ The [November 2020 FAQ, pp.2–3](https://www.gf9games.com/dune/wp-content/uploa
 The [E1 FAQ, p.11](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=11) describes Sandtrout's anti-Nexus and immediate replacement-card behavior. Its Karama table distinguishes destroying Fremen at a worm from stopping additional-worm placement. The [E3 rules, pp.11–12 and 16](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=12), reread in the cached publisher-authored PDF text and fresh publisher-indexed excerpts, give common Nexus timing and distinguish Great Maker's reserve ride from ordinary board-origin riding. Great Maker remains a separate integration boundary.
 
 ## Bounded Betrayal: movement and worm riding
+
+The initial classic-only envelope below is historical; the native module
+extension above supersedes it. Its advance-declaration timing remains a
+prototype boundary rather than a universal reactive-priority ruling.
 
 An unallied non-Fremen holder of the physical Fremen Nexus card may spend it
 during Shipment and Movement **before Fremen move** to suppress their native
@@ -78,6 +134,9 @@ Recommended focused contracts:
 Two interactions need a concrete decision before treating this as a complete feature. The card triggers at appearance while ordinary riding follows negotiations: a just-drawn card must not automatically buy a retrospective ride for an earlier empty worm. Also, ordinary Karama's printed Shai-Hulud result destroys forces at the worm, whereas the remote source is elsewhere. Do not destroy that remote source, or invent a global loss of all riding, as a shortcut for cancellation. A bounded enhanced-native cancellation policy must preserve the original empty occurrence and unrelated rides.
 
 ### Connected native Cunning path
+
+The initial module exclusions below are historical; the native extension above
+supersedes them. Original appearance, cancellation and ride ownership remain.
 
 `game/nexus-fremen-cunning.ts` captures `{event, turn, territory, origin, pile?, parent?, initiallyEmpty}` at the accepted appearance before destruction, using public `presenceAt` across players. Advisers and public No-Field markers count without revealing marker denomination. `beginWorm` offers the same Fremen decision for an initially empty appearance whether or not that seat holds its own card; the owner-only card view controls the spend button. The server, not the client, issues the event and later `{event, turn, owner}` ride authorization. The actual Fremen card moves to the Nexus discard on acceptance.
 

@@ -2,6 +2,61 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Native Fremen Nexus modules — 18 October 2026
+
+**Prototyped / Partial.** Native Fremen Cunning and Betrayal now use original
+initialized Nexus and registered selected rosters with their original optional
+modules. Existing host/setup prerequisites remain; no played-save conversion
+or free held face is supplied. Genuine first closing draws, paid counter cards
+and accepted empty appearances bind the original response and typed remote ride.
+Ordinary movement and reserve allowances remain unchanged. A living native
+Sandmaster may optionally collect one destination spice through the original
+pile quote; a declined/omitted collection still rides.
+
+Revealed Discovery destinations and source-parent HMS geometry share the public
+human/bot/server destination calculation. HMS has genuine first-Storm placement
+and typed arrival proof; Discovery has focused pure quote evidence, with actual
+arrival acceptance still due. Native movement Betrayal leaves ordinary range1
+and earned city range3 intact. Predeclared worm prevention also suppresses Great
+Maker reserve riding under the explicit source composition, while votes,
+casualties and Nexus continue. A completed Maker does not block a later ordinary
+empty-worm offer. The replacement event adds no second Cunning board ride.
+[Source/timing and limits](NEXUS_FREMEN_RULES.md#native-modules-remote-riding-and-great-maker--18-october-2026),
+[Sandmaster](SANDMASTER_WORM.md#native-cunning-remote-ride--18-october-2026),
+[Great Maker composition](RULE_DECISIONS.md#fremen-nexus-and-great-maker-riding--18-october-2026).
+
+Three exclusive helper/fixture lanes plus owner engine/Sandmaster/bot/table
+integration pass frozen **14 files86/86**, types/lint/build and nine finite
+original-action/rendered-control programmes. Basic selected Ix/CHOAM Cunning
+uses160/100 actions; original six-seat World/all14/phase Sandmaster and HMS
+each373. Restricted movement Basic/Advanced uses120+29/127+27, earned city129+27;
+Maker source95 plus20 prevented/21 unspent, and later empty-worm source95+21.
+Four minimal policies retain actual Cunning and both Betrayal declarations;
+no strategy refinement or strength calibration.
+
+Actual table SSR retains spend, response/ride, typed-source, HMS, Betrayal and
+Great Maker controls. The shared Sandmaster checkbox is additionally rendered
+from the genuine pending quote. Framework aliases/CSS stubs mean no visual/
+browser acceptance. Private four-step proof is
+`20261018-fremen-nexus-modules-frozen/report.json`, with runtime facts in
+`20261018-fremen-nexus-modules/runtime-smoke.json`. Later checkpoint prose and
+checklist evidence are a documented overlay; application/tests stayed frozen.
+
+Iteration fixed the real engine-cleared-decision adapter. Fixtures now buy an
+actual one-spice Karama instead of expecting a fictional response, preserve
+original post-negotiation/closing-draw timing, distinguish an Ecaz coalition
+from an ordinary ally and allow the actual next Advanced spice blow to continue.
+A range rejection assertion now matches the actual one-territory reason. No
+printed numeric rule changed. No saved room/database, reset, restart or
+deployment. Reactive post-appearance timing, dynamic arrival combinations,
+complete modes, comprehensive assurance and deployed acceptance remain required.
+
+Evidence: `game/fremen-nexus-profile.ts`, `game/nexus-fremen-cunning.ts`,
+`game/nexus-fremen-betrayal.ts`, `game/sandmaster-worm.ts`,
+`tests/fremen-cunning-modules.test.ts`, `tests/fremen-betrayal-modules.test.ts`,
+their original-action fixtures and
+`tests/nexus-fremen-cunning-modules-quotes.test.ts`.
+
 ## Native Betrayal and Atomics composition — 18 October 2026
 
 **Prototyped / Partial.** Ecaz Betrayal now uses

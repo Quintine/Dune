@@ -23,7 +23,7 @@ import { quoteSmugglerNoField, smugglerNoFieldModeSupported, type SmugglerNoFiel
 import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
 import { createSmugglerBattle, settleSmugglerBattle, smugglerBattleModeSupported, smugglerBattlePlanBlock, smugglerBattlePile, smugglerBattleSignature, smugglerBattleAllocationRequired, chooseSmugglerBattleAllocation, type SmugglerBattleReceipt, type SmugglerBattleCollectionOffer } from './smuggler-battle';
 import { quoteSandmasterMovement, validateSandmasterMovement, sandmasterCollectionPiles, sandmasterLeader, sandmasterRouteDistance, validateSandmasterStronghold, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
-import { sandmasterWormCollection } from './sandmaster-worm';
+import { sandmasterWormCollection, sandmasterCunningCollection } from './sandmaster-worm';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
 import { BankerIncomeError, createBankerIncomeState, validateBankerIncomeState, quoteBankerIncome, commitBankerIncome, quoteBankerIncomeCollection, commitBankerIncomeCollection, projectBankerIncome, type BankerIncomeState, type BankerIncomeAuthority, type BankerIncomeContext } from './spice-banker-income';
 import { quoteDiplomatDefense, diplomatDefenseModeSupported, diplomatDefenseLabel, type DiplomatDefenseQuote } from './diplomat-defense';
@@ -49,6 +49,7 @@ import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusP
 import { createEmperorPaymentReceipt, validateEmperorPaymentReceipt, emperorPaymentUseBlock, emperorPaymentSourceQuote, requiredEmperorPaymentResponders, emperorPaymentReceiptSignature, type EmperorPaymentReceipt } from './nexus-emperor-payment';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, createFremenNexusRevival, upgradeFremenNexusRevival, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
 import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningRide, validateFremenCunningSelection, type FremenCunningOccurrence, type FremenCunningRideAuthorization, type FremenCunningSelection } from './nexus-fremen-cunning';
+import { fremenNexusModeSupported } from './fremen-nexus-profile';
 import { createNexusFremenProtection, currentNexusFremenProtectionOwner, answerNexusFremenProtection, validateNexusFremenProtection, type NexusFremenProtectionFrame, type NexusFremenProtectionInput } from './nexus-fremen-protection';
 import { truthKnowledgeOf } from './truthtrance-knowledge';
 import { createMoritaniAssassinateOpportunity, moritaniAssassinateTrigger, moritaniAssassinateChoices, quoteMoritaniAssassinate, moritaniAssassinateSignature, validateMoritaniAssassinate, type MoritaniAssassinateState, type MoritaniAssassinateReceipt } from './moritani-assassinate';
@@ -11425,10 +11426,7 @@ function beginWorm(g: Game, t: string, origin: 'natural' | 'additional' | 'summo
   if ((origin !== 'summoned' || (g.summonedWorm?.event &&
     !g.nexusFremenCunningOffer &&
     !g.nexusFremenCunningRides?.some(row => row.stage === 'pending' || row.stage === 'select'))) &&
-    !g.greatMaker && g.nexusCards?.cards &&
-    !g.expansions.length && !g.homeworlds && !g.leaderSkills &&
-    !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
-    g.players.every(seat => ['atreides', 'harkonnen', 'emperor', 'guild', 'beneGesserit', 'fremen'].includes(seat.faction)) &&
+    (!g.greatMaker || g.greatMaker.stage === 'complete') && fremenNexusModeSupported(g) &&
     fremen && !fremen.ally && g.phase === 1 &&
     fremen.fremenNexusWormBlockedTurn !== g.turn &&
     Object.entries(fremen.forces).some(([key, amount]) => {
@@ -11882,7 +11880,8 @@ function decideDiscoveryDiscard(g: Game, p: Player, action: Action) {
 
 function greatMakerRideOptions(g: Game, owner: string) {
   const p = getPlayer(g,owner), frame = g.greatMaker;
-  if (frame?.stage !== 'ride' || p.faction !== 'fremen') return null;
+  if (frame?.stage !== 'ride' || p.faction !== 'fremen' ||
+    p.fremenNexusWormBlockedTurn === g.turn) return null;
   const destinations = gameTerritories(g).flatMap(t => t.sectors.flatMap(sector => {
     try { allowedEntry(g,p,t.id,sector); return [{territory:t.id,name:t.name,sector}]; }
     catch (error) { if (error instanceof RuleError) return []; throw error; }
@@ -11963,7 +11962,7 @@ function decideGreatMakerVote(g: Game, p: Player, action: Action) {
     log(g, 'A majority voted yes: the Great Maker produces a Nexus.');
   } else log(g, 'The Great Maker vote has no yes majority, so this encounter adds no Nexus.');
   const fremen = byFaction(g, 'fremen');
-  if (fremen && fremen.reserves > 0) {
+  if (fremen && fremen.reserves > 0 && fremen.fremenNexusWormBlockedTurn !== g.turn) {
     frame.stage = 'ride'; stampGreatMaker(g);
     g.decision = {kind:'greatMakerRide', player:fremen.id, event:frame.event};
   } else completeGreatMaker(g);
@@ -11972,6 +11971,8 @@ function decideGreatMakerRide(g: Game, p: Player, action: Action) {
   const frame = g.greatMaker!;
   requireRule(frame?.stage === 'ride' && frame.event === action.event && p.faction === 'fremen' && typeof action.accept === 'boolean',
     'Choose the current Great Maker reserve ride.');
+  requireRule(p.fremenNexusWormBlockedTurn !== g.turn,
+    'Fremen Nexus Betrayal prevents worm riding this turn.');
   if (!action.accept) {
     requireRule(Object.keys(action).every(key => ['type','event','accept'].includes(key)), 'Declining a ride selects no forces or destination.');
     log(g, `${p.name} left the optional Great Maker riders in reserves.`);
@@ -32308,8 +32309,13 @@ function applyActionInner(
       'Choose the pending Fremen Cunning remote worm ride.');
       if (action.accept) {
         requireRule(Object.keys(action).every(key =>
-          ['type', 'event', 'accept', 'source', 'forces', 'territory', 'sector'].includes(key)),
+          ['type', 'event', 'accept', 'source', 'forces', 'territory', 'sector', 'sandmasterCollect', 'sandmasterPile'].includes(key)),
         'Choose only this Cunning source, forces and destination.');
+        requireRule(action.sandmasterCollect === undefined || typeof action.sandmasterCollect === 'boolean',
+          'Choose whether to collect spice with Sandmaster.');
+        requireRule(action.sandmasterPile === undefined ||
+          (action.sandmasterCollect === true && typeof action.sandmasterPile === 'string'),
+          'Choose a destination spice pile only with Sandmaster collection.');
         const selection = {
           source: stringField(action.source),
           forces: action.forces as FremenCunningSelection['forces'],
@@ -32321,6 +32327,15 @@ function applyActionInner(
         const chosen = nexusRule(() => validateFremenCunningSelection(
           g, id, ride.occurrence, selection, ride.authorization));
         allowedEntry(g, p, selection.destination.territory, selection.destination.sector);
+        const sandmaster = action.sandmasterCollect ? sandmasterCunningCollection(g, id,
+          selection.source, selection.destination.territory, selection.destination.sector,
+          action.sandmasterPile as string | undefined, decision) : null;
+        if (action.sandmasterCollect) {
+          requireRule(sandmaster && !sandmaster.blocked && sandmaster.key,
+            sandmaster?.blocked ?? 'Sandmaster collection needs the living native trainer.');
+          requireRule(sandmaster.piles.length <= 1 || typeof action.sandmasterPile === 'string',
+            'Choose the destination spice pile for Sandmaster collection.');
+        }
         const entries = Object.entries(selection.forces);
         removeGroup(p, entries.map(([key, count]) => [key, count.normal + count.elite] as [string, number]),
           Object.fromEntries(entries.map(([key, count]) => [key, count.elite])));
@@ -32329,6 +32344,12 @@ function applyActionInner(
         ride.stage = 'complete';
         log(g, `${p.name} used Fremen Nexus Cunning to ride ${chosen.total} forces from ${territory(selection.source).name} to ${territory(selection.destination.territory).name}.`,
           { faction: p.faction, name: 'Fremen Nexus Cunning' });
+        if (sandmaster) {
+          g.spice[sandmaster.key!] = sandmaster.before - 1;
+          p.spice++;
+          log(g, `${p.name}'s Sandmaster collected 1 spice at the remote worm-ride destination. This ride does not consume normal movement.`,
+            { faction: p.faction, name: 'Sandmaster collection' });
+        }
         const intruded = intrusion(g, p, selection.destination.territory, { wormRide: true });
         if (openTerritoryEntry(g, p, selection.destination.territory,
           selection.destination.sector, chosen.total, chosen.elite,

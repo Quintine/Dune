@@ -2,6 +2,22 @@
 
 Updated 18 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
 
+## Fremen Nexus and Great Maker riding — 18 October 2026
+
+Publisher E3printed12 and the supplied Advanced revision physical23/logical21
+replace ordinary board-origin riding/Sandworm placement with Great Maker reserve
+riding; native Karama killing the board group does not cancel that reserve ride.
+Fremen Nexus Betrayal's distinct turn-long worm-
+riding prohibition therefore also suppresses this reserve ride under the
+14 October choose-recommended instruction. It leaves original votes, casualties,
+spice and Nexus untouched. This is a source composition, not an explicit
+publisher Nexus/Great Maker clarification or an extension of Karama.
+
+Actual Great Maker appearances do not open an additional Cunning board ride;
+their completed historical frame does not block a later ordinary worm. Original
+ordinary Cunning and its authenticated sources retain their own continuation.
+[Contract, controls and limits](NEXUS_FREMEN_RULES.md#native-modules-remote-riding-and-great-maker--18-october-2026).
+
 ## Provisional No-Field return and Atomics — 18 October 2026
 
 The supplied Advanced revision physical35/printed33 sends all territory forces

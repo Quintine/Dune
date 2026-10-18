@@ -1,5 +1,5 @@
-import { TERRITORIES, splitLocation, validGameLocation } from './board';
-import type { Game, Player } from './engine';
+import { gameTerritories, MOBILE_STRONGHOLD, TERRITORIES, splitLocation, validGameLocation } from './board';
+import type { Game, GameView, Player } from './engine';
 import { presenceAt } from './force-presence';
 import { nexusCardMode, validateNexusCards } from './nexus-cards';
 import { territoryEntryBlock } from './occupancy';
@@ -118,19 +118,35 @@ export function quoteFremenCunningRide(
   return sources.length ? { event: occurrence.event, sources } : null;
 }
 
-/** Same structural, storm and occupation restrictions as ordinary riding.
- * Dynamic Homeworld/Discovery/HMS arrival needs its own dedicated adapter. */
+/** Public destination legality for the human and minimal bot adapters. This
+ * does not authenticate an appearance, held card or selected source counters. */
+export function fremenCunningPublicDestinationBlock(
+  g: Game | GameView, owner: string,
+  source: string, destination: FremenCunningSelection['destination'],
+): string | null {
+  const { territory: to, sector } = destination;
+  if (!gameTerritories(g).some(t => t.id === to) || !validGameLocation(g, to, sector))
+    return 'Choose an Arrakis board sector.';
+  if (to === source)
+    return 'Choose another destination territory.';
+  if (to === MOBILE_STRONGHOLD) {
+    const pointer = g.mobileStronghold?.location;
+    const parent = pointer ? splitLocation(pointer) : null;
+    if (!parent || !TERRITORIES.some(t => t.id === parent.territory) ||
+      !validGameLocation(g, parent.territory, parent.sector) || parent.territory !== source)
+      return 'Ride into the mobile stronghold only from the territory it points at.';
+  }
+  if (sector !== 0 && sector === g.storm) return 'That sector is in storm.';
+  return territoryEntryBlock(g.players, owner, to);
+}
+
+/** Preserve the original occurrence-taking API. Authentication stays in the
+ * saved ride quote; all destination consumers share the public calculation. */
 export function fremenCunningDestinationBlock(
   g: Game, owner: string, occurrence: FremenCunningOccurrence,
   source: string, destination: FremenCunningSelection['destination'],
 ): string | null {
-  const { territory: to, sector } = destination;
-  if (!TERRITORIES.some(t => t.id === to) || !validGameLocation(g, to, sector))
-    return 'Choose an Arrakis board sector.';
-  if (to === source)
-    return 'Choose another destination territory.';
-  if (sector !== 0 && sector === g.storm) return 'That sector is in storm.';
-  return territoryEntryBlock(g.players, owner, to);
+  return fremenCunningPublicDestinationBlock(g, owner, source, destination);
 }
 
 /** Requote immediately before committing, while the authenticated appearance

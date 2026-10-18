@@ -101,7 +101,8 @@ import { PlanetologistMovement } from './planetologist-movement';
 import { selectedOriginElites, advisorFlipMovementBlocked } from '@/game/planetologist-movement';
 import { SandmasterMovement } from './sandmaster-movement';
 import { SandmasterWormChoice } from './sandmaster-worm';
-import { sandmasterWormCollection } from '@/game/sandmaster-worm';
+import { sandmasterWormCollection, sandmasterCunningCollection } from '@/game/sandmaster-worm';
+import { fremenCunningPublicDestinationBlock } from '@/game/nexus-fremen-cunning';
 import { ResidualPoison, BattleLeaderOpportunity } from './residual-poison';
 import { PortableSnooper } from './portable-snooper';
 import {
@@ -536,12 +537,18 @@ export function GameTable({
   const [rideForces, setRideForces] = useState<Record<string, number>>({});
   const [collectSandmasterRide, setCollectSandmasterRide] = useState(true);
   const [sandmasterRidePile, setSandmasterRidePile] = useState<{ target: string; key: string } | null>(null);
-  const sandmasterRideTarget = JSON.stringify([g.turn, g.decision?.kind === 'wormRide' ? g.decision : null, selected, sector]);
-  const baseSandmasterRide = sandmasterWormCollection(g, me.id, selected, sector);
+  const sandmasterRideTarget = JSON.stringify([g.turn,
+    g.decision?.kind === 'wormRide' || g.decision?.kind === 'nexusFremenCunningRide' ? g.decision : null,
+    source, selected, sector]);
+  const baseSandmasterRide = g.decision?.kind === 'nexusFremenCunningRide'
+    ? sandmasterCunningCollection(g, me.id, source, selected, sector)
+    : sandmasterWormCollection(g, me.id, selected, sector);
   const selectedRidePile = sandmasterRidePile?.target === sandmasterRideTarget
     ? baseSandmasterRide?.piles.find(pile => pile.key === sandmasterRidePile.key) : null;
   const sandmasterRide = selectedRidePile && baseSandmasterRide
     ? { ...baseSandmasterRide, key: selectedRidePile.key, before: selectedRidePile.before } : baseSandmasterRide;
+  const cunningDestinationBlocked = g.decision?.kind === 'nexusFremenCunningRide' && source
+    ? fremenCunningPublicDestinationBlock(g, me.id, source, { territory: selected, sector }) : null;
   const [exchangeCards, setExchangeCards] = useState<Record<string, boolean>>(
     {},
   );
@@ -3828,16 +3835,23 @@ export function GameTable({
                       )}
                     </div>)}
                   {destination}
+                  {cunningDestinationBlocked && <p className="notice">{cunningDestinationBlocked}</p>}
+                  <SandmasterWormChoice quote={sandmasterRide} collect={collectSandmasterRide}
+                    onChange={setCollectSandmasterRide}
+                    onPileChange={key => setSandmasterRidePile({ target: sandmasterRideTarget, key })} />
                   {actionButton('Ride remotely', {
                     type: 'decision', event: g.decision.event, accept: true,
                     source, territory: selected, sector,
+                    ...(sandmasterRide?.blocked === null
+                      ? { sandmasterCollect: collectSandmasterRide,
+                          ...(collectSandmasterRide ? { sandmasterPile: sandmasterRide.key } : {}) } : {}),
                     forces: Object.fromEntries(Object.entries(rideForces)
                       .filter(([key, count]) => count > 0 && splitLocation(key).territory === source)
                       .map(([key, count]) => [key, {
                         normal: count - (eliteForces[key] ?? 0),
                         elite: eliteForces[key] ?? 0,
                       }])),
-                  }, !source || !Object.entries(rideForces).some(([key, count]) =>
+                  }, !source || !!cunningDestinationBlocked || !Object.entries(rideForces).some(([key, count]) =>
                     count > 0 && splitLocation(key).territory === source))}
                   {actionButton('Decline remote ride', {
                     type: 'decision', event: g.decision.event, accept: false,

@@ -1,5 +1,34 @@
 # Sandmaster worm-ride collection
 
+## Native Cunning remote ride — 18 October 2026
+
+**Prototyped / Partial.** The original authenticated
+Fremen Nexus Cunning ride can optionally collect one destination spice using
+`sandmasterCunningCollection(game, player, source, destination, sector, selectedPile?)`.
+It requires the living available native trainer and the actual pending remote
+ride. The selected source must be an occupied printed desert; the already
+resolved empty worm's territory is not substituted for that source.
+
+The accepted ordinary Cunning action adds the same optional `sandmasterCollect`
+and `sandmasterPile` fields as native worm riding. The engine requotes the
+typed source, destination and original positive pile before moving any force or
+spice. Collection debits one destination pile once, regardless of force count
+or source sectors. Omitted/false collection preserves the underlying ride;
+invalid collection rejects the request. This does not spend normal movement,
+touch World reserves, or collect from a source or invented intermediate route.
+
+The original shared checkbox/pile controls and minimal bot choices use the same
+quote. Original multi-pile selection remains a provisional allocation policy;
+[Fremen Nexus timing and boundaries](NEXUS_FREMEN_RULES.md#native-modules-remote-riding-and-great-maker--18-october-2026)
+remain separate from complete module and deployed acceptance.
+
+Owner-frozen related14-file86/86, types/lint/build, genuine six-seat trained
+World Cunning and actual HMS programmes pass. Destination6→5 pays the native
+trainer one spice; false/omitted collection still rides, and a stale pile or
+nonboolean flag rejects. All four policies retain legal original choices.
+The actual shared checkbox is rendered from its pending source-bound quote;
+table SSR is not visual/browser acceptance. [Shared proof and limits](NEXUS_CARD_RULES.md#native-fremen-nexus-modules--18-october-2026).
+
 20 September 2026. **Prototyped**, with **Partial** rules coverage. Native
 Fremen worm rides connect optional destination collection in Basic/Advanced
 Leader Skills development games. Public module and publication gates stay closed.
