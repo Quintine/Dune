@@ -568,29 +568,27 @@ void test('unrelated opponent cards and wealth cannot change Advanced answer or 
   }
 });
 
-void test('Advanced Guild and selected expansions reject unsupported questions immutably before binding or discard', () => {
-  for (const scope of ['guild', 'expansion'] as const) {
-    const g = fixture('emperor', scope === 'guild' ? ['guild'] : []);
-    if (scope === 'expansion') g.expansions = ['ix'];
-    const pending = openQuestion(g);
-    reject(pending, 'a', {
-      type: 'truthAsk',
-      question: {
-        kind: 'shipment',
-        target: 'p',
-        territory: 'carthag',
-        minimum: 6,
-      },
-    });
-    assert.equal(pending.shipmentPromises?.length ?? 0, 0);
-    assert.equal(
-      pending.discard.filter((c) => c.effect === 'truthtrance').length,
-      0,
-    );
-    assert.equal(
-      player(pending, 'a').hand.filter((c) => c.effect === 'truthtrance')
-        .length,
-      1,
-    );
-  }
+void test('selected expansions still reject unsupported questions immutably before binding or discard', () => {
+  const g = fixture('emperor');
+  g.expansions = ['ix'];
+  const pending = openQuestion(g);
+  reject(pending, 'a', {
+    type: 'truthAsk',
+    question: {
+      kind: 'shipment',
+      target: 'p',
+      territory: 'carthag',
+      minimum: 6,
+    },
+  });
+  assert.equal(pending.shipmentPromises?.length ?? 0, 0);
+  assert.equal(
+    pending.discard.filter((c) => c.effect === 'truthtrance').length,
+    0,
+  );
+  assert.equal(
+    player(pending, 'a').hand.filter((c) => c.effect === 'truthtrance')
+      .length,
+    1,
+  );
 });

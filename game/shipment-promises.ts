@@ -175,8 +175,7 @@ export function shipmentPromiseModeSupported(game: {
   return (
     !game.expansions.length &&
     (!game.advanced ||
-      (!game.players.some((player) => player.faction === 'guild') &&
-        !game.techTokens &&
+      (!game.techTokens &&
         !game.strongholdCards &&
         !game.nexusCards &&
         !game.homeworlds))

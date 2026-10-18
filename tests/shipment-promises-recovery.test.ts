@@ -544,10 +544,6 @@ void test('corrupt persisted promise records and pending shipment questions reje
         g.phase = 6;
       },
       (g) => {
-        g.advanced = true;
-        g.players[2].faction = 'guild';
-      },
-      (g) => {
         g.expansions = ['ix'];
       },
     ];

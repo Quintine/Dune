@@ -14,7 +14,7 @@ void test('Advanced shipment scope excludes separately enabled optional modules 
       ...base,
       players: [...base.players, { faction: 'guild' }],
     }),
-    false,
+    true,
   );
   for (const option of [
     'techTokens',
@@ -528,7 +528,6 @@ void test('malformed questions and unsupported public scopes reject without disc
       },
     });
   for (const change of [
-    'advanced',
     'expansion',
     'phase',
     'spent',
@@ -536,10 +535,6 @@ void test('malformed questions and unsupported public scopes reject without disc
     'territory',
   ]) {
     const bad = structuredClone(g);
-    if (change === 'advanced') {
-      bad.advanced = true;
-      bad.players[2].faction = 'guild';
-    }
     if (change === 'expansion') bad.expansions = ['ix'];
     if (change === 'phase') bad.phase = 4;
     if (change === 'spent') bad.players[1].shipped = true;
@@ -606,10 +601,6 @@ void test('saved malformed promise bindings reject before action or normalizatio
     (g) => {
       g.shipmentPromises![0].fulfilled = true;
       g.shipmentPromises![0].released = true;
-    },
-    (g) => {
-      g.advanced = true;
-      g.players[2].faction = 'guild';
     },
     (g) => {
       g.phase = 4;

@@ -354,11 +354,15 @@ export function Truthtrance({
                     Includes Fremen reinforcements and Guild transport from
                     southern reserves. Ground movement and transport of forces
                     already on the board do not count.
+                    {' '}Guild interception and Karama rate responses resolve
+                    before delivery. A stopped shipment can release an
+                    impossible answer; an unfinished response does not fulfill it.
                   </p>
                   {!shipmentAvailable && (
                     <p className="notice">
                       Automatic enforcement currently supports the active
-                      player’s unused ordinary shipment in base rules or a
+                      player’s unused ordinary shipment in Basic or Advanced
+                      base rules, including the Guild, or a
                       classic payer in the Richese Semuta profile. Select
                       that player and finish pending decisions first.
                       Native No-Field shipments and other rules configurations

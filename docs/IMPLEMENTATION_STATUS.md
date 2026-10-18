@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 18 October 2026 — Truthtrance with native Advanced Guild
+
+Base Advanced shipment promises now include Guild. Native responses remain
+pending until actual delivery or resolved opposition; stopped absence fulfills
+matching whole claims and releases the rest. Server legality blocks voluntary
+self-interception evasion, controls show its reason, and executable guidance
+waits for clean native windows. Other profile/module gates remain.
+
+A disjoint original-action fixture lane, bounded continuation review and owner
+integration pass10-file106/106, one updated existing in-memory scope case,
+types/lint/build and four gameplay/rendering programmes plus four finite policy
+continuations. Both source setups use39 genuine actions; typed Emperor3 pays3
+or opposing stop pays/delivers0, Guild3 pays half2 or actual Karama full3. Each
+finishes in8–10 continuations; four profiles make12 legal proposals. Controlled
+compound/alternative/route probes are separate. Only an unused fixture import
+needed frozen-feedback repair. [Canonical source and exact proof](TRUTHTRANCE_SHIPMENT_PROMISES.md#advanced-guild-interception-and-rates--18-october-2026).
+No broad recovery campaign, complete-mode or browser/deployed acceptance; final
+assurance remains due. No saved-room/database/reset/restart/deployment operation.
+
+
 ## 18 October 2026 — Residual Poison with native Harkonnen captives
 
 Remove the Advanced Harkonnen and exceptional-custody card exclusions. All

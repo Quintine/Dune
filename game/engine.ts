@@ -22920,6 +22920,27 @@ function finishShipmentPromises(
   ))
     promise.fulfilled = true;
 }
+function ownGuildStopPromiseBlock(g: Game, p: Player): string | null {
+  const decision = g.decision;
+  if (p.faction !== 'guild' ||
+    (decision?.kind !== 'guildShipment' && decision?.kind !== 'homeworldShipmentGuild') ||
+    decision.shipper !== p.id || g.pendingShipment?.source === 'ambassador') return null;
+  try { checkShipmentPromises(g, p, null); return null; }
+  catch (error) { if (error instanceof RuleError) return error.message; throw error; }
+}
+/** An opposing Guild stop consumes the opportunity without a shipment. It
+ * fulfills statements matching that absence and releases impossible answers;
+ * the respondent's promise cannot veto the opponent's printed power. */
+function settleStoppedShipmentPromises(g: Game, p: Player, actor: string) {
+  if (actor === p.id) checkShipmentPromises(g, p, null);
+  for (const promise of liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn)) {
+    if (matchesShipment(promise, null) === promise.answer) promise.fulfilled = true;
+    else {
+      promise.released = true;
+      log(g, `The Guild stopped ${p.name}’s shipment; that Truthtrance shipment answer is no longer binding.`);
+    }
+  }
+}
 function reconcileShipmentPromises(
   g: Game,
   voluntary?: { actor: string; action: Action },
@@ -29875,6 +29896,8 @@ export function prepareSpecialKaramaIntent(
       },
     };
   } else if (p.faction === 'guild') {
+    const promiseBlock = ownGuildStopPromiseBlock(g, p);
+    requireRule(!promiseBlock, promiseBlock ?? 'Honor your Truthtrance shipment answer.');
     if (g.decision?.kind === 'homeworldShipmentGuild') {
       requireRule(!g.response && g.decision.player === p.id,
         'Wait for your Homeworld shipment interception decision.');
@@ -30236,7 +30259,7 @@ function resolveSpecialKaramaEffect(g: Game, p: Player, card: Card, intent: Spec
     refundStoppedShipmentKarama(g, shipper);
     g.pendingHomeworldShipment = null;
     g.decision = null;
-    finishShipmentPromises(g, shipper, null);
+    settleStoppedShipmentPromises(g, shipper, p.id);
     log(g, `${p.name} used special Karama to stop ${shipper.name}’s interplanetary shipment. No forces arrive or spice is paid; their shipment is used and movement remains available.`);
   } else if (intent.kind === 'guild') {
     const shipper = getPlayer(g, intent.target);
@@ -30263,6 +30286,7 @@ function resolveSpecialKaramaEffect(g: Game, p: Player, card: Card, intent: Spec
       g,
       `${p.name} used special Karama to stop ${shipper.name}’s shipment. No forces arrive or spice is paid; movement remains available.`,
     );
+    settleStoppedShipmentPromises(g, shipper, p.id);
   } else if (
     intent.kind === 'emperorLeader' ||
     intent.kind === 'emperorForces'
@@ -35127,6 +35151,7 @@ export function viewGame(state: Game, id: string) {
     battleOrder: projectedBattleOrder(g),
     guildAmbassadorAdvisorChoices: guildAdvisorChoices(g, id),
     truthShipmentSupported: shipmentPromiseModeSupported(g),
+    guildShipmentStopPromiseBlock: ownGuildStopPromiseBlock(g, me),
     truthShipmentAnswers:
       g.truthtrance?.stage === 'answer' &&
       g.truthtrance.question?.target === id &&
@@ -35138,7 +35163,9 @@ export function viewGame(state: Game, id: string) {
     shipmentPromises: (g.shipmentPromises ?? []).filter(p => !p.mixed || p.player === id),
     shipmentCompletion:
       !g.pendingTreacheryDiscard &&
-      !g.response && !g.pendingKarama &&
+      !g.response && !g.pendingKarama && !g.truthtrance &&
+      !g.decision && !g.phaseOpening && !g.pendingShipment &&
+      !g.pendingGuildTransport && !g.pendingHomeworldShipment &&
       liveShipmentPromises(g.shipmentPromises ?? [], id, g.turn).some(
         (p) => matchesShipment(p,null) !== p.answer,
       )

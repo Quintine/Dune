@@ -3318,8 +3318,10 @@ export function GameTable({
                   <HelpTip topic="guildShipment" />
                   {actionButton('Allow Homeworld shipment', { type: 'decision', event: g.decision.event, allow: true })}
                   {me.hand?.filter(canActivateKarama).map((c) => (
-                    <div key={c.id}>{actionButton('Spend Karama · stop shipment', { type: 'card', mode: 'special', card: c.id })}</div>
+                    <div key={c.id}>{actionButton('Spend Karama · stop shipment', { type: 'card', mode: 'special', card: c.id },
+                      !!g.guildShipmentStopPromiseBlock, g.guildShipmentStopPromiseBlock ? 'guild-stop-promise-guidance' : undefined)}</div>
                   ))}
+                  {g.guildShipmentStopPromiseBlock && <p id="guild-stop-promise-guidance" role="status">{g.guildShipmentStopPromiseBlock}</p>}
                 </>
               ) : g.decision.kind === 'guildShipment' ? (
                 <>
@@ -3351,9 +3353,11 @@ export function GameTable({
                           type: 'card',
                           mode: 'special',
                           card: c.id,
-                        })}
+                        }, !!g.guildShipmentStopPromiseBlock,
+                        g.guildShipmentStopPromiseBlock ? 'guild-stop-promise-guidance' : undefined)}
                       </div>
                     ))}
+                  {g.guildShipmentStopPromiseBlock && <p id="guild-stop-promise-guidance" role="status">{g.guildShipmentStopPromiseBlock}</p>}
                 </>
               ) : g.decision.kind === 'handExchange' ? (
                 <>

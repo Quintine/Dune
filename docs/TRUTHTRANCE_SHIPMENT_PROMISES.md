@@ -2,6 +2,10 @@
 
 Original checkpoint, 7 September 2026; Advanced follow-up, 13 September 2026. The [14 September compound follow-up](COMPOUND_SHIPMENT_PROMISES.md) adds shipment-only AND/OR while retaining the boundaries below. This implements a bounded reserve-shipment future-action predicate. It does not certify complete Truthtrance, Advanced play or expansion interactions, and opens no new mode gate.
 
+The former Advanced Guild exclusion is superseded by the
+[18 October native Guild composition](#advanced-guild-interception-and-rates--18-october-2026).
+Earlier scope descriptions and verification totals remain historical.
+
 ## Authority and supported meaning
 
 The [GF9 November 2020 FAQ, printed p8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf) provides the Emperor/Carthag example: a definite Yes binds the matching shipment while possible; No allows fewer forces, another destination or none. Current-turn commitments, unknown for outcomes beyond the respondent's control, storm-order priority and release upon impossibility are the publisher's rules. The independent reviewer retrieved official indexed text this checkpoint; direct PDF access returned 403. No tournament or other-edition rule was adopted.
@@ -64,3 +68,92 @@ The reviewed offline runner `/tmp/dune-shipment-fullgames.ts` uses the unchanged
 All 20 games completed: 9,597 accepted actions, zero rejected candidates, stalls, exceptions or invariant failures; 94 actual setup actions and 441 actual continuations from serialized JSON. Thirty shipment questions produced 23 Yes and seven No; all 30 records were fulfilled, with no pending or released promises. Yes occurred at every difficulty; the sampled No answers occurred at Hard and Brutal. Full-game thresholds here are minimum one; the six-force, all-minimum and preparation-path coverage comes from focused tests and browser play. This homogeneous sample cannot calibrate relative AI strength or certify the remaining game scope.
 
 The root independently reviewed the runner and reread all 57 source/runner hashes with zero changes. Combined SHA-256: `e6c4c008d059934b8519d06b01c2bc15c9aaec40270cdd78b23a97bb6a70ca2c`. Results `/tmp/dune-shipment-fullgames.json`, SHA-256 `62f6d214b3b17f661497c65159534d732e710873f04fa407a1d15079bfa135df`. The run took 48.392 seconds and its terminal exited successfully.
+
+## Advanced Guild interception and rates — 18 October 2026
+
+**Prototyped / Partial.** Base Advanced games now support the same structured
+reserve-shipment and mixed current-fact questions with Guild seated, including
+Guild itself and its reciprocal ally as respondent. Asking still requires the
+active player's unused shipment and finished control windows. Native TAKE/WAIT
+decides that active opportunity first. No faction expansion or other optional
+module is admitted by this change; existing Basic/Richese Semuta scope remains.
+
+The original FAQ's commitment/release rule composes with native Guild powers;
+no new numerical or timing ruling is introduced. A declaration awaiting native
+interception, transport permission or rate responses neither fulfills nor releases
+the promise. Actual delivery settles the actual reserve count/destination once,
+before its later arrival reactions. Physical force type, tariffs, bank/Guild
+income, original funding and one-use powers remain authoritative.
+
+An opposing Guild special Karama consumes the shipment opportunity without
+delivery or payment. Evaluate each complete accepted expression against that
+absence: matching answers fulfill; impossible answers publicly release. This
+also handles a Yes to an OR whose frozen current fact is already true. The
+respondent's promise cannot veto the opponent's printed stop. The Guild may not
+use self-interception to evade its own required shipment; shared server legality
+disables the stop button with its reason, while native allowance stays available.
+Own stops permitted by the whole promise retain the normal power and card cost.
+
+Rate cancellation remains separate from interception. A funded full tariff
+delivers and fulfills normally. An unaffordable original payment split returns
+the declaration unused, retains the full-rate restriction and rechecks available
+owned preparation. An independent retained Karama discount may keep a promise
+possible; without a legal completion, an opposing cancellation releases it. The
+respondent cannot deliberately spend its last completion away. Denied native
+cross/return permission moves nothing and consumes no shipment: ordinary Fremen
+reinforcement remains a separate possible fallback, while an unreachable
+destination releases. A purchased price does not restore denied route permission.
+
+Private suggested actions appear only at an executable clean boundary, not while
+Truthtrance, a decision, response, opening or physical shipment is pending. The
+reachability solver can preserve a possible allowed route during those windows
+without offering a concurrent duplicate action. Existing policies use the same
+private feasible answers and completion witness; no strategy tuning is included.
+
+### Targeted proof and limits
+
+A disjoint fixture lane, bounded continuation review and owner integration pass
+**10 files106/106**, one updated existing in-memory scope-regression case,
+`npm run check:quick`, production build and actual-rule/rendered-control smoke.
+Frozen feedback removed one unused fixture import. The old negative case that
+classified Advanced Guild itself as corruption is removed; the remaining
+unsupported-expansion case remains. Only that existing in-memory test runs,
+not a new recovery or production-save assurance campaign.
+
+The passing frozen source is based on
+`377e9c516035191a6d73f8eca05e253d31f39739`, tree
+`a1b4fe7440dbfeb2a664db86acf0813ca9711ff486c30e505131057f077792ee`,
+2,595 tracked/nonignored files. The preserved untracked source PDF contributes
+only its hash to the snapshot; it is not committed or republished.
+
+`tests/fixture-truthtrance-guild-shipment.ts` uses actual public classic Advanced
+setup, original physical starting deals and native TAKE/WAIT. Only unopened
+starting-deal/Spice positions and authoritative scalar lotteries are selected;
+no postdeal hand, wallet, army, clock, flag or promise is installed. Both sources
+use39 actions. Four programmes finish the actual respondent turn in8–10 more:
+
+- Emperor3, including one Sardaukar, is allowed for3 paid to Guild and fulfills;
+  actual opposing special Karama instead consumes the opportunity, pays and
+  delivers0, and publicly releases the impossible positive.
+- Guild TAKE ships3 for half2, or an actual opposing Emperor Karama removes that
+  rate and the funded full3 is paid once. Both deliveries fulfill.
+
+`tests/truthtrance-guild-shipment-engine.test.ts` covers these original controls.
+Four existing profiles make12 legal answer/shipment/Guild proposals and finish
+their resulting opportunity. `tests/truthtrance-guild-shipment.test.ts` separately
+uses controlled No/mixed, self-stop, funded/unaffordable rate, owned alternative
+and denied Fremen-route probes. The ordinary completion remains legal without
+strategic refinement. Existing compound, core Guild and shipment tests pass.
+
+Actual GameTable/ShipmentPromises render question, bound, interception, rate and
+finished states. The real self-stop button is disabled with the server reason;
+the executable guide is absent during pending controls. Framework aliases/CSS
+stubs mean no browser click or visual acceptance. Private logs, snapshots, HTML
+and runtime results are in
+`/home/quintine/.local/share/dune/checkpoints/20261018-truth-guild-shipment/`;
+`frozen-integrated-2/report.json` is the complete passing batch. Final prose and
+reference evidence edits are checked against all frozen file hashes before push.
+
+Broader phases/routes/modules, full Truthtrance/modes, final assurance and
+browser/deployed acceptance remain open. No saved-room/database/reset/restart/
+deployment operation was performed.
