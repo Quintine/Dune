@@ -18,7 +18,11 @@ All four profiles consume the same private offer. The shared policy uses public 
 
 The engine binds the original placement, physical face and native opportunity in a saved receipt. A separate current-placement map ends when the token relocates, reveals or returns to supply; historical evidence remains available to the already committed entry and discard children. This preserves legitimate continuation across later turns and population changes without letting an old receipt authorize a new relocation. Consumers neither reconstruct that history nor broaden ordinary Grumman addition rules. The [Grumman stacking source](GRUMMAN_STACKED_TERROR_RULES.md) and its separate removal boundary remain unchanged.
 
-Atomics and Extortion reactions, restricted Assassination leader pools, and existing Sneak Attack arrival combinations retain their explicit gates. No complete Moritani, Nexus or expansion-release claim follows from this checkpoint.
+The [native-module Atomics extension](MORITANI_TERROR_RULES.md#native-module-atomics--18-october-2026)
+now follows the actual Cunning grant into a printed desert, preserving its
+historical placement source in Aftermath after removal. This supersedes this
+checkpoint's original Atomics gate. Other reactions retain their own current
+contracts. No complete Moritani, Nexus or expansion-release claim follows.
 
 ## Independent recovery review
 

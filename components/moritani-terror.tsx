@@ -601,7 +601,9 @@ export function MoritaniEntry({
                 does too, if you have one. Each hand over its new limit
                 discards one random card per excess card. Under the provisional
                 persistent-target interpretation, later alliance changes do not
-                move this penalty to a new ally.
+                move this penalty to a new ally. A caught concealed No-Field
+                provisionally reveals and places only its available reserve
+                forces before those forces go to the Tanks.
               </p>
             )}
             {entry.kind === 'sneakAttack' && sneak && (

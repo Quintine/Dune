@@ -2,6 +2,63 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Native Betrayal and Atomics composition — 18 October 2026
+
+**Prototyped / Partial.** Ecaz Betrayal now uses
+the original native and selected-independent Nexus profiles with their selected
+World/training/phase modules. Actual typed groups return to native reserves;
+advisors lose their returned stance; original parent-to-HMS movement supplies a
+real shared target. A full unspent Shipment/Movement opening survives actual
+Guild first/wait and Sapho ordering. The native counter still needs its own
+original paid Karama; no second shipment or movement is created.
+
+For a concealed No-Field, the explicit provisional return policy recalls the
+marker face down without materializing counters or revealing its denomination.
+The distinct provisional destructive policy materializes capped native reserves
+before Moritani Atomics sends all territory forces to Tanks. Original invoice,
+Ambassador/Terror order, random overflow and fixed activation hand targets
+remain. Original World Sneak Attack withdraws actual native reserves and retains
+the printed Aftermath exception. See [Ecaz](NEXUS_ECAZ_RULES.md#native-modules-and-face-down-recall--18-october-2026),
+[Atomics](MORITANI_TERROR_RULES.md#native-module-atomics--18-october-2026) and
+[provisional authority](RULE_DECISIONS.md#provisional-no-field-return-and-atomics--18-october-2026).
+
+A real Moritani Cunning placement can put Atomics into a printed desert. Its
+actual historical grant remains the source for later Aftermath; ordinary
+placement stays restricted to strongholds. Homeworld, HMS and Discovery targets
+are not added by this exception. These are connected effects, not certification
+of all Nexus effects, complete factions or all rules-permitted combinations.
+Comprehensive assurance, full AI and deployed acceptance remain open.
+
+Original-action evidence: `tests/ecaz-betrayal-modules.test.ts`,
+`tests/moritani-atomics-modules.test.ts`,
+`tests/nexus-moritani-atomics-runtime.test.ts` and their genuine setup fixtures.
+Focused quote/physical cases include `tests/nexus-ecaz-betrayal-quotes.test.ts`,
+`tests/richese-no-field-hidden-return.test.ts` and `tests/moritani-atomics.test.ts`.
+
+Owner frozen **16 files115/115**, types/lint/build pass. Eight finite original-
+action programmes pass: typed/marker/advisor/HMS Betrayal201/222/200/213 original
+actions plus two response actions per allowance/cancel; World Atomics/
+Sneak375; paired arrival176; Basic/Advanced desert134/261. Actual table SSR
+retains return, concealed-marker, revelation, Aftermath and original arrival
+controls. Framework aliases and CSS stubs mean no visual/browser acceptance.
+Four minimal policies execute actual typed/concealed Betrayal and World Sneak
+choices; this is legal participation, not difficulty calibration.
+
+Iteration corrected real Guild-first opening and World reserve withdrawal
+defects. Fixtures now decline an unwanted allied No-Field offer, place Ecaz at
+its actual native phase-four opportunity, accompany BG explicitly, read the
+completed Cunning history, and fund a genuine adjacent Basic movement source.
+No printed numeric rule changed for a fixture. A bounded original-grant review
+found no remaining concrete desert guard/continuation defect.
+
+Private proof `20261018-native-betrayal-atomics/combined-proof.json` binds the
+passed rule/type/build steps and the corrected runtime step to the same source
+tree. The first external smoke incorrectly selected a completed Sneak result;
+only that external programme changed before the passing repeat. Diagnostics
+remain outside Git. Later checkpoint prose is a documented overlay; no saved
+room/database, reset, server restart or deployment was involved. Full rules,
+combinations, comprehensive assurance and deployed acceptance remain required.
+
 ## Selected E3 independent Nexus — 18 October 2026
 
 **Prototyped / Partial.** Fresh selected Ecaz/Moritani
@@ -41,8 +98,8 @@ Evidence paths: `tests/selected-independent-nexus-entry.test.ts`,
 `tests/e3-independent-nexus-cards.test.ts`,
 `tests/e3-independent-nexus-duke.test.ts` and
 `tests/e3-independent-nexus-arrival.test.ts`, with their original-action fixtures.
-Ecaz Betrayal and Moritani Atomics remain distinct required effects with
-substantive unimplemented envelopes; this delivery does not certify all Nexus
+The later native composition above supersedes the original Betrayal/Atomics
+exclusions. This earlier delivery does not certify all Nexus
 effects, complete factions, combinations or final release. Comprehensive
 assurance, full AI and deployed acceptance remain open.
 

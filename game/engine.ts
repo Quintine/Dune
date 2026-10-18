@@ -419,6 +419,7 @@ import {
   validateRicheseNoFieldPair,
   moveRicheseNoField,
   revealRicheseNoField,
+  recallRicheseNoField,
   shipAlliedRicheseNoField,
   projectRicheseNoField,
   type RicheseNoField,
@@ -3248,13 +3249,20 @@ function finishEcazBetrayalResponse(g: Game, response: ResponseWindow, canceled:
       delete ally.forces[key];
       if (ally.elites) delete ally.elites.forces[key];
     }
-    ally.reserves += record.snapshot.total.normal + record.snapshot.total.elite;
-    if (ally.elites) ally.elites.reserves += record.snapshot.total.elite;
+    if (ally.advisors) delete ally.advisors[record.snapshot.territory];
+    if (record.snapshot.noField) {
+      const source = record.snapshot.noField;
+      const supplier = getPlayer(g, source.supplier);
+      supplier.noField = noFieldRule(() => recallRicheseNoField(supplier.noField!, source.tokenId));
+      supplier.noFieldEvent = crypto.randomUUID();
+    }
+    const amount = record.snapshot.total.normal + record.snapshot.total.elite;
+    if (amount) addNativeReserves(g, ally, amount, record.snapshot.total.elite);
     observeOccupation(g);
   }
   log(g, canceled
     ? `Karama prevented the Ecaz Nexus return from ${territory(record.snapshot.territory).name}; the Nexus card remains spent.`
-    : `${ally.name} returned ${record.snapshot.total.normal + record.snapshot.total.elite} forces from ${territory(record.snapshot.territory).name} to reserves under Ecaz Nexus Betrayal.`,
+    : `${ally.name} returned ${record.snapshot.total.normal + record.snapshot.total.elite} physical forces${record.snapshot.noField ? ' and recalled the concealed No-Field face down' : ''} from ${territory(record.snapshot.territory).name} under Ecaz Nexus Betrayal.`,
   { faction: ally.faction, name: 'Ecaz Nexus Betrayal' });
 }
 function playEcazBetrayal(g: Game, p: Player, action: Action) {
@@ -4941,28 +4949,50 @@ function atomicsRule<T>(run: () => T): T {
     throw error;
   }
 }
-/** Only the clean printed-territory entry is connected; other arrival parents remain gated. */
+/** Optional modules do not remove the native all-forces effect. Their setup and
+ * original arrival rules retain their own admission and continuation checks. */
 function atomicsModeSupported(g: Game): boolean {
-  return !!byFaction(g, 'moritani') && !byFaction(g, 'ecaz') &&
+  if (!byFaction(g, 'moritani')) return false;
+  const original = !byFaction(g, 'ecaz') &&
     !byFaction(g, 'guild') &&
     g.players.every(p => CLASSIC_FACTIONS[p.faction] === true || p.faction === 'moritani') &&
     g.expansions.every(expansion => expansion === 'ecaz') &&
     !g.homeworlds && !g.nexusCards && !g.leaderSkills &&
     !g.discoveryEnabled && !g.techTokens && !g.strongholdCards &&
-    !g.ecazTreachery && !g.pendingArrivalOverlap;
+    !g.ecazTreachery;
+  return original || (typeof g.advanced === 'boolean' &&
+    g.players.length >= (g.techTokens ? 3 : 2) && g.players.length <= 6 &&
+    new Set(g.players.map(player => player.faction)).size === g.players.length &&
+    g.expansions.includes('ecaz') && g.expansions.length <= 3 &&
+    g.expansions.every((family,index) => ['ecaz','ix','choam'].includes(family) && g.expansions.indexOf(family) === index) &&
+    (!g.strongholdCards || g.advanced) &&
+    g.players.every(player => FACTIONS.some(faction => faction.id === player.faction &&
+      (faction.expansion === 'base' || g.expansions.includes(faction.expansion)))));
 }
 function currentAtomicsQuote(
   g: Game,
   entry: NonNullable<Game['pendingTerrorEntry']>,
 ): AtomicsQuote {
-  requireRule(atomicsModeSupported(g) && !g.moritaniAtomics && !g.moritaniExtortion,
-    'Atomics with these combined modules or another unresolved Terror effect is not yet supported.');
+  requireRule(atomicsModeSupported(g) && !g.moritaniAtomics,
+    'Atomics requires its original native roster and unused Aftermath token.');
+  const blocked = homeworldTerrorEntryBlock(g, entry.entrant, entry.amount, 'reveal');
+  requireRule(!blocked, blocked ?? 'This Terror reveal is unavailable.');
   const token = g.moritaniTerror?.tokens.find(row => row.id === entry.token);
   requireRule(token, 'The Atomics token has lost its original stronghold.');
+  requireRule(terrorEntryLocationAllowed(g,entry), 'Atomics lost its original physical placement source.');
+  // Provisional explosion composition: quote the same capped physical reveal
+  // that allowance will perform. Forecasts never change or expose a live marker.
+  const forecast = g.players.some(player => player.noField?.deployed?.location.territory === entry.territory)
+    ? structuredClone(g) : g;
+  if (forecast !== g) for (const player of forecast.players)
+    if (player.noField?.deployed?.location.territory === entry.territory)
+      revealPlayerNoField(forecast, player, 'atomics');
   return atomicsRule(() => quoteMoritaniAtomics({
     token, territory: entry.territory, moritaniId: byFaction(g, 'moritani')!.id,
     turn: g.turn, aftermath: g.moritaniAtomics ?? null,
-    players: g.players.map(player => ({
+    ...(!TERROR_STRONGHOLDS.includes(entry.territory)
+      ? {nexusPlacement:entry.nexusPlacements?.[token.id]} : {}),
+    players: forecast.players.map(player => ({
       ...player, handSize: player.hand.length, baseHandLimit: handLimit(player),
     })),
   }));
@@ -4972,6 +5002,9 @@ function resolveAtomics(
   entry: NonNullable<Game['pendingTerrorEntry']>,
   quote: AtomicsQuote,
 ) {
+  for (const player of g.players)
+    if (player.noField?.deployed?.location.territory === entry.territory)
+      revealPlayerNoField(g, player, 'atomics');
   g.moritaniAtomics = quote.aftermath;
   for (const casualty of quote.casualties) {
     const player = getPlayer(g, casualty.playerId);
@@ -6153,7 +6186,7 @@ function treacheryDiscardIntegrity(g: Game) {
   const box = continuation?.kind === 'nullentropyDiscard';
   const truth = continuation?.kind === 'truthtranceDiscard';
   const ambassadorTerror =
-    continuation?.kind === 'terrorDiscard' &&
+    (continuation?.kind === 'terrorDiscard' || continuation?.kind === 'terrorAtomics') &&
     continuation.entry.cause === 'ambassador';
   requireRule(
     (g.status === 'playing' || (truth && g.status === 'setup')) &&
@@ -7035,16 +7068,20 @@ function treacheryDiscardIntegrity(g: Game) {
   } else if (continuation?.kind === 'terrorAtomics') {
     const { entry, aftermath, handBefore } = continuation;
     atomicsIntegrity(g);
+    if (entry?.cause === 'ambassador') ambassadorRelocationIntegrity(g);
     const owner = byFaction(g, 'moritani');
     const token = g.moritaniTerror?.tokens.find(row => row.id === entry?.token);
     requireRule(!g.pendingTerrorEntry && !g.pendingExchange && !g.summonedWorm &&
       entry && entry.turn === g.turn && entry.phase === g.phase &&
-      entry.stage === 'offer' && entry.resume === (entry.cause === 'wormRide' ? 'wormRide' : 'none') &&
-      (entry.cause !== 'wormRide' || (g.phase === 1 &&
-        g.players.some(player => player.id === entry.entrant && player.faction === 'fremen'))) &&
-      ['shipment', 'movement', 'advisor', 'wormRide'].includes(entry.cause) &&
+      entry.stage === 'offer' && ['none','wormRide','ambassador'].includes(entry.resume) &&
+      (entry.cause === 'ambassador' ? ambassadorTerrorEntryMatches(g,entry)
+        : entry.cause === 'wormRide' ?
+          (entry.resume === 'wormRide' || overlapOwnsWormTerror(g,entry)) && g.phase === 1 &&
+          g.players.some(player => player.id === entry.entrant && player.faction === 'fremen')
+          : entry.resume === 'none') &&
+      ['shipment', 'movement', 'guildTransport', 'advisor', 'wormRide', 'ambassador'].includes(entry.cause) &&
       entry.entrant !== owner?.id && entry.territory === aftermath.territory &&
-      validGameLocation(g, entry.territory, entry.sector) &&
+      terrorEntryLocationAllowed(g,entry) && validGameLocation(g, entry.territory, entry.sector) &&
       token?.kind === 'atomics' && token.status === 'removed' &&
       token.location === null &&
       batch.cause === 'terror:atomics' && batch.entries.length > 0 &&
@@ -16445,7 +16482,7 @@ function arrivalOverlapIntegrity(g: Game) {
   const ambassador = g.pendingAmbassador ??
     (continuation?.kind === 'ambassador' ? continuation.entry : null);
   const terror = g.pendingTerrorEntry ??
-    (continuation?.kind === 'terrorDiscard' ? continuation.entry : null);
+    (continuation?.kind === 'terrorDiscard' || continuation?.kind === 'terrorAtomics' ? continuation.entry : null);
   const active = record.stage === 'first' ? record.first :
     record.first === 'ambassador' ? 'terror' : 'ambassador';
   requireRule(g.status === 'playing' && arrivalOverlapModeSupported(g) &&
@@ -16713,7 +16750,7 @@ function ambassadorRelocationIntegrity(g: Game) {
   );
   const terror =
     g.pendingTerrorEntry ??
-    (continuation?.kind === 'terrorDiscard' ? continuation.entry : null);
+    (continuation?.kind === 'terrorDiscard' || continuation?.kind === 'terrorAtomics' ? continuation.entry : null);
   const relatedResponses = responses.filter(
     (response) =>
       response.advisorResume === 'ambassador' ||
@@ -18980,7 +19017,7 @@ function decideTerror(g: Game, p: Player, action: Action) {
         !options.blocked,
         options.blocked ?? 'This arrival is unavailable.',
       );
-      p.reserves -= amount;
+      withdrawNativeReserves(g, p, amount, 0);
       place(p, entry.territory, entry.sector, amount);
       observeOccupation(g);
       // A positive Sneak Attack transfers Moritani's expressly off-planet
@@ -21864,7 +21901,9 @@ function atomicsIntegrity(g: Game) {
   const token = g.moritaniTerror?.tokens.find(row => row.kind === 'atomics');
   requireRule(atomicsModeSupported(g) && owner?.id === aftermath.moritaniId &&
     Number.isSafeInteger(aftermath.turn) && aftermath.turn >= 1 &&
-    aftermath.turn <= g.turn && TERROR_STRONGHOLDS.includes(aftermath.territory) &&
+    aftermath.turn <= g.turn && (TERROR_STRONGHOLDS.includes(aftermath.territory) ||
+      (token && typeof aftermath.nexusPlacement === 'string' &&
+        terrorLocationAllowed(g,token.id,aftermath.territory,aftermath.nexusPlacement,false,true))) &&
     token?.status === 'removed' && token.location === null &&
     aftermath.alliancePolicy === 'activation-targets' &&
     (aftermath.allyAtActivation === null || g.players.some(player =>

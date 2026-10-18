@@ -2,6 +2,54 @@
 
 Audit: 2026-09-06. Scope: the six Terror tokens, setup, placement, entry reactions and continuing effects. Initial audit made no runtime edits; see the implementation checkpoint below. This is an implementation contract with explicit evidence limits, not certification that the faction is playable.
 
+## Native module Atomics — 18 October 2026
+
+**Prototyped / Partial.** Original registered native
+tables can reveal Atomics with their selected World/Nexus/Skills/phase/card
+modules. Their setup and original arrival legality remain authoritative; no
+Terror placement on a Homeworld, HMS or other unprinted target is added.
+Existing Grumman occupation and low-population reveal restrictions still apply
+to the entrant, including a directly submitted Atomics action. Another deferred
+Extortion award does not remove the separately held Atomics token.
+
+The separate original Moritani Nexus Cunning grant permits placement in any
+printed Arrakis territory, including a desert. Atomics follows that actual
+physical grant; a non-stronghold Aftermath retains its original placement event
+and validates it against the original Cunning history after token removal.
+This does not give ordinary Mentat placement a desert option or make Homeworlds,
+HMS or Discovery territories printed Arrakis targets. The source and original
+placement contract remain in [Moritani Nexus](NEXUS_MORITANI_RUNTIME.md).
+
+The all-forces effect includes original normal/starred counters and advisors.
+For a caught concealed No-Field, the
+[explicit provisional reveal-first policy](RULE_DECISIONS.md#provisional-no-field-return-and-atomics--18-october-2026)
+uses a detached forecast of the original native capped reveal, then performs
+that reveal and actual physical loss once on acceptance. An unaffordable
+denomination creates no extra counters. Forecasts disclose no private value.
+This follows the supplied revision physical35/36 as a selected destructive-
+effect composition; it is not an explicit printed Atomics/No-Field FAQ.
+
+Original paid Guild invoices and Ambassador/Terror arrival order retain their
+own continuation. A random hand-overflow discard can suspend that same ordered
+arrival, rather than losing or replaying it. Aftermath keeps the original
+activation targets, lasting shipment/cross-shipment ban, movement distinction
+and printed Sneak Attack exception. No new battle, victory reward, revival or
+shipment income is inferred from these casualties.
+
+Original-action evidence is in `tests/fixture-moritani-atomics-modules.ts` and
+`tests/moritani-atomics-modules.test.ts`, alongside the original pure/native
+Atomics cases. Genuine desert placement and later movement/shipment evidence is
+in `tests/fixture-nexus-moritani-atomics.ts` and
+`tests/nexus-moritani-atomics-runtime.test.ts`. Full rules, combinations, comprehensive custody/privacy/recovery
+assurance and deployed acceptance remain open.
+
+The owner-frozen related16-file115/115 batch, types/lint/build and finite original-
+action/table-SSR smoke pass. Original paid marker entry, ordered paired arrival,
+random overflow, World Sneak withdrawal and Basic/Advanced Cunning desert
+Aftermath use actual controls. Four policies have legal World Sneak choices.
+The [shared checkpoint](NEXUS_CARD_RULES.md#native-betrayal-and-atomics-composition--18-october-2026)
+records counts, the external-smoke correction and visual/deployment limits.
+
 ## Evidence and revision boundary
 
 - **E3:** [GF9 Ecaz & Moritani rulebook](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf), printed pp. 3–6, 14, 16. Publisher-indexed text verified setup/placement/Assassination/Atomics on p. 5 and the official built-in FAQ/Karama answers on pp. 14 and 16. Direct download currently returns 403.

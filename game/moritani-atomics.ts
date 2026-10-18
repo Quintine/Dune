@@ -1,4 +1,4 @@
-import { splitLocation, validLocation } from './board';
+import { TERRITORIES, splitLocation, validLocation } from './board';
 import type { Player } from './engine';
 import type { TerrorToken } from './moritani-terror';
 import { TERROR_STRONGHOLDS } from './moritani-terror';
@@ -11,6 +11,8 @@ export type AtomicsAftermath = Readonly<{
   allyAtActivation: string | null;
   /** Provisional permanent targets: Moritani and its ally at activation. */
   alliancePolicy: 'activation-targets';
+  /** Original Moritani Cunning grant for an otherwise non-stronghold target. */
+  nexusPlacement?: string;
 }>;
 
 export type AtomicsPlayer = Pick<
@@ -49,11 +51,15 @@ export function quoteMoritaniAtomics(input: {
   moritaniId: string;
   turn: number;
   aftermath: AtomicsAftermath | null;
+  /** The engine authenticates the original physical Cunning placement. */
+  nexusPlacement?: string;
 }): AtomicsQuote {
   const { token, players, moritaniId, turn, territory } = input;
   requireAtomics(token.kind === 'atomics' && token.status === 'placed' &&
-    token.location === territory && TERROR_STRONGHOLDS.includes(territory),
-  'Atomics requires its still-placed token in the entered ordinary stronghold.');
+    token.location === territory && (TERROR_STRONGHOLDS.includes(territory) ||
+      (typeof input.nexusPlacement === 'string' && input.nexusPlacement.length > 0 &&
+        TERRITORIES.some(entry => entry.id === territory))),
+  'Atomics requires its still-placed token and an ordinary stronghold or original Nexus placement.');
   requireAtomics(input.aftermath === null, 'Atomics Aftermath is already on the board.');
   requireAtomics(Number.isSafeInteger(turn) && turn >= 1, 'Atomics needs a valid turn.');
   requireAtomics(players.length > 0 && new Set(players.map(p => p.id)).size === players.length &&
@@ -70,8 +76,8 @@ export function quoteMoritaniAtomics(input: {
       (whole(p.elites.tanks) && p.elites.tanks <= p.tanks)),
     'Atomics needs valid Tanks custody.');
     let total = 0, eliteTotal = 0;
-    // A marker with zero counters is not a casualty. A concealed No-Field with
-    // physical counters needs its own reveal/custody ruling before this effect.
+    // The engine materializes any caught No-Field in a detached forecast before
+    // quoting this physical effect. The pure calculator never invents counters.
     requireAtomics(p.noField?.deployed?.location.territory !== token.location,
       'Atomics with a concealed No-Field awaits its reveal and casualty rules.');
     for (const key of new Set([...Object.keys(p.forces),
@@ -82,7 +88,7 @@ export function quoteMoritaniAtomics(input: {
       const elite = p.elites?.forces[key] ?? 0;
       requireAtomics(key === `${territory}:${sector}` && validLocation(territory, sector) &&
         whole(amount) && whole(elite) && elite <= amount,
-      'Atomics needs valid typed forces in the stronghold.');
+      'Atomics needs valid typed forces in the territory.');
       total += amount;
       eliteTotal += elite;
       if (amount) casualties.push({ playerId: p.id, location: key,
@@ -103,7 +109,8 @@ export function quoteMoritaniAtomics(input: {
   return {
     casualties,
     aftermath: { territory: token.location, turn, moritaniId,
-      allyAtActivation: ally?.id ?? null, alliancePolicy: 'activation-targets' },
+      allyAtActivation: ally?.id ?? null, alliancePolicy: 'activation-targets',
+      ...(!TERROR_STRONGHOLDS.includes(territory) ? { nexusPlacement: input.nexusPlacement! } : {}) },
     handReductions,
   };
 }

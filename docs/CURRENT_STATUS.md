@@ -16,6 +16,32 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Native Ecaz Betrayal / Moritani Atomics — 18 October. Prototyped / Partial.**
+Selected modules now retain typed native returns, advisors, actual shared HMS,
+face-down concealed recall and original paid Karama cancellation. Guild first/
+wait and Sapho ordering preserve a full unspent Shipment/Movement opening.
+Native Atomics retains capped No-Field materialization, original paid arrival,
+ordered Ambassador/Terror continuation and fixed hand targets. Original Nexus
+Cunning grants now support printed-desert Atomics and historical Aftermath;
+ordinary placement, shipment bans and the Sneak Attack exception stay distinct.
+Both No-Field overlaps remain explicitly provisional.
+
+Three disjoint lanes and owner integration are frozen. **16 files115/115**,
+types/lint/build and eight finite original-action/table-SSR programmes pass:
+typed/marker/advisor/HMS Betrayal201/222/200/213 source actions plus two choices
+per allowance/cancel; World Atomics/Sneak375, paired arrival176, Basic/Advanced
+desert134/261. Four policies retain legal typed/concealed Betrayal and native
+World Sneak choices; no calibration. SSR framework aliases/CSS stubs mean no
+visual/browser or deployed acceptance. Corrected fixtures preserve native
+placement chronology, optional allied No-Field revelation and Basic range1.
+The external smoke initially selected an already completed Sneak result; its
+corrected pending-choice run passed against unchanged application source.
+
+No saved room/database, reset, restart or deployment. Remaining Nexus/Discovery/
+Semuta envelopes and other rule interactions still require implementation;
+comprehensive assurance and complete modes stay open.
+[Source, evidence and limits](NEXUS_CARD_RULES.md#native-betrayal-and-atomics-composition--18-october-2026).
+
 **Selected E3 independent Nexus — 18 October. Prototyped / Partial.**
 Fresh selected E3, optionally Ix/CHOAM/both, now composes independent cards,
 Nexus and original World/phase/all14 modules. Native Occupy, Advanced
@@ -36,8 +62,8 @@ Fixture corrections retain the real at-least-one-alliance draw gate and decline
 unwanted paid Ambassador placement before the Duke invasion. Initial lint caught
 a reserved loop binding. No printed numeric rule changed. Bounded shared-profile
 review found no material defect. No saved room/database, reset, restart or
-deployment. **Next required rules:** Ecaz Betrayal and Moritani Atomics envelopes,
-then remaining optional combinations; comprehensive assurance stays deferred.
+deployment. The later native Betrayal/Atomics checkpoint above supersedes these
+original effect exclusions; remaining combinations and assurance stay open.
 [Contract, evidence and boundaries](NEXUS_CARD_RULES.md#selected-e3-independent-nexus--18-october-2026).
 
 **Selected-deck independent Nexus — 18 October. Prototyped / Partial.**

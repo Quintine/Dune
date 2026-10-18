@@ -2,6 +2,33 @@
 
 Updated 18 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
 
+## Provisional No-Field return and Atomics — 18 October 2026
+
+The supplied Advanced revision physical35/printed33 sends all territory forces
+to Tanks for Moritani Atomics. Physical36/printed34 treats a concealed No-Field
+as one force until revelation and lists Storm, worm, Lasgun–Shield explosion
+and Battle Plan revelation; it does not explicitly name either Terror Atomics
+or Ecaz Betrayal. The original E3 Homeworld rule p10 says Homeworlds are not
+territories; enabling that module adds no Homeworld target to these effects.
+
+Under the 14 October choose-recommended instruction, provisionally compose:
+
+- **Ecaz Betrayal:** return the marker face down without materializing forces.
+  Return actual visible normal/starred counters to their native reserves.
+  Preserve the last-shipment repeat restriction; recalling the marker does not
+  reveal its denomination through the public last-used display. Cancellation
+  leaves the marker and visible group unchanged.
+- **Moritani Atomics:** treat this destructive explosion as a reveal source;
+  materialize only the original available capped reserves, then send those
+  physical forces and all other territory forces to Tanks. Before acceptance,
+  the forecast changes no live marker and exposes no denomination. Original
+  paid entry, random overflow disposal and both arrival owners continue once.
+
+These are explicit provisional compositions, not retrieved publisher FAQ
+answers or new user numerical rulings. Original Karama classification and
+persistent activation-target interpretations remain. [Ecaz contract](NEXUS_ECAZ_RULES.md#native-modules-and-face-down-recall--18-october-2026),
+[Atomics contract](MORITANI_TERROR_RULES.md#native-module-atomics--18-october-2026).
+
 ## Provisional own-World temporary-role reserve fee — 18 October 2026
 
 Under the 14 October choose-recommended direction, an own-World Reinforcements

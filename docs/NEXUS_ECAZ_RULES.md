@@ -48,6 +48,51 @@ Implement the common, source-clear contract as a pure boolean intersection of **
 
 Meaningful regressions should cover positive and negative answers with equal public hand sizes; dead/revived native leaders; native captive versus foreign captive/Ghola cases for the explicitly selected scope; Duke and Hero identities; Tleilaxu role separation; Harkonnen exchange before/after inquiry; stale/replayed/concurrent play; JSON/SQL historical persistence; and exact audience projection without counts or matching identities. Until scope and audience are selected, those unresolved branches must not be presented as fully source-verified behavior.
 
+## Native modules and face-down recall — 18 October 2026
+
+**Prototyped / Partial.** The original E3 Nexus
+and Skills profiles and selected-independent Nexus core share the same Betrayal
+effect. Original World, phase and training selections no longer block unrelated
+Arrakis force returns. Their own setup/capture gates remain. Printed locations,
+the actual placed HMS and revealed Discovery territories use room-local
+legality. Homeworlds remain separate off-planet custody, not territory targets;
+see original E3p10 and [Homeworld transport rules](HOMEWORLD_RULES.md).
+
+The ally returns every visible normal/starred counter in every sector of the
+chosen territory through the original native-reserve deposit. This preserves
+typed Emperor Worlds; returned BG advisors lose their old territorial stance.
+The coalition's other territories, Ecaz forces, original movement queue and
+shipment/movement allowances remain. No shipment, revival or token income is
+invented by the return.
+
+Under the [explicit provisional No-Field policy](RULE_DECISIONS.md#provisional-no-field-return-and-atomics--18-october-2026),
+an allied concealed marker counts as a possible shared group even if no ordinary
+counter is visible. The public offer contains a concealed-marker flag and only
+visible force counts. It never reads its denomination or reserve cap for target
+availability. The private pre-return snapshot additionally binds the supplier,
+controller-derived ally, original token/event and location. On allowance, the
+marker returns face down, without materializing physical forces or changing
+reserves/Tanks. The original last-shipment ban stays, and public last-used
+projection does not reveal the recalled marker. Cancellation keeps all custody
+unchanged. Old marker-free snapshot grammar remains.
+
+The original quiet first-Shipment window and provisional Karama response remain.
+An actual Guild first/wait choice or Sapho queue change does not close this
+window while every player's shipment/movement is still unused and the full
+roster remains in the queue. A pending timing choice must finish first;
+this is not a newly supplied timing FAQ. Unsupported profiles, including the
+existing trained E3/Harkonnen capture combination, remain separate. Original-
+action fixtures and focused cases are `tests/fixture-ecaz-betrayal-modules.ts`,
+`tests/ecaz-betrayal-modules.test.ts`, `tests/nexus-ecaz-betrayal-quotes.test.ts`
+and `tests/richese-no-field-hidden-return.test.ts`. Comprehensive assurance and
+complete-mode/deployed acceptance remain open.
+
+The owner-frozen related16-file115/115 batch, types/lint/build and actual table
+SSR pass. Original typed, marker, advisor and HMS programmes retain all selected
+modules, original paid Karama and the unspent queue. Four minimal policies have
+legal typed/concealed return choices. See the shared [source-bound checkpoint](NEXUS_CARD_RULES.md#native-betrayal-and-atomics-composition--18-october-2026)
+for counts, fixture corrections and the explicit visual/deployment limits.
+
 ## Bounded Betrayal runtime
 
 The printed Betrayal is a **separate panel** from the Secret Ally inquiry above.
@@ -63,7 +108,7 @@ board forces unchanged and the Nexus card spent. This response classification
 is an explicit **provisional composition**, not a GF9 ruling granting Karama
 blanket jurisdiction over Nexus effects.
 
-The first implementation window is deliberately narrow: phase 5 while its
+The initial implementation window was deliberately narrow: phase 5 while its
 first active player is still current, the original movement queue is intact,
 no pending decision/response and no shipment or movement has been used. It does
 not assert that this is the only possible reading of “before Shipment and
@@ -71,9 +116,8 @@ Movement.” The physical Ecaz alliance and co-occupation must be current.
 An automated eligible holder is scheduled before an earlier-seated movement
 bot closes this opening; a human holder must declare before that first turn
 advances. The game does not pause all seats to reveal a hidden card.
-Only the classic factions plus Ecaz/Moritani and the Nexus module are
-admitted; advisors, hidden No-Fields, Homeworlds, Discoveries, Leader Skills,
-Tech, Stronghold Cards and other combined modules remain gated. A saved
+That initial classic-plus-E3 envelope is superseded by the native-module
+extension above; it is retained here as historical scope. A saved
 pending snapshot binds the card's discard position, ally and exact typed board
 group through the Karama window, even if another Nexus card is discarded
 during that response. The ally's reserve counters are validated before any

@@ -14,6 +14,8 @@ export type RicheseNoField = {
   /** Shared own/allied shipment history; revelation never resets it. */
   lastShipped: string | null;
   deployed: NoFieldDeployment | null;
+  /** A forced face-down recall retains the last shipment without revealing it. */
+  hiddenReturn?: true;
 };
 export type NoFieldRevealCause =
   | 'voluntary'
@@ -22,7 +24,8 @@ export type NoFieldRevealCause =
   | 'worm'
   | 'gamont'
   | 'beforeAlly'
-  | 'allyShipment';
+  | 'allyShipment'
+  | 'atomics';
 export type NoFieldReveal = {
   state: RicheseNoField;
   tokenId: string;
@@ -93,6 +96,9 @@ export function validateRicheseNoField(state: RicheseNoField): void {
       (typeof state.deployed === 'object' && !!state.deployed),
     'Invalid deployed No-Field custody.',
   );
+  requireNoField(state.hiddenReturn === undefined ||
+    (state.hiddenReturn === true && state.deployed === null && state.lastShipped !== null),
+  'A hidden No-Field return needs its previous shipment and no deployed token.');
   if (state.deployed) {
     requireNoField(
       state.tokens.some((token) => token.id === state.deployed!.tokenId) &&
@@ -151,6 +157,7 @@ export function deployRicheseNoField(
 ): RicheseNoField {
   validateDeployment(previous, deployment);
   const state = structuredClone(previous);
+  delete state.hiddenReturn;
   state.lastShipped = deployment.tokenId;
   state.deployed = structuredClone(deployment);
   return state;
@@ -192,6 +199,7 @@ export function deployRicheseNoFieldPair(
 ): { state: RicheseNoField; revealed: NoFieldReveal } {
   const token = validateRicheseNoFieldPair(previous, concealed, revealedTokenId, reserves);
   const state = structuredClone(previous);
+  delete state.hiddenReturn;
   state.lastShipped = concealed.tokenId;
   state.deployed = structuredClone(concealed);
   return {
@@ -252,6 +260,7 @@ export function revealRicheseNoField(
       'gamont',
       'beforeAlly',
       'allyShipment',
+      'atomics',
     ].includes(input.cause),
     'Choose a valid No-Field reveal cause.',
   );
@@ -260,6 +269,7 @@ export function revealRicheseNoField(
     (candidate) => candidate.id === input.tokenId,
   )!;
   const state = structuredClone(previous);
+  delete state.hiddenReturn;
   state.deployed = null;
   return {
     state,
@@ -270,6 +280,14 @@ export function revealRicheseNoField(
     forces: Math.min(token.value, input.reserves),
     cause: input.cause,
   };
+}
+
+/** Provisional Ecaz Betrayal composition: return the marker face down, without
+ * revealing or materializing its denomination. The last-shipment ban remains. */
+export function recallRicheseNoField(previous: RicheseNoField, tokenId: string): RicheseNoField {
+  validateRicheseNoField(previous);
+  requireNoField(previous.deployed?.tokenId === tokenId, 'That No-Field is not deployed.');
+  return {...structuredClone(previous), deployed:null, hiddenReturn:true};
 }
 
 /** Any existing marker must already have been revealed by the authorized caller. */
@@ -312,7 +330,7 @@ export function projectRicheseNoField(
         }
       : null,
     lastUsed:
-      !state.deployed && state.lastShipped !== null
+      !state.deployed && !state.hiddenReturn && state.lastShipped !== null
         ? state.tokens.find((token) => token.id === state.lastShipped)!.value
         : null,
   };

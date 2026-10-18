@@ -84,7 +84,7 @@ void test('placement, existing Aftermath, alliance inconsistency and malformed p
   /still-placed token/);
   assert.throws(() => quoteMoritaniAtomics({ token, territory: 'carthag',
     moritaniId: 'm', turn: 3, aftermath: null, players: [moritani] }),
-  /entered ordinary stronghold/);
+  /still-placed token/);
   assert.throws(() => quote([{ ...moritani, ally: 'missing' }]), /mutual ally/);
   assert.throws(() => quote([{ ...moritani, forces: { 'arrakeen:11': 1 } }]),
     /valid typed forces/);
@@ -107,4 +107,54 @@ void test('a token at a storm-exposed stronghold still quotes all occupied count
   assert.deepEqual(stormExposed.casualties,
     [{ playerId: 'm', location: 'tueks_sietch:5', normal: 1, elite: 0, advisor: 0 }]);
   assert.equal(stormExposed.aftermath.territory, 'tueks_sietch');
+});
+
+void test('an authenticated Cunning desert placement destroys every typed sector and retains its grant in Aftermath', () => {
+  // The engine authenticates this original event against placement history;
+  // the pure effect consumes that authority without creating a placement.
+  const nexusPlacement = 'original-cunning-placement';
+  const players: AtomicsPlayer[] = [
+    { ...moritani, forces: { 'wind_pass:14': 2, 'wind_pass:15': 1, 'arrakeen:10': 3 } },
+    { id: 'e', faction: 'emperor', ally: null, tanks: 0, handSize: 4, baseHandLimit: 4,
+      forces: { 'wind_pass:14': 3, 'wind_pass:15': 2, 'carthag:11': 1 },
+      elites: { reserves: 0, tanks: 0, revived: 0,
+        forces: { 'wind_pass:14': 1, 'wind_pass:15': 2 } } },
+    { id: 'bg', faction: 'beneGesserit', ally: null, tanks: 0, handSize: 0, baseHandLimit: 4,
+      forces: { 'wind_pass:15': 1 }, advisors: { wind_pass: {} } },
+  ];
+  const before = structuredClone(players);
+  const plan = quoteMoritaniAtomics({ token: { ...token, location: 'wind_pass' },
+    territory: 'wind_pass', players, moritaniId: 'm', turn: 4, aftermath: null, nexusPlacement });
+  assert.deepEqual(plan.casualties, [
+    { playerId: 'm', location: 'wind_pass:14', normal: 2, elite: 0, advisor: 0 },
+    { playerId: 'm', location: 'wind_pass:15', normal: 1, elite: 0, advisor: 0 },
+    { playerId: 'e', location: 'wind_pass:14', normal: 2, elite: 1, advisor: 0 },
+    { playerId: 'e', location: 'wind_pass:15', normal: 0, elite: 2, advisor: 0 },
+    { playerId: 'bg', location: 'wind_pass:15', normal: 1, elite: 0, advisor: 1 },
+  ]);
+  assert.deepEqual(plan.aftermath, { territory: 'wind_pass', turn: 4, moritaniId: 'm',
+    allyAtActivation: null, alliancePolicy: 'activation-targets', nexusPlacement });
+  assert.deepEqual(plan.handReductions, [{ playerId: 'm', limit: 3, randomDiscards: 1 }]);
+  assert.equal(atomicsShipmentBlocked(plan.aftermath, 'wind_pass'), true);
+  assert.equal(atomicsShipmentBlocked(plan.aftermath, 'arrakeen'), false);
+  assert.deepEqual(players, before, 'Quoting changes neither board counters nor Tanks.');
+});
+
+void test('Cunning Atomics requires a grant for a printed non-stronghold and cannot admit another location kind', () => {
+  for (const nexusPlacement of [undefined, ''])
+    assert.throws(() => quoteMoritaniAtomics({ token: { ...token, location: 'wind_pass' },
+      territory: 'wind_pass', players: [moritani], moritaniId: 'm', turn: 3,
+      aftermath: null, nexusPlacement }), /original Nexus placement/);
+  for (const territory of ['homeworld:moritani', 'hidden_mobile_stronghold', 'jacurutu-sietch', 'not-a-territory'])
+    assert.throws(() => quoteMoritaniAtomics({ token: { ...token, location: territory },
+      territory, players: [moritani], moritaniId: 'm', turn: 3,
+      aftermath: null, nexusPlacement: 'original-cunning-placement' }), /original Nexus placement/);
+});
+
+void test('ordinary stronghold Aftermath keeps its original JSON shape even with supplied Cunning context', () => {
+  const ordinary = quote([moritani]);
+  const withGrant = quoteMoritaniAtomics({ token, territory: 'arrakeen', players: [moritani],
+    moritaniId: 'm', turn: 3, aftermath: null, nexusPlacement: 'original-cunning-placement' });
+  assert.deepEqual(withGrant, ordinary);
+  assert.equal(Object.hasOwn(withGrant.aftermath, 'nexusPlacement'), false);
 });

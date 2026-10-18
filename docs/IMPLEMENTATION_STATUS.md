@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 18 October 2026 — Native Betrayal and Atomics composition
+
+Ecaz Betrayal now retains selected native modules, typed World returns,
+advisors, actual shared HMS and provisional face-down No-Field recall. A genuine
+Guild-first/wait or Sapho reorder preserves a full unspent opening. Native
+Atomics retains original invoice/arrival order, provisional capped No-Field
+destruction, fixed activation hand targets and actual World Sneak withdrawal.
+Original Cunning grants support printed-desert Atomics/Aftermath without
+changing ordinary placement or shipment/movement rules.
+
+Three exclusive lanes plus owner integration pass frozen16-file115/115,
+types/lint/build, eight finite original-action/table-SSR programmes and four
+minimal policies. Recipe corrections preserve actual timing, optional allied
+revelation and Basic range1; no printed numeric rule changed for a fixture.
+One external smoke selected an already completed Sneak result, then passed
+against unchanged application source after selecting its pending choice.
+[Canonical source-bound proof and limitations](NEXUS_CARD_RULES.md#native-betrayal-and-atomics-composition--18-october-2026).
+No stored room/reset/restart/deployment; wider effects, full combinations,
+comprehensive assurance, AI calibration and deployed acceptance remain open.
+
 ## 18 October 2026 — Selected E3 independent Nexus
 
 Selected E3, optionally Ix/CHOAM/both, now composes independent cards/Nexus12
