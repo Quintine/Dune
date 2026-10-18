@@ -901,7 +901,8 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A concealed No-Field may move as a group member without exposing its value. A marker moved in the first group cannot also move in the second. Revealing an unmoved marker converts its remaining entitlement to its actual placed forces; revealing a moved marker does not give those forces another move.',
       'A validated declaration moves the physical card from your hand to the public played-card area. It remains there through genuine CHOAM, Ixian or other arrival decisions and is discarded once when the chosen use ends. Random hand effects act on cards still in hand. Ending your movement closes any remaining card movement without undoing a completed group.',
       'The saved event binds retries and the remaining original-group data. Refresh and reconnect preserve that event. After disposal, recovery preserves the completed forces and marker event before opening arrival decisions or advancing an early-ended turn; it does not move the group again. Missing saved group data cannot be reconstructed from merged forces and blocks the damaged continuation instead of allowing reuse.',
-      'Kulon and the fixed-range card now coexist under a provisional policy: the one-group move stays capped at three territories, while each normal-range group receives Kulon’s bonus. Hajr/prior-move composition and advanced advisor use remain guarded; these development guards are not printed prohibitions. Other unfinished entry and optional-module interactions remain unfinished; full Richese starts are still disabled.',
+      'Under the provisional composition, Ornithopter replaces one unused ordinary or Hajr movement. A prior move stays spent and cannot become the card’s first group retrospectively. One Hajr plus a two-group flight permits three group movements; the Hajr move may reuse a card-moved group. Ending early abandons the unused card group and ends your turn. Multiple physical Hajr cards remain unfinished.',
+      'Advanced Hajr must be played immediately after a completed Force Movement and its required arrival decisions, before your next voluntary game action. A completed card group provisionally supplies this opportunity. Basic retains broader own-turn timing. Kulon leaves the fixed card maximum at three and extends both normal-range groups. Advisor/card use, Guild Cunning/card and wider optional combinations remain unfinished.',
       'All four AI profiles use their own projected movement choices and original-group limits. They can use a longer route, split distinct groups, finish interrupted movement and end optional movement when no legal second group remains. Complete Richese-game calibration is not yet certified.',
     ],
     related: [
@@ -915,32 +916,37 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Both movement modes, played-card custody, exact event continuation, typed original-group quotas, concealed-marker conversion and separate disposal recovery are integrated. Kulon coexistence uses a labeled provisional three-territory cap; Hajr/prior moves and advisor composition remain guarded.',
+          'Both modes retain original event/cohort accounting. One unused normal/Hajr entitlement can start a flight; completed two-group credit preserves unused Hajr afterward. Advanced uses supplied immediate-after-play timing with an explicit online/card-group convention. Multiple Hajr and advisor composition remain unfinished.',
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Uses the existing board source/destination and multi-sector controls, a mode selector, an inspector and remaining-group guidance. Automatic disposal adds no confirmation.',
+          'Existing source/destination, typed group, mode and inspector controls consume current shared movement availability. Persistent text explains Hajr composition and Advanced timing; automatic disposal adds no confirmation.',
       },
       {
         area: 'AI',
         status: 'Partial',
         detail:
-          'Four profiles use projected ranges and remaining ordinary/elite/marker quotas without hidden-value access. Complete expansion strength calibration remains unfinished.',
+          'Four profiles use projected ranges, distinct group quotas and earned Hajr movement. Actual owned second-flight and extra-move candidates are legal; strategic tuning remains deferred.',
       },
       {
         area: 'Documentation',
         status: 'Partial',
         detail:
-          'Explains both choices, independent card range, current normal range, distinct groups, public played-card custody and explicit unresolved combinations.',
+          'Explains unused entitlement replacement, per-flight distinctness, later Hajr reuse, fixed/normal range, Advanced source timing and explicit unfinished multiple-card/module combinations.',
       },
       {
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Pure quota and engine checks cover twelve holders, both game modes, merged groups, exact marker events, stale state and interrupted faction decisions. Full expansion acceptance remains unverified.',
+          'Hajr checkpoint adds frozen11-file132/132, types/lint/build and12 original-action/rendered-table programmes: actual paid cards/shipments, Basic and Advanced timing, prior normal movement, typed groups, native Baliset, voluntary window closure/reopening and early end. Four minimal policies retain both continuations. Framework aliases/CSS stubs mean no visual/browser/deployed acceptance; full combinations/assurance/modes remain open.',
         evidence: [
+          'game/ornithopter.ts',
+          'game/card-availability.ts',
+          'tests/fixture-ornithopter-hajr.ts',
+          'tests/ornithopter-hajr-engine.test.ts',
+          'docs/RICHESE_ORNITHOPTER_ENGINE_AUDIT.md',
           'tests/ornithopter.test.ts',
           'tests/ornithopter-engine.test.ts',
           'tests/ornithopter-engine-review.test.ts',
@@ -1217,7 +1223,7 @@ export const RULE_TOPICS: RuleTopic[] = [
               : definition.card.effect === 'nullentropyBox'
                 ? 'Use the Nullentropy Box panel to pay two bank spice for a private discard search. Both modes provisionally permit full-hand retrieval as an atomic exchange that discards the Box and leaves the final hand within its current limit. Provisional Guild refund claims remain guarded.'
                 : definition.card.effect === 'ornithopter'
-                  ? 'Use the Ornithopter movement controls with a selected group and destination. Provisionally, Kulon coexists without raising the one-group maximum of three; both normal-range groups retain its bonus. Hajr/prior-move composition and advanced advisors remain guarded.'
+                    ? 'Use the Ornithopter controls with one unused normal/Hajr movement and a selected group/destination. Two card groups stay distinct, while Hajr may reuse their forces afterward. Advanced Hajr follows immediate-after-movement timing. Kulon retains the fixed maximum three and extends both normal groups. Multiple Hajr, advisor/card and wider module combinations remain unfinished.'
                   : definition.card.effect === 'residualPoison'
                     ? 'Use the Residual Poison panel before either combatant commits a leader. A shared preparation step provides an opportunity regardless of hand contents; advanced Harkonnen tables remain guarded pending the secret-captive ruling. In the explicit Semuta preview, a clean death with no readiness or inspection commitments pauses after public disposal for the neutral offer, then resumes the same preparation.'
                     : definition.card.effect === 'stoneBurner'
@@ -1251,7 +1257,7 @@ export const RULE_TOPICS: RuleTopic[] = [
           'The private semuta --discoveries entry composes original Richese/CHOAM and optional Ix Discovery setup, optionally unused Tech3+ and Advanced Strongholds, without Skills, Homeworlds, Nexus or E3. An entitled physical Truthtrance used as Karama offers its original fresh cost before the same price, cancellation, normal-auction or native special effect resumes. Emperor revival already happened and is not repeated. A physical Karama used as Truthtrance offers after its single definite answer. Recovery changes custody, never the printed face or original effect. Controlled Shrine setup evidence is not natural draw/entry or complete-mode acceptance.',
           'The separate fresh semuta --homeworlds entry retains original Richese/CHOAM and classic Homeworld occupation setup with exact CHOAM and no other modules. Paid Box search, clean Distrans transfer, definite Truthtrance answers, used ordinary specials, paid Kaitain disposal, Tupile cleanup and printed Karama canceling native Guild/Emperor/Richese-purchase income offer Semuta. Native printed Kulon, Baliset, La La La, Trip to Gamont and Jubba costs also pause before their original effect: claim/pass adds one movement bonus, denies free allowance without charging/moving forces, stops the uncommitted Baliset move, returns one original board counter before the same CHOAM close, or applies protection before the same recorded storm moves. Printed Karama canceling these powers pauses separately before denial; the retained Worthless fuel is not a candidate. A canceled reactive Baliset resumes its original declared move once; canceled Kulon/La La La/Gamont/Jubba do not apply their effects. A recovered card grants no other faction CHOAM power. Kaitain private groups require commitment before selection; each Tupile holder has a separate cost. Native income denial retains payment and the original occupied-share allocation. Basic unresolved epochs, Kull, other producers and public starts remain guarded.',
           'Legal completed CHOAM market sales also offer their used card in the Homeworld profile. Worthless cashout keeps its original two-spice credit; a non-Worthless duplicate keeps its three-spice credit and the original same-name witness stays held. The high-Tupile Worthless-sale prohibition still applies, including duplicate Worthless sales. Claim/pass cannot repeat payout, undo the actual reserve shipment or replace the original market close; no new bank-income interpretation is made.',
-          'Final Ornithopter disposal also offers its used card in the Homeworld profile after the one-group range-three or original two-group movement completes, including an early end with no useful original group. Claim/pass cannot move those counters again or replay the paid native shipment; prior-move/Hajr, advisor and Homeworld-transfer boundaries remain. Clean Sapho Once Around and unstarted Movement first/last costs likewise offer after reordering the finite unacted queue. Earlier bids/funding and physical storm order stay committed, and the same next bidder or combined turn resumes once. Cyclic auctions, partly completed turns, first-versus-Guild and late battle timing are not opened.',
+          'Final Ornithopter disposal also offers its used card in the Homeworld profile after the one-group range-three or original two-group movement completes, including an early end with no useful original group. Claim/pass cannot move those counters again or replay the paid native shipment; unused movement entitlements retain the shared Hajr composition, while advisor and Homeworld-transfer boundaries remain. Clean Sapho Once Around and unstarted Movement first/last costs likewise offer after reordering the finite unacted queue. Earlier bids/funding and physical storm order stay committed, and the same next bidder or combined turn resumes once. Cyclic auctions, partly completed turns, first-versus-Guild and late battle timing are not opened.',
           'Original Homeworld battle disposal offers accepted losing cards, later mandatory winning cards and optional winner-selected cards as separate fresh events. Commit and exact selection recover at most one other player’s newly discarded card; unselected cards stay in the pile. The original paid deployments, accepted result, leader deaths and casualty obligations remain committed, with the same native winner cleanup and rewards afterward. A recovered card cannot replay combat or consume another original opportunity.',
           'Clean Homeworld Residual Poison disposal offers its used card after exactly one native random eligible leader enters the Tanks, with no spice bounty or force loss; claim/pass resumes the original shared preparation and does not redraw the victim. Early Sapho aggressor disposal likewise keeps the original participants/chooser and changed ordinary tie priority, while clean between-battle first/last disposal keeps earlier resolved battles and only reorders remaining chooser opportunities. Physical storm order is unchanged. Readied or inspected Poison costs, late Sapho timing and Advanced Harkonnen captive disclosure remain outside these clean reactions.',
           'Printed Karama canceling original CHOAM opening income or native Inflation placement also offers its used card in the Homeworld profile. Claim/pass completes the same denial once: unpaid income stays withheld, and the original placement attempt remains spent with no token. Clean normal-lot printed Karama purchase and free winning-bid payment likewise offer their costs before exactly one original reserved card arrives without spice payment. Earlier bids, the normal pool, Richese cache, original wallets and later native controls stay committed. Richese lots, BG Worthless conversion, Kull and other cancellations remain separate.',
@@ -2556,14 +2562,15 @@ export const RULE_TOPICS: RuleTopic[] = [
     id: 'card-hajr',
     title: 'Hajr',
     category: 'Cards',
-    coverage: 'Implemented',
+    coverage: 'Partial',
     summary: 'Make an additional force move during your movement turn.',
     steps: [
-      'Play during your shipment and movement turn.',
-      'Make a second legal group move. Normal source, range and destination restrictions still apply.',
+      'In Basic, play during your shipment and movement turn. Advanced requires the immediate opportunity after a completed Force Movement and its required arrival decisions, before your next voluntary game action.',
+      'Make one additional legal group move, using the same or another group. Normal source, range and destination restrictions still apply. A completed Ornithopter group provisionally supplies the Advanced timing opportunity.',
+      'Ornithopter replaces one unused movement entitlement, so one Hajr and a two-group flight permit three group movements. Groups must differ within that flight, while the later Hajr move may reuse them. Multiple physical Hajr plays in one turn remain an unfinished prototype boundary; the supplied passage does not establish a once-per-turn prohibition.',
       'A saved play preserves the extra movement allowance. Recovery neither grants another move nor finishes your movement turn.',
     ],
-    related: ['movement'],
+    related: ['movement', 'ornithopter-movement'],
   },
   {
     id: 'card-ghola',

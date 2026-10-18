@@ -16,6 +16,23 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Ornithopter / Hajr — 18 October. Prototyped / Partial.** New card uses replace
+one unused movement by the selected mode and retain the independent Hajr move.
+Prior ordinary moves stay spent; groups are distinct within the flight and may
+be reused by Hajr afterward. Advanced now adopts supplied immediate-after-move
+play timing with an explicit online/card-group interpretation; Basic timing stays.
+
+One disjoint fixture lane, owner integration and bounded source review pass
+frozen **11 files132/132**, types/lint/build and12 original-action/rendered-table
+programmes. Real cache/normal purchases and paid shipment use38 Basic/45 Advanced
+source actions, native CHOAM/Baliset65. Early ends grant no abandoned group;
+four minimal policies retain both legal movement continuations. Two historical
+Homeworld/Semuta guard cases now exercise the new entitlement and source timing.
+Multiple Hajr cards, advisor use, Guild Cunning/card and wider combinations remain
+open. Framework aliases/CSS stubs mean no visual/browser/deployed acceptance.
+No saved room/database mutation, reset, restart or deployment.
+[Source cutover, provisional procedure and proof](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#hajr-and-unused-movement-entitlements--18-october-2026).
+
 **Stone Burner physical allocation — 18 October. Prototyped / Partial.**
 New original Basic/Advanced Stone and copied Mirror battles now finish
 outcome-changing mixed-force comparisons. Only ambiguous sides privately commit

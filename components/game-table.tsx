@@ -5003,6 +5003,8 @@ export function GameTable({
                         ? `${(me.movesAllowed ?? 1) - (me.moved ?? 0)} movement remaining.`
                         : 'Movement complete. Finish your turn when your shipment is also settled.'}
                     </p>
+                    {g.ornithopter && <p className="fine">Provisional card composition: Ornithopter replaces one unused movement. Its two groups must be different; Hajr adds one separate normal move and may move those forces again.</p>}
+                    {g.advanced && me.hand?.some(card => card.effect === 'hajr') && <p className="fine">Play Hajr immediately after a completed Force Movement and its required arrival decisions, before your next voluntary action.</p>}
                     {transportPreview && (
                       <>
                         <ShipmentQuote

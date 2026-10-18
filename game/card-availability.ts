@@ -17,6 +17,9 @@ export type OrdinaryCardPlayer = {
   advisors?: Record<string, { lockedTurn?: number }>;
   hand?: readonly Card[];
   movesAllowed?: number;
+  moved?: number;
+  hajrUsed?: boolean;
+  hajrAvailable?: boolean;
 };
 /** Only public state and the current viewer's own hand are inspected. */
 export type OrdinaryCardState = {
@@ -102,9 +105,12 @@ export function ordinaryCardAvailability(
       if (
         state.phase !== 5 ||
         state.active !== state.me ||
-        (state.nexusGuildCunning?.active ? !state.nexusGuildCunning.active.hajrAvailable : own.movesAllowed !== 1)
+        (state.nexusGuildCunning?.active ? !state.nexusGuildCunning.active.hajrAvailable :
+          own.hajrAvailable !== undefined ? !own.hajrAvailable :
+          own.hajrUsed === undefined ? own.movesAllowed !== 1 :
+            own.hajrUsed || (own.moved ?? 0) > (own.movesAllowed ?? 1))
       )
-        return blocked('Use Hajr during your movement.');
+        return blocked('Use one Hajr during your movement; Advanced requires the immediate opportunity after a completed Force Movement.');
       break;
     case 'harvester':
       if (state.phase !== 1 || !harvesterAvailable(state.spiceWindow))

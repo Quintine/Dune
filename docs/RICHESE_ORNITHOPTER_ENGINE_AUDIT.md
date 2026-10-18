@@ -2,6 +2,73 @@
 
 Audit: 2026-09-06. Document-only source and engine review. The canonical component is `richese-ornithopter`; this is distinct from ordinary Arrakeen/Carthag ornithopter access and the later Ecaz discovery token. No runtime effect or complete expansion compliance is claimed here.
 
+## Hajr and unused movement entitlements — 18 October 2026
+
+**Prototyped / Partial.** The photographed Ornithopter face supplies its two
+alternatives but no Hajr combination procedure. The authorized supplied PDF,
+physical p10/logical p8, checks ordinary ornithopter access for each Force
+Movement, including Hajr. Its physical p39/logical p37 Hajr errata separately
+requires playing immediately after a Force Movement and allows reusing a moved
+group or choosing another group. This is the supplied unofficial compilation,
+not a new GF9 combination ruling. Bounded official-source follow-up found no
+card-specific resolution; the publisher PDF endpoints returned403.
+
+Under the standing choose-recommended instruction, provisionally replace one
+**unused** ordinary/Hajr movement entitlement with either a range-three move or
+two distinct normal-range groups. One Hajr adds one independent normal move:
+one two-group flight plus that Hajr permits three completed group movements.
+An earlier ordinary movement stays spent; it cannot be retrospectively counted
+as the card's first group. Its counters may join a later newly declared flight.
+The two groups within that flight must differ, while a later Hajr move may reuse
+the first card group. Range-three stays capped at three and normal range is
+recomputed for every other group. No extra shipment or spice fee is created.
+
+Advanced adopts the supplied immediate-after-play timing, correcting the older
+broader availability. A completed card group provisionally counts as a Force
+Movement for that opportunity. Mandatory arrival/disposal decisions finish first;
+other seats' actions and polling do not close it. The owner's next voluntary
+non-Hajr game action closes it, and a later actual movement opens a new window.
+Basic preserves its original broader own-turn timing. Existing separate Nexus
+Guild Cunning timing remains its own adapter; physical-card composition there
+is still guarded. The supplied passage neither permits nor forbids stacking
+multiple physical Hajr cards; the existing single-Hajr limit is an unfinished
+implementation boundary, not a printed once-per-turn rule established here.
+
+Shared movement accounting retains a credit only after the second actual card
+group completes, so clearing the played-card frame cannot consume unused Hajr.
+Early ending abandons the second group and ends the turn without that credit.
+Original event/cohort validation and reaction continuations remain. The private
+view projects current Hajr availability separately from the total move count;
+human controls and all four minimal bot policies consume those same facts.
+New movement fields are additive and cleared with the next movement-phase
+counters. Completed legacy flights without a credit are not reconstructed.
+
+One fixture lane plus owner integration and bounded source/implementation review
+pass frozen **11 files132/132**, types/lint/build and **12** original-action/
+actual-GameTable rendering programmes. Genuine cache Ornithopter1, ordinary
+Hajr1 and funded desert shipment reach the source in38 Basic/45 Advanced actions.
+Before/during/after Basic and after-group/after-flight Advanced use five
+continuations; prior-normal then fresh flight also five, range-three plus Hajr
+four. Both modes keep the distinct-group rule and legal later reuse. Early ends
+earn no abandoned movement. The native Advanced CHOAM/Baliset pause uses65
+source actions; declining it opens Hajr, an original funded bribe closes the
+window, and the second typed group reopens it. Four policies retain legal second
+groups and earned extra moves (eight proposals), without tuning.
+
+Two older Homeworld/Semuta guard assertions were updated to the new entitlement
+and Advanced timing while retaining the fixed maximum-three rejection. Related
+original disposal and Guild Cunning regressions pass; this does not certify all
+World/Semuta combinations. Framework aliases/CSS stubs mean no visual/browser/
+deployed acceptance. Advisor/card use, multiple Hajr cards, wider module
+combinations, comprehensive assurance and complete modes remain open. No saved
+room/database mutation, reset, restart or deployment.
+
+Proof base `6ccfaa1b4d5198f7e1654d5f4341bd6fc7a5daaa`, frozen tree
+`29c081daee908f14d502e1a1adc5d871216c031460e830806e7699720b94dee0`;
+private reports/HTML are under
+`/home/quintine/.local/share/dune/checkpoints/20261018-ornithopter-hajr/`.
+The older Hajr guards below are dated implementation history.
+
 ## Provisional Kulon coexistence — 9 October 2026
 
 Both modes now remain usable after Kulon. The one-group card move retains

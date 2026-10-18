@@ -163,7 +163,7 @@ for (const advanced of [false, true]) for (const { mode, early } of paths) {
   });
 }
 
-for (const advanced of [false, true]) void test(`${advanced ? 'Advanced' : 'Basic'} Homeworld original prior-move, Hajr and fixed maximum-three guards remain real`, () => {
+for (const advanced of [false, true]) void test(`${advanced ? 'Advanced' : 'Basic'} Homeworld prior move needs an unused entitlement and Hajr preserves the fixed maximum three`, () => {
   const f = createSemutaHomeworldOrnithopterFixture('range3', advanced);
   const before = structuredClone(f.beforeFirstMove);
   assert.throws(() => applyAction(before, f.owner, { ...f.firstMove, ...splitLocation(f.tooFarDestination) }));
@@ -174,14 +174,20 @@ for (const advanced of [false, true]) void test(`${advanced ? 'Advanced' : 'Basi
   assert.equal(player(moved, f.owner).hand.some(c => c.id === f.card), true);
   assert.throws(() => applyAction(moved, f.owner, { ...f.firstMove, from: f.secondDestination,
     ...splitLocation(f.origin) }));
-  const hajrGame = structuredClone(before);
+  const hajrGame = structuredClone(advanced ? moved : before);
   const hajr = holdSemutaHomeworldChoamCard(hajrGame, f.owner, 'Hajr');
   const played = applyAction(hajrGame, f.owner, { type: 'card', card: hajr });
   const allowed = advanceSemutaHomeworldChoam(played,
     g => !g.pendingTreacheryDiscard && !g.response && !g.decision && !g.phaseOpening);
-  assert.equal(player(allowed, f.owner).moved, 0);
+  assert.equal(player(allowed, f.owner).moved, advanced ? 1 : 0);
   assert.ok(allowed.hajr.includes(f.owner));
-  assert.throws(() => applyAction(allowed, f.owner, f.firstMove));
   assert.equal(player(allowed, f.owner).hand.some(c => c.id === f.card), true);
+  const declared = applyAction(allowed, f.owner, advanced
+    ? { ...f.firstMove, from: f.secondDestination, ...splitLocation(f.origin) }
+    : f.firstMove);
+  const completed = advanceSemutaHomeworldChoam(declared,
+    g => !g.pendingTreacheryDiscard && !g.response && !g.decision && !g.phaseOpening);
+  assert.equal(player(completed, f.owner).moved, advanced ? 2 : 1);
   assertCounters(allowed, f.setup);
+  assertCounters(completed, f.setup);
 });

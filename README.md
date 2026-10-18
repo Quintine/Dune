@@ -35,6 +35,10 @@ advisors, Polar Sink and native Ecaz coexistence retain their exceptions.
 Basic and an already recorded current Storm keep their existing protocol.
 See [Advanced source boundaries](docs/BASE_ADVANCED_READINESS_20260907.md#authorized-advanced-source-follow-up--1-october-2026)
 and [allied separation](docs/ALLIED_TRANSIT_RULES.md).
+Advanced Hajr is played immediately after a completed Force Movement and its
+required arrival decisions. Basic keeps its broader own-turn timing. The
+[Ornithopter combination](docs/RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#hajr-and-unused-movement-entitlements--18-october-2026)
+uses one unused movement entitlement and retains Hajr's separate move.
 
 Before starting, open **Configure** on an AI seat to change its difficulty,
 faction or player circle without replacing it. Changes save immediately and

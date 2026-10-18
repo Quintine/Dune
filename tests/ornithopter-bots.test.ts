@@ -207,6 +207,7 @@ void test('all profiles honor mode/ownership guards, existing interaction priori
       },
       (g: Game) => {
         g.hajr = ['p'];
+        g.players[0].moved = 2;
       },
       (g: Game) => {
         g.active = 'o';

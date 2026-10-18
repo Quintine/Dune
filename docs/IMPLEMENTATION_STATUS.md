@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 18 October 2026 — Ornithopter and unused Hajr movement
+
+One unused normal/Hajr entitlement now supports either card mode without losing
+the independent Hajr move after a completed two-group flight. Prior ordinary
+movement is not reclassified; per-flight cohorts remain distinct and later Hajr
+reuse is legal. Advanced adopts supplied immediate-after-movement play timing;
+online window/card-group composition is explicitly provisional.
+
+One exclusive fixture lane plus owner integration/bounded source review pass
+frozen11-file132/132, types/lint/build and12 original-action/rendered-table
+programmes. Actual purchases/paid shipment, typed movement, native Baliset pause,
+owned window closure/reopening, early end and four legal policies have bounded
+evidence. Two old guard assertions now cover new entitlements and source timing.
+[Canonical source, exact counts and remaining scope](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#hajr-and-unused-movement-entitlements--18-october-2026).
+Multiple Hajr cards, advisor/card and wider module combinations remain unfinished;
+no comprehensive assurance, full-mode or deployed claim. No saved-room/reset/
+restart/deployment operation.
+
 ## 18 October 2026 — Outcome-changing Stone physical totals
 
 New original Basic/Advanced Stone and copied Mirror now request sealed physical

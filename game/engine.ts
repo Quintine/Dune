@@ -400,6 +400,7 @@ import {
 } from './residual-poison';
 import {
   createRemainingCohort,
+  ordinaryMovementAllowance,
   validateCohortSelection,
   type MovementCohort,
   type OrnithopterMode,
@@ -681,6 +682,10 @@ export type Player = {
   ecazRevivalCohort?: EcazRevivalCohort;
   shipped: boolean;
   moved: number;
+  /** Completed second groups replace one entitlement without consuming Hajr. */
+  ornithopterExtraMoves?: number;
+  /** Supplied Advanced Hajr timing: the owner's next voluntary action. */
+  hajrWindow?: {turn: number; move: number};
   battleLosses: number;
   kwisatz?: { dead: boolean; usedAt?: string; revivalCycle?: number };
   prediction?: { faction: FactionId; turn: number };
@@ -6085,6 +6090,8 @@ function ornithopterDiscardSignature(
       advisors: p.advisors,
       noField: p.noField,
       noFieldEvent: p.noFieldEvent,
+      ornithopterExtraMoves: p.ornithopterExtraMoves,
+      hajrWindow: p.hajrWindow,
       moved: p.moved,
       shipped: p.shipped,
     })),
@@ -15568,9 +15575,11 @@ function movesAllowed(g: Game, p: Player) {
   const flight = g.ornithopter;
   return flight?.player === p.id && flight.turn === g.turn
     ? flight.startingMove + (flight.mode === 'twoGroups' ? 2 : 1)
-    : g.hajr.includes(p.id)
-      ? 2
-      : 1;
+    : ordinaryMovementAllowance(g.hajr.includes(p.id), p.ornithopterExtraMoves);
+}
+function hajrAvailable(g: Game, p: Player) {
+  return !g.hajr.includes(p.id) && p.moved <= movesAllowed(g,p) &&
+    (!g.advanced || (p.hajrWindow?.turn === g.turn && p.hajrWindow.move === p.moved));
 }
 function emperorHomeworldMoveBlock(g: Game, p: Player): string | null {
   if (!g.homeworlds?.custody || !g.advanced || p.faction !== 'emperor')
@@ -15637,8 +15646,8 @@ function ornithopterBlock(
   if (g.ornithopter)
     return 'Finish the already played Ornithopter movement first.';
   if (currentGuildCunning(g,p.id)) return 'Guild Cunning combined with the physical Ornithopter card awaits its timing ruling.';
-  if (p.moved || g.hajr.includes(p.id))
-    return 'Ornithopter combined with prior moves or Hajr awaits its timing ruling.';
+  if (p.moved >= movesAllowed(g,p))
+    return 'Spend an unused ordinary or Hajr movement on Ornithopter.';
   // Provisional composition: Kulon augments normal movement, not the
   // Ornithopter card's explicit maximum of three territories.
   return null;
@@ -16252,6 +16261,7 @@ function completeMove(g: Game, move: MovementOrder) {
   finishShipmentPromises(g, p, null);
   p.shipped = true;
   p.moved++;
+  p.hajrWindow = {turn:g.turn,move:p.moved};
   if (move.discoveryFlight) {
     g.discoveries = nexusRule(() => completeDiscoveryFlight(g, move.discoveryFlight!, move));
     log(g, `${p.name} used the carried Discovery Ornithopter for this movement and removed its token.`);
@@ -16271,6 +16281,7 @@ function completeMove(g: Game, move: MovementOrder) {
   if (flight?.player === id) {
     flight.completed++;
     if (flight.completed === (flight.mode === 'twoGroups' ? 2 : 1)) {
+      if (flight.mode === 'twoGroups') p.ornithopterExtraMoves = (p.ornithopterExtraMoves ?? 0) + 1;
       finishOrnithopter(g, 'move', completed);
       return;
     }
@@ -19640,6 +19651,8 @@ function commitMovementPhaseStart(g: Game, quote: MovementPhaseQuote) {
   for (const p of g.players) {
     p.shipped = false;
     p.moved = 0;
+    delete p.ornithopterExtraMoves;
+    delete p.hajrWindow;
   }
   applyAdvisorReleases(g, quote.released);
   g.decision = quote.decision;
@@ -28354,7 +28367,7 @@ function projectedNexusGuildCunning(g: Game, owner: string) {
   else if (g.response || g.decision || g.truthtrance || g.phaseOpening || g.pendingKarama || g.pendingTreacheryDiscard ||
     g.pendingNullentropy || g.pendingShipment || g.pendingHomeworldShipment || g.nexusTraitorPending || g.nexusCards.phase?.stage === 'drawing')
     blocked = 'Finish the current interaction before declaring a second shipment.';
-  else if (g.ornithopter || p.moved > (g.hajr.includes(owner) ? 2 : 1))
+  else if (g.ornithopter || p.ornithopterExtraMoves || p.moved > (g.hajr.includes(owner) ? 2 : 1))
     blocked = 'Cunning combined with the physical Ornithopter movement card awaits its timing ruling.';
   else if (g.nexusGuildCunningHistory?.some(r => r.receipt.turn === g.turn && r.receipt.owner === owner))
     blocked = 'This turn’s Guild Cunning opportunity is already used.';
@@ -30730,6 +30743,12 @@ function applyActionInner(
   );
   requireRule(g.status !== 'finished', 'This game has ended.');
   const t = action.type;
+  // Mandatory movement reactions and other seats' actions do not close the
+  // Advanced owner's immediate Hajr opportunity. Its next voluntary action does.
+  if (g.advanced && p.hajrWindow && !g.response && !g.decision && !g.truthtrance &&
+    !g.phaseOpening && !g.pendingTreacheryDiscard && t !== 'advanceBots' &&
+    !(t === 'card' && p.hand.some(card => card.id === action.card && card.effect === 'hajr')))
+    delete p.hajrWindow;
   requireRule(t !== 'nexusIxianReplacementPass' && t !== 'nexusIxianReplacementUse',
     'This purchased-card choice is no longer pending.');
   requireRule(t !== 'guildBetrayalPass' && t !== 'guildBetrayalUse',
@@ -33995,6 +34014,7 @@ function applyActionInner(
     finishShipmentPromises(g, p, null);
     p.shipped = true;
     p.moved++;
+    p.hajrWindow = {turn:g.turn,move:p.moved};
     const name = (world: string) =>
       world === 'homeworld:emperor' ? 'Kaitain' : 'Salusa Secundus';
     const shifts = quote.populations.after
@@ -34592,6 +34612,8 @@ function applyActionInner(
             advisors: p.advisors,
             hand: p.hand,
             movesAllowed: movesAllowed(g, p),
+            hajrUsed: g.hajr.includes(p.id),
+            hajrAvailable: hajrAvailable(g,p),
           },
         ],
       },
@@ -34601,11 +34623,8 @@ function applyActionInner(
     if (availability && !availability.available)
       throw new RuleError(availability.reason);
     if (c.effect === 'hajr') {
-      requireRule(
-        g.ornithopter?.player !== id,
-        'Hajr combined with Ornithopter awaits its timing ruling.',
-      );
       g.hajr.push(id);
+      delete p.hajrWindow;
     } else if (c.effect === 'ghola') {
       applyGholaEffect(g, p, action, c.id);
     } else if (c.effect === 'harvester') {
@@ -35585,6 +35604,8 @@ export function viewGame(state: Game, id: string) {
             shipped: p.shipped,
             moved: p.moved,
             movesAllowed: movesAllowed(g, p),
+            hajrUsed: g.hajr.includes(p.id),
+            hajrAvailable: hajrAvailable(g,p),
             revived: p.revived,
             leaderRevived: p.leaderRevived,
             gholaBlocked: Object.entries(p.gholaBlocked ?? {})

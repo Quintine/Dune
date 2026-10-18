@@ -7,6 +7,15 @@ export type MovementCohort = {
 };
 type Counts = Readonly<Record<string, number>>;
 
+/** A two-group flight replaces one ordinary entitlement. Only its completed
+ * extra group earns a physical-move credit; Hajr remains an independent move. */
+export function ordinaryMovementAllowance(hajrUsed: boolean, extraMoves = 0): number {
+  const limit = 1 + Number(hajrUsed) + extraMoves;
+  if (typeof hajrUsed !== 'boolean' || !Number.isSafeInteger(extraMoves) || extraMoves < 0 ||
+    !Number.isSafeInteger(limit)) throw new RangeError('Movement credits must be nonnegative safe integers.');
+  return limit;
+}
+
 function validateCounts(counts: Counts, label: string) {
   if (!counts || typeof counts !== 'object' || Array.isArray(counts))
     throw new TypeError(`${label} must be a location count record.`);
