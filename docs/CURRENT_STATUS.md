@@ -16,6 +16,36 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Sapho late aggressor — 18 October. Prototyped / Partial.** Fresh public
+Richese-roster battles permit clean intervention after commitments/reveal and
+retain a fixed final opportunity for both combatants. Both explicitly finish;
+an actual Sapho use clears both marks with a fresh event. Priority closes before
+Stone counts and outcome settlement. Plans, votes, physical participants and
+Habbanya precedence remain; the holder's sealed/inspected card stays reserved.
+Old unstamped battles retain early timing and exact old discard-signature bytes.
+The final acknowledgement protocol is provisional, not a publisher FAQ.
+
+Two frozen disjoint lanes, bounded continuation review and owner integration
+pass **16 files177/177**, types/lint/build and eight original-action/rendered-table
+programmes. Actual cache1 and opposing paid shipments use40 Basic/47 Advanced
+source actions; native Stone1 turn1/Sapho1 turn2 uses86, with accepted original
+Richese circle4/Emperor circle5. Four-to-seven preparation actions and two-to-four
+continuations cover ordinary ties, one opposing sealed plan, own prior final
+acknowledgement and real mixed-Sardaukar count2. Sixteen minimal policy proposals
+are legal. Pure lifecycle/control cases and controlled reservation probes stay
+separately labelled.
+
+Review repaired a final Harkonnen Nexus vote exit so all final-vote paths retain
+native Homeworld Portable defense before the window. Frozen feedback corrected
+four historical fixture assumptions: explicit legacy Stone stamping, a human
+saving Sapho instead of letting a bot spend it, and Basic/Advanced pre-plan
+readiness. All affected checks then passed together. Actual controls render
+offered/busy/already-finished/revised states without browser clicks or visual/
+deployed acceptance. Direct late Semuta claim/capture, combined World/Nexus/Sapho,
+wider combinations, full modes and final assurance remain open. No saved-room/
+database/reset/restart/deployment operation.
+[Canonical source, protocol and proof](SAPHO_AGGRESSOR.md#late-aggressor-and-public-final-opportunity--18-october-2026).
+
 **Sapho cyclic auctions — 18 October. Prototyped / Partial.** First/last now
 works in ordinary cyclic lots and native Advanced normal Black Market under an
 explicit provisional current-lot convention. Full local cycles preserve existing

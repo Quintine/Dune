@@ -54,6 +54,11 @@ const clean = (game: Game) => !game.phaseOpening && !game.response && !game.deci
 
 /** Consume only live native windows; ordinary setup choices come from real views. */
 export function nextRicheseStrongholdsNativeStep(game: Game): StrongholdFactionsNativeStep | null {
+  if (clean(game) && game.battle?.outcomeWindow && !game.battle.outcomeWindow.closed) {
+    const window = game.battle.outcomeWindow;
+    const actor = [window.attacker, window.defender].find(id => !window.ready.includes(id));
+    if (actor) return {actor, action: {type: 'battleOutcomeReady', event: window.event}};
+  }
   if (!game.phaseOpening && !game.response && game.decision) {
     const decision = game.decision, actor = decision.player;
     const event = game.richeseBidding?.event;

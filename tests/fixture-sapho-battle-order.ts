@@ -137,7 +137,21 @@ export function chooseSaphoBattleAction(g: Game): {
 /** One real owner action, suitable for either applyAction or authenticated room.act. */
 export function nextSaphoBattleAction(
   g: Game,
+  keepSapho = false,
 ): { player: string; action: Action } | null {
+  if (keepSapho && g.battle && !g.response && !g.decision && !g.truthtrance && !g.phaseOpening) {
+    const b = g.battle;
+    const window = b.outcomeWindow ?? b.preLeader;
+    if (window && !window.closed) {
+      const player = [b.attacker, b.defender].find(id => !window.ready.includes(id));
+      if (player) return {player, action: {type: b.outcomeWindow ? 'battleOutcomeReady' : 'battlePreparationReady', event: window.event}};
+    }
+    if (b.revealed) {
+      const view = viewGame(g, b.attacker).battle!;
+      const player = view.traitorVoters.find(id => !view.traitorSubmitted.includes(id));
+      if (player) return {player, action: {type: 'traitorCall', call: false}};
+    }
+  }
   if (
     !g.response &&
     !g.decision &&
@@ -186,7 +200,7 @@ export function nextSaphoBattleAction(
   }
   return null;
 }
-export function resolveSaphoBattle(state: Game): Game {
+export function resolveSaphoBattle(state: Game, keepSapho = false): Game {
   let g = state;
   assert.ok(g.battle);
   for (let step = 0; step < 120; step++) {
@@ -195,7 +209,7 @@ export function resolveSaphoBattle(state: Game): Game {
       (g.phase !== 6 || viewGame(g, g.players[0].id).battleOrder?.current)
     )
       return g;
-    const next = nextSaphoBattleAction(g);
+    const next = nextSaphoBattleAction(g, keepSapho);
     assert.ok(
       next,
       'The selected battle must retain a finite owned continuation.',

@@ -91,11 +91,20 @@ const play = (g: Game, extra: Partial<Action> = {}) =>
     ...extra,
   });
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
+const finishFinal = (state: Game) => {
+  let g = state;
+  while (g.battle?.outcomeWindow && !g.battle.outcomeWindow.closed) {
+    const window = g.battle.outcomeWindow;
+    const actor = [window.attacker, window.defender].find(id => !window.ready.includes(id))!;
+    g = applyAction(g, actor, {type: 'battleOutcomeReady', event: window.event});
+  }
+  return g;
+};
 const finish = (g: Game) =>
-  applyAction(applyAction(g, 'q', { type: 'traitorCall', call: false }), 'p', {
+  finishFinal(applyAction(applyAction(g, 'q', { type: 'traitorCall', call: false }), 'p', {
     type: 'traitorCall',
     call: false,
-  });
+  }));
 
 void test('all twelve holders use Portable in normal and late plans in Basic and Advanced with ordinary winner retention', () => {
   for (const f of FACTIONS)
@@ -208,6 +217,7 @@ void test('a losing late defender discards the physical card once while a traito
   g = play(g);
   g = applyAction(g, 'q', { type: 'traitorCall', call: true });
   g = applyAction(g, 'p', { type: 'traitorCall', call: false });
+  g = finishFinal(g);
   assert.equal(g.players[0].leaders.find((l) => l.id === victim)!.dead, true);
   assert.equal(g.discard.filter((c) => c.id === card).length, 1);
 });

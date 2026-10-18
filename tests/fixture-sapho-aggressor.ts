@@ -7,6 +7,9 @@ export function saphoAggressorGame(options: Parameters<typeof saphoBattleOrderGa
   const choice = chooseSaphoBattleAction(game);
   let opened = applyAction(game,choice.player,choice.action);
   if(opened.decision?.kind==='fullPlanOffer') opened=applyAction(opened,opened.decision.player,{type:'decision',decline:true});
+  // This historical controlled fixture exercises the unchanged unstamped protocol.
+  // Fresh native late timing is covered by fixture-sapho-late-aggressor instead.
+  delete opened.battle!.saphoTimingVersion;
   return opened;
 }
 export function aggressorAction(game: Game, owner = game.battle!.defender): Action {

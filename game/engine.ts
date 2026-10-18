@@ -95,6 +95,7 @@ import { quoteHomeworldSubstitution } from './homeworld-substitution';
 import { combatArmy, combatLocations, combatLocationName, homeworldBattleLocation, quoteCombatBoard, quoteCombatBoardContinuation } from './combat-location';
 import { battleChooserEvent, quoteBattleChoosers, reorderBattleChoosers, validateBattleChooserOrder, BattleChooserOrderError, type BattleChooserOrder } from './battle-chooser-order';
 import { battleTieOwner, changeSaphoAggressor, saphoAggressorEvent, validateSaphoAggressor, SaphoAggressorError, type SaphoAggressorState } from './sapho-aggressor';
+import { createBattleOutcomeWindow, validateBattleOutcomeWindow, readyBattleOutcomeWindow, reviseBattleOutcomeWindow, BattleOutcomeWindowError, type BattleOutcomeWindow } from './battle-outcome-window';
 import { quoteHomeworldCombatLoss } from './homeworld-combat-loss';
 import { quoteHomeworldBattleRules } from './homeworld-battle-rules';
 import type { HomeworldForces } from './homeworld-custody';
@@ -746,6 +747,9 @@ export type Battle = {
   chooserEvent?: string;
   saphoAggressor?: SaphoAggressorState;
   saphoAggressorEvents?: string[];
+  /** Fresh Richese-roster battles allow late priority before physical settlement. */
+  saphoTimingVersion?: 1;
+  outcomeWindow?: BattleOutcomeWindow;
   /** Only newly created supported battles enter the pre-plan Mentat question. */
   mentatQuestionVersion?: 1;
   mentatQuestionEvent?: string;
@@ -5494,6 +5498,11 @@ function saphoAggressorDiscardSignature(g: Game, c: SaphoAggressorDiscardContinu
       voice: battle.voice, prescience: battle.prescience,
       fullPlan: battle.fullPlan, nexusInspection: battle.nexusInspection,
       truthPromises: battle.truthPromises,
+      ...(battle.saphoTimingVersion === 1 ? {
+        saphoTimingVersion: battle.saphoTimingVersion, outcomeWindow: battle.outcomeWindow,
+        traitorCalls: battle.traitorCalls, poisonTooth: battle.poisonTooth,
+        stoneBurner: battle.stoneBurner, lateDefense: battle.lateDefense,
+      } : {}),
     },
     players: g.players.map(p => ({ id: p.id, faction: p.faction, ally: p.ally })),
   });
@@ -6504,10 +6513,8 @@ function treacheryDiscardIntegrity(g: Game) {
     const c = continuation, entry = batch.entries[0], battle = g.battle;
     requireRule(
       g.phase === 6 && battle && battle.event === c.battleEvent &&
-      battle.preLeader?.event === c.battleEvent && !battle.preLeader.closed &&
-      !battle.preLeader.ready.includes(c.player) &&
+      battle.preLeader?.event === c.battleEvent && saphoAggressorTimingOpen(g, c.player) &&
       [battle.attacker, battle.defender].includes(c.player) &&
-      !battle.revealed && Object.keys(battle.plans).length === 0 &&
       battle.saphoAggressor?.uses.at(-1)?.event === c.saphoEvent &&
       battle.saphoAggressor.uses.at(-1)?.player === c.player &&
       battle.saphoAggressorEvents?.includes(c.saphoEvent) &&
@@ -6518,7 +6525,7 @@ function treacheryDiscardIntegrity(g: Game) {
       !c.resume.response && !c.resume.decision &&
       !c.resume.pendingKarama && !c.resume.phaseOpening &&
       c.stateSignature === saphoAggressorDiscardSignature(g, c),
-      'The used Juice of Sapho no longer matches its pre-plan aggressor choice.',
+      'The used Juice of Sapho no longer matches its unresolved aggressor choice.',
     );
     saphoAggressorIntegrity(g);
   } else if (continuation?.kind === 'residualPoisonDiscard') {
@@ -9934,7 +9941,7 @@ function decideHarkonnenNexusBetrayal(g: Game,id: string,action: Action): void {
   g.nexusHarkonnenBetrayalCursor = closed.cursor;
   g.pendingNexusHarkonnenBetrayal = null;
   if (traitorVoters(g,g.battle!).every(voter => g.battle!.traitorCalls[voter] !== undefined))
-    advanceBattleOutcome(g);
+    finishBattleVotes(g);
 }
 function drawHarkonnenNexusBetrayalReplacement(g: Game): void {
   const due = g.pendingNexusHarkonnenReplacement;
@@ -13051,10 +13058,36 @@ function battleAggressor(g: Game) {
   const b = g.battle!;
   return saphoAggressorRule(() => validateSaphoAggressor(b.saphoAggressor, b.saphoAggressorEvents, b, g.turn));
 }
+function battleOutcomeRule<T>(calculate: () => T): T {
+  try { return calculate(); }
+  catch (error) { if (error instanceof BattleOutcomeWindowError) throw new RuleError(error.message); throw error; }
+}
+function battleOutcomeIdentity(g: Game) {
+  const b = g.battle!;
+  requireRule(b.event, 'The final battle opportunity needs its original battle event.');
+  return {event: b.event, attacker: b.attacker, defender: b.defender, turn: g.turn};
+}
+/** Stage only. Never infer a public opportunity from held cards or an outcome. */
+function saphoAggressorTimingOpen(g: Game, player: string) {
+  const b = g.battle;
+  if (!b?.event || b.preLeader?.event !== b.event) return false;
+  if (b.saphoTimingVersion === 1)
+    return !b.outcomeWindow?.closed && !g.pendingAuditor && !g.pendingCapture &&
+      !g.pendingTech && !g.pendingFaceDance && !g.pendingChoamBattleIncome &&
+      !g.pendingWinnerDiscards && !g.moritaniRetention && !g.pendingIxSubstitution;
+  return !b.preLeader.closed && !b.preLeader.ready.includes(player) &&
+    !b.revealed && Object.keys(b.plans).length === 0 &&
+    !b.voice && !b.prescience && !b.fullPlan && !b.nexusInspection && !b.truthPromises?.length;
+}
 function saphoAggressorIntegrity(g: Game) {
   const b = g.battle;
   if (!b) return;
   battleAggressor(g);
+  if (b.outcomeWindow) {
+    requireRule(b.saphoTimingVersion === 1 && b.revealed && g.status === 'playing' && g.phase === 6,
+      'The final battle opportunity needs its original revealed battle.');
+    battleOutcomeRule(() => validateBattleOutcomeWindow(b.outcomeWindow!, battleOutcomeIdentity(g), b.saphoAggressor?.uses.length ?? 0));
+  }
   if (!b.saphoAggressor) return;
   requireRule(g.status === 'playing' && g.phase === 6 && b.preLeader?.event === b.event &&
     g.players.some(p => p.id === b.attacker) && g.players.some(p => p.id === b.defender),
@@ -19494,7 +19527,9 @@ function saphoOptions(g: Game, p: Player): SaphoOption[] {
     !richeseCardDefinition(card) ||
     p.hand.filter((c) => c.id === card.id).length !== 1 ||
     transferCardBlock(g, p, card) ||
-    giftReserved(g, p.id, card.id)
+    giftReserved(g, p.id, card.id) ||
+    (g.battle?.plans[p.id] && [g.battle.plans[p.id].weapon, g.battle.plans[p.id].defense, g.battle.plans[p.id].leader].includes(card.id)) ||
+    (g.battle && committedPlanElements(g.battle, p.id).some(element => element.value === card.id))
   )
     return [];
   const options: SaphoOption[] = [];
@@ -19508,10 +19543,7 @@ function saphoOptions(g: Game, p: Player): SaphoOption[] {
     }
   }
   const battle = g.battle;
-  if (g.phase === 6 && battle?.event && battle.preLeader?.event === battle.event &&
-    !battle.preLeader.closed && !battle.preLeader.ready.includes(p.id) &&
-    !battle.revealed && Object.keys(battle.plans).length === 0 &&
-    !battle.voice && !battle.prescience && !battle.fullPlan && !battle.nexusInspection && !battle.truthPromises?.length &&
+  if (g.phase === 6 && battle?.event && saphoAggressorTimingOpen(g, p.id) &&
     !g.pendingTreacheryDiscard && [battle.attacker, battle.defender].includes(p.id) &&
     battleAggressor(g) !== p.id)
     options.push({scope: 'battleAggressor',
@@ -19583,7 +19615,9 @@ function playSapho(g: Game, p: Player, action: Action) {
     const used = discard(g, p, 'richese-juice-of-sapho');
     b.saphoAggressor = next;
     (b.saphoAggressorEvents ??= []).push(option.event);
-    log(g, `${p.name} discarded Juice of Sapho to become this battle’s aggressor before plans. They now win ordinary ties; a Habbanya Stronghold advantage still takes precedence. Battle participants and later battle choices stay unchanged.`,
+    if (b.outcomeWindow)
+      b.outcomeWindow = battleOutcomeRule(() => reviseBattleOutcomeWindow(b.outcomeWindow!, battleOutcomeIdentity(g), next.uses.length - 1, next.uses.length));
+    log(g, `${p.name} discarded Juice of Sapho to become this battle’s aggressor. They now win ordinary ties; a Habbanya Stronghold advantage still takes precedence. Battle participants, committed plans and later battle choices stay unchanged.${b.outcomeWindow ? ' Both players must finish the revised final battle opportunity.' : ''}`,
       {faction: p.faction, name: 'Juice of Sapho'});
     if (g.semutaPreview) {
       const continuation: SaphoAggressorDiscardContinuation = {
@@ -23371,6 +23405,7 @@ function nextRevealedDecision(g: Game) {
 function homeworldRevealPending(g: Game): boolean {
   const b = g.battle;
   if (g.status !== 'playing' || g.phase !== 6 || !b?.revealed || !b.territory.startsWith('homeworld:') || g.decision || g.response ||
+    b.outcomeWindow ||
     g.truthtrance || g.phaseOpening || g.pendingNullentropy || g.pendingTreacheryDiscard ||
     g.pendingRicheseGift || g.pendingExchange || g.pendingKarama || g.summonedWorm) return false;
   return traitorVoters(g, b).every((id) => b.traitorCalls[id] !== undefined);
@@ -23386,6 +23421,11 @@ function advanceHomeworldReveal(g: Game): boolean {
     g.decision = {kind: 'homeworldDefense', player: owner, event: b.event};
   } else advanceBattleOutcome(g);
   return true;
+}
+/** All final vote/response exits retain native Homeworld late-defense ordering. */
+function finishBattleVotes(g: Game) {
+  if (g.battle!.territory.startsWith('homeworld:')) advanceHomeworldReveal(g);
+  else advanceBattleOutcome(g);
 }
 function traitorVoters(g: Game, b: Battle) {
   const home = homeworldBattleLocation(g, b.territory);
@@ -23746,6 +23786,15 @@ function offerStoneAllocation(g: Game): boolean {
 }
 function advanceBattleOutcome(g: Game) {
   const b = g.battle!;
+  if (b.saphoTimingVersion === 1) {
+    if (!b.outcomeWindow) {
+      b.outcomeWindow = battleOutcomeRule(() => createBattleOutcomeWindow(battleOutcomeIdentity(g), b.saphoAggressor?.uses.length ?? 0));
+      log(g, 'Both combatants may finish their final battle actions before the outcome and physical losses are applied. This public opportunity does not depend on held cards.',
+        {faction: getPlayer(g, b.attacker).faction, name: 'Final battle actions'});
+    }
+    battleOutcomeRule(() => validateBattleOutcomeWindow(b.outcomeWindow!, battleOutcomeIdentity(g), b.saphoAggressor?.uses.length ?? 0));
+    if (!b.outcomeWindow.closed) return;
+  }
   if (offerStoneAllocation(g)) return;
   const quote = currentBattleResolutionQuote(g);
   if (quote.smugglerAllocation || quote.sandmasterSelection) {
@@ -23821,6 +23870,8 @@ function jacurutuDialIntegrity(g: Game) {
 }
 function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
   const b = g.battle!;
+  requireRule(b.saphoTimingVersion !== 1 || b.outcomeWindow?.closed,
+    'Both combatants must finish final battle actions before resolving losses.');
   requireRule(!!b.diplomatRetreat === !!retreat, 'Resolve the pending Diplomat retreat before battle losses.');
   // Quote before any withdrawal: fixedLosses retains the original ceil(E/2)
   // physical commitment, never one recalculated from Ecaz's diminished board.
@@ -27006,7 +27057,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
     if (
       traitorVoters(g, b).every((voter) => b.traitorCalls[voter] !== undefined)
     )
-      advanceBattleOutcome(g);
+      finishBattleVotes(g);
   } else if (response.kind === 'richesePurchaseIncome') {
     const pending = g.pendingRichesePurchaseIncome;
     requireRule(
@@ -31107,6 +31158,20 @@ function applyActionInner(
     );
     return g;
   }
+  if (t === 'battleOutcomeReady') {
+    const b = g.battle;
+    requireRule(Object.keys(action).sort().join(',') === 'event,type' &&
+      g.phase === 6 && b?.saphoTimingVersion === 1 && b.revealed && b.outcomeWindow &&
+      traitorVoters(g, b).every(player => b.traitorCalls[player] !== undefined),
+      'No shared final battle opportunity is waiting for you.');
+    requireRule(saphoCleanWindow(g) && !g.pendingTreacheryDiscard,
+      'Finish the current interaction before finishing final battle actions.');
+    b.outcomeWindow = battleOutcomeRule(() => readyBattleOutcomeWindow(b.outcomeWindow!, battleOutcomeIdentity(g),
+      b.saphoAggressor?.uses.length ?? 0, id, stringField(action.event)));
+    log(g, `${p.name} finished final battle actions${b.outcomeWindow.closed ? '; both combatants are ready for the outcome' : ''}.`);
+    if (b.outcomeWindow.closed) advanceBattleOutcome(g);
+    return g;
+  }
   if (
     t === 'card' &&
     p.hand.some((c) => c.id === action.card && c.effect === 'residualPoison')
@@ -34479,7 +34544,7 @@ function applyActionInner(
       ...(g.leaderSkills && ordinaryLeaderSkillModeSupported(g) ? { diplomatRetreatVersion: 1 as const } : {}),
       ...(g.ecazTreachery ? { harassAllocationVersion: 1 as const } : {}),
       ...(byFaction(g, 'richese')
-        ? { preLeader: { event: battleEvent, ready: [], closed: false } }
+        ? { saphoTimingVersion: 1 as const, preLeader: { event: battleEvent, ready: [], closed: false } }
         : {}),
       ...(noFieldPlayers.length ? { noFieldPlayers } : {}),
       ...(mixedNoFieldPlayers ? { mixedNoFieldPlayers } : {}),
@@ -34705,8 +34770,7 @@ function applyActionInner(
     if (
       traitorVoters(g, b).every((voter) => b.traitorCalls[voter] !== undefined)
     )
-      if (!b.territory.startsWith('homeworld:')) advanceBattleOutcome(g);
-      else advanceHomeworldReveal(g);
+      finishBattleVotes(g);
     return g;
   }
   if (t === 'card') {
@@ -36082,6 +36146,8 @@ export function viewGame(state: Game, id: string) {
               : null,
           event: b.event ?? null,
           preLeader: b.preLeader ?? null,
+          saphoTimingVersion: b.saphoTimingVersion ?? null,
+          outcomeWindow: b.outcomeWindow ? structuredClone(b.outcomeWindow) : null,
           territory: b.territory,
           attacker: b.attacker,
           aggressor: battleAggressor(g),

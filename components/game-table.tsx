@@ -77,6 +77,7 @@ import { RicheseSpecialKarama } from './richese-special-karama';
 import { RicheseGift } from './richese-gift';
 import { Distrans } from './distrans';
 import { JuiceOfSapho } from './juice-of-sapho';
+import { BattleOutcomeWindowControls } from './battle-outcome-window';
 import { LeaderSkillsPanel } from './leader-skills';
 import { LeaderSkillBattleGuide } from './leader-skill-battle-guide';
 import { smugglerBattlePlanBlock } from '@/game/smuggler-battle';
@@ -5155,6 +5156,11 @@ export function GameTable({
                     {g.battle.tieWinner !== g.battle.aggressor ? ' (Habbanya Stronghold advantage)' : ''}.
                   </p>
                   <EcazOccupyBattleSummary game={g} />
+                  {g.battle.outcomeWindow && !g.battle.outcomeWindow.closed && (
+                    <BattleOutcomeWindowControls window={g.battle.outcomeWindow} me={g.me}
+                      players={g.players} busy={busy || !!g.decision || !!g.response || !!g.truthtrance || !!g.phaseOpening}
+                      onReady={event => act({type: 'battleOutcomeReady', event})} />
+                  )}
                   {!g.battle.revealed && g.battle.leaderless.length > 0 && (
                     <p className="notice block" role="status">
                       {g.battle.leaderless.map(id => g.players.find(p => p.id === id)?.name).join(', ')}

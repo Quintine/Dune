@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 18 October 2026 — Sapho late aggressor and final battle actions
+
+Fresh actual-Richese battles now support clean priority changes after sealed
+plans/reveal and a fixed public both-combatant final opportunity. Both explicitly
+finish; an actual Sapho use clears both marks with a fresh event. Priority closes
+before physical Stone counts or outcome settlement. Existing plans, declarations,
+participants and Habbanya priority remain; sealed/inspected physical cards stay
+reserved. Legacy unstamped battles retain early timing and signature bytes.
+This final online acknowledgement protocol is provisional.
+
+Two disjoint lanes, bounded review and owner integration pass16-file177/177,
+types/lint/build and eight original-action/rendered-table programmes. Public
+cache1/paid forces use40 Basic/47 Advanced source actions; actual Stone1 turn1/
+Sapho1 turn2 and original circle4/circle5 use86. Four-to-seven preparation and
+two-to-four continuation actions cover ties, one sealed plan, revised readiness
+and real mixed count2. Sixteen minimal proposals are legal; controlled reservation
+and pure lifecycle/control cases remain separately labelled.
+
+Review fixed the Harkonnen Nexus final-vote route to retain native Homeworld
+Portable defense. Frozen feedback repaired four stale fixture assumptions; all
+checks then passed together. [Canonical source and exact proof](SAPHO_AGGRESSOR.md#late-aggressor-and-public-final-opportunity--18-october-2026).
+No browser click, visual/deployed, direct late Semuta claim/capture, combined
+World/Nexus/Sapho or complete-mode acceptance. Final assurance remains due.
+No saved-room/database/reset/restart/deployment operation.
+
+
 ## 18 October 2026 — Sapho current-lot cyclic auctions
 
 First/last now connects ordinary cyclic lots and native Advanced normal Black

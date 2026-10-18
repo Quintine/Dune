@@ -1,5 +1,13 @@
 # Juice of Sapho battle integration review
 
+**18 October implementation follow-up:** the original review below describes
+its historical engine and blocker. Fresh Stone physical-total allocation now
+permits late aggressor changes before allocation. The current shared outcome
+entry owns a fixed final opportunity; all final-vote exits first retain native
+Homeworld defense. See the [current contract](SAPHO_AGGRESSOR.md#late-aggressor-and-public-final-opportunity--18-october-2026).
+Historical line numbers, absence claims and proposed conservative guards below
+are not the current implementation or new publisher restrictions.
+
 7 September 2026. Read-only audit of saved engine/bots/combat code. No shared source changed. Companion evidence: `/tmp/dune-sapho-stone-probe.ts` and `.jsonl`. The existing `docs/JUICE_OF_SAPHO_ENGINE_AUDIT.md` supplies the verified physical face and official CHOAM FAQ provenance; I did not discover a new timing ruling. The face allows becoming the battle aggressor and separately first/last in an ordered phase/action. It says discard after use. An unresolved current battle is the scope; completed casualties and winner cleanup cannot be reopened. Fine-grained online acknowledgement boundaries below are implementation recommendations, not quoted publisher rules.
 
 ## Smallest coherent contract

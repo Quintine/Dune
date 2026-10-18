@@ -57,13 +57,16 @@ void test('an unchosen allied Prescience prompt allows early Sapho but an actual
  assert.equal(inspecting.battle!.preLeader!.closed,false);
  assert.deepEqual(viewGame(inspecting,'b').saphoOptions,[]);reject(inspecting,'b',action);
 });
-void test('early priority feeds Stone pre-commit finishability before any hidden opposing plan exists',()=>{
+void test('legacy early priority feeds Stone pre-commit finishability before any hidden opposing plan exists',()=>{
  const initial=saphoAggressorGame({advanced:true,holder:'a'},g=>{
   g.order=['b','a','c','r'];g.active='b';
   const a=g.players[0],b=g.players[1];a.forces={'carthag:11':2};a.reserves=18;
   a.elites!.forces={'carthag:11':1};a.elites!.reserves=4;
   b.forces={'carthag:11':1};b.reserves=19;takeSaphoBattleCard(g,'b','richese-stone-burner');
  });
+ // Explicit historical unstamped Stone protocol; fresh physical allocation is
+ // covered by the original paid Stone/Sapho programmes.
+ delete initial.battle!.stoneAllocationVersion;
  assert.equal(initial.battle!.attacker,'b');
  const plan={type:'battlePlan',dial:0,support:0,leader:initial.players[1].leaders[0].id,weapon:'richese-stone-burner'};
  // Original Guild tie priority makes every opposing allocation finishable.

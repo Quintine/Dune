@@ -49,7 +49,7 @@ void test('held Sapho exposes the legal battle-order action with its actual timi
     assert.match(html, new RegExp(`Choose battles ${mode} and`));
     assert.match(html, /Other players may still choose battles against you/);
     assert.match(html, /not the aggressor or tie advantage/);
-    assert.match(html, /Later aggressor intervention[\s\S]*unfinished/);
+    assert.match(html, /Late aggressor timing[\s\S]*provisional shared final opportunity/);
     assert.match(panel(view, true), /<button[^>]*disabled=""[^>]*>Choose battles/);
     const observer = game.players.find(player => player.id !== holder)!;
     assert.equal(panel(viewGame(game, observer.id)), '');

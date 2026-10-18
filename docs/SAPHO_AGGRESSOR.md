@@ -1,6 +1,90 @@
-# Juice of Sapho: early battle aggressor
+# Juice of Sapho: battle aggressor
 
-20 September 2026. Connected partial prototype. The physical face and source
+## Late aggressor and public final opportunity — 18 October 2026
+
+**Prototyped / Partial.** The physical face permits becoming the current battle's
+aggressor without a before-plans qualifier; see the
+[primary-source review](JUICE_OF_SAPHO_SOURCE_UPDATE.md#aggressor-and-battle-selection-order).
+The former mixed-Stone blocker is addressed by the new
+[physical-total allocation](STONE_BURNER_ENGINE_AUDIT.md#outcome-changing-physical-totals--18-october-2026).
+Under the standing choose-recommended instruction, this checkpoint selects the
+following provisional online protocol. The acknowledgement procedure is an
+implementation interpretation, not an official timing FAQ or new printed rule.
+
+Fresh battles with an actual public Richese roster receive
+`saphoTimingVersion:1`, alongside their existing public preparation window.
+This follows the physical cache/Sapho producer; merely selecting the E2 family
+without Richese does not create that cache or a Sapho-dependent prompt.
+The canonical unreserved holder may become aggressor at a clean boundary before
+the final opportunity closes, including after one/both sealed plans and revealed
+weapon/Traitor declarations. Existing nested responses/decisions still finish
+first. Eligibility does not inspect an opposing hand or sealed plan. The holder's
+own sealed or inspected card slots reserve the physical card: Sapho cannot be
+spent while used as a Planetologist Special weapon or another commitment.
+
+After all original weapon decisions, Traitor votes/responses and any native
+Homeworld invader Portable Snooper choice, both physical combatants receive
+the same **Final battle actions** control. It opens regardless of actual card
+ownership, tie, Traitor/explosion branch or final winner. Each chooses
+**Finish final battle actions** using the current public event. This persistent
+window has no timer and does not replace a suspended decision. Playing Sapho
+changes public priority and creates a fresh event, clearing both finish marks;
+both players must finish again. Playing does not itself finish the opportunity.
+
+The second acknowledgement closes priority before Stone physical counts,
+Smuggler/Sandmaster choices, Diplomat retreat, Jacurutu, losses and aftermath.
+The closed window cannot reopen there. Plans, participants, chooser, Voice,
+Prescience, Truthtrance promises and chosen weapon/Traitor declarations remain
+unchanged. Habbanya still precedes ordinary aggressor tie priority on either
+physical side. New discard continuations bind the late stage and public revision;
+unstamped old battles retain their exact early conditions/signature format.
+No existing battle is converted or reset.
+
+The table exposes only public identity, revision and readiness. Minimal policies
+use their existing server-derived Sapho option first, otherwise explicitly finish
+their own opportunity. This adds legal participation, not strategy calibration.
+
+### Checkpoint evidence and remaining limits
+
+Frozen **16 files177/177**, types/lint/build and eight original-action/
+rendered-table programmes pass. The source-bound report is retained privately at
+`/home/quintine/.local/share/dune/checkpoints/20261018-sapho-late/frozen-integrated-2/report.json`:
+proof base `cb13a4d6748c3b86d5b472bab8d798b49b45af28`, source tree
+`54889569fdfe483bfdeaffdf85c88127a41afdbceafb32ceb7b7d9dc99a7f75f`.
+Only checkpoint prose/reference evidence changes after that frozen source.
+
+The new original-action fixtures buy Sapho for1 through the actual cache and pay
+for opposing three-force Arrakeen shipments:40 Basic/47 Advanced source actions.
+The Advanced mixed branch buys Stone1 on turn1, Sapho1 on turn2 and ships6/1Sard
+against Richese3:86 actions, including actual original circle4/circle5 choices.
+Four-to-seven plan/vote/use actions reach the final window; two-to-four actions
+finish both acknowledgements, real physical count2 and original typed cleanup.
+Baseline ties go to Richese; one-plan/final-window Sapho changes them to Emperor.
+A use after the holder's own acknowledgement resets both marks and rejects the
+old event. Sixteen minimal proposals are legal in actual held/no-card views.
+
+Actual GameTable, Sapho and isolated final controls render offered, busy,
+already-finished and revised states. Framework aliases/CSS stubs mean no browser
+clicks or visual/deployed acceptance. Pure lifecycle/control tests and controlled
+own-plan/Prescience reservation probes remain separate evidence; the latter do
+not claim a full original Planetologist/Sapho setup. Related existing regressions
+include native Stone, Homeworld defense, Harkonnen Nexus and Semuta early disposal.
+
+Bounded review repaired the Harkonnen Nexus final-vote exit to preserve original
+Homeworld invader defense. Frozen feedback corrected four obsolete fixture
+assumptions: the historical Stone guard is explicitly unstamped, a human saving
+Sapho uses explicit controls instead of an eager bot, and Basic/Advanced readiness
+retains late timing only in fresh battles. The exact failed cases pass8/8, then
+the entire affected177 pass with types/lint/build/runtime against unchanged source.
+
+This does not certify full modes, direct late Semuta claim/capture, a combined
+World/Nexus/Sapho journey, wider combinations or final assurance. Browser and
+exact-revision deployed acceptance remain open. No saved-room/database, reset,
+restart or deployment operation was performed.
+
+## Historical early prototype — 20 September 2026
+
+Connected partial prototype at that checkpoint. The physical face and source
 precedence remain in the [Sapho audit](JUICE_OF_SAPHO_ENGINE_AUDIT.md); the
 [battle review](JUICE_OF_SAPHO_BATTLE_REVIEW.md) separates scheduling, physical
 participants and tie priority. This checkpoint implements the printed aggressor

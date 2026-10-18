@@ -23,9 +23,11 @@ function unavailableReason(game: GameView) {
     return 'Movement order can change only before the current combined shipment and movement turn begins. First requires all remaining turns to be unstarted and the Advanced Guild to have finished or be absent. Completed turns stay completed. Already-held positions and committed cards are unavailable.';
   if (game.phase === 6)
     return game.battle
-      ? 'Become aggressor only during your open pre-plan opportunity, before declaring ready or committing a plan. Already-held priority and committed cards are unavailable. Finish the current battle and its aftermath before changing remaining battle-choice order.'
+      ? game.battle.saphoTimingVersion === 1
+        ? 'Become aggressor at a clean boundary before both players finish final battle actions. Already-held priority, a committed card, pending decisions and closed final opportunities are unavailable. Finish the current battle and its aftermath before changing remaining battle-choice order.'
+        : 'This older battle retains its pre-plan opportunity, before declaring ready or committing a plan. Already-held priority and committed cards are unavailable. Finish the current battle and its aftermath before changing remaining battle-choice order.'
       : 'You need an unresolved battle and an available first or last position. Completed battles stay resolved, and a card committed elsewhere cannot be used.';
-  return 'These controls support Once Around and cyclic bidding, movement order, remaining battle-choice order and pre-plan aggressor. Later battle intervention and other phase modes remain unfinished.';
+  return 'These controls support Once Around and cyclic bidding, movement order, remaining battle-choice order and aggressor priority. Other phase modes remain unfinished.';
 }
 
 export function JuiceOfSapho({
@@ -68,7 +70,7 @@ export function JuiceOfSapho({
               >
                 <p>
                   {aggressor
-                    ? 'Become this battle’s aggressor before plans. You win ordinary ties; a Habbanya Stronghold advantage still takes precedence. The participants and later battle choices stay unchanged.'
+                    ? 'Become this battle’s aggressor. You win ordinary ties; a Habbanya Stronghold advantage still takes precedence. The participants, committed plans and later battle choices stay unchanged.'
                     : cyclic
                     ? `Bid ${option.mode} in the current cyclic lot. Provisional duration: this lot only. Existing bids, funding and passes stay committed. Later circuits use the changed cycle; the next lot returns to its normal opener.`
                     : once
@@ -96,7 +98,7 @@ export function JuiceOfSapho({
           </p>
         )}
         <p className="text-sm">
-          Later aggressor intervention and other phase modes are still unfinished.
+          Late aggressor timing in new battles uses a provisional shared final opportunity. Older battles retain their pre-plan timing. Other phase modes are still unfinished.
         </p>
       </div>
     </details>

@@ -188,7 +188,7 @@ for (const advanced of [false, true]) for (const combo of combos) {
     assert.throws(() => applyAction(result.game, f.choam, { type: 'endMovement' }));
   });
 
-  void test(`${label}: only legacy, stale or readiness-closed Sapho controls survive untouched`, () => {
+  void test(`${label}: stale and spent controls reject while fresh readiness preserves late timing`, () => {
     const f = createSemutaHomeworldBattleSaphoFixture(combo.scope, combo.mode, advanced);
     const scope = f.scope === 'aggressor' ? 'battleAggressor' : 'battleOrder';
     assert.equal(viewGame(f.game, f.owner).saphoOptions.find(option => option.scope === scope)?.mode,
@@ -200,10 +200,17 @@ for (const advanced of [false, true]) for (const combo of combos) {
     const wrong = f.scope === 'aggressor' ? 'last' : f.mode === 'first' ? 'last' : 'first';
     assert.throws(() => applyAction(f.game, f.owner, { ...f.action, mode: wrong }),
       'Only the one legal position at this boundary is accepted');
-    if (f.scope === 'aggressor')
-      assert.deepEqual(viewGame(applyAction(f.game, f.owner,
+    if (f.scope === 'aggressor') {
+      assert.ok(viewGame(applyAction(f.game, f.owner,
+        { type: 'battlePreparationReady', event: f.game.battle!.event }), f.owner).saphoOptions
+        .some(option => option.scope === 'battleAggressor'),
+      'Fresh battles retain late intervention after pre-plan readiness');
+      const legacy = structuredClone(f.game);
+      delete legacy.battle!.saphoTimingVersion;
+      assert.deepEqual(viewGame(applyAction(legacy, f.owner,
         { type: 'battlePreparationReady', event: f.game.battle!.event }), f.owner).saphoOptions, [],
-      'The owner\'s own readiness closes the early pre-plan aggressor window');
+      'Unstamped battles retain readiness-closed early timing');
+    }
     const other = f.game.players.find(seat => ![f.owner, f.holder].includes(seat.id))!.id;
     assert.throws(() => applyAction(f.game, other, f.action));
   });

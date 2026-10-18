@@ -3786,6 +3786,10 @@ function policyActions(g: GameView): Action[] {
   }
   if (g.phase === 6) {
     const b = g.battle;
+    if (b?.outcomeWindow && !b.outcomeWindow.closed) {
+      if (![b.attacker, b.defender].includes(me.id) || b.outcomeWindow.ready.includes(me.id)) return [];
+      return [{type: 'battleOutcomeReady', event: b.outcomeWindow.event}];
+    }
     const poison = g.residualPoison;
     const opponent =
       b?.attacker === me.id
