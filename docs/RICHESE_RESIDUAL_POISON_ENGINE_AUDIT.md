@@ -2,6 +2,10 @@
 
 Audit: 2026-09-06. The source findings below informed the bounded runtime integration recorded at the end. Historical hook and proposed-contract sections describe the pre-integration audit; they do not supersede the final checkpoint. Complete expansion compliance remains unverified.
 
+The Advanced Harkonnen exclusion below is superseded by the
+[18 October captive-death composition](#native-captive-death--18-october-2026).
+Earlier timings, test totals and unimplemented-card statements remain historical.
+
 ## Evidence and confirmed effect
 
 The publisher card face says **“Play on your opponent before choosing leaders in a battle.”** It then randomly sends one available leader of that faction to the Tanks, specifies **“No spice is collected for it”**, and requires disposal after use. The enlarged physical face was visually read at `/tmp/dune-rules/choam-residual-reading.png`, from the [photograph of the actual components](https://cdn.anyfinder.eu/assets/QsUJtVktEC87xwK08oLlwnKyaozUWfuaLzG0LFEn67ENEEVgNrDGoITy3608Dqe7), linked by the [product gallery](https://www.tabletopfinder.eu/en/boardgame/32692/dune-choam-richese). The photographer's printing/date is unverified; the evidence is the visible publisher text, not retailer commentary. Photograph SHA256: `9c1d3e65fa33489e7675055ed1fc932fefcb79f6053ee365ddee6737ae10b81f`.
@@ -85,4 +89,92 @@ No extra user question was sent. Guaranteed opportunity scheduling and exception
 - The manual maintenance restart preserved all **1,175 saved room versions and exact state hashes**, including a real browser-created open preparation step in synthetic QA room QPNV5XJJ v29. Backup: `/tmp/dune-maintenance-20260906T1117/database.sqlite`. The known human room remained idle and unchanged. A fresh invitation restored the exact event and opponent readiness. Browser play then killed Flinto Kinnis once, left spice and forces unchanged, removed the card from hand and placed exactly one in discard. Ready resumed normal planning; the AI sealed a valid plan. Refresh retained v34, the same event, one death and one discard. All other 1,174 saved room hashes remained unchanged. No automation was recreated. Snapshots: `/tmp/dune-residual-browser-complete-v31.json` and `/tmp/dune-residual-browser-planning-v34.json`.
 - Five original CHOAM portraits bring ordinary coverage to **45/60**, completing the six base factions plus Ixians, Tleilaxu and CHOAM. All forty earlier files and manifest entries remain unchanged. Full-resolution inspection, four existing asset tests, and actual 192px inspector / 80px circular browser review pass. The temporary contact-sheet server was stopped. See [CHOAM_PORTRAITS.md](CHOAM_PORTRAITS.md). Fifteen ordinary portraits and separate special-disc artwork remain unfinished.
 - Five Richese effects remain inactive: Semuta Drug, Stone Burner, Mirror Weapon, Portable Snooper and Juice of Sapho. Other incomplete faction/module systems and unresolved interactions remain tracked. No full Advanced or expansion game was certified and no start gate was removed. The full goal remains active.
+
+## Native captive death — 18 October 2026
+
+**Prototyped / Partial.** Residual Poison now works with Advanced Harkonnen.
+The random pool includes every living, currently controlled physical disc
+available in the battle territory, including a concealed ordinary captive,
+captured foreign Ghola and captured shared Duke. It never chooses a particular
+leader at the player's request or redraws to preserve a commitment.
+
+The selected disc suffers one ordinary death, with zero spice awarded. Its
+identity/death becomes public and captivity ends. Unselected living captives
+retain their concealment. A foreign Ghola keeps its existing Tleilaxu revival
+custody; the shared Duke retains his one physical disc/death history while
+temporary tenure and capture underlay end. Ecaz-only Duke revival is unchanged.
+The existing common Skill hook returns a dead trained leader's card; no new
+replacement assignment is created. Killing the last native Harkonnen leader
+still returns surviving captives immediately, without executing them.
+
+This public death is a **provisional source composition**, not an express
+Residual Poison FAQ answer. The authorized supplied Advanced PDF, physical33
+(printed31), permits undisclosed capture but gives the distinct execution-for-two
+branch its face-down Tanks instruction. Its physical9 (printed7) supplies
+ordinary death-history handling. The [official FAQ, p6](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf)
+gives execution its special private inspection and twice-dead treatment. The
+physical Residual face specifies no bounty and no face-down exception. Applying
+ordinary public Tanks handling avoids inventing a secret death or importing
+execution's extra payment/death rule. It does not reveal living captures in
+general or replace the [known trained-card inference](LEADER_SKILLS_CAPTURE.md).
+The supplied file identity/authority remains in
+[the source register](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026).
+
+The source-specific configuration/custody bans are removed. Existing exact-card,
+event, participant, pre-leader, interaction and promise checks remain. The
+private card control explains the consequence and provisional interpretation
+in Advanced Harkonnen tables. Existing minimal policies consume the same legal
+server option, without scoring a hidden victim pool or strategic refinement.
+
+The Semuta suffix now finds the signed victim by its unique physical identity
+across native rosters/shared Duke: a dead captive no longer belongs to its former
+controller. The signature still binds the target, victim, committed battle and
+complete physical state. Claiming the discarded card neither kills again nor
+changes readiness or the battle's original continuation. Existing signature
+bytes and neutral response procedure remain unchanged.
+
+### Targeted proof and limits
+
+One disjoint genuine-fixture lane, bounded source review and owner integration
+pass **9 files74/74**, `npm run check:quick`, production build and actual-rule/
+rendered-control smoke on one frozen source:
+
+- Base commit `6c83148ead958a7071f755b598c76615b02e458c`; source tree
+  `a0348b55b6ef2e5da6301982693f85c3bce09f2b883bda1b6fbe5669d0e281a9`,
+  2,592 tracked/nonignored source files, including only a hash of the preserved
+  untracked supplied PDF. Proof is local; no PDF is committed or republished.
+- `tests/fixture-residual-poison-capture.ts` uses70 original public Advanced
+  actions: real host start, opening bid1/seller purchase2, Harkonnen3/Emperor1
+  Red Chasm and Richese1 Carthag shipments costing6/2/1, actual native battle win,
+  optional random capture/keep and the second original battle. No postdeal hand,
+  disc, force, wallet, clock or capture is installed. Only unopened original
+  Spice positions and authoritative scalar lotteries are selected.
+- `tests/residual-poison-capture-engine.test.ts` and runtime smoke select a native
+  or captive disc from five actual eligible leaders, excluding the Harkonnen
+  leader already used in Red Chasm. Each uses9 continuation actions through the
+  shared opportunity, real plans/votes/final acknowledgement and completed
+  Carthag battle. One death/discard, zero bounty and nonselected concealment
+  remain. Four minimal profiles make eight legal card/readiness proposals and
+  finish that battle; no strength calibration is claimed.
+- `tests/residual-poison-custody.test.ts` uses separately labelled controlled
+  probes for ordinary/captured-Ghola/shared-Duke death, last-native Harkonnen
+  return and Semuta claim after physical custody ends. These are not additional
+  original-action combined-module programmes. Existing core capture, trained
+  capture and Homeworld/Semuta card regressions pass in the same affected union.
+- Actual GameTable and card components render offered, busy, death and completed
+  states. The new explanation is visible and busy disables the real play control.
+  Framework aliases/CSS stubs mean no browser click or visual acceptance.
+
+First targeted feedback repaired fixture assumptions only: a Once Around seller
+gets its final raise after a real positive opening, and the resolved discard
+sentinel is null. All affected checks then pass on unchanged rule source. Private
+logs, source snapshots, rendered HTML and runtime results are in
+`/home/quintine/.local/share/dune/checkpoints/20261018-residual-capture/`;
+`frozen-integrated/report.json` is the complete passing batch. Final edits after
+this proof are documentation/reference prose/evidence only, separately checked
+against all verified file hashes before commit/push.
+
+Wider combinations, complete modes, final privacy/custody/recovery assurance and
+deployed acceptance remain open. No saved-room/database/reset/restart/deployment
+operation was performed.
 

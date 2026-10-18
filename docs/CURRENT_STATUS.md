@@ -16,6 +16,32 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Residual Poison / Advanced Harkonnen — 18 October. Prototyped / Partial.**
+The card now includes available ordinary captives, captured foreign Gholas and
+the shared Duke. One selected public death pays no bounty; other living
+captives stay concealed. Ghola revival custody, Duke disc/history and last-native
+Harkonnen returns remain. Semuta locates the signed physical victim after
+temporary control ends. Controls explain provisional ordinary Tanks handling;
+this is source composition, not a Residual-specific publisher FAQ.
+
+A disjoint genuine-fixture lane, bounded source review and owner integration
+pass **9 files74/74**, types/lint/build and two original-action/rendered-table
+programmes plus four finite policy continuations. Public Advanced start, real
+opening bid1/seller purchase2, paid Hark3/Emperor1 desert/Richese1 Carthag
+deployments, actual victory/capture/keep and second battle use70 source actions.
+Native or captive selection from five eligible discs and battle completion use9
+continuations; one death/discard, zero bounty and unselected concealment remain.
+Four profiles make eight legal card/readiness proposals and finish. Separate
+controlled probes cover Ghola/Duke, last-native returns and Semuta claim.
+
+First feedback repaired only two fixture assumptions: Once Around's all-zero
+shortcut needs a real opening bid before the seller's final raise, and resolved
+discard uses null. No rule change followed frozen feedback. Actual GameTable
+and enabled/busy card controls render the provisional consequence. No browser
+clicks, visual/deployed or broad combination/assurance acceptance; complete modes
+remain open. No saved-room/database/reset/restart/deployment operation.
+[Canonical source, interpretation and proof](RICHESE_RESIDUAL_POISON_ENGINE_AUDIT.md#native-captive-death--18-october-2026).
+
 **Sapho Extortion payer order — 18 October. Prototyped / Partial.** The general
 ordered-action alternative now provisionally reorders only native Extortion's
 unanswered payer suffix. Public replay preserves original membership and prior

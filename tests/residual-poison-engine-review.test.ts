@@ -340,16 +340,19 @@ void test('foreign ghola, ordinary captive and separate Duke deaths retain exact
   }
 });
 
-void test('public advanced Harkonnen guard is invariant to captive possession and a legitimately reacquired physical card may be played again', () => {
+void test('Advanced Harkonnen no longer disables the card based on captive possession', () => {
   let g = fixture();
   g.advanced = true;
   g.players[2] = newPlayer('e', 'Harkonnen', 'harkonnen');
   g = start(g);
   const first = viewGame(g, 'r').residualPoison!.blocked;
+  assert.equal(first, null);
   g.players[1].leaders[0].capturedBy = 'e';
   assert.equal(viewGame(g, 'r').residualPoison!.blocked, first);
-  assert.match(first!, /advanced Harkonnen/);
-  g = start(fixture());
+});
+
+void test('a legitimately reacquired physical Residual Poison may be played again', () => {
+  let g = start(fixture());
   hold(g, 'r', 'Nullentropy Box');
   const all = inventory(g);
   g = poison(g);

@@ -860,7 +860,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'An available leader must be alive and eligible for this battle territory. A leader used in this same territory remains eligible; one used elsewhere does not. Cheap Hero cards are not leader discs. The card is discarded once, the victim enters the Tanks, and no spice bounty or battle victory is awarded. Force counts and ordinary battle preparation continue.',
       'In games with Richese seated, both combatants finish a shared preparation opportunity before submitting plans or a leader-valued Prescience answer. This application timing procedure appears independently of both hands and does not reveal who holds a preparation card. Active responses, decisions and Truthtrance resolve first. A completed readiness step does not itself choose a leader.',
       'A foreign ghola retains its recorded revival custody when killed. Duke Vidal is the same physical disc with its death history retained, and his temporary control ends. An involuntary death releases impossible battle promises and can require a previously answered non-leader Prescience question to be answered again; it never redraws the victim to preserve an answer.',
-      'The handling of a still-secret Harkonnen captive after this death is unresolved. Advanced games with Harkonnen seated therefore guard this card based on that public configuration, independently of any hidden captive. This is a development limitation, not a printed ban. Legacy battles without a saved preparation event are not retroactively reopened.',
+      'Available Harkonnen captives are included. If selected, the captive suffers one public death and captivity ends; unselected living captives stay concealed. This ordinary Tanks interpretation is provisional, distinct from face-down execution for two spice. Foreign Ghola revival custody remains; the shared Duke returns dead and set aside. Legacy battles without a saved preparation event are not retroactively reopened.',
       'Saved battle events bind readiness and card actions. Reconnect preserves the opportunity and a committed death. Competing actions use room versions: a stale request cannot repeat the discard or death and must refresh before retrying. All four AI profiles use only their entitled card availability and opponent information.',
     ],
     related: [
@@ -874,7 +874,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Pre-leader timing, uniform eligible-disc selection, automatic death, single discard, custody, promise reconciliation and exact event validation are integrated. Advanced Harkonnen disclosure and full expansion combinations remain unresolved.',
+          'Pre-leader timing, uniform eligible-disc selection, automatic death, single discard, custody, promise reconciliation and exact event validation are integrated. Advanced Harkonnen now uses provisional ordinary public captive death; wider combinations remain incomplete.',
       },
       {
         area: 'Player controls',
@@ -892,18 +892,22 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Documentation',
         status: 'Partial',
         detail:
-          'Explains printed timing and disposal, the shared application opportunity, casualty custody and explicit unresolved disclosure.',
+          'Explains printed timing/disposal, shared application opportunity, casualty custody and the provisional public captive-death composition.',
       },
       {
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Pure selection, twelve-holder engine, independent review, four-profile AI and persisted concurrent-action tests cover supported boundaries. Full expansion games remain unverified.',
+          'Current 74-case affected batch, types/lint/build and two real Advanced cache2/capture/battle programmes cover native/captive death, with four finite legal-policy continuations. Controlled Ghola/Duke/last-native/Semuta probes are separate. Historical persisted evidence does not certify final assurance or full expansion games.',
         evidence: [
           'tests/residual-poison.test.ts',
           'tests/residual-poison-engine.test.ts',
           'tests/residual-poison-engine-review.test.ts',
           'tests/residual-poison-bots.test.ts',
+          'tests/residual-poison-custody.test.ts',
+          'tests/residual-poison-capture-engine.test.ts',
+          'tests/fixture-residual-poison-capture.ts',
+          'docs/RICHESE_RESIDUAL_POISON_ENGINE_AUDIT.md',
           'tests/residual-poison-recovery.test.ts',
         ],
       },

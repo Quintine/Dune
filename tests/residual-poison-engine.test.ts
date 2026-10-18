@@ -48,14 +48,13 @@ void test('normal foreign ghola control and Duke tank history are preserved with
  }
 });
 void test('invalid timing, target, identity and state fail before random selection and preserve the card',t=>{
- for(const problem of ['stale','outsider','target','sealed','prescienceLeader','empty','overflow','advancedCapture','forgedVictim'] as const){
+ for(const problem of ['stale','outsider','target','sealed','prescienceLeader','empty','overflow','forgedVictim'] as const){
   const g=fixture();const extra:Partial<Action>={};let actor='p';
   if(problem==='stale')extra.event='stale';if(problem==='outsider')actor='r';if(problem==='target')extra.target='p';
   if(problem==='sealed')g.battle!.plans.q={dial:1,leader:g.players[1].leaders[0].id,weapon:null,defense:null,support:0};
   if(problem==='prescienceLeader')g.battle!.prescience={player:'p',field:'leader',value:g.players[1].leaders[0].id};
   if(problem==='empty')g.players[1].leaders.forEach(l=>{l.dead=true;l.deaths=1;});
   if(problem==='overflow')g.players[1].leaders[0].deaths=Number.MAX_SAFE_INTEGER;
-  if(problem==='advancedCapture'){g.advanced=true;g.players[0].faction='harkonnen';}
   if(problem==='forgedVictim')extra.leader=g.players[1].leaders[0].id;
   const before=structuredClone(g);let calls=0;const mock=t.mock.method(crypto,'getRandomValues',()=>{calls++;throw Error('RNG must not run');});
   assert.throws(()=>applyAction(g,actor,{type:'card',card,target:'q',event:g.battle!.event,...extra}),problem);assert.deepEqual(g,before);assert.equal(calls,0,problem);mock.mock.restore();

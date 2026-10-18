@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 18 October 2026 — Residual Poison with native Harkonnen captives
+
+Remove the Advanced Harkonnen and exceptional-custody card exclusions. All
+available controlled physical discs participate; one ordinary public death
+ends selected captivity with zero bounty. Other living captures stay concealed,
+foreign Ghola revival custody remains, and the shared Duke's tenure ends with
+his original disc/history intact. Last-native Harkonnen death still returns
+survivors. The Semuta suffix locates its signed victim across physical homes
+after control ends; it does not replay death. UI explains provisional normal
+Tanks handling, separate from execution-for-two and known trained-card capture.
+
+A disjoint genuine-fixture lane, bounded source review and owner integration
+pass9-file74/74, types/lint/build and two original-action/rendered-table programmes
+plus four finite policy continuations. Public Advanced start, opening bid1/native
+seller purchase2, paid Hark3/Emperor1 desert and Richese1 Carthag shipments,
+actual win/capture/keep and second battle use70 source actions. Native/captive
+selection from five eligible discs plus final battle uses9 continuations; four
+profiles make eight legal card/readiness proposals and finish. Controlled
+Ghola/Duke/last-native/Semuta probes are separately labelled. Actual GameTable
+and enabled/busy card controls render the consequence.
+
+First feedback corrected only a seller-auction fixture shortcut and the expected
+null resolved-discard sentinel. The whole frozen batch then passes unchanged.
+[Canonical source, exact proof and remaining limits](RICHESE_RESIDUAL_POISON_ENGINE_AUDIT.md#native-captive-death--18-october-2026).
+No browser/visual/deployed, full combination or complete-mode acceptance. Final
+assurance remains due; no saved-room/database/reset/restart/deployment operation.
+
+
 ## 18 October 2026 — Sapho Extortion payer ordering
 
 The printed ordered-action alternative now has a provisional native Extortion

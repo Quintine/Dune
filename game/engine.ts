@@ -6565,9 +6565,11 @@ function treacheryDiscardIntegrity(g: Game) {
     saphoAggressorIntegrity(g);
   } else if (continuation?.kind === 'residualPoisonDiscard') {
     const c = continuation, entry = batch.entries[0], battle = g.battle;
-    const victim = g.players.some(p => p.id === c.target)
-      ? controlledLeaders(g, getPlayer(g, c.target)).find(l => l.id === c.victim)
-      : null;
+    // Death has already ended capture/temporary Duke control. Find the physical
+    // disc at its home, rather than requiring its former controller to own it.
+    const victims = [...g.players.flatMap(p => p.leaders),
+      ...(g.dukeVidal ? [g.dukeVidal.leader] : [])].filter(l => l.id === c.victim);
+    const victim = victims.length === 1 ? victims[0] : null;
     requireRule(
       g.phase === 6 && battle && battle.event === c.battleEvent &&
       !battle.revealed && !Object.keys(battle.plans).length &&
@@ -21479,22 +21481,8 @@ function validateResidualPoison(
   );
   const reserved = transferCardBlock(g, p, card);
   requireRule(!reserved, reserved ?? 'The card is committed.');
-  // Guard on public configuration, never on whether a particular hidden captive exists.
-  requireRule(
-    !(g.advanced && byFaction(g, 'harkonnen')),
-    'Residual Poison with advanced Harkonnen capture awaits the secret-captive disclosure ruling.',
-  );
   const target = getPlayer(g, targetId),
     controlled = controlledLeaders(g, target);
-  requireRule(
-    !controlled.some(
-      (l) =>
-        l.concealed ||
-        (l.capturedBy && l.gholaBy) ||
-        (l.id === DUKE_VIDAL_ID && (l.capturedBy || l.gholaBy)),
-    ),
-    'This exceptional leader custody is not yet supported for Residual Poison.',
-  );
   const candidates = noFieldRule(() =>
     residualPoisonCandidates(controlled, b.territory),
   );
@@ -21533,6 +21521,8 @@ function playResidualPoison(
   Object.assign(victim, dead);
   delete victim.usedAt;
   if (victim.capturedBy) {
+    // Residual Poison is an ordinary public death, not Harkonnen's separate
+    // face-down execution for two spice. Only the selected captive is revealed.
     delete victim.capturedBy;
     delete victim.concealed;
   }

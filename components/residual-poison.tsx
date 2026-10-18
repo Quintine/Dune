@@ -32,6 +32,11 @@ export function ResidualPoison({ game, act, busy }: PreparationProps) {
           leader is randomly sent to the Tanks, with no spice bounty, then
           Residual Poison is discarded. You do not choose the leader.
         </p>
+        {game.advanced && game.players.some(player => player.faction === 'harkonnen') && <p>
+          An available captive is included. If selected, that leader’s death
+          becomes public and captivity ends; other captives stay concealed.
+          This uses a provisional interpretation of ordinary Tanks handling.
+        </p>}
         <CardRules card={poison.card} />
         <CardInspector card={poison.card} />
         {reason && (
