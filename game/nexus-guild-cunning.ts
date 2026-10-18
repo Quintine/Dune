@@ -9,11 +9,20 @@ export type NexusGuildCunningBefore = {
   moved: number;
   hajrUsed: boolean;
   hajrPlays?: never;
+  ornithopterExtraMoves?: never;
 };
 export type NexusGuildCunningCountedBefore = {
   shipped: boolean;
   moved: number;
   hajrPlays: number;
+  hajrUsed?: never;
+  ornithopterExtraMoves?: never;
+};
+export type NexusGuildCunningMovementBefore = {
+  shipped: boolean;
+  moved: number;
+  hajrPlays: number;
+  ornithopterExtraMoves: number;
   hajrUsed?: never;
 };
 type NexusGuildCunningReceiptFields = {
@@ -33,10 +42,16 @@ export type NexusGuildCunningCountedReceipt = NexusGuildCunningReceiptFields & {
   version: 2;
   before: NexusGuildCunningCountedBefore;
 };
+export type NexusGuildCunningMovementReceipt = NexusGuildCunningReceiptFields & {
+  version: 3;
+  before: NexusGuildCunningMovementBefore;
+};
 export type NexusGuildCunningReceipt =
   | NexusGuildCunningLegacyReceipt
-  | NexusGuildCunningCountedReceipt;
-type Before = NexusGuildCunningBefore | NexusGuildCunningCountedBefore;
+  | NexusGuildCunningCountedReceipt
+  | NexusGuildCunningMovementReceipt;
+type Before = NexusGuildCunningBefore | NexusGuildCunningCountedBefore |
+  NexusGuildCunningMovementBefore;
 
 function requireGuild(value: unknown, message: string): asserts value {
   if (!value) throw new Error(message);
@@ -75,17 +90,24 @@ function validPlayCount(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 &&
     Number.isSafeInteger(value + 1);
 }
-function validateBefore(before: Before, version: 1 | 2) {
+function validateBefore(before: Before, version: 1 | 2 | 3) {
+  const expectedKeys = version === 1 ? 'hajrUsed,moved,shipped' : version === 2
+    ? 'hajrPlays,moved,shipped' : 'hajrPlays,moved,ornithopterExtraMoves,shipped';
   requireGuild(
     plain(before) &&
-      Object.keys(before).sort().join(',') ===
-        (version === 1 ? 'hajrUsed,moved,shipped' : 'hajrPlays,moved,shipped') &&
+      Object.keys(before).sort().join(',') === expectedKeys &&
       typeof before.shipped === 'boolean' &&
       (version === 1 ? typeof before.hajrUsed === 'boolean' : validPlayCount(before.hajrPlays)) &&
+      (version !== 3 || validPlayCount(before.ornithopterExtraMoves)) &&
+      Number.isSafeInteger(1 + (version === 1 ? Number(before.hajrUsed) : before.hajrPlays!) +
+        (version === 3 ? before.ornithopterExtraMoves! : 0)) &&
       Number.isSafeInteger(before.moved) &&
       before.moved >= 0 &&
-      before.moved <= 1 + (version === 1 ? Number(before.hajrUsed) : before.hajrPlays!),
-    'Guild Cunning needs the original ordinary shipment and Hajr movement allowance.',
+      before.moved <= 1 + (version === 1 ? Number(before.hajrUsed) : before.hajrPlays!) +
+        (version === 3 ? before.ornithopterExtraMoves! : 0),
+    version === 3
+      ? 'Guild Cunning needs the original ordinary shipment, Hajr and completed Ornithopter movement allowance.'
+      : 'Guild Cunning needs the original ordinary shipment and Hajr movement allowance.',
   );
 }
 function signature(receipt: NexusGuildCunningReceipt) {
@@ -98,8 +120,11 @@ function signature(receipt: NexusGuildCunningReceipt) {
     receipt.phase,
     receipt.mode,
     receipt.roster.map((p) => [p.id, p.faction]),
-    [receipt.before.shipped, receipt.before.moved,
-      receipt.version === 1 ? receipt.before.hajrUsed : receipt.before.hajrPlays],
+    receipt.version === 3
+      ? [receipt.before.shipped, receipt.before.moved, receipt.before.hajrPlays,
+          receipt.before.ornithopterExtraMoves]
+      : [receipt.before.shipped, receipt.before.moved,
+          receipt.version === 1 ? receipt.before.hajrUsed : receipt.before.hajrPlays],
   ]);
 }
 /** Validates historical facts, not current cards, alliances, resources or movement.
@@ -113,7 +138,7 @@ export function validateNexusGuildCunning(
     plain(receipt) &&
       Object.keys(receipt).sort().join(',') ===
         'before,event,mode,owner,phase,roster,signature,turn,version' &&
-      (receipt.version === 1 || receipt.version === 2) &&
+      (receipt.version === 1 || receipt.version === 2 || receipt.version === 3) &&
       receipt.phase === 5 &&
       receipt.mode === 'cunning' &&
       Number.isSafeInteger(receipt.turn) &&
@@ -149,6 +174,11 @@ export function createNexusGuildCunning(
 export function createNexusGuildCunning(
   context: NexusGuildCunningContext & { phase: number; active: string | null },
   owner: string,
+  before: NexusGuildCunningMovementBefore,
+): NexusGuildCunningMovementReceipt;
+export function createNexusGuildCunning(
+  context: NexusGuildCunningContext & { phase: number; active: string | null },
+  owner: string,
   before: Before,
 ): NexusGuildCunningReceipt;
 export function createNexusGuildCunning(
@@ -165,7 +195,8 @@ export function createNexusGuildCunning(
       ),
     'Guild Cunning requires the unallied native Guild at the end of its own combined turn.',
   );
-  const version = plain(before) && Object.hasOwn(before, 'hajrPlays') ? 2 : 1;
+  const version = plain(before) && Object.hasOwn(before, 'ornithopterExtraMoves') ? 3 :
+    plain(before) && Object.hasOwn(before, 'hajrPlays') ? 2 : 1;
   validateBefore(before, version);
   const fields: Omit<NexusGuildCunningReceiptFields, 'signature'> = {
     event: JSON.stringify(['nexusGuildCunning', context.turn, owner]),
@@ -177,18 +208,22 @@ export function createNexusGuildCunning(
   };
   const receipt: NexusGuildCunningReceipt = version === 1
     ? { version: 1, ...fields, before: { ...before as NexusGuildCunningBefore }, signature: '' }
-    : { version: 2, ...fields, before: { ...before as NexusGuildCunningCountedBefore }, signature: '' };
+    : version === 2
+      ? { version: 2, ...fields, before: { ...before as NexusGuildCunningCountedBefore }, signature: '' }
+      : { version: 3, ...fields, before: { ...before as NexusGuildCunningMovementBefore }, signature: '' };
   receipt.signature = signature(receipt);
   validateNexusGuildCunning(context, receipt);
   return receipt;
 }
-/** Ending ordinary movement forgoes at least its first slot. Every actual Hajr
- * play supplies one extra slot; the engine owns card custody and play timing.
- * Legacy boolean callers/receipts retain their original zero-or-one meaning. */
+/** Ending ordinary movement forgoes at least its first slot. Actual Hajr plays
+ * and completed two-group Ornithopter uses supply their earned extra slots.
+ * The engine owns card custody, play timing and any still-active flight's rights;
+ * no speculative flight credit is supplied here. Legacy defaults are unchanged. */
 export function nexusGuildCunningMoves(
   receipt: NexusGuildCunningReceipt,
   currentHajrUsed: boolean | number,
   movesAfterSecond = 0,
+  currentOrnithopterExtraMoves = 0,
 ): number {
   validateNexusGuildCunning(
     { turn: receipt.turn, players: receipt.roster },
@@ -196,13 +231,19 @@ export function nexusGuildCunningMoves(
   );
   const currentCount = typeof currentHajrUsed === 'boolean' ? Number(currentHajrUsed) : currentHajrUsed;
   const beforeCount = receipt.version === 1 ? Number(receipt.before.hajrUsed) : receipt.before.hajrPlays;
+  const beforeExtraMoves = receipt.version === 3 ? receipt.before.ornithopterExtraMoves : 0;
   requireGuild(
     validPlayCount(currentCount) && currentCount >= beforeCount &&
+      validPlayCount(currentOrnithopterExtraMoves) && currentOrnithopterExtraMoves >= beforeExtraMoves &&
+      Number.isSafeInteger(1 + currentCount + currentOrnithopterExtraMoves) &&
       Number.isSafeInteger(movesAfterSecond) &&
       movesAfterSecond >= 0,
-    'Guild Cunning has changed its remaining Hajr movement.',
+    receipt.version === 3 || currentOrnithopterExtraMoves !== 0
+      ? 'Guild Cunning has changed its remaining Hajr or Ornithopter movement.'
+      : 'Guild Cunning has changed its remaining Hajr movement.',
   );
-  const available = Math.max(0, 1 + currentCount - Math.max(1, receipt.before.moved));
+  const available = Math.max(0, 1 + currentCount + currentOrnithopterExtraMoves -
+    Math.max(1, receipt.before.moved));
   requireGuild(
     movesAfterSecond <= available,
     'Guild Cunning cannot supply another ordinary movement.',

@@ -5001,7 +5001,7 @@ export function GameTable({
                       {guildCunning?.stage === 'secondShipment'
                         ? 'Choose or decline the second shipment before any Hajr movement.'
                         : guildCunning?.stage === 'extraMove'
-                          ? `${guildCunning.movesLeft} unused Hajr movement remaining. No ordinary movement is granted.`
+                          ? `${guildCunning.movesLeft} movement remaining from unused Hajr or the active card. No ordinary movement is granted.`
                         : (me.moved ?? 0) < (me.movesAllowed ?? 1)
                         ? `${(me.movesAllowed ?? 1) - (me.moved ?? 0)} movement remaining.`
                         : 'Movement complete. Finish your turn when your shipment is also settled.'}
@@ -5066,7 +5066,7 @@ export function GameTable({
                     <AdvancedAllySeparation quote={g.advancedAllySeparation} />
                     {g.nexusGuildCunning?.offer && (
                       <section className="notice">
-                        <p>Guild Cunning ends your ordinary shipment and movement, then offers one second shipment at normal Guild prices. Only an unused Hajr move can follow it. The physical Ornithopter card combination remains unavailable.</p>
+                        <p>Guild Cunning ends your ordinary shipment and movement, then offers one second shipment at normal Guild prices. Only an unused Hajr move can follow it. Provisional card combination: Ornithopter can replace that unused Hajr movement; declaring Cunning abandons any unfinished current card group.</p>
                         {g.nexusGuildCunning.offer.blocked && <p>{g.nexusGuildCunning.offer.blocked}</p>}
                         {actionButton('Finish ordinary turn and declare Guild Cunning',
                           guildCunningAction ?? {type: 'endMovement'}, !guildCunningAction)}
@@ -5075,7 +5075,7 @@ export function GameTable({
                     {guildCunning && <p className="notice">{guildCunning.stage === 'secondShipment'
                       ? 'Guild Cunning: choose your second shipment, or skip it and retain an unused Hajr move. This does not reopen ordinary movement.'
                       : guildCunning.stage === 'extraMove'
-                        ? 'The second shipment is settled. Use an unused Hajr move or finish your turn.'
+                        ? 'The second shipment is settled. Use an unused Hajr move, replace it with Ornithopter, finish an active card group, or finish your turn.'
                         : 'Guild Cunning awaits its cancellation response.'}</p>}
                     {guildCunning?.stage === 'secondShipment' && actionButton('Skip second shipment',
                       nexusGuildSkipShipmentAction(g, guildCunning.event) ?? {type: 'endMovement'},

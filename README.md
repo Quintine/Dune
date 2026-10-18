@@ -42,6 +42,9 @@ uses one unused movement entitlement and retains Hajr's separate move.
 The single physical Hajr can be played again after legitimate
 [paid Box recovery](docs/RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#recovered-hajr-replay--18-october-2026).
 Advanced still requires a fresh post-movement opportunity.
+After Guild Cunning, either physical Ornithopter mode may provisionally replace
+an earned unused Hajr movement. Cunning itself adds no ordinary move; abandoned
+card groups grant no extra credit. See the [combination contract](docs/NEXUS_GUILD_CUNNING_RUNTIME.md#physical-ornithopter-composition--18-october-2026).
 Advanced advisors may use both physical Ornithopter modes. Advisors do not grant
 city access; normal-range groups use current fighter occupancy. See the
 [advisor source cutover](docs/RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#advanced-advisor-card-movement--18-october-2026).

@@ -2,6 +2,70 @@
 
 This checkpoint follows the [Guild source contract](NEXUS_GUILD_RULES.md): native Guild can spend Cunning when finishing its ordinary Shipment and Movement turn to obtain one second shipment. It preserves one combined turn and the actual history of the first shipment and movement. It does not implement Guild Secret Ally, Betrayal or complete Nexus play.
 
+## Physical Ornithopter composition — 18 October 2026
+
+The [printed Guild face](NEXUS_GUILD_RULES.md#primary-evidence) grants only
+one second shipment; Hajr remains necessary for later movement. Under the
+standing recommended-composition policy, the physical Ornithopter may replace
+one earned unused Hajr allowance after that shipment. This is an explicit
+provisional interaction, not a new publisher FAQ or a free ordinary move.
+
+Range-three mode consumes that allowance once. Two-group mode retains both
+original distinct groups even after the first consumes the underlying Hajr
+allowance; only actually completing both groups earns the extra physical-move
+credit. Original movement counters still count every group. Earlier completed
+flights retain their earned credit when Cunning is declared. A spent Hajr
+cannot be reused merely by playing either card.
+
+Declaring Cunning during an unfinished ordinary flight abandons its remaining
+optional group and discards the physical card before resuming the original
+Cunning response. The new bounded `ornithopterDiscard` source `cunning` parks
+that response rather than ending the turn. Ordinary early ending after Cunning
+uses the existing end-turn suffix and completes the Cunning lifecycle. Neither
+early ending earns the abandoned group's credit. Existing discard consumers,
+including Semuta's supported-suffix grammar, retain the actual saved response.
+This alone does not certify every capture/claim combination.
+
+New v3 receipts bind the original completed Ornithopter count as well as actual
+Hajr plays. Optional signed lifecycle snapshots retain final earned counts after
+phase resets. Exact v1/v2 receipt bytes and unstamped lifecycle signatures keep
+their original meanings; an older active receipt can acquire a genuinely earned
+new credit without rewriting its original history. The pure helper never invents
+rights for an unfinished flight; the engine retains that flight's own ceiling.
+
+Controls keep the Hajr prerequisite and provisional interpretation visible;
+all four minimal policies can propose legal first/second card groups. Strategic
+AI refinement, wider combinations, full modes and final assurance remain open.
+The frozen batch passes **13 files125/125**, types/lint/build and eight finite
+original-action/rendered-table continuations. Two genuine public ready/start
+programmes use81 Basic/93 Advanced source actions: cache Ornithopter1 and normal
+Hajr1 purchases, turn2 worm and reciprocal Richese/Emperor alliance, actual
+closing Guild Nexus draw from the unopened deck and paid reserve shipment2.
+Each real second reserve shipment pays1; six to eight continuation actions cover
+both modes, completed earlier flights and Basic early endings. Eight first/
+second-group policy proposals are legal. Another original-action regression
+rejects the held card with no earned Hajr or with its grant already spent.
+Nine new pure cases cover original credits, earned/completed counts, safe bounds,
+strict v3 shapes and exact old receipt bytes/defaults.
+
+All frozen checks passed without repair. Actual GameTable views and isolated
+controls with accepted drafts render; no select/submit browser click. A bounded
+read-only continuation/count review found no concrete defect. Prior Semuta
+Homeworld/disposal regressions pass, but the new Cunning suffix itself has native
+response proof rather than direct combined Semuta claim/capture evidence.
+No complete modes, wider combinations, strategic calibration, final assurance or
+visual/browser/deployed acceptance is claimed. No saved-room/database/reset/
+restart/deployment operation.
+
+Private artifacts: `/home/quintine/.local/share/dune/checkpoints/20261018-guild-cunning-ornithopter/`.
+`frozen-integrated/report.json` binds source base `7fe84ff` and tree
+`80097576d1033dad38a08cf85814664bd604bc76d623780e51a1b82d024ed395`.
+`runtime-smoke.json` and private rendered HTML record the actual controls and
+original actions. Final checkpoint prose/reference evidence is a documented
+post-proof overlay; `documentation-overlay.json`/`git-result.json` bind that
+reviewed overlay and pushed checkpoint. Relevant source, controls, helpers and
+tests remain identical to the frozen proof.
+
 ## Classic core payment acknowledgement — 18 October 2026
 
 Original classic base33 or selected independent36 Nexus, optionally all14,
@@ -87,7 +151,8 @@ No ordinary movement follows the extra shipment. Every remaining movement must
 come from an actually earned unused Hajr allowance. A consumed grant cannot be
 spent twice; a legally recovered and replayed physical Hajr adds a new grant.
 The same native Guild player retains that continuation. Native city range still
-applies normally; physical Ornithopter card composition remains unavailable.
+applies normally. The physical-card composition above supersedes the earlier
+unavailable boundary within its named scope.
 
 The [18 October replay checkpoint](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#recovered-hajr-replay--18-october-2026)
 adds counted v2 declarations and current/final count snapshots, retaining exact

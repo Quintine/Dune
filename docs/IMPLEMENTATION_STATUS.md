@@ -1,5 +1,29 @@
 # Dune implementation status
 
+## 18 October 2026 — Guild Cunning with the physical Ornithopter
+
+Provisional unused-entitlement composition now permits either card mode to
+replace an earned unused Hajr grant after the second shipment. Cunning adds no
+ordinary move. Prior completed credits and actual physical group counts remain;
+an active two-group flight retains only its original second group. New v3
+receipts/final snapshots preserve old formats. Declaring Cunning during a partial
+flight discards it before resuming the original response; ending afterward
+completes the turn. Abandoned groups grant no extra credit.
+
+Two disjoint lanes, bounded continuation review and owner integration pass
+13-file125/125, types/lint/build and eight finite original-action/rendered-table
+continuations. Public original setup, cache1/Hajr1 purchases, real worm/alliance/
+Guild draw and paid first shipment2 use81 Basic/93 Advanced source actions;
+second shipment1 and6–8 continuation actions cover both modes, earlier completed
+flights and Basic early endings. Eight minimal policy proposals are legal.
+Original-action rejection cases preserve the held card without an unused Hajr.
+No frozen check needed repair. [Canonical contract and exact proof](NEXUS_GUILD_CUNNING_RUNTIME.md#physical-ornithopter-composition--18-october-2026).
+Rendering does not click controls or establish visual/browser/deployed acceptance.
+Semuta grammar is connected; direct combined claim/capture proof, wider
+combinations, full modes and final assurance remain open. No saved-room/database/
+reset/restart/deployment operation.
+
+
 ## 18 October 2026 — Advanced advisor physical Ornithopter
 
 Both physical card modes now accept advisors under the supplied city-access

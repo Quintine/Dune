@@ -3328,7 +3328,7 @@ function policyActions(g: GameView): Action[] {
     const movementAvailable = nexusGuildMovementAvailable(g);
     const hajr = nexusGuildHajrAction(g);
     if (hajr) return [hajr];
-    const cardMoves = nexusGuildCunningActive(g) ? [] : ornithopterMoves(g);
+    const cardMoves = ornithopterMoves(g);
     const discoveryMoves = g.discoveryOrnithopter && !g.discoveryOrnithopter.blocked
       ? discoveryFlightBotActions(g,
         destinations(g).filter(target => target.score > -1000)

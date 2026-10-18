@@ -1,5 +1,31 @@
 # Richese Ornithopter: movement integration audit
 
+## Guild Cunning and earned Hajr movement — 18 October 2026
+
+The [printed Guild Nexus](NEXUS_GUILD_RULES.md#primary-evidence) grants only a
+second shipment, with Hajr required for subsequent movement. This checkpoint
+connects the existing unused-entitlement replacement policy: either physical
+Ornithopter mode may replace an earned unused Hajr allowance after Cunning.
+Earlier completed flight credits remain counted, and an active two-group flight
+retains its original second group without speculative credit. Only completion of
+both groups earns the extra physical-move credit. Declaring Cunning during an
+unfinished flight discards it before the original Nexus response resumes; ending
+a later partial flight completes the turn without abandoned-group credit.
+
+This composition is explicitly provisional. It does not assert a card-specific
+publisher clarification, grant an ordinary move or alter Advanced Hajr timing.
+See the [runtime contract](NEXUS_GUILD_CUNNING_RUNTIME.md#physical-ornithopter-composition--18-october-2026)
+for v3 original-count receipts, compatible old formats and continuation scope.
+Earlier “separate/unavailable” observations below are historical within this
+named combination. Wider modules, full modes and final assurance remain open.
+The frozen13-file125/125 batch, types/lint/build and eight original-action/
+rendered-table continuations pass. Actual paid cards, worm/alliance/Nexus draw,
+first2/second1 shipments and both modes preserve all earned counts. Eight minimal
+policy proposals are legal; no frozen repair. Exact source binding and runtime
+limits are recorded in the linked contract. New Semuta grammar has no direct
+combined claim/capture programme; browser/deployed acceptance stays open.
+
+
 Audit: 2026-09-06. Document-only source and engine review. The canonical component is `richese-ornithopter`; this is distinct from ordinary Arrakeen/Carthag ornithopter access and the later Ecaz discovery token. No runtime effect or complete expansion compliance is claimed here.
 
 ## Advanced advisor card movement — 18 October 2026

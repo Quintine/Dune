@@ -1556,7 +1556,7 @@ export type Game = {
         }
       | {
           kind: 'ornithopterDiscard';
-          source: 'move' | 'end';
+          source: 'move' | 'end' | 'cunning';
           flight: NonNullable<Game['ornithopter']>;
           movement: CompletedMovement | null;
           resume: NonNullable<Game['pendingNullentropy']>['resume'];
@@ -2031,7 +2031,7 @@ export type Game = {
   nexusSardaukarLast?: {event: string; stage: 'pending' | 'active' | 'canceled'};
   nexusChoamHistory?: {receipt: NexusChoamReceipt; stage: 'pending' | 'canceled' | 'complete' | 'fizzled'; frame: string; parent: string; signature: string}[];
   nexusMoritaniHistory?: {receipt:NexusMoritaniReceipt;stage:'pending'|'complete'|'canceled';before:string;frame:string;signature:string}[];
-  nexusGuildCunningHistory?: {receipt:NexusGuildCunningReceipt;stage:'pending'|'secondShipment'|'extraMove'|'completed'|'canceled';parent:string;movesAfter:number;hajrPlays?:number;shipment?:{kind:'reserve'|'guild'|'homeworld';frame:string;stage:'pending'|'complete'|'stopped'}|{kind:'declined';stage:'declined'};signature:string}[];
+  nexusGuildCunningHistory?: {receipt:NexusGuildCunningReceipt;stage:'pending'|'secondShipment'|'extraMove'|'completed'|'canceled';parent:string;movesAfter:number;hajrPlays?:number;ornithopterExtraMoves?:number;shipment?:{kind:'reserve'|'guild'|'homeworld';frame:string;stage:'pending'|'complete'|'stopped'}|{kind:'declined';stage:'declined'};signature:string}[];
   nexusGuildCunningLast?: {event:string;stage:'pending'|'secondShipment'|'extraMove'|'completed'|'canceled'};
   nexusGuildSecretHistory?: {receipt:NexusGuildSecretAllyReceipt;kind:'reserve'|'cross'|'homeworld';frame:string;signature:string}[];
   nexusGuildSecretLast?: {event:string};
@@ -6949,7 +6949,7 @@ function treacheryDiscardIntegrity(g: Game) {
         Number.isSafeInteger(flight.completed) &&
         flight.completed >= 0 &&
         owner.moved === flight.startingMove + flight.completed &&
-        ['move', 'end'].includes(c.source) &&
+        ['move', 'end', 'cunning'].includes(c.source) &&
         (c.source === 'move'
           ? flight.completed === total
           : flight.completed < total) &&
@@ -6991,6 +6991,12 @@ function treacheryDiscardIntegrity(g: Game) {
         c.movement === null,
         'An ended Ornithopter has no arrival to replay.',
       );
+    if (c.source === 'cunning') {
+      requireRule(c.resume.response?.kind === 'nexusGuildCunning' &&
+        c.resume.response.owner === owner.id,
+      'The ended Ornithopter must resume its original Guild Cunning response.');
+      validateGuildCunningResponse(g, c.resume.response);
+    }
     requireRule(
       c.stateSignature === ornithopterDiscardSignature(g, c),
       'The retired Ornithopter no longer matches its saved movement obligations.',
@@ -7503,7 +7509,7 @@ function semutaOfferSupported(
     continuation.kind !== 'winnerMandatoryDiscard' &&
     continuation.kind !== 'battleResolved' &&
     !(continuation.kind === 'ornithopterDiscard' &&
-      (continuation.source === 'end' ||
+      (continuation.source === 'end' || continuation.source === 'cunning' ||
         (continuation.source === 'move' &&
           !g.players.some(p => p.faction === 'ecaz' || p.faction === 'moritani') &&
           !g.pendingArrivalOverlap))) &&
@@ -7645,7 +7651,9 @@ function semutaOfferSupported(
         continuation.kind === 'karamaEmperorShareDiscard' ||
         continuation.kind === 'karamaIncomeDiscard' ||
         continuation.kind === 'karamaShipmentDiscard' ||
-        (!continuation.resume.response && !continuation.resume.decision &&
+        ((continuation.kind === 'ornithopterDiscard' && continuation.source === 'cunning'
+          ? continuation.resume.response?.kind === 'nexusGuildCunning'
+          : !continuation.resume.response) && !continuation.resume.decision &&
           !continuation.resume.pendingKarama &&
           (continuation.kind === 'amalDiscard'
             ? continuation.resume.phaseOpening?.passed.length === 0
@@ -7982,7 +7990,7 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
     if (next.source === 'move') finishMovedGroup(g, next.movement!);
-    else finishMovementTurn(g, next.flight.player);
+    else if (next.source === 'end') finishMovementTurn(g, next.flight.player);
   } else if (next.kind === 'ixAllyCard') {
     const buyer = getPlayer(g, next.player);
     const card = draw(g);
@@ -15611,12 +15619,13 @@ function hajrPlayCount(g: Game, p: Player) {
   return count;
 }
 function movesAllowed(g: Game, p: Player) {
-  const cunning = currentGuildCunning(g,p.id);
-  if (cunning) return p.moved + (cunning.stage === 'extraMove' ? nexusRule(() => nexusGuildCunningMoves(cunning.receipt,hajrPlayCount(g,p),cunning.movesAfter)) : 0);
   const flight = g.ornithopter;
-  return flight?.player === p.id && flight.turn === g.turn
-    ? flight.startingMove + (flight.mode === 'twoGroups' ? 2 : 1)
-    : ordinaryMovementAllowance(hajrPlayCount(g,p), p.ornithopterExtraMoves);
+  if (flight?.player === p.id && flight.turn === g.turn)
+    return flight.startingMove + (flight.mode === 'twoGroups' ? 2 : 1);
+  const cunning = currentGuildCunning(g,p.id);
+  if (cunning) return p.moved + (cunning.stage === 'extraMove' ? nexusRule(() =>
+    nexusGuildCunningMoves(cunning.receipt,hajrPlayCount(g,p),cunning.movesAfter,p.ornithopterExtraMoves ?? 0)) : 0);
+  return ordinaryMovementAllowance(hajrPlayCount(g,p), p.ornithopterExtraMoves);
 }
 function hajrAvailable(g: Game, p: Player) {
   return p.hand.some(card => card.kind === 'special' && card.effect === 'hajr') && p.moved <= movesAllowed(g,p) &&
@@ -15686,7 +15695,6 @@ function ornithopterBlock(
     return 'Resolve the current interaction before declaring a movement.';
   if (g.ornithopter)
     return 'Finish the already played Ornithopter movement first.';
-  if (currentGuildCunning(g,p.id)) return 'Guild Cunning combined with the physical Ornithopter card awaits its timing ruling.';
   if (p.moved >= movesAllowed(g,p))
     return 'Spend an unused ordinary or Hajr movement on Ornithopter.';
   // Provisional composition: Kulon augments normal movement, not the
@@ -15743,7 +15751,7 @@ function ornithopterIntegrity(g: Game) {
 }
 function finishOrnithopter(
   g: Game,
-  source: 'move' | 'end',
+  source: 'move' | 'end' | 'cunning',
   movement: CompletedMovement | null = null,
 ) {
   const flight = g.ornithopter;
@@ -16322,7 +16330,14 @@ function completeMove(g: Game, move: MovementOrder) {
   if (flight?.player === id) {
     flight.completed++;
     if (flight.completed === (flight.mode === 'twoGroups' ? 2 : 1)) {
-      if (flight.mode === 'twoGroups') p.ornithopterExtraMoves = (p.ornithopterExtraMoves ?? 0) + 1;
+      if (flight.mode === 'twoGroups') {
+        p.ornithopterExtraMoves = (p.ornithopterExtraMoves ?? 0) + 1;
+        if (cunning) {
+          cunning.hajrPlays = hajrPlayCount(g,p);
+          cunning.ornithopterExtraMoves = p.ornithopterExtraMoves;
+          saveGuildCunning(g,cunning);
+        }
+      }
       finishOrnithopter(g, 'move', completed);
       return;
     }
@@ -28391,7 +28406,8 @@ function guildCunningParent(g: Game) {
 }
 function guildCunningSignature(record: NonNullable<Game['nexusGuildCunningHistory']>[number]) {
   return JSON.stringify([record.receipt.signature,record.stage,record.parent,record.movesAfter,record.shipment ?? null,
-    ...(record.hajrPlays === undefined ? [] : [record.hajrPlays])]);
+    ...(record.hajrPlays === undefined ? [] : [record.hajrPlays]),
+    ...(record.ornithopterExtraMoves === undefined ? [] : [['ornithopter',record.ornithopterExtraMoves]])]);
 }
 function saveGuildCunning(g: Game, record: NonNullable<Game['nexusGuildCunningHistory']>[number]) {
   record.signature = guildCunningSignature(record);
@@ -28402,7 +28418,7 @@ function projectedNexusGuildCunning(g: Game, owner: string) {
   if (!p || p.faction !== 'guild') return null;
   const record = currentGuildCunning(g,owner);
   if (record) return {offer:null,active:{event:record.receipt.event,stage:record.stage as 'pending'|'secondShipment'|'extraMove',
-    movesLeft:record.stage === 'extraMove' ? nexusRule(() => nexusGuildCunningMoves(record.receipt,hajrPlayCount(g,p),record.movesAfter)) : 0,
+    movesLeft:record.stage === 'extraMove' ? movesAllowed(g,p) - p.moved : 0,
     hajrAvailable:record.stage !== 'pending' && hajrAvailable(g,p)}};
   if (g.nexusCards?.cards?.hands[owner] !== 'guild') return null;
   let blocked: string | null = null;
@@ -28413,8 +28429,6 @@ function projectedNexusGuildCunning(g: Game, owner: string) {
   else if (g.response || g.decision || g.truthtrance || g.phaseOpening || g.pendingKarama || g.pendingTreacheryDiscard ||
     g.pendingNullentropy || g.pendingShipment || g.pendingHomeworldShipment || g.nexusTraitorPending || g.nexusCards.phase?.stage === 'drawing')
     blocked = 'Finish the current interaction before declaring a second shipment.';
-  else if (g.ornithopter || p.ornithopterExtraMoves || p.moved > ordinaryMovementAllowance(hajrPlayCount(g,p)))
-    blocked = 'Cunning combined with the physical Ornithopter movement card awaits its timing ruling.';
   else if (g.nexusGuildCunningHistory?.some(r => r.receipt.turn === g.turn && r.receipt.owner === owner))
     blocked = 'This turn’s Guild Cunning opportunity is already used.';
   return {offer:{event:JSON.stringify(['nexusGuildCunning',g.turn,owner]),blocked},active:null};
@@ -28422,8 +28436,8 @@ function projectedNexusGuildCunning(g: Game, owner: string) {
 function declareGuildCunning(g: Game, p: Player, event: unknown) {
   const offer = projectedNexusGuildCunning(g,p.id)?.offer;
   requireRule(offer && !offer.blocked && event === offer.event,offer?.blocked ?? 'This Guild Cunning opportunity is stale.');
-  const receipt = nexusRule(() => createNexusGuildCunning(g,p.id,{shipped:p.shipped,moved:p.moved,hajrPlays:hajrPlayCount(g,p)}));
-  const record = {receipt,stage:'pending' as const,parent:guildCunningParent(g),movesAfter:0,hajrPlays:hajrPlayCount(g,p),signature:''};
+  const receipt = nexusRule(() => createNexusGuildCunning(g,p.id,{shipped:p.shipped,moved:p.moved,hajrPlays:hajrPlayCount(g,p),ornithopterExtraMoves:p.ornithopterExtraMoves ?? 0}));
+  const record = {receipt,stage:'pending' as const,parent:guildCunningParent(g),movesAfter:0,hajrPlays:hajrPlayCount(g,p),ornithopterExtraMoves:p.ornithopterExtraMoves ?? 0,signature:''};
   g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
   (g.nexusGuildCunningHistory ??= []).push(record); saveGuildCunning(g,record);
   g.karamaShipping = null;
@@ -28482,16 +28496,20 @@ function nexusGuildCunningIntegrity(g: Game) {
   requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0,'Guild Cunning requires its original Nexus module and history.');
   const events = new Set<string>();
   for (const [index,record] of history.entries()) {
-    requireRule(record && typeof record === 'object' && Object.keys(record).every(k => ['receipt','stage','parent','movesAfter','hajrPlays','shipment','signature'].includes(k)) &&
+    requireRule(record && typeof record === 'object' && Object.keys(record).every(k => ['receipt','stage','parent','movesAfter','hajrPlays','ornithopterExtraMoves','shipment','signature'].includes(k)) &&
       ['pending','secondShipment','extraMove','completed','canceled'].includes(record.stage) && typeof record.parent === 'string' &&
       record.signature === guildCunningSignature(record) && !events.has(record.receipt?.event) &&
       Number.isSafeInteger(record.movesAfter) && record.movesAfter >= 0 &&
       (['completed','canceled'].includes(record.stage) || index === history.length - 1),'Guild Cunning has a changed or duplicated allowance record.');
     nexusRule(() => validateNexusGuildCunning(g,record.receipt));
+    requireRule((record.ornithopterExtraMoves === undefined ||
+      (Number.isSafeInteger(record.ornithopterExtraMoves) && record.ornithopterExtraMoves >= 0)) &&
+      (record.receipt.version !== 3 || record.ornithopterExtraMoves !== undefined),
+    'Guild Cunning needs its actual completed Ornithopter count.');
     if (record.hajrPlays !== undefined) {
       requireRule(Number.isSafeInteger(record.hajrPlays) && record.hajrPlays >= 0,
         'Guild Cunning needs its actual earned Hajr count.');
-      nexusRule(() => nexusGuildCunningMoves(record.receipt,record.hajrPlays!,record.movesAfter));
+      nexusRule(() => nexusGuildCunningMoves(record.receipt,record.hajrPlays!,record.movesAfter,record.ornithopterExtraMoves ?? 0));
     } else requireRule(record.receipt.version === 1 && record.movesAfter <= 1,
       'The legacy Guild Cunning history has lost its original Hajr bound.');
     if (record.shipment?.kind === 'declined') requireRule(Object.keys(record.shipment).sort().join(',') === 'kind,stage' && record.shipment.stage === 'declined' && ['extraMove','completed'].includes(record.stage), 'Guild Cunning has changed its declined second shipment.');
@@ -28517,9 +28535,10 @@ function nexusGuildCunningIntegrity(g: Game) {
   requireRule(g.status === 'playing' && g.phase === 5 && g.active === owner.id &&
     active.parent === guildCunningParent(g) && owner.moved === active.receipt.before.moved + active.movesAfter &&
     (active.hajrPlays === undefined || active.hajrPlays === hajrPlayCount(g,owner)) &&
+    (active.ornithopterExtraMoves === undefined || active.ornithopterExtraMoves === (owner.ornithopterExtraMoves ?? 0)) &&
     owner.shipped === (active.stage === 'extraMove' && (active.shipment?.kind !== 'declined' || active.movesAfter > 0) ? true : active.receipt.before.shipped) && g.nexusCards.cards.discard.includes('guild'),
     'Guild Cunning changed its original active player, queue, shipment or movement allowance.');
-  nexusRule(() => nexusGuildCunningMoves(active.receipt,hajrPlayCount(g,owner),active.movesAfter));
+  nexusRule(() => nexusGuildCunningMoves(active.receipt,hajrPlayCount(g,owner),active.movesAfter,owner.ornithopterExtraMoves ?? 0));
   for (const response of responses) validateGuildCunningResponse(g,response!);
   if (active.shipment?.stage === 'pending') {
     const suspended = g.pendingGuildBetrayal?.continuation;
@@ -34287,7 +34306,11 @@ function applyActionInner(
       g.phase === 5 && g.active === id,
       'Wait for your movement turn.',
     );
-    if (action.nexus !== undefined) { declareGuildCunning(g,p,action.nexus); return g; }
+    if (action.nexus !== undefined) {
+      declareGuildCunning(g,p,action.nexus);
+      if (g.ornithopter?.player === id) finishOrnithopter(g, 'cunning');
+      return g;
+    }
     // Reject unsupported concealed custody before retiring a played movement
     // card and parking its native ending continuation.
     requireAlliedSeparationCustody(g, p);

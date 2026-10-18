@@ -1,5 +1,16 @@
 # Rule decision index
 
+## Guild Cunning and physical Ornithopter — 18 October 2026
+
+The printed Nexus grants a second shipment with Hajr required for later movement.
+Under the standing recommended-composition instruction, the physical card may
+replace an earned unused Hajr allowance. Completed flight credits preserve actual
+movement counts; unfinished groups grant no extra credit when abandoned. New
+v3 original-count receipts retain exact old receipt formats. This is provisional
+composition, not publisher clarification or complete-combination acceptance.
+[Canonical contract](NEXUS_GUILD_CUNNING_RUNTIME.md#physical-ornithopter-composition--18-october-2026).
+
+
 Updated 18 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
 
 ## Fremen Nexus and Great Maker riding — 18 October 2026

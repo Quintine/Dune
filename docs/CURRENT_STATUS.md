@@ -16,6 +16,32 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Guild Cunning / physical Ornithopter — 18 October. Prototyped / Partial.**
+Either physical card mode may provisionally replace an earned unused Hajr
+allowance after Cunning's second shipment. No ordinary move is added. Original
+physical counts, prior completed flight credit and the active second-group right
+remain distinct. Ending a partial flight grants no abandoned-group credit;
+declaring Cunning disposes it before the original Nexus response resumes.
+New v3 receipts/final-count snapshots retain exact old receipt formats.
+
+Two disjoint lanes, bounded continuation review and owner integration pass
+**13 files125/125**, types/lint/build and eight finite original-action/rendered-
+table continuations. Two public host/setup programmes use81 Basic/93 Advanced
+source actions: cache1/Hajr1 purchases, real worm/alliance/Guild Nexus draw and
+paid first shipment2. Each second shipment pays1; continuations use6–8 actions.
+Both modes and earlier completed flights work in Basic/Advanced; Basic early
+endings preserve no abandoned credit. Eight minimal policy proposals are legal.
+An additional original-action regression rejects both an unearned and already
+spent Hajr grant without consuming the held physical card.
+
+All frozen checks passed without repair. Actual GameTable views and isolated
+accepted movement drafts render; no select/submit browser click or visual/
+browser/deployed acceptance. Semuta's new suffix grammar is connected and prior
+disposal regressions pass, but direct combined claim/capture proof stays open.
+Wider combinations, full modes and final assurance remain due. No saved-room/
+database/reset/restart/deployment operation.
+[Source, composition and exact proof](NEXUS_GUILD_CUNNING_RUNTIME.md#physical-ornithopter-composition--18-october-2026).
+
 **Advanced advisor / physical Ornithopter — 18 October. Prototyped / Partial.**
 The supplied source excludes advisors from granting city access, rather than
 using this physical card. Both modes now use native stance, arrival/locks and

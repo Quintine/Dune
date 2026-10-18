@@ -31,6 +31,7 @@ export function OrnithopterMovement({
   const me = game.players.find((p) => p.id === game.me);
   if (!card || !me) return null;
   const advisorGuidance = game.advanced && me.faction === 'beneGesserit';
+  const guildGuidance = !!game.nexusGuildCunning?.active;
   const active = card.active;
   const mode =
     active?.mode ??
@@ -182,6 +183,14 @@ export function OrnithopterMovement({
           </p>
         </>
       )}
+      {guildGuidance && (
+        <p className="notice" id={`${id}-guild-guidance`}>
+          Provisional Guild Cunning combination: Ornithopter replaces one unused
+          Hajr movement after the second shipment. Two-group mode keeps its second
+          different group available until you finish it or end your turn. Ending
+          early grants no movement for the abandoned group.
+        </p>
+      )}
       {advisorGuidance && (
         <p className="notice" id={`${id}-advisor-guidance`}>
           Advanced Bene Gesserit advisors can use both card modes. Advisors in
@@ -207,6 +216,7 @@ export function OrnithopterMovement({
         className="min-h-11 whitespace-normal motion-reduce:transition-none"
         disabled={busy || !!reason}
         aria-describedby={[
+          ...(guildGuidance ? [`${id}-guild-guidance`] : []),
           ...(advisorGuidance ? [`${id}-advisor-guidance`] : []),
           ...(reason ? [`${id}-reason`] : []),
         ].join(' ') || undefined}
