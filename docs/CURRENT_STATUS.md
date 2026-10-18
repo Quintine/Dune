@@ -16,6 +16,35 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Sapho cyclic auctions — 18 October. Prototyped / Partial.** First/last now
+works in ordinary cyclic lots and native Advanced normal Black Market under an
+explicit provisional current-lot convention. Full local cycles preserve existing
+bids, funding and passes; native traversal skips passes until a real raise.
+Actual post-discard capacity admits a full holder. Original opener identity stays
+with both Black Market settlement consumers; ordinary overrides clear on the
+next lot. Persistent controls and existing minimal policies use the same options.
+
+Two disjoint lanes, bounded source/continuation review and owner integration
+pass **10 files134/134**, types/lint/build and eight finite original-action/
+rendered-table continuations. Public host/setup and cache1 purchase use33 Basic/
+38 Advanced source actions; actual next-turn Black Market uses81, including a
+real lobby circle5 choice; a full hand from two normal1 purchases uses44.
+Continuations use10–18 actions: prior1, actual holder2/rival3/holder4 wrap, native
+payment4 and original next opener or final-lot Revival entry. Eight minimal
+policy proposals are legal. Original-action passes remain spent until a real
+raise; controlled pure-cycle/post-sale quotes are separately labelled.
+
+Feedback repaired two fixture assumptions: turn2's native opener required the
+original lobby circle choice, and Black Market completion must pass its native
+cache auction before the following normal pool. The external rendering smoke
+was corrected for default history visibility and final-lot phase closure; only
+that smoke was rerun against identical source after tests/types/lint/build.
+No engine repair followed frozen feedback. Actual offered/busy controls render,
+without browser clicks or visual/deployed acceptance. Direct combined Semuta
+claim/capture, other timing scopes, full modes and final assurance remain open.
+No saved-room/database/reset/restart/deployment operation.
+[Source, convention and exact proof](JUICE_OF_SAPHO_RUNTIME.md#cyclic-ordinary-and-black-market-bidding--18-october-2026).
+
 **Guild Cunning / physical Ornithopter — 18 October. Prototyped / Partial.**
 Either physical card mode may provisionally replace an earned unused Hajr
 allowance after Cunning's second shipment. No ordinary move is added. Original

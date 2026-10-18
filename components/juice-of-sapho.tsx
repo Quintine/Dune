@@ -15,8 +15,8 @@ function unavailableReason(game: GameView) {
   if (game.phase === 3) {
     if (game.richeseAuction?.method === 'silent')
       return 'Silent bids are simultaneous. These controls do not change their tie order.';
-    if (game.richeseAuction?.method !== 'onceAround')
-      return 'These bidding controls require a Once Around auction.';
+    if (game.auction || game.richeseAuction?.method === 'normal')
+      return 'No cyclic order change is available for your pending bid. A passed player waits for a new raise; the current high bidder has no pending bid. Already-held positions and committed cards are unavailable.';
     return 'No order change is available for you in this lot. You must not have bid or passed; discarding this card can open a hand slot, but a completed opportunity cannot be repeated. A card already committed elsewhere cannot be used.';
   }
   if (game.phase === 5)
@@ -25,7 +25,7 @@ function unavailableReason(game: GameView) {
     return game.battle
       ? 'Become aggressor only during your open pre-plan opportunity, before declaring ready or committing a plan. Already-held priority and committed cards are unavailable. Finish the current battle and its aftermath before changing remaining battle-choice order.'
       : 'You need an unresolved battle and an available first or last position. Completed battles stay resolved, and a card committed elsewhere cannot be used.';
-  return 'These controls support Once Around bidding, movement order, remaining battle-choice order and pre-plan aggressor. Later battle intervention and other phase or auction modes remain unfinished.';
+  return 'These controls support Once Around and cyclic bidding, movement order, remaining battle-choice order and pre-plan aggressor. Later battle intervention and other phase modes remain unfinished.';
 }
 
 export function JuiceOfSapho({
@@ -58,6 +58,7 @@ export function JuiceOfSapho({
         {options.length ? (
           options.map((option) => {
             const once = option.scope === 'onceAround';
+            const cyclic = option.scope === 'cyclicAuction';
             const battle = option.scope === 'battleOrder';
             const aggressor = option.scope === 'battleAggressor';
             return (
@@ -68,6 +69,8 @@ export function JuiceOfSapho({
                 <p>
                   {aggressor
                     ? 'Become this battle’s aggressor before plans. You win ordinary ties; a Habbanya Stronghold advantage still takes precedence. The participants and later battle choices stay unchanged.'
+                    : cyclic
+                    ? `Bid ${option.mode} in the current cyclic lot. Provisional duration: this lot only. Existing bids, funding and passes stay committed. Later circuits use the changed cycle; the next lot returns to its normal opener.`
                     : once
                     ? `Bid ${option.mode} in the current Once Around lot. Each eligible player still has only one bidding opportunity.`
                     : battle
@@ -82,7 +85,7 @@ export function JuiceOfSapho({
                   }}
                 >
                   {aggressor ? 'Become aggressor and discard Juice of Sapho' :
-                    `${once ? 'Bid' : battle ? 'Choose battles' : 'Take your movement turn'} ${option.mode} and discard Juice of Sapho`}
+                    `${once || cyclic ? 'Bid' : battle ? 'Choose battles' : 'Take your movement turn'} ${option.mode} and discard Juice of Sapho`}
                 </Button>
               </div>
             );
@@ -93,7 +96,7 @@ export function JuiceOfSapho({
           </p>
         )}
         <p className="text-sm">
-          Later aggressor intervention and other phase or auction modes are still unfinished.
+          Later aggressor intervention and other phase modes are still unfinished.
         </p>
       </div>
     </details>

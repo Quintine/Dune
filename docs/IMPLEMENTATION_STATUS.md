@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 18 October 2026 — Sapho current-lot cyclic auctions
+
+First/last now connects ordinary cyclic lots and native Advanced normal Black
+Market under an explicit provisional current-lot convention. Local cycles retain
+all seat positions, bids/funding/passes and actual post-discard capacity. Both
+advancement loops skip passed seats until a real raise. Native opener identity
+survives both Black Market settlement consumers; ordinary overrides clear before
+the next lot. Existing minimal policies use the projected choices, with readable
+scope/block reasons and compatible old Sapho discard signatures.
+
+Two disjoint lanes, bounded review and owner integration pass10-file134/134,
+types/lint/build and eight original-action/rendered-table continuations.
+Public setup/cache1 uses33 Basic/38 Advanced actions; Black Market uses81 with
+an actual pre-start circle5 choice; the full hand from two normal1 purchases
+uses44. Each10–18-action continuation preserves prior1 and native2/3/4 raises,
+one payment4 and original following opener or final-lot Revival. Eight minimal
+policy proposals remain legal; an actual pending-pass case requires a real raise
+before reentry. Controlled pure quotes stay separately labelled.
+
+Feedback corrected original Black Market opener/completion fixture assumptions.
+Only the external rendering smoke was rerun after repairing default-history and
+final-lot assertions against unchanged source; tests/types/lint/build retain
+their exact source binding. No engine repair followed frozen feedback.
+[Canonical source and exact proof](JUICE_OF_SAPHO_RUNTIME.md#cyclic-ordinary-and-black-market-bidding--18-october-2026).
+No browser click, visual/deployed, direct combined Semuta claim/capture, wider
+scope or complete-mode acceptance. Final assurance remains due. No saved-room/
+database/reset/restart/deployment operation.
+
+
 ## 18 October 2026 — Guild Cunning with the physical Ornithopter
 
 Provisional unused-entitlement composition now permits either card mode to

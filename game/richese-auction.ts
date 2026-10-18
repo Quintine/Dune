@@ -13,6 +13,8 @@ export type RicheseAuction = {
   method: RicheseAuctionMethod;
   eligible: string[];
   order: string[];
+  /** Original native normal-lot opener; Sapho changes this lot's cycle only. */
+  saphoOriginalOpener?: string;
   tieOrder: string[];
   active: string | null;
   bid: number;
@@ -215,7 +217,7 @@ export function submitRicheseBid(
     const at = state.order.indexOf(input.actor);
     for (let distance = 1; distance <= state.order.length; distance++) {
       const next = state.order[(at + distance) % state.order.length];
-      if (next !== state.bidder) {
+      if (state.eligible.includes(next) && next !== state.bidder && !state.passed.includes(next)) {
         state.active = next;
         break;
       }

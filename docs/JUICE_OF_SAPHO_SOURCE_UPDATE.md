@@ -37,6 +37,14 @@ The connected follow-up now offers first after earlier bids whenever the holder 
 
 ### Ordinary cyclic and normal Black Market bidding
 
+**18 October implementation follow-up:** the standing choose-recommended
+instruction selects an explicit provisional current-lot cycle, anchored at the
+live next bidder. It preserves funding/passes, original opener identity and
+native strict-raise/termination. The following source uncertainty remains;
+this is not a publisher answer or a user numerical ruling.
+[Runtime contract](JUICE_OF_SAPHO_RUNTIME.md#cyclic-ordinary-and-black-market-bidding--18-october-2026).
+
+
 The source guarantees an order effect exists for ordered actions, but does not specify the cycle anchor or duration in a cyclic auction. Plausible implementations (one upcoming circuit, whole current lot, or full Bidding Phase) have different winners and opener sequences. None was resolved by this review.
 
 Before enabling any such adapter, specify its selected scope and test that it preserves ordinary raise/pass termination. A last bidder is not entitled to buy at the standing price: every acquisition still requires a legal bid and the ordinary closing condition. Simply moving the holder to the end of an array while advancing from a numeric cursor can skip or repeat seats; immediately changing `active` can deprive another seat of an existing opportunity. A first/last array position without a declared cycle anchor has no stable meaning once bidding wraps.

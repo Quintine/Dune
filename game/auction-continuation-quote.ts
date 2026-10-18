@@ -257,6 +257,8 @@ function calculate(
         ids(lot.order) &&
         lot.order.length > 0 &&
         lot.order.every((id) => input.order.includes(id)) &&
+        (lot.saphoOriginalOpener === undefined ||
+          text(lot.saphoOriginalOpener) && lot.order.includes(lot.saphoOriginalOpener)) &&
         lot.order.includes(s.winner) &&
         ['normal', 'onceAround', 'silent'].includes(lot.method) &&
         !(lot.source === 'cache' && lot.method === 'normal'),
@@ -431,7 +433,7 @@ function calculate(
         ...(lot.method === 'normal'
           ? {
               opener:
-                (input.order.indexOf(lot.order[0]) + 1) % input.order.length,
+                (input.order.indexOf(lot.saphoOriginalOpener ?? lot.order[0]) + 1) % input.order.length,
             }
           : {}),
       });
@@ -481,10 +483,12 @@ function calculate(
       : atreides
         ? { kind: 'atreidesAuction', owner: atreides.id, passed: [] }
         : null;
+  const nextAuction = structuredClone(a);
+  delete nextAuction.saphoOrder;
   return result({
     kind: 'normalLot',
     auction: {
-      ...structuredClone(a),
+      ...nextAuction,
       index,
       bid: 0,
       allyPayment: 0,

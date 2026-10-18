@@ -30,7 +30,7 @@ export function quoteNormalAuctionNext(context: {
   for (let offset = 1; offset <= context.order.length; offset++) {
     const index = (Math.max(activeIndex, -1) + offset) % context.order.length;
     const player = context.order[index];
-    if (eligible.has(player) && player !== context.bidder)
+    if (eligible.has(player) && player !== context.bidder && !context.passed.includes(player))
       return { kind: 'bid', player };
   }
 

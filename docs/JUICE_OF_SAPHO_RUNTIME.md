@@ -1,12 +1,106 @@
 # Juice of Sapho: finite ordering implementation
 
-Updated 14 September 2026. **Partial card implementation; complete Richese/Advanced starts remain disabled.** This document distinguishes implemented boundaries from printed rules. Sources and unresolved questions remain in [the source audit](JUICE_OF_SAPHO_ENGINE_AUDIT.md). The publisher CHOAM/Richese rulebook p11 confirms Once Around last; the physical face describes first, last (including after Guild), and battle aggressor. No newly discovered official ruling resolves normal cyclic auction duration, partly completed combined turns, or first versus Guild. These three material questions have been sent to the user; no answer has been assumed.
+Updated 18 October 2026. **Partial card implementation; full modes and
+publication acceptance remain gated.** The earlier source audit remains the
+printed-evidence baseline. The current-lot prototype below selects an explicit
+provisional cyclic convention under the 14 October choose-recommended direction;
+it is not a newly located publisher answer. Other timing questions remain open.
 
 The [Battle-phase ordering prototype](SAPHO_BATTLE_ORDER.md) adds first/last
 remaining battle choices. Its separate chooser, phase priority and saved-boundary
 contract supersede the earlier absence of that mode below. The
 [early aggressor prototype](SAPHO_AGGRESSOR.md) now uses the existing shared
 pre-plan opportunity; later aggressor intervention remains unfinished.
+
+## Cyclic ordinary and Black Market bidding — 18 October 2026
+
+The physical face offers first/last in an ordered action; the publisher's Once
+Around FAQ does not determine duration in cyclic bidding. The
+[source review](JUICE_OF_SAPHO_SOURCE_UPDATE.md#ordinary-cyclic-and-normal-black-market-bidding)
+identifies one upcoming circuit, the current lot and the whole phase as different
+possible readings. Provisionally choose **the current lot**, anchored at the
+actual next bidder when Sapho is played. This supersedes the old software
+exclusion within ordinary normal auctions and native Advanced normal Black
+Market. It does not alter Silent bidding, native Black Market eligibility or
+extend a choice across the phase.
+
+A holder with a pending eligible bid can move first/last in the full local cycle.
+Keep other seats' relative cyclic order, including high-bid, passed and currently
+full placeholders that could become relevant later. The next actor is the first
+eligible unpassed seat other than the high bidder. A passed holder waits for a
+real raise; a high bidder has no current pending bid to reorder. These are
+explicit next-opportunity prototype boundaries, not extra printed restrictions.
+Compare full effective cycles for no-op rejection: a last pending bidder may
+still move behind a skipped seat that can reenter after a raise. A mere rotation
+with the same next actor and effective cycle cannot consume the card.
+
+Discarding the real card frees a hand slot before determining holder capacity.
+A native full-hand Black Market seller retains its existing paid-retention
+eligibility through the shared quote. Sapho does not change the physical lot,
+standing bid, bidder, allied funding or passed list. Both native advancement
+loops skip passes until a genuine raise clears them. Every new bid must still
+strictly exceed the standing amount; Sapho supplies no standing-price purchase.
+
+The ordinary auction retains a per-lot `saphoOrder`; the physical `g.order` and
+original `opener` stay unchanged, and the next lot removes the override. A normal
+Black Market retains `saphoOriginalOpener` before changing its local cycle, so
+both settlement consumers resume the following normal pool from the original
+physical source. Existing same-lot unfunded-payment recovery retains the new
+cycle without revising its separate provisional payment policy.
+
+Owner controls expose `scope:'cyclicAuction'` with the server event and first/
+last mode, explain this provisional duration and keep blocked reasons readable.
+The existing minimal bot adapter consumes the same options without new strategy
+or hidden hand inspection. The optional cyclic tag on the existing Sapho discard
+continuation binds its native lot and does not run a bid during disposal. Legacy
+Once Around signatures and their normal resume suffix stay unchanged.
+
+The frozen batch passes **10 files134/134**, types/lint/build and eight finite
+original-action/rendered-table continuations from four public setup sources.
+Actual cache1 purchase uses33 Basic/38 Advanced source actions; native next-turn
+Black Market uses81, including the accepted original Emperor circle5 choice;
+a full hand built through two further normal1 purchases uses44. First/last
+continuations use10–18 actions: prior1 stays funded, the actual holder raises2,
+rival raises3, holder wraps to4, and native purchase pays4 once. Black Market
+pays its seller4 and resumes the original next opener; ordinary lots rotate
+normally, while the full-hand final lot correctly enters Revival. Eight minimal
+policy proposals remain legal. Another original-action case keeps prior passes
+through Sapho, rejects the standing-price bid and reopens passes only on a real
+raise. Nine controlled pure tests cover full cycles, no-ops, strict funding/
+termination and post-sale opener/override quotes.
+
+The first batch exposed an original fixture assumption: turn2's native Storm
+made the holder already first after its initial raiser. A real pre-start circle
+choice supplies the intended independent pending opportunity. Its completion
+predicate also had to follow the actual intervening cache-first lot before
+asserting the following normal pool. No live order/card/fund/clock injection or
+engine repair followed this feedback. Original unopened Spice positions/scalar
+lotteries and the explicit lobby circle choice are selected source conditions.
+
+The external rendered smoke initially assumed default history showed the full
+new log and that every completed lot had a next lot. It now checks the actual
+accepted event separately, renders offered/busy/passed controls, and permits the
+full-hand final lot's native phase close. Only that smoke was rerun after those
+external-only repairs; all application source stayed identical to the passing
+134/134/types/lint/build checkpoint. The aggregate report records exact child
+report provenance rather than claiming those checks were repeated. A bounded
+read-only source/consumer review found no concrete implementation defect.
+
+Actual GameTable and isolated offered controls render with enabled and busy
+states. No browser click, visual or deployed acceptance is claimed. Direct
+combined Semuta claim/capture, other ordered phases, first-versus-Guild, partly
+completed movement, later aggressor intervention, full modes and final assurance
+remain open. No saved-room/database/reset/restart/deployment operation.
+
+Private artifacts: `/home/quintine/.local/share/dune/checkpoints/20261018-sapho-cyclic/`.
+`frozen-integrated-final/report.json` combines passing tests/types/lint/build
+from `frozen-integrated-2` with `runtime-repaired-2`, all at base `561152d` and tree
+`506a6b698ff5c791a1f05a0700450dc6d13837516ecdef6a8f9d3d5eee752bd3`.
+`runtime-smoke.json` and private rendered HTML retain actual source/continuation
+counts and controls. Final checkpoint prose/reference evidence is a documented
+post-proof overlay; `documentation-overlay.json` and `git-result.json` bind that
+reviewed overlay and pushed revision. Relevant helpers, engine, controls and
+tests stay identical to the frozen proof.
 
 ## Implemented contract
 
@@ -27,7 +121,7 @@ The [battle-order follow-up](SAPHO_BATTLE_ORDER.md) connects first/last at a cle
 boundary between actual battles. It does not implement the separate aggressor
 mode discussed below.
 
-Later battle aggressor intervention, normal/Black Market cyclic bidding, other ordered actions and partly completed movement remain unfinished. First/Guild competing priority is guarded. Reacquiring and replaying Sapho while an existing movement protection remains is also guarded. Silent submission is simultaneous and receives no fabricated order or tie change.
+Later battle aggressor intervention, other ordered actions and partly completed movement remain unfinished. The current-lot cyclic prototype above supersedes the earlier normal/Black Market absence claim. First/Guild competing priority is guarded. Reacquiring and replaying Sapho while an existing movement protection remains is also guarded. Silent submission is simultaneous and receives no fabricated order or tie change.
 
 The battle audit in [the battle review](JUICE_OF_SAPHO_BATTLE_REVIEW.md) found a real Stone Burner counterexample: a plan admitted with original aggressor tie priority can become allocation-ambiguous after late Sapho. A complete implementation needs the actual allocation continuation (and a usable, possession-independent late intervention boundary), not rejection based on an opponent's hidden plan. No aggressor handler has been enabled around that defect.
 

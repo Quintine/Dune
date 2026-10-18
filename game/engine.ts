@@ -261,6 +261,7 @@ import {
   quoteNormalAuctionBid,
   quoteNormalAuctionNext,
 } from './normal-auction';
+import { reorderSaphoCyclicAuction, SaphoCyclicAuctionError } from './sapho-cyclic-auction';
 import {
   quoteNormalAuctionPeek,
   quoteIxTechnologyCancellation,
@@ -828,6 +829,8 @@ export type Battle = {
   voice?: { target: string; kind: Card['kind'] | 'stoneBurner' | 'mirrorWeapon'; must: boolean };
 };
 export type Auction = {
+  /** Sapho changes this lot's cycle, never physical order or the next opener. */
+  saphoOrder?: string[];
   peekKnown?: boolean;
   occupiedEvent?: string;
   cards: Card[];
@@ -1395,6 +1398,7 @@ export type Game = {
         }
       | {
           kind: 'saphoAuctionDiscard';
+          cyclic?: 'normal' | 'blackMarket';
           player: string;
           card: string;
           event: string;
@@ -5441,6 +5445,7 @@ type SaphoAuctionDiscardContinuation = Extract<
 function saphoAuctionDiscardSignature(g: Game, c: SaphoAuctionDiscardContinuation) {
   return JSON.stringify({
     player: c.player, card: c.card, event: c.event, mode: c.mode,
+    ...(c.cyclic === undefined ? {} : { cyclic: c.cyclic, auction: g.auction }),
     parent: nullentropyParentSignature(g, c.resume, c.event),
     turn: g.turn, phase: g.phase, active: g.active, order: g.order,
     lot: g.richeseAuction, bidding: g.richeseBidding, funding: g.richeseFunding,
@@ -6456,21 +6461,27 @@ function treacheryDiscardIntegrity(g: Game) {
   } else if (continuation?.kind === 'saphoAuctionDiscard') {
     const c = continuation, entry = batch.entries[0], lot = g.richeseAuction;
     const remaining = lot?.order.filter(id => !lot.acted.includes(id));
+    const cyclic = c.cyclic === undefined ? null : saphoCyclicContext(g);
     requireRule(
-      g.phase === 3 && lot?.method === 'onceAround' &&
+      g.phase === 3 && (c.cyclic === undefined ? lot?.method === 'onceAround' &&
       lot.event === c.event && !lot.outcome &&
       lot.eligible.includes(c.player) && !lot.acted.includes(c.player) &&
       (c.mode === 'first'
         ? remaining?.[0] === c.player && lot.active === c.player
         : c.mode === 'last' && remaining?.at(-1) === c.player) &&
-      g.active === lot.active && batch.cause === 'sapho:auction' &&
+      g.active === lot.active : cyclic && cyclic.source === c.cyclic &&
+      cyclic.event === c.event && cyclic.eligible.includes(c.player) &&
+      !cyclic.passed.includes(c.player) && cyclic.bidder !== c.player &&
+      (c.mode === 'first' ? cyclic.order[0] === c.player && cyclic.active === c.player
+        : c.mode === 'last' && cyclic.order.at(-1) === c.player) &&
+      g.active === cyclic.active) && batch.cause === 'sapho:auction' &&
       batch.entries.length === 1 && entry.publicFace &&
       entry.discardedBy === c.player && entry.card.id === c.card &&
       richeseCardDefinition(entry.card)?.card.effect === 'juiceOfSapho' &&
       !c.resume.response && !c.resume.decision &&
       !c.resume.pendingKarama && !c.resume.phaseOpening &&
       c.stateSignature === saphoAuctionDiscardSignature(g, c),
-      'The used Juice of Sapho no longer matches its committed Once Around order.',
+      'The used Juice of Sapho no longer matches its committed auction order.',
     );
   } else if (continuation?.kind === 'saphoBattleOrderDiscard') {
     const c = continuation, entry = batch.entries[0], order = g.battleOrder;
@@ -7673,7 +7684,7 @@ function semutaOfferSupported(
           continuation.use.response.kind === 'emperorIncome'
           ? !!g.currentAuctionSale && (g.currentAuctionSale.origin === 'normal'
             ? !!g.auction && !g.richeseAuction : !!g.richeseAuction && !g.auction)
-          : !g.auction)) &&
+          : (continuation.kind === 'saphoAuctionDiscard' && continuation.cyclic === 'normal') || !g.auction)) &&
     (bgDiscard || continuation.kind === 'specialKaramaDiscard' || continuation.kind === 'saphoAuctionDiscard' ||
       continuation.kind === 'ixAllyCard' ||
       (continuation.kind === 'karamaIncomeDiscard' &&
@@ -7913,7 +7924,7 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.decision = next.resume.decision;
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
-    settleRicheseLot(g);
+    if (next.cyclic === undefined) settleRicheseLot(g);
   } else if (next.kind === 'saphoBattleOrderDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -12355,7 +12366,7 @@ function finishRicheseLot(g: Game) {
     richeseDeclarationCache(g);
     round.blackMarketSold = lot.outcome?.kind === 'sold';
     if (lot.method === 'normal') {
-      const opener = lot.order[0];
+      const opener = lot.saphoOriginalOpener ?? lot.order[0];
       round.opener = (g.order.indexOf(opener) + 1) % g.order.length;
     }
   }
@@ -13593,7 +13604,7 @@ function auctionNext(g: Game) {
     return p.hand.length < handLimit(p);
   });
   const next = quoteNormalAuctionNext({
-    order: g.order,
+    order: a.saphoOrder ?? g.order,
     eligible,
     active: a.active,
     bid: a.bid,
@@ -15464,12 +15475,18 @@ function recoverAuctionPayment(g: Game, p: Player) {
   a.bidder = null;
   a.allyPayment = 0;
   a.passed = [];
-  while (
-    getPlayer(g, g.order[a.opener]).hand.length >=
-    handLimit(getPlayer(g, g.order[a.opener]))
-  )
-    a.opener = (a.opener + 1) % g.order.length;
-  a.active = g.order[a.opener];
+  if (a.saphoOrder) {
+    const first = a.saphoOrder.find(id => getPlayer(g,id).hand.length < handLimit(getPlayer(g,id)));
+    requireRule(first, 'The original Sapho lot has no eligible bidder to resume.');
+    a.active = first;
+  } else {
+    while (
+      getPlayer(g, g.order[a.opener]).hand.length >=
+      handLimit(getPlayer(g, g.order[a.opener]))
+    )
+      a.opener = (a.opener + 1) % g.order.length;
+    a.active = g.order[a.opener];
+  }
   g.active = a.active;
   log(
     g,
@@ -19328,10 +19345,58 @@ function offerMoritaniDuke(g: Game) {
   return true;
 }
 type SaphoOption = {
-  scope: 'onceAround' | 'movement' | 'battleOrder';
+  scope: 'onceAround' | 'cyclicAuction' | 'movement' | 'battleOrder';
   event: string;
   mode: 'first' | 'last';
 } | { scope: 'battleAggressor'; event: string; mode: 'aggressor' };
+function saphoCyclicRule<T>(quote: () => T): T {
+  try { return quote(); }
+  catch (error) {
+    if (error instanceof SaphoCyclicAuctionError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function saphoCyclicIntegrity(g: Game) {
+  const cycle = g.auction?.saphoOrder;
+  if (cycle !== undefined) requireRule(g.phase === 3 && Array.isArray(cycle) &&
+    cycle.length === g.order.length && new Set(cycle).size === cycle.length &&
+    cycle.every(id => g.order.includes(id)),
+  'The current lot has lost its original Sapho bidder cycle.');
+  const lot = g.richeseAuction;
+  if (lot?.saphoOriginalOpener !== undefined) requireRule(g.phase === 3 &&
+    lot.source === 'blackMarket' && lot.method === 'normal' &&
+    g.order.includes(lot.saphoOriginalOpener) && lot.order.includes(lot.saphoOriginalOpener),
+  'The Black Market has lost its original opener after Sapho.');
+}
+/** A concrete current lot only. Post-discard eligibility can admit a full hand;
+ * neither a past pass nor the standing high bid creates another pending bid. */
+function saphoCyclicContext(g: Game, spending?: Player) {
+  if (g.status !== 'playing' || g.phase !== 3 || g.currentAuctionSale) return null;
+  saphoCyclicIntegrity(g);
+  const a = g.auction, lot = g.richeseAuction;
+  if (a && !lot && a.cards[a.index] && g.active === a.active) {
+    const order = a.saphoOrder ?? g.order;
+    return {source:'normal' as const, event:JSON.stringify(['saphoCyclic',g.turn,'normal',a.index]),
+      order, active:a.active, bidder:a.bidder, passed:a.passed,
+      eligible:order.filter(id => {
+        const player = getPlayer(g,id);
+        return player.hand.length - Number(spending?.id === id) < handLimit(player);
+      })};
+  }
+  if (lot?.source === 'blackMarket' && lot.method === 'normal' && !lot.outcome &&
+    lot.active && g.active === lot.active) {
+    const order = spending && !lot.order.includes(spending.id) ? [...lot.order,spending.id] : lot.order;
+    return {source:'blackMarket' as const, event:JSON.stringify(['saphoCyclic',g.turn,'blackMarket',lot.event]),
+      order, active:lot.active, bidder:lot.bidder, passed:lot.passed,
+      eligible:order.filter(id => {
+        const player = getPlayer(g,id);
+        return (lot.eligible.includes(id) || spending?.id === id) &&
+          richeseBidFitsHand(lot.source,lot.owner,id,
+            player.hand.length - Number(spending?.id === id),handLimit(player));
+      })};
+  }
+  return null;
+}
 function saphoMovementIntegrity(g: Game) {
   const last = g.saphoMovementLast;
   if (last === undefined || last === null) return;
@@ -19433,6 +19498,15 @@ function saphoOptions(g: Game, p: Player): SaphoOption[] {
   )
     return [];
   const options: SaphoOption[] = [];
+  const cyclic = saphoCyclicContext(g,p);
+  if (cyclic) for (const mode of ['first','last'] as const) {
+    try {
+      reorderSaphoCyclicAuction(cyclic,{event:cyclic.event,player:p.id,mode});
+      options.push({scope:'cyclicAuction',event:cyclic.event,mode});
+    } catch (error) {
+      if (!(error instanceof SaphoCyclicAuctionError)) throw error;
+    }
+  }
   const battle = g.battle;
   if (g.phase === 6 && battle?.event && battle.preLeader?.event === battle.event &&
     !battle.preLeader.closed && !battle.preLeader.ready.includes(p.id) &&
@@ -19523,6 +19597,41 @@ function playSapho(g: Game, p: Player, action: Action) {
       if (semutaOfferSupported(g, continuation, entries)) {
         continuation.stateSignature = saphoAggressorDiscardSignature(g, continuation);
         stageTreacheryDiscard(g, 'sapho:aggressor', entries, continuation);
+      }
+    }
+  } else if (option.scope === 'cyclicAuction') {
+    const context = saphoCyclicContext(g,p);
+    requireRule(context, 'The cyclic Sapho auction is no longer open.');
+    const next = saphoCyclicRule(() => reorderSaphoCyclicAuction(context,
+      {event:option.event,player:p.id,mode:option.mode}));
+    const used = discard(g,p,'richese-juice-of-sapho');
+    if (context.source === 'normal') {
+      g.auction!.saphoOrder = next.order;
+      g.auction!.active = next.active;
+    } else {
+      const lot = g.richeseAuction!;
+      lot.saphoOriginalOpener ??= lot.order[0];
+      if (!lot.eligible.includes(p.id)) {
+        lot.eligible.push(p.id);
+        lot.tieOrder = g.order.filter(id => lot.eligible.includes(id));
+      }
+      lot.order = next.order;
+      lot.active = next.active;
+    }
+    g.active = next.active;
+    log(g, `${p.name} discarded Juice of Sapho to bid ${option.mode} in this cyclic auction. Provisional scope: the current lot only. Existing bids, funding and passes remain committed; every purchase still requires a raised bid.`,
+      {faction:p.faction,name:'Juice of Sapho'});
+    if (g.semutaPreview) {
+      const continuation: SaphoAuctionDiscardContinuation = {
+        kind:'saphoAuctionDiscard',cyclic:context.source,player:p.id,card:used.id,
+        event:option.event,mode:option.mode,
+        resume:{response:g.response,decision:g.decision,pendingKarama:g.pendingKarama,phaseOpening:g.phaseOpening},
+        stateSignature:'',
+      };
+      const entries = [{card:used,discardedBy:p.id,publicFace:true}];
+      if (semutaOfferSupported(g,continuation,entries)) {
+        continuation.stateSignature = saphoAuctionDiscardSignature(g,continuation);
+        stageTreacheryDiscard(g,'sapho:auction',entries,continuation);
       }
     }
   } else if (option.scope === 'onceAround') {
@@ -22012,6 +22121,7 @@ function atomicsIntegrity(g: Game) {
     'Atomics Aftermath has lost its revealed token, original targets or hand-limit custody.');
 }
 function marketGholaIntegrity(g: Game) {
+  saphoCyclicIntegrity(g);
   battleOrderIntegrity(g);
   saphoAggressorIntegrity(g);
   nexusCardsIntegrity(g);

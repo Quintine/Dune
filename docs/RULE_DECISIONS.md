@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Provisional Sapho cyclic lot — 18 October 2026
+
+The printed first/last ordered-action effect does not specify cyclic duration.
+Under the 14 October choose-recommended direction, use the current ordinary or
+native Advanced normal Black Market lot, anchored at the live next bidder.
+Keep the full local cycle, standing bid/funding/passes, strict raises and native
+next-lot opener. A pending eligible holder may reorder; passed/high-bid holders
+wait for another genuine opportunity. Full effective cycle comparison rejects
+no-ops. This is a first-version composition, not publisher clarification or a
+new human timing answer. Other ordered phases/timing remain open.
+[Source and runtime contract](JUICE_OF_SAPHO_RUNTIME.md#cyclic-ordinary-and-black-market-bidding--18-october-2026).
+
+
 ## Guild Cunning and physical Ornithopter — 18 October 2026
 
 The printed Nexus grants a second shipment with Hajr required for later movement.

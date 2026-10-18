@@ -494,14 +494,15 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Choose an available order change or become battle aggressor before plans, then discard Sapho. Later intervention and other timing modes remain unfinished.',
     steps: [
       'In a current Once Around auction, first or last can reorder remaining bidders while you have not yet bid. Earlier bids stay committed; a position you already hold is unavailable. You still get only one bidding opportunity and must outbid the current high bid to win.',
-      'Discarding Sapho frees a hand slot. A full-hand holder can join a still-open lot through this order change. A completed bid or pass cannot be repeated, and a finished lot cannot reopen.',
+      'In ordinary cyclic bidding or native Advanced normal Black Market, provisional first/last changes the current lot only, anchored at the live next bidder. Later circuits use that local cycle. Keep standing bids, allied funding and passes; a passed holder waits for a real raise, and the high bidder has no pending bid to reorder. Every purchase still requires a strict raise. Full effective-cycle no-ops cannot consume the card. The next lot uses its normal physical opener.',
+      'Discarding Sapho frees a hand slot. A full-hand holder can join a still-open lot through this order change. Once Around completed opportunities cannot repeat. A cyclic pass stays spent until a genuine raise reopens it; a finished lot cannot reopen.',
       'The movement controls change complete shipment and movement turns at a boundary before the current player begins. First moves you ahead of the remaining unstarted turns, including after earlier players have fully finished. In Advanced, the Guild must have finished or be absent. Last stays after the Guild even if the Guild later chooses to wait.',
       'Between completed battles, choose first or last among remaining battle choosers. The priority lasts for the rest of the Battle phase. You still need a real unresolved battle. Others may choose battles against you before your own turn; last is not immunity. This scope changes the chooser, not each battle’s aggressor or tie advantage.',
       'During your open pre-plan preparation, use Sapho to become the current battle’s aggressor before declaring ready. You win ordinary ties, while the Habbanya Stronghold advantage still takes precedence. Physical participants, plans and later battle-choice order do not swap. The accepted priority survives refresh.',
       'Finish existing shipment, movement, card preparation and pending decisions before changing order. Your hand panel lists only currently available choices. A reserved card or a position you already hold cannot be selected.',
       'Completed bids and turns stay completed. Storm order, committed funding and movement counters do not reset. Refreshing preserves the same remaining opportunities and any declared last position.',
       'In the explicitly opted-in Semuta preview, clean Once Around and movement-order discards pause after their bidder/turn queues reorder; a clean between-battles chooser discard pauses after changing battle priority but before the next chooser acts; a clean pre-plan aggressor discard pauses after changing ordinary tie priority. Every seat receives the same neutral offer. Claim or decline moves only the used card or leaves it discarded; each committed queue or unsealed battle then continues once.',
-      'These are the supported development controls, not additional printed restrictions. Later aggressor intervention, ordinary cyclic auction scope, other phase ordering and intervention during a partly completed combined turn remain unfinished. Silent bids are simultaneous; their storm-order tie rule is unchanged.',
+      'These are the supported development controls, not additional printed restrictions. Cyclic lot duration and next-opportunity eligibility are explicit provisional conventions. Later aggressor intervention, other phase ordering and intervention during a partly completed combined turn remain unfinished. Silent bids are simultaneous; their storm-order tie rule is unchanged.',
     ],
     example:
       'Atreides bids 2. Before taking its bid, the Emperor uses Sapho to go last. Richese bids 3, then the Emperor must bid at least 4 to win. Atreides does not receive another bid.',
@@ -516,13 +517,13 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Finite Once Around, clean combined-turn and remaining Battle-phase ordering; authoritative chooser/participant separation, phase priority, physical discard, full-hand auction eligibility and persisted last-over-Guild movement protection. Remaining timing modes are guarded.',
+          'Finite Once Around, provisional current-lot cyclic ordinary/normal Black Market, clean combined-turn and remaining Battle-phase ordering. Local cycles preserve passes/funding; both native consumers retain the original following opener. Authoritative chooser/participant separation, full-hand eligibility and last-over-Guild protection remain. Other timing modes stay unfinished.',
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Owner-only first/last and pre-plan aggressor actions, public aggressor/tie priority and remaining battle order, owner-relative targets, readable inspector and timing explanations. Later aggressor and cyclic-auction controls remain unfinished.',
+          'Owner-only first/last and pre-plan aggressor actions, public aggressor/tie priority and remaining battle order, owner-relative targets, readable inspector and timing explanations. Cyclic first/last explains current-lot duration and pending-bid limits; later aggressor controls remain unfinished.',
       },
       {
         area: 'AI',
@@ -540,8 +541,14 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Finite-order, engine, all-profile and real persisted-room tests cover once-only play, funding, full-hand eligibility, privacy, Guild deferral and battle scheduling through actual outcomes. Full expansion compliance remains unverified.',
+          '18 October cyclic scope:10-file134/134, types/lint/build and eight original-action/rendered-table continuations pass. Actual cache1, Basic/Advanced ordinary bidding, native Advanced Black Market and paid full hand preserve prior1,2/3/4 raises, one payment4 and original next opener or final-lot Revival. Eight minimal policy proposals are legal; actual passes need a real raise. Controlled pure-cycle/post-sale quotes are separate. Fixture opener/completion and external smoke assumptions were repaired; only runtime was rerun against identical source after types/lint/build. No browser click, visual/deployed, direct combined Semuta claim/capture, full-mode or final-assurance acceptance.',
         evidence: [
+          'game/sapho-cyclic-auction.ts',
+          'components/juice-of-sapho.tsx',
+          'tests/sapho-cyclic-auction.test.ts',
+          'tests/fixture-sapho-cyclic-auction.ts',
+          'tests/sapho-cyclic-auction-engine.test.ts',
+          'docs/JUICE_OF_SAPHO_RUNTIME.md',
           'tests/ordered-opportunity.test.ts',
           'tests/juice-of-sapho-engine.test.ts',
           'tests/juice-of-sapho-engine-review.test.ts',
