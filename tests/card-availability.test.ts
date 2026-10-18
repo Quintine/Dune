@@ -153,7 +153,7 @@ void test('Weather Control stays available after dials and confirmations, but va
     'omitting selection asks about timing only',
   );
 });
-void test('Hajr requires the active movement owner and grants only one additional ordinary entitlement', () => {
+void test('each held Hajr needs the active movement owner and grants its own ordinary entitlement', () => {
   agrees(
     'hajr',
     (g) => {
@@ -173,7 +173,7 @@ void test('Hajr requires the active movement owner and grants only one additiona
     (g) => {
       g.hajr = ['a'];
     },
-    false,
+    true,
   );
   agrees(
     'hajr',

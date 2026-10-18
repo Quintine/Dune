@@ -88,7 +88,8 @@ void test('Guild special Karama stops its own second shipment without payment or
     const f = nexusGuildCunningFixture({ advanced: true, homeworlds });
     const karama = holdGuildCunningCard(f.g, f.owner, 'karama');
     const hajr = holdGuildCunningCard(f.g, f.owner, 'hajr');
-    let g = originalGuildCunningTurn(f, false);
+    let g = originalGuildCunningTurn(f);
+    g = applyAction(g, f.owner, {type:'card',card:hajr.id});
     g = nexusGuildCunningAllow(
       applyAction(g, f.owner, nexusGuildCunningRequest(f, g)),
     );
@@ -131,22 +132,20 @@ void test('Guild special Karama stops its own second shipment without payment or
       );
     const move: Action = {
       type: 'move',
-      from: 'arrakeen:10',
-      territory: 'hagga_basin',
+      from: 'hagga_basin:12',
+      territory: 'plastic_basin',
       sector: 12,
       amount: 5,
     };
-    rejected(g, f.owner, move);
     rejected(g, f.owner, shipment);
-    g = applyAction(nexusGuildCunningReload(g), f.owner, {
-      type: 'card',
-      card: hajr.id,
-    });
+    assert.equal(viewGame(g,f.owner).nexusGuildCunning!.active!.movesLeft,1);
+    // Supplied Advanced timing played Hajr after the first actual movement;
+    // the stopped second shipment preserves that already earned unused move.
     g = applyAction(g, f.owner, move);
     rejected(g, f.owner, {
       type: 'move',
-      from: 'hagga_basin:12',
-      territory: 'arsunt',
+      from: 'plastic_basin:12',
+      territory: 'hagga_basin',
       sector: 12,
       amount: 5,
     });

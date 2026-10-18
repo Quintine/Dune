@@ -2,6 +2,69 @@
 
 Audit: 2026-09-06. Document-only source and engine review. The canonical component is `richese-ornithopter`; this is distinct from ordinary Arrakeen/Carthag ornithopter access and the later Ecaz discovery token. No runtime effect or complete expansion compliance is claimed here.
 
+## Recovered Hajr replay — 18 October 2026
+
+**Prototyped / Partial.** The earlier multiple-physical-Hajr boundary had an
+incorrect premise: the original inventory has only one Hajr. A real missing
+case is recovering that discarded card with the original paid
+[Nullentropy Box](NULLENTROPY_BOX_ENGINE_AUDIT.md) and playing it again.
+The supplied physical p39/logical p37 paragraph gives each Hajr play one extra
+normal move and immediate-after-Force-Movement timing, but establishes no
+once-per-turn cap. Under choose-recommended, a genuinely recovered held card
+may be played again for one further allowance. This replay interpretation is
+explicit; it is not a newly retrieved publisher FAQ or permission to duplicate
+the printed card. Basic retains broader timing; Advanced requires a fresh
+completed movement after the preceding Hajr consumed its opportunity.
+
+Actual accepted Hajr plays are counted separately from the unique legacy
+has-used marker. The physical card must be back in hand: repeating a consumed
+first-use ID before recovery, or after its second discard, grants nothing.
+The original Box pays two bank spice and retrieves the one eligible discard
+automatically when no selection is needed. Searching grants no movement or
+Advanced timing opportunity. Basic may replay after retrieval; Advanced's
+programme retrieves while one earned move remains, completes that movement,
+then plays the same Hajr at the fresh opportunity. Both finish three ordinary
+movements with one physical Hajr and one paid Box.
+
+The shared movement ceiling and owned control count accepted plays, preserving
+Ornithopter's separate completed-group credit. Ordinary/flight disposal binds
+the new count without altering legacy signatures when the field is absent.
+The count resets with the original turn/movement counters; old marker-only
+positions mean one play, without reconstructing saved history. Guild Cunning
+now carries counted unused Hajr allowances while forfeiting the ordinary slot.
+New declarations use v2 count receipts; legacy v1 boolean bytes stay valid.
+Signed current/final counts bound the native continuation after the second
+shipment and remain in completed history. Advanced Cunning now uses the same
+held-card/fresh-window timing. Physical Ornithopter/Cunning remains separate.
+
+Two exclusive fixture/pure lanes plus owner integration and bounded review pass
+frozen **12 files102/102**, types/lint/build and **two** original-action/
+actual-GameTable programmes. Real cache Box1, ordinary Hajr1 and paid three-counter
+desert shipment reach the source in38 Basic/45 Advanced actions; seven subsequent
+actions include first use, the original two-spice search, same-ID second use,
+three ordinary moves and actual turn ending. Advanced retains two originally
+shipped Sardaukar. Both sole-discard searches are automatic, with no fabricated
+second card or manual selection claim. Four minimal policies retain the third
+move in each mode (eight proposals); strategy/calibration is deferred.
+
+Pure cases additionally cover old receipt bytes, counted before/after grants,
+ordinary forfeiture, spent counters and invalid mixed formats. Related Cunning,
+Box, disposal and prior flight regressions pass. One historical Advanced Cunning
+case now earns Hajr after the real first move before carrying it through a
+stopped shipment; its later route respects lost city access. Fixture type
+feedback corrected a nullable private search reference. No printed number changed.
+
+Proof base `72e77d7f4d96a3eca5987eba5287cc36dea3e99c`, frozen tree
+`8c1122bd35446db71d09245dad128be1c8df440392c7d1ac7b0014fca3cadecc`;
+private reports/HTML are under
+`/home/quintine/.local/share/dune/checkpoints/20261018-hajr-replay/`.
+Cunning replay composition has pure/related regression evidence, not a genuine
+paid-Box native Nexus replay programme. Framework aliases/CSS stubs mean no
+visual/browser/deployed acceptance. Other recovery producers, advisor/card and
+wider module combinations, comprehensive assurance and full modes remain open.
+No saved room/database mutation, reset, restart or deployment. Earlier one-Hajr
+and multiple-copy descriptions below remain dated implementation history.
+
 ## Hajr and unused movement entitlements — 18 October 2026
 
 **Prototyped / Partial.** The photographed Ornithopter face supplies its two

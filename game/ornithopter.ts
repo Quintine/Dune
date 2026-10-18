@@ -9,9 +9,10 @@ type Counts = Readonly<Record<string, number>>;
 
 /** A two-group flight replaces one ordinary entitlement. Only its completed
  * extra group earns a physical-move credit; Hajr remains an independent move. */
-export function ordinaryMovementAllowance(hajrUsed: boolean, extraMoves = 0): number {
-  const limit = 1 + Number(hajrUsed) + extraMoves;
-  if (typeof hajrUsed !== 'boolean' || !Number.isSafeInteger(extraMoves) || extraMoves < 0 ||
+export function ordinaryMovementAllowance(hajr: boolean | number, extraMoves = 0): number {
+  const plays = typeof hajr === 'boolean' ? Number(hajr) : hajr;
+  const limit = 1 + plays + extraMoves;
+  if (!Number.isSafeInteger(plays) || plays < 0 || !Number.isSafeInteger(extraMoves) || extraMoves < 0 ||
     !Number.isSafeInteger(limit)) throw new RangeError('Movement credits must be nonnegative safe integers.');
   return limit;
 }

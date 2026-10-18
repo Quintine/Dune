@@ -16,6 +16,26 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Recovered Hajr replay — 18 October. Prototyped / Partial.** The deck contains
+one Hajr. Real paid Box recovery now permits playing that same held card again,
+counting one extra allowance per accepted use. Advanced needs a fresh completed
+movement; Basic retains broader timing. Legacy used markers/receipt bytes remain
+compatible, while new Cunning declarations/count snapshots preserve unused Hajr
+allowances without another ordinary move. Replay is an explicit interpretation.
+
+Two disjoint lanes plus owner integration/review pass frozen **12 files102/102**,
+types/lint/build and two original-action/rendered-table programmes. Actual cards
+and shipment use38 Basic/45 Advanced source actions plus seven continuations.
+The original sole-discard search pays2 and retrieves automatically; no fabricated
+copy or manual selection. Both finish three ordinary moves, with four legal
+policies in each mode. A historical Advanced Cunning case now earns Hajr before
+its stopped second shipment, and respects the resulting normal range.
+Native Cunning replay has pure/related regression evidence, not an original
+paid-Box Nexus programme. Wider combinations, full modes and final assurance
+remain open; no visual/browser/deployed acceptance, saved-room/reset/restart or
+deployment operation.
+[Source, counted protocol and proof](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#recovered-hajr-replay--18-october-2026).
+
 **Ornithopter / Hajr — 18 October. Prototyped / Partial.** New card uses replace
 one unused movement by the selected mode and retain the independent Hajr move.
 Prior ordinary moves stay spent; groups are distinct within the flight and may

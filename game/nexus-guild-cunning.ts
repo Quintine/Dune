@@ -8,18 +8,35 @@ export type NexusGuildCunningBefore = {
   shipped: boolean;
   moved: number;
   hajrUsed: boolean;
+  hajrPlays?: never;
 };
-export type NexusGuildCunningReceipt = {
-  version: 1;
+export type NexusGuildCunningCountedBefore = {
+  shipped: boolean;
+  moved: number;
+  hajrPlays: number;
+  hajrUsed?: never;
+};
+type NexusGuildCunningReceiptFields = {
   event: string;
   owner: string;
   turn: number;
   phase: 5;
   mode: 'cunning';
   roster: { id: string; faction: FactionId }[];
-  before: NexusGuildCunningBefore;
   signature: string;
 };
+export type NexusGuildCunningLegacyReceipt = NexusGuildCunningReceiptFields & {
+  version: 1;
+  before: NexusGuildCunningBefore;
+};
+export type NexusGuildCunningCountedReceipt = NexusGuildCunningReceiptFields & {
+  version: 2;
+  before: NexusGuildCunningCountedBefore;
+};
+export type NexusGuildCunningReceipt =
+  | NexusGuildCunningLegacyReceipt
+  | NexusGuildCunningCountedReceipt;
+type Before = NexusGuildCunningBefore | NexusGuildCunningCountedBefore;
 
 function requireGuild(value: unknown, message: string): asserts value {
   if (!value) throw new Error(message);
@@ -54,15 +71,20 @@ function roster(context: NexusGuildCunningContext) {
     .map(({ id, faction }) => ({ id, faction }))
     .sort((a, b) => a.id.localeCompare(b.id));
 }
-function validateBefore(before: NexusGuildCunningBefore) {
+function validPlayCount(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 &&
+    Number.isSafeInteger(value + 1);
+}
+function validateBefore(before: Before, version: 1 | 2) {
   requireGuild(
     plain(before) &&
-      Object.keys(before).sort().join(',') === 'hajrUsed,moved,shipped' &&
+      Object.keys(before).sort().join(',') ===
+        (version === 1 ? 'hajrUsed,moved,shipped' : 'hajrPlays,moved,shipped') &&
       typeof before.shipped === 'boolean' &&
-      typeof before.hajrUsed === 'boolean' &&
+      (version === 1 ? typeof before.hajrUsed === 'boolean' : validPlayCount(before.hajrPlays)) &&
       Number.isSafeInteger(before.moved) &&
       before.moved >= 0 &&
-      before.moved <= (before.hajrUsed ? 2 : 1),
+      before.moved <= 1 + (version === 1 ? Number(before.hajrUsed) : before.hajrPlays!),
     'Guild Cunning needs the original ordinary shipment and Hajr movement allowance.',
   );
 }
@@ -76,7 +98,8 @@ function signature(receipt: NexusGuildCunningReceipt) {
     receipt.phase,
     receipt.mode,
     receipt.roster.map((p) => [p.id, p.faction]),
-    [receipt.before.shipped, receipt.before.moved, receipt.before.hajrUsed],
+    [receipt.before.shipped, receipt.before.moved,
+      receipt.version === 1 ? receipt.before.hajrUsed : receipt.before.hajrPlays],
   ]);
 }
 /** Validates historical facts, not current cards, alliances, resources or movement.
@@ -90,7 +113,7 @@ export function validateNexusGuildCunning(
     plain(receipt) &&
       Object.keys(receipt).sort().join(',') ===
         'before,event,mode,owner,phase,roster,signature,turn,version' &&
-      receipt.version === 1 &&
+      (receipt.version === 1 || receipt.version === 2) &&
       receipt.phase === 5 &&
       receipt.mode === 'cunning' &&
       Number.isSafeInteger(receipt.turn) &&
@@ -107,7 +130,7 @@ export function validateNexusGuildCunning(
       JSON.stringify(receipt.roster) === JSON.stringify(seats),
     'Guild Cunning has changed its original owner, turn or faction roster.',
   );
-  validateBefore(receipt.before);
+  validateBefore(receipt.before, receipt.version);
   requireGuild(
     receipt.signature === signature(receipt),
     'Guild Cunning has changed its original combined turn.',
@@ -117,6 +140,21 @@ export function createNexusGuildCunning(
   context: NexusGuildCunningContext & { phase: number; active: string | null },
   owner: string,
   before: NexusGuildCunningBefore,
+): NexusGuildCunningLegacyReceipt;
+export function createNexusGuildCunning(
+  context: NexusGuildCunningContext & { phase: number; active: string | null },
+  owner: string,
+  before: NexusGuildCunningCountedBefore,
+): NexusGuildCunningCountedReceipt;
+export function createNexusGuildCunning(
+  context: NexusGuildCunningContext & { phase: number; active: string | null },
+  owner: string,
+  before: Before,
+): NexusGuildCunningReceipt;
+export function createNexusGuildCunning(
+  context: NexusGuildCunningContext & { phase: number; active: string | null },
+  owner: string,
+  before: Before,
 ): NexusGuildCunningReceipt {
   const seats = roster(context);
   requireGuild(
@@ -127,47 +165,47 @@ export function createNexusGuildCunning(
       ),
     'Guild Cunning requires the unallied native Guild at the end of its own combined turn.',
   );
-  validateBefore(before);
-  const receipt: NexusGuildCunningReceipt = {
-    version: 1,
+  const version = plain(before) && Object.hasOwn(before, 'hajrPlays') ? 2 : 1;
+  validateBefore(before, version);
+  const fields: Omit<NexusGuildCunningReceiptFields, 'signature'> = {
     event: JSON.stringify(['nexusGuildCunning', context.turn, owner]),
     owner,
     turn: context.turn,
     phase: 5,
     mode: 'cunning',
     roster: seats,
-    before: { ...before },
-    signature: '',
   };
+  const receipt: NexusGuildCunningReceipt = version === 1
+    ? { version: 1, ...fields, before: { ...before as NexusGuildCunningBefore }, signature: '' }
+    : { version: 2, ...fields, before: { ...before as NexusGuildCunningCountedBefore }, signature: '' };
   receipt.signature = signature(receipt);
   validateNexusGuildCunning(context, receipt);
   return receipt;
 }
-/** Ending ordinary movement forgoes at least its first slot. Hajr supplies only
- * the still-unused extra slot, whether played before or after the shipment. */
+/** Ending ordinary movement forgoes at least its first slot. Every actual Hajr
+ * play supplies one extra slot; the engine owns card custody and play timing.
+ * Legacy boolean callers/receipts retain their original zero-or-one meaning. */
 export function nexusGuildCunningMoves(
   receipt: NexusGuildCunningReceipt,
-  currentHajrUsed: boolean,
+  currentHajrUsed: boolean | number,
   movesAfterSecond = 0,
-): 0 | 1 {
+): number {
   validateNexusGuildCunning(
     { turn: receipt.turn, players: receipt.roster },
     receipt,
   );
+  const currentCount = typeof currentHajrUsed === 'boolean' ? Number(currentHajrUsed) : currentHajrUsed;
+  const beforeCount = receipt.version === 1 ? Number(receipt.before.hajrUsed) : receipt.before.hajrPlays;
   requireGuild(
-    typeof currentHajrUsed === 'boolean' &&
-      (!receipt.before.hajrUsed || currentHajrUsed) &&
+    validPlayCount(currentCount) && currentCount >= beforeCount &&
       Number.isSafeInteger(movesAfterSecond) &&
-      movesAfterSecond >= 0 &&
-      movesAfterSecond <= 1,
+      movesAfterSecond >= 0,
     'Guild Cunning has changed its remaining Hajr movement.',
   );
-  const available = currentHajrUsed
-    ? Math.max(0, 2 - Math.max(1, receipt.before.moved))
-    : 0;
+  const available = Math.max(0, 1 + currentCount - Math.max(1, receipt.before.moved));
   requireGuild(
     movesAfterSecond <= available,
     'Guild Cunning cannot supply another ordinary movement.',
   );
-  return (available - movesAfterSecond) as 0 | 1;
+  return available - movesAfterSecond;
 }

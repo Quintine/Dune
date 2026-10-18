@@ -19,6 +19,7 @@ export type OrdinaryCardPlayer = {
   movesAllowed?: number;
   moved?: number;
   hajrUsed?: boolean;
+  hajrPlays?: number;
   hajrAvailable?: boolean;
 };
 /** Only public state and the current viewer's own hand are inspected. */
@@ -110,7 +111,7 @@ export function ordinaryCardAvailability(
           own.hajrUsed === undefined ? own.movesAllowed !== 1 :
             own.hajrUsed || (own.moved ?? 0) > (own.movesAllowed ?? 1))
       )
-        return blocked('Use one Hajr during your movement; Advanced requires the immediate opportunity after a completed Force Movement.');
+        return blocked('Play a held Hajr during your movement; Advanced requires a fresh immediate opportunity after a completed Force Movement.');
       break;
     case 'harvester':
       if (state.phase !== 1 || !harvesterAvailable(state.spiceWindow))

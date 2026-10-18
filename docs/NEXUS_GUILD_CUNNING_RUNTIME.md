@@ -83,7 +83,19 @@ Truthtrance questions and fulfillment searches recognize the second shipment as 
 
 ## Hajr and bot policy
 
-No ordinary movement follows the extra shipment. Only an unused Hajr move is available, and a Hajr move already consumed cannot create a third move. The source's exception retains the same active Guild player through the optional extra move. Native city ornithopter range still applies normally; combining this with the separate physical Ornithopter Treachery Card remains unavailable.
+No ordinary movement follows the extra shipment. Every remaining movement must
+come from an actually earned unused Hajr allowance. A consumed grant cannot be
+spent twice; a legally recovered and replayed physical Hajr adds a new grant.
+The same native Guild player retains that continuation. Native city range still
+applies normally; physical Ornithopter card composition remains unavailable.
+
+The [18 October replay checkpoint](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#recovered-hajr-replay--18-october-2026)
+adds counted v2 declarations and current/final count snapshots, retaining exact
+legacy v1 receipt compatibility. Remaining movement subtracts the original
+ordinary slot even when it was forgone. Advanced uses the supplied fresh
+post-movement play window; holding or recovering Hajr alone cannot open it.
+Count composition has focused pure and related native regression evidence;
+the original paid-Box replay programme itself is a non-Nexus table.
 
 The server supplies `hajrAvailable` independently of the displayed movement ceiling. [Ordinary card availability](../game/card-availability.ts) uses this permission during the Cunning continuation, avoiding a false second Hajr offer when a derived ceiling happens to equal one. Controls disable movement during the second-shipment step and explain the remaining Hajr allowance afterward.
 

@@ -682,6 +682,8 @@ export type Player = {
   ecazRevivalCohort?: EcazRevivalCohort;
   shipped: boolean;
   moved: number;
+  /** One allowance per actual physical Hajr play; old marker-only saves mean one. */
+  hajrPlays?: number;
   /** Completed second groups replace one entitlement without consuming Hajr. */
   ornithopterExtraMoves?: number;
   /** Supplied Advanced Hajr timing: the owner's next voluntary action. */
@@ -2026,7 +2028,7 @@ export type Game = {
   nexusSardaukarLast?: {event: string; stage: 'pending' | 'active' | 'canceled'};
   nexusChoamHistory?: {receipt: NexusChoamReceipt; stage: 'pending' | 'canceled' | 'complete' | 'fizzled'; frame: string; parent: string; signature: string}[];
   nexusMoritaniHistory?: {receipt:NexusMoritaniReceipt;stage:'pending'|'complete'|'canceled';before:string;frame:string;signature:string}[];
-  nexusGuildCunningHistory?: {receipt:NexusGuildCunningReceipt;stage:'pending'|'secondShipment'|'extraMove'|'completed'|'canceled';parent:string;movesAfter:number;shipment?:{kind:'reserve'|'guild'|'homeworld';frame:string;stage:'pending'|'complete'|'stopped'}|{kind:'declined';stage:'declined'};signature:string}[];
+  nexusGuildCunningHistory?: {receipt:NexusGuildCunningReceipt;stage:'pending'|'secondShipment'|'extraMove'|'completed'|'canceled';parent:string;movesAfter:number;hajrPlays?:number;shipment?:{kind:'reserve'|'guild'|'homeworld';frame:string;stage:'pending'|'complete'|'stopped'}|{kind:'declined';stage:'declined'};signature:string}[];
   nexusGuildCunningLast?: {event:string;stage:'pending'|'secondShipment'|'extraMove'|'completed'|'canceled'};
   nexusGuildSecretHistory?: {receipt:NexusGuildSecretAllyReceipt;kind:'reserve'|'cross'|'homeworld';frame:string;signature:string}[];
   nexusGuildSecretLast?: {event:string};
@@ -5357,6 +5359,7 @@ function ordinaryDiscardSignature(g: Game, next: OrdinaryDiscardContinuation) {
       tanks: p.tanks,
       elites: p.elites,
       advisors: p.advisors,
+      hajrPlays: p.hajrPlays,
       moved: p.moved,
       shipped: p.shipped,
       revived: p.revived,
@@ -6090,6 +6093,7 @@ function ornithopterDiscardSignature(
       advisors: p.advisors,
       noField: p.noField,
       noFieldEvent: p.noFieldEvent,
+      hajrPlays: p.hajrPlays,
       ornithopterExtraMoves: p.ornithopterExtraMoves,
       hajrWindow: p.hajrWindow,
       moved: p.moved,
@@ -15569,16 +15573,22 @@ function forceGroup(g: Game, p: Player, action: Action, maxOrigins = 1) {
     ],
   };
 }
+function hajrPlayCount(g: Game, p: Player) {
+  const used = g.hajr.includes(p.id), count = p.hajrPlays ?? Number(used);
+  requireRule(Number.isSafeInteger(count) && count >= 0 && (count > 0) === used,
+    'The Hajr movement count must retain its actual played-card marker.');
+  return count;
+}
 function movesAllowed(g: Game, p: Player) {
   const cunning = currentGuildCunning(g,p.id);
-  if (cunning) return p.moved + (cunning.stage === 'extraMove' ? nexusRule(() => nexusGuildCunningMoves(cunning.receipt,g.hajr.includes(p.id),cunning.movesAfter)) : 0);
+  if (cunning) return p.moved + (cunning.stage === 'extraMove' ? nexusRule(() => nexusGuildCunningMoves(cunning.receipt,hajrPlayCount(g,p),cunning.movesAfter)) : 0);
   const flight = g.ornithopter;
   return flight?.player === p.id && flight.turn === g.turn
     ? flight.startingMove + (flight.mode === 'twoGroups' ? 2 : 1)
-    : ordinaryMovementAllowance(g.hajr.includes(p.id), p.ornithopterExtraMoves);
+    : ordinaryMovementAllowance(hajrPlayCount(g,p), p.ornithopterExtraMoves);
 }
 function hajrAvailable(g: Game, p: Player) {
-  return !g.hajr.includes(p.id) && p.moved <= movesAllowed(g,p) &&
+  return p.hand.some(card => card.kind === 'special' && card.effect === 'hajr') && p.moved <= movesAllowed(g,p) &&
     (!g.advanced || (p.hajrWindow?.turn === g.turn && p.hajrWindow.move === p.moved));
 }
 function emperorHomeworldMoveBlock(g: Game, p: Player): string | null {
@@ -19651,6 +19661,7 @@ function commitMovementPhaseStart(g: Game, quote: MovementPhaseQuote) {
   for (const p of g.players) {
     p.shipped = false;
     p.moved = 0;
+    delete p.hajrPlays;
     delete p.ornithopterExtraMoves;
     delete p.hajrWindow;
   }
@@ -20203,6 +20214,7 @@ function beginStormTurn(g: Game) {
   }
 
   g.hajr = [];
+  for (const player of g.players) delete player.hajrPlays;
   g.nexus = false;
   log(g, `Turn ${g.turn} begins.`);
 }
@@ -28345,7 +28357,8 @@ function guildCunningParent(g: Game) {
   return JSON.stringify([g.active,g.order,g.movementRemaining,g.guildTimingGranted,g.guildTimingLocked,g.saphoMovementLast ?? null]);
 }
 function guildCunningSignature(record: NonNullable<Game['nexusGuildCunningHistory']>[number]) {
-  return JSON.stringify([record.receipt.signature,record.stage,record.parent,record.movesAfter,record.shipment ?? null]);
+  return JSON.stringify([record.receipt.signature,record.stage,record.parent,record.movesAfter,record.shipment ?? null,
+    ...(record.hajrPlays === undefined ? [] : [record.hajrPlays])]);
 }
 function saveGuildCunning(g: Game, record: NonNullable<Game['nexusGuildCunningHistory']>[number]) {
   record.signature = guildCunningSignature(record);
@@ -28356,8 +28369,8 @@ function projectedNexusGuildCunning(g: Game, owner: string) {
   if (!p || p.faction !== 'guild') return null;
   const record = currentGuildCunning(g,owner);
   if (record) return {offer:null,active:{event:record.receipt.event,stage:record.stage as 'pending'|'secondShipment'|'extraMove',
-    movesLeft:record.stage === 'extraMove' ? nexusRule(() => nexusGuildCunningMoves(record.receipt,g.hajr.includes(owner),record.movesAfter)) : 0,
-    hajrAvailable:record.stage !== 'pending' && !g.hajr.includes(owner)}};
+    movesLeft:record.stage === 'extraMove' ? nexusRule(() => nexusGuildCunningMoves(record.receipt,hajrPlayCount(g,p),record.movesAfter)) : 0,
+    hajrAvailable:record.stage !== 'pending' && hajrAvailable(g,p)}};
   if (g.nexusCards?.cards?.hands[owner] !== 'guild') return null;
   let blocked: string | null = null;
   if (g.guildBetrayalPreview && !nexusCoreProfile(g)) blocked = 'This payment audit profile supports the original native shipment, not a Cunning second-shipment overlay.';
@@ -28367,7 +28380,7 @@ function projectedNexusGuildCunning(g: Game, owner: string) {
   else if (g.response || g.decision || g.truthtrance || g.phaseOpening || g.pendingKarama || g.pendingTreacheryDiscard ||
     g.pendingNullentropy || g.pendingShipment || g.pendingHomeworldShipment || g.nexusTraitorPending || g.nexusCards.phase?.stage === 'drawing')
     blocked = 'Finish the current interaction before declaring a second shipment.';
-  else if (g.ornithopter || p.ornithopterExtraMoves || p.moved > (g.hajr.includes(owner) ? 2 : 1))
+  else if (g.ornithopter || p.ornithopterExtraMoves || p.moved > ordinaryMovementAllowance(hajrPlayCount(g,p)))
     blocked = 'Cunning combined with the physical Ornithopter movement card awaits its timing ruling.';
   else if (g.nexusGuildCunningHistory?.some(r => r.receipt.turn === g.turn && r.receipt.owner === owner))
     blocked = 'This turn’s Guild Cunning opportunity is already used.';
@@ -28376,8 +28389,8 @@ function projectedNexusGuildCunning(g: Game, owner: string) {
 function declareGuildCunning(g: Game, p: Player, event: unknown) {
   const offer = projectedNexusGuildCunning(g,p.id)?.offer;
   requireRule(offer && !offer.blocked && event === offer.event,offer?.blocked ?? 'This Guild Cunning opportunity is stale.');
-  const receipt = nexusRule(() => createNexusGuildCunning(g,p.id,{shipped:p.shipped,moved:p.moved,hajrUsed:g.hajr.includes(p.id)}));
-  const record = {receipt,stage:'pending' as const,parent:guildCunningParent(g),movesAfter:0,signature:''};
+  const receipt = nexusRule(() => createNexusGuildCunning(g,p.id,{shipped:p.shipped,moved:p.moved,hajrPlays:hajrPlayCount(g,p)}));
+  const record = {receipt,stage:'pending' as const,parent:guildCunningParent(g),movesAfter:0,hajrPlays:hajrPlayCount(g,p),signature:''};
   g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
   (g.nexusGuildCunningHistory ??= []).push(record); saveGuildCunning(g,record);
   g.karamaShipping = null;
@@ -28436,12 +28449,18 @@ function nexusGuildCunningIntegrity(g: Game) {
   requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0,'Guild Cunning requires its original Nexus module and history.');
   const events = new Set<string>();
   for (const [index,record] of history.entries()) {
-    requireRule(record && typeof record === 'object' && Object.keys(record).every(k => ['receipt','stage','parent','movesAfter','shipment','signature'].includes(k)) &&
+    requireRule(record && typeof record === 'object' && Object.keys(record).every(k => ['receipt','stage','parent','movesAfter','hajrPlays','shipment','signature'].includes(k)) &&
       ['pending','secondShipment','extraMove','completed','canceled'].includes(record.stage) && typeof record.parent === 'string' &&
       record.signature === guildCunningSignature(record) && !events.has(record.receipt?.event) &&
-      Number.isSafeInteger(record.movesAfter) && record.movesAfter >= 0 && record.movesAfter <= 1 &&
+      Number.isSafeInteger(record.movesAfter) && record.movesAfter >= 0 &&
       (['completed','canceled'].includes(record.stage) || index === history.length - 1),'Guild Cunning has a changed or duplicated allowance record.');
     nexusRule(() => validateNexusGuildCunning(g,record.receipt));
+    if (record.hajrPlays !== undefined) {
+      requireRule(Number.isSafeInteger(record.hajrPlays) && record.hajrPlays >= 0,
+        'Guild Cunning needs its actual earned Hajr count.');
+      nexusRule(() => nexusGuildCunningMoves(record.receipt,record.hajrPlays!,record.movesAfter));
+    } else requireRule(record.receipt.version === 1 && record.movesAfter <= 1,
+      'The legacy Guild Cunning history has lost its original Hajr bound.');
     if (record.shipment?.kind === 'declined') requireRule(Object.keys(record.shipment).sort().join(',') === 'kind,stage' && record.shipment.stage === 'declined' && ['extraMove','completed'].includes(record.stage), 'Guild Cunning has changed its declined second shipment.');
     else if (record.shipment) requireRule(Object.keys(record.shipment).sort().join(',') === 'frame,kind,stage' &&
       ['reserve','guild','homeworld'].includes(record.shipment.kind) && typeof record.shipment.frame === 'string' &&
@@ -28464,9 +28483,10 @@ function nexusGuildCunningIntegrity(g: Game) {
   const owner = getPlayer(g,active.receipt.owner);
   requireRule(g.status === 'playing' && g.phase === 5 && g.active === owner.id &&
     active.parent === guildCunningParent(g) && owner.moved === active.receipt.before.moved + active.movesAfter &&
+    (active.hajrPlays === undefined || active.hajrPlays === hajrPlayCount(g,owner)) &&
     owner.shipped === (active.stage === 'extraMove' && (active.shipment?.kind !== 'declined' || active.movesAfter > 0) ? true : active.receipt.before.shipped) && g.nexusCards.cards.discard.includes('guild'),
     'Guild Cunning changed its original active player, queue, shipment or movement allowance.');
-  nexusRule(() => nexusGuildCunningMoves(active.receipt,g.hajr.includes(owner.id),active.movesAfter));
+  nexusRule(() => nexusGuildCunningMoves(active.receipt,hajrPlayCount(g,owner),active.movesAfter));
   for (const response of responses) validateGuildCunningResponse(g,response!);
   if (active.shipment?.stage === 'pending') {
     const suspended = g.pendingGuildBetrayal?.continuation;
@@ -34613,6 +34633,7 @@ function applyActionInner(
             hand: p.hand,
             movesAllowed: movesAllowed(g, p),
             hajrUsed: g.hajr.includes(p.id),
+            hajrPlays: hajrPlayCount(g,p),
             hajrAvailable: hajrAvailable(g,p),
           },
         ],
@@ -34623,8 +34644,11 @@ function applyActionInner(
     if (availability && !availability.available)
       throw new RuleError(availability.reason);
     if (c.effect === 'hajr') {
-      g.hajr.push(id);
+      p.hajrPlays = hajrPlayCount(g,p) + 1;
+      if (!g.hajr.includes(id)) g.hajr.push(id);
       delete p.hajrWindow;
+      const cunning = currentGuildCunning(g,id);
+      if (cunning) { cunning.hajrPlays = p.hajrPlays; saveGuildCunning(g,cunning); }
     } else if (c.effect === 'ghola') {
       applyGholaEffect(g, p, action, c.id);
     } else if (c.effect === 'harvester') {
@@ -35605,6 +35629,7 @@ export function viewGame(state: Game, id: string) {
             moved: p.moved,
             movesAllowed: movesAllowed(g, p),
             hajrUsed: g.hajr.includes(p.id),
+            hajrPlays: hajrPlayCount(g,p),
             hajrAvailable: hajrAvailable(g,p),
             revived: p.revived,
             leaderRevived: p.leaderRevived,

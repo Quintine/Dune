@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 18 October 2026 — Recovered physical Hajr replay
+
+The original inventory has one Hajr; genuine paid Box retrieval now allows that
+same physical card to grant another move when legally replayed. Counts preserve
+Basic timing and Advanced's fresh completed-movement opportunity. Cunning
+forfeits the ordinary slot while carrying counted unused grants; new v2 receipts
+and signed final counts retain old v1 compatibility. Replay remains an explicit
+composition interpretation, not a new publisher FAQ.
+
+Two exclusive lanes plus owner integration/review pass frozen12-file102/102,
+types/lint/build and two actual-source/rendered-table programmes. Actual cache/
+normal purchases, paid shipment and Box2 retrieval use38/45 source plus7 actions;
+one original Hajr finishes three moves. All four policies retain a third move in
+both modes. A historical Advanced Cunning case now earns its allowance at the
+proper movement and uses a legal post-city route; nullable search typing fixed.
+[Canonical source, exact proof and limits](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#recovered-hajr-replay--18-october-2026).
+Native Nexus replay has quote/regression rather than complete original-Box proof;
+other producers, full combinations/assurance/modes and deployed acceptance stay
+open. No saved-room/reset/restart/deployment operation.
+
 ## 18 October 2026 — Ornithopter and unused Hajr movement
 
 One unused normal/Hajr entitlement now supports either card mode without losing
