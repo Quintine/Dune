@@ -13,6 +13,15 @@ contract supersede the earlier absence of that mode below. The
 and a fixed public final opportunity in fresh Richese battles; old battles keep
 their early protocol.
 
+## Extortion payer order — 18 October 2026
+
+First/last now has a provisional adapter for native Moritani Extortion's unanswered
+payer suffix. Earlier declines, collected bank5 and the one-payment3 limit remain;
+every use expires the previous native payer event even when the next player does
+not change. The [canonical source, controls and continuation contract](MORITANI_EXTORTION_RULES.md#sapho-payer-ordering--18-october-2026)
+records original order replay, payment/recovery and the unchanged placement-first
+policy. Other pending decisions are not general Sapho interruption windows.
+
 ## First while the Advanced Guild remains — 18 October 2026
 
 **Prototyped / Partial.** The physical face changes ordered turns and explicitly

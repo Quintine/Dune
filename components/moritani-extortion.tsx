@@ -18,12 +18,16 @@ export function MoritaniExtortionNotice({ game }: { game: GameView }) {
         </p>
       )}
       {pending && (
+        <>
         <p>
           Moritani has collected the bank award. {payer?.name ?? 'The current player'}
           {' '}may pay {pending.amount} spice to prevent Extortion’s return, or decline.
           The first payment ends the opportunity; if everyone declines, the token
           returns to Moritani’s hidden supply.
         </p>
+        <p>Remaining choices: {pending.remaining.map(id => game.players.find(player => player.id === id)?.name ?? id).join(' → ')}.</p>
+        {pending.saphoReordered && <p>Juice of Sapho changed the remaining order. Earlier declines stay finished.</p>}
+        </>
       )}
     </section>
   );

@@ -10,8 +10,11 @@ import { CardInspector } from './card-inspector';
 function unavailableReason(game: GameView) {
   if (game.status !== 'playing')
     return 'Order changes are available during play.';
-  if (game.truthtrance || game.response || game.decision || game.phaseOpening)
+  if (game.truthtrance || game.response || game.phaseOpening ||
+    (game.decision && !(game.phase === 8 && game.decision.kind === 'moritaniExtortion')))
     return 'Finish the current interaction before changing turn order.';
+  if (game.phase === 8 && game.extortion?.pending)
+    return 'Only an unanswered non-Moritani player can change their Extortion choice position. Earlier declines stay finished. Already-held first/last positions and committed cards are unavailable; you may still decline payment when your choice arrives.';
   if (game.phase === 3) {
     if (game.richeseAuction?.method === 'silent')
       return 'Silent bids are simultaneous. These controls do not change their tie order.';
@@ -63,6 +66,7 @@ export function JuiceOfSapho({
             const cyclic = option.scope === 'cyclicAuction';
             const battle = option.scope === 'battleOrder';
             const aggressor = option.scope === 'battleAggressor';
+            const extortion = option.scope === 'extortion';
             return (
               <div
                 key={`${option.scope}-${option.event}-${option.mode}`}
@@ -71,6 +75,8 @@ export function JuiceOfSapho({
                 <p>
                   {aggressor
                     ? 'Become this battle’s aggressor. You win ordinary ties; a Habbanya Stronghold advantage still takes precedence. The participants, committed plans and later battle choices stay unchanged.'
+                    : extortion
+                    ? `Take your Extortion choice ${option.mode} among unanswered players. Earlier declines and Moritani’s five-spice bank collection remain. You may decline instead of paying; the first actual three-spice payment ends all offers.`
                     : cyclic
                     ? `Bid ${option.mode} in the current cyclic lot. Provisional duration: this lot only. Existing bids, funding and passes stay committed. Later circuits use the changed cycle; the next lot returns to its normal opener.`
                     : once
@@ -87,7 +93,7 @@ export function JuiceOfSapho({
                   }}
                 >
                   {aggressor ? 'Become aggressor and discard Juice of Sapho' :
-                    `${once || cyclic ? 'Bid' : battle ? 'Choose battles' : 'Take your movement turn'} ${option.mode} and discard Juice of Sapho`}
+                    `${once || cyclic ? 'Bid' : battle ? 'Choose battles' : extortion ? 'Take your Extortion choice' : 'Take your movement turn'} ${option.mode} and discard Juice of Sapho`}
                 </Button>
               </div>
             );

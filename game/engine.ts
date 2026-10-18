@@ -507,6 +507,7 @@ import {
   type TerrorState,
 } from './moritani-terror';
 import { reserveExtortion, collectExtortion, answerExtortion, validateExtortionState, type ExtortionState } from './moritani-extortion';
+import { saphoExtortionEvent, validateSaphoExtortion, reorderSaphoExtortion, SaphoExtortionError } from './sapho-extortion';
 import { STORM_START_SECTOR, PLAYER_CIRCLE_SECTORS } from './player-positions';
 import { cashInCards } from './choam-karama';
 import { kullBlocksKarama, activeKullRestrictions, validateKullPhaseRestrictions, validateKullAttemptStamp, kullNativeCostCards, kullNexusCostCards, kullCounterCards, type KullPhaseRestriction } from './choam-kull';
@@ -1397,6 +1398,15 @@ export type Game = {
           event: string;
           mode: 'first' | 'last';
           previousActive: string;
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
+          kind: 'saphoExtortionDiscard';
+          player: string;
+          card: string;
+          event: string;
+          mode: 'first' | 'last';
           resume: NonNullable<Game['pendingNullentropy']>['resume'];
           stateSignature: string;
         }
@@ -5427,6 +5437,17 @@ type SaphoMovementDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'saphoMovementDiscard' }
 >;
+type SaphoExtortionDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'saphoExtortionDiscard' }
+>;
+function saphoExtortionDiscardSignature(g: Game, c: SaphoExtortionDiscardContinuation) {
+  return JSON.stringify({player: c.player, card: c.card, event: c.event, mode: c.mode,
+    parent: nullentropyParentSignature(g, c.resume, c.event),
+    turn: g.turn, phase: g.phase, advanced: g.advanced, order: g.order,
+    extortion: g.moritaniExtortion,
+    players: g.players.map(p => ({id: p.id, faction: p.faction}))});
+}
 function saphoMovementDiscardSignature(g: Game, c: SaphoMovementDiscardContinuation) {
   return JSON.stringify({
     player: c.player, card: c.card, event: c.event, mode: c.mode,
@@ -6439,6 +6460,20 @@ function treacheryDiscardIntegrity(g: Game) {
       c.stateSignature === distransDiscardSignature(g, c),
       'The completed private Distrans transfer no longer matches its fresh discard.',
     );
+  } else if (continuation?.kind === 'saphoExtortionDiscard') {
+    const c = continuation, entry = batch.entries[0], state = g.moritaniExtortion;
+    const latest = state?.saphoOrder?.uses.at(-1), decision = c.resume.decision;
+    requireRule(g.phase === 8 && state?.stage === 'payment' &&
+      latest?.event === c.event && latest.player === c.player && latest.mode === c.mode &&
+      decision?.kind === 'moritaniExtortion' && decision.player === state.queue[state.cursor] &&
+      decision.event === extortionEvent(state) && !g.decision &&
+      batch.cause === 'sapho:extortion' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.player && entry.card.id === c.card &&
+      richeseCardDefinition(entry.card)?.card.effect === 'juiceOfSapho' &&
+      !c.resume.response && !c.resume.pendingKarama && !c.resume.phaseOpening &&
+      c.stateSignature === saphoExtortionDiscardSignature(g, c),
+      'The used Juice of Sapho no longer matches its current Extortion payer order.');
+    moritaniExtortionIntegrity(g);
   } else if (continuation?.kind === 'saphoMovementDiscard') {
     const c = continuation, entry = batch.entries[0];
     requireRule(
@@ -7492,6 +7527,7 @@ function semutaOfferSupported(
     continuation.kind !== 'nexusChoamTrade' &&
     continuation.kind !== 'nexusChoamBetrayal' &&
     continuation.kind !== 'saphoMovementDiscard' &&
+    continuation.kind !== 'saphoExtortionDiscard' &&
     continuation.kind !== 'saphoAggressorDiscard' &&
     continuation.kind !== 'saphoAuctionDiscard' &&
     continuation.kind !== 'saphoBattleOrderDiscard' &&
@@ -7556,6 +7592,7 @@ function semutaOfferSupported(
       continuation.kind !== 'ornithopterDiscard' &&
       continuation.kind !== 'saphoAuctionDiscard' &&
       continuation.kind !== 'saphoMovementDiscard' &&
+      continuation.kind !== 'saphoExtortionDiscard' &&
       continuation.kind !== 'battleResolved' &&
       continuation.kind !== 'winnerMandatoryDiscard' &&
       continuation.kind !== 'battleCleanup' &&
@@ -7571,6 +7608,13 @@ function semutaOfferSupported(
       continuation.kind !== 'karamaBattleDiscard') return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
+  if (continuation.kind === 'saphoExtortionDiscard' &&
+    (g.phase !== 8 || g.moritaniExtortion?.stage !== 'payment' ||
+      continuation.resume.decision?.kind !== 'moritaniExtortion' ||
+      continuation.resume.decision.event !== extortionEvent(g.moritaniExtortion) ||
+      continuation.resume.decision.player !== g.moritaniExtortion.queue[g.moritaniExtortion.cursor] ||
+      continuation.resume.response || continuation.resume.pendingKarama ||
+      continuation.resume.phaseOpening || g.decision || g.response)) return false;
   if ((continuation.kind === 'battleCleanup' ||
     continuation.kind === 'winnerMandatoryDiscard' ||
     continuation.kind === 'battleResolved') &&
@@ -7661,6 +7705,7 @@ function semutaOfferSupported(
       continuation.kind === 'choamBalisetDiscard' ||
       continuation.kind === 'choamGamontDiscard' ||
       continuation.kind === 'choamJubbaDiscard' ||
+      continuation.kind === 'saphoExtortionDiscard' ||
       (continuation.kind === 'karamaCharityDiscard' ||
         continuation.kind === 'karamaInflationDiscard' ||
         continuation.kind === 'karamaBgCharityDiscard' ||
@@ -7916,6 +7961,11 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.phaseOpening = next.resume.phaseOpening;
     g.truthtrance = next.remaining;
   } else if (next.kind === 'distransDiscard') {
+    g.response = next.resume.response;
+    g.decision = next.resume.decision;
+    g.pendingKarama = next.resume.pendingKarama;
+    g.phaseOpening = next.resume.phaseOpening;
+  } else if (next.kind === 'saphoExtortionDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
     g.pendingKarama = next.resume.pendingKarama;
@@ -11121,7 +11171,13 @@ function setupComplete(g: Game) {
   );
 }
 function extortionEvent(state: ExtortionState): string {
-  return JSON.stringify(['moritaniExtortion', state.turn, state.token, state.cursor]);
+  return JSON.stringify(['moritaniExtortion', state.turn, state.token, state.cursor,
+    ...(state.saphoOrder ? [state.saphoOrder.uses.length] : [])]);
+}
+function extortionSaphoContext(g: Game) {
+  const state = g.moritaniExtortion!;
+  return {owner: state.owner, token: state.token, turn: state.turn,
+    stormOrder: g.order, queue: state.queue, cursor: state.cursor, order: state.saphoOrder};
 }
 function extortionContext(g: Game) {
   return { turn: g.turn, phase: g.phase, players: g.players.map(player => ({ id: player.id, spice: player.spice })) };
@@ -11142,8 +11198,7 @@ function moritaniExtortionIntegrity(g: Game) {
     'Extortion has lost its revealed token or Moritani owner.');
   if (!pending) return;
   extortionRule(() => validateExtortionState(pending, extortionContext(g)));
-  const stormPayers = pending.stage === 'payment'
-    ? g.order.filter(id => id !== pending.owner) : null;
+  if (pending.stage === 'payment') extortionRule(() => validateSaphoExtortion(extortionSaphoContext(g)));
   const savedDecisions = pending.stage === 'payment'
     ? homeworldSavedDecisions(g).filter(decision => decision.kind === 'moritaniExtortion')
     : [];
@@ -11153,10 +11208,8 @@ function moritaniExtortionIntegrity(g: Game) {
       g.moritaniTerror?.placementTurn === g.turn &&
       savedDecisions.length === 1 &&
       savedDecisions[0].player === pending.queue[pending.cursor] &&
-      savedDecisions[0].event === extortionEvent(pending) &&
-      pending.queue.length === stormPayers?.length &&
-      pending.queue.every((seat, index) => seat === stormPayers?.[index]),
-    'Extortion payment must resume in the original Mentat storm order.');
+      savedDecisions[0].event === extortionEvent(pending),
+    'Extortion payment must resume in its original Mentat scope and current ordered opportunity.');
 }
 function settleMoritaniExtortion(g: Game, state: ExtortionState, recover: boolean) {
   requireRule(g.moritaniTerror && state.stage === 'settled',
@@ -19378,7 +19431,7 @@ function offerMoritaniDuke(g: Game) {
   return true;
 }
 type SaphoOption = {
-  scope: 'onceAround' | 'cyclicAuction' | 'movement' | 'battleOrder';
+  scope: 'onceAround' | 'cyclicAuction' | 'movement' | 'battleOrder' | 'extortion';
   event: string;
   mode: 'first' | 'last';
 } | { scope: 'battleAggressor'; event: string; mode: 'aggressor' };
@@ -19456,13 +19509,19 @@ function saphoMovementIntegrity(g: Game) {
     protectedLast: last.player,
   });
 }
+function saphoExtortionDecision(g: Game) {
+  const state = g.moritaniExtortion, decision = g.decision;
+  return g.phase === 8 && state?.stage === 'payment' && !g.pendingTreacheryDiscard &&
+    decision?.kind === 'moritaniExtortion' && decision.player === state.queue[state.cursor] &&
+    decision.event === extortionEvent(state);
+}
 function saphoCleanWindow(g: Game) {
   return (
     g.status === 'playing' &&
     !g.truthtrance &&
     !g.phaseOpening &&
     !g.response &&
-    !g.decision &&
+    (!g.decision || saphoExtortionDecision(g)) &&
     !g.pendingNullentropy &&
     !g.pendingRicheseGift &&
     !g.pendingExchange &&
@@ -19533,6 +19592,17 @@ function saphoOptions(g: Game, p: Player): SaphoOption[] {
   )
     return [];
   const options: SaphoOption[] = [];
+  if (saphoExtortionDecision(g)) {
+    const context = extortionSaphoContext(g), event = extortionRule(() => saphoExtortionEvent(context));
+    for (const mode of ['first', 'last'] as const) {
+      try {
+        reorderSaphoExtortion(context, {event, player: p.id, mode});
+        options.push({scope: 'extortion', event, mode});
+      } catch (error) {
+        if (!(error instanceof SaphoExtortionError)) throw error;
+      }
+    }
+  }
   const cyclic = saphoCyclicContext(g,p);
   if (cyclic) for (const mode of ['first','last'] as const) {
     try {
@@ -19706,6 +19776,29 @@ function playSapho(g: Game, p: Player, action: Action) {
       }
     }
     settleRicheseLot(g);
+  } else if (option.scope === 'extortion') {
+    const state = g.moritaniExtortion!;
+    const ordered = extortionRule(() => reorderSaphoExtortion(extortionSaphoContext(g),
+      {event: option.event, player: p.id, mode: option.mode}));
+    state.queue = ordered.queue;
+    state.saphoOrder = ordered.order;
+    g.decision = {kind: 'moritaniExtortion', player: state.queue[state.cursor], event: extortionEvent(state)};
+    const used = discard(g, p, 'richese-juice-of-sapho');
+    log(g, `${p.name} discarded Juice of Sapho to take their Extortion choice ${option.mode} among the unanswered payers. Earlier declines and the five-spice collection remain; each player still chooses whether to pay the one three-spice payment.`,
+      {faction: p.faction, name: 'Juice of Sapho'});
+    if (g.semutaPreview) {
+      const continuation: SaphoExtortionDiscardContinuation = {
+        kind: 'saphoExtortionDiscard', player: p.id, card: used.id, event: option.event, mode: option.mode,
+        resume: {response: g.response, decision: g.decision,
+          pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening}, stateSignature: '',
+      };
+      const entries = [{card: used, discardedBy: p.id, publicFace: true}];
+      g.decision = null;
+      if (semutaOfferSupported(g, continuation, entries)) {
+        continuation.stateSignature = saphoExtortionDiscardSignature(g, continuation);
+        stageTreacheryDiscard(g, 'sapho:extortion', entries, continuation);
+      } else g.decision = continuation.resume.decision;
+    }
   } else if (option.scope === 'battleOrder') {
     const next = battleOrderRule(() => reorderBattleChoosers({state: g.battleOrder, physicalOrder: g.order,
       turn: g.turn, afterBattle: battleOrderAfterBattle(g), pairs: quoteCombatBoard(g).battles,
@@ -35129,6 +35222,9 @@ export function viewGame(state: Game, id: string) {
             player: g.decision.player,
             amount: 3 as const,
             canPay: me.id === g.decision.player ? me.spice >= 3 : null,
+            remaining: g.moritaniExtortion.queue.slice(g.moritaniExtortion.cursor),
+            completed: g.moritaniExtortion.queue.slice(0, g.moritaniExtortion.cursor),
+            saphoReordered: !!g.moritaniExtortion.saphoOrder,
           }
         : null,
     },

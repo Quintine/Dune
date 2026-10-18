@@ -1,3 +1,5 @@
+import type { SaphoExtortionOrder } from './sapho-extortion';
+
 /** Isolated Extortion ledger; authorization and Mentat scheduling belong to the engine.
  * Source: docs/MORITANI_EXTORTION_RULES.md. No placement-relative priority is encoded.
  */
@@ -16,6 +18,8 @@ export type ExtortionState = {
   cursor: number;
   stage: 'reserved' | 'payment' | 'settled';
   payer: string | null;
+  /** Public ordered-action exception; absent in original storm-order ledgers. */
+  saphoOrder?: SaphoExtortionOrder;
 };
 export type ExtortionTransfer =
   | { from: 'reservedBank'; to: string; amount: 5 }
@@ -135,6 +139,7 @@ function clone(state: ExtortionState): ExtortionState {
     cursor: state.cursor,
     stage: state.stage,
     payer: state.payer,
+    ...(state.saphoOrder ? {saphoOrder: structuredClone(state.saphoOrder)} : {}),
   };
 }
 
@@ -209,7 +214,7 @@ export function answerExtortion(
   );
   requireValid(
     state.queue[state.cursor] === playerId,
-    'Wait for your Extortion turn in storm order.',
+    'Wait for your current Extortion payment opportunity.',
   );
   requireValid(
     typeof pay === 'boolean',

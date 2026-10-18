@@ -16,6 +16,33 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Sapho Extortion payer order — 18 October. Prototyped / Partial.** The general
+ordered-action alternative now provisionally reorders only native Extortion's
+unanswered payer suffix. Public replay preserves original membership and prior
+declines; ledger answers retain the receipt. Every use expires the native payer
+event, even if the same player remains next. Collected bank5, one payment3,
+physical storm order and the user's placement-first policy remain. Persistent
+controls display remaining names; existing minimal policies use real options.
+A typed Semuta suffix parks one updated payer decision without paying/advancing.
+
+Two disjoint helper/fixture lanes, bounded source/continuation review and owner
+integration pass **9 files115/115**, types/lint/build and six original-action/
+rendered-table programmes. Public Basic/Advanced cache1, real Extortion placement,
+paid foreign1 entry/reveal, later actual Mentat placement-before-bank5 and one
+Atreides decline use120/139 source actions. First/payment3 and last/payment3 or
+all-decline use2–4 continuations: Moritani gains8 or5, the token retires or rotates
+into hidden supply, and no earlier payer repeats. Four profiles make eight legal
+holder/payer proposals and finish. Pure replay/no-op/recovered-reuse cases remain
+separate. No dealt piece, wallet, clock, payer queue or receipt is installed.
+
+Frozen feedback corrected only a deliberate-invalid-mode test cast; the whole
+batch then passed together. Actual GameTable and enabled/busy card/payer controls
+render public order and payer-only affordability. No browser clicks or visual/
+deployed acceptance. Direct combined Semuta claim/capture, broader combinations,
+complete modes and final assurance remain open. No saved-room/database/reset/
+restart/deployment operation.
+[Canonical source, protocol and exact proof](MORITANI_EXTORTION_RULES.md#sapho-payer-ordering--18-october-2026).
+
 **Sapho first with an unspent Advanced Guild — 18 October. Prototyped / Partial.**
 At a clean unstarted non-Guild boundary, first now reorders the remaining queue
 and retains the Guild's native next-boundary take/wait choice. A granted current

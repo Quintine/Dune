@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 18 October 2026 — Sapho Extortion payer ordering
+
+The printed ordered-action alternative now has a provisional native Extortion
+adapter for the unanswered suffix. Original membership/declines, collected bank5,
+one payment3, placement-first policy and physical storm order remain. A public
+replay receipt survives native answers; each use expires the old payer event,
+even when that payer stays next. Persistent controls show current remaining
+names, and existing minimal policies use actual private options. The typed
+Semuta suffix parks one updated payer decision and restores without advancement.
+
+Two disjoint helper/fixture lanes, bounded source/continuation review and owner
+integration pass9-file115/115, types/lint/build and six original-action/rendered-
+table programmes. Public Basic/Advanced cache1, actual placed Terror, paid foreign1
+entry/reveal, later native Mentat placement-before-bank5 and a real earlier
+decline use120/139 source actions. First/payment3 and last/payment3 or all-decline
+use2–4 continuations; Moritani gains8/5 and the token retires/rotates. Four profiles
+make eight legal holder/payer proposals and complete. Pure replay/no-op/recovered
+reuse cases are separate; no dealt pieces, funds, queue or receipt is installed.
+
+Only a negative-test cast needed frozen-feedback repair; the full batch then
+passed. [Canonical source, protocol and exact proof](MORITANI_EXTORTION_RULES.md#sapho-payer-ordering--18-october-2026).
+No browser clicks, visual/deployed, direct combined Semuta claim/capture, wider
+combination or full-mode acceptance. Final assurance remains due. No saved-room/
+database/reset/restart/deployment operation.
+
+
 ## 18 October 2026 — Sapho first with an unspent Advanced Guild
 
 A clean unstarted non-Guild boundary now admits provisional first ordering while

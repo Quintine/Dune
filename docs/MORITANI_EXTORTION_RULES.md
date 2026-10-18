@@ -2,6 +2,77 @@
 
 Initial primary-source audit, 2026-09-06; placement-first implementation interpretation selected by the user on 2026-09-28. No live-room action was performed for this rule work.
 
+## Sapho payer ordering — 18 October 2026
+
+**Prototyped / Partial.** Juice of Sapho's physical face permits first/last in
+an ordered action, and Extortion supplies a finite ordered payer sequence.
+The [Sapho source audit](JUICE_OF_SAPHO_ENGINE_AUDIT.md#all-printed-modes-and-applicable-systems)
+identifies this composition. No Extortion-specific Sapho clarification is claimed.
+Provisionally apply the general card to the **unanswered payer suffix**; this
+online boundary is an explicit implementation interpretation under the standing
+recommended-choice instruction. It changes neither printed payment nor the
+user's placement-first policy below.
+
+While the exact native payer decision is current and otherwise clean, an
+unreserved holder who is still an eligible unanswered payer may discard Sapho
+to choose first/last. Completed declines stay completed. All other unanswered
+players retain relative order; allies and insolvent players remain eligible.
+Moritani is not added to its own payer queue. Current-first/already-last positions
+cannot consume the card, and no one receives another opportunity. First/last
+orders the optional **choice**, not a promised payment.
+
+The original storm payer queue and every use are public ordered-action records.
+The ledger retains the receipt through native answers, and validation replays
+each change against the original queue, preserving the completed prefix. The
+native payer event gains a revision only after a use; older receipt-free events
+retain their bytes. A queued last use may leave the same player next, but that
+player's older answer event still expires. Physical `g.order`, cursor, token,
+collected bank5, balances and later placement are unchanged by Sapho. Actual
+payment-time affordability remains the native check.
+
+The next player receives the existing pay3/decline controls; a payment ends all
+offers and retires the token, while all declines use native hidden-supply identity
+rotation. The public notice displays the remaining names and explains an applied
+Sapho order. Only the current payer sees affordability. The owner's hand panel
+uses server-derived options; existing minimal policies can play the card and
+answer the actual resulting event without strategy refinement.
+
+In the opted-in Semuta preview, the physical discard can pause after reordering.
+Its typed continuation parks exactly one **updated** payer decision, binding the
+receipt and event. Completion restores that decision without paying, advancing,
+recollecting bank spice or restarting placement. Existing continuation formats
+remain unchanged. Direct combined claim/capture proof remains open.
+
+Frozen **9 files115/115**, types/lint/build and six original-action/rendered-table
+programmes pass. Genuine public Basic/Advanced setup/cache1, first native Terror
+placement, paid foreign1 entry/reveal, later actual Mentat placement-before-bank5
+and an Atreides decline use120/139 source actions. First/payment3, last/payment3
+and last/all-decline use2–4 continuation actions. Moritani gains8 or5 from its
+pre-placement balance; payment retires the token, otherwise native identity
+rotation restores hidden supply. Prior declines never repeat. LAST leaves Guild
+next but rejects its old event. Four profiles make eight legal holder/payer
+proposals and complete without strategic refinement.
+
+Only original unopened Spice positions and scalar lotteries are selected.
+No dealt hand, counter, wallet, clock, payer queue or receipt is installed.
+Seven pure public-order cases cover replay, no-ops, prefix/relative order and
+recovered reuse separately from the genuine programmes. Actual GameTable and
+isolated enabled/busy card/payer controls render remaining order and owner-only
+affordability. Framework aliases/CSS stubs mean no browser clicks or visual/
+deployed acceptance. Bounded source/continuation review found no concrete defect.
+Frozen feedback corrected only the deliberate-invalid-mode test cast; all checks
+then passed together without application rule repair.
+
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261018-sapho-extortion/frozen-integrated-2/report.json`,
+base `2d89ddb6e1aaf63a178c22c4f511fa9f832477e7`, source tree
+`0ffe797657fdcac40c92f9282eac32a8495e227703f9777bb729b08389e9dc82`.
+Final checkpoint prose/reference evidence is a separately reviewed overlay;
+private `documentation-overlay.json` and `git-result.json` bind it to the pushed
+revision while engine/helpers/controls/tests remain identical to frozen proof.
+Direct combined Semuta claim/capture, broader combinations, complete modes,
+final assurance and browser/deployed acceptance remain open. No saved-room/
+database, reset, restart or deployment operation was performed.
+
 ## Confirmed sequence
 
 The official token paragraph orders the events as follows:

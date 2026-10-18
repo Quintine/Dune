@@ -1,5 +1,16 @@
 # Rule decision index
 
+## Provisional Sapho Extortion payer order — 18 October 2026
+
+Apply the general printed first/last ordered-action effect to Extortion's
+unanswered payer suffix. Preserve earlier declines, native payer membership,
+bank5, one payment3 and the user-selected placement-before-collection sequence.
+A public replay receipt orders the suffix without changing physical storm order;
+its revision expires older native answers even if the same payer remains next.
+This is provisional composition, not an Extortion-specific publisher ruling.
+[Canonical scope and source](MORITANI_EXTORTION_RULES.md#sapho-payer-ordering--18-october-2026).
+
+
 ## Provisional Sapho first with an unspent Guild — 18 October 2026
 
 The face explicitly supersedes Guild for last, without settling competing first
