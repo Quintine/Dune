@@ -7,7 +7,6 @@ import {
   type OrnithopterMode,
 } from '@/game/ornithopter';
 import { location, splitLocation, gameTerritories } from '@/game/board';
-import { isAdvisor } from '@/game/advisors';
 import { botGroundMoveAllowed } from '@/game/bot-mobility';
 import { Button } from './ui/button';
 import { CardInspector, CardRules } from './card-inspector';
@@ -31,6 +30,7 @@ export function OrnithopterMovement({
   const card = game.ornithopter;
   const me = game.players.find((p) => p.id === game.me);
   if (!card || !me) return null;
+  const advisorGuidance = game.advanced && me.faction === 'beneGesserit';
   const active = card.active;
   const mode =
     active?.mode ??
@@ -59,18 +59,6 @@ export function OrnithopterMovement({
         location(String(move.territory), Number(move.sector)), 0)))
       reason = 'The Fremen two-territory advantage is unavailable. Choose a reachable destination within the remaining normal range.';
   }
-  const physicalSource =
-    typeof move?.from === 'string'
-      ? move.from
-      : move?.forces && typeof move.forces === 'object'
-        ? Object.keys(move.forces)[0]
-        : undefined;
-  if (
-    !reason &&
-    physicalSource &&
-    isAdvisor(me, splitLocation(physicalSource).territory)
-  )
-    reason = 'Advanced advisor use of the Ornithopter card awaits its ruling.';
   if (!reason && active?.cohort && move) {
     const forces =
       (move.forces as Record<string, number> | undefined) ??
@@ -194,6 +182,15 @@ export function OrnithopterMovement({
           </p>
         </>
       )}
+      {advisorGuidance && (
+        <p className="notice" id={`${id}-advisor-guidance`}>
+          Advanced Bene Gesserit advisors can use both card modes. Advisors in
+          Arrakeen or Carthag do not grant the city’s movement range. This card’s
+          one-group mode independently gives range three. Two-group mode uses
+          your current normal range and different original forces. Normal entry
+          and advisor conversion still apply.
+        </p>
+      )}
       {me.faction === 'choam' && game.choamMovementBonus > 0 && (
         <p className="notice">
           Provisional Kulon combination: the one-group card move stays capped
@@ -209,7 +206,10 @@ export function OrnithopterMovement({
       <Button
         className="min-h-11 whitespace-normal motion-reduce:transition-none"
         disabled={busy || !!reason}
-        aria-describedby={reason ? `${id}-reason` : undefined}
+        aria-describedby={[
+          ...(advisorGuidance ? [`${id}-advisor-guidance`] : []),
+          ...(reason ? [`${id}-reason`] : []),
+        ].join(' ') || undefined}
         onClick={() => {
           if (busy || reason || !move || !mode) return;
           const action = { ...move };

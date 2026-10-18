@@ -34176,10 +34176,6 @@ function applyActionInner(
           action.ornithopter === undefined,
         'No matching Ornithopter movement is active.',
       );
-    requireRule(
-      !flight || !isAdvisor(p, origin),
-      'Advanced advisor use of the Ornithopter card awaits its ruling.',
-    );
     const move: MovementOrder = {
       player: id,
       group,

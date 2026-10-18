@@ -2,6 +2,64 @@
 
 Audit: 2026-09-06. Document-only source and engine review. The canonical component is `richese-ornithopter`; this is distinct from ordinary Arrakeen/Carthag ornithopter access and the later Ecaz discovery token. No runtime effect or complete expansion compliance is claimed here.
 
+## Advanced advisor card movement — 18 October 2026
+
+**Prototyped / Partial.** The authorized supplied Advanced source,
+physical28/logical26, says advisors do not count as occupying a stronghold for
+ornithopter access. Physical10/logical8 likewise excludes advisors from granting
+city access, while permitting a player with eligible city forces to move forces
+elsewhere. Neither passage gives the prior blanket ban on an advisor using the
+separately named physical card. The photographed card supplies its own
+three-territory move or two different normal moves without a faction/stance
+exclusion. This cutover supersedes the older advisor guard and source assessment
+below; it is not a newly located publisher-specific card FAQ.
+
+Both modes now permit advisor groups. The range3 mode supplies its printed
+independent maximum. Two-group mode uses current normal range at each actual
+move: advisors alone in a city grant no access; fighters do. An advisor arriving
+alone automatically becomes a fighter and can therefore enable the second group.
+Leaving the last city fighter removes that access even if advisors remain in
+another city. Existing advisor/fighter arrival, new-advisor locks, same-territory
+stance, native response windows, storm/entry and distinct original force quotas
+continue to govern. This is no new shipment, stance privilege or free replay.
+
+The isolated control gives persistent Advanced BG guidance. Minimal bot card
+candidates use the shared advisor-aware route and native entry checks, alongside
+current fighter-city access and original group quotas. No strategy tuning.
+Two disjoint implementation lanes plus owner integration pass frozen **10
+files87/87**, types/lint/build and three original-action/rendered-table
+programmes. Each starts with58 actual source actions: original Advanced host,
+BG advisorSetup in native Atreides Arrakeen, cache1 purchase, Richese1 shipment,
+actual free accompaniment and BG2 Polar Sink or1 Carthag reinforcement. Only
+original scalar lotteries and unopened first-turn Spice positions are selected;
+no postdeal hand, wallet, force, stance or clock is installed.
+
+Range3 has2 continuation actions; advisor/fighter twoGroups and last-city-fighter
+variants each have3. The real advisor source cannot use an ordinary three-range
+move without city fighters. Card range3 succeeds and empty arrival flips.
+TwoGroups retains original advisor/fighter quotas after automatic face changes;
+leaving the last Carthag fighter recomputes the second advisor group to1 even
+while advisors remain in Arrakeen. Four minimal policies supply eight legal
+initial/second-group proposals. Four controlled rule cases separately exercise
+empty-city access, occupied-city nonaccess, existing fighter-city ordinary use
+and locked advisor entry among two other factions. Six isolated control cases
+cover modes, guidance, original cohorts and disabled states.
+
+Source-bound proof is outside Git at
+`~/.local/share/dune/checkpoints/20261018-ornithopter-advisors/frozen-integrated-2/report.json`:
+base `884a09fa92c8604c943979ef2a4c29990399c0fc`, source tree
+`62adeab78469339886640fa0e852a8532f7e03d80da052a687576fc4e7110c83`.
+The narrow native case corrected only its expected-error matcher; type feedback
+added a nonnull annotation for the controlled fixture’s known movement list.
+The frozen related union and required checks then passed on identical source.
+Only checkpoint prose/reference evidence changed afterward.
+
+GameTable snapshots use genuine views; isolated controls render the actual
+accepted first/second movement drafts. SSR does not click select/submit, and
+framework aliases/CSS stubs do not establish visual/browser/deployed acceptance.
+Other card/module combinations, full modes and comprehensive assurance remain
+due. No saved-room/database/reset/restart or deployment operation occurred.
+
 ## Recovered Hajr replay — 18 October 2026
 
 **Prototyped / Partial.** The earlier multiple-physical-Hajr boundary had an
@@ -146,7 +204,7 @@ extra territory. The authorized supplied Advanced PDF repeats “one extra
 territory during your Force Movement” on physical p29, but does not resolve
 the separately named Richese card's maximum. Choosing the explicit card
 cap avoids inventing a four-territory exception. Hajr/prior-move and
-Advanced advisor combinations remain guarded.
+Advanced advisor card movement now follows the later supplied-source cutover above; broader combinations remain open.
 
 Changed-path proof: real Kulon activation followed by a three-territory
 card move, four-territory rejection, both normal groups moving two

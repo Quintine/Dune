@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 18 October 2026 — Advanced advisor physical Ornithopter
+
+Both physical card modes now accept advisors under the supplied city-access
+wording. Advisors do not grant city range; eligible fighters do, recomputed per
+normal group. Existing stance, arrival/locks, route/entry and original physical
+cohorts remain authoritative. The isolated control gives persistent guidance;
+minimal bots use shared advisor-aware geometry and native entry.
+
+Two disjoint lanes plus owner integration pass10-file87/87, types/lint/build and
+three original-action/rendered-table programmes. Each uses58 source actions for
+original advisor setup, paid cache1, native shipment/accompaniment and BG2 Polar
+Sink or1 city reinforcement. Range3 uses2 continuations; ordinary twoGroups and
+last-city-fighter variants use3 each. Eight minimal policy proposals are legal.
+Four controlled geometry and six control cases are separately labelled.
+Feedback corrected an error matcher and nullable fixture annotation, without a
+subsequent rule repair. [Source cutover and exact proof](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#advanced-advisor-card-movement--18-october-2026).
+SSR does not click controls or establish visual/browser/deployed acceptance.
+Wider combinations, complete modes and final assurance stay open. No saved-room/
+database/reset/restart/deployment operation.
+
 ## 18 October 2026 — Advanced Kull specific-effect scope
 
 New Advanced attempts now restrict the semantic Karama effect named by the

@@ -95,6 +95,7 @@ import { liveShipmentPromises, matchesShipment } from './shipment-promises';
 import {
   botEntryAllowed,
   botGroundMoveAllowed,
+  groundMoveRouteDistance,
   fremenReserveEntry,
   guildTransportCost,
 } from './bot-mobility';
@@ -479,13 +480,6 @@ function ornithopterMoves(g: GameView): Action[] {
       ? ['range3', 'twoGroups']
       : ['twoGroups', 'range3'];
   const result: Action[] = [];
-  const pathsBlocked = (key: string) => {
-    const loc = splitLocation(key);
-    return (
-      loc.sector === g.storm ||
-      strongholdPathBlocked(g.players, me.id, loc.territory)
-    );
-  };
   const targets = destinations(g).filter(
     (to) =>
       to.t !== MOBILE_STRONGHOLD &&
@@ -511,7 +505,7 @@ function ornithopterMoves(g: GameView): Action[] {
         if (
           source.from === to.key ||
           origin.sector === g.storm ||
-          isAdvisor(me, origin.territory) ||
+          !botEntryAllowed(g, me, to.t, to.s, 'move', origin.territory) ||
           (origin.territory !== to.t &&
             g.balisetRestrictions.some(
               (b) => b.player === me.id && b.territory === to.t,
@@ -536,7 +530,7 @@ function ornithopterMoves(g: GameView): Action[] {
                 (me.faction === 'ixians' && elite > 0 && !me.ixMovementBlocked)
               ? 2
               : 1) + (me.faction === 'choam' ? g.choamMovementBonus : 0);
-        const distance = gameDistance(g, source.from, to.key, pathsBlocked);
+        const distance = groundMoveRouteDistance(g, me, source.from, to.key);
         if (
           distance > (mode === 'range3' ? 3 : normalRange) ||
           (!active && mode === 'range3' && distance <= normalRange)

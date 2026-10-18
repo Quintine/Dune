@@ -67,12 +67,11 @@ void test('played card escrow, owner-only remaining quotas and ended movement su
  assert.equal(ended.active,'q');
 });
 void test('invalid source, blocked route, committed card and explicitly unresolved combinations are immutable',()=>{
- for(const change of ['range','storm','prior','advisor','gift','wrongMode'] as const){
-  const g=fixture(change==='advisor'?'beneGesserit':'emperor',change==='advisor');
+ for(const change of ['range','storm','prior','gift','wrongMode'] as const){
+  const g=fixture();
   let key=destination(g,origin,3);const extra:Partial<Action>={movementCard:card,ornithopter:'range3'};
   if(change==='range')key=destination(g,origin,4);if(change==='storm')g.storm=splitLocation(key).sector;
   if(change==='prior')g.players[0].moved=1;
-  if(change==='advisor'){g.players[0].advisors={red_chasm:{}};g.players[1].forces={[origin]:1};}
   if(change==='wrongMode')extra.ornithopter='both';
   if(change==='gift')g.pendingRicheseGift={event:'reserved',intent:{owner:'p',recipient:'q',cardId:card},turn:g.turn,phase:g.phase,resume:{response:null,decision:null,pendingKarama:null,phaseOpening:null}} as Game['pendingRicheseGift'];
   const before=structuredClone(g);assert.throws(()=>move(g,key,extra),change);assert.deepEqual(g,before);

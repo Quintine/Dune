@@ -16,6 +16,31 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Advanced advisor / physical Ornithopter — 18 October. Prototyped / Partial.**
+The supplied source excludes advisors from granting city access, rather than
+using this physical card. Both modes now use native stance, arrival/locks and
+original-group accounting. Fixed range3 is independent; normal groups recompute
+current fighter-city access. Persistent controls explain the distinction, and
+minimal bots use shared advisor-aware routes and native entry checks.
+
+Two disjoint implementation lanes plus owner integration pass **10 files87/87**,
+types/lint/build and three original-action/rendered-table programmes. Each uses58
+source actions: original host/setup advisor, cache1 purchase, actual foreign
+shipment1/accompaniment and paid BG2 Polar Sink or1 Carthag reinforcement.
+Range3 uses2 continuations; advisor/fighter twoGroups and last-city-fighter
+variants use3 each. Empty advisor arrivals flip normally, moved forces cannot
+be reused, and remaining advisors grant no range after the last fighter leaves.
+Eight minimal policy proposals are legal; four controlled geometry and six
+isolated control cases remain separately labelled.
+
+Feedback corrected only an expected-error matcher and a nullable fixture
+annotation. No engine rule repair followed frozen checks. Rendering uses actual
+GameTable views plus accepted movement drafts in the isolated control; no
+select/submit browser click or visual/deployed acceptance. Wider combinations,
+full modes and final assurance remain open. No saved-room/database/reset/restart
+or deployment operation.
+[Source cutover and proof](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#advanced-advisor-card-movement--18-october-2026).
+
 **Advanced Kull effect scope — 18 October. Prototyped / Partial.** New
 Advanced attempts adopt the supplied specific-effect wording. Basic and
 unstamped older pending/settled restrictions remain all-purpose. Semantic keys

@@ -42,6 +42,9 @@ uses one unused movement entitlement and retains Hajr's separate move.
 The single physical Hajr can be played again after legitimate
 [paid Box recovery](docs/RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#recovered-hajr-replay--18-october-2026).
 Advanced still requires a fresh post-movement opportunity.
+Advanced advisors may use both physical Ornithopter modes. Advisors do not grant
+city access; normal-range groups use current fighter occupancy. See the
+[advisor source cutover](docs/RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#advanced-advisor-card-movement--18-october-2026).
 
 Before starting, open **Configure** on an AI seat to change its difficulty,
 faction or player circle without replacing it. Changes save immediately and

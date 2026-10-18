@@ -902,7 +902,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A validated declaration moves the physical card from your hand to the public played-card area. It remains there through genuine CHOAM, Ixian or other arrival decisions and is discarded once when the chosen use ends. Random hand effects act on cards still in hand. Ending your movement closes any remaining card movement without undoing a completed group.',
       'The saved event binds retries and the remaining original-group data. Refresh and reconnect preserve that event. After disposal, recovery preserves the completed forces and marker event before opening arrival decisions or advancing an early-ended turn; it does not move the group again. Missing saved group data cannot be reconstructed from merged forces and blocks the damaged continuation instead of allowing reuse.',
       'Under the provisional composition, Ornithopter replaces one unused ordinary or Hajr movement. A prior move stays spent and cannot become the card’s first group retrospectively. One Hajr play plus a two-group flight permits three group movements; Hajr may reuse a card-moved group. Ending early abandons the unused card group and ends your turn. The single physical Hajr may grant another move after legitimate recovery and a new legal play.',
-      'Advanced Hajr must be played immediately after a completed Force Movement and its required arrival decisions, before your next voluntary game action. A completed card group provisionally supplies this opportunity. Basic retains broader own-turn timing. Kulon leaves the fixed card maximum at three and extends both normal-range groups. Advisor/card use, Guild Cunning/card and wider optional combinations remain unfinished.',
+      'Advanced Hajr must be played immediately after a completed Force Movement and its required arrival decisions, before your next voluntary game action. A completed card group provisionally supplies this opportunity. Basic retains broader own-turn timing. Kulon leaves the fixed card maximum at three and extends both normal-range groups. Advanced advisors may use both physical card modes. They do not grant city access themselves; two-group mode uses current fighter city access at each move, while range3 is independent. Empty arrivals flip normally, and fresh-advisor locks and original-group limits still apply. Guild Cunning/card and wider optional combinations remain unfinished.',
       'All four AI profiles use their own projected movement choices and original-group limits. They can use a longer route, split distinct groups, finish interrupted movement and end optional movement when no legal second group remains. Complete Richese-game calibration is not yet certified.',
     ],
     related: [
@@ -916,19 +916,19 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Both modes retain original event/cohort accounting. One unused normal/Hajr entitlement can start a flight; completed two-group credit preserves unused Hajr afterward. Each genuinely recovered Hajr replay has its own grant. Advanced uses supplied immediate-after-play timing with an explicit online/card-group convention. Advisor composition and broader acceptance remain unfinished.',
+          'Both modes retain original event/cohort accounting. One unused normal/Hajr entitlement can start a flight; completed two-group credit preserves unused Hajr afterward. Each genuinely recovered Hajr replay has its own grant. Advanced uses supplied immediate-after-play timing with an explicit online/card-group convention. Both modes now accept Advanced advisors through native stance/entry and original-group rules. Advisors do not grant city access; current fighter-city range is recomputed for each normal group. Wider combinations and broader acceptance remain unfinished.',
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Existing source/destination, typed group, mode and inspector controls consume current shared movement availability. Persistent text explains Hajr composition and Advanced timing; automatic disposal adds no confirmation.',
+          'Existing source/destination, typed group, mode and inspector controls consume current shared movement availability. Persistent text explains Hajr composition, Advanced timing and advisor/city access; automatic disposal adds no confirmation.',
       },
       {
         area: 'AI',
         status: 'Partial',
         detail:
-          'Four profiles use projected ranges, distinct group quotas and earned Hajr movement. Actual owned second-flight and extra-move candidates are legal; strategic tuning remains deferred.',
+          'Four profiles use projected ranges, advisor-aware routes/native entry, distinct group quotas and earned Hajr movement. Actual advisor and owned second-group candidates are legal; strategic tuning remains deferred.',
       },
       {
         area: 'Documentation',
@@ -940,9 +940,14 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Hajr checkpoint adds frozen11-file132/132, types/lint/build and12 original-action/rendered-table programmes: actual paid cards/shipments, Basic and Advanced timing, prior normal movement, typed groups, native Baliset, voluntary window closure/reopening and early end. Four minimal policies retain both continuations. Framework aliases/CSS stubs mean no visual/browser/deployed acceptance; full combinations/assurance/modes remain open.',
+          '18 October advisor scope:10-file87/87, types/lint/build and three original-action/rendered-table programmes pass. Actual host/setup, paid cache1, native accompaniment and paid BG reinforcement cover advisor range3, distinct advisor/fighter groups and loss of city access. Eight minimal policy proposals are legal. Controlled geometry and isolated controls remain separately labelled; no select/submit browser click. Earlier Hajr evidence remains separate. Framework aliases/CSS stubs mean no visual/browser/deployed acceptance; full combinations/assurance/modes remain open.',
         evidence: [
           'game/ornithopter.ts',
+          'components/ornithopter-movement.tsx',
+          'tests/ornithopter-advisor-rules.test.ts',
+          'tests/ornithopter-advisors-engine.test.ts',
+          'tests/ornithopter-advisors-controls.test.tsx',
+          'tests/fixture-ornithopter-advisors.ts',
           'game/card-availability.ts',
           'tests/fixture-ornithopter-hajr.ts',
           'tests/ornithopter-hajr-engine.test.ts',
