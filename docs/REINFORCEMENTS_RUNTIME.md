@@ -16,6 +16,15 @@ fixes the exact card. Harass & Withdraw may share the plan under the
 Original or copied Stone Burner composes in clean selected Ix/CHOAM families
 and the existing native Advanced Occupy envelope. Other profile boundaries remain.
 
+## Independent Discovery composition — 18 October 2026
+
+Original selected36/38/50 cards now compose with Discovery7/8 and optional
+Nexus, World/all14/phase modules. Real Jacurutu reveal/free entry and paid
+shipment precede purchased R/Harass settlement; typed native fees and returns
+retain existing policies. The [canonical source-bound programme](NEXUS_CARD_RULES.md#independent-cards-with-discovery--18-october-2026)
+records actual later Recruits revival, focused proof and remaining limits.
+This prototype does not certify full card/module combinations or complete modes.
+
 ## Independent World/Nexus temporary roles — 18 October 2026
 
 Fresh classic independent36 + Homeworlds + Nexus12 now composes in Basic and

@@ -2,6 +2,70 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Independent cards with Discovery — 18 October 2026
+
+**Prototyped / Partial.** The independent three-card variant now composes with
+original Discovery setup for registered unique two-through-six-seat rosters:
+classics or natives from zero through three selected Ix/CHOAM/Ecaz families.
+A selected deck does not require its native seat. Nexus is optional, as are
+original Homeworlds, all14 Skills, Tech3+ and Advanced Strongholds. The printed
+independence of the four E3 variants is the existing authority in
+[the faction source audit](EXPANSION_FACTIONS_PROTOTYPE.md#source-and-deck-boundary).
+No new numerical or timing interpretation is introduced.
+
+The shared public configuration capability admits the original Discovery7/eight
+token inventory and selected36/38/50 Treachery stock. Fresh setup still checks
+original undealt components and native force/card inventories. With Nexus it
+initializes original twelve-card stock and actual native reaction state; without
+Nexus it creates none of those effects. Original trained E3/Harkonnen and
+unrelated-preview exclusions remain. Runtime capability no longer disappears
+merely because Sandtrout, a token, stash or Maker frame exists. Specific card,
+occurrence, response, reserve-fee, physical allocation and native arrival checks
+remain authoritative; this does not certify every transient interaction.
+
+Original action programmes now cover paid finder shipment, actual supply-token
+placement, private inspection/public reveal and next-turn free entry before
+native Fremen Cunning lands in revealed Cistern. Native Fremen retains printed
+Hiereg knowledge before anyone inspects it. A separate original E1 Sandtrout
+breaks an earned alliance, suppresses its next worm, doubles its immediate land
+replacement and retains the unused Fremen card. No false Nexus draw is added.
+
+A real Jacurutu reveal/free entry then paid enemy shipment produces a nested
+battle. Actually purchased Reinforcements pays three original reserves before
+Harass returns the two undialed counters. Advanced native Emperor fees use
+Kaitain normals; Sardaukar return to Salusa. Real fee/dial casualties then fund
+next-turn Recruits, not a staged Tank count. Same-plan fee-before-return and
+other previously recorded policies remain provisional. Two no-Nexus Duke pure
+quote guards now admit the untrained Advanced Ecaz/Harkonnen composition;
+trained actual-E3/Harkonnen stays excluded. This is quote evidence, not a new
+complete acquisition/death/revival programme.
+
+Evidence: [genuine host entry](../tests/independent-discovery-nexus-entry.test.ts),
+[actual Cunning/Sandtrout](../tests/independent-discovery-cards.test.ts),
+[nested physical card battles/revival](../tests/independent-discovery-battles.test.ts),
+[Duke acquisition](../tests/ecaz-duke-acquisition.test.ts) and
+[revival quote](../tests/ecaz-duke-revival.test.ts). One owner froze three
+helper lanes and shared integration: **15 files118/118**, types/lint/build and
+six finite original-action/rendered-control programmes pass. Basic/Advanced
+Cunning97/359 actions; Sandtrout155; Basic no-Nexus75+4 and Nexus78+5 battle;
+selected50 World battle149+8 followed by52 original Revival actions. Four
+policies each retain legal Cunning offer/ride and source-bearing positive
+Reinforcements plans. No AI refinement/calibration.
+
+Private proof is outside Git at
+`/home/quintine/.local/share/dune/checkpoints/20261018-independent-discovery/`:
+`combined-proof.json` binds the first three passed frozen steps and corrected
+runtime-only report to unchanged tree `2aa05183becbcf517d5b60ae32e5c311dcec36a35befc5a6343b6ad76f80b0ea`
+at base `b4157aaa9bb89c9643704985eb98b0a630881ded`.
+The external programme first expected the wrong entry label, then expected the
+reserve selector before selecting its card. Its corrected actual-table render
+and shared selector from the real quote pass without application changes.
+`runtime-smoke.json` records counts and limitations; HTML, per-file hashes and
+post-proof prose overlay accompany it. Framework aliases/CSS stubs mean no
+visual/browser/deployed acceptance. Full combinations, Great Maker/card bands,
+Semuta, complete modes and comprehensive assurance remain due. No saved-game,
+reset, restart or deployment operation occurred.
+
 ## Native Fremen Nexus modules — 18 October 2026
 
 **Prototyped / Partial.** Native Fremen Cunning and Betrayal now use original
@@ -15,8 +79,8 @@ pile quote; a declined/omitted collection still rides.
 
 Revealed Discovery destinations and source-parent HMS geometry share the public
 human/bot/server destination calculation. HMS has genuine first-Storm placement
-and typed arrival proof; Discovery has focused pure quote evidence, with actual
-arrival acceptance still due. Native movement Betrayal leaves ordinary range1
+and typed arrival proof. Discovery had focused quotes at this earlier checkpoint;
+the independent Discovery checkpoint above adds actual arrival evidence. Native movement Betrayal leaves ordinary range1
 and earned city range3 intact. Predeclared worm prevention also suppresses Great
 Maker reserve riding under the explicit source composition, while votes,
 casualties and Nexus continue. A completed Maker does not block a later ordinary

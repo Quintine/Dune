@@ -40,6 +40,16 @@ function fixture(advanced = false) {
   g.dukeVidal!.leader.deaths = 1;
   return g;
 }
+void test('independent Discovery without Nexus admits the untrained Advanced Ecaz/Harkonnen revival quote', () => {
+  const g = fixture(true);
+  g.players[1] = newPlayer('h', 'Harkonnen', 'harkonnen');
+  g.ecazTreachery = true;
+  g.discoveryEnabled = true;
+  assert.equal(g.nexusCards, undefined);
+  assert.equal(quoteEcazDukeRevival(g, 'ec', false).cost, 5);
+  const excluded = { ...g, leaderSkills: {} };
+  assert.throws(() => quoteEcazDukeRevival(excluded as Game, 'ec', false), EcazDukeRevivalError);
+});
 void test('canonical dead shared Duke resolves without manufacturing or reviving it and always has printed normal price five', () => {
   for (const advanced of [false, true]) {
     const g = fixture(advanced);

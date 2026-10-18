@@ -11,6 +11,8 @@ export type SelectedIndependentEntryOptions = {
   homeworlds?: boolean;
   tech?: boolean;
   strongholds?: boolean;
+  discoveries?: boolean;
+  nexus?: boolean;
 };
 
 /** Ordinary host controls and original private choices; no dealt inventory edits. */
@@ -24,7 +26,8 @@ export function createSelectedIndependentEntry(options: SelectedIndependentEntry
     game = applyAction(game, actor, action);
   };
   act(host, {type:'moduleOption', module:'ecazTreachery', enabled:true});
-  act(host, {type:'moduleOption', module:'nexusCards', enabled:true});
+  if (options.nexus !== false) act(host, {type:'moduleOption', module:'nexusCards', enabled:true});
+  if (options.discoveries) act(host, {type:'moduleOption', module:'discoveries', enabled:true});
   if (options.skills) act(host, {type:'moduleOption', module:'leaderSkills', enabled:true});
   if (options.homeworlds) act(host, {type:'homeworlds', enabled:true});
   if (options.tech) act(host, {type:'techTokens', enabled:true});

@@ -42,19 +42,33 @@ export function selectedIndependentNexusProfile(game: NexusCoreConfiguration): b
   return game.ecazTreachery === true && game.expansions.length > 0 && nexusCoreRosterProfile(game, true);
 }
 
-/** Common consumers of the classic and selected-independent fresh Nexus core. */
-export function nexusCoreProfile(game: NexusCoreConfiguration): boolean {
-  return classicNexusCoreProfile(game) || selectedIndependentNexusProfile(game);
+/** Independent Discovery composes selected decks and original optional modules.
+ * Nexus remains optional; live tokens and encounters are runtime state, not selections. */
+export function independentDiscoveryProfile(game: NexusCoreConfiguration): boolean {
+  return game.ecazTreachery === true && game.discoveryEnabled === true &&
+    nexusCoreRosterProfile(game, true, true);
 }
 
-function nexusCoreRosterProfile(game: NexusCoreConfiguration, selectedDecks: boolean): boolean {
+export function independentDiscoveryNexusProfile(game: NexusCoreConfiguration): boolean {
+  return !!game.nexusCards && independentDiscoveryProfile(game);
+}
+
+/** Common consumers of the classic and selected-independent fresh Nexus core. */
+export function nexusCoreProfile(game: NexusCoreConfiguration): boolean {
+  return classicNexusCoreProfile(game) || selectedIndependentNexusProfile(game) ||
+    independentDiscoveryNexusProfile(game);
+}
+
+function nexusCoreRosterProfile(game: NexusCoreConfiguration, selectedDecks: boolean, discovery = false): boolean {
   const players = game.players;
-  if (typeof game.advanced !== 'boolean' || !game.nexusCards ||
+  if (typeof game.advanced !== 'boolean' || (!discovery && !game.nexusCards) ||
     !players || players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
-    (game.strongholdCards && !game.advanced) || game.sandtrout ||
-    game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
+    (game.strongholdCards && !game.advanced) ||
+    (!discovery && (game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker)) ||
     game.semutaPreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.richeseBetrayalPreview ||
+    (!game.nexusCards && (game.guildBetrayalPreview || game.nexusIxianReplacementPreview ||
+      game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview)) ||
     (game.moritaniAssassinatePreview && (!selectedDecks || !game.advanced ||
       !players.some(player => player.faction === 'moritani'))) ||
     (game.nexusIxianBetrayalPreview && (!selectedDecks || !players.some(player => player.faction === 'ixians')))) return false;

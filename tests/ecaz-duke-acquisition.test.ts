@@ -83,6 +83,15 @@ function command(g: Game): Action {
   };
 }
 const acquire = (g: Game) => applyAction(g, 'ec', command(g));
+void test('independent Discovery without Nexus admits the untrained Advanced Ecaz/Harkonnen acquisition quote', () => {
+  const g = fixture('harkonnen', true);
+  g.ecazTreachery = true;
+  g.discoveryEnabled = true;
+  assert.equal(g.nexusCards, undefined);
+  assert.equal(quoteEcazDukeAcquisition(g, 'ec').controller, 'ec');
+  const excluded = { ...g, leaderSkills: {} };
+  assert.throws(() => quoteEcazDukeAcquisition(excluded as Game, 'ec'), EcazDukeAcquisitionError);
+});
 function reject(g: Game, id: string, action: Action) {
   const before = structuredClone(g);
   assert.throws(() => applyAction(g, id, action), RuleError);

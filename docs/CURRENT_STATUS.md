@@ -16,13 +16,43 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Independent cards with Discovery — 18 October. Prototyped / Partial.**
+Fresh classic and selected-deck tables now combine independent36/38/50 with
+Discovery7/8, with or without Nexus12. Original World/all14/Tech3+/Advanced
+Strongholds remain optional. Real host/setup choices retain native pieces;
+transient Sandtrout or Maker frames no longer remove unrelated capabilities.
+The trained actual-E3/Harkonnen and unrelated-preview gates remain.
+
+Three disjoint fixture/review lanes plus owner integration pass frozen
+**15 files118/118**, types/lint/build and six finite original-action/control
+programmes. Actual reveal/free-entry/Cunning uses97 Basic or359 Advanced
+three-family World/all14/phase actions; original Sandtrout155. Basic nested
+paid-card battles use75+4 without Nexus or78+5 with it. Selected50 World fee,
+Sardaukar return and earned Recruits revival use149+8+52. Four minimal policies
+retain legal Cunning and source-bearing positive Reinforcements plans; no tuning.
+
+Bounded review repaired two no-Nexus Duke quote admissions. Fixture feedback
+corrected Fremen's printed Hiereg knowledge and the existing Recruits view name.
+The external control programme corrected its entry label and rendered the shared
+reserve selector from the actual quote; application source stayed unchanged.
+Framework aliases/CSS stubs mean no visual/browser/deployed acceptance. Broader
+Nexus/Discovery/Semuta interactions, full modes and final assurance remain open.
+No saved room/database, reset, restart or deployment.
+[Exact source, proof and limits](NEXUS_CARD_RULES.md#independent-cards-with-discovery--18-october-2026).
+
+The notice follow-up also rechecked the existing persistent room/seat/action
+controls: **23/23** focused tests pass. Room confirmations still wait for Continue;
+shared toasts have Dismiss and no automatic timeout. Their earlier local browser
+proof remains dated; [deployed notice verification remains open](READABLE_NOTICES.md).
+
 **Native Fremen Nexus modules — 18 October. Prototyped / Partial.**
 Cunning and Betrayal now retain the original registered Nexus roster and selected
 modules. Actual drawn Cunning, original Karama allowance/cancellation and the
 typed post-negotiation ride keep their source and normal allowances. A living
 native Sandmaster may collect one earned destination spice. Original HMS entry
 requires its actual pointer to target the selected desert; Discovery destinations
-have focused quote coverage, with their actual arrival smoke still due.
+had focused quote coverage here; the later independent Discovery checkpoint
+above adds actual arrival proof.
 
 Great Maker reserve riding now respects the predeclared worm restriction under
 the explicit source composition. Votes, original casualties and Nexus continue;

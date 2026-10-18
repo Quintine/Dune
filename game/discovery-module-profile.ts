@@ -1,5 +1,5 @@
 import { FACTIONS } from './catalog';
-import { mixedE3NexusRosterProfile, type FactionModuleProfile } from './faction-module-profile';
+import { independentDiscoveryProfile, mixedE3NexusRosterProfile, type FactionModuleProfile } from './faction-module-profile';
 import type { LeaderSkillProfile } from './leader-skill-profile';
 
 /** Public unused-lobby admission only. The original initializer owns physical
@@ -16,6 +16,7 @@ export function homeworldDiscoveryProfile(game: FactionModuleProfile): boolean {
 
 /** The same roster/module contract during play; live Discovery frames are expected. */
 export function discoveryModeSupported(game: FactionModuleProfile): boolean {
+  if (independentDiscoveryProfile(game)) return true;
   if (game.nexusCards) return standaloneE3DiscoveryNexusProfile(game) || singleE1E2DiscoveryNexusProfile(game) ||
     mixedE3DiscoveryNexusProfile(game) || mixedE1E2DiscoveryNexusProfile(game) || pairedE3DiscoveryNexusProfile(game);
   if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||

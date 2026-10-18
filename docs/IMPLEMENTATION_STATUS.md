@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 18 October 2026 — Independent cards with Discovery
+
+Fresh selected36/38/50 and original Discovery7/8 now compose with or without
+Nexus12 and original optional World/all14/phase modules. Shared public
+capabilities retain native setup and card consumers across transient encounters.
+Actual reveal/free entry/Cunning, original Sandtrout suppression, paid nested
+R/Harass, typed World returns and earned Recruits revival have source programmes.
+Bounded review corrected two no-Nexus Duke quote admissions while preserving
+trained native-E3/Harkonnen exclusion. No new numerical rule.
+
+Frozen15-file118/118, types/lint/build and six original-action/rendered-control
+programmes pass, with four minimal legal policies. External smoke label/selected-
+control assumptions were corrected against unchanged application source.
+[Canonical source, action counts and limits](NEXUS_CARD_RULES.md#independent-cards-with-discovery--18-october-2026).
+No saved-room/reset/restart/deployment or complete-mode assurance claim.
+
 ## 18 October 2026 — Native Fremen Nexus modules
 
 Original registered Nexus rosters now retain Cunning/Betrayal with selected

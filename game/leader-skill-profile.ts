@@ -1,5 +1,5 @@
 import { FACTIONS } from './catalog';
-import { independentNexusProfile, classicNexusCoreProfile, nexusCoreProfile, mixedE3NexusRosterProfile } from './faction-module-profile';
+import { independentDiscoveryProfile, independentNexusProfile, classicNexusCoreProfile, nexusCoreProfile, mixedE3NexusRosterProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile } from './discovery-module-profile';
 
 /** Public configuration only; never gate a skill on a hidden card or random deal. */
@@ -463,7 +463,7 @@ function homeworldLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
 /** Original Homeworld/Skills under the existing classic or native Nexus roster contracts. */
 export function homeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (!game.homeworlds) return false;
-  if (nexusCoreProfile(game)) return true;
+  if (nexusCoreProfile(game) || independentDiscoveryProfile(game)) return true;
   if (game.expansions.length) return nativeExpansionLeaderSkillsProfile(game);
   if (!homeworldLeaderSkillModulesSupported(game)) return false;
   const players = game.players!;
@@ -479,7 +479,7 @@ export function homeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean 
 
 /** Independent cards with registered selected-family all14 setup and original module/role guards. */
 export function independentTreacheryLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (independentNexusProfile(game)) return true;
+  if (independentNexusProfile(game) || independentDiscoveryProfile(game)) return true;
   if (game.ecazTreachery !== true || game.expansions.length > 3 ||
       typeof game.advanced !== 'boolean' || !game.players ||
       game.players.length < (game.techTokens ? 3 : 2) || game.players.length > 6 ||
