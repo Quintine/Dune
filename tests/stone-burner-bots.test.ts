@@ -90,10 +90,11 @@ void test('all profiles offer guarded low-dial Stone plans on both sides in Basi
       }
 });
 
-void test('every public pool is checked and blocked, missing or noncanonical Stone inputs are not emitted', () => {
+void test('legacy battles check every public pool and blocked, missing or noncanonical Stone inputs are not emitted', () => {
   for (const difficulty of DIFFICULTIES) {
     const g = fixture(true, true),
       v = view(g, difficulty);
+    v.battle!.stoneBurnerContext!.allowAllocations = false;
     v.battle!.ownForces = {
       normal: 2,
       elite: 1,

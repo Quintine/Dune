@@ -16,6 +16,28 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Stone Burner physical allocation — 18 October. Prototyped / Partial.**
+New original Basic/Advanced Stone and copied Mirror battles now finish
+outcome-changing mixed-force comparisons. Only ambiguous sides privately commit
+an undialed physical total; all original required values stay sealed until
+complete. The winner retains compatible later ordinary/elite loss choices.
+Ordinary/invariant battles and unstamped legacy frames retain their prior path.
+Timing is explicitly provisional under the 14 October choose-recommended policy.
+
+Three disjoint lanes and owner integration pass frozen **16 files146/146**,
+types/lint/build and14 finite original-action/rendered-control programmes.
+Original paid Stone uses69 Basic/52 Advanced source actions, actual next-turn
+Mirror90, both native mixed sides95 in either seat order. Both outcomes and
+same-count typed alternatives complete; four minimal policies make both legal
+private choices. Actual Mirror feedback repaired a card-cleanup continuation
+that lost the narrowed physical count; native consumers now retain it too.
+Historical guard tests explicitly keep legacy coverage; no printed number changed.
+
+Framework aliases/CSS stubs mean no visual/browser/deployed acceptance. Wider
+combinations, full modes and final assurance remain open. No saved room/database,
+reset, restart or deployment.
+[Exact source, procedure and proof](STONE_BURNER_ENGINE_AUDIT.md#outcome-changing-physical-totals--18-october-2026).
+
 **Independent cards with Discovery — 18 October. Prototyped / Partial.**
 Fresh classic and selected-deck tables now combine independent36/38/50 with
 Discovery7/8, with or without Nexus12. Original World/all14/Tech3+/Advanced
@@ -5708,7 +5730,7 @@ These links define bounded working behavior, not complete module certification.
 | Area | Current connected work and evidence |
 | --- | --- |
 | Base/Advanced setup | [Normal Advanced preview](ADVANCED_PREVIEW.md), [genuine setup](ADVANCED_SETUP_TEST_SEAM.md), [Advanced study](AI_ADVANCED_SETUP_CALIBRATION_20260907.md), [Fremen cancellation](FREMEN_MOVEMENT_KARAMA_RULES.md), [Atreides full-plan audit](ATREIDES_FULL_PLAN_TIMING.md). Earlier Basic-then-flip fixtures do not establish current setup coverage. |
-| Expansion factions | [Ixians/Tleilaxu](IX_PROTOTYPE.md) and [all seven faction selections](EXPANSION_FACTIONS_PROTOTYPE.md): genuine setup, Ecaz six-force placement and [Advanced Loyalty](ECAZ_LOYALTY.md), separate optional card variants, private controls and saved per-lot Ixian/Richese decline. Actual special-lot exchange remains pending. |
+| Expansion factions | [Ixians/Tleilaxu](IX_PROTOTYPE.md) and [all seven faction selections](EXPANSION_FACTIONS_PROTOTYPE.md): genuine setup, Ecaz six-force placement, [Advanced Loyalty](ECAZ_LOYALTY.md), separate optional card variants and private controls. The [adopted Ixians D source](RICHESE_AUCTION_RULES.md#explicit-source-boundaries) excludes Richese auctions from Technology; no special-lot exchange or decline is required. |
 | Leader Skills | [Common lifecycle](LEADER_SKILLS_RUNTIME.md), [known skilled capture](LEADER_SKILLS_CAPTURE.md), [Mentat question preview](MENTAT_QUESTION.md), [Bureaucrat payments](BUREAUCRAT_PAYMENTS.md), five battle disciplines, [Planetologist](PLANETOLOGIST_RULES.md), [Suk Graduate](SUK_GRADUATE_RULES.md), [Rihani and other battle effects](LEADER_BATTLE_EFFECTS.md), [Smuggler shipment](SMUGGLER_SHIPMENT.md), [No-Field](SMUGGLER_NO_FIELD.md) and [battle collection](SMUGGLER_BATTLE.md), [Sandmaster routes](SANDMASTER_MOVEMENT.md) and [worm rides](SANDMASTER_WORM.md), [Banker spending](SPICE_BANKER_RUNTIME.md), [Diplomat defense](DIPLOMAT_DEFENSE.md) and [bounded retreat](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation). Remaining bands and combinations are explicit in those contracts. |
 | Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Orgiz transfers, Jacurutu income, Testing Station and Shrine. Orgiz's per-deposit interpretation, contested/shared benefits and mixed physical allocation remain provisional or pending. The Orgiz path in current source is not yet deployed. |
 | Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Secret Ally trade and bounded after-victory inspection](NEXUS_CHOAM_SECRET_ALLY.md), [Moritani Secret Ally losing-card retention](NEXUS_MORITANI_RULES.md#secret-ally-losing-card-retention-prototype), [Ecaz private yes/no inquiry and bounded native Duke Cunning](NEXUS_ECAZ_RULES.md#bounded-native-cunning-duke-vidal), [Emperor extra revival and bounded bank-auction purchase](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) are connected. Uniform CHOAM winner/Moritani loser windows, Ecaz inquiry scope/audience and Ecaz Cunning's Battle-only window are product inferences, not publisher rulings. Source audits or helpers alone do not certify full module games. |

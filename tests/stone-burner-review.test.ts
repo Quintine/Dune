@@ -147,7 +147,7 @@ void test('forged Stone roles reject before any hidden plan commitment', () => {
   }
 });
 
-void test('Advanced Emperor outcome-changing allocation is rejected identically before or after an unrelated hidden opposing plan', () => {
+void test('legacy Advanced Emperor guard remains hidden-plan independent while new battles admit later physical commitments', () => {
   let g = fixture();
   g.advanced = true;
   g.players[0].faction = 'emperor';
@@ -162,6 +162,9 @@ void test('Advanced Emperor outcome-changing allocation is rejected identically 
     revived: 0,
   };
   g = prepare(start(g));
+  for (const state of [g, ...[0, 1, 2].map(dial => plan(g, 'g', {dial}))])
+    assert.ok(plan(state, 'r', {dial: 3, support: 1}).battle!.plans.r);
+  delete g.battle!.stoneAllocationVersion;
   const attempt = (state: Game) => {
     try {
       plan(state, 'r', { dial: 3, support: 1 });
@@ -181,7 +184,7 @@ void test('Advanced Emperor outcome-changing allocation is rejected identically 
   assert.ok(valid.battle!.plans.r);
 });
 
-void test('public zero-spice compulsion guard is independent of Stone possession and leaves ordinary Voice decline available', () => {
+void test('legacy zero-spice compulsion guard remains custody independent while new Stone has a finishable later commitment', () => {
   let g = fixture();
   g.advanced = true;
   g.players[0].forces = { 'arrakeen:10': 1 };
@@ -201,6 +204,11 @@ void test('public zero-spice compulsion guard is independent of Stone possession
   g.players[2].ally = 'g';
   g.players[1].ally = 'e';
   g = start(g);
+  const withoutStone = reload(g);
+  withoutStone.richeseCache!.push(withoutStone.players[0].hand.pop()!);
+  for (const state of [g, withoutStone]) assert.doesNotThrow(() =>
+    send(state, 'e', {type: 'voice', kind: 'stoneBurner', must: true}));
+  delete g.battle!.stoneAllocationVersion;
   const error = (state: Game) => {
     try {
       send(state, 'e', { type: 'voice', kind: 'stoneBurner', must: true });
@@ -220,7 +228,7 @@ void test('public zero-spice compulsion guard is independent of Stone possession
   assert.ok(plan(g, 'r', { weapon: null, dial: 0 }).battle!.plans.r);
 });
 
-void test('required Mirror Voice rejects unfinishable public zero-spice plans without testing card possession', () => {
+void test('required Mirror Voice preserves the legacy guard and new count capability without testing card possession', () => {
   let g = fixture();
   g.advanced = true;
   g.richeseCache!.push(g.players[0].hand.pop()!);
@@ -242,6 +250,10 @@ void test('required Mirror Voice rejects unfinishable public zero-spice plans wi
   const withoutMirror = reload(g);
   withoutMirror.richeseCache!.push(withoutMirror.players[0].hand.pop()!);
   for (const state of [g, withoutMirror]) {
+    assert.doesNotThrow(() => send(state, 'e', {
+      type: 'voice', kind: 'mirrorWeapon', must: true,
+    }));
+    delete state.battle!.stoneAllocationVersion;
     const before = structuredClone(state);
     assert.throws(() => send(state, 'e', {
       type: 'voice', kind: 'mirrorWeapon', must: true,

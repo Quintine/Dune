@@ -168,6 +168,7 @@ import {
 } from '@/game/battle-cards';
 import { validBattleSlotPair, usesNativeBattleSpecial } from '@/game/battle-card-slots';
 import { stoneBurnerPlanBlock, stoneBurnerWithdrawalContext } from '@/game/stone-burner';
+import { StoneBurnerAllocation } from './stone-burner-allocation';
 import { mirrorWeaponModeBlock } from '@/game/mirror-weapon-mode';
 import { TECH_TOKENS, ownedTech } from '@/game/tech-tokens';
 import {
@@ -629,6 +630,7 @@ export function GameTable({
                   ? 'attacker'
                   : 'defender',
                 stoneCandidateContext,
+                stoneContext?.allowAllocations,
               ),
             )
             .find((reason) => reason !== null) ?? null)));
@@ -3737,6 +3739,11 @@ export function GameTable({
                     accept: false,
                   })}
                 </>
+              ) : g.decision.kind === 'stoneAllocation' ? (
+                g.battle?.stoneAllocation && <StoneBurnerAllocation event={g.decision.event}
+                  totals={g.battle.stoneAllocation.totals}
+                  onCommit={undialed => act({type:'decision',event:g.battle!.stoneAllocation!.event,undialed})}
+                  busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
               ) : g.decision.kind === 'discoveryEntry' ? (
                 <DiscoveryEntryDecision game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
               ) : g.decision.kind === 'ecologicalStorm' ? (

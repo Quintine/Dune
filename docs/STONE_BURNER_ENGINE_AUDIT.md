@@ -2,6 +2,76 @@
 
 Audit: 2026-09-06. Scope: the canonical weapon, its revealed-plan choice and physical undialed-force comparison. No runtime files were changed in this audit. This is not a full optional-module or expansion certification.
 
+## Outcome-changing physical totals — 18 October 2026
+
+**Prototyped / Partial.** New original battles now finish the previously guarded
+Basic Cyborg/Suboid and Advanced mixed-force cases where choosing physical
+casualties can change Stone's winner. The publisher face below compares
+undialed physical counters but supplies no commitment procedure. The authorized
+supplied revision, physical p12/logical p10, retains the winner's later casualty
+choice and the Emperor dial3/support1 example with three-or-five physical
+losses; original E1 pp9–10 supplies Cyborg/Suboid strength and later substitution.
+Neither establishes simultaneous online allocation timing. Under the 14 October
+choose-recommended instruction, the following is an explicit provisional
+procedure, not a retrieved publisher ruling or new numerical rule.
+
+After original reveal modes, actual Harass returns and decisive Traitor/explosion
+branches, the shared calculator identifies whether legal physical totals can
+change the winner. Only then does each ambiguous side privately commit its
+**undialed physical total**. Singleton totals are automatic. Storm order queues
+the original physical owners, including Occupy's variable ally. Every originally
+required side must still commit even when the first private value would already
+fix the winner. Other seats receive no selected value and the public log names
+no count until all commitments are complete. The final comparison reveals them
+together. Ordinary and invariant-winner battles receive no new prompt.
+
+This commits a physical count rather than a full ordinary/elite casualty tuple.
+The eventual winner retains every original legal typed casualty choice with
+that count. For example, genuine Advanced4N2E/dial3/support1 retains both2N1E
+and1N2E losses at physical3. Later native Cyborg substitution remains later.
+Support, fees, Harass complements, fixed Ecaz losses, temporary normal roles,
+No-Field reconstruction and native World pools remain calculator inputs.
+Diplomat retreat must leave at least one compatible typed loss; Jacurutu uses
+a compatible tuple with the committed scalar. Card cleanup, native Homeworld
+losses, Suk and temporary Sardaukar receipts carry the same physical-count
+constraint rather than reopening the original unfiltered loss menu.
+
+New `chooseBattle` frames receive additive `stoneAllocationVersion:1`. Legacy
+unstamped battles retain their conservative public-only guard and no saved
+battle is converted. Precommit validation still checks legal physical pools,
+dial/support and zero-spice compulsion without inspecting hidden opposing plans.
+The private owned control stays visible until a legal commitment. All four bot
+profiles select a legal own offered value; strategy/calibration remains deferred.
+
+Three disjoint helper/fixture/source-review lanes plus owner integration pass
+frozen **16 files146/146**, types/lint/build and **14** finite original-action/
+actual-GameTable rendering programmes. Basic paid Stone reaches its offer in69
+actions; Advanced Sardaukar52; actual paid Stone plus next-turn retained Mirror90.
+Both native mixed sides use95 source actions in either original seating order;
+both extreme outcomes complete after7 actions, and either same-count typed loss
+after8. Ordinary/invariant mixed Ix uses68/69 source actions and retains its
+original later choice. Four minimal policies make both private choices legally
+(eight proposals), with no tuning. Focused pure cases cover fixed Occupy,
+Harass, temporary roles, reconstructed Richese/World pools and decisive outcomes;
+related suffix/default regressions are not complete native-combination proof.
+
+Actual Mirror feedback found that mandatory disposal rejected a correctly
+narrowed casualty menu. The physical constraint now survives that continuation
+and its other native consumers. Iteration also corrected city-income expectations,
+closed-battle projection access and the semantic disabled-button matcher.
+Historical guard tests now explicitly exercise unstamped frames alongside new
+admission. Type feedback added the new decision to both exhaustive registries.
+No printed number was changed to fit a fixture.
+
+Proof base `677ad7aa3ca9833feb6edad82b82487debf340bb`, frozen tree
+`dd7eb5392d6c59a1b7c99a22c439daa48dc1ee7bd84eed62118c0aae91e6e73d`;
+private reports/HTML are under
+`/home/quintine/.local/share/dune/checkpoints/20261018-stone-physical-allocation/`.
+Framework aliases/CSS stubs mean no visual/browser/deployed acceptance. Wider
+optional combinations, comprehensive assurance and complete-mode gates remain
+open. No saved room/database mutation, reset, restart or deployment. The older
+guarded allocation descriptions below remain dated historical evidence.
+
 ## Stone Burner, complete ordinary portraits and recovery checkpoint (2026-09-06)
 
 - Canonical Stone Burner now uses the weapon slot without changing its saved `kind: special` identity. It has a named Voice role, Prescience/Truth-compatible original commitments, a private precommit availability check, and an event-bound owner choice after both plans reveal. Kill mode kills both participating leader discs; ignore mode preserves other weapon attacks. Both replace ordinary strength with undialed physical-token comparison, with the aggressor winning ties. Neither adds the Kwisatz Haderach bonus or kills that companion. Normal support, bounty, traitor/explosion precedence, casualty choices and winner/loser/Moritani retention remain shared with the existing battle flow.

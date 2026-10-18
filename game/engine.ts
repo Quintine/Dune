@@ -334,6 +334,7 @@ import {
   BattleResolutionQuoteError,
   type ResolutionCombatant,
   type BattleResolutionQuote,
+  type BattleResolutionInput,
 } from './battle-resolution-quote';
 import {
   quoteRevivalCancellation,
@@ -381,6 +382,8 @@ import {
   sampleAuditCards,
 } from './choam-auditor';
 import { stoneBurnerPlanBlock, stoneBurnerWithdrawalContext, type StoneBurnerContext } from './stone-burner';
+import { quoteStoneBurnerAllocations, stoneBurnerCommittedLosses, type StoneBurnerAllocationChoice } from './stone-burner-allocation';
+import { casualtyConstraintFields, committedCasualtyOptions } from './battle-casualty-commitment';
 import {
   STRONGHOLD_CARDS,
   createStrongholdCards,
@@ -768,6 +771,14 @@ export type Battle = {
   truthPromises?: BattlePromise[];
   poisonTooth?: Record<string, boolean>;
   stoneBurner?: Record<string, 'kill' | 'ignore'>;
+  /** New ambiguous Stone battles commit physical totals without changing ordinary casualty timing. */
+  stoneAllocationVersion?: 1;
+  stoneAllocation?: {
+    event: string; battle: string; turn: number; context: string;
+    choices: readonly StoneBurnerAllocationChoice[];
+    selections: Record<string, number>;
+    complete?: true;
+  };
   /** Supplemental revealed defense; never rewrites the original sealed plan. */
   lateDefense?: Record<string, string>;
   fullPlan?: { owner: string; target: string };
@@ -916,6 +927,7 @@ export type Decision =
   | { kind: 'techToken'; player: string; loser: string; choices: TechId[] }
   | { kind: 'poisonTooth'; player: string; event?: string; physicalId?: string; copiedFrom?: string | null }
   | { kind: 'stoneBurner'; player: string; event: string; physicalId?: string; copiedFrom?: string | null }
+  | { kind: 'stoneAllocation'; player: string; event: string }
   | { kind: 'sukRescue'; player: string; event: string; territory: string; mode: 'normal' | 'skilled'; options: SukRescueOption[]; reserveHomes?: { id: string; name: string; secondary: boolean }[] }
   | { kind: 'rihani'; player: string; event: string; stage: 'offer' | 'return' }
   | { kind: 'fullPlanOffer'; player: string }
@@ -1565,6 +1577,7 @@ export type Game = {
             owner?: string;
             /** Harass has already returned the complement of this physical pool. */
             fullyCommitted?: true;
+            physicalLossCount?: number;
             forces: CombatForces;
             dial: number;
             support: number;
@@ -2004,7 +2017,7 @@ export type Game = {
   nexusAdvisorLast?: { event: string; stage: 'pending' | 'completed' | 'canceled' };
   nexusSardaukarHistory?: {receipt: NexusSardaukarReceipt; stage: 'pending' | 'active' | 'canceled'; parent: string; signature: string;
     casualties?: {forces: CombatForces; dial: number; support: number; options: Casualties[]; outcome: 'pending' | 'complete';
-      reserveFee?: {normal: number; elite: number}}}[];
+      reserveFee?: {normal: number; elite: number}; fullyCommitted?: true; physicalLossCount?: number}}[];
   nexusSardaukarLast?: {event: string; stage: 'pending' | 'active' | 'canceled'};
   nexusChoamHistory?: {receipt: NexusChoamReceipt; stage: 'pending' | 'canceled' | 'complete' | 'fizzled'; frame: string; parent: string; signature: string}[];
   nexusMoritaniHistory?: {receipt:NexusMoritaniReceipt;stage:'pending'|'complete'|'canceled';before:string;frame:string;signature:string}[];
@@ -2214,7 +2227,7 @@ export type Game = {
     options: HomeworldForces[];
     /** Original printed face; reserve-card fees cannot reprice this explosion. */
     faceAtResolution?: 'high' | 'low';
-    commitment?: { forces: CombatForces; dial: number; support: number; fullyCommitted?: true };
+    commitment?: { forces: CombatForces; dial: number; support: number; fullyCommitted?: true; physicalLossCount?: number };
   } | null;
   lastBattleContext?: {
     event: string;
@@ -3817,11 +3830,14 @@ function nexusSardaukarIntegrity(g: Game) {
           JSON.stringify(reinforcementsBattleForces(original,fee)) === JSON.stringify(losses.forces),
         'The reduced temporary Sardaukar need their original own-World reserve fee.');
       }
+      const constraints = casualtyConstraintFields(losses);
+      const commitment = {forces:losses.forces,dial:losses.dial,support:losses.support,options:losses.options,...constraints};
       requireRule(record.stage === 'active' && ['pending','complete'].includes(losses.outcome) &&
-        Object.keys(losses).sort().join(',') === (fee ? 'dial,forces,options,outcome,reserveFee,support' : 'dial,forces,options,outcome,support') &&
+        Object.keys(losses).sort().join(',') ===
+          ['dial','forces','options','outcome','support',...(fee ? ['reserveFee'] : []),...Object.keys(constraints)].sort().join(',') &&
         validCombatForces(losses.forces) && (fee ? Number(losses.forces.temporaryElite) >= 2 : losses.forces.temporaryElite === 5) &&
         Array.isArray(losses.options) && losses.options.length > 0 &&
-        JSON.stringify(losses.options) === JSON.stringify(casualtyOptions(losses.forces,losses.dial,losses.support)),
+        JSON.stringify(losses.options) === JSON.stringify(committedCasualtyOptions(losses.forces,losses.dial,losses.support,losses)),
         'The Nexus Sardaukar casualties have lost their committed force allocation.');
       if (losses.outcome === 'pending') {
         const context = g.lastBattleContext;
@@ -3838,16 +3854,16 @@ function nexusSardaukarIntegrity(g: Game) {
         requireRule(decisions.length > 0 || committed || rescue?.losses, 'The Nexus Sardaukar battle has lost its casualty choice.');
         if (rescue) requireRule(rescue.player === record.receipt.owner &&
           rescue.turn === record.receipt.turn && rescue.territory === record.receipt.territory &&
-          JSON.stringify(rescue.commitment) === JSON.stringify({forces:losses.forces,dial:losses.dial,support:losses.support,options:losses.options}) &&
+          JSON.stringify(rescue.commitment) === JSON.stringify(commitment) &&
           (!rescue.losses || losses.options.some(option => JSON.stringify(option) === JSON.stringify(rescue.losses))),
           'The Suk rescue differs from the committed Nexus Sardaukar casualties.');
         for (const decision of decisions) requireRule(decision.kind === 'battleLosses' &&
           decision.territory === record.receipt.territory && JSON.stringify(decision.options) === JSON.stringify(losses.options),
           'The casualty choices differ from the committed Nexus Sardaukar plan.');
-        if (committed) requireRule(JSON.stringify(committed) === JSON.stringify({forces:losses.forces,dial:losses.dial,support:losses.support,options:losses.options}),
+        if (committed) requireRule(JSON.stringify(committed) === JSON.stringify(commitment),
           'The suspended Sardaukar casualty allocation was changed.');
         if (g.homeworldBattleLoss) requireRule(JSON.stringify(g.homeworldBattleLoss.commitment) ===
-          JSON.stringify({forces:losses.forces,dial:losses.dial,support:losses.support}),
+          JSON.stringify({forces:losses.forces,dial:losses.dial,support:losses.support,...constraints}),
           'The Homeworld Sardaukar casualties have lost their effective combat roles.');
       }
     }
@@ -7308,7 +7324,7 @@ function treacheryDiscardIntegrity(g: Game) {
         'The mandatory battle discard cause is inconsistent.',
       );
       if (c.casualties) {
-        const { forces, dial, support, options, fullyCommitted } = c.casualties;
+        const { forces, dial, support, options, fullyCommitted, physicalLossCount } = c.casualties;
         const winner = g.players.find((p) => p.id === c.winner);
         const forceOwner = g.players.find((p) => p.id === (c.casualties!.owner ?? c.winner));
         const pool = forceOwner ? combatArmy(g, forceOwner.id, c.territory) : { normal: 0, elite: 0 };
@@ -7320,6 +7336,8 @@ function treacheryDiscardIntegrity(g: Game) {
               winner.ally === forceOwner.id &&
               (winner.faction === 'ecaz' || forceOwner.faction === 'ecaz'))) &&
             (fullyCommitted === undefined || fullyCommitted === true) &&
+            (physicalLossCount === undefined || (Number.isSafeInteger(physicalLossCount) &&
+              physicalLossCount >= 0 && physicalLossCount <= total)) &&
             forces &&
             validCombatForces(forces) &&
             Number.isSafeInteger(forces.normal) &&
@@ -7337,10 +7355,7 @@ function treacheryDiscardIntegrity(g: Game) {
             Array.isArray(options) &&
             options.length > 0 &&
             JSON.stringify(options) ===
-              JSON.stringify(fullyCommitted
-                ? casualtyOptions(forces, dial, support).filter(option =>
-                  option.normal === forces.normal && option.elite === forces.elite)
-                : casualtyOptions(forces, dial, support)),
+              JSON.stringify(committedCasualtyOptions(forces, dial, support, {fullyCommitted, physicalLossCount})),
           'The saved battle casualties do not match the committed dial, support and effective forces.',
         );
       }
@@ -8263,11 +8278,11 @@ function homeworldBattleLossIntegrity(g: Game) {
   } else {
     const commitment = pending.commitment;
     requireRule(commitment && commitment.forces.normal === pool.normal && commitment.forces.elite === pool.elite &&
-      (commitment.fullyCommitted === undefined || commitment.fullyCommitted === true),
+      (commitment.fullyCommitted === undefined || commitment.fullyCommitted === true) &&
+      (commitment.physicalLossCount === undefined || (Number.isSafeInteger(commitment.physicalLossCount) &&
+        commitment.physicalLossCount >= 0 && commitment.physicalLossCount <= pool.normal + pool.elite)),
       'The Homeworld winner needs its committed physical forces.');
-    options = casualtyOptions(commitment.forces, commitment.dial, commitment.support)
-      .filter(choice => !commitment.fullyCommitted ||
-        choice.normal === commitment.forces.normal && choice.elite === commitment.forces.elite)
+    options = committedCasualtyOptions(commitment.forces, commitment.dial, commitment.support, commitment)
       .map(({normal, elite}) => ({normal, elite}));
   }
   requireRule(options.length > 0 && JSON.stringify(options) === JSON.stringify(pending.options),
@@ -14506,7 +14521,8 @@ function validateKaramaUse(
         'The canceled allied traitor call needs its original revealed battle.',
       );
       if (traitorVoters(g, b).every((id) => b.traitorCalls[id] !== undefined))
-        currentBattleResolutionQuote(g, owner.id);
+        if (g.battle!.stoneAllocationVersion !== 1 || !currentStoneAllocationQuote(g, owner.id))
+          currentBattleResolutionQuote(g, owner.id);
     }
     if (use.response.kind === 'moritaniRetention')
       validateMoritaniCancellation(g, use.response.owner);
@@ -21450,6 +21466,7 @@ function stonePlanBlock(
           b.attacker === p.id ? 'attacker' : 'defender',
           battleTieWinner(g) === b.attacker ? 'attacker' : 'defender',
           context,
+          b.stoneAllocationVersion === 1,
         ),
       )
       .find(Boolean) ??
@@ -21484,6 +21501,7 @@ function stoneCompulsionBlock(g: Game, target: Player): string | null {
               b.attacker === target.id ? 'attacker' : 'defender',
               battleTieWinner(g) === b.attacker ? 'attacker' : 'defender',
               context,
+              b.stoneAllocationVersion === 1,
             ),
         ),
     );
@@ -22923,6 +22941,7 @@ function revealedWeaponAnswered(
 function battleSpecialWeaponIntegrity(g: Game) {
   const b = g.battle;
   if (!b) return;
+  stoneAllocationIntegrity(g);
   for (const id of [b.attacker, b.defender]) {
     const cardId = b.plans[id]?.weapon;
     if (cardId !== 'richese-stone-burner' && cardId !== 'richese-mirror-weapon') continue;
@@ -23255,7 +23274,7 @@ function smugglerBattleIntegrity(g: Game) {
     'The completed Smuggler collection changed its original battle receipt.');
 }
 /** Prepare current server-only inputs once; the pure module cannot inspect Game or mutate it. */
-function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
+function currentBattleResolutionInput(g: Game, canceledVoter?: string): BattleResolutionInput {
   const b = g.battle!;
   const combatant = (id: string, opponentId: string): ResolutionCombatant => {
     const p = getPlayer(g, id),
@@ -23293,43 +23312,50 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       ...(aid ? { aid: { donor: p.ally!, amount: aid.amount } } : {}),
     };
   };
+  const attacker = combatant(b.attacker, b.defender);
+  const defender = combatant(b.defender, b.attacker);
+  const homeworld = currentHomeworldBattleRules(g, b.territory);
+  if (homeworld) {
+    const native = homeworld.native === attacker.id ? attacker :
+      homeworld.native === defender.id ? defender : null;
+    if (native) homeworld.nativeForces = { normal: native.forces.normal, elite: native.forces.elite };
+  }
+  return {
+    advanced: g.advanced,
+    ...(b.ecazOccupy ? { ecazOccupy: ecazBattleProfile(g)! } : {}),
+    aggressor: battleAggressor(g),
+    typedCasualties: !!g.homeworlds,
+    ...(homeworld ? { homeworld } : {}),
+    turn: g.turn,
+    territory: b.territory,
+    attacker,
+    defender,
+    voters: traitorVoters(g, b).map((id) => ({
+      id,
+      beneficiary: traitorBeneficiary(g, b, id)!,
+      called: id === canceledVoter ? false : b.traitorCalls[id],
+      traitors: b.traitorDeclarations?.[id] ? [b.traitorDeclarations[id].identity] : getPlayer(g, id).traitors,
+    })),
+    participants: g.players.map((p) => ({
+      id: p.id,
+      faction: p.faction,
+      ally: p.ally,
+      noFieldAtTerritory:
+        p.noField?.deployed?.location.territory === b.territory,
+    })),
+    physicalCards: physicalTreacheryCards(g),
+    pendingAuditorPresent: !!g.pendingAuditor,
+    pendingRetentionPresent: !!g.moritaniRetention,
+    nexusMoritani: !!g.nexusCards?.cards && !byFaction(g, 'moritani'),
+    ...(b.stoneAllocation ? { stoneAllocations: b.stoneAllocation.selections } : {}),
+  };
+}
+function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
+  const b = g.battle!;
   try {
-    const attacker = combatant(b.attacker, b.defender);
-    const defender = combatant(b.defender, b.attacker);
-    const homeworld = currentHomeworldBattleRules(g, b.territory);
-    if (homeworld) {
-      const native = homeworld.native === attacker.id ? attacker :
-        homeworld.native === defender.id ? defender : null;
-      if (native) homeworld.nativeForces = { normal: native.forces.normal, elite: native.forces.elite };
-    }
-    const quote = quoteBattleResolution({
-      advanced: g.advanced,
-      ...(b.ecazOccupy ? { ecazOccupy: ecazBattleProfile(g)! } : {}),
-      aggressor: battleAggressor(g),
-      typedCasualties: !!g.homeworlds,
-      ...(homeworld ? { homeworld } : {}),
-      turn: g.turn,
-      territory: b.territory,
-      attacker,
-      defender,
-      voters: traitorVoters(g, b).map((id) => ({
-        id,
-        beneficiary: traitorBeneficiary(g, b, id)!,
-        called: id === canceledVoter ? false : b.traitorCalls[id],
-        traitors: b.traitorDeclarations?.[id] ? [b.traitorDeclarations[id].identity] : getPlayer(g, id).traitors,
-      })),
-      participants: g.players.map((p) => ({
-        id: p.id,
-        faction: p.faction,
-        ally: p.ally,
-        noFieldAtTerritory:
-          p.noField?.deployed?.location.territory === b.territory,
-      })),
-      physicalCards: physicalTreacheryCards(g),
-      pendingAuditorPresent: !!g.pendingAuditor,
-      pendingRetentionPresent: !!g.moritaniRetention,
-      nexusMoritani: !!g.nexusCards?.cards && !byFaction(g, 'moritani'),
-    });
+    const input = currentBattleResolutionInput(g, canceledVoter);
+    const homeworld = input.homeworld;
+    const quote = quoteBattleResolution(input);
     for (const withdrawal of quote.harassWithdraw ?? [])
       validateReserveReturnCounters(getPlayer(g, withdrawal.player), withdrawal.returned);
     if (quote.sukGraduate) requireRule(
@@ -23415,6 +23441,8 @@ function diplomatRetreatOffer(g: Game, quote: BattleResolutionQuote) {
   const forces = combatForces(g, p, b.territory, opponent);
   const occupy = ecazBattleProfile(g);
   const combined = occupy?.lead === player && !occupy.canceled;
+  const committedStoneLosses = b.stoneAllocation?.complete && !(combined && player === occupy.ecaz)
+    ? stoneBurnerCommittedLosses(currentBattleResolutionInput(g), player) : null;
   const dial = combined
     ? player === occupy.ecaz ? occupy.fixedEcazDial : plan.dial - occupy.fixedEcazDial
     : plan.dial;
@@ -23436,7 +23464,10 @@ function diplomatRetreatOffer(g: Game, quote: BattleResolutionQuote) {
         const elite = p.elites?.forces[origin] ?? 0;
         return { normal: sum.normal + count - elite, elite: sum.elite + elite };
       }, { normal: 0, elite: 0 });
-      return { location: key, choices: diplomatRetreatChoices(forces, dial, support, strength, available) };
+      const choices = diplomatRetreatChoices(forces, dial, support, strength, available)
+        .filter(choice => !committedStoneLosses || committedStoneLosses.some(loss =>
+          loss.normal + choice.normal <= forces.normal && loss.elite + choice.elite <= forces.elite));
+      return { location: key, choices };
     })
     .filter(option => option.choices.length);
   return destinations.length ? { player, destinations } : null;
@@ -23465,8 +23496,76 @@ function diplomatRetreatIntegrity(g: Game) {
     JSON.stringify(decision.destinations) === JSON.stringify(receipt.destinations),
     'The saved Diplomat retreat changed its battle, forces, outcome or legal destinations.');
 }
+function currentStoneAllocationQuote(g: Game, canceledVoter?: string) {
+  try {
+    return quoteStoneBurnerAllocations(currentBattleResolutionInput(g, canceledVoter));
+  } catch (error) {
+    if (error instanceof BattleResolutionQuoteError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+/** Only the revealed physical commitment is frozen; unrelated hands and wallets are not. */
+function stoneAllocationContext(g: Game) {
+  const b = g.battle!, input = currentBattleResolutionInput(g);
+  const physical = (side: ResolutionCombatant) => ({
+    player: side.id, faction: side.faction, forces: side.forces, plan: side.plan,
+    stoneMode: side.stoneMode, harass: side.harassWithdraw, harassSelection: side.harassSelection,
+  });
+  return JSON.stringify({ battle: b.event, turn: g.turn, territory: b.territory,
+    attacker: physical(input.attacker), defender: physical(input.defender),
+    occupy: input.ecazOccupy, aggressor: input.aggressor,
+    traitors: b.traitorCalls, weaponModes: b.poisonTooth });
+}
+function stoneAllocationIntegrity(g: Game) {
+  const b = g.battle, frame = b?.stoneAllocation;
+  if (!frame) {
+    requireRule(g.decision?.kind !== 'stoneAllocation', 'The physical-count choice lost its Stone battle.');
+    return;
+  }
+  requireRule(b && b.stoneAllocationVersion === 1 && g.status === 'playing' && g.phase === 6 &&
+    b.revealed && b.event === frame.battle && frame.turn === g.turn && frame.event &&
+    frame.context === stoneAllocationContext(g),
+    'The Stone physical-count commitment changed its original revealed battle.');
+  const offer = currentStoneAllocationQuote(g);
+  requireRule(offer && frame.choices.length === offer.choices.length &&
+    frame.choices.every(choice => offer.choices.some(candidate => JSON.stringify(candidate) === JSON.stringify(choice))) &&
+    Object.entries(frame.selections).every(([player, total]) =>
+      frame.choices.some(choice => choice.player === player && choice.totals.includes(total))),
+    'The Stone physical-count choices no longer match their original legal pools.');
+  const pending = frame.choices.find(choice => !Object.hasOwn(frame.selections, choice.player));
+  requireRule(!!frame.complete === !pending,
+    'Finish every private Stone count before exposing the comparison.');
+  if (pending) requireRule(homeworldSavedDecisions(g).some(decision => decision.kind === 'stoneAllocation' &&
+    decision.event === frame.event && decision.player === pending.owner),
+    'The unfinished Stone count lost its owned decision.');
+}
+function offerStoneAllocation(g: Game): boolean {
+  const b = g.battle!;
+  if (b.stoneAllocationVersion !== 1 || !revealedWeaponChoices(g).some(choice => choice.kind === 'stoneBurner')) return false;
+  const offer = currentStoneAllocationQuote(g);
+  if (!offer) return false;
+  b.stoneAllocation ??= {
+    event: crypto.randomUUID(), battle: b.event!, turn: g.turn,
+    context: stoneAllocationContext(g), selections: {},
+    choices: [...offer.choices].sort((a, d) => g.order.indexOf(a.owner) - g.order.indexOf(d.owner)),
+  };
+  const frame = b.stoneAllocation;
+  const choice = frame.choices.find(candidate => !Object.hasOwn(frame.selections, candidate.player));
+  if (choice) {
+    g.decision = {kind: 'stoneAllocation', player: choice.owner, event: frame.event};
+    return true;
+  }
+  if (!frame.complete) {
+    frame.complete = true;
+    log(g, `Stone Burner physical counts are committed: ${frame.choices.map(candidate =>
+      `${getPlayer(g, candidate.player).name} ${frame.selections[candidate.player]} undialed`).join('; ')}. The winner's later typed losses must retain that physical count.`,
+      {faction:getPlayer(g, b.attacker).faction,name:'Stone Burner physical counts'});
+  }
+  return false;
+}
 function advanceBattleOutcome(g: Game) {
   const b = g.battle!;
+  if (offerStoneAllocation(g)) return;
   const quote = currentBattleResolutionQuote(g);
   if (quote.smugglerAllocation || quote.sandmasterSelection) {
     g.decision = quote.smugglerAllocation ?? quote.sandmasterSelection;
@@ -23502,6 +23601,16 @@ function currentJacurutuIncome(g: Game, quote: ReturnType<typeof currentBattleRe
     ? casualtyOptions(forces,plan.dial,plan.support).find(choice =>
       choice.normal === withdrawal.remaining.normal && choice.elite === withdrawal.remaining.elite)
     : undefined;
+  const sentToTanks = forces ? {
+    normal: forces.normal - (withdrawal?.returned.normal ?? 0) - (retreat?.normal ?? 0),
+    elite: forces.elite - (withdrawal?.returned.elite ?? 0) - (retreat?.elite ?? 0),
+  } : null;
+  const committedStoneOptions = opponent && b.stoneAllocation?.complete
+    ? stoneBurnerCommittedLosses(currentBattleResolutionInput(g), opponent.id) : null;
+  const committedStoneDial = committedStoneOptions?.find(option => sentToTanks &&
+    option.normal <= sentToTanks.normal && option.elite <= sentToTanks.elite);
+  requireRule(!committedStoneOptions || committedStoneDial,
+    'The Jacurutu loss and retreat must retain the committed Stone physical count.');
   requireRule(!withdrawal || withdrawalDial, 'Harass & Withdraw must retain its original physical dial.');
   return nexusRule(() => quoteJacurutuBattleIncome({
     territory: b.territory,
@@ -23511,11 +23620,8 @@ function currentJacurutuIncome(g: Game, quote: ReturnType<typeof currentBattleRe
     opponentForces: forces,
     opponentDial: plan?.dial ?? null,
     opponentSupport: plan?.support ?? null,
-    sentToTanks: forces ? {
-      normal: forces.normal - (withdrawal?.returned.normal ?? 0) - (retreat?.normal ?? 0),
-      elite: forces.elite - (withdrawal?.returned.elite ?? 0) - (retreat?.elite ?? 0),
-    } : null,
-    selectedDial: b.jacurutuDial?.selectedDial ?? withdrawalDial,
+    sentToTanks,
+    selectedDial: b.jacurutuDial?.selectedDial ?? withdrawalDial ?? committedStoneDial,
   }));
 }
 function jacurutuDialIntegrity(g: Game) {
@@ -23997,7 +24103,8 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
       pool: combatArmy(g, owner, b.territory),
       options: (quote.homeworldExplosion?.options ?? casualtyCommitment!.options).map(({normal, elite}) => ({normal, elite})),
       ...(casualtyCommitment ? { commitment: { forces: {...casualtyCommitment.forces}, dial: casualtyCommitment.dial, support: casualtyCommitment.support,
-        ...(casualtyCommitment.fullyCommitted ? { fullyCommitted: true as const } : {}) } } : {}),
+        ...(casualtyCommitment.fullyCommitted ? { fullyCommitted: true as const } : {}),
+        ...(casualtyCommitment.physicalLossCount !== undefined ? { physicalLossCount: casualtyCommitment.physicalLossCount } : {}) } } : {}),
     };
   }
   if (discarded.length) {
@@ -24242,7 +24349,8 @@ function sukRescueIntegrity(g: Game) {
     JSON.stringify(pending.pool) === JSON.stringify(sukForcePool(g, player, pending.territory)) &&
     pending.commitment.forces.normal === pending.pool.reduce((sum, group) => sum + group.normal, 0) &&
     pending.commitment.forces.elite === pending.pool.reduce((sum, group) => sum + group.elite, 0) &&
-    JSON.stringify(pending.commitment.options) === JSON.stringify(casualtyOptions(pending.commitment.forces, pending.commitment.dial, pending.commitment.support)) &&
+    JSON.stringify(pending.commitment.options) === JSON.stringify(committedCasualtyOptions(
+      pending.commitment.forces, pending.commitment.dial, pending.commitment.support, pending.commitment)) &&
     pending.commitment.options.length > 0 && pending.cards.every((id) => player.hand.some((c) => c.id === id)),
     'The saved Suk Graduate rescue no longer matches its battle, cards or physical forces.');
   if (pending.losses) {
@@ -24274,7 +24382,8 @@ function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean, d
     record.receipt.battle === pending.event && record.receipt.owner === pending.player);
   if (sardaukar?.casualties) requireRule(sardaukar.casualties.outcome === 'pending' &&
     JSON.stringify(pending.commitment) === JSON.stringify({forces:sardaukar.casualties.forces,
-      dial:sardaukar.casualties.dial,support:sardaukar.casualties.support,options:sardaukar.casualties.options}) &&
+      dial:sardaukar.casualties.dial,support:sardaukar.casualties.support,options:sardaukar.casualties.options,
+      ...casualtyConstraintFields(sardaukar.casualties)}) &&
     sardaukar.casualties.options.some(choice => JSON.stringify(choice) === JSON.stringify(pending.losses)),
     'The Suk rescue lost its original Nexus Sardaukar casualty allocation.');
   let physical: SukPhysicalRescueQuote | undefined;
@@ -31844,6 +31953,18 @@ function applyActionInner(
       if (destination === null)
         log(g, `${p.name} declined the Diplomat retreat.`, { faction: p.faction, name: 'Diplomat retreat' });
       resolveBattle(g, { destination: destination as string | null, normal: normal as number, elite: elite as number });
+    } else if (decision.kind === 'stoneAllocation') {
+      const frame = g.battle?.stoneAllocation;
+      const choice = frame?.choices.find(candidate => !Object.hasOwn(frame.selections, candidate.player));
+      requireRule(frame && choice && choice.owner === id && !frame.complete &&
+        decision.event === frame.event && action.event === frame.event &&
+        Object.keys(action).every(key => ['type','event','undialed'].includes(key)) &&
+        typeof action.undialed === 'number' && choice.totals.includes(action.undialed),
+        'Commit one offered undialed physical count for the current revealed Stone battle.');
+      frame.selections[choice.player] = action.undialed;
+      log(g, `${p.name} committed a Stone Burner physical count. Counts remain sealed until every required side commits.`,
+        {faction:p.faction,name:'Stone Burner commitment'});
+      advanceBattleOutcome(g);
     } else if (decision.kind === 'jacurutuDial') {
       const frame = g.battle?.jacurutuDial;
       requireRule(frame && frame.owner === id && frame.event === decision.event && action.event === decision.event &&
@@ -34149,6 +34270,7 @@ function applyActionInner(
       ...choice,
       chooserEvent: battleChooserEvent(g.turn, battleOrderAfterBattle(g), g.battleOrder?.uses.length ?? 0),
       event: battleEvent,
+      stoneAllocationVersion: 1,
       ...(g.leaderSkills ? { smugglerCollectionVersion: 1 as const } : {}),
       ...(g.leaderSkills && mentatQuestionModeSupported(g) ? { mentatQuestionVersion: 1 as const } : {}),
       ...(g.leaderSkills && diplomatDefenseModeSupported(g) ? { diplomatDefenseVersion: 3 as const } : {}),
@@ -35687,9 +35809,19 @@ export function viewGame(state: Game, id: string) {
               : null,
           poisonTooth: b.revealed ? (b.poisonTooth ?? {}) : {},
           stoneBurner: b.revealed ? (b.stoneBurner ?? {}) : {},
+          stoneAllocation: b.stoneAllocation?.choices.some(choice => choice.owner === id)
+            ? (() => {
+                const choice = b.stoneAllocation!.choices.find(candidate => candidate.owner === id &&
+                  !Object.hasOwn(b.stoneAllocation!.selections, candidate.player)) ??
+                  b.stoneAllocation!.choices.find(candidate => candidate.owner === id)!;
+                return {event:b.stoneAllocation!.event,player:choice.player,owner:choice.owner,totals:[...choice.totals],
+                  selected:b.stoneAllocation!.selections[choice.player] ?? null};
+              })()
+            : null,
           stoneBurnerContext: [b.attacker, b.defender].includes(id)
             ? {
                 blocked: stoneTimingBlock(g),
+                allowAllocations: b.stoneAllocationVersion === 1,
                 occupy: stoneOccupyContext(g),
                 opponentPools: stonePublicPools(
                   g,

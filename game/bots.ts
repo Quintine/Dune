@@ -1008,6 +1008,7 @@ function plans(g: GameView): Action[] {
                   b.attacker === me.id ? 'attacker' : 'defender',
                   b.tieWinner === b.attacker ? 'attacker' : 'defender',
                   stoneContext,
+                  b.stoneBurnerContext?.allowAllocations,
                 ),
               ))
           )
@@ -2428,6 +2429,12 @@ function policyActions(g: GameView): Action[] {
             ['heighliners', 'production', 'axlotl'].indexOf(b),
       )[0];
       return [{ type: 'decision', token }];
+    }
+    if (d.kind === 'stoneAllocation') {
+      const offer = g.battle?.stoneAllocation;
+      const undialed = offer?.totals.at(-1);
+      return offer && offer.owner === me.id && offer.event === d.event && undialed !== undefined
+        ? [{type:'decision',event:d.event,undialed}] : [];
     }
     if (d.kind === 'stoneBurner') {
       const b = g.battle!,

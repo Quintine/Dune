@@ -1130,8 +1130,9 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Compare the number of physical force tokens not dialed into battle. The aggressor wins a tie unless the actual held Habbanya Ridge Sietch advantage decides it. Dialed losses and spice support still follow their normal rules; elite strength is not an extra physical token.',
       'With Harass & Withdraw, this prototype provisionally compares undialed tokens remaining after successful withdrawal. An opposing successful Traitor cancels the return and decides the outcome instead. In Occupy, only the card user’s pool returns; original fixed Ecaz commitment and the other ally’s undialed counters remain. This timing is an explicit implementation interpretation, not a publisher ruling.',
       'In the existing native Advanced Occupy prototype, Reinforcements still pays its original own-reserve cost with same-plan, opposing or Mirror-copied Stone. Its +2 normal-score bonus adds no physical undialed tokens, dial, support or on-board casualties. Original mode choices, Traitor precedence and physical Stone/Mirror retention remain unchanged; other profile/module boundaries stay.',
-      'The plan editor checks dial/support against every public opposing force possibility, never a hidden plan or No-Field value. Winner-changing physical allocations remain guarded. Clean selected CHOAM/Ix profiles now reuse the existing provisional original Stone-first, then uncopied Tooth order; Mirror copies still choose before their originals as printed. The earlier priority question remains unanswered.',
-      'Clean selected Ix/CHOAM retains original Tech3+ and/or Advanced Strongholds2+, using genuine setup, delayed income and earned end-Mentat custody. Original47 and independent50 decks keep the separate Richese cache. Homeworlds, Nexus, Skills, Discoveries, active Sandtrout and mixed E3 with these phase modules stay guarded. Native Ecaz/Moritani combinations remain Advanced-only; other non-Ix behavior and public starts are unchanged.',
+      'New battles with winner-changing physical allocations provisionally ask each ambiguous side to commit its undialed physical total after revealed modes and actual withdrawal. All required values stay sealed until everyone commits. The winner chooses compatible ordinary/elite losses afterward. Ordinary and invariant-winner battles keep their usual later casualty choice. Older battles retain their original public-only guard. No hidden opposing plan or No-Field value is inspected to decide precommit availability.',
+      'Clean selected CHOAM/Ix profiles reuse the existing provisional original Stone-first, then uncopied Tooth order; Mirror copies still choose before their originals as printed. The earlier priority question remains unanswered. Physical-count commitment timing is also an explicit prototype procedure, rather than a publisher clarification.',
+      'Selected Ix/CHOAM retains original Tech3+ and Advanced Strongholds2+, with genuine setup, delayed income and earned end-Mentat custody. Original47 and independent50 decks keep the separate Richese cache. Native optional-module and Ecaz/Moritani integrations retain their existing setup requirements and preview warnings; a physical-count commitment does not certify every combination.',
       'Traitor and Lasgun–shield explosion precedence remain intact. Ordinary bounty applies unless another effect suppresses it. Stone Burner uses the general winning battle-card retention rule: a winner may keep it, and a losing played card is discarded. Normal Moritani ally retention may apply.',
       'The post-reveal choice is bound to the current battle event and cannot be repeated after refresh. Review both revealed plans and select one mode; there is no separate victim or death confirmation.',
     ],
@@ -1146,32 +1147,40 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Canonical weapon admission, public pre-commit safety, persisted reveal choice, physical-token comparison, provisional post-Harass comparison and ordinary cleanup are integrated. Public fixed Ecaz withdrawal alternatives are checked without hidden-card reads. Ambiguous combinations remain guarded.',
+          'New original Basic/Advanced mixed-force and copied Stone comparisons collect sealed physical totals only when the winner depends on them. Later typed losses, mandatory cleanup and native aftercare retain that count. Ordinary/invariant and legacy behavior remains; broader combinations and complete modes stay unfinished.',
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Weapon and prescience selectors include Stone Burner; the editor explains chosen dial/support restrictions, provides an inspector and exposes both reveal modes.',
+          'Weapon/prescience selectors, inspectors and both reveal modes remain. The owned physical-total control explains provisional sealed timing and stays visible until commitment; later matching ordinary/elite loss choices remain separate.',
       },
       {
         area: 'AI',
         status: 'Partial',
         detail:
-          'All profiles generate guarded low-dial Stone candidates and choose a reveal mode from public force/leader information. Broader expansion strategy remains unverified.',
+          'All profiles generate legal Stone candidates, choose a reveal mode and commit an offered own physical total. Native two-sided programmes verify both owned choices; strategic refinement and calibration remain deferred.',
       },
       {
         area: 'Documentation',
         status: 'Partial',
         detail:
-          'Explains physical-token victory, both leader choices, ordinary winner retention and explicit combined timing limits.',
+          'Explains physical-token victory, both leader choices, sealed total commitments, later typed losses and the explicitly provisional timing/source boundary.',
       },
       {
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Earlier pure/engine/review/recovery evidence remains separate. Genuine native cache acquisition, paid marker/typed attack and earned Habbanya now cover physical fees/losses and original/copied retention. Two mobile journeys/20 actions reach Collection;32 legal policy programmes validate870 candidates/256 continuations. All32 naturally call a held Traitor; normal physical outcomes are separate Node/UI proof, not complete modes or calibration.',
+          'The physical-total checkpoint passes frozen16-file146/146, types/lint/build and14 original-action/rendered-control programmes: paid native Basic/Advanced Stone, actual next-turn Mirror, both mixed sides in either seat order, both winners and matching later typed alternatives. Four policies make both private choices legally. Earlier mobile/marker/Habbanya evidence stays dated. Framework aliases/CSS stubs mean no visual/browser/deployed acceptance; comprehensive combinations, assurance and complete modes remain open.',
         evidence: [
+          'game/stone-burner-allocation.ts',
+          'game/battle-casualty-commitment.ts',
+          'components/stone-burner-allocation.tsx',
+          'tests/stone-burner-allocation.test.ts',
+          'tests/stone-burner-allocation-engine.test.ts',
+          'tests/stone-burner-allocation-controls.test.tsx',
+          'tests/fixture-stone-burner-allocation.ts',
+          'docs/STONE_BURNER_ENGINE_AUDIT.md',
           'tests/stone-burner.test.ts',
           'tests/stone-burner-engine.test.ts',
           'tests/stone-burner-review.test.ts',

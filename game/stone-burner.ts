@@ -4,6 +4,7 @@ import {
   maxCombatDial,
   maxCombatSupport,
   type CombatForces,
+  type Casualties,
 } from './combat';
 import type { HarassWithdrawOccupyContext } from './harass-withdraw';
 
@@ -54,6 +55,18 @@ function validSide(side: StoneBurnerSide): boolean {
 function sorted(values: Iterable<number>): number[] {
   return [...new Set(values)].sort((a, b) => a - b);
 }
+/** The score uses physical undialed counters after the original withdrawal,
+ * including only the surviving fixed Ecaz contribution. Paid support is not
+ * another casualty and temporary roles retain their ordinary physical type. */
+export function stoneBurnerUndialedTotal(
+  forces: CombatForces,
+  losses: Pick<Casualties, 'normal' | 'elite'>,
+  context?: StoneBurnerSideContext,
+): number {
+  const fixedUndialed = context?.withdrawal === 'ecaz' ? 0 : context?.ecazUndialed ?? 0;
+  return context?.withdrawal === 'variable' ? fixedUndialed
+    : fixedUndialed + forces.normal + forces.elite - losses.normal - losses.elite;
+}
 function totals(
   forces: CombatForces,
   dial: number,
@@ -78,7 +91,7 @@ function totals(
   if (context?.withdrawal === 'variable') return [fixedUndialed];
   return sorted(
     losses.map(
-      (loss) => fixedUndialed + forces.normal + forces.elite - loss.normal - loss.elite,
+      (loss) => stoneBurnerUndialedTotal(forces, loss, context),
     ),
   );
 }
@@ -181,6 +194,7 @@ export function stoneBurnerPlanBlock(
   side: StoneBurnerSide,
   aggressor: StoneBurnerSide = 'attacker',
   context?: StoneBurnerContext,
+  allowAllocations = false,
 ): string | null {
   if (!validSide(side) || !validSide(aggressor))
     return 'Choose valid Stone Burner combatant roles.';
@@ -191,6 +205,9 @@ export function stoneBurnerPlanBlock(
   const ownTotals = totals(own, dial, support, ownOccupy);
   if (!ownTotals.length)
     return 'Your dial and support do not permit a legal Stone Burner force allocation.';
+  // New battles finish ambiguous outcomes through separate sealed undialed
+  // totals. Legacy battles retain the original public-only preflight boundary.
+  if (allowAllocations === true) return null;
   const possibleFixedReturn = opponentOccupy?.possibleEcazWithdrawal &&
     opponentOccupy.withdrawal !== 'ecaz' ? opponentOccupy.ecazUndialed ?? 0 : 0;
   for (const otherTotals of allOpposingTotals(opponent, opponentOccupy)) {
@@ -215,6 +232,7 @@ export function stoneBurnerCompulsionBlock(
   side: StoneBurnerSide,
   aggressor: StoneBurnerSide = 'attacker',
   context?: StoneBurnerContext,
+  allowAllocations = false,
 ): string | null {
   if (!validSide(side) || !validSide(aggressor))
     return 'Choose valid Stone Burner combatant roles.';
@@ -226,7 +244,7 @@ export function stoneBurnerCompulsionBlock(
   for (let halfDial = fixedDial * 2; halfDial <= maximumStrength * 2; halfDial++) {
     if (!totals(own, halfDial / 2, 0, ownOccupy).length) continue;
     if (
-      stoneBurnerPlanBlock(own, halfDial / 2, 0, opponent, side, aggressor, context) ===
+      stoneBurnerPlanBlock(own, halfDial / 2, 0, opponent, side, aggressor, context, allowAllocations) ===
       null
     )
       return null;

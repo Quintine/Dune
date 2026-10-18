@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 18 October 2026 — Outcome-changing Stone physical totals
+
+New original Basic/Advanced Stone and copied Mirror now request sealed physical
+totals only when they can change the winner. Every originally ambiguous side
+commits; the eventual winner keeps all matching later typed loss choices.
+Ordinary/invariant and unstamped legacy battles retain their earlier paths.
+This is explicit provisional timing, with no new numerical rule.
+
+Three exclusive lanes and owner integration pass frozen16-file146/146,
+types/lint/build and14 original-action/rendered-control programmes; four policies
+make both private choices legally. Actual Mirror feedback repaired the mandatory
+card-cleanup constraint and native suffix consumers retain the same count.
+Guard regressions now distinguish old and new frames; fixture expectations
+respect normal city income and closed battle frames.
+[Canonical source, proof and limitations](STONE_BURNER_ENGINE_AUDIT.md#outcome-changing-physical-totals--18-october-2026).
+No complete-mode, comprehensive combination/assurance or deployed claim;
+no saved room/database mutation, reset, restart or deployment.
+
 ## 18 October 2026 — Independent cards with Discovery
 
 Fresh selected36/38/50 and original Discovery7/8 now compose with or without

@@ -20,9 +20,11 @@ export type SukRescueReceipt = {
   player: string;
   territory: string;
   skill: SukGraduateSkill;
-  commitment: { forces: CombatForces; dial: number; support: number; options: Casualties[] };
+  commitment: { forces: CombatForces; dial: number; support: number; options: Casualties[];
+    fullyCommitted?: true; physicalLossCount?: number };
   /** Ecaz-led Occupy settles the ally's variable losses before this own-force rescue. */
-  occupyCasualties?: { owner: string; forces: CombatForces; dial: number; support: number; options: Casualties[] };
+  occupyCasualties?: { owner: string; forces: CombatForces; dial: number; support: number; options: Casualties[];
+    fullyCommitted?: true; physicalLossCount?: number };
   pool: SukForceGroup[];
   cards: string[];
   physical: string;

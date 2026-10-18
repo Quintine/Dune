@@ -76,6 +76,7 @@ const decisions = {
   techToken: true,
   poisonTooth: true,
   stoneBurner: true,
+  stoneAllocation: true,
   sukRescue: true,
   rihani: true,
   fullPlanOffer: true,

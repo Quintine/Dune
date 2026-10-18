@@ -27,6 +27,7 @@ import {
 import {
   stoneBurnerComparison,
   stoneBurnerWithdrawalContext,
+  stoneBurnerUndialedTotal,
   type StoneBurnerContext,
   type StoneBurnerComparison,
 } from './stone-burner';
@@ -56,11 +57,26 @@ import {
 } from './leader-skill-combat';
 import { quoteEcazOccupyOutcome, type EcazOccupyBattleProfile } from './ecaz-occupy-battle';
 import { ecazSpecialKaramaBonus, ecazSpecialKaramaPlanAllowed } from './ecaz-special-karama';
+import type { StoneBurnerAllocationChoice, StoneBurnerAllocationLoss } from './stone-burner-allocation';
 
 export class BattleResolutionQuoteError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'BattleResolutionQuoteError';
+  }
+}
+/** Pure prerequisite only: no combat resources have been applied. The engine
+ * owns the private simultaneous commitment protocol and its battle stamp. */
+export class StoneBurnerAllocationRequiredError extends BattleResolutionQuoteError {
+  readonly choices: readonly StoneBurnerAllocationChoice[];
+  readonly losses: Readonly<Record<string, readonly StoneBurnerAllocationLoss[]>>;
+  constructor(choices: readonly StoneBurnerAllocationChoice[],
+    losses: Readonly<Record<string, readonly StoneBurnerAllocationLoss[]>> = {}) {
+    super('Stone Burner requires private undialed physical totals before determining this battle winner.');
+    this.name = 'StoneBurnerAllocationRequiredError';
+    this.choices = choices.map(choice => ({ ...choice, totals: [...choice.totals] }));
+    this.losses = Object.fromEntries(Object.entries(losses).map(([player, options]) => [player,
+      options.map(option => ({ undialed: option.undialed, losses: { ...option.losses } }))]));
   }
 }
 export type ResolutionPlan = {
@@ -113,6 +129,9 @@ export type ResolutionCombatant = ResolutionParticipant & {
   ecazSpecialKarama?: true;
 };
 export type BattleResolutionInput = {
+  /** New battle protocol: physical undialed totals, keyed by the stable side
+   * player, without preselecting the winner's later typed casualty tuple. */
+  stoneAllocations?: Readonly<Record<string, number>>;
   ecazOccupy?: EcazOccupyBattleProfile;
   /** Stable physical slots remain unchanged when Sapho changes aggressor. */
   aggressor?: string;
@@ -187,6 +206,9 @@ export type BattleResolutionQuote = {
   sandmaster?: string;
   casualties: {
     owner?: string;
+    /** A selected Stone total constrains the later variable physical losses,
+     * after any fixed Ecaz contribution and actual withdrawal. */
+    physicalLossCount?: number;
     /** The returned Harass complement fixes all remaining physical fighters. */
     fullyCommitted?: true;
     forces: CombatForces;
@@ -211,6 +233,25 @@ export type BattleResolutionQuote = {
 };
 function requireQuote(condition: unknown, message: string): asserts condition {
   if (!condition) throw new BattleResolutionQuoteError(message);
+}
+/** Shared pure validation accepts partial commitments while gathering choices.
+ * The resolution itself requires every originally ambiguous side to commit. */
+export function validateStoneBurnerAllocationSelections(
+  choices: readonly StoneBurnerAllocationChoice[],
+  selections: Readonly<Record<string, number>> | undefined,
+  complete = false,
+): Readonly<Record<string, number>> {
+  requireQuote(selections === undefined || (!!selections && typeof selections === 'object' &&
+    !Array.isArray(selections) && [Object.prototype, null].includes(Object.getPrototypeOf(selections))),
+  'Stone Burner allocations must identify original side players and legal physical totals.');
+  const selected = selections ?? {};
+  requireQuote(Object.entries(selected).every(([player, total]) => {
+    const choice = choices.find(choice => choice.player === player);
+    return choice && Number.isSafeInteger(total) && choice.totals.includes(total);
+  }), 'Stone Burner allocations must identify original side players and legal physical totals.');
+  if (complete && !choices.every(choice => Object.hasOwn(selected, choice.player)))
+    throw new StoneBurnerAllocationRequiredError(choices);
+  return selected;
 }
 const id = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0;
@@ -525,7 +566,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         stoneContext = stoneBurnerWithdrawalContext(
           stoneContext, side === a ? 'attacker' : 'defender', side.harassWithdraw?.occupy,
         );
-  const stone = hasStone
+  let stone = hasStone
     ? stoneBurnerComparison(
         a.forces,
         a.plan.dial,
@@ -537,10 +578,37 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         stoneContext,
       )
     : null;
+  const explosion = battleWeaponsExplode(aw, ad, dw, dd);
+  const allocationChoices: StoneBurnerAllocationChoice[] = stone && !stone.winner && !ac && !dc && !explosion
+    ? ([['attacker', a], ['defender', d]] as const).flatMap(([slot, side]) => stone![slot].length > 1 ? [{
+      player: side.id,
+      owner: input.ecazOccupy && !input.ecazOccupy.canceled && input.ecazOccupy.lead === side.id
+        ? input.ecazOccupy.forceOwner : side.id,
+      totals: [...stone![slot]],
+    }] : []) : [];
+  const stoneAllocationLosses = Object.fromEntries(allocationChoices.map(choice => {
+    const side = choice.player === a.id ? a : d, context = stoneContext?.[side === a ? 'attacker' : 'defender'];
+    const withdrawal = harassWithdraw.find(withdrawal => withdrawal.player === choice.owner);
+    const options = casualtyOptions(side.forces, side.plan.dial - (context?.fixedEcazDial ?? 0), side.plan.support)
+      .filter(loss => !withdrawal || loss.normal === withdrawal.remaining.normal && loss.elite === withdrawal.remaining.elite)
+      .map(losses => ({ undialed: stoneBurnerUndialedTotal(side.forces, losses, context), losses }));
+    return [choice.player, options];
+  }));
+  const stoneAllocations = validateStoneBurnerAllocationSelections(allocationChoices, input.stoneAllocations);
+  if (!allocationChoices.every(choice => Object.hasOwn(stoneAllocations, choice.player)))
+    throw new StoneBurnerAllocationRequiredError(allocationChoices, stoneAllocationLosses);
+  if (stone && allocationChoices.length) {
+    const attacker = Object.hasOwn(stoneAllocations, a.id) ? [stoneAllocations[a.id]] : stone.attacker;
+    const defender = Object.hasOwn(stoneAllocations, d.id) ? [stoneAllocations[d.id]] : stone.defender;
+    requireQuote(attacker.length === 1 && defender.length === 1,
+      'Complete both original Stone Burner physical allocations before resolving battle.');
+    stone = { attacker, defender, winner: attacker[0] > defender[0] ||
+      attacker[0] === defender[0] && tie === 'attacker' ? 'attacker' : 'defender' };
+  }
   if (stone) {
     requireQuote(
       stone.attacker.length > 0 && stone.defender.length > 0 &&
-        (!!stone.winner || ac || dc),
+        (!!stone.winner || ac || dc || explosion),
       'Stone Burner has an unresolved physical casualty allocation. No battle resources were spent.',
     );
     for (const [side, weapon] of [
@@ -614,7 +682,6 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
           0,
         )
       : 0;
-  const explosion = battleWeaponsExplode(aw, ad, dw, dd);
   const result =
     ac && dc
       ? 'mutualTraitors'
@@ -821,6 +888,15 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         casualties = { ...casualties, forces: withdrawal.remaining, options, fullyCommitted: true };
       }
     }
+  }
+  if (winner && result === 'normal' && casualties && Object.hasOwn(stoneAllocations, winner.id)) {
+    const options = casualties.options.filter(option => stoneBurnerUndialedTotal(winner.forces, option,
+      stoneContext?.[winner === a ? 'attacker' : 'defender']) === stoneAllocations[winner.id]);
+    requireQuote(options.length > 0, 'The Stone Burner winner must retain a typed casualty allocation matching its committed physical total.');
+    const physicalLossCount = options[0].normal + options[0].elite;
+    requireQuote(options.every(option => option.normal + option.elite === physicalLossCount),
+      'The selected Stone Burner total must retain one variable physical loss count.');
+    casualties = { ...casualties, options, physicalLossCount };
   }
   const strongholdIncome =
     result === 'mutualTraitors'

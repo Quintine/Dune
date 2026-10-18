@@ -62,6 +62,7 @@ const DECISIONS = {
   techToken: true,
   poisonTooth: true,
   stoneBurner: true,
+  stoneAllocation: true,
   fullPlanOffer: true,
   fullPlanRead: true,
   guildShipment: true,
