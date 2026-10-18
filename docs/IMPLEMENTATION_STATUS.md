@@ -1,5 +1,32 @@
 # Dune implementation status
 
+## 18 October 2026 — Sapho first with an unspent Advanced Guild
+
+A clean unstarted non-Guild boundary now admits provisional first ordering while
+retaining the native Guild take/wait choice. A granted current Guild turn stays
+protected, canceled timing stays locked, and original permissions, completed
+turns, costs and last protection remain. Existing continuation/signature formats
+and server-derived minimal options suffice; persistent controls explain Guild
+may still act ahead. Actual competing first remains a separate guarded case.
+
+A disjoint genuine-fixture lane, bounded source/continuation review and owner
+integration pass7-file97/97, types/lint/build and six original-action/rendered-
+table programmes. Original cache1/wait uses49 source actions; a real paid Richese
+prefix uses55; native grant/cancel branches fork from48 before the wait.
+TAKE/WAIT with/without the prefix use12–14 continuations, pay Emperor2/Guild1 once
+and preserve non-Guild order. Real dealt-Karama cancellation remains locked;
+granted-current timing cannot be displaced. Four profiles make eight legal
+proposals. Only unopened original deal/Spice positions and scalar lotteries
+are selected; no dealt hand, force, wallet, phase, queue or receipt is installed.
+
+Frozen feedback corrected an obsolete exclusion and a response-pass/turn-count
+fixture assumption; exact failures and the whole batch pass.
+[Canonical source, interpretation and exact proof](JUICE_OF_SAPHO_RUNTIME.md#first-while-the-advanced-guild-remains--18-october-2026).
+No browser click, visual/deployed, direct combined Semuta claim/capture, actual
+competing first, partly completed turn or full-mode acceptance. Final assurance
+remains due. No saved-room/database/reset/restart/deployment operation.
+
+
 ## 18 October 2026 — Sapho late aggressor and final battle actions
 
 Fresh actual-Richese battles now support clean priority changes after sealed

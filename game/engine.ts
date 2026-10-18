@@ -19580,8 +19580,8 @@ function saphoOptions(g: Game, p: Player): SaphoOption[] {
     if (
       !queue.remaining.some((id) => saphoMovementStarted(g, getPlayer(g, id))) &&
       !(
-        g.advanced &&
-        queue.remaining.some((id) => getPlayer(g, id).faction === 'guild')
+        g.advanced && !g.guildTimingLocked && g.guildTimingGranted &&
+        getPlayer(g, queue.current!).faction === 'guild'
       ) &&
       queue.current !== p.id
     )
@@ -19749,7 +19749,7 @@ function playSapho(g: Game, p: Player, action: Action) {
     const used = discard(g, p, 'richese-juice-of-sapho');
     log(
       g,
-      `${p.name} discarded Juice of Sapho to take the ${option.mode} remaining combined shipment and movement turn${option.mode === 'last' ? ', including after the Spacing Guild' : ''}. Completed turns and physical storm order are unchanged.`,
+      `${p.name} discarded Juice of Sapho to take the ${option.mode} remaining combined shipment and movement turn${option.mode === 'last' ? ', including after the Spacing Guild' : ''}. Completed turns and physical storm order are unchanged.${option.mode === 'first' && g.advanced && g.movementRemaining.some(id => id !== p.id && getPlayer(g, id).faction === 'guild') ? ' The Guild retains its next legal timing choice and may still take its turn before this reordered turn.' : ''}`,
       { faction: p.faction, name: 'Juice of Sapho' },
     );
     if (g.semutaPreview) {

@@ -314,7 +314,7 @@ void test('Sapho first reorders only the unstarted movement suffix after a real 
   reject(startedNext, 'g', request);
 });
 
-void test('Genuine Advanced setup permits Sapho first after Guild finishes, retaining unspent Guild priority beforehand', () => {
+void test('Genuine Advanced setup permits Sapho first after Guild waits or finishes, retaining a granted current Guild turn', () => {
   let g = movement('e', true);
   assert.equal(g.players[1].elites!.reserves, 5);
   assert.equal(g.decision?.kind, 'guildTiming');
@@ -324,7 +324,12 @@ void test('Genuine Advanced setup permits Sapho first after Guild finishes, reta
     take: false,
   });
   assert.equal(deferred.active, 'a');
-  reject(deferred, 'e', action(deferred, 'first'));
+  const first = applyAction(deferred, 'e', action(deferred, 'first'));
+  assert.deepEqual(first.movementRemaining, ['e', 'a', 'g']);
+  assert.equal(first.active, null);
+  assert.equal(first.decision?.kind, 'guildTiming');
+  assert.equal(first.guildTimingGranted, deferred.guildTimingGranted);
+  assert.equal(first.guildTimingLocked, deferred.guildTimingLocked);
 
   g = applyAction(g, 'g', { type: 'decision', take: true });
   assert.equal(g.active, 'g');
@@ -431,7 +436,7 @@ void test('Advanced Guild remains before Sapho last across repeated deferrals an
   reject(g, 'e', action(g, 'last'));
   g = applyAction(g, 'g', { type: 'decision', take: false });
   assert.equal(g.active, 'a');
-  reject(g, 'e', action(g, 'first'));
+  assert.ok(viewGame(g, 'e').saphoOptions.some(option => option.scope === 'movement' && option.mode === 'first'));
   g = applyAction(g, 'e', action(g, 'last'));
   assert.deepEqual(g.movementRemaining, ['a', 'g', 'e']);
   assert.equal(

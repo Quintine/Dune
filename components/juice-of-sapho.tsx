@@ -20,7 +20,7 @@ function unavailableReason(game: GameView) {
     return 'No order change is available for you in this lot. You must not have bid or passed; discarding this card can open a hand slot, but a completed opportunity cannot be repeated. A card already committed elsewhere cannot be used.';
   }
   if (game.phase === 5)
-    return 'Movement order can change only before the current combined shipment and movement turn begins. First requires all remaining turns to be unstarted and the Advanced Guild to have finished or be absent. Completed turns stay completed. Already-held positions and committed cards are unavailable.';
+    return 'Movement order can change only before the current combined shipment and movement turn begins. First requires all remaining turns to be unstarted. The Advanced Guild retains its next timing choice; an already granted current Guild turn cannot be displaced. A Karama-locked privilege stays locked. Completed turns, already-held positions and committed cards remain unavailable.';
   if (game.phase === 6)
     return game.battle
       ? game.battle.saphoTimingVersion === 1
@@ -77,7 +77,7 @@ export function JuiceOfSapho({
                     ? `Bid ${option.mode} in the current Once Around lot. Each eligible player still has only one bidding opportunity.`
                     : battle
                       ? `Choose your remaining battles ${option.mode}. Completed battles stay resolved. This changes who chooses next, not the aggressor or tie advantage of a battle. Other players may still choose battles against you before your turn.`
-                    : `Take the ${option.mode} remaining combined shipment and movement turn. Completed turns stay completed${option.mode === 'last' ? ', and the Guild cannot move behind you' : ''}.`}
+                    : `Take the ${option.mode} remaining combined shipment and movement turn. Completed turns stay completed${option.mode === 'last' ? ', and the Guild cannot move behind you' : game.advanced && game.players.some(player => player.faction === 'guild' && player.id !== game.me) ? '. Provisional first priority: the Guild retains its next legal timing choice and may take its turn before yours; a Karama-locked privilege stays locked' : ''}.`}
                 </p>
                 <Button
                   className="min-h-11 whitespace-normal motion-reduce:transition-none"

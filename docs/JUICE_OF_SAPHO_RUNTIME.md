@@ -9,8 +9,74 @@ it is not a newly located publisher answer. Other timing questions remain open.
 The [Battle-phase ordering prototype](SAPHO_BATTLE_ORDER.md) adds first/last
 remaining battle choices. Its separate chooser, phase priority and saved-boundary
 contract supersede the earlier absence of that mode below. The
-[early aggressor prototype](SAPHO_AGGRESSOR.md) now uses the existing shared
-pre-plan opportunity; later aggressor intervention remains unfinished.
+[aggressor prototype](SAPHO_AGGRESSOR.md) now includes clean late intervention
+and a fixed public final opportunity in fresh Richese battles; old battles keep
+their early protocol.
+
+## First while the Advanced Guild remains — 18 October 2026
+
+**Prototyped / Partial.** The physical face changes ordered turns and explicitly
+supersedes Guild only for last. The [source review](JUICE_OF_SAPHO_SOURCE_UPDATE.md#movement-firstlast)
+and [Guild audit](JUICE_OF_SAPHO_ENGINE_AUDIT.md#movement-and-guild) distinguish
+ordinary reordering from a competing first declaration. No publisher answer
+settles that conflict. Under the standing recommended-choice instruction, the
+new composition provisionally admits a nonconflicting first after Guild waits,
+while preserving its native next-boundary timing. This is an implementation
+interpretation, not a retrieved official ruling or unconditional first priority.
+
+At a clean boundary before any remaining combined turn starts, the holder may
+move first in the native remaining queue even while Guild has an unspent turn.
+The existing native timing choice then opens before that reordered turn. Guild
+may take its own turn first or wait, retaining the relative order of every
+non-Guild participant. Existing `guildTimingGranted` permission stays recorded;
+waiting does not consume it or create another Karama response. An ungranted
+out-of-order timing attempt retains its original response. A granted current
+Guild turn remains unavailable for displacement. A Karama-locked timing privilege
+stays locked: Sapho changes order independently without restoring that advantage.
+
+The queue still includes only unfinished turns. Earlier completed turns, paid
+shipments, movement allowances and physical storm order do not reset. Existing
+pending decisions/responses, partly completed turns, reserved cards, no-op checks
+and Sapho-last protection remain. No new game marker or signature format is
+introduced. Reorder and discard before entering native timing; the existing
+Semuta suffix does the same only after original disposal finishes.
+
+The hand panel explains that Guild can still go ahead, and existing minimal
+policies consume the authoritative options. Frozen **7 files97/97**, types/lint/
+build and six original-action/rendered-table programmes pass. Actual public
+host/setup, original dealt Atreides Karama, cache1 and native wait use49 source
+actions. A real paid Richese1 Polar Sink prefix costing2 and explicit end uses55.
+TAKE/WAIT with and without that prefix use12–14 continuation actions; Emperor2
+and Guild1 shipments pay once, non-Guild order remains and every turn ends.
+Granted-current and canceled-TAKE branches fork from48 source actions before
+that wait, use3/2 native choice actions and11/7 continuations to finish the phase.
+The canceled privilege remains locked with its real Karama discarded once.
+Four profiles make eight legal holder/Guild proposals without strategy tuning.
+
+Only unopened original starting-deal/Spice positions and scalar lotteries are
+selected. No postdeal hand, force, wallet, queue, phase or timing receipt is
+installed. Actual GameTable and isolated Sapho controls render offered/busy,
+renewed native Guild choice, granted-current and locked states. Framework aliases
+and CSS stubs mean no browser clicks or visual/deployed acceptance.
+
+Frozen feedback repaired two fixture assumptions: an old LAST regression also
+expected first to remain excluded, and a completed Richese could still allow
+another faction's later response without repeating its movement turn. The
+exact two failures pass, then all97/types/lint/build/runtime pass together.
+The bounded source/continuation review found no need for another saved field
+or continuation. No application rule repair followed frozen feedback.
+
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261018-sapho-guild-first/frozen-integrated-2/report.json`,
+base `84200ebc7448bbefa788158408bb389b722ee8f0`, tree
+`0f03e96546e48e9ae3a355b4935e72685c9b891dbde0fcdd15d31a03f63ef4ea`.
+The report binds the unchanged implementation/control/test source. Final
+checkpoint prose/reference evidence is a separately reviewed overlay; private
+`documentation-overlay.json` and `git-result.json` bind it to the pushed revision.
+
+Direct combined Semuta claim/capture, actual competing first, partly completed
+movement and other ordered actions remain open. Full-mode, browser/deployed and
+final assurance acceptance is separate. No saved-room/database, reset, restart
+or deployment operation is part of this checkpoint.
 
 ## Cyclic ordinary and Black Market bidding — 18 October 2026
 
@@ -107,7 +173,7 @@ tests stay identical to the frozen proof.
 `{type:'card',card:'richese-juice-of-sapho',scope,event,mode}` accepts one of these current opportunities and discards the actual held card once:
 
 - `scope:'onceAround'`: first or last while the holder has not acted and the change reorders a still-unacted bidder. Earlier bids remain committed. The intervention applies to this lot only. Prior bids, funding, completed participants, physical lot, event and storm tie order remain intact. Richese is not restored to last after Sapho. A holder excluded initially by a full hand gains a slot and eligibility by discarding Sapho, provided this lot is still open. Completed passes never reopen. Every purchase still requires a strict outbid.
-- `scope:'movement'`: reorder entire remaining combined shipment/movement turns at a clean boundary. First requires every remaining turn to be unstarted; previously completed turns may retain their spent shipment/movement counters. In Advanced, Guild must be absent or have fully completed its turn and left the remaining queue. Last remains after Guild, including later Guild deferrals. No movement counters, Hajr, transport pricing, concealed tokens, resources or completed turns reset. Existing shipment/movement/preparation, reaction, Truthtrance, paid Box and gift commitments block the intervention. The next actor retains an already settled Guild timing choice when their identity is unchanged. An already granted, unstarted early Guild turn is lifted to the front of the local remaining queue before applying last, without changing physical order; this also permits Guild itself to declare last. A player now actually last cannot spend the card on a no-op.
+- `scope:'movement'`: reorder entire remaining combined shipment/movement turns at a clean boundary. First requires every remaining turn to be unstarted; previously completed turns may retain their spent shipment/movement counters. In Advanced, Guild retains its native next-boundary timing even while unspent; it may still take its turn before the reordered holder. An already granted current Guild turn is protected. A Karama-locked privilege stays locked. Last remains after Guild, including later Guild deferrals. No movement counters, Hajr, transport pricing, concealed tokens, resources or completed turns reset. Existing shipment/movement/preparation, reaction, Truthtrance, paid Box and gift commitments block the intervention. The next actor retains an already settled Guild timing choice when their identity is unchanged. An already granted, unstarted early Guild turn is lifted to the front of the local remaining queue before applying last, without changing physical order; this also permits Guild itself to declare last. A player now actually last cannot spend the card on a no-op.
 
 The reusable immutable `ordered-opportunity` helper checks unique IDs, exact remaining/completed partition, stable event and locked current/protected-last positions. It never defines card scope or cyclic timing. Movement protection persists as `saphoMovementLast:{event,turn,player}`, checked on action, normalization and projection, and cleared when its owner finishes. Normal storm order is never rewritten. Invalid records are rejected, not repaired by replaying turns.
 
@@ -136,8 +202,9 @@ Browser and final regression outcomes from 7 September are recorded in the histo
 The [existing source contract](JUICE_OF_SAPHO_SOURCE_UPDATE.md#movement-firstlast)
 already permits reordering the remaining unstarted participants between complete
 combined turns. The old global completed/shipped guard was narrower than that
-contract. The engine now checks only remaining participants and only retains the
-Advanced Guild-first guard while Guild is among them. No new timing ruling,
+contract. That checkpoint checked only remaining participants but retained the
+Advanced Guild-first guard while Guild was among them; the 18 October section
+above supersedes that blanket exclusion. No new timing ruling,
 saved field, player action shape or separate AI legality calculation is added.
 
 Four new engine tests cover a real completed shipment before first, a genuine

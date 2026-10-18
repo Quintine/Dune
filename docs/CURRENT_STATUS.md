@@ -16,6 +16,36 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Sapho first with an unspent Advanced Guild — 18 October. Prototyped / Partial.**
+At a clean unstarted non-Guild boundary, first now reorders the remaining queue
+and retains the Guild's native next-boundary take/wait choice. A granted current
+Guild turn stays protected; actual Karama cancellation stays locked. Original
+permissions, completed turns, payments and last protection remain. Existing
+continuations and minimal policies need no new saved field or signature format.
+This nonconflicting composition is provisional, not a publisher precedence FAQ.
+
+One disjoint genuine-fixture lane, bounded source/continuation review and owner
+integration pass **7 files97/97**, types/lint/build and six original-action/
+rendered-table programmes. Original cache1/native wait uses49 source actions;
+an actual Richese1 Polar Sink shipment costing2 and explicit end uses55. Original
+grant/cancel branches fork from48 before the first wait. TAKE/WAIT with and
+without that prefix use12–14 continuation actions, retain ordinary non-Guild
+order and pay Emperor2/Guild1 once. Granted-current and actual dealt-Karama
+cancellation use3/2 choice actions plus11/7 continuations. Four profiles make
+eight legal holder/Guild proposals. Only unopened original deal/Spice positions
+and scalar lotteries are selected; no postdeal pieces, funds, queue or receipt
+is installed.
+
+Frozen feedback corrected an obsolete first exclusion and a fixture that counted
+an already completed player's later response pass as a repeated movement turn.
+The exact two failures and then the whole batch pass. Actual controls render
+first/busy, renewed native Guild timing, granted-current and locked states;
+no browser click or visual/deployed acceptance. Direct combined Semuta claim/
+capture, actual competing first, partly completed turns, wider ordered actions,
+full modes and final assurance remain open. No saved-room/database/reset/restart/
+deployment operation.
+[Canonical source, interpretation and proof](JUICE_OF_SAPHO_RUNTIME.md#first-while-the-advanced-guild-remains--18-october-2026).
+
 **Sapho late aggressor — 18 October. Prototyped / Partial.** Fresh public
 Richese-roster battles permit clean intervention after commitments/reveal and
 retain a fixed final opportunity for both combatants. Both explicitly finish;
