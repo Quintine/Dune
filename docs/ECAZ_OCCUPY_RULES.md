@@ -2,6 +2,25 @@
 
 Historical primary-source audit, 2026-09-07, corrected after independent verification. The publisher/designer odd-force conflict remains unresolved as a publisher correction. Under the 8 October Basic-first prototype instruction, Basic now provisionally uses the main p8 paragraph: ceiling contribution/loss and floor survivors, with a visible control warning. This is not a numerical ruling by the user or designer. Advanced retains its separately authorized source. The earlier false attribution to Jack Reda remains withdrawn.
 
+## Bare Basic native Tleilaxu — 24 October 2026
+
+The Basic profile now admits native Tleilaxu with exactly the selected `ecaz`
+and `ix` decks, classic seats and optional Moritani. This removes the old
+conservative roster restriction through the existing composition predicate;
+the genuine start and battle assertions remain. It adds no native Ixian,
+CHOAM/Richese or independent-card/optional-module composition. Existing broader
+registered profiles keep their own boundaries.
+
+Basic Tleilaxu supplies ordinary counters and uses the existing fixed Ecaz
+contribution, selected lead, zero support and separate physical losses. The
+winning co-side cannot Face Dance itself; external Face Dance returns both
+winning armies and counts their combined survivors. These existing native
+handlers have no Advanced-only dependency. The Basic odd-count interpretation
+above remains provisional. This is the setup dependency for [Ambassador bank
+income](TLEILAXU_AMBASSADOR_RULES.md#provisional-free-revival-income--24-october-2026),
+not complete-mode certification. Bounded consumer proof and exact frozen results
+are recorded with that checkpoint.
+
 ## Registered mixed Skills — 18 October 2026
 
 Actual Eca and registered selected E1/E2/classic seats now use all14 without

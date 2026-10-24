@@ -285,7 +285,10 @@ export function EcazEntry({
           <p className="m-0 text-sm leading-6">
             Revive one eligible leader or return up to {entry.revival?.maximum ?? 0}
             {' '}physical forces for free. This independent grant leaves ordinary
-            allowances and income unchanged provisionally. Ordinary leaders and
+            allowances unchanged provisionally. When Tleilaxu is seated, a
+            positive return can earn it one bank spice, sharing the beneficiary’s
+            once-per-turn free-revival reward. Canceling income keeps the return.
+            This income interpretation is provisional. Ordinary leaders and
             Atreides’ Kwisatz Haderach retain their first-death restriction.
             Other revival interactions remain under development.
           </p>

@@ -224,7 +224,8 @@ const cancellationSources = {
   revivalLimit: (g) => g.pendingRevival ?? null,
   revivalDiscount: (g) => g.pendingRevival ?? null,
   earlyRevival: (g) => g.pendingRevival ?? null,
-  revivalIncome: () => null,
+  revivalIncome: (g, response) => response.source === 'ambassadorRevival'
+    ? g.pendingAmbassador?.revivalReceipt ?? null : null,
   foreignGhola: (g) => g.pendingRevival ?? null,
   ixSubstitution: (g) => ({
     ...aftermathSource(g),

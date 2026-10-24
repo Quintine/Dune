@@ -24,16 +24,27 @@ polling and a lobby action; Continue left the room intact. Focused tests pass
 The live site still reports older revision `716304b`; the fix is pushed but
 awaits deployment. [Exact evidence and limits](READABLE_NOTICES.md#verification).
 
-**Queued next — Tleilaxu income from Ambassador revivals, 24 October.** Connect
-positive free force/leader returns to the existing per-beneficiary/turn free
-income ledger under the explicit provisional interpretation. Decline earns0;
-Ghola stays independent. A committed-return receipt and distinct revival marker
-bind the native income response so allow/cancel resumes the original Ambassador
-once without repeating the revival. Root owns engine, response-context, controls,
-regressions and docs/reference; proposed disjoint lanes own only a pure receipt
-helper/test and original-action source fixture. The source review is complete;
-implementation was deferred for the user's notice report. No new module or
-assurance campaign.
+**Tleilaxu Ambassador income — 24 October. Prototyped / Partial.** Positive
+free force/leader returns now share the actual beneficiary's once-per-turn free
+income ledger. This selected source composition remains explicitly provisional;
+Ghola stays independent and decline earns nothing. A committed-return receipt
+binds the distinct income response. Allow/cancel finishes the original Ambassador
+once; canceling the bank spice keeps the return and spent entitlement. Persistent
+controls explain both the provisional reward and the already-completed return.
+
+A disjoint receipt/fixture/Basic-consumer wave, bounded source/composition review
+and owner integration pass **8 files81/81**, types/lint/build, four original
+Basic native/BG-copy allow/cancel gameplay/rendering programmes and eight legal
+policy continuations. Sources158/159 retain original47/22 decks, actual paid
+placements, Duke acquisition/death, Guild entry and its original dealt Karama.
+The real Basic start exposed a conservative restriction; bare Ecaz+Ix with native
+Tleilaxu now uses existing coalition/Face Dance mechanics. Six labelled controlled
+Basic cases retain genuine setup, actual Nexus/alliance and funded shipments.
+Feedback corrected a Guild-ally tariff expectation and an idle-policy private
+driver; runtime alone reran on identical source. [Policy, exact proof and limits](TLEILAXU_AMBASSADOR_RULES.md#provisional-free-revival-income--24-october-2026).
+Wider combinations, generic ordinary repeat eligibility, complete modes and final
+assurance remain open. No optional-module opening, strategic calibration or
+saved-room/database/reset/restart/deployment operation in this batch.
 
 **Ecaz's Ambassador Duke revival — 24 October. Prototyped / Partial.** The
 original Tleilaxu grant now offers Ecaz the real shared dead Duke, including his

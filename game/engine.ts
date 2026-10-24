@@ -16,6 +16,8 @@ import {
 import { quoteSukPhysicalRescue, quoteSukRescue, SukPhysicalRescueError, sukReceiptSignature, sukRescueOptions, type SukForceGroup, type SukPhysicalRescueQuote, type SukPhysicalRescueReceipt, type SukReserveDestinations, type SukRescueOption, type SukRescueReceipt } from './suk-graduate';
 import { quoteTleilaxuAmbassadorForces, TleilaxuAmbassadorForceError } from './tleilaxu-ambassador-forces';
 import { tleilaxuAmbassadorLeaderChoices, tleilaxuAmbassadorLeaderSelection } from './tleilaxu-ambassador-leaders';
+import { createAmbassadorRevivalReceipt, validateAmbassadorRevivalReceipt, AmbassadorRevivalIncomeError,
+  type AmbassadorRevivalReceipt, type AmbassadorRevivalReturn } from './tleilaxu-ambassador-income';
 import { leaderSkillStrongholdCount, sandmasterVictorySpice, sandmasterVictoryPiles, type SandmasterVictorySpiceOffer } from './leader-skill-battle-board';
 import { beginRihani, chooseRihaniDraw, finishRihani, validateRihani, type RihaniReceipt, type RihaniSkill } from './rihani-decipherer';
 import { planetologistMovementModeSupported, planetologistLeader, planetologistRange, selectedOriginElites, groundMovementRange, planetologistGatherAdvisorEntry, advisorFlipMovementBlocked, type PlanetologistMovement } from './planetologist-movement';
@@ -1059,7 +1061,7 @@ export type ResponseWindow = {
   occupiedPayment?: { event: string; contributions: { payer: string; amount: number }[] };
   /** Bank-paid portion of a frozen Homeworld charity claim. */
   charityHomeworld?: number;
-  source?: 'ambassador';
+  source?: 'ambassador' | 'ambassadorRevival';
   intent?: string;
   advisors?: boolean;
   /** Saved exact ordinary Guild-rate response; not the independent Karama rate. */
@@ -1770,6 +1772,8 @@ export type Game = {
       stage: 'income' | 'bonus';
       nexusEvent?: string;
     };
+    /** The free return is committed; only its bank income remains answerable. */
+    revivalReceipt?: AmbassadorRevivalReceipt;
     beneficiary?: string;
     effect?: AmbassadorEffect;
     copyChoices: AmbassadorEffect[];
@@ -10754,6 +10758,15 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
   return initialized;
 }
 function ecazOccupyCompositionSupported(g: Game): boolean {
+  // Native Tleilaxu's ordinary Basic armies and Face Dance already use the
+  // same coalition outcome. Admit their bare selected decks without opening
+  // unrelated native factions or optional-module compositions.
+  const basicTleilaxu = g.advanced === false && Array.isArray(g.expansions) && g.expansions.length === 2 &&
+    g.expansions.includes('ecaz') && g.expansions.includes('ix') &&
+    !!byFaction(g, 'tleilaxu') &&
+    g.players.every(p => p.faction === 'ecaz' || p.faction === 'moritani' ||
+      p.faction === 'tleilaxu' || CLASSIC_FACTIONS[p.faction]) &&
+    !g.ecazTreachery && !g.techTokens && !g.strongholdCards;
   if ((independentNexusProfile(g) || independentDiscoveryProfile(g)) && byFaction(g, 'ecaz')) return true;
   if (g.leaderSkills && nativeEcazLeaderSkillsProfile(g)) return true;
   if (g.ecazOccupyPreview === true && (mixedE3NexusProfile(g) || standaloneE3NexusProfile(g) || pairedE3NexusProfile(g)) &&
@@ -10779,7 +10792,7 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
     g.expansions.includes('ecaz') &&
     g.expansions.every(id => ['ecaz', 'ix', 'choam'].includes(id)) &&
     new Set(g.expansions).size === g.expansions.length &&
-    (g.advanced || (g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
+    (g.advanced || basicTleilaxu || (g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
       g.players.every(p => p.faction === 'ecaz' ||
         p.faction === 'moritani' || CLASSIC_FACTIONS[p.faction]))) &&
     g.players.length >= 2 && g.players.length <= 6 &&
@@ -10797,7 +10810,7 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
 /** Fresh native Occupy profile; Basic odd counts use the main printed rule provisionally. */
 export function initializeEcazOccupyGameForAudit(state: Game): Game {
   requireRule(ecazOccupyCompositionSupported(state),
-    'Occupy requires supported native factions and their selected decks; Basic uses Ecaz/classic/optional Moritani and may include the independent cards.');
+    'Occupy requires supported native factions and their selected decks; Basic additionally admits native Tleilaxu with the bare Ecaz and Ix decks.');
   requireFreshBaseRuntime(state);
   requireFreshFactionInventory(state);
   const g = initializeSetupGameForAudit(state, false, false, false, false, false, false, true, state.ecazTreachery === true);
@@ -18451,6 +18464,59 @@ function ecazAllianceIntegrity(g: Game) {
     getPlayer(g, entry.entrant).ally === entry.owner,
     'The Duke loan lost its accepted Ecaz alliance.');
 }
+/** The Ambassador return has happened; the existing free-income ledger decides
+ * whether its independent bank reward still needs a response. */
+function finishAmbassadorRevival(g: Game, beneficiary: Player, returned: AmbassadorRevivalReturn) {
+  const entry = g.pendingAmbassador!;
+  collectRevivalIncome(g, beneficiary, 0, true);
+  if (!g.response) { finishAmbassador(g); return; }
+  const income = g.response;
+  requireRule(income.kind === 'revivalIncome' && income.amount === 1,
+    'The free Ambassador revival lost its bank income.');
+  entry.revivalReceipt = createAmbassadorRevivalReceipt({
+    event: entry.event, owner: entry.owner, entrant: entry.entrant, token: entry.token,
+    territory: entry.territory, sector: entry.sector, turn: entry.turn, phase: entry.phase,
+    beneficiary: beneficiary.id, incomeOwner: income.owner,
+  }, returned);
+  entry.stage = 'income';
+  income.source = 'ambassadorRevival';
+  income.intent = entry.event;
+  log(g, 'Provisional Ambassador revival income: Tleilaxu may collect one bank spice for this beneficiary this turn. The return is already complete; canceling income does not undo it.',
+    { faction: 'tleilaxu', name: 'Ambassador revival income' });
+}
+/** Bind the income to the original committed return, not its pieces' later
+ * location after an otherwise legal card interruption. */
+function validateAmbassadorRevivalIncome(g: Game, response: ResponseWindow) {
+  const entry = g.pendingAmbassador, receipt = entry?.revivalReceipt;
+  const token = g.ecazAmbassadors?.tokens.find(t => t.id === entry?.token);
+  requireRule(g.status === 'playing' && entry && receipt && entry.stage === 'income' &&
+    entry.effect === 'tleilaxu' && entry.turn === g.turn && entry.phase === g.phase &&
+    ambassadorPhaseAllowed(g) && response.kind === 'revivalIncome' &&
+    response.source === 'ambassadorRevival' && response.intent === entry.event && response.amount === 1 &&
+    response.owner === byFaction(g, 'tleilaxu')?.id && response.recipient === entry.beneficiary &&
+    byFaction(g, 'ecaz')?.id === entry.owner && g.players.some(p => p.id === entry.entrant) &&
+    g.players.some(p => p.id === entry.beneficiary) && g.revivalFreeIncome?.[entry.beneficiary!] === g.turn &&
+    token && ((token.effect === 'tleilaxu' && token.zone === 'used') ||
+      (token.effect === 'beneGesserit' && token.zone === 'removed' && entry.copyChoices.includes('tleilaxu'))),
+  'This Ambassador revival income has lost its committed return.');
+  try {
+    validateAmbassadorRevivalReceipt({ event: entry.event, owner: entry.owner, entrant: entry.entrant,
+      token: entry.token, territory: entry.territory, sector: entry.sector, turn: entry.turn, phase: entry.phase,
+      beneficiary: entry.beneficiary!, incomeOwner: response.owner }, receipt);
+  } catch (error) {
+    if (error instanceof AmbassadorRevivalIncomeError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function ambassadorRevivalIncomeIntegrity(g: Game) {
+  const responses = [...new Set([...savedNoFieldResponses(g), ...savedKaramaContexts(g).flatMap(({ pending }) =>
+    pending.use.kind === 'cancel' ? [pending.use.response] : [])])]
+    .filter(response => response.source === 'ambassadorRevival');
+  const entry = g.pendingAmbassador;
+  if (!entry?.revivalReceipt && !(entry?.effect === 'tleilaxu' && entry.stage === 'income') && !responses.length) return;
+  requireRule(responses.length === 1, 'The committed Ambassador revival needs its original income response.');
+  validateAmbassadorRevivalIncome(g, responses[0]);
+}
 function decideAmbassador(g: Game, p: Player, action: Action) {
   const entry = g.pendingAmbassador;
   requireRule(
@@ -18541,12 +18607,13 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
         'Choose a leader or forces, not both.');
       const selected = tleilaxuAmbassadorLeaderSelection(g, p, action.leader);
       requireRule(selected, 'Choose an eligible own leader, Ecaz Duke or Kwisatz Haderach from the Tanks.');
-      let name: string;
+      let name: string, returned: AmbassadorRevivalReturn;
       if (selected === 'kwisatz') {
         const kwisatz = p.kwisatz!;
         kwisatz.dead = false;
         delete kwisatz.usedAt;
         kwisatz.revivalCycle = Math.max(p.revivalCycle, kwisatz.revivalCycle ?? 1) + 1;
+        returned = { kind: 'kwisatz', cycle: kwisatz.revivalCycle };
         name = 'Kwisatz Haderach';
       } else if (selected === DUKE_VIDAL_ID) {
         const duke = g.dukeVidal!.leader;
@@ -18555,16 +18622,18 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
         delete duke.usedAt;
         delete duke.concealed;
         name = duke.name;
+        returned = { kind: 'leader', leader: duke.id, deaths: duke.deaths };
         g.dukeVidal = consumeDuke(g.dukeVidal!);
       } else {
         recordEcazLeaderReturn(g, selected);
         selected.dead = false;
         delete selected.usedAt;
         name = selected.name;
+        returned = { kind: 'leader', leader: selected.id, deaths: selected.deaths };
       }
       log(g, `${p.name} revived ${name} for free through the Tleilaxu Ambassador.${selected === DUKE_VIDAL_ID ? ' The living shared disc is set aside, unclaimed.' : ''} The ordinary leader allowance is unchanged.`,
         { faction: 'tleilaxu', name: 'Tleilaxu Ambassador' });
-      finishAmbassador(g);
+      finishAmbassadorRevival(g, p, returned);
       return;
     }
     const forces = integer(action.forces, 1, 4, 'Forces to return');
@@ -18604,10 +18673,10 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
     }
     log(
       g,
-      `${p.name} returned ${quote.amount} physical ${quote.amount === 1 ? 'force' : 'forces'} (${quote.elite} special) from the Tanks to its reserves for free through the Tleilaxu Ambassador. Ordinary revival allowances, prices and income are unchanged.`,
+      `${p.name} returned ${quote.amount} physical ${quote.amount === 1 ? 'force' : 'forces'} (${quote.elite} special) from the Tanks to its reserves for free through the Tleilaxu Ambassador. Ordinary revival allowances and prices are unchanged.`,
       { faction: 'tleilaxu', name: 'Tleilaxu Ambassador' },
     );
-    finishAmbassador(g);
+    finishAmbassadorRevival(g, p, { kind: 'forces', amount: quote.amount, elite: quote.elite });
     return;
   }
   if (entry.stage === 'offer') {
@@ -26142,6 +26211,8 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       : null;
   if (response.source === 'ambassador')
     validateAmbassadorPurchaseResponse(g, response);
+  if (response.source === 'ambassadorRevival')
+    validateAmbassadorRevivalIncome(g, response);
   const placementCancellation = canceled
     ? currentPlacementCancellationQuote(g, response)
     : null;
@@ -26831,6 +26902,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
     awardBankerIncome(g, response.spiceBankerIncomePayment, canceled);
     if (g.pendingChoamMarketGhola && g.pendingChoamMarketGhola.event === response.intent)
       g.pendingChoamMarketGhola.stage = 'complete';
+    if (response.source === 'ambassadorRevival') finishAmbassador(g);
   } else if (response.kind === 'faceDancerReplacement') {
     const owner = getPlayer(g, response.owner);
     const index = owner.faceDancers!.findIndex(
@@ -30511,6 +30583,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
   ambassadorRelocationIntegrity(state);
+  ambassadorRevivalIncomeIntegrity(state);
   ecazCollectionIntegrity(state);
   ecazAllianceIntegrity(state);
   // Seat control is independent of gameplay locks and must preserve their exact continuation.
@@ -30917,6 +30990,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
   ambassadorRelocationIntegrity(state);
+  ambassadorRevivalIncomeIntegrity(state);
   ecazCollectionIntegrity(state);
   ecazAllianceIntegrity(state);
   const g = structuredClone(state);
@@ -35129,6 +35203,7 @@ export function viewGame(state: Game, id: string) {
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
   ambassadorRelocationIntegrity(state);
+  ambassadorRevivalIncomeIntegrity(state);
   ecazCollectionIntegrity(state);
   ecazAllianceIntegrity(state);
   battleSpecialWeaponIntegrity(state);

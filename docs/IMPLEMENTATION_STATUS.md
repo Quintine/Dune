@@ -1,5 +1,29 @@
 # Dune implementation status
 
+## 24 October 2026 — Tleilaxu income from committed Ambassador returns
+
+Positive free force/native leader/KH/Duke returns now share the existing
+beneficiary/turn free-income ledger under an explicitly provisional source
+composition. Actual Ghola stays separate; decline earns nothing. Bind the
+already-completed return to a distinct income response. Allow pays one bank
+spice; cancellation keeps the revival and spent entitlement. Both finish the
+original Ambassador once. Persistent controls explain the policy and result.
+
+The original Basic source exposed an old conservative start restriction. Bare
+Ecaz+Ix with native Tleilaxu now admits existing coalition/Face Dance behavior,
+retaining the start/battle assertions and other faction/module boundaries.
+A disjoint receipt/fixture/consumer wave, bounded review and owner integration
+pass8-file81/81, types/lint/build, four original Basic native/copy allow/cancel
+gameplay/rendering programmes and eight legal policies. Sources158/159 retain
+original47/22 decks, actual placements/acquisition/poison death/paid Guild entry
+and its dealt Karama. Six labelled controlled Basic consumers retain original
+setup and actual Nexus/alliance/funded battle controls. Feedback repaired a
+Guild-ally price expectation and private idle-policy driver; runtime alone
+reran on identical source. [Policy, source and exact frozen evidence](TLEILAXU_AMBASSADOR_RULES.md#provisional-free-revival-income--24-october-2026).
+Full modes, ordinary repeated-leader eligibility, wider combinations, assurance
+and deployed acceptance remain open. No strategic calibration, optional-module
+opening or saved-room/database/reset/restart/deployment operation.
+
 ## 24 October 2026 — Ecaz's free Ambassador Duke return
 
 Connect the missing shared-disc alternative to the original Tleilaxu grant for

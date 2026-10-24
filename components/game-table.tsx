@@ -2611,6 +2611,15 @@ export function GameTable({
                     response.
                   </p>
                 )}
+              {g.response.source === 'ambassadorRevival' && (
+                <p className="notice">
+                  The free Ambassador revival is already complete. Canceling
+                  Tleilaxu’s bank income leaves the revived pieces in play.
+                  Provisional rule: one free-revival reward per beneficiary
+                  per turn, shared with ordinary free revival. Ghola cards
+                  retain their separate income.
+                </p>
+              )}
               {g.response.source === 'ambassador' && (
                 <p className="notice">
                   The Richese Ambassador purchase is already paid and its card

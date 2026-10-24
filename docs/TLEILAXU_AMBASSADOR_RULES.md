@@ -2,6 +2,103 @@
 
 Primary-source review, 2026-09-07, with later runtime checkpoints below. This document supplements the [Ambassador effects audit](ECAZ_AMBASSADOR_EFFECTS_AUDIT.md) and [runtime readiness review](TLEILAXU_AMBASSADOR_RUNTIME_READINESS.md). Recorded source questions remain distinct from the Basic-first implementation choices.
 
+## Provisional free revival income — 24 October 2026
+
+A successful positive Ambassador force, native leader, KH or Ecaz Duke return
+now uses Tleilaxu's existing bank-income mechanism. The [E1 rulebook, printed
+page7](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=7)
+awards income for each faction using free revival or Ghola. The [E3 rulebook,
+printed page8](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=8)
+makes this Ambassador return free. Applying that general trigger, including
+the leader alternative, is source composition. Neither passage explicitly
+settles cross-phase repetition. Under the standing choose-recommended-option
+instruction, use **one bank spice per actual beneficiary per turn**, shared
+with ordinary free revival; actual Ghola remains independently rewarded per
+use. This is a provisional interpretation, not a located publisher example.
+It supersedes only the earlier Ambassador income-independence boundary below.
+
+Complete the physical return first, then stamp the existing `revivalFreeIncome`
+ledger through `collectRevivalIncome`. The actual recipient may be Ecaz, its
+ally or Tleilaxu itself. A decline returns nothing, consumes no entitlement and
+opens no income response. An already-used ordinary free entitlement pays no
+second reward. Existing Tleilaxu Homeworld suppression remains in the shared
+calculation. No ordinary quota, price, paid request, Ghola or out-of-phase Axlotl
+payment is added.
+
+When a reward is due, keep the original Ambassador at `income` with a receipt
+binding its event, owner, entrant, token, site, turn/phase, beneficiary, Tleilaxu
+owner and exact committed return. Distinct `ambassadorRevival` response routing
+avoids Richese's purchase continuation. Allow pays the bank spice; cancel spends
+the actual eligible card and prevents only that spice. Both finish the original
+Ambassador once, without replaying the return or releasing the free entitlement.
+Returned pieces need not stay in their original location during an otherwise
+legal interruption. The income source also remains bound across BG conversion
+and its printed counter. Persistent guidance explains the provisional reward
+before selection and the already-completed return during the response.
+
+The original Basic source also exposed an old conservative Occupy whitelist.
+Bare selected `ecaz`+`ix` with native Tleilaxu now admits the existing ordinary
+Basic coalition and Face Dance paths, with classic seats and optional Moritani.
+The start and battle guards remain; this does not open native Ixian/CHOAM/
+Richese Basic compositions or add optional modules/independent card variants.
+See [the native force-owner contract](ECAZ_OCCUPY_RULES.md#native-e1e2-force-owner-integration--2-october-2026).
+The actual source roster for this income programme is Ecaz/Harkonnen/Tleilaxu/
+Guild; its original47-card Treachery deck and22-card Spice deck are retained.
+
+### Focused income proof and remaining scope
+
+Frozen owner integration passes **8 files,81/81 tests**, types/lint and production
+build. The six pure receipt cases bind exact source/return identity and fixed
+one-spice amount. Engine cases cover force/native leader/KH/Duke returns, actual
+beneficiary/self attribution, decline, prior ordinary free revival, actual Ghola
+before/after the grant, printed cancellation and an Advanced BG conversion's
+printed counter. The latter restores the original income without another revival.
+Existing ordinary usage, legacy BG contexts, Basic coalition and Duke paths pass
+in the affected union. No full recovery/privacy/custody suite was added.
+
+`tests/fixture-ambassador-revival-income.ts` supplies native and copied original
+public Basic sources using **158/159 accepted actions**. Five unopened deal
+positions give Guild its actual Karama, two unopened ordinary Spice positions
+and original packet/scalar lotteries retain all components. Real paid placements,
+Duke acquisition, a two-poison battle/death and next-turn paid Guild entry precede
+the free Duke return and separate bank-income response. Four allow/cancel
+programmes preserve the living strength6/deaths1 shared disc, the consumed free
+entitlement and original entrant movement. Only allowing credits the one spice;
+the original held Karama is physically spent only on cancellation.
+
+Actual GameTable/entry rendering checks enabled/busy Duke controls, preselection
+policy, income-owner amount and persistent cancellation guidance. Eight existing
+Easy/Medium/Hard/Brutal native/copy policies select the legal return and an eligible
+response, then finish the original entrant. No strategy refinement. The private
+driver initially selected an idle seat without a cancellation card; selecting
+an eligible responder repaired only that driver. Runtime alone reran with all
+application/test source identical to the already-passed tests/quick/build.
+Framework aliases/CSS stubs make this runtime rendering, not browser, visual or
+deployed acceptance.
+
+Six explicitly controlled Basic coalition consumers retain the actual public
+setup, original47-card inventory, physical forces and Traitor identities. Labelled
+conserved board/card/Face Dancer swaps precede real next-turn Nexus/alliance,
+funded city shipments and native choose/lead/plan/loss/cleanup controls. Both
+Tleilaxu co-side leads suppress self Face Dance; external Tleilaxu zero/three
+replacement returns both winning Ecaz/Guild armies and retains original rewards.
+Their initial cost expectation omitted the actual Guild alliance half-rate;
+only that expectation was corrected. These are controlled consumers, not six
+unmodified original full-game programmes or wider-combination certification.
+
+Frozen source: base `f9e204c301c6789718553c0cd10cd59ef315792c`, tree
+`9cd43e04cf7d4cada94daa2749da36bd335da9d3ff78a72062d47364fefc70e0`,
+2611 source files, including only the hash of the untracked authorized PDF.
+Private evidence:
+`/home/quintine/.local/share/dune/checkpoints/20261024-ambassador-revival-income/`.
+`frozen-integrated-final/report.json` explicitly combines the identical-source
+passed checks in `frozen-integrated-2` with `runtime-repair`; earlier failed
+feedback reports remain. Final checkpoint prose/reference is a reviewed
+documentation-only overlay. Full modes, generic repeated ordinary leader
+eligibility, wider modules/combinations and final assurance remain unfinished;
+no deployment, server restart or saved-room/database operation belongs to this
+batch.
+
 ## Ecaz shared Duke alternative — 24 October 2026
 
 The original Tleilaxu Ambassador now offers Ecaz its dead shared Duke as the
