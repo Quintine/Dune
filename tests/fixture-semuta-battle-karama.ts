@@ -3,6 +3,7 @@ import { applyAction, createGame, initializeSemutaGameForAudit, joinGame, newPla
 import { botActions } from '../game/bots';
 import { isAuditorLeader } from '../game/cards';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
+import { finishSemutaBattleOutcome } from './fixture-semuta-homeworld-choam';
 
 export type SemutaBattleKaramaKind = 'capture' | 'choamAudit' | 'choamBattleIncome';
 export const reloadBattleKarama = (game: Game): Game => JSON.parse(JSON.stringify(game));
@@ -114,6 +115,7 @@ export function semutaBattleKaramaFixture(kind: SemutaBattleKaramaKind) {
   game = applyAction(game, loser, { type: 'battlePlan', dial: 0, support: 0,
     leader: loserLeader.id, defense: defense.id });
   for (const id of [winner, loser]) game = applyAction(game, id, { type: 'traitorCall', call: false });
+  game = finishSemutaBattleOutcome(game);
   assert.equal(game.pendingTreacheryDiscard?.reaction?.stage, 'offer');
   const earlierEvents = [game.pendingTreacheryDiscard!.batch.event];
   game = passBattleKaramaOffer(game);

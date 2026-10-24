@@ -1,5 +1,20 @@
 # Rule decision index
 
+## Advisor conversion after battle losses — 24 October 2026
+
+Compose supplied Advanced physical17's group counter with physical28 E's alone
+conversion after actual battle losses. Preserve the completed result, payments,
+deaths, casualty choices and mandatory disposal. Under the 14 October policy,
+resolve this conversion after original skill/substitution handling and before
+optional winner-card cleanup and later aftermath;
+that priority is provisional, not an explicit combined publisher ruling.
+Immediate no-winner losses retain their occurrence through original disposal.
+The public phase6 receipt omits private cleanup cards/cursor; consume the parent
+before resuming that exact cursor once, without replaying resolution or losses.
+An explosion with no surviving advisors produces no conversion. Retain the
+existing provisional continuously-alone duration and unfinished producer scope.
+[Source and continuation contract](ADVISOR_AUTOMATIC_FLIPS.md#battle-losses-before-optional-cleanup--24-october-2026).
+
 ## Advisor conversion after Trip to Gamont — 24 October 2026
 
 Compose supplied physical29 B’s Mentat return with physical17’s group counter and

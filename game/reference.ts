@@ -4315,6 +4315,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A normal shipment enters as fighters unless joining existing advisors. Moving or shipping into your existing group must match its type. Advisors moved into an occupied territory without another Bene Gesserit group may remain peaceful or request a flip to fighters.',
       'After Trip to Gamont completes during Mentat, the last outsider’s return or empty No-Field reveal can leave advisors alone. Karama can then prevent their conversion without undoing the completed effect or card use. The final CHOAM opportunity resumes afterward; victory waits for its original confirmation. Ordinary Mentat does not gain an extra final chooser.',
       'A committed Guild cross-shipment or return to reserves can also leave advisors alone. Original transport permission, rate and any Guild income resolve first; payment, force transfer and shipment use stay committed if the later conversion is prevented. The ordinary ground move remains unused. Cross-shipment arrival follows the conversion once; a reserve return has no arrival.',
+      'After actual battle losses leave surviving bystanding advisors alone, Karama may prevent their conversion without undoing losses or costs. Mandatory card disposal, original skills and substitution finish first. Provisionally resolve this before optional winner-card cleanup and later aftermath, then resume the original cleanup once. An explosion that destroys the advisors creates no conversion.',
       'Provisional cancellation duration: a prevented advisor group stays advisors while continuously alone, including across phase and turn changes. Another faction returning or the group becoming empty ends that held occurrence. Later arrivals joining that same group match its stance. Other non-ground automatic conversions and matching-group flip counters remain unfinished.',
       'When another faction ships, moves or worm rides into your fighters, immediately choose whether to become advisors. The choice opens a Karama response. Repeated entry can offer a new choice.',
       'After another faction’s off-planet shipment, choose a free force in the Polar Sink or an accompanying force at the shipment destination. An accompanying advisor group cannot flip to fighters in that turn while other factions remain.',
@@ -4326,7 +4327,7 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Implementation",
     "status": "Partial",
-    "detail": "Gamont now commits cost/return before phase8 conversion, keeps private fuel provenance out of its public event, and defers the original final chooser until the parent is consumed once. Victory waits for original confirmation; ordinary Mentat gains no chooser. Earlier ground/transport/preparation: Committed Guild cross/return now binds an exact public transport parent, holds the affected group before board benefits, preserves payment/shipment use, and resumes arrival once after conversion. Private projections/from-reserves do not create occurrences; legacy ground receipt shape remains. Earlier ground/preparation: Ground mandatory conversion is now prototyped: physical advisor arrival/last-outsider departure commits before an exact sourced Karama response. Shared normalization/board quotes retain a prevented continuously-alone stance. Non-ground producers and matching-group conversion remain unfinished. Earlier preparation: Shared native public-board eligibility wraps a current-turn receipt and exact owner/territory/turn source. Direct preparation resolves before-cost and outcome validation without entering movement from earlier phases. Native future declaration queues remain intact; successful shipment commits close the receipt, including markers and positive Sneak Attack.",
+    "detail": "Ground movement, committed Guild transport, Gamont and actual battle losses now have distinct event-bound mandatory-conversion sources. Shared settlement preserves prevented continuously-alone groups. Battle receipts select public identity/outcome only; a private cursor resumes original winner/aftermath after mandatory disposal, skills and substitution without replaying casualties. Transport retains paid transfer and one arrival; Gamont defers the original final chooser. Phases2–5 preparation retains its own window and per-territory prevention. Other automatic producers and matching-group counters remain unfinished.",
     "evidence": [
       "game/advisor-automatic-flip.ts",
       "game/advisors.ts",
@@ -4341,7 +4342,7 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Player controls",
     "status": "Partial",
-    "detail": "Standard Gamont conversion response explains completed effect/card use and the pending victory check. Earlier controls: Transport conversion uses original Karama/Allow controls with completed-payment guidance; later real Intrusion remains its own decision. Earlier controls: Standard Karama/Allow responses show the completed ground move and explicit provisional continuous-alone duration, with no new confirmation or timer. Earlier preparation controls: Persistent owner-only territory actions and blocked/provisional guidance work in phases2–5 at quiet boundaries, including after initial decline. Busy and mandatory interactions stay blocked; private counts/cards/balances are not read. Original phase5 chooser remains.",
+    "detail": "Standard Karama/Allow controls explain completed movement, paid transport, Gamont card use or battle losses and the provisional continuously-alone hold. Battle guidance distinguishes committed casualties from remaining cleanup. Existing preparation controls remain available at quiet phases2–5 boundaries, including after initial decline; first actual shipment closes that window. No new confirmation or timing delay.",
     "evidence": [
       "docs/ADVISOR_AUTOMATIC_FLIPS.md",
       "components/advisor-preparation.tsx",
@@ -4352,8 +4353,10 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "AI",
     "status": "Partial",
-    "detail": "Eight existing-profile ordinary/final Gamont paths resolve legally before the actual final outcome, without strategy changes. Earlier paths: Eight existing-profile transport response paths stay legal without consuming ordinary movement or changing strategy. Earlier paths: Eight existing-profile ground-conversion paths accept legal standard responses and continue without a new strategy. Earlier preparation: The existing native preparation preference consumes the projected window; sixteen own-view existing-profile response paths accept16 legal proposals. No strategy tuning or difficulty calibration is claimed.",
+    "detail": "Eight existing-profile native winner-dial-all/mutual-Traitor response paths resolve legally to actual Collection without replay. Existing ground, transport, Gamont and preparation paths retain their separate evidence. No strategy refinement or difficulty calibration.",
     "evidence": [
+      "tests/advisor-battle-flip-engine.test.ts",
+      "tests/fixture-advisor-battle-flip.ts",
       "tests/advisor-gamont-flip-engine.test.ts",
       "tests/advisor-transport-flip-engine.test.ts",
       "tests/advisor-automatic-flip-engine.test.ts",
@@ -4364,7 +4367,7 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Documentation",
     "status": "Partial",
-    "detail": "Gamont scope distinguishes original-effect prevention, empty revelation, private fuel, final/ordinary timing and the unchanged provisional hold. Earlier contracts: Guild transport source/slot/payment and exactly-once arrival are distinguished from permission/rate; continuously-alone duration remains provisional. Earlier guidance: The ground-conversion contract distinguishes the printed counter, automatic setup, provisional continuous-alone duration and remaining producers. Earlier preparation: Supplied physical28 G and publisher timing distinguish the open window from shipment allowance flags. Denied-territory scope is provisional, existing Ecaz co-side composition is retained, and old pending/unknown-clock behavior and remaining forced-flip/combination limits are explicit.",
+    "detail": "Source physical17/28 E composes the group counter with mandatory conversion. Continuously-alone duration and battle cleanup priority are explicitly provisional. Public receipts, private continuation boundaries, native scenario provenance and remaining producers/combinations are distinguished. Preparation and supported Ecaz coexistence keep their separate contracts.",
     "evidence": [
       "docs/ADVISOR_AUTOMATIC_FLIPS.md",
       "docs/ADVISOR_PREPARATION.md",
@@ -4375,8 +4378,10 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Verification",
     "status": "Partial",
-    "detail": "Gamont passes frozen18-file277/277, types/lint/build, five native Gamont/response/GameTable SSR journeys and eight profile paths. Genuine52/56-action sources earn two holds and a real final win versus next-turn outcome; empty revelation is pure-source evidence. Full No-Field/Nexus/Semuta and remaining producers remain open. Earlier proof: Transport passes frozen17-file243/243, types/lint/build, eight native transport/response/GameTable SSR journeys and eight existing-profile paths. Genuine36/42-action sources earn original Tueks5 and actual paid destination Intrusion. Affordable full-price return and unfunded cross remain distinct. Broader producers and final assurance stay open. Earlier proof: Ground conversion passes frozen16-file199/199, types/lint/build, five native move/response/GameTable SSR journeys and eight legal existing-profile paths. Genuine34/36-action sources retain originals; standard controls render without new callback/browser/deployed certification. Earlier preparation evidence: 16 files229/229, types/lint/build, twelve genuine new-control/gameplay/GameTable SSR journeys and sixteen minimal response paths pass. Public23/29/32/38/39-action sources preserve original setup advisor/Karama; a separate controlled ground/Terror unit proves positive Sneak Attack closure and zero nonclosure. Full combinations, visual/browser/deployed and comprehensive assurance remain open.",
+    "detail": "Battle conversion passes frozen16-file264/264, types/lint/build, five native battle/response/GameTable SSR journeys and eight existing-profile paths. Genuine44-action public sources earn original forces/cards and actual two-versus-zero city income; Lasgun/Shield destroys the advisor without a counter. Stale Semuta fixtures now submit existing final acknowledgements; production guards stay unchanged. Earlier ground/transport/Gamont/preparation evidence is in linked contracts. Full skill/Caladan/Face Dance/Semuta combinations, remaining producers, complete modes, browser/mobile/deployed and comprehensive assurance stay open.",
     "evidence": [
+      "tests/advisor-battle-flip-engine.test.ts",
+      "tests/fixture-advisor-battle-flip.ts",
       "tests/advisor-gamont-flip-engine.test.ts",
       "tests/fixture-advisor-gamont-flip.ts",
       "tests/advisor-transport-flip-engine.test.ts",
@@ -4391,7 +4396,12 @@ export const RULE_TOPICS: RuleTopic[] = [
       "tests/moritani-force-leader.test.ts",
       "tests/advisors.test.ts",
       "tests/movement-phase-quote.test.ts",
-      "tests/karama-movement-cancellation.test.ts"
+      "tests/karama-movement-cancellation.test.ts",
+      "tests/fixture-semuta-battle-karama.ts",
+      "tests/fixture-semuta-homeworld-battle-loser.ts",
+      "tests/fixture-semuta-homeworld-battle-winner.ts",
+      "tests/fixture-semuta-homeworld-choam.ts",
+      "tests/semuta-homeworld-battle-winner.test.ts"
     ]
   }
 ],

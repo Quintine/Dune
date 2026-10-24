@@ -10,12 +10,14 @@ import {
   type AutomaticAdvisorFlipSource,
   type AutomaticAdvisorTransport,
   type AutomaticAdvisorGamont,
+  type AutomaticAdvisorBattle,
 } from '../game/advisor-automatic-flip';
 import { MOBILE_LOCATION, MOBILE_STRONGHOLD } from '../game/board';
 
 type GroundSource = Extract<AutomaticAdvisorFlipSource, { producer: 'groundMovement' }>;
 type TransportSource = Extract<AutomaticAdvisorFlipSource, { producer: 'guildTransport' }>;
 type GamontSource = Extract<AutomaticAdvisorFlipSource, { producer: 'gamont' }>;
+type BattleSource = Extract<AutomaticAdvisorFlipSource, { producer: 'battleLosses' }>;
 
 function context(): AutomaticAdvisorFlipContext {
   return {
@@ -66,7 +68,7 @@ void test('quotes exclude held, occupied and physically empty advisor groups whi
   ctx.players[1].forces = { ...ctx.players[1].forces, 'arrakeen:10': 1 };
   assert.deepEqual(quoteAutomaticAdvisorFlips(ctx), []);
   for (const patch of [
-    { advanced: false }, { status: 'lobby' }, { phase: 0 }, { phase: 4 }, { phase: 6 },
+    { advanced: false }, { status: 'lobby' }, { phase: 0 }, { phase: 4 }, { phase: 7 },
   ]) {
     assert.deepEqual(quoteAutomaticAdvisorFlips({ ...context(), ...patch }), []);
   }
@@ -480,5 +482,153 @@ void test('post-Gamont validation does not ask for prior availability, a remaini
     get() { throw new Error('An empty No-Field reveal has no returned counter to validate'); },
   });
   assert.deepEqual(ctx.players[2].forces, {});
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+});
+
+function battleResult(result: AutomaticAdvisorBattle['result'] = 'normal') {
+  const { ctx, source: ground } = held();
+  ctx.phase = 6;
+  ctx.battle = null;
+  ctx.players[1].forces = {};
+  ctx.players[2].forces = {};
+  const receipt: AutomaticAdvisorBattle = {
+    event: 'original-resolved-battle', turn: ctx.turn, territory: 'imperial_basin',
+    combatants: ['a', 'r'], winner: result === 'normal' || result === 'traitor' ? 'a' : null, result,
+  };
+  ctx.lastBattleContext = { ...receipt, combatants: [...receipt.combatants] };
+  const source: BattleSource = {
+    event: 'automatic-after-original-battle-losses', owner: ground.owner,
+    territory: ground.territory, turn: ground.turn, phase: 6,
+    forces: ground.forces, producer: 'battleLosses', battle: receipt,
+  };
+  ctx.players[0].advisors = {
+    ...ctx.players[0].advisors,
+    imperial_basin: { lockedTurn: 4, aloneFlipHold: source.event },
+  };
+  return { ctx, source };
+}
+
+void test('phase-six quotes and exact public resolved battle receipts retain a physically nonempty BG bystander group', () => {
+  const quiet = context();
+  quiet.phase = 6;
+  const original = structuredClone(quiet);
+  assert.equal(quoteAutomaticAdvisorFlips(quiet).some((entry) => entry.territory === 'imperial_basin'), true);
+  assert.deepEqual(quiet, original);
+  for (const result of ['normal', 'traitor', 'mutualTraitors'] as const) {
+    const { ctx, source } = battleResult(result);
+    const before = structuredClone({ ctx, source });
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+    assert.deepEqual({ ctx, source }, before);
+    assert.deepEqual(Object.keys(source).sort(), ['battle', 'event', 'forces', 'owner', 'phase', 'producer', 'territory', 'turn']);
+    assert.deepEqual(Object.keys(source.battle).sort(), ['combatants', 'event', 'result', 'territory', 'turn', 'winner']);
+  }
+});
+
+void test('a stale battle event, turn, winner, participant, location or active battle cannot settle the held source', () => {
+  const changes: ((ctx: AutomaticAdvisorFlipContext, source: BattleSource) => void)[] = [
+    (ctx) => { ctx.advanced = false; },
+    (ctx) => { ctx.status = 'lobby'; },
+    (ctx) => { ctx.turn++; },
+    (ctx) => { ctx.battle = {}; },
+    (ctx) => { ctx.lastBattleContext = null; },
+    (ctx) => { delete ctx.lastBattleContext; },
+    (ctx) => { ctx.lastBattleContext!.event = 'changed-battle'; },
+    (ctx) => { ctx.lastBattleContext!.turn++; },
+    (ctx) => { ctx.lastBattleContext!.territory = 'arrakeen'; },
+    (ctx) => { ctx.lastBattleContext!.winner = 'r'; },
+    (ctx) => { ctx.lastBattleContext!.result = 'traitor'; },
+    (_ctx, source) => { source.battle.event = 'stale-battle'; },
+    (_ctx, source) => { source.battle.turn++; },
+    (_ctx, source) => { source.battle.territory = 'arrakeen'; },
+    (_ctx, source) => { source.battle.territory = 'missing'; },
+    (_ctx, source) => { source.battle.combatants = ['a', 'a']; },
+    (_ctx, source) => { source.battle.combatants = ['a', 'missing']; },
+    (_ctx, source) => { source.battle.combatants.reverse(); },
+    (_ctx, source) => { source.battle.winner = null; },
+    (_ctx, source) => { source.battle.winner = 'b'; },
+    (_ctx, source) => { source.battle.result = 'mutualTraitors'; },
+    (_ctx, source) => { source.battle.result = 'explosion'; },
+    (ctx) => { ctx.players = [...ctx.players, { ...ctx.players[1] }]; },
+    (ctx) => { ctx.players[1].forces = { 'imperial_basin:9': 1 }; },
+    (_ctx, source) => { source.forces = { 'imperial_basin:9': 3 }; },
+  ];
+  for (const change of changes) {
+    const { ctx, source } = battleResult();
+    change(ctx, source);
+    const before = structuredClone({ ctx, source });
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+    assert.deepEqual({ ctx, source }, before);
+  }
+  const { ctx, source } = battleResult();
+  for (const malformed of [
+    { ...source, battle: null },
+    { ...source, battle: { ...source.battle, result: 'legacy' } },
+    { ...source, battle: { ...source.battle, winner: 1 } },
+    { ...source, battle: { ...source.battle, combatants: ['a'] } },
+    { ...source, battle: { ...source.battle, combatants: ['a', 'r', 'b'] } },
+  ]) {
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, malformed as unknown as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('a BG combatant or an explosion with no remaining physical advisor group has no valid bystander conversion', () => {
+  const combatant = battleResult();
+  combatant.source.battle.combatants = ['b', 'r'];
+  combatant.source.battle.winner = 'r';
+  combatant.ctx.lastBattleContext = { ...combatant.source.battle, combatants: ['b', 'r'] };
+  assert.throws(() => validateAutomaticAdvisorFlip(combatant.ctx, combatant.source), AutomaticAdvisorFlipError);
+  const exploded = battleResult('explosion');
+  assert.equal(exploded.source.battle.winner, null);
+  for (const player of exploded.ctx.players) player.forces = {};
+  assert.deepEqual(quoteAutomaticAdvisorFlips(exploded.ctx), []);
+  assert.throws(() => validateAutomaticAdvisorFlip(exploded.ctx, exploded.source), AutomaticAdvisorFlipError);
+});
+
+void test('battle source and receipt layers reject private cards, skills, casualty choices and continuation payloads', () => {
+  const { ctx, source } = battleResult();
+  for (const field of ['cards', 'skills', 'casualtyChoices', 'continuation']) {
+    for (const malformed of [
+      { ...source, [field]: 'private-payload' },
+      { ...source, battle: { ...source.battle, [field]: 'private-payload' } },
+    ]) {
+      assert.throws(() => validateAutomaticAdvisorFlip(ctx, malformed as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+    }
+  }
+});
+
+void test('phase-six battle conversion does not widen the old movement, transport or Gamont producer windows', () => {
+  for (const original of [held(), transported(), gamont(false)]) {
+    const before = JSON.stringify(original.source);
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
+    assert.equal(JSON.stringify(original.source), before);
+    original.ctx.phase = 6;
+    original.source.phase = 6;
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+  }
+  for (const phase of [5, 8]) {
+    const { ctx, source } = battleResult();
+    ctx.phase = phase;
+    source.phase = phase;
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('battle validation reads only its six public context fields and the current physical group', () => {
+  const { ctx, source } = battleResult();
+  for (const player of ctx.players) {
+    for (const field of ['hand', 'leaders', 'spice', 'traitors', 'faceDancers', 'moved', 'shipped', 'reserves']) {
+      Object.defineProperty(player, field, {
+        get() { throw new Error(`Battle advisor rule read ${player.id} private or unrelated ${field}`); },
+      });
+    }
+  }
+  for (const field of ['cardRoles', 'mandatoryDiscard', 'winnerDiscards', 'skills', 'casualtyChoices', 'continuation']) {
+    Object.defineProperty(ctx.lastBattleContext, field, {
+      enumerable: true,
+      get() { throw new Error(`Battle advisor rule read private context ${field}`); },
+    });
+  }
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+  ctx.battle = false;
   assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
 });

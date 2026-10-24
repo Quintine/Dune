@@ -12,7 +12,7 @@ import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, h
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteAtreidesFullPlan } from './atreides-full-plan';
 import { quoteTleilaxuSpecialKarama } from './tleilaxu-special-karama';
-import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport, type AutomaticAdvisorGamont } from './advisor-automatic-flip';
+import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport, type AutomaticAdvisorGamont, type AutomaticAdvisorBattle } from './advisor-automatic-flip';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
@@ -1265,6 +1265,11 @@ export type Game = {
   pendingAutomaticAdvisorFlips?: AutomaticAdvisorFlipSource[];
   pendingAutomaticAdvisorTransport?: AutomaticAdvisorTransport;
   pendingAutomaticAdvisorGamont?: { receipt: AutomaticAdvisorGamont; card: string; nexusEvent?: string };
+  pendingAutomaticAdvisorBattle?: {
+    receipt: AutomaticAdvisorBattle;
+    resume: { kind: 'winner'; player: string; territory: string; cards: string[] } | { kind: 'aftermath' } | null;
+    signature?: string;
+  };
   advisorPreparation?: AdvisorPreparationWindow;
   ecazOccupyPreview?: boolean;
   /** Fresh native Guild/Nexus payment-replacement profile, never inferred from a save. */
@@ -20292,13 +20297,19 @@ function currentAutomaticAdvisorFlip(g: Game, response: ResponseWindow) {
     response.owner === source.owner && response.location === source.territory &&
     response.advisorResume === undefined &&
     JSON.stringify(g.pendingAutomaticAdvisorFlips?.[0]) === JSON.stringify(source),
-    'The mandatory advisor conversion has lost its original movement source.');
+    'The mandatory advisor conversion has lost its original committed source.');
   if (source.producer === 'guildTransport')
     requireRule(JSON.stringify(source.transport) === JSON.stringify(g.pendingAutomaticAdvisorTransport),
       'The mandatory conversion has lost its original committed Guild transport.');
   if (source.producer === 'gamont')
     requireRule(JSON.stringify(source.gamont) === JSON.stringify(g.pendingAutomaticAdvisorGamont?.receipt),
       'The mandatory conversion has lost its original completed Trip to Gamont.');
+  if (source.producer === 'battleLosses') {
+    const parent = g.pendingAutomaticAdvisorBattle;
+    requireRule(parent && JSON.stringify(source.battle) === JSON.stringify(parent.receipt),
+      'The mandatory conversion has lost its original completed battle.');
+    validateBattleAdvisorResume(g, parent);
+  }
   automaticAdvisorRule(() => validateAutomaticAdvisorFlip(g, source));
   return source;
 }
@@ -20306,6 +20317,8 @@ function openAutomaticAdvisorFlip(g: Game) {
   if (g.response || g.decision || g.truthtrance || g.phaseOpening) return;
   const source = g.pendingAutomaticAdvisorFlips?.[0];
   if (!source) return;
+  // Hold immediate losses through the original mandatory discard/casualty work.
+  if (source.producer === 'battleLosses' && !g.pendingAutomaticAdvisorBattle?.resume) return;
   automaticAdvisorRule(() => validateAutomaticAdvisorFlip(g, source));
   g.response = { kind: 'advisorFlip', owner: source.owner, location: source.territory,
     advisors: false, passed: [], automaticAdvisorFlip: source,
@@ -20380,6 +20393,73 @@ function finishAutomaticAdvisorGamont(g: Game) {
   delete g.pendingAutomaticAdvisorGamont;
   if (parent.receipt.mentat)
     g.decision = { kind: 'choamMentat', player: parent.receipt.player };
+}
+/** Capture actual surviving bystanders before settlement can auto-convert them. */
+function prepareBattleAdvisorFlips(g: Game) {
+  const context = g.lastBattleContext;
+  if (!g.advanced || g.status !== 'playing' || g.phase !== 6 || g.battle ||
+      !context || context.turn !== g.turn || context.result === 'legacy') return;
+  if (g.pendingAutomaticAdvisorBattle) {
+    requireRule(g.pendingAutomaticAdvisorBattle.receipt.event === context.event,
+      'Finish the original battle conversion before another battle.');
+    return;
+  }
+  const groups = automaticAdvisorRule(() => quoteAutomaticAdvisorFlips(g))
+    .filter(group => group.territory === context.territory && !context.combatants.includes(group.player));
+  if (!groups.length) return;
+  requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorTransport &&
+    !g.pendingAutomaticAdvisorGamont, 'Finish the original advisor conversion first.');
+  const receipt: AutomaticAdvisorBattle = { event: context.event, turn: context.turn,
+    territory: context.territory, combatants: [...context.combatants],
+    winner: context.winner, result: context.result };
+  // Private cleanup cards and cursor never enter the public source receipt.
+  g.pendingAutomaticAdvisorBattle = { receipt, resume: null };
+  for (const group of groups) {
+    const source: AutomaticAdvisorFlipSource = { event: crypto.randomUUID(), owner: group.player,
+      territory: group.territory, turn: g.turn, phase: g.phase, forces: group.forces,
+      producer: 'battleLosses', battle: receipt };
+    getPlayer(g, group.player).advisors![group.territory].aloneFlipHold = source.event;
+    (g.pendingAutomaticAdvisorFlips ??= []).push(source);
+  }
+}
+function validateBattleAdvisorResume(g: Game, parent: NonNullable<Game['pendingAutomaticAdvisorBattle']>) {
+  const resume = parent.resume;
+  requireRule(g.phase === 6 && !g.battle && parent.receipt.event === g.lastBattleContext?.event &&
+    resume && parent.signature === JSON.stringify(resume) && !g.pendingSukRescue &&
+    !g.pendingWinnerDiscards && !g.pendingTreacheryDiscard,
+    'Finish the original mandatory battle costs and casualties before advisor conversion.');
+  if (resume.kind === 'winner') {
+    const winner = getPlayer(g, resume.player);
+    requireRule(parent.receipt.winner === winner.id && resume.territory === parent.receipt.territory &&
+      new Set(resume.cards).size === resume.cards.length &&
+      resume.cards.every(id => winner.hand.some(card => card.id === id)),
+      'The advisor conversion lost the original winner cleanup cards.');
+  } else requireRule(resume.kind === 'aftermath', 'Resume only the original battle aftermath.');
+}
+/** Pause only at the original cleanup cursor; never rerun battle resolution. */
+function openBattleAdvisorFlips(g: Game, resume: NonNullable<NonNullable<Game['pendingAutomaticAdvisorBattle']>['resume']>) {
+  prepareBattleAdvisorFlips(g);
+  const parent = g.pendingAutomaticAdvisorBattle;
+  if (!parent) return false;
+  requireRule(parent.resume === null && !!g.pendingAutomaticAdvisorFlips?.length &&
+    !g.response && !g.decision, 'The original battle conversion already owns its cleanup.');
+  parent.resume = structuredClone(resume);
+  parent.signature = JSON.stringify(parent.resume);
+  validateBattleAdvisorResume(g, parent);
+  openAutomaticAdvisorFlip(g);
+  return true;
+}
+function finishAutomaticAdvisorBattle(g: Game) {
+  const parent = g.pendingAutomaticAdvisorBattle;
+  if (!parent) return;
+  requireRule(!g.pendingAutomaticAdvisorFlips?.length,
+    'Finish all original advisor conversions before battle cleanup.');
+  validateBattleAdvisorResume(g, parent);
+  const resume = parent.resume!;
+  delete g.pendingAutomaticAdvisorBattle;
+  if (resume.kind === 'winner')
+    finishWinner(g, getPlayer(g, resume.player), resume.territory, resume.cards);
+  else finishBattle(g);
 }
 function applyAdvisorReleases(g: Game, released: AdvisorRelease[]) {
   for (const entry of released)
@@ -22400,7 +22480,8 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
 
 function victory(g: Game, quote?: VictoryQuote) {
   requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorTransport &&
-    !g.pendingAutomaticAdvisorGamont, 'Resolve mandatory advisor conversions before checking victory.');
+    !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle,
+    'Resolve mandatory advisor conversions before checking victory.');
   quote ??= currentVictoryQuote(g);
   applyAdvisorReleases(g, quote.released);
   g.winner = quote.winner;
@@ -25673,6 +25754,7 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
       battleMandatoryDiscardSignature(g.lastBattleContext);
   }
   g.battle = null;
+  prepareBattleAdvisorFlips(g);
   const cards = [...quote.winnerCards];
   const continuation: Extract<
     NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -26149,6 +26231,7 @@ function projectedRihani(g: Game, owner: string) {
   } : null };
 }
 function finishWinner(g: Game, winner: Player, t: string, cards: string[]) {
+  prepareBattleAdvisorFlips(g);
   if (startRihaniVictory(g, winner, t, cards)) return;
   const assassination = g.moritaniAssassinate?.opportunities.find(r => r.stage === 'skills');
   if (assassination) {
@@ -26192,6 +26275,7 @@ function finishWinner(g: Game, winner: Player, t: string, cards: string[]) {
       territory: t, optional: [...cards], commitment: structuredClone(pending) });
     return;
   }
+  if (openBattleAdvisorFlips(g, { kind: 'winner', player: winner.id, territory: t, cards })) return;
   const context = g.lastBattleContext;
   const moritani = byFaction(g, 'moritani');
   if (g.advanced && context && moritani && !moritani.specialKaramaUsed &&
@@ -26411,6 +26495,7 @@ function projectedHomeworldVictoryReturn(g: Game, player: string) {
   };
 }
 function finishBattle(g: Game) {
+  if (openBattleAdvisorFlips(g, { kind: 'aftermath' })) return;
   const quote = currentBattleAftermathQuote(g);
   for (const step of quote.steps) {
     if (step.kind === 'transferTech') {
@@ -28217,13 +28302,14 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       }
       if (automaticAdvisorFlip) {
         if (canceled)
-          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' ? 'transport and payment stay' : automaticAdvisorFlip.producer === 'gamont' ? 'Trip to Gamont effect and card use stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
+          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' ? 'transport and payment stay' : automaticAdvisorFlip.producer === 'gamont' ? 'Trip to Gamont effect and card use stay' : automaticAdvisorFlip.producer === 'battleLosses' ? 'battle losses and costs stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
             { faction: bg.faction, name: 'Mandatory advisor conversion prevented' });
         g.pendingAutomaticAdvisorFlips!.shift();
         if (!g.pendingAutomaticAdvisorFlips!.length) delete g.pendingAutomaticAdvisorFlips;
         if (!g.pendingAutomaticAdvisorFlips?.length) {
           finishAutomaticAdvisorTransport(g);
           finishAutomaticAdvisorGamont(g);
+          finishAutomaticAdvisorBattle(g);
         } else openAutomaticAdvisorFlip(g);
       } else finishAdvisorReaction(g, response);
     }

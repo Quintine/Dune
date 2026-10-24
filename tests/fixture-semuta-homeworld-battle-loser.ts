@@ -5,7 +5,7 @@ import { splitLocation } from '../game/board';
 import { nativeShipmentSources } from '../game/homeworld-options';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { advanceSemutaHomeworldChoam, applySemutaHomeworldChoamStep,
-  createSemutaHomeworldChoamSetup } from './fixture-semuta-homeworld-choam';
+  createSemutaHomeworldChoamSetup, finishSemutaBattleOutcome } from './fixture-semuta-homeworld-choam';
 import { moveSemutaEmperorCard, semutaEmperorPlayer as player } from './fixture-semuta-emperor-share';
 import { nextRicheseSkillsTechNativeStep, type RicheseSkillsTechStep } from './fixture-richese-skills-tech';
 
@@ -127,7 +127,8 @@ export function createSemutaHomeworldLoserFixture(advanced = false, fullHolder =
 
 export function disposeSemutaHomeworldLoser(f: SemutaHomeworldLoserFixture,
   state = f.game, actions?: RicheseSkillsTechStep[]): Game {
-  return applySemutaHomeworldChoamStep(state, f.actor, f.action, actions);
+  const game = applySemutaHomeworldChoamStep(state, f.actor, f.action, actions);
+  return finishSemutaBattleOutcome(game, actions);
 }
 
 /** Keep the winner's held played cards, then use original income/market controls

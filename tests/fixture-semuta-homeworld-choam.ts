@@ -29,6 +29,20 @@ export function holdSemutaHomeworldChoamCard(game: Game, owner: string, name: st
   return moveSemutaEmperorCard(game, card.id, owner);
 }
 
+/** Acknowledge only the actual final battle window; leave fresh discards and
+ * every subsequent card, casualty or aftermath choice to the caller. */
+export function finishSemutaBattleOutcome(state: Game, actions?: RicheseSkillsTechStep[]): Game {
+  let game = state;
+  while (game.battle?.outcomeWindow && !game.battle.outcomeWindow.closed) {
+    const window = game.battle.outcomeWindow;
+    const actor = [window.attacker, window.defender].find(id => !window.ready.includes(id));
+    assert.ok(actor);
+    game = applySemutaHomeworldChoamStep(game, actor,
+      { type: 'battleOutcomeReady', event: window.event }, actions);
+  }
+  return game;
+}
+
 /** Caller tests the requested boundary before each real native action. */
 export function advanceSemutaHomeworldChoam(
   state: Game, until: (game: Game) => boolean, actions?: RicheseSkillsTechStep[],

@@ -1,5 +1,73 @@
 # Mandatory advisor conversions
 
+## Battle losses before optional cleanup — 24 October 2026
+
+**Prototyped / Partial.** Compose the supplied
+Advanced source's physical17 group-flip counter with physical28 E's mandatory
+conversion when alone. Ordinary battle losses can leave surviving bystanding
+advisors alone even when neither combatant keeps a force. Preserve the completed
+battle result, payments, deaths and actual casualty allocation. An explosion
+that destroys the advisors leaves no group to convert.
+
+The selected provisional priority is after actual casualties (including Suk
+Graduate's physical rescue), original skills/substitution and mandatory Treachery
+disposal, before optional winner-card cleanup and subsequent aftermath effects.
+This is a composition under the 14 October recommended-policy authority, not a newly retrieved publisher
+priority ruling. Resolving the occurrence before later reinforcement/replacement
+avoids silently losing an already-earned conversion opportunity.
+
+Capture immediate no-winner losses after the original battle closes, retaining
+the advisor stance through mandatory disposal. Winner casualties capture the
+group before skills and compulsory winner disposal; their original choices
+finish before the response opens. The public phase6 source selects only the
+original event, turn, territory, two combatants, winner and result, bound to the
+exact surviving BG group. Cleanup cards and the winner/aftermath cursor stay in
+the private parent, outside the response and Karama source selection.
+
+After the counter, consume that parent before resuming the exact winner or
+aftermath cursor once. Never call battle resolution or apply casualties again.
+Preventing conversion preserves losses/costs and the existing provisional
+continuously-alone hold; it neither restores armies nor skips original cleanup.
+The original standard Karama/Allow controls explain this boundary. Other
+withdrawals, special arrivals and matching-group conversions remain open scope.
+
+[Native battle fixture](../tests/fixture-advisor-battle-flip.ts) starts public
+Advanced BG/Atreides/Harkonnen with original base33. Original advisorSetup places
+the peaceful counter beside Atreides' ten Arrakeen forces. Actual movement leaves
+one Atreides there, then brings one Harkonnen counter from Carthag by city range.
+Original Thufir5/dial1/support1 and Shield defeat Iakin2/dial0, leaving neither
+army. A second original pre-deal Traitor permutation and actual private choice
+earn mutual calls; both armies die and Shield's mandatory disposal precedes the
+conversion. A third original Lasgun/Shield deal destroys the advisor too. No
+played force, phase, hand, wallet, Tanks, stance or receipt is installed.
+
+[Engine cases](../tests/advisor-battle-flip-engine.test.ts) exercise both response
+outcomes and exact original cleanup, prevention holds through Collection,
+public/private parent mismatch rejection, no-survivor explosion and existing
+profiles. Frozen **16 files264/264**, types/lint/build, five native battle/
+response/GameTable SSR journeys and eight existing-profile paths pass. Each
+original source takes44 actual actions. Both battle outcomes reach actual
+Collection with two BG city income when allowed, none when prevented; actual
+Lasgun/Shield kills the advisor and opens no conversion. Standard existing
+controls render; this is not a new callback/browser/mobile/deployed certificate.
+
+The first frozen223/264 feedback found41 old Semuta battle cases expecting
+physical disposal before the existing final battle acknowledgements. A
+representative failure reproduced against unchanged base035be51 in isolated
+source, without copying saved games. Four focused fixtures now acknowledge only
+the original final window; two remaining direct-test callers receive the same
+repair. Focused3/3 then2/2 and the final264/264 pass, preserving original card/
+force/continuation assertions and all production Semuta guards.
+
+Private reports, baseline comparison, rendered HTML and hashes:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-battle-flips/`.
+`frozen-integrated-3/report.json` binds fingerprint
+`665defe51a1f46a6b5992b6e1e4b034203f91e7101acf860eb549f5bf9865151`
+on base `035be5191510333951bb3be9692ecfe3a233eace`. Checkpoint prose/reference
+updates are reviewed and hashed separately after proof.
+Full Suk/Rihani/Caladan/Face Dance/Semuta combinations are not certified by these
+native base scenarios; wider interaction and final assurance work remains due.
+
 ## Trip to Gamont before Mentat victory — 24 October 2026
 
 **Prototyped / Partial.** Compose supplied physical29 B’s return of one other

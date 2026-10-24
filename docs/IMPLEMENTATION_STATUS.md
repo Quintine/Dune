@@ -1,5 +1,50 @@
 # Dune implementation status
 
+## 24 October 2026 — Advisor conversion after committed battle losses
+
+Supplied Advanced physical17/28 E now compose at native battle loss boundaries.
+Capture surviving BG bystanders after actual losses, including immediate
+no-winner losses before mandatory disposal. Preserve original skills,
+substitution and compulsory winner disposal, then open conversion before optional
+winner-card cleanup and later aftermath. That priority is explicit provisional
+policy. An explosion destroying the advisors creates no occurrence.
+
+A strict phase6 source selects only original event/turn/territory/combatants/
+winner/result and the exact held group. Private cleanup cards and the winner/aftermath cursor, checked against its
+stored signature, never enter the public response or Karama source selection. Consume the parent before resuming its exact cursor once; no replayed
+resolution, casualties, payment or disposal. Prevented conversion keeps the
+existing provisional continuously-alone hold through Collection.
+
+Disjoint pure-helper/native-fixture lanes, read-only continuation review and
+root integration pass **16 files264/264**, types/lint/build, five actual native
+battle/response/GameTable SSR journeys and eight legal existing-profile paths.
+Genuine44-action public Advanced BG/Atreides/Harkonnen sources earn the original
+advisor, real nine-counter departure and one-counter city arrival, original
+Thufir/Iakin plans and Shield/Karama. Winner dial-all and mutual Traitors leave
+both armies gone. Allowance earns two BG city income; prevention earns none.
+The original Lasgun/Shield variant kills the advisor too. No played force,
+phase, hand, wallet, Tanks, stance, prevention or receipt is installed.
+
+Initial223/264 feedback found41 stale Semuta battle cases skipping the existing
+final outcome acknowledgements. A representative case also fails against the
+unchanged base. Four fixture repairs preserve original actions/assertions and
+stop at the actual fresh discard. Two remaining direct callers need the same
+acknowledgement; focused3/3 then2/2 and the final264/264 pass. Production Semuta
+availability/continuation guards stay intact. One initial new-test optional
+absence assertion was also corrected; its focused native case then passed.
+
+Private proof, baseline comparison and original-action HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-battle-flips/`.
+Frozen `frozen-integrated-3/report.json` binds tree
+`665defe51a1f46a6b5992b6e1e4b034203f91e7101acf860eb549f5bf9865151`,
+2739 files on base `035be5191510333951bb3be9692ecfe3a233eace`.
+Prose/reference overlays are separately reviewed/hashed. Standard response
+controls render; no new callback/browser/mobile/deployed or complete-mode claim.
+Full Suk/Rihani/Caladan/Face Dance/Semuta combinations, other automatic producers,
+comprehensive assurance and full AI refinement remain due. No saved-room/D1,
+reset, restart or deployment operation.
+[Source and connected behavior](ADVISOR_AUTOMATIC_FLIPS.md#battle-losses-before-optional-cleanup--24-october-2026).
+
 ## 24 October 2026 — Gamont conversion before final victory
 
 Compose the physical17/28 E advisor counter with physical29 B’s Mentat return.

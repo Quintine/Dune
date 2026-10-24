@@ -16,6 +16,34 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Advisor conversion after battle losses — 24 October. Prototyped / Partial.**
+Actual battle losses can now leave surviving bystanding advisors in a sourced
+Karama conversion response. Preserve casualties, payments, deaths and mandatory
+card disposal. Original skill/substitution handling retains priority, then the
+counter precedes optional winner-card cleanup and later aftermath under an
+explicit provisional ordering. Public identity/outcome stays separate from the
+private winner/aftermath cursor; consume it before resuming once. Prevention
+retains the existing continuously-alone hold and changes actual Collection.
+[Source, native scenarios and limits](ADVISOR_AUTOMATIC_FLIPS.md#battle-losses-before-optional-cleanup--24-october-2026).
+
+Disjoint helper/native-fixture lanes, bounded continuation review and root
+integration pass **16 files264/264**, types/lint/build, five native battle/response/
+GameTable SSR journeys and eight legal existing-profile paths. Genuine44-action
+public BG/Atreides/Harkonnen sources earn the original advisor, last-counter
+battle and original Shield/Karama. Winner dial-all and mutual Traitors preserve
+both armies' actual losses; allowance earns BG two city income, prevention earns
+none. An actual Lasgun/Shield explosion destroys the advisor and creates no
+conversion. Feedback repairs stale Semuta fixtures that skipped existing final
+battle acknowledgements; the representative failure also reproduced against
+unchanged base035be51. No production Semuta guard is relaxed. Full skill,
+reinforcement/replacement/Semuta combinations and other producers remain open.
+No AI refinement, comprehensive/browser/deployed assurance or saved-room/D1/
+reset/restart/deployment operation.
+
+Next native conversion work includes other withdrawals, special arrivals and
+matching-group flips. Battle, ground, transport and Gamont proofs do not certify
+all causes or complete Advanced modes.
+
 **Advisor conversion after Trip to Gamont — 24 October. Prototyped / Partial.**
 Gamont now completes its original card use and return/revelation before the
 resulting mandatory advisor-conversion counter. Preventing conversion preserves
@@ -38,11 +66,6 @@ shape. Empty reveal is pure-source evidence; full No-Field/Nexus/Semuta
 combinations and remaining mandatory producers stay open. No AI refinement,
 comprehensive/browser/deployed assurance or saved-room/D1/reset/restart/deployment
 operation.
-
-Next native conversion producers include casualties/aftermath, other withdrawals
-and special arrivals. Preserve the original aftermath and collection continuations
-before extending this counter; ground, transport and Gamont proofs do not certify
-all mandatory conversion causes.
 
 **Advisor conversion after committed Guild transport — 24 October. Prototyped / Partial.**
 Guild cross-shipment and reserve returns now retain the original paid transfer

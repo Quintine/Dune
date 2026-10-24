@@ -4,7 +4,8 @@ import { nativeShipmentSources } from '../game/homeworld-options';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { semutaEmperorPlayer as player, moveSemutaEmperorCard } from './fixture-semuta-emperor-share';
 import { advanceSemutaHomeworldChoam, applySemutaHomeworldChoamStep,
-  createSemutaHomeworldChoamSetup, holdSemutaHomeworldChoamCard } from './fixture-semuta-homeworld-choam';
+  createSemutaHomeworldChoamSetup, finishSemutaBattleOutcome,
+  holdSemutaHomeworldChoamCard } from './fixture-semuta-homeworld-choam';
 import type { RicheseSkillsTechStep } from './fixture-richese-skills-tech';
 
 export type SemutaHomeworldWinnerKind = 'mandatory' | 'selected';
@@ -117,6 +118,7 @@ export function createSemutaHomeworldWinnerFixture(
   let action = finalResponse;
   if (kind === 'selected') {
     game = applySemutaHomeworldChoamStep(game, voters[1], finalResponse, actions);
+    game = finishSemutaBattleOutcome(game, actions);
     if (game.pendingTreacheryDiscard) {
       earlierEvents.push(game.pendingTreacheryDiscard.batch.event);
       game = passOffer(game, actions);
@@ -134,6 +136,7 @@ export function createSemutaHomeworldWinnerFixture(
 export function disposeSemutaHomeworldWinner(f: SemutaHomeworldWinnerFixture,
   state = f.game, actions?: RicheseSkillsTechStep[]): Game {
   let game = applySemutaHomeworldChoamStep(state, f.actor, f.action, actions);
+  game = finishSemutaBattleOutcome(game, actions);
   if (f.kind === 'mandatory' && game.pendingTreacheryDiscard?.continuation.kind === 'battleResolved')
     game = passOffer(game, actions);
   return game;

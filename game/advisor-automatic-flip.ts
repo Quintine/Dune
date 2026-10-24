@@ -28,6 +28,15 @@ export type AutomaticAdvisorGamont = {
   mentat: boolean;
 };
 
+export type AutomaticAdvisorBattle = {
+  event: string;
+  turn: number;
+  territory: string;
+  combatants: string[];
+  winner: string | null;
+  result: 'normal' | 'traitor' | 'mutualTraitors' | 'explosion';
+};
+
 export type AutomaticAdvisorFlipSource = {
   event: string;
   owner: string;
@@ -39,6 +48,7 @@ export type AutomaticAdvisorFlipSource = {
   | { producer: 'groundMovement'; mover: string; move: number }
   | { producer: 'guildTransport'; transport: AutomaticAdvisorTransport }
   | { producer: 'gamont'; gamont: AutomaticAdvisorGamont }
+  | { producer: 'battleLosses'; battle: AutomaticAdvisorBattle }
 );
 
 export type AutomaticAdvisorFlipPlayer = ForcePresence & {
@@ -60,6 +70,15 @@ export type AutomaticAdvisorFlipContext = AdvisorSettlementContext & MobileBoard
   turn: number;
   phase: number;
   choamMentatPending?: boolean;
+  lastBattleContext?: {
+    event: string;
+    turn: number;
+    territory: string;
+    combatants: readonly string[];
+    winner: string | null;
+    result: string;
+  } | null;
+  battle?: unknown;
 };
 
 export class AutomaticAdvisorFlipError extends Error {
@@ -93,7 +112,7 @@ function otherPresence(ctx: AdvisorSettlementContext, player: AutomaticAdvisorFl
 
 function currentWindow(ctx: AutomaticAdvisorFlipContext) {
   return ctx.advanced === true && ctx.status === 'playing' &&
-    (ctx.phase === 5 || ctx.phase === 8) && positive(ctx.turn);
+    (ctx.phase === 5 || ctx.phase === 6 || ctx.phase === 8) && positive(ctx.turn);
 }
 
 /** A supported committed producer opens a response for these current groups.
@@ -199,6 +218,34 @@ function validateGamontSource(
     'Automatic advisor conversion lost its final CHOAM Mentat opportunity.');
 }
 
+function validateBattleSource(
+  ctx: AutomaticAdvisorFlipContext,
+  source: Extract<AutomaticAdvisorFlipSource, { producer: 'battleLosses' }>,
+) {
+  const receipt = source.battle;
+  requireFlip(record(receipt) &&
+    Object.keys(receipt).sort().join(',') === 'combatants,event,result,territory,turn,winner' &&
+    identifier(receipt.event) && positive(receipt.turn) && receipt.turn === source.turn &&
+    identifier(receipt.territory) && receipt.territory === source.territory &&
+    Array.isArray(receipt.combatants) && receipt.combatants.length === 2 &&
+    receipt.combatants.every(identifier) && new Set(receipt.combatants).size === 2 &&
+    receipt.combatants.every((id) => ctx.players.filter((player) => player.id === id).length === 1) &&
+    !receipt.combatants.includes(source.owner) &&
+    ['normal', 'traitor', 'mutualTraitors', 'explosion'].includes(receipt.result) &&
+    (receipt.result === 'normal' || receipt.result === 'traitor'
+      ? identifier(receipt.winner) && receipt.combatants.includes(receipt.winner)
+      : receipt.winner === null) &&
+    gameTerritories(ctx).some((place) => place.id === receipt.territory),
+  'Automatic advisor conversion needs the original public battle result and bystander group.');
+  const current = ctx.lastBattleContext;
+  requireFlip(!ctx.battle && record(current) && current.event === receipt.event &&
+    current.turn === receipt.turn && current.territory === receipt.territory &&
+    current.winner === receipt.winner && current.result === receipt.result &&
+    Array.isArray(current.combatants) && current.combatants.length === receipt.combatants.length &&
+    current.combatants.every((id, index) => id === receipt.combatants[index]),
+  'Automatic advisor conversion lost its original completed battle context.');
+}
+
 /** Validate the same committed producer and exact held group before either response outcome. */
 export function validateAutomaticAdvisorFlip(
   ctx: AutomaticAdvisorFlipContext,
@@ -210,10 +257,12 @@ export function validateAutomaticAdvisorFlip(
       (source.producer === 'guildTransport' &&
         Object.keys(source).sort().join(',') === 'event,forces,owner,phase,producer,territory,transport,turn') ||
       (source.producer === 'gamont' &&
-        Object.keys(source).sort().join(',') === 'event,forces,gamont,owner,phase,producer,territory,turn')) &&
+        Object.keys(source).sort().join(',') === 'event,forces,gamont,owner,phase,producer,territory,turn') ||
+      (source.producer === 'battleLosses' &&
+        Object.keys(source).sort().join(',') === 'battle,event,forces,owner,phase,producer,territory,turn')) &&
     identifier(source.event) && identifier(source.owner) && identifier(source.territory) &&
     positive(source.turn) && source.turn === ctx.turn &&
-    source.phase === (source.producer === 'gamont' ? 8 : 5) &&
+    source.phase === (source.producer === 'gamont' ? 8 : source.producer === 'battleLosses' ? 6 : 5) &&
     currentWindow(ctx) && source.phase === ctx.phase,
   'Automatic advisor conversion lost its original current-turn committed producer.');
   const owners = ctx.players.filter((player) => player.id === source.owner);
@@ -228,7 +277,8 @@ export function validateAutomaticAdvisorFlip(
     requireFlip(movers.length === 1 && positive(source.move) && movers[0].moved === source.move,
       'Automatic advisor conversion lost its original completed movement.');
   } else if (source.producer === 'guildTransport') validateTransportSource(ctx, source);
-  else validateGamontSource(ctx, source);
+  else if (source.producer === 'gamont') validateGamontSource(ctx, source);
+  else validateBattleSource(ctx, source);
   const forces = physicalGroup(owner, source.territory);
   requireFlip(record(source.forces) && Object.keys(forces).length > 0 &&
     Object.values(forces).every(positive) && Object.values(source.forces).every(positive) &&

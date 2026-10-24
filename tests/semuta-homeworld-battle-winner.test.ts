@@ -6,7 +6,7 @@ import { DIFFICULTIES } from '../game/bot-profiles';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { quoteSpiceCollection } from '../game/board-resolution-quote';
 import { semutaEmperorPlayer as player } from './fixture-semuta-emperor-share';
-import { reactSemutaHomeworldChoam } from './fixture-semuta-homeworld-choam';
+import { finishSemutaBattleOutcome, reactSemutaHomeworldChoam } from './fixture-semuta-homeworld-choam';
 import { withoutSemutaHomeworldChoamMovementHolder } from './fixture-semuta-homeworld-choam-movement';
 import {
   createSemutaHomeworldWinnerFixture, disposeSemutaHomeworldWinner,
@@ -234,7 +234,7 @@ for (const advanced of [false, true]) for (const kind of ['mandatory', 'selected
 
 for (const advanced of [false, true]) void test(`${advanced ? 'Advanced' : 'Basic'} original losing, mandatory winning and selected cleanup are distinct fresh events`, () => {
   const f = createSemutaHomeworldWinnerFixture('mandatory', advanced);
-  let game = applyAction(f.game, f.actor, f.action);
+  let game = finishSemutaBattleOutcome(applyAction(f.game, f.actor, f.action));
   const losingEvent = game.pendingTreacheryDiscard!.batch.event;
   assert.deepEqual(game.pendingTreacheryDiscard?.batch.entries.map(e => e.card.id), [f.worthless]);
   assert.equal(player(game, f.owner).hand.some(c => c.id === f.card), true,
