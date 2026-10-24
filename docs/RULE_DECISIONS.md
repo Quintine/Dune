@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Advisor conversion after Trip to Gamont — 24 October 2026
+
+Compose supplied physical29 B’s Mentat return with physical17’s group counter and
+physical28 E’s mandatory alone conversion. Complete original Gamont cost/disposal,
+return/revelation first; prevent only the resulting conversion before victory.
+Do not require an actual returned counter: a revealed empty No-Field can also
+remove the last foreign presence. Preserve the same provisional continuously-alone
+hold. Public phase8 evidence omits card/Nexus fuel identity; private provenance
+stays in its parent. Both original direct and Semuta continuations defer the
+final chooser until that parent is consumed. Ordinary Mentat gets no final
+chooser, and the callback itself never declares victory.
+[Source, earned victory and limits](ADVISOR_AUTOMATIC_FLIPS.md#trip-to-gamont-before-mentat-victory--24-october-2026).
+
 ## Advisor conversion after committed Guild transport — 24 October 2026
 
 Extend the existing physical17/28 E composition to Guild cross-shipment and

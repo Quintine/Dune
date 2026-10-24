@@ -12,7 +12,7 @@ import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, h
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteAtreidesFullPlan } from './atreides-full-plan';
 import { quoteTleilaxuSpecialKarama } from './tleilaxu-special-karama';
-import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport } from './advisor-automatic-flip';
+import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport, type AutomaticAdvisorGamont } from './advisor-automatic-flip';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
@@ -1264,6 +1264,7 @@ type RicheseAllyOffer = {
 export type Game = {
   pendingAutomaticAdvisorFlips?: AutomaticAdvisorFlipSource[];
   pendingAutomaticAdvisorTransport?: AutomaticAdvisorTransport;
+  pendingAutomaticAdvisorGamont?: { receipt: AutomaticAdvisorGamont; card: string; nexusEvent?: string };
   advisorPreparation?: AdvisorPreparationWindow;
   ecazOccupyPreview?: boolean;
   /** Fresh native Guild/Nexus payment-replacement profile, never inferred from a save. */
@@ -8026,8 +8027,10 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
       log(g, 'The declared move was prevented without moving forces or spending a movement.');
   } else if (next.kind === 'choamGamontDiscard') {
     completeChoamGamont(g, getPlayer(g, next.player), next.target,
-      next.location, next.elite ?? 0, next.noFieldEvent);
-    if (next.mentat) g.decision = { kind: 'choamMentat', player: next.player };
+      next.location, next.elite ?? 0, next.noFieldEvent,
+      { card: next.card, mentat: next.mentat, nexusEvent: next.nexusEvent });
+    if (next.mentat && !g.pendingAutomaticAdvisorGamont)
+      g.decision = { kind: 'choamMentat', player: next.player };
   } else if (next.kind === 'choamJubbaDiscard') {
     completeChoamJubba(g, getPlayer(g, next.player), next.territory);
     offerChoamStorm(g);
@@ -20293,6 +20296,9 @@ function currentAutomaticAdvisorFlip(g: Game, response: ResponseWindow) {
   if (source.producer === 'guildTransport')
     requireRule(JSON.stringify(source.transport) === JSON.stringify(g.pendingAutomaticAdvisorTransport),
       'The mandatory conversion has lost its original committed Guild transport.');
+  if (source.producer === 'gamont')
+    requireRule(JSON.stringify(source.gamont) === JSON.stringify(g.pendingAutomaticAdvisorGamont?.receipt),
+      'The mandatory conversion has lost its original completed Trip to Gamont.');
   automaticAdvisorRule(() => validateAutomaticAdvisorFlip(g, source));
   return source;
 }
@@ -20340,6 +20346,40 @@ function finishAutomaticAdvisorTransport(g: Game) {
     if (transport.origin !== transport.to)
       openTerritoryEntry(g, p, transport.to, transport.sector, transport.amount, transport.elite, 'guildTransport');
   }
+}
+function prepareGamontAdvisorFlips(g: Game, owner: Player, target: Player,
+  from: string, elite: number, returned: boolean,
+  completed: { card: string; mentat?: boolean; nexusEvent?: string }) {
+  const site = splitLocation(from).territory;
+  const groups = automaticAdvisorRule(() => quoteAutomaticAdvisorFlips(g))
+    .filter(group => group.territory === site);
+  if (!groups.length) return false;
+  requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorGamont &&
+    !g.pendingAutomaticAdvisorTransport, 'Finish the original advisor conversion first.');
+  // Public effect evidence never includes CHOAM Cunning's private fuel card.
+  const receipt: AutomaticAdvisorGamont = { event: crypto.randomUUID(), player: owner.id,
+    target: target.id, location: from, elite, returned, mentat: completed.mentat === true };
+  g.pendingAutomaticAdvisorGamont = { receipt, card: completed.card,
+    ...(completed.nexusEvent ? { nexusEvent: completed.nexusEvent } : {}) };
+  for (const group of groups) {
+    const source: AutomaticAdvisorFlipSource = { event: crypto.randomUUID(), owner: group.player,
+      territory: group.territory, turn: g.turn, phase: g.phase, forces: group.forces,
+      producer: 'gamont', gamont: receipt };
+    getPlayer(g, group.player).advisors![group.territory].aloneFlipHold = source.event;
+    (g.pendingAutomaticAdvisorFlips ??= []).push(source);
+  }
+  openAutomaticAdvisorFlip(g);
+  return true;
+}
+function finishAutomaticAdvisorGamont(g: Game) {
+  const parent = g.pendingAutomaticAdvisorGamont;
+  if (!parent) return;
+  requireRule(g.status === 'playing' && g.phase === 8 && !g.pendingAutomaticAdvisorFlips?.length &&
+    (!parent.receipt.mentat || g.choamMentatPending === true),
+    'Finish the original advisor conversion before resuming Mentat.');
+  delete g.pendingAutomaticAdvisorGamont;
+  if (parent.receipt.mentat)
+    g.decision = { kind: 'choamMentat', player: parent.receipt.player };
 }
 function applyAdvisorReleases(g: Game, released: AdvisorRelease[]) {
   for (const entry of released)
@@ -22358,7 +22398,10 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
   }
 }
 
-function victory(g: Game, quote: VictoryQuote = currentVictoryQuote(g)) {
+function victory(g: Game, quote?: VictoryQuote) {
+  requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorTransport &&
+    !g.pendingAutomaticAdvisorGamont, 'Resolve mandatory advisor conversions before checking victory.');
+  quote ??= currentVictoryQuote(g);
   applyAdvisorReleases(g, quote.released);
   g.winner = quote.winner;
   g.status = quote.status;
@@ -27250,7 +27293,8 @@ function completeChoamJubba(g: Game, owner: Player, location: string) {
 }
 function completeChoamGamont(
   g: Game, owner: Player, targetId: string, from: string,
-  elite: number, noFieldEvent?: string,
+  elite: number, noFieldEvent: string | undefined,
+  completed: { card: string; mentat?: boolean; nexusEvent?: string },
 ) {
   const target = getPlayer(g, targetId);
   if (noFieldEvent) revealPlayerNoField(g, target, 'gamont');
@@ -27260,6 +27304,7 @@ function completeChoamGamont(
     target.reserves++;
     if (target.elites) target.elites.reserves += elite;
   }
+  prepareGamontAdvisorFlips(g, owner, target, from, elite, returned, completed);
   observeOccupation(g);
   settleAdvisors(g);
   log(g, returned
@@ -27789,7 +27834,8 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
           }
         }
         completeChoamGamont(g, choam, pending.target!, pending.location!,
-          pending.elite!, pending.noFieldEvent);
+          pending.elite!, pending.noFieldEvent,
+          { card: used.id, mentat: pending.mentat, nexusEvent: pending.nexusEvent });
       } else {
         if (g.semutaPreview && (used.name === 'La La La' || pending.nexusEvent) &&
           !pending.storm && !pending.movement && !pending.mentat &&
@@ -27830,7 +27876,8 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
     if (pending.storm && g.stormResolution) offerChoamStorm(g);
     if (pending.revival && g.pendingRevival) offerRevivalStop(g);
     if (pending.movement && g.pendingChoamMove) resumeChoamMovement(g);
-    if (pending.mentat) g.decision = { kind: 'choamMentat', player: choam.id };
+    if (pending.mentat && !g.pendingAutomaticAdvisorGamont)
+      g.decision = { kind: 'choamMentat', player: choam.id };
   } else if (response.kind === 'richeseAuction') {
     const round = validateRicheseCacheCancellation(g, response);
     if (canceled) {
@@ -28170,12 +28217,14 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       }
       if (automaticAdvisorFlip) {
         if (canceled)
-          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' ? 'transport and payment stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
+          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' ? 'transport and payment stay' : automaticAdvisorFlip.producer === 'gamont' ? 'Trip to Gamont effect and card use stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
             { faction: bg.faction, name: 'Mandatory advisor conversion prevented' });
         g.pendingAutomaticAdvisorFlips!.shift();
         if (!g.pendingAutomaticAdvisorFlips!.length) delete g.pendingAutomaticAdvisorFlips;
-        if (!g.pendingAutomaticAdvisorFlips?.length) finishAutomaticAdvisorTransport(g);
-        else openAutomaticAdvisorFlip(g);
+        if (!g.pendingAutomaticAdvisorFlips?.length) {
+          finishAutomaticAdvisorTransport(g);
+          finishAutomaticAdvisorGamont(g);
+        } else openAutomaticAdvisorFlip(g);
       } else finishAdvisorReaction(g, response);
     }
   } else if (response.kind === 'capture') {

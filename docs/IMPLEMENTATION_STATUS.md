@@ -1,5 +1,53 @@
 # Dune implementation status
 
+## 24 October 2026 — Gamont conversion before final victory
+
+Compose the physical17/28 E advisor counter with physical29 B’s Mentat return.
+Original Gamont cost/disposal and return/revelation commit once, then a distinct
+phase8 source binds the held group. Earlier original-effect prevention still
+keeps the last outsider/card. Conversion prevention preserves the completed effect
+and spent use, retaining the already provisional continuously-alone hold. A
+returned:false receipt supports completed empty No-Field revelation without
+rechecking the now-consumed availability.
+
+Private card/optional Nexus provenance stays beside a seven-field public effect
+receipt. No fuel identity enters the response or Karama source selection. The
+source union retains exact phase5 ground/transport shapes and adds phase8 Gamont.
+Both direct and Semuta continuations defer final choamMentat while the new parent
+owns conversion. Consume that parent before restoring only the original final
+chooser once; ordinary Mentat receives none. Callback completion does not declare
+victory. Actual victory rejects unresolved conversion parents before evaluation.
+Standard controls explain that the effect/card use is already complete.
+
+Frozen **18 files277/277**, types/lint/build, five native Gamont/response/GameTable
+SSR journeys and eight existing-profile paths pass. Genuine52-action ordinary and
+56-action final public Advanced BG/Atreides/CHOAM sources use CHOAM35, original
+starting Gamont/Karama, actual advisor placement, paid two-force Carthag shipment,
+one-force city-range Tabr movement and nine-force Atreides departure. Actual
+Collection/Mentat earns BG two strongholds and an advisor beside the last outsider.
+Allow conversion and final confirmation for a real three-stronghold BG victory;
+prevent it and the genuine final check advances the turn with no winner. No
+played army, phase, wallet, hand, hold, response or winner is installed.
+
+One narrow final-victory case and the first277-case union pass. Typecheck flags an
+intentionally malformed Gamont object’s boundary cast. The initial replacement
+hits an older matching test; restore that unrelated line and anchor the Gamont
+case explicitly through unknown. Strict runtime validation is unchanged. Final
+frozen277/277 and every scoped check pass without private smoke-driver repairs
+or source changes during proof. Native evidence covers an ordinary counter
+return; empty revelation is pure-source evidence, and full No-Field/Nexus/Semuta
+and remaining-producer combinations remain open.
+
+[Contract and remaining scope](ADVISOR_AUTOMATIC_FLIPS.md#trip-to-gamont-before-mentat-victory--24-october-2026).
+Private evidence: `/home/quintine/.local/share/dune/checkpoints/20261024-advisor-gamont-flips/`.
+Frozen fingerprint:
+`3833bcfc789c1a5765b71df68ad138d529429f5b64449159a08c8febf6cdc03a`
+(2,737 nonignored files), on base `d0f52c7bae4b2df9bf6bf087770850a4681f56de`.
+Final prose/reference overlay is separately reviewed and hashed. Standard rendered
+controls do not certify a new component callback, browser/mobile/deployed,
+complete mode or comprehensive assurance. No AI refinement, saved-room/D1/reset/
+restart/deployment operation.
+
 ## 24 October 2026 — Advisor counter after committed Guild transport
 
 Extend the mandatory-conversion protocol to actual Guild cross-shipment and

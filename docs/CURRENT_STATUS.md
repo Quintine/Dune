@@ -16,6 +16,34 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Advisor conversion after Trip to Gamont — 24 October. Prototyped / Partial.**
+Gamont now completes its original card use and return/revelation before the
+resulting mandatory advisor-conversion counter. Preventing conversion preserves
+the effect and spent use. A phase8 public event contains no private card/fuel
+identity; server-only provenance owns its parent. Both direct and Semuta cost
+continuations defer the genuine final chooser. Consume the parent before restoring
+it once; ordinary Mentat receives none. Victory waits for original confirmation,
+with the same provisional continuously-alone hold.
+[Source, earned victory and limits](ADVISOR_AUTOMATIC_FLIPS.md#trip-to-gamont-before-mentat-victory--24-october-2026).
+
+Disjoint helper/native-fixture lanes, bounded continuation review and root
+integration pass **18 files277/277**, types/lint/build, five native Gamont/
+response/GameTable SSR journeys and eight legal existing-profile paths. Genuine
+52/56-action public Advanced BG/Atreides/CHOAM sources earn two BG strongholds
+through paid shipment and city-range movement, then leave Atreides’ actual last
+counter with the original Arrakeen advisor. Allowed conversion earns a real
+third stronghold/final win; prevention retains two and advances the turn. A
+malformed-input test annotation is corrected without relaxing the strict source
+shape. Empty reveal is pure-source evidence; full No-Field/Nexus/Semuta
+combinations and remaining mandatory producers stay open. No AI refinement,
+comprehensive/browser/deployed assurance or saved-room/D1/reset/restart/deployment
+operation.
+
+Next native conversion producers include casualties/aftermath, other withdrawals
+and special arrivals. Preserve the original aftermath and collection continuations
+before extending this counter; ground, transport and Gamont proofs do not certify
+all mandatory conversion causes.
+
 **Advisor conversion after committed Guild transport — 24 October. Prototyped / Partial.**
 Guild cross-shipment and reserve returns now retain the original paid transfer
 and shipment use before mandatory advisor-conversion prevention. An exact public
@@ -38,11 +66,6 @@ cross declaration and adds the actually affordable full-price return; no wallet
 is staged. Exact legacy ground receipts remain accepted. No AI refinement,
 full-mode/comprehensive/browser/deployed assurance or saved-room/D1/reset/restart/
 deployment operation.
-
-Next native conversion producers remain non-transport withdrawals (including
-Trip to Gamont before Mentat victory), casualties/aftermath and other special
-arrivals. Extend each original continuation before claiming complete mandatory
-conversion cancellation; preserve setup’s automatic exception.
 
 **Mandatory advisor conversion after ground movement — 24 October. Prototyped / Partial.**
 A native advisor group moving into an empty destination, or left alone by the

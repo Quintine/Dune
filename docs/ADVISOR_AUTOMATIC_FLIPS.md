@@ -1,5 +1,66 @@
 # Mandatory advisor conversions
 
+## Trip to Gamont before Mentat victory — 24 October 2026
+
+**Prototyped / Partial.** Compose supplied physical29 B’s return of one other
+player’s force during Mentat with physical17’s group-flip counter and physical28 E’s
+alone conversion. The original Gamont declaration/counter and physical card
+use/disposal finish first. The actual return, or completed empty No-Field reveal,
+then creates a conversion occurrence before settlement or victory. Preventing
+that conversion does not return another counter, restore the used card or undo
+revelation. Earlier Gamont prevention still keeps the force/card unchanged.
+
+A phase8 public event binds actor, target, location, elite/returned metadata and
+ordinary-versus-final Mentat scope to the held BG group. Card and optional Nexus
+fuel provenance stay server-side in a separate parent; neither the public receipt
+nor Karama source selection copies the hidden fuel identity. Post-commit
+validation does not call pre-return availability again. Old ground/transport
+source shapes stay phase5-only. The existing provisional continuously-alone hold
+is unchanged; setup remains automatic.
+
+Both direct cost completion and the original Semuta disposal continuation defer
+the final choamMentat chooser while the new parent owns the counter. The parent
+is consumed before restoring that chooser once; ordinary Mentat receives none.
+The callback does not check victory itself. Actual victory rejects unresolved
+conversion parents, then evaluates only after the original final confirmation.
+
+[Native Gamont fixture](../tests/fixture-advisor-gamont-flip.ts) starts public
+Advanced BG/Atreides/CHOAM with the original CHOAM35 deck. Unopened original
+cards supply Gamont/Karama. Actual BG advisorSetup at Arrakeen, a paid two-force
+shipment into Carthag and a one-force city-range move to Tabr earn two BG
+strongholds. Atreides really moves nine counters out of Arrakeen, leaving its
+last counter beside the advisor. Actual Collection and ordinary/final Mentat
+controls retain that near-win. No played army, phase, wallet, hand, advisor hold,
+response or winner is installed.
+
+[Native engine cases](../tests/advisor-gamont-flip-engine.test.ts) cover ordinary
+and final timing, both conversion outcomes, earlier original-effect prevention,
+parent mismatch, a fuel-free public response and existing profiles. Allowance
+can earn BG’s real third stronghold and final win; prevention retains only two
+and advances the turn. Pure cases include the empty-reveal metadata path; this
+native fixture proves ordinary-counter return, not full No-Field/Nexus/Semuta
+combinations. Frozen **18 files277/277**, types/lint/build, five native Gamont/response/
+GameTable SSR journeys and eight existing-profile paths pass. Original sources
+take52 ordinary/56 final actions. Two earned BG strongholds plus the allowed
+Arrakeen conversion produce an actual final BG win; preventing conversion leaves
+two and advances the actual turn. Earlier original Gamont prevention retains
+the outsider and card. The public response contains no fuel-card ID; its private
+parent records provenance. An explicit malformed-input boundary annotation is
+repaired without changing runtime validation; final frozen proof passes with
+no driver repairs or moving source.
+
+Private reports, rendered HTML and hashes:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-gamont-flips/`.
+`frozen-integrated-3/report.json` records fingerprint
+`3833bcfc789c1a5765b71df68ad138d529429f5b64449159a08c8febf6cdc03a`
+on base `d0f52c7bae4b2df9bf6bf087770850a4681f56de`. Prose/reference evidence is
+reviewed and hashed separately afterward. Standard controls render; this is not
+new component-callback/browser/mobile/deployed or complete-mode acceptance.
+
+Remaining withdrawals, casualties/aftermath, other special arrivals and matching
+groups remain open. No complete mode, comprehensive assurance or release gate
+opens from this prototype.
+
 ## Guild transport and reserve returns — 24 October 2026
 
 **Prototyped / Partial.** The same physical17 counter and physical28 E mandatory

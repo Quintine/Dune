@@ -18,6 +18,16 @@ export type AutomaticAdvisorTransport = {
   group: Record<string, number>;
 };
 
+export type AutomaticAdvisorGamont = {
+  event: string;
+  player: string;
+  target: string;
+  location: string;
+  elite: number;
+  returned: boolean;
+  mentat: boolean;
+};
+
 export type AutomaticAdvisorFlipSource = {
   event: string;
   owner: string;
@@ -28,6 +38,7 @@ export type AutomaticAdvisorFlipSource = {
 } & (
   | { producer: 'groundMovement'; mover: string; move: number }
   | { producer: 'guildTransport'; transport: AutomaticAdvisorTransport }
+  | { producer: 'gamont'; gamont: AutomaticAdvisorGamont }
 );
 
 export type AutomaticAdvisorFlipPlayer = ForcePresence & {
@@ -48,6 +59,7 @@ export type AutomaticAdvisorFlipContext = AdvisorSettlementContext & MobileBoard
   status: string;
   turn: number;
   phase: number;
+  choamMentatPending?: boolean;
 };
 
 export class AutomaticAdvisorFlipError extends Error {
@@ -80,7 +92,8 @@ function otherPresence(ctx: AdvisorSettlementContext, player: AutomaticAdvisorFl
 }
 
 function currentWindow(ctx: AutomaticAdvisorFlipContext) {
-  return ctx.advanced === true && ctx.status === 'playing' && ctx.phase === 5 && positive(ctx.turn);
+  return ctx.advanced === true && ctx.status === 'playing' &&
+    (ctx.phase === 5 || ctx.phase === 8) && positive(ctx.turn);
 }
 
 /** A supported committed producer opens a response for these current groups.
@@ -158,6 +171,34 @@ function validateTransportSource(
     'Automatic advisor conversion lost the original transported physical counters.');
 }
 
+function validateGamontSource(
+  ctx: AutomaticAdvisorFlipContext,
+  source: Extract<AutomaticAdvisorFlipSource, { producer: 'gamont' }>,
+) {
+  const receipt = source.gamont;
+  requireFlip(record(receipt) &&
+    Object.keys(receipt).sort().join(',') === 'elite,event,location,mentat,player,returned,target' &&
+    identifier(receipt.event) && identifier(receipt.player) && identifier(receipt.target) &&
+    identifier(receipt.location) && (receipt.elite === 0 || receipt.elite === 1) &&
+    typeof receipt.returned === 'boolean' && typeof receipt.mentat === 'boolean',
+  'Automatic advisor conversion lost its exact public Trip to Gamont receipt.');
+  const point = splitLocation(receipt.location);
+  requireFlip(receipt.location === `${point.territory}:${point.sector}` &&
+    gameTerritories(ctx).some((place) => place.id === point.territory && place.sectors.includes(point.sector)) &&
+    source.territory === point.territory,
+  'Automatic advisor conversion must use the original current Gamont location.');
+  const actors = ctx.players.filter((player) => player.id === receipt.player);
+  const targets = ctx.players.filter((player) => player.id === receipt.target);
+  requireFlip(actors.length === 1 && actors[0].faction === 'choam' &&
+    targets.length === 1 && receipt.target !== receipt.player,
+  'Automatic advisor conversion needs the original native CHOAM actor and distinct Gamont target.');
+  if (receipt.returned)
+    requireFlip(nonnegative(targets[0].reserves) && targets[0].reserves >= 1,
+      'Automatic advisor conversion lost the returned Gamont counter.');
+  requireFlip(!receipt.mentat || ctx.choamMentatPending === true,
+    'Automatic advisor conversion lost its final CHOAM Mentat opportunity.');
+}
+
 /** Validate the same committed producer and exact held group before either response outcome. */
 export function validateAutomaticAdvisorFlip(
   ctx: AutomaticAdvisorFlipContext,
@@ -167,11 +208,14 @@ export function validateAutomaticAdvisorFlip(
     ((source.producer === 'groundMovement' && identifier(source.mover) &&
       Object.keys(source).sort().join(',') === 'event,forces,move,mover,owner,phase,producer,territory,turn') ||
       (source.producer === 'guildTransport' &&
-        Object.keys(source).sort().join(',') === 'event,forces,owner,phase,producer,territory,transport,turn')) &&
+        Object.keys(source).sort().join(',') === 'event,forces,owner,phase,producer,territory,transport,turn') ||
+      (source.producer === 'gamont' &&
+        Object.keys(source).sort().join(',') === 'event,forces,gamont,owner,phase,producer,territory,turn')) &&
     identifier(source.event) && identifier(source.owner) && identifier(source.territory) &&
-    positive(source.turn) && source.turn === ctx.turn && source.phase === 5 &&
+    positive(source.turn) && source.turn === ctx.turn &&
+    source.phase === (source.producer === 'gamont' ? 8 : 5) &&
     currentWindow(ctx) && source.phase === ctx.phase,
-  'Automatic advisor conversion lost its original current-turn ground movement or Guild transport.');
+  'Automatic advisor conversion lost its original current-turn committed producer.');
   const owners = ctx.players.filter((player) => player.id === source.owner);
   const owner = owners[0];
   requireFlip(owners.length === 1 && owner?.faction === 'beneGesserit' &&
@@ -183,7 +227,8 @@ export function validateAutomaticAdvisorFlip(
     const movers = ctx.players.filter((player) => player.id === source.mover);
     requireFlip(movers.length === 1 && positive(source.move) && movers[0].moved === source.move,
       'Automatic advisor conversion lost its original completed movement.');
-  } else validateTransportSource(ctx, source);
+  } else if (source.producer === 'guildTransport') validateTransportSource(ctx, source);
+  else validateGamontSource(ctx, source);
   const forces = physicalGroup(owner, source.territory);
   requireFlip(record(source.forces) && Object.keys(forces).length > 0 &&
     Object.values(forces).every(positive) && Object.values(source.forces).every(positive) &&

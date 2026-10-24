@@ -9,11 +9,13 @@ import {
   type AutomaticAdvisorFlipContext,
   type AutomaticAdvisorFlipSource,
   type AutomaticAdvisorTransport,
+  type AutomaticAdvisorGamont,
 } from '../game/advisor-automatic-flip';
 import { MOBILE_LOCATION, MOBILE_STRONGHOLD } from '../game/board';
 
 type GroundSource = Extract<AutomaticAdvisorFlipSource, { producer: 'groundMovement' }>;
 type TransportSource = Extract<AutomaticAdvisorFlipSource, { producer: 'guildTransport' }>;
+type GamontSource = Extract<AutomaticAdvisorFlipSource, { producer: 'gamont' }>;
 
 function context(): AutomaticAdvisorFlipContext {
   return {
@@ -332,4 +334,151 @@ void test('transport validation reads only public slot and physical deposit meta
     }
     assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
   }
+});
+
+function gamont(returned = true, mentat = false) {
+  const { ctx, source: ground } = held();
+  ctx.phase = 8;
+  ctx.players[1].faction = 'choam';
+  ctx.players[2].reserves = returned ? 1 : 0;
+  ctx.players[2].noField = { deployed: null };
+  const receipt: AutomaticAdvisorGamont = {
+    event: 'completed-trip-to-gamont', player: 'a', target: 'r',
+    location: 'imperial_basin:9', elite: 0, returned, mentat,
+  };
+  const source: GamontSource = {
+    event: 'automatic-after-completed-gamont', owner: ground.owner,
+    territory: ground.territory, turn: ground.turn, phase: 8,
+    forces: ground.forces, producer: 'gamont', gamont: receipt,
+  };
+  ctx.players[0].advisors = {
+    ...ctx.players[0].advisors,
+    imperial_basin: { lockedTurn: 4, aloneFlipHold: source.event },
+  };
+  if (mentat) ctx.choamMentatPending = true;
+  return { ctx, source };
+}
+
+void test('phase-eight public groups can be quoted and Gamont validates with a real return or an empty No-Field reveal', () => {
+  const quiet = context();
+  quiet.phase = 8;
+  const before = structuredClone(quiet);
+  assert.equal(quoteAutomaticAdvisorFlips(quiet).some((entry) => entry.territory === 'imperial_basin'), true);
+  assert.deepEqual(quiet, before);
+  for (const returned of [false, true]) {
+    const { ctx, source } = gamont(returned);
+    const original = structuredClone({ ctx, source });
+    assert.deepEqual(ctx.players[2].forces, {});
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+    assert.deepEqual({ ctx, source }, original);
+    assert.deepEqual(Object.keys(source).sort(), ['event', 'forces', 'gamont', 'owner', 'phase', 'producer', 'territory', 'turn']);
+    assert.deepEqual(Object.keys(source.gamont).sort(), ['elite', 'event', 'location', 'mentat', 'player', 'returned', 'target']);
+  }
+});
+
+void test('only a final Gamont receipt requires the still-open native CHOAM Mentat flag', () => {
+  const { ctx, source } = gamont(true, true);
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+  ctx.choamMentatPending = false;
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+  delete ctx.choamMentatPending;
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+  source.gamont.mentat = false;
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+});
+
+void test('Gamont metadata binds native CHOAM, the distinct target, current location, outcome and exact held group', () => {
+  const changes: ((ctx: AutomaticAdvisorFlipContext, source: GamontSource) => void)[] = [
+    (ctx) => { ctx.advanced = false; },
+    (ctx) => { ctx.status = 'lobby'; },
+    (ctx) => { ctx.turn++; },
+    (_ctx, source) => { source.gamont.event = ''; },
+    (_ctx, source) => { source.gamont.player = 'missing'; },
+    (ctx) => { ctx.players[1].faction = 'atreides'; },
+    (ctx) => { ctx.players = [...ctx.players, { ...ctx.players[1] }]; },
+    (_ctx, source) => { source.gamont.target = source.gamont.player; },
+    (_ctx, source) => { source.gamont.target = 'missing'; },
+    (ctx) => { ctx.players = [...ctx.players, { ...ctx.players[2] }]; },
+    (_ctx, source) => { source.gamont.location = 'missing:0'; },
+    (_ctx, source) => { source.gamont.location = 'imperial_basin:8'; },
+    (_ctx, source) => { source.gamont.location = 'imperial_basin:9.0'; },
+    (_ctx, source) => { source.gamont.location = 'arrakeen:10'; },
+    (_ctx, source) => { source.gamont.elite = -1; },
+    (_ctx, source) => { source.gamont.elite = 2; },
+    (_ctx, source) => { source.gamont.elite = 0.5; },
+    (ctx) => { ctx.players[2].reserves = 0; },
+    (ctx) => { delete ctx.players[2].reserves; },
+    (_ctx, source) => { source.forces = { 'imperial_basin:9': 3 }; },
+    (ctx) => { ctx.players[2].forces = { 'imperial_basin:10': 1 }; },
+    (ctx) => { ctx.players[0].advisors = { imperial_basin: { aloneFlipHold: 'another-event' } }; },
+  ];
+  for (const change of changes) {
+    const { ctx, source } = gamont();
+    change(ctx, source);
+    const before = structuredClone({ ctx, source });
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+    assert.deepEqual({ ctx, source }, before);
+  }
+  const { ctx, source } = gamont();
+  source.gamont.elite = 1;
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+  for (const malformed of [
+    { ...source, gamont: null },
+    { ...source, gamont: { ...source.gamont, returned: 'yes' } },
+    { ...source, gamont: { ...source.gamont, mentat: 1 } },
+    { ...source, gamont: { ...source.gamont, elite: '1' } },
+  ]) {
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, malformed as unknown as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('private Gamont fuel and Nexus identifiers are rejected in either public source layer', () => {
+  const { ctx, source } = gamont();
+  for (const malformed of [
+    { ...source, card: 'private-fuel-card' },
+    { ...source, fuel: 'private-fuel-card' },
+    { ...source, nexusEvent: 'private-nexus-event' },
+    { ...source, gamont: { ...source.gamont, card: 'private-fuel-card' } },
+    { ...source, gamont: { ...source.gamont, fuel: 'private-fuel-card' } },
+    { ...source, gamont: { ...source.gamont, nexusEvent: 'private-nexus-event' } },
+  ]) {
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, malformed as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('producer phases stay distinct while the original ground and transport receipts remain accepted in phase five', () => {
+  for (const original of [held(), transported()]) {
+    const before = JSON.stringify(original.source);
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
+    assert.equal(JSON.stringify(original.source), before);
+    original.ctx.phase = 8;
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+    original.source.phase = 8;
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+  }
+  const { ctx, source } = gamont();
+  ctx.phase = 5;
+  source.phase = 5;
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+});
+
+void test('post-Gamont validation does not ask for prior availability, a remaining target counter or private fuel', () => {
+  const { ctx, source } = gamont(false);
+  for (const player of ctx.players) {
+    for (const field of ['hand', 'leaders', 'spice', 'traitors', 'faceDancers', 'moved', 'shipped', 'gamontAvailable']) {
+      Object.defineProperty(player, field, {
+        get() { throw new Error(`Gamont advisor rule read ${player.id} ${field}`); },
+      });
+    }
+  }
+  for (const field of ['gamontAvailable', 'pendingAutomaticAdvisorGamont', 'choamMentatPending']) {
+    Object.defineProperty(ctx, field, {
+      get() { throw new Error(`Gamont advisor rule read private or prior ${field}`); },
+    });
+  }
+  Object.defineProperty(ctx.players[2], 'reserves', {
+    get() { throw new Error('An empty No-Field reveal has no returned counter to validate'); },
+  });
+  assert.deepEqual(ctx.players[2].forces, {});
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
 });
