@@ -1,3 +1,4 @@
+import { recordMovementDiscardKnowledge, knownMovementDiscards, recordMovementBoxKnowledge, recordMovementClaimKnowledge, clearMovementDiscardKnowledge, type MovementDiscardKnowledge } from './movement-discard-knowledge';
 import { MovementClaimError, liveMovementPromises, movementEventAllowed, movementPromiseTargetAvailable, settleMovementEvent, finishMovementPromises, validMovementClaim, type MovementClaim, type MovementPromise } from './movement-promises';
 import { findMovementCompletion, type MovementCompletion } from './movement-promise-search';
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
@@ -1973,6 +1974,8 @@ export type Game = {
   truthHistory?: TruthRecord[];
   shipmentPromises?: ShipmentPromise[];
   movementPromises?: MovementPromise[];
+  /** Server-only certainty of movement-relevant cards still in the discard. */
+  movementDiscardKnowledge?: MovementDiscardKnowledge;
   ixSetupCards?: Card[] | null;
   ixAuction?: { count: number; cards: Card[]; authority?: string } | null;
   ixAuctionKnown?: { turn: number; cards: Card[]; controller?: string } | null;
@@ -4559,6 +4562,14 @@ function finishNullentropy(
     preview.ownerHand,
     { type: 'card', card: pending.box },
   );
+  const movementPreview = structuredClone(context);
+  getPlayer(movementPreview, player).hand = preview.ownerHand;
+  movementPreview.discard = preview.discard;
+  setMovementDiscardKnowledge(movementPreview, recordMovementBoxKnowledge(movementPreview.movementDiscardKnowledge,
+    movementPreview.players.map(p => p.id), player, preview.discard));
+  requireRule(!liveMovementPromises(g.movementPromises ?? [], player, g.turn).some(promise => promise.answer) ||
+    groundMovementCompletion(movementPreview, player) !== null,
+  'Choose a card that preserves your accepted ground-movement promises. The paid search remains available.');
   // All rejection paths precede this single server shuffle. The paid record and
   // final shuffled order are each persisted by the room's normal CAS fence.
   const order = shuffle(remaining).map((c) => c.id);
@@ -4573,6 +4584,8 @@ function finishNullentropy(
   );
   owner.hand = result.ownerHand;
   g.discard = result.discard;
+  setMovementDiscardKnowledge(g, recordMovementBoxKnowledge(g.movementDiscardKnowledge,
+    g.players.map(p => p.id), player, result.discard));
   g.pendingNullentropy = null;
   g.decision = null;
   log(
@@ -5210,6 +5223,14 @@ export function joinGame(g: Game, p: Player) {
   g.players.forEach((x) => (x.ready = !!x.bot));
   log(g, `${p.name} joined as ${faction(p.faction).name}.`);
 }
+function setMovementDiscardKnowledge(g: Game, knowledge: MovementDiscardKnowledge | undefined) {
+  if (knowledge === undefined) delete g.movementDiscardKnowledge;
+  else g.movementDiscardKnowledge = knowledge;
+}
+function rememberMovementDiscards(g: Game, entries: FreshDiscardBatch['entries']) {
+  setMovementDiscardKnowledge(g, recordMovementDiscardKnowledge(g.movementDiscardKnowledge,
+    g.players.map(p => p.id), entries));
+}
 function draw(g: Game) {
   requireRule(
     !g.pendingTreacheryDiscard,
@@ -5222,6 +5243,7 @@ function draw(g: Game) {
   if (!g.deck.length) {
     g.deck = shuffle(g.discard);
     g.discard = [];
+    setMovementDiscardKnowledge(g, clearMovementDiscardKnowledge(g.movementDiscardKnowledge));
   }
   return g.deck.shift();
 }
@@ -5250,6 +5272,7 @@ function discard(g: Game, p: Player, id: string, role?: Omit<EcazPoisonDiscard, 
     (g.ecazPoisonIncome ??= []).push({ ...income, turn: g.turn, phase: g.phase });
   }
   g.discard.push(c);
+  rememberMovementDiscards(g, [{ card: c, discardedBy: p.id, publicFace: false }]);
   p.hand = p.hand.filter((c) => c.id !== id);
   return c;
 }
@@ -7877,6 +7900,7 @@ function stageTreacheryDiscard(
   continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
 ) {
   requireRule(!g.pendingTreacheryDiscard, 'Finish the prior discard first.');
+  rememberMovementDiscards(g, entries);
   treacheryDiscardIntegrity(g);
   const sequence = (g.treacheryDiscardSequence ?? 0) + 1;
   g.treacheryDiscardSequence = sequence;
@@ -7918,6 +7942,10 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
   if (result && owner) {
     owner.hand = result.ownerHand;
     g.discard = result.discard;
+    setMovementDiscardKnowledge(g, recordMovementClaimKnowledge(g.movementDiscardKnowledge,
+      g.players.map(p => p.id), owner.id, pending.batch.entries.filter(entry => entry.discardedBy !== owner.id), claim!.card));
+    rememberMovementDiscards(g, pending.batch.entries.filter(entry => entry.discardedBy === owner.id)
+      .map(entry => ({ ...entry, publicFace: false })));
     log(g, `${owner.name} played Semuta Drug and recovered one freshly discarded Treachery Card. The acquired card stays private.`,
       { faction: owner.faction, name: 'Semuta Drug' });
   }
@@ -13572,15 +13600,17 @@ function projectedBribes(g: Game, p: Player): BribeOptions {
   const battlePromises = g.battle?.truthPromises?.some(promise =>
     promise.player === p.id && !promise.released && !g.battle?.revealed && !g.battle?.plans[p.id]);
   const shipmentPromises = liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length > 0;
+  const movementPromises = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).some(promise => promise.answer);
   // Reuse the authoritative promise checks on an isolated resource-only copy.
   // No payment, receipt or live continuation is created by this projection.
-  const maximum = !blocked && (battlePromises || shipmentPromises)
+  const maximum = !blocked && (battlePromises || shipmentPromises || movementPromises)
     ? maximumBribe(available, amount => {
         const probe = structuredClone(g);
         getPlayer(probe, p.id).spice -= amount;
         try {
           if (battlePromises) reconcileBattlePromises(probe, { actor: p.id, action: { type: 'bribe' } });
           if (shipmentPromises) reconcileShipmentPromises(probe, { actor: p.id, action: { type: 'bribe' } });
+          if (movementPromises && !groundMovementCompletion(probe, p.id)) return false;
           return true;
         } catch (error) {
           if (error instanceof RuleError) return false;
@@ -16406,7 +16436,8 @@ function groundMovementProbe(source: Game): Game {
   game.pendingKarama = null; game.pendingTreacheryDiscard = null;
   game.pendingFremenMove = null; game.pendingIxMove = null; game.pendingChoamMove = null;
   game.pendingAmbassador = null; game.pendingTerrorEntry = null; game.pendingArrivalOverlap = null;
-  game.pendingArrivalReaction = []; game.pendingExchange = null; game.pendingNullentropy = null;
+  game.pendingArrivalReaction = []; game.pendingExchange = null;
+  if (game.pendingNullentropy && source.decision?.kind === 'nullentropy') game.decision = structuredClone(source.decision);
   return game;
 }
 function groundMovementEvent(move: MovementOrder) {
@@ -16420,23 +16451,71 @@ function projectGroundMovement(source: Game, move: MovementOrder): Game {
     flight.completed++;
     if (flight.completed === (flight.mode === 'twoGroups' ? 2 : 1)) {
       if (flight.mode === 'twoGroups') player.ornithopterExtraMoves = (player.ornithopterExtraMoves ?? 0) + 1;
-      game.discard.push(flight.card); game.ornithopter = null;
+      game.discard.push(flight.card);
+      rememberMovementDiscards(game, [{ card: flight.card, discardedBy: player.id, publicFace: true }]);
+      game.ornithopter = null;
     }
   }
   return game;
 }
+function projectMovementBoxRecovery(source: Game, actor: string, box: string, selected: string, paid: boolean): Game | null {
+  const game = structuredClone(source), owner = getPlayer(game, actor);
+  try {
+    if (paid) requireRule(game.pendingNullentropy?.player === actor && !nullentropyIntegrity(game),
+      'Retain the original paid search.');
+    else { validateNullentropyBegin(game, owner, box); owner.spice -= 2; }
+    const context = nullentropyContext(game), player = getPlayer(context, actor);
+    let result: ReturnType<typeof resolveNullentropyBox>;
+    try { result = resolveNullentropyBox(player.hand, box, context.discard, selected,
+      context.discard.filter(card => card.id !== selected).map(card => card.id), handLimit(player), true); }
+    catch (error) { throw new RuleError(error instanceof Error ? error.message : 'Invalid owned Box recovery.'); }
+    validateTransferCompletion(context, player, player, result.ownerHand, result.ownerHand, { type: 'card', card: box });
+    player.hand = result.ownerHand; context.discard = result.discard;
+    setMovementDiscardKnowledge(context, recordMovementBoxKnowledge(context.movementDiscardKnowledge,
+      context.players.map(p => p.id), actor, result.discard));
+    return groundMovementProbe(context);
+  } catch (error) {
+    if (error instanceof RuleError) return null;
+    throw error;
+  }
+}
 function groundMovementCompletion(source: Game, actor: string,
   promises = liveMovementPromises(source.movementPromises ?? [], actor, source.turn)): MovementCompletion | null {
   const game = groundMovementProbe(source);
-  if (!movementPromiseTargetAvailable(game, actor)) return null;
+  if (!movementPromiseTargetAvailable(game.pendingNullentropy?.player === actor ? { ...game, decision: null } : game, actor)) return null;
   return findMovementCompletion(game, actor, promises, {
     allowance: movesAllowed,
-    prepareHajr(state, owner) {
-      const player = getPlayer(state, owner);
-      const card = player.hand.find(card => card.effect === 'hajr');
-      if (!card || !hajrAvailable(state, player) || transferCardBlock(state, player, card)) return null;
-      try { return groundMovementProbe(applyActionInner(state, owner, { type: 'card', card: card.id }, 'movementPreparation')); }
-      catch (error) { if (error instanceof RuleError) return null; throw error; }
+    *preparations(state, owner) {
+      const player = getPlayer(state, owner), paid = state.pendingNullentropy;
+      const relevant = (card: Card) => card.effect === 'hajr' || card.effect === 'ornithopter' ||
+        (player.faction === 'choam' && card.kind === 'worthless' && card.name === 'Kulon');
+      if (paid) {
+        if (paid.player !== owner || nullentropyIntegrity(state)) return;
+        for (const card of eligibleNullentropyCards(state.discard).filter(relevant)) {
+          const projected = projectMovementBoxRecovery(state, owner, paid.box, card.id, true);
+          if (projected) yield { game: projected, actions: [{ type: 'decision', event: paid.event, card: card.id }] };
+        }
+        return;
+      }
+      for (const card of player.hand) {
+        if (card.effect === 'hajr' && hajrAvailable(state, player) && !transferCardBlock(state, player, card)) {
+          try { yield { game: groundMovementProbe(applyActionInner(state, owner,
+            { type: 'card', card: card.id }, 'movementPreparation')), actions: [{ type: 'card', card: card.id }] }; }
+          catch (error) { if (!(error instanceof RuleError)) throw error; }
+        }
+        if (player.faction === 'choam' && card.kind === 'worthless' && card.name === 'Kulon') {
+          const action: Action = { type: 'card', mode: 'choam', card: card.id };
+          try { yield { game: groundMovementProbe(applyActionInner(state, owner, action, 'movementPreparation')), actions: [action] }; }
+          catch (error) { if (!(error instanceof RuleError)) throw error; }
+        }
+        if (richeseCardDefinition(card)?.card.effect === 'nullentropyBox') {
+          // Never inspect unconfirmed private faces to advertise a pre-payment route.
+          for (const known of knownMovementDiscards(state.movementDiscardKnowledge, owner, state.discard).filter(relevant)) {
+            const projected = projectMovementBoxRecovery(state, owner, card.id, known.id, false);
+            if (projected) yield { game: projected, actions: [{ type: 'card', card: card.id }] };
+          }
+        }
+      }
     },
     reachable(state, player, origin, destination, sector) {
       // Include current native range (notably CHOAM Kulon) and the card's
@@ -16455,8 +16534,10 @@ function groundMovementCompletion(source: Game, actor: string,
   });
 }
 function projectedGroundMovementPolicy(g: Game, player: Player): Action[] | null {
-  if (g.truthtrance || !movementPromiseTargetAvailable(g, player.id) ||
-      !liveMovementPromises(g.movementPromises ?? [], player.id, g.turn).length) return null;
+  const live = liveMovementPromises(g.movementPromises ?? [], player.id, g.turn);
+  const paid = g.pendingNullentropy?.player === player.id;
+  if (g.truthtrance || !live.length || (paid && !live.some(promise => promise.answer)) ||
+      !movementPromiseTargetAvailable(paid ? { ...g, decision: null } : g, player.id)) return null;
   const completion = groundMovementCompletion(g, player.id);
   return completion ? completion.actions.length ? completion.actions.slice(0, 1) : [{ type: 'endMovement' }] : null;
 }
@@ -27065,6 +27146,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
         return;
       }
       if (pending.effect === 'kulon') {
+        rememberMovementDiscards(g, [{ card: used, discardedBy: choam.id, publicFace: pending.nexusEvent === undefined }]);
         if (g.semutaPreview && (used.name === 'Kulon' || pending.nexusEvent) &&
           !pending.storm && !pending.revival && !pending.movement &&
           !pending.mentat) {
@@ -29990,7 +30072,7 @@ function gamontAvailable(
     e = p.elites?.forces[key] ?? 0;
   return elite === 1 ? e > 0 : elite === 0 && n > e;
 }
-function playChoamWorthless(g: Game, p: Player, action: Action) {
+function playChoamWorthless(g: Game, p: Player, action: Action, movementPreparation = false) {
   const storming =
     g.decision?.kind === 'choamStorm' && g.decision.player === p.id;
   const reactive =
@@ -30133,6 +30215,13 @@ function playChoamWorthless(g: Game, p: Player, action: Action) {
       !g.revivalRules?.freeBlocked?.includes(target),
       'That player is already prevented from free revival.',
     );
+  }
+  if (movementPreparation) {
+    requireRule(effect === 'kulon' && !nexus, 'Only native Kulon is an owned movement preparation.');
+    const used = discard(g, p, card.id);
+    rememberMovementDiscards(g, [{ card: used, discardedBy: p.id, publicFace: true }]);
+    completeChoamKulon(g, p);
+    return;
   }
   g.pendingChoamWorthless = {
     owner: p.id,
@@ -30609,8 +30698,13 @@ function refundStoppedShipmentKarama(g: Game, shipper: Player) {
   if (benefit?.player !== shipper.id) return;
   if (benefit.card && !benefit.costClaimed) {
     const index = g.discard.findIndex(card => card.id === benefit.card);
-    if (index >= 0)
-      getPlayer(g, benefit.owner).hand.push(...g.discard.splice(index, 1));
+    if (index >= 0) {
+      const [card] = g.discard.splice(index, 1);
+      getPlayer(g, benefit.owner).hand.push(card);
+      setMovementDiscardKnowledge(g, recordMovementClaimKnowledge(g.movementDiscardKnowledge,
+        g.players.map(p => p.id), benefit.owner,
+        [{ card, discardedBy: benefit.owner, publicFace: true }], card.id));
+    }
   }
   g.karamaShipping = null;
 }
@@ -31777,7 +31871,7 @@ function applyActionInner(
   // Conversion spends the selected card as fuel; its printed effect must not
   // intercept that explicit mode (including Recruits and other special faces).
   if (t === 'card' && action.mode === 'choam') {
-    playChoamWorthless(g, p, action);
+    playChoamWorthless(g, p, action, execution === 'movementPreparation');
     return g;
   }
   if (t === 'card' && action.card === RECRUITS_CARD_ID) {

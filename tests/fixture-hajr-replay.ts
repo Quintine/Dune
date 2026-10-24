@@ -51,7 +51,7 @@ export function advanceHajrReplay(game: Game, until: (state: Game) => boolean,
 /** Genuine original host, setup, paid Box/Hajr lots and paid desert shipment.
  * Only unopened Hajr/Spice deck positions and scalar lotteries are selected.
  * No hand, wallet, force, phase or completed-effect receipt is installed. */
-export function createHajrReplayFixture(options: { advanced?: boolean } = {}) {
+export function createHajrReplayFixture(options: { advanced?: boolean; truthForGuild?: boolean } = {}) {
   const advanced = options.advanced ?? false;
   let game = createGame('HAJRREPLAY', newPlayer('richese', 'Richese', 'richese'), advanced, ['choam']);
   for (const faction of ['emperor', 'guild'] as const) joinGame(game, newPlayer(faction, faction, faction));
@@ -62,8 +62,22 @@ export function createHajrReplayFixture(options: { advanced?: boolean } = {}) {
   const lobby = structuredClone(game);
   act(game.host, advanced ? { type: 'start', advancedPreview: true } : { type: 'start' });
   const setup = structuredClone(game);
+  const startingDealSelection: { position: number; from: number; card: string }[] = [];
+  let guildTruth: string | null = null;
+  if (options.truthForGuild) {
+    assert.equal(game.status, 'setup');
+    assert.ok(game.players.every(player => player.hand.length === 0), 'Select only an unopened starting deal');
+    const position = game.players.findIndex(player => player.id === 'guild');
+    const from = game.deck.findIndex(card => card.effect === 'truthtrance');
+    assert.ok(position >= 0 && from >= position);
+    guildTruth = game.deck[from].id;
+    [game.deck[position], game.deck[from]] = [game.deck[from], game.deck[position]];
+    startingDealSelection.push({ position, from, card: guildTruth });
+  }
+  const beforeStartingDeal = structuredClone(game);
   reach(state => state.status === 'playing');
   const afterSetup = structuredClone(game), front: Game['spiceDeck'] = [];
+  if (guildTruth) assert.ok(hajrReplayPlayer(game, 'guild').hand.some(card => card.id === guildTruth));
   for (let count = 0; count < (advanced ? 2 : 1); count++) {
     const at = game.spiceDeck.findIndex(card => 'territory' in card && !card.discovery); assert.ok(at >= 0);
     front.push(game.spiceDeck.splice(at, 1)[0]);
@@ -83,7 +97,8 @@ export function createHajrReplayFixture(options: { advanced?: boolean } = {}) {
     type: 'ship', territory: 'imperial_basin', sector: 9, amount: 3, elite: advanced ? 2 : 0, allyPayment: 0,
   } };
   act(shipmentStep.actor, shipmentStep.action); reach(hajrReplayClean);
-  return { game, lobby, setup, afterSetup, beforePurchases, acquired, beforeShipment, shipmentStep,
+  return { game, lobby, setup, beforeStartingDeal, startingDealSelection, guildTruth,
+    afterSetup, beforePurchases, acquired, beforeShipment, shipmentStep,
     afterShipment: structuredClone(game), hajr, box: HAJR_REPLAY_BOX, owner: 'emperor',
     source: 'imperial_basin:9', actions,
     staging: ['Original native setup and paid cache1/normal1 lots acquire Box and the single Hajr. An original paid3-counter desert shipment leaves the two-spice Box fee. Only unopened deck positions and scalar lotteries are selected.'] };

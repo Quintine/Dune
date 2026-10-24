@@ -37,8 +37,9 @@ reconfigured and absent promise fields remain absent until a real answer binds.
 - Feasible answers use actual board/typed groups and the shared human movement
   declaration validator, not the strategic bot shortlist. The finite search
   considers ordinary moves, held Hajr, both held/active Ornithopter modes and
-  their original cohort, current city access and current native bonuses such as
-  CHOAM Kulon. Preparations use private detached execution; actual cards retain
+  their original cohort, current city access, current native bonuses, held
+  CHOAM Kulon and the owned Box recovery described below. Preparations use
+  private detached execution; actual cards retain
   their ordinary effects, counters, discard/response and arrival continuations.
   Unknown future draws/gifts and unresolved opposing outcomes are not invented.
 - Voluntary moves/actions cannot remove the last legal completion. A declared
@@ -53,11 +54,84 @@ reconfigured and absent promise fields remain absent until a real answer binds.
   views without strategy changes or calibration.
 
 This is bounded reachability, not complete arbitrary Truthtrance enforcement.
-Other owned preparation families (including Box recovery and native relocation
-preparation), earlier timing, optional/Advanced profiles and comprehensive
+Other owned preparation families (including native relocation preparation),
+earlier timing, optional/Advanced profiles and comprehensive
 combination/recovery/privacy/custody acceptance remain due.
 
-## Source programmes and current verification
+## Owned Box and Kulon preparation — 24 October 2026
+
+The same bare Basic predicate now considers a held native CHOAM Kulon and an
+owned Nullentropy Box with its printed **two uncommitted spice** fee. Box
+authority and the existing provisional atomic full-hand exchange are unchanged;
+see [the Box source contract](NULLENTROPY_BOX_ENGINE_AUDIT.md). This extends
+bounded owned reachability, not the supported mode/timing profile.
+
+Before payment, only a relevant physical card known still to be in the discard
+may supply a Box witness. Public disposals teach all actual seats; private
+disposals teach their former holder. Hajr, canonical Ornithopter and Kulon are
+the only remembered faces needed here. A private Box choice or mixed Semuta
+claim invalidates other seats' certainty of those candidates' **current
+location**; its entitled inspector knows the remaining faces. Rebuilding the
+deck removes current-discard certainty. This bookkeeping does not erase anyone's
+historical memory, reveal discard names/counts before payment or retroactively
+inspect unconfirmed old piles. Unknown/private preparation possibilities outside
+that provable knowledge remain unfinished. The metadata is server-only; the
+ordinary owner sees only the next legal action.
+
+After actual payment, the original private search still shows every eligible
+card, retains its event and charges once. A live Yes supplies a compliant
+movement-card selection in the persistent promise control. A selection that
+would destroy the last route rejects **before** the real shuffle and leaves the
+paid decision available; its fee is neither repeated nor refunded. No-only
+promises keep the ordinary paid choice and do not offer End movement until that
+choice finishes. Minimal policies use the same guided paid selection rather
+than repeatedly choosing an incompatible high-value card.
+
+Speculation uses detached copies and deterministic pile order; it never pays,
+shuffles or samples the live game. Actual Box settlement retains its one server
+shuffle, physical exchange and native discard continuation. Held Kulon uses its
+original native legality/cost/bonus; actual counters keep it held and blocked
+when canceled. Opposing loss can release an impossible answer, while voluntary
+spending cannot remove the only remaining fee-funded route. Broader preparation
+through native relocation, counter mitigation, earlier timing and optional or
+Advanced rules remains unfinished.
+
+### Current preparation evidence
+
+`tests/fixture-truth-movement-box.ts` selects one original unopened Guild
+Truthtrance deal, then uses actual public Basic Richese/Emperor/Guild setup,
+Box1/Hajr1 purchases, three-force desert shipment6 and real Hajr plus two
+one-force moves. Its44-action source leaves the original Hajr in discard, held
+Box and exactly two owned spice. The actual definite Truthtrance answer adds
+the second paid-search candidate. Yes recovers that same Hajr and makes the
+third move; No uses the original ordinary paid-selection control. Native
+CHOAM source25 stops before actual Kulon, then the question, held Kulon and
+city-enabled route4 execute normally. Only unopened positions and native scalar
+lotteries are selected; no dealt hand, wallet, force, clock or receipt is installed.
+Separate full-hand, unknown legacy certainty, opposing fee-loss and acquired
+Karama-counter tests explicitly stage conserved original outcomes.
+
+The current seventeen-file union passes **231/231**, types/lint and production
+build. Three actual-control/GameTable-rendering programmes retain full paid
+inspection, original event, single fee, rejected selection and busy no-submit.
+Four existing profiles make40 accepted paid-selection/Hajr/move/end/neutral-pass
+actions and finish legally without strategy refinement. Two older Box/Auditor
+fixtures failed identically on the previous engine and now acknowledge the
+actual battle result; a test-only const lint issue was repaired. Bounded review
+checked printed search entitlement, full-hand policy, original paid continuation,
+primitive disposal knowledge, memoized preparation state and paid-choice priority.
+
+Frozen base `edbcbe28de2128c1b59ab7b17bdf7328bddc7416`, tree
+`fd900a863da9cbc9826c22ca7627c26123d1cad04915d059735cb32471c7ba00`,
+2636 files. Private logs, original-state control HTML and receipts:
+`/home/quintine/.local/share/dune/checkpoints/20261024-movement-card-preparation/`,
+`frozen-integrated-3/report.json`. Only final checkpoint/reference prose overlays
+follow that proof. Framework aliases/CSS stubbing establish server rendering,
+not browser/visual/deployed acceptance. Other timing/preparations/counter
+mitigation, unknown private possibilities, optional/Advanced, full modes and
+comprehensive assurance remain open. No saved-room/D1/reset/restart/deployment.
+
+## Preceding movement checkpoint
 
 `tests/fixture-truth-movement.ts` uses genuine public Basic Atreides/Emperor
 setup, original33-card inventory and actual dealt Truthtrance/Hajr. Only unopened
@@ -81,7 +155,7 @@ Separate multiple-question and impossibility edges explicitly stage a conserved
 second original Truthtrance acquisition and conserved force-loss outcomes. They
 are not natural second-purchase or native Atomics/Terror source evidence.
 
-The seventeen-file affected union passes **218/218**, with types/lint and the
+The preceding seventeen-file affected union passed **218/218**, with types/lint and the
 production build passing. Seven actual gameplay/control/table-rendering
 programmes cover direct Yes, later Hajr Yes, No surviving Hajr, both actual
 Ornithopter groups, its range-three option and native current-Kulon route4.

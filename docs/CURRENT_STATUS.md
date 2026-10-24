@@ -16,6 +16,27 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Owned movement-card preparation — 24 October. Prototyped / Partial.**
+Basic movement promises now include held native Kulon and owned paid Box
+recovery. Before payment, only known current-discard identities supply a route;
+paid inspection keeps its full original choice/event and single two-spice fee.
+An incompatible Yes selection rejects before shuffle, preserving that paid
+decision. No-only searches retain ordinary selection before End movement.
+Physical Hajr replay, native Kulon counters and existing full-hand policy remain.
+
+A disjoint knowledge/source lane, bounded preparation review and owner
+integration pass **17 files231/231**, types/lint/build, three actual-control/table
+rendering programmes and four existing profiles with40 accepted actions. Public
+Box source44 uses actual purchases1+1, desert shipment6 and two completed Hajr
+moves; native held-Kulon source25 uses actual shipment1 before route4. Full-hand,
+legacy-knowledge, fee-loss and acquired-counter edges disclose controlled
+conserved staging. Two stale Auditor fixture failures reproduced on the previous
+engine and now acknowledge the actual battle result; test-only const lint was
+repaired. [Source, exact proof and remaining scope](TRUTHTRANCE_MOVEMENT_PROMISES.md#owned-box-and-kulon-preparation--24-october-2026).
+Other timing/preparations/counter mitigation, unknown private possibilities,
+optional/Advanced, full modes and final assurance remain open. No strategy
+tuning or saved-room/reset/restart/deployment operation.
+
 **Basic Truthtrance ground-movement promises — 24 October. Prototyped / Partial.**
 Structured future ground-movement answers now bind a clean active post-shipment
 Basic native turn. One qualifying physical move fulfills Yes before arrival or

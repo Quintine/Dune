@@ -348,7 +348,7 @@ export function Truthtrance({
               {kind === 'movement' ? (
                 <>
                   <MovementClaimFields id={`${factId}-movement`} value={movement} onChange={setMovement} />
-                  <p className="fine">One ground movement of the chosen physical minimum, from now until the respondent’s Movement turn ends. Shipment, HMS relocation and Ambassador relocation do not count. Owned Hajr and Ornithopter can prepare a later move. No stays binding after earlier nonmatching moves.</p>
+                  <p className="fine">One ground movement of the chosen physical minimum, from now until the respondent’s Movement turn ends. Shipment, HMS relocation and Ambassador relocation do not count. Owned Hajr, Ornithopter, native Kulon and paid Box recovery of a known discard can prepare a later move. No stays binding after earlier nonmatching moves.</p>
                   {!g.truthMovementTargets.includes(target) && <p className="notice">Choose the active Basic player after shipment and finish pending decisions. Optional-module and Advanced movement promises remain unfinished.</p>}
                   <p className="notice" aria-label="Public movement question preview">{truthQuestionText(question, leaderName, locationName)}</p>
                 </>

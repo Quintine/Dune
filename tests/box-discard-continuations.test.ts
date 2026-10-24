@@ -673,6 +673,12 @@ for (const stage of ['response', 'payment'] as const)
     });
     initial = applyAction(initial, 'p', { type: 'traitorCall', call: false });
     initial = applyAction(initial, 'q', { type: 'traitorCall', call: false });
+    while (initial.battle?.outcomeWindow) {
+      const window = initial.battle.outcomeWindow;
+      const actor = [window.attacker, window.defender].find(id => !window.ready.includes(id));
+      assert.ok(actor);
+      initial = applyAction(initial, actor, { type: 'battleOutcomeReady', event: window.event });
+    }
     assert.equal(initial.decision?.kind, 'choamAudit');
     initial = applyAction(initial, 'q', {
       type: 'decision',

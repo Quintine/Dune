@@ -4,7 +4,7 @@ import { liveMovementPromises, movementEventAllowed, settleMovementEvent, type M
 
 export type MovementPromiseAdapter = {
   allowance: (game: Game, player: Player) => number;
-  prepareHajr: (game: Game, player: string) => Game | null;
+  preparations: (game: Game, player: string) => Iterable<{ game: Game; actions: Action[] }>;
   reachable: (game: Game, player: Player, origin: string, destination: string, sector: number) => boolean;
   project: (game: Game, player: string, action: Action) => { game: Game; event: MovementEvent } | null;
 };
@@ -31,7 +31,8 @@ function* groups(player: Player, keys: string[], amount: number, index = 0,
 }
 
 /** Finite owned-action reachability. Each move consumes a real entitlement;
- * Hajr and Ornithopter are existing physical cards, never invented future draws.
+ * Hajr, Ornithopter, Kulon and Box use owned physical cards and known or
+ * already-paid recovery choices, never invented unknown future draws.
  * The adapter shares authoritative movement validation/physical commitment.
  * Opposing arrival outcomes are not simulated or assumed. */
 export function findMovementCompletion(source: Game, actor: string,
@@ -44,13 +45,15 @@ export function findMovementCompletion(source: Game, actor: string,
     const physical = Object.values(player.forces).reduce((sum, amount) => sum + amount, 0);
     if (live.some(promise => promise.answer && promise.minimum > physical)) return null;
     const key = JSON.stringify([player.forces, player.elites, player.moved, player.hand.map(card => card.id),
-      player.hajrPlays, player.ornithopterExtraMoves, game.hajr, game.ornithopter ? [game.ornithopter.mode, game.ornithopter.startingMove, game.ornithopter.completed, game.ornithopter.cohort] : null,
+      player.hajrPlays, player.ornithopterExtraMoves, player.spice, game.choamMovement,
+      game.discard.map(card => card.id), game.movementDiscardKnowledge?.[actor], game.pendingNullentropy,
+      game.choamWorthlessBlocked, game.hajr, game.ornithopter ? [game.ornithopter.mode, game.ornithopter.startingMove, game.ornithopter.completed, game.ornithopter.cohort] : null,
       live.map(promise => [promise.territory, promise.minimum, promise.answer])]);
     if (failed.has(key)) return null;
     const destinations = gameTerritories(game).filter(destination => !destination.id.startsWith('homeworld:'));
     destinations.sort((a, b) => Number(live.some(p => p.answer && p.territory === b.id)) -
       Number(live.some(p => p.answer && p.territory === a.id)));
-    if (player.moved < adapter.allowance(game, player)) {
+    if (!game.pendingNullentropy && player.moved < adapter.allowance(game, player)) {
       const origins = [...new Set(Object.keys(player.forces).filter(key => player.forces[key] > 0)
         .map(key => splitLocation(key).territory))];
       const card = !game.ornithopter ? player.hand.find(card => card.effect === 'ornithopter') : null;
@@ -80,10 +83,8 @@ export function findMovementCompletion(source: Game, actor: string,
         }
       }
     }
-    const prepared = adapter.prepareHajr(game, actor);
-    if (prepared) {
-      const card = player.hand.find(card => card.effect === 'hajr')!;
-      const result = search(prepared, live, [...actions, { type: 'card', card: card.id }]);
+    for (const prepared of adapter.preparations(game, actor)) {
+      const result = search(prepared.game, live, [...actions, ...prepared.actions]);
       if (result) return result;
     }
     failed.add(key); return null;

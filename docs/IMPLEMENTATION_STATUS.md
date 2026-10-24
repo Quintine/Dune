@@ -1,5 +1,27 @@
 # Dune implementation status
 
+## 24 October 2026 — Owned movement-card preparation
+
+Extend bounded Basic movement promises with held native Kulon and owned paid
+Box recovery. Pre-payment routes use known current-discard identities; private
+choices invalidate location certainty without erasing historical memory. Actual
+paid selection retains all entitled faces, its original event and one two-spice
+fee. Reject a Yes-breaking choice before shuffle and keep that paid decision.
+No-only searches retain ordinary selection; physical Hajr replay, native counters,
+full-hand policy and persistent busy-safe controls remain.
+
+Disjoint knowledge/source lanes, bounded review and owner integration pass
+17 files231/231, types/lint/build, three actual-control/table-rendering programmes
+and four existing profiles with40 accepted proposals. Original public sources
+44/25 retain actual Box/Hajr purchases, shipment costs6/1 and native Kulon route4.
+Separate full-hand/knowledge/fee-loss/counter edges disclose conserved staging.
+Two old Auditor fixtures reproduce on the previous engine; actual battle-result
+acknowledgements repair their source. Test-only const lint was corrected.
+[Current authority, exact source and limits](TRUTHTRANCE_MOVEMENT_PROMISES.md#owned-box-and-kulon-preparation--24-october-2026).
+Broader timing, preparations/counter mitigation, unknown private possibilities,
+optional/Advanced, full modes, final assurance and deployed acceptance remain
+open. No tuning or saved-room/reset/restart/deployment operation.
+
 ## 24 October 2026 — Basic Truthtrance ground-movement commitments
 
 Add the missing structured future single-movement predicate for clean active
