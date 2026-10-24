@@ -76,7 +76,18 @@ const key = (id: StrongholdId) => id === MOBILE_STRONGHOLD ? MOBILE_LOCATION : `
  * a human must seal a plan; the helper never reads or invents that private plan. */
 export function nextStrongholdFactionsNativeStep(game: Game): StrongholdFactionsNativeStep | null {
   if (game.status === 'finished') return null;
-  if (game.pendingTreacheryDiscard) return { actor: game.host, action: { type: 'advanceBots' } };
+  if (game.pendingTreacheryDiscard) {
+    const pending = game.pendingTreacheryDiscard, reaction = pending.reaction;
+    if (reaction?.stage === 'offer') {
+      const actor = game.players.find(p => !reaction.passed.includes(p.id)); assert.ok(actor);
+      return { actor: actor.id, action: { type: 'semutaPass', event: pending.batch.event } };
+    }
+    if (reaction?.stage === 'select') {
+      const action = botActions(viewGame(game, reaction.player))[0]; assert.ok(action);
+      return { actor: reaction.player, action };
+    }
+    return { actor: game.host, action: { type: 'advanceBots' } };
+  }
   if (game.phaseOpening) {
     const actor = game.players.find(p => !game.phaseOpening!.passed.includes(p.id))?.id;
     assert.ok(actor);

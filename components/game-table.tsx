@@ -1,4 +1,5 @@
 'use client';
+import { MovementPromises } from './movement-promises';
 import { integerInputValue } from '../lib/integer-input';
 import { EcazSetup } from './ecaz-setup';
 import { StormCardInspector, StormCardLogInspector } from './storm-cards';
@@ -1959,6 +1960,7 @@ export function GameTable({
           </div>
           {g.battle?.revealed && <a className="battle-display-link" href="#revealed-battle-plans">Compare revealed battle plans</a>}
           <PrivateBattlePlan game={g} />
+          <MovementPromises game={g} act={act} busy={reactionBusy} />
           {!reactionOwnsControls && g.semutaReaction && <SemutaReaction game={g} act={act} busy={reactionBusy} />}
           {g.karamaBlocked && <p className="notice" role="status">{g.karamaBlocked}</p>}
           {g.karamaPurposeBlocks?.map(({purpose, message}) => <p key={purpose} className="notice" role="status">{message}</p>)}

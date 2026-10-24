@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 24 October 2026 — Basic Truthtrance ground-movement commitments
+
+Add the missing structured future single-movement predicate for clean active
+post-shipment Basic native turns. Matching physical commitment fulfills Yes
+before disposal/arrival; No remains binding through later Hajr/Ornithopter until
+actual closure. Private witnesses reuse actual declaration and piece commitment,
+including typed/cohort limits and current city/Kulon range. No strategic shortlist
+proves feasibility. Voluntary loss of the last route rejects; opposing loss
+retains compatible promises in accepted order. Persistent authoring, answers
+and owned continuation controls retain busy handling and minimum legal AI.
+
+A pure-ledger/source/review wave and owner integration pass17 files218/218,
+types/lint/build, seven original-action gameplay/control/table-rendering
+programmes and four existing profiles with12 accepted actions. Sources20/58/26
+retain original33 or35+10 inventories, actual paid shipment/cache/placement and
+actual allowed Kulon. Only unopened positions and scalar/packet lotteries are
+selected; extra-card/force-loss edges explicitly stage conserved outcomes.
+Review corrected current Kulon pruning and selective release. Multiple-promise
+feedback synchronizes detached settlement and uses deterministic private
+preparation without creating extra cost events. Old fixture failures reproduced
+on the prior engine: Semuta/battle acknowledgements and Basic pre-movement Hajr
+scope now match current controls. Notice-label type lint was repaired.
+[Authority, exact source and limits](TRUTHTRANCE_MOVEMENT_PROMISES.md).
+Full modes, wider timing/preparations/modules, comprehensive assurance and
+deployed acceptance remain open. No tuning or saved-room/reset/restart/deploy.
+
 ## 24 October 2026 — Fresh Basic Semuta and Ambassador discards
 
 Initialize the existing Semuta protocol before genuine fresh public bare Basic

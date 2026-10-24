@@ -150,8 +150,8 @@ void test('no-card and owner-only Karama tables apply Fremen movement automatica
   }
 });
 
-void test('Karama preserves forces and movement allowance, while only the current Fremen group move loses range two', () => {
-  const initial = fixture(true);
+void test('Basic pre-movement Hajr preserves forces and allowance when Karama reduces only the current Fremen group range', () => {
+  const initial = fixture();
   initial.players[1].hand = [karamas[0]];
   initial.players[0].hand = [baseDeck().find((c) => c.effect === 'hajr')!];
   const hajr = applyAction(initial, 'f', {

@@ -1280,6 +1280,10 @@ function policyActions(g: GameView): Action[] {
       return w.passed.includes(me.id) ? [] : [{ type: 'truthPass' }];
     if (w.stage === 'answer') {
       if (w.question?.target !== me.id) return [];
+      if (w.question.kind === 'movement') {
+        const answer = g.truthMovementAnswers?.find(answer => answer !== 'unknown') ?? g.truthMovementAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'mixedShipment') {
         const choices = g.truthShipmentAnswers ?? [];
         const answer = choices.find(choice => choice === 'yes' || choice === 'no') ?? choices[0];
@@ -4073,6 +4077,9 @@ export function botActions(g: GameView): Action[] {
   if (g.shipmentPromisePolicy && g.status === 'playing' &&
       !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending)
     return g.shipmentPromisePolicy;
+  if (g.movementPromisePolicy && g.status === 'playing' &&
+      !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending)
+    return g.movementPromisePolicy;
   if (g.nexusHarkonnenBetrayalReaction) {
     if (g.status !== 'playing' || g.roomControl?.paused || g.roomControl?.closed ||
         g.automaticContinuationPending) return [];

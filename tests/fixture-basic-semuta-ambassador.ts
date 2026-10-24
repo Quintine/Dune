@@ -107,9 +107,11 @@ function originalPacket(effect: BasicSemutaAmbassadorEffect, copied: boolean) {
  * grant BEFORE any discard, payout, replacement draw or Semuta commitment. */
 export function createBasicSemutaAmbassadorFixture(options: {
   effect: BasicSemutaAmbassadorEffect; copied?: boolean; arrival?: 'shipment' | 'movement';
+  cacheCard?: 'semuta' | 'ornithopter'; ecazTruth?: boolean;
 }) {
   const effect = options.effect, copied = options.copied ?? false, packet = originalPacket(effect, copied);
   const arrivalKind = options.arrival ?? 'shipment';
+  const cacheCardId = options.cacheCard === 'ornithopter' ? 'richese-ornithopter' : SEMUTA_DRUG_ID;
   let game = createGame('BASICSEMUTAAMBASSADOR', newPlayer('ecaz', 'Ecaz', 'ecaz'), false, ['ecaz', 'choam']);
   for (const faction of ['choam', 'richese', 'guild'] as const)
     joinGame(game, newPlayer(faction, faction, faction));
@@ -131,7 +133,7 @@ export function createBasicSemutaAmbassadorFixture(options: {
     !game.strongholdCards && !game.discoveryEnabled && !game.ecazTreachery);
   assert.ok(game.players.every(player => player.hand.length === 0));
   assert.equal(game.deck.length, 35); assert.equal(game.richeseCache?.length, 10);
-  assert.ok(game.richeseCache!.some(card => card.id === SEMUTA_DRUG_ID));
+  assert.ok(game.richeseCache!.some(card => card.id === cacheCardId));
   const originalMainDeck = game.deck.map(card => card.id).sort();
   const originalCache = game.richeseCache!.map(card => card.id).sort();
   const originalTreachery = basicSemutaAmbassadorInventory(game);
@@ -139,6 +141,7 @@ export function createBasicSemutaAmbassadorFixture(options: {
   // Ordinary cards avoid optional card-use controls during the source path.
   const ordinary = game.deck.filter(card => ['projectile', 'poison', 'shield', 'snooper'].includes(card.kind)).slice(0, 5);
   assert.equal(ordinary.length, 5);
+  if (options.ecazTruth) ordinary[0] = game.deck.find(card => card.effect === 'truthtrance')!;
   const deal = ordinary.map(card => card.id);
   const dealOrder = deal.map((id, position) => {
     const from = game.deck.findIndex(card => card.id === id); assert.ok(from >= position);
@@ -177,13 +180,13 @@ export function createBasicSemutaAmbassadorFixture(options: {
   reach(state => !state.response && !state.phaseOpening && state.decision?.kind === 'richeseCache');
   const beforeCacheOffer = structuredClone(game), acquisitionStart = actions.length;
   const cacheOffer: BasicSemutaAmbassadorStep = { actor: 'richese', action: { type: 'decision',
-    event: game.richeseBidding!.event, card: SEMUTA_DRUG_ID, method: 'onceAround', direction: 'counterclockwise' } };
+    event: game.richeseBidding!.event, card: cacheCardId, method: 'onceAround', direction: 'counterclockwise' } };
   act(cacheOffer.actor, cacheOffer.action);
   reach(state => basicSemutaAmbassadorClean(state) && !!state.richeseAuction && !state.richeseAuction.outcome);
   const cacheAuction = structuredClone(game);
   const cacheBidSteps: BasicSemutaAmbassadorStep[] = [];
   let semutaBid: BasicSemutaAmbassadorTransition | null = null;
-  for (let count = 0; !basicSemutaAmbassadorPlayer(game, holder).hand.some(card => card.id === SEMUTA_DRUG_ID) && count < 8; count++) {
+  for (let count = 0; !basicSemutaAmbassadorPlayer(game, holder).hand.some(card => card.id === cacheCardId) && count < 8; count++) {
     const lot = game.richeseAuction; assert.ok(lot && !lot.outcome && lot.active);
     const bid: BasicSemutaAmbassadorStep = { actor: lot.active, action: { type: 'richeseBid', event: lot.event,
       amount: lot.active === holder ? 1 : null, allyPayment: 0 } };
@@ -191,7 +194,7 @@ export function createBasicSemutaAmbassadorFixture(options: {
     const result = transition(bid, state => basicSemutaAmbassadorClean(state));
     if (bid.actor === holder) semutaBid = result;
   }
-  assert.ok(semutaBid); assert.ok(basicSemutaAmbassadorPlayer(game, holder).hand.some(card => card.id === SEMUTA_DRUG_ID));
+  assert.ok(semutaBid); assert.ok(basicSemutaAmbassadorPlayer(game, holder).hand.some(card => card.id === cacheCardId));
   assert.equal(game.richeseCache!.length, 9);
   assert.equal(basicSemutaAmbassadorPlayer(game, holder).spice,
     basicSemutaAmbassadorPlayer(beforeCacheOffer, holder).spice - 1);
@@ -239,7 +242,7 @@ export function createBasicSemutaAmbassadorFixture(options: {
   assert.equal(game.pendingAmbassador!.beneficiary, beneficiary); assert.equal(game.pendingAmbassador!.entrant, entrant);
   assert.equal(game.decision?.player, beneficiary); assert.equal(game.active, entrant);
   assert.equal(game.turn, 1); assert.equal(game.phase, 5); assert.ok(!game.pendingTreacheryDiscard);
-  assert.ok(basicSemutaAmbassadorPlayer(game, holder).hand.some(card => card.id === SEMUTA_DRUG_ID));
+  assert.ok(basicSemutaAmbassadorPlayer(game, holder).hand.some(card => card.id === cacheCardId));
   assert.deepEqual(basicSemutaAmbassadorInventory(game), originalTreachery);
   const currentGrant = structuredClone(game), eligibleChosenIds = basicSemutaAmbassadorPlayer(game, beneficiary).hand
     .slice(0, effect === 'choam' ? 2 : 1).map(card => card.id);
@@ -251,11 +254,11 @@ export function createBasicSemutaAmbassadorFixture(options: {
     cacheAuction, cacheBidSteps, semutaBid, acquisition, normalPurchase, placement, beforeArrival, shipment, arrival, arrivalKind, offer,
     triggerStep, beforeCopy, copyStep, currentGrant, ownerView: viewGame(game, owner), holderView: viewGame(game, holder),
     entrantView: viewGame(game, entrant), effect, copied, advanced: false as const,
-    owner, beneficiary, holder, entrant, token: token.id, semuta: SEMUTA_DRUG_ID, event, territory, sector,
-    location: `${territory}:${sector}`, eligibleChosenIds, chosenCards: eligibleChosenIds, discardStep,
+    owner, beneficiary, holder, entrant, token: token.id, semuta: cacheCardId, event, territory, sector,
+    location: `${territory}:${sector}`, cacheCard: cacheCardId, eligibleChosenIds, chosenCards: eligibleChosenIds, discardStep,
     preReplacementDeckTop, balances: basicSemutaAmbassadorBalances(game),
     entrantContinuation: { actor: entrant, action: { type: 'endMovement' } } as BasicSemutaAmbassadorStep,
     actions, sourceActionCount: actions.length,
-    staging: ['Only five unopened original main-deck positions (four starts and the first normal purchase), two unopened ordinary land Spice positions and original scalar lotteries are selected. Nine explicitly recorded draws select the original Ambassador packet on the final original traitor choice. Other scalar draws retain Fisher–Yates order; UUID/byte entropy remains native. Public Basic Ecaz/CHOAM/Richese/Guild setup retains the selected Ecaz+CHOAM decks (35 main plus 10 genuine native cache cards) and no optional modules. Guild buys the physical Semuta Drug in the real Once Around cache auction for 1; Ecaz pays 1 for the original first ordinary card and 1 for its actual placement. Guild then pays 1 for the non-allied original reserve entry. Native/BG-copy choices stop at the original cards grant. No dealt hands, resources, armies, clocks, alliances, deaths, token custody, pending reactions or receipts are installed. No discard, CHOAM payout, Ixian replacement or Semuta commitment has happened in this source snapshot.'] };
+    staging: [`Only five unopened original main-deck positions (four starts and the first normal purchase), two unopened ordinary land Spice positions and original scalar lotteries are selected. Nine explicitly recorded draws select the original Ambassador packet on the final original traitor choice. Other scalar draws retain Fisher–Yates order; UUID/byte entropy remains native. Public Basic Ecaz/CHOAM/Richese/Guild setup retains the selected Ecaz+CHOAM decks (35 main plus 10 genuine native cache cards) and no optional modules. Guild buys the physical Semuta Drug in the real Once Around cache auction for 1; Ecaz pays 1 for the original first ordinary card and 1 for its actual placement. Guild then pays 1 for the non-allied original reserve entry. Native/BG-copy choices stop at the original cards grant. No dealt hands, resources, armies, clocks, alliances, deaths, token custody, pending reactions or receipts are installed. No discard, CHOAM payout, Ixian replacement or Semuta commitment has happened in this source snapshot. Optional source selection buys ${cacheCardId} instead and deals original Truthtrance to Ecaz=${!!options.ecazTruth}.`] };
 }
 export type BasicSemutaAmbassadorFixture = ReturnType<typeof createBasicSemutaAmbassadorFixture>;

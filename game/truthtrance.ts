@@ -1,3 +1,4 @@
+import { parseMovementClaim, movementClaimText, movementPromiseTargetAvailable, MovementClaimError, type MovementClaim } from './movement-promises';
 import { shipmentAvailable } from './shipment-opportunity';
 import type { ShipmentClaim } from './shipment-promises';
 import {
@@ -52,6 +53,7 @@ export type TruthFact =
   | { kind: 'spice'; compare: 'eq' | 'gte' | 'lte'; value: number }
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type TruthQuestion =
+  | ({ kind: 'movement'; target: string } & MovementClaim)
   | ({ kind: 'shipment'; target: string } & ShipmentClaim)
   | { kind: 'mixedShipment'; target: string; mixed: MixedShipmentExpression }
   | { kind: 'battlePlan'; target: string; territory: string; claim: PlanClaim }
@@ -191,6 +193,14 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       g.players.some((p) => p.id === v.target),
     'Ask one other player.',
   );
+  if (v.kind === 'movement') {
+    check(Object.keys(v).sort().join(',') === 'kind,minimum,target,territory',
+      'Supply one ground-movement destination, minimum and respondent.');
+    check(movementPromiseTargetAvailable(g, v.target as string),
+      'Ground-movement promises require a clean active Basic turn after shipment, with no optional modules.');
+    try { return { kind: 'movement', target: v.target as string, ...parseMovementClaim(v) }; }
+    catch (error) { if (error instanceof MovementClaimError) throw new TruthError(error.message); throw error; }
+  }
   if (v.kind === 'shipment' || v.kind === 'mixedShipment') {
     check(
       shipmentPromiseModeSupported(g, v.target) &&
@@ -295,7 +305,7 @@ export function validateSavedTruthtrance(g: Game) {
       'The saved Truthtrance must retain each committed physical card in its holder’s hand.',
     );
   }
-  if (window?.question?.kind === 'fact') {
+  if (window?.question?.kind === 'fact' || window?.question?.kind === 'movement') {
     check((window.stage === 'answer' || window.stage === 'unknown') && window.queue.length > 0,
       'The saved fact question must retain its asking player and answer stage.');
     check(JSON.stringify(parseQuestion(g, window.queue[0].player, window.question)) === JSON.stringify(window.question),
@@ -397,6 +407,7 @@ export function truthQuestionText(
   locationName: (id: string) => string,
 ): string {
   if (q.kind === 'freeform') return q.text;
+  if (q.kind === 'movement') return `Will you ${movementClaimText(q)} before your Shipment and Movement turn ends?`;
   if (q.kind === 'shipment')
     return `Will you ${shipmentClaimText(q)} this turn?`;
   if (q.kind === 'battlePlan')
@@ -437,6 +448,8 @@ export function resolveTruthAction(
       asker: string,
       mixed?: MixedShipmentExpression,
     ) => void;
+    movementAnswers?: (g: Game, p: Player, claim: MovementClaim) => TruthAnswer[];
+    bindMovement?: (g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) => void;
     battleAnswers: (g: Game, p: Player, claim: PlanClaim) => TruthAnswer[];
     bindBattle: (
       g: Game,
@@ -594,6 +607,11 @@ export function resolveTruthAction(
           if (a.answer !== 'unknown')
             effects.bindShipment(g, p, claim, a.answer === 'yes', current.player,
               q.kind === 'mixedShipment' ? q.mixed : undefined);
+        }
+        if (q.kind === 'movement') {
+          check(effects.movementAnswers && effects.bindMovement && effects.movementAnswers(g, p, q).includes(a.answer),
+            'Choose an answer consistent with legal ground movement and earlier promises.');
+          if (a.answer !== 'unknown') effects.bindMovement(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'battlePlan') {
           check(

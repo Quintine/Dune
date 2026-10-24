@@ -1,4 +1,6 @@
 'use client';
+import { MovementClaimFields } from './movement-claim-fields';
+import { validMovementClaim, type MovementClaim } from '@/game/movement-promises';
 import { ShipmentClaimFields, invalidShipmentClause, type ShipmentClauseInput } from './shipment-claim-fields';
 import { BattleClaimFields } from './battle-promises';
 import {
@@ -50,8 +52,9 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement'
   >('fact');
+  const [movement, setMovement] = useState<MovementClaim>({ territory: 'carthag', minimum: 6 });
   const [shipmentJoin, setShipmentJoin] = useState<'single' | 'and' | 'or'>('single');
   const [shipmentClauses, setShipmentClauses] = useState<ShipmentClauseInput[]>([
     { territory: 'carthag', minimum: 6 },
@@ -105,6 +108,7 @@ export function Truthtrance({
                 ? planClauses[0]
                 : { kind: join, terms: planClauses },
           }
+        : kind === 'movement' ? { kind, target, ...movement }
         : kind === 'shipment'
           ? {
               kind,
@@ -210,6 +214,13 @@ export function Truthtrance({
                           { type: 'truthAnswer', answer },
                         )}
                       </div>
+                    ))}
+                  </>
+                ) : w.question!.kind === 'movement' ? (
+                  <>
+                    <p className="notice">Yes requires one matching ground movement before your turn ends, while possible. No forbids every matching move through later Hajr or Ornithopter opportunities. Separate smaller groups do not add together. The No-Field marker itself is not a physical force counter.</p>
+                    {(g.truthMovementAnswers ?? []).map(answer => (
+                      <div key={answer}>{button(answer === 'unknown' ? 'I don’t know yet' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}</div>
                     ))}
                   </>
                 ) : w.question!.kind === 'battlePlan' ? (
@@ -319,6 +330,7 @@ export function Truthtrance({
                   <option value="fact">
                     Verified current facts
                   </option>
+                  <option value="movement">Bind ground movement this turn</option>
                   <option value="shipment">
                     Bind a shipment from reserves
                   </option>
@@ -333,7 +345,15 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'shipment' || kind === 'mixedShipment' ? (
+              {kind === 'movement' ? (
+                <>
+                  <MovementClaimFields id={`${factId}-movement`} value={movement} onChange={setMovement} />
+                  <p className="fine">One ground movement of the chosen physical minimum, from now until the respondent’s Movement turn ends. Shipment, HMS relocation and Ambassador relocation do not count. Owned Hajr and Ornithopter can prepare a later move. No stays binding after earlier nonmatching moves.</p>
+                  {!g.truthMovementTargets.includes(target) && <p className="notice">Choose the active Basic player after shipment and finish pending decisions. Optional-module and Advanced movement promises remain unfinished.</p>}
+                  <p className="notice" aria-label="Public movement question preview">{truthQuestionText(question, leaderName, locationName)}</p>
+                </>
+              ) : kind === 'shipment' || kind === 'mixedShipment' ? (
+
                 <>
                   {kind === 'mixedShipment' ? (
                     <MixedShipmentFields id={`${factId}-mixed`} value={mixed}
@@ -472,6 +492,7 @@ export function Truthtrance({
               {button(
                 'Ask publicly',
                 { type: 'truthAsk', question },
+                (kind === 'movement' && (!validMovementClaim(movement) || !g.truthMovementTargets.includes(target))) ||
                 (kind === 'shipment' &&
                   (invalidShipment || !shipmentAvailable)) ||
                   (kind === 'mixedShipment' &&

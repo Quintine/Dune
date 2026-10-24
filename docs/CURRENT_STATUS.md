@@ -16,6 +16,31 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Basic Truthtrance ground-movement promises — 24 October. Prototyped / Partial.**
+Structured future ground-movement answers now bind a clean active post-shipment
+Basic native turn. One qualifying physical move fulfills Yes before arrival or
+card disposal; No survives later Hajr/Ornithopter groups until actual closure.
+Shared movement declaration/piece validation supplies private owned witnesses,
+including held cards, typed cohorts, city access and current Kulon. Voluntary
+loss of the last route rejects; opposing loss retains compatible promises in
+accepted order. Other timing, preparations, optional/Advanced profiles and full
+arbitrary Truthtrance enforcement remain unfinished.
+
+A pure-ledger lane, original public source lane, bounded review and owner
+integration pass **17 files218/218**, types/lint/build, seven original-action
+control/table-rendering programmes and four existing profiles with12 accepted
+answer/move/end actions. Sources20/58/26 use real classic setup/paid shipment,
+native cache Ornithopter purchase/entry and actual Kulon/city range4. Only
+unopened positions and native scalar/packet lotteries are selected. Additional
+second-card/force-loss edges disclose controlled conserved outcomes. Review
+repaired current Kulon pruning and selective release; multiple-promise feedback
+keeps detached ledger settlement and deterministic preparation coherent.
+Representative old fixture failures reproduced on the previous engine; native
+Semuta/battle acknowledgements and Basic pre-movement Hajr scope are corrected.
+A notice-label lint issue was repaired. [Source, exact proof and remaining scope](TRUTHTRANCE_MOVEMENT_PROMISES.md).
+Full modes, broader rules, final assurance and deployed acceptance remain open.
+No strategy calibration or saved-room/reset/restart/deployment operation.
+
 **Fresh Basic Semuta and Ambassador discards — 24 October. Prototyped / Partial.**
 Fresh bare public Basic Richese previews initialize Semuta before genuine setup
 with selected native families. Optional/Advanced profiles and older games keep
@@ -6204,7 +6229,7 @@ These links define bounded working behavior, not complete module certification.
 | Leader Skills | [Common lifecycle](LEADER_SKILLS_RUNTIME.md), [known skilled capture](LEADER_SKILLS_CAPTURE.md), [Mentat question preview](MENTAT_QUESTION.md), [Bureaucrat payments](BUREAUCRAT_PAYMENTS.md), five battle disciplines, [Planetologist](PLANETOLOGIST_RULES.md), [Suk Graduate](SUK_GRADUATE_RULES.md), [Rihani and other battle effects](LEADER_BATTLE_EFFECTS.md), [Smuggler shipment](SMUGGLER_SHIPMENT.md), [No-Field](SMUGGLER_NO_FIELD.md) and [battle collection](SMUGGLER_BATTLE.md), [Sandmaster routes](SANDMASTER_MOVEMENT.md) and [worm rides](SANDMASTER_WORM.md), [Banker spending](SPICE_BANKER_RUNTIME.md), [Diplomat defense](DIPLOMAT_DEFENSE.md) and [bounded retreat](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation). Remaining bands and combinations are explicit in those contracts. |
 | Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Orgiz transfers, Jacurutu income, Testing Station and Shrine. Orgiz's per-deposit interpretation, contested/shared benefits and mixed physical allocation remain provisional or pending. The Orgiz path in current source is not yet deployed. |
 | Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Secret Ally trade and bounded after-victory inspection](NEXUS_CHOAM_SECRET_ALLY.md), [Moritani Secret Ally losing-card retention](NEXUS_MORITANI_RULES.md#secret-ally-losing-card-retention-prototype), [Ecaz private yes/no inquiry and bounded native Duke Cunning](NEXUS_ECAZ_RULES.md#bounded-native-cunning-duke-vidal), [Emperor extra revival and bounded bank-auction purchase](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) are connected. Uniform CHOAM winner/Moritani loser windows, Ecaz inquiry scope/audience and Ecaz Cunning's Battle-only window are product inferences, not publisher rulings. Source audits or helpers alone do not certify full module games. |
-| Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), [recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), and [base Basic/Advanced reserve-shipment promises, including Guild](TRUTHTRANCE_SHIPMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |
+| Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), [recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), [base Basic/Advanced reserve-shipment promises, including Guild](TRUTHTRANCE_SHIPMENT_PROMISES.md), and [active Basic ground-movement promises](TRUTHTRANCE_MOVEMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |
 | Other cards | [Sapho runtime](JUICE_OF_SAPHO_RUNTIME.md) includes first among remaining unstarted movement turns after Advanced Guild has finished. [Recruits](RECRUITS_RUNTIME.md) connects clean Revival play; [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md) and [Reinforcements](REINFORCEMENTS_RUNTIME.md) connect bounded battle effects in the same independent three-card preview. Richese card contracts and the checklist identify other connected effects and explicit gaps. |
 | Multiplayer | [Public and private discussion](TABLE_DISCUSSION.md), saved rooms/seats, [recovery](../README.md#saved-seats-and-reconnecting), uncertain-request retry, [own-seat AI](AUTOPILOT.md), [named-player AI permission](SEAT_AI_PERMISSION.md) and [voluntary seat handover](SEAT_HANDOVER.md) have connected controls and recovery evidence. |
 

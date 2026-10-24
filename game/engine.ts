@@ -1,3 +1,5 @@
+import { MovementClaimError, liveMovementPromises, movementEventAllowed, movementPromiseTargetAvailable, settleMovementEvent, finishMovementPromises, validMovementClaim, type MovementClaim, type MovementPromise } from './movement-promises';
+import { findMovementCompletion, type MovementCompletion } from './movement-promise-search';
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
@@ -1571,6 +1573,7 @@ export type Game = {
           resume: NonNullable<Game['pendingNullentropy']>['resume'];
           promise:
             | { kind: 'shipment'; index: number; value: ShipmentPromise }
+            | { kind: 'movement'; index: number; value: MovementPromise }
             | { kind: 'battle'; index: number; value: BattlePromise }
             | null;
           parentSignature: string;
@@ -1969,6 +1972,7 @@ export type Game = {
   truthtrance?: TruthWindow | null;
   truthHistory?: TruthRecord[];
   shipmentPromises?: ShipmentPromise[];
+  movementPromises?: MovementPromise[];
   ixSetupCards?: Card[] | null;
   ixAuction?: { count: number; cards: Card[]; authority?: string } | null;
   ixAuctionKnown?: { turn: number; cards: Card[]; controller?: string } | null;
@@ -6026,6 +6030,7 @@ function truthtranceDiscardSignature(g: Game, next: TruthDiscardContinuation) {
     history: g.truthHistory,
     battle: g.battle,
     shipmentPromises: g.shipmentPromises,
+    movementPromises: g.movementPromises,
     active: g.active,
     order: g.order,
     status: g.status,
@@ -6048,7 +6053,10 @@ function finishTruthtranceAnswer(g: Game) {
   const record = g.truthHistory![historyIndex];
   const card = discard(g, getPlayer(g, consumed.player), consumed.card);
   let promise: TruthDiscardContinuation['promise'] = null;
-  if (record.question.kind === 'shipment' || record.question.kind === 'mixedShipment')
+  if (record.question.kind === 'movement') promise = {
+    kind: 'movement', index: g.movementPromises!.length - 1, value: g.movementPromises!.at(-1)!,
+  };
+  else if (record.question.kind === 'shipment' || record.question.kind === 'mixedShipment')
     promise = {
       kind: 'shipment',
       index: g.shipmentPromises!.length - 1,
@@ -6930,7 +6938,7 @@ function treacheryDiscardIntegrity(g: Game) {
     try {
       validateTruthQuestionReceipt(context, c.consumed.player, record.question);
     } catch (error) {
-      if (error instanceof TruthError || error instanceof PlanClaimError)
+      if (error instanceof TruthError || error instanceof PlanClaimError || error instanceof MovementClaimError)
         throw new RuleError(error.message);
       throw error;
     }
@@ -6942,15 +6950,16 @@ function treacheryDiscardIntegrity(g: Game) {
       g.battle &&
       !g.battle.revealed &&
       !g.battle.plans[q.target];
-    if (expectedShipment || expectedBattle) {
-      const actual = expectedShipment
+    const expectedMovement = q.kind === 'movement';
+    if (expectedShipment || expectedBattle || expectedMovement) {
+      const actual = expectedMovement ? g.movementPromises : expectedShipment
         ? g.shipmentPromises
         : g.battle?.truthPromises;
       requireRule(
         promise &&
           promise.value &&
           typeof promise.value === 'object' &&
-          promise.kind === (expectedShipment ? 'shipment' : 'battle') &&
+          promise.kind === (expectedMovement ? 'movement' : expectedShipment ? 'shipment' : 'battle') &&
           Array.isArray(actual) &&
           Number.isSafeInteger(promise.index) &&
           promise.index >= 0 &&
@@ -6963,7 +6972,11 @@ function treacheryDiscardIntegrity(g: Game) {
           !promise.value.released,
         'The completed Truthtrance is missing its newly bound promise.',
       );
-      if (promise.kind === 'shipment')
+      if (promise.kind === 'movement')
+        requireRule(q.kind === 'movement' && promise.value.turn === g.turn && !promise.value.fulfilled &&
+          promise.value.territory === q.territory && promise.value.minimum === q.minimum,
+        'The completed Truthtrance ground-movement promise differs from its answer.');
+      else if (promise.kind === 'shipment')
         requireRule(
           (q.kind === 'shipment' || q.kind === 'mixedShipment') &&
             promise.value.turn === g.turn &&
@@ -7595,6 +7608,7 @@ function semutaOfferSupported(
       (continuation.consumed.source === undefined || continuation.consumed.source === 'shrine') &&
       (continuation.promise === null ||
         continuation.promise.kind === 'shipment' ||
+        continuation.promise.kind === 'movement' ||
         continuation.promise.kind === 'battle'))) return false;
   if (g.homeworlds && !bgDiscard && continuation.kind !== 'kaitainDiscard' &&
       continuation.kind !== 'tupileCleanupDiscard' &&
@@ -16384,29 +16398,319 @@ function recoverableUnsupportedShipment(shipment: PendingShipment) {
     shipment.guildSecretEvent === undefined
   );
 }
-function completeMove(g: Game, move: MovementOrder) {
-  if (move.noField) {
-    const blocked = homeworldRule(() => homeworldNoFieldMovementBlock(g, move.player));
+/** Keep source controls in the real game. A detached witness answers only
+ * owned movement reachability; unresolved opposing outcomes are never replayed. */
+function groundMovementProbe(source: Game): Game {
+  const game = structuredClone(source);
+  game.truthtrance = null; game.response = null; game.decision = null; game.phaseOpening = null;
+  game.pendingKarama = null; game.pendingTreacheryDiscard = null;
+  game.pendingFremenMove = null; game.pendingIxMove = null; game.pendingChoamMove = null;
+  game.pendingAmbassador = null; game.pendingTerrorEntry = null; game.pendingArrivalOverlap = null;
+  game.pendingArrivalReaction = []; game.pendingExchange = null; game.pendingNullentropy = null;
+  return game;
+}
+function groundMovementEvent(move: MovementOrder) {
+  return { territory: move.to, amount: move.total - Number(!!move.noField) };
+}
+function projectGroundMovement(source: Game, move: MovementOrder): Game {
+  const game = structuredClone(source), player = getPlayer(game, move.player);
+  commitGroundMovementPieces(game, move);
+  const flight = game.ornithopter;
+  if (flight?.player === player.id) {
+    flight.completed++;
+    if (flight.completed === (flight.mode === 'twoGroups' ? 2 : 1)) {
+      if (flight.mode === 'twoGroups') player.ornithopterExtraMoves = (player.ornithopterExtraMoves ?? 0) + 1;
+      game.discard.push(flight.card); game.ornithopter = null;
+    }
+  }
+  return game;
+}
+function groundMovementCompletion(source: Game, actor: string,
+  promises = liveMovementPromises(source.movementPromises ?? [], actor, source.turn)): MovementCompletion | null {
+  const game = groundMovementProbe(source);
+  if (!movementPromiseTargetAvailable(game, actor)) return null;
+  return findMovementCompletion(game, actor, promises, {
+    allowance: movesAllowed,
+    prepareHajr(state, owner) {
+      const player = getPlayer(state, owner);
+      const card = player.hand.find(card => card.effect === 'hajr');
+      if (!card || !hajrAvailable(state, player) || transferCardBlock(state, player, card)) return null;
+      try { return groundMovementProbe(applyActionInner(state, owner, { type: 'card', card: card.id }, 'movementPreparation')); }
+      catch (error) { if (error instanceof RuleError) return null; throw error; }
+    },
+    reachable(state, player, origin, destination, sector) {
+      // Include current native range (notably CHOAM Kulon) and the card's
+      // explicit range-three option. This only prunes impossible geometry;
+      // the actual declaration still validates exact speed/groups/custody.
+      return Object.keys(player.forces).some(key => player.forces[key] > 0 && splitLocation(key).territory === origin &&
+        gameDistance(state, key, location(destination, sector), point => pathBlocked(state, player, point, isAdvisor(player, origin))) <= Math.max(3, movementRange(state, player, 1)));
+    },
+    project(state, owner, action) {
+      const copy = structuredClone(state), player = getPlayer(copy, owner);
+      try {
+        const move = declareGroundMovement(copy, player, action, true);
+        return { game: projectGroundMovement(copy, move), event: groundMovementEvent(move) };
+      } catch (error) { if (error instanceof RuleError) return null; throw error; }
+    },
+  });
+}
+function projectedGroundMovementPolicy(g: Game, player: Player): Action[] | null {
+  if (g.truthtrance || !movementPromiseTargetAvailable(g, player.id) ||
+      !liveMovementPromises(g.movementPromises ?? [], player.id, g.turn).length) return null;
+  const completion = groundMovementCompletion(g, player.id);
+  return completion ? completion.actions.length ? completion.actions.slice(0, 1) : [{ type: 'endMovement' }] : null;
+}
+function movementTruthAnswers(g: Game, p: Player, claim: MovementClaim): TruthAnswer[] {
+  const live = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn);
+  const answers: TruthAnswer[] = [];
+  for (const answer of [true, false]) {
+    const promise = { ...claim, turn: g.turn, player: p.id, asker: g.players.find(other => other.id !== p.id)!.id, answer };
+    if (groundMovementCompletion(g, p.id, [...live, promise])) answers.push(answer ? 'yes' : 'no');
+  }
+  return answers.length ? answers : ['unknown'];
+}
+function bindMovementTruth(g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) {
+  (g.movementPromises ??= []).push({ ...claim, turn: g.turn, player: p.id, asker, answer });
+}
+function checkGroundMovementPromises(g: Game, p: Player, move: MovementOrder) {
+  const live = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn);
+  if (!live.length) return;
+  const event = groundMovementEvent(move);
+  requireRule(movementEventAllowed(live, event), 'This movement would break your accepted No answer.');
+  const projected = projectGroundMovement(g, move);
+  projected.movementPromises = settleMovementEvent(g.movementPromises ?? [], p.id, g.turn, event);
+  requireRule(groundMovementCompletion(projected, p.id) !== null,
+    'Leave a legal completion for your accepted ground-movement promises.');
+}
+function recordGroundMovementPromises(g: Game, p: Player, move: MovementOrder) {
+  if (move.source === 'ambassador') return;
+  if (!g.movementPromises) return;
+  const old = g.movementPromises;
+  g.movementPromises = settleMovementEvent(old, p.id, g.turn, groundMovementEvent(move));
+  g.movementPromises.forEach((promise, index) => {
+    if (promise.fulfilled && !old[index].fulfilled)
+      log(g, `${p.name} fulfilled a Truthtrance ground-movement promise with this committed move.`);
+  });
+}
+function reconcileGroundMovementPromises(g: Game, actor?: string) {
+  // A declared native movement is awaiting a real opponent choice. It is not
+  // impossible and must not be fulfilled before physical commitment.
+  if (g.pendingFremenMove || g.pendingIxMove || g.pendingChoamMove) return;
+  for (const p of g.players) {
+    const live = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn);
+    if (!live.some(promise => promise.answer)) continue;
+    const busy = !!(g.response || g.decision || g.phaseOpening || g.pendingTreacheryDiscard ||
+      g.pendingAmbassador || g.pendingTerrorEntry || g.pendingArrivalOverlap || g.pendingArrivalReaction?.length);
+    if (busy && actor !== p.id) continue;
+    if (groundMovementCompletion(g, p.id, live)) continue;
+    requireRule(actor !== p.id, 'Your action would remove the last legal completion of an accepted ground-movement promise.');
+    const kept = live.filter(promise => !promise.answer);
+    // Keep still-feasible earlier answers and every No constraint; an opposing
+    // loss does not erase independent promises that remain possible.
+    for (const promise of live.filter(promise => promise.answer)) {
+      if (groundMovementCompletion(g, p.id, [...kept, promise])) { kept.push(promise); continue; }
+      promise.released = true;
+      log(g, `${p.name}'s Truthtrance ground-movement promise is released because no owned legal completion remains possible.`);
+    }
+  }
+}
+/** One shared declaration validates human actions and private promise witnesses.
+ * Quote callers supply a detached game; card preparation stays in that copy. */
+function declareGroundMovement(g: Game, p: Player, action: Action, quoteOnly = false): MovementOrder {
+  const id = p.id;
+  requireRule(action.discoveryFlight === undefined,
+    'Choose a carried Discovery Ornithopter token; saved flight receipts are internal.');
+  if (action.noField !== undefined) {
+    const blocked = homeworldRule(() => homeworldNoFieldMovementBlock(g, id));
     requireRule(!blocked, blocked ?? 'The No-Field cannot move.');
   }
+  if (!p.shipped) checkShipmentPromises(g, p, null);
+  requireRule(
+    g.phase === 5 && g.active === id && p.moved < movesAllowed(g, p),
+    'Your movement is not available.',
+  );
+  const skillLeader = planetologistLeader(g, id);
+  requireRule(action.origins === undefined &&
+    (action.planetologist === undefined || (skillLeader &&
+      (action.planetologist === 'range' || action.planetologist === 'gather'))),
+    'Choose an available Planetologist movement mode.');
+  const planetologist: PlanetologistMovement | undefined = action.planetologist === undefined
+    ? undefined : {leader: skillLeader!, mode: action.planetologist as PlanetologistMovement['mode']};
   const {
     group,
     eliteGroup,
     elite,
     origin,
+    origins,
+    total: n,
+    noField,
+    sourceKeys,
+  } = forceGroup(g, p, action, planetologist?.mode === 'gather' ? 2 : 1);
+  const to = stringField(action.territory),
+    s = integer(action.sector, 0, 18, 'Sector');
+  const {advisors, lockedTurn, wantsFighters, advisorGather} = movementStance(g, p, origins, to, action.fighters === true);
+  requireRule(
+    origins.every(source => !balisetPrevents(g, id, source, to)),
+    'Baliset prevents movement into this CHOAM territory; shipment remains possible.',
+  );
+  allowedEntry(g, p, to, s, false, advisors && !wantsFighters);
+  requireRule(
+    sourceKeys.every((key) => key !== location(to, s)),
+    'Choose a different destination.',
+  );
+  // Reject known unsupported arrivals before any movement-card event or
+  // native movement-prevention window can commit this declaration.
+  validateMovementArrival(g, {
+    player: id, group, eliteGroup, elite, origin, origins, total: n,
+    to, sector: s, advisors, wantsFighters, lockedTurn,
+  });
+  let flight = g.ornithopter?.player === id ? g.ornithopter : null;
+  if (action.movementCard !== undefined) {
+    const mode = action.ornithopter;
+    requireRule(
+      mode === 'range3' || mode === 'twoGroups',
+      'Choose an Ornithopter movement mode.',
+    );
+    const blocked = ornithopterBlock(g, p);
+    requireRule(!blocked, blocked ?? 'Ornithopter cannot be played.');
+    const card = p.hand.find((c) => c.id === action.movementCard);
+    requireRule(
+      card && richeseCardDefinition(card)?.card.effect === 'ornithopter',
+      'Choose the canonical Ornithopter in your hand.',
+    );
+    const reserved = transferCardBlock(g, p, card);
+    requireRule(!reserved, reserved ?? 'The card is committed.');
+    requireRule(
+      action.ornithopterEvent === undefined,
+      'A new card movement cannot name an old event.',
+    );
+    flight = {
+      event: crypto.randomUUID(),
+      player: id,
+      card,
+      turn: g.turn,
+      mode,
+      startingMove: p.moved,
+      completed: 0,
+    };
+    g.ornithopter = flight;
+    p.hand = p.hand.filter((c) => c.id !== card.id);
+    log(
+      g,
+      `${p.name} played Ornithopter: ${mode === 'range3' ? 'one group with a maximum three-territory route' : 'two different groups using normal movement'}. The card remains on the table until its use finishes.`,
+    );
+  } else if (flight)
+    requireRule(
+      action.ornithopterEvent === flight.event,
+      'Use the current Ornithopter movement event.',
+    );
+  else
+    requireRule(
+      action.ornithopterEvent === undefined &&
+        action.ornithopter === undefined,
+      'No matching Ornithopter movement is active.',
+    );
+  const move: MovementOrder = {
+    player: id,
+    group,
+    eliteGroup,
+    elite,
+    origin,
+    ...(planetologist ? {planetologist} : {}),
+    ...(planetologist?.mode === 'gather' ? {origins} : {}),
     total: n,
     to,
     sector: s,
     advisors,
     wantsFighters,
     lockedTurn,
-    player: id,
-  } = move;
-  const p = getPlayer(g, id);
+    ...(noField ? { noField } : {}),
+    ...(flight
+      ? {
+          ornithopterEvent: flight.event,
+          ornithopterRange: flight.mode === 'range3',
+        }
+      : {}),
+  };
+  if (action.discoveryOrnithopter !== undefined)
+    move.discoveryFlight = nexusRule(() => quoteDiscoveryFlight(g, action.discoveryOrnithopter, move));
   validatePlanetologistMove(g, p, move);
+  const speed = movementOrderRange(g, p, move);
+  if (action.sandmaster !== undefined) {
+    move.sandmaster = nexusRule(() => quoteSandmasterMovement(g, id, sandmasterOrder(g, p, move), action.sandmaster));
+    validateSandmasterOrder(g, p, move);
+  }
+  requireRule(
+    sourceKeys.every(
+      (key) =>
+        gameDistance(g, key, location(to, s), (k) =>
+          pathBlocked(g, p, k, isAdvisor(p, splitLocation(key).territory)),
+        ) <= movementOrderRange(g, p, move, splitLocation(key).territory),
+    ),
+    planetologist?.mode === 'gather'
+      ? 'Each selected origin must have an unblocked route within its own movement range.'
+      : `That destination is blocked or more than ${speed} territories away.`,
+  );
   validateFlightSelection(g, p, move);
-  validateMovementArrival(g, move);
-  validateSandmasterOrder(g, p, move);
+  if (quoteOnly) return move;
+  checkGroundMovementPromises(g, p, move);
+  if (advisorGather) {
+    g.response = {
+      kind: 'advisorFlip', owner: id, location: to, advisors: false, amount: n, passed: [],
+      advisorResume: 'planetologistGather', advisorGatherMove: { turn: g.turn, move: p.moved, order: move },
+    };
+  } else if (
+    !move.ornithopterRange && !move.discoveryFlight &&
+    p.faction === 'ixians' &&
+    elite > 0 &&
+    !(p.ixMovementBlocked?.turn === g.turn && p.ixMovementBlocked.move === p.moved) &&
+    !fighterCount(p, 'arrakeen') && !fighterCount(p, 'carthag') &&
+    (move.sandmaster
+      ? Object.values(move.sandmaster.routes).some(route => sandmasterRouteDistance(g, route) > 1)
+      : group.some(([key]) =>
+        selectedOriginElites(group, eliteGroup, splitLocation(key).territory) > 0 &&
+        gameDistance(g, key, location(to, s), (k) =>
+          pathBlocked(g, p, k, isAdvisor(p, splitLocation(key).territory)),
+        ) > planetologistRange(1, planetologist?.mode)))
+  ) {
+    g.pendingIxMove = move;
+    g.response = {
+      kind: 'ixMovement',
+      owner: id,
+      location: location(to, s),
+      amount: n,
+      elite,
+      passed: [],
+    };
+  } else if (
+    !move.ornithopterRange && !move.discoveryFlight &&
+    p.faction === 'fremen' &&
+    p.fremenNexusMovementBlockedTurn !== g.turn &&
+    !(p.fremenMovementBlocked?.turn === g.turn && p.fremenMovementBlocked.move === p.moved) &&
+    !fighterCount(p, 'arrakeen') && !fighterCount(p, 'carthag') &&
+    (move.sandmaster
+      ? Object.values(move.sandmaster.routes).some(route => sandmasterRouteDistance(g, route) > 1)
+      : group.some(
+        ([key]) => gameDistance(g, key, location(to, s), (k) =>
+          pathBlocked(g, p, k, isAdvisor(p, origin))) > planetologistRange(1, planetologist?.mode)))
+  ) {
+    g.pendingFremenMove = { turn: g.turn, move: p.moved, order: move };
+    g.response = {
+      kind: 'fremenMovement',
+      ...(move.sandmaster ? {sandmasterProof: JSON.stringify(move.sandmaster)} : {}),
+      owner: id,
+      location: location(to, s),
+      amount: n,
+      passed: [],
+    };
+  } else offerChoamMovement(g, move);
+  return move;
+}
+/** Commit only the selected physical group and native movement counters. Arrival
+ * decisions and card disposal follow separately in the actual continuation. */
+function commitGroundMovementPieces(g: Game, move: MovementOrder) {
+  const {group, eliteGroup, elite, total:n, to, sector:s, advisors, wantsFighters, lockedTurn, player:id} = move;
+  const p = getPlayer(g, id);
   const flight = g.ornithopter;
   if (
     flight?.player === id &&
@@ -16474,6 +16778,21 @@ function completeMove(g: Game, move: MovementOrder) {
     g.discoveries = nexusRule(() => completeDiscoveryFlight(g, move.discoveryFlight!, move));
     log(g, `${p.name} used the carried Discovery Ornithopter for this movement and removed its token.`);
   }
+}
+function completeMove(g: Game, move: MovementOrder) {
+  if (move.noField) {
+    const blocked = homeworldRule(() => homeworldNoFieldMovementBlock(g, move.player));
+    requireRule(!blocked, blocked ?? 'The No-Field cannot move.');
+  }
+  const { elite, origin, total: n, to, sector: s, player: id } = move;
+  const p = getPlayer(g, id);
+  validatePlanetologistMove(g, p, move);
+  validateFlightSelection(g, p, move);
+  validateMovementArrival(g, move);
+  validateSandmasterOrder(g, p, move);
+  const flight = g.ornithopter;
+  commitGroundMovementPieces(g, move);
+  recordGroundMovementPromises(g, p, move);
   const cunning = currentGuildCunning(g,id);
   if (cunning) { requireRule(cunning.stage === 'extraMove', 'Guild Cunning permits no movement before the second shipment.'); cunning.movesAfter++; saveGuildCunning(g,cunning); }
   const completed: CompletedMovement = {
@@ -16599,6 +16918,12 @@ function finishBasicAlliedShipment(g: Game, p: Player) {
 /** A played movement card is already retired before queue advancement. */
 function finishMovementTurn(g: Game, id: string) {
   const p = getPlayer(g, id);
+  try {
+    if (g.movementPromises) g.movementPromises = finishMovementPromises(g.movementPromises, p.id, g.turn);
+  } catch (error) {
+    if (error instanceof MovementClaimError) throw new RuleError(error.message);
+    throw error;
+  }
   requireAlliedSeparationCustody(g, p);
   const cunning = currentGuildCunning(g,id);
   if (cunning) { requireRule(cunning.stage !== 'pending' && cunning.shipment?.stage !== 'pending', 'Finish the Guild Cunning response or shipment first.'); cunning.stage = 'completed'; saveGuildCunning(g,cunning); }
@@ -22771,6 +23096,14 @@ function shipmentPromiseIntegrity(g: Game) {
     if (error instanceof TruthError) throw new RuleError(error.message);
     throw error;
   }
+  requireRule(g.movementPromises === undefined || (Array.isArray(g.movementPromises) &&
+    g.movementPromises.every(promise => validMovementClaim(promise) &&
+      Number.isSafeInteger(promise.turn) && promise.turn >= 1 && promise.turn <= g.turn &&
+      g.players.some(p => p.id === promise.player) && g.players.some(p => p.id === promise.asker && p.id !== promise.player) &&
+      typeof promise.answer === 'boolean' &&
+      (promise.fulfilled === undefined || typeof promise.fulfilled === 'boolean') &&
+      (promise.released === undefined || typeof promise.released === 'boolean') &&
+      !(promise.fulfilled && promise.released))), 'The saved ground-movement promises are invalid.');
   const promises = g.shipmentPromises;
   requireRule(
     promises === undefined || Array.isArray(promises),
@@ -30787,6 +31120,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     return normalizeAutomaticGame(state);
   }
   const g = applyActionInner(state, id, action);
+  reconcileGroundMovementPromises(g, id);
   harkonnenNexusBetrayalIntegrity(g);
   if (g.pendingNexusHarkonnenBetrayal) return g;
   ixianNexusBetrayalIntegrity(g);
@@ -31088,6 +31422,7 @@ function settleAutomaticContinuations(g: Game) {
     // they are not the original actor voluntarily spending a promised resource.
     reconcileBattlePromises(g);
     reconcileShipmentPromises(g);
+    reconcileGroundMovementPromises(g);
     requireRule(
       JSON.stringify(g) !== before,
       'Automatic response continuation made no progress.',
@@ -31177,6 +31512,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   }
   reconcileBattlePromises(g);
   reconcileShipmentPromises(g);
+  reconcileGroundMovementPromises(g);
   settleAutomaticContinuations(g);
   observeOccupation(g);
   discoveryIntegrity(g);
@@ -31211,7 +31547,7 @@ function applyActionInner(
   state: Game,
   id: string,
   action: Action,
-  execution: 'live' | 'shipmentPreparation' = 'live',
+  execution: 'live' | 'shipmentPreparation' | 'movementPreparation' = 'live',
 ): Game {
   tupileSlotsIntegrity(state);
   const tupileBlock = tupileSourceBlock(state);
@@ -31409,6 +31745,8 @@ function applyActionInner(
         log,
         shipmentAnswers: shipmentTruthAnswers,
         bindShipment: bindShipmentTruth,
+        movementAnswers: movementTruthAnswers,
+        bindMovement: bindMovementTruth,
         battleAnswers: battleTruthAnswers,
         bindBattle: bindBattleTruth,
         cardBlock: transferCardBlock,
@@ -31416,7 +31754,7 @@ function applyActionInner(
     )
       return g;
   } catch (error) {
-    if (error instanceof TruthError || error instanceof PlanClaimError)
+    if (error instanceof TruthError || error instanceof PlanClaimError || error instanceof MovementClaimError)
       throw new RuleError(error.message);
     throw error;
   }
@@ -34656,190 +34994,7 @@ function applyActionInner(
     return g;
   }
   if (t === 'move') {
-    requireRule(action.discoveryFlight === undefined,
-      'Choose a carried Discovery Ornithopter token; saved flight receipts are internal.');
-    if (action.noField !== undefined) {
-      const blocked = homeworldRule(() => homeworldNoFieldMovementBlock(g, id));
-      requireRule(!blocked, blocked ?? 'The No-Field cannot move.');
-    }
-    if (!p.shipped) checkShipmentPromises(g, p, null);
-    requireRule(
-      g.phase === 5 && g.active === id && p.moved < movesAllowed(g, p),
-      'Your movement is not available.',
-    );
-    const skillLeader = planetologistLeader(g, id);
-    requireRule(action.origins === undefined &&
-      (action.planetologist === undefined || (skillLeader &&
-        (action.planetologist === 'range' || action.planetologist === 'gather'))),
-      'Choose an available Planetologist movement mode.');
-    const planetologist: PlanetologistMovement | undefined = action.planetologist === undefined
-      ? undefined : {leader: skillLeader!, mode: action.planetologist as PlanetologistMovement['mode']};
-    const {
-      group,
-      eliteGroup,
-      elite,
-      origin,
-      origins,
-      total: n,
-      noField,
-      sourceKeys,
-    } = forceGroup(g, p, action, planetologist?.mode === 'gather' ? 2 : 1);
-    const to = stringField(action.territory),
-      s = integer(action.sector, 0, 18, 'Sector');
-    const {advisors, lockedTurn, wantsFighters, advisorGather} = movementStance(g, p, origins, to, action.fighters === true);
-    requireRule(
-      origins.every(source => !balisetPrevents(g, id, source, to)),
-      'Baliset prevents movement into this CHOAM territory; shipment remains possible.',
-    );
-    allowedEntry(g, p, to, s, false, advisors && !wantsFighters);
-    requireRule(
-      sourceKeys.every((key) => key !== location(to, s)),
-      'Choose a different destination.',
-    );
-    // Reject known unsupported arrivals before any movement-card event or
-    // native movement-prevention window can commit this declaration.
-    validateMovementArrival(g, {
-      player: id, group, eliteGroup, elite, origin, origins, total: n,
-      to, sector: s, advisors, wantsFighters, lockedTurn,
-    });
-    let flight = g.ornithopter?.player === id ? g.ornithopter : null;
-    if (action.movementCard !== undefined) {
-      const mode = action.ornithopter;
-      requireRule(
-        mode === 'range3' || mode === 'twoGroups',
-        'Choose an Ornithopter movement mode.',
-      );
-      const blocked = ornithopterBlock(g, p);
-      requireRule(!blocked, blocked ?? 'Ornithopter cannot be played.');
-      const card = p.hand.find((c) => c.id === action.movementCard);
-      requireRule(
-        card && richeseCardDefinition(card)?.card.effect === 'ornithopter',
-        'Choose the canonical Ornithopter in your hand.',
-      );
-      const reserved = transferCardBlock(g, p, card);
-      requireRule(!reserved, reserved ?? 'The card is committed.');
-      requireRule(
-        action.ornithopterEvent === undefined,
-        'A new card movement cannot name an old event.',
-      );
-      flight = {
-        event: crypto.randomUUID(),
-        player: id,
-        card,
-        turn: g.turn,
-        mode,
-        startingMove: p.moved,
-        completed: 0,
-      };
-      g.ornithopter = flight;
-      p.hand = p.hand.filter((c) => c.id !== card.id);
-      log(
-        g,
-        `${p.name} played Ornithopter: ${mode === 'range3' ? 'one group with a maximum three-territory route' : 'two different groups using normal movement'}. The card remains on the table until its use finishes.`,
-      );
-    } else if (flight)
-      requireRule(
-        action.ornithopterEvent === flight.event,
-        'Use the current Ornithopter movement event.',
-      );
-    else
-      requireRule(
-        action.ornithopterEvent === undefined &&
-          action.ornithopter === undefined,
-        'No matching Ornithopter movement is active.',
-      );
-    const move: MovementOrder = {
-      player: id,
-      group,
-      eliteGroup,
-      elite,
-      origin,
-      ...(planetologist ? {planetologist} : {}),
-      ...(planetologist?.mode === 'gather' ? {origins} : {}),
-      total: n,
-      to,
-      sector: s,
-      advisors,
-      wantsFighters,
-      lockedTurn,
-      ...(noField ? { noField } : {}),
-      ...(flight
-        ? {
-            ornithopterEvent: flight.event,
-            ornithopterRange: flight.mode === 'range3',
-          }
-        : {}),
-    };
-    if (action.discoveryOrnithopter !== undefined)
-      move.discoveryFlight = nexusRule(() => quoteDiscoveryFlight(g, action.discoveryOrnithopter, move));
-    validatePlanetologistMove(g, p, move);
-    const speed = movementOrderRange(g, p, move);
-    if (action.sandmaster !== undefined) {
-      move.sandmaster = nexusRule(() => quoteSandmasterMovement(g, id, sandmasterOrder(g, p, move), action.sandmaster));
-      validateSandmasterOrder(g, p, move);
-    }
-    requireRule(
-      sourceKeys.every(
-        (key) =>
-          gameDistance(g, key, location(to, s), (k) =>
-            pathBlocked(g, p, k, isAdvisor(p, splitLocation(key).territory)),
-          ) <= movementOrderRange(g, p, move, splitLocation(key).territory),
-      ),
-      planetologist?.mode === 'gather'
-        ? 'Each selected origin must have an unblocked route within its own movement range.'
-        : `That destination is blocked or more than ${speed} territories away.`,
-    );
-    validateFlightSelection(g, p, move);
-    if (advisorGather) {
-      g.response = {
-        kind: 'advisorFlip', owner: id, location: to, advisors: false, amount: n, passed: [],
-        advisorResume: 'planetologistGather', advisorGatherMove: { turn: g.turn, move: p.moved, order: move },
-      };
-    } else if (
-      !move.ornithopterRange && !move.discoveryFlight &&
-      p.faction === 'ixians' &&
-      elite > 0 &&
-      !(p.ixMovementBlocked?.turn === g.turn && p.ixMovementBlocked.move === p.moved) &&
-      !fighterCount(p, 'arrakeen') && !fighterCount(p, 'carthag') &&
-      (move.sandmaster
-        ? Object.values(move.sandmaster.routes).some(route => sandmasterRouteDistance(g, route) > 1)
-        : group.some(([key]) =>
-          selectedOriginElites(group, eliteGroup, splitLocation(key).territory) > 0 &&
-          gameDistance(g, key, location(to, s), (k) =>
-            pathBlocked(g, p, k, isAdvisor(p, splitLocation(key).territory)),
-          ) > planetologistRange(1, planetologist?.mode)))
-    ) {
-      g.pendingIxMove = move;
-      g.response = {
-        kind: 'ixMovement',
-        owner: id,
-        location: location(to, s),
-        amount: n,
-        elite,
-        passed: [],
-      };
-    } else if (
-      !move.ornithopterRange && !move.discoveryFlight &&
-      p.faction === 'fremen' &&
-      p.fremenNexusMovementBlockedTurn !== g.turn &&
-      !(p.fremenMovementBlocked?.turn === g.turn && p.fremenMovementBlocked.move === p.moved) &&
-      !fighterCount(p, 'arrakeen') && !fighterCount(p, 'carthag') &&
-      (move.sandmaster
-        ? Object.values(move.sandmaster.routes).some(route => sandmasterRouteDistance(g, route) > 1)
-        : group.some(
-          ([key]) => gameDistance(g, key, location(to, s), (k) =>
-            pathBlocked(g, p, k, isAdvisor(p, origin))) > planetologistRange(1, planetologist?.mode)))
-    ) {
-      g.pendingFremenMove = { turn: g.turn, move: p.moved, order: move };
-      g.response = {
-        kind: 'fremenMovement',
-        ...(move.sandmaster ? {sandmasterProof: JSON.stringify(move.sandmaster)} : {}),
-        owner: id,
-        location: location(to, s),
-        amount: n,
-        passed: [],
-      };
-    } else offerChoamMovement(g, move);
+    declareGroundMovement(g, p, action);
     return g;
   }
   if (t === 'nexusGuildSkipShipment') {
@@ -34854,6 +35009,8 @@ function applyActionInner(
     return g;
   }
   if (t === 'endMovement') {
+    requireRule(!liveMovementPromises(g.movementPromises ?? [], id, g.turn).some(promise => promise.answer),
+      'Complete your accepted ground-movement promises before ending movement.');
     finishShipmentPromises(g, p, null);
     requireRule(
       g.phase === 5 && g.active === id,
@@ -35286,7 +35443,7 @@ function applyActionInner(
         ? { faction: p.faction, name: 'Ghola revival' }
         : undefined,
     );
-    // Shipment feasibility executes deterministic preparations on private clones.
+    // Shipment/movement feasibility executes deterministic preparations on private clones.
     // Its internal mode never comes from the submitted action or player state.
     if (execution === 'live') stageOrdinaryCardDiscard(g, p, used);
     return g;
@@ -35423,6 +35580,12 @@ export function viewGame(state: Game, id: string) {
     battleChoices: g.status === 'playing' && g.phase === 6 ? battleOrderQuote(g).choices : [],
     battleOrder: projectedBattleOrder(g),
     guildAmbassadorAdvisorChoices: guildAdvisorChoices(g, id),
+    truthMovementTargets: g.players.filter(p => movementPromiseTargetAvailable(g, p.id)).map(p => p.id),
+    truthMovementAnswers: g.truthtrance?.stage === 'answer' &&
+      g.truthtrance.question?.kind === 'movement' && g.truthtrance.question.target === id
+      ? movementTruthAnswers(g, me, g.truthtrance.question) : null,
+    movementPromises: g.movementPromises ?? [],
+    movementPromisePolicy: projectedGroundMovementPolicy(g, me),
     truthShipmentSupported: g.players.some(p => shipmentPromiseModeSupported(g, p.id)),
     truthShipmentTargets: !g.response && !g.decision && !g.phaseOpening && !g.pendingShipment
       ? g.players.filter(p => shipmentPromiseModeSupported(g, p.id) &&
