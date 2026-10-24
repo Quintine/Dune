@@ -104,9 +104,9 @@ void test('the Basic profile permits a clean active post-shipment respondent wit
   assert.equal(movementPromiseTargetAvailable(g, 'target'), true);
   assert.equal(movementPromiseTargetAvailable(g, 'asker'), false);
 });
-void test('movement question profile rejects an unspent shipment, exhausted turn and active opposing response', () => {
+void test('movement question profile permits an unspent shipment but rejects an exhausted turn and active opposing response', () => {
   const unused = movementBoundary(); unused.players[0].shipped = false;
-  assert.equal(movementPromiseTargetAvailable(unused, 'target'), false);
+  assert.equal(movementPromiseTargetAvailable(unused, 'target'), true);
   const ended = movementBoundary(); ended.movementRemaining = ['asker'];
   assert.equal(movementPromiseTargetAvailable(ended, 'target'), false);
   const response = movementBoundary(); response.response = { kind: 'fremenMovement', owner: 'target', location: 'carthag:11', amount: 1, passed: [] };

@@ -197,7 +197,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
     check(Object.keys(v).sort().join(',') === 'kind,minimum,target,territory',
       'Supply one ground-movement destination, minimum and respondent.');
     check(movementPromiseTargetAvailable(g, v.target as string),
-      'Ground-movement promises require a clean active Basic turn after shipment, with no optional modules.');
+      'Ground-movement promises require a clean active Basic turn, with no optional modules.');
     try { return { kind: 'movement', target: v.target as string, ...parseMovementClaim(v) }; }
     catch (error) { if (error instanceof MovementClaimError) throw new TruthError(error.message); throw error; }
   }

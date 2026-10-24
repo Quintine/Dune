@@ -1,4 +1,5 @@
 import { recordMovementDiscardKnowledge, knownMovementDiscards, recordMovementBoxKnowledge, recordMovementClaimKnowledge, clearMovementDiscardKnowledge, type MovementDiscardKnowledge } from './movement-discard-knowledge';
+import { movementShipmentPreparations } from './movement-shipment-preparation';
 import { MovementClaimError, liveMovementPromises, movementEventAllowed, movementPromiseTargetAvailable, settleMovementEvent, finishMovementPromises, validMovementClaim, type MovementClaim, type MovementPromise } from './movement-promises';
 import { findMovementCompletion, type MovementCompletion } from './movement-promise-search';
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
@@ -16437,6 +16438,15 @@ function groundMovementProbe(source: Game): Game {
   game.pendingFremenMove = null; game.pendingIxMove = null; game.pendingChoamMove = null;
   game.pendingAmbassador = null; game.pendingTerrorEntry = null; game.pendingArrivalOverlap = null;
   game.pendingArrivalReaction = []; game.pendingExchange = null;
+  if (game.pendingShipment?.player === game.active && recoverableUnsupportedShipment(game.pendingShipment)) {
+    const shipment = game.pendingShipment; game.pendingShipment = null;
+    commitShipment(game, shipment, undefined, true);
+  }
+  if (game.pendingGuildTransport?.player === game.active) {
+    const intent = game.pendingGuildTransport; game.pendingGuildTransport = null;
+    commitGuildTransport(game, getPlayer(game, intent.player), guildTransportOrder(intent), intent.fromReserves,
+      undefined, undefined, true);
+  }
   if (game.pendingNullentropy && source.decision?.kind === 'nullentropy') game.decision = structuredClone(source.decision);
   return game;
 }
@@ -16485,6 +16495,10 @@ function groundMovementCompletion(source: Game, actor: string,
   if (!movementPromiseTargetAvailable(game.pendingNullentropy?.player === actor ? { ...game, decision: null } : game, actor)) return null;
   return findMovementCompletion(game, actor, promises, {
     allowance: movesAllowed,
+    canFinish(state, owner) {
+      return !state.pendingNullentropy && liveShipmentPromises(state.shipmentPromises ?? [], owner, state.turn)
+        .every(promise => matchesShipment(promise, null) === promise.answer);
+    },
     *preparations(state, owner) {
       const player = getPlayer(state, owner), paid = state.pendingNullentropy;
       const relevant = (card: Card) => card.effect === 'hajr' || card.effect === 'ornithopter' ||
@@ -16497,6 +16511,14 @@ function groundMovementCompletion(source: Game, actor: string,
         }
         return;
       }
+      yield* movementShipmentPreparations(state, owner, (source, actor, action) => {
+        const payer = getPlayer(source, actor), share = Number(action.allyPayment);
+        const cost = reserveShipmentCost({ faction: payer.faction, halfRate: shipmentHalfRate(source, payer) },
+          territory(String(action.territory)).type, Number(action.amount));
+        if (share > cost || share > (aidFor(source, payer)?.amount ?? 0) || cost - share > payer.spice) return null;
+        try { return groundMovementProbe(applyActionInner(source, actor, action, 'movementPreparation')); }
+        catch (error) { if (error instanceof RuleError) return null; throw error; }
+      });
       for (const card of player.hand) {
         if (card.effect === 'hajr' && hajrAvailable(state, player) && !transferCardBlock(state, player, card)) {
           try { yield { game: groundMovementProbe(applyActionInner(state, owner,
@@ -28951,6 +28973,7 @@ function commitGuildTransport(
   g: Game, p: Player, frame: GuildTransportOrder, fromReserves: boolean,
   guildSecretEvent?: string,
   settlement?: {recipient: string | null},
+  movementPreparation = false,
 ) {
   requireRule(!g.guildBetrayalPreview || !guildSecretEvent,
     'Guild Betrayal native transport does not combine with a Guild Secret Ally producer.');
@@ -28963,16 +28986,18 @@ function commitGuildTransport(
   bindGuildCunningShipment(g, p, 'guild', frame);
   payWithAlly(g, p, cost, allyPayment);
   if (settlement?.recipient) getPlayer(g, settlement.recipient).spice += cost;
-  const guild = byFaction(g, 'guild');
-  const guildPayment = guildShipmentIncome({
-    guild: guild?.id, shipper: p.id, ally: p.ally, cost, allyPayment,
-    bankOnly: g.karamaShipping?.player === p.id,
-  });
-  if (!settlement?.recipient && guild && guildPayment > 0)
-    g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment),
-      allyPayment ? undefined : p.id, [{ payer: p.id, amount: p.id === guild.id ? 0 : cost - allyPayment },
-        ...(allyPayment && p.ally !== guild.id ? [{ payer: p.ally!, amount: allyPayment }] : [])]);
-  settleBankerShipmentIncome(g, p, cost, allyPayment);
+  if (!movementPreparation) {
+    const guild = byFaction(g, 'guild');
+    const guildPayment = guildShipmentIncome({
+      guild: guild?.id, shipper: p.id, ally: p.ally, cost, allyPayment,
+      bankOnly: g.karamaShipping?.player === p.id,
+    });
+    if (!settlement?.recipient && guild && guildPayment > 0)
+      g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment),
+        allyPayment ? undefined : p.id, [{ payer: p.id, amount: p.id === guild.id ? 0 : cost - allyPayment },
+          ...(allyPayment && p.ally !== guild.id ? [{ payer: p.ally!, amount: allyPayment }] : [])]);
+    settleBankerShipmentIncome(g, p, cost, allyPayment);
+  }
   if (fromReserves) {
     p.reserves -= amount;
     if (p.elites) p.elites.reserves -= elite;
@@ -28993,6 +29018,7 @@ function commitGuildTransport(
   finishGuildCunningShipment(g, p.id, 'guild', frame);
   p.shipped = true;
   g.karamaShipping = null;
+  if (movementPreparation) return;
   log(g, `${p.name} used Guild transport for ${amount} forces.${guildSecretEvent ? ` Guild Secret Ally is spent; ${cost} spice was paid to the bank. Their ordinary movement remains available.` : ''}`,
     guildSecretEvent
       ? { faction: 'guild', name: 'Secret Ally transport' }
@@ -29055,7 +29081,9 @@ function offerShipment(g: Game, shipment: PendingShipment) {
     );
   } else if (!openGuildRate(g, shipment)) commitShipment(g, shipment);
 }
-function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipient: string | null}) {
+function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipient: string | null}, movementPreparation = false) {
+  if (movementPreparation) requireRule(recoverableUnsupportedShipment(shipment),
+    'Movement preparation requires an ordinary physical reserve shipment.');
   if (shipment.source === 'ambassador') {
     commitAmbassadorShipment(g, shipment);
     return;
@@ -29182,6 +29210,7 @@ function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipi
   }
   if (advisors && n > 0) (p.advisors ??= {})[to] ??= {};
   p.shipped = true;
+  if (movementPreparation) { g.karamaShipping = null; return; }
   if (p.faction !== 'fremen') techIncome(g, 'heighliners', p);
   const guild = byFaction(g, 'guild');
   const guildPayment = guildShipmentIncome({
@@ -34908,6 +34937,10 @@ function applyActionInner(
     }
     if (nexusEvent) recordNexusRicheseShipment(g,shipment);
     bindGuildCunningShipment(g,p,'reserve',shipment);
+    if (execution === 'movementPreparation') {
+      commitShipment(g, shipment, undefined, true);
+      return g;
+    }
     if (shipment.noField) {
       // This cancellation window bypasses offerShipment, so reject known
       // unsupported arrival combinations before saving its private intent.

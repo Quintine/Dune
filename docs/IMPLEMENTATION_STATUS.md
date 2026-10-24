@@ -1,5 +1,29 @@
 # Dune implementation status
 
+## 24 October 2026 — Basic movement promises before shipment
+
+Extend active Basic questions to unused ordinary shipment. Shared declaration,
+tariffs and physical commit supply typed reserve arrivals and all pledged splits,
+without speculative income/entry effects. Actual response/arrival paths remain.
+Shipment never fulfills ground movement, and joint No/positive-shipment guidance
+cannot offer illegal End. Preserve exact pending ordinary/Guild frames so a
+voluntary bad shipment cannot release Yes on an opponent pass. Guard unsupported
+sources before any full speculative continuation. Persistent guidance serves
+the joint route and remains busy-safe.
+
+A disjoint original-source lane, bounded review and owner integration pass
+19 files165/165, types/lint/build, six gameplay/control/table-rendering programmes
+and four existing profiles with16 accepted actions. Sources19/37/24/19 retain
+actual classic reinforcement10→11, native zero-board starts and original Guild
+5/15/5. Controlled second-card/counter cases are separately labelled. Review
+corrected exact-source and funding completeness; an observed expensive search
+was stopped and candidate ordering/dead-end pruning repaired without deleting
+legal candidates. Twelve new engine cases pass in3.2s; label lint was corrected.
+[Authority, exact source and limits](TRUTHTRANCE_MOVEMENT_PROMISES.md#before-shipment-movement-promises--24-october-2026).
+Earlier phases/waiting turns, other preparation families, No-Field/modules,
+full modes, comprehensive assurance and deployed acceptance remain open.
+No strategic tuning or saved-room/reset/restart/deployment operation.
+
 ## 24 October 2026 — Owned movement-card preparation
 
 Extend bounded Basic movement promises with held native Kulon and owned paid

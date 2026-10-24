@@ -17,8 +17,8 @@ movement statement, the owned-action witness and accepted-order release policy
 below are explicit software compositions, not a publisher movement-specific FAQ
 or Basic adoption of the unofficial Advanced revision.
 
-Fresh or existing Basic native tables can ask at a clean **active post-shipment
-turn**, including selected E1/E2/E3 factions. No optional modules or Advanced
+Fresh or existing Basic native tables can ask at a clean **active Shipment and
+Movement turn**, before or after shipment, including selected E1/E2/E3 factions. No optional modules or Advanced
 inherit this entry. The actual native roster, physical inventory and route
 validation remain authoritative; no mode or publication gate opens. Earlier
 phase/waiting-turn movement questions, compound movement/fact questions and wider
@@ -55,8 +55,68 @@ reconfigured and absent promise fields remain absent until a real answer binds.
 
 This is bounded reachability, not complete arbitrary Truthtrance enforcement.
 Other owned preparation families (including native relocation preparation),
-earlier timing, optional/Advanced profiles and comprehensive
+earlier phases/waiting turns, optional/Advanced profiles and comprehensive
 combination/recovery/privacy/custody acceptance remain due.
+
+## Before-shipment movement promises — 24 October 2026
+
+The same existential ground-movement question now includes the active player's
+unused ordinary reserve shipment. This is a software reachability extension of
+the general FAQ contract above; it introduces no new shipment price, force or
+fulfillment rule. A shipment may create or reinforce a later ground group; it
+does not fulfill Yes or violate No by itself. Both existing shipment answers and
+movement answers constrain the same remaining owned turn. No-only movement
+guidance first honors a required shipment instead of incorrectly suggesting End.
+
+Ordinary preparation enumerates physical amounts, native special allocations,
+destinations/sectors and explicit pledged ally-payment splits. The actual
+declaration, shared tariff/funding validation and physical commit primitive
+decide legality. Its detached mode stops after payment, typed withdrawal,
+placement, stance, shipment-promise settlement and consuming the current price
+benefit. It invents no income, draws, opponent choices or arrival effects.
+Actual actions keep their original response and entry continuations.
+
+A pending ordinary reserve shipment or native Guild cross/return projects its
+**exact** declaration before later movement is checked. A player cannot declare
+a bad destination/force split and then use an opponent's pass to release Yes.
+Unsupported Ambassador/No-Field/module sources retain their boundary rather
+than executing a full speculative continuation. Native cross/return preparation
+is not enumerated yet, though actual legal choices preserve the existing promise.
+Other preparation families, earlier phases/waiting turns, optional/Advanced and
+comprehensive acceptance remain unfinished.
+
+### Current before-shipment evidence
+
+`tests/fixture-truth-movement-shipment.ts` retains actual source prefixes before
+their original shipment. Classic19 has Arrakeen10 plus10 reserves: a one-spice
+reinforcement permits a later eleven-force ground move. Native Emperor37 has
+the real bought Box/Hajr and no board forces; CHOAM24 has its actually dealt
+Kulon and no board forces. Fresh public Guild19 preserves original Tuek5,
+reserves15 and spice5, with actual reserve and cross transport. Only unopened
+deals/Spice and native scalar lotteries are selected. No hand, wallet, force,
+clock or receipt is installed. Separate second-Truth and Karama acquisition
+edges explicitly transfer conserved originals; actual rate cancellation and
+joint answers then use their original controls.
+
+The current nineteen-file union passes **165/165**, types/lint and production
+build. Six actual guidance-handler/GameTable programmes cover classic Yes/No,
+Emperor, CHOAM with actual Kulon and Guild reserve/cross transport; busy handlers
+submit nothing. Four existing profiles make16 accepted answer/ship/move/end
+actions without tuning. Bounded review repaired ordinary-source guarding,
+pledged-share enumeration, exact pending declarations and joint completion.
+One expensive search run was stopped; all candidates remain after ordering by
+reinforcement and useful nearby routes. Conservative last-move pruning retains
+owned movement cards. The twelve new engine cases subsequently pass in3.2s.
+A display-template lint issue was repaired.
+
+Frozen base `b5a53da7126f2be5066db0723536aea3b2fa91a6`, tree
+`05a19569eee3e40f07c1be2f5c4cdcb51b4772a720bafd203a9ab0acadb02d26`,
+2641 files. Private logs, original-state control HTML and receipts:
+`/home/quintine/.local/share/dune/checkpoints/20261024-movement-before-shipment/`,
+`frozen-integrated-3/report.json`. Only final checkpoint/reference prose overlays
+follow proof. Framework aliases/CSS stubbing establish server rendering, not
+browser/visual/deployed acceptance. Full modes, wider timing/preparations and
+comprehensive assurance remain open. No saved-room/D1/reset/restart/deployment.
 
 ## Owned Box and Kulon preparation — 24 October 2026
 
@@ -96,7 +156,7 @@ spending cannot remove the only remaining fee-funded route. Broader preparation
 through native relocation, counter mitigation, earlier timing and optional or
 Advanced rules remains unfinished.
 
-### Current preparation evidence
+### Preceding card-preparation evidence
 
 `tests/fixture-truth-movement-box.ts` selects one original unopened Guild
 Truthtrance deal, then uses actual public Basic Richese/Emperor/Guild setup,
@@ -111,7 +171,7 @@ lotteries are selected; no dealt hand, wallet, force, clock or receipt is instal
 Separate full-hand, unknown legacy certainty, opposing fee-loss and acquired
 Karama-counter tests explicitly stage conserved original outcomes.
 
-The current seventeen-file union passes **231/231**, types/lint and production
+The preceding seventeen-file union passed **231/231**, types/lint and production
 build. Three actual-control/GameTable-rendering programmes retain full paid
 inspection, original event, single fee, rejected selection and busy no-submit.
 Four existing profiles make40 accepted paid-selection/Hajr/move/end/neutral-pass

@@ -16,6 +16,27 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Basic movement promises before shipment — 24 October. Prototyped / Partial.**
+Clean active Basic turns now include ordinary reserve shipment preparation, with
+actual tariffs, typed withdrawals and pledged payment splits. Shipment itself
+never fulfills movement; a movement No cannot bypass a shipment Yes. Pending
+ordinary reserve/Guild transport keeps its exact declaration, while unsupported
+sources stay guarded. Persistent joint guidance keeps both obligations readable.
+
+A disjoint original-source lane, bounded response review and owner integration
+pass **19 files165/165**, types/lint/build, six actual-control/table-rendering
+programmes and four existing profiles with16 accepted actions. Classic source19
+reinforces original Arrakeen10 to11 for a later move, or ships under No. Native
+Emperor37, CHOAM24 and Guild19 retain original cards/payments; Guild remains
+5 board/15 reserve/5 spice. Second-card/counter edges disclose conserved staging.
+Review repaired exact-source projection, pledged-share enumeration and joint
+completion; observed search expansion prompted complete candidate reordering
+and conservative dead-end pruning. Twelve new engine cases then pass in3.2s;
+a display-label lint issue was corrected. [Current source/proof and remaining scope](TRUTHTRANCE_MOVEMENT_PROMISES.md#before-shipment-movement-promises--24-october-2026).
+Earlier phases/waiting turns, native transport/relocation preparation,
+No-Field/module sources and wider interactions remain unfinished. No strategy
+tuning, comprehensive assurance or saved-room/reset/restart/deployment operation.
+
 **Owned movement-card preparation — 24 October. Prototyped / Partial.**
 Basic movement promises now include held native Kulon and owned paid Box
 recovery. Before payment, only known current-discard identities supply a route;

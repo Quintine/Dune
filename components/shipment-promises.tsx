@@ -1,6 +1,7 @@
 'use client';
 import type { Action, GameView } from '@/game/engine';
 import { liveShipmentPromises, matchesShipment, shipmentClaimText } from '@/game/shipment-promises';
+import { liveMovementPromises } from '@/game/movement-promises';
 import { truthQuestionText } from '@/game/truthtrance';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
 import { territory } from '@/game/board';
@@ -20,7 +21,8 @@ export function ShipmentPromises({
   if (!promises.length) return null;
   const me = g.players.find((p) => p.id === g.me)!;
   const early = g.phase < 5;
-  const next = g.phase === 5 ? g.shipmentCompletion?.actions[0] : undefined;
+  const jointMovement = liveMovementPromises(g.movementPromises ?? [], g.me, g.turn).length > 0;
+  const next = g.phase === 5 && !jointMovement ? g.shipmentCompletion?.actions[0] : undefined;
   const preparation = early ? g.shipmentPreparation?.actions[0] : undefined;
   const preparationCard = preparation?.type === 'card'
     ? me.hand?.find(card => card.id === preparation.card) : undefined;
@@ -72,6 +74,7 @@ export function ShipmentPromises({
       id="shipment-promise-guidance"
     >
       <h3>Your shipment promises</h3>
+      {jointMovement && <p>Your ground-movement promise guidance below keeps both sets of answers possible.</p>}
       {early ? <p>
         Your shipment opportunity is later this turn, during Shipment and
         Movement. Keep your needed spice, forces and cards available to honor

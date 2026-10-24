@@ -1,9 +1,10 @@
 import type { Action, Game, Player } from './engine';
 import { gameTerritories, splitLocation } from './board';
-import { liveMovementPromises, movementEventAllowed, settleMovementEvent, type MovementEvent, type MovementPromise } from './movement-promises';
+import { liveMovementPromises, movementEventAllowed, movementMatches, settleMovementEvent, type MovementEvent, type MovementPromise } from './movement-promises';
 
 export type MovementPromiseAdapter = {
   allowance: (game: Game, player: Player) => number;
+  canFinish: (game: Game, player: string) => boolean;
   preparations: (game: Game, player: string) => Iterable<{ game: Game; actions: Action[] }>;
   reachable: (game: Game, player: Player, origin: string, destination: string, sector: number) => boolean;
   project: (game: Game, player: string, action: Action) => { game: Game; event: MovementEvent } | null;
@@ -40,12 +41,14 @@ export function findMovementCompletion(source: Game, actor: string,
   const failed = new Set<string>();
   const search = (game: Game, pending: readonly MovementPromise[], actions: Action[]): MovementCompletion | null => {
     const live = liveMovementPromises(pending, actor, game.turn);
-    if (!live.some(promise => promise.answer)) return { actions };
+    const needsMove = live.some(promise => promise.answer);
+    if (!needsMove && adapter.canFinish(game, actor)) return { actions };
     const player = game.players.find(candidate => candidate.id === actor)!;
     const physical = Object.values(player.forces).reduce((sum, amount) => sum + amount, 0);
-    if (live.some(promise => promise.answer && promise.minimum > physical)) return null;
-    const key = JSON.stringify([player.forces, player.elites, player.moved, player.hand.map(card => card.id),
+    if (live.some(promise => promise.answer && promise.minimum > physical + (player.shipped ? 0 : player.reserves))) return null;
+    const key = JSON.stringify([player.forces, player.elites, player.moved, player.shipped, player.reserves, player.hand.map(card => card.id),
       player.hajrPlays, player.ornithopterExtraMoves, player.spice, game.choamMovement,
+      game.aid, game.karamaShipping, game.guildRateBlocked, game.shipmentPromises,
       game.discard.map(card => card.id), game.movementDiscardKnowledge?.[actor], game.pendingNullentropy,
       game.choamWorthlessBlocked, game.hajr, game.ornithopter ? [game.ornithopter.mode, game.ornithopter.startingMove, game.ornithopter.completed, game.ornithopter.cohort] : null,
       live.map(promise => [promise.territory, promise.minimum, promise.answer])]);
@@ -53,7 +56,8 @@ export function findMovementCompletion(source: Game, actor: string,
     const destinations = gameTerritories(game).filter(destination => !destination.id.startsWith('homeworld:'));
     destinations.sort((a, b) => Number(live.some(p => p.answer && p.territory === b.id)) -
       Number(live.some(p => p.answer && p.territory === a.id)));
-    if (!game.pendingNullentropy && player.moved < adapter.allowance(game, player)) {
+    if (needsMove && !live.some(promise => promise.answer && promise.minimum > physical) &&
+      !game.pendingNullentropy && player.moved < adapter.allowance(game, player)) {
       const origins = [...new Set(Object.keys(player.forces).filter(key => player.forces[key] > 0)
         .map(key => splitLocation(key).territory))];
       const card = !game.ornithopter ? player.hand.find(card => card.effect === 'ornithopter') : null;
@@ -61,6 +65,11 @@ export function findMovementCompletion(source: Game, actor: string,
         ? [{ ornithopterEvent: game.ornithopter.event }]
         : [{}, ...(card ? [{ movementCard: card.id, ornithopter: 'range3' },
           { movementCard: card.id, ornithopter: 'twoGroups' }] : [])];
+      // An exhausted ordinary move cannot leave Yes pending without an owned
+      // card that could grant another move. Treat held Box/Hajr/Ornithopter
+      // conservatively; their actual availability remains the adapter's job.
+      const mayMoveAgain = player.moved + 1 < adapter.allowance(game, player) || !!game.ornithopter ||
+        player.hand.some(card => ['hajr', 'ornithopter', 'nullentropyBox'].includes(card.effect ?? ''));
       for (const destination of destinations) for (const sector of destination.sectors) for (const origin of origins) {
         if (!adapter.reachable(game, player, origin, destination.id, sector)) continue;
         const keys = Object.keys(player.forces).filter(key => player.forces[key] > 0 && splitLocation(key).territory === origin);
@@ -71,6 +80,7 @@ export function findMovementCompletion(source: Game, actor: string,
         for (const amount of amounts) {
           const event = { territory: destination.id, amount };
           if (!movementEventAllowed(live, event)) continue;
+          if (!mayMoveAgain && live.some(promise => promise.answer && !movementMatches(promise, event))) continue;
           for (const group of groups(player, keys, amount)) for (const mode of modes) {
             const action = { ...group, ...mode, territory: destination.id, sector };
             const next = adapter.project(game, actor, action);
