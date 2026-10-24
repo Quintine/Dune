@@ -16,6 +16,25 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Original Ix Spice cards — 24 October. Prototyped / Partial.** The historical
+Thumper/Sandtrout/Harvester audit now records explicit provisional first-turn
+precedence, later generated-worm suppression and sequential physical doubling.
+The source review found no reason to change the existing numerical mechanics.
+Held Thumper warnings explain first-turn disposal and immediate replacements;
+public logs explain ignored encounters. Relevant reference topics now describe
+the actual preview controls instead of stale public-start prohibitions.
+
+A disjoint genuine-fixture lane, bounded source review and owner integration
+pass **4 files47/47**, types/lint/build, twelve original Basic/Advanced gameplay/
+rendering programmes and four minimal legal profiles. Actual starting cards,
+native Sandtrout across a real turn, Nexus and both Harvesters produce fresh8,
+32 or enhanced64 as selected, reset readiness and finish the actual phase while
+retaining original physical stock. A private rendering assertion was corrected
+for the collapsed chronicle; runtime alone reran with source unchanged. No new
+publisher clarification, module opening, broad assurance or native-faction/full-
+mode/browser/deployed certification. [Sources, exact proof and remaining scope](IX_PROTOTYPE.md#original-spice-cards-and-selected-policy--24-october-2026).
+No saved-room/database/reset/restart/deployment operation in this rule batch.
+
 **Basic Tupile slot lifecycle — 24 October. Prototyped / Partial.** The
 existing provisional Basic current-sole policy now supplies Tupile's slot and
 normal-limit cleanup instead of stopping on its conservative lifecycle guard.

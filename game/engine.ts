@@ -12147,7 +12147,11 @@ function continueSpice(g: Game, injected?: SpiceCard) {
     }
     doubleNext = false;
     if (g.turn === 1) {
-      if (!card.thumper) sequence.skipped.push(card);
+      if (!card.thumper) {
+        sequence.skipped.push(card);
+        if (g.sandtrout)
+          log(g, 'The first-turn worm rule leaves Sandtrout waiting; this ignored encounter adds no double-spice bonus.');
+      } else log(g, 'The first-turn worm rule ignores this Thumper encounter; the normal Spice Card draw continues.');
     } else if (g.sandtrout) {
       g.sandtrout = false;
       g.spiceDiscard[sequence.pile].push(

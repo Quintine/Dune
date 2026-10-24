@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 24 October 2026 — Original Ix Spice card interpretations
+
+Retain existing Thumper/Sandtrout/Harvester mechanics after bounded printed-source
+review, with explicit provisional first-turn precedence, later generated-worm
+suppression and sequential physical doubling. Persistent held-card warnings
+explain first-turn disposal and replacement behavior; public logs explain ignored
+encounters. Correct stale preview-gate claims in the relevant reference topics.
+
+A disjoint genuine original-source fixture lane, bounded source review and owner
+integration pass4-file47/47, types/lint/build, twelve original Basic/Advanced
+gameplay/rendering programmes and four legal policies. Actual original Thumper,
+both distinct Harvesters and native Sandtrout across a real turn finish the phase
+with expected8/32/enhanced64, Nexus membership, readiness reset and physical stock.
+The only final feedback repair was a private rendering assertion about the
+default-collapsed chronicle; source-identical runtime alone reran. [Canonical
+sources, selected policy, action counts and frozen evidence](IX_PROTOTYPE.md#original-spice-cards-and-selected-policy--24-october-2026).
+No new numerical ruling, module opening, strategy calibration, wider native-
+faction/combination/browser/deployed or final assurance claim. No saved-room/
+database/reset/restart/deployment operation in this rule batch.
+
 ## 24 October 2026 — Basic occupied Tupile lifecycle
 
 Extend the existing provisional Basic current-sole policy to one-slot grants and

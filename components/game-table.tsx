@@ -5999,8 +5999,14 @@ export function GameTable({
                     {c.effect === 'thumper' && (
                       <p className="fine">
                         Play before the first spice draw to resolve Shai-Hulud
-                        without drawing a card. Fremen protection, rides, Nexus
-                        and a waiting Sandtrout apply.
+                        without drawing a card. On later turns, Fremen protection,
+                        rides, Nexus and a waiting Sandtrout apply.{' '}
+                        {g.turn === 1 ? <>First-turn preview policy: spending
+                          Thumper discards it, but its worm encounter is ignored.
+                          Normal spice drawing continues.</> : g.sandtrout ? <>
+                          A waiting Sandtrout will suppress this encounter. Only
+                          an immediate territory replacement receives double spice;
+                          another worm instead resolves normally.</> : null}
                       </p>
                     )}
                     {c.effect === 'ghola' && (

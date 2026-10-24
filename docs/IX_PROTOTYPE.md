@@ -1,5 +1,97 @@
 # Ixians & Tleilaxu functional prototype
 
+## Original Spice cards and selected policy — 24 October 2026
+
+Normal lobbies now offer labelled Basic/Advanced expansion previews through
+the [current entry controls](EXPANSION_FACTIONS_PROTOTYPE.md). The September
+initializer and evidence below are historical; complete expansion rules and
+publication acceptance remain open.
+
+This bounded source review covers original Thumper, Sandtrout and the two
+physical Harvesters. It retains existing mechanics under the standing
+14 October choose-recommended instruction, with these explicit interpretations:
+
+- Thumper creates an encounter without consuming a real Spice Card. The
+  [original photographed card faces](https://static.lelekan.ua/image/cache/catalog/igri/dune-ixians-tleilaxu-expansion-eng/dune-ixians-tleilaxu-expansion-gale-force-nine-eng-lelekan-components-2-800x800.jpg)
+  replace the reveal with Shai-Hulud. The [GF9 November FAQ, printed page 8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=8)
+  confirms Nexus and Advanced subsequent-worm placement; it does not expressly
+  decide first-turn precedence.
+- Provisionally give the [base first-turn rule, printed page 8](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=8)
+  precedence over both generated and drawn worms. Thumper is discarded but its
+  first-turn encounter is ignored; a drawn first-turn worm does not consume
+  waiting Sandtrout or earn doubling. Real ignored worms return to the original
+  deck, while the virtual encounter never becomes an extra physical card.
+- On later turns, waiting Sandtrout suppresses Thumper by the card's equivalence
+  to Shai-Hulud. This composition is provisional, not a named publisher ruling.
+  The [E1 rulebook, printed page 11](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=11)
+  limits doubling to the immediate replacement territory. Another worm instead
+  resolves normally, including its Nexus; a later territory receives no bonus.
+- Each original Harvester doubles the current fresh blow while its window
+  remains open. Two distinct copies therefore give four times the original
+  blow, or eight times when an immediate Sandtrout replacement already doubled
+  it. Pre-existing ground spice is unchanged. This is the recommended sequential
+  reading of the photographed faces, not an independently confirmed FAQ result.
+
+The photograph shows original components but is hosted by a retailer. Direct
+official PDF retrieval returned 403; publisher-domain indexed excerpts and those
+photographed faces supplied the bounded review. The authorized local Advanced
+PDF corroborates first-turn ignoring on physical page 7 (printed 5), Thumper on
+physical 41 (printed 39), and Sandtrout on physical 42 (printed 40). It does not
+settle the stated ambiguities and supplies no new Basic authority.
+
+The held Thumper explanation persistently warns about first-turn disposal before
+the player spends it. Waiting Sandtrout also has an immediate-replacement warning.
+Public chronicle entries explain ignored first-turn encounters. These are
+readable controls and feedback; no extra confirmation, timing restriction or
+numerical effect was introduced.
+
+### Focused proof and limits
+
+`tests/fixture-ix-spice-cards.ts` starts actual three-seat public Basic/Advanced
+selected-Ix games with Atreides, Harkonnen and Fremen. Only four unopened original
+Treachery deal positions and specified unopened Spice prefixes are selected;
+native setup, phase openings and intervening turns actually execute. No dealt
+hand, force, wallet, mode, turn or effect flag is installed. The independent
+`tests/ix-spice-cards-engine.test.ts` assertions cover first/later Thumper,
+first-turn Sandtrout/worm precedence, an immediate doubled replacement, a normal
+replacement worm and both original Harvesters. All twelve programmes finish the
+actual Spice phase, retain all 47 physical Treachery identities and preserve the
+six real worms, fifteen territories and one physical/waiting Sandtrout. A second
+Harvester clears earlier readiness and spends its own original physical card.
+
+Frozen integration passes **4 files, 47/47 tests**, types/lint and production
+build. Twelve original gameplay programmes also render the actual GameTable:
+held-card warnings appear before disposal, and public projected logs retain the
+new ignored-encounter explanation. Four existing minimal difficulty profiles
+each submit one legal acceptance from the actual harvested window and finish
+the phase; this is participation evidence, not strategy calibration.
+
+| Programme | Basic source + continuation actions | Advanced source + continuation actions | Actual fresh-blow outcome |
+| --- | --- | --- | --- |
+| First-turn Thumper | 18 + 7 | 20 + 10 | 8; no Nexus |
+| Later ordinary Thumper | 78 + 10 | 83 + 13 | 8; Nexus |
+| First-turn Sandtrout then worm | 18 + 9 | 20 + 12 | 8; Sandtrout still waiting |
+| Two original Harvesters | 18 + 12 | 20 + 15 | 8 → 16 → 32 |
+| Waiting Sandtrout then Thumper and two Harvesters | 18 + 70 | 20 + 76 | 8 → 16 → 32 → 64; no Nexus |
+| Waiting Sandtrout then Thumper and replacement worm | 18 + 70 | 20 + 76 | 8; Nexus, no delayed doubling |
+
+Source identity: base `6fabe6aa627845a8521049ea217faf9f9cc54826`, frozen tree
+`c4fa1d22163a3b0ebd00e5107ddef4a4b76fed00c0d8a3e36a5fbe8671ae96c5`,
+2,603 tracked/nonignored files. Private reports, original failed rendering check,
+repaired runtime, HTML and proof manifest live outside Git under
+`20261024-ix-spice-cards/`. The initial rendering check incorrectly expected text
+inside the default-collapsed chronicle. Only that private assertion changed to
+check the public projected log; runtime alone reran on the identical source.
+The final aggregate retains the original passing tests/types/lint/build with
+their logs and links the repaired runtime explicitly. Subsequent checkpoint
+prose/reference changes are separately reviewed; runtime source stays frozen.
+
+These source programmes do not certify native Ixian/Tleilaxu decisions, all
+phase-opening priorities, optional-module combinations, full modes, save/recovery
+assurance, browser visuals or deployed acceptance. Those requirements remain due.
+
+## Historical prototype — 13 September 2026
+
 13 September 2026. This connects the existing expansion mechanics to genuine
 setup and an ordinary saved browser table. It is a **working prototype**, with
 rules coverage still partial. Normal Advanced/expansion start gates and the
