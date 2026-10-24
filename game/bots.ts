@@ -4070,6 +4070,9 @@ export function botActions(g: GameView): Action[] {
   if (g.homeworldTupileBlocked) return [];
   if (g.decision?.kind === 'homeworldTupileCleanup' || g.homeworldTupileCleanup)
     return tupileCleanupActions(g);
+  if (g.shipmentPromisePolicy && g.status === 'playing' &&
+      !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending)
+    return g.shipmentPromisePolicy;
   if (g.nexusHarkonnenBetrayalReaction) {
     if (g.status !== 'playing' || g.roomControl?.paused || g.roomControl?.closed ||
         g.automaticContinuationPending) return [];

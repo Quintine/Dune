@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 24 October 2026 — Earlier Basic Truthtrance shipment commitments
+
+Extend bare classic Basic current-turn questions to phases0–4 with remaining
+owned Charity/normal Revival and net current auction invoices. Distinct physical
+Karama costs cannot be double-counted; incoming Bidding aid expires and unused
+outgoing funds return net actual contributions. A definite answer reopens owned
+Charity/Revival readiness. Voluntary payments and closing needed preparation
+cannot evade a promise; unresolved foreign invoices wait for actual outcomes.
+The Emperor's gift/extra-revival invoice is checked before responses. The actual
+table retains earlier guidance/current preparation while shipping stays at the
+original phase5 turn. Nonrestrictive answers keep native legal payment policy.
+
+A disjoint fixture/control lane, bounded review and owner integration pass
+18-file131/131, types/lint/build, two original Basic Storm/Charity gameplay/rendering
+programmes and four finite legal profiles. Real purchase2 and later shipment8/cost8
+fulfill before explicitly finishing. Sources are original public setup snapshots;
+controlled readiness, Karama, funding and extra-revival probes remain distinct.
+Feedback repaired early ally-invoice release, deferred paid-revival evasion,
+No-answer overbid payment, obsolete phase4 negatives and a test getter type.
+[Policy, source and exact frozen proof](TRUTHTRANCE_SHIPMENT_PROMISES.md#earlier-basic-phases--24-october-2026).
+The owned-witness/readiness protocol is explicitly provisional. Earlier Advanced/
+modules, wider promises, full modes, comprehensive assurance and deployed
+acceptance remain open. No strategic calibration or saved-room/reset/restart/
+deployment operation.
+
 ## 24 October 2026 — Tleilaxu income from committed Ambassador returns
 
 Positive free force/native leader/KH/Duke returns now share the existing

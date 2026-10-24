@@ -201,7 +201,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
         !g.decision &&
         !g.phaseOpening &&
         !g.pendingShipment,
-      'Structured shipment promises require a supported unused shipment this phase: the respondent must be active or still waiting for their turn. Finish pending decisions first.',
+      'Structured shipment promises require a supported unused shipment this turn. During Shipment and Movement the respondent must be active or still waiting. Finish pending decisions first.',
     );
     try {
       if (v.kind === 'mixedShipment') {

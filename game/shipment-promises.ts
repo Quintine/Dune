@@ -149,6 +149,7 @@ export function shipmentClaimText(
 /** Software readiness boundary; this is not a printed restriction on Truthtrance. */
 export function shipmentPromiseModeSupported(game: {
   advanced: boolean;
+  phase?: number;
   expansions: readonly unknown[];
   players: readonly { id?: string; faction: string }[];
   techTokens?: unknown;
@@ -159,7 +160,11 @@ export function shipmentPromiseModeSupported(game: {
   semutaPreview?: unknown;
   leaderSkills?: unknown;
   discoveryEnabled?: unknown;
+  ecazTreachery?: unknown;
 }, respondent = game.active): boolean {
+  if (game.phase !== undefined && game.phase < 5 &&
+    (game.advanced || game.expansions.length || game.techTokens || game.strongholdCards ||
+      game.nexusCards || game.homeworlds || game.leaderSkills || game.discoveryEnabled || game.ecazTreachery)) return false;
   if (game.semutaPreview === true && game.expansions.length === 1 &&
     game.expansions[0] === 'choam' && !game.techTokens &&
     !game.strongholdCards && !game.nexusCards && !game.homeworlds &&
@@ -188,8 +193,9 @@ export function shipmentPromiseTurnAvailable(game: {
   active?: string | null;
   movementRemaining?: readonly string[] | null;
 }, player: string, unused: boolean): boolean {
-  return game.status === 'playing' && game.phase === 5 && unused &&
-    (game.active === player || !!game.movementRemaining?.includes(player));
+  return game.status === 'playing' && Number.isInteger(game.phase) && game.phase >= 0 &&
+    (game.phase < 5 || game.phase === 5 && unused &&
+      (game.active === player || !!game.movementRemaining?.includes(player)));
 }
 export type ShipmentPromise = ShipmentClaim & {
   turn: number;

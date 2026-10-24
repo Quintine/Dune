@@ -19,7 +19,17 @@ export function ShipmentPromises({
   const promises = liveShipmentPromises(g.shipmentPromises, g.me, g.turn);
   if (!promises.length) return null;
   const me = g.players.find((p) => p.id === g.me)!;
-  const next = g.shipmentCompletion?.actions[0];
+  const early = g.phase < 5;
+  const next = g.phase === 5 ? g.shipmentCompletion?.actions[0] : undefined;
+  const preparation = early ? g.shipmentPreparation?.actions[0] : undefined;
+  const preparationCard = preparation?.type === 'card'
+    ? me.hand?.find(card => card.id === preparation.card) : undefined;
+  const preparationLabel = preparation?.type === 'charity'
+    ? 'Claim charity'
+    : preparation?.type === 'revive'
+      ? `Revive ${Number(preparation.amount)} force${Number(preparation.amount) === 1 ? '' : 's'} in Revival`
+      : preparationCard ? `Play ${preparationCard.name}` : null;
+  const blocked = busy || !!g.truthtrance || !!g.response || !!g.decision || !!g.phaseOpening;
   const shipping = next && (next.type === 'ship' || next.type === 'guildShip');
   const halfRate = g.karamaShipping?.player === me.id ||
     (!g.guildRateCanceled &&
@@ -62,7 +72,11 @@ export function ShipmentPromises({
       id="shipment-promise-guidance"
     >
       <h3>Your shipment promises</h3>
-      {g.active !== g.me && <p>
+      {early ? <p>
+        Your shipment opportunity is later this turn, during Shipment and
+        Movement. Keep your needed spice, forces and cards available to honor
+        these answers while you continue playing the current phase normally.
+      </p> : g.active !== g.me && <p>
         Your shipment turn is still ahead. This answer stays binding while
         other players finish; shipment actions become available on your turn.
       </p>}
@@ -84,8 +98,10 @@ export function ShipmentPromises({
       </ul>
       {promises.some((p) => matchesShipment(p, null) !== p.answer) ? (
         <p>
-          Complete a qualifying shipment before ground movement or finishing
-          your turn: skipping would not honor the whole claim you answered.
+          {early
+            ? 'During your later Shipment and Movement turn, complete a qualifying shipment before ground movement or finishing that turn: skipping would not honor the whole claim you answered.'
+            : 'Complete a qualifying shipment before ground movement or finishing your turn: skipping would not honor the whole claim you answered.'}
+          {' '}
           You can choose any legal count, sector and funding that honor all
           your answers. Current facts remain fixed at the time of your answer.
         </p>
@@ -95,6 +111,20 @@ export function ShipmentPromises({
           legal shipment that honors every answer. Current facts are historical
           and create no later card, spice or force holding obligation.
         </p>
+      )}
+      {preparation && preparationLabel && (
+        <section aria-label="Current shipment preparation">
+          <p>
+            This preparation is available in the current phase. Your shipment
+            remains later this turn.
+          </p>
+          <Button className="game-action" disabled={blocked} onClick={() => {
+            if (blocked) return;
+            act(preparation);
+          }}>
+            {preparationLabel}
+          </Button>
+        </section>
       )}
       {next && (
         <details>

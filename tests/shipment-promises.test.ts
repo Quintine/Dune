@@ -536,7 +536,7 @@ void test('malformed questions and unsupported public scopes reject without disc
   ]) {
     const bad = structuredClone(g);
     if (change === 'expansion') bad.expansions = ['ix'];
-    if (change === 'phase') bad.phase = 4;
+    if (change === 'phase') bad.phase = 6;
     if (change === 'spent') bad.players[1].shipped = true;
     if (change === 'inactive') { bad.active = 'a'; bad.movementRemaining = ['a', 'o']; }
     reject(bad, 'a', {
@@ -603,7 +603,7 @@ void test('saved malformed promise bindings reject before action or normalizatio
       g.shipmentPromises![0].released = true;
     },
     (g) => {
-      g.phase = 4;
+      g.phase = 6;
     },
     (g) => {
       g.active = 'a';

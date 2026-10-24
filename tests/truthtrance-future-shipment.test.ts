@@ -66,13 +66,18 @@ function reject(g: Game, actor: string, action: Action) {
   const before = structuredClone(g); assert.throws(() => applyAction(g, actor, action)); assert.deepEqual(g, before);
 }
 
-void test('same-phase target eligibility requires an unused active or original remaining turn and evaluates the actual Semuta respondent', () => {
+void test('current-turn target timing distinguishes earlier phases from unused movement turns and evaluates the actual Semuta respondent', () => {
   const g = fixture();
   assert.equal(shipmentPromiseTurnAvailable(g, 'a', true), true);
   assert.equal(shipmentPromiseTurnAvailable(g, 'p', true), true);
   assert.equal(shipmentPromiseTurnAvailable(g, 'p', false), false);
   assert.equal(shipmentPromiseTurnAvailable({ ...g, movementRemaining: ['a'] }, 'p', true), false);
-  assert.equal(shipmentPromiseTurnAvailable({ ...g, phase: 4 }, 'p', true), false);
+  assert.equal(shipmentPromiseTurnAvailable({ ...g, phase: 4 }, 'p', true), true);
+  assert.equal(shipmentPromiseTurnAvailable({ ...g, phase: 2 }, 'p', false), true,
+    'A prior-turn shipped flag does not consume the future current-turn opportunity');
+  assert.equal(shipmentPromiseModeSupported({ ...g, phase: 4 }, 'p'), true);
+  assert.equal(shipmentPromiseModeSupported({ ...g, phase: 4, advanced: true }, 'p'), false);
+  assert.equal(shipmentPromiseModeSupported({ ...g, phase: 2, techTokens: {} }, 'p'), false);
   const mode = { ...g, advanced: true, active: 'r', expansions: ['choam'], semutaPreview: true,
     players: [{ id: 'r', faction: 'richese' }, { id: 'p', faction: 'emperor' }] };
   assert.equal(shipmentPromiseModeSupported(mode, 'p'), true);

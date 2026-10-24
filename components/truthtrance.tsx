@@ -352,11 +352,11 @@ export function Truthtrance({
                   </p>
                   {!shipmentAvailable && (
                     <p className="notice">
-                      Automatic enforcement supports an unused shipment this
-                      phase, including a player still waiting for their turn,
-                      in Basic or Advanced
-                      base rules, including the Guild, or a
-                      classic payer in the Richese Semuta profile. Select
+                      Automatic enforcement supports a later shipment this turn
+                      in Basic base rules without optional modules. During
+                      Shipment and Movement it also supports unused active or
+                      waiting turns in Advanced base rules, including the Guild,
+                      or a classic payer in the Richese Semuta profile. Select
                       an eligible player and finish pending decisions first.
                       Native No-Field shipments and other rules configurations
                       remain unfinished.

@@ -4,7 +4,7 @@ Original checkpoint, 7 September 2026; Advanced follow-up, 13 September 2026. Th
 
 The former Advanced Guild exclusion is superseded by the
 [18 October native Guild composition](#advanced-guild-interception-and-rates--18-october-2026).
-The [24 October waiting-turn follow-up](#same-phase-waiting-respondents--24-october-2026) supersedes the active-only timing boundary. Earlier scope descriptions and verification totals remain historical.
+The [24 October waiting-turn follow-up](#same-phase-waiting-respondents--24-october-2026) supersedes the active-only timing boundary. The [earlier Basic phase follow-up](#earlier-basic-phases--24-october-2026) extends current-turn timing before Movement. Earlier scope descriptions and verification totals remain historical.
 
 ## Authority and supported meaning
 
@@ -244,3 +244,99 @@ feedback is retained. No new save/recovery audit was added.
 Earlier phases, broader routes/modules/actions, full Truthtrance/modes, final
 assurance and browser/deployed acceptance remain open. No saved-room/database/
 reset/restart/deployment operation was performed.
+
+
+## Earlier Basic phases — 24 October 2026
+
+**Prototyped / Partial.** Bare classic Basic games now accept structured reserve
+shipment and mixed current-fact questions during phases0–4, as well as the
+existing unused phase5 opportunity. This removes an implementation boundary;
+the FAQ already describes a this-turn promise. Advanced, faction expansions,
+optional modules and independent expansion Treachery keep their earlier-phase
+boundaries. Existing phase5 profiles retain their own support. Answering never
+ships early or changes another player's turn.
+
+The selected provisional interpretation evaluates the current board and
+respondent's owned route. It is not a prediction of unresolved Storm movement,
+unknown future purchases, rival gifts/income or vacated destinations. Native
+forced/opposing changes can release an answer after they actually make it
+impossible. Future rule breadth and comprehensive assurance remain unfinished.
+The FAQ supplies the current-turn binding/release rule; this private witness and
+readiness protocol is an explicit product interpretation, not a new publisher
+worked example.
+
+The witness includes remaining owned Charity and ordinary force Revival using
+actual quotes, physical Tanks and remaining/free allowances. It does not assume
+unoffered ally revival benefits. Current winning auction invoices reserve their
+actual own-spice share or a retained physical Karama. The same card cannot also
+supply the later shipping discount. Unknown purchased cards contribute nothing.
+Unused outgoing Bidding escrow returns to its donor at phase completion, net
+any actual committed contribution; incoming Bidding aid expires rather than
+becoming future shipping funds. An unresolved ally invoice and its income
+responses finish before release; an actual funded outcome may preserve the
+route, while canceled income can leave a real shortfall.
+
+A definite answer reopens the respondent's already-confirmed Charity/Revival
+readiness. Own Ready cannot forego the last required preparation. Own bids,
+normal force/leader revival, bribes, gifts, extra paid ally revival and card
+spending must preserve a route. The Emperor's proposed gift/revival invoice is
+checked before its response so another responder cannot turn that voluntary
+cost into an escape. Passing a bid or allowing a foreign power remains native
+continuation, not a new owner payment.
+
+The actual table retains the original question and later-this-turn guidance
+through earlier phases. Only current available Charity/Revival preparation
+gets a button; future shipment and price controls remain absent. Actual shipping
+guidance still waits for phase5, the original turn and completed control windows.
+The editor describes both timing scopes. Existing profiles use minimal legal
+preparation, pass Bidding and choose a valid committed payment when delivery is
+required. Where skipping honors all answers, ordinary legal policy remains,
+including Karama-funded overbids. No strategy or difficulty calibration is added.
+
+### Targeted proof and limits
+
+A disjoint original-fixture/control lane, bounded continuation review and owner
+integration pass **18 files131/131**, `npm run check:quick`, production build and
+two original gameplay/rendered-table programmes. Both actual Storm and Charity
+questions survive native Bidding/Revival, buy the actual auction card for2, then
+ship8 to Carthag for8 and explicitly finish the respondent's turn. The source
+fixture uses22 original actions, full original Basic decks and selected unopened
+deal/Spice positions plus scalar lotteries; no dealt hand, army, wallet, clock or
+promise is installed. The Storm programme uses the genuine earlier after-setup
+snapshot. Its52 and the Charity programme's38 continuations are distinct from
+the controlled probes.
+
+All four existing profiles traverse Charity/Bidding/Revival/Shipment with four
+legal owner proposals and20 total continuations apiece, fulfill and finish.
+Actual GameTable rendering retains the early promise during Storm, Charity,
+Bidding and Revival, hides future shipment controls and exposes the real phase5
+cost/action. Framework aliases/CSS stubs mean runtime rendering, not browser or
+visual acceptance. The six isolated control cases cover phases0–4, current
+preparation payloads/busy controls, original grouped questions and phase5 behavior.
+
+The eleven early engine cases include original eight-force purchase/delivery,
+controlled owned Charity/Revival and reopened readiness, distinct physical
+auction/shipping Karamas, expired incoming escrow, actual ally-invoice income
+allow/cancel, pre-response extra-revival costs and native No-answer overbids.
+Related existing tests cover joint claims, waiting/native Guild, typed preparation,
+normal auction and Revival. Earlier malformed-scope cases now use post-Movement
+phase6 rather than newly supported phase4. Focused feedback found and fixed early
+foreign-invoice release, delayed extra-revival evasion and a No-answer policy
+forcing an unfunded cash payment. A controlled retained-card test was corrected
+from3 to7 because the actual remaining Karama legally funds half-price shipping;
+type feedback gave the poisoned-view getter an explicit throwing return type.
+
+The passing frozen source is based on
+`6d30e7c5e177b45a03bfbd95e93d9e3c0e0fe15f`, tree
+`36da1bc827d67564f7fae17a65d40d399583d87faeda8bb6a42823c29e9306af`,
+2,614 tracked/nonignored files. The untracked supplied PDF contributes only its
+hash and is not committed or republished. Private reports, logs, HTML and runtime
+results are in
+`/home/quintine/.local/share/dune/checkpoints/20261024-truth-early-shipment/`;
+`frozen-integrated-3/report.json` is the complete passing batch. Final checkpoint
+prose and reference evidence are checked against every frozen source hash before
+push. Earlier failed feedback reports remain separate.
+
+Earlier-phase Advanced/modules, wider future actions, full Truthtrance/modes,
+comprehensive assurance and browser/deployed acceptance remain open. No saved-
+room/database/reset/restart/deployment operation or strategic calibration.

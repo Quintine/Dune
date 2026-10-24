@@ -1997,6 +1997,9 @@ export function GameTable({
             onSectorChange={setSector}
           />
           </>}
+          {g.status === 'playing' && g.phase < 5 && (
+            <ShipmentPromises game={g} act={act} busy={busy} />
+          )}
           {g.guildBetrayalReaction ? (
             <NexusGuildBetrayal game={g} act={act} busy={reactionBusy} />
           ) : g.richeseBetrayalReaction ? (

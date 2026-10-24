@@ -22758,7 +22758,7 @@ function shipmentPromiseIntegrity(g: Game) {
       requireRule(
         shipmentPromiseModeSupported(g, promise.player) &&
           shipmentPromiseTurnAvailable(g, promise.player, shipmentAvailable(g,getPlayer(g,promise.player))),
-      'The saved shipment promise does not belong to a supported unused shipment opportunity this phase.',
+      'The saved shipment promise does not belong to a supported unused shipment opportunity this turn.',
       );
   }
 }
@@ -22773,6 +22773,81 @@ function projectPendingShipmentKarama(g: Game, player: string) {
   g.pendingKarama = null;
   completeKarama(g, getPlayer(g, pending.owner), pending.use);
 }
+type ShipmentCompletion = { actions: Action[]; early?: { phase: number; action: Action }[] };
+type ShipmentCompletionSeed = { game: Game; actions: Action[]; early: { phase: number; action: Action }[] };
+/** Private owned-stage witnesses, not an early action or a simulation of rival
+ * choices, unknown draws, future gifts or the unresolved Storm outcome. */
+function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string): ShipmentCompletionSeed[] {
+  let seeds: ShipmentCompletionSeed[] = [{ game: initial, actions: [], early: [] }];
+  if (source.phase > 4) return seeds;
+  if (source.phase <= 2 && !(source.phase === 2 && source.ready.includes(owner))) {
+    const charitySeeds: ShipmentCompletionSeed[] = [];
+    for (const seed of seeds) {
+      const g = structuredClone(seed.game); g.phase = 2;
+      const p = getPlayer(g, owner);
+      if (p.charityTurn === g.turn || charityQuote(g, p).total <= 0) continue;
+      try {
+        const action: Action = { type: 'charity' };
+        const next = applyActionInner(g, owner, action, 'shipmentPreparation');
+        charitySeeds.push({ game: next, actions: [action], early: [{ phase: 2, action }] });
+      } catch (error) { if (!(error instanceof RuleError)) throw error; }
+    }
+    seeds.push(...charitySeeds);
+  }
+  if (source.phase <= 3) {
+    const fundingSeeds: ShipmentCompletionSeed[] = [];
+    for (const seed of seeds) {
+      const p = getPlayer(seed.game, owner), a = source.phase === 3 && !source.currentAuctionSale ? source.auction : null;
+      const ownBid = a?.bidder === owner && a.bid > 0;
+      const cash = ownBid ? a.bid - (a.allyPayment ?? 0) : 0;
+      const committed = source.phase === 3 && source.currentAuctionSale ? 0 : committedOutgoingAid(source, getPlayer(source, owner));
+      const refund = (source.aid[owner]?.amount ?? 0) - committed;
+      const alternatives: (string | null)[] = [null, ...(ownBid ? p.hand
+        .filter(card => canUseAsKaramaRole(seed.game, p, card)).map(card => card.id) : [])];
+      for (const card of alternatives) {
+        const g = structuredClone(seed.game), beneficiary = getPlayer(g, owner);
+        if (!card && beneficiary.spice < cash) continue;
+        beneficiary.spice += refund - (card ? 0 : cash);
+        if (!Number.isSafeInteger(beneficiary.spice) || beneficiary.spice < 0) continue;
+        const actions = [...seed.actions], early = [...seed.early];
+        if (card) {
+          const index = beneficiary.hand.findIndex(c => c.id === card);
+          g.discard.push(beneficiary.hand.splice(index, 1)[0]);
+          const action: Action = { type: 'decision', karama: true, card };
+          actions.push(action); early.push({ phase: 3, action });
+        }
+        // Native Bidding refunds its unused pledges. An ally's incoming
+        // Bidding escrow is never a promised future Shipment contribution.
+        g.aid = {}; g.auction = null; g.currentAuctionSale = null;
+        fundingSeeds.push({ game: g, actions, early });
+      }
+    }
+    seeds = fundingSeeds;
+  }
+  const revivalSeeds: ShipmentCompletionSeed[] = [];
+  for (const seed of seeds) {
+    const g = structuredClone(seed.game); g.phase = 4;
+    if (source.phase < 4) {
+      g.revivalRules = newRevivalRules(); g.revivalRequests = {}; g.freeRevival = []; g.emperorExtra = {};
+      const p = getPlayer(g, owner); p.revived = 0; p.freeForcesRevived = 0; p.leaderRevived = false;
+    }
+    revivalSeeds.push({ ...seed, game: g });
+    if (source.phase === 4 && source.ready.includes(owner)) continue;
+    const p = getPlayer(g, owner);
+    for (let amount = 1; amount <= forceRevivalRemaining(g, p); amount++) {
+      try {
+        const action: Action = { type: 'revive', amount };
+        const next = applyActionInner(g, owner, action, 'shipmentPreparation');
+        revivalSeeds.push({ game: next, actions: [...seed.actions, action], early: [...seed.early, { phase: 4, action }] });
+      } catch (error) { if (!(error instanceof RuleError)) throw error; }
+    }
+  }
+  return revivalSeeds.map(seed => {
+    seed.game.phase = 5; seed.game.ready = []; seed.game.karamaShipping = null;
+    const p = getPlayer(seed.game, owner); p.shipped = false; p.moved = 0;
+    return seed;
+  });
+}
 /** Search owned preparation and canonical shipment quotes, never the AI's scored shortlist. */
 function findShipmentCompletion(
   state: Game,
@@ -22782,7 +22857,7 @@ function findShipmentCompletion(
     owner.id,
     state.turn,
   ),
-): { actions: Action[] } | null {
+): ShipmentCompletion | null {
   if (
     !shipmentPromiseTurnAvailable(state, owner.id, shipmentAvailable(state,owner))
   )
@@ -22792,7 +22867,7 @@ function findShipmentCompletion(
   const initial = structuredClone(state);
   initial.truthtrance = null;
   projectPendingShipmentKarama(initial, owner.id);
-  const waiting = state.active !== owner.id;
+  const waiting = state.phase < 5 || state.active !== owner.id;
   const outgoingFloor = committedOutgoingAid(state, owner);
   if (waiting) {
     // Quote this owner's later turn without taking it or resolving another
@@ -22810,13 +22885,11 @@ function findShipmentCompletion(
   initial.decision = null;
   initial.phaseOpening = null;
   initial.shipmentPromises = [];
-  const queue: { game: Game; actions: Action[] }[] = [
-    { game: initial, actions: [] },
-  ];
+  const queue = earlyShipmentCompletionSeeds(initial, state, owner.id);
   const visited = new Set<string>();
   const destinations = [...new Set(promises.flatMap(shipmentClaimDestinations))];
   for (let index = 0; index < queue.length; index++) {
-    const { game: g, actions } = queue[index];
+    const { game: g, actions, early } = queue[index];
     const p = getPlayer(g, owner.id);
     const signature = JSON.stringify([
       p.spice,
@@ -22882,6 +22955,7 @@ function findShipmentCompletion(
             if (nexus && !guildSecretEvent) recordNexusRicheseShipment(trial,shipment);
             validatePhysicalShipment(trial,shipment);
             return {
+              early,
               actions: [
                 ...actions,
                 {
@@ -22911,7 +22985,7 @@ function findShipmentCompletion(
           };
           try {
             applyActionInner(g, p.id, action);
-            return { actions: [...actions, action] };
+            return { actions: [...actions, action], early };
           } catch (error) {
             if (!(error instanceof RuleError)) throw error;
           }
@@ -22944,13 +23018,35 @@ function findShipmentCompletion(
       try {
         const next = applyActionInner(g, p.id, action, 'shipmentPreparation');
         projectPendingShipmentKarama(next, p.id);
-        queue.push({ game: next, actions: [...actions, action] });
+        queue.push({ game: next, actions: [...actions, action], early });
       } catch (error) {
         if (!(error instanceof RuleError)) throw error;
       }
     }
   }
   return null;
+}
+/** Minimal current-phase controls for an early commitment. Strategic bidding
+ * remains deferred; preserve a legal owned route instead of exposing a future
+ * shipment or asking a bot to spend the resources reserved for it. */
+function earlyShipmentGuidance(g: Game, p: Player): { preparation: { actions: Action[] } | null; policy?: Action[] } {
+  const none = { preparation: null };
+  const promises = liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn);
+  if (g.status !== 'playing' || g.phase >= 5 || !shipmentPromiseModeSupported(g, p.id) ||
+      !promises.length || promises.every(promise => matchesShipment(promise, null) === promise.answer) ||
+      g.truthtrance || g.response || g.phaseOpening || g.pendingTreacheryDiscard ||
+      (g.decision && !(g.decision.kind === 'auctionPayment' && g.decision.player === p.id))) return none;
+  const completion = findShipmentCompletion(g, p);
+  if (!completion) return none;
+  const current = completion.early?.find(step => step.phase === g.phase)?.action;
+  if (g.decision?.kind === 'auctionPayment')
+    return { preparation: null, policy: [current?.type === 'decision' ? current : { type: 'decision', karama: false }] };
+  if (g.phase === 3)
+    return { preparation: null, policy: g.auction?.active === p.id ? [{ type: 'passBid' }] : [] };
+  if (g.phase === 2 || g.phase === 4)
+    return { preparation: current ? { actions: [current] } : null,
+      policy: current ? [current] : g.ready.includes(p.id) ? [] : [{ type: 'ready' }] };
+  return none;
 }
 function shipmentTruthAnswers(
   g: Game,
@@ -22964,7 +23060,10 @@ function shipmentTruthAnswers(
       ...prior,
       { ...claim, turn: g.turn, player: p.id, asker: '', answer },
     ];
-    if (findShipmentCompletion(g, p, promises))
+    // A new commitment reopens its respondent's owned Charity/Revival Ready.
+    const answerSource = g.phase === 2 || g.phase === 4
+      ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
+    if (findShipmentCompletion(answerSource, p, promises))
       answers.push(answer ? 'yes' : 'no');
   }
   return answers.length ? answers : ['unknown'];
@@ -22977,6 +23076,10 @@ function bindShipmentTruth(
   asker: string,
   mixed?: MixedShipmentExpression,
 ) {
+  if ((g.phase === 2 || g.phase === 4) && g.ready.includes(p.id)) {
+    g.ready = g.ready.filter(id => id !== p.id);
+    log(g, `${p.name} has a new Truthtrance shipment commitment and must confirm readiness again after completing any needed preparation.`);
+  }
   (g.shipmentPromises ??= []).push({
     turn: g.turn,
     player: p.id,
@@ -23034,7 +23137,7 @@ function settleStoppedShipmentPromises(g: Game, p: Player, actor: string) {
 }
 function reconcileShipmentPromises(
   g: Game,
-  voluntary?: { actor: string; action: Action },
+  voluntary?: { actor: string; action: Action; phase?: number },
 ) {
   if (g.pendingKull || g.pendingRicheseBetrayal) return;
   const kept: ShipmentPromise[] = [];
@@ -23042,15 +23145,20 @@ function reconcileShipmentPromises(
     if (promise.turn !== g.turn || promise.released || promise.fulfilled)
       continue;
     const p = getPlayer(g, promise.player);
-    const future = g.active !== p.id;
+    const future = g.phase < 5 || g.active !== p.id;
+    const earlyVoluntary = (voluntary?.phase ?? g.phase) < 5 && voluntary &&
+      (['bid', 'revive', 'reviveLeader', 'reviveKwisatz', 'emperorRevival'].includes(voluntary.action.type) ||
+        voluntary.action.type === 'ready' && [2, 4].includes(voluntary.phase ?? g.phase));
     const ownVoluntary = voluntary?.actor === p.id &&
       (['card', 'bribe', 'pledgeAid', 'emperorGift'].includes(voluntary.action.type) ||
+        earlyVoluntary ||
         future && voluntary.action.type === 'decision');
     // A foreign pending parent may spend or refund its approved funding. Wait
     // for that outcome; never release a future promise just for waiting.
     if (future && !ownVoluntary && (g.truthtrance || g.response || g.decision ||
       g.phaseOpening || g.pendingShipment || g.pendingGuildTransport ||
-      g.pendingHomeworldShipment || g.pendingTreacheryDiscard || g.ornithopter)) {
+      g.pendingHomeworldShipment || g.pendingTreacheryDiscard || g.ornithopter ||
+      g.phase === 3 && !g.currentAuctionSale && g.auction?.bidder === p.ally && (g.auction?.allyPayment ?? 0) > 0)) {
       kept.push(promise);
       continue;
     }
@@ -30755,7 +30863,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   finishLeaderSkillCustody(g, state);
   leaderSkillsIntegrity(g);
   reconcileBattlePromises(g, { actor: id, action });
-  reconcileShipmentPromises(g, { actor: id, action });
+  reconcileShipmentPromises(g, { actor: id, action, phase: state.phase });
   settleAutomaticContinuations(g);
   observeOccupation(g);
   discoveryIntegrity(g);
@@ -33758,13 +33866,6 @@ function applyActionInner(
       maximum,
       t === 'emperorGift' ? 'Spice' : 'Forces',
     );
-    if (t === 'emperorGift' && liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length) {
-      // Permission to cancel the gift is not funding for an already promised
-      // shipment. Validate the voluntary outflow before opening its response.
-      const afterGift = structuredClone(g);
-      getPlayer(afterGift, p.id).spice -= amount;
-      reconcileShipmentPromises(afterGift, { actor: p.id, action });
-    }
     const elite =
       t === 'emperorRevival'
         ? eliteChoice(
@@ -33783,6 +33884,14 @@ function applyActionInner(
         p.spice >= paidForceRevivalCost(recipient, amount, elite),
         'Not enough spice for these extra revivals.',
       );
+    if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length) {
+      // A later responder cannot erase the owner's voluntary gift/revival
+      // invoice. Check its allowed outcome before opening the response.
+      const afterPayment = structuredClone(g);
+      getPlayer(afterPayment, p.id).spice -= t === 'emperorGift'
+        ? amount : paidForceRevivalCost(recipient, amount, elite);
+      reconcileShipmentPromises(afterPayment, { actor: p.id, action });
+    }
     g.response = {
       kind: t,
       elite,
@@ -35212,6 +35321,7 @@ export function viewGame(state: Game, id: string) {
   settleAdvisors(g);
   normalizeBattle(g);
   const me = getPlayer(g, id);
+  const earlyShipment = earlyShipmentGuidance(g, me);
   const sharedDuke = projectedSharedDuke(g, id);
   const choamPlayer = byFaction(g, 'choam');
   let victoryProgress: StrongholdProgress[] = [];
@@ -35285,8 +35395,10 @@ export function viewGame(state: Game, id: string) {
     // Mixed compiled claims contain private past-clause answers. The complete
     // original question and whole answer remain public through truthHistory.
     shipmentPromises: (g.shipmentPromises ?? []).filter(p => !p.mixed || p.player === id),
+    shipmentPreparation: earlyShipment.preparation,
+    shipmentPromisePolicy: earlyShipment.policy,
     shipmentCompletion:
-      g.active === id &&
+      g.phase === 5 && g.active === id &&
       !g.pendingTreacheryDiscard &&
       !g.response && !g.pendingKarama && !g.truthtrance &&
       !g.decision && !g.phaseOpening && !g.pendingShipment &&

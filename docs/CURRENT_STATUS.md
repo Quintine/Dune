@@ -16,6 +16,26 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Earlier Basic Truthtrance shipment promises — 24 October. Prototyped / Partial.**
+Bare classic Basic phases0–4 now bind the current-turn reserve event using
+current-board feasibility, remaining owned Charity/normal Revival and net current
+auction liabilities. Distinct Karama payment/shipping costs and Bidding escrow
+expiration remain physical. A new answer reopens owned Charity/Revival readiness;
+voluntary bids, payments or closure cannot erase the last route. Unresolved ally
+invoices wait for actual income outcomes. The selected witness/readiness protocol
+is provisional product composition; earlier Advanced/module boundaries remain.
+
+A disjoint fixture/control lane, bounded review and owner integration pass
+**18 files131/131**, types/lint/build, two original Storm/Charity question
+programmes and four finite legal profiles. Actual purchase2, later shipment8/cost8
+and turn completion use52/38 continuations from the original source snapshots.
+The real table retains earlier promises; shipping controls stay at phase5.
+Focused feedback repaired foreign-invoice release, deferred extra-revival cost,
+a No-answer overbid policy and obsolete phase4 negative fixtures/type feedback.
+[Source, explicit policy, exact proof and limits](TRUTHTRANCE_SHIPMENT_PROMISES.md#earlier-basic-phases--24-october-2026).
+Full modes, wider future actions, final assurance and deployed acceptance remain
+open. No strategy calibration or saved-room/reset/restart/deployment operation.
+
 **Readable notices — 24 October follow-up.** Current source already keeps room
 and seat confirmations/action notices until Continue, and toasts until Dismiss.
 The new local create check retained its confirmation for 30 seconds through
