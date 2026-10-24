@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 18 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 24 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable. Advanced, expansion-faction and supported optional-module starts
 are labelled previews; complete rules/publication acceptance remains gated.**
 
@@ -16,6 +16,27 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance before the respondent's turn — 24 October. Prototyped / Partial.**
+Same-phase questions now include a supported unused turn still in the original
+queue. Waiting promises remain visible without an executable early action;
+private reachability uses owned resources, and native Guild WAIT/TAKE retains its
+original timing. Pending foreign declarations defer release; their approved ally
+funding stays locked. Voluntary Emperor gifts/BG accompaniment cannot spend the
+last completion. Minimal policies legally decline optional accompaniment while
+bound; no strategy tuning, new profile/module or earlier-phase opening.
+
+A disjoint genuine-fixture lane, bounded continuation review and owner
+integration pass **14 files146/146**, one updated existing in-memory scope case,
+types/lint/build and three original-action/rendered-table programmes plus four
+finite policies. Public classic Basic/Advanced starting deals use40/45 source
+actions; paid intervening turns and later Emperor3/cost3 or Guild3/half2 fulfill
+in16/19/29 continuations. Four profiles make eight legal answer/shipment proposals
+and finish. Separate controlled funding, price, gift and advisor probes pass.
+Feedback repaired an obsolete negative waiting-target fixture and two type
+declarations. No broader recovery campaign, browser/visual/deployed or full-mode
+acceptance. No saved-room/database/reset/restart/deployment operation.
+[Canonical behavior and exact proof](TRUTHTRANCE_SHIPMENT_PROMISES.md#same-phase-waiting-respondents--24-october-2026).
+
 **Truthtrance with Advanced Guild — 18 October. Prototyped / Partial.** Base
 Advanced questions include Guild without another profile/module opening. Native
 interception, permission and rate responses retain the promise until delivery or

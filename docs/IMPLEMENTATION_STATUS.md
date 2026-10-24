@@ -1,5 +1,27 @@
 # Dune implementation status
 
+## 24 October 2026 — Truthtrance before the respondent's turn
+
+Supported unused shipments still in the original same-phase queue now admit
+structured promises without granting an early action. Private owned-resource
+reachability, frozen mixed facts, native Guild WAIT/TAKE and actual paid delivery
+retain their original boundaries. Pending foreign funding outcomes defer release;
+approved contributions stay locked. Voluntary gifts/accompaniment cannot spend
+the last legal completion. The minimal advisor policy declines while bound.
+
+A disjoint public-action fixture lane, bounded continuation review and owner
+integration pass14-file146/146, one existing in-memory scope case, types/lint/build
+and three actual gameplay/rendering programmes plus four finite policies.
+Original Basic/Advanced deals use40/45 source actions. Paid earlier turns and
+later Emperor3/cost3 or Guild3/half2 finish in16/19/29 continuations; four profiles
+make eight legal answer/shipment proposals. Controlled probes remain separate.
+Feedback repaired an obsolete waiting-target negative and two type declarations.
+[Canonical behavior, source and exact proof](TRUTHTRANCE_SHIPMENT_PROMISES.md#same-phase-waiting-respondents--24-october-2026).
+No other profile/module/earlier-phase opening, strategy refinement, broad recovery
+campaign, complete-mode or browser/deployed acceptance. Final assurance remains
+due. No saved-room/database/reset/restart/deployment operation.
+
+
 ## 18 October 2026 — Truthtrance with native Advanced Guild
 
 Base Advanced shipment promises now include Guild. Native responses remain

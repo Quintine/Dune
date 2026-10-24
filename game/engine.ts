@@ -373,6 +373,7 @@ import {
   shipmentClaimDestinations,
   liveShipmentPromises,
   shipmentPromiseModeSupported,
+  shipmentPromiseTurnAvailable,
   type ShipmentClaim,
   type ShipmentPromise,
 } from './shipment-promises';
@@ -13457,6 +13458,16 @@ function settleStrongholdOwnership(g: Game, quoted?: StrongholdState) {
     );
   }
 }
+function committedOutgoingAid(g: Game, p: Player): number {
+  if (!p.ally) return 0;
+  return Math.max(
+    g.pendingHomeworldShipment?.player === p.ally ? g.pendingHomeworldShipment.allyPayment : 0,
+    g.pendingShipment?.player === p.ally ? g.pendingShipment.allyPayment : 0,
+    g.pendingGuildTransport?.player === p.ally ? g.pendingGuildTransport.allyPayment : 0,
+    g.phase === 6 ? (g.battle?.plans[p.ally!]?.allyPayment ?? 0)
+      : g.auction?.bidder === p.ally ? (g.auction.allyPayment ?? 0) : 0,
+  );
+}
 function pledgeAid(g: Game, p: Player, requested: unknown) {
   requireRule(
     p.ally && getPlayer(g, p.ally).ally === p.id,
@@ -13473,14 +13484,7 @@ function pledgeAid(g: Game, p: Player, requested: unknown) {
     ),
     'Ally funding cannot be reduced until the submitted Silent bids are revealed.',
   );
-  const committed =
-    g.pendingHomeworldShipment?.player === p.ally
-      ? g.pendingHomeworldShipment.allyPayment
-      : g.phase === 6
-      ? (g.battle?.plans[p.ally]?.allyPayment ?? 0)
-      : g.auction?.bidder === p.ally
-        ? (g.auction.allyPayment ?? 0)
-        : 0;
+  const committed = committedOutgoingAid(g, p);
   const amount = integer(
     requested,
     g.richeseAuction?.method === 'silent' &&
@@ -22671,12 +22675,9 @@ function shipmentPromiseIntegrity(g: Game) {
     );
     if (promise.turn === g.turn && !promise.released && !promise.fulfilled)
       requireRule(
-        shipmentPromiseModeSupported(g) &&
-          g.status === 'playing' &&
-          g.phase === 5 &&
-          g.active === promise.player &&
-          shipmentAvailable(g,getPlayer(g,promise.player)),
-        'The saved shipment promise does not belong to a supported unused shipment opportunity.',
+        shipmentPromiseModeSupported(g, promise.player) &&
+          shipmentPromiseTurnAvailable(g, promise.player, shipmentAvailable(g,getPlayer(g,promise.player))),
+      'The saved shipment promise does not belong to a supported unused shipment opportunity this phase.',
       );
   }
 }
@@ -22702,10 +22703,7 @@ function findShipmentCompletion(
   ),
 ): { actions: Action[] } | null {
   if (
-    state.status !== 'playing' ||
-    state.phase !== 5 ||
-    state.active !== owner.id ||
-    !shipmentAvailable(state,owner)
+    !shipmentPromiseTurnAvailable(state, owner.id, shipmentAvailable(state,owner))
   )
     return null;
   if (promises.every(p => matchesShipment(p, null) === p.answer))
@@ -22713,6 +22711,18 @@ function findShipmentCompletion(
   const initial = structuredClone(state);
   initial.truthtrance = null;
   projectPendingShipmentKarama(initial, owner.id);
+  const waiting = state.active !== owner.id;
+  const outgoingFloor = committedOutgoingAid(state, owner);
+  if (waiting) {
+    // Quote this owner's later turn without taking it or resolving another
+    // player's declaration. Keep all actual resources and the original queue.
+    initial.active = owner.id;
+    if (initial.karamaShipping?.player !== owner.id) initial.karamaShipping = null;
+    if (initial.pendingShipment?.player !== owner.id) initial.pendingShipment = null;
+    if (initial.pendingGuildTransport?.player !== owner.id) initial.pendingGuildTransport = null;
+    if (initial.pendingHomeworldShipment?.player !== owner.id) initial.pendingHomeworldShipment = null;
+    initial.pendingKarama = null;
+  }
   // Test choices after the interrupt, while leaving the real continuation intact.
   // Every actual action still revalidates its timing, quote and physical custody.
   initial.response = null;
@@ -22831,8 +22841,8 @@ function findShipmentCompletion(
     // conversion effects. More reserves/lower cost cannot remove
     // a previously available choice of physical shipment count.
     const preparations: Action[] = [];
-    if (g.aid[p.id]?.amount > 0)
-      preparations.push({ type: 'pledgeAid', amount: 0 });
+    if ((g.aid[p.id]?.amount ?? 0) > outgoingFloor)
+      preparations.push({ type: 'pledgeAid', amount: outgoingFloor });
     const karama = p.hand.find((c) => canUseAsKaramaRole(g, p, c));
     if (karama && !g.karamaShipping)
       preparations.push({
@@ -22951,6 +22961,18 @@ function reconcileShipmentPromises(
     if (promise.turn !== g.turn || promise.released || promise.fulfilled)
       continue;
     const p = getPlayer(g, promise.player);
+    const future = g.active !== p.id;
+    const ownVoluntary = voluntary?.actor === p.id &&
+      (['card', 'bribe', 'pledgeAid', 'emperorGift'].includes(voluntary.action.type) ||
+        future && voluntary.action.type === 'decision');
+    // A foreign pending parent may spend or refund its approved funding. Wait
+    // for that outcome; never release a future promise just for waiting.
+    if (future && !ownVoluntary && (g.truthtrance || g.response || g.decision ||
+      g.phaseOpening || g.pendingShipment || g.pendingGuildTransport ||
+      g.pendingHomeworldShipment || g.pendingTreacheryDiscard || g.ornithopter)) {
+      kept.push(promise);
+      continue;
+    }
     if (
       findShipmentCompletion(g, p, [
         ...kept.filter((old) => old.player === p.id),
@@ -22960,9 +22982,7 @@ function reconcileShipmentPromises(
       kept.push(promise);
     else {
       requireRule(
-        !voluntary ||
-          voluntary.actor !== p.id ||
-          !['card', 'bribe', 'pledgeAid'].includes(voluntary.action.type),
+        !ownVoluntary,
         'You cannot voluntarily make your Truthtrance shipment answer impossible.',
       );
       promise.released = true;
@@ -32727,6 +32747,13 @@ function applyActionInner(
           location: location(dest.territory, dest.sector),
           amount,
         };
+        if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length) {
+          // Accepting accompaniment is voluntary even though a later responder
+          // commits its reserve withdrawal. Check that allowed outcome now.
+          const afterAdvisor = structuredClone(g);
+          finishResponse(afterAdvisor, false);
+          reconcileShipmentPromises(afterAdvisor, { actor: p.id, action });
+        }
       } else log(g, `${p.name} declined the free shipment.`);
     } else if (decision.kind === 'wormPlacement') {
       requireRule(
@@ -33645,6 +33672,13 @@ function applyActionInner(
       maximum,
       t === 'emperorGift' ? 'Spice' : 'Forces',
     );
+    if (t === 'emperorGift' && liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length) {
+      // Permission to cancel the gift is not funding for an already promised
+      // shipment. Validate the voluntary outflow before opening its response.
+      const afterGift = structuredClone(g);
+      getPlayer(afterGift, p.id).spice -= amount;
+      reconcileShipmentPromises(afterGift, { actor: p.id, action });
+    }
     const elite =
       t === 'emperorRevival'
         ? eliteChoice(
@@ -35150,7 +35184,10 @@ export function viewGame(state: Game, id: string) {
     battleChoices: g.status === 'playing' && g.phase === 6 ? battleOrderQuote(g).choices : [],
     battleOrder: projectedBattleOrder(g),
     guildAmbassadorAdvisorChoices: guildAdvisorChoices(g, id),
-    truthShipmentSupported: shipmentPromiseModeSupported(g),
+    truthShipmentSupported: g.players.some(p => shipmentPromiseModeSupported(g, p.id)),
+    truthShipmentTargets: !g.response && !g.decision && !g.phaseOpening && !g.pendingShipment
+      ? g.players.filter(p => shipmentPromiseModeSupported(g, p.id) &&
+        shipmentPromiseTurnAvailable(g, p.id, shipmentAvailable(g, p))).map(p => p.id) : [],
     guildShipmentStopPromiseBlock: ownGuildStopPromiseBlock(g, me),
     truthShipmentAnswers:
       g.truthtrance?.stage === 'answer' &&
@@ -35162,6 +35199,7 @@ export function viewGame(state: Game, id: string) {
     // original question and whole answer remain public through truthHistory.
     shipmentPromises: (g.shipmentPromises ?? []).filter(p => !p.mixed || p.player === id),
     shipmentCompletion:
+      g.active === id &&
       !g.pendingTreacheryDiscard &&
       !g.response && !g.pendingKarama && !g.truthtrance &&
       !g.decision && !g.phaseOpening && !g.pendingShipment &&

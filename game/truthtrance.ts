@@ -2,6 +2,7 @@ import { shipmentAvailable } from './shipment-opportunity';
 import type { ShipmentClaim } from './shipment-promises';
 import {
   shipmentPromiseModeSupported,
+  shipmentPromiseTurnAvailable,
   parseShipmentClaim,
   shipmentClaimText,
   ShipmentClaimError,
@@ -192,19 +193,15 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
   );
   if (v.kind === 'shipment' || v.kind === 'mixedShipment') {
     check(
-      shipmentPromiseModeSupported(g) &&
-        g.status === 'playing' &&
-        g.phase === 5 &&
-        g.active === v.target &&
-        shipmentAvailable(
-          g,
-          g.players.find((p) => p.id === v.target)!,
-        ) &&
+      shipmentPromiseModeSupported(g, v.target) &&
+        shipmentPromiseTurnAvailable(g, v.target, shipmentAvailable(
+          g, g.players.find((p) => p.id === v.target)!,
+        )) &&
         !g.response &&
         !g.decision &&
         !g.phaseOpening &&
         !g.pendingShipment,
-      'Structured shipment promises require a supported active unused shipment: Basic or Advanced base rules, or a classic payer in the Richese Semuta profile. Finish pending decisions first.',
+      'Structured shipment promises require a supported unused shipment this phase: the respondent must be active or still waiting for their turn. Finish pending decisions first.',
     );
     try {
       if (v.kind === 'mixedShipment') {

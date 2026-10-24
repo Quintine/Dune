@@ -159,7 +159,7 @@ export function shipmentPromiseModeSupported(game: {
   semutaPreview?: unknown;
   leaderSkills?: unknown;
   discoveryEnabled?: unknown;
-}): boolean {
+}, respondent = game.active): boolean {
   if (game.semutaPreview === true && game.expansions.length === 1 &&
     game.expansions[0] === 'choam' && !game.techTokens &&
     !game.strongholdCards && !game.nexusCards && !game.homeworlds &&
@@ -169,7 +169,7 @@ export function shipmentPromiseModeSupported(game: {
       player.faction === 'atreides' || player.faction === 'harkonnen' ||
       player.faction === 'emperor' || player.faction === 'beneGesserit' ||
       player.faction === 'fremen')) {
-    const target = game.players.find(player => player.id === game.active);
+    const target = game.players.find(player => player.id === respondent);
     return !!target && target.faction !== 'richese';
   }
   return (
@@ -180,6 +180,16 @@ export function shipmentPromiseModeSupported(game: {
         !game.nexusCards &&
         !game.homeworlds))
   );
+}
+/** Current-turn eligibility, distinct from permission to execute an action now. */
+export function shipmentPromiseTurnAvailable(game: {
+  status: string;
+  phase: number;
+  active?: string | null;
+  movementRemaining?: readonly string[] | null;
+}, player: string, unused: boolean): boolean {
+  return game.status === 'playing' && game.phase === 5 && unused &&
+    (game.active === player || !!game.movementRemaining?.includes(player));
 }
 export type ShipmentPromise = ShipmentClaim & {
   turn: number;

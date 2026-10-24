@@ -538,7 +538,7 @@ void test('malformed questions and unsupported public scopes reject without disc
     if (change === 'expansion') bad.expansions = ['ix'];
     if (change === 'phase') bad.phase = 4;
     if (change === 'spent') bad.players[1].shipped = true;
-    if (change === 'inactive') bad.active = 'a';
+    if (change === 'inactive') { bad.active = 'a'; bad.movementRemaining = ['a', 'o']; }
     reject(bad, 'a', {
       type: 'truthAsk',
       question: {
@@ -607,6 +607,7 @@ void test('saved malformed promise bindings reject before action or normalizatio
     },
     (g) => {
       g.active = 'a';
+      g.movementRemaining = ['a', 'o'];
     },
     (g) => {
       g.players[1].shipped = true;

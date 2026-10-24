@@ -2720,6 +2720,10 @@ function policyActions(g: GameView): Action[] {
         { type: 'decision', accept: false },
       ];
     }
+    if (d.kind === 'advisor' && liveShipmentPromises(g.shipmentPromises ?? [], me.id, g.turn).length)
+      // A waiting promise may need these reserves. Declining is the minimal
+      // legal policy until optional accompaniment strategy is implemented.
+      return [{ type: 'decision', accept: false }];
     if (d.kind === 'advisor')
       return [
         ...(g.advanced && d.destination && (g.homeworldMobility?.advisorAccompanyMaximum ?? 1) > 0

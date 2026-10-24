@@ -539,6 +539,7 @@ void test('corrupt persisted promise records and pending shipment questions reje
       },
       (g) => {
         g.active = f.seats[2].playerId;
+        g.movementRemaining = g.movementRemaining!.filter(id => id !== f.seats[1].playerId);
       },
       (g) => {
         g.phase = 6;
@@ -580,6 +581,7 @@ void test('corrupt persisted promise records and pending shipment questions reje
         Object.assign(g.truthtrance!.question!, {
           target: f.seats[2].playerId,
         });
+        g.movementRemaining = g.movementRemaining!.filter(id => id !== f.seats[2].playerId);
       },
       (g) => {
         g.truthtrance!.queue[0].player = 'missing-holder';

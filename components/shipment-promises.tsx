@@ -62,6 +62,10 @@ export function ShipmentPromises({
       id="shipment-promise-guidance"
     >
       <h3>Your shipment promises</h3>
+      {g.active !== g.me && <p>
+        Your shipment turn is still ahead. This answer stays binding while
+        other players finish; shipment actions become available on your turn.
+      </p>}
       <ul>
         {promises.map((p, index) => (
           <li key={index}>

@@ -4,7 +4,7 @@ Original checkpoint, 7 September 2026; Advanced follow-up, 13 September 2026. Th
 
 The former Advanced Guild exclusion is superseded by the
 [18 October native Guild composition](#advanced-guild-interception-and-rates--18-october-2026).
-Earlier scope descriptions and verification totals remain historical.
+The [24 October waiting-turn follow-up](#same-phase-waiting-respondents--24-october-2026) supersedes the active-only timing boundary. Earlier scope descriptions and verification totals remain historical.
 
 ## Authority and supported meaning
 
@@ -157,3 +157,90 @@ reference evidence edits are checked against all frozen file hashes before push.
 Broader phases/routes/modules, full Truthtrance/modes, final assurance and
 browser/deployed acceptance remain open. No saved-room/database/reset/restart/
 deployment operation was performed.
+
+
+## Same-phase waiting respondents — 24 October 2026
+
+**Prototyped / Partial.** Structured reserve-shipment and mixed current-fact
+questions now include a respondent whose unused turn remains in the original
+Shipment & Movement queue, as well as the active player. The same current-turn
+FAQ commitment/release rule applies; this removes a software timing boundary,
+not a new printed restriction or numerical ruling. Existing base Basic/Advanced
+and classic-payer Richese Semuta profiles remain; no other module or earlier
+phase opens. Semuta eligibility reads the actual respondent, not the active
+faction. Original Truthtrance priority and the interrupted turn stay intact.
+
+Feasibility uses the respondent's existing resources, owned preparation and
+joint whole promises. A private quote selects that owner's later turn and clears
+a foreign transient shipping price/declaration, without changing the real active
+player, queue or intervening decisions. No future income, voluntary cooperation,
+returned troops or vacated destination is assumed. Mixed facts remain frozen at
+the original answer. The public accepted question and owner promise panel stay
+visible; executable completion guidance waits for the actual turn and a clean
+control boundary. Native Guild WAIT/TAKE still chooses its real opportunity.
+
+Foreign pending decisions retain the future promise until the outcome is known.
+An ally's already approved shipment contribution cannot be withdrawn or counted
+as freely recoverable preparation while its original declaration is pending.
+Delivery may spend it and release an impossible answer; a stop preserves the
+original refund and later recovery route. Other opposing completed effects still
+release only when no legal completion remains. A waiting owner may not declare
+an Emperor gift or accept BG accompaniment that spends the last completion;
+the allowed outflow is checked before opening its response, where the eventual
+responder is another player. Affordable gifts/accompaniment remain legal.
+
+### Targeted proof and limits
+
+A disjoint original-action fixture lane, bounded continuation review and owner
+integration pass **14 files146/146**, one updated existing in-memory scope case,
+`npm run check:quick`, production build and three actual-gameplay/rendered-table
+programmes. First feedback updated an old negative pending-question fixture:
+a waiting respondent is now legal, so the invalid case also removes that turn.
+Type feedback added the queue's existing null case to the helper signature and
+narrowed the generic policy answer in its test. No rule change followed feedback.
+
+The passing frozen source is based on
+`2939ffa900f8f201fd0b55173cb2406657ccc93b`, tree
+`96bf67b82570590afe79feda3491373f02714ff8b591c8897f81f0f07a261285`,
+2,598 tracked/nonignored files. The supplied untracked PDF contributes only its
+hash; it is neither committed nor republished. Final checkpoint/reference prose
+is checked against all frozen file hashes before push.
+
+`tests/fixture-truthtrance-future-shipment.ts` earns the question from public
+classic four-seat setup and the original unopened physical starting deal. Only
+five unopened card positions, unopened land Spice positions and scalar lotteries
+are selected. No dealt holdings, wallets, armies, phase, turn queue, timing flags
+or promise receipts are installed. Three programmes finish the respondent turn:
+
+- Basic Emperor uses40 source and16 continuation actions. Atreides really ships1
+  to Imperial Basin for2 first; Emperor later ships3 to Sietch Tabr for3.
+- Advanced Emperor uses45 source and19 continuations, including original Guild
+  WAIT before the question and another afterward. The later3 include one
+  physical Sardaukar; the original tariff is3.
+- A mixed future Guild answer uses45 source and29 continuations. Atreides and
+  Emperor each really pay2 for an earlier shipment; Guild waits once more while
+  bound, then takes its native turn before still-unstarted Harkonnen. Guild3
+  pays half2 and fulfills once; its earlier current-spice fact stays compiled
+  from the answer even as earned incoming shipment income accrues.
+
+`tests/truthtrance-future-shipment-engine.test.ts` covers those actual paths,
+original queue, no early action/witness, native timing, one physical discard and
+later paid fulfillment. Four existing profiles make eight legal answer/shipment
+proposals, with no early movement action, and complete their native turn in the
+runtime smoke. `tests/truthtrance-future-shipment.test.ts` separately controls
+foreign temporary prices, actual respondent Semuta scope, locked approved ally
+funding with allowance/stop, and both rejected and affordable Emperor gifts/BG
+accompaniment. All four minimal profiles legally decline the optional advisor
+choice while bound; this is legality, not strategic refinement.
+
+Actual GameTable/ShipmentPromises render the question, persistent waiting
+promise without executable guidance, active private guide and finished turn.
+Framework aliases/CSS stubs do not establish browser clicks, visual or deployed
+acceptance. Private reports, source hashes, HTML and runtime results are in
+`/home/quintine/.local/share/dune/checkpoints/20261024-truth-future-shipment/`;
+`frozen-integrated-3/report.json` is the complete passing batch. Earlier failed
+feedback is retained. No new save/recovery audit was added.
+
+Earlier phases, broader routes/modules/actions, full Truthtrance/modes, final
+assurance and browser/deployed acceptance remain open. No saved-room/database/
+reset/restart/deployment operation was performed.

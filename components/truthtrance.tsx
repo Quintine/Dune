@@ -11,7 +11,6 @@ import type { MixedShipmentExpression } from '@/game/mixed-shipment-question';
 import type { PlanClaim } from '@/game/battle-promises';
 import { useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { shipmentAvailable as targetShipmentAvailable } from '@/game/shipment-opportunity';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
 import {
   truthQuestionText,
@@ -67,14 +66,7 @@ export function Truthtrance({
   });
   const invalidMixed = mixedShipmentInputError(mixed, g, target);
   const invalidShipment = shipmentClauses.slice(0, shipmentJoin === 'single' ? 1 : 2).some(invalidShipmentClause);
-  const shipmentAvailable =
-    g.truthShipmentSupported &&
-    g.phase === 5 &&
-    g.active === target &&
-    targetShipmentAvailable(g, {id:target,shipped:g.players.find(p => p.id === target)?.shipped ?? false}) &&
-    !g.response &&
-    !g.decision &&
-    !g.phaseOpening;
+  const shipmentAvailable = g.truthShipmentTargets.includes(target);
   const [planClauses, setPlanClauses] = useState<PlanClaim[]>([
     { kind: 'dial', compare: 'gte', value: 1 },
     { kind: 'weapon', name: null },
@@ -360,11 +352,12 @@ export function Truthtrance({
                   </p>
                   {!shipmentAvailable && (
                     <p className="notice">
-                      Automatic enforcement currently supports the active
-                      player’s unused ordinary shipment in Basic or Advanced
+                      Automatic enforcement supports an unused shipment this
+                      phase, including a player still waiting for their turn,
+                      in Basic or Advanced
                       base rules, including the Guild, or a
                       classic payer in the Richese Semuta profile. Select
-                      that player and finish pending decisions first.
+                      an eligible player and finish pending decisions first.
                       Native No-Field shipments and other rules configurations
                       remain unfinished.
                     </p>

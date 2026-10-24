@@ -2912,15 +2912,15 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Cards',
     coverage: 'Partial',
     summary:
-      'Bind a shipment from reserves to a named territory with a minimum physical force count during the active supported shipment opportunity.',
+      'Bind an unused reserve shipment this phase, including a player whose turn is still ahead, to a named destination and minimum physical count.',
     steps: [
-      'Declare Truthtrance, select the active player and choose Bind a shipment from reserves. Choose a printed destination and minimum of one to twenty forces, or combine two shipment conditions using AND or OR. Each describes the same shipment. Automatic enforcement supports base Basic and base Advanced games, including Guild, before that active player ships and after pending decisions finish. Other optional configurations keep their existing boundaries.',
+      'Declare Truthtrance, select an eligible player whose unused shipment is active or still ahead this phase, and choose Bind a shipment from reserves. Choose a printed destination and minimum of one to twenty forces, or combine two shipment conditions using AND or OR. Each describes the same shipment. Automatic enforcement supports base Basic and base Advanced games, including Guild, before that player ships and after pending decisions finish. Earlier players keep their original turns; answering never grants an early shipment. Other optional configurations keep their existing boundaries.',
       'Yes requires the complete statement to match while possible: all AND conditions or at least one OR condition. No requires the whole statement to be false: at least one AND condition false, or every OR condition false. A smaller count, different destination, transport of forces already on the board or no shipment may satisfy No. Forces already in the destination and ground movement do not satisfy the question. Fremen reinforcements and Guild transport from southern reserves do count.',
       'The target privately sees feasible answers based on their own resources and earlier promises. Available Ghola revival, Karama discounts, incoming pledged aid and reclaiming their own unused pledge are included. Other players’ unplayed cards and future voluntary gifts are not assumed.',
       'Accepted whole answers are public and constrain the event together with earlier promises. When an answer requires a shipment, honor it before ground movement or finishing and do not voluntarily spend away the last legal completion. A completed opposing effect that makes compliance impossible releases it publicly.',
       'Guild interception and rate or transport-permission responses finish before delivery. An opposing stop consumes the shipment without payment or arrival: answers matching no shipment fulfill and impossible answers release. You cannot stop your own shipment to evade your answer. An unaffordable canceled rate leaves shipment available; a retained owned discount or ordinary Fremen reinforcement may still provide a legal route.',
       'Choose Mixed current fact and shipment for nested AND/OR groups of supported current facts and this-turn reserve shipments. Current facts freeze privately when answered: Yes OR a true current fact can allow skipping even after later losing that holding; No AND a false current fact can allow shipping even after that fact changes. Unknown is not false. Only the whole question and answer are public.',
-      'Your own promises show the original grouped question, not private compiled clause results. Optional private next-step guidance includes preparation, funding or shipment, only after pending controls finish. All four legal policies use server-feasible choices and the same complete route. Earlier phases, other modules, expansion shipment modes, other future actions and arbitrary prose enforcement remain unfinished.',
+      'Your own promises show the original grouped question, not private compiled clause results. While waiting, the promise remains visible without an executable action. Optional private next-step guidance includes preparation, funding or shipment only on your actual turn after pending controls finish. All four legal policies use server-feasible choices and the same complete route. Earlier phases, other modules, expansion shipment modes, other future actions and arbitrary prose enforcement remain unfinished.',
     ],
     example:
       'Yes to at least six forces to Carthag and No to at least eight there leaves a shipment of six or seven. Moving existing forces into Carthag does not fulfill either shipment event.',
@@ -2930,7 +2930,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Authoritative reserve commitments, mixed current-fact AND/OR, frozen clauses, owned preparation, actual shipment/skip and opposing release include base Advanced Guild interception, permission and rates. Self-stop cannot evade an answer; broader timing/modules remain unfinished.',
+          'Authoritative reserve commitments, mixed current-fact AND/OR, frozen clauses, owned preparation, actual shipment/skip and opposing release include base Advanced Guild interception, permission and rates. Same-phase waiting turns retain joint promises through native Guild WAIT/TAKE and paid intervening turns. Own gifts/accompaniment cannot spend the last completion; broader phases/modules remain unfinished.',
       },
       {
         area: 'Player controls',
@@ -2954,7 +2954,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Current Guild batch passes106 rule cases plus one updated existing in-memory scope case, types/lint/build, four original-action/rendered-table programmes and four finite policy continuations. Earlier persistence/privacy evidence is historical; full Truthtrance, modes, final assurance and deployed acceptance remain open.',
+          'Current waiting-turn batch passes146 rule cases plus one updated existing in-memory scope case, types/lint/build, three original-action/rendered-table programmes and four finite legal policy continuations. Earlier persistence/privacy evidence is historical; full Truthtrance, modes, final assurance and deployed acceptance remain open.',
         evidence: [
           'tests/shipment-promises.test.ts',
           'tests/shipment-promises-bots.test.ts',
@@ -2965,6 +2965,9 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/compound-shipment-recovery.test.ts',
           'tests/mixed-shipment-question.test.ts',
           'tests/mixed-shipment-engine.test.ts',
+          'tests/truthtrance-future-shipment.test.ts',
+          'tests/truthtrance-future-shipment-engine.test.ts',
+          'tests/fixture-truthtrance-future-shipment.ts',
           'tests/truthtrance-guild-shipment.test.ts',
           'tests/truthtrance-guild-shipment-engine.test.ts',
           'tests/fixture-truthtrance-guild-shipment.ts',
