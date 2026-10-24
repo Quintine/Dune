@@ -16,6 +16,25 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Readable notices — 24 October follow-up.** Current source already keeps room
+and seat confirmations/action notices until Continue, and toasts until Dismiss.
+The new local create check retained its confirmation for 30 seconds through
+polling and a lobby action; Continue left the room intact. Focused tests pass
+23/23 and the bounded source audit found no remaining automatic text dismissal.
+The live site still reports older revision `716304b`; the fix is pushed but
+awaits deployment. [Exact evidence and limits](READABLE_NOTICES.md#verification).
+
+**Queued next — Tleilaxu income from Ambassador revivals, 24 October.** Connect
+positive free force/leader returns to the existing per-beneficiary/turn free
+income ledger under the explicit provisional interpretation. Decline earns0;
+Ghola stays independent. A committed-return receipt and distinct revival marker
+bind the native income response so allow/cancel resumes the original Ambassador
+once without repeating the revival. Root owns engine, response-context, controls,
+regressions and docs/reference; proposed disjoint lanes own only a pure receipt
+helper/test and original-action source fixture. The source review is complete;
+implementation was deferred for the user's notice report. No new module or
+assurance campaign.
+
 **Ecaz's Ambassador Duke revival — 24 October. Prototyped / Partial.** The
 original Tleilaxu grant now offers Ecaz the real shared dead Duke, including his
 existing independent death histories. Native and BG-copy effects use canonical

@@ -49,6 +49,26 @@ countdowns keep their existing behavior.
 
 ## Verification
 
+24 October user-report follow-up: a fresh local create at source revision
+`59aa56af2bd2b98f5996fadb888019b3ebb53498` showed only concise progress, then
+**Room created** with **Continue**. The confirmation remained readable for at
+least 30 seconds through background polling and a player-circle change.
+Continue removed only the notice; the same room and selected circle remained.
+The dedicated QA room and screenshot are preserved. The three focused
+notice/entry/seat test files pass **23/23**. A bounded source audit found no
+remaining automatic dismissal of actionable text: action notices and room/seat
+confirmations use Continue, standard toasts use Dismiss, and uncertain request
+instructions retain their recovery controls. No application callers override
+the toast provider's no-timeout default.
+
+The same follow-up read the live homepage at **dune.procrastination.games**:
+it still identifies `716304bb9ed7bcf73202e07712de7c6d857ddc0c`, predating the
+room-confirmation fix in `999edb6`. This is an outstanding deployment gap;
+no new application change or deployment was made for this recheck. The local
+development server had been stopped and was started for this dedicated QA;
+existing saved games were preserved. Private evidence is in
+`/home/quintine/.local/share/dune/checkpoints/20261024-readable-notices-followup/`.
+
 24 October deployed recheck: the public site displayed revision
 `716304bb9ed7bcf73202e07712de7c6d857ddc0c`. A dedicated QA create request showed
 the concise progress screen, then opened its lobby without a persistent room
