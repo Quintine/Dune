@@ -30,7 +30,9 @@ for (const kind of ['arrival', 'departure'] as const) {
     assert.deepEqual(f.game, before);
     assert.equal(pending.response?.kind, 'advisorFlip');
     assert.equal(pending.response?.automaticAdvisorFlip?.territory, f.territory);
-    assert.equal(pending.response?.automaticAdvisorFlip?.mover, f.actor);
+    const source = pending.response?.automaticAdvisorFlip;
+    assert.ok(source?.producer === 'groundMovement');
+    assert.equal(source.mover, f.actor);
     assert.equal(player(pending, f.actor).moved, player(before, f.actor).moved + 1);
     assert.equal(player(pending, f.actor).forces[f.from], undefined);
     assert.equal(player(pending, f.actor).forces[f.to], f.amount);

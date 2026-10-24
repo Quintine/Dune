@@ -2473,8 +2473,10 @@ export function GameTable({
               )}
               {g.response.automaticAdvisorFlip && (
                 <p className="notice">
-                  The ground movement is complete. These advisors are now alone and must become fighters.
-                  {' '}Karama prevents only this conversion; it does not undo the move.
+                  {g.response.automaticAdvisorFlip.producer === 'guildTransport'
+                    ? 'The transport and payment are complete. These advisors are now alone and must become fighters.'
+                    : 'The ground movement is complete. These advisors are now alone and must become fighters.'}
+                  {' '}Karama prevents only this conversion; the completed action and its costs stay committed.
                   {' '}Provisional rule: a prevented group stays advisors while continuously alone,
                   until another faction returns or the group leaves.
                 </p>

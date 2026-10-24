@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Advisor conversion after committed Guild transport — 24 October 2026
+
+Extend the existing physical17/28 E composition to Guild cross-shipment and
+reserve returns. Preserve original permission/rate/income order and the one
+completed payment, physical transfer and shipment use. An event-bound public
+transport parent and exact held advisor group own the counter; consume the parent
+before original Intrusion/territory entry resumes once. No arrival follows a
+reserve return, and ordinary movement remains unused. Preserve the existing
+provisional continuously-alone duration and all transport/module guards. Private
+preparation projections and from-reserves Fremen transport create no occurrence.
+[Source, continuation and limits](ADVISOR_AUTOMATIC_FLIPS.md#guild-transport-and-reserve-returns--24-october-2026).
+
 ## Mandatory advisor conversion after ground movement — 24 October 2026
 
 Compose supplied Advanced physical17’s token-group flip counter with physical28 E’s

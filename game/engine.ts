@@ -12,7 +12,7 @@ import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, h
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteAtreidesFullPlan } from './atreides-full-plan';
 import { quoteTleilaxuSpecialKarama } from './tleilaxu-special-karama';
-import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource } from './advisor-automatic-flip';
+import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport } from './advisor-automatic-flip';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
@@ -1263,6 +1263,7 @@ type RicheseAllyOffer = {
 };
 export type Game = {
   pendingAutomaticAdvisorFlips?: AutomaticAdvisorFlipSource[];
+  pendingAutomaticAdvisorTransport?: AutomaticAdvisorTransport;
   advisorPreparation?: AdvisorPreparationWindow;
   ecazOccupyPreview?: boolean;
   /** Fresh native Guild/Nexus payment-replacement profile, never inferred from a save. */
@@ -20289,6 +20290,9 @@ function currentAutomaticAdvisorFlip(g: Game, response: ResponseWindow) {
     response.advisorResume === undefined &&
     JSON.stringify(g.pendingAutomaticAdvisorFlips?.[0]) === JSON.stringify(source),
     'The mandatory advisor conversion has lost its original movement source.');
+  if (source.producer === 'guildTransport')
+    requireRule(JSON.stringify(source.transport) === JSON.stringify(g.pendingAutomaticAdvisorTransport),
+      'The mandatory conversion has lost its original committed Guild transport.');
   automaticAdvisorRule(() => validateAutomaticAdvisorFlip(g, source));
   return source;
 }
@@ -20301,16 +20305,41 @@ function openAutomaticAdvisorFlip(g: Game) {
     advisors: false, passed: [], automaticAdvisorFlip: source,
     intent: `${getPlayer(g, source.owner).name}: mandatory advisor-to-fighter conversion in ${territory(source.territory).name}.` };
 }
-function prepareAutomaticAdvisorFlips(g: Game, mover: Player) {
-  const groups = automaticAdvisorRule(() => quoteAutomaticAdvisorFlips(g));
+function prepareAutomaticAdvisorFlips(g: Game, mover: Player,
+  transport?: Omit<AutomaticAdvisorTransport, 'event'>, deferResponse = false) {
+  const groups = automaticAdvisorRule(() => quoteAutomaticAdvisorFlips(g))
+    .filter(group => !transport || group.territory === transport.origin || group.territory === transport.to);
+  if (!groups.length) return false;
+  let parent: AutomaticAdvisorTransport | undefined;
+  if (transport) {
+    requireRule(!g.pendingAutomaticAdvisorTransport && !g.pendingAutomaticAdvisorFlips?.length,
+      'Finish the original advisor conversion before another transport.');
+    parent = { event: crypto.randomUUID(), ...transport };
+    g.pendingAutomaticAdvisorTransport = parent;
+  }
   for (const group of groups) {
     const source: AutomaticAdvisorFlipSource = { event: crypto.randomUUID(), owner: group.player,
-      territory: group.territory, turn: g.turn, phase: g.phase, producer: 'groundMovement',
-      mover: mover.id, move: mover.moved, forces: group.forces };
+      territory: group.territory, turn: g.turn, phase: g.phase, forces: group.forces,
+      ...(parent ? { producer: 'guildTransport' as const, transport: parent }
+        : { producer: 'groundMovement' as const, mover: mover.id, move: mover.moved }) };
     getPlayer(g, group.player).advisors![group.territory].aloneFlipHold = source.event;
     (g.pendingAutomaticAdvisorFlips ??= []).push(source);
   }
-  openAutomaticAdvisorFlip(g);
+  if (!deferResponse) openAutomaticAdvisorFlip(g);
+  return true;
+}
+function finishAutomaticAdvisorTransport(g: Game) {
+  const transport = g.pendingAutomaticAdvisorTransport;
+  if (!transport) return;
+  requireRule(g.phase === 5 && !g.pendingAutomaticAdvisorFlips?.length,
+    'Finish the original conversions before resuming this transport arrival.');
+  delete g.pendingAutomaticAdvisorTransport;
+  const p = getPlayer(g, transport.player);
+  if (transport.to !== 'reserves') {
+    intrusion(g, p, transport.to);
+    if (transport.origin !== transport.to)
+      openTerritoryEntry(g, p, transport.to, transport.sector, transport.amount, transport.elite, 'guildTransport');
+  }
 }
 function applyAdvisorReleases(g: Game, released: AdvisorRelease[]) {
   for (const entry of released)
@@ -28141,11 +28170,12 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       }
       if (automaticAdvisorFlip) {
         if (canceled)
-          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed movement stays committed; this group remains advisors while continuously alone.`,
+          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' ? 'transport and payment stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
             { faction: bg.faction, name: 'Mandatory advisor conversion prevented' });
         g.pendingAutomaticAdvisorFlips!.shift();
         if (!g.pendingAutomaticAdvisorFlips!.length) delete g.pendingAutomaticAdvisorFlips;
-        openAutomaticAdvisorFlip(g);
+        if (!g.pendingAutomaticAdvisorFlips?.length) finishAutomaticAdvisorTransport(g);
+        else openAutomaticAdvisorFlip(g);
       } else finishAdvisorReaction(g, response);
     }
   } else if (response.kind === 'capture') {
@@ -29507,6 +29537,9 @@ function commitGuildTransport(
   if (!settlement && beginGuildBetrayal(g, {source: 'guildTransport', frame, fromReserves})) return;
   const { origin, group, eliteGroup, to, sector, amount, elite, cost, allyPayment, advisors } = frame;
   const sourceLock = p.advisors?.[origin]?.lockedTurn;
+  const advisorArrival = advisors || (!movementPreparation && !fromReserves && to !== 'reserves' &&
+    g.advanced && p.faction === 'beneGesserit' && isAdvisor(p, origin) && !at(p, to) &&
+    !g.players.some(other => other.id !== p.id && at(other, to)));
   if (guildSecretEvent) recordGuildSecretShipment(g, p.id, guildSecretEvent, 'cross',
     { ...frame, guildSecretEvent });
   bindGuildCunningShipment(g, p, 'guild', frame);
@@ -29534,11 +29567,16 @@ function commitGuildTransport(
     addNativeReserves(g, p, amount, elite);
   } else {
     place(p, to, sector, amount, elite);
-    if (advisors) {
+    if (advisorArrival) {
       const lockedTurn = Math.max(sourceLock ?? 0, p.advisors?.[to]?.lockedTurn ?? 0);
       (p.advisors ??= {})[to] = { ...p.advisors?.[to], ...(lockedTurn ? { lockedTurn } : {}) };
     } else if (p.advisors) delete p.advisors[to];
   }
+  // Capture after physical transfer, before any board-derived benefit. Private
+  // feasibility projections neither create events nor retain response parents.
+  const heldConversion = !movementPreparation && !fromReserves &&
+    prepareAutomaticAdvisorFlips(g, p, { player: p.id, origin, to, sector, amount, elite,
+      group: Object.fromEntries(group) }, true);
   observeOccupation(g);
   finishShipmentPromises(g, p, fromReserves ? { territory: to, amount } : null);
   finishGuildCunningShipment(g, p.id, 'guild', frame);
@@ -29550,6 +29588,10 @@ function commitGuildTransport(
     guildSecretEvent
       ? { faction: 'guild', name: 'Secret Ally transport' }
       : { faction: p.faction, name: 'Guild transport' });
+  if (heldConversion) {
+    openAutomaticAdvisorFlip(g);
+    return;
+  }
   if (to !== 'reserves') {
     intrusion(g, p, to);
     if (origin !== to)
@@ -32045,6 +32087,7 @@ function settleAutomaticContinuations(g: Game) {
     prepareTupileCleanup(g);
     if (g.pendingHomeworldTupileCleanup || tupileSourceBlock(g)) return;
     if (g.truthtrance || g.phaseOpening || g.status === 'finished') return;
+    if (!g.response && !g.decision && g.pendingAutomaticAdvisorFlips?.length) openAutomaticAdvisorFlip(g);
     if (g.pendingArrivalReaction?.length && !g.response && !g.decision &&
         !g.pendingTerrorEntry && !g.pendingAmbassador && !g.pendingArrivalOverlap) {
       const deferred = g.pendingArrivalReaction.shift()!;
@@ -32055,7 +32098,6 @@ function settleAutomaticContinuations(g: Game) {
         deferred.amount, deferred.elite, deferred.cause, deferred.resume);
       continue;
     }
-    if (!g.response && !g.decision && g.pendingAutomaticAdvisorFlips?.length) openAutomaticAdvisorFlip(g);
     const response = g.response;
     const before = JSON.stringify(g);
     const bonus = g.pendingHomeworldOccupiedBonus;

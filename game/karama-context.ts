@@ -181,6 +181,7 @@ const cancellationSources = {
   advisorFlip: (g, response) =>
     response.automaticAdvisorFlip
       ? { source: response.automaticAdvisorFlip, pending: g.pendingAutomaticAdvisorFlips?.[0] ?? null,
+          transport: response.automaticAdvisorFlip.producer === 'guildTransport' ? g.pendingAutomaticAdvisorTransport ?? null : null,
           group: g.players.find(p => p.id === response.owner)?.advisors?.[response.location ?? ''] ?? null }
       : response.advisorPreparationSource
       ? { preparation: response.advisorPreparationSource, window: g.advisorPreparation ?? null }

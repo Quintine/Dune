@@ -16,6 +16,34 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Advisor conversion after committed Guild transport — 24 October. Prototyped / Partial.**
+Guild cross-shipment and reserve returns now retain the original paid transfer
+and shipment use before mandatory advisor-conversion prevention. An exact public
+transport event owns the held group and one later arrival. Canceling conversion
+refunds nothing; ordinary ground movement remains unused. Original permission,
+rate and income retain their priority. After conversion, the consumed parent
+resumes actual destination Intrusion once; a reserve return has no arrival.
+The provisional continuously-alone hold and all transport/module guards remain.
+[Source, continuation and limits](ADVISOR_AUTOMATIC_FLIPS.md#guild-transport-and-reserve-returns--24-october-2026).
+
+Disjoint helper/native-fixture lanes, bounded continuation review and root
+integration pass **17 files243/243**, types/lint/build, eight native transport/
+response/GameTable SSR journeys and eight legal existing-profile paths. Genuine
+36-action default sources place the native advisor beside Guild’s original five
+Tuek’s sector5 counters and retain Atreides’ original Karama. A42-action source
+really ships BG’s second group to Basin, pays native Guild income, ends BG and
+uses the next early Guild turn to earn Intrusion. Normal routes pay5 cross/3
+return before the new counter. Feedback preserves an unaffordable full-price
+cross declaration and adds the actually affordable full-price return; no wallet
+is staged. Exact legacy ground receipts remain accepted. No AI refinement,
+full-mode/comprehensive/browser/deployed assurance or saved-room/D1/reset/restart/
+deployment operation.
+
+Next native conversion producers remain non-transport withdrawals (including
+Trip to Gamont before Mentat victory), casualties/aftermath and other special
+arrivals. Extend each original continuation before claiming complete mandatory
+conversion cancellation; preserve setup’s automatic exception.
+
 **Mandatory advisor conversion after ground movement — 24 October. Prototyped / Partial.**
 A native advisor group moving into an empty destination, or left alone by the
 last outsider’s ground departure, now opens Karama prevention after the physical
@@ -36,11 +64,6 @@ all frozen source checks then pass. Standard existing Karama/Allow controls are
 rendered, without a new component-callback or browser certificate. No AI
 refinement, full-mode, comprehensive or deployed assurance, and no saved-room/D1/
 reset/restart/deployment operation.
-
-Next native rule slice: connect the same mandatory-conversion protocol to
-non-ground last-outsider removal/return producers before their later collection
-or victory effects. Keep setup and completed movement independent; do not treat
-this ground slice as complete automatic-flip cancellation.
 
 **Tleilaxu proactive Revival prevention — 24 October. Prototyped / Partial.**
 The native Advanced special Karama now selects any one player at a quiet Revival

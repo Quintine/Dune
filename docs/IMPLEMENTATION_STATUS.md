@@ -1,5 +1,52 @@
 # Dune implementation status
 
+## 24 October 2026 — Advisor counter after committed Guild transport
+
+Extend the mandatory-conversion protocol to actual Guild cross-shipment and
+reserve returns. Preserve original permission/rate/settlement/income order,
+paid costs, physical transfer, shipment use and promise/Cunning records. Capture
+only affected origin/destination groups before board-derived occupation reads;
+open conversion after original slot bookkeeping. One public original-route/
+group/event parent revalidates before prevention disposal/outcome. Consume it
+before original Intrusion/territory arrival resumes once. Returns have no arrival;
+ordinary ground movement remains unused. Private feasibility simulations and
+from-reserves Fremen transport create no event or held parent.
+
+The source union preserves exact old ground JSON and adds the transport variant.
+The old continuously-alone cancellation duration stays explicitly provisional;
+remaining withdrawals, casualties, matching groups and special arrivals remain
+unfinished. Existing transport/Nexus/typed/No-Field/module guards stay intact.
+Standard response controls explain that transport/payment are already complete.
+No bot strategy changes or new confirmation/timer are introduced.
+
+Frozen **17 files243/243**, types/lint/build, eight native transport/response/
+GameTable SSR journeys and eight existing-profile paths pass. Genuine36-action
+public Advanced BG/Atreides/Guild sources preserve original setup/deal and all
+first-round controls, with actual early Guild timing. Native Tuek’s is sector5.
+Cross pays5; reserve return pays3 before conversion. The42-action Intrusion source
+actually waits Guild, pays2 for a BG reserve to Basin, allows Guild income, ends
+BG and takes Guild’s next early turn. Actual arrival then resumes its independent
+Intrusion, and repeated normalization does not reopen it. No played force, phase,
+hand, wallet, reserve, hold, response or receipt is installed.
+
+First frozen union is241/242: one test assumed the original5-spice Guild could
+pay a canceled10-spice cross tariff. Preserve the engine’s original uncommitted
+outcome; use the earned affordable full-price reserve return for successful
+rate/conversion independence and add the negative cross case. Both focused
+cases pass. Narrow the existing ground test to its producer before reading
+mover; retain strict source union types. Final frozen243/243 and all checks pass
+without private smoke-driver repairs or source changes during proof.
+
+[Contract and remaining producers](ADVISOR_AUTOMATIC_FLIPS.md#guild-transport-and-reserve-returns--24-october-2026).
+Private evidence: `/home/quintine/.local/share/dune/checkpoints/20261024-advisor-transport-flips/`.
+Frozen fingerprint:
+`cca2ff32114b6854c9339fff72f3384d68d1772d5539811594cd82f0c3e8d4fa`
+(2,735 nonignored files), on base `3aca64412feabae750b1adc2796a4086505a49c9`.
+Final prose/reference overlay is separately reviewed and hashed. Rendered
+standard controls do not certify a new component callback or browser/hydration/
+mobile/deployed journey. Full modes, combinations and comprehensive assurance
+remain open. No saved-room/D1/reset/restart/deployment operation.
+
 ## 24 October 2026 — Mandatory advisor ground-conversion counter
 
 Connect supplied physical17’s token-group flip counter with physical28 E’s

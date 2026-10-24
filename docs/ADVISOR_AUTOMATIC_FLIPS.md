@@ -1,4 +1,70 @@
-# Mandatory advisor conversion after ground movement
+# Mandatory advisor conversions
+
+## Guild transport and reserve returns — 24 October 2026
+
+**Prototyped / Partial.** The same physical17 counter and physical28 E mandatory
+conversion now compose with committed Guild cross-shipment and reserve returns.
+The original privilege, rate, settlement and payment responses retain their
+order. Actual payment, force transfer, shipment use and promise/Cunning receipts
+commit once before the conversion response. Ordinary ground movement is not
+consumed. Canceling only this conversion neither refunds payment nor reverses
+transport or revives the earlier permission/rate opportunity.
+
+The source stores the public original route, selected physical group, amount,
+elite count and a unique committed transport event. It binds to one saved parent
+and the exact held advisor group. Holds are captured before board-derived
+occupation observations; the response opens only after original slot bookkeeping.
+An existing Guild-income response retains priority. Once all conversion outcomes
+finish, the parent is consumed before original Intrusion/territory entry resumes
+once. A reserve return has no arrival suffix. Hidden funding shares, hands and
+wallets are not copied into that public source.
+
+From-reserves Fremen transport and private movement-preparation projections do
+not manufacture conversion events. Only changed origin/destination groups are
+considered. A transported BG advisor arriving alone retains its original advisor
+stance until this counter resolves. Existing source, typed-transport, No-Field,
+Nexus, module and start guards remain; no new entitlement is granted. The existing
+provisional continuously-alone duration is unchanged. Exact old ground receipt
+shape remains accepted; new transport fields are additive.
+
+[Native transport fixture](../tests/fixture-advisor-transport-flip.ts) starts
+public Advanced BG/Atreides/Guild, actually placing the advisor beside Guild’s
+original five counters at printed Tuek’s Sietch sector5. Atreides receives an
+original starting Karama; real first-round controls, declined preparation and
+native early Guild timing lead to the pre-transport source. Caller actions allow
+original permission/rate, then stop before the post-payment conversion. No played
+army, phase, hand, wallet, reserve, hold or response is installed. A separate
+Intrusion source actually defers Guild, pays for one BG reserve to Imperial
+Basin as a fighter, resolves original interception/income, ends BG’s turn and
+takes Guild’s next early turn. The tested cross-shipment then produces the origin
+conversion followed by a real destination Intrusion; it is not a synthetic
+pending decision.
+[Engine cases](../tests/advisor-transport-flip-engine.test.ts) cover both routes,
+both outcomes, a real later ordinary move, earlier permission/rate independence,
+affordable full-price return versus an uncommitted unaffordable cross declaration,
+source-parent rejection and minimal existing profiles. Pure transport/legacy
+cases remain in the shared quote suite. Frozen **17 files243/243**, types/lint/build, eight native transport/response/
+GameTable SSR journeys and eight existing-profile paths pass. Native default
+sources take36 actions; the actual paid-shipment Intrusion source takes42.
+Cross costs5 and return3 before the conversion. Earlier privilege prevention
+leaves pieces unchanged; an unaffordable canceled cross tariff remains
+uncommitted, while a full-price return really settles before unopposed
+conversion. The first241/242 feedback corrected the funding expectation without
+staging spice, then added the negative branch. Two focused cases and the final
+frozen243/243 pass. An existing ground consumer now narrows the strict source
+union before reading its mover; no source shape is relaxed.
+
+Private reports, rendered HTML and hashes:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-transport-flips/`.
+`frozen-integrated-2/report.json` records fingerprint
+`cca2ff32114b6854c9339fff72f3384d68d1772d5539811594cd82f0c3e8d4fa`
+on base `3aca64412feabae750b1adc2796a4086505a49c9`. Prose/reference evidence is
+reviewed and hashed separately afterward. Standard controls are rendered; this
+is no new component-callback/browser/mobile/deployed certificate.
+
+Shipments outside this transport path, other withdrawals, casualties/aftermath,
+matching-group conversions and wider interleavings remain open. This is not
+complete cancellation or full Advanced/mode acceptance.
 
 ## Source and provisional duration — 24 October 2026
 
@@ -45,8 +111,8 @@ cannot simply erase the canceled result or offer an immediate free retry.
   Existing minimal bot response handling remains, without strategy changes.
 
 No start gate, physical inventory, save, schema or room is reset. Setup and
-legacy unheld non-ground conversions keep their existing behavior. Remaining
-mandatory producers include shipments, withdrawals, casualties/aftermath and
+remaining unheld non-ground conversions keep their existing behavior. Remaining
+mandatory producers beyond the transport follow-up include other shipments, withdrawals, casualties/aftermath and
 other special arrivals; matching an existing fighter group and broader
 interleavings also remain unfinished. This checkpoint does not claim complete
 advisor-conversion cancellation or full Advanced compliance.

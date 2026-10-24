@@ -8,7 +8,12 @@ import {
   type AdvisorSettlementContext,
   type AutomaticAdvisorFlipContext,
   type AutomaticAdvisorFlipSource,
+  type AutomaticAdvisorTransport,
 } from '../game/advisor-automatic-flip';
+import { MOBILE_LOCATION, MOBILE_STRONGHOLD } from '../game/board';
+
+type GroundSource = Extract<AutomaticAdvisorFlipSource, { producer: 'groundMovement' }>;
+type TransportSource = Extract<AutomaticAdvisorFlipSource, { producer: 'guildTransport' }>;
 
 function context(): AutomaticAdvisorFlipContext {
   return {
@@ -28,7 +33,7 @@ function context(): AutomaticAdvisorFlipContext {
 function held() {
   const ctx = context();
   const choice = quoteAutomaticAdvisorFlips(ctx).find((entry) => entry.territory === 'imperial_basin')!;
-  const source: AutomaticAdvisorFlipSource = {
+  const source: GroundSource = {
     event: 'automatic-after-original-ground-move', owner: choice.player,
     territory: choice.territory, turn: ctx.turn, phase: ctx.phase,
     producer: 'groundMovement', mover: 'a', move: 1, forces: choice.forces,
@@ -127,7 +132,7 @@ void test('the response validates its original held event and exact physical gro
 });
 
 void test('changed window, owner, occurrence, group, occupation and movement sources throw the named rule error', () => {
-  const changes: ((ctx: AutomaticAdvisorFlipContext, source: AutomaticAdvisorFlipSource) => void)[] = [
+  const changes: ((ctx: AutomaticAdvisorFlipContext, source: GroundSource) => void)[] = [
     (ctx) => { ctx.advanced = false; },
     (ctx) => { ctx.status = 'lobby'; },
     (ctx) => { ctx.phase = 4; },
@@ -185,4 +190,146 @@ void test('quotes, settlement and response matching do not inspect private cards
   });
   assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
   assert.deepEqual(ctx.players.map((player) => ({ forces: player.forces, advisors: player.advisors })), before);
+});
+
+function transported(to: 'carthag' | 'reserves' = 'carthag') {
+  const { ctx, source: ground } = held();
+  const transport: AutomaticAdvisorTransport = {
+    event: 'committed-native-guild-transport', player: 'a', origin: 'imperial_basin',
+    to, sector: to === 'reserves' ? 0 : 11, amount: 3, elite: 0,
+    group: { 'imperial_basin:9': 2, 'imperial_basin:10': 1 },
+  };
+  ctx.players[1].shipped = true;
+  ctx.players[1].forces = to === 'reserves' ? {} : { 'carthag:11': 3 };
+  ctx.players[1].reserves = to === 'reserves' ? 3 : 0;
+  const source: TransportSource = {
+    event: 'automatic-after-original-guild-transport', owner: ground.owner,
+    territory: ground.territory, turn: ground.turn, phase: ground.phase,
+    forces: ground.forces, producer: 'guildTransport', transport,
+  };
+  ctx.players[0].advisors = {
+    ...ctx.players[0].advisors,
+    imperial_basin: { lockedTurn: 4, aloneFlipHold: source.event },
+  };
+  return { ctx, source };
+}
+
+void test('committed cross-transport and reserve return bind the same held advisor origin and physical deposit', () => {
+  for (const destination of ['carthag', 'reserves'] as const) {
+    const { ctx, source } = transported(destination);
+    const before = structuredClone({ ctx, source });
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+    assert.deepEqual({ ctx, source }, before);
+    assert.deepEqual(Object.keys(source).sort(), ['event', 'forces', 'owner', 'phase', 'producer', 'territory', 'transport', 'turn']);
+    assert.deepEqual(advisorStanceAfterSettlement({ advanced: true, players: ctx.players }, 'b', 'imperial_basin'), {
+      lockedTurn: 4, aloneFlipHold: source.event,
+    });
+  }
+});
+
+void test('a native BG transported advisor arrival can bind its destination group without imposing a Guild-faction actor', () => {
+  const { ctx, source } = transported();
+  source.transport = {
+    event: 'committed-bg-cross-transport', player: 'b', origin: 'hagga_basin',
+    to: 'imperial_basin', sector: 9, amount: 2, elite: 0, group: { 'hagga_basin:12': 2 },
+  };
+  ctx.players[0].shipped = true;
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+  source.transport.sector = 10;
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+});
+
+void test('transport metadata uses current board identities and rejects unplaced dynamic destinations', () => {
+  const { ctx, source } = transported();
+  source.transport.to = MOBILE_STRONGHOLD;
+  source.transport.sector = 0;
+  ctx.players[1].forces = { [MOBILE_LOCATION]: 3 };
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+  ctx.mobileStronghold = { location: 'imperial_basin:9' };
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+  ctx.mobileStronghold.location = null;
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+});
+
+void test('changed transport metadata, selected group, native slot, deposit or response location rejects before settlement', () => {
+  const changes: ((ctx: AutomaticAdvisorFlipContext, source: TransportSource) => void)[] = [
+    (_ctx, source) => { source.transport.event = ''; },
+    (_ctx, source) => { source.transport.player = ''; },
+    (_ctx, source) => { source.transport.player = 'missing'; },
+    (_ctx, source) => { source.transport.origin = 'missing'; },
+    (_ctx, source) => { source.transport.to = 'missing'; },
+    (_ctx, source) => { source.transport.sector = -1; },
+    (_ctx, source) => { source.transport.sector = 11.5; },
+    (_ctx, source) => { source.transport.sector = 12; },
+    (_ctx, source) => { source.transport.amount = 0; },
+    (_ctx, source) => { source.transport.amount = 4; },
+    (_ctx, source) => { source.transport.elite = -1; },
+    (_ctx, source) => { source.transport.elite = 4; },
+    (_ctx, source) => { source.transport.elite = 1.5; },
+    (_ctx, source) => { source.transport.group = {}; },
+    (_ctx, source) => { source.transport.group = { 'imperial_basin:9': 3.5 }; },
+    (_ctx, source) => { source.transport.group = { 'imperial_basin:9': 3, 'imperial_basin:10': 0 }; },
+    (_ctx, source) => { source.transport.group = { 'carthag:11': 3 }; },
+    (_ctx, source) => { source.transport.group = { 'imperial_basin:8': 3 }; },
+    (_ctx, source) => { source.transport.group = { 'imperial_basin:9.0': 3 }; },
+    (_ctx, source) => {
+      source.transport.origin = 'arrakeen';
+      source.transport.group = { 'arrakeen:10': 3 };
+    },
+    (ctx) => { ctx.players[1].shipped = false; },
+    (ctx) => { delete ctx.players[1].shipped; },
+    (ctx) => { ctx.players[1].forces = { 'carthag:11': 2 }; },
+    (ctx) => { ctx.players[1].forces = { 'carthag:10': 3 }; },
+    (ctx) => { ctx.players = [...ctx.players, { ...ctx.players[1] }]; },
+    (_ctx, source) => { source.forces = { 'imperial_basin:9': 3 }; },
+  ];
+  for (const change of changes) {
+    const { ctx, source } = transported();
+    change(ctx, source);
+    const before = structuredClone({ ctx, source });
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+    assert.deepEqual({ ctx, source }, before);
+  }
+  const { ctx, source } = transported('reserves');
+  ctx.players[1].reserves = 2;
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+  delete ctx.players[1].reserves;
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+  for (const malformed of [
+    { ...source, mover: 'a' },
+    { ...source, transport: null },
+    { ...source, transport: { ...source.transport, paid: 1 } },
+    { ...source, transport: { ...source.transport, group: null } },
+  ]) {
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, malformed as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('old ground receipts keep their exact JSON shape and never require transport slot or reserve metadata', () => {
+  const { ctx, source } = held();
+  for (const player of ctx.players) {
+    for (const field of ['shipped', 'reserves']) {
+      Object.defineProperty(player, field, {
+        get() { throw new Error(`Ground source read transport-only ${field}`); },
+      });
+    }
+  }
+  const saved = JSON.parse(JSON.stringify(source)) as GroundSource;
+  assert.deepEqual(Object.keys(saved).sort(), ['event', 'forces', 'move', 'mover', 'owner', 'phase', 'producer', 'territory', 'turn']);
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, saved));
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, { ...saved, transport: {} } as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+});
+
+void test('transport validation reads only public slot and physical deposit metadata, not wallets, cards or leaders', () => {
+  for (const destination of ['carthag', 'reserves'] as const) {
+    const { ctx, source } = transported(destination);
+    for (const player of ctx.players) {
+      for (const field of ['hand', 'leaders', 'spice', 'traitors', 'faceDancers']) {
+        Object.defineProperty(player, field, {
+          get() { throw new Error(`Transport advisor rule read ${player.id} private ${field}`); },
+        });
+      }
+    }
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+  }
 });
