@@ -1950,6 +1950,12 @@ function policyActions(g: GameView): Action[] {
       const entry = g.ambassadorEntry;
       if (!entry) return [];
       const action = { type: 'decision' as const, event: entry.event };
+      if (entry.noField && (entry.noField.stage === 'supply' || entry.noField.stage === 'consent' ||
+          (entry.noField.stage === 'own' && !entry.shipment?.maximum))) {
+        const choice = entry.noField.options.find(option => !option.blocked);
+        if (choice) return [choice.action];
+        if (entry.noField.decline) return [entry.noField.decline];
+      }
       const canBuyRichese =
         (me.spice ?? 0) >= 3 &&
         (me.hand?.length ?? me.handLimit) < me.handLimit;

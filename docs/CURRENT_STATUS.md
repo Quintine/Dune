@@ -16,6 +16,28 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Basic Guild Ambassador No-Field — 24 October. Prototyped / Partial.**
+Native Richese0/3/5 can replace the whole independent grant with one concealed
+free marker. Allied use now has actual supplier choice and beneficiary consent,
+immediate reserve-capped materialization within four, and provisional printed
+one/two-spice Guild/Bank payment. Original token history, native prior reveal,
+ordinary allowances, source-scoped Karama prevention and the original entrant
+remain intact. Persistent controls also work with zero physical reserves.
+[Selected source interpretation](GUILD_AMBASSADOR_RULES.md#basic-no-field-composition--24-october-2026)
+distinguishes the unresolved cap/fee combination from publisher authority.
+
+Disjoint quote, genuine source and controls lanes plus bounded review pass
+**13 files129/129**, types/lint/build, fifteen gameplay/control/GameTable SSR
+journeys and eight existing-profile continuations (12 accepted proposals).
+Actual three/four-seat setup, two placements, accepted Ecaz alliance and paid
+entrant supply53/71/74 source actions; two shortage cases explicitly stage
+conserved prior deployments. Feedback fixes a lost decision after native reveal,
+held-Karama versus automatic-response fixtures and three fixture type errors.
+[Exact behavior, proof and limits](GUILD_AMBASSADOR_IMPLEMENTATION.md#basic-native-and-allied-no-field--24-october-2026).
+Native Advanced/optional profiles, broader originating-card/arrival combinations,
+complete modes, comprehensive/browser/deployed acceptance and full AI remain
+unfinished. No saved-room/D1/reset/restart/deployment operation.
+
 **Basic shared Ambassador/Terror arrival — 24 October. Prototyped / Partial.**
 The existing bare Basic Richese profile now admits a paid shared native entry.
 Both originally eligible owners keep the selected provisional storm order

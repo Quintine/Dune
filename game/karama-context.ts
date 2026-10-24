@@ -117,9 +117,10 @@ const cancellationSources = {
       : auctionSource(g),
   richesePurchaseIncome: (g) => g.pendingRichesePurchaseIncome ?? null,
   richeseGift: (g) => g.pendingRicheseGift ?? null,
-  richeseNoField: (g) => ({
+  richeseNoField: (g, response) => ({
     ...movementSource(g),
     shipment: g.pendingShipment ?? null,
+    ...(response.source === 'ambassadorNoField' ? { ambassador: g.pendingAmbassador ?? null } : {}),
   }),
   harkonnenBonus: (g, response) =>
     response.source === 'ambassador'
@@ -133,7 +134,7 @@ const cancellationSources = {
     plans: g.battle?.plans ?? null,
     calls: g.battle?.traitorCalls ?? null,
   }),
-  guildIncome: () => null,
+  guildIncome: (g,response) => response.source === 'ambassadorNoFieldIncome' ? {ambassador:g.pendingAmbassador ?? null} : null,
   guildTransportPermission: g => ({
     ...(g.pendingGuildTransport ? { transport: g.pendingGuildTransport } : {}),
     ...(g.pendingHomeworldShipment ? { homeworld: g.pendingHomeworldShipment } : {}),

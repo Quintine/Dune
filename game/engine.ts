@@ -143,6 +143,8 @@ import {
 import { homeworldRevivalDestinations, quoteHomeworldRevivalDestination } from './homeworld-revival-destinations';
 import { terrorEntrySignature, terrorSelectionSignature, validateTerrorEntrySignature } from './terror-entry-receipt';
 import { arrivalOverlapSignature, overlapOwnsAmbassadorDiscard, overlapOwnsTerrorDiscard, overlapOwnsWormTerror } from './arrival-overlap';
+import { GuildAmbassadorMarkerError, markerDestinations, markerOwner, quoteGuildAmbassadorMarker,
+  type GuildAmbassadorMarker, type GuildAmbassadorMarkerQuote } from './guild-ambassador-no-field';
 import {
   homeworldLowBonus,
   homeworldRevivalKaramaBlock,
@@ -1068,7 +1070,7 @@ export type ResponseWindow = {
   occupiedPayment?: { event: string; contributions: { payer: string; amount: number }[] };
   /** Bank-paid portion of a frozen Homeworld charity claim. */
   charityHomeworld?: number;
-  source?: 'ambassador' | 'ambassadorRevival';
+  source?: 'ambassador' | 'ambassadorRevival' | 'ambassadorNoField' | 'ambassadorNoFieldIncome';
   intent?: string;
   advisors?: boolean;
   /** Saved exact ordinary Guild-rate response; not the independent Karama rate. */
@@ -1188,6 +1190,7 @@ type PendingShipment = {
   homeworldSources?: NativeReserveSelections;
   source?: 'ambassador';
   ambassadorEvent?: string;
+  ambassadorMarker?: GuildAmbassadorMarker;
   /** Absent in legacy rooms; new declarations cannot resume in a later turn. */
   turn?: number;
   player: string;
@@ -1759,13 +1762,19 @@ export type Game = {
       | 'revival'
       | 'arrival';
     nexusPurchase?: { event: string; signature: string };
+    guildMarkerBlocked?: true;
+    guildMarkerRequest?: {
+      owner: string; territory: string; sector: number; tokenEvent: string;
+      offer?: GuildAmbassadorMarkerQuote;
+    };
     relocation?: {
       order: FremenAmbassadorMove;
       next: 'flip' | 'intrusion' | 'terror' | 'finish';
     };
     shipmentReceipt?: {
       order: GuildAmbassadorShipment;
-      next: 'intrusion' | 'terror' | 'accompany' | 'advisor' | 'finish';
+      next: 'income' | 'intrusion' | 'terror' | 'accompany' | 'advisor' | 'finish';
+      markerCommitSignature?: string;
       advisorArrival?: {
         player: string;
         territory: string;
@@ -14631,6 +14640,10 @@ function choamSaleCancellationQuote(g: Game, response: ResponseWindow) {
 }
 function noFieldCancellationQuote(g: Game, response: ResponseWindow) {
   if (response.kind !== 'richeseNoField') return null;
+  if (response.source === 'ambassadorNoField') {
+    const shipment = validateAmbassadorMarkerResponse(g,response);
+    return {kind:'own' as const,player:shipment.ambassadorMarker!.owner,blockedTurn:g.turn,pendingShipment:null};
+  }
   try {
     return quoteNoFieldCancellation(g, response);
   } catch (error) {
@@ -15463,7 +15476,7 @@ function finishAutomaticDecision(g: Game): boolean {
     const choices = guildAmbassadorRule(() =>
       guildAmbassadorShipments(g, beneficiary.id),
     );
-    if (!choices.maximum || !choices.destinations.length) {
+    if ((!choices.maximum || !choices.destinations.length) && !guildMarkerAvailable(g,beneficiary.id)) {
       g.decision = null;
       log(
         g,
@@ -17559,7 +17572,8 @@ function ambassadorRelocationIntegrity(g: Game) {
   if (entry?.effect === 'guild' && entry.stage === 'arrival') {
     const next = entry.shipmentReceipt?.next;
     requireRule(
-      next === 'terror' ||
+      next === 'income' ||
+        next === 'terror' ||
         next === 'accompany' ||
         next === 'advisor' ||
         next === 'finish',
@@ -17620,7 +17634,10 @@ function ambassadorRelocationIntegrity(g: Game) {
         'This saved Terror does not match its Guild Ambassador arrival.',
       );
     requireRule(
-      next === 'accompany' || next === 'finish'
+      next === 'income'
+        ? responses.some(response => response.kind === 'guildIncome' && response.source === 'ambassadorNoFieldIncome' &&
+          response.intent === entry.event && response.owner === byFaction(g,'guild')?.id && response.amount === order.cost)
+        : next === 'accompany' || next === 'finish'
         ? relatedTerror
         : relatedResponses.length +
             relatedDecisions.length +
@@ -17641,6 +17658,7 @@ function ambassadorRelocationIntegrity(g: Game) {
     if (entry?.stage === 'move') currentFremenAmbassador(g);
     if (entry?.stage === 'ship') {
       const { beneficiary } = currentGuildAmbassador(g);
+      markerRequestIntegrity(g);
       const selections = decisions.filter(
         (decision) => decision.kind === 'ecazAmbassador',
       );
@@ -17648,19 +17666,22 @@ function ambassadorRelocationIntegrity(g: Game) {
         (decision) => decision.kind === 'guildShipment',
       );
       if (g.pendingShipment) {
-        requireRule(
-          g.pendingShipment.source === 'ambassador' &&
-            g.phase === 5 &&
-            !selections.length &&
-            stops.length > 0,
-          'The pending Guild Ambassador shipment has lost its shipment decision.',
-        );
-        for (const stop of stops) validateGuildShipmentDecision(g, stop);
+        if (g.pendingShipment.ambassadorMarker && !stops.length) {
+          const markerResponses = responses.filter(response => response.source === 'ambassadorNoField');
+          requireRule(!selections.length && markerResponses.length > 0,
+            'The independent marker shipment has lost its original response.');
+          for (const response of markerResponses) validateAmbassadorMarkerResponse(g,response);
+        } else {
+          requireRule(g.pendingShipment.source === 'ambassador' && g.phase === 5 &&
+            !selections.length && stops.length > 0,
+            'The pending Guild Ambassador shipment has lost its shipment decision.');
+          for (const stop of stops) validateGuildShipmentDecision(g, stop);
+        }
       } else
         requireRule(
           !stops.length &&
             selections.length > 0 &&
-            selections.every((decision) => decision.player === beneficiary.id),
+            selections.every((decision) => decision.player === (entry.guildMarkerRequest && !entry.guildMarkerRequest.offer ? entry.guildMarkerRequest.owner : beneficiary.id)),
           'The Guild Ambassador has lost its beneficiary shipment selection.',
         );
     }
@@ -17844,10 +17865,163 @@ function guildAmbassadorRule<T>(calculate: () => T): T {
   try {
     return calculate();
   } catch (error) {
-    if (error instanceof GuildAmbassadorShipmentError)
+    if (error instanceof GuildAmbassadorShipmentError || error instanceof GuildAmbassadorMarkerError)
       throw new RuleError(error.message);
     throw error;
   }
+}
+const GUILD_MARKER_POLICY = 'Provisional Guild Ambassador composition: a concealed native No-Field counts as one and ships free. An allied marker reveals immediately, must fit the four-force grant, and retains the printed one/two-spice transport payment to Guild or Bank. No ordinary shipment is spent.';
+type GuildMarkerView = {
+  stage: 'own' | 'request' | 'supply' | 'consent'; policy: string;
+  options: {key: string; label: string; territory?: string; sector?: number; action: Action; blocked: string | null}[];
+  decline?: Action; declineLabel?: string;
+};
+function guildMarkerAvailable(g: Game, beneficiary: string): boolean {
+  return bareBasicSemutaProfile(g) && !g.pendingAmbassador?.guildMarkerBlocked && !!markerOwner(g, beneficiary);
+}
+function quoteAmbassadorMarker(g: Game, beneficiary: string, fields: {
+  tokenId: string; tokenEvent: string; territory: string; sector: number; payer?: string; elite?: number;
+}, checkFunds = true): GuildAmbassadorMarkerQuote {
+  requireRule(guildMarkerAvailable(g, beneficiary), 'This independent No-Field grant is unavailable.');
+  const quote = guildAmbassadorRule(() => quoteGuildAmbassadorMarker(g, beneficiary, fields, checkFunds));
+  requireRule(uncommittedSpice(g, getPlayer(g, quote.marker.owner)) >= quote.marker.ownerPayment,
+    'The supplier needs enough uncommitted spice for this transport payment.');
+  if (checkFunds) requireRule(uncommittedSpice(g, getPlayer(g, beneficiary)) >= quote.marker.recipientPayment,
+    'The recipient needs enough uncommitted spice for this transport payment.');
+  return quote;
+}
+function markerRequestIntegrity(g: Game) {
+  const entry = g.pendingAmbassador, request = entry?.guildMarkerRequest;
+  if (!request) return;
+  const owner = entry.beneficiary && markerOwner(g, entry.beneficiary);
+  requireRule(entry.stage === 'ship' && entry.effect === 'guild' && owner &&
+    owner.id !== entry.beneficiary && owner.id === request.owner && owner.noFieldEvent === request.tokenEvent &&
+    guildMarkerAvailable(g, entry.beneficiary!) && validGameLocation(g, request.territory, request.sector),
+    'This allied No-Field request has lost its original supplier or grant.');
+  if (request.offer) {
+    const order = request.offer;
+    requireRule(order.player === entry.beneficiary && order.territory === request.territory &&
+      order.sector === request.sector && order.marker.owner === request.owner &&
+      order.marker.tokenEvent === request.tokenEvent,
+      'The allied marker offer differs from its requested arrival.');
+  }
+}
+function ambassadorMarkerView(g: Game, id: string): GuildMarkerView | null {
+  const entry = g.pendingAmbassador;
+  if (!entry || entry.stage !== 'ship' || entry.effect !== 'guild' ||
+      g.decision?.kind !== 'ecazAmbassador' || g.decision.player !== id ||
+      !entry.beneficiary || !guildMarkerAvailable(g, entry.beneficiary)) return null;
+  markerRequestIntegrity(g);
+  const beneficiary = getPlayer(g, entry.beneficiary), supplier = markerOwner(g, beneficiary.id)!;
+  const request = entry.guildMarkerRequest;
+  const view: GuildMarkerView = {stage: request ? request.offer ? 'consent' : 'supply' :
+    supplier.id === beneficiary.id ? 'own' : 'request', policy: GUILD_MARKER_POLICY, options: []};
+  const add = (label: string, action: Action, at?: {territory: string; sector: number}, blocked: string | null = null) =>
+    view.options.push({key: JSON.stringify(action), label, action, blocked, ...at});
+  if (request?.offer) {
+    const offer = request.offer;
+    let blocked: string | null = null;
+    try { quoteAmbassadorMarker(g, beneficiary.id, {...offer.marker, territory: offer.territory,
+      sector: offer.sector, elite: offer.elite}); } catch (error) { if (!(error instanceof RuleError)) throw error; blocked = error.message; }
+    add(`Accept No-Field ${offer.marker.value}: ${offer.amount} physical forces to ${territory(offer.territory).name}, sector ${offer.sector}. ${getPlayer(g, offer.marker.payer === 'both' ? supplier.id : offer.marker.payer).name}${offer.marker.payer === 'both' ? ' and recipient each pay 1' : ` pays ${offer.cost}`} spice to Guild or Bank.`,
+      {type: 'decision', event: entry.event, acceptNoField: true}, undefined, blocked);
+  } else if (supplier.noField?.deployed && supplier.id === beneficiary.id) {
+    add('Reveal your existing No-Field before choosing another marker', {type:'decision', event:entry.event, revealNoField:true});
+  } else {
+    let destinations: ReturnType<typeof markerDestinations> = [];
+    try { destinations = guildAmbassadorRule(() => markerDestinations(g, beneficiary.id)); } catch (error) { if (!(error instanceof RuleError)) throw error; }
+    if (view.stage === 'request') {
+      for (const at of destinations) add(`Ask Richese for a No-Field shipment to ${territory(at.territory).name}, sector ${at.sector}`,
+        {type:'decision', event:entry.event, requestNoField:true, territory:at.territory, sector:at.sector}, at);
+    } else for (const at of request ? [{territory:request.territory,sector:request.sector}] : destinations) {
+      for (const token of supplier.noField!.tokens.filter(token => token.id !== supplier.noField!.lastShipped)) {
+        const cost = territory(at.territory).type === 'stronghold' ? 1 : 2;
+        for (const payer of view.stage === 'own' ? [supplier.id] : [supplier.id,beneficiary.id,...(cost === 2 ? ['both'] : [])]) {
+          try {
+            const order = quoteAmbassadorMarker(g, beneficiary.id, {tokenId:token.id, tokenEvent:supplier.noFieldEvent!, ...at, payer}, view.stage === 'own');
+            add(view.stage === 'own' ? `Ship concealed No-Field ${token.value} for free to ${territory(at.territory).name}, sector ${at.sector}` :
+              `Offer No-Field ${token.value}: ${order.amount} forces; ${payer === 'both' ? 'each ally pays 1 spice' : `${getPlayer(g,payer).name} pays ${order.cost} spice`}`,
+              view.stage === 'own' ? {type:'decision',event:entry.event,amount:1,noField:token.id,noFieldEvent:supplier.noFieldEvent, ...at} :
+                {type:'decision',event:entry.event,offerNoField:token.id,noFieldEvent:supplier.noFieldEvent,payer,elite:order.elite}, at);
+          } catch (error) { if (!(error instanceof RuleError)) throw error; }
+        }
+      }
+    }
+  }
+  if (request) { view.decline = {type:'decision',event:entry.event,declineNoField:true}; view.declineLabel = 'Return to the original shipment choice'; }
+  return view;
+}
+function declareAmbassadorMarker(g: Game, order: GuildAmbassadorMarkerQuote) {
+  const entry = g.pendingAmbassador!;
+  validateAmbassadorShipmentArrival(g, order);
+  const {marker,...shipment} = order;
+  g.pendingShipment = {...shipment, ambassadorMarker:marker, turn:g.turn, source:'ambassador', ambassadorEvent:entry.event};
+  g.response = {kind:'richeseNoField',owner:order.marker.owner,passed:[],source:'ambassadorNoField',intent:entry.event};
+  g.decision = null;
+  log(g, 'A No-Field substitution was declared for the independent Guild Ambassador shipment. Its payment, token and forces wait for the response.');
+}
+function validateAmbassadorMarkerResponse(g: Game, response: ResponseWindow) {
+  const shipment = g.pendingShipment, entry = g.pendingAmbassador;
+  requireRule(response.kind === 'richeseNoField' && response.source === 'ambassadorNoField' &&
+    entry?.stage === 'ship' && entry.effect === 'guild' && response.intent === entry.event &&
+    shipment?.source === 'ambassador' && shipment.ambassadorEvent === entry.event &&
+    shipment.ambassadorMarker?.owner === response.owner,
+    'The No-Field response has lost its original independent grant.');
+  validateAmbassadorShipmentOrder(g, shipment);
+  return shipment;
+}
+function decideAmbassadorMarker(g: Game, actor: Player, action: Action): boolean {
+  const {entry,beneficiary} = currentGuildAmbassador(g, stringField(action.event));
+  const request = entry.guildMarkerRequest;
+  markerRequestIntegrity(g);
+  if (request) {
+    if (action.declineNoField === true) {
+      delete entry.guildMarkerRequest;
+      g.decision = {kind:'ecazAmbassador',player:beneficiary.id};
+      return true;
+    }
+    if (!request.offer) {
+      requireRule(actor.id === request.owner, 'Richese chooses its own physical marker and payment.');
+      request.offer = quoteAmbassadorMarker(g, beneficiary.id, {tokenId:stringField(action.offerNoField),
+        tokenEvent:stringField(action.noFieldEvent), territory:request.territory, sector:request.sector,
+        payer:stringField(action.payer), elite:action.elite === undefined ? undefined : integer(action.elite,0,4,'Elite forces')}, false);
+      g.decision = {kind:'ecazAmbassador',player:beneficiary.id};
+    } else {
+      requireRule(actor.id === beneficiary.id && action.acceptNoField === true, 'Accept or decline this allied No-Field offer.');
+      const offer = request.offer;
+      const quoted = quoteAmbassadorMarker(g,beneficiary.id,{...offer.marker, territory:offer.territory,sector:offer.sector,elite:offer.elite});
+      requireRule(JSON.stringify(quoted) === JSON.stringify(offer), 'The offered token, physical forces or payment changed. Request a fresh offer.');
+      declareAmbassadorMarker(g,quoted);
+    }
+    return true;
+  }
+  if (action.requestNoField === true) {
+    const supplier = markerOwner(g,beneficiary.id);
+    requireRule(guildMarkerAvailable(g,beneficiary.id) && supplier && supplier.id !== beneficiary.id,
+      'A current Richese ally must choose and authorize its own marker.');
+    const to = stringField(action.territory), sector = integer(action.sector,0,18,'Sector');
+    requireRule(guildAmbassadorRule(() => markerDestinations(g,beneficiary.id)).some(at => at.territory === to && at.sector === sector), 'Choose an available independent shipment destination.');
+    entry.guildMarkerRequest = {owner:supplier.id,tokenEvent:supplier.noFieldEvent!,territory:to,sector};
+    g.decision = {kind:'ecazAmbassador',player:supplier.id};
+    return true;
+  }
+  if (action.revealNoField === true) {
+    requireRule(guildMarkerAvailable(g,beneficiary.id) && actor.id === beneficiary.id && actor.faction === 'richese' && actor.noField?.deployed,
+      'Only Richese may reveal its existing marker before its independent shipment.');
+    revealPlayerNoField(g,actor,'voluntary');
+    g.decision = {kind:'ecazAmbassador',player:beneficiary.id};
+    return true;
+  }
+  if (action.noField !== undefined) {
+    requireRule(actor.id === beneficiary.id && actor.faction === 'richese' && action.amount === 1 &&
+      (action.elite === undefined || action.elite === 0) &&
+      (action.allyPayment === undefined || action.allyPayment === 0) && action.alliedNoField === undefined,
+      'Substitute one native marker for the whole grant, without additional counters.');
+    declareAmbassadorMarker(g,quoteAmbassadorMarker(g,beneficiary.id,{tokenId:stringField(action.noField),
+      tokenEvent:stringField(action.noFieldEvent),territory:stringField(action.territory),sector:integer(action.sector,0,18,'Sector')}));
+    return true;
+  }
+  return false;
 }
 function quoteAmbassadorShipment(g: Game, action: Action) {
   const { beneficiary } = currentGuildAmbassador(g, stringField(action.event));
@@ -17862,7 +18036,7 @@ function offerAmbassadorShipment(g: Game) {
   const choices = guildAmbassadorRule(() =>
     guildAmbassadorShipments(g, beneficiary.id),
   );
-  if (choices.maximum && choices.destinations.length)
+  if ((choices.maximum && choices.destinations.length) || guildMarkerAvailable(g,beneficiary.id))
     g.decision = { kind: 'ecazAmbassador', player: beneficiary.id };
   else {
     log(
@@ -17899,6 +18073,20 @@ function validateAmbassadorShipmentOrder(g: Game, shipment: PendingShipment) {
       !shipment.alliedNoField,
     'This declaration does not match its independent Guild Ambassador shipment.',
   );
+  if (shipment.ambassadorMarker) {
+    const marker = shipment.ambassadorMarker;
+    const order = quoteAmbassadorMarker(g,beneficiary.id,{...marker,territory:shipment.territory,
+      sector:shipment.sector,elite:shipment.elite});
+    requireRule(shipment.amount === order.amount && shipment.elite === order.elite &&
+      shipment.cost === order.cost && shipment.allyPayment === 0 && shipment.advisors === order.advisors &&
+      JSON.stringify(marker) === JSON.stringify(order.marker),
+      'The declared independent marker changed its original token, payment or force allocation.');
+    if (marker.mode === 'allied') requireRule(entry.guildMarkerRequest?.offer &&
+      JSON.stringify(entry.guildMarkerRequest.offer) === JSON.stringify(order),
+      'This allied marker has no matching supplier offer and recipient consent.');
+    validateAmbassadorShipmentArrival(g,order);
+    return order;
+  }
   const order = quoteAmbassadorShipment(g, {
     type: 'decision',
     event: entry.event,
@@ -17916,8 +18104,46 @@ function validateAmbassadorShipmentOrder(g: Game, shipment: PendingShipment) {
   validateAmbassadorShipmentArrival(g, order);
   return order;
 }
+function commitAmbassadorMarker(g: Game, order: GuildAmbassadorShipment & {marker: GuildAmbassadorMarker}) {
+  const entry = g.pendingAmbassador!, p = getPlayer(g,order.player), marker = order.marker;
+  const supplier = getPlayer(g,marker.owner);
+  if (marker.mode === 'allied' && supplier.noField!.deployed) revealPlayerNoField(g,supplier,'beforeAlly');
+  if (marker.mode === 'own') supplier.noField = noFieldRule(() => deployRicheseNoField(supplier.noField!,{
+    tokenId:marker.tokenId,controller:p.id,location:{territory:order.territory,sector:order.sector},
+  }));
+  else {
+    const result = noFieldRule(() => shipAlliedRicheseNoField(supplier.noField!,{
+      tokenId:marker.tokenId,controller:p.id,location:{territory:order.territory,sector:order.sector},
+    },p.reserves));
+    requireRule(result.forces === order.amount, 'The approved marker no longer matches its physical arrival.');
+    supplier.noField = result.state;
+    p.reserves -= order.amount;
+    if (p.elites) p.elites.reserves -= order.elite;
+    if (order.amount) place(p,order.territory,order.sector,order.amount,order.elite);
+  }
+  supplier.noFieldEvent = crypto.randomUUID();
+  supplier.spice -= marker.ownerPayment;
+  p.spice -= marker.recipientPayment;
+  observeOccupation(g);
+  delete entry.guildMarkerRequest;
+  entry.stage = 'arrival';
+  const guild = byFaction(g,'guild');
+  entry.shipmentReceipt = {order,markerCommitSignature:JSON.stringify(order),next:order.cost > 0 && guild ? 'income' : 'intrusion'};
+  log(g, marker.mode === 'own'
+    ? `${p.name} shipped one concealed No-Field for free through the Guild Ambassador. Its value remains private and ordinary shipment is unchanged.`
+    : `${supplier.name}'s No-Field ${marker.value} immediately revealed ${order.amount} ${p.name} forces through the Guild Ambassador. The allies paid ${order.cost} spice to ${guild ? 'Guild' : 'Bank'} under the provisional independent-grant policy; ordinary shipment is unchanged.`,
+    {faction:p.faction,name:'Guild Ambassador No-Field shipment'});
+  if (entry.shipmentReceipt.next === 'income') {
+    g.response = {...guildPaymentResponse(g,guild!.id,[marker.ownerPayment,marker.recipientPayment],undefined,
+      [{payer:supplier.id,amount:marker.ownerPayment},{payer:p.id,amount:marker.recipientPayment}]),
+      source:'ambassadorNoFieldIncome',intent:entry.event};
+    return;
+  }
+  continueGuildAmbassadorShipment(g,entry.event);
+}
 function commitAmbassadorShipment(g: Game, shipment: PendingShipment) {
   const order = validateAmbassadorShipmentOrder(g, shipment);
+  if (order.marker) { commitAmbassadorMarker(g,{...order,marker:order.marker}); return; }
   const { entry, beneficiary: p } = currentGuildAmbassador(
     g,
     shipment.ambassadorEvent,
@@ -17956,6 +18182,7 @@ function continueGuildAmbassadorShipment(g: Game, event: string) {
   const receipt = entry.shipmentReceipt;
   const { order } = guildAmbassadorArrival(g, event, receipt.next);
   const p = getPlayer(g, order.player);
+  if (receipt.next === 'income') return;
   if (receipt.next === 'intrusion') {
     receipt.next = 'terror';
     if (intrusion(g, p, order.territory, { ambassadorEvent: event })) return;
@@ -17968,7 +18195,7 @@ function continueGuildAmbassadorShipment(g: Game, event: string) {
         p,
         order.territory,
         order.sector,
-        order.amount,
+        order.marker ? Math.max(1,order.amount) : order.amount,
         order.elite,
         'ambassador',
         'ambassador',
@@ -19099,7 +19326,7 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
   const owner = getPlayer(g, entry.owner),
     entrant = getPlayer(g, entry.entrant);
   requireRule(
-    p.id === (entry.stage === 'offer' ? owner.id : entry.beneficiary),
+    p.id === (entry.stage === 'offer' ? owner.id : entry.stage === 'ship' && entry.guildMarkerRequest && !entry.guildMarkerRequest.offer ? entry.guildMarkerRequest.owner : entry.beneficiary),
     'The Ambassador choice belongs to another player.',
   );
   if (entry.stage === 'loan') {
@@ -19374,6 +19601,7 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
     resolveAmbassadorEffect(g);
   } else if (entry.stage === 'ship') {
     currentGuildAmbassador(g, stringField(action.event));
+    if (decideAmbassadorMarker(g,p,action)) return;
     if (action.amount === 0) {
       requireRule(
         action.noField === undefined && action.alliedNoField === undefined,
@@ -27116,6 +27344,15 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
     g.decision = resume.decision;
     g.pendingKarama = resume.pendingKarama;
     g.phaseOpening = resume.phaseOpening;
+  } else if (response.kind === 'richeseNoField' && response.source === 'ambassadorNoField') {
+    const shipment = validateAmbassadorMarkerResponse(g,response), entry = g.pendingAmbassador!;
+    g.pendingShipment = null;
+    if (canceled) {
+      entry.guildMarkerBlocked = true;
+      delete entry.guildMarkerRequest;
+      g.decision = {kind:'ecazAmbassador',player:entry.beneficiary!};
+      log(g,'Karama prevented No-Field substitution for this independent Guild Ambassador grant. No payment, force or token changed; physical reserve shipment remains available.');
+    } else offerShipment(g,shipment);
   } else if (response.kind === 'richeseNoField') {
     const quote = canceled ? noFieldCancellationQuote(g, response) : null;
     const shipment = g.pendingShipment;
@@ -27983,6 +28220,15 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
         name: canceled ? 'Shipment income prevented' : 'Shipment income',
       },
     );
+    if (response.source === 'ambassadorNoFieldIncome') {
+      const entry = g.pendingAmbassador!;
+      requireRule(entry?.stage === 'arrival' && entry.shipmentReceipt?.next === 'income' &&
+        response.intent === entry.event && response.owner === byFaction(g,'guild')?.id &&
+        response.amount === entry.shipmentReceipt.order.cost,
+        'This Guild income has lost its committed No-Field shipment.');
+      entry.shipmentReceipt.next = 'intrusion';
+      continueGuildAmbassadorShipment(g,entry.event);
+    }
   } else if (response.kind === 'harkonnenTraitor') {
     const b = g.battle!;
     if (canceled) b.traitorCalls[response.owner] = false;
@@ -29188,11 +29434,11 @@ function finishGuildTransportRateResponse(g: Game, response: ResponseWindow, can
 function offerShipment(g: Game, shipment: PendingShipment) {
   validatePhysicalShipment(g, shipment);
   validateShipmentArrival(g, shipment);
-  checkShipmentIncomeFunding(g, getPlayer(g, shipment.player), shipment.cost, shipment.allyPayment);
+  if (!shipment.ambassadorMarker) checkShipmentIncomeFunding(g, getPlayer(g, shipment.player), shipment.cost, shipment.allyPayment);
   const p = getPlayer(g, shipment.player),
     id = p.id;
   const { territory: to, sector: s } = shipment;
-  const n = shipment.alliedNoField ? 1 : shipment.amount;
+  const n = shipment.alliedNoField || shipment.ambassadorMarker ? 1 : shipment.amount;
   const guild = byFaction(g, 'guild');
   if (
     g.advanced &&
@@ -36057,6 +36303,7 @@ export function viewGame(state: Game, id: string) {
             stage: entry.stage,
             effect: entry.effect ?? token.effect,
             beneficiary: entry.beneficiary ?? null,
+            noField: ambassadorMarkerView(g, id),
             shipment:
               entry.stage === 'ship' && id === entry.beneficiary
                 ? (() => {

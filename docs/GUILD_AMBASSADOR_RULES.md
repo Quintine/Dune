@@ -2,6 +2,50 @@
 
 Primary-source review, 7 September 2026. This is a source contract, not an implementation or a claim of complete expansion compliance. Read alongside [runtime readiness](GUILD_AMBASSADOR_RUNTIME_READINESS.md).
 
+## Basic No-Field composition — 24 October 2026
+
+This supersedes the older No-Field implementation gate below for bare Basic
+Richese/Ecaz tables without optional modules. The 14 October standing
+choose-recommended instruction authorizes a provisional composition; it does
+not turn it into a publisher ruling or decide broader Advanced combinations.
+A bounded fresh check of official indexed E2/E3 extracts found no direct
+answer for this later free grant. Direct PDF retrieval returned403; existing
+primary-source links and physical-page citations remain the provenance.
+
+E2 physical p6 permits native shipment substitution and immediately reveals an
+allied token. P10 treats an unrevealed marker as one force, including zero.
+P11 requires one spice to a stronghold or two elsewhere for allied use, paid
+by either ally to Guild, or Bank if Guild is absent. This is transport payment,
+not a service fee paid to Richese. That FAQ predates E3's free up-to-four grant
+(p8), so fee precedence and the combined cap still need explicit qualification.
+
+Selected provisional policy:
+
+- Substitute the whole independent grant; no marker plus extra counters.
+- Native Richese0/3/5 counts as one while concealed and ships for free without
+  withdrawing physical reserves. Preserve normal marker history; explicitly
+  reveal a previous native marker before choosing a different one.
+- Allied use immediately materializes `min(value, recipient reserves)` actual
+  counters and must fit four. A5 marker can deliver four when only four exist;
+  it cannot truncate five available counters just to fit. An original supplier
+  marker reveals once at accepted allied commitment, using Richese's own pieces.
+- Preserve the specialized allied one/two-spice payment to Guild/Bank despite
+  the general free grant. Either ally may pay; a two-spice shipment can split
+  equally. This precedence is provisional, not an E3-specific FAQ answer.
+- The beneficiary requests the destination, Richese selects its own token and
+  payer, and the beneficiary accepts or declines the exact offer before any
+  payment/reveal. Decline returns the original physical shipment choice.
+- Printed Karama may stop marker substitution for this independent grant only.
+  Keep its physical-force alternative and ordinary shipment state. Allowance
+  commits token/payment once, then any original Guild income and arrival suffix.
+
+The existing unused ordinary shipment, movement, purchased tariff and normal
+No-Field block flags are not consumed or reset. The source event/token history
+and private choices stay authoritative. Existing serialized physical receipts
+retain their old zero-cost contract; new marker receipts carry their own witness.
+Optional modules, native Advanced and wider child interactions retain their
+separate gates; this is a working Basic prototype, not full-rule acceptance.
+
 ## Authority and the independent grant
 
 E3 pp.7–8 gives Ecaz the optional trigger and lets Ecaz assign its benefit to its ally. The benefit sends up to four beneficiary-owned reserve forces to a clear territory, free. The physical Guild marker excludes a Guild entrant; an entrant is not the beneficiary. The BG marker copies effects, so distinguish its physical identity from its chosen effect. E3 p.15 expressly classifies the Guild effect as an immediate shipment, interrupting the entrant before its movement. Occupy permits the Ecaz pair to co-occupy and counts that pair as one faction. E3 p.16's Ambassador Karama entry prevents placement, not an already-triggered effect. [Official E3](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf)

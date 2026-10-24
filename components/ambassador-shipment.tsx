@@ -5,6 +5,7 @@ import type { Action, GameView } from '@/game/engine';
 import { location, territory } from '@/game/board';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { AmbassadorNoField } from './ambassador-no-field';
 
 const bounded = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, Number.isSafeInteger(value) ? value : min));
@@ -26,24 +27,46 @@ export function AmbassadorShipment({
   const entry = game.ambassadorEntry;
   if (
     entry?.stage !== 'ship' ||
-    entry.beneficiary !== game.me ||
     game.decision?.kind !== 'ecazAmbassador' ||
-    game.decision.player !== game.me ||
-    !entry.shipment
+    game.decision.player !== game.me
   )
     return null;
+  if (entry.noField?.stage === 'supply' || entry.noField?.stage === 'consent')
+    return <AmbassadorNoField game={game} act={act} busy={busy} />;
+  if (entry.beneficiary !== game.me || !entry.shipment) return null;
   const me = game.players.find((p) => p.id === game.me)!;
   const shipment = entry.shipment;
+  const destinations = shipment.destinations.map((d) => ({
+    territory: d.territory,
+    sector: d.sector,
+    blocked: d.blocked,
+  }));
+  for (const option of entry.noField?.options ?? []) {
+    if (!option.territory || option.sector === undefined) continue;
+    const existing = destinations.find((d) =>
+      d.territory === option.territory && d.sector === option.sector,
+    );
+    if (existing) {
+      if (!option.blocked) existing.blocked = null;
+    } else destinations.push({
+      territory: option.territory,
+      sector: option.sector,
+      blocked: option.blocked,
+    });
+  }
   const destination =
-    shipment.destinations.find(
+    destinations.find(
       (d) => location(d.territory, d.sector) === destinationKey,
     ) ??
-    shipment.destinations.find((d) => !d.blocked) ??
-    shipment.destinations[0];
+    destinations.find((d) => !d.blocked) ??
+    destinations[0];
+  const physicalDestination = shipment.destinations.find((d) =>
+    d.territory === destination?.territory && d.sector === destination?.sector,
+  );
   const maximum = Math.min(
     shipment.maximum,
     me.reserves,
-    destination?.maximum ?? shipment.maximum,
+    physicalDestination?.maximum ?? 0,
   );
   const amount = maximum ? bounded(count ?? maximum, 1, maximum) : 0;
   const minimumElite = Math.max(
@@ -54,11 +77,11 @@ export function AmbassadorShipment({
   const elite = bounded(eliteCount, minimumElite, maximumElite);
   const reason = !amount
     ? 'You have no reserve forces available for this shipment.'
-    : !destination
+    : !physicalDestination
       ? 'No shipment destination is currently available.'
-      : destination.blocked;
+      : physicalDestination.blocked;
   const territories = [
-    ...new Set(shipment.destinations.map((d) => d.territory)),
+    ...new Set(destinations.map((d) => d.territory)),
   ];
   return (
     <div
@@ -112,9 +135,9 @@ export function AmbassadorShipment({
           id={`${id}-territory`}
           className="min-h-11"
           value={destination?.territory ?? ''}
-          disabled={busy || !shipment.destinations.length}
+          disabled={busy || !destinations.length}
           onChange={(e) => {
-            const options = shipment.destinations.filter(
+            const options = destinations.filter(
               (d) => d.territory === e.target.value,
             );
             const chosen = options.find((d) => !d.blocked) ?? options[0];
@@ -142,7 +165,7 @@ export function AmbassadorShipment({
           disabled={busy || !destination}
           onChange={(e) => setDestinationKey(e.target.value)}
         >
-          {shipment.destinations
+          {destinations
             .filter((d) => d.territory === destination?.territory)
             .map((d) => (
               <option key={d.sector} value={location(d.territory, d.sector)}>
@@ -152,15 +175,12 @@ export function AmbassadorShipment({
             ))}
         </select>
       </label>
-      {destination?.advisors && (
+      {physicalDestination?.advisors && (
         <p className="m-0 text-sm">These forces join your advisors.</p>
       )}
       <p className="m-0 text-sm" aria-live="polite">
         Selected: {amount} physical forces, including {elite} elites. Cost: 0
         spice.
-      </p>
-      <p className="m-0 text-sm">
-        No-Field substitution for this effect remains unfinished.
       </p>
       {reason && (
         <p id={`${id}-reason`} className="m-0 text-sm leading-6">
@@ -195,6 +215,13 @@ export function AmbassadorShipment({
       >
         Send no forces
       </Button>
+      <AmbassadorNoField
+        game={game}
+        act={act}
+        busy={busy}
+        destination={destination?.territory}
+        sector={destination?.sector}
+      />
     </div>
   );
 }

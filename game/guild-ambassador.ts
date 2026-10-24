@@ -11,6 +11,7 @@ import {
 import { presenceAt } from './force-presence';
 import { territoryEntryBlock } from './occupancy';
 import { homeworldSpiritualAdvisorQuote } from './homeworld-mobility';
+import type { GuildAmbassadorMarker } from './guild-ambassador-no-field';
 
 export class GuildAmbassadorShipmentError extends Error {
   constructor(message: string) {
@@ -25,8 +26,9 @@ export type GuildAmbassadorShipment = {
   territory: string;
   sector: number;
   advisors: boolean;
-  cost: 0;
+  cost: 0 | 1 | 2;
   allyPayment: 0;
+  marker?: GuildAmbassadorMarker;
 };
 export type GuildAmbassadorShipments = {
   maximum: number;
@@ -283,11 +285,11 @@ export function quoteGuildAmbassadorAdvisor(
       shipper.faction !== 'fremen' &&
       record(shipment) &&
       count(shipment.amount) &&
-      shipment.amount >= 1 &&
+      (shipment.amount >= 1 || shipment.marker?.mode === 'allied') &&
       shipment.amount <= 4 &&
       count(shipment.elite) &&
       shipment.elite <= shipment.amount &&
-      shipment.cost === 0 &&
+      (shipment.marker ? [0,1,2].includes(shipment.cost) : shipment.cost === 0) &&
       shipment.allyPayment === 0 &&
       typeof shipment.advisors === 'boolean' &&
       typeof shipment.territory === 'string' &&

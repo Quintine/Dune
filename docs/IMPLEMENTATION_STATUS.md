@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 24 October 2026 — Basic Guild Ambassador No-Field
+
+Connect native concealed0/3/5 and explicit allied supplier/beneficiary consent
+to the whole independent grant. Native use counts one/free; allied immediate
+materialization fits four, with provisional one/two-spice transport to Guild or
+Bank. No extra counters join the marker. Actual old native reveal, allied prior
+reveal, shared last-token history, physical fallback after refusal/prevention
+and original entrant continuation remain distinct. New optional marker/request
+fields and a committed receipt witness leave legacy physical receipts intact.
+
+Disjoint quote/source/controls lanes and bounded source/continuation review pass
+13 files129/129, types/lint/build, fifteen gameplay/control/GameTable SSR
+journeys and eight existing-profile paths accepting12 proposals. Genuine
+three/four-seat setup, original Ambassador packet, two paid placements, accepted
+Ecaz alliance and paid entrant supply53/71/74 source actions. Two shortage cases
+explicitly move conserved original counters to existing groups; no source clock,
+alliance or pending receipt is installed. Held-Karama sources preserve meaningful
+prevention controls; ordinary hands autoallow. The actual reveal feedback found
+and fixed a lost native shipment decision. Three fixture type errors were fixed.
+
+[Exact source, policy and evidence](GUILD_AMBASSADOR_IMPLEMENTATION.md#basic-native-and-allied-no-field--24-october-2026)
+retain Basic-only bounds, unfinished Advanced/modules/complete modes and final
+assurance/deployed gates. No server, saved-game/D1/reset/restart/deployment
+operation or strategy/calibration work.
+
 ## 24 October 2026 — Basic shared Ambassador and Terror arrival
 
 Admit the original ordered native entry in the existing bare Basic Richese

@@ -2,6 +2,77 @@
 
 7 September 2026. The Guild Ambassador now provides an independent free physical reserve shipment for Ecaz or its ally, including a permitted Bene Gesserit copy. It is the eighth implemented ordinary Ambassador effect. This checkpoint does not enable full Ecaz, Advanced or expansion starts or establish complete expansion compliance.
 
+## Basic native and allied No-Field — 24 October 2026
+
+**Prototyped / Partial.** Bare Basic Richese/Ecaz tables without optional modules
+now use No-Field for the whole Guild Ambassador grant. The
+[source-selected provisional composition](GUILD_AMBASSADOR_RULES.md#basic-no-field-composition--24-october-2026)
+admits native concealed0/3/5 as one free marker without reserve withdrawal.
+Allied immediate materialization uses `min(value, recipient reserves)` within
+four, never an invented truncation of five available pieces. The specialized
+one/two-spice allied transport payment goes to Guild, or Bank when absent,
+despite the general free grant; this precedence remains provisional.
+
+The beneficiary chooses the requested destination. Richese privately chooses
+its physical token and supplier/recipient/split payment; the beneficiary accepts
+or declines the exact offer before any transfer. A two-spice fee may split1/1.
+Either refusal returns the original physical shipment choice. Native Richese
+explicitly reveals an old marker first; accepted allied use reveals the old
+supplier marker once, then immediately materializes the new token from the
+recipient's own reserves. Normal token availability/history remains shared.
+Zero reserve counters do not erase a native concealed-marker opportunity.
+
+New controls retain their event, supplier/beneficiary actor, exact server option,
+provisional guidance and busy/blocked reasons. Printed Karama prevents only this
+grant's marker substitution and retains the physical-force alternative. Ordinary
+shipment/movement, normal No-Field block flags and unrelated tariff benefits
+remain unchanged. Successful payment opens its exact Guild-income response
+before existing arrival continuation; canceling income keeps the paid shipment.
+New optional declaration/request fields and a committed marker receipt witness
+do not retrofit old physical receipts or change their zero-price validation.
+
+Pure quotes live in `game/guild-ambassador-no-field.ts`; root integration covers
+authoritative declaration/consent, payment, token placement/revelation and the
+existing typed arrival parent. The ordinary physical quote remains separate.
+Basic minimal bots answer supplier/consent requests using their own projected
+options and can complete a native marker grant when no physical reserve remains.
+No strategy or strength calibration was added.
+
+The final **13-file129/129** related union, `npm run check:quick` and production
+build pass. Fifteen gameplay/control/GameTable SSR journeys exercise native
+0/3/5, actual old-marker reveal, zero reserves, allied consent/refusal, cap5→4,
+zero materialization, Guild/Bank payment, printed prevention, physical fallback
+and the original entrant's actual move/end. Eight existing-profile continuations
+accept12 proposals from native-empty or allied-request positions. Pure/controller
+regressions keep fees, token events, typed counts and legacy behavior covered.
+
+Genuine three/four-seat Basic setup selects only original undealt cards/Spice
+and nine original packet rolls. Ecaz actually pays for two placements, forms
+an accepted alliance with Richese through its reusable token and declines its
+optional Basic Duke loan. Ecaz/Richese have already shipped normally; Harkonnen
+then pays for the real Guild-marker entry. Runtime sources retain53/71/74
+actual actions. Native-empty and allied5/reserves4 cases separately stage prior
+conserved deployments into existing groups, not played movement. Source cases
+with actual held Karama keep the prevention response; ordinary hands autoallow.
+Feedback repaired a lost decision after native prior reveal, those response
+assumptions and three fixture type errors. Bounded source/continuation review
+found no remaining blocking issue.
+
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261024-guild-ambassador-no-field/`,
+`frozen-integrated/report.json`, `runtime-smoke.json`, HTML/logs and
+`verified-files.json`. Before final prose: base4b2f4f3fa3853aa1acd46631d186c746a06842f8,
+source treed30c6163b8e7e07e73159f27f8dfb2e49726d88ec777b4ce377eb05bb48fd8a3,
+2680 tracked/nonignored files unchanged throughout verification. Four final
+prose/reference overlays preserve code/test hashes; delivery checks links,
+evidence, reference syntax/keys, explicit staging and remote push.
+
+This supersedes the earlier No-Field implementation gate below only for this
+Basic profile. Native Advanced, optional modules and wider originating-card or
+competing arrival combinations retain their separate boundaries. SSR uses
+framework aliases/CSS stubs and is not browser/visual/deployed acceptance.
+Complete rules, comprehensive saved-game/privacy/custody assurance and full AI
+remain unfinished. No saved room, D1, reset, restart or deployment operation.
+
 ## Rules and bounded behavior
 
 [GUILD_AMBASSADOR_RULES.md](GUILD_AMBASSADOR_RULES.md) records the primary sources and unresolved combinations. E3 pp.8,15 establishes the reserve grant and immediate shipment before the original entrant continues. The beneficiary may select one through four physical forces, including any required or chosen elites, and a clear destination sector. An explicit zero-force choice is implemented as the reading of “up to four”; the triggered token remains committed. No available reserves or board destination completes without moving forces under the documented unavailable-effect interpretation. An implementation-blocked arrival is not silently treated as a rules-impossible destination.
@@ -18,13 +89,13 @@ The durable receipt validates historical actor, event, token, quantity and child
 
 ## Controls and AI
 
-Only the beneficiary receives `ambassadorEntry.shipment`. The dedicated event-keyed form shows physical count, elite minimum/maximum, destination territory/sector, zero cost and an explicit **Send no forces** action. Server-projected blocked reasons disable submission and are associated with the controls. There is no payment dialog or No-Field selector.
+Only the beneficiary receives `ambassadorEntry.shipment`. The dedicated event-keyed form shows physical count, elite minimum/maximum, destination territory/sector, zero cost and an explicit **Send no forces** action. Server-projected blocked reasons disable submission and are associated with the controls. This dated physical-only baseline is extended by the Basic No-Field controls above.
 
 All four AI profiles choose a positive projected legal shipment when available, preserve canonical elite allocation and otherwise choose zero. They filter blocked destinations before scoring. Offer/copy preference uses only the bot's own reserve availability, not an ally's hidden resources. For a source-bound BG follow-up, only its owner receives `guildAmbassadorAdvisorChoices`; UI and AI use the supplied sectors and blocking reasons. The AI falls back to Polar Sink or decline. Legacy accompaniment controls retain their prior behavior.
 
 ## Remaining boundaries
 
-- **No-Field substitution remains unavailable pending the user's interpretation.** The combined free price, four-force cap, concealed value and mandatory allied substitution fee have no direct publisher ruling established here. Moving an existing marker with the Fremen effect does not settle this shipment question.
+- **No-Field:** the24 October Basic prototype above supersedes the original implementation gate. Native Advanced and optional combined profiles remain gated; the combined cap and fee policy is provisional, without a direct publisher ruling.
 - Simultaneous foreign-BG Intrusion/Terror and Ambassador/Terror remain explicit arrival gates. A rejected declaration commits no forces. The supported sequential or secondary cases do not resolve those competing priorities.
 - Moritani Atomics Aftermath's shipment prohibition still requires its gated effect producer/state. Homeworlds, Discovery locations and their component modifiers require their own gated modules. The physical quote is not evidence that these absent combinations have been implemented.
 - Tleilaxu Ambassador, complete Occupy combat/collection/victory, exceptional Duke custody and full optional-module combinations remain unfinished. The source-version conflict about Occupy combat rounding is unchanged.

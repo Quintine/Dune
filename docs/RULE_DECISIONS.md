@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Provisional Basic Guild Ambassador No-Field composition — 24 October 2026
+
+Use the 14 October choose-recommended authority for the previously gated
+independent grant: native concealed0/3/5 counts as one/free; allied immediate
+reserve-capped materialization must fit four, while the specialized printed
+one/two-spice Guild/Bank payment survives the general free grant. No extra
+counters accompany the marker. Supplier choice and beneficiary consent precede
+payment/reveal; marker cancellation affects only this grant. No direct publisher
+combination ruling was found. [Exact primary passages, policy and boundaries](GUILD_AMBASSADOR_RULES.md#basic-no-field-composition--24-october-2026).
+
 ## Provisional Sapho Extortion payer order — 18 October 2026
 
 Apply the general printed first/last ordered-action effect to Extortion's

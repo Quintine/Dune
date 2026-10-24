@@ -26,6 +26,7 @@ export type GuildAmbassadorArrivalContext = Pick<
   | 'lastBattleContext'
 >;
 export type GuildAmbassadorArrivalNext =
+  | 'income'
   | 'intrusion'
   | 'terror'
   | 'accompany'
@@ -78,7 +79,7 @@ export function validateGuildAmbassadorArrivalContext(
       entry.phase === g.phase &&
       id(event) &&
       entry.event === event &&
-      ['intrusion', 'terror', 'accompany', 'advisor', 'finish'].includes(
+      ['income', 'intrusion', 'terror', 'accompany', 'advisor', 'finish'].includes(
         next,
       ) &&
       record(entry.shipmentReceipt) &&
@@ -134,11 +135,11 @@ export function validateGuildAmbassadorArrivalContext(
     record(order) &&
       order.player === beneficiary.id &&
       whole(order.amount) &&
-      order.amount >= 1 &&
+      (order.amount >= 1 || !!order.marker) &&
       order.amount <= 4 &&
       whole(order.elite) &&
       order.elite <= order.amount &&
-      order.cost === 0 &&
+      (order.marker ? [0,1,2].includes(order.cost) : order.cost === 0) &&
       order.allyPayment === 0 &&
       typeof order.advisors === 'boolean' &&
       boardLocation(order.territory, order.sector) &&
@@ -146,6 +147,21 @@ export function validateGuildAmbassadorArrivalContext(
       !Object.hasOwn(order, 'alliedNoField'),
     'The saved Guild Ambassador receipt is not a physical free reserve shipment.',
   );
+  if (order.marker) {
+    const marker = order.marker, supplier = g.players.find(p => p.id === marker.owner);
+    requireArrival(entry.shipmentReceipt.markerCommitSignature === JSON.stringify(order) &&
+      supplier?.faction === 'richese' && id(marker.tokenEvent) && id(marker.stateSignature) &&
+      supplier.noField?.tokens.some(token => token.id === marker.tokenId && token.value === marker.value) &&
+      (marker.mode === 'own' ? marker.owner === beneficiary.id && order.amount === 1 && order.elite === 0 &&
+        order.cost === 0 && marker.ownerPayment === 0 && marker.recipientPayment === 0 :
+        marker.mode === 'allied' && marker.owner !== beneficiary.id &&
+        order.amount <= marker.value && order.cost === (territory(order.territory).type === 'stronghold' ? 1 : 2) &&
+        whole(marker.ownerPayment) && whole(marker.recipientPayment) &&
+        marker.ownerPayment + marker.recipientPayment === order.cost) &&
+      (next !== 'income' || marker.mode === 'allied' && order.cost > 0),
+      'The committed independent marker shipment has lost its original receipt.');
+  } else requireArrival(next !== 'income' && entry.shipmentReceipt.markerCommitSignature === undefined,
+    'An ordinary free shipment has no marker payment continuation.');
   const advisorArrival = entry.shipmentReceipt.advisorArrival;
   requireArrival(
     next === 'finish' ? record(advisorArrival) : advisorArrival === undefined,
