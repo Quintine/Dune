@@ -2,6 +2,87 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Native Ornithopter movement and arrival — 24 October 2026
+
+**Prototyped / Partial.** Fresh bare Basic Richese tables with selected native
+E3 factions now offer Semuta after a completed Ornithopter movement, including
+range-three and the final two-group move. This removes the blanket Ecaz/Moritani
+seat exclusion for that existing public Basic profile. Original classic/
+non-E3 permissions remain; native Advanced E3 and optional combined profiles
+retain their preceding guards. Existing games do not gain a Semuta setup marker.
+
+The physical group and movement counters commit first. The finished card is
+the first fresh group; claim or every-seat Continue retires it before the
+original movement arrival runs. Taking the card does not move the forces again,
+grant another movement or end the original player's turn. The saved completed
+move and existing native-token signature remain unchanged; no new serialized
+field, receipt or arrival rule is introduced.
+
+The original suffix opens a clean single-token Ambassador or Terror entry with
+its actual movement cause. CHOAM private discards retain their already-paid
+three spice per card; Ixian discard pauses before its one replacement draw.
+Sabotage/Robbery overflow keep their native draw/discard and gift continuations.
+Each is a later, separate fresh event. A holder who spends the single physical
+Semuta on Ornithopter cannot spend it again on that later group. Passing the
+first group can preserve it for an eligible later card.
+
+This composes existing printed movement/discard mechanics and the current
+Semuta protocol, not a new publisher timing ruling. Ambassador/Terror overlap
+keeps its existing preflight/order: Ambassador discard admission remains guarded
+while an overlap is active. Other nested arrivals, native Advanced E3,
+optional combinations, complete modes and final acceptance remain unfinished.
+
+### Native Ornithopter source and proof
+
+The Ambassador source reuses only the original public Basic Ecaz/CHOAM/Richese/
+Guild prefix before Guild shipment: paid original cache Orni1, Ecaz's actual
+ordinary purchase1 and token placement1. Its unused constructor normal-move/
+trigger branch is neither replayed nor counted. Prefix56 actions plus1 real
+shipment (range-three) or2 branch actions (shipment2 and first same-territory
+sector move) reach the caller-owned final move. The first two-group counter
+really moves Ridge Flat17→18; the remaining original counter enters Sietch17.
+Only the original cache Semuta is transferred to Richese as labelled acquisition.
+
+The Terror source really starts Basic Moritani/Richese/Guild, chooses native
+Oh Gap setup, buys original Orni1 in turn1, places the actual hidden Terror at
+Mentat, uses legal first zero/later1+1 dials and pays turn2 shipment. Its70/71
+actions reach range-three/final-two-group movement into Carthag11; two-group
+mode first moves another counter to empty Arrakeen10. Robbery's four-card hand
+and optional claimant full hand use labelled conserved ordinary-card
+acquisitions; no force, clock, token or pending receipt is installed.
+
+The first new range-three CHOAM regression fails before admission, then passes.
+Twelve Ambassador cases, eight Terror cases and two actual-state control cases
+cover both modes, flight/later-card recovery, BG copy, empty CHOAM choice,
+original private selection, full hands, single spend, stale first-event
+rejection and exact original continuation. CHOAM credits6 once; Ix draws one
+replacement only after its fresh group; Sabotage gifts one original card or
+declines; Robbery draws one actual top card before its overflow discard.
+Native token/force/card custody stays physical and movement never repeats.
+
+The final affected **10-file135/135** union, npm run check:quick and production
+build pass. Sixteen gameplay/GameTable SSR programmes exercise both modes,
+both recovery points and all four native effect families, through explicit
+movement end. Eight existing-profile later-discard continuations accept28
+proposals, all making a legal claim. Actual Continue/Commit/Select callbacks
+retain their own events; busy handlers submit nothing. No strategy tuning or
+strength calibration occurs. Source feedback corrected setup/phase adapters,
+live flight inventory and later legal Storm dials. The first frozen union
+passed rules but failed a fixture's offer/select type narrowing; the repaired
+final source passes all checks.
+
+Private artifacts: /home/quintine/.local/share/dune/checkpoints/20261024-semuta-native-ornithopter/,
+final frozen-integrated-2/report.json, runtime-smoke.json, private HTML/logs,
+verified-files.json and documentation-overlay.json. Before final prose:
+base047011e2438e06e93dc68d423d56135cb883846d,
+source tree96867bfb66adb8a889ca001990067f35f7f9586241b6a3b7a007bc26c6398bfc,
+2670 tracked/nonignored files unchanged throughout verification. Only four
+checkpoint-prose/reference overlays follow; local links/evidence and reference
+syntax/keys are checked separately. Framework aliases/CSS stub provide rendering
+smoke, not browser/visual/deployed acceptance. Overlap, native Advanced E3,
+optional combinations, complete modes and comprehensive assurance remain open.
+No saved-room/D1/reset/restart/deployment operation occurs.
+
 ## Ghola and conditional native income — 24 October 2026
 
 **Prototyped / Partial.** A completed ordinary Ghola can offer its used physical
@@ -91,8 +172,8 @@ now offer the same neutral reaction. A fresh entry retains its original arrival
 cause. Only phase-five shipment/movement entries with no active nested arrival,
 worm, relocation, transport, revival or purchase parent enter this scope. Older
 frames without that witness retain their original immediate continuation.
-Completed movement-card provenance and all other nested combinations remain
-unfinished interaction coverage; cause admission does not certify them.
+Completed Ornithopter movement now has the native follow-up above. Other
+nested combinations remain unfinished; cause admission does not certify them.
 
 The existing [discard inventory](SEMUTA_DISCARD_CONTINUATIONS.md) already defines
 the order: CHOAM's selected private cards form one simultaneous batch **after**

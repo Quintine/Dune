@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 24 October 2026 — Native Basic Ornithopter recovery and arrival
+
+Admit the completed movement-card fresh group in the existing bare Basic E3
+Semuta profile. Keep the actual moved group/counters and retire that event
+before original movement-caused arrival. Clean CHOAM/Ix Ambassador and
+Sabotage/Robbery overflow then retain distinct fresh groups, original payout,
+one replacement/draw and native gift. The single physical Semuta cannot be
+spent twice. Existing signatures and serialized fields remain unchanged;
+overlap, native Advanced E3 and optional-profile guards remain.
+
+Disjoint source/test lanes, actual control callbacks, bounded continuation
+review and owner integration pass10 files135/135, types/lint/build and sixteen
+gameplay/GameTable SSR programmes across both modes and both recovery points.
+Eight existing-profile later-native continuations accept28 proposals without
+strategy changes. Ambassador prefix56 plus1/2 real branch actions and Terror
+70/71 actions retain actual setup, paid cache Orni, placements and shipments.
+Semuta/overflow/full-hand acquisitions are explicitly conserved staging.
+BG copy and empty CHOAM grants have separate source/control proof.
+
+The pre-change range-three CHOAM case reproduces the missing first offer.
+Source feedback corrects phase handling before traitor setup, the final native
+Moritani setup window, legal next-turn1+1 dials and physical escrow inventory.
+The first frozen rule union passes but type checking finds an offer/select
+narrowing issue in a fixture; its source-qualified pass guard is repaired,
+then final frozen proof passes.
+[Exact source/evidence and remaining gates](SEMUTA_SOURCE_UPDATE_20260907.md#native-ornithopter-movement-and-arrival--24-october-2026).
+No complete-mode/combination or browser/deployed certificate, full AI tuning,
+comprehensive assurance or saved-room/D1/reset/restart/deployment operation.
+
+
 ## 24 October 2026 — Semuta before native Ghola income
 
 A completed Ghola now offers its actual used card while the original Tleilaxu

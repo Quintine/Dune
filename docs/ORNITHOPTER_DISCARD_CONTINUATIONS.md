@@ -2,6 +2,17 @@
 
 7 September 2026. Retiring the played Ornithopter now preserves the exact remaining arrival or turn-ending step. This continues the shared discard infrastructure without enabling Semuta or changing any unresolved movement rule or expansion start gate.
 
+## Native Basic Semuta arrival follow-up — 24 October 2026
+
+The [current native profile](SEMUTA_SOURCE_UPDATE_20260907.md#native-ornithopter-movement-and-arrival--24-october-2026)
+now admits the completed-card fresh group in bare Basic E3 tables. Original
+movement, escrow retirement and the existing after-disposal arrival remain.
+Claim/Continue retires that group before the actual movement-caused entry.
+Clean CHOAM/Ix Ambassador or Terror discards have their own later event and
+continuation; the single Semuta cannot be spent twice. Existing overlap,
+Advanced E3 and optional-profile boundaries remain. Older checkpoint counts
+below are dated continuation evidence, not a current complete-mode certificate.
+
 ## 11 October 2026 — Semuta before native Intrusion
 
 The explicit Semuta development envelope now pauses the final public Ornithopter

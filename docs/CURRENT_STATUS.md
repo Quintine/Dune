@@ -16,6 +16,27 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Native Basic Ornithopter recovery and arrival — 24 October. Prototyped / Partial.**
+Completed range-three/final-two-group flights now offer Semuta in the existing
+bare Basic E3 profile. Retire that first fresh group before the original native
+arrival; CHOAM/Ix Ambassador or Terror then has its own distinct discard event.
+Physical movement, counters, credit, replacement draw and gift never replay.
+One Semuta can recover the flight or a later native card, with existing
+full-hand exchange and persistent controls.
+
+Disjoint Ambassador/Terror sources, controls, bounded review and owner
+integration pass **10 files135/135**, types/lint/build, sixteen actual gameplay/
+control/table-rendering journeys and eight existing-profile continuations
+(28 accepted proposals). Genuine paid Orni/placement/shipments supply Ambassador
+prefix56 plus1/2 branch actions and Terror70/71 actions. Semuta/overflow/full-hand
+prior-card acquisitions are explicitly conserved staging. Source feedback
+repaired setup-vs-phase ordering, live escrow inventory and legal later Storm
+dials; a discriminated offer guard fixes the first type-check failure.
+[Source, proof and limits](SEMUTA_SOURCE_UPDATE_20260907.md#native-ornithopter-movement-and-arrival--24-october-2026).
+Overlap, native Advanced E3, optional profiles, complete modes, comprehensive/
+browser/deployed acceptance and full AI refinement remain unfinished.
+No saved-room/D1/reset/restart/deployment operation.
+
 **Semuta and native Ghola income — 24 October. Prototyped / Partial.**
 Semuta now recovers a completed Ghola while its original Tleilaxu one-spice
 income is pending. One shared source predicate retains exact native ownership,

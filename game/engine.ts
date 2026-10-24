@@ -7621,7 +7621,8 @@ function semutaOfferSupported(
     !(continuation.kind === 'ornithopterDiscard' &&
       (continuation.source === 'end' || continuation.source === 'cunning' ||
         (continuation.source === 'move' &&
-          !g.players.some(p => p.faction === 'ecaz' || p.faction === 'moritani') &&
+          (!g.players.some(p => p.faction === 'ecaz' || p.faction === 'moritani') ||
+            bareBasicSemutaProfile(g)) &&
           !g.pendingArrivalOverlap))) &&
     !(continuation.kind === 'truthtranceDiscard' &&
       (continuation.consumed.source === undefined || continuation.consumed.source === 'shrine') &&
