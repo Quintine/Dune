@@ -127,6 +127,7 @@ const RESPONSES = {
   guildTransportPermission: true,
   emperorGift: true,
   emperorRevival: true,
+  fremenRevivalGrant: true,
   stormPeek: true,
   stormProtection: true,
   wormPlacement: true,

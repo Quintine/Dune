@@ -52,6 +52,7 @@ import { NexusSardaukar } from './nexus-sardaukar';
 import { TerrorBoardMarkers } from './terror-board-markers';
 import { AmbassadorBoardMarkers } from './ambassador-board-markers';
 import { CharityClaim } from './charity-claim';
+import { FremenRevivalGrant } from './fremen-revival-grant';
 import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
 import { JunctionTransport } from './junction-transport';
@@ -2423,6 +2424,7 @@ export function GameTable({
                     advisor: 'Spiritual advisor',
                     emperorGift: 'Emperor spice gift',
                     emperorRevival: 'Emperor extra revival',
+                    fremenRevivalGrant: 'Fremen allied free revival',
                     bgCharity: 'Bene Gesserit charity',
                     choamCharity: 'CHOAM charity income',
                     choamInflation: 'CHOAM Inflation placement',
@@ -2544,6 +2546,14 @@ export function GameTable({
                   quantity limit. Karama restores the three-force limit and
                   two-spice price for this phase. Tleilaxu permission can still
                   allow five forces.
+                </p>
+              )}
+              {g.response.kind === 'fremenRevivalGrant' && (
+                <p className="notice">
+                  Fremen offered their current ally the ordinary free-revival rate of three.
+                  Karama can prevent this grant before it takes effect. Recruits uses the
+                  current valid rate after settlement, with prior returns and payments retained.
+                  Response timing and prevention of this grant for the current Revival are provisional.
                 </p>
               )}
               {g.response.kind === 'choamCharity' && (
@@ -4367,19 +4377,10 @@ export function GameTable({
                       ? ' · Tleilaxu half-price discount'
                       : ''}
                   </p>
-                  {me.faction === 'fremen' &&
-                    me.ally &&
-                    !g.freeRevival.includes(me.ally) &&
-                    actionButton('Grant ally three free revivals', {
-                      type: 'grantRevival',
-                    }, !!g.recruitsPreview?.grantRevivalBlocked,
-                    g.recruitsPreview?.grantRevivalBlocked ? 'recruits-grant-unavailable' : undefined)}
-                  {me.faction === 'fremen' && me.ally && !g.freeRevival.includes(me.ally) && g.recruitsPreview?.grantRevivalBlocked && (
-                    <p className="notice" id="recruits-grant-unavailable">{g.recruitsPreview.grantRevivalBlocked}</p>
-                  )}
+                  <FremenRevivalGrant game={g} act={act} busy={busy} />
                   {g.freeRevival.includes(me.id) && !g.revival.freeBlocked && (
                     <p className="muted">
-                      Fremen allow you up to {g.recruitsPreview?.active ? 'six' : 'three'} free force revivals this phase.
+                      Fremen’s grant is active. Your current free allowance above includes Recruits and any applicable bonuses.
                     </p>
                   )}
                   {amountInput}

@@ -5207,6 +5207,83 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
   },
   {
+    "id": "fremen-revival-grant",
+    "title": "Fremen allied free revival",
+    "category": "Factions",
+    "coverage": "Partial",
+    "developmentStage": "Prototyped",
+    "summary": "Grant the current ally its Fremen free-revival rate after a native Karama response, including after Recruits.",
+    "steps": [
+      "During Revival, Fremen may offer the current ally its ordinary free-force rate of three. The grant replaces the native ordinary rate; current bonuses, total limits and separate special-force limits still apply. It never moves counters by itself.",
+      "The original owner, ally and turn remain bound while another player may prevent the grant with Karama. All-pass commits once. Under the provisional prevention policy, cancellation denies this grant for the current Revival, preserving the ally’s intrinsic free rate, Recruits and completed returns/payments. The next native Revival clears the denial.",
+      "Recruits doubles the current granted rate including applicable bonuses before caps. With no other bonus, three becomes six. Provisionally accept grants before or after the card with the same calculation: deduct recorded free usage, preserve all earlier total returns and paid classifications, and give no refund. Finish a pending transaction before declaring a grant.",
+      "The Fremen panel keeps status and unavailable reasons visible. Your ally’s normal revival panel supplies the actual remaining amount. Complete modes, broader combinations and final acceptance remain unfinished."
+    ],
+    "related": [
+      "revival",
+      "faction-fremen",
+      "card-recruits",
+      "card-karama"
+    ],
+    "checklist": [
+      {
+        "area": "Implementation",
+        "status": "Partial",
+        "detail": "Original owner/mutual-ally/turn source validates before cancellation cost and both outcomes. Only all-pass commits; cancellation marks a phase-scoped denied grant without general free prevention. Existing native arithmetic retains limits, prices, bonuses and prior usage.",
+        "evidence": [
+          "game/fremen-revival-grant.ts",
+          "game/engine.ts",
+          "game/revival.ts",
+          "game/karama-context.ts",
+          "game/kull-purpose.ts"
+        ]
+      },
+      {
+        "area": "Player controls",
+        "status": "Partial",
+        "detail": "Actual grant callback, native response and persistent status/policy guidance are integrated. Busy, interrupted, already granted and denied actions stay disabled; no private balance, Tanks or usage count is read.",
+        "evidence": [
+          "components/fremen-revival-grant.tsx",
+          "components/game-table.tsx",
+          "tests/fremen-revival-grant-controls.test.tsx"
+        ]
+      },
+      {
+        "area": "AI",
+        "status": "Partial",
+        "detail": "Sixteen existing-profile native/Recruits paths accept80 legal own-view grant/response/return proposals. The same projected permission prevents repeat grants. Strategy and strength calibration remain deferred.",
+        "evidence": [
+          "game/bots.ts",
+          "tests/recruits-controls.test.tsx",
+          "docs/FREMEN_REVIVAL_GRANT.md"
+        ]
+      },
+      {
+        "area": "Documentation",
+        "status": "Partial",
+        "detail": "Distinguishes printed native rates and general alliance cancellation from provisional digital response duration and late-Recruits current-rate symmetry.",
+        "evidence": [
+          "docs/FREMEN_REVIVAL_GRANT.md",
+          "docs/RECRUITS_RUNTIME.md",
+          "docs/RECRUITS_RULES.md"
+        ]
+      },
+      {
+        "area": "Verification",
+        "status": "Partial",
+        "detail": "14 files305/305, types/lint/build, twelve actual control/gameplay/GameTable SSR journeys and sixteen minimal-policy paths pass. Genuine75–77 Basic/92–94 Advanced actions earn casualties and form a native Nexus alliance; Recruits is originally dealt and prior returns paid normally. Next actual Revival resets denial. Complete modes, visual/deployed and comprehensive assurance remain open.",
+        "evidence": [
+          "tests/fixture-fremen-revival-grant.ts",
+          "tests/fremen-revival-grant-engine.test.ts",
+          "tests/fremen-revival-grant-quote.test.ts",
+          "tests/fremen-revival-grant-controls.test.tsx",
+          "tests/recruits-engine.test.ts",
+          "tests/recruits-controls.test.tsx"
+        ]
+      }
+    ]
+  },
+  {
     id: 'card-recruits',
     title: 'Recruits and the Ecaz Treachery Cards variant',
     category: 'Cards',
@@ -5217,16 +5294,16 @@ export const RULE_TOPICS: RuleTopic[] = [
       'The separate three-card variant includes Recruits, Reinforcements and Harass & Withdraw. It does not require the Ecaz faction. A development preview includes all three physical cards before setup; Recruits, bounded Reinforcements and Harass & Withdraw controls are connected.',
       'The holder may play Recruits from its Revival panel. Discard the card once, then all players use the increased rates while this Revival phase remains open, including players who had already marked themselves ready. Completed returns still count toward their turn totals.',
       'Atreides rises from two free forces to four; Fremen from three to six; Guild from one to two. The ordinary force limit becomes seven. Native unlimited CHOAM and Tleilaxu allowances remain unlimited, and their free rates become zero and four. Paid prices and separate elite limits still apply.',
-      'Free prevention still prevents free returns. Prior paid ordinary returns now have a visibly provisional policy: preserve payment, deduct only recorded free returns from the doubled free allowance and all returns from the total cap. Two free plus one paid Atreides may take two more free without refund; this is not a numerical user ruling. Missing/inconsistent ledgers, later Fremen grants, pending transactions and same-turn replay remain guarded.',
+      'Free prevention still prevents free returns. Prior paid ordinary returns now have a visibly provisional policy: preserve payment, deduct only recorded free returns from the doubled free allowance and all returns from the total cap. Two free plus one paid Atreides may take two more free without refund; this is not a numerical user ruling. Fremen may now grant after play under the same provisional current-rate policy, with its original Karama response settled before commitment. Missing/inconsistent ledgers, pending transactions and same-turn replay remain guarded.',
       'Clean classic2–6 Basic/Advanced Homeworlds compose through the fresh independent36-card setup. Double current native free rates including low-population bonuses, within the seven-force total. Provisionally recheck population and recorded free use on each separate request: low Fremen may take7 together, but1 crossing high leaves5 further free and cannot buy a seventh without Tleilaxu. Original typed destinations and special-force limits stay. Other overlays/rosters, public activation and whole-mode acceptance remain unfinished.',
       'Classic or selected Ix/CHOAM native/base rosters, including Homeworlds, may retain original unused Tech Tokens3–6 and/or Stronghold Cards2–6 Advanced. Setup, first-Storm Tech and actual end-Mentat custody remain original. Recruits changes current native free rates, not the once-per-phase Axlotl trigger/delayed payout. Harass returns are not free Revival.',
       'Selected Ix/CHOAM native/base Basic/Advanced Worlds use original38/50 independent-card setup with optional original phase modules. Current native bonuses, typed deposits and accepted paid/free classifications stay. Ix keeps its multiple-Cyborg allowance; Tleilaxu and CHOAM remain unlimited rather than being reduced to seven. Other card/overlay/public-start gates remain.',
       'Supported original all14/card rosters retain Tech3+ and Advanced Strongholds2+, including classic/E1/E2 Worlds. Current native free allowance doubles after recorded use; separate World groups re-observe native population. Typed elite caps, unlimited native allowances, paid Cyborg surcharges and any Tleilaxu recipient stay. Axlotl accrues once and waits for phase end; normal Banker uses the accepted final Bank invoice and waits for Mentat, not a net wallet delta after a separate native payout. No ledger, refund, owner or premature spendable income is invented.',
       'Independent Discovery, with or without Nexus, retains original optional World/all14/phase modules. Purchased Recruits may double the native free rate against actual earlier nested-battle losses; accepted physical fee and dial casualties supply the Tanks. Existing late-play/current-rate policies stay provisional. Broader interactions and complete modes remain open.',
     ],
-    related: ['revival', 'homeworlds', 'ecaz-modules', 'expansion-faction-games', 'implementation-checklist'],
+    related: ['fremen-revival-grant', 'revival', 'homeworlds', 'ecaz-modules', 'expansion-faction-games', 'implementation-checklist'],
     checklist: [
-      { area: 'Implementation', status: 'Partial', detail: 'Independent physical play/discard and public turn rates use shared revival quotes, including clean classic Homeworlds and native typed deposits. Separate requests provisionally recompute current thresholds; prior paid returns retain payment and recorded free use. Unknown ledgers, pending repricing and later Fremen grants remain guarded; Reinforcements has its separate exact native-source fee composition.', evidence: ['game/ecaz-cards.ts', 'game/recruits.ts', 'game/revival.ts', 'game/engine.ts'] },
+      { area: 'Implementation', status: 'Partial', detail: 'Independent physical play/discard and public turn rates use shared revival quotes, including clean classic Homeworlds and native typed deposits. Separate requests provisionally recompute current thresholds; prior paid returns retain payment and recorded free use. A later Fremen grant now uses the same current-rate/free-use quote after native Karama settlement; unknown ledgers and pending repricing remain guarded; Reinforcements has its separate exact native-source fee composition.', evidence: ['game/ecaz-cards.ts', 'game/recruits.ts', 'game/revival.ts', 'game/engine.ts'] },
       { area: 'Player controls', status: 'Implemented', detail: 'The owned physical card has full inspection, a Revival action and explicit unavailable reasons. All seats see the effective public rates after play.', evidence: ['components/recruits.tsx', 'components/game-table.tsx', 'game/card-presentation.ts'] },
       { area: 'AI', status: 'Partial', detail: 'All four profiles use the same legal owned offer for useful own or allied revival, then existing authoritative revival choices. Complete card strategy and calibration remain unfinished.', evidence: ['game/bots.ts'] },
       { area: 'Documentation', status: 'Implemented', detail: 'The guide records examples, limits, independent-cap inference and the visibly provisional late-paid policy; source alternatives and late-rate questions remain explicit.', evidence: ['docs/RECRUITS_RULES.md', 'docs/RECRUITS_RUNTIME.md'] },

@@ -532,6 +532,7 @@ import { quoteHomeworldPaymentIncome, quoteHomeworldBankPayment } from './homewo
 import { quoteEcazPoisonIncome, EcazPoisonIncomeError, type EcazPoisonDiscard } from './ecaz-poison-income';
 import { resolveBattleWeapons } from './effective-weapons';
 import { choamGholaEvent, choamGholaSkillOfferEvent, choamGholaSkillSignature, choamMarketGholaError, choamSaleGholaTiming, type ChoamMarketGhola } from './choam-market-ghola';
+import { quoteFremenRevivalGrant, validateFremenRevivalGrant, projectFremenRevivalGrant, FremenRevivalGrantError, type FremenRevivalGrantSource } from './fremen-revival-grant';
 import {
   charityAmount,
   charityQuote,
@@ -1060,6 +1061,7 @@ type SpiceBankerIncomePayment = {
 };
 
 export type ResponseWindow = {
+  fremenGrant?: FremenRevivalGrantSource;
   spiceBankerIncomePayment?: SpiceBankerIncomePayment;
   bureaucratPayment?: BureaucratPaymentSource;
   bureaucratPaymentEvent?: string;
@@ -1113,6 +1115,7 @@ export type ResponseWindow = {
     | 'guildTransportPermission'
     | 'emperorGift'
     | 'emperorRevival'
+    | 'fremenRevivalGrant'
     | 'stormPeek'
     | 'stormProtection'
     | 'wormPlacement'
@@ -14452,10 +14455,23 @@ function recruitsPreview(g: Game, viewer: Player): RecruitsPreview | null {
       const allowance = normalRevivalAllowance(g, target);
       return { player, freeRate: allowance.freeRate, limit: allowance.limit };
     }),
-    grantRevivalBlocked: active
-      ? 'Grant Fremen ally revival before Recruits; changing the free rate after activation awaits a rules ruling.'
-      : null,
+    grantRevivalBlocked: projectFremenRevivalGrant(g, viewer.id)?.blocked ?? null,
   };
+}
+function fremenRevivalGrantRule<T>(quote: () => T): T {
+  try { return quote(); }
+  catch (error) {
+    if (error instanceof FremenRevivalGrantError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function currentFremenRevivalGrant(g: Game, response: ResponseWindow): FremenRevivalGrantSource {
+  requireRule(response.kind === 'fremenRevivalGrant' && response.fremenGrant &&
+    response.owner === response.fremenGrant.owner && response.recipient === response.fremenGrant.recipient,
+    'The Fremen revival grant lost its original owner and ally.');
+  requireRule(!g.pendingRevival, 'Finish the existing force return before resolving the Fremen grant.');
+  fremenRevivalGrantRule(() => validateFremenRevivalGrant(g, response.fremenGrant!));
+  return response.fremenGrant;
 }
 /** Pure normal-lot prerequisites; free payment deliberately does not require spice. */
 function normalKaramaAuction(
@@ -14694,6 +14710,7 @@ function validateKaramaUse(
       'Karama cancels another faction’s power.',
     );
     karamaCanceledSource(g, use.response);
+    if (use.response.kind === 'fremenRevivalGrant') currentFremenRevivalGrant(g, use.response);
     validateAuctionContinuationCancellation(
       g,
       use.response,
@@ -27119,6 +27136,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
   karamaConversionIntegrity(g);
   currentFactionPayment(g);
   const response = g.response!;
+  const fremenGrant = response.kind === 'fremenRevivalGrant' ? currentFremenRevivalGrant(g, response) : null;
   if (g.pendingKull?.stage === 'counter' && response.kind === 'choamWorthless') kullIntegrity(g);
   if (response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, response);
   if (response.kind === 'nexusAdvisorFlip') validateNexusAdvisorResponse(g, response);
@@ -27196,6 +27214,18 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
     return;
   }
   if (offerOccupiedBonus(g, response)) return;
+  if (response.kind === 'fremenRevivalGrant') {
+    requireRule(fremenGrant, 'The original Fremen revival grant is missing.');
+    if (canceled) {
+      g.revivalRules ??= newRevivalRules();
+      (g.revivalRules.fremenGrantBlocked ??= []).push(fremenGrant.recipient);
+      log(g, `${getPlayer(g, fremenGrant.owner).name}'s allied revival grant was prevented for this Revival. The ally keeps its intrinsic free rate and completed returns.`);
+    } else {
+      g.freeRevival.push(fremenGrant.recipient);
+      log(g, `${getPlayer(g, fremenGrant.owner).name} granted ${getPlayer(g, fremenGrant.recipient).name} the Fremen allied free-revival rate for this phase. Current Recruits rates, prior usage and total limits still apply.`, { faction: 'fremen', name: 'Allied free revival' });
+    }
+    return;
+  }
   if (response.kind === 'ecazOccupy') {
     const b = g.battle, occupy = b?.ecazOccupy;
     requireRule(b && occupy?.lead && occupy.ecaz === response.owner && !b.revealed &&
@@ -34783,23 +34813,12 @@ function applyActionInner(
     return g;
   }
   if (t === 'grantRevival') {
-    requireRule(
-      g.phase === 4 && p.faction === 'fremen' && p.ally,
-      'Only Fremen may grant their ally free revival during revival.',
-    );
-    requireRule(
-      !g.freeRevival.includes(p.ally),
-      'Free revival has already been granted.',
-    );
-    requireRule(
-      g.recruits?.turn !== g.turn,
-      'Grant Fremen ally revival before Recruits; changing the free rate after activation awaits a rules ruling.',
-    );
-    g.freeRevival.push(p.ally);
-    log(
-      g,
-      `${p.name} granted their ally up to three free force revivals this phase.`,
-    );
+    requireRule(g.phase === 4 && p.faction === 'fremen' && p.ally,
+      'Only Fremen may grant their ally free revival during revival.');
+    requireRule(!recruitsInteractionPending(g), 'Finish the current revival transaction or priority window before granting allied revival.');
+    const source = fremenRevivalGrantRule(() => quoteFremenRevivalGrant(g, id));
+    g.response = { kind: 'fremenRevivalGrant', owner: source.owner,
+      recipient: source.recipient, fremenGrant: source, passed: [] };
     return g;
   }
   if (t === 'tleilaxuRevivalLimit' || t === 'tleilaxuAllyDiscount') {
@@ -36803,6 +36822,7 @@ export function viewGame(state: Game, id: string) {
     emperorExtra: g.emperorExtra ?? {},
     freeRevival: g.freeRevival ?? [],
     recruitsPreview: recruitsPreview(g, me),
+    fremenRevivalGrant: projectFremenRevivalGrant(g, id),
     revivalRules: {
       ...(g.revivalRules ?? newRevivalRules()),
       earlyBlocked: (g.revivalRules?.earlyBlocked ?? []).filter(

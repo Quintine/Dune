@@ -42,6 +42,7 @@ const cancellationLabels = {
   guildTransportPermission: 'Guild transport permission',
   emperorGift: 'the Emperor gift',
   emperorRevival: 'Emperor revival',
+  fremenRevivalGrant: 'the Fremen allied free-revival grant',
   stormPeek: 'the storm peek',
   stormProtection: 'storm protection',
   wormPlacement: 'additional worm placement',

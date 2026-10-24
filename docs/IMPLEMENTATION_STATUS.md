@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 24 October 2026 — Fremen allied revival response and late Recruits
+
+Replace direct permission commitment with an original owner/ally/turn-bound
+Karama response. Before-cost and allow/deny checks share the focused quote.
+All-pass grants once; prevention marks only the current Revival grant and
+retains intrinsic free rates, Recruits and history. The existing phase opening
+clears that denial. A successful later Recruits grant uses current rates and
+actual free usage without refunding prior paid returns. Timing/duration and
+late-rate symmetry remain explicit provisional choices. Persistent controls,
+response names, source/purpose registries and minimal bots are connected.
+
+Frozen14-file305/305, types/lint/build, twelve actual control/gameplay/GameTable
+SSR journeys into Shipment and sixteen existing-profile paths/80 accepted
+proposals pass. Genuine public classic setup, paid six-counter invasion, native
+battle losses and a second-turn worm/Nexus alliance supply75–77 Basic or92–94
+Advanced source actions. Recruits is originally dealt; optional prior return is
+actually two free/one paid. No played phase, army, wallet or alliance is assigned.
+Feedback corrects a stale guidance assertion, two exhaustive response tables
+and a synthetic response label. Bounded review corrects bonus-order wording;
+existing arithmetic already doubles applicable bonuses before caps.
+
+[Source, exact evidence and limits](FREMEN_REVIVAL_GRANT.md)
+retain complete rules/modes, wider combinations and comprehensive/browser/
+deployed acceptance. No strategy/calibration or saved-room/D1/reset/restart/
+deployment operation. Private proof:20261024-fremen-revival-grant/frozen-integrated-3.
+
 ## 24 October 2026 — CHOAM Charity self-claims and shortfall funding
 
 Make the ordinary poverty claim effective for CHOAM itself using the bank,

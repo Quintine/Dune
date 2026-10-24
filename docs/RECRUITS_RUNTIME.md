@@ -6,6 +6,19 @@ Advanced faction setup. All three physical cards are present exactly once.
 Recruits, bounded Reinforcements and Harass & Withdraw have connected controls,
 AI and saved continuation; full interactions and publication remain gated.
 
+## Native Fremen grant after play — 24 October 2026
+
+The earlier later-grant guard is replaced by the symmetric current-rate
+prototype: an original Fremen allied grant may be declared after Recruits.
+Its native Karama window settles before permission is committed. Prevention
+blocks only that grant for this Revival; it does not erase intrinsic free
+allowance, Recruits or earlier returns/payments. A successful late grant uses
+the same current3→6 calculation as a grant preceding play, with actual prior
+free usage deducted, no refund, and ordinary/native total and typed limits.
+The exact response scope and later-rate composition remain provisional under
+14 October, not a new publisher combined ruling.
+[Source, controls and bounded evidence](FREMEN_REVIVAL_GRANT.md).
+
 ## Original Skills/phase composition — 17 October 2026
 
 Supported classic, selected E1/E2 and standalone/paired E3 all14/card profiles
@@ -30,7 +43,7 @@ user ruling or a newly retrieved publisher answer.
 Thus Atreides' actual two-free/one-paid return retains its two-spice payment
 and three total returns; after Recruits it may take two additional free
 forces under the seven total cap. Missing or inconsistent free-use ledgers,
-pending declarations, later rate changes and same-turn replay remain guarded.
+pending declarations, unrelated later rate changes and same-turn replay remain guarded.
 The owned before-play panel and public active panel name this interpretation.
 
 Basic/Advanced before/after native smokes use a genuinely dealt card, an
@@ -113,7 +126,7 @@ source review. No newly retrieved late-paid ruling is claimed.
 
 The scope permits activation before returns or after consistently recorded
 free/paid normal returns, once priority windows and transactions finish.
-Unknown legacy usage, later Fremen grants, same-turn replay after recovery
+Unknown legacy usage, unrelated late-rate changes, same-turn replay after recovery
 and other optional modules remain guarded, apart from clean classic Homeworlds
 above or the separate clean classic/Ix/CHOAM
 [Tech/Advanced Stronghold composition](ECAZ_TREACHERY_RULES.md#original-phase-module-composition--16-october-2026).

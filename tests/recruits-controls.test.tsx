@@ -149,7 +149,7 @@ for (const level of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) {
   });
 }
 
-void test('all AI profiles skip the unresolved late Fremen grant while using other legal revival choices', () => {
+void test('all AI profiles retain the legal late Fremen grant after Recruits', () => {
   let g = ownerGame();
   g.players[0].ally = 'fr'; g.players[1].ally = 'at';
   g = applyAction(g, 'at', { type: 'card', card: 'ecaz-recruits' });
@@ -158,7 +158,9 @@ void test('all AI profiles skip the unresolved late Fremen grant while using oth
     view.players.find((p) => p.id === 'fr')!.bot = level;
     const actions = botActions(view);
     assert.ok(actions.length);
-    assert.ok(!actions.some((action) => action.type === 'grantRevival'));
+    const grant = actions.find(action => action.type === 'grantRevival');
+    assert.ok(grant);
+    assert.doesNotThrow(() => applyAction(g, 'fr', grant));
     assert.doesNotThrow(() => applyAction(g, 'fr', actions[0]));
   }
 });

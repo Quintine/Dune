@@ -88,7 +88,7 @@ void test('playing Recruits discards its exact card and publishes effective rate
     );
     assert.equal(preview.active, true);
     assert.equal(preview.playedBy, 'ch');
-    assert.equal(preview.grantRevivalBlocked?.includes('before Recruits'), true);
+    assert.equal(preview.grantRevivalBlocked, null);
   }
 });
 
@@ -149,13 +149,17 @@ void test('free prevention remains zero and canceled unlimited faction caps comp
   assert.equal(rows.ch.limit, 7);
 });
 
-void test('prior settled Fremen ally grant is doubled, while a grant after activation rejects immutably', () => {
+void test('Fremen ally grant uses the same current doubled rate before or after Recruits', () => {
   let g = recruitsGame();
   const fremen = g.players.find((player) => player.id === 'fr')!;
   const atreides = g.players.find((player) => player.id === 'at')!;
   fremen.ally = atreides.id;
   atreides.ally = fremen.id;
   g = applyAction(g, fremen.id, { type: 'grantRevival' });
+  while (g.response) {
+    const actor = g.players.find(p => !g.response!.passed.includes(p.id))!;
+    g = applyAction(g, actor.id, { type: 'passResponse' });
+  }
   g = applyAction(g, 'ch', play);
   assert.deepEqual(
     viewGame(g, 'at').recruitsPreview!.rates.find((row) => row.player === 'at'),
@@ -165,8 +169,14 @@ void test('prior settled Fremen ally grant is doubled, while a grant after activ
   const late = recruitsGame();
   late.players.find((player) => player.id === 'fr')!.ally = 'at';
   late.players.find((player) => player.id === 'at')!.ally = 'fr';
-  const active = applyAction(late, 'ch', play);
-  rejectUnchanged(active, 'fr', { type: 'grantRevival' });
+  let active = applyAction(late, 'ch', play);
+  active = applyAction(active, 'fr', { type: 'grantRevival' });
+  while (active.response) {
+    const actor = active.players.find(p => !active.response!.passed.includes(p.id))!;
+    active = applyAction(active, actor.id, { type: 'passResponse' });
+  }
+  assert.deepEqual(viewGame(active, 'at').recruitsPreview!.rates.find(row => row.player === 'at'),
+    { player: 'at', freeRate: 6, limit: 7 });
 });
 
 void test('activation rejects pending, unknown and inconsistent revival histories without consuming the card', () => {

@@ -16,6 +16,25 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Fremen allied free revival — 24 October. Prototyped / Partial.**
+The original owner/ally/turn grant now resolves Karama before commitment.
+Prevention provisionally denies only that grant for the current Revival;
+intrinsic rates, Recruits and completed returns/payments stay intact. A later
+Recruits grant now uses the same current-rate calculation and actual free-use
+ledger as the opposite order, with no refund or retroactive reclassification.
+Persistent controls and minimal bots share the projected permission.
+[Source, selected timing and proof](FREMEN_REVIVAL_GRANT.md).
+
+Disjoint helper/source/controls lanes and bounded review pass **14 files305/305**,
+types/lint/build, twelve actual control/gameplay/GameTable SSR journeys into
+Shipment, and sixteen existing-profile paths (80 accepted proposals).
+Genuine75–77 Basic/92–94 Advanced action sources earn Tanks in an actual battle
+and form the alliance at a real Nexus. Feedback repairs guidance expectations,
+two exhaustive kind registries and a fixture response label. No full-mode,
+strategy, comprehensive/browser/deployed certificate or saved-room/D1/reset/
+restart/deployment operation. The next mapped native candidate is Advanced
+Bene Gesserit advisor preparation timing before the first shipment.
+
 **CHOAM Charity funding — 24 October. Prototyped / Partial.**
 CHOAM's own eligible poverty claim now uses the Spice Bank; E2 names other
 factions as its payees. After legal intervening spending, the selected preview

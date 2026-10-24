@@ -28,6 +28,8 @@ export type RevivalRules = {
   nexusFremen?: { turn: number; owners: string[] };
   choamBlocked?: boolean;
   freeBlocked?: string[];
+  /** This Revival turn's prevented native Fremen-to-ally grant opportunities. */
+  fremenGrantBlocked?: string[];
   limitBlocked: boolean;
   fullPrice: boolean;
   allyDiscount: string | null;

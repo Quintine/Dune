@@ -3245,8 +3245,7 @@ function policyActions(g: GameView): Action[] {
           actions.push({ type: 'requestLeaderRevival', leader: dead.id });
       }
     }
-    if (me.faction === 'fremen' && me.ally && !g.freeRevival.includes(me.ally) &&
-        !g.recruitsPreview?.grantRevivalBlocked)
+    if (g.fremenRevivalGrant && !g.fremenRevivalGrant.granted && !g.fremenRevivalGrant.blocked)
       actions.push({ type: 'grantRevival' });
     if (me.faction === 'emperor' && me.ally && level > 0) {
       const ally = g.players.find((p) => p.id === me.ally)!;

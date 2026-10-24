@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Fremen allied revival response and later Recruits grant — 24 October 2026
+
+Compose the base Fremen allied free rate with the general FAQ's cancelable
+alliance use. Before committing the original owner/mutual-ally/turn grant,
+resolve the native Karama window. Under the 14 October recommended policy,
+prevention denies only this grant for current Revival, retaining intrinsic
+free rates, Recruits and completed history. An allowed later Recruits grant
+uses the same current rate and recorded free usage as the opposite order;
+prior paid returns keep their prices without refund. Exact response duration
+and late-rate symmetry are provisional, not a direct publisher worked ruling.
+[Source, implementation and limits](FREMEN_REVIVAL_GRANT.md#source-and-selected-timing--24-october-2026).
+
 ## CHOAM self-claim and provisional shortfall funding — 24 October 2026
 
 E2 p7 names other factions as CHOAM's payees; the ordinary poverty rule leaves

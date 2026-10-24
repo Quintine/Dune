@@ -189,6 +189,14 @@ const cancellationSources = {
         : response.advisorResume === 'declaration'
           ? { battle: battleSource(g), active: g.active }
           : movementSource(g),
+  fremenRevivalGrant: (g, response) => ({
+    source: response.fremenGrant ?? null,
+    ownerAlly: g.players.find(p => p.id === response.owner)?.ally ?? null,
+    recipientAlly: g.players.find(p => p.id === response.recipient)?.ally ?? null,
+    granted: g.freeRevival.includes(response.recipient ?? ''),
+    blocked: g.revivalRules?.fremenGrantBlocked?.includes(response.recipient ?? '') ?? false,
+    recruits: g.recruits?.turn === g.turn,
+  }),
   bgCharity: () => null,
   choamCharity: () => null,
   choamInflation: (g) => ({

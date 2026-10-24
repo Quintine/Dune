@@ -17,6 +17,13 @@ provisional, not a new FAQ or resolution of all later-rate questions. See the
 [native contract](RECRUITS_RUNTIME.md#classic-homeworld-composition--16-october-2026).
 
 
+**Native grant follow-up — 24 October 2026:** the earlier direct-commit and
+later-grant absence claims below are superseded by the source-bound
+[Fremen grant protocol](FREMEN_REVIVAL_GRANT.md). The existing optional action
+now offers Karama before commitment; current-Recruits rate symmetry and denial
+of that grant for this Revival are explicit prototype choices. This does not
+settle unrelated timing/combination questions or certify full modes.
+
 ## Primary evidence
 
 | Source                                                                                                                                   | Relevant verified rule                                                                                                                                                                                                                                           |
