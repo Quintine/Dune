@@ -4315,6 +4315,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'In Advanced, advisors may coexist with their ally without triggering the end-turn alliance constraint in either direction. Neither the advisors nor the allied fighters are lost for that coexistence. Bene Gesserit fighters remain subject to ordinary separation; Basic receives no new advisor exception.',
       'After Fremen setup, choose the starting advisor’s territory and sector. Setup conversions remain automatic. During play, advisors alone must become fighters. A ground move into an empty territory or the last outsider’s ground departure now offers Karama prevention after the physical move, before fighter benefits. Allow to convert once; cancellation leaves the completed movement intact.',
       'A normal shipment enters as fighters unless joining existing advisors. Opposite-type normal ground arrivals and normal reserves joining advisors now offer Karama matching prevention before movement or payment. Residents keep their type. Provisionally stop a prevented packet into this territory for that action opportunity, leaving a legal replacement and the unused action available. Same-type moves need no flip. Advisors entering another occupied territory may keep their existing optional fighter choice.',
+      'An allied Fremen Ambassador relocation also offers incoming matching before any selected force moves or collects spice. Residents keep their type. Provisionally, prevention restores the same relocation chooser while denying that same packet here for this Ambassador event. The already-triggered token and ordinary movement/shipment remain unchanged; another legal packet or destination stays available.',
       'After Trip to Gamont completes during Mentat, the last outsider’s return or empty No-Field reveal can leave advisors alone. Karama can then prevent their conversion without undoing the completed effect or card use. The final CHOAM opportunity resumes afterward; victory waits for its original confirmation. Ordinary Mentat does not gain an extra final chooser.',
       'A committed Guild cross-shipment or return to reserves can also leave advisors alone. Original transport permission, rate and any Guild income resolve first; payment, force transfer and shipment use stay committed if the later conversion is prevented. The ordinary ground move remains unused. Cross-shipment arrival follows the conversion once; a reserve return has no arrival.',
       'After actual battle losses leave surviving bystanding advisors alone, Karama may prevent their conversion without undoing losses or costs. Mandatory card disposal, original skills and substitution finish first. Provisionally resolve this before optional winner-card cleanup and later aftermath, then resume the original cleanup once. An explosion that destroys the advisors creates no conversion.',
@@ -4333,8 +4334,12 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Implementation",
     "status": "Partial",
-    "detail": "Fresh Advanced Spiritual declarations share target legality and distinct shipping/matching/committed-alone stages. A public seven-field source binds a private original chooser/parent/order; late unavailability restores choice before placement, and committed callbacks never recheck withdrawn reserves. Ordinary/Guild continuation and prior alone holds stay intact. Basic and already-recorded legacy responses keep their old protocol.",
+    "detail": "Fremen Ambassador incoming matching now owns a separate precommit counter tied to the actual allied grant, with scoped denial and one original CHOAM/transfer/arrival suffix. Residents, consumed trigger and ordinary allowances are retained. Fresh Advanced Spiritual declarations share target legality and distinct shipping/matching/committed-alone stages. A public seven-field source binds a private original chooser/parent/order; late unavailability restores choice before placement, and committed callbacks never recheck withdrawn reserves. Ordinary/Guild continuation and prior alone holds stay intact. Basic and already-recorded legacy responses keep their old protocol.",
     "evidence": [
+      "game/advisor-ambassador-matching.ts",
+      "tests/advisor-ambassador-matching.test.ts",
+      "tests/advisor-ambassador-matching-engine.test.ts",
+      "tests/fixture-advisor-ambassador-matching.ts",
       "tests/fixture-spiritual-advisor-flow.ts",
       "tests/spiritual-advisor-engine.test.ts",
       "tests/spiritual-advisor.test.ts",
@@ -4354,8 +4359,9 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Player controls",
     "status": "Partial",
-    "detail": "Shared projected target choices drive ordinary/Guild buttons and minimal bots. Persistent notices distinguish uncommitted shipping/matching from an already-arrived force awaiting conversion. Same prevented matching packet stays blocked when the original chooser returns. Fifteen native GameTable SSR journeys and two controlled late-stance cases pass; callback/hydration and browser acceptance remain separate.",
+    "detail": "Ambassador relocation drafts and persistent matching notices reuse the shared packet denial quote. Six native declaration/response/replacement GameTable SSR journeys pass; callback/hydration and browser acceptance remain separate. Shared projected target choices drive ordinary/Guild buttons and minimal bots. Persistent notices distinguish uncommitted shipping/matching from an already-arrived force awaiting conversion. Same prevented matching packet stays blocked when the original chooser returns. Fifteen native GameTable SSR journeys and two controlled late-stance cases pass; callback/hydration and browser acceptance remain separate.",
     "evidence": [
+      "components/ambassador-movement.tsx",
       "docs/SPIRITUAL_ADVISORS.md",
       "docs/ADVISOR_MATCHING.md",
       "docs/ADVISOR_AUTOMATIC_FLIPS.md",
@@ -4367,8 +4373,12 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "AI",
     "status": "Partial",
-    "detail": "Minimal policies consume projected legal targets, including all-blocked matching fallback to decline. Twenty-four paths across four existing profiles, two native parents and three stances accept72 choice/response actions. This is legal participation; no strategy refinement or difficulty calibration.",
+    "detail": "Fremen Ambassador candidates reuse the public packet quote to omit prevented retries. Eight native existing-profile paths accept sixteen response/replacement actions after Ambassador matching; no strategy refinement. Minimal policies consume projected legal targets, including all-blocked matching fallback to decline. Twenty-four paths across four existing profiles, two native parents and three stances accept72 choice/response actions. This is legal participation; no strategy refinement or difficulty calibration.",
     "evidence": [
+      "game/advisor-ambassador-matching.ts",
+      "tests/advisor-ambassador-matching.test.ts",
+      "tests/advisor-ambassador-matching-engine.test.ts",
+      "tests/fixture-advisor-ambassador-matching.ts",
       "tests/fixture-spiritual-advisor-flow.ts",
       "tests/spiritual-advisor-engine.test.ts",
       "tests/spiritual-advisor.test.ts",
@@ -4413,8 +4423,12 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Verification",
     "status": "Partial",
-    "detail": "The frozen batch passes22 files390/390, types/lint/build, fifteen native ordinary/Guild declaration/response/GameTable SSR journeys, two controlled late-stance cases and twenty-four existing-profile paths. Public35/37-action ordinary and45/48-action Guild sources earn actual shipment/Intrusion; a second genuine grant preserves the held group. Four older matching/projection expectations are updated. Controlled legacy responses are format compatibility, not saved captures. Wider Homeworld/Tech/Nexus/No-Field combinations, other matching producers, full modes and final assurance remain open.",
+    "detail": "The new Fremen Ambassador batch passes17 files358/358, types/lint/build, six native declaration/response/replacement GameTable SSR journeys and eight existing-profile paths. Genuine81-action sources earn a Nexus alliance and actual allied grant; both directions and responses retain trigger/ordinary allowances. One zero/absence assertion is repaired. The following earlier frozen results retain their original scope. The frozen batch passes22 files390/390, types/lint/build, fifteen native ordinary/Guild declaration/response/GameTable SSR journeys, two controlled late-stance cases and twenty-four existing-profile paths. Public35/37-action ordinary and45/48-action Guild sources earn actual shipment/Intrusion; a second genuine grant preserves the held group. Four older matching/projection expectations are updated. Controlled legacy responses are format compatibility, not saved captures. Wider Homeworld/Tech/Nexus/No-Field combinations, other matching producers, full modes and final assurance remain open.",
     "evidence": [
+      "game/advisor-ambassador-matching.ts",
+      "tests/advisor-ambassador-matching.test.ts",
+      "tests/advisor-ambassador-matching-engine.test.ts",
+      "tests/fixture-advisor-ambassador-matching.ts",
       "tests/fixture-spiritual-advisor-flow.ts",
       "tests/spiritual-advisor-engine.test.ts",
       "tests/spiritual-advisor.test.ts",

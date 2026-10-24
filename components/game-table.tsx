@@ -2503,6 +2503,13 @@ export function GameTable({
                   {' '}Any already-played movement or declaration card keeps its original use. Choose a legal replacement if matching is prevented.
                 </p>
               )}
+              {g.response.kind==='advisorFlip'&&g.response.advisorAmbassadorMatchingSource&&(
+                <p className="notice">
+                  The incoming Fremen Ambassador group must match your resident forces. No selected force has moved or collected spice yet.
+                  {' '}Preventing matching restores the original relocation choice and blocks this same packet here for this Ambassador event.
+                  {' '}The trigger stays committed; your ordinary shipment and movement remain unchanged.
+                </p>
+              )}
               {g.response.kind==='advisorFlip'&&g.response.spiritualAdvisorSource&&(
                 <p className="notice">
                   The free advisor packet must become fighters to match your Polar Sink residents. No free force has arrived yet.

@@ -1,5 +1,67 @@
 # Matching incoming Bene Gesserit groups
 
+## Fremen Ambassador relocation — 24 October 2026
+
+**Prototyped / Partial.** The supplied revised
+Advanced physical28 matching clause covers incoming shipping/moving groups;
+physical17 permits preventing the group's flip. Fremen Ambassador relocation
+can move a genuine BG ally's opposite-type group into its residents. This is a
+separate matching operation before the physical transfer, not the later alone
+conversion. Basic and same-type/empty arrivals retain their original behavior.
+
+Native grant, token, phase, mutual ally, route, fresh-advisor locks and occupancy
+remain the original producer's authority. After their quote succeeds, offer
+matching before CHOAM's movement reaction, Sandmaster collection or any transfer.
+The public ten-field source binds event, original Ambassador parent, owner,
+turn/phase, origin, destination/sector, target stance and selected physical group.
+The exact original order and parent signature stay private. An inactive ordinary
+player may own this independent allied grant; do not use their normal moved
+index as its identity. Existing normal matching sources retain their shape.
+
+Under the existing provisional prevention policy, restore the original owned
+move chooser while retaining the already-consumed trigger and all ordinary
+allowances. Deny that same packet/destination/stance for this Ambassador event;
+a sector, response UUID or optional fighter flag cannot retry it. Another
+packet or destination remains available. Do not invent a trigger refund, a new
+decline action or a turn-wide ban. Minimal bots and human drafts use the shared
+quote to omit blocked packets. Allowance consumes the matching parent before
+one original CHOAM/transfer/arrival suffix; original post-transfer mandatory
+conversions retain their own timing. Already-recorded old continuations are
+not reopened or replayed.
+
+[Native fixture](../tests/fixture-advisor-ambassador-matching.ts) earns the
+public Advanced BG/Ecaz/Atreides base33 setup, original Arrakeen advisor, paid
+two-force Tuek's fighter group, real first-Revival Fremen placement, actual
+turn-two Shai-Hulud/Nexus alliance and a paid third-party entrant. Ecaz selects
+its genuinely allied BG beneficiary. No played force, hand, alliance, phase or
+matching response is installed. Both direction payloads and later replacement
+choices remain caller-owned. [Connected cases](../tests/advisor-ambassador-matching-engine.test.ts)
+cover allowance/prevention, unchanged pending physical state, scoped retry and
+different-packet/empty replacement, exact parent binding and minimal profiles.
+The frozen batch passes **17 files358/358**, types/lint/build, six native
+declaration/response/replacement/GameTable SSR journeys and eight existing-profile
+paths with sixteen accepted response/replacement actions. Each source uses81
+actual public actions. Both matching directions retain forces, stances, money
+and allowances while pending. Allowance moves once without replaying the trigger;
+prevention preserves that grant, rejects the original packet and admits either
+the actual two-force packet or empty Polar Sink replacement. The no-matching
+route retains the original Karama. Four existing profiles respond and choose a
+legal replacement after prevention, without strategic refinement.
+
+The first native allowance passes. Feedback only repairs an empty-source
+zero/absence test assertion; the focused repair and final union pass. The native
+runtime required no application source repair. Private proof and original-source
+HTML live in
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-ambassador-matching/`.
+`frozen-integrated-2/report.json` binds tree
+`c2f21f81711c05ce6eb466d152fc65de53bb816dbcf04215e92fa3028e513107`,
+2761 files on base `767bace7747ccf3cfb62600dc31cd47b2d46117b`.
+Only checkpoint prose/reference overlays follow that proof, with separate
+link/evidence/source-invariance review. SSR is not callback/hydration or browser
+acceptance. Guild/Junction transport, two-origin gathering, wider modules and
+final mode/browser/deployed acceptance remain open. No saved-room/D1/server/
+reset/restart/deployment operation.
+
 ## Normal movement and reserve shipment — 24 October 2026
 
 **Prototyped / Partial.** The supplied revised

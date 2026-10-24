@@ -194,6 +194,8 @@ const cancellationSources = {
           ...(response.automaticAdvisorFlip.producer === 'spiritualArrival'
             ? { spiritual:g.pendingSpiritualAdvisor?.source??null } : {}),
           group: g.players.find(p => p.id === response.owner)?.advisors?.[response.location ?? ''] ?? null }
+      : response.advisorAmbassadorMatchingSource
+      ? {matching:response.advisorAmbassadorMatchingSource,pending:g.pendingAdvisorAmbassadorMatching?.receipt??null}
       : response.advisorMatchingSource
       ? {matching:response.advisorMatchingSource,pending:g.pendingAdvisorMatching?.receipt??null}
       : response.spiritualAdvisorSource

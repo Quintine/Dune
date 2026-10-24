@@ -16,6 +16,32 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Fremen Ambassador incoming matching — 24 October. Prototyped / Partial.**
+Incoming opposite-type BG relocation now offers Karama before CHOAM movement
+reactions, Sandmaster collection or physical transfer. Its real original allied
+grant owns the selected packet, independently of the ordinary active player.
+Prevention restores that move chooser and provisionally blocks only the same
+packet/destination/stance for that event, retaining the consumed token and all
+ordinary allowances. Another packet or destination remains available. Consume
+the private matching parent before one original movement/arrival suffix; later
+mandatory alone conversions stay separate.
+[Source, contract and native evidence](ADVISOR_MATCHING.md#fremen-ambassador-relocation--24-october-2026).
+
+Disjoint helper/native-fixture lanes, bounded source/integration review and root
+integration pass **17 files358/358**, types/lint/build, six native
+declaration/response/replacement/GameTable SSR journeys and eight existing-profile
+paths with sixteen accepted response/replacement actions. Genuine81-action
+public Advanced BG/Ecaz/Atreides base33 sources earn actual prediction/Traitors,
+original advisor, paid two-force fighter shipment, paid Fremen token, turn-two
+Shai-Hulud/Nexus alliance, third-party entry and actual BG beneficiary. Both
+matching directions preserve physical state while waiting; allowance moves once,
+and prevention keeps the grant, rejects the same packet and admits a different
+packet or empty target. No played force, phase, hand, alliance or response is
+installed. Feedback repairs one empty-source zero/absence assertion; runtime
+needed no application source fix. No AI refinement or saved-room/D1/server/
+reset/restart/deployment operation. Guild/Junction, two-origin gathering, wider
+modules and final mode/browser/deployed assurance remain open.
+
 **Spiritual Advisor targets and conversion — 24 October. Prototyped / Partial.**
 Supplied physical28 redirects retained non-Polar fighters to Polar Sink or
 decline unless Intrusion first changed them. Fresh Advanced declarations now

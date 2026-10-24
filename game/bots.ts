@@ -117,6 +117,7 @@ import { botNexusHarkonnenBetrayalActions } from './bot-nexus-harkonnen-betrayal
 import { validateCohortSelection, type OrnithopterMode } from './ornithopter';
 import { fighterCount, isAdvisor } from './advisors';
 import { quoteAdvisorMatching, AdvisorMatchingError } from './advisor-matching';
+import { quoteAdvisorAmbassadorMatching, AdvisorAmbassadorMatchingError } from './advisor-ambassador-matching';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from './combat';
 import { reinforcementsBattleForces } from './reinforcements-homeworld';
 import type { NativeReserveSelections } from './homeworld-native-reserves';
@@ -418,6 +419,12 @@ function fremenAmbassadorMoves(g: GameView): Action[] {
             (destination.advisors ? 3 : 0);
       const sandmaster = !marker
         ? sandmasterDestinationCollection(g, me.id, source.territory, destination.territory, destination.sector) : null;
+      try{
+        quoteAdvisorAmbassadorMatching({...g,pendingAmbassador:{...entry,turn:g.turn,phase:g.phase,
+          beneficiary:me.id},advisorAmbassadorMatchingDenied:entry.matchingDenied},
+          {parent:entry.event,owner:me.id,origin:source.territory,destination:destination.territory,
+            sector:destination.sector,advisors:destination.advisors,group:forces});
+      }catch(error){if(!(error instanceof AdvisorAmbassadorMatchingError))throw error;continue;}
       candidates.push({
         score,
         action: {

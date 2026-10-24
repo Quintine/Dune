@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 24 October 2026 — Incoming BG matching through a native Fremen Ambassador
+
+Supplied physical28's marked matching clause now composes the native allied
+Fremen Ambassador relocation. After original grant, phase, route, lock and
+arrival legality, counter the selected opposite-type BG group before CHOAM,
+Sandmaster collection or transfer. Residents retain their stance. A public
+ten-field source selects the actual packet and original Ambassador event;
+the exact original movement and parent signature remain private. Its allied
+beneficiary need not be the ordinary active player. Existing source formats
+and already-recorded older continuations retain their protocol.
+
+Under the existing provisional remedy, prevention restores the original chooser
+and blocks that packet/destination/stance for this event. Do not refund the
+committed trigger, spend ordinary allowances, introduce a decline or ban all
+flips for the turn. A different packet/destination remains available. Consume
+the private matching parent before the existing CHOAM/transfer/arrival suffix
+once; later mandatory alone conversion remains independent. Public controls
+and minimal bots reuse the pure quote for prevented packets.
+
+Disjoint helper/native-fixture lanes, bounded source/integration review and root
+integration pass **17 files358/358**, types/lint/build and six native
+declaration/response/replacement/GameTable SSR journeys. Genuine81-action public
+Advanced BG/Ecaz/Atreides base33 sources earn original setup/cards, paid native
+fighter shipment, actual token placement, turn-two Shai-Hulud/Nexus alliance,
+paid third-party entry and genuine BG beneficiary. Both matching directions,
+both responses, the different-packet/empty replacements and a no-match route
+retain physical custody, grants and ordinary allowances. Eight existing-profile
+paths accept sixteen response/replacement actions. No played force, phase,
+hand, alliance or response is installed. Feedback repairs a zero/absence test
+assertion; focused repair and final union pass. Native runtime needed no
+application source fix.
+
+Private proof:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-ambassador-matching/`.
+`frozen-integrated-2/report.json` binds tree
+`c2f21f81711c05ce6eb466d152fc65de53bb816dbcf04215e92fa3028e513107`,
+2761 files on base `767bace7747ccf3cfb62600dc31cd47b2d46117b`.
+Final prose/reference overlays are separately reviewed. No new callback/
+hydration/browser/mobile/deployed certificate. Guild/Junction, two-origin
+gathering, wider modules and final mode/assurance remain open. No AI refinement
+or saved-room/D1/server/reset/restart/deployment operation.
+[Source, original continuation and limits](ADVISOR_MATCHING.md#fremen-ambassador-relocation--24-october-2026).
+
 ## 24 October 2026 — Spiritual Advisor targets, matching and alone conversion
 
 Supplied physical28 starts the free packet advisor-side and directs retained

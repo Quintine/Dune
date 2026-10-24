@@ -1,5 +1,20 @@
 # Rule decision index
 
+## Fremen Ambassador incoming matching — 24 October 2026
+
+Compose supplied physical28's incoming shipping/moving matching clause and
+physical17's group counter with a native Fremen Ambassador grant. After original
+legality and before CHOAM/collection/transfer, counter only the opposite-type
+BG packet; residents keep their stance. Its original Ambassador event owns
+prevention, independently of ordinary active player or moved index. Under the
+existing provisional remedy, prevention restores the original chooser, retains
+the consumed trigger and ordinary allowances, and denies the same packet/target
+stance in that destination for that event. Different packets/destinations stay
+available. No new decline, refund or turn-wide ban is introduced. Consume the
+private matching parent before one original suffix; later mandatory conversion
+is separate. Basic and recorded older continuations retain their protocol.
+[Source, contract and evidence](ADVISOR_MATCHING.md#fremen-ambassador-relocation--24-october-2026).
+
 ## Spiritual Advisor targets and distinct conversions — 24 October 2026
 
 Supplied physical28 E ships an advisor and redirects retained non-Polar fighters

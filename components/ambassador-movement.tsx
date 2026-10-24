@@ -4,6 +4,7 @@ import { useId, useState } from 'react';
 import type { Action, GameView } from '@/game/engine';
 import { location, splitLocation, territory } from '@/game/board';
 import { sandmasterDestinationCollection } from '@/game/sandmaster-movement';
+import { quoteAdvisorAmbassadorMatching, AdvisorAmbassadorMatchingError } from '@/game/advisor-ambassador-matching';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
@@ -94,8 +95,18 @@ export function AmbassadorMovement({
     sandmaster?.piles.some((pile) => pile.key === sandmasterSelection.key)
       ? sandmasterSelection.key
       : sandmaster?.key;
+  let matchingBlock:string|null=null;
+  if(destination&&total>0){
+    try{
+      quoteAdvisorAmbassadorMatching({...game,pendingAmbassador:{...entry,turn:game.turn,phase:game.phase,
+        beneficiary:game.me},advisorAmbassadorMatchingDenied:entry.matchingDenied},
+        {parent:entry.event,owner:game.me,origin:source.territory,destination:destination.territory,
+          sector:destination.sector,advisors:destination.advisors,group:selectedForces});
+    }catch(error){if(!(error instanceof AdvisorAmbassadorMatchingError))throw error;matchingBlock=error.message;}
+  }
   const reason =
     destination?.blocked ??
+    matchingBlock ??
     (!destination
       ? 'Choose an available destination.'
       : !total && !includesMarker
@@ -121,6 +132,9 @@ export function AmbassadorMovement({
         Relocate a group from one territory. This does not spend your ordinary
         shipment or movement. The Ambassador has already been triggered.
       </p>
+      {game.advanced&&game.players.find(player=>player.id===game.me)?.faction==='beneGesserit'&&(
+        <p className="notice">An opposite-type incoming group has a separate matching response before relocation. If matching is prevented, choose another legal packet or destination; the original trigger stays committed.</p>
+      )}
       <label className="flex flex-col gap-2" htmlFor={`${id}-source`}>
         Source territory
         <select
