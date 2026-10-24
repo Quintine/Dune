@@ -16431,8 +16431,20 @@ function recoverableUnsupportedShipment(shipment: PendingShipment) {
 }
 /** Keep source controls in the real game. A detached witness answers only
  * owned movement reachability; unresolved opposing outcomes are never replayed. */
-function groundMovementProbe(source: Game): Game {
+function groundMovementProbe(source: Game, actor: string): Game {
   const game = structuredClone(source);
+  if (game.active !== actor) {
+    // Forecast only this owner's unused turn on the current board. Do not
+    // complete a foreign declaration, price, flight or private search, and do
+    // not turn its potential discarded card into an owned Box candidate.
+    game.active = actor;
+    if (game.pendingShipment?.player !== actor) game.pendingShipment = null;
+    if (game.pendingHomeworldShipment?.player !== actor) game.pendingHomeworldShipment = null;
+    if (game.pendingGuildTransport?.player !== actor) game.pendingGuildTransport = null;
+    if (game.karamaShipping?.player !== actor) game.karamaShipping = null;
+    if (game.ornithopter?.player !== actor) game.ornithopter = null;
+    if (game.pendingNullentropy?.player !== actor) game.pendingNullentropy = null;
+  }
   game.truthtrance = null; game.response = null; game.decision = null; game.phaseOpening = null;
   game.pendingKarama = null; game.pendingTreacheryDiscard = null;
   game.pendingFremenMove = null; game.pendingIxMove = null; game.pendingChoamMove = null;
@@ -16483,7 +16495,7 @@ function projectMovementBoxRecovery(source: Game, actor: string, box: string, se
     player.hand = result.ownerHand; context.discard = result.discard;
     setMovementDiscardKnowledge(context, recordMovementBoxKnowledge(context.movementDiscardKnowledge,
       context.players.map(p => p.id), actor, result.discard));
-    return groundMovementProbe(context);
+    return groundMovementProbe(context, actor);
   } catch (error) {
     if (error instanceof RuleError) return null;
     throw error;
@@ -16491,7 +16503,7 @@ function projectMovementBoxRecovery(source: Game, actor: string, box: string, se
 }
 function groundMovementCompletion(source: Game, actor: string,
   promises = liveMovementPromises(source.movementPromises ?? [], actor, source.turn)): MovementCompletion | null {
-  const game = groundMovementProbe(source);
+  const game = groundMovementProbe(source, actor);
   if (!movementPromiseTargetAvailable(game.pendingNullentropy?.player === actor ? { ...game, decision: null } : game, actor)) return null;
   return findMovementCompletion(game, actor, promises, {
     allowance: movesAllowed,
@@ -16505,7 +16517,9 @@ function groundMovementCompletion(source: Game, actor: string,
         (player.faction === 'choam' && card.kind === 'worthless' && card.name === 'Kulon');
       if (paid) {
         if (paid.player !== owner || nullentropyIntegrity(state)) return;
-        for (const card of eligibleNullentropyCards(state.discard).filter(relevant)) {
+        const choices = eligibleNullentropyCards(state.discard)
+          .sort((a, b) => Number(relevant(b)) - Number(relevant(a)));
+        for (const card of choices) {
           const projected = projectMovementBoxRecovery(state, owner, paid.box, card.id, true);
           if (projected) yield { game: projected, actions: [{ type: 'decision', event: paid.event, card: card.id }] };
         }
@@ -16516,18 +16530,18 @@ function groundMovementCompletion(source: Game, actor: string,
         const cost = reserveShipmentCost({ faction: payer.faction, halfRate: shipmentHalfRate(source, payer) },
           territory(String(action.territory)).type, Number(action.amount));
         if (share > cost || share > (aidFor(source, payer)?.amount ?? 0) || cost - share > payer.spice) return null;
-        try { return groundMovementProbe(applyActionInner(source, actor, action, 'movementPreparation')); }
+        try { return groundMovementProbe(applyActionInner(source, actor, action, 'movementPreparation'), actor); }
         catch (error) { if (error instanceof RuleError) return null; throw error; }
       });
       for (const card of player.hand) {
         if (card.effect === 'hajr' && hajrAvailable(state, player) && !transferCardBlock(state, player, card)) {
           try { yield { game: groundMovementProbe(applyActionInner(state, owner,
-            { type: 'card', card: card.id }, 'movementPreparation')), actions: [{ type: 'card', card: card.id }] }; }
+            { type: 'card', card: card.id }, 'movementPreparation'), owner), actions: [{ type: 'card', card: card.id }] }; }
           catch (error) { if (!(error instanceof RuleError)) throw error; }
         }
         if (player.faction === 'choam' && card.kind === 'worthless' && card.name === 'Kulon') {
           const action: Action = { type: 'card', mode: 'choam', card: card.id };
-          try { yield { game: groundMovementProbe(applyActionInner(state, owner, action, 'movementPreparation')), actions: [action] }; }
+          try { yield { game: groundMovementProbe(applyActionInner(state, owner, action, 'movementPreparation'), owner), actions: [action] }; }
           catch (error) { if (!(error instanceof RuleError)) throw error; }
         }
         if (richeseCardDefinition(card)?.card.effect === 'nullentropyBox') {
@@ -16558,8 +16572,10 @@ function groundMovementCompletion(source: Game, actor: string,
 function projectedGroundMovementPolicy(g: Game, player: Player): Action[] | null {
   const live = liveMovementPromises(g.movementPromises ?? [], player.id, g.turn);
   const paid = g.pendingNullentropy?.player === player.id;
-  if (g.truthtrance || !live.length || (paid && !live.some(promise => promise.answer)) ||
-      !movementPromiseTargetAvailable(paid ? { ...g, decision: null } : g, player.id)) return null;
+  if (g.truthtrance || !live.length || (!paid && g.active !== player.id) ||
+      (paid && !live.some(promise => promise.answer))) return null;
+  const available = paid ? groundMovementProbe(g, player.id) : g;
+  if (!movementPromiseTargetAvailable(paid ? { ...available, decision: null } : available, player.id)) return null;
   const completion = groundMovementCompletion(g, player.id);
   return completion ? completion.actions.length ? completion.actions.slice(0, 1) : [{ type: 'endMovement' }] : null;
 }
@@ -16598,10 +16614,11 @@ function recordGroundMovementPromises(g: Game, p: Player, move: MovementOrder) {
 function reconcileGroundMovementPromises(g: Game, actor?: string) {
   // A declared native movement is awaiting a real opponent choice. It is not
   // impossible and must not be fulfilled before physical commitment.
-  if (g.pendingFremenMove || g.pendingIxMove || g.pendingChoamMove) return;
   for (const p of g.players) {
     const live = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn);
     if (!live.some(promise => promise.answer)) continue;
+    if (g.pendingFremenMove?.order.player === p.id || g.pendingIxMove?.player === p.id ||
+      g.pendingChoamMove?.player === p.id) continue;
     const busy = !!(g.response || g.decision || g.phaseOpening || g.pendingTreacheryDiscard ||
       g.pendingAmbassador || g.pendingTerrorEntry || g.pendingArrivalOverlap || g.pendingArrivalReaction?.length);
     if (busy && actor !== p.id) continue;
@@ -33444,12 +33461,14 @@ function applyActionInner(
           location: location(dest.territory, dest.sector),
           amount,
         };
-        if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length) {
+        if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length ||
+          liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).some(promise => promise.answer)) {
           // Accepting accompaniment is voluntary even though a later responder
           // commits its reserve withdrawal. Check that allowed outcome now.
           const afterAdvisor = structuredClone(g);
           finishResponse(afterAdvisor, false);
           reconcileShipmentPromises(afterAdvisor, { actor: p.id, action });
+          reconcileGroundMovementPromises(afterAdvisor, p.id);
         }
       } else log(g, `${p.name} declined the free shipment.`);
     } else if (decision.kind === 'wormPlacement') {
@@ -34387,13 +34406,15 @@ function applyActionInner(
         p.spice >= paidForceRevivalCost(recipient, amount, elite),
         'Not enough spice for these extra revivals.',
       );
-    if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length) {
+    if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length ||
+      liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).some(promise => promise.answer)) {
       // A later responder cannot erase the owner's voluntary gift/revival
       // invoice. Check its allowed outcome before opening the response.
       const afterPayment = structuredClone(g);
       getPlayer(afterPayment, p.id).spice -= t === 'emperorGift'
         ? amount : paidForceRevivalCost(recipient, amount, elite);
       reconcileShipmentPromises(afterPayment, { actor: p.id, action });
+      reconcileGroundMovementPromises(afterPayment, p.id);
     }
     g.response = {
       kind: t,

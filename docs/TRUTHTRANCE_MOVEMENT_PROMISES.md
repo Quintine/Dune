@@ -17,11 +17,12 @@ movement statement, the owned-action witness and accepted-order release policy
 below are explicit software compositions, not a publisher movement-specific FAQ
 or Basic adoption of the unofficial Advanced revision.
 
-Fresh or existing Basic native tables can ask at a clean **active Shipment and
-Movement turn**, before or after shipment, including selected E1/E2/E3 factions. No optional modules or Advanced
+Fresh or existing Basic native tables can ask at a clean **active or still-unused
+waiting turn in the current Shipment and Movement queue**, before or after the
+active respondent's shipment, including selected E1/E2/E3 factions. No optional modules or Advanced
 inherit this entry. The actual native roster, physical inventory and route
 validation remain authoritative; no mode or publication gate opens. Earlier
-phase/waiting-turn movement questions, compound movement/fact questions and wider
+phase/later-round movement questions, compound movement/fact questions and wider
 owned preparations/interactions remain unfinished. Existing saves are not
 reconfigured and absent promise fields remain absent until a real answer binds.
 
@@ -55,8 +56,84 @@ reconfigured and absent promise fields remain absent until a real answer binds.
 
 This is bounded reachability, not complete arbitrary Truthtrance enforcement.
 Other owned preparation families (including native relocation preparation),
-earlier phases/waiting turns, optional/Advanced profiles and comprehensive
+earlier phases/later rounds, optional/Advanced profiles and comprehensive
 combination/recovery/privacy/custody acceptance remain due.
+
+## Same-phase waiting respondents — 24 October 2026
+
+The general current-round FAQ contract now includes a respondent whose unused
+turn remains in the original Movement queue. This extends the provisional owned
+forecast used by shipment promises; it introduces no future-income, cooperation
+or vacated-destination assumption. Keep the current board, owned resources and
+native per-player Hajr history. The detached forecast selects that owner's turn
+and isolates foreign declarations, prices, Ornithopter controls and private
+searches without resolving them or awarding a hypothetical discarded card.
+The live active player, queues, cards and pending decisions remain unchanged.
+
+A matching move by another player neither fulfills Yes nor violates No. Another
+player's end cannot close the respondent's promise. Ordinary action guidance
+appears only on the actual owned turn. The exception is the owner's **already
+paid** Box selection: its current private decision can finish while waiting,
+using the original event and full entitled choice. Once paid, even an ordinary
+nonmovement card may preserve an existing route; do not falsely restrict that
+search to movement cards. Pre-payment known-discard planning is unchanged.
+
+Owner-declared Emperor gift and Spiritual Advisor costs are checked on their
+allowed outcome before opening the deferred response, so a foreign responder
+cannot convert voluntary loss into an opposing release. A pending native move
+defers reconciliation for its own moving player, while a different waiting
+owner still preserves required resources when voluntarily interrupting with Box.
+All four minimal profiles may conservatively decline optional accompaniment
+under a positive promise; strategic refinement remains deferred. Persistent
+waiting/paid guidance has no timer and retains busy handling.
+
+Earlier phases/later rounds, additional preparation families, No-Field/modules,
+full modes and comprehensive acceptance remain unfinished.
+
+### Current waiting-turn evidence
+
+`tests/fixture-truth-movement-waiting.ts` reverses two original unopened deal
+positions, then performs real setup and phase continuations. Its19-action public
+Basic source leaves active Atreides10 at Arrakeen and waiting Emperor0/20 with
+native wallets. Another player's actual matching move/end leaves Yes/No pending;
+the respondent then ships and moves or honors No through its own real ending.
+
+`tests/fixture-truth-movement-waiting-box.ts` uses actual public native purchases
+Box1/Hajr1, stops at Richese's first movement turn and genuinely spends its dealt
+Truth on a current fact. Guild's original distinct Truth then asks the waiting
+Emperor. The44-action source retains cash8, all20 reserves and zero board forces;
+actual payment leaves6, with two ordinary Truth choices. Paid Yes/No selection
+retains the original event and one fee, returns to waiting and later finishes
+the owned turn. Only unopened positions and native scalar lotteries are selected.
+No hand, wallet, force, queue, clock or receipt is installed in these sources.
+
+Separate controlled tests label the modeled pact/gift and past BG losses,
+conserved original Ornithopter acquisition and native Fremen-response/Box
+timing. The last checks both unaffordable and affordable payment: reject the
+former without changing its original frame, and restore the latter's exact
+foreign movement response with one spice left. No foreign flight is discarded
+or reassigned by the waiting forecast. All four profiles can decline optional
+accompaniment instead of repeatedly proposing an illegal acceptance.
+
+The final eighteen-file union passes **125/125**, types/lint and four actual
+guidance/ordinary paid-choice-handler/GameTable programmes. Eight existing-profile
+runs make32 accepted owned proposals, with12 separate neutral acknowledgements;
+there is no strategy tuning. Bounded review repaired active-only policy with
+the paid exception, both deferred-cost preflights and native-owner deferral.
+The production build passes at the initial freeze; a test-only affordable
+counterpart follows. `build-identity.json` proves all application/build/dependency
+and other source files identical while the final tests/types/runtime run again.
+
+Frozen base `f0b2ac82d924ca8568bb7b58b5c290ad75cd04be`, final proof tree
+`0156db54c6165d6b64c612ad15b984c953395f7659e6314894d8317491e64714`,
+2645 files. Private logs, original-state control HTML, build identity and receipts:
+`/home/quintine/.local/share/dune/checkpoints/20261024-movement-waiting/`,
+`frozen-integrated-2/report.json`; the original build is in `frozen-integrated/`.
+Only final checkpoint/reference prose overlays follow proof. Framework aliases/
+CSS stubbing establish server rendering, not browser/visual/deployed acceptance.
+Earlier phases/later rounds, remaining preparation families/modules, complete
+modes and comprehensive assurance remain open. No saved-room/D1/reset/restart/
+deployment operation.
 
 ## Before-shipment movement promises — 24 October 2026
 
@@ -82,10 +159,10 @@ a bad destination/force split and then use an opponent's pass to release Yes.
 Unsupported Ambassador/No-Field/module sources retain their boundary rather
 than executing a full speculative continuation. Native cross/return preparation
 is not enumerated yet, though actual legal choices preserve the existing promise.
-Other preparation families, earlier phases/waiting turns, optional/Advanced and
+Other preparation families, earlier phases/later rounds, optional/Advanced and
 comprehensive acceptance remain unfinished.
 
-### Current before-shipment evidence
+### Preceding before-shipment evidence
 
 `tests/fixture-truth-movement-shipment.ts` retains actual source prefixes before
 their original shipment. Classic19 has Arrakeen10 plus10 reserves: a one-spice
@@ -140,7 +217,8 @@ ordinary owner sees only the next legal action.
 
 After actual payment, the original private search still shows every eligible
 card, retains its event and charges once. A live Yes supplies a compliant
-movement-card selection in the persistent promise control. A selection that
+selection in the persistent promise control: a required movement card, or an
+ordinary card when an existing route needs no new movement card. A selection that
 would destroy the last route rejects **before** the real shuffle and leaves the
 paid decision available; its fee is neither repeated nor refunded. No-only
 promises keep the ordinary paid choice and do not offer End movement until that

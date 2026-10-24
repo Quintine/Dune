@@ -1,4 +1,5 @@
 import { discoveryBotActions } from './discovery-options';
+import { liveMovementPromises } from './movement-promises';
 import { ecazOccupyDialChoices, ecazOccupyOwnProfile, ecazOccupyPolicyActions } from './ecaz-occupy-options';
 import { quoteEcazOccupyDial } from './ecaz-occupy-battle';
 import { recruitsPlayAction } from './recruits';
@@ -2724,7 +2725,8 @@ function policyActions(g: GameView): Action[] {
         { type: 'decision', accept: false },
       ];
     }
-    if (d.kind === 'advisor' && liveShipmentPromises(g.shipmentPromises ?? [], me.id, g.turn).length)
+    if (d.kind === 'advisor' && (liveShipmentPromises(g.shipmentPromises ?? [], me.id, g.turn).length ||
+      liveMovementPromises(g.movementPromises ?? [], me.id, g.turn).some(promise => promise.answer)))
       // A waiting promise may need these reserves. Declining is the minimal
       // legal policy until optional accompaniment strategy is implemented.
       return [{ type: 'decision', accept: false }];

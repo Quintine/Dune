@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 24 October 2026 — Waiting-turn Basic movement promises
+
+Allow unused respondents in the current Movement queue to answer against their
+current owned board/resources. Isolate foreign controls in the detached forecast
+without future income/discard assumptions. Other players' moves/ends cannot
+fulfill or close the promise. Ordinary guidance waits until active; the original
+already-paid Box decision can finish while waiting, including an ordinary card
+that preserves the route. Retain owner preflight for deferred gift/accompaniment
+costs; native movement deferral now belongs only to its actual moving owner.
+Minimal accompaniment policy may decline under a positive promise.
+
+A disjoint original-source lane, bounded review and owner integration pass
+18 files125/125, types/lint, production build and four actual-control/table
+programmes. Source19 preserves the original reversed classic deal. Native44 buys Box1/
+Hajr1 and spends the first Truth; the actual later question supplies the second. Eight profile runs
+make32 legal proposals, with12 separate neutral acknowledgements. Controlled
+pact/gift, BG losses, acquired Ornithopter and native Fremen/Box cases distinguish
+their staging. Paired affordable/unaffordable interruption feedback passes;
+only that regression changed after the first build, whose application identity
+is verified while final types/tests/runtime run again.
+[Authority, exact proof and remaining scope](TRUTHTRANCE_MOVEMENT_PROMISES.md#same-phase-waiting-respondents--24-october-2026).
+Earlier phases/later rounds, wider preparations/modules, full modes, final
+assurance and deployed acceptance remain open. No tuning or saved-room/reset/
+restart/deployment operation.
+
 ## 24 October 2026 — Basic movement promises before shipment
 
 Extend active Basic questions to unused ordinary shipment. Shared declaration,

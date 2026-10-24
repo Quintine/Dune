@@ -23,7 +23,8 @@ export function MovementPromises({ game, act, busy }: { game: GameView; act: (ac
     : `${next?.movementCard ? 'Use Ornithopter and move' : 'Move'} ${amount} forces to ${destinationLabel}, sector ${sector}`;
   return <section className="notice space-y-3" aria-label="Your ground-movement promises">
     <h4>Your ground-movement promises</h4>
-    {own.map((promise, index) => <p key={index}>{promise.answer ? 'Yes: you must' : 'No: you must not'} {movementClaimText(promise)} before this Movement turn ends.</p>)}
+    {game.active !== game.me && <p>Your Movement turn is still ahead. Keep the needed forces, spice and cards available; movement controls appear on your turn.{next?.type === 'decision' && ' Your already-paid Box search can finish now.'}</p>}
+    {own.map((promise, index) => <p key={index}>{promise.answer ? 'Yes: you must' : 'No: you must not'} {movementClaimText(promise)} before your Movement turn ends this round.</p>)}
     <p className="fine">One qualifying ground move fulfills Yes; a shipment can prepare that move but does not fulfill it. No remains binding through every later Hajr or Ornithopter move. A paid Box search must finish before moving; its fee is paid only once. Opposing effects release an answer only if it becomes impossible.</p>
     {next && <Button className="game-action min-h-11 whitespace-normal" disabled={busy} onClick={() => { if (!busy) act(next); }}>{label}</Button>}
   </section>;

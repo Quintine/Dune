@@ -93,7 +93,7 @@ function movementBoundary(): Game {
   g.movementRemaining = ['target', 'asker']; g.players[0].shipped = true;
   return g;
 }
-void test('the Basic profile permits a clean active post-shipment respondent with Truthtrance or ordinary flight open', () => {
+void test('the Basic profile permits an active respondent or a still-unused waiting turn with Truthtrance or ordinary flight open', () => {
   const g = movementBoundary(); assert.equal(movementPromiseTargetAvailable(g, 'target'), true);
   g.truthtrance = { stage: 'ask', queue: [], passed: [], question: null };
   assert.equal(movementPromiseTargetAvailable(g, 'target'), true);
@@ -102,6 +102,10 @@ void test('the Basic profile permits a clean active post-shipment respondent wit
   assert.equal(movementPromiseTargetAvailable(g, 'target'), true);
   g.players[0].shipped = false; g.players[0].moved = 1;
   assert.equal(movementPromiseTargetAvailable(g, 'target'), true);
+  assert.equal(movementPromiseTargetAvailable(g, 'asker'), true);
+  g.players[1].shipped = true;
+  assert.equal(movementPromiseTargetAvailable(g, 'asker'), false);
+  g.players[1].shipped = false; g.players[1].moved = 1;
   assert.equal(movementPromiseTargetAvailable(g, 'asker'), false);
 });
 void test('movement question profile permits an unspent shipment but rejects an exhausted turn and active opposing response', () => {

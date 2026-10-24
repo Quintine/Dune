@@ -86,7 +86,7 @@ export function finishMovementPromises<T extends MovementPromise>(
 export function movementPromiseTargetAvailable(g: Game, player: string): boolean {
   const target = g.players.find(candidate => candidate.id === player);
   return g.status === 'playing' && g.advanced === false && g.phase === 5 &&
-    g.active === player && !!target &&
+    !!target && (g.active === player || (!target.shipped && target.moved === 0)) &&
     !!g.movementRemaining?.includes(player) &&
     g.players.length >= 2 && g.players.length <= 6 &&
     g.expansions.every(id => ['ix', 'choam', 'ecaz'].includes(id)) &&
