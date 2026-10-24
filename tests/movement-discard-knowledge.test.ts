@@ -10,11 +10,24 @@ import {
 
 const seats = ['owner', 'rival', 'observer'];
 const hajr: Card = { id: 'physical-hajr', kind: 'special', name: 'Hajr', effect: 'hajr' };
+const ghola: Card = { id: 'physical-ghola', kind: 'special', name: 'Tleilaxu Ghola', effect: 'ghola' };
 const ornithopter: Card = { id: 'richese-ornithopter', kind: 'special', name: 'Ornithopter', effect: 'ornithopter' };
 const kulon: Card = { id: 'physical-kulon', kind: 'worthless', name: 'Kulon' };
 const shield: Card = { id: 'physical-shield', kind: 'shield', name: 'Shield' };
 const entry = (card: Card, discardedBy = 'owner', publicFace = false): FreshDiscardBatch['entries'][number] =>
   ({ card, discardedBy, publicFace });
+
+void test('Ghola force preparation uses only actually observed public, private or paid Box faces', () => {
+  const privateKnowledge = recordMovementDiscardKnowledge(undefined, seats, [entry(ghola)]);
+  assert.deepEqual(knownMovementDiscards(privateKnowledge, 'owner', [ghola]), [ghola]);
+  assert.deepEqual(knownMovementDiscards(privateKnowledge, 'rival', [ghola]), []);
+  const publicKnowledge = recordMovementDiscardKnowledge(privateKnowledge, seats, [entry(ghola, 'owner', true)]);
+  for (const player of seats) assert.deepEqual(knownMovementDiscards(publicKnowledge, player, [ghola]), [ghola]);
+  const paidKnowledge = recordMovementBoxKnowledge(publicKnowledge, seats, 'rival', [ghola, shield]);
+  assert.deepEqual(knownMovementDiscards(paidKnowledge, 'rival', [ghola, shield]), [ghola]);
+  assert.deepEqual(knownMovementDiscards(paidKnowledge, 'owner', [ghola]), []);
+  assert.deepEqual(knownMovementDiscards(paidKnowledge, 'rival', []), []);
+});
 
 void test('a public relevant disposal is remembered by all seats without creating unrelated face knowledge', () => {
   const entries = [entry(hajr, 'rival', true), entry(shield, 'rival', true)];

@@ -7,7 +7,7 @@ type Entries = FreshDiscardBatch['entries'];
 type Knowledge = MovementDiscardKnowledge | undefined;
 
 const relevant = (card: Card): boolean =>
-  (card.kind === 'special' && card.effect === 'hajr') ||
+  (card.kind === 'special' && (card.effect === 'hajr' || card.effect === 'ghola')) ||
   (card.kind === 'special' && card.id === 'richese-ornithopter' && card.effect === 'ornithopter') ||
   (card.kind === 'worthless' && card.name === 'Kulon');
 

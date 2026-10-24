@@ -1,3 +1,4 @@
+import { gholaForcePreparations } from './ghola-force-preparation';
 import { earlyAuctionFunding } from './early-auction-funding';
 import { recordMovementDiscardKnowledge, knownMovementDiscards, recordMovementBoxKnowledge, recordMovementClaimKnowledge, clearMovementDiscardKnowledge, type MovementDiscardKnowledge } from './movement-discard-knowledge';
 import { movementShipmentPreparations } from './movement-shipment-preparation';
@@ -16552,7 +16553,7 @@ function groundMovementCompletionAtMovement(game: Game, actor: string, promises:
     },
     *preparations(state, owner) {
       const player = getPlayer(state, owner), paid = state.pendingNullentropy;
-      const relevant = (card: Card) => card.effect === 'hajr' || card.effect === 'ornithopter' ||
+      const relevant = (card: Card) => card.effect === 'hajr' || card.effect === 'ornithopter' || card.effect === 'ghola' ||
         (player.faction === 'choam' && card.kind === 'worthless' && card.name === 'Kulon');
       if (paid) {
         if (paid.player !== owner || nullentropyIntegrity(state)) return;
@@ -16572,6 +16573,14 @@ function groundMovementCompletionAtMovement(game: Game, actor: string, promises:
         try { return groundMovementProbe(applyActionInner(source, actor, action, 'movementPreparation'), actor); }
         catch (error) { if (error instanceof RuleError) return null; throw error; }
       });
+      const ghola = gholaOptions(state, player);
+      if (ghola.available) for (const action of gholaForcePreparations({
+        cards: ghola.cards, tanks: player.tanks, eliteTanks: player.elites?.tanks ?? 0,
+        maxForces: ghola.maxForces, eliteRemaining: ghola.eliteRemaining,
+      })) {
+        try { yield { game: groundMovementProbe(applyActionInner(state, owner, action, 'movementPreparation'), owner), actions: [action] }; }
+        catch (error) { if (!(error instanceof RuleError)) throw error; }
+      }
       for (const card of player.hand) {
         if (!player.shipped && !state.karamaShipping && canUseAsKaramaRole(state, player, card)) {
           const action: Action = { type: 'card', card: card.id, mode: 'shipment', target: owner };

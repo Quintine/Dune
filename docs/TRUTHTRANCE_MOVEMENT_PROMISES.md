@@ -1,6 +1,6 @@
 # Truthtrance ground-movement promises
 
-The [native early Basic follow-up](#native-early-basic-funding--24-october-2026)
+The [Ghola preparation follow-up](#owned-ghola-preparation--24-october-2026)
 supersedes preceding timing boundaries. Previous checkpoint counts remain dated
 evidence, not complete rules or final acceptance.
 
@@ -45,7 +45,7 @@ reconfigured and absent promise fields remain absent until a real answer binds.
   declaration validator, not the strategic bot shortlist. The finite search
   considers ordinary moves, held Hajr, both held/active Ornithopter modes and
   their original cohort, current city access, current native bonuses, held
-  CHOAM Kulon and the owned Box recovery described below. Preparations use
+  CHOAM Kulon, held Ghola force returns and the owned Box recovery described below. Preparations use
   private detached execution; actual cards retain
   their ordinary effects, counters, discard/response and arrival continuations.
   Unknown future draws/gifts and unresolved opposing outcomes are not invented.
@@ -64,6 +64,77 @@ This is bounded reachability, not complete arbitrary Truthtrance enforcement.
 Other owned preparation families (including native relocation preparation),
 later rounds, optional/Advanced profiles and comprehensive
 combination/recovery/privacy/custody acceptance remain due.
+
+## Owned Ghola preparation — 24 October 2026
+
+**Prototyped / Partial.** The Basic owned-movement witness includes a held
+physical Ghola's force choice using the current authoritative card eligibility,
+maximum and typed-force allowance. Each candidate plays that exact card through
+the shared engine on a detached copy. Returned pieces go to reserves; neither
+the card play nor shipment fulfills a ground-movement promise. The actual later
+shipment must remain unused and affordable, then one qualifying ground movement
+must commit. Normal force/leader revival allowances are unchanged.
+
+A publicly observed Ghola discard or the owner's privately observed card can
+supply a known-discard Box route. An unpaid unknown face supplies none. A paid
+Box search retains its complete private choice, original event and single fee;
+choosing a card which erases the last route rejects before shuffle. Both held
+recovery and an already-paid search keep the conservative all-Tanks bound, while
+every actual return, typed composition and payment is validated separately.
+The single physical Ghola may return more than five total over legitimate
+Box recovery and replay; no extra Ghola is manufactured.
+
+Tleilaxu's possible Ghola income is not forecast spending money. Actual card
+disposal and revival-income responses retain their original controls and
+suspend movement guidance until they finish. Persistent guidance names the
+force return, then shipment, then ground movement; busy controls submit nothing.
+Existing minimal profiles follow this same legal path without strategy tuning.
+
+This composes the existing printed Ghola/Box mechanics with the movement
+predicate above; it is not a new publisher movement-specific ruling. Wider
+owned preparations, native relocation, later rounds, modules/Advanced and
+comprehensive full-mode/recovery/privacy/deployed acceptance remain unfinished.
+
+### Ghola source and proof
+
+The original held source reaches turn2 unshipped with10 Arrakeen forces,
+9 reserves,1 real Storm casualty and10 spice; its optional Tleilaxu variant
+retains the same owned pieces. Actual 17+0 first dials move Storm Start1 to18;
+next-turn1+1 crosses the paid sacrificial Cielago North1 shipment and ends2.
+Emperor's actual2-spice bribe settles before the source. Actual Revival Ready
+declines ordinary returns. Basic city occupation grants no bank income.
+
+The native Richese source actually sells its original cache Box for1, ships
+separate sacrificial groups and plays Richese's original Ghola on the real
+casualty. Emperor's actual6-spice bribe leaves Atreides13; the known Ghola stays
+in current discard. Owned Box2 → Ghola1 → city shipment10 → ground20 leaves1.
+Original source prefixes are42/104 actions held without/with Tleilaxu, and75/151
+for Box. Only unopened original deal/Spice positions and scalar lotteries are
+selected; no dealt hand, wallet, army, death, clock or completed receipt is set.
+Controlled extra-card/prior-loss/knowledge projections, ten-Tank reuse of the
+single Ghola and a conserved acquired Karama holding the real income window
+open are separately labelled tests, not claims about those natural prefixes.
+
+The final frozen batch passes **22 files182/182**, types/lint (npm run check:quick),
+production build and four actual-control/GameTable SSR programmes. Eight
+existing-profile held/Box runs accept40 proposals plus24 separate native
+continuations. Busy handlers submit nothing; actual answer, recovery, force
+return, shipment and ground controls pass. The first frozen batch passed the
+rule union but failed type checking on a duplicate fixture snapshot/action key;
+the corrected final batch passes. Earlier feedback corrected source geography
+and Basic funding; bounded review repaired missing Ghola discard knowledge.
+
+Private artifacts: /home/quintine/.local/share/dune/checkpoints/20261024-movement-ghola/,
+final frozen-integrated-2/report.json, runtime-smoke.json, private HTML/logs,
+verified-files.json and documentation-overlay.json. Before final prose:
+base c311ed42519bbc19d81655a82a2363da64d36ccd, source tree
+58bfc5420edfd9bb358f85d5901c605474d6f39944272b29465fca4ae1dd02e5,
+2657 tracked/nonignored files unchanged throughout. Only four checkpoint-prose/
+reference overlays follow proof; local links/evidence and reference syntax/keys
+are reviewed separately. Framework aliases/CSS stub are rendering smoke, not
+browser/visual/deployed acceptance. Full modes, wider preparations, combinations
+and comprehensive assurance stay open; no saved-room/D1/reset/restart/deployment
+operation or AI strategy calibration occurs.
 
 ## Native early Basic funding — 24 October 2026
 

@@ -32,7 +32,7 @@ function* groups(player: Player, keys: string[], amount: number, index = 0,
 }
 
 /** Finite owned-action reachability. Each move consumes a real entitlement;
- * Hajr, Ornithopter, Kulon and Box use owned physical cards and known or
+ * Hajr, Ornithopter, Ghola, Kulon and Box use owned physical cards and known or
  * already-paid recovery choices, never invented unknown future draws.
  * The adapter shares authoritative movement validation/physical commitment.
  * Opposing arrival outcomes are not simulated or assumed. */
@@ -45,8 +45,12 @@ export function findMovementCompletion(source: Game, actor: string,
     if (!needsMove && adapter.canFinish(game, actor)) return { actions };
     const player = game.players.find(candidate => candidate.id === actor)!;
     const physical = Object.values(player.forces).reduce((sum, amount) => sum + amount, 0);
-    if (live.some(promise => promise.answer && promise.minimum > physical + (player.shipped ? 0 : player.reserves))) return null;
-    const key = JSON.stringify([player.forces, player.elites, player.moved, player.shipped, player.reserves, player.hand.map(card => card.id),
+    // A held recovery card may return more than five over several real plays
+    // or Box reuse. Tanks are only an optimistic bound; the adapter still
+    // validates every owned card and never inspects unknown Box faces here.
+    const recovery = player.hand.some(card => card.effect === 'ghola' || card.effect === 'nullentropyBox') ? player.tanks : 0;
+    if (live.some(promise => promise.answer && promise.minimum > physical + (player.shipped ? 0 : player.reserves + recovery))) return null;
+    const key = JSON.stringify([player.forces, player.elites, player.moved, player.shipped, player.reserves, player.tanks, player.hand.map(card => card.id),
       player.hajrPlays, player.ornithopterExtraMoves, player.spice, game.choamMovement,
       game.aid, game.karamaShipping, game.guildRateBlocked, game.shipmentPromises,
       game.discard.map(card => card.id), game.movementDiscardKnowledge?.[actor], game.pendingNullentropy,

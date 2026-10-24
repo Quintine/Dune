@@ -1,5 +1,29 @@
 # Dune implementation status
 
+## 24 October 2026 — Owned Ghola movement preparation
+
+Basic movement witnesses use current physical Ghola force choices and exact
+typed eligibility, including known-discard or already-paid Box recovery. Return
+to reserves, preserve unused affordable shipment, then commit matching ground
+movement. Normal revival slots are unchanged; possible Tleilaxu income supplies
+no forecast cash. Real disposal/income controls retain their continuations.
+Persistent busy-safe guidance and existing minimal profiles follow the same
+path; legitimate Box recovery can replay the single physical Ghola.
+
+Disjoint source/control lanes, bounded review and owner integration pass22 files
+182/182, types/lint/build and four actual gameplay/control/GameTable SSR journeys.
+Original held/Box prefixes42/104/75/151 retain native setup/cards, actual cache
+purchase, paid separate desert shipments, 17+0 then1+1 Storm dials and settled
+Emperor bribes2/6. Eight profile runs accept40 proposals plus24 separate native
+continuations. Controlled acquisitions/losses/knowledge and counter-enabled
+income are labelled separately. Source feedback corrected nonexistent desert
+geometry, invalid Basic city income and a duplicate fixture field. Review caught
+missing Ghola discard relevance; final frozen proof passes.
+[Source, exact artifacts and unfinished scope](TRUTHTRANCE_MOVEMENT_PROMISES.md#owned-ghola-preparation--24-october-2026).
+No complete-mode/combination or browser/deployed acceptance, full AI refinement,
+comprehensive assurance or saved-room/D1/reset/restart/deployment operation.
+
+
 ## 24 October 2026 — Native early Basic movement promises
 
 Extend earlier questions to declared native families using actual Richese

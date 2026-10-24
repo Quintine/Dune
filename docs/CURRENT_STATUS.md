@@ -16,6 +16,27 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Owned Ghola movement preparation — 24 October. Prototyped / Partial.**
+Held physical Ghola and known/paid Box recovery now prepare exact force returns
+before an unused affordable shipment and qualifying ground move. Keep normal
+revival allowances separate, typed eligibility authoritative and possible
+Tleilaxu income conditional. Persistent guidance and minimal legal bots use the
+same current action. The single Ghola can be recovered and replayed legitimately.
+
+Disjoint source/control lanes, bounded review and owner integration pass
+**22 files182/182**, types/lint/build, four gameplay/control/table-rendering
+programmes and eight existing-profile runs (40 accepted proposals plus24 separate
+native continuations). Original held/Box sources42/104/75/151 use actual native
+setup, cache purchase, desert shipment, Storm casualties and settled Emperor
+bribes; Basic city occupation grants no invented income. Controlled prior-card,
+loss, knowledge and counter-enabled income cases disclose staging. Review fixed
+Ghola discard relevance; source feedback repaired geography/funding and a
+snapshot/action field collision before the final frozen batch.
+[Authority, exact proof and limits](TRUTHTRANCE_MOVEMENT_PROMISES.md#owned-ghola-preparation--24-october-2026).
+Wider preparations, later rounds, modules/Advanced, complete rules and
+comprehensive/browser/deployed acceptance remain unfinished. No full AI tuning
+or saved-room/D1/reset/restart/deployment operation.
+
 **Native early Basic movement promises — 24 October. Prototyped / Partial.**
 Earlier questions now include declared native families. Richese own/donor
 funding retains exact unpaid invoices, full submitted-ally Silent pledge locks
