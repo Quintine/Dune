@@ -12,6 +12,17 @@ import { newRevivalRules } from '../game/revival';
 
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
 const player = (g: Game, id: string) => g.players.find(p => p.id === id)!;
+/** These discard tests begin after the participants acknowledge the actual
+ * revealed result; that native window precedes fresh cleanup reactions. */
+function finishBattleOutcome(game: Game): Game {
+  while (game.battle?.outcomeWindow) {
+    const window = game.battle.outcomeWindow;
+    const actor = [window.attacker, window.defender].find(id => !window.ready.includes(id));
+    assert.ok(actor); game = applyAction(game, actor, { type: 'battleOutcomeReady', event: window.event });
+  }
+  return game;
+}
+
 function take(g: Game, id: string) {
   const zones = [g.deck, g.discard, g.richeseCache!, ...g.players.map(p => p.hand)];
   for (const zone of zones) {
@@ -88,6 +99,7 @@ for (const holder of ['a', 'r'] as const) void test(
     state = applyAction(state, 'e', { type: 'battlePlan', dial: 0, support: 0,
       leader: player(state, 'e').leaders.find(isAuditorLeader)!.id, defense: defense.id });
     for (const id of ['a', 'e']) state = applyAction(state, id, { type: 'traitorCall', call: false });
+  state = finishBattleOutcome(state);
     assert.equal(state.pendingTreacheryDiscard?.reaction?.stage, 'offer');
     const pass = (game: Game) => {
       const event = game.pendingTreacheryDiscard!.batch.event;
@@ -165,6 +177,7 @@ void test('Semuta preserves quoted CHOAM battle income through original allowanc
   state = applyAction(state, 'e', { type: 'battlePlan', dial: 0, support: 0,
     leader: player(state, 'e').leaders.find(l => !isAuditorLeader(l))!.id, defense: defense.id });
   for (const id of ['a', 'e']) state = applyAction(state, id, { type: 'traitorCall', call: false });
+  state = finishBattleOutcome(state);
   assert.equal(state.pendingTreacheryDiscard?.reaction?.stage, 'offer');
   assert.deepEqual(state.pendingChoamBattleIncome, { owner: 'e', amount: 1 });
   assert.equal(player(state, 'e').spice, beforeIncome);
@@ -262,6 +275,7 @@ void test('Semuta settles mandatory and winner discards before one native Face D
   state = applyAction(state, 'e', { type: 'battlePlan', dial: 0, support: 0,
     leader: player(state, 'e').leaders[0].id, defense: defense.id });
   for (const id of ['a', 'e']) state = applyAction(state, id, { type: 'traitorCall', call: false });
+  state = finishBattleOutcome(state);
   assert.equal(state.pendingTreacheryDiscard?.reaction?.stage, 'offer');
   assert.equal(state.pendingFaceDance?.winner, 'a');
   const pass = (game: Game) => {
@@ -1659,6 +1673,7 @@ void test('clean winner-selected battle cards allow one committed Semuta choice 
     leader: player(battle, 'e').leaders[0].id, defense: defense.id });
   battle = applyAction(battle, 'a', { type: 'traitorCall', call: false });
   battle = applyAction(battle, 'e', { type: 'traitorCall', call: false });
+  battle = finishBattleOutcome(battle);
   assert.equal(battle.pendingTreacheryDiscard?.continuation.kind, 'battleResolved');
   assert.equal(battle.pendingTreacheryDiscard?.reaction?.stage, 'offer');
   assert.deepEqual(battle.pendingTreacheryDiscard?.batch.entries.map(entry => [
@@ -1770,6 +1785,7 @@ void test('Semuta settles mandatory and winner discards before the original Hark
   state = applyAction(state, 'a', { type: 'battlePlan', dial: 0, support: 0,
     leader: player(state, 'a').leaders[0].id, defense: defense.id });
   for (const id of ['e', 'a']) state = applyAction(state, id, { type: 'traitorCall', call: false });
+  state = finishBattleOutcome(state);
   assert.equal(state.pendingTreacheryDiscard?.continuation.kind, 'battleResolved');
   assert.equal(state.pendingTreacheryDiscard?.reaction?.stage, 'offer');
   assert.deepEqual(state.pendingCapture, { player: 'e', loser: 'a', territory: 'arrakeen' });
@@ -1857,7 +1873,7 @@ void test('a mandatory winner Hero is reserved through the loser offer and claim
   battle = applyAction(battle, 'e', { type: 'battlePlan', dial: 0, support: 0,
     leader: player(battle, 'e').leaders[0].id, defense: defense.id });
   battle = applyAction(battle, 'a', { type: 'traitorCall', call: false });
-  let pending = applyAction(battle, 'e', { type: 'traitorCall', call: false });
+  let pending = finishBattleOutcome(applyAction(battle, 'e', { type: 'traitorCall', call: false }));
   assert.equal(player(pending, 'a').hand.some(card => card.id === hero.id), true);
   assert.equal(pending.discard.some(card => card.id === hero.id), false);
   const loserEvent = pending.pendingTreacheryDiscard!.batch.event;
@@ -1929,7 +1945,7 @@ void test('a mutual-traitor battle offers one mixed-owner mandatory batch with o
   battle = applyAction(battle, 'e', { type: 'battlePlan', dial: 0, support: 0,
     leader: player(battle, 'e').leaders[0].id, defense: snooper.id });
   battle = applyAction(battle, 'a', { type: 'traitorCall', call: true });
-  const pending = applyAction(battle, 'e', { type: 'traitorCall', call: true });
+  const pending = finishBattleOutcome(applyAction(battle, 'e', { type: 'traitorCall', call: true }));
   assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'battleResolved');
   assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
   assert.deepEqual(pending.pendingTreacheryDiscard?.batch.entries.map(entry => [

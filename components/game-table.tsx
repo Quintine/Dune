@@ -1255,7 +1255,13 @@ export function GameTable({
           ) : (
             <>
           Semuta Drug development preview · bounded fresh-discard reactions,
-          not complete Richese or certified expansion rules. Original Tech Tokens
+          not complete Richese or certified expansion rules. Fresh bare Basic
+          Richese starts enable these reactions with their selected native
+          families; older games are unchanged. Clean CHOAM and Ixian Ambassador
+          discards, including BG copies, now pause after ordinary shipment or
+          movement entry. CHOAM keeps its already-earned spice; Ixians draw their
+          one replacement after the reaction. Other nested arrivals remain
+          unfinished. Original Tech Tokens
           may remain in supported fresh 3–6-seat CHOAM/Ix profiles; the original
           winner’s award follows card cleanup and precedes Face Dance. Original
           Stronghold Cards may remain in Advanced 2–6-seat profiles and are claimed

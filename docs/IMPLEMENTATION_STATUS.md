@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 24 October 2026 — Fresh Basic Semuta and Ambassador discards
+
+Initialize the existing Semuta protocol before genuine fresh public bare Basic
+Richese setup with selected native families. Keep optional/Advanced profiles and
+older games unchanged. Retain the actual Ambassador arrival cause; clean
+shipment/movement CHOAM and Ixian private discards, including native BG copies,
+park the original entry. CHOAM credit stays committed once; Ixians draw exactly
+once after the reaction. Existing private commitment/selection, physical Semuta,
+approved full-hand exchange and original entrant suffix remain.
+
+A disjoint original-action fixture lane, bounded dependency review and owner
+integration pass twelve-file142/142, types/lint/build, ten actual-control/table
+rendering programmes and four existing profiles with20 legal proposals. Real
+public setup, actual Semuta auction/card purchase, paid placement/shipment and
+two actual movement arrivals use58/59 source actions and35 main plus10 cache.
+Only unopened positions and native scalar/packet lotteries are selected. The
+separate full-hand/own-card tests disclose controlled conserved transfers.
+Eight stale battle cases now acknowledge the actual result; the old module
+rejection now retains the already-supported independent-card/Discovery setup.
+Representative failures reproduced on the previous engine. Fixture-only type
+feedback was repaired; frozen source passes without a rule workaround.
+[Source, current scope and exact proof](SEMUTA_SOURCE_UPDATE_20260907.md#fresh-basic-starts-and-ambassador-discards--24-october-2026).
+Full modes, nested/provenance combinations, comprehensive assurance and deployed
+acceptance remain open. No strategy tuning or saved-room/reset/restart/deployment.
+
 ## 24 October 2026 — Bare Basic native Ecaz coalitions
 
 Remove the conservative Basic native-family admission restriction while keeping

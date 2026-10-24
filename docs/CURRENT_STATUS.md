@@ -16,6 +16,28 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Fresh Basic Semuta and Ambassador discards — 24 October. Prototyped / Partial.**
+Fresh bare public Basic Richese previews initialize Semuta before genuine setup
+with selected native families. Optional/Advanced profiles and older games keep
+their existing scope. Clean native/BG-copy CHOAM and Ixian private discards after
+source-witnessed ordinary shipment/movement park the original entry. CHOAM keeps
+its single credit; Ixians draw once after claim/Continue. Existing committed-only
+selection and full-hand exchange remain; controls persist without a timer.
+
+A disjoint original-action fixture lane, bounded dependency review and owner
+integration pass **12 files142/142**, types/lint/build, ten actual-control/table
+rendering programmes and four existing profiles with20 legal proposals. Sources
+58/59 use genuine public Basic setup, 35 main plus10 cache, actual Semuta/card
+purchases, paid placement/shipment and two actual ground-movement arrivals.
+Only unopened positions and original scalar/packet lotteries are selected;
+separate full-hand/own-card edge tests explicitly transfer conserved cards.
+Nearby stale tests now acknowledge actual battle results and retain the existing
+independent-card/Discovery composition; representative failures reproduced on
+the previous engine. Fixture-only type feedback was repaired.
+[Current scope, exact proof and remaining limits](SEMUTA_SOURCE_UPDATE_20260907.md#fresh-basic-starts-and-ambassador-discards--24-october-2026).
+Full modes, nested/provenance combinations, comprehensive assurance and deployed
+acceptance remain open. No strategy tuning or saved-room/reset/restart/deployment.
+
 **Bare Basic native Ecaz coalitions — 24 October. Prototyped / Partial.**
 Fresh public Basic Ecaz now admits selected native E1/E2 families while retaining
 original setup/roster and actual battle guards. Include allied zero/mixed Richese

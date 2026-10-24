@@ -1725,6 +1725,8 @@ export type Game = {
     richeseContribution?: number;
   } | null;
   pendingAmbassador?: {
+    /** Fresh entries retain their actual arrival source; older frames omit it. */
+    arrivalCause?: NonNullable<Game['pendingTerrorEntry']>['cause'];
     revivalEvent?: string;
     victoryEvent?: string;
     event: string;
@@ -7525,6 +7527,20 @@ function semutaOfferSupported(
 ) {
   const bgDiscard = continuation.kind === 'bgKaramaCostDiscard' ||
     continuation.kind === 'karamaBgConversionCancelDiscard';
+  const ambassadorDiscard = continuation.kind === 'ambassador';
+  if (ambassadorDiscard &&
+    (!bareBasicSemutaProfile(g) || g.phase !== 5 ||
+      continuation.entry.stage !== 'cards' || continuation.entry.resume !== 'none' ||
+      !['shipment', 'movement'].includes(continuation.entry.arrivalCause ?? '') ||
+      !['choam', 'ixians'].includes(continuation.entry.effect ?? '') ||
+      continuation.entry.guildAdvisorOrigin || continuation.entry.revivalEvent ||
+      continuation.entry.victoryEvent || continuation.entry.relocation ||
+      continuation.entry.shipmentReceipt || continuation.entry.purchaseReceipt ||
+      continuation.entry.revivalReceipt || continuation.entry.nexusPurchase ||
+      g.pendingArrivalOverlap || g.pendingArrivalReaction?.length ||
+      g.pendingChoamMove || g.pendingIxMove || g.pendingFremenMove ||
+      g.ornithopter || g.summonedWorm || g.wormRides.length > 0 ||
+      g.pendingRevival)) return false;
   if (continuation.kind === 'karamaBgConversionCancelDiscard' &&
     !semutaBgConversionCancelResponse(g, continuation.use.response, continuation.resume.pendingKarama)) return false;
   if (continuation.kind !== 'ordinaryCardDiscard' &&
@@ -7549,6 +7565,7 @@ function semutaOfferSupported(
     continuation.kind !== 'karamaShipmentDiscard' &&
     continuation.kind !== 'karamaShipmentPriceDiscard' &&
     continuation.kind !== 'specialKaramaDiscard' &&
+    !ambassadorDiscard &&
     !bgDiscard &&
     continuation.kind !== 'kaitainDiscard' &&
     continuation.kind !== 'tupileCleanupDiscard' &&
@@ -7661,7 +7678,7 @@ function semutaOfferSupported(
   return g.semutaPreview === true && g.status === 'playing' &&
     g.players.some(p => p.faction === 'richese') &&
     entries.length > 0 &&
-    (continuation.kind === 'kaitainDiscard' || continuation.kind === 'tupileCleanupDiscard' ||
+    (ambassadorDiscard || continuation.kind === 'kaitainDiscard' || continuation.kind === 'tupileCleanupDiscard' ||
       (continuation.kind === 'specialKaramaDiscard' && continuation.stage === 'cashout')
       ? entries.every(entry => !entry.publicFace)
       : continuation.kind === 'ixAllyCard' || continuation.kind === 'terrorDiscard' ||
@@ -7696,6 +7713,7 @@ function semutaOfferSupported(
         (!g.response || JSON.stringify(g.response) === JSON.stringify(continuation.resume.response))
       : true) &&
     (continuation.kind === 'battleCleanup' ||
+      ambassadorDiscard ||
       bgDiscard ||
       continuation.kind === 'specialKaramaDiscard' ||
       continuation.kind === 'winnerMandatoryDiscard' ||
@@ -8598,7 +8616,7 @@ function startModules(state: Game): Game {
   if (g.homeworlds)
     return g.expansions.length ? initializeHomeworldOccupationGameForAudit(g) : initializeHomeworldGameForAudit(g);
   if (g.strongholdCards) return initializeStrongholdFactionsGameForAudit(g);
-  return initializeFactionExpansionsGameForAudit(g);
+  return initializeFactionExpansionsGame(g, bareBasicSemutaProfile(g));
 }
 /** Public consistency only; each module's genuine initializer validates its own envelope. */
 function baseStartProfileBlock(g: Game): string | null {
@@ -10742,6 +10760,11 @@ export function initializeIxGameForAudit(state: Game): Game {
 }
 /** Genuine faction-only development setup. Optional variants and public starts remain gated. */
 export function initializeFactionExpansionsGameForAudit(state: Game): Game {
+  return initializeFactionExpansionsGame(state);
+}
+function initializeFactionExpansionsGame(state: Game, semuta = false): Game {
+  requireRule(!semuta || state.semutaPreview === undefined,
+    'Fresh public Semuta starts cannot inherit an existing preview marker.');
   requireRule(typeof state.advanced === 'boolean', 'Choose Basic or Advanced rules for the faction prototype.');
   requireRule(Array.isArray(state.expansions) && state.expansions.length > 0 &&
     state.expansions.every(id => ['ix', 'choam', 'ecaz'].includes(id)) &&
@@ -10752,7 +10775,7 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
     (!state.techTokens || nativeFactionTechProfile(state)) && !state.strongholdCards,
     'The faction prototype excludes other optional modules; Tech Tokens require a supported native three-through-six-seat lobby.');
   requireFreshFactionInventory(state);
-  const initialized = initializeSetupGameForAudit(state, false, false, false, false, false, false, true);
+  const initialized = initializeSetupGameForAudit(state, false, false, false, false, false, false, true, false, false, semuta);
   if (byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   if (moritaniAssassinateModeSupported(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
@@ -10869,23 +10892,32 @@ export function initializeMoritaniAssassinateGameForAudit(state: Game): Game {
     'Assassination requires Advanced Moritani in a supported selected native roster and module composition.');
   return initializeFactionExpansionsGameForAudit(state);
 }
-/** Development-only Semuta with original native modules/skills, separate bounded
- * Homeworld occupation, or Basic Moritani/E3. Public starts stay gated. */
+/** Bare native Basic starts share the original deck/roster validation. Optional
+ * modules retain their own explicit Semuta envelopes; saved games are not upgraded. */
+function bareBasicSemutaProfile(g: Game): boolean {
+  return g.advanced === false && g.players.length >= 2 && g.players.length <= 6 &&
+    g.expansions.includes('choam') && !!byFaction(g, 'richese') &&
+    g.expansions.every(id => ['ix', 'choam', 'ecaz'].includes(id)) &&
+    new Set(g.expansions).size === g.expansions.length &&
+    g.players.every(p => faction(p.faction).expansion === 'base' ||
+      g.expansions.includes(faction(p.faction).expansion)) &&
+    !g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.techTokens &&
+    !g.strongholdCards && !g.ecazTreachery && !g.discoveryEnabled &&
+    !g.discoveries && !g.discoveryStash && !g.greatMaker;
+}
+/** Explicit development entry for original native modules/skills, separate
+ * Homeworld occupation or bare Basic selected native families. */
 export function initializeSemutaGameForAudit(state: Game, skills = false): Game {
-  const nativeTerror = !state.advanced && state.expansions.length === 2 &&
-    state.expansions.includes('choam') && state.expansions.includes('ecaz') &&
-    state.players.some(p => p.faction === 'moritani') &&
-    state.players.every(p => p.faction === 'richese' || p.faction === 'moritani' ||
-      faction(p.faction).expansion === 'base');
+  const basicNative = bareBasicSemutaProfile(state);
   requireRule(!state.semutaPreview &&
     state.expansions.includes('choam') &&
-    (state.expansions.every(id => id === 'choam' || id === 'ix') || nativeTerror) &&
+    (state.expansions.every(id => id === 'choam' || id === 'ix') || basicNative) &&
     state.players.some(p => p.faction === 'richese'),
-  'Semuta needs a fresh Richese faction game: CHOAM with optional Ix and supported original modules/skills; separate exact-CHOAM Homeworld occupation has no other modules, while Basic Moritani uses CHOAM/Ecaz and classics without modules. Other overlays remain excluded.');
-  if (state.discoveryEnabled) requireRule(!nativeTerror && !skills && !state.homeworlds &&
+  'Semuta needs a fresh Richese faction game: bare Basic selected native families, or CHOAM with optional Ix and supported original modules/skills; separate exact-CHOAM Homeworld occupation has no other modules. Other overlays remain excluded.');
+  if (state.discoveryEnabled) requireRule(!basicNative && !skills && !state.homeworlds &&
     !state.nexusCards && discoveryModuleProfile(state),
   'Semuta Discovery keeps original Richese/CHOAM and optional Ix setup, without Skills, Homeworlds, Nexus or E3 overlays.');
-  if (state.nexusCards) requireRule(!nativeTerror && !state.homeworlds &&
+  if (state.nexusCards) requireRule(!basicNative && !state.homeworlds &&
     !state.discoveryEnabled && !state.discoveries,
   'Semuta Nexus retains original E1/E2 rosters without Homeworlds, Discovery or E3.');
   if (state.homeworlds) requireRule(!skills && semutaHomeworldRoster(state),
@@ -11051,7 +11083,7 @@ export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   if (moritaniAssassinateModeSupported(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
 }
-function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false, factions = false, ecazTreachery = false, strongholdFactions = false): Game {
+function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false, factions = false, ecazTreachery = false, strongholdFactions = false, semuta = false): Game {
   nexusCardsIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -11153,6 +11185,11 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       g.nexusHarkonnenReplacementHistory = [];
     }
     if (byFaction(g, 'guild')) initializeGuildBetrayalState(g);
+  }
+  if (semuta) {
+    requireRule(factions && bareBasicSemutaProfile(g),
+      'Fresh public Semuta setup requires a bare Basic Richese roster.');
+    g.semutaPreview = true;
   }
   initializeSetup(g, strongholdFactions || !!g.strongholdCards);
   if (nativeTech && byFaction(g, 'ecaz')) g.ecazOccupyPreview = true;
@@ -16743,8 +16780,10 @@ function arrivalOverlapIntegrity(g: Game) {
 function openAmbassadorEntry(
   g: Game, owner: Player, token: AmbassadorToken, entrant: Player, to: string,
   sector: number, resume: 'none' | 'wormRide',
+  arrivalCause?: NonNullable<Game['pendingTerrorEntry']>['cause'],
 ): boolean {
   g.pendingAmbassador = {
+    ...(arrivalCause ? { arrivalCause } : {}),
     event: `ambassador:${g.turn}:${g.phase}:${(g.log.at(-1)?.seq ?? 0) + 1}`,
     owner: owner.id,
     entrant: entrant.id,
@@ -16829,7 +16868,7 @@ function openTerritoryEntry(
   requireRule(!g.response && !g.decision && !g.pendingTerrorEntry && !g.pendingAmbassador,
     'Finish the other arrival reaction before opening this entry.');
   if (!terrorTokens.length)
-    return openAmbassadorEntry(g, owner, token, entrant, to, sector, resume);
+    return openAmbassadorEntry(g, owner, token, entrant, to, sector, resume, cause);
   requireRule(arrivalOverlapModeSupported(g) && !g.pendingArrivalOverlap &&
     moritani && g.order.includes(owner.id) && g.order.includes(moritani.id),
     'Ambassador and Terror overlap still needs a supported classic Ecaz/Moritani table.');
@@ -16846,7 +16885,7 @@ function openTerritoryEntry(
   log(g, `${owner.name} and ${moritani.name} both have optional reactions to ${entrant.name}'s entry in ${territory(to).name}; ${first === 'ambassador' ? owner.name : moritani.name} acts first in storm order.`);
   if (first === 'terror')
     return openTerrorEntry(g, entrant, to, sector, amount, elite, cause, 'none');
-  openAmbassadorEntry(g, owner, token, entrant, to, sector, 'none');
+  openAmbassadorEntry(g, owner, token, entrant, to, sector, 'none', cause);
   overlap.ambassadorEvent = g.pendingAmbassador!.event;
   return true;
 }
@@ -18996,7 +19035,7 @@ function finishTerrorEntry(g: Game) {
         t.location === overlap.territory);
       requireRule(token, 'The originally triggered Ambassador token is no longer present.');
       openAmbassadorEntry(g, getPlayer(g, overlap.ecaz), token,
-        getPlayer(g, overlap.entrant), overlap.territory, overlap.sector, 'none');
+        getPlayer(g, overlap.entrant), overlap.territory, overlap.sector, 'none', overlap.cause);
       overlap.ambassadorEvent = g.pendingAmbassador!.event;
       return;
     }

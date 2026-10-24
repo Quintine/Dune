@@ -6,6 +6,7 @@ import {
 } from '../game/engine';
 import { FACTIONS, type FactionId } from '../game/catalog';
 import { baseDeck } from '../game/cards';
+import { ecazTreacheryCards } from '../game/ecaz-cards';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES, type Difficulty } from '../game/bot-profiles';
 import { createLeaderSkills } from '../game/leader-skills';
@@ -54,7 +55,7 @@ function completedSetup(initial: Game, difficulty: Difficulty = 'Easy') {
   assert.equal(game.setupStage, undefined);
   assert.deepEqual(normalizeAutomaticGame(reload(game)), game);
   const cards = [...game.deck, ...game.discard, ...game.players.flatMap(p => p.hand)].map(card => card.id).sort();
-  assert.deepEqual(cards, baseDeck().map(card => card.id).sort());
+  assert.deepEqual(cards, [...baseDeck(), ...(initial.ecazTreachery ? ecazTreacheryCards() : [])].map(card => card.id).sort());
   const traitors = [...game.traitorReserve!, ...game.players.flatMap(p => [...p.traitors, ...p.traitorChoices])];
   assert.equal(new Set(traitors).size, traitors.length);
   assert.deepEqual(traitors.sort(), game.players.flatMap(p => p.leaders.map(leader => leader.id)).sort());
@@ -121,13 +122,20 @@ void test('only the host can select a boolean rules mode, changes clear human re
   completedSetup(act(ready(game), game.host, { type: 'start' }));
 });
 
-void test('unsupported independent cards and Discovery reject the whole start without silently dropping a module', () => {
+void test('supported independent cards and Discovery preserve both selected modules through public Basic setup', () => {
   let game = act(lobby(['atreides', 'emperor']), 'atreides',
     { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
   game = act(game, game.host, { type: 'moduleOption', module: 'discoveries', enabled: true });
   game = ready(game);
-  reject(game, game.host, { type: 'start' });
-  assert.ok(game.players.every(p => !p.hand.length && !p.traitors.length));
+  const before = structuredClone(game), started = act(game, game.host, { type: 'start' });
+  assert.deepEqual(game, before); assert.equal(started.status, 'setup');
+  assert.equal(started.advanced, false); assert.equal(started.ecazTreachery, true);
+  assert.equal(started.discoveryEnabled, true); assert.ok(started.discoveries);
+  assert.ok(started.spiceDeck.some(card => 'discovery' in card && card.discovery));
+  const cards = [...started.deck, ...started.players.flatMap(p => p.hand)];
+  for (const card of ecazTreacheryCards()) assert.ok(cards.some(held => held.id === card.id));
+  assert.equal(started.semutaPreview, undefined);
+  completedSetup(started);
 });
 
 void test('Advanced starts require the exact host opt-in and cannot dispatch audit initializers or hidden bypass options', () => {

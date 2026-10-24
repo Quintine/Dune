@@ -2,6 +2,76 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Fresh Basic starts and Ambassador discards — 24 October 2026
+
+Fresh public **bare Basic Richese previews** now initialize Semuta before the
+original setup and normalization. Two through six native seats use only their
+selected E1/E2/E3 families and the genuine physical decks/cache. No optional
+modules or independent E3 card variant inherit this route; Advanced and those
+modules retain their existing separate entry contracts. Existing games are not
+retrofitted. This connects current Basic preview behavior, not complete Richese,
+expansion or mode certification.
+
+Clean native **CHOAM and Ixian Ambassador** discards, including actual BG copies,
+now offer the same neutral reaction. A fresh entry retains its original arrival
+cause. Only phase-five shipment/movement entries with no active nested arrival,
+worm, relocation, transport, revival or purchase parent enter this scope. Older
+frames without that witness retain their original immediate continuation.
+Completed movement-card provenance and all other nested combinations remain
+unfinished interaction coverage; cause admission does not certify them.
+
+The existing [discard inventory](SEMUTA_DISCARD_CONTINUATIONS.md) already defines
+the order: CHOAM's selected private cards form one simultaneous batch **after**
+its single three-spice-per-card credit; Ixians' one private discard pauses
+**before** its one replacement draw. The whole original Ambassador entry stays
+parked. Claim or all-seat Continue retires that fresh batch and resumes the
+original entrant once. A CHOAM empty selection creates no event or income.
+This is printed-component composition with the existing Semuta protocol, not a
+new publisher timing FAQ. The approved full-hand exchange is unchanged.
+
+No private face is projected before commitment; only the committed owner sees
+eligible other-player cards. A multiple-card group requires exactly one claim;
+one candidate settles immediately. Ixians' reserved replacement belongs to the
+discarding beneficiary, who cannot claim their own batch, so it does not consume
+the distinct claimant's slot. Physical Semuta is spent once. The persistent
+Continue/claim controls use the existing reaction component and never time out.
+
+Original-action evidence uses actual public Basic Ecaz/CHOAM/Richese/Guild setup,
+35 ordinary plus10 native cache cards, Guild's real one-spice Semuta auction,
+Ecaz's one-spice ordinary purchase and one-spice placement, then Guild's paid
+one-force entry. Only unopened deal/Spice positions and original scalar/packet
+lotteries are selected; no dealt hand, wallet, force, clock, marker or pending
+receipt is installed. Two sources additionally make a real ordinary ground move
+from the paid shipment to the Ambassador. Full-hand and own-card edge cases
+explicitly stage conserved card transfers and are labelled controlled.
+
+The twelve-file affected union passes **142/142**, including17 new behavior
+cases, and types/lint/build pass. Ten actual gameplay/control/rendering programmes
+cover four native/copy grants through both claim/pass branches plus two real
+movement entries. Sources use58/59 actual actions. The real persistent
+`SemutaReaction` handlers exercise Continue, commit, private selection and busy
+protection; actual `GameTable` server rendering covers the grant, offer, selection,
+resumption and original entrant completion. Four existing profiles make20 legal
+reaction proposals. Framework aliases and a CSS stub make this server-rendered
+control evidence, not browser/visual/deployed acceptance. No strategy is tuned.
+
+Feedback found eight old Semuta battle cases skipping the now-required result
+acknowledgements, plus an old Advanced-preview test still rejecting the existing
+independent-card/Discovery combination. Representative failures reproduced
+against the preceding committed engine. Tests now follow actual acknowledgements
+and retain both existing modules. Subsequent fixture-only type feedback was
+corrected; the frozen union and runtime pass without an engine workaround.
+
+Exact frozen base `1f3e71fe033deb18470f8bc0f29a96dfa01e8578`, tree
+`2a379f47d4b789a486b198ddff4b17433086e824f5ce3919bb3aad7c11b2868f`,
+2621 source files. Private logs, original-action HTML/receipts and source hashes:
+`/home/quintine/.local/share/dune/checkpoints/20261024-basic-semuta-ambassador/`,
+`frozen-integrated-3/report.json`. Final checkpoint prose/reference overlays are
+separately recorded; engine, controls and tests remain identical to that proof.
+Full modes, wider producers/modules, nested originating-card combinations,
+comprehensive assurance and deployed acceptance remain open. No worker/D1,
+saved-room operation, reset, restart or deployment.
+
 ## Shrine physical-role costs — 16 October 2026
 
 The private `semuta --discoveries` entry now composes original fresh Richese/
