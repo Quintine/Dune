@@ -85,10 +85,6 @@ export function finishMovementPromises<T extends MovementPromise>(
  * in the engine. Truthtrance and an ordinary active Ornithopter may remain. */
 export function movementPromiseModeSupported(g: Game): boolean {
   return g.advanced === false &&
-    // Early owned-stage forecasts currently price ordinary classic invoices.
-    // Native phase5 coverage does not establish Richese/CHOAM bidding prices.
-    (g.phase >= 5 || (!g.expansions.length && g.players.every(player =>
-      FACTIONS.find(entry => entry.id === player.faction)?.expansion === 'base'))) &&
     g.players.length >= 2 && g.players.length <= 6 &&
     g.expansions.every(id => ['ix', 'choam', 'ecaz'].includes(id)) &&
     new Set(g.expansions).size === g.expansions.length &&

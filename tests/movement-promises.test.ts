@@ -130,12 +130,12 @@ void test('Basic native selected families qualify, while optional modules and un
   }
 });
 
-void test('earlier current-round movement questions support classic Basic while native early invoices remain unfinished', () => {
+void test('earlier current-round movement question profiles include declared Basic native families', () => {
   for (const phase of [0, 1, 2, 3, 4]) {
     const classic = movementBoundary(); classic.phase = phase; classic.movementRemaining = [];
     assert.equal(movementPromiseTargetAvailable(classic, 'target'), true);
     const native = structuredClone(classic); native.players[0].faction = 'ixians'; native.expansions = ['ix'];
-    assert.equal(movementPromiseTargetAvailable(native, 'target'), false);
+    assert.equal(movementPromiseTargetAvailable(native, 'target'), true);
     classic.advanced = true; assert.equal(movementPromiseTargetAvailable(classic, 'target'), false);
   }
   for (const phase of [-1, 6, 8]) {

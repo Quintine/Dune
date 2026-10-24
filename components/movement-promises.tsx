@@ -12,7 +12,7 @@ export function MovementPromises({ game, act, busy }: { game: GameView; act: (ac
   const next = game.phase >= 5 || paidDecision ||
     (game.phase === 2 && ['charity', 'ready'].includes(proposed?.type ?? '')) ||
     (game.phase === 4 && ['revive', 'ready'].includes(proposed?.type ?? '')) ||
-    (game.phase === 3 && proposed?.type === 'passBid') ? proposed : undefined;
+    (game.phase === 3 && ['passBid', 'richeseBid'].includes(proposed?.type ?? '')) ? proposed : undefined;
   const amount = next?.forces && typeof next.forces === 'object'
     ? Object.values(next.forces as Record<string, number>).reduce((sum, count) => sum + count, 0) : typeof next?.amount === 'number' ? next.amount : 0;
   const destination = next && game.combatLocations.find(location => location.id === next.territory)?.name;
@@ -27,6 +27,7 @@ export function MovementPromises({ game, act, busy }: { game: GameView; act: (ac
     : next?.type === 'revive' ? `Revive ${amount} forces for your later movement`
     : next?.type === 'ready' ? 'Finish this preparation phase while preserving your promises'
     : next?.type === 'passBid' ? 'Pass this bid and preserve later movement'
+    : next?.type === 'richeseBid' ? next.amount === 0 ? 'Submit zero in this Silent auction and preserve later movement' : 'Pass this Richese bid and preserve later movement'
     : next?.type === 'card' && next.mode === 'shipment' ? `Use ${card?.name ?? 'your card'} for Guild shipment rates`
     : next?.type === 'card' && card?.effect === 'nullentropyBox' ? 'Pay 2 spice and search with Nullentropy Box'
     : next?.type === 'card' && next.mode === 'choam' ? 'Play Kulon to extend the required movement'

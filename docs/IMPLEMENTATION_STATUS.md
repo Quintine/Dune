@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 24 October 2026 — Native early Basic movement promises
+
+Extend earlier questions to declared native families using actual Richese
+own/donor funding and current paid-sale boundaries. Keep a submitted Silent
+ally's whole pledge locked until reveal; exact private splits do not leak through
+the forecast. Native current controls pass or submit zero even while a foreign
+invoice temporarily prevents a witness. Positive own bids/gifts preserve the
+route; actual opposing settlement may release it. Quote only non-CHOAM fixed
+preopening Charity, with no fictional payer receipt or future native income.
+Owned ordinary revival uses shared force accounting while native counters stay
+pending. The mandatory Ix phase5 opening retains the owned future turn/reset.
+
+Disjoint source/control lanes, bounded funding review and owner integration pass
+29 files244/244, types/lint/build and six gameplay/control/table-rendering
+programmes. Original E2/E1/E3 Charity prefixes25/36/25 retain actual native setup
+and cards, including Ixian Shield selection. Emperor retains10 spice/20 reserves;
+actual first/last Once Around/Silent cache purchases2, shipment8 and ground8
+fulfill Yes. Eight profile runs make56 accepted proposals plus148 separate native
+continuations. Controlled escrow, original-card acquisition/prior losses and
+allowed/canceled Charity/revival cases disclose staging. Source feedback repaired
+Silent actor selection and a nonexistent setup field; engine feedback repaired
+owned ordinary revival projection and the mandatory Ix phase-opening gap. The
+final frozen batch passes after the initially failing opening regression.
+[Authority, exact source/proof and unfinished scope](TRUTHTRANCE_MOVEMENT_PROMISES.md#native-early-basic-funding--24-october-2026).
+Unresolved CHOAM own opening, wider preparations, later rounds, optional/Advanced
+and complete modes remain unfinished. No full AI refinement, comprehensive
+assurance or saved-room/D1/reset/restart/deployment operation.
+
 ## 24 October 2026 — Earlier classic Basic movement promises
 
 Extend current-round questions to clean classic Basic phases0–4. Owned Charity,

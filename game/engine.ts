@@ -1,3 +1,4 @@
+import { earlyAuctionFunding } from './early-auction-funding';
 import { recordMovementDiscardKnowledge, knownMovementDiscards, recordMovementBoxKnowledge, recordMovementClaimKnowledge, clearMovementDiscardKnowledge, type MovementDiscardKnowledge } from './movement-discard-knowledge';
 import { movementShipmentPreparations } from './movement-shipment-preparation';
 import { MovementClaimError, liveMovementPromises, movementEventAllowed, movementPromiseModeSupported, movementPromiseTargetAvailable, settleMovementEvent, finishMovementPromises, validMovementClaim, type MovementClaim, type MovementPromise } from './movement-promises';
@@ -16434,6 +16435,10 @@ function recoverableUnsupportedShipment(shipment: PendingShipment) {
 function groundMovementProbe(source: Game, actor: string): Game {
   const game = structuredClone(source);
   projectPendingShipmentKarama(game, actor);
+  if (game.phase < 5) {
+    if (game.pendingRevival?.player === actor) projectOwnedOrdinaryRevival(game, actor);
+    else game.pendingRevival = null;
+  }
   if (game.active !== actor) {
     // Forecast only this owner's unused turn on the current board. Do not
     // complete a foreign declaration, price, flight or private search, and do
@@ -16506,6 +16511,10 @@ function groundMovementCompletion(source: Game, actor: string,
   promises = liveMovementPromises(source.movementPromises ?? [], actor, source.turn)): MovementCompletion | null {
   if (!movementPromiseModeSupported(source) || source.phase < 0 || source.phase > 5) return null;
   const game = groundMovementProbe(source, actor);
+  if (source.phase === 5 && source.phaseOpening?.initialize) {
+    resetGroundMovementForecast(game, actor);
+    return groundMovementCompletionAtMovement(game, actor, promises);
+  }
   if (source.phase < 5) {
     const paid = source.pendingNullentropy;
     if (paid?.player === actor) {
@@ -16519,16 +16528,19 @@ function groundMovementCompletion(source: Game, actor: string,
       return null;
     }
     for (const seed of earlyShipmentCompletionSeeds(game, source, actor)) {
-      resetPlayerMovement(getPlayer(seed.game, actor));
-      seed.game.hajr = seed.game.hajr.filter(player => player !== actor);
-      seed.game.ornithopter = null;
-      seed.game.movementRemaining = [actor];
+      resetGroundMovementForecast(seed.game, actor);
       const completion = groundMovementCompletionAtMovement(seed.game, actor, promises);
       if (completion) return { actions: [...seed.actions, ...completion.actions], early: seed.early };
     }
     return null;
   }
   return groundMovementCompletionAtMovement(game, actor, promises);
+}
+function resetGroundMovementForecast(game: Game, actor: string) {
+  resetPlayerMovement(getPlayer(game, actor));
+  game.hajr = game.hajr.filter(player => player !== actor);
+  game.ornithopter = null;
+  game.movementRemaining = [actor];
 }
 function groundMovementCompletionAtMovement(game: Game, actor: string, promises: readonly MovementPromise[]): MovementCompletion | null {
   if (!movementPromiseTargetAvailable(game.pendingNullentropy?.player === actor ? { ...game, decision: null } : game, actor)) return null;
@@ -16617,12 +16629,21 @@ function earlyGroundMovementPolicy(g: Game, player: Player): Action[] | null {
   if (g.status !== 'playing' || !movementPromiseModeSupported(g) || !live.some(promise => promise.answer) ||
     g.truthtrance || g.response || g.phaseOpening || g.pendingTreacheryDiscard ||
     (g.decision && !(g.decision.kind === 'auctionPayment' && g.decision.player === player.id))) return null;
+  // Passing cannot spend the reserved route. In particular, a foreign Silent
+  // invoice may still refund escrow: do not replace a legal zero with a bid
+  // merely because that unresolved reservation prevents a current witness.
+  if (g.phase === 3 && !g.decision) {
+    const lot = g.richeseAuction;
+    if (lot) return !lot.outcome && lot.eligible.includes(player.id) &&
+      (lot.method === 'silent' ? !Object.hasOwn(lot.sealed, player.id) : lot.active === player.id)
+      ? [{ type: 'richeseBid', event: lot.event, amount: lot.method === 'silent' ? 0 : null, allyPayment: 0 }] : [];
+    return g.auction?.active === player.id ? [{ type: 'passBid' }] : [];
+  }
   const completion = groundMovementCompletion(g, player.id);
   if (!completion) return null;
   const current = completion.early?.find(step => step.phase === g.phase)?.action;
   if (g.decision?.kind === 'auctionPayment')
     return [current?.type === 'decision' ? current : { type: 'decision', karama: false }];
-  if (g.phase === 3) return g.auction?.active === player.id ? [{ type: 'passBid' }] : [];
   if (g.phase === 2 || g.phase === 4) return current ? [current] : g.ready.includes(player.id) ? [] : [{ type: 'ready' }];
   return null;
 }
@@ -16673,11 +16694,14 @@ function reconcileGroundMovementPromises(g: Game, actor?: string, action?: Actio
       g.pendingChoamMove?.player === p.id) continue;
     const early = g.phase < 5 || sourcePhase < 5;
     const voluntary = actor === p.id && (!early || !!action &&
-      (['card', 'bribe', 'pledgeAid', 'emperorGift', 'bid', 'revive', 'reviveLeader', 'reviveKwisatz', 'emperorRevival', 'decision'].includes(action.type) ||
+      (['card', 'bribe', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revive', 'reviveLeader', 'reviveKwisatz', 'emperorRevival', 'decision'].includes(action.type) ||
+        action.type === 'richeseBid' && typeof action.amount === 'number' && action.amount > 0 ||
         action.type === 'ready' && [2, 4].includes(sourcePhase)));
     const busy = !!(g.response || g.decision || g.phaseOpening || g.pendingTreacheryDiscard ||
       g.pendingAmbassador || g.pendingTerrorEntry || g.pendingArrivalOverlap || g.pendingArrivalReaction?.length ||
-      g.phase === 3 && !g.currentAuctionSale && g.auction?.bidder === p.ally && (g.auction?.allyPayment ?? 0) > 0);
+      g.phase === 3 && !g.currentAuctionSale &&
+        (g.auction?.bidder === p.ally && (g.auction?.allyPayment ?? 0) > 0 ||
+          g.richeseAuction && !g.richeseAuction.outcome));
     if (busy && !voluntary) continue;
     if (groundMovementCompletion(g, p.id, live)) continue;
     requireRule(!voluntary, 'Your action would remove the last legal completion of an accepted ground-movement promise.');
@@ -23341,7 +23365,14 @@ function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string
       if (p.charityTurn === g.turn || charityQuote(g, p).total <= 0) continue;
       try {
         const action: Action = { type: 'charity' };
-        const next = applyActionInner(g, owner, action, 'shipmentPreparation');
+        // Before CHOAM's opening response, another faction's fixed ordinary
+        // entitlement is unchanged by its outcome. Quote only that entitlement:
+        // no CHOAM income, payment or invented receipt enters this forecast.
+        let next: Game;
+        if (source.phase < 2 && byFaction(g, 'choam') && g.choamCharity?.turn !== g.turn) {
+          if (p.faction === 'choam') continue;
+          p.spice += charityQuote(g, p).total; p.charityTurn = g.turn; next = g;
+        } else next = applyActionInner(g, owner, action, 'shipmentPreparation');
         charitySeeds.push({ game: next, actions: [action], early: [{ phase: 2, action }] });
       } catch (error) { if (!(error instanceof RuleError)) throw error; }
     }
@@ -23352,15 +23383,17 @@ function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string
     for (const seed of seeds) {
       const p = getPlayer(seed.game, owner), a = source.phase === 3 && !source.currentAuctionSale ? source.auction : null;
       const ownBid = a?.bidder === owner && a.bid > 0;
-      const cash = ownBid ? a.bid - (a.allyPayment ?? 0) : 0;
-      const committed = source.phase === 3 && source.currentAuctionSale ? 0 : committedOutgoingAid(source, getPlayer(source, owner));
-      const refund = (source.aid[owner]?.amount ?? 0) - committed;
+      const funding = earlyAuctionFunding({ phase: source.phase, owner, ally: p.ally,
+        paid: !!source.currentAuctionSale, normal: source.auction,
+        native: source.richeseAuction, funding: source.richeseFunding,
+        pledge: source.aid[owner]?.amount ?? 0 });
+      const cash = funding.normalCash;
       const alternatives: (string | null)[] = [null, ...(ownBid ? p.hand
         .filter(card => canUseAsKaramaRole(seed.game, p, card)).map(card => card.id) : [])];
       for (const card of alternatives) {
         const g = structuredClone(seed.game), beneficiary = getPlayer(g, owner);
-        if (!card && beneficiary.spice < cash) continue;
-        beneficiary.spice += refund - (card ? 0 : cash);
+        if (beneficiary.spice < funding.nativeCash + (card ? 0 : cash)) continue;
+        beneficiary.spice += funding.refund - (card ? 0 : cash) - funding.nativeCash;
         if (!Number.isSafeInteger(beneficiary.spice) || beneficiary.spice < 0) continue;
         const actions = [...seed.actions], early = [...seed.early];
         if (card) {
@@ -23372,6 +23405,7 @@ function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string
         // Native Bidding refunds its unused pledges. An ally's incoming
         // Bidding escrow is never a promised future Shipment contribution.
         g.aid = {}; g.auction = null; g.currentAuctionSale = null;
+        g.richeseAuction = null; g.richeseFunding = {}; g.richeseBidding = null;
         fundingSeeds.push({ game: g, actions, early });
       }
     }
@@ -23391,6 +23425,7 @@ function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string
       try {
         const action: Action = { type: 'revive', amount };
         const next = applyActionInner(g, owner, action, 'shipmentPreparation');
+        projectOwnedOrdinaryRevival(next, owner);
         revivalSeeds.push({ game: next, actions: [...seed.actions, action], early: [...seed.early, { phase: 4, action }] });
       } catch (error) { if (!(error instanceof RuleError)) throw error; }
     }
@@ -23701,9 +23736,10 @@ function reconcileShipmentPromises(
     const future = g.phase < 5 || g.active !== p.id;
     const earlyVoluntary = (voluntary?.phase ?? g.phase) < 5 && voluntary &&
       (['bid', 'revive', 'reviveLeader', 'reviveKwisatz', 'emperorRevival'].includes(voluntary.action.type) ||
+        voluntary.action.type === 'richeseBid' && typeof voluntary.action.amount === 'number' && voluntary.action.amount > 0 ||
         voluntary.action.type === 'ready' && [2, 4].includes(voluntary.phase ?? g.phase));
     const ownVoluntary = voluntary?.actor === p.id &&
-      (['card', 'bribe', 'pledgeAid', 'emperorGift'].includes(voluntary.action.type) ||
+      (['card', 'bribe', 'pledgeAid', 'emperorGift', 'richeseGift'].includes(voluntary.action.type) ||
         earlyVoluntary ||
         future && voluntary.action.type === 'decision');
     // A foreign pending parent may spend or refund its approved funding. Wait
@@ -23711,7 +23747,9 @@ function reconcileShipmentPromises(
     if (future && !ownVoluntary && (g.truthtrance || g.response || g.decision ||
       g.phaseOpening || g.pendingShipment || g.pendingGuildTransport ||
       g.pendingHomeworldShipment || g.pendingTreacheryDiscard || g.ornithopter ||
-      g.phase === 3 && !g.currentAuctionSale && g.auction?.bidder === p.ally && (g.auction?.allyPayment ?? 0) > 0)) {
+      g.phase === 3 && !g.currentAuctionSale &&
+        (g.auction?.bidder === p.ally && (g.auction?.allyPayment ?? 0) > 0 ||
+          g.richeseAuction && !g.richeseAuction.outcome))) {
       kept.push(promise);
       continue;
     }
@@ -26490,6 +26528,35 @@ function currentRevivalResumeQuote(g: Game, stage: 'stop' | 'finish') {
     throw error;
   }
 }
+/** Shared physical accounting after the authoritative revival quote. */
+function commitRevivalForcePieces(g: Game, p: Player, revival: PendingRevival) {
+  const n = revival.amount!, elite = revival.elite ?? 0;
+  addNativeReserves(g, p, n, elite);
+  p.tanks -= n;
+  if (revival.emperorExtra)
+    g.emperorExtra[p.id] = (g.emperorExtra[p.id] ?? 0) + n;
+  else if (!revival.nexusEmperorEvent) {
+    // Keep unknown historical free usage unknown in both real and quoted paths.
+    if (p.freeForcesRevived !== undefined || p.revived === 0)
+      p.freeForcesRevived = (p.freeForcesRevived ?? 0) + revival.free;
+    p.revived += n;
+  }
+  if (p.elites) { p.elites.tanks -= elite; p.elites.revived += elite; }
+}
+/** Private allowed-outcome projection for the owner's declared ordinary force
+ * request. Native CHOAM/Tleilaxu controls remain real unresolved decisions.
+ * Do not execute their choices, income, technology or continuation effects. */
+function projectOwnedOrdinaryRevival(g: Game, owner: string) {
+  const pending = g.pendingRevival;
+  if (!pending || pending.player !== owner || pending.kind !== 'forces' ||
+    pending.emperorExtra || pending.nexusEmperorEvent || pending.payer && pending.payer !== owner || g.homeworlds) return;
+  const quote = currentRevivalResumeQuote({ ...g, pendingRevival: { ...pending, checks: [] } }, 'finish');
+  if (quote.outcome !== 'revive') return;
+  const p = getPlayer(g, owner);
+  p.spice -= quote.pending.cost;
+  commitRevivalForcePieces(g, p, quote.pending);
+  g.pendingRevival = null; g.decision = null; g.response = null;
+}
 function finishRevival(
   g: Game,
   quote: RevivalResumeQuote = currentRevivalResumeQuote(g, 'finish'),
@@ -26538,20 +26605,7 @@ function finishRevival(
     const source = revival.nexusEmperorEvent ? 'nexusEmperor' :
       revival.emperorExtra ? 'emperorExtra' : 'normal';
     const group = { amount: n, elite, free: revival.free };
-    addNativeReserves(g, p, n, elite);
-    p.tanks -= n;
-    if (revival.emperorExtra)
-      g.emperorExtra[p.id] = (g.emperorExtra[p.id] ?? 0) + n;
-    else if (!revival.nexusEmperorEvent) {
-      // Preserve unknown legacy usage instead of guessing how earlier paid returns were priced.
-      if (p.freeForcesRevived !== undefined || p.revived === 0)
-        p.freeForcesRevived = (p.freeForcesRevived ?? 0) + revival.free;
-      p.revived += n;
-    }
-    if (p.elites) {
-      p.elites.tanks -= elite;
-      p.elites.revived += elite;
-    }
+    commitRevivalForcePieces(g, p, revival);
     finishNexusEmperorRevival(g, revival, 'returned');
     if (quote.techIncome) {
       const income = quote.techIncome;

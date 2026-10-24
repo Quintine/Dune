@@ -16,6 +16,28 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Native early Basic movement promises — 24 October. Prototyped / Partial.**
+Earlier questions now include declared native families. Richese own/donor
+funding retains exact unpaid invoices, full submitted-ally Silent pledge locks
+and already-paid sale boundaries. Current native controls pass or submit zero
+without exposing future movement. Non-CHOAM preopening Charity quotes its fixed
+entitlement only; ordinary owned revival shares physical accounting while real
+native counters remain pending. The mandatory Ix Movement opening retains the
+future turn instead of vetoing preceding Ready.
+
+Disjoint source/control lanes, bounded funding review and owner integration pass
+**29 files244/244**, types/lint/build and six gameplay/control/table-rendering
+programmes. Original E2/E1/E3 Charity prefixes25/36/25 retain actual setup/cards
+and Emperor10 spice/20 reserves; real first/last Once Around/Silent invoice2,
+shipment8 and ground8 fulfill Yes. Eight profile runs make56 accepted proposals
+plus148 separate native continuations. Controlled escrow, original-card/prior
+loss and allowed/canceled Charity/revival cases disclose staging. The first
+integrated run exposed the Ix opening boundary; its narrow repair passes before
+the final frozen union. [Source, exact proof and limits](TRUTHTRANCE_MOVEMENT_PROMISES.md#native-early-basic-funding--24-october-2026).
+CHOAM's unresolved own opening, wider preparations, later rounds, modules/
+Advanced, full modes, comprehensive assurance and deployed acceptance remain
+unfinished. No strategy tuning or saved-room/D1/reset/restart/deployment operation.
+
 **Earlier classic Basic movement promises — 24 October. Prototyped / Partial.**
 Clean current-round phases0–4 now include owned Charity, ordinary auction
 payment and Revival before later ground movement. Reopen readiness, reserve

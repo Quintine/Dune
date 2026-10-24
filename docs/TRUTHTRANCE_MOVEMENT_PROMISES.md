@@ -1,6 +1,6 @@
 # Truthtrance ground-movement promises
 
-The [earlier classic Basic follow-up](#earlier-classic-basic-phases--24-october-2026)
+The [native early Basic follow-up](#native-early-basic-funding--24-october-2026)
 supersedes preceding timing boundaries. Previous checkpoint counts remain dated
 evidence, not complete rules or final acceptance.
 
@@ -21,14 +21,14 @@ movement statement, the owned-action witness and accepted-order release policy
 below are explicit software compositions, not a publisher movement-specific FAQ
 or Basic adoption of the unofficial Advanced revision.
 
-Classic Basic tables can also ask in clean earlier phases0–4 of the current
-round, with the owned preparations below. Fresh or existing Basic native tables
-can ask at a clean **active or still-unused
+Basic tables with the declared native families can also ask in clean earlier
+phases0–4 of the current round, with the owned preparations below. During
+Movement, ask at a clean **active or still-unused
 waiting turn in the current Shipment and Movement queue**, before or after the
 active respondent's shipment, including selected E1/E2/E3 factions. No optional modules or Advanced
 inherit this entry. The actual native roster, physical inventory and route
-validation remain authoritative; no mode or publication gate opens. Earlier
-phases with native factions, later-round movement questions, compound movement/fact questions and wider
+validation remain authoritative; no mode or publication gate opens.
+Later-round movement questions, compound movement/fact questions and wider
 owned preparations/interactions remain unfinished. Existing saves are not
 reconfigured and absent promise fields remain absent until a real answer binds.
 
@@ -62,8 +62,80 @@ reconfigured and absent promise fields remain absent until a real answer binds.
 
 This is bounded reachability, not complete arbitrary Truthtrance enforcement.
 Other owned preparation families (including native relocation preparation),
-earlier native phases/later rounds, optional/Advanced profiles and comprehensive
+later rounds, optional/Advanced profiles and comprehensive
 combination/recovery/privacy/custody acceptance remain due.
+
+## Native early Basic funding — 24 October 2026
+
+Clean earlier Basic entry now includes declared E1/E2/E3 native factions without
+optional modules. The existing [native auction contract](RICHESE_AUCTION_RULES.md)
+and `richeseOwnCommitment` / `richeseAllyCommitment` price real pending invoices.
+Subtract the current leading Once Around offer or an owned submitted Silent
+split; losing and unsubmitted offers spend nothing. Native cache invoices have
+no ordinary Karama payment alternative. A current paid sale is not charged
+again. Clear only the detached auction/funding controls before the phase5
+forecast, so reserved own spice is not deducted twice. No unknown purchased
+card or future seller/Emperor income supplies a route.
+
+During unfinished Silent bidding, a submitted ally locks the **entire outgoing
+pledge**, using public submission status rather than exposing its private split
+through feasibility. Only the actual revealed winner determines the final
+donated cost/refund. Foreign auction/income controls finish before release.
+Positive owner bids and card gifts cannot voluntarily erase the route. Current
+guidance passes a live Once Around bid or submits Silent zero with its original
+event; it does so even while foreign escrow temporarily prevents a witness.
+A zero/pass is not a voluntary promise-breaking spend. Original cache choices,
+native setup and post-auction decisions retain their own controls.
+The mandatory Ix-enabled phase5 opening is also a forecast boundary: retain the
+owned future turn with its normal reset until real opening readiness initializes
+Movement. It cannot veto the owner's preceding Ready or expose movement early.
+
+Before CHOAM's opening response, another faction may quote its fixed ordinary
+Charity entitlement using current Inflation. This detached credit creates no
+CHOAM income, payment or fictional receipt; the actual phase2 claim still waits
+for the real allowed/canceled payer receipt and affordability. CHOAM's own
+unresolved opening income/claim is not precredited and remains a wider forecast
+boundary. A declared owned ordinary force revival projects only its quoted
+allowed physical return/cost through the same accounting as real revival.
+CHOAM/Tleilaxu decisions, benefit checks and income remain real unresolved
+controls; no quote executes their choices or awards a future receipt. A real
+denial can release impossibility, or leave an affordable paid route intact.
+This continues the explicit provisional owned-outcome policy above, not a new
+publisher Truthtrance clarification.
+
+`tests/fixture-truth-movement-native-early.ts` supplies genuine original public
+Basic Atreides/Emperor plus Richese/CHOAM, Ixians/Tleilaxu or Ecaz/Moritani.
+Actual Ixian card selection/mobile placement and Ecaz/Moritani placement retain
+their original counters; Atreides genuinely receives Truth and Emperor Baliset,
+ten spice and twenty reserves. Actual questions, native first/last Once Around
+or Silent invoices, shipment8 and ground8 are caller actions. Controlled prior
+losses, original-card transfers, alliance escrow and preopening Charity cases
+are separately disclosed.
+
+The final **29-file union passes244/244**, types/lint and production build.
+Six actual gameplay/guidance-handler/GameTable programmes cover first/last
+Once Around/Silent cache purchase2, shipment8 and ground8, plus original E1/E3
+early continuations. E2/E1/E3 source prefixes have25/36/25 actual actions. Eight
+existing-profile runs make56 accepted guided proposals plus148 separate native
+continuations, without tuning. Actual native zero/pass handlers and busy
+protection also pass their two original-source control tests. Controlled tests
+retain a real pending free revival before CHOAM's decision, then distinguish an
+unaffordable denial from a retained paid route. Source corrections use actual
+Silent submission status and Ix/Ecaz setup fields. Initial integrated feedback
+exposed the Ix Movement opening; the narrow repair and final frozen union pass.
+
+Frozen base `f995b6f4cd9008954893f2d646ecb861986a43de`, tree
+`5c366c0cd7200c61e4461ac148a3a15a98f53ef1dec5fd661d425cced6c1f675`,
+2653 files. Private source-bound logs, actual-state HTML and receipts:
+`/home/quintine/.local/share/dune/checkpoints/20261024-movement-native-early/`,
+`frozen-integrated-2/report.json`. Only final checkpoint/reference prose overlays
+follow proof. Framework aliases/CSS stubbing establish server rendering, not
+browser/visual/deployed acceptance. No saved-room/D1/reset/restart/deployment.
+
+Wider owned preparations, CHOAM's unresolved own opening, later rounds,
+optional/Advanced and mixed questions, full modes, comprehensive assurance and
+browser/deployed acceptance remain unfinished. Native shipment-promise entry
+is unchanged; this does not certify all promise families or faction rules.
 
 ## Earlier classic Basic phases — 24 October 2026
 
