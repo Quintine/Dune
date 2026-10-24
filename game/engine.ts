@@ -15,7 +15,7 @@ import {
 } from './leader-skill-combat';
 import { quoteSukPhysicalRescue, quoteSukRescue, SukPhysicalRescueError, sukReceiptSignature, sukRescueOptions, type SukForceGroup, type SukPhysicalRescueQuote, type SukPhysicalRescueReceipt, type SukReserveDestinations, type SukRescueOption, type SukRescueReceipt } from './suk-graduate';
 import { quoteTleilaxuAmbassadorForces, TleilaxuAmbassadorForceError } from './tleilaxu-ambassador-forces';
-import { tleilaxuAmbassadorLeaderChoices, tleilaxuAmbassadorLeaderSelection } from './tleilaxu-ambassador-leaders';
+import { tleilaxuAmbassadorLeaderChoices, tleilaxuAmbassadorLeaderSelection, tleilaxuAmbassadorLeaderOpening } from './tleilaxu-ambassador-leaders';
 import { createAmbassadorRevivalReceipt, validateAmbassadorRevivalReceipt, AmbassadorRevivalIncomeError,
   type AmbassadorRevivalReceipt, type AmbassadorRevivalReturn } from './tleilaxu-ambassador-income';
 import { leaderSkillStrongholdCount, sandmasterVictorySpice, sandmasterVictoryPiles, type SandmasterVictorySpiceOffer } from './leader-skill-battle-board';
@@ -18353,7 +18353,7 @@ function resolveAmbassadorEffect(g: Game) {
     g.decision = { kind: 'ecazAmbassador', player: p.id };
     log(
       g,
-      `${p.name} may revive one first-death own leader or return up to four physical forces for free through the Tleilaxu Ambassador. Ordinary revival allowances and income are unchanged.`,
+      `${p.name} may revive one eligible own leader or return up to four physical forces for free through the Tleilaxu Ambassador. Repeated native leaders retain their ordinary death-cohort condition provisionally. Ordinary revival allowances remain independent; a positive return can earn the existing free-revival income.`,
       { faction: 'tleilaxu', name: 'Tleilaxu Ambassador' },
     );
     return;
@@ -18610,6 +18610,8 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
       let name: string, returned: AmbassadorRevivalReturn;
       if (selected === 'kwisatz') {
         const kwisatz = p.kwisatz!;
+        const opening = tleilaxuAmbassadorLeaderOpening(g, p);
+        if (opening !== null) p.revivalCycle = Math.max(p.revivalCycle, opening);
         kwisatz.dead = false;
         delete kwisatz.usedAt;
         kwisatz.revivalCycle = Math.max(p.revivalCycle, kwisatz.revivalCycle ?? 1) + 1;
@@ -18625,7 +18627,12 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
         returned = { kind: 'leader', leader: duke.id, deaths: duke.deaths };
         g.dukeVidal = consumeDuke(g.dukeVidal!);
       } else {
+        // A living leader would hide a newly opened ordinary cohort: preserve
+        // its quote before resurrection. Ecaz records identity against that same
+        // original dead state before generic cycle persistence.
+        const opening = tleilaxuAmbassadorLeaderOpening(g, p);
         recordEcazLeaderReturn(g, selected);
+        if (opening !== null) p.revivalCycle = Math.max(p.revivalCycle, opening);
         selected.dead = false;
         delete selected.usedAt;
         name = selected.name;

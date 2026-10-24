@@ -5,7 +5,7 @@ import { isAuditorLeader } from './choam-auditor';
 import { homeworldLowBonus } from './homeworld-benefits';
 import { recruitsRevivalAllowance } from './recruits';
 import { DUKE_VIDAL_ID } from './duke-vidal';
-import { ecazDukeRevivalBlock, quoteEcazDukeRevival } from './ecaz-duke-revival';
+import { ecazDukeRevivalBlock, quoteEcazDukeRevival, type EcazDukeRevivalContext } from './ecaz-duke-revival';
 import {
   quoteEcazRevivalCohort, completeEcazRevivalCohortUse,
   recordEcazRevivalOpening, recordEcazFirstExecution,
@@ -164,8 +164,45 @@ export function normalRevivalCycle(
   return cycle;
 }
 
-/** Ordinary Ecaz cohorts keep native identity separate from independent Duke deaths.
- * Only the absent-Tleilaxu card quote may waive the unopened first cohort. */
+export type LeaderRevivalCohortContext = EcazDukeRevivalContext;
+export type LeaderRevivalCohortPlayer = Pick<
+  Player, 'id' | 'faction' | 'leaders' | 'revivalCycle' | 'ecazRevivalCohort'
+>;
+export type LeaderRevivalCohortQuote = {
+  cycle: number;
+  leaders: readonly string[];
+  dukeAvailable: boolean;
+  dukeBlocked: string | null;
+};
+
+/** Ordinary death/cohort permission only, independent of phase, allowance,
+ * payment and prevention. The native Tleilaxu early service is separate.
+ * Ecaz keeps native identity separate from independent Duke deaths; only the
+ * absent-Tleilaxu card quote may waive the unopened first cohort. */
+export function quoteLeaderRevivalCohort(
+  g: LeaderRevivalCohortContext,
+  p: LeaderRevivalCohortPlayer,
+  waiveOpening = false,
+): LeaderRevivalCohortQuote {
+  const shared = p.faction === 'ecaz' && g.dukeVidal;
+  const dukeContext = shared && g.status === 'playing' ? g : null;
+  const dukeBlocked = dukeContext ? ecazDukeRevivalBlock(dukeContext, p.id) : null;
+  const dukeAvailable = !!dukeContext && !dukeBlocked;
+  const cohort = shared ? quoteEcazRevivalCohort(p, dukeAvailable, waiveOpening) : null;
+  let cycle = cohort?.cycle ?? normalRevivalCycle(p);
+  if (waiveOpening && !cohort) cycle = Math.max(1, cycle);
+  const leaders = p.leaders.flatMap((leader) => {
+    if (!leader.dead || leader.capturedBy || leader.gholaBy) return [];
+    // Supplied Advanced p29 E permits Auditor revival each turn regardless
+    // of the ordinary five-disc cohort, including its repeated deaths.
+    const auditorReturn = g.advanced && p.faction === 'choam' && isAuditorLeader(leader);
+    return auditorReturn || (cycle > 0 && (cohort
+      ? !cohort.returned.includes(leader.id) : leader.deaths === cycle))
+      ? [leader.id] : [];
+  });
+  return { cycle, leaders, dukeAvailable, dukeBlocked };
+}
+
 export function leaderRevivalOptions(
   g: Pick<
     Game,
@@ -192,27 +229,14 @@ export function leaderRevivalOptions(
   waiveOpening = false,
 ) {
   const shared = p.faction === 'ecaz' && g.dukeVidal;
-  const dukeContext = shared && g.status === 'playing' ? g : null;
-  const dukeBlocked = dukeContext ? ecazDukeRevivalBlock(dukeContext, p.id) : null;
-  const dukeAvailable = !!dukeContext && !dukeBlocked;
-  const cohort = shared ? quoteEcazRevivalCohort(p, dukeAvailable, waiveOpening) : null;
-  let cycle = cohort?.cycle ?? normalRevivalCycle(p);
-  if (waiveOpening && !cohort) cycle = Math.max(1, cycle);
+  const { cycle, leaders: cohortLeaders, dukeAvailable, dukeBlocked } =
+    quoteLeaderRevivalCohort(g, p, waiveOpening);
   const enabled = g.phase === 4 && !revivalPrevented(g, p.id);
   const discount = revivalDiscount(g, p);
   const leaders = p.leaders.flatMap((leader) => {
     if (!enabled || !leader.dead || leader.capturedBy || leader.gholaBy)
       return [];
-    // Supplied Advanced p29 E permits Auditor revival each turn regardless
-    // of the other leaders in Tanks; retain the ordinary one-leader allowance.
-    const auditorReturn =
-      g.advanced &&
-      p.faction === 'choam' &&
-      isAuditorLeader(leader);
-    const normal =
-      !p.leaderRevived &&
-      (auditorReturn || (cycle > 0 && (cohort
-        ? !cohort.returned.includes(leader.id) : leader.deaths === cycle)));
+    const normal = !p.leaderRevived && cohortLeaders.includes(leader.id);
     if (
       !normal &&
       (p.faction !== 'tleilaxu' ||
@@ -232,7 +256,7 @@ export function leaderRevivalOptions(
     ];
   });
   if (dukeAvailable && enabled && !p.leaderRevived) {
-    const quote = quoteEcazDukeRevival(dukeContext!, p.id, !!discount);
+    const quote = quoteEcazDukeRevival(g, p.id, !!discount);
     leaders.push({
       id: DUKE_VIDAL_ID,
       name: quote.duke.leader.name,

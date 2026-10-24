@@ -288,8 +288,11 @@ export function EcazEntry({
             allowances unchanged provisionally. When Tleilaxu is seated, a
             positive return can earn it one bank spice, sharing the beneficiary’s
             once-per-turn free-revival reward. Canceling income keeps the return.
-            This income interpretation is provisional. Ordinary leaders and
-            Atreides’ Kwisatz Haderach retain their first-death restriction.
+            This income interpretation is provisional. First-death leaders and
+            the first-killed Kwisatz Haderach need not wait for the ordinary
+            revival cohort. Further returns must satisfy their ordinary death
+            condition under the provisional interpretation. Kwisatz Haderach
+            keeps its separate next-cohort marker.
             Other revival interactions remain under development.
           </p>
           {entry.revival?.leaders.some(leader => leader.destination === 'setAside') && <p className="m-0 text-sm leading-6">

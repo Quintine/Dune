@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { leaders } from '../game/cards';
+import { createAuditorLeader, leaders } from '../game/cards';
+import type { Player } from '../game/engine';
+import type { FactionId } from '../game/catalog';
 import { createDukeVidal, DUKE_VIDAL_ID } from '../game/duke-vidal';
+import { quoteLeaderRevivalCohort } from '../game/revival';
 import {
   tleilaxuAmbassadorLeaderChoices,
+  tleilaxuAmbassadorLeaderOpening,
   tleilaxuAmbassadorLeaderSelection,
 } from '../game/tleilaxu-ambassador-leaders';
 
@@ -16,6 +20,19 @@ function fixture(advanced = false, deaths = 1) {
   };
   context.dukeVidal.leader.dead = true;
   context.dukeVidal.leader.deaths = deaths;
+  return { context, player };
+}
+
+function cohortFixture(faction: FactionId = 'emperor', advanced = false) {
+  const player: Pick<Player, 'id' | 'faction' | 'leaders' | 'kwisatz' | 'battleLosses' |
+    'revivalCycle' | 'ecazRevivalCohort' | 'leaderRevived' | 'spice'> = {
+    id: 'owner', faction, leaders: leaders(faction), battleLosses: 0,
+    revivalCycle: 0, leaderRevived: false, spice: 0,
+  };
+  const context = {
+    advanced, status: 'playing' as const, turn: 3, players: [player],
+    dukeVidal: faction === 'ecaz' ? createDukeVidal() : undefined,
+  };
   return { context, player };
 }
 
@@ -34,7 +51,7 @@ void test('Basic and Advanced Ecaz receive the canonical shared Duke alternative
   }
 });
 
-void test('independent Duke permission preserves repeated deaths without extending ordinary Ambassador repeat returns', () => {
+void test('independent Duke permission preserves repeated deaths without inventing a sparse native cohort', () => {
   for (const deaths of [2, 4]) {
     const { context, player } = fixture(false, deaths);
     const first = player.leaders[0], repeated = player.leaders[1];
@@ -52,6 +69,207 @@ void test('independent Duke permission preserves repeated deaths without extendi
     assert.deepEqual(context, before);
     assert.equal(context.dukeVidal.leader.deaths, deaths);
   }
+});
+
+void test('first-death grant remains immediate while only a real opened cohort is snapshotted', () => {
+  for (const faction of ['emperor', 'ecaz'] as const) {
+    const { context, player } = cohortFixture(faction);
+    const first = player.leaders[0];
+    first.dead = true; first.deaths = 1;
+    const closed = structuredClone(context);
+    assert.equal(quoteLeaderRevivalCohort(context, player).cycle, 0);
+    assert.deepEqual(quoteLeaderRevivalCohort(context, player).leaders, []);
+    assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, first.id), first);
+    assert.equal(tleilaxuAmbassadorLeaderOpening(context, player), null);
+    assert.deepEqual(context, closed, 'The immediate grant never opens a closed ordinary cohort');
+
+    for (const leader of player.leaders) { leader.dead = true; leader.deaths = 1; }
+    const opened = structuredClone(context);
+    const opening = tleilaxuAmbassadorLeaderOpening(context, player);
+    assert.equal(opening, 1);
+    assert.deepEqual(quoteLeaderRevivalCohort(context, player).leaders, player.leaders.map(leader => leader.id));
+    assert.deepEqual(context, opened, 'Quoting the all-five-first-dead opening does not record it');
+    if (faction === 'emperor') {
+      first.dead = false;
+      assert.equal(quoteLeaderRevivalCohort(context, player).cycle, 0,
+        'Clearing death before recording the actual opening would lose it');
+      player.revivalCycle = opening!;
+      assert.deepEqual(quoteLeaderRevivalCohort(context, player).leaders, player.leaders.slice(1).map(leader => leader.id));
+    }
+  }
+});
+
+void test('repeated native leaders wait for their own ordinary death cohort and then become choices', () => {
+  const { context, player } = cohortFixture();
+  player.revivalCycle = 1;
+  for (const leader of player.leaders) { leader.dead = true; leader.deaths = 1; }
+  const repeated = player.leaders[0];
+  repeated.deaths = 2;
+  assert.deepEqual(quoteLeaderRevivalCohort(context, player).leaders, player.leaders.slice(1).map(leader => leader.id));
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, repeated.id), null);
+  assert.equal(tleilaxuAmbassadorLeaderOpening(context, player), 1);
+
+  for (const leader of player.leaders) leader.deaths = 2;
+  const before = structuredClone(context);
+  assert.equal(quoteLeaderRevivalCohort(context, player).cycle, 2);
+  assert.deepEqual(tleilaxuAmbassadorLeaderChoices(context, player).map(choice => choice.id), player.leaders.map(leader => leader.id));
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, repeated.id), repeated);
+  assert.equal(tleilaxuAmbassadorLeaderOpening(context, player), 2);
+  assert.deepEqual(context, before);
+
+  player.revivalCycle = 2;
+  for (const leader of player.leaders.slice(1)) { leader.dead = false; leader.deaths = 1; }
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, repeated.id), repeated,
+    'An already opened second cycle survives the other leaders returning alive');
+});
+
+void test('unavailable captured and foreign-ghola roster members retain the ordinary cohort exception', () => {
+  const { context, player } = cohortFixture('atreides', true);
+  const repeated = player.leaders[0];
+  repeated.dead = true; repeated.deaths = 2;
+  player.revivalCycle = 1;
+  for (const leader of player.leaders.slice(1)) {
+    leader.deaths = 1;
+    leader.capturedBy = 'other';
+  }
+  delete player.leaders[4].capturedBy;
+  player.leaders[4].gholaBy = 'other';
+  assert.equal(quoteLeaderRevivalCohort(context, player).cycle, 2);
+  assert.deepEqual(quoteLeaderRevivalCohort(context, player).leaders, [repeated.id]);
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, repeated.id), repeated);
+  for (const leader of player.leaders.slice(1))
+    assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, leader.id), null);
+});
+
+void test('Ambassador repeats ignore ordinary phase slot price and prevention without importing early service', () => {
+  for (const faction of ['emperor', 'tleilaxu'] as const) {
+    const { context, player } = cohortFixture(faction);
+    player.revivalCycle = 2;
+    player.leaderRevived = true;
+    for (const leader of player.leaders) { leader.dead = true; leader.deaths = 2; }
+    const expected = quoteLeaderRevivalCohort(context, player);
+    for (const phase of [0, 2, 4, 5, 9]) {
+      const gated = { ...context, phase, revivalPrevention: { turn: 3, player: player.id } };
+      const before = structuredClone(gated);
+      assert.deepEqual(quoteLeaderRevivalCohort(gated, player), expected);
+      assert.equal(tleilaxuAmbassadorLeaderSelection(gated, player, player.leaders[0].id), player.leaders[0]);
+      assert.equal(tleilaxuAmbassadorLeaderOpening(gated, player), 2);
+      assert.equal(player.spice, 0);
+      assert.equal(player.leaderRevived, true);
+      assert.deepEqual(gated, before);
+    }
+    player.revivalCycle = 0;
+    for (const leader of player.leaders.slice(1)) { leader.dead = false; leader.deaths = 0; }
+    assert.deepEqual(quoteLeaderRevivalCohort(context, player).leaders, []);
+    assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, player.leaders[0].id), null);
+    assert.equal(tleilaxuAmbassadorLeaderOpening(context, player), null);
+    assert.equal(quoteLeaderRevivalCohort(context, player, true).cycle, 1,
+      'The explicit absent-faction card waiver remains available to its original caller');
+    assert.deepEqual(quoteLeaderRevivalCohort(context, player, true).leaders, [],
+      'Even an explicit first-opening waiver does not waive a second death');
+  }
+});
+
+void test('opened native cohorts still reject foreign captured and foreign-ghola dead identities', () => {
+  const { context, player } = cohortFixture();
+  player.revivalCycle = 2;
+  for (const leader of player.leaders) { leader.dead = true; leader.deaths = 2; }
+  const captive = player.leaders[1], ghola = player.leaders[2];
+  captive.capturedBy = 'other'; ghola.gholaBy = 'other';
+  const foreign = leaders('harkonnen')[0];
+  foreign.dead = true; foreign.deaths = 2;
+  player.leaders[3] = foreign;
+  assert.deepEqual(tleilaxuAmbassadorLeaderChoices(context, player).map(choice => choice.id),
+    [player.leaders[0].id, player.leaders[4].id]);
+  for (const leader of [captive, ghola, foreign])
+    assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, leader.id), null);
+});
+
+void test('Advanced Auditor repeated eligibility remains independent of the five ordinary CHOAM discs', () => {
+  const { context, player } = cohortFixture('choam', true);
+  const auditor = createAuditorLeader();
+  auditor.dead = true; auditor.deaths = 4;
+  player.leaders.push(auditor);
+  const before = structuredClone(context);
+  assert.equal(quoteLeaderRevivalCohort(context, player).cycle, 0);
+  assert.deepEqual(quoteLeaderRevivalCohort(context, player).leaders, [auditor.id]);
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, auditor.id), auditor);
+  assert.equal(tleilaxuAmbassadorLeaderOpening(context, player), null);
+  assert.equal(tleilaxuAmbassadorLeaderSelection({ ...context, advanced: false }, player, auditor.id), null);
+  assert.deepEqual(context, before);
+
+  for (const leader of player.leaders.slice(0, 5)) { leader.dead = true; leader.deaths = 2; }
+  auditor.dead = false;
+  assert.equal(quoteLeaderRevivalCohort(context, player).cycle, 2);
+  assert.deepEqual(quoteLeaderRevivalCohort(context, player).leaders, player.leaders.slice(0, 5).map(leader => leader.id));
+  assert.equal(tleilaxuAmbassadorLeaderOpening(context, player), 2,
+    'A living or more often killed Auditor neither opens nor delays the ordinary cycle');
+});
+
+void test('Ecaz repeated permission follows identity cohorts rather than native or Duke death-number equality', () => {
+  const { context, player } = cohortFixture('ecaz');
+  player.revivalCycle = 3;
+  player.ecazRevivalCohort = { cycle: 3, returned: player.leaders.slice(0, 4).map(leader => leader.id) };
+  for (const leader of player.leaders) { leader.dead = true; leader.deaths = 8; }
+  const pending = player.leaders[4];
+  pending.deaths = 2;
+  context.dukeVidal!.leader.dead = true;
+  context.dukeVidal!.leader.deaths = 7;
+  const before = structuredClone(context);
+  const quote = quoteLeaderRevivalCohort(context, player);
+  assert.equal(quote.cycle, 3);
+  assert.deepEqual(quote.leaders, [pending.id]);
+  assert.equal(quote.dukeAvailable, true);
+  assert.equal(quote.dukeBlocked, null);
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, pending.id), pending);
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, player.leaders[0].id), null);
+  assert.deepEqual(tleilaxuAmbassadorLeaderChoices(context, player).map(choice => choice.id), [pending.id, DUKE_VIDAL_ID]);
+  assert.equal(tleilaxuAmbassadorLeaderOpening(context, player), 3);
+  assert.deepEqual(context, before);
+
+  player.ecazRevivalCohort.returned.push(pending.id);
+  assert.equal(quoteLeaderRevivalCohort(context, player).cycle, 4);
+  assert.deepEqual(quoteLeaderRevivalCohort(context, player).leaders, player.leaders.map(leader => leader.id));
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, pending.id), pending);
+  assert.equal(tleilaxuAmbassadorLeaderOpening(context, player), 4);
+});
+
+void test('KH repeats require their own marker to be met by an actual ordinary cohort', () => {
+  const { context, player } = cohortFixture('atreides', true);
+  player.battleLosses = 7;
+  for (const leader of player.leaders) { leader.dead = true; leader.deaths = 2; }
+  player.kwisatz = { dead: true, revivalCycle: 2 };
+  assert.equal(quoteLeaderRevivalCohort(context, player).cycle, 2);
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, 'kwisatz'), 'kwisatz');
+  player.kwisatz.revivalCycle = 3;
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, 'kwisatz'), null);
+  player.kwisatz.revivalCycle = 1;
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, 'kwisatz'), 'kwisatz');
+});
+
+void test('missing ordinary cohort facts preserve first-death choices without inventing repeat permission', () => {
+  const { context, player } = cohortFixture('ecaz');
+  player.revivalCycle = 2;
+  player.ecazRevivalCohort = { cycle: 2, returned: [] };
+  for (const leader of player.leaders) { leader.dead = true; leader.deaths = 2; }
+  const first = player.leaders[0], repeated = player.leaders[1];
+  first.deaths = 1;
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, player, repeated.id), repeated,
+    'The complete source actually permits this repeated identity');
+  const contexts = [
+    { advanced: false },
+    { ...context, turn: undefined },
+    { ...context, players: [] },
+  ];
+  for (const sparse of contexts) {
+    assert.equal(tleilaxuAmbassadorLeaderSelection(sparse, player, first.id), first);
+    assert.equal(tleilaxuAmbassadorLeaderSelection(sparse, player, repeated.id), null);
+    assert.equal(tleilaxuAmbassadorLeaderOpening(sparse, player), null);
+  }
+  const legacy = { ...player, revivalCycle: undefined };
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, legacy, first.id), first);
+  assert.equal(tleilaxuAmbassadorLeaderSelection(context, legacy, repeated.id), null);
+  assert.equal(tleilaxuAmbassadorLeaderOpening(context, legacy), null);
 });
 
 void test('a non-Ecaz beneficiary or unseated Ecaz identity cannot inherit shared Duke revival', () => {

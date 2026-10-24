@@ -16,6 +16,27 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Ambassador repeated leaders and KH — 24 October. Prototyped / Partial.**
+A shared death-cohort quote removes the generic lifetime first-death cap while
+retaining ordinary repeat conditions. First returns remain immediate; actual
+openings persist before resurrection, including the all-first-dead seam. Ecaz
+keeps native identity accounting and the independent shared Duke. KH retains
+activation losses/five native discs and advances its marker beyond the actual
+opened cycle. The composition and ordinary-slot independence remain provisional.
+
+A disjoint helper lane, bounded review and owner integration pass
+**13 files114/114**, types/lint/build and three controlled gameplay/rendering
+programmes. Two original Basic paid-entry sources receive explicitly assigned
+repeat/cohort histories, then real free return, next-turn ordinary choice4 and
+paid4 revival in27 continuations each. A separate controlled Advanced actual
+entry returns KH with cohort3/old2 → marker4. Twelve existing legal policies
+return a repeat and finish the original entrant. Tests also retain actual income
+allow/cancel and first-death/ordinary timing boundaries.
+[Source, interpretation, exact proof and limits](TLEILAXU_AMBASSADOR_RULES.md#ordinary-repeated-leaders--24-october-2026).
+Full modes, wider custody/module combinations and final assurance/deployed
+acceptance remain open. No strategy calibration or saved-room/reset/restart/
+deployment operation.
+
 **Earlier Basic Truthtrance shipment promises — 24 October. Prototyped / Partial.**
 Bare classic Basic phases0–4 now bind the current-turn reserve event using
 current-board feasibility, remaining owned Charity/normal Revival and net current
@@ -62,8 +83,7 @@ Tleilaxu now uses existing coalition/Face Dance mechanics. Six labelled controll
 Basic cases retain genuine setup, actual Nexus/alliance and funded shipments.
 Feedback corrected a Guild-ally tariff expectation and an idle-policy private
 driver; runtime alone reran on identical source. [Policy, exact proof and limits](TLEILAXU_AMBASSADOR_RULES.md#provisional-free-revival-income--24-october-2026).
-Wider combinations, generic ordinary repeat eligibility, complete modes and final
-assurance remain open. No optional-module opening, strategic calibration or
+Wider combinations, complete modes and final assurance remain open. No optional-module opening, strategic calibration or
 saved-room/database/reset/restart/deployment operation in this batch.
 
 **Ecaz's Ambassador Duke revival — 24 October. Prototyped / Partial.** The

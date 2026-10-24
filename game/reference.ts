@@ -1500,8 +1500,9 @@ export const RULE_TOPICS: RuleTopic[] = [
     title: 'Ecaz Ambassadors: placement and remaining effects',
     category: 'Advanced & expansions',
     coverage: 'Partial',
+    developmentStage: 'Prototyped',
     summary:
-      'End-of-Revival placement, eight random entry effects, direct Ecaz Duke acquisition and consensual alliance formation are supported in development fixtures, with public token guides and private inspection history.',
+      'End-of-Revival placement, entry effects, cohort-eligible free revival, Ecaz Duke acquisition and consensual alliances have connected preview controls and public token guides.',
     steps: [
       'Ecaz has its reusable Ambassador plus five randomly selected Ambassadors from the other ten identities. Inspect the public supply, placed tokens, triggered group and unused pool to read each effect.',
       'Placed Ambassadors are face up by designer clarification. This implementation also shows the unplaced supply openly by default; that supply policy is an interpretation, not an explicit official FAQ ruling.',
@@ -1522,7 +1523,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'The Guild Ambassador grants an immediate free shipment of zero through four physical reserve forces for Ecaz or its ally, including typed elites. Choose a clear territory and sector; this does not spend ordinary shipment or movement, ally aid or a retained rate card. Fremen may use destinations outside their ordinary reinforcement radius, but their southern reserves stay on-planet and this effect never permits storm entry. Only Ixians may ship directly into their placed mobile stronghold.',
       'During Shipment and Movement, Guild can use its special Karama to stop another eligible off-planet Ambassador shipment before forces arrive; it does not stop this grant during a phase-one worm sequence. A successful off-planet shipment may invite Bene Gesserit accompaniment and accrues applicable phase-five Heighliner income once. BG can accompany Ixians into the mobile stronghold. Projected accompaniment choices show blocked sectors and keep Polar Sink and decline available when legal. Intrusion, separate Terror and accompanying fighter-triggered Ambassadors finish before the original entrant or worm rider resumes.',
       'No-Field substitution into the free four-force grant remains unavailable. In bounded classic plus Ecaz/Moritani games, a shared Ambassador/Terror entry gives both owners saved optional prompts in current storm order without repeating the committed entry; this is a provisional table order, not a printed publisher priority. A Terror entry now waits for the arrival’s own interaction — Guild income, a Bene Gesserit fighter Intrusion or advisor choice, or Fremen storm protection — and then opens without replaying payment or force transfer. Ambassador-created child arrivals retain their own contracts. The native-module extension now composes ordinary paid arrival order with Atomics, Homeworlds and Nexus; other combinations and complete rules remain unfinished.',
-      'The Tleilaxu Ambassador offers one eligible leader or up to four physical forces free. Ordinary native leaders retain their first-death limit; Atreides may choose its separate first-killed Kwisatz Haderach without adding a roster disc or resetting losses. An Ecaz beneficiary may instead return the original dead shared Duke through his independent permission, preserving death history and any native cohort opening. He becomes alive and set aside, unclaimed; a separate legal acquisition is needed before battle use. Ecaz’s ally cannot inherit that revival permission. Native and BG copied grants share private eligibility. Force/leader choices remain exclusive. Under the provisional income interpretation, a positive return earns seated Tleilaxu one bank spice per beneficiary per turn, sharing ordinary free revival; actual Ghola stays separate. Canceling income keeps the return and spent entitlement. Ordinary allowance independence and generic repeat/custody combinations remain provisional.',
+      'The Tleilaxu Ambassador returns one eligible own leader or up to four physical forces free. First-death leaders and the first-killed Atreides KH need not wait for the ordinary cohort. Under the provisional repeat interpretation, later native leaders must satisfy their ordinary death condition, and later KH returns must meet their saved next-cohort marker. Preserve the actual opening before resurrection; KH advances its marker beyond both owner and old KH cycles without resetting activation losses or adding a native disc. Ecaz retains native identity bookkeeping. Ecaz may instead return the shared Duke alive and unclaimed under his independent permission; its ally cannot inherit that permission. Native and BG copied grants share eligibility and exclusive alternatives. A positive return provisionally earns seated Tleilaxu one bank spice per beneficiary/turn, sharing ordinary free revival; Ghola stays separate. Canceling income keeps the return and spent entitlement. Ordinary allowance independence and wider custody/module combinations remain provisional.',
       'All eleven effect guides are readable. Emperor, Atreides, Harkonnen, CHOAM, Ixian, Richese, Fremen and Guild entry effects are integrated, together with Bene Gesserit copies of those eight effects and direct Duke acquisition or consensual alliance through the reusable Ecaz token. Advanced combined Occupy has a separate bounded Development Verified guide, and Basic even-force Occupy now composes the same shared controls. Remaining effects, exceptional Duke custody and complete Ecaz rules remain unfinished. Mobile stronghold placement is gated. Normal public Ecaz starts remain development previews; complete rules and unsupported combinations stay gated.',
     ],
     checklist: [
@@ -1530,21 +1531,21 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Original effects, copies, Duke acquisition, consent and token returns remain integrated. Ecaz’s Tleilaxu grant now returns the canonical shared dead Duke alive and set aside, preserving his history and satisfied cohort opening without a paid request, ordinary quota or extra disc. Positive Tleilaxu Ambassador returns now use the shared free-income ledger and a bound committed-return response; allow/cancel finishes the original arrival once. Bare Basic Ecaz+Ix with native Tleilaxu admits existing coalition/Face Dance mechanics; other combinations stay partial.',
-        evidence: ['game/engine.ts', 'game/tleilaxu-ambassador-leaders.ts', 'game/tleilaxu-ambassador-income.ts', 'game/karama-context.ts', 'game/ecaz-duke-revival.ts', 'game/bot-arrival.ts'],
+          'A shared ordinary death-cohort quote admits eligible native/KH repeats without importing normal phase/slot/price or native early-service gates into the independent grant. Preserve actual openings before native resurrection, retain Ecaz identity tracking and advance KH above its actual cycle while keeping five native discs and loss activation. Existing Duke, source-bound income and original entrant continuation remain; wider custody/modules stay partial.',
+        evidence: ['game/engine.ts', 'game/revival.ts', 'game/tleilaxu-ambassador-leaders.ts', 'game/tleilaxu-ambassador-income.ts', 'game/karama-context.ts', 'game/ecaz-duke-revival.ts', 'game/bot-arrival.ts'],
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Existing placement, effect, consent and movement controls remain. An entitled Duke choice explains the alive/unclaimed destination; free-return and income controls explain the provisional shared reward and cancellation retaining the completed return. Earlier four actual390px native transport/income/BG journeys remain separate evidence; original entrant movement and once-only payment are retained.',
+          'Persistent free-return guidance explains first-return and later-cohort eligibility, KH’s separate marker, ordinary-slot independence and the provisional shared income. Original exact native/KH/Duke buttons, busy controls, force alternatives and committed-return/income continuation remain. Earlier mobile arrival evidence stays separate.',
         evidence: ['components/ecaz-entry.tsx', 'components/game-table.tsx'],
       },
       {
         area: 'AI',
         status: 'Partial',
         detail:
-          'All four existing profiles legally select the original free Duke return and an eligible revival-income response, then finish the entrant turn: eight native/BG-copy policy continuations with Tleilaxu seated. Earlier placement, consent, income/acquisition and BG arrival evidence remains separate. No strategy refinement or calibration.',
+          'Twelve existing legal profiles select repeated native/copy/KH choices and finish the original entrant, using server-private eligibility. Earlier original Duke/income and placement/consent evidence remains separate. No strategy refinement or strength calibration.',
         evidence: ['game/bots.ts', 'tests/ambassador-revival-income-engine.test.ts', 'tests/duke-ambassador-engine.test.ts', 'docs/TLEILAXU_AMBASSADOR_RULES.md'],
       },
       {
@@ -1558,8 +1559,11 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Current income8-file81/81, types/lint/build, four original Basic native/copy allow/cancel gameplay/rendering programmes and eight legal policies pass. Original47/22 components, actual acquisition/death/paid Guild entry and dealt Karama precede the return and bound bank income. Six labelled Basic Tleilaxu coalition consumers retain actual setup/alliance/funded battles. Earlier Duke-only42 and arrival/browser evidence remain separate; full modes, wider combinations and deployed/final assurance stay open.',
+          'Current repeat13-file114/114, types/lint/build and three controlled gameplay/rendering programmes pass: original Basic paid-entry sources plus assigned native histories reach the next actual ordinary Revival; separate Advanced actual entry returns KH with old2/cohort3 → marker4. Twelve legal policies finish original entry. First-opening, income allow/cancel and ordinary controls pass. Controlled histories are not earned repeat-battle/full-game proof. Earlier original Duke/income evidence stays separate; full modes, wider combinations, assurance and deployed acceptance remain open.',
         evidence: [
+          'tests/ambassador-repeat-leader-engine.test.ts',
+          'tests/fixture-ambassador-repeat-leaders.ts',
+          'tests/tleilaxu-ambassador-leaders.test.ts',
           'tests/fixture-ambassador-revival-income.ts',
           'tests/ambassador-revival-income-engine.test.ts',
           'tests/tleilaxu-ambassador-income.test.ts',

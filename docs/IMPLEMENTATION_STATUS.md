@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 24 October 2026 — Cohort-eligible Ambassador leader and KH repeats
+
+Use one phase/slot/price-independent death-cohort quote for normal Revival and
+the independent Tleilaxu Ambassador. First returns stay immediate; repeats retain
+their ordinary condition, including Ecaz identity bookkeeping and Advanced
+Auditor permission. Preserve an opening before clearing death so the free return
+does not close remaining ordinary choices. KH keeps its own token/loss history
+and advances above both the actual owner cycle and its old marker. Ordinary
+phase/payment/prevention/one-leader controls and native early service stay in
+normal Revival. Persistent controls explain the provisional repeat composition.
+
+A disjoint helper lane, bounded review and owner integration pass13-file114/114,
+types/lint/build, two controlled Basic return-to-next-Revival programmes and one
+controlled Advanced KH actual-entry programme. Original public Basic sources
+use72/73 actions before assigned native repeat/cohort histories; real free return,
+entrant completion and paid4 ordinary revival use27 actions each. Advanced actual
+entry3 followed by return/end2 yields cohort3/old2 → marker4. Twelve existing legal
+profiles finish original entry; controlled income allow/cancel preserves deaths2.
+Focused feedback exposed the lost all-first-dead opening and corrected a missing
+Advanced transport-allowance fixture step. [Source, policy, exact proof and limits](TLEILAXU_AMBASSADOR_RULES.md#ordinary-repeated-leaders--24-october-2026).
+This is provisional composition and controlled runtime evidence, not earned
+repeat-battle histories or complete mode acceptance. Wider custody/modules,
+comprehensive assurance and deployed acceptance remain open. No strategic tuning
+or saved-room/reset/restart/deployment operation.
+
 ## 24 October 2026 — Earlier Basic Truthtrance shipment commitments
 
 Extend bare classic Basic current-turn questions to phases0–4 with remaining

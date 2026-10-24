@@ -1,6 +1,114 @@
 # Tleilaxu Ambassador revival: source contract
 
-Primary-source review, 2026-09-07, with later runtime checkpoints below. This document supplements the [Ambassador effects audit](ECAZ_AMBASSADOR_EFFECTS_AUDIT.md) and [runtime readiness review](TLEILAXU_AMBASSADOR_RUNTIME_READINESS.md). Recorded source questions remain distinct from the Basic-first implementation choices.
+Primary-source review, 2026-09-07, with later runtime checkpoints below. This document supplements the [Ambassador effects audit](ECAZ_AMBASSADOR_EFFECTS_AUDIT.md) and [runtime readiness review](TLEILAXU_AMBASSADOR_RUNTIME_READINESS.md). Recorded source questions remain distinct from the Basic-first implementation choices. The current repeated-leader/KH section supersedes first-death-only boundaries in the historical checkpoints below.
+
+## Ordinary repeated leaders — 24 October 2026
+
+**Prototyped / Partial.** The free one-leader alternative no longer has a
+lifetime first-death cap. Retain the immediate first-death own-leader permission;
+a native leader killed again becomes eligible when its existing ordinary death
+cohort permits return. Do not give it the Tleilaxu negotiated early-service
+waiver. Atreides' KH keeps its activation and separate next-cohort marker;
+its first return is immediate and repeats must meet that marker in the actual
+ordinary cohort. Ecaz's shared Duke keeps its independent permission and
+selected living/set-aside destination.
+Captured or foreign-ghola discs do not become the beneficiary's own Tanks.
+
+The [E3 grant, printed8](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=8)
+says one own leader without a lifetime death cap. The [base restriction,
+printed9](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=9)
+controls repeat deaths. Under the standing choose-recommended-option instruction,
+compose those sources by retaining their ordinary repeat condition while waiving
+the initial opening for first-death leaders as before. This is an explicit
+provisional interpretation, not a located Ambassador repeat FAQ. It supersedes
+the generic first-death-only and first-killed-KH implementation boundaries
+below, preserving the separate ordinary allowance interpretation. The base
+[KH rule, printed17](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=17)
+revives KH like a leader; this bounded repeat composition uses its existing
+ordinary marker condition without adding it to the native roster.
+
+A shared phase/slot/price-independent cohort quote now supplies both ordinary
+Revival and the Ambassador. Ordinary Revival keeps its actual phase, one-leader
+allowance, payment, prevention and native early-service controls. The independent
+Ambassador ignores those phase/slot/payment gates and leaves their usage counters
+unchanged. Basic ordinary CHOAM cohorts retain their existing policy. The already
+adopted Advanced Auditor permission (supplied PDF physical29/logical27, CHOAM E)
+remains independent of the ordinary five-disc opening; composing it with this
+free grant is provisional rather than a new publisher worked example.
+
+Snapshot an actually opened cohort **before** clearing death. Preserve its cycle
+so the newly living leader cannot close the remaining ordinary returns. This
+also fixes all-five-first-dead followed by an Ambassador first return, where no
+repeat was selected but the ordinary opening was previously lost. Ecaz uses its
+existing native identity/cohort record before mutation; Duke's death count does
+not index that roster. The original physical identity, printed strength, deaths,
+Traitor susceptibility and other native leaders remain. A closed first-death
+special return does not manufacture an ordinary opening. Before returning KH,
+preserve the actual opening and then set its next marker above both the owner
+cycle and prior KH marker. Thus an actual cycle3 return with an older marker2
+advances to4, preventing another return in the same cohort. Loss activation
+progress and the separate token's identity remain unchanged.
+
+Native and Bene Gesserit copied grants use the same private choices and actual
+free return. Zero-price/ordinary-slot independence, exclusive leader-versus-force
+selection, current event ownership, original entrant continuation and the existing
+committed-return/income receipt remain. Persistent guidance explains repeat
+eligibility before selection; no player acknowledgement or new phase is added.
+Full modes, exceptional custody/module combinations and comprehensive assurance
+remain unfinished.
+
+### Focused repeat proof and limits
+
+A disjoint shared-helper lane, bounded source/implementation review and owner
+integration pass **13 files114/114**, `npm run check:quick`, production build and
+three changed-path gameplay/rendering programmes. The initial focused case
+reproduced a lost first ordinary opening (`0` instead of `1` after the free
+return); preserving the quote repairs it and the next actual Revival offers
+four remaining leaders. No ordinary phase/slot/price/prevention or native
+Tleilaxu early-service gate was removed from normal Revival.
+
+The two Basic runtime programmes start from the original public
+`tests/fixture-duke-ambassador.ts` sources (72/73 accepted actions through actual
+paid entry), then explicitly assign **controlled five-disc repeated histories
+and a prior completed cohort**. They are not earned repeat-death battle histories.
+Each real native/BG-copy choice returns the same native disc free at deaths2,
+retains cycle2 and the spent ordinary slot, explicitly finishes the original
+entrant, then reaches next-turn ordinary Revival and pays4 to return another
+leader. Each uses27 continuation actions and retains four ordinary choices after
+the first free return. Existing physical source cards/forces remain unchanged.
+
+A separate controlled Advanced source in
+`tests/fixture-ambassador-repeat-leaders.ts` uses the actual Guild shipment,
+transport permission and Ambassador trigger (three source actions), followed by
+KH return and original entrant completion. Actual cohort3 plus old marker2 yields
+next marker4, with ten activation losses and five native discs retained. Its
+histories are also assigned, not played Advanced setup/complete-game proof.
+Twelve existing profiles (native/copy/KH × four levels) each make one legal free
+return and finish the original entrant; no strategic tuning or calibration.
+
+Actual GameTable/EcazEntry rendering shows repeat policy, exact leader/KH
+buttons, enabled/busy states, completed return and the later ordinary remainder.
+Framework aliases/CSS stubs mean runtime rendering, not browser/visual/deployed
+acceptance. Sixteen pure helper cases and ten engine cases cover open/closed
+cohorts, first-death independence, identity bookkeeping, ordinary slot/zero price,
+KH marker boundaries, event ownership/exclusivity, and native/copied receipt
+income allowance/cancellation. Related ordinary, Auditor, Duke, revival-use and
+income regressions remain in the focused union. The controlled Advanced KH
+fixture initially omitted native transport permission; submitting its actual
+allowance fixed the fixture before frozen proof.
+
+Frozen source: base `16f654071aa79763e325b7953ccfeb5d524e791c`, tree
+`464b5a0363de992ddddd0c0d08dc3ec9a5bbe3e82a6e30cc4cb1ee26fcdd55f0`,
+2,616 tracked/nonignored files, including only the supplied untracked PDF's hash.
+The PDF is not committed or republished. Private logs, HTML, snapshots and runtime
+results are in
+`/home/quintine/.local/share/dune/checkpoints/20261024-ambassador-repeat-leaders/`;
+`frozen-integrated/report.json` contains the complete passing batch. Final
+checkpoint prose/reference changes are compared against all frozen file hashes.
+Full modes, wider custody/module combinations, comprehensive assurance and
+deployed acceptance remain open. No saved-room/database/reset/restart/deployment
+operation or strategic calibration.
+
 
 ## Provisional free revival income — 24 October 2026
 
