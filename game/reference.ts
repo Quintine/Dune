@@ -1522,7 +1522,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'The Guild Ambassador grants an immediate free shipment of zero through four physical reserve forces for Ecaz or its ally, including typed elites. Choose a clear territory and sector; this does not spend ordinary shipment or movement, ally aid or a retained rate card. Fremen may use destinations outside their ordinary reinforcement radius, but their southern reserves stay on-planet and this effect never permits storm entry. Only Ixians may ship directly into their placed mobile stronghold.',
       'During Shipment and Movement, Guild can use its special Karama to stop another eligible off-planet Ambassador shipment before forces arrive; it does not stop this grant during a phase-one worm sequence. A successful off-planet shipment may invite Bene Gesserit accompaniment and accrues applicable phase-five Heighliner income once. BG can accompany Ixians into the mobile stronghold. Projected accompaniment choices show blocked sectors and keep Polar Sink and decline available when legal. Intrusion, separate Terror and accompanying fighter-triggered Ambassadors finish before the original entrant or worm rider resumes.',
       'No-Field substitution into the free four-force grant remains unavailable. In bounded classic plus Ecaz/Moritani games, a shared Ambassador/Terror entry gives both owners saved optional prompts in current storm order without repeating the committed entry; this is a provisional table order, not a printed publisher priority. A Terror entry now waits for the arrival’s own interaction — Guild income, a Bene Gesserit fighter Intrusion or advisor choice, or Fremen storm protection — and then opens without replaying payment or force transfer. Ambassador-created child arrivals retain their own contracts. The native-module extension now composes ordinary paid arrival order with Atomics, Homeworlds and Nexus; other combinations and complete rules remain unfinished.',
-      'The Tleilaxu Ambassador offers one first-death own-leader revival or up to four physical forces for free. Atreides may choose its separate first-killed Kwisatz Haderach under the base leader-revival rule; this does not add a disc to the ordinary roster, reset battle losses or spend the ordinary leader allowance. Native and Bene Gesserit copied grants share the same private eligibility. Every existing KH return advances its original cycle marker; a prior return remains outside this first-death preview. The force/leader choices are exclusive and ordinary allowance independence stays provisional. Repeat-return, shared-leader and revival-income interpretations remain separate.',
+      'The Tleilaxu Ambassador offers one eligible leader or up to four physical forces free. Ordinary native leaders retain their first-death limit; Atreides may choose its separate first-killed Kwisatz Haderach without adding a roster disc or resetting losses. An Ecaz beneficiary may instead return the original dead shared Duke through his independent permission, preserving death history and any native cohort opening. He becomes alive and set aside, unclaimed; a separate legal acquisition is needed before battle use. Ecaz’s ally cannot inherit that revival permission. Native and BG copied grants share private eligibility. Force/leader choices remain exclusive; ordinary allowance/income independence stays provisional and generic repeat/custody combinations remain separate.',
       'All eleven effect guides are readable. Emperor, Atreides, Harkonnen, CHOAM, Ixian, Richese, Fremen and Guild entry effects are integrated, together with Bene Gesserit copies of those eight effects and direct Duke acquisition or consensual alliance through the reusable Ecaz token. Advanced combined Occupy has a separate bounded Development Verified guide, and Basic even-force Occupy now composes the same shared controls. Remaining effects, exceptional Duke custody and complete Ecaz rules remain unfinished. Mobile stronghold placement is gated. Full Ecaz starts remain disabled.',
     ],
     checklist: [
@@ -1530,34 +1530,40 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Original effects, copies, Duke acquisition, consent and token returns remain integrated. Ordinary shipment and native Guild transport distinguish future own income/BG controls from actual busy state; the existing committed-entry queue handles settlement. A legitimate fighter companion has its own child entry. Original prices, funding, payment, forces and movement remain; unsupported paired/module combinations stay partial.',
-        evidence: ['game/engine.ts', 'game/bot-arrival.ts'],
+          'Original effects, copies, Duke acquisition, consent and token returns remain integrated. Ecaz’s Tleilaxu grant now returns the canonical shared dead Duke alive and set aside, preserving his history and satisfied cohort opening without a paid request, ordinary quota or extra disc. Native shipment/Guild income and BG child/original arrival settlement remain; wider combinations stay partial.',
+        evidence: ['game/engine.ts', 'game/tleilaxu-ambassador-leaders.ts', 'game/ecaz-duke-revival.ts', 'game/bot-arrival.ts'],
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Existing placement, effect, consent and movement controls remain. Four actual390px native journeys use Guild transport and income cancellation, peaceful accompaniment, accepted Intrusion, and retained fighters with distinct child/original offers. Original entrant resumes actual movement after once-only payment and transfer; advisors do not create a bogus fighter offer.',
+          'Existing placement, effect, consent and movement controls remain. An entitled Duke revival choice explains the alive/unclaimed shared destination before selection. Earlier four actual390px native transport/income/BG journeys remain separate evidence; original entrant movement and once-only payment are retained.',
+        evidence: ['components/ecaz-entry.tsx', 'components/game-table.tsx'],
       },
       {
         area: 'AI',
         status: 'Partial',
         detail:
-          'All four profiles retain private legal placement, effect, consent and arrival decisions. Native transport future income and ordinary future accompaniment no longer block a candidate solely as predicted busy controls. All four Ecaz policies acquire Duke after income; all four BG policies legally convert and accompany. The retained-fighter child path is separate human/scripted proof. No strategy calibration.',
+          'All four existing profiles legally select the sole free Duke alternative in both original Basic native/BG-copy positions and finish the entrant turn: eight policy continuations. Earlier legal placement, consent, native income/acquisition and BG arrival paths remain separate evidence. No strategy refinement or calibration.',
+        evidence: ['game/bots.ts', 'tests/duke-ambassador-engine.test.ts'],
       },
       {
         area: 'Documentation',
         status: 'Partial',
         detail:
           'Source-bound effects, copies and Duke guides remain. Native own-arrival child-first/live-token order stays provisional. Separate native transport permission, independent purchased typed prices and own/allied marker billing preserve original sources and approvals. Immune Junction now keeps its offered tariff/payees with an explicit unused-purchase choice. Cunning opportunity scope, special-stop card return and unused-price expiry are selected interpretations; full combinations remain open.',
-        evidence: ['docs/ECAZ_AMBASSADORS_RULES.md', 'docs/DEFERRED_SHIPMENT_ARRIVAL.md', 'docs/BOT_ARRIVAL_PREFLIGHT.md'],
+        evidence: ['docs/ECAZ_AMBASSADORS_RULES.md', 'docs/TLEILAXU_AMBASSADOR_RULES.md', 'docs/DEFERRED_SHIPMENT_ARRIVAL.md', 'docs/BOT_ARRIVAL_PREFLIGHT.md'],
       },
       {
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Affected six-file55/55,20 original API/policy paths and four actual390px journeys pass: income allow/cancel, accompaniment and Intrusion accept/decline/cancel, legitimate fighter child, token consumption and original movement. No overflow/application browser errors. Genuine original-action fixtures do not stage played hands, wallets, armies or phase. Existing saved/deployed evidence stays historical; full acceptance remains open.',
+          'Current Duke-grant5-file42/42, types/lint/build, two original Basic gameplay/rendering programmes and eight legal policies pass. Actual acquisition/death/paid Guild entry precede the free original-disc return and movement completion. Controlled Advanced/repeat/cohort/ownership/reacquisition probes and earlier native arrival/browser evidence remain separate; full mode, combination, browser/deployed and final assurance stay open.',
         evidence: [
+          'tests/fixture-duke-ambassador.ts',
+          'tests/duke-ambassador-engine.test.ts',
+          'tests/tleilaxu-ambassador-leaders.test.ts',
+          'tests/tleilaxu-ambassador-engine.test.ts',
           'tests/ecaz-ambassadors.test.ts',
           'tests/ecaz-placement.test.ts',
           'tests/ecaz-entry.test.ts',

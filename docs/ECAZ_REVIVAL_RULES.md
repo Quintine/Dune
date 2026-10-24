@@ -15,6 +15,10 @@ and follows the normal stop, discount-cancellation and payment/income windows.
 Ghola spends the actual card instead of spice or that slot. Strength remains
 six; both paths preserve the physical death history.
 
+The same selected destination also applies to Ecaz's free Tleilaxu Ambassador
+return; see its [shared Duke route](TLEILAXU_AMBASSADOR_RULES.md#ecaz-shared-duke-alternative--24-october-2026).
+That independent grant retains its own provisional allowance/income policy.
+
 Ecaz's first ordinary cohort opens with five dead discs counting Duke, or
 when its entire native five-disc roster is unavailable under the existing
 captured-leader exception. The opened first cohort persists across returns.

@@ -2,6 +2,93 @@
 
 Primary-source review, 2026-09-07, with later runtime checkpoints below. This document supplements the [Ambassador effects audit](ECAZ_AMBASSADOR_EFFECTS_AUDIT.md) and [runtime readiness review](TLEILAXU_AMBASSADOR_RUNTIME_READINESS.md). Recorded source questions remain distinct from the Basic-first implementation choices.
 
+## Ecaz shared Duke alternative — 24 October 2026
+
+The original Tleilaxu Ambassador now offers Ecaz its dead shared Duke as the
+one-leader free alternative. The previous selector searched only the ordinary
+native roster and separate KH, so it omitted the real disc in `Game.dukeVidal`.
+Both a native Tleilaxu token and the original Bene Gesserit copy use the same
+beneficiary-specific selection. Ecaz's ally cannot inherit this permission.
+
+The [publisher's E3 rules, printed pages 8–9](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=8)
+provide the free own-leader grant and Ecaz's independent Duke revival permission,
+with Duke revival restricted to Ecaz. A bounded official-domain indexed check
+corroborated the grant and independent revival paragraph this checkpoint. This
+is their composition with the existing [selected living/set-aside custody](ECAZ_REVIVAL_RULES.md#selected-product-interpretation-28-september-2026),
+not a new publisher worked example or numerical ruling. Reuse the canonical
+dead-Duke resolver, including its preserved repeated-death histories and existing
+custody/profile limits. The ordinary Ambassador first-death and KH limits remain;
+they do not add a new death-count cap to Duke's independent permission.
+
+Commit against the original shared disc: record any satisfied native Ecaz cohort
+opening **before** clearing Duke's death, preserve his ID, strength6 and death
+count, clear obsolete use/concealment, and release control/source/acquisition
+through the existing shared-disc return. The result is alive and unclaimed in
+the shared area, never appended to Ecaz's five native leaders. A separate legal
+acquisition is required before battle use. Persistent owner-only guidance states
+that result before the free-return button is pressed.
+
+The return costs0, creates no paid Revival request, spends no Ghola and grants no
+skill. The Ambassador's existing provisional independence from ordinary leader
+allowance and income is preserved. Force and leader alternatives remain
+exclusive. The original Ambassador finishes once and the committed entrant
+retains its remaining movement. Generic ordinary repeated-leader eligibility,
+Tleilaxu income policy, wider captured/module envelopes and full acceptance stay
+separate. Earlier shared-Duke absence/destination notes below are superseded only
+for this route; they remain historical source analysis.
+
+### Focused proof and remaining scope
+
+`game/tleilaxu-ambassador-leaders.ts` delegates shared identity/custody validation
+to `resolveEcazDukeRevival` and projects a canonical set-aside choice. Pure
+`tests/tleilaxu-ambassador-leaders.test.ts` cases keep old sparse ordinary/KH
+callers working and distinguish valid independent Duke histories from malformed,
+unseated, living or unsupported sources without exposing custody details.
+`tests/duke-ambassador-engine.test.ts` separately checks actual native entry
+consumption, the Ecaz-only beneficiary, copied effects, unchanged resources and
+ordinary allowance, prior cohort opening, event/exclusive-choice guards, native
+movement continuation and a subsequent separate original acquisition. Original
+source and final integrated results are recorded below.
+
+Frozen owner integration passes **5 files, 42/42 tests**, types/lint and production
+build. `tests/fixture-duke-ambassador.ts` supplies two genuine public Basic
+Ecaz/Harkonnen/Guild programmes with original E3 components. Four unopened deal
+positions select two real poisons; two unopened ordinary Spice positions and
+original scalar/packet lotteries are recorded. Actual paid1+2 placements, reserve
+shipments and an Ecaz-token acquisition precede both real poison plans. Duke
+dies at deaths1. Ecaz wins the zero-dial attacker tie without losing its force or
+a native leader, naturally leaving Duke as its sole revival alternative.
+
+Native and BG-copy sources use **72/73 accepted actions**. On turn2 an actual
+Guild shipment costs1 and triggers the already placed token. Each human branch
+uses two more actions: free Duke return, then explicit completion of the same
+entrant's movement turn. All four existing profiles in both original positions
+submit that same legal alternative and finish the entrant turn: **8 policy
+continuations**, without strategy refinement. Wallets, force pools, hands and
+ordinary allowances are unchanged by the return; Duke remains strength6,
+deaths1, alive/set-aside and outside the five-disc roster.
+
+Actual GameTable and isolated entry rendering verify persistent destination
+guidance and enabled/busy Duke buttons. Framework aliases/CSS stubs make this
+rendering evidence, not browser/visual/deployed acceptance. The controlled
+Advanced source (without Harkonnen), repeated Duke/cohort opening, non-Ecaz,
+event/exclusivity, decline and separate reacquisition probes remain distinct
+from the two genuine Basic sources. Full modes, other custody/module envelopes,
+generic ordinary repeats/income and final assurance remain open.
+
+Source identity: base `c95e2948908a853289a0c9b0c09143fb41e37fa8`, frozen tree
+`9848951790a5e3a314934cc32613fe2feb84716ffe56c61fd345571f9147253c`,
+2,606 tracked/nonignored files. Private logs, HTML, source manifest and original
+failed checks are retained outside Git under `20261024-duke-ambassador/`.
+Feedback repaired only fixture/control expectations after the consumer was
+connected: use the original legal first/later Storm choices, retain actual source
+sector/token bindings, and finish Advanced Guild permission before awaiting the
+Ambassador. The private render assertion then needed an attribute-only check
+instead of matching the CSS `disabled:` utility. That runtime alone reran on the
+identical source; the final aggregate links original passing tests/types/lint/
+build and the repaired runtime. Checkpoint prose/reference overlays are separately
+reviewed. No saved-room/database/reset/restart/deployment operation occurred.
+
 ## First-death own Kwisatz Haderach — 11 October 2026
 
 The source-supported separate KH identity below now appears in Atreides'
@@ -65,7 +152,7 @@ Specific identities compose as follows:
 
 - **Kwisatz Haderach:** base p.17 says a killed KH is revived like a leader, without affecting the ordinary Atreides roster threshold. This supports an Atreides KH choice under the one-leader alternative. Preserve its own activation/death record; it is not another native leader disc or a free force. [Base p.17](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=17)
 - **Auditor:** it is a CHOAM leader, so the own-leader alternative can include a dead CHOAM Auditor. Its normal early-return permission expressly consumes the ordinary leader slot, while the Ambassador's accounting is still unresolved. The published exclusions prohibit Tleilaxu foreign-ghola acquisition and Harkonnen capture. They do not prohibit CHOAM receiving its own free return. Existing repeat-death and sixth-disc cycle questions remain; this grant does not answer them. [GF9 CHOAM & Richese, p.8](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf#page=8)
-- **Duke Vidal:** E3 p.9 expressly restricts revival to Ecaz, including Ghola. An allied beneficiary does not inherit an exception. If the beneficiary is Ecaz, the revival is free under this effect, rather than charging Duke's normal five. The existing unresolved revived-disc destination and six-disc cycle issues remain exactly as documented in [Ecaz revival rules](ECAZ_REVIVAL_RULES.md); do not choose active Ecaz custody versus set-aside custody here. [E3 pp.8–9](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=9)
+- **Duke Vidal:** E3 p.9 expressly restricts revival to Ecaz, including Ghola. An allied beneficiary does not inherit an exception. If the beneficiary is Ecaz, the revival is free under this effect, rather than charging Duke's normal five. The 24 October route above applies the existing selected set-aside destination and independent Duke permission; generic cohort/repeat/income interpretations remain separately recorded in [Ecaz revival rules](ECAZ_REVIVAL_RULES.md). [E3 pp.8–9](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=9)
 - **Captured or foreign-ghola leaders:** a living unavailable captive is not a dead piece in Tanks. The Ambassador does not grant a capture release or acquisition of an opponent's disc. A leader's temporary controller must not substitute for its legitimate revival owner. Exceptional concealed custody needs the existing generic unavailable projection, not an opponent-visible identity probe.
 
 Keep physical identity and death history when returning a leader. A normal revived leader is usable, remains susceptible to its Traitor, and does not become a new disc. The base Ghola FAQ allows immediate reuse in a later battle, but that card-specific clarification does not authorize resetting unrelated histories or bypassing a still-pending Ambassador parent. [Base pp.9,22](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf)

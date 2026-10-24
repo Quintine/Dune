@@ -16,6 +16,26 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Ecaz's Ambassador Duke revival — 24 October. Prototyped / Partial.** The
+original Tleilaxu grant now offers Ecaz the real shared dead Duke, including his
+existing independent death histories. Native and BG-copy effects use canonical
+identity/custody validation and the selected alive/set-aside return. Ordinary
+first-death/KH limits and provisional independent allowance/income remain.
+Persistent controls explain that revival grants no battle control. Record any
+satisfied native cohort opening before clearing death; add no roster disc/skill.
+
+A disjoint helper lane, original-source fixture lane, bounded source review and
+owner integration pass **5 files42/42**, types/lint/build, two original Basic
+gameplay/rendering programmes and eight legal policy continuations. Real paid
+placements1+2, acquisition, two poison plans and Duke death precede the next-turn
+Guild entry/cost1. Sources72/73 then use two actions for free return and original
+entrant completion, preserving strength6/deaths1 and resources. Controlled
+Advanced/repeat/cohort/ownership/event/reacquisition probes are separate. Fixture
+expectations and a private disabled-attribute assertion needed feedback repair;
+runtime alone reran with source unchanged. [Sources, exact proof and limits](TLEILAXU_AMBASSADOR_RULES.md#ecaz-shared-duke-alternative--24-october-2026).
+No module opening, broad assurance, complete-mode or browser/deployed claim.
+No saved-room/database/reset/restart/deployment operation in this rule batch.
+
 **Original Ix Spice cards — 24 October. Prototyped / Partial.** The historical
 Thumper/Sandtrout/Harvester audit now records explicit provisional first-turn
 precedence, later generated-worm suppression and sequential physical doubling.

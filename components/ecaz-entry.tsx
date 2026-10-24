@@ -283,12 +283,16 @@ export function EcazEntry({
       ) : entry.stage === 'revival' ? (
         <>
           <p className="m-0 text-sm leading-6">
-            Revive one eligible first-death own leader, including Atreides’ first
-            killed Kwisatz Haderach, or return up to {entry.revival?.maximum ?? 0}
+            Revive one eligible leader or return up to {entry.revival?.maximum ?? 0}
             {' '}physical forces for free. This independent grant leaves ordinary
-            allowances and income unchanged provisionally. Repeat-return and
-            shared-leader interactions remain unfinished.
+            allowances and income unchanged provisionally. Ordinary leaders and
+            Atreides’ Kwisatz Haderach retain their first-death restriction.
+            Other revival interactions remain under development.
           </p>
+          {entry.revival?.leaders.some(leader => leader.destination === 'setAside') && <p className="m-0 text-sm leading-6">
+            Duke returns alive to the shared area, unclaimed. A separate legal
+            acquisition is needed before he can fight.
+          </p>}
           {entry.revival?.blocked && (
             <p className="m-0 text-sm leading-6">{entry.revival.blocked}</p>
           )}

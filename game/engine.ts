@@ -18540,7 +18540,7 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
       requireRule(action.forces === undefined && action.elite === undefined,
         'Choose a leader or forces, not both.');
       const selected = tleilaxuAmbassadorLeaderSelection(g, p, action.leader);
-      requireRule(selected, 'Choose an eligible first-death own leader or Kwisatz Haderach from the Tanks.');
+      requireRule(selected, 'Choose an eligible own leader, Ecaz Duke or Kwisatz Haderach from the Tanks.');
       let name: string;
       if (selected === 'kwisatz') {
         const kwisatz = p.kwisatz!;
@@ -18548,13 +18548,21 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
         delete kwisatz.usedAt;
         kwisatz.revivalCycle = Math.max(p.revivalCycle, kwisatz.revivalCycle ?? 1) + 1;
         name = 'Kwisatz Haderach';
+      } else if (selected === DUKE_VIDAL_ID) {
+        const duke = g.dukeVidal!.leader;
+        recordEcazLeaderReturn(g, duke);
+        duke.dead = false;
+        delete duke.usedAt;
+        delete duke.concealed;
+        name = duke.name;
+        g.dukeVidal = consumeDuke(g.dukeVidal!);
       } else {
         recordEcazLeaderReturn(g, selected);
         selected.dead = false;
         delete selected.usedAt;
         name = selected.name;
       }
-      log(g, `${p.name} revived ${name} for free through the Tleilaxu Ambassador. The ordinary leader allowance is unchanged.`,
+      log(g, `${p.name} revived ${name} for free through the Tleilaxu Ambassador.${selected === DUKE_VIDAL_ID ? ' The living shared disc is set aside, unclaimed.' : ''} The ordinary leader allowance is unchanged.`,
         { faction: 'tleilaxu', name: 'Tleilaxu Ambassador' });
       finishAmbassador(g);
       return;

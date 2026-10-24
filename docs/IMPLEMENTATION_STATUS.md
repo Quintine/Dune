@@ -1,5 +1,27 @@
 # Dune implementation status
 
+## 24 October 2026 — Ecaz's free Ambassador Duke return
+
+Connect the missing shared-disc alternative to the original Tleilaxu grant for
+Ecaz only. Native and BG-copy effects validate canonical dead Duke custody and
+return the same disc alive/set-aside under the selected policy, preserving death
+history and any satisfied native cohort opening. Add no native disc, control,
+skill, paid request or ordinary allowance debit. Persistent controls explain the
+required separate acquisition; original entrant movement remains available.
+
+A disjoint helper lane and genuine-fixture lane, bounded source review and owner
+integration pass5-file42/42, types/lint/build, two original Basic gameplay/rendering
+programmes and eight legal policies. Sources72/73 use real paid placements1+2,
+acquisition and a two-poison Duke death, then turn2 Guild entry/cost1. Free return
+and original entrant completion use two more actions with unchanged resources,
+strength6, deaths1 and five native discs. Controlled Advanced/repeat/cohort/
+ownership/event/decline/reacquisition evidence remains separate. Fixture control
+expectations and a private disabled-attribute assertion were repaired; runtime
+alone reran on identical source. [Canonical source, policy, scope and frozen proof](TLEILAXU_AMBASSADOR_RULES.md#ecaz-shared-duke-alternative--24-october-2026).
+Generic ordinary repeat/income policy, wider combinations, complete modes and
+browser/deployed/final assurance remain open. No strategy refinement or saved-
+room/database/reset/restart/deployment operation in this rule batch.
+
 ## 24 October 2026 — Original Ix Spice card interpretations
 
 Retain existing Thumper/Sandtrout/Harvester mechanics after bounded printed-source
