@@ -1265,7 +1265,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                     : definition.card.effect === 'stoneBurner'
                       ? 'Use Stone Burner in the weapon selector and review public dial/support feasibility before sealing. Clean selected CHOAM/Ix now uses visibly provisional original Stone-first then uncopied Tooth order; copy-first and physical allocation guards remain.'
                       : definition.card.effect === 'mirrorWeapon'
-                        ? 'Choose physical Mirror in a supported CHOAM/Richese-deck table, including clean selected Ix and Advanced Ecaz/Moritani. Copied Tooth or Stone chooses before its original. The user-selected winning physical-Mirror retention still applies after copied Tooth or Artillery. Original Stone/Tooth provisionally uses Stone-first order. Other profile/module and public-start gates remain.'
+                        ? 'Choose physical Mirror in a supported CHOAM/Richese-deck table, including clean selected Ix and bare Basic or Advanced Ecaz/Moritani. Copied Tooth or Stone chooses before its original. The user-selected winning physical-Mirror retention still applies after copied Tooth or Artillery. Original Stone/Tooth provisionally uses Stone-first order. Other profile/module and public-start gates remain.'
                       : definition.card.effect === 'portableSnooper'
                         ? 'Choose Portable Snooper as your ordinary poison defense, or use the late-defense panel after reveal before your own traitor decision. It uses ordinary winner retention and cannot stop Poison Tooth.'
                         : definition.card.effect === 'semutaDrug'
@@ -1405,20 +1405,20 @@ export const RULE_TOPICS: RuleTopic[] = [
         : definition.card.effect === 'mirrorWeapon'
           ? { checklist: [
               { area: 'Implementation' as const, status: 'Partial' as const,
-                detail: 'Canonical physical Mirror, copy-first answers and physical retention compose with clean selected Ixian/Tleilaxu pools and original Advanced Occupy. Public feasibility and other profile/module boundaries remain.',
-                evidence: ['game/mirror-weapon-mode.ts', 'game/effective-weapons.ts', 'game/engine.ts'] },
+                detail: 'Canonical physical Mirror, copy-first answers and physical retention now compose with bare Basic native E3, both coalition leads and actual Moritani combatants, including selected Ix typed pools. Original fixed Ecaz accounting, physical-owner scalar allocation and later native cleanup remain. Other profile/module boundaries stay separate.',
+                evidence: ['game/mirror-weapon-mode.ts', 'game/effective-weapons.ts', 'game/engine.ts', 'tests/basic-native-mirror-engine.test.ts'] },
               { area: 'Player controls' as const, status: 'Partial' as const,
-                detail: 'Actual weapon selectors, independent copied choices and original retention are usable. Ix original Stone/Tooth priority is visibly provisional before commitment and during revelation.',
-                evidence: ['components/battle-preparation.tsx', 'components/game-table.tsx'] },
+                detail: 'Actual native Basic selectors admit Mirror. Copied Tooth/Stone choices remain explicit, persistent and busy-disabled; original event actions advance the independent queue. Physical-owner allocation callbacks retain their real event/count and busy no-submit. Inline GameTable callbacks are rendered rather than directly invoked. Ix original Stone/Tooth priority remains visibly provisional.',
+                evidence: ['components/battle-preparation.tsx', 'components/game-table.tsx', 'tests/basic-native-mirror-controls.test.tsx'] },
               { area: 'AI' as const, status: 'Partial' as const,
-                detail: 'All four profiles have legal clean-Ix candidate and original/copy continuation paths. This is not strategy or difficulty calibration.',
-                evidence: ['game/bots.ts', 'tests/ix-revealed-weapons.test.ts'] },
+                detail: 'Twelve existing-profile native Basic continuations across both coalition leads and Moritani accept36 proposals plus256 separate native controls. Legal Mirror commitments use only the current own view. Earlier clean-Ix paths remain. No strategy or difficulty calibration.',
+                evidence: ['game/bots.ts', 'tests/ix-revealed-weapons.test.ts', 'tests/basic-native-mirror-engine.test.ts'] },
               { area: 'Documentation' as const, status: 'Partial' as const,
                 detail: 'Printed copy-first, user-selected physical retention and provisional original Stone/Tooth priority are distinguished. Combined modules and full-mode acceptance remain separate.',
                 evidence: ['docs/MIRROR_WEAPON_ENGINE_AUDIT.md', 'docs/STONE_BURNER_ENGINE_AUDIT.md'] },
               { area: 'Verification' as const, status: 'Partial' as const,
-                detail: 'Original Matrix/engine proof plus genuine native setup with explicit conserved battle staging covers Basic/Advanced, both native force pools, original/copy modes, public ambiguity and Advanced fixed/variable Occupy. Mobile and policy proof is bounded, not unstaged complete-game or final assurance certification.',
-                evidence: ['tests/ix-revealed-weapons.test.ts', 'tests/fixture-ix-revealed-weapons.ts', 'tests/mirror-weapon-engine.test.ts'] },
+                detail: 'Current17-file130/130, types/lint/build and six gameplay/GameTable SSR programmes pass. Genuine six-native Basic setup/alliance/battle with explicit conserved board/budget/card staging covers Ecaz, allied Ix and Moritani copied Tooth/Stone. Original Ix owner selects6/9 physical totals and later native losses; five Moritani counters beat four despite opposing dial9. Legacy fixture controls and unstamped guards are repaired before final frozen proof. Earlier proofs remain dated; browser/deployed, full modes/combinations and comprehensive assurance stay open.',
+                evidence: ['tests/ix-revealed-weapons.test.ts', 'tests/fixture-ix-revealed-weapons.ts', 'tests/mirror-weapon-engine.test.ts', 'tests/fixture-basic-native-mirror.ts', 'tests/basic-native-mirror-engine.test.ts', 'tests/basic-native-mirror-controls.test.tsx'] },
             ] }
           : {}),
       related: [

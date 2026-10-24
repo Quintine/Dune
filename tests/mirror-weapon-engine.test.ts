@@ -5,6 +5,7 @@ import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import { treacheryDeck, type Card } from '../game/cards';
 import { richeseCards } from '../game/richese-cards';
+import { finishBattleOutcomeWindow } from './fixture-battle-outcome-window';
 
 const mirror = richeseCards().find((card) => card.effect === 'mirrorWeapon')!;
 function fixture(advanced = false) {
@@ -60,7 +61,8 @@ function reveal(g: Game, source?: Card, ownDial = 2, otherDial = 2) {
 }
 function finish(g: Game) {
   g = applyAction(g, 'q', { type: 'traitorCall', call: false });
-  return applyAction(g, 'p', { type: 'traitorCall', call: false });
+  g = applyAction(g, 'p', { type: 'traitorCall', call: false });
+  return finishBattleOutcomeWindow(g);
 }
 
 void test('copied Tooth chooses before its original despite reverse storm order; restored choices keep physical custody', () => {

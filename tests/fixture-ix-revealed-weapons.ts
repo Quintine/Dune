@@ -3,6 +3,7 @@ import {applyAction, viewGame, type Action, type Game} from '../game/engine';
 import {harassWithdrawGame} from './fixture-harass-withdraw';
 import {stoneHarassCustody, takeStoneHarassCard, STONE_CARD, MIRROR_CARD} from './fixture-stone-harass';
 import {finishOccupyCardsAftermath} from './fixture-ecaz-occupy-cards';
+import {finishBattleOutcomeWindow} from './fixture-battle-outcome-window';
 
 export const IX_TOOTH = 'ix-poison-tooth';
 export type IxRevealedCase = {
@@ -53,6 +54,7 @@ export function finishIxWeaponBattle(state: Game): Game {
   assert.equal(game.decision, null, 'All native reveal choices must precede traitor calls.');
   for (const id of viewGame(game, 'a').battle!.traitorVoters)
     game = applyAction(game, id, {type: 'traitorCall', call: false});
+  game = finishBattleOutcomeWindow(game);
   game = finishOccupyCardsAftermath(game, {stopAtFaceDance: true});
   if (game.decision?.kind === 'faceDance') {
     game = applyAction(game, game.decision.player, {type: 'decision', reveal: false});

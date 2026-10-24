@@ -148,12 +148,15 @@ void test('a Mirror Weapon copying the opposing Stone keeps the copied compariso
   }
 });
 
-void test('Stone Burner precommit is public: the same commitment is decided before and after hidden opposing plans', () => {
+void test('legacy unstamped Stone precommit stays public before and after hidden opposing plans', () => {
   const messages: string[] = [];
   for (const hiddenDial of [1, 5]) {
     const ambiguous = stoneHarassFixture({ advanced: true, harass: 'defender', stone: 'opponent',
       attackerForces: 2, attackerElite: 1, attackerDial: 2, attackerSupport: 1,
       defenderForces: 5, defenderDial: hiddenDial });
+    // Retain the old unstamped guard here. Fresh v1 battles instead collect
+    // their actual physical-total commitments after revealed weapon choices.
+    delete ambiguous.game.battle!.stoneAllocationVersion;
     const stonePlan = planOf(ambiguous.plans, 'a');
     const hiddenPlan = planOf(ambiguous.plans, 'd');
     const before = { spice: seat(ambiguous.game, 'a').spice, reserves: seat(ambiguous.game, 'a').reserves,

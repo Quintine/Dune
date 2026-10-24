@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 24 October 2026 — Basic native Mirror and Stone
+
+Bare Basic native E3 with CHOAM/Richese, including selected Ix, now uses original
+Mirror/Stone resolution. Actual fixed Ecaz strength/losses, variable allied
+typed pools, public-only admission, physical-owner allocation and later native
+cleanup remain separate. Copy-first and user-selected physical winner retention
+are unchanged. Basic E3 phase modules remain guarded; existing Advanced no-Ix
+phase-module permission is retained.
+
+Disjoint source/control lanes, bounded review and owner integration pass17 files
+130/130, types/lint/build and six gameplay/GameTable SSR programmes across both
+coalition leads and an actual Moritani combatant. Copied Tooth/Stone remain
+independent,6/9 physical choices belong to Ix, and five Moritani counters beat
+four opposing physical counters despite total dial9. Native setup/alliance/
+battle admission is genuine; conserved battle-board, thirty-spice and original
+card staging is explicit. Twelve minimal-profile continuations accept36 actions
+plus256 separate native steps. Rendered inline choices and actual event actions
+are distinguished from direct physical-allocation component callback proof.
+
+The initial union exposed outdated final-priority fixture continuations and
+old precommit expectations. A committed-profile probe confirms the old Mirror
+failure predates this admission. Actual final Ready controls now precede result
+assertions; two conservative guard tests explicitly model unstamped legacy
+battles. New stamped cases retain real count commitments. A reserved lint
+variable is renamed; final frozen proof passes.
+[Authority, exact evidence and unfinished scope](MIRROR_WEAPON_ENGINE_AUDIT.md#basic-native-e3-admission--24-october-2026).
+No full mode/combination, browser/deployed or comprehensive assurance certificate,
+AI strategy/calibration or saved-room/D1/reset/restart/deployment operation.
+
+
 ## 24 October 2026 — Owned Ghola movement preparation
 
 Basic movement witnesses use current physical Ghola force choices and exact

@@ -13,6 +13,7 @@ import {
   chooseEcazOccupyLead, ecazOccupyFixture, openEcazOccupyPlans, type EcazOccupyFixture,
 } from './fixture-ecaz-occupy';
 import { finishOccupyCardsAftermath } from './fixture-ecaz-occupy-cards';
+import { finishBattleOutcomeWindow } from './fixture-battle-outcome-window';
 
 export const HARASS_CARD = 'ecaz-harass-withdraw';
 export const STONE_CARD = 'richese-stone-burner';
@@ -266,6 +267,7 @@ export function finishStoneHarassBattle(state: Game, options: {
       call: options.traitors?.includes(voter) ?? false });
     if (game.decision) break;
   }
+  game = finishBattleOutcomeWindow(game);
   game = finishOccupyCardsAftermath(game);
   stoneHarassCustody(game);
   return game;

@@ -12,6 +12,7 @@ import {
 import { baseDeck, ixBattleCards, type Card } from '../game/cards';
 import { FACTIONS, type FactionId } from '../game/catalog';
 import { richeseCards } from '../game/richese-cards';
+import { finishBattleOutcomeWindow } from './fixture-battle-outcome-window';
 import {
   isStoneBurner,
   isWeaponCard,
@@ -95,11 +96,11 @@ function reveal(
 }
 const mode = (g: Game, mode: 'kill' | 'ignore') =>
   applyAction(g, 'p', { type: 'decision', event: g.battle!.event, mode });
-const finish = (g: Game) =>
-  applyAction(applyAction(g, 'q', { type: 'traitorCall', call: false }), 'p', {
-    type: 'traitorCall',
-    call: false,
-  });
+function finish(g: Game) {
+  g = applyAction(g, 'q', { type: 'traitorCall', call: false });
+  g = applyAction(g, 'p', { type: 'traitorCall', call: false });
+  return finishBattleOutcomeWindow(g);
+}
 
 void test('canonical Stone is a named special weapon, never a generic special, poison or projectile', () => {
   const card = richeseCards().find((c) => c.id === stoneId)!;
@@ -208,6 +209,7 @@ void test('traitor and explosion precedence remain intact, while Stone never kil
   g.players[1].traitors = [g.battle!.plans.p.leader!];
   g = applyAction(g, 'q', { type: 'traitorCall', call: true });
   g = applyAction(g, 'p', { type: 'traitorCall', call: false });
+  g = finishBattleOutcomeWindow(g);
   assert.equal(g.players[1].leaders[0].dead, false);
   assert.equal(g.players[1].forces['pasty_mesa:5'], 5);
   g = fixture();

@@ -74,8 +74,11 @@ void test('original Ix-deck Stone precedes uncopied Tooth under the existing pro
     }
 });
 
-void test('Ix public precommit still rejects winner-changing cyborg allocations independently of the hidden opposing plan', () => {
+void test('legacy unstamped Ix public precommit rejects winner-changing cyborg allocations independently of the hidden opposing plan', () => {
   const source = ixRevealedWeaponFixture({advanced: true, kind: 'stoneTooth'});
+  // This case specifically preserves the pre-v1 public allocation guard.
+  // Fresh stamped battles use their actual revealed physical-count controls.
+  delete source.game.battle!.stoneAllocationVersion;
   const own = {...source.plans[0].action, dial: 2, support: 0};
   const messages: string[] = [];
   for (const dial of [0, 5]) {

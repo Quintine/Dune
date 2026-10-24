@@ -2,6 +2,16 @@
 
 Audit: 2026-09-06. Scope: the canonical weapon, its revealed-plan choice and physical undialed-force comparison. No runtime files were changed in this audit. This is not a full optional-module or expansion certification.
 
+## Basic native E3 follow-up — 24 October 2026
+
+Bare Basic Ecaz/Moritani with CHOAM/Richese, including selected Ix, now admits
+the original Stone and physical Mirror through the existing native calculator.
+Fixed Ecaz dial/losses and undialed counters remain separate from allied typed
+pools; actual physical owners retain scalar allocation and later casualty/
+substitution controls. This changes a public configuration boundary, not Stone
+arithmetic, copy-first or provisional online timing.
+[Source, bounded proof and unfinished scope](MIRROR_WEAPON_ENGINE_AUDIT.md#basic-native-e3-admission--24-october-2026).
+
 ## Outcome-changing physical totals — 18 October 2026
 
 **Prototyped / Partial.** New original battles now finish the previously guarded

@@ -16,6 +16,27 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Basic native Mirror/Stone — 24 October. Prototyped / Partial.**
+Bare Basic Ecaz/Moritani families, including selected Ix, now admit the physical
+Mirror and original Stone through existing native resolution. Preserve fixed
+Ecaz accounting, actual allied typed pools, copy-first independent choices and
+physical winner retention. Basic E3 phase-module guards remain; existing
+Advanced permissions do not expand.
+
+Disjoint source/control lanes, bounded review and owner integration pass
+**17 files130/130**, types/lint/build and six actual gameplay/table-rendering
+journeys. Both coalition leads and an actual Moritani combatant copy Tooth and
+Stone; the original Ixian physical owner chooses6/9 undialed counters, and
+Moritani's five physical counters beat four despite the opposing dial9.
+Genuine six-native setup/alliance/battle admission retains explicit conserved
+board/budget/card staging. Twelve existing-profile paths accept36 proposals
+plus256 separate native continuations. Updated legacy fixtures close actual
+final-priority controls; two old allocation-guard tests now explicitly model
+unstamped battles. [Source, proof and limits](MIRROR_WEAPON_ENGINE_AUDIT.md#basic-native-e3-admission--24-october-2026).
+Optional combinations, complete modes, full AI work and comprehensive/browser/
+deployed acceptance remain unfinished. No saved-room/D1/reset/restart/deployment
+operation.
+
 **Owned Ghola movement preparation — 24 October. Prototyped / Partial.**
 Held physical Ghola and known/paid Box recovery now prepare exact force returns
 before an unused affordable shipment and qualifying ground move. Keep normal

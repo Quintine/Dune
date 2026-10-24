@@ -1,8 +1,87 @@
 # Mirror Weapon: source and engine integration audit
 
-Audited 6 September 2026 as a proposed contract. The 28 September bounded runtime now admits canonical Mirror in CHOAM/Richese-deck classic/CHOAM/Richese battles without optional combined modules; the hook map and former blockers below describe the earlier audit, not current inactive status. Richese expansion starts remain gated.
+The [24 October Basic native follow-up](#basic-native-e3-admission--24-october-2026) is the current bare-profile boundary. Older September audits, blocker descriptions and start restrictions below are dated evidence. Complete expansion rules and publication acceptance remain gated.
 
 **28 September ruling and runtime:** the user selected ordinary winner retention for the physical Mirror even when its copy activates Tooth or Artillery. This is an explicit product interpretation, not a located GF9 clarification. `game/effective-weapons.ts` keeps physical identity apart from copied attacks; the engine now connects copied Tooth/Stone choices, Stone comparison, custody, battle controls and legal AI in the bounded configuration.
+
+## Basic native E3 admission — 24 October 2026
+
+**Prototyped / Partial.** Bare Basic CHOAM/Richese plus Ecaz/Moritani now uses
+the same canonical physical Mirror and original Stone handling as supported
+Advanced tables. Selected Ix can remain present with its real Cyborg/Suboid
+pools. This supersedes the older Advanced-only native-E3 boundary below.
+The public profile admits the configured families without inspecting hands or
+sealed plans. Homeworlds, Nexus, Leader Skills, Discoveries and active Sandtrout
+remain guarded. Basic E3 with Tech Tokens or Stronghold Cards also stays outside
+this slice; existing Advanced E3 without Ix retains its prior phase-module
+permission. Mixed Advanced E3/Ix phase modules keep their existing guard.
+
+The actual battle actors, native fixed Ecaz commitment and variable allied
+forces remain separate. Copied Tooth and Stone choose before their originals,
+with original physical IDs in sealed/revealed plans. An ambiguous Stone total
+is committed by the original physical force owner, even when Ecaz selected its
+own leader and plan. Keep Basic zero support, actual typed casualties, later
+Ix substitution and native cleanup. No new numerical or timing ruling is made:
+printed copy-first, the existing provisional allocation procedure and the
+user-selected physical-Mirror winner retention stay in force.
+
+New fixtures start through genuine public Basic native setup, original cards,
+a real Nexus alliance and actual battle admission. They explicitly inherit a
+conserved controlled battle board, thirty-spice budget and original-card
+transfers; they are not unstaged acquisition or complete-game evidence. Both
+coalition leads and an actual Moritani combatant receive their own Mirror.
+Native controls remain explicit and persistent; minimal profiles use the
+current public profile and own legal plan/decision views.
+
+### Basic native source and verification
+
+The original six-faction Basic setup retains Ecaz, Ixians, CHOAM, Richese,
+Moritani and Tleilaxu, original native components and the actual Ecaz/Ix alliance.
+Before real admission, the source explicitly conserves five Ecaz and eight
+allied Ixian counters (including two Cyborgs), or replaces the opposing CHOAM
+army with five conserved Moritani counters. It inherits the labelled thirty-spice
+controlled budget and moves original physical cards between their actual
+cache/deck/hand locations. Neither the phase, alliance, battle, plan nor finished
+outcome is installed. This is genuine setup plus controlled rule-case staging,
+not an unstaged full game or a naturally played Mirror acquisition.
+
+Both coalition leads copy Tooth before the original, keep physical Mirror after
+winning and pay no Basic support. Real leader deaths supply their printed
+bounty. Copied Stone independently chooses before its original; fixed Ecaz3
+and undialed2 remain separate from the allied pool. Two real physical-count
+alternatives6/9 belong to Ix regardless of the selected plan actor; each extreme
+settles its actual winner, typed losses, native substitution and cleanup.
+Moritani's five undialed counters defeat the coalition's four despite its total
+dial9. Original card inventory and physical pools remain conserved.
+
+The final frozen batch passes **17 files130/130**, npm run check:quick,
+production build and six actual-state gameplay/GameTable SSR programmes.
+Two native Stone-allocation component callbacks retain busy no-submit and
+submit the original event/count. Copied Tooth/Stone inline GameTable controls
+are rendered persistently with busy choices and exercised through actual
+event-bound engine actions; their inline callbacks are not directly invoked.
+Twelve existing-profile continuations accept36 proposals plus256 separate
+native controls. No strategy change or strength calibration is performed.
+
+The first batch's legacy Mirror/Stone tests asserted results before the
+existing final outcome window closed. One committed-profile probe reproduces
+the old Mirror failure. Shared fixture continuations now submit the actual
+two final Ready controls; two old ambiguity guards are explicitly limited to
+legacy unstamped battles. Fresh v1 cases keep their physical commitments.
+Later narrow feedback fixes one such old guard and a reserved lint identifier.
+The final frozen source, including these repairs, passes all required checks.
+
+Private artifacts: /home/quintine/.local/share/dune/checkpoints/20261024-basic-native-mirror/,
+final frozen-integrated-4/report.json, runtime-smoke.json, private HTML/logs,
+committed-profile-baseline.log, verified-files.json and documentation-overlay.json.
+Before final prose: base49992d322f543726ad858e0bed60226711f1c32d,
+source tree512bef259fadc063d64325dfac227144b202d746d0cff8d19d4d3753ec24db06,
+2661 tracked/nonignored files unchanged throughout verification. Only four
+checkpoint-prose/reference overlays follow proof; links/evidence and reference
+syntax/keys are reviewed separately. Framework aliases/CSS stubs do not prove
+browser/visual/deployed acceptance. Full modes, optional combinations and
+comprehensive assurance remain open. No saved-room/D1/reset/restart/deployment
+operation occurs.
 
 ## Original phase-module composition — 16 October 2026
 

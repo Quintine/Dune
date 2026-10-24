@@ -13,6 +13,7 @@ import { botActions } from '../game/bots';
 import { DIFFICULTIES, type Difficulty } from '../game/bot-profiles';
 import { stoneBurnerPlanBlock } from '../game/stone-burner';
 import { baseDeck, ixBattleCards } from '../game/cards';
+import { finishBattleOutcomeWindow } from './fixture-battle-outcome-window';
 const stone = () => richeseCards().find((c) => c.effect === 'stoneBurner')!;
 function fixture(advanced = false, reverse = false) {
   let g = createGame('STONEBOT', newPlayer('p', 'Pilot', 'emperor'), advanced, [
@@ -167,6 +168,7 @@ void test('all profiles choose public leader preservation versus bounty without 
         next = JSON.parse(JSON.stringify(next));
         next = applyAction(next, 'p', { type: 'traitorCall', call: false });
         next = applyAction(next, 'q', { type: 'traitorCall', call: false });
+        next = finishBattleOutcomeWindow(next);
         assert.equal(next.players[0].forces['pasty_mesa:5'], 8);
         assert.equal(next.players[1].tanks, 3);
         assert.equal(
