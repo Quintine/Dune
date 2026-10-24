@@ -119,6 +119,7 @@ import { fighterCount, isAdvisor } from './advisors';
 import { quoteAdvisorMatching, AdvisorMatchingError } from './advisor-matching';
 import { quoteAdvisorAmbassadorMatching, AdvisorAmbassadorMatchingError } from './advisor-ambassador-matching';
 import { guildTransportQuote } from './transport-quote';
+import { quoteAdvisorGatherMatching, AdvisorGatherMatchingError } from './advisor-gather-matching';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from './combat';
 import { reinforcementsBattleForces } from './reinforcements-homeworld';
 import type { NativeReserveSelections } from './homeworld-native-reserves';
@@ -4087,7 +4088,7 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 
 /** Obligations apply across policy branches, including choosing to move first. */
 function botAdvisorMatchingAllowed(g:GameView,action:Action) {
-  if(!g.advisorMatchingDenied?.length || !['move','ship'].includes(action.type) || action.planetologist==='gather') return true;
+  if(!g.advisorMatchingDenied?.length || !['move','ship'].includes(action.type)) return true;
   const me=g.players.find(p=>p.id===g.me)!;
   if(!g.advanced || me.faction!=='beneGesserit' || g.phase!==5 || g.active!==me.id) return true;
   const destination=String(action.territory),sector=Number(action.sector);
@@ -4095,6 +4096,12 @@ function botAdvisorMatchingAllowed(g:GameView,action:Action) {
     action.forces && typeof action.forces==='object' ? action.forces as Record<string,number> :
     {[String(action.from)]:Number(action.amount)};
   const origins=[...new Set(Object.keys(group).map(key=>splitLocation(key).territory))];
+  if(action.type==='move'&&action.planetologist==='gather'){
+    try{
+      quoteAdvisorGatherMatching(g,{owner:me.id,move:me.moved??0,destination,sector,
+        advisors:isAdvisor(me,destination),group});return true;
+    }catch(error){if(!(error instanceof AdvisorGatherMatchingError))throw error;return false;}
+  }
   if(action.type==='move' && origins.length!==1) return true;
   try {
     quoteAdvisorMatching(g,{kind:action.type==='ship'?'shipment':'movement',owner:me.id,

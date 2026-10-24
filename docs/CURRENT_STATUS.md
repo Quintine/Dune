@@ -16,6 +16,37 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Planetologist resident matching — 24 October. Prototyped / Partial.**
+Resident gathers now queue one normal-format matching response per changing
+incoming origin. Both physical groups wait through partial allowance; any
+prevention stops the whole declared gather without moving/flipping forces,
+collecting spice or spending movement. The prevented origin packet shares its
+normal denial key, closing normal/gather retries while keeping legal replacements.
+Consume the private approval batch before one original movement suffix. Stable
+queue order and atomic cancellation remain explicit provisional composition;
+the existing enemy-only/empty policy and stored one-shot responses remain.
+[Source, native flows and limits](ADVISOR_MATCHING.md#planetologist-gathering-into-residents--24-october-2026).
+
+Disjoint helper/native-fixture lanes, bounded priority/source/integration review
+and root integration pass **15 files274/274**, types/lint/build, seven native
+declaration/group-response/replacement/GameTable SSR journeys and eight
+existing-profile paths with sixteen accepted response/replacement actions.
+Genuine78-action mixed and73-action double sources earn original base33/all14
+Skills, actual offered/assigned Planetologist, original Karama, resident advisor,
+paid Basin2/Oh Gap1, actual Emperor bribe1 and, for mixed, real Intrusion.
+Both origins are distance1 from Arrakeen without advisor ornithopters. First
+allowance leaves both groups untouched; second prevention retains the whole
+unused movement. Different-packet and same-type/ordinary replacements complete
+once; normal prevention cannot be bypassed by adding a gather origin. No played
+state is installed. Fixture type feedback makes offer narrowing and stage
+snapshots explicit; the final runtime/union/types/lint/build pass. Wider empty
+sequencing, modules, complete modes and final browser/deployed assurance remain
+open. No AI refinement or saved-room/D1/server/reset/restart/deployment operation.
+
+**Requested stopping checkpoint:** the user requested stopping after the next
+Git push. This verified gathering checkpoint is that push; the full objective
+is unchanged and further goal work waits for the user to resume it.
+
 **Guild/Junction incoming matching — 24 October. Prototyped / Partial.**
 Fresh native Guild and absent-Guild Secret Ally cross-transports plus Junction
 board/World arrivals now offer incoming BG matching before original permission,

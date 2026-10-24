@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Planetologist resident matching groups — 24 October 2026
+
+Compose supplied physical28's resident-matching rule with physical17's counter
+for one group. Partition the actual two-origin gather and offer one counter per
+changing physical origin, using existing normal receipt/denial formats. Stable
+origin order and all-or-nothing gather commitment are explicit provisional
+composition: partial allowance moves/flips nothing, and prevention stops both
+groups while recording only the prevented packet's normal scoped denial.
+Retain the unused movement and legal replacement; normal/gather declarations
+cannot bypass each other's prevented packet. Consume the private approval batch
+before one original movement/collection suffix. Preserve Basic, the existing
+enemy-only/empty policy and already-recorded legacy one-shot responses.
+[Contract, sources and evidence](ADVISOR_MATCHING.md#planetologist-gathering-into-residents--24-october-2026).
+
 ## Guild/Junction incoming matching — 24 October 2026
 
 Supplied physical28's marked shipping/moving clause and physical17's group

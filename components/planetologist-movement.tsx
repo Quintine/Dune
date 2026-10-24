@@ -10,6 +10,8 @@ import {
   type PlanetologistMoveMode,
 } from '@/game/planetologist-movement';
 import { botGroundMoveAllowed } from '@/game/bot-mobility';
+import { isAdvisor } from '@/game/advisors';
+import { quoteAdvisorGatherMatching, AdvisorGatherMatchingError } from '@/game/advisor-gather-matching';
 import {
   gameTerritories,
   location,
@@ -92,6 +94,12 @@ export function planetologistMoveDraft(
           ? 'The selected route is beyond the boosted range or is blocked.'
           : 'Each selected source must reach the destination using its normal range.',
     };
+  if(mode==='gather'){
+    try{
+      quoteAdvisorGatherMatching(game,{owner:me.id,move:me.moved??0,destination,sector,
+        advisors:isAdvisor(me,destination),group:Object.fromEntries(selected)});
+    }catch(error){if(!(error instanceof AdvisorGatherMatchingError))throw error;return {action:null,blocked:error.message};}
+  }
   return {
     action: {
       type: 'move',
@@ -168,6 +176,9 @@ export function PlanetologistMovement({
         gather forces from exactly two territories into the selected
         destination.
       </p>
+      {game.advanced&&me.faction==='beneGesserit'&&mode==='gather'&&(
+        <p className="notice">When joining your residents, each incoming origin that changes type has its own matching response. Both groups wait for every required allowance. Prevention leaves the movement unused and keeps both groups in place.</p>
+      )}
       <label htmlFor={`${id}-mode`}>Movement mode</label>
       <select
         id={`${id}-mode`}

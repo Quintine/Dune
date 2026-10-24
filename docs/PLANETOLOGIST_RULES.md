@@ -1,6 +1,6 @@
 # Planetologist rule contract
 
-Updated 18 October 2026. This note audits the movement and battle effects of the
+Updated 24 October 2026. This note audits the movement and battle effects of the
 Planetologist Leader Skill against its physical card, the common Leader Skills
 rules, the GF9 base battle rules and designer Jack Reda's walkthrough. The connected prototype is described below; other Leader Skill effects remain separate work.
 
@@ -201,6 +201,15 @@ the prototype adopts an explicit **common-fighter, precommit flip** policy:
   destinations and an existing BG destination group retain their original
   compulsory common stance. Uniform origins and already-opened ordinary
   flip windows keep their existing timing.
+
+The [24 October resident follow-up](ADVISOR_MATCHING.md#planetologist-gathering-into-residents--24-october-2026)
+retains that final resident stance but adds one precommit matching counter per
+incoming origin that changes type. Two changing origins require two responses.
+Partial allowance leaves both origins untouched; prevention stops the whole
+gather and shares the prevented origin packet's normal movement denial.
+The original living trainer, complete movement and approved receipt queue stay
+bound privately until the atomic movement can resume once. The earlier
+enemy-only/empty policy and already-recorded one-shot responses remain separate.
 
 This is visibly provisional product composition, not a retrieved combined
 FAQ or a separately answered numerical ruling. The shared quote drives the

@@ -612,6 +612,7 @@ import { quoteAdvisorMatching, validateAdvisorMatching, advisorMatchingKey,
   AdvisorMatchingError, type AdvisorMatchingSource } from './advisor-matching';
 import { quoteAdvisorAmbassadorMatching, validateAdvisorAmbassadorMatching, advisorAmbassadorMatchingKey, AdvisorAmbassadorMatchingError, type AdvisorAmbassadorMatchingSource } from './advisor-ambassador-matching';
 import { quoteAdvisorTransportMatching, validateAdvisorTransportMatching, advisorTransportMatchingKey, AdvisorTransportMatchingError, type AdvisorTransportMatchingSource } from './advisor-transport-matching';
+import { quoteAdvisorGatherMatching, AdvisorGatherMatchingError } from './advisor-gather-matching';
 import { spiritualAdvisorTargetBlock, spiritualAdvisorArrival, validateSpiritualAdvisorSource,
   spiritualAdvisorMatchingKey, SpiritualAdvisorError, type SpiritualAdvisorSource } from './spiritual-advisor';
 import {
@@ -1076,6 +1077,8 @@ export type ResponseWindow = {
   advisorMatchingSource?: AdvisorMatchingSource;
   advisorAmbassadorMatchingSource?: AdvisorAmbassadorMatchingSource;
   advisorTransportMatchingSource?: AdvisorTransportMatchingSource;
+  advisorGatherMatchingSource?: AdvisorMatchingSource;
+  advisorGatherMatchingPosition?: {current:number;total:number};
   spiritualAdvisorSource?: SpiritualAdvisorSource;
   fremenGrant?: FremenRevivalGrantSource;
   spiceBankerIncomePayment?: SpiceBankerIncomePayment;
@@ -1299,6 +1302,13 @@ export type Game = {
     intent: {kind:'movement'; order:MovementOrder} | {kind:'shipment'; order:PendingShipment};
   };
   advisorMatchingDenied?: string[];
+  pendingAdvisorGatherMatching?: {
+    order: MovementOrder;
+    receipts: AdvisorMatchingSource[];
+    signature: string;
+    index: number;
+    approved: string[];
+  };
   pendingAdvisorAmbassadorMatching?: {
     receipt: AdvisorAmbassadorMatchingSource;
     order: MovementOrder;
@@ -14642,6 +14652,7 @@ function revivalCancellationQuote(g: Game, response: ResponseWindow) {
   }
 }
 function movementCancellationQuote(g: Game, response: ResponseWindow) {
+  if (response.advisorGatherMatchingSource) { currentAdvisorGatherMatching(g,response); return null; }
   if (response.advisorTransportMatchingSource) { currentAdvisorTransportMatching(g,response); return null; }
   if (response.advisorAmbassadorMatchingSource) { currentAdvisorAmbassadorMatching(g,response); return null; }
   if (response.spiritualAdvisorSource) { currentSpiritualAdvisorResponse(g,response); return null; }
@@ -16604,6 +16615,7 @@ function groundMovementProbe(source: Game, actor: string): Game {
   game.pendingFremenMove = null; game.pendingIxMove = null; game.pendingChoamMove = null;
   game.pendingAmbassador = null; game.pendingTerrorEntry = null; game.pendingArrivalOverlap = null;
   delete game.pendingAdvisorTransportMatching;
+  delete game.pendingAdvisorGatherMatching;
   game.pendingArrivalReaction = []; game.pendingExchange = null;
   if (game.pendingShipment?.player === game.active && recoverableUnsupportedShipment(game.pendingShipment)) {
     const shipment = game.pendingShipment; game.pendingShipment = null;
@@ -17011,9 +17023,12 @@ function declareGroundMovement(g: Game, p: Player, action: Action, quoteOnly = f
   );
   validateFlightSelection(g, p, move);
   const matching = quoteMatchingMovement(g, move);
+  const gatherMatching=quoteGatherMatching(g,move);
   if (quoteOnly) return move;
   checkGroundMovementPromises(g, p, move);
-  if (advisorGather) {
+  if(gatherMatching.length){
+    openAdvisorGatherMatching(g,move,gatherMatching);
+  } else if (advisorGather) {
     g.response = {
       kind: 'advisorFlip', owner: id, location: to, advisors: false, amount: n, passed: [],
       advisorResume: 'planetologistGather', advisorGatherMove: { turn: g.turn, move: p.moved, order: move },
@@ -20773,6 +20788,76 @@ function finishAdvisorAmbassadorMatching(g:Game,response:ResponseWindow,canceled
       {faction:'beneGesserit',name:'Ambassador group matching prevented'});
   }else offerChoamMovement(g,parent.order);
 }
+function gatherMatchingRule<T>(quote:()=>T):T{
+  try{return quote();}catch(error){if(error instanceof AdvisorGatherMatchingError)throw new RuleError(error.message);throw error;}
+}
+function quoteGatherMatching(g:Game,move:MovementOrder){
+  if(move.planetologist?.mode!=='gather')return [];
+  return gatherMatchingRule(()=>quoteAdvisorGatherMatching(g,{owner:move.player,move:getPlayer(g,move.player).moved,
+    destination:move.to,sector:move.sector,advisors:move.advisors,group:Object.fromEntries(move.group)}));
+}
+function nextAdvisorGatherMatching(g:Game){
+  const parent=g.pendingAdvisorGatherMatching!,source=parent.receipts[parent.index];
+  g.response={kind:'advisorFlip',owner:source.owner,location:source.destination,advisors:source.advisors,
+    amount:Object.values(source.group).reduce((n,count)=>n+count,0),passed:[],advisorGatherMatchingSource:source,
+    advisorGatherMatchingPosition:{current:parent.index+1,total:parent.receipts.length}};
+}
+function openAdvisorGatherMatching(g:Game,order:MovementOrder,quotes:Omit<AdvisorMatchingSource,'event'>[]){
+  requireRule(!g.pendingAdvisorGatherMatching&&!g.response&&!g.decision&&quotes.length>0,
+    'Finish the original gathered matching before another movement.');
+  const receipts=quotes.map(quote=>({event:crypto.randomUUID(),...quote}));
+  g.pendingAdvisorGatherMatching={order,receipts,signature:JSON.stringify([order,receipts]),index:0,approved:[]};
+  nextAdvisorGatherMatching(g);
+}
+function currentAdvisorGatherMatching(g:Game,response:ResponseWindow){
+  const parent=g.pendingAdvisorGatherMatching,source=response.advisorGatherMatchingSource;
+  requireRule(parent&&source&&Number.isSafeInteger(parent.index)&&parent.index>=0&&parent.index<parent.receipts.length&&
+    parent.approved.length===parent.index&&parent.approved.every((event,index)=>event===parent.receipts[index].event)&&
+    parent.signature===JSON.stringify([parent.order,parent.receipts])&&parent.order.planetologist?.mode==='gather'&&
+    JSON.stringify(parent.receipts[parent.index])===JSON.stringify(source)&&response.kind==='advisorFlip'&&
+    response.owner===source.owner&&response.location===source.destination&&response.advisors===source.advisors&&
+    response.amount===Object.values(source.group).reduce((n,count)=>n+count,0)&&
+    response.advisorGatherMatchingPosition?.current===parent.index+1&&
+    response.advisorGatherMatchingPosition?.total===parent.receipts.length&&
+    !response.advisorResume&&!response.advisorMatchingSource&&!response.advisorAmbassadorMatchingSource&&
+    !response.advisorTransportMatchingSource&&!response.spiritualAdvisorSource&&!response.automaticAdvisorFlip&&
+    !response.advisorPreparationSource&&!response.advisorGatherMove,
+    'The gathered matching response lost its original two-origin declaration or approvals.');
+  matchingAdvisorRule(()=>validateAdvisorMatching(g,source));
+  validateMovementOrder(g,getPlayer(g,source.owner),parent.order);
+  const quotes=quoteGatherMatching(g,parent.order);
+  requireRule(JSON.stringify(quotes)===JSON.stringify(parent.receipts.map(receipt=>Object.fromEntries(
+    Object.entries(receipt).filter(([key])=>key!=='event')))),
+    'The gathered matching responses no longer describe their original selected groups.');
+  return parent;
+}
+function advisorGatherMatchingIntegrity(g:Game){
+  if(!g.pendingAdvisorGatherMatching)return;
+  const continuation=g.pendingTreacheryDiscard?.continuation;
+  const controls=[g,g.pendingExchange,g.pendingNullentropy?.resume,g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume,g.summonedWorm?.resume,g.pendingKull?.resume,
+    continuation&&'resume'in continuation?continuation.resume:null];
+  const responses=controls.flatMap(c=>c?.response?[c.response]:[]);
+  for(const {pending}of savedKaramaContexts(g))if(pending.use.kind==='cancel')responses.push(pending.use.response);
+  const matching=responses.filter(r=>r.advisorGatherMatchingSource);
+  requireRule(matching.length>0,'Restore the original gathered matching response.');
+  for(const response of matching)currentAdvisorGatherMatching(g,response);
+}
+function finishAdvisorGatherMatching(g:Game,response:ResponseWindow,canceled:boolean){
+  const parent=currentAdvisorGatherMatching(g,response),source=parent.receipts[parent.index];
+  if(canceled){
+    delete g.pendingAdvisorGatherMatching;
+    const key=advisorMatchingKey(source);if(!(g.advisorMatchingDenied??=[]).includes(key))g.advisorMatchingDenied.push(key);
+    log(g,`${getPlayer(g,source.owner).name}'s gathered matching from ${territory(source.origin).name} in ${territory(source.destination).name} was prevented. Neither group moved or changed type, and the movement remains unused. Choose a legal replacement without this prevented packet.`,
+      {faction:'beneGesserit',name:'Gathered group matching prevented'});
+  }else{
+    parent.approved.push(source.event);parent.index++;
+    if(parent.index<parent.receipts.length){nextAdvisorGatherMatching(g);return;}
+    delete g.pendingAdvisorGatherMatching;
+    validateMovementOrder(g,getPlayer(g,source.owner),parent.order);
+    offerChoamMovement(g,parent.order);
+  }
+}
 function matchingAdvisorRule<T>(quote: () => T): T {
   try { return quote(); }
   catch(error) { if(error instanceof AdvisorMatchingError) throw new RuleError(error.message); throw error; }
@@ -23305,7 +23390,7 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
 function victory(g: Game, quote?: VictoryQuote) {
   requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorTransport &&
     !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle && !g.pendingAutomaticAdvisorHomeworldTransport &&
-    !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm && !g.pendingAutomaticAdvisorRelocation && !g.pendingAdvisorMatching && !g.pendingAdvisorAmbassadorMatching && !g.pendingAdvisorTransportMatching && !g.pendingSpiritualAdvisor,
+    !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm && !g.pendingAutomaticAdvisorRelocation && !g.pendingAdvisorMatching && !g.pendingAdvisorAmbassadorMatching && !g.pendingAdvisorTransportMatching && !g.pendingAdvisorGatherMatching && !g.pendingSpiritualAdvisor,
     'Resolve mandatory advisor conversions before checking victory.');
   quote ??= currentVictoryQuote(g);
   applyAdvisorReleases(g, quote.released);
@@ -29097,7 +29182,8 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       );
   } else if (response.kind === 'advisorFlip') {
     const bg = getPlayer(g, response.owner);
-    if (response.advisorTransportMatchingSource) finishAdvisorTransportMatching(g,response,canceled);
+    if (response.advisorGatherMatchingSource) finishAdvisorGatherMatching(g,response,canceled);
+    else if (response.advisorTransportMatchingSource) finishAdvisorTransportMatching(g,response,canceled);
     else if (response.advisorAmbassadorMatchingSource) finishAdvisorAmbassadorMatching(g,response,canceled);
     else if (response.spiritualAdvisorSource) finishSpiritualAdvisorResponse(g,response,canceled);
     else if (response.advisorMatchingSource) finishAdvisorMatching(g,response,canceled);
@@ -32784,6 +32870,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   treacheryDiscardIntegrity(state);
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
+  advisorGatherMatchingIntegrity(state);
   advisorTransportMatchingIntegrity(state);
   advisorAmbassadorMatchingIntegrity(state);
   spiritualAdvisorIntegrity(state);
@@ -33197,6 +33284,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   treacheryDiscardIntegrity(state);
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
+  advisorGatherMatchingIntegrity(state);
   advisorTransportMatchingIntegrity(state);
   advisorAmbassadorMatchingIntegrity(state);
   spiritualAdvisorIntegrity(state);
@@ -37286,6 +37374,7 @@ export function viewGame(state: Game, id: string) {
   treacheryDiscardIntegrity(state);
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
+  advisorGatherMatchingIntegrity(state);
   advisorTransportMatchingIntegrity(state);
   advisorAmbassadorMatchingIntegrity(state);
   spiritualAdvisorIntegrity(state);

@@ -2503,6 +2503,14 @@ export function GameTable({
                   {' '}Any already-played movement or declaration card keeps its original use. Choose a legal replacement if matching is prevented.
                 </p>
               )}
+              {g.response.kind==='advisorFlip'&&g.response.advisorGatherMatchingSource&&(
+                <p className="notice">
+                  Gathered group {g.response.advisorGatherMatchingPosition?.current} of {g.response.advisorGatherMatchingPosition?.total}:
+                  {' '}the incoming forces from {territory(g.response.advisorGatherMatchingSource.origin).name} must match your residents.
+                  {' '}Neither origin has moved, changed type or collected spice. Every required group response must allow the same original gather before it moves once.
+                  {' '}Preventing one group leaves both origins and the movement unused, while this prevented packet here remains unavailable. Choose a legal replacement.
+                </p>
+              )}
               {g.response.kind==='advisorFlip'&&g.response.advisorTransportMatchingSource&&(
                 <p className="notice">
                   The incoming transport group must match your residents before payment or force transfer.

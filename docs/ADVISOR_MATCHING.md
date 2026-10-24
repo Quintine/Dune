@@ -1,5 +1,73 @@
 # Matching incoming Bene Gesserit groups
 
+## Planetologist gathering into residents — 24 October 2026
+
+**Prototyped / Partial.** Supplied physical28
+requires matching resident BG forces, while physical17 counters one physical
+group's conversion. Partition an actual Planetologist gather by its two board
+origins and reuse normal matching quotes for each origin whose stance differs
+from the residents. One changing origin gets one response; two get two. Normal
+public ten-field movement receipts and denial keys stay unchanged.
+
+Neither source supplies a worked simultaneous two-origin ordering. Under the
+standing recommended-policy authority, order changing origins by their stable
+territory IDs and keep the whole gather physically atomic. A private parent
+binds the original complete movement, exact receipt queue, current index and
+approved events. Public progress identifies the current group without copying
+the original private order. Allowing the first counter moves or flips nothing;
+all required allowances precede the original CHOAM/movement/collection suffix.
+Consume the batch before invoking that suffix once. Revalidate the actual
+living Planetologist, both packets, routes and original destination throughout.
+
+Preventing any group stops the whole declared gather before force, stance,
+collection or movement use changes. Record only that origin packet's existing
+normal matching denial for this destination and movement opportunity. Gathering
+cannot bypass a prior normal denial, nor can an ordinary move bypass a gather
+denial. A new response UUID, changed sector or reordered selection does not
+create another permission. A legal replacement without the prevented packet
+remains available. Do not import the separate enemy-only provisional flip stamp
+or a turn-wide ban. Human drafts and minimal bots reuse the partition quote.
+
+Basic, same-type arrivals and the existing no-resident enemy-only/empty policy
+retain their original behavior. Existing recorded `planetologistGather`
+responses keep their one-shot protocol; they are not converted into new queues.
+This resident-matching addition does not settle wider empty-arrival sequencing
+or certify complete Leader Skills/mode/module combinations.
+
+[Native fixture](../tests/fixture-advisor-gather-matching.ts) earns original
+public Advanced BG/Atreides/Emperor base33 and all14 Skills. The actual original
+offer/assignment grants Planetologist; actual advisor setup retains Arrakeen
+beside native Atreides10. Paid Basin2 and Oh Gap1 sources are both distance1
+away without advisor ornithopters. A real Emperor bribe1 funds the six-spice
+shipments; mixed sources additionally earn actual Emperor entry and Intrusion.
+No played force, wallet, hand, phase, assignment, stance or response is installed.
+The mixed source takes78 public actions; the double source takes73.
+
+[Connected cases](../tests/advisor-gather-matching-engine.test.ts) and the frozen
+batch pass **15 files274/274**, types/lint/build, seven native declaration/group-
+response/replacement/GameTable SSR journeys and eight existing-profile paths
+with sixteen accepted response/replacement actions. Both changing groups have
+separate windows. First allowance changes only the private approval cursor;
+both forces and original Karama remain. Second prevention leaves the whole
+movement unused, including through a bounded JSON boundary. Same-packet retries
+are blocked in both normal/gather directions; a genuine larger Basin packet
+and ordinary/same-type replacement move once. The actual Skill inventory stays
+intact. Tampered original signatures and unearned approval indices fail before
+cancellation cost. This is not a saved-game recovery certificate.
+
+Focused mixed allowance and second-group prevention pass. Fixture type feedback
+makes the owned offer and before-action stage snapshot explicit; final runtime,
+union, types/lint/build pass. Bounded review finds no concrete queue/callback
+blocker. Private proof and HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-gather-matching/`.
+`frozen-integrated-2/report.json` binds tree
+`a80519bde0b171bf7d5b2325e58b2d6cab6d9173566e954811e2bcf6e47d0374`,
+2770 files on base `b2a20226d7caa34a5c020052c1eb7f0ebafdd385`.
+Final prose/reference overlays are separately reviewed. SSR is not callback/
+hydration/browser acceptance. Wider empty sequencing, modules and complete-mode/
+final assurance remain open. No AI refinement or saved-room/D1/server/reset/
+restart/deployment operation. This is the user's requested stopping push.
+
 ## Guild and Junction transport — 24 October 2026
 
 **Prototyped / Partial.** Compose supplied revised

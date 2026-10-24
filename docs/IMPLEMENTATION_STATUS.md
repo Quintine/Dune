@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 24 October 2026 — One matching counter per changing resident-gather origin
+
+Supplied physical28's resident matching and physical17's one-group counter now
+compose the two-origin Planetologist move. Partition selected physical sources
+and reuse normal quotes/receipt/denial formats. A changing origin gets one
+counter, so two changing groups require two. Stable origin order and all-or-
+nothing commitment are explicit provisional composition. A private parent binds
+the original full movement, exact receipt queue, current index and approved
+events. Partial allowance moves/flips/collects nothing. Prevention stops both
+groups while recording only the prevented origin packet's normal scoped denial;
+normal and gather declarations cannot bypass one another. Legal replacements
+retain the movement. Consume the batch before one original CHOAM/movement suffix.
+Basic, existing enemy-only/empty policy and recorded one-shot responses remain.
+
+Disjoint helper/native-fixture lanes, bounded priority/source/integration review
+and root integration pass **15 files274/274**, types/lint/build and seven native
+declaration/group-response/replacement/GameTable SSR journeys, plus eight
+existing-profile paths with sixteen accepted actions. Genuine78/73-action mixed/
+double public Advanced base33/all14 sources earn original Planetologist offers
+and assignment, original Karama, resident advisor, paid Basin2/Oh Gap1, actual
+Emperor bribe1 and real mixed Intrusion. Both origins are distance1 without
+advisor ornithopters. No played force, wallet, hand, phase, assignment, stance
+or response is installed. First approval is physically inert; second prevention
+keeps both sources and the unused movement. Larger-packet and normal/same-type
+replacements complete once. Original Skill inventory and rejected-action state
+remain intact. Tampered approval/signature evidence fails before cost.
+
+Focused mixed allowance/second prevention and final union pass. Fixture type
+feedback makes offer narrowing and the before-action stage snapshot explicit;
+final runtime/types/lint/build pass. Bounded review finds no concrete blocker.
+Private proof:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-gather-matching/`.
+`frozen-integrated-2/report.json` binds tree
+`a80519bde0b171bf7d5b2325e58b2d6cab6d9173566e954811e2bcf6e47d0374`,
+2770 files on base `b2a20226d7caa34a5c020052c1eb7f0ebafdd385`.
+Final prose/reference overlays are separately reviewed. The bounded partial-
+approval JSON boundary is not recovery certification; SSR is not callback/
+hydration/browser acceptance. Wider empty sequencing, modules, complete modes
+and final assurance remain open. No AI refinement or saved-room/D1/server/reset/
+restart/deployment operation. The user requested stopping after this next push;
+the full goal scope is unchanged.
+[Source, atomic queue and evidence](ADVISOR_MATCHING.md#planetologist-gathering-into-residents--24-october-2026).
+
 ## 24 October 2026 — Fresh Guild, Junction and Secret Ally incoming BG matching
 
 Incoming opposite-type BG packets now have a distinct precommit counter through
