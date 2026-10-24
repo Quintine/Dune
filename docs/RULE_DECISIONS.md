@@ -1,5 +1,20 @@
 # Rule decision index
 
+## Advisor conversion after special relocation — 24 October 2026
+
+Compose supplied Advanced physical17/28 E with actual Fremen Ambassador and
+Discovery free-entry transfers. Provisionally complete movement and original
+Sandmaster collection, then resolve the conversion counter before original
+arrival reactions. Preserve consumed tokens, independent allowances and exact
+Discovery round/child. Discovery retains non-advisor-only admission; only
+Ambassador movement can carry advisors into an empty destination. Preserve
+that arrival's lock through one mandatory conversion, without an optional retry
+or an imported old alone occurrence. Public six-field location evidence omits
+No-Fields/private orders/cursors. Retain original phase permissions, bind live
+and parked responses, then consume the private parent before original arrival
+resumes once. Continuously-alone cancellation duration remains provisional.
+[Connected source and boundaries](ADVISOR_AUTOMATIC_FLIPS.md#ambassador-and-discovery-relocation--24-october-2026).
+
 ## Advisor conversion during storm traversal — 24 October 2026
 
 Compose supplied Advanced physical17/28 E with actual current-sector storm

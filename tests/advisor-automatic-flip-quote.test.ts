@@ -14,6 +14,7 @@ import {
   type AutomaticAdvisorHomeworldTransport,
   type AutomaticAdvisorFaceDance,
   type AutomaticAdvisorStorm,
+  type AutomaticAdvisorRelocation,
 } from '../game/advisor-automatic-flip';
 import { MOBILE_LOCATION, MOBILE_STRONGHOLD } from '../game/board';
 
@@ -24,6 +25,7 @@ type BattleSource = Extract<AutomaticAdvisorFlipSource, { producer: 'battleLosse
 type HomeworldSource = Extract<AutomaticAdvisorFlipSource, { producer: 'homeworldTransport' }>;
 type FaceDanceSource = Extract<AutomaticAdvisorFlipSource, { producer: 'faceDance' }>;
 type StormSource = Extract<AutomaticAdvisorFlipSource, { producer: 'storm' }>;
+type RelocationSource = Extract<AutomaticAdvisorFlipSource, { producer: 'specialRelocation' }>;
 
 function context(): AutomaticAdvisorFlipContext {
   return {
@@ -74,7 +76,7 @@ void test('quotes exclude held, occupied and physically empty advisor groups whi
   ctx.players[1].forces = { ...ctx.players[1].forces, 'arrakeen:10': 1 };
   assert.deepEqual(quoteAutomaticAdvisorFlips(ctx), []);
   for (const patch of [
-    { advanced: false }, { status: 'lobby' }, { status: 'setup', phase: 0 }, { phase: 1 }, { phase: 4 }, { phase: 7 },
+    { advanced: false }, { status: 'lobby' }, { status: 'setup', phase: 0 }, { phase: 2 }, { phase: 4 }, { phase: 7 },
   ]) {
     assert.deepEqual(quoteAutomaticAdvisorFlips({ ...context(), ...patch }), []);
   }
@@ -1170,5 +1172,190 @@ void test('storm stays phase-zero-only while every existing producer keeps its o
     ctx.phase = phase;
     source.phase = phase;
     assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+  }
+});
+
+function relocation(kind: AutomaticAdvisorRelocation['kind'] = 'ambassador', phase = kind === 'discovery' ? 0 : 5) {
+  const { ctx, source: ground } = held();
+  ctx.phase = phase;
+  ctx.players[0].forces = { 'imperial_basin:9': 2, 'imperial_basin:10': 1, 'arrakeen:10': 1 };
+  ctx.players[1].faction = kind === 'discovery' ? 'fremen' : 'atreides';
+  ctx.players[1].forces = { 'carthag:11': 1 };
+  const receipt: AutomaticAdvisorRelocation = {
+    event: 'completed-public-special-relocation', kind, player: 'a',
+    origin: 'imperial_basin', destination: 'carthag', sector: 11,
+  };
+  const source: RelocationSource = {
+    event: 'automatic-after-original-special-relocation', owner: ground.owner,
+    territory: ground.territory, turn: ground.turn, phase,
+    forces: ground.forces, producer: 'specialRelocation', relocation: receipt,
+  };
+  ctx.players[0].advisors = {
+    ...ctx.players[0].advisors,
+    imperial_basin: { lockedTurn: 4, aloneFlipHold: source.event },
+  };
+  return { ctx, source };
+}
+
+void test('Ambassador relocations retain exact six-field public receipts in all supported source phases and allow a BG arrival group', () => {
+  for (const phase of [1, 3, 5, 8]) {
+    const original = relocation('ambassador', phase);
+    const before = structuredClone(original);
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
+    assert.deepEqual(original, before);
+    assert.deepEqual(Object.keys(original.source).sort(), ['event', 'forces', 'owner', 'phase', 'producer', 'relocation', 'territory', 'turn']);
+    assert.deepEqual(Object.keys(original.source.relocation).sort(), ['destination', 'event', 'kind', 'origin', 'player', 'sector']);
+  }
+  const arrival = relocation();
+  arrival.source.relocation.player = 'b';
+  arrival.source.relocation.destination = 'hagga_basin';
+  arrival.source.relocation.sector = 12;
+  arrival.source.territory = 'hagga_basin';
+  arrival.source.forces = { 'hagga_basin:12': 2 };
+  arrival.ctx.players[0].forces = { 'hagga_basin:12': 2 };
+  arrival.ctx.players[0].advisors = { hagga_basin: { aloneFlipHold: arrival.source.event } };
+  arrival.ctx.players[1].forces = {};
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(arrival.ctx, arrival.source));
+});
+
+void test('Discovery relocation uses actual revealed interiors and the room board admits a placed HMS sector zero', () => {
+  const discovery = relocation('discovery');
+  discovery.ctx.discoveries = {
+    tokens: [{ face: 'cistern', status: 'placed', territory: 'hagga_basin', sector: 12, revealedTurn: 1 }],
+  };
+  discovery.source.relocation.destination = 'cistern';
+  discovery.source.relocation.sector = 0;
+  discovery.ctx.players[1].forces = { 'cistern:0': 1 };
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(discovery.ctx, discovery.source));
+  discovery.ctx.discoveries.tokens[0].revealedTurn = null;
+  assert.throws(() => validateAutomaticAdvisorFlip(discovery.ctx, discovery.source), AutomaticAdvisorFlipError);
+  discovery.ctx.discoveries.tokens[0].revealedTurn = 1;
+  discovery.source.relocation.origin = 'cistern';
+  discovery.source.relocation.destination = 'carthag';
+  discovery.source.relocation.sector = 11;
+  discovery.source.territory = 'cistern';
+  discovery.source.forces = { 'cistern:0': 2 };
+  discovery.ctx.players[0].forces = { 'cistern:0': 2 };
+  discovery.ctx.players[0].advisors = { cistern: { aloneFlipHold: discovery.source.event } };
+  discovery.ctx.players[1].forces = { 'carthag:11': 1 };
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(discovery.ctx, discovery.source));
+  const mobile = relocation();
+  mobile.ctx.players[1].faction = 'ixians';
+  mobile.ctx.mobileStronghold = { location: 'imperial_basin:9' };
+  mobile.source.relocation.destination = MOBILE_STRONGHOLD;
+  mobile.source.relocation.sector = 0;
+  mobile.ctx.players[1].forces = { [MOBILE_LOCATION]: 1 };
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(mobile.ctx, mobile.source));
+  mobile.ctx.mobileStronghold.location = null;
+  assert.throws(() => validateAutomaticAdvisorFlip(mobile.ctx, mobile.source), AutomaticAdvisorFlipError);
+});
+
+void test('a relocated concealed No-Field supplies effective destination presence without exposing its denomination or identity', () => {
+  const { ctx, source } = relocation();
+  source.relocation.player = 'r';
+  ctx.players[2].forces = {};
+  ctx.players[2].noField = { deployed: { location: { territory: 'carthag', sector: 11 } } };
+  for (const field of ['tokens', 'lastUsed', 'lastShipped', 'value']) {
+    Object.defineProperty(ctx.players[2].noField, field, {
+      get() { throw new Error(`Special relocation read hidden No-Field ${field}`); },
+    });
+  }
+  for (const field of ['tokenId', 'value']) {
+    Object.defineProperty(ctx.players[2].noField.deployed, field, {
+      get() { throw new Error(`Special relocation read hidden deployed No-Field ${field}`); },
+    });
+  }
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+  ctx.players[2].noField.deployed = null;
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+});
+
+void test('special relocation rejects changed actor, current board locations, source binding, exact held group and private payloads', () => {
+  const changes: ((ctx: AutomaticAdvisorFlipContext, source: RelocationSource) => void)[] = [
+    (_ctx, source) => { source.relocation.event = ''; },
+    (_ctx, source) => { source.relocation.player = 'missing'; },
+    (ctx) => { ctx.players = [...ctx.players, { ...ctx.players[1] }]; },
+    (_ctx, source) => { source.relocation.origin = 'missing'; },
+    (_ctx, source) => { source.relocation.origin = 'homeworld:guild'; },
+    (_ctx, source) => { source.relocation.destination = 'homeworld:atreides'; },
+    (_ctx, source) => { source.relocation.destination = 'missing'; },
+    (_ctx, source) => { source.relocation.destination = 'carthag:11'; },
+    (_ctx, source) => { source.relocation.sector = -1; },
+    (_ctx, source) => { source.relocation.sector = 11.5; },
+    (_ctx, source) => { source.relocation.sector = 10; },
+    (_ctx, source) => { source.relocation.origin = 'hagga_basin'; },
+    (ctx) => { ctx.players[1].forces = {}; },
+    (ctx) => { ctx.players[1].forces = { 'arrakeen:10': 1 }; },
+    (ctx) => { ctx.players[0].forces = {}; },
+    (_ctx, source) => { source.forces = { 'imperial_basin:9': 3 }; },
+  ];
+  for (const change of changes) {
+    const original = relocation();
+    change(original.ctx, original.source);
+    const before = structuredClone(original);
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+    assert.deepEqual(original, before);
+  }
+  const { ctx, source } = relocation();
+  for (const field of ['group', 'noField', 'tokenId', 'order', 'skills', 'signature', 'amount']) {
+    for (const malformed of [
+      { ...source, [field]: 'private-original-state' },
+      { ...source, relocation: { ...source.relocation, [field]: 'private-original-state' } },
+    ]) {
+      assert.throws(() => validateAutomaticAdvisorFlip(ctx, malformed as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+    }
+  }
+  for (const malformed of [
+    { ...source, relocation: null },
+    { ...source, relocation: { ...source.relocation, kind: 'worm' } },
+    { ...source, relocation: { ...source.relocation, sector: '11' } },
+  ]) {
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, malformed as unknown as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('relocation kind controls its own phases without widening any existing producer receipt or phase', () => {
+  for (const original of [held(), transported(), gamont(false), battleResult(), homeworldTransport(), faceDance(), storm()]) {
+    const before = JSON.stringify(original.source);
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
+    assert.equal(JSON.stringify(original.source), before);
+    for (const phase of [1, 3]) {
+      original.ctx.phase = phase;
+      original.source.phase = phase;
+      assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+    }
+  }
+  for (const phase of [0, 2, 4, 6, 7]) {
+    const original = relocation('ambassador', phase);
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+  }
+  for (const phase of [1, 3, 5, 6, 8]) {
+    const original = relocation('discovery', phase);
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+  }
+  for (const phase of [1, 3]) {
+    const quiet = context();
+    quiet.phase = phase;
+    assert.equal(quoteAutomaticAdvisorFlips(quiet).some((entry) => entry.territory === 'imperial_basin'), true);
+    quiet.status = 'setup';
+    assert.deepEqual(quoteAutomaticAdvisorFlips(quiet), []);
+  }
+});
+
+void test('completed relocation validation never reads private parent signatures, hands, skills or original allowances', () => {
+  for (const original of [relocation(), relocation('discovery')]) {
+    for (const player of original.ctx.players) {
+      for (const field of ['hand', 'leaders', 'spice', 'traitors', 'faceDancers', 'reserves', 'moved', 'shipped', 'skills']) {
+        Object.defineProperty(player, field, {
+          get() { throw new Error(`Special relocation read ${player.id} private or original ${field}`); },
+        });
+      }
+    }
+    for (const field of ['pendingAmbassador', 'pendingDiscoveryRelocation', 'pendingAutomaticAdvisorRelocation', 'movementOrder', 'leaderSkills']) {
+      Object.defineProperty(original.ctx, field, {
+        get() { throw new Error(`Special relocation read private parent ${field}`); },
+      });
+    }
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
   }
 });

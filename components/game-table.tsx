@@ -2485,7 +2485,9 @@ export function GameTable({
                             ? 'Face Dance is complete: the winning army has returned, the replacement is placed and the Face Dancer is revealed. These surviving advisors are now alone and must become fighters before aftermath continues.'
                             : g.response.automaticAdvisorFlip.producer === 'storm'
                               ? `Storm casualties in sector ${g.response.automaticAdvisorFlip.storm.sector} are complete. These surviving advisors are now alone and must become fighters before the remaining storm traversal.`
-                              : 'The ground movement is complete. These advisors are now alone and must become fighters.'}
+                              : g.response.automaticAdvisorFlip.producer === 'specialRelocation'
+                                ? `${g.response.automaticAdvisorFlip.relocation.kind === 'ambassador' ? 'Fremen Ambassador relocation' : 'The free Discovery force transfer'} is complete. These advisors are now alone and must become fighters before the original arrival continues.`
+                                : 'The ground movement is complete. These advisors are now alone and must become fighters.'}
                   {' '}Karama prevents only this conversion; the completed action and its costs stay committed.
                   {' '}Provisional rule: a prevented group stays advisors while continuously alone,
                   until another faction returns or the group leaves.

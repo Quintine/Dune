@@ -1,5 +1,54 @@
 # Dune implementation status
 
+## 24 October 2026 — Advisor conversion after independent relocation
+
+Supplied physical17/28 E's counter now composes Fremen Ambassador and Discovery
+free-entry transfers. Complete the move and original Sandmaster collection
+before conversion, then resume original arrival reactions once. This selected
+priority is explicit provisional composition under the 14 October authority.
+Preserve the consumed Ambassador token, independent allowances and Discovery's
+exact pre-Storm arrival frame/child. Discovery remains non-advisor-only; it does
+not gain an empty-advisor free-entry path.
+
+An actual empty Ambassador advisor arrival keeps its stance and lock until one
+mandatory conversion. The original quote still sets no optional fighter request
+there, preventing an immediate optional retry after Karama. Public six-field
+location facts omit private move orders, No-Fields and skill identities. Root
+retains the original private first-flip or Discovery arrival cursor, separately
+binds live/parked responses and excludes simultaneous ordinary arrival children.
+Consume the automatic parent before original optional flip/Intrusion/Terror or
+Discovery completion. Original movement, collection and token use never replay.
+The existing continuously-alone cancellation duration remains provisional.
+
+Disjoint helper/native-fixture lanes, bounded timing review and root integration
+pass **19 files270/270**, types/lint/build, five native transfer/response/GameTable
+SSR journeys, two controlled empty-arrival cases and eight existing-profile
+paths. Original public Advanced base33 sources take44 Ambassador and49 Discovery
+actions. Actual Ecaz packet/setup, paid Fremen placement and Atreides shipment
+trigger six counters' Basin10→Tuek's5 relocation. Actual Discovery module/setup,
+native Cistern placement in Gara Kulon8, shipment2/Intrusion, Collection reveal
+and next-turn entry move the last outsider into Cistern0. Both outcomes retain
+physical transfer/allowances. Original Discovery decline leaves its mixed parent
+and Karama intact. No played force, phase, hand, wallet, alliance, stance or
+receipt is installed in those native sources. Controlled BG-beneficiary cases
+explicitly stage alliance/beneficiary on borrowed original cards/pieces/event;
+they do not certify an earned native alliance.
+
+Feedback repairs an optional-absence smoke assertion and the new empty-arrival
+presence helper. Both focused cases pass. Final contract review makes the added
+Karama selector conditional, preserving prior serialized counter shapes; its
+focused regression and final270/270/quick/build/runtime pass. Private proof:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-relocation-flips/`.
+`frozen-integrated-4/report.json` binds tree
+`e9f37b0270ae5779fe9620b95058a409941804917d55e3988a1f0b8751e4a120`,
+2747 files on base `d66b594770b10af796fddf103583f7ad9c2b162b`.
+Prose/reference overlays are separately reviewed/hashed. Standard controls render;
+no new callback/browser/mobile/deployed or complete-mode claim. Broader
+No-Field/Sandmaster/Homeworld/Nexus combinations, native allied BG arrival,
+matching-group counters, final assurance and full AI remain due. No saved-room/
+D1, reset, restart or deployment operation.
+[Connected source and limits](ADVISOR_AUTOMATIC_FLIPS.md#ambassador-and-discovery-relocation--24-october-2026).
+
 ## 24 October 2026 — Advisor conversion between storm sectors
 
 Supplied physical17/28 E's counter now follows actual current-sector losses

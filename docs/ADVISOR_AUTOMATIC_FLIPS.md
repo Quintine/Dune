@@ -1,5 +1,88 @@
 # Mandatory advisor conversions
 
+## Ambassador and Discovery relocation — 24 October 2026
+
+**Prototyped / Partial.** Compose the supplied
+Advanced physical17/28 E counter with the original independent relocation
+producers. Fremen Ambassador movement can remove the last outsider beside BG
+advisors, or carry advisors into an empty territory. Discovery's next-turn free
+entry can remove the last outsider from a parent territory. Its original
+non-advisor-only source restriction remains; it grants advisors no free entry.
+
+Under the 14 October recommended policy, complete the physical move and any
+original Sandmaster collection first, then resolve mandatory conversion before
+the original arrival reactions. This selected composition is provisional,
+consistent with the existing committed ground/transport counter. Preserve the
+Ambassador's consumed token, independent movement and original entrant; preserve
+the Discovery round's original one-time entry and exact typed transfer.
+
+Keep an actual empty Ambassador advisor arrival in advisor stance until its
+mandatory counter resolves. Carry the source's accompaniment lock, without
+carrying its previous continuously-alone occurrence to another territory. The
+original quote still sets no optional fighter request for that empty arrival;
+preventing the mandatory flip cannot immediately retry it as an optional flip.
+Occupied destinations retain their original matching-stance and optional-flip
+rules. Existing Basic behavior is unchanged.
+
+The six-field public receipt contains only a fresh event, Ambassador/Discovery
+kind, actor, origin, destination and sector. Do not copy original move orders,
+No-Field identities or denominations, Sandmaster identities, private signatures
+or the original Discovery child. Root binds those original cursors separately
+in a private parent. The original Ambassador phase permission remains
+authoritative, including actual Homeworld Revival/victory arrivals; Discovery
+stays in its phase0 pre-Storm round.
+
+During the counter, the Ambassador retains its original first flip stage. A
+nonmutating nested projection validates completed movement without consuming
+that stage. Discovery retains its original arrival frame; its automatic BG
+response may concern the parent territory, not the destination. Current and
+parked Karama responses remain bound to the original queued occurrence. Exclude
+simultaneous ordinary arrival children. Consume only the automatic parent
+before one original optional flip/Intrusion/Terror or Discovery completion;
+never repeat physical movement, collection, token consumption or round advance.
+Cancellation retains the existing provisional continuously-alone duration.
+
+See the original [Ambassador contract](FREMEN_AMBASSADOR_RULES.md),
+[Discovery prototype](DISCOVERY_PROTOTYPE.md),
+[native relocation fixture](../tests/fixture-advisor-relocation-flip.ts) and
+[connected cases](../tests/advisor-relocation-flip-engine.test.ts).
+The genuine Ambassador source takes44 public Advanced BG/Ecaz/Atreides actions
+with original base33. Actual original packet draws earn a Fremen token, native
+setup places Ecaz6 beside BG1 in Basin10, and paid token placement in Carthag
+precedes Atreides' actual shipment/trigger. Relocating all six to empty Tuek's5
+leaves the original BG advisor. The genuine Discovery source takes49 public
+Advanced BG/Atreides/Emperor actions with actual module selection and base33.
+The original Hagga Discovery Card places its native Cistern token in Gara
+Kulon8. Actual BG setup, Atreides' paid shipment2, Intrusion, Collection
+inspection/reveal and next-turn free entry earn the transferred last counter.
+No played force, wallet, hand, phase, stance, alliance or receipt is installed
+in either native source.
+
+Frozen **19 files270/270**, types/lint/build, five native transfer/response/
+GameTable SSR journeys and eight existing-profile paths pass. Both outcomes
+retain the original physical move and allowances, then finish the original
+arrival once. Original Discovery decline preserves the mixed parent group and
+unused Karama. Two separately labelled controlled empty-arrival cases borrow
+the native Ambassador cards/pieces/event but stage an alliance and BG
+beneficiary; they are not native alliance evidence. Both retain one mandatory
+conversion with no optional retry. Standard controls render; no new callback,
+browser/mobile/deployed or complete-mode certificate is claimed.
+
+Feedback corrects an optional-absence assertion in the smoke/tests and a missing
+presence-helper reference in the new empty-arrival integration. Both focused
+controlled cases then pass. Final review limits the new Karama selector field
+to this producer, preserving existing serialized counter shapes; its focused
+contract regression and final batch pass. This is not a recovery campaign.
+Private proof and original-action HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-relocation-flips/`.
+`frozen-integrated-4/report.json` binds tree
+`e9f37b0270ae5779fe9620b95058a409941804917d55e3988a1f0b8751e4a120`,
+2747 files on base `d66b594770b10af796fddf103583f7ad9c2b162b`.
+Checkpoint prose/reference overlays are separately reviewed and hashed after
+proof. Broader No-Field/Sandmaster/Homeworld/Nexus combinations, native allied
+BG arrival, remaining matching-group interpretation and final assurance remain
+open. No saved-room/D1, reset, restart or deployment operation was performed.
+
 ## Storm casualties before remaining traversal — 24 October 2026
 
 **Prototyped / Partial.** Compose the supplied Advanced source's physical17

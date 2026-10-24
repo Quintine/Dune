@@ -68,6 +68,15 @@ export type AutomaticAdvisorStorm = {
   sector: number;
 };
 
+export type AutomaticAdvisorRelocation = {
+  event: string;
+  kind: 'ambassador' | 'discovery';
+  player: string;
+  origin: string;
+  destination: string;
+  sector: number;
+};
+
 export type AutomaticAdvisorFlipSource = {
   event: string;
   owner: string;
@@ -83,6 +92,7 @@ export type AutomaticAdvisorFlipSource = {
   | { producer: 'battleLosses'; battle: AutomaticAdvisorBattle }
   | { producer: 'faceDance'; faceDance: AutomaticAdvisorFaceDance }
   | { producer: 'storm'; storm: AutomaticAdvisorStorm }
+  | { producer: 'specialRelocation'; relocation: AutomaticAdvisorRelocation }
 );
 
 export type AutomaticAdvisorFlipPlayer = ForcePresence & {
@@ -155,7 +165,7 @@ function otherPresence(ctx: AdvisorSettlementContext, player: AutomaticAdvisorFl
 
 function currentWindow(ctx: AutomaticAdvisorFlipContext) {
   return ctx.advanced === true && ctx.status === 'playing' &&
-    (ctx.phase === 0 || ctx.phase === 5 || ctx.phase === 6 || ctx.phase === 8) && positive(ctx.turn);
+    [0, 1, 3, 5, 6, 8].includes(ctx.phase) && positive(ctx.turn);
 }
 
 /** A supported committed producer opens a response for these current groups.
@@ -408,6 +418,27 @@ function validateStormSource(
   'Automatic advisor conversion needs its current exposed storm territory.');
 }
 
+function validateRelocationSource(
+  ctx: AutomaticAdvisorFlipContext,
+  source: Extract<AutomaticAdvisorFlipSource, { producer: 'specialRelocation' }>,
+) {
+  const receipt = source.relocation;
+  requireFlip(record(receipt) &&
+    Object.keys(receipt).sort().join(',') === 'destination,event,kind,origin,player,sector' &&
+    identifier(receipt.event) && (receipt.kind === 'ambassador' || receipt.kind === 'discovery') &&
+    identifier(receipt.player) && identifier(receipt.origin) && identifier(receipt.destination) &&
+    nonnegative(receipt.sector),
+  'Automatic advisor conversion lost its exact public special-relocation receipt.');
+  const places = gameTerritories(ctx);
+  requireFlip(places.some((place) => place.id === receipt.origin) &&
+    places.some((place) => place.id === receipt.destination && place.sectors.includes(receipt.sector)) &&
+    (source.territory === receipt.origin || source.territory === receipt.destination),
+  'Automatic advisor conversion needs the current special-relocation origin or destination.');
+  const actors = ctx.players.filter((player) => player.id === receipt.player);
+  requireFlip(actors.length === 1 && presenceAt(actors[0], receipt.destination) > 0,
+    'Automatic advisor conversion lost the original relocated actor at its destination.');
+}
+
 /** Validate the same committed producer and exact held group before either response outcome. */
 export function validateAutomaticAdvisorFlip(
   ctx: AutomaticAdvisorFlipContext,
@@ -427,11 +458,16 @@ export function validateAutomaticAdvisorFlip(
       (source.producer === 'faceDance' &&
         Object.keys(source).sort().join(',') === 'event,faceDance,forces,owner,phase,producer,territory,turn') ||
       (source.producer === 'storm' &&
-        Object.keys(source).sort().join(',') === 'event,forces,owner,phase,producer,storm,territory,turn')) &&
+        Object.keys(source).sort().join(',') === 'event,forces,owner,phase,producer,storm,territory,turn') ||
+      (source.producer === 'specialRelocation' &&
+        Object.keys(source).sort().join(',') === 'event,forces,owner,phase,producer,relocation,territory,turn')) &&
     identifier(source.event) && identifier(source.owner) && identifier(source.territory) &&
     positive(source.turn) && source.turn === ctx.turn &&
-    source.phase === (source.producer === 'storm' ? 0 : source.producer === 'gamont' ? 8 :
-      source.producer === 'battleLosses' || source.producer === 'faceDance' ? 6 : 5) &&
+    (source.producer === 'specialRelocation'
+      ? record(source.relocation) && (source.relocation.kind === 'discovery'
+        ? source.phase === 0 : source.relocation.kind === 'ambassador' && [1, 3, 5, 8].includes(source.phase))
+      : source.phase === (source.producer === 'storm' ? 0 : source.producer === 'gamont' ? 8 :
+        source.producer === 'battleLosses' || source.producer === 'faceDance' ? 6 : 5)) &&
     currentWindow(ctx) && source.phase === ctx.phase,
   'Automatic advisor conversion lost its original current-turn committed producer.');
   const owners = ctx.players.filter((player) => player.id === source.owner);
@@ -450,7 +486,8 @@ export function validateAutomaticAdvisorFlip(
   else if (source.producer === 'gamont') validateGamontSource(ctx, source);
   else if (source.producer === 'battleLosses') validateBattleSource(ctx, source);
   else if (source.producer === 'faceDance') validateFaceDanceSource(ctx, source);
-  else validateStormSource(ctx, source);
+  else if (source.producer === 'storm') validateStormSource(ctx, source);
+  else validateRelocationSource(ctx, source);
   const forces = physicalGroup(owner, source.territory);
   requireFlip(record(source.forces) && Object.keys(forces).length > 0 &&
     Object.values(forces).every(positive) && Object.values(source.forces).every(positive) &&

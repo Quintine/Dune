@@ -16,6 +16,32 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Special-relocation advisor conversion — 24 October. Prototyped / Partial.**
+Fremen Ambassador and Discovery free-entry transfers now capture surviving alone
+advisors before original arrivals. Preserve an empty Ambassador advisor arrival
+through one mandatory counter, without granting advisor access to Discovery's
+non-advisor-only free entry. The selected transfer/collection-before-conversion,
+conversion-before-arrival order is provisional. Public six-field location
+receipts omit orders, No-Fields/skills and private continuation. Original phase
+permission, flip/entry stage, tokens and physical transfers remain bound; consume
+the private parent before one original arrival resumes. Existing counter source
+shapes remain unchanged.
+[Source, native routes and limits](ADVISOR_AUTOMATIC_FLIPS.md#ambassador-and-discovery-relocation--24-october-2026).
+
+Disjoint helper/native-fixture lanes, bounded continuation review and root
+integration pass **19 files270/270**, types/lint/build, five native transfer/
+response/GameTable SSR journeys, two labelled controlled empty-arrival cases
+and eight existing-profile paths. Genuine44/49-action public Advanced base33
+sources earn native Fremen packet/placement/trigger and actual Cistern placement,
+Intrusion, Collection reveal and next-turn entry. Both conversion outcomes keep
+the move/allowances; original Discovery decline retains its group. Controlled
+alliance/beneficiary staging is not native-alliance evidence. Feedback repairs
+an optional-absence assertion and missing presence-helper reference; the focused
+serialized-source regression preserves older counters. Wider No-Field/skills/
+Homeworld/Nexus combinations, native allied BG arrival, matching-group counters
+and full modes remain open. No AI refinement, comprehensive/browser/deployed
+assurance or saved-room/D1/reset/restart/deployment operation.
+
 **Advisor conversion during storm traversal — 24 October. Prototyped / Partial.**
 Current-sector losses now capture surviving alone advisors before the original
 traversal continues. Retain them through unresolved Fremen casualty choices;
@@ -64,7 +90,7 @@ Homeworld/Nexus combinations with this counter remain open. No AI refinement,
 comprehensive/browser/deployed assurance or saved-room/D1/reset/restart/deployment
 operation.
 
-Next conversion work includes special Ambassador/Discovery relocation.
+Special Ambassador/Discovery relocation is now tracked above.
 Matching-group interpretation and complete
 Advanced/mode acceptance remain unfinished.
 

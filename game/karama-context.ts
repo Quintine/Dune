@@ -187,6 +187,8 @@ const cancellationSources = {
           homeworld: response.automaticAdvisorFlip.producer === 'homeworldTransport' ? g.pendingAutomaticAdvisorHomeworldTransport?.receipt ?? null : null,
           faceDance: response.automaticAdvisorFlip.producer === 'faceDance' ? g.pendingAutomaticAdvisorFaceDance ?? null : null,
           storm: response.automaticAdvisorFlip.producer === 'storm' ? g.pendingAutomaticAdvisorStorm?.receipt ?? null : null,
+          ...(response.automaticAdvisorFlip.producer === 'specialRelocation'
+            ? { relocation: g.pendingAutomaticAdvisorRelocation?.receipt ?? null } : {}),
           group: g.players.find(p => p.id === response.owner)?.advisors?.[response.location ?? ''] ?? null }
       : response.advisorPreparationSource
       ? { preparation: response.advisorPreparationSource, window: g.advisorPreparation ?? null }

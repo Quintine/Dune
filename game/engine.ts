@@ -12,7 +12,7 @@ import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, h
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteAtreidesFullPlan } from './atreides-full-plan';
 import { quoteTleilaxuSpecialKarama } from './tleilaxu-special-karama';
-import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport, type AutomaticAdvisorGamont, type AutomaticAdvisorBattle, type AutomaticAdvisorHomeworldTransport, type AutomaticAdvisorFaceDance, type AutomaticAdvisorStorm } from './advisor-automatic-flip';
+import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport, type AutomaticAdvisorGamont, type AutomaticAdvisorBattle, type AutomaticAdvisorHomeworldTransport, type AutomaticAdvisorFaceDance, type AutomaticAdvisorStorm, type AutomaticAdvisorRelocation } from './advisor-automatic-flip';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
@@ -1278,6 +1278,11 @@ export type Game = {
   };
   pendingAutomaticAdvisorFaceDance?: AutomaticAdvisorFaceDance;
   pendingAutomaticAdvisorStorm?: { receipt: AutomaticAdvisorStorm; ready: boolean; cursor?: string };
+  pendingAutomaticAdvisorRelocation?: {
+    receipt: AutomaticAdvisorRelocation;
+    signature: string;
+    resume: { kind: 'ambassador'; event: string } | { kind: 'discovery'; child: DiscoveryEntryArrivalChild };
+  };
   advisorPreparation?: AdvisorPreparationWindow;
   ecazOccupyPreview?: boolean;
   /** Fresh native Guild/Nexus payment-replacement profile, never inferred from a save. */
@@ -12005,6 +12010,20 @@ function discoveryEntryIntegrity(g: Game) {
   requireRule(g.discoveryEnabled && g.discoveries && g.status === 'playing' && g.phase === 0 &&
     frame.stage !== 'complete', 'Discovery entry must finish before the Storm Phase begins.');
   nexusRule(() => validateDiscoveryEntryRound({...g, discoveries:g.discoveries!},frame));
+  const automatic = g.pendingAutomaticAdvisorRelocation;
+  if (automatic?.receipt.kind === 'discovery') {
+    requireRule(frame.stage === 'arrival' && !choices.length && !children.length,
+      'The Discovery conversion must precede its original arrival interaction.');
+    validateRelocationAdvisorParent(g, automatic);
+    const responses = controls.flatMap(control => {
+      const pending = control && 'pendingKarama' in control ? control.pendingKarama as Game['pendingKarama'] : null;
+      return [control?.response, pending?.use.kind === 'cancel' ? pending.use.response : null];
+    });
+    for (const {pending} of savedKaramaContexts(g))
+      if (pending.use.kind === 'cancel') responses.push(pending.use.response);
+    validateRelocationAdvisorResponse(g, automatic, responses);
+    return;
+  }
   if (frame.stage === 'choose') {
     const owner = frame.order[frame.cursor % frame.order.length];
     requireRule(!children.length && choices.length === 1 && choices[0].player === owner &&
@@ -12070,6 +12089,8 @@ function decideDiscoveryEntry(g: Game, p: Player, action: Action) {
   log(g, `${p.name} moved ${arrival.amount} ${arrival.amount === 1 ? 'force' : 'forces'}${arrival.elite ? `, including ${arrival.elite} elite ${arrival.elite === 1 ? 'force' : 'forces'},` : ''} from ${territory(arrival.parent).name} into ${territory(arrival.destination).name} before the storm. This one-time Discovery entry spends no spice or normal movement.`);
   const child: DiscoveryEntryArrivalChild = {owner:p.id,territory:arrival.destination,sector:0,
     amount:arrival.amount,elite:arrival.elite,discoveryEntry:arrival.signature};
+  if (prepareRelocationAdvisorFlips(g, {kind:'discovery',player:p.id,origin:arrival.parent,
+    destination:arrival.destination,sector:0}, {kind:'discovery',child})) return;
   if (!intrusion(g,p,arrival.destination,{discoveryEntry:child})) completeDiscoveryEntryArrival(g,child);
 }
 function resolveDiscoveryBlow(g: Game, card: Extract<SpiceCard, {territory:string}>) {
@@ -17755,6 +17776,13 @@ function ambassadorRelocationIntegrity(g: Game) {
     'This Ambassador relocation cannot own an accompaniment decision.',
   );
   const next = entry.relocation?.next;
+  if (next === 'flip' && g.pendingAutomaticAdvisorRelocation?.receipt.kind === 'ambassador') {
+    requireRule(!relatedResponses.length && !relatedDecisions.length && !relatedTerror,
+      'Complete mandatory advisor conversion before original Ambassador arrival reactions.');
+    validateRelocationAdvisorParent(g, g.pendingAutomaticAdvisorRelocation);
+    validateRelocationAdvisorResponse(g, g.pendingAutomaticAdvisorRelocation, responses);
+    return;
+  }
   requireRule(
     next === 'intrusion' || next === 'terror' || next === 'finish',
     'The saved Ambassador arrival has an invalid continuation stage.',
@@ -18571,6 +18599,7 @@ function ambassadorRelocationMovement(g: Game, player: string) {
 function commitAmbassadorRelocation(g: Game, move: FremenAmbassadorMove) {
   const { entry, beneficiary: p } = currentFremenAmbassador(g);
   validateAmbassadorRelocationArrival(g, move);
+  const emptyAdvisorArrival = emptyRelocatedAdvisorArrival(g, p, move.origin, move.to);
   if (move.ambassadorSandmaster) {
     const { key } = move.ambassadorSandmaster;
     g.spice[key]--;
@@ -18595,7 +18624,7 @@ function commitAmbassadorRelocation(g: Game, move: FremenAmbassadorMove) {
   removeGroup(p, move.group, move.eliteGroup);
   const physical = move.total - (move.noField ? 1 : 0);
   if (physical) place(p, move.to, move.sector, physical, move.elite);
-  if (move.advisors) {
+  if (move.advisors || emptyAdvisorArrival) {
     const lockedTurn = Math.max(move.lockedTurn ?? 0, p.advisors?.[move.to]?.lockedTurn ?? 0);
     (p.advisors ??= {})[move.to] = { ...p.advisors?.[move.to], ...(lockedTurn ? { lockedTurn } : {}) };
   } else if (p.advisors) delete p.advisors[move.to];
@@ -18606,6 +18635,8 @@ function commitAmbassadorRelocation(g: Game, move: FremenAmbassadorMove) {
     `${p.name} relocated ${physical} physical forces${move.noField ? ' and a concealed No-Field' : ''} from ${territory(move.origin).name} to ${territory(move.to).name}, sector ${move.sector}, through the Fremen Ambassador. Their ordinary shipment and movement allowances are unchanged.`,
     { faction: p.faction, name: 'Fremen Ambassador relocation' },
   );
+  if (prepareRelocationAdvisorFlips(g, {kind:'ambassador',player:p.id,origin:move.origin,
+    destination:move.to,sector:move.sector}, {kind:'ambassador',event:entry.event})) return;
   continueAmbassadorRelocation(g, entry.event);
 }
 function continueAmbassadorRelocation(g: Game, event: string) {
@@ -20340,6 +20371,12 @@ function currentAutomaticAdvisorFlip(g: Game, response: ResponseWindow) {
       'The mandatory conversion has lost its original storm sector.');
     validateStormAdvisorCursor(g, parent);
   }
+  if (source.producer === 'specialRelocation') {
+    const parent = g.pendingAutomaticAdvisorRelocation;
+    requireRule(parent && JSON.stringify(source.relocation) === JSON.stringify(parent.receipt),
+      'The mandatory conversion has lost its original completed relocation.');
+    validateRelocationAdvisorParent(g, parent);
+  }
   automaticAdvisorRule(() => validateAutomaticAdvisorFlip(g, source));
   return source;
 }
@@ -20664,6 +20701,90 @@ function finishAutomaticAdvisorStorm(g: Game) {
   validateStormAdvisorCursor(g, parent);
   delete g.pendingAutomaticAdvisorStorm;
   continueStorm(g);
+}
+function emptyRelocatedAdvisorArrival(g: Game, p: Player, origin: string, destination: string) {
+  return g.advanced && isAdvisor(p, origin) &&
+    !g.players.some(other => presenceAt(other, destination) > 0);
+}
+function relocationAdvisorSignature(g: Game, kind: AutomaticAdvisorRelocation['kind']) {
+  return JSON.stringify(kind === 'ambassador' ? g.pendingAmbassador : g.discoveryEntry);
+}
+function prepareRelocationAdvisorFlips(g: Game, relocation: Omit<AutomaticAdvisorRelocation, 'event'>,
+  resume: NonNullable<Game['pendingAutomaticAdvisorRelocation']>['resume']) {
+  const groups = automaticAdvisorRule(() => quoteAutomaticAdvisorFlips(g)).filter(group =>
+    group.territory === relocation.origin || group.territory === relocation.destination);
+  if (!groups.length) return false;
+  requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorRelocation &&
+    !g.pendingAutomaticAdvisorTransport && !g.pendingAutomaticAdvisorHomeworldTransport &&
+    !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle &&
+    !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm,
+    'Finish the original advisor conversion before a special relocation.');
+  const receipt = { event: crypto.randomUUID(), ...relocation };
+  const parent = { receipt, resume, signature: relocationAdvisorSignature(g, receipt.kind) };
+  g.pendingAutomaticAdvisorRelocation = parent;
+  validateRelocationAdvisorParent(g, parent);
+  for (const group of groups) {
+    const source: AutomaticAdvisorFlipSource = { event: crypto.randomUUID(), owner: group.player,
+      territory: group.territory, turn: g.turn, phase: g.phase, forces: group.forces,
+      producer: 'specialRelocation', relocation: receipt };
+    getPlayer(g, group.player).advisors![group.territory].aloneFlipHold = source.event;
+    (g.pendingAutomaticAdvisorFlips ??= []).push(source);
+  }
+  openAutomaticAdvisorFlip(g);
+  return true;
+}
+function validateRelocationAdvisorParent(g: Game, parent: NonNullable<Game['pendingAutomaticAdvisorRelocation']>) {
+  const receipt = parent.receipt;
+  requireRule(receipt.kind === parent.resume.kind &&
+    parent.signature === relocationAdvisorSignature(g, receipt.kind),
+    'The mandatory conversion lost its exact original relocation continuation.');
+  if (parent.resume.kind === 'ambassador') {
+    const {entry,beneficiary} = currentFremenAmbassador(g, parent.resume.event, true);
+    const move = entry.relocation!.order;
+    requireRule(entry.relocation!.next === 'flip' && receipt.player === beneficiary.id &&
+      receipt.origin === move.origin && receipt.destination === move.to && receipt.sector === move.sector,
+      'Finish the pending conversion before the original Ambassador arrival.');
+    // Validate completed physical provenance without consuming the first flip stage.
+    const context = { ...g, pendingAmbassador: { ...entry,
+      relocation: { ...entry.relocation!, next: 'intrusion' as const } } };
+    try { validateAmbassadorRelocationContext(context, entry.event, 'intrusion'); }
+    catch (error) { if (error instanceof MovementCancellationError) throw new RuleError(error.message); throw error; }
+  } else {
+    const frame = g.discoveryEntry, arrival = frame?.arrival;
+    requireRule(g.phase === 0 && frame?.stage === 'arrival' && arrival &&
+      receipt.player === arrival.owner && receipt.origin === arrival.parent &&
+      receipt.destination === arrival.destination && receipt.sector === 0,
+      'Finish the pending conversion before the original Discovery arrival.');
+    const child = parent.resume.child;
+    nexusRule(() => validateDiscoveryEntryArrivalChild(frame, child));
+    const owner = getPlayer(g, arrival.owner), key = `${arrival.destination}:0`;
+    requireRule(owner.forces[key] === arrival.destinationBefore + arrival.amount &&
+      (owner.elites?.forces[key] ?? 0) === arrival.destinationEliteBefore + arrival.elite,
+      'The completed Discovery transfer lost its original ordinary or elite counters.');
+  }
+}
+function validateRelocationAdvisorResponse(g: Game, parent: NonNullable<Game['pendingAutomaticAdvisorRelocation']>,
+  responses: readonly (ResponseWindow | null | undefined)[]) {
+  const source = g.pendingAutomaticAdvisorFlips?.[0];
+  requireRule(source?.producer === 'specialRelocation' &&
+    JSON.stringify(source.relocation) === JSON.stringify(parent.receipt) &&
+    responses.some(response => response?.kind === 'advisorFlip' &&
+      JSON.stringify(response.automaticAdvisorFlip) === JSON.stringify(source)),
+    'The original relocation has lost its owned mandatory advisor response.');
+}
+function finishAutomaticAdvisorRelocation(g: Game) {
+  const parent = g.pendingAutomaticAdvisorRelocation;
+  if (!parent) return;
+  requireRule(!g.pendingAutomaticAdvisorFlips?.length,
+    'Finish all original relocation conversions before arrival.');
+  validateRelocationAdvisorParent(g, parent);
+  delete g.pendingAutomaticAdvisorRelocation;
+  if (parent.resume.kind === 'ambassador') continueAmbassadorRelocation(g, parent.resume.event);
+  else {
+    const p = getPlayer(g, parent.receipt.player), child = parent.resume.child;
+    if (!intrusion(g, p, parent.receipt.destination, {discoveryEntry:child}))
+      completeDiscoveryEntryArrival(g, child);
+  }
 }
 function applyAdvisorReleases(g: Game, released: AdvisorRelease[]) {
   for (const entry of released)
@@ -22685,7 +22806,7 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
 function victory(g: Game, quote?: VictoryQuote) {
   requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorTransport &&
     !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle && !g.pendingAutomaticAdvisorHomeworldTransport &&
-    !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm,
+    !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm && !g.pendingAutomaticAdvisorRelocation,
     'Resolve mandatory advisor conversions before checking victory.');
   quote ??= currentVictoryQuote(g);
   applyAdvisorReleases(g, quote.released);
@@ -28507,7 +28628,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       }
       if (automaticAdvisorFlip) {
         if (canceled)
-          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' || automaticAdvisorFlip.producer === 'homeworldTransport' ? 'transport and payment stay' : automaticAdvisorFlip.producer === 'gamont' ? 'Trip to Gamont effect and card use stay' : automaticAdvisorFlip.producer === 'battleLosses' ? 'battle losses and costs stay' : automaticAdvisorFlip.producer === 'faceDance' ? 'Face Dance replacement and reveal stay' : automaticAdvisorFlip.producer === 'storm' ? 'current-sector storm casualties stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
+          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' || automaticAdvisorFlip.producer === 'homeworldTransport' ? 'transport and payment stay' : automaticAdvisorFlip.producer === 'gamont' ? 'Trip to Gamont effect and card use stay' : automaticAdvisorFlip.producer === 'battleLosses' ? 'battle losses and costs stay' : automaticAdvisorFlip.producer === 'faceDance' ? 'Face Dance replacement and reveal stay' : automaticAdvisorFlip.producer === 'storm' ? 'current-sector storm casualties stay' : automaticAdvisorFlip.producer === 'specialRelocation' ? 'relocation and any collection stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
             { faction: bg.faction, name: 'Mandatory advisor conversion prevented' });
         g.pendingAutomaticAdvisorFlips!.shift();
         if (!g.pendingAutomaticAdvisorFlips!.length) delete g.pendingAutomaticAdvisorFlips;
@@ -28518,6 +28639,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
           finishAutomaticAdvisorHomeworldTransport(g);
           finishAutomaticAdvisorFaceDance(g);
           finishAutomaticAdvisorStorm(g);
+          finishAutomaticAdvisorRelocation(g);
         } else openAutomaticAdvisorFlip(g);
       } else finishAdvisorReaction(g, response);
     }
