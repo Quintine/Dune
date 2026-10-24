@@ -2,6 +2,24 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Basic native coalition composition — 24 October 2026
+
+Bare Basic Ecaz/native E1/E2 tables now keep allied marker presence and the
+existing provisional additive ordinary-plus-reserve-capped-marker quote through
+actual coalition admission and both seals. This supersedes only the Basic
+coalition boundary in the historical mixed-pool checkpoint below. Richese's
+variable counters, fixed Ecaz losses, private force-owner bounds, original token
+history and selected-only cancellation stay separate. Basic support remains0;
+no Advanced funding or city income is added. Positive ordinary forces plus
+marker5/reserves2 retain the ordinary group and materialize only2 once; marker0
+retains battle presence without creating a counter.
+
+This is source composition using the earlier explicitly provisional mixed-pool
+policy, not a resolution of the FAQ reserve-cap ambiguity or full Richese/module
+acceptance. [Current scope, controls and exact evidence](ECAZ_OCCUPY_RULES.md#bare-basic-native-families--24-october-2026)
+remain in the canonical coalition contract. Optional configurations retain their
+own profiles; no saved-game conversion is introduced.
+
 ## Current concealed-value Truthtrance — 16 October 2026
 
 The separate current-fact question asks whether the respondent **currently has

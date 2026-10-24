@@ -2,6 +2,88 @@
 
 Historical primary-source audit, 2026-09-07, corrected after independent verification. The publisher/designer odd-force conflict remains unresolved as a publisher correction. Under the 8 October Basic-first prototype instruction, Basic now provisionally uses the main p8 paragraph: ceiling contribution/loss and floor survivors, with a visible control warning. This is not a numerical ruling by the user or designer. Advanced retains its separately authorized source. The earlier false attribution to Jack Reda remains withdrawn.
 
+## Bare Basic native families — 24 October 2026
+
+**Prototyped / Partial.** Fresh public Basic Ecaz tables now admit native Ixians,
+Tleilaxu, CHOAM and Richese with their selected E1/E2 decks, optional Moritani and
+classic seats, within the original two-through-six-seat limits. The same
+selected-family/roster, fresh setup and actual combined-battle assertions remain;
+no played Advanced game is reflagged. This supersedes the earlier bare
+Tleilaxu-only Basic admission below. Independent E3 cards and optional modules
+retain their own registered profiles rather than inheriting this new scope.
+Starts and full rules remain previews, not complete-mode certification.
+
+Basic retains the existing provisional main-p8 odd policy: Ecaz contributes and
+loses `ceil(E/2)`, leaving `floor(E/2)` on an ordinary victory. The selected lead
+owns leaders/cards/cleanup, while the physical partner owns variable forces and
+their casualties. Basic has zero spice support/funding/income; fixed Ecaz strength
+never becomes a CHOAM payment or Advanced city income. Suboids retain half
+strength and Cyborgs two without support. A surviving physical Suboid funds the
+actual Ixian's substitution; Ecaz cannot spend its own counters for that exchange.
+The original Tleilaxu winning-co-side exclusion and external whole-side Face Dance
+remain. No new printed arithmetic or resolution priority is claimed.
+
+The actual total-wheel now derives half steps from its current physical force
+pool, including when Ecaz plans an Ixian half commitment. It returns to ordinary
+Basic whole steps if cancellation leaves only Ecaz's own army. Native CHOAM
+keeps its actual Basic five-disc roster; no Advanced Auditor/funding is added.
+
+A marker-only allied Richese remains part of the admitted coalition even when
+Ecaz is the original battle representative and the marker has value0. Mixed
+ordinary-plus-marker Basic battles use the existing explicitly provisional
+additive quote: ordinary counters plus `min(printed token, current reserves)`.
+This extends the selected Advanced composition, not a new adjudication of the
+FAQ mixed-cap ambiguity. The actual force owner supplies private bounds; rivals
+receive no concealed increment. The first seal retains the marker/reserves; the
+second reveals the original marker and materializes its capped group once,
+retaining ordinary counters. Richese takes variable losses separately from fixed
+Ecaz losses. Cancellation retains the original lead, removes the unselected
+pool and preserves original marker reveal/history.
+
+### Focused Basic native proof and limits
+
+A disjoint native-consumer lane, bounded dependency review and owner integration
+pass **12 files244/244**, `npm run check:quick`, production build and nine
+actual-gameplay/rendered-table programmes. Four public-entry cases cover each
+new native family and the six-native roster. Seventeen consumer cases retain
+real public ready/start/setup, original native offers/components, real Nexus
+alliance and actual No-Field shipment, then explicitly controlled conserved
+board/typed/card positions and thirty-spice budgets. These are not unstaged
+complete games or earned starting wallets for their later battle positions.
+
+Runtime covers both Ixian leads with actual typed loss/substitution, Ecaz total
+3.5 losing one Suboid, actual Karama returning to Ecaz-only dial2, both CHOAM
+leads, marker-only zero and both mixed Richese leads. Each reaches original
+Basic Collection in14–38 lead/plan/continuation actions. Selected ordinary decks
+remain47 or35 plus the separate ten-card cache; native CHOAM has five leaders.
+Actual Ix offers and subsequent native HMS placement are retained. The private
+driver originally expected HMS placement in the earlier after-setup snapshot;
+checking its actual pre-battle placement repaired only that driver. Source,
+tests, types and build stayed identical while runtime alone reran.
+
+Actual GameTable numeric wheels expose step0.5 for the Ixian pool under either
+lead and step1 after Ecaz-only cancellation. Rendered first/second-seal, typed
+loss, actual-Ixian substitution and Collection states use real player views.
+Four existing profiles supply twelve legal lead/plan/native-substitution
+proposals; no strategy tuning. Framework aliases/CSS stubs mean runtime
+rendering, not browser/visual/deployed acceptance. Frozen type feedback repaired
+only a fixture's stale lead-choice narrowing across action closures. Related
+Advanced, Basic Tleilaxu, mixed-marker, typed and Face Dance regressions pass.
+
+Frozen source: base `152039be5b052d5ea20462c5313481ec595b6e5b`, tree
+`87032d020159fa6258fa2c2df9327bb1043511377dcd36648fbc9e4a2aff1498`,
+2,619 tracked/nonignored files including only the untracked supplied PDF's hash.
+The PDF is not committed or republished. Private logs, HTML, snapshots and
+runtime results are in
+`/home/quintine/.local/share/dune/checkpoints/20261024-basic-ecaz-native/`.
+`frozen-integrated-final/report.json` combines identical-source tests/quick/build
+from `frozen-integrated-2` with the passed `runtime-repair`; failed feedback is
+preserved separately. Final prose/reference changes are checked against all
+frozen hashes. Full modes, other optional configurations, comprehensive
+assurance and deployed acceptance remain open. No saved-room/database/reset/
+restart/deployment operation or strategic calibration.
+
+
 ## Bare Basic native Tleilaxu — 24 October 2026
 
 The Basic profile now admits native Tleilaxu with exactly the selected `ecaz`

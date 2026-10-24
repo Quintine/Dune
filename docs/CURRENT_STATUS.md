@@ -16,6 +16,27 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Bare Basic native Ecaz coalitions — 24 October. Prototyped / Partial.**
+Fresh public Basic Ecaz now admits selected native E1/E2 families while retaining
+original setup/roster and actual battle guards. Include allied zero/mixed Richese
+markers through both seals and owner-specific losses. The current physical Ixian
+pool supplies half-step wheels even under Ecaz; cancellation restores the
+selected-only pool. Basic support/funding/income stays0 and CHOAM keeps five
+discs. Existing odd rounding and additive mixed-marker interpretations remain
+provisional; optional-module boundaries are unchanged.
+
+A disjoint consumer lane, bounded review and owner integration pass
+**12 files244/244**, types/lint/build, nine controlled native gameplay/rendering
+programmes and four existing profiles with12 legal proposals. Real public setup,
+Nexus/alliance/marker shipment precede labelled conserved board/card and thirty-
+spice staging. Native typed substitution, total3.5, zero/capped/mixed markers and
+both physical leads reach Basic Collection. Source35/47 plus cache10, actual HMS
+placement and Basic CHOAM5 remain. Feedback repaired only fixture type narrowing
+and the private driver's HMS observation stage; runtime alone reran on identical
+source. [Scope, source, exact evidence and limits](ECAZ_OCCUPY_RULES.md#bare-basic-native-families--24-october-2026).
+Full modes, wider optional configurations and comprehensive/deployed acceptance
+remain open. No strategic calibration or saved-room/reset/restart/deployment.
+
 **Ambassador repeated leaders and KH — 24 October. Prototyped / Partial.**
 A shared death-cohort quote removes the generic lifetime first-death cap while
 retaining ordinary repeat conditions. First returns remain immediate; actual

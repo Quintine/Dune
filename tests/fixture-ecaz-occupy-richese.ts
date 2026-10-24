@@ -8,7 +8,9 @@ import { finishEcazOccupySetup, stageEcazOccupyCard } from './fixture-ecaz-occup
 import { nextRicheseStrongholdsNativeStep } from './fixture-richese-strongholds';
 
 export type EcazOccupyRicheseOptions = {
-  allyFaction?: 'richese' | 'ixians' | 'guild';
+  allyFaction?: 'richese' | 'ixians' | 'choam' | 'guild';
+  advanced?: boolean;
+  publicStart?: boolean;
   opponentFaction?: 'richese' | 'choam' | 'atreides' | 'guild';
   marker?: NoFieldValue;
   richeseReserves?: number;
@@ -72,11 +74,12 @@ function place(game: Game, owner: string, location: string, count: number): void
   if (count) player.forces[location] = (player.forces[location] ?? 0) + count;
 }
 
-/** Real fresh Advanced family deal and natural Nexus alliance. Explicitly
+/** Real fresh selected Basic/Advanced family deal and natural Nexus alliance. Explicitly
  * controlled conserved board/bank/card staging follows original setup; only
  * native shipment creates the concealed marker, and actual chooseBattle admits
  * the coalition. No phase, faction, alliance, plan or marker is assigned. */
 export function ecazOccupyRicheseFixture(options: EcazOccupyRicheseOptions = {}): EcazOccupyRicheseFixture {
+  const advanced = options.advanced ?? true;
   const allyFaction = options.allyFaction ?? 'richese';
   const opponentFaction = options.opponentFaction ?? 'guild';
   assert.notEqual(allyFaction, opponentFaction);
@@ -89,12 +92,12 @@ export function ecazOccupyRicheseFixture(options: EcazOccupyRicheseOptions = {})
     game = structuredClone(options.initial);
     assert.equal(game.status, 'setup');
     assert.equal(game.turn, 1);
-    assert.equal(game.advanced, true);
+    assert.equal(game.advanced, advanced);
     assert.equal(game.ecazOccupyPreview, true);
     assert.deepEqual(game.players.map(p => p.faction), roster);
     assert.deepEqual(game.expansions, expansions);
   } else {
-    game = createGame('ECAZOCCUPYRICHESE', newPlayer(roster[0], roster[0], roster[0]), true, expansions);
+    game = createGame('ECAZOCCUPYRICHESE', newPlayer(roster[0], roster[0], roster[0]), advanced, expansions);
     for (const faction of roster.slice(1)) joinGame(game, newPlayer(faction, faction, faction));
     for (let i = roster.length - 1; i >= 0; i--) {
       const position = i + 1;
@@ -102,7 +105,9 @@ export function ecazOccupyRicheseFixture(options: EcazOccupyRicheseOptions = {})
         game = applyAction(game, roster[i], { type: 'seatPosition', position });
     }
     for (const player of game.players) game = applyAction(game, player.id, { type: 'ready' });
-    game = initializeEcazOccupyGameForAudit(game);
+    game = options.publicStart
+      ? applyAction(game, game.host, { type: 'start', ...(advanced ? { advancedPreview: true } : {}) })
+      : initializeEcazOccupyGameForAudit(game);
   }
   const initial = structuredClone(game);
   game = finishEcazOccupySetup(game);

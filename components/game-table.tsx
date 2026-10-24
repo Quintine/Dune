@@ -498,7 +498,7 @@ export function GameTable({
     : g.advanced || me.faction === 'ixians'
       ? 40
       : battleForces);
-  const battleDialStep = g.advanced || me.faction === 'ixians' ? 0.5 : 1;
+  const battleDialStep = g.advanced || ownBattleForces?.normalFixedHalf || me.faction === 'ixians' ? 0.5 : 1;
   // A draft carried from a previous battle must show and submit the same bounded value.
   const battleDial = Number.isFinite(dial)
     ? Math.max(

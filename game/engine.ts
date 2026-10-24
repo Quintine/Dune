@@ -10758,14 +10758,10 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
   return initialized;
 }
 function ecazOccupyCompositionSupported(g: Game): boolean {
-  // Native Tleilaxu's ordinary Basic armies and Face Dance already use the
-  // same coalition outcome. Admit their bare selected decks without opening
-  // unrelated native factions or optional-module compositions.
-  const basicTleilaxu = g.advanced === false && Array.isArray(g.expansions) && g.expansions.length === 2 &&
-    g.expansions.includes('ecaz') && g.expansions.includes('ix') &&
-    !!byFaction(g, 'tleilaxu') &&
-    g.players.every(p => p.faction === 'ecaz' || p.faction === 'moritani' ||
-      p.faction === 'tleilaxu' || CLASSIC_FACTIONS[p.faction]) &&
+  // Bare native Basic uses the same physical coalition and selected decks.
+  // Family/roster checks below remain authoritative; optional configurations
+  // retain their separate registered profiles rather than inheriting admission.
+  const basicNatives = g.advanced === false &&
     !g.ecazTreachery && !g.techTokens && !g.strongholdCards;
   if ((independentNexusProfile(g) || independentDiscoveryProfile(g)) && byFaction(g, 'ecaz')) return true;
   if (g.leaderSkills && nativeEcazLeaderSkillsProfile(g)) return true;
@@ -10792,7 +10788,7 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
     g.expansions.includes('ecaz') &&
     g.expansions.every(id => ['ecaz', 'ix', 'choam'].includes(id)) &&
     new Set(g.expansions).size === g.expansions.length &&
-    (g.advanced || basicTleilaxu || (g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
+    (g.advanced || basicNatives || (g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
       g.players.every(p => p.faction === 'ecaz' ||
         p.faction === 'moritani' || CLASSIC_FACTIONS[p.faction]))) &&
     g.players.length >= 2 && g.players.length <= 6 &&
@@ -10810,7 +10806,7 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
 /** Fresh native Occupy profile; Basic odd counts use the main printed rule provisionally. */
 export function initializeEcazOccupyGameForAudit(state: Game): Game {
   requireRule(ecazOccupyCompositionSupported(state),
-    'Occupy requires supported native factions and their selected decks; Basic additionally admits native Tleilaxu with the bare Ecaz and Ix decks.');
+    'Occupy requires supported native factions and their selected decks; bare Basic native families exclude optional modules.');
   requireFreshBaseRuntime(state);
   requireFreshFactionInventory(state);
   const g = initializeSetupGameForAudit(state, false, false, false, false, false, false, true, state.ecazTreachery === true);
@@ -34859,7 +34855,7 @@ function applyActionInner(
     const noFieldPlayers = g.players.filter(player =>
       player.noField?.deployed?.location.territory === choice.territory &&
       (player.id === choice.attacker || player.id === choice.defender ||
-        (g.advanced && connected && ecaz && ally?.ally === ecaz.id && player.id === ally.id &&
+        (combined && ecaz && player.id === ally?.id &&
           (choice.attacker === ecaz.id || choice.defender === ecaz.id)))).map(player => player.id);
     let mixedNoFieldPlayers: string[] | undefined;
     for (const playerId of noFieldPlayers) {
@@ -34867,8 +34863,8 @@ function applyActionInner(
         ([key, n]) => n > 0 && splitLocation(key).territory === choice.territory,
       );
       if (!mixed) continue;
-      requireRule(!combined || g.advanced,
-        'Combined mixed No-Field dialing requires the selected Advanced Occupy composition.');
+      requireRule(!combined || ecazOccupyCompositionSupported(g),
+        'Combined mixed No-Field dialing requires an admitted native Occupy composition.');
       (mixedNoFieldPlayers ??= []).push(playerId);
     }
     if (combined) {

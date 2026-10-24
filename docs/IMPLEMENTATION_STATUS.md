@@ -1,5 +1,27 @@
 # Dune implementation status
 
+## 24 October 2026 — Bare Basic native Ecaz coalitions
+
+Remove the conservative Basic native-family admission restriction while keeping
+fresh public setup, selected decks/rosters and actual coalition assertions.
+Include allied marker-only/mixed Richese in actual admission, preserve original
+both-seal materialization and physical owner losses, and use the actual Ixian
+force pool for half-step wheels under Ecaz. Cancellation returns to selected-only
+forces/whole steps. Basic retains zero support/funding/income and CHOAM5. Existing
+odd-count and additive-marker interpretations remain explicitly provisional.
+
+A disjoint consumer lane, bounded dependency review and owner integration pass
+12-file244/244, types/lint/build, nine actual-control/rendered-table programmes
+and four existing profiles with12 legal proposals. Public Basic setup/Nexus/
+alliance/marker shipment are genuine; later conserved board/card/typed/thirty-
+spice staging is controlled. Source47/35 plus cache10 and actual native HMS
+placement remain. Typed loss/substitution, total3.5, original Karama and zero/
+capped/mixed markers reach native Collection in14–38 continuations. Feedback
+repaired fixture narrowing and a private HMS stage assumption; runtime alone
+reran with source unchanged. [Current scope, source and exact frozen evidence](ECAZ_OCCUPY_RULES.md#bare-basic-native-families--24-october-2026).
+Full modes, optional-module combinations, comprehensive assurance and deployed
+acceptance remain open. No strategy tuning or saved-room/reset/restart/deployment.
+
 ## 24 October 2026 — Cohort-eligible Ambassador leader and KH repeats
 
 Use one phase/slot/price-independent death-cohort quote for normal Revival and
