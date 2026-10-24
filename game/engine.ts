@@ -12,7 +12,7 @@ import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, h
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteAtreidesFullPlan } from './atreides-full-plan';
 import { quoteTleilaxuSpecialKarama } from './tleilaxu-special-karama';
-import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport, type AutomaticAdvisorGamont, type AutomaticAdvisorBattle } from './advisor-automatic-flip';
+import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport, type AutomaticAdvisorGamont, type AutomaticAdvisorBattle, type AutomaticAdvisorHomeworldTransport } from './advisor-automatic-flip';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
@@ -1269,6 +1269,12 @@ export type Game = {
     receipt: AutomaticAdvisorBattle;
     resume: { kind: 'winner'; player: string; territory: string; cards: string[] } | { kind: 'aftermath' } | null;
     signature?: string;
+  };
+  pendingAutomaticAdvisorHomeworldTransport?: {
+    receipt: AutomaticAdvisorHomeworldTransport;
+    sourceEvent: string;
+    arrival?: { territory: string; sector: number; amount: number; elite: number };
+    signature: string;
   };
   advisorPreparation?: AdvisorPreparationWindow;
   ecazOccupyPreview?: boolean;
@@ -20310,6 +20316,12 @@ function currentAutomaticAdvisorFlip(g: Game, response: ResponseWindow) {
       'The mandatory conversion has lost its original completed battle.');
     validateBattleAdvisorResume(g, parent);
   }
+  if (source.producer === 'homeworldTransport') {
+    const parent = g.pendingAutomaticAdvisorHomeworldTransport;
+    requireRule(parent && JSON.stringify(source.transport) === JSON.stringify(parent.receipt),
+      'The mandatory conversion has lost its original committed Homeworld transport.');
+    validateHomeworldAdvisorTransport(g, parent);
+  }
   automaticAdvisorRule(() => validateAutomaticAdvisorFlip(g, source));
   return source;
 }
@@ -20460,6 +20472,66 @@ function finishAutomaticAdvisorBattle(g: Game) {
   if (resume.kind === 'winner')
     finishWinner(g, getPlayer(g, resume.player), resume.territory, resume.cards);
   else finishBattle(g);
+}
+function homeworldAdvisorTransportSignature(parent: NonNullable<Game['pendingAutomaticAdvisorHomeworldTransport']>) {
+  return JSON.stringify([parent.receipt, parent.sourceEvent, parent.arrival ?? null]);
+}
+function prepareHomeworldAdvisorFlips(g: Game, transport: Omit<AutomaticAdvisorHomeworldTransport, 'event'>,
+  sourceEvent: string, arrival?: NonNullable<Game['pendingAutomaticAdvisorHomeworldTransport']>['arrival']) {
+  const destination = transport.destination.startsWith('homeworld:') ? null : splitLocation(transport.destination).territory;
+  const groups = automaticAdvisorRule(() => quoteAutomaticAdvisorFlips(g))
+    .filter(group => group.territory === transport.origin || group.territory === destination);
+  if (!groups.length) return false;
+  requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorHomeworldTransport &&
+    !g.pendingAutomaticAdvisorTransport && !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle,
+    'Finish the original advisor conversion before another Homeworld transport.');
+  // The original declaration event includes a private snapshot. Only this new
+  // public UUID and physical transfer metadata enter the conversion response.
+  const receipt: AutomaticAdvisorHomeworldTransport = { event: crypto.randomUUID(), ...transport };
+  const parent: NonNullable<Game['pendingAutomaticAdvisorHomeworldTransport']> = {
+    receipt, sourceEvent, ...(arrival ? { arrival: { ...arrival } } : {}), signature: '',
+  };
+  parent.signature = homeworldAdvisorTransportSignature(parent);
+  g.pendingAutomaticAdvisorHomeworldTransport = parent;
+  for (const group of groups) {
+    const source: AutomaticAdvisorFlipSource = { event: crypto.randomUUID(), owner: group.player,
+      territory: group.territory, turn: g.turn, phase: g.phase, forces: group.forces,
+      producer: 'homeworldTransport', transport: receipt };
+    getPlayer(g, group.player).advisors![group.territory].aloneFlipHold = source.event;
+    (g.pendingAutomaticAdvisorFlips ??= []).push(source);
+  }
+  return true;
+}
+function validateHomeworldAdvisorTransport(g: Game, parent: NonNullable<Game['pendingAutomaticAdvisorHomeworldTransport']>) {
+  const { receipt, arrival } = parent;
+  const actor = getPlayer(g, receipt.player);
+  requireRule(g.status === 'playing' && g.phase === 5 && g.homeworlds?.custody && actor.shipped &&
+    typeof parent.sourceEvent === 'string' && parent.sourceEvent.length > 0 &&
+    parent.signature === homeworldAdvisorTransportSignature(parent),
+    'The committed Homeworld transport lost its original private continuation.');
+  if (receipt.destination.startsWith('homeworld:')) {
+    const deposit = homeworldRule(() => homeworldForceGroups(homeworldContext(g), g.homeworlds!.custody!))
+      .find(world => world.id === receipt.destination)?.forces[actor.id];
+    requireRule(!arrival && deposit && deposit.normal + deposit.elite >= receipt.amount && deposit.elite >= receipt.elite,
+      'The original Homeworld transport lost its deposited physical counters.');
+  } else requireRule(receipt.kind === 'junction' && arrival &&
+    location(arrival.territory, arrival.sector) === receipt.destination &&
+    arrival.amount === receipt.amount && arrival.elite === receipt.elite,
+    'The committed Junction transport lost its original board arrival.');
+}
+function finishAutomaticAdvisorHomeworldTransport(g: Game) {
+  const parent = g.pendingAutomaticAdvisorHomeworldTransport;
+  if (!parent) return;
+  requireRule(!g.pendingAutomaticAdvisorFlips?.length,
+    'Finish the original advisor conversions before resuming Homeworld transport.');
+  validateHomeworldAdvisorTransport(g, parent);
+  delete g.pendingAutomaticAdvisorHomeworldTransport;
+  if (parent.arrival) {
+    const { territory: to, sector, amount, elite } = parent.arrival;
+    const actor = getPlayer(g, parent.receipt.player);
+    intrusion(g, actor, to);
+    openTerritoryEntry(g, actor, to, sector, amount, elite, 'shipment');
+  }
 }
 function applyAdvisorReleases(g: Game, released: AdvisorRelease[]) {
   for (const entry of released)
@@ -22480,7 +22552,7 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
 
 function victory(g: Game, quote?: VictoryQuote) {
   requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorTransport &&
-    !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle,
+    !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle && !g.pendingAutomaticAdvisorHomeworldTransport,
     'Resolve mandatory advisor conversions before checking victory.');
   quote ??= currentVictoryQuote(g);
   applyAdvisorReleases(g, quote.released);
@@ -28302,7 +28374,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       }
       if (automaticAdvisorFlip) {
         if (canceled)
-          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' ? 'transport and payment stay' : automaticAdvisorFlip.producer === 'gamont' ? 'Trip to Gamont effect and card use stay' : automaticAdvisorFlip.producer === 'battleLosses' ? 'battle losses and costs stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
+          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' || automaticAdvisorFlip.producer === 'homeworldTransport' ? 'transport and payment stay' : automaticAdvisorFlip.producer === 'gamont' ? 'Trip to Gamont effect and card use stay' : automaticAdvisorFlip.producer === 'battleLosses' ? 'battle losses and costs stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
             { faction: bg.faction, name: 'Mandatory advisor conversion prevented' });
         g.pendingAutomaticAdvisorFlips!.shift();
         if (!g.pendingAutomaticAdvisorFlips!.length) delete g.pendingAutomaticAdvisorFlips;
@@ -28310,6 +28382,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
           finishAutomaticAdvisorTransport(g);
           finishAutomaticAdvisorGamont(g);
           finishAutomaticAdvisorBattle(g);
+          finishAutomaticAdvisorHomeworldTransport(g);
         } else openAutomaticAdvisorFlip(g);
       } else finishAdvisorReaction(g, response);
     }
@@ -28758,6 +28831,9 @@ function commitJunctionTransport(g: Game, p: Player, declaration: JunctionTransp
   const {option, rate, quote, arrival, nativeDeparture, promise, sourceLock, advisors, allyPayment, destination} =
     quoteJunctionDeclaration(g, p, declaration);
   if (!settlement && beginGuildBetrayal(g, {source: 'junction', transport: declaration})) return;
+  const advisorArrival = advisors || (quote.originKind === 'arrakis' && !!arrival &&
+    g.advanced && p.faction === 'beneGesserit' && isAdvisor(p, quote.origin) &&
+    !at(p, arrival.territory) && !g.players.some(other => other.id !== p.id && at(other, arrival.territory)));
   // Junction permission and tariff are Homeworld effects and resist Karama.
   // All validation precedes this atomic settlement; there is no special-stop frame.
   payWithAlly(g, p, quote.cost, allyPayment);
@@ -28770,14 +28846,19 @@ function commitJunctionTransport(g: Game, p: Player, declaration: JunctionTransp
     owner.reserves = seat.reserves;
     if (owner.elites) owner.elites.reserves = seat.eliteReserves;
   }
-  observeOccupation(g);
   if (arrival) {
     place(p, arrival.territory, arrival.sector, quote.amount, quote.elite);
-    if (advisors) {
+    if (advisorArrival) {
       const lockedTurn = Math.max(sourceLock ?? 0, p.advisors?.[arrival.territory]?.lockedTurn ?? 0);
       (p.advisors ??= {})[arrival.territory] = { ...p.advisors?.[arrival.territory], ...(lockedTurn ? { lockedTurn } : {}) };
     } else if (p.advisors) delete p.advisors[arrival.territory];
   }
+  const heldConversion = quote.originKind === 'arrakis' && prepareHomeworldAdvisorFlips(g,
+    { kind: 'junction', player: p.id, origin: quote.origin, destination, amount: quote.amount, elite: quote.elite,
+      group: Object.fromEntries(quote.sources.map(source => [source.key,
+        source.before.normal + source.before.elite - source.after.normal - source.after.elite])) },
+    declaration.event, arrival ? { ...arrival, amount: quote.amount, elite: quote.elite } : undefined);
+  observeOccupation(g);
   p.shipped = true;
   closeAdvisorPreparationOnShipment(g, p.id, 'junction');
   if (declaration.forfeitPurchasedRate) g.karamaShipping = null;
@@ -28800,6 +28881,10 @@ function commitJunctionTransport(g: Game, p: Player, declaration: JunctionTransp
     quote.sources.map((s) => combatLocationName(g, s.key)).join(' and ');
   log(g, `${p.name} accepted ${getPlayer(g, option.owner).name}’s Junction ${rate}-price offer and transported ${quote.amount} physical forces (${quote.elite} special) from ${sourceName} to ${arrival ? `${territory(arrival.territory).name}, sector ${arrival.sector}` : combatLocationName(g, destination)} for ${quote.cost} spice (${quote.cost - allyPayment} own, ${allyPayment} pledged). The shipment is used; movement remains available.${declaration.forfeitPurchasedRate ? ' The separate purchased Karama price ended unused; no card is refunded.' : ''}`,
     {faction: 'guild', name: 'Junction transport'});
+  if (heldConversion) {
+    openAutomaticAdvisorFlip(g);
+    return;
+  }
   if (arrival) {
     const bg = byFaction(g, 'beneGesserit');
     const followup = offPlanet && bg && bg.id !== p.id && spiritualAdvisorMaximum(g, bg.id) > 0
@@ -28926,6 +29011,11 @@ function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment, se
     owner.reserves = seat.reserves;
     if (owner.elites) owner.elites.reserves = seat.eliteReserves;
   }
+  const heldConversion = shipment.route === 'arrakis' && prepareHomeworldAdvisorFlips(g,
+    { kind: 'native', player: p.id, origin: splitLocation(Object.keys(shipment.sources)[0]).territory,
+      destination: shipment.destination, amount: quote.amount, elite: quote.elite,
+      group: Object.fromEntries(Object.entries(shipment.sources).map(([key, selected]) =>
+        [key, selected.normal + selected.elite])) }, shipment.event);
   observeOccupation(g);
   p.shipped = true;
   closeAdvisorPreparationOnShipment(g, p.id, 'homeworld');
@@ -28945,6 +29035,7 @@ function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment, se
   if (purchasedRate) g.karamaShipping = null;
   log(g, `${p.name} shipped ${quote.amount} physical forces (${quote.elite} special) from ${quote.sourceNames.join(' and ')} to ${combatLocationName(g, shipment.destination)} for ${quote.cost} spice (${quote.cost - shipment.allyPayment} own, ${shipment.allyPayment} pledged). This uses their shipment; movement remains available.${shipment.guildSecretEvent ? ' Guild Secret Ally is spent for this half-price shipment; the payment goes to the bank.' : ''}`,
     {faction: shipment.guildSecretEvent ? 'guild' : p.faction, name: shipment.guildSecretEvent ? 'Secret Ally Homeworld shipment' : 'Homeworld shipment'});
+  if (heldConversion) openAutomaticAdvisorFlip(g);
 }
 function declareHomeworldShipment(g: Game, p: Player, intent: HomeworldShipmentIntent & {route?: 'arrakis';guildSecretEvent?:string}, allyPayment?: unknown) {
   const quote = homeworldShipmentQuote(g, intent);

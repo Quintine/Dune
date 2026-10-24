@@ -4316,6 +4316,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'After Trip to Gamont completes during Mentat, the last outsider’s return or empty No-Field reveal can leave advisors alone. Karama can then prevent their conversion without undoing the completed effect or card use. The final CHOAM opportunity resumes afterward; victory waits for its original confirmation. Ordinary Mentat does not gain an extra final chooser.',
       'A committed Guild cross-shipment or return to reserves can also leave advisors alone. Original transport permission, rate and any Guild income resolve first; payment, force transfer and shipment use stay committed if the later conversion is prevented. The ordinary ground move remains unused. Cross-shipment arrival follows the conversion once; a reserve return has no arrival.',
       'After actual battle losses leave surviving bystanding advisors alone, Karama may prevent their conversion without undoing losses or costs. Mandatory card disposal, original skills and substitution finish first. Provisionally resolve this before optional winner-card cleanup and later aftermath, then resume the original cleanup once. An explosion that destroys the advisors creates no conversion.',
+      'Native Guild board-to-Homeworld and Junction board transfers can leave advisors alone after payment and physical transfer. Karama prevents only the resulting BG conversion; Junction permission and tariff stay immune. Original income resolves first, then any Junction board arrival resumes once. Original declaration snapshots stay private.',
       'Provisional cancellation duration: a prevented advisor group stays advisors while continuously alone, including across phase and turn changes. Another faction returning or the group becoming empty ends that held occurrence. Later arrivals joining that same group match its stance. Other non-ground automatic conversions and matching-group flip counters remain unfinished.',
       'When another faction ships, moves or worm rides into your fighters, immediately choose whether to become advisors. The choice opens a Karama response. Repeated entry can offer a new choice.',
       'After another faction’s off-planet shipment, choose a free force in the Polar Sink or an accompanying force at the shipment destination. An accompanying advisor group cannot flip to fighters in that turn while other factions remain.',
@@ -4327,7 +4328,7 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Implementation",
     "status": "Partial",
-    "detail": "Ground movement, committed Guild transport, Gamont and actual battle losses now have distinct event-bound mandatory-conversion sources. Shared settlement preserves prevented continuously-alone groups. Battle receipts select public identity/outcome only; a private cursor resumes original winner/aftermath after mandatory disposal, skills and substitution without replaying casualties. Transport retains paid transfer and one arrival; Gamont defers the original final chooser. Phases2–5 preparation retains its own window and per-territory prevention. Other automatic producers and matching-group counters remain unfinished.",
+    "detail": "Homeworld/Junction board transfers now capture alone groups before occupation/settlement, retain completed typed transfer/payment and shipment use, keep original snapshot events private and resume only original Junction board arrival after the consumed parent. Existing ground/Guild transport/Gamont/battle/preparation sources retain separate exact receipts and timing. Other automatic producers and matching-group counters remain unfinished.",
     "evidence": [
       "game/advisor-automatic-flip.ts",
       "game/advisors.ts",
@@ -4342,7 +4343,7 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Player controls",
     "status": "Partial",
-    "detail": "Standard Karama/Allow controls explain completed movement, paid transport, Gamont card use or battle losses and the provisional continuously-alone hold. Battle guidance distinguishes committed casualties from remaining cleanup. Existing preparation controls remain available at quiet phases2–5 boundaries, including after initial decline; first actual shipment closes that window. No new confirmation or timing delay.",
+    "detail": "Standard Karama/Allow controls distinguish completed Homeworld transport/payment from the pending BG conversion and remaining arrival. Existing ground, ordinary transport, Gamont, battle and phase2–5 preparation guidance retain their contracts. No new confirmation or timer.",
     "evidence": [
       "docs/ADVISOR_AUTOMATIC_FLIPS.md",
       "components/advisor-preparation.tsx",
@@ -4353,8 +4354,10 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "AI",
     "status": "Partial",
-    "detail": "Eight existing-profile native winner-dial-all/mutual-Traitor response paths resolve legally to actual Collection without replay. Existing ground, transport, Gamont and preparation paths retain their separate evidence. No strategy refinement or difficulty calibration.",
+    "detail": "Sixteen existing-profile native Homeworld/Junction response paths accept legal actions without replaying transfer/payment or consuming ordinary movement. Prior ground/Guild transport/Gamont/battle/preparation paths retain separate evidence. No strategy refinement or difficulty calibration.",
     "evidence": [
+      "tests/advisor-homeworld-flip-engine.test.ts",
+      "tests/fixture-advisor-homeworld-flip.ts",
       "tests/advisor-battle-flip-engine.test.ts",
       "tests/fixture-advisor-battle-flip.ts",
       "tests/advisor-gamont-flip-engine.test.ts",
@@ -4367,7 +4370,7 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Documentation",
     "status": "Partial",
-    "detail": "Source physical17/28 E composes the group counter with mandatory conversion. Continuously-alone duration and battle cleanup priority are explicitly provisional. Public receipts, private continuation boundaries, native scenario provenance and remaining producers/combinations are distinguished. Preparation and supported Ecaz coexistence keep their separate contracts.",
+    "detail": "Physical17/28 E composes the group counter with mandatory conversion. Homeworld/Junction guidance distinguishes immune transport from BG conversion, private original snapshots, public physical evidence and one original arrival. Continuously-alone duration and earlier battle priority remain provisional. Remaining producers and combinations stay explicit.",
     "evidence": [
       "docs/ADVISOR_AUTOMATIC_FLIPS.md",
       "docs/ADVISOR_PREPARATION.md",
@@ -4378,8 +4381,10 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Verification",
     "status": "Partial",
-    "detail": "Battle conversion passes frozen16-file264/264, types/lint/build, five native battle/response/GameTable SSR journeys and eight existing-profile paths. Genuine44-action public sources earn original forces/cards and actual two-versus-zero city income; Lasgun/Shield destroys the advisor without a counter. Stale Semuta fixtures now submit existing final acknowledgements; production guards stay unchanged. Earlier ground/transport/Gamont/preparation evidence is in linked contracts. Full skill/Caladan/Face Dance/Semuta combinations, remaining producers, complete modes, browser/mobile/deployed and comprehensive assurance stay open.",
+    "detail": "Homeworld/Junction passes frozen18-file218/218, types/lint/build, nine native transport/response/GameTable SSR journeys and sixteen profile paths. Genuine37/38/42/36-action sources earn original native/Junction returns, destination Intrusion and BG empty arrival. Costs3/5/10/1 remain spent through both outcomes; earlier native permission prevention stays uncommitted. A fixture-variable lint repair preserves strict source validation. Earlier producer proofs remain linked; wider contributor/occupation/Nexus/Semuta, remote Face Dance/storm/other producers, full modes and browser/mobile/deployed/comprehensive acceptance remain open.",
     "evidence": [
+      "tests/advisor-homeworld-flip-engine.test.ts",
+      "tests/fixture-advisor-homeworld-flip.ts",
       "tests/advisor-battle-flip-engine.test.ts",
       "tests/fixture-advisor-battle-flip.ts",
       "tests/advisor-gamont-flip-engine.test.ts",

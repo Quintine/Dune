@@ -1,5 +1,69 @@
 # Mandatory advisor conversions
 
+## Homeworld and Junction transport — 24 October 2026
+
+**Prototyped / Partial.** Compose physical17/28 E's
+existing counter with the separate Homeworld transport paths. Native Guild
+Arrakis-to-Homeworld shipment and board-origin Junction transport can remove the
+last outsider beside advisors. Junction can also move advisors into an empty
+board territory. Capture those groups after the actual typed force transfer,
+before occupation/settlement can erase their stance or grant fighter benefits.
+
+Original transport interception, privilege, tariff, payment, custody deposit,
+shipment use and income retain their order. Cancellation of the resulting BG
+conversion reverses none of them. Junction's own permission/rate immunity remains
+distinct from the independently counterable BG advantage, per the existing
+[Junction source contract](JUNCTION_TRANSPORT_RULES.md#karama-and-offer-lifetime).
+The provisional continuously-alone hold remains unchanged.
+
+The public phase5 receipt contains only a new UUID, native/Junction kind, actor,
+origin/destination and selected physical group/counts. The original declaration
+event includes a private state snapshot: retain it only in the private parent,
+alongside the exact optional Junction arrival. Public response and Karama source
+selection never copy that original event or private funding/continuation. Check
+the actual committed world deposit or board counters instead of rerunning a
+pre-transfer permission, funding or shipment-availability quote.
+
+World destinations have no arrival suffix. For board-origin Junction arrival,
+consume the parent before resuming original Intrusion and territory entry once.
+Native/foreign world departures that do not alter a board advisor group retain
+their original flow. This does not broaden routes, start gates or transport
+entitlements. Broader combinations, other special arrivals, remote Face Dance
+sources and storm casualties remain unfinished.
+
+[Native fixture](../tests/fixture-advisor-homeworld-flip.ts) starts public Advanced
+BG/Atreides/Guild with Homeworlds enabled by the actual lobby action and original
+base33. Actual advisorSetup shares Tuek's five Guild counters for a native return,
+or Arrakeen's ten Atreides counters for Junction. Original Atreides Karama stays
+held through real first-round controls. Native return costs3 for five; sponsored
+own-world return costs5 for ten. A real BG reserve shipment into Basin earns the
+separate destination Intrusion route, transporting ten Atreides there for10.
+Another actual Junction offer moves BG's original advisor into empty Basin for1.
+No played force, phase, hand, wallet, native reserve or stance is installed.
+
+[Engine cases](../tests/advisor-homeworld-flip-engine.test.ts) cover both response
+outcomes for those four routes, original native privilege prevention, private
+source/arrival mismatch and minimal existing-profile participation. Original
+world deposits or board counters stay transferred, shipment stays used and the
+ordinary move stays unused. Frozen **18 files218/218**, types/lint/build, nine
+native transport/response/GameTable SSR journeys and sixteen existing-profile
+paths pass. Native return uses37 source actions, Junction return38, earned
+Intrusion42 and actual BG empty arrival36. Their original costs3/5/10/1 remain
+spent through both conversion outcomes. Earlier native permission prevention
+keeps the original force/payment/unused shipment. Standard controls render;
+this is not a new callback/browser/mobile/deployed certificate.
+
+Initial feedback passed218/218 and types, then lint rejected two test variables
+named module. Renaming only those variables passes focused lint and the final
+frozen218/218, types/lint/build and runtime, without changing rule validation.
+Private proof and original-action HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-homeworld-flips/`.
+`frozen-integrated-2/report.json` binds tree
+`5365a5d6fba829c6bcee1cb1e00977ec41769912a32180062e52af0ca59645da`
+on base `d83db397c0365421034a53315c5604ae1c525177`. Checkpoint prose/reference
+updates are separately reviewed and hashed after proof. Broader contributor/occupation/Nexus/Semuta compositions are
+not certified by these native own-world and board scenarios.
+
 ## Battle losses before optional cleanup — 24 October 2026
 
 **Prototyped / Partial.** Compose the supplied

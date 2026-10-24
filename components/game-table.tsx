@@ -2479,7 +2479,9 @@ export function GameTable({
                       ? 'Trip to Gamont is complete and its card use stays spent. These advisors are now alone and must become fighters before victory is checked.'
                       : g.response.automaticAdvisorFlip.producer === 'battleLosses'
                         ? 'Battle losses and mandatory card disposal are complete. These surviving advisors are now alone and must become fighters before the remaining cleanup.'
-                        : 'The ground movement is complete. These advisors are now alone and must become fighters.'}
+                        : g.response.automaticAdvisorFlip.producer === 'homeworldTransport'
+                          ? 'The Homeworld transport and payment are complete. These advisors are now alone and must become fighters before any remaining arrival.'
+                          : 'The ground movement is complete. These advisors are now alone and must become fighters.'}
                   {' '}Karama prevents only this conversion; the completed action and its costs stay committed.
                   {' '}Provisional rule: a prevented group stays advisors while continuously alone,
                   until another faction returns or the group leaves.

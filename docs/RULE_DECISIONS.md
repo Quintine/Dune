@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Advisor conversion after Homeworld transport — 24 October 2026
+
+Extend the existing physical17/28 E composition to native Guild board-to-world
+and board-origin Junction transfers. Capture surviving alone groups only after
+the typed transfer, preserving original interception/privilege/rate, payment,
+custody, shipment use and income. Junction's own Homeworld permission/tariff
+immunity does not make the separate BG conversion advantage immune. Keep the
+existing provisional continuously-alone duration. A fresh public UUID/physical
+receipt omits the private original declaration snapshot. Consume the private
+parent before resuming a Junction board arrival once; world destinations have
+no arrival. No original pre-transfer eligibility is rerun after commitment.
+[Connected source and continuation](ADVISOR_AUTOMATIC_FLIPS.md#homeworld-and-junction-transport--24-october-2026).
+
 ## Advisor conversion after battle losses — 24 October 2026
 
 Compose supplied Advanced physical17's group counter with physical28 E's alone

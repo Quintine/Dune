@@ -16,6 +16,34 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Advisor conversion after Homeworld/Junction transport — 24 October. Prototyped / Partial.**
+Native Guild board-to-world and Junction board transfers now capture resulting
+alone advisors after typed transfer/payment and before settlement benefits.
+Original privilege/rate, custody, shipment use and income retain their order.
+Only the BG conversion is prevented; Junction's own Homeworld advantage retains
+immunity. A fresh public physical receipt omits the private original declaration
+snapshot. Consume the parent before one original Junction board arrival; world
+destinations have none. The existing continuously-alone hold is unchanged.
+[Source, native routes and limits](ADVISOR_AUTOMATIC_FLIPS.md#homeworld-and-junction-transport--24-october-2026).
+
+Disjoint helper/native-fixture lanes, bounded timing review and root integration
+pass **18 files218/218**, types/lint/build, nine native transport/response/
+GameTable SSR journeys and sixteen existing-profile paths. Genuine37/38/42/36-
+action public Advanced Homeworld sources earn native return, Junction own-world
+return, actual destination Intrusion and BG advisor arrival into empty Basin.
+Costs3/5/10/1 remain spent through either conversion outcome; original native
+privilege prevention still leaves the transport uncommitted. Lint feedback
+renames two fixture variables without relaxing checks or rule validation.
+Wider contributor/occupation/Nexus/Semuta combinations and remaining automatic
+producers stay open. No AI refinement, comprehensive/browser/deployed assurance
+or saved-room/D1/reset/restart/deployment operation.
+
+Next concrete conversion gaps include remote Face Dance source departures,
+sector-specific storm losses and special Ambassador/Discovery relocation.
+Harass withdrawal and Diplomat retreat origin already use the battle capture
+boundary; they do not need duplicate producers. Matching-group interpretation
+and complete Advanced/mode acceptance remain unfinished.
+
 **Advisor conversion after battle losses — 24 October. Prototyped / Partial.**
 Actual battle losses can now leave surviving bystanding advisors in a sourced
 Karama conversion response. Preserve casualties, payments, deaths and mandatory
@@ -39,10 +67,6 @@ unchanged base035be51. No production Semuta guard is relaxed. Full skill,
 reinforcement/replacement/Semuta combinations and other producers remain open.
 No AI refinement, comprehensive/browser/deployed assurance or saved-room/D1/
 reset/restart/deployment operation.
-
-Next native conversion work includes other withdrawals, special arrivals and
-matching-group flips. Battle, ground, transport and Gamont proofs do not certify
-all causes or complete Advanced modes.
 
 **Advisor conversion after Trip to Gamont — 24 October. Prototyped / Partial.**
 Gamont now completes its original card use and return/revelation before the

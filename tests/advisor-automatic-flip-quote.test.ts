@@ -11,6 +11,7 @@ import {
   type AutomaticAdvisorTransport,
   type AutomaticAdvisorGamont,
   type AutomaticAdvisorBattle,
+  type AutomaticAdvisorHomeworldTransport,
 } from '../game/advisor-automatic-flip';
 import { MOBILE_LOCATION, MOBILE_STRONGHOLD } from '../game/board';
 
@@ -18,6 +19,7 @@ type GroundSource = Extract<AutomaticAdvisorFlipSource, { producer: 'groundMovem
 type TransportSource = Extract<AutomaticAdvisorFlipSource, { producer: 'guildTransport' }>;
 type GamontSource = Extract<AutomaticAdvisorFlipSource, { producer: 'gamont' }>;
 type BattleSource = Extract<AutomaticAdvisorFlipSource, { producer: 'battleLosses' }>;
+type HomeworldSource = Extract<AutomaticAdvisorFlipSource, { producer: 'homeworldTransport' }>;
 
 function context(): AutomaticAdvisorFlipContext {
   return {
@@ -631,4 +633,176 @@ void test('battle validation reads only its six public context fields and the cu
   assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
   ctx.battle = false;
   assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+});
+
+function homeworldTransport(
+  kind: AutomaticAdvisorHomeworldTransport['kind'] = 'native',
+  destination = 'homeworld:richese',
+) {
+  const { ctx, source: ground } = held();
+  ctx.homeworlds = { custody: { visitors: {}, salusa: null } };
+  ctx.players[1].faction = kind === 'native' ? 'guild' : 'atreides';
+  ctx.players[1].shipped = true;
+  ctx.players[1].forces = destination.startsWith('homeworld:') ? {} : { [destination]: 3 };
+  if (kind === 'junction') ctx.players = [...ctx.players, { id: 'g', faction: 'guild', forces: {} }];
+  const transport: AutomaticAdvisorHomeworldTransport = {
+    event: 'fresh-public-homeworld-transport-event', kind, player: 'a', origin: 'imperial_basin',
+    destination, amount: 3, elite: 0, group: { 'imperial_basin:9': 2, 'imperial_basin:10': 1 },
+  };
+  const source: HomeworldSource = {
+    event: 'automatic-after-original-homeworld-transport', owner: ground.owner,
+    territory: ground.territory, turn: ground.turn, phase: 5,
+    forces: ground.forces, producer: 'homeworldTransport', transport,
+  };
+  ctx.players[0].advisors = {
+    ...ctx.players[0].advisors,
+    imperial_basin: { lockedTurn: 4, aloneFlipHold: source.event },
+  };
+  return { ctx, source };
+}
+
+void test('native Guild and Junction Homeworld transports retain exact public source shapes and current native destinations', () => {
+  for (const original of [
+    homeworldTransport(), homeworldTransport('native', 'homeworld:guild'),
+    homeworldTransport('junction'), homeworldTransport('junction', 'carthag:11'),
+  ]) {
+    const before = structuredClone(original);
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
+    assert.deepEqual(original, before);
+    assert.deepEqual(Object.keys(original.source).sort(), ['event', 'forces', 'owner', 'phase', 'producer', 'territory', 'transport', 'turn']);
+    assert.deepEqual(Object.keys(original.source.transport).sort(), ['amount', 'destination', 'elite', 'event', 'group', 'kind', 'origin', 'player']);
+  }
+  const salusa = homeworldTransport('junction', 'homeworld:emperor:salusa');
+  assert.throws(() => validateAutomaticAdvisorFlip(salusa.ctx, salusa.source), AutomaticAdvisorFlipError);
+  salusa.ctx.players = [...salusa.ctx.players, { id: 'e', faction: 'emperor', forces: {} }];
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(salusa.ctx, salusa.source));
+});
+
+void test('a Junction BG advisor arrival binds the actual destination group and deposited physical board counters', () => {
+  const { ctx, source } = homeworldTransport('junction', 'imperial_basin:9');
+  ctx.players[1].forces = {};
+  ctx.players[0].shipped = true;
+  source.transport.player = 'b';
+  source.transport.origin = 'hagga_basin';
+  source.transport.group = { 'hagga_basin:12': 2 };
+  source.transport.amount = 2;
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+  source.transport.destination = 'imperial_basin:10';
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+  const departed = homeworldTransport('junction', 'carthag:11');
+  departed.ctx.players[1].forces = { 'carthag:11': 2 };
+  assert.throws(() => validateAutomaticAdvisorFlip(departed.ctx, departed.source), AutomaticAdvisorFlipError);
+});
+
+void test('Homeworld transport rejects malformed metadata, missing native permissions, current locations and changed held groups', () => {
+  const changes: ((ctx: AutomaticAdvisorFlipContext, source: HomeworldSource) => void)[] = [
+    (_ctx, source) => { source.transport.event = ''; },
+    (_ctx, source) => { source.transport.player = 'missing'; },
+    (_ctx, source) => { source.transport.origin = 'missing'; },
+    (_ctx, source) => { source.transport.destination = 'homeworld:emperor'; },
+    (_ctx, source) => { source.transport.destination = 'reserves'; },
+    (_ctx, source) => { source.transport.destination = 'carthag:11'; },
+    (_ctx, source) => { source.transport.amount = 0; },
+    (_ctx, source) => { source.transport.amount = 2; },
+    (_ctx, source) => { source.transport.elite = -1; },
+    (_ctx, source) => { source.transport.elite = 4; },
+    (_ctx, source) => { source.transport.elite = 1.5; },
+    (_ctx, source) => { source.transport.group = {}; },
+    (_ctx, source) => { source.transport.group = { 'carthag:11': 3 }; },
+    (_ctx, source) => { source.transport.group = { 'imperial_basin:9': 3.5 }; },
+    (_ctx, source) => { source.transport.group = { 'imperial_basin:9': 3, 'imperial_basin:10': 0 }; },
+    (_ctx, source) => { source.transport.group = { 'imperial_basin:8': 3 }; },
+    (_ctx, source) => { source.transport.group = { 'imperial_basin:9.0': 3 }; },
+    (_ctx, source) => {
+      source.transport.origin = 'hagga_basin';
+      source.transport.group = { 'hagga_basin:12': 3 };
+    },
+    (ctx) => { ctx.players[1].faction = 'atreides'; },
+    (ctx) => { ctx.players[1].shipped = false; },
+    (ctx) => { delete ctx.players[1].shipped; },
+    (ctx) => { ctx.players = [...ctx.players, { ...ctx.players[1] }]; },
+    (_ctx, source) => { source.forces = { 'imperial_basin:9': 3 }; },
+  ];
+  for (const change of changes) {
+    const original = homeworldTransport();
+    change(original.ctx, original.source);
+    const before = structuredClone(original);
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+    assert.deepEqual(original, before);
+  }
+  const junction = homeworldTransport('junction', 'carthag:11');
+  junction.ctx.players = junction.ctx.players.filter((player) => player.faction !== 'guild');
+  assert.throws(() => validateAutomaticAdvisorFlip(junction.ctx, junction.source), AutomaticAdvisorFlipError);
+  for (const destination of ['carthag', 'carthag:10', 'carthag:11.0', 'homeworld:emperor:salusa']) {
+    const invalid = homeworldTransport('junction', destination);
+    assert.throws(() => validateAutomaticAdvisorFlip(invalid.ctx, invalid.source), AutomaticAdvisorFlipError);
+  }
+  for (const homeworldState of [undefined, null, [], false, 'homeworlds', {}, { custody: null }, { custody: [] }]) {
+    const original = homeworldTransport();
+    original.ctx.homeworlds = homeworldState;
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('Homeworld source receipts reject private original events and stale producer payloads at both layers', () => {
+  const { ctx, source } = homeworldTransport();
+  for (const field of ['homeworldShipmentEvent', 'card', 'nexusEvent', 'funds', 'permission']) {
+    for (const malformed of [
+      { ...source, [field]: 'private-original-state' },
+      { ...source, transport: { ...source.transport, [field]: 'private-original-state' } },
+    ]) {
+      assert.throws(() => validateAutomaticAdvisorFlip(ctx, malformed as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+    }
+  }
+  for (const malformed of [
+    { ...source, transport: null },
+    { ...source, transport: { ...source.transport, kind: 'guild' } },
+    { ...source, transport: { ...source.transport, group: null } },
+    { ...source, transport: transported().source.transport },
+  ]) {
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, malformed as unknown as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('Homeworld transport stays phase-five-only and leaves all earlier producer receipt shapes and windows unchanged', () => {
+  for (const original of [held(), transported(), gamont(false), battleResult()]) {
+    const before = JSON.stringify(original.source);
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
+    assert.equal(JSON.stringify(original.source), before);
+  }
+  for (const phase of [4, 6, 8]) {
+    const { ctx, source } = homeworldTransport();
+    ctx.phase = phase;
+    source.phase = phase;
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('Homeworld source validation never reads original shipment events, private module players or pretransfer funding', () => {
+  for (const original of [homeworldTransport(), homeworldTransport('junction', 'carthag:11')]) {
+    const custody = {};
+    for (const field of ['visitors', 'salusa', 'players']) {
+      Object.defineProperty(custody, field, {
+        get() { throw new Error(`Advisor transport helper read delegated world custody ${field}`); },
+      });
+    }
+    const homeworldState = { custody };
+    Object.defineProperty(homeworldState, 'players', {
+      get() { throw new Error('Advisor transport helper read private Homeworld players'); },
+    });
+    original.ctx.homeworlds = homeworldState;
+    for (const field of ['homeworldShipmentEvent', 'pendingHomeworldShipment', 'pendingAutomaticAdvisorHomeworldTransport']) {
+      Object.defineProperty(original.ctx, field, {
+        get() { throw new Error(`Advisor transport helper read private parent ${field}`); },
+      });
+    }
+    for (const player of original.ctx.players) {
+      for (const field of ['hand', 'leaders', 'spice', 'traitors', 'faceDancers', 'reserves', 'pledged', 'guildTransportPermission']) {
+        Object.defineProperty(player, field, {
+          get() { throw new Error(`Advisor transport helper read ${player.id} private funding or custody ${field}`); },
+        });
+      }
+    }
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
+  }
 });

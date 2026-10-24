@@ -1,5 +1,46 @@
 # Dune implementation status
 
+## 24 October 2026 — Advisor conversion after Homeworld/Junction transfer
+
+Native Guild board-to-world and board-origin Junction transport now hold
+resulting alone BG groups after typed payment/transfer and before occupation or
+fighter benefits. Preserve original interception/privilege/rate, custody,
+shipment use, income and ordinary movement. Junction's Homeworld permission/
+tariff remains immune while the separate BG advantage can be countered. The
+existing provisional continuously-alone duration is unchanged.
+
+An eight-field public receipt uses a fresh UUID and physical transfer metadata.
+The original declaration event contains a private state snapshot; keep it and
+the exact optional arrival only in the private parent. Check committed world
+custody/board counters rather than rerunning original pre-transfer legality.
+Consume the parent before original Junction Intrusion/territory entry once;
+world destinations have no arrival. No transport route or start gate opens.
+
+Disjoint helper/native-fixture lanes, bounded timing review and root integration
+pass **18 files218/218**, types/lint/build, nine actual native transport/response/
+GameTable SSR journeys and sixteen legal existing-profile paths. Public Advanced
+BG/Atreides/Guild enables Homeworlds through actual lobby controls, preserving
+base33 and original physical setup/Karama. Sources take37 native return,38
+Junction return,42 earned Intrusion and36 BG advisor-arrival actions. Actual
+costs3/5/10/1 remain spent through both conversion outcomes. Original native
+permission prevention leaves force, payment and shipment uncommitted. No played
+army, wallet, hand, phase, native reserve, stance or receipt is installed.
+
+Initial218/218 and types passed; lint rejected two test variables named module.
+Their scoped rename passes focused lint and the final frozen218/218, quick,
+build and runtime. No rule guard, source shape or lint check is weakened.
+Private proof and original-action HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-homeworld-flips/`.
+Frozen `frozen-integrated-2/report.json` binds tree
+`5365a5d6fba829c6bcee1cb1e00977ec41769912a32180062e52af0ca59645da`,
+2741 files on base `d83db397c0365421034a53315c5604ae1c525177`.
+Prose/reference overlays are separately reviewed/hashed. Standard controls
+render; no new callback/browser/mobile/deployed or complete-mode claim. Wider
+contributor/occupation/Nexus/Semuta compositions, remote Face Dance/storm/other
+producers, comprehensive assurance and full AI refinement remain due. No saved-
+room/D1, reset, restart or deployment operation.
+[Connected behavior and limits](ADVISOR_AUTOMATIC_FLIPS.md#homeworld-and-junction-transport--24-october-2026).
+
 ## 24 October 2026 — Advisor conversion after committed battle losses
 
 Supplied Advanced physical17/28 E now compose at native battle loss boundaries.

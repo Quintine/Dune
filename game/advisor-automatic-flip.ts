@@ -18,6 +18,17 @@ export type AutomaticAdvisorTransport = {
   group: Record<string, number>;
 };
 
+export type AutomaticAdvisorHomeworldTransport = {
+  event: string;
+  kind: 'native' | 'junction';
+  player: string;
+  origin: string;
+  destination: string;
+  amount: number;
+  elite: number;
+  group: Record<string, number>;
+};
+
 export type AutomaticAdvisorGamont = {
   event: string;
   player: string;
@@ -47,6 +58,7 @@ export type AutomaticAdvisorFlipSource = {
 } & (
   | { producer: 'groundMovement'; mover: string; move: number }
   | { producer: 'guildTransport'; transport: AutomaticAdvisorTransport }
+  | { producer: 'homeworldTransport'; transport: AutomaticAdvisorHomeworldTransport }
   | { producer: 'gamont'; gamont: AutomaticAdvisorGamont }
   | { producer: 'battleLosses'; battle: AutomaticAdvisorBattle }
 );
@@ -79,6 +91,7 @@ export type AutomaticAdvisorFlipContext = AdvisorSettlementContext & MobileBoard
     result: string;
   } | null;
   battle?: unknown;
+  homeworlds?: unknown;
 };
 
 export class AutomaticAdvisorFlipError extends Error {
@@ -218,6 +231,50 @@ function validateGamontSource(
     'Automatic advisor conversion lost its final CHOAM Mentat opportunity.');
 }
 
+function validateHomeworldTransportSource(
+  ctx: AutomaticAdvisorFlipContext,
+  source: Extract<AutomaticAdvisorFlipSource, { producer: 'homeworldTransport' }>,
+) {
+  const transport = source.transport;
+  requireFlip(record(ctx.homeworlds) && record(ctx.homeworlds.custody) && record(transport) &&
+    Object.keys(transport).sort().join(',') === 'amount,destination,elite,event,group,kind,origin,player' &&
+    identifier(transport.event) && (transport.kind === 'native' || transport.kind === 'junction') &&
+    identifier(transport.player) && identifier(transport.origin) && identifier(transport.destination) &&
+    positive(transport.amount) && nonnegative(transport.elite) && transport.elite <= transport.amount &&
+    record(transport.group) && Object.values(transport.group).every(positive) &&
+    Object.values(transport.group).reduce((total, count) => total + count, 0) === transport.amount,
+  'Automatic advisor conversion lost its public Homeworld transport receipt or module.');
+  const actors = ctx.players.filter((player) => player.id === transport.player);
+  const actor = actors[0];
+  requireFlip(actors.length === 1 && actor.shipped === true,
+    'Automatic advisor conversion lost its completed Homeworld transport slot.');
+  const places = gameTerritories(ctx);
+  const origin = places.find((place) => place.id === transport.origin);
+  const point = splitLocation(transport.destination);
+  const boardDestination = places.find((place) =>
+    transport.destination === `${point.territory}:${point.sector}` &&
+    place.id === point.territory && place.sectors.includes(point.sector));
+  const worldDestination = ctx.players.some((player) =>
+    transport.destination === `homeworld:${player.faction}` ||
+    (player.faction === 'emperor' && transport.destination === 'homeworld:emperor:salusa'));
+  requireFlip(origin && Object.keys(transport.group).every((key) => {
+    const selected = splitLocation(key);
+    return key === `${selected.territory}:${selected.sector}` && selected.territory === transport.origin &&
+      origin.sectors.includes(selected.sector);
+  }) && (source.territory === transport.origin ||
+    (boardDestination && source.territory === boardDestination.id)) &&
+    (transport.kind === 'native'
+      ? actor.faction === 'guild' && worldDestination
+      : ctx.players.filter((player) => player.faction === 'guild').length === 1 &&
+        (worldDestination || !!boardDestination)),
+  'Automatic advisor conversion needs the original native or Junction Homeworld transport locations.');
+  if (boardDestination) {
+    const deposited = actor.forces[transport.destination];
+    requireFlip(nonnegative(deposited) && deposited >= transport.amount,
+      'Automatic advisor conversion lost the Homeworld transport board deposit.');
+  }
+}
+
 function validateBattleSource(
   ctx: AutomaticAdvisorFlipContext,
   source: Extract<AutomaticAdvisorFlipSource, { producer: 'battleLosses' }>,
@@ -256,6 +313,8 @@ export function validateAutomaticAdvisorFlip(
       Object.keys(source).sort().join(',') === 'event,forces,move,mover,owner,phase,producer,territory,turn') ||
       (source.producer === 'guildTransport' &&
         Object.keys(source).sort().join(',') === 'event,forces,owner,phase,producer,territory,transport,turn') ||
+      (source.producer === 'homeworldTransport' &&
+        Object.keys(source).sort().join(',') === 'event,forces,owner,phase,producer,territory,transport,turn') ||
       (source.producer === 'gamont' &&
         Object.keys(source).sort().join(',') === 'event,forces,gamont,owner,phase,producer,territory,turn') ||
       (source.producer === 'battleLosses' &&
@@ -277,6 +336,7 @@ export function validateAutomaticAdvisorFlip(
     requireFlip(movers.length === 1 && positive(source.move) && movers[0].moved === source.move,
       'Automatic advisor conversion lost its original completed movement.');
   } else if (source.producer === 'guildTransport') validateTransportSource(ctx, source);
+  else if (source.producer === 'homeworldTransport') validateHomeworldTransportSource(ctx, source);
   else if (source.producer === 'gamont') validateGamontSource(ctx, source);
   else validateBattleSource(ctx, source);
   const forces = physicalGroup(owner, source.territory);
