@@ -1,4 +1,5 @@
 import { discoveryBotActions } from './discovery-options';
+import { atreidesFullPlanAction } from './atreides-full-plan';
 import { liveMovementPromises } from './movement-promises';
 import { ecazOccupyDialChoices, ecazOccupyOwnProfile, ecazOccupyPolicyActions } from './ecaz-occupy-options';
 import { quoteEcazOccupyDial } from './ecaz-occupy-battle';
@@ -2581,24 +2582,7 @@ function policyActions(g: GameView): Action[] {
       ];
     }
     if (d.kind === 'fullPlanOffer') {
-      const b = g.battle!;
-      const beneficiary = [b.attacker, b.defender].includes(me.id)
-        ? me.id
-        : me.ally;
-      if (
-        specialCard &&
-        beneficiary &&
-        [b.attacker, b.defender].includes(beneficiary)
-      )
-        return [
-          {
-            type: 'card',
-            mode: 'special',
-            card: specialCard.id,
-            target: b.attacker === beneficiary ? b.defender : b.attacker,
-          },
-        ];
-      return [{ type: 'decision', decline: true }];
+      return [atreidesFullPlanAction(g) ?? { type: 'decision', decline: true }];
     }
     // A legacy inspection gate is cleared by authoritative normalization.
     if (d.kind === 'fullPlanRead') return [];
@@ -3801,6 +3785,8 @@ function policyActions(g: GameView): Action[] {
   }
   if (g.phase === 6) {
     const b = g.battle;
+    const inspection = atreidesFullPlanAction(g);
+    if (inspection) return [inspection];
     if (b?.outcomeWindow && !b.outcomeWindow.closed) {
       if (![b.attacker, b.defender].includes(me.id) || b.outcomeWindow.ready.includes(me.id)) return [];
       return [{type: 'battleOutcomeReady', event: b.outcomeWindow.event}];

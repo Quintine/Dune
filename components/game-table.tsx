@@ -54,6 +54,7 @@ import { AmbassadorBoardMarkers } from './ambassador-board-markers';
 import { CharityClaim } from './charity-claim';
 import { FremenRevivalGrant } from './fremen-revival-grant';
 import { AdvisorPreparation } from './advisor-preparation';
+import { AtreidesFullPlan } from './atreides-full-plan';
 import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
 import { JunctionTransport } from './junction-transport';
@@ -1975,6 +1976,7 @@ export function GameTable({
           <NexusCards game={g} act={act} busy={busy} />
           <Recruits game={g} act={act} busy={busy} />
           <AdvisorPreparation game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
+          {g.decision?.kind !== 'fullPlanOffer' && <AtreidesFullPlan game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />}
           <NexusTraitors game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
           <DiscoveryPanel game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
           <LeaderSkillsPanel skills={g.leaderSkills} leaders={g.allLeaders} players={g.players} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
@@ -3311,38 +3313,7 @@ export function GameTable({
                 </>
               ) : g.decision.kind === 'fullPlanOffer' ? (
                 <>
-                  <p className="muted">
-                    You may spend your once-per-game special Karama to inspect
-                    either combatant’s full plan. The chosen player commits
-                    first, then only you receive the inspection.
-                  </p>
-                  {!!g.battle?.noFieldPlayers.length && (
-                    <p className="notice">
-                      Provisional power distinction: special Karama reads the
-                      complete committed No-Field plan, including dial and
-                      support. Ordinary Prescience still cannot request its dial.
-                      This private read does not reveal or materialize the marker
-                      before both plans seal.
-                    </p>
-                  )}
-                  <HelpTip topic="fullPlan" />
-                  {me.hand
-                    ?.filter(canActivateKarama)
-                    .flatMap((c) =>
-                      [g.battle!.attacker, g.battle!.defender].map((id) => (
-                        <div key={`${c.id}-${id}`}>
-                          {actionButton(
-                            `Spend Karama · inspect ${g.players.find((p) => p.id === id)?.name}`,
-                            {
-                              type: 'card',
-                              mode: 'special',
-                              card: c.id,
-                              target: id,
-                            },
-                          )}
-                        </div>
-                      )),
-                    )}
+                  <AtreidesFullPlan game={g} act={act} busy={busy} />
                   {actionButton('Keep special power for later', {
                     type: 'decision',
                     decline: true,

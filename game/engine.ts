@@ -10,6 +10,7 @@ import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile,
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
+import { quoteAtreidesFullPlan } from './atreides-full-plan';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
@@ -15347,9 +15348,13 @@ function auctionSpicePaymentFunded(g: Game, p: Player) {
 }
 function recordFullPlanInspection(g: Game, owner: string) {
   const p = getPlayer(g, owner);
+  const b = g.battle;
+  const bothSealed = b && b.plans[b.attacker] && b.plans[b.defender];
   log(
     g,
-    `${p.name} can now inspect the committed battle plan privately. The plan remains available until both plans are revealed.`,
+    bothSealed
+      ? `${p.name}'s inspection target has committed. Both plans reveal immediately; existing sealed plans cannot change.`
+      : `${p.name} can now inspect the committed battle plan privately. The plan remains available until both plans are revealed.`,
     { faction: p.faction, name: 'Full plan inspection' },
   );
 }
@@ -30774,6 +30779,31 @@ function actualSpecialKaramaCards(g: Game, p: Player) {
   return p.hand.filter(card => card.kind === 'special' && card.effect === 'karama' &&
     !karamaSpendingBlock(g, p, card, kullSpecialPurpose(p.faction)));
 }
+function atreidesFullPlanTiming(g: Game, p: Player) {
+  const b = g.battle;
+  const ownOffer = g.decision?.kind === 'fullPlanOffer' && g.decision.player === p.id;
+  return quoteAtreidesFullPlan({
+    status: g.status, phase: g.phase, advanced: g.advanced, owner: p,
+    blocked: g.truthtrance || g.response || (g.decision && !ownOffer) ||
+      g.phaseOpening || g.pendingKarama || g.pendingRevival || g.choamMarket ||
+      g.pendingTreacheryDiscard || g.pendingNullentropy
+      ? 'Resolve the current response, decision or card effect before special prescience.' : null,
+    battle: b ? { attacker: b.attacker, defender: b.defender, revealed: b.revealed,
+      // Preserve the existing special offer before shared pre-leader readiness;
+      // that separate opportunity still guards every actual plan commitment.
+      preparing: !!b.preparation,
+      fullPlan: !!b.fullPlan } : null,
+  });
+}
+function atreidesFullPlanView(g: Game, p: Player) {
+  if (g.status !== 'playing' || !g.advanced || p.faction !== 'atreides' ||
+      g.phase !== 6 || !g.battle) return null;
+  const quote = atreidesFullPlanTiming(g, p);
+  const cards = p.hand.filter(card => canUseAsKaramaRole(g, p, card) &&
+    !karamaSpendingBlock(g, p, card, kullSpecialPurpose(p.faction))).map(card => card.id);
+  return { ...quote, cards,
+    blocked: quote.blocked ?? (cards.length ? null : 'A spendable Karama card is required.') };
+}
 function ecazSpecialKaramaContext(g: Game, p: Player) {
   const b = g.battle;
   return { status: g.status, phase: g.phase, advanced: g.advanced, owner: p,
@@ -31036,21 +31066,12 @@ export function prepareSpecialKaramaIntent(
     );
     return { ...base, kind: 'fremen', territory: t };
   } else if (p.faction === 'atreides') {
-    const b = g.battle;
-    requireRule(
-      g.phase === 6 &&
-        !g.response &&
-        g.decision?.kind === 'fullPlanOffer' &&
-        g.decision.player === p.id &&
-        b &&
-        !b.revealed &&
-        !b.preparation &&
-        !Object.keys(b.plans).length,
-      'Choose special prescience after battle preparation and before plans are sealed.',
-    );
+    const quote = atreidesFullPlanTiming(g, p);
+    requireRule(!quote.blocked, quote.blocked ?? 'Special prescience is unavailable.');
+    const b = g.battle!;
     const target = stringField(action.target);
     requireRule(
-      [b.attacker, b.defender].includes(target),
+      quote.targets.includes(target),
       'Choose a player in this battle.',
     );
     // Distinct special Karama inspects the sealed plan, not the token inventory.
@@ -31425,6 +31446,7 @@ function resolveSpecialKaramaEffect(g: Game, p: Player, card: Card, intent: Spec
       g,
       `${p.name} used special Karama to inspect ${getPlayer(g, target).name}’s entire battle plan.`,
     );
+    if (b.plans[target]) recordFullPlanInspection(g, p.id);
   } else if (intent.kind === 'guildHomeworld') {
     const shipper = getPlayer(g, intent.target);
     p.specialKaramaUsed = true;
@@ -35831,7 +35853,6 @@ function applyActionInner(
       log(g, `${p.name} announced a Battle Plan without a leader or Cheap Hero; no battle cards can be played.`);
     if (b.fullPlan?.target === id) {
       recordFullPlanInspection(g, b.fullPlan.owner);
-      return g;
     }
     if (b.plans[b.attacker] && b.plans[b.defender]) {
       for (const playerId of b.noFieldPlayers ?? []) {
@@ -37147,6 +37168,7 @@ export function viewGame(state: Game, id: string) {
         }
       : null,
     richeseSpecialKarama: richeseSpecialKaramaView(g, me),
+    atreidesFullPlan: atreidesFullPlanView(g, me),
     ...(me.faction === 'ecaz' && g.advanced && g.battle
       ? { ecazSpecialKarama: ecazSpecialKaramaView(g, me) } : {}),
     ...(g.moritaniSpecialKarama?.source.owner === me.id && g.moritaniSpecialKarama.stage === 'offer'

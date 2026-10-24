@@ -76,7 +76,7 @@ export const HELP = {
   choamCombat:
     'CHOAM may reserve spice for an ally’s advanced battle support. The ally chooses the payment split when sealing. A traitor victory costs the winner no support; any revealed traitor prevents CHOAM force-payment income.',
   fullPlan:
-    'Atreides may spend its Advanced special Karama once per game to inspect the full committed plan. Only Atreides receives dial, leader, actual played faces, support and KH while the other combatant plans; no inspection confirmation. The provisional No-Field distinction permits this separate special power while ordinary dial Prescience stays barred. A private read does not reveal or materialize the token before both plans seal.',
+    'Atreides may spend its Advanced special Karama once per game after preparation and before public reveal, even after declining the first offer or one plan sealing. A sealed target is read immediately; an unsealed target commits first. Existing sealed plans cannot change. Only Atreides receives the private inspection; no confirmation. Both seals reveal immediately. The provisional No-Field distinction permits this separate special power while ordinary dial Prescience stays barred; private reading does not materialize its token.',
   guildShipment:
     'The Guild may spend its special Karama once per game to stop a declared off-planet shipment before payment or arrival. The shipper keeps its forces and spice and may still move. Fremen’s southern reinforcements are on-planet.',
   specialKarama:
@@ -2715,6 +2715,28 @@ export const RULE_TOPICS: RuleTopic[] = [
       },
     ],
     related: ['revival'],
+  },
+  {
+    id: 'atreides-full-plan',
+    title: 'Atreides: special full Battle Plan inspection',
+    category: 'Factions',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'Spend the native Advanced special Karama before public revelation, including after one plan seals.',
+    steps: [
+      'After battle preparation, spend a projected available Karama and select either combatant. Keeping the power at the initial offer preserves later use before revelation, without opening another mandatory offer.',
+      'If the target has sealed, inspect the original full plan immediately. Otherwise that target commits next. Only Atreides receives the plan and selected card faces; an ally gains no automatic access.',
+      'Already sealed plans stay fixed. If you have already sealed, the other combatant’s last commitment reveals both plans immediately. The special power grants no replanning, payment refund or separate reading pause.',
+      'Preparation order and target-first sequencing remain provisional. The distinct No-Field permission retains ordinary dial Prescience’s prohibition and does not materialize the marker during private inspection.',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Shared before-reveal timing replaces the initial-offer deadline; sealed target reading and target-last public reveal preserve original commitments.', evidence: ['game/atreides-full-plan.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Initial and persistent later controls share projected spendable physical cards and combatant targets, with unavailable and own-sealed guidance.', evidence: ['components/atreides-full-plan.tsx', 'components/game-table.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'The existing own/allied target preference shares the legal projection at initial and later windows. Strategy and calibration remain deferred.', evidence: ['game/atreides-full-plan.ts', 'game/bots.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'Supplied source deadline, retained provisional sequencing and same-action last-seal limitation are explicit.', evidence: ['docs/ATREIDES_FULL_PLAN_TIMING.md', 'docs/RULE_DECISIONS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Genuine49/50-action public setup, paid acquisition, shipments and movement create the native battle. Frozen11-file126/126, types/lint/build, five actual control/gameplay/table-SSR journeys and eight existing-profile paths pass. Full modes, broader combinations and comprehensive/browser/deployed assurance remain open.', evidence: ['tests/atreides-full-plan-window.test.ts', 'tests/atreides-full-plan-ui.test.tsx', 'tests/fixture-atreides-full-plan-window.ts', 'tests/full-plan.test.ts', 'tests/no-field-full-plan.test.ts'] },
+    ],
+    related: ['card-karama', 'advanced-combat', 'battle-cards'],
   },
   {
     id: 'card-karama',

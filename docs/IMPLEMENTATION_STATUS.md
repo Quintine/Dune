@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 24 October 2026 — Atreides special inspection until public reveal
+
+Use supplied physical27 F's before-reveal deadline after declining the original
+special offer, including one committed plan. A focused public-state timing quote
+serves preflight and owner-only card/target projection; persistent controls and
+minimal existing-profile preference reuse it. A sealed target is read at once;
+an unsealed one retains target-first commitment. Existing plans, physical pieces,
+support costs and binding fields stay fixed. Removing the target-branch early
+return lets the second seal reach normal public reveal once, without a new
+reading acknowledgement. Preparation priority and sequencing remain provisional.
+
+Disjoint fixture/control lanes and bounded review pass11 files126/126,
+types/lint/build, five actual control/gameplay/GameTable SSR journeys through
+Collection and eight profile paths accepting eight proposals. Genuine49/50
+public native Advanced actions include an actual one-spice Shield auction,
+two four-spice shipments and real Arrakeen ground movement. No played phase,
+army, wallet, hand or plan is assigned. Core and existing No-Field tests now
+retain late permission rather than the obsolete first-offer deadline; an
+unrelated owner's late read retains private entitlement.
+
+Feedback catches and removes an unintended shared pre-leader prerequisite absent
+from original special preflight, retaining its separate gate on every plan seal.
+Exact repaired Semuta/Atreides1/1 passes; later type feedback repairs existing
+reference metadata usage and two test assertions. Final source is frozen through
+all checks. Full modes, wider optional combinations, comprehensive/browser/
+deployed assurance and AI refinement remain unfinished. No saved-room/D1/reset/
+restart/deployment operation.
+[Source, exact proof and limits](ATREIDES_FULL_PLAN_TIMING.md#before-reveal-window--24-october-2026).
+Private proof:20261024-atreides-full-plan-window/frozen-integrated-3.
+
 ## 24 October 2026 — Native advisor preparation before first shipment
 
 Expose the supplied Advanced BG after-Spice/Nexus window in phases2–5 at quiet

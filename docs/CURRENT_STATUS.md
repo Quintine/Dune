@@ -16,6 +16,26 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Atreides special inspection before reveal — 24 October. Prototyped / Partial.**
+Supplied physical27 F now controls the native special Karama deadline. Declining
+the original offer preserves quiet later use with zero or one sealed plans.
+A sealed target is privately readable immediately; an unsealed target commits
+next. Existing plans cannot change, and a target that seals last reaches the
+original public reveal without a reading acknowledgement or deadlock.
+Persistent controls and minimal bots share spendable-card/target permission.
+Ordinary preparation priority and target-first sequencing remain provisional.
+[Source, continuation and bounded proof](ATREIDES_FULL_PLAN_TIMING.md#before-reveal-window--24-october-2026).
+
+Disjoint fixture/control lanes and bounded source/continuation review pass
+**11 files126/126**, types/lint/build, five actual control/gameplay/GameTable SSR
+journeys into Collection and eight existing-profile paths accepting eight
+inspection proposals. Genuine49/50-action public Advanced setup, a paid Shield
+auction, two paid shipments and actual ground movement supply the battle.
+Feedback removes an unintended new pre-leader restriction and repairs reference
+metadata/two test type assertions. Full modes, wider combinations, comprehensive/
+browser/deployed acceptance and AI refinement remain unfinished. No saved-room,
+D1, reset, restart or deployment operation.
+
 **Native advisor preparation — 24 October. Prototyped / Partial.**
 Advanced Bene Gesserit can now declare preparation at quiet boundaries in
 Charity, Bidding, Revival and before the first actual shipment, including after

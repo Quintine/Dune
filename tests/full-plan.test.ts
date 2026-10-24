@@ -222,7 +222,22 @@ void test('Atreides may inspect an unrelated battle without giving its ally the 
   g = applyAction(g, 'e', targetPlan);
   assert.equal(g.battle?.revealed, true);
 });
-void test('declining preserves the power and card, offers independently of hidden cards, and cannot be reopened mid-battle', () => {
+void test('unrelated Atreides may decline then inspect an already sealed combatant without granting its ally access', () => {
+  let g = offer(fixture(true));
+  g.players[0].ally = 'b';
+  g.players[3].ally = 'a';
+  g = applyAction(g, 'a', { type: 'decision', decline: true });
+  g = applyAction(g, 'g', { type: 'battlePlan', dial: 0, support: 0, leader: 'guild-0' });
+  const sealed = structuredClone(g.battle!.plans.g);
+  g = inspect(g, 'g');
+  assert.deepEqual(viewGame(g, 'a').battle?.fullPlanInsight?.plan, sealed);
+  for (const actor of ['b', 'e', 'g'])
+    assert.equal(viewGame(g, actor).battle?.fullPlanInsight, null);
+  assert.deepEqual(g.battle?.plans.g, sealed);
+  g = applyAction(g, 'e', targetPlan);
+  assert.equal(g.battle?.revealed, true);
+});
+void test('declining preserves the power and card and allows later use before reveal without reopening the offer', () => {
   const before = fixture();
   const offered = offer(before);
   before.players[0].hand = [];
@@ -233,7 +248,8 @@ void test('declining preserves the power and card, offers independently of hidde
   });
   assert.equal(declined.players[0].specialKaramaUsed, undefined);
   assert.ok(declined.players[0].hand.some((c) => c.id === karama.id));
-  assert.throws(() => inspect(declined), /preparation/);
+  assert.equal(declined.decision, null);
+  assert.equal(inspect(declined).battle?.fullPlan?.target, 'e');
   assert.ok(applyAction(declined, 'a', ownPlan).battle?.plans.a);
 });
 void test('ordinary prescience cancellation does not suppress special inspection', () => {

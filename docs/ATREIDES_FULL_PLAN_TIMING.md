@@ -1,5 +1,90 @@
 # Atreides full-plan interaction audit
 
+## Before-reveal window — 24 October 2026
+
+**Prototyped / Partial.** The authorized supplied revision, physical **p27 F**,
+allows the native Advanced special Karama before Battle Plans are revealed.
+The initial offer after preparation remains, but declining it no longer forfeits
+this battle's later opportunity. A quiet boundary with zero or one sealed plans
+permits the same held spendable card and once-per-game use, including Atreides
+outside the current battle. This supersedes the older pre-first-seal deadline
+documented in the historical audit below; no explicit user decision fixed it.
+
+A focused public-state timing quote serves native preflight and the private
+owner-only projection. It never reads the opposing plan. Persistent controls
+reuse that permission and original special-card action; both combatants remain
+selectable. The initial offer uses those same controls, with its separate keep
+button. Minimal bots retain their existing own/allied target preference and
+use the shared permission at the initial or later window. No strategy tuning.
+
+Selecting an already sealed target immediately makes its original committed
+plan and selected physical card faces available to Atreides alone. Selecting an
+unsealed target retains the existing target-first rule. Already sealed fields,
+physical cards, forces, support payments and Truthtrance commitments are not
+reopened or refunded. The private read does not itself materialize a No-Field;
+the previously recorded distinction remains unchanged.
+
+If Atreides has already sealed, a target that commits last completes both
+plans and the normal public reveal happens in that same action. There is no
+new reading pause or acknowledgement and neither combatant can revise its
+plan. This deliberately preserves the existing automatic reveal protocol.
+Target-first sequencing and Voice/ordinary Prescience preparation priority
+remain provisional implementation compositions; the source supplies the
+before-reveal deadline rather than those network ordering details. Current
+response, decision, Truthtrance, card-effect and preparation priority remains.
+
+The genuine three-seat fixture uses public native Advanced setup and original
+undealt card/Spice positions. Atreides earns its Shield at an actual one-spice
+auction, pays four to ship two forces and moves two from Arrakeen; Emperor pays
+four to ship two into that territory. Native preparation reaches the original
+offer, which is actually declined. No played phase, army, wallet, hand or plan
+is assigned. Branches use real legal plan actions in either sealing order.
+The source prefix is49 actions at the original offer or50 after its decline.
+
+### Current scoped proof
+
+The frozen **11-file126/126** affected offline union, `npm run check:quick`,
+production build and actual changed-control smoke pass. Nine new native-window
+cases, seven UI cases and an unrelated-owner late read cover immediate sealed
+inspection, target-first continuation, own-sealed target-last reveal, self target,
+unchanged plans, physical cost, rejected timing/target/card choices and all four
+existing profiles. Earlier No-Field assertions retain the original marker and
+ordinary planning rather than asserting the obsolete deadline.
+
+Five actual new-component callback/gameplay/full GameTable SSR journeys reach
+Collection: initial, later zero-seal, target already sealed, own already sealed
+and own sealed self target. Eight own-view profile paths (zero/one seal for each
+profile) accept eight original inspection actions and continue the native battle.
+This is runtime and server-rendered control evidence, not browser/hydration,
+mobile, complete-game or deployed certification.
+
+First frozen feedback was125/126: adding a new shared pre-leader readiness guard
+incorrectly blocked an existing Richese/Semuta initial offer. The repaired quote
+retains the original Voice/Prescience preparation priority, while shared readiness
+continues to guard actual plan commitments. The exact failing case passes1/1.
+Second frozen tests pass126/126; type feedback then corrects checklist schema
+metadata and two intentional test assertion types, with no rule behavior change.
+Final types/lint/build and all scoped proof pass on unchanged source.
+
+The source-bound proof is based on `660b0a0c258aeab6b3002a42a1f5ef6d527c1006`,
+tree `dee3d11ca7dbfc6454530650087ce25967cd5d16e5b9694ce962a52e092d00ff`
+(2711 nonignored files). Private reports/logs/control renderings remain outside
+Git in `20261024-atreides-full-plan-window/frozen-integrated-3`; the final
+checkpoint prose/reference overlay is reviewed separately with source hashes.
+
+Relevant paths: [timing and policy](../game/atreides-full-plan.ts),
+[controls](../components/atreides-full-plan.tsx),
+[native fixture](../tests/fixture-atreides-full-plan-window.ts),
+[native regressions](../tests/atreides-full-plan-window.test.ts),
+[control regressions](../tests/atreides-full-plan-ui.test.tsx),
+[existing full-plan cases](../tests/full-plan.test.ts) and
+[existing No-Field cases](../tests/no-field-full-plan.test.ts).
+
+Full Basic/Advanced/expansion modes, wider optional combinations, comprehensive
+rules/save/privacy/custody/browser/deployed acceptance and full AI remain
+unfinished. No saved-room, D1, reset, restart or deployment operation is needed
+for this slice. The historical evidence below retains its original date/scope.
+
 13 September 2026. This audit verifies the existing native Advanced interaction
 paths without promoting an implementation timing choice to an official ruling.
 The public Advanced and unfinished expansion gates remain closed.

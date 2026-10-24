@@ -170,7 +170,7 @@ void test('each permitted ordinary element can answer against a concealed marker
     const declined = applyNoFieldFullPlanStep(fixture.game, fixture.declineStep);
     assert.equal(noFieldFullPlanPlayer(declined, atreides).specialKaramaUsed, undefined);
     assert.ok(noFieldFullPlanPlayer(declined, atreides).hand.some(c => c.id === cards.karama.id));
-    rejectedUnchanged(declined, atreides, fixture.inspectStep.action, /preparation/);
+    assert.equal(viewGame(declined, atreides).atreidesFullPlan?.blocked, null);
     // No special target-first gate survives decline: Atreides may seal first.
     const first = applyNoFieldFullPlanStep(declined, fixture.planActions[1]);
     assert.equal(first.battle!.revealed, false);
