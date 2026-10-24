@@ -1,5 +1,20 @@
 # Rule decision index
 
+## Advisor conversion during storm traversal — 24 October 2026
+
+Compose supplied Advanced physical17/28 E with actual current-sector storm
+losses that leave advisors alive and alone elsewhere in the same territory.
+Under the 14 October authority, provisionally finish all current-sector losses,
+including Fremen allocation choices, before the conversion counter and remaining
+traversal. Protection keeps its original earlier priority. Hold surviving
+advisors through unresolved casualty choices; an empty queue is not sufficient.
+Cancel only conversion, preserving actual losses and the existing continuously-
+alone duration. A public five-field sector receipt omits forecasts, protection
+and private continuation. Consume its private parent before traversing the next
+sector or completing the storm once. Later sectors can still kill the group;
+same-sector destruction creates no conversion.
+[Source, continuation and limits](ADVISOR_AUTOMATIC_FLIPS.md#storm-casualties-before-remaining-traversal--24-october-2026).
+
 ## Advisor conversion after Face Dance — 24 October 2026
 
 Compose supplied Advanced physical17/28 E with physical38 A's completed

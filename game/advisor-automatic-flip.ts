@@ -1,6 +1,7 @@
 import type { FactionId } from './catalog';
 import { gameTerritories, splitLocation, type MobileBoard } from './board';
 import { presenceAt, type ForcePresence } from './force-presence';
+import { stormExposesTerritory, stormSectorAfter } from './disaster-rules';
 
 export type AdvisorStance = {
   lockedTurn?: number;
@@ -59,6 +60,14 @@ export type AutomaticAdvisorFaceDance = {
   returned: Record<string, number>;
 };
 
+export type AutomaticAdvisorStorm = {
+  event: string;
+  from: number;
+  distance: number;
+  traversed: number;
+  sector: number;
+};
+
 export type AutomaticAdvisorFlipSource = {
   event: string;
   owner: string;
@@ -73,6 +82,7 @@ export type AutomaticAdvisorFlipSource = {
   | { producer: 'gamont'; gamont: AutomaticAdvisorGamont }
   | { producer: 'battleLosses'; battle: AutomaticAdvisorBattle }
   | { producer: 'faceDance'; faceDance: AutomaticAdvisorFaceDance }
+  | { producer: 'storm'; storm: AutomaticAdvisorStorm }
 );
 
 export type AutomaticAdvisorFlipPlayer = ForcePresence & {
@@ -104,6 +114,14 @@ export type AutomaticAdvisorFlipContext = AdvisorSettlementContext & MobileBoard
   } | null;
   battle?: unknown;
   homeworlds?: unknown;
+  storm?: number;
+  shieldWallDestroyed?: boolean;
+  stormResolution?: {
+    from: number;
+    distance: number;
+    traversed: number;
+    pending: readonly string[];
+  } | null;
 };
 
 export class AutomaticAdvisorFlipError extends Error {
@@ -137,7 +155,7 @@ function otherPresence(ctx: AdvisorSettlementContext, player: AutomaticAdvisorFl
 
 function currentWindow(ctx: AutomaticAdvisorFlipContext) {
   return ctx.advanced === true && ctx.status === 'playing' &&
-    (ctx.phase === 5 || ctx.phase === 6 || ctx.phase === 8) && positive(ctx.turn);
+    (ctx.phase === 0 || ctx.phase === 5 || ctx.phase === 6 || ctx.phase === 8) && positive(ctx.turn);
 }
 
 /** A supported committed producer opens a response for these current groups.
@@ -367,6 +385,29 @@ function validateFaceDanceSource(
   }
 }
 
+function validateStormSource(
+  ctx: AutomaticAdvisorFlipContext,
+  source: Extract<AutomaticAdvisorFlipSource, { producer: 'storm' }>,
+) {
+  const receipt = source.storm;
+  requireFlip(record(receipt) &&
+    Object.keys(receipt).sort().join(',') === 'distance,event,from,sector,traversed' &&
+    identifier(receipt.event) && nonnegative(receipt.from) && receipt.from <= 18 &&
+    ctx.storm === receipt.from && positive(receipt.distance) && receipt.distance <= 40 &&
+    positive(receipt.traversed) && receipt.traversed <= receipt.distance &&
+    positive(receipt.sector) && receipt.sector <= 18 &&
+    receipt.sector === stormSectorAfter(receipt.from, receipt.traversed),
+  'Automatic advisor conversion lost its exact public current-sector storm receipt.');
+  const current = ctx.stormResolution;
+  requireFlip(record(current) && current.from === receipt.from && current.distance === receipt.distance &&
+    current.traversed === receipt.traversed && Array.isArray(current.pending) && current.pending.length === 0,
+  'Automatic advisor conversion must finish the original current-sector storm casualties first.');
+  const place = gameTerritories(ctx).find((candidate) => candidate.id === source.territory);
+  requireFlip(place && place.sectors.includes(receipt.sector) &&
+    stormExposesTerritory(place.id, ctx.shieldWallDestroyed === true),
+  'Automatic advisor conversion needs its current exposed storm territory.');
+}
+
 /** Validate the same committed producer and exact held group before either response outcome. */
 export function validateAutomaticAdvisorFlip(
   ctx: AutomaticAdvisorFlipContext,
@@ -384,10 +425,12 @@ export function validateAutomaticAdvisorFlip(
       (source.producer === 'battleLosses' &&
         Object.keys(source).sort().join(',') === 'battle,event,forces,owner,phase,producer,territory,turn') ||
       (source.producer === 'faceDance' &&
-        Object.keys(source).sort().join(',') === 'event,faceDance,forces,owner,phase,producer,territory,turn')) &&
+        Object.keys(source).sort().join(',') === 'event,faceDance,forces,owner,phase,producer,territory,turn') ||
+      (source.producer === 'storm' &&
+        Object.keys(source).sort().join(',') === 'event,forces,owner,phase,producer,storm,territory,turn')) &&
     identifier(source.event) && identifier(source.owner) && identifier(source.territory) &&
     positive(source.turn) && source.turn === ctx.turn &&
-    source.phase === (source.producer === 'gamont' ? 8 :
+    source.phase === (source.producer === 'storm' ? 0 : source.producer === 'gamont' ? 8 :
       source.producer === 'battleLosses' || source.producer === 'faceDance' ? 6 : 5) &&
     currentWindow(ctx) && source.phase === ctx.phase,
   'Automatic advisor conversion lost its original current-turn committed producer.');
@@ -406,7 +449,8 @@ export function validateAutomaticAdvisorFlip(
   else if (source.producer === 'homeworldTransport') validateHomeworldTransportSource(ctx, source);
   else if (source.producer === 'gamont') validateGamontSource(ctx, source);
   else if (source.producer === 'battleLosses') validateBattleSource(ctx, source);
-  else validateFaceDanceSource(ctx, source);
+  else if (source.producer === 'faceDance') validateFaceDanceSource(ctx, source);
+  else validateStormSource(ctx, source);
   const forces = physicalGroup(owner, source.territory);
   requireFlip(record(source.forces) && Object.keys(forces).length > 0 &&
     Object.values(forces).every(positive) && Object.values(source.forces).every(positive) &&

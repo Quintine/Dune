@@ -16,6 +16,30 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Advisor conversion during storm traversal — 24 October. Prototyped / Partial.**
+Current-sector losses now capture surviving alone advisors before the original
+traversal continues. Retain them through unresolved Fremen casualty choices;
+an empty pending queue alone does not mean ready. The selected post-casualty,
+pre-next-sector priority is explicitly provisional. Original protection remains
+earlier; final storm bookkeeping remains later. Public sector evidence omits
+forecasts/protection/private continuation. Prevent only conversion and consume
+the private parent before the original traversal resumes once.
+[Source and native routes](ADVISOR_AUTOMATIC_FLIPS.md#storm-casualties-before-remaining-traversal--24-october-2026).
+
+Disjoint helper/native-fixture lanes, bounded continuation review and root
+integration pass **17 files220/220**, types/lint/build, five native Storm/response/
+GameTable SSR journeys and eight legal existing-profile paths. Genuine48-action
+public Advanced BG/Atreides/Emperor sources earn original base33, actual first
+dials2/3, paid shipment/Intrusion and native turn-two Storm Cards3/4. Both
+responses preserve Atreides' sector9 loss. Ending9 leaves BG10 alive; continuing
+through10 then destroys it after either response. Same-sector destruction leaves
+no conversion. A controlled mixed-Fremen case preserves original casualty
+priority. Type feedback repairs only an empty-array fixture assertion. Wider
+Fremen/CHOAM/Jubba/Ecological Storm/Homeworld/Nexus combinations, special
+relocation and matching-group interpretation stay open. No AI refinement,
+comprehensive/browser/deployed assurance or saved-room/D1/reset/restart/deployment
+operation.
+
 **Advisor conversion after Face Dance — 24 October. Prototyped / Partial.**
 Completed replacement now captures surviving alone advisors at remote board
 sources and zero-replacement targets. Original army return, replacement, leader
@@ -40,8 +64,8 @@ Homeworld/Nexus combinations with this counter remain open. No AI refinement,
 comprehensive/browser/deployed assurance or saved-room/D1/reset/restart/deployment
 operation.
 
-Next conversion work includes sector-specific storm losses and special
-Ambassador/Discovery relocation. Matching-group interpretation and complete
+Next conversion work includes special Ambassador/Discovery relocation.
+Matching-group interpretation and complete
 Advanced/mode acceptance remain unfinished.
 
 **Advisor conversion after Homeworld/Junction transport — 24 October. Prototyped / Partial.**

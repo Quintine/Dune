@@ -226,6 +226,67 @@ void test('printed counter-cancellation of BG storm protection restores genuine 
   assert.equal(player(g, 'f').elites?.tanks, 1);
   assert.equal(g.stormResolution, null);
 });
+void test('controlled storm staging holds alone advisors until the original mixed Fremen casualties finish', () => {
+  for (const prevented of [false, true]) {
+    const f = fixture();
+    // Controlled conserved placement, not an earned native setup journey:
+    // the existing mixed Red Chasm group still owns the real casualty choice.
+    const bg = player(f.g, 'b'), emperor = player(f.g, 'e');
+    bg.forces['the_minor_erg:8'] = 1;
+    bg.reserves--;
+    bg.advisors = { the_minor_erg: {} };
+    emperor.forces['the_minor_erg:7'] = 1;
+    emperor.reserves--;
+
+    let g = pass(storm(f), 'stormProtection');
+    assert.equal(player(g, 'e').forces['the_minor_erg:7'], undefined);
+    assert.equal(player(g, 'e').tanks, 1);
+    assert.equal(g.decision?.kind, 'stormLosses');
+    if (g.decision?.kind !== 'stormLosses') assert.fail('The original Fremen casualty choice must remain first.');
+    assert.equal(g.decision.key, 'red_chasm:7');
+    assert.equal(g.decision.amount, 2);
+    assert.equal(g.response, null, 'The held conversion must not interrupt mandatory Fremen losses.');
+    const held = g.pendingAutomaticAdvisorFlips?.find(source =>
+      source.owner === 'b' && source.territory === 'the_minor_erg');
+    assert.ok(held, 'The storm must capture the already-alone group before exposing the casualty choice.');
+    assert.equal(held.producer, 'storm');
+    assert.equal(held.phase, 0);
+    assert.deepEqual(held.forces, { 'the_minor_erg:8': 1 });
+    assert.equal(player(g, 'b').advisors?.the_minor_erg?.aloneFlipHold, held.event);
+    assert.equal(g.stormResolution?.traversed, 1);
+    assert.equal(g.storm, 6);
+    assert.deepEqual(g.stormResolution?.pending, [], 'The last casualty choice has already popped its queue item.');
+    assert.equal(g.pendingAutomaticAdvisorStorm?.ready, false, 'An unresolved casualty choice is not a ready sector.');
+
+    g = act(g, 'f', { type: 'decision', elite: 1 });
+    assert.equal(g.decision, null);
+    assert.equal(g.response?.kind, 'advisorFlip');
+    assert.equal(g.response?.automaticAdvisorFlip?.event, held.event);
+    assert.equal(g.pendingAutomaticAdvisorStorm?.ready, true);
+    assert.deepEqual(g.stormResolution?.pending, []);
+    assert.equal(g.stormResolution?.traversed, 1);
+    assert.equal(player(g, 'f').forces['red_chasm:7'], 2);
+    assert.equal(player(g, 'f').elites?.forces['red_chasm:7'], 1);
+    assert.equal(player(g, 'f').tanks, 2);
+    assert.equal(player(g, 'f').elites?.tanks, 1);
+    const physical = g.players.map(p => ({ id: p.id, forces: structuredClone(p.forces),
+      reserves: p.reserves, tanks: p.tanks, elites: structuredClone(p.elites) }));
+
+    g = prevented ? cancel(g, f, false) : pass(g, 'advisorFlip');
+    assert.notEqual(g.response?.kind, 'advisorFlip');
+    assert.equal(g.storm, 7);
+    assert.equal(g.stormResolution, null);
+    assert.equal(g.phase, 1);
+    assert.ok(!g.pendingAutomaticAdvisorFlips?.length);
+    assert.deepEqual(g.players.map(p => ({ id: p.id, forces: structuredClone(p.forces),
+      reserves: p.reserves, tanks: p.tanks, elites: structuredClone(p.elites) })), physical,
+    'Finishing the conversion must not repeat any storm casualty or physical transfer.');
+    assert.equal(!!player(g, 'b').advisors?.the_minor_erg, prevented);
+    if (prevented)
+      assert.equal(player(g, 'b').advisors?.the_minor_erg?.aloneFlipHold, held.event);
+    assert.equal(g.discard.filter(card => card.id === f.printed).length, Number(prevented));
+  }
+});
 void test('both forms cancel only a newly shipped typed Fremen cohort in the storm, leaving earlier occupants intact', () => {
   for (const bg of [false, true]) {
     const f = fixture();

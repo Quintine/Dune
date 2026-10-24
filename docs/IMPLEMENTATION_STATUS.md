@@ -1,5 +1,49 @@
 # Dune implementation status
 
+## 24 October 2026 — Advisor conversion between storm sectors
+
+Supplied physical17/28 E's counter now follows actual current-sector losses
+that leave surviving advisors alone elsewhere in the same territory. Original
+CHOAM/Fremen protection remains earlier. Preserve the group through unresolved
+Fremen casualty choices, including when the last pending item has already been
+popped. Under the 14 October authority, finishing all current-sector losses
+before conversion and remaining traversal is explicit provisional composition.
+
+A public five-field event/from/distance/traversed/sector receipt selects only
+current movement facts. The private parent separately binds readiness and the
+original traversal/source cursor. Forecasts, protection and private continuation
+stay out of the response and Karama source. Prevention changes only conversion;
+retain actual losses and the existing continuously-alone hold. Consume the
+parent before the next sector/final storm bookkeeping once. Later sectors can
+still destroy either stance; a group destroyed in the same sector cannot flip.
+
+Disjoint helper/native-fixture lanes, bounded timing review and root integration
+pass **17 files220/220**, types/lint/build, five native Storm/response/GameTable
+SSR journeys and eight existing-profile paths. Each source takes48 original
+public Advanced BG/Atreides/Emperor actions with base33, genuine first dials2/3,
+paid shipment2, actual Intrusion and native turn-two Storm Cards3/4. Ending9
+kills the last Atreides while BG10 survives. Continuing resumes9→10 after both
+response outcomes, killing BG once; same-sector9 kills both without conversion.
+Original Karama is spent once only when used. A separately labelled conserved
+controlled case checks original mixed-Fremen casualty priority in both outcomes.
+No played force, phase, wallet, hand, Tanks, stance or forecast is installed in
+the native sources.
+
+Initial220/220 passes; typecheck catches an empty-array fixture assertion's
+never[] narrowing. Its equivalent length assertion repairs only that fixture;
+final frozen220/220, quick, build and runtime pass without weakening rules or
+checks. Private proof and actual-source HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-storm-flips/`.
+`frozen-integrated-2/report.json` binds tree
+`3efca2d3ef25d0090bc1c992411c4bbda0cf55265019306fed5761a4745221f9`,
+2745 files on base `9959f1b347f1e0e5bc96c2468cc6cfd97d13d4f3`.
+Prose/reference overlays are separately reviewed/hashed. Standard controls render;
+no new callback/browser/mobile/deployed or complete-mode claim. Broader
+Fremen/CHOAM/Jubba/Ecological Storm/Homeworld/Nexus combinations with this counter,
+special relocation, matching-group interpretation, comprehensive assurance and
+AI refinement remain due. No saved-room/D1, reset, restart or deployment operation.
+[Connected source and limits](ADVISOR_AUTOMATIC_FLIPS.md#storm-casualties-before-remaining-traversal--24-october-2026).
+
 ## 24 October 2026 — Advisor conversion after completed Face Dance
 
 Supplied physical17/28 E's counter now follows physical38 A's completed native

@@ -13,6 +13,7 @@ import {
   type AutomaticAdvisorBattle,
   type AutomaticAdvisorHomeworldTransport,
   type AutomaticAdvisorFaceDance,
+  type AutomaticAdvisorStorm,
 } from '../game/advisor-automatic-flip';
 import { MOBILE_LOCATION, MOBILE_STRONGHOLD } from '../game/board';
 
@@ -22,6 +23,7 @@ type GamontSource = Extract<AutomaticAdvisorFlipSource, { producer: 'gamont' }>;
 type BattleSource = Extract<AutomaticAdvisorFlipSource, { producer: 'battleLosses' }>;
 type HomeworldSource = Extract<AutomaticAdvisorFlipSource, { producer: 'homeworldTransport' }>;
 type FaceDanceSource = Extract<AutomaticAdvisorFlipSource, { producer: 'faceDance' }>;
+type StormSource = Extract<AutomaticAdvisorFlipSource, { producer: 'storm' }>;
 
 function context(): AutomaticAdvisorFlipContext {
   return {
@@ -72,7 +74,7 @@ void test('quotes exclude held, occupied and physically empty advisor groups whi
   ctx.players[1].forces = { ...ctx.players[1].forces, 'arrakeen:10': 1 };
   assert.deepEqual(quoteAutomaticAdvisorFlips(ctx), []);
   for (const patch of [
-    { advanced: false }, { status: 'lobby' }, { phase: 0 }, { phase: 4 }, { phase: 7 },
+    { advanced: false }, { status: 'lobby' }, { status: 'setup', phase: 0 }, { phase: 1 }, { phase: 4 }, { phase: 7 },
   ]) {
     assert.deepEqual(quoteAutomaticAdvisorFlips({ ...context(), ...patch }), []);
   }
@@ -1004,4 +1006,169 @@ void test('completed Face Dance validation never rereads availability, current d
     });
   }
   assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+});
+
+function storm() {
+  const ctx = context();
+  ctx.phase = 0;
+  ctx.storm = 8;
+  ctx.stormResolution = { from: 8, distance: 2, traversed: 1, pending: [] };
+  ctx.players[0].forces = { 'oh_gap:10': 2 };
+  ctx.players[1].forces = {};
+  ctx.players[2].forces = {};
+  const receipt: AutomaticAdvisorStorm = {
+    event: 'public-current-sector-storm-event', from: 8, distance: 2, traversed: 1, sector: 9,
+  };
+  const source: StormSource = {
+    event: 'automatic-after-current-sector-casualties', owner: 'b', territory: 'oh_gap',
+    turn: ctx.turn, phase: 0, forces: { 'oh_gap:10': 2 }, producer: 'storm', storm: receipt,
+  };
+  ctx.players[0].advisors = { oh_gap: { lockedTurn: 4, aloneFlipHold: source.event } };
+  return { ctx, source };
+}
+
+void test('the five-field public storm source binds current Oh Gap sector nine while surviving advisors remain in sector ten', () => {
+  const original = storm();
+  const before = structuredClone(original);
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
+  assert.deepEqual(original, before);
+  assert.deepEqual(Object.keys(original.source).sort(), ['event', 'forces', 'owner', 'phase', 'producer', 'storm', 'territory', 'turn']);
+  assert.deepEqual(Object.keys(original.source.storm).sort(), ['distance', 'event', 'from', 'sector', 'traversed']);
+  const quiet = storm().ctx;
+  quiet.players[0].advisors = { oh_gap: { lockedTurn: 4 } };
+  assert.deepEqual(quoteAutomaticAdvisorFlips(quiet), [
+    { player: 'b', territory: 'oh_gap', forces: { 'oh_gap:10': 2 } },
+  ]);
+  quiet.status = 'setup';
+  assert.deepEqual(quoteAutomaticAdvisorFlips(quiet), []);
+  assert.equal(advisorStanceAfterSettlement({ advanced: true, players: quiet.players }, 'b', 'oh_gap'), undefined);
+  for (const from of [0, 18]) {
+    const wrapped = storm();
+    wrapped.ctx.storm = from;
+    wrapped.source.storm = { ...wrapped.source.storm, from, distance: 40, traversed: 9, sector: 9 };
+    wrapped.ctx.stormResolution = { from, distance: 40, traversed: 9, pending: [] };
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(wrapped.ctx, wrapped.source));
+  }
+});
+
+void test('storm conversion rejects stale public cursor, unfinished current-sector casualties and malformed traversal bounds', () => {
+  const changes: ((ctx: AutomaticAdvisorFlipContext, source: StormSource) => void)[] = [
+    (ctx) => { ctx.storm = 9; },
+    (ctx) => { delete ctx.storm; },
+    (ctx) => { ctx.stormResolution = null; },
+    (ctx) => { delete ctx.stormResolution; },
+    (ctx) => { ctx.stormResolution!.from = 9; },
+    (ctx) => { ctx.stormResolution!.distance = 3; },
+    (ctx) => { ctx.stormResolution!.traversed = 2; },
+    (ctx) => { ctx.stormResolution!.pending = ['private-fremen-casualty-key']; },
+    (ctx) => { ctx.status = 'setup'; },
+    (ctx) => { ctx.turn++; },
+    (_ctx, source) => { source.storm.event = ''; },
+    (_ctx, source) => { source.storm.from = -1; },
+    (_ctx, source) => { source.storm.from = 19; },
+    (_ctx, source) => { source.storm.from = 8.5; },
+    (_ctx, source) => { source.storm.distance = 0; },
+    (_ctx, source) => { source.storm.distance = 41; },
+    (_ctx, source) => { source.storm.distance = 2.5; },
+    (_ctx, source) => { source.storm.traversed = 0; },
+    (_ctx, source) => { source.storm.traversed = 3; },
+    (_ctx, source) => { source.storm.traversed = 1.5; },
+    (_ctx, source) => { source.storm.sector = 0; },
+    (_ctx, source) => { source.storm.sector = 19; },
+    (_ctx, source) => { source.storm.sector = 10; },
+  ];
+  for (const change of changes) {
+    const original = storm();
+    change(original.ctx, original.source);
+    const before = structuredClone(original);
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+    assert.deepEqual(original, before);
+  }
+  const { ctx, source } = storm();
+  for (const malformed of [
+    { ...source, storm: null },
+    { ...source, storm: { ...source.storm, sector: '9' } },
+    { ...source, storm: { ...source.storm, forecast: 2 } },
+    { ...source, protected: true },
+  ]) {
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, malformed as unknown as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('protected Imperial Basin and unrelated or unknown territories cannot supply a storm occurrence', () => {
+  const imperial = storm();
+  imperial.source.territory = 'imperial_basin';
+  imperial.source.forces = { 'imperial_basin:10': 2 };
+  imperial.ctx.players[0].forces = { 'imperial_basin:10': 2 };
+  imperial.ctx.players[0].advisors = { imperial_basin: { aloneFlipHold: imperial.source.event } };
+  assert.throws(() => validateAutomaticAdvisorFlip(imperial.ctx, imperial.source), AutomaticAdvisorFlipError);
+  imperial.ctx.shieldWallDestroyed = true;
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(imperial.ctx, imperial.source));
+  for (const territory of ['arrakeen', 'missing']) {
+    const invalid = storm();
+    invalid.source.territory = territory;
+    invalid.source.forces = { [`${territory}:10`]: 2 };
+    invalid.ctx.players[0].forces = { [`${territory}:10`]: 2 };
+    invalid.ctx.players[0].advisors = { [territory]: { aloneFlipHold: invalid.source.event } };
+    invalid.ctx.shieldWallDestroyed = true;
+    assert.throws(() => validateAutomaticAdvisorFlip(invalid.ctx, invalid.source), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('later storm traversal cannot reuse the old occurrence or restore an advisor group killed in its next sector', () => {
+  const { ctx, source } = storm();
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+  ctx.stormResolution!.traversed = 2;
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+  ctx.players[0].forces = {};
+  const before = structuredClone({ ctx, source });
+  assert.deepEqual(quoteAutomaticAdvisorFlips(ctx), []);
+  assert.equal(advisorStanceAfterSettlement(ctx, 'b', 'oh_gap'), undefined);
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+  assert.deepEqual({ ctx, source }, before);
+});
+
+void test('storm public validation never reads forecasts, protection choices, private cards or pending Fremen keys', () => {
+  const { ctx, source } = storm();
+  for (const field of ['stormCard', 'stormCardKnown', 'stormForecast', 'discoveryChoices', 'pendingAutomaticAdvisorStorm']) {
+    Object.defineProperty(ctx, field, {
+      get() { throw new Error(`Storm advisor rule read private or future ${field}`); },
+    });
+  }
+  for (const field of ['protected', 'choamProtected', 'discoveryChoices', 'forecast']) {
+    Object.defineProperty(ctx.stormResolution, field, {
+      get() { throw new Error(`Storm advisor rule read private cursor ${field}`); },
+    });
+  }
+  for (const player of ctx.players) {
+    for (const field of ['hand', 'leaders', 'spice', 'traitors', 'faceDancers', 'stormForecast']) {
+      Object.defineProperty(player, field, {
+        get() { throw new Error(`Storm advisor rule read ${player.id} private ${field}`); },
+      });
+    }
+  }
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+  const pending = ['private-fremen-key'];
+  Object.defineProperty(pending, '0', {
+    get() { throw new Error('Storm advisor rule inspected a pending Fremen key'); },
+  });
+  ctx.stormResolution!.pending = pending;
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+});
+
+void test('storm stays phase-zero-only while every existing producer keeps its original receipt and phase', () => {
+  for (const original of [held(), transported(), gamont(false), battleResult(), homeworldTransport(), faceDance()]) {
+    const before = JSON.stringify(original.source);
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
+    assert.equal(JSON.stringify(original.source), before);
+    original.ctx.phase = 0;
+    original.source.phase = 0;
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+  }
+  for (const phase of [5, 6, 8]) {
+    const { ctx, source } = storm();
+    ctx.phase = phase;
+    source.phase = phase;
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+  }
 });

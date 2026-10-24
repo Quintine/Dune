@@ -1,5 +1,84 @@
 # Mandatory advisor conversions
 
+## Storm casualties before remaining traversal — 24 October 2026
+
+**Prototyped / Partial.** Compose the supplied Advanced source's physical17
+group-flip counter with physical28 E's mandatory conversion when alone. A storm
+can destroy the last outsider in one sector while advisors survive in another
+sector of the same exposed territory. Capture the surviving group after the
+actual sector's losses, before settlement can erase its advisor stance.
+Advisors destroyed in that same sector leave no conversion opportunity.
+
+Under the 14 October recommended-policy authority, the selected priority is
+after all current-sector casualties, including original Fremen allocation
+choices, and before the next sector or final storm completion. This composition
+is provisional, not a new combined publisher timing ruling. Initial CHOAM and
+Fremen protection retain their original priority. Hold an already-alone group
+through another territory's Fremen choice; an empty pending queue alone does
+not mean the last popped casualty choice is answered.
+
+The phase0 public receipt contains exactly a fresh event, starting sector,
+distance, traversed count and current sector. Bind the exact surviving physical
+group to that occurrence. The private parent separately records whether all
+current-sector choices are ready and the unchanged original traversal/source
+cursor. Never project that cursor, a private forecast, protection state or
+Fremen pending keys into the response or Karama source selection.
+
+Karama prevents only the BG conversion. The completed losses and spent card
+stay committed, with the existing provisional continuously-alone hold. Consume
+the parent before resuming the original traversal once, without replaying the
+current sector. Remaining sectors can still destroy the surviving group,
+whether it converted or remained advisors. Ecological Storm completion,
+final position/order and the next phase's forecast keep their original place.
+
+[Native fixture](../tests/fixture-advisor-storm-flip.ts) starts a public Advanced
+BG/Atreides/Emperor table with original base33, no Fremen or optional module.
+Actual setup places BG's original counter in empty Oh Gap10; it initially
+becomes a fighter. Actual first Storm dials2/3 move from1 to6. Atreides later
+pays2 to ship one original reserve into Oh Gap9, and BG accepts the resulting
+Intrusion and original advisor-flip response to become peaceful. Original
+starting Karama remains in Atreides' hand.
+
+Actual first Mentat readiness draws the original turn-two Storm Card. Scoped
+entropy selects only the original six-card shuffle, revealing3 or4 with its
+native source signature and logged card face. No played force, phase, wallet,
+hand, Tanks, stance or forecast is installed. Stop before the final real Storm
+Ready. A three-sector traversal kills Atreides9 while BG10 survives; a
+four-sector traversal must pause at9 and then destroy BG10 after the counter.
+The same-sector variant earns the same Intrusion at9, then both forces die
+without manufacturing a conversion.
+
+[Engine cases](../tests/advisor-storm-flip-engine.test.ts) cover both responses
+for ending/continuing traversal, same-sector destruction, source mismatch and
+all four existing legal profiles. The separately labelled controlled regression
+in [storm/worm cancellation](../tests/storm-worm-cancellation.test.ts) checks
+both outcomes after a real mixed Fremen casualty choice; its conserved placement
+is not a native setup journey. Frozen **17 files220/220**, types/lint/build,
+five native Storm/response/GameTable SSR journeys and eight existing-profile
+paths pass. All five genuine sources take48 original actions. Ending traversal
+finishes9 with BG10 alive; continuing traversal resumes from9 to10 and destroys
+that counter after either conversion outcome. Atreides loses one force once;
+same-sector placement loses both without offering a conversion. The original
+Karama is spent once only when used. Standard controls render; this is not a
+new callback/browser/mobile/deployed certificate.
+
+Initial220/220 passes; typecheck then catches an empty-array assertion narrowing
+the native fixture's readiness array to never[]. An equivalent length assertion
+repairs only the fixture. Final frozen220/220, types/lint/build and runtime pass
+without changing rule mechanics or weakening checks. Private proof and native
+HTML are in
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-storm-flips/`.
+`frozen-integrated-2/report.json` binds tree
+`3efca2d3ef25d0090bc1c992411c4bbda0cf55265019306fed5761a4745221f9`,
+2745 files on base `9959f1b347f1e0e5bc96c2468cc6cfd97d13d4f3`.
+Prose/reference checkpoint overlays are separately reviewed and hashed after
+proof. No saved-room/D1, reset, restart or deployment operation was performed.
+
+Broader Fremen/CHOAM/Jubba/Ecological Storm/Homeworld/Nexus combinations with
+this conversion, special Ambassador/Discovery relocation and matching-group
+interpretations remain open. These prototypes do not certify complete modes,
+callbacks/browser/deployed behavior or final assurance.
+
 ## Completed Face Dance replacement — 24 October 2026
 
 **Prototyped / Partial.** Compose the same supplied

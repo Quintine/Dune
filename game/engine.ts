@@ -12,7 +12,7 @@ import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, h
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteAtreidesFullPlan } from './atreides-full-plan';
 import { quoteTleilaxuSpecialKarama } from './tleilaxu-special-karama';
-import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport, type AutomaticAdvisorGamont, type AutomaticAdvisorBattle, type AutomaticAdvisorHomeworldTransport, type AutomaticAdvisorFaceDance } from './advisor-automatic-flip';
+import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport, type AutomaticAdvisorGamont, type AutomaticAdvisorBattle, type AutomaticAdvisorHomeworldTransport, type AutomaticAdvisorFaceDance, type AutomaticAdvisorStorm } from './advisor-automatic-flip';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
@@ -1277,6 +1277,7 @@ export type Game = {
     signature: string;
   };
   pendingAutomaticAdvisorFaceDance?: AutomaticAdvisorFaceDance;
+  pendingAutomaticAdvisorStorm?: { receipt: AutomaticAdvisorStorm; ready: boolean; cursor?: string };
   advisorPreparation?: AdvisorPreparationWindow;
   ecazOccupyPreview?: boolean;
   /** Fresh native Guild/Nexus payment-replacement profile, never inferred from a save. */
@@ -11539,6 +11540,8 @@ function continueStorm(g: Game) {
         if (g.decision) return;
       }
     }
+    // All current-sector casualties finish before conversion or the next step.
+    if (openStormAdvisorFlips(g)) return;
     if (resolution.traversed === resolution.distance) break;
     resolution.traversed++;
     const s = stormSectorAfter(resolution.from, resolution.traversed);
@@ -11578,6 +11581,8 @@ function continueStorm(g: Game) {
     }
     for (const key of Object.keys(g.spice))
       if (splitLocation(key).sector === s) delete g.spice[key];
+    // Retain surviving advisor stances through any pending Fremen choices.
+    prepareStormAdvisorFlips(g);
   }
   if (g.ecologicalStorm?.stage === 'traversal')
     g.ecologicalStorm = nexusRule(() => finishDiscoveryStorm(g.ecologicalStorm!));
@@ -20329,6 +20334,12 @@ function currentAutomaticAdvisorFlip(g: Game, response: ResponseWindow) {
       'The mandatory conversion has lost its original completed Face Dance.');
     validateCompletedFaceDance(g, parent);
   }
+  if (source.producer === 'storm') {
+    const parent = g.pendingAutomaticAdvisorStorm;
+    requireRule(parent && JSON.stringify(source.storm) === JSON.stringify(parent.receipt),
+      'The mandatory conversion has lost its original storm sector.');
+    validateStormAdvisorCursor(g, parent);
+  }
   automaticAdvisorRule(() => validateAutomaticAdvisorFlip(g, source));
   return source;
 }
@@ -20338,6 +20349,7 @@ function openAutomaticAdvisorFlip(g: Game) {
   if (!source) return;
   // Hold immediate losses through the original mandatory discard/casualty work.
   if (source.producer === 'battleLosses' && !g.pendingAutomaticAdvisorBattle?.resume) return;
+  if (source.producer === 'storm' && !g.pendingAutomaticAdvisorStorm?.ready) return;
   automaticAdvisorRule(() => validateAutomaticAdvisorFlip(g, source));
   g.response = { kind: 'advisorFlip', owner: source.owner, location: source.territory,
     advisors: false, passed: [], automaticAdvisorFlip: source,
@@ -20592,6 +20604,66 @@ function finishAutomaticAdvisorFaceDance(g: Game) {
   validateCompletedFaceDance(g, receipt);
   delete g.pendingAutomaticAdvisorFaceDance;
   finishBattle(g);
+}
+function stormAdvisorCursor(g: Game) {
+  return JSON.stringify([g.stormResolution, g.stormMovementSource ?? null]);
+}
+function prepareStormAdvisorFlips(g: Game) {
+  const resolution = g.stormResolution;
+  if (!g.advanced || g.status !== 'playing' || g.phase !== 0 || !resolution || resolution.traversed <= 0) return;
+  const sector = stormSectorAfter(resolution.from, resolution.traversed);
+  const groups = automaticAdvisorRule(() => quoteAutomaticAdvisorFlips(g)).filter(group =>
+    gameTerritories(g).some(place => place.id === group.territory && place.sectors.includes(sector) &&
+      stormExposesTerritory(place.id, g.shieldWallDestroyed)));
+  if (!groups.length) return;
+  let parent = g.pendingAutomaticAdvisorStorm;
+  if (parent) requireRule(!parent.ready && parent.receipt.from === resolution.from &&
+    parent.receipt.distance === resolution.distance && parent.receipt.traversed === resolution.traversed,
+    'The storm conversion must retain its original current sector.');
+  else {
+    requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorTransport &&
+      !g.pendingAutomaticAdvisorHomeworldTransport && !g.pendingAutomaticAdvisorGamont &&
+      !g.pendingAutomaticAdvisorBattle && !g.pendingAutomaticAdvisorFaceDance,
+      'Finish the original advisor conversion before another storm sector.');
+    parent = { receipt: { event: crypto.randomUUID(), from: resolution.from,
+      distance: resolution.distance, traversed: resolution.traversed, sector }, ready: false };
+    g.pendingAutomaticAdvisorStorm = parent;
+  }
+  for (const group of groups) {
+    const source: AutomaticAdvisorFlipSource = { event: crypto.randomUUID(), owner: group.player,
+      territory: group.territory, turn: g.turn, phase: g.phase, forces: group.forces,
+      producer: 'storm', storm: parent.receipt };
+    getPlayer(g, group.player).advisors![group.territory].aloneFlipHold = source.event;
+    (g.pendingAutomaticAdvisorFlips ??= []).push(source);
+  }
+}
+function openStormAdvisorFlips(g: Game) {
+  prepareStormAdvisorFlips(g);
+  const parent = g.pendingAutomaticAdvisorStorm;
+  if (!parent) return false;
+  requireRule(!parent.ready && !g.response && !g.decision && g.stormResolution?.pending.length === 0 &&
+    !!g.pendingAutomaticAdvisorFlips?.length,
+    'Finish all original current-sector casualties before advisor conversion.');
+  parent.ready = true;
+  parent.cursor = stormAdvisorCursor(g);
+  openAutomaticAdvisorFlip(g);
+  return true;
+}
+function validateStormAdvisorCursor(g: Game, parent: NonNullable<Game['pendingAutomaticAdvisorStorm']>) {
+  const resolution = g.stormResolution, receipt = parent.receipt;
+  requireRule(g.status === 'playing' && g.phase === 0 && parent.ready && resolution &&
+    resolution.pending.length === 0 && resolution.from === receipt.from &&
+    resolution.distance === receipt.distance && resolution.traversed === receipt.traversed &&
+    parent.cursor === stormAdvisorCursor(g),
+    'The mandatory conversion lost its original completed-sector storm cursor.');
+}
+function finishAutomaticAdvisorStorm(g: Game) {
+  const parent = g.pendingAutomaticAdvisorStorm;
+  if (!parent) return;
+  requireRule(!g.pendingAutomaticAdvisorFlips?.length, 'Finish all original sector conversions before storm traversal.');
+  validateStormAdvisorCursor(g, parent);
+  delete g.pendingAutomaticAdvisorStorm;
+  continueStorm(g);
 }
 function applyAdvisorReleases(g: Game, released: AdvisorRelease[]) {
   for (const entry of released)
@@ -22613,7 +22685,7 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
 function victory(g: Game, quote?: VictoryQuote) {
   requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorTransport &&
     !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle && !g.pendingAutomaticAdvisorHomeworldTransport &&
-    !g.pendingAutomaticAdvisorFaceDance,
+    !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm,
     'Resolve mandatory advisor conversions before checking victory.');
   quote ??= currentVictoryQuote(g);
   applyAdvisorReleases(g, quote.released);
@@ -28435,7 +28507,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       }
       if (automaticAdvisorFlip) {
         if (canceled)
-          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' || automaticAdvisorFlip.producer === 'homeworldTransport' ? 'transport and payment stay' : automaticAdvisorFlip.producer === 'gamont' ? 'Trip to Gamont effect and card use stay' : automaticAdvisorFlip.producer === 'battleLosses' ? 'battle losses and costs stay' : automaticAdvisorFlip.producer === 'faceDance' ? 'Face Dance replacement and reveal stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
+          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' || automaticAdvisorFlip.producer === 'homeworldTransport' ? 'transport and payment stay' : automaticAdvisorFlip.producer === 'gamont' ? 'Trip to Gamont effect and card use stay' : automaticAdvisorFlip.producer === 'battleLosses' ? 'battle losses and costs stay' : automaticAdvisorFlip.producer === 'faceDance' ? 'Face Dance replacement and reveal stay' : automaticAdvisorFlip.producer === 'storm' ? 'current-sector storm casualties stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
             { faction: bg.faction, name: 'Mandatory advisor conversion prevented' });
         g.pendingAutomaticAdvisorFlips!.shift();
         if (!g.pendingAutomaticAdvisorFlips!.length) delete g.pendingAutomaticAdvisorFlips;
@@ -28445,6 +28517,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
           finishAutomaticAdvisorBattle(g);
           finishAutomaticAdvisorHomeworldTransport(g);
           finishAutomaticAdvisorFaceDance(g);
+          finishAutomaticAdvisorStorm(g);
         } else openAutomaticAdvisorFlip(g);
       } else finishAdvisorReaction(g, response);
     }

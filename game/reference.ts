@@ -4320,7 +4320,8 @@ export const RULE_TOPICS: RuleTopic[] = [
       'After actual battle losses leave surviving bystanding advisors alone, Karama may prevent their conversion without undoing losses or costs. Mandatory card disposal, original skills and substitution finish first. Provisionally resolve this before optional winner-card cleanup and later aftermath, then resume the original cleanup once. An explosion that destroys the advisors creates no conversion.',
       'Native Guild board-to-Homeworld and Junction board transfers can leave advisors alone after payment and physical transfer. Karama prevents only the resulting BG conversion; Junction permission and tariff stay immune. Original income resolves first, then any Junction board arrival resumes once. Original declaration snapshots stay private.',
       'A completed Face Dance can leave advisors alone at remote board sources or, with zero replacement, at the battle target. Original force returns, replacement, leader death, revelation and any card cycle finish first. Karama can then prevent only the BG conversion; native Face Dance remains immune. Afterward the original aftermath resumes once.',
-      'Provisional cancellation duration: a prevented advisor group stays advisors while continuously alone, including across phase and turn changes. Another faction returning or the group becoming empty ends that held occurrence. Later arrivals joining that same group match its stance. Other non-ground automatic conversions and matching-group flip counters remain unfinished.',
+      'After a storm sector removes the last outsider, surviving advisors elsewhere in that territory must convert. Provisionally finish every current-sector casualty choice first, then offer Karama prevention before the remaining traversal. Completed losses stay committed. Later sectors can still destroy advisors or fighters; advisors destroyed in the same sector create no conversion.',
+      'Provisional cancellation duration: a prevented advisor group stays advisors while continuously alone, including across phase and turn changes. Another faction returning or the group becoming empty ends that held occurrence. Later arrivals joining that same group match its stance. Special Ambassador/Discovery relocation and matching-group flip counters remain unfinished.',
       'When another faction ships, moves or worm rides into your fighters, immediately choose whether to become advisors. The choice opens a Karama response. Repeated entry can offer a new choice.',
       'After another faction’s off-planet shipment, choose a free force in the Polar Sink or an accompanying force at the shipment destination. An accompanying advisor group cannot flip to fighters in that turn while other factions remain.',
       'After Spice Blow and Nexus, use Prepare advisors for battle during Charity, Bidding, Revival or before the first actual shipment. Quiet boundaries retain current mandatory priority. Each whole-territory flip has its original Karama response; its direct continuation preserves the current phase, auction, readiness and active movement. Declining the initial phase-five chooser leaves this window open. Ordinary allied presence, storm and fresh-advisor locks still restrict eligibility; the recorded supported Ecaz co-side composition remains separate.',
@@ -4331,7 +4332,7 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Implementation",
     "status": "Partial",
-    "detail": "Completed Face Dance now captures alone advisors at all positive board sources and its target, preserving return/replacement, leader death and revelation/cycling before one original aftermath. Its public physical/battle receipt omits Face Dancer identities and does not reuse pre-reveal availability. Existing ground, Guild/Homeworld/Junction transport, Gamont, battle and preparation sources retain their contracts. Storm and other special relocation/matching-group causes remain unfinished.",
+    "detail": "Storm traversal now captures surviving alone advisors after current-sector losses and retains them through original Fremen casualty choices. A public sector receipt binds a private ready/cursor parent; consume it before continuing once. Existing ground, transport, Gamont, battle and Face Dance contracts remain. Special relocation and matching-group causes remain unfinished.",
     "evidence": [
       "game/advisor-automatic-flip.ts",
       "game/advisors.ts",
@@ -4346,7 +4347,7 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Player controls",
     "status": "Partial",
-    "detail": "Standard Karama/Allow controls distinguish completed Face Dance from the pending BG conversion. Existing transport, ground, Gamont, battle and phase2–5 preparation guidance remain. No new confirmation or timer.",
+    "detail": "Standard Karama/Allow controls identify completed current-sector casualties and the remaining traversal. Prevention keeps actual losses; later sectors may still destroy the group. Existing producer and preparation guidance remains, without a new confirmation or timer.",
     "evidence": [
       "docs/ADVISOR_AUTOMATIC_FLIPS.md",
       "components/advisor-preparation.tsx",
@@ -4357,8 +4358,11 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "AI",
     "status": "Partial",
-    "detail": "Eight existing-profile native remote/zero Face Dance response paths resolve legally through actual Collection, preserving completed return, death, revelation and replacement. Earlier producer paths retain separate evidence. No strategy refinement or difficulty calibration.",
+    "detail": "Eight existing-profile native ending/continuing Storm conversion paths resolve legally through the original next phase. Completed current-sector losses remain; a later sector can still destroy BG. Earlier producer paths retain separate evidence. No strategy refinement or difficulty calibration.",
     "evidence": [
+      "tests/storm-worm-cancellation.test.ts",
+      "tests/fixture-advisor-storm-flip.ts",
+      "tests/advisor-storm-flip-engine.test.ts",
       "tests/advisor-face-dance-flip-engine.test.ts",
       "tests/fixture-advisor-face-dance-flip.ts",
       "tests/advisor-homeworld-flip-engine.test.ts",
@@ -4375,7 +4379,7 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Documentation",
     "status": "Partial",
-    "detail": "Physical17/28 E composes the group counter with physical38 A after completed return/replacement. Face Dance immunity, actual returns, remote sources, zero replacement, original card cycle and private holdings are distinguished from the BG response. Continuously-alone duration remains provisional; other producers/combinations stay explicit.",
+    "detail": "Physical17/28 E composes the mandatory counter with current-sector losses. The selected priority after all current-sector casualties and before remaining traversal is explicitly provisional, as is continuously-alone cancellation duration. Public sector facts stay separate from private forecasts/protection/continuation.",
     "evidence": [
       "docs/ADVISOR_AUTOMATIC_FLIPS.md",
       "docs/ADVISOR_PREPARATION.md",
@@ -4386,8 +4390,11 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Verification",
     "status": "Partial",
-    "detail": "Face Dance passes frozen16-file201/201, types/lint/build, five native Face Dance/response/GameTable SSR journeys and eight profile paths. Genuine67/66-action sources earn original Ix47, native draw, shipment, moves and battle. Both outcomes preserve nine returned survivors and one leader death; actual BG city income is2/0. Original decline stays intact. A fixture deck-count correction changes no cards/rules. Full cycle/Skills/Ecaz co-side/Homeworld/Nexus combinations, storm/special relocation, complete modes and browser/mobile/deployed/comprehensive acceptance remain open.",
+    "detail": "Storm conversion passes frozen17-file220/220, types/lint/build, five native Storm/response/GameTable SSR journeys and eight profile paths. Genuine48-action sources earn base33, first dials, paid shipment/Intrusion and native turn-two Cards3/4. Ending9 preserves BG10; continuing10 destroys it after either response. Same-sector destruction has no conversion; controlled mixed-Fremen choices retain priority. Type feedback repairs only an empty-array fixture assertion. Wider combinations, special relocation/matching-group interpretation, complete modes and callback/browser/mobile/deployed/comprehensive acceptance remain open.",
     "evidence": [
+      "tests/storm-worm-cancellation.test.ts",
+      "tests/fixture-advisor-storm-flip.ts",
+      "tests/advisor-storm-flip-engine.test.ts",
       "tests/advisor-face-dance-flip-engine.test.ts",
       "tests/fixture-advisor-face-dance-flip.ts",
       "tests/advisor-homeworld-flip-engine.test.ts",
