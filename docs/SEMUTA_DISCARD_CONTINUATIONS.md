@@ -182,8 +182,12 @@ resumes once, with the snapshot entitled only to CHOAM.
 Completed ordinary Ghola disposal may now offer Semuta during battle as well.
 Revival has already committed; the receipt binds the returned leader/forces and
 original battle, including a sealed opposing plan. Claim or decline restores
-planning without reviving again or changing that plan. This does not admit
-competing parents or market-specific Ghola interruptions.
+planning without reviving again or changing that plan. The
+[conditional native-income follow-up](SEMUTA_SOURCE_UPDATE_20260907.md#ghola-and-conditional-native-income--24-october-2026)
+also parks the original one-spice Tleilaxu response from that Ghola, including
+self-income, until claim/Continue finishes. It then allows/cancels once; returned
+pieces and normal revival allowances stay committed. Other competing parents
+and market-specific Ghola interruptions remain outside this admission.
 
 Completed paid Box disposal may now offer Semuta during battle as well. Only the
 used Box is fresh; payment, private acquisition, shuffled pile and original

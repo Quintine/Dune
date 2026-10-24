@@ -16,6 +16,29 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta and native Ghola income — 24 October. Prototyped / Partial.**
+Semuta now recovers a completed Ghola while its original Tleilaxu one-spice
+income is pending. One shared source predicate retains exact native ownership,
+recipient, amount and empty passes; other response/parent boundaries remain.
+Claim/Continue preserves physical returns and normal revival quotas, then
+restores the same allow/cancel response. Tleilaxu self-income remains valid.
+
+Disjoint source/control lanes, bounded review and owner integration pass
+**10 files156/156**, types/lint/build, eight actual gameplay/control/table-rendering
+journeys and eight existing-profile continuations (32 accepted proposals).
+Real native setup, prior Storm casualty and paid Box recovery supply160 source
+actions; Semuta/Karama/full-hand acquisitions are explicitly conserved staging.
+Normal/full hand × claim/pass × allow/cancel then resumes real shipment10,
+ground20 and end. Controlled own-Tleilaxu and prior leader-death cases are
+separate. The committed engine reproduces the old missing offer. The first
+private runtime runner selected a noneligible no-Karama responder; its repair
+passes with all application source unchanged, retaining the earlier passing
+tests/types/lint/build by exact source identity.
+[Authority, exact evidence and limits](SEMUTA_SOURCE_UPDATE_20260907.md#ghola-and-conditional-native-income--24-october-2026).
+Other producers/parents, complete modes, comprehensive/browser/deployed acceptance
+and full AI refinement remain unfinished. No saved-room/D1/reset/restart/deployment
+operation.
+
 **Basic native Mirror/Stone — 24 October. Prototyped / Partial.**
 Bare Basic Ecaz/Moritani families, including selected Ix, now admit the physical
 Mirror and original Stone through existing native resolution. Preserve fixed

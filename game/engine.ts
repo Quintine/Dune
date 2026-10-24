@@ -1,3 +1,4 @@
+import { ordinaryDiscardIncomeMatches } from './ordinary-discard-income';
 import { gholaForcePreparations } from './ghola-force-preparation';
 import { earlyAuctionFunding } from './early-auction-funding';
 import { recordMovementDiscardKnowledge, knownMovementDiscards, recordMovementBoxKnowledge, recordMovementClaimKnowledge, clearMovementDiscardKnowledge, type MovementDiscardKnowledge } from './movement-discard-knowledge';
@@ -6440,16 +6441,8 @@ function treacheryDiscardIntegrity(g: Game) {
       !c.resume.decision && !c.resume.pendingKarama && !c.resume.phaseOpening,
       'The ordinary card has an unexpected suspended decision.',
     );
-    const income = c.resume.response,
-      tleilaxu = byFaction(g, 'tleilaxu');
     requireRule(
-      c.effect === 'ghola' && tleilaxu
-        ? income?.kind === 'revivalIncome' &&
-            income.owner === tleilaxu.id &&
-            income.recipient === c.player &&
-            income.amount === 1 &&
-            income.passed.length === 0
-        : !income,
+      ordinaryDiscardIncomeMatches(g, c),
       'The consumed card no longer matches its pending revival income.',
     );
     requireRule(
@@ -7779,9 +7772,11 @@ function semutaOfferSupported(
         continuation.kind === 'karamaEmperorShareDiscard' ||
         continuation.kind === 'karamaIncomeDiscard' ||
         continuation.kind === 'karamaShipmentDiscard' ||
-        ((continuation.kind === 'ornithopterDiscard' && continuation.source === 'cunning'
-          ? continuation.resume.response?.kind === 'nexusGuildCunning'
-          : !continuation.resume.response) && !continuation.resume.decision &&
+        ((continuation.kind === 'ordinaryCardDiscard'
+          ? ordinaryDiscardIncomeMatches(g, continuation)
+          : continuation.kind === 'ornithopterDiscard' && continuation.source === 'cunning'
+            ? continuation.resume.response?.kind === 'nexusGuildCunning'
+            : !continuation.resume.response) && !continuation.resume.decision &&
           !continuation.resume.pendingKarama &&
           (continuation.kind === 'amalDiscard'
             ? continuation.resume.phaseOpening?.passed.length === 0

@@ -2,6 +2,80 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Ghola and conditional native income — 24 October 2026
+
+**Prototyped / Partial.** A completed ordinary Ghola can offer its used physical
+card to Semuta while its native Tleilaxu one-spice income is pending. The force
+or leader return commits first; the same original income response stays parked
+until the fresh discard is claimed or every seat continues. Neither claim nor
+decline revives again, changes normal revival allowances or pays/refunds spice.
+The ordinary response then allows or cancels that one payment under its
+existing native controls. Tleilaxu's own Ghola also earns the one-spice reward.
+
+One shared source predicate governs admission and the saved parent: Ghola with
+a seated Tleilaxu has that faction's original revival-income response, the actual
+Ghola player as recipient, amount1 and no prior passes. Other ordinary cards,
+and Ghola without Tleilaxu, keep their existing no-response boundary. Signature,
+control and physical-effect checks remain. No serialized field or signature
+format changes; no arbitrary pending response becomes eligible.
+
+The original Semuta full-hand exchange and single-candidate completion apply.
+All seats retain the neutral persistent Continue offer; a legal holder can
+Commit, spending its physical Semuta once and acquiring the actual used Ghola.
+The already returned piece and original conditional income are independent of
+which player takes that card. Other nested parents, CHOAM market Ghola,
+unfinished producers and complete-mode/combination acceptance remain separate.
+This composes printed Ghola, native income and Semuta with the existing saved
+discard protocol; it makes no new publisher timing or disposal ruling.
+
+### Native Ghola source and proof
+
+The inherited native Basic Atreides/Emperor/Richese/Tleilaxu programme uses
+original setup, actual separate paid desert shipments, the later Storm casualty,
+settled Emperor bribe and original cache Box. Its real paid Box recovery reaches
+a clean pre-Ghola boundary after160 actions. Only then are the original cache
+Semuta and original deck Karama transferred into Richese/Emperor hands as
+explicit conserved rule-case acquisitions. Full-hand cases move three original
+ordinary deck cards into Richese hand. No response, receipt, wallet, force,
+phase or completed revival is installed in that source.
+
+Nine engine and three actual-source control cases cover the fresh neutral offer,
+claim/pass × allowed/canceled payment, approved full-hand exchange, original
+event/busy callbacks, stale/tampered rejection and once-only returns/normal
+quotas. Controlled prior acquisition/casualty separately exercises Tleilaxu
+using its own Ghola; controlled prior leader death proves recovery of a leader
+does not also return the separate Tank. These controlled variants are explicit,
+not natural death/acquisition or complete-game claims.
+
+The affected **10-file156/156** union, npm run check:quick and production build
+pass. Eight actual-control/GameTable SSR programmes cover normal/full hand,
+claim/pass and native allow/cancel, then real city shipment10, ground20 and end.
+Eight existing-profile continuations accept32 legal proposals from eligible
+own views; all claim Ghola and allow the original income. Human/runtime counter
+branches separately prove actual cancellation. No strategy tuning or relative
+strength calibration occurs.
+
+A committed-engine loader reproduces the old missing-offer assertion at
+19e554666ee4bf55dd33d162a6a1f987a699ed03. The initial private runtime probe asked
+a no-Karama seat for an optional income response, for which its policy correctly
+offered no action. The corrected runner uses eligible projected controllers.
+No application/helper/component/test/doc source changed between those probes,
+so the passing affected tests/types/lint/build are retained by exact identity.
+The initial failure and separate repaired runtime report remain preserved.
+
+Private artifacts: /home/quintine/.local/share/dune/checkpoints/20261024-semuta-ghola-income/,
+final-verification.json (explicitly composed from retained frozen-integrated/
+report.json and runtime-eligible/report.json), runtime-smoke.json, baseline-result.json,
+private HTML/logs, verified-files.json and documentation-overlay.json.
+Before final prose: base19e554666ee4bf55dd33d162a6a1f987a699ed03,
+source tree6e423ffb032bb8a35993de3061cd09fda0fde08c4ae56d772afc492b4fb1183f,
+2665 tracked/nonignored files unchanged throughout both reports. Only four
+checkpoint-prose/reference overlays follow; local links/evidence and reference
+syntax/keys are checked separately. Framework aliases/CSS stub provide rendering
+smoke, not browser/visual/deployed acceptance. Wider producers, parent/module
+combinations, complete modes and comprehensive assurance remain open.
+No saved-room/D1/reset/restart/deployment operation occurs.
+
 ## Fresh Basic starts and Ambassador discards — 24 October 2026
 
 Fresh public **bare Basic Richese previews** now initialize Semuta before the

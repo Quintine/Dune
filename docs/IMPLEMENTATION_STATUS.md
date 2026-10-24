@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 24 October 2026 — Semuta before native Ghola income
+
+A completed Ghola now offers its actual used card while the original Tleilaxu
+one-spice income is suspended. Reuse one exact source predicate in fresh-offer
+admission and saved-parent validation; no fields or signature formats change.
+Claim/pass never repeats physical revival, consumes normal quotas or precredits
+income. Restore the original allowed/canceled payment once, including Tleilaxu
+self-income. Other pending effects and market parents keep their existing guards.
+
+Disjoint source/control lanes, bounded review and owner integration pass10 files
+156/156, types/lint/build, eight actual gameplay/control/GameTable SSR journeys
+and eight minimal-profile continuations (32 accepted proposals). Actual native
+setup, real Storm loss and paid Box recovery supply160 source actions; original
+Semuta/Karama/full-hand acquisitions are explicitly conserved staging.
+Normal/full hand, claim/pass and allow/cancel combinations preserve the source,
+then real shipment10/ground20/end finish. Controlled own-Ghola and prior native
+leader death separately cover self-income and leader return without also
+returning the original Tank.
+
+A committed-engine probe fails the missing-offer assertion. The first new
+runtime runner incorrectly demanded an action from a no-Karama seat; selecting
+only actual eligible own-view proposals fixes that private runner. Application
+source stays byte-identical, so passing tests/types/lint/build are retained by
+source hash and a separate runtime report supplies the final proof.
+[Authority, proof records and limits](SEMUTA_SOURCE_UPDATE_20260907.md#ghola-and-conditional-native-income--24-october-2026).
+No new publisher timing ruling, strategy/calibration, full-mode/combination or
+browser/deployed certificate, comprehensive assurance or saved-room/D1/reset/
+restart/deployment operation.
+
+
 ## 24 October 2026 — Basic native Mirror and Stone
 
 Bare Basic native E3 with CHOAM/Richese, including selected Ix, now uses original
