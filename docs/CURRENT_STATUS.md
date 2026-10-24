@@ -16,6 +16,29 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Moritani captured and foreign-ghola targets — 24 October. Prototyped / Partial.**
+Assassinate now accepts the opposing printed faction's valid captured or ordinary
+foreign-ghola target. Pending choices show uniform printed potential bounty;
+actual concealed death/custody does not change the choice label. A committed
+reveal kills/pays once if alive, or preserves prior death count for zero bounty.
+Selected capture/concealment ends; ordinary Ghola return custody, original
+cleanup and one Mentat replacement remain. Making a selected concealed execution's
+actual outcome public is explicit provisional policy. Auditor/controller and
+original module guards remain.
+[Source, settlement and bounded proof](MORITANI_ASSASSINATE_LEADERS.md#native-target-custody--24-october-2026).
+
+Disjoint control/capture/Ghola lanes and bounded review pass **14 files100/100**,
+types/lint/build, six actual choice/gameplay/GameTable SSR journeys and twelve
+existing-profile continuations (twelve accepted proposals). Genuine47-action
+native capture/Keep-or-Execute/later loss sources cover both hidden outcomes.
+The Ghola branch earns a140-action death/paid revival prefix, then explicitly
+stages a conserved seven-action later battle and physical Traitor swap.
+Feedback repairs stale projection consumers, a public-roster assertion and
+private smoke continuation drivers; source-identical checks are reused rather
+than rerun after driver-only repairs. Full modes, broader combinations and
+comprehensive/browser/deployed assurance remain open. No saved-room/D1/reset/
+restart/deployment operation or AI refinement.
+
 **Atreides special inspection before reveal — 24 October. Prototyped / Partial.**
 Supplied physical27 F now controls the native special Karama deadline. Declining
 the original offer preserves quiet later use with zero or one sealed plans.

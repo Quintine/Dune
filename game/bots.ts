@@ -1829,7 +1829,7 @@ function policyActions(g: GameView): Action[] {
     if (d.kind === 'moritaniAssassinate') {
       const pending = g.moritaniAssassinate?.pending;
       if (!pending || pending.event !== d.event) return [];
-      const cards = [...pending.cards].sort((a,b) => b.bounty-a.bounty || a.card.localeCompare(b.card));
+      const cards = [...pending.cards].sort((a,b) => b.potentialBounty-a.potentialBounty || a.card.localeCompare(b.card));
       return [cards.length && !pending.blocked
         ? {type:'decision',event:d.event,card:cards[0].card}
         : {type:'decision',event:d.event,decline:true}];

@@ -178,7 +178,7 @@ void test('normal held Suk physical rescue precedes unused-disc assassination, c
   assert.equal(player(pending, f.opponent).spice, player(f.revealed, f.opponent).spice - 3);
   const d = pending.decision;
   if (d?.kind !== 'moritaniAssassinate') throw Error('Expected loss choice');
-  assert.equal(viewGame(pending, f.moritani).moritaniAssassinate!.pending!.cards.find(c => c.card === target.id)!.bounty, 3);
+  assert.equal(viewGame(pending, f.moritani).moritaniAssassinate!.pending!.cards.find(c => c.card === target.id)!.potentialBounty, 3);
   const action = { type: 'decision', event: d.event, card: target.id };
   reject(pending, f.opponent, action); reject(pending, f.moritani, { ...action, event: 'stale' });
   reject(pending, f.moritani, { ...action, card: f.opponentLeader });

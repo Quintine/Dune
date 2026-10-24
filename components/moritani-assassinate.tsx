@@ -17,6 +17,22 @@ export function MoritaniAssassinate({
   busy: boolean;
 }) {
   const [selected, setSelected] = useState('');
+  return <MoritaniAssassinateChoice game={game} act={act} busy={busy} selected={selected} onSelect={setSelected} />;
+}
+
+export function MoritaniAssassinateChoice({
+  game,
+  act,
+  busy,
+  selected,
+  onSelect,
+}: {
+  game: GameView;
+  act: (action: Action) => void;
+  busy: boolean;
+  selected: string;
+  onSelect: (card: string) => void;
+}) {
   const offer = game.moritaniAssassinate;
   const decision = game.decision;
   if (
@@ -30,9 +46,9 @@ export function MoritaniAssassinate({
   const pending = offer.pending;
   const card = pending.cards.find((candidate) => candidate.card === selected) ?? pending.cards[0];
   const blocked = busy || !!game.response || !!game.truthtrance;
+  const revealBlocked = blocked || !!pending.blocked;
   const opponent = game.players.find((player) => player.id === pending.opponent);
   const factionName = opponent ? faction(opponent.faction).name : 'the opposing faction';
-  const selectedLeader = card && game.allLeaders.find((leader) => leader.id === card.card);
   return (
     <section className="min-w-0 space-y-3" aria-label="Moritani Assassinate Leaders">
       <h3 className="font-serif text-xl">Assassinate Leaders</h3>
@@ -43,7 +59,10 @@ export function MoritaniAssassinate({
       </p>
       <p className="fine">
         This advantage is available once against each faction. It cannot be canceled
-        with Karama. A dead target remains a legal choice, but yields no spice.
+        with Karama. The potential bounty is the leader’s printed strength and is
+        awarded only if the target is alive. An already-dead target remains a
+        legal choice and awards no spice. Revealing the physical Traitor Card
+        makes the actual outcome public.
       </p>
       {pending.blocked && <p className="notice">{pending.blocked}</p>}
       {pending.cards.length > 0 ? (
@@ -54,31 +73,32 @@ export function MoritaniAssassinate({
               aria-label="Traitor Card to reveal"
               className="min-h-11 w-full rounded border border-[#65644b] bg-[#171b17] px-3 py-2"
               value={card?.card ?? ''}
-              disabled={blocked}
-              onChange={(event) => setSelected(event.currentTarget.value)}
+              disabled={revealBlocked}
+              onChange={(event) => onSelect(event.currentTarget.value)}
             >
               {pending.cards.map((candidate) => (
                 <option key={candidate.card} value={candidate.card}>
-                  {candidate.name}{candidate.dead ? ' · dead target · 0 spice' : ` · ${candidate.bounty} spice`}
+                  {candidate.name} · {candidate.potentialBounty} spice potential bounty
                 </option>
               ))}
             </select>
           </label>
           {card && (
             <div className="rounded-lg border border-[#485542] p-4 space-y-2">
-              <p className="m-0"><strong>{card.name}</strong> · {card.dead ? '0 spice; target already dead' : `${card.bounty} spice bounty`}</p>
-              <p className="m-0 text-sm">Printed leader strength: {selectedLeader?.strength ?? 'unknown'}</p>
+              <p className="m-0"><strong>{card.name}</strong> · {card.potentialBounty} spice potential bounty</p>
+              <p className="m-0 text-sm">Printed leader strength: {card.potentialBounty}</p>
               <LeaderInspector
                 kind="traitor"
                 assassination="choice"
-                identity={{ name: card.name, factionName, strength: selectedLeader?.strength ?? 0 }}
+                identity={{ name: card.name, factionName, strength: card.potentialBounty }}
               />
             </div>
           )}
           <Button
+            data-testid="moritani-assassinate-reveal"
             className="min-h-11 whitespace-normal"
-            disabled={blocked || !card}
-            onClick={() => card && !blocked && act({ type: 'decision', event: pending.event, card: card.card })}
+            disabled={revealBlocked || !card}
+            onClick={() => card && !revealBlocked && act({ type: 'decision', event: pending.event, card: card.card })}
           >
             Reveal {card?.name ?? 'selected Traitor Card'} publicly
           </Button>
@@ -87,6 +107,7 @@ export function MoritaniAssassinate({
         <p className="notice">No eligible opposing-faction Traitor Card is available for this advantage.</p>
       )}
       <Button
+        data-testid="moritani-assassinate-decline"
         variant="outline"
         className="min-h-11 whitespace-normal"
         disabled={blocked}

@@ -35,7 +35,7 @@ void test('an original surviving Auditor2 win opens native CHOAM assassination, 
   assert.ok(ownChoice, 'The actual owner receives the real private opportunity.');
   assert.equal(ownChoice.blocked, null);
   assert.deepEqual(ownChoice.cards.map(c => c.card), [f.target]);
-  assert.equal(ownChoice.cards[0].bounty, printedTarget.strength);
+  assert.equal(ownChoice.cards[0].potentialBounty, printedTarget.strength);
   assert.deepEqual(viewGame(pending, f.native).moritaniAssassinate!.pending!.cards, []);
 
   const targetBefore = mixedE3MoritaniPlayer(pending, f.native).leaders.find(l => l.id === f.target)!;
@@ -79,7 +79,7 @@ void test('a different surviving CHOAM disc permits the actual Auditor Traitor t
   const f = createMoritaniAuditorWinnerFixture({ auditorTarget: true });
   const pending = pendingMoritaniAuditorAssassination(f);
   const own = viewGame(pending, f.moritani).moritaniAssassinate!.pending!;
-  assert.deepEqual(own.cards.map(c => ({ card: c.card, bounty: c.bounty })), [
+  assert.deepEqual(own.cards.map(c => ({ card: c.card, bounty: c.potentialBounty })), [
     { card: CHOAM_AUDITOR_ID, bounty: 2 },
   ]);
   const beforeSpice = mixedE3MoritaniPlayer(pending, f.moritani).spice;

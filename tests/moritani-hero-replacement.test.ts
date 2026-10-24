@@ -38,7 +38,7 @@ void test('original native Ixians loss pays the held native target bounty and Me
   assert.equal(pendingReceipt.faction, 'ixians');
   assert.equal(pendingReceipt.opposingLeader, f.battle.enemyLeader);
   const ownerChoice = viewGame(f.pending, f.moritani).moritaniAssassinate!.pending!;
-  assert.deepEqual(ownerChoice.cards.map(card => ({ card: card.card, bounty: card.bounty })),
+  assert.deepEqual(ownerChoice.cards.map(card => ({ card: card.card, bounty: card.potentialBounty })),
     [{ card: f.target, bounty: target.strength }]);
   assert.deepEqual(viewGame(f.pending, f.native).moritaniAssassinate!.pending!.cards, []);
   assert.equal(mixedE3MoritaniPlayer(f.revealed, f.moritani).spice,

@@ -45,7 +45,7 @@ void test('a real Tleilaxu foreign ghola victory opens Moritani’s private loss
   'Only the opposing player’s native Tleilaxu identities are targets.');
   assert.equal(f.window.cards.some((choice) => choice.card === FOREIGN_GHOLA_DISC), false,
     'The borrowed foreign disc never becomes a target identity.');
-  assert.equal(f.window.cards.find((choice) => choice.card === f.target)!.bounty, f.bounty);
+  assert.equal(f.window.cards.find((choice) => choice.card === f.target)!.potentialBounty, f.bounty);
 
   // Original continuation: printed bounty, one physical death, Mentat replacement.
   const outcome = revealMoritaniForeignGholaWitness(f);

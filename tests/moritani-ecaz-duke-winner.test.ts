@@ -69,7 +69,7 @@ void test('original Ecaz Ambassador Duke6 win opens the formerly missing native 
   const offer = viewGame(reload(pending), moritani).moritaniAssassinate!.pending!;
   assert.equal(offer.blocked, null);
   assert.deepEqual(offer.cards.map(c => c.card), [target]);
-  assert.equal(offer.cards[0].bounty, native.strength);
+  assert.equal(offer.cards[0].potentialBounty, native.strength);
   assert.equal(viewGame(pending, ecaz).moritaniAssassinate!.pending!.cards.length, 0);
   const d = pending.decision;
   assert.ok(d?.kind === 'moritaniAssassinate');

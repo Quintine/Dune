@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 24 October 2026 — Moritani native targets under capture or foreign Ghola
+
+Replace the target-custody exclusion with actual native Harkonnen/Tleilaxu
+producer identities, retaining canonical original disc/name/value/faction,
+native controller, shared-Duke and Auditor boundaries. Keep actual life status
+inside the settlement quote; pending projection contains only canonical identity
+and printed potential bounty. Persistent human choices and minimal bots share
+that shape. Revealing a living target kills once for printed Bank bounty;
+already-dead execution keeps its prior death count and awards zero. Clear the
+selected capture/concealment, retain ordinary Ghola return custody, then original
+release/skill/cleanup/Mentat mechanics. Selected concealed-outcome disclosure is
+provisional under14October; unselected secrecy and mode/roster guards remain.
+
+Disjoint fixture/control lanes and bounded review pass14 affected files100/100,
+types/lint/build, six actual choice/gameplay/GameTable SSR journeys through
+Mentat and twelve legal profile continuations. Both47-action capture outcomes
+come from real public Advanced setup, held-card selection, paid shipment,
+movement, capture and subsequent loss against a different Emperor disc. The
+Ghola branch reuses an actual140-action native death/paid revival prefix with
+an explicit conserved Traitor swap and seven-action later battle. Its target
+record is untouched until the actual assassination. This is no unstaged-game,
+broader custody/combination or full-mode certificate.
+
+Feedback retains original Collection income, updates old pending-choice shape/
+value assertions, reads actual public death from the native roster and fixes
+two further typed consumers. Private smoke now handles owned Face Dancer/other
+aftermath and original Nexus closing controls before expecting Mentat replacement.
+The final runtime-only pass verifies unchanged source hashes and reuses the
+previous passed tests/types/lint/build. No application checks are relabelled as
+rerun. Source/command/link proof and four prose/reference overlays remain bound.
+[Source, exact evidence and limits](MORITANI_ASSASSINATE_LEADERS.md#native-target-custody--24-october-2026).
+No saved-room/D1/reset/restart/deployment operation or AI calibration.
+Private proof:20261024-moritani-assassinate-target/frozen-integrated-3 plus
+source-identical frozen-integrated-5/reused-checks evidence.
+
 ## 24 October 2026 — Atreides special inspection until public reveal
 
 Use supplied physical27 F's before-reveal deadline after declining the original

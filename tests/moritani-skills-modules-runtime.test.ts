@@ -160,7 +160,7 @@ for (const hasKarama of [false, true]) void test(`the normal Guild Suk rescue an
   if (d?.kind !== 'moritaniAssassinate') throw Error('Expected original loss choice');
   const action: Action = { type: 'decision', event: d.event, card: f.target };
   const privateMenu = viewGame(pending, f.moritani).moritaniAssassinate!.pending!.cards;
-  assert.equal(privateMenu.find(c => c.card === f.target)!.bounty, 3);
+  assert.equal(privateMenu.find(c => c.card === f.target)!.potentialBounty, 3);
   assert.equal(privateMenu.some(c => c.card === f.opponentLeader), false);
   reject(pending, f.opponent, action); reject(pending, f.moritani, { ...action, event: `${d.event}:stale` });
   reject(pending, f.moritani, { ...action, card: f.opponentLeader });

@@ -1,16 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { registerHooks } from 'node:module';
-import { createElement } from 'react';
+import { Children, createElement, isValidElement, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import type { GameView } from '../game/engine';
+import type { Action, GameView } from '../game/engine';
 
 const aliases = registerHooks({
   resolve(specifier, context, next) {
     return next(specifier === 'next/image' ? 'vinext/shims/image' : specifier, context);
   },
 });
-const { MoritaniAssassinate, MoritaniAssassinateHistory } = await import('../components/moritani-assassinate');
+const { MoritaniAssassinate, MoritaniAssassinateChoice, MoritaniAssassinateHistory } = await import('../components/moritani-assassinate');
 
 function view(overrides: Record<string, unknown> = {}) {
   return {
@@ -34,8 +34,8 @@ function view(overrides: Record<string, unknown> = {}) {
       pending: {
         event: 'assassinate-1', opponent: 'o', territory: 'Arrakeen',
         cards: [
-          { card: 'traitor-1', name: 'Duke Leto', bounty: 5, dead: false },
-          { card: 'traitor-2', name: 'Thufir Hawat', bounty: 0, dead: true },
+          { card: 'traitor-1', name: 'Duke Leto', potentialBounty: 5 },
+          { card: 'traitor-2', name: 'Thufir Hawat', potentialBounty: 4 },
         ], blocked: null,
       },
       history: [],
@@ -48,22 +48,96 @@ function markup(game: GameView, busy = false) {
   return renderToStaticMarkup(createElement(MoritaniAssassinate, { game, act() {}, busy }));
 }
 
-void test('owner sees public traitor choices, bounty, dead-target legality and rules', () => {
+function click(node: ReactNode, selector: string): boolean {
+  for (const child of Children.toArray(node)) {
+    if (!isValidElement<{
+      children?: ReactNode;
+      onClick?: () => void;
+      'data-testid'?: string;
+    }>(child)) continue;
+    if (child.props['data-testid'] === selector && child.props.onClick) {
+      child.props.onClick();
+      return true;
+    }
+    if (click(child.props.children, selector)) return true;
+  }
+  return false;
+}
+
+function choose(game: GameView, selected = 'traitor-1', busy = false, decline = false): Action[] {
+  const actions: Action[] = [];
+  const tree = MoritaniAssassinateChoice({
+    game, selected, busy, onSelect() {}, act(action) { actions.push(action); },
+  });
+  click(tree, decline ? 'moritani-assassinate-decline' : 'moritani-assassinate-reveal');
+  return actions;
+}
+
+void test('owner sees canonical traitor names and printed potential bounties with conditional reward rules', () => {
   const html = markup(view());
   assert.match(html, /Traitor Card to reveal/);
   assert.match(html, /Duke Leto/);
-  assert.match(html, /5 spice bounty/);
-  assert.match(html, /Thufir Hawat · dead target · 0 spice/);
+  assert.match(html, /5 spice potential bounty/);
+  assert.match(html, /Thufir Hawat · 4 spice potential bounty/);
   assert.match(html, /replaced automatically during Mentat Pause/);
   assert.match(html, /cannot be canceled with Karama/);
-  const dead = markup(view({ moritaniAssassinate: {
+  assert.match(html, /potential bounty is the leader’s printed strength/);
+  assert.match(html, /awarded only if the target is alive/);
+  assert.match(html, /already-dead target remains a legal choice and awards no spice/);
+  assert.match(html, /physical Traitor Card makes the actual outcome public/);
+  const other = markup(view({ moritaniAssassinate: {
     owner: 'm', blocked: null, pending: {
       event: 'assassinate-1', opponent: 'o', territory: 'Arrakeen',
-      cards: [{ card: 'traitor-2', name: 'Thufir Hawat', bounty: 0, dead: true }], blocked: null,
+      cards: [{ card: 'traitor-2', name: 'Thufir Hawat', potentialBounty: 4 }], blocked: null,
     }, history: [],
   } }));
-  assert.match(dead, /0 spice; target already dead/);
-  assert.match(dead, /Printed leader strength: 4/);
+  assert.match(other, /Thufir Hawat · 4 spice potential bounty/);
+  assert.match(other, /Printed leader strength: 4/);
+  assert.doesNotMatch(other, /dead target · 0 spice|0 spice; target already dead/);
+});
+
+void test('real reveal and decline callbacks retain the selected physical card and original event', () => {
+  const game = view();
+  for (const card of game.moritaniAssassinate!.pending!.cards) {
+    assert.deepEqual(choose(game, card.card), [{ type: 'decision', event: 'assassinate-1', card: card.card }]);
+  }
+  assert.deepEqual(choose(game, 'traitor-2', false, true), [{ type: 'decision', event: 'assassinate-1', decline: true }]);
+  assert.deepEqual(choose(game, 'stale-selection'), [{ type: 'decision', event: 'assassinate-1', card: 'traitor-1' }]);
+});
+
+void test('pending choice labels remain uniform for living, dead, captured, concealed-executed and foreign-Ghola targets', () => {
+  const states = [
+    { dead: false },
+    { dead: true },
+    { dead: false, capturedBy: 'h' },
+    { dead: false, capturedBy: 'h', concealedExecuted: true },
+    { dead: false, gholaBy: 'o' },
+  ];
+  for (const state of states) {
+    const game = view();
+    const leader = game.allLeaders.find((candidate) => candidate.id === 'traitor-1')!;
+    Object.assign(leader, state);
+    // Only the uniform pending projection is a choice source. Even an available
+    // public leader record must not supply a private custody-dependent label.
+    for (const field of ['dead', 'capturedBy', 'concealedExecuted', 'gholaBy']) {
+      Object.defineProperty(leader, field, {
+        get() { throw new Error(`Pending choice read target ${field}`); },
+      });
+    }
+    for (const card of game.moritaniAssassinate!.pending!.cards) {
+      for (const field of ['dead', 'bounty', 'capturedBy', 'gholaBy']) {
+        Object.defineProperty(card, field, {
+          get() { throw new Error(`Pending choice read internal ${field}`); },
+        });
+      }
+    }
+    const html = markup(game);
+    assert.match(html, /Duke Leto · 5 spice potential bounty<\/option>/);
+    assert.match(html, /<strong>Duke Leto<\/strong> · 5 spice potential bounty/);
+    assert.match(html, /Printed leader strength: 5/);
+    assert.doesNotMatch(html, /dead target · 0 spice|0 spice; target already dead|captured|concealed-executed|foreign-Ghola/);
+    assert.deepEqual(choose(game), [{ type: 'decision', event: 'assassinate-1', card: 'traitor-1' }]);
+  }
 });
 
 void test('nonowner, stale, blocked, response and Truthtrance contexts stay guarded', () => {
@@ -78,6 +152,25 @@ void test('nonowner, stale, blocked, response and Truthtrance contexts stay guar
   assert.match(blocked, />Continue</);
   assert.match(markup(view({ response: { kind: 'test' } })), /disabled=""/);
   assert.match(markup(view({ truthtrance: { stage: 'answer' } })), /disabled=""/);
+  assert.deepEqual(choose(view(), 'traitor-1', true), []);
+  assert.deepEqual(choose(view(), 'traitor-1', true, true), []);
+  for (const game of [
+    view({ me: 'o' }),
+    view({ decision: { kind: 'moritaniAssassinate', player: 'm', event: 'old' } }),
+    view({ response: { kind: 'test' } }),
+    view({ truthtrance: { stage: 'answer' } }),
+  ]) {
+    assert.deepEqual(choose(game), []);
+    assert.deepEqual(choose(game, 'traitor-1', false, true), []);
+  }
+  const noCard = view();
+  noCard.moritaniAssassinate!.pending!.cards = [];
+  assert.deepEqual(choose(noCard), []);
+  assert.deepEqual(choose(noCard, '', false, true), [{ type: 'decision', event: 'assassinate-1', decline: true }]);
+  const unavailable = view();
+  unavailable.moritaniAssassinate!.pending!.blocked = 'This opportunity has ended.';
+  assert.deepEqual(choose(unavailable), []);
+  assert.deepEqual(choose(unavailable, '', false, true), [{ type: 'decision', event: 'assassinate-1', decline: true }]);
 });
 
 void test('public history shows face-up traitor markers and read-only inspection for every seat', () => {

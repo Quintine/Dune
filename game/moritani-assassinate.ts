@@ -45,6 +45,8 @@ export type MoritaniAssassinateContext = {
   held: readonly string[];
   normallyRevealed: readonly string[];
   leaders: readonly Leader[];
+  /** Native producer identities; never included in the pending player choices. */
+  custodians?: readonly { id: string; faction: FactionId }[];
 };
 /** The engine owns the full traitor universe and the actual Mentat draw.
  * These lists verify the still-reserved and permanently removed card zones. */
@@ -58,6 +60,12 @@ export type MoritaniAssassinateChoice = {
   name: string;
   bounty: number;
   dead: boolean;
+};
+export type MoritaniAssassinateProjectedChoice = {
+  card: string;
+  name: string;
+  /** Printed potential only: actual life/capture/Ghola status is not disclosed. */
+  potentialBounty: number;
 };
 
 const opponents: readonly FactionId[] = [
@@ -335,6 +343,9 @@ export function moritaniAssassinateChoices(
         'That Traitor Card is already reserved or removed by Assassinate.';
     const matches = leaders.filter((l) => l.id === card),
       leader = matches[0];
+    const nativeCustodian = (id: string | undefined, faction: FactionId) =>
+      !!id && id !== receipt.opponent &&
+      context.custodians?.some(player => player.id === id && player.faction === faction);
     if (
       !reason &&
       (matches.length !== 1 ||
@@ -343,14 +354,15 @@ export function moritaniAssassinateChoices(
         leader.strength !== native.strength ||
         leader.faction !== receipt.faction ||
         typeof leader.dead !== 'boolean' ||
-        leader.capturedBy ||
-        leader.gholaBy ||
-        leader.concealed ||
+        (leader.capturedBy !== undefined && !nativeCustodian(leader.capturedBy, 'harkonnen')) ||
+        (leader.gholaBy !== undefined && !nativeCustodian(leader.gholaBy, 'tleilaxu')) ||
+        (leader.concealed && !nativeCustodian(leader.concealed.captor, 'harkonnen')) ||
+        (card === CHOAM_AUDITOR_ID && (leader.capturedBy || leader.gholaBy || leader.concealed)) ||
         (leader.controller !== undefined &&
           leader.controller !== receipt.opponent))
     )
       reason =
-        'Assassinate with missing, altered, captured or foreign-ghola target custody remains pending.';
+        'Assassinate needs one canonical native target with valid original custody.';
     if (reason) {
       unavailable.push({ card, reason });
       continue;
@@ -370,6 +382,19 @@ export function moritaniAssassinateChoices(
     cards,
     unavailable,
   };
+}
+/** Pending options do not reveal whether a secret captive has been executed.
+ * Normal, captured, already-dead and foreign-ghola identities use the same shape.
+ * Only a committed reveal resolves actual death and awarded bounty.
+ */
+export function projectedMoritaniAssassinateChoices(context: MoritaniAssassinateContext) {
+  const choices = moritaniAssassinateChoices(context);
+  const cards: MoritaniAssassinateProjectedChoice[] = choices.cards.map(choice => ({
+    card: choice.card,
+    name: choice.name,
+    potentialBounty: printed(context.receipt.faction, choice.card)!.strength,
+  }));
+  return { blocked: choices.blocked, cards };
 }
 export function quoteMoritaniAssassinate(
   context: MoritaniAssassinateContext,

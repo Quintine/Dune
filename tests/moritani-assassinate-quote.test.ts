@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { leaders } from '../game/cards';
+import { createAuditorLeader, leaders } from '../game/cards';
 import {
   createMoritaniAssassinateOpportunity,
   moritaniAssassinateChoices,
+  projectedMoritaniAssassinateChoices,
   moritaniAssassinateSignature,
   moritaniAssassinateTrigger,
   quoteMoritaniAssassinate,
@@ -201,7 +202,7 @@ void test('the sourced normal-reveal forfeiture and already normally revealed ca
   assert.deepEqual(moritaniAssassinateChoices(context).cards, []);
 });
 
-void test('missing, duplicated, altered or exceptional target custody cannot select another physical leader or invent bounty', () => {
+void test('missing, duplicated, altered or invalid target custody cannot select another physical leader or invent bounty', () => {
   for (const damage of [
     (c: MoritaniAssassinateContext) => {
       c.leaders = c.leaders.filter((l) => l.id !== 'atreides-1');
@@ -245,6 +246,67 @@ void test('missing, duplicated, altered or exceptional target custody cannot sel
       /eligible/,
     );
     assert.deepEqual(context, before);
+  }
+});
+
+void test('native capture and foreign-ghola targets retain one printed choice without disclosing life or custody', () => {
+  const base = fixture();
+  base.custodians = [{ id: 'h', faction: 'harkonnen' }, { id: 't', faction: 'tleilaxu' }];
+  const expected = projectedMoritaniAssassinateChoices(base);
+  const original = base.leaders[1];
+  for (const patch of [
+    {},
+    { dead: true, deaths: 1 },
+    { capturedBy: 'h', concealed: { captor: 'h', controller: 'a', dead: false, deaths: 0 } },
+    { dead: true, deaths: 2, concealed: { captor: 'h', controller: 'a', dead: false, deaths: 0 } },
+    { gholaBy: 't', deaths: 1 },
+    { gholaBy: 't', dead: true, deaths: 2 },
+    { gholaBy: 't', capturedBy: 'h', deaths: 1,
+      concealed: { captor: 'h', controller: 't', dead: false, deaths: 1 } },
+  ]) {
+    const context = structuredClone(base);
+    Object.assign(context.leaders[1], patch);
+    const before = structuredClone(context);
+    const projected = projectedMoritaniAssassinateChoices(context);
+    assert.deepEqual(projected, expected);
+    assert.deepEqual(Object.keys(projected.cards[0]).sort(), ['card', 'name', 'potentialBounty']);
+    const quote = quoteMoritaniAssassinate(context, original.id);
+    assert.equal(quote.kill, !context.leaders[1].dead);
+    assert.equal(quote.bounty, context.leaders[1].dead ? 0 : original.strength);
+    assert.deepEqual(context, before);
+  }
+});
+
+void test('native producer identities and the existing native controller are still required for exceptional targets', () => {
+  const base = fixture();
+  base.custodians = [{ id: 'h', faction: 'harkonnen' }, { id: 't', faction: 'tleilaxu' }];
+  for (const patch of [
+    { capturedBy: 't' }, { gholaBy: 'h' },
+    { concealed: { captor: 't', controller: 'a', dead: false, deaths: 0 } },
+    { capturedBy: 'h', controller: 'h' }, { gholaBy: 't', controller: 't' },
+  ]) {
+    const context = structuredClone(base);
+    Object.assign(context.leaders[1], patch);
+    assert.ok(!moritaniAssassinateChoices(context).cards.some(choice => choice.card === 'atreides-1'));
+    assert.throws(() => quoteMoritaniAssassinate(context, 'atreides-1'));
+  }
+});
+
+void test('Auditor remains a native printed two-spice target with its explicit capture and foreign-ghola exclusions', () => {
+  const context = fixture('choam');
+  const auditor = createAuditorLeader();
+  context.leaders = [...context.leaders, auditor];
+  context.held = [auditor.id];
+  context.custodians = [{ id: 'h', faction: 'harkonnen' }, { id: 't', faction: 'tleilaxu' }];
+  assert.equal(quoteMoritaniAssassinate(context, auditor.id).bounty, 2);
+  for (const patch of [
+    { capturedBy: 'h' }, { gholaBy: 't' },
+    { concealed: { captor: 'h', controller: 'a', dead: false, deaths: 0 } },
+  ]) {
+    const changed = structuredClone(context);
+    Object.assign(changed.leaders.at(-1)!, patch);
+    assert.deepEqual(projectedMoritaniAssassinateChoices(changed).cards, []);
+    assert.throws(() => quoteMoritaniAssassinate(changed, auditor.id));
   }
 });
 

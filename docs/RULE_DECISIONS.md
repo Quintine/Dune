@@ -1,5 +1,25 @@
 # Rule decision index
 
+## Moritani native targets under capture or foreign Ghola — 24 October 2026
+
+Supplied physical35 D identifies the opposing printed faction and a different
+held Traitor identity; capture or ordinary foreign-Ghola control does not change
+that identity. Admit the actual native Harkonnen/Tleilaxu producer flags on the
+unique original disc, retaining canonical value, native controller and Auditor's
+explicit exclusions. Pending choices uniformly show printed potential bounty,
+without actual death/capture/Ghola status. Only a committed physical reveal
+resolves a new death/bounty or an already-dead zero-bounty result. Clear the
+selected capture/concealment and retain ordinary `gholaBy`; normal captive
+release and skill returns retain their existing rules.
+
+Under the 14 October recommended-policy authority, the selected actual outcome
+becomes public even after a concealed execution. That disclosure is provisional:
+the source does not expressly settle it, and the captured-own-winning-disc FAQ
+does not answer this target question. Unselected discs retain their existing
+secrecy, subject to normal last-native captive release. No new module or roster
+permission is granted.
+[Source, settlement and bounded proof](MORITANI_ASSASSINATE_LEADERS.md#native-target-custody--24-october-2026).
+
 ## Atreides special inspection before public reveal — 24 October 2026
 
 Supplied physical27 F permits the native Advanced special Karama before Battle

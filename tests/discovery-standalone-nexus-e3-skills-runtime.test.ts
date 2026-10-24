@@ -260,7 +260,7 @@ void test('Advanced Moritani after-loss assassination kills the actual unused tr
   reject(pending, f.opponent, action); reject(pending, f.owner, { ...action, card: battle.enemyLeader });
   const reserve = [...pending.traitorReserve!], held = [...player(pending, f.owner).traitors];
   const quote = viewGame(pending, f.owner).moritaniAssassinate!.pending!.cards.find(c => c.card === target.id)!;
-  assert.equal(quote.bounty, 3);
+  assert.equal(quote.potentialBounty, 3);
   let killed = step(pending, { actor: f.owner, action });
   assert.equal(player(killed, f.opponent).leaders.find(l => l.id === target.id)!.dead, true);
   assert.equal(player(killed, f.opponent).leaders.find(l => l.id === target.id)!.deaths, target.deaths + 1);

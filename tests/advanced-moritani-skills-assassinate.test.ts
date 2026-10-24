@@ -134,7 +134,7 @@ void test('Advanced all14 assassination kills only the held native trainer, retu
   assert.equal(pending.phase, 6);
   assert.ok(pending.moritaniAssassinateResume!.continuation.cards.includes(card));
   assert.equal(guild.leaders.find(l => l.id === pending.moritaniAssassinate!.opportunities.at(-1)!.opposingLeader)!.dead, false);
-  assert.equal(viewGame(pending, moritani.id).moritaniAssassinate!.pending!.cards.find(c => c.card === target)!.bounty, killed.strength);
+  assert.equal(viewGame(pending, moritani.id).moritaniAssassinate!.pending!.cards.find(c => c.card === target)!.potentialBounty, killed.strength);
   assert.deepEqual(viewGame(pending, guild.id).moritaniAssassinate!.pending!.cards, []);
   reject(pending, guild.id, action);
   reject(pending, moritani.id, { ...action, event: 'stale' });

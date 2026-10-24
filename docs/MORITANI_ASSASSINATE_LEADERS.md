@@ -1,11 +1,106 @@
 # Moritani: Advanced Assassinate Leaders preview
 
-Updated18 October2026. **Prototyped / Partial**. Supported fresh native
+Updated24 October2026. **Prototyped / Partial**. Supported fresh native
 Advanced Moritani starts initialize this printed advantage automatically,
 including plain faction starts and the independent-card profile. Normal lobby
 access is a labelled preview, not complete-mode or publication acceptance.
 This battle-loss ability is separate from the random Assassination Terror token.
 Played saves are not assigned fabricated prior-call or opportunity history.
+
+## Native target custody — 24 October 2026
+
+The authorized supplied revision, physical **p35 D**, selects a different held
+Traitor identity of the opposing printed faction. A valid native Harkonnen
+capture or ordinary Tleilaxu foreign-Ghola return does not rewrite that faction.
+The target pool now accepts those actual producer flags, including an already
+dead target. It still requires one canonical disc in the original native roster,
+matching printed name/value/faction and the original native controller. Unknown
+custodians, arbitrary foreign controllers, shared Duke's nonexistent Traitor and
+Auditor's explicit capture/foreign-Ghola prohibitions remain excluded. The older
+captured-winning-disc work below did not itself enable these targets.
+
+Pending choices now contain only canonical card/name and printed **potential
+bounty**. Living, dead, captured, concealed-executed and ordinary foreign-ghola
+targets have the same choice shape; controls and minimal bots do not receive
+actual life/capture/Ghola fields to rank or label those choices. Every publicly
+qualifying loss still gets the same private opportunity, and rivals receive no
+candidate identities. Public completed history retains the actual awarded bounty.
+
+Committing the original event-bound physical reveal kills a living target once,
+clears its territory use and awards printed value. An already-dead target adds
+no death or spice, retaining its existing execution/death count. Clear only the
+selected `capturedBy` and `concealed`; retain ordinary `gholaBy` for its existing
+return/buyback contract. A new death uses the existing global last-native
+Harkonnen captive-release hook and idempotent skill-return hook. Original
+cleanup, once-per-printed-faction use, normal-call forfeiture and one physical
+Mentat retirement/replacement remain unchanged. Declining changes none of the
+target's custody or bounty and does not spend that faction's use.
+
+**Selected outcome disclosure is provisional.** Under standing 14 October
+choose-recommended authority, committing the selected Traitor reveal makes its
+actual death/zero-bounty outcome public, including a previously concealed
+execution. Supplied D does not expressly settle that disclosure; the publisher's
+captured-own-winning-disc answer is not a target-custody FAQ. Unselected discs
+retain existing secrecy, subject to the ordinary last-native captive release.
+No mode, module or roster admission is changed.
+
+The primary fixture earns the held Emperor card, battle, Harkonnen capture,
+Keep/Execute decision and later Emperor victory against Moritani through actual
+public native Advanced play. A different surviving Fenring disc supplies the
+opportunity; Burseg3 remains the selected target. Only original undealt positions,
+scalar shuffle choices and the actual capture permutation are selected. A second
+fixture earns the ordinary Guild disc's combat death and paid Tleilaxu foreign
+revival, then explicitly stages a conserved later Guild/Mori battle and one
+physical Traitor swap. That branch does not claim a wholly unstaged chronology.
+The native capture source takes47 actual actions in either branch. The paid
+Ghola prefix takes140 actual actions; its separate later battle uses seven
+actual actions after the documented conserved positioning.
+
+### Current scoped proof
+
+The frozen **14-file100/100** affected offline union, `npm run check:quick` and
+production build pass. Six actual choice callbacks/gameplay/full GameTable SSR
+journeys cover captive, concealed-executed and foreign-ghola reveal/decline,
+including original physical Mentat replacement. Twelve own-view paths across
+the existing four profiles accept twelve original actions and finish the same
+continuation. Ten new native/controlled engine cases, three added quote cases
+and the current five control cases cover eligibility, uniform choices, actual
+death/payment, source/event/owner rejection and decline. Earlier trained/native
+discs and other projected-choice consumers retain their actual rule assertions.
+
+Narrow feedback first caught a test that ignored Harkonnen's ordinary two-spice
+stronghold income when battle completion starts Collection. Runtime stays
+unchanged. First frozen79/82 feedback repairs old choice-schema consumers and
+a death assertion that read the printed registry instead of the public native
+roster; four selected cases pass4/4. Subsequent82/82 tests pass, then typecheck
+finds two further old pending-bounty consumers, which join the final union.
+
+Final100/100/types/lint/build are in `frozen-integrated-3`. Private smoke feedback
+first stopped at entering Mentat before queued Nexus replacement, then at an
+owned Face Dancer choice. The corrected driver explicitly declines optional
+aftermath and follows original closing controls to the actual receipt. The
+runtime-only `frozen-integrated-5` checks source equality before reusing those
+three passed check steps; `reused-checks.json` records their origin. Tests/build
+were not rerun after these private driver-only repairs.
+
+All evidence binds base `61828150b951a859eb440f4987c59ef5a0038ba9`, tree
+`2f72c115cca1bf3afdc61c9cfbcaab568be872f6db3d885d4296ca159c7006bb`
+(2714 nonignored files). Private logs, rendered controls and source hashes stay
+outside Git in `20261024-moritani-assassinate-target`; final checkpoint prose/
+reference overlays are reviewed separately without changing engine/tests.
+This is no browser/hydration/mobile/deployed or complete-game certification.
+
+Relevant paths: [quote and projection](../game/moritani-assassinate.ts),
+[choice controls](../components/moritani-assassinate.tsx),
+[native capture fixture](../tests/fixture-moritani-assassinate-target.ts),
+[paid-Ghola prefix and controlled battle](../tests/fixture-moritani-assassinate-ghola-target.ts),
+[target outcomes](../tests/moritani-assassinate-target.test.ts),
+[quote cases](../tests/moritani-assassinate-quote.test.ts) and
+[choice cases](../tests/moritani-assassinate-controls.test.tsx).
+
+Full modes, wider combinations, comprehensive rules/save/privacy/custody and
+browser/deployed acceptance, plus full AI, remain unfinished. This prototype
+does not run a capture-restoration campaign or operate on saved rooms/D1.
 
 **18 October registered Skills:** mixed native E1/E2/E3 seats and unused
 selected decks no longer need Nexus or one exact E3 family for all14. Actual

@@ -94,7 +94,7 @@ void test('Advanced standalone Moritani keeps the printed Assassinate power thro
   assert.equal(choice.blocked, null);
   assert.deepEqual(choice.cards, [{ card: f.traitorTarget,
     name: owned(f, f.pending, f.traitorTarget).name,
-    bounty: owned(f, f.pending, f.traitorTarget).strength, dead: false }]);
+    potentialBounty: owned(f, f.pending, f.traitorTarget).strength }]);
   assert.equal(choice.cards.some((card) => card.card === f.winnerLeader), false);
   assert.deepEqual(choiceOf(f.pending, f.opponent).cards, []);
   assert.deepEqual(choiceOf(f.pending, f.third).cards, []);
@@ -171,7 +171,7 @@ void test('Advanced standalone Moritani keeps the printed power without Leader S
   assert.equal(f.pending.decision?.kind, 'moritaniAssassinate');
   const choice = choiceOf(f.pending, f.moritani);
   assert.deepEqual(choice.cards.map((card) => card.card), [f.traitorTarget]);
-  assert.equal(choice.cards[0].bounty, owned(f, f.pending, f.traitorTarget).strength);
+  assert.equal(choice.cards[0].potentialBounty, owned(f, f.pending, f.traitorTarget).strength);
   const spent = chooseMoritaniIndependentSkillsAssassination(f.pending, f.traitorTarget);
   const target = owned(f, spent, f.traitorTarget);
   assert.equal(target.dead, true);

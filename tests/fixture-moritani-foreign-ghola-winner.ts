@@ -51,7 +51,7 @@ export type ForeignGholaWinnerWindow = {
   event: string; turn: number; territory: string; owner: string; opponent: string;
   faction: string; opposingLeader: string;
   /** Owner-only opportunity; a rival view must stay empty. */
-  cards: { card: string; name: string; bounty: number; dead: boolean }[];
+  cards: { card: string; name: string; potentialBounty: number }[];
   blocked: string | null;
   rivalCards: number;
 };
@@ -261,7 +261,7 @@ export function createMoritaniForeignGholaWinnerFixture(): ForeignGholaWinnerFix
   assert.equal(window.cards.some((choice) => choice.card === FOREIGN_GHOLA_DISC), false,
     'The borrowed disc’s printed faction never supplies the target pool.');
   assert.equal(window.rivalCards, 0, 'Rivals see the decision without Moritani’s private options.');
-  assert.equal(window.cards.find((choice) => choice.card === setup.target)!.bounty,
+  assert.equal(window.cards.find((choice) => choice.card === setup.target)!.potentialBounty,
     leaders('tleilaxu')[0].strength, 'The printed bounty of the held card is quoted.');
 
   return {
@@ -289,6 +289,7 @@ export function revealMoritaniForeignGholaWitness(f: ForeignGholaWinnerFixture,
   assert.ok(choice, 'Choose one of the real private reveal options.');
   const before = mixedE3MoritaniPlayer(g, f.moritani);
   const victim = mixedE3MoritaniPlayer(g, f.tleilaxu).leaders.find((l) => l.id === card)!;
+  assert.equal(victim.dead, false, 'This original witness selects a living native target.');
   const rivalSpice = mixedE3MoritaniPlayer(g, f.tleilaxu).spice;
   const reserveBefore = [...(g.traitorReserve ?? [])];
   g = stepMixedE3Moritani(g, { actor: f.moritani,
@@ -297,7 +298,7 @@ export function revealMoritaniForeignGholaWitness(f: ForeignGholaWinnerFixture,
   const killed = mixedE3MoritaniPlayer(after, f.tleilaxu).leaders.find((l) => l.id === card)!;
   assert.equal(killed.dead, true, 'The revealed native disc really died.');
   assert.equal(killed.deaths, victim.deaths + 1);
-  assert.equal(mixedE3MoritaniPlayer(after, f.moritani).spice, before.spice + choice.bounty,
+  assert.equal(mixedE3MoritaniPlayer(after, f.moritani).spice, before.spice + victim.strength,
     'The printed bounty is paid once from the bank.');
   assert.equal(mixedE3MoritaniPlayer(after, f.tleilaxu).spice, rivalSpice, 'The revealing seat pays nothing.');
   assert.equal(after.moritaniAssassinate!.opportunities.at(-1)!.stage, 'revealed');
@@ -321,7 +322,7 @@ export function revealMoritaniForeignGholaWitness(f: ForeignGholaWinnerFixture,
   const heldBefore = mixedE3MoritaniPlayer(f.window.game, f.moritani).forces[f.location] ?? 0;
   assert.equal(mixedE3MoritaniPlayer(settled, f.moritani).forces[f.location] ?? 0, heldBefore,
     'Moritani’s real counters at its starting stronghold are unchanged by the loss and its aftermath.');
-  return { window: f.window.game, after, mentat: settled, replacement, retired: card, bounty: choice.bounty };
+  return { window: f.window.game, after, mentat: settled, replacement, retired: card, bounty: receipt.bounty };
 }
 
 

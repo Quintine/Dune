@@ -62,7 +62,7 @@ import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningR
 import { fremenNexusModeSupported } from './fremen-nexus-profile';
 import { createNexusFremenProtection, currentNexusFremenProtectionOwner, answerNexusFremenProtection, validateNexusFremenProtection, type NexusFremenProtectionFrame, type NexusFremenProtectionInput } from './nexus-fremen-protection';
 import { truthKnowledgeOf } from './truthtrance-knowledge';
-import { createMoritaniAssassinateOpportunity, moritaniAssassinateTrigger, moritaniAssassinateChoices, quoteMoritaniAssassinate, moritaniAssassinateSignature, validateMoritaniAssassinate, type MoritaniAssassinateState, type MoritaniAssassinateReceipt } from './moritani-assassinate';
+import { createMoritaniAssassinateOpportunity, moritaniAssassinateTrigger, projectedMoritaniAssassinateChoices, quoteMoritaniAssassinate, moritaniAssassinateSignature, validateMoritaniAssassinate, type MoritaniAssassinateState, type MoritaniAssassinateReceipt } from './moritani-assassinate';
 import { moritaniTerrorAssassinationPool, moritaniTerrorAssassinationValue } from './moritani-terror-assassination';
 import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGuildSecretShipment, type NexusGuildSecretAllyReceipt } from './nexus-guild-secret-ally';
 import { shipmentAvailable } from './shipment-opportunity';
@@ -8845,7 +8845,7 @@ function moritaniAssassinateModeSupported(g: Game) {
 function moritaniAssassinateContext(g: Game, receipt: MoritaniAssassinateReceipt) {
   const p = getPlayer(g,receipt.owner), opponent = getPlayer(g,receipt.opponent);
   return {state:g.moritaniAssassinate!,receipt,held:p.traitors,
-    normallyRevealed:p.revealedTraitors ?? [],leaders:opponent.leaders};
+    normallyRevealed:p.revealedTraitors ?? [],leaders:opponent.leaders,custodians:g.players};
 }
 function moritaniAssassinateIntegrity(g: Game) {
   const state = g.moritaniAssassinate, resume = g.moritaniAssassinateResume;
@@ -8945,7 +8945,7 @@ function projectedMoritaniAssassinate(g: Game, viewer: string) {
   if (!state) return null;
   const pending = state.opportunities.find(r => r.stage === 'choice');
   const own = viewer === state.owner;
-  const choices = pending && own ? nexusRule(() => moritaniAssassinateChoices(moritaniAssassinateContext(g,pending))) : null;
+  const choices = pending && own ? nexusRule(() => projectedMoritaniAssassinateChoices(moritaniAssassinateContext(g,pending))) : null;
   return {owner:state.owner,blocked:own && state.normalTraitorCall
     ? 'Moritani forfeited Assassinate Leaders for the rest of this game after revealing its Traitor Card normally.' : null,
     pending:pending ? {event:pending.event,opponent:pending.opponent,territory:pending.territory,
@@ -8973,9 +8973,16 @@ function actMoritaniAssassinate(g: Game, decision: Extract<Decision,{kind:'morit
       target.dead = true;
       target.deaths++;
       delete target.usedAt;
-      if (getPlayer(g, r.opponent).faction === 'harkonnen') returnCaptives(g, getPlayer(g, r.opponent));
-      finishLeaderSkillCustody(g);
     }
+    // The selected public reveal settles this original disc even if a hidden
+    // execution already killed it. Ordinary foreign-ghola return custody stays.
+    delete target.capturedBy;
+    delete target.concealed;
+    if (quote.kill) {
+      const harkonnen = byFaction(g, 'harkonnen');
+      if (harkonnen) returnCaptives(g, harkonnen);
+    }
+    finishLeaderSkillCustody(g);
     const owner = getPlayer(g,r.owner);
     requireRule(Number.isSafeInteger(owner.spice + quote.bounty), 'Assassination income exceeds the supported spice balance.');
     owner.spice += quote.bounty;

@@ -32,7 +32,9 @@ void test('a real lost battle reveals one different opposing traitor, kills its 
 void test('an already dead target remains a legal assassination reveal with no bounty or repeated death',()=>{
   const pending=resolveAssassinationBattle(stageAssassinationBattle(assassinationGame(),'guild-1',true));
   const before=pending.players[0].spice,dead=structuredClone(pending.players[1].leaders[1]);
-  assert.equal(viewGame(pending,'m').moritaniAssassinate!.pending!.cards[0].bounty,0);
+  const choice=viewGame(pending,'m').moritaniAssassinate!.pending!.cards[0];
+  assert.equal(choice.potentialBounty,dead.strength);
+  assert.equal('dead' in choice,false);assert.equal('bounty' in choice,false);
   const done=assassinationChoice(pending,'guild-1');
   assert.equal(done.players[0].spice,before);assert.deepEqual(done.players[1].leaders[1],dead);
   const next=assassinationToMentat(done);assert.equal(next.moritaniAssassinate!.opportunities[0].stage,'replaced');
