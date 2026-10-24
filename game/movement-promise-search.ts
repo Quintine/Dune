@@ -9,7 +9,7 @@ export type MovementPromiseAdapter = {
   reachable: (game: Game, player: Player, origin: string, destination: string, sector: number) => boolean;
   project: (game: Game, player: string, action: Action) => { game: Game; event: MovementEvent } | null;
 };
-export type MovementCompletion = { actions: Action[] };
+export type MovementCompletion = { actions: Action[]; early?: { phase: number; action: Action }[] };
 
 /** Enumerate actual physical subgroups from one territory, including native
  * elite allocations and several sectors. No strategic shortlist proves legality. */

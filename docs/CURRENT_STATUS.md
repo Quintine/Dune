@@ -16,6 +16,28 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Earlier classic Basic movement promises — 24 October. Prototyped / Partial.**
+Clean current-round phases0–4 now include owned Charity, ordinary auction
+payment and Revival before later ground movement. Reopen readiness, reserve
+the actual winning invoice and retain joint shipment predicates. Mandatory Storm
+losses release impossibility; old Hajr/Ornithopter allowances reset at Movement.
+Held Karama now prepares its actual Guild shipment rate, with a separate card
+when another pays the auction. Persistent controls offer only current preparation,
+Ready, bid-pass or owned payment; minimal bots follow the combined route.
+
+A disjoint original-source/control lane, bounded continuation review and owner
+integration pass **21 files155/155**, types/lint/build and four actual-control/
+table-rendering programmes. Genuine Storm8/Charity22 prefixes retain Emperor's
+printed10 spice/20 reserves/zero board; actual purchase2 → city shipment8 →
+ground8 fulfills Yes. Controlled prior losses, conserved cards, escrow and stale
+allowances disclose their staging. Four profiles make24 accepted proposals plus
+76 separate native continuations. Tests exposed the missing held shipment-rate
+preparation; it now uses the existing card action and actual tariff.
+[Source, exact proof and limits](TRUTHTRANCE_MOVEMENT_PROMISES.md#earlier-classic-basic-phases--24-october-2026).
+Native early auction liabilities, later rounds, other preparations/modules,
+complete modes, comprehensive assurance and deployed acceptance remain open.
+No strategy tuning or saved-room/D1/reset/restart/deployment operation.
+
 **Waiting-turn Basic movement promises — 24 October. Prototyped / Partial.**
 Unused respondents in the current Movement queue can now answer. Forecast their
 current board/resources without resolving foreign controls or granting future

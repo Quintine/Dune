@@ -1,5 +1,9 @@
 # Truthtrance ground-movement promises
 
+The [earlier classic Basic follow-up](#earlier-classic-basic-phases--24-october-2026)
+supersedes preceding timing boundaries. Previous checkpoint counts remain dated
+evidence, not complete rules or final acceptance.
+
 ## Basic prototype — 24 October 2026
 
 **Prototyped / Partial.** The structured question asks whether the respondent
@@ -17,12 +21,14 @@ movement statement, the owned-action witness and accepted-order release policy
 below are explicit software compositions, not a publisher movement-specific FAQ
 or Basic adoption of the unofficial Advanced revision.
 
-Fresh or existing Basic native tables can ask at a clean **active or still-unused
+Classic Basic tables can also ask in clean earlier phases0–4 of the current
+round, with the owned preparations below. Fresh or existing Basic native tables
+can ask at a clean **active or still-unused
 waiting turn in the current Shipment and Movement queue**, before or after the
 active respondent's shipment, including selected E1/E2/E3 factions. No optional modules or Advanced
 inherit this entry. The actual native roster, physical inventory and route
 validation remain authoritative; no mode or publication gate opens. Earlier
-phase/later-round movement questions, compound movement/fact questions and wider
+phases with native factions, later-round movement questions, compound movement/fact questions and wider
 owned preparations/interactions remain unfinished. Existing saves are not
 reconfigured and absent promise fields remain absent until a real answer binds.
 
@@ -56,8 +62,72 @@ reconfigured and absent promise fields remain absent until a real answer binds.
 
 This is bounded reachability, not complete arbitrary Truthtrance enforcement.
 Other owned preparation families (including native relocation preparation),
-earlier phases/later rounds, optional/Advanced profiles and comprehensive
+earlier native phases/later rounds, optional/Advanced profiles and comprehensive
 combination/recovery/privacy/custody acceptance remain due.
+
+## Earlier classic Basic phases — 24 October 2026
+
+The current-round question now includes classic Basic Storm, Spice Blow,
+Charity, Bidding and Revival. This is the same provisional owned-stage forecast
+used by early shipment promises, not a new printed payment or future-income
+rule. Use current board/resources plus available owned Charity and ordinary
+Revival. Price a currently leading ordinary bid against cash or one held
+physical Karama; do not invent the purchased card, future income, gifts,
+cooperation or a favorable Storm outcome. Bidding aid retains its committed
+floor and refunds only its uncommitted remainder; incoming Bidding aid expires
+before Movement. Actual foreign invoices/income responses finish before an
+impossible promise releases. Native early auction/funding liabilities remain
+unfinished; selected native phase5 entries are unchanged.
+
+A new answer reopens its owner's Charity/Revival readiness. Claim or revive
+before Ready when needed; a bid, payment or optional revival cannot spend the
+last route. Mandatory Storm dials/readiness and forced casualties can release
+impossible answers rather than trapping their owner. Forecasts reset old Hajr
+and Ornithopter allowances exactly as real Movement entry does. Joint shipment
+predicates remain in the same completion search. Ground preparation also
+enumerates held Karama for its actual Guild shipment rate, with a distinct card
+when another Karama pays the auction; only the actual shipment consumes that
+rate. Pending owned Worthless conversion projects its allowed result without
+settling its real response.
+
+Persistent guidance offers only the current Charity, ordinary Revival, Ready,
+bid-pass or owned invoice control. It never exposes future shipment/movement
+before phase5. Existing paid Box decisions retain their original phase before
+forecast promotion; no genuine classic Box source is claimed. Positive movement
+guidance owns the combined route before independent shipment suggestions;
+all-No answers keep normal auction-payment choices. All four profiles retain
+minimal legal participation; strategic refinement remains deferred.
+
+`tests/fixture-truth-movement-early.ts` retains genuine original classic Basic
+Storm/Charity prefixes with Atreides Truth, Emperor Baliset, Harkonnen
+Karama/Shield and Guild Snooper. Emperor keeps printed10 spice,20 reserves and
+zero board/Tanks. The caller performs its later normal purchase2, city
+shipment8 and ground8. Controlled prior losses, conserved Karama/second-Truth
+transfers, ally escrow and stale allowance cases are explicitly separate from
+that natural source. The storm-loss case stages prior resources/position, then
+uses actual dials and last owner Ready over exposed Oh Gap; Imperial Basin's
+printed storm protection is retained.
+
+The frozen **21-file union passes155/155**, types/lint and production build.
+Four actual guidance-handler/GameTable programmes cover genuine Storm8 and
+Charity22 sources with actual purchase2/city shipment8/ground8, original Charity
+No, and an explicitly controlled Charity/Revival1 preparation. Busy handlers
+submit nothing. Four existing profiles make24 accepted current-phase/later-turn
+proposals plus76 separate native pass/readiness continuations. No strategy
+refinement or relative-difficulty calibration is claimed. Focused feedback
+repaired missing held Karama shipment preparation; fixture corrections retained
+actual geometry, current-sector blocking and Imperial Basin storm protection.
+
+Frozen base `49586efd2fffcf2ba990693fedc9307a5b522150`, tree
+`e56b10d3a3c602078451d125b55aeaabc7acff1b348f8f682e04149e3831382d`,
+2648 files. Private source-bound logs, actual-state control HTML and receipts:
+`/home/quintine/.local/share/dune/checkpoints/20261024-movement-early/`,
+`frozen-integrated/report.json`. Only final checkpoint/reference prose overlays
+follow proof. Framework aliases/CSS stubbing establish server rendering, not
+browser/visual/deployed acceptance. No saved-room/D1/reset/restart/deployment.
+
+Full native early phases, later rounds, other preparations/modules, complete
+modes, comprehensive assurance and browser/deployed acceptance remain open.
 
 ## Same-phase waiting respondents — 24 October 2026
 

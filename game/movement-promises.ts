@@ -83,11 +83,12 @@ export function finishMovementPromises<T extends MovementPromise>(
 
 /** Prototype profile/timing only. Actual route feasibility stays authoritative
  * in the engine. Truthtrance and an ordinary active Ornithopter may remain. */
-export function movementPromiseTargetAvailable(g: Game, player: string): boolean {
-  const target = g.players.find(candidate => candidate.id === player);
-  return g.status === 'playing' && g.advanced === false && g.phase === 5 &&
-    !!target && (g.active === player || (!target.shipped && target.moved === 0)) &&
-    !!g.movementRemaining?.includes(player) &&
+export function movementPromiseModeSupported(g: Game): boolean {
+  return g.advanced === false &&
+    // Early owned-stage forecasts currently price ordinary classic invoices.
+    // Native phase5 coverage does not establish Richese/CHOAM bidding prices.
+    (g.phase >= 5 || (!g.expansions.length && g.players.every(player =>
+      FACTIONS.find(entry => entry.id === player.faction)?.expansion === 'base'))) &&
     g.players.length >= 2 && g.players.length <= 6 &&
     g.expansions.every(id => ['ix', 'choam', 'ecaz'].includes(id)) &&
     new Set(g.expansions).size === g.expansions.length &&
@@ -97,7 +98,14 @@ export function movementPromiseTargetAvailable(g: Game, player: string): boolean
     }) &&
     !g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.techTokens &&
     !g.strongholdCards && !g.discoveryEnabled && !g.discoveries &&
-    !g.discoveryStash && !g.greatMaker && !g.ecazTreachery &&
+    !g.discoveryStash && !g.greatMaker && !g.ecazTreachery;
+}
+export function movementPromiseTargetAvailable(g: Game, player: string): boolean {
+  const target = g.players.find(candidate => candidate.id === player);
+  return movementPromiseModeSupported(g) && g.status === 'playing' &&
+    Number.isInteger(g.phase) && g.phase >= 0 && g.phase <= 5 && !!target &&
+    (g.phase < 5 || ((g.active === player || (!target.shipped && target.moved === 0)) &&
+      !!g.movementRemaining?.includes(player))) &&
     !g.response && !g.decision && !g.phaseOpening &&
     !g.pendingShipment && !g.pendingHomeworldShipment && !g.pendingGuildTransport &&
     !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingArrivalOverlap &&

@@ -1,6 +1,6 @@
 import { recordMovementDiscardKnowledge, knownMovementDiscards, recordMovementBoxKnowledge, recordMovementClaimKnowledge, clearMovementDiscardKnowledge, type MovementDiscardKnowledge } from './movement-discard-knowledge';
 import { movementShipmentPreparations } from './movement-shipment-preparation';
-import { MovementClaimError, liveMovementPromises, movementEventAllowed, movementPromiseTargetAvailable, settleMovementEvent, finishMovementPromises, validMovementClaim, type MovementClaim, type MovementPromise } from './movement-promises';
+import { MovementClaimError, liveMovementPromises, movementEventAllowed, movementPromiseModeSupported, movementPromiseTargetAvailable, settleMovementEvent, finishMovementPromises, validMovementClaim, type MovementClaim, type MovementPromise } from './movement-promises';
 import { findMovementCompletion, type MovementCompletion } from './movement-promise-search';
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile } from './faction-module-profile';
@@ -16433,6 +16433,7 @@ function recoverableUnsupportedShipment(shipment: PendingShipment) {
  * owned movement reachability; unresolved opposing outcomes are never replayed. */
 function groundMovementProbe(source: Game, actor: string): Game {
   const game = structuredClone(source);
+  projectPendingShipmentKarama(game, actor);
   if (game.active !== actor) {
     // Forecast only this owner's unused turn on the current board. Do not
     // complete a foreign declaration, price, flight or private search, and do
@@ -16503,7 +16504,33 @@ function projectMovementBoxRecovery(source: Game, actor: string, box: string, se
 }
 function groundMovementCompletion(source: Game, actor: string,
   promises = liveMovementPromises(source.movementPromises ?? [], actor, source.turn)): MovementCompletion | null {
+  if (!movementPromiseModeSupported(source) || source.phase < 0 || source.phase > 5) return null;
   const game = groundMovementProbe(source, actor);
+  if (source.phase < 5) {
+    const paid = source.pendingNullentropy;
+    if (paid?.player === actor) {
+      if (nullentropyIntegrity(source)) return null;
+      for (const card of eligibleNullentropyCards(source.discard)) {
+        const projected = projectMovementBoxRecovery(source, actor, paid.box, card.id, true);
+        const completion = projected && groundMovementCompletion(projected, actor, promises);
+        if (completion) return { ...completion,
+          actions: [{ type: 'decision', event: paid.event, card: card.id }, ...completion.actions] };
+      }
+      return null;
+    }
+    for (const seed of earlyShipmentCompletionSeeds(game, source, actor)) {
+      resetPlayerMovement(getPlayer(seed.game, actor));
+      seed.game.hajr = seed.game.hajr.filter(player => player !== actor);
+      seed.game.ornithopter = null;
+      seed.game.movementRemaining = [actor];
+      const completion = groundMovementCompletionAtMovement(seed.game, actor, promises);
+      if (completion) return { actions: [...seed.actions, ...completion.actions], early: seed.early };
+    }
+    return null;
+  }
+  return groundMovementCompletionAtMovement(game, actor, promises);
+}
+function groundMovementCompletionAtMovement(game: Game, actor: string, promises: readonly MovementPromise[]): MovementCompletion | null {
   if (!movementPromiseTargetAvailable(game.pendingNullentropy?.player === actor ? { ...game, decision: null } : game, actor)) return null;
   return findMovementCompletion(game, actor, promises, {
     allowance: movesAllowed,
@@ -16534,6 +16561,11 @@ function groundMovementCompletion(source: Game, actor: string,
         catch (error) { if (error instanceof RuleError) return null; throw error; }
       });
       for (const card of player.hand) {
+        if (!player.shipped && !state.karamaShipping && canUseAsKaramaRole(state, player, card)) {
+          const action: Action = { type: 'card', card: card.id, mode: 'shipment', target: owner };
+          try { yield { game: groundMovementProbe(applyActionInner(state, owner, action, 'movementPreparation'), owner), actions: [action] }; }
+          catch (error) { if (!(error instanceof RuleError)) throw error; }
+        }
         if (card.effect === 'hajr' && hajrAvailable(state, player) && !transferCardBlock(state, player, card)) {
           try { yield { game: groundMovementProbe(applyActionInner(state, owner,
             { type: 'card', card: card.id }, 'movementPreparation'), owner), actions: [{ type: 'card', card: card.id }] }; }
@@ -16572,6 +16604,7 @@ function groundMovementCompletion(source: Game, actor: string,
 function projectedGroundMovementPolicy(g: Game, player: Player): Action[] | null {
   const live = liveMovementPromises(g.movementPromises ?? [], player.id, g.turn);
   const paid = g.pendingNullentropy?.player === player.id;
+  if (!paid && g.phase < 5) return earlyGroundMovementPolicy(g, player);
   if (g.truthtrance || !live.length || (!paid && g.active !== player.id) ||
       (paid && !live.some(promise => promise.answer))) return null;
   const available = paid ? groundMovementProbe(g, player.id) : g;
@@ -16579,16 +16612,35 @@ function projectedGroundMovementPolicy(g: Game, player: Player): Action[] | null
   const completion = groundMovementCompletion(g, player.id);
   return completion ? completion.actions.length ? completion.actions.slice(0, 1) : [{ type: 'endMovement' }] : null;
 }
+function earlyGroundMovementPolicy(g: Game, player: Player): Action[] | null {
+  const live = liveMovementPromises(g.movementPromises ?? [], player.id, g.turn);
+  if (g.status !== 'playing' || !movementPromiseModeSupported(g) || !live.some(promise => promise.answer) ||
+    g.truthtrance || g.response || g.phaseOpening || g.pendingTreacheryDiscard ||
+    (g.decision && !(g.decision.kind === 'auctionPayment' && g.decision.player === player.id))) return null;
+  const completion = groundMovementCompletion(g, player.id);
+  if (!completion) return null;
+  const current = completion.early?.find(step => step.phase === g.phase)?.action;
+  if (g.decision?.kind === 'auctionPayment')
+    return [current?.type === 'decision' ? current : { type: 'decision', karama: false }];
+  if (g.phase === 3) return g.auction?.active === player.id ? [{ type: 'passBid' }] : [];
+  if (g.phase === 2 || g.phase === 4) return current ? [current] : g.ready.includes(player.id) ? [] : [{ type: 'ready' }];
+  return null;
+}
 function movementTruthAnswers(g: Game, p: Player, claim: MovementClaim): TruthAnswer[] {
   const live = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn);
   const answers: TruthAnswer[] = [];
   for (const answer of [true, false]) {
     const promise = { ...claim, turn: g.turn, player: p.id, asker: g.players.find(other => other.id !== p.id)!.id, answer };
-    if (groundMovementCompletion(g, p.id, [...live, promise])) answers.push(answer ? 'yes' : 'no');
+    const answerSource = g.phase === 2 || g.phase === 4 ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
+    if (groundMovementCompletion(answerSource, p.id, [...live, promise])) answers.push(answer ? 'yes' : 'no');
   }
   return answers.length ? answers : ['unknown'];
 }
 function bindMovementTruth(g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) {
+  if ((g.phase === 2 || g.phase === 4) && g.ready.includes(p.id)) {
+    g.ready = g.ready.filter(id => id !== p.id);
+    log(g, `${p.name} has a new Truthtrance movement commitment and must confirm readiness again after any needed preparation.`);
+  }
   (g.movementPromises ??= []).push({ ...claim, turn: g.turn, player: p.id, asker, answer });
 }
 function checkGroundMovementPromises(g: Game, p: Player, move: MovementOrder) {
@@ -16611,7 +16663,7 @@ function recordGroundMovementPromises(g: Game, p: Player, move: MovementOrder) {
       log(g, `${p.name} fulfilled a Truthtrance ground-movement promise with this committed move.`);
   });
 }
-function reconcileGroundMovementPromises(g: Game, actor?: string) {
+function reconcileGroundMovementPromises(g: Game, actor?: string, action?: Action, sourcePhase = g.phase) {
   // A declared native movement is awaiting a real opponent choice. It is not
   // impossible and must not be fulfilled before physical commitment.
   for (const p of g.players) {
@@ -16619,11 +16671,16 @@ function reconcileGroundMovementPromises(g: Game, actor?: string) {
     if (!live.some(promise => promise.answer)) continue;
     if (g.pendingFremenMove?.order.player === p.id || g.pendingIxMove?.player === p.id ||
       g.pendingChoamMove?.player === p.id) continue;
+    const early = g.phase < 5 || sourcePhase < 5;
+    const voluntary = actor === p.id && (!early || !!action &&
+      (['card', 'bribe', 'pledgeAid', 'emperorGift', 'bid', 'revive', 'reviveLeader', 'reviveKwisatz', 'emperorRevival', 'decision'].includes(action.type) ||
+        action.type === 'ready' && [2, 4].includes(sourcePhase)));
     const busy = !!(g.response || g.decision || g.phaseOpening || g.pendingTreacheryDiscard ||
-      g.pendingAmbassador || g.pendingTerrorEntry || g.pendingArrivalOverlap || g.pendingArrivalReaction?.length);
-    if (busy && actor !== p.id) continue;
+      g.pendingAmbassador || g.pendingTerrorEntry || g.pendingArrivalOverlap || g.pendingArrivalReaction?.length ||
+      g.phase === 3 && !g.currentAuctionSale && g.auction?.bidder === p.ally && (g.auction?.allyPayment ?? 0) > 0);
+    if (busy && !voluntary) continue;
     if (groundMovementCompletion(g, p.id, live)) continue;
-    requireRule(actor !== p.id, 'Your action would remove the last legal completion of an accepted ground-movement promise.');
+    requireRule(!voluntary, 'Your action would remove the last legal completion of an accepted ground-movement promise.');
     const kept = live.filter(promise => !promise.answer);
     // Keep still-feasible earlier answers and every No constraint; an opposing
     // loss does not erase independent promises that remain possible.
@@ -20495,6 +20552,13 @@ function advisorBattleOptions(g: Game) {
   applyAdvisorReleases(g, quote.released);
   return quote.territories;
 }
+function resetPlayerMovement(p: Player) {
+  p.shipped = false;
+  p.moved = 0;
+  delete p.hajrPlays;
+  delete p.ornithopterExtraMoves;
+  delete p.hajrWindow;
+}
 function commitMovementPhaseStart(g: Game, quote: MovementPhaseQuote) {
   if (quote.kind === 'opening') {
     g.phaseOpening = quote.phaseOpening;
@@ -20514,13 +20578,7 @@ function commitMovementPhaseStart(g: Game, quote: MovementPhaseQuote) {
         passed: [],
       };
   }
-  for (const p of g.players) {
-    p.shipped = false;
-    p.moved = 0;
-    delete p.hajrPlays;
-    delete p.ornithopterExtraMoves;
-    delete p.hajrWindow;
-  }
+  for (const p of g.players) resetPlayerMovement(p);
   applyAdvisorReleases(g, quote.released);
   g.decision = quote.decision;
   g.active = quote.active;
@@ -31260,7 +31318,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     return normalizeAutomaticGame(state);
   }
   const g = applyActionInner(state, id, action);
-  reconcileGroundMovementPromises(g, id);
+  reconcileGroundMovementPromises(g, id, action, state.phase);
   harkonnenNexusBetrayalIntegrity(g);
   if (g.pendingNexusHarkonnenBetrayal) return g;
   ixianNexusBetrayalIntegrity(g);
@@ -33468,7 +33526,7 @@ function applyActionInner(
           const afterAdvisor = structuredClone(g);
           finishResponse(afterAdvisor, false);
           reconcileShipmentPromises(afterAdvisor, { actor: p.id, action });
-          reconcileGroundMovementPromises(afterAdvisor, p.id);
+          reconcileGroundMovementPromises(afterAdvisor, p.id, action, g.phase);
         }
       } else log(g, `${p.name} declined the free shipment.`);
     } else if (decision.kind === 'wormPlacement') {
@@ -34414,7 +34472,7 @@ function applyActionInner(
       getPlayer(afterPayment, p.id).spice -= t === 'emperorGift'
         ? amount : paidForceRevivalCost(recipient, amount, elite);
       reconcileShipmentPromises(afterPayment, { actor: p.id, action });
-      reconcileGroundMovementPromises(afterPayment, p.id);
+      reconcileGroundMovementPromises(afterPayment, p.id, action, g.phase);
     }
     g.response = {
       kind: t,

@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 24 October 2026 — Earlier classic Basic movement promises
+
+Extend current-round questions to clean classic Basic phases0–4. Owned Charity,
+ordinary auction payment and Revival prepare the later route; new answers reopen
+Ready. Retain joint shipment predicates, actual winning cash/Karama costs and
+aid expiry/refund. Forced Storm losses release impossibility; old movement
+allowances reset exactly as phase entry. Current-phase guidance and minimal bots
+preserve the combined route. Held Karama also prepares its actual Guild shipment
+rate, independently of any card paying the auction invoice.
+
+A disjoint source/control lane, bounded continuation review and owner integration
+pass21 files155/155, types/lint/build and four gameplay/control/table-rendering
+programmes. Original Storm8/Charity22 prefixes keep Emperor10 spice/20 reserves/
+zero board; actual purchase2, shipment8 and ground8 fulfill Yes. Controlled prior
+losses/cards, escrow, stale credits and exposed Oh Gap storm cases disclose their
+staging. Four existing profiles make24 accepted proposals and76 separate native
+continuations, without tuning. The new invoice regression exposed missing held
+Karama shipment preparation; the shared graph now uses the actual card action.
+Initial storm fixtures were corrected to respect distance, current storm sector
+and Imperial Basin protection rather than changing those printed rules.
+[Authority, exact proof and unfinished scope](TRUTHTRANCE_MOVEMENT_PROMISES.md#earlier-classic-basic-phases--24-october-2026).
+Native early invoices, later rounds, other preparations/modules, complete rules,
+comprehensive assurance and deployed acceptance remain open. No saved-room/D1/
+reset/restart/deployment operation.
+
 ## 24 October 2026 — Waiting-turn Basic movement promises
 
 Allow unused respondents in the current Movement queue to answer against their

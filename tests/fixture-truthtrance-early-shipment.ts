@@ -54,7 +54,7 @@ export function createTruthtranceEarlyShipmentFixture() {
   });
   const beforeStartingDeal = structuredClone(game);
   reach(state => state.status === 'playing');
-  const afterSetup = structuredClone(game);
+  const afterSetup = structuredClone(game), afterSetupActionCount = actions.length;
   assert.ok(truthtranceEarlyShipmentPlayer(game, asker).hand.some(card => card.id === truth.id));
   assert.ok(truthtranceEarlyShipmentPlayer(game, counterHolder).hand.some(card => card.id === karama.id));
   assert.ok(truthtranceEarlyShipmentPlayer(game, target).hand.some(card => card.id === filler[0]!.id));
@@ -80,7 +80,7 @@ export function createTruthtranceEarlyShipmentFixture() {
   const declarationStep: TruthtranceEarlyShipmentStep = { actor: asker,
     action: { type: 'card', card: truth.id } };
   const askStep: TruthtranceEarlyShipmentStep = { actor: asker, action: { type: 'truthAsk', question } };
-  return { game, lobby, setup, beforeStartingDeal, afterSetup, beforeSpiceOrder, spiceOrder,
+  return { game, lobby, setup, beforeStartingDeal, afterSetup, afterSetupActionCount, beforeSpiceOrder, spiceOrder,
     deal, dealOrder, originalTreachery, originalSpice, asker, target, counterHolder, guild: 'guild',
     card: truth.id, karama: karama.id, question, declarationStep, askStep,
     territory: 'carthag', sector: 11, location: 'carthag:11', minimum: 8,

@@ -21,9 +21,10 @@ export function ShipmentPromises({
   if (!promises.length) return null;
   const me = g.players.find((p) => p.id === g.me)!;
   const early = g.phase < 5;
-  const jointMovement = liveMovementPromises(g.movementPromises ?? [], g.me, g.turn).length > 0;
+  const movement = liveMovementPromises(g.movementPromises ?? [], g.me, g.turn);
+  const jointMovement = movement.length > 0;
   const next = g.phase === 5 && !jointMovement ? g.shipmentCompletion?.actions[0] : undefined;
-  const preparation = early ? g.shipmentPreparation?.actions[0] : undefined;
+  const preparation = early && !movement.some(promise => promise.answer) ? g.shipmentPreparation?.actions[0] : undefined;
   const preparationCard = preparation?.type === 'card'
     ? me.hand?.find(card => card.id === preparation.card) : undefined;
   const preparationLabel = preparation?.type === 'charity'
