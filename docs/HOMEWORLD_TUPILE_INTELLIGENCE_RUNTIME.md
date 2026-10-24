@@ -2,6 +2,89 @@
 
 Runtime checkpoint, 10 September 2026. Native CHOAM can now request and retain a private Tupile intelligence observation in a game with proven setup history. This implements the bounded disclosure described in the [source contract](HOMEWORLD_TUPILE_INTELLIGENCE_RULES.md); occupation entitlement, expiry and occupied income remain unresolved. Advanced and unfinished expansion starts, publication and complete-rules release retain the gates in [README](../README.md).
 
+## Basic current-sole slot lifecycle — 24 October 2026
+
+**Prototyped / Partial.** Basic Tupile now follows the same visibly provisional
+current-sole-controller policy as the other Basic occupied benefits. This
+supersedes the conservative Tupile exception in the 5 October contract and
+9 October general policy. No explicit human ruling required that exception;
+under the standing recommended-choice direction, keep the printed one-slot and
+normal-limit discard mechanics usable while publisher lifecycle clarification
+remains unresolved. This is an application interpretation, not a GF9 ruling or
+a transfer of the supplied Advanced retention rule into Basic.
+
+A qualified sole foreign controller and its reciprocal ally each receive one
+slot while native reserves remain below high threshold. Departure, foreign
+contest or native high population ends the Basic grant. Actual recorded public
+snapshots identify each continuous eligible interval. A turn boundary preserves
+its activation; loss and later observed restoration create a fresh activation,
+even when the original qualification reducer deduplicates a same-turn fact.
+Current forces without the necessary observed source cannot invent a new grant.
+The existing source/lease format and historical valid qualification sources stay
+readable; no saved version or setup flag is added.
+
+Losing holders owe the original normal-limit cleanup. A later activation cannot
+lend space until that holder's earlier cleanup finishes. Original exact held-card
+choices, protected cards, event identity, suspended controls and discard effects
+remain. Views and repeated sync never draw a card, add spice, stack slots or
+settle another player's discard. Alliance changes continue to remove only the
+former holders. Basic loss restores new low-intelligence eligibility when
+population/contact permit it, without clearing historical private answers or
+once-per-faction use. Advanced retains its original last-force-departure rule.
+Existing unmarked profiles keep their previous behavior; no other module opens.
+
+### Targeted proof and limits
+
+One disjoint original-action fixture lane, bounded source-identity review and
+owner integration pass **10 files70/70**, `npm run check:quick`, production build
+and two gameplay/rendered-table programmes plus four finite legal policies.
+First feedback repaired only TypeScript loop narrowing: the replay tracks its
+active interval by index rather than an inferred nullable object. The full
+frozen batch then passes; no new source policy or numerical ruling followed.
+
+The passing source is based on
+`ae2d0371ceb0b9119b929ba0eef616df565ace56`, tree
+`de29c84b36a735c7a2e9da2614b936ead6fd0a68f18043059f84d9b05ba3c1c7`,
+2,601 tracked/nonignored files. The untracked source PDF contributes only its
+hash, without being committed or republished. Final checkpoint/reference prose
+is reviewed against all frozen source-file hashes before push.
+
+`tests/fixture-basic-tupile-lifecycle.ts` uses the real public Basic three-seat
+Atreides/CHOAM/Guild Homeworld start. Only unopened land Spice positions and
+scalar lotteries are selected. Three actual normal1 purchases fill Guild's
+original dealt hand to4. Atreides's actual earlier Imperial Basin shipment costs2
+and earns Guild2. Guild ships2 from its own World to Tupile for1. A real unarmed
+battle with Guild dial1 and CHOAM dial0 puts native20 and Guild1 in Tanks, leaving
+one foreign visitor and its single slot. No dealt cards, funds, forces, phase,
+queue, alliance, lease or occupation history is installed.
+
+The no-fifth source uses88 actions; the fifth-card source uses91 and actually
+buys that fifth normal-auction card for1. Both retain the same original activation
+across the turn boundary. Actual last-force return costs1 and takes1 continuation
+with no overfull prompt, or2 with exactly one normal-limit discard. Both preserve
+unused original movement, then the runtime explicitly ends the real Guild turn.
+All four minimal profiles submit one legal actually held-card cleanup and finish
+the native turn; no strength or strategy calibration is claimed.
+
+`tests/basic-tupile-lifecycle-engine.test.ts` covers those original control paths.
+The revised controlled Tupile tests separately cover turn continuity, departure,
+contest, native high population, a different controller, same-turn return with
+no new qualification row, no unobserved activation, old cleanup before reacquired
+capacity, reciprocal ally removal and preserved Basic/Advanced intelligence use.
+Existing Advanced retained-occupation, hand-capacity, cleanup and source tests pass.
+
+Actual GameTable and cleanup components render the persistent provisional Basic
+policy, occupied/fifth-card/paid-return state, exact owned choice and busy controls.
+Framework aliases/CSS stubs do not establish browser clicks, visual or deployed
+acceptance. Private source hashes, logs, HTML and runtime results are in
+`/home/quintine/.local/share/dune/checkpoints/20261024-basic-tupile/`;
+`frozen-integrated-2/report.json` is the complete passing batch, with the earlier
+feedback retained. No broad recovery/privacy/custody audit was added.
+
+Publisher Basic lifecycle clarification, wider interactions, full Homeworld/mode
+certification, final assurance and browser/deployed acceptance remain open. No
+saved-room/database/reset/restart/deployment operation was performed.
+
 ## Semuta / original lost-slot discard — 11 October 2026
 
 The separate fresh `semuta --homeworlds` entry reuses original occupation setup

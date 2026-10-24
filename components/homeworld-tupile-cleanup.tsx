@@ -50,10 +50,11 @@ function CleanupChoice({ game, offer, act, busy }: Props & { offer: Offer }) {
         cards are protected. This settles the lost slot; normal discard effects remain separate.
       </p>
       <p className="notice">
-        Development preview · Advanced rulebook page 22 retains the original occupation
-        benefit until the occupier’s last own force leaves; contests, native high population
-        and turn changes do not end it. A new sole occupier after departure starts a new
-        occupation epoch. Basic unresolved expiry and competing-owner cases remain guarded.
+        Development preview · {game.advanced ? <>Advanced retains the original occupation
+          benefit until the occupier’s last own force leaves; contests, native high population
+          and turn changes do not end it.</> : <>Basic provisionally ends the slot on
+          departure, another foreign army or native high population. Regaining control
+          does not cancel this earlier normal-limit discard.</>}{' '}
         Not complete or certified Homeworld rules.
       </p>
       <p className="fine break-all">Original occupation cleanup event: {offer.event}</p>

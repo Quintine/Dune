@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 24 October 2026 — Basic occupied Tupile lifecycle
+
+Extend the existing provisional Basic current-sole policy to one-slot grants and
+original normal-limit cleanup. Observed intervals keep continuous turns separate
+from loss and reacquisition; old discards cannot be erased by a returning grant.
+Historical valid sources, intelligence usage and Advanced retention remain.
+Persistent controls label the application policy rather than claiming a GF9 ruling.
+
+A disjoint original-action fixture lane, bounded source review and owner
+integration pass10-file70/70, types/lint/build and two actual public Basic gameplay/
+rendering programmes plus four legal cleanup profiles. Sources88/91 earn actual
+cards/income, paid invasion and native battle, then one continuous slot and a real
+optional fifth purchase. Paid return1 plus zero/one cleanup use1/2 continuations,
+leave original movement unused and then explicitly end the turn. Controlled
+lifecycle/ally/intelligence probes remain separate. Only TypeScript loop narrowing
+needed feedback repair. [Canonical source, policy and exact proof](HOMEWORLD_TUPILE_INTELLIGENCE_RUNTIME.md#basic-current-sole-slot-lifecycle--24-october-2026).
+Full module/modes, publisher clarification, final assurance and browser/deployed
+acceptance stay open. No saved-room/database/reset/restart/deployment operation.
+
+
 ## 24 October 2026 — Truthtrance before the respondent's turn
 
 Supported unused shipments still in the original same-phase queue now admit

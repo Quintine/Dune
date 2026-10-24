@@ -29,8 +29,8 @@ type Player = Game['players'][number];
 export type StableHomeworldOccupationOptions = {
   /** Basic-only policy selector. `currentSole` is the provisional default used
    * by occupied income, Bidding, defenses and percentage effects. `epoch` keeps
-   * the conservative original-epoch gate for Basic Tupile slot leasing while
-   * the retention/turnover ruling stays open. Advanced ignores this option. */
+   * the historical conservative original-epoch selector. Tupile now separately
+   * replays observed Basic activations. Advanced ignores this option. */
   basic?: 'currentSole' | 'epoch';
 };
 
@@ -39,8 +39,8 @@ export type StableHomeworldOccupationOptions = {
  * requires sole foreign presence and survives until that occupier leaves.
  * Basic defaults to a visibly provisional current-sole-controller policy; the
  * sole-foreign-controller entitlement expires immediately on departure,
- * contest or native repopulation. Tupile keeps the conservative Basic epoch
- * gate documented in its own module. Neither mode invents an unobserved event. */
+ * contest or native repopulation. Tupile adds observed activation identity in
+ * its own module. Neither mode invents an unobserved event. */
 export function quoteStableHomeworldOccupation(
   game: StableHomeworldOccupationContext,
   cardId: HomeworldId,

@@ -16,6 +16,26 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Basic Tupile slot lifecycle — 24 October. Prototyped / Partial.** The
+existing provisional Basic current-sole policy now supplies Tupile's slot and
+normal-limit cleanup instead of stopping on its conservative lifecycle guard.
+Observed continuous intervals distinguish turn changes from actual loss/return;
+a new grant cannot erase an earlier required discard. Original intelligence use
+and Advanced last-departure retention remain. Controls label the Basic policy.
+
+A disjoint genuine-fixture lane, bounded source-identity review and owner
+integration pass **10 files70/70**, types/lint/build and two original public
+Basic gameplay/rendering programmes plus four legal cleanup profiles. Actual
+normal1 purchases, earned Guild income2, invasion2/cost1 and native battle
+create one visitor/slot. The fifth-card source really buys card5 for1. Sources
+use88/91 actions; paid last return1 and zero/one cleanup use1/2 continuations,
+retain unused movement and then explicitly finish. Controlled turnover/contest/
+native-high/reacquisition/ally and intelligence probes are separate. Only a
+TypeScript loop-narrowing fix followed feedback. No wider recovery audit,
+complete-mode or browser/visual/deployed acceptance. No saved-room/database/
+reset/restart/deployment operation.
+[Canonical policy and exact proof](HOMEWORLD_TUPILE_INTELLIGENCE_RUNTIME.md#basic-current-sole-slot-lifecycle--24-october-2026).
+
 **Truthtrance before the respondent's turn — 24 October. Prototyped / Partial.**
 Same-phase questions now include a supported unused turn still in the original
 queue. Waiting promises remain visible without an executable early action;

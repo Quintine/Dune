@@ -1180,12 +1180,15 @@ export function GameTable({
       {g.homeworldTupilePreview && (
         <output className="notice block">
           Occupied Tupile development preview · the occupier and reciprocal ally
-          each gain one server-derived hand slot; losing it requires the original
-          owner to discard eligible held cards to the normal limit. Advanced rulebook
-          page 22 retains occupation benefits until the occupier’s last own force
-          leaves, not on contests, native high population or turn changes; a new sole
-          occupier after departure starts a new epoch. Basic unresolved expiry and
-          competing-owner cases remain guarded. No extra card or spice is granted.
+          each gain one extra hand slot. A player who loses it must discard
+          eligible held cards to the normal limit.{' '}
+          {g.advanced ? <>Advanced retains occupation benefits until the occupier’s
+            last own force leaves; contests, native high population and turn changes
+            do not end it.</> : <>Basic provisionally gives the slot to the current
+            sole foreign controller. Departure, another foreign army or native high
+            population ends it. If you regain control, finish your earlier required
+            discards before using the extra slot again.</>}{' '}
+          Continuous control never adds a second slot. No extra card or spice is granted.
           Not complete or certified Homeworld rules.{' '}
           <a href="/rules?topic=homeworlds#homeworlds">Preview rules and limits</a>
         </output>

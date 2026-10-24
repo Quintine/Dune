@@ -2,6 +2,7 @@ import { nativeHandLimit } from './engine';
 import { HomeworldCustodyError } from './homeworld-custody';
 import { homeworldContext } from './homeworld-game';
 import { validateHomeworldOccupationHistory } from './homeworld-occupation-history';
+import { basicTupileActivations } from './basic-tupile-occupation';
 import {
   quoteStableHomeworldOccupation,
   type StableHomeworldOccupationContext,
@@ -97,7 +98,7 @@ const cleanupEvent = (lease: OccupiedTupileLease, player: string) =>
 
 /** Printed original Tupile occupied face (homeworld-cards.ts): one slot EACH,
  * never one per army, and loss of CHOAM's low advantage. Stable history owns all
- * Basic ruling gates and the authorized Advanced retained-occupation lifecycle.
+ * provisional Basic current-sole and authorized Advanced retained lifecycles.
  * The extra preview marker is original fresh-entry-only, not a public option. */
 export function quoteOccupiedTupileAuthority(game: OccupiedTupileContext): OccupiedTupileAuthority {
   const native = game.players.find(player => player.faction === 'choam');
@@ -108,9 +109,19 @@ export function quoteOccupiedTupileAuthority(game: OccupiedTupileContext): Occup
   if (!game.homeworldTupilePreview || !native) return none;
   if (!game.homeworldOccupationPreview) return Object.freeze({ ...base, status: 'unknown',
     lowIntelligence: 'unknown', blocked: 'Tupile slots require the original fresh occupation profile.' });
-  const quote = quoteStableHomeworldOccupation(game, 'tupile', { basic: 'epoch' });
-  const entitlement = quote.entitlement;
-  const blocked = quote.blocked ?? (entitlement?.ally === native.id
+  const quote = quoteStableHomeworldOccupation(game, 'tupile');
+  let entitlement = quote.entitlement;
+  let activationBlock: string | null = null;
+  if (!game.advanced && game.homeworlds?.custody && game.homeworlds.historyVersion === 1 && game.homeworldOccupationHistory) {
+    const activation = basicTupileActivations(game);
+    activationBlock = activation.blocked;
+    if (entitlement) {
+      if (activation.current?.occupier === entitlement.occupier)
+        entitlement = { ...entitlement, qualification: activation.current.event };
+      else activationBlock ??= 'The current Basic Tupile activation needs its original observed source.';
+    }
+  }
+  const blocked = quote.blocked ?? activationBlock ?? (entitlement?.ally === native.id
     ? 'The native CHOAM cannot ally with its own Homeworld occupier.' : null);
   if (blocked) return Object.freeze({ ...base, status: 'unknown', lowIntelligence: 'unknown', blocked });
   if (!entitlement) return none;
@@ -143,6 +154,19 @@ function originalEpochs(game: OccupiedTupileContext): Map<string, OccupiedTupile
     'saved leases require their original fresh occupation history and native provider.');
   validateHomeworldOccupationHistory(history, homeworldContext(game), game.turn);
   const epochs = new Map<string, OccupiedTupileSource>();
+  if (!game.advanced) {
+    // Keep all previously valid Basic qualification sources readable. New slot
+    // activations also bind their actual observed interval, never an old lease.
+    for (const fact of history.qualifications.filter(fact => fact.world === 'homeworld:choam')) {
+      const source = history.sources.find(source => source.event === fact.event)!;
+      if (!epochs.has(source.event)) epochs.set(source.event, sourceCopy({ world: 'homeworld:choam', card: 'tupile', native: native.id,
+        occupier: fact.player, qualification: source.event, signature: source.signature }));
+    }
+    for (const source of basicTupileActivations(game).epochs)
+      epochs.set(source.event, sourceCopy({ world: 'homeworld:choam', card: 'tupile', native: native.id,
+        occupier: source.occupier, qualification: source.event, signature: source.signature }));
+    return epochs;
+  }
   let retained: string | null = null;
   for (const observation of history.sources) {
     const snapshot = JSON.parse(history.snapshots[observation.snapshot]) as [string, [string, number, number][]][];
@@ -152,13 +176,11 @@ function originalEpochs(game: OccupiedTupileContext): Map<string, OccupiedTupile
     if (retained && !present.some(([id]) => id === retained)) retained = null;
     const candidate = observation.cause !== 'setup' && present.length === 1 && present[0][0] !== native.id
       ? present[0][0] : null;
-    if (game.advanced ? !retained && candidate !== null : history.qualifications.some(fact =>
-      fact.world === 'homeworld:choam' && fact.event === observation.event)) {
-      const occupier = game.advanced ? candidate! : history.qualifications.find(fact =>
-        fact.world === 'homeworld:choam' && fact.event === observation.event)!.player;
+    if (!retained && candidate !== null) {
+      const occupier = candidate;
       epochs.set(observation.event, sourceCopy({ world: 'homeworld:choam', card: 'tupile', native: native.id,
         occupier, qualification: observation.event, signature: observation.signature }));
-      if (game.advanced) retained = occupier;
+      retained = occupier;
     }
   }
   return epochs;
@@ -231,7 +253,7 @@ function syncResult(state: OccupiedTupileState, authority: OccupiedTupileAuthori
 
 /** Persist next state and backing flags atomically at the original occupation
  * observation / reciprocal-alliance boundary. Repeated view/sync is idempotent.
- * Unknown Basic expiry cannot invent departure, cleanup or a new beneficiary.
+ * Basic changes use an observed activation rather than reviving a closed grant.
  * No card/spice draw occurs here. Parent owns control-suffix suspension/restoration. */
 export function syncOccupiedTupileLease(game: OccupiedTupileContext, state: OccupiedTupileState): OccupiedTupileSync {
   validateOccupiedTupileState(state, game);

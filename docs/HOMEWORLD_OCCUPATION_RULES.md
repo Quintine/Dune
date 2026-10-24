@@ -2,6 +2,13 @@
 
 Runtime follow-up, 10 September 2026: [Tupile intelligence and qualification history](HOMEWORLD_TUPILE_INTELLIGENCE_RUNTIME.md#occupation-observation-boundaries) implement confirmed observations while retaining the unresolved entitlement and expiry questions below. The source audit remains historical evidence.
 
+The [24 October Tupile follow-up](HOMEWORLD_TUPILE_INTELLIGENCE_RUNTIME.md#basic-current-sole-slot-lifecycle--24-october-2026)
+extends the provisional Basic policy below to occupied Tupile slots and their
+normal-limit cleanup, superseding its historical conservative consumer exception.
+Advanced retains its distinct authorized retention rule. The publisher question
+remains explicit; this is usable provisional behavior under the standing
+recommended-choice instruction, not newly located source authority.
+
 ## Basic current-sole benefit policy — 9 October 2026
 
 The content-first pass replaces Basic's blanket lifecycle block with an

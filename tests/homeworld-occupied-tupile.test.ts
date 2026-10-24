@@ -177,13 +177,13 @@ void test('Advanced turnover and same-player return are new original epochs; pen
   validateOccupiedTupileState(final.state, game);
 });
 
-void test('Basic unobserved turn, contest, native repopulation, competing source and departure remain unknown/read-only, never guessed cleanup', () => {
+void test('Basic current-sole policy keeps continuous turns and closes or transfers slots at observed control changes', () => {
   for (const mode of ['turn', 'contest', 'nativeHigh', 'departure', 'competitor'] as const) {
     const { game, cards } = occupiedTupileFixture(false);
     const first = syncOccupiedTupileLease(game, createOccupiedTupileState());
     if (mode === 'turn') {
       game.turn++;
-      // Controlled incomplete boundary: no current-turn qualification is fabricated.
+      // A new turn alone changes neither the original activation nor its slot.
     } else if (mode === 'nativeHigh') {
       restoreTupileNative(game, 11);
       recordTupilePosition(game, 'pending-native-repopulation');
@@ -196,14 +196,18 @@ void test('Basic unobserved turn, contest, native repopulation, competing source
       recordTupilePosition(game, `pending-basic-${mode}`);
     }
     const before = structuredClone({ game, state: first.state }), quote = quoteOccupiedTupileAuthority(game);
-    assert.equal(quote.status, 'unknown');
-    assert.equal(quote.lowIntelligence, 'unknown');
-    assert.ok(quote.blocked);
-    assert.equal(quote.source, null);
-    assert.deepEqual(quote.holders, []);
+    assert.equal(quote.status, mode === 'turn' || mode === 'competitor' ? 'occupied' : 'unoccupied');
+    assert.equal(quote.lowIntelligence, mode === 'turn' || mode === 'competitor' ? 'suppressed' : 'available');
+    assert.equal(quote.blocked, null);
     const result = syncOccupiedTupileLease(game, first.state);
-    assert.equal(result.state.current, first.state.current);
-    assert.deepEqual(result.pending, []);
+    if (mode === 'turn') {
+      assert.deepEqual(quote.source, first.authority.source);
+      assert.equal(result.state, first.state);
+      assert.deepEqual(result.pending, []);
+    } else {
+      assert.deepEqual(result.pending.map(row => row.player), ['occupier', 'ally']);
+      assert.deepEqual(result.slotHolders, mode === 'competitor' ? ['fremen'] : []);
+    }
     assert.deepEqual({ game, state: first.state }, before);
     assert.deepEqual(biddingPhysicalIds(game), cards);
   }
@@ -222,6 +226,63 @@ void test('Basic observed continuous turn qualification keeps one existing slot 
   assert.equal(next.pending.length, 0);
   assert.deepEqual(biddingPhysicalIds(game), cards);
 });
+
+void test('Basic same-turn departure and return needs a new observed activation and settles the old excess before regaining slots', () => {
+  const { game, cards } = occupiedTupileFixture(false);
+  const first = syncOccupiedTupileLease(game, createOccupiedTupileState());
+  stageBiddingHandSize(game, 'occupier', 5);
+  stageBiddingHandSize(game, 'ally', 9);
+  const qualifications = game.homeworldOccupationHistory!.qualifications.length;
+  removeTupileForces(game, 'occupier');
+  recordTupilePosition(game, 'basic-observed-last-departure');
+  const closed = syncOccupiedTupileLease(game, first.state);
+  assert.equal(closed.state.current, null);
+  addTupileForces(game, 'occupier');
+  const before = structuredClone(game);
+  assert.equal(quoteOccupiedTupileAuthority(game).status, 'unknown');
+  assert.match(quoteOccupiedTupileAuthority(game).blocked!, /observed/);
+  assert.deepEqual(game, before);
+  recordTupilePosition(game, 'basic-observed-same-turn-return');
+  assert.equal(game.homeworldOccupationHistory!.qualifications.length, qualifications,
+    'The original qualification reducer deliberately deduplicates this same-turn fact');
+  const renewed = syncOccupiedTupileLease(game, closed.state);
+  assert.equal(renewed.authority.status, 'occupied');
+  assert.notEqual(renewed.lease!.source.qualification, first.lease!.source.qualification);
+  assert.deepEqual(renewed.slotHolders, []);
+  assert.deepEqual(renewed.pending.map(row => row.player), ['occupier', 'ally']);
+  const settled = settleAll(game, renewed.state);
+  const available = syncOccupiedTupileLease(game, settled);
+  assert.deepEqual(available.slotHolders, ['occupier', 'ally']);
+  assert.equal(tupilePlayer(game, 'occupier').hand.length, 4);
+  assert.equal(tupilePlayer(game, 'ally').hand.length, 8);
+  assert.equal(available.state.leases.length, 2);
+  assert.equal(syncOccupiedTupileLease(game, available.state).state, available.state);
+  assert.throws(() => completeOccupiedTupileCleanup(game, settled, renewed.pending[0].event, 'occupier'), HomeworldCustodyError);
+  assert.deepEqual(biddingPhysicalIds(game), cards);
+});
+
+for (const cause of ['contest', 'nativeHigh'] as const) void test(
+  `Basic ${cause} ends the slot and clearing it starts a new observed interval without stacking`, () => {
+    const { game, cards } = occupiedTupileFixture(false);
+    const first = syncOccupiedTupileLease(game, createOccupiedTupileState());
+    if (cause === 'contest') addTupileForces(game, 'fremen');
+    else restoreTupileNative(game, 11);
+    recordTupilePosition(game, `basic-${cause}-closes-control`);
+    const closed = syncOccupiedTupileLease(game, first.state);
+    assert.equal(closed.authority.status, 'unoccupied');
+    assert.equal(closed.authority.lowIntelligence, 'available');
+    assert.equal(closed.state.current, null);
+    if (cause === 'contest') removeTupileForces(game, 'fremen');
+    else clearDefenseNative(game, TUPILE_WORLD);
+    recordTupilePosition(game, `basic-${cause}-cleared`);
+    const renewed = syncOccupiedTupileLease(game, settleAll(game, closed.state));
+    assert.equal(renewed.authority.status, 'occupied');
+    assert.notEqual(renewed.lease!.source.qualification, first.lease!.source.qualification);
+    assert.deepEqual(renewed.slotHolders, ['occupier', 'ally']);
+    assert.equal(renewed.authority.capacities[0].occupied, 5);
+    validateOccupiedTupileState(renewed.state, game);
+    assert.deepEqual(biddingPhysicalIds(game), cards);
+  });
 
 void test('unobserved Advanced writes cannot fabricate a new source or resurrect a closed original epoch', () => {
   const { game } = occupiedTupileFixture(true, false);
@@ -284,8 +345,8 @@ void test('strict persisted JSON keeps original source/cleanup epochs and reject
   assert.throws(() => quoteOccupiedTupileCleanup(game, state, 'other-epoch'), HomeworldCustodyError);
 });
 
-void test('suppression and Advanced expiry preserve actual historical private intelligence and lifetime faction use', () => {
-  const { game } = freshTupileFixture();
+for (const advanced of [false, true]) void test(`${advanced ? 'Advanced' : 'Basic'} suppression and expiry preserve actual historical intelligence and lifetime faction use`, () => {
+  const { game } = freshTupileFixture(advanced);
   clearDefenseNative(game, TUPILE_WORLD);
   restoreTupileNative(game, 1);
   addTupileForces(game, 'occupier');
@@ -306,7 +367,8 @@ void test('suppression and Advanced expiry preserve actual historical private in
     tupileIntelligenceUsedFactions(game.tupileIntelligence!), first.authority.status, 'occupier', 'defenses'), HomeworldCustodyError);
   removeTupileForces(game, 'occupier');
   recordTupilePosition(game, 'intelligence-owner-epoch-expires');
-  syncOccupiedTupileLease(game, first.state);
+  const closed = syncOccupiedTupileLease(game, first.state);
+  assert.equal(closed.authority.lowIntelligence, 'available');
   validateTupileIntelligenceState(game.tupileIntelligence!, game.players, game.turn);
   assert.deepEqual(game.tupileIntelligence, observed);
   assert.deepEqual(tupileIntelligenceUsedFactions(game.tupileIntelligence!), ['guild']);
@@ -363,7 +425,7 @@ void test('original Atomics hand reduction composes with one Tupile slot and cle
   assertDefenseInventory(game);
 });
 
-void test('direct reciprocal ally replacement freezes former-holder cleanup and Basic uncertainty blocks its settlement without changing receipts', () => {
+void test('Basic departure preserves a former ally’s original cleanup and allows its normal-limit settlement', () => {
   const { game } = occupiedTupileFixture(false);
   const first = syncOccupiedTupileLease(game, createOccupiedTupileState());
   stageBiddingHandSize(game, 'ally', 9);
@@ -379,19 +441,17 @@ void test('direct reciprocal ally replacement freezes former-holder cleanup and 
   removeTupileForces(game, 'occupier');
   recordTupilePosition(game, 'pending-basic-expiry-with-original-former-ally-cleanup');
   const before = structuredClone({ game, state: replacement.state });
-  const unknown = syncOccupiedTupileLease(game, replacement.state);
-  assert.equal(unknown.authority.status, 'unknown');
-  assert.equal(unknown.state, replacement.state);
-  const blocked = quoteOccupiedTupileCleanup(game, replacement.state, event);
-  assert.ok(blocked.blocked);
-  assert.equal(blocked.receipt.player, 'ally');
-  assert.equal(blocked.source.occupier, 'occupier');
+  const closed = syncOccupiedTupileLease(game, replacement.state);
+  assert.equal(closed.authority.status, 'unoccupied');
+  const owed = quoteOccupiedTupileCleanup(game, closed.state, event);
+  assert.equal(owed.blocked, null);
+  assert.equal(owed.receipt.player, 'ally');
+  assert.equal(owed.source.occupier, 'occupier');
   assert.deepEqual({ game, state: replacement.state }, before);
-  // A separate conserved hand transfer is not permission to settle unknown expiry.
+  // Model the owner's exact physical discard before committing that receipt.
   stageBiddingHandSize(game, 'ally', 8);
-  const blockedBefore = structuredClone({ game, state: replacement.state });
-  assert.throws(() => completeOccupiedTupileCleanup(game, replacement.state, event, 'ally'), HomeworldCustodyError);
-  assert.deepEqual({ game, state: replacement.state }, blockedBefore);
+  const settled = completeOccupiedTupileCleanup(game, closed.state, event, 'ally');
+  assert.equal(settled.cleanups.find(row => row.event === event)!.status, 'completed');
 });
 
 void test('an active Tupile marker without its original occupation profile is unknown and cannot close existing grants', () => {
