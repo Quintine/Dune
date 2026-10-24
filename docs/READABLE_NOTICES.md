@@ -49,6 +49,16 @@ countdowns keep their existing behavior.
 
 ## Verification
 
+24 October subsequent source recheck: the same three focused test files still
+pass **23/23**. The notice components have no dismissal timers, and no application
+caller overrides the toast provider's no-timeout default. Corrected the in-app
+reference and README, which still described the former short action notices.
+A fresh read-only browser visit to the deployed homepage still displayed
+`716304bb9ed7bcf73202e07712de7c6d857ddc0c`; it remains older than the pushed room
+confirmation fix. No new room, deployment or server restart was needed for
+this recheck. The existing local/browser evidence below remains separate from
+production acceptance.
+
 24 October user-report follow-up: a fresh local create at source revision
 `59aa56af2bd2b98f5996fadb888019b3ebb53498` showed only concise progress, then
 **Room created** with **Continue**. The confirmation remained readable for at
