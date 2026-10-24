@@ -1406,10 +1406,12 @@ export function GameTable({
           <p>
             {g.players.find((player) => player.id === g.arrivalOverlap!.entrant)?.name ?? 'The entrant'}
             {' '}entered {territory(g.arrivalOverlap.territory).name}. Ecaz Ambassador
-            and Moritani Terror resolve in storm order:{' '}
+            and Moritani Terror resolve in this table’s provisional storm order:{' '}
             {g.arrivalOverlap.first === 'ambassador' ? 'Ecaz, then Moritani' : 'Moritani, then Ecaz'}.
-            {' '}{g.arrivalOverlap.active === 'ambassador' ? 'Ecaz' : 'Moritani'} decides now;
-            the original entry is not repeated.
+            {g.semutaReaction
+              ? ' The current fresh-discard response must finish before the next arrival decision.'
+              : <> {g.arrivalOverlap.active === 'ambassador' ? 'Ecaz' : 'Moritani'} decides now.</>}
+            {' '}The original entry is not repeated.
           </p>
         </section>
       )}

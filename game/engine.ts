@@ -142,7 +142,7 @@ import {
 } from './homeworld-revival-return';
 import { homeworldRevivalDestinations, quoteHomeworldRevivalDestination } from './homeworld-revival-destinations';
 import { terrorEntrySignature, terrorSelectionSignature, validateTerrorEntrySignature } from './terror-entry-receipt';
-import { arrivalOverlapSignature, overlapOwnsWormTerror } from './arrival-overlap';
+import { arrivalOverlapSignature, overlapOwnsAmbassadorDiscard, overlapOwnsTerrorDiscard, overlapOwnsWormTerror } from './arrival-overlap';
 import {
   homeworldLowBonus,
   homeworldRevivalKaramaBlock,
@@ -7551,7 +7551,7 @@ function treacheryDiscardIntegrity(g: Game) {
 }
 /** Bounded public single-card reaction after completed effects. Battle cleanup
  * preserves the original winner queue and bounded native retention/rewards without replaying them.
- * Final flight arrival may resume native Intrusion, but other entry responses remain gated. */
+ * Basic ordinary entry discards retain their ordered Ambassador/Terror parent. */
 function semutaOfferSupported(
   g: Game,
   continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -7569,7 +7569,8 @@ function semutaOfferSupported(
       continuation.entry.victoryEvent || continuation.entry.relocation ||
       continuation.entry.shipmentReceipt || continuation.entry.purchaseReceipt ||
       continuation.entry.revivalReceipt || continuation.entry.nexusPurchase ||
-      g.pendingArrivalOverlap || g.pendingArrivalReaction?.length ||
+      (g.pendingArrivalOverlap && !overlapOwnsAmbassadorDiscard(g, continuation.entry)) ||
+      g.pendingArrivalReaction?.length ||
       g.pendingChoamMove || g.pendingIxMove || g.pendingFremenMove ||
       g.ornithopter || g.summonedWorm || g.wormRides.length > 0 ||
       g.pendingRevival)) return false;
@@ -7683,7 +7684,9 @@ function semutaOfferSupported(
   if (continuation.kind === 'terrorDiscard' &&
     (continuation.entry.resume !== 'none' ||
       (continuation.entry.cause !== 'shipment' && continuation.entry.cause !== 'movement') ||
-      g.pendingArrivalOverlap || g.pendingChoamMove || g.pendingIxMove ||
+      (g.pendingArrivalOverlap && (!bareBasicSemutaProfile(g) ||
+        !overlapOwnsTerrorDiscard(g, continuation.entry, continuation.owner))) ||
+      g.pendingChoamMove || g.pendingIxMove ||
       g.pendingFremenMove || g.ornithopter || g.summonedWorm ||
       g.wormRides.length > 0)) return false;
   if ((continuation.kind === 'distransDiscard' ||
@@ -17242,6 +17245,7 @@ function ambassadorEffectBlock(
   return null;
 }
 function arrivalOverlapModeSupported(g: Game): boolean {
+  if (bareBasicSemutaProfile(g) && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if ((independentNexusProfile(g) || independentDiscoveryProfile(g)) && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if ((mixedE3NexusLeaderSkillsProfile(g) || mixedE3NexusProfile(g)) &&
     byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;

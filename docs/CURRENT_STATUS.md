@@ -16,6 +16,28 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Basic shared Ambassador/Terror arrival — 24 October. Prototyped / Partial.**
+The existing bare Basic Richese profile now admits a paid shared native entry.
+Both originally eligible owners keep the selected provisional storm order
+while their separate CHOAM/Ix or Sabotage/Robbery fresh groups offer Semuta.
+Source-qualified child matching preserves the original entry, already-paid
+credit, one draw/gift, full-hand exchange and the other owner's opportunity.
+The table banner explains the shared discard response instead of attributing
+that choice to the paused native owner.
+
+Disjoint real-source/control lanes, bounded continuation review and owner
+integration pass **12 files144/144**, types/lint/build, eight actual gameplay/
+control/GameTable SSR journeys and eight existing-profile continuations
+(69 accepted proposals). Real five-seat setup, lobby circles, paid cache and
+placements supply139–142 source actions. Prior Semuta transfer/overflow hands
+are explicitly conserved staging. Feedback fixes an unopened optional-field
+assertion, two lint declarations and a stale Truthtrance test expecting the
+previously removed native Ornithopter discard exclusion.
+[Source, proof and limits](SEMUTA_SOURCE_UPDATE_20260907.md#basic-shared-ambassador-and-terror-arrival--24-october-2026).
+Native Advanced/optional profiles, unsupported child effects, full combinations,
+complete modes, comprehensive/browser/deployed acceptance and full AI remain
+unfinished. No saved-room/D1/reset/restart/deployment operation.
+
 **Native Basic Ornithopter recovery and arrival — 24 October. Prototyped / Partial.**
 Completed range-three/final-two-group flights now offer Semuta in the existing
 bare Basic E3 profile. Retire that first fresh group before the original native

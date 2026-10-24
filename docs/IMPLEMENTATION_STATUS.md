@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 24 October 2026 — Basic shared Ambassador and Terror arrival
+
+Admit the original ordered native entry in the existing bare Basic Richese
+profile, with no new serialized receipt or timing ruling. CHOAM/Ix Ambassador
+and Sabotage/Robbery fresh groups can suspend their own active parent stage
+for Semuta while the other originally eligible owner remains queued. Bind the
+child to original signature/order, owner/token/event, cause, sector and turn;
+Terror also retains its entering amount and elite count. Keep the original
+credit/draw/gift and physical entry exactly once. The banner names the shared
+discard response and labels the inherited storm-order interpretation provisional.
+
+Disjoint source/control lanes and bounded review pass12 files144/144,
+types/lint/build, eight gameplay/control/GameTable SSR journeys and eight
+existing-profile continuations accepting69 proposals. Real five-seat setup,
+lobby circles and paid cache/placements supply139–142 source actions; prior
+Semuta transfer and overflow hands remain explicit conserved staging. Both
+owner orders, shipment/movement, selected BG copy, full-hand claim and empty
+CHOAM grants have focused evidence. A first actual entry reproduces preflight
+rejection; parent-only admission then reproduces the missing Semuta pause.
+Feedback repairs a null-vs-unopened optional-field assertion, two const lint
+issues and an older Truthtrance test's obsolete native Orni exclusion.
+
+Private final proof:20261024-semuta-arrival-overlap/frozen-integrated-3.
+The canonical [source and boundaries](SEMUTA_SOURCE_UPDATE_20260907.md#basic-shared-ambassador-and-terror-arrival--24-october-2026)
+retain Advanced/module/nested-effect limits and unfinished complete-mode,
+browser/deployed and comprehensive assurance. No game/database/reset/restart/
+deployment operation or AI strategy/calibration.
+
 ## 24 October 2026 — Native Basic Ornithopter recovery and arrival
 
 Admit the completed movement-card fresh group in the existing bare Basic E3

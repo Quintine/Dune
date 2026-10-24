@@ -2,6 +2,68 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Basic shared Ambassador and Terror arrival — 24 October 2026
+
+**Prototyped / Partial.** The existing bare Basic Richese profile now admits
+an ordinary paid entry that originally qualifies for both native markers.
+Keep the [selected provisional owner order](MORITANI_ENTRY_TIMING.md#selected-bounded-overlap-order--29-september-2026):
+this is composition of the existing interpretation, not a new publisher ruling.
+Both optional opportunities belong to the same committed shipment or movement.
+
+CHOAM/Ix Ambassador and Sabotage/Robbery overflow fresh groups can each pause
+for Semuta while the other owner's earned opportunity remains queued. Bind the
+suspended child to the signed original parent, current owner order/stage,
+owner/token/event, entry cause, territory/sector, turn/phase and ordinary return;
+Terror also keeps the original entering amount and elite count. No new saved
+field or receipt/signature format is introduced. CHOAM credit and the Robbery
+draw already committed before their discard remain paid/drawn once. Ix draws
+one replacement afterward; Sabotage finishes its original gift choice before
+the second owner. Neither path replays the physical entry or its payment.
+One Semuta cannot be spent on both fresh groups. Empty CHOAM creates no empty
+event, and the existing full-hand exchange remains available.
+
+The table banner labels storm order provisional and says the shared fresh
+discard finishes before the next native decision. Actual Continue/Commit/Select
+controls remain persistent, event-bound and disabled while busy. Minimal bots
+use their own entitled projected choices; no strategy refinement occurs.
+
+The source uses genuine five-seat Basic Ecaz/CHOAM/Richese/Guild/Moritani setup
+with35 main cards and10 cache cards, original unopened card/Spice positions
+and nine selected original Ambassador packet draws. Actual lobby circles set
+either owner order. Guild buys Semuta for1, Ecaz buys an ordinary card for1 and
+pays its actual turn-one placement, and the original Mentat opportunity places
+Terror at the same Sietch. Legal later1+1 Storm dials reach turn2; the caller
+makes the actual destination shipment or move after a paid Ridge Flat shipment.
+These139–142 source actions exclude the inherited constructor's unused entry
+branch. A prior transfer of the paid Semuta to Richese, Robbery's four-card
+hand and optional claimant full hand are explicitly conserved acquisitions;
+no clock, wallet, force, token or pending receipt is installed.
+
+The first source reproduces the original arrival-preflight rejection. With
+parent admission alone, its CHOAM discard skips Semuta and opens Terror; the
+source-qualified child guards repair that second failure. Final **12-file144/144**,
+`npm run check:quick` and production build pass. Eight actual gameplay/control/
+GameTable SSR journeys cover both orders, CHOAM/Ix, Sabotage/Robbery, selected
+BG copy/full hand, separate events and actual movement end. Eight existing
+profiles continue the original suspended groups with69 accepted proposals.
+A null-vs-unopened optional-field test, two const declarations and an older
+Truthtrance test's obsolete Orni exclusion were repaired during feedback.
+
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261024-semuta-arrival-overlap/`,
+`frozen-integrated-3/report.json`, `runtime-smoke.json`, HTML/logs and
+`verified-files.json`. Before final prose: base7b9938219d7f3e0e3b9f82ae752ad368b26fe901,
+source treeba53b110f9b3ca6b0d6169f23f0167a24bcdc90dabe73484bd14ad6d77f1a7ff,
+2673 tracked/nonignored files unchanged throughout verification. Four final
+prose/reference overlays retain code/test hashes; delivery verifies local links,
+evidence paths, reference syntax/keys, explicit staging and remote push.
+
+Native Advanced E3, optional combined profiles, unsupported child effects and
+wider originating-card/shared-entry chains remain unfinished. The unchanged
+prior module/entry guards do not certify complete modes. Framework aliases/CSS
+stubs mean SSR is not browser/visual/deployed acceptance. Comprehensive rules,
+saved-game/privacy/custody assurance and full AI/calibration remain due. No saved
+room, D1, reset, restart or deployment operation occurred.
+
 ## Native Ornithopter movement and arrival — 24 October 2026
 
 **Prototyped / Partial.** Fresh bare Basic Richese tables with selected native
@@ -27,10 +89,10 @@ Semuta on Ornithopter cannot spend it again on that later group. Passing the
 first group can preserve it for an eligible later card.
 
 This composes existing printed movement/discard mechanics and the current
-Semuta protocol, not a new publisher timing ruling. Ambassador/Terror overlap
-keeps its existing preflight/order: Ambassador discard admission remains guarded
-while an overlap is active. Other nested arrivals, native Advanced E3,
-optional combinations, complete modes and final acceptance remain unfinished.
+Semuta protocol, not a new publisher timing ruling. Ordinary shared-entry
+recovery is prototyped above; a full originating-card/shared-entry chain has
+no separate three-group runtime proof here. Other nested arrivals, native
+Advanced E3, optional combinations, complete modes and final acceptance remain unfinished.
 
 ### Native Ornithopter source and proof
 

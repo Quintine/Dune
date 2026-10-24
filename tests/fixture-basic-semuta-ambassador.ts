@@ -59,6 +59,8 @@ export function nextBasicSemutaAmbassadorStep(game: Game): BasicSemutaAmbassador
   }
   if (!game.response && !game.phaseOpening) {
     if (game.decision?.kind === 'ecazAmbassador' || game.decision?.kind === 'richeseCache') return null;
+    if (game.decision?.kind === 'moritaniSetup' && game.status === 'setup' && !game.setupStage)
+      return { actor: game.decision.player, action: { type: 'decision', territory: 'oh_gap', sector: 9 } };
     if (game.decision?.kind === 'ecazPlacement')
       return { actor: game.decision.player, action: { type: 'decision', decline: true } };
     if (game.status === 'setup' && game.setupStage === 'forces' &&
@@ -108,6 +110,7 @@ function originalPacket(effect: BasicSemutaAmbassadorEffect, copied: boolean) {
 export function createBasicSemutaAmbassadorFixture(options: {
   effect: BasicSemutaAmbassadorEffect; copied?: boolean; arrival?: 'shipment' | 'movement';
   cacheCard?: 'semuta' | 'ornithopter'; ecazTruth?: boolean;
+  overlapOrder?: 'ambassador' | 'terror';
 }) {
   const effect = options.effect, copied = options.copied ?? false, packet = originalPacket(effect, copied);
   const arrivalKind = options.arrival ?? 'shipment';
@@ -115,6 +118,7 @@ export function createBasicSemutaAmbassadorFixture(options: {
   let game = createGame('BASICSEMUTAAMBASSADOR', newPlayer('ecaz', 'Ecaz', 'ecaz'), false, ['ecaz', 'choam']);
   for (const faction of ['choam', 'richese', 'guild'] as const)
     joinGame(game, newPlayer(faction, faction, faction));
+  if (options.overlapOrder) joinGame(game, newPlayer('moritani', 'Moritani', 'moritani'));
   const owner = 'ecaz', beneficiary = owner, holder = 'guild', entrant = holder;
   const actions: BasicSemutaAmbassadorStep[] = [];
   const act = (actor: string, action: Action) => { game = actBasicSemutaAmbassador(game, actor, action, actions); };
@@ -123,6 +127,13 @@ export function createBasicSemutaAmbassadorFixture(options: {
     const before = structuredClone(game); act(step.actor, step.action); reach(until);
     return { before, step: structuredClone(step), after: structuredClone(game) };
   };
+  if (options.overlapOrder) {
+    act('guild', { type: 'seatPosition', position: 6 });
+    if (options.overlapOrder === 'terror') act('moritani', { type: 'seatPosition', position: 4 });
+    act('ecaz', { type: 'seatPosition', position: options.overlapOrder === 'ambassador' ? 4 : 5 });
+    act('choam', { type: 'seatPosition', position: 1 });
+    act('richese', { type: 'seatPosition', position: 2 });
+  }
   for (const player of game.players) act(player.id, { type: 'ready' });
   const lobby = structuredClone(game);
   act(game.host, { type: 'start' });
@@ -137,10 +148,11 @@ export function createBasicSemutaAmbassadorFixture(options: {
   const originalMainDeck = game.deck.map(card => card.id).sort();
   const originalCache = game.richeseCache!.map(card => card.id).sort();
   const originalTreachery = basicSemutaAmbassadorInventory(game);
-  // Four still-undealt starts plus the first still-unopened normal purchase.
+  // Still-undealt starts plus the first still-unopened normal purchase.
   // Ordinary cards avoid optional card-use controls during the source path.
-  const ordinary = game.deck.filter(card => ['projectile', 'poison', 'shield', 'snooper'].includes(card.kind)).slice(0, 5);
-  assert.equal(ordinary.length, 5);
+  const ordinary = game.deck.filter(card => ['projectile', 'poison', 'shield', 'snooper'].includes(card.kind))
+    .slice(0, game.players.length + 1);
+  assert.equal(ordinary.length, game.players.length + 1);
   if (options.ecazTruth) ordinary[0] = game.deck.find(card => card.effect === 'truthtrance')!;
   const deal = ordinary.map(card => card.id);
   const dealOrder = deal.map((id, position) => {
@@ -204,7 +216,7 @@ export function createBasicSemutaAmbassadorFixture(options: {
   const normalPurchase = transition({ actor: owner, action: { type: 'bid', amount: 1, allyPayment: 0 } },
     state => basicSemutaAmbassadorPlayer(state, owner).hand.length === 2 && basicSemutaAmbassadorClean(state));
   assert.equal(basicSemutaAmbassadorPlayer(game).spice, basicSemutaAmbassadorPlayer(normalPurchase.before).spice - 1);
-  assert.deepEqual(basicSemutaAmbassadorPlayer(game).hand.map(card => card.id), [deal[0], deal[4]]);
+  assert.deepEqual(basicSemutaAmbassadorPlayer(game).hand.map(card => card.id), [deal[0], deal[game.players.length]]);
   reach(state => state.phase === 4 && !state.response && !state.phaseOpening && state.decision?.kind === 'ecazPlacement');
   const territory = 'habbanya_ridge_sietch', sector = 17;
   const placement = transition({ actor: owner, action: { type: 'decision', token: token.id, territory } },
@@ -259,6 +271,6 @@ export function createBasicSemutaAmbassadorFixture(options: {
     preReplacementDeckTop, balances: basicSemutaAmbassadorBalances(game),
     entrantContinuation: { actor: entrant, action: { type: 'endMovement' } } as BasicSemutaAmbassadorStep,
     actions, sourceActionCount: actions.length,
-    staging: [`Only five unopened original main-deck positions (four starts and the first normal purchase), two unopened ordinary land Spice positions and original scalar lotteries are selected. Nine explicitly recorded draws select the original Ambassador packet on the final original traitor choice. Other scalar draws retain Fisher–Yates order; UUID/byte entropy remains native. Public Basic Ecaz/CHOAM/Richese/Guild setup retains the selected Ecaz+CHOAM decks (35 main plus 10 genuine native cache cards) and no optional modules. Guild buys the physical Semuta Drug in the real Once Around cache auction for 1; Ecaz pays 1 for the original first ordinary card and 1 for its actual placement. Guild then pays 1 for the non-allied original reserve entry. Native/BG-copy choices stop at the original cards grant. No dealt hands, resources, armies, clocks, alliances, deaths, token custody, pending reactions or receipts are installed. No discard, CHOAM payout, Ixian replacement or Semuta commitment has happened in this source snapshot. Optional source selection buys ${cacheCardId} instead and deals original Truthtrance to Ecaz=${!!options.ecazTruth}.`] };
+    staging: [`Only ${game.players.length + 1} unopened original main-deck positions (${game.players.length} starts and the first normal purchase), two unopened ordinary land Spice positions and original scalar lotteries are selected. Nine explicitly recorded draws select the original Ambassador packet on the final original traitor choice. Other scalar draws retain Fisher–Yates order; UUID/byte entropy remains native. Public Basic Ecaz/CHOAM/Richese/Guild${options.overlapOrder ? '/Moritani' : ''} setup retains the selected Ecaz+CHOAM decks (35 main plus 10 genuine native cache cards) and no optional modules. Guild buys the physical Semuta Drug in the real Once Around cache auction for 1; Ecaz pays 1 for the original first ordinary card and 1 for its actual placement. Guild then pays 1 for the non-allied original reserve entry. Native/BG-copy choices stop at the original cards grant. No dealt hands, resources, armies, clocks, alliances, deaths, token custody, pending reactions or receipts are installed. No discard, CHOAM payout, Ixian replacement or Semuta commitment has happened in this source snapshot. Optional source selection buys ${cacheCardId} instead and deals original Truthtrance to Ecaz=${!!options.ecazTruth}.`] };
 }
 export type BasicSemutaAmbassadorFixture = ReturnType<typeof createBasicSemutaAmbassadorFixture>;

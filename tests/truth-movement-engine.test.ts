@@ -150,8 +150,12 @@ for (const answer of ['yes', 'no'] as const) void test(`actual bought two-group 
   if (answer === 'yes') {
     game = act(game, f.target, second);
     assert.equal(game.movementPromises![0].fulfilled, true, 'Physical commitment precedes final card disposal');
-    // Native Ecaz retains its existing final-move Semuta boundary; the
-    // physical card still retires once before the ordinary entry resumes.
+    // Completed native Basic flights now offer their physical card before
+    // the original arrival; the already fulfilled promise survives that pause.
+    assert.equal(game.pendingTreacheryDiscard?.continuation.kind, 'ornithopterDiscard');
+    assert.equal(game.pendingTreacheryDiscard.reaction?.stage, 'offer');
+    game = passSemuta(game);
+    assert.equal(game.movementPromises![0].fulfilled, true);
     assert.equal(game.pendingTreacheryDiscard, null);
     game = act(game, f.target, { type: 'endMovement' });
   } else {
