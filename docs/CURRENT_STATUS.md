@@ -16,6 +16,32 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance unrevealed Face Dancer facts — 24 October. Prototyped / Partial.**
+The shared current-fact author can now ask whether a respondent holds a named
+identity as an unrevealed Face Dancer. Actual current cards determine the answer;
+ordinary Traitors and revealed/returned cards stay distinct. Candidate names use
+public printed identities, and only the target sees the verified aggregate
+before its public reply. This neither turns up the card nor binds later retention
+or Face Dance. Actual Mentat replacement remains legal after Yes.
+[Source, predicate and bounded proof](TRUTHTRANCE_FACE_DANCERS.md).
+
+Disjoint helper/control/native-fixture lanes and bounded review pass
+**12 files86/86**, types/lint/build, twelve actual field/question/gameplay/
+GameTable SSR journeys and sixteen existing-profile answer paths. Native
+Basic26/Advanced29-action setup/Storm/Spice sources earn the actual cards;
+replacement-first sources take60/63 actions. Narrow mixed-question feedback
+preserves its existing expansion entry guard rather than changing a mode to
+fit the fixture. No full-mode, broader mixed/future-question, comprehensive/
+browser/deployed or AI calibration certificate; no saved-room/D1/reset/restart/
+deployment operation.
+
+Next concrete native content candidate: supplied physical38 H permits the
+Tleilaxu special Karama during Revival, while native preflight currently waits
+for a pending normal request. Its proactive window needs implementation;
+Ghola/Emperor-special exceptions remain separately recorded provisional scope.
+Inspect the existing [native special cases](../tests/tleilaxu-special.test.ts)
+before changing that contract.
+
 **Moritani captured and foreign-ghola targets — 24 October. Prototyped / Partial.**
 Assassinate now accepts the opposing printed faction's valid captured or ordinary
 foreign-ghola target. Pending choices show uniform printed potential bounty;

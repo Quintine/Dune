@@ -2889,6 +2889,28 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
   },
   {
+    id: 'truthtrance-face-dancers',
+    title: 'Truthtrance: currently unrevealed Face Dancers',
+    category: 'Cards',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'Ask whether another player currently holds a named printed identity as an unrevealed Face Dancer.',
+    steps: [
+      'Declare Truthtrance and choose a verified current fact. Select Currently unrevealed Face Dancer, the respondent and a public printed identity. Cheap Hero / Heroine shares one identity; Duke has no Face Dancer card.',
+      'A matching currently held unrevealed card answers Yes. Revealed, absent and returned cards answer No. Ordinary selected-Traitor questions continue to ask about ordinary Traitor Cards.',
+      'Combine current facts with AND or OR. Only the respondent sees the verified whole answer before replying; other players receive the question and final aggregate answer, without the private card list or individual clause results.',
+      'This does not turn up a physical Face Dancer or promise to use or retain it later. A later legal replacement may change the current answer while the earlier historical answer remains correct. Existing mixed-shipment profile limits still apply.',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Exact public-identity parsing and current unrevealed matching share normal Truthtrance evaluation, aggregate text and physical disposal.', evidence: ['game/truthtrance-face-dancer.ts', 'game/truthtrance.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Public identity fields, current-only guidance and the common fact selector work standalone and in the existing compound builder.', evidence: ['components/truthtrance-face-dancer.tsx', 'components/mixed-shipment-fields.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Existing profiles use their own server-verified aggregate answer. Question strategy and final calibration remain deferred.', evidence: ['game/bots.ts', 'tests/truthtrance-face-dancer-engine.test.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'Native card and broad question permission, ordinary Traitor distinction and absence of any future promise are explicit.', evidence: ['docs/TRUTHTRANCE_FACE_DANCERS.md', 'docs/RULE_DECISIONS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Frozen12-file86/86, types/lint/build, twelve actual identity-field/question/gameplay/table-SSR journeys and sixteen legal profile answers pass. Native26/29-action sources and actual60/63-action replacement sources preserve current cards, old answers and original parent; broader modes, future/mixed profiles and comprehensive/browser/deployed proof remain open.', evidence: ['tests/truthtrance-face-dancer-fact.test.ts', 'tests/truthtrance-face-dancer-engine.test.ts', 'tests/truthtrance-face-dancer-controls.test.tsx', 'tests/fixture-truthtrance-face-dancer.ts'] },
+    ],
+    related: ['card-truthtrance', 'tleilaxu-face-dancers', 'truthtrance-hand-inventory'],
+  },
+  {
     id: 'truthtrance-hand-inventory',
     title: 'Truthtrance: hand size and primary card roles',
     category: 'Cards',
@@ -3089,7 +3111,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Ask another player a public yes/no question. Verified facts, supported shipment and ground-movement promises, current-battle plan commitments, freeform answers and saving an unanswered card are supported; arbitrary promise enforcement is unfinished.',
     steps: [
       'Declare the card from your hand at any time after cards are dealt. Other players may declare a competing Truthtrance or pass; questions are then asked in storm order. The interrupted phase, response, or battle decision resumes afterward.',
-      'Ask a game-related yes/no question. Named-card, selected-traitor and current personal-spice questions are checked by the server. AND and OR combine facts; only the combined answer is published, with no extra inventory details or separate answer for each clause.',
+      'Ask a game-related yes/no question. Named-card, selected-traitor, currently unrevealed Face Dancer and current personal-spice questions are checked by the server. Face Dancer and ordinary Traitor holdings stay distinct. AND and OR combine facts; only the combined answer is published, with no extra inventory details or separate answer for each clause.',
       'For current spice, choose Exactly, At least or At most and a nonnegative whole amount. This counts spice personally held when answering, excluding separately pledged aid and incoming payments. It does not ask whether a particular action is affordable or promise that the balance will stay unchanged. A true current-spice answer does not prevent later legal spending.',
       'For a concealed No-Field, choose its current printed value0,3 or5, not the prospective force pool. A missing or already revealed marker answers No, including for0; a concealed5 with empty reserves still answers Yes to5. Only the respondent sees the expected aggregate before public reply. Neither question nor answer turns up the physical token or commits later use; current-force facts continue to exclude markers.',
       'The questioned player answers publicly. A definite answer discards the card. If the answer cannot be known, the holder may ask a different question or save Truthtrance for later.',

@@ -41,6 +41,7 @@ import { DUKE_VIDAL_ID } from './duke-vidal';
 import { canUseAsTruthtranceRole } from './shrine';
 import { isKnowledgeFact, parseKnowledgeFact, knowledgeFactAnswer, knowledgeFactText, truthKnowledgeOf, type KnowledgeFact, type TruthKnowledge } from './truthtrance-knowledge';
 import { parseNoFieldValueFact, noFieldValueFactMatches, noFieldValueFactText, type NoFieldValueFact } from './truthtrance-no-field-value';
+import { parseFaceDancerFact, faceDancerFactMatches, faceDancerFactText, type FaceDancerFact } from './truthtrance-face-dancer';
 
 export type TruthFact =
   | KnowledgeFact
@@ -48,6 +49,7 @@ export type TruthFact =
   | HandInventoryFact
   | ForceCountFact
   | NoFieldValueFact
+  | FaceDancerFact
   | { kind: 'hand'; name: string }
   | { kind: 'traitor'; leader: string }
   | { kind: 'spice'; compare: 'eq' | 'gte' | 'lte'; value: number }
@@ -152,6 +154,16 @@ function parseFact(
       'Choose a leader in this game.',
     );
     return { kind: 'traitor', leader: v.leader };
+  }
+  if (v.kind === 'faceDancer') {
+    try {
+      // Candidate identities are public printed components, independent of the
+      // respondent's private cards or the status of any particular Face Dancer.
+      return parseFaceDancerFact(v, [CHEAP_HERO_TRAITOR,
+        ...g.players.flatMap(player => player.leaders.map(leader => leader.id))]);
+    } catch (error) {
+      throw new TruthError(error instanceof Error ? error.message : String(error));
+    }
   }
   if (v.kind === 'spice') {
     check(
@@ -348,7 +360,7 @@ export function queuedTruthCardMatches(
 }
 /** A fact answer never returns which disjunct matched or any underlying private cards. */
 export function truthFactAnswer(
-  p: Pick<Player, 'hand' | 'traitors' | 'traitorChoices' | 'spice' | 'noField'> & Partial<ForceCountPlayer>,
+  p: Pick<Player, 'hand' | 'traitors' | 'traitorChoices' | 'spice' | 'noField' | 'faceDancers'> & Partial<ForceCountPlayer>,
   fact: TruthFact,
   knowledge?: TruthKnowledge,
 ): TruthAnswer {
@@ -367,6 +379,8 @@ export function truthFactAnswer(
     if (p.traitorChoices.length) return 'unknown';
     return p.traitors.includes(fact.leader) ? 'yes' : 'no';
   }
+  if (fact.kind === 'faceDancer')
+    return faceDancerFactMatches(p, fact) ? 'yes' : 'no';
   if (fact.kind === 'spice') {
     // A current fact reports personal custody, not transaction-specific spending power or a future promise.
     const matches =
@@ -420,6 +434,7 @@ export function truthQuestionText(
     if (f.kind === 'handCount') return cardCountFactText(f);
     if (f.kind === 'hand') return `you hold ${f.name}`;
     if (f.kind === 'traitor') return `${leaderName(f.leader)} is your traitor`;
+    if (f.kind === 'faceDancer') return faceDancerFactText(f, leaderName);
     if (f.kind === 'spice')
       return `you currently hold ${f.compare === 'eq' ? 'exactly' : f.compare === 'gte' ? 'at least' : 'at most'} ${f.value} spice`;
     return `(${f.terms.map(clause).join(f.kind === 'and' ? ' AND ' : ' OR ')})`;

@@ -8,6 +8,7 @@ import { TRUTH_CARD_NAMES } from '@/game/truthtrance-card-names';
 import { SHIPMENT_EXPRESSION_MAX_DEPTH, SHIPMENT_EXPRESSION_MAX_LEAVES } from '@/game/shipment-promises';
 import { isKnowledgeFact, knowledgeFactInputError } from '@/game/truthtrance-knowledge';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
+import { DUKE_VIDAL_ID } from '@/game/duke-vidal';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { CardCountFields } from './truthtrance-card-count';
@@ -16,6 +17,8 @@ import { ForceCountFields, forceCountInputError } from './truthtrance-force-coun
 import { ShipmentClauseFields, invalidShipmentClause } from './shipment-claim-fields';
 import { NoFieldValueFields } from './truthtrance-no-field-value';
 import { parseNoFieldValueFact } from '@/game/truthtrance-no-field-value';
+import { FaceDancerFactFields } from './truthtrance-face-dancer';
+import { parseFaceDancerFact } from '@/game/truthtrance-face-dancer';
 
 export function invalidTruthFact(fact: TruthFact, game: GameView, target: string): boolean {
   if (fact.kind === 'and' || fact.kind === 'or') {
@@ -27,6 +30,15 @@ export function invalidTruthFact(fact: TruthFact, game: GameView, target: string
   if (fact.kind === 'noFieldValue') {
     try { parseNoFieldValueFact(fact); return false; }
     catch { return true; }
+  }
+  if (fact.kind === 'faceDancer') {
+    try {
+      parseFaceDancerFact(fact, [
+        ...game.allLeaders.filter((leader) => leader.id !== DUKE_VIDAL_ID && leader.id !== CHEAP_HERO_TRAITOR).map((leader) => leader.id),
+        CHEAP_HERO_TRAITOR,
+      ]);
+      return false;
+    } catch { return true; }
   }
   if (isKnowledgeFact(fact)) return !!knowledgeFactInputError(fact);
   if (fact.kind === 'forceCount') {
@@ -48,6 +60,7 @@ export function TruthFactFields({ value: fact, game, target, onChange }: {
     handCount: { kind: 'handCount', name: 'Shield', compare: 'gte', value: 2 },
     handInventory: { kind: 'handInventory', category: 'all', compare: 'gte', value: 2 },
     traitor: { kind: 'traitor', leader: game.allLeaders[0].id },
+    faceDancer: { kind: 'faceDancer', leader: game.allLeaders.find((leader) => leader.id !== DUKE_VIDAL_ID)?.id ?? CHEAP_HERO_TRAITOR },
     predictionFaction: { kind: 'prediction', field: 'faction', faction: 'atreides' },
     predictionTurn: { kind: 'prediction', field: 'turn', compare: 'gte', value: 1 },
     stormDial: { kind: 'stormDial', compare: 'gte', value: 0 },
@@ -65,6 +78,7 @@ export function TruthFactFields({ value: fact, game, target, onChange }: {
         <option value="handCount">Current number of a named card</option>
         <option value="handInventory">Current hand size or primary card role</option>
         <option value="traitor">Selected a traitor</option>
+        <option value="faceDancer">Currently unrevealed Face Dancer</option>
         <option value="predictionFaction">Stored faction prediction</option>
         <option value="predictionTurn">Stored turn prediction</option>
         <option value="stormDial">Known storm dial</option>
@@ -80,7 +94,8 @@ export function TruthFactFields({ value: fact, game, target, onChange }: {
         {TRUTH_CARD_NAMES.map(name => <option key={name}>{name}</option>)}
       </select>
     </label> : fact.kind === 'handCount' || fact.kind === 'handInventory' ?
-      <CardCountFields value={fact} onChange={onChange} /> : fact.kind === 'noFieldValue' ?
+      <CardCountFields value={fact} onChange={onChange} /> : fact.kind === 'faceDancer' ?
+        <FaceDancerFactFields value={fact} leaders={game.allLeaders} onChange={onChange} /> : fact.kind === 'noFieldValue' ?
         <NoFieldValueFields value={fact} onChange={onChange} /> : fact.kind === 'forceCount' ?
           <ForceCountFields value={fact} game={game} player={game.players.find(player => player.id === target)!} onChange={onChange} /> :
         fact.kind === 'prediction' || fact.kind === 'stormDial' || fact.kind === 'stormForecast' ?

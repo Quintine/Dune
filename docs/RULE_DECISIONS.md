@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Truthtrance unrevealed Face Dancer fact — 24 October 2026
+
+Compose the publisher FAQ's game-related Yes/No/AND/OR permission with native
+Face Dancer cards (E1 printed6; supplied Advanced physical38 A/39). Ask only
+whether a named identity is currently held unrevealed; revealed/absent/returned
+cards are No and ordinary selected-Traitor semantics stay separate. Public
+candidate IDs do not depend on hidden holdings; only the respondent sees the
+verified aggregate before its public reply. This current fact creates no
+future reveal/retention promise and does not turn up the physical card. Existing
+mixed-shipment admission remains independent. No Face-Dancer-specific FAQ,
+new roster/module permission or complete Truthtrance certification is claimed.
+[Predicate, source and bounded proof](TRUTHTRANCE_FACE_DANCERS.md#source-and-predicate--24-october-2026).
+
 ## Moritani native targets under capture or foreign Ghola — 24 October 2026
 
 Supplied physical35 D identifies the opposing printed faction and a different

@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 24 October 2026 — Verified current Face Dancer questions
+
+Add a distinct Truthtrance current unrevealed Face Dancer identity fact. Exact
+shape/known-public-identity parsing, current strict unrevealed matching and
+wording share the ordinary fact decoder/evaluator and compound answer flow.
+Shared author fields use public printed names, exclude Duke and include the
+single Hero/Heroine identity without reading the target's hidden cards.
+Ordinary Traitor semantics and existing mixed-shipment mode gates remain.
+Physical question disposal and parent continuation use the existing flow;
+current Yes creates no future reveal/retention promise. No AI strategy changes.
+
+Disjoint helper/control/fixture lanes and bounded review pass12 files86/86,
+types/lint/build, twelve actual field-callback/question/answer/GameTable SSR
+journeys and sixteen legal profile answers. Public Basic26/Advanced29-action
+setup, actual native Face Dancer deal and Storm/Spice supply originals.
+Native Mentat replacement-first takes60/63 actions; answer-then-replace branches
+keep the earlier public fact while actual current custody changes. No played
+hand, Face Dancer status, phase, wallet, answer or receipt is assigned.
+
+Narrow feedback changes a proposed mixed-shipment expectation to preserve its
+existing expansion guard; standalone current facts still work at that point.
+The final frozen union and all required scoped checks pass on unchanged source.
+Full Truthtrance/modes, broader future/mixed-question profiles, comprehensive/
+browser/deployed acceptance and final AI remain unfinished.
+[Source, exact proof and limits](TRUTHTRANCE_FACE_DANCERS.md).
+No saved-room/D1/reset/restart/deployment operation.
+Private proof:20261024-truthtrance-face-dancer/frozen-integrated.
+
 ## 24 October 2026 — Moritani native targets under capture or foreign Ghola
 
 Replace the target-custody exclusion with actual native Harkonnen/Tleilaxu
