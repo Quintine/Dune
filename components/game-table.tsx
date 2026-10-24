@@ -2487,7 +2487,9 @@ export function GameTable({
                               ? `Storm casualties in sector ${g.response.automaticAdvisorFlip.storm.sector} are complete. These surviving advisors are now alone and must become fighters before the remaining storm traversal.`
                               : g.response.automaticAdvisorFlip.producer === 'specialRelocation'
                                 ? `${g.response.automaticAdvisorFlip.relocation.kind === 'ambassador' ? 'Fremen Ambassador relocation' : 'The free Discovery force transfer'} is complete. These advisors are now alone and must become fighters before the original arrival continues.`
-                                : 'The ground movement is complete. These advisors are now alone and must become fighters.'}
+                                : g.response.automaticAdvisorFlip.producer === 'spiritualArrival'
+                                  ? 'The free Spiritual Advisor packet has arrived and its reserves and any earned income stay committed. These advisors are now alone and must become fighters before the original arrival continues.'
+                                  : 'The ground movement is complete. These advisors are now alone and must become fighters.'}
                   {' '}Karama prevents only this conversion; the completed action and its costs stay committed.
                   {' '}Provisional rule: a prevented group stays advisors while continuously alone,
                   until another faction returns or the group leaves.
@@ -2501,10 +2503,18 @@ export function GameTable({
                   {' '}Any already-played movement or declaration card keeps its original use. Choose a legal replacement if matching is prevented.
                 </p>
               )}
+              {g.response.kind==='advisorFlip'&&g.response.spiritualAdvisorSource&&(
+                <p className="notice">
+                  The free advisor packet must become fighters to match your Polar Sink residents. No free force has arrived yet.
+                  {' '}Preventing matching restores your original free-shipment choice; that same packet here remains unavailable for this opportunity.
+                  {' '}The other faction’s completed shipment stays committed. Choose another legal packet or decline.
+                </p>
+              )}
               {g.response.kind === 'advisor' && (
                 <p className="notice">
                   {g.players.find((player) => player.id === g.response?.owner)?.name} declared {g.response.amount ?? 1} free {(g.response.amount ?? 1) === 1 ? 'force' : 'forces'} to {territory(splitLocation(g.response.location ?? 'polar_sink:0').territory).name}.
                   {' '}Allow the arrival or cancel Spiritual Advisors. Canceling prevents the whole declared group.
+                  {g.response.spiritualAdvisorSource&&<> Matching or an alone conversion may follow separately. The other faction’s shipment is already committed.</>}
                 </p>
               )}
               {g.response.kind === 'moritaniRetention' &&
@@ -3719,8 +3729,9 @@ export function GameTable({
                     Another faction has shipped from off-planet. You may send
                     up to {g.homeworldMobility?.advisorSinkMaximum ?? 1} reserve forces to the Polar Sink for free.
                   </p>
-                  {g.guildAmbassadorAdvisorChoices ? (
-                    g.guildAmbassadorAdvisorChoices.choices.map((choice) => {
+                  {g.advanced&&<p className="notice">Retained fighters outside the Polar Sink require Polar Sink or decline, unless Intrusion already changed them to advisors. Polar matching and an alone conversion have separate responses.</p>}
+                  {(g.spiritualAdvisorChoices??g.guildAmbassadorAdvisorChoices) ? (
+                    (g.spiritualAdvisorChoices??g.guildAmbassadorAdvisorChoices)!.choices.map((choice) => {
                       const reasonId = `guild-advisor-${choice.accompany}-${choice.territory}-${choice.sector}-${choice.amount}`;
                       return (
                         <div key={reasonId}>

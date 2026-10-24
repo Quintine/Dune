@@ -17,6 +17,7 @@ import {
   type AutomaticAdvisorRelocation,
 } from '../game/advisor-automatic-flip';
 import { MOBILE_LOCATION, MOBILE_STRONGHOLD } from '../game/board';
+import { spiritualAdvisorArrival, type SpiritualAdvisorSource } from '../game/spiritual-advisor';
 
 type GroundSource = Extract<AutomaticAdvisorFlipSource, { producer: 'groundMovement' }>;
 type TransportSource = Extract<AutomaticAdvisorFlipSource, { producer: 'guildTransport' }>;
@@ -26,6 +27,7 @@ type HomeworldSource = Extract<AutomaticAdvisorFlipSource, { producer: 'homeworl
 type FaceDanceSource = Extract<AutomaticAdvisorFlipSource, { producer: 'faceDance' }>;
 type StormSource = Extract<AutomaticAdvisorFlipSource, { producer: 'storm' }>;
 type RelocationSource = Extract<AutomaticAdvisorFlipSource, { producer: 'specialRelocation' }>;
+type SpiritualArrivalSource = Extract<AutomaticAdvisorFlipSource, { producer: 'spiritualArrival' }>;
 
 function context(): AutomaticAdvisorFlipContext {
   return {
@@ -1358,4 +1360,114 @@ void test('completed relocation validation never reads private parent signatures
     }
     assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
   }
+});
+
+function spiritualArrival(amount = 1, phase = 5) {
+  const ctx = context();
+  ctx.phase = phase;
+  ctx.players[0].forces = { 'polar_sink:0': amount };
+  ctx.players[1].forces = {};
+  ctx.players[2].forces = {};
+  const receipt: SpiritualAdvisorSource = {
+    event: 'original-public-spiritual-opportunity', owner: 'b', turn: ctx.turn, phase,
+    territory: 'polar_sink', sector: 0, amount,
+  };
+  const source: SpiritualArrivalSource = {
+    event: 'automatic-after-completed-spiritual-placement', owner: 'b',
+    territory: 'polar_sink', turn: ctx.turn, phase, forces: { 'polar_sink:0': amount },
+    producer: 'spiritualArrival', spiritual: receipt,
+  };
+  ctx.players[0].advisors = { polar_sink: { aloneFlipHold: source.event } };
+  return { ctx, source };
+}
+
+void test('a committed empty Spiritual Advisor placement retains its exact public source and surviving advisor group', () => {
+  for (const phase of [1, 3, 5, 8]) {
+    for (const amount of [1, 2]) {
+      const original = spiritualArrival(amount, phase);
+      const before = structuredClone(original);
+      assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
+      assert.deepEqual(original, before);
+      assert.deepEqual(Object.keys(original.source).sort(), ['event', 'forces', 'owner', 'phase', 'producer', 'spiritual', 'territory', 'turn']);
+      assert.deepEqual(Object.keys(original.source.spiritual).sort(), ['amount', 'event', 'owner', 'phase', 'sector', 'territory', 'turn']);
+    }
+  }
+});
+
+void test('Spiritual Arrival conversion rejects changed owner, target, phase, amount, deposit and physical group', () => {
+  const changes: ((ctx: AutomaticAdvisorFlipContext, source: SpiritualArrivalSource) => void)[] = [
+    (_ctx, source) => { source.spiritual.event = ''; },
+    (_ctx, source) => { source.spiritual.owner = 'a'; },
+    (_ctx, source) => { source.spiritual.turn++; },
+    (_ctx, source) => { source.spiritual.phase = 6; },
+    (_ctx, source) => { source.spiritual.territory = 'arrakeen'; source.spiritual.sector = 10; },
+    (_ctx, source) => { source.spiritual.sector = 1; },
+    (_ctx, source) => { source.spiritual.amount = 2; },
+    (_ctx, source) => { source.spiritual.amount = 3; },
+    (ctx) => { ctx.players[0].forces = {}; },
+    (ctx) => { ctx.players[1].forces = { 'polar_sink:0': 1 }; },
+    (_ctx, source) => { source.forces = { 'polar_sink:0': 2 }; },
+  ];
+  for (const change of changes) {
+    const original = spiritualArrival();
+    change(original.ctx, original.source);
+    const before = structuredClone(original);
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+    assert.deepEqual(original, before);
+  }
+  const { ctx, source } = spiritualArrival();
+  for (const malformed of [
+    { ...source, spiritual: null },
+    { ...source, spiritual: { ...source.spiritual, order: 'private-parent' } },
+    { ...source, spiritual: { ...source.spiritual, card: 'private-shipping-cost' } },
+    { ...source, spiritual: { ...source.spiritual, amount: '1' } },
+    { ...source, order: 'private-parent' },
+  ]) {
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, malformed as unknown as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('an already-held continuously-alone group stays advisors after another Spiritual Advisor joins without earning a fresh automatic response', () => {
+  const { ctx, source } = spiritualArrival();
+  ctx.players[0].forces = { 'polar_sink:0': 3 };
+  source.forces = { 'polar_sink:0': 3 };
+  ctx.players[0].advisors = { polar_sink: { aloneFlipHold: 'earlier-prevented-alone-occurrence' } };
+  assert.deepEqual(spiritualAdvisorArrival(ctx, 'b', 'polar_sink'), { advisors: true, matching: false, alone: true });
+  assert.deepEqual(quoteAutomaticAdvisorFlips(ctx), []);
+  assert.deepEqual(advisorStanceAfterSettlement(ctx, 'b', 'polar_sink'), {
+    aloneFlipHold: 'earlier-prevented-alone-occurrence',
+  });
+  assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+});
+
+void test('Spiritual Arrival leaves all prior producer receipts and phases unchanged and rejects unsupported or Basic conversion windows', () => {
+  for (const original of [held(), transported(), gamont(false), battleResult(), homeworldTransport(), faceDance(), storm(), relocation(), relocation('discovery')]) {
+    const before = JSON.stringify(original.source);
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
+    assert.equal(JSON.stringify(original.source), before);
+  }
+  for (const phase of [0, 2, 4, 6, 7]) {
+    const original = spiritualArrival(1, phase);
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+  }
+  const basic = spiritualArrival();
+  basic.ctx.advanced = false;
+  assert.throws(() => validateAutomaticAdvisorFlip(basic.ctx, basic.source), AutomaticAdvisorFlipError);
+});
+
+void test('Spiritual Arrival conversion uses only public receipt, current deposit and held group without reading resources or the private original frame', () => {
+  const { ctx, source } = spiritualArrival(2);
+  for (const player of ctx.players) {
+    for (const field of ['hand', 'leaders', 'spice', 'traitors', 'faceDancers', 'reserves', 'moved', 'shipped']) {
+      Object.defineProperty(player, field, {
+        get() { throw new Error(`Spiritual conversion read ${player.id} private or original ${field}`); },
+      });
+    }
+  }
+  for (const field of ['pendingSpiritualAdvisor', 'pendingShipment', 'stormCard', 'stormForecast', 'leaderSkills', 'homeworlds']) {
+    Object.defineProperty(ctx, field, {
+      get() { throw new Error(`Spiritual conversion read private parent ${field}`); },
+    });
+  }
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
 });

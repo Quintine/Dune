@@ -4324,7 +4324,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A completed Fremen Ambassador relocation or next-turn Discovery force transfer can leave advisors alone at its source. Ambassador movement can also bring advisors to an empty destination. Provisionally resolve their mandatory conversion after movement and any original collection, before the original arrival reactions continue. Karama keeps the transfer committed. Discovery free entry still admits non-advisor forces only.',
       'Provisional cancellation duration: a prevented advisor group stays advisors while continuously alone, including across phase and turn changes. Another faction returning or the group becoming empty ends that held occurrence. Later arrivals joining that same group match its stance. Matching-group flip counters and wider combinations remain unfinished.',
       'When another faction ships, moves or worm rides into your fighters, immediately choose whether to become advisors. The choice opens a Karama response. Repeated entry can offer a new choice.',
-      'After another faction’s off-planet shipment, choose a free force in the Polar Sink or an accompanying force at the shipment destination. An accompanying advisor group cannot flip to fighters in that turn while other factions remain.',
+      'After another faction’s eligible off-planet shipment, choose a free advisor at the shipment destination or Polar Sink. Retained fighters outside Polar Sink require Polar Sink or decline unless Intrusion already changed them to advisors. The free shipping counter comes first. Provisionally, Polar fighters require a separate incoming matching counter before placement; preventing matching restores the owned choice while that same packet here stays unavailable. Empty arrivals then have a separate committed alone-conversion counter. Earlier locked advisor rules still apply while others remain.',
       'After Spice Blow and Nexus, use Prepare advisors for battle during Charity, Bidding, Revival or before the first actual shipment. Quiet boundaries retain current mandatory priority. Each whole-territory flip has its original Karama response; its direct continuation preserves the current phase, auction, readiness and active movement. Declining the initial phase-five chooser leaves this window open. Ordinary allied presence, storm and fresh-advisor locks still restrict eligibility; the recorded supported Ecaz co-side composition remains separate.',
       'A current-turn window closes on a committed shipment, including a concealed zero No-Field, independent Ambassador shipment or positive Sneak Attack. Proposals, stopped shipments, ground movement and unshipped turns do not close it. Under the explicit provisional retry policy, Karama prevents that territory’s preparation for the rest of this window; Intrusion, Nexus and automatic flips remain independent. Focused evidence does not certify complete modes, broader priority/optional or remaining automatic-flip cancellation behavior.',
     ],
@@ -4333,8 +4333,13 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Implementation",
     "status": "Partial",
-    "detail": "Normal opposite-type ground arrivals and reserve-to-advisor shipments now use a precommit matching receipt and private original order. Shared packet-scoped denial leaves residents and unused actions intact. Same-type ground movement remains direct. Special transport/gather and Spiritual source cutovers remain unfinished.",
+    "detail": "Fresh Advanced Spiritual declarations share target legality and distinct shipping/matching/committed-alone stages. A public seven-field source binds a private original chooser/parent/order; late unavailability restores choice before placement, and committed callbacks never recheck withdrawn reserves. Ordinary/Guild continuation and prior alone holds stay intact. Basic and already-recorded legacy responses keep their old protocol.",
     "evidence": [
+      "tests/fixture-spiritual-advisor-flow.ts",
+      "tests/spiritual-advisor-engine.test.ts",
+      "tests/spiritual-advisor.test.ts",
+      "game/spiritual-advisor.ts",
+      "docs/SPIRITUAL_ADVISORS.md",
       "docs/ADVISOR_MATCHING.md",
       "game/advisor-automatic-flip.ts",
       "game/advisors.ts",
@@ -4349,8 +4354,9 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Player controls",
     "status": "Partial",
-    "detail": "Standard Karama/Allow explains that matching precedes physical arrival/payment and does not flip residents. Prevention retains unused actions and original card uses, with a legal replacement. Seven native GameTable SSR journeys render standard controls; no new confirmation or timer.",
+    "detail": "Shared projected target choices drive ordinary/Guild buttons and minimal bots. Persistent notices distinguish uncommitted shipping/matching from an already-arrived force awaiting conversion. Same prevented matching packet stays blocked when the original chooser returns. Fifteen native GameTable SSR journeys and two controlled late-stance cases pass; callback/hydration and browser acceptance remain separate.",
     "evidence": [
+      "docs/SPIRITUAL_ADVISORS.md",
       "docs/ADVISOR_MATCHING.md",
       "docs/ADVISOR_AUTOMATIC_FLIPS.md",
       "components/advisor-preparation.tsx",
@@ -4361,8 +4367,13 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "AI",
     "status": "Partial",
-    "detail": "Twelve existing-profile matching responses and twelve accepted legal replacements use shared packet/opportunity denials. Earlier producers retain separate evidence. No strategy refinement or difficulty calibration.",
+    "detail": "Minimal policies consume projected legal targets, including all-blocked matching fallback to decline. Twenty-four paths across four existing profiles, two native parents and three stances accept72 choice/response actions. This is legal participation; no strategy refinement or difficulty calibration.",
     "evidence": [
+      "tests/fixture-spiritual-advisor-flow.ts",
+      "tests/spiritual-advisor-engine.test.ts",
+      "tests/spiritual-advisor.test.ts",
+      "game/spiritual-advisor.ts",
+      "docs/SPIRITUAL_ADVISORS.md",
       "tests/fixture-advisor-matching-move.ts",
       "tests/advisor-matching-engine.test.ts",
       "tests/advisor-matching.test.ts",
@@ -4389,8 +4400,9 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Documentation",
     "status": "Partial",
-    "detail": "Physical28 E explicitly marks matching as counterable and physical17 identifies the incoming group. Shipment defaults and precommit remedy/packet-opportunity restraint are provisional. Spiritual destination/Polar matching cutovers and broader transports remain explicit open scope.",
+    "detail": "Supplied physical28 redirects retained non-Polar fighters and starts Spiritual Advisors advisor-side, with no alone-conversion Polar exemption. Distinct physical17 counters, provisional Polar matching/restored-choice remedy, continuously-alone duration and the legacy source cutover are explicit. Wider combinations remain open.",
     "evidence": [
+      "docs/SPIRITUAL_ADVISORS.md",
       "docs/ADVISOR_MATCHING.md",
       "docs/ADVISOR_AUTOMATIC_FLIPS.md",
       "docs/ADVISOR_PREPARATION.md",
@@ -4401,8 +4413,13 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Verification",
     "status": "Partial",
-    "detail": "Normal matching passes frozen19-file244/244, types/lint/build, seven native declaration/response/GameTable SSR journeys, twelve profile responses and twelve accepted replacements. Genuine34/33-action base33 sources earn original advisors/fighters/Karama. Both directions and reserve shipment wait without transfer; allowance commits once and shipment pays1. Prevention keeps payment/action unused, rejects same-packet retry and permits legal replacement. Same-type movement has no counter. Special relocation, Guild/Homeworld, gathering, Spiritual matching/source cutover, full modes and final assurance remain open.",
+    "detail": "The frozen batch passes22 files390/390, types/lint/build, fifteen native ordinary/Guild declaration/response/GameTable SSR journeys, two controlled late-stance cases and twenty-four existing-profile paths. Public35/37-action ordinary and45/48-action Guild sources earn actual shipment/Intrusion; a second genuine grant preserves the held group. Four older matching/projection expectations are updated. Controlled legacy responses are format compatibility, not saved captures. Wider Homeworld/Tech/Nexus/No-Field combinations, other matching producers, full modes and final assurance remain open.",
     "evidence": [
+      "tests/fixture-spiritual-advisor-flow.ts",
+      "tests/spiritual-advisor-engine.test.ts",
+      "tests/spiritual-advisor.test.ts",
+      "game/spiritual-advisor.ts",
+      "docs/SPIRITUAL_ADVISORS.md",
       "tests/fixture-advisor-matching-move.ts",
       "tests/advisor-matching-engine.test.ts",
       "tests/advisor-matching.test.ts",

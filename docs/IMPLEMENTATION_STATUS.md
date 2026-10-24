@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 24 October 2026 — Spiritual Advisor targets, matching and alone conversion
+
+Supplied physical28 starts the free packet advisor-side and directs retained
+non-Polar fighters to Polar Sink or decline unless Intrusion changed them.
+Shared ordinary/Guild quotes, projected choices, controls and minimal bots now
+apply that source cutover. Basic and already-recorded legacy declarations retain
+their old protocol. Fresh Advanced declarations bind a public seven-field
+receipt to the private original chooser, committed foreign parent and order.
+
+Shipping prevention ends the free packet. Provisionally allow the named Polar
+fallback with fighters, then offer a distinct incoming matching counter before
+reserve withdrawal. Prevented matching restores the chooser and blocks that
+same packet/destination for the original grant. Placement then commits native
+withdrawal and income once. A separately prevented mandatory alone conversion
+retains that arrival and its continuously-alone hold, including when a later
+genuine grant joins it. Revalidate availability before matching/placement;
+never re-quote resources after withdrawal. Retire the frame before original
+ordinary/Guild arrival resumes; retain native child, worm and Homeworld suffixes.
+
+Disjoint helper/native-fixture lanes, bounded source/continuation review and root
+integration pass **22 files390/390**, types/lint/build and fifteen native
+ordinary/Guild declaration/response/GameTable SSR journeys. Genuine35/37-action
+public base33 ordinary and45/48-action bare E3 Guild sources earn setup,
+original Karama, paid foreign shipment, actual Intrusion answers and the free
+packet. Both matching and alone outcomes, shipping prevention, retained-fighter
+target rejection, accepted Intrusion and a second real grant are exercised.
+Two late-stance cases are explicitly controlled. Legacy tests are controlled
+format compatibility, not native earned actions or historical-save captures.
+Twenty-four existing-profile paths accept72 legal actions. Feedback updates
+four old matching/projection expectations; their focused repairs and the final
+union pass. The first native runtime needed no application source fix.
+
+Private proof:
+`/home/quintine/.local/share/dune/checkpoints/20261024-spiritual-advisor-flow/`.
+`frozen-integrated-2/report.json` binds tree
+`403d1a46ccdc0fbe353546a870d858fdb80340cb2c20533e87667dd414df6fe0`,
+2757 files on base `438a5692a644305360199da920760e25fee8d15f`.
+Final prose/reference overlays are reviewed separately. Full Homeworld/Tech/
+Nexus/No-Field combinations, other matching producers, browser/deployed/mode
+acceptance and final assurance remain open. No AI refinement or saved-room/D1/
+server/reset/restart/deployment operation.
+[Source, stages and continuation](SPIRITUAL_ADVISORS.md).
+
 ## 24 October 2026 — Matching incoming advisor packets before arrival
 
 Supplied physical28 E explicitly marks matching shipping/moving into resident

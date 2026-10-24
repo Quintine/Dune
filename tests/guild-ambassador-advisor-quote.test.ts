@@ -67,7 +67,7 @@ void test('advanced accompaniment uses the exact shipment territory with its ori
   assert.equal(JSON.stringify({ g, shipment }), before);
 });
 
-void test('Basic accompaniment request and explicit non-accompaniment both grant Polar Sink only', () => {
+void test('Polar fallback stays ordinary in Basic and starts advisor-side in Advanced', () => {
   for (const advanced of [false, true]) {
     const { g, shipment } = fixture(advanced);
     for (const accompany of advanced
@@ -79,7 +79,7 @@ void test('Basic accompaniment request and explicit non-accompaniment both grant
         sector: 0,
         amount: 1,
         elite: 0,
-        advisors: false,
+        advisors: advanced,
       });
   }
 });
@@ -124,7 +124,7 @@ void test('historical primary losses, changed alliances and reserves do not inva
   g.players[1].ally = 'm';
   g.players[3].ally = 'p';
   const result = quote(g, shipment, { accompany: true });
-  assert.equal(result.advisors, false); // Empty territory converts stance normally.
+  assert.equal(result.advisors, true); // Empty Advanced arrival converts separately after placement.
   assert.equal(result.amount, 1);
   assert.equal(result.territory, 'hagga_basin');
 });
@@ -135,7 +135,7 @@ void test('current advisor/fighter stance and Ecaz shared occupation determine c
   g.players[1].forces = { 'carthag:11': 2 };
   g.players[3].forces = { 'carthag:11': 1 };
   assert.equal(quote(g, shipment, { accompany: true }).advisors, true);
-  g.players[0].forces = { 'carthag:11': 1 }; // Existing fighters remain fighters.
+  g.players[0].forces = { 'carthag:11': 1 }; // Retained fighters forbid fresh accompaniment here.
   assert.throws(
     () => quote(g, shipment, { accompany: true }),
     GuildAmbassadorShipmentError,
@@ -147,7 +147,10 @@ void test('current advisor/fighter stance and Ecaz shared occupation determine c
   g.players[2].forces = { 'carthag:11': 1 };
   g.players[0].ally = 'e';
   g.players[2].ally = 'b';
-  assert.equal(quote(g, shipment, { accompany: true }).advisors, false);
+  assert.throws(
+    () => quote(g, shipment, { accompany: true }),
+    /cannot accompany/,
+  );
 });
 
 void test('invalid BG/source identity and forged shipment shape reject without mutation', () => {

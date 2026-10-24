@@ -2695,8 +2695,11 @@ function policyActions(g: GameView): Action[] {
         { type: 'decision', accept: false },
       ];
     }
-    if (d.kind === 'advisor' && g.guildAmbassadorAdvisorChoices) {
-      const choices = g.guildAmbassadorAdvisorChoices.choices.filter(
+    if(d.kind==='advisor'&&!d.ambassadorEvent&&(liveShipmentPromises(g.shipmentPromises??[],me.id,g.turn).length ||
+      liveMovementPromises(g.movementPromises??[],me.id,g.turn).some(promise=>promise.answer)))
+      return [{type:'decision',accept:false}];
+    if (d.kind === 'advisor' && (g.spiritualAdvisorChoices??g.guildAmbassadorAdvisorChoices)) {
+      const choices = (g.spiritualAdvisorChoices??g.guildAmbassadorAdvisorChoices)!.choices.filter(
         (choice) => !choice.blocked,
       );
       return [

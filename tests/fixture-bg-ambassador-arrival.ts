@@ -92,10 +92,32 @@ function advance(game: Game, until: (state: Game) => boolean, actions: BgAmbassa
   throw Error('Original native BG arrival did not reach the requested boundary');
 }
 
-/** Finish only original response/acknowledgement windows. In particular this
- * never silently chooses Intrusion, accompaniment or the Ambassador offer. */
+/** Allow response/acknowledgement windows, including a committed Spiritual
+ * arrival's automatic conversion. Never choose Intrusion, accompaniment or an
+ * Ambassador offer; tests stop at those original owned decisions. */
 export function settleBgAmbassadorArrivalControls(game: Game, actions: BgAmbassadorArrivalStep[] = []): Game {
   return advance(game, state => !state.response && !state.phaseOpening && !state.pendingTreacheryDiscard, actions);
+}
+
+/** Controlled already-declared legacy control, not fresh accompaniment permission.
+ * Keep the earned shipment, parent, forces, cards and wallets; replace only its
+ * current advisor chooser with the old recorded response shape, without the new
+ * Spiritual source. This isolates the retained callback protocol. */
+export function recordControlledLegacyBgAdvisorResponse(state: Game): Game {
+  const decision = state.decision;
+  assert.ok(decision?.kind === 'advisor' && decision.destination);
+  assert.ok(!state.response && !state.pendingSpiritualAdvisor);
+  const game = structuredClone(state);
+  game.decision = null;
+  game.response = {
+    kind: 'advisor', owner: decision.player, location: decision.destination,
+    amount: 1, passed: [],
+    ...(decision.ambassadorEvent === undefined ? {} : {
+      advisorResume: 'ambassador' as const, advisorAmbassadorEvent: decision.ambassadorEvent,
+    }),
+  };
+  assert.equal(game.response.spiritualAdvisorSource, undefined);
+  return game;
 }
 
 function orderLandBlows(game: Game, staging: string[]) {

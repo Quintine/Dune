@@ -16,6 +16,34 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Spiritual Advisor targets and conversion — 24 October. Prototyped / Partial.**
+Supplied physical28 redirects retained non-Polar fighters to Polar Sink or
+decline unless Intrusion first changed them. Fresh Advanced declarations now
+share target legality through ordinary/Guild quotes, projected choices, controls
+and minimal bots. Distinct shipping, incoming Polar matching and committed
+alone-conversion responses retain the original foreign shipment. Matching
+prevention restores the owned chooser while blocking that same packet here;
+shipping prevention ends the free packet. An alone-conversion prevention keeps
+the deposited force, withdrawal/income and continuously-alone hold. The Polar
+fallback and matching remedy remain explicit provisional compositions.
+Basic and already-recorded legacy declarations keep their previous protocol.
+[Source, original continuation and limits](SPIRITUAL_ADVISORS.md).
+
+Disjoint helper/native-fixture lanes, bounded source/continuation review and root
+integration pass **22 files390/390**, types/lint/build and fifteen native
+ordinary/Guild declaration/response/GameTable SSR journeys. Public35/37-action
+base33 ordinary sources and45/48-action bare E3 Guild sources earn the original
+setup, actual paid foreign shipment, declined/accepted Intrusion, original
+Karama and independent free shipment. A second genuine foreign shipment joins
+an existing held advisor group without rearming conversion. Two late-stance
+cases are explicitly controlled; recorded-legacy tests are format compatibility,
+not native saved captures. Twenty-four existing-profile paths accept72 actions
+through target choice, distinct responses and restored decline. Feedback updates
+four older matching/projection expectations; no application source repair was
+needed after the frozen runtime passed. No strategic AI work or saved-room/D1/
+server/reset/restart/deployment operation. Wider combinations, other matching
+producers and final browser/deployed/mode assurance remain open.
+
 **Matching incoming BG groups — 24 October. Prototyped / Partial.**
 Normal opposite-type ground arrivals and reserve-to-advisor shipments now offer
 Karama before physical transfer/payment. Supplied physical28 E explicitly marks
@@ -40,15 +68,10 @@ No AI refinement, comprehensive/browser/deployed assurance or saved-room/D1/
 reset/restart/deployment operation. Wider transport, gathering and mode acceptance
 remain open.
 
-Bounded complete-page review also identifies a remaining Advanced Spiritual
-Advisor source cutover: retained fighters at the original shipment destination
-require Polar Sink or decline unless Intrusion changes them first. Polar Sink
-fallback with resident fighters provisionally needs its own incoming matching
-counter after the distinct shipping counter. Ordinary/Guild Ambassador target
-quotes, projected choices and bots must share that restriction; do not apply
-it to ordinary paid shipments. That independent Spiritual-parent integration
-and special relocation/gather matching remain explicitly open after the normal
-arrival prototype. Full rule/mode acceptance is still unfinished.
+The separate Advanced Spiritual target, matching and committed-alone source
+follow-up is now prototyped above. It does not change ordinary paid shipments'
+target permissions. Special relocation/gather matching and wider combinations
+remain open; full rule/mode acceptance is still unfinished.
 
 **Special-relocation advisor conversion — 24 October. Prototyped / Partial.**
 Fremen Ambassador and Discovery free-entry transfers now capture surviving alone

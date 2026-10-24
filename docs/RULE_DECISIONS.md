@@ -1,5 +1,26 @@
 # Rule decision index
 
+## Spiritual Advisor targets and distinct conversions — 24 October 2026
+
+Supplied physical28 E ships an advisor and redirects retained non-Polar fighters
+to Polar Sink or decline unless Intrusion first changed them. Basic and already-
+recorded legacy declarations retain their old protocol; fresh Advanced
+declarations carry a new source/private parent. Share target legality across
+normal/Guild quotes, choices, controls and bots; keep resource quotes separate.
+Physical17's shipping and group-flip counters are distinct. An empty Advanced
+arrival remains advisor-side until its separately counterable mandatory alone
+conversion; there is no printed Polar Sink exemption from that conversion.
+
+Under the 14 October authority, provisionally permit the named Polar fallback
+even when it is the original destination with fighters, offering a separate
+incoming matching counter before placement. Prevention restores the original
+chooser while denying the same packet/destination in that grant; shipping
+prevention ends the free packet. Neither undoes the other faction's committed
+shipment. After placement, prevent only conversion while keeping forces/income
+and the existing continuously-alone hold. Preserve original ordinary/Guild
+arrivals once; never rerun reserve availability after withdrawal.
+[Source, stages, compatibility boundary and limits](SPIRITUAL_ADVISORS.md).
+
 ## Matching incoming advisor groups — 24 October 2026
 
 Supplied physical28 E directly marks matching into resident BG forces as

@@ -2,6 +2,7 @@ import type { FactionId } from './catalog';
 import { gameTerritories, splitLocation, type MobileBoard } from './board';
 import { presenceAt, type ForcePresence } from './force-presence';
 import { stormExposesTerritory, stormSectorAfter } from './disaster-rules';
+import { validateSpiritualAdvisorSource, type SpiritualAdvisorSource } from './spiritual-advisor';
 
 export type AdvisorStance = {
   lockedTurn?: number;
@@ -93,6 +94,7 @@ export type AutomaticAdvisorFlipSource = {
   | { producer: 'faceDance'; faceDance: AutomaticAdvisorFaceDance }
   | { producer: 'storm'; storm: AutomaticAdvisorStorm }
   | { producer: 'specialRelocation'; relocation: AutomaticAdvisorRelocation }
+  | { producer: 'spiritualArrival'; spiritual: SpiritualAdvisorSource }
 );
 
 export type AutomaticAdvisorFlipPlayer = ForcePresence & {
@@ -439,6 +441,23 @@ function validateRelocationSource(
     'Automatic advisor conversion lost the original relocated actor at its destination.');
 }
 
+function validateSpiritualArrivalSource(
+  ctx: AutomaticAdvisorFlipContext,
+  source: Extract<AutomaticAdvisorFlipSource, { producer: 'spiritualArrival' }>,
+) {
+  try { validateSpiritualAdvisorSource(ctx, source.spiritual); }
+  catch (cause) {
+    throw new AutomaticAdvisorFlipError(cause instanceof Error ? cause.message : 'The public Spiritual Advisor source changed.');
+  }
+  const receipt = source.spiritual;
+  requireFlip(receipt.owner === source.owner && receipt.territory === source.territory,
+    'Automatic advisor conversion must use the original Spiritual Advisor owner and target.');
+  const owner = ctx.players.find((player) => player.id === source.owner)!;
+  const deposited = owner.forces[`${receipt.territory}:${receipt.sector}`];
+  requireFlip(nonnegative(deposited) && deposited >= receipt.amount,
+    'Automatic advisor conversion lost its completed Spiritual Advisor placement.');
+}
+
 /** Validate the same committed producer and exact held group before either response outcome. */
 export function validateAutomaticAdvisorFlip(
   ctx: AutomaticAdvisorFlipContext,
@@ -460,12 +479,15 @@ export function validateAutomaticAdvisorFlip(
       (source.producer === 'storm' &&
         Object.keys(source).sort().join(',') === 'event,forces,owner,phase,producer,storm,territory,turn') ||
       (source.producer === 'specialRelocation' &&
-        Object.keys(source).sort().join(',') === 'event,forces,owner,phase,producer,relocation,territory,turn')) &&
+        Object.keys(source).sort().join(',') === 'event,forces,owner,phase,producer,relocation,territory,turn') ||
+      (source.producer === 'spiritualArrival' &&
+        Object.keys(source).sort().join(',') === 'event,forces,owner,phase,producer,spiritual,territory,turn')) &&
     identifier(source.event) && identifier(source.owner) && identifier(source.territory) &&
     positive(source.turn) && source.turn === ctx.turn &&
     (source.producer === 'specialRelocation'
       ? record(source.relocation) && (source.relocation.kind === 'discovery'
         ? source.phase === 0 : source.relocation.kind === 'ambassador' && [1, 3, 5, 8].includes(source.phase))
+      : source.producer === 'spiritualArrival' ? [1, 3, 5, 8].includes(source.phase)
       : source.phase === (source.producer === 'storm' ? 0 : source.producer === 'gamont' ? 8 :
         source.producer === 'battleLosses' || source.producer === 'faceDance' ? 6 : 5)) &&
     currentWindow(ctx) && source.phase === ctx.phase,
@@ -487,7 +509,8 @@ export function validateAutomaticAdvisorFlip(
   else if (source.producer === 'battleLosses') validateBattleSource(ctx, source);
   else if (source.producer === 'faceDance') validateFaceDanceSource(ctx, source);
   else if (source.producer === 'storm') validateStormSource(ctx, source);
-  else validateRelocationSource(ctx, source);
+  else if (source.producer === 'specialRelocation') validateRelocationSource(ctx, source);
+  else validateSpiritualArrivalSource(ctx, source);
   const forces = physicalGroup(owner, source.territory);
   requireFlip(record(source.forces) && Object.keys(forces).length > 0 &&
     Object.values(forces).every(positive) && Object.values(source.forces).every(positive) &&

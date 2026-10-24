@@ -102,7 +102,9 @@ const cancellationSources = {
     declaration: g.nexusSardaukarHistory?.find(record => record.stage === 'pending') ?? null,
   }),
   advisor: (g, response) =>
-    response.advisorResume === 'ambassador'
+    response.spiritualAdvisorSource
+      ? {source:response.spiritualAdvisorSource,pending:g.pendingSpiritualAdvisor?.source??null}
+      : response.advisorResume === 'ambassador'
       ? {
           entry: g.pendingAmbassador ?? null,
           ambassadors: g.ecazAmbassadors ?? null,
@@ -189,9 +191,13 @@ const cancellationSources = {
           storm: response.automaticAdvisorFlip.producer === 'storm' ? g.pendingAutomaticAdvisorStorm?.receipt ?? null : null,
           ...(response.automaticAdvisorFlip.producer === 'specialRelocation'
             ? { relocation: g.pendingAutomaticAdvisorRelocation?.receipt ?? null } : {}),
+          ...(response.automaticAdvisorFlip.producer === 'spiritualArrival'
+            ? { spiritual:g.pendingSpiritualAdvisor?.source??null } : {}),
           group: g.players.find(p => p.id === response.owner)?.advisors?.[response.location ?? ''] ?? null }
       : response.advisorMatchingSource
       ? {matching:response.advisorMatchingSource,pending:g.pendingAdvisorMatching?.receipt??null}
+      : response.spiritualAdvisorSource
+      ? {spiritual:response.spiritualAdvisorSource,pending:g.pendingSpiritualAdvisor?.source??null}
       : response.advisorPreparationSource
       ? { preparation: response.advisorPreparationSource, window: g.advisorPreparation ?? null }
       : response.advisorResume === 'ambassador'

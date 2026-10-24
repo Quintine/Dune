@@ -6,7 +6,8 @@ import {
   bgAmbassadorAccompanimentAction, bgAmbassadorArrivalPlayer,
   bgAmbassadorIntrusionAction, bgAmbassadorOfferAction,
   createBgAmbassadorArrivalFixture, finishBgAmbassadorArrival,
-  settleBgAmbassadorArrivalControls, type BgAmbassadorArrivalFixture,
+  recordControlledLegacyBgAdvisorResponse, settleBgAmbassadorArrivalControls,
+  type BgAmbassadorArrivalFixture,
 } from './fixture-bg-ambassador-arrival';
 
 function assertStock(game: Game) {
@@ -70,7 +71,13 @@ function assertOriginalMovementResumes(fixture: BgAmbassadorArrivalFixture, game
   } else assert.equal(game.dukeVidal?.controller ?? null, null);
   const before = bgAmbassadorArrivalPlayer(game, fixture.entrant);
   const bgBefore = bgAmbassadorArrivalPlayer(game, fixture.advisor);
-  const moved = applyBgAmbassadorArrivalStep(game, { actor: fixture.entrant, action: fixture.movementAction });
+  let moved = applyBgAmbassadorArrivalStep(game, { actor: fixture.entrant, action: fixture.movementAction });
+  if (moved.response?.automaticAdvisorFlip) {
+    assert.equal(moved.response.automaticAdvisorFlip.producer, 'groundMovement');
+    assert.equal(moved.response.owner, fixture.advisor);
+    assert.equal(moved.response.location, fixture.territory);
+    moved = settleBgAmbassadorArrivalControls(moved);
+  }
   const entrant = bgAmbassadorArrivalPlayer(moved, fixture.entrant);
   assert.equal(entrant.forces[fixture.location] ?? 0, 0);
   assert.equal(entrant.forces['arsunt:11'], 1);
@@ -85,8 +92,8 @@ function assertOriginalMovementResumes(fixture: BgAmbassadorArrivalFixture, game
   assert.equal(moved.pendingArrivalReaction?.length ?? 0, 0);
   assert.deepEqual(bgAmbassadorArrivalPlayer(moved, fixture.advisor).forces, bgBefore.forces);
   assert.equal(bgAmbassadorArrivalPlayer(moved, fixture.advisor).reserves, bgBefore.reserves);
-  // If BG remains alone after the original entrant moves out, its stance changes
-  // automatically without another entry event or another Ambassador prompt.
+  // Allow any actual alone-conversion counter after the original entrant moves
+  // out, without another entry event or another Ambassador prompt.
   if (bgBefore.forces[fixture.location])
     assert.equal(bgAmbassadorArrivalPlayer(moved, fixture.advisor).advisors?.[fixture.territory], undefined);
   assertStock(moved);
@@ -156,9 +163,14 @@ for (const becomeAdvisors of [true, false]) {
     assert.equal(bgAmbassadorArrivalPlayer(game, fixture.advisor).reserves, bgBefore.reserves);
     assert.equal(bgAmbassadorArrivalPlayer(game, fixture.advisor).forces[fixture.location], 1);
     assertMainQueue(fixture, game);
-    // Keeping fighters and accepting accompaniment would join that fighter
-    // group, not manufacture an advisor. Here that branch legitimately declines
-    // the reserve transfer; the accepted branch joins the newly peaceful group.
+    // Fresh Advanced accompaniment cannot join retained fighters. Declining the
+    // reserve transfer preserves them; accepted Intrusion permits the new advisor.
+    if (!becomeAdvisors) {
+      const before = structuredClone(game);
+      assert.throws(() => applyAction(game, fixture.advisor, bgAmbassadorAccompanimentAction(true)),
+        /cannot accompany/);
+      assert.deepEqual(game, before);
+    }
     game = applyBgAmbassadorArrivalStep(game, { actor: fixture.advisor, action: bgAmbassadorAccompanimentAction(becomeAdvisors) });
     if (becomeAdvisors) {
       assert.equal(game.response?.kind, 'advisor');
@@ -177,7 +189,35 @@ for (const becomeAdvisors of [true, false]) {
   });
 }
 
-void test('declining Intrusion and accepting accompaniment preserves fighters: one BG child offer then one original shipper offer', () => {
+void test('fresh retained fighters reject destination accompaniment while Polar Sink preserves the original paid entry', () => {
+  const fixture = createBgAmbassadorArrivalFixture({ fighters: true });
+  const bgBefore = bgAmbassadorArrivalPlayer(fixture.beforeShipment, fixture.advisor);
+  let game = beginBgAmbassadorArrival(fixture);
+  game = applyBgAmbassadorArrivalStep(game, {
+    actor: fixture.advisor, action: bgAmbassadorIntrusionAction(false),
+  });
+  const before = structuredClone(game);
+  assert.throws(() => applyAction(game, fixture.advisor, bgAmbassadorAccompanimentAction(true)),
+    /cannot accompany/);
+  assert.deepEqual(game, before);
+  game = applyBgAmbassadorArrivalStep(game, {
+    actor: fixture.advisor, action: bgAmbassadorAccompanimentAction(true, false),
+  });
+  assert.equal(game.response?.kind, 'advisor');
+  assert.ok(game.response?.spiritualAdvisorSource);
+  assertMainQueue(fixture, game);
+  game = settleBgAmbassadorArrivalControls(game);
+  const bg = bgAmbassadorArrivalPlayer(game, fixture.advisor);
+  assert.equal(bg.forces[fixture.location], 1);
+  assert.equal(bg.advisors?.[fixture.territory], undefined);
+  assert.equal(bg.forces['polar_sink:0'], 1);
+  assert.equal(bg.advisors?.polar_sink, undefined);
+  assert.equal(bg.reserves, bgBefore.reserves - 1);
+  assertMainOffer(fixture, game);
+  assertOriginalMovementResumes(fixture, finishBgAmbassadorArrival(game, false), false);
+});
+
+void test('controlled recorded legacy accompaniment preserves fighters: one BG child offer then one original shipper offer', () => {
   const fixture = createBgAmbassadorArrivalFixture({ fighters: true });
   const bgBefore = bgAmbassadorArrivalPlayer(fixture.beforeShipment, fixture.advisor);
   let game = beginBgAmbassadorArrival(fixture);
@@ -189,9 +229,7 @@ void test('declining Intrusion and accepting accompaniment preserves fighters: o
   });
   assert.equal(game.decision?.kind, 'advisor');
   assertMainQueue(fixture, game);
-  game = applyBgAmbassadorArrivalStep(game, {
-    actor: fixture.advisor, action: bgAmbassadorAccompanimentAction(true),
-  });
+  game = recordControlledLegacyBgAdvisorResponse(game);
   assert.equal(game.response?.kind, 'advisor');
   assertMainQueue(fixture, game);
   game = settleBgAmbassadorArrivalControls(game);
@@ -225,7 +263,7 @@ void test('declining Intrusion and accepting accompaniment preserves fighters: o
   assertOriginalMovementResumes(fixture, game, true);
 });
 
-void test('triggering the genuine BG fighter child returns the live Ecaz token before the queued shipper entry resumes', () => {
+void test('controlled recorded legacy fighter child returns the live Ecaz token before the queued shipper entry resumes', () => {
   const fixture = createBgAmbassadorArrivalFixture({ fighters: true });
   const bgBefore = bgAmbassadorArrivalPlayer(fixture.beforeShipment, fixture.advisor);
   let game = beginBgAmbassadorArrival(fixture);
@@ -233,9 +271,7 @@ void test('triggering the genuine BG fighter child returns the live Ecaz token b
     actor: fixture.advisor, action: bgAmbassadorIntrusionAction(false),
   });
   assert.equal(game.decision?.kind, 'advisor');
-  game = settleBgAmbassadorArrivalControls(applyBgAmbassadorArrivalStep(game, {
-    actor: fixture.advisor, action: bgAmbassadorAccompanimentAction(true),
-  }));
+  game = settleBgAmbassadorArrivalControls(recordControlledLegacyBgAdvisorResponse(game));
   assert.equal(game.pendingAmbassador?.entrant, fixture.advisor);
   assert.equal(game.pendingArrivalReaction?.[0]?.entrant, fixture.entrant);
   const spentChild = bgAmbassadorOfferAction(game, true);
@@ -278,6 +314,10 @@ void test('canceling the real Intrusion flip retains fighters and the followup b
   assertMainQueue(fixture, game);
   assert.equal(bgAmbassadorArrivalPlayer(game, fixture.advisor).advisors?.[fixture.territory], undefined);
   assert.equal(bgAmbassadorArrivalPlayer(game, fixture.advisor).forces[fixture.location], 1);
+  const retained = structuredClone(game);
+  assert.throws(() => applyAction(game, fixture.advisor, bgAmbassadorAccompanimentAction(true)),
+    /cannot accompany/);
+  assert.deepEqual(game, retained);
   game = applyBgAmbassadorArrivalStep(game, { actor: fixture.advisor, action: bgAmbassadorAccompanimentAction(false) });
   assertMainOffer(fixture, game);
   assert.equal(game.discard.filter(c => c.id === card).length, 1);

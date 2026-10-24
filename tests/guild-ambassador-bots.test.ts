@@ -308,7 +308,7 @@ void test('Guild Ambassador accompaniment candidates exclude the storm sector at
   for (const level of DIFFICULTIES) {
     const v = view(g, 'al', level);
     const before = structuredClone(v);
-    const descriptor = v.guildAmbassadorAdvisorChoices!;
+    const descriptor = v.spiritualAdvisorChoices ?? v.guildAmbassadorAdvisorChoices!;
     assert.ok(
       descriptor.choices.some(
         (c) => c.accompany && c.sector === 14 && c.blocked,
@@ -348,7 +348,7 @@ void test('projected blocked accompaniment falls back to Polar Sink, then declin
   const g = advisorWindow();
   for (const level of DIFFICULTIES) {
     const v = view(g, 'al', level);
-    const choices = v.guildAmbassadorAdvisorChoices!.choices;
+    const choices = (v.spiritualAdvisorChoices ?? v.guildAmbassadorAdvisorChoices!).choices;
     // The policy consumes projected blocking regardless of its public cause.
     // Server-side competing-arrival rules have separate engine fixtures.
     for (const c of choices)

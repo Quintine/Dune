@@ -20,6 +20,7 @@ import {
 import { createTerrorState, placeTerror } from '../game/moritani-terror';
 import { MOBILE_LOCATION, MOBILE_STRONGHOLD } from '../game/board';
 import { createTechTokens } from '../game/tech-tokens';
+import { recordControlledLegacyBgAdvisorResponse } from './fixture-bg-ambassador-arrival';
 
 const p = (g: Game, id: string) => g.players.find((p) => p.id === id)!;
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
@@ -501,6 +502,13 @@ void test('Intrusion resolves before the independent accompanying advisor choice
       !!p(g, 'beneGesserit').advisors?.sietch_tabr,
       outcome === 'allow',
     );
+    if (outcome !== 'allow') {
+      const before = reload(g);
+      assert.throws(() => applyAction(g, 'beneGesserit', {
+        type: 'decision', accept: true, accompany: true,
+      }), /cannot accompany/);
+      assert.deepEqual(reload(g), before);
+    }
     g = applyAction(reload(g), 'beneGesserit', {
       type: 'decision',
       accept: true,
@@ -733,7 +741,7 @@ void test('free off-planet shipment accrues Heighliner income once, with Guild-o
   }
 });
 
-void test('accompanying BG fighters trigger a second Ambassador and preserve the original phase-five or worm continuation until that child completes', () => {
+void test('controlled recorded legacy BG fighter accompaniment preserves its second Ambassador and original phase-five or worm continuation', () => {
   for (const phase of [5, 1] as const) {
     const initial = fixture(
       'atreides',
@@ -794,11 +802,7 @@ void test('accompanying BG fighters trigger a second Ambassador and preserve the
       accept: false,
     });
     assert.equal(g.decision?.kind, 'advisor');
-    g = applyAction(reload(g), 'beneGesserit', {
-      type: 'decision',
-      accept: true,
-      accompany: true,
-    });
+    g = recordControlledLegacyBgAdvisorResponse(reload(g));
     assert.equal(g.response?.kind, 'advisor');
     assert.equal(g.pendingAmbassador?.event, parentEvent);
     g = allow(reload(g));

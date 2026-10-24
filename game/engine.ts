@@ -610,6 +610,8 @@ import {
 import { canUseAsKaramaRole } from './shrine';
 import { quoteAdvisorMatching, validateAdvisorMatching, advisorMatchingKey,
   AdvisorMatchingError, type AdvisorMatchingSource } from './advisor-matching';
+import { spiritualAdvisorTargetBlock, spiritualAdvisorArrival, validateSpiritualAdvisorSource,
+  spiritualAdvisorMatchingKey, SpiritualAdvisorError, type SpiritualAdvisorSource } from './spiritual-advisor';
 import {
   isAdvisor,
   fighterCount,
@@ -1070,6 +1072,7 @@ export type ResponseWindow = {
   automaticAdvisorFlip?: AutomaticAdvisorFlipSource;
   advisorPreparationSource?: AdvisorPreparationSource;
   advisorMatchingSource?: AdvisorMatchingSource;
+  spiritualAdvisorSource?: SpiritualAdvisorSource;
   fremenGrant?: FremenRevivalGrantSource;
   spiceBankerIncomePayment?: SpiceBankerIncomePayment;
   bureaucratPayment?: BureaucratPaymentSource;
@@ -1292,6 +1295,19 @@ export type Game = {
     intent: {kind:'movement'; order:MovementOrder} | {kind:'shipment'; order:PendingShipment};
   };
   advisorMatchingDenied?: string[];
+  pendingSpiritualAdvisor?: {
+    event: string;
+    turn: number;
+    phase: number;
+    decision: Extract<Decision,{kind:'advisor'}>;
+    signature: string;
+    stage: 'offer' | 'shipping' | 'matching' | 'arrival';
+    denied: string[];
+    source?: SpiritualAdvisorSource;
+    selection?: string;
+    order?: {player:string;territory:string;sector:number;amount:number;elite:0;advisors:boolean};
+    deposit?: {key:string;before:number};
+  };
   advisorPreparation?: AdvisorPreparationWindow;
   ecazOccupyPreview?: boolean;
   /** Fresh native Guild/Nexus payment-replacement profile, never inferred from a save. */
@@ -14607,6 +14623,7 @@ function revivalCancellationQuote(g: Game, response: ResponseWindow) {
   }
 }
 function movementCancellationQuote(g: Game, response: ResponseWindow) {
+  if (response.spiritualAdvisorSource) { currentSpiritualAdvisorResponse(g,response); return null; }
   if (response.advisorMatchingSource) { currentAdvisorMatching(g, response); return null; }
   try {
     if (response.automaticAdvisorFlip) { currentAutomaticAdvisorFlip(g, response); return null; }
@@ -14737,6 +14754,10 @@ function noFieldCancellationQuote(g: Game, response: ResponseWindow) {
   }
 }
 function terminalCancellationQuote(g: Game, response: ResponseWindow) {
+  if(response.spiritualAdvisorSource){
+    currentSpiritualAdvisorResponse(g,response);
+    return response.kind==='advisor'?{kind:'advisor' as const,owner:response.owner}:null;
+  }
   try {
     return validateTerminalCancellation(g, response);
   } catch (error) {
@@ -17677,6 +17698,12 @@ function ambassadorRelocationIntegrity(g: Game) {
       'The saved Guild Ambassador arrival has an invalid continuation stage.',
     );
     const { order } = guildAmbassadorArrival(g, entry.event, next);
+    if(next==='advisor' && g.pendingSpiritualAdvisor?.decision.ambassadorEvent===entry.event){
+      requireRule(!relatedResponses.length && !relatedDecisions.length && !relatedTerror,
+        'The original Guild shipment must wait for its owned Spiritual Advisor flow.');
+      spiritualAdvisorIntegrity(g);
+      return;
+    }
     for (const response of relatedResponses) {
       requireRule(
         response.advisorResume === 'ambassador' &&
@@ -18447,7 +18474,7 @@ function finishGuildAmbassadorAdvisor(
       sector: at.sector,
       territory: at.territory,
       amount: response.amount ?? 1,
-    }),
+    },true),
   );
   validateGuildAdvisorEntry(g, quote);
   const bg = getPlayer(g, quote.player);
@@ -18456,6 +18483,14 @@ function finishGuildAmbassadorAdvisor(
   techIncome(g, 'heighliners', bg);
   if (quote.advisors)
     (bg.advisors ??= {})[quote.territory] = { ...bg.advisors?.[quote.territory], lockedTurn: g.turn };
+  logSpiritualAdvisorPlacement(g,quote,true);
+  finishGuildAmbassadorAdvisorArrival(g,response,quote);
+}
+function finishGuildAmbassadorAdvisorArrival(g:Game,response:ResponseWindow,
+  quote:ReturnType<typeof quoteGuildAmbassadorAdvisor>){
+  const event=response.advisorAmbassadorEvent!;
+  const {order}=guildAmbassadorArrival(g,event,'advisor');
+  const bg=getPlayer(g,quote.player);
   const receipt = g.pendingAmbassador!.shipmentReceipt!;
   receipt.next = 'finish';
   receipt.advisorArrival = {
@@ -18465,11 +18500,6 @@ function finishGuildAmbassadorAdvisor(
     amount: quote.amount,
     elite: 0,
   };
-  log(
-    g,
-    `${bg.name} sent ${quote.amount} free reserve ${quote.amount === 1 ? 'force' : 'forces'} to ${territory(quote.territory).name}, sector ${quote.sector}, after the Guild Ambassador shipment${quote.amount === 2 ? ' using high-population Wallach IX' : ''}.`,
-    { faction: bg.faction, name: 'Spiritual Advisors' },
-  );
   if (guildAdvisorAmbassador(g, quote)) {
     const parent = g.pendingAmbassador!;
     const arrivalTag = parent.revivalEvent !== undefined ? 'revivalEvent' :
@@ -20347,6 +20377,207 @@ function automaticAdvisorRule<T>(quote: () => T): T {
   try { return quote(); }
   catch (error) { if (error instanceof AutomaticAdvisorFlipError) throw new RuleError(error.message); throw error; }
 }
+function spiritualRule<T>(quote:()=>T):T{
+  try{return quote();}catch(error){if(error instanceof SpiritualAdvisorError)throw new RuleError(error.message);throw error;}
+}
+function logSpiritualAdvisorPlacement(g:Game,order:{player:string;territory:string;sector:number;amount:number},ambassador:boolean){
+  const bg=getPlayer(g,order.player);
+  log(g,ambassador
+    ? `${bg.name} sent ${order.amount} free reserve ${order.amount===1?'force':'forces'} to ${territory(order.territory).name}, sector ${order.sector}, after the Guild Ambassador shipment${order.amount===2?' using high-population Wallach IX':''}.`
+    : `${bg.name} sent ${order.amount} free ${order.amount===1?'force':'forces'} to ${territory(order.territory).name}${order.amount===2?' using high-population Wallach IX':''}.`,
+    {faction:bg.faction,name:'Spiritual Advisors'});
+}
+function spiritualParentSignature(g:Game,decision:Extract<Decision,{kind:'advisor'}>){
+  return JSON.stringify([g.turn,g.phase,g.active,decision,decision.ambassadorEvent
+    ? g.pendingAmbassador : g.pendingArrivalReaction??null]);
+}
+function quoteSpiritualOrder(g:Game,decision:Extract<Decision,{kind:'advisor'}>,action:Action){
+  const bg=getPlayer(g,decision.player);
+  let order:{player:string;territory:string;sector:number;amount:number;elite:0;advisors:boolean};
+  if(decision.ambassadorEvent){
+    const {order:shipment}=guildAmbassadorArrival(g,decision.ambassadorEvent,'advisor');
+    order=guildAmbassadorRule(()=>quoteGuildAmbassadorAdvisor(g,bg.id,shipment,action));
+  }else{
+    requireRule(action.accompany===undefined || typeof action.accompany==='boolean','Choose an accompaniment option.');
+    const target=action.accompany===true&&g.advanced?decision.destination:'polar_sink:0';
+    requireRule(target,'This shipment has no accompanying destination.');
+    const point=splitLocation(target);
+    if(action.accompany===true&&g.advanced&&action.sector!==undefined)
+      point.sector=integer(action.sector,0,18,'Sector');
+    requireRule(action.territory===undefined||action.territory===point.territory,'Use the original shipment territory or Polar Sink.');
+    const amount=integer(action.amount===undefined?1:action.amount,1,spiritualAdvisorMaximum(g,bg.id,point.territory),'Spiritual Advisor forces');
+    order={player:bg.id,territory:point.territory,sector:point.sector,amount,elite:0,advisors:false};
+  }
+  const block=spiritualRule(()=>spiritualAdvisorTargetBlock(g,bg.id,order.territory));
+  requireRule(!block,block??'This Spiritual Advisor destination is unavailable.');
+  const arrival=spiritualRule(()=>spiritualAdvisorArrival(g,bg.id,order.territory));
+  order.advisors=arrival.advisors;
+  allowedEntry(g,bg,order.territory,order.sector,false,order.advisors);
+  if(decision.ambassadorEvent){
+    const quote={...order,amount:order.amount as 1|2};
+    validateGuildAdvisorEntry(g,quote);
+    if(arrival.alone&&!bg.advisors?.[order.territory]?.aloneFlipHold)
+      validateGuildAdvisorEntry(g,{...quote,advisors:false});
+  }
+  return order;
+}
+function spiritualAdvisorChoices(g:Game,id:string){
+  const decision=g.decision;
+  if(!g.advanced||decision?.kind!=='advisor'||decision.player!==id)return null;
+  const destination=decision.destination?splitLocation(decision.destination).territory:null;
+  const choices=[...(destination?gameTerritories(g).find(t=>t.id===destination)?.sectors.map(sector=>
+    ({accompany:true,territory:destination,sector,amount:1}))??[]:[]),
+    ...Array.from({length:Math.max(1,spiritualAdvisorMaximum(g,id))},(_,index)=>
+      ({accompany:false,territory:'polar_sink',sector:0,amount:index+1}))];
+  return {choices:choices.map(choice=>{
+    try{
+      const order=quoteSpiritualOrder(g,decision,{type:'decision',...choice});
+      const frame=g.pendingSpiritualAdvisor;
+      if(frame&&spiritualAdvisorArrival(g,id,choice.territory).matching){
+        const source={event:frame.event,owner:id,turn:g.turn,phase:g.phase,
+          territory:order.territory,sector:order.sector,amount:order.amount};
+        requireRule(!frame.denied.includes(spiritualAdvisorMatchingKey(source)),
+          'Matching this free packet here was prevented. Choose another legal packet or decline.');
+      }
+      return {...choice,blocked:null as string|null};
+    }catch(error){if(!(error instanceof RuleError))throw error;return {...choice,blocked:error.message};}
+  })};
+}
+function spiritualFrameBody(g:Game){
+  const frame=g.pendingSpiritualAdvisor;
+  requireRule(frame&&g.advanced&&g.status==='playing'&&frame.turn===g.turn&&frame.phase===g.phase&&
+    getPlayer(g,frame.decision.player).faction==='beneGesserit'&&
+    frame.signature===JSON.stringify([frame.event,spiritualParentSignature(g,frame.decision)]),
+    'Spiritual Advisors lost the original committed foreign shipment.');
+  if(frame.stage!=='offer'){
+    requireRule(frame.source&&frame.order&&frame.selection===JSON.stringify([frame.source,frame.order])&&
+      frame.source.event===frame.event&&frame.source.owner===frame.decision.player&&
+      frame.order.player===frame.source.owner&&frame.order.territory===frame.source.territory&&
+      frame.order.sector===frame.source.sector&&frame.order.amount===frame.source.amount,
+      'The Spiritual packet lost its exact original declaration.');
+    spiritualRule(()=>validateSpiritualAdvisorSource(g,frame.source!));
+  }
+  if(frame.stage==='arrival'){
+    const deposit=frame.deposit,source=frame.source!,owner=getPlayer(g,source.owner);
+    requireRule(deposit&&deposit.key===location(source.territory,source.sector)&&
+      owner.forces[deposit.key]===deposit.before+source.amount,
+      'The committed Spiritual packet lost its actual physical deposit.');
+  }
+  return frame;
+}
+function spiritualAdvisorIntegrity(g:Game){
+  if(!g.pendingSpiritualAdvisor)return;
+  const frame=spiritualFrameBody(g),continuation=g.pendingTreacheryDiscard?.continuation;
+  const controls=[g,g.pendingExchange,g.pendingNullentropy?.resume,g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume,g.summonedWorm?.resume,g.pendingKull?.resume,
+    continuation&&'resume'in continuation?continuation.resume:null];
+  const responses=controls.flatMap(c=>c?.response?[c.response]:[]);
+  for(const {pending}of savedKaramaContexts(g))if(pending.use.kind==='cancel')responses.push(pending.use.response);
+  if(frame.stage==='offer'){
+    requireRule(!frame.source&&!frame.order&&controls.some(c=>JSON.stringify(c?.decision)===JSON.stringify(frame.decision)),
+      'Restore the original owned Spiritual Advisor chooser.');
+  }else if(frame.stage==='arrival'){
+    requireRule(responses.some(r=>r.automaticAdvisorFlip?.producer==='spiritualArrival'&&
+      JSON.stringify(r.automaticAdvisorFlip.spiritual)===JSON.stringify(frame.source)),
+      'The committed Spiritual arrival lost its pending alone conversion.');
+  }else requireRule(responses.some(r=>JSON.stringify(r.spiritualAdvisorSource)===JSON.stringify(frame.source)&&
+      r.kind===(frame.stage==='shipping'?'advisor':'advisorFlip')),
+    'The original Spiritual packet lost its owned shipping or matching response.');
+}
+function beginSpiritualAdvisor(g:Game,decision:Extract<Decision,{kind:'advisor'}>,action:Action){
+  const order=quoteSpiritualOrder(g,decision,action);
+  let frame=g.pendingSpiritualAdvisor;
+  if(frame){
+    spiritualFrameBody(g);
+    requireRule(frame.stage==='offer'&&JSON.stringify(frame.decision)===JSON.stringify(decision),
+      'Finish the original Spiritual Advisor opportunity first.');
+  }else{
+    const event=crypto.randomUUID();
+    frame={event,turn:g.turn,phase:g.phase,decision:structuredClone(decision),
+      signature:JSON.stringify([event,spiritualParentSignature(g,decision)]),stage:'offer',denied:[]};
+  }
+  const source:SpiritualAdvisorSource={event:frame.event,owner:decision.player,turn:g.turn,phase:g.phase,
+    territory:order.territory,sector:order.sector,amount:order.amount};
+  if(spiritualAdvisorArrival(g,source.owner,source.territory).matching)
+    requireRule(!frame.denied.includes(spiritualAdvisorMatchingKey(source)),
+      'Matching this free packet here was prevented. Choose another legal packet or decline.');
+  frame.source=source;frame.order=order;frame.selection=JSON.stringify([source,order]);frame.stage='shipping';
+  g.pendingSpiritualAdvisor=frame;
+  g.response={kind:'advisor',owner:source.owner,location:location(source.territory,source.sector),
+    amount:source.amount,passed:[],spiritualAdvisorSource:source};
+}
+function currentSpiritualAdvisorResponse(g:Game,response:ResponseWindow){
+  const frame=spiritualFrameBody(g),source=response.spiritualAdvisorSource;
+  requireRule(source&&JSON.stringify(source)===JSON.stringify(frame.source)&&response.owner===source.owner&&
+    response.location===location(source.territory,source.sector)&&response.amount===source.amount&&
+    !response.advisorResume&&!response.advisorAmbassadorEvent&&!response.automaticAdvisorFlip&&
+    !response.advisorMatchingSource&&!response.advisorPreparationSource&&
+    (frame.stage==='shipping'&&response.kind==='advisor'||
+      frame.stage==='matching'&&response.kind==='advisorFlip'&&response.advisors===false),
+    'The Spiritual response lost its original shipping or matching packet.');
+  return frame;
+}
+function restoreSpiritualAdvisorOffer(g:Game,matchingPrevented:boolean){
+  const frame=spiritualFrameBody(g);
+  if(matchingPrevented)frame.denied.push(spiritualAdvisorMatchingKey(frame.source!));
+  delete frame.source;delete frame.order;delete frame.selection;delete frame.deposit;frame.stage='offer';
+  g.decision=structuredClone(frame.decision);
+  log(g,matchingPrevented?'Spiritual Advisor matching was prevented before the free packet arrived. Choose another legal packet or decline; the original foreign shipment stays committed.':
+    'The free Spiritual packet is no longer available as declared. Choose a legal replacement or decline; the original foreign shipment stays committed.');
+}
+function finishSpiritualAdvisorResponse(g:Game,response:ResponseWindow,canceled:boolean){
+  const frame=currentSpiritualAdvisorResponse(g,response);
+  if(canceled){
+    if(frame.stage==='matching'){restoreSpiritualAdvisorOffer(g,true);return;}
+    delete g.pendingSpiritualAdvisor;
+    log(g,'Karama prevented the free Spiritual Advisor shipment. The original foreign shipment remains committed.');
+    if(frame.decision.ambassadorEvent)finishAmbassador(g);
+    return;
+  }
+  let order:NonNullable<typeof frame.order>;
+  try{order=quoteSpiritualOrder(g,frame.decision,{type:'decision',accompany:frame.source!.territory!=='polar_sink',
+    territory:frame.source!.territory,sector:frame.source!.sector,amount:frame.source!.amount});}
+  catch(error){if(!(error instanceof RuleError))throw error;restoreSpiritualAdvisorOffer(g,false);return;}
+  if(frame.stage==='shipping'&&spiritualAdvisorArrival(g,frame.source!.owner,frame.source!.territory).matching){
+    frame.order=order;frame.selection=JSON.stringify([frame.source,order]);
+    frame.stage='matching';g.response={kind:'advisorFlip',owner:frame.source!.owner,
+      location:response.location,amount:response.amount,advisors:false,passed:[],spiritualAdvisorSource:frame.source};
+    return;
+  }
+  const bg=getPlayer(g,order.player),key=location(order.territory,order.sector);
+  frame.order=order;frame.selection=JSON.stringify([frame.source,order]);
+  frame.deposit={key,before:bg.forces[key]??0};frame.stage='arrival';
+  withdrawNativeReserves(g,bg,order.amount,0);place(bg,order.territory,order.sector,order.amount);
+  techIncome(g,'heighliners',bg);
+  if(order.advisors)(bg.advisors??={})[order.territory]={...bg.advisors?.[order.territory],lockedTurn:g.turn};
+  else if(bg.advisors)delete bg.advisors[order.territory];
+  logSpiritualAdvisorPlacement(g,order,!!frame.decision.ambassadorEvent);
+  const groups=automaticAdvisorRule(()=>quoteAutomaticAdvisorFlips(g)).filter(group=>group.territory===order.territory);
+  for(const group of groups){
+    requireRule(!g.pendingAutomaticAdvisorFlips?.length,'Finish the original advisor conversion before this Spiritual arrival.');
+    const source:AutomaticAdvisorFlipSource={event:crypto.randomUUID(),owner:group.player,
+      territory:group.territory,turn:g.turn,phase:g.phase,forces:group.forces,
+      producer:'spiritualArrival',spiritual:frame.source!};
+    getPlayer(g,group.player).advisors![group.territory].aloneFlipHold=source.event;
+    (g.pendingAutomaticAdvisorFlips??=[]).push(source);
+  }
+  if(groups.length){openAutomaticAdvisorFlip(g);return;}
+  completeSpiritualAdvisorArrival(g);
+}
+function completeSpiritualAdvisorArrival(g:Game){
+  const frame=spiritualFrameBody(g),order=frame.order!;
+  requireRule(frame.stage==='arrival'&&!g.pendingAutomaticAdvisorFlips?.length,
+    'Finish the committed Spiritual conversion before arrival.');
+  const bg=getPlayer(g,order.player);
+  delete g.pendingSpiritualAdvisor;
+  if(frame.decision.ambassadorEvent){
+    finishGuildAmbassadorAdvisorArrival(g,{kind:'advisor',owner:bg.id,passed:[],
+      advisorAmbassadorEvent:frame.decision.ambassadorEvent},
+      {...order,amount:order.amount as 1|2,advisors:isAdvisor(bg,order.territory)});
+  }else{
+    openTerritoryEntry(g,bg,order.territory,order.sector,order.amount,0,'advisor');
+  }
+}
 function matchingAdvisorRule<T>(quote: () => T): T {
   try { return quote(); }
   catch(error) { if(error instanceof AdvisorMatchingError) throw new RuleError(error.message); throw error; }
@@ -20444,6 +20675,11 @@ function currentAutomaticAdvisorFlip(g: Game, response: ResponseWindow) {
     requireRule(parent && JSON.stringify(source.relocation) === JSON.stringify(parent.receipt),
       'The mandatory conversion has lost its original completed relocation.');
     validateRelocationAdvisorParent(g, parent);
+  }
+  if(source.producer==='spiritualArrival'){
+    const frame=spiritualFrameBody(g);
+    requireRule(frame.stage==='arrival'&&JSON.stringify(frame.source)===JSON.stringify(source.spiritual),
+      'The mandatory conversion lost its committed Spiritual Advisor packet.');
   }
   automaticAdvisorRule(() => validateAutomaticAdvisorFlip(g, source));
   return source;
@@ -22874,7 +23110,7 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
 function victory(g: Game, quote?: VictoryQuote) {
   requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorTransport &&
     !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle && !g.pendingAutomaticAdvisorHomeworldTransport &&
-    !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm && !g.pendingAutomaticAdvisorRelocation && !g.pendingAdvisorMatching,
+    !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm && !g.pendingAutomaticAdvisorRelocation && !g.pendingAdvisorMatching && !g.pendingSpiritualAdvisor,
     'Resolve mandatory advisor conversions before checking victory.');
   quote ??= currentVictoryQuote(g);
   applyAdvisorReleases(g, quote.released);
@@ -28666,7 +28902,8 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       );
   } else if (response.kind === 'advisorFlip') {
     const bg = getPlayer(g, response.owner);
-    if (response.advisorMatchingSource) finishAdvisorMatching(g,response,canceled);
+    if (response.spiritualAdvisorSource) finishSpiritualAdvisorResponse(g,response,canceled);
+    else if (response.advisorMatchingSource) finishAdvisorMatching(g,response,canceled);
     else if (response.advisorResume === 'planetologistGather') {
       movementCancellationQuote(g, response);
       const pending = response.advisorGatherMove!;
@@ -28697,7 +28934,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       }
       if (automaticAdvisorFlip) {
         if (canceled)
-          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' || automaticAdvisorFlip.producer === 'homeworldTransport' ? 'transport and payment stay' : automaticAdvisorFlip.producer === 'gamont' ? 'Trip to Gamont effect and card use stay' : automaticAdvisorFlip.producer === 'battleLosses' ? 'battle losses and costs stay' : automaticAdvisorFlip.producer === 'faceDance' ? 'Face Dance replacement and reveal stay' : automaticAdvisorFlip.producer === 'storm' ? 'current-sector storm casualties stay' : automaticAdvisorFlip.producer === 'specialRelocation' ? 'relocation and any collection stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
+          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' || automaticAdvisorFlip.producer === 'homeworldTransport' ? 'transport and payment stay' : automaticAdvisorFlip.producer === 'gamont' ? 'Trip to Gamont effect and card use stay' : automaticAdvisorFlip.producer === 'battleLosses' ? 'battle losses and costs stay' : automaticAdvisorFlip.producer === 'faceDance' ? 'Face Dance replacement and reveal stay' : automaticAdvisorFlip.producer === 'storm' ? 'current-sector storm casualties stay' : automaticAdvisorFlip.producer === 'specialRelocation' ? 'relocation and any collection stay' : automaticAdvisorFlip.producer === 'spiritualArrival' ? 'free Spiritual force placement and any income stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
             { faction: bg.faction, name: 'Mandatory advisor conversion prevented' });
         g.pendingAutomaticAdvisorFlips!.shift();
         if (!g.pendingAutomaticAdvisorFlips!.length) delete g.pendingAutomaticAdvisorFlips;
@@ -28709,6 +28946,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
           finishAutomaticAdvisorFaceDance(g);
           finishAutomaticAdvisorStorm(g);
           finishAutomaticAdvisorRelocation(g);
+          if(g.pendingSpiritualAdvisor?.stage==='arrival')completeSpiritualAdvisorArrival(g);
         } else openAutomaticAdvisorFlip(g);
       } else finishAdvisorReaction(g, response);
     }
@@ -29006,6 +29244,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
     } else log(g, 'Karama prevented the Harkonnen bonus treachery card.');
     nextAuction(g);
   } else if (response.kind === 'advisor') {
+    if(response.spiritualAdvisorSource){finishSpiritualAdvisorResponse(g,response,canceled);return;}
     if (response.advisorResume === 'ambassador') {
       finishGuildAmbassadorAdvisor(g, response, canceled);
       return;
@@ -32347,6 +32586,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   treacheryDiscardIntegrity(state);
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
+  spiritualAdvisorIntegrity(state);
   ambassadorRelocationIntegrity(state);
   ambassadorRevivalIncomeIntegrity(state);
   ecazCollectionIntegrity(state);
@@ -32646,7 +32886,7 @@ function settleAutomaticContinuations(g: Game) {
     if (g.truthtrance || g.phaseOpening || g.status === 'finished') return;
     if (!g.response && !g.decision && g.pendingAutomaticAdvisorFlips?.length) openAutomaticAdvisorFlip(g);
     if (g.pendingArrivalReaction?.length && !g.response && !g.decision &&
-        !g.pendingTerrorEntry && !g.pendingAmbassador && !g.pendingArrivalOverlap) {
+        !g.pendingTerrorEntry && !g.pendingAmbassador && !g.pendingArrivalOverlap && !g.pendingSpiritualAdvisor) {
       const deferred = g.pendingArrivalReaction.shift()!;
       if (!g.pendingArrivalReaction.length) g.pendingArrivalReaction = null;
       const entrant = g.players.find(p => p.id === deferred.entrant);
@@ -32757,6 +32997,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   treacheryDiscardIntegrity(state);
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
+  spiritualAdvisorIntegrity(state);
   ambassadorRelocationIntegrity(state);
   ambassadorRevivalIncomeIntegrity(state);
   ecazCollectionIntegrity(state);
@@ -34563,6 +34804,31 @@ function applyActionInner(
         };
       } else movementTurn(g);
     } else if (decision.kind === 'advisor') {
+      if(g.advanced){
+        requireRule(typeof action.accept==='boolean','Choose the free Spiritual shipment or decline.');
+        if(action.accept){
+          beginSpiritualAdvisor(g,decision,action);
+          if(liveShipmentPromises(g.shipmentPromises??[],p.id,g.turn).length ||
+            liveMovementPromises(g.movementPromises??[],p.id,g.turn).some(promise=>promise.answer)){
+            const afterAdvisor=structuredClone(g);
+            for(let step=0;step<4&&afterAdvisor.response&&(afterAdvisor.response.spiritualAdvisorSource ||
+              afterAdvisor.response.automaticAdvisorFlip?.producer==='spiritualArrival');step++)
+              finishResponse(afterAdvisor,false);
+            reconcileShipmentPromises(afterAdvisor,{actor:p.id,action});
+            reconcileGroundMovementPromises(afterAdvisor,p.id,action,g.phase);
+          }
+        }else{
+          if(g.pendingSpiritualAdvisor){
+            const frame=spiritualFrameBody(g);
+            requireRule(frame.stage==='offer'&&JSON.stringify(frame.decision)===JSON.stringify(decision),
+              'Decline only the original Spiritual Advisor chooser.');
+            delete g.pendingSpiritualAdvisor;
+          }
+          log(g,`${p.name} declined the free Spiritual Advisor shipment.`);
+          if(decision.ambassadorEvent)finishAmbassador(g);
+        }
+        return g;
+      }
       requireRule(
         typeof action.accept === 'boolean',
         'Choose whether to ship an advisor.',
@@ -36817,6 +37083,7 @@ export function viewGame(state: Game, id: string) {
   treacheryDiscardIntegrity(state);
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
+  spiritualAdvisorIntegrity(state);
   ambassadorRelocationIntegrity(state);
   ambassadorRevivalIncomeIntegrity(state);
   ecazCollectionIntegrity(state);
@@ -36887,6 +37154,8 @@ export function viewGame(state: Game, id: string) {
     battleChoices: g.status === 'playing' && g.phase === 6 ? battleOrderQuote(g).choices : [],
     battleOrder: projectedBattleOrder(g),
     guildAmbassadorAdvisorChoices: guildAdvisorChoices(g, id),
+    ...(g.advanced&&g.decision?.kind==='advisor'&&g.decision.player===id
+      ? {spiritualAdvisorChoices:spiritualAdvisorChoices(g,id)} : {}),
     truthMovementTargets: g.players.filter(p => movementPromiseTargetAvailable(g, p.id)).map(p => p.id),
     truthMovementAnswers: g.truthtrance?.stage === 'answer' &&
       g.truthtrance.question?.kind === 'movement' && g.truthtrance.question.target === id

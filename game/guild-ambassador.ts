@@ -1,5 +1,6 @@
 import type { Action, Game, Player } from './engine';
 import { arrivalAsAdvisor } from './advisors';
+import { spiritualAdvisorTargetBlock, spiritualAdvisorArrival } from './spiritual-advisor';
 import {
   gameTerritories,
   location,
@@ -274,6 +275,7 @@ export function quoteGuildAmbassadorAdvisor(
   bgId: string,
   shipment: GuildAmbassadorShipment,
   action: Action,
+  recordedLegacy = false,
 ): GuildAmbassadorAdvisor {
   const bg = beneficiary(g, bgId);
   const shipper = g.players.find((p) => p.id === shipment?.player);
@@ -343,7 +345,10 @@ export function quoteGuildAmbassadorAdvisor(
     to !== MOBILE_STRONGHOLD || (accompanying && shipper.faction === 'ixians'),
     'Accompany only an Ixian shipment into the mobile stronghold.',
   );
-  const advisors = arrivalAsAdvisor(g, bg, to, undefined, accompanying);
+  const targetBlock=recordedLegacy?null:spiritualAdvisorTargetBlock(g,bg.id,to);
+  requireShipment(!targetBlock,targetBlock??'This Spiritual Advisor target is unavailable.');
+  const advisors = recordedLegacy ? arrivalAsAdvisor(g, bg, to, undefined, accompanying)
+    : spiritualAdvisorArrival(g,bg.id,to).advisors;
   validateDestinationOccupancy(g, bg, to, advisors);
   requireShipment(
     count((bg.forces[location(to, sector)] ?? 0) + amount) &&

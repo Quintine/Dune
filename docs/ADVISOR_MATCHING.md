@@ -78,7 +78,7 @@ proof. Existing-mode completeness, special relocation, Guild/Homeworld,
 Planetologist gathering and Spiritual Advisor matching remain open. No saved-
 room/D1, reset, restart or deployment operation was performed.
 
-## Spiritual Advisor source cutover still due
+## Spiritual Advisor source follow-up
 
 Complete physical28 review also requires Polar Sink or decline when the
 original shipment destination retains BG fighters, unless Intrusion changes
@@ -93,5 +93,6 @@ Polar Sink with resident fighters. The recommended provisional composition
 keeps the named Polar fallback and lets the incoming advisor packet match those
 fighters under its own precommit matching counter, after the distinct Spiritual
 Advisor shipping counter. The other faction's shipment is already committed
-and cannot be undone. That separate parent/projection integration is pending;
-this normal movement/shipment prototype does not certify it.
+and cannot be undone. The separate parent, target projection and committed
+alone-conversion follow-up is now tracked in [Spiritual Advisors](SPIRITUAL_ADVISORS.md);
+the normal movement/shipment evidence above does not certify that follow-up.

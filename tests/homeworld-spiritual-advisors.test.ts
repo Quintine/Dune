@@ -74,6 +74,17 @@ function setup(reserves = 11, advanced = true, withKarama = true) {
   return { g, karama };
 }
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
+function allowPolarShipment(g: Game) {
+  const before = structuredClone(g.players[1]);
+  g = applyAction(reload(g), 'atreides', { type: 'passResponse' });
+  if (g.advanced) {
+    assert.equal(g.response?.kind, 'advisorFlip');
+    assert.ok(g.response?.spiritualAdvisorSource);
+    assert.deepEqual(g.players[1], before, 'Incoming advisors must match the existing Polar fighters before withdrawal.');
+    g = applyAction(reload(g), 'atreides', { type: 'passResponse' });
+  }
+  return g;
+}
 function ship(g: Game) {
   return applyAction(g, 'atreides', {
     type: 'ship',
@@ -118,7 +129,7 @@ void test('actual Basic and Advanced shipments offer optional one or two at high
       assert.equal(g.response?.kind, 'advisor');
       assert.equal(g.response?.amount, amount);
       assert.equal(g.players[1].reserves, 11);
-      g = applyAction(reload(g), 'atreides', { type: 'passResponse' });
+      g = allowPolarShipment(g);
       assert.equal(g.players[1].reserves, 11 - amount);
       assert.equal(g.players[1].forces['polar_sink:0'], 9 + amount);
       assert.equal(g.response, null);
@@ -149,7 +160,7 @@ void test('a low Wallach suppresses the actual free advisor decision and does no
 
 void test('the next actual shipment rechecks Wallach after a high population group lowers it to nine', () => {
   let g = choose(ship(setup().g));
-  g = applyAction(g, 'atreides', { type: 'passResponse' });
+  g = allowPolarShipment(g);
   assert.equal(g.players[1].reserves, 9);
   // Stage a later unused shipment opportunity; conserve all earlier resources.
   g.turn++;
@@ -235,6 +246,10 @@ void test('low Wallach still permits paid BG shipments and movement of its exist
     sector: 10,
     amount: 1,
   });
+  assert.equal(g.response?.kind, 'advisorFlip');
+  assert.ok(g.response?.advisorMatchingSource);
+  assert.equal(g.players[1].reserves, 10, 'The ordinary paid packet waits for its independent matching response.');
+  g = applyAction(g, 'atreides', { type: 'passResponse' });
   assert.equal(g.players[1].reserves, 9);
   assert.equal(g.players[1].forces['arrakeen:10'], 2);
   assert.ok(g.players[1].advisors?.arrakeen);
