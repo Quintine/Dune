@@ -320,3 +320,30 @@ void test('declining the Bene Gesserit intrusion still offers the free advisor s
   );
 });
 
+
+void test('only a positive Sneak Attack after ground entry closes native advisor preparation', () => {
+  // Controlled native entry board; the separate advisor fixture owns public
+  // setup chronology. No shipment occurs before the actual ground/Terror path.
+  for (const amount of [0, 1]) {
+    const g = fixture('sneakAttack');
+    g.advanced = true;
+    g.players.push(newPlayer('b', 'Bene Gesserit', 'beneGesserit'));
+    g.order.push('b');
+    g.movementRemaining!.push('b');
+    g.advisorPreparation = { turn: g.turn, firstShipment: null, deniedTerritories: [] };
+    player(g, 'e').forces = { 'imperial_basin:10': 1 };
+    player(g, 'e').reserves = 19;
+    const entered = applyAction(g, 'e', { type: 'move', from: 'imperial_basin:10',
+      territory: 'arrakeen', sector: 10, amount: 1 });
+    assert.equal(entered.advisorPreparation?.firstShipment, null);
+    assert.equal(player(entered, 'e').shipped, true, 'Ground movement spends the allowance without shipping');
+    const revealed = decide(entered, { reveal: true });
+    const done = decide(revealed, { amount });
+    assert.deepEqual(done.advisorPreparation?.firstShipment,
+      amount ? { player: 'm', producer: 'sneakAttack' } : null);
+    assert.equal(player(done, 'm').reserves, 20 - amount);
+    assert.equal(player(done, 'm').forces['arrakeen:10'] ?? 0, amount);
+    assert.equal(totalForces(done, 'm'), 20);
+    if (amount) assert.equal(done.decision?.kind, 'advisor', 'The clock closes before accompaniment');
+  }
+});

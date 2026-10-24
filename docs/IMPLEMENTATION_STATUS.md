@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 24 October 2026 — Native advisor preparation before first shipment
+
+Expose the supplied Advanced BG after-Spice/Nexus window in phases2–5 at quiet
+priority boundaries, with original public-board eligibility and owner/turn/
+territory-bound Karama validation. A separate continuation preserves phase,
+auction, readiness and active movement. Native phase5 declarations retain their
+saved future-choice queue and actual-choice validation; declining permits later
+manual preparation while the window remains open. Successful shipment commits
+close a turn receipt, including markers, cross/return/World/Junction transport,
+Ambassador shipping and positive Sneak Attack. Stops/skips/ground movement do
+not. Denied-territory retry scope stays provisional; existing Ecaz composition,
+Intrusion, Nexus and mandatory alone-advisor behavior remain separate.
+
+Disjoint helper/source/controls and bounded review pass16 files229/229,
+types/lint/build, twelve actual control/gameplay/GameTable SSR journeys and
+sixteen existing-profile response paths accepting16 proposals. Public Advanced
+BG/Atreides/Emperor setup with original advisor/Karama and native Storm/Spice
+supplies23/29/32/38/39 source actions. Controlled Moritani ground entry supplies
+separate positive/zero Sneak Attack evidence. Feedback corrects an invalid test
+payload, a real premature queue-filter regression, a priority-field typo and a
+fixture assertion. No rule is loosened to fit a fixture; full modes, broader
+priority/optional/forced-flip and comprehensive/browser/deployed gates remain.
+[Source, exact proof and limits](ADVISOR_PREPARATION.md).
+No strategy/calibration or saved-room/D1/reset/restart/deployment operation.
+Private proof:20261024-advisor-preparation/frozen-integrated-3.
+
 ## 24 October 2026 — Fremen allied revival response and late Recruits
 
 Replace direct permission commitment with an original owner/ally/turn-bound

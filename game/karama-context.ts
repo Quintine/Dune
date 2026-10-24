@@ -179,7 +179,9 @@ const cancellationSources = {
     checks: g.battle?.powerChecks,
   }),
   advisorFlip: (g, response) =>
-    response.advisorResume === 'ambassador'
+    response.advisorPreparationSource
+      ? { preparation: response.advisorPreparationSource, window: g.advisorPreparation ?? null }
+      : response.advisorResume === 'ambassador'
       ? {
           entry: g.pendingAmbassador ?? null,
           ambassadors: g.ecazAmbassadors ?? null,

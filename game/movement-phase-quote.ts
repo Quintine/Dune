@@ -28,8 +28,9 @@ type Context = Pick<
   | 'spiceDeck'
   | 'spiceDiscard'
   | 'homeworlds'
+  | 'advisorPreparation'
 >;
-type AdvisorContext = BoardContext & { turn: number };
+type AdvisorContext = BoardContext & { turn: number } & Pick<Game, 'advisorPreparation'>;
 const whole = (n: unknown): n is number =>
   Number.isSafeInteger(n) && Number(n) >= 0;
 function boardSeats(g: BoardContext, released: AdvisorRelease[]): BoardSeat[] {
@@ -95,7 +96,10 @@ export function quoteAdvisorBattleOffer(g: AdvisorContext) {
           b.territory === t && (b.attacker === bg.id || b.defender === bg.id || b.coalition?.includes(bg.id)),
       );
     });
-    return { released: board.released, owner: bg.id, territories };
+    const window = g.advisorPreparation?.turn === g.turn ? g.advisorPreparation : undefined;
+    return { released: board.released, owner: bg.id,
+      territories: window?.firstShipment ? [] : territories.filter(t => !window?.deniedTerritories.includes(t)) };
+
   } catch (error) {
     if (error instanceof MovementPhaseQuoteError) throw error;
     throw new MovementPhaseQuoteError(

@@ -1,5 +1,20 @@
 # Rule decision index
 
+## Native advisor preparation window — 24 October 2026
+
+Apply supplied physical28 G and publisher base18 after-Spice/Nexus timing
+through the first actual shipment, rather than only phase5 initialization.
+A current-turn receipt closes at physical shipment commitment, including native
+transport, independent Ambassador shipping and positive Sneak Attack; proposals,
+stops and skipped
+allowances do not close it. A direct quiet-boundary preparation uses an original
+native owner/territory/turn Karama response without advancing the current phase.
+The 14 October selected retry policy denies only the prevented territory for
+this remaining window; Intrusion, Nexus and automatic flips remain separate.
+This retry scope is provisional. Preserve the already recorded supported Ecaz
+co-side composition rather than silently changing native eligibility.
+[Source, clock, continuation and limits](ADVISOR_PREPARATION.md#source-timing-and-scope--24-october-2026).
+
 ## Fremen allied revival response and later Recruits grant — 24 October 2026
 
 Compose the base Fremen allied free rate with the general FAQ's cancelable

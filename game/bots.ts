@@ -3084,6 +3084,14 @@ function policyActions(g: GameView): Action[] {
     }
     return g.ready.includes(me.id) ? [] : [{ type: 'ready' }];
   }
+  // Reuse the native advisor-decision preference; eligibility comes only from
+  // the shared current-window projection, including first actual shipment.
+  if (level > 0 && g.advisorPreparation && !g.advisorPreparation.blocked) {
+    const territory = g.advisorPreparation.territories.find(t => g.players
+      .filter(p => p.id !== me.id && p.id !== me.ally)
+      .every(p => fighterCount(p, t) < countAt(me, t)));
+    if (territory) return [{ type: 'prepareAdvisors', territory }];
+  }
   if (
     g.phase === 2 &&
     !me.charityClaimed &&

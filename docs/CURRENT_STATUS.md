@@ -16,6 +16,29 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Native advisor preparation — 24 October. Prototyped / Partial.**
+Advanced Bene Gesserit can now declare preparation at quiet boundaries in
+Charity, Bidding, Revival and before the first actual shipment, including after
+declining the initial phase5 chooser. The original stance quote and current
+owner/territory/turn source retain storm, fresh-advisor and ordinary allied
+restrictions plus the recorded Ecaz co-side composition. A turn receipt closes
+only on committed shipments, including zero No-Field markers and positive Sneak
+Attack. Proposals, prevention and unshipped turns do not close it. Cancellation
+provisionally denies only that territory for this remaining window; the direct
+continuation retains phase, auction, readiness and active movement controls.
+[Source, clock and bounded proof](ADVISOR_PREPARATION.md).
+
+Disjoint helper/source/controls lanes and bounded review pass **16 files229/229**,
+types/lint/build, twelve actual control/gameplay/GameTable SSR journeys and
+sixteen existing-profile response paths (16 accepted proposals). Genuine
+23/29/32/38/39-action public Advanced setup sources reach the selected controls.
+A controlled Moritani ground-entry case reproduces/fixes the missed positive
+Sneak Attack closure. Feedback replaces an invalid zero-shipment test with real
+endMovement, restores the saved declaration queue, and repairs two type issues.
+Complete modes, broader/forced-flip combinations, comprehensive/browser/deployed
+acceptance and full AI remain unfinished. No saved-room/D1/reset/restart/deployment
+operation.
+
 **Fremen allied free revival — 24 October. Prototyped / Partial.**
 The original owner/ally/turn grant now resolves Karama before commitment.
 Prevention provisionally denies only that grant for the current Revival;
@@ -32,8 +55,8 @@ Genuine75–77 Basic/92–94 Advanced action sources earn Tanks in an actual bat
 and form the alliance at a real Nexus. Feedback repairs guidance expectations,
 two exhaustive kind registries and a fixture response label. No full-mode,
 strategy, comprehensive/browser/deployed certificate or saved-room/D1/reset/
-restart/deployment operation. The next mapped native candidate is Advanced
-Bene Gesserit advisor preparation timing before the first shipment.
+restart/deployment operation. The native advisor follow-up above supersedes the
+previously mapped preparation timing gap.
 
 **CHOAM Charity funding — 24 October. Prototyped / Partial.**
 CHOAM's own eligible poverty claim now uses the Spice Bank; E2 names other

@@ -4251,6 +4251,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     title: 'Bene Gesserit advisors',
     category: 'Advanced & expansions',
     coverage: 'Partial',
+    developmentStage: 'Prototyped',
     summary:
       'Peaceful occupation, matching token types, intrusion and preparing for battle.',
     steps: [
@@ -4261,10 +4262,68 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A normal shipment enters as fighters unless joining existing advisors. Moving or shipping into your existing group must match its type. Advisors moved into an occupied territory without another Bene Gesserit group may remain peaceful or request a flip to fighters.',
       'When another faction ships, moves or worm rides into your fighters, immediately choose whether to become advisors. The choice opens a Karama response. Repeated entry can offer a new choice.',
       'After another faction’s off-planet shipment, choose a free force in the Polar Sink or an accompanying force at the shipment destination. An accompanying advisor group cannot flip to fighters in that turn while other factions remain.',
-      'Before the first shipment, choose eligible advisor territories to prepare for battle. Each chosen flip has a Karama response. Advisors cannot prepare against an ally or where storm prevents the battle.',
-      'The engine and these choices have focused tests. Advanced preview is available for the six classic factions; the full advisor timing audit, forced-flip cancellation and expansion interactions remain unfinished.',
+      'After Spice Blow and Nexus, use Prepare advisors for battle during Charity, Bidding, Revival or before the first actual shipment. Quiet boundaries retain current mandatory priority. Each whole-territory flip has its original Karama response; its direct continuation preserves the current phase, auction, readiness and active movement. Declining the initial phase-five chooser leaves this window open. Ordinary allied presence, storm and fresh-advisor locks still restrict eligibility; the recorded supported Ecaz co-side composition remains separate.',
+      'A current-turn window closes on a committed shipment, including a concealed zero No-Field, independent Ambassador shipment or positive Sneak Attack. Proposals, stopped shipments, ground movement and unshipped turns do not close it. Under the explicit provisional retry policy, Karama prevents that territory’s preparation for the rest of this window; Intrusion, Nexus and automatic flips remain independent. Focused evidence does not certify complete modes, broader priority/optional or forced-flip cancellation behavior.',
     ],
     related: ['faction-beneGesserit', 'movement', 'battle', 'victory'],
+    checklist: [
+  {
+    "area": "Implementation",
+    "status": "Partial",
+    "detail": "Shared native public-board eligibility wraps a current-turn receipt and exact owner/territory/turn source. Direct preparation resolves before-cost and outcome validation without entering movement from earlier phases. Native future declaration queues remain intact; successful shipment commits close the receipt, including markers and positive Sneak Attack.",
+    "evidence": [
+      "game/advisor-preparation-window.ts",
+      "game/engine.ts",
+      "game/movement-phase-quote.ts",
+      "game/karama-context.ts",
+      "game/karama-movement-cancellation.ts"
+    ]
+  },
+  {
+    "area": "Player controls",
+    "status": "Partial",
+    "detail": "Persistent owner-only territory actions and blocked/provisional guidance work in phases2–5 at quiet boundaries, including after initial decline. Busy and mandatory interactions stay blocked; private counts/cards/balances are not read. Original phase5 chooser remains.",
+    "evidence": [
+      "components/advisor-preparation.tsx",
+      "components/game-table.tsx",
+      "tests/advisor-preparation-controls.test.tsx"
+    ]
+  },
+  {
+    "area": "AI",
+    "status": "Partial",
+    "detail": "The existing native preparation preference consumes the projected window; sixteen own-view existing-profile response paths accept16 legal proposals. No strategy tuning or difficulty calibration is claimed.",
+    "evidence": [
+      "game/bots.ts",
+      "docs/ADVISOR_PREPARATION.md"
+    ]
+  },
+  {
+    "area": "Documentation",
+    "status": "Partial",
+    "detail": "Supplied physical28 G and publisher timing distinguish the open window from shipment allowance flags. Denied-territory scope is provisional, existing Ecaz co-side composition is retained, and old pending/unknown-clock behavior and remaining forced-flip/combination limits are explicit.",
+    "evidence": [
+      "docs/ADVISOR_PREPARATION.md",
+      "docs/RULE_DECISIONS.md",
+      "docs/ECAZ_OCCUPY_RULES.md"
+    ]
+  },
+  {
+    "area": "Verification",
+    "status": "Partial",
+    "detail": "16 files229/229, types/lint/build, twelve genuine new-control/gameplay/GameTable SSR journeys and sixteen minimal response paths pass. Public23/29/32/38/39-action sources preserve original setup advisor/Karama; a separate controlled ground/Terror unit proves positive Sneak Attack closure and zero nonclosure. Full combinations, visual/browser/deployed and comprehensive assurance remain open.",
+    "evidence": [
+      "tests/fixture-advisor-preparation.ts",
+      "tests/advisor-preparation-engine.test.ts",
+      "tests/advisor-preparation-window.test.ts",
+      "tests/advisor-preparation-controls.test.tsx",
+      "tests/moritani-force-leader.test.ts",
+      "tests/advisors.test.ts",
+      "tests/movement-phase-quote.test.ts",
+      "tests/karama-movement-cancellation.test.ts"
+    ]
+  }
+],
   },
   {
     id: 'homeworlds',

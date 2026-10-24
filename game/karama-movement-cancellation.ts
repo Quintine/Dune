@@ -304,6 +304,8 @@ export function quoteMovementCancellation(
   g: Game,
   response: ResponseWindow,
 ): MovementCancellationQuote | null {
+  // This native pre-shipment action has a phase-independent source validator.
+  if (response.kind === 'advisorFlip' && response.advisorResume === 'preparation') return null;
   if (
     ![
       'guildTiming',

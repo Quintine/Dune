@@ -532,6 +532,7 @@ import { quoteHomeworldPaymentIncome, quoteHomeworldBankPayment } from './homewo
 import { quoteEcazPoisonIncome, EcazPoisonIncomeError, type EcazPoisonDiscard } from './ecaz-poison-income';
 import { resolveBattleWeapons } from './effective-weapons';
 import { choamGholaEvent, choamGholaSkillOfferEvent, choamGholaSkillSignature, choamMarketGholaError, choamSaleGholaTiming, type ChoamMarketGhola } from './choam-market-ghola';
+import { quoteAdvisorPreparationWindow, quoteAdvisorPreparation, validateAdvisorPreparation, projectAdvisorPreparationWindow, AdvisorPreparationError, type AdvisorPreparationWindow, type AdvisorPreparationSource } from './advisor-preparation-window';
 import { quoteFremenRevivalGrant, validateFremenRevivalGrant, projectFremenRevivalGrant, FremenRevivalGrantError, type FremenRevivalGrantSource } from './fremen-revival-grant';
 import {
   charityAmount,
@@ -1061,6 +1062,7 @@ type SpiceBankerIncomePayment = {
 };
 
 export type ResponseWindow = {
+  advisorPreparationSource?: AdvisorPreparationSource;
   fremenGrant?: FremenRevivalGrantSource;
   spiceBankerIncomePayment?: SpiceBankerIncomePayment;
   bureaucratPayment?: BureaucratPaymentSource;
@@ -1080,7 +1082,7 @@ export type ResponseWindow = {
   /** Saved exact ordinary Guild-rate response; not the independent Karama rate. */
   guildRateEvent?: string;
   guildTransportEvent?: string;
-  advisorResume?: 'wormRide' | 'declaration' | 'ambassador' | 'discoveryEntry' | 'planetologistGather';
+  advisorResume?: 'preparation' | 'wormRide' | 'declaration' | 'ambassador' | 'discoveryEntry' | 'planetologistGather';
   advisorGatherMove?: { turn: number; move: number; order: MovementOrder };
   discoveryEntry?: DiscoveryEntryArrivalChild;
   advisorAmbassadorEvent?: string;
@@ -1256,6 +1258,7 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  advisorPreparation?: AdvisorPreparationWindow;
   ecazOccupyPreview?: boolean;
   /** Fresh native Guild/Nexus payment-replacement profile, never inferred from a save. */
   guildBetrayalPreview?: boolean;
@@ -14542,6 +14545,7 @@ function revivalCancellationQuote(g: Game, response: ResponseWindow) {
 }
 function movementCancellationQuote(g: Game, response: ResponseWindow) {
   try {
+    if (response.advisorResume === 'preparation') { currentAdvisorPreparationResponse(g, response); return null; }
     return quoteMovementCancellation(g, response);
   } catch (error) {
     if (error instanceof MovementCancellationError)
@@ -14710,6 +14714,7 @@ function validateKaramaUse(
       'Karama cancels another faction’s power.',
     );
     karamaCanceledSource(g, use.response);
+    currentAdvisorPreparationResponse(g, use.response);
     if (use.response.kind === 'fremenRevivalGrant') currentFremenRevivalGrant(g, use.response);
     validateAuctionContinuationCancellation(
       g,
@@ -18141,6 +18146,7 @@ function commitAmbassadorMarker(g: Game, order: GuildAmbassadorShipment & {marke
   supplier.spice -= marker.ownerPayment;
   p.spice -= marker.recipientPayment;
   observeOccupation(g);
+  closeAdvisorPreparationOnShipment(g, p.id, 'ambassador');
   delete entry.guildMarkerRequest;
   entry.stage = 'arrival';
   const guild = byFaction(g,'guild');
@@ -18168,6 +18174,7 @@ function commitAmbassadorShipment(g: Game, shipment: PendingShipment) {
   if (p.elites) p.elites.reserves -= order.elite;
   place(p, order.territory, order.sector, order.amount, order.elite);
   observeOccupation(g);
+  if (order.amount > 0) closeAdvisorPreparationOnShipment(g, p.id, 'ambassador');
   if (order.advisors) (p.advisors ??= {})[order.territory] ??= {};
   if (p.faction !== 'fremen') techIncome(g, 'heighliners', p);
   entry.stage = 'arrival';
@@ -20123,6 +20130,7 @@ function decideTerror(g: Game, p: Player, action: Action) {
       withdrawNativeReserves(g, p, amount, 0);
       place(p, entry.territory, entry.sector, amount);
       observeOccupation(g);
+      closeAdvisorPreparationOnShipment(g, p.id, 'sneakAttack');
       // A positive Sneak Attack transfers Moritani's expressly off-planet
       // reserves onto the board, so it is classified as an off-planet
       // shipment for the Heighliners token. The token itself enforces its
@@ -20824,6 +20832,49 @@ function movementPhaseQuote<T>(calculate: () => T): T {
     throw error;
   }
 }
+function advisorPreparationRule<T>(quote: () => T): T {
+  try { return quote(); }
+  catch (error) {
+    if (error instanceof AdvisorPreparationError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function openAdvisorPreparation(g: Game) {
+  if (g.advanced && byFaction(g, 'beneGesserit') && g.advisorPreparation?.turn !== g.turn)
+    g.advisorPreparation = { turn: g.turn, firstShipment: null, deniedTerritories: [] };
+}
+function closeAdvisorPreparationOnShipment(g: Game, player: string,
+  producer: NonNullable<AdvisorPreparationWindow['firstShipment']>['producer']) {
+  if (!g.advanced || !byFaction(g, 'beneGesserit') || g.phase < 2 || g.phase > 5) return;
+  if (g.advisorPreparation?.turn !== g.turn)
+    g.advisorPreparation = { turn: g.turn, firstShipment: null, deniedTerritories: [] };
+  if (!g.advisorPreparation!.firstShipment)
+    g.advisorPreparation!.firstShipment = { player, producer };
+}
+function advisorPreparationPriorityBlock(g: Game): string | null {
+  return recruitsInteractionPending(g) || pendingNexusTraitors(g) || g.pendingShipment ||
+    g.pendingHomeworldShipment || g.pendingGuildTransport || g.pendingTerrorEntry ||
+    g.pendingNexusHarkonnenBetrayal || g.pendingNexusIxianBetrayal || g.pendingNexusIxianReplacement ||
+    g.pendingGuildBetrayal || g.pendingRicheseBetrayal || g.pendingNexusEmperorPayment ||
+    g.pendingNexusEmperorSellerPurchase || g.pendingChoamMarketGhola || g.bureaucratPayments?.pending
+    ? 'Finish the current transaction or priority window before preparing advisors.' : null;
+}
+function advisorPreparationView(g: Game, viewer: string) {
+  const offer = projectAdvisorPreparationWindow(g, viewer);
+  return offer ? { ...offer, blocked: offer.blocked ?? advisorPreparationPriorityBlock(g) } : null;
+}
+function currentAdvisorPreparationResponse(g: Game, response: ResponseWindow) {
+  if (response.kind !== 'advisorFlip' || !response.advisorPreparationSource) {
+    requireRule(response.advisorResume !== 'preparation', 'The advisor preparation lost its original source.');
+    return null;
+  }
+  requireRule((response.advisorResume === 'preparation' || response.advisorResume === 'declaration') &&
+    response.owner === response.advisorPreparationSource.owner &&
+    response.location === response.advisorPreparationSource.territory && response.advisors === false,
+    'The advisor preparation lost its original owner or territory.');
+  advisorPreparationRule(() => validateAdvisorPreparation(g, response.advisorPreparationSource!));
+  return response.advisorPreparationSource;
+}
 function advisorBattleOptions(g: Game) {
   const quote = movementPhaseQuote(() => quoteAdvisorBattleOffer(g));
   applyAdvisorReleases(g, quote.released);
@@ -20863,11 +20914,7 @@ function commitMovementPhaseStart(g: Game, quote: MovementPhaseQuote) {
 function beginAdvisorBattle(g: Game, remaining = advisorBattleOptions(g)) {
   const bg = byFaction(g, 'beneGesserit');
   if (bg && remaining.length)
-    g.decision = {
-      kind: 'advisorBattle',
-      player: bg.id,
-      territories: remaining,
-    };
+    g.decision = { kind: 'advisorBattle', player: bg.id, territories: remaining };
   else movementTurn(g);
 }
 function finishAdvisorReaction(
@@ -20884,6 +20931,7 @@ function finishAdvisorReaction(
   if (details.advisorFollowup && spiritualAdvisorMaximum(g, bg.id) > 0)
     g.decision = { kind: 'advisor', player: bg.id, ...details.advisorFollowup };
   else if (details.advisorResume === 'wormRide') nextWormRide(g);
+  else if (details.advisorResume === 'preparation') return;
   else if (details.advisorResume === 'declaration')
     beginAdvisorBattle(g, details.advisorRemaining ?? []);
   else if (details.advisorResume === 'ambassador')
@@ -21242,6 +21290,7 @@ function beginPhase(g: Game) {
     g.auditorInsight = null;
     retireNexusChoamInsight(g);
   }
+  if (g.phase === 2) openAdvisorPreparation(g);
   if (g.phase === 2 && g.choamCharity?.turn !== g.turn) {
     const choam = byFaction(g, 'choam');
     if (choam && charityMultiplier(g) === 0) {
@@ -27136,6 +27185,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
   karamaConversionIntegrity(g);
   currentFactionPayment(g);
   const response = g.response!;
+  const advisorPreparationSource = currentAdvisorPreparationResponse(g, response);
   const fremenGrant = response.kind === 'fremenRevivalGrant' ? currentFremenRevivalGrant(g, response) : null;
   if (g.pendingKull?.stage === 'counter' && response.kind === 'choamWorthless') kullIntegrity(g);
   if (response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, response);
@@ -28016,6 +28066,12 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
     } else {
       if (canceled) movementCancellationQuote(g, response);
       const to = response.location!;
+      if (canceled && advisorPreparationSource) {
+        if (!g.advisorPreparation!.deniedTerritories.includes(to))
+          g.advisorPreparation!.deniedTerritories.push(to);
+        log(g, `${bg.name}'s advisor preparation in ${territory(to).name} was prevented for the remaining pre-shipment window. Other native flips and the current phase continue normally.`,
+          { faction: bg.faction, name: 'Advisor preparation prevented' });
+      }
       if (!canceled) {
         bg.advisors ??= {};
         if (response.advisors) bg.advisors[to] = {};
@@ -28493,6 +28549,7 @@ function commitJunctionTransport(g: Game, p: Player, declaration: JunctionTransp
     } else if (p.advisors) delete p.advisors[arrival.territory];
   }
   p.shipped = true;
+  closeAdvisorPreparationOnShipment(g, p.id, 'junction');
   if (declaration.forfeitPurchasedRate) g.karamaShipping = null;
   g.junctionOffer = null;
   finishShipmentPromises(g, p, promise);
@@ -28641,6 +28698,7 @@ function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment, se
   }
   observeOccupation(g);
   p.shipped = true;
+  closeAdvisorPreparationOnShipment(g, p.id, 'homeworld');
   g.pendingHomeworldShipment = null;
   // The E3 FAQ explicitly includes Homeworld shipment, including Fremen.
   techIncome(g, 'heighliners', p);
@@ -29420,6 +29478,7 @@ function commitGuildTransport(
   finishShipmentPromises(g, p, fromReserves ? { territory: to, amount } : null);
   finishGuildCunningShipment(g, p.id, 'guild', frame);
   p.shipped = true;
+  closeAdvisorPreparationOnShipment(g, p.id, 'guildTransport');
   g.karamaShipping = null;
   if (movementPreparation) return;
   log(g, `${p.name} used Guild transport for ${amount} forces.${guildSecretEvent ? ` Guild Secret Ally is spent; ${cost} spice was paid to the bank. Their ordinary movement remains available.` : ''}`,
@@ -29613,6 +29672,8 @@ function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipi
   }
   if (advisors && n > 0) (p.advisors ??= {})[to] ??= {};
   p.shipped = true;
+  if (n > 0 || shipment.noField || shipment.alliedNoField || shipment.smugglerCompanion)
+    closeAdvisorPreparationOnShipment(g, p.id, 'ordinary');
   if (movementPreparation) { g.karamaShipping = null; return; }
   if (p.faction !== 'fremen') techIncome(g, 'heighliners', p);
   const guild = byFaction(g, 'guild');
@@ -32355,6 +32416,18 @@ function applyActionInner(
     offerDiplomatDefense(g);
     return g;
   }
+  if (t === 'prepareAdvisors') {
+    requireRule(Object.keys(action).sort().join(',') === 'territory,type',
+      'Choose only the territory for native advisor preparation.');
+    const blocked = advisorPreparationPriorityBlock(g);
+    requireRule(!blocked, blocked ?? 'Finish the current interaction before preparing advisors.');
+    const source = advisorPreparationRule(() => quoteAdvisorPreparation(g, id, stringField(action.territory)));
+    const offer = quoteAdvisorPreparationWindow(g, id);
+    applyAdvisorReleases(g, offer.released);
+    g.response = { kind: 'advisorFlip', owner: id, location: source.territory,
+      advisors: false, passed: [], advisorResume: 'preparation', advisorPreparationSource: source };
+    return g;
+  }
   if (t === 'battlePreparationReady') {
     const b = g.battle,
       opportunity = b?.preLeader;
@@ -33770,6 +33843,8 @@ function applyActionInner(
             advisorBattleOptions(g).includes(to),
           'These advisors cannot prepare for battle.',
         );
+        openAdvisorPreparation(g);
+        const source = advisorPreparationRule(() => quoteAdvisorPreparation(g, id, to));
         g.response = {
           kind: 'advisorFlip',
           owner: id,
@@ -33777,6 +33852,7 @@ function applyActionInner(
           advisors: false,
           passed: [],
           advisorResume: 'declaration',
+          advisorPreparationSource: source,
           advisorRemaining: decision.territories.filter((t) => t !== to),
         };
       } else movementTurn(g);
@@ -36823,6 +36899,7 @@ export function viewGame(state: Game, id: string) {
     freeRevival: g.freeRevival ?? [],
     recruitsPreview: recruitsPreview(g, me),
     fremenRevivalGrant: projectFremenRevivalGrant(g, id),
+    advisorPreparation: advisorPreparationView(g, id),
     revivalRules: {
       ...(g.revivalRules ?? newRevivalRules()),
       earlyBlocked: (g.revivalRules?.earlyBlocked ?? []).filter(

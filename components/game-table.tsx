@@ -53,6 +53,7 @@ import { TerrorBoardMarkers } from './terror-board-markers';
 import { AmbassadorBoardMarkers } from './ambassador-board-markers';
 import { CharityClaim } from './charity-claim';
 import { FremenRevivalGrant } from './fremen-revival-grant';
+import { AdvisorPreparation } from './advisor-preparation';
 import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
 import { JunctionTransport } from './junction-transport';
@@ -1973,6 +1974,7 @@ export function GameTable({
           {!reactionOwnsControls && <>
           <NexusCards game={g} act={act} busy={busy} />
           <Recruits game={g} act={act} busy={busy} />
+          <AdvisorPreparation game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <NexusTraitors game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
           <DiscoveryPanel game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
           <LeaderSkillsPanel skills={g.leaderSkills} leaders={g.allLeaders} players={g.players} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
@@ -2547,6 +2549,9 @@ export function GameTable({
                   two-spice price for this phase. Tleilaxu permission can still
                   allow five forces.
                 </p>
+              )}
+              {g.response.kind === 'advisorFlip' && g.response.advisorResume === 'preparation' && (
+                <p className="notice">Bene Gesserit declared native advisor preparation before the first shipment. Karama can prevent this territory’s flip. The current phase and its original auction, readiness or movement control continue afterward.</p>
               )}
               {g.response.kind === 'fremenRevivalGrant' && (
                 <p className="notice">
