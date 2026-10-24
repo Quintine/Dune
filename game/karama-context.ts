@@ -179,7 +179,10 @@ const cancellationSources = {
     checks: g.battle?.powerChecks,
   }),
   advisorFlip: (g, response) =>
-    response.advisorPreparationSource
+    response.automaticAdvisorFlip
+      ? { source: response.automaticAdvisorFlip, pending: g.pendingAutomaticAdvisorFlips?.[0] ?? null,
+          group: g.players.find(p => p.id === response.owner)?.advisors?.[response.location ?? ''] ?? null }
+      : response.advisorPreparationSource
       ? { preparation: response.advisorPreparationSource, window: g.advisorPreparation ?? null }
       : response.advisorResume === 'ambassador'
       ? {

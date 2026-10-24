@@ -1,6 +1,7 @@
 import type { Player } from './engine';
+import { advisorStanceAfterSettlement } from './advisor-automatic-flip';
 import type { ForcePresence } from './force-presence';
-import { presenceAt, presenceByLocation } from './force-presence';
+import { presenceByLocation } from './force-presence';
 import { fighterCount, isAdvisor } from './advisors';
 import { quoteAidRefunds, PhaseResourceError } from './phase-resource-quote';
 import { ecazOccupancyIdentity } from './ecaz-occupy';
@@ -81,14 +82,14 @@ export function settledBoard(g: BoardContext) {
   const players = g.players.map((p) => {
     if (!g.advanced || p.faction !== 'beneGesserit' || !p.advisors) return p;
     const advisors = { ...p.advisors };
-    for (const t of Object.keys(advisors))
-      if (
-        !presenceAt(p, t) ||
-        !g.players.some((other) => other.id !== p.id && presenceAt(other, t))
-      ) {
+    for (const t of Object.keys(advisors)) {
+      const stance = advisorStanceAfterSettlement(g, p, t);
+      if (stance) advisors[t] = stance;
+      else {
         delete advisors[t];
         released.push({ player: p.id, territory: t });
       }
+    }
     return {
       id: p.id,
       faction: p.faction,

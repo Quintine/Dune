@@ -12,6 +12,7 @@ import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, h
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteAtreidesFullPlan } from './atreides-full-plan';
 import { quoteTleilaxuSpecialKarama } from './tleilaxu-special-karama';
+import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource } from './advisor-automatic-flip';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
@@ -664,7 +665,7 @@ export type Player = {
   noField?: RicheseNoField;
   noFieldEvent?: string;
   noFieldBlockedTurn?: number;
-  advisors?: Record<string, { lockedTurn?: number }>;
+  advisors?: Record<string, AdvisorStance>;
   advisorSetup?: boolean;
   charityTurn?: number;
   specialKaramaUsed?: boolean;
@@ -1064,6 +1065,7 @@ type SpiceBankerIncomePayment = {
 };
 
 export type ResponseWindow = {
+  automaticAdvisorFlip?: AutomaticAdvisorFlipSource;
   advisorPreparationSource?: AdvisorPreparationSource;
   fremenGrant?: FremenRevivalGrantSource;
   spiceBankerIncomePayment?: SpiceBankerIncomePayment;
@@ -1260,6 +1262,7 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  pendingAutomaticAdvisorFlips?: AutomaticAdvisorFlipSource[];
   advisorPreparation?: AdvisorPreparationWindow;
   ecazOccupyPreview?: boolean;
   /** Fresh native Guild/Nexus payment-replacement profile, never inferred from a save. */
@@ -12041,7 +12044,7 @@ function decideDiscoveryEntry(g: Game, p: Player, action: Action) {
   removeGroup(p,arrival.groups.map(group => [group.source,group.normal+group.elite]),
     Object.fromEntries(arrival.groups.map(group => [group.source,group.elite])));
   place(p,arrival.destination,0,arrival.amount,arrival.elite);
-  if (advisors) (p.advisors ??= {})[arrival.destination] = {};
+  if (advisors) (p.advisors ??= {})[arrival.destination] ??= {};
   else if (p.advisors) delete p.advisors[arrival.destination];
   log(g, `${p.name} moved ${arrival.amount} ${arrival.amount === 1 ? 'force' : 'forces'}${arrival.elite ? `, including ${arrival.elite} elite ${arrival.elite === 1 ? 'force' : 'forces'},` : ''} from ${territory(arrival.parent).name} into ${territory(arrival.destination).name} before the storm. This one-time Discovery entry spends no spice or normal movement.`);
   const child: DiscoveryEntryArrivalChild = {owner:p.id,territory:arrival.destination,sector:0,
@@ -14554,6 +14557,7 @@ function revivalCancellationQuote(g: Game, response: ResponseWindow) {
 }
 function movementCancellationQuote(g: Game, response: ResponseWindow) {
   try {
+    if (response.automaticAdvisorFlip) { currentAutomaticAdvisorFlip(g, response); return null; }
     if (response.advisorResume === 'preparation') { currentAdvisorPreparationResponse(g, response); return null; }
     return quoteMovementCancellation(g, response);
   } catch (error) {
@@ -16139,12 +16143,15 @@ function movementStance(g: Game, p: Player, origins: string[], to: string, fight
   requireRule(!gather.blocked, gather.blocked ?? 'The mixed gather cannot flip its advisors.');
   requireRule(!gather.requiresFlip || fighters,
     'Declare a common fighter arrival for a mixed advisor/fighter gather.');
-  const advisors = !gather.requiresFlip && arrivalAsAdvisor(g, p, to, origins[0]);
+  const aloneArrival = g.advanced && p.faction === 'beneGesserit' && !gather.requiresFlip &&
+    isAdvisor(p, origins[0]) && !at(p, to) &&
+    !g.players.some(other => other.id !== p.id && at(other, to));
+  const advisors = !gather.requiresFlip && (aloneArrival || arrivalAsAdvisor(g, p, to, origins[0]));
   const lockedTurn = Math.max(0, ...origins.map(origin => p.advisors?.[origin]?.lockedTurn ?? 0)) || undefined;
   requireRule(advisors || lockedTurn !== g.turn ||
     !g.players.some(other => other.id !== p.id && at(other, to)),
     'New advisors cannot become fighters this turn.');
-  const wantsFighters = advisors && fighters;
+  const wantsFighters = advisors && fighters && !aloneArrival;
   requireRule(!wantsFighters || !advisorFlipMovementBlocked(g, p),
     'Advisor flipping was canceled for this movement. Choose a legal replacement without flipping advisors.');
   requireRule(!wantsFighters || (lockedTurn !== g.turn && !at(p, to) &&
@@ -17016,7 +17023,7 @@ function commitGroundMovementPieces(g: Game, move: MovementOrder) {
     place(p, to, s, n - (move.noField ? 1 : 0), elite);
   if (advisors) {
     const arrivalLock = Math.max(lockedTurn ?? 0, p.advisors?.[to]?.lockedTurn ?? 0);
-    (p.advisors ??= {})[to] = arrivalLock ? { lockedTurn: arrivalLock } : {};
+    (p.advisors ??= {})[to] = { ...p.advisors?.[to], ...(arrivalLock ? { lockedTurn: arrivalLock } : {}) };
   } else if (p.advisors) delete p.advisors[to];
   if (wantsFighters)
     g.response = {
@@ -17049,6 +17056,7 @@ function completeMove(g: Game, move: MovementOrder) {
   const flight = g.ornithopter;
   commitGroundMovementPieces(g, move);
   recordGroundMovementPromises(g, p, move);
+  prepareAutomaticAdvisorFlips(g, p);
   const cunning = currentGuildCunning(g,id);
   if (cunning) { requireRule(cunning.stage === 'extraMove', 'Guild Cunning permits no movement before the second shipment.'); cunning.movesAfter++; saveGuildCunning(g,cunning); }
   const completed: CompletedMovement = {
@@ -18385,7 +18393,7 @@ function finishGuildAmbassadorAdvisor(
   place(bg, quote.territory, quote.sector, quote.amount);
   techIncome(g, 'heighliners', bg);
   if (quote.advisors)
-    (bg.advisors ??= {})[quote.territory] = { lockedTurn: g.turn };
+    (bg.advisors ??= {})[quote.territory] = { ...bg.advisors?.[quote.territory], lockedTurn: g.turn };
   const receipt = g.pendingAmbassador!.shipmentReceipt!;
   receipt.next = 'finish';
   receipt.advisorArrival = {
@@ -18568,7 +18576,7 @@ function commitAmbassadorRelocation(g: Game, move: FremenAmbassadorMove) {
   if (physical) place(p, move.to, move.sector, physical, move.elite);
   if (move.advisors) {
     const lockedTurn = Math.max(move.lockedTurn ?? 0, p.advisors?.[move.to]?.lockedTurn ?? 0);
-    (p.advisors ??= {})[move.to] = lockedTurn ? { lockedTurn } : {};
+    (p.advisors ??= {})[move.to] = { ...p.advisors?.[move.to], ...(lockedTurn ? { lockedTurn } : {}) };
   } else if (p.advisors) delete p.advisors[move.to];
   entry.stage = 'arrival';
   entry.relocation = { order: move, next: 'flip' };
@@ -20269,6 +20277,40 @@ function boardResolution<T>(quote: () => T): T {
       throw new RuleError(error.message);
     throw error;
   }
+}
+function automaticAdvisorRule<T>(quote: () => T): T {
+  try { return quote(); }
+  catch (error) { if (error instanceof AutomaticAdvisorFlipError) throw new RuleError(error.message); throw error; }
+}
+function currentAutomaticAdvisorFlip(g: Game, response: ResponseWindow) {
+  const source = response.automaticAdvisorFlip;
+  requireRule(response.kind === 'advisorFlip' && source && response.advisors === false &&
+    response.owner === source.owner && response.location === source.territory &&
+    response.advisorResume === undefined &&
+    JSON.stringify(g.pendingAutomaticAdvisorFlips?.[0]) === JSON.stringify(source),
+    'The mandatory advisor conversion has lost its original movement source.');
+  automaticAdvisorRule(() => validateAutomaticAdvisorFlip(g, source));
+  return source;
+}
+function openAutomaticAdvisorFlip(g: Game) {
+  if (g.response || g.decision || g.truthtrance || g.phaseOpening) return;
+  const source = g.pendingAutomaticAdvisorFlips?.[0];
+  if (!source) return;
+  automaticAdvisorRule(() => validateAutomaticAdvisorFlip(g, source));
+  g.response = { kind: 'advisorFlip', owner: source.owner, location: source.territory,
+    advisors: false, passed: [], automaticAdvisorFlip: source,
+    intent: `${getPlayer(g, source.owner).name}: mandatory advisor-to-fighter conversion in ${territory(source.territory).name}.` };
+}
+function prepareAutomaticAdvisorFlips(g: Game, mover: Player) {
+  const groups = automaticAdvisorRule(() => quoteAutomaticAdvisorFlips(g));
+  for (const group of groups) {
+    const source: AutomaticAdvisorFlipSource = { event: crypto.randomUUID(), owner: group.player,
+      territory: group.territory, turn: g.turn, phase: g.phase, producer: 'groundMovement',
+      mover: mover.id, move: mover.moved, forces: group.forces };
+    getPlayer(g, group.player).advisors![group.territory].aloneFlipHold = source.event;
+    (g.pendingAutomaticAdvisorFlips ??= []).push(source);
+  }
+  openAutomaticAdvisorFlip(g);
 }
 function applyAdvisorReleases(g: Game, released: AdvisorRelease[]) {
   for (const entry of released)
@@ -27201,6 +27243,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
   currentFactionPayment(g);
   const response = g.response!;
   const advisorPreparationSource = currentAdvisorPreparationResponse(g, response);
+  const automaticAdvisorFlip = response.automaticAdvisorFlip ? currentAutomaticAdvisorFlip(g, response) : null;
   const fremenGrant = response.kind === 'fremenRevivalGrant' ? currentFremenRevivalGrant(g, response) : null;
   if (g.pendingKull?.stage === 'counter' && response.kind === 'choamWorthless') kullIntegrity(g);
   if (response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, response);
@@ -28096,7 +28139,14 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
           `${bg.name} changed all forces in ${territory(to).name} to ${response.advisors ? 'advisors' : 'fighters'}.`,
         );
       }
-      finishAdvisorReaction(g, response);
+      if (automaticAdvisorFlip) {
+        if (canceled)
+          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed movement stays committed; this group remains advisors while continuously alone.`,
+            { faction: bg.faction, name: 'Mandatory advisor conversion prevented' });
+        g.pendingAutomaticAdvisorFlips!.shift();
+        if (!g.pendingAutomaticAdvisorFlips!.length) delete g.pendingAutomaticAdvisorFlips;
+        openAutomaticAdvisorFlip(g);
+      } else finishAdvisorReaction(g, response);
     }
   } else if (response.kind === 'capture') {
     const capture = g.pendingCapture!;
@@ -28413,7 +28463,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
     techIncome(g, 'heighliners', owner);
     if (advisors) {
       owner.advisors ??= {};
-      owner.advisors[target.territory] = { lockedTurn: g.turn };
+      owner.advisors[target.territory] = { ...owner.advisors[target.territory], lockedTurn: g.turn };
     }
     log(
       g,
@@ -28560,7 +28610,7 @@ function commitJunctionTransport(g: Game, p: Player, declaration: JunctionTransp
     place(p, arrival.territory, arrival.sector, quote.amount, quote.elite);
     if (advisors) {
       const lockedTurn = Math.max(sourceLock ?? 0, p.advisors?.[arrival.territory]?.lockedTurn ?? 0);
-      (p.advisors ??= {})[arrival.territory] = lockedTurn ? { lockedTurn } : {};
+      (p.advisors ??= {})[arrival.territory] = { ...p.advisors?.[arrival.territory], ...(lockedTurn ? { lockedTurn } : {}) };
     } else if (p.advisors) delete p.advisors[arrival.territory];
   }
   p.shipped = true;
@@ -29486,7 +29536,7 @@ function commitGuildTransport(
     place(p, to, sector, amount, elite);
     if (advisors) {
       const lockedTurn = Math.max(sourceLock ?? 0, p.advisors?.[to]?.lockedTurn ?? 0);
-      (p.advisors ??= {})[to] = lockedTurn ? { lockedTurn } : {};
+      (p.advisors ??= {})[to] = { ...p.advisors?.[to], ...(lockedTurn ? { lockedTurn } : {}) };
     } else if (p.advisors) delete p.advisors[to];
   }
   observeOccupation(g);
@@ -32005,6 +32055,7 @@ function settleAutomaticContinuations(g: Game) {
         deferred.amount, deferred.elite, deferred.cause, deferred.resume);
       continue;
     }
+    if (!g.response && !g.decision && g.pendingAutomaticAdvisorFlips?.length) openAutomaticAdvisorFlip(g);
     const response = g.response;
     const before = JSON.stringify(g);
     const bonus = g.pendingHomeworldOccupiedBonus;

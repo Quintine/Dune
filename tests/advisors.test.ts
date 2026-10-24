@@ -199,7 +199,7 @@ void test('moving fighters into existing advisors matches their stance, and the 
   assert.equal(isAdvisor(g.players[1], 'arrakeen'), false);
   assert.equal(fighterCount(g.players[1], 'arrakeen'), 3);
 });
-void test('advisors moving to an empty territory become fighters; optional occupied-territory flips can be canceled after movement', () => {
+void test('empty and occupied advisor arrivals offer conversion cancellation after the committed movement', () => {
   const g = fixture();
   g.players[0].hand = [baseDeck().find((c) => c.effect === 'karama')!];
   army(g, 'a', { 'arrakeen:10': 1 });
@@ -217,8 +217,14 @@ void test('advisors moving to an empty territory become fighters; optional occup
   assert.equal(isAdvisor(allow(moved).players[1], 'imperial_basin'), false);
   g.players[2].forces = {};
   const empty = move(g, 'b', 'arrakeen:10', 'imperial_basin', 10, 2);
-  assert.equal(isAdvisor(empty.players[1], 'imperial_basin'), false);
-  assert.equal(empty.response, null);
+  assert.equal(isAdvisor(empty.players[1], 'imperial_basin'), true);
+  assert.equal(empty.response?.kind, 'advisorFlip');
+  assert.ok(empty.response?.automaticAdvisorFlip);
+  assert.equal(isAdvisor(allow(empty).players[1], 'imperial_basin'), false);
+  const held = cancel(empty);
+  assert.equal(isAdvisor(held.players[1], 'imperial_basin'), true);
+  assert.ok(held.players[1].advisors?.imperial_basin.aloneFlipHold);
+  assert.equal(held.players[1].moved, 1);
 });
 void test('intrusion without advisor accompaniment restores the same decision and private views', () => {
   const g = fixture();

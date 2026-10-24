@@ -1,5 +1,50 @@
 # Dune implementation status
 
+## 24 October 2026 — Mandatory advisor ground-conversion counter
+
+Connect supplied physical17’s token-group flip counter with physical28 E’s
+alone-advisor obligation. Actual ground movement commits first, then opens the
+existing advisorFlip response for empty advisor arrivals or the last outsider’s
+departure. Exact turn/phase/mover/movement-count/whole-group sources and ordered
+pending occurrences revalidate before disposal or outcome. Allow converts once;
+preventing the flip retains the physical move and advisor stance. No card or
+movement opportunity is replayed. Setup conversions remain automatic.
+
+The 14 October selected duration is provisional: retain the hold while that
+territory’s group is continuously alone, including across phases/turns; foreign
+presence or physical emptiness ends it. Both normalization and readonly board
+resolution honor the same stance, so prevented forces gain no fighter, income,
+collection or victory benefits. Joining held advisors retains their stance.
+Native ground-movement scope does not implement every other mandatory producer,
+matching-group conversion or wider special arrival. Existing minimal AI response
+policy is reused, without strategy refinement.
+
+Frozen **16 files199/199**, types/lint/build, five native move/response/GameTable
+SSR journeys and eight existing-profile paths pass. Genuine34-action arrival and
+36-action departure sources use public Advanced BG/Atreides/Guild setup, original
+advisorSetup at Arrakeen, unopened original deals, actual Storm/Spice/Charity/
+Bidding/Revival, preparation decline and Guild timing. Departure actually skips
+BG’s turn before the original ten Atreides move. No played army, phase, hand,
+wallet, stance, response or hold is installed. Four allowance/cancellation
+journeys continue to Battle/Collection; a fifth actual outsider return ends the
+hold without changing advisor stance.
+
+One narrow native arrival case passes. The first frozen union passes199/199 and
+types; lint catches the import made redundant by shared settlement. Remove it,
+then rerun the coherent frozen checks: all pass, including runtime without
+source changes or private driver repairs. Standard existing Karama/Allow
+controls render; this is SSR/engine proof, not new component-callback,
+browser/mobile or deployed evidence.
+
+[Contract and remaining producers](ADVISOR_AUTOMATIC_FLIPS.md). Private evidence:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-automatic-flips/`.
+Frozen source fingerprint:
+`385c4758cd118574be8431593267a3198dd570eea6960c02e45a462e23494c4c`
+(2,733 nonignored files), based on `1a505525a8aa1499bc6270da2241506baf3e5be2`.
+Final prose/reference overlay is separately reviewed and hashed. Complete
+Advanced/modes, remaining producers, combinations and comprehensive assurance
+stay open. No saved-room/D1/reset/restart/deployment operation.
+
 ## 24 October 2026 — Tleilaxu proactive Revival prevention
 
 Implement supplied physical38 H’s any-player Revival window through a focused

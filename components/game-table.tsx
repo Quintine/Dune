@@ -2471,6 +2471,14 @@ export function GameTable({
                   {' '}leaves {g.paymentIncome.bank} spice in the bank. The payer’s cost stays the same.
                 </p>
               )}
+              {g.response.automaticAdvisorFlip && (
+                <p className="notice">
+                  The ground movement is complete. These advisors are now alone and must become fighters.
+                  {' '}Karama prevents only this conversion; it does not undo the move.
+                  {' '}Provisional rule: a prevented group stays advisors while continuously alone,
+                  until another faction returns or the group leaves.
+                </p>
+              )}
               {g.response.kind === 'advisor' && (
                 <p className="notice">
                   {g.players.find((player) => player.id === g.response?.owner)?.name} declared {g.response.amount ?? 1} free {(g.response.amount ?? 1) === 1 ? 'force' : 'forces'} to {territory(splitLocation(g.response.location ?? 'polar_sink:0').territory).name}.

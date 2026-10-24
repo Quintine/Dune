@@ -16,6 +16,32 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Mandatory advisor conversion after ground movement — 24 October. Prototyped / Partial.**
+A native advisor group moving into an empty destination, or left alone by the
+last outsider’s ground departure, now opens Karama prevention after the physical
+movement and before fighter benefits. Allow converts once. Cancellation preserves
+the move and holds the advisor stance while continuously alone; another faction’s
+actual return clears the hold. That duration is explicitly provisional. Setup
+stays automatic; non-ground mandatory producers and matching-group conversions
+remain open scope.
+[Source, implementation and limits](ADVISOR_AUTOMATIC_FLIPS.md).
+
+Disjoint pure-helper/native-fixture lanes, bounded source review and root
+integration pass **16 files199/199**, types/lint/build, five native move/response/
+GameTable SSR journeys and eight legal existing-profile paths. Genuine34/36-action
+public Advanced setup, original advisor placement, actual first-round controls,
+preparation decline and Guild timing retain Atreides’ original Karama; no played
+army, phase, hand, wallet or hold is staged. Feedback removes one redundant import;
+all frozen source checks then pass. Standard existing Karama/Allow controls are
+rendered, without a new component-callback or browser certificate. No AI
+refinement, full-mode, comprehensive or deployed assurance, and no saved-room/D1/
+reset/restart/deployment operation.
+
+Next native rule slice: connect the same mandatory-conversion protocol to
+non-ground last-outsider removal/return producers before their later collection
+or victory effects. Keep setup and completed movement independent; do not treat
+this ground slice as complete automatic-flip cancellation.
+
 **Tleilaxu proactive Revival prevention — 24 October. Prototyped / Partial.**
 The native Advanced special Karama now selects any one player at a quiet Revival
 boundary, including self, ally, ready and prior-return targets. The original

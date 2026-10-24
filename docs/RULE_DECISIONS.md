@@ -1,5 +1,22 @@
 # Rule decision index
 
+## Mandatory advisor conversion after ground movement — 24 October 2026
+
+Compose supplied Advanced physical17’s token-group flip counter with physical28 E’s
+mandatory conversion when alone. A committed advisor move into an empty territory,
+or the last outsider’s ground departure, now opens the original advisorFlip
+Karama response before the group gains fighter benefits. Allowance converts once;
+cancellation preserves the completed movement and leaves the group as advisors.
+Setup stays automatic under physical16’s post-setup Karama timing.
+
+The 14 October recommended policy provisionally retains that cancellation while
+the territory’s advisor group is continuously alone, across phase/turn changes.
+Foreign presence or physical emptiness ends the held occurrence; it is not an
+immediate retry opportunity for the canceled flip. This duration is not a direct
+publisher ruling. The shared settlement/board quote honors the hold. Other
+mandatory producers and matching-group conversions remain open scope.
+[Source, connected movement and limits](ADVISOR_AUTOMATIC_FLIPS.md).
+
 ## Tleilaxu proactive Revival prevention — 24 October 2026
 
 Supplied Advanced physical38 H permits selecting any one player during Revival,
