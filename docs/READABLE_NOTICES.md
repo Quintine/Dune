@@ -49,6 +49,17 @@ countdowns keep their existing behavior.
 
 ## Verification
 
+24 October deployed recheck: the public site displayed revision
+`716304bb9ed7bcf73202e07712de7c6d857ddc0c`. A dedicated QA create request showed
+the concise progress screen, then opened its lobby without a persistent room
+confirmation. That deployed revision predates the **Room created / Room joined**
+Continue confirmation added in `999edb6`; it does not verify the current source.
+The current action-notice, room-entry client and seat-confirmation tests pass
+**23/23**. The QA room and private screenshot/observation are preserved outside
+Git. No deployment or server restart was performed. Recheck actual create/join
+confirmation retention and Continue after deploying a revision containing the
+fix; production acceptance for that fix remains open.
+
 18 October follow-up: local QA room NAZLA8P4 kept its unread confirmation for
 43 seconds through background polling and a normal player-circle change.
 Continue removed only the notice; the same room stayed open and subsequent
