@@ -16,6 +16,25 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**CHOAM Charity funding — 24 October. Prototyped / Partial.**
+CHOAM's own eligible poverty claim now uses the Spice Bank; E2 names other
+factions as its payees. After legal intervening spending, the selected preview
+policy pays other eligible claims in full from available CHOAM cash and a bank
+residual. This is an explicit provisional deviation: no publisher insolvency
+remedy was found, and voluntary transfers can shift costs to the bank.
+Persistent controls explain the policy without exposing private payment shares.
+Original eligibility, once-turn claims, BG cancellation, Inflation, bank-only
+Homeworld additions, Production and deferred bribes remain.
+[Source, policy and bounded evidence](CHOAM_CHARITY_FUNDING.md).
+
+Disjoint source/fixture/controls lanes and bounded integration review pass
+**9 affected offline files88/88**, types/lint/build, eight actual claim-control/gameplay/GameTable SSR journeys and eight existing-profile continuations (16 accepted proposals).
+Actual public three-seat setup, first opening income and legal bribes supply
+24/27 source actions. Feedback updates an obsolete Homeworld rejection and
+one now-constant test binding. Full modes, wider combinations, comprehensive/
+browser/deployed acceptance and AI refinement remain unfinished. No saved-room/
+D1/reset/restart/deployment operation.
+
 **Ecaz Ambassador on the placed HMS — 24 October. Prototyped / Partial.**
 The shared placement quote now includes the genuinely placed Hidden Mobile
 Stronghold in Basic and Advanced, including its intrinsic storm shelter.

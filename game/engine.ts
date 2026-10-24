@@ -536,6 +536,8 @@ import {
   charityAmount,
   charityQuote,
   charityPayer,
+  quoteCharityFunding,
+  CharityFundingError,
   charityMultiplier,
   type Inflation,
 } from './charity';
@@ -21336,20 +21338,20 @@ function payCharity(g: Game, player: Player, amount: number, homeworld = 0) {
     'The Homeworld charity payment is invalid.',
   );
   const ordinary = amount - homeworld;
-  const payer = charityPayer(g);
-  // The published charity rule does not specify insolvency after intervening
-  // spending. Fail atomically while this edge case remains under audit; never
-  // mint a bank subsidy or create a negative spice balance silently.
-  requireRule(
-    !payer || payer.spice >= ordinary,
-    'CHOAM cannot fund this charity claim.',
-  );
-  if (payer) payer.spice -= ordinary;
+  const payer = charityPayer(g, player.id);
+  let funding: ReturnType<typeof quoteCharityFunding>;
+  try {
+    funding = quoteCharityFunding({ ordinary, homeworld }, payer?.spice ?? null);
+  } catch (error) {
+    if (error instanceof CharityFundingError) throw new RuleError(error.message);
+    throw error;
+  }
+  if (payer) payer.spice -= funding.choam;
   player.spice += amount;
   if (homeworld)
     log(
       g,
-      `${player.name} received ${ordinary} ordinary charity spice ${payer ? `from ${payer.name}` : 'from the Spice Bank'} and ${homeworld} additional bank spice for low Homeworld population.`,
+      `${player.name} received ${ordinary} ordinary charity spice ${payer ? `under ${payer.name}’s provisional funding rule` : 'from the Spice Bank'} and ${homeworld} additional bank spice for low Homeworld population.`,
       { faction: player.faction, name: 'Homeworld charity' },
     );
   techIncome(g, 'production', player);
@@ -36737,7 +36739,7 @@ export function viewGame(state: Game, id: string) {
       ...charityQuote(g, me),
       multiplier: charityMultiplier(g),
       amount: charityAmount(g, me),
-      payer: charityPayer(g)?.id ?? null,
+      payer: charityPayer(g, me.id)?.id ?? null,
       incomePending: !!byFaction(g, 'choam') && g.choamCharity?.turn !== g.turn,
       incomeCanceled:
         g.choamCharity?.turn === g.turn && g.choamCharity.canceled,

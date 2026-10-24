@@ -1,5 +1,17 @@
 # Rule decision index
 
+## CHOAM self-claim and provisional shortfall funding — 24 October 2026
+
+E2 p7 names other factions as CHOAM's payees; the ordinary poverty rule leaves
+CHOAM's own eligible claim bank-funded. After legal intervening spending,
+other eligible claims now receive their full amount from available CHOAM cash
+and a bank residual. This second rule is an explicit provisional deviation:
+no publisher insolvency remedy was found; transfers can shift costs to the
+bank. The 14 October choose-recommended authority applies. No debt, negative
+wallet, outgoing escrow or new start gate is introduced. Original claim limits,
+BG cancellation, Inflation and bank-only Homeworld additions remain.
+[Source, policy and limits](CHOAM_CHARITY_FUNDING.md#source-and-selected-prototype-policy--24-october-2026).
+
 ## Ecaz Ambassador on the placed HMS — 24 October 2026
 
 Compose E3 any-stronghold placement (p7; authorized revised p30,A) with E1

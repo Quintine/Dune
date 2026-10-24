@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 24 October 2026 — CHOAM Charity self-claims and shortfall funding
+
+Make the ordinary poverty claim effective for CHOAM itself using the bank,
+consistent with E2's other-faction payer language. For other eligible claims,
+prototype full entitlement from available CHOAM cash plus a bank residual after
+intervening legal spending. This second policy is provisional and permits
+transfer-driven cost shifting; no official insolvency remedy is claimed.
+Keep original claim limits, cancellation, Inflation, bank-only Homeworld bonus,
+Production and deferred incoming bribes. Actual persistent controls explain the
+policy independently of private wallet values; no new serialized field or debt.
+
+Disjoint source/fixture/control lanes and bounded review pass **9 affected offline files88/88**, types/lint/build, eight actual claim-control/gameplay/GameTable SSR journeys and eight existing-profile continuations (16 accepted proposals).
+Original public CHOAM/Atreides/Guild setup, held starting Karama, actual first
+opening response and legal bribes supply24/27 source actions without an
+installed played phase, wallet, army or payment receipt. Actual callbacks check
+busy/once-only behavior and reach native Bidding; existing legal bots claim for
+both low factions. The first union finds an older Homeworld shortfall rejection;
+its replacement keeps ordinary eligibility, full amount, exact capped debit,
+immutable rejected/starting state and no second claim. A const lint fix follows.
+
+[Source, selected policy, proof and limits](CHOAM_CHARITY_FUNDING.md)
+retain full-rule/combination and comprehensive/browser/deployed gates.
+Private final proof:20261024-choam-charity-funding/frozen-integrated-3.
+No strategy/calibration or saved-room/D1/reset/restart/deployment operation.
+
 ## 24 October 2026 — Ecaz Ambassador on the placed HMS
 
 Share dynamic placement legality between the engine, projected choices,

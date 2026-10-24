@@ -226,18 +226,23 @@ void test('actual cancellation of CHOAM phase-opening income makes both ordinary
 });
 
 void test('the bank bonus never creates ordinary eligibility or makes CHOAM fund more than its exact ordinary portion', () => {
-  let g = choam(setup(false));
+  const g = choam(setup(false));
   seat(g, 'a').spice = 2;
   seat(g, 'b').spice = 9;
   rejects(g, 'a', { type: 'charity' });
   rejects(g, 'b', { type: 'charity' });
-  seat(g, 'a').spice = 1;
-  seat(g, 'c').spice = 0;
-  rejects(g, 'a', { type: 'charity' });
-  seat(g, 'c').spice = 1;
-  g = applyAction(g, 'a', { type: 'charity' });
-  assert.equal(seat(g, 'a').spice, 3);
-  assert.equal(seat(g, 'c').spice, 0);
+  for (const cash of [0, 1, 4]) {
+    const source = structuredClone(g);
+    seat(source, 'a').spice = 1;
+    seat(source, 'c').spice = cash;
+    const before = structuredClone(source);
+    const claimed = applyAction(source, 'a', { type: 'charity' });
+    assert.equal(seat(claimed, 'a').spice, 3);
+    assert.equal(seat(claimed, 'c').spice, Math.max(0, cash - 1));
+    assert.equal(viewGame(claimed, 'a').players.find(p => p.id === 'a')!.charityClaimed, true);
+    assert.deepEqual(source, before);
+    rejects(claimed, 'a', { type: 'charity' });
+  }
 });
 
 void test('a forged saved BG bank split or total is rejected unchanged before allowance and Karama card spend', () => {

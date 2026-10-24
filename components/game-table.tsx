@@ -51,6 +51,7 @@ import { NexusAdvisors } from './nexus-advisors';
 import { NexusSardaukar } from './nexus-sardaukar';
 import { TerrorBoardMarkers } from './terror-board-markers';
 import { AmbassadorBoardMarkers } from './ambassador-board-markers';
+import { CharityClaim } from './charity-claim';
 import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
 import { JunctionTransport } from './junction-transport';
@@ -4204,35 +4205,7 @@ export function GameTable({
                   Ready the table to reveal the next spice blow.
                 </p>
               )}
-              {g.phase === 2 && (
-                <>
-                  <p className="muted">
-                    {g.charity.multiplier === 0
-                      ? 'Inflation cancels charity for every faction this turn.'
-                      : g.charity.multiplier === 2
-                        ? 'Inflation doubles the amount of charity you receive. Ordinary eligibility still requires fewer than two spice; advanced Bene Gesserit receives four regardless of wealth.'
-                        : g.advanced && me.faction === 'beneGesserit'
-                          ? 'Receive two spice once per turn. If you already hold two or more, opponents may cancel the faction benefit with Karama.'
-                          : 'If you have fewer than two spice, claim charity once to reach two.'}
-                  </p>
-                  <p className="fine">
-                    {g.charity.payer
-                      ? `The ordinary ${g.charity.ordinary} spice is paid from ${g.players.find((p) => p.id === g.charity.payer)?.name}’s spice.`
-                      : 'Charity is paid by the Spice Bank.'}
-                    {g.charity.homeworld > 0 &&
-                      ` Low Homeworld population adds ${g.charity.homeworld} spice directly from the bank${g.charity.multiplier === 2 ? ' after Inflation doubles the bonus' : ''}.`}
-                  </p>
-                  {actionButton(
-                    g.charity.amount > 0
-                      ? `Claim ${g.charity.amount} charity spice`
-                      : 'Claim charity',
-                    { type: 'charity' },
-                    me.charityClaimed ||
-                      g.charity.incomePending ||
-                      g.charity.amount === 0,
-                  )}
-                </>
-              )}
+              {g.phase === 2 && <CharityClaim game={g} act={act} busy={busy} />}
               {g.phase === 3 && g.richeseAuction && (
                 <RicheseAuctionLot
                   key={`${g.richeseAuction.event}-${g.me}`}

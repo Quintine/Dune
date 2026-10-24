@@ -4080,10 +4080,10 @@ export const RULE_TOPICS: RuleTopic[] = [
       'CHOAM collects before charity claims and holds up to five treachery cards.',
     steps: [
       'At the start of Charity, resolve CHOAM’s public Karama response. If allowed, CHOAM receives two spice per faction, including itself. In a six-player game this is twelve spice.',
-      'Other factions claim normally, with payments taken from CHOAM’s spice. Advanced Bene Gesserit receives two even when wealthy; its cancelable claim resolves before CHOAM pays.',
-      'Canceling CHOAM’s income sends all charity payments that turn to the bank. CHOAM can then claim ordinary charity if it has zero or one spice. Cancellation does not affect next turn’s income.',
+      'Other factions claim normally from CHOAM. Under an explicit provisional shortfall policy, CHOAM pays the available ordinary contribution and the Spice Bank supplies any remainder, preserving the full eligible claim. This unresolved funding choice can shift costs to the bank after voluntary transfers. Advanced Bene Gesserit receives two even when wealthy; its cancelable claim resolves before any payment.',
+      'Canceling CHOAM’s income sends all charity payments that turn to the bank. CHOAM’s own ordinary poverty claim also uses the bank, even after allowed opening income, because its faction payer rule names other factions. Every claimant still has one eligible claim per turn. Cancellation does not affect next turn’s income.',
       'CHOAM may hold five treachery cards and can bid for a fifth. A full five-card hand prevents further purchases, including purchases with Karama.',
-      'Inflation now has engine support; see its topic for the two-turn lifecycle. Insolvency after intervening spending still needs a rules ruling; unsupported claims fail without altering balances. CHOAM games remain disabled until the remaining powers and full interaction audit are complete.',
+      'Inflation retains its two-turn lifecycle and original wealth threshold. Homeworld additions remain bank-funded regardless of the ordinary payer. Controls explain the provisional shortfall rule without exposing private wallets. CHOAM starts remain labelled previews; full faction, combination and official insolvency acceptance remain unfinished.',
     ],
     related: [
       'charity',
@@ -4098,6 +4098,60 @@ export const RULE_TOPICS: RuleTopic[] = [
       'choam-worthless',
       'bg-charity-karama',
     ],
+    checklist: [
+  {
+    "area": "Implementation",
+    "status": "Partial",
+    "detail": "Beneficiary-aware payer fixes CHOAM self-claims. A private quote caps another CHOAM wallet at the ordinary contribution and supplies the provisional bank residual, retaining full entitlement, BG response, once-turn claims, Inflation and Homeworld bank portions. No debt or new persisted field.",
+    "evidence": [
+      "game/charity.ts",
+      "game/engine.ts"
+    ]
+  },
+  {
+    "area": "Player controls",
+    "status": "Partial",
+    "detail": "Actual persistent claim controls distinguish ordinary bank payment from the constant provisional CHOAM fallback. Busy, pending income, completed/zero claims, Truthtrance and Nexus Traitor interruption remain blocked; no rival balance is read.",
+    "evidence": [
+      "components/charity-claim.tsx",
+      "components/game-table.tsx",
+      "tests/charity-claim-controls.test.tsx"
+    ]
+  },
+  {
+    "area": "AI",
+    "status": "Partial",
+    "detail": "Eight existing-profile Basic/Advanced paths accept16 legal Charity proposals for both low factions through the same settlement. Strategy, full AI and difficulty calibration remain deferred.",
+    "evidence": [
+      "game/bots.ts",
+      "docs/CHOAM_CHARITY_FUNDING.md"
+    ]
+  },
+  {
+    "area": "Documentation",
+    "status": "Partial",
+    "detail": "Separates the sourced self-bank composition from the unconfirmed bank-residual remedy, including the cost-shifting limitation and unfinished full-rule gates.",
+    "evidence": [
+      "docs/CHOAM_CHARITY_FUNDING.md",
+      "docs/RULE_DECISIONS.md"
+    ]
+  },
+  {
+    "area": "Verification",
+    "status": "Partial",
+    "detail": "Nine files88/88, types/lint/build, eight actual control/gameplay/GameTable SSR journeys and eight minimal-policy continuations pass. Genuine24/27-action public setup/income/bribe sources preserve original claims, physical pieces/cards and deferred receipts through Bidding. Browser/deployed, complete modes, broader combinations and comprehensive assurance remain open.",
+    "evidence": [
+      "tests/fixture-choam-charity-funding.ts",
+      "tests/choam-charity-funding-engine.test.ts",
+      "tests/charity-funding-quote.test.ts",
+      "tests/charity-claim-controls.test.tsx",
+      "tests/choam-charity.test.ts",
+      "tests/homeworld-charity-engine.test.ts",
+      "tests/choam-inflation.test.ts",
+      "tests/tech-tokens.test.ts"
+    ]
+  }
+],
   },
   {
     id: 'bg-charity-karama',

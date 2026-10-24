@@ -239,6 +239,23 @@ void test('wealthy Bene Gesserit payment waits for its response; cancellation ne
     assert.equal(viewGame(g, 'b').players[2].charityClaimed, true);
   }
 });
+void test('wealthy BG response preserves cancellation before provisional shortfall funding', () => {
+  for (const canceled of [false, true]) {
+    let g = allow(ready(fixture(true)));
+    contest(g);
+    g = applyAction(g, 'c', { type: 'bribe', target: 'e', amount: 6 });
+    g.players[2].spice = 12;
+    g = applyAction(g, 'b', { type: 'charity' });
+    assert.equal(g.response?.kind, 'bgCharity');
+    assert.equal(g.players[0].spice, 0);
+    assert.equal(g.players[2].spice, 12);
+    g = canceled ? cancel(g) : allow(g);
+    assert.equal(g.players[0].spice, 0);
+    assert.equal(g.players[2].spice, canceled ? 12 : 14);
+    assert.equal(viewGame(g, 'b').players[2].charityClaimed, true);
+    assert.equal(g.players[1].bribes, 6);
+  }
+});
 void test('Karama cancels CHOAM income, restores bank payments and permits CHOAM ordinary charity', () => {
   let g = cancel(ready(contest(fixture(true))));
   assert.equal(g.players[0].spice, 0);
@@ -337,12 +354,31 @@ void test('ordinary funded claims still accrue and settle Spice Production once'
   assert.equal(g.players[1].spice, 3);
   assert.equal(g.techTokens!.production.spice, 0);
 });
-void test('unresolved insolvency fails atomically without minted spice or negative balances', () => {
-  let g = allow(ready(fixture()));
-  g = applyAction(g, 'c', { type: 'bribe', target: 'e', amount: 6 });
-  const before = structuredClone(g);
-  assert.throws(() => applyAction(g, 'b', { type: 'charity' }), /cannot fund/);
-  assert.deepEqual(g, before);
+void test('provisional shortfall funding completes the full claim after actual CHOAM bribes', () => {
+  for (const remaining of [0, 1, 2]) {
+    let g = allow(ready(fixture()));
+    g = applyAction(g, 'c', { type: 'bribe', target: 'e', amount: 6 - remaining });
+    const before = structuredClone(g);
+    const claimed = applyAction(g, 'b', { type: 'charity' });
+    assert.equal(claimed.players[0].spice, 0);
+    assert.equal(claimed.players[2].spice, 2);
+    assert.equal(claimed.players[1].bribes, 6 - remaining);
+    assert.equal(viewGame(claimed, 'b').players[2].charityClaimed, true);
+    assert.throws(() => applyAction(claimed, 'b', { type: 'charity' }), /once per turn|fewer than/);
+    assert.deepEqual(g, before);
+  }
+});
+void test('CHOAM self-claim uses the bank after its original income is legally given away', () => {
+  for (const remaining of [0, 1]) {
+    let g = allow(ready(fixture()));
+    g = applyAction(g, 'c', { type: 'bribe', target: 'e', amount: 6 - remaining });
+    assert.equal(viewGame(g, 'c').charity.payer, null);
+    const claimed = applyAction(g, 'c', { type: 'charity' });
+    assert.equal(claimed.players[0].spice, 2);
+    assert.equal(claimed.players[1].bribes, 6 - remaining);
+    assert.equal(viewGame(claimed, 'c').players[0].charityClaimed, true);
+    assert.equal(viewGame(claimed, 'b').charity.payer, 'c');
+  }
 });
 void test('CHOAM can buy its fifth card, but a full five-card hand cannot take an auction with Karama', () => {
   let g = allow(ready(fixture()));

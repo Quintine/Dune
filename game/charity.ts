@@ -38,8 +38,28 @@ export function charityAmount(
 
 export function charityPayer(
   g: Pick<Game, 'players' | 'turn' | 'choamCharity'>,
+  beneficiary?: string,
 ) {
   return g.choamCharity?.turn === g.turn && !g.choamCharity.canceled
-    ? g.players.find((p) => p.faction === 'choam')
+    ? g.players.find((p) => p.faction === 'choam' && p.id !== beneficiary)
     : undefined;
+}
+
+export class CharityFundingError extends Error {}
+
+/** Preview policy: preserve the claimant's full entitlement without negative
+ * cash. Only the ordinary portion can debit another faction's CHOAM wallet;
+ * the bank covers any shortfall and every Homeworld addition. No loan is made.
+ * Keep this private calculation out of rival projections and public logs. */
+export function quoteCharityFunding(
+  amounts: { ordinary: number; homeworld: number },
+  payerSpice: number | null,
+): { choam: number; bank: number } {
+  const { ordinary, homeworld } = amounts;
+  if (![ordinary, homeworld].every(n => Number.isSafeInteger(n) && n >= 0) ||
+      !Number.isSafeInteger(ordinary + homeworld) ||
+      (payerSpice !== null && (!Number.isSafeInteger(payerSpice) || payerSpice < 0)))
+    throw new CharityFundingError('The charity funding amounts are invalid.');
+  const choam = payerSpice === null ? 0 : Math.min(ordinary, payerSpice);
+  return { choam, bank: ordinary - choam + homeworld };
 }
