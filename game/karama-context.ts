@@ -190,6 +190,8 @@ const cancellationSources = {
           ...(response.automaticAdvisorFlip.producer === 'specialRelocation'
             ? { relocation: g.pendingAutomaticAdvisorRelocation?.receipt ?? null } : {}),
           group: g.players.find(p => p.id === response.owner)?.advisors?.[response.location ?? ''] ?? null }
+      : response.advisorMatchingSource
+      ? {matching:response.advisorMatchingSource,pending:g.pendingAdvisorMatching?.receipt??null}
       : response.advisorPreparationSource
       ? { preparation: response.advisorPreparationSource, window: g.advisorPreparation ?? null }
       : response.advisorResume === 'ambassador'

@@ -1,5 +1,20 @@
 # Rule decision index
 
+## Matching incoming advisor groups — 24 October 2026
+
+Supplied physical28 E directly marks matching into resident BG forces as
+counterable; physical17 names one incoming group's flip. Residents retain their
+type. Opposite-type normal ground arrivals need a counter; same-type movement
+does not flip. Ordinary reserves have no printed fixed side, so using the
+existing normal-fighter default for reserve-to-advisor matching is explicit
+provisional composition. Preventing matching provisionally stops that arrival
+before transfer/payment/action use, while allowing a legal replacement. Prevent
+the same packet/destination in the same opportunity, not all flips for the turn
+or the continuously-alone duration. Existing card preparation retains its use.
+Spiritual destinations/matching and special transport/gather combinations remain
+separate open scope; do not certify them from these normal paths.
+[Exact source, contracts and outstanding Spiritual cutover](ADVISOR_MATCHING.md).
+
 ## Advisor conversion after special relocation — 24 October 2026
 
 Compose supplied Advanced physical17/28 E with actual Fremen Ambassador and

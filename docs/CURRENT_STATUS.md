@@ -16,6 +16,40 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Matching incoming BG groups — 24 October. Prototyped / Partial.**
+Normal opposite-type ground arrivals and reserve-to-advisor shipments now offer
+Karama before physical transfer/payment. Supplied physical28 E explicitly marks
+matching; physical17 identifies one incoming packet. Residents never change.
+The ordinary reserve fighter default and precommit remedy are explicit
+provisional compositions. Prevention retains the unused action while denying
+that same packet/destination in the same opportunity; same-type movement needs
+no flip. A public receipt owns a private original order; consume the parent
+before one original movement/shipment suffix. Personalized legal bot filtering
+reuses the shared quote.
+[Source, normal native paths and limits](ADVISOR_MATCHING.md).
+
+Disjoint helper/native-fixture lanes, complete-page source review and root
+integration pass **19 files244/244**, types/lint/build and seven native
+normal declaration/response/GameTable SSR journeys, with twelve existing-profile
+responses and twelve accepted replacements. Genuine34/33-action public Advanced
+base33 sources earn the original advisor, paid Basin fighter and original
+Karama. Both directions and normal shipment preserve state while waiting.
+Allowed shipment pays1 once; prevention keeps payment/action unused, rejects
+same-packet retry and admits the earned same-type or empty-territory replacement.
+No AI refinement, comprehensive/browser/deployed assurance or saved-room/D1/
+reset/restart/deployment operation. Wider transport, gathering and mode acceptance
+remain open.
+
+Bounded complete-page review also identifies a remaining Advanced Spiritual
+Advisor source cutover: retained fighters at the original shipment destination
+require Polar Sink or decline unless Intrusion changes them first. Polar Sink
+fallback with resident fighters provisionally needs its own incoming matching
+counter after the distinct shipping counter. Ordinary/Guild Ambassador target
+quotes, projected choices and bots must share that restriction; do not apply
+it to ordinary paid shipments. That independent Spiritual-parent integration
+and special relocation/gather matching remain explicitly open after the normal
+arrival prototype. Full rule/mode acceptance is still unfinished.
+
 **Special-relocation advisor conversion — 24 October. Prototyped / Partial.**
 Fremen Ambassador and Discovery free-entry transfers now capture surviving alone
 advisors before original arrivals. Preserve an empty Ambassador advisor arrival

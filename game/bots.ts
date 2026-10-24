@@ -116,6 +116,7 @@ import { botNexusIxianBetrayalActions } from './bot-nexus-ixian-betrayal';
 import { botNexusHarkonnenBetrayalActions } from './bot-nexus-harkonnen-betrayal';
 import { validateCohortSelection, type OrnithopterMode } from './ornithopter';
 import { fighterCount, isAdvisor } from './advisors';
+import { quoteAdvisorMatching, AdvisorMatchingError } from './advisor-matching';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from './combat';
 import { reinforcementsBattleForces } from './reinforcements-homeworld';
 import type { NativeReserveSelections } from './homeworld-native-reserves';
@@ -4074,6 +4075,24 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 }
 
 /** Obligations apply across policy branches, including choosing to move first. */
+function botAdvisorMatchingAllowed(g:GameView,action:Action) {
+  if(!g.advisorMatchingDenied?.length || !['move','ship'].includes(action.type) || action.planetologist==='gather') return true;
+  const me=g.players.find(p=>p.id===g.me)!;
+  if(!g.advanced || me.faction!=='beneGesserit' || g.phase!==5 || g.active!==me.id) return true;
+  const destination=String(action.territory),sector=Number(action.sector);
+  const group:Record<string,number>=action.type==='ship' ? {reserves:Number(action.amount)} :
+    action.forces && typeof action.forces==='object' ? action.forces as Record<string,number> :
+    {[String(action.from)]:Number(action.amount)};
+  const origins=[...new Set(Object.keys(group).map(key=>splitLocation(key).territory))];
+  if(action.type==='move' && origins.length!==1) return true;
+  try {
+    quoteAdvisorMatching(g,{kind:action.type==='ship'?'shipment':'movement',owner:me.id,
+      move:action.type==='ship'?0:me.moved??0,
+      origin:action.type==='ship'?'reserves':origins[0],destination,sector,
+      advisors:isAdvisor(me,destination),group});
+    return true;
+  } catch(error) { if(error instanceof AdvisorMatchingError) return false; throw error; }
+}
 export function botActions(g: GameView): Action[] {
   if (g.homeworldTupileBlocked) return [];
   if (g.decision?.kind === 'homeworldTupileCleanup' || g.homeworldTupileCleanup)
@@ -4249,7 +4268,7 @@ export function botActions(g: GameView): Action[] {
     if (action.type === 'battlePlan' && g.ecazSpecialKarama?.declared &&
         (action.weapon || action.defense)) return [];
     const sourced = withNativeShipmentSources(g, action);
-    return sourced && botHomeworldShipmentPaymentAllowed(g, sourced) && !homeworldRevivalActionBlock(g, sourced) && !botArrivalBlock(g, sourced) ? [sourced] : [];
+    return sourced && botHomeworldShipmentPaymentAllowed(g, sourced) && !homeworldRevivalActionBlock(g, sourced) && !botArrivalBlock(g, sourced) && botAdvisorMatchingAllowed(g,sourced) ? [sourced] : [];
   });
   const me = g.players.find((p) => p.id === g.me)!;
   const advancedDepartures = g.advancedAllySeparation?.territories;

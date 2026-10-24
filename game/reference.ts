@@ -4314,7 +4314,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Advisors do not fight, contest stronghold victory, block another faction’s entry, collect spice, earn stronghold income, grant ornithopters or enable Family Atomics. Storms, worms, explosions and Atomics still destroy them.',
       'In Advanced, advisors may coexist with their ally without triggering the end-turn alliance constraint in either direction. Neither the advisors nor the allied fighters are lost for that coexistence. Bene Gesserit fighters remain subject to ordinary separation; Basic receives no new advisor exception.',
       'After Fremen setup, choose the starting advisor’s territory and sector. Setup conversions remain automatic. During play, advisors alone must become fighters. A ground move into an empty territory or the last outsider’s ground departure now offers Karama prevention after the physical move, before fighter benefits. Allow to convert once; cancellation leaves the completed movement intact.',
-      'A normal shipment enters as fighters unless joining existing advisors. Moving or shipping into your existing group must match its type. Advisors moved into an occupied territory without another Bene Gesserit group may remain peaceful or request a flip to fighters.',
+      'A normal shipment enters as fighters unless joining existing advisors. Opposite-type normal ground arrivals and normal reserves joining advisors now offer Karama matching prevention before movement or payment. Residents keep their type. Provisionally stop a prevented packet into this territory for that action opportunity, leaving a legal replacement and the unused action available. Same-type moves need no flip. Advisors entering another occupied territory may keep their existing optional fighter choice.',
       'After Trip to Gamont completes during Mentat, the last outsider’s return or empty No-Field reveal can leave advisors alone. Karama can then prevent their conversion without undoing the completed effect or card use. The final CHOAM opportunity resumes afterward; victory waits for its original confirmation. Ordinary Mentat does not gain an extra final chooser.',
       'A committed Guild cross-shipment or return to reserves can also leave advisors alone. Original transport permission, rate and any Guild income resolve first; payment, force transfer and shipment use stay committed if the later conversion is prevented. The ordinary ground move remains unused. Cross-shipment arrival follows the conversion once; a reserve return has no arrival.',
       'After actual battle losses leave surviving bystanding advisors alone, Karama may prevent their conversion without undoing losses or costs. Mandatory card disposal, original skills and substitution finish first. Provisionally resolve this before optional winner-card cleanup and later aftermath, then resume the original cleanup once. An explosion that destroys the advisors creates no conversion.',
@@ -4333,8 +4333,9 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Implementation",
     "status": "Partial",
-    "detail": "Fremen Ambassador and Discovery free entry now capture resulting alone advisors before original arrivals. Preserve an empty Ambassador advisor arrival through one mandatory counter, without changing Discovery non-advisor admission. Private parent cursors retain original flip/entry stages; public six-field location evidence omits orders, No-Fields and skills. Matching-group and wider combinations remain unfinished.",
+    "detail": "Normal opposite-type ground arrivals and reserve-to-advisor shipments now use a precommit matching receipt and private original order. Shared packet-scoped denial leaves residents and unused actions intact. Same-type ground movement remains direct. Special transport/gather and Spiritual source cutovers remain unfinished.",
     "evidence": [
+      "docs/ADVISOR_MATCHING.md",
       "game/advisor-automatic-flip.ts",
       "game/advisors.ts",
       "game/board-resolution-quote.ts",
@@ -4348,8 +4349,9 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Player controls",
     "status": "Partial",
-    "detail": "Standard Karama/Allow controls distinguish completed special force transfer from pending conversion and original arrival. Existing producer and preparation guidance remains, without another confirmation or timer.",
+    "detail": "Standard Karama/Allow explains that matching precedes physical arrival/payment and does not flip residents. Prevention retains unused actions and original card uses, with a legal replacement. Seven native GameTable SSR journeys render standard controls; no new confirmation or timer.",
     "evidence": [
+      "docs/ADVISOR_MATCHING.md",
       "docs/ADVISOR_AUTOMATIC_FLIPS.md",
       "components/advisor-preparation.tsx",
       "components/game-table.tsx",
@@ -4359,8 +4361,13 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "AI",
     "status": "Partial",
-    "detail": "Eight existing-profile native Ambassador/Discovery conversion paths resolve legally through original arrival completion. Transfers, allowances and original parent flow remain. Earlier producers retain separate evidence; no strategy refinement or difficulty calibration.",
+    "detail": "Twelve existing-profile matching responses and twelve accepted legal replacements use shared packet/opportunity denials. Earlier producers retain separate evidence. No strategy refinement or difficulty calibration.",
     "evidence": [
+      "tests/fixture-advisor-matching-move.ts",
+      "tests/advisor-matching-engine.test.ts",
+      "tests/advisor-matching.test.ts",
+      "game/advisor-matching.ts",
+      "docs/ADVISOR_MATCHING.md",
       "tests/fixture-advisor-relocation-flip.ts",
       "tests/advisor-relocation-flip-engine.test.ts",
       "tests/storm-worm-cancellation.test.ts",
@@ -4382,8 +4389,9 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Documentation",
     "status": "Partial",
-    "detail": "Physical17/28 E composes conversion with original independent relocation. Priority after physical transfer/collection and before original arrivals is explicitly provisional. Original Ambassador phase permission and Discovery non-advisor-only admission remain; cancellation duration and wider combinations stay explicit.",
+    "detail": "Physical28 E explicitly marks matching as counterable and physical17 identifies the incoming group. Shipment defaults and precommit remedy/packet-opportunity restraint are provisional. Spiritual destination/Polar matching cutovers and broader transports remain explicit open scope.",
     "evidence": [
+      "docs/ADVISOR_MATCHING.md",
       "docs/ADVISOR_AUTOMATIC_FLIPS.md",
       "docs/ADVISOR_PREPARATION.md",
       "docs/RULE_DECISIONS.md",
@@ -4393,8 +4401,13 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Verification",
     "status": "Partial",
-    "detail": "Special relocation passes frozen19-file270/270, types/lint/build, five native transfer/response/GameTable SSR journeys, two labelled controlled empty-arrival cases and eight profile paths. Genuine44/49-action base33 sources earn native packet/placement/trigger or actual Cistern placement, Intrusion, Collection reveal and next-turn entry. Both outcomes retain transfer; original decline preserves its group. Controlled alliances are not native-alliance evidence. Focused compatibility regression retains older serialized counters. Wider No-Field/skills/Homeworld/Nexus combinations, native allied BG arrival, matching-group interpretation, full modes and final assurance remain open.",
+    "detail": "Normal matching passes frozen19-file244/244, types/lint/build, seven native declaration/response/GameTable SSR journeys, twelve profile responses and twelve accepted replacements. Genuine34/33-action base33 sources earn original advisors/fighters/Karama. Both directions and reserve shipment wait without transfer; allowance commits once and shipment pays1. Prevention keeps payment/action unused, rejects same-packet retry and permits legal replacement. Same-type movement has no counter. Special relocation, Guild/Homeworld, gathering, Spiritual matching/source cutover, full modes and final assurance remain open.",
     "evidence": [
+      "tests/fixture-advisor-matching-move.ts",
+      "tests/advisor-matching-engine.test.ts",
+      "tests/advisor-matching.test.ts",
+      "game/advisor-matching.ts",
+      "docs/ADVISOR_MATCHING.md",
       "tests/fixture-advisor-relocation-flip.ts",
       "tests/advisor-relocation-flip-engine.test.ts",
       "tests/storm-worm-cancellation.test.ts",

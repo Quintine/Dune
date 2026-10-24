@@ -608,6 +608,8 @@ import {
   type TechState,
 } from './tech-tokens';
 import { canUseAsKaramaRole } from './shrine';
+import { quoteAdvisorMatching, validateAdvisorMatching, advisorMatchingKey,
+  AdvisorMatchingError, type AdvisorMatchingSource } from './advisor-matching';
 import {
   isAdvisor,
   fighterCount,
@@ -1067,6 +1069,7 @@ type SpiceBankerIncomePayment = {
 export type ResponseWindow = {
   automaticAdvisorFlip?: AutomaticAdvisorFlipSource;
   advisorPreparationSource?: AdvisorPreparationSource;
+  advisorMatchingSource?: AdvisorMatchingSource;
   fremenGrant?: FremenRevivalGrantSource;
   spiceBankerIncomePayment?: SpiceBankerIncomePayment;
   bureaucratPayment?: BureaucratPaymentSource;
@@ -1283,6 +1286,12 @@ export type Game = {
     signature: string;
     resume: { kind: 'ambassador'; event: string } | { kind: 'discovery'; child: DiscoveryEntryArrivalChild };
   };
+  pendingAdvisorMatching?: {
+    receipt: AdvisorMatchingSource;
+    signature: string;
+    intent: {kind:'movement'; order:MovementOrder} | {kind:'shipment'; order:PendingShipment};
+  };
+  advisorMatchingDenied?: string[];
   advisorPreparation?: AdvisorPreparationWindow;
   ecazOccupyPreview?: boolean;
   /** Fresh native Guild/Nexus payment-replacement profile, never inferred from a save. */
@@ -14598,6 +14607,7 @@ function revivalCancellationQuote(g: Game, response: ResponseWindow) {
   }
 }
 function movementCancellationQuote(g: Game, response: ResponseWindow) {
+  if (response.advisorMatchingSource) { currentAdvisorMatching(g, response); return null; }
   try {
     if (response.automaticAdvisorFlip) { currentAutomaticAdvisorFlip(g, response); return null; }
     if (response.advisorResume === 'preparation') { currentAdvisorPreparationResponse(g, response); return null; }
@@ -16957,6 +16967,7 @@ function declareGroundMovement(g: Game, p: Player, action: Action, quoteOnly = f
       : `That destination is blocked or more than ${speed} territories away.`,
   );
   validateFlightSelection(g, p, move);
+  const matching = quoteMatchingMovement(g, move);
   if (quoteOnly) return move;
   checkGroundMovementPromises(g, p, move);
   if (advisorGather) {
@@ -16964,6 +16975,8 @@ function declareGroundMovement(g: Game, p: Player, action: Action, quoteOnly = f
       kind: 'advisorFlip', owner: id, location: to, advisors: false, amount: n, passed: [],
       advisorResume: 'planetologistGather', advisorGatherMove: { turn: g.turn, move: p.moved, order: move },
     };
+  } else if (matching) {
+    openAdvisorMatching(g, matching, {kind:'movement',order:move});
   } else if (
     !move.ornithopterRange && !move.discoveryFlight &&
     p.faction === 'ixians' &&
@@ -20334,6 +20347,61 @@ function automaticAdvisorRule<T>(quote: () => T): T {
   try { return quote(); }
   catch (error) { if (error instanceof AutomaticAdvisorFlipError) throw new RuleError(error.message); throw error; }
 }
+function matchingAdvisorRule<T>(quote: () => T): T {
+  try { return quote(); }
+  catch(error) { if(error instanceof AdvisorMatchingError) throw new RuleError(error.message); throw error; }
+}
+function quoteMatchingMovement(g: Game, move: MovementOrder) {
+  if (move.planetologist?.mode === 'gather') return null;
+  return matchingAdvisorRule(() => quoteAdvisorMatching(g, {kind:'movement',owner:move.player,
+    move:getPlayer(g,move.player).moved,origin:move.origin,destination:move.to,sector:move.sector,
+    advisors:move.advisors,group:Object.fromEntries(move.group)}));
+}
+function quoteMatchingShipment(g: Game, shipment: PendingShipment) {
+  if (shipment.source || shipment.noField || shipment.ambassadorMarker || shipment.alliedNoField) return null;
+  return matchingAdvisorRule(() => quoteAdvisorMatching(g, {kind:'shipment',owner:shipment.player,
+    move:0,origin:'reserves',destination:shipment.territory,sector:shipment.sector,
+    advisors:shipment.advisors,group:{reserves:shipment.amount}}));
+}
+function openAdvisorMatching(g: Game, quote: Omit<AdvisorMatchingSource,'event'>,
+  intent: NonNullable<Game['pendingAdvisorMatching']>['intent']) {
+  requireRule(!g.pendingAdvisorMatching && !g.response && !g.decision,
+    'Finish the original group matching before another arrival.');
+  const receipt={event:crypto.randomUUID(),...quote};
+  g.pendingAdvisorMatching={receipt,intent,signature:JSON.stringify(intent)};
+  g.response={kind:'advisorFlip',owner:receipt.owner,location:receipt.destination,
+    advisors:receipt.advisors,amount:Object.values(receipt.group).reduce((n,count)=>n+count,0),
+    passed:[],advisorMatchingSource:receipt};
+}
+function currentAdvisorMatching(g: Game,response:ResponseWindow) {
+  const source=response.advisorMatchingSource,parent=g.pendingAdvisorMatching;
+  requireRule(source && parent && response.kind==='advisorFlip' && response.owner===source.owner &&
+    response.location===source.destination && response.advisors===source.advisors &&
+    !response.automaticAdvisorFlip && !response.advisorPreparationSource && !response.advisorResume &&
+    JSON.stringify(parent.receipt)===JSON.stringify(source) &&
+    parent.signature===JSON.stringify(parent.intent) && parent.intent.kind===source.kind,
+    'The matching counter has lost its original uncommitted arrival.');
+  matchingAdvisorRule(()=>validateAdvisorMatching(g,source));
+  const quote=parent.intent.kind==='movement'
+    ? quoteMatchingMovement(g,parent.intent.order) : quoteMatchingShipment(g,parent.intent.order);
+  requireRule(quote && JSON.stringify(quote)===JSON.stringify(Object.fromEntries(
+    Object.entries(source).filter(([key])=>key!=='event'))),
+    'The matching counter no longer describes the selected incoming group.');
+  return parent;
+}
+function finishAdvisorMatching(g:Game,response:ResponseWindow,canceled:boolean) {
+  const parent=currentAdvisorMatching(g,response),source=parent.receipt;
+  delete g.pendingAdvisorMatching;
+  if(canceled){
+    const key=advisorMatchingKey(source);
+    if(!(g.advisorMatchingDenied??=[]).includes(key)) g.advisorMatchingDenied.push(key);
+    log(g,`${getPlayer(g,source.owner).name}'s incoming group matching in ${territory(source.destination).name} was prevented before ${source.kind==='movement'?'movement':'shipment'}. Residents keep their type; forces, payment and the unused action remain. Choose a legal replacement.`,
+      {faction:'beneGesserit',name:'Incoming group matching prevented'});
+  } else if(parent.intent.kind==='movement') {
+    validateMovementOrder(g,getPlayer(g,source.owner),parent.intent.order);
+    offerChoamMovement(g,parent.intent.order);
+  } else offerShipment(g,parent.intent.order,true);
+}
 function currentAutomaticAdvisorFlip(g: Game, response: ResponseWindow) {
   const source = response.automaticAdvisorFlip;
   requireRule(response.kind === 'advisorFlip' && source && response.advisors === false &&
@@ -22806,7 +22874,7 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
 function victory(g: Game, quote?: VictoryQuote) {
   requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorTransport &&
     !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle && !g.pendingAutomaticAdvisorHomeworldTransport &&
-    !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm && !g.pendingAutomaticAdvisorRelocation,
+    !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm && !g.pendingAutomaticAdvisorRelocation && !g.pendingAdvisorMatching,
     'Resolve mandatory advisor conversions before checking victory.');
   quote ??= currentVictoryQuote(g);
   applyAdvisorReleases(g, quote.released);
@@ -28598,7 +28666,8 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       );
   } else if (response.kind === 'advisorFlip') {
     const bg = getPlayer(g, response.owner);
-    if (response.advisorResume === 'planetologistGather') {
+    if (response.advisorMatchingSource) finishAdvisorMatching(g,response,canceled);
+    else if (response.advisorResume === 'planetologistGather') {
       movementCancellationQuote(g, response);
       const pending = response.advisorGatherMove!;
       if (canceled) {
@@ -30099,12 +30168,17 @@ function finishGuildTransportRateResponse(g: Game, response: ResponseWindow, can
     log(g, `Karama removed Guild's half-price transport rate. ${shipper.name} paid the full ${fullCost} spice for the unchanged physical transport.`);
   }
 }
-function offerShipment(g: Game, shipment: PendingShipment) {
+function offerShipment(g: Game, shipment: PendingShipment, matchingApproved = false) {
   validatePhysicalShipment(g, shipment);
   validateShipmentArrival(g, shipment);
   if (!shipment.ambassadorMarker) checkShipmentIncomeFunding(g, getPlayer(g, shipment.player), shipment.cost, shipment.allyPayment);
   const p = getPlayer(g, shipment.player),
     id = p.id;
+  const matching = quoteMatchingShipment(g, shipment);
+  if (matching && !matchingApproved) {
+    openAdvisorMatching(g, matching, {kind:'shipment',order:shipment});
+    return;
+  }
   const { territory: to, sector: s } = shipment;
   const n = shipment.alliedNoField || shipment.ambassadorMarker ? 1 : shipment.amount;
   const guild = byFaction(g, 'guild');
@@ -36039,6 +36113,7 @@ function applyActionInner(
       shipment.noFieldSkillProof = noFieldSkillProof(shipment);
       validatePhysicalShipment(g, shipment);
     }
+    quoteMatchingShipment(g, shipment);
     if (nexusEvent) recordNexusRicheseShipment(g,shipment);
     bindGuildCunningShipment(g,p,'reserve',shipment);
     if (execution === 'movementPreparation') {
@@ -37569,6 +37644,8 @@ export function viewGame(state: Game, id: string) {
       freeBlocked: g.revivalRules?.freeBlocked?.includes(id) ?? false,
     },
     ghola: gholaOptions(g, me),
+    ...(me.faction === 'beneGesserit' && g.advisorMatchingDenied?.length
+      ? {advisorMatchingDenied:g.advisorMatchingDenied} : {}),
     aid: {
       pledged: g.aid?.[id]?.amount ?? 0,
       available:

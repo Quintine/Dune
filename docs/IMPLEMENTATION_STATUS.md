@@ -1,5 +1,52 @@
 # Dune implementation status
 
+## 24 October 2026 — Matching incoming advisor packets before arrival
+
+Supplied physical28 E explicitly marks matching shipping/moving into resident
+BG forces as counterable; physical17 names the incoming group, not the
+residents. Normal opposite-type ground packets and ordinary reserves joining
+advisors now receive a precommit counter. Same-type movement has no flip.
+Ordinary reserves' fighter default is a stated provisional composition because
+the supplied source gives no fixed reserve side.
+
+The source does not specify the remedy when matching is prevented. Under the
+14 October authority, stop only that declaration before transfer/payment/use,
+retain original resident/incoming types and allow a legal replacement. Deny
+the same packet/destination territory in the same owned opportunity; sector or
+response UUID changes cannot retry it. Different packets/destinations and later
+opportunities stay independent. Do not import a turn-wide ban, action loss or
+the continuously-alone hold. Already-played declaration cards retain original
+use. A strict public ten-field receipt selects physical matching facts; keep
+the exact original order/signature private and consume its parent before one
+original CHOAM movement or normal shipment suffix. Personalized minimal bots
+reuse the same quote to remove prevented packets.
+
+Disjoint helper/native-fixture lanes, complete-page source review and root
+integration pass **19 files244/244**, types/lint/build and seven native
+normal declaration/response/GameTable SSR journeys, plus twelve existing-profile
+counter responses and twelve accepted replacement actions. Genuine34-action
+public Advanced BG/Atreides/Emperor base33 sources earn the original Arrakeen
+advisor and paid Basin fighter, retaining originally dealt Karama. The real
+33-action prefix owns normal reserve-to-advisor shipment. Both ground directions
+and shipment retain original board/funds/allowances while waiting. Allowance
+commits once; shipment pays1 once. Prevention leaves the unused action and
+payment, rejects the same packet and admits an earned same-type sector move
+or an empty-territory shipment. Same-type movement keeps the original Karama.
+No played force, phase, wallet, hand, stance or counter is installed.
+
+The focused first native allowance and final frozen batch pass. Private proof:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-matching-groups/`.
+`frozen-integrated/report.json` binds tree
+`f1dc33ab54b8f74e98c7c6e7950fddf9dfd2a16cf0e4648cb2c0617cda23a061`,
+2752 files on base `abf0305ddfe6883f49b9f34c1d4e879c47dcf4f2`.
+Prose/reference overlays are separately reviewed/hashed. Standard controls render;
+no new callback/browser/mobile/deployed or complete-mode claim. Source review
+also identifies an Advanced Spiritual target cutover and its separate Polar
+matching parent still due; special relocation, Guild/Homeworld, gathering,
+complete modes and final assurance remain open. No strategic AI work or saved-
+room/D1/reset/restart/deployment operation.
+[Connected source and limits](ADVISOR_MATCHING.md).
+
 ## 24 October 2026 — Advisor conversion after independent relocation
 
 Supplied physical17/28 E's counter now composes Fremen Ambassador and Discovery

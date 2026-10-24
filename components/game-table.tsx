@@ -2493,6 +2493,14 @@ export function GameTable({
                   until another faction returns or the group leaves.
                 </p>
               )}
+              {g.response.advisorMatchingSource && (
+                <p className="notice">
+                  The incoming group must become {g.response.advisorMatchingSource.advisors ? 'advisors' : 'fighters'} to match your forces already in the destination.
+                  {' '}This {g.response.advisorMatchingSource.kind === 'movement' ? 'movement' : 'shipment'} has not happened yet.
+                  {' '}Karama prevents this group from matching here during this action opportunity. Residents keep their type; no forces, shipment payment or unused action are spent.
+                  {' '}Any already-played movement or declaration card keeps its original use. Choose a legal replacement if matching is prevented.
+                </p>
+              )}
               {g.response.kind === 'advisor' && (
                 <p className="notice">
                   {g.players.find((player) => player.id === g.response?.owner)?.name} declared {g.response.amount ?? 1} free {(g.response.amount ?? 1) === 1 ? 'force' : 'forces'} to {territory(splitLocation(g.response.location ?? 'polar_sink:0').territory).name}.
