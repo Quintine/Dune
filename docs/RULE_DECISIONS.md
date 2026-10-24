@@ -1,5 +1,22 @@
 # Rule decision index
 
+## Tleilaxu proactive Revival prevention — 24 October 2026
+
+Supplied Advanced physical38 H permits selecting any one player during Revival,
+without requiring a pending request, unused allowance or current Tanks. Keep the
+original pending normal-revival interruption target-bound; decline preserves a
+later quiet declaration. Neither path reverses completed returns or payments.
+The printed Special Karama immunity (physical16/39) protects Emperor’s native
+special revival (physical31 D).
+
+Under the 14 October recommended-policy authority, prevention also covers Ghola
+Treachery returns during the remaining affected Revival and expires outside that
+phase. Physical39’s Ghola erratum supplies free immediate returns and a separate
+normal allowance, without naming prevention immunity. This is an explicit textual
+composition, not a newly retrieved combined publisher FAQ. It supersedes the old
+provisional Ghola bypass. The unresolved low-Homeworld overlap guard remains.
+[Source, connected controls and limits](TLEILAXU_SPECIAL_KARAMA.md).
+
 ## Truthtrance unrevealed Face Dancer fact — 24 October 2026
 
 Compose the publisher FAQ's game-related Yes/No/AND/OR permission with native

@@ -66,7 +66,7 @@ export const HELP = {
   ixForces:
     'Suboids always dial one-half strength and cannot receive spice support. Cyborgs count two in basic play; in advanced play they need one spice each for strength two and otherwise count one. After losses, surviving suboids may replace cyborgs lost in that battle, one for one.',
   tleilaxuSpecial:
-    'Once per game, Tleilaxu can spend a real Karama at a normal revival declaration to prevent that faction’s normal force and leader revivals for this turn. The attempt costs no spice and returns no pieces. Ghola treachery and Emperor special Karama remain separate; full timing and exception audits are pending.',
+    'Once per game during Revival, Tleilaxu may spend a real Karama to prevent any one player’s remaining force and leader revivals, before a request or at its normal revival decision. Completed returns and payments stay unchanged. Provisional scope includes Ghola during this Revival and expires with the phase; Emperor special Karama remains protected. Low-Homeworld overlap and wider interactions remain unfinished.',
   techTokens:
     'Tech tokens are public industries. Their income is paid once at the end of the matching phase, in an amount equal to the owner’s token count. A battle winner takes one from the loser. All three must belong to one player to count as a stronghold.',
   summonedWorm:
@@ -2665,6 +2665,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     coverage: 'Partial',
     summary: 'Return forces or a leader from the tanks using the card.',
     steps: [
+      'During Revival, Tleilaxu special Karama prevention also blocks this card for the selected player. This inclusion is provisional and ends when Revival ends; completed returns stay unchanged. Ghola remains available afterward, subject to its other timing and target rules.',
       'Choose a dead leader for leader revival, or leave the leader choice empty to return up to five forces. A card pays for one of these choices; it cannot revive both a leader and the Kwisatz Haderach.',
       'A binding battle answer or prescience commitment may require this preparation. The private guide identifies a Ghola play that can fulfill the answer, without spending or revealing the card until you choose to play it. Resolve any revival-income response before using that income to support a battle.',
       'A Basic ground-movement promise can also require Ghola force preparation. The guide returns physical Tanks to reserves, then preserves an unused affordable shipment and one later matching ground move. Ghola itself does not fulfill movement or consume normal revival allowances. A known discarded Ghola may be recovered with the paid Box and played again.',
@@ -2714,7 +2715,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         ],
       },
     ],
-    related: ['revival'],
+    related: ['revival', 'special-karama'],
   },
   {
     id: 'atreides-full-plan',
@@ -3793,12 +3794,19 @@ export const RULE_TOPICS: RuleTopic[] = [
       'The stopped shipment uses the shipper’s shipment opportunity while retaining forces, spice, allied credit and any shipment-rate card; ordinary movement remains available. These settlement details remain provisional pending primary-source clarification. The Guild decision appears regardless of its hidden hand.',
       'Fremen may call a worm in a sand territory during Spice Blow and Nexus. It destroys spice and unprotected forces immediately. Ally protection and Fremen survival have separate responses; a second Karama may cause Fremen to be devoured. The special summon itself consumes no spice-deck card.',
       'Resume any interrupted spice draw, fresh-blow window or worm response after the summoned worm resolves. Its Nexus occurs at the end of the blow, followed by eligible Fremen rides. During an open Nexus, the new ride joins the existing queue. Destroyed fresh spice cannot later be doubled by Harvester.',
-      'Tleilaxu receive a decision before another faction’s normal revival completes, whether or not they hold Karama. Decline to continue the revival, or spend a real Karama once per game to prevent that faction’s normal force and leader revivals for the current turn. A stopped attempt spends no spice, returns no pieces and consumes no elite or extra-revival quota.',
-      'This includes negotiated leaders, KH and Emperor-funded allied extra forces. The Emperor remains the payer when an extra revival is allowed. Hidden leader identities and prices are not added to the public stop decision. Ghola treachery and the Emperor’s special Karama currently remain separate from the normal-revival restriction.',
-      'The printed Tleilaxu power is brief. Its full-turn scope, precise timing and card/special-power exceptions remain provisional pending the complete primary-source audit. These choices are tested implementation behavior, not certification of the full expansion rules.',
+      'During a quiet Revival boundary, Tleilaxu may spend its once-per-game special Karama to select any one player, including itself, an ally or a ready faction. It also retains the original decision before another faction’s normal revival completes, independently of card holdings. Declining that decision continues the original return and preserves later quiet use. A pending decision can select only its original recipient.',
+      'Prevention stops further force and leader returns in this Revival, including negotiated leaders, KH and Emperor-funded extra forces. It does not undo completed returns, payments or used allowances. A stopped pending request spends no spice or revival quota. Hidden leader identities and negotiated prices remain outside the public decision. Emperor’s special Karama is immune.',
+      'Provisional scope includes Ghola Treachery returns during the affected Revival and ends when that phase ends; Ghola is available afterward. This composes the revised prevention wording with Ghola’s free-return rule, rather than quoting a combined publisher ruling. Low-population Homeworld overlap retains its existing guard. Full expansion and combination acceptance remains open.',
       'CHOAM cash-in, Richese acquisition and Ixian HMS relocation also have connected special-use paths. Ecaz’s supplied p30 unarmed disc difference and Moritani’s supplied p35 post-loss winner-card disposal now have owned controls and native cost/once-use, with explicit provisional numeric/disposal interpretations. Advanced preview remains six-classic only; broader timing and combinations are not certified.',
       'Richese’s special purchase is available in development tables: spend a Karama and three spice to choose privately from the cache, with separate Emperor income and explicit full-hand/final-cache guards. See its acquisition guide for current controls and limits.',
       'See Ecaz special Karama and Moritani special Karama for their source-bound first versions. Their declarations do not create a normal faction-cancellation window; existing Kull/BG handling remains in the shared special-intent pipeline.',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Tleilaxu proactive Revival is prototyped: quiet any-player selection and original target-bound interruption share current physical-cost validation; completed returns stay intact. Ghola inclusion and phase expiry are provisional; Emperor special immunity and the low-Homeworld overlap guard remain.', evidence: ['game/tleilaxu-special-karama.ts', 'game/engine.ts', 'game/card-availability.ts', 'game/revival.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Native Advanced owner has persistent card/target controls before a request and in the pending decision, including self, ally, ready and prior-return choices. Enclosing priorities and target restrictions retain readable reasons.', evidence: ['components/tleilaxu-special-karama.tsx', 'components/game-table.tsx', 'tests/tleilaxu-special-karama-controls.test.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Four existing profiles reuse public-Tanks thresholds through the shared current quote; no strategic refinement or difficulty calibration.', evidence: ['game/bots.ts', 'tests/tleilaxu-special-karama-window.test.ts', 'tests/ghola-bots.test.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'Proactive source cutover, provisional Ghola/phase scope, printed Special Karama immunity and remaining Homeworld/combination limits are explicit.', evidence: ['docs/TLEILAXU_SPECIAL_KARAMA.md', 'docs/RULE_DECISIONS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Native setup, paid shipment and battle earn the actual cards and twelve Tanks; focused regressions cover declaration, original interruption, prior returns, stale intent and real phase expiry. Frozen14-file148/148, types/lint/build, six actual callback/engine/GameTable SSR journeys and four legal existing-profile paths pass. Genuine111/113-action sources earn original cards and casualties. Private-driver-only repairs reuse unchanged-source checks. Full modes, browser/deployed and final assurance stay open.', evidence: ['tests/fixture-tleilaxu-special-karama.ts', 'tests/tleilaxu-special-karama-window.test.ts', 'tests/tleilaxu-special-karama-quote.test.ts', 'tests/tleilaxu-special.test.ts', 'tests/karama-intents.test.ts', 'tests/ghola-lifecycle.test.ts'] },
     ],
     related: [
       'card-karama',

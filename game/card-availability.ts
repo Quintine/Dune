@@ -3,6 +3,7 @@ import { TERRITORIES } from './board';
 import { harvesterAvailable, type Card } from './cards';
 import type { FactionId } from './catalog';
 import { choamSaleGholaTiming } from './choam-market-ghola';
+import { revivalPrevented } from './revival';
 
 export type OrdinaryCardEffect =
   | 'weather'
@@ -26,6 +27,8 @@ export type OrdinaryCardPlayer = {
 export type OrdinaryCardState = {
   status: 'lobby' | 'setup' | 'playing' | 'finished';
   phase: number;
+  turn?: number;
+  revivalPrevention?: { player: string; turn: number } | null;
   active: string | null;
   me: string;
   nexusGuildCunning?: { active: { hajrAvailable: boolean } | null } | null;
@@ -102,6 +105,11 @@ export function ordinaryCardAvailability(
     return blocked('Select a special card in your hand.');
 
   switch (card.effect as OrdinaryCardEffect) {
+    case 'ghola':
+      if (revivalPrevented({ phase: state.phase, turn: state.turn ?? 0,
+        revivalPrevention: state.revivalPrevention ?? undefined }, own.id))
+        return blocked('Tleilaxu prevented this player’s revival, including Ghola, for the remaining Revival Phase.');
+      break;
     case 'hajr':
       if (
         state.phase !== 5 ||

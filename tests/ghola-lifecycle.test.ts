@@ -234,7 +234,7 @@ void test('Ghola options are own-hand only and ignore opponents private spice ca
   assert.deepEqual(viewGame(g, 'p').ghola, a);
   assert.deepEqual(before.players[0], g.players[0]);
 });
-void test('Ghola respects pending table windows while normal revival prevention does not block it', () => {
+void test('Ghola respects table windows and Revival prevention, which expires outside Revival', () => {
   const { g, card } = fixture();
   Object.assign(g.players[0], {
     tanks: 5,
@@ -243,6 +243,13 @@ void test('Ghola respects pending table windows while normal revival prevention 
     leaderRevived: true,
   });
   g.revivalPrevention = { player: 'p', turn: 2 };
+  assert.equal(viewGame(g, 'p').ghola.available, false);
+  const blocked = structuredClone(g);
+  assert.throws(() => applyAction(g, 'p', { type: 'card', card, amount: 5 }), /prevented.*Ghola/);
+  assert.deepEqual(g, blocked);
+  // Unit timing branch; the native fixture separately proves actual phase exit.
+  g.phase = 5;
+  g.active = 'p';
   assert.equal(viewGame(g, 'p').ghola.available, true);
   const done = applyAction(g, 'p', { type: 'card', card, amount: 5 });
   assert.equal(done.players[0].reserves, 20);

@@ -16,6 +16,27 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Tleilaxu proactive Revival prevention — 24 October. Prototyped / Partial.**
+The native Advanced special Karama now selects any one player at a quiet Revival
+boundary, including self, ally, ready and prior-return targets. The original
+pending normal-revival interruption remains target-bound and can be declined
+without losing later quiet use. Completed returns, payments and quotas stay
+intact. The selected provisional composition includes Ghola during the remaining
+Revival, then expires at phase end; Emperor special revival retains printed
+immunity and the unresolved low-Homeworld guard remains.
+[Source, implementation and limits](TLEILAXU_SPECIAL_KARAMA.md).
+
+Disjoint control/native-fixture contributions, bounded source review and root
+integration pass **14 files148/148**, types/lint/build, six actual control/engine/
+GameTable SSR journeys and four existing-profile paths. Genuine111-action public
+Advanced setup, paid shipments and battle earn original Karama/Ghola and twelve
+Atreides Tanks; a prior-free source takes113 actions. Feedback updates the old
+provisional Ghola bypass and corrects quota-exhaustion assertions and one const
+lint issue. After the private smoke-driver correction, unchanged-source test,
+type/lint and build results are reused explicitly. No AI refinement, full-mode,
+comprehensive/browser/deployed or save/recovery/privacy/custody certificate;
+no saved-room/D1/reset/restart/deployment operation.
+
 **Truthtrance unrevealed Face Dancer facts — 24 October. Prototyped / Partial.**
 The shared current-fact author can now ask whether a respondent holds a named
 identity as an unrevealed Face Dancer. Actual current cards determine the answer;
@@ -34,13 +55,6 @@ preserves its existing expansion entry guard rather than changing a mode to
 fit the fixture. No full-mode, broader mixed/future-question, comprehensive/
 browser/deployed or AI calibration certificate; no saved-room/D1/reset/restart/
 deployment operation.
-
-Next concrete native content candidate: supplied physical38 H permits the
-Tleilaxu special Karama during Revival, while native preflight currently waits
-for a pending normal request. Its proactive window needs implementation;
-Ghola/Emperor-special exceptions remain separately recorded provisional scope.
-Inspect the existing [native special cases](../tests/tleilaxu-special.test.ts)
-before changing that contract.
 
 **Moritani captured and foreign-ghola targets — 24 October. Prototyped / Partial.**
 Assassinate now accepts the opposing printed faction's valid captured or ordinary

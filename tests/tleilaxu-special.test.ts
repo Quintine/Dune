@@ -136,7 +136,7 @@ void test('special Karama consumes one card once, aborts payment and prevents re
 });
 void test('ownership, actual Karama, window, target and decline validation reject immutably', () => {
   const idle = beforeRevival();
-  assert.throws(() => prevent(idle), /declaration/);
+  assert.throws(() => prevent(idle), /Expected a string/);
   const g = declare(idle);
   const snapshot = structuredClone(g);
   assert.throws(
@@ -245,11 +245,13 @@ void test('allowing Emperor-funded revival preserves separate quota, correct pay
   assert.equal(g.players[0].revived, 0);
   assert.equal(g.players[0].tanks, 5);
 });
-void test('Ghola treachery and Emperor special Karama remain separate from blocked normal revivals', () => {
-  let g = prevent(declare(beforeRevival()));
+void test('Ghola is prevented during Revival while Emperor special Karama retains printed immunity', () => {
+  const g = prevent(declare(beforeRevival()));
   placeFixtureHand(g, 0, [ghola]);
-  g = allow(applyAction(g, 'a', { type: 'card', card: ghola.id, amount: 5 }));
-  assert.equal(g.players[0].tanks, 3);
+  const before = structuredClone(g);
+  assert.throws(() => applyAction(g, 'a', { type: 'card', card: ghola.id, amount: 5 }), /prevented.*Ghola/);
+  assert.deepEqual(g, before);
+  assert.equal(g.players[0].tanks, 8);
   assert.equal(g.players[0].revived, 0);
   let emperor = beforeRevival();
   emperor.players[1].tanks = 5;

@@ -1,5 +1,47 @@
 # Dune implementation status
 
+## 24 October 2026 — Tleilaxu proactive Revival prevention
+
+Implement supplied physical38 H’s any-player Revival window through a focused
+quote, native owner-only projection, persistent card/target controls and the
+existing special-intent pipeline. Quiet intents have no pending request;
+interrupted intents bind the original complete declaration. Revalidation rejects
+a replaced source before spending. One original Karama and the game-long use
+receipt are consumed; no completed return, payment, income or allowance changes.
+Existing pending decline and low-Homeworld overlap safeguards remain.
+
+The 14 October selected textual composition includes Ghola Treachery during the
+affected remaining Revival and expires afterward. This explicitly supersedes
+the old provisional bypass, without claiming a combined publisher FAQ. Printed
+Special Karama immunity keeps Emperor’s native special revival legal. Both
+ordinary-card availability and the shared Ghola effect enforce the same clock.
+Minimal bots reuse their public-Tanks thresholds through the owner quote.
+
+Frozen **14 files148/148**, types/lint/build, six actual control/engine/GameTable
+SSR journeys and four existing-profile paths pass. Genuine111-action public
+Advanced native setup, original paid shipments and battle provide original
+Karama/Ghola and twelve Atreides Tanks; prior-free chronology takes113. Quiet,
+pending, prior-free, prior-paid, ready and self branches continue through actual
+phase5 Ghola without using normal quota. No played hand, phase, casualty,
+wallet or special-use receipt is installed in that source.
+
+Initial feedback is145/148: two old Ghola-bypass expectations and an exhausted
+normal-quota error expectation. Three focused repairs pass; the frozen union
+then passes148/148. Types pass and lint catches one newly constant test variable;
+that correction is included in the final frozen source. The private smoke driver
+also needed the same quota-error correction and accurate pending-branch action
+recording. Application bytes stay unchanged, so its passed union/types/lint/build
+are explicitly reused with the repaired runtime proof rather than repeated.
+
+[Contract and remaining boundaries](TLEILAXU_SPECIAL_KARAMA.md). Private evidence:
+`/home/quintine/.local/share/dune/checkpoints/20261024-tleilaxu-special-karama/`.
+Frozen source fingerprint:
+`ea3f7b9de32d42208ea12cdafa5f581a2de0fee3638e307adade21591e6bbf7a`
+(2,728 nonignored files), based on `6ea691255af68003b900a490256b3d2381b32322`.
+Final prose/reference overlay is separately validated and hashed. Broader modes,
+combinations, comprehensive assurance, browser/mobile/deployed acceptance and AI
+refinement remain open. No saved-room/D1/reset/restart/deployment operation.
+
 ## 24 October 2026 — Verified current Face Dancer questions
 
 Add a distinct Truthtrance current unrevealed Face Dancer identity fact. Exact

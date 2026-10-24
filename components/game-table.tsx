@@ -55,6 +55,7 @@ import { CharityClaim } from './charity-claim';
 import { FremenRevivalGrant } from './fremen-revival-grant';
 import { AdvisorPreparation } from './advisor-preparation';
 import { AtreidesFullPlan } from './atreides-full-plan';
+import { TleilaxuSpecialKarama } from './tleilaxu-special-karama';
 import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
 import { JunctionTransport } from './junction-transport';
@@ -1977,6 +1978,7 @@ export function GameTable({
           <Recruits game={g} act={act} busy={busy} />
           <AdvisorPreparation game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           {g.decision?.kind !== 'fullPlanOffer' && <AtreidesFullPlan game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />}
+          {g.decision?.kind !== 'revivalStop' && <TleilaxuSpecialKarama game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />}
           <NexusTraitors game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
           <DiscoveryPanel game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
           <LeaderSkillsPanel skills={g.leaderSkills} leaders={g.allLeaders} players={g.players} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
@@ -3161,8 +3163,8 @@ export function GameTable({
                     declared a{' '}
                     {g.decision.revival === 'forces' ? 'force' : 'leader'}{' '}
                     revival. Allow it or use your once-per-game special Karama
-                    to prevent their normal force and leader revivals for this
-                    turn.
+                    to prevent their further force and leader revivals during
+                    this Revival Phase, including Ghola.
                   </p>
                   {g.decision.source === 'nexusEmperor' && (
                     <p className="notice">
@@ -3171,21 +3173,7 @@ export function GameTable({
                       income; both the Nexus and your special Karama remain spent.
                     </p>
                   )}
-                  <HelpTip topic="tleilaxuSpecial" />
-                  {g.revival.specialKaramaBlock && (
-                    <p role="status">{g.revival.specialKaramaBlock}</p>
-                  )}
-                  {me.hand
-                    ?.filter(canActivateKarama)
-                    .map((c) => (
-                      <div key={c.id}>
-                        {actionButton(
-                          'Spend special Karama · prevent revival',
-                          { type: 'card', card: c.id, mode: 'special' },
-                          !!g.revival.specialKaramaBlock,
-                        )}
-                      </div>
-                    ))}
+                  <TleilaxuSpecialKarama game={g} act={act} busy={busy} />
                   {actionButton('Allow this revival', {
                     type: 'decision',
                     decline: true,

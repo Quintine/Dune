@@ -11,6 +11,7 @@ import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, home
 import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteAtreidesFullPlan } from './atreides-full-plan';
+import { quoteTleilaxuSpecialKarama } from './tleilaxu-special-karama';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
@@ -23289,6 +23290,8 @@ function playMarketGhola(g: Game, p: Player, action: Action) {
   stageOrdinaryCardDiscard(g, p, used);
 }
 function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
+  requireRule(!revivalPrevented(g, p.id),
+    'Tleilaxu prevented this player’s revival, including Ghola, for the remaining Revival Phase.');
   if (action.leader === 'kwisatz') {
     requireRule(
       g.advanced && p.faction === 'atreides' && p.kwisatz?.dead,
@@ -30811,6 +30814,27 @@ function atreidesFullPlanView(g: Game, p: Player) {
   return { ...quote, cards,
     blocked: quote.blocked ?? (cards.length ? null : 'A spendable Karama card is required.') };
 }
+function tleilaxuSpecialKaramaQuote(g: Game, p: Player) {
+  const ownStop = g.decision?.kind === 'revivalStop' && g.decision.player === p.id &&
+    g.pendingRevival?.player === g.decision.recipient;
+  return quoteTleilaxuSpecialKarama({
+    status: g.status, phase: g.phase, advanced: g.advanced, owner: p,
+    players: g.players,
+    cards: p.hand.filter(card => canUseAsKaramaRole(g, p, card) &&
+      !karamaSpendingBlock(g, p, card, kullSpecialPurpose(p.faction))).map(card => card.id),
+    pendingPlayer: g.pendingRevival?.player ?? null,
+    blocked: g.truthtrance || g.response || (g.decision && !ownStop) ||
+      (g.pendingRevival && !ownStop) || g.phaseOpening || g.pendingKarama ||
+      g.choamMarket || g.pendingTreacheryDiscard || g.pendingNullentropy || g.pendingKull
+      ? 'Resolve the current response, decision or card effect before declaring revival prevention.' : null,
+    targetBlocks: Object.fromEntries(g.players.map(player =>
+      [player.id, homeworldRevivalKaramaBlock(g, player.id)])),
+  });
+}
+function tleilaxuSpecialKaramaView(g: Game, p: Player) {
+  return g.status === 'playing' && g.advanced && p.faction === 'tleilaxu' && g.phase === 4
+    ? tleilaxuSpecialKaramaQuote(g, p) : null;
+}
 function ecazSpecialKaramaContext(g: Game, p: Player) {
   const b = g.battle;
   return { status: g.status, phase: g.phase, advanced: g.advanced, owner: p,
@@ -30867,7 +30891,7 @@ export type SpecialKaramaIntent = {
   | { kind: 'choam'; cards: string[] }
   | { kind: 'richese'; acquire: string; nexusEvent?: string }
   | { kind: 'ixians'; route: string[]; collect: boolean; sandmasterPiles?: string[] }
-  | { kind: 'tleilaxu'; target: string; revival: PendingRevival }
+  | { kind: 'tleilaxu'; target: string; revival: PendingRevival | null }
   | { kind: 'fremen'; territory: string }
   | {
       kind: 'atreides';
@@ -31037,29 +31061,21 @@ export function prepareSpecialKaramaIntent(
       ...(action.sandmasterPiles !== undefined ? { sandmasterPiles } : {}),
     };
   } else if (p.faction === 'tleilaxu') {
+    const quote = tleilaxuSpecialKaramaQuote(g, p);
+    requireRule(!quote.blocked, quote.blocked ?? 'Revival prevention is unavailable.');
+    const target = action.target === undefined && g.pendingRevival
+      ? g.pendingRevival.player : stringField(action.target);
+    const selection = quote.targets.find(candidate => candidate.player === target);
     requireRule(
-      g.phase === 4 &&
-        !g.response &&
-        g.decision?.kind === 'revivalStop' &&
-        g.decision.player === p.id &&
-        g.pendingRevival,
-      'Wait for a normal revival declaration before preventing it.',
+      selection,
+      g.pendingRevival ? 'This decision applies to the faction currently reviving.' : 'Choose a player to prevent during Revival.',
     );
-    const target = g.pendingRevival.player;
-    const homeworldBlock = homeworldRevivalKaramaBlock(g, target);
-    requireRule(
-      !homeworldBlock,
-      homeworldBlock ?? '',
-    );
-    requireRule(
-      action.target === undefined || action.target === target,
-      'This decision applies to the faction currently reviving.',
-    );
+    requireRule(!selection.blocked, selection.blocked ?? 'This target is unavailable.');
     return {
       ...base,
       kind: 'tleilaxu',
       target,
-      revival: structuredClone(g.pendingRevival),
+      revival: g.pendingRevival ? structuredClone(g.pendingRevival) : null,
     };
   } else if (p.faction === 'fremen') {
     requireRule(
@@ -31265,7 +31281,8 @@ export function executeSpecialKaramaIntent(
   if (intent.kind === 'tleilaxu' && prepared.kind === 'tleilaxu')
     requireRule(
       intent.target === prepared.target &&
-        sameDeclaration(intent.revival, prepared.revival),
+        (intent.revival === null ? prepared.revival === null :
+          prepared.revival !== null && sameDeclaration(intent.revival, prepared.revival)),
       'The original revival declaration is no longer pending.',
     );
   if (intent.kind === 'guild' && prepared.kind === 'guild')
@@ -31409,7 +31426,7 @@ function resolveSpecialKaramaEffect(g: Game, p: Player, card: Card, intent: Spec
     if (g.revivalRequests) delete g.revivalRequests[target];
     log(
       g,
-      `${p.name} used special Karama to prevent ${getPlayer(g, target).name}’s normal force and leader revivals for this turn.`,
+      `${p.name} used special Karama to prevent ${getPlayer(g, target).name}’s force and leader revivals, including Ghola, for the remaining Revival Phase. Completed returns stay unchanged; the Emperor’s special Karama remains independent.`,
     );
   } else if (intent.kind === 'fremen') {
     const t = intent.territory;
@@ -36003,6 +36020,8 @@ function applyActionInner(
       {
         status: g.status,
         phase: g.phase,
+        turn: g.turn,
+        revivalPrevention: g.revivalPrevention,
         active: g.active,
         me: id,
         nexusGuildCunning: projectedNexusGuildCunning(g,id),
@@ -37176,6 +37195,7 @@ export function viewGame(state: Game, id: string) {
       : null,
     richeseSpecialKarama: richeseSpecialKaramaView(g, me),
     atreidesFullPlan: atreidesFullPlanView(g, me),
+    tleilaxuSpecialKarama: tleilaxuSpecialKaramaView(g, me),
     ...(me.faction === 'ecaz' && g.advanced && g.battle
       ? { ecazSpecialKarama: ecazSpecialKaramaView(g, me) } : {}),
     ...(g.moritaniSpecialKarama?.source.owner === me.id && g.moritaniSpecialKarama.stage === 'offer'

@@ -2302,12 +2302,15 @@ function policyActions(g: GameView): Action[] {
         target.id !== me.ally &&
         (target.tanks >= [12, 8, 5, 3][level] ||
           (level > 0 && d.revival === 'leader' && noLeader));
-      if (specialCard && shouldStop && !g.revival.specialKaramaBlock)
+      const offer = g.tleilaxuSpecialKarama;
+      const card = offer?.cards[0];
+      const allowed = offer?.targets.some(choice => choice.player === target.id && !choice.blocked);
+      if (card && offer && !offer.blocked && allowed && shouldStop)
         return [
           {
             type: 'card',
             mode: 'special',
-            card: specialCard.id,
+            card,
             target: target.id,
           },
         ];
@@ -3129,6 +3132,14 @@ function policyActions(g: GameView): Action[] {
       : [{ type: 'passBid' }];
   }
   if (g.phase === 4) {
+    // Reuse the existing public-Tanks preference, with shared current permission.
+    const prevention = g.tleilaxuSpecialKarama;
+    if (prevention && !prevention.blocked && !prevention.pending && prevention.cards.length) {
+      const target = g.players.find(player => player.id !== me.id && player.id !== me.ally &&
+        player.tanks >= [12, 8, 5, 3][level] &&
+        prevention.targets.some(choice => choice.player === player.id && !choice.blocked));
+      if (target) return [{ type: 'card', mode: 'special', card: prevention.cards[0], target: target.id }];
+    }
     if (g.revival.prevented)
       return g.ready.includes(me.id) ? [] : [{ type: 'ready' }];
     const actions: Action[] = [];

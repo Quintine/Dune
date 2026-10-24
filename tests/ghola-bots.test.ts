@@ -223,7 +223,7 @@ void test('foreign-ghola and negotiated early-revival bot candidates explicitly 
     );
   }
 });
-void test('ordinary revival prevention does not itself prevent independent Ghola recovery', () => {
+void test('bots respect Ghola prevention during Revival and can use it after phase expiry', () => {
   const { g, card } = fixture();
   g.phase = 4;
   g.active = null;
@@ -231,7 +231,14 @@ void test('ordinary revival prevention does not itself prevent independent Ghola
   g.revivalPrevention = { player: 'p', turn: g.turn };
   for (const level of DIFFICULTIES) {
     assert.equal(view(g, level).revival.prevented, true);
-    const { a, done } = apply(g, level);
+    assert.equal(view(g, level).ghola.available, false);
+    const blocked = apply(g, level);
+    assert.notEqual(blocked.a.card, card.id);
+    assert.ok(blocked.done.players[0].hand.some(c => c.id === card.id));
+    const expired = structuredClone(g);
+    expired.phase = 5;
+    expired.active = 'p';
+    const { a, done } = apply(expired, level);
     assert.equal(a.card, card.id);
     assert.equal(done.players[0].reserves, 5);
   }
