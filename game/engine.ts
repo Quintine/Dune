@@ -12,7 +12,7 @@ import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, h
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteAtreidesFullPlan } from './atreides-full-plan';
 import { quoteTleilaxuSpecialKarama } from './tleilaxu-special-karama';
-import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport, type AutomaticAdvisorGamont, type AutomaticAdvisorBattle, type AutomaticAdvisorHomeworldTransport } from './advisor-automatic-flip';
+import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport, type AutomaticAdvisorGamont, type AutomaticAdvisorBattle, type AutomaticAdvisorHomeworldTransport, type AutomaticAdvisorFaceDance } from './advisor-automatic-flip';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
@@ -1276,6 +1276,7 @@ export type Game = {
     arrival?: { territory: string; sector: number; amount: number; elite: number };
     signature: string;
   };
+  pendingAutomaticAdvisorFaceDance?: AutomaticAdvisorFaceDance;
   advisorPreparation?: AdvisorPreparationWindow;
   ecazOccupyPreview?: boolean;
   /** Fresh native Guild/Nexus payment-replacement profile, never inferred from a save. */
@@ -20322,6 +20323,12 @@ function currentAutomaticAdvisorFlip(g: Game, response: ResponseWindow) {
       'The mandatory conversion has lost its original committed Homeworld transport.');
     validateHomeworldAdvisorTransport(g, parent);
   }
+  if (source.producer === 'faceDance') {
+    const parent = g.pendingAutomaticAdvisorFaceDance;
+    requireRule(parent && JSON.stringify(source.faceDance) === JSON.stringify(parent),
+      'The mandatory conversion has lost its original completed Face Dance.');
+    validateCompletedFaceDance(g, parent);
+  }
   automaticAdvisorRule(() => validateAutomaticAdvisorFlip(g, source));
   return source;
 }
@@ -20532,6 +20539,59 @@ function finishAutomaticAdvisorHomeworldTransport(g: Game) {
     intrusion(g, actor, to);
     openTerritoryEntry(g, actor, to, sector, amount, elite, 'shipment');
   }
+}
+function prepareFaceDanceAdvisorFlips(g: Game, player: Player, to: string, sector: number,
+  sources: Record<string, number>, returned: Record<string, number>) {
+  const context = g.lastBattleContext;
+  if (!g.advanced || g.status !== 'playing' || g.phase !== 6 || !context ||
+      (context.result !== 'normal' && context.result !== 'traitor')) return false;
+  const changed = new Set([to, ...Object.entries(sources)
+    .filter(([key, count]) => key !== 'reserves' && count > 0).map(([key]) => splitLocation(key).territory)]);
+  const groups = automaticAdvisorRule(() => quoteAutomaticAdvisorFlips(g))
+    .filter(group => changed.has(group.territory));
+  if (!groups.length) return false;
+  requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorFaceDance &&
+    !g.pendingAutomaticAdvisorBattle && !g.pendingAutomaticAdvisorTransport &&
+    !g.pendingAutomaticAdvisorHomeworldTransport && !g.pendingAutomaticAdvisorGamont,
+    'Finish the original advisor conversion before another Face Dance.');
+  const receipt: AutomaticAdvisorFaceDance = { event: crypto.randomUUID(),
+    battle: { event: context.event, turn: context.turn, territory: context.territory,
+      combatants: [...context.combatants], winner: context.winner, result: context.result },
+    player: player.id, territory: to, sector, sources, returned,
+    amount: Object.values(sources).reduce((sum, count) => sum + count, 0) };
+  g.pendingAutomaticAdvisorFaceDance = receipt;
+  for (const group of groups) {
+    const source: AutomaticAdvisorFlipSource = { event: crypto.randomUUID(), owner: group.player,
+      territory: group.territory, turn: g.turn, phase: g.phase, forces: group.forces,
+      producer: 'faceDance', faceDance: receipt };
+    getPlayer(g, group.player).advisors![group.territory].aloneFlipHold = source.event;
+    (g.pendingAutomaticAdvisorFlips ??= []).push(source);
+  }
+  return true;
+}
+function validateCompletedFaceDance(g: Game, receipt: AutomaticAdvisorFaceDance) {
+  requireRule(g.status === 'playing' && g.phase === 6 && !g.battle && !g.pendingFaceDance &&
+    receipt.battle.event === g.lastBattleContext?.event,
+    'Finish the original Face Dance reveal, replacement and card cycle before conversion.');
+  const player = getPlayer(g, receipt.player);
+  const deposited = receipt.territory.startsWith('homeworld:')
+    ? homeworldRule(() => homeworldForceGroups(homeworldContext(g), g.homeworlds!.custody!))
+      .find(world => world.id === receipt.territory)?.forces[player.id]
+    : null;
+  const amount = receipt.territory.startsWith('homeworld:')
+    ? (deposited?.normal ?? 0) + (deposited?.elite ?? 0)
+    : (player.forces[location(receipt.territory, receipt.sector)] ?? 0);
+  requireRule(amount >= receipt.amount && Object.entries(receipt.returned)
+    .every(([owner, count]) => getPlayer(g, owner).reserves >= count),
+    'The completed Face Dance lost its original returned or replacement counters.');
+}
+function finishAutomaticAdvisorFaceDance(g: Game) {
+  const receipt = g.pendingAutomaticAdvisorFaceDance;
+  if (!receipt) return;
+  requireRule(!g.pendingAutomaticAdvisorFlips?.length, 'Finish all original Face Dance conversions before aftermath.');
+  validateCompletedFaceDance(g, receipt);
+  delete g.pendingAutomaticAdvisorFaceDance;
+  finishBattle(g);
 }
 function applyAdvisorReleases(g: Game, released: AdvisorRelease[]) {
   for (const entry of released)
@@ -22552,7 +22612,8 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
 
 function victory(g: Game, quote?: VictoryQuote) {
   requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorTransport &&
-    !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle && !g.pendingAutomaticAdvisorHomeworldTransport,
+    !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle && !g.pendingAutomaticAdvisorHomeworldTransport &&
+    !g.pendingAutomaticAdvisorFaceDance,
     'Resolve mandatory advisor conversions before checking victory.');
   quote ??= currentVictoryQuote(g);
   applyAdvisorReleases(g, quote.released);
@@ -28374,7 +28435,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       }
       if (automaticAdvisorFlip) {
         if (canceled)
-          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' || automaticAdvisorFlip.producer === 'homeworldTransport' ? 'transport and payment stay' : automaticAdvisorFlip.producer === 'gamont' ? 'Trip to Gamont effect and card use stay' : automaticAdvisorFlip.producer === 'battleLosses' ? 'battle losses and costs stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
+          log(g, `${bg.name}'s mandatory conversion in ${territory(to).name} was prevented. The completed ${automaticAdvisorFlip.producer === 'guildTransport' || automaticAdvisorFlip.producer === 'homeworldTransport' ? 'transport and payment stay' : automaticAdvisorFlip.producer === 'gamont' ? 'Trip to Gamont effect and card use stay' : automaticAdvisorFlip.producer === 'battleLosses' ? 'battle losses and costs stay' : automaticAdvisorFlip.producer === 'faceDance' ? 'Face Dance replacement and reveal stay' : 'movement stays'} committed; this group remains advisors while continuously alone.`,
             { faction: bg.faction, name: 'Mandatory advisor conversion prevented' });
         g.pendingAutomaticAdvisorFlips!.shift();
         if (!g.pendingAutomaticAdvisorFlips!.length) delete g.pendingAutomaticAdvisorFlips;
@@ -28383,6 +28444,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
           finishAutomaticAdvisorGamont(g);
           finishAutomaticAdvisorBattle(g);
           finishAutomaticAdvisorHomeworldTransport(g);
+          finishAutomaticAdvisorFaceDance(g);
         } else openAutomaticAdvisorFlip(g);
       } else finishAdvisorReaction(g, response);
     }
@@ -33758,6 +33820,7 @@ function applyActionInner(
         typeof action.reveal === 'boolean',
         'Reveal a Face Dancer or decline.',
       );
+      let heldConversion = false;
       if (action.reveal) {
         const dancer = p.faceDancers?.find(
           (c) => !c.revealed && c.leader === decision.identity,
@@ -33810,6 +33873,12 @@ function applyActionInner(
             if (!p.forces[source.key]) delete p.forces[source.key];
           }
         }
+        // Record the counters actually returned by the existing transfer. A
+        // co-side Tleilaxu army may already have supplied selected counters.
+        const returned = Object.fromEntries((home
+          ? [[winner.id, army.normal + army.elite] as const]
+          : winningArmies.map(owner => [owner.id, at(owner, decision.territory)] as const))
+          .filter(([, count]) => count > 0));
         if (home) {
           const destination = `homeworld:${winner.faction}`;
           const external = selected.filter((source) => source.key !== 'reserves').reduce((n, source) => n + source.count, 0);
@@ -33848,6 +33917,8 @@ function applyActionInner(
           delete leader.concealed;
         }
         if (total && !home) place(p, decision.territory, sector, total);
+        heldConversion = prepareFaceDanceAdvisorFlips(g, p, decision.territory, sector,
+          Object.fromEntries(selected.filter(source => source.count > 0).map(source => [source.key, source.count])), returned);
         observeOccupation(g);
         dancer.revealed = true;
         log(
@@ -33869,7 +33940,8 @@ function applyActionInner(
       const harkonnen = byFaction(g, 'harkonnen');
       if (harkonnen) returnCaptives(g, harkonnen);
       settleAdvisors(g);
-      finishBattle(g);
+      if (heldConversion) openAutomaticAdvisorFlip(g);
+      else finishBattle(g);
     } else if (decision.kind === 'diplomatRetreat') {
       const receipt = g.battle?.diplomatRetreat;
       const destination = action.destination;

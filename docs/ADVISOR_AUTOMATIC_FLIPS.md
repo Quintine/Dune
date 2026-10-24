@@ -1,5 +1,66 @@
 # Mandatory advisor conversions
 
+## Completed Face Dance replacement — 24 October 2026
+
+**Prototyped / Partial.** Compose the same supplied
+physical17/28 E counter with native Face Dance's return/replacement (physical38 A).
+Selecting forces from remote board territories can leave surviving BG advisors
+alone there. Choosing zero replacement can leave the target's advisors alone
+after the winning army returns. Consider all changed source territories and
+the target after the complete physical transfer, before settlement benefits.
+
+Original battle rewards and card cleanup keep their priority. Complete the
+winning army's actual return, replacement placement, original leader death,
+Face Dancer revelation and any all-three card cycle first. Face Dance itself
+retains its printed immunity; the new response concerns the separate BG
+advantage. Canceling conversion neither replays nor reverses replacement or
+reveals another Face Dancer. Retain the existing provisional continuously-alone
+hold and consume the parent before resuming original battle aftermath once.
+
+The public phase6 receipt selects the original six-field battle identity,
+replacement actor/target/sector, positive physical sources, replacement amount
+and actual returned counts. It contains no secret Face Dancer identity, new
+drawn card or wider private battle context. Current card availability is not
+rechecked after revelation/cycling. A remote advisor group may belong to an
+original combatant; the battle-loss-only bystander restriction does not apply
+to a different territory. Existing Homeworld/native and co-side permissions
+remain in the original replacement; this response grants none.
+
+[Native fixture](../tests/fixture-advisor-face-dance-flip.ts) starts public
+Advanced BG/Tleilaxu/Atreides in that seat order, original Ix47 and no optional
+module. The real final advisorSetup action deals the original three Face Dancers
+from a selected permutation of unused original identities. Actual earlier
+Traitor choices, starting Treachery deal and the undealt card census remain.
+Tleilaxu pays3 to ship three forces into Arrakeen, then really moves two to
+Basin. A real unarmed Atreides win with dial/support1 leaves nine survivors.
+The remote branch moves all ten Atreides to Basin first, then replaces the
+survivors using the last remote Arrakeen counter and eight reserves. The zero
+branch fights in Arrakeen and replaces none. Original Atreides Karama remains
+available. No played army, hand, wallet, phase, Tanks, revealed flag or receipt
+is installed.
+
+[Engine cases](../tests/advisor-face-dance-flip-engine.test.ts) cover both
+conversion outcomes, original decline/immunity, completed parent mismatch and
+existing profiles. Force return, actual leader death, revelation and replacement
+stay committed while the response waits; Collection depends on the final stance.
+Frozen **16 files201/201**, types/lint/build, five native Face Dance/response/
+GameTable SSR journeys and eight existing-profile paths pass. Remote and zero
+sources take67/66 original actions. Both return nine actual Atreides survivors,
+kill the original leader once without bounty and reveal the original card.
+Allowed conversion earns BG two actual city income; prevention earns none.
+Original decline leaves the army, leader and unrevealed card intact. Standard
+controls render; this is not a new callback/browser/mobile/deployed certificate.
+
+First native feedback corrects the expected original Ix deck count43 to47,
+without changing any physical card/deal or rule. Its focused case and the final
+frozen batch pass. Private proof and original-action HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-face-dance-flips/`.
+`frozen-integrated/report.json` binds tree
+`78239a9def5dd70ae404d5a614a21ea09ea615dd2a6cde7d05760715416d7401`
+on base `0b3413fcd8238301f97114171fcca2936adf51e5`. Prose/reference evidence is
+reviewed and hashed separately after proof. Combined all-three cycling, Skills/Ecaz co-side/Homeworld/Nexus and other automatic producers remain
+unfinished acceptance; focused proof does not open complete modes.
+
 ## Homeworld and Junction transport — 24 October 2026
 
 **Prototyped / Partial.** Compose physical17/28 E's

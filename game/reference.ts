@@ -2094,7 +2094,8 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A winning Cheap Hero may be a Face Dancer. Kwisatz Haderach does not protect an accompanying leader against Face Dancing. Karama cannot cancel the reveal or the replacement army.',
       'Keep revealed Face Dancers face up until all three have been used. Shuffle those cards back into the unused deck and draw three new ones. During Mentat Pause, you may instead replace one unrevealed Face Dancer; this once-per-turn exchange has a Karama response.',
       'Zoal has variable battle strength: he copies the opposing leader disc, without any KH bonus, or counts zero against a Cheap Hero. His death bounty uses that copied strength. His ordinary revival value is three spice before discounts.',
-      'The core setup, reveal sequence, card cycling, Zoal effects and AI controls are tested. Tleilaxu revival commerce also has tested support. Foreign ghola acquisition and buyback controls are also implemented. Their special Karama now also has tested support; its timing and the complete expansion interaction audit are still unfinished, so expansion starts remain disabled.',
+      'After completed replacement, advisors left alone at remote sources or a zero-replacement target have a separate BG conversion response. Face Dance remains complete and immune; prevention keeps its returns, replacement, leader death and revelation/cycle, then resumes the original aftermath once.',
+      'The core setup, reveal sequence, card cycling, Zoal effects and AI controls are tested. Tleilaxu revival commerce also has tested support. Foreign ghola acquisition and buyback controls are also implemented. Their special Karama now also has tested support; its timing and the complete expansion interaction audit are still unfinished, so starts remain labelled previews.',
     ],
     related: [
       'battle',
@@ -2102,6 +2103,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'tech-tokens',
       'mentat',
       'ix-modules',
+      'advanced-advisors',
     ],
   },
 
@@ -4317,6 +4319,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A committed Guild cross-shipment or return to reserves can also leave advisors alone. Original transport permission, rate and any Guild income resolve first; payment, force transfer and shipment use stay committed if the later conversion is prevented. The ordinary ground move remains unused. Cross-shipment arrival follows the conversion once; a reserve return has no arrival.',
       'After actual battle losses leave surviving bystanding advisors alone, Karama may prevent their conversion without undoing losses or costs. Mandatory card disposal, original skills and substitution finish first. Provisionally resolve this before optional winner-card cleanup and later aftermath, then resume the original cleanup once. An explosion that destroys the advisors creates no conversion.',
       'Native Guild board-to-Homeworld and Junction board transfers can leave advisors alone after payment and physical transfer. Karama prevents only the resulting BG conversion; Junction permission and tariff stay immune. Original income resolves first, then any Junction board arrival resumes once. Original declaration snapshots stay private.',
+      'A completed Face Dance can leave advisors alone at remote board sources or, with zero replacement, at the battle target. Original force returns, replacement, leader death, revelation and any card cycle finish first. Karama can then prevent only the BG conversion; native Face Dance remains immune. Afterward the original aftermath resumes once.',
       'Provisional cancellation duration: a prevented advisor group stays advisors while continuously alone, including across phase and turn changes. Another faction returning or the group becoming empty ends that held occurrence. Later arrivals joining that same group match its stance. Other non-ground automatic conversions and matching-group flip counters remain unfinished.',
       'When another faction ships, moves or worm rides into your fighters, immediately choose whether to become advisors. The choice opens a Karama response. Repeated entry can offer a new choice.',
       'After another faction’s off-planet shipment, choose a free force in the Polar Sink or an accompanying force at the shipment destination. An accompanying advisor group cannot flip to fighters in that turn while other factions remain.',
@@ -4328,7 +4331,7 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Implementation",
     "status": "Partial",
-    "detail": "Homeworld/Junction board transfers now capture alone groups before occupation/settlement, retain completed typed transfer/payment and shipment use, keep original snapshot events private and resume only original Junction board arrival after the consumed parent. Existing ground/Guild transport/Gamont/battle/preparation sources retain separate exact receipts and timing. Other automatic producers and matching-group counters remain unfinished.",
+    "detail": "Completed Face Dance now captures alone advisors at all positive board sources and its target, preserving return/replacement, leader death and revelation/cycling before one original aftermath. Its public physical/battle receipt omits Face Dancer identities and does not reuse pre-reveal availability. Existing ground, Guild/Homeworld/Junction transport, Gamont, battle and preparation sources retain their contracts. Storm and other special relocation/matching-group causes remain unfinished.",
     "evidence": [
       "game/advisor-automatic-flip.ts",
       "game/advisors.ts",
@@ -4343,7 +4346,7 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Player controls",
     "status": "Partial",
-    "detail": "Standard Karama/Allow controls distinguish completed Homeworld transport/payment from the pending BG conversion and remaining arrival. Existing ground, ordinary transport, Gamont, battle and phase2–5 preparation guidance retain their contracts. No new confirmation or timer.",
+    "detail": "Standard Karama/Allow controls distinguish completed Face Dance from the pending BG conversion. Existing transport, ground, Gamont, battle and phase2–5 preparation guidance remain. No new confirmation or timer.",
     "evidence": [
       "docs/ADVISOR_AUTOMATIC_FLIPS.md",
       "components/advisor-preparation.tsx",
@@ -4354,8 +4357,10 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "AI",
     "status": "Partial",
-    "detail": "Sixteen existing-profile native Homeworld/Junction response paths accept legal actions without replaying transfer/payment or consuming ordinary movement. Prior ground/Guild transport/Gamont/battle/preparation paths retain separate evidence. No strategy refinement or difficulty calibration.",
+    "detail": "Eight existing-profile native remote/zero Face Dance response paths resolve legally through actual Collection, preserving completed return, death, revelation and replacement. Earlier producer paths retain separate evidence. No strategy refinement or difficulty calibration.",
     "evidence": [
+      "tests/advisor-face-dance-flip-engine.test.ts",
+      "tests/fixture-advisor-face-dance-flip.ts",
       "tests/advisor-homeworld-flip-engine.test.ts",
       "tests/fixture-advisor-homeworld-flip.ts",
       "tests/advisor-battle-flip-engine.test.ts",
@@ -4370,7 +4375,7 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Documentation",
     "status": "Partial",
-    "detail": "Physical17/28 E composes the group counter with mandatory conversion. Homeworld/Junction guidance distinguishes immune transport from BG conversion, private original snapshots, public physical evidence and one original arrival. Continuously-alone duration and earlier battle priority remain provisional. Remaining producers and combinations stay explicit.",
+    "detail": "Physical17/28 E composes the group counter with physical38 A after completed return/replacement. Face Dance immunity, actual returns, remote sources, zero replacement, original card cycle and private holdings are distinguished from the BG response. Continuously-alone duration remains provisional; other producers/combinations stay explicit.",
     "evidence": [
       "docs/ADVISOR_AUTOMATIC_FLIPS.md",
       "docs/ADVISOR_PREPARATION.md",
@@ -4381,8 +4386,10 @@ export const RULE_TOPICS: RuleTopic[] = [
   {
     "area": "Verification",
     "status": "Partial",
-    "detail": "Homeworld/Junction passes frozen18-file218/218, types/lint/build, nine native transport/response/GameTable SSR journeys and sixteen profile paths. Genuine37/38/42/36-action sources earn original native/Junction returns, destination Intrusion and BG empty arrival. Costs3/5/10/1 remain spent through both outcomes; earlier native permission prevention stays uncommitted. A fixture-variable lint repair preserves strict source validation. Earlier producer proofs remain linked; wider contributor/occupation/Nexus/Semuta, remote Face Dance/storm/other producers, full modes and browser/mobile/deployed/comprehensive acceptance remain open.",
+    "detail": "Face Dance passes frozen16-file201/201, types/lint/build, five native Face Dance/response/GameTable SSR journeys and eight profile paths. Genuine67/66-action sources earn original Ix47, native draw, shipment, moves and battle. Both outcomes preserve nine returned survivors and one leader death; actual BG city income is2/0. Original decline stays intact. A fixture deck-count correction changes no cards/rules. Full cycle/Skills/Ecaz co-side/Homeworld/Nexus combinations, storm/special relocation, complete modes and browser/mobile/deployed/comprehensive acceptance remain open.",
     "evidence": [
+      "tests/advisor-face-dance-flip-engine.test.ts",
+      "tests/fixture-advisor-face-dance-flip.ts",
       "tests/advisor-homeworld-flip-engine.test.ts",
       "tests/fixture-advisor-homeworld-flip.ts",
       "tests/advisor-battle-flip-engine.test.ts",

@@ -12,6 +12,7 @@ import {
   type AutomaticAdvisorGamont,
   type AutomaticAdvisorBattle,
   type AutomaticAdvisorHomeworldTransport,
+  type AutomaticAdvisorFaceDance,
 } from '../game/advisor-automatic-flip';
 import { MOBILE_LOCATION, MOBILE_STRONGHOLD } from '../game/board';
 
@@ -20,6 +21,7 @@ type TransportSource = Extract<AutomaticAdvisorFlipSource, { producer: 'guildTra
 type GamontSource = Extract<AutomaticAdvisorFlipSource, { producer: 'gamont' }>;
 type BattleSource = Extract<AutomaticAdvisorFlipSource, { producer: 'battleLosses' }>;
 type HomeworldSource = Extract<AutomaticAdvisorFlipSource, { producer: 'homeworldTransport' }>;
+type FaceDanceSource = Extract<AutomaticAdvisorFlipSource, { producer: 'faceDance' }>;
 
 function context(): AutomaticAdvisorFlipContext {
   return {
@@ -805,4 +807,201 @@ void test('Homeworld source validation never reads original shipment events, pri
     }
     assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
   }
+});
+
+function faceDance(combatant = true, result: 'normal' | 'traitor' = 'normal') {
+  const { ctx, source: ground } = held();
+  ctx.phase = 6;
+  ctx.battle = null;
+  ctx.players[0].forces = { 'imperial_basin:9': 2, 'imperial_basin:10': 1, 'arrakeen:10': 1 };
+  ctx.players[1].forces = {};
+  ctx.players[2].faction = 'tleilaxu';
+  ctx.players[2].forces = { 'carthag:11': 2 };
+  const battle: AutomaticAdvisorBattle = {
+    event: 'original-face-dance-battle', turn: ctx.turn, territory: 'carthag',
+    combatants: combatant ? ['b', 'a'] : ['a', 'r'], winner: 'a', result,
+  };
+  const receipt: AutomaticAdvisorFaceDance = {
+    event: 'completed-public-face-dance', battle, player: 'r', territory: 'carthag', sector: 11,
+    sources: { 'imperial_basin:9': 1, reserves: 1 }, amount: 2, returned: { a: 2 },
+  };
+  ctx.lastBattleContext = { ...battle, combatants: [...battle.combatants] };
+  const source: FaceDanceSource = {
+    event: 'automatic-after-remote-face-dance-source', owner: ground.owner,
+    territory: ground.territory, turn: ground.turn, phase: 6,
+    forces: ground.forces, producer: 'faceDance', faceDance: receipt,
+  };
+  ctx.players[0].advisors = {
+    ...ctx.players[0].advisors,
+    imperial_basin: { lockedTurn: 4, aloneFlipHold: source.event },
+  };
+  return { ctx, source };
+}
+
+void test('Face Dance remote sources accept a BG original combatant or bystander after a normal or traitor result', () => {
+  for (const combatant of [false, true]) {
+    for (const result of ['normal', 'traitor'] as const) {
+      const original = faceDance(combatant, result);
+      const before = structuredClone(original);
+      assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
+      assert.deepEqual(original, before);
+      assert.deepEqual(Object.keys(original.source).sort(), ['event', 'faceDance', 'forces', 'owner', 'phase', 'producer', 'territory', 'turn']);
+      assert.deepEqual(Object.keys(original.source.faceDance).sort(), ['amount', 'battle', 'event', 'player', 'returned', 'sector', 'sources', 'territory']);
+    }
+  }
+});
+
+void test('every positive board source can bind its own exact held group and returned Ecaz co-side counts may include Tleilaxu', () => {
+  const { ctx, source } = faceDance();
+  source.faceDance.sources = { 'imperial_basin:9': 1, 'hagga_basin:12': 1 };
+  ctx.players[0].forces = { ...ctx.players[0].forces, 'hagga_basin:12': 1 };
+  const remote: FaceDanceSource = {
+    ...source, event: 'automatic-after-second-remote-source', territory: 'hagga_basin',
+    forces: { 'hagga_basin:12': 1 },
+  };
+  ctx.players[0].advisors = {
+    ...ctx.players[0].advisors,
+    hagga_basin: { aloneFlipHold: remote.event },
+  };
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, remote));
+  ctx.players[1].faction = 'ecaz';
+  source.faceDance.returned = { a: 1, r: 1 };
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, remote));
+});
+
+void test('zero replacement can leave advisors at the board target and a native World target delegates its new physical deposit', () => {
+  const zero = faceDance(false);
+  zero.source.territory = 'carthag';
+  zero.source.forces = { 'carthag:11': 2 };
+  zero.source.faceDance.amount = 0;
+  zero.source.faceDance.sources = {};
+  zero.ctx.players[0].forces = { 'carthag:11': 2 };
+  zero.ctx.players[0].advisors = { carthag: { aloneFlipHold: zero.source.event } };
+  zero.ctx.players[2].forces = {};
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(zero.ctx, zero.source));
+  const world = faceDance();
+  world.source.faceDance.territory = 'homeworld:tleilaxu';
+  world.source.faceDance.sector = 0;
+  world.source.faceDance.amount = 1;
+  world.source.faceDance.sources = { 'imperial_basin:9': 1 };
+  world.source.faceDance.battle.territory = 'homeworld:tleilaxu';
+  world.ctx.lastBattleContext = {
+    ...world.source.faceDance.battle, combatants: [...world.source.faceDance.battle.combatants],
+  };
+  world.ctx.players[2].forces = {};
+  assert.throws(() => validateAutomaticAdvisorFlip(world.ctx, world.source), AutomaticAdvisorFlipError);
+  world.ctx.homeworlds = { custody: {} };
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(world.ctx, world.source));
+  world.source.faceDance.sector = 1;
+  assert.throws(() => validateAutomaticAdvisorFlip(world.ctx, world.source), AutomaticAdvisorFlipError);
+});
+
+void test('Face Dance validates current public battle identity, actor, positive sources, returns, board deposit and held group', () => {
+  const changes: ((ctx: AutomaticAdvisorFlipContext, source: FaceDanceSource) => void)[] = [
+    (ctx) => { ctx.battle = {}; },
+    (ctx) => { ctx.lastBattleContext = null; },
+    (ctx) => { ctx.lastBattleContext!.event = 'stale'; },
+    (ctx) => { ctx.lastBattleContext!.combatants = ['a', 'b']; },
+    (_ctx, source) => { source.faceDance.event = ''; },
+    (_ctx, source) => { source.faceDance.battle.event = 'stale'; },
+    (_ctx, source) => { source.faceDance.battle.turn++; },
+    (_ctx, source) => { source.faceDance.battle.winner = null; },
+    (ctx, source) => {
+      source.faceDance.battle.combatants = ['b', 'r'];
+      source.faceDance.battle.winner = 'r';
+      ctx.lastBattleContext = { ...source.faceDance.battle, combatants: ['b', 'r'] };
+    },
+    (_ctx, source) => { source.faceDance.player = 'missing'; },
+    (ctx) => { ctx.players[2].faction = 'richese'; },
+    (ctx) => { ctx.players = [...ctx.players, { ...ctx.players[2] }]; },
+    (_ctx, source) => { source.faceDance.territory = 'arrakeen'; },
+    (_ctx, source) => { source.faceDance.sector = 10; },
+    (_ctx, source) => { source.faceDance.amount = -1; },
+    (_ctx, source) => { source.faceDance.amount = 3; },
+    (_ctx, source) => { source.faceDance.sources = { reserves: 2 }; },
+    (_ctx, source) => { source.faceDance.sources = { 'imperial_basin:8': 2 }; },
+    (_ctx, source) => { source.faceDance.sources = { 'imperial_basin:9.0': 2 }; },
+    (_ctx, source) => { source.faceDance.sources = { 'homeworld:tleilaxu:0': 2 }; },
+    (_ctx, source) => { source.faceDance.sources = { 'imperial_basin:9': 1, reserves: 1, 'hagga_basin:12': 0 }; },
+    (_ctx, source) => { source.faceDance.sources = { 'imperial_basin:9': 1.5, reserves: 0.5 }; },
+    (_ctx, source) => { source.faceDance.returned = { missing: 2 }; },
+    (_ctx, source) => { source.faceDance.returned = { a: 0 }; },
+    (_ctx, source) => { source.faceDance.returned = { a: 1.5 }; },
+    (ctx) => { ctx.players[2].forces = { 'carthag:11': 1 }; },
+    (_ctx, source) => { source.forces = { 'imperial_basin:9': 3 }; },
+  ];
+  for (const change of changes) {
+    const original = faceDance();
+    change(original.ctx, original.source);
+    const before = structuredClone(original);
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+    assert.deepEqual(original, before);
+  }
+  for (const result of ['mutualTraitors', 'explosion'] as const) {
+    const original = faceDance();
+    original.source.faceDance.battle.result = result;
+    original.source.faceDance.battle.winner = null;
+    original.ctx.lastBattleContext = {
+      ...original.source.faceDance.battle, combatants: [...original.source.faceDance.battle.combatants],
+    };
+    assert.throws(() => validateAutomaticAdvisorFlip(original.ctx, original.source), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('Face Dance public layers reject private identities, cards, skills and continuation fields', () => {
+  const { ctx, source } = faceDance();
+  for (const field of ['leader', 'faceDancer', 'card', 'skills', 'continuation']) {
+    for (const malformed of [
+      { ...source, [field]: 'private-payload' },
+      { ...source, faceDance: { ...source.faceDance, [field]: 'private-payload' } },
+      { ...source, faceDance: { ...source.faceDance, battle: { ...source.faceDance.battle, [field]: 'private-payload' } } },
+    ]) {
+      assert.throws(() => validateAutomaticAdvisorFlip(ctx, malformed as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+    }
+  }
+  for (const malformed of [
+    { ...source, faceDance: null },
+    { ...source, faceDance: { ...source.faceDance, sources: null } },
+    { ...source, faceDance: { ...source.faceDance, returned: [] } },
+  ]) {
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, malformed as unknown as AutomaticAdvisorFlipSource), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('Face Dance remains phase-six-only and does not alter existing producer JSON shapes or phase windows', () => {
+  for (const original of [held(), transported(), gamont(false), battleResult(), homeworldTransport()]) {
+    const before = JSON.stringify(original.source);
+    assert.doesNotThrow(() => validateAutomaticAdvisorFlip(original.ctx, original.source));
+    assert.equal(JSON.stringify(original.source), before);
+  }
+  for (const phase of [5, 8]) {
+    const { ctx, source } = faceDance();
+    ctx.phase = phase;
+    source.phase = phase;
+    assert.throws(() => validateAutomaticAdvisorFlip(ctx, source), AutomaticAdvisorFlipError);
+  }
+});
+
+void test('completed Face Dance validation never rereads availability, current dancers or private parent continuation', () => {
+  const { ctx, source } = faceDance();
+  for (const player of ctx.players) {
+    for (const field of ['hand', 'leaders', 'spice', 'traitors', 'faceDancers', 'reserves', 'moved', 'shipped']) {
+      Object.defineProperty(player, field, {
+        get() { throw new Error(`Face Dance helper read pretransfer or private ${player.id} ${field}`); },
+      });
+    }
+  }
+  for (const field of ['pendingFaceDance', 'pendingAutomaticAdvisorFaceDance', 'leaderSkills', 'continuation']) {
+    Object.defineProperty(ctx, field, {
+      get() { throw new Error(`Face Dance helper read private parent ${field}`); },
+    });
+  }
+  for (const field of ['cardRoles', 'mandatoryDiscard', 'winnerDiscards', 'casualtyChoices', 'continuation']) {
+    Object.defineProperty(ctx.lastBattleContext, field, {
+      get() { throw new Error(`Face Dance helper read private battle ${field}`); },
+    });
+  }
+  assert.doesNotThrow(() => validateAutomaticAdvisorFlip(ctx, source));
 });

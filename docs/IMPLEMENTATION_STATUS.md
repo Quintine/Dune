@@ -1,5 +1,47 @@
 # Dune implementation status
 
+## 24 October 2026 — Advisor conversion after completed Face Dance
+
+Supplied physical17/28 E's counter now follows physical38 A's completed native
+return/replacement. Capture all positive board source territories and target,
+including zero replacement. Preserve actual return, replacement, leader death,
+revelation and any all-three card cycle before the BG response. Face Dance
+itself stays immune. Retain the existing provisional continuously-alone hold,
+then consume the parent before original battle aftermath resumes once.
+
+An eight-field public physical/battle receipt omits secret Face Dancer identity,
+newly drawn cards and private battle context. No pre-reveal availability is
+rechecked after cycling. Remote BG groups may belong to original combatants;
+the battle-loss-only bystander restriction remains separate. Actual returned
+counts follow existing source consumption, including a Tleilaxu co-side army
+that may have supplied selected counters. Existing Homeworld/co-side permissions
+stay with the original replacement; no new entitlement is granted.
+
+Disjoint helper/native-fixture lanes, bounded continuation review and root
+integration pass **16 files201/201**, types/lint/build, five actual Face Dance/
+response/GameTable SSR journeys and eight existing-profile paths. Genuine67/66-
+action public Advanced BG/Tleilaxu/Atreides sources earn original Ix47, native
+first Face Dancer draw, paid three-counter shipment, real ground moves and
+actual unarmed battle. Remote one-plus-eight and zero replacement both return
+nine original Atreides survivors, kill the original leader once without bounty
+and reveal the original card. BG income is2 when allowed,0 when prevented.
+Original decline retains winner, leader and unrevealed card. No played army,
+phase, wallet, hand, Tanks, revealed flag or receipt is installed.
+
+First native feedback corrects the expected original deck count43 to47; physical
+cards, native deal and rules remain unchanged. The focused case and final frozen
+proof pass. Private proof and original-action HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-face-dance-flips/`.
+Frozen `frozen-integrated/report.json` binds tree
+`78239a9def5dd70ae404d5a614a21ea09ea615dd2a6cde7d05760715416d7401`,
+2743 files on base `0b3413fcd8238301f97114171fcca2936adf51e5`.
+Prose/reference overlays are separately reviewed/hashed. Standard controls
+render; no new callback/browser/mobile/deployed or complete-mode claim. Full
+all-three-cycle/Skills/Ecaz co-side/Homeworld/Nexus combinations with this counter,
+storm/special relocation/other producers, comprehensive assurance and full AI
+refinement remain due. No saved-room/D1, reset, restart or deployment operation.
+[Connected source and limits](ADVISOR_AUTOMATIC_FLIPS.md#completed-face-dance-replacement--24-october-2026).
+
 ## 24 October 2026 — Advisor conversion after Homeworld/Junction transfer
 
 Native Guild board-to-world and board-origin Junction transport now hold

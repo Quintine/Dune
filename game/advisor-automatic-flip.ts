@@ -48,6 +48,17 @@ export type AutomaticAdvisorBattle = {
   result: 'normal' | 'traitor' | 'mutualTraitors' | 'explosion';
 };
 
+export type AutomaticAdvisorFaceDance = {
+  event: string;
+  battle: AutomaticAdvisorBattle;
+  player: string;
+  territory: string;
+  sector: number;
+  sources: Record<string, number>;
+  amount: number;
+  returned: Record<string, number>;
+};
+
 export type AutomaticAdvisorFlipSource = {
   event: string;
   owner: string;
@@ -61,6 +72,7 @@ export type AutomaticAdvisorFlipSource = {
   | { producer: 'homeworldTransport'; transport: AutomaticAdvisorHomeworldTransport }
   | { producer: 'gamont'; gamont: AutomaticAdvisorGamont }
   | { producer: 'battleLosses'; battle: AutomaticAdvisorBattle }
+  | { producer: 'faceDance'; faceDance: AutomaticAdvisorFaceDance }
 );
 
 export type AutomaticAdvisorFlipPlayer = ForcePresence & {
@@ -275,25 +287,23 @@ function validateHomeworldTransportSource(
   }
 }
 
-function validateBattleSource(
+function validatePublicBattleIdentity(
   ctx: AutomaticAdvisorFlipContext,
-  source: Extract<AutomaticAdvisorFlipSource, { producer: 'battleLosses' }>,
+  receipt: AutomaticAdvisorBattle,
+  turn: number,
 ) {
-  const receipt = source.battle;
   requireFlip(record(receipt) &&
     Object.keys(receipt).sort().join(',') === 'combatants,event,result,territory,turn,winner' &&
-    identifier(receipt.event) && positive(receipt.turn) && receipt.turn === source.turn &&
-    identifier(receipt.territory) && receipt.territory === source.territory &&
+    identifier(receipt.event) && positive(receipt.turn) && receipt.turn === turn &&
+    identifier(receipt.territory) &&
     Array.isArray(receipt.combatants) && receipt.combatants.length === 2 &&
     receipt.combatants.every(identifier) && new Set(receipt.combatants).size === 2 &&
     receipt.combatants.every((id) => ctx.players.filter((player) => player.id === id).length === 1) &&
-    !receipt.combatants.includes(source.owner) &&
     ['normal', 'traitor', 'mutualTraitors', 'explosion'].includes(receipt.result) &&
     (receipt.result === 'normal' || receipt.result === 'traitor'
       ? identifier(receipt.winner) && receipt.combatants.includes(receipt.winner)
-      : receipt.winner === null) &&
-    gameTerritories(ctx).some((place) => place.id === receipt.territory),
-  'Automatic advisor conversion needs the original public battle result and bystander group.');
+      : receipt.winner === null),
+  'Automatic advisor conversion needs the original public battle result.');
   const current = ctx.lastBattleContext;
   requireFlip(!ctx.battle && record(current) && current.event === receipt.event &&
     current.turn === receipt.turn && current.territory === receipt.territory &&
@@ -301,6 +311,60 @@ function validateBattleSource(
     Array.isArray(current.combatants) && current.combatants.length === receipt.combatants.length &&
     current.combatants.every((id, index) => id === receipt.combatants[index]),
   'Automatic advisor conversion lost its original completed battle context.');
+}
+
+function validateBattleSource(
+  ctx: AutomaticAdvisorFlipContext,
+  source: Extract<AutomaticAdvisorFlipSource, { producer: 'battleLosses' }>,
+) {
+  validatePublicBattleIdentity(ctx, source.battle, source.turn);
+  requireFlip(source.battle.territory === source.territory &&
+    !source.battle.combatants.includes(source.owner) &&
+    gameTerritories(ctx).some((place) => place.id === source.battle.territory),
+  'Automatic advisor conversion needs the original public battle result and bystander group.');
+}
+
+function validateFaceDanceSource(
+  ctx: AutomaticAdvisorFlipContext,
+  source: Extract<AutomaticAdvisorFlipSource, { producer: 'faceDance' }>,
+) {
+  const receipt = source.faceDance;
+  requireFlip(record(receipt) &&
+    Object.keys(receipt).sort().join(',') === 'amount,battle,event,player,returned,sector,sources,territory' &&
+    identifier(receipt.event) && identifier(receipt.player) && identifier(receipt.territory) &&
+    nonnegative(receipt.sector) && nonnegative(receipt.amount) && record(receipt.sources) &&
+    Object.values(receipt.sources).every(positive) &&
+    Object.values(receipt.sources).reduce((total, count) => total + count, 0) === receipt.amount &&
+    record(receipt.returned) && Object.values(receipt.returned).every(positive) &&
+    Object.keys(receipt.returned).every((id) =>
+      identifier(id) && ctx.players.filter((player) => player.id === id).length === 1),
+  'Automatic advisor conversion lost its exact public Face Dance receipt.');
+  validatePublicBattleIdentity(ctx, receipt.battle, source.turn);
+  const actors = ctx.players.filter((player) => player.id === receipt.player);
+  const actor = actors[0];
+  requireFlip(actors.length === 1 && actor.faction === 'tleilaxu' &&
+    receipt.battle.winner !== null && receipt.player !== receipt.battle.winner &&
+    (receipt.battle.result === 'normal' || receipt.battle.result === 'traitor') &&
+    receipt.territory === receipt.battle.territory,
+  'Automatic advisor conversion needs the original other winner and native Face Dance actor.');
+  const places = gameTerritories(ctx);
+  const destination = places.find((place) => place.id === receipt.territory && place.sectors.includes(receipt.sector));
+  const worldDestination = receipt.territory === 'homeworld:tleilaxu' && receipt.sector === 0 &&
+    record(ctx.homeworlds) && record(ctx.homeworlds.custody);
+  requireFlip((!!destination || worldDestination) && Object.keys(receipt.sources).every((key) => {
+    if (key === 'reserves') return true;
+    const point = splitLocation(key);
+    return key === `${point.territory}:${point.sector}` &&
+      places.some((place) => place.id === point.territory && place.sectors.includes(point.sector));
+  }) && ((!!destination && source.territory === receipt.territory) || Object.keys(receipt.sources).some((key) =>
+    key !== 'reserves' && splitLocation(key).territory === source.territory)),
+  'Automatic advisor conversion must use the Face Dance destination or a positive board source.');
+  if (destination) {
+    const current = actor.forces[`${receipt.territory}:${receipt.sector}`];
+    const deposited = current === undefined ? 0 : current;
+    requireFlip(nonnegative(deposited) && deposited >= receipt.amount,
+      'Automatic advisor conversion lost the Face Dance board replacement.');
+  }
 }
 
 /** Validate the same committed producer and exact held group before either response outcome. */
@@ -318,10 +382,13 @@ export function validateAutomaticAdvisorFlip(
       (source.producer === 'gamont' &&
         Object.keys(source).sort().join(',') === 'event,forces,gamont,owner,phase,producer,territory,turn') ||
       (source.producer === 'battleLosses' &&
-        Object.keys(source).sort().join(',') === 'battle,event,forces,owner,phase,producer,territory,turn')) &&
+        Object.keys(source).sort().join(',') === 'battle,event,forces,owner,phase,producer,territory,turn') ||
+      (source.producer === 'faceDance' &&
+        Object.keys(source).sort().join(',') === 'event,faceDance,forces,owner,phase,producer,territory,turn')) &&
     identifier(source.event) && identifier(source.owner) && identifier(source.territory) &&
     positive(source.turn) && source.turn === ctx.turn &&
-    source.phase === (source.producer === 'gamont' ? 8 : source.producer === 'battleLosses' ? 6 : 5) &&
+    source.phase === (source.producer === 'gamont' ? 8 :
+      source.producer === 'battleLosses' || source.producer === 'faceDance' ? 6 : 5) &&
     currentWindow(ctx) && source.phase === ctx.phase,
   'Automatic advisor conversion lost its original current-turn committed producer.');
   const owners = ctx.players.filter((player) => player.id === source.owner);
@@ -338,7 +405,8 @@ export function validateAutomaticAdvisorFlip(
   } else if (source.producer === 'guildTransport') validateTransportSource(ctx, source);
   else if (source.producer === 'homeworldTransport') validateHomeworldTransportSource(ctx, source);
   else if (source.producer === 'gamont') validateGamontSource(ctx, source);
-  else validateBattleSource(ctx, source);
+  else if (source.producer === 'battleLosses') validateBattleSource(ctx, source);
+  else validateFaceDanceSource(ctx, source);
   const forces = physicalGroup(owner, source.territory);
   requireFlip(record(source.forces) && Object.keys(forces).length > 0 &&
     Object.values(forces).every(positive) && Object.values(source.forces).every(positive) &&

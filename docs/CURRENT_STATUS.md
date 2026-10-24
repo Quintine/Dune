@@ -16,6 +16,34 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Advisor conversion after Face Dance — 24 October. Prototyped / Partial.**
+Completed replacement now captures surviving alone advisors at remote board
+sources and zero-replacement targets. Original army return, replacement, leader
+death, revelation and any card cycle complete first. Face Dance stays immune;
+only the separate BG conversion can be prevented. Public physical/battle evidence
+omits secret identities and never rechecks a now-revealed dancer. Consume the
+parent before one original aftermath; preserve the existing continuously-alone
+hold and actual Collection outcome.
+[Source, native scenarios and limits](ADVISOR_AUTOMATIC_FLIPS.md#completed-face-dance-replacement--24-october-2026).
+
+Disjoint helper/native-fixture lanes, bounded continuation review and root
+integration pass **16 files201/201**, types/lint/build, five native Face Dance/
+response/GameTable SSR journeys and eight existing-profile paths. Genuine67/66-
+action public Advanced BG/Tleilaxu/Atreides sources earn original Ix47, a first
+native Face Dancer deal, paid shipment, real ground moves, unarmed battle and
+nine surviving Atreides. Remote one-plus-eight replacement and zero replacement
+both retain the completed return/death/revelation; allowed BG conversion earns
+city income2, prevention earns0. Original decline preserves the winning army
+and unrevealed card. Feedback corrects a fixture's expected deck count43 to47,
+without changing physical cards or game rules. Full cycle/Skills/Ecaz co-side/
+Homeworld/Nexus combinations with this counter remain open. No AI refinement,
+comprehensive/browser/deployed assurance or saved-room/D1/reset/restart/deployment
+operation.
+
+Next conversion work includes sector-specific storm losses and special
+Ambassador/Discovery relocation. Matching-group interpretation and complete
+Advanced/mode acceptance remain unfinished.
+
 **Advisor conversion after Homeworld/Junction transport — 24 October. Prototyped / Partial.**
 Native Guild board-to-world and Junction board transfers now capture resulting
 alone advisors after typed transfer/payment and before settlement benefits.
@@ -37,12 +65,6 @@ renames two fixture variables without relaxing checks or rule validation.
 Wider contributor/occupation/Nexus/Semuta combinations and remaining automatic
 producers stay open. No AI refinement, comprehensive/browser/deployed assurance
 or saved-room/D1/reset/restart/deployment operation.
-
-Next concrete conversion gaps include remote Face Dance source departures,
-sector-specific storm losses and special Ambassador/Discovery relocation.
-Harass withdrawal and Diplomat retreat origin already use the battle capture
-boundary; they do not need duplicate producers. Matching-group interpretation
-and complete Advanced/mode acceptance remain unfinished.
 
 **Advisor conversion after battle losses — 24 October. Prototyped / Partial.**
 Actual battle losses can now leave surviving bystanding advisors in a sourced

@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Advisor conversion after Face Dance — 24 October 2026
+
+Compose supplied Advanced physical17/28 E with physical38 A's completed
+return/replacement. Capture actual surviving groups at positive board-source
+territories and the target, including zero replacement. Original rewards/card
+cleanup, physical returns, leader death, revelation and card cycle finish first.
+Native Face Dance remains immune; only the later BG conversion can be prevented.
+Retain the existing provisional continuously-alone duration. Public physical/
+battle evidence omits private Face Dancers and is not a second availability
+check after revelation. Consume the parent before original aftermath resumes
+once; no replacement, death, reward or draw is repeated.
+[Connected source and continuation](ADVISOR_AUTOMATIC_FLIPS.md#completed-face-dance-replacement--24-october-2026).
+
 ## Advisor conversion after Homeworld transport — 24 October 2026
 
 Extend the existing physical17/28 E composition to native Guild board-to-world
