@@ -143,6 +143,7 @@ import {
 import { homeworldRevivalDestinations, quoteHomeworldRevivalDestination } from './homeworld-revival-destinations';
 import { terrorEntrySignature, terrorSelectionSignature, validateTerrorEntrySignature } from './terror-entry-receipt';
 import { arrivalOverlapSignature, overlapOwnsAmbassadorDiscard, overlapOwnsTerrorDiscard, overlapOwnsWormTerror } from './arrival-overlap';
+import { ambassadorPlacementDestination, ambassadorPlacementDestinations, quoteEcazAmbassadorPlacement } from './ecaz-ambassador-placement';
 import { GuildAmbassadorMarkerError, markerDestinations, markerOwner, quoteGuildAmbassadorMarker,
   type GuildAmbassadorMarker, type GuildAmbassadorMarkerQuote } from './guild-ambassador-no-field';
 import {
@@ -468,7 +469,6 @@ import {
 import {
   validateAmbassadors,
   createAmbassadors,
-  placeAmbassador,
   triggerAmbassador,
   destroyAmbassador,
   replenishAmbassadors,
@@ -7119,12 +7119,9 @@ function treacheryDiscardIntegrity(g: Game) {
         ['choam', 'ixians'].includes(entry.effect!) &&
         ['none', 'wormRide'].includes(entry.resume) &&
         validAmbassadorResume(g, entry) &&
-        TERRITORIES.some(
-          (t) =>
-            t.id === entry.territory &&
-            t.type === 'stronghold' &&
-            t.sectors.includes(entry.sector),
-        ) &&
+        ambassadorPlacementDestination(g, entry.territory).allowed &&
+        ambassadorPlacementDestination(g, entry.territory).stronghold &&
+        validGameLocation(g, entry.territory, entry.sector) &&
         owner?.faction === 'ecaz' &&
         beneficiary &&
         (beneficiary.id === owner.id ||
@@ -21167,19 +21164,9 @@ function ambassadorPlacementQuote(
   token: string,
   to: string,
 ) {
-  const destination = TERRITORIES.find((t) => t.id === to);
   requireRule(g.ecazAmbassadors, 'No Ambassador supply is available.');
   try {
-    return placeAmbassador(g.ecazAmbassadors, token, {
-      turn: g.turn,
-      availableSpice: owner.spice,
-      destination: {
-        id: to,
-        stronghold: destination?.type === 'stronghold',
-        allowed: !!destination,
-        inStorm: !destination || destination.sectors.includes(g.storm),
-      },
-    });
+    return quoteEcazAmbassadorPlacement(g, owner, token, to);
   } catch (error) {
     throw new RuleError(
       error instanceof Error ? error.message : 'Invalid Ambassador placement.',
@@ -36277,6 +36264,7 @@ export function viewGame(state: Game, id: string) {
     ambassadors: g.ecazAmbassadors
       ? {
           tokens: g.ecazAmbassadors.tokens.map((token) => ({ ...token })),
+          destinations: ambassadorPlacementDestinations(g),
           nextCost:
             (g.ecazAmbassadors.placement?.turn === g.turn
               ? g.ecazAmbassadors.placement.count

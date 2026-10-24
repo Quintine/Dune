@@ -50,6 +50,7 @@ import { NexusSuboids } from './nexus-suboids';
 import { NexusAdvisors } from './nexus-advisors';
 import { NexusSardaukar } from './nexus-sardaukar';
 import { TerrorBoardMarkers } from './terror-board-markers';
+import { AmbassadorBoardMarkers } from './ambassador-board-markers';
 import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
 import { JunctionTransport } from './junction-transport';
@@ -1837,6 +1838,7 @@ export function GameTable({
               })}
               <NoFieldBoardMarkers players={g.players} />
               <TerrorBoardMarkers tokens={g.moritaniTerror?.tokens ?? []} atomics={g.moritaniAtomics} />
+              <AmbassadorBoardMarkers tokens={g.ambassadors?.tokens ?? []} />
               {Object.entries(g.spice)
                 .filter(([, n]) => n > 0)
                 .map(([k, n]) => {

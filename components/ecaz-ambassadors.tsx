@@ -19,14 +19,14 @@ import {
   AMBASSADOR_COMMON_GUIDANCE,
   AMBASSADOR_REFERENCE,
 } from '@/game/ambassador-reference';
-import { TERRITORIES } from '@/game/board';
+import { territory } from '@/game/board';
 import { faction } from '@/game/catalog';
 
 export const AMBASSADOR_COVERAGE =
-  'Development coverage: Ambassador placement, Ecaz’s direct Duke acquisition and consensual alliance, Emperor, Atreides, Harkonnen, CHOAM, Ixian, Richese, Fremen, Guild and Tleilaxu entry effects are supported, plus Bene Gesserit copies. The Tleilaxu effect offers physical forces or a first-death own leader, including Atreides’ separate Kwisatz Haderach token. Basic offers an optional new-ally Duke loan; Advanced automatically grants the available Duke after accepted alliance consent. One-battle loan tenure is provisional; an unused living loan is set aside at turn end. Ordinary revival accounting, repeat-return/shared-leader cases and competing arrivals remain for refinement; full Ecaz starts remain disabled.';
+  'Development coverage: Ambassador placement, including the placed Hidden Mobile Stronghold, Ecaz’s direct Duke acquisition and consensual alliance, Emperor, Atreides, Harkonnen, CHOAM, Ixian, Richese, Fremen, Guild and Tleilaxu entry effects are supported, plus Bene Gesserit copies. The Tleilaxu effect offers physical forces or a first-death own leader, including Atreides’ separate Kwisatz Haderach token. Basic offers an optional new-ally Duke loan; Advanced automatically grants the available Duke after accepted alliance consent. One-battle loan tenure is provisional; an unused living loan is set aside at turn end. Ordinary revival accounting, repeat-return/shared-leader cases and competing arrivals remain for refinement; Ecaz starts remain labelled previews.';
 function tokenLocation(token: AmbassadorToken) {
   if (token.zone === 'placed')
-    return `Placed in ${TERRITORIES.find((t) => t.id === token.location)?.name ?? 'a stronghold'}`;
+    return `Placed in ${token.location ? territory(token.location).name : 'a stronghold'}`;
   return {
     pool: 'Unused pool',
     supply: 'Available supply',
@@ -211,6 +211,40 @@ export function EcazPlacement({
   const id = useId();
   const [selectedToken, setSelectedToken] = useState('');
   const [selectedTerritory, setSelectedTerritory] = useState('');
+  return (
+    <EcazPlacementChoice
+      game={game}
+      act={act}
+      busy={busy}
+      id={id}
+      selectedToken={selectedToken}
+      selectedTerritory={selectedTerritory}
+      onSelectToken={setSelectedToken}
+      onSelectTerritory={setSelectedTerritory}
+    />
+  );
+}
+
+/** Uses only the current projected supply and destinations, including the placed HMS. */
+export function EcazPlacementChoice({
+  game,
+  act,
+  busy,
+  id,
+  selectedToken,
+  selectedTerritory,
+  onSelectToken,
+  onSelectTerritory,
+}: {
+  game: GameView;
+  act: (action: Action) => void;
+  busy: boolean;
+  id: string;
+  selectedToken: string;
+  selectedTerritory: string;
+  onSelectToken: (token: string) => void;
+  onSelectTerritory: (territory: string) => void;
+}) {
   const me = game.players.find((player) => player.id === game.me);
   const state = game.ambassadors;
   if (
@@ -221,14 +255,7 @@ export function EcazPlacement({
   )
     return null;
   const supply = state.tokens.filter((token) => token.zone === 'supply');
-  const destinations = TERRITORIES.filter(
-    (territory) =>
-      territory.type === 'stronghold' &&
-      !territory.sectors.includes(game.storm) &&
-      !state.tokens.some(
-        (token) => token.zone === 'placed' && token.location === territory.id,
-      ),
-  );
+  const destinations = state.destinations;
   const token = supply.find((candidate) => candidate.id === selectedToken);
   const destination = destinations.find(
     (candidate) => candidate.id === selectedTerritory,
@@ -254,7 +281,7 @@ export function EcazPlacement({
           className="min-h-11 w-full"
           value={token?.id ?? ''}
           disabled={busy || state.blocked}
-          onChange={(event) => setSelectedToken(event.target.value)}
+          onChange={(event) => onSelectToken(event.target.value)}
         >
           <option value="">Choose from your supply</option>
           {supply.map((candidate) => (
@@ -279,12 +306,13 @@ export function EcazPlacement({
           className="min-h-11 w-full"
           value={destination?.id ?? ''}
           disabled={busy || state.blocked}
-          onChange={(event) => setSelectedTerritory(event.target.value)}
+          onChange={(event) => onSelectTerritory(event.target.value)}
         >
-          <option value="">Choose a stronghold outside the storm</option>
+          <option value="">Choose an available stronghold</option>
           {destinations.map((candidate) => (
             <option key={candidate.id} value={candidate.id}>
               {candidate.name}
+              {candidate.sheltered ? ' · sheltered from the storm' : ''}
             </option>
           ))}
         </select>
@@ -301,7 +329,7 @@ export function EcazPlacement({
       )}
       {!destinations.length && (
         <p className="m-0 text-sm leading-6">
-          No ordinary stronghold is currently available for an Ambassador.
+          No stronghold is currently available for an Ambassador.
         </p>
       )}
       {!affordable && (
@@ -312,6 +340,7 @@ export function EcazPlacement({
       )}
       <div className="flex flex-wrap gap-2">
         <Button
+          data-testid="ecaz-ambassador-placement-submit"
           className="min-h-11 whitespace-normal motion-reduce:transition-none"
           disabled={disabled}
           onClick={() => {
@@ -326,10 +355,13 @@ export function EcazPlacement({
           Place Ambassador · {state.nextCost} spice
         </Button>
         <Button
+          data-testid="ecaz-ambassador-placement-finish"
           variant="outline"
           className="min-h-11 whitespace-normal motion-reduce:transition-none"
           disabled={busy}
-          onClick={() => act({ type: 'decision', decline: true })}
+          onClick={() => {
+            if (!busy) act({ type: 'decision', decline: true });
+          }}
         >
           Finish Ambassador placement
         </Button>

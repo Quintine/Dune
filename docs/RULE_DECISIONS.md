@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Ecaz Ambassador on the placed HMS — 24 October 2026
+
+Compose E3 any-stronghold placement (p7; authorized revised p30,A) with E1
+p9 HMS identity and intrinsic storm shelter. The token attaches to the HMS
+interior, retaining original fees, trigger exclusions and native relocation;
+no other faction gains direct shipment. E3 expressly excludes Terror instead.
+No direct HMS/Ambassador clarification was found in the bounded official
+search; this is general source composition, without a new priority or numerical
+ruling. [Source, permission and boundaries](ECAZ_AMBASSADORS_RULES.md#placed-hidden-mobile-stronghold--24-october-2026).
+
 ## Provisional Basic Guild Ambassador No-Field composition — 24 October 2026
 
 Use the 14 October choose-recommended authority for the previously gated

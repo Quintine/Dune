@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 24 October 2026 — Ecaz Ambassador on the placed HMS
+
+Share dynamic placement legality between the engine, projected choices,
+placement cancellation and minimal bots. A legitimately placed HMS is an
+eligible sheltered stronghold; absent/malformed pointers remain invalid.
+Preserve physical supply, increasing fee, occupancy and original Karama event.
+Public face-up markers use the HMS interior identity through native relocation.
+CHOAM/Ix discard continuations recognize that same actual stronghold location.
+Source composition does not extend Terror or other factions' direct shipment.
+
+Disjoint quote/source/controls lanes and bounded review pass12 files135/135,
+types/lint/build, twelve gameplay/control/GameTable SSR journeys and eight
+existing-profile continuations accepting eight proposals. Genuine public
+Ecaz/Ix/Guild setup, original undealt-card choices/lotteries and native HMS
+placement supply46 Basic or50 Advanced actions. Actual callbacks exercise
+paid placement and busy guards; entry/Emperor5/decline, held Karama,
+storm-point shelter, native next-Storm relocation and Basic CHOAM/Ix effects
+retain original forces/payment/entrant. Fixture feedback repairs absent optional
+fields, missing expansion flags and an invalid pointer; lint repairs seven
+floating test registrations. No installed played phase, army or reaction receipt.
+
+[Source, exact proof and limitations](ECAZ_AMBASSADORS_RULES.md#hms-implementation-and-proof)
+retain wider-combination, complete-mode and comprehensive/browser/deployed gates.
+Private final proof:20261024-ecaz-hms-ambassador/frozen-integrated-2.
+No strategy/calibration or saved-room/D1/reset/restart/deployment operation.
+
 ## 24 October 2026 — Basic Guild Ambassador No-Field
 
 Connect native concealed0/3/5 and explicit allied supplier/beneficiary consent

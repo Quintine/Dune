@@ -1,6 +1,6 @@
 import { terrorLocationAllowed, type TerrorLocationContext } from './terror-location';
 import type { Game, ResponseWindow } from './engine';
-import { TERRITORIES } from './board';
+import { ambassadorPlacementDestination } from './ecaz-ambassador-placement';
 import {
   blockAmbassadorPlacement,
   type AmbassadorState,
@@ -31,6 +31,8 @@ export type PlacementCancellationContext = Pick<
   | 'status'
   | 'phase'
   | 'turn'
+  | 'storm'
+  | 'mobileStronghold'
   | 'players'
   | 'pendingEcazPlacement'
   | 'ecazPlacementTurn'
@@ -89,9 +91,8 @@ export function quotePlacementCancellation(
         Array.isArray(state.tokens) &&
         Array.isArray(state.cohort) &&
         state.tokens.filter((t) => t.id === pending.token).length === 1 &&
-        TERRITORIES.some(
-          (t) => t.id === pending.territory && t.type === 'stronghold',
-        ) &&
+        ambassadorPlacementDestination(g, pending.territory).allowed &&
+        ambassadorPlacementDestination(g, pending.territory).stronghold &&
         whole(pending.cost) &&
         pending.cost > 0,
       'No current physical Ambassador placement is awaiting cancellation.',

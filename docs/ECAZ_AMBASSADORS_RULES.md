@@ -2,6 +2,93 @@
 
 Audit: 2026-09-06. Scope: ambassador inventory, setup, placement, triggering, effects, and necessary continuation boundaries. This is a developer audit, not complete Ecaz support. Only this document was written.
 
+## Placed Hidden Mobile Stronghold — 24 October 2026
+
+The source permission now composes with the actual placed HMS in Basic and
+Advanced. Publisher E3 physical p7 permits placement in any stronghold without
+an Ambassador outside storm; the authorized revised source's physical p30,A
+uses the same placement language. Publisher E1 p9 identifies the HMS as a
+stronghold and protects it from storms and worms. E3 p5 expressly excludes
+Terror from the HMS but supplies no corresponding Ambassador exclusion.
+[Official E3](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf),
+[official E1](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf).
+
+This is composition of those general permissions and intrinsic shelter, not a
+new designer-specific HMS/Ambassador ruling. A bounded fresh official-index
+search reproduced these passages; direct E3 PDF retrieval returned403. The
+user-supplied revised page is used under its already recorded source authority,
+without republishing it. No priority, price, faction admission or optional-module
+ruling follows from this change.
+
+A legitimately placed HMS with a printed non-stronghold pointer is eligible,
+even when that pointing sector is in storm. An absent/malformed pointer cannot
+create a location. Placement does not require Ecaz forces or Ixian control of
+the stronghold. Preserve one token per stronghold, the original supply and
+increasing1/2/3 fees, original placement opportunity and Karama cancellation.
+Other dynamic territories do not inherit this permission automatically.
+
+The token belongs to the HMS interior, not its pointing territory. Existing
+entry exclusions and effect choices apply to an actual entry. Leaving it hidden
+keeps it attached when Ix moves the HMS; movement does not place or charge it
+again. Direct shipment by other factions remains prohibited under E1; this
+change supplies no transport permission. Moritani Terror remains excluded.
+
+The focused implementation uses one shared location/placement quote for the
+engine, available-control projection and cancellation. HMS-origin card discard
+continuations use that same real stronghold location. Public board markers and
+inspectors identify the attached face; no private event or hand is displayed.
+Complete modes, broader child/optional combinations and final assurance remain
+open; the checkpoint and verification section below records bounded evidence.
+
+### HMS implementation and proof
+
+The focused helper is `game/ecaz-ambassador-placement.ts`; engine projection,
+placement cancellation and minimal bots consume its eligible destinations.
+`EcazPlacementChoice` supplies actual paid/finish callbacks and busy guards.
+`AmbassadorBoardMarkers` places public face-up identities on printed strongholds
+or the HMS interior; full table rendering includes that layer. The shared
+fresh-discard location validator admits actual HMS CHOAM/Ix parents without
+changing event, token, beneficiary, effect or original entrant continuation.
+
+The source fixture uses actual public Ecaz/Ix/Guild setup and private Traitor
+choices. It selects only three original unopened Treachery positions, the
+native Ix private choice, nine original Ecaz packet scalars and four unopened
+ordinary Spice positions. Native Storm, forces, HMS placement and phases run
+normally:46 Basic or50 Advanced source actions before paid placement. No played
+clock, army, alliance, token or pending receipt is installed. Guild pays for
+one force at the pointer, then legally moves into HMS sector0; the Emperor
+trigger gains its printed5 bank spice. The alternate branch declines and both
+resume the original entrant. A separate original held Ix Karama prevents
+placement before payment; native next-Storm movement keeps an untriggered
+Ambassador attached. Basic CHOAM/Ix exercise their actual card continuations.
+
+Frozen proof passes **12 affected offline files135/135**, types/lint and
+production build. Twelve actual placement-control/gameplay/GameTable SSR
+journeys cover both modes, storm-point shelter, cancellation and relocation,
+plus Basic CHOAM/Ix. Eight existing-profile own-view continuations accept eight
+legal proposals, with no strategy refinement or difficulty calibration.
+Bounded independent source/continuation review found no concrete blocker.
+The first real46-action source reproduced the old static-stronghold rejection.
+Feedback fixed missing fixture expansion flags, absent optional-field assertions,
+an invalid Imperial Basin pointer and seven floating test registrations;
+no rule was loosened to accommodate a fixture.
+
+Private evidence:
+`/home/quintine/.local/share/dune/checkpoints/20261024-ecaz-hms-ambassador/`,
+including `frozen-integrated-2/report.json`, `runtime-smoke.json` and HTML.
+Verified base `659e2a4a9a8443785372d652133cdc4a11aca969`, source tree
+`09336c7c223d21b46f32cc625df3a8d4ffd362df8c2664d3aa29d540317bdcce`
+(2686 nonignored files, identical before/after checks). Only checkpoint prose,
+reference strings and evidence paths follow that proof; delivery records the
+reviewed overlay and pushed revision separately. The user PDF stays untracked.
+
+Framework aliases and CSS stubs mean this is control callback/gameplay/SSR
+proof, not browser visual or deployed acceptance. Other effects/copies,
+optional modules and wider HMS combinations need their own integration proof;
+complete modes, comprehensive rules/recovery/privacy/custody assurance and
+final deployed acceptance remain unfinished. No Terror/transport permission,
+server operation, saved-game/D1/reset/restart or deployment occurs here.
+
 ## Primary evidence and precedence
 
 - **E3:** [GF9 Ecaz & Moritani rulebook](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf), printed p.4 components; pp.7–8 Ecaz; p.9 Duke Vidal; p.15 built-in Ecaz FAQ; p.16 Karama table. Targeted searches retrieved the publisher's indexed text.

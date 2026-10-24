@@ -16,6 +16,26 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Ecaz Ambassador on the placed HMS — 24 October. Prototyped / Partial.**
+The shared placement quote now includes the genuinely placed Hidden Mobile
+Stronghold in Basic and Advanced, including its intrinsic storm shelter.
+Original supply, increasing fee, occupied-token exclusion, placement Karama and
+entrant continuation remain. A face-up board marker stays attached to the HMS
+interior through native movement; controls, projection and minimal bots share
+available destinations. CHOAM/Ix discard continuations accept that real location.
+[Source composition and bounded proof](ECAZ_AMBASSADORS_RULES.md#hms-implementation-and-proof).
+
+Disjoint quote/source/controls lanes and bounded source/continuation review pass
+**12 files135/135**, types/lint/build, twelve gameplay/control/GameTable SSR
+journeys and eight existing-profile continuations (eight accepted proposals).
+Actual three-seat public setup and original lotteries supply46 Basic or50
+Advanced actions before paid placement. Entry, Emperor5/decline, original held
+Karama, storm-point shelter, native next-Storm relocation and Basic card effects
+have focused evidence. Feedback repaired source-fixture assumptions and seven
+floating test registrations. No direct-shipment/Terror permission, complete-mode
+certificate, full AI refinement or saved-room/D1/reset/restart/deployment operation.
+Broader combinations and comprehensive/browser/deployed acceptance remain open.
+
 **Basic Guild Ambassador No-Field — 24 October. Prototyped / Partial.**
 Native Richese0/3/5 can replace the whole independent grant with one concealed
 free marker. Allied use now has actual supplier choice and beneficiary consent,
