@@ -308,6 +308,7 @@ export function quoteMovementCancellation(
   if (response.kind === 'advisorFlip' && response.advisorResume === 'preparation') return null;
   if (response.kind === 'advisorFlip' && response.advisorMatchingSource) return null;
   if (response.kind === 'advisorFlip' && response.advisorAmbassadorMatchingSource) return null;
+  if (response.kind === 'advisorFlip' && response.advisorTransportMatchingSource) return null;
   if (response.kind === 'advisorFlip' && response.spiritualAdvisorSource) return null;
   if (
     ![

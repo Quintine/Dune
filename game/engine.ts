@@ -611,6 +611,7 @@ import { canUseAsKaramaRole } from './shrine';
 import { quoteAdvisorMatching, validateAdvisorMatching, advisorMatchingKey,
   AdvisorMatchingError, type AdvisorMatchingSource } from './advisor-matching';
 import { quoteAdvisorAmbassadorMatching, validateAdvisorAmbassadorMatching, advisorAmbassadorMatchingKey, AdvisorAmbassadorMatchingError, type AdvisorAmbassadorMatchingSource } from './advisor-ambassador-matching';
+import { quoteAdvisorTransportMatching, validateAdvisorTransportMatching, advisorTransportMatchingKey, AdvisorTransportMatchingError, type AdvisorTransportMatchingSource } from './advisor-transport-matching';
 import { spiritualAdvisorTargetBlock, spiritualAdvisorArrival, validateSpiritualAdvisorSource,
   spiritualAdvisorMatchingKey, SpiritualAdvisorError, type SpiritualAdvisorSource } from './spiritual-advisor';
 import {
@@ -1074,6 +1075,7 @@ export type ResponseWindow = {
   advisorPreparationSource?: AdvisorPreparationSource;
   advisorMatchingSource?: AdvisorMatchingSource;
   advisorAmbassadorMatchingSource?: AdvisorAmbassadorMatchingSource;
+  advisorTransportMatchingSource?: AdvisorTransportMatchingSource;
   spiritualAdvisorSource?: SpiritualAdvisorSource;
   fremenGrant?: FremenRevivalGrantSource;
   spiceBankerIncomePayment?: SpiceBankerIncomePayment;
@@ -1302,6 +1304,14 @@ export type Game = {
     order: MovementOrder;
     signature: string;
     parentSignature: string;
+  };
+  advisorTransportMatchingDenied?: {owner:string;turn:number;key:string}[];
+  pendingAdvisorTransportMatching?: {
+    receipt: AdvisorTransportMatchingSource;
+    opportunity: string;
+    signature: string;
+    intent: {kind:'guild';frame:GuildTransportOrder;fromReserves:boolean;secret?:string}
+      | {kind:'junction';declaration:JunctionTransportDeclaration};
   };
   pendingSpiritualAdvisor?: {
     event: string;
@@ -14632,6 +14642,7 @@ function revivalCancellationQuote(g: Game, response: ResponseWindow) {
   }
 }
 function movementCancellationQuote(g: Game, response: ResponseWindow) {
+  if (response.advisorTransportMatchingSource) { currentAdvisorTransportMatching(g,response); return null; }
   if (response.advisorAmbassadorMatchingSource) { currentAdvisorAmbassadorMatching(g,response); return null; }
   if (response.spiritualAdvisorSource) { currentSpiritualAdvisorResponse(g,response); return null; }
   if (response.advisorMatchingSource) { currentAdvisorMatching(g, response); return null; }
@@ -16592,6 +16603,7 @@ function groundMovementProbe(source: Game, actor: string): Game {
   game.pendingKarama = null; game.pendingTreacheryDiscard = null;
   game.pendingFremenMove = null; game.pendingIxMove = null; game.pendingChoamMove = null;
   game.pendingAmbassador = null; game.pendingTerrorEntry = null; game.pendingArrivalOverlap = null;
+  delete game.pendingAdvisorTransportMatching;
   game.pendingArrivalReaction = []; game.pendingExchange = null;
   if (game.pendingShipment?.player === game.active && recoverableUnsupportedShipment(game.pendingShipment)) {
     const shipment = game.pendingShipment; game.pendingShipment = null;
@@ -20589,6 +20601,113 @@ function completeSpiritualAdvisorArrival(g:Game){
     openTerritoryEntry(g,bg,order.territory,order.sector,order.amount,0,'advisor');
   }
 }
+type TransportMatchingIntent=NonNullable<Game['pendingAdvisorTransportMatching']>['intent'];
+function transportMatchingRule<T>(quote:()=>T):T{
+  try{return quote();}catch(error){if(error instanceof AdvisorTransportMatchingError)throw new RuleError(error.message);throw error;}
+}
+function transportMatchingScopes(g:Game,owner:string){
+  return {guild:JSON.stringify(['guild',g.turn,owner,guildTransportOpportunity(g,owner)]),
+    secret:JSON.stringify(['guildSecret',g.turn,owner]),
+    junction:JSON.stringify(['junction',g.turn,owner,g.junctionOffer?.recipient===owner?g.junctionOffer.event:null])};
+}
+function transportMatchingContext(g:Game,owner:string,opportunity:string){
+  return {...g,worlds:g.homeworlds?.custody?(homeworldRule(()=>homeworldTable(g))??undefined):undefined,
+    advisorTransportMatchingOpportunity:opportunity,
+    advisorTransportMatchingDenied:g.advisorTransportMatchingDenied?.filter(r=>r.owner===owner&&r.turn===g.turn).map(r=>r.key)};
+}
+function quoteTransportMatching(g:Game,intent:TransportMatchingIntent){
+  const owner=intent.kind==='guild'?intent.frame.player:intent.declaration.player;
+  const scopes=transportMatchingScopes(g,owner);
+  if(intent.kind==='guild'){
+    if(intent.fromReserves)return null;
+    const order=intent.frame,opportunity=intent.secret?scopes.secret:scopes.guild;
+    const quote=transportMatchingRule(()=>quoteAdvisorTransportMatching(transportMatchingContext(g,owner,opportunity),
+      {producer:'guild',owner,origin:order.origin,destination:order.to,sector:order.sector,
+        advisors:order.advisors,group:Object.fromEntries(order.group)}));
+    return quote?{quote,opportunity}:null;
+  }
+  const {quote:order,arrival,advisors}=quoteJunctionDeclaration(g,getPlayer(g,owner),intent.declaration);
+  if(!arrival)return null;
+  const group=Object.fromEntries(order.sources.map(source=>[source.key,
+    source.before.normal+source.before.elite-source.after.normal-source.after.elite]));
+  const origin=order.originKind==='homeworld'?Object.keys(group).sort()[0]:order.origin;
+  const quote=transportMatchingRule(()=>quoteAdvisorTransportMatching(transportMatchingContext(g,owner,scopes.junction),
+    {producer:'junction',owner,origin,destination:arrival.territory,sector:arrival.sector,advisors,group}));
+  return quote?{quote,opportunity:scopes.junction}:null;
+}
+function openAdvisorTransportMatching(g:Game,intent:TransportMatchingIntent){
+  const matching=quoteTransportMatching(g,intent);if(!matching)return false;
+  requireRule(!g.response&&!g.decision&&!g.pendingAdvisorTransportMatching,
+    'Finish the original incoming transport matching first.');
+  const receipt={event:crypto.randomUUID(),...matching.quote};
+  g.pendingAdvisorTransportMatching={receipt,intent,signature:JSON.stringify(intent),opportunity:matching.opportunity};
+  g.response={kind:'advisorFlip',owner:receipt.owner,location:receipt.destination,advisors:receipt.advisors,
+    amount:Object.values(receipt.group).reduce((n,count)=>n+count,0),passed:[],advisorTransportMatchingSource:receipt};
+  return true;
+}
+function transportMatchingShadow(g:Game,event:string){
+  const shadow=structuredClone(g);
+  const owned=(control:unknown)=>{
+    const c=control as {response?:ResponseWindow|null;pendingKarama?:Game['pendingKarama']}|null|undefined;
+    return c?.response?.advisorTransportMatchingSource?.event===event||
+      (c?.pendingKarama?.use.kind==='cancel'&&c.pendingKarama.use.response.advisorTransportMatchingSource?.event===event);
+  };
+  if(owned(shadow.pendingExchange))shadow.pendingExchange=null;
+  if(owned(shadow.pendingNullentropy?.resume))shadow.pendingNullentropy=null;
+  if(owned(shadow.pendingRicheseGift?.resume))shadow.pendingRicheseGift=null;
+  if(owned(shadow.pendingRichesePurchaseIncome?.resume))shadow.pendingRichesePurchaseIncome=null;
+  const continuation=shadow.pendingTreacheryDiscard?.continuation;
+  if(continuation&&'resume'in continuation&&owned(continuation.resume))shadow.pendingTreacheryDiscard=null;
+  shadow.response=null;shadow.decision=null;shadow.pendingKarama=null;shadow.truthtrance=null;
+  return shadow;
+}
+function currentAdvisorTransportMatching(g:Game,response:ResponseWindow){
+  const parent=g.pendingAdvisorTransportMatching,source=response.advisorTransportMatchingSource;
+  requireRule(parent&&source&&response.kind==='advisorFlip'&&response.owner===source.owner&&
+    response.location===source.destination&&response.advisors===source.advisors&&
+    response.amount===Object.values(source.group).reduce((n,count)=>n+count,0)&&
+    !response.advisorResume&&!response.advisorMatchingSource&&!response.advisorAmbassadorMatchingSource&&
+    !response.spiritualAdvisorSource&&!response.automaticAdvisorFlip&&!response.advisorPreparationSource&&
+    JSON.stringify(parent.receipt)===JSON.stringify(source)&&parent.signature===JSON.stringify(parent.intent)&&
+    source.producer===(parent.intent.kind==='guild'?'guild':'junction'),
+    'The transport matching counter lost its original uncommitted declaration.');
+  const quiet=transportMatchingShadow(g,source.event),owner=getPlayer(quiet,source.owner);
+  if(parent.intent.kind==='guild')validateGuildTransportForCommit(quiet,owner,parent.intent.frame,
+    parent.intent.fromReserves,parent.intent.secret);
+  const matching=quoteTransportMatching(quiet,parent.intent);
+  requireRule(matching&&matching.opportunity===parent.opportunity&&
+    JSON.stringify(matching.quote)===JSON.stringify(Object.fromEntries(Object.entries(source).filter(([key])=>key!=='event'))),
+    'The transport matching counter no longer owns its original packet or grant.');
+  transportMatchingRule(()=>validateAdvisorTransportMatching(transportMatchingContext(quiet,source.owner,parent.opportunity),source));
+  return parent;
+}
+function advisorTransportMatchingIntegrity(g:Game){
+  if(!g.pendingAdvisorTransportMatching)return;
+  const continuation=g.pendingTreacheryDiscard?.continuation;
+  const controls=[g,g.pendingExchange,g.pendingNullentropy?.resume,g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume,g.summonedWorm?.resume,g.pendingKull?.resume,
+    continuation&&'resume'in continuation?continuation.resume:null];
+  const responses=controls.flatMap(c=>c?.response?[c.response]:[]);
+  for(const {pending}of savedKaramaContexts(g))if(pending.use.kind==='cancel')responses.push(pending.use.response);
+  const matching=responses.filter(r=>r.advisorTransportMatchingSource);
+  requireRule(matching.length>0,'Restore the original transport matching response.');
+  for(const response of matching)currentAdvisorTransportMatching(g,response);
+}
+function finishAdvisorTransportMatching(g:Game,response:ResponseWindow,canceled:boolean){
+  const parent=currentAdvisorTransportMatching(g,response),source=parent.receipt;
+  delete g.pendingAdvisorTransportMatching;
+  if(canceled){
+    const key=advisorTransportMatchingKey(source,parent.opportunity);
+    if(!g.advisorTransportMatchingDenied?.some(r=>r.key===key))
+      (g.advisorTransportMatchingDenied??=[]).push({owner:source.owner,turn:g.turn,key});
+    log(g,`${getPlayer(g,source.owner).name}'s incoming transport matching in ${territory(source.destination).name} was prevented before payment or transfer. Choose another legal packet or destination; the original shipment opportunity remains unused.`,
+      {faction:'beneGesserit',name:'Transport group matching prevented'});
+  }else if(parent.intent.kind==='guild'){
+    const intent=parent.intent,owner=getPlayer(g,source.owner);
+    if(intent.secret)commitGuildTransport(g,owner,intent.frame,intent.fromReserves,intent.secret);
+    else openGuildTransportPermission(g,owner,intent.frame,intent.fromReserves);
+  }else commitJunctionTransport(g,getPlayer(g,source.owner),parent.intent.declaration);
+}
 function ambassadorMatchingRule<T>(quote:()=>T):T{
   try{return quote();}catch(error){if(error instanceof AdvisorAmbassadorMatchingError)throw new RuleError(error.message);throw error;}
 }
@@ -23186,7 +23305,7 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
 function victory(g: Game, quote?: VictoryQuote) {
   requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorTransport &&
     !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle && !g.pendingAutomaticAdvisorHomeworldTransport &&
-    !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm && !g.pendingAutomaticAdvisorRelocation && !g.pendingAdvisorMatching && !g.pendingAdvisorAmbassadorMatching && !g.pendingSpiritualAdvisor,
+    !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm && !g.pendingAutomaticAdvisorRelocation && !g.pendingAdvisorMatching && !g.pendingAdvisorAmbassadorMatching && !g.pendingAdvisorTransportMatching && !g.pendingSpiritualAdvisor,
     'Resolve mandatory advisor conversions before checking victory.');
   quote ??= currentVictoryQuote(g);
   applyAdvisorReleases(g, quote.released);
@@ -28978,7 +29097,8 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       );
   } else if (response.kind === 'advisorFlip') {
     const bg = getPlayer(g, response.owner);
-    if (response.advisorAmbassadorMatchingSource) finishAdvisorAmbassadorMatching(g,response,canceled);
+    if (response.advisorTransportMatchingSource) finishAdvisorTransportMatching(g,response,canceled);
+    else if (response.advisorAmbassadorMatchingSource) finishAdvisorAmbassadorMatching(g,response,canceled);
     else if (response.spiritualAdvisorSource) finishSpiritualAdvisorResponse(g,response,canceled);
     else if (response.advisorMatchingSource) finishAdvisorMatching(g,response,canceled);
     else if (response.advisorResume === 'planetologistGather') {
@@ -29555,7 +29675,7 @@ function performJunctionTransport(g: Game, p: Player, action: Action) {
   const quote = quoteJunctionDeclaration(g, p, declaration, action.allyPayment === undefined);
   declaration.allyPayment = action.allyPayment === undefined ? quote.allyPayment :
     contribution(g, p, quote.quote.cost, action.allyPayment);
-  commitJunctionTransport(g, p, declaration);
+  if(!openAdvisorTransportMatching(g,{kind:'junction',declaration}))commitJunctionTransport(g,p,declaration);
 }
 function homeworldShipmentQuote(g: Game, intent: HomeworldShipmentIntent & {route?: 'arrakis';guildSecretEvent?:string}) {
   requireRule(g.homeworlds?.custody, 'Homeworld shipment requires saved physical custody.');
@@ -30350,14 +30470,15 @@ function nativeGuildTransportPermission(g: Game, p: Player): boolean {
   return !!guild && p.ally === guild.id && guild.ally === p.id;
 }
 function validateGuildTransportForCommit(
-  g: Game, p: Player, frame: GuildTransportOrder, fromReserves: boolean,
+  g: Game, p: Player, frame: GuildTransportOrder, fromReserves: boolean, guildSecretEvent?:string,
 ) {
   const { origin, group, eliteGroup, to, sector, amount, elite, cost, allyPayment, advisors } = frame;
   requireRule(g.status === 'playing' && g.phase === 5 && frame.turn === g.turn &&
     frame.player === p.id && g.active === p.id && shipmentAvailable(g, p),
     'This Guild transport no longer belongs to an unused shipment opportunity.');
-  requireRule(nativeGuildTransportPermission(g, p),
+  requireRule(guildSecretEvent?validateGuildSecretDeclaration(g,p.id,guildSecretEvent):nativeGuildTransportPermission(g,p),
     'Native Guild transport requires the Guild or its reciprocal ally.');
+  requireRule(!guildSecretEvent||!fromReserves,'Use the reserve shipment selector for Guild Secret Ally reinforcements.');
   if (fromReserves) {
     requireRule(p.faction === 'fremen' && origin === 'reserves' &&
       group.length === 0 && Object.keys(eliteGroup).length === 0,
@@ -30375,7 +30496,7 @@ function validateGuildTransportForCommit(
       'The original Guild transport force group changed or entered the storm.');
   }
   requireRule((fromReserves || to === 'reserves' || to !== origin) &&
-    (to !== 'reserves' || p.faction === 'guild') &&
+    (to !== 'reserves' || p.faction === 'guild' || !!guildSecretEvent) &&
     (to !== MOBILE_STRONGHOLD || p.faction === 'ixians') &&
     advisors === (to !== 'reserves' && arrivalAsAdvisor(g, p, to)),
     'The original Guild transport destination or advisor stance is unavailable.');
@@ -30384,7 +30505,7 @@ function validateGuildTransportForCommit(
     !g.players.some(other => other.id !== p.id && at(other, to)),
     'New advisors cannot become fighters this turn.');
   if (to !== 'reserves') allowedEntry(g, p, to, sector, false, advisors);
-  const halfRate = g.karamaShipping?.player === p.id ||
+  const halfRate = !!guildSecretEvent || g.karamaShipping?.player === p.id ||
     !(g.guildRateBlocked?.turn === g.turn && g.guildRateBlocked.player === p.id);
   requireRule(cost === guildShipmentCost(
     to === 'reserves' ? 'reserves' : territory(to).type, amount, halfRate),
@@ -32663,6 +32784,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   treacheryDiscardIntegrity(state);
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
+  advisorTransportMatchingIntegrity(state);
   advisorAmbassadorMatchingIntegrity(state);
   spiritualAdvisorIntegrity(state);
   ambassadorRelocationIntegrity(state);
@@ -33075,6 +33197,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   treacheryDiscardIntegrity(state);
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
+  advisorTransportMatchingIntegrity(state);
   advisorAmbassadorMatchingIntegrity(state);
   spiritualAdvisorIntegrity(state);
   ambassadorRelocationIntegrity(state);
@@ -36583,6 +36706,7 @@ function applyActionInner(
       turn: g.turn, player: id, origin, group, eliteGroup, to, sector,
       amount: n, elite, cost, allyPayment, advisors,
     };
+    if(execution==='live'&&openAdvisorTransportMatching(g,{kind:'guild',frame,fromReserves,...(guildSecretEvent?{secret:guildSecretEvent}:{})}))return g;
     if (!guildSecretEvent) {
       openGuildTransportPermission(g, p, frame, fromReserves);
       return g;
@@ -37162,6 +37286,7 @@ export function viewGame(state: Game, id: string) {
   treacheryDiscardIntegrity(state);
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
+  advisorTransportMatchingIntegrity(state);
   advisorAmbassadorMatchingIntegrity(state);
   spiritualAdvisorIntegrity(state);
   ambassadorRelocationIntegrity(state);
@@ -37633,6 +37758,9 @@ export function viewGame(state: Game, id: string) {
     homeworldRevivalDeployment: projectedHomeworldRevivalReturn(g, id),
     caladanReinforcement: projectedHomeworldVictoryReturn(g, id),
     homeworldRevivalBlocks: homeworldRevivalChoiceBlocks(g, me),
+    ...(g.advisorTransportMatchingDenied?.some(r=>r.owner===id&&r.turn===g.turn)?{
+      advisorTransportMatchingDenied:g.advisorTransportMatchingDenied.filter(r=>r.owner===id&&r.turn===g.turn).map(r=>r.key),
+      advisorTransportMatchingScopes:transportMatchingScopes(g,id)}:{}),
     homeworlds: g.homeworlds
       ? { worlds: homeworldRule(() => homeworldTable(g)) }
       : null,

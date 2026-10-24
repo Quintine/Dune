@@ -17,6 +17,7 @@ import {
   type HomeworldShipmentSources,
 } from './homeworld-shipment-options';
 import { liveShipmentPromises, matchesShipment } from './shipment-promises';
+import { quoteAdvisorTransportMatching, AdvisorTransportMatchingError } from './advisor-transport-matching';
 
 export function junctionTransportOrigins(view: GameView) {
   const me = view.players.find((player) => player.id === view.me);
@@ -219,6 +220,16 @@ export function junctionTransportChoice(
         arrival.territory,
         quote.originKind === 'arrakis' ? quote.origin : undefined,
       );
+      if(view.advisorTransportMatchingDenied?.length){
+        const group=Object.fromEntries(quote.sources.map(source=>[source.key,
+          source.before.normal+source.before.elite-source.after.normal-source.after.elite]));
+        try{
+          quoteAdvisorTransportMatching({...view,worlds:view.homeworlds?.worlds??undefined,
+            advisorTransportMatchingOpportunity:view.advisorTransportMatchingScopes?.junction},
+            {producer:'junction',owner:me.id,origin:quote.originKind==='homeworld'?Object.keys(group).sort()[0]:quote.origin,
+              destination:arrival.territory,sector:arrival.sector,advisors:result.advisors,group});
+        }catch(error){if(!(error instanceof AdvisorTransportMatchingError))throw error;result.blocked=error.message;}
+      }
       const entryBlock = territoryEntryBlock(
         view.players,
         me.id,

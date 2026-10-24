@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Guild/Junction incoming matching — 24 October 2026
+
+Supplied physical28's marked shipping/moving clause and physical17's group
+counter apply to opposite-type incoming BG transport packets. Junction World
+packets provisionally retain the ordinary reserve fighter default. Under the
+14 October policy, select fresh-declaration matching after quote and before
+permission/rate/Betrayal/payment, without reopening stored old continuations.
+Junction permission/tariff remain immune; Secret Ally is not consumed before
+physical commitment. Prevent only that packet/destination/stance in the actual
+producer opportunity, retaining unused shipment and original grant. Keep native
+scope, funding and signature private; consume the matching parent before one
+original suffix. Broader modes remain unfinished.
+[Source, original ordering and evidence](ADVISOR_MATCHING.md#guild-and-junction-transport--24-october-2026).
+
 ## Fremen Ambassador incoming matching — 24 October 2026
 
 Compose supplied physical28's incoming shipping/moving matching clause and

@@ -2503,6 +2503,16 @@ export function GameTable({
                   {' '}Any already-played movement or declaration card keeps its original use. Choose a legal replacement if matching is prevented.
                 </p>
               )}
+              {g.response.kind==='advisorFlip'&&g.response.advisorTransportMatchingSource&&(
+                <p className="notice">
+                  The incoming transport group must match your residents before payment or force transfer.
+                  {' '}Preventing matching leaves the shipment unused, while this same packet here stays unavailable for the original opportunity.
+                  {' '}Choose another legal packet or destination.
+                  {g.response.advisorTransportMatchingSource.producer==='junction'
+                    ? ' The Junction permission and tariff remain immune; the original payment and transfer follow allowance.'
+                    : ' Original transport permission, price and payment follow separately if matching is allowed.'}
+                </p>
+              )}
               {g.response.kind==='advisorFlip'&&g.response.advisorAmbassadorMatchingSource&&(
                 <p className="notice">
                   The incoming Fremen Ambassador group must match your resident forces. No selected force has moved or collected spice yet.

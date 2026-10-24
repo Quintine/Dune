@@ -1,5 +1,83 @@
 # Matching incoming Bene Gesserit groups
 
+## Guild and Junction transport — 24 October 2026
+
+**Prototyped / Partial.** Compose supplied revised
+Advanced physical28's marked matching clause and physical17's group counter
+with fresh Guild cross-transport and Junction board arrivals. Incoming BG board
+groups retain their actual source stance. A Junction native or foreign World
+packet provisionally starts with the ordinary fighter default; multiple selected
+world keys are one original transport packet. Match only opposite-type arrivals
+joining actual BG residents. Returns to reserves/worlds need no board matching.
+
+The selected provisional priority offers matching after the original fresh
+declaration's legality/funding quote, before native Guild transport permission,
+rate, Guild Betrayal settlement or any payment/transfer. These sources do not
+specify their relative response order. Junction's Homeworld permission and
+tariff stay immune; matching targets only BG's independent group conversion.
+Absent-Guild Secret Ally retains its unspent actual Nexus and bank price until
+the original physical commitment. Native Guild Cunning belongs to Guild, not
+BG; it grants no extra BG transport. Purchased Karama is an independent price,
+not a cross-transport permission.
+
+The public ten-field source contains only event, producer, owner, turn/phase,
+origin, destination/sector, target stance and physical group. Private native
+opportunity identity, original order/funding and exact signature remain outside
+that receipt. Before either counter outcome, revalidate the real original grant
+and packet using a nonmutating projection of its owned matching controls;
+Junction/Secret frontdoor busy checks must not reject their own response. Never
+create matching events in movement-preparation simulation.
+
+Under the existing provisional remedy, prevent only that packet/destination/
+stance in the same producer opportunity, retaining the unused shipment and
+original Junction offer or Secret card. A different packet/destination remains
+available. Price changes, destination sectors and response UUIDs cannot retry
+the same original packet. Human quotes and minimal bots share those denials.
+Allowance consumes the matching parent before invoking the exact original
+permission/Secret/Junction suffix once. Existing stored permission/rate/Betrayal
+continuations keep their old protocol; do not reopen them or replay costs. This
+fresh-declaration cutover preserves the original full-rate cleanup timing.
+
+[Native sources](../tests/fixture-advisor-transport-matching.ts) earn original
+public Advanced BG/Guild/Atreides setup, original advisor and Karama, paid
+fighters, actual Nexus alliance or current high-native Junction offer. Separate
+[Secret Ally source](../tests/fixture-advisor-secret-transport-matching.ts)
+earns absent-Guild Nexus entitlement with BG unallied and an actual Atreides/
+Emperor alliance supplying native draw eligibility. Sources use85 public actions
+for allied Guild,82 for Junction board,36 for native World and74 for Secret.
+No played force, hand, phase, alliance, grant, offer or response is installed.
+
+Frozen **25 files437/437**, types/lint/build, twenty native declaration/response/
+replacement/original-permission/rate/GameTable SSR journeys, two controlled
+Truthtrance cases and sixteen existing-profile paths with32 accepted actions
+pass. Both board directions and native World arrivals preserve state while
+matching waits. Prevention keeps the actual grant, blocks the same packet and
+admits empty or genuine two-counter replacements. Matching allowance still
+precedes original Guild permission and, when a real discount exists, rate.
+A one-force city price has no separate discount; actual desert discount does.
+Original permission denial and unaffordable full-rate cancellation leave the
+physical shipment unused. Secret keeps its Nexus through prevention and spends
+it once on actual transfer. Junction retains original tariff/custody/income.
+
+Bounded review identifies and repairs Truthtrance's own busy overlay in grant
+validation and an inconsistent matching-only price restriction. A labelled
+controlled original-card relocation reproduces the busy failure; both overlay
+regressions then preserve real Truthtrance priority and resume the same matching
+response. Runtime feedback corrects city-discount and actual empty-target
+assumptions; type feedback normalizes nullable World tables at three adapters.
+Controlled Truthtrance custody is not a native earned draw. Standard controls
+render; SSR does not establish callback/hydration or browser acceptance.
+
+Private proof and HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-transport-matching/`.
+`frozen-integrated-4/report.json` binds tree
+`43e21e75f3d9b4130593e5c4427c1df86232ea8e8506408c38861706e09437d7`,
+2766 files on base `c999054ae02d5a03d1005448f9c467bf0c44bed3`.
+Checkpoint prose/reference overlays are separately reviewed. Two-origin
+gathering, mixed foreign-World/purchased-price/Betrayal/other modules, all valid
+combinations and final browser/deployed/mode assurance remain open. No AI
+refinement or saved-room/D1/server/reset/restart/deployment operation.
+
 ## Fremen Ambassador relocation — 24 October 2026
 
 **Prototyped / Partial.** The supplied revised
@@ -58,8 +136,8 @@ HTML live in
 2761 files on base `767bace7747ccf3cfb62600dc31cd47b2d46117b`.
 Only checkpoint prose/reference overlays follow that proof, with separate
 link/evidence/source-invariance review. SSR is not callback/hydration or browser
-acceptance. Guild/Junction transport, two-origin gathering, wider modules and
-final mode/browser/deployed acceptance remain open. No saved-room/D1/server/
+acceptance. The Guild/Junction follow-up is now prototyped above; two-origin
+gathering, wider modules and final mode/browser/deployed acceptance remain open. No saved-room/D1/server/
 reset/restart/deployment operation.
 
 ## Normal movement and reserve shipment — 24 October 2026

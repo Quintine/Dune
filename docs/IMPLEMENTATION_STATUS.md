@@ -1,5 +1,56 @@
 # Dune implementation status
 
+## 24 October 2026 — Fresh Guild, Junction and Secret Ally incoming BG matching
+
+Incoming opposite-type BG packets now have a distinct precommit counter through
+native allied Guild cross-transport, absent-Guild Secret Ally, Junction board
+relocation and Junction native/foreign World arrival. Supplied physical28's
+marked matching clause/physical17's group counter support the conversion;
+World incoming fighter default and matching-before-permission/rate/settlement
+priority remain explicit provisional compositions. Junction's own Homeworld
+permission and tariff retain immunity. Existing stored continuations retain
+their old protocol, avoiding any replay of original costs or rate cleanup.
+
+Public ten-field receipts select physical packets only. Keep original scope,
+funding, order and signature private; before either counter outcome revalidate
+the original actual grant through a quiet projection of owned interruptions.
+Prevention leaves shipment/grant unused while denying the same packet/target
+stance in that destination for the producer opportunity. Price, sector and
+counter UUID changes cannot retry it; another packet/destination remains.
+Human quotes and minimal bots share these denials. Allowance consumes the parent
+before one original permission/Secret/Junction suffix. No matching events are
+created during movement-preparation simulation.
+
+Disjoint helper/native-fixture lanes, bounded source/integration review and root
+integration pass **25 files437/437**, types/lint/build, twenty native
+declaration/response/replacement/original-permission/rate/GameTable SSR journeys,
+two controlled Truthtrance cases and sixteen existing-profile paths with32
+accepted response/replacement actions. Genuine85/82/36/74-action original
+base33 sources earn allied-Guild, Junction board, native World and Secret
+respectively. Original setup/Karama, paid forces, actual Nexus alliance/high
+Junction offer and actual Guild Nexus draw remain authoritative. Secret BG stays
+unallied while Atreides/Emperor earn its native draw eligibility. No played
+state is installed in those native sources. Permission and actual-discount
+responses still follow matching; original unfunded full-price cancellation
+leaves shipment unused. Secret spends its physical Nexus once at commitment.
+
+Review repairs Truthtrance's owned busy projection and a matching-only price
+inconsistency. A controlled real-card relocation reproduces the busy failure;
+both repaired overlay cases preserve actual priority and original matching.
+Smoke feedback corrects city-discount and empty-target assumptions; type
+feedback normalizes nullable World data at three adapters. The final union and
+runtime pass. Private proof:
+`/home/quintine/.local/share/dune/checkpoints/20261024-advisor-transport-matching/`.
+`frozen-integrated-4/report.json` binds tree
+`43e21e75f3d9b4130593e5c4427c1df86232ea8e8506408c38861706e09437d7`,
+2766 files on base `c999054ae02d5a03d1005448f9c467bf0c44bed3`.
+Final prose/reference overlays are reviewed separately. Controlled Truthtrance
+is not an earned draw; SSR is not callback/hydration/browser acceptance. Mixed
+foreign-World/purchased-price/Betrayal/other modules, two-origin gathering and
+final mode/assurance remain open. No AI refinement or saved-room/D1/server/reset/
+restart/deployment operation.
+[Source, ordering, original continuations and limits](ADVISOR_MATCHING.md#guild-and-junction-transport--24-october-2026).
+
 ## 24 October 2026 — Incoming BG matching through a native Fremen Ambassador
 
 Supplied physical28's marked matching clause now composes the native allied

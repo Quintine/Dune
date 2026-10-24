@@ -16,6 +16,40 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Guild/Junction incoming matching — 24 October. Prototyped / Partial.**
+Fresh native Guild and absent-Guild Secret Ally cross-transports plus Junction
+board/World arrivals now offer incoming BG matching before original permission,
+price, settlement or physical transfer. This selected priority is provisional;
+Junction permission/tariff remain immune. Public ten-field physical sources omit
+private orders, scope and funding. Prevention retains unused shipment and grant,
+denying only that packet/destination/stance in its producer opportunity. Shared
+human/bot quotes retain replacements; consume the private matching parent before
+one original suffix. Stored old continuations keep their previous protocol.
+[Source, fresh cutover and evidence](ADVISOR_MATCHING.md#guild-and-junction-transport--24-october-2026).
+
+Disjoint helper/native-fixture lanes, bounded source/integration review and root
+integration pass **25 files437/437**, types/lint/build, twenty native
+declaration/response/replacement/original-permission/rate/GameTable SSR journeys,
+two controlled Truthtrance cases and sixteen existing-profile paths with32
+accepted response/replacement actions. Genuine85-action allied-Guild sources,
+82-action Junction board,36-action native World and74-action Secret sources
+earn original base33 setup/Karama, paid fighters, actual Nexus alliance or high
+Junction offer. Secret BG stays unallied; an actual Atreides/Emperor alliance
+earns its genuine Guild Nexus draw. No played state is installed in native
+sources. Both matching outcomes preserve physical state while waiting; later
+permission and actual discounted-price counters remain separate. A city price
+with no discount has no rate counter. Nexus is consumed once at actual Secret
+commitment; original unaffordable full-price cancellation stays unused.
+
+Review repairs the owned quiet Truthtrance projection and removes an inconsistent
+matching-only price restriction. The controlled overlay reproduces the busy
+failure, then both overlay regressions pass; real priority and original response
+remain. Feedback corrects city-discount/empty-target smoke expectations and
+normalizes nullable World data at three adapters. Two-origin gathering, mixed
+foreign-World/purchased-price/Betrayal/module combinations and final mode/browser/
+deployed assurance remain open. No AI refinement or saved-room/D1/server/reset/
+restart/deployment operation.
+
 **Fremen Ambassador incoming matching — 24 October. Prototyped / Partial.**
 Incoming opposite-type BG relocation now offers Karama before CHOAM movement
 reactions, Sandmaster collection or physical transfer. Its real original allied
@@ -39,8 +73,9 @@ and prevention keeps the grant, rejects the same packet and admits a different
 packet or empty target. No played force, phase, hand, alliance or response is
 installed. Feedback repairs one empty-source zero/absence assertion; runtime
 needed no application source fix. No AI refinement or saved-room/D1/server/
-reset/restart/deployment operation. Guild/Junction, two-origin gathering, wider
-modules and final mode/browser/deployed assurance remain open.
+reset/restart/deployment operation. The Guild/Junction follow-up is now prototyped
+above; two-origin gathering, wider modules and final mode/browser/deployed
+assurance remain open.
 
 **Spiritual Advisor targets and conversion — 24 October. Prototyped / Partial.**
 Supplied physical28 redirects retained non-Polar fighters to Polar Sink or

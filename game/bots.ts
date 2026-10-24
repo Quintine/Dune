@@ -118,6 +118,7 @@ import { validateCohortSelection, type OrnithopterMode } from './ornithopter';
 import { fighterCount, isAdvisor } from './advisors';
 import { quoteAdvisorMatching, AdvisorMatchingError } from './advisor-matching';
 import { quoteAdvisorAmbassadorMatching, AdvisorAmbassadorMatchingError } from './advisor-ambassador-matching';
+import { guildTransportQuote } from './transport-quote';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from './combat';
 import { reinforcementsBattleForces } from './reinforcements-homeworld';
 import type { NativeReserveSelections } from './homeworld-native-reserves';
@@ -4278,7 +4279,8 @@ export function botActions(g: GameView): Action[] {
     if (action.type === 'battlePlan' && g.ecazSpecialKarama?.declared &&
         (action.weapon || action.defense)) return [];
     const sourced = withNativeShipmentSources(g, action);
-    return sourced && botHomeworldShipmentPaymentAllowed(g, sourced) && !homeworldRevivalActionBlock(g, sourced) && !botArrivalBlock(g, sourced) && botAdvisorMatchingAllowed(g,sourced) ? [sourced] : [];
+    return sourced && botHomeworldShipmentPaymentAllowed(g, sourced) && !homeworldRevivalActionBlock(g, sourced) && !botArrivalBlock(g, sourced) && botAdvisorMatchingAllowed(g,sourced) &&
+      (sourced.type!=='guildShip'||!g.advisorTransportMatchingDenied?.length||!guildTransportQuote(g,sourced).unavailableReasons.length) ? [sourced] : [];
   });
   const me = g.players.find((p) => p.id === g.me)!;
   const advancedDepartures = g.advancedAllySeparation?.territories;

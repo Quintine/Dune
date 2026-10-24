@@ -4,6 +4,7 @@ import type { Action, GameView } from './engine';
 import { splitLocation, validGameLocation } from './board';
 import { botEntryAllowed, guildTransportCost } from './bot-mobility';
 import { shipmentPaymentBounds } from './shipment-price';
+import { quoteAdvisorTransportMatching, AdvisorTransportMatchingError } from './advisor-transport-matching';
 
 /** Preview the submitted Guild transport using only this seat's entitled view.
  * The authoritative action still revalidates the selection when it arrives.
@@ -23,6 +24,7 @@ export function guildTransportQuote(g: GameView, action: Action) {
   const fromReserves = action.from === 'reserves';
   let total = 0;
   let origin: string | undefined;
+  const matchingGroup:Record<string,number>={};
   let validForces = true;
   const unitSelection = (
     value: unknown,
@@ -101,6 +103,7 @@ export function guildTransportQuote(g: GameView, action: Action) {
           : action.elite,
       );
       if (typeof count !== 'number' || count <= 0) continue;
+      matchingGroup[key]=count;
       if (origin && origin !== source.territory) {
         validForces = false;
         unavailableReasons.push('Select forces from one territory.');
@@ -187,6 +190,14 @@ export function guildTransportQuote(g: GameView, action: Action) {
           'Your spice does not cover your selected share. Adjust the ally payment or transport fewer forces.',
         );
     }
+  }
+  if(g.advisorTransportMatchingDenied?.length&&origin&&!fromReserves){
+    try{
+      quoteAdvisorTransportMatching({...g,worlds:g.homeworlds?.worlds??undefined,
+        advisorTransportMatchingOpportunity:g.advisorTransportMatchingScopes?.[nexus?'secret':'guild']},
+        {producer:'guild',owner:p.id,origin,destination:to,sector:Number(action.sector??0),
+          advisors:!!p.advisors?.[to],group:matchingGroup});
+    }catch(error){if(!(error instanceof AdvisorTransportMatchingError))throw error;unavailableReasons.push(error.message);}
   }
   return {
     physicalForces: validForces && total > 0 ? total : undefined,
