@@ -16,6 +16,40 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Sandmaster special-route collection — 26 October. Prototyped / Partial.**
+Physical range3/twoGroups, carried Discovery and the own concealed marker now use
+the existing signed route/pile choice. Fixed range stays3; different normal card
+groups use current range and each gets its existing collection opportunity.
+Declared legal detours and current positive piles survive the quote; original
+typed/marker cohorts, flight identities and one disposal/credit remain. Marker0/
+3/5 stays concealed without materialization. Shared transport choices, editable
+routes, pile/decline controls and guarded callbacks feed minimal legal policy.
+Existing allocation/reset composition remains provisional; no mode gate opens.
+
+Three disjoint native/control lanes and root integration pass **14 files,130/130**,
+types/lint/build and **18 engine/GameTable SSR/actual selected-props callbacks**
+on unchanged source. Eight public E/R/A +choam/Skills paths earn card1, shipment8
+and real turn-two Spice blows (Basic73 / Advanced79 source actions); four public
+G/E/H Skills/Discovery paths acquire the token through actual Collection and use
+it with a real later blow (Basic65 / Advanced71). Collection/decline and current
+second-group piles finish in two-to-four continuation actions. Physical paths
+retain45 Treachery, Discovery33; each retains14 Skills/15 Traitors. Six labelled
+controlled marker paths supplement12 native paths; their positions/piles have
+no played chronology claim. Eight physical, seven Discovery, fifteen controlled
+and thirteen marker engine cases cover the slice. Feedback corrects an assumed
+native source-spice remainder, nullable projection narrowing and a test name.
+
+A bounded inventory also finds first versions of all28 independent Skill bands
+connected. Stale absence claims are corrected; full interactions, polished AI
+and complete-mode acceptance remain due. [Inventory](LEADER_SKILLS_RUNTIME.md#independent-band-inventory--26-october-2026).
+
+Frozen v3 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-sandmaster-flight-proof-v3/`;
+journeys/HTML: adjacent `20261026-sandmaster-flight-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+SSR/selected-props callbacks do not certify DOM/hydration, browser/mobile/deployed
+acceptance or full modes/combinations. [Source and execution](SANDMASTER_MOVEMENT.md#flight-and-concealed-marker-routes--26-october-2026).
+
 **Planetologist flight composition — 26 October. Prototyped / Partial.**
 Both skill alternatives now compose with physical range3/twoGroups and carried
 Discovery. Fixed3 stays3; twoGroups applies normal+1/cap3 or ordinary gathering
@@ -166,14 +200,12 @@ deployed acceptance. Full Truthtrance, modes/combinations and final assurance
 remain open. [Battle controls](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md#grouped-battle-plan-authoring--26-october-2026);
 [shipment controls](COMPOUND_SHIPMENT_PROMISES.md#full-pure-shipment-authoring--26-october-2026).
 
-Next source-supported interaction: Sandmaster collection along physical
-Ornithopter range3/twoGroups and carried Discovery routes. Its printed moving-
-forces band excludes none of these items. The live `validateSandmasterOrder`
-and `game/sandmaster-movement.ts` adapters still refuse them. Preserve chosen
-paths, exact piles, one collection per entered territory per movement, current
-range, original cohorts and one commitment/disposal. A second card movement
-requotes current spice; income never enlarges unmoved quotas. Use actual trained
-sources and produced Spice blows, not changed played assignments or staged piles.
+Next delivery inventory: remaining standalone Richese card effects, six Terror
+effects and the independent Ecaz card variant named in the readiness row below.
+Use their current canonical checklist/handlers/controls to distinguish a missing
+primitive from a stale absence claim or unfinished combination, then deliver
+real independent gaps before more Skill combinations. All28 Skill bands have
+connected first versions; that finding does not establish all Dune rules complete.
 Bounded allied-marker review found an existing legal voluntary-reveal→endMovement
 route; the supplied
 physical15/36 text does not expressly add alliance separation as a forced reveal
@@ -8504,7 +8536,7 @@ These links define bounded working behavior, not complete module certification.
 | --- | --- |
 | Basic core | Broader truthful commitments, unresolved special timing and integrated rules/human/AI acceptance. Ordinary Guild rate cancellation now exists: the `guildRate` prepayment response and `guildRateBlocked` turn window cover ordinary reserve shipment, eligible cross-planet transport and Guild return through the normalized `guildTransport`/shipment intents (`game/engine.ts`, `docs/GUILD_RATE_KARAMA_RULES.md`); the older 7 September readiness note that called it absent is superseded. |
 | Six-faction Advanced | Base gaps, provisional special-Karama outcomes, remaining timing audits and authentic multiplayer/browser acceptance. The user-authorized unfinished preview is available; setup matrices and complete samples do not certify full compliance. |
-| Twelve factions and all optional modules | Every missing effect, remaining skill bands, Ecaz card variant, Kull Wahad, unfinished Richese cards, Terror effects, occupation entitlement, Nexus interactions, contested Discoveries and complete games across valid combinations. The 7 October 2026 rulings settled CHOAM's low-population opening income, the Richese exhausted/canceled cache count, Suk/Kwisatz loss counting, the Guild Secret Ally Homeworld reserve return and Sandmaster HMS-relocation eligibility; the preserved captures can be resumed. Detailed boundaries remain in the checklist/decision index. |
+| Twelve factions and all optional modules | Every missing effect, remaining skill interactions and integrated acceptance, Ecaz card variant, Kull Wahad, unfinished Richese cards, Terror effects, occupation entitlement, Nexus interactions, contested Discoveries and complete games across valid combinations. The 7 October 2026 rulings settled CHOAM's low-population opening income, the Richese exhausted/canceled cache count, Suk/Kwisatz loss counting, the Guild Secret Ally Homeworld reserve return and Sandmaster HMS-relocation eligibility; the preserved captures can be resumed. Detailed boundaries remain in the checklist/decision index. |
 | AI | Maintain minimal legal participation and critical correctness fixes while game features are unfinished. Full implementation, strategy refinement and calibration wait until all non-AI features are complete; then target approximately 75% higher-tier wins for Medium/Easy, Hard/Medium and Brutal/Hard. See the [AI development plan](AI_DEVELOPMENT_PLAN.md). These targets remain unverified. |
 | Multiplayer | Broader disconnected/abandoned-seat recovery, unattended continuation and network-failure acceptance, while preserving authoritative versioning, custody, privacy and saves. |
 | Administration | Complete the [admin panel](ADMIN_PANEL.md): permissions, room directory and creation/removal, lifecycle controls, participant support, backup/restore and operational audit tools. Required before full AI refinement. |

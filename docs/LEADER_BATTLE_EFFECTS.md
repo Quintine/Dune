@@ -1,10 +1,12 @@
 # Leader Skill battle effects
 
-13 September 2026. **Prototyped, with Partial rules coverage.** This follow-up
-connects both Rihani Decipherer bands and the lower battle bands of Mentat,
-Bureaucrat and Sandmaster. Normal Mentat questioning, Bureaucrat payments and
-Sandmaster movement collection remain missing, as do Spice Banker, Diplomat and
-Smuggler. Public module starts and publication remain gated.
+13 September 2026 checkpoint. **Prototyped, with Partial rules coverage.**
+This dated follow-up connected both Rihani bands and the lower battle bands of
+Mentat, Bureaucrat and Sandmaster. Its earlier absence claims for normal Mentat,
+payments, movement collection, Banker, Diplomat and Smuggler are superseded:
+the [26 October inventory](LEADER_SKILLS_RUNTIME.md#independent-band-inventory--26-october-2026)
+records connected first versions of all28 independent bands. Full interactions,
+mode acceptance and publication remain gated.
 
 ## Source contract
 

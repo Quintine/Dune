@@ -4977,14 +4977,10 @@ export function GameTable({
                           act={act}
                           busy={busy}
                           unavailableReason={
-                            !movementAvailable
+                            !movementAvailable && !g.ornithopter?.active
                               ? 'No ordinary movement is currently available.'
-                              : (me.moved ?? 0) >= (me.movesAllowed ?? 1)
+                              : !g.ornithopter?.active && (me.moved ?? 0) >= (me.movesAllowed ?? 1)
                                 ? 'No ordinary movement remains this turn.'
-                                : ordinaryMovementRouteBlocked
-                                  ? 'Choose an unblocked source and route outside the storm.'
-                                : canceledFremenRouteBlocked
-                                  ? 'Choose an ordinary route within your available range.'
                                   : selectedDestinationInStorm
                                     ? 'Choose a destination outside the storm.'
                                     : liveShipmentPromises(

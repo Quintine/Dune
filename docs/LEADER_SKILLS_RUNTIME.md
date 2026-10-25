@@ -1,5 +1,27 @@
 # Leader Skills first functional prototype
 
+## Independent band inventory — 26 October 2026
+
+A bounded delivery inventory finds connected first versions of all28 independent
+normal/battle bands on the fourteen physical faces. This supersedes older
+absence claims below; it does not certify every interaction, complete modes,
+comprehensive verification, polished controls or AI strategy.
+
+| Faces | Connected normal and battle effects |
+| --- | --- |
+| Warmaster and four weapon/defense disciplines | Shared role scoring and actual battle-plan/posture controls |
+| Bureaucrat and Spice Banker | Payment redirection, normal deferred income, stronghold penalty and sealed battle spending |
+| Mentat, Rihani, Diplomat and Suk Graduate | Private questioning, traitor inspection/exchange, defense copying/retreat and physical rescue |
+| Sandmaster, Smuggler and Planetologist | Route/victory collection, shipment/battle collection and movement/Special substitution |
+
+The [physical faces](LEADER_SKILLS_RULES.md),
+[canonical implementation/control/AI checklist](../game/reference.ts) and its
+linked current helpers are the evidence. Current Sandmaster flight/marker
+delivery completes the previously guarded route adapters; no wholly absent
+independent band was identified. Keep `Prototyped` / `Partial` classifications.
+Recorded edge interpretations, including [empty-hand Mentat](MENTAT_QUESTION.md),
+valid module combinations, full games and final assurance remain open.
+
 **17 October default cutover:** normal Spice Banker income is mandatory in
 fresh supported ordinary all-fourteen Skills setups, including their existing
 module and native-overlay envelopes. The separate income initializer/profile
@@ -1373,9 +1395,11 @@ Other expansion rosters and combined optional modules remain gated. Native
 Advanced foreign gholas now follow the bounded Tleilaxu contract above; the
 recorded source-contract timing questions remain open. Planetologist has bounded
 movement and battle controls as described below.
-Remaining normal-band payments, ordinary Mentat activation, modified Smuggler collection,
-and the other guarded skill combinations still need connected effects. Diplomat
-retreat is a bounded prototype, not a complete simultaneous-effect ruling.
+The earlier missing normal-payment, ordinary Mentat and modified Smuggler
+claims are superseded by their connected current contracts above and the
+26 October independent-band inventory. Guarded interactions still require
+integration and acceptance. Diplomat retreat remains a bounded prototype,
+not a complete simultaneous-effect ruling.
 
 ## Planetologist follow-up
 
@@ -1389,8 +1413,9 @@ continuation and revalidate source custody before a response is spent.
 Six base factions remain the supported roster. Mixed BG origins are supported
 where ordinary rules determine the destination stance. Enemy-only mixed arrival
 still needs a combined flip response. Expansion faction/card/module combinations
-and full integrated acceptance remain unfinished. The remaining bands and skill families are
-listed above; this is partial prototype coverage.
+and full integrated acceptance remain unfinished. This dated roster/arrival
+boundary is superseded by current native and flight contracts above; all
+independent bands now have connected first versions, with partial coverage.
 
 ## Suk Graduate follow-up
 

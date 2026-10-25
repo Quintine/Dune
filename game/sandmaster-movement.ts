@@ -4,6 +4,8 @@ import { GRAPH, location, mobileRouteDistance, splitLocation, MOBILE_LOCATION, v
 import { isAdvisor } from './advisors';
 import { strongholdPathBlocked } from './occupancy';
 import { botMovementRange } from './bot-mobility';
+import { planetologistFlightSelection as movementFlightSelection } from './planetologist-flight';
+import { validateCohortSelection, type MovementMarker, type OrnithopterMode } from './ornithopter';
 
 export class SandmasterMovementError extends Error {}
 export type SandmasterChoice = {
@@ -18,7 +20,17 @@ export type SandmasterOrder = {
   to: string;
   sector: number;
   range: number;
+  noField?: MovementMarker;
+  flight?: SandmasterFlight;
 };
+export type SandmasterFlight =
+  | { kind: 'physical'; card: string; mode: OrnithopterMode; completed: number; event?: string }
+  | { kind: 'discovery'; token: string; acquiredTurn: number };
+
+/** A marker and physical counters in the same sector share one declared route. */
+export function sandmasterOrderSources(order: SandmasterOrder): string[] {
+  return [...new Set([...order.group.map(([key]) => key), ...(order.noField ? [order.noField.from] : [])])];
+}
 export type SandmasterMovement = SandmasterChoice & {
   leader: string;
   turn: number;
@@ -236,10 +248,11 @@ export function quoteSandmasterMovement(
       Array.isArray(value.collect),
     'Choose Sandmaster routes and optional collection territories.',
   );
-  const sources = move.group.map(([key]) => key);
+  const physical = move.group.map(([key]) => key);
+  const sources = sandmasterOrderSources(move);
   requireMove(
     sources.length > 0 &&
-      new Set(sources).size === sources.length &&
+      new Set(physical).size === physical.length &&
       JSON.stringify(Object.keys(value.routes).sort()) ===
         JSON.stringify([...sources].sort()),
     'Every moving source sector needs its own Sandmaster route.',
@@ -330,53 +343,70 @@ export function sandmasterActionOrder(
 ): SandmasterOrder | null {
   const p = g.players.find((p) => p.id === player);
   if (
-    !p ||
+    !p || player !== g.me ||
     action.type !== 'move' ||
-    action.noField !== undefined ||
-    action.planetologist !== undefined ||
-    action.movementCard !== undefined ||
-    action.ornithopterEvent !== undefined ||
-    action.discoveryOrnithopter !== undefined ||
-    g.ornithopter?.active
+    action.planetologist !== undefined
   )
     return null;
-  const group: [string, number][] = record(action.forces)
-    ? (Object.entries(action.forces).filter(
-        ([, n]) => typeof n === 'number' && n > 0,
-      ) as [string, number][])
-    : typeof action.from === 'string' && typeof action.amount === 'number'
-      ? [[action.from, action.amount]]
-      : [];
-  if (
-    !group.length ||
-    group.some(
-      ([key, n]) =>
-        !Number.isSafeInteger(n) || n <= 0 || n > (p.forces[key] ?? 0),
-    ) ||
-    new Set(group.map(([key]) => splitLocation(key).territory)).size !== 1 ||
-    typeof action.territory !== 'string' ||
-    typeof action.sector !== 'number'
-  )
-    return null;
-  const eliteGroup = Object.fromEntries(
-    group.map(([key]) => [
-      key,
-      Number(
-        record(action.eliteForces)
-          ? (action.eliteForces[key] ?? 0)
-          : (action.elite ?? 0),
-      ),
-    ]),
-  );
+  const kind = action.discoveryOrnithopter !== undefined ? 'discovery'
+    : action.movementCard !== undefined ? action.ornithopter : 'ordinary';
+  if (kind !== 'ordinary' && kind !== 'discovery' && kind !== 'range3' && kind !== 'twoGroups') return null;
+  const transport = movementFlightSelection(g, kind);
+  if (transport.blocked || ['movementCard', 'ornithopter', 'ornithopterEvent', 'discoveryOrnithopter']
+    .some(key => action[key] !== transport.fields[key])) return null;
+  const entries = action.forces !== undefined
+    ? record(action.forces) ? Object.entries(action.forces) : null
+    : typeof action.from === 'string' ? [[action.from, action.amount] as const] : null;
+  if (!entries || typeof action.territory !== 'string' || !Number.isSafeInteger(action.sector) ||
+    !validGameLocation(g, action.territory, action.sector as number)) return null;
+  const group: [string, number][] = [], eliteGroup: Record<string, number> = {};
+  for (const [key, count] of entries) {
+    const at = splitLocation(key), owned = p.forces[key] ?? 0, ownedElite = p.elites?.forces[key] ?? 0;
+    if (!Number.isSafeInteger(count) || (count as number) < 0 || (count as number) > owned ||
+      key !== location(at.territory, at.sector) || !validGameLocation(g, at.territory, at.sector)) return null;
+    if (!count) continue;
+    const minimum = Math.max(0, (count as number) - (owned - ownedElite));
+    const elite = (action.forces !== undefined
+      ? record(action.eliteForces) ? action.eliteForces[key] : undefined : action.elite) ?? minimum;
+    if (!Number.isSafeInteger(elite) || (elite as number) < minimum ||
+      (elite as number) > Math.min(count as number, ownedElite)) return null;
+    group.push([key, count as number]); eliteGroup[key] = elite as number;
+  }
+  const info = g.richeseNoField?.owner === player ? g.richeseNoField : null;
+  const marker = info?.private?.deployed;
+  const noField: MovementMarker | undefined = action.noField === undefined ? undefined
+    : info && marker?.controller === player && marker.tokenId === action.noField && info.event === action.event
+      ? { tokenId: marker.tokenId, event: info.event,
+        from: location(marker.location.territory, marker.location.sector) } : undefined;
+  if (action.noField !== undefined && (!noField || g.homeworldMobility?.noFieldMovementBlocked)) return null;
+  const origins = new Set([...group.map(([key]) => splitLocation(key).territory),
+    ...(noField ? [splitLocation(noField.from).territory] : [])]);
+  if (origins.size !== 1) return null;
+  if (transport.cohort) {
+    try { validateCohortSelection(transport.cohort, p.forces, p.elites?.forces ?? {},
+      Object.fromEntries(group), eliteGroup, noField); }
+    catch { return null; }
+  }
   const elite = Object.values(eliteGroup).reduce((a, b) => a + b, 0);
+  const frame = g.ornithopter;
+  const flight: SandmasterFlight | undefined = typeof transport.fields.discoveryOrnithopter === 'string'
+    ? { kind: 'discovery', token: transport.fields.discoveryOrnithopter,
+      acquiredTurn: g.discoveryOrnithopter!.acquiredTurn }
+    : typeof transport.fields.movementCard === 'string' || typeof transport.fields.ornithopterEvent === 'string'
+      ? { kind: 'physical', card: frame!.card.id,
+        mode: frame!.active?.mode ?? kind as OrnithopterMode,
+        completed: frame!.active?.completed ?? 0,
+        ...(frame!.active ? { event: frame!.active.event } : {}) } : undefined;
   return {
     group,
     eliteGroup,
     elite,
-    origin: splitLocation(group[0][0]).territory,
+    origin: [...origins][0],
     to: action.territory,
-    sector: action.sector,
-    range: botMovementRange(g, p, elite),
+    sector: action.sector as number,
+    range: transport.rangeOverride ?? botMovementRange(g, p, elite),
+    ...(noField ? { noField } : {}),
+    ...(flight ? { flight } : {}),
   };
 }
 export function sandmasterDefaultChoice(
@@ -388,7 +418,7 @@ export function sandmasterDefaultChoice(
   const move = sandmasterActionOrder(g, player, action);
   if (!move) return null;
   const routes: Record<string, string[]> = {};
-  for (const [from] of move.group) {
+  for (const from of sandmasterOrderSources(move)) {
     const route = sandmasterShortestRoute(
       g,
       player,

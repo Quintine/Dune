@@ -1,5 +1,38 @@
 # Dune implementation status
 
+## 26 October 2026 — Sandmaster flight and concealed-marker routes
+
+**Prototyped / Partial.** Physical range3/twoGroups, carried Discovery and the
+own No-Field use exact source routes and current chosen piles. Fixed3 remains3;
+each different card movement uses current normal range and its own one-per-
+entered-territory opportunity. Source/flight identity, current trainer, typed
+cohort and exact pile amounts bind the receipt. Chosen detours remain intact;
+declines earn0. The marker counts as one without materializing0/3/5. Route/pile
+editing and a guarded actual submit leaf share projected transport; minimal
+policies retain original destination priority. Legacy ordinary order fields stay.
+
+Frozen **14-file130/130**, types/lint/build and **18 engine/GameTable SSR/actual
+selected-props callback paths** pass. Eight public physical sources earn card1,
+shipment8 and actual later Spice (Basic73 / Advanced79 actions); four public
+Discovery sources earn original Collection acquisition and real later Spice
+(Basic65 / Advanced71). Two-to-four continuation actions finish Collection,
+without replaying bonuses/disposal. Physical45/Discovery33 Treachery,14 Skills
+and15 Traitors remain. Six controlled marker callback paths make no played
+source claim. Eight physical, seven Discovery, fifteen control and thirteen
+marker engine cases cover the slice. Feedback repairs the native residual-spice
+assumption, nullable projection narrowing and reserved test variable name.
+
+Bounded delivery inventory finds all28 independent Skill bands connected, while
+retaining Partial/Prototyped classifications and full acceptance gates; current
+absence wording is reconciled with the existing evidence.
+[Band inventory](LEADER_SKILLS_RUNTIME.md#independent-band-inventory--26-october-2026).
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261026-sandmaster-flight-proof-v3/`;
+journeys/HTML: adjacent `20261026-sandmaster-flight-runtime/`. No saved-room/D1/
+server, reset/restart, deployment or recovery operation. SSR/selected-props
+callbacks do not prove DOM/hydration, browser/mobile/deployed or complete-mode
+acceptance. Full rules, interactions and final assurance remain open.
+[Source and contract](SANDMASTER_MOVEMENT.md#flight-and-concealed-marker-routes--26-october-2026).
+
 ## 26 October 2026 — Planetologist physical and Discovery flight matrix
 
 **Prototyped / Partial.** Connect both skill alternatives to physical range3,

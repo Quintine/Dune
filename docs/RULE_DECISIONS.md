@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Sandmaster flight and concealed-marker collection — 26 October 2026
+
+Compose the moving-forces normal band with both physical Ornithopter modes,
+carried Discovery and an own concealed No-Field. Fixed flight remains3; twoGroups
+retains current normal range and different original cohorts. Each accepted
+movement gets the existing provisional one-per-entered-territory collection,
+selecting one current positive pile or declining. Preserve chosen legal detours,
+actual source and flight identities, exact pile bounds and original disposal.
+Marker0/3/5 stays concealed without materialization. The reset and sector
+allocation remain explicit selected policy, not a joint publisher FAQ.
+[Source and execution](SANDMASTER_MOVEMENT.md#flight-and-concealed-marker-routes--26-october-2026).
+
 ## Planetologist physical and Discovery flight — 26 October 2026
 
 Under 14 October choose-recommended authority, compose both skill alternatives

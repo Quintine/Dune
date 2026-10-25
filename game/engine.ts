@@ -17320,13 +17320,24 @@ function ornithopterView(g: Game, p: Player) {
   };
 }
 function sandmasterOrder(g: Game, p: Player, move: MovementOrder): SandmasterOrder {
+  const frame = move.ornithopterEvent ? g.ornithopter : null;
+  const flight: SandmasterOrder['flight'] = move.discoveryFlight
+    ? { kind: 'discovery', token: move.discoveryFlight.token, acquiredTurn: move.discoveryFlight.acquiredTurn }
+    : frame ? { kind: 'physical', card: frame.card.id, mode: frame.mode,
+      completed: frame.completed, event: frame.event } : undefined;
   return { group: move.group, eliteGroup: move.eliteGroup, elite: move.elite, origin: move.origin,
-    to: move.to, sector: move.sector, range: movementOrderRange(g, p, move) };
+    to: move.to, sector: move.sector, range: movementOrderRange(g, p, move),
+    ...(move.noField ? { noField: move.noField } : {}), ...(flight ? { flight } : {}) };
 }
 function validateSandmasterOrder(g: Game, p: Player, move: MovementOrder) {
   if (move.sandmaster === undefined) return;
-  requireRule(!move.source && !move.noField && !move.planetologist && !move.ornithopterEvent && !move.discoveryFlight,
-    'Sandmaster with special movement routes is still being integrated.');
+  requireRule(!move.source && !move.planetologist,
+    'Sandmaster with this special relocation or another normal-band skill is still being integrated.');
+  requireRule(!(move.ornithopterEvent && move.discoveryFlight),
+    'Choose one Ornithopter flight source for this Sandmaster movement.');
+  requireRule(!move.ornithopterEvent ||
+    (g.ornithopter?.event === move.ornithopterEvent && g.ornithopter.player === p.id),
+  'The Sandmaster route lost its original Ornithopter frame.');
   nexusRule(() => validateSandmasterMovement(g, p.id, sandmasterOrder(g, p, move), move.sandmaster!));
 }
 function sandmasterIntegrity(g: Game) {

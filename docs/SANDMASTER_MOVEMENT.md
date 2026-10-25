@@ -5,6 +5,69 @@ ground movement now connects the normal band through explicit routes, optional
 collection, player controls, all four AI profiles and saved continuation.
 This does not open public Leader Skills starts or publication.
 
+## Flight and concealed-marker routes — 26 October 2026
+
+Sandmaster's physical normal band applies when moving owned forces into or
+through a territory with spice; it excludes none of the three flight sources.
+The [physical Ornithopter](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#authority) changes
+range or grants two different normal movements, and Discovery E3p13 changes
+range for one later movement action. Neither removes route collection. The
+[No-Field contract](RICHESE_NO_FIELD_RULES.md#verified-lifecycle) counts a
+concealed marker as one force, including0. Compose these effects under existing
+14 October authority; no joint publisher FAQ is claimed.
+
+Physical range3 and carried Discovery use a maximum of3. Physical twoGroups
+uses each group's current normal range. Each accepted movement gets its own
+one-per-entered-territory opportunity under the existing provisional reset
+policy, so a second different group can collect there again if spice remains.
+The source territory grants no bonus without actually re-entering it. Each
+territory selects one current positive pile or declines, retaining the existing
+provisional sector-allocation policy. Declining collection does not decline
+movement or preserve a spent card/token entitlement.
+
+The original chosen route is authoritative, including a legal detour longer
+than the shortest path. Current route bounds, storm/entry and typed force/marker
+cohorts still apply. A physical flight fingerprint binds original card, event,
+mode and completed-group index; Discovery binds token/acquisition turn alongside
+its original parent receipt. The signed Sandmaster order retains exact source,
+range, route, pile amounts, trainer and move. Legacy ordinary orders add no new
+fields. No circular signature or public receipt is required in the action.
+
+Marker-only routes remain concealed and do not materialize or debit reserves.
+Selected physical counters at the same marker sector share one declared route.
+Its value supplies no extra range or collection. First-flight arrivals do not
+enlarge the remaining original cohort, and spice income adds no counters or
+movement credit. The second movement requotes current piles. Original card/
+token disposal and earned allowance occur once through their existing flow.
+
+The form offers ordinary/card/token transport before validating its source
+route, keeps route editing and selected-pile/decline controls, and guards the
+actual callback with current transport and signed quote. Minimal policy adds
+the same deterministic legal route choice while retaining original candidates
+and destination priority. Other normal-band skills and special relocations
+retain separate adapters. No saved root field, action kind or module gate opens.
+
+**Frozen evidence:** v3 passes14 files,130/130, types/lint/build and18 engine/
+GameTable SSR/actual selected-props callback paths. Eight genuine public physical
+paths earn cache card1, four-counter shipment8 and actual produced Spice,
+using Basic73 / Advanced79 source actions. Four public Discovery paths earn
+original Collection acquisition and a later real Spice blow, using Basic65 /
+Advanced71 actions. Two-to-four continuations finish Collection, with45 physical-
+family or33 classic Treachery,14 Skills and15 Traitors retained. Six explicitly
+controlled marker paths supplement the12 native paths; no played positions,
+shipment or blow provenance is claimed for those supplements. Eight physical,
+seven Discovery, fifteen control and thirteen marker cases cover the slice and
+minimal policies. Positive source-pile exclusion in the Discovery seam is a
+controlled supplement; native source spice is preserved at its actual value,
+including0. Feedback corrects that earlier remainder assumption, projection
+narrowing and a reserved test variable.
+
+Report/logs: private `20261026-sandmaster-flight-proof-v3/` under
+`/home/quintine/.local/share/dune/checkpoints/`; journeys/HTML: adjacent
+`20261026-sandmaster-flight-runtime/`. No saved-room/D1/server, reset/restart,
+deployment or recovery operation. SSR/selected-props callbacks do not certify
+DOM/hydration, browser/mobile/deployed acceptance, full combinations or modes.
+
 ## Owned ground-route pile selection — 9 October 2026
 
 Ordinary ground movement now offers every existing positive pile in each

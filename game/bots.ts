@@ -105,7 +105,7 @@ import {
 } from './bot-mobility';
 import { planetologistMovementModeSupported, planetologistLeader, planetologistGatherAdvisorEntry } from './planetologist-movement';
 import { botPlanetologistFlightActions } from './bot-planetologist-flight';
-import { quoteSandmasterStronghold, sandmasterDefaultChoice, sandmasterDestinationCollection } from './sandmaster-movement';
+import { quoteSandmasterStronghold, sandmasterDefaultChoice, sandmasterDestinationCollection, sandmasterLeader } from './sandmaster-movement';
 import { sandmasterWormCollection, sandmasterCunningCollection } from './sandmaster-worm';
 import { fremenCunningPublicDestinationBlock } from './nexus-fremen-cunning';
 import { richeseCardDefinition } from './richese-cards';
@@ -597,6 +597,21 @@ function ornithopterMoves(g: GameView): Action[] {
       }
   }
   return result;
+}
+/** Route collection is optional; retain the original legal candidate alongside
+ * its existing deterministic route/pile choice, without tuning destination rank. */
+function sandmasterMovementCandidates(game: GameView, actions: Action[]): Action[] {
+  if (!sandmasterLeader(game, game.me)) return actions;
+  const seen = new Set<string>();
+  return actions.flatMap(action => {
+    const choice = action.sandmaster === undefined ? sandmasterDefaultChoice(game, game.me, action) : null;
+    const candidates = choice?.collect.length ? [{ ...action, sandmaster: choice }, action] : [action];
+    return candidates.filter(candidate => {
+      const key = JSON.stringify(candidate);
+      if (seen.has(key)) return false;
+      seen.add(key); return true;
+    });
+  });
 }
 function candidatePlan(a: Action): Plan {
   const plan: Plan = {
@@ -3375,10 +3390,10 @@ function policyActions(g: GameView): Action[] {
     const flightTargets = destinations(g).filter(target => target.score > -1000)
       .map(target => ({ territory: target.t, sector: target.s }));
     const skillCardMoves = botPlanetologistFlightActions(g, flightTargets, ['range3', 'twoGroups']);
-    const cardMoves = [...skillCardMoves, ...ornithopterMoves(g)];
+    const cardMoves = sandmasterMovementCandidates(g, [...skillCardMoves, ...ornithopterMoves(g)]);
     const discoveryMoves = g.discoveryOrnithopter && !g.discoveryOrnithopter.blocked && !g.ornithopter?.active
-      ? [...botPlanetologistFlightActions(g, flightTargets, ['discovery']),
-        ...discoveryFlightBotActions(g, flightTargets)]
+      ? sandmasterMovementCandidates(g, [...botPlanetologistFlightActions(g, flightTargets, ['discovery']),
+        ...discoveryFlightBotActions(g, flightTargets)])
       : [];
     if (discoveryMoves.length && (me.shipped || me.reserves === 0))
       return discoveryMoves;
@@ -3832,6 +3847,7 @@ function policyActions(g: GameView): Action[] {
     // Moving before an unused shipment is legal; retain these candidates after
     // the existing shipment choices without changing their ordinary priority.
     actions.push(...skillCardMoves);
+    actions.push(...cardMoves.filter(action => action.sandmaster !== undefined));
     if (reveal && !actions.length) actions.push(reveal);
     if (me.shipped || !actions.some((action) => action.type === 'ship' || action.type === 'homeworldShip'))
       actions.unshift(...emperorHomeworldMoveActions(g));
@@ -3845,9 +3861,9 @@ function policyActions(g: GameView): Action[] {
     const cunning = g.nexusGuildCunning?.offer && nexusGuildCunningAction(g, g.nexusGuildCunning.offer.event);
     if (cunning && (me.reserves > 0 || Object.values(me.forces).some(n => n > 0))) actions.push(cunning);
     actions.push({ type: 'endMovement' });
-    return g.ornithopter?.active
+    return sandmasterMovementCandidates(g, g.ornithopter?.active
       ? actions.filter((action) => action.type !== 'move')
-      : actions;
+      : actions);
   }
   if (g.phase === 6) {
     const b = g.battle;
