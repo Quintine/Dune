@@ -5762,6 +5762,22 @@ function semutaIncomeKaramaResponse(g: Game, response: ResponseWindow): boolean 
   if (response.kind === 'guildIncome')
     return g.phase === 5 && owner?.faction === 'guild' &&
       Number.isSafeInteger(response.amount) && response.amount! > 0;
+  if (response.kind === 'revivalIncome') {
+    // Ordinary returns and Ghola have already committed. Only their income
+    // remains; other producers retain their own unfinished parent contracts.
+    if (response.source !== undefined || g.pendingRevival || g.pendingChoamMarketGhola ||
+        (g.homeworldRevivalReturn && g.homeworldRevivalReturn.stage !== 'complete') ||
+        g.pendingHomeworldShipment || g.pendingSpiritualAdvisor ||
+        g.pendingArrivalOverlap || g.pendingArrivalReaction?.length ||
+        g.pendingIxMove || g.pendingFremenMove || g.pendingChoamMove ||
+        g.ornithopter || g.summonedWorm || g.wormRides.length > 0) return false;
+    try {
+      return terminalCancellationQuote(g,response)?.kind === 'revivalIncome';
+    } catch (error) {
+      if (error instanceof RuleError) return false;
+      throw error;
+    }
+  }
   if (owner?.faction !== 'emperor') return false;
   if (response.kind === 'emperorIncome')
     return g.phase === 3 && !!g.currentAuctionSale &&
@@ -5847,6 +5863,7 @@ function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinu
   const worthless = c.kind === 'karamaChoamWorthlessDiscard';
   const emperorShare = c.kind === 'karamaEmperorShareDiscard';
   const income = c.kind === 'karamaIncomeDiscard';
+  const revivalIncome = income && c.use.response.kind === 'revivalIncome';
   const shipment = c.kind === 'karamaShipmentDiscard';
   const conversion = c.kind === 'karamaBgConversionCancelDiscard';
   const richese = c.kind === 'karamaRicheseAuctionDiscard' || c.kind === 'karamaRicheseGiftDiscard';
@@ -5886,6 +5903,19 @@ function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinu
         percentages: g.homeworldOccupiedPercentageLedger,
       } : undefined,
     } : undefined,
+    ...(revivalIncome ? { revivalIncome: {
+      rules:g.revivalRules, requests:g.revivalRequests, freeIncome:g.revivalFreeIncome,
+      free:g.freeRevival, emperor:g.emperorExtra, tech:g.techTokens,
+      homeworldRevival:g.homeworldRevival, return:g.homeworldRevivalReturn,
+      progress:g.homeworldRevivalProgress, duke:g.dukeVidal,
+      banker:g.spiceBankerIncome,
+      players:g.players.map(p => ({
+        id:p.id, revived:p.revived, freeForcesRevived:p.freeForcesRevived,
+        leaderRevived:p.leaderRevived, revivalCycle:p.revivalCycle,
+        ecazRevivalCohort:p.ecazRevivalCohort, gholaBlocked:p.gholaBlocked,
+        kwisatz:p.kwisatz, leaders:p.leaders,
+      })),
+    } } : {}),
     shipment: shipment ? {
       reserve: g.pendingShipment, transport: g.pendingGuildTransport,
       homeworld: g.pendingHomeworldShipment, custody: g.homeworlds,
@@ -15718,7 +15748,7 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
               : use.response.kind === 'emperorGift' || use.response.kind === 'emperorRevival'
                 ? 'karamaEmperorShareDiscard'
                 : use.response.kind === 'guildIncome' || use.response.kind === 'emperorIncome' ||
-                  use.response.kind === 'richesePurchaseIncome'
+                  use.response.kind === 'richesePurchaseIncome' || use.response.kind === 'revivalIncome'
                   ? 'karamaIncomeDiscard' : 'karamaBattleDiscard',
       player: p.id, card: used.id, use,
       resume: { response: g.response, decision: g.decision,

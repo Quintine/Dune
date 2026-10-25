@@ -58,6 +58,11 @@ for (const claims of [false, true]) for (const canceled of [false, true])
     game = canceled
       ? act(game, f.counterOwner, { type: 'card', card: f.counter, mode: 'cancel' })
       : allow(game);
+    if (canceled) {
+      assert.equal(game.pendingTreacheryDiscard?.continuation.kind, 'karamaIncomeDiscard');
+      game = pass(game);
+      assert.equal(game.pendingTreacheryDiscard, null);
+    }
     assert.equal(game.response, null);
     assert.equal(player(game, f.incomeOwner).spice, beforeIncome + Number(!canceled));
     assert.equal(player(game, f.owner).spice, 11, 'Ghola and a counter do not refund or repay the Box');

@@ -16,6 +16,35 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on Tleilaxu revival-income cancellation — 26 October. Prototyped / Partial.**
+Printed-role Karama stopping clean native ordinary/Ghola income now offers its
+exact used cost through `karamaIncomeDiscard`. Claim/pass denies the original
+income once while retaining completed returns, payment and allowance/free-income
+history. Native validation owns the recipient/amount; a subtype-only signature
+binds those ledgers without changing earlier income signatures. Existing controls
+and minimal profiles serve the new producer. Unfinished battle, Ambassador,
+market and arrival parents remain separate.
+[Source and boundaries](SEMUTA_SOURCE_UPDATE_20260907.md#revival-income-cancellation-costs--26-october-2026).
+
+One native-source lane, bounded read-only continuation review and root integration
+pass **15 files,285/285**, types/lint/build and **eight native engine/GameTable
+SSR/real Semuta-callback journeys** on unchanged source. Eleven new cases cover
+Basic/Advanced ordinary/Ghola claim/pass, original allowed income, stale/foreign/
+underlying replies and all four minimal profiles. Genuine paid cache1 Semuta,
+dealt Karama/Ghola, paid shipment4 and next-Storm two-force casualties precede
+the real return. Ordinary201/211 source actions pay2, use normal2/free1 and offer
+income3; Ghola205/214 pays0, keeps normal quotas0 and offers income1 after five
+real earlier discard passes. Reserves20/Tanks0 and all57 cards remain physical.
+Fixture feedback repairs explicit reaction typing/narrowing. An existing Ghola
+consumer now explicitly passes the new counter-cost group before its completion
+assertions. No production rule guard is weakened. Private source-bound report:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-revival-reaction-typed/`;
+journeys/HTML: adjacent `20261026-semuta-revival-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results, not hydration, DOM/browser/mobile or
+deployed evidence. Wider producers/combinations, full modes and final assurance
+remain unfinished; continue the remaining rule/checklist gaps.
+
 **Semuta on auction-advantage cancellation costs — 26 October. Prototyped / Partial.**
 Printed-role Karama stopping Atreides inspection, Ixian pool preparation or
 Advanced Technology now offers its exact used cost before native prevention.

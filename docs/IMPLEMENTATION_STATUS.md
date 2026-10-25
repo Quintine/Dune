@@ -1,5 +1,41 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta claims Tleilaxu revival-income cancellation costs
+
+**Prototyped / Partial.** Printed-role Karama stopping clean native ordinary or
+Ghola `revivalIncome` now offers that used physical cost before native denial.
+The existing `karamaIncomeDiscard` resumes once. Completed returns, actual fees,
+normal/free/elite quota use, leader/cycle state and free-income history remain.
+The native terminal quote validates owner/recipient/amount; a subtype-only signed
+branch binds revival ledgers while earlier income signatures keep their format.
+Quiet Ghola income is not restricted to phase4. Existing persistent controls and
+minimal legal bots serve the new producer. Battle, Ambassador, market and other
+unfinished arrival/return parents retain their separate boundaries.
+[Source and limits](SEMUTA_SOURCE_UPDATE_20260907.md#revival-income-cancellation-costs--26-october-2026).
+
+One native-source lane, bounded continuation review and root integration pass
+**15 files,285/285**, types/lint/build and **eight native engine/GameTable SSR/
+actual Semuta-callback journeys** on unchanged source. Eleven new cases cover
+Basic/Advanced ordinary/Ghola claim/pass, original allowance, stale/foreign/
+underlying rejection and all four minimal profiles.
+
+Real cache1 Semuta, original Karama/Ghola deals, paid shipment4 and next-Storm
+two-force casualties precede the return. Ordinary201/211 Basic/Advanced actions
+pay2 and use normal2/free1 for income3; Ghola205/214 pays0, preserves normal
+quotas0 and passes its earlier fresh discard with all five original seats before
+income1. Reserves20/Tanks0 and all57 cards remain physical. No played-state hand,
+wallet, casualty, phase or receipt is installed. Two static attempts expose test
+inference/narrowing; explicit reaction typing repairs them. An existing Ghola
+consumer now finishes the new counter-cost group before completion assertions.
+No production rule guard is weakened.
+
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-revival-reaction-typed/`;
+journeys/HTML: adjacent `20261026-semuta-revival-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results; hydration, DOM/browser/mobile, broader
+combinations, full modes and deployed/final assurance remain open.
+
 ## 26 October 2026 — Semuta claims auction-advantage cancellation costs
 
 **Prototyped / Partial.** Printed-role Karama stopping Atreides inspection,

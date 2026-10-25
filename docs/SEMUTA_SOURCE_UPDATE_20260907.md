@@ -2,6 +2,61 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Revival-income cancellation costs — 26 October 2026
+
+**Prototyped / Partial.** Printed-role Karama stopping clean native Tleilaxu
+`revivalIncome` now offers that exact cost before the original income denial.
+Reuse `karamaIncomeDiscard` and its existing persistent neutral controls, private
+claim/pass and minimal legal profiles. The native terminal cancellation quote
+validates its Tleilaxu owner, seated recipient and positive amount. A recipient
+may be Tleilaxu itself; quiet Ghola income is not restricted to Revival phase.
+This applies the existing physical Semuta face and fresh-discard convention,
+not a new publisher income ruling.
+
+Ordinary or Ghola revival is already committed. Its actual returned physical
+pieces, paid spice, normal/free/elite allowances, leader/cycle/Ghola state,
+Axlotl accrual and free-income history remain. A subtype-only signature binds
+these ledgers and the original response; earlier income signatures omit that
+branch. Claim/pass retires the fresh group and runs native income prevention
+once without another return, fee, Tleilaxu income, draw or producer action.
+Ghola's own original disposal is a separate fresh group; passing it may retain
+Semuta for the later counter's cost. Recovering that cost cannot recover Ghola
+or undo its use.
+
+Unfinished revival, Homeworld-return, battle, movement/arrival, Ambassador and
+CHOAM-market parents remain outside this producer. Existing native Banker
+payment markers retain their own accounting suffix and ledger; this does not
+certify that module combination. No broad profile or release gate opens.
+[Native source](../tests/fixture-semuta-revival-income.ts) and
+[engine cases](../tests/semuta-revival-income-engine.test.ts) record the exact
+action paths. Wider producers/combinations, complete modes and final assurance
+remain open.
+
+Frozen **15 files,285/285**, types/lint/build and **eight actual native engine/
+GameTable SSR/real Semuta-callback journeys** pass on unchanged source. Eleven
+new cases cover both rules bands, ordinary/Ghola claim/pass, original allowed
+income, stale/foreign/underlying rejection and all four minimal profiles.
+
+Native sources earn paid cache1 Semuta and originally dealt Karama/Ghola.
+Emperor pays4 to ship2 normal counters to Cielago North1; the real next Storm
+sends them to Tanks. Ordinary201 Basic/211 Advanced source actions then return2,
+pay2, use normal2/free1 and offer income3. Ghola205/214 returns2 for0 with normal
+quotas0, then actually passes its earlier fresh discard with all five seats,
+preserving Semuta for the later cost. Both finish with reserves20/Tanks0 and all
+57 original cards. No played-state hand, wallet, casualty, phase or receipt is
+installed. Source lotteries and unopened positions remain explicitly selected.
+
+Two initial static attempts identify a test driver's cyclic inference and union
+narrowing; explicit live-reaction typing repairs both before the related union.
+The existing Ghola-income consumer now passes the new counter-cost group before
+asserting finished cancellation. No production guard is weakened. Private
+source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-revival-reaction-typed/`;
+journeys/HTML: adjacent `20261026-semuta-revival-runtime/`.
+No saved-room/database/server/reset/restart/deployment/recovery operation occurs.
+Engine/SSR/callback evidence leaves hydration, DOM/browser/mobile, wider
+combinations, complete modes and exact-revision deployed acceptance open.
+
 ## Auction-advantage cancellation costs — 26 October 2026
 
 **Prototyped / Partial.** Exact printed-role Karama stopping Atreides auction
