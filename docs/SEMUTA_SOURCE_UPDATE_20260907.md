@@ -2,6 +2,78 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Auction-advantage cancellation costs — 26 October 2026
+
+**Prototyped / Partial.** Exact printed-role Karama stopping Atreides auction
+inspection, Ixian auction preparation or Advanced Technology now offers the used
+cost through the existing neutral Semuta protocol before native prevention.
+The shared `karamaAuctionAdvantageDiscard` binds the original response and lot/
+pool, count, order, funding, selected hand card, attempt-use and knowledge state.
+It adds no inspection or replacement entitlement. Existing knowledge is retained.
+
+The original native cancellation validator performs a pure preflight against
+the same source with only its child discard removed. The cost is already in
+physical stock; do not supply it again as an unspent card. After claim/pass,
+retire the batch and execute the original typed cancellation once. No producer
+action, activation discard, draw or exchange is replayed.
+
+Canceled Atreides inspection preserves the actual normal or native Black Market
+lot and its existing bid/participant continuation. Canceled Ix preparation draws
+only the native ordinary pool after the cost response, without granting the
+extra private Ixian choice. Original frozen count remains; actual physical
+stock determines supply. A passed cost can join a later native refill; a claimed
+cost is in its new owner's hand and cannot also be drawn. Technology keeps the
+original unseen lot and outgoing card, retains its used attempt, clears the
+exchange and resumes the native Atreides peek. Existing occupation authority
+and independent information entitlements retain their own rules.
+
+If the original outgoing Technology card is Semuta, the committed cancellation
+releases only that reservation for this cost response. The actual native source
+stays pending until prevention; Semuta may then spend as itself to take the
+counter's used cost. This is not an exchange or a second use of Technology.
+The same rule now handles an allied gift whose proposed card is Semuta. After
+commitment, native gift prevention records/restores its original parent while
+Semuta is still held; the computed Semuta exchange then spends that retained
+card and takes the counter's cost atomically. The recipient gets neither card.
+The native prevention is not run twice. The reservation-check shadow restores
+the gift's saved parent, so its other commitments remain visible. Every other
+card/transaction reservation stays enforced; no general reservation bypass is
+introduced.
+
+Evidence: [Atreides sources](../tests/fixture-semuta-auction-inspection.ts),
+[inspection cases](../tests/semuta-auction-inspection-engine.test.ts),
+[Ixian sources](../tests/fixture-semuta-ixian-auction.ts),
+[pool/Technology cases](../tests/semuta-ixian-auction-engine.test.ts).
+The [prevented Semuta gift cases](../tests/semuta-prevented-gift-reservation.test.ts)
+fork a genuine prior `beforeGift` source and make the actual Semuta gift;
+they do not install a canceled gift or move played cards between hands.
+Other producers, broader combinations, complete modes, comprehensive assurance
+and exact-revision deployed acceptance remain open.
+
+Frozen **15 files,269/269**, types/lint/build and **22 actual native engine/
+GameTable SSR/real Semuta-callback journeys** pass on unchanged source. New
+inspection11, Ixian10 and outgoing-gift9 cases exercise claim/pass, original
+normal/Black Market lots, Basic/Advanced undrawn pools, selected outgoing Semuta,
+original income parents, stale/underlying rejection and all four minimal profiles.
+
+Earlier real paid cache1 acquisition supplies Semuta and original dealing supplies
+the printed cost. Inspection uses114/121 Basic/Advanced source actions; actual
+Advanced Black Market115 preserves its unbid lot. Pool75/80 stops before any
+native draw; Technology87 actually declares Shield or the acquired Semuta as
+its outgoing card. Gift121/128 and income-parent116/123 fork the native source
+before declaration, then actually propose Semuta. Original inventories and
+wallets remain physical through the continuations. No played-state receipt,
+hand transfer or pending cancellation is installed.
+
+Initial type feedback needs an explicit live reaction annotation in the Ixian
+test driver. Frozen quick, related union, build and runtime then pass without
+weakening a rule guard. Private matching source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-auction-frozen/`;
+journeys/HTML: adjacent `20261026-semuta-auction-runtime/`.
+No saved-room/database/server/reset/restart/deployment/recovery operation occurs.
+Engine/SSR/callback evidence does not certify hydration, DOM/browser/mobile,
+broader combinations, complete modes or deployed/final assurance.
+
 ## Richese cancellation costs — 25 October 2026
 
 **Prototyped / Partial.** Printed-role Karama stopping the compulsory Richese

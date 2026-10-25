@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 25 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 26 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable. Advanced, expansion-faction and supported optional-module starts
 are labelled previews; complete rules/publication acceptance remains gated.**
 
@@ -16,6 +16,35 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on auction-advantage cancellation costs — 26 October. Prototyped / Partial.**
+Printed-role Karama stopping Atreides inspection, Ixian pool preparation or
+Advanced Technology now offers its exact used cost before native prevention.
+Claim/pass resumes the original typed response once. Original lot/pool, frozen
+count, funding, knowledge and Technology attempt remain; no extra inspection,
+private Ix choice, exchange or producer replay occurs. The same committed
+prevention releases outgoing Semuta's own Technology/gift reservation, allowing
+it to claim the counter's cost. Gift prevention first retains Semuta and restores
+its parent, then the atomic Semuta exchange spends it; other commitments remain.
+[Source and boundaries](SEMUTA_SOURCE_UPDATE_20260907.md#auction-advantage-cancellation-costs--26-october-2026).
+
+Two disjoint source lanes, bounded native-order review and root integration pass
+**15 files,269/269**, types/lint/build and **22 native engine/GameTable SSR/real
+Semuta-callback journeys** on unchanged source. Thirty new cases cover normal/
+Black Market inspection, Basic/Advanced undrawn pools, selected Semuta in
+Technology and gifts, original income parents, stale/underlying rejection and
+all four minimal profiles. Earlier paid cache1 acquisition and actually dealt
+Karama reach each source; the fixtures do not install played-state receipts.
+Source prefixes: inspection114/121, Black Market115, pool75/80, Technology87,
+gift121/128 and income-parent116/123. Type feedback required one explicit test
+reaction annotation; the frozen checks pass without changing a rule guard.
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-auction-frozen/`;
+journeys/HTML: adjacent `20261026-semuta-auction-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results, not hydration, DOM/browser/mobile or
+deployed evidence. Other producers, broader combinations, complete modes and
+final assurance remain unfinished; continue the remaining rule/checklist gaps.
+
 **Semuta on Richese cancellation costs — 25 October. Prototyped / Partial.**
 Printed-role Karama stopping the compulsory cache auction or allied Richese
 gift now offers its exact used cost before native prevention finishes. Claim/

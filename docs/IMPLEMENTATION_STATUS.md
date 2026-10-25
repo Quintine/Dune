@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta claims auction-advantage cancellation costs
+
+**Prototyped / Partial.** Printed-role Karama stopping Atreides inspection,
+Ixian ordinary-pool preparation or Advanced Technology now offers the exact
+physical cost before native prevention. One typed continuation binds the
+original response, lot/pool, count, funding, knowledge and Technology attempt.
+Claim/pass resumes once without inspecting, granting the extra Ix choice,
+exchanging a card or replaying the producer. Physical stock after the reaction
+governs the later native draw; the spent cost is never counted twice.
+[Source and boundaries](SEMUTA_SOURCE_UPDATE_20260907.md#auction-advantage-cancellation-costs--26-october-2026).
+
+When outgoing Semuta itself was selected for the now-prevented Technology or
+allied gift, only that reservation releases for this cost response. Native gift
+prevention retains Semuta and restores its original parent before the computed
+Semuta exchange spends it and takes the counter's cost. The recipient gets
+neither card; prevention cannot execute twice. Other parent reservations remain
+visible and enforced. Existing persistent controls and minimal legal bots serve
+these sources without a strategy change.
+
+Two disjoint source lanes, bounded native-order review and root integration pass
+**15 files,269/269**, types/lint/build and **22 native engine/GameTable SSR/real
+Semuta-callback journeys** on unchanged source. Thirty new cases cover ordinary/
+Black Market inspection, Basic/Advanced undrawn pools, outgoing Semuta, native
+income parents, stale/underlying rejection and all four minimal profiles.
+Actual paid cache1 acquisition and original dealt costs supply every source:
+inspection114/121 actions, Black Market115, pool75/80, Technology87, gift121/128
+and income-parent116/123. No played-state hand, receipt or pending cancellation
+is installed. Initial static feedback requires one test reaction annotation;
+the frozen proof passes without weakening any rule guard.
+
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-auction-frozen/`;
+journeys/HTML: adjacent `20261026-semuta-auction-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results; hydration, DOM/browser/mobile, broader
+combinations, full modes and deployed/final assurance remain open.
+
 ## 25 October 2026 — Semuta claims Richese cancellation costs
 
 **Prototyped / Partial.** Exact physical printed-role Karama stopping the
