@@ -16,6 +16,44 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on native combat-power cancellation costs — 26 October. Prototyped / Partial.**
+Printed-role Karama stopping Voice, ordinary Prescience, KH, elite strength,
+Fremen support or CHOAM battle aid now offers its exact used cost before
+prevention. `karamaCombatDiscard` retains the original battle, declaration,
+remaining checks, physical actors and pledge. Pure native preflight executes no
+preparation, future plan, reveal or payment. Claim/pass restores the response and
+finishes native cancellation once; subsequent choices use actual current hands
+and native quotes. Existing persistent controls and minimal profiles serve all
+six kinds. Live Nexus borrowed Voice keeps its original cancellation protocol.
+[Source and boundaries](SEMUTA_SOURCE_UPDATE_20260907.md#native-combat-power-cancellation-costs--26-october-2026).
+
+Three disjoint source lanes, bounded native/diff review and root integration pass
+**15 files,176/176**, types/lint/build and **20 native engine/GameTable SSR/actual
+Semuta-callback journeys through legal plan reveal** on unchanged source. Thirty
+new cases cover ten sources, claim/pass, native allowances, exact remaining
+preparation/checks, reduced plan legality, earned KH strength/real held-Traitor
+protection, relevant rejection and all four minimal profiles. Actual cache1
+Semuta and original dealt Karama precede each cost. Voice87/98 and Prescience88/99
+Basic/Advanced actions include genuine BG2 arrival at original Atreides Arrakeen10.
+Fedaykin94, Sardaukar99 and Fremen support99 use actual paid/free typed entry;
+CHOAM aid203 adds a real Nexus alliance and pledge1, retained without early
+spending/refund. KH163 earns seven battle losses with an actual unsupported
+3.5-strength dial, then an actual turn2 opposing shipment creates its next battle.
+Basic Cyborg100 pays for shipment, moves the original elite, and retains legal
+dial2 before cancellation versus dial1 after. Original45/57 cards remain physical;
+no played hand, force, alliance, loss/availability, wallet, clock or battle/control
+is installed.
+
+Feedback repairs the KH earning fixture's Advanced dial from7 to3.5 for seven
+unsupported counters; the matching source assertion changes with it. Native
+rules/guards stay intact. Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-combat-proof/`;
+journeys/HTML: adjacent `20261026-semuta-combat-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results; hydration, DOM/browser/mobile, borrowed
+Voice and broader parent/combinations, complete modes and deployed/final
+assurance remain unfinished.
+
 **Semuta on native disaster cancellation costs — 26 October. Prototyped / Partial.**
 Printed-role Karama stopping Fremen Storm protection, worm survival, allied worm
 protection or Advanced additional placement now offers its exact used cost before

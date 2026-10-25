@@ -1,5 +1,45 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta claims native combat-power cancellation costs
+
+**Prototyped / Partial.** Printed-role Karama stopping native Voice, ordinary
+Prescience, KH, elite strength, Fremen support or CHOAM battle aid offers its exact
+used cost before prevention. `karamaCombatDiscard` binds the battle, declaration,
+remaining checks, physical actors and pledge; pure native cancellation preflight
+executes no preparation, plan, reveal or payment. Claim/pass restores the response
+and finishes prevention once. Current hands and native quotes govern the actual
+next check/preparation and plan legality. A qualified existing full-plan offer is
+parked without initialization; live Nexus borrowed Voice keeps its original
+cancellation protocol. Existing controls/minimal bots serve all six kinds, and
+older signature formats remain unchanged.
+[Source and limits](SEMUTA_SOURCE_UPDATE_20260907.md#native-combat-power-cancellation-costs--26-october-2026).
+
+Three disjoint source lanes, bounded native/diff review and root integration pass
+**15 files,176/176**, types/lint/build and **20 native engine/GameTable SSR/actual
+Semuta-callback journeys through legal plan reveal** on unchanged source. Thirty
+new cases cover ten sources, applicable bands, claim/pass, allowances, reduced
+plan legality, earned KH strength/real held-Traitor immunity, relevant rejection
+and four minimal profiles. Real cache1 Semuta and original dealt Karama supply
+every cost. Voice87/98 and Prescience88/99 Basic/Advanced actions use actual BG2
+entry into original Atreides Arrakeen10 and original preparation/answer cursors.
+Fedaykin94, Sardaukar99 and free support99 use actual paid/free typed groups;
+CHOAM aid203 adds a real Nexus alliance and pledge1 retained without early
+spending/refund. KH163 earns seven physical battle losses, then real turn2 entry
+opens its next battle; an actual held Traitor proves the protection distinction.
+Basic Cyborg100 pays for shipment and moves the original elite, proving native
+dial2 versus canceled dial1. All45/57 cards remain physical; no played hand,
+force, alliance, wallet, loss/availability, clock or battle/control is installed.
+
+Feedback corrects the KH earning fixture's Advanced dial7 to3.5 for seven
+unsupported counters and its matching assertion. No gameplay guard changes.
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-combat-proof/`;
+journeys/HTML: adjacent `20261026-semuta-combat-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results; hydration, DOM/browser/mobile, direct
+full-plan coexistence acceptance, live borrowed Voice, broader combinations,
+complete modes and deployed/final assurance remain open.
+
 ## 26 October 2026 — Semuta claims native disaster cancellation costs
 
 **Prototyped / Partial.** Printed-role Karama stopping native Fremen Storm

@@ -1577,7 +1577,7 @@ export type Game = {
           stateSignature: string;
         }
       | {
-          kind: 'karamaCharityDiscard' | 'karamaInflationDiscard' | 'karamaBgCharityDiscard' | 'karamaBattleDiscard' | 'karamaChoamWorthlessDiscard' | 'karamaEmperorShareDiscard' | 'karamaIncomeDiscard' | 'karamaShipmentDiscard' | 'karamaBgConversionCancelDiscard' | 'karamaRicheseAuctionDiscard' | 'karamaRicheseGiftDiscard' | 'karamaAuctionAdvantageDiscard' | 'karamaTerminalDiscard' | 'karamaMovementDiscard' | 'karamaRevivalDiscard' | 'karamaDisasterDiscard';
+          kind: 'karamaCharityDiscard' | 'karamaInflationDiscard' | 'karamaBgCharityDiscard' | 'karamaBattleDiscard' | 'karamaChoamWorthlessDiscard' | 'karamaEmperorShareDiscard' | 'karamaIncomeDiscard' | 'karamaShipmentDiscard' | 'karamaBgConversionCancelDiscard' | 'karamaRicheseAuctionDiscard' | 'karamaRicheseGiftDiscard' | 'karamaAuctionAdvantageDiscard' | 'karamaTerminalDiscard' | 'karamaMovementDiscard' | 'karamaRevivalDiscard' | 'karamaDisasterDiscard' | 'karamaCombatDiscard';
           player: string;
           card: string;
           use: Extract<KaramaUse, { kind: 'cancel' }>;
@@ -5952,9 +5952,40 @@ function semutaDisasterKaramaResponse(g: Game, response: ResponseWindow, player:
     throw error;
   }
 }
+/** Native combat quotes validate the declared source without granting its
+ * benefit, answering preparation, revealing a plan or advancing the queue. */
+function semutaCombatKaramaResponse(g: Game, response: ResponseWindow, player: string,
+  decision: Game['decision'] = g.decision): boolean {
+  if (!isCombatResponseKind(response.kind) || !g.battle ||
+      g.battle.nexusBorrowedVoice?.stage === 'declared' ||
+      g.phaseOpening || g.pendingKarama || g.truthtrance ||
+      g.pendingRevival || g.pendingShipment || g.pendingGuildTransport || g.pendingHomeworldShipment ||
+      g.pendingFremenMove || g.pendingIxMove || g.pendingMobileMove || g.pendingChoamMove ||
+      g.pendingSpiritualAdvisor || g.pendingAmbassador || g.pendingTerrorEntry ||
+      g.pendingArrivalOverlap || g.pendingArrivalReaction?.length || g.ornithopter ||
+      g.summonedWorm || g.wormRides.length > 0 || g.choamMarket || g.pendingChoamMarketGhola) return false;
+  // A declared Voice can already have finished ordinary preparation. Preserve
+  // that exact native full-plan offer; do not initialize or answer it again.
+  if (decision) {
+    const atreides = g.players.find(p => p.faction === 'atreides');
+    if (response.kind !== 'voice' || decision.kind !== 'fullPlanOffer' || !g.advanced ||
+        !atreides || decision.player !== atreides.id || atreides.specialKaramaUsed ||
+        g.battle.preparation || g.battle.fullPlanOffered !== true || Object.keys(g.battle.plans).length > 0)
+      return false;
+  }
+  if (g.decision && JSON.stringify(g.decision) !== JSON.stringify(decision)) return false;
+  const context: Game = {...g,pendingTreacheryDiscard:null,response,decision};
+  try {
+    validateKaramaUse(context,getPlayer(context,player),{kind:'cancel',response});
+    return true;
+  } catch (error) {
+    if (error instanceof RuleError) return false;
+    throw error;
+  }
+}
 type KaramaResponseDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
-  { kind: 'karamaCharityDiscard' | 'karamaInflationDiscard' | 'karamaBgCharityDiscard' | 'karamaBattleDiscard' | 'karamaChoamWorthlessDiscard' | 'karamaEmperorShareDiscard' | 'karamaIncomeDiscard' | 'karamaShipmentDiscard' | 'karamaBgConversionCancelDiscard' | 'karamaRicheseAuctionDiscard' | 'karamaRicheseGiftDiscard' | 'karamaAuctionAdvantageDiscard' | 'karamaTerminalDiscard' | 'karamaMovementDiscard' | 'karamaRevivalDiscard' | 'karamaDisasterDiscard' }
+  { kind: 'karamaCharityDiscard' | 'karamaInflationDiscard' | 'karamaBgCharityDiscard' | 'karamaBattleDiscard' | 'karamaChoamWorthlessDiscard' | 'karamaEmperorShareDiscard' | 'karamaIncomeDiscard' | 'karamaShipmentDiscard' | 'karamaBgConversionCancelDiscard' | 'karamaRicheseAuctionDiscard' | 'karamaRicheseGiftDiscard' | 'karamaAuctionAdvantageDiscard' | 'karamaTerminalDiscard' | 'karamaMovementDiscard' | 'karamaRevivalDiscard' | 'karamaDisasterDiscard' | 'karamaCombatDiscard' }
 >;
 function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinuation) {
   const battle = c.kind === 'karamaBattleDiscard';
@@ -5970,6 +6001,7 @@ function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinu
   const movement = c.kind === 'karamaMovementDiscard';
   const revival = c.kind === 'karamaRevivalDiscard';
   const disaster = c.kind === 'karamaDisasterDiscard';
+  const combat = c.kind === 'karamaCombatDiscard';
   return JSON.stringify({
     player: c.player, card: c.card, use: c.use,
     parent: nullentropyParentSignature(g, c.resume,
@@ -6115,12 +6147,22 @@ function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinu
         advisors:p.advisors, noField:p.noField, noFieldEvent:p.noFieldEvent,
         wormBlocked:p.fremenNexusWormBlockedTurn})),
     } : undefined,
+    combat: combat ? {
+      battle:g.battle, aid:g.aid, lastBattle:g.lastBattle, lastContext:g.lastBattleContext,
+      battleOrder:g.battleOrder, orderUses:g.battleOrderUseEvents,
+      skills:g.leaderSkills, duke:g.dukeVidal, tech:g.techTokens, nexus:g.nexusCards,
+      homeworlds:g.homeworlds, occupation:g.homeworldOccupationHistory,
+      banker:g.spiceBankerIncome, bureaucrat:g.bureaucratPayments,
+      players:g.players.map(p => ({id:p.id, losses:p.battleLosses, kwisatz:p.kwisatz,
+        leaders:p.leaders, specialUsed:p.specialKaramaUsed, allySince:p.allySinceTurn,
+        advisors:p.advisors, noField:p.noField, noFieldEvent:p.noFieldEvent})),
+    } : undefined,
     order: g.order,
     players: g.players.map(p => ({
       id: p.id, faction: p.faction, ally: p.ally,
       hand: p.hand.map(card => card.id), spice: p.spice,
-      shipped: income || shipment || conversion || terminal || movement || disaster ? p.shipped : undefined,
-      physical: battle || worthless || income || shipment || conversion || terminal || movement || revival || disaster
+      shipped: income || shipment || conversion || terminal || movement || disaster || combat ? p.shipped : undefined,
+      physical: battle || worthless || income || shipment || conversion || terminal || movement || revival || disaster || combat
         ? { forces: p.forces, reserves: p.reserves, tanks: p.tanks,
           elites: p.elites, leaders: battle ? p.leaders : undefined,
           noField: shipment ? p.noField : undefined,
@@ -7038,6 +7080,7 @@ function treacheryDiscardIntegrity(g: Game) {
     continuation?.kind === 'karamaMovementDiscard' ||
     continuation?.kind === 'karamaRevivalDiscard' ||
     continuation?.kind === 'karamaDisasterDiscard' ||
+    continuation?.kind === 'karamaCombatDiscard' ||
     continuation?.kind === 'karamaShipmentDiscard' ||
     continuation?.kind === 'karamaBgConversionCancelDiscard') {
     const c = continuation, entry = batch.entries[0];
@@ -7076,6 +7119,8 @@ function treacheryDiscardIntegrity(g: Game) {
           semutaRevivalKaramaResponse(g,c.use.response,c.player)) ||
         (c.kind === 'karamaDisasterDiscard' &&
           semutaDisasterKaramaResponse(g,c.use.response,c.player)) ||
+        (c.kind === 'karamaCombatDiscard' &&
+          semutaCombatKaramaResponse(g,c.use.response,c.player,c.resume.decision)) ||
         (c.kind === 'karamaShipmentDiscard' &&
           semutaGuildShipmentKaramaResponse(g, c.use.response)) ||
         (c.kind === 'karamaBgConversionCancelDiscard' &&
@@ -7084,7 +7129,7 @@ function treacheryDiscardIntegrity(g: Game) {
       c.resume.response?.kind === c.use.response.kind &&
       JSON.stringify(c.resume.response) === JSON.stringify(c.use.response) &&
       (c.kind === 'karamaBgConversionCancelDiscard' ||
-        ((c.kind === 'karamaTerminalDiscard' || !c.resume.decision) &&
+        ((c.kind === 'karamaTerminalDiscard' || c.kind === 'karamaCombatDiscard' || !c.resume.decision) &&
           !c.resume.pendingKarama && !c.resume.phaseOpening)) &&
       batch.cause === `karama:${c.use.response.kind}` &&
       batch.entries.length === 1 &&
@@ -7983,6 +8028,7 @@ function semutaOfferSupported(
   const movementDiscard = continuation.kind === 'karamaMovementDiscard';
   const revivalDiscard = continuation.kind === 'karamaRevivalDiscard';
   const disasterDiscard = continuation.kind === 'karamaDisasterDiscard';
+  const combatDiscard = continuation.kind === 'karamaCombatDiscard';
   const bgDiscard = continuation.kind === 'bgKaramaCostDiscard' ||
     continuation.kind === 'karamaBgConversionCancelDiscard';
   const ambassadorDiscard = continuation.kind === 'ambassador';
@@ -8021,7 +8067,7 @@ function semutaOfferSupported(
     continuation.kind !== 'karamaChoamWorthlessDiscard' &&
     continuation.kind !== 'karamaEmperorShareDiscard' &&
     continuation.kind !== 'karamaIncomeDiscard' &&
-    !richeseDiscard && !auctionAdvantageDiscard && !terminalDiscard && !movementDiscard && !revivalDiscard && !disasterDiscard &&
+    !richeseDiscard && !auctionAdvantageDiscard && !terminalDiscard && !movementDiscard && !revivalDiscard && !disasterDiscard && !combatDiscard &&
     continuation.kind !== 'karamaShipmentDiscard' &&
     continuation.kind !== 'karamaShipmentPriceDiscard' &&
     continuation.kind !== 'specialKaramaDiscard' &&
@@ -8058,7 +8104,7 @@ function semutaOfferSupported(
         continuation.promise.kind === 'shipment' ||
         continuation.promise.kind === 'movement' ||
         continuation.promise.kind === 'battle'))) return false;
-  if (g.homeworlds && !bgDiscard && !richeseDiscard && !auctionAdvantageDiscard && !terminalDiscard && !movementDiscard && !revivalDiscard && !disasterDiscard && continuation.kind !== 'kaitainDiscard' &&
+  if (g.homeworlds && !bgDiscard && !richeseDiscard && !auctionAdvantageDiscard && !terminalDiscard && !movementDiscard && !revivalDiscard && !disasterDiscard && !combatDiscard && continuation.kind !== 'kaitainDiscard' &&
       continuation.kind !== 'tupileCleanupDiscard' &&
       continuation.kind !== 'karamaIncomeDiscard' &&
       continuation.kind !== 'karamaShipmentDiscard' &&
@@ -8166,6 +8212,7 @@ function semutaOfferSupported(
       movementDiscard ||
       revivalDiscard ||
       disasterDiscard ||
+      combatDiscard ||
       continuation.kind === 'karamaShipmentDiscard'
       ? (continuation.kind === 'karamaBattleDiscard'
         ? semutaBattleKaramaResponse(g, continuation.use.response)
@@ -8187,10 +8234,12 @@ function semutaOfferSupported(
                 ? semutaRevivalKaramaResponse(g,continuation.use.response,continuation.player)
               : disasterDiscard
                 ? semutaDisasterKaramaResponse(g,continuation.use.response,continuation.player)
+              : combatDiscard
+                ? semutaCombatKaramaResponse(g,continuation.use.response,continuation.player,continuation.resume.decision)
               : continuation.kind === 'karamaShipmentDiscard'
                 ? semutaGuildShipmentKaramaResponse(g, continuation.use.response)
                 : ['choamCharity', 'choamInflation', 'bgCharity'].includes(continuation.resume.response?.kind ?? '')) &&
-        (terminalDiscard || !continuation.resume.decision) && !continuation.resume.pendingKarama &&
+        (terminalDiscard || combatDiscard || !continuation.resume.decision) && !continuation.resume.pendingKarama &&
         !continuation.resume.phaseOpening && !g.pendingKarama &&
         (!g.response || JSON.stringify(g.response) === JSON.stringify(continuation.resume.response))
       : true) &&
@@ -8226,6 +8275,7 @@ function semutaOfferSupported(
         movementDiscard ||
         revivalDiscard ||
         disasterDiscard ||
+        combatDiscard ||
         continuation.kind === 'karamaShipmentDiscard' ||
         ((continuation.kind === 'ordinaryCardDiscard'
           ? ordinaryDiscardIncomeMatches(g, continuation)
@@ -8256,7 +8306,7 @@ function semutaOfferSupported(
       continuation.kind === 'ixAllyCard' ||
       (continuation.kind === 'karamaIncomeDiscard' &&
         continuation.use.response.kind === 'emperorIncome') || !g.richeseAuction) &&
-    (richeseGiftDiscard || continuation.kind === 'saphoAggressorDiscard' ||
+    (richeseGiftDiscard || combatDiscard || continuation.kind === 'saphoAggressorDiscard' ||
       bgDiscard ||
       continuation.kind === 'specialKaramaDiscard' ||
       continuation.kind === 'residualPoisonDiscard' ||
@@ -8586,6 +8636,7 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     next.kind === 'karamaMovementDiscard' ||
     next.kind === 'karamaRevivalDiscard' ||
     next.kind === 'karamaDisasterDiscard' ||
+    next.kind === 'karamaCombatDiscard' ||
     next.kind === 'karamaShipmentDiscard' ||
     next.kind === 'karamaBgConversionCancelDiscard' ||
     next.kind === 'karamaPurchaseDiscard' ||
@@ -15944,6 +15995,7 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
       semutaMovementKaramaResponse(g,use.response,p.id) ||
       semutaRevivalKaramaResponse(g,use.response,p.id) ||
       semutaDisasterKaramaResponse(g,use.response,p.id) ||
+      semutaCombatKaramaResponse(g,use.response,p.id) ||
       guildShipmentDiscard || bgConversionCancelDiscard)) {
     const continuation: KaramaResponseDiscardContinuation = {
       kind: bgConversionCancelDiscard ? 'karamaBgConversionCancelDiscard'
@@ -15955,6 +16007,7 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
         : ['fremenMovement','ixMovement','mobileStronghold','guildTiming'].includes(use.response.kind) ? 'karamaMovementDiscard'
         : ['choamRevival','revivalLimit','revivalDiscount','earlyRevival','foreignGhola'].includes(use.response.kind) ? 'karamaRevivalDiscard'
         : ['stormProtection','wormPlacement','wormAllyProtection','wormSurvival'].includes(use.response.kind) ? 'karamaDisasterDiscard'
+        : isCombatResponseKind(use.response.kind) ? 'karamaCombatDiscard'
         : use.response.kind === 'choamCharity' ? 'karamaCharityDiscard'
         : use.response.kind === 'choamInflation'
           ? 'karamaInflationDiscard'
@@ -15975,7 +16028,7 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
       g.response = null;
       if (bgConversionCancelDiscard) {
         g.decision = null; g.pendingKarama = null; g.phaseOpening = null;
-      } else if (continuation.kind === 'karamaTerminalDiscard') g.decision = null;
+      } else if (continuation.kind === 'karamaTerminalDiscard' || continuation.kind === 'karamaCombatDiscard') g.decision = null;
       continuation.stateSignature = karamaResponseDiscardSignature(g, continuation);
       stageTreacheryDiscard(g, `karama:${use.response.kind}`, entries, continuation);
       return;

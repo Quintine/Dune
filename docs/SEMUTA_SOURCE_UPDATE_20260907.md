@@ -2,6 +2,95 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Native combat-power cancellation costs — 26 October 2026
+
+**Prototyped / Partial.** Printed-role Karama stopping native Voice, ordinary
+Prescience, Kwisatz Haderach, elite strength, Fremen support or CHOAM battle aid
+now offers its exact used cost. `karamaCombatDiscard` retains the unrevealed
+battle, declared power, remaining checks, physical actors and original pledge.
+Existing persistent neutral controls, private claim/pass and minimal profiles
+serve these sources. This applies the existing fresh-discard timing, not a new
+publisher ruling or a change to those benefits.
+
+The native [combat-response quote](../game/combat-response-quote.ts), reached
+through the ordinary Karama validator, validates cancellation without applying
+it, answering preparation or evaluating/sealing a future plan. The physical
+cost is already spent and is not supplied as an unspent card. A subtype-only
+snapshot binds the whole battle, physical pools, KH losses/identity, support
+pledge, native roles and module records; earlier signature formats remain
+unchanged. Other unfinished card, arrival and transport parents remain separate.
+
+After claim/pass, retire the group and restore the exact response before native
+prevention once. Canceled Voice removes the command while its already selected
+next preparation remains. Canceled Prescience removes the question and pending
+answer without disclosing one, then finishes preparation natively. A qualified
+native full-plan offer that already coexists with Voice is parked unchanged;
+do not initialize, answer or offer it again. KH/elite/support/aid denial marks
+only the original battle's native block, then takes the original next check.
+A newly claimed Karama can make that next response actionable. Later checks
+and preparation receive real inputs; no declaration, ready action or cost replays.
+
+No support or casualties are committed while Semuta is offered. A CHOAM pledge
+was already reserved before its battle-aid response: keep that native reservation
+through the cost, without spending or refunding it early. Actual plan legality
+and support funding after denial use the native current quote. KH remains earned
+and physically unchanged; cancellation suppresses its bonus and traitor protection
+only in the original battle. Basic Cyborg cancellation retains physical types
+and the independent Suboid rule. The live Nexus borrowed-Voice parent keeps its
+existing cancellation path; its separate source-bound Semuta integration remains
+open. This is not a blanket rejection of other Nexus context.
+
+Three disjoint source lanes, bounded native/diff review and root integration pass
+**15 files,176/176**, types/lint/build and **20 native engine/GameTable SSR/actual
+Semuta-callback journeys through legal plan reveal** on unchanged source. Thirty
+new cases cover ten native sources, claim/pass, positive allowances, reduced or
+repriced plan legality, actual later preparation/checks, relevant stale/underlying
+rejection and all four minimal profiles. Real cache1 acquisition and original
+dealt Karama supply every cost; all original45/57 cards remain physical. No
+played hand, force, alliance, wallet, loss/availability, clock or battle/control
+is installed.
+
+[Declaration sources](../tests/fixture-semuta-combat-declarations.ts) and
+[cases](../tests/semuta-combat-declarations-engine.test.ts) use actual BG setup,
+prediction, reserve shipment2/cost2 into original Atreides Arrakeen10, native
+battle selection and both pre-leader ready inputs. Voice87/98 Basic/Advanced
+actions retain the original next Prescience preparation. Prescience88/99 actually
+declines Voice before declaring weapon; its original opponent answer remains
+unanswered through the cost. Prevention asks no answer; allowance receives the
+actual null weapon answer. Both later seal legal unarmed plans in the same battle.
+
+[Force sources](../tests/fixture-semuta-combat-forces.ts) and
+[cases](../tests/semuta-combat-forces-engine.test.ts) use actual Richese normal
+shipment1/cost2 and Fremen/Emperor elite entry. Fedaykin94, Sardaukar99 and free
+support99 actions retain original native strength, half-step dials and actual
+later checks. Sardaukar's positive source faces Richese, respecting its Fremen
+exception. CHOAM aid203 earns the real Nexus alliance and reserves pledge1 before
+the response. Cancellation preserves that escrow but removes access to its
+funding; native allowed/canceled plan proposals prove the difference without
+charging support before outcome. An independent originally dealt Emperor Karama
+keeps later checks explicit while Guild spends its distinct printed cost.
+
+[Capability sources](../tests/fixture-semuta-combat-capabilities.ts) and
+[cases](../tests/semuta-combat-capabilities-engine.test.ts) earn KH163 through
+a real seven-counter battle loss, leaving original Arrakeen3. The actual turn2
+opposing shipment creates a second battle with earned KH, including a companion
+whose Traitor Emperor really holds. Allowed KH adds2 and prevents that real call;
+cancellation removes both while retaining the seven-loss history and component.
+Basic Cyborg100 actually pays for its original Polar Sink shipment and moves the
+physical elite to the opposing group; dial2 is legal before prevention and dial1
+after. The native typed pool and Suboid rule are unchanged.
+
+Feedback repairs only the KH earning source's dial7/support0 proposal: seven
+unsupported Advanced normals require strength3.5/support0. The source assertion
+is corrected too; the actual seven casualties and native KH permission remain.
+No gameplay guard is relaxed. Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-combat-proof/`;
+journeys/HTML: adjacent `20261026-semuta-combat-runtime/`.
+No saved-room/database/server/reset/restart/deployment/recovery operation occurs.
+Engine/SSR/callback evidence leaves hydration, DOM/browser/mobile, direct
+coexisting full-plan acceptance, live borrowed Voice and other wider parents/
+combinations, complete modes and exact-revision deployed acceptance open.
+
 ## Storm and worm cancellation costs — 26 October 2026
 
 **Prototyped / Partial.** Printed-role Karama stopping native Fremen Storm
