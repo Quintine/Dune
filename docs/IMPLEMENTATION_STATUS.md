@@ -1,5 +1,39 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta on native Advanced advisor conversion costs
+
+**Prototyped / Partial.** One typed used-cost continuation connects native
+advisor preparation, ordinary incoming matching and mandatory ground conversion.
+Pure native validation retains original controls, physical groups and movement;
+claim/pass restores and denies once. Preparation keeps the current auction,
+matching keeps the unused move, and a completed departure keeps its original
+arrival and continuously-alone hold. Existing persistent controls/minimal bots
+serve it. Original preview gates and provisional native duration remain.
+[Source and scope](SEMUTA_SOURCE_UPDATE_20260907.md#native-advanced-advisor-conversion-costs--26-october-2026).
+
+Three disjoint source lanes and root integration pass **15 files,172/172**,
+types/lint/build and **eight native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Eighteen new cases cover four original Advanced
+R/C/BG/A/E sources, claim/pass, native allowance, relevant rejection and four
+profiles. Original BG advisorSetup, native A10, actual cache1 and dealt Karama
+supply all45-card sources. Preparation66 keeps the actual phase3 auction and
+stamps territory denial. Both matching87 sources preserve groups/unused move,
+then actually reposition the paid Basin9 fighter to Basin10, wallet3/reserves18.
+Ground departure87 preserves completed A10 movement and queued entry, retains
+the original hold, drains entry once and really ends A's turn to Collection7.
+No played hand, force, stance, wallet, clock, receipt or result is installed.
+
+Feedback retains the original preparation resume tag, qualifies only the exact
+nine-field deposited ground arrival and fixes the fixture's post-move shipment
+flag to spent. Native calculations stay intact. A bounded lookup found no wholly
+absent Basic primitive, without certifying Basic or reopening explicit Cunning/
+Kull policies. Other advisor parents/modules and complete modes remain open.
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-advisor-proof/`;
+journeys/HTML: adjacent `20261026-semuta-advisor-runtime/`. No room/D1/server,
+reset/restart, deployment or recovery operation occurs. DOM/hydration,
+browser/mobile and deployed/final assurance remain open.
+
 ## 26 October 2026 — Semuta on native market and allied revival costs
 
 **Prototyped / Partial.** Two typed used-cost continuations add CHOAM sale,

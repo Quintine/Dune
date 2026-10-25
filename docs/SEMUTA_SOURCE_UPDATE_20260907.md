@@ -2,6 +2,91 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Native Advanced advisor conversion costs — 26 October 2026
+
+**Prototyped / Partial.** `karamaAdvisorFlipDiscard` offers the fresh printed-role
+Karama used to prevent native advisor preparation, ordinary incoming-group
+matching or mandatory conversion after committed ground movement. Existing
+persistent neutral controls, private claim/pass and minimal legal profiles serve
+these sources. This applies existing discard timing and conversion rules; it
+adds no publisher ruling or mode admission.
+
+Native [preparation](../game/advisor-preparation-window.ts),
+[matching](../game/advisor-matching.ts) and
+[automatic conversion](../game/advisor-automatic-flip.ts) validators own source
+legality. The cost adapter supplies no already-spent card as another held cost,
+and executes no stance change, group transfer, allowance or phase opening.
+Native preparation retains its original `preparation` resume tag; its live
+auction is source context, not a sale to settle. The subtype signature binds
+original preparation/matching/automatic records, queued arrival, current
+auction/order, physical groups/stances and movement counters. Older signature
+formats retain their bytes.
+
+After claim/pass the fresh group retires, the original response restores and
+native denial runs once:
+
+- Preparation records its original territory denial while keeping advisors,
+  the pre-shipment clock and any current ordinary auction intact. It neither
+  starts Shipment nor closes another territory's future preparation by analogy.
+- Ordinary incoming matching retains both resident and incoming groups, their
+  types, previous shipment/payment and unused movement. The original denial key
+  prevents the same conversion request; the player can choose an actual legal
+  alternate move. Allowance commits the original typed group once.
+- A mandatory ground conversion retains movement already completed, its normal
+  counter usage and native continuously-alone hold. The original deposited
+  arrival resumes once after conversion denial/allowance; no transfer or move
+  replays. A real endMovement later advances the same original turn once.
+
+The focused [arrival qualifier](../game/semuta-advisor-arrival.ts) admits only
+one original nine-field ground entry with the current native mover, turn/phase,
+spent shipment/movement count and actual deposited normal/elite cohort. It does
+not create an arrival or reprice a move. The existing continuously-alone
+prevention duration remains provisional under the 14 October recommended
+policy, as recorded in [the native source](ADVISOR_AUTOMATIC_FLIPS.md#source-and-provisional-duration--24-october-2026).
+
+Three disjoint source lanes, bounded native/diff review and root integration pass
+**15 files,172/172**, types/lint/build and **eight native engine/GameTable SSR/
+actual Semuta-callback journeys** on unchanged source. Eighteen new cases cover
+four sources, claim/pass, native allowance, exact original control boundaries,
+real alternate movement and phase continuation, relevant rejection and four
+minimal profiles. Each source uses original Advanced R/C/BG/A/E setup with
+exact CHOAM, no optional modules, BG's actual Arrakeen advisor beside native
+Atreides10, CHOAM's real cache1 Semuta and original Emperor Karama. All45 cards
+remain physical; no played hand, force, stance, wallet, clock, receipt or outcome
+is installed.
+
+Preparation66 occurs during actual phase3 Bidding, preserving its auction and
+recording only native Arrakeen denial. Matching87 in each direction earns its
+separate BG fighter through paid1-counter Basin9 shipment2. Denial retains the
+unused move, then actually repositions that fighter to Basin10, keeping the
+Arrakeen advisor and BG wallet3/reserves18. Ground departure87 physically moves
+Atreides10 Arrakeen10→Basin10; its pending arrival remains behind the original
+mandatory conversion. Denial keeps the existing hold and drains that arrival,
+then a real A endMovement reaches Collection7 without another conversion.
+
+Feedback preserves the original preparation resume tag, admits only the native
+ground-arrival packet and corrects the fixture's shipment flag: moving first
+consumes its unused shipment. Native rule calculations remain unchanged. A
+bounded checklist/code lookup found no wholly absent Basic primitive; this is
+not a complete Basic audit or certification. Explicit Cunning and deferred Kull
+user policies remain. Transport, Ambassador, gather, spiritual and non-ground
+automatic parents, broader combinations, complete modes and final assurance
+remain open.
+
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-advisor-proof/`;
+journeys/HTML: adjacent `20261026-semuta-advisor-runtime/`. No room/D1/server,
+reset/restart, deployment or recovery operation occurs. These are engine, SSR
+and actual component callbacks; DOM/hydration, browser/mobile and deployed/final
+acceptance remain open.
+
+Evidence: [preparation source](../tests/fixture-semuta-advisor-preparation.ts),
+[preparation cases](../tests/semuta-advisor-preparation-engine.test.ts),
+[matching sources](../tests/fixture-semuta-advisor-matching.ts),
+[matching cases](../tests/semuta-advisor-matching-engine.test.ts),
+[ground source](../tests/fixture-semuta-advisor-alone.ts) and
+[ground cases](../tests/semuta-advisor-alone-engine.test.ts).
+
 ## Native market and allied revival-grant cancellation costs — 26 October 2026
 
 **Prototyped / Partial.** `karamaMarketDiscard` now offers fresh printed-role

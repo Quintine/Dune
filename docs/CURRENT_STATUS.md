@@ -16,6 +16,45 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on native Advanced advisor conversions — 26 October. Prototyped / Partial.**
+`karamaAdvisorFlipDiscard` now offers the exact printed-role cancellation cost
+for native preparation, ordinary incoming-group matching and mandatory conversion
+after a ground move. Pure native validation retains original preparation/auction,
+uncommitted matching or committed departure/automatic queue. Claim/pass applies
+only conversion denial and resumes the original source once. Existing persistent
+controls/minimal bots serve it; no stance, movement, payment or phase is pre-applied.
+
+Three disjoint source lanes and root integration pass **15 files,172/172**,
+types/lint/build and **eight native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Eighteen new cases cover four native sources,
+claim/pass, allowance, exact boundaries, relevant rejection and four profiles.
+Every source uses original Advanced R/C/BG/A/E setup, BG's actual advisorSetup
+beside native Atreides10, cache1 CHOAM Semuta and original Emperor Karama. All45
+cards remain physical. Preparation66 preserves the current phase3 auction and
+stamps only Arrakeen's denied preparation. Matching87 in both directions retains
+both original groups/unused move after denial, then actually moves the paid
+Basin9 fighter to Basin10 with wallet3/reserves18. Ground departure87 moves the
+actual Atreides10 to Basin10 first; denial retains BG's original continuously-alone
+hold, drains the exact queued arrival once and really ends A's turn to Collection7.
+Allowance actually converts the stance or commits the original matching group.
+No played hand, force, stance, wallet, clock, receipt or outcome is installed.
+
+Feedback retains the native preparation resume tag and qualifies only the exact
+nine-field deposited ground-arrival packet for suspension behind its mandatory
+conversion. Moving before shipping correctly consumes the unused shipment; no
+native move/cancellation calculation changes. A bounded code lookup found no
+wholly absent Basic primitive; that is not Basic completion certification and
+does not reopen user-selected Cunning or deferred Kull policies. Transport,
+Ambassador, gather, spiritual, other automatic producers and wider parents retain
+separate Semuta follow-ups; complete modes/final assurance remain open.
+
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-advisor-proof/`;
+journeys/HTML: adjacent `20261026-semuta-advisor-runtime/`. No room/D1/server,
+reset/restart, deployment or recovery operation occurs. These are engine, SSR
+and component-callback results; DOM/hydration, browser/mobile and deployed/final
+acceptance remain open. [Source and scope](SEMUTA_SOURCE_UPDATE_20260907.md#native-advanced-advisor-conversion-costs--26-october-2026).
+
 **Semuta on native markets and Fremen allied revival — 26 October. Prototyped / Partial.**
 Fresh printed-role cancellation costs now pause through `karamaMarketDiscard`
 for CHOAM sales, Richese Black Market and native Ixian ally replacement, and
