@@ -1,5 +1,35 @@
 # Truthtrance ground-movement promises
 
+## Native early Advanced and CHOAM opening — 26 October 2026
+
+**Prototyped / Partial.** Both Basic and Advanced now admit clean current-round
+questions during phases0–4 with registered native factions and their selected
+Ix/Tleilax, CHOAM/Richese or Ecaz/Moritani decks. This supersedes the earlier
+Advanced phase5-only guard below. The same typed, physical-only witness serves
+both rulesets; optional modules and independent Ecaz cards retain their fences.
+Answering neither ships nor moves early. Actual movement still waits for the
+respondent's native turn and normal arrival/counter decisions.
+
+CHOAM's own unresolved opening may supply its fixed allowed income in the
+detached witness, using the actual settlement calculation. Current cash stays
+unchanged until the real opening counter is allowed. A current-turn receipt,
+including cancellation, prevents repeated credit; completed cancellation may
+release impossibility. Foreign future income and unknown purchases supply no
+forecast cash. This is the provisional owned-stage composition in the
+[decision index](RULE_DECISIONS.md#native-early-promises-and-owned-choam-opening--26-october-2026),
+not new publisher authority.
+
+Genuine native [CHOAM](../tests/fixture-truthtrance-choam-promises.ts),
+[Richese](../tests/fixture-truthtrance-richese-promises.ts) and
+[Ecaz/Moritani](../tests/fixture-truthtrance-native-family-promises.ts) sources
+start before Movement with no installed promises or preparatory armies.
+CHOAM's actual opening funds later shipment and movement; empty-board Richese
+must pay for real shipment before ground movement; Ecaz moves its original six
+Basin counters. Existing current-phase preparation/pass controls and minimal
+legal policies serve these sources. Exact frozen results are recorded in the
+[shared native promise checkpoint](TRUTHTRANCE_SHIPMENT_PROMISES.md#native-factions-and-owned-choam-opening--26-october-2026).
+No complete-mode, DOM/hydration, browser/deployed or final assurance is claimed.
+
 ## Native Advanced and No-Field preparation — 25 October 2026
 
 **Prototyped / Partial.** Advanced phase5 now accepts declared native expansion

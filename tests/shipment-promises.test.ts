@@ -32,6 +32,19 @@ void test('Advanced shipment scope excludes separately enabled optional modules 
     true,
   );
 });
+void test('native faction decks admit early Basic and Advanced shipment scope while retaining module fences', () => {
+  const families = [
+    ['ix', 'ixians'], ['ix', 'tleilaxu'], ['choam', 'choam'],
+    ['choam', 'richese'], ['ecaz', 'ecaz'], ['ecaz', 'moritani'],
+  ];
+  for (const advanced of [false, true]) for (const phase of [0, 2, 5]) for (const [family, faction] of families) {
+    const native = { advanced, phase, expansions: [family], players: [{ faction: 'atreides' }, { faction }] };
+    assert.equal(shipmentPromiseModeSupported(native), true, `${faction}/${advanced}/${phase}`);
+    assert.equal(shipmentPromiseModeSupported({ ...native, expansions: [family, family] }), false);
+    assert.equal(shipmentPromiseModeSupported({ ...native, ecazTreachery: true }), false);
+    if (phase < 5) assert.equal(shipmentPromiseModeSupported({ ...native, expansions: [] }), false);
+  }
+});
 import {
   applyAction,
   createGame,
@@ -528,14 +541,14 @@ void test('malformed questions and unsupported public scopes reject without disc
       },
     });
   for (const change of [
-    'expansion',
+    'duplicateDeck',
     'phase',
     'spent',
     'inactive',
     'territory',
   ]) {
     const bad = structuredClone(g);
-    if (change === 'expansion') bad.expansions = ['ix'];
+    if (change === 'duplicateDeck') bad.expansions = ['ix', 'ix'];
     if (change === 'phase') bad.phase = 6;
     if (change === 'spent') bad.players[1].shipped = true;
     if (change === 'inactive') { bad.active = 'a'; bad.movementRemaining = ['a', 'o']; }

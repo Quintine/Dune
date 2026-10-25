@@ -1,6 +1,7 @@
 import { TERRITORIES, territory } from './board';
 import type { MixedShipmentExpression } from './mixed-shipment-question';
 import type { TruthAnswer } from './truthtrance';
+import { nativePromiseScopeSupported } from './native-promise-scope';
 
 /** Every shipment leaf describes the same eventual reserve shipment, or its absence. */
 export type ShipmentLeaf = { territory: string; minimum: number };
@@ -160,11 +161,13 @@ export function shipmentPromiseModeSupported(game: {
   semutaPreview?: unknown;
   leaderSkills?: unknown;
   discoveryEnabled?: unknown;
+  discoveries?: unknown;
+  discoveryStash?: unknown;
+  greatMaker?: unknown;
   ecazTreachery?: unknown;
 }, respondent = game.active): boolean {
-  if (game.phase !== undefined && game.phase < 5 &&
-    (game.expansions.length || game.techTokens || game.strongholdCards ||
-      game.nexusCards || game.homeworlds || game.leaderSkills || game.discoveryEnabled || game.ecazTreachery)) return false;
+  if (nativePromiseScopeSupported(game)) return true;
+  if (game.phase !== undefined && game.phase < 5) return false;
   if (game.semutaPreview === true && game.expansions.length === 1 &&
     game.expansions[0] === 'choam' && !game.techTokens &&
     !game.strongholdCards && !game.nexusCards && !game.homeworlds &&

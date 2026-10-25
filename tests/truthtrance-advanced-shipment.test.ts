@@ -568,9 +568,9 @@ void test('unrelated opponent cards and wealth cannot change Advanced answer or 
   }
 });
 
-void test('selected expansions still reject unsupported questions immutably before binding or discard', () => {
+void test('duplicate expansion declarations reject unsupported questions immutably before binding or discard', () => {
   const g = fixture('emperor');
-  g.expansions = ['ix'];
+  g.expansions = ['ix', 'ix'];
   const pending = openQuestion(g);
   reject(pending, 'a', {
     type: 'truthAsk',

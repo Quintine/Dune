@@ -121,6 +121,11 @@ void test('controlled original Karama prevents a native No-Field preparation bef
   assert.ok(!g.movementPromises![0].fulfilled && !g.movementPromises![0].released);
   g = act(g, f.asker, { type: 'card', card: karama.id, mode: 'cancel' });
   assert.equal(player(g, f.target).shipped, false); assert.equal(player(g, f.target).spice, before.spice);
+  // The original Karama disposal must finish its native Semuta offer before
+  // the deferred prevention and impossibility release actually settle.
+  if (g.pendingTreacheryDiscard) assert.equal(g.movementPromises![0].released, undefined);
+  g = advance(g, clean);
+  assert.equal(player(g, f.target).shipped, false); assert.equal(player(g, f.target).spice, before.spice);
   assert.equal(g.movementPromises![0].released, true); assert.deepEqual(inventory(g), f.originalCards);
 });
 

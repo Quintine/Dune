@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 26 October 2026 — Native early Truthtrance promises
+
+**Prototyped / Partial.** Bare registered native factions with selected decks can answer current-turn
+shipment and physical ground-movement questions in Basic/Advanced phases0–5.
+CHOAM's own fixed allowed opening uses the actual settlement formula in the
+witness; cash, cancellation and its current-turn receipt stay native. Richese
+shipment guidance passes or submits Silent zero with the original event.
+Existing preparation, voluntary-cost checks, persistent controls and all four
+minimal legal profiles are reused. Optional-module boundaries and public mode
+gates remain separate.
+
+Three disjoint native source lanes and root integration pass **24 files,
+223/223**, types/lint/build and **sixteen native engine/GameTable SSR/actual
+promise-control journeys** on unchanged source. Forty-five native cases plus
+one scope case cover real income/cancellation/invoices, Yes/No, original
+physical events, stale/foreign rejection and four minimal profiles. Native
+CHOAM8-action sources retain35 cards/2 cash until opening8; Richese Basic18/
+Advanced22 retain45/5 cash; Ecaz20/23 retain33/original Basin6. Only unopened
+positions/native lotteries are selected; no played physical sources or promises
+are installed. Controlled configuration negatives remain labelled supplements.
+
+Feedback corrects fixture-only card/start/group expectations and awaits actual
+movement-No closure and Karama/Semuta disposal before No-Field release. The
+shared quote signature retains Advanced context. A known-failing union is
+stopped; the Richese policy smoke is narrowed to fixed genuine cache controls,
+then all four answer/Silent-zero/completion branches, avoiding unrelated special
+acquisition and repeated views during foreign passes. Final v4 is complete.
+Final frozen v4 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truthtrance-native-families-proof-v4/`;
+journeys/HTML: adjacent `20261026-truthtrance-native-families-runtime/`.
+Broader promises/modules, complete rules and final assurance remain open.
+No saved-room/D1/server, restart, deployment or recovery operation occurs.
+DOM/hydration, browser/mobile and deployed acceptance remain due.
+[Source and scope](TRUTHTRANCE_SHIPMENT_PROMISES.md#native-factions-and-owned-choam-opening--26-october-2026).
+
 ## 26 October 2026 — Earlier Advanced Truthtrance shipment promises
 
 **Prototyped / Partial.** Extend current-turn reserve-shipment questions to bare

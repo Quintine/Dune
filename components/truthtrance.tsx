@@ -360,10 +360,10 @@ export function Truthtrance({
                 <>
                   <MovementClaimFields id={`${factId}-movement`} value={movement} onChange={setMovement} />
                   <p className="fine">One ground movement of the chosen physical minimum, from now until the respondent’s Movement turn ends. Shipment, HMS relocation and Ambassador relocation do not count. Owned Hajr, Ornithopter, native Kulon and paid Box recovery of a known discard can prepare a later move. No stays binding after earlier nonmatching moves.</p>
-                  {g.phase < 5 && <p className="notice">Movement comes later this round. Keep the forces, spice and cards needed by your answer; available Charity or Revival may prepare the route. Current auction commitments reserve their actual funding. Current preparation appears when it is available.</p>}
+                  {g.phase < 5 && <p className="notice">Movement comes later this round. Keep the forces, spice and cards needed by your answer; available Charity, your own CHOAM opening income or Revival may prepare the route. Current auction commitments reserve their actual funding. Current preparation appears when it is available.</p>}
                   {g.advanced && <p className="fine">Advanced movement counts physical forces, including each elite once. Hajr remains available only immediately after a completed movement and its required arrival decisions.</p>}
                   <p className="fine">An owned No-Field may prepare a route through its normal shipment, movement or voluntary reveal. The concealed marker does not count toward the promised physical minimum; revelation uses only available reserves.</p>
-                  {!g.truthMovementTargets.includes(target) && <p className="notice">Choose a supported Basic respondent this round or an Advanced respondent with declared native families during Movement, and finish pending decisions. Optional modules and earlier Advanced movement forecasts remain unfinished.</p>}
+                  {!g.truthMovementTargets.includes(target) && <p className="notice">Choose a supported Basic or Advanced respondent with declared native families and an unused turn this round, and finish pending decisions. Optional modules remain unfinished.</p>}
                   <p className="notice" aria-label="Public movement question preview">{truthQuestionText(question, leaderName, locationName)}</p>
                 </>
               ) : kind === 'shipment' || kind === 'mixedShipment' ? (
@@ -388,10 +388,10 @@ export function Truthtrance({
                   {!shipmentAvailable && (
                     <p className="notice">
                       Automatic enforcement supports a later shipment this turn
-                      in classic Basic or Advanced rules without optional modules,
-                      including the Guild. Active or waiting turns are eligible
-                      during Shipment and Movement; the Richese Semuta profile
-                      also supports classic payers at that time. Select
+                      under Basic or Advanced rules with selected native faction
+                      decks and no optional modules, including the Guild. Active
+                      or waiting turns are eligible during Shipment and Movement;
+                      existing optional profiles retain their separate scope. Select
                       an eligible player and finish pending decisions first.
                       Native No-Field shipments and other rules configurations
                       remain unfinished.

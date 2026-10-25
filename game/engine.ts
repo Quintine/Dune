@@ -552,6 +552,7 @@ import {
   quoteCharityFunding,
   CharityFundingError,
   charityMultiplier,
+  choamOpeningIncome,
   type Inflation,
 } from './charity';
 import {
@@ -25913,6 +25914,15 @@ type ShipmentCompletionSeed = { game: Game; actions: Action[]; early: { phase: n
 function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string): ShipmentCompletionSeed[] {
   let seeds: ShipmentCompletionSeed[] = [{ game: initial, actions: [], early: [] }];
   if (source.phase > 4) return seeds;
+  if (source.phase <= 2 && source.choamCharity?.turn !== source.turn && getPlayer(source,owner).faction === 'choam') {
+    // The owned opening is automatic, not an executable future claim. Witness
+    // its allowed fixed income only; the real table retains the counter.
+    const projected = structuredClone(initial);
+    const choam = getPlayer(projected,owner);
+    choam.spice += choamOpeningIncome(projected,choam);
+    projected.choamCharity = {turn:projected.turn,canceled:false};
+    seeds.push({game:projected,actions:[],early:[]});
+  }
   if (source.phase <= 2 && !(source.phase === 2 && source.ready.includes(owner))) {
     const charitySeeds: ShipmentCompletionSeed[] = [];
     for (const seed of seeds) {
@@ -26194,8 +26204,13 @@ function earlyShipmentGuidance(g: Game, p: Player): { preparation: { actions: Ac
   const current = completion.early?.find(step => step.phase === g.phase)?.action;
   if (g.decision?.kind === 'auctionPayment')
     return { preparation: null, policy: [current?.type === 'decision' ? current : { type: 'decision', karama: false }] };
-  if (g.phase === 3)
+  if (g.phase === 3) {
+    const lot = g.richeseAuction;
+    if (lot) return {preparation:null,policy:!lot.outcome && lot.eligible.includes(p.id) &&
+      (lot.method === 'silent' ? !Object.hasOwn(lot.sealed,p.id) : lot.active === p.id)
+      ? [{type:'richeseBid',event:lot.event,amount:lot.method === 'silent' ? 0 : null,allyPayment:0}] : []};
     return { preparation: null, policy: g.auction?.active === p.id ? [{ type: 'passBid' }] : [] };
+  }
   if (g.phase === 2 || g.phase === 4)
     return { preparation: current ? { actions: [current] } : null,
       policy: current ? [current] : g.ready.includes(p.id) ? [] : [{ type: 'ready' }] };
@@ -30396,10 +30411,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       // User ruling 7 October 2026: CHOAM's phase-opening income is a
       // qualifying collection, so a low-population native Homeworld adds its
       // bank bonus under the same Inflation multiplier as ordinary charity.
-      const multiplier = charityMultiplier(g);
-      const amount =
-        2 * g.players.length * multiplier +
-        homeworldLowBonus(g, choam.id) * multiplier;
+      const amount = choamOpeningIncome(g,choam);
       choam.spice += amount;
       log(g, `${choam.name} collected ${amount} spice before charity claims.`);
     } else

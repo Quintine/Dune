@@ -1,5 +1,5 @@
 import { TERRITORIES, territory } from './board';
-import { FACTIONS } from './catalog';
+import { nativePromiseScopeSupported } from './native-promise-scope';
 import type { Game } from './engine';
 
 /** One qualifying ground movement, never the sum of several smaller groups. */
@@ -84,20 +84,7 @@ export function finishMovementPromises<T extends MovementPromise>(
 /** Prototype profile/timing only. Actual route feasibility stays authoritative
  * in the engine. Truthtrance and an ordinary active Ornithopter may remain. */
 export function movementPromiseModeSupported(g: Game): boolean {
-  // Basic retains early-phase admission. Advanced native families use the same
-  // declared roster during Movement; earlier forecasts/modules stay separate.
-  return (g.advanced === false ||
-    g.advanced === true && g.phase === 5) &&
-    g.players.length >= 2 && g.players.length <= 6 &&
-    g.expansions.every(id => ['ix', 'choam', 'ecaz'].includes(id)) &&
-    new Set(g.expansions).size === g.expansions.length &&
-    g.players.every(candidate => {
-      const family = FACTIONS.find(entry => entry.id === candidate.faction)?.expansion;
-      return family === 'base' || (!!family && g.expansions.includes(family));
-    }) &&
-    !g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.techTokens &&
-    !g.strongholdCards && !g.discoveryEnabled && !g.discoveries &&
-    !g.discoveryStash && !g.greatMaker && !g.ecazTreachery;
+  return nativePromiseScopeSupported(g);
 }
 export function movementPromiseTargetAvailable(g: Game, player: string): boolean {
   const target = g.players.find(candidate => candidate.id === player);

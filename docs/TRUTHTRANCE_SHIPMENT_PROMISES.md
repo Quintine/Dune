@@ -4,7 +4,73 @@ Original checkpoint, 7 September 2026; Advanced follow-up, 13 September 2026. Th
 
 The former Advanced Guild exclusion is superseded by the
 [18 October native Guild composition](#advanced-guild-interception-and-rates--18-october-2026).
-The [24 October waiting-turn follow-up](#same-phase-waiting-respondents--24-october-2026) supersedes the active-only timing boundary. The [earlier Basic phase follow-up](#earlier-basic-phases--24-october-2026) extends current-turn timing before Movement; the [26 October Advanced extension](#earlier-classic-advanced-phases--26-october-2026) adds bare classic Advanced while retaining earlier module fences. Earlier scope descriptions and verification totals remain historical.
+The [24 October waiting-turn follow-up](#same-phase-waiting-respondents--24-october-2026) supersedes the active-only timing boundary. The [earlier Basic phase follow-up](#earlier-basic-phases--24-october-2026) extends current-turn timing before Movement; the [26 October Advanced extension](#earlier-classic-advanced-phases--26-october-2026) adds bare classic Advanced while retaining earlier module fences. The [native-faction follow-up](#native-factions-and-owned-choam-opening--26-october-2026) adds native early scope and owned CHOAM income. Earlier scope descriptions and verification totals remain historical.
+
+## Native factions and owned CHOAM opening — 26 October 2026
+
+**Prototyped / Partial.** Both shipment and
+physical ground-movement questions now accept registered native factions with
+selected Ix/Tleilax, CHOAM/Richese and Ecaz/Moritani decks in Basic/Advanced
+phases0–5. Earlier classic-only/Advanced phase5-only scope below is historical.
+Optional-module and independent Ecaz-card boundaries remain separate; existing
+late-phase shipment profiles retain their prior admission. No public game-start
+gate changes, and a concealed No-Field is still not a physical reserve shipment.
+
+Forecast CHOAM's own allowed fixed opening with the actual settlement formula
+on a detached witness only. The live opening response, physical cash and
+cancellation decision remain. A current-turn collection/cancellation receipt
+prevents another forecast credit. Native Richese pass/Silent-zero guidance
+carries the original event; voluntary winning invoices retain their actual
+funding. Current-board feasibility assumes no unknown purchases, rival future
+income or future Storm movement. Genuine opposing effects may release an
+impossible answer. This is provisional owned-stage composition under the
+[recorded authority](RULE_DECISIONS.md#native-early-promises-and-owned-choam-opening--26-october-2026).
+
+Three disjoint native source lanes and root integration pass **24 files,
+223/223**, types/lint/build and **sixteen native engine/GameTable SSR/actual
+promise-control journeys** on unchanged source. Forty-five native cases plus
+one scope case cover real income/cancellation/invoices, Yes/No, original
+physical events, stale/foreign rejection and four minimal profiles. Native
+CHOAM8-action sources retain35 cards/2 cash until opening8; Richese Basic18/
+Advanced22 retain45/5 cash; Ecaz20/23 retain33/original Basin6. Only unopened
+positions/native lotteries are selected; no played physical sources or promises
+are installed. Controlled configuration negatives remain labelled supplements.
+
+The [CHOAM source](../tests/fixture-truthtrance-choam-promises.ts) earns public
+A/C/E/H setup before first Storm. Actual opening8 funds shipment10, or actual
+purchase2 followed by paid city shipment6 and ground6 to Carthag. E's original
+Karama cancellation keeps C2 and releases impossibility. No permits shipment9
+or ground5; movement No fulfills only after actual `endMovement`.
+
+The [Richese source](../tests/fixture-truthtrance-richese-promises.ts) earns public
+R/A/E Charity with20 reserves and no board force. Actual native Silent/ordinary
+own bid1 leaves only4 for city shipment after real payment. Early movement
+requires an actual paid landing first. The ordinary case explicitly ships1 to
+Arrakeen before its legal move; profiles may use their native No-Field route.
+The [Ecaz/Moritani source](../tests/fixture-truthtrance-native-family-promises.ts)
+earns public A/Ecaz/Mori Charity: Ecaz12 cash/14 reserves/Basin6, Mori Oh Gap6.
+A real city shipment5 costs5, or original Basin6 moves to Arrakeen beside A10.
+Native optional placement is really declined. Shipment never fulfills movement.
+
+Actual ShipmentPromises/MovementPromises buttons execute original physical
+events on the real turn; native Silent-zero callbacks retain event and notice.
+Feedback repairs CHOAM's no-Richese35 count, observes the actual Advanced start
+argument, accepts scalar/grouped move packets, and waits for movement-No closure
+and Karama/Semuta disposal. Scope tests reject unsupported configurations rather
+than declared native decks. The initial known-failing union is stopped. Richese
+profile proof uses fixed genuine cache controls plus all four answer/Silent-zero/
+completion branches, avoiding unrelated special acquisition and repeated private
+views during foreign passes. No strategy or strength calibration is performed.
+
+Final v4 binds2941 files to
+`8975b9722db46d85d58f1441c2b989769a26d39338ccd570e73a49a0327b7e04` on base `8053e1fb268780b1dc0380a8a63c8b26afad70c6`.
+Final frozen v4 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truthtrance-native-families-proof-v4/`;
+journeys/HTML: adjacent `20261026-truthtrance-native-families-runtime/`.
+
+Broader promises/modules, complete rules and final assurance remain open.
+No saved-room/D1/server, restart, deployment or recovery operation occurs.
+DOM/hydration, browser/mobile and deployed acceptance remain due.
 
 ## Earlier classic Advanced phases — 26 October 2026
 

@@ -36,6 +36,14 @@ export function charityAmount(
   return charityQuote(g, p).total;
 }
 
+/** Native phase-opening collection, distinct from a player's ordinary claim. */
+export function choamOpeningIncome(
+  g: Pick<Game, 'advanced' | 'turn' | 'inflation' | 'players' | 'homeworlds'>,
+  owner: Pick<Player, 'id'>,
+) {
+  return (2 * g.players.length + homeworldLowBonus(g, owner.id)) * charityMultiplier(g);
+}
+
 export function charityPayer(
   g: Pick<Game, 'players' | 'turn' | 'choamCharity'>,
   beneficiary?: string,
