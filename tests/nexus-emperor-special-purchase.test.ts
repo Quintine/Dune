@@ -88,16 +88,19 @@ void test('original Richese Nexus profiles compose, but unsupported full overlay
   const skills = original();
   skills.g.leaderSkills = {} as NonNullable<Game['leaderSkills']>;
   assert.equal(quoteEmperorNexusSpecialPurchase(skills.g, 'r').blocked, null);
+  const independent = original();
+  independent.g.ecazTreachery = true;
+  assert.equal(quoteEmperorNexusSpecialPurchase(independent.g, 'r').blocked, null,
+    'The selected E1/E2 independent-card profile already supports native purchases.');
   for (const change of [
     (g: Game) => { g.advancedPreview = true; },
-    (g: Game) => { g.ecazTreachery = true; },
     (g: Game) => { g.sandtrout = true; },
     (g: Game) => { g.nexusCards = undefined; },
     (g: Game) => { g.expansions = ['choam', 'ix', 'ecaz']; },
   ]) {
     const { g, activation, acquire } = original();
     change(g);
-    assert.ok(quoteEmperorNexusSpecialPurchase(g, 'r').blocked);
+    assert.ok(quoteEmperorNexusSpecialPurchase(g, 'r').blocked, change.toString());
     assert.throws(() => createEmperorNexusSpecialPurchase(g, 'r', activation.id, acquire.id),
       EmperorNexusPurchaseError);
   }

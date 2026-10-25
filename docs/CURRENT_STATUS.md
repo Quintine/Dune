@@ -16,6 +16,44 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Karama acquisitions reach Richese Nexus veto — 25 October. Prototyped / Partial.**
+The existing preview now covers immediate ordinary Karama and private Advanced
+special purchase. Uniform acknowledgements precede original costs. Under the
+visible provisional policy, successful veto discards only the intended card;
+the activation Karama stays held, special price/once-use remain unspent, and
+an intended joint Emperor Nexus stays held. Concealed ordinary misses spend
+Nexus then execute the original free purchase once. All-pass runs the original
+paid/joint special intent, including native income and suspended parent controls.
+Unpaid ordinary lots retire without inventing a winner or sale. Public source
+adds `karama` / `specialKarama`; face, cost identity and private funding stay
+concealed. [Source and selected timing](NEXUS_RICHESE_RULES.md#karama-acquisition-betrayal--25-october-2026).
+
+Three disjoint lanes, bounded read-only review and root integration pass
+**19 files, 169/169**, types/lint/build and **14 actual engine/GameTable SSR
+and component-callback journeys** on unchanged source. New cases: eight invoice,
+eight unpaid-retirement, six controls/profile and fifteen engine. Ordinary
+Basic109/Advanced117 action prefixes inherit the labelled controlled recycle;
+quiet private104 and joint147 earn native draws without it. Parent128 preserves
+a real paid-auction Emperor-income response. Pass/veto/miss, actual competing
+bid, nominal3 payment, retained joint price, exact original costs, once-use and
+native continuation are exercised. Inventories remain physical. Controls stay
+visible until action; all four minimal profiles use projected legality.
+
+Fixture feedback corrects response shape, automatic income settlement when no
+Karama remains, and the joint target's live eligibility. The parent source
+really acquired another Karama, so its child income still pauses and preserves
+the original response. An older entitlement assertion now accepts independent
+cards already supported by the prior selected E1/E2 composition. One extracted
+helper callback receives a missing type annotation. No game rule or guard is
+weakened. Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261025-richese-karama-final/`;
+rendered journeys/HTML: `20261025-richese-karama-runtime/` alongside it.
+These are engine/SSR/callback evidence, not hydration, DOM/browser/mobile or
+deployed acceptance. Native full-deck exhaustion, wider combinations, full
+modes and final assurance remain open. No saved-room/D1/server/reset/restart/
+deployment operation occurred. Continue the remaining rule/checklist gaps;
+complete administration/non-AI work precedes strategic AI and final acceptance.
+
 **Ordinary-deck Richese Nexus purchase veto — 25 October. Prototyped / Partial.**
 A positive native Richese ordinary win now opens the existing neutral response
 before payment choice. The card’s identity is concealed. Under the selected visible
@@ -48,8 +86,8 @@ legacy source-quote mutators only narrow the new frame union. No game rule or
 start guard is weakened. Private source-bound logs/HTML:
 `/home/quintine/.local/share/dune/checkpoints/20261025-richese-normal-betrayal/`.
 No saved-room/D1/server/reset/restart/deployment operation or recovery campaign
-occurred. Proactive immediate/private special Karama producers, wider valid
-combinations, final assurance and exact-revision deployed acceptance remain due.
+occurred. The later Karama checkpoint above adds the immediate/private producers;
+wider valid combinations, final assurance and deployed acceptance remain due.
 
 **Selected revival storm/HMS route reasons — 25 October.** Source review retains
 the current routes: Southern's named placement does not inherit Fremen storm

@@ -13,6 +13,18 @@ Targeted searches found discussion titles concerning full hands and alliance can
 
 ## 1. Advanced special Karama purchase
 
+### Richese Nexus pre-cost response — 25 October 2026
+
+The supported Richese Betrayal preview now offers neutral acknowledgements
+after preparing the exact private purchase, before its activation costs. Under
+the explicitly provisional selected ordering, a veto discards only the intended
+cache card: Karama, three spice and special once-use remain unspent, including
+an intended joint Emperor Nexus. All-pass executes the original paid/joint
+intent and separate income once, preserving an already pending parent response.
+The nominal-price prompt grants no selected-face or private-funding inspection.
+Ordinary Karama immunity alone does not establish Nexus immunity.
+[Source, selected policy and evidence](NEXUS_RICHESE_RULES.md#karama-acquisition-betrayal--25-october-2026).
+
 ### Emperor Nexus joint purchase composition — 14 October 2026
 
 The original source explicitly calls this a purchase; the printed Emperor

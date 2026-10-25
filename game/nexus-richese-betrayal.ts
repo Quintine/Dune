@@ -9,7 +9,7 @@ export type RicheseBetrayalInvoice = {
   kind: 'purchase' | 'sale';
   target: string;
   buyer: string;
-  source: 'cache' | 'blackMarket' | 'normal';
+  source: 'cache' | 'blackMarket' | 'normal' | 'karama' | 'specialKarama';
   price: number;
   ownPayment: number;
   allyPayment: number;
@@ -88,19 +88,24 @@ function validateInvoice(players: readonly NexusPlayer[], invoice: RicheseBetray
   const target = players.find(p => p.id === invoice.target);
   const buyer = players.find(p => p.id === invoice.buyer);
   requireBetrayal(target?.faction === 'richese' && buyer &&
-    ['cache', 'blackMarket', 'normal'].includes(invoice.source) &&
-    whole(invoice.price) && invoice.price > 0 && whole(invoice.ownPayment) && whole(invoice.allyPayment) &&
+    ['cache', 'blackMarket', 'normal', 'karama', 'specialKarama'].includes(invoice.source) &&
+    whole(invoice.price) && (invoice.source === 'karama' ? invoice.price === 0 :
+      invoice.source === 'specialKarama' ? invoice.price === 3 : invoice.price > 0) &&
+    whole(invoice.ownPayment) && whole(invoice.allyPayment) &&
     invoice.allyPayment <= invoice.price && invoice.ownPayment === invoice.price - invoice.allyPayment &&
     (invoice.allyPayment === 0 ? invoice.donor === null :
       text(invoice.donor) && invoice.donor !== invoice.buyer && players.some(p => p.id === invoice.donor)) &&
-    validCard(invoice.card), 'Richese Betrayal needs a positive original price, exact funding split and physical card.');
+    validCard(invoice.card), 'Richese Betrayal needs its original source price, exact funding split and physical card.');
   if (invoice.kind === 'purchase') {
-    requireBetrayal((invoice.source === 'normal' || invoice.source === 'cache' && richeseCardDefinition(invoice.card)) &&
+    requireBetrayal((['normal', 'karama'].includes(invoice.source) ||
+      ['cache', 'specialKarama'].includes(invoice.source) && richeseCardDefinition(invoice.card)) &&
       buyer.id === target.id &&
+      (invoice.source !== 'karama' && invoice.source !== 'specialKarama' ||
+        invoice.allyPayment === 0 && invoice.donor === null) &&
       invoice.originalRecipient === (players.find(p => p.faction === 'emperor')?.id ?? null),
-      'Richese self-veto requires an original cache or normal purchase paid to Emperor or bank.');
+      'Richese self-veto requires its original native purchase and payment recipient.');
   } else {
-    requireBetrayal(invoice.kind === 'sale' && invoice.source !== 'normal' &&
+    requireBetrayal(invoice.kind === 'sale' && ['cache', 'blackMarket'].includes(invoice.source) &&
       buyer.id !== target.id && invoice.originalRecipient === target.id &&
       (invoice.source !== 'cache' || richeseCardDefinition(invoice.card)),
       'Richese sale diversion requires another buyer and income originally owed to Richese.');
@@ -184,11 +189,50 @@ export function quoteRicheseNormalBetrayalInvoice(input: {
   return invoice;
 }
 
-/** Evaluate only after the physical Nexus has been committed. A normal-lot
- * miss still records a used counter; it grants no earlier face inspection. */
+/** Capture a selected, still unplayed Karama purchase. The caller owns native
+ * role, funding and once-per-game legality; this quote owns distinct physical
+ * cost/target custody and the original invoice. */
+export function quoteRicheseKaramaBetrayalInvoice(input: {
+  players: readonly NexusPlayer[];
+  owner: string;
+  source: 'karama' | 'specialKarama';
+  card: Card;
+  costCard: Card;
+  ownerCards: readonly Card[];
+  sourceCards: readonly Card[];
+  physicalCards: readonly Card[];
+  originalRecipient: string | null;
+}): RicheseBetrayalInvoice {
+  requireBetrayal(plain(input), 'Richese Betrayal needs an original Karama purchase.');
+  validatePlayers(input.players);
+  requireBetrayal(text(input.owner) && input.players.some(player => player.id === input.owner && player.faction === 'richese') &&
+    ['karama', 'specialKarama'].includes(input.source) && validCard(input.card) && validCard(input.costCard) &&
+    input.card.id !== input.costCard.id,
+    'Richese Betrayal needs its native owner and distinct physical purchase and Karama cost.');
+  for (const [cards, card] of [
+    [input.ownerCards, input.costCard], [input.sourceCards, input.card],
+    [input.physicalCards, input.costCard], [input.physicalCards, input.card],
+  ] as const) {
+    requireBetrayal(Array.isArray(cards) && cards.every(validCard), 'Richese Betrayal needs physical source custody.');
+    const matches = cards.filter(candidate => candidate.id === card.id);
+    requireBetrayal(matches.length === 1 && sameCard(matches[0], card),
+      'Richese Betrayal has lost or duplicated its exact purchase or Karama cost card.');
+  }
+  const price = input.source === 'karama' ? 0 : 3;
+  const invoice: RicheseBetrayalInvoice = {
+    kind: 'purchase', target: input.owner, buyer: input.owner, source: input.source,
+    price, ownPayment: price, allyPayment: 0, donor: null,
+    originalRecipient: input.originalRecipient, card: { ...input.card },
+  };
+  validateInvoice(input.players, invoice);
+  return invoice;
+}
+
+/** Evaluate only after the physical Nexus has been committed. A concealed
+ * ordinary-lot miss still records a used counter without prior inspection. */
 export function richeseBetrayalVetoesPurchase(invoice: RicheseBetrayalInvoice): boolean {
   return invoice.kind === 'purchase' &&
-    (invoice.source !== 'normal' || !!richeseCardDefinition(invoice.card));
+    (!['normal', 'karama'].includes(invoice.source) || !!richeseCardDefinition(invoice.card));
 }
 
 /** Public held-presence only: private Nexus identities never affect timing. */

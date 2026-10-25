@@ -281,6 +281,7 @@ import {
   quoteNormalAuctionBid,
   quoteNormalAuctionNext,
 } from './normal-auction';
+import { quoteNormalAuctionRetirement, NormalAuctionRetirementError, type NormalAuctionRetirementQuote } from './normal-auction-retirement';
 import { reorderSaphoCyclicAuction, SaphoCyclicAuctionError } from './sapho-cyclic-auction';
 import {
   quoteNormalAuctionPeek,
@@ -531,7 +532,7 @@ import { STORM_START_SECTOR, PLAYER_CIRCLE_SECTORS } from './player-positions';
 import { cashInCards } from './choam-karama';
 import { kullBlocksKarama, activeKullRestrictions, validateKullPhaseRestrictions, validateKullAttemptStamp, kullNativeCostCards, kullNexusCostCards, kullCounterCards, type KullPhaseRestriction } from './choam-kull';
 import { kullCancellationPurpose, kullSpecialPurpose, kullPurposeLabel, type KullPurpose } from './kull-purpose';
-import { quoteRicheseBetrayalInvoice, quoteRicheseNormalBetrayalInvoice, richeseBetrayalVetoesPurchase, requiredRicheseBetrayalResponders, richeseBetrayalEligibility, richeseBetrayalEvent, createRicheseBetrayalReceipt, validateRicheseBetrayalCursor, type RicheseBetrayalCursor, type RicheseBetrayalReceipt } from './nexus-richese-betrayal';
+import { quoteRicheseBetrayalInvoice, quoteRicheseNormalBetrayalInvoice, quoteRicheseKaramaBetrayalInvoice, richeseBetrayalVetoesPurchase, requiredRicheseBetrayalResponders, richeseBetrayalEligibility, richeseBetrayalEvent, createRicheseBetrayalReceipt, validateRicheseBetrayalCursor, type RicheseBetrayalCursor, type RicheseBetrayalReceipt } from './nexus-richese-betrayal';
 import { saleOptions, quoteSale, type ChoamMarket } from './choam-market';
 import { highKaitainDiscardsAvailable, quoteKaitainDiscards, homeworldWorthlessSaleBlock } from './homeworld-card-economy';
 import { biddingEndError, biddingEndQuiet, biddingEndPubliclyEmpty, type BiddingEnd } from './bidding-end';
@@ -1199,6 +1200,10 @@ type KaramaUse =
   | { kind: 'shipment'; recipient: string; card?: string }
   | { kind: 'purchase' }
   | { kind: 'auctionPayment' };
+type RichesePreCostDeclaration = { round: string; lot: string } & (
+  | { kind: 'ordinary'; owner: string; card: string; index: number }
+  | { kind: 'special'; intent: Extract<SpecialKaramaIntent, { kind: 'richese' }> }
+);
 type PendingHomeworldShipment = HomeworldShipmentIntent & {
   guildSecretEvent?: string;
   guildNexusEvent?: string;
@@ -1377,6 +1382,8 @@ export type Game = {
   } | {
     /** The actual unpaid ordinary pool, never a fabricated Richese cache lot. */
     normal: { round: string; lot: string; index: number };
+  } | {
+    preCost: RichesePreCostDeclaration;
   }) | null;
   /** Original normal-auction obligation; neutral acknowledgements precede funding. */
   nexusEmperorPayment?: { sequence: number; current: string | null; completed: EmperorPaymentReceipt[] };
@@ -12722,6 +12729,16 @@ function richeseBetrayalResponders(g: Game): string[] {
   })));
 }
 function richeseBetrayalSourceSignature(g: Game, frame: NonNullable<Game['pendingRicheseBetrayal']>): string {
+  if ('preCost' in frame) return JSON.stringify({
+    event:frame.receipt.event,preCost:frame.preCost,turn:g.turn,phase:g.phase,status:g.status,
+    round:g.richeseBidding,auction:g.auction,richeseAuction:g.richeseAuction,cache:g.richeseCache,
+    order:g.order,aid:g.aid,nexus:g.nexusCards,history:g.nexusEmperorPurchaseHistory,
+    players:g.players.map(p=>({id:p.id,faction:p.faction,ally:p.ally,hand:p.hand,
+      spice:p.spice,specialKaramaUsed:p.specialKaramaUsed})),
+    active:g.active,decision:g.decision,response:g.response,phaseOpening:g.phaseOpening,
+    pendingKarama:g.pendingKarama,truthtrance:g.truthtrance,sale:g.currentAuctionSale,
+    purchaseIncome:g.pendingRichesePurchaseIncome,
+  });
   if ('normal' in frame) return JSON.stringify({
     event:frame.receipt.event,normal:frame.normal,turn:g.turn,phase:g.phase,status:g.status,
     round:g.richeseBidding,auction:g.auction,order:g.order,aid:g.aid,
@@ -12777,6 +12794,79 @@ function normalRicheseBetrayalPreflight(g: Game) {
   const invoice=normalRicheseBetrayalInvoice(g);
   currentAuctionContinuationQuote(g,{kind:'next'});
   return invoice;
+}
+function richesePreCostInvoice(g: Game, declaration: RichesePreCostDeclaration) {
+  requireRule(richeseBetrayalModeSupported(g) && g.status === 'playing',
+    'This declared purchase needs the original Richese Nexus profile.');
+  const owner=declaration.kind === 'ordinary' ? declaration.owner : declaration.intent.owner;
+  const p=getPlayer(g,owner);
+  requireRule(p.faction === 'richese', 'Only the original Richese acquisition can be stopped.');
+  let card:Card, costCard:Card, sourceCards:Card[];
+  if (declaration.kind === 'ordinary') {
+    requireRule(!g.pendingKarama && !g.pendingKull && !g.pendingTreacheryDiscard &&
+      !g.pendingNexusEmperorPayment && !g.pendingNexusEmperorSellerPurchase,
+      'Finish the already committed auction-card effect before another acquisition.');
+    normalKaramaAuction(g,p,false);
+    requireRule(g.auction!.index === declaration.index, 'The declared ordinary lot has changed.');
+    costCard=p.hand.find(c=>c.id===declaration.card)!;
+    requireRule(costCard, 'The unplayed activation Karama must remain held.');
+    const blocked=karamaSpendingBlock(g,p,costCard,'auction-free-purchase');
+    requireRule(!blocked,blocked ?? 'This Karama is unavailable.');
+    validateKaramaUse(g,p,{kind:'purchase'},costCard);
+    card=g.auction!.cards[declaration.index];sourceCards=[card];
+  } else {
+    const intent=declaration.intent;
+    requireRule(intent.turn===g.turn && intent.phase===g.phase,
+      'The declared special acquisition belongs to another window.');
+    const prepared=prepareSpecialKaramaIntent(g,owner,specialKaramaAction(intent));
+    requireRule(prepared.kind==='richese' && JSON.stringify(prepared)===JSON.stringify(intent),
+      'The original private special-purchase selection or funding has changed.');
+    costCard=p.hand.find(c=>c.id===intent.card)!;
+    card=g.richeseCache!.find(c=>c.id===intent.acquire)!;sourceCards=g.richeseCache!;
+  }
+  return nexusRule(()=>quoteRicheseKaramaBetrayalInvoice({players:g.players,owner,
+    source:declaration.kind==='ordinary'?'karama':'specialKarama',card,costCard,
+    ownerCards:p.hand,sourceCards,physicalCards:physicalTreacheryCards(g),
+    originalRecipient:byFaction(g,'emperor')?.id ?? null}));
+}
+/** Costed callbacks remain the original owner's voluntary declaration, even
+ * when the last neutral acknowledgement is made by another player. */
+function reconcileRichesePreCostPromises(g: Game, declaration: RichesePreCostDeclaration) {
+  const owner=declaration.kind==='ordinary'?declaration.owner:declaration.intent.owner;
+  const action:Action=declaration.kind==='ordinary'
+    ?{type:'card',mode:'purchase',card:declaration.card}:specialKaramaAction(declaration.intent);
+  reconcileBattlePromises(g,{actor:owner,action});
+  reconcileShipmentPromises(g,{actor:owner,action});
+  reconcileGroundMovementPromises(g,owner,action,g.phase);
+}
+function beginRichesePreCostBetrayal(g: Game, source:
+  {kind:'ordinary';owner:string;card:string;index:number} |
+  {kind:'special';intent:Extract<SpecialKaramaIntent,{kind:'richese'}>}): boolean {
+  if (!g.richeseBetrayalPreview) return false;
+  const declaration:RichesePreCostDeclaration={...source,round:crypto.randomUUID(),lot:crypto.randomUUID()};
+  const invoice=richesePreCostInvoice(g,declaration),required=richeseBetrayalResponders(g);
+  if (!required.length) return false;
+  const owner=invoice.buyer;
+  if (liveShipmentPromises(g.shipmentPromises ?? [],owner,g.turn).length ||
+      g.battle?.truthPromises?.some(p=>p.player===owner && !p.released) ||
+      liveMovementPromises(g.movementPromises ?? [],owner,g.turn).some(p=>p.answer)) {
+    const projected=structuredClone(g);
+    if (source.kind==='ordinary') {
+      const p=getPlayer(projected,owner);
+      spendKarama(projected,p,p.hand.find(c=>c.id===source.card)!,{kind:'purchase'});
+    } else executeSpecialKaramaIntent(projected,source.intent);
+    reconcileRichesePreCostPromises(projected,declaration);
+  }
+  const cursor=g.richeseBetrayal!,sequence=cursor.sequence+1;
+  const receipt=nexusRule(()=>createRicheseBetrayalReceipt(g,{
+    event:richeseBetrayalEvent(g.turn,sequence,declaration.round,declaration.lot),
+    turn:g.turn,sequence,round:declaration.round,lot:declaration.lot,invoice,required,
+    passed:[],stage:'pending',actor:null,nexusDiscardIndex:null,
+  }));
+  const frame:NonNullable<Game['pendingRicheseBetrayal']>={receipt,preCost:declaration,signature:''};
+  frame.signature=richeseBetrayalSourceSignature(g,frame);
+  cursor.sequence=sequence;cursor.current=receipt.event;g.pendingRicheseBetrayal=frame;
+  return true;
 }
 function richeseBetrayalSourcePreflight(g: Game, quote: Extract<RicheseSettlementQuote,{kind:'sold'}>): void {
   requireRule(richeseBetrayalModeSupported(g) && g.status === 'playing' && g.phase === 3 &&
@@ -12837,7 +12927,17 @@ function richeseBetrayalIntegrity(g: Game): void {
   nexusCardsIntegrity(g);
   nexusRule(() => validateRicheseBetrayalCursor(g,cursor,frame?.receipt ?? null));
   if (frame) {
-    if ('normal' in frame) {
+    if ('preCost' in frame) {
+      const declaration=frame.preCost,invoice=richesePreCostInvoice(g,declaration);
+      const keys=declaration.kind==='ordinary'?'card,index,kind,lot,owner,round':'intent,kind,lot,round';
+      requireRule(Object.keys(frame).sort().join(',')==='preCost,receipt,signature' &&
+        Object.keys(declaration).sort().join(',')===keys &&
+        declaration.round===frame.receipt.round && declaration.lot===frame.receipt.lot &&
+        frame.receipt.turn===g.turn && JSON.stringify(invoice)===JSON.stringify(frame.receipt.invoice) &&
+        frame.signature===richeseBetrayalSourceSignature(g,frame) &&
+        JSON.stringify(frame.receipt.required)===JSON.stringify(richeseBetrayalResponders(g)),
+      'The intended Karama purchase lost its unplayed costs, selected card or original continuation.');
+    } else if ('normal' in frame) {
       const invoice=normalRicheseBetrayalPreflight(g);
       requireRule(Object.keys(frame).sort().join(',') === 'normal,receipt,signature' &&
         Object.keys(frame.normal).sort().join(',') === 'index,lot,round' &&
@@ -12864,8 +12964,10 @@ function richeseBetrayalIntegrity(g: Game): void {
     }
   }
   const sale = g.currentAuctionSale;
-  const completed = cursor.completed.at(-1);
-  if (completed && completed.invoice.source !== 'normal' && completed.lot === g.richeseAuction?.event) {
+  const completed = cursor.completed.find(receipt=>
+    (receipt.invoice.source==='cache' || receipt.invoice.source==='blackMarket') &&
+    receipt.lot===g.richeseAuction?.event);
+  if (completed) {
     const waiting = g.pendingNexusEmperorSellerPurchase;
     requireRule(g.status === 'playing' && g.phase === 3 && completed.turn === g.turn &&
       completed.round === g.richeseBidding?.event &&
@@ -12894,7 +12996,7 @@ function richeseBetrayalIntegrity(g: Game): void {
     }
   }
   if (sale?.recipient) {
-    const receipt = cursor.completed.at(-1);
+    const receipt = completed;
     requireRule(sale.recipient === 'bank' && receipt?.stage === 'used' && receipt.invoice.kind === 'sale' &&
       receipt.lot === g.richeseAuction?.event && receipt.round === g.richeseBidding?.event &&
       receipt.invoice.buyer === sale.winner && receipt.invoice.target === sale.seller &&
@@ -12966,6 +13068,30 @@ function decideRicheseBetrayal(g: Game, p: Player, action: Action): void {
   g.richeseBetrayal!.completed.push(next);
   g.richeseBetrayal!.current = null;
   g.pendingRicheseBetrayal = null;
+  if ('preCost' in frame) {
+    const declaration=frame.preCost;
+    if (use && richeseBetrayalVetoesPurchase(receipt.invoice)) {
+      if (declaration.kind==='ordinary') {
+        const next=normalAuctionRetirementQuote(g);
+        g.discard.push(g.auction!.cards[g.auction!.index]);
+        g.response=null;g.decision=null;
+        commitNormalAuctionRetirement(g,next);
+      } else {
+        const index=g.richeseCache!.findIndex(card=>card.id===declaration.intent.acquire);
+        requireRule(index>=0,'The privately selected card must remain in its original cache.');
+        g.discard.push(...g.richeseCache!.splice(index,1));
+      }
+      log(g,`${p.name} spent Richese Nexus Betrayal and stopped the intended Karama purchase. The selected card was discarded privately; its activation costs remain unspent.`);
+    } else {
+      if (use) log(g,`${p.name} spent a committed Richese Nexus attempt. The intended Karama acquisition continues without card inspection.`);
+      if (declaration.kind==='ordinary') {
+        const buyer=getPlayer(g,declaration.owner);
+        spendKarama(g,buyer,buyer.hand.find(card=>card.id===declaration.card)!,{kind:'purchase'});
+      } else executeSpecialKaramaIntent(g,declaration.intent);
+      reconcileRichesePreCostPromises(g,declaration);
+    }
+    return;
+  }
   if ('normal' in frame) {
     // Cost precedes the private family test. A miss cannot be a free oracle.
     if (use && richeseBetrayalVetoesPurchase(receipt.invoice)) {
@@ -14199,18 +14325,30 @@ function commitAuctionContinuation(g: Game, quote: AuctionContinuationQuote,bure
     offerOccupiedBonus(g, g.response);
   }
   else if (next.kind === 'richeseEnd') finishRicheseLot(g);
-  else {
-    g.currentAuctionSale = null;
-    if (next.kind === 'normalEnd') {
-      g.deck = [...next.returned, ...g.deck];
-      g.auction = null;
-      finishNormalBidding(g);
-    } else {
-      g.auction = next.auction;
-      g.active = next.active;
-      if (next.offer?.kind === 'ixTechnology') g.decision = next.offer;
-      else if (next.offer) offerAuctionPeek(g);
-    }
+  else commitNormalAuctionRetirement(g,next);
+}
+function normalAuctionRetirementQuote(g: Game) {
+  try {
+    return quoteNormalAuctionRetirement({turn:g.turn,advanced:g.advanced,
+      players:g.players.map(p=>({...p,handLimit:handLimit(p)})),order:g.order,auction:g.auction,
+      richeseBidding:g.richeseBidding,richeseCacheCount:g.richeseCache?.length,
+      ixTechnologyTurn:g.ixTechnologyTurn,physicalCards:physicalTreacheryCards(g)});
+  } catch(error) {
+    if(error instanceof NormalAuctionRetirementError)throw new RuleError(error.message);
+    throw error;
+  }
+}
+function commitNormalAuctionRetirement(g: Game, next: NormalAuctionRetirementQuote) {
+  g.currentAuctionSale = null;
+  if (next.kind === 'normalEnd') {
+    g.deck = [...next.returned, ...g.deck];
+    g.auction = null;
+    finishNormalBidding(g);
+  } else {
+    g.auction = next.auction;
+    g.active = next.active;
+    if (next.offer?.kind === 'ixTechnology') g.decision = next.offer;
+    else if (next.offer) offerAuctionPeek(g);
   }
 }
 function continueAuctionSale(g: Game, free: boolean) {
@@ -33081,6 +33219,7 @@ function resolveSpecialKaramaEffect(g: Game, p: Player, card: Card, intent: Spec
 }
 function specialKarama(g: Game, p: Player, action: Action) {
   const intent = prepareSpecialKaramaIntent(g, p.id, action);
+  if (intent.kind==='richese' && beginRichesePreCostBetrayal(g,{kind:'special',intent})) return;
   const card = p.hand.find(card => card.id === intent.card)!;
   if (!beginKullAttempt(g, p, card, { kind: 'special', use: intent }))
     executeSpecialKaramaIntent(g, intent);
@@ -37592,6 +37731,8 @@ function applyActionInner(
         g.phase === 3 && g.auction && p.hand.length < handLimit(p),
         'You may take the current auction card only when eligible to bid.',
       );
+      if (p.faction==='richese' && beginRichesePreCostBetrayal(g,
+        {kind:'ordinary',owner:p.id,card:c.id,index:g.auction!.index})) return g;
       spendKarama(g, p, c, { kind: 'purchase' });
       return g;
     }

@@ -2,6 +2,84 @@
 
 Audited 10 September 2026, with a bounded Betrayal implementation contract added 30 September. This separates the ordinary Secret Ally shipment, native Cunning's two-marker operation and Betrayal's two auction outcomes. It does not certify full-family implementation or open the Nexus release gate. See [common Nexus rules](NEXUS_CARD_RULES.md), [auction custody and source boundaries](RICHESE_AUCTION_RULES.md), [No-Field custody](RICHESE_NO_FIELD_RULES.md), and [allied No-Field distinctions](RICHESE_ALLIED_SHIPMENT_AUDIT.md).
 
+## Karama acquisition Betrayal — 25 October 2026
+
+**Prototyped / Partial.** The printed Richese Nexus purchase-veto alternative
+has no origin restriction. Supplied physical16 permits ordinary Karama's free
+acquisition outside Richese auctions; physical36 / E2p4 permits the private
+native special purchase for Karama plus three spice, once per game. The printed
+special-power Karama immunity does not establish Nexus immunity. These two
+direct sources now enter the existing supported Betrayal preview.
+
+**Selected provisional pre-cost order:** under the 14 October recommended-option
+authority, prepare the original legal intent, then offer the neutral response
+before any activation cost. A successful veto discards only the intended card.
+The activation Karama stays held; private special purchase also retains its
+three spice and unused once-per-game power. A prepared joint Emperor Nexus
+stays held too. This is a recommended online composition, **not** a publisher
+timing clarification, refund or ruling that a used special power is restored.
+
+The ordinary lot remains concealed and uses the prior committed blind-attempt
+policy. Use first spends the physical Richese Nexus. Actual Richese-family:
+discard that lot and retire its native unpaid pool position once, without
+inventing a winning bid, sale or award to a competing bidder. Other family:
+Nexus stays spent, then the exact original Karama spends and acquires the lot
+free. All-pass retains Nexus and performs that same native acquisition once.
+The independent retirement helper preserves actual next opener, hand limits,
+inspection offer, remaining cards and last-cache transition.
+
+The private selected cache card is necessarily Richese-family, so this source
+has no blind miss. The face/ID and actual joint funding are never added to the
+public prompt. All-pass runs the original typed special intent once: its native
+costs, acquisition, once-use, separate Emperor income and suspended parent
+controls remain. Veto preserves those parent controls without making income.
+The nominal three-spice prompt does not identify a private Emperor Nexus choice.
+
+Private `preCost` frames bind the original unplayed cost, selected physical
+source, normalized special intent, wallet/reservations, live window and enclosing
+controls. They store no raw action for replay. Public reaction source additionally
+accepts `karama` and `specialKarama`; existing action/event fields are unchanged.
+Persistent controls distinguish intended acquisitions from won auctions and
+explain the selected ordering. All four minimal profiles pass concealed ordinary
+attempts and consume the canonical special-veto projection.
+
+Evidence: [invoice helper](../game/nexus-richese-betrayal.ts),
+[unbought retirement](../game/normal-auction-retirement.ts),
+[invoice cases](../tests/nexus-richese-betrayal-karama.test.ts),
+[retirement cases](../tests/normal-auction-retirement.test.ts),
+[controls/profile cases](../tests/nexus-richese-betrayal-karama-controls.test.tsx),
+[actual source fixtures](../tests/fixture-richese-karama-betrayal.ts),
+[engine cases](../tests/richese-karama-betrayal-engine.test.ts).
+Ordinary Richese-family recycling remains labelled controlled placement after
+real cost/discard; private special and joint sources earn their actual draws
+without that recycle. This section supersedes the earlier proactive/private
+producer exclusions only in the existing supported profile. Wider combinations,
+comprehensive assurance, full modes and exact-revision deployed acceptance stay
+open. Local engine/SSR evidence is not browser/hydration/deployed evidence.
+
+Frozen **19 files, 169/169**, types/lint/build and fourteen actual engine/
+GameTable SSR/component-callback journeys pass. New invoice8, retirement8,
+controls6 and engine15 cases include both ordinary rules bands, competing bid,
+private paid purchase, actual pending ordinary Emperor income and joint Emperor
+Nexus intent. Basic109/Advanced117 ordinary prefixes retain their labelled
+controlled recycle; quiet private104 and joint147 use native draws without it.
+Parent128 includes that earlier controlled recycle and actual paid income.
+Main/cache and Nexus inventories stay physical; no full exhaustion/reshuffle is
+claimed. The private control stays readable until an acknowledgement is made.
+
+Fixture repairs follow actual response shape and native income auto-settlement:
+quiet purchase spends its only opposing Karama, whereas the parent source really
+acquired a second Karama and still pauses its child income. Joint selection uses
+the remaining eligible cache rather than an already retained face. An older
+Emperor entitlement assertion is reconciled with previously delivered independent
+card support; one extracted-helper callback needs a type annotation. Runtime
+mechanics and profile guards are not relaxed. Private source-bound report:
+`/home/quintine/.local/share/dune/checkpoints/20261025-richese-karama-final/report.json`;
+journey data and rendered HTML are in the adjacent
+`20261025-richese-karama-runtime/` directory. No saved rooms, D1, running server,
+reset, restart, deployment or recovery campaign is involved. Browser/mobile,
+hydration, broader combinations, full modes and final assurance remain open.
+
 ## Ordinary winning-bid Betrayal — 25 October 2026
 
 **Prototyped / Partial.** The printed purchase-veto alternative has no cache-
@@ -42,8 +120,8 @@ Fresh normal frames bind their original live pool index, round, opaque lot ID,
 physical card, winning quote and source controls. Public event IDs contain no
 card identifier. Intrinsic receipt shape and old cache/Black Market signature
 bytes remain unchanged. The legacy alternatives keep their existing native
-continuations. Proactive immediate Karama acquisition and private special-
-Karama acquisition remain separate outstanding producers. Wider profile,
+continuations. Immediate and private special Karama producers are added in the
+later [Karama acquisition section](#karama-acquisition-betrayal--25-october-2026). Wider profile,
 combination, recovery/privacy assurance and deployed acceptance are not claimed.
 
 Evidence: [invoice/outcome helper](../game/nexus-richese-betrayal.ts),
@@ -86,8 +164,7 @@ played hand. Final type feedback replaces two mutations of a readonly fixture
 array with equivalent malformed copies. No rules, profiles or start guards
 are relaxed. Private matching code fingerprints, logs and rendered HTML:
 `/home/quintine/.local/share/dune/checkpoints/20261025-richese-normal-betrayal/`.
-Exact native discard/reshuffle, proactive immediate Karama, private special
-acquisition, wider combinations, complete modes, final recovery/privacy/rules
+Exact native discard/reshuffle, wider combinations, complete modes, final recovery/privacy/rules
 assurance and browser/mobile/deployed acceptance remain unfinished. These
 journeys are engine/SSR, not parent hydration or DOM clicks. No saved-room/D1/
 server/reset/restart/deployment operation occurred.

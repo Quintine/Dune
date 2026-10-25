@@ -1,5 +1,21 @@
 # Rule decision index
 
+## Richese Nexus before Karama acquisition costs — 25 October 2026
+
+Apply the printed purchase veto to native immediate ordinary Karama and private
+Advanced special purchases in the existing supported preview. Ordinary Karama
+special-power immunity does not itself establish Nexus immunity. Under the
+14 October recommended-option authority, resolve Betrayal **before** costs:
+successful veto discards only the intended card, retaining the unplayed Karama,
+special price and once-use, including a prepared joint Emperor Nexus. This is
+explicitly provisional ordering, not a printed refund/restore ruling. Concealed
+ordinary lots use the existing spend-before-family-check convention; a miss
+spends Nexus and resumes the exact free acquisition. All-pass runs the original
+paid/joint typed intent and native enclosing income/controls once. No selected
+face or private funding is disclosed. This supersedes prior producer exclusions
+only in the existing bounded preview.
+[Source, selected order and limits](NEXUS_RICHESE_RULES.md#karama-acquisition-betrayal--25-october-2026).
+
 ## Richese Nexus ordinary-purchase blind attempt — 25 October 2026
 
 The printed Richese veto is not cache-only, but an ordinary recycled card's
@@ -12,8 +28,9 @@ quote does not reopen. No prior family flag or exact-face reveal is introduced.
 This spend-on-miss convention is explicitly provisional online composition;
 primary rules did not establish general voluntary Nexus discard or an identifying
 family back. Existing cache/Black Market alternatives, private eligibility,
-native later payment choice and source/profile guards remain. Proactive and
-special Karama acquisition are still outstanding producers.
+native later payment choice and source/profile guards remain. The later
+[pre-cost acquisition decision](#richese-nexus-before-karama-acquisition-costs--25-october-2026)
+adds proactive and special Karama producers in the same supported profile.
 [Printed source, knowledge policy and scope](NEXUS_RICHESE_RULES.md#ordinary-winning-bid-betrayal--25-october-2026).
 
 ## Revived placement retains storm and HMS routes — 25 October 2026

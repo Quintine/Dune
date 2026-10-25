@@ -2,6 +2,7 @@ import type { Card } from './cards';
 import type { FactionId } from './catalog';
 import type { Game, ResponseWindow } from './engine';
 import { requireRicheseDeclarationCache } from './richese-settlement';
+import { quoteNormalAuctionRetirement } from './normal-auction-retirement';
 
 export type AuctionContinuationSeat = {
   id: string;
@@ -444,61 +445,8 @@ function calculate(
       after: round.position === 'first' ? 'normalPool' : 'phase',
     });
   }
-  const a = input.auction!,
-    index = a.index + 1,
-    able = input.order.filter((id) => {
-      const p = seated(id)!;
-      return handCount(p) < p.handLimit;
-    });
-  if (index === a.cards.length || !able.length) {
-    const round = input.richeseBidding,
-      activeRound = round?.turn === input.turn && round.stage === 'normal';
-    // User ruling 7 October 2026: the cache lot only runs when physical cache
-    // cards remain and the compulsory auction was not canceled.
-    const cacheLast =
-      !!activeRound &&
-      round.position === 'last' &&
-      !round.cacheCanceled &&
-      (input.richeseCacheCount ?? 0) > 0;
-    return result({
-      kind: 'normalEnd',
-      returned: structuredClone(a.cards.slice(index)),
-      after: cacheLast ? 'richeseCache' : 'phase',
-      completeRound: !!activeRound && !cacheLast,
-    });
-  }
-  let opener = a.opener;
-  do {
-    opener = (opener + 1) % input.order.length;
-  } while (!able.includes(input.order[opener]));
-  const active = input.order[opener],
-    ix = input.players.find((p) => p.faction === 'ixians'),
-    atreides = input.players.find((p) => p.faction === 'atreides');
-  const offer: LotOffer =
-    input.advanced &&
-    ix &&
-    handCount(ix) > 0 &&
-    input.ixTechnologyTurn !== input.turn
-      ? { kind: 'ixTechnology', player: ix.id }
-      : atreides
-        ? { kind: 'atreidesAuction', owner: atreides.id, passed: [] }
-        : null;
-  const nextAuction = structuredClone(a);
-  delete nextAuction.saphoOrder;
-  return result({
-    kind: 'normalLot',
-    auction: {
-      ...nextAuction,
-      index,
-      bid: 0,
-      allyPayment: 0,
-      bidder: null,
-      passed: [],
-      opener,
-      active,
-      peekKnown: false,
-    },
-    active,
-    offer,
-  });
+  return result(quoteNormalAuctionRetirement({ ...input,
+    players: spending ? input.players.map(player => player.id === spending.player
+      ? { ...player, hand: player.hand.filter((card: { id: string }) => card.id !== spending.card) } : player) : input.players,
+  }));
 }

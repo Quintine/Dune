@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 25 October 2026 — Richese Nexus reaches original Karama acquisitions
+
+**Prototyped / Partial.** Immediate ordinary Karama and private Advanced special
+purchase now pause before their exact original costs in the existing Richese
+Betrayal preview. Successful veto discards the selected card while retaining
+unplayed Karama, special price/once-use and intended joint Emperor Nexus. This
+pre-cost order is explicitly provisional under the 14 October authority.
+Concealed ordinary misses spend Nexus then execute the original free purchase;
+all-pass resumes the native paid/joint intent and parent controls once. The
+ordinary retirement helper advances an unbought lot without fabricating a bid,
+sale or competing-bidder award. Public controls distinguish intended purchases,
+show nominal prices and keep selected faces/funding concealed. Source enum adds
+`karama` / `specialKarama`; action/event interfaces are unchanged.
+[Selected timing, sources and limits](NEXUS_RICHESE_RULES.md#karama-acquisition-betrayal--25-october-2026).
+
+Three disjoint lanes, bounded review and root integration pass **19 files,
+169/169**, types/lint/build and fourteen actual engine/GameTable SSR and isolated
+component-callback journeys. New invoice8/retirement8/controls6/engine15 cases
+cover both ordinary rules bands, veto/pass/miss, competing bid, paid private
+purchase, nested native Emperor income and joint intent. Ordinary Basic109/
+Advanced117 inherits the labelled recycle; quiet private104 and joint147 earn
+native draws without it. Parent128 has an actual paid income response. Printed
+main/cache and Nexus inventories remain physical; full deck exhaustion is not
+claimed. Minimal profiles acknowledge legal projections; strategy is deferred.
+
+The first frozen union163/169 exposes fixture assumptions about response amount,
+automatic income, a previously retained target and an old independent-card
+exclusion. Targeted fixes use native live sources and current prior entitlement.
+Quiet income auto-settles after its only Karama spends; the real paid-parent
+source has acquired another Karama, so child income still saves its parent.
+No hands, wallets, profiles or rule guards are altered to make cases pass.
+Final type feedback adds one missing helper annotation. Source-bound report:
+`/home/quintine/.local/share/dune/checkpoints/20261025-richese-karama-final/report.json`;
+rendered journeys/HTML in adjacent `20261025-richese-karama-runtime/`.
+These are engine/SSR/callback results, not parent hydration, DOM/browser/mobile
+or deployed proof. No saved-room/D1/server/reset/restart/deployment operation or
+recovery campaign occurs. Wider valid combinations, full modes, remaining
+non-AI features, final assurance and exact-revision deployed acceptance stay due.
+
 ## 25 October 2026 — Original normal auction reaches Richese Nexus purchase veto
 
 **Ordinary-deck Richese Nexus purchase veto — 25 October. Prototyped / Partial.**
