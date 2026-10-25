@@ -1,5 +1,47 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta claims pending revival-benefit cancellation costs
+
+**Prototyped / Partial.** Printed-role Karama stopping native CHOAM revival,
+Tleilaxu granted limits or discounts, early leaders or Advanced foreign Ghola
+offers its exact used cost before prevention. `karamaRevivalDiscard` binds the
+unpaid request, remaining checks, physical Tanks/leader, payer and native ledgers.
+Pure native cancellation validation neither simulates a return nor supplies the
+spent cost as unspent. Claim/pass retires the group, restores the exact response
+and finishes prevention once; native abandonment, repricing/funding, remaining
+checks, physical return/payment and earned income retain authority. Existing
+persistent controls and minimal bots serve all five kinds. Earlier signature
+formats remain unchanged.
+[Source and limits](SEMUTA_SOURCE_UPDATE_20260907.md#pending-revival-benefit-cancellation-costs--26-october-2026).
+
+Two disjoint source lanes, bounded native/diff review and root integration pass
+**15 files,248/248**, types/lint/build and **26 native engine/GameTable SSR/actual
+Semuta-callback journeys** on unchanged source. Thirty-three new cases cover
+claim/pass, applicable bands, allowed benefits, funded/unfunded repricing,
+above-cap abandonment, real smaller replacements, relevant rejection and four
+minimal profiles. Genuine cache1 Semuta and original dealt Karama supply every
+cost, retaining all original57 cards. CHOAM220/230 Basic/Advanced actions include
+shipment4/cost8 and Storm casualties; granted limit222/232 uses actual deferred
+Emperor bribe6 and five Atreides Storm deaths. Allowed Atreides5/free2/cost6 earns
+Tleilaxu7, funding shipment4/cost8 and turn3 deaths: own discount369/383, or370
+with a real bribe2 making full4 unaffordable. Leader241/256 uses real paid2
+shipments, Wykk2/Yueh1 Poison/no-Traitor deaths and original bounty. Discount246/261
+passes the prior early window; foreign256 retains four actual active own leaders.
+No played-state hand, casualty, wallet, clock, allowance or request is installed.
+
+Feedback repairs source assumptions about protected Arrakeen, native free2,
+CHOAM's actual free-revival chooser and automatic income acknowledgement. With
+the original only Karama spent, declining Semuta can let income auto-settle;
+recovering it can preserve an actionable native counter. Independent pure quotes
+assert actual payment, free allowance and earned credit once. Native gameplay
+guards remain intact. Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-revival-benefits-proof/`;
+journeys/HTML: adjacent `20261026-semuta-revival-benefits-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results; hydration, DOM/browser/mobile, complex
+parents, broader combinations, complete modes and deployed/final assurance remain
+open.
+
 ## 26 October 2026 — Semuta claims native movement cancellation costs
 
 **Prototyped / Partial.** Printed-role Karama stopping ordinary Fremen/Cyborg

@@ -2,6 +2,81 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Pending revival-benefit cancellation costs — 26 October 2026
+
+**Prototyped / Partial.** Printed-role Karama stopping native CHOAM revival,
+Tleilaxu granted force limits or discounts, early leader revival or Advanced
+foreign Ghola now offers its exact used cost. `karamaRevivalDiscard` retains the
+original unpaid request, response and remaining checks. Existing persistent
+neutral controls, private claim/pass and minimal profiles serve these sources.
+This applies the existing fresh-discard timing, not a new publisher ruling.
+
+The native [cancellation quote](../game/revival-cancellation.ts) is pure preflight:
+no return, payment, allowance or income is simulated while Semuta is open.
+The spent cost is not supplied again as an unspent card. The subtype signature
+binds the request, physical Tanks/leader, payer, rules and relevant allowance,
+Homeworld, Tech and income ledgers; earlier receipt formats remain unchanged.
+Competing battle, decision, opening, arrival, transport and market parents remain
+outside this clean source. CHOAM holding Semuta needs no new hand reservation
+exception: its request commits no Treachery card or incoming card slot.
+
+After claim/pass, retire the group and restore the exact response before native
+prevention once. Limit, early and foreign cancellation abandon the request;
+foreign denial retains its native per-turn block. CHOAM can abandon an above-cap
+request or reprice a legal one. Discount denial requotes the original payment;
+insufficient funds return nothing and consume no allowance. Retained requests
+use their native remaining checks, then actual physical return/payment and
+earned income once. Neither `revive` nor a negotiated-price action is replayed.
+An abandoned/unfunded request can leave a real smaller legal return available.
+The separate completed-revival income cost below retains its earlier boundary.
+
+Source evidence: [force sources](../tests/fixture-semuta-revival-benefits-forces.ts)
+and [cases](../tests/semuta-revival-benefits-forces-engine.test.ts),
+[leader sources](../tests/fixture-semuta-revival-benefits-leaders.ts) and
+[cases](../tests/semuta-revival-benefits-leaders-engine.test.ts).
+Two disjoint source lanes, bounded native/diff review and root integration pass
+**15 files,248/248**, types/lint/build and **26 native engine/GameTable SSR/real
+Semuta-callback journeys** on unchanged source. Thirty-three new cases cover
+all five kinds, applicable rule bands, claim/pass, actual cheaper/granted
+allowance, unfunded/above-cap outcomes, smaller legal alternatives, relevant
+rejection and all four minimal profiles. Real cache1 acquisition and original
+dealt Karama precede every cost; all original57 cards remain physical.
+
+Force sources retain actual paid shipments and Storm casualties. CHOAM220/230
+Basic/Advanced actions ship4 for8 before turn2 deaths and native cheap3/full6
+revival. Limit222/232 uses an actual Emperor bribe6, deferred through Mentat,
+and Atreides shipment5/cost10/deaths before the native funded5 request. Allowing
+that actual request returns5/free2 for6 and earns Tleilaxu7 (5→12), then its own
+shipment4/cost8 into spice-free exposed sand and turn3 Storm deaths provide the
+discount source369/383. Its cheap2/full4 has exactly4 available; a real bribe2
+makes the370-action variant unfunded. Above-cap CHOAM4 and granted-limit denial
+abandon without payment/allowance. Smaller alternatives actually return pieces.
+
+Leader sources241/256 actions use genuine paid2 shipments into Imperial Basin9,
+both original Poison weapons with Wykk2/Yueh1, dial0 and actual no-Traitor votes.
+Native weapons kill both leaders; Tleilaxu wins with one surviving force and its
+original bounty. Early cancellation abandons; discount246/261 actually passes
+the prior early window and then pays full2 once; Advanced foreign256 abandons
+the real dead Atreides disc while preserving its native per-turn block. The
+actual four living own leaders supply foreign capacity. Original battle-discard
+groups are explicitly declined, preserving Semuta for the later used cost.
+No played-state hand, force/leader death, wallet, clock, allowance or pending
+request is installed.
+
+Feedback repairs test-source assumptions about protected Arrakeen, Atreides'
+printed free2, the native CHOAM free-revival chooser and automatic income.
+Once the only Karama is spent, declining Semuta can let earned income settle
+automatically; recovering it can leave that same income counter actionable.
+Pure native resume quotes independently predict cost and earned income before
+asserting the actual payment/credit and only remaining acknowledgements. Native
+gameplay guards remain intact. Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-revival-benefits-proof/`;
+journeys/HTML: adjacent `20261026-semuta-revival-benefits-runtime/`.
+No saved-room/database/server/reset/restart/deployment/recovery operation occurs.
+Engine/SSR/callback evidence leaves hydration, DOM/browser/mobile, complex
+parents, wider combinations, complete modes and exact-revision deployed
+acceptance open.
+
 ## Movement cancellation costs — 26 October 2026
 
 **Prototyped / Partial.** Printed-role Karama stopping ordinary native Fremen
