@@ -1014,9 +1014,9 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Payment is recorded once before inspection. Refresh or reconnect restores an unfinished paid search for its owner without charging again. While it is open, other gameplay actions wait so they cannot change the reserved Box or discard pile. The completed search saves the recovered card and shuffled pile before restoring an interrupted response, decision or phase opening. Recovery does not charge, select or shuffle again, and does not replay the earlier action.',
       'The selected card enters your hand privately. Other players do not receive the selected identity or the shuffled discard faces. Temporary search access ends on completion; the normal discard pile remains private, even though the played Box is placed face up on top. Past inspection records do not become a permanent live discard browser.',
       'An active Truthtrance question and exact card or transaction commitments must resolve as required. Basic and Advanced full-hand holders have a visibly provisional atomic exchange: retrieve one non-Box and discard the played Box, leaving the final hand at its current limit. The printed intermediate-capacity question remains unresolved; over-limit hands are rejected.',
-      'A pending Guild refund claim on a discarded shipping Karama also blocks starting the search while that provisional refund policy is unresolved. The guard protects the competing claim to that card; it is not a general ban on Box during Shipment. Empty or only-Box searches are rejected before payment under the current unsupported-empty-search policy; there is no fallback deck draw.',
+      'A pending purchased-shipment cost does not block the search. Under the provisional refund composition, recovering that exact cost preserves its purchased price, creator and beneficiary but ends its later Guild special-stop refund, even if discarded again. Selecting another card leaves the cost’s existing claim status unchanged. Empty or only-Box searches are rejected before payment under the current unsupported-empty-search policy; there is no fallback deck draw.',
       'All four AI profiles start only when their own projected availability and spice reserve allow it. They do not inspect unpaid discard contents. Once paid, they choose from their entitled cards, prefer existing functional effects over unfinished Richese faces and complete a legal selection even if only unfinished effects remain. A paid search takes priority over optional actions.',
-      'The paid search and continuations are integrated in development fixtures, with a connected full-hand prototype in both modes. The provisional Guild refund interaction remains guarded. The explicit Semuta preview can recover the used Box after a clean completed search without replaying payment or shuffle; other discard compositions remain separate. Full Richese starts and complete browser/mobile/full-game acceptance remain gated.',
+      'The paid search and continuations are integrated in development fixtures, with a connected full-hand prototype in both modes. Purchased-shipment cost recovery now uses the provisional nonduplication policy without blocking the search. The explicit Semuta preview can recover the used Box after a clean completed search without replaying payment or shuffle; other discard compositions remain separate. Full Richese starts and complete browser/mobile/full-game acceptance remain gated.',
     ],
     related: [
       'card-richese-nullentropy-box',
@@ -1030,7 +1030,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Paid inspection, exact private custody, shuffled remainder, Box on top, sole-choice completion and restored parent continuations are integrated. Basic and Advanced full-hand exchange use a connected provisional final-capacity policy. Guild-refund guards remain; wider discard/commitment refinement is separate.',
+          'Paid inspection, exact private custody, shuffled remainder, Box on top, sole-choice completion and restored parent continuations are integrated. Basic and Advanced full-hand exchange use a connected provisional final-capacity policy. Recovering an exact shipment cost ends only its provisional refund eligibility, retaining the original price and continuation; wider discard/commitment refinement is separate.',
       },
       {
         area: 'Player controls',
@@ -1048,7 +1048,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Documentation',
         status: 'Partial',
         detail:
-          'Payment, temporary private access, disposal order, continuation recovery and separate capacity/refund interpretations are documented. This does not grant generic discard browsing or certify the remaining expansion effects.',
+          'Payment, temporary private access, disposal order, continuation recovery and provisional capacity/claimed-cost refund interpretations are documented. This does not grant generic discard browsing or certify the remaining expansion effects.',
       },
       {
         area: 'Verification',
@@ -1058,6 +1058,9 @@ export const RULE_TOPICS: RuleTopic[] = [
         evidence: [
           'tests/nullentropy-box.test.ts',
           'tests/nullentropy-box-engine.test.ts',
+          'tests/box-shipment-price.test.ts',
+          'tests/box-shipment-price-controls.test.ts',
+          'tests/fixture-box-shipment-price.ts',
           'tests/nullentropy-box-engine-review.test.ts',
           'tests/nullentropy-box-bots.test.ts',
           'tests/nullentropy-box-recovery.test.ts',

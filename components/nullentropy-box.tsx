@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { CardInspector, CardRules } from './card-inspector';
 
 const fullHandPolicy = 'Provisional full-hand exchange: retrieval and the played Box discard settle atomically, leaving your final hand at its limit. The printed intermediate-capacity timing remains unresolved.';
+const shipmentPricePolicy = 'Provisional refund rule: the purchased shipping price, the player who bought it and its shipment beneficiary stay unchanged. Recovering its original card cost prevents a refund if the Guild later stops that shipment with special Karama, even after that card is discarded again. Taking another card leaves any still-unclaimed cost under its usual refund rule.';
 
 type BoxProps = {
   game: GameView;
@@ -24,6 +25,7 @@ export function NullentropyBox({ game, act, busy }: BoxProps) {
         Your Nullentropy Box search is paid. Complete the private card choice in
         the decision panel above.
         {box.fullHandExchange && <span className="block">{fullHandPolicy}</span>}
+        {game.karamaShipping && <span className="block">{shipmentPricePolicy}</span>}
       </p>
     );
   return (
@@ -42,6 +44,7 @@ export function NullentropyBox({ game, act, busy }: BoxProps) {
           the cards. If only one card is eligible, the server takes it
           automatically.
         </p>
+        {game.karamaShipping && <p className="fine">{shipmentPricePolicy}</p>}
         {box.fullHandExchange && <p className="notice">{fullHandPolicy}</p>}
         <CardRules card={box.card} />
         <CardInspector card={box.card} />
@@ -84,6 +87,7 @@ export function NullentropySearch({ game, act, busy }: BoxProps) {
         These discard cards are visible only to you during this paid search.
         Inspection does not select a card.
       </p>
+      {game.karamaShipping && <p className="fine">{shipmentPricePolicy}</p>}
       {game.nullentropy?.fullHandExchange && <p className="notice">{fullHandPolicy}</p>}
       <div
         className="grid min-w-0 gap-4"

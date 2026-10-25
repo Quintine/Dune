@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Box recovery of a purchased shipment cost — 26 October 2026
+
+Under the 14 October choose-recommended authority, extend the selected Semuta
+nonduplication policy to paid Box recovery. Every eligible non-Box remains
+selectable. Recovering the exact active or pending-conversion shipment cost
+ends its provisional Guild special-stop refund, even after rediscard, while
+retaining the original price, creator and beneficiary. A different selection
+does not alter that cost's claim status. The original conversion response may
+still pass or cancel normally. This supersedes the blanket Box search guard;
+it is a provisional composition, not a publisher worked example or new mode gate.
+[Source and continuation boundary](NULLENTROPY_BOX_ENGINE_AUDIT.md#shipping-price-cost-recovery--26-october-2026).
+
 ## Fremen Betrayal at an actual pending ride — 26 October 2026
 
 The printed turn-long worm-riding alternative now has an executable reactive

@@ -2,6 +2,16 @@
 
 Initial primary-source and engine audit, 2026-09-06. The bounded ordinary-reserve cancellation policy below was selected on 2026-09-28 after a targeted publisher-source search found no affordability procedure; the later original audit remains historical evidence for unfinished transport and module combinations.
 
+## Nullentropy recovery of the price cost — 26 October 2026
+
+Paid Box recovery now shares the existing claimed-cost nonduplication policy:
+recovering the exact original cost ends its future provisional stop refund,
+even after rediscard, without canceling or transferring the purchased price.
+Recovering another card leaves any still-unclaimed cost under its existing
+exact-card refund rule. This removes the old blanket Box search guard without
+claiming a new publisher timing ruling.
+[Current Box contract](NULLENTROPY_BOX_ENGINE_AUDIT.md#shipping-price-cost-recovery--26-october-2026).
+
 ## Purchased rate with native Richese Cunning — 25 October 2026
 
 The native unallied pair now retains an original independently purchased rate:

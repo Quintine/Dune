@@ -16,6 +16,41 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Box shipping-cost recovery — 26 October. Prototyped / Partial.**
+Paid Box search now permits an active purchased-shipment cost in discard.
+Exact cost recovery preserves its original price/creator/beneficiary and ends
+only its provisional Guild special-stop refund, even after rediscard. A different
+selection leaves the existing claim status unchanged. Suspended Worthless
+conversion retains the selected provenance and its original pass/cancel response.
+Persistent Box controls explain the provisional composition; no mode gate changes.
+
+Two disjoint native-source/control lanes and root integration pass **14 files,
+126/126**, types/lint/build and **nine native engine/GameTable SSR/actual paid
+selection-callback journeys** on unchanged source. Twelve new native cases,
+seven projection/control supplements and two controlled engine cases cover the
+changed contract, including all four minimal profiles. Genuine public sources
+retain all45 original cards: real cache Box1 acquisition, original Weather
+alternative and original Atreides price activation. Normal sources use60 actions;
+sole sources use Basic55/Advanced60. Basic delivers immediately; Advanced restores
+its exact interception, then allows or stops with the same recovered card or a
+separate original Guild card. Fees, invoices, typed physical custody and subsequent
+ordinary movement remain intact. No played hand, wallet, force, clock or grant is
+installed in these native sources.
+
+Frozen v3 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-box-shipment-price-proof-v3/`;
+journeys/HTML: adjacent `20261026-box-shipment-price-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+DOM/hydration, browser/mobile, complete rules/combinations and final assurance
+remain due. [Source and provisional policy](NULLENTROPY_BOX_ENGINE_AUDIT.md#shipping-price-cost-recovery--26-october-2026).
+
+Next concrete card-function gap: Residual Poison still rejects its pre-leader
+window after two answered Cunning inspections. Scope the existing native-first
+reconciliation rather than postponing the printed card window; see
+[Nexus inspection boundary](NEXUS_ATREIDES_RULES.md#residual-poison-and-two-inspected-commitments),
+`validateResidualPoison`, `reconcileChangedBattleInspections` and
+`tests/nexus-residual-ambiguity.test.ts`.
+
 **Reactive Fremen Nexus worm prevention — 26 October. Prototyped / Partial.**
 Fremen Nexus Betrayal now responds at actual unmade ordinary/Great Maker
 rides, after the original completed effects. Uniform public Nexus-back holders
@@ -43,11 +78,6 @@ Full rules/combinations and final assurance remain open. No saved-room/D1/
 server, reset/restart, deployment or recovery operation occurs. DOM/hydration,
 browser/mobile and exact-revision deployed acceptance remain due.
 [Source and selected priority](NEXUS_FREMEN_RULES.md#reactive-before-ride-betrayal--26-october-2026).
-
-Next bounded card-function gap: Box still rejects paid search while a discarded
-shipping Karama has a provisional Guild refund claim. Existing recovered-cost
-provenance supplies a related policy; see [the Box contract](NULLENTROPY_BOX_ENGINE_AUDIT.md)
-and `validateNullentropyBegin` before choosing that composition.
 
 **Occupied Ecaz Duke grant — 26 October. Prototyped / Partial.**
 The printed occupied Ecaz benefit now grants the living shared Duke to its

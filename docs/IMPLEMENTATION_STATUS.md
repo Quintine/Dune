@@ -1,5 +1,32 @@
 # Dune implementation status
 
+## 26 October 2026 — Box recovery of a purchased shipment cost
+
+**Prototyped / Partial.** Remove the blanket pending-refund search ban. Exact
+cost recovery marks the existing claimed-cost provenance in both prospective
+completion/movement forecasting and actual settlement. It preserves the original
+purchased price, creator and beneficiary while ending only that cost's provisional
+special-stop refund, including after rediscard. A different selection retains its
+existing claim status. Suspended Worthless conversion keeps its exact parent and
+pass/cancel behavior. Persistent human guidance explains the selected composition;
+this extends the earlier Semuta nonduplication policy, not a publisher example.
+
+Frozen **14-file126/126**, types/lint/build and **nine native runtime/SSR/paid
+callback journeys** pass. Twelve native cases cover real public R/G/A/E setup,
+original cache Box1 purchase, both selections, Basic immediate delivery, Advanced
+same-card/separate-card stops and restored interception, sole automatic recovery,
+rejection/one fee and all four minimal profiles. All45 original cards remain;
+source actions are normal60 and sole Basic55/Advanced60. Seven controlled UI
+supplements and two controlled engine cases add guidance, busy/callbacks and
+suspended conversion. Initial feedback corrected the Basic interception assumption,
+a test-only narrowing assertion and a label helper's string conversion.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261026-box-shipment-price-proof-v3/`;
+journeys/HTML: adjacent `20261026-box-shipment-price-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation. No new
+mode admission; full rules/combinations, DOM/hydration, browser/mobile and final
+assurance remain due. [Source and selected policy](NULLENTROPY_BOX_ENGINE_AUDIT.md#shipping-price-cost-recovery--26-october-2026).
+
 ## 26 October 2026 — Reactive Fremen Nexus worm prevention
 
 **Prototyped / Partial.** Fremen Nexus Betrayal now responds at actual unmade ordinary/Great Maker

@@ -38,15 +38,51 @@ void test('a sole eligible card is taken automatically while every other Box sta
  const done=begin(g);assert.equal(done.pendingNullentropy,null);assert.equal(done.decision,null);assert.equal(done.players[0].spice,8);
  assert.deepEqual(done.players[0].hand,[selected]);assert.deepEqual(done.discard.map(c=>c.id),['other-box',boxId]);
 });
-void test('illegal starts do not charge or expose a search, including Guild-refund cases',()=>{
- for(const change of ['funds','empty','onlyBox','reservedRefund','preselect'] as const){
+void test('illegal starts do not charge or expose a search',()=>{
+ for(const change of ['funds','empty','onlyBox','preselect'] as const){
   const g=fixture();
   if(change==='funds')g.players[0].spice=1;if(change==='empty')g.discard=[];
   if(change==='onlyBox')g.discard=[{...g.players[0].hand[0],id:'other-box'}];
-  if(change==='reservedRefund'){g.players[1].faction='guild';g.karamaShipping={owner:'p',player:'p',card:g.discard[0].id};}
   const before=structuredClone(g);
   assert.throws(()=>applyAction(g,'p',{type:'card',card:boxId,...(change==='preselect'?{give:g.discard[0].id}:{})}));
   assert.deepEqual(g,before);assert.equal(viewGame(g,'p').nullentropy!.search,null);
+ }
+});
+void test('a paid Box search preserves the active price and claims only its recovered original cost',()=>{
+ for(const recoverCost of [false,true]){
+  const g=fixture();g.players[1].faction='guild';
+  const index=g.deck.findIndex(card=>card.effect==='karama');assert.ok(index>=0);
+  const cost=g.deck.splice(index,1)[0];g.discard.push(cost);
+  g.karamaShipping={owner:'q',player:'p',card:cost.id};
+  const original=structuredClone(g.karamaShipping),paid=begin(g);
+  assert.deepEqual(paid.karamaShipping,original);assert.equal(paid.players[0].spice,8);
+  const done=choose(paid,recoverCost?cost.id:g.discard[0].id);
+  assert.deepEqual(done.karamaShipping,{...original,...(recoverCost?{costClaimed:true}:{})});
+  assert.equal(done.players[0].spice,8);assert.equal(done.discard.at(-1)!.id,boxId);
+ }
+});
+void test('Box recovery preserves a suspended Worthless price response and marks only its selected cost',()=>{
+ // Controlled physical setup; the conversion, paid search and response use real actions.
+ for(const recoverCost of [false,true])for(const cancel of [false,true]){
+  let g=fixture('beneGesserit',true,5);g.players[1].faction='guild';
+  const cost=g.deck.splice(g.deck.findIndex(card=>card.kind==='worthless'),1)[0];
+  g.players[0].hand.push(cost);
+  const counter=g.deck.splice(g.deck.findIndex(card=>card.effect==='karama'),1)[0];
+  g.players[1].hand.push(counter);
+  g=applyAction(g,'p',{type:'card',card:cost.id,mode:'shipment',target:'q'});
+  assert.equal(g.response?.kind,'worthlessKarama');assert.equal(g.karamaShipping,null);
+  const response=structuredClone(g.response),paid=begin(g);
+  const done=choose(paid,recoverCost?cost.id:g.discard[0].id);
+  assert.deepEqual(done.response,response);assert.equal(done.players[0].spice,8);
+  assert.equal(done.pendingKarama?.costClaimed,recoverCost?true:undefined);
+  assert.equal(done.karamaShipping,null);
+  if(cancel)g=applyAction(done,'q',{type:'card',card:counter.id,mode:'cancel'});
+  else{
+   g=done;
+   while(g.response)g=applyAction(g,g.players.find(p=>!g.response!.passed.includes(p.id))!.id,{type:'passResponse'});
+  }
+  assert.equal(g.pendingKarama,null);
+  assert.deepEqual(g.karamaShipping,cancel?null:{owner:'p',player:'q',card:cost.id,...(recoverCost?{costClaimed:true}:{})});
  }
 });
 void test('a paid auction bid is not charged again as a reservation when Box is played during its remaining income response',()=>{

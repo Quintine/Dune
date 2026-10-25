@@ -2,6 +2,38 @@
 
 Audit: 2026-09-06, with Basic and Advanced runtime amendments on 8 October below. This is a source/continuation contract, not complete Richese certification. Read with [the acquisition audit](RICHESE_ACQUISITION_RULES.md). The full-hand publisher question remains unresolved; the user's first-version instruction permits the visibly qualified prototype, not a new timing ruling.
 
+## Shipping-price cost recovery — 26 October 2026
+
+Box can now search while the original purchased-shipment cost remains in
+discard. Every eligible non-Box card remains selectable. Selecting that exact
+cost ends its provisional special-stop refund eligibility, including after a
+later rediscard; the purchased price, creator and beneficiary remain unchanged.
+Selecting a different card leaves the original cost's existing refund status
+unchanged. This extends the [selected Semuta nonduplication policy](SEMUTA_SOURCE_UPDATE_20260907.md#shipment-price-cost-and-claimed-card-refund--16-october-2026)
+under the 14 October choose-recommended authority, not a publisher worked example.
+
+The engine marks recovered-cost provenance before prospective continuation
+validation and only commits it with a valid physical selection. A suspended
+Worthless conversion retains that provenance in its original parent response;
+passing activates the original price, while cancellation still cancels it.
+Payment, search lock, disposal order and all other resource/commitment checks
+remain. The former blanket pending-refund guard below is superseded.
+
+Frozen14-file126/126, types/lint/build and nine native engine/GameTable SSR/paid
+selection-callback journeys pass. Real public R/G/A/E setup, cache Box1 purchase,
+original Weather alternative and Atreides price retain all45 physical cards.
+Normal sources use60 actions; sole sources use Basic55/Advanced60. Both choices
+keep the bank invoice, Advanced original interception resumes exactly, claimed
+same-card stops do not refund, and unclaimed separate-card stops retain the
+existing refund. Basic still settles immediately without Advanced special powers.
+Sole recovery, stale/foreign denial and all four minimal profiles are included.
+Controlled projection/engine supplements remain distinct from original sources.
+
+Report/logs: `/home/quintine/.local/share/dune/checkpoints/20261026-box-shipment-price-proof-v3/`;
+journeys/HTML: adjacent `20261026-box-shipment-price-runtime/`. No saved-room/D1/
+server, deployment, restart or recovery operation. DOM/hydration, browser/mobile,
+complete rules/combinations and final assurance remain due.
+
 ## Advanced full-hand exchange follow-up — 8 October 2026
 
 Advanced now shares the Basic atomic final-capacity policy below.
@@ -58,7 +90,11 @@ This is an ordinary card effect: no generic faction/alliance Karama cancellation
 
 The full-hand intermediate-capacity question remains unresolved. Basic and Advanced use the explicit atomic-exchange prototype above. Empty or only-Box piles still have no legal result and are rejected before payment under the existing unsupported-empty-search policy. There is no deck fallback or permission to waste the fee; every Box is excluded from retrieval.
 
-A further boundary comes from an existing provisional engine policy, not the Box source. `executeSpecialKaramaIntent` for Guild may refund `g.karamaShipping.card` by taking that exact previously discarded Karama back into its original owner's hand. Box could first recover that same card. Pausing the pile during search does not resolve the later conflicting claim. Do not silently blacklist an otherwise legal non-Box search card as an official rule. Until the provisional refund policy is resolved, guard that particular pending-refund context before payment and label the reason accurately. No broader ban on Box during Shipment is justified.
+The existing provisional Guild special-stop policy can refund the exact original
+shipping cost only while it remains unclaimed. The 26 October composition above
+supersedes the earlier search ban: Box recovery marks that exact cost as claimed,
+preserving the price without creating a later second claim to the card. No
+otherwise legal non-Box card is blacklisted, and no broader Shipment ban applies.
 
 ## Proposed persisted contract
 
@@ -109,7 +145,7 @@ In `game/engine.ts`:
 | `draw`                                                                        | When deck is empty it shuffles all of `g.discard` into the deck and empties the pile.            | Prevent during search, including automatic callers. Selection never calls `draw`.                             |
 | `discard`                                                                     | Ordinary card play, Karama, battle cleanup, CHOAM, Terror and Ambassador exchanges append cards. | Lock or reserve through the explicit settlement path.                                                         |
 | Distrans early branch                                                         | Assigns both hands and appends its discarded activation directly, bypassing `discard`.           | Central pending-search lock before this branch; protect the played Box in transfer validation too.            |
-| Guild special Karama                                                          | Directly splices its refundable shipping Karama out of discard.                                  | Lock while browsing; resolve the pre-existing future-refund claim before allowing search, as described above. |
+| Guild special Karama                                                          | Directly splices its refundable shipping Karama out of discard.                                  | Lock while browsing; mark exact recovered-cost provenance at selection as described above; future unclaimed refunds remain separate. |
 | CHOAM cash-in / special                                                       | Early dispatch can discard many cards without the ordinary decision branch.                      | Lock before early dispatch; do not let a cash-in remove the reserved Box.                                     |
 | Ixian replacement / technology, Harkonnen bonus, auction/setup dealing        | Draws may recycle the searched pile; accepted replacements also discard.                         | Preserve their parent state and prevent completion until search settles.                                      |
 | Battle winner cards / Moritani retention / Terror discard / Ecaz Ixian effect | Finalizers append cards and then continue into other effects.                                    | Suspend the exact decision; do not replay or pre-finish its disposal.                                         |
@@ -144,7 +180,7 @@ Others receive only the public pending decision owner and a generic paid-search 
 
 Semuta's printed reaction is to another player's discard. The relevant new event is the final Box discard; selecting a card from discard is not a new discard and shuffling is not a series of discard events. Future Semuta implementation must react to the completed Box disposal before advancing past any required immediate reaction, using one event-bound physical Box. It must not rerun the paid search or reclaim the selected card as though that card was discarded. Precise concurrent Semuta priority and full-hand timing remain outside the verified Box contract; do not claim an invented FAQ order.
 
-Required focused cases: one fee/one shuffle/exact top Box; every non-Box family selectable; every Box excluded; empty/full/funding/commitment failures immutable before inspection; all viewers before/after payment and after expiry; queued Truthtrance and early CHOAM/Distrans blocked while browsing; parent response/decision/opening preserved; deck-empty bonus cannot recycle the pile during search; future Guild refund guard; promise-preserving fee; reserved gift/accepted Ix Box cannot activate; JSON reload and duplicate begin/select CAS; no-op authenticated GET and automatic workers; private AI selection on all profiles. No such runtime tests were executed for this document-only audit.
+Required focused cases: one fee/one shuffle/exact top Box; every non-Box family selectable; every Box excluded; empty/full/funding/commitment failures immutable before inspection; all viewers before/after payment and after expiry; queued Truthtrance and early CHOAM/Distrans blocked while browsing; parent response/decision/opening preserved; deck-empty bonus cannot recycle the pile during search; exact claimed/unclaimed shipping-cost refund; promise-preserving fee; reserved gift/accepted Ix Box cannot activate; JSON reload and duplicate begin/select CAS; no-op authenticated GET and automatic workers; private AI selection on all profiles. No such runtime tests were executed for this document-only audit.
 
 ## Pure custody helper checkpoint
 

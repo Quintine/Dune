@@ -4697,16 +4697,6 @@ function validateNullentropyBegin(g: Game, owner: Player, cardId: string) {
     owner.hand.length <= limit,
     'The final exchanged hand must not exceed its hand limit.',
   );
-  const guild = byFaction(g, 'guild');
-  requireRule(
-    !(
-      g.karamaShipping?.card &&
-      guild &&
-      !guild.specialKaramaUsed &&
-      g.discard.some((c) => c.id === g.karamaShipping?.card)
-    ),
-    'Searching while a shipping Karama has a provisional Guild refund claim awaits resolution.',
-  );
   // A completed purchase has already paid its bid; it is no longer a reservation.
   const funding = structuredClone(g);
   if (funding.currentAuctionSale) {
@@ -4736,6 +4726,16 @@ function validateNullentropyBegin(g: Game, owner: Player, cardId: string) {
     'An empty or only-Box discard search is unsupported; no spice has been paid.',
   );
   return { card, candidates };
+}
+/** Physical recovery ends only this cost's provisional stop refund, not its price. */
+function claimNullentropyShipmentCost(
+  g: Pick<Game, 'karamaShipping' | 'pendingKarama'>,
+  card: string,
+) {
+  if (g.karamaShipping?.card === card) g.karamaShipping.costClaimed = true;
+  const pending = g.pendingKarama;
+  if (pending?.use.kind === 'shipment' && pending.use.card === card)
+    pending.costClaimed = true;
 }
 function finishNullentropy(
   g: Game,
@@ -4772,6 +4772,7 @@ function finishNullentropy(
         : 'Invalid private search selection.',
     );
   }
+  claimNullentropyShipmentCost(context, cardId);
   validateTransferCompletion(
     context,
     getPlayer(context, player),
@@ -4802,6 +4803,10 @@ function finishNullentropy(
   );
   owner.hand = result.ownerHand;
   g.discard = result.discard;
+  claimNullentropyShipmentCost({
+    karamaShipping: g.karamaShipping,
+    pendingKarama: pending.resume.pendingKarama,
+  }, cardId);
   setMovementDiscardKnowledge(g, recordMovementBoxKnowledge(g.movementDiscardKnowledge,
     g.players.map(p => p.id), player, result.discard));
   g.pendingNullentropy = null;
@@ -17798,6 +17803,7 @@ function projectMovementBoxRecovery(source: Game, actor: string, box: string, se
     try { result = resolveNullentropyBox(player.hand, box, context.discard, selected,
       context.discard.filter(card => card.id !== selected).map(card => card.id), handLimit(player), true); }
     catch (error) { throw new RuleError(error instanceof Error ? error.message : 'Invalid owned Box recovery.'); }
+    claimNullentropyShipmentCost(context, selected);
     validateTransferCompletion(context, player, player, result.ownerHand, result.ownerHand, { type: 'card', card: box });
     player.hand = result.ownerHand; context.discard = result.discard;
     setMovementDiscardKnowledge(context, recordMovementBoxKnowledge(context.movementDiscardKnowledge,
