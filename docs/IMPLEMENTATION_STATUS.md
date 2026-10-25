@@ -1,5 +1,45 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta claims native disaster cancellation costs
+
+**Prototyped / Partial.** Printed-role Karama stopping native Fremen Storm
+protection, worm survival, allied protection or Advanced additional placement
+offers its exact used cost before prevention. `karamaDisasterDiscard` retains the
+original response, physical cohorts, Storm/Spice cursor, rides and summoned
+parent. Pure native validation never executes an allowed outcome, casualty,
+future draw or ride for Semuta. A focused qualifier retains the exact deposited
+Fremen Storm shipment's single queued entry; after cancellation destroys that
+group, normalization drains the original arrival without re-shipping or paying.
+Summons keep their whole independent `resume`; claim/pass restores only the cost's
+response, then native cancellation finishes once. Existing controls and minimal
+bots serve all four kinds, and earlier signature formats remain unchanged.
+[Source and limits](SEMUTA_SOURCE_UPDATE_20260907.md#storm-and-worm-cancellation-costs--26-october-2026).
+
+Two disjoint source lanes, bounded native/diff review and root integration pass
+**15 files,175/175**, types/lint/build and **16 native engine/GameTable SSR/actual
+Semuta-callback journeys** on unchanged source. Twenty-six new cases cover eight
+sources, applicable bands, claim/pass, native allowance, both legal typed Storm
+losses, relevant stale/queued-entry rejection and four minimal profiles. Actual
+cache1 Semuta and original dealt Karama precede every cost, retaining all45 cards.
+Storm traversal85/shipment66 actions use free3/elite1 at Great Flat15: denial kills3,
+allowance loses2 through the original elite0/1 choice; protected Tabr10 remains.
+Natural survival106/129 Basic/Advanced uses actual Funeral Plain15 entry; allied
+194/235 retains the actual Nexus alliance and CHOAM's paid1/cost2 Great Flat15
+group, with Fremen genuinely absent from that territory. Co-present allied
+survival remains outside this source evidence. Additional135 keeps the earlier
+allowed worm and queued ride; summoned130 spends its distinct original cost and
+actually passes that earlier fresh group before the later cancellation cost.
+No played hand, force, casualty, wallet, alliance, clock, ride or pending parent
+is installed. Narrow feedback and frozen integration require no repair.
+
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-disaster-proof/`;
+journeys/HTML: adjacent `20261026-semuta-disaster-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results; hydration, DOM/browser/mobile, active
+Ecological/Great Maker parents, broader combinations, complete modes and
+deployed/final assurance remain open.
+
 ## 26 October 2026 — Semuta claims pending revival-benefit cancellation costs
 
 **Prototyped / Partial.** Printed-role Karama stopping native CHOAM revival,

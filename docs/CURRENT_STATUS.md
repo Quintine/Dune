@@ -16,6 +16,44 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on native disaster cancellation costs — 26 October. Prototyped / Partial.**
+Printed-role Karama stopping Fremen Storm protection, worm survival, allied worm
+protection or Advanced additional placement now offers its exact used cost before
+prevention. `karamaDisasterDiscard` retains the native traversal, deposited group,
+Spice cursor, rides and summoned parent. Pure native validation executes no
+casualty, placement, future draw or ride. Claim/pass restores the response and
+finishes native cancellation once. A focused qualifier retains the exact queued
+Fremen Storm shipment entry, which drains after original casualties without
+shipping or paying again. Summons retain their entire independent saved parent.
+Existing persistent controls and minimal profiles serve all four kinds.
+[Source and boundaries](SEMUTA_SOURCE_UPDATE_20260907.md#storm-and-worm-cancellation-costs--26-october-2026).
+
+Two disjoint source lanes, bounded native/diff review and root integration pass
+**15 files,175/175**, types/lint/build and **16 native engine/GameTable SSR/actual
+Semuta-callback journeys** on unchanged source. Twenty-six new cases cover eight
+native sources, claim/pass, original allowance, both legal typed half-loss
+choices, relevant stale/queued-entry rejection and all four minimal profiles.
+Real cache1 Semuta and original dealt Karama precede every cost. Storm traversal85
+and shipment66 actions use actual free3 entry into Great Flat15, including one
+elite; denial kills all3, allowance loses2 with a real elite0/1 chooser. The
+protected original Tabr10 remains. Natural survival106/129 Basic/Advanced actions
+retain one actual Funeral Plain15 Fremen; allied194/235 uses a real Nexus alliance
+and CHOAM's paid1 Great Flat15 entry. Fremen is absent from that threatened allied
+territory, so co-present allied survival is not certified by these sources.
+Additional135 uses consecutive actual worms and original ride; summoned130 passes
+the earlier distinct original Karama disposal before its separate cancellation
+cost. All original45 cards remain physical; no played hand, casualty, wallet,
+force, alliance, clock, ride, pending control or parent is installed.
+
+Narrow sources, shared checks and runtime pass without a repair. Private
+source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-disaster-proof/`;
+journeys/HTML: adjacent `20261026-semuta-disaster-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results; hydration, DOM/browser/mobile, active
+Ecological/Great Maker parents, wider combinations, complete modes and
+deployed/final assurance remain unfinished.
+
 **Semuta on pending revival-benefit cancellation costs — 26 October. Prototyped / Partial.**
 Printed-role Karama stopping native CHOAM revival, Tleilaxu granted limits or
 discounts, early leaders or Advanced foreign Ghola now offers its exact used

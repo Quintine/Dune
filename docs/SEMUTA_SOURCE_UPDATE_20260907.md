@@ -2,6 +2,84 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Storm and worm cancellation costs — 26 October 2026
+
+**Prototyped / Partial.** Printed-role Karama stopping native Fremen Storm
+protection, worm survival, allied worm protection or Advanced additional-worm
+placement now offers its exact used cost. `karamaDisasterDiscard` keeps the
+original response and disaster parent live until claim/pass. Existing persistent
+neutral controls, private claim/pass and minimal legal profiles serve these
+sources. This applies the existing fresh-discard timing, not a new publisher
+ruling or an additional protection rule.
+
+Native [disaster validation](../game/disaster-preflight.ts) remains pure preflight:
+validate the original traversal, deposited cohort or worm occurrence without
+executing allowed protection, casualties, placement, a draw, ride or Nexus.
+The physical cost is already spent and is not supplied as an unspent card.
+The subtype signature retains physical cohorts/typed pools and native Storm,
+Spice, ride, alliance, module and summoned-parent records. Earlier continuation
+formats remain unchanged. Competing decisions, opening, arrival and transport
+preparations retain their existing boundaries.
+
+Storm traversal cancellation sets the original protection false and finishes
+the native traversal once. Shipment protection instead retains the original
+already-deposited Fremen group and its exact single queued shipment arrival.
+A [focused qualifier](../game/semuta-disaster-arrival.ts) checks the original
+owner, active turn, clock, location and typed amount; the native disaster validator
+owns physical cohort validation. Sign and retain the queue through Semuta. After
+denial kills the original group, let normalization consume the earned arrival
+once; never require that destroyed cohort to survive or replay shipment/payment.
+
+Additional placement denial records the original native per-turn restriction
+and resumes Spice without creating the additional worm. Allied protection denial
+may open a separate native Fremen survival response; taking Karama can make that
+new response actionable. Survival denial devours under the original captured
+ally protection, then continues the native worm. A summoned worm retains its
+entire `resume` inside its own parent, separate from the fresh cost's saved
+response. Native completion restores it and merges rides/Nexus once. No future
+response, random draw or parent is flattened or pre-executed for Semuta.
+
+Two disjoint source lanes, bounded native/diff review and root integration pass
+**15 files,175/175**, types/lint/build and **16 native engine/GameTable SSR/actual
+Semuta-callback journeys** on unchanged source. Twenty-six new cases cover eight
+native sources, claim/pass, native allowance, both typed Storm-loss choices,
+relevant rejection and all four minimal profiles. Real cache1 Semuta and original
+dealt Karama supply every cost; all original45 main/cache cards remain physical.
+No played hand, force, casualty, wallet, alliance, clock, ride or pending parent
+is installed. Narrow feedback and frozen integration pass without a repair.
+
+[Storm sources](../tests/fixture-semuta-disaster-storm.ts) and
+[cases](../tests/semuta-disaster-storm-engine.test.ts) use actual Advanced
+Fremen setup10 at protected Tabr14 and free reserve entry3/elite1 at Great Flat15.
+Shipment66 actions follows real first dials14+0 ending15 and retains the deposited
+cohort's queued entry. Traversal85 follows13+0 ending14, then the actual next
+Storm card before traversal. Denial kills3/elite1; native allowance still gives
+the actual loss2 chooser with elite0 or1. Original protected10 remain; neither
+declaration nor reserve withdrawal/payment replays.
+
+[Worm sources](../tests/fixture-semuta-disaster-worm.ts) and
+[cases](../tests/semuta-disaster-worm-engine.test.ts) use original Fremen free1
+Funeral Plain15 entry and CHOAM paid1/cost2 at Great Flat15. Natural survival106/129
+Basic/Advanced source actions reach the actual turn2 worm. Allied194/235 forms the
+real reciprocal CHOAM/Fremen Nexus alliance before the turn3 worm threatens the
+separate CHOAM group. Fremen is absent there: these sources do not certify the
+co-present allied/survival chain. Additional135 reaches consecutive real worms,
+allows the earlier survival and declares the additional placement with the
+original ride still queued. Summoned130 actually spends Fremen's distinct original
+Karama and passes every participant in that earlier discard group, retaining
+Semuta for Emperor's later cost. Its original summon parent restores once; the
+earlier cost remains discarded and its special use stays spent. Actual later
+passes, ride declines and Nexus controls finish at quiet Charity, without another
+card or shipment. Used-cost claim cannot create a second appearance or draw.
+
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-disaster-proof/`;
+journeys/HTML: adjacent `20261026-semuta-disaster-runtime/`.
+No saved-room/database/server/reset/restart/deployment/recovery operation occurs.
+Engine/SSR/callback evidence leaves hydration, DOM/browser/mobile, active
+Ecological/Great Maker parents, wider combinations, complete modes and
+exact-revision deployed acceptance open.
+
 ## Pending revival-benefit cancellation costs — 26 October 2026
 
 **Prototyped / Partial.** Printed-role Karama stopping native CHOAM revival,
