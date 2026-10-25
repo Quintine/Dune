@@ -2,6 +2,18 @@
 
 Initial primary-source and engine audit, 2026-09-06. The bounded ordinary-reserve cancellation policy below was selected on 2026-09-28 after a targeted publisher-source search found no affordability procedure; the later original audit remains historical evidence for unfinished transport and module combinations.
 
+## Purchased rate with native Richese Cunning — 25 October 2026
+
+The native unallied pair now retains an original independently purchased rate:
+one billable pair unit plus any High paid counters, halved and rounded once,
+entirely bank-paid. Identity is bound through the original pending frame even
+when a stronghold's rounded fee stays one. Native No-Field prevention retains
+the unused grant and spent Nexus; successful delivery consumes the grant.
+Advanced Guild stopping retains the existing provisional exact-card refund
+and live claimed-cost exclusion below. This extends a prototype boundary,
+without supplying a new native Guild rate or resolving wider combinations.
+[Canonical composition and evidence](NEXUS_RICHESE_RULES.md#purchased-karama-rate-with-native-cunning--25-october-2026).
+
 ## Recovered purchase cost and stop refund — 16 October 2026
 
 Semuta now offers an original printed shipment-price activation cost.

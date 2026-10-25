@@ -194,7 +194,8 @@ export function RicheseNoFieldControls({
     pairGroup = quoteRicheseHomeworldPair({ enabled: info.homeworldForcesEnabled,
       reserves: me.reserves, amount: reserveForces, revealedValue: pairRevealed?.value ?? 0 });
   } catch (error) { pairProblems.push(error instanceof Error ? error.message : 'Choose available paid reserve forces.'); }
-  const pairCost = reserveShipmentCost({ faction: me.faction, halfRate: false }, selectedTerritory.type, pairGroup?.priced ?? 1);
+  const pairPurchasedRate = game.karamaShipping?.player === me.id;
+  const pairCost = reserveShipmentCost({ faction: me.faction, halfRate: pairPurchasedRate }, selectedTerritory.type, pairGroup?.priced ?? 1);
   if (pairCost > (me.spice ?? 0)) pairProblems.push(`This Cunning group needs ${pairCost} own spice.`);
   if (nexus?.blocked) pairProblems.push(nexus.blocked);
   if (!pairConcealed || !pairRevealed)
@@ -362,6 +363,11 @@ export function RicheseNoFieldControls({
                   applies to this pair. Smuggler is a separate selection for
                   the ordinary single-marker route.
                 </p>
+                {pairPurchasedRate && <p className="fine mt-2">
+                  Your purchased Karama rate halves this combined invoice,
+                  rounded up once. Pay the Spice Bank. The original rate remains
+                  available if the No-Field counter prevents this declaration.
+                </p>}
                 <label htmlFor={`${id}-pair-revealed`}>
                   Private token to reveal immediately
                 </label>

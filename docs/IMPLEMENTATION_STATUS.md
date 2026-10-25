@@ -1,5 +1,54 @@
 # Dune implementation status
 
+## 25 October 2026 — Purchased Karama rates compose with native Richese Cunning
+
+The native unallied pair now accepts its original independent purchased rate.
+The server snapshots only beneficiary/owner/optional activation-card identity
+inside the existing signed pair frame, prices one pair unit plus any High paid
+companions at half-normal rates rounded once, and retains original bank routing.
+Lost/replaced grants reject even at city price one. Mutable claimed-cost history
+stays on the live grant, not its identity snapshot; historical outcomes need no
+active rate or perpetual discard custody. Absent legacy sources stay absent.
+No new client source fields, physical card or rate grant are introduced.
+
+Original No-Field prevention keeps the unused rate and ordinary shipment while
+the Nexus stays spent. Successful delivery clears the rate once. Native Advanced
+Guild stopping finishes the original history, consumes shipment and uses the
+existing provisional refund: only the original unclaimed cost still in discard
+returns to its owner. Claimed costs stay ineligible after rediscard. Persistent
+pair guidance, minimal policies and shared Homeworld payment eligibility use
+the same purchased tariff. Printed permission and this bounded composition are
+explicit in the [canonical source contract](NEXUS_RICHESE_RULES.md#purchased-karama-rate-with-native-cunning--25-october-2026);
+this is not a new publisher worked example or native Guild discount.
+
+Disjoint helper/native-fixture work, bounded read-only source/settlement review
+and root integration pass **20 files, 168/168**, types/lint/build and four native
+selector-callback/engine/GameTable SSR journeys. Actual four-seat Basic 126 and
+Advanced 141 source actions earn real setup, Emperor/Atreides alliance, unallied
+Richese draw, completed funding and Emperor's genuinely dealt Karama activation.
+Eleven paid plus immediate five cost six, leave four reserves/six spice and award
+Guild no income. Original Guild Karama prevention retains the rate for a real
+ordinary replacement; actual Advanced special stopping returns only Emperor's
+original unclaimed activation cost and spends Guild's own second original card.
+An actual sixteen-paid/capped-four group costs nine with twelve available, while
+full seventeen is unaffordable; the shared filter accepts only the purchased
+version. Zero/one-companion city rounding and all four legal profiles pass.
+
+Six pure source cases and explicitly labelled controlled pending-grant/claimed-
+cost metadata cases supplement native paths; they are not original Box/Semuta
+recovery programmes. No source played hand/wallet/phase/alliance/forces is installed.
+The initial quick check catches assertion-induced fixture type narrowing; its
+one-line typed flag mutation repair passes the final frozen full selection.
+Private proof/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-richese-cunning-purchased-rate/`.
+`frozen-type-fix/report.json` passes unchanged tree
+`f289ed1aa3512bb2e79d4bff220aacafa5d6157e9651bcbf8e422e405684a9e7`,
+2,809 files, base `61c2691`. Final prose-only evidence overlay is separately
+checked without repeating unchanged runtime checks. Broader routes/modules,
+full modes, browser/mobile/deployed and final assurance stay open. No saved-room,
+D1, server, reset, restart or deployment operation occurred. SSR/callbacks do
+not certify parent hydration.
+
 ## 25 October 2026 — High Richese retains paid forces through Nexus Cunning
 
 The original two-token Cunning action now accepts explicit `noFieldReserves`.

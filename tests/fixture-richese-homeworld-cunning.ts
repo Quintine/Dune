@@ -29,12 +29,12 @@ export const richeseHomeworldCunningPopulation = richeseHomeworldShipmentPopulat
  * declaration. Emperor and Atreides actually ally at the turn-two worm; the
  * unallied Richese really draws its original Cunning singleton afterward. */
 export function createRicheseHomeworldCunningFixture(options: {
-  advanced?: boolean; companions?: number; revealedValue?: NoFieldValue; concealedValue?: NoFieldValue;
+  advanced?: boolean; companions?: number; revealedValue?: NoFieldValue; concealedValue?: NoFieldValue; guild?: boolean;
 } = {}) {
   const revealedValue = options.revealedValue ?? 5, concealedValue = options.concealedValue ?? 3;
   assert.notEqual(revealedValue, concealedValue, 'The two original physical tokens must be distinct');
   const f = createRicheseHomeworldShipmentFixture({ advanced: options.advanced,
-    companions: options.companions, value: concealedValue, nexus: true });
+    companions: options.companions, value: concealedValue, nexus: true, guild: options.guild });
   assert.ok(f.nexusDraw && f.nexusAlliance && f.observer);
   const p = richeseHomeworldCunningPlayer(f.game, f.owner), offer = viewGame(f.game, f.owner).nexusRicheseCunning;
   assert.ok(offer && !offer.blocked, offer?.blocked ?? 'The actually drawn native Richese Cunning is live');
@@ -53,7 +53,7 @@ export function createRicheseHomeworldCunningFixture(options: {
     value: concealedValue, markerValue: concealedValue, token: concealed.id, tokenId: concealed.id,
     paid: quote.paid, physical: quote.physical, priced: quote.priced, revealedForces: quote.revealed, pairQuote: quote,
     staging: [...f.staging,
-      'This native three-seat branch stops before the original two-token Cunning declaration. Its Emperor/Atreides alliance is earned, Richese is unallied, the original Richese Nexus is actually held and empty Carthag11 is the funded destination. No two-seat all-unallied draw is manufactured.',
+      `This native ${f.guild ? 'four' : 'three'}-seat branch stops before the original two-token Cunning declaration. Its Emperor/Atreides alliance is earned, Richese is unallied, the original Richese Nexus is actually held and empty Carthag11 is the funded destination. No two-seat all-unallied draw is manufactured.`,
       'The proposed pair uses one concealed three token and one immediate faceup five token by default, plus eleven paid original reserves. Root’s explicitly provisional composition reserves the paid group first, materializes only the remaining stock for the immediate token and leaves the other token concealed. The original Nexus spend, No-Field Karama counter, one combined invoice and later reserve-capped reveal remain real caller actions.',
     ],
   };

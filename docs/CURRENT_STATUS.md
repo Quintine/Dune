@@ -16,6 +16,33 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Purchased Karama rate with native Richese Cunning — 25 October. Prototyped / Partial.**
+The original independent rate now halves Cunning's one billable pair unit plus
+any High paid companions, rounded once and paid to the bank. The original
+beneficiary/owner/activation card stays bound through responses even when city
+rounding leaves the same fee. Live claimed-cost history remains authoritative.
+No-Field prevention preserves the unused rate and spends the declared Nexus;
+success consumes the grant. Advanced Guild stopping retains its existing
+provisional exact-card refund and consumed-shipment outcome. Persistent controls,
+minimal policies and the shared payment filter use the same quote.
+[Source, policy and limits](NEXUS_RICHESE_RULES.md#purchased-karama-rate-with-native-cunning--25-october-2026).
+
+Disjoint helper/native-fixture work, bounded review and root integration pass
+**20 files, 168/168**, types/lint/build and four native selector-callback/engine/
+GameTable SSR journeys. Actual four-seat Basic 126/Advanced 141 source actions
+retain original setup, real alliance/draw/funding and Emperor's genuine Karama
+activation. Eleven paid plus immediate five cost six, leaving four reserves
+and six spice; Guild receives none. Original opposing Karama prevention retains
+the rate for a real ordinary replacement; Advanced stopping returns only the
+original unclaimed activation card while Nexus remains spent. Actual sixteen
+paid plus capped four are affordable at nine, where full seventeen is not.
+Zero/one-companion rounding and all four minimal policies pass. Explicitly
+controlled metadata cases cover lost/replaced sources and claimed-cost refund;
+no original card-recovery programme is claimed. Fixture type feedback is repaired.
+No played source hand/wallet/phase/alliance/forces are installed. Wider modes,
+browser/mobile/deployed and final assurance remain open. No saved-room/D1/server/
+reset/restart/deployment operation occurred; SSR is not hydration acceptance.
+
 **High Richese with Nexus Cunning — 25 October. Prototyped / Partial.**
 Paid reserve forces now accompany the original two-token Cunning shipment.
 Its signed frame retains the explicit count and one invoice: reserve paid

@@ -59,6 +59,7 @@ import { quoteNexusMoritaniRetention, nexusMoritaniRetentionSignature, type Nexu
 import { quoteNexusChoamBetrayal, validateNexusChoamBetrayal, nexusChoamBetrayalSignature, type NexusChoamBetrayal } from './nexus-choam-betrayal';
 import { quoteEcazInquiry, ecazInquiryAnswer, ecazInquiryHistory, ecazInquirySignature, validateEcazInquiry, type EcazInquiryReceipt } from './nexus-ecaz-inquiry';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
+import { sourceForRicheseCunning, richeseCunningRateMatches, validRicheseCunningRateSource, RicheseCunningRateError, type RicheseCunningRateSource } from './richese-cunning-rate';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusLegacyRevivalModeSupported, quoteEmperorNexusRevival, createEmperorNexusRevival, settleEmperorNexusRevival, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, emperorNexusBankPurchaseModeSupported, emperorNexusSellerPurchaseModeSupported, quoteEmperorNexusSellerPurchase, createEmperorNexusSellerPurchase, emperorNexusAmbassadorPurchaseModeSupported, quoteEmperorNexusAmbassadorPurchase, createEmperorNexusAmbassadorPurchase, quoteEmperorNexusSpecialPurchase, createEmperorNexusSpecialPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
 import { createEmperorPaymentReceipt, validateEmperorPaymentReceipt, emperorPaymentUseBlock, emperorPaymentSourceQuote, requiredEmperorPaymentResponders, emperorPaymentReceiptSignature, type EmperorPaymentReceipt } from './nexus-emperor-payment';
@@ -1217,7 +1218,7 @@ type PendingShipment = {
   guildRateEvent?: string;
   guildNexusEvent?: string;
   nexusEvent?: string;
-  richesePair?: { event: string; revealedTokenId: string };
+  richesePair?: { event: string; revealedTokenId: string; karama?: RicheseCunningRateSource };
   homeworldSources?: NativeReserveSelections;
   source?: 'ambassador';
   ambassadorEvent?: string;
@@ -31458,7 +31459,7 @@ function nexusRicheseCunningOffer(g: Game, owner: string) {
   else if (p.ally) blocked = 'Nexus Cunning requires an unallied Richese holder.';
   else if (g.status !== 'playing' || g.phase !== 5 || g.active !== owner || !shipmentAvailable(g, p))
     blocked = 'Use Cunning for your unused shipment before movement.';
-  else if (nexusCleanPlayBlocked(g) || g.karamaShipping)
+  else if (nexusCleanPlayBlocked(g) || (g.karamaShipping && g.karamaShipping.player !== owner))
     blocked = 'Finish the current interaction or Karama shipment before using Cunning.';
   else blocked = noFieldShipBlock(g, p);
   return {
@@ -31469,6 +31470,13 @@ function nexusRicheseCunningOffer(g: Game, owner: string) {
 function richesePairSignature(record: NonNullable<Game['nexusRicheseCunningHistory']>[number]) {
   return JSON.stringify([record.event, record.owner, record.turn, record.phase,
     record.tokenEvent, record.frame, record.stage]);
+}
+function richeseCunningRateSource(g: Game, owner: string) {
+  try { return sourceForRicheseCunning(g.karamaShipping, owner); }
+  catch (error) {
+    if (error instanceof RicheseCunningRateError) throw new RuleError(error.message);
+    throw error;
+  }
 }
 function currentRichesePairShipment(g: Game, shipment: PendingShipment) {
   const pair = shipment.richesePair;
@@ -31491,12 +31499,14 @@ function currentRichesePairShipment(g: Game, shipment: PendingShipment) {
     p.noFieldEvent === record.tokenEvent && !p.noField.deployed &&
     g.status === 'playing' && g.phase === 5 && g.active === p.id &&
     shipmentAvailable(g, p), 'Richese Cunning lost its unused native shipment.');
+  requireRule(richeseCunningRateMatches(pair.karama, g.karamaShipping, p.id),
+    'Richese Cunning lost its original purchased Karama rate source.');
   if (shipment.noFieldReserves !== undefined) integer(shipment.noFieldReserves, 1, p.reserves, 'Paid Cunning reserve forces');
   const group = currentRichesePairForces(g, p, shipment.noFieldReserves ?? 0, pair.revealedTokenId);
   if (g.homeworlds?.custody && group.physical) homeworldRule(() =>
     quoteNativeReserveWithdrawal(homeworldContext(g), g.homeworlds!.custody!, p.id,
       { normal: group.physical, elite: 0 }));
-  const cost = reserveShipmentCost({ faction: p.faction, halfRate: false },
+  const cost = reserveShipmentCost({ faction: p.faction, halfRate: !!pair.karama },
     territory(shipment.territory).type, group.priced);
   requireRule(shipment.cost === cost && Number.isSafeInteger(shipment.sector) &&
     validGameLocation(g, shipment.territory, shipment.sector),
@@ -31564,6 +31574,11 @@ function richesePairIntegrity(g: Game) {
       frame.richesePair?.event === record.event && frame.player === record.owner &&
       frame.noField?.event === record.tokenEvent && frame.turn === record.turn &&
       typeof frame.noField.tokenId === 'string' && typeof frame.richesePair.revealedTokenId === 'string' &&
+      Object.keys(frame.richesePair).sort().join(',') === (frame.richesePair.karama === undefined
+        ? 'event,revealedTokenId' : 'event,karama,revealedTokenId') &&
+      (frame.richesePair.karama === undefined || (validRicheseCunningRateSource(frame.richesePair.karama) &&
+        frame.richesePair.karama.player === frame.player &&
+        g.players.some(player => player.id === frame.richesePair!.karama!.owner))) &&
       g.players.some(player => player.id === record.owner && player.faction === 'richese' &&
         player.noField?.tokens.some(token => token.id === frame.noField?.tokenId) &&
         player.noField?.tokens.some(token => token.id === frame.richesePair?.revealedTokenId)),
@@ -36745,7 +36760,9 @@ function applyActionInner(
       requireRule(Object.keys(action).filter(key => key !== 'noFieldReserves').sort().join(',') ===
         'allyPayment,event,nexus,noField,revealedToken,sector,territory,type',
         'Choose exactly two physical No-Field tokens and a shipment destination.');
-      richesePair = { event: offer.event, revealedTokenId: stringField(action.revealedToken) };
+      const karama = richeseCunningRateSource(g, id);
+      richesePair = { event: offer.event, revealedTokenId: stringField(action.revealedToken),
+        ...(karama ? { karama } : {}) };
     } else if (action.nexus !== undefined && action.nexus === nexusGuildSecretAllyOffer(g,id)?.event) {
       guildSecretEvent = validateGuildSecretDeclaration(g,id,action.nexus);
       requireRule(Object.keys(action).every(k => ['type','territory','sector','amount','elite','homeworldSources','allyPayment','nexus'].includes(k)),

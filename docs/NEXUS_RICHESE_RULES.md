@@ -2,6 +2,65 @@
 
 Audited 10 September 2026, with a bounded Betrayal implementation contract added 30 September. This separates the ordinary Secret Ally shipment, native Cunning's two-marker operation and Betrayal's two auction outcomes. It does not certify full-family implementation or open the Nexus release gate. See [common Nexus rules](NEXUS_CARD_RULES.md), [auction custody and source boundaries](RICHESE_AUCTION_RULES.md), [No-Field custody](RICHESE_NO_FIELD_RULES.md), and [allied No-Field distinctions](RICHESE_ALLIED_SHIPMENT_AUDIT.md).
 
+## Purchased Karama rate with native Cunning — 25 October 2026
+
+**Prototyped / Partial.** The native unallied two-token Cunning shipment now
+composes with an independently purchased ordinary Karama rate for that active
+shipper. The supplied revision's physical page 16 permits purchasing any
+player's Force Shipment at half-normal Guild rates, paid to the Spice Bank.
+Cunning changes its billable quantity to one, not that independent rate.
+With optional High reserve accompaniment, provisionally bill **one pair unit
+plus the selected paid counters**, then halve and round up once. Immediate
+faceup materialization adds no billable units. This is a bounded composition,
+not a newly located publisher worked example or native Guild discount.
+
+The server captures the original rate's beneficiary, owner and optional
+physical activation-card identity inside the pair's original signed frame.
+An unchanged rounded fee cannot substitute a lost or replacement grant or
+silently change the bank payee. Live claimed-cost history stays on the original
+grant and may change independently; it is not reset from this identity snapshot.
+Historical outcomes need no active grant or perpetual discard custody. Old
+full-price frames retain their absent source rather than acquiring a new rate.
+
+Successful delivery pays the original combined invoice to the bank and consumes
+the grant. Initial native No-Field prevention leaves that grant unused for a
+legal ordinary replacement; tokens, physical counters and spice remain, the
+shipment is unused and the already-declared Nexus remains spent. Advanced Guild
+special stopping consumes the shipment and clears the grant without payment
+or arrival. It retains the [existing provisional refund policy](GUILD_RATE_KARAMA_RULES.md#recovered-purchase-cost-and-stop-refund--16-october-2026):
+return only the original unclaimed activation card still in discard to its
+original owner. A claimed cost cannot refund even after rediscard. Never refund
+the Nexus, invent another card or renew the purchased rate.
+
+Persistent pair controls show the combined price and bank-only purchased rate;
+the minimal bot candidate and shared payment filter use that same tariff.
+Original unallied, distinct-token/nonrepeat, unused-opportunity and parent
+counter restrictions remain. A rate for another beneficiary is not borrowed.
+Smuggler remains a separate single-marker selection. This section supersedes
+only the earlier purchased-rate exclusion below; broader modes and combinations
+remain unfinished.
+
+Evidence: [origin binding](../game/richese-cunning-rate.ts),
+[origin cases](../tests/richese-cunning-rate.test.ts),
+[native source](../tests/fixture-richese-cunning-purchased-rate.ts),
+[runtime cases](../tests/richese-cunning-purchased-rate-runtime.test.ts),
+[shared controls](../components/richese-no-field.tsx) and
+[payment adapter](../game/homeworld-payment-options.ts).
+
+Frozen 20-file **168/168**, types/lint/build and four native selector-callback/
+engine/GameTable SSR journeys pass. Basic 126/Advanced 141 source actions earn
+original setup/alliance/draw/funding and the actual Emperor activation; an
+original fourth Guild receives no bank-paid fee, cancels the No-Field for a
+real replacement, or uses Advanced stopping with the original exact refund.
+Eleven paid plus immediate five cost six. An actual sixteen-paid/capped-four
+invoice is nine, affordable with twelve where full seventeen is not. Zero/one
+rounding, six pure origin cases, controlled pending-source/claimed-cost metadata
+and all four minimal profiles pass. Controlled cases do not claim a native
+card-recovery programme. Private source-bound proof/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-richese-cunning-purchased-rate/`.
+No saved-room/D1/server/reset/restart/deployment operation occurred. Full modes,
+comprehensive assurance, browser/mobile/deployed and parent hydration remain open.
+
 ## High Homeworld Cunning accompaniment — 25 October 2026
 
 **Prototyped / Partial.** An unallied native Richese holder may explicitly add
@@ -27,7 +86,7 @@ changes this invoice.
 
 Observe native High before the whole group, permit its arrival to cross Low,
 then apply current Low movement rules to later actions. The source's ordinary
-unallied/no-purchased-rate and distinct available token/nonrepeat conditions
+unallied and distinct available token/nonrepeat conditions
 remain. Smuggler retains its separate single-marker route. Zero paid forces
 need no High entitlement and preserve ordinary Cunning, including scarce stock.
 The arrival counts actual paid plus immediate faceup counters and one effective

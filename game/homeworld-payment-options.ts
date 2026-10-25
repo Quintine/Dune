@@ -26,7 +26,7 @@ export function botHomeworldShipmentPaymentAllowed(g: GameView, action: Action):
       const group = quoteRicheseHomeworldPair({ enabled: !!info.homeworldForcesEnabled,
         reserves: me.reserves, amount: paid,
         revealedValue: revealed.value });
-      return reserveShipmentCost({ faction: me.faction, halfRate: false },
+      return reserveShipmentCost({ faction: me.faction, halfRate: g.karamaShipping?.player === me.id },
         territory(to).type, group.priced) <= (me.spice ?? 0);
     } catch { return false; }
   }

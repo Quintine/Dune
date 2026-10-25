@@ -3425,7 +3425,7 @@ function policyActions(g: GameView): Action[] {
           const group = quoteRicheseHomeworldPair({ enabled: !!noField.homeworldForcesEnabled,
             reserves: me.reserves, amount, revealedValue: revealed.value });
           const target = markerTargets.slice(0, 24).find(to =>
-            reserveShipmentCost({ faction: me.faction, halfRate: false },
+            reserveShipmentCost({ faction: me.faction, halfRate: g.karamaShipping?.player === me.id },
               territory(to.t).type, group.priced) <= (me.spice ?? 0));
           if (target) return [{
             type: 'ship', noField: concealed.id, revealedToken: revealed.id,

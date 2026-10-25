@@ -50,6 +50,8 @@ export const richeseHomeworldShipmentNexusInventory = (game: Game) => {
  * really takes ordinary Charity when eligible; no balance is installed. */
 export function nextRicheseHomeworldShipment(game: Game): RicheseHomeworldShipmentStep | null {
   if (game.truthtrance) return null;
+  if (!game.phaseOpening && !game.response && !game.pendingTreacheryDiscard && game.decision?.kind === 'guildTiming')
+    return { actor: game.decision.player, action: { type: 'decision', take: false } };
   if (game.nexusCards?.phase?.stage === 'drawing') {
     const phase = game.nexusCards.phase, actor = phase.eligible.find(id => !phase.done.includes(id)); assert.ok(actor);
     return { actor, action: { type: 'nexusCardChoice', turn: phase.turn,
@@ -96,10 +98,12 @@ export function finishRicheseHomeworldShipment(game: Game, actions: RicheseHomew
  * cards and undeployed original No-Fields. Native deferred bribes fund one
  * combined invoice without changing either physical army. Stop BEFORE ship. */
 export function createRicheseHomeworldShipmentFixture(options: {
-  advanced?: boolean; companions?: number; value?: NoFieldValue; nexus?: boolean;
+  advanced?: boolean; companions?: number; value?: NoFieldValue; nexus?: boolean; guild?: boolean;
 } = {}) {
   const advanced = options.advanced ?? false, companions = options.companions ?? 11, value = options.value ?? 5;
   const nexus = options.nexus ?? false;
+  const guild = options.guild ? 'guild' : null;
+  assert.ok(!guild || nexus, 'The bounded optional Guild source retains its actual Nexus programme');
   assert.ok(Number.isSafeInteger(companions) && companions >= 1 && companions <= 16,
     'The bounded native funding programme supports one through sixteen companions');
   const owner = 'richese', holder = 'emperor', observer = nexus ? 'atreides' : null;
@@ -108,6 +112,7 @@ export function createRicheseHomeworldShipmentFixture(options: {
   let game = createGame('RICHESEHOMEWORLDSHIPMENT', newPlayer(owner, 'Richese', 'richese'), advanced, ['choam']);
   joinGame(game, newPlayer(holder, 'Emperor', 'emperor'));
   if (observer) joinGame(game, newPlayer(observer, 'Atreides', 'atreides'));
+  if (guild) joinGame(game, newPlayer(guild, 'Guild', 'guild'));
   const initial = structuredClone(game), actions: RicheseHomeworldShipmentStep[] = [];
   const act = (actor: string, action: Action) => { game = actRicheseHomeworldShipment(game, actor, action, actions); };
   const reach = (until: (state: Game) => boolean) => { game = advanceRicheseHomeworldShipment(game, until, actions); };
@@ -133,7 +138,9 @@ export function createRicheseHomeworldShipmentFixture(options: {
   const karama = game.deck.find(card => card.effect === 'karama'); assert.ok(ordinary && karama);
   const observerCard = observer ? game.deck.find(card => card.kind === 'shield') : null;
   assert.ok(!observer || observerCard);
-  const deal = [ordinary.id, karama.id, ...(observerCard ? [observerCard.id] : [])];
+  const guildCard = guild ? game.deck.find(card => card.effect === 'karama' && card.id !== karama.id) : null;
+  assert.ok(!guild || guildCard);
+  const deal = [ordinary.id, karama.id, ...(observerCard ? [observerCard.id] : []), ...(guildCard ? [guildCard.id] : [])];
   const dealOrder = deal.map((id, position) => {
     const from = game.deck.findIndex(card => card.id === id); assert.ok(from >= position);
     [game.deck[position], game.deck[from]] = [game.deck[from], game.deck[position]];
@@ -149,6 +156,8 @@ export function createRicheseHomeworldShipmentFixture(options: {
   assert.deepEqual(richeseHomeworldShipmentPlayer(game, holder).hand.map(card => card.id), [karama.id]);
   if (observer && observerCard)
     assert.deepEqual(richeseHomeworldShipmentPlayer(game, observer).hand.map(card => card.id), [observerCard.id]);
+  if (guild && guildCard)
+    assert.deepEqual(richeseHomeworldShipmentPlayer(game, guild).hand.map(card => card.id), [guildCard.id]);
   assert.equal(richeseHomeworldShipmentPlayer(game, owner).reserves, 20);
   assert.deepEqual(richeseHomeworldShipmentPlayer(game, owner).forces, {});
   const originalInventory = richeseHomeworldShipmentInventory(game); assert.equal(originalInventory.length, 45);
@@ -165,6 +174,7 @@ export function createRicheseHomeworldShipmentFixture(options: {
   const beforeFunding = structuredClone(game), funding: RicheseHomeworldShipmentTransition[] = [];
   let beforeWorm: Game | null = null, beforeNexusDraw: Game | null = null;
   let nexusAlliance: RicheseHomeworldShipmentTransition | null = null, nexusDraw: RicheseHomeworldShipmentTransition | null = null;
+  let guildNexusPass: RicheseHomeworldShipmentTransition | null = null;
   let wormOrder: { position: number; from: number; card: Game['spiceDeck'][number] } | null = null;
   let nexusOrder: { position: number; from: number; card: 'richese' } | null = null;
   const wormFollowupOrder: { position: number; from: number; card: Game['spiceDeck'][number] }[] = [];
@@ -200,6 +210,10 @@ export function createRicheseHomeworldShipmentFixture(options: {
       nexusDraw = transition(() => { act(owner, { type: 'nexusCardChoice', turn: game.turn,
         card: null, choice: 'draw', ownRedraws: 0 }); });
       assert.equal(game.nexusCards!.cards!.hands[owner], 'richese');
+      if (guild) guildNexusPass = transition(() => {
+        assert.equal(game.nexusCards!.cards!.hands[guild], null);
+        act(guild, { type: 'nexusCardChoice', turn: game.turn, card: null, choice: 'keep', ownRedraws: 0 });
+      });
     }
     reach(state => state.turn === turn && state.phase === 5 && state.active === owner && richeseHomeworldShipmentClean(state));
   };
@@ -236,8 +250,10 @@ export function createRicheseHomeworldShipmentFixture(options: {
     nexusAlliance: nexusAlliance as RicheseHomeworldShipmentTransition | null,
     beforeNexusDraw: beforeNexusDraw as Game | null,
     nexusDraw: nexusDraw as RicheseHomeworldShipmentTransition | null,
+    guildNexusPass: guildNexusPass as RicheseHomeworldShipmentTransition | null,
     nexusOrder: nexusOrder as { position: number; from: number; card: 'richese' } | null,
     advanced, nexus, owner, richese: owner, actor: owner, holder, emperor: holder, observer, atreides: observer,
+    guild, guildKarama: guildCard?.id ?? null,
     companions, noFieldReserves: companions, amount: companions, physical: companions, priced: companions + 1,
     cost, shipmentCost: cost, value, markerValue: value, token: token.id, tokenId: token.id, event, shipmentEvent: event,
     territory, sector, location, action, shipmentAction: action,
@@ -249,12 +265,15 @@ export function createRicheseHomeworldShipmentFixture(options: {
     actions, steps: actions, sourceActionCount: actions.length,
     staging: [
       nexus
-        ? 'Actual public Basic/Advanced Richese/Emperor/Atreides lobby enables Homeworlds and Nexus Cards, then native ready/start with original main35/cache10, all12 Nexus singletons and all three native No-Field components. Only original scalar lotteries, three unopened Treachery positions and six unopened ordinary Spice positions are selected.'
+        ? guild
+          ? 'Actual public Basic/Advanced Richese/Emperor/Atreides/Guild lobby enables Homeworlds and Nexus Cards, then native ready/start with original main35/cache10, all12 Nexus singletons and all three native No-Field components. Only original scalar lotteries, four unopened Treachery positions and six unopened ordinary Spice positions are selected.'
+          : 'Actual public Basic/Advanced Richese/Emperor/Atreides lobby enables Homeworlds and Nexus Cards, then native ready/start with original main35/cache10, all12 Nexus singletons and all three native No-Field components. Only original scalar lotteries, three unopened Treachery positions and six unopened ordinary Spice positions are selected.'
         : 'Actual public Basic/Advanced Richese/Emperor lobby enables only Homeworlds, then native ready/start with original main35/cache10 and all three native No-Field components. Only original scalar lotteries, two unopened Treachery positions and six unopened ordinary Spice positions are selected.',
       'Richese really receives an ordinary projectile and Emperor its printed original Karama. Every original Storm, Spice, Charity, native cache/normal auction, Black Market decline in Advanced, Revival, Movement ending and Mentat control is used. Real cache lots are passed and retired, never replaced or acquired by assigning a hand.',
       'The default eleven-companion stronghold invoice needs twelve spice. Emperor really pays Richese a seven-spice bribe during turn one; its pending recipient share becomes available only at the actual Mentat. Richese’s next unused turn retains all twenty original reserves and HIGH population before declaration.',
       'The sixteen-companion cap variant uses an actual ten-spice first bribe, next-turn Emperor Charity for two and a second two-spice bribe, both completed through real Mentat. Its third unused turn has seventeen spendable spice and the same untouched original twenty reserves. Smaller companion requests use only the native funding they need.',
       ...(nexus ? ['The original turn-two unopened Spice order supplies a real Shai-Hulud and ordinary land follow-ups. Emperor actually proposes and Atreides accepts alliance; Richese stays unallied. Only the unopened Richese Nexus singleton is moved to the next original draw position, then Richese really draws it at the closing Nexus choice. Two seats cannot earn that unallied draw; the native third seat supplies its real eligibility. Empty Carthag11 avoids Atreides’ original Arrakeen army.'] : []),
+      ...(guild ? ['The optional fourth Guild seat really receives the second original printed Karama in its unopened starting deal. Atreides keeps its original Shield; neither card is moved between hands. Guild explicitly keeps its empty position at the real Nexus closing choice and declines native early timing before the source. Its actual native five Tuek counters and starting resources remain earned state.'] : []),
       'Stop BEFORE the marker/physical shipment. The original token/event, opponent-held Karama, quiet unused shipment and exact funded combined invoice remain live caller inputs. No force, wallet, phase, hand, stance, token custody, canceled history or pending proof is installed.',
     ],
   };
