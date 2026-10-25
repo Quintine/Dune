@@ -116,7 +116,7 @@ void test('movement question profile permits an unspent shipment but rejects an 
   const response = movementBoundary(); response.response = { kind: 'fremenMovement', owner: 'target', location: 'carthag:11', amount: 1, passed: [] };
   assert.equal(movementPromiseTargetAvailable(response, 'target'), false);
   const advanced = movementBoundary(); advanced.advanced = true;
-  assert.equal(movementPromiseTargetAvailable(advanced, 'target'), false);
+  assert.equal(movementPromiseTargetAvailable(advanced, 'target'), true);
 });
 void test('Basic native selected families qualify, while optional modules and undeclared native families do not', () => {
   const native = movementBoundary(); native.players[0].faction = 'ixians'; native.expansions = ['ix'];
@@ -142,4 +142,18 @@ void test('earlier current-round movement question profiles include declared Bas
     const g = movementBoundary(); g.phase = phase;
     assert.equal(movementPromiseTargetAvailable(g, 'target'), false);
   }
+});
+
+void test('classic Advanced Movement admits active and unused waiting seats while retaining module and native-family boundaries', () => {
+  const advanced = movementBoundary(); advanced.advanced = true;
+  assert.equal(movementPromiseTargetAvailable(advanced, 'target'), true);
+  assert.equal(movementPromiseTargetAvailable(advanced, 'asker'), true);
+  for (const field of ['homeworlds', 'nexusCards', 'leaderSkills', 'techTokens', 'strongholdCards',
+    'discoveryEnabled', 'discoveries', 'discoveryStash', 'greatMaker', 'ecazTreachery'] as const) {
+    assert.equal(movementPromiseTargetAvailable({ ...advanced, [field]: true } as unknown as Game, 'target'), false, field);
+  }
+  const native = structuredClone(advanced); native.players[0].faction = 'ixians'; native.expansions = ['ix'];
+  assert.equal(movementPromiseTargetAvailable(native, 'target'), false);
+  advanced.players[1].shipped = true;
+  assert.equal(movementPromiseTargetAvailable(advanced, 'asker'), false);
 });

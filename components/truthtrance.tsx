@@ -350,7 +350,8 @@ export function Truthtrance({
                   <MovementClaimFields id={`${factId}-movement`} value={movement} onChange={setMovement} />
                   <p className="fine">One ground movement of the chosen physical minimum, from now until the respondent’s Movement turn ends. Shipment, HMS relocation and Ambassador relocation do not count. Owned Hajr, Ornithopter, native Kulon and paid Box recovery of a known discard can prepare a later move. No stays binding after earlier nonmatching moves.</p>
                   {g.phase < 5 && <p className="notice">Movement comes later this round. Keep the forces, spice and cards needed by your answer; available Charity or Revival may prepare the route. Current auction commitments reserve their actual funding. Current preparation appears when it is available.</p>}
-                  {!g.truthMovementTargets.includes(target) && <p className="notice">Choose a supported Basic respondent this round and finish pending decisions. Optional-module and Advanced movement promises remain unfinished.</p>}
+                  {g.advanced && <p className="fine">Classic Advanced movement counts physical forces, including each elite once. Hajr remains available only immediately after a completed movement and its required arrival decisions.</p>}
+                  {!g.truthMovementTargets.includes(target) && <p className="notice">Choose a supported Basic respondent this round or a classic Advanced respondent during Movement, and finish pending decisions. Advanced expansion and optional-module movement promises remain unfinished.</p>}
                   <p className="notice" aria-label="Public movement question preview">{truthQuestionText(question, leaderName, locationName)}</p>
                 </>
               ) : kind === 'shipment' || kind === 'mixedShipment' ? (

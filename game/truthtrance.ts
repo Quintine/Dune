@@ -209,7 +209,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
     check(Object.keys(v).sort().join(',') === 'kind,minimum,target,territory',
       'Supply one ground-movement destination, minimum and respondent.');
     check(movementPromiseTargetAvailable(g, v.target as string),
-      'Ground-movement promises need a supported Basic opportunity this round with pending decisions finished. Optional modules and Advanced remain unfinished.');
+      'Ground-movement promises need a supported Basic opportunity this round or a classic Advanced Movement turn, with pending decisions finished. Optional modules and Advanced expansion preparations remain unfinished.');
     try { return { kind: 'movement', target: v.target as string, ...parseMovementClaim(v) }; }
     catch (error) { if (error instanceof MovementClaimError) throw new TruthError(error.message); throw error; }
   }

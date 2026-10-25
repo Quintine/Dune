@@ -84,7 +84,11 @@ export function finishMovementPromises<T extends MovementPromise>(
 /** Prototype profile/timing only. Actual route feasibility stays authoritative
  * in the engine. Truthtrance and an ordinary active Ornithopter may remain. */
 export function movementPromiseModeSupported(g: Game): boolean {
-  return g.advanced === false &&
+  // Basic retains its native-family/early-phase prototype. Advanced starts
+  // with classic factions during Movement; earlier forecasts and expansion
+  // preparations are separate scope, not implied by this admission.
+  return (g.advanced === false ||
+    g.advanced === true && g.phase === 5 && g.expansions.length === 0) &&
     g.players.length >= 2 && g.players.length <= 6 &&
     g.expansions.every(id => ['ix', 'choam', 'ecaz'].includes(id)) &&
     new Set(g.expansions).size === g.expansions.length &&

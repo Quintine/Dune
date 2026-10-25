@@ -1,8 +1,60 @@
 # Truthtrance ground-movement promises
 
-The [Ghola preparation follow-up](#owned-ghola-preparation--24-october-2026)
-supersedes preceding timing boundaries. Previous checkpoint counts remain dated
-evidence, not complete rules or final acceptance.
+## Classic Advanced Movement — 25 October 2026
+
+**Prototyped / Partial.** Classic Advanced tables without expansions or optional
+modules now accept the same structured movement question during phase5, for an
+active or still-unused waiting respondent. Basic's existing native-family and
+earlier-phase entry stays available. Earlier Advanced phases, Advanced expansion
+families, modules and arbitrary promises remain unfinished.
+
+The single-event meaning and general current-turn FAQ authority below still
+apply; this is a software composition, not a new movement-specific publisher
+ruling. Count physical counters, including each Fedaykin/Sardaukar once, through
+the shared typed movement validator. A reserve shipment can prepare a larger
+group but cannot fulfill movement. Hajr requires the actual immediate
+post-movement opportunity; search cannot play it before the first move or after
+an intervening voluntary action has closed that opportunity.
+
+Private reachability includes the owned native pre-first-shipment advisor
+preparation and an eligible incoming advisor's requested fighter flip. Project
+the allowed owned advantage and normal stance settlement without creating
+matching events or new automatic-flip receipts. This retains continuously-alone
+holds and removes empty advisor groups. The real action still resolves its
+original independent Karama counter. Keep promises pending across original
+Fremen/matching/conversion decisions; fulfill only on a physical matching move.
+A final mandatory response pass cannot voluntarily evade a promise or prevent
+release when an opponent's completed counter makes it impossible. Search memo
+keys retain current stances, prevention markers and the immediate Hajr window.
+
+The [native fixture](../tests/fixture-truth-movement-advanced.ts) selects original
+unopened lotteries/deal/Spice positions, uses the real lobby Advanced selector
+and preview start, and earns original Truthtrance/Hajr through actual dealing.
+The Atreides branch retains its native ten Arrakeen counters after a paid Polar
+shipment. The Fremen branch actually places two Fedaykin at Tabr, buys Emperor's
+original Karama for1 and ships the last reserve Fedaykin to Polar. No played
+clock, force, wallet, hand or promise is installed. Separate BG regressions
+explicitly label controlled original-card acquisition/stance/reserve placement;
+native preparation, paid shipment, original counter and later movement still
+use production controls. This is not native provenance for those overlays.
+
+Evidence: [rule/control tests](../tests/truth-movement-advanced-engine.test.ts),
+[actual callback test](../tests/truth-movement-advanced-controls.test.tsx).
+Frozen **26 files238/238**, types/lint/build and four actual-control/GameTable
+SSR journeys pass, including a real persistent-guidance callback. Native source
+prefixes take23/27 actions. Private proof and HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-truth-movement-advanced/`;
+`frozen-integrated/report.json` binds tree
+`2bbb98a518df218683789a6c183d4985c750403f42cb7e82ac5a23736c8681bc`,
+2773files on base `0d8481e8216c20cfe100d903fe4c7d41f9136dc7`.
+Final prose/reference overlays are separately reviewed.
+All four existing profiles use the same legal guidance; no strategic tuning or
+calibration is added. Browser/hydration/mobile/deployed and comprehensive final
+rules/recovery/privacy/custody acceptance remain open. No saved-room, database,
+server restart or deployment operation is part of this checkpoint.
+
+The preceding Basic records below retain their dated scope; the Advanced entry
+above supersedes only their blanket Advanced exclusion.
 
 ## Basic prototype — 24 October 2026
 

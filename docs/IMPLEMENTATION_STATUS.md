@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 25 October 2026 — Classic Advanced structured ground-movement Truthtrance
+
+Classic Advanced without modules now accepts structured movement questions in
+phase5 for active or unused waiting seats. Retain Basic/native early admission,
+physical elite counts, original route validation and immediate Hajr timing.
+Owned advisor preparation and eligible arrival fighter flips can supply later
+city range; detached stance settlement preserves continuously-alone holds and
+removes empty groups without creating matching/automatic receipts. Real native
+Fremen/matching/conversion counters retain priority and physical fulfillment;
+mandatory response passes cannot deadlock opposing impossibility release.
+Human guidance and all four minimal policies share the private witness.
+
+Disjoint fixture work, bounded Advanced review and root integration pass
+**26 files238/238**, types/lint/build and four actual-control/GameTable SSR
+journeys, including a real persistent-guidance callback. Genuine23-action
+Atreides and27-action Fremen public Advanced sources earn original base33 deal,
+Truthtrance/Hajr, original forces, actual paid/free Polar shipment and native
+Fedaykin setup. Emperor actually buys its original Karama for1. No played state
+is installed. Separate BG cases explicitly control original-card acquisition,
+stance and two reserve placements while exercising actual production counters,
+preparation and later moves. Fixture feedback corrects an invalid zero-shipment
+payload and a controlled advisor stance that would immediately settle.
+
+Private proof and HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-truth-movement-advanced/`.
+`frozen-integrated/report.json` binds tree
+`2bbb98a518df218683789a6c183d4985c750403f42cb7e82ac5a23736c8681bc`,
+2773files on base `0d8481e8216c20cfe100d903fe4c7d41f9136dc7`.
+Final four prose/reference overlays are reviewed separately. This reuses the
+existing general FAQ composition, not a new movement-specific publisher ruling.
+Earlier Advanced, expansions/modules, broader commitments and full-mode/final
+rules/recovery/privacy/custody/browser/deployed acceptance remain open. No AI
+refinement or saved-room/D1/server/reset/restart/deployment operation.
+[Canonical contract](TRUTHTRANCE_MOVEMENT_PROMISES.md#classic-advanced-movement--25-october-2026).
+
 ## 24 October 2026 — One matching counter per changing resident-gather origin
 
 Supplied physical28's resident matching and physical17's one-group counter now

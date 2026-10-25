@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 24 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 25 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable. Advanced, expansion-faction and supported optional-module starts
 are labelled previews; complete rules/publication acceptance remains gated.**
 
@@ -16,6 +16,30 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Classic Advanced movement promises — 25 October. Prototyped / Partial.**
+Classic Advanced phase5 now accepts structured movement Truthtrance for active
+or unused waiting seats. Shared typed legality counts each elite once; owned
+advisor preparation/arrival flips can supply city range, and Hajr retains its
+immediate timing. Actual matching/Fremen/conversion counters finish before
+transfer or impossibility; persistent guidance uses the same legal witness.
+Basic/native early-phase entry remains. Earlier Advanced, expansion/module
+preparations and arbitrary commitments remain unfinished.
+[Meaning, authority and boundaries](TRUTHTRANCE_MOVEMENT_PROMISES.md#classic-advanced-movement--25-october-2026).
+
+Disjoint native-fixture work, bounded Advanced review and root integration pass
+**26 files238/238**, types/lint/build and four actual-control/GameTable SSR
+journeys, including a real guidance callback, Hajr continuation and typed Fremen
+allowance/prevention. Genuine23/27-action public Advanced sources earn original
+Truthtrance/Hajr, native forces and actual shipment; Fremen earns its original
+Karama through a paid1 auction and places/ships actual Fedaykin. No played state
+is installed in those sources. Separate BG cases label controlled acquisitions/
+stance/reserve placements and exercise original preparation, matching, city-range
+arrival flip and Hajr. Four existing policies finish legally without tuning.
+Fixture feedback corrected an invalid zero-shipment action and an immediately
+settling controlled advisor stance. Final proof is source-bound; SSR/callbacks
+are not hydration/browser/mobile/deployed acceptance. Full modes and final
+assurance remain open; no saved-room/D1/server/restart/deployment operation.
+
 **Planetologist resident matching — 24 October. Prototyped / Partial.**
 Resident gathers now queue one normal-format matching response per changing
 incoming origin. Both physical groups wait through partial allowance; any
@@ -43,9 +67,8 @@ snapshots explicit; the final runtime/union/types/lint/build pass. Wider empty
 sequencing, modules, complete modes and final browser/deployed assurance remain
 open. No AI refinement or saved-room/D1/server/reset/restart/deployment operation.
 
-**Requested stopping checkpoint:** the user requested stopping after the next
-Git push. This verified gathering checkpoint is that push; the full objective
-is unchanged and further goal work waits for the user to resume it.
+**Requested stopping checkpoint:** this gathering checkpoint was pushed before
+pausing as requested. The user subsequently resumed; the full objective remains.
 
 **Guild/Junction incoming matching — 24 October. Prototyped / Partial.**
 Fresh native Guild and absent-Guild Secret Ally cross-transports plus Junction

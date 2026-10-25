@@ -16635,6 +16635,14 @@ function groundMovementEvent(move: MovementOrder) {
 function projectGroundMovement(source: Game, move: MovementOrder): Game {
   const game = structuredClone(source), player = getPlayer(game, move.player);
   commitGroundMovementPieces(game, move);
+  // Witness the allowed owned arrival without opening another real response.
+  // The live declaration retains its matching/conversion counters. Settlement
+  // also removes emptied advisor groups and preserves an existing alone hold.
+  if (move.wantsFighters) {
+    if (player.advisors) delete player.advisors[move.to];
+    game.response = null;
+  }
+  settleAdvisors(game);
   const flight = game.ornithopter;
   if (flight?.player === player.id) {
     flight.completed++;
@@ -16724,6 +16732,18 @@ function groundMovementCompletionAtMovement(game: Game, actor: string, promises:
           if (projected) yield { game: projected, actions: [{ type: 'decision', event: paid.event, card: card.id }] };
         }
         return;
+      }
+      if (state.advanced && player.faction === 'beneGesserit') {
+        for (const territory of quoteAdvisorPreparationWindow(state, owner).territories) {
+          const action: Action = { type: 'prepareAdvisors', territory };
+          try {
+            const prepared = applyActionInner(state, owner, action, 'movementPreparation');
+            // Assume this owned advantage is allowed in the witness; the live
+            // action still opens its real independently counterable response.
+            if (prepared.response?.advisorPreparationSource) finishResponse(prepared, false);
+            yield { game: groundMovementProbe(prepared, owner), actions: [action] };
+          } catch (error) { if (!(error instanceof RuleError)) throw error; }
+        }
       }
       yield* movementShipmentPreparations(state, owner, (source, actor, action) => {
         const payer = getPlayer(source, actor), share = Number(action.allyPayment);
@@ -16860,9 +16880,13 @@ function reconcileGroundMovementPromises(g: Game, actor?: string, action?: Actio
     const live = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn);
     if (!live.some(promise => promise.answer)) continue;
     if (g.pendingFremenMove?.order.player === p.id || g.pendingIxMove?.player === p.id ||
-      g.pendingChoamMove?.player === p.id) continue;
+      g.pendingChoamMove?.player === p.id ||
+      g.pendingAdvisorMatching?.intent.kind === 'movement' && g.pendingAdvisorMatching.intent.order.player === p.id ||
+      g.response?.kind === 'advisorFlip' && g.response.owner === p.id ||
+      g.pendingAutomaticAdvisorFlips?.some(source => source.owner === p.id ||
+        source.producer === 'groundMovement' && source.mover === p.id)) continue;
     const early = g.phase < 5 || sourcePhase < 5;
-    const voluntary = actor === p.id && (!early || !!action &&
+    const voluntary = actor === p.id && action?.type !== 'passResponse' && (!early || !!action &&
       (['card', 'bribe', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revive', 'reviveLeader', 'reviveKwisatz', 'emperorRevival', 'decision'].includes(action.type) ||
         action.type === 'richeseBid' && typeof action.amount === 'number' && action.amount > 0 ||
         action.type === 'ready' && [2, 4].includes(sourcePhase)));

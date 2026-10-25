@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Classic Advanced ground-movement promises — 25 October 2026
+
+Extend the existing general current-turn Truthtrance composition to clean
+classic Advanced Movement. Count physical typed counters once, retain immediate
+Hajr timing and quote native routes. Owned advisor preparation/arrival flips
+may supply an allowed reachability witness; actual independent counters still
+resolve before commitment/impossibility. Normal stance settlement preserves
+continuously-alone holds. A mandatory final response pass is not a voluntary
+way to destroy or evade a promise. No new publisher timing ruling is claimed;
+earlier Advanced, expansions/modules and arbitrary commitments remain open.
+[Meaning, sources and native/controlled evidence](TRUTHTRANCE_MOVEMENT_PROMISES.md#classic-advanced-movement--25-october-2026).
+
 ## Planetologist resident matching groups — 24 October 2026
 
 Compose supplied physical28's resident-matching rule with physical17's counter

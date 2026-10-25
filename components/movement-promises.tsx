@@ -32,6 +32,7 @@ export function MovementPromises({ game, act, busy }: { game: GameView; act: (ac
     : next?.type === 'card' && card?.effect === 'nullentropyBox' ? 'Pay 2 spice and search with Nullentropy Box'
     : next?.type === 'card' && card?.effect === 'ghola' ? `Play Ghola to return ${amount} ${amount === 1 ? 'force' : 'forces'} to reserves for the required movement`
     : next?.type === 'card' && next.mode === 'choam' ? 'Play Kulon to extend the required movement'
+    : next?.type === 'prepareAdvisors' ? `Prepare advisors in ${destinationLabel} for the required movement`
     : next?.type === 'card' ? 'Play Hajr to prepare the required movement'
     : next?.type === 'ship' ? `Ship ${amount} forces to ${destinationLabel}, sector ${sector}, before the required movement`
     : next?.type === 'endMovement' ? 'Finish movement while honoring No'

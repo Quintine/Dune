@@ -50,8 +50,10 @@ export function findMovementCompletion(source: Game, actor: string,
     // validates every owned card and never inspects unknown Box faces here.
     const recovery = player.hand.some(card => card.effect === 'ghola' || card.effect === 'nullentropyBox') ? player.tanks : 0;
     if (live.some(promise => promise.answer && promise.minimum > physical + (player.shipped ? 0 : player.reserves + recovery))) return null;
-    const key = JSON.stringify([player.forces, player.elites, player.moved, player.shipped, player.reserves, player.tanks, player.hand.map(card => card.id),
-      player.hajrPlays, player.ornithopterExtraMoves, player.spice, game.choamMovement,
+    const key = JSON.stringify([player.forces, player.elites, player.advisors, player.moved, player.shipped, player.reserves, player.tanks, player.hand.map(card => card.id),
+      player.hajrPlays, player.hajrWindow, player.ornithopterExtraMoves, player.spice, game.choamMovement,
+      player.fremenMovementBlocked, player.advisorFlipMovementBlocked, game.advisorMatchingDenied,
+      game.advisorPreparation,
       game.aid, game.karamaShipping, game.guildRateBlocked, game.shipmentPromises,
       game.discard.map(card => card.id), game.movementDiscardKnowledge?.[actor], game.pendingNullentropy,
       game.choamWorthlessBlocked, game.hajr, game.ornithopter ? [game.ornithopter.mode, game.ornithopter.startingMove, game.ornithopter.completed, game.ornithopter.cohort] : null,
@@ -69,6 +71,8 @@ export function findMovementCompletion(source: Game, actor: string,
         ? [{ ornithopterEvent: game.ornithopter.event }]
         : [{}, ...(card ? [{ movementCard: card.id, ornithopter: 'range3' },
           { movementCard: card.id, ornithopter: 'twoGroups' }] : [])];
+      const stances: Partial<Action>[] = game.advanced && player.faction === 'beneGesserit'
+        ? [{}, { fighters: true }] : [{}];
       // An exhausted ordinary move cannot leave Yes pending without an owned
       // card that could grant another move. Treat held Box/Hajr/Ornithopter
       // conservatively; their actual availability remains the adapter's job.
@@ -85,8 +89,8 @@ export function findMovementCompletion(source: Game, actor: string,
           const event = { territory: destination.id, amount };
           if (!movementEventAllowed(live, event)) continue;
           if (!mayMoveAgain && live.some(promise => promise.answer && !movementMatches(promise, event))) continue;
-          for (const group of groups(player, keys, amount)) for (const mode of modes) {
-            const action = { ...group, ...mode, territory: destination.id, sector };
+          for (const group of groups(player, keys, amount)) for (const mode of modes) for (const stance of stances) {
+            const action = { ...group, ...mode, ...stance, territory: destination.id, sector };
             const next = adapter.project(game, actor, action);
             if (!next) continue;
             const settled = settleMovementEvent(pending, actor, game.turn, next.event);
