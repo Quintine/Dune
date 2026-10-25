@@ -1,5 +1,20 @@
 # Rule decision index
 
+## Occupied Ecaz living Duke grant — 26 October 2026
+
+Connect the printed occupied-face living Duke grant through existing stable
+qualification; the user's Ecaz-only revival ruling still overrides its foreign-
+revival text. Under the 14 October recommended-policy authority, select one
+recipient per turn/qualification, one battle, unused turn-end expiry and no
+restoration of an old holder. A sole recipient receives him automatically;
+two eligible recipients require the occupier's choice at an uncommitted native
+boundary. Loss of occupation/recipient ends only this tenure. Native living
+Ecaz/Moritani acquisition respects occupied priority; Ecaz's independent revival
+remains distinct. No Karama response is created for this immune Homeworld
+benefit. This is visibly provisional tenure/priority composition, not a new
+publisher example. Captive/Ghola/concealed transfer remains guarded.
+[Source, policy and evidence](HOMEWORLD_ECAZ_DUKE.md#source-and-selected-ordinary-lifecycle--26-october-2026).
+
 ## Native early promises and owned CHOAM opening — 26 October 2026
 
 Extend both current-turn shipment and physical ground-movement questions to

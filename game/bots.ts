@@ -1213,6 +1213,9 @@ function policyActions(g: GameView): Action[] {
   if (!(me.bot ?? me.autopilot) || g.status === 'finished') return [];
   if (g.status === 'lobby') return me.ready ? [] : [{ type: 'ready' }];
   if (g.homeworldTupileBlocked) return [];
+  const dukeGrant = g.homeworldEcazDuke;
+  if (dukeGrant && dukeGrant.occupier === me.id && !dukeGrant.blocked && dukeGrant.event && dukeGrant.recipients.length)
+    return [{ type: 'homeworldDuke', event: dukeGrant.event, recipient: dukeGrant.recipients[0].id }];
   if (g.decision?.kind === 'homeworldTupileCleanup' || g.homeworldTupileCleanup)
     return tupileCleanupActions(g);
   if (!g.decision && !g.response && g.richeseBidding?.stage === 'cacheOffer' && g.richeseBidding.offerBlocked)

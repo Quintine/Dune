@@ -1,6 +1,7 @@
 'use client';
 import { TraitorDecisionPromises } from './traitor-decision-promises';
 import { MovementPromises } from './movement-promises';
+import { HomeworldEcazDuke } from './homeworld-ecaz-duke';
 import { integerInputValue } from '../lib/integer-input';
 import { EcazSetup } from './ecaz-setup';
 import { StormCardInspector, StormCardLogInspector } from './storm-cards';
@@ -1973,6 +1974,7 @@ export function GameTable({
           </div>
           {g.battle?.revealed && <a className="battle-display-link" href="#revealed-battle-plans">Compare revealed battle plans</a>}
           <PrivateBattlePlan game={g} />
+          <HomeworldEcazDuke game={g} act={act} busy={reactionBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <MovementPromises game={g} act={act} busy={reactionBusy} />
           {!reactionOwnsControls && g.semutaReaction && <SemutaReaction game={g} act={act} busy={reactionBusy} />}
           {g.karamaBlocked && <p className="notice" role="status">{g.karamaBlocked}</p>}

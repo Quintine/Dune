@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 26 October 2026 — Occupied Ecaz Duke grant
+
+**Prototyped / Partial.** The printed occupied Ecaz benefit now grants the living shared Duke to its
+qualified occupier or reciprocal ally. A sole recipient receives him automatically;
+an allied occupier chooses in persistent controls before either plan seals.
+Stable occupation supplies authority, native Duke acquisition respects priority,
+and the user's Ecaz-only revival ruling stays intact. The one-choice/turn,
+one-battle and unused turn-end lifecycle is visibly provisional; departed or
+ineligible grants end without restoring an old holder. Captive/Ghola transfer
+and wider profiles remain guarded; no public start gate changes.
+
+Three disjoint helper/native-source/control lanes and root integration pass
+**15 files,129/129**, types/lint/build and **eight native engine/GameTable SSR/
+actual grant-control journeys** on unchanged source. Thirty-five new cases cover
+automatic/explicit recipients, source/actor guards, one use/death, actual Ecaz
+revival, controlled lifetime boundaries and all four minimal profiles. Native
+Basic97/99 and Advanced113/115-action sources retain all33 original cards:
+real deferred bribe, shipments, worm Nexus alliance, four-force World invasion,
+actual victory leaving3 foreign occupiers, and a separate original next battle.
+No played force, wallet, hand, clock, occupation or grant is installed. Pure
+quote/contract controls remain labelled controlled supplements.
+
+Feedback repairs a fixture's later Basic dial0 to native legal1 and types its
+known recipient's original poison lookup. Actual rule behavior needs no repair
+after the smallest native case. The final v2 tree remains unchanged through
+shared proof. Existing source authority, Karama immunity and Ecaz-only revival
+are distinct from the selected ordinary tenure/priority policy.
+Final frozen v2 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-occupied-ecaz-duke-proof-v2/`;
+journeys/HTML: adjacent `20261026-occupied-ecaz-duke-runtime/`.
+Complete rules, wider interactions and final assurance remain open. No saved-
+room/D1/server, reset/restart, deployment or recovery operation occurs. DOM/
+hydration, browser/mobile and exact-revision deployed acceptance remain due.
+[Source and provisional boundaries](HOMEWORLD_ECAZ_DUKE.md#source-and-selected-ordinary-lifecycle--26-october-2026).
+
 ## 26 October 2026 — Native early Truthtrance promises
 
 **Prototyped / Partial.** Bare registered native factions with selected decks can answer current-turn

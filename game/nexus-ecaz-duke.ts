@@ -3,6 +3,7 @@ import type { Game } from './engine';
 import { acquireDuke, dukeController, DUKE_VIDAL_ID, type DukeSource } from './duke-vidal';
 import { nexusCardMode } from './nexus-cards';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
+import { quoteHomeworldEcazDuke } from './homeworld-ecaz-duke';
 import { mixedE3NexusLeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile } from './leader-skill-profile';
 import { mixedE3NexusProfile, pairedE3NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 import { nexusCoreProfile } from './faction-module-profile';
@@ -125,6 +126,8 @@ export function quoteNexusEcazDuke(g: Game, owner: string, automaticPending = fa
   let blocked: string | null = null;
   if (!nexusEcazDukeModeSupported(g) || nexusCardMode('ecaz', holder.faction, roster) !== 'cunning')
     blocked = 'Ecaz Nexus Cunning requires a supported original paired or standalone Ecaz Nexus profile.';
+  else if (duke && !duke.leader.dead && quoteHomeworldEcazDuke(g).nativeAcquisitionBlocked)
+    blocked = 'Occupied Ecaz reserves Duke Vidal for its occupier or reciprocal ally.';
   else if (holder.ally) blocked = 'Use Ecaz Nexus Cunning while unallied.';
   else if (g.status !== 'playing')
     blocked = 'Wait until play begins before using Ecaz Nexus Cunning.';

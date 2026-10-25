@@ -1,7 +1,7 @@
 import type { Leader } from './cards';
 
 export const DUKE_VIDAL_ID = 'duke-vidal';
-export type DukeSource = 'moritani' | 'ecaz' | 'ecazNexus' | 'ally';
+export type DukeSource = 'moritani' | 'ecaz' | 'ecazNexus' | 'ally' | 'homeworldEcaz';
 export type DukeState = {
   leader: Leader;
   controller: string | null;
@@ -68,7 +68,7 @@ function validUnderlay(state: Pick<DukeState, 'controller' | 'acquiredTurn' | 's
     ? state.acquiredTurn !== null || state.source !== null
     : typeof state.controller !== 'string' || !state.controller.trim() ||
       !Number.isSafeInteger(state.acquiredTurn) || state.acquiredTurn! < 1 ||
-      state.acquiredTurn! > turn || !['moritani', 'ecaz', 'ecazNexus', 'ally'].includes(state.source!))
+      state.acquiredTurn! > turn || !['moritani', 'ecaz', 'ecazNexus', 'ally', 'homeworldEcaz'].includes(state.source!))
     throw new Error('Duke Vidal lost his underlying custody.');
 }
 
@@ -210,7 +210,7 @@ export function acquireDuke(
   validUnderlay(state, turn);
   if (typeof controller !== 'string' || !controller.trim())
     throw new Error('Choose a player to control Duke Vidal.');
-  if (!['moritani', 'ecaz', 'ecazNexus', 'ally'].includes(source))
+  if (!['moritani', 'ecaz', 'ecazNexus', 'ally', 'homeworldEcaz'].includes(source))
     throw new Error('Choose a valid source of Duke Vidal custody.');
   if (state.leader.dead && source !== 'ecazNexus')
     throw new Error('Duke Vidal is in the Tanks and cannot be acquired by this source.');
@@ -261,12 +261,14 @@ export function consumeDuke(state: DukeState): DukeState {
 /**
  * End-turn custody only. Ecaz's ordinary Ambassador acquisition lasts until
  * battle use; Ecaz Nexus Cunning and the Basic Ambassador ally loan last this
- * turn. The prototype sets an unused loan aside, pending return-policy refinement.
+ * turn. Occupied Ecaz grants likewise expire unused, with a new choice on a
+ * continuing qualified occupation next turn. The prototype sets an unused loan
+ * aside, pending return-policy refinement.
  */
 export function expireDuke(state: DukeState, turn: number): DukeState {
   validTurn(turn);
   if (
-    (state.source === 'moritani' || state.source === 'ecazNexus' || state.source === 'ally') &&
+    (state.source === 'moritani' || state.source === 'ecazNexus' || state.source === 'ally' || state.source === 'homeworldEcaz') &&
     state.acquiredTurn !== null &&
     state.acquiredTurn <= turn &&
     !state.leader.dead &&
@@ -290,6 +292,7 @@ export const DUKE_VIDAL_RULES = Object.freeze({
     'Moritani may use Duke Vidal for one battle. An unused living, uncaptured Duke is set aside at the end of the turn; Moritani must qualify again on a later turn to acquire him again.',
     'Karama may prevent Moritani from acquiring Duke Vidal. It does not strip him from Moritani once already controlled and does not cancel his ordinary battle use.',
     'The Ecaz Ambassador may acquire Duke Vidal when he is not dead, captured or a ghola. Ecaz keeps him until battle use or until Moritani takes him. The Ambassador’s separate alliance choice can permit a loan to the faction that has just allied with Ecaz for that turn.',
+    'Occupied Ecaz reserves the living Duke for its occupier or reciprocal ally. A sole recipient receives him automatically; an allied occupier chooses at an otherwise quiet boundary before either Battle Plan seals. The provisional grant permits one battle and expires unused at turn end; occupation loss ends its own tenure without restoring an old holder. Only Ecaz may revive him.',
     'Battle death sends the same disc to the Tanks and preserves its death history. Only Ecaz may revive Duke Vidal, including when using the Ghola Treachery Card. His printed revival price is five spice, distinct from his battle strength of six, and this revival does not require other leaders to be dead.',
     'Ecaz can begin ordinary leader revival when five of its leaders are in the Tanks, counting Duke Vidal, even if it still has another living leader. These special rules do not create an extra native leader or an extra Traitor card.',
   ]),

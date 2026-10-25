@@ -128,6 +128,7 @@ import { beginHomeworldOccupiedIncome, quoteHomeworldOccupiedIncomeChoice, homew
 import { createOccupiedPercentageState, quoteOccupiedPercentageSource, allocateOccupiedPercentageReceipt, validateOccupiedPercentageState, type OccupiedPercentageState, type OccupiedPercentageSource } from './homeworld-occupied-percentage';
 import { quoteOccupiedBiddingAuthority, requireOccupiedBiddingController, requireOccupiedBiddingBonusRecipient } from './homeworld-occupied-bidding';
 import { quoteStableHomeworldOccupation } from './homeworld-stable-occupation';
+import { quoteHomeworldEcazDuke, createHomeworldEcazDukeReceipt, quoteHomeworldEcazDukeLifecycle, type HomeworldEcazDukeReceipt } from './homeworld-ecaz-duke';
 import { createOccupiedTupileState, syncOccupiedTupileLease, quoteOccupiedTupileAuthority, quoteOccupiedTupileCleanup, completeOccupiedTupileCleanup, validateOccupiedTupileState, type OccupiedTupileState } from './homeworld-occupied-tupile';
 import { ecazHomeworldVictoryProgress, type EcazHomeworldVictoryProgress } from './ecaz-homeworld-victory';
 import { quoteGrummanCollection, quoteGrummanCollectionAction } from './grumman-collection';
@@ -2220,6 +2221,8 @@ export type Game = {
   /** Null/absent disables the module; custody is installed at force placement. */
   homeworlds?: { custody: HomeworldCustody | null; historyVersion?: 1 } | null;
   homeworldOccupationHistory?: HomeworldOccupationHistory;
+  /** Actual occupied-Ecaz recipient choices; historical grants never restore a holder. */
+  homeworldEcazDukeGrants?: HomeworldEcazDukeReceipt[];
   /** Fresh development occupation entry only; never inferred for an older Homeworld save. */
   homeworldOccupationPreview?: true;
   /** Fresh printed Ecaz high-card victory, separate from ordinary stronghold points. */
@@ -18487,7 +18490,7 @@ function ambassadorEffectBlock(
       return 'Assigning the Ecaz Ambassador effect to an ally is still being implemented.';
     if (g.players.some((p) => p.leaders.some((l) => l.id === DUKE_VIDAL_ID)))
       return 'Duke Vidal is unavailable for this acquisition.';
-    return ecazDukeAcquisitionBlock(g, owner.id);
+    return occupiedEcazDukePriority(g) ?? ecazDukeAcquisitionBlock(g, owner.id);
   }
   if (
     effect === 'ixians' &&
@@ -20507,7 +20510,7 @@ function ecazAmbassadorLoanBlock(g: Game, owner: Player, entrant: Player) {
     duke.leader.dead || duke.leader.concealed ||
     duke.leader.capturedBy || duke.leader.gholaBy)
     return 'Duke Vidal is unavailable for this loan.';
-  return duke.controller === owner.id ? null : ecazDukeAcquisitionBlock(g, owner.id);
+  return occupiedEcazDukePriority(g) ?? (duke.controller === owner.id ? null : ecazDukeAcquisitionBlock(g, owner.id));
 }
 function ecazAllianceIntegrity(g: Game) {
   const entry = g.pendingAmbassador;
@@ -20860,6 +20863,7 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
         'This entrant cannot trigger the Ecaz Ambassador.',
       );
       try {
+        requireRule(!occupiedEcazDukePriority(g), occupiedEcazDukePriority(g) ?? 'Duke Vidal is reserved by occupied Ecaz.');
         acquiredDuke = quoteEcazDukeAcquisition(g, owner.id);
       } catch (error) {
         if (error instanceof EcazDukeAcquisitionError)
@@ -22562,7 +22566,7 @@ function projectedBattleOrder(g: Game) {
 /** Evaluate only at the committed end of movement, using the normal battle geometry. */
 function offerMoritaniDuke(g: Game) {
   const owner = byFaction(g, 'moritani');
-  if (!owner || g.dukeAcquisitionTurn === g.turn) return false;
+  if (!owner || g.dukeAcquisitionTurn === g.turn || occupiedEcazDukePriority(g)) return false;
   g.dukeAcquisitionTurn = g.turn;
   g.dukeVidal ??= createDukeVidal();
   const duke = g.dukeVidal;
@@ -23919,6 +23923,54 @@ function observeOccupation(g: Game, cause: 'change' | 'turnStart' | 'turnEnd' = 
       ? `homeworld-change-${g.homeworldOccupationHistory!.sources[0].event}-${g.homeworldOccupationHistory!.sources.length}`
       : `homeworld-turn-${g.turn}-${cause}`));
   syncTupileSlots(g);
+}
+/** A new Duke grant may precede the first sealed plan, but never changes a
+ * committed parent or a chosen physical leader in an existing Battle Plan. */
+function homeworldEcazDukeBoundaryBlocked(g: Game): boolean {
+  const freshBattle = g.battle && !g.battle.revealed && !Object.keys(g.battle.plans).length;
+  return !!g.pendingGuildTransport || nexusCleanPlayBlocked(freshBattle ? { ...g, battle: null } : g);
+}
+function occupiedEcazDukePriority(g: Game): string | null {
+  return homeworldRule(() => quoteHomeworldEcazDuke(g)).nativeAcquisitionBlocked
+    ? 'Occupied Ecaz reserves Duke Vidal for its occupier or reciprocal ally.' : null;
+}
+function homeworldEcazDukeOffer(g: Game, viewer: string) {
+  const quote = homeworldRule(() => quoteHomeworldEcazDuke(g));
+  if (quote.owner !== viewer) return null;
+  const blocked = quote.blocked ?? (homeworldEcazDukeBoundaryBlocked(g)
+    ? 'Finish the current interaction or committed Battle Plans before choosing Duke Vidal.' : null);
+  return { event: blocked ? null : quote.event, blocked, occupier: quote.owner as string | null,
+    recipients: quote.recipients.map(id => ({ id, name: getPlayer(g, id).name })) };
+}
+function claimHomeworldEcazDuke(g: Game, actor: string, event: unknown, recipient: unknown) {
+  requireRule(!homeworldEcazDukeBoundaryBlocked(g),
+    'Finish the current interaction or committed Battle Plans before choosing Duke Vidal.');
+  requireRule(typeof event === 'string' && typeof recipient === 'string',
+    'Choose the original occupied Ecaz grant and an eligible recipient.');
+  const receipt = homeworldRule(() => createHomeworldEcazDukeReceipt(g, actor, event, recipient));
+  g.dukeVidal = homeworldRule(() => acquireDuke(g.dukeVidal!, recipient, g.turn, 'homeworldEcaz'));
+  (g.homeworldEcazDukeGrants ??= []).push(receipt);
+  log(g, `${getPlayer(g, actor).name} granted the living Duke Vidal to ${getPlayer(g, recipient).name} through occupied Ecaz. This provisional grant permits one battle and ends unused at turn end; only Ecaz may revive him.`,
+    { faction: getPlayer(g, actor).faction, name: 'Occupied Ecaz Duke grant' });
+}
+function reconcileHomeworldEcazDuke(g: Game) {
+  if (g.status !== 'playing' || !g.homeworldOccupationPreview || !byFaction(g, 'ecaz') || homeworldEcazDukeBoundaryBlocked(g)) return;
+  const lifecycle = homeworldRule(() => quoteHomeworldEcazDukeLifecycle(g));
+  if (lifecycle.blocked) return;
+  if (lifecycle.release && g.dukeVidal?.source === 'homeworldEcaz') {
+    g.dukeVidal = consumeDuke(g.dukeVidal);
+    log(g, `The occupied Ecaz Duke grant ended: ${lifecycle.reason ?? 'its original entitlement ended'}. Duke Vidal is set aside without restoring an earlier controller.`);
+  }
+  const quote = homeworldRule(() => quoteHomeworldEcazDuke(g));
+  const duke = g.dukeVidal;
+  if (quote.nativeAcquisitionBlocked && duke?.controller && duke.source !== 'homeworldEcaz' &&
+    !duke.leader.dead && !duke.leader.capturedBy && !duke.leader.gholaBy && !duke.leader.concealed) {
+    g.dukeVidal = consumeDuke(duke);
+    log(g, 'Occupied Ecaz displaced Duke Vidal’s ordinary faction grant; the occupier chooses its eligible recipient.');
+  }
+  const available = homeworldRule(() => quoteHomeworldEcazDuke(g));
+  if (!available.blocked && available.event && available.owner && available.recipients.length === 1)
+    claimHomeworldEcazDuke(g, available.owner, available.event, available.recipients[0]);
 }
 function homeworldHistoryIntegrity(g: Game) {
   const initialized = g.homeworlds?.historyVersion === 1;
@@ -29835,7 +29887,9 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       g.phase === 5 && g.dukeAcquisitionTurn === g.turn && g.dukeVidal,
       'This Duke Vidal acquisition is no longer current.',
     );
-    if (!canceled && !g.dukeVidal.leader.dead) {
+    if (!canceled && occupiedEcazDukePriority(g)) {
+      log(g, 'Occupied Ecaz retains priority over this Moritani Duke acquisition. No native grant occurred.');
+    } else if (!canceled && !g.dukeVidal.leader.dead) {
       g.dukeVidal = acquireDuke(g.dukeVidal, response.owner, g.turn, 'moritani');
       log(g, `${getPlayer(g, response.owner).name} acquired Duke Vidal for one battle this turn.`);
     } else if (!canceled) {
@@ -34363,6 +34417,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   reconcileShipmentPromises(g, { actor: id, action, phase: state.phase });
   settleAutomaticContinuations(g);
   observeOccupation(g);
+  reconcileHomeworldEcazDuke(g);
   discoveryIntegrity(g);
   greatMakerIntegrity(g);
   nexusChoamTradeIntegrity(g);
@@ -34409,6 +34464,7 @@ function finishActionContinuations(g: Game) {
   if (g.pendingNexusEmperorSellerPurchase || g.pendingAmbassador?.nexusPurchase) return;
   if (pendingNexusTraitors(g)) return;
   observeOccupation(g);
+  reconcileHomeworldEcazDuke(g);
   resumeHomeworldRevivalReturn(g);
   resumeHomeworldVictoryReturn(g);
   resumeMarketGhola(g);
@@ -34620,6 +34676,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   ecazCollectionIntegrity(state);
   ecazAllianceIntegrity(state);
   const g = structuredClone(state);
+  reconcileHomeworldEcazDuke(g);
   syncTupileSlots(g);
   prepareTupileCleanup(g);
   if (g.pendingHomeworldTupileCleanup || tupileSourceBlock(g)) return g;
@@ -34860,6 +34917,10 @@ function applyActionInner(
   if (t === 'nexusChoamTrade') { playNexusChoamTrade(g, p, action); return g; }
   if (t === 'nexusChoamBetrayal') { playNexusChoamBetrayal(g, p, action); return g; }
   if (t === 'nexusEcazInquiry') { playNexusEcazInquiry(g, p, action); return g; }
+  if (t === 'homeworldDuke') {
+    requireRule(Object.keys(action).sort().join(',') === 'event,recipient,type', 'Choose only the current occupied Ecaz grant and recipient.');
+    claimHomeworldEcazDuke(g, p.id, action.event, action.recipient); return g;
+  }
   if (t === 'nexusEcazDuke') { playNexusEcazDuke(g, p, action); return g; }
   if (t === 'nexusEmperorRevive') { playNexusEmperorRevive(g,p,action); return g; }
   if (t === 'nexusEmperorPurchase') { playNexusEmperorPurchase(g,p,action); return g; }
@@ -38880,6 +38941,7 @@ export function viewGame(state: Game, id: string) {
     advanced: g.advanced,
     advancedPreview: g.advancedPreview === true,
     dukeVidal: sharedDuke,
+    homeworldEcazDuke: homeworldEcazDukeOffer(g, id),
     moritaniTerror: g.moritaniTerror
       ? projectTerror(g.moritaniTerror, me.faction === 'moritani')
       : null,

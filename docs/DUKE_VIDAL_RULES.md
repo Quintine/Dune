@@ -1,5 +1,13 @@
 # Duke Prad Vidal lifecycle
 
+## Occupied Ecaz grant — 26 October 2026
+
+The occupied Homeworld now connects its living shared-Duke recipient choice,
+automatic sole recipient, occupied priority and visibly provisional one-battle/
+turn-end lifecycle. The user's Ecaz-only revival rule remains. Captive/Ghola
+transfer, wider combinations and final acceptance are separate.
+[Current source and native proof](HOMEWORLD_ECAZ_DUKE.md).
+
 Primary-source audit, 2026-09-06. Scope: the separate leader disc and its acquisition, use, capture and revival. This is a bounded implementation contract; unresolved combinations below remain distinct from verified ordinary behavior.
 
 ## Sources and identity
