@@ -2,6 +2,7 @@ import { ordinaryDiscardIncomeMatches } from './ordinary-discard-income';
 import { semutaTerminalArrivalSupported } from './semuta-terminal-arrival';
 import { semutaDisasterArrivalSupported } from './semuta-disaster-arrival';
 import { semutaAdvisorArrivalSupported } from './semuta-advisor-arrival';
+import { semutaSpiritualArrivalSupported } from './semuta-spiritual-arrival';
 import { traitorDecisionChoices, bindTraitorDecisionPromise, settleTraitorDecisionPromises,
   reconcileTraitorDecisionPromises as reconcileTraitorDecisions, validateTraitorDecisionPromise,
   TraitorDecisionError, type TraitorDecisionContext, type TraitorDecisionPromise } from './traitor-decision-promises';
@@ -5857,20 +5858,35 @@ function semutaAuctionAdvantageResponse(g: Game, response: ResponseWindow, playe
     throw error;
   }
 }
+/** Qualify only the original ordinary foreign shipment and its exact selected
+ * Spiritual packet. Native quotes retain the shipping/matching/arrival stage. */
+function semutaSpiritualKaramaParent(g: Game, response: ResponseWindow): boolean {
+  if (!semutaSpiritualArrivalSupported(g)) return false;
+  try {
+    if (response.spiritualAdvisorSource) currentSpiritualAdvisorResponse(g,response);
+    else if (response.automaticAdvisorFlip?.producer === 'spiritualArrival') currentAutomaticAdvisorFlip(g,response);
+    else return false;
+    return true;
+  } catch (error) {
+    if (error instanceof RuleError) return false;
+    throw error;
+  }
+}
 /** These denied native branches change only knowledge, an unused packet or
- * the declared replacement attempt. Keep complex arrival/opening parents out. */
+ * the declared replacement attempt. Arrival parents require an exact source. */
 function semutaTerminalKaramaResponse(g: Game, response: ResponseWindow, player: string,
   decision: Game['decision'] = g.decision): boolean {
+  const spiritual = response.kind === 'advisor' && semutaSpiritualKaramaParent(g,response);
   if (!['advisor','atreidesSpice','stormPeek','faceDancerReplacement'].includes(response.kind) ||
       g.battle || g.phaseOpening || g.pendingKarama || g.pendingRevival ||
       g.pendingShipment || g.pendingGuildTransport || g.pendingHomeworldShipment ||
-      g.pendingSpiritualAdvisor || g.pendingAmbassador || g.pendingTerrorEntry ||
-      g.pendingArrivalOverlap || !semutaTerminalArrivalSupported(g,response) ||
+      (g.pendingSpiritualAdvisor && !spiritual) || g.pendingAmbassador || g.pendingTerrorEntry ||
+      g.pendingArrivalOverlap || (!spiritual && !semutaTerminalArrivalSupported(g,response)) ||
       g.pendingIxMove || g.pendingFremenMove || g.pendingChoamMove ||
       g.ornithopter || g.summonedWorm || g.wormRides.length > 0 ||
       g.choamMarket || g.pendingChoamMarketGhola) return false;
   if (response.kind === 'advisor' &&
-      (response.spiritualAdvisorSource || response.advisorResume ||
+      ((response.spiritualAdvisorSource && !spiritual) || response.advisorResume ||
         response.advisorFollowup || response.advisorRemaining !== undefined ||
         response.advisorAmbassadorEvent !== undefined)) return false;
   try {
@@ -6073,23 +6089,26 @@ function semutaMarketGrantKaramaResponse(g: Game, response: ResponseWindow, play
 /** Ordinary Advanced advisor conversion sources retain their native timing:
  * preparation, uncommitted matching or an already completed native producer. */
 function semutaAdvisorFlipKaramaResponse(g: Game, response: ResponseWindow, player: string): boolean {
+  const spiritual = response.kind === 'advisorFlip' && semutaSpiritualKaramaParent(g,response);
+  const relocation = response.automaticAdvisorFlip?.producer === 'specialRelocation';
+  const ambassador = relocation && g.pendingAutomaticAdvisorRelocation?.resume.kind === 'ambassador';
   if (response.kind !== 'advisorFlip' || !g.advanced ||
       response.owner !== byFaction(g,'beneGesserit')?.id ||
       g.battle || g.decision || g.phaseOpening || g.pendingKarama || g.truthtrance ||
       g.pendingExchange || g.pendingNullentropy || g.pendingRicheseGift || g.pendingRichesePurchaseIncome ||
       g.pendingRevival || g.pendingShipment || g.pendingGuildTransport || g.pendingHomeworldShipment ||
       g.pendingFremenMove || g.pendingIxMove || g.pendingMobileMove || g.pendingChoamMove ||
-      g.pendingSpiritualAdvisor || g.pendingAmbassador || g.pendingTerrorEntry || g.pendingArrivalOverlap ||
-      !semutaAdvisorArrivalSupported(g,response) || g.ornithopter || g.summonedWorm || g.wormRides.length > 0 ||
+      (g.pendingSpiritualAdvisor && !spiritual) || (g.pendingAmbassador && !ambassador) || g.pendingTerrorEntry || g.pendingArrivalOverlap ||
+      (!spiritual && !semutaAdvisorArrivalSupported(g,response)) || g.ornithopter || g.summonedWorm || g.wormRides.length > 0 ||
       g.currentAuctionSale || g.choamMarket || g.pendingChoamMarketGhola || g.pendingIxAlly ||
       response.advisorGatherMatchingSource || response.advisorTransportMatchingSource ||
-      response.advisorAmbassadorMatchingSource || response.spiritualAdvisorSource ||
+      response.advisorAmbassadorMatchingSource || (response.spiritualAdvisorSource && !spiritual) ||
       (response.advisorResume !== undefined && !(response.advisorResume === 'preparation' && response.advisorPreparationSource)) ||
       (!!g.pendingAdvisorMatching !== !!response.advisorMatchingSource) ||
       (!!g.pendingAutomaticAdvisorFlips?.length !== !!response.automaticAdvisorFlip)) return false;
   if ((g.auction || g.richeseAuction) && !response.advisorPreparationSource) return false;
   if (response.automaticAdvisorFlip &&
-      g.pendingAutomaticAdvisorFlips?.some(source => !['groundMovement','guildTransport','gamont','storm','homeworldTransport','battleLosses','faceDance'].includes(source.producer))) return false;
+      g.pendingAutomaticAdvisorFlips?.some(source => !['groundMovement','guildTransport','gamont','storm','homeworldTransport','battleLosses','faceDance','specialRelocation','spiritualArrival'].includes(source.producer))) return false;
   const context: Game = {...g,pendingTreacheryDiscard:null,response};
   try {
     // Native source quotes validate denial without requiring the spent card,
@@ -6367,6 +6386,14 @@ function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinu
       faceDance:g.pendingAutomaticAdvisorFaceDance, context:g.lastBattleContext,
       pending:g.pendingFaceDance, custody:g.homeworlds,
       players:g.players.map(p => ({id:p.id, faceDancers:p.faceDancers, replaced:p.faceDancerReplacedTurn})),
+    } : advisorProducer === 'specialRelocation' ? {
+      relocation:g.pendingAutomaticAdvisorRelocation, ambassador:g.pendingAmbassador,
+      discovery:g.discoveryEntry, tokens:g.ecazAmbassadors,
+    } : undefined,
+    spiritualParent: (terminal || advisor) && (c.use.response.spiritualAdvisorSource ||
+      advisorProducer === 'spiritualArrival') ? {
+      frame:g.pendingSpiritualAdvisor, arrivals:g.pendingArrivalReaction,
+      tech:g.techTokens,
     } : undefined,
     order: g.order,
     players: g.players.map(p => ({
@@ -6936,7 +6963,10 @@ function treacheryDiscardIntegrity(g: Game) {
     continuation.entry.cause === 'ambassador';
   const ambassadorCost =
     (continuation?.kind === 'karamaBonusDiscard' && continuation.use.response.source === 'ambassador') ||
-    (continuation?.kind === 'karamaNoFieldDiscard' && continuation.use.response.source === 'ambassadorNoField');
+    (continuation?.kind === 'karamaNoFieldDiscard' && continuation.use.response.source === 'ambassadorNoField') ||
+    (continuation?.kind === 'karamaAdvisorFlipDiscard' &&
+      continuation.use.response.automaticAdvisorFlip?.producer === 'specialRelocation' &&
+      g.pendingAutomaticAdvisorRelocation?.resume.kind === 'ambassador');
   requireRule(
     (g.status === 'playing' || (truth && g.status === 'setup')) &&
       pending.sequence === sequence &&
@@ -8593,7 +8623,10 @@ function semutaOfferSupported(
         !g.pendingArrivalOverlap && !g.pendingRevival &&
         !g.ornithopter && !g.ecologicalStorm)) &&
     (richeseGiftDiscard || ambassadorBenefitDiscard || (!g.pendingExchange && (replacementCostDiscard || !g.pendingIxAlly) && !g.pendingNullentropy &&
-      !g.pendingAmbassador && (terrorAllianceDiscard || !g.pendingTerrorEntry))) &&
+      (!g.pendingAmbassador || advisorDiscard &&
+        continuation.use.response.automaticAdvisorFlip?.producer === 'specialRelocation' &&
+        g.pendingAutomaticAdvisorRelocation?.resume.kind === 'ambassador') &&
+      (terrorAllianceDiscard || !g.pendingTerrorEntry))) &&
     (richeseGiftDiscard || noFieldDiscard || continuation.kind === 'karamaShipmentDiscard' ||
       continuation.kind === 'specialKaramaDiscard' ||
       bgDiscard ||

@@ -2,6 +2,88 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Spiritual Advisor and relocation costs — 26 October 2026
+
+**Prototyped / Partial.** Existing `karamaTerminalDiscard` admits the original
+ordinary Spiritual shipping cost; `karamaAdvisorFlipDiscard` admits its distinct
+matching/committed-arrival costs and completed Ambassador/Discovery relocation
+conversion costs. Existing persistent neutral controls, claim/pass and minimal
+legal profiles serve these sources. This extends the recorded
+[Spiritual contract](SPIRITUAL_ADVISORS.md) and
+[automatic-conversion contract](ADVISOR_AUTOMATIC_FLIPS.md), without new rulings,
+native calculations, public starts or mode/publication admission. Continuously-
+alone duration retains the existing provisional policy.
+
+The focused [paid-parent qualifier](../game/semuta-spiritual-arrival.ts) checks
+the actual original nine-field ordinary shipment entry, its current shipper,
+destination and deposited counters. Native frame/source validators separately
+bind the owned chooser, exact selected packet, stage and deposit. No foreign
+shipment, grant, relocation, entry or resource quote executes in preflight.
+Spiritual exceptions apply only to this ordinary parent; Guild Ambassador,
+revival and broader module/grant combinations are not certified here. The
+relocation exception admits only the original source-owned Ambassador or
+Discovery child. Conditional signature additions bind these new frames while
+leaving earlier serialized receipt formats unchanged.
+
+After fresh claim/pass, native denial runs once:
+
+- Shipping retains the already paid foreign shipment and ends the free packet
+  before withdrawing a BG reserve.
+- Matching retains the paid parent and all residents, restores the original
+  chooser and blocks the exact denied packet. The actual other legal target or
+  decline remains available. Changing labels cannot retry that same packet.
+- Spiritual alone conversion retains the already withdrawn/placed advisor,
+  accompaniment lock and continuously-alone hold, then completes the free child
+  and drains the original paid entry once.
+- Relocation retains the consumed token/free-entry allowance and completed force
+  transfer. Denial retains the stranded advisor hold and resumes the original
+  Ambassador/Discovery arrival suffix. It repeats no payment, transfer or entry.
+
+Three disjoint [choice](../tests/semuta-spiritual-cost-engine.test.ts),
+[arrival](../tests/semuta-spiritual-arrival-engine.test.ts) and
+[relocation](../tests/semuta-advisor-relocation-engine.test.ts) source lanes and
+root integration pass **13 files,163/163**, types/lint/build and **ten native
+engine/GameTable SSR/actual Semuta-callback journeys** on unchanged source.
+Twenty-six new cases cover five genuine sources, claim/pass, allowance, actual
+legal replacement, original continuation, stale/source/deposit/parent rejection
+and four minimal profiles. Every source uses actual original Advanced setup,
+paid cache1 Semuta and originally dealt printed Karama; all45 cards remain
+physical. No played hand, force, stance, wallet, clock, source or parent is
+installed. Explicitly malformed negative copies are labelled supplements.
+
+Spiritual88/92 uses Advanced R/C/BG/A/E and CHOAM only. A really pays1 to ship1
+to Arrakeen beside BG's original advisor or to empty Tuek's while BG has its
+original Polar fighter. Shipping stops before withdrawal; matching really passes
+that separate counter before opening. Matching denial permits actual Tuek's
+accompaniment1 or decline, while the denied Polar1 remains blocked. The native
+replacement may settle immediately when nobody can counter it. Arrival93 uses
+the same original roster: BG really chooses empty Polar1, passes shipping,
+withdraws its reserve19→18, places/locks the advisor and opens the distinct
+mandatory conversion before the original paid queue resumes.
+
+Ambassador89 uses original Advanced R/C/Ecaz/BG/A with CHOAM+Ecaz. The real final
+Traitor lottery earns Fremen supply; paid token, actual A entrant and genuine
+Ecaz6 Basin→Tuek's relocation leave BG alone. Discovery114 uses the original
+Discovery-only module entry with Advanced R/C/BG/A/E. A real first-blow Cistern
+placement, A paid2 shipment/accepted Intrusion, actual Collection inspect/reveal
+and next-turn A1 free entry leave the original BG advisor stranded. Claim/pass
+retains each actual child/token and ends before unrelated Storm readiness.
+
+Narrow feedback corrects absent-field and Discovery revealed-turn assertions.
+The first frozen quick/test/build steps pass. The private runtime harness alone
+then corrects its unconditional extra-counter assumption and passes all ten
+journeys on a runtime-only rerun. Both reports bind the identical2917-file tree
+`0df139bc97b5bd3e5d6bc1121bf34f0c26790506aa85557ab3f8d60421b87332`.
+Private reports under `/home/quintine/.local/share/dune/checkpoints/` are
+`20261026-semuta-spiritual-relocation-proof/` and
+`20261026-semuta-spiritual-relocation-runtime-proof/`; scripts/journeys/HTML are
+in adjacent `20261026-semuta-spiritual-relocation-runtime/`.
+
+Other matching/grant parents, wider combinations, full modes and final rules/
+recovery/privacy/custody assurance remain open. SSR/component callbacks do not
+certify DOM/hydration, browser/mobile or deployed acceptance. No saved-room, D1,
+server, reset/restart, deployment or recovery operation occurs.
+
 ## Homeworld, battle and Face Dance conversion costs — 26 October 2026
 
 **Prototyped / Partial.** Existing `karamaAdvisorFlipDiscard` now offers fresh

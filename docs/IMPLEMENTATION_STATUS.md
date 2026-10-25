@@ -1,5 +1,38 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta on Spiritual Advisor and relocation costs
+
+**Prototyped / Partial.** Existing terminal/advisor cost continuations now retain
+ordinary Spiritual shipping, matching and placed-arrival sources, plus completed
+Ambassador/Discovery relocation. Exact native parent validation preserves the
+paid foreign entry, unspent free reserve or already deposited grant/transfer as
+appropriate. Denial resumes the original distinct choice/arrival once. Conditional
+signatures preserve earlier formats; existing persistent controls/minimal bots
+serve these sources without changing mode gates or native calculations.
+[Source and scope](SEMUTA_SOURCE_UPDATE_20260907.md#spiritual-advisor-and-relocation-costs--26-october-2026).
+
+Three disjoint source lanes and root integration pass **13 files,163/163**,
+types/lint/build and **ten native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Twenty-six new cases cover five genuine sources,
+claim/pass, allowance, restored legal accompaniment/decline, source/stale rejection
+and four minimal profiles. Spiritual88/92 retains actual A paid1; arrival93
+actually withdraws/places Polar1 before conversion. Ambassador89 earns its native
+Fremen packet, paid token/entrant and Ecaz6 relocation; Discovery114 earns actual
+Cistern placement/reveal and next-turn A1 free entry. All45 cards stay physical;
+no played hand, force, stance, wallet, clock, outcome or parent is installed.
+
+Feedback repairs two fixture assertions: absent phase-opening value and the
+separate Discovery revealed-turn field. A private runtime-only rerun corrects
+the harness's assumption that every replacement must pause for a counter; the
+original passed quick/test/build source remains identical. Private reports live
+under `/home/quintine/.local/share/dune/checkpoints/` in
+`20261026-semuta-spiritual-relocation-proof/` and its
+`20261026-semuta-spiritual-relocation-runtime-proof/` companion; journeys/HTML are
+in adjacent `20261026-semuta-spiritual-relocation-runtime/`.
+Other matching/grant parents, combinations and complete-mode/final assurance stay
+open. These results do not certify DOM/hydration, browser/mobile or deployment.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+
 ## 26 October 2026 — Semuta on World, battle and Face Dance conversion costs
 
 **Prototyped / Partial.** Existing advisor cost continuation retains committed

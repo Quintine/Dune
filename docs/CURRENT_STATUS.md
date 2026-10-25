@@ -16,6 +16,41 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on Spiritual Advisor and relocation costs — 26 October. Prototyped / Partial.**
+Existing terminal/advisor cost continuations now retain ordinary Spiritual
+shipping, matching and committed-arrival parents, plus Ambassador/Discovery
+relocation. Pure native validators own each distinct denial and original suffix.
+Shipping prevention spends no free reserve; matching prevention restores its
+chooser; alone-conversion prevention retains the placed advisor. Conditional
+signatures bind only these new parents. Existing persistent controls/minimal
+bots serve the sources; no rule calculation or mode gate changes.
+
+Three disjoint source lanes and root integration pass **13 files,163/163**,
+types/lint/build and **ten native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Twenty-six new cases cover five genuine sources,
+claim/pass, allowance, legal replacement, original continuation, stale/source
+rejection and four minimal profiles. Original Advanced setup, actual cache1 and
+dealt Karama supply every45-card source. Spiritual88/92 keeps A's real paid1
+shipment; matching denial really permits the alternative accompaniment or
+decline. Arrival93 actually withdraws/places BG1 at empty Polar before conversion,
+retains its lock/hold and then drains the original paid entry. Ambassador89
+uses the original Fremen packet, paid token/entrant and actual Ecaz6 relocation.
+Discovery114 uses actual Cistern placement, inspect/reveal and next-turn A1 free
+entry. No played hand, force, stance, wallet, clock, receipt or parent is installed.
+
+Narrow feedback fixes absent-field and Discovery revealed-turn assertions.
+The private runtime harness then learns that an uncancellable replacement may
+settle immediately; only that harness is repaired/rerun. Application source stays
+identical across the passed quick/test/build proof and runtime-only companion.
+Private reports: `20261026-semuta-spiritual-relocation-proof/` and
+`20261026-semuta-spiritual-relocation-runtime-proof/` under
+`/home/quintine/.local/share/dune/checkpoints/`; journeys/HTML: adjacent
+`20261026-semuta-spiritual-relocation-runtime/`.
+Other matching/grant parents, combinations, complete modes and final assurance
+remain open. No room/D1/server, reset/restart, deployment or recovery operation
+occurs; DOM/hydration, browser/mobile and deployed acceptance remain due.
+[Source and scope](SEMUTA_SOURCE_UPDATE_20260907.md#spiritual-advisor-and-relocation-costs--26-october-2026).
+
 **Semuta on Homeworld, battle and Face Dance conversions — 26 October. Prototyped / Partial.**
 Existing `karamaAdvisorFlipDiscard` now offers exact printed-role costs after
 committed typed Homeworld transport, completed battle losses and completed Face
