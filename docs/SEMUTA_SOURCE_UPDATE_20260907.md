@@ -2,6 +2,93 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Committed transport, Gamont and Storm conversion costs — 26 October 2026
+
+**Prototyped / Partial.** The existing `karamaAdvisorFlipDiscard` now offers
+printed-role cancellation costs for native mandatory conversion after Guild
+cross/return, Trip to Gamont and current-sector Storm casualties. Existing
+persistent neutral controls, private claim/pass and minimal legal profiles serve
+these sources. This extends physical fresh-discard timing through the original
+[native conversion contracts](ADVISOR_AUTOMATIC_FLIPS.md); it adds no publisher
+ruling or mode admission. The existing continuously-alone duration remains
+provisional under the 14 October recommended policy.
+
+Pure original automatic-conversion validation binds the public source to its
+private [Guild transport](../game/advisor-automatic-flip.ts), Gamont or Storm
+parent before the cost is spent and when it resumes. No transfer, return, fee,
+fuel disposal, casualty, draw or traversal is simulated. Producer-specific
+signature additions bind original parents and their continuation/cursor only
+for these newly admitted producers; earlier preparation, matching and ground
+signature bytes remain unchanged.
+
+After fresh claim/pass, retire the group, restore its response and finish native
+denial once:
+
+- Guild cross/return retains original permission/rate/payment, physically moved
+  five counters, spent shipment and unused ground move. Conversion denial keeps
+  the held advisor group. The original transport parent is consumed before
+  original Intrusion/arrival; return has no arrival. Its native parent already
+  defers entry, so no new arrival qualifier or duplicate entry is needed. Actual
+  endMovement closes only the original Guild turn.
+- Gamont retains its actual returned counter and disposed fuel. Denial preserves
+  the advisor hold, then restores ordinary Mentat or the original final CHOAM
+  chooser. Only subsequent native ready/Done controls evaluate victory or start
+  the next turn. The original card/return is never repeated. Allowance converts
+  first and can change the real stronghold result before confirmation.
+- Storm retains all casualties already applied in its current sector, the exact
+  surviving group, public occurrence and private ready/traversal cursor. Future
+  sectors remain untouched through Semuta. Native continuation resumes after
+  conversion denial/allowance; a held advisor is still killed if a later sector
+  reaches its actual force location. No second loss, Storm draw, completion log
+  or premature Spice reveal is introduced.
+
+Three disjoint source lanes, bounded native/diff review and root integration pass
+**13 files,148/148**, types/lint/build and **12 native engine/GameTable SSR/actual
+Semuta-callback journeys** on unchanged source. Twenty-four new cases cover six
+sources, claim/pass, allowance, original continuation and phase/victory results,
+source rejection and four minimal profiles. Every source uses fresh original
+Advanced setup, actual cache1 Semuta and original dealt Karama. All45 cards
+remain physical; no played hand, force, stance, wallet, loss, clock, card order,
+receipt, outcome or cursor is installed.
+
+Guild85 uses R/C/BG/A/G, native BG advisor beside original G5 at Tuek's5 and actual
+early Take. Cross transports5 to empty Basin10 for5; return sends5 to reserves
+for3. Both keep their original paid result through denial and really close the
+Guild turn once. Gamont84/89 uses R/C/BG/A, original CHOAM Gamont, paid BG2 at
+Carthag and real1 movement to Tabr, plus actual A9 departure. Gamont returns the
+last A1 beside BG's advisor. Denial keeps two BG strongholds and starts turn2;
+allowance grants the third and wins only on original final confirmation.
+
+Storm115 uses R/C/BG/A/E. Original BG setup at Oh Gap10 starts fighter-side;
+actual A reserve1 shipment to Oh Gap9 costs2 and its real Intrusion/allowed flip
+earns the advisor stance. First dials2+3 move1→6. A scoped five-scalar permutation
+selects only the original native six-card shuffle3/4 on actual final CHOAM Mentat
+Done. Real turn2 readiness then kills A1 at9 and opens conversion before10.
+Ending9 retains the denied advisor/hold; continuing10 actually kills BG1. Both
+finish native traversal once at phase1, before the next Spice reveal.
+
+Narrow feedback preserves initial CHOAM market priority over first dials and
+finishes the real closing market/final Mentat before Storm draw. Static fixture
+repairs widen the current decision after native callbacks and supply a numeric
+Storm-card sort. No production timing or rule calculation changes. Homeworld,
+battle/Face Dance, relocation/spiritual and other matching producers retain
+separate Semuta follow-ups; broader modules, complete modes and final assurance
+remain open.
+
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-advisor-producers-proof-v4/`;
+journeys/HTML: adjacent `20261026-semuta-advisor-producers-runtime/`.
+No room/D1/server, reset/restart, deployment or recovery operation occurs. These
+are engine, SSR and actual component callbacks; DOM/hydration, browser/mobile
+and deployed/final acceptance remain open.
+
+Evidence: [transport sources](../tests/fixture-semuta-advisor-transport.ts),
+[transport cases](../tests/semuta-advisor-transport-engine.test.ts),
+[Gamont sources](../tests/fixture-semuta-advisor-gamont.ts),
+[Gamont cases](../tests/semuta-advisor-gamont-engine.test.ts),
+[Storm sources](../tests/fixture-semuta-advisor-storm.ts) and
+[Storm cases](../tests/semuta-advisor-storm-engine.test.ts).
+
 ## Native Advanced advisor conversion costs — 26 October 2026
 
 **Prototyped / Partial.** `karamaAdvisorFlipDiscard` offers the fresh printed-role

@@ -6071,7 +6071,7 @@ function semutaMarketGrantKaramaResponse(g: Game, response: ResponseWindow, play
   }
 }
 /** Ordinary Advanced advisor conversion sources retain their native timing:
- * preparation, uncommitted matching or an already completed ground movement. */
+ * preparation, uncommitted matching or an already completed native producer. */
 function semutaAdvisorFlipKaramaResponse(g: Game, response: ResponseWindow, player: string): boolean {
   if (response.kind !== 'advisorFlip' || !g.advanced ||
       response.owner !== byFaction(g,'beneGesserit')?.id ||
@@ -6089,7 +6089,7 @@ function semutaAdvisorFlipKaramaResponse(g: Game, response: ResponseWindow, play
       (!!g.pendingAutomaticAdvisorFlips?.length !== !!response.automaticAdvisorFlip)) return false;
   if ((g.auction || g.richeseAuction) && !response.advisorPreparationSource) return false;
   if (response.automaticAdvisorFlip &&
-      g.pendingAutomaticAdvisorFlips?.some(source => source.producer !== 'groundMovement')) return false;
+      g.pendingAutomaticAdvisorFlips?.some(source => !['groundMovement','guildTransport','gamont','storm'].includes(source.producer))) return false;
   const context: Game = {...g,pendingTreacheryDiscard:null,response};
   try {
     // Native source quotes validate denial without requiring the spent card,
@@ -6125,6 +6125,7 @@ function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinu
   const e3 = c.kind === 'karamaEcazMoritaniDiscard';
   const marketGrant = c.kind === 'karamaMarketDiscard' || c.kind === 'karamaFremenGrantDiscard';
   const advisor = c.kind === 'karamaAdvisorFlipDiscard';
+  const advisorProducer = advisor ? c.use.response.automaticAdvisorFlip?.producer : undefined;
   return JSON.stringify({
     player: c.player, card: c.card, use: c.use,
     parent: nullentropyParentSignature(g, c.resume,
@@ -6338,6 +6339,21 @@ function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinu
       players:g.players.map(p => ({id:p.id, moved:p.moved, advisors:p.advisors,
         noField:p.noField, noFieldEvent:p.noFieldEvent, flipBlocked:p.advisorFlipMovementBlocked,
         hajr:p.hajrPlays, window:p.hajrWindow, leaders:p.leaders, kwisatz:p.kwisatz})),
+    } : undefined,
+    advisorParent: advisorProducer === 'guildTransport' ? {
+      transport:g.pendingAutomaticAdvisorTransport, pending:g.pendingGuildTransport,
+      rate:g.guildRateBlocked, permission:g.guildTransportBlocked,
+      price:g.karamaShipping, homeworlds:g.homeworlds,
+    } : advisorProducer === 'gamont' ? {
+      gamont:g.pendingAutomaticAdvisorGamont, worthless:g.pendingChoamWorthless,
+      mentat:g.choamMentatPending, market:g.choamMarket,
+      cleanup:g.moritaniTerror, order:g.order, spice:g.spice,
+    } : advisorProducer === 'storm' ? {
+      storm:g.pendingAutomaticAdvisorStorm, sector:g.storm, pending:g.stormPending,
+      cursor:g.stormResolution, source:g.stormMovementSource,
+      dials:g.stormDials, dialers:g.stormDialers, card:g.stormCard, known:g.stormCardKnown,
+      spice:g.spice, wall:g.shieldWallDestroyed,
+      ecological:g.ecologicalStorm, maker:g.greatMaker,
     } : undefined,
     order: g.order,
     players: g.players.map(p => ({

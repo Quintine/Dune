@@ -16,6 +16,46 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on committed transport, Gamont and Storm conversions — 26 October. Prototyped / Partial.**
+`karamaAdvisorFlipDiscard` now offers the exact used cancellation cost for
+mandatory conversions after Guild cross/return, Trip to Gamont and current-sector
+Storm casualties. Pure native validation retains the committed producer, held
+queue and original continuation. Claim/pass applies only conversion denial;
+payment, transfer/return, disposed fuel and completed casualties stay committed.
+Producer-specific signature additions leave prior preparation/matching/ground
+formats unchanged. Existing persistent controls/minimal bots serve these sources.
+
+Three disjoint source lanes and root integration pass **13 files,148/148**,
+types/lint/build and **12 native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Twenty-four new cases cover six sources,
+claim/pass, native allowance, original suffixes, source rejection and four
+profiles. Every source uses original Advanced setup, actual cache1 Semuta and
+original dealt Karama; all45 cards remain physical. Guild85 transports native5
+for cross5 or return3, retains the paid result, then really ends its original
+turn once. Gamont84/89 preserves actual fuel disposal and one returned A force;
+ordinary/final Mentat restores its original choice before confirmation. Denial
+keeps BG at two strongholds and advances turn2; allowance reaches three and wins
+only through original final confirmation. Storm115 uses actual A shipment1 for2,
+Intrusion/allowed flip, first dials2+3 to6 and a real six-card shuffle3/4. Its
+sector9 casualty stays committed through the cost; native remainder either ends9
+with the held advisor or reaches10 and really kills BG before Spice opens.
+No played hand, force, stance, wallet, loss, clock, card or cursor is installed.
+
+Narrow feedback finishes the initial CHOAM market before first dials, and actual
+closing market/final Mentat before the next Storm draw. The scoped shuffle now
+belongs to that real final Done. Fixture static feedback fixes the decision
+narrowing and numeric Storm-card sort; production timing/calculations stay intact.
+Original Guild parent already owns deferred arrival, so its arrival qualifier
+needs no change. Other automatic/matching parents, wider modules and complete
+modes/final assurance remain open.
+
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-advisor-producers-proof-v4/`;
+journeys/HTML: adjacent `20261026-semuta-advisor-producers-runtime/`.
+No room/D1/server, reset/restart, deployment or recovery operation occurs. These
+are engine, SSR and component-callback results; DOM/hydration, browser/mobile and
+deployed/final acceptance remain open. [Source and scope](SEMUTA_SOURCE_UPDATE_20260907.md#committed-transport-gamont-and-storm-conversion-costs--26-october-2026).
+
 **Semuta on native Advanced advisor conversions — 26 October. Prototyped / Partial.**
 `karamaAdvisorFlipDiscard` now offers the exact printed-role cancellation cost
 for native preparation, ordinary incoming-group matching and mandatory conversion

@@ -1,5 +1,39 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta on committed transport, Gamont and Storm costs
+
+**Prototyped / Partial.** Existing advisor-conversion cost continuation now
+retains native Guild cross/return, Gamont return and current-sector Storm
+casualties through fresh claim/pass. Pure validation preserves original paid/
+committed producers; only conversion denial runs before their native suffix.
+Producer-specific signatures keep earlier receipt bytes. Existing persistent
+controls/minimal bots serve the sources; no new mode or rule interpretation.
+[Source and scope](SEMUTA_SOURCE_UPDATE_20260907.md#committed-transport-gamont-and-storm-conversion-costs--26-october-2026).
+
+Three disjoint source lanes and root integration pass **13 files,148/148**,
+types/lint/build and **12 native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Twenty-four new cases cover six original
+Advanced sources, claim/pass, allowance, source rejection, original suffixes
+and four profiles. Actual cache1 and dealt Karama supply all45-card sources.
+Guild85 physically transports native5 for cross5/return3, keeps payment and
+really ends its original turn. Gamont84/89 keeps its disposed card/returned A1,
+restores ordinary/final Mentat, then denies BG's third stronghold and starts
+turn2 or allows native victory only at final confirmation. Storm115 earns its
+advisor through actual paid1/tariff2 Intrusion, first dials2+3 to6, real native
+shuffle3/4 and turn2 sector9 casualty. Native remainder ends9 with hold or kills
+BG at10, once and before Spice. No played state, loss, order or cursor is installed.
+
+Narrow feedback completes CHOAM's initial market before dials and actual closing
+market/final Mentat before the next Storm draw. Fixture static fixes widen the
+current decision and sort numeric Storm cards explicitly. Native timing and
+calculations stay intact; no extra Guild arrival qualifier is needed.
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-advisor-producers-proof-v4/`;
+journeys/HTML: adjacent `20261026-semuta-advisor-producers-runtime/`.
+No room/D1/server, reset/restart, deployment or recovery operation occurs.
+DOM/hydration, browser/mobile, other advisor parents/modules, complete modes and
+deployed/final assurance remain open.
+
 ## 26 October 2026 — Semuta on native Advanced advisor conversion costs
 
 **Prototyped / Partial.** One typed used-cost continuation connects native
