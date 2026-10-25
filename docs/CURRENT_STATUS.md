@@ -16,6 +16,48 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on Ecaz/Moritani cancellation costs — 26 October. Prototyped / Partial.**
+Six native powers now offer their printed-role Karama cost through
+`karamaEcazMoritaniDiscard`: Ecaz/Moritani placement, Moritani Duke acquisition,
+Ecaz Occupy and Advanced Collection, and Enemy of My Enemy. Pure native quotes
+retain original declarations, earlier payments, physical tokens, battle lead,
+paid entry and collection source. Claim/pass restores the original response and
+applies denial once; the existing persistent controls and minimal bots serve it.
+No placement, collection, preparation, pact, reveal or phase is pre-applied.
+
+Three disjoint source lanes and root integration pass **15 files,236/236**,
+types/lint/build and **18 native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Thirty-two new cases cover nine original sources,
+claim/pass, allowance, native suffixes, relevant rejection and four minimal
+profiles. Real cache1 Semuta and originally dealt Karama supply every cost.
+Ecaz first56/second61 preserve earlier placement1 before the unpaid2 opportunity;
+Moritani placement67 keeps its free attempt; Duke62 earns two real stronghold
+conflicts and retains CHOAM's closing choice before Battle6. Occupy87 exercises
+both actual leads and a legal own-force plan after combined dial3 becomes2.
+Enemy of My Enemy150/151 preserves real city1 or desert2/move entry before the
+original Terror chooser and actual Robbery5/4. Collection77 uses a fresh original
+Advanced R/C/Ecaz/E setup: native alliance and paid shared city groups earn the
+Ecaz2 bonus; actual CHOAM1 Funeral15 shipment costs2 and collects2. Denial preserves
+Richese city2 and ordinary desert2, withholding only Ecaz's bonus once. All45
+cards remain physical; no played hand, force, wallet, alliance, token, control,
+income or clock is installed.
+
+Basic receives no Advanced Collection bonus. Only the explicit fresh development
+initializer adds bare Advanced Ecaz/Richese with exact CHOAM+Ecaz decks, native
+classic opponents and no optional modules; public Advanced Semuta admission and
+other E3/module envelopes remain guarded. Feedback corrects Duke's native CHOAM
+market suffix, explicitly passes Richese's optional allied No-Field opportunity,
+and uses the quote's stronghold-income field and actual public preview contract.
+Native cancellation legality remains intact.
+
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-e3-cost-proof-v2/`;
+journeys/HTML: adjacent `20261026-semuta-e3-cost-runtime/`. No saved-room, D1,
+server, reset/restart, deployment or recovery operation occurs. These results
+cover engine, SSR and actual component callbacks; DOM/hydration, browser/mobile,
+wider arrival parents/combinations, complete modes and deployed/final assurance
+remain open. [Source and exact scope](SEMUTA_SOURCE_UPDATE_20260907.md#ecaz-and-moritani-cancellation-costs--26-october-2026).
+
 **Semuta on bonus, No-Field and allied Traitor costs — 26 October. Prototyped / Partial.**
 Printed-role Karama stopping Harkonnen's bonus card, Richese No-Field or the
 Harkonnen spectator-ally Traitor call now offers its exact used cost. Three

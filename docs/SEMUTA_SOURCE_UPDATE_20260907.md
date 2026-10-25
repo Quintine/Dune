@@ -2,6 +2,83 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Ecaz and Moritani cancellation costs — 26 October 2026
+
+**Prototyped / Partial.** `karamaEcazMoritaniDiscard` offers the fresh printed-role
+Karama cost of native Ecaz/Moritani placement, Moritani Duke acquisition, Ecaz
+Occupy/Advanced Collection and Enemy of My Enemy. Existing neutral persistent
+controls and minimal legal profiles serve claim/pass. This composes the existing
+fresh-discard timing with native powers; it adds no publisher ruling.
+
+The native [placement cancellation](../game/placement-cancellation.ts),
+[Terror-alliance cancellation](../game/moritani-alliance-cancellation.ts),
+[Occupy profile](../game/ecaz-occupy-battle.ts) and
+[Collection quote](../game/board-resolution-quote.ts) remain authoritative.
+Preflight supplies no already-spent card as an unspent cost and executes no
+placement, phase opening, collection, combat preparation, Terror effect or pact.
+The subtype signature binds original declarations, inventories, paid entry,
+allied physical board, selected lead, Duke/attempt and Collection source; older
+continuation formats retain their bytes. Claim/pass retires the fresh group,
+restores its response and invokes the native denied continuation once.
+
+- Ecaz denial closes only the remaining placement opportunity. First cost1 is
+  unpaid; canceling the second cost2 preserves the actual first placement/payment1.
+  Moritani's free Mentat attempt is consumed with the token still available.
+- Moritani earns Duke through two real stronghold conflicts at committed Movement
+  end. Denial leaves the original disc unacquired and attempt consumed. The native
+  CHOAM closing market precedes Battle; its actual Done action completes that suffix.
+- Occupy retains either actually selected Ecaz/ally lead and both physical armies.
+  Denial disables the coalition contribution; native preparation resumes and the
+  same lead submits a legal own-force plan. No merged army or plan is installed.
+- Enemy of My Enemy retains the paid shipment or actual ground entry and hidden
+  Terror token. Denial restores Moritani's original reveal/decline chooser with
+  that alliance offer blocked. Actual reveal then chooses native Robbery; a real
+  decline retains the hidden token. Allowance lets the entrant actually accept
+  the pact and returns the token through native logic.
+- Collection is Advanced-only. Denial applies the original ordinary receipts and
+  map collection once, withholding only the quoted Ecaz shared-stronghold bonus.
+  Basic has no such bonus. A positive ordinary desert receipt proves this path
+  beyond a zero-income case; later acknowledgement cannot collect again.
+
+The existing explicit development initializer now admits fresh bare Advanced
+Ecaz/Richese, exact CHOAM+Ecaz decks, two–six original seats, only native
+Ecaz/Richese/CHOAM/classic factions and no optional modules. Native fresh-setup
+validation still applies. This is separate from public start admission and never
+converts a played Basic game. The demonstrated Advanced source is R/C/Ecaz/E4;
+Advanced Moritani, other selected families/overlays and wider parents retain their
+separate envelopes. Public ordinary Advanced preview still requires its existing
+opt-in and does not silently gain Semuta.
+
+Three disjoint source lanes, bounded native/diff review and root integration pass
+**15 files,236/236**, types/lint/build and **18 native engine/GameTable SSR/actual
+Semuta-callback journeys** on unchanged source. Thirty-two new cases cover nine
+native sources, both outcomes, allowance, actual suffixes, relevant rejection and
+four minimal profiles. Prefixes: Ecaz first56/second61, Moritani placement67,
+Duke62, both Occupy leads87, Terror shipment150/movement151 and Advanced
+Collection77. Every source uses original setup/deal and actual cache1 Semuta.
+Occupy max3 becomes own2 with actual plan entry. Real Terror entries pay1/2 before
+Robbery5/4. Advanced R/Ecaz each pay2 for two city counters after a native alliance;
+CHOAM pays2 for Funeral15 counter1 and really collects2. Denial retains Richese
+city2 and CHOAM desert2 while removing Ecaz2. All45 cards remain physical. No played hand,
+wallet, force, alliance, token, leader, control, income or clock is installed.
+
+Feedback preserves Duke's CHOAM closing market, declines the actual optional
+Richese allied No-Field offer before ordinary Ecaz shipment, uses the quote's
+stronghold-income field and tests the existing public preview behavior. Native
+power legality remains unchanged. Private report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-e3-cost-proof-v2/`;
+journeys/HTML: adjacent `20261026-semuta-e3-cost-runtime/`. No room/D1/server,
+reset/restart, deployment or recovery operation occurs. DOM/hydration,
+browser/mobile, broader arrival parents/combinations, complete modes and
+production/final assurance remain open.
+
+Evidence: [placement sources](../tests/fixture-semuta-e3-placement.ts),
+[placement cases](../tests/semuta-e3-placement-engine.test.ts),
+[Occupy/Collection sources](../tests/fixture-semuta-ecaz-economy.ts),
+[economy cases](../tests/semuta-ecaz-economy-engine.test.ts),
+[Terror sources](../tests/fixture-semuta-moritani-alliance.ts) and
+[Terror cases](../tests/semuta-moritani-alliance-engine.test.ts).
+
 ## Bonus, No-Field and allied Traitor cancellation costs — 26 October 2026
 
 **Prototyped / Partial.** Three source-specific used-cost continuations now

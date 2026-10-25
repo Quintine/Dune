@@ -1,5 +1,41 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta on native Ecaz/Moritani power costs
+
+**Prototyped / Partial.** One typed used-cost continuation connects native
+Ecaz/Moritani placement, earned Moritani Duke, Ecaz Occupy/Advanced Collection
+and Enemy of My Enemy. Pure native validation retains physical declarations,
+prior payments, selected lead, paid entry and Collection source. Claim/pass
+restores and denies once; native controls own the next chooser, preparation,
+income and phase. Basic receives no Advanced bonus. A restricted fresh Advanced
+Ecaz/Richese development entry uses original setup; public Advanced Semuta and
+other E3/module gates remain. Existing persistent controls/minimal bots serve it.
+[Source and limits](SEMUTA_SOURCE_UPDATE_20260907.md#ecaz-and-moritani-cancellation-costs--26-october-2026).
+
+Three disjoint source lanes and root integration pass **15 files,236/236**,
+types/lint/build and **18 native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Thirty-two new cases cover nine native sources,
+claim/pass, allowance, original suffixes, relevant rejection and four profiles.
+Real cache1 Semuta and original dealt Karama supply all45-card sources. Ecaz
+first56/second61 preserve earlier placement1 before unpaid2; native Moritani
+placement67 keeps its free attempt; Duke62 earns actual two-stronghold conflict
+and retains CHOAM's market before Battle6. Occupy87 covers both selected leads,
+combined3 versus own2 and real own-plan submission. Terror150/151 preserves
+city1 or desert2/movement entry then actual Robbery5/4. Advanced Collection77
+uses original R/C/Ecaz/E4, native alliance, paid2 city cohorts and actual CHOAM1
+Funeral15 shipment2/collection2. Denial retains Richese city2 and CHOAM desert2 and
+removes only Ecaz2. No played state, income or result is installed.
+
+Feedback corrects Duke's native market suffix, passes the real Richese optional
+No-Field offer, uses stronghold rather than desert receipt fields and tests
+actual existing public preview behavior. Native cancellation rules stay intact.
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-e3-cost-proof-v2/`;
+journeys/HTML: adjacent `20261026-semuta-e3-cost-runtime/`. No room/D1/server,
+reset/restart, deployment or recovery operation occurs. DOM/hydration,
+browser/mobile, broader parents/combinations, complete modes and deployed/final
+assurance remain open.
+
 ## 26 October 2026 — Semuta claims bonus, No-Field and allied Traitor costs
 
 **Prototyped / Partial.** Printed-role Karama stopping Harkonnen's bonus card,
