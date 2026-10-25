@@ -16,6 +16,42 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on information/advisor cancellation costs — 26 October. Prototyped / Partial.**
+Printed-role Karama stopping ordinary Basic Spiritual Advisors, Atreides Movement
+foresight, Advanced Fremen next-Storm knowledge or native Face Dancer replacement
+now offers its exact cost through `karamaTerminalDiscard`. Claim/pass finishes
+the original prevention once without placement, inspection, draw, replacement,
+attempt reset or shipment replay. Atreides retains its actual advisor-battle or
+Guild opening decision through the child cost. The original Basic paid entry
+waits in its signed queue, then continues once after advisor denial. Native Storm
+opening acknowledgements retain priority and finish before cancellation.
+[Source and boundaries](SEMUTA_SOURCE_UPDATE_20260907.md#terminal-information-and-advisor-cancellation-costs--26-october-2026).
+
+Two disjoint source lanes, bounded native review and root integration pass
+**15 files,237/237**, types/lint/build and **16 native engine/GameTable SSR/real
+Semuta-callback journeys** on unchanged source. Twenty-five new cases cover four
+producers, both native Movement decisions, original allowed outcomes, opening
+priority, stale/underlying replies and all four minimal profiles. Genuine cache1
+Semuta and original dealt Karama precede every cost. Basic advisor82 source
+actions retain paid shipment2 and one deposited counter. Foresight71/77 Basic/
+Advanced, native BG77 and Guild75 preserve original queues/decks. Dancer124/134
+retains the original three and used attempt; Storm156 records five real opening
+ready acknowledgements before the same native forecast. Original45/57 cards stay
+physical. No played-state hand, force, phase, pool or control is installed.
+
+First feedback repairs absent-versus-null opening assertions and test decision
+narrowing. Related233/237 identifies the ordinary advisor's still-queued paid
+entry. A focused qualifier now admits that exact committed physical source,
+keeps it signed/live during Semuta and lets native continuation drain it once;
+no retired shipment or payment is reconstructed. Native guards remain intact.
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-terminal-entry/`;
+journeys/HTML: adjacent `20261026-semuta-terminal-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results, not hydration, DOM/browser/mobile or
+deployed evidence. Complex Spiritual/queued-entry families, wider combinations,
+complete modes and final assurance remain unfinished.
+
 **Semuta on Tleilaxu revival-income cancellation — 26 October. Prototyped / Partial.**
 Printed-role Karama stopping clean native ordinary/Ghola income now offers its
 exact used cost through `karamaIncomeDiscard`. Claim/pass denies the original

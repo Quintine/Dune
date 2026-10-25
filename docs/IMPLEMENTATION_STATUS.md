@@ -1,5 +1,47 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta claims information and advisor cancellation costs
+
+**Prototyped / Partial.** Exact printed-role Karama stopping ordinary Basic
+Spiritual Advisors, Atreides Movement foresight, Advanced Fremen next-Storm
+knowledge or native Face Dancer replacement now enters the existing Semuta
+protocol before denial. `karamaTerminalDiscard` binds the original response,
+knowledge, physical counters, queue and replacement attempt/pool. Native pure
+preflight supplies no second unspent cost. Claim/pass finishes once without a
+new placement, inspection, draw, replacement, attempt reset or shipment replay.
+[Source and limits](SEMUTA_SOURCE_UPDATE_20260907.md#terminal-information-and-advisor-cancellation-costs--26-october-2026).
+
+Atreides may retain the native advisor-battle or Guild opening decision. Re-quote
+only its decision, park the exact original through Semuta, then restore it before
+denial without answering or initializing anything. Basic advisor cancellation
+retains the original paid shipment's queued physical entry; a focused qualifier
+validates that committed source without reconstructing its retired request.
+Native normalization consumes the entry once after prevention. Storm's original
+false opening must finish through real ready acknowledgements before cancellation;
+dispatcher priority remains. Existing persistent controls and minimal bots serve
+all four producers. Complex Spiritual/queued-entry families remain separate.
+
+Two disjoint source lanes, bounded native review and root integration pass
+**15 files,237/237**, types/lint/build and **16 native engine/GameTable SSR/actual
+Semuta-callback journeys** on unchanged source. Twenty-five new cases cover both
+Movement decisions, original allowance, opening priority, relevant rejection and
+all four profiles. Real cache1 Semuta and original dealt Karama supply every cost:
+Basic advisor82 actions retain shipment2/one counter; foresight71/77 Basic/Advanced,
+BG77 and Guild75 retain original decks/decisions. Dancer124/134 keeps three
+original cards and used attempt; Storm156 includes five original opening ready
+actions. Original45/57 cards and native Traitor/Face Dancer pools remain physical;
+no played-state hand, force, wallet, phase, pool or control is installed.
+
+Feedback repairs absent-versus-null opening assertions and one test-only type
+guard. Related233/237 exposes the ordinary advisor's deferred paid entry; root
+adds its precise signed source admission and native once-only continuation.
+No native gameplay guard is weakened. Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-terminal-entry/`;
+journeys/HTML: adjacent `20261026-semuta-terminal-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results; hydration, DOM/browser/mobile, broader
+combinations, full modes and deployed/final assurance remain open.
+
 ## 26 October 2026 — Semuta claims Tleilaxu revival-income cancellation costs
 
 **Prototyped / Partial.** Printed-role Karama stopping clean native ordinary or

@@ -2,6 +2,81 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Terminal information and advisor cancellation costs — 26 October 2026
+
+**Prototyped / Partial.** Printed-role Karama stopping ordinary Basic Spiritual
+Advisors, native Atreides Movement foresight, Advanced Fremen next-Storm knowledge
+or native Face Dancer replacement now offers its exact used cost before denial.
+The shared `karamaTerminalDiscard` retains the original typed response and uses
+the native cancellation validator as pure preflight. Its cost is already spent;
+do not supply it again as an unspent card. After claim/pass, retire the group,
+restore original controls and finish prevention once. Existing neutral persistent
+controls, private candidate choice and minimal profiles serve all four sources.
+This applies the existing printed Semuta timing, not a new publisher ruling.
+
+The stopped advisor packet is not withdrawn, placed or given an arrival/Tech
+event. Its preceding actual shipment/payment and remaining turn remain intact.
+A [focused source qualifier](../game/semuta-terminal-arrival.ts) retains the
+single current Basic ordinary paid entry queued behind that advisor response.
+It checks the deposited physical typed group and original clock/turn owner;
+it does not reconstruct a retired shipment or quote/pay/withdraw again. Keep
+the signed queue live through the fresh cost; native continuation consumes it
+once after prevention. Other queued-entry families remain separate.
+Atreides and Fremen gain no new knowledge, draw or refill from cancellation;
+retain the actual already-prepared Spice/Storm source. The stopped Face Dancer
+replacement retains its original private pool and reserve order, while its
+declared once-per-turn attempt stays used. No producer action replays.
+
+Atreides foresight may coexist with a native advisor-battle or Guild opening
+decision. Re-quote only that decision from the current public native board/order;
+do not compare or execute an initialization/refill. Suspend the exact decision
+while the cost is offered, then restore it before prevention without answering
+it. The quoted source and subtype-only signature bind the original decision,
+queue, counters, knowledge, attempt and pools; earlier receipt kinds retain their
+signature format. Other unfinished movement/arrival parents remain separate.
+
+With the Ix deck, native post-Storm knowledge initially coexists with an
+`initialize:false` phase opening. The dispatcher gives that opening priority.
+Real ready acknowledgements must finish before a valid ordinary cancellation;
+do not clear, bypass or reinitialize the frame to manufacture a source. Advanced
+SpiritualSource, Ambassador and other complex accompaniment remain separate.
+
+[Spiritual/foresight source](../tests/fixture-semuta-spiritual-foresight.ts) and
+[engine cases](../tests/semuta-spiritual-foresight-engine.test.ts),
+[Storm/replacement source](../tests/fixture-semuta-storm-dancer.ts) and
+[engine cases](../tests/semuta-storm-dancer-engine.test.ts) record the native paths.
+Wider producers/combinations, complete modes and final assurance remain open.
+
+Frozen **15 files,237/237**, types/lint/build and **16 actual native engine/
+GameTable SSR/real Semuta-callback journeys** pass on unchanged source. Twenty-five
+new cases cover four producers, both Movement-opening decisions, original allowed
+outcomes, native opening priority, stale/underlying rejection and all four minimal
+profiles. Earlier assertions and evidence keep their original scope.
+
+Native first-cache1 acquisition and original Karama dealing precede all costs.
+Basic advisor82 source actions include an actual two-spice one-force shipment
+and BG acceptance. Foresight71 Basic/77 Advanced stops at its original prepared
+deck; real BG77 or Guild75 setup yields the coexisting native decision. Basic/
+Advanced Dancer124/134 actually declares replacement of an original unrevealed
+candidate and retains its used attempt. Storm156 reaches the real second-Storm
+forecast, records its false opening and submits five actual ready actions before
+the same valid counter. Original45/57 Treachery cards and native Traitor/Face
+Dancer pools remain physical. No played-state hand, force, wallet, phase, pool
+or control is installed.
+
+First feedback repairs missing-versus-null opening assertions and a test-only
+advisor-decision type guard. Related233/237 then exposes the original advisor
+shipment's deferred entry. The focused qualifier admits only its exact single
+current Basic ordinary physical entry, rather than treating it as an unrelated
+complex parent. Keep it signed and live during the cost; native continuation
+consumes it once afterward without replaying payment or placement. No native
+gameplay guard is weakened. Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-terminal-entry/`;
+journeys/HTML: adjacent `20261026-semuta-terminal-runtime/`.
+No saved-room/database/server/reset/restart/deployment/recovery operation occurs.
+Engine/SSR/callback evidence leaves hydration, DOM/browser/mobile, broader
+combinations, complete modes and exact-revision deployed acceptance open.
+
 ## Revival-income cancellation costs — 26 October 2026
 
 **Prototyped / Partial.** Printed-role Karama stopping clean native Tleilaxu
