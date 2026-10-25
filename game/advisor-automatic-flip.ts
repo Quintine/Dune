@@ -116,6 +116,7 @@ export type AutomaticAdvisorFlipContext = AdvisorSettlementContext & MobileBoard
   turn: number;
   phase: number;
   homeworldRevivalReturn?: SpiritualAdvisorContext['homeworldRevivalReturn'];
+  homeworldVictoryReinforcement?: SpiritualAdvisorContext['homeworldVictoryReinforcement'];
   pendingSpiritualAdvisor?: SpiritualAdvisorContext['pendingSpiritualAdvisor'];
   pendingAmbassador?: SpiritualAdvisorContext['pendingAmbassador'];
   choamMentatPending?: boolean;
@@ -490,7 +491,7 @@ export function validateAutomaticAdvisorFlip(
     (source.producer === 'specialRelocation'
       ? record(source.relocation) && (source.relocation.kind === 'discovery'
         ? source.phase === 0 : source.relocation.kind === 'ambassador' && [1, 3, 5, 8].includes(source.phase))
-      : source.producer === 'spiritualArrival' ? [1, 3, 4, 5, 8].includes(source.phase)
+      : source.producer === 'spiritualArrival' ? [1, 3, 4, 5, 6, 8].includes(source.phase)
       : source.phase === (source.producer === 'storm' ? 0 : source.producer === 'gamont' ? 8 :
         source.producer === 'battleLosses' || source.producer === 'faceDance' ? 6 : 5)) &&
     currentWindow(ctx) && source.phase === ctx.phase,

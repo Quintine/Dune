@@ -30,10 +30,12 @@ export type SpiritualAdvisorContext = SpiritualAdvisorBoardContext & MobileBoard
   turn: number;
   phase: number;
   homeworldRevivalReturn?: Pick<NonNullable<Game['homeworldRevivalReturn']>, 'event' | 'turn' | 'phase' | 'stage' | 'destination'>;
+  homeworldVictoryReinforcement?: Pick<NonNullable<Game['homeworldVictoryReinforcement']>, 'event' | 'turn' | 'phase' | 'stage'>;
   pendingSpiritualAdvisor?: Pick<NonNullable<Game['pendingSpiritualAdvisor']>, 'event' | 'turn' | 'phase'> & {
     decision: Pick<NonNullable<Game['pendingSpiritualAdvisor']>['decision'], 'player' | 'destination' | 'ambassadorEvent' | 'revivalEvent'>;
   };
-  pendingAmbassador?: Pick<NonNullable<Game['pendingAmbassador']>, 'event' | 'revivalEvent' | 'turn' | 'phase' | 'stage'> | null;
+  pendingAmbassador?: Pick<NonNullable<Game['pendingAmbassador']>,
+    'event' | 'revivalEvent' | 'victoryEvent' | 'turn' | 'phase' | 'stage' | 'effect' | 'shipmentReceipt'> | null;
 };
 
 export type SpiritualAdvisorTarget = string | { territory: string; sector?: number };
@@ -120,7 +122,7 @@ export function validateSpiritualAdvisorSource(ctx: SpiritualAdvisorContext, sou
     Object.keys(source).sort().join(',') === (source.phase === 4
       ? 'amount,event,owner,phase,revivalEvent,sector,territory,turn' : 'amount,event,owner,phase,sector,territory,turn') &&
     identifier(source.event) && identifier(source.owner) && positive(source.turn) && source.turn === ctx.turn &&
-    source.phase === ctx.phase && [1, 3, 4, 5, 8].includes(source.phase) && ctx.status === 'playing' &&
+    source.phase === ctx.phase && [1, 3, 4, 5, 6, 8].includes(source.phase) && ctx.status === 'playing' &&
     identifier(source.territory) && Number.isSafeInteger(source.sector) && source.sector >= 0 &&
     (source.amount === 1 || source.amount === 2),
   'Spiritual Advisors lost their exact current-turn public shipment source.');
@@ -128,6 +130,32 @@ export function validateSpiritualAdvisorSource(ctx: SpiritualAdvisorContext, sou
   requireSpiritual(gameTerritories(ctx).some((place) =>
     place.id === source.territory && place.sectors.includes(source.sector)),
   'Spiritual Advisors need their current board destination and sector.');
+  if (source.phase === 6) {
+    const parent = ctx.homeworldVictoryReinforcement;
+    requireSpiritual(record(parent) && identifier(parent.event) && parent.turn === ctx.turn &&
+      parent.phase === 6 && parent.stage === 'arrival',
+    'Victory Spiritual Advisors need their original current-turn Caladan arrival parent.');
+    const frame = ctx.pendingSpiritualAdvisor, ambassador = ctx.pendingAmbassador;
+    const decision = frame?.decision;
+    requireSpiritual(record(frame) && frame.event === source.event && frame.turn === ctx.turn && frame.phase === 6 &&
+      record(decision) && decision.player === source.owner && identifier(decision.ambassadorEvent) &&
+      decision.revivalEvent === undefined && record(ambassador) && ambassador.event === decision.ambassadorEvent &&
+      ambassador.victoryEvent === parent.event && ambassador.revivalEvent === undefined &&
+      ambassador.turn === ctx.turn && ambassador.phase === 6 && ambassador.stage === 'arrival' && ambassador.effect === 'guild',
+    'Victory Spiritual Advisors need their original owned Guild Ambassador child.');
+    const receipt = ambassador.shipmentReceipt;
+    requireSpiritual(record(receipt) && receipt.next === 'advisor' && record(receipt.order) &&
+      identifier(receipt.order.territory) && Number.isSafeInteger(receipt.order.sector) &&
+      identifier(decision.destination),
+    'Victory Spiritual Advisors need their original committed Guild shipment destination.');
+    const destination = splitLocation(decision.destination);
+    requireSpiritual(decision.destination === `${destination.territory}:${destination.sector}` &&
+      decision.destination === `${receipt.order.territory}:${receipt.order.sector}` &&
+      gameTerritories(ctx).some(place => place.id === destination.territory && place.sectors.includes(destination.sector)),
+    'Victory Spiritual Advisors need their original board Guild shipment destination.');
+    requireSpiritual(source.territory === destination.territory || source.territory === 'polar_sink',
+    'Victory Spiritual Advisors need the original Guild shipment territory or Polar Sink.');
+  }
   if (source.phase === 4) {
     const parent = ctx.homeworldRevivalReturn;
     requireSpiritual(identifier(source.revivalEvent) && record(parent) &&

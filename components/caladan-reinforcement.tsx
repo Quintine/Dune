@@ -40,6 +40,12 @@ function ReinforcementChoice({ game, act, busy }: Props) {
       <p>
         Add one reserve force at the battle location, or leave it in reserves.
       </p>
+      <p className="fine" aria-label="Provisional Face Dance order">
+        Provisional order: this optional force joins the original victorious
+        army before any later Face Dance. If replacement occurs, it returns with
+        the surviving army and counts toward the current replacement limit.
+        This does not create another victory or grant another Caladan reinforcement.
+      </p>
       <label className="block space-y-1">
         <span>Reinforcement destination</span>
         <select

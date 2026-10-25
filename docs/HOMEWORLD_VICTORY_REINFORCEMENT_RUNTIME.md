@@ -1,5 +1,9 @@
 # Caladan victory reinforcement runtime
 
+The 10 September checkpoint below is historical. The [26 October before-Face-Dance composition](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#reinforcement-before-face-dance--26-october-2026)
+supersedes its decline-only overlap. Use [current status](CURRENT_STATUS.md)
+for present preview admission and proof; this old checkpoint does not certify it.
+
 Development checkpoint, 10 September 2026. This implements the bounded behavior
 in the [source contract](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md), not complete
 Homeworld or expansion support. Advanced and unfinished module starts remain

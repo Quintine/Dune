@@ -14,6 +14,7 @@ import {
 } from '../game/engine';
 import { botActions } from '../game/bots';
 import { caladanReinforcementActions } from '../game/caladan-reinforcement-options';
+import { homeworldVictoryOfferSignature } from '../game/homeworld-victory-return';
 import {
   caladanVictoryFixture,
   prepareVictoryBattle,
@@ -411,7 +412,7 @@ void test('a waiting Caladan victory cannot lose its real optional Shield cleanu
   stable(valid);
 });
 
-void test('all profiles consume the real owned event and observers receive no destinations; Face Dance ordering stays blocked but declinable', () => {
+void test('all profiles consume the real owned event and the original reinforcement precedes Face Dance', () => {
   const g = victory();
   const observer = viewGame(g, 'g');
   assert.deepEqual(observer.caladanReinforcement!.destinations, []);
@@ -428,25 +429,11 @@ void test('all profiles consume the real owned event and observers receive no de
   }
   let contested = victory(caladanVictoryFixture({ tleilaxu: true }));
   const offer = viewGame(contested, 'a').caladanReinforcement!;
-  assert.match(offer.blocked!, /Face Dancer.*ordering ruling/);
-  reject(
-    contested,
-    'a',
-    {
-      type: 'decision',
-      event: offer.event,
-      amount: 1,
-      destination: 'hagga_basin:12',
-    },
-    /ordering ruling/,
-  );
+  assert.equal(offer.blocked, null);
   const before = structuredClone(p(contested, 'a'));
-  contested = applyAction(reload(contested), 'a', {
-    type: 'decision',
-    event: offer.event,
-    decline: true,
-  });
-  assert.deepEqual(p(contested, 'a'), before);
+  contested = applyAction(contested, 'a', reinforce(contested));
+  assert.equal(p(contested, 'a').reserves, before.reserves - 1);
+  assert.equal(p(contested, 'a').forces['hagga_basin:12'], before.forces['hagga_basin:12'] + 1);
   assert.equal(contested.homeworldVictoryReinforcement!.stage, 'complete');
   if (contested.decision?.kind === 'faceDance')
     contested = applyAction(contested, 't', {
@@ -454,4 +441,21 @@ void test('all profiles consume the real owned event and observers receive no de
       reveal: false,
     });
   stable(contested);
+});
+
+void test('an existing signed ordering-only refusal can use the current legal Caladan destination', () => {
+  // Controlled historical metadata, not a restored-room or recovery proof.
+  let game = victory(caladanVictoryFixture({ tleilaxu: true }));
+  const frame = game.homeworldVictoryReinforcement!, offer = frame.offer!;
+  offer.blocked = 'Caladan reinforcement and Face Dancer replacement await an ordering ruling. You may leave the reserve force at home.';
+  offer.signature = homeworldVictoryOfferSignature(frame, offer);
+  assert.equal(viewGame(game, 'a').caladanReinforcement!.blocked, null);
+  const before = structuredClone(p(game, 'a'));
+  game = applyAction(game, 'a', reinforce(game));
+  assert.equal(p(game, 'a').reserves, before.reserves - 1);
+  assert.equal(p(game, 'a').forces['hagga_basin:12'], before.forces['hagga_basin:12'] + 1);
+  assert.equal(game.homeworldVictoryReinforcement!.stage, 'complete');
+  assert.equal(game.decision?.kind, 'faceDance');
+  game = applyAction(game, 't', { type: 'decision', reveal: false });
+  stable(game);
 });

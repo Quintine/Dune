@@ -387,9 +387,9 @@ function actualFaceDance() {
   g = commit(reload(g), 'guild');
   assert.equal(g.lastBattleContext!.winner, 'atreides');
   // This fixture tests Face Dance after the winner explicitly declines its
-  // new Caladan option; it does not resolve the pending placement-order ruling.
+  // Caladan option, keeping the original replacement-only baseline.
   assert.equal(g.decision?.kind, 'caladanReinforcement');
-  assert.match(viewGame(g, 'atreides').caladanReinforcement!.blocked!, /ordering ruling/);
+  assert.equal(viewGame(g, 'atreides').caladanReinforcement!.blocked, null);
   const beforeReinforcement = structuredClone(g.players);
   g = applyAction(reload(g), 'atreides', {
     type: 'decision',

@@ -28706,7 +28706,13 @@ function stampHomeworldVictoryStage(g: Game) {
   context.caladanReinforcement.signature = homeworldVictoryObligationSignature(context,
     context.caladanReinforcement.completed, frame.stage);
 }
-function openHomeworldVictoryReturn(g: Game, faceDancePending: boolean) {
+/** Retire only the former prototype ordering fence on an existing signed offer. */
+function homeworldVictoryStoredBlock(frame: HomeworldVictoryReturn) {
+  const blocked = frame.offer?.blocked;
+  return blocked === 'Caladan reinforcement and Face Dancer replacement await an ordering ruling. You may leave the reserve force at home.'
+    ? null : blocked ?? null;
+}
+function openHomeworldVictoryReturn(g: Game) {
   const frame = g.homeworldVictoryReinforcement;
   if (!frame || frame.stage === 'complete' || frame.event !== g.lastBattleContext?.event) return false;
   requireRule(frame.stage === 'waiting', 'Finish the Caladan reinforcement before resuming battle cleanup.');
@@ -28719,9 +28725,7 @@ function openHomeworldVictoryReturn(g: Game, faceDancePending: boolean) {
       log(g, `${getPlayer(g, frame.player).name} received no Caladan victory reinforcement: ${quote.blocked}`);
     return false;
   }
-  const blocked = faceDancePending
-    ? 'Caladan reinforcement and Face Dancer replacement await an ordering ruling. You may leave the reserve force at home.'
-    : quote.blocked;
+  const blocked = quote.blocked;
   const offer = { population: quote.population, survivors: quote.survivors, blocked };
   frame.offer = { ...offer, signature: homeworldVictoryOfferSignature(frame, offer) };
   frame.stage = 'choice';
@@ -28743,7 +28747,8 @@ function decideHomeworldVictoryReturn(g: Game, p: Player, action: Action) {
     finishBattle(g);
     return;
   }
-  requireRule(!frame.offer?.blocked, frame.offer?.blocked ?? 'This reinforcement needs its ordering ruling.');
+  const blocked = homeworldVictoryStoredBlock(frame);
+  requireRule(!blocked, blocked ?? 'This reinforcement is unavailable.');
   requireRule((action.amount === undefined || action.amount === 1) && typeof action.destination === 'string',
     'Caladan adds exactly one reserve force to the battle location.');
   const quote = homeworldRule(() => quoteHomeworldVictoryReinforcementDestination(g,
@@ -28779,7 +28784,7 @@ function projectedHomeworldVictoryReturn(g: Game, player: string) {
   if (frame?.stage !== 'choice') return null;
   const quote = homeworldRule(() => quoteHomeworldVictoryReinforcement(g, homeworldVictoryWitness(frame)));
   return { event: frame.event, player: frame.player, territory: frame.territory, amount: 1 as const,
-    blocked: frame.offer?.blocked ?? quote.blocked,
+    blocked: homeworldVictoryStoredBlock(frame) ?? quote.blocked,
     destinations: player === frame.player ? quote.destinations : [],
   };
 }
@@ -28810,7 +28815,7 @@ function finishBattle(g: Game) {
     rihani.signature = rihaniObligationSignature(g.lastBattleContext!);
   }
   if ((next.kind === 'faceDance' || next.kind === 'board') &&
-      openHomeworldVictoryReturn(g, next.kind === 'faceDance')) return;
+      openHomeworldVictoryReturn(g)) return;
   const choamInspection = g.lastBattleContext?.nexusChoamInspection;
   if (next.kind === 'board' && choamInspection?.stage === 'pending') {
     choamInspection.stage = 'offer';

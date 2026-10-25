@@ -1,5 +1,22 @@
 # Rule decision index
 
+## Caladan reinforcement before Face Dance — 26 October 2026
+
+Under the 14 October choose-recommended authority, grant the original winning
+Atreides army its optional high-Caladan reinforcement before any later native
+Face Dance. This selects the existing winner-cleanup position provisionally;
+no retrieved publisher example resolves that cross-expansion priority. Replacement
+uses the current surviving army, including the added counter, and returns the
+actual army once. Original winner/leader identity, one completed grant and other
+destination/source restrictions remain. Raising Caladan through the return adds
+no second victory or entitlement. The exact former ordering-only refusal on a
+signed pending offer is retired through current destination legality as well.
+The observed legal Guild child can finish its Battle-phase Spiritual reaction
+through its original Caladan arrival/frame/receipt. This repairs continuation
+legality without granting an ordinary Battle-phase shipment or changing the
+source payload shape.
+[Source, selected order and boundaries](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#reinforcement-before-face-dance--26-october-2026).
+
 ## Residual Poison after answered Cunning — 26 October 2026
 
 Under the 14 October choose-recommended authority, remove the product refusal

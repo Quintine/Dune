@@ -2,8 +2,9 @@
 
 Historical pre-integration audit. The subsequent
 [runtime checkpoint](HOMEWORLD_VICTORY_REINFORCEMENT_RUNTIME.md) records the
-implemented hook and evidence. Face Dancer overlap remains guarded pending a
-ruling; the structural recommendation below does not establish its rules order.
+implemented hook and evidence. The [26 October selected before-Face-Dance order](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#reinforcement-before-face-dance--26-october-2026)
+supersedes this audit’s earlier ordering fence; the remaining historical structural
+recommendations do not establish further rulings.
 
 10 September 2026. Read-only, bounded runtime audit. This identifies integration
 points for the high-Caladan optional reserve force; it does not establish new

@@ -1,5 +1,38 @@
 # Dune implementation status
 
+## 26 October 2026 — Caladan reinforcement before Face Dance
+
+**Prototyped / Partial.** Select optional original-winner reinforcement before
+native Face Dance under the 14 October recommended-policy authority. Replacement
+uses the current army, including the surviving added counter, and returns it
+once. Original winner/leader identity and the completed Caladan obligation remain;
+no second reward follows the return to High. Retire only the exact prior ordering
+refusal on a signed pending offer through current destination legality. Other
+destination, occupation, physical-source and public mode restrictions remain.
+
+The related legal Guild/Intrusion/Spiritual path exposed a Battle-phase source
+validator failure. Add only its existing Caladan-arrival/frame/Guild-receipt chain,
+with unchanged source payload, and admit its automatic Polar conversion. Keep
+the old source phases intact. Actual Intrusion must settle before Advanced
+accompaniment; advisors do not trigger the waiting Fremen Ambassador. Updated
+old tests distinguish that legal path and normal later Collection income from
+the free Face Dance effect; Advanced's real source reaches turn2.
+
+Frozen **15-file189/189**, types/lint/build and **sixteen engine/GameTable SSR
+journeys** pass. Eight genuine public Basic59/Advanced124-action routes cover
+all give/leave and reveal/decline choices with47 Treachery and16 original Traitor/
+Face Dancer identities. Six explicitly controlled native-Homeworld routes prove
+3/4 physical return/replacement; two controlled Ambassador routes prove original
+Battle-phase Spiritual continuation and Polar fighter conversion. Minimal four-
+profile participation and current live caps are included, without AI tuning.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261026-caladan-face-dance-proof-v2/`;
+journeys/HTML: adjacent `20261026-caladan-face-dance-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation. No
+clicked-control/DOM/hydration or browser/mobile/deployed acceptance. Complete
+rules/combinations, mode gates and final assurance remain open.
+[Source and selected policy](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#reinforcement-before-face-dance--26-october-2026).
+
 ## 26 October 2026 — Residual Poison after completed Cunning
 
 **Prototyped / Partial.** Remove the blanket pre-leader refusal after two

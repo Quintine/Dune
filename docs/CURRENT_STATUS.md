@@ -16,6 +16,39 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Caladan reinforcement before Face Dance — 26 October. Prototyped / Partial.**
+The original winning army may now take its optional reinforcement before native
+replacement. The later reveal uses the live10/11 Arrakis or3/4 Homeworld force
+limit and returns the actual army once; a return to High Caladan creates no
+second grant. The priority is visibly provisional. Only the exact former
+ordering refusal on an existing signed offer is retired; other restrictions stay.
+
+Three disjoint native/controlled-Homeworld/control lanes and root integration
+pass **15 files,189/189**, types/lint/build and **sixteen engine/GameTable SSR
+journeys** on unchanged source. Eight journeys use genuine public Basic59/
+Advanced124-action setup/shipment/battle sources, all47 Treachery and16 original
+Traitor/Face Dancer identities. Six separate controlled Homeworld routes prove
+actual native replacement/typed return. Two controlled Caladan/Guild/Spiritual
+routes repair an observed Battle-phase continuation failure: the unchanged
+source binds its original Caladan arrival, owned frame and actual Guild receipt,
+including automatic Polar conversion. Advisors correctly leave the Fremen
+Ambassador untriggered. All four existing profiles use legal choices.
+
+Frozen v2 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-caladan-face-dance-proof-v2/`;
+journeys/HTML: adjacent `20261026-caladan-face-dance-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+No clicked-control/DOM/hydration or browser/mobile/deployed acceptance is claimed.
+Complete rules/combinations, mode gates and final assurance remain open.
+[Source, policy and child scope](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#reinforcement-before-face-dance--26-october-2026).
+
+Next concrete Basic function gap: an existing Ecaz ally still cannot receive the
+triggered Ecaz Ambassador's living Duke acquisition. Printed sharing supports
+that branch; scope direct-acquisition tenure separately from the new-alliance
+turn loan, preserving occupied-Ecaz priority and the user's Ecaz-only revival.
+See [the Ambassador audit](ECAZ_AMBASSADOR_EFFECTS_AUDIT.md),
+`ambassadorEffectBlock`, `game/ecaz-duke-acquisition.ts` and `components/ecaz-entry.tsx`.
+
 **Residual Poison after Cunning — 26 October. Prototyped / Partial.**
 The printed pre-leader window now stays available after two completed nonleader
 Cunning inspections. Resolve one actual random leader death/discard, retain an
@@ -44,12 +77,6 @@ No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
 No DOM/hydration, browser/mobile or real clicked-control acceptance is claimed.
 Complete rules/combinations, final assurance and mode gates remain open.
 [Source and selected priority](NEXUS_ATREIDES_RULES.md#residual-poison-and-two-inspected-commitments).
-
-Next concrete function gap: the Caladan High victory reinforcement is still
-decline-only when native Face Dance is pending. Scope its original victory
-army and subsequent physical replacement through
-[the reinforcement contract](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md),
-`openHomeworldVictoryReturn` and `game/homeworld-victory-reinforcement.ts`.
 
 **Box shipping-cost recovery — 26 October. Prototyped / Partial.**
 Paid Box search now permits an active purchased-shipment cost in discard.
