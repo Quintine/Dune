@@ -49,10 +49,15 @@ export function findMovementCompletion(source: Game, actor: string,
     // or Box reuse. Tanks are only an optimistic bound; the adapter still
     // validates every owned card and never inspects unknown Box faces here.
     const recovery = player.hand.some(card => card.effect === 'ghola' || card.effect === 'nullentropyBox') ? player.tanks : 0;
-    if (live.some(promise => promise.answer && promise.minimum > physical + (player.shipped ? 0 : player.reserves + recovery))) return null;
+    const marker = player.faction === 'richese' ? player.noField?.deployed : null;
+    const markerValue = marker ? player.noField!.tokens.find(token => token.id === marker.tokenId)?.value ?? 0 : 0;
+    const revealable = Math.min(markerValue, player.reserves + recovery);
+    if (live.some(promise => promise.answer && promise.minimum > physical +
+      (player.shipped ? revealable : player.reserves + recovery))) return null;
     const key = JSON.stringify([player.forces, player.elites, player.advisors, player.moved, player.shipped, player.reserves, player.tanks, player.hand.map(card => card.id),
       player.hajrPlays, player.hajrWindow, player.ornithopterExtraMoves, player.spice, game.choamMovement,
-      player.fremenMovementBlocked, player.advisorFlipMovementBlocked, game.advisorMatchingDenied,
+      player.fremenMovementBlocked, player.ixMovementBlocked, player.advisorFlipMovementBlocked, game.advisorMatchingDenied,
+      player.noField, player.noFieldEvent,
       game.advisorPreparation,
       game.aid, game.karamaShipping, game.guildRateBlocked, game.shipmentPromises,
       game.discard.map(card => card.id), game.movementDiscardKnowledge?.[actor], game.pendingNullentropy,
@@ -61,11 +66,12 @@ export function findMovementCompletion(source: Game, actor: string,
     if (failed.has(key)) return null;
     const destinations = gameTerritories(game).filter(destination => !destination.id.startsWith('homeworld:'));
     destinations.sort((a, b) => Number(live.some(p => p.answer && p.territory === b.id)) -
-      Number(live.some(p => p.answer && p.territory === a.id)));
-    if (needsMove && !live.some(promise => promise.answer && promise.minimum > physical) &&
+      Number(live.some(p => p.answer && p.territory === a.id)) ||
+      (marker ? Number(['arrakeen', 'carthag'].includes(b.id)) - Number(['arrakeen', 'carthag'].includes(a.id)) : 0));
+    if (needsMove && (marker || !live.some(promise => promise.answer && promise.minimum > physical)) &&
       !game.pendingNullentropy && player.moved < adapter.allowance(game, player)) {
-      const origins = [...new Set(Object.keys(player.forces).filter(key => player.forces[key] > 0)
-        .map(key => splitLocation(key).territory))];
+      const origins = [...new Set([...Object.keys(player.forces).filter(key => player.forces[key] > 0)
+        .map(key => splitLocation(key).territory), ...(marker ? [marker.location.territory] : [])])];
       const card = !game.ornithopter ? player.hand.find(card => card.effect === 'ornithopter') : null;
       const modes: Partial<Action>[] = game.ornithopter
         ? [{ ornithopterEvent: game.ornithopter.event }]
@@ -82,15 +88,18 @@ export function findMovementCompletion(source: Game, actor: string,
         if (!adapter.reachable(game, player, origin, destination.id, sector)) continue;
         const keys = Object.keys(player.forces).filter(key => player.forces[key] > 0 && splitLocation(key).territory === origin);
         const total = keys.reduce((sum, key) => sum + player.forces[key], 0);
-        const amounts = Array.from({ length: total }, (_, i) => i + 1);
+        const carriesMarker = marker?.location.territory === origin && !!player.noFieldEvent;
+        const amounts = [...(carriesMarker ? [0] : []), ...Array.from({ length: total }, (_, i) => i + 1)];
         amounts.sort((a, b) => Number(live.some(p => p.answer && p.territory === destination.id && b >= p.minimum)) -
           Number(live.some(p => p.answer && p.territory === destination.id && a >= p.minimum)) || a - b);
         for (const amount of amounts) {
           const event = { territory: destination.id, amount };
           if (!movementEventAllowed(live, event)) continue;
           if (!mayMoveAgain && live.some(promise => promise.answer && !movementMatches(promise, event))) continue;
-          for (const group of groups(player, keys, amount)) for (const mode of modes) for (const stance of stances) {
-            const action = { ...group, ...mode, ...stance, territory: destination.id, sector };
+          const markers: Partial<Action>[] = carriesMarker
+            ? [...(amount ? [{}] : []), { noField: marker!.tokenId, event: player.noFieldEvent }] : [{}];
+          for (const group of groups(player, keys, amount)) for (const mode of modes) for (const stance of stances) for (const selected of markers) {
+            const action = { ...group, ...mode, ...stance, ...selected, territory: destination.id, sector };
             const next = adapter.project(game, actor, action);
             if (!next) continue;
             const settled = settleMovementEvent(pending, actor, game.turn, next.event);

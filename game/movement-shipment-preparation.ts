@@ -21,7 +21,17 @@ export function* movementShipmentPreparations(game: Game, actor: string,
         gameDistance(game, `${destination.id}:${from}`, `${target.id}:${to}`))))) : 0]));
   destinations.sort((a, b) => present(b.id) - present(a.id) ||
     Number(b.type === 'stronghold') - Number(a.type === 'stronghold') || proximity.get(a.id)! - proximity.get(b.id)!);
-  for (const destination of destinations) for (const sector of destination.sectors)
+  for (const destination of destinations) for (const sector of destination.sectors) {
+    if (player.faction === 'richese' && player.noField && !player.noField.deployed && player.noFieldEvent) {
+      for (const token of player.noField.tokens.filter(token => token.id !== player.noField!.lastShipped)) {
+        for (let allyPayment = Math.min(2, game.aid[player.ally ?? '']?.amount ?? 0); allyPayment >= 0; allyPayment--) {
+          const action: Action = { type: 'ship', territory: destination.id, sector, amount: 1, elite: 0,
+            allyPayment, noField: token.id, event: player.noFieldEvent };
+          const next = project(game, actor, action);
+          if (next) yield { game: next, actions: [action] };
+        }
+      }
+    }
     for (let amount = 1; amount <= player.reserves; amount++) {
       const special = player.elites?.reserves ?? 0;
       for (let elite = Math.max(0, amount - (player.reserves - special)); elite <= Math.min(amount, special); elite++) {
@@ -36,4 +46,5 @@ export function* movementShipmentPreparations(game: Game, actor: string,
         }
       }
     }
+  }
 }

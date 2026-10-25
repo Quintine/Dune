@@ -144,7 +144,7 @@ void test('earlier current-round movement question profiles include declared Bas
   }
 });
 
-void test('classic Advanced Movement admits active and unused waiting seats while retaining module and native-family boundaries', () => {
+void test('Advanced Movement admits active and unused waiting seats with declared native families while retaining module boundaries', () => {
   const advanced = movementBoundary(); advanced.advanced = true;
   assert.equal(movementPromiseTargetAvailable(advanced, 'target'), true);
   assert.equal(movementPromiseTargetAvailable(advanced, 'asker'), true);
@@ -153,6 +153,8 @@ void test('classic Advanced Movement admits active and unused waiting seats whil
     assert.equal(movementPromiseTargetAvailable({ ...advanced, [field]: true } as unknown as Game, 'target'), false, field);
   }
   const native = structuredClone(advanced); native.players[0].faction = 'ixians'; native.expansions = ['ix'];
+  assert.equal(movementPromiseTargetAvailable(native, 'target'), true);
+  native.expansions = [];
   assert.equal(movementPromiseTargetAvailable(native, 'target'), false);
   advanced.players[1].shipped = true;
   assert.equal(movementPromiseTargetAvailable(advanced, 'asker'), false);

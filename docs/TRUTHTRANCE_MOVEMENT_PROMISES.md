@@ -1,5 +1,67 @@
 # Truthtrance ground-movement promises
 
+## Native Advanced and No-Field preparation — 25 October 2026
+
+**Prototyped / Partial.** Advanced phase5 now accepts declared native expansion
+families through the same roster checks as Basic. Optional modules and earlier
+Advanced forecasts remain separate. This supersedes the preceding classic-only
+admission below, not complete faction/mode acceptance.
+
+Richese's owned route can use its original No-Field shipment, voluntary reveal,
+marker-only positioning or a physical group carrying the marker. The native
+one-force tariff, exact event/token, last-used restriction, funding and original
+Karama responses remain. Materialization uses only actual remaining reserves;
+an owned Ghola may prepare those reserves through its existing physical path.
+The marker itself contributes zero toward a movement promise. Reveal and shipment
+prepare but do not fulfill it; only actual physical movement does. A concealed
+zero can still supply city presence/range for a later physical Hajr move.
+
+Reuse the [printed lifecycle](RICHESE_NO_FIELD_ENGINE_AUDIT.md#source-boundary-and-model-contract)
+and existing general current-turn composition below; no new publisher ruling is
+claimed. The witness includes reserve-capped reveal potential before pruning
+marker-only armies, keeps original marker/event and Ixian cancellation in its
+memo, and tries city preparation early without dropping other legal candidates.
+Before saving a live No-Field declaration, check its allowed exact commitment
+on a detached copy. The real original counter still decides the shipment;
+prevention can release an impossible Yes without charging or deploying it.
+An optional own reveal, including in earlier Basic phases, cannot erase the last
+required route and then claim opposing impossibility.
+
+The [Richese source](../tests/fixture-truth-movement-no-field.ts) earns public
+Basic/Advanced main35/cache10, original dealt Truthtrance, actual native bidding
+and paid concealed Basin shipment without installed played state. Its zero/3/5
+choices use original custody. The [Ixian source](../tests/fixture-truth-movement-ixian.ts)
+earns actual Advanced setup/HMS, original Truthtrance, Emperor's paid Karama and
+a paid two-Cyborg shipment before its original range counter. Controlled reserve
+caps, physical placements, Hajr/Karama acquisition and an earlier phase boundary
+are explicitly labelled in [separate regressions](../tests/truth-movement-no-field-engine.test.ts).
+They are not genuine full-game traces. Human controls give distinct persistent
+shipment/reveal/marker/mixed-group guidance; existing minimal policies follow
+the same owned route. No strategy/calibration or complete-mode claim is added.
+
+The24-file163/163 related union passes. Fixture-only lint repairs in two files
+then pass all3-file15/15 affected consumers, types/lint/build and six native
+original-control/GameTable SSR journeys. An exact hash comparison retains all
+application/other files across repairs. Basic24/Advanced27 Richese and Ixian43
+source prefixes earn original cards, payments and typed pieces. Real reveal
+callbacks and one-spice shipment/reveal/movement complete. Four existing profiles
+follow legal owned reveal guidance. Controlled cap/zero/mixed/Hajr/counter/early
+boundaries retain their staging labels. Trying city preparation earlier makes
+the concealed-positioning cases finite promptly without pruning legal choices.
+
+Private proof/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-truth-movement-native-no-field/`.
+`frozen-integrated/report.json` keeps initial related success and fixture lint
+failure; `fixture-lint-repair.json` records exactly two changed test/fixture paths.
+`frozen-fixture-lint-repair/report.json` binds tree
+`6963f2074dbcc48f56447963f4e6064d4344ebbd28abcea6dfc67429aab41609`,
+2778files on base `2ae2b984c05c918c7df34be7c6234524c52f1c65`.
+Final prose/reference overlays are separately reviewed. These callbacks/SSR are
+not hydration, browser, mobile or deployed acceptance.
+Earlier Advanced, modules, arbitrary commitments and final assurance/deployed
+acceptance remain unfinished. No saved-room, database, server restart or
+deployment operation is part of this work.
+
 ## Classic Advanced Movement — 25 October 2026
 
 **Prototyped / Partial.** Classic Advanced tables without expansions or optional

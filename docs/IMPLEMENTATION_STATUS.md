@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 25 October 2026 — Native Advanced and owned No-Field movement preparation
+
+Advanced phase5 now reuses the declared native-family admission. Richese's
+owned No-Field shipment, reveal, marker-only positioning and physical-plus-marker
+movement enter the actual route witness. Physical minima exclude the marker;
+reveal is reserve capped and preserves native history/Ornithopter custody.
+Exact quiet allowed-commit preflight protects a new live shipment before its
+original counter. Prevention retains payment/pieces and can release impossible
+Yes; an optional own reveal cannot evade a commitment. Memo retains original
+No-Field/event and Ixian cancellation. City preparation is ordered early without
+removing candidates. Human guidance names each preparation; minimal AI reuses it.
+
+Disjoint native fixtures, bounded source review and root integration pass
+**24-file163/163** related cases. Three fixture lint findings are repaired in
+exactly two test/fixture files: numeric sort comparator and typed location.
+All application/other files remain unchanged; final **3-file15/15** consumers,
+types/lint/build and six native original-control/GameTable SSR journeys pass.
+Genuine Richese Basic24/Advanced27 sources earn actual35+10 setup/deal, bidding
+and paid marker. Ixian43 earns native47 cards/HMS, original one-spice Karama
+purchase and actual four-spice two-Cyborg shipment. Real reveal callbacks,
+one-spice shipment/reveal/physical fulfillment and original Ixian range outcomes
+pass. Controlled reserve/Tanks, physical/card and earlier-clock boundaries remain
+explicit. Fixture repairs preserve Basic's absent Black Market, expansion start
+markers, string token identity and original Semuta discard priority.
+
+Private proof/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-truth-movement-native-no-field/`.
+`frozen-integrated/report.json` retains the initial related pass/lint failure;
+`fixture-lint-repair.json` binds the two repairs; final
+`frozen-fixture-lint-repair/report.json` binds tree
+`6963f2074dbcc48f56447963f4e6064d4344ebbd28abcea6dfc67429aab41609`,
+2778files on base `2ae2b984c05c918c7df34be7c6234524c52f1c65`.
+Final four prose/reference overlays are reviewed separately. Existing printed
+No-Field and general current-turn sources compose this software predicate; no
+new publisher FAQ is claimed. Earlier Advanced, modules, arbitrary commitments,
+full modes and final assurance/browser/deployed acceptance remain open. No AI
+refinement or saved-room/D1/server/reset/restart/deployment operation.
+[Canonical contract](TRUTHTRANCE_MOVEMENT_PROMISES.md#native-advanced-and-no-field-preparation--25-october-2026).
+
 ## 25 October 2026 — Classic Advanced structured ground-movement Truthtrance
 
 Classic Advanced without modules now accepts structured movement questions in

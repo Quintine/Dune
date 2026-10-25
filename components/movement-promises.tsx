@@ -33,9 +33,13 @@ export function MovementPromises({ game, act, busy }: { game: GameView; act: (ac
     : next?.type === 'card' && card?.effect === 'ghola' ? `Play Ghola to return ${amount} ${amount === 1 ? 'force' : 'forces'} to reserves for the required movement`
     : next?.type === 'card' && next.mode === 'choam' ? 'Play Kulon to extend the required movement'
     : next?.type === 'prepareAdvisors' ? `Prepare advisors in ${destinationLabel} for the required movement`
+    : next?.type === 'revealNoField' ? 'Reveal your No-Field to prepare physical forces for the required movement'
     : next?.type === 'card' ? 'Play Hajr to prepare the required movement'
+    : next?.type === 'ship' && next.noField ? `Ship a concealed No-Field to ${destinationLabel}, sector ${sector}, before the required movement`
     : next?.type === 'ship' ? `Ship ${amount} forces to ${destinationLabel}, sector ${sector}, before the required movement`
     : next?.type === 'endMovement' ? 'Finish movement while honoring No'
+    : next?.noField && !amount ? `Move your concealed No-Field to ${destinationLabel}, sector ${sector}, to prepare the required movement`
+    : next?.noField ? `Move ${amount} physical forces with your No-Field to ${destinationLabel}, sector ${sector}`
     : `${next?.movementCard ? 'Use Ornithopter and move' : 'Move'} ${amount} forces to ${destinationLabel}, sector ${sector}`;
   return <section className="notice space-y-3" aria-label="Your ground-movement promises">
     <h4>Your ground-movement promises</h4>

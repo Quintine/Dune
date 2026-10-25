@@ -25,3 +25,14 @@ void test('spent shipment and paid Box decisions cannot start another preparatio
   game.players[0].shipped = false; game.pendingNullentropy = { player: 'owner' } as Game['pendingNullentropy'];
   assert.deepEqual([...movementShipmentPreparations(game, 'owner', () => assert.fail('Finish the paid decision'))], []);
 });
+
+void test('owned No-Field shipment candidates preserve marker identity, one-force tariff shares and last-use restrictions', () => {
+  const game = source(), owner = game.players[0]; owner.faction = 'richese';
+  owner.noField = { tokens: [{ id: 'zero', value: 0 }, { id: 'three', value: 3 }, { id: 'five', value: 5 }],
+    lastShipped: 'three', deployed: null }; owner.noFieldEvent = 'current';
+  const choices = [...movementShipmentPreparations(game, owner.id, (state, _actor, action) =>
+    action.noField && action.territory === 'imperial_basin' && action.sector === 9 && action.allyPayment === 2
+      ? structuredClone(state) : null)].map(choice => choice.actions[0]);
+  assert.deepEqual(choices.map(choice => choice.noField), ['zero', 'five']);
+  assert.ok(choices.every(choice => choice.amount === 1 && choice.elite === 0 && choice.event === 'current'));
+});

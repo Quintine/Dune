@@ -16745,6 +16745,12 @@ function groundMovementCompletionAtMovement(game: Game, actor: string, promises:
           } catch (error) { if (!(error instanceof RuleError)) throw error; }
         }
       }
+      if (player.faction === 'richese' && player.noField?.deployed && !noFieldRevealBlock(state, player)) {
+        const action: Action = { type: 'revealNoField', token: player.noField.deployed.tokenId, event: player.noFieldEvent };
+        try {
+          yield { game: groundMovementProbe(applyActionInner(state, owner, action, 'movementPreparation'), owner), actions: [action] };
+        } catch (error) { if (!(error instanceof RuleError)) throw error; }
+      }
       yield* movementShipmentPreparations(state, owner, (source, actor, action) => {
         const payer = getPlayer(source, actor), share = Number(action.allyPayment);
         const cost = reserveShipmentCost({ faction: payer.faction, halfRate: shipmentHalfRate(source, payer) },
@@ -16790,7 +16796,10 @@ function groundMovementCompletionAtMovement(game: Game, actor: string, promises:
       // Include current native range (notably CHOAM Kulon) and the card's
       // explicit range-three option. This only prunes impossible geometry;
       // the actual declaration still validates exact speed/groups/custody.
-      return Object.keys(player.forces).some(key => player.forces[key] > 0 && splitLocation(key).territory === origin &&
+      const marker = player.faction === 'richese' ? player.noField?.deployed : null;
+      const sources = [...Object.keys(player.forces).filter(key => player.forces[key] > 0),
+        ...(marker ? [location(marker.location.territory, marker.location.sector)] : [])];
+      return sources.some(key => splitLocation(key).territory === origin &&
         gameDistance(state, key, location(destination, sector), point => pathBlocked(state, player, point, isAdvisor(player, origin))) <= Math.max(3, movementRange(state, player, 1)));
     },
     project(state, owner, action) {
@@ -16881,13 +16890,14 @@ function reconcileGroundMovementPromises(g: Game, actor?: string, action?: Actio
     if (!live.some(promise => promise.answer)) continue;
     if (g.pendingFremenMove?.order.player === p.id || g.pendingIxMove?.player === p.id ||
       g.pendingChoamMove?.player === p.id ||
+      g.pendingShipment?.player === p.id && !!g.pendingShipment.noField ||
       g.pendingAdvisorMatching?.intent.kind === 'movement' && g.pendingAdvisorMatching.intent.order.player === p.id ||
       g.response?.kind === 'advisorFlip' && g.response.owner === p.id ||
       g.pendingAutomaticAdvisorFlips?.some(source => source.owner === p.id ||
         source.producer === 'groundMovement' && source.mover === p.id)) continue;
     const early = g.phase < 5 || sourcePhase < 5;
     const voluntary = actor === p.id && action?.type !== 'passResponse' && (!early || !!action &&
-      (['card', 'bribe', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revive', 'reviveLeader', 'reviveKwisatz', 'emperorRevival', 'decision'].includes(action.type) ||
+      (['card', 'bribe', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revealNoField', 'revive', 'reviveLeader', 'reviveKwisatz', 'emperorRevival', 'decision'].includes(action.type) ||
         action.type === 'richeseBid' && typeof action.amount === 'number' && action.amount > 0 ||
         action.type === 'ready' && [2, 4].includes(sourcePhase)));
     const busy = !!(g.response || g.decision || g.phaseOpening || g.pendingTreacheryDiscard ||
@@ -30755,8 +30765,9 @@ function offerShipment(g: Game, shipment: PendingShipment, matchingApproved = fa
   } else if (!openGuildRate(g, shipment)) commitShipment(g, shipment);
 }
 function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipient: string | null}, movementPreparation = false) {
-  if (movementPreparation) requireRule(recoverableUnsupportedShipment(shipment),
-    'Movement preparation requires an ordinary physical reserve shipment.');
+  if (movementPreparation) requireRule(recoverableUnsupportedShipment(shipment) ||
+    shipment.noField && !shipment.richesePair && recoverableUnsupportedShipment({ ...shipment, noField: undefined }),
+  'Movement preparation requires an ordinary physical or owned No-Field shipment.');
   if (shipment.source === 'ambassador') {
     commitAmbassadorShipment(g, shipment);
     return;
@@ -36705,6 +36716,11 @@ function applyActionInner(
       // unsupported arrival combinations before saving its private intent.
       validateShipmentArrival(g, shipment);
       checkShipmentIncomeFunding(g, p, cost, allyPayment);
+      if (liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).some(promise => promise.answer)) {
+        const afterShipment = structuredClone(g);
+        commitShipment(afterShipment, shipment, undefined, true);
+        reconcileGroundMovementPromises(afterShipment, p.id, action, g.phase);
+      }
       if (richesePair) recordRichesePairShipment(g, shipment);
       g.pendingShipment = shipment;
       g.response = { kind: 'richeseNoField', owner: p.id, passed: [],

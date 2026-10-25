@@ -16,6 +16,32 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Native Advanced and No-Field movement promises — 25 October. Prototyped / Partial.**
+Declared native Advanced families now share phase5 movement questions. Owned
+No-Field shipment, reserve-capped reveal, concealed positioning and mixed moves
+can prepare a route; the marker contributes zero toward the physical minimum.
+Original tariff, token/event/history and Karama remain; a detached exact
+preflight protects a new shipment without committing it early. Own optional
+reveal cannot evade a promise. City preparation is tried earlier without
+removing candidates. Earlier Advanced, modules and broader commitments remain.
+[Contract and labelled source boundaries](TRUTHTRANCE_MOVEMENT_PROMISES.md#native-advanced-and-no-field-preparation--25-october-2026).
+
+Disjoint fixture work, bounded source review and root integration pass the
+**24-file163/163** related union. Fixture-only lint repairs (numeric comparator
+and typed location) then pass all **3-file15/15** affected consumers, types/lint,
+build and six native original-control/GameTable SSR journeys. Hash comparison
+confirms application/other tests unchanged across those repairs. Genuine Basic24/
+Advanced27-action Richese sources retain original35+10 cards and paid marker;
+43-action Ixian source earns original47 cards, paid Karama, HMS and two Cyborgs.
+Actual reveal callbacks and one-spice shipment/reveal/physical moves complete;
+Ixian allowance fulfills after its original counter, while prevention keeps the
+move unused. Controlled reserve caps, Hajr/card acquisition, physical placement
+and earlier phase are explicit. Four profiles use legal owned reveal guidance.
+Fixture feedback corrects a Basic Black Market wait, native preview-marker
+assumption, original token shape and real discard priority. Concealed city cases
+pass after trying useful city preparation first. No AI tuning, complete-mode/
+final-assurance claim or saved-room/D1/server/reset/restart/deployment operation.
+
 **Classic Advanced movement promises — 25 October. Prototyped / Partial.**
 Classic Advanced phase5 now accepts structured movement Truthtrance for active
 or unused waiting seats. Shared typed legality counts each elite once; owned
@@ -6997,7 +7023,7 @@ These links define bounded working behavior, not complete module certification.
 | Leader Skills | [Common lifecycle](LEADER_SKILLS_RUNTIME.md), [known skilled capture](LEADER_SKILLS_CAPTURE.md), [Mentat question preview](MENTAT_QUESTION.md), [Bureaucrat payments](BUREAUCRAT_PAYMENTS.md), five battle disciplines, [Planetologist](PLANETOLOGIST_RULES.md), [Suk Graduate](SUK_GRADUATE_RULES.md), [Rihani and other battle effects](LEADER_BATTLE_EFFECTS.md), [Smuggler shipment](SMUGGLER_SHIPMENT.md), [No-Field](SMUGGLER_NO_FIELD.md) and [battle collection](SMUGGLER_BATTLE.md), [Sandmaster routes](SANDMASTER_MOVEMENT.md) and [worm rides](SANDMASTER_WORM.md), [Banker spending](SPICE_BANKER_RUNTIME.md), [Diplomat defense](DIPLOMAT_DEFENSE.md) and [bounded retreat](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation). Remaining bands and combinations are explicit in those contracts. |
 | Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Orgiz transfers, Jacurutu income, Testing Station and Shrine. Orgiz's per-deposit interpretation, contested/shared benefits and mixed physical allocation remain provisional or pending. The Orgiz path in current source is not yet deployed. |
 | Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Secret Ally trade and bounded after-victory inspection](NEXUS_CHOAM_SECRET_ALLY.md), [Moritani Secret Ally losing-card retention](NEXUS_MORITANI_RULES.md#secret-ally-losing-card-retention-prototype), [Ecaz private yes/no inquiry and bounded native Duke Cunning](NEXUS_ECAZ_RULES.md#bounded-native-cunning-duke-vidal), [Emperor extra revival and bounded bank-auction purchase](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) are connected. Uniform CHOAM winner/Moritani loser windows, Ecaz inquiry scope/audience and Ecaz Cunning's Battle-only window are product inferences, not publisher rulings. Source audits or helpers alone do not certify full module games. |
-| Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), [recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), [base Basic/Advanced reserve-shipment promises, including Guild](TRUTHTRANCE_SHIPMENT_PROMISES.md), and [Basic ground-movement promises](TRUTHTRANCE_MOVEMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |
+| Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), [recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), [base Basic/Advanced reserve-shipment promises, including Guild](TRUTHTRANCE_SHIPMENT_PROMISES.md), and [Basic and native Advanced movement promises](TRUTHTRANCE_MOVEMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |
 | Other cards | [Sapho runtime](JUICE_OF_SAPHO_RUNTIME.md) includes first among remaining unstarted movement turns after Advanced Guild has finished. [Recruits](RECRUITS_RUNTIME.md) connects clean Revival play; [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md) and [Reinforcements](REINFORCEMENTS_RUNTIME.md) connect bounded battle effects in the same independent three-card preview. Richese card contracts and the checklist identify other connected effects and explicit gaps. |
 | Multiplayer | [Public and private discussion](TABLE_DISCUSSION.md), saved rooms/seats, [recovery](../README.md#saved-seats-and-reconnecting), uncertain-request retry, [own-seat AI](AUTOPILOT.md), [named-player AI permission](SEAT_AI_PERMISSION.md) and [voluntary seat handover](SEAT_HANDOVER.md) have connected controls and recovery evidence. |
 

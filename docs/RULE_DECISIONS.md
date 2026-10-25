@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Native Advanced and No-Field movement preparation — 25 October 2026
+
+Reuse the existing physical-movement/current-turn composition and printed
+No-Field lifecycle. Admit declared Advanced native families during phase5,
+retaining module/earlier-phase boundaries. Owned shipment/reveal and concealed
+movement may prepare a route, while only physical counters fulfill its minimum.
+Materialization is reserve capped and preserves native token history/counters.
+A detached exact allowed commitment checks a new declaration before its real
+counter; prevention retains payment/pieces and may release impossible Yes.
+Own optional revelation cannot evade a promise. This is software composition,
+not a new No-Field-specific publisher FAQ or full-mode certification.
+[Contract and labelled native/controlled evidence](TRUTHTRANCE_MOVEMENT_PROMISES.md#native-advanced-and-no-field-preparation--25-october-2026).
+
 ## Classic Advanced ground-movement promises — 25 October 2026
 
 Extend the existing general current-turn Truthtrance composition to clean

@@ -2,6 +2,16 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Owned movement-promise preparation — 25 October 2026
+
+The [movement contract](TRUTHTRANCE_MOVEMENT_PROMISES.md#native-advanced-and-no-field-preparation--25-october-2026)
+now includes native owned shipment, reserve-capped voluntary reveal and concealed
+marker positioning/carrying as preparations. The marker contributes zero to the
+promised physical quantity. Original token identity, no-repeat history, tariff,
+Karama and movement allowances remain authoritative; an optional reveal cannot
+erase the last route. Basic and declared native Advanced phase5 are supported;
+optional modules and complete-mode acceptance remain separate.
+
 ## Basic native coalition composition — 24 October 2026
 
 Bare Basic Ecaz/native E1/E2 tables now keep allied marker presence and the
