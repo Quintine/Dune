@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Remaining structured Truthtrance authoring — 26 October 2026
+
+Expose the existing full grouped battle-plan and pure-shipment inputs rather
+than two-condition forms. Existing FAQ AND/OR authority and engine feasibility,
+obligation, timing and custody contracts remain. Plan's eight children/sixteen
+nodes/depth four and shipment's sixteen leaves/depth four are software input
+limits, unchanged by the controls. Pure shipment does not require a current fact
+or accept internal frozen constants. [Battle authoring](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md#grouped-battle-plan-authoring--26-october-2026);
+[shipment authoring](COMPOUND_SHIPMENT_PROMISES.md#full-pure-shipment-authoring--26-october-2026).
+
 ## Truthtrance compound current-fact controls — 26 October 2026
 
 Expose existing AND/OR current-fact expressions without the old two-fact form

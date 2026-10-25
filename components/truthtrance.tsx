@@ -2,8 +2,9 @@
 import { MovementClaimFields } from './movement-claim-fields';
 import { TraitorDecisionAnswers } from './traitor-decision-promises';
 import { validMovementClaim, type MovementClaim } from '@/game/movement-promises';
-import { ShipmentClaimFields, invalidShipmentClause, type ShipmentClauseInput } from './shipment-claim-fields';
-import { BattleClaimFields } from './battle-promises';
+import { TruthShipmentQuestion } from './truth-shipment-question';
+import { TruthBattlePlanQuestion } from './truth-battle-plan-question';
+import type { ShipmentExpression } from '@/game/shipment-promises';
 import {
   MixedShipmentFields,
   mixedShipmentInputError,
@@ -55,11 +56,7 @@ export function Truthtrance({
     'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall'
   >('fact');
   const [movement, setMovement] = useState<MovementClaim>({ territory: 'carthag', minimum: 6 });
-  const [shipmentJoin, setShipmentJoin] = useState<'single' | 'and' | 'or'>('single');
-  const [shipmentClauses, setShipmentClauses] = useState<ShipmentClauseInput[]>([
-    { territory: 'carthag', minimum: 6 },
-    { territory: 'arrakeen', minimum: 4 },
-  ]);
+  const [shipment, setShipment] = useState<ShipmentExpression>({ territory: 'carthag', minimum: 6 });
   const [mixed, setMixed] = useState<MixedShipmentExpression>({
     kind: 'and',
     terms: [
@@ -68,15 +65,10 @@ export function Truthtrance({
     ],
   });
   const invalidMixed = mixedShipmentInputError(mixed, g, target);
-  const invalidShipment = shipmentClauses.slice(0, shipmentJoin === 'single' ? 1 : 2).some(invalidShipmentClause);
   const shipmentAvailable = g.truthShipmentTargets.includes(target);
-  const [planClauses, setPlanClauses] = useState<PlanClaim[]>([
-    { kind: 'dial', compare: 'gte', value: 1 },
-    { kind: 'weapon', name: null },
-  ]);
+  const [planClaim, setPlanClaim] = useState<PlanClaim>({ kind: 'dial', compare: 'gte', value: 1 });
   const [scope, setScope] = useState<'fact' | 'currentTurn'>('fact');
   const [text, setText] = useState('');
-  const [join, setJoin] = useState<'single' | 'and' | 'or'>('single');
   const [fact, setFact] = useState<TruthFact>({ kind: 'hand', name: 'Shield' });
   const factId = useId();
   const leaderName = (id: string) =>
@@ -97,10 +89,7 @@ export function Truthtrance({
             kind,
             target,
             territory: g.battle?.territory ?? '',
-            claim:
-              join === 'single'
-                ? planClauses[0]
-                : { kind: join, terms: planClauses },
+            claim: planClaim,
           }
         : kind === 'traitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '' }
         : kind === 'movement' ? { kind, target, ...movement }
@@ -108,7 +97,7 @@ export function Truthtrance({
           ? {
               kind,
               target,
-              ...(shipmentJoin === 'single' ? shipmentClauses[0] : { claim: { op: shipmentJoin, terms: shipmentClauses } }),
+              claim: shipment,
             }
           : kind === 'mixedShipment'
             ? { kind, target, mixed }
@@ -365,9 +354,9 @@ export function Truthtrance({
                   {kind === 'mixedShipment' ? (
                     <MixedShipmentFields id={`${factId}-mixed`} value={mixed}
                       game={g} target={target} disabled={busy} onChange={setMixed} />
-                  ) : (
-                    <ShipmentClaimFields id={`${factId}-shipment`} clauses={shipmentClauses}
-                      join={shipmentJoin} onClauses={setShipmentClauses} onJoin={setShipmentJoin} />
+                  ) : question.kind === 'shipment' && (
+                    <TruthShipmentQuestion game={g} question={question} busy={busy}
+                      act={act} onChange={setShipment} />
                   )}
                   <p className="fine">
                     Includes Fremen reinforcements and Guild transport from
@@ -390,53 +379,15 @@ export function Truthtrance({
                       remain unfinished.
                     </p>
                   )}
-                  <p className="notice" aria-label="Public grouped question preview">
-                    {kind === 'mixedShipment'
-                      ? invalidMixed ?? truthQuestionText(question, leaderName, locationName)
-                      : invalidShipment
-                        ? 'Enter a whole minimum of one to twenty forces.'
-                        : truthQuestionText(question, leaderName, locationName)}
-                  </p>
+                  {kind === 'mixedShipment' && <p className="notice" aria-label="Public grouped question preview">
+                    {invalidMixed ?? truthQuestionText(question, leaderName, locationName)}
+                  </p>}
                 </>
               ) : kind === 'battlePlan' ? (
-                <>
-                  <label>
-                    Combine conditions
-                    <select
-                      value={join}
-                      onChange={(e) => setJoin(e.target.value as typeof join)}
-                    >
-                      <option value="single">One condition</option>
-                      <option value="and">Both · AND</option>
-                      <option value="or">Either · OR</option>
-                    </select>
-                  </label>
-                  {planClauses
-                    .slice(0, join === 'single' ? 1 : 2)
-                    .map((c, index) => (
-                      <fieldset key={index}>
-                        <legend>Condition {index + 1}</legend>
-                        <BattleClaimFields
-                          game={g}
-                          value={c}
-                          onChange={(next) =>
-                            setPlanClauses(
-                              planClauses.map((old, n) =>
-                                n === index ? next : old,
-                              ),
-                            )
-                          }
-                        />
-                      </fieldset>
-                    ))}
-                  <p className="notice">
-                    {truthQuestionText(question, leaderName, locationName)}
-                  </p>
-                  {g.battle &&
-                    ![g.battle.attacker, g.battle.defender].includes(
-                      target,
-                    ) && <p>Select one of the combatants for this question.</p>}
-                </>
+                question.kind === 'battlePlan' && (
+                  <TruthBattlePlanQuestion game={g} question={question} busy={busy}
+                    act={act} onChange={setPlanClaim} />
+                )
               ) : kind === 'fact' ? (
                 question.kind === 'fact' && (
                   <TruthFactQuestion game={g} question={question} busy={busy}
@@ -474,21 +425,14 @@ export function Truthtrance({
                   </p>
                 </>
               )}
-              {kind !== 'fact' && button(
+              {!['fact', 'battlePlan', 'shipment'].includes(kind) && button(
                 'Ask publicly',
                 { type: 'truthAsk', question },
                 (kind === 'movement' && (!validMovementClaim(movement) || !g.truthMovementTargets.includes(target))) ||
                 (kind === 'traitorCall' && !g.truthTraitorTargets.includes(target)) ||
-                (kind === 'shipment' &&
-                  (invalidShipment || !shipmentAvailable)) ||
                   (kind === 'mixedShipment' &&
                     (!!invalidMixed || !shipmentAvailable)) ||
-                  (kind === 'freeform' && !text.trim()) ||
-                  (kind === 'battlePlan' &&
-                    (!g.battle ||
-                      ![g.battle.attacker, g.battle.defender].includes(
-                        target,
-                      ))),
+                  (kind === 'freeform' && !text.trim()),
               )}
             </>
           )}

@@ -4,6 +4,52 @@
 with shipment-only AND/OR questions. Public mode and publication gates remain
 unchanged.
 
+## Full pure-shipment authoring — 26 October 2026
+
+The pure shipment form now exposes the parser's full shipment-only tree instead
+of two flat conditions. Add siblings, wrap/nest AND/OR groups, switch their
+meaning and remove/collapse without losing other conditions. It can use all
+sixteen shipment leaves and depth four, without spending a leaf on a current
+fact. The separate Mixed builder keeps its own requirement for both kinds.
+Each leaf still describes the same eventual reserve shipment, never an extra
+shipment or permission to ship early.
+
+The existing shipment parser supplies the unchanged shape/bounds and whole-
+input validation. Internal frozen fact constants cannot be authored, including
+under a decisive OR. Numeric-invalid minima remain editable; the whole question
+must be valid before Ask publicly. Legacy single-leaf questions remain accepted,
+while the full form uses the existing `claim` expression envelope. No saved
+field, migration or new action kind is added.
+
+Current ask ownership, busy and seated-target checks apply to actual callbacks;
+`truthShipmentTargets` remains the authoritative opportunity boundary. The
+form uses public destinations and physical minima, without reading private
+holdings or recreating feasibility. The existing server supplies feasible
+answers, prevents voluntary evasion, fulfills the same physical delivery/skip
+and retains the original continuation. AND requires every condition; OR any;
+No makes the whole statement false. All four minimal profiles keep their
+existing legal path, with strategic refinement deferred.
+
+Controls: `components/shipment-expression-fields.tsx` and
+`components/truth-shipment-question.tsx`, integrated in the original panel;
+`game/shipment-expression-input.ts` reuses the existing parser for editing
+bounds. This form extension does not certify broader timing/module combinations,
+full Truthtrance or deployed acceptance.
+
+Combined battle/shipment proof passes **14 files,123/123**, types/lint/build and
+twelve native engine/GameTable SSR/actual edit-and-Ask callback paths. Six pure
+shipment routes use a genuine two-seat Basic20-action prefix, bind whole Yes/No,
+deliver the original one-force Arrakeen shipment at its one-spice cost and end
+the original turn, six post-source actions each. Nine new engine cases cover24
+flat and four nested variants, sixteen distinct destinations/depth four,
+skip/nonmatching alternatives, invalid constants/limits, original continuation
+and four minimal profiles; eleven controlled cases cover the complete form.
+All33 original cards remain. Private proof:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-remaining-authoring-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-remaining-authoring-runtime/`.
+No saved-room/D1/server or recovery operation. Native evidence is Basic;
+SSR/callbacks do not prove DOM/hydration or browser/mobile/deployed acceptance.
+
 ## Mixed current facts and future shipment — 3 October 2026
 
 The structured builder now supports bounded nested AND/OR trees containing
@@ -87,8 +133,8 @@ destinations cannot be fulfilled by a single shipment, so Yes is unavailable.
 
 ## Connected prototype
 
-The question form adds a second destination/count condition and an AND/OR choice.
-The shared engine expression supports grouping within software limits of sixteen leaves and four nested groups; the first visual builder exposes two conditions. Existing flat questions
+The original question form added a second destination/count condition and an AND/OR choice.
+The shared engine expression supports grouping within software limits of sixteen leaves and four nested groups; the 26 October form above now exposes that full pure expression. Existing flat questions
 and saved promises retain their meaning. Public question/history text preserves
 grouping, while answer feasibility and suggested preparations stay private to
 the respondent.

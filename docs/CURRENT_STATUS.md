@@ -16,6 +16,45 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Remaining structured Truthtrance authoring — 26 October. Prototyped / Partial.**
+Battle-plan and pure-shipment forms now expose their full existing grouped
+inputs. Add/wrap/nest, switch AND/OR, remove/collapse and whole-field validation
+retain the entire claim. Battle uses the unchanged eight-child/sixteen-node/
+depth-four envelope; pure shipment uses all sixteen shipment leaves/depth four,
+without inserting a current fact. Existing actions, target-private feasibility,
+binding, one discard and legal plan/shipment continuation remain authoritative.
+Invalid battle-number drafts render empty beside their validation feedback.
+
+Two disjoint battle/shipment lanes and root integration pass **14 files,123/123**,
+types/lint/build and **twelve native engine/GameTable SSR/actual edit-and-Ask
+callback paths** on unchanged source. Genuine two-seat Basic Atreides/Emperor
+prefixes use24 actions before plans and20 before shipment, retaining the original
+cards/forces/wallets. Six battle routes bind whole Yes/No, reject a contradictory
+original plan and seal the valid plans. Six shipment routes bind the full claim,
+deliver one actual Arrakeen force for1 spice and end the original turn. Each
+runtime uses six continuation actions; all33 physical cards remain. Seventeen
+new engine cases cover48 flat and eight nested variants, accepted/rejected
+bounds, actual continuation and four minimal profiles. Twenty-two controlled
+cases cover edits, validation, ownership and the actual submit contract.
+
+Frozen v2 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-remaining-authoring-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-remaining-authoring-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+Sources are Basic; SSR/callbacks do not prove DOM/hydration or browser/mobile/
+deployed acceptance. Full Truthtrance, modes/combinations and final assurance
+remain open. [Battle controls](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md#grouped-battle-plan-authoring--26-october-2026);
+[shipment controls](COMPOUND_SHIPMENT_PROMISES.md#full-pure-shipment-authoring--26-october-2026).
+
+Next concrete independent rule gap: Advanced/Homeworld Face Dance blocks an
+Emperor winner's army return. Scope exact typed normal→Kaitain and Sardaukar→
+Salusa return through the existing native reserve helpers, separately from
+revival/payment/income. The live guard and both Arrakis/Homeworld return paths
+need integration; removing its message alone misroutes elites. See
+`faceDanceReturnBlock`, `addNativeReserves`, `game/homeworld-native-reserves.ts`
+and [the replacement contract](HOMEWORLD_REPLACEMENT_RULES.md). This next scope
+does not establish Basic completion or authorize a custody/recovery campaign.
+
 **Truthtrance compound current-fact authoring — 26 October. Prototyped / Partial.**
 The form now exposes two-through-eight-term AND/OR groups and nesting, with
 add/wrap/remove/collapse controls and a whole-question preview. Shared existing
@@ -42,14 +81,6 @@ No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
 SSR/callbacks do not prove DOM/hydration or browser/mobile/deployed acceptance;
 the native source is Basic. Complete Truthtrance/rules/combinations and final
 assurance remain open. [Source and controls](TRUTHTRANCE_CARD_COUNT.md#compound-current-fact-authoring--26-october-2026).
-
-Next concrete Basic function gap: battle-plan Truthtrance authoring still caps
-the existing AND/OR parser at two flat conditions. Connect its full grouped
-input controls to the existing legal-plan feasibility and sealing path. See
-`game/battle-promises.ts`, `components/battle-promises.tsx`, the battle-plan
-branch of `components/truthtrance.tsx` and the genuine `beforePlans` source in
-`tests/fixture-truth-traitor-decision.ts`. Pure shipment's maximum sixteen-leaf
-form is also pending; ordinary nested shipment already has its Mixed equivalent.
 
 **Distrans before the first bid/pass — 26 October. Prototyped / Partial.**
 An untouched ordinary lot now allows the private card transfer before its first

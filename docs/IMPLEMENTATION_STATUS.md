@@ -1,5 +1,39 @@
 # Dune implementation status
 
+## 26 October 2026 — Grouped battle-plan and full pure shipment authoring
+
+**Prototyped / Partial.** Deliver the remaining structured Truthtrance form
+caps together. Battle-plan authoring now exposes all existing AND/OR groups,
+eight children, sixteen total nodes and depth four; pure shipment exposes all
+sixteen shipment leaves/depth four without a current-fact term. Add/wrap/nest,
+group meaning and remove/collapse preserve the whole tree. Shared unchanged
+limits and complete parsers block invalid later fields or internal shipment
+constants. Actual callbacks enforce ask ownership, target/battle/opportunity
+and busy state. Existing answer feasibility, commitments, card disposal and
+plan/shipment permissions remain. No saved field, action kind or mode opens.
+
+Frozen **14-file123/123**, types/lint/build and **twelve native engine/GameTable
+SSR/actual edit-and-Ask callback paths** pass. Original two-seat Basic A/E sources
+use24 pre-plan or20 pre-shipment actions; original held projectile, Truthtrance,
+paid shipment and actual battle preparation earn the boundaries. Six plan paths
+bind Yes/No, reject the actual contradictory plan, then seal both legal plans.
+Six shipment paths bind Yes/No and deliver one paid Arrakeen force before ending
+the original turn. Each uses six continuation actions; all33 original cards
+remain. Seventeen native engine cases cover48 flat and eight nested variants,
+accepted/rejected limits, one discard, battle/turn continuation and four minimal
+profiles. Twenty-two controlled cases cover edit/validation/guard/payload paths.
+Feedback repaired the fixture's known Emperor leader indexing and empty rendering
+of an invalid NaN battle-number draft; a first narrow-name filter was corrected
+before the two intended source cases passed.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261026-truth-remaining-authoring-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-remaining-authoring-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation. Native
+sources are Basic; DOM/hydration, browser/mobile/deployed and broader combination
+acceptance remain due. Full rules and final assurance stay open.
+[Battle contract](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md#grouped-battle-plan-authoring--26-october-2026);
+[pure shipment contract](COMPOUND_SHIPMENT_PROMISES.md#full-pure-shipment-authoring--26-october-2026).
+
 ## 26 October 2026 — Full structured current-fact question authoring
 
 **Prototyped / Partial.** Replace the two-flat-fact form cap with controlled

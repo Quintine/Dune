@@ -69,7 +69,7 @@ export function BattleClaimFields({
               min={0}
               max={40}
               step={c.kind === 'dial' ? 0.5 : 1}
-              value={c.value}
+              value={Number.isNaN(c.value) ? '' : c.value}
               onChange={(e) =>
                 onChange({ ...c, value: Number(e.target.value) })
               }

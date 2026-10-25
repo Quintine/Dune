@@ -1,5 +1,51 @@
 # Truthtrance nonbattle readiness and first implementation slice
 
+## Grouped battle-plan authoring — 26 October 2026
+
+The existing battle-plan question now has a complete bounded expression form,
+replacing the original two-flat-condition controls. Add or wrap AND/OR groups,
+switch their meaning, add siblings/nesting and remove conditions or groups.
+Singleton groups collapse to their remaining condition without dropping siblings.
+The preview and `truthAsk` action retain the whole claim.
+
+`game/battle-claim-expression.ts` shares the parser's existing limits of eight
+children per group, sixteen total nodes and depth four with the editor. These
+are unchanged software input limits, not printed restrictions on questions.
+The existing `parsePlanClaim` validates every leaf, including later rows;
+invalid numeric, card-name or leader inputs cannot be submitted. Public printed
+identities support authoring; opponent hands, submitted plans and feasible
+answers are not read to infer a question. The server still determines available
+answers and compliant plans.
+
+The current ask owner chooses another combatant in the same live battle.
+Busy, foreign-owner and invalid-target callbacks cannot submit. Sealed-plan,
+reveal, Voice/prescience and preparation rights remain with the existing engine;
+the form creates no new timing, answer, custody or mode permission. A definite
+answer discards its original card once and preserves the whole Yes/No obligation
+through actual plan sealing. No negates the entire claim, not each clause.
+The existing minimal profiles retain their entitled legal-answer path; strategy
+and calibration remain deferred.
+
+Current controls: `components/battle-claim-expression-fields.tsx`,
+`components/truth-battle-plan-question.tsx`, integrated through the original
+Truthtrance panel. [Pure-shipment authoring](COMPOUND_SHIPMENT_PROMISES.md#full-pure-shipment-authoring--26-october-2026)
+is delivered in the same batch. The older design/source audit below remains
+historical; this follow-up does not certify full Truthtrance or modes.
+
+Combined battle/shipment proof passes **14 files,123/123**, types/lint/build and
+twelve native engine/GameTable SSR/actual edit-and-Ask callback paths. Six battle
+paths use a genuine two-seat Basic24-action pre-plan source, bind the complete
+Yes/No, reject the original contradictory projectile/empty plan and seal both
+valid plans. Eight new battle engine cases cover24 flat and four nested variants,
+limits, one discard, actual battle completion and four minimal profiles; eleven
+controlled cases cover the form. The invalid numeric draft now renders empty
+beside its existing error. All33 original cards remain. The runtime routes use
+six post-source actions each; the original sealed battle event is retained.
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261026-truth-remaining-authoring-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-remaining-authoring-runtime/`.
+No saved-room/D1/server or recovery operation. Native evidence is Basic;
+SSR/callbacks do not prove DOM/hydration or browser/mobile/deployed acceptance.
+
 **Later implementation:** the Basic active-opportunity reserve-shipment slice is now implemented and verified. See [TRUTHTRANCE_SHIPMENT_PROMISES.md](TRUTHTRANCE_SHIPMENT_PROMISES.md) for its exact scope, owned Ghola/Karama/escrow feasibility, Guild-allied Fremen reserve transport, persistence, controls and full-game evidence. The design below remains a historical audit; its statements that no nonbattle promise store exists are superseded by that follow-up. Broader future-action and expansion timing work remains unfinished.
 
 Read-only design audit, 7 September 2026. Only this document is added. Runtime, controls, tests, calibration tools, live rooms and mode gates are unchanged. References identify the inspected implementation by symbol; line numbers can move during coordinator integration.

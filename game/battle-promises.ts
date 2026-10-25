@@ -2,6 +2,10 @@ import { TRUTH_CARD_NAMES } from './truthtrance-card-names';
 import type { Plan } from './engine';
 import type { Card } from './cards';
 import { CHEAP_HERO_TRAITOR } from './traitors';
+import {
+  BATTLE_CLAIM_MAX_NODES, BATTLE_CLAIM_MAX_DEPTH, BATTLE_CLAIM_MAX_TERMS,
+  BATTLE_CLAIM_INPUT_ERROR,
+} from './battle-claim-expression';
 
 export type PlanClaim =
   | { kind: 'dial' | 'support'; compare: 'eq' | 'gte' | 'lte'; value: number }
@@ -21,24 +25,24 @@ export function parsePlanClaim(
   value: unknown,
   leaders: string[],
   depth = 0,
-  budget = { remaining: 16 },
+  budget = { remaining: BATTLE_CLAIM_MAX_NODES },
 ): PlanClaim {
   const fail = (): never => {
     throw new PlanClaimError(
-      'Choose a valid battle-plan condition (at most 16 clauses and four grouping levels).',
+      BATTLE_CLAIM_INPUT_ERROR,
     );
   };
   if (
     !value ||
     typeof value !== 'object' ||
     Array.isArray(value) ||
-    depth > 4 ||
+    depth > BATTLE_CLAIM_MAX_DEPTH ||
     budget.remaining-- <= 0
   )
     return fail();
   const v = value as Record<string, unknown>;
   if (v.kind === 'and' || v.kind === 'or') {
-    if (!Array.isArray(v.terms) || v.terms.length < 2 || v.terms.length > 8)
+    if (!Array.isArray(v.terms) || v.terms.length < 2 || v.terms.length > BATTLE_CLAIM_MAX_TERMS)
       return fail();
     return {
       kind: v.kind,
