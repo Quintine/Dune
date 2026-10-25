@@ -37,17 +37,6 @@ export function homeworldLowBonus(
     : 0;
 }
 
-/** Keep the unresolved special-Karama overlap consistent in validation and
- * the public controls. This is a release boundary, not a rules exception. */
-export function homeworldRevivalKaramaBlock(
-  context: HomeworldBenefitContext,
-  target: string,
-): string | null {
-  return homeworldLowBonus(context, target)
-    ? 'Special Karama against a low-population Homeworld awaits the revival-overlap ruling.'
-    : null;
-}
-
 /** Salusa's threshold counts Sardaukar at Salusa, not all Imperial reserves.
  * Its high advantage affects the faction's Sardaukar wherever they fight. */
 export function homeworldSardaukarFreeSupport(

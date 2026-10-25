@@ -16,6 +16,33 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Low Homeworld revival prevention — 25 October. Prototyped / Partial.**
+Tleilaxu's native special Karama now admits Low Homeworld targets at quiet
+Revival windows and the original pending counter. The printed Low free rate
+remains intact; preventing the qualifying return produces no independent
+bonus-only counter, payment, quota use, income or new High deployment. Completed
+returns stay completed. This is an explicit provisional event/advantage
+composition, preserving the 24 October phase 4 Ghola prevention and Emperor
+special immunity. The actor guide and the formerly stale recipient Ghola notice
+match current behavior. Original cost/once-use and existing minimal thresholds
+remain; no strategy refinement.
+[Source, policy and limits](HOMEWORLD_BENEFITS_RULES.md#provisional-low-homeworld-revival-prevention--25-october-2026).
+
+Disjoint native-fixture work, bounded source review and root integration pass
+**10 files, 87/87**, types/lint/build and four actual component-callback/engine/
+GameTable SSR journeys. Genuine 75-action public Advanced Fremen/Tleilaxu +
+Homeworlds sources earn original 47 cards, native 10-counter/three-Fedaykin setup,
+real 6+6 first Storm, native 10-normal shipment into Storm 13, original half-five
+loss and actual second Revival at Low 0/Tanks 5. Quiet and pending prevention
+retain stock/free 4; decline really returns 4 and awards native income 1. Original
+Ghola is refused in the affected phase, then real readiness reaches phase 5 and
+returns 5 without ordinary quota. No played state is installed. All four
+existing reactive policies act legally, including allowance at lower existing
+thresholds. The selected union includes one existing in-memory Ghola lifecycle
+file; no live saved-room/D1/server/reset/restart/deployment operation or broad
+assurance campaign occurred. Full module/mode, browser/mobile/deployed and final
+assurance remain open; SSR/callbacks are not hydration acceptance.
+
 **High Richese mixed shipment — 25 October. Prototyped / Partial.**
 Native High Richese now selects paid physical reserve forces beside one
 concealed No-Field. The marker keeps its own token/event and amount 1; the

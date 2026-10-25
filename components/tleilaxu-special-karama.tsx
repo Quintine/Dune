@@ -47,6 +47,10 @@ export function TleilaxuSpecialKarama({
         The Emperor’s native special Karama remains protected by the printed
         immunity of special Karama powers.
       </p>
+      {game.homeworlds && <p className="fine">
+        Provisional Homeworld rule: Low keeps its printed free revival rate.
+        Preventing the return as a whole gives no separate bonus-only return.
+      </p>}
       {offer.pending && (
         <p className="fine">Only the original recipient can be selected during this pending revival.</p>
       )}

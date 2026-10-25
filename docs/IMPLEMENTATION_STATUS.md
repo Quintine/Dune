@@ -1,5 +1,50 @@
 # Dune implementation status
 
+## 25 October 2026 — Low Homeworlds retain their rate under Tleilaxu revival prevention
+
+Removed the old target guard from the Homeworld helper and native Tleilaxu
+quote. Quiet and original pending selections now accept Low factions using
+ordinary physical card cost and once-per-game scope. The explicit provisional
+composition prevents the entire qualifying event while leaving its printed
+rate unchanged; no independent bonus-only return or new High grant is created.
+Existing priorities, committed returns, phase 4 Ghola inclusion and Emperor
+special immunity remain. Actor guidance states the Homeworld composition, and
+recipient guidance now correctly describes the existing 24 October Ghola rule.
+The legacy projected block field stays null; no saved state/schema is changed.
+Existing AI thresholds consume the real offer without tuning.
+
+Disjoint native-fixture work, bounded source review and root integration pass
+**10 files, 87/87**, types/lint/build and four actual component-callback/engine/
+GameTable SSR journeys. A controlled prior army/card fixture now proves all
+four existing profiles can prevent the original low free return while keeping
+its rate 4, actual counters, unused quotas and income unchanged. Native source
+requires 75 actions: actual public Advanced Fremen/Tleilaxu + Homeworlds/E1,
+original 47 cards, original Fremen setup 10 with three Fedaykin at sheltered
+Tabr 14, real first-Storm dials 6+6→13 and free native 10-normal shipment into
+Hagga 13. Original Fremen protection loses exactly five normals, leaving Low 0,
+five actual Tanks, five survivors at Hagga and all stars safe at Tabr. Original
+phases reach the real next Revival; no played phase, army, wallet, card or
+receipt is installed.
+
+Actual controls perform quiet and original pending prevention without returns,
+cost to recipient, quota use, income or deployment. Native decline returns 4 free
+and awards Tleilaxu its original separate bank 1. The actual held Ghola remains
+unspent on phase 4 refusal, then original readiness reaches phase 5 and returns all 5
+without ordinary quota. Easy/Medium retain their original choice to allow the
+five-Tank counter; Hard/Brutal may prevent, and all four actions complete legally.
+The selected union also included the existing in-memory Ghola lifecycle file;
+this is bounded related evidence, not final recovery/custody certification.
+
+Private source-bound report/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-homeworld-revival-prevention/`.
+`frozen-integrated/report.json` passes unchanged-source tree
+`96cdab49e8977847c5aa91be6fed5b73bb7756416dc8476a2bb3bb45c097b34b`,
+2803 files, base `5bcf5bab488a1ba784e18d3be8c665abcfe4e292`.
+[Source and current interpretation](HOMEWORLD_BENEFITS_RULES.md#provisional-low-homeworld-revival-prevention--25-october-2026).
+Broader High-effect/module composition, full modes and final assurance remain
+unfinished. SSR/callbacks do not certify browser hydration/mobile/deployed
+acceptance. No live saved-room/D1/server/reset/restart/deployment operation.
+
 ## 25 October 2026 — High Richese ships paid reserves beside a concealed marker
 
 Native High Richese uses the original single-marker action plus positive

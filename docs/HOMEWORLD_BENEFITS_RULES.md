@@ -2,6 +2,54 @@
 
 Source audit, 9 September 2026. This separates publisher wording, rule composition, and remaining decisions. It does not enable Homeworld games or replace the outstanding Ambassador/Duke revival rulings.
 
+## Provisional Low Homeworld revival prevention — 25 October 2026
+
+**Prototyped / Partial.** The earlier target guard against Tleilaxu special
+Karama is removed. Native Advanced Tleilaxu may choose a Low Homeworld faction
+at the existing quiet window or original pending revival decision. Eligibility,
+physical Karama disposal, once-per-game use and ordinary enclosing priorities
+remain in the [native special-power contract](TLEILAXU_SPECIAL_KARAMA.md).
+
+The user-authorized revised PDF's physical page 38 H prevents force/leader
+revival for a chosen player, with no Homeworld exception. Publisher E3 printed
+page 10 protects Homeworld advantages and penalties from Karama. Under the
+14 October choose-recommended instruction, the explicit provisional composition
+is **event prevention**: Low keeps its printed extra free-revival rate, but the
+ordinary return is prevented as a whole, including its conditional extra
+counter. No separate bonus-only return is created. This is not a located
+combined publisher FAQ or a change to the printed High/Low face.
+
+No physical force, leader, payment or quota changes because of the stopped
+return. No actual free return exists to award Tleilaxu/Axlotl income, and no
+paid Cyborg or newly returned group exists to trigger Ix/Southern/Tleilax High
+follow-ups. Prior completed returns and their effects remain completed. There
+is no new response aimed only at the Homeworld bonus, and no retroactive
+interruption of a committed deployment.
+
+The 24 October prevention cutover is retained: Ghola is prevented during the
+remaining affected Revival, then becomes available outside that phase under
+its own ordinary card rules. The Emperor's native special Karama keeps its
+printed immunity. This does not restore the old provisional Ghola bypass or
+conflate La La La with a Karama effect. Targets retain readable persistent
+guidance; existing minimal policies consume the shared actual native offer,
+without strategic tuning.
+
+Bounded evidence: [native source](../tests/fixture-homeworld-revival-prevention.ts),
+[native transitions](../tests/homeworld-revival-prevention-runtime.test.ts) and
+[controlled regression](../tests/homeworld-revival-benefits-engine.test.ts).
+Frozen 10-file 87/87, types/lint/build and four actual-control/engine/GameTable SSR
+journeys pass. Genuine 75-action original setup, typed free shipment and Storm
+losses earn Low 0/Tanks 5 before the real second Revival. Quiet/pending prevention
+retains rate 4 and all physical/usage state; decline returns 4 and awards original
+income 1. Held Ghola rejects during affected phase 4, then returns 5 after actual phase
+progression. Four existing policies act legally without tuning. One existing
+in-memory Ghola lifecycle file is included in the selected union; this is not
+final assurance. Private proof:
+`/home/quintine/.local/share/dune/checkpoints/20261025-homeworld-revival-prevention/`.
+The earlier unresolved-overlap paragraph below remains the historical source
+audit; this dated policy supersedes its execution guard. Full module/High-
+effect combinations and final assurance remain open.
+
 ## Provisional Ix High paid revival bonus — 25 October 2026
 
 **Prototyped / Partial.** The printed Ix High card now connects an ordinary

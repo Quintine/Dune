@@ -154,7 +154,6 @@ import { GuildAmbassadorMarkerError, markerDestinations, markerOwner, quoteGuild
   type GuildAmbassadorMarker, type GuildAmbassadorMarkerQuote } from './guild-ambassador-no-field';
 import {
   homeworldLowBonus,
-  homeworldRevivalKaramaBlock,
   homeworldSardaukarFreeSupport,
   homeworldSardaukarGholaBlock,
   snapshotHomeworldRevival,
@@ -32160,8 +32159,6 @@ function tleilaxuSpecialKaramaQuote(g: Game, p: Player) {
       (g.pendingRevival && !ownStop) || g.phaseOpening || g.pendingKarama ||
       g.choamMarket || g.pendingTreacheryDiscard || g.pendingNullentropy || g.pendingKull
       ? 'Resolve the current response, decision or card effect before declaring revival prevention.' : null,
-    targetBlocks: Object.fromEntries(g.players.map(player =>
-      [player.id, homeworldRevivalKaramaBlock(g, player.id)])),
   });
 }
 function tleilaxuSpecialKaramaView(g: Game, p: Player) {
@@ -38367,10 +38364,7 @@ export function viewGame(state: Game, id: string) {
     ),
     revival: {
       pending: !!g.pendingRevival,
-      specialKaramaBlock:
-        g.decision?.kind === 'revivalStop'
-          ? homeworldRevivalKaramaBlock(g, g.decision.recipient)
-          : null,
+      specialKaramaBlock: null,
       leaders: leaderRevivals.leaders,
       kwisatz: leaderRevivals.kwisatz,
       ...(leaderRevivals.auditorCyclePolicy ? { auditorCyclePolicy: leaderRevivals.auditorCyclePolicy } : {}),

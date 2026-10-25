@@ -21,8 +21,9 @@ composition**: prevention includes Ghola Treachery during the remainder of the
 affected Revival Phase and expires outside that phase. Ghola during Shipment
 and Movement or Battle stays legal. This replaces the earlier provisional Ghola
 bypass; it is not a direct combined GF9 FAQ ruling. No already completed return,
-payment, income or allowance is undone. Low-population Homeworld overlap remains
-guarded under its existing unresolved contract. Wider combinations and complete
+payment, income or allowance is undone. Low-population Homeworlds now follow the
+[25 October provisional event-prevention composition](HOMEWORLD_BENEFITS_RULES.md#provisional-low-homeworld-revival-prevention--25-october-2026):
+preserve the printed Low rate and prevent the whole qualifying return. Wider combinations and complete
 rules/mode acceptance remain unfinished.
 
 ## Connected implementation

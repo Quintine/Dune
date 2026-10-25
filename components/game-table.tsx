@@ -4364,9 +4364,10 @@ export function GameTable({
                 <>
                   {g.revival.prevented && (
                     <p className="notice">
-                      Tleilaxu prevented your normal force and leader revivals
-                      this turn. Ghola treachery and the Emperor’s special
-                      Karama remain separate.
+                      Tleilaxu prevented your force and leader revivals for
+                      the rest of this Revival, including Ghola Treachery.
+                      The Emperor’s native special Karama remains immune;
+                      this prevention does not stop Ghola outside Revival.
                     </p>
                   )}
                   <RevivalCommerce game={g} act={act} busy={busy} />

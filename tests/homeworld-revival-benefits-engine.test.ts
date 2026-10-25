@@ -360,37 +360,45 @@ void test('actual high Tleilax phase opening permits one ordinary free-income pa
   inventory(g);
 });
 
-void test('every AI respects the projected low-Homeworld special-Karama boundary and can allow the saved revival', () => {
+void test('controlled Low Homeworld keeps its rate while human and minimal policies can prevent the whole return', () => {
   let g = setup(['fremen', 'tleilaxu', 'atreides'], true);
   position(g, 'fremen', 2, 12);
   position(g, 'tleilaxu', 12, 0);
-  // Advanced identity is established before genuine setup history is signed;
-  // public Advanced/Homeworld starts remain independently gated.
+  // Controlled later army/card allocation; the separate native fixture earns
+  // its actual Low population and Tanks through setup/shipment/Storm losses.
   g = enterRevival(g);
   const card = hold(g, 'tleilaxu', 'karama');
   g = applyAction(g, 'fremen', { type: 'revive', amount: 1, elite: 0 });
   assert.equal(g.decision?.kind, 'revivalStop');
   const before = reload(g);
-  assert.match(
-    viewGame(g, 'tleilaxu').revival.specialKaramaBlock!,
-    /revival-overlap ruling/,
-  );
-  rejected(g, 'tleilaxu', { type: 'card', card, mode: 'special' });
+  const offer = viewGame(g, 'tleilaxu').tleilaxuSpecialKarama!;
+  assert.equal(offer.blocked, null);
+  assert.deepEqual(offer.targets, [{ player: 'fremen', blocked: null }]);
+  assert.equal(viewGame(g, 'tleilaxu').revival.specialKaramaBlock, null);
   for (const difficulty of DIFFICULTIES) {
     const view = viewGame(reload(g), 'tleilaxu');
     view.players.find((player) => player.id === 'tleilaxu')!.bot = difficulty;
-    const candidates = botActions(view);
-    assert.deepEqual(candidates, [{ type: 'decision', decline: true }]);
-    const allowed = applyAction(reload(g), 'tleilaxu', candidates[0]);
-    assert.equal(p(allowed, 'fremen').reserves, 3);
-    assert.equal(p(allowed, 'fremen').tanks, 11);
-    assert.equal(p(allowed, 'tleilaxu').specialKaramaUsed ?? false, false);
-    assert.ok(p(allowed, 'tleilaxu').hand.some((held) => held.id === card));
-    assert.equal(
-      viewGame(allowed, 'tleilaxu').revival.specialKaramaBlock,
-      null,
-    );
-    inventory(allowed);
+    const action = botActions(view)[0];
+    assert.deepEqual(action, { type: 'card', card, mode: 'special', target: 'fremen' });
+    const stopped = applyAction(reload(g), 'tleilaxu', action);
+    assert.equal(stopped.pendingRevival ?? null, null);
+    assert.equal(p(stopped, 'fremen').reserves, 2);
+    assert.equal(p(stopped, 'fremen').tanks, 12);
+    assert.equal(p(stopped, 'fremen').revived, 0);
+    assert.equal(p(stopped, 'fremen').freeForcesRevived, 0);
+    assert.equal(p(stopped, 'tleilaxu').specialKaramaUsed, true);
+    assert.equal(p(stopped, 'tleilaxu').spice, p(before, 'tleilaxu').spice);
+    assert.ok(!p(stopped, 'tleilaxu').hand.some(held => held.id === card));
+    assert.equal(stopped.discard.filter(held => held.id === card).length, 1);
+    const recipient = viewGame(stopped, 'fremen');
+    assert.equal(recipient.revival.prevented, true);
+    assert.equal(recipient.revival.freeRemaining, 4);
+    rejected(stopped, 'fremen', { type: 'revive', amount: 1, elite: 0 });
+    inventory(stopped);
   }
+  const allowed = applyAction(reload(g), 'tleilaxu', { type: 'decision', decline: true });
+  assert.equal(p(allowed, 'fremen').reserves, 3);
+  assert.equal(p(allowed, 'fremen').tanks, 11);
+  assert.ok(p(allowed, 'tleilaxu').hand.some(held => held.id === card));
   assert.deepEqual(g, before);
 });
