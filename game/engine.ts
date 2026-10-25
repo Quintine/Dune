@@ -1269,6 +1269,9 @@ type PendingGuildTransport = {
   cost: number;
   allyPayment: number;
   advisors: boolean;
+  /** Fresh board transports retain their actual source stance at foreign arrivals.
+   * Absent on declarations recorded before this source cutover. */
+  advisorArrivalSource?: string;
 };
 type GuildTransportOrder = Omit<PendingGuildTransport, 'event' | 'signature' | 'fromReserves' | 'permission'>;
 type JunctionTransportDeclaration = {
@@ -6086,12 +6089,21 @@ function semutaMarketGrantKaramaResponse(g: Game, response: ResponseWindow, play
     throw error;
   }
 }
+/** Matching and completed relocation can retain the original Ambassador child.
+ * Their native source validators still prove the exact parent before admission. */
+function semutaAdvisorAmbassadorParent(g: Game, response: ResponseWindow): boolean {
+  if (response.kind !== 'advisorFlip') return false;
+  if (response.advisorAmbassadorMatchingSource)
+    return !!g.pendingAdvisorAmbassadorMatching &&
+      response.advisorAmbassadorMatchingSource.parent === g.pendingAmbassador?.event;
+  return response.automaticAdvisorFlip?.producer === 'specialRelocation' &&
+    g.pendingAutomaticAdvisorRelocation?.resume.kind === 'ambassador';
+}
 /** Ordinary Advanced advisor conversion sources retain their native timing:
  * preparation, uncommitted matching or an already completed native producer. */
 function semutaAdvisorFlipKaramaResponse(g: Game, response: ResponseWindow, player: string): boolean {
   const spiritual = response.kind === 'advisorFlip' && semutaSpiritualKaramaParent(g,response);
-  const relocation = response.automaticAdvisorFlip?.producer === 'specialRelocation';
-  const ambassador = relocation && g.pendingAutomaticAdvisorRelocation?.resume.kind === 'ambassador';
+  const ambassador = semutaAdvisorAmbassadorParent(g,response);
   if (response.kind !== 'advisorFlip' || !g.advanced ||
       response.owner !== byFaction(g,'beneGesserit')?.id ||
       g.battle || g.decision || g.phaseOpening || g.pendingKarama || g.truthtrance ||
@@ -6101,8 +6113,7 @@ function semutaAdvisorFlipKaramaResponse(g: Game, response: ResponseWindow, play
       (g.pendingSpiritualAdvisor && !spiritual) || (g.pendingAmbassador && !ambassador) || g.pendingTerrorEntry || g.pendingArrivalOverlap ||
       (!spiritual && !semutaAdvisorArrivalSupported(g,response)) || g.ornithopter || g.summonedWorm || g.wormRides.length > 0 ||
       g.currentAuctionSale || g.choamMarket || g.pendingChoamMarketGhola || g.pendingIxAlly ||
-      response.advisorGatherMatchingSource || response.advisorTransportMatchingSource ||
-      response.advisorAmbassadorMatchingSource || (response.spiritualAdvisorSource && !spiritual) ||
+      (response.spiritualAdvisorSource && !spiritual) ||
       (response.advisorResume !== undefined && !(response.advisorResume === 'preparation' && response.advisorPreparationSource)) ||
       (!!g.pendingAdvisorMatching !== !!response.advisorMatchingSource) ||
       (!!g.pendingAutomaticAdvisorFlips?.length !== !!response.automaticAdvisorFlip)) return false;
@@ -6358,6 +6369,16 @@ function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinu
       players:g.players.map(p => ({id:p.id, moved:p.moved, advisors:p.advisors,
         noField:p.noField, noFieldEvent:p.noFieldEvent, flipBlocked:p.advisorFlipMovementBlocked,
         hajr:p.hajrPlays, window:p.hajrWindow, leaders:p.leaders, kwisatz:p.kwisatz})),
+    } : undefined,
+    advisorMatchingParent: advisor && c.use.response.advisorGatherMatchingSource ? {
+      gather:g.pendingAdvisorGatherMatching,
+    } : advisor && c.use.response.advisorTransportMatchingSource ? {
+      transport:g.pendingAdvisorTransportMatching, denied:g.advisorTransportMatchingDenied,
+      pending:g.pendingGuildTransport, rate:g.guildRateBlocked,
+      permission:g.guildTransportBlocked, price:g.karamaShipping, nexus:g.nexusCards,
+    } : advisor && c.use.response.advisorAmbassadorMatchingSource ? {
+      matching:g.pendingAdvisorAmbassadorMatching, ambassador:g.pendingAmbassador,
+      tokens:g.ecazAmbassadors,
     } : undefined,
     advisorParent: advisorProducer === 'guildTransport' ? {
       transport:g.pendingAutomaticAdvisorTransport, pending:g.pendingGuildTransport,
@@ -6965,8 +6986,7 @@ function treacheryDiscardIntegrity(g: Game) {
     (continuation?.kind === 'karamaBonusDiscard' && continuation.use.response.source === 'ambassador') ||
     (continuation?.kind === 'karamaNoFieldDiscard' && continuation.use.response.source === 'ambassadorNoField') ||
     (continuation?.kind === 'karamaAdvisorFlipDiscard' &&
-      continuation.use.response.automaticAdvisorFlip?.producer === 'specialRelocation' &&
-      g.pendingAutomaticAdvisorRelocation?.resume.kind === 'ambassador');
+      semutaAdvisorAmbassadorParent(g,continuation.use.response));
   requireRule(
     (g.status === 'playing' || (truth && g.status === 'setup')) &&
       pending.sequence === sequence &&
@@ -8624,8 +8644,7 @@ function semutaOfferSupported(
         !g.ornithopter && !g.ecologicalStorm)) &&
     (richeseGiftDiscard || ambassadorBenefitDiscard || (!g.pendingExchange && (replacementCostDiscard || !g.pendingIxAlly) && !g.pendingNullentropy &&
       (!g.pendingAmbassador || advisorDiscard &&
-        continuation.use.response.automaticAdvisorFlip?.producer === 'specialRelocation' &&
-        g.pendingAutomaticAdvisorRelocation?.resume.kind === 'ambassador') &&
+        semutaAdvisorAmbassadorParent(g,continuation.use.response)) &&
       (terrorAllianceDiscard || !g.pendingTerrorEntry))) &&
     (richeseGiftDiscard || noFieldDiscard || continuation.kind === 'karamaShipmentDiscard' ||
       continuation.kind === 'specialKaramaDiscard' ||
@@ -11401,7 +11420,7 @@ function guildBetrayalAuthority(g: Game, continuation: GuildBetrayalContinuation
     case 'guildTransport': {
       requireRule(typeof continuation.fromReserves === 'boolean', 'The Guild transport source flag is malformed.');
       const frame = continuation.frame;
-      requireRule(frame && Object.keys(frame).sort().join(',') ===
+      requireRule(frame && Object.keys(frame).filter(key => key !== 'advisorArrivalSource').sort().join(',') ===
         'advisors,allyPayment,amount,cost,elite,eliteGroup,group,origin,player,sector,to,turn',
       'The saved Guild transport frame is malformed.');
       const p = getPlayer(g, frame.player);
@@ -31622,6 +31641,7 @@ function guildTransportSignature(intent: PendingGuildTransport): string {
     intent.group, intent.eliteGroup, intent.origin, intent.to, intent.sector,
     intent.amount, intent.elite, intent.cost, intent.allyPayment, intent.advisors];
   if (intent.permission !== undefined) fields.push(intent.permission);
+  if (intent.advisorArrivalSource !== undefined) fields.push(intent.advisorArrivalSource);
   return JSON.stringify(fields);
 }
 function ordinaryGuildTransportFullCost(g: Game, p: Player, frame: GuildTransportOrder): number | null {
@@ -31678,6 +31698,8 @@ function validateGuildTransportWindow(g: Game, response: ResponseWindow) {
     Number.isSafeInteger(intent.elite) && intent.elite >= 0 && intent.elite <= intent.amount &&
     Number.isSafeInteger(intent.allyPayment) && intent.allyPayment >= 0 &&
     intent.allyPayment <= intent.cost && typeof intent.advisors === 'boolean' &&
+    (intent.advisorArrivalSource === undefined || g.advanced && shipper.faction === 'beneGesserit' &&
+      !intent.fromReserves && intent.to !== 'reserves' && intent.advisorArrivalSource === intent.origin) &&
     (intent.fromReserves
       ? intent.origin === 'reserves' && shipper.faction === 'fremen' &&
         intent.group.length === 0 && Object.keys(intent.eliteGroup).length === 0 &&
@@ -31711,6 +31733,7 @@ function guildTransportOrder(intent: PendingGuildTransport, cost = intent.cost):
     group: intent.group, eliteGroup: intent.eliteGroup, to: intent.to,
     sector: intent.sector, amount: intent.amount, elite: intent.elite,
     cost, allyPayment: intent.allyPayment, advisors: intent.advisors,
+    ...(intent.advisorArrivalSource !== undefined ? {advisorArrivalSource:intent.advisorArrivalSource} : {}),
   };
 }
 function guildTransportOpportunity(g: Game, player: string): string {
@@ -31787,7 +31810,9 @@ function validateGuildTransportForCommit(
   requireRule((fromReserves || to === 'reserves' || to !== origin) &&
     (to !== 'reserves' || p.faction === 'guild' || !!guildSecretEvent) &&
     (to !== MOBILE_STRONGHOLD || p.faction === 'ixians') &&
-    advisors === (to !== 'reserves' && arrivalAsAdvisor(g, p, to)),
+    (frame.advisorArrivalSource === undefined || g.advanced && p.faction === 'beneGesserit' &&
+      !fromReserves && to !== 'reserves' && frame.advisorArrivalSource === origin) &&
+    advisors === (to !== 'reserves' && arrivalAsAdvisor(g, p, to, frame.advisorArrivalSource)),
     'The original Guild transport destination or advisor stance is unavailable.');
   const sourceLock = p.advisors?.[origin]?.lockedTurn;
   requireRule(to === 'reserves' || advisors || sourceLock !== g.turn ||
@@ -38039,7 +38064,9 @@ function applyActionInner(
       to !== 'reserves' || p.faction === 'guild' || !!guildSecretEvent,
       'Only the Guild may ship forces back to reserves.',
     );
-    const advisors = to !== 'reserves' && arrivalAsAdvisor(g, p, to);
+    const advisorArrivalSource = g.advanced && p.faction === 'beneGesserit' &&
+      !fromReserves && to !== 'reserves' ? origin : undefined;
+    const advisors = to !== 'reserves' && arrivalAsAdvisor(g, p, to, advisorArrivalSource);
     const sourceLock = p.advisors?.[origin]?.lockedTurn;
     requireRule(
       to === 'reserves' ||
@@ -38066,6 +38093,7 @@ function applyActionInner(
     const frame: GuildTransportOrder = {
       turn: g.turn, player: id, origin, group, eliteGroup, to, sector,
       amount: n, elite, cost, allyPayment, advisors,
+      ...(advisorArrivalSource !== undefined ? {advisorArrivalSource} : {}),
     };
     if(execution==='live'&&openAdvisorTransportMatching(g,{kind:'guild',frame,fromReserves,...(guildSecretEvent?{secret:guildSecretEvent}:{})}))return g;
     if (!guildSecretEvent) {

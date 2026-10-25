@@ -2,6 +2,97 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Guild advisor arrival and matching costs — 26 October 2026
+
+**Prototyped / Partial.** Existing `karamaAdvisorFlipDiscard` now admits native
+Planetologist gathering, Guild/Junction transport and Fremen Ambassador matching
+costs. The [recorded matching contract](ADVISOR_MATCHING.md) remains authoritative:
+one origin's prevention stops a whole uncommitted gather; transport prevention
+retains its unused producer opportunity; Ambassador prevention retains its
+already-consumed trigger and restores that benefit's chooser. This extends fresh
+cost coverage without a new ruling, public start or mode/publication gate.
+
+Private cost signatures conditionally bind the actual gather order/queue/index/
+approvals, transport declaration/opportunity/denials or matching Ambassador/
+token. Pure native validation checks the exact current selected packet. It
+executes no payment, transfer, collection or arrival. Fresh claim/pass restores
+the original response and applies its native denial once. The denied packet
+stays blocked under its existing producer identity; real different routes or
+packets remain available. Ambassador has no invented decline or trigger refund.
+Earlier cost signature formats remain unchanged when these new sources are
+absent. Existing persistent neutral controls/private choice and minimal profiles
+serve the new sources.
+
+The original advisor replacement test exposes a separate native defect: Guild
+entry projection and live declaration/commit omit the board origin when deriving
+arrival stance, treating an actual advisor as a fighter beside foreign forces.
+The existing physical28/source-stance contract and shared occupancy rule already
+permit advisor coexistence. The correction passes origin through the shared
+entry quote and stamps fresh Advanced BG board declarations with optional
+`advisorArrivalSource`. Commit revalidates that exact original source; permission/
+rate adapters and conditional signatures retain it. Unstamped recorded orders
+keep their original protocol and receipt bytes. The native Betrayal frame's
+shape check admits this optional field under the same semantic validator.
+No stored order is rewritten. Direct reserve defaults, fighter occupancy,
+advisor locks and existing empty-arrival conversion keep their own rules.
+
+Three disjoint [gather](../tests/semuta-advisor-gather-engine.test.ts),
+[transport](../tests/semuta-advisor-transport-matching-engine.test.ts) and
+[Ambassador](../tests/semuta-advisor-ambassador-matching-engine.test.ts) lanes plus
+[native Guild regressions](../tests/guild-advisor-source-arrival-engine.test.ts)
+and root integration pass **22 files,255/255**, types/lint/build and **sixteen
+native engine/GameTable SSR/actual Semuta-callback journeys** on unchanged source.
+Thirty-five new cases cover eight original cost sources, native arrival/default/
+lock behavior, a labelled controlled legacy-format supplement, claim/pass,
+allowance, genuine legal replacements, source/stale rejection and four minimal
+profiles. The observed native frame change justifies the related Guild quote,
+permission, rate, Betrayal and Secret Ally cases; it does not start a broad
+save/privacy/custody campaign.
+
+Gather158/162 uses original Advanced R/C/BG/A/E, exact CHOAM and all14 Skills from
+the original undealt initializer. Real five-seat offers/assignments earn BG
+Planetologist. E really bribes1; BG pays4 for Basin2 in turn1 and2 for OhGap1 in
+turn2, retaining its original Arrakeen advisor beside A10. The two-origin gather
+opens original first/second counters; actual first allowance changes no physical
+state. Either denial preserves both groups and unused movement, then the real
+same-type Basin1→OhGap replacement uses one normal movement.
+
+Guild169/Junction164 uses original Advanced R/C/BG/A/G, exact CHOAM. BG's real
+setup advisor and paid Basin2 provide both incoming-type directions. Guild earns
+its actual next-turn Worm Nexus and reciprocal alliance. Junction instead earns
+real lobby Homeworlds and high-Guild's current half-price offer. Costs stop before
+permission/rate/payment. Either denied packet permits actual paid1 transfer to
+empty Polar for fighters or Guild-occupied Tuek's for advisors. Only an actual
+price difference opens a rate counter; city full1/half1 proceeds to original
+income. The new source-stamp regression proves native quote/live allied advisor
+arrival, while fighters still cannot cross into that ally. Direct reserve
+shipping retains its original fighter default and temporary-visit contract.
+
+Ambassador227 uses original six-seat R/C/Ecaz/BG/A/E, exact CHOAM+Ecaz. Actual
+final-Traitor lottery earns Fremen supply, Ecaz pays1 for the Carthag token, BG
+pays2 for Tuek's2, real Worm Nexus proposals earn the BG/Ecaz pact, and A pays1
+to trigger that token. Ecaz really grants relocation to BG; both one-counter
+opposite-type selections stop at matching. After denial the real fighter1→Polar
+alternate keeps the used token and all ordinary allowances, then finishes its
+original child once. Actual cache1 and originally dealt Karama supply every45-
+card source. No played hand, force, stance, wallet, skill, pact, clock, receipt
+or parent is installed. Controlled malformed/legacy copies are labelled
+supplements, not genuine historical captures.
+
+Feedback removes an unused import and assumptions about one manual pass per seat
+or a mandatory rate window without a price difference. The actual allied-entry
+failure then leads to the source fix rather than a different destination that
+hides it. Final frozen v3 report binds2924 files to
+`8ffd8a7292d297e9dae89dcf1dbda42aeb4aa01487cecf45ab83903d498adef0`.
+Private report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-incoming-matching-proof-v3/`;
+scripts/journeys/HTML: adjacent `20261026-semuta-incoming-matching-runtime/`.
+
+Wider grant/module combinations, complete modes and final rules/recovery/privacy/
+custody assurance remain open. SSR/component callbacks do not certify DOM/
+hydration, browser/mobile or deployed acceptance. No saved-room, D1, server,
+reset/restart, deployment or recovery operation occurs.
+
 ## Spiritual Advisor and relocation costs — 26 October 2026
 
 **Prototyped / Partial.** Existing `karamaTerminalDiscard` admits the original

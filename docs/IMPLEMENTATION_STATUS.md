@@ -1,5 +1,46 @@
 # Dune implementation status
 
+## 26 October 2026 — Guild advisor arrival and Semuta matching costs
+
+**Prototyped / Partial.** Fix fresh Guild board transport dropping an advisor's
+origin when quoting/validating a foreign arrival. Shared human/bot entry and live
+declaration/commit now preserve its source stance, including arrival beside the
+actual Guild ally. A conditional source stamp preserves old recorded declaration
+settlement and signature bytes; direct reserve defaults, fighter restrictions
+and fresh-advisor locks remain distinct. The native Betrayal frame admits the
+new optional field under the same semantic validation. This follows the existing
+board-source contract, without new rulings or mode gates.
+
+Existing advisor cost continuation also retains actual gathered, Guild/Junction
+and Fremen Ambassador matching declarations through Semuta claim/pass. Native
+denial leaves the whole gather unused, preserves the original transport grant
+or restores the consumed Ambassador's chooser. Real legal alternatives complete
+their original payment/arrival once. Persistent controls/minimal bots are reused.
+[Source and scope](SEMUTA_SOURCE_UPDATE_20260907.md#guild-advisor-arrival-and-matching-costs--26-october-2026).
+
+Three disjoint source lanes and root integration pass **22 files,255/255**,
+types/lint/build and **sixteen native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Thirty-five new cases cover eight cost sources,
+native Guild arrival/default/lock behavior, labelled legacy-format acceptance,
+claim/pass, allowance, alternatives, source/stale rejection and four profiles.
+Gather158/162 earns actual Planetologist/all14 Skills, E bribe1 and paid BG2+1;
+Guild169/Junction164 earn a real pact or live World offer and preserve their
+unused transport before actual paid1 replacements. Ambassador227 earns original
+Fremen supply, token/entrant fees and mutual BG/Ecaz alliance, then its real
+Polar alternate keeps token/ordinary allowances. Actual cache1 and dealt Karama
+supply all45-card sources; no played force, stance, wallet, skill, pact, clock,
+source or parent is installed.
+
+Feedback removes an unused import and fixed reply/rate-window assertions. The
+allied replacement's rejection exposes the actual source-stance defect; native
+regressions prove its correction and the retained older receipt shape. Its frame
+change justifies the related Guild boundary cases. Final frozen v3 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-incoming-matching-proof-v3/`;
+scripts/journeys/HTML: adjacent `20261026-semuta-incoming-matching-runtime/`.
+Broader modules, full modes and final rules/recovery/privacy/custody assurance
+remain open; these results do not certify DOM/hydration, browser/mobile or
+deployment. No saved-room/D1/server, reset/restart or recovery operation occurs.
+
 ## 26 October 2026 — Semuta on Spiritual Advisor and relocation costs
 
 **Prototyped / Partial.** Existing terminal/advisor cost continuations now retain

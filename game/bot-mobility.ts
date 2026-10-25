@@ -56,7 +56,7 @@ export function botEntryAllowed(
     g,
     p,
     to,
-    kind === 'move' ? source : undefined,
+    kind === 'move' || kind === 'guildShip' ? source : undefined,
   );
   if (
     source &&

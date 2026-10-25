@@ -238,11 +238,12 @@ void test('source storm, destination geometry, ally occupancy and stronghold cap
   unavailable(fixture(), cross({ territory: MOBILE_STRONGHOLD, sector: 0 }));
 });
 
-void test('new Bene Gesserit advisor source locks forbid fighter arrival but existing destination advisors preserve the lock', () => {
+void test('fresh Guild transport retains advisor source locks at foreign arrivals and forbids matching into resident fighters', () => {
   const g = fixture('beneGesserit');
   g.players[0].advisors = { imperial_basin: { lockedTurn: g.turn } };
   army(g, 2, { 'carthag:11': 1, 'imperial_basin:10': 1 });
-  unavailable(g, cross());
+  const foreign = enabled(g, cross(), 2);
+  assert.equal(foreign.players[0].advisors!.carthag.lockedTurn, g.turn);
   army(g, 0, { ...g.players[0].forces, 'carthag:11': 1 });
   g.players[0].advisors.carthag = {};
   const after = enabled(g, cross(), 2);

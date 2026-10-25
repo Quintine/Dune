@@ -16,6 +16,48 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Guild advisor arrival and Semuta matching costs — 26 October. Prototyped / Partial.**
+Fresh Guild board transport now retains an advisor group's source stance when
+joining a foreign group, including its Guild ally. Shared projected entry and
+live declaration/commit use that source. New declarations carry an optional
+source stamp; old recorded orders retain their original settlement/signature
+format. Fighter cross-entry, direct reserve defaults and advisor locks retain
+their distinct rules. This repairs an observed source omission, not a new ruling.
+
+Existing `karamaAdvisorFlipDiscard` also admits Planetologist gathering, Guild/
+Junction transport and Fremen Ambassador matching costs. Exact native parents
+retain the gathered queue/approvals, unused transport opportunity or consumed
+Ambassador trigger. Claim/pass applies denial once, then actual legal alternatives
+remain available. Existing persistent controls/minimal bots serve these sources;
+no mode gate changes.
+
+Three disjoint source lanes and root integration pass **22 files,255/255**,
+types/lint/build and **sixteen native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Thirty-five new cases cover eight cost sources,
+native Guild arrival/default/lock behavior, a labelled legacy-format supplement,
+claim/pass, allowance, legal alternatives, source/stale rejection and four minimal
+profiles. Gather158/162 earns real all14 Skill offers/Planetologist, E bribe1 and
+BG's paid Basin2/OhGap1; allowing the first group moves nothing before the second.
+Guild169 earns a real reciprocal Nexus pact; Junction164 earns lobby Homeworlds
+and its live high-Guild offer. Both types really take a different paid1 route
+after denial. Ambassador227 earns native Fremen supply, paid token/entrant,
+BG/Ecaz pact and actual grant; the legal Polar alternate retains its used token
+and all ordinary allowances. Every45-card source uses actual cache1 and dealt
+Karama; no played physical state, skill, pact, clock or parent is installed.
+
+Feedback removes an unused import and fixed per-seat reply/rate-window
+assumptions. The rejected allied target then exposes the actual Guild source
+omission, which is repaired with native regressions rather than avoiding it.
+The observed native frame-format change justifies the affected Guild permission,
+rate, Betrayal and Secret Ally checks; broad assurance remains deferred.
+Private report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-incoming-matching-proof-v3/`;
+journeys/HTML: adjacent `20261026-semuta-incoming-matching-runtime/`.
+Wider grant/module combinations, complete modes and final assurance remain open.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs;
+DOM/hydration, browser/mobile and deployed acceptance remain due.
+[Source and scope](SEMUTA_SOURCE_UPDATE_20260907.md#guild-advisor-arrival-and-matching-costs--26-october-2026).
+
 **Semuta on Spiritual Advisor and relocation costs — 26 October. Prototyped / Partial.**
 Existing terminal/advisor cost continuations now retain ordinary Spiritual
 shipping, matching and committed-arrival parents, plus Ambassador/Discovery
