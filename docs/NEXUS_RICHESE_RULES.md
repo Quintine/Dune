@@ -2,6 +2,76 @@
 
 Audited 10 September 2026, with a bounded Betrayal implementation contract added 30 September. This separates the ordinary Secret Ally shipment, native Cunning's two-marker operation and Betrayal's two auction outcomes. It does not certify full-family implementation or open the Nexus release gate. See [common Nexus rules](NEXUS_CARD_RULES.md), [auction custody and source boundaries](RICHESE_AUCTION_RULES.md), [No-Field custody](RICHESE_NO_FIELD_RULES.md), and [allied No-Field distinctions](RICHESE_ALLIED_SHIPMENT_AUDIT.md).
 
+## High Homeworld Cunning accompaniment — 25 October 2026
+
+**Prototyped / Partial.** An unallied native Richese holder may explicitly add
+paid physical reserve forces to its original two-token Cunning declaration
+while its Homeworld is High. The same `noFieldReserves` count used by ordinary
+High shipment now belongs to the original signed pair frame; omitting it keeps
+the original pair and its one-force price. The Nexus is still spent at accepted
+declaration, before its native No-Field counter. There is no extra Skill proof,
+Homeworld-only counter, refund coupon or additional shipment opportunity.
+
+The photographed Cunning card prices the two tokens as one shipment for one
+force; the High Homeworld component permits reserve accompaniment. The supplied
+revision's physical pages 22/23/36 do not give a combined price or physical
+allocation order. Under the 14 October choose-recommended instruction, the
+explicit provisional composition is one invoice for **one pair unit plus the
+selected paid count**. Reserve those paid normal counters first, then immediately
+materialize `min(faceup value, reserves − paid count)` from the faceup token.
+This is allocation within the one atomic shipment, not a second action or a
+delayed faceup reveal. The other token remains concealed and debits no physical
+stock until its later native reveal. No paid force is displaced by the free
+materialization, substituted or manufactured. The hidden denomination never
+changes this invoice.
+
+Observe native High before the whole group, permit its arrival to cross Low,
+then apply current Low movement rules to later actions. The source's ordinary
+unallied/no-purchased-rate and distinct available token/nonrepeat conditions
+remain. Smuggler retains its separate single-marker route. Zero paid forces
+need no High entitlement and preserve ordinary Cunning, including scarce stock.
+The arrival counts actual paid plus immediate faceup counters and one effective
+concealed marker; physical shipment commitments count only actual counters.
+
+The original No-Field counter can prevent the entire bundle without changing
+tokens, paid stock, invoice balances or the unused ordinary shipment, while
+the declared Nexus stays spent. A later Advanced Guild stop retains its existing
+consumed-shipment outcome. Original token/event/history, selected paid quantity
+and price remain bound through the original parent; later reveal uses the
+remaining native reserve pool. Historical frames with no extra quantity retain
+their old shape and are not retrofitted.
+
+The persistent private pair controls show the selected paid group, exact
+immediate physical materialization and combined cost. Pair funding is its own
+unallied invoice, independent of the single-marker/Smuggler selection. Minimal
+policies try one affordable paid companion and retain the ordinary pair fallback;
+there is no strategic refinement. The [shared Homeworld payment adapter](../game/homeworld-payment-options.ts)
+now validates the actual pair allocation and funded invoice instead of excluding
+all Homeworld pairs.
+
+Evidence paths: [physical allocation quote](../game/richese-homeworld-shipment.ts),
+[native source](../tests/fixture-richese-homeworld-cunning.ts),
+[native cases](../tests/richese-homeworld-cunning-runtime.test.ts),
+[shared selector](../components/richese-no-field.tsx) and
+[quote cases](../tests/richese-homeworld-shipment.test.ts).
+Frozen 16-file 134/134, types/lint/build and four native runtime/SSR journeys
+pass. Basic 91/Advanced 97 sources earn an actual Emperor/Atreides alliance and
+unallied Richese singleton draw, original main 35/cache 10 and a completed bribe 7.
+Eleven paid plus immediate 5 leave 4 and concealed 3, then later reveal leaves 1.
+Capped 134 earns real 10/2 bribes/Charity: reserve 16 paid first, materialize 4 of the
+immediate 5 and later materialize 0. Original Karama cancellation 91 keeps physical
+stock and the ordinary opportunity while retaining the spent Nexus; a normal
+replacement really completes. Original two-seat sources and no-count pairs stay
+in the related union. Four existing profiles complete legal positive groups;
+the shared payment adapter also rejects an unfunded actual source.
+The first 133-case union exposed that adapter's old blanket Homeworld exclusion;
+that behavior is fixed, not bypassed. No played phase/hand/wallet/alliance/force
+pool is installed. Private source-bound proof/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-richese-homeworld-cunning/`.
+Wider routes/modules, complete games and final assurance remain unfinished.
+This dated section supersedes the older High-accompaniment boundary below,
+while retaining the separate Secret Ally and Betrayal contracts.
+
 ## Native Guild rate composition — 15 October 2026
 
 Secret Ally retains its printed **one charged counter / up to five physical

@@ -4,8 +4,8 @@ import { newPlayer, type Game } from '../game/engine';
 import { createHomeworldCustody, quoteHomeworldCustody } from '../game/homeworld-custody';
 import { homeworldContext } from '../game/homeworld-game';
 import {
-  richeseHomeworldShipmentEnabled, quoteRicheseHomeworldForces, RicheseHomeworldShipmentError,
-  type RicheseHomeworldForcesInput,
+  richeseHomeworldShipmentEnabled, quoteRicheseHomeworldForces, quoteRicheseHomeworldPair,
+  RicheseHomeworldShipmentError, type RicheseHomeworldForcesInput, type RicheseHomeworldPairInput,
 } from '../game/richese-homeworld-shipment';
 
 /** Controlled native population context, not an earned shipment chronology. */
@@ -74,4 +74,53 @@ void test('malformed physical counts and source flags reject before producing a 
   }
   assert.throws(() => quoteRicheseHomeworldForces(shipment({ enabled: 'yes' as unknown as boolean })), RicheseHomeworldShipmentError);
   assert.throws(() => quoteRicheseHomeworldForces(shipment({ smuggler: 1 as unknown as boolean })), RicheseHomeworldShipmentError);
+});
+
+void test('public pair reserves paid counters before materializing a scarce revealed denomination', () => {
+  const input: RicheseHomeworldPairInput = { enabled: true, reserves: 5, amount: 4, revealedValue: 5 };
+  const before = structuredClone(input);
+  assert.deepEqual(quoteRicheseHomeworldPair(input), { paid: 4, physical: 5, priced: 5, revealed: 1 });
+  assert.deepEqual(input, before);
+  assert.deepEqual(quoteRicheseHomeworldPair({ enabled: true, reserves: 3, amount: 3, revealedValue: 3 }),
+    { paid: 3, physical: 3, priced: 4, revealed: 0 });
+});
+
+void test('public zero, three and five affect physical reveal without changing the combined paid invoice', () => {
+  for (const revealedValue of [0, 3, 5] as const) {
+    const input = { enabled: true, reserves: 10, amount: 2, revealedValue };
+    const before = structuredClone(input);
+    assert.deepEqual(quoteRicheseHomeworldPair(input),
+      { paid: 2, physical: 2 + revealedValue, priced: 3, revealed: revealedValue });
+    assert.deepEqual(input, before);
+  }
+});
+
+void test('ordinary zero-paid public pairs need no High benefit and reveal only actual remaining stock', () => {
+  for (const revealedValue of [0, 3, 5] as const) {
+    const input = { enabled: false, reserves: 2, amount: 0, revealedValue };
+    const revealed = Math.min(2, revealedValue);
+    assert.deepEqual(quoteRicheseHomeworldPair(input), { paid: 0, physical: revealed, priced: 1, revealed });
+    assert.deepEqual(quoteRicheseHomeworldPair({ ...input, reserves: 0 }),
+      { paid: 0, physical: 0, priced: 1, revealed: 0 });
+  }
+  assert.throws(() => quoteRicheseHomeworldPair({ enabled: false, reserves: 10, amount: 1, revealedValue: 3 }), /High population/);
+  assert.throws(() => quoteRicheseHomeworldPair({ enabled: true, reserves: 2, amount: 3, revealedValue: 5 }), /physical reserves/);
+});
+
+void test('public pair rejects invalid denominations and reuses safe physical count validation without mutation', () => {
+  const invalid: unknown[] = [-1, 1, 2, 4, 6, 3.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1, '3', null, undefined];
+  for (const value of invalid) {
+    const input: RicheseHomeworldPairInput = {
+      enabled: true, reserves: 10, amount: 2, revealedValue: value as RicheseHomeworldPairInput['revealedValue'],
+    };
+    const before = structuredClone(input);
+    assert.throws(() => quoteRicheseHomeworldPair(input), RicheseHomeworldShipmentError);
+    assert.deepEqual(input, before);
+  }
+  for (const field of ['reserves', 'amount'] as const) for (const value of [-1, 0.5, 21, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+    const input: RicheseHomeworldPairInput = { enabled: true, reserves: 10, amount: 2, revealedValue: 3, [field]: value };
+    const before = structuredClone(input);
+    assert.throws(() => quoteRicheseHomeworldPair(input), RicheseHomeworldShipmentError);
+    assert.deepEqual(input, before);
+  }
 });

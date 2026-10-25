@@ -569,7 +569,7 @@ import {
 import type { MixedShipmentExpression } from './mixed-shipment-question';
 import { controlsLeader, nativeAvailable } from './leader-control';
 import { ixHomeworldRevivalEnabled, quoteIxSuboidBonus } from './ix-homeworld-revival';
-import { richeseHomeworldShipmentEnabled, quoteRicheseHomeworldForces, RicheseHomeworldShipmentError } from './richese-homeworld-shipment';
+import { richeseHomeworldShipmentEnabled, quoteRicheseHomeworldForces, quoteRicheseHomeworldPair, RicheseHomeworldShipmentError } from './richese-homeworld-shipment';
 import type { EcazRevivalCohort } from './ecaz-revival-cohort';
 import {
   newRevivalRules,
@@ -16549,7 +16549,9 @@ function quoteShipmentArrival(
   const p = getPlayer(g, shipment.player);
   const amount = shipment.alliedNoField
     ? Math.max(1, shipment.amount)
-    : shipment.amount + (shipment.noFieldReserves ?? 0) + (shipment.smugglerCompanion ? 1 : 0);
+    : shipment.richesePair
+      ? 1 + currentRichesePairForces(g, p, shipment.noFieldReserves ?? 0, shipment.richesePair.revealedTokenId).physical
+      : shipment.amount + (shipment.noFieldReserves ?? 0) + (shipment.smugglerCompanion ? 1 : 0);
   const guild = byFaction(g, 'guild');
   const currentDecision = !!(
     g.decision &&
@@ -30180,6 +30182,17 @@ function currentRicheseHomeworldForces(g: Game, p: Player, amount: number, smugg
     throw error;
   }
 }
+function currentRichesePairForces(g: Game, p: Player, amount: number, revealedToken: string) {
+  const token = p.noField?.tokens.find(t => t.id === revealedToken);
+  requireRule(token, 'Choose the original physical token to reveal.');
+  try {
+    return quoteRicheseHomeworldPair({ enabled: richeseHomeworldShipmentEnabled(g, p.id),
+      reserves: p.reserves, amount, revealedValue: token.value });
+  } catch (error) {
+    if (error instanceof RicheseHomeworldShipmentError) throw new RuleError(error.message);
+    throw error;
+  }
+}
 function validateLeaderSkillNoFieldShipment(g: Game, shipment: PendingShipment) {
   const mixed = shipment.noFieldReserves !== undefined;
   requireRule((mixed || g.leaderSkills && smugglerNoFieldModeSupported(g)) && shipment.noField &&
@@ -30259,7 +30272,7 @@ function leaderSkillNoFieldIntegrity(g: Game): boolean {
     for (const rate of rates) validateGuildRateResponse(g, rate);
     return true;
   }
-  const pair = !!g.leaderSkills && !!shipment?.richesePair;
+  const pair = !!shipment?.richesePair && (!!g.leaderSkills || shipment.noFieldReserves !== undefined);
   if (!(pair || shipment?.noFieldReserves !== undefined || shipment?.smugglerCompanion !== undefined || shipment?.noFieldSkillProof !== undefined ||
     (g.leaderSkills && shipment?.noField) || responses.some(r => r.noFieldSkillProof !== undefined) ||
     decisions.some(d => 'noFieldSkillProof' in d))) return false;
@@ -30281,8 +30294,8 @@ function leaderSkillNoFieldIntegrity(g: Game): boolean {
   return true;
 }
 function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
-  requireRule(shipment.noFieldReserves === undefined || shipment.noField && !shipment.richesePair,
-    'Paid No-Field reserves require a single native concealed marker.');
+  requireRule(shipment.noFieldReserves === undefined || shipment.noField,
+    'Paid No-Field reserves require a native concealed marker.');
   requireRule(!atomicsShipmentBlocked(g.moritaniAtomics, shipment.territory),
     'Atomics Aftermath permanently blocks shipments into this territory.');
   // The pair has its original signed two-token validator below; skill proofs bind single markers.
@@ -30904,7 +30917,9 @@ function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipi
   finishShipmentPromises(
     g,
     getPlayer(g, shipment.player),
-    shipment.noField ? (shipment.noFieldReserves || shipment.smugglerCompanion
+    shipment.noField ? (shipment.richesePair
+      ? { territory: shipment.territory, amount: currentRichesePairForces(g, getPlayer(g, shipment.player), shipment.noFieldReserves ?? 0, shipment.richesePair.revealedTokenId).physical }
+      : shipment.noFieldReserves || shipment.smugglerCompanion
       ? { territory: shipment.territory, amount: (shipment.noFieldReserves ?? 0) + (shipment.smugglerCompanion ? 1 : 0) }
       : null) : shipment.alliedNoField ? null : shipment,
   );
@@ -30931,7 +30946,7 @@ function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipi
         tokenId: shipment.noField!.tokenId,
         controller: p.id,
         location: { territory: to, sector: s },
-      }, shipment.richesePair!.revealedTokenId, p.reserves));
+      }, shipment.richesePair!.revealedTokenId, p.reserves - (shipment.noFieldReserves ?? 0)));
       p.noField = pair.state;
       pairRevealed = pair.revealed;
     } else p.noField = noFieldRule(() => deployRicheseNoField(p.noField!, {
@@ -31045,7 +31060,7 @@ function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipi
       ? `${getPlayer(g, shipment.alliedNoField.owner).name} shipped ${p.name} with No-Field ${quoteAlliedTokenValue(g, shipment.alliedNoField)}, immediately placing ${n} physical forces (${elite} elite) in ${territory(to).name}, sector ${s}. ${shipment.alliedNoField.payer === 'both' ? 'Each ally paid 1 spice' : `${getPlayer(g, shipment.alliedNoField.payer).name} paid ${cost} spice`}.`
       : shipment.noField
         ? pairRevealed
-          ? `${p.name} shipped two No-Fields with Richese Nexus Cunning to ${territory(to).name}, sector ${s}, for ${cost} spice. The faceup ${pairRevealed.value} token placed ${pairRevealed.forces} physical forces from reserves${pairRevealed.forces < pairRevealed.value ? ' (only the available reserves)' : ''}; the other token remains concealed and counts as one force.`
+          ? `${p.name} shipped two No-Fields with Richese Nexus Cunning to ${territory(to).name}, sector ${s}, for ${cost} spice.${shipment.noFieldReserves ? ` ${shipment.noFieldReserves} paid reserve forces accompanied the tokens.` : ''} The faceup ${pairRevealed.value} token placed ${pairRevealed.forces} physical forces from reserves${pairRevealed.forces < pairRevealed.value ? ' (only the available reserves after the paid group)' : ''}; the other token remains concealed and counts as one force.`
           : `${p.name} shipped one concealed No-Field to ${territory(to).name}, sector ${s}, for ${cost} spice. ${shipment.noFieldReserves ? `${shipment.noFieldReserves} paid reserve forces${shipment.smugglerCompanion ? ' and one free Smuggler force' : ''} arrived beside the marker; the concealed token remains unchanged until reveal.` : shipment.smugglerCompanion ? 'One free Smuggler force left reserves and arrived beside the marker; the concealed token remains unchanged until reveal.' : 'It counts as one force; physical reserves remain unchanged until reveal.'}`
         : `${p.name} shipped ${n} forces to ${territory(to).name}, sector ${s}.${shipment.guildSecretEvent ? ` Guild Secret Ally is spent; Guild shipping prices cost ${cost} spice paid to the bank.` : ''}${shipment.nexusEvent ? ` Richese Secret Ally priced the ${n} physical forces as one: ${cost} spice.` : ''}${homeworldOrigins ? ` Homeworld sources: ${homeworldOrigins}. Total shipment cost: ${cost} spice.` : ''}`,
     shipment.noField || shipment.alliedNoField
@@ -31476,11 +31491,17 @@ function currentRichesePairShipment(g: Game, shipment: PendingShipment) {
     p.noFieldEvent === record.tokenEvent && !p.noField.deployed &&
     g.status === 'playing' && g.phase === 5 && g.active === p.id &&
     shipmentAvailable(g, p), 'Richese Cunning lost its unused native shipment.');
+  if (shipment.noFieldReserves !== undefined) integer(shipment.noFieldReserves, 1, p.reserves, 'Paid Cunning reserve forces');
+  const group = currentRichesePairForces(g, p, shipment.noFieldReserves ?? 0, pair.revealedTokenId);
+  if (g.homeworlds?.custody && group.physical) homeworldRule(() =>
+    quoteNativeReserveWithdrawal(homeworldContext(g), g.homeworlds!.custody!, p.id,
+      { normal: group.physical, elite: 0 }));
   const cost = reserveShipmentCost({ faction: p.faction, halfRate: false },
-    territory(shipment.territory).type, 1);
+    territory(shipment.territory).type, group.priced);
   requireRule(shipment.cost === cost && Number.isSafeInteger(shipment.sector) &&
     validGameLocation(g, shipment.territory, shipment.sector),
-    'Richese Cunning lost its original one-marker price or currently revealed destination.');
+    shipment.noFieldReserves ? 'Richese Cunning lost its original paid-group invoice or currently revealed destination.'
+      : 'Richese Cunning lost its original one-marker price or currently revealed destination.');
   noFieldRule(() => validateRicheseNoFieldPair(p.noField!, {
     tokenId: shipment.noField!.tokenId,
     controller: p.id,
@@ -31536,7 +31557,10 @@ function richesePairIntegrity(g: Game) {
       'Richese Cunning changed its original card, owner or shipment receipt.');
     const frame = JSON.parse(record.frame) as PendingShipment;
     requireRule(frame && typeof frame === 'object' && !Array.isArray(frame) &&
-      Object.keys(frame).sort().join(',') === 'advisors,allyPayment,amount,cost,elite,noField,player,richesePair,sector,territory,turn' &&
+      Object.keys(frame).sort().join(',') === (frame.noFieldReserves === undefined
+        ? 'advisors,allyPayment,amount,cost,elite,noField,player,richesePair,sector,territory,turn'
+        : 'advisors,allyPayment,amount,cost,elite,noField,noFieldReserves,player,richesePair,sector,territory,turn') &&
+      (frame.noFieldReserves === undefined || Number.isSafeInteger(frame.noFieldReserves) && frame.noFieldReserves > 0 && frame.noFieldReserves <= 20) &&
       frame.richesePair?.event === record.event && frame.player === record.owner &&
       frame.noField?.event === record.tokenEvent && frame.turn === record.turn &&
       typeof frame.noField.tokenId === 'string' && typeof frame.richesePair.revealedTokenId === 'string' &&
@@ -36718,7 +36742,7 @@ function applyActionInner(
       const offer = nexusRicheseCunningOffer(g, id);
       requireRule(offer && !offer.blocked && action.nexus === offer.event,
         offer?.blocked ?? 'Richese Cunning is unavailable or stale.');
-      requireRule(Object.keys(action).sort().join(',') ===
+      requireRule(Object.keys(action).filter(key => key !== 'noFieldReserves').sort().join(',') ===
         'allyPayment,event,nexus,noField,revealedToken,sector,territory,type',
         'Choose exactly two physical No-Field tokens and a shipment destination.');
       richesePair = { event: offer.event, revealedTokenId: stringField(action.revealedToken) };
@@ -36734,8 +36758,8 @@ function applyActionInner(
         'Richese Secret Ally requires an ordinary physical reserve shipment.');
       nexusEvent = offer.event;
     }
-    requireRule(action.noFieldReserves === undefined || action.noField !== undefined && !richesePair,
-      'Paid No-Field reserves accompany one native concealed marker.');
+    requireRule(action.noFieldReserves === undefined || action.noField !== undefined,
+      'Paid No-Field reserves accompany a native concealed marker.');
     if (action.noField === undefined) checkShipmentPromises(g, p, {
       territory: String(action.territory), amount: Number(action.amount),
     });
@@ -36794,7 +36818,8 @@ function applyActionInner(
       'Smuggler needs a living face-up native trainer and an empty territory, with two ordinary shipment forces or one reserve companion beside your No-Field.');
     const noFieldReserves = action.noFieldReserves === undefined ? 0
       : integer(action.noFieldReserves, 1, p.reserves, 'Paid No-Field reserve forces');
-    const noFieldGroup = noField ? currentRicheseHomeworldForces(g, p, noFieldReserves, !!smugglerCompanion) : null;
+    const noFieldGroup = richesePair ? currentRichesePairForces(g, p, noFieldReserves, richesePair.revealedTokenId)
+      : noField ? currentRicheseHomeworldForces(g, p, noFieldReserves, !!smugglerCompanion) : null;
     const cost = guildSecretEvent ? nexusRule(() => quoteNexusGuildSecretShipment(territory(to).type,n)).cost : nexusEvent
       ? nexusRule(() => quoteNexusRicheseShipment(price,territory(to).type,n)).cost
       : reserveShipmentCost(price,territory(to).type,noFieldGroup?.priced ?? n - (smuggler ? 1 : 0));

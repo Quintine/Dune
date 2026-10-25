@@ -8,7 +8,7 @@ import { fighterCount } from '@/game/advisors';
 import { reserveShipmentCost } from '@/game/shipment-price';
 import type { RicheseNoFieldView } from '@/game/richese-no-field';
 import { quoteSmugglerNoField } from '@/game/smuggler-no-field';
-import { quoteRicheseHomeworldForces } from '@/game/richese-homeworld-shipment';
+import { quoteRicheseHomeworldForces, quoteRicheseHomeworldPair } from '@/game/richese-homeworld-shipment';
 import { RicheseHomeworldForces } from './richese-homeworld-forces';
 import { ShipmentQuote } from './shipment-quote';
 import { Button } from './ui/button';
@@ -145,7 +145,6 @@ export function RicheseNoFieldControls({
       ))) ||
       game.karamaShipping?.player === me.id,
   };
-  const markerCost = reserveShipmentCost(rate, selectedTerritory.type, 1);
   const smuggler = info.canShip
     ? quoteSmugglerNoField(game, me.id, destination)
     : null;
@@ -161,24 +160,25 @@ export function RicheseNoFieldControls({
       ? Math.max(0, cost - (me.spice ?? 0))
       : Number(allyPayment);
   const validShare = Number.isSafeInteger(share) && share >= 0 && share <= cost;
-  const problems: string[] = [];
-  if (groupProblem) problems.push(groupProblem);
+  const commonProblems: string[] = [];
   if (!info.canShip)
-    problems.push(info.shipBlock ?? 'No-Field shipment is not available now.');
-  if (!selected) problems.push('No different No-Field token is available.');
+    commonProblems.push(info.shipBlock ?? 'No-Field shipment is not available now.');
+  if (!selected) commonProblems.push('No different No-Field token is available.');
   if (destination === MOBILE_STRONGHOLD)
-    problems.push('You cannot ship directly into the mobile stronghold.');
+    commonProblems.push('You cannot ship directly into the mobile stronghold.');
   if (
     selectedTerritory.type === 'stronghold' &&
     game.players.filter(
       (player) => player.id !== me.id && fighterCount(player, destination) > 0,
     ).length >= 2
   )
-    problems.push('Two other factions already occupy this stronghold.');
+    commonProblems.push('Two other factions already occupy this stronghold.');
   if (!selectedTerritory.sectors.includes(sector))
-    problems.push('Select a sector in the destination territory.');
+    commonProblems.push('Select a sector in the destination territory.');
   if (sector === game.storm)
-    problems.push('You cannot ship into the storm sector.');
+    commonProblems.push('You cannot ship into the storm sector.');
+  const problems = [...commonProblems];
+  if (groupProblem) problems.push(groupProblem);
   if (!validShare) problems.push(`Choose an ally payment from 0 to ${cost}.`);
   else {
     if (share > game.aid.available)
@@ -188,8 +188,14 @@ export function RicheseNoFieldControls({
     if (cost - share > (me.spice ?? 0))
       problems.push('Your spice does not cover the chosen payment.');
   }
-  const pairProblems = [...problems];
-  if (reserveForces > 0) pairProblems.push('Set paid reserve forces to 0 to use the separate two-token Cunning shipment.');
+  const pairProblems = [...commonProblems];
+  let pairGroup: ReturnType<typeof quoteRicheseHomeworldPair> | null = null;
+  try {
+    pairGroup = quoteRicheseHomeworldPair({ enabled: info.homeworldForcesEnabled,
+      reserves: me.reserves, amount: reserveForces, revealedValue: pairRevealed?.value ?? 0 });
+  } catch (error) { pairProblems.push(error instanceof Error ? error.message : 'Choose available paid reserve forces.'); }
+  const pairCost = reserveShipmentCost({ faction: me.faction, halfRate: false }, selectedTerritory.type, pairGroup?.priced ?? 1);
+  if (pairCost > (me.spice ?? 0)) pairProblems.push(`This Cunning group needs ${pairCost} own spice.`);
   if (nexus?.blocked) pairProblems.push(nexus.blocked);
   if (!pairConcealed || !pairRevealed)
     pairProblems.push('Choose two different available No-Field tokens.');
@@ -288,7 +294,7 @@ export function RicheseNoFieldControls({
             {(game.homeworlds || reserveForces > 0) && <RicheseHomeworldForces
               enabled={info.homeworldForcesEnabled}
               amount={reserveForces}
-              max={Math.max(0, me.reserves - (useSmuggler && smuggler ? 1 : 0))}
+              max={me.reserves}
               busy={busy}
               onChange={setReserveForces}
             />}
@@ -348,10 +354,13 @@ export function RicheseNoFieldControls({
                 <p className="fine mt-2">
                   Choose one token to reveal immediately and one to keep
                   concealed at {selectedTerritory.name}, sector {sector}. The
-                  revealed token brings up to its printed value in forces from
-                  your current reserves; the concealed marker still counts as
-                  one force. Both ship for the price of one marker ({markerCost} spice).
-                  This is separate from the ordinary shipment and Smuggler.
+                  selected paid group reserves {reserveForces} physical counters
+                  first. The faceup token then brings {pairGroup?.revealed ?? 0}
+                  {' '}from the remaining reserves; the concealed marker still
+                  counts as one force. Both tokens are priced as one, plus the
+                  paid group: {pairCost} spice. The paid selection above also
+                  applies to this pair. Smuggler is a separate selection for
+                  the ordinary single-marker route.
                 </p>
                 <label htmlFor={`${id}-pair-revealed`}>
                   Private token to reveal immediately
@@ -431,12 +440,14 @@ export function RicheseNoFieldControls({
                         event: info.event,
                         territory: destination,
                         sector,
-                        allyPayment: share,
+                        allyPayment: 0,
+                        ...(reserveForces ? { noFieldReserves: reserveForces } : {}),
                       });
                   }}
                 >
                   Reveal No-Field {pairRevealed?.value ?? ''} and ship concealed
-                  No-Field {pairConcealed?.value ?? ''} · {markerCost} spice
+                  No-Field {pairConcealed?.value ?? ''} · {pairCost} spice
+                  {reserveForces ? ` · + ${reserveForces} paid forces` : ''}
                 </Button>
               </div>
             )}

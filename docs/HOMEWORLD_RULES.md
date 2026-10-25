@@ -40,8 +40,10 @@ Physical shipment commitments count only the companions. The persistent private
 selector explains current stock, costs and immediate versus concealed forces.
 Existing minimal policies offer one affordable paid companion and retain the
 ordinary marker fallback; no strategic tuning is performed. The two-token
-Richese Nexus Cunning route retains its separate one-marker invoice and cannot
-silently inherit a selected ordinary paid group. Its combined High timing,
+[Richese Nexus Cunning composition](NEXUS_RICHESE_RULES.md#high-homeworld-cunning-accompaniment--25-october-2026)
+now explicitly carries the selected paid group in its own original receipt,
+prices the tokens as one plus those counters and reserves paid stock before
+immediate faceup materialization. Its allocation/timing remains provisional;
 other specialized routes/modules and comprehensive acceptance remain unfinished.
 
 Evidence paths: [shared quote](../game/richese-homeworld-shipment.ts),

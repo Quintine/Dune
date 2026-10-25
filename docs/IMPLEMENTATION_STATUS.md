@@ -1,5 +1,54 @@
 # Dune implementation status
 
+## 25 October 2026 — High Richese retains paid forces through Nexus Cunning
+
+The original two-token Cunning action now accepts explicit `noFieldReserves`.
+Its original signed frame binds the positive count, invoice and physical token
+choices without a second Skill proof. The shared quote reserves paid counters
+first, then materializes the faceup token from remaining stock; the concealed
+one uses later actual reserves. The combined invoice prices the pair as one plus
+paid quantity, under visibly provisional combined pricing/allocation/High timing.
+One commit moves both physical groups, emits one actual arrival count and leaves
+Low restrictions for later actions. Original No-Field cancellation leaves the
+whole group unused but retains its already spent Nexus; Guild's later stop keeps
+its separate consumed-shipment policy. Old no-count histories remain unchanged.
+
+Private pair controls have independent funding/stock quotes; the shared paid
+selector permits the full pair stock without inheriting ordinary Smuggler's
+reserved extra. Existing profiles try one affordable positive companion before
+the ordinary pair fallback. The shared Homeworld payment guard now checks the
+native offer, physical tokens, allocation and own funded invoice, replacing its
+old blanket Homeworld exclusion. An actual unfunded group is still rejected;
+this is legal participation, not AI refinement or strength calibration.
+
+Disjoint helper/native-fixture work, bounded source/correctness review and root
+integration pass **16 files, 134/134**, final types/lint/build and four native
+selector-callback/engine/GameTable SSR journeys. Basic 91/Advanced 97 source
+actions earn original main 35/cache 10, native public Homeworld+Nexus/E2 setup,
+real Emperor/Atreides alliance at a real Worm and actual unallied Richese draw.
+Bribe7 really settles at Mentat before the unused shipment. Eleven paid plus
+immediate 5 arrive for 12, leaving 4 and a concealed 3; later reveal leaves 1.
+Capped 134 earns actual bribes 10/2 and Charity: sixteen paid reserve first,
+faceup 5 materializes 4 and the concealed 3 later materializes 0. Cancellation 91
+uses original Emperor Karama, preserves stock/invoice/opportunity and completes
+a normal replacement, with Nexus already spent. All four existing profiles
+complete positive paired actions. No played hand, wallet, phase, alliance or
+force pool is installed. The old two-seat default remains in the related proof.
+
+Review fixes an ordinary-Smuggler cap leaking into shared input and removes a
+fixture-only amount field forbidden by the preserved pair protocol. Initial
+133-case union passes 132 and reveals the actual shared AI payment exclusion;
+its narrow case passes after the adapter fix and the final 134-case union passes.
+No test or authority requirement is weakened. Private proof/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-richese-homeworld-cunning/`.
+`frozen-payment-fix/report.json` passes unchanged tree
+`fdc882f08107706189a892eec377a2a6fc741207981e67a8cd4dffd3501baf34`,
+2805 files, base `ce676f0e54cefbcec606aa8aba46d09a5b4be1a6`.
+[Combined source and contract](NEXUS_RICHESE_RULES.md#high-homeworld-cunning-accompaniment--25-october-2026).
+Wider routes/module combinations, full modes and final assurance remain open.
+SSR/callbacks are not parent hydration/browser/mobile/deployed acceptance.
+No saved-room/D1/server/reset/restart/deployment operation occurred.
+
 ## 25 October 2026 — Low Homeworlds retain their rate under Tleilaxu revival prevention
 
 Removed the old target guard from the Homeworld helper and native Tleilaxu

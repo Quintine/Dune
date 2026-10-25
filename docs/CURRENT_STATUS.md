@@ -16,6 +16,39 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**High Richese with Nexus Cunning — 25 October. Prototyped / Partial.**
+Paid reserve forces now accompany the original two-token Cunning shipment.
+Its signed frame retains the explicit count and one invoice: reserve paid
+counters first, then immediately materialize the faceup token from remaining
+stock. The other token stays concealed until native reveal. Whole-group High
+timing, combined pricing and paid-first allocation are explicit provisional
+compositions. Original token/event/history, card spend, No-Field cancellation
+and Guild stop remain. Shared controls/quotes and one-companion/fallback minimal
+policies are connected; no strategy refinement or new mode gate.
+[Source, protocol and limits](NEXUS_RICHESE_RULES.md#high-homeworld-cunning-accompaniment--25-october-2026).
+
+Disjoint helper/native-fixture work, bounded review and root integration pass
+**16 files, 134/134**, types/lint/build and four native selector-callback/engine/
+GameTable SSR journeys. Basic 91 and Advanced 97 source actions earn original
+main 35/cache 10, real Emperor/Atreides alliance, actual unallied Richese singleton
+draw and completed bribe 7. Eleven paid counters plus immediate 5 leave 4 reserves
+and a concealed 3, whose later reveal leaves 1. Capped 134 earns actual 10/2 bribes
+and Charity: sixteen paid counters reserve first, so the immediate 5 returns 4
+and later concealed 3 returns 0. Cancellation 91 spends original opposing Karama,
+preserves the unused whole shipment/stock/payment and permits normal replacement;
+its already-declared Nexus remains spent. Default two-seat sources and ordinary
+zero-count pairs remain. All four existing profiles complete legal positive
+pairs and the payment guard rejects a physically available but unfunded group.
+
+Review repairs shared-input stock clipping from ordinary Smuggler and an
+Advanced fixture's non-protocol amount field. The first union exposes an actual
+shared AI payment adapter still excluding every Homeworld pair; it now uses
+the same allocation and invoice quote, and the final full related union passes.
+No played hand, wallet, alliance, forces or phase is installed. Wider routes/
+modules, full modes, browser/mobile/deployed and final assurance remain open.
+No saved-room/D1/server/reset/restart/deployment operation occurred. SSR/callbacks
+are not parent hydration acceptance.
+
 **Low Homeworld revival prevention — 25 October. Prototyped / Partial.**
 Tleilaxu's native special Karama now admits Low Homeworld targets at quiet
 Revival windows and the original pending counter. The printed Low free rate

@@ -10,6 +10,10 @@ export type RicheseHomeworldForcesInput = {
   smuggler?: boolean;
 };
 export type RicheseHomeworldForcesQuote = { paid: number; physical: number; priced: number };
+export type RicheseHomeworldPairInput = Pick<RicheseHomeworldForcesInput, 'enabled' | 'reserves' | 'amount'> & {
+  revealedValue: 0 | 3 | 5;
+};
+export type RicheseHomeworldPairQuote = RicheseHomeworldForcesQuote & { revealed: number };
 
 export class RicheseHomeworldShipmentError extends Error {
   constructor(message: string) {
@@ -42,4 +46,14 @@ export function quoteRicheseHomeworldForces(input: RicheseHomeworldForcesInput):
   if (physical > reserves)
     throw new RicheseHomeworldShipmentError('The paid forces and any Smuggler force must fit the available physical reserves.');
   return { paid: amount, physical, priced: 1 + amount };
+}
+
+/** Public pair settlement reserves the paid group first, then supplies only
+ * the revealed denomination's remaining physical stock. No Smuggler is added. */
+export function quoteRicheseHomeworldPair(input: RicheseHomeworldPairInput): RicheseHomeworldPairQuote {
+  const quote = quoteRicheseHomeworldForces({ enabled: input.enabled, reserves: input.reserves, amount: input.amount });
+  if (!Number.isSafeInteger(input.revealedValue) || ![0, 3, 5].includes(input.revealedValue))
+    throw new RicheseHomeworldShipmentError('Choose a publicly revealed No-Field value of zero, three or five.');
+  const revealed = Math.min(input.revealedValue, input.reserves - quote.paid);
+  return { ...quote, physical: quote.paid + revealed, revealed };
 }

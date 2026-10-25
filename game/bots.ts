@@ -59,7 +59,7 @@ import {
   paidForceRevivalCost,
 } from './revival';
 import { controlsLeader, nativeAvailable } from './leader-control';
-import { quoteRicheseHomeworldForces } from './richese-homeworld-shipment';
+import { quoteRicheseHomeworldForces, quoteRicheseHomeworldPair } from './richese-homeworld-shipment';
 import { CHEAP_HERO_TRAITOR, matchingTraitor } from './traitors';
 import {
   treacheryDeck,
@@ -3421,14 +3421,19 @@ function policyActions(g: GameView): Action[] {
       if (cunning && !cunning.blocked && tokens.length >= 2) {
         const revealed = tokens.reduce((best, token) => token.value > best.value ? token : best);
         const concealed = tokens.find(token => token.id !== revealed.id)!;
-        const target = markerTargets.slice(0, 24).find(to =>
-          reserveShipmentCost({ faction: me.faction, halfRate: false },
-            territory(to.t).type, 1) <= (me.spice ?? 0));
-        if (target) return [{
-          type: 'ship', noField: concealed.id, revealedToken: revealed.id,
-          nexus: cunning.event, event: noField.event,
-          territory: target.t, sector: target.s, allyPayment: 0,
-        }];
+        for (const amount of noField.homeworldForcesEnabled && me.reserves > 0 ? [1, 0] : [0]) {
+          const group = quoteRicheseHomeworldPair({ enabled: !!noField.homeworldForcesEnabled,
+            reserves: me.reserves, amount, revealedValue: revealed.value });
+          const target = markerTargets.slice(0, 24).find(to =>
+            reserveShipmentCost({ faction: me.faction, halfRate: false },
+              territory(to.t).type, group.priced) <= (me.spice ?? 0));
+          if (target) return [{
+            type: 'ship', noField: concealed.id, revealedToken: revealed.id,
+            nexus: cunning.event, event: noField.event,
+            territory: target.t, sector: target.s, allyPayment: 0,
+            ...(amount ? { noFieldReserves: amount } : {}),
+          }];
+        }
       }
       if (selected)
         for (const to of markerTargets.slice(0, 24)) {
