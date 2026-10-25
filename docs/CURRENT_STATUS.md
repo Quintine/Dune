@@ -16,6 +16,46 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Earlier Advanced Truthtrance shipment promises — 26 October. Prototyped / Partial.**
+Classic Advanced respondents can now answer this-turn reserve-shipment questions
+during phases0–4, using the existing current-board/owned-stage policy. Shipment
+still waits for the actual turn and native Guild controls. The shared witness
+now includes wealthy BG's allowed charity payment through native `payCharity`;
+the actual counter stays live and a denial may release an impossible answer.
+Typed revival preserves current-turn elite usage. Existing readiness reopening,
+voluntary-cost checks, guidance and minimal legal bots serve the timing. Earlier
+expansion/module envelopes and public mode gates stay unchanged.
+
+Two disjoint source lanes, bounded preparation review and root integration pass
+**15 files,120/120**, types/lint/build and **eleven native engine/GameTable SSR
+journeys with actual current-preparation/rate/shipment callbacks** on unchanged
+source. Seventeen new cases cover Storm/Charity/Bidding questions, Yes/No,
+actual purchase2/delivery8, native Guild TAKE/WAIT/income, forced Storm release,
+wealthy BG Charity and denial, typed revival, readiness, legal controls and four
+minimal profiles. Public Advanced sources retain all33 original cards; no played
+hand, force, wallet, clock, Tank, elite or promise is installed.
+
+Storm/Charity/Bidding prefixes use8/26/33 actions. E really buys its ordinary
+weapon for2, retains8 and delivers8; a No can deliver7. Recorded Storm distance
+does not release a current-board promise before actual movement closes the
+route. BG's24-action source needs its real5→7 charity; E's original Karama
+cancellation leaves5 and releases the old promise before a legal5 replacement.
+The94-action elite source earns A's actual bid4/E income4, paid two-Sardaukar
+shipment and next-Storm losses. One free Sardaukar returns19 reserves; the held
+Karama pays10 for19 actual counters, including four elites, leaving one in Tanks.
+
+Bounded core/Discovery/card/Skill lookups found no wholly absent standalone
+primitive in those sets; that is not complete-rule certification. The concrete
+early-Advanced guard drove this change. Shared-witness review identifies the BG
+payment omission and confirms elite reset belongs to Storm, not Revival. The
+first frozen proof passes without source repairs. Private report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truthtrance-early-advanced-proof/`;
+journeys/HTML: adjacent `20261026-truthtrance-early-advanced-runtime/`.
+Broader promises/modules, full rules and final assurance remain open. No saved-
+room/D1/server, reset/restart, deployment or recovery operation occurs; DOM/
+hydration, browser/mobile and deployed acceptance remain due.
+[Source and scope](TRUTHTRANCE_SHIPMENT_PROMISES.md#earlier-classic-advanced-phases--26-october-2026).
+
 **Semuta on Guild Ambassador and Revival Spiritual grants — 26 October. Prototyped / Partial.**
 Existing terminal/advisor cost continuations now retain the original Guild
 Ambassador child or Tleilax SEND return through Spiritual shipping, matching and

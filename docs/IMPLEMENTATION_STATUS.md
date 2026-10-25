@@ -1,5 +1,43 @@
 # Dune implementation status
 
+## 26 October 2026 — Earlier Advanced Truthtrance shipment promises
+
+**Prototyped / Partial.** Extend current-turn reserve-shipment questions to bare
+classic Advanced phases0–4. The existing current-board/owned-stage policy remains
+provisional; it predicts no future Storm result, rival gift or unknown purchase.
+Actual shipment/Guild timing stays later. The shared detached witness now applies
+wealthy BG's allowed charity payment with native `payCharity`, while preserving
+the live counter/denial. Current elite usage is retained; its reset belongs to
+Storm opening. Existing readiness, preparation, voluntary-cost and minimal legal
+policies are reused. Earlier modules and public mode gates remain unchanged.
+[Source and scope](TRUTHTRANCE_SHIPMENT_PROMISES.md#earlier-classic-advanced-phases--26-october-2026).
+
+Two disjoint source lanes, bounded preparation review and root integration pass
+**15 files,120/120**, types/lint/build and **eleven native engine/GameTable SSR
+journeys with actual current-preparation/rate/shipment callbacks** on unchanged
+source. Seventeen new cases cover three earlier phases, Yes/No, real purchase/
+delivery, Guild TAKE/WAIT/income, actual Storm release, wealthy BG allowance/
+cancellation, typed revival, readiness, legal controls and four profiles. All33
+original cards remain physical; no played hand, force, wallet, clock, Tank, elite
+or promise is installed. Existing controlled fixtures remain separate evidence.
+
+Storm/Charity/Bidding8/26/33 earns E's real purchase2→eight-force shipment;
+No can deliver7. BG24 earns actual5→7 charity or original E Karama cancellation
+and affordable5 delivery after release. Elite94 earns actual A bid4/E income4,
+paid two-Sardaukar Hagga shipment and next-Storm loss. One free elite return,
+owned Karama and native bank invoice10 deliver19 counters/four elites while
+retaining the last elite in Tanks. No last preparation can be skipped voluntarily.
+
+Bounded gap lookups find no absent standalone primitive in the inspected core,
+Discovery/card/Skill sets, not full completion. Current code verifies the real
+early-Advanced timing exclusion and the BG forecast-payment omission; no unrelated
+combination campaign is added. First frozen proof passes. Private report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truthtrance-early-advanced-proof/`;
+scripts/journeys/HTML: adjacent `20261026-truthtrance-early-advanced-runtime/`.
+Wider promises/modules and final rules/recovery/privacy/custody assurance stay
+open. SSR/component callbacks do not certify DOM/hydration, browser/mobile or
+deployment. No saved-room/D1/server, reset/restart or recovery operation occurs.
+
 ## 26 October 2026 — Semuta on Guild Ambassador and Revival Spiritual grants
 
 **Prototyped / Partial.** Existing terminal/advisor cost continuations now retain

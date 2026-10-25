@@ -163,7 +163,7 @@ export function shipmentPromiseModeSupported(game: {
   ecazTreachery?: unknown;
 }, respondent = game.active): boolean {
   if (game.phase !== undefined && game.phase < 5 &&
-    (game.advanced || game.expansions.length || game.techTokens || game.strongholdCards ||
+    (game.expansions.length || game.techTokens || game.strongholdCards ||
       game.nexusCards || game.homeworlds || game.leaderSkills || game.discoveryEnabled || game.ecazTreachery)) return false;
   if (game.semutaPreview === true && game.expansions.length === 1 &&
     game.expansions[0] === 'choam' && !game.techTokens &&

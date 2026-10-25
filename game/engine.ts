@@ -25928,7 +25928,16 @@ function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string
         if (source.phase < 2 && byFaction(g, 'choam') && g.choamCharity?.turn !== g.turn) {
           if (p.faction === 'choam') continue;
           p.spice += charityQuote(g, p).total; p.charityTurn = g.turn; next = g;
-        } else next = applyActionInner(g, owner, action, 'shipmentPreparation');
+        } else {
+          next = applyActionInner(g, owner, action, 'shipmentPreparation');
+          // Wealthy Advanced BG claims before its counter pays. Witness only
+          // that owned allowed outcome; the actual table keeps every response.
+          const response = next.response;
+          if (response?.kind === 'bgCharity' && response.owner === owner) {
+            next.response = null;
+            payCharity(next,getPlayer(next,owner),response.amount ?? 2,response.charityHomeworld ?? 0);
+          }
+        }
         charitySeeds.push({ game: next, actions: [action], early: [{ phase: 2, action }] });
       } catch (error) { if (!(error instanceof RuleError)) throw error; }
     }

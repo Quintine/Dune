@@ -4,7 +4,98 @@ Original checkpoint, 7 September 2026; Advanced follow-up, 13 September 2026. Th
 
 The former Advanced Guild exclusion is superseded by the
 [18 October native Guild composition](#advanced-guild-interception-and-rates--18-october-2026).
-The [24 October waiting-turn follow-up](#same-phase-waiting-respondents--24-october-2026) supersedes the active-only timing boundary. The [earlier Basic phase follow-up](#earlier-basic-phases--24-october-2026) extends current-turn timing before Movement. Earlier scope descriptions and verification totals remain historical.
+The [24 October waiting-turn follow-up](#same-phase-waiting-respondents--24-october-2026) supersedes the active-only timing boundary. The [earlier Basic phase follow-up](#earlier-basic-phases--24-october-2026) extends current-turn timing before Movement; the [26 October Advanced extension](#earlier-classic-advanced-phases--26-october-2026) adds bare classic Advanced while retaining earlier module fences. Earlier scope descriptions and verification totals remain historical.
+
+## Earlier classic Advanced phases — 26 October 2026
+
+**Prototyped / Partial.** Bare classic Advanced now accepts the same structured
+this-turn reserve-shipment and mixed current-fact questions during phases0–4.
+Actual shipment still waits for the respondent's real turn, preparations and
+native Guild decisions. Earlier expansion and optional-module configurations
+remain outside this envelope. Public Advanced/mode gates are unchanged.
+
+The existing GF9 FAQ supplies current-turn commitment and release after genuine
+impossibility. Under the 14 October recommended-policy authority, extend the
+earlier Basic current-board/owned-stage interpretation to these Advanced roles.
+This is explicit provisional online composition, not a new publisher example.
+Do not predict unresolved Storm movement, vacated destinations, unknown purchases
+or future rival gifts/income. An actual opposing/forced change may release the
+answer only after it makes the route impossible. A recorded future Storm distance
+alone does not become an already changed board. Existing voluntary spending,
+auction liabilities, distinct card costs and expiring escrow remain binding.
+
+The shared [mode helper](../game/shipment-promises.ts) now admits bare classic
+Advanced before Movement. Existing early Charity/Revival/payment witnesses,
+private answers, readiness reopening and future-turn obligations remain shared.
+One concrete omission is corrected: wealthy Advanced BG's native charity claim
+opens `bgCharity` before its fixed two spice is paid. The detached witness now
+uses native `payCharity` for that owned allowed outcome. It neither credits the
+real table nor bypasses its counter. Actual allowance pays once; cancellation
+can leave no legal route and release the original promise. The same seed is used
+by early ground-movement reachability.
+
+Keep physical counter counts separate from combat strength. Native typed stock,
+free/ordinary quotas and the current one-elite-per-turn limit stay authoritative.
+Elite usage resets at native Storm opening, not when forecasting Revival; a
+current use is never erased. Before Movement, only an available current Charity
+or Revival action is executable. Price/ship controls wait for the real turn.
+The question editor explains current-board preparation and later shipment; the
+promise guide and all four profiles reuse the same minimal legal policy.
+
+Two disjoint [earlier-phase](../tests/truthtrance-early-advanced-shipment-engine.test.ts)
+and [preparation](../tests/truthtrance-advanced-shipment-preparation-engine.test.ts)
+source lanes, bounded preparation review and root integration pass
+**15 files,120/120**, types/lint/build and **eleven native engine/GameTable SSR
+journeys with actual current-preparation/rate/shipment callbacks** on unchanged
+source. Seventeen new cases cover native Storm/Charity/Bidding questions,
+Yes/No, paid purchase/delivery, Guild TAKE/WAIT/income, actual forced release,
+wealthy BG payment/counter, typed revival, readiness, legal controls and four
+minimal profiles. Existing controlled preparation/engine and UI fixtures are
+separate evidence; this does not claim saved-game or browser certification.
+
+The public Advanced A/E/H/G source stops after8/26/33 actions in Storm/Charity/
+Bidding. Original setup really deals A Truthtrance, E Baliset, H Karama+Shield
+and G Snooper; an unopened ordinary weapon remains the actual first lot. A real
+eight-force promise retains E's printed10 cash/20 reserves, permits its actual
+purchase2 and delivers8 after real Guild TAKE or WAIT and interception/income.
+No can deliver7 instead. Another original first-Storm source records distance10
+without releasing, then actual movement to sector11 closes Carthag's route and
+releases once. No clock, promise or physical source is installed.
+
+The24-action BG source uses actual public A/BG/E Advanced setup, with A's original
+Truthtrance, BG's ordinary card and E's original Karama. BG starts5 cash/19
+reserves with its original Arrakeen advisor beside A10. A seven-city-counter
+promise needs its real charity2. The current guide's actual callback claims it;
+the live counter keeps BG5 until allowance makes7. E may instead spend its real
+Karama, keeping BG5 and releasing the now-impossible promise before an actual
+affordable5 shipment. Eight remains infeasible without an owned funding source.
+
+The94-action elite source uses public Advanced A/E/H/G with original A Truthtrance
+and E Karama. A really bids4 for an original ordinary card, giving E income4;
+E then pays4 to ship two Sardaukar to Hagga13 after dials11+0 reach12. The next
+native StormCard1 reaches13 and kills both. At turn2 Revival, E has10 cash,
+18 reserves and two elite-only Tanks. One actual free Sardaukar returns19
+reserves/four elites. The owned Karama buys the actual10-spice bank tariff for
+19 city counters; the second elite remains in Tanks. Neither a twentieth force
+nor another elite return is forecast. Actual preparation/rate/shipment callbacks
+and native controls deliver that original group once.
+
+All33 original Treachery Cards remain physical. Only original unopened deck/
+Spice positions and native scalar lotteries are selected; no played hand, wallet,
+force, Tank, elite, clock, promise or response is installed. The first frozen
+proof passes without source repairs and binds2934 files to
+`f78252b76d0f53433bb8d1db6db008c05b4df7ad5763ff0430406c633ff8c82b`.
+Private report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truthtrance-early-advanced-proof/`;
+scripts/journeys/HTML: adjacent `20261026-truthtrance-early-advanced-runtime/`.
+
+Bounded core/Discovery/card/Skill lookups found no absent standalone primitive
+in those sets; that is not a complete-rule audit. The concrete timing guard and
+BG witness omission drove this work. Earlier modules, other future actions,
+arbitrary promise enforcement and final rules/recovery/privacy/custody assurance
+remain open. SSR/callback results do not certify DOM/hydration, browser/mobile or
+deployed acceptance. No saved-room, D1, server, reset/restart, deployment or
+recovery operation occurs.
 
 ## Authority and supported meaning
 

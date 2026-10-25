@@ -384,13 +384,14 @@ export function Truthtrance({
                     before delivery. A stopped shipment can release an
                     impossible answer; an unfinished response does not fulfill it.
                   </p>
+                  {g.phase < 5 && <p className="notice">Your shipment comes later this turn. Answers use the current board and preparations you can make yourself. A change outside your control can release an answer that becomes impossible. Keep playing the current phase; shipping waits for your turn.</p>}
                   {!shipmentAvailable && (
                     <p className="notice">
                       Automatic enforcement supports a later shipment this turn
-                      in Basic base rules without optional modules. During
-                      Shipment and Movement it also supports unused active or
-                      waiting turns in Advanced base rules, including the Guild,
-                      or a classic payer in the Richese Semuta profile. Select
+                      in classic Basic or Advanced rules without optional modules,
+                      including the Guild. Active or waiting turns are eligible
+                      during Shipment and Movement; the Richese Semuta profile
+                      also supports classic payers at that time. Select
                       an eligible player and finish pending decisions first.
                       Native No-Field shipments and other rules configurations
                       remain unfinished.

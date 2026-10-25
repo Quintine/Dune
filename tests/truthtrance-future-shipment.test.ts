@@ -76,7 +76,8 @@ void test('current-turn target timing distinguishes earlier phases from unused m
   assert.equal(shipmentPromiseTurnAvailable({ ...g, phase: 2 }, 'p', false), true,
     'A prior-turn shipped flag does not consume the future current-turn opportunity');
   assert.equal(shipmentPromiseModeSupported({ ...g, phase: 4 }, 'p'), true);
-  assert.equal(shipmentPromiseModeSupported({ ...g, phase: 4, advanced: true }, 'p'), false);
+  assert.equal(shipmentPromiseModeSupported({ ...g, phase: 4, advanced: true }, 'p'), true);
+  assert.equal(shipmentPromiseModeSupported({ ...g, phase: 4, advanced: true, homeworlds: {} }, 'p'), false);
   assert.equal(shipmentPromiseModeSupported({ ...g, phase: 2, techTokens: {} }, 'p'), false);
   const mode = { ...g, advanced: true, active: 'r', expansions: ['choam'], semutaPreview: true,
     players: [{ id: 'r', faction: 'richese' }, { id: 'p', faction: 'emperor' }] };

@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Earlier Advanced shipment commitments — 26 October 2026
+
+Extend the selected current-board/owned-stage shipment-promise policy to bare
+classic Advanced phases0–4. The FAQ already supplies current-turn binding and
+release after genuine impossibility; under the 14 October recommended-policy
+authority this uses owned Charity/Revival preparations rather than predicting
+unresolved Storm movement or future rival funding. Wealthy BG's allowed charity
+payment may witness feasibility, while its real counter stays live; actual
+denial may release an impossible answer. Preserve the current one-elite revival
+limit and actual later Guild timing. This is provisional online composition,
+not a new publisher worked example or public mode gate.
+[Source, implementation and limits](TRUTHTRANCE_SHIPMENT_PROMISES.md#earlier-classic-advanced-phases--26-october-2026).
+
 ## Sapho after a started combined turn — 25 October 2026
 
 Under the 14 October choose-recommendation authority, select the source review's

@@ -3172,13 +3172,13 @@ export const RULE_TOPICS: RuleTopic[] = [
     summary:
       'Bind this turn’s reserve shipment to a destination and physical minimum, including earlier Basic phases and players whose shipment turn is still ahead.',
     steps: [
-      'Declare Truthtrance, select an eligible player and choose Bind a shipment from reserves. Bare Basic rules allow the question during Storm through Revival as well as before that player’s shipment. During Shipment and Movement, base Basic and Advanced, including Guild, also support an unused active or waiting turn. Finish pending decisions first. Choose a printed destination and minimum of one to twenty forces, or combine conditions using AND or OR; each describes the same shipment. Answering never grants an early shipment. Earlier Advanced, expansion and optional configurations keep their existing boundaries.',
+      'Declare Truthtrance, select an eligible player and choose Bind a shipment from reserves. Bare classic Basic and Advanced rules allow the question during Storm through Revival as well as before that player’s shipment. During Shipment and Movement, base Basic and Advanced, including Guild, support an unused active or waiting turn. Finish pending decisions first. Choose a printed destination and minimum of one to twenty forces, or combine conditions using AND or OR; each describes the same shipment. Answering never grants an early shipment. Earlier expansion and optional configurations keep their existing boundaries.',
       'Yes requires the complete statement to match while possible: all AND conditions or at least one OR condition. No requires the whole statement to be false: at least one AND condition false, or every OR condition false. A smaller count, different destination, transport of forces already on the board or no shipment may satisfy No. Forces already in the destination and ground movement do not satisfy the question. Fremen reinforcements and Guild transport from southern reserves do count.',
       'The target privately sees feasible answers based on the current board, owned resources and all earlier promises. Before Movement, include remaining owned Charity and normal Revival, the current winning invoice and unused outgoing Bidding refunds; incoming Bidding aid expires. Auction payment and shipping discounts need distinct physical Karamas. At shipment time, available Ghola, Karama and current pledged aid retain their normal rules. Unknown purchases, unresolved Storm outcomes, rival gifts and future income are not assumed.',
       'Accepted whole answers are public and constrain the event together. A new answer reopens your Charity or Revival readiness when needed. Claim or revive before marking Ready if that is your last legal route; bids, gifts and paid revivals cannot spend it away. Honor a required shipment before ground movement or finishing. An unresolved foreign bid and its income responses finish before release. A completed opposing effect that makes compliance impossible releases it publicly.',
       'Guild interception and rate or transport-permission responses finish before delivery. An opposing stop consumes the shipment without payment or arrival: answers matching no shipment fulfill and impossible answers release. You cannot stop your own shipment to evade your answer. An unaffordable canceled rate leaves shipment available; a retained owned discount or ordinary Fremen reinforcement may still provide a legal route.',
       'Choose Mixed current fact and shipment for nested AND/OR groups of supported current facts and this-turn reserve shipments. Current facts freeze privately when answered: Yes OR a true current fact can allow skipping even after later losing that holding; No AND a false current fact can allow shipping even after that fact changes. Unknown is not false. Only the whole question and answer are public.',
-      'Your promises retain the original grouped question without exposing private compiled facts. Earlier phases show later-this-turn guidance and only an available current Charity or Revival preparation. Shipment actions wait for your actual phase5 turn and finished controls. The owned-route/readiness protocol is a provisional interpretation. All four profiles retain a minimal legal path; answers allowing a skip retain ordinary legal payment choices. Earlier Advanced/modules, expansion shipment modes, other future actions and arbitrary prose enforcement remain unfinished.',
+      'Your promises retain the original grouped question without exposing private compiled facts. Earlier phases show later-this-turn guidance and only an available current Charity or Revival preparation. Shipment actions wait for your actual phase5 turn and finished controls. The owned-route/readiness protocol is a provisional interpretation. All four profiles retain a minimal legal path; answers allowing a skip retain ordinary legal payment choices. Earlier modules, expansion shipment modes, other future actions and arbitrary prose enforcement remain unfinished.',
     ],
     example:
       'Yes to at least six forces to Carthag and No to at least eight there leaves a shipment of six or seven. Moving existing forces into Carthag does not fulfill either shipment event.',
@@ -3188,7 +3188,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Bare Basic phases0–4 use explicit provisional current-board/owned-stage feasibility, auction liabilities, distinct card costs, expiring aid and readiness reopening. Voluntary bids/payments/closure preserve a route; foreign invoices await their actual outcome. Existing phase5 waiting/native Guild interception, permission and rates remain. Earlier Advanced/modules and wider future actions remain unfinished.',
+          'Bare classic Basic/Advanced phases0–4 use explicit provisional current-board/owned-stage feasibility, auction liabilities, distinct card costs, expiring aid and readiness reopening. Wealthy Advanced BG Charity retains its native counter; the detached witness uses its allowed fixed payment. Typed revival keeps the current one-elite limit. Voluntary bids/payments/closure preserve a route; foreign invoices await their actual outcome. Existing phase5 waiting/native Guild interception, permission and rates remain. Earlier modules and wider future actions remain unfinished.',
       },
       {
         area: 'Player controls',
@@ -3212,7 +3212,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Current early-phase batch passes18 files131/131, types/lint/build, two original Storm/Charity question programmes with actual purchase2 and shipment8, rendered table guidance and four finite legal profiles. Controlled preparation, readiness, physical cards, invoice allow/cancel and No overbids remain separate. Earlier persistence/privacy evidence is historical; full Truthtrance, modes, assurance and deployed acceptance remain open.',
+          'Source programmes cover original Basic and Advanced early-phase questions, actual purchase/payment and delivery, wealthy BG charity/counter, typed revival, real forced Storm release, current preparation controls and four minimal legal profiles. Current frozen totals and limits are in the source contract/current checkpoint; earlier persistence/privacy evidence remains historical. Full Truthtrance, modes, assurance and deployed acceptance remain open.',
         evidence: [
           'tests/shipment-promises.test.ts',
           'tests/shipment-promises-bots.test.ts',
@@ -3226,6 +3226,10 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/truthtrance-early-shipment-engine.test.ts',
           'tests/truthtrance-early-shipment-controls.test.tsx',
           'tests/fixture-truthtrance-early-shipment.ts',
+          'tests/fixture-truthtrance-early-advanced-shipment.ts',
+          'tests/truthtrance-early-advanced-shipment-engine.test.ts',
+          'tests/fixture-truthtrance-advanced-shipment-preparation.ts',
+          'tests/truthtrance-advanced-shipment-preparation-engine.test.ts',
           'components/shipment-promises.tsx',
           'components/truthtrance.tsx',
           'components/game-table.tsx',
