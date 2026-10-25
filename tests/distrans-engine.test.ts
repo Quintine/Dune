@@ -37,13 +37,22 @@ void test('projection exposes choices only to the holder and public history reve
   assert.equal(JSON.stringify(viewGame(done,'o')).includes(card.id),false);
   assert.match(done.log.at(-1)!.text,/Distrans/);assert.equal(done.log.some(l=>l.text.includes(card.name)),false);
 });
-void test('an unresolved ordinary lot is an explicit timing guard while a phase-three pre-bid context remains playable',()=>{
+void test('an untouched ordinary lot permits Distrans but its first bid or pass closes the provisional window',()=>{
   const {g,card}=fixture('richese',false,3);
   assert.deepEqual(play(g,card.id).players[1].hand,[card]);
   g.auction={cards:[g.deck.shift()!],index:0,bid:0,bidder:null,active:'t',passed:[],opener:0};
-  const before=structuredClone(g);
-  assert.throws(()=>play(g,card.id),/unresolved auction lot awaits a ruling/);assert.deepEqual(g,before);
-  assert.match(viewGame(g,'d').distrans!.blocked!,/awaits a ruling/);
+  assert.equal(viewGame(g,'d').distrans!.blocked,null);
+  const transferred=play(g,card.id);
+  assert.deepEqual(transferred.auction,g.auction);
+  assert.deepEqual(transferred.players[1].hand,[card]);
+  for(const progress of ['bid','pass'] as const){
+  const during=reload(g);
+  if(progress==='bid'){during.auction!.bid=1;during.auction!.bidder='t';}
+  else during.auction!.passed=['o'];
+  const before=structuredClone(during);
+  assert.throws(()=>play(during,card.id),/after bidding starts/);assert.deepEqual(during,before);
+  assert.match(viewGame(during,'d').distrans!.blocked!,/after bidding starts/);
+  }
 });
 void test('an already-paid purchase response allows Distrans without changing its completed sale or creating a second response',()=>{
   const {g,card}=fixture('richese',true,3);

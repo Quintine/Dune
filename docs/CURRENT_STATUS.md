@@ -16,6 +16,41 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Distrans before the first bid/pass — 26 October. Prototyped / Partial.**
+An untouched ordinary lot now allows the private card transfer before its first
+bid or pass, with the same dealt pool/index/opener/order/active seat. The span is
+explicitly provisional; active bids, unpaid special auctions and self-transfer
+keep their restrictions. Current capacity controls new bids after a gift: a full
+active seat sees Raise disabled, can Pass, and all four minimal profiles do so.
+Existing card action/projection and the paid-sale allowance remain.
+
+Two disjoint native/control lanes and root integration pass **10 files,68/68**,
+types/lint/build and **eight native engine/GameTable SSR/actual leaf-callback
+paths** on unchanged source. Original public R/G/A/E sources buy Distrans for1
+and give the original Guild Shield. Native purchases earn full-donor and final-
+slot recipient positions; real Pass and payment finish the same lot. A genuinely
+full recipient rejects at turn2. All45 original Treachery remain. Source actions
+are Basic33/42/44/87 and Advanced38/47/49/96 for ordinary/donor-full/final-slot/
+already-full paths. Fourteen native cases and seven controlled rendering cases
+cover the new span; existing quote/bot/auction regressions remain green.
+
+Types/lint/build/test proof: private `20261026-distrans-prebid-proof-v2/`;
+runtime companion and composed same-source evidence:
+`/home/quintine/.local/share/dune/checkpoints/20261026-distrans-prebid-runtime-proof-v3/`;
+journeys/HTML: adjacent `20261026-distrans-prebid-runtime/`.
+The private runtime selector was repaired for the button's actual arrow SVG;
+application source stayed unchanged. No saved-room/D1/server, reset/restart,
+deployment or recovery operation occurs. SSR/callbacks do not prove DOM/hydration,
+browser/mobile/deployed acceptance. Complete rules/combinations and final
+assurance remain open. [Source and policy](RICHESE_DISTRANS_ENGINE_AUDIT.md#untouched-ordinary-lot--26-october-2026).
+
+Next concrete Basic function gap: Truthtrance's structured-question engine
+accepts two through eight facts, but the authoring panel only exposes two.
+Connect add/remove fact controls to the existing AND/OR action with actual
+aggregate-answer/resumption evidence. See `components/truthtrance.tsx`,
+`game/truthtrance.ts`, `tests/fixture-truth-movement-early.ts` and
+[the source contract](TRUTHTRANCE_CARD_COUNT.md).
+
 **Shared Ecaz Ambassador Duke — 26 October. Prototyped / Partial.**
 The triggered token can now grant its living Duke to Ecaz's current reciprocal
 ally. Per-recipient controls and all four minimal profiles use the server's
@@ -41,13 +76,6 @@ No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
 Actual hook-free callbacks and SSR are not DOM/hydration or browser/mobile/
 deployed acceptance. Complete rules/combinations, mode gates and final assurance
 remain open. [Source and selected tenure](ECAZ_DUKE_ACQUISITION.md#existing-ally-direct-acquisition--26-october-2026).
-
-Next concrete Basic function gap: Distrans rejects even an untouched ordinary
-auction lot before the first bid/pass. Scope that pre-bid transfer under the
-14 October recommended-policy authority, retaining the actual card, lot/order,
-hand-limit eligibility and active-bid restrictions. See
-[the timing audit](RICHESE_DISTRANS_ENGINE_AUDIT.md), `distransBlock` and
-`tests/distrans-engine.test.ts`; broader special-auction timing remains separate.
 
 **Caladan reinforcement before Face Dance — 26 October. Prototyped / Partial.**
 The original winning army may now take its optional reinforcement before native

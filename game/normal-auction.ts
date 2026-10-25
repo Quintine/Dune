@@ -7,6 +7,12 @@ export type NormalAuctionBid =
   | { ok: true; amount: number }
   | { ok: false; reason: string };
 
+/** Capacity can change after a lot opens, for example through Distrans. The
+ * existing active player may still pass; only a new purchase bid is barred. */
+export function normalAuctionHandBlock(held: number, limit: number): string | null {
+  return held >= limit ? 'Your Treachery hand is full; pass this bid.' : null;
+}
+
 /**
  * Quote the next ordinary auction step. The engine owns card custody, payment,
  * phase progression and the hand-limit eligibility calculation.

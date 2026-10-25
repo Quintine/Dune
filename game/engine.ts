@@ -284,6 +284,7 @@ import {
   type AuctionContinuationQuote,
 } from './auction-continuation-quote';
 import {
+  normalAuctionHandBlock,
   quoteNormalAuctionBid,
   quoteNormalAuctionNext,
 } from './normal-auction';
@@ -438,6 +439,7 @@ import {
   resolveNullentropyBox,
 } from './nullentropy-box';
 import { transferDistrans } from './distrans';
+import { distransAuctionBlock } from './distrans-timing';
 import { SEMUTA_DRUG_ID, committedSemutaCandidates, resolveSemutaDrug, type FreshDiscardBatch, type SemutaContext } from './semuta-drug';
 import {
   prepareRicheseGift,
@@ -5028,11 +5030,7 @@ function distransBlock(g: Game, owner: Player, card: Card): string | null {
     return 'Resolve the active Truthtrance question before changing hands.';
   const reserved = transferCardBlock(g, owner, card);
   if (reserved) return reserved;
-  // The face excludes a bid, not the complete Bidding phase. A live unpaid lot
-  // remains guarded pending the requested ruling; already-paid income is separate.
-  if ((g.auction || g.richeseAuction) && !g.currentAuctionSale)
-    return 'Distrans during an unresolved auction lot awaits a ruling. It remains available outside that bid.';
-  return null;
+  return distransAuctionBlock(g);
 }
 function validateDistrans(
   g: Game,
@@ -37543,6 +37541,8 @@ function applyActionInner(
     );
     const a = g.auction;
     if (t === 'bid') {
+      const capacity = normalAuctionHandBlock(p.hand.length, handLimit(p));
+      requireRule(!capacity, capacity ?? 'Your Treachery hand is full.');
       const quotedBid = quoteNormalAuctionBid({
         currentBid: a.bid,
         amount: action.amount,

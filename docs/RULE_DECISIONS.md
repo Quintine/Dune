@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Distrans before the first ordinary bid/pass — 26 October 2026
+
+The printed card permits use except during a bid (publisher E2 p5). Under
+14 October choose-recommended authority, a physical ordinary lot with no bid,
+bidder, pass or committed contribution may accept Distrans before its first bid
+or pass. This selects a provisional span; inspection and opening the lot do not
+themselves begin that bid. Keep the original dealt pool, lot index, opener,
+cycle and active seat. Live bids, unpaid special auctions and self-transfer keep
+their existing separate restrictions; completed paid-sale use stays available.
+After a transfer, current hand capacity controls new ordinary bids: a now-full
+active seat can pass and the existing cycle recalculates eligibility.
+[Source and execution](RICHESE_DISTRANS_ENGINE_AUDIT.md#untouched-ordinary-lot--26-october-2026).
+
 ## Existing-ally Ecaz Ambassador Duke acquisition — 26 October 2026
 
 Connect printed Ambassador benefit sharing (publisher E3 p8, authorized

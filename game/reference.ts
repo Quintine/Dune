@@ -738,7 +738,8 @@ export const RULE_TOPICS: RuleTopic[] = [
     steps: [
       'Any faction holding Distrans may use it. Choose another player whose hand has room and a different Treachery Card from your own hand. The recipient need not be your ally. Transfer that card intact, then discard Distrans into the ordinary discard pile.',
       'Open the Distrans transfer panel in your hand, select the recipient and card, inspect either card, then press Give and discard Distrans. There is no spice payment, purchase bonus, recipient acknowledgement or faction-power Karama response. Other players see the played Distrans, not the transferred card identity.',
-      'The printed exception is during a bid. Its exact span remains unresolved: an unpaid open auction lot is currently guarded, while a pre-bid context or completed purchase income response may allow the effect. This is not a prohibition on the entire Bidding phase. Giving Distrans itself also remains guarded pending clarification.',
+      'The printed exception is during a bid. Provisionally, an untouched ordinary auction lot allows Distrans before its first bid or pass. Opening or inspecting that lot does not start the bid; its dealt cards and bidding order stay the same. Active bids and unpaid special auctions remain guarded, while a completed purchase income response may allow use. Giving Distrans itself remains guarded.',
+      'Current hand space still controls bidding after a transfer. A full donor can free space; if the active bidder receives its final card, it must pass instead of raising. The existing auction skips full hands without adding a lot or resetting earlier passes.',
       'Distrans resolves in one server action and keeps an existing response, decision or phase opening in place. Active Truthtrance retains priority. Both outgoing cards must be uncommitted; a sealed plan, fixed prescience answer, pending Richese gift or accepted replacement cannot lose its reserved card.',
       'A transfer must preserve binding battle answers, compulsory discards and both sides of a pending Harkonnen hand exchange. The recipient must retain room for its mandatory incoming return. Optional proposals that become unavailable can still finish through their existing decline or no-effect path.',
       'A different legal transfer can fill or free space for a pending Richese gift. The ordinary Distrans transfer resolves first, and the pending gift rechecks capacity before moving its own card. A canceled alliance gift does not automatically prevent using this separate card effect.',
@@ -757,13 +758,13 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Synchronous two-card custody, private transfer, normal Distrans disposal, both-card reservations and prospective transaction/promise checks are integrated. The explicit Semuta preview offers a neutral reaction only after a clean completed transfer; open-lot timing, competing transactions and self-transfer remain guarded.',
+          'Synchronous two-card custody, private transfer, normal disposal, reservations and prospective checks are integrated. The provisional untouched ordinary-lot window admits use before its first bid/pass and rechecks live bid capacity. Active bids, unpaid special auctions, competing transactions and self-transfer retain their separate boundaries.',
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Recipient and given-card selectors, both inspectors, unavailable reasons and an explicit give-and-discard action are integrated. Desktop selection, real transfer and fresh-tab recovery passed in a synthetic table, including a preserved pending gift. Mobile acceptance remains pending.',
+          'Recipient/card selectors, both inspectors, unavailable reasons and explicit give-and-discard controls are integrated. Persistent provisional pre-bid guidance and the actual hook-free submission are connected. Browser/mobile acceptance of this extension remains pending.',
       },
       {
         area: 'AI',
@@ -781,10 +782,16 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Six pure custody, six engine matrix, six independent review, five all-profile AI and three persisted/API cases cover the implemented boundaries. The integrated suites pass 1,258 registered rules/client/component and 96 persisted/API tests. Desktop transfer and fresh-tab recovery passed in a synthetic table. Mobile and full Richese games remain unverified.',
+          'Pure timing/custody, existing engine/bot regressions, fourteen genuine Basic/Advanced pre-bid cases and seven controlled rendering/callback cases cover the implemented span. Native sources buy the actual cache card, earn capacities through purchases and complete the same ordinary lot. Full Richese games, browser/mobile/deployed acceptance and final assurance remain due.',
         evidence: [
           'tests/distrans.test.ts',
           'tests/distrans-engine.test.ts',
+          'game/distrans-timing.ts',
+          'tests/distrans-timing.test.ts',
+          'tests/fixture-distrans-prebid.ts',
+          'tests/distrans-prebid-engine.test.ts',
+          'tests/distrans-prebid-controls.test.ts',
+          'components/distrans-transfer-action.tsx',
           'tests/distrans-engine-review.test.ts',
           'tests/distrans-bots.test.ts',
           'tests/distrans-recovery.test.ts',

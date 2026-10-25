@@ -2,6 +2,56 @@
 
 Audit date: 2026-09-06. Read `docs/RICHESE_ACQUISITION_RULES.md` first. This audit does not activate the card or certify the remaining Richese effects.
 
+## Untouched ordinary lot — 26 October 2026
+
+The printed exception excludes use during a bid, without defining its complete
+span. Under the 14 October choose-recommended authority, allow Distrans on a
+real untouched ordinary lot before its first bid or pass. This is a provisional
+timing composition, not a retrieved publisher clarification. It supersedes only
+that part of the original blanket unpaid-lot boundary below. Later lots may
+qualify independently; already committed lot quantity and physical deck order
+do not change. The existing completed paid-sale allowance remains.
+
+`game/distrans-timing.ts` supplies the authoritative timing block. It requires
+Bidding, an actual current ordinary card, zero bid, no bidder/passes/contribution
+and no Richese special lot. Current inspection does not consume this window.
+The first accepted bid or pass closes it for that lot; no action resets the
+bid history to permit a transfer. Once Around/Silent unpaid lots, self-transfer,
+Truthtrance, exact physical reservations and pending capacity commitments keep
+their existing restrictions. This does not certify every auction substep.
+
+The existing action, private projection and selectors remain. Persistent human
+guidance identifies the provisional span. Both outgoing cards and the recipient
+are validated before the normal private transfer/discard; no recipient consent,
+payment or extra deal is added. The current lot/cards/index/opener/order/active
+seat remain. Full donor hands can free space, while a recipient whose final
+slot is filled cannot buy beyond its limit. Shared `normalAuctionHandBlock`
+is used by the engine, minimal AI and table controls: a now-full active player
+may pass, then the existing cycle skips ineligible hands. No new saved field,
+source kind or transfer response is introduced.
+
+Frozen evidence: **10 files,68/68**, types/lint/build and eight native
+engine/GameTable SSR/actual hook-free transfer-callback paths. The public
+R/G/A/E source buys the physical cache Distrans for1 and retains its original
+starting Shield. Actual ordinary purchases create full-donor, final-slot active
+recipient and already-full recipient positions. The last rejects at turn2;
+successful transfers finish the original lot through native bidding/payment.
+All45 original cards remain. Source actions: Basic33/42/44/87 and
+Advanced38/47/49/96 in that four-path order. Fourteen native engine and seven
+controlled rendering/callback cases supplement the existing related regressions.
+Test/types/lint/build logs are in private `20261026-distrans-prebid-proof-v2/`;
+runtime/composed same-source evidence:
+`/home/quintine/.local/share/dune/checkpoints/20261026-distrans-prebid-runtime-proof-v3/`;
+journeys/HTML: adjacent `20261026-distrans-prebid-runtime/`.
+The private smoke selector was corrected for the rendered arrow SVG without
+changing application source. No saved-room/D1/server or recovery operation;
+SSR/callbacks do not prove DOM/hydration or browser/mobile/deployed acceptance.
+
+The official publisher URL still appears in indexed search, but a fresh direct
+fetch returned403; this change uses the recorded face text and selected policy,
+not a claim of a newly published ruling. Full Richese games, wider auction
+timing, combinations and final assurance remain open.
+
 ## Verified printed effect
 
 Distrans is a Special Treachery Card. Its holder gives **one other player one Treachery Card from the holder's hand**, provided the recipient has room. It can be played at any time except during a bid. Distrans is discarded after use.
@@ -28,7 +78,7 @@ The distinction between an ordinary Treachery effect and a cancellable faction/a
 ## Explicit unresolved guards
 
 1. **Giving the activating Distrans itself.** The give-then-discard wording does not explain self-selection. Do not put the same physical card in both the recipient's hand and the discard, discard a different card, or silently omit the discard. Until clarified, require a separate transferred card and label self-selection unsupported, not a printed prohibition.
-2. **Exact scope of “during a bid.”** The face does not define whether this means one bid declaration or the complete auction of a card. It does not say the entire Bidding phase. A temporary guard over unresolved normal/Once Around/Silent lots, including unsettled payment, is an explicit conservative implementation boundary. Pre-bid declaration/selection, between-lot windows and post-purchase income are distinct contexts; do not silently present a blanket phase-3 ban as the official rule. The user has already been asked about this boundary by root; this audit adds no question or assumed answer.
+2. **Exact scope of “during a bid.”** The face does not define whether this means one bid declaration or the complete auction of a card. It does not say the entire Bidding phase. The 26 October selected policy above now permits an untouched ordinary lot before its first bid/pass; live normal/Once Around/Silent lots, including unsettled payment, retain the explicit timing boundary. Pre-bid declaration/selection, between-lot windows and post-purchase income are distinct contexts; do not present a blanket phase-3 ban as the official rule. The earlier open question is superseded only by that selected provisional scope.
 3. **Active Truthtrance answer priority.** Existing question/priority resolution prevents changing the queried hand mid-question. No retrieved Distrans-specific rule overrides it. Keep this narrow existing priority boundary, rather than disabling Distrans for every unrelated decision or response.
 4. **Semuta discard reaction — updated 11 October 2026.** The explicit development preview reacts after a clean completed transfer, including during battle. Only the used Distrans is fresh; the privately transferred card is never a Semuta target. Claim or decline cannot repeat the transfer or change a sealed plan. The recipient may itself hold Semuta and claim the used card while keeping the earlier gift. Competing parents retain their separate boundaries; the neutral response and approved full-hand exchange are documented in [the Semuta source/runtime contract](SEMUTA_SOURCE_UPDATE_20260907.md).
 
@@ -98,7 +148,7 @@ Recommended regressions: atomic distinct-card conservation and fresh-version rep
 
 ## Runtime integration checkpoint
 
-The ordinary card action and owner-only projected transfer choices are integrated. Shared exact-card reservations cover saved parent Ix replacements and pending gifts; prospective checks preserve compulsory exchanges and binding donor promises. No new response or recipient confirmation is created. The supported post-payment context uses currentAuctionSale only after the existing code has paid and transferred the purchased card. Open unpaid lots and self-transfer remain explicit unresolved guards.
+The ordinary card action and owner-only projected transfer choices are integrated. Shared exact-card reservations cover saved parent Ix replacements and pending gifts; prospective checks preserve compulsory exchanges and binding donor promises. No new response or recipient confirmation is created. The supported post-payment context uses currentAuctionSale only after the existing code has paid and transferred the purchased card. The 26 October prototype admits untouched ordinary lots; live bids, unpaid special lots and self-transfer remain guarded.
 
 Six root engine, six independent review, five AI and three real SQLite/API cases pass, in addition to six pure custody cases. Full registered suites pass1,247 rules/client and96 persisted/API tests; TypeScript, lint and production build pass. The real browser gave Shield from a synthetic Harkonnen hand using Distrans while preserving a separate pending Richese gift; fresh-tab recovery did not replay it. Exact logs and fixtures are in IMPLEMENTATION_STATUS.md. Mobile, future Semuta, bid/self-transfer rulings and full Richese games remain incomplete.
 

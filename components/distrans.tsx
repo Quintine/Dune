@@ -2,8 +2,8 @@
 
 import { useId, useState } from 'react';
 import type { Action, GameView } from '@/game/engine';
-import { Button } from './ui/button';
 import { CardInspector, CardRules } from './card-inspector';
+import { DistransTransferAction } from './distrans-transfer-action';
 
 export function Distrans({
   game,
@@ -48,6 +48,12 @@ export function Distrans({
           Give one other card from your hand to another player with room, then
           discard Distrans. No spice is paid. The transfer happens immediately,
           without a recipient confirmation or Karama response.
+        </p>
+        <p className="m-0 text-sm leading-6" aria-label="Provisional Distrans bid timing">
+          Provisional bid timing: you may transfer before the first bid or pass
+          on an ordinary auction lot. Once anyone bids or passes, that lot stays
+          blocked while unresolved. Special auctions keep their existing
+          restrictions.
         </p>
         <CardInspector card={distrans.card} />
         {choice && (
@@ -103,23 +109,15 @@ export function Distrans({
             {reason}
           </p>
         )}
-        <Button
-          className="min-h-11 whitespace-normal motion-reduce:transition-none"
-          disabled={busy || !!reason}
-          aria-describedby={reason ? `${id}-reason` : undefined}
-          onClick={() => {
-            if (!busy && !reason && choice && given)
-              act({
-                type: 'card',
-                card: distrans.card.id,
-                target: choice.recipient,
-                give: given.id,
-              });
-          }}
-        >
-          Give {given?.name ?? 'a card'} to {recipient?.name ?? 'the recipient'}{' '}
-          and discard Distrans
-        </Button>
+        <DistransTransferAction
+          card={distrans.card}
+          recipient={choice ? { id: choice.recipient, name: recipient?.name } : undefined}
+          given={given}
+          reason={reason}
+          reasonId={`${id}-reason`}
+          busy={busy}
+          act={act}
+        />
         {!!choice?.unavailable.length && (
           <div
             className="flex min-w-0 flex-col gap-3"

@@ -1,9 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  normalAuctionHandBlock,
   quoteNormalAuctionBid,
   quoteNormalAuctionNext,
 } from '../game/normal-auction';
+
+void test('a hand filled after an ordinary lot opens cannot bid, while faction-specific free capacity remains usable', () => {
+  assert.equal(normalAuctionHandBlock(3, 4), null);
+  assert.match(normalAuctionHandBlock(4, 4)!, /hand is full; pass/);
+  assert.equal(normalAuctionHandBlock(7, 8), null);
+  assert.match(normalAuctionHandBlock(8, 8)!, /hand is full; pass/);
+  assert.match(normalAuctionHandBlock(5, 4)!, /hand is full; pass/);
+});
 
 void test('ordinary auction follows table order and skips full-hand seats and the high bidder', () => {
   assert.deepEqual(

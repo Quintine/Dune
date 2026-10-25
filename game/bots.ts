@@ -1,4 +1,5 @@
 import { discoveryBotActions } from './discovery-options';
+import { normalAuctionHandBlock } from './normal-auction';
 import { atreidesFullPlanAction } from './atreides-full-plan';
 import { liveMovementPromises } from './movement-promises';
 import { ecazOccupyDialChoices, ecazOccupyOwnProfile, ecazOccupyPolicyActions } from './ecaz-occupy-options';
@@ -3153,6 +3154,8 @@ function policyActions(g: GameView): Action[] {
       ];
     }
     if (g.auction?.active !== me.id) return [];
+    if (normalAuctionHandBlock(me.hand?.length ?? me.handCount ?? me.handLimit, me.handLimit))
+      return [{ type: 'passBid' }];
     const budget = Math.min(
       (me.spice ?? 0) + g.aid.available,
       [1, 3, 5, 7][level] + ((me.hand?.length ?? 0) === 0 ? 2 : 0),

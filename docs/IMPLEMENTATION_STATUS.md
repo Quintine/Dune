@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 26 October 2026 — Distrans before the first ordinary bid/pass
+
+**Prototyped / Partial.** Select a provisional first-bid/pass span under the
+14 October authority. A real untouched ordinary lot now admits the existing
+private transfer with its dealt pool, index, opener, order and active seat intact.
+First bid/pass, unpaid special-auction and self-transfer restrictions remain;
+completed paid-sale use keeps its existing allowance. Current hand capacity is
+shared by engine/table/minimal bots, so a now-full active bidder cannot raise
+but may Pass, then the original cycle skips ineligible hands. No new saved
+field or response is introduced. Persistent controls explain the interpretation.
+
+Frozen **10-file68/68**, types/lint/build and **eight native engine/GameTable
+SSR/actual hook-free transfer-callback paths** pass. Public R/G/A/E starts buy
+the actual cache Distrans for1 and give the original Guild Shield. Real ordinary
+purchases earn both capacity cases and the full-recipient next-turn refusal.
+Source actions are Basic33/42/44/87 and Advanced38/47/49/96 for ordinary/full-
+donor/final-slot/already-full paths. Actual Pass, payment and native retirement
+finish the same lot; all45 original cards remain. Fourteen native cases, seven
+controlled rendering cases and the related existing quote/bot/auction tests
+cover the slice. Feedback corrected the controls' test expansion identifier,
+the optional own-hand count fallback and a private SSR selector's SVG assumption.
+
+Test/types/lint/build: private `20261026-distrans-prebid-proof-v2/`;
+runtime/composed same-source proof:
+`/home/quintine/.local/share/dune/checkpoints/20261026-distrans-prebid-runtime-proof-v3/`;
+journeys/HTML: adjacent `20261026-distrans-prebid-runtime/`.
+Only the private selector changed before the runtime companion; source stayed
+unchanged. No saved-room/D1/server, reset/restart, deployment or recovery
+operation. Browser/mobile/deployed acceptance, broader auction timing, complete
+rules/combinations and final assurance remain open.
+[Source and selected policy](RICHESE_DISTRANS_ENGINE_AUDIT.md#untouched-ordinary-lot--26-october-2026).
+
 ## 26 October 2026 — Existing-ally Ecaz Ambassador Duke acquisition
 
 **Prototyped / Partial.** Connect the printed benefit-sharing branch to the

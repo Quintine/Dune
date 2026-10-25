@@ -3,6 +3,7 @@ import { TraitorDecisionPromises } from './traitor-decision-promises';
 import { MovementPromises } from './movement-promises';
 import { HomeworldEcazDuke } from './homeworld-ecaz-duke';
 import { integerInputValue } from '../lib/integer-input';
+import { normalAuctionHandBlock } from '@/game/normal-auction';
 import { EcazSetup } from './ecaz-setup';
 import { StormCardInspector, StormCardLogInspector } from './storm-cards';
 import { stormCardDistance } from '@/game/storm-cards';
@@ -4319,6 +4320,8 @@ export function GameTable({
                       </label>
                       <p className="fine">
                         Minimum bid: {minimumBid} spice.
+                        {normalAuctionHandBlock(me.hand?.length ?? me.handCount ?? me.handLimit, me.handLimit) &&
+                          ' Your Treachery hand is full; pass this bid.'}
                         {maximumBid < minimumBid &&
                           ' You cannot afford a higher bid; pass this card.'}
                       </p>
@@ -4329,7 +4332,8 @@ export function GameTable({
                           amount: bidAmount,
                           ...payment,
                         },
-                        !Number.isSafeInteger(bidAmount) ||
+                        !!normalAuctionHandBlock(me.hand?.length ?? me.handCount ?? me.handLimit, me.handLimit) ||
+                          !Number.isSafeInteger(bidAmount) ||
                           bidAmount < minimumBid ||
                           bidAmount > maximumBid,
                       )}
