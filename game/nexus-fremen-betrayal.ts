@@ -1,6 +1,7 @@
 import type { Game } from './engine';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
 import { fremenNexusModeSupported } from './fremen-nexus-profile';
+import { fremenRideBetrayalCurrentOwner } from './nexus-fremen-ride-betrayal';
 
 export type FremenNexusBetrayal = {
   event: string;
@@ -26,8 +27,8 @@ export const fremenBetrayalEvent = (
 export const fremenBetrayalSignature = (record: FremenNexusBetrayal) =>
   JSON.stringify({ ...record, signature: undefined });
 
-/** Clean advance declarations avoid a holder-dependent worm interruption
- * while preserving both mutually exclusive printed alternatives. */
+/** Existing advance declarations and an engine-owned neutral before-ride
+ * opportunity preserve both mutually exclusive printed alternatives. */
 export function fremenBetrayalOffer(
   g: Game, owner: string, automaticPending = false,
 ): FremenBetrayalOffer | null {
@@ -36,23 +37,27 @@ export function fremenBetrayalOffer(
   if (!holder || !fremen || g.nexusCards?.cards?.hands[owner] !== 'fremen' ||
     holder.faction === 'fremen') return null;
   const mode = g.phase === 1 ? 'worm' : 'movement';
+  const reaction = g.nexusFremenRideBetrayal;
+  const reactive = reaction?.stage === 'choose' && g.decision?.kind === 'nexusFremenRideBetrayal' &&
+    g.decision.event === reaction.event && g.decision.player === owner &&
+    fremenRideBetrayalCurrentOwner(reaction) === owner;
   let blocked: string | null = null;
   if (holder.ally) blocked = 'An allied player cannot use a Nexus card.';
   else if (g.status !== 'playing' || (g.phase !== 1 && g.phase !== 5))
-    blocked = 'Use Fremen Betrayal before the first Spice Blow or before Fremen movement.';
+    blocked = 'Use Fremen Betrayal before the first Spice Blow, at an original before-ride opportunity, or before Fremen movement.';
   else if (!fremenNexusModeSupported(g))
     blocked = 'This Fremen Nexus roster or module prerequisite is unavailable.';
-  else if (nexusCleanPlayBlocked(g, automaticPending))
+  else if (!reactive && nexusCleanPlayBlocked(g, automaticPending))
     blocked = 'Finish the current interaction before using Fremen Betrayal.';
   else if (g.nexusFremenBetrayalHistory?.some(record => record.turn === g.turn))
     blocked = 'Fremen Betrayal already spent its one physical card this turn.';
-  else if (mode === 'worm') {
+  else if (mode === 'worm' && !reactive) {
     if (g.spiceSequence || g.spiceResolution || g.spiceWindow || g.nexus ||
       g.wormRides.length || g.summonedBeforeBlow || g.nexusFremenCunningOffer ||
       g.nexusFremenCunningRides?.some(row => row.stage !== 'complete'))
       blocked = 'Declare worm-riding prevention before the first worm or spice blow this turn.';
-  } else if (!g.movementRemaining?.includes(fremen.id) || fremen.moved !== 0 ||
-    fremen.fremenNexusMovementBlockedTurn === g.turn)
+  } else if (mode === 'movement' && (!g.movementRemaining?.includes(fremen.id) || fremen.moved !== 0 ||
+    fremen.fremenNexusMovementBlockedTurn === g.turn))
     blocked = 'Fremen have already moved or completed their turn.';
   return { event: fremenBetrayalEvent(g.turn, owner, fremen.id, mode),
     blocked, target: fremen.id, mode };

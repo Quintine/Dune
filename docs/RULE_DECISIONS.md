@@ -1,5 +1,22 @@
 # Rule decision index
 
+## Fremen Betrayal at an actual pending ride — 26 October 2026
+
+The printed turn-long worm-riding alternative now has an executable reactive
+window, superseding the earlier advance-only product fence. Under the 14 October
+choose-recommended authority, pause at actual native ordinary/Great Maker ride
+creation, after the original completed effects. All unallied non-Fremen seats
+with a public Nexus back acknowledge in storm order regardless of hidden face;
+only the actual Fremen holder may spend. A publicly discarded Fremen singleton
+adds no pause, including its existing pending Cunning ride. All-pass restores
+the exact unmade native decision. Use spends once through the existing mode-
+bound receipt, suppresses remaining rides and advances original continuation;
+completed destruction, spice, votes, protection and Nexus are not replayed.
+This neutral priority is visibly provisional online composition, not a new
+publisher post-appearance timing ruling. Predeclarations, old receipts and mode
+admission stay unchanged.
+[Current source and boundaries](NEXUS_FREMEN_RULES.md#reactive-before-ride-betrayal--26-october-2026).
+
 ## Occupied Ecaz living Duke grant — 26 October 2026
 
 Connect the printed occupied-face living Duke grant through existing stable

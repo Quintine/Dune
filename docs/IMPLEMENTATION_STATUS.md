@@ -1,5 +1,41 @@
 # Dune implementation status
 
+## 26 October 2026 — Reactive Fremen Nexus worm prevention
+
+**Prototyped / Partial.** Fremen Nexus Betrayal now responds at actual unmade ordinary/Great Maker
+rides, after the original completed effects. Uniform public Nexus-back holders
+acknowledge in storm order; only the actual holder privately gets Use. All-pass
+restores the same native decision; spending suppresses remaining rides without
+replaying destruction, protection, spice, votes or Nexus. Known public-discard
+Cunning adds no pointless pause. Existing predeclarations, mode-bound/legacy
+receipts, roster guards and public mode gates remain. Priority is provisional.
+
+Three disjoint pure/native-source/control lanes and root integration pass
+**15 files,118/118**, types/lint/build and **six native engine/GameTable SSR/
+actual reaction-callback journeys** on unchanged source. Thirty-one new cases
+cover neutral membership/source/order, spend/pass, typed native riding, stale/
+foreign/underlying denial and all four minimal profiles. Basic ordinary88,
+Advanced ordinary92 and Advanced Maker90-action sources retain all33 original
+Treachery and all12 Nexus cards. Actual turn2 Nexus/alliance/physical draw and
+free Hagga2 reinforcement precede the real turn3 appearance; no played hand,
+force, wallet, clock, worm or card receipt is installed. Pure/control contract
+fixtures remain explicit controlled supplements.
+
+Integration adds the new decision to existing exhaustive shape/dispatch maps
+and retains the original Great Maker/Cunning decision under the signed wrapper.
+Feedback corrects a nullable test access and native Emperor5/Fremen3 elite
+invariants. Two old unspent Maker baselines explicitly Continue rather than let
+the new generic bot policy spend the held counter; production minimal Use stays.
+Completed Game receipts remain while public controls clear. Final v3 is complete
+and frozen, preserving original Maker votes and all-pass native riding.
+Final frozen v3 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-fremen-reactive-betrayal-proof-v3/`;
+journeys/HTML: adjacent `20261026-fremen-reactive-betrayal-runtime/`.
+Full rules/combinations and final assurance remain open. No saved-room/D1/
+server, reset/restart, deployment or recovery operation occurs. DOM/hydration,
+browser/mobile and exact-revision deployed acceptance remain due.
+[Source and selected priority](NEXUS_FREMEN_RULES.md#reactive-before-ride-betrayal--26-october-2026).
+
 ## 26 October 2026 — Occupied Ecaz Duke grant
 
 **Prototyped / Partial.** The printed occupied Ecaz benefit now grants the living shared Duke to its

@@ -91,6 +91,7 @@ const DECISIONS = {
   wormRide: true,
   nexusFremenCunningOffer: true,
   nexusFremenProtection: true,
+  nexusFremenRideBetrayal: true,
   nexusEmperorPayment: true,
   nexusEmperorSellerPurchase: true,
   nexusEmperorAmbassadorPurchase: true,

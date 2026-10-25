@@ -214,6 +214,10 @@ export function finishFremenBetrayalWorm(fixture: FremenBetrayalModulesFixture, 
     } else if (!game.response && !game.phaseOpening && decision?.kind === 'nexusFremenCunningOffer') {
       cunningOffers.push(structuredClone(game));
       step = { actor: decision.player, action: { type: 'decision', event: decision.event, accept: false } };
+    } else if (!game.response && !game.phaseOpening && decision?.kind === 'nexusFremenRideBetrayal') {
+      // This unspent control deliberately permits its original native ride;
+      // do not let a generic bot policy spend the held prevention card.
+      step = { actor: decision.player, action: { type: 'decision', event: decision.event, use: false } };
     } else if (!game.response && !game.phaseOpening && decision?.kind === 'greatMakerVote') {
       step = { actor: decision.player, action: { type: 'decision', event: decision.event, yes: true } };
       votes.push(structuredClone(step));

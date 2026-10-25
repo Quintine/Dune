@@ -94,6 +94,7 @@ import { createNexusMoritani, validateNexusMoritani, quoteNexusMoritaniPlacement
 import { moritaniBetrayalOffer } from './nexus-moritani-betrayal';
 import { ecazBetrayalOffer, quoteEcazBetrayal, validateEcazBetrayalSnapshot, type EcazBetrayalSnapshot } from './nexus-ecaz-betrayal';
 import { fremenBetrayalOffer, fremenBetrayalSignature, validateFremenBetrayal, type FremenNexusBetrayal, type StoredFremenNexusBetrayal } from './nexus-fremen-betrayal';
+import { createFremenRideBetrayal, fremenRideBetrayalCurrentOwner, validateFremenRideBetrayal, passFremenRideBetrayal, useFremenRideBetrayal, type FremenRideBetrayalParent, type FremenRideBetrayalFrame } from './nexus-fremen-ride-betrayal';
 import { atomicsShipmentBlocked, quoteMoritaniAtomics, type AtomicsAftermath, type AtomicsQuote } from './moritani-atomics';
 import { nexusMoritaniRecordSignature, terrorLocationAllowed, terrorEntryLocationAllowed } from './terror-location';
 import { CHOAM_NEXUS_EFFECTS, createNexusChoam, validateNexusChoam, type NexusChoamEffect, type NexusChoamReceipt } from './nexus-choam';
@@ -1059,6 +1060,7 @@ export type Decision =
   | { kind: 'wormPlacement'; player: string }
   | { kind: 'wormProtection'; player: string; territory: string; ally: string }
   | { kind: 'nexusFremenProtection'; player: string; event: string }
+  | { kind: 'nexusFremenRideBetrayal'; player: string; event: string }
   | { kind: 'discoveryDiscard'; player: string; event: string }
   | { kind: 'discoveryEntry'; player: string; event: string }
   | { kind: 'ecologicalStorm'; player: string; event: string }
@@ -2189,6 +2191,8 @@ export type Game = {
   nexusEcazBetrayalHistory?: { snapshot: EcazBetrayalSnapshot; stage: 'pending' | 'complete' }[];
   /** Spent Fremen card receipts include the earlier movement-only saved form. */
   nexusFremenBetrayalHistory?: StoredFremenNexusBetrayal[];
+  /** Neutral public queue holding one exact unmade native ride. */
+  nexusFremenRideBetrayal?: FremenRideBetrayalFrame | null;
   /** One actual Sardaukar battle advantage suppressed by a spent Emperor card. */
   nexusEmperorBetrayalHistory?: { event: string; turn: number; territory: string; owner: string; target: string }[];
   /** Original native Voice canceled by a spent Bene Gesserit Nexus card. */
@@ -2803,6 +2807,65 @@ function playNexusEmperorBetrayal(g: Game, p: Player, action: Action) {
   log(g, `${p.name} spent Emperor Nexus Betrayal to suppress ${getPlayer(g, record.target).name}'s Sardaukar strength in this battle. Actual starred counters remain Sardaukar.`,
     { faction: p.faction, name: 'Emperor Nexus Betrayal' });
 }
+function fremenRideBetrayalIntegrity(g: Game) {
+  const frame = g.nexusFremenRideBetrayal;
+  if (!frame) {
+    requireRule(g.decision?.kind !== 'nexusFremenRideBetrayal', 'The pending ride has lost its original Betrayal opportunity.');
+    return;
+  }
+  nexusRule(() => validateFremenRideBetrayal(g, frame));
+  requireRule(frame.stage === 'choose' || g.decision?.kind !== 'nexusFremenRideBetrayal',
+    'The completed before-ride opportunity retained its old controls.');
+}
+function offerFremenRideBetrayal(g: Game) {
+  const decision = g.decision;
+  if (!decision || !['wormRide', 'nexusFremenCunningRide', 'greatMakerRide'].includes(decision.kind)) return;
+  requireRule(g.nexusFremenRideBetrayal?.stage !== 'choose', 'Finish the original before-ride Betrayal opportunity first.');
+  const frame = nexusRule(() => createFremenRideBetrayal(g, decision as FremenRideBetrayalParent, crypto.randomUUID()));
+  if (!frame) return;
+  g.nexusFremenRideBetrayal = frame;
+  g.decision = { kind: 'nexusFremenRideBetrayal', player: fremenRideBetrayalCurrentOwner(frame)!, event: frame.event };
+}
+function fremenRideBetrayalView(g: Game, viewer: string) {
+  const frame = g.nexusFremenRideBetrayal;
+  if (!frame || frame.stage !== 'choose') return null;
+  const player = fremenRideBetrayalCurrentOwner(frame)!;
+  const own = player === viewer ? fremenBetrayalOffer(g, viewer) : null;
+  return { event: frame.event, player, source: structuredClone(frame.source),
+    canUse: !!own && !own.blocked, passed: [...frame.passed] };
+}
+function decideFremenRideBetrayal(g: Game, p: Player, action: Action) {
+  const frame = g.nexusFremenRideBetrayal;
+  requireRule(frame?.stage === 'choose' && g.decision?.kind === 'nexusFremenRideBetrayal' &&
+    g.decision.player === p.id && typeof action.event === 'string' && typeof action.use === 'boolean' &&
+    Object.keys(action).sort().join(',') === 'event,type,use',
+  'Choose your current before-ride Betrayal opportunity.');
+  const resolved = nexusRule(() => action.use
+    ? useFremenRideBetrayal(g, frame, p.id, action.event as string)
+    : passFremenRideBetrayal(g, frame, p.id, action.event as string));
+  if (action.use) {
+    const offer = fremenBetrayalOffer(g, p.id);
+    requireRule(offer && !offer.blocked && offer.mode === 'worm', 'Use your held Fremen Nexus card for this original ride opportunity.');
+    playNexusFremenBetrayal(g, p, { type: 'nexusFremenBetrayal', event: offer.event });
+  }
+  g.nexusFremenRideBetrayal = resolved;
+  if (resolved.stage === 'choose') {
+    g.decision = { kind: 'nexusFremenRideBetrayal', player: fremenRideBetrayalCurrentOwner(resolved)!, event: resolved.event };
+    return;
+  }
+  if (!action.use) {
+    g.decision = structuredClone(frame.source);
+    return;
+  }
+  // Suppress only unmade transfers. Original worm destruction, votes, spice
+  // and Nexus state have already settled and are never replayed here.
+  g.decision = null;
+  g.wormRides = [];
+  for (const ride of g.nexusFremenCunningRides ?? [])
+    if (ride.occurrence.turn === g.turn && ride.stage !== 'complete') ride.stage = 'complete';
+  if (frame.source.kind === 'greatMakerRide') completeGreatMaker(g);
+  else nextWormRide(g);
+}
 function nexusFremenBetrayalIntegrity(g: Game) {
   const history = g.nexusFremenBetrayalHistory;
   const fremen = byFaction(g, 'fremen');
@@ -2859,7 +2922,9 @@ function playNexusFremenBetrayal(g: Game, p: Player, action: Action) {
   else fremen.fremenNexusMovementBlockedTurn = g.turn;
   (g.nexusFremenBetrayalHistory ??= []).push(record);
   log(g, offer.mode === 'worm'
-    ? `${p.name} spent Fremen Nexus Betrayal before the first blow to suppress Fremen worm riding for this turn. Worm appearances and protection still resolve; ordinary and remote rides do not.`
+    ? g.nexusFremenRideBetrayal?.stage === 'choose'
+      ? `${p.name} spent Fremen Nexus Betrayal before this unmade ride to suppress remaining worm rides this turn. The resolved worm, spice, votes and Nexus remain.`
+      : `${p.name} spent Fremen Nexus Betrayal before the first blow to suppress Fremen worm riding for this turn. Worm appearances and protection still resolve; ordinary and remote rides do not.`
     : `${p.name} spent Fremen Nexus Betrayal to suppress the Fremen two-territory movement advantage this turn. Independent ornithopters and movement abilities remain available.`,
     { faction: p.faction, name: 'Fremen Nexus Betrayal' });
 }
@@ -3229,8 +3294,9 @@ function nexusFremenCunningIntegrity(g: Game) {
       occurrence.turn === g.turn && g.nexusCards!.cards!.discard.includes('fremen'),
     'A pending Fremen ride has lost its spent physical card.');
     if (stage === 'select') {
+      const held = g.nexusFremenRideBetrayal?.stage === 'choose' ? g.nexusFremenRideBetrayal.source : null;
       const decision = g.decision?.kind === 'nexusFremenCunningRide'
-        ? g.decision : suspended?.decision;
+        ? g.decision : suspended?.decision?.kind === 'nexusFremenCunningRide' ? suspended.decision : held;
       requireRule(decision?.kind === 'nexusFremenCunningRide' &&
         decision.player === authorization.owner &&
         decision.event === occurrence.event,
@@ -13039,7 +13105,8 @@ function stampGreatMaker(g: Game) {
 function greatMakerIntegrity(g: Game) {
   const frame = g.greatMaker, continuation = g.pendingTreacheryDiscard?.continuation;
   const controls = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
-    g.pendingRichesePurchaseIncome?.resume, continuation && 'resume' in continuation ? continuation.resume : null];
+    g.pendingRichesePurchaseIncome?.resume, continuation && 'resume' in continuation ? continuation.resume : null,
+    g.nexusFremenRideBetrayal?.stage === 'choose' ? { decision: g.nexusFremenRideBetrayal.source, response: null } : null];
   const owned = controls.filter(control => control?.decision?.kind === 'greatMakerVote' || control?.decision?.kind === 'greatMakerRide');
   if (!frame) {
     requireRule(owned.length === 0, 'The Great Maker has lost its original encounter.');
@@ -13110,6 +13177,7 @@ function decideGreatMakerVote(g: Game, p: Player, action: Action) {
   if (fremen && fremen.reserves > 0 && fremen.fremenNexusWormBlockedTurn !== g.turn) {
     frame.stage = 'ride'; stampGreatMaker(g);
     g.decision = {kind:'greatMakerRide', player:fremen.id, event:frame.event};
+    offerFremenRideBetrayal(g);
   } else completeGreatMaker(g);
 }
 function decideGreatMakerRide(g: Game, p: Player, action: Action) {
@@ -13278,6 +13346,7 @@ function nextWormRide(g: Game) {
       )
     ) {
       g.decision = { kind: 'wormRide', player: fremen.id, territory: t };
+      offerFremenRideBetrayal(g);
       return;
     }
   }
@@ -13298,6 +13367,7 @@ function nextWormRide(g: Game) {
     ride.stage = 'select';
     g.decision = { kind: 'nexusFremenCunningRide',
       player: ride.authorization.owner, event: ride.occurrence.event };
+    offerFremenRideBetrayal(g);
     return;
   }
   g.nexus = false;
@@ -25505,6 +25575,7 @@ function marketGholaIntegrity(g: Game) {
   nexusEmperorSecretIntegrity(g);
   nexusEmperorBetrayalIntegrity(g);
   nexusFremenBetrayalIntegrity(g);
+  fremenRideBetrayalIntegrity(g);
   nexusBgBetrayalIntegrity(g);
   nexusBorrowedVoiceIntegrity(g);
   nexusFremenRevivalIntegrity(g);
@@ -34874,6 +34945,11 @@ function applyActionInner(
   );
   requireRule(g.status !== 'finished', 'This game has ended.');
   const t = action.type;
+  if (g.nexusFremenRideBetrayal?.stage === 'choose') {
+    if (t === 'advanceBots') return g;
+    requireRule(t === 'decision', 'Finish the current before-ride Betrayal opportunity first.');
+    decideFremenRideBetrayal(g, p, action); return g;
+  }
   // Mandatory movement reactions and other seats' actions do not close the
   // Advanced owner's immediate Hajr opportunity. Its next voluntary action does.
   if (g.advanced && p.hajrWindow && !g.response && !g.decision && !g.truthtrance &&
@@ -35347,6 +35423,8 @@ function applyActionInner(
   }
   if (g.decision) {
     const decision = g.decision;
+    requireRule(decision.kind !== 'nexusFremenRideBetrayal',
+      'The before-ride response needs its original active wrapper.');
     requireRule(decision.kind !== 'nexusFremenProtection',
       'Use only the original worm protection event with Use or Pass.');
     requireRule(decision.kind !== 'nexusEmperorPayment',
@@ -39252,8 +39330,9 @@ export function viewGame(state: Game, id: string) {
       g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
     nexusEcazBetrayal: ecazBetrayalOffer(g, id,
       g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
-    nexusFremenBetrayal: fremenBetrayalOffer(g, id,
+    nexusFremenBetrayal: g.nexusFremenRideBetrayal?.stage === 'choose' ? null : fremenBetrayalOffer(g, id,
       g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
+    nexusFremenRideBetrayal: fremenRideBetrayalView(g, id),
     nexusRichese: nexusRicheseOffer(g,id),
     nexusRicheseCunning: nexusRicheseCunningOffer(g, id),
     nexusGuildSecretAlly: nexusGuildSecretAllyOffer(g,id),

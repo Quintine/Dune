@@ -45,6 +45,7 @@ import { NexusMoritaniBetrayal } from './nexus-moritani-betrayal';
 import { buildRevision, buildRevisionLabel } from '@/lib/build-revision';
 import { NexusEcazBetrayal } from './nexus-ecaz-betrayal';
 import { NexusFremenBetrayal } from './nexus-fremen-betrayal';
+import { NexusFremenRideBetrayal } from './nexus-fremen-ride-betrayal';
 import { NexusEcazInquiry } from './nexus-ecaz-inquiry';
 import { NexusEcazDuke } from './nexus-ecaz-duke';
 import { NexusTleilaxu } from './nexus-tleilaxu';
@@ -347,8 +348,8 @@ export function GameTable({
   const harkonnenBetrayalOwnsControls = !!g.nexusHarkonnenBetrayalReaction &&
     !g.response && !g.decision && !g.truthtrance && !g.phaseOpening &&
     !g.automaticContinuationPending && !g.nexusCards?.waiting.length && !g.nexusTraitors?.pending;
-  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls || harkonnenBetrayalOwnsControls;
-  const reactionOwnsControls = !!g.kullReaction || !!g.kullCounterEvent || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls || harkonnenBetrayalOwnsControls;
+  const busy = reactionBusy || !!g.nexusFremenRideBetrayal || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls || harkonnenBetrayalOwnsControls;
+  const reactionOwnsControls = !!g.nexusFremenRideBetrayal || !!g.kullReaction || !!g.kullCounterEvent || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls || harkonnenBetrayalOwnsControls;
   const canSpendKarama = (card: Card, purpose: KullPurpose) =>
     !kullPurposeBlock(g, purpose) && canUseAsKaramaRole(g, me, card);
   const canActivateKarama = (card: Card) => canSpendKarama(card, kullSpecialPurpose(me.faction));
@@ -1974,6 +1975,7 @@ export function GameTable({
           </div>
           {g.battle?.revealed && <a className="battle-display-link" href="#revealed-battle-plans">Compare revealed battle plans</a>}
           <PrivateBattlePlan game={g} />
+          <NexusFremenRideBetrayal game={g} act={act} busy={reactionBusy} />
           <HomeworldEcazDuke game={g} act={act} busy={reactionBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <MovementPromises game={g} act={act} busy={reactionBusy} />
           {!reactionOwnsControls && g.semutaReaction && <SemutaReaction game={g} act={act} busy={reactionBusy} />}

@@ -2,6 +2,85 @@
 
 Primary-source and integration audit, 10 September 2026, with dated Secret Ally revival, protection and native Cunning prototypes. These bounded paths do not certify complete Fremen/Nexus effects or open a release gate. The [common Nexus rules](NEXUS_CARD_RULES.md) apply.
 
+## Reactive before-ride Betrayal — 26 October 2026
+
+**Prototyped / Partial.** The printed Fremen
+Nexus Betrayal suppresses worm riding for the turn; it does not print the older
+prototype's pre-first-blow-only limitation. Under the existing recommended-policy
+authority, an actual native ordinary or Great Maker reserve-ride decision now
+has a neutral before-transfer opportunity. The original appearance, protection,
+destruction, spice and completed votes/Nexus stay resolved; remaining native
+steps continue once. This is selected online priority, not a publisher worked
+example or permission to stop an already committed ride.
+
+Public participation uses unallied non-Fremen seats with any held Nexus back,
+in actual storm order. Membership/event never uses a secret card face. Only the
+current actual Fremen-card holder privately sees Use. Others see Continue and
+normal waiting. If the physical Fremen card is publicly discarded, no window
+is needed; a valid pending Cunning ride currently retains exactly that card
+in discard. Its own operation is not duplicated to manufacture a counter.
+
+A signed server frame holds the exact original native decision. Continue keeps
+all cards and physical groups; all-pass restores that same decision, queue and
+native choices. Use validates the real card, closes the same source, spends
+through the original mode-bound turn receipt and suppresses only unmade rides.
+Native Great Maker completion retains original votes/Spice/Nexus. Earlier
+six-field movement receipts and ordinary predeclarations remain unchanged.
+A later physical redraw cannot spend a second alternative in the same turn.
+
+The persistent panel owns current controls until acknowledgment/Use finishes.
+It has no timeout; busy and waiting seats cannot submit an underlying ride.
+All four minimal profiles use only projected event and private legal Use;
+no strategy or difficulty calibration is added. The native roster/module guard
+is unchanged; this does not open combinations, publication or complete modes.
+
+Three disjoint pure/native-source/control lanes and root integration pass
+**15 files,118/118**, types/lint/build and **six native engine/GameTable SSR/
+actual reaction-callback journeys** on unchanged source. Thirty-one new cases
+cover neutral membership/source/order, spend/pass, typed native riding, stale/
+foreign/underlying denial and all four minimal profiles. Basic ordinary88,
+Advanced ordinary92 and Advanced Maker90-action sources retain all33 original
+Treachery and all12 Nexus cards. Actual turn2 Nexus/alliance/physical draw and
+free Hagga2 reinforcement precede the real turn3 appearance; no played hand,
+force, wallet, clock, worm or card receipt is installed. Pure/control contract
+fixtures remain explicit controlled supplements.
+
+The [native producer](../tests/fixture-nexus-fremen-reactive-betrayal.ts) starts
+fresh Fremen/Emperor/Guild, Nexus only, with Discovery additionally for approved
+Advanced Maker. An actual turn2 worm/replacement Hagga, Fremen/Emperor alliance,
+original Guild singleton draw and real free2 Hagga reinforcement earn the source.
+Advanced uses one actual Fedaykin. The later worm and applicable Maker votes
+finish before the current original ride is held. No advance Betrayal replaces
+the reactive use. All original card stock, pools and selected module entry stay.
+
+Ten [native engine cases](../tests/nexus-fremen-reactive-betrayal-engine.test.ts)
+cover all three sources spending/passing, real ordinary2 (one Fedaykin in
+Advanced) or Maker reserve1/Fedaykin1 Polar rides, wrong actors/stale events/underlying replies and twelve
+existing-profile proposals. Fourteen
+[pure cases](../tests/nexus-fremen-ride-betrayal-quote.test.ts) label controlled
+membership, original parent/order, held-back versus hidden-face changes, signed
+completion and known-discard Cunning skip. Seven
+[control cases](../tests/nexus-fremen-ride-betrayal-controls.test.tsx) label their
+projected UI contract. Actual new callbacks, waiting/busy controls and native
+continued riding are exercised separately through GameTable SSR in six journeys.
+
+Feedback adds the decision to existing exhaustive maps, retains suspended
+native Maker validation, fixes a nullable test access and native elite totals,
+and distinguishes authoritative completed receipts from cleared player controls.
+Old unspent Maker programmes now explicitly Continue through the new opportunity;
+they still prove the original reserve ride, later ordinary ride and second-pile
+Cunning offer.
+Final v3 binds2955 files to
+`9ecfb427dbcc95f2db9be104d5b285e58eb3d9e0a9d7a3453516508181cb8099` on base `78bcf22bca0fae7b5d514ff6e649012ba6ace6e0`.
+Final frozen v3 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-fremen-reactive-betrayal-proof-v3/`;
+journeys/HTML: adjacent `20261026-fremen-reactive-betrayal-runtime/`.
+
+Full rules/combinations and final assurance remain open. No saved-room/D1/
+server, reset/restart, deployment or recovery operation occurs. DOM/hydration,
+browser/mobile and exact-revision deployed acceptance remain due.
+
+
 ## Native modules, remote riding and Great Maker — 18 October 2026
 
 **Prototyped / Partial.** Native Fremen Nexus

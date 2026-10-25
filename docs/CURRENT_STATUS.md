@@ -16,6 +16,39 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Reactive Fremen Nexus worm prevention — 26 October. Prototyped / Partial.**
+Fremen Nexus Betrayal now responds at actual unmade ordinary/Great Maker
+rides, after the original completed effects. Uniform public Nexus-back holders
+acknowledge in storm order; only the actual holder privately gets Use. All-pass
+restores the same native decision; spending suppresses remaining rides without
+replaying destruction, protection, spice, votes or Nexus. Known public-discard
+Cunning adds no pointless pause. Existing predeclarations, mode-bound/legacy
+receipts, roster guards and public mode gates remain. Priority is provisional.
+
+Three disjoint pure/native-source/control lanes and root integration pass
+**15 files,118/118**, types/lint/build and **six native engine/GameTable SSR/
+actual reaction-callback journeys** on unchanged source. Thirty-one new cases
+cover neutral membership/source/order, spend/pass, typed native riding, stale/
+foreign/underlying denial and all four minimal profiles. Basic ordinary88,
+Advanced ordinary92 and Advanced Maker90-action sources retain all33 original
+Treachery and all12 Nexus cards. Actual turn2 Nexus/alliance/physical draw and
+free Hagga2 reinforcement precede the real turn3 appearance; no played hand,
+force, wallet, clock, worm or card receipt is installed. Pure/control contract
+fixtures remain explicit controlled supplements.
+
+Final frozen v3 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-fremen-reactive-betrayal-proof-v3/`;
+journeys/HTML: adjacent `20261026-fremen-reactive-betrayal-runtime/`.
+Full rules/combinations and final assurance remain open. No saved-room/D1/
+server, reset/restart, deployment or recovery operation occurs. DOM/hydration,
+browser/mobile and exact-revision deployed acceptance remain due.
+[Source and selected priority](NEXUS_FREMEN_RULES.md#reactive-before-ride-betrayal--26-october-2026).
+
+Next bounded card-function gap: Box still rejects paid search while a discarded
+shipping Karama has a provisional Guild refund claim. Existing recovered-cost
+provenance supplies a related policy; see [the Box contract](NULLENTROPY_BOX_ENGINE_AUDIT.md)
+and `validateNullentropyBegin` before choosing that composition.
+
 **Occupied Ecaz Duke grant — 26 October. Prototyped / Partial.**
 The printed occupied Ecaz benefit now grants the living shared Duke to its
 qualified occupier or reciprocal ally. A sole recipient receives him automatically;
@@ -44,11 +77,6 @@ Complete rules, wider interactions and final assurance remain open. No saved-
 room/D1/server, reset/restart, deployment or recovery operation occurs. DOM/
 hydration, browser/mobile and exact-revision deployed acceptance remain due.
 [Source and provisional boundaries](HOMEWORLD_ECAZ_DUKE.md#source-and-selected-ordinary-lifecycle--26-october-2026).
-
-Next concrete content gap found in this bounded lookup: Fremen Nexus Betrayal
-cannot react before an already queued worm ride; its original pre-first-blow
-fence remains. See [the current contract](NEXUS_FREMEN_RULES.md) and
-`game/nexus-fremen-betrayal.ts`. Broad source reconciliation is not certified.
 
 **Native early Truthtrance promises — 26 October. Prototyped / Partial.**
 Bare registered native factions with selected decks can answer current-turn

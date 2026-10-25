@@ -2752,6 +2752,11 @@ function policyActions(g: GameView): Action[] {
     if (d.kind === 'jacurutuDial')
       return g.jacurutuDial?.choices.map((_,allocation) => ({type:'decision',event:d.event,allocation})) ?? [];
     if (d.kind === 'greatMakerVote' || d.kind === 'greatMakerRide') return greatMakerBotActions(g);
+    if (d.kind === 'nexusFremenRideBetrayal') {
+      const reaction = g.nexusFremenRideBetrayal;
+      return reaction && reaction.player === me.id
+        ? [{ type: 'decision', event: reaction.event, use: reaction.canUse }] : [];
+    }
     if (d.kind === 'nexusFremenProtection') {
       const offer = g.nexusFremenProtection;
       return offer && !offer.blocked

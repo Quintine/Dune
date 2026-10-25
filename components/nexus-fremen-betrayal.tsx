@@ -18,7 +18,7 @@ export function NexusFremenBetrayal({ game, act, busy }: Props) {
       <p>{nexusCardReference('fremen').betrayal}</p>
       {fremen && <p className="fine">
         {offer.mode === 'worm'
-          ? `Declare before the first spice blow: ${fremen.name} cannot take ordinary or Cunning worm rides this turn. Worm destruction, survival, protection and Nexus still resolve.`
+          ? `Declare before the first spice blow, or respond at an actual before-ride opportunity: ${fremen.name} cannot take remaining ordinary or Cunning worm rides this turn. Worm destruction, survival, protection and Nexus still resolve.`
           : `This use suppresses ${fremen.name}’s native two-territory movement advantage for the rest of this turn. Independent ornithopters remain available.`}
       </p>}
       {offer.mode === 'worm' && game.discoveries && <p className="fine">
