@@ -5861,15 +5861,31 @@ function semutaAuctionAdvantageResponse(g: Game, response: ResponseWindow, playe
     throw error;
   }
 }
-/** Qualify only the original ordinary foreign shipment and its exact selected
- * Spiritual packet. Native quotes retain the shipping/matching/arrival stage. */
+/** Qualify the original foreign entry and its exact selected Spiritual packet.
+ * Native quotes retain the shipping/matching/arrival stage and owned parent. */
 function semutaSpiritualKaramaParent(g: Game, response: ResponseWindow): boolean {
-  if (!semutaSpiritualArrivalSupported(g)) return false;
+  if (!g.advanced) return false;
+  const context: Game = {...g,pendingTreacheryDiscard:null,response};
   try {
-    if (response.spiritualAdvisorSource) currentSpiritualAdvisorResponse(g,response);
-    else if (response.automaticAdvisorFlip?.producer === 'spiritualArrival') currentAutomaticAdvisorFlip(g,response);
+    if (response.spiritualAdvisorSource) currentSpiritualAdvisorResponse(context,response);
+    else if (response.automaticAdvisorFlip?.producer === 'spiritualArrival') currentAutomaticAdvisorFlip(context,response);
     else return false;
-    return true;
+    const frame = spiritualFrameBody(context), decision = frame.decision;
+    if (decision.ambassadorEvent) {
+      if (g.phase !== 5 || decision.revivalEvent || g.pendingAmbassador?.revivalEvent) return false;
+      const {order} = guildAmbassadorArrival(context,decision.ambassadorEvent,'advisor');
+      return decision.shipment === order.player &&
+        decision.destination === location(order.territory,order.sector);
+    }
+    if (decision.revivalEvent) {
+      const parent = g.homeworldRevivalReturn;
+      if (g.phase !== 4 || g.pendingAmbassador || !parent || parent.stage !== 'arrival' ||
+          parent.quote.kind !== 'tleilax' || decision.revivalEvent !== parent.event ||
+          decision.shipment !== parent.player || decision.destination !== parent.destination) return false;
+      homeworldRule(() => validateHomeworldRevivalReturn(context,parent));
+      return true;
+    }
+    return semutaSpiritualArrivalSupported(context);
   } catch (error) {
     if (error instanceof RuleError) return false;
     throw error;
@@ -5881,9 +5897,10 @@ function semutaTerminalKaramaResponse(g: Game, response: ResponseWindow, player:
   decision: Game['decision'] = g.decision): boolean {
   const spiritual = response.kind === 'advisor' && semutaSpiritualKaramaParent(g,response);
   if (!['advisor','atreidesSpice','stormPeek','faceDancerReplacement'].includes(response.kind) ||
-      g.battle || g.phaseOpening || g.pendingKarama || g.pendingRevival ||
+      g.battle || g.phaseOpening || g.pendingKarama || (g.pendingRevival && !spiritual) ||
       g.pendingShipment || g.pendingGuildTransport || g.pendingHomeworldShipment ||
-      (g.pendingSpiritualAdvisor && !spiritual) || g.pendingAmbassador || g.pendingTerrorEntry ||
+      (g.pendingSpiritualAdvisor && !spiritual) ||
+      (g.pendingAmbassador && !(spiritual && g.pendingSpiritualAdvisor?.decision.ambassadorEvent)) || g.pendingTerrorEntry ||
       g.pendingArrivalOverlap || (!spiritual && !semutaTerminalArrivalSupported(g,response)) ||
       g.pendingIxMove || g.pendingFremenMove || g.pendingChoamMove ||
       g.ornithopter || g.summonedWorm || g.wormRides.length > 0 ||
@@ -6092,6 +6109,10 @@ function semutaMarketGrantKaramaResponse(g: Game, response: ResponseWindow, play
 /** Matching and completed relocation can retain the original Ambassador child.
  * Their native source validators still prove the exact parent before admission. */
 function semutaAdvisorAmbassadorParent(g: Game, response: ResponseWindow): boolean {
+  if ((response.kind === 'advisor' || response.kind === 'advisorFlip') &&
+      g.pendingSpiritualAdvisor?.decision.ambassadorEvent &&
+      (response.spiritualAdvisorSource || response.automaticAdvisorFlip?.producer === 'spiritualArrival'))
+    return semutaSpiritualKaramaParent(g,response);
   if (response.kind !== 'advisorFlip') return false;
   if (response.advisorAmbassadorMatchingSource)
     return !!g.pendingAdvisorAmbassadorMatching &&
@@ -6108,7 +6129,7 @@ function semutaAdvisorFlipKaramaResponse(g: Game, response: ResponseWindow, play
       response.owner !== byFaction(g,'beneGesserit')?.id ||
       g.battle || g.decision || g.phaseOpening || g.pendingKarama || g.truthtrance ||
       g.pendingExchange || g.pendingNullentropy || g.pendingRicheseGift || g.pendingRichesePurchaseIncome ||
-      g.pendingRevival || g.pendingShipment || g.pendingGuildTransport || g.pendingHomeworldShipment ||
+      (g.pendingRevival && !spiritual) || g.pendingShipment || g.pendingGuildTransport || g.pendingHomeworldShipment ||
       g.pendingFremenMove || g.pendingIxMove || g.pendingMobileMove || g.pendingChoamMove ||
       (g.pendingSpiritualAdvisor && !spiritual) || (g.pendingAmbassador && !ambassador) || g.pendingTerrorEntry || g.pendingArrivalOverlap ||
       (!spiritual && !semutaAdvisorArrivalSupported(g,response)) || g.ornithopter || g.summonedWorm || g.wormRides.length > 0 ||
@@ -6415,6 +6436,15 @@ function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinu
       advisorProducer === 'spiritualArrival') ? {
       frame:g.pendingSpiritualAdvisor, arrivals:g.pendingArrivalReaction,
       tech:g.techTokens,
+      ...(g.pendingSpiritualAdvisor?.decision.ambassadorEvent ? {
+        ambassador:g.pendingAmbassador, tokens:g.ecazAmbassadors,
+      } : {}),
+      ...(g.pendingSpiritualAdvisor?.decision.revivalEvent ? {
+        revival:g.homeworldRevivalReturn, progress:g.homeworldRevivalProgress,
+        pending:g.pendingRevival, rules:g.revivalRules, free:g.freeRevival,
+        custody:g.homeworlds, income:g.revivalFreeIncome,
+        players:g.players.map(p => ({id:p.id,revived:p.revived,free:p.freeForcesRevived,leader:p.leaderRevived})),
+      } : {}),
     } : undefined,
     order: g.order,
     players: g.players.map(p => ({
@@ -6922,13 +6952,17 @@ function semutaNexusProfile(g: Game): boolean {
       mixedE1E2NexusLeaderSkillsProfile(g)
     : pairedNexusModulesProfile(g) || singleE1E2NexusProfile(g) || mixedE1E2NexusProfile(g));
 }
-/** Original Richese/CHOAM Homeworld occupation only; other optional envelopes stay separate. */
+/** Original classic occupation or a focused Advanced Tleilax SEND profile.
+ * Other optional envelopes remain separate; no recorded game is redealt. */
 function semutaHomeworldRoster(g: Game): boolean {
-  return !!g.homeworlds && g.expansions.length === 1 && g.expansions[0] === 'choam' &&
+  const classic = g.expansions.length === 1 && g.expansions[0] === 'choam' &&
+    g.players.every(p => p.faction === 'richese' || p.faction === 'choam' || faction(p.faction).expansion === 'base');
+  const tleilax = g.advanced === true && g.expansions.length === 2 &&
+    g.expansions.includes('choam') && g.expansions.includes('ix') && !!byFaction(g,'tleilaxu') &&
+    g.players.every(p => ['richese','choam','tleilaxu'].includes(p.faction) || faction(p.faction).expansion === 'base');
+  return !!g.homeworlds && (classic || tleilax) &&
     g.players.length >= 2 && g.players.length <= 6 &&
     g.players.some(p => p.faction === 'richese') &&
-    g.players.every(p => p.faction === 'richese' || p.faction === 'choam' ||
-      faction(p.faction).expansion === 'base') &&
     !g.nexusCards && !g.leaderSkills && !g.techTokens && !g.strongholdCards &&
     !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
     !g.greatMaker && !g.ecazTreachery;
@@ -6985,7 +7019,7 @@ function treacheryDiscardIntegrity(g: Game) {
   const ambassadorCost =
     (continuation?.kind === 'karamaBonusDiscard' && continuation.use.response.source === 'ambassador') ||
     (continuation?.kind === 'karamaNoFieldDiscard' && continuation.use.response.source === 'ambassadorNoField') ||
-    (continuation?.kind === 'karamaAdvisorFlipDiscard' &&
+    ((continuation?.kind === 'karamaAdvisorFlipDiscard' || continuation?.kind === 'karamaTerminalDiscard') &&
       semutaAdvisorAmbassadorParent(g,continuation.use.response));
   requireRule(
     (g.status === 'playing' || (truth && g.status === 'setup')) &&
@@ -8643,7 +8677,7 @@ function semutaOfferSupported(
         !g.pendingArrivalOverlap && !g.pendingRevival &&
         !g.ornithopter && !g.ecologicalStorm)) &&
     (richeseGiftDiscard || ambassadorBenefitDiscard || (!g.pendingExchange && (replacementCostDiscard || !g.pendingIxAlly) && !g.pendingNullentropy &&
-      (!g.pendingAmbassador || advisorDiscard &&
+      (!g.pendingAmbassador || (advisorDiscard || terminalDiscard) &&
         semutaAdvisorAmbassadorParent(g,continuation.use.response)) &&
       (terrorAllianceDiscard || !g.pendingTerrorEntry))) &&
     (richeseGiftDiscard || noFieldDiscard || continuation.kind === 'karamaShipmentDiscard' ||
@@ -11837,7 +11871,7 @@ export function initializeSemutaGameForAudit(state: Game, skills = false): Game 
     state.expansions.includes('choam') &&
     (state.expansions.every(id => id === 'choam' || id === 'ix') || basicNative || advancedEcaz) &&
     state.players.some(p => p.faction === 'richese'),
-  'Semuta needs a fresh Richese faction game: bare Basic selected native families, bare Advanced Ecaz/Richese, or CHOAM with optional Ix and supported original modules/skills; separate exact-CHOAM Homeworld occupation has no other modules. Other overlays remain excluded.');
+  'Semuta needs a fresh Richese faction game: bare Basic selected native families, bare Advanced Ecaz/Richese, or CHOAM with optional Ix and supported original modules/skills; separate classic or Advanced Tleilax Homeworld occupation has no other modules. Other overlays remain excluded.');
   if (state.discoveryEnabled) requireRule(!basicNative && !skills && !state.homeworlds &&
     !state.nexusCards && discoveryModuleProfile(state),
   'Semuta Discovery keeps original Richese/CHOAM and optional Ix setup, without Skills, Homeworlds, Nexus or E3 overlays.');
@@ -11845,7 +11879,7 @@ export function initializeSemutaGameForAudit(state: Game, skills = false): Game 
     !state.discoveryEnabled && !state.discoveries,
   'Semuta Nexus retains original E1/E2 rosters without Homeworlds, Discovery or E3.');
   if (state.homeworlds) requireRule(!skills && semutaHomeworldRoster(state),
-    'Semuta Homeworlds require original Richese/CHOAM and classic factions, exact CHOAM, and no other modules.');
+    'Semuta Homeworlds require original Richese/CHOAM and classic factions with exact CHOAM, or Advanced Tleilax with exact CHOAM+Ix, and no other modules.');
   const g = state.discoveryEnabled ? initializeDiscoveryGameForAudit(state)
     : state.homeworlds ? initializeHomeworldOccupationGameForAudit(state)
     : skills ? initializeLeaderSkillsGameForAudit(state)

@@ -2,6 +2,92 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Guild Ambassador and Revival Spiritual costs — 26 October 2026
+
+**Prototyped / Partial.** Existing `karamaTerminalDiscard` and
+`karamaAdvisorFlipDiscard` now admit original Guild Ambassador-derived Spiritual
+shipping/matching/arrival costs and native Tleilax SEND-derived costs. The
+[Spiritual contract](SPIRITUAL_ADVISORS.md),
+[Guild child contract](GUILD_AMBASSADOR_RULES.md) and existing
+[provisional Revival composition](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md#revival-arrival-responses--25-october-2026)
+remain authoritative. There is no new ruling, public start or full-mode claim.
+
+Pure preflight first validates the exact current Spiritual frame/packet or
+committed automatic conversion. The ordinary paid-entry qualifier stays
+unchanged. A normal phase-five Guild child additionally requires its actual
+`advisor` receipt, shipment owner and destination. A phase-four native Tleilax
+source instead requires its original current SEND return/event, player,
+destination, stage and native return validator. No phase-four Guild/Terror child
+or unrelated grant is admitted by those tests. Conditional parent signatures
+bind only these new Ambassador/token or Revival/progress/custody/free-use
+contexts; previous ordinary receipt bytes stay unchanged. Preflight executes
+neither shipment, revival, transfer, income nor arrival.
+
+Fresh claim/pass restores the original response and runs native denial once.
+Shipping ends the free packet before withdrawal; matching restores its original
+chooser with the exact denied packet blocked; a legal different accompaniment
+or decline remains available. Automatic conversion prevention retains the
+already withdrawn/deposited advisor, lock and continuously-alone hold. The
+original Guild receipt/outer arrival or SEND/deferred income completes once.
+Token, paid foreign entry, free revival, physical SEND and earlier BG placement
+are never replayed. Existing persistent neutral controls/private choice and
+minimal legal profiles serve the sources.
+
+The fresh development entry now also admits original Advanced R/C/BG/A/T with
+exact CHOAM+Ix and Homeworlds alone. It uses the existing native occupation
+initializer, creating actual typed custody once before play; no played state is
+retagged, upgraded or redealt. Basic T World, extra E3 decks, Skills, Nexus, Tech,
+Strongholds and Discoveries remain outside this focused envelope. Existing
+classic exact-CHOAM World behavior remains separate. This admission is prototype
+evidence, not a public publication gate.
+
+Three disjoint [Guild choice](../tests/semuta-spiritual-ambassador-cost-engine.test.ts),
+[Guild arrival](../tests/semuta-spiritual-ambassador-arrival-engine.test.ts) and
+[Revival](../tests/semuta-spiritual-revival-engine.test.ts) lanes plus root
+integration pass **15 files,157/157**, types/lint/build and **twelve native
+engine/GameTable SSR/actual Semuta-callback journeys** on unchanged source.
+Thirty new cases cover six genuine sources, claim/pass, native allowance, real
+accompaniment replacement, exact continuation/income, source/stale/configuration
+rejection and four minimal profiles. Every source earns original setup, actual
+cache1 Semuta and originally dealt Karama. All45/57 Treachery cards remain
+physical; no played hand, force, wallet, stance, custody, clock, token, source or
+parent is installed. Controlled negative copies are labelled supplements.
+
+Guild shipping/matching takes90/94 native actions from original Advanced
+R/C/Ecaz/BG/A, exact CHOAM+Ecaz and no modules. The original nine-draw packet
+earns Guild; Ecaz pays1 for its Carthag token, A pays1 to enter, and Ecaz really
+ships its independent free1 to Arrakeen or Tuek's. BG's original Arrakeen advisor
+accompanies the first; its original Polar fighter creates the second matching
+source after actual shipping passes. Matching denial permits real Tuek's
+accompaniment, with the already placed Ecaz counter keeping it non-alone.
+Guild arrival takes121 actions with the original six-seat E addition: Ecaz
+really ships1 to empty Tuek's and BG chooses Polar1, passes shipping and actually
+withdraws/places/locks the advisor before its separate conversion counter.
+
+Revival shipping/matching/arrival takes217/220/221 actions from the original
+Advanced T World profile. The actual opening market finishes before dials11+0
+move the Storm to12. T really pays2 to ship1 to Hagga13; the earlier ordinary
+Spiritual choice is explicitly declined. A native next-Storm card1 kills that
+counter, leaving High19/Tanks1. Actual free revive1 opens the owned SEND choice;
+T really places1 in Arrakeen10. BG's actual accompaniment or Polar declaration
+then earns shipping, matching or a committed Polar deposit. Native T income1
+stays retained until the original entry/free child finishes. Replacement after
+matching uses the actual Arrakeen accompaniment; it repeats no return or fee.
+
+Feedback keeps Storm dials behind the original opening market and removes an
+assumption that every legal replacement must wait for a counter when none
+remains. Final frozen v2 binds2930 files to
+`c293f5f13bcdce957d2b3f4f039d2e11b9823e9f3b451809ba761e5e3c18295b`.
+Private report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-spiritual-grants-proof-v2/`;
+scripts/journeys/HTML: adjacent `20261026-semuta-spiritual-grants-runtime/`.
+
+Nested phase-four Guild/Terror children, other independent grants, wider modules,
+complete modes and final rules/recovery/privacy/custody assurance remain open.
+SSR/component callbacks do not certify DOM/hydration, browser/mobile or deployed
+acceptance. No saved-room, D1, server, reset/restart, deployment or recovery
+operation occurs.
+
 ## Guild advisor arrival and matching costs — 26 October 2026
 
 **Prototyped / Partial.** Existing `karamaAdvisorFlipDiscard` now admits native

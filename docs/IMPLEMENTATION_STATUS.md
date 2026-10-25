@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta on Guild Ambassador and Revival Spiritual grants
+
+**Prototyped / Partial.** Existing terminal/advisor cost continuations now retain
+the native Guild Ambassador child or Tleilax SEND parent through Spiritual
+shipping, matching and committed-arrival denial. Exact pure source validation
+and conditional signatures retain the grant, deposit, lock/hold, original return
+and waiting income. Shipping denial spends no free reserve; matching restores
+its chooser; conversion denial keeps the placed advisor. Native suffixes finish
+once. Earlier ordinary formats, persistent controls/minimal bots and public mode
+gates remain intact.
+[Source and scope](SEMUTA_SOURCE_UPDATE_20260907.md#guild-ambassador-and-revival-spiritual-costs--26-october-2026).
+
+The focused fresh Advanced Tleilax World entry uses exact CHOAM+Ix, original
+R/C/BG/A/T and no other module. Actual native initialization creates custody
+once; Basic T World and extra E3 remain rejected without input mutation. No
+played game is upgraded or redealt. This follows the existing provisional
+SEND/Spiritual contract rather than adding a publisher ruling.
+
+Three disjoint source lanes and root integration pass **15 files,157/157**,
+types/lint/build and **twelve native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Thirty new cases cover six genuine sources,
+claim/pass, allowance, real accompaniment replacement, exact child/return/income,
+source/stale/configuration rejection and four minimal profiles. Guild90/94/121
+earns original supply, paid token/entrant and real Ecaz/BG free shipments.
+Revival217/220/221 earns actual T paid1 Hagga13, next-Storm loss, free revive1 at
+High19, real SEND to Arrakeen and retained income1. Actual cache1 and dealt
+Karama supply all45/57 cards; no played stock, hand, wallet, stance, custody,
+clock, receipt or parent is installed. Malformed/configuration negatives are
+explicitly labelled supplements.
+
+Narrow feedback completes the initial market before dials and follows native
+immediate settlement when no counter remains. Final frozen v2 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-spiritual-grants-proof-v2/`;
+scripts/journeys/HTML: adjacent `20261026-semuta-spiritual-grants-runtime/`.
+Nested Revival Guild/Terror children, broader grants/modules and full-mode/final
+rules/recovery/privacy/custody assurance remain open. These are not DOM/hydration,
+browser/mobile or deployed results. No saved-room, D1, server, reset/restart,
+deployment or recovery operation occurs.
+
 ## 26 October 2026 — Guild advisor arrival and Semuta matching costs
 
 **Prototyped / Partial.** Fix fresh Guild board transport dropping an advisor's

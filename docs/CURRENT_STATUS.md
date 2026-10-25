@@ -16,6 +16,45 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on Guild Ambassador and Revival Spiritual grants — 26 October. Prototyped / Partial.**
+Existing terminal/advisor cost continuations now retain the original Guild
+Ambassador child or Tleilax SEND return through Spiritual shipping, matching and
+placed-arrival cancellation. Pure native validators bind the exact grant,
+selected packet and completed deposit. Shipping denial withdraws no BG reserve;
+matching restores the original chooser; alone-conversion denial retains the
+placed advisor/lock/hold. The original child or return/income then finishes once.
+Conditional parent signatures preserve earlier ordinary formats. Persistent
+controls/minimal bots are reused; public mode gates stay intact.
+
+A focused fresh Advanced Tleilax World entry uses original R/C/BG/A/T setup,
+exact CHOAM+Ix and Homeworlds only. Native initialization creates its actual
+custody; it redeals no played game. Basic T World, extra E3 decks and other
+modules remain outside this entry. The existing provisional SEND/Spiritual
+contract stays authoritative; this is not a new publisher ruling.
+
+Three disjoint source lanes and root integration pass **15 files,157/157**,
+types/lint/build and **twelve native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Thirty new cases cover six genuine sources,
+claim/pass, allowance, actual accompaniment replacement, exact child/return/
+income, source/stale rejection, entry negatives and four minimal profiles.
+Guild costs use90/94 original actions; arrival uses121. Actual Guild supply,
+paid token/A entrant, Ecaz free shipment and BG declaration earn each source.
+Revival uses217/220/221 actions: real initial market/dials, T paid1 to Hagga13,
+next-Storm casualty, free revive1 at High19 and actual SEND to Arrakeen. Native
+income1 waits through the child. Actual cache1/dealt Karama supply all45/57-card
+sources; no played force, hand, wallet, stance, custody, clock or parent is
+installed. Controlled malformed/configuration copies are labelled supplements.
+
+Feedback finishes the opening market before first dials and permits immediate
+native replacement settlement when nobody can counter. Final frozen v2 report:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-spiritual-grants-proof-v2/`;
+journeys/HTML: adjacent `20261026-semuta-spiritual-grants-runtime/`.
+Nested Revival Guild/Terror children, other grants/modules, complete modes and
+final assurance remain open. No saved-room/D1/server, reset/restart, deployment
+or recovery operation occurs; DOM/hydration, browser/mobile and deployed
+acceptance remain due.
+[Source and scope](SEMUTA_SOURCE_UPDATE_20260907.md#guild-ambassador-and-revival-spiritual-costs--26-october-2026).
+
 **Guild advisor arrival and Semuta matching costs — 26 October. Prototyped / Partial.**
 Fresh Guild board transport now retains an advisor group's source stance when
 joining a foreign group, including its Guild ally. Shared projected entry and
