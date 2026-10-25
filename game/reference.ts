@@ -1095,7 +1095,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     steps: [
       'Richese has three No-Fields, numbered zero, three and five. A concealed token counts as one force. Only one may be deployed on Arrakis, and consecutive own or allied shipments cannot use the same token.',
       'A normal No-Field shipment pays the one-force price. The concealed token moves like a force. Before Battle, Richese may reveal it voluntarily; a token involved in battle is revealed with the Battle Plan. Revelation brings the indicated forces from reserves, limited by what remains there.',
-      'With a living, uncaptured Planetologist, your own concealed marker may provisionally use the ordinary extra-range alternative: one territory farther, capped at three. Select the marker alone or with physical forces from its own territory. It stays concealed, including zero, and spends one movement without materializing reserves. Two-origin gathering and special flight combinations remain unfinished.',
+      'With a living, uncaptured Planetologist, your own concealed marker may provisionally use either ordinary movement alternative. Extra range adds one, capped at three, for one origin. Gathering combines exactly two territories at one destination using each selected sector’s ordinary range; the marker can supply one origin alone or with physical companions, and physical counters supply the other. The alternatives do not stack. The marker stays concealed, including zero, and spends one movement without materializing reserves. Special flight combinations remain unfinished.',
       'The revealed token stays face up until another token is placed. Revealing it does not clear the previous-shipment restriction. An allied No-Field shipment reveals immediately and uses the ally’s reserves; an existing token must be revealed before another shipment.',
       'Before an eligible ally uses its shipment, the game holds an offer opportunity for Richese. Richese may pass or privately propose a token, destination and payment. The ally accepts the exact offer and chooses its permitted regular/elite mix, or declines without payment. Success consumes the ally’s shipment, not Richese’s shipment or either player’s movement.',
       'Ordinary allied shipment costs one spice into a stronghold or two elsewhere. Guild recipients and active purchased prices use the existing provisional bank-only discount. Canceling a native Guild recipient’s rate charges one full-price marker, never zero/five materialized forces. A supplier’s original whole-fee1 approval cannot silently become2; release unchanged and obtain a new full-price offer/consent. Independent purchased price remains. Fremen on-planet reserves stay ineligible.',
@@ -1124,36 +1124,39 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Native lifecycle, additive pools, card funding, distinct special inspection and current printed-value Truthtrance remain. Own concealed Planetologist extra-range movement uses current trainer/token/event and ordinary path/entry, preserving one movement, denomination and physical stocks. Gather/flight combinations remain open.',
+          'Native lifecycle, additive pools, card funding, distinct special inspection and current printed-value Truthtrance remain. Own concealed Planetologist extra-range or two-origin gathering uses current trainer/token/event and exact per-origin route/entry, preserving one movement, denomination and physical stocks. Special transport remains separate.',
         evidence: ['game/shipment-price.ts', 'game/engine.ts', 'game/planetologist-movement.ts', 'game/bot-mobility.ts', 'game/truthtrance.ts', 'game/truthtrance-no-field-value.ts'],
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Original inventory/card/inspection and current-fact controls remain. Planetologist exposes the owner’s marker separately from same-origin counters, with provisional guidance and guarded actual submission. Marker-only selection creates no physical force count.',
+          'Original inventory/card/inspection and current-fact controls remain. Planetologist exposes the owner’s marker separately from physical counters in either movement mode, with provisional guidance, exact origin counts and guarded actual submission. The marker creates no physical force count.',
         evidence: ['components/richese-allied-no-field.tsx', 'components/richese-no-field.tsx', 'components/planetologist-movement.tsx', 'components/planetologist-movement-action.tsx', 'components/harass-withdraw.tsx', 'components/game-table.tsx', 'components/private-battle-plan.tsx', 'components/mixed-shipment-fields.tsx', 'components/truthtrance-no-field-value.tsx'],
       },
       {
         area: 'AI',
         status: 'Partial',
         detail:
-          'Existing own/allied, inspection and truthAnswer policies remain. All four minimal profiles may offer boosted own-marker routes through the shared normal geometry/entry quote and living trainer. Strategy and calibration remain deferred.',
+          'Existing own/allied, inspection and truthAnswer policies remain. All four minimal profiles may offer boosted own-marker routes or marker-plus-other-origin gathering through shared legal geometry/entry and a living trainer. Existing mixed-marker reveal preference, strategy and calibration remain separate.',
         evidence: ['game/bots.ts'],
       },
       {
         area: 'Documentation',
         status: 'Partial',
         detail:
-          'Current-observation, printed value and physical counter distinctions remain recorded. The marker-as-one-force plus Planetologist ordinary-range composition is explicitly provisional; no joint FAQ or complete combinations are claimed.',
+          'Current-observation, printed value and physical counter distinctions remain recorded. Marker-as-one-force plus either ordinary Planetologist movement alternative is explicitly provisional; no joint FAQ or complete combinations are claimed.',
         evidence: ['docs/RICHESE_ALLIED_SHIPMENT_AUDIT.md', 'docs/GUILD_RATE_KARAMA_RULES.md', 'docs/RICHESE_NO_FIELD_RULES.md', 'docs/PLANETOLOGIST_RULES.md', 'docs/ATREIDES_FULL_PLAN_TIMING.md', 'docs/TRUTHTRANCE_FORCE_FACTS.md'],
       },
       {
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Native trained-leader/shipment/movement cases and controlled submit callbacks cover the concealed Planetologist range route and legal continuation. Earlier scoped Truthtrance, inspection, allied and recovery evidence remains historical. Complete modes, broader combinations, browser/mobile/deployed and final assurance remain due.',
+          'Native trained-leader/shipment/movement cases and controlled submit callbacks cover concealed Planetologist range and gather routes plus legal continuation. Earlier scoped Truthtrance, inspection, allied and recovery evidence remains historical. Complete modes, broader combinations, browser/mobile/deployed and final assurance remain due.',
         evidence: [
+          'tests/fixture-planetologist-no-field-gather.ts',
+          'tests/planetologist-no-field-gather-engine.test.ts',
+          'tests/planetologist-no-field-gather-controls.test.tsx',
           'tests/fixture-planetologist-no-field.ts',
           'tests/planetologist-no-field-engine.test.ts',
           'tests/planetologist-no-field-controls.test.tsx',

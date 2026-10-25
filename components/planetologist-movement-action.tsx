@@ -82,17 +82,15 @@ export function planetologistMoveDraft(
   }
   const marker = includeNoField ? planetologistNoFieldMarker(game) : null;
   if (includeNoField) {
-    if (mode !== 'range')
-      return { action: null, blocked: 'A concealed No-Field can use extra range, but cannot join a Planetologist gather.' };
     if (!marker)
       return { action: null, blocked: 'Choose your current deployed No-Field.' };
     if (game.homeworldMobility?.noFieldMovementBlocked)
       return { action: null, blocked: game.homeworldMobility.noFieldMovementBlocked };
-    if (selected.some(([from]) => splitLocation(from).territory !== marker.location.territory))
+    if (mode === 'range' && selected.some(([from]) => splitLocation(from).territory !== marker.location.territory))
       return { action: null, blocked: 'The selected No-Field and physical forces must share one origin territory.' };
   }
-  const origins = new Set(selected.map(([from]) => splitLocation(from).territory));
-  if (marker) origins.add(marker.location.territory);
+  const origins = new Set(marker ? [marker.location.territory] : []);
+  for (const [from] of selected) origins.add(splitLocation(from).territory);
   if ((mode === 'range' && origins.size !== 1) || (mode === 'gather' && origins.size !== 2))
     return {
       action: null,
@@ -136,7 +134,7 @@ export function planetologistMoveDraft(
 
 export function planetologistMovementBlocked(game: GameView, draft: Draft, unavailableReason?: string | null): string | null {
   const me = game.players.find(player => player.id === game.me);
-  return unavailableReason ??
+  return unavailableReason ||
     (!me || game.status !== 'playing' || game.phase !== 5 || game.active !== me.id
       ? 'Planetologist movement is available only during your movement turn.'
       : game.ornithopter?.active

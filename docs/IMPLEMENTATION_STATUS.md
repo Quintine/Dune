@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 26 October 2026 — Concealed No-Field two-origin Planetologist gathering
+
+**Prototyped / Partial.** The own marker supplies one of exactly two origins,
+alone or with its physical companions; physical counters supply the other.
+Every selected sector keeps ordinary range to one destination, without +1.
+Current trainer/token/event, concealed0/3/5, original physical stocks and one
+movement remain. Controls retain marker selection across modes and guard actual
+submission, including empty optional reason text. Minimal policy offers legal
+marker gathering; the chronicle records both origins. Composition is provisional,
+not a joint publisher FAQ. No saved field/action, module gate or special transport
+permission is added.
+
+Frozen **10-file87/87**, types/lint/build and **twelve native engine/GameTable SSR/
+actual selected-props submit-callback paths** pass. Public R/A/E +choam/Skills
+sources earn training and both paid shipments; companion paths earn the split
+move and explicit second-turn charity. Basic sources use74/76 actions,
+Advanced79–82; two-to-three continuation actions finish same-turn Collection.
+All45 Treachery,14 Skills and15 Traitor cards remain. Fifteen native and twelve
+new controlled cases include bounds/rejections, controlled eligibility supplements
+and four minimal profiles. Feedback repairs skipped charity in the native fixture
+and the controlled autopilot type; earlier failed reports are retained.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261026-planetologist-no-field-gather-proof-v3/`;
+journeys/HTML: adjacent `20261026-planetologist-no-field-gather-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation. SSR/
+selected-props callbacks do not prove DOM/hydration, browser/mobile/deployed or
+complete-mode acceptance. Full interactions and final assurance remain due.
+[Source and execution](PLANETOLOGIST_RULES.md#concealed-no-field-two-origin-gathering--26-october-2026).
+
 ## 26 October 2026 — Concealed No-Field Planetologist extra range
 
 **Prototyped / Partial.** Compose marker-as-one-force with Planetologist's

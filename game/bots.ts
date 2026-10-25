@@ -3718,6 +3718,27 @@ function policyActions(g: GameView): Action[] {
               gather: false,
             });
         }
+      if (marker && noField && !g.homeworldMobility?.noFieldMovementBlocked) {
+        const markerFrom = location(marker.location.territory, marker.location.sector);
+        for (const source of movingSources.filter(candidate =>
+          splitLocation(candidate.from).territory !== marker.location.territory).slice(0, 12))
+          for (const to of usefulTargets.filter(target =>
+            (materialized > 0 || target.enemy === 0) &&
+            botGroundMoveAllowed(g, me, markerFrom, target.key, 0, 'gather') &&
+            botGroundMoveAllowed(g, me, source.from, target.key, source.elite, 'gather')).slice(0, 24))
+            groundMoves.push({
+              action: {
+                type: 'move', planetologist: 'gather',
+                forces: { [source.from]: source.amount },
+                ...(me.elites ? { eliteForces: { [source.from]: source.elite } } : {}),
+                noField: marker.tokenId, event: noField.event,
+                territory: to.t, sector: to.s,
+              },
+              destinationScore: to.score,
+              amount: source.amount + 1,
+              gather: true,
+            });
+      }
       const gatherSources = movingSources.slice(0, 12);
       for (let first = 0; first < gatherSources.length; first += 1)
         for (let second = first + 1; second < gatherSources.length; second += 1) {

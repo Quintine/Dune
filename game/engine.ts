@@ -17366,10 +17366,8 @@ function validatePlanetologistMove(g: Game, p: Player, move: Pick<MovementOrder,
     'Planetologist movement combined with expansion factions is still being implemented.');
   requireRule(!move.ornithopterEvent && !move.discoveryFlight,
     'Planetologist combined with special movement cards is still being implemented.');
-  // Selected composition: the concealed marker moves as one force, so the
-  // ordinary extra-range band applies without revealing or materializing it.
-  requireRule(!move.noField || skill.mode === 'range',
-    'Planetologist gathering with a No-Field is still being implemented.');
+  // Selected composition: the concealed marker moves as one force for either
+  // alternative. Gathering retains each origin's ordinary range; no +1 stacks.
   requireRule(skill.mode === 'gather'
     ? Array.isArray(move.origins) && move.origins.length === 2 && new Set(move.origins).size === 2 && move.origins[0] === move.origin
     : move.origins === undefined,
@@ -18374,14 +18372,15 @@ function completeMove(g: Game, move: MovementOrder) {
 }
 /** Forces and movement counters are already committed; only arrival remains. */
 function finishMovedGroup(g: Game, move: CompletedMovement) {
-  const { player: id, origin, total: n, to, sector: s, elite } = move;
+  const { player: id, total: n, to, sector: s, elite } = move;
   const p = getPlayer(g, id);
+  const origins = movementOrigins(move).map(source => territory(source).name).join(' and ');
   g.karamaShipping = null;
   log(
     g,
     move.noField
-      ? `${p.name} moved a concealed No-Field${n > 1 ? ` with ${n - 1} physical forces` : ''} from ${territory(origin).name} to ${territory(to).name}. Its value remains concealed.`
-      : `${p.name} moved ${n} forces from ${movementOrigins(move).map(source => territory(source).name).join(' and ')} to ${territory(to).name}.`,
+      ? `${p.name} moved a concealed No-Field${n > 1 ? ` with ${n - 1} physical forces` : ''} from ${origins} to ${territory(to).name}. Its value remains concealed.`
+      : `${p.name} moved ${n} forces from ${origins} to ${territory(to).name}.`,
     { faction: p.faction, name: 'Movement' },
   );
   intrusion(g, p, to);

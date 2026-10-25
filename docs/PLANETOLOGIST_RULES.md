@@ -4,6 +4,50 @@ Updated 26 October 2026. This note audits the movement and battle effects of the
 Planetologist Leader Skill against its physical card, the common Leader Skills
 rules, the GF9 base battle rules and designer Jack Reda's walkthrough. The connected prototype is described below; other Leader Skill effects remain separate work.
 
+## Concealed No-Field two-origin gathering — 26 October 2026
+
+Compose the printed No-Field marker-as-one-force rule (E2 pp5–6,10–12) with
+Planetologist's physical two-origin alternative. Under the 14 October authority,
+the own concealed marker can supply one origin by itself or accompany physical
+forces there, while selected physical forces supply the second origin. Exactly
+two distinct territories contribute, and every selected sector must reach one
+shared destination using its ordinary range. The +1 range alternative does not
+stack. This is provisional composition, not a located joint publisher FAQ.
+
+Existing normalization puts the current marker origin first, records both
+origins and quotes their routes before either commits. Current living trainer,
+token/event, whole physical groups, path, storm and entry remain authoritative.
+The same marker relocates concealed, including0; physical counters transfer
+from their actual sectors. No reserves materialize, no new shipment payment
+occurs, one movement is consumed and the existing arrival/turn flow resumes.
+
+The form retains a separate owner-only marker checkbox in either mode. It
+requires the correct origin count, explains ordinary per-origin gather range
+and uses the same guarded actual submit action. Empty optional notice text
+cannot override current movement/response guards. Minimal policy offers a
+marker plus another physical origin through shared legal geometry; existing
+positive mixed-marker reveal preference and difficulty strategy remain.
+
+Physical/Discovery Ornithopter, Guild and Homeworld combinations remain
+separate. No action kind, saved field, module gate, historical save conversion,
+new trainer assignment or complete-mode acceptance is introduced.
+
+**Frozen evidence:** v3 passes10 files,87/87, types/lint/build and twelve native
+engine/GameTable SSR/actual selected-props submit-callback paths. Public R/A/E
++choam/Skills sources earn actual training, both paid shipments and optional
+split movement/explicit charity. Basic prefixes use74/76 actions; Advanced79–82.
+Two-to-three continuation actions reach same-turn Collection, retaining45
+Treachery,14 Skills and15 Traitor cards. Fifteen native and twelve new controlled
+cases include no stacked +1, exact origins, controlled eligibility supplements,
+current callback guards and four minimal profiles. Source feedback repairs a
+skipped charity claim; compile feedback corrects the autopilot fixture type.
+
+Report/logs: private `20261026-planetologist-no-field-gather-proof-v3/` under
+`/home/quintine/.local/share/dune/checkpoints/`; journeys/HTML: adjacent
+`20261026-planetologist-no-field-gather-runtime/`. No saved-room/D1/server, reset/
+restart, deployment or recovery operation. SSR/selected-props callbacks do not
+certify DOM/hydration, browser/mobile/deployed acceptance or complete modes.
+
 ## Concealed No-Field ordinary range — 26 October 2026
 
 The printed No-Field rules (E2 pp5–6,10–12, recorded in the
@@ -29,8 +73,9 @@ companions remain ordinary physical counters. Actual callbacks retain movement,
 ownership, response, automatic-action and busy guards. Minimal policy adds only
 legal marker routes that need the extra range; no difficulty tuning occurs.
 
-The two-origin gather alternative, physical/Discovery Ornithopter, Guild and
-Homeworld combinations retain their separate boundaries. This change adds no
+At this range checkpoint, gathering retained its separate boundary; the follow-up
+above adds the ordinary two-origin alternative. Physical/Discovery Ornithopter,
+Guild and Homeworld combinations remain separate. The range change adds no
 saved field, new action kind, skill assignment, mode admission or publication
 acceptance. Full interactions and final browser/deployed assurance remain due.
 

@@ -16,6 +16,34 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Planetologist No-Field gathering — 26 October. Prototyped / Partial.**
+The own concealed marker and selected physical counters can gather from exactly
+two territories to one destination. Each selected sector keeps ordinary range;
+the +1 alternative does not stack. Current trainer/token/event, physical stocks,
+concealment and one movement remain. Controls retain marker selection across
+modes and guard actual submission, including empty optional reason text. Minimal
+policy offers the new legal route; the chronicle names both original territories.
+This composition remains provisional; special transport and full modes stay open.
+
+Two disjoint native/control lanes and root integration pass **10 files,87/87**,
+types/lint/build and **twelve native engine/GameTable SSR/actual selected-props
+submit-callback paths** on unchanged source. Public R/A/E +choam/Skills starts
+earn original training, first-turn paid physical shipment and second-turn paid
+marker shipment for all0/3/5. Companion paths also earn a real split movement and
+explicit charity claim; no wallet is installed. Basic sources use74/76 actions,
+Advanced79–82; two-to-three continuation actions reach same-turn Collection.
+Each retains45 Treachery,14 Skills and15 Traitor cards. Fifteen native cases and
+twelve new controlled cases cover the route and four minimal profiles. Feedback
+corrects skipped charity in the source fixture and its controlled autopilot type.
+
+Frozen v3 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-planetologist-no-field-gather-proof-v3/`;
+journeys/HTML: adjacent `20261026-planetologist-no-field-gather-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+SSR/selected-props callbacks do not certify DOM/hydration, browser/mobile/deployed
+acceptance, complete combinations or modes. Final assurance remains due.
+[Source and execution](PLANETOLOGIST_RULES.md#concealed-no-field-two-origin-gathering--26-october-2026).
+
 **Planetologist and Richese No-Field range — 26 October. Prototyped / Partial.**
 The owner's concealed marker can use the ordinary extra-range alternative alone
 or with selected same-territory physical forces. Shared range/entry quotes retain
@@ -104,15 +132,15 @@ deployed acceptance. Full Truthtrance, modes/combinations and final assurance
 remain open. [Battle controls](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md#grouped-battle-plan-authoring--26-october-2026);
 [shipment controls](COMPOUND_SHIPMENT_PROMISES.md#full-pure-shipment-authoring--26-october-2026).
 
-Next scoped interaction: Planetologist's two-origin gather with Richese's own
-concealed marker. The normalized group already records its source and selected
-physical origins; the remaining gather fence, controls and native earned-source
-chronology need integration. Each origin must retain its ordinary range, with
-one shared destination and one movement. This prospective composition is not a
-located joint FAQ or permission to enable flight/Guild/Homeworld combinations.
-See [No-Field source](RICHESE_NO_FIELD_RULES.md) and
-[Planetologist contract](PLANETOLOGIST_RULES.md). Complete rules and final
-assurance remain unfinished.
+Next scoped source check: the live Planetologist/card-movement refusal in
+`validatePlanetologistMove`, against the existing
+[Ornithopter contract](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md) and
+[Planetologist contract](PLANETOLOGIST_RULES.md). Distinguish printed movement
+limits from missing compositions before implementation. Bounded allied-marker
+review found an existing legal voluntary-reveal→endMovement route; the supplied
+physical15/36 text does not expressly add alliance separation as a forced reveal
+trigger. Preserve that route rather than calling it a deadlock or inventing an
+automatic reveal. Complete rules and final assurance remain unfinished.
 
 **Truthtrance compound current-fact authoring — 26 October. Prototyped / Partial.**
 The form now exposes two-through-eight-term AND/OR groups and nesting, with

@@ -91,11 +91,7 @@ function PlanetologistMovementDraft({
         id={`${id}-mode`}
         value={mode}
         disabled={busy}
-        onChange={(event) => {
-          const nextMode = event.target.value as PlanetologistMoveMode;
-          setMode(nextMode);
-          if (nextMode !== 'range') setIncludeNoField(false);
-        }}
+        onChange={(event) => setMode(event.target.value as PlanetologistMoveMode)}
       >
         <option value="range">One territory farther, maximum three</option>
         <option value="gather">Gather from two territories</option>
@@ -111,7 +107,7 @@ function PlanetologistMovementDraft({
               id={`${id}-no-field`}
               type="checkbox"
               checked={includeNoField}
-              disabled={busy || mode !== 'range' || !!game.homeworldMobility?.noFieldMovementBlocked}
+              disabled={busy || !!game.homeworldMobility?.noFieldMovementBlocked}
               onChange={(event) => setIncludeNoField(event.target.checked)}
             />
             Include your concealed No-Field from {territory(marker.location.territory).name}, sector {marker.location.sector}
@@ -121,6 +117,12 @@ function PlanetologistMovementDraft({
             force with Planetologist’s extra range, up to three territories.
             Move it alone or with physical forces from its own territory; its
             value stays concealed. No direct joint FAQ settles this combination.
+          </p>
+          <p className="fine" aria-label="Provisional Planetologist No-Field gather">
+            Provisional gather composition: the concealed marker supplies one of
+            exactly two origin territories, alone or with physical forces there.
+            Select physical forces from one other territory. Every origin uses
+            its normal range; gather adds no extra range. Its value stays concealed.
           </p>
           {game.homeworldMobility?.noFieldMovementBlocked && (
             <p className="notice">{game.homeworldMobility.noFieldMovementBlocked}</p>
@@ -203,7 +205,7 @@ function PlanetologistMovementDraft({
         busy={busy} unavailableReason={unavailableReason} reasonId={`${id}-reason`} act={act}
       />
       <p className="fine">
-        Concealed No-Fields cannot join gather, either Ornithopter card movement
+        Concealed No-Fields cannot join either Ornithopter card movement
         or Discovery flight.
         Normal movement and arrival rules still apply.
       </p>

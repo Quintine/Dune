@@ -78,7 +78,7 @@ void test('the owned marker has a usable checkbox origin and persistent provisio
       assert.match(html, /value stays concealed/);
       assert.match(html, /No direct joint FAQ settles this combination/);
       assert.match(html, /No physical board forces are available to move/);
-      assert.match(html, /Concealed No-Fields cannot join gather, either Ornithopter card movement or Discovery flight/);
+      assert.match(html, /Concealed No-Fields cannot join either Ornithopter card movement or Discovery flight/);
       assert.doesNotMatch(html, /controlled-zero|controlled-three|controlled-five|Confirm|Acknowledge|countdown/);
     }
     assert.deepEqual(game, before);
@@ -125,7 +125,7 @@ void test('the existing six-argument draft keeps physical movement separate from
   assert.deepEqual(click({ ...propsFor(game), includeNoField: false }), []);
 });
 
-void test('the marker cannot join gather or carry physical forces from a second territory', () => {
+void test('marker gather requires two origins and ordinary range while extra range excludes a second territory', () => {
   const game = projected(0, true);
   game.players[0].forces['wind_pass:14'] = 2;
   for (const props of [
@@ -137,7 +137,7 @@ void test('the marker cannot join gather or carry physical forces from a second 
     assert.deepEqual(click(props), []);
     assert.match(button(renderToStaticMarkup(createElement(PlanetologistMovementAction, props))), /\sdisabled=/);
   }
-  assert.match(planetologistMoveDraft(game, 'gather', destination, 0, {}, {}, true).blocked!, /cannot join a Planetologist gather/);
+  assert.match(planetologistMoveDraft(game, 'gather', destination, 0, {}, {}, true).blocked!, /exactly two different territories/);
 });
 
 void test('exact source and destination sectors and valid whole available counts guard actual submission', () => {

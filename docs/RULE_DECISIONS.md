@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Planetologist concealed No-Field gathering — 26 October 2026
+
+Under 14 October choose-recommended authority, compose the printed moving-marker
+one-force rule with Planetologist's two-origin alternative. The own marker can
+supply one territory, alone or with its physical companions; physical counters
+supply the other. Exactly two origins use ordinary range to one destination,
+spending one movement without revealing/materializing the value, including0.
+The +1 alternative does not stack. This is provisional composition, not a joint
+publisher FAQ. Current trainer/token/event, physical sources and arrival remain.
+Special flight/Guild/Homeworld boundaries and mode gates stay separate.
+[Source and execution](PLANETOLOGIST_RULES.md#concealed-no-field-two-origin-gathering--26-october-2026).
+
 ## Planetologist and concealed No-Field range — 26 October 2026
 
 Under 14 October choose-recommended authority, compose No-Field's printed
