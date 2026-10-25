@@ -2,6 +2,100 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Bonus, No-Field and allied Traitor cancellation costs — 26 October 2026
+
+**Prototyped / Partial.** Three source-specific used-cost continuations now
+offer printed-role Karama before native prevention: `karamaBonusDiscard` for
+Harkonnen's bonus Treachery card, `karamaNoFieldDiscard` for Richese's marker
+declaration and `karamaAlliedTraitorDiscard` for Harkonnen's spectator-ally call.
+Existing persistent neutral controls, private claim/pass and minimal profiles
+serve these sources. This applies the existing fresh-discard timing, not a new
+publisher ruling or a change to the native benefits.
+
+The ordinary Karama validator remains pure preflight, without supplying the
+already spent cost as an unspent card. Native [auction continuation](../game/auction-continuation-quote.ts)
+validates paid-card bonus sources; its Ambassador wrapper validates the original
+used Richese token, paid card and purchase receipt instead of fabricating an
+auction. Native [No-Field cancellation](../game/karama-no-field-cancellation.ts)
+validates the unpaid declaration without rechecking an allowed shipment's price,
+funding or capacity. Its independent Ambassador wrapper retains that separate
+grant rather than imposing ordinary active-player/unused-shipment prerequisites.
+The allied Traitor source retains the revealed battle, real held identity and
+submitted calls. No bonus draw, shipment, vote reset or outcome is pre-applied.
+
+After claim/pass, retire the fresh group, restore its response and finish native
+prevention once. Bonus denial keeps the paid card, payment and seller/Emperor
+income, skips the bonus and resumes the exact auction or entry suffix. Ordinary
+own/allied No-Field denial keeps stock, private token/event and unused shipment,
+then marks the original native restriction. Independent Guild Ambassador denial
+instead marks that entry's marker request blocked and returns its chooser; its
+ordinary incoming shipment was already spent, while the separate reserve grant
+remains available. Neither source quotes, withdraws, pays or delivers again.
+
+Allied Harkonnen denial changes only that effective call to false. Earlier
+votes and revealed plans remain. If other voters remain, their actual inputs
+precede the native final window; if all voted, that window opens directly.
+Actual native quotes/settlement determine normal versus Traitor results and
+physical cleanup once. The held Traitor is not discarded, transferred or made
+a candidate: only the new physical Karama cost is fresh. A subtype-only snapshot
+binds the original acquisition/entry/shipment/battle, native roles and physical
+pools. Other receipt formats retain their bytes. Source-qualified Ambassador
+admission changes no Advanced preview gate; current Ambassador sources are Basic.
+
+Three disjoint source lanes, bounded native/diff review and root integration pass
+**15 files,223/223**, types/lint/build and **26 native engine/GameTable SSR/actual
+Semuta-callback journeys**, including actual replacement shipments and allied
+battle cleanup, on unchanged source. Thirty-five new cases cover thirteen native
+sources, claim/pass, positive allowance, exact paid acquisition/draw/entry/vote
+suffixes, real held-Traitor outcomes, relevant rejection and four minimal profiles.
+Real cache1 Semuta and original dealt Karama precede every cost; all45 original
+main/cache cards remain physical. No played hand, force, wallet, alliance,
+identity, clock, pending control or outcome is installed.
+
+[Bonus sources](../tests/fixture-semuta-harkonnen-bonus.ts) and
+[cases](../tests/semuta-harkonnen-bonus-engine.test.ts) use normal49/53 Basic/
+Advanced source actions, Advanced Black Market111 or Basic Richese Ambassador88.
+The normal card stays delivered; the Black Market seller retains its paid1 and
+original declaration suffix; the independent Harkonnen beneficiary retains its
+paid3 card while Emperor's original income is already completed. The Ambassador
+source actually places Ecaz and Richese tokens for native prices1+2, forms the
+printed Harkonnen/Ecaz alliance and uses a distinct non-ally Emperor entrant.
+Denial draws0; native allowance draws exactly the original next card1.
+
+[No-Field sources](../tests/fixture-semuta-no-field-cost.ts) and
+[cases](../tests/semuta-no-field-cost-engine.test.ts) use own55/60 Basic/Advanced,
+allied125/137 and Basic independent Ambassador158 source actions. Allied offers
+use a real Nexus alliance and actual private token consent. The independent
+source has actual lobby circles, paid Guild token placement, Nexus alliance,
+Richese Polar Sink1 shipment for2 and Emperor Carthag1 entry for1. Its ordinary
+Richese turn was already spent; the original free Guild grant remains separate.
+Every denied source then makes a real physical1 replacement, costing2 ordinarily
+or0 independently. Positive allowance actually deploys/reveals its native token,
+deploys the allied five forces from reserves or keeps the independent marker hidden,
+with original payments once and no ordinary-turn replay.
+
+[Allied-call sources](../tests/fixture-semuta-allied-traitor.ts) and
+[cases](../tests/semuta-allied-traitor-engine.test.ts) use actual Harkonnen/Emperor
+Nexus alliance, paid opposing groups and CHOAM leader3 truly held among Harkonnen's
+original four Traitors. Early156/173 Basic/Advanced actions leave two real voters;
+last158/175 has their prior inputs already submitted. Claim/pass keeps the original
+plans and votes until native denial, then completes only the remaining votes and
+two actual final ready actions. Native settlement gives CHOAM the normal win;
+allowance gives Emperor the Traitor win and original revelations. Physical
+Traitor custody never changes, and it never becomes a Semuta candidate.
+
+Feedback repairs source sequencing between real Ecaz placement responses and the
+Polar Sink price assertion. The fresh-discard invariant gains only the two exact
+Ambassador source qualifiers, with native entry/purchase/marker validation still
+required. Generic saved-response walkers retain the original response through the
+child; native cancellation legality is unchanged. Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-benefits-proof/`;
+journeys/HTML: adjacent `20261026-semuta-benefits-runtime/`.
+No saved-room/database/server/reset/restart/deployment/recovery operation occurs.
+Engine/SSR/callback evidence leaves hydration, DOM/browser/mobile, Advanced
+Ambassador and wider parents/combinations, complete modes and exact-revision
+deployed acceptance open.
+
 ## Native combat-power cancellation costs — 26 October 2026
 
 **Prototyped / Partial.** Printed-role Karama stopping native Voice, ordinary

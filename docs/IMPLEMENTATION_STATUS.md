@@ -1,5 +1,46 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta claims bonus, No-Field and allied Traitor costs
+
+**Prototyped / Partial.** Printed-role Karama stopping Harkonnen's bonus card,
+Richese No-Field or the Harkonnen spectator-ally Traitor call offers its exact used
+cost before native prevention. Three typed continuations retain original paid
+acquisition, unpaid shipment or revealed battle/votes. Pure validation executes
+no bonus draw, shipment or outcome. Claim/pass restores the response and finishes
+native denial once; original suffixes and outstanding inputs remain native.
+Exact Basic Ambassador wrappers retain entry/purchase/marker receipts without
+ordinary-turn replay. Existing controls/minimal bots serve all three sources;
+older signature formats and Advanced Ambassador admission remain unchanged.
+[Source and limits](SEMUTA_SOURCE_UPDATE_20260907.md#bonus-no-field-and-allied-traitor-cancellation-costs--26-october-2026).
+
+Three disjoint source lanes, bounded native/diff review and root integration pass
+**15 files,223/223**, types/lint/build and **26 native engine/GameTable SSR/actual
+Semuta-callback journeys**, including physical replacements and allied battle
+completion, on unchanged source. Thirty-five new cases cover thirteen sources,
+claim/pass, native allowance, paid retention, zero/one bonus draws, unpaid marker
+stock and actual replacement, early/last voters, real held-Traitor outcomes,
+relevant rejection and four minimal profiles. Real cache1 Semuta and original
+dealt Karama supply every cost. Normal bonus49/53 Basic/Advanced, Black Market111
+and Basic Ambassador88 retain original paid cards. Actual placements cost1+2,
+Ecaz-token alliance and an independent Emperor entrant earn Harkonnen's paid3
+Ambassador purchase. No-Field own55/60, allied125/137 and Basic Ambassador158 retain
+stock before denial, then actually replace with physical1 for ordinary2 or free0.
+Allied H/E calls156/173 early and158/175 last preserve paid cohorts, Nexus pact and
+Harkonnen's real CHOAM Traitor: prevention gives the native CHOAM normal win,
+allowance the Emperor Traitor win. All45 cards remain physical; no played hand,
+force, wallet, alliance, identity, clock, pending control or outcome is installed.
+
+Feedback finishes actual placement responses before the next declaration, fixes
+the Polar Sink price assertion to2 and admits only exact source-qualified
+Ambassador cost parents through the discard invariant. Native cancellation
+legality remains intact. Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-benefits-proof/`;
+journeys/HTML: adjacent `20261026-semuta-benefits-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results; hydration, DOM/browser/mobile, Advanced
+Ambassador and broader parents/combinations, complete modes and deployed/final
+assurance remain open.
+
 ## 26 October 2026 — Semuta claims native combat-power cancellation costs
 
 **Prototyped / Partial.** Printed-role Karama stopping native Voice, ordinary
