@@ -316,6 +316,9 @@ export type PendingRevival = {
   emperorExtra?: boolean;
   /** Independent fixed-three source; never native Emperor funding or ordinary usage. */
   nexusEmperorEvent?: string;
+  /** Frozen physical Ix HIGH grant, additional to ordinary allowance. Absent
+   * on requests accepted before this effect was implemented. */
+  ixSuboidBonus?: number;
   amount?: number;
   elite?: number;
   leader?: string;

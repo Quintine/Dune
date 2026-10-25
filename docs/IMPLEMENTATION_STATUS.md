@@ -1,5 +1,49 @@
 # Dune implementation status
 
+## 25 October 2026 — Ix High adds physical Suboids to paid Cyborg revival
+
+The original ordinary revival now snapshots the native High entitlement and
+selected paid/free Cyborg allocation, freezes its positive physical grant and
+returns the selected group plus remaining bonus Suboids in one native deposit.
+Provisional additional-quota/partial-shortage policy keeps ordinary revived/free
+usage on the base group only. No owed stock, substituted elite or extra choice.
+Original payment, discount cancellation, native request stops and one combined
+Tleilaxu/Axlotl free-event receipt remain; prior La La La suppresses new grants.
+Successful reactive La La La stops the entire return, while preventing that
+card effect resumes the frozen source. Recruits changes its rate, not the bonus.
+Old pending requests are not retrofitted. Persistent quote text uses the shared
+calculator; all four existing profiles retain legal ordinary actions.
+
+Disjoint helper/native-fixture lanes, bounded source/correctness review and root
+integration cover **12 files, 210 cases**. The first union passed 209 with one
+controlled Recruits fixture rejected by the real module requirement. That test
+is now explicitly quote-only; its complete six-case file, final types/lint and
+build pass. Exact hashes retain the other 2,793 source files and all prior passing
+runtime/union behavior. Initial quick feedback also completed the Recruits
+fixture's typed source fields. No requirement was weakened to obtain a pass.
+
+Four native engine/selected-quote/GameTable SSR journeys pass. Basic 111 and
+Advanced 118 source actions earn original 47-card private draft, native HMS,
+actual paid 5 typed invasion, a real five-counter battle loss, retained Ix High 9
+and the next Revival. Returning three selected counters adds two actual Suboids
+without spending extra normal slots. Prior-free112 preserves its completed
+return; original-Ghola 111 leaves a one-Suboid partial bonus. All original physical
+inventory stays in its actual zones. Separate labelled controlled cases cover
+Recruits, earlier La La La and pending invoice/income behavior. No played
+resources, phase, casualty or hand is installed in the native chronology.
+
+Final proof/HTML outside Git:
+`/home/quintine/.local/share/dune/checkpoints/20261025-ix-homeworld-revival-bonus/`.
+`frozen-fixture-repair/report.json` binds tree
+`13ebdd86fcd44694ccf806ee7bbe71ba18c67e624c0839cd8c6464cc14a5237a`,
+2794 files, base `86608f7ea9aa4a1e9585d36bc3fd314b69363f2a`.
+The preceding frozen report retains the four runtime journeys and 209 passing
+cases; `fixture-repair-overlay.json` records the sole changed test file.
+[Policy/source contract](HOMEWORLD_BENEFITS_RULES.md#provisional-ix-high-paid-revival-bonus--25-october-2026).
+Full Homeworld/mode/module acceptance and final assurance remain open. No AI
+refinement, saved-room/D1/server/reset/restart/deployment operation. SSR is not
+browser hydration/mobile/deployed evidence.
+
 ## 25 October 2026 — Truthtrance binds the current native Traitor declaration
 
 A separate revealed-battle question binds an actual unsubmitted native voter,

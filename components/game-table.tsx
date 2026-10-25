@@ -165,6 +165,7 @@ import {
 import { IxTechnology } from './ix-technology';
 import { MobileStronghold } from './mobile-stronghold';
 import { IxSubstitution } from './ix-substitution';
+import { IxHomeworldRevivalBonus } from './ix-homeworld-revival';
 import { controlsLeader } from '@/game/leader-control';
 import { leaderStrengthLabel, harvesterAvailable } from '@/game/cards';
 import { RevivalCommerce } from './revival-commerce';
@@ -4434,6 +4435,19 @@ export function GameTable({
                         do not share the one-per-turn Sardaukar/Fedaykin limit.
                       </span>
                     </label>
+                  )}
+                  {me.faction === 'ixians' && (
+                    <IxHomeworldRevivalBonus
+                      enabled={g.revival.ixSuboidBonusEnabled}
+                      blocked={g.revival.freeBlocked}
+                      amount={amount}
+                      elite={eliteAmount}
+                      free={Math.min(amount, g.revival.freeRemaining)}
+                      freeElite={freeCyborgFirst
+                        ? Math.min(amount, g.revival.freeRemaining, eliteAmount)
+                        : Math.max(0, Math.min(amount, g.revival.freeRemaining) - (amount - eliteAmount))}
+                      normalTanks={me.tanks - (me.elites?.tanks ?? 0)}
+                    />
                   )}
                   {me.faction === 'emperor' &&
                     me.ally &&

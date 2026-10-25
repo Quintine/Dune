@@ -2,6 +2,73 @@
 
 Source audit, 9 September 2026. This separates publisher wording, rule composition, and remaining decisions. It does not enable Homeworld games or replace the outstanding Ambassador/Duke revival rulings.
 
+## Provisional Ix High paid revival bonus — 25 October 2026
+
+**Prototyped / Partial.** The printed Ix High card now connects an ordinary
+paid Cyborg revival to its automatic physical Suboid return. The original
+`revive` controls still choose the base group and which Cyborgs use the ordinary
+free quota. A free Cyborg, paid Suboid, Ghola return, or another faction paying
+Emperor extra revival does not trigger this native paid-Cyborg grant.
+
+The card establishes two free Suboids per paid Cyborg. The authorized revised
+PDF's physical page 22 gives the current-population Homeworld rule, but does
+not supply an Ix-specific quota/shortage ruling. Physical page 9 retains the
+ordinary revival cap. The following are explicit **provisional composition
+policies**, selected under the user's 14 October instruction to proceed with
+recommended interpretations; they are not publisher errata:
+
+- Observe native Ix High before accepting the group. A return that first raises
+  Ix from Low to High earns no retroactive bonus; a later independent paid
+  Cyborg request observes its own current population.
+- Reserve the selected base group's normal Suboids first. Return up to two
+  remaining physical Suboids from Tanks per paid Cyborg. A shortage reduces the
+  grant; it never manufactures a counter, substitutes a Cyborg, blocks the
+  original legal purchase or leaves a debt for a later return.
+- The bonus is additional to normal revival allowance and ordinary free quota.
+  Recruits does not multiply it. A discounted positive Cyborg payment qualifies;
+  canceling the price discount retains the grant only if the original request
+  can still be funded. The original selected quantities and invoice stay intact.
+- Prior La La La prevents the free bonus on new requests while leaving paid
+  revival available. The existing reactive opportunity also recognizes a
+  bonus-only free event: successful La La La stops the whole atomic request
+  without payment or returns; preventing La La La resumes the original frozen
+  request and grant. No new Homeworld-only Karama response is generated.
+- A delivered bonus counts as one free-return event for existing Tleilaxu and
+  Axlotl income. Combine it with any base free return rather than awarding
+  twice. The paid invoice, once-per-turn receipts and Tleilax's phase-start Low
+  suppression remain. This composes the revised PDF's general free-revival
+  income at physical pages 21 and 38; neither passage specifically names Ix.
+
+The accepted request stores only its positive `ixSuboidBonus` count. Settlement
+checks its paid Cyborg allocation and actual remaining Suboids, then deposits
+the entire physical return once. Ordinary `revived` and `freeForcesRevived`
+increase only for the selected base group. Old pending requests without that
+field retain their accepted behavior. The player view exposes current High
+eligibility; persistent selection text explains the automatic grant or La La La
+suppression. Existing minimal AI uses the same ordinary legal actions, with no
+strategic refinement.
+
+Implementation and focused evidence: [physical quote](../game/ix-homeworld-revival.ts),
+[native chronology](../tests/fixture-ix-homeworld-revival-bonus.ts),
+[native tests](../tests/ix-homeworld-revival-bonus-runtime.test.ts),
+[quote tests](../tests/ix-homeworld-revival.test.ts),
+[continuation tests](../tests/ix-homeworld-revival-continuation.test.ts),
+[controls](../components/ix-homeworld-revival.tsx) and
+[control tests](../tests/ix-homeworld-revival-controls.test.ts).
+Frozen proof covers 12 related files, 210 cases: 209 originally passed, and the
+sole Recruits fixture failure was corrected to a quote-only composition test;
+its full 6/6 file, final types/lint/build pass with the other 2,793 source files
+unchanged. Four actual native runtime/SSR journeys pass (Basic 111, Advanced 118,
+prior-free 112 and original-Ghola 111 source actions). These earn original 47 cards,
+a real paid 5 mixed invasion and five actual Tanks casualties; no played state
+is installed. Separate controlled continuation/income/La La La/Recruits contexts
+are labelled. Proof is retained privately in
+`/home/quintine/.local/share/dune/checkpoints/20261025-ix-homeworld-revival-bonus/`.
+Full Homeworld/module combinations, comprehensive assurance and final deployed
+acceptance remain open. This dated section supersedes the earlier audit's
+decision-pending implementation boundary below; it does not turn those gaps in
+printed authority into located rulings.
+
 ## Provisional high-threshold revival deployment — 9 October 2026
 
 The previously blocked case "a supported revival whose own return first reaches

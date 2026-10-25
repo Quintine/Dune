@@ -569,6 +569,7 @@ import {
 } from './truthtrance';
 import type { MixedShipmentExpression } from './mixed-shipment-question';
 import { controlsLeader, nativeAvailable } from './leader-control';
+import { ixHomeworldRevivalEnabled, quoteIxSuboidBonus } from './ix-homeworld-revival';
 import type { EcazRevivalCohort } from './ecaz-revival-cohort';
 import {
   newRevivalRules,
@@ -28079,8 +28080,9 @@ function currentRevivalResumeQuote(g: Game, stage: 'stop' | 'finish') {
 /** Shared physical accounting after the authoritative revival quote. */
 function commitRevivalForcePieces(g: Game, p: Player, revival: PendingRevival) {
   const n = revival.amount!, elite = revival.elite ?? 0;
-  addNativeReserves(g, p, n, elite);
-  p.tanks -= n;
+  const physical = n + (revival.ixSuboidBonus ?? 0);
+  addNativeReserves(g, p, physical, elite);
+  p.tanks -= physical;
   if (revival.emperorExtra)
     g.emperorExtra[p.id] = (g.emperorExtra[p.id] ?? 0) + n;
   else if (!revival.nexusEmperorEvent) {
@@ -28166,7 +28168,7 @@ function finishRevival(
         `${rule.name} accrued ${token.spice} spice for ${getPlayer(g, income.owner).name}, payable at phase end.`,
       );
     }
-    log(g, `${p.name} revived ${n} forces.${g.homeworlds ? ` ${revival.free} were free; ${n - revival.free} were paid. ${payer.name} paid ${revival.cost} spice. Future revival requests use the resulting Homeworld population.` : ''}`,
+    log(g, `${p.name} revived ${n} forces.${g.homeworlds ? ` ${revival.free} were free; ${n - revival.free} were paid. ${payer.name} paid ${revival.cost} spice. Future revival requests use the resulting Homeworld population.` : ''}${revival.ixSuboidBonus ? ` Ix HIGH also returned ${revival.ixSuboidBonus} physical Suboid${revival.ixSuboidBonus === 1 ? '' : 's'} for free, without using normal revival allowance.` : ''}`,
       { faction: p.faction, name: 'Revival' });
     stageHomeworldRevivalReturn(g, p, source, group, deploymentGrant);
   } else {
@@ -28229,7 +28231,7 @@ function beginRevival(g: Game, revival: PendingRevival) {
   if (
     choam &&
     choam.id !== revival.player &&
-    revival.free > 0 &&
+    (revival.free > 0 || (revival.ixSuboidBonus ?? 0) > 0) &&
     !revival.emperorExtra && !revival.nexusEmperorEvent
   ) {
     g.decision = {
@@ -36487,6 +36489,11 @@ function applyActionInner(
         : 0;
     const quote = forceRevivalQuote(g, p, n, elite, freeElite);
     requireRule(quote.cost <= p.spice, 'Not enough spice for revival.');
+    const ixSuboidBonus = p.faction === 'ixians' ? quoteIxSuboidBonus({
+      enabled: ixHomeworldRevivalEnabled(g, id) && !g.revivalRules?.freeBlocked?.includes(id), amount: n, elite,
+      free: quote.free, freeElite,
+      normalTanks: p.tanks - (p.elites?.tanks ?? 0),
+    }) : 0;
     const checks: PendingRevival['checks'] = [];
     const choamBenefit = p.faction === 'choam' && !g.revivalRules?.choamBlocked;
     const uncancelableLimit = Math.max(
@@ -36504,6 +36511,7 @@ function applyActionInner(
       amount: n,
       elite,
       ...quote,
+      ...(ixSuboidBonus ? { ixSuboidBonus } : {}),
       checks,
     });
     return g;
@@ -38343,6 +38351,7 @@ export function viewGame(state: Game, id: string) {
       choamBlocked: !!g.revivalRules?.choamBlocked,
       freeRemaining: freeRevivalRemaining(g, me),
       homeworldBonus: homeworldLowBonus(g, me.id),
+      ixSuboidBonusEnabled: ixHomeworldRevivalEnabled(g, me.id),
       tleilaxuHomeworldIncomeBlocked: homeworldRule(() =>
         tleilaxuHomeworldFreeIncomeBlocked(g),
       ),

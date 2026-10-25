@@ -3,6 +3,7 @@ import { DUKE_VIDAL_ID } from './duke-vidal';
 import { resolveEcazDukeRevival } from './ecaz-duke-revival';
 import { isAuditorLeader } from './choam-auditor';
 import { controlsLeader } from './leader-control';
+import { ixHomeworldRevivalEnabled, quoteIxSuboidBonus } from './ix-homeworld-revival';
 import {
   eliteRevivalRemaining,
   normalForceRevivalLimit,
@@ -73,15 +74,38 @@ export function continuationCustody(
   p: Player,
   pending: Pending,
 ) {
+  if (pending.ixSuboidBonus !== undefined) {
+    requireRevival(pending.kind === 'forces' && !pending.emperorExtra &&
+      pending.nexusEmperorEvent === undefined && pending.payer === undefined &&
+      p.faction === 'ixians' && nonnegative(pending.ixSuboidBonus) &&
+      pending.ixSuboidBonus > 0 && pending.ixSuboidBonus <= 13 &&
+      nonnegative(pending.amount) && nonnegative(pending.elite) &&
+      nonnegative(pending.free) && nonnegative(pending.normalCost) &&
+      pending.cost > 0,
+    'The Ix bonus needs its original paid native Cyborg request.');
+    const freeElite = (pending.amount! - pending.free) * 2 +
+      pending.elite! - pending.normalCost;
+    let expected = -1;
+    try {
+      expected = quoteIxSuboidBonus({
+        enabled: ixHomeworldRevivalEnabled(g, p.id),
+        amount: pending.amount!, elite: pending.elite!, free: pending.free,
+        freeElite, normalTanks: p.tanks - (p.elites?.tanks ?? 0),
+      });
+    } catch { /* Convert malformed physical quotes into the native rule error. */ }
+    requireRevival(expected === pending.ixSuboidBonus,
+      'The pending Ix bonus no longer matches its paid Cyborgs and physical Suboids.');
+  }
   if (pending.kind === 'forces') {
     const n = pending.amount!,
-      elite = pending.elite ?? 0;
+      elite = pending.elite ?? 0,
+      physical = n + (pending.ixSuboidBonus ?? 0);
     requireRevival(
-      nonnegative(p.tanks) && nonnegative(p.reserves) && n <= p.tanks,
+      nonnegative(p.tanks) && nonnegative(p.reserves) && physical <= p.tanks,
       'The pending revival forces are no longer in the tanks.',
     );
     requireRevival(
-      nonnegative(p.reserves + n) &&
+      nonnegative(p.reserves + physical) &&
         nonnegative(p.revived) &&
         (pending.nexusEmperorEvent !== undefined ||
           (pending.emperorExtra
@@ -107,7 +131,7 @@ export function continuationCustody(
       nonnegative(eliteTanks) &&
         eliteTanks <= p.tanks &&
         elite <= eliteTanks &&
-        n - elite <= p.tanks - eliteTanks &&
+        physical - elite <= p.tanks - eliteTanks &&
         elite <= eliteRevivalRemaining(p, g.advanced),
       'The pending ordinary and elite revival groups no longer match their tanks.',
     );

@@ -16,6 +16,37 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Ix High paid-Cyborg revival bonus — 25 October. Prototyped / Partial.**
+An ordinary paid Cyborg return now automatically returns up to two additional
+physical Suboids from Tanks. Selected free types, original invoice and native
+payment/stop responses remain. Bonus quantities are frozen before the group,
+spend no ordinary revival/free quota and never manufacture pieces. Quota,
+shortage, La La La and free-event income are explicitly provisional compositions;
+Recruits does not multiply the grant. Persistent selected-group text and existing
+minimal policies are connected, without strategic tuning.
+[Source, provisional policy and limits](HOMEWORLD_BENEFITS_RULES.md#provisional-ix-high-paid-revival-bonus--25-october-2026).
+
+Disjoint helper/native-fixture work, bounded source/correctness review and root
+integration cover **12 files, 210 cases**. The original union passed 209; only a
+controlled Recruits fixture attempted execution without its required card
+module. Repairing it to an honestly labelled quote-only case passes its whole
+**6/6** file, types/lint/build; hashes confirm the other 2,793 source files unchanged.
+Four genuine native engine/selected-quote/GameTable SSR journeys pass: Basic 111
+and Advanced 118 source actions earn original 47-card setup/draft, paid 5 mixed
+invasion, real five-counter loss and turn-two revival; prior-free 112 retains
+actual earlier usage, and original-Ghola 111 leaves one actual bonus Suboid.
+Five physical returns consume three ordinary slots; partial stock, original
+negative branches and all four minimal profiles pass. Controlled continuation
+quotes cover discounted/unfunded invoices, once-only income and old requests.
+No full-mode, final-assurance, hydration/browser/mobile or deployed acceptance
+is claimed; no saved-room/D1/server/reset/restart/deployment operation occurred.
+
+A bounded ordinary-faction and Treachery-card lookup found no further wholly
+absent native power; that is not complete source coverage.
+The remaining **High Richese No-Field plus reserve shipment** is a concrete
+Homeworld content gap, distinct from its existing Smuggler companion. Preserve
+the user's specific unfunded-Karama/Kull deferral while continuing other rules.
+
 **Current Traitor-declaration Truthtrance — 25 October. Prototyped / Partial.**
 A structured revealed-battle question now binds an actual unsubmitted voter to
 Reveal or decline. Native matching/KH/voter/beneficiary rules supply the private

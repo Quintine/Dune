@@ -426,7 +426,7 @@ export function quoteRevivalResume(
     };
   if (
     pending.kind === 'forces' &&
-    pending.free > 0 &&
+    (pending.free > 0 || (pending.ixSuboidBonus ?? 0) > 0) &&
     g.techTokens &&
     p.faction !== 'tleilaxu'
   ) {
@@ -464,7 +464,9 @@ export function quoteRevivalResume(
       lastFree === undefined || count(lastFree),
       'The revival free-income receipt is invalid.',
     );
-    const free = pending.free > 0;
+    // The physical Homeworld grant is one free-return event within the same
+    // invoice, without spending the ordinary free-rate ledger.
+    const free = pending.free > 0 || (pending.ixSuboidBonus ?? 0) > 0;
     const reward =
       free &&
       lastFree !== g.turn &&

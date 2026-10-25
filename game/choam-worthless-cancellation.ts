@@ -189,7 +189,8 @@ export function quoteChoamWorthlessCancellation(
         p.target !== p.owner &&
         g.pendingRevival.kind === 'forces' &&
         whole(g.pendingRevival.free) &&
-        g.pendingRevival.free > 0 &&
+        (g.pendingRevival.free > 0 ||
+          (whole(g.pendingRevival.ixSuboidBonus) && g.pendingRevival.ixSuboidBonus > 0)) &&
         !g.pendingRevival.emperorExtra,
       'Reactive La La La needs the original opposing free force revival.',
     );
