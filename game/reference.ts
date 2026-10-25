@@ -2977,7 +2977,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     summary:
       'Ask whether another player holds exactly, at least or at most a number of copies of one named card.',
     steps: [
-      'Declare Truthtrance and choose Verified cards, traitors or spice. Select Number of a named card, choose its exact name, select a comparison and enter a whole count of zero or more. Review the public question before asking.',
+      'Declare Truthtrance and choose Verified current facts. Select Number of a named card, choose its exact name, select a comparison and enter a whole count of zero or more. Review the public question before asking.',
       'Only physical cards currently in that player’s hand count. Separate cache cards, cards in discard and cards still in a deck are excluded. Shield and Shield Snooper are different names. A card retained in hand after battle still counts.',
       'The shared canonical name list includes the three independent Ecaz cards as well as ordinary/Ix and separate Richese cache identities. Naming one does not select its family, expose its physical ID or change its battle role.',
       'The server establishes the truthful Yes or No privately for the target. Their public answer reveals only the requested comparison, not card identities or the rest of their hand. An exact-count question answered Yes naturally confirms that count.',
@@ -2986,7 +2986,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
     example:
       '“Do you currently hold at least two cards named Shield?” is Yes with two Shields and No with one Shield plus one Shield Snooper.',
-    related: ['card-truthtrance', 'truthtrance-spice', 'privacy'],
+    related: ['card-truthtrance', 'truthtrance-fact-expression', 'truthtrance-spice', 'privacy'],
     checklist: [
       {
         area: 'Implementation',
@@ -3025,6 +3025,32 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
   },
   {
+    id: 'truthtrance-fact-expression',
+    title: 'Truthtrance: grouped current facts',
+    category: 'Cards',
+    coverage: 'Partial',
+    summary: 'Build one current-fact question with multiple AND/OR conditions and nested groups.',
+    steps: [
+      'After declaring Truthtrance and resolving priority, choose another player and Verified current facts. Start with one current fact. Group it with AND or OR, add further facts or nested groups, and review the whole public question.',
+      'AND requires all conditions. OR requires at least one condition. Each nested group keeps its own meaning. Removing a fact preserves its siblings; a group with one remaining fact collapses to that fact.',
+      'The builder supports up to eight terms per group, sixteen total items including groups, and four levels of grouping. These are app input limits. Add/group controls explain the available expression, and invalid fields anywhere in the tree block Ask publicly.',
+      'Current facts are evaluated when the target answers. Only the aggregate answer is published. No makes the whole expression false; it does not necessarily make each condition false. Unknown retains the existing option to ask again or save the card.',
+      'A definite answer uses the original single card discard and resumes the previous table decision. Current facts do not promise that cards, spice or forces will remain afterward. Battle-plan and future shipment or movement promises use their separate question types.',
+    ],
+    example: 'Does the Emperor have at least ten spice AND at least one Baliset AND no Shields? One public Yes confirms that whole current conjunction without listing any other card.',
+    related: ['card-truthtrance', 'truthtrance-card-count', 'truthtrance-spice', 'truthtrance-forces'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Existing structured fact parsing and aggregate evaluation retain their limits, now shared with controlled whole-tree authoring; actions and saved state are unchanged.' },
+      { area: 'Player controls', status: 'Partial', detail: 'Add, wrap, AND/OR selection, nested groups, remove/collapse, whole-tree validation, persistent meaning and actual public submission are connected.' },
+      { area: 'AI', status: 'Partial', detail: 'The four existing profiles answer their entitled aggregate result. Full proactive question strategy and difficulty calibration remain deferred.' },
+      { area: 'Documentation', status: 'Partial', detail: 'Explains grouping, aggregate disclosure, current-only meaning and software input limits separately from printed permission.' },
+      { area: 'Verification', status: 'Partial', detail: 'Focused structure/control and genuine original-card question/answer cases cover the authoring path. Browser/mobile/deployed acceptance and full Truthtrance combinations remain due.', evidence: [
+        'game/truth-fact-expression.ts', 'components/truth-fact-expression-fields.tsx', 'components/truth-fact-question.tsx', 'components/truthtrance.tsx',
+        'tests/truth-fact-expression.test.ts', 'tests/truth-fact-expression-controls.test.ts', 'tests/truth-fact-expression-engine.test.ts', 'tests/fixture-truth-fact-expression.ts', 'docs/TRUTHTRANCE_CARD_COUNT.md',
+      ] },
+    ],
+  },
+  {
     id: 'truthtrance-face-dancers',
     title: 'Truthtrance: currently unrevealed Face Dancers',
     category: 'Cards',
@@ -3054,7 +3080,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     summary:
       'Ask a verified Yes/No question about total hand size or how many held cards have a selected primary role.',
     steps: [
-      'Declare Truthtrance, choose Verified cards, traitors or spice, then Hand size or primary card role. Select all cards or a primary role, a comparison and a whole count of zero or more. Review the question before asking.',
+      'Declare Truthtrance, choose Verified current facts, then Hand size or primary card role. Select all cards or a primary role, a comparison and a whole count of zero or more. Review the question before asking.',
       'Count only physical cards currently in the target’s hand, including reserved cards still held there. Decks, discards, separate caches and cards already on the table do not count. Every held physical copy counts once.',
       'Primary roles are the cards’ default roles. Weirding Way is a weapon; Chemistry is a defense. Alternate battle roles do not change these counts. Worthless cards and Cheap Heroes or Heroines are separate categories. Bene Gesserit and CHOAM powers do not turn held Worthless cards into another category.',
       'Richese cards use their printed roles: Stone Burner and Mirror Weapon are weapons; Portable Snooper is a defense. Other Special cards belong to the Special category. A classification question does not make an unfinished card effect available.',
@@ -3296,6 +3322,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'truthtrance-forces',
       'truthtrance-card-count',
       'truthtrance-hand-inventory',
+      'truthtrance-fact-expression',
       'truthtrance-shipment',
       'truthtrance-movement',
       'richese-no-field',

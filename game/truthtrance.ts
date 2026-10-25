@@ -37,6 +37,10 @@ import { parseForceCountFact, forceCountFactMatches, forceCountFactText, forceCo
 import type { Action, Game, Player } from './engine';
 import { TRUTH_CARD_NAMES } from './truthtrance-card-names';
 import { CHEAP_HERO_TRAITOR } from './traitors';
+import {
+  TRUTH_FACT_MAX_NODES, TRUTH_FACT_MAX_DEPTH, TRUTH_FACT_MAX_TERMS,
+  TRUTH_FACT_SIZE_ERROR, TRUTH_FACT_GROUP_ERROR,
+} from './truth-fact-expression';
 import { DUKE_VIDAL_ID } from './duke-vidal';
 import { canUseAsTruthtranceRole } from './shrine';
 import { isKnowledgeFact, parseKnowledgeFact, knowledgeFactAnswer, knowledgeFactText, truthKnowledgeOf, type KnowledgeFact, type TruthKnowledge } from './truthtrance-knowledge';
@@ -103,11 +107,11 @@ function parseFact(
   value: unknown,
   respondent: Player,
   depth = 0,
-  budget = { remaining: 16 },
+  budget = { remaining: TRUTH_FACT_MAX_NODES },
 ): TruthFact {
   check(
-    depth <= 4 && budget.remaining-- > 0,
-    'Truthtrance supports at most 16 clauses and four levels of grouping.',
+    depth <= TRUTH_FACT_MAX_DEPTH && budget.remaining-- > 0,
+    TRUTH_FACT_SIZE_ERROR,
   );
   const v = record(value);
   if (v.kind === 'forceCount') {
@@ -183,8 +187,8 @@ function parseFact(
     (v.kind === 'and' || v.kind === 'or') &&
       Array.isArray(v.terms) &&
       v.terms.length >= 2 &&
-      v.terms.length <= 8,
-    'Combine two to eight fact clauses with AND or OR.',
+      v.terms.length <= TRUTH_FACT_MAX_TERMS,
+    TRUTH_FACT_GROUP_ERROR,
   );
   return {
     kind: v.kind,

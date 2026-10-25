@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 26 October 2026 — Full structured current-fact question authoring
+
+**Prototyped / Partial.** Replace the two-flat-fact form cap with controlled
+AND/OR trees: add up to eight siblings, nest/wrap groups, switch their meaning
+and remove/collapse without losing other predicates. The whole preview and
+public action retain all terms. Existing parser limits (sixteen total nodes,
+depth four) move to a focused shared helper without changing accepted engine
+input. All leaf validation, including later rows, applies before Ask publicly;
+busy/stage/owner/target guards also apply to actual callbacks. The stateful parent
+keeps its draft, while battle-plan/shipment controls remain separate. No action,
+saved schema, timing, card-custody or mode permission is added.
+
+Frozen **11-file80/80**, types/lint/build and **eight native engine/GameTable
+SSR/actual edit-and-Ask callback paths** pass. A genuine public Basic A/E/H/G
+eleven-action setup/Storm prefix earns the original cards and nonempty Ready.
+Three/eight-term AND/OR, mixed nesting, sixteen nodes and depth four use actual
+authoring callbacks, truthful target aggregate, one discard and the same Storm
+Ready resumption, seven continuation actions each. All33 original cards remain.
+Eight engine cases include24 flat and four nested native variants, accepted and
+rejected bounds, dishonest/foreign/unknown/repeated denials and all four minimal
+profiles. Thirteen controlled cases and four structure cases supplement the
+existing Truthtrance/reference regressions. Feedback corrected only two test
+typing issues: the malformed No-Field input cast and optional assertion regex.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261026-truth-fact-expression-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-fact-expression-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation. Native
+source is Basic; SSR/callbacks do not certify DOM/hydration or browser/mobile/
+deployed acceptance. Full Truthtrance, combinations and final assurance remain
+open. [Source and authoring contract](TRUTHTRANCE_CARD_COUNT.md#compound-current-fact-authoring--26-october-2026).
+
 ## 26 October 2026 — Distrans before the first ordinary bid/pass
 
 **Prototyped / Partial.** Select a provisional first-bid/pass span under the

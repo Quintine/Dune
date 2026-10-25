@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Truthtrance compound current-fact controls — 26 October 2026
+
+Expose existing AND/OR current-fact expressions without the old two-fact form
+cap. The November 2020 FAQ p8 authority already permits combined questions.
+Eight children per group, sixteen total nodes and depth four remain unchanged
+software input limits; sharing them with the editor does not establish printed
+rules or expand answer/custody permissions. Current aggregate facts create no
+future retention promise. [Source and controls](TRUTHTRANCE_CARD_COUNT.md#compound-current-fact-authoring--26-october-2026).
+
 ## Distrans before the first ordinary bid/pass — 26 October 2026
 
 The printed card permits use except during a bid (publisher E2 p5). Under

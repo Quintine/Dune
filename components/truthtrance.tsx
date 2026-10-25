@@ -6,10 +6,9 @@ import { ShipmentClaimFields, invalidShipmentClause, type ShipmentClauseInput } 
 import { BattleClaimFields } from './battle-promises';
 import {
   MixedShipmentFields,
-  TruthFactFields,
-  invalidTruthFact,
   mixedShipmentInputError,
 } from './mixed-shipment-fields';
+import { TruthFactQuestion } from './truth-fact-question';
 import type { MixedShipmentExpression } from '@/game/mixed-shipment-question';
 import type { PlanClaim } from '@/game/battle-promises';
 import { useId, useState } from 'react';
@@ -78,14 +77,8 @@ export function Truthtrance({
   const [scope, setScope] = useState<'fact' | 'currentTurn'>('fact');
   const [text, setText] = useState('');
   const [join, setJoin] = useState<'single' | 'and' | 'or'>('single');
-  const [clauses, setClauses] = useState<TruthFact[]>([
-    { kind: 'hand', name: 'Shield' },
-    { kind: 'hand', name: 'Snooper' },
-  ]);
+  const [fact, setFact] = useState<TruthFact>({ kind: 'hand', name: 'Shield' });
   const factId = useId();
-  const invalidFact = clauses
-    .slice(0, join === 'single' ? 1 : 2)
-    .some((fact) => invalidTruthFact(fact, g, target));
   const leaderName = (id: string) =>
     id === CHEAP_HERO_TRAITOR
       ? 'Cheap Hero / Heroine'
@@ -97,7 +90,7 @@ export function Truthtrance({
       ? {
           kind,
           target,
-          fact: join === 'single' ? clauses[0] : { kind: join, terms: clauses },
+          fact,
         }
       : kind === 'battlePlan'
         ? {
@@ -445,33 +438,10 @@ export function Truthtrance({
                     ) && <p>Select one of the combatants for this question.</p>}
                 </>
               ) : kind === 'fact' ? (
-                <>
-                  <label>
-                    Combine facts
-                    <select
-                      value={join}
-                      onChange={(e) => setJoin(e.target.value as typeof join)}
-                    >
-                      <option value="single">One fact</option>
-                      <option value="and">Both facts · AND</option>
-                      <option value="or">Either fact · OR</option>
-                    </select>
-                  </label>
-                  {clauses
-                    .slice(0, join === 'single' ? 1 : 2)
-                    .map((c, index) => (
-                      <fieldset key={index}>
-                        <legend>Fact {index + 1}</legend>
-                        <TruthFactFields value={c} game={g} target={target}
-                          onChange={next => setClauses(clauses.map((old, n) => n === index ? next : old))} />
-                      </fieldset>
-                    ))}
-                  <p className="notice">
-                    {invalidFact
-                      ? 'Resolve the marked fields before asking this question.'
-                      : truthQuestionText(question, leaderName, locationName)}
-                  </p>
-                </>
+                question.kind === 'fact' && (
+                  <TruthFactQuestion game={g} question={question} busy={busy}
+                    act={act} onChange={setFact} />
+                )
               ) : (
                 <>
                   <label>
@@ -504,7 +474,7 @@ export function Truthtrance({
                   </p>
                 </>
               )}
-              {button(
+              {kind !== 'fact' && button(
                 'Ask publicly',
                 { type: 'truthAsk', question },
                 (kind === 'movement' && (!validMovementClaim(movement) || !g.truthMovementTargets.includes(target))) ||
@@ -514,7 +484,6 @@ export function Truthtrance({
                   (kind === 'mixedShipment' &&
                     (!!invalidMixed || !shipmentAvailable)) ||
                   (kind === 'freeform' && !text.trim()) ||
-                  (kind === 'fact' && invalidFact) ||
                   (kind === 'battlePlan' &&
                     (!g.battle ||
                       ![g.battle.attacker, g.battle.defender].includes(

@@ -16,6 +16,41 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance compound current-fact authoring — 26 October. Prototyped / Partial.**
+The form now exposes two-through-eight-term AND/OR groups and nesting, with
+add/wrap/remove/collapse controls and a whole-question preview. Shared existing
+sixteen-node/depth-four input limits govern parser and editor. Invalid leaves
+beyond the former second row also block submission. Current target-only
+aggregate answers, the original action/queue, one discard and continuation stay
+unchanged; no future retention promise or new saved field is added.
+
+Two disjoint native/control lanes and root integration pass **11 files,80/80**,
+types/lint/build and **eight native engine/GameTable SSR/actual edit-and-Ask
+callback paths** on unchanged source. A genuine public Basic A/E/H/G eleven-
+action setup/Storm prefix earns the original Truthtrance and Emperor Baliset,
+then keeps the real nonempty Ready list. Three/eight-term, mixed nested,
+sixteen-node and depth-four questions publish the truthful aggregate, discard
+once and resume the same Storm controls; each runtime takes seven continuation
+actions. All33 physical cards remain. Eight engine cases include24 flat paths,
+four nested paths, boundaries/rejections and four minimal profiles. Thirteen
+controlled form cases cover edits, whole-leaf validation and live ownership.
+
+Frozen v2 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-fact-expression-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-fact-expression-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+SSR/callbacks do not prove DOM/hydration or browser/mobile/deployed acceptance;
+the native source is Basic. Complete Truthtrance/rules/combinations and final
+assurance remain open. [Source and controls](TRUTHTRANCE_CARD_COUNT.md#compound-current-fact-authoring--26-october-2026).
+
+Next concrete Basic function gap: battle-plan Truthtrance authoring still caps
+the existing AND/OR parser at two flat conditions. Connect its full grouped
+input controls to the existing legal-plan feasibility and sealing path. See
+`game/battle-promises.ts`, `components/battle-promises.tsx`, the battle-plan
+branch of `components/truthtrance.tsx` and the genuine `beforePlans` source in
+`tests/fixture-truth-traitor-decision.ts`. Pure shipment's maximum sixteen-leaf
+form is also pending; ordinary nested shipment already has its Mixed equivalent.
+
 **Distrans before the first bid/pass — 26 October. Prototyped / Partial.**
 An untouched ordinary lot now allows the private card transfer before its first
 bid or pass, with the same dealt pool/index/opener/order/active seat. The span is
@@ -43,13 +78,6 @@ application source stayed unchanged. No saved-room/D1/server, reset/restart,
 deployment or recovery operation occurs. SSR/callbacks do not prove DOM/hydration,
 browser/mobile/deployed acceptance. Complete rules/combinations and final
 assurance remain open. [Source and policy](RICHESE_DISTRANS_ENGINE_AUDIT.md#untouched-ordinary-lot--26-october-2026).
-
-Next concrete Basic function gap: Truthtrance's structured-question engine
-accepts two through eight facts, but the authoring panel only exposes two.
-Connect add/remove fact controls to the existing AND/OR action with actual
-aggregate-answer/resumption evidence. See `components/truthtrance.tsx`,
-`game/truthtrance.ts`, `tests/fixture-truth-movement-early.ts` and
-[the source contract](TRUTHTRANCE_CARD_COUNT.md).
 
 **Shared Ecaz Ambassador Duke — 26 October. Prototyped / Partial.**
 The triggered token can now grant its living Duke to Ecaz's current reciprocal

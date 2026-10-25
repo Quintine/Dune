@@ -2,6 +2,52 @@
 
 Implemented 7 September 2026 local date. This closes a bounded base-game question gap: a player can now ask whether another player currently holds exactly, at least, or at most a specified number of cards with one canonical printed name. Previously the structured hand fact checked existence only; asking an AI the knowable equivalent in freeform produced unknown.
 
+## Compound current-fact authoring — 26 October 2026
+
+Current-fact questions now expose the existing structured AND/OR expression
+envelope instead of limiting the form to two facts. A player can add up to
+eight terms to a group, nest AND/OR groups, switch each group's meaning and
+remove individual facts or groups. Removing one of two siblings leaves the
+remaining fact directly; other conditions and their values are preserved.
+The preview and submitted action retain the whole tree without truncation.
+
+The existing parser accepts at most sixteen total nodes, counting groups, and
+depth four. Those software input limits are now shared by the parser and
+editor through `game/truth-fact-expression.ts`; they are not newly asserted
+printed restrictions. Candidate edits that exceed them are unavailable.
+Every leaf uses the existing entitled fields and validation, including invalid
+values beyond the old second fact. Invalid structure or any invalid leaf blocks
+Ask publicly. Busy/wrong-owner/absent-target controls cannot submit a question.
+
+The original `truthAsk` fact action, queue, card custody and answer projection
+are unchanged. All current facts are evaluated when the target answers. AND
+requires every branch; OR requires at least one. The player publishes one
+aggregate Yes/No/unknown result, without a separate answer per condition or a
+future promise to retain current cards, spice or forces. Existing minimal AI
+answers use their entitled result; no strategy or calibration is added.
+
+`components/truth-fact-expression-fields.tsx` and `truth-fact-question.tsx`
+provide controlled edit/submit handlers; the stateful original Truthtrance
+panel owns the draft. Battle-plan and shipment/mixed-shipment authoring keep
+their separate existing controls. No saved field, action kind or mode gate is
+added. This closes the current-fact form cap, not full Truthtrance acceptance.
+
+Frozen proof passes **11 files,80/80**, types/lint/build and eight native
+engine/GameTable SSR/actual edit-and-Ask callback journeys. The original Basic
+A/E/H/G setup/Storm source uses11 public actions, including the native two
+dials and Emperor Ready. Actual callbacks author three/eight-term AND/OR,
+mixed nesting, sixteen nodes and depth four; truthful target aggregate, one
+discard and original Storm Ready resumption take seven more actions each.
+All33 original cards remain. Eight engine cases cover24 flat variants, four
+nested variants, size/depth bounds, refusals and four-profile legal answers;
+thirteen controlled form and four structure cases add edit/validation evidence.
+Private report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-fact-expression-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-fact-expression-runtime/`.
+No saved-room/D1/server or recovery operation occurs. This native source is
+Basic; DOM/hydration, browser/mobile/deployed and broader combination acceptance
+remain due. Historical named-count evidence below is separately dated.
+
 ## Source and interpretation
 
 The [official November 2020 GF9 FAQ, printed p.8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf) permits game-related yes/no questions and combinations with AND/OR. Its separate future-action discussion limits commitments to the current turn. The official PDF's indexed page text was retrieved again during this implementation; a newly downloaded local PDF is not claimed. The [earlier nonbattle audit](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md) records the same authority and remaining promise work.
