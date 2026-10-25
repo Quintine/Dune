@@ -69,7 +69,7 @@ export function nexusTraitorReturnAction(
     (pending.mode === 'secretAlly' && game.phase !== 8) ||
     cards.length !== pending.count ||
     new Set(cards).size !== cards.length ||
-    !cards.every((id) => pending.choices.some((choice) => choice.id === id))
+    !cards.every((id) => pending.choices.some((choice) => choice.id === id && !choice.blocked))
   )
     return null;
   return { type: 'nexusTraitorReturn', event, cards: [...cards] };
@@ -118,7 +118,7 @@ export function nexusTraitorBotActions(game: GameView): Action[] {
       game.status !== 'playing'
     )
       return [];
-    const cards = [...pending.choices]
+    const cards = pending.choices.filter(choice => !choice.blocked)
       .sort(
         (one, two) =>
           returnPreference(game, one.id) - returnPreference(game, two.id),

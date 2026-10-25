@@ -1,5 +1,41 @@
 # Dune implementation status
 
+## 25 October 2026 — Truthtrance binds the current native Traitor declaration
+
+A separate revealed-battle question binds an actual unsubmitted native voter,
+using original battle/turn/voter/beneficiary/opponent/leader source and shared
+matching/KH legality. Yes/No constrain the declaration; fulfill before later
+allied Karama or Nexus betrayal changes its effect. Sealed votes stay fixed.
+Original Truthtrance disposal binds the new ledger. Harkonnen Cunning return
+checks a live required identity before custody/shuffle, projects a private
+reason and retains other choices; fulfilled declarations remain returnable.
+The pending return parent exempts only old/new promise ledgers. Both human vote
+panels and minimal policies consume shared choices; no new module gate opens.
+
+Disjoint helper/native-fixture lanes, bounded review and root integration pass
+**13 files101/101**, types/lint/build and six genuine native engine/answer-callback/
+GameTable SSR journeys. Basic26 earns original setup/deal/Traitor choice,
+paid invasion and actual seals. Allied Harkonnen72 earns a real turn-two alliance
+and original Karama purchase; Cunning77 earns its real original Nexus draw and
+mandatory return. Native Yes/No refusals, post-declaration prevention, pending-
+return Truthtrance and later fulfilled custody pass. Four profiles answer and
+vote legally; an unmatched original-card exchange is explicitly controlled.
+
+Feedback corrects submitted-false handling, a fixture stopping before mandatory
+response passes, reconciliation annotations and nullable/corruption fixture
+narrowing. Sealed-vote/early refusal is checked against the exact queued action.
+Final frozen proof/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-truth-traitor-decision/`.
+`frozen-integrated-3/report.json` binds tree
+`1f0db4bd54ba97381e12a3d3c5e98944d387f78fbcd473e212295635aab80c43`,
+2787files on base `724eabf99ce0243f9ef27982cbf2509de9ad7550`.
+Final four prose/reference overlays are reviewed separately. This is explicit
+current-turn software composition under the existing general FAQ, not a new
+Traitor-specific publisher ruling. Broader future/preparation promises, complete
+modes/modules and final rules/recovery/privacy/custody/browser/deployed acceptance
+remain open. No AI tuning or saved-room/D1/server/reset/restart/deployment action.
+[Canonical contract](TRUTHTRANCE_TRAITOR_DECISIONS.md).
+
 ## 25 October 2026 — Native Advanced and owned No-Field movement preparation
 
 Advanced phase5 now reuses the declared native-family admission. Richese's

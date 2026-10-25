@@ -1292,6 +1292,11 @@ function policyActions(g: GameView): Action[] {
       return w.passed.includes(me.id) ? [] : [{ type: 'truthPass' }];
     if (w.stage === 'answer') {
       if (w.question?.target !== me.id) return [];
+      if (w.question.kind === 'traitorCall') {
+        const answers = g.truthTraitorAnswers ?? [];
+        const answer = answers.find(answer => answer === 'yes') ?? answers[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'movement') {
         const answer = g.truthMovementAnswers?.find(answer => answer !== 'unknown') ?? g.truthMovementAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];
@@ -3904,7 +3909,7 @@ function policyActions(g: GameView): Action[] {
         ? me.id
         : me.ally;
       const enemy = b.attacker === beneficiary ? b.defender : b.attacker;
-      const call =
+      const preferredCall =
         ownsTraitorDecision &&
         !b.plans[enemy].kwisatz &&
         !!matchingTraitor(
@@ -3912,6 +3917,8 @@ function policyActions(g: GameView): Action[] {
           b.plans[enemy].leader,
           b.cards.find((c) => c.id === b.plans[enemy].leader),
         );
+      const choices = b.traitorCallChoices;
+      const call = choices && !choices.includes(preferredCall) ? choices[0] ?? false : preferredCall;
       const portable = g.portableSnooper;
       if (
         !call &&

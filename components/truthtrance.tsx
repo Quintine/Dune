@@ -1,5 +1,6 @@
 'use client';
 import { MovementClaimFields } from './movement-claim-fields';
+import { TraitorDecisionAnswers } from './traitor-decision-promises';
 import { validMovementClaim, type MovementClaim } from '@/game/movement-promises';
 import { ShipmentClaimFields, invalidShipmentClause, type ShipmentClauseInput } from './shipment-claim-fields';
 import { BattleClaimFields } from './battle-promises';
@@ -52,7 +53,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall'
   >('fact');
   const [movement, setMovement] = useState<MovementClaim>({ territory: 'carthag', minimum: 6 });
   const [shipmentJoin, setShipmentJoin] = useState<'single' | 'and' | 'or'>('single');
@@ -108,6 +109,7 @@ export function Truthtrance({
                 ? planClauses[0]
                 : { kind: join, terms: planClauses },
           }
+        : kind === 'traitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '' }
         : kind === 'movement' ? { kind, target, ...movement }
         : kind === 'shipment'
           ? {
@@ -223,6 +225,8 @@ export function Truthtrance({
                       <div key={answer}>{button(answer === 'unknown' ? 'I don’t know yet' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}</div>
                     ))}
                   </>
+                ) : w.question!.kind === 'traitorCall' ? (
+                  <TraitorDecisionAnswers game={g} act={act} busy={busy} />
                 ) : w.question!.kind === 'battlePlan' ? (
                   <>
                     <p className="notice">
@@ -331,6 +335,7 @@ export function Truthtrance({
                     Verified current facts
                   </option>
                   <option value="movement">Bind ground movement this turn</option>
+                  <option value="traitorCall">Bind this battle’s Traitor declaration</option>
                   <option value="shipment">
                     Bind a shipment from reserves
                   </option>
@@ -345,7 +350,13 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'movement' ? (
+              {kind === 'traitorCall' ? (
+                <>
+                  <p className="notice">Choose a still-unsubmitted voter in the current revealed battle. A definite answer binds that player’s original declaration, without reopening any sealed vote or promising that a later response will allow it.</p>
+                  {!g.truthTraitorTargets.includes(target) && <p>Reveal both plans and choose a voter who has not submitted their Traitor decision.</p>}
+                  {g.battle?.revealed && <p className="notice" aria-label="Public Traitor question preview">{truthQuestionText(question, leaderName, locationName)}</p>}
+                </>
+              ) : kind === 'movement' ? (
                 <>
                   <MovementClaimFields id={`${factId}-movement`} value={movement} onChange={setMovement} />
                   <p className="fine">One ground movement of the chosen physical minimum, from now until the respondent’s Movement turn ends. Shipment, HMS relocation and Ambassador relocation do not count. Owned Hajr, Ornithopter, native Kulon and paid Box recovery of a known discard can prepare a later move. No stays binding after earlier nonmatching moves.</p>
@@ -496,6 +507,7 @@ export function Truthtrance({
                 'Ask publicly',
                 { type: 'truthAsk', question },
                 (kind === 'movement' && (!validMovementClaim(movement) || !g.truthMovementTargets.includes(target))) ||
+                (kind === 'traitorCall' && !g.truthTraitorTargets.includes(target)) ||
                 (kind === 'shipment' &&
                   (invalidShipment || !shipmentAvailable)) ||
                   (kind === 'mixedShipment' &&

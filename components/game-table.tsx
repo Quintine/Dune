@@ -1,4 +1,5 @@
 'use client';
+import { TraitorDecisionPromises } from './traitor-decision-promises';
 import { MovementPromises } from './movement-promises';
 import { integerInputValue } from '../lib/integer-input';
 import { EcazSetup } from './ecaz-setup';
@@ -362,7 +363,7 @@ export function GameTable({
           : traitorBattle.attacker
       ]
     : undefined;
-  const canRevealTraitor = !!(
+  const canRevealTraitor = traitorBattle?.traitorCallChoices?.includes(true) ?? !!(
     traitorBattle?.traitorVoters.includes(me.id) &&
     traitorPlan &&
     !traitorPlan.kwisatz &&
@@ -372,7 +373,9 @@ export function GameTable({
       traitorBattle.cards.find((card) => card.id === traitorPlan.leader),
     )
   );
-  const noTraitorReason = traitorPlan?.kwisatz
+  const canDeclineTraitor = traitorBattle?.traitorCallChoices?.includes(false) ?? true;
+  const noTraitorReason = traitorBattle?.ownTraitorPromises?.some(promise => !promise.answer && !promise.fulfilled && !promise.released)
+    ? 'Your accepted Truthtrance answer requires declining this Traitor declaration.' : traitorPlan?.kwisatz
     ? 'Kwisatz Haderach prevents this leader from turning traitor.'
     : 'You do not hold the opposing leader as a traitor.';
   const [guildSecretEvent, setGuildSecretEvent] = useState('');
@@ -5307,6 +5310,7 @@ export function GameTable({
                         )}
                         {g.battle.traitorVoters.includes(me.id) && !g.battle.traitorSubmitted.includes(me.id) && (
                           <>
+                            <TraitorDecisionPromises game={g} />
                             {actionButton(
                               'Reveal traitor',
                               {
@@ -5321,7 +5325,7 @@ export function GameTable({
                             {actionButton('No traitor — resolve', {
                               type: 'traitorCall',
                               call: false,
-                            })}
+                            }, !canDeclineTraitor)}
                           </>
                         )}
                       </>
@@ -5719,6 +5723,7 @@ export function GameTable({
                       </p>
                       {!g.battle.traitorSubmitted.includes(me.id) ? (
                         <>
+                          <TraitorDecisionPromises game={g} />
                           {actionButton(
                             'Reveal ally’s opponent as traitor',
                             {
@@ -5733,7 +5738,7 @@ export function GameTable({
                           {actionButton('Decline traitor support', {
                             type: 'traitorCall',
                             call: false,
-                          })}
+                          }, !canDeclineTraitor)}
                         </>
                       ) : (
                         <p className="muted">

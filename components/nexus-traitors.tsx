@@ -165,7 +165,7 @@ function ReturnCards({ game, act, busy }: Props) {
                   className="shrink-0"
                   checked={checked}
                   disabled={
-                    blocked || (!checked && selected.length >= pending.count)
+                    blocked || (!checked && (!!choice.blocked || selected.length >= pending.count))
                   }
                   onChange={() =>
                     setSelected((old) =>
@@ -184,6 +184,7 @@ function ReturnCards({ game, act, busy }: Props) {
                   </span>
                 </span>
               </label>
+              {choice.blocked && <p className="notice">{choice.blocked}</p>}
               <LeaderInspector
                 identity={identity}
                 kind={dancers ? 'faceDancer' : 'traitor'}

@@ -2998,6 +2998,29 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
   },
   {
+    id: 'truthtrance-traitor-decision',
+    title: 'Truthtrance: this battle’s Traitor declaration',
+    category: 'Cards',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'Bind an unsubmitted native voter’s original declaration after both battle plans reveal.',
+    steps: [
+      'Choose Bind this battle’s Traitor declaration, then an actual voter who has not submitted. The public question names the current revealed battle. Already submitted Yes and No votes cannot be reopened; future unrevealed-leader questions remain separate.',
+      'Yes requires a legal Reveal against the opposing revealed leader; No requires decline. Native matching Traitor identity, Kwisatz protection and voter/beneficiary rules remain. Face Dancers do not count as ordinary Traitors. Only the respondent sees feasible answers. This current-choice prototype uses held matching eligibility; unknown future identity draws and broader future preparations remain unfinished.',
+      'The original declaration fulfills the answer before any later Harkonnen-ally Karama response or Nexus betrayal. A prevented effect does not make that completed declaration untruthful. The answer does not guarantee successful betrayal.',
+      'Harkonnen Cunning may still draw and return an ordinary legal identity. A live promised Reveal protects the matching card from voluntary return, with a private reason and other original choices available. No and already fulfilled declarations do not impose that custody restriction. The native pending return resumes after Truthtrance.',
+      'Persistent answer and vote notices use the same legal choices as the server. Four minimal policies honor the declared choice; strategy and calibration remain deferred. Current-decision composition is explicit software policy under the general current-turn rule, not a publisher Traitor-specific FAQ. Full game/module and final acceptance remain unfinished.',
+    ],
+    related: ['card-truthtrance', 'battle', 'card-karama', 'nexus-harkonnen-betrayal', 'implementation-checklist'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Original event/voter/beneficiary/opponent/leader binding, declaration-time fulfillment and native matching eligibility are connected. Harkonnen Cunning retains unfulfilled matching custody while completed declarations keep ordinary return rights.', evidence: ['game/traitor-decision-promises.ts', 'game/truthtrance.ts', 'game/engine.ts', 'game/nexus-traitor-options.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Public eligible targets, private definite answers, persistent vote notices, both native/ally vote panels and private blocked return reasons are connected. Busy callbacks do nothing and a stale blocked checkbox may be unchecked.', evidence: ['components/truthtrance.tsx', 'components/traitor-decision-promises.tsx', 'components/game-table.tsx', 'components/nexus-traitors.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Existing profiles consume private legal answers and declarations; the shared Nexus return policy excludes a forbidden identity. No strength tuning or general freeform interpretation is added.', evidence: ['game/bots.ts', 'game/nexus-traitor-options.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'Current declaration versus successful effect, native eligibility and Cunning custody boundaries are explicit, with wider future promises and final acceptance open.', evidence: ['docs/TRUTHTRANCE_TRAITOR_DECISIONS.md', 'docs/RULE_DECISIONS.md'] },
+      { area: 'Verification', status: 'Partial', detail: '13 files101/101, types/lint/build and six native engine/answer-callback/GameTable SSR journeys pass. Genuine26/72/77-action Basic/allied/Cunning sources earn original cards, alliances, payments, reveal and draw/return. Four profiles answer/vote legally. Unmatched-card staging is labelled; submitted-false and response/typing fixture feedback is repaired. Full future promises, combinations and final assurance remain open.', evidence: ['tests/traitor-decision-promises.test.ts', 'tests/fixture-truth-traitor-decision.ts', 'tests/fixture-truth-traitor-harkonnen.ts', 'tests/truth-traitor-decision-engine.test.ts', 'tests/truth-traitor-harkonnen-engine.test.ts', 'tests/truth-traitor-decision-controls.test.tsx', 'docs/TRUTHTRANCE_TRAITOR_DECISIONS.md'] },
+    ],
+  },
+  {
     id: 'truthtrance-movement',
     title: 'Truthtrance: ground-movement promises',
     category: 'Cards',
@@ -3113,7 +3136,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Cards',
     coverage: 'Partial',
     summary:
-      'Ask another player a public yes/no question. Verified facts, supported shipment and ground-movement promises, current-battle plan commitments, freeform answers and saving an unanswered card are supported; arbitrary promise enforcement is unfinished.',
+      'Ask another player a public yes/no question. Verified facts, supported shipment and ground-movement promises, current-battle plan and Traitor-declaration commitments, freeform answers and saving an unanswered card are supported; arbitrary promise enforcement is unfinished.',
     steps: [
       'Declare the card from your hand at any time after cards are dealt. Other players may declare a competing Truthtrance or pass; questions are then asked in storm order. The interrupted phase, response, or battle decision resumes afterward.',
       'Ask a game-related yes/no question. Named-card, selected-traitor, currently unrevealed Face Dancer and current personal-spice questions are checked by the server. Face Dancer and ordinary Traitor holdings stay distinct. AND and OR combine facts; only the combined answer is published, with no extra inventory details or separate answer for each clause.',
@@ -3123,6 +3146,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A saved definite answer resumes automatically: its public answer, binding promise and consumed card are recorded once, then the next queued question or interrupted action resumes. Private answer and preparation guidance is unavailable during this automatic recovery.',
       'Freeform questions also accept public Yes, No, or I don’t know answers. Their truthfulness relies on the players. AI answers structured facts and battle-plan questions; it cannot yet interpret freeform questions.',
       'An answer may bind actions or decisions during the current turn only. The answering player must do everything in their power to comply; if compliance later becomes impossible, the answer is no longer binding. Freeform promises are recorded in the table’s turn history. Arbitrary freeform enforcement and broader action commitments remain unfinished. Structured reserve-shipment promises include earlier bare Basic phases and unused active or waiting phase5 turns in base Basic/Advanced, including Guild; see the shipment promise guide. Ground-movement minima include earlier Basic phases with declared native families, owned Charity/ordinary revival preparation and exact normal/native auction funding, plus active or unused waiting phase5 turns before or after shipment. Yes binds a qualifying event while possible, and No remains binding through later Hajr/Ornithopter until actual turn end. See the separate ground-movement guide and its remaining preparation/timing boundaries.',
+      'After both plans reveal, a separate current-Traitor question binds an actual unsubmitted native voter to Reveal or decline. The declaration fulfills it before later Karama/betrayal prevention. Cunning cannot voluntarily return a matching card needed by a live Yes; completed declarations retain their native later custody rights. See the current-Traitor guide for scope.',
       'Battle-plan questions can bind dial values or ranges, named weapon/defense slots, a leader or either Cheap Hero, spice support and Kwisatz use. AND/OR combinations preserve legal alternatives. Only answers with a legal completion now or through available Ghola preparation are offered; a sealed plan fixes its answer. Previous battle commitments, Voice and prescience also apply. Private preparation guidance can play a required Ghola, then a compliant-plan example can fill the form for review before sealing.',
       'Named conditions include Reinforcements and Harass slot occupancy without making either a weapon/defense category. In clean classic Homeworlds, a source-aware legal completion can choose the native fee needed for a promised dial; review and filling retain that exact allocation. Active preview, answers/history and server records use the actual combat location name, including native Worlds, rather than treating every battle as an Arrakis territory.',
       'If a completed opposing power makes a battle answer impossible, it is publicly released. A pending Voice response resolves before that release. A player cannot voluntarily spend a promised battle card or give away necessary support spice to evade the answer. Feasibility includes available Ghola cards, eligible leader/Kwisatz or force revivals, and possible revival income. Each actual card can be spent only once. Other future card/power sequences and the full timing audit remain unfinished.',

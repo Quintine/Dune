@@ -1,5 +1,16 @@
 # Rule decision index
 
+## Current Traitor-declaration Truthtrance — 25 October 2026
+
+Compose the existing general current-turn rule with an actual unsubmitted
+revealed-battle voter. Bind its native public source; Yes/No constrains the
+original declaration, which fulfills before later Karama/betrayal changes its
+effect. Preserve native voter/beneficiary, physical matching, KH and submitted
+votes. Protect an unfulfilled Yes from a voluntary Harkonnen Cunning return;
+fulfilled declarations retain their ordinary later custody rules. This is
+explicit software composition, not a new publisher Traitor-specific FAQ.
+[Source, shared controls and native evidence](TRUTHTRANCE_TRAITOR_DECISIONS.md).
+
 ## Native Advanced and No-Field movement preparation — 25 October 2026
 
 Reuse the existing physical-movement/current-turn composition and printed

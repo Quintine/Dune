@@ -1,4 +1,7 @@
 import { ordinaryDiscardIncomeMatches } from './ordinary-discard-income';
+import { traitorDecisionChoices, bindTraitorDecisionPromise, settleTraitorDecisionPromises,
+  reconcileTraitorDecisionPromises as reconcileTraitorDecisions, validateTraitorDecisionPromise,
+  TraitorDecisionError, type TraitorDecisionContext, type TraitorDecisionPromise } from './traitor-decision-promises';
 import { gholaForcePreparations } from './ghola-force-preparation';
 import { earlyAuctionFunding } from './early-auction-funding';
 import { recordMovementDiscardKnowledge, knownMovementDiscards, recordMovementBoxKnowledge, recordMovementClaimKnowledge, clearMovementDiscardKnowledge, type MovementDiscardKnowledge } from './movement-discard-knowledge';
@@ -838,6 +841,7 @@ export type Battle = {
   plans: Record<string, Plan>;
   revealed: boolean;
   traitorCalls: Record<string, boolean>;
+  traitorDecisionPromises?: TraitorDecisionPromise[];
   /** Original native allowance, retained separately from the Nexus source. */
   nexusHarkonnenAllowance?: {
     provider: string;
@@ -1669,6 +1673,7 @@ export type Game = {
             | { kind: 'shipment'; index: number; value: ShipmentPromise }
             | { kind: 'movement'; index: number; value: MovementPromise }
             | { kind: 'battle'; index: number; value: BattlePromise }
+            | { kind: 'traitor'; index: number; value: TraitorDecisionPromise }
             | null;
           parentSignature: string;
         }
@@ -3524,7 +3529,8 @@ function nexusTraitorParentSignature(g: Game, event: string) {
   const resume = { response: context.response ?? null, decision: context.decision ?? null,
     pendingKarama: 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] ?? null : null,
     phaseOpening: 'phaseOpening' in context ? context.phaseOpening as Game['phaseOpening'] ?? null : null };
-  const battle = g.battle ? Object.fromEntries(Object.entries(g.battle).filter(([key]) => key !== 'truthPromises')) : null;
+  const battle = g.battle ? Object.fromEntries(Object.entries(g.battle).filter(([key]) =>
+    key !== 'truthPromises' && key !== 'traitorDecisionPromises')) : null;
   return JSON.stringify({ event, turn: g.turn, phase: g.phase, status: g.status, active: g.active,
     order: g.order, ready: g.ready, battle, nullentropy: g.pendingNullentropy ?? null,
     controls: nullentropyParentSignature(g, resume, event) });
@@ -3629,6 +3635,8 @@ function finishNexusTraitorReturn(g: Game, p: Player, action: Action) {
   requireRule(pending?.owner === p.id && action.event === pending.event &&
     Object.keys(action).sort().join(',') === 'cards,event,type' && Array.isArray(action.cards),
   'This Nexus return is stale or belongs to another player.');
+  const promiseBlock = traitorReturnPromiseBlock(g, p, action.cards as string[]);
+  requireRule(!promiseBlock, promiseBlock ?? 'Preserve your accepted Traitor declaration.');
   const result = nexusRule(() => finishNexusTraitorExchange(nexusTraitorSnapshot(g), nexusTraitorUniverse(g),
     pending, action.cards as string[], random));
   applyNexusTraitorSnapshot(g, result.state);
@@ -3641,11 +3649,16 @@ function projectedNexusTraitors(g: Game, id: string) {
   if (!g.nexusCards?.cards) return null;
   const pending = pendingNexusTraitors(g);
   const owner = pending ? getPlayer(g, pending.owner) : null;
+  const choices: {id:string;revealed:boolean;drawn:boolean;blocked?:string}[] = !pending || pending.owner !== id ? []
+    : owner!.faction === 'tleilaxu'
+      ? owner!.faceDancers!.filter(card => !card.revealed).map(card => ({id:card.leader, revealed:card.revealed, drawn:pending.drawn.includes(card.leader)}))
+      : owner!.traitors.map(card => {
+        const blocked = traitorReturnPromiseBlock(g, owner!, [card]);
+        return {id:card, revealed:false, drawn:pending.drawn.includes(card), ...(blocked ? {blocked} : {})};
+      });
   return { offer: nexusTraitorOffer(g, id), pending: pending ? {
     event: pending.event, owner: pending.owner, mode: pending.mode, count: pending.drawn.length,
-    choices: pending.owner !== id ? [] : (owner!.faction === 'tleilaxu'
-      ? owner!.faceDancers!.filter(card => !card.revealed).map(card => ({id:card.leader, revealed:card.revealed, drawn:pending.drawn.includes(card.leader)}))
-      : owner!.traitors.map(card => ({id:card, revealed:false, drawn:pending.drawn.includes(card)}))),
+    choices,
   } : null };
 }
 
@@ -6179,6 +6192,9 @@ function finishTruthtranceAnswer(g: Game) {
   if (record.question.kind === 'movement') promise = {
     kind: 'movement', index: g.movementPromises!.length - 1, value: g.movementPromises!.at(-1)!,
   };
+  else if (record.question.kind === 'traitorCall') promise = {
+    kind: 'traitor', index: g.battle!.traitorDecisionPromises!.length - 1, value: g.battle!.traitorDecisionPromises!.at(-1)!,
+  };
   else if (record.question.kind === 'shipment' || record.question.kind === 'mixedShipment')
     promise = {
       kind: 'shipment',
@@ -7066,15 +7082,16 @@ function treacheryDiscardIntegrity(g: Game) {
       !g.battle.revealed &&
       !g.battle.plans[q.target];
     const expectedMovement = q.kind === 'movement';
-    if (expectedShipment || expectedBattle || expectedMovement) {
-      const actual = expectedMovement ? g.movementPromises : expectedShipment
+    const expectedTraitor = q.kind === 'traitorCall';
+    if (expectedShipment || expectedBattle || expectedMovement || expectedTraitor) {
+      const actual = expectedTraitor ? g.battle?.traitorDecisionPromises : expectedMovement ? g.movementPromises : expectedShipment
         ? g.shipmentPromises
         : g.battle?.truthPromises;
       requireRule(
         promise &&
           promise.value &&
           typeof promise.value === 'object' &&
-          promise.kind === (expectedMovement ? 'movement' : expectedShipment ? 'shipment' : 'battle') &&
+          promise.kind === (expectedTraitor ? 'traitor' : expectedMovement ? 'movement' : expectedShipment ? 'shipment' : 'battle') &&
           Array.isArray(actual) &&
           Number.isSafeInteger(promise.index) &&
           promise.index >= 0 &&
@@ -7087,7 +7104,11 @@ function treacheryDiscardIntegrity(g: Game) {
           !promise.value.released,
         'The completed Truthtrance is missing its newly bound promise.',
       );
-      if (promise.kind === 'movement')
+      if (promise.kind === 'traitor')
+        requireRule(q.kind === 'traitorCall' && promise.value.battle === q.battle &&
+          promise.value.turn === g.turn && !promise.value.fulfilled,
+        'The completed Truthtrance Traitor promise differs from its original decision.');
+      else if (promise.kind === 'movement')
         requireRule(q.kind === 'movement' && promise.value.turn === g.turn && !promise.value.fulfilled &&
           promise.value.territory === q.territory && promise.value.minimum === q.minimum,
         'The completed Truthtrance ground-movement promise differs from its answer.');
@@ -24740,6 +24761,7 @@ function findReachableBattlePlan(
 function shipmentPromiseIntegrity(g: Game) {
   try {
     validateSavedTruthtrance(g);
+    traitorTruthIntegrity(g);
   } catch (error) {
     if (error instanceof TruthError) throw new RuleError(error.message);
     throw error;
@@ -25796,6 +25818,82 @@ function traitorVoters(g: Game, b: Battle) {
 function traitorBeneficiary(g: Game, b: Battle, id: string) {
   if (b.ecazOccupy?.lead && [b.ecazOccupy.ecaz, b.ecazOccupy.ally].includes(id)) return b.ecazOccupy.lead;
   return [b.attacker, b.defender].includes(id) ? id : getPlayer(g, id).ally;
+}
+/** One native eligibility quote for declarations and private Truthtrance answers. */
+function traitorCallBlock(g: Game, b: Battle, id: string, held = getPlayer(g, id).traitors): string | null {
+  const other = b.attacker === traitorBeneficiary(g, b, id) ? b.defender : b.attacker;
+  if (b.plans[other].kwisatz) return 'Kwisatz Haderach prevents this leader from turning traitor.';
+  return matchingTraitor(held, b.plans[other].leader, cardOf(getPlayer(g, other), b.plans[other].leader))
+    ? null : 'You do not hold that leader as a traitor.';
+}
+function traitorTruthContext(g: Game, player: string, held?: string[]): TraitorDecisionContext | null {
+  const b = g.battle;
+  if (g.status !== 'playing' || g.phase !== 6 || !b?.revealed || !b.event || !traitorVoters(g, b).includes(player)) return null;
+  const beneficiary = traitorBeneficiary(g, b, player);
+  if (!beneficiary) return null;
+  const target = b.attacker === beneficiary ? b.defender : b.attacker;
+  if (!b.plans[target]) return null;
+  return { turn: g.turn, battle: b.event, player, beneficiary, target, leader: b.plans[target].leader,
+    canReveal: !traitorCallBlock(g, b, player, held),
+    ...(b.traitorCalls[player] === undefined ? {} : { submitted: b.traitorCalls[player] }) };
+}
+function traitorDecisionRule<T>(operation: () => T): T {
+  try { return operation(); }
+  catch (error) { if (error instanceof TraitorDecisionError) throw new RuleError(error.message); throw error; }
+}
+function traitorTruthAnswers(g: Game, p: Player): TruthAnswer[] {
+  const context = traitorTruthContext(g, p.id);
+  return context ? traitorDecisionRule(() => traitorDecisionChoices(context, g.battle?.traitorDecisionPromises ?? []))
+    .map(call => call ? 'yes' as const : 'no' as const) : [];
+}
+function bindTraitorTruth(g: Game, p: Player, answer: boolean, asker: string) {
+  const context = traitorTruthContext(g, p.id);
+  requireRule(context, 'Retain the current unsubmitted Traitor decision.');
+  g.battle!.traitorDecisionPromises = traitorDecisionRule(() =>
+    bindTraitorDecisionPromise(context, g.battle!.traitorDecisionPromises ?? [], asker, answer));
+}
+function traitorTruthIntegrity(g: Game) {
+  const b = g.battle, promises = b?.traitorDecisionPromises;
+  if (promises !== undefined) {
+    requireRule(Array.isArray(promises) && promises.every(validateTraitorDecisionPromise), 'Invalid Traitor decision promises.');
+    for (const promise of promises) {
+      const context = traitorTruthContext(g, promise.player);
+      requireRule(context && promise.turn === context.turn && promise.battle === context.battle &&
+        promise.beneficiary === context.beneficiary && promise.target === context.target && promise.leader === context.leader &&
+        g.players.some(p => p.id === promise.asker && p.id !== promise.player) &&
+        !(promise.fulfilled && promise.released) &&
+        (promise.fulfilled || promise.released || context.submitted === undefined),
+      'The Traitor promise lost its original public battle/voter source.');
+    }
+  }
+  const question = g.truthtrance?.question;
+  if (question?.kind === 'traitorCall') {
+    const context = traitorTruthContext(g, question.target);
+    requireRule(context && context.submitted === undefined && context.battle === question.battle,
+      'This Truthtrance requires the original unsubmitted native Traitor voter.');
+  }
+}
+function reconcileTraitorTruth(g: Game, actor?: string, action?: Action) {
+  const b = g.battle;
+  if (!b?.traitorDecisionPromises?.length) return;
+  for (const player of new Set(b.traitorDecisionPromises.map(promise => promise.player))) {
+    const context = traitorTruthContext(g, player);
+    if (!context || context.submitted !== undefined) continue;
+    const old: TraitorDecisionPromise[] = b.traitorDecisionPromises;
+    const next: TraitorDecisionPromise[] = traitorDecisionRule(() => reconcileTraitorDecisions(context, old));
+    if (next.some((promise, index) => promise.released && !old[index].released)) {
+      requireRule(actor !== player || action?.type === 'passResponse',
+        'Your action would remove the legal Traitor declaration required by Truthtrance.');
+      log(g, `${getPlayer(g, player).name}'s Truthtrance Traitor declaration promise is released because its original Reveal is no longer possible.`);
+    }
+    b.traitorDecisionPromises = next;
+  }
+}
+function traitorReturnPromiseBlock(g: Game, p: Player, returned: readonly string[]): string | null {
+  const promises = g.battle?.traitorDecisionPromises;
+  if (!promises?.some(promise => promise.player === p.id && promise.answer && !promise.fulfilled && !promise.released)) return null;
+  const context = traitorTruthContext(g, p.id, p.traitors.filter(card => !returned.includes(card)));
+  return context && !context.canReveal ? 'Keep the identity needed by your accepted Traitor declaration; return another card.' : null;
 }
 function pendingSmugglerBattle(g: Game): SmugglerBattleReceipt | null {
   const b = g.battle!;
@@ -32965,6 +33063,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   }
   const g = applyActionInner(state, id, action);
   reconcileGroundMovementPromises(g, id, action, state.phase);
+  reconcileTraitorTruth(g, id, action);
   harkonnenNexusBetrayalIntegrity(g);
   if (g.pendingNexusHarkonnenBetrayal) return g;
   ixianNexusBetrayalIntegrity(g);
@@ -33268,6 +33367,7 @@ function settleAutomaticContinuations(g: Game) {
     reconcileBattlePromises(g);
     reconcileShipmentPromises(g);
     reconcileGroundMovementPromises(g);
+    reconcileTraitorTruth(g);
     requireRule(
       JSON.stringify(g) !== before,
       'Automatic response continuation made no progress.',
@@ -33362,6 +33462,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   reconcileBattlePromises(g);
   reconcileShipmentPromises(g);
   reconcileGroundMovementPromises(g);
+  reconcileTraitorTruth(g);
   settleAutomaticContinuations(g);
   observeOccupation(g);
   discoveryIntegrity(g);
@@ -33596,6 +33697,8 @@ function applyActionInner(
         bindShipment: bindShipmentTruth,
         movementAnswers: movementTruthAnswers,
         bindMovement: bindMovementTruth,
+        traitorAnswers: traitorTruthAnswers,
+        bindTraitor: bindTraitorTruth,
         battleAnswers: battleTruthAnswers,
         bindBattle: bindBattleTruth,
         cardBlock: transferCardBlock,
@@ -33603,7 +33706,7 @@ function applyActionInner(
     )
       return g;
   } catch (error) {
-    if (error instanceof TruthError || error instanceof PlanClaimError || error instanceof MovementClaimError)
+    if (error instanceof TruthError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof TraitorDecisionError)
       throw new RuleError(error.message);
     throw error;
   }
@@ -37168,22 +37271,13 @@ function applyActionInner(
       'Traitor decision is not available.',
     );
     requireRule(typeof action.call === 'boolean', 'Choose reveal or decline.');
+    const context = traitorTruthContext(g, id);
+    if (context && b.traitorDecisionPromises)
+      b.traitorDecisionPromises = traitorDecisionRule(() => settleTraitorDecisionPromises(context, b.traitorDecisionPromises!, action.call as boolean));
     if (g.nexusCards?.cards || b.ecazOccupy) ensureTraitorDeclarations(g);
     if (action.call) {
-      const other =
-        b.attacker === traitorBeneficiary(g, b, id) ? b.defender : b.attacker;
-      requireRule(
-        !b.plans[other].kwisatz,
-        'Kwisatz Haderach prevents this leader from turning traitor.',
-      );
-      requireRule(
-        matchingTraitor(
-          p.traitors,
-          b.plans[other].leader,
-          cardOf(getPlayer(g, other), b.plans[other].leader),
-        ),
-        'You do not hold that leader as a traitor.',
-      );
+      const blocked = traitorCallBlock(g, b, id);
+      requireRule(!blocked, blocked ?? 'This Traitor declaration is unavailable.');
     }
     if (action.call && b.traitorDeclarationVersion)
       b.traitorDeclarations![id] = nexusRule(() => createTraitorDeclaration(traitorDeclarationContext(g), id));
@@ -37491,6 +37585,9 @@ export function viewGame(state: Game, id: string) {
     ...(g.advanced&&g.decision?.kind==='advisor'&&g.decision.player===id
       ? {spiritualAdvisorChoices:spiritualAdvisorChoices(g,id)} : {}),
     truthMovementTargets: g.players.filter(p => movementPromiseTargetAvailable(g, p.id)).map(p => p.id),
+    truthTraitorTargets: g.players.filter(p => { const context = traitorTruthContext(g, p.id); return context && context.submitted === undefined; }).map(p => p.id),
+    truthTraitorAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.kind === 'traitorCall' &&
+      g.truthtrance.question.target === id ? traitorTruthAnswers(g, me) : null,
     truthMovementAnswers: g.truthtrance?.stage === 'answer' &&
       g.truthtrance.question?.kind === 'movement' && g.truthtrance.question.target === id
       ? movementTruthAnswers(g, me, g.truthtrance.question) : null,
@@ -38659,6 +38756,9 @@ export function viewGame(state: Game, id: string) {
               ? { [id]: b.plans[id] }
               : {},
           traitorSubmitted: Object.keys(b.traitorCalls),
+          traitorCallChoices: (() => { const context = traitorTruthContext(g, id); return context
+            ? traitorDecisionRule(() => traitorDecisionChoices(context, b.traitorDecisionPromises ?? [])) : null; })(),
+          ownTraitorPromises: (b.traitorDecisionPromises ?? []).filter(promise => promise.player === id),
           traitorVoters: traitorVoters(g, b),
           preparation: b.preparation && g.homeworldOccupationPreview && b.preparation.kind === 'voice'
             ? { ...b.preparation, blocked: homeworldRule(() => quoteOccupiedHomeworldVoice(g,

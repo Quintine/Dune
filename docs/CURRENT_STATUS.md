@@ -16,6 +16,32 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Current Traitor-declaration Truthtrance — 25 October. Prototyped / Partial.**
+A structured revealed-battle question now binds an actual unsubmitted voter to
+Reveal or decline. Native matching/KH/voter/beneficiary rules supply the private
+choices. Fulfill the original declaration before later Karama/betrayal changes
+its effect; submitted votes cannot be reopened. Harkonnen Cunning keeps the
+identity needed by a live Yes, with other returns available, while fulfilled
+calls retain later native custody rights. Shared answer/vote controls, original
+discard/return parents and minimal policies are connected.
+[Source, current-choice meaning and limits](TRUTHTRANCE_TRAITOR_DECISIONS.md).
+
+Disjoint pure/native-fixture work, bounded source review and root integration
+pass **13 files101/101**, types/lint/build and six native engine/answer-callback/
+GameTable SSR journeys. Genuine26-action Basic,72-action allied Harkonnen and77-
+action Cunning sources earn original cards/Traitors, real alliances, payments,
+plan reveal and native draw/return. Basic Yes/No actually constrain declarations;
+allied prevention leaves fulfillment intact. Pending-return Truthtrance keeps
+its original parent, blocks only the required identity, and later completed
+calls may return it. All four minimal policies answer/declare legally. One
+unmatched case explicitly exchanges conserved original Traitor identities.
+Feedback repairs submitted-false semantics and a fixture that stopped before
+mandatory response passes; final types make reconciliation/fixture narrowing
+explicit, and sealed-vote refusal is checked at the exact queued request.
+No strategic tuning or full future-promise/module/mode acceptance follows.
+Final assurance/browser/deployed remain open; no saved-room/D1/server/reset/
+restart/deployment operation.
+
 **Native Advanced and No-Field movement promises — 25 October. Prototyped / Partial.**
 Declared native Advanced families now share phase5 movement questions. Owned
 No-Field shipment, reserve-capped reveal, concealed positioning and mixed moves
