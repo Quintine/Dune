@@ -70,42 +70,68 @@ The unresolved cases were reported to the coordinator before implementation deci
 
 ## Residual Poison and two inspected commitments
 
-The following is a reasoned counterexample from the existing preparation rules,
-not a reported executed gameplay regression. In Advanced play, CHOAM has four
-ordinary forces in the battle, no spice, one living usable leader, a projectile,
-Ghola and a real Karama, and its cash-in power is unused. Suppose native
-Prescience fixed the dial at three and Cunning fixed the projectile. Before a
-leader death, both answers are reachable: cashing Ghola supplies three spice,
-enough to support the dial, while the living leader permits the projectile.
+**Selected provisional composition — 26 October 2026.** The 14 October
+choose-recommended authority supersedes the earlier blanket product refusal.
+The printed Residual Poison window remains available after two completed
+nonleader Cunning inspections, before either combatant commits a leader.
+Active interactions and exact card commitments still resolve as required.
+This does not make leader-valued inspection commitments poisonable.
 
-If Residual Poison kills that last leader, each answer can remain feasible by
-itself. Keeping the projectile permits Ghola revival with a lower dial. Keeping
-the dial permits cash-in while omitting the weapon. Keeping both cannot spend
-the same Ghola both on revival and on funding, nor cash the committed projectile.
-There is therefore no generally valid assumption that an earlier answer, a later
-answer, or all individually feasible answers identify the uniquely correct
-surviving set. The retrieved publisher rules do not select between these sets.
+Resolve the one actual random eligible leader death and discard first. Use the
+same existing reconciliation already used after canceled Sardaukar enhancement:
 
-The coordinator has asked whether the affected player should choose the retained
-commitment, the earlier commitment should take priority, or this combination
-should await an official ruling. The answer is pending. No such priority is
-implemented by this document. Until resolved, the runtime uses an explicit
-development boundary: Residual Poison is unavailable after an answered Cunning
-inspection. This guard depends on the publicly played mode and completion stage,
-not the opponent's hidden cards, spice, or whether a private feasibility search
-happens to find a conflict. It is not a printed prohibition. The independent
-leader-commitment restriction still applies, and this boundary does not prohibit
-the single-element Secret Ally continuation.
+1. Test the original native nonleader answer without obsolete extra bindings
+   or Truthtrance. Keep it if a legal prepared plan can still honor it.
+2. Test the extra Cunning answer jointly with any retained native answer. If
+   no legal plan honors both, reopen the extra answer's original field.
+3. If the native answer itself is impossible, reopen both current bindings.
+   Answer its original field first, then the extra field through the original
+   saved protocol, so the old extra binding cannot constrain the renewed native
+   choice.
+4. Reconcile Truthtrance only after retiring the impossible inspection bindings.
+   Keep earlier private observations and the spent Nexus receipt; re-answering
+   changes neither field selection nor card cost. Never redraw the victim,
+   restore a dead leader or repeat the discard to save a commitment.
 
-Any later implementation should test complete legal continuations with the
-proposed retired bindings removed on private copies. Testing one binding while
-another impossible binding remains can falsely release a valid dial. Likewise,
-reconciling Truthtrance before retiring an impossible inspection can wrongly
-release an otherwise feasible promise. Preserve historical disclosures and the
-consumed Nexus receipt separately from active bindings; a renewed answer is to
-the original field and does not consume another card. Multiple incomparable
-maximal surviving sets must not acquire an unexplained software tie-break.
+The ordered pair reopening when native becomes impossible applies to Residual
+Poison, including its original discard continuation. Sardaukar cancellation
+retains its existing still-feasible other answer. The native-first priority is
+an explicit online interpretation, not a retrieved publisher choice among
+incomparable surviving answer sets. The earlier source
+question is not a separately answered publisher ruling. Ordinary single-element
+Secret Ally and native inspection paths continue to use their existing rules.
 
-The focused [public-guard regression](../tests/nexus-residual-ambiguity.test.ts)
-covers the declared implementation boundary and hidden-state independence. It
-does not claim to execute or resolve the counterexample above.
+A resource-exclusive example motivates the joint check: Advanced CHOAM can have
+four ordinary battle forces, no spice, one usable living leader, a projectile,
+Ghola and the one Karama needed to activate its unused cash-in power. Native
+dial3 and Cunning projectile may both be reachable before death by selling
+Ghola for support. After that last usable leader dies, Ghola cannot both be
+sold for support and revive a leader for the projectile. Keeping native dial3
+permits an unarmed plan after cash-in; keeping the projectile alone can permit
+revival with a lower dial. The special-activation Karama is not a second freely
+saleable funding card. The controlled regression must execute the real actions
+and check reachable continuations rather than treating this prose as proof.
+
+[Controlled reconciliation evidence](../tests/nexus-residual-ambiguity.test.ts)
+is separate from [the genuine acquisition/Nexus/battle source](../tests/fixture-residual-cunning.ts)
+and [its runtime cases](../tests/residual-cunning-engine.test.ts).
+Complete combinations and final assurance remain open.
+
+## Focused prototype evidence — 26 October 2026
+
+Frozen17-file131/131, types/lint/build and five engine/GameTable SSR journeys
+pass. Genuine public Basic108/Advanced120-action sources really buy Residual1,
+draw the original Atreides Nexus, ship Richese1 into Arrakeen and answer both
+fields. The actual random death preserves both feasible answers; each battle
+finishes legally. Separate controlled Advanced resource/leader seams execute
+both resource-exclusive priorities and impossible-native ordered re-answers,
+including actual cash-in, Ghola and battle. All45 physical Treachery and12 Nexus
+cards remain. Seven native cases, four controlled engine cases and six rendering
+supplements include four-profile legal participation and existing cancellation
+compatibility. Controlled setup is not original acquisition proof.
+
+Report/logs: `/home/quintine/.local/share/dune/checkpoints/20261026-residual-cunning-proof-v3/`;
+journeys/HTML: adjacent `20261026-residual-cunning-runtime/`.
+No saved-room/D1/server, deployment/restart or recovery operation. No DOM/
+hydration, browser/mobile or clicked-control acceptance; complete combinations,
+full rules and final assurance remain due.

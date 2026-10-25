@@ -6,6 +6,19 @@ The Advanced Harkonnen exclusion below is superseded by the
 [18 October captive-death composition](#native-captive-death--18-october-2026).
 Earlier timings, test totals and unimplemented-card statements remain historical.
 
+## Answered Cunning follow-up — 26 October 2026
+
+The pre-leader window now remains available after two answered nonleader
+Cunning inspections. Under the 14 October choose-recommended authority, use
+the existing native-first reconciliation after the single actual death:
+preserve an independently possible native answer, then require the extra
+answer to permit the same legal plan. Reopen only required original fields;
+retain private observations and the original spent Nexus. No victim redraw,
+second death/discard or new card payment occurs. Leader commitments and other
+active interactions remain guarded. The priority is a provisional online
+composition, not a publisher tie-break among incompatible surviving sets.
+[Canonical inspection composition](NEXUS_ATREIDES_RULES.md#residual-poison-and-two-inspected-commitments).
+
 ## Evidence and confirmed effect
 
 The publisher card face says **“Play on your opponent before choosing leaders in a battle.”** It then randomly sends one available leader of that faction to the Tanks, specifies **“No spice is collected for it”**, and requires disposal after use. The enlarged physical face was visually read at `/tmp/dune-rules/choam-residual-reading.png`, from the [photograph of the actual components](https://cdn.anyfinder.eu/assets/QsUJtVktEC87xwK08oLlwnKyaozUWfuaLzG0LFEn67ENEEVgNrDGoITy3608Dqe7), linked by the [product gallery](https://www.tabletopfinder.eu/en/boardgame/32692/dune-choam-richese). The photographer's printing/date is unverified; the evidence is the visible publisher text, not retailer commentary. Photograph SHA256: `9c1d3e65fa33489e7675055ed1fc932fefcb79f6053ee365ddee6737ae10b81f`.

@@ -9020,7 +9020,7 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.decision = next.resume.decision;
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
-    reconcileChangedBattleInspections(g, 'the leader death');
+    reconcileChangedBattleInspections(g, 'the leader death', true);
     const battle = g.battle!;
     if (battle.preLeader && !battle.preLeader.closed)
       battle.preLeader.ready = battle.preLeader.ready.filter(id => id !== next.player);
@@ -24804,8 +24804,6 @@ function validateResidualPoison(
       ![b.attacker, b.defender].some(owner => committedPlanElements(b, owner).some(element => element.field === 'leader')),
     'Residual Poison must be played before either combatant commits a leader.',
   );
-  requireRule(!(b.nexusInspection?.mode === 'cunning' && b.nexusInspection.stage === 'answered'),
-    'Residual Poison after two inspected elements awaits the ruling for incompatible surviving commitments.');
   requireRule(
     !g.truthtrance && !g.response && !g.decision && !g.phaseOpening,
     'Resolve the current interaction before playing Residual Poison.',
@@ -24887,12 +24885,15 @@ function playResidualPoison(
       return;
     }
   }
-  reconcileChangedBattleInspections(g, 'the leader death');
+  reconcileChangedBattleInspections(g, 'the leader death', true);
   if (b.preLeader && !b.preLeader.closed)
     b.preLeader.ready = b.preLeader.ready.filter((id) => id !== p.id);
 }
-function reconcileChangedBattleInspections(g: Game, cause: string) {
+function reconcileChangedBattleInspections(g: Game, cause: string, renewExtraWithNative = false) {
   const b = g.battle!;
+  // Selected provisional priority: preserve an independently feasible native
+  // answer first, then require the extra answer to be jointly feasible. This
+  // is also used after Residual Poison; never redraw its real leader death.
   // Retire an inspection made impossible by the opposing effect. Testing on
   // a private copy without Truthtrance avoids releasing a still-feasible truth
   // answer solely because an obsolete inspection was left in the trial.
@@ -24913,6 +24914,11 @@ function reconcileChangedBattleInspections(g: Game, cause: string) {
       if (b.nexusInspection?.mode === 'cunning')
         b.nexusInspection = nexusRule(() => reopenNexusNative(battleInspectionContext(g), b.nexusInspection!));
       delete insight.value;
+      // An old extra answer must not constrain the renewed native choice.
+      // Keep its observation history, then answer it after the native field.
+      if (renewExtraWithNative && b.nexusInspection?.mode === 'cunning' &&
+        b.nexusInspection.stage === 'answered' && b.nexusInspection.field !== 'leader')
+        b.nexusInspection = nexusRule(() => reopenNexusInspection(battleInspectionContext(g), b.nexusInspection!));
       b.preparation = {
         kind: 'prescienceAnswer',
         owner: answering.id,

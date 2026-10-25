@@ -37,6 +37,14 @@ export function ResidualPoison({ game, act, busy }: PreparationProps) {
           becomes public and captivity ends; other captives stay concealed.
           This uses a provisional interpretation of ordinary Tanks handling.
         </p>}
+        <p className="fine" aria-label="Provisional inspection priority">
+          Provisional inspection priority: keep the original nonleader Atreides
+          answer if it can still be honored on its own. Both answers must permit
+          one legal Battle Plan, so an extra Cunning answer may need to be
+          answered again for the same field after a leader dies. If the original
+          answer becomes impossible, answer its original field again first.
+          This spends no additional Nexus card and does not redraw the victim.
+        </p>
         <CardRules card={poison.card} />
         <CardInspector card={poison.card} />
         {reason && (

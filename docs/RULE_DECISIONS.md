@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Residual Poison after answered Cunning — 26 October 2026
+
+Under the 14 October choose-recommended authority, remove the product refusal
+for two completed nonleader inspections. Resolve the single actual random death
+and discard, then use the existing native-first reconciliation: preserve an
+independently feasible original native answer, test the extra answer jointly,
+and reopen only required original fields. An impossible native answer reopens
+first. Keep private observation history and the original spent Nexus; do not
+redraw the victim or replay its death. This software priority is provisional,
+not a publisher choice among competing surviving commitments. The printed
+pre-leader restriction and other active-interaction/card commitments still apply.
+[Current composition](NEXUS_ATREIDES_RULES.md#residual-poison-and-two-inspected-commitments).
+
 ## Box recovery of a purchased shipment cost — 26 October 2026
 
 Under the 14 October choose-recommended authority, extend the selected Semuta

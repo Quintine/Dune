@@ -866,6 +866,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'An available leader must be alive and eligible for this battle territory. A leader used in this same territory remains eligible; one used elsewhere does not. Cheap Hero cards are not leader discs. The card is discarded once, the victim enters the Tanks, and no spice bounty or battle victory is awarded. Force counts and ordinary battle preparation continue.',
       'In games with Richese seated, both combatants finish a shared preparation opportunity before submitting plans or a leader-valued Prescience answer. This application timing procedure appears independently of both hands and does not reveal who holds a preparation card. Active responses, decisions and Truthtrance resolve first. A completed readiness step does not itself choose a leader.',
       'A foreign ghola retains its recorded revival custody when killed. Duke Vidal is the same physical disc with its death history retained, and his temporary control ends. An involuntary death releases impossible battle promises and can require a previously answered non-leader Prescience question to be answered again; it never redraws the victim to preserve an answer.',
+      'Two completed nonleader Cunning inspections do not block this pre-leader card window. The provisional priority keeps a still-possible original native answer first, then requires the extra answer to fit the same legal plan. An impossible answer reopens its original field without another Nexus card or another leader death.',
       'Available Harkonnen captives are included. If selected, the captive suffers one public death and captivity ends; unselected living captives stay concealed. This ordinary Tanks interpretation is provisional, distinct from face-down execution for two spice. Foreign Ghola revival custody remains; the shared Duke returns dead and set aside. Legacy battles without a saved preparation event are not retroactively reopened.',
       'Saved battle events bind readiness and card actions. Reconnect preserves the opportunity and a committed death. Competing actions use room versions: a stale request cannot repeat the discard or death and must refresh before retrying. All four AI profiles use only their entitled card availability and opponent information.',
     ],
@@ -880,7 +881,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Pre-leader timing, uniform eligible-disc selection, automatic death, single discard, custody, promise reconciliation and exact event validation are integrated. Advanced Harkonnen now uses provisional ordinary public captive death; wider combinations remain incomplete.',
+          'Pre-leader timing, uniform eligible-disc selection, automatic death, single discard, custody, promise reconciliation and exact event validation are integrated. Answered nonleader Cunning uses provisional native-first reconciliation; Advanced Harkonnen uses provisional ordinary public captive death. Wider combinations remain incomplete.',
       },
       {
         area: 'Player controls',
@@ -904,7 +905,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Current 74-case affected batch, types/lint/build and two real Advanced cache2/capture/battle programmes cover native/captive death, with four finite legal-policy continuations. Controlled Ghola/Duke/last-native/Semuta probes are separate. Historical persisted evidence does not certify final assurance or full expansion games.',
+          'Focused pure/engine/control/bot cases cover native/captive death and the pre-leader timing. Genuine Basic/Advanced cache acquisition, Nexus Cunning and battle sources cover two surviving disclosures. Controlled resource-exclusive and impossible-answer cases separately exercise native-first re-answer priority. Historical persisted evidence does not certify final assurance or complete expansion games.',
         evidence: [
           'tests/residual-poison.test.ts',
           'tests/residual-poison-engine.test.ts',
@@ -912,6 +913,11 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/residual-poison-bots.test.ts',
           'tests/residual-poison-custody.test.ts',
           'tests/residual-poison-capture-engine.test.ts',
+          'tests/residual-cunning-engine.test.ts',
+          'tests/residual-cunning-controls.test.ts',
+          'tests/nexus-residual-ambiguity.test.ts',
+          'tests/fixture-residual-cunning.ts',
+          'tests/fixture-residual-cunning-priority.ts',
           'tests/fixture-residual-poison-capture.ts',
           'docs/RICHESE_RESIDUAL_POISON_ENGINE_AUDIT.md',
           'tests/residual-poison-recovery.test.ts',
@@ -5390,7 +5396,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Atreides Cunning adds a second, different opposing plan element after the first native answer. Both remain binding. Use it in your own battle before sealing your plan; Karama may cancel the extra attempt while preserving the first disclosure.',
       'With Atreides absent, Secret Ally inspects one opposing element in your battle. A sealed plan supplies only that selected answer automatically. Otherwise the opponent chooses an answer that permits a legal plan. Other players receive no private answer.',
       'The No-Field restriction names Atreides, so Cunning cannot inspect that dial. A non-Atreides Secret Ally holder may request it without learning the token denomination or other plan elements.',
-      'Residual Poison cannot follow a committed leader. If it makes a single nonleader inspection impossible, the same field is answered again and the earlier observation remains private history. Residual Poison after two completed Cunning inspections awaits a ruling on incompatible surviving commitments.',
+      'Residual Poison cannot follow a committed leader. After its actual random death, keep the original native nonleader answer if it can still be honored. The extra Cunning answer must permit the same legal plan and may need an answer to that original field again. If the native answer is impossible, reopen its original field first. Earlier private observations and the spent Nexus stay recorded. This native-first priority is provisional; the victim is never redrawn to preserve an answer.',
       'Harkonnen Cunning draws one Traitor Card before you choose one held card to return. It can pause another action, including a response or decision. Finish the private return before that action continues; active Truthtrance takes priority. Returning an identity already declared as a traitor does not cancel that declaration.',
       'With Harkonnen absent, Secret Ally draws two Traitor Cards during Mentat Pause, then you choose exactly two distinct held identities to return. Newly drawn cards may be returned. Tleilaxu receives Face Dancers and can return newly drawn or existing unrevealed dancers; previously revealed dancers stay protected.',
       'The Harkonnen exchange spends the Nexus Card when you draw and shuffles the returned cards into the Traitor Deck after your selection. Your original hand size is restored. Other players see that the exchange is pending, without learning your drawn or returned identities.',

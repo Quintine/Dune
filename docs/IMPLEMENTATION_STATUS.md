@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 26 October 2026 — Residual Poison after completed Cunning
+
+**Prototyped / Partial.** Remove the blanket pre-leader refusal after two
+answered nonleader Cunning inspections. The actual one-death/one-discard effect
+uses selected provisional native-first reconciliation. Preserve an independently
+possible native answer; test the extra jointly. If native becomes impossible,
+reopen both original fields in order, preserving observations and the spent
+Nexus. Both normal and original discard continuations opt into this ordered
+Residual policy; Sardaukar cancellation retains its other feasible answer.
+Persistent card guidance explains the composition. No leader-commitment or
+other active-interaction restriction is removed.
+
+Frozen **17-file131/131**, types/lint/build and **five engine/GameTable SSR
+journeys** pass. Two genuine public Basic108/Advanced120-action cache/Nexus/
+shipment/battle sources preserve both answers after one real random death and
+finish the actual battle. Three clearly controlled Advanced resource/leader
+sources separately prove native dial3 cash-in, retained weapon with actual Ghola,
+and impossible-native ordered re-answers. All45 physical Treachery and12 Nexus
+cards remain. Seven native cases, four revised controlled engine cases and six
+rendering supplements cover rejection, commitments and four minimal profiles.
+Feedback repaired a base-only test initializer, omitted native outcome readiness,
+CSS-class/attribute assertions and the unrelated cancellation regression; final
+lint also removed an unnecessary test-array copy.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261026-residual-cunning-proof-v3/`;
+journeys/HTML: adjacent `20261026-residual-cunning-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation. No
+DOM/hydration, browser/mobile or actual clicked-control acceptance. Complete
+rules/combinations, final assurance and all mode gates remain open.
+[Source and priority](NEXUS_ATREIDES_RULES.md#residual-poison-and-two-inspected-commitments).
+
 ## 26 October 2026 — Box recovery of a purchased shipment cost
 
 **Prototyped / Partial.** Remove the blanket pending-refund search ban. Exact

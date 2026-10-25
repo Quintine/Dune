@@ -16,6 +16,41 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Residual Poison after Cunning — 26 October. Prototyped / Partial.**
+The printed pre-leader window now stays available after two completed nonleader
+Cunning inspections. Resolve one actual random leader death/discard, retain an
+independently possible native answer, then require the extra answer to fit the
+same legal plan. An impossible native answer reopens both original fields in
+order, retaining private observations and the spent Nexus. This ordered-pair
+policy is provisional and specific to Residual; existing Sardaukar cancellation
+retains its other feasible answer. Persistent card guidance explains the priority.
+
+Three disjoint native-source/controlled-reconciliation/control lanes and root
+integration pass **17 files,131/131**, types/lint/build and **five engine/GameTable
+SSR journeys** on unchanged source. Seven native cases, four revised controlled
+engine cases and six controlled rendering cases cover the slice. Genuine public
+Basic108/Advanced120-action sources include an actual cache Residual1 purchase,
+original Nexus draw, Richese1 shipment into Arrakeen and both actual answers;
+one death preserves both commitments and the battle completes legally. Three
+explicitly controlled Advanced resource/leader seams separately prove native
+dial/weapon priority, actual cash-in or Ghola and ordered native/extra re-answers.
+All sources retain45 physical Treachery and12 Nexus cards. The four existing
+profiles use the legal new window; strategy/calibration remain deferred.
+
+Frozen v3 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-residual-cunning-proof-v3/`;
+journeys/HTML: adjacent `20261026-residual-cunning-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+No DOM/hydration, browser/mobile or real clicked-control acceptance is claimed.
+Complete rules/combinations, final assurance and mode gates remain open.
+[Source and selected priority](NEXUS_ATREIDES_RULES.md#residual-poison-and-two-inspected-commitments).
+
+Next concrete function gap: the Caladan High victory reinforcement is still
+decline-only when native Face Dance is pending. Scope its original victory
+army and subsequent physical replacement through
+[the reinforcement contract](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md),
+`openHomeworldVictoryReturn` and `game/homeworld-victory-reinforcement.ts`.
+
 **Box shipping-cost recovery — 26 October. Prototyped / Partial.**
 Paid Box search now permits an active purchased-shipment cost in discard.
 Exact cost recovery preserves its original price/creator/beneficiary and ends
@@ -43,13 +78,6 @@ journeys/HTML: adjacent `20261026-box-shipment-price-runtime/`.
 No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
 DOM/hydration, browser/mobile, complete rules/combinations and final assurance
 remain due. [Source and provisional policy](NULLENTROPY_BOX_ENGINE_AUDIT.md#shipping-price-cost-recovery--26-october-2026).
-
-Next concrete card-function gap: Residual Poison still rejects its pre-leader
-window after two answered Cunning inspections. Scope the existing native-first
-reconciliation rather than postponing the printed card window; see
-[Nexus inspection boundary](NEXUS_ATREIDES_RULES.md#residual-poison-and-two-inspected-commitments),
-`validateResidualPoison`, `reconcileChangedBattleInspections` and
-`tests/nexus-residual-ambiguity.test.ts`.
 
 **Reactive Fremen Nexus worm prevention — 26 October. Prototyped / Partial.**
 Fremen Nexus Betrayal now responds at actual unmade ordinary/Great Maker
