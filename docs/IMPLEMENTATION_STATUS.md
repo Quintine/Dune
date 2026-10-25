@@ -1,5 +1,61 @@
 # Dune implementation status
 
+## 25 October 2026 — High Richese ships paid reserves beside a concealed marker
+
+Native High Richese uses the original single-marker action plus positive
+`noFieldReserves`. The shared physical quote reserves actual paid counters and
+any independent free Smuggler counter, while pricing marker+paid group once.
+The private original marker proof binds quantities through No-Field Karama,
+Advanced Guild interception and separate rate repricing. Exact native withdrawal
+moves the combined physical companions once, preserves the hidden denomination
+and produces the correct public entry count. A completed group may cross Low;
+subsequent movement obeys Low and revelation draws only remaining reserves.
+Original omitted-field shipments retain their marker-only behavior. The new
+persistent selector and legal one-companion/fallback policies share the quote.
+The separate two-token Cunning route retains its existing contract.
+
+The card grants accompaniment; combined invoice/rounding and pre-group High
+eligibility are explicitly provisional source compositions. Bounded review
+caught a real UI omission: native Guild discount cancellation now restores the
+full replacement fee while a purchased Karama rate remains independent. Its
+regression uses an explicitly controlled projected alliance/rate, not a claimed
+native alliance. Actual original Karama separately proves one and two companions
+cost 1/2 under the combined rounded tariff. No mode gate is opened.
+
+Disjoint helper/control/native-fixture work and root integration cover **15
+files, 123 cases**. The original union passed 122; one old orphaned-pair case had
+two stale error-message assertions against the already unchanged funded-parent
+guard. Both now match its actual reason and its entire **6/6** file passes.
+Final types/lint/build pass; per-file hashes keep the other 2,800 source files,
+all native runtime code and all other passing tests unchanged. Initial lint
+feedback removed an unused fixture import. A private smoke assertion was also
+corrected to inspect the actual Low movement reason rather than a boolean;
+application behavior needed no repair for that assertion.
+
+Five native selector-callback/engine/GameTable SSR journeys pass. Basic 56 and
+Advanced 60 earn original main 35/cache 10, native ready/start/auctions, real 7-spice
+bribe/Mentat settlement and the next unused shipment. Eleven paid arrivals leave
+nine reserves and a concealed 5 marker, then reveal 5 from that remaining pool.
+Capped-reveal85 earns real 10/2 bribes and intervening Charity, then sixteen paid
+arrivals leave only four for the 5 reveal. Cancellation56 uses the original
+opposing Karama, preserves the unspent stock/payment/opportunity and completes
+an ordinary replacement. Purchased-rate 27 spends that original card and rounds
+marker+one companion to one spice. Physical components are never installed in
+the played state. All four minimal profiles produce/complete legal positive
+companion shipments; no strategic refinement.
+
+Private reports/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-richese-homeworld-shipment/`.
+`frozen-fixture-repair/report.json` binds tree
+`fe06ed932316df7e068563ba57da670dfed8df9b93dc6fcf3fbfbb38283132fc`,
+2801 files, base `052737d0f98564d50a39c1428ed90bb8efbbc3b5`.
+`frozen-remaining/report.json` retains the passing runtime and 122 cases;
+`fixture-repair-overlay.json` proves the sole changed test file.
+[Source/provisional contract](HOMEWORLD_RULES.md#high-richese-mixed-shipment-prototype--25-october-2026).
+Wider two-token/module interactions, complete modes and final assurance remain.
+SSR/callbacks are not browser hydration/mobile/deployed evidence. No saved-room/
+D1/server/reset/restart/deployment operation occurred.
+
 ## 25 October 2026 — Ix High adds physical Suboids to paid Cyborg revival
 
 The original ordinary revival now snapshots the native High entitlement and

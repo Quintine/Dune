@@ -98,7 +98,7 @@ void test('restoration rejects an orphaned pair before it can lose its Karama or
   assert.equal(declared.response?.kind, 'richeseNoField');
   const missingResponse = JSON.parse(JSON.stringify(declared)) as Game;
   missingResponse.response = null;
-  assert.throws(() => normalizeAutomaticGame(missingResponse), /Karama response or Guild interception/);
+  assert.throws(() => normalizeAutomaticGame(missingResponse), /unique Karama, native Guild interception or funded invoice continuation/);
 
   const advanced = nexusRicheseFixture({
     ownerFaction: 'richese', opponentFaction: 'guild', advanced: true,
@@ -109,7 +109,7 @@ void test('restoration rejects an orphaned pair before it can lose its Karama or
   assert.equal(pending.decision?.kind, 'guildShipment');
   const missingDecision = JSON.parse(JSON.stringify(pending)) as Game;
   missingDecision.decision = null;
-  assert.throws(() => viewGame(missingDecision, advanced.owner), /Karama response or Guild interception/);
+  assert.throws(() => viewGame(missingDecision, advanced.owner), /unique Karama, native Guild interception or funded invoice continuation/);
 });
 
 void test('pair rejects duplicate, prior-used and stale tokens without changing the original game', () => {

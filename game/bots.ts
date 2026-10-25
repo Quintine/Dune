@@ -59,6 +59,7 @@ import {
   paidForceRevivalCost,
 } from './revival';
 import { controlsLeader, nativeAvailable } from './leader-control';
+import { quoteRicheseHomeworldForces } from './richese-homeworld-shipment';
 import { CHEAP_HERO_TRAITOR, matchingTraitor } from './traitors';
 import {
   treacheryDeck,
@@ -3431,23 +3432,22 @@ function policyActions(g: GameView): Action[] {
       }
       if (selected)
         for (const to of markerTargets.slice(0, 24)) {
-          if (Math.min(selected.value, me.reserves) === 0 && to.enemy > 0)
-            continue;
-          const cost = reserveShipmentCost(
-            { faction: me.faction, halfRate },
-            territory(to.t).type,
-            1,
-          );
-          if (cost > shipmentBudget) continue;
-          actions.push({
-            type: 'ship',
-            noField: selected.id,
-            event: noField.event,
-            territory: to.t,
-            sector: to.s,
-            allyPayment: Math.max(0, cost - (me.spice ?? 0)),
-            ...(quoteSmugglerNoField(g, me.id, to.t) ? { smuggler: true } : {}),
-          });
+          const smuggler = !!quoteSmugglerNoField(g, me.id, to.t);
+          const companions = noField.homeworldForcesEnabled && me.reserves > (smuggler ? 1 : 0) ? [1, 0] : [0];
+          for (const amount of companions) {
+            const group = quoteRicheseHomeworldForces({ enabled: !!noField.homeworldForcesEnabled,
+              reserves: me.reserves, amount, smuggler });
+            if (Math.min(selected.value, me.reserves) + group.physical === 0 && to.enemy > 0) continue;
+            const cost = reserveShipmentCost({ faction: me.faction, halfRate }, territory(to.t).type, group.priced);
+            if (cost > shipmentBudget) continue;
+            actions.push({
+              type: 'ship', noField: selected.id, event: noField.event,
+              territory: to.t, sector: to.s,
+              allyPayment: Math.max(0, cost - (me.spice ?? 0)),
+              ...(smuggler ? { smuggler: true } : {}),
+              ...(amount ? { noFieldReserves: amount } : {}),
+            });
+          }
         }
     }
     if (marker && noField && !g.homeworldMobility?.noFieldMovementBlocked && (me.moved ?? 0) < (me.movesAllowed ?? 1)) {

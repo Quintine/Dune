@@ -2,6 +2,69 @@
 
 Source audit, 9 September 2026. No runtime activation. The primary module source is the [GF9 Ecaz & Moritani rulebook](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf), especially printed pp.4, 9–10 and the Homeworld FAQ on pp.15–16. The local publisher-text transcription is `/tmp/dune-rules/ecaz-audit.txt`; fresh official indexed pp.9, 10 and 15 were checked against it. Direct PDF retrieval currently returns HTTP 403. Physical card faces are separately audited in [Homeworld component audit](HOMEWORLD_COMPONENT_AUDIT.md); a rulebook statement and a card-face statement are not interchangeable evidence.
 
+## High Richese mixed shipment prototype — 25 October 2026
+
+**Prototyped / Partial.** Native Richese at High may select actual paid reserve
+forces alongside its ordinary concealed No-Field shipment. The marker keeps its
+original token/event and one-force identity; `noFieldReserves` names only the
+additional paid physical counters. No hidden 0/3/5 denomination is withdrawn or
+added to that invoice. The reserve group enters now, while a later reveal draws
+only the physical reserves still available then. No-field amount stays 1 for old
+and new actions; omitting the new field preserves ordinary marker-only behavior.
+
+The inspected High component grants accompaniment without specifying a free
+price or a special numerical cap. The user-authorized revised PDF's physical
+page 36 Richese B prices the marker as one force; physical page 22 supplies current
+population eligibility. Under the user's 14 October instruction to choose
+recommended interpretations, this prototype provisionally combines one marker
+plus paid counters into **one ordinary invoice**, with Guild rounding once on
+the whole priced group. Observe High before the accepted group, allow that
+group to cross Low, and apply the resulting Low movement penalty to subsequent
+actions. Combined pricing and grouped threshold timing are application
+composition, not a located printed worked example.
+
+Select at most actual native reserves. The independent Smuggler force, if
+eligible and selected, reserves one additional real counter and stays free;
+it never substitutes for a paid count or comes from the marker denomination.
+The private original declaration proof binds the new count through the ordinary
+No-Field cancellation, Advanced Guild shipment stop and separate Guild rate
+response. An allowed shipment withdraws the full actual companion group once,
+pays the original approved split and keeps the marker concealed. Preventing
+No-Field cancels the entire group without payment, force transfer or shipment
+use; the native token-use denial still applies and normal replacement remains.
+Native Guild interception retains its separate existing outcomes. No new
+Karama response can cancel only the High card's permission.
+
+Arrival/entry counts include one effective marker plus the actual companions.
+Physical shipment commitments count only the companions. The persistent private
+selector explains current stock, costs and immediate versus concealed forces.
+Existing minimal policies offer one affordable paid companion and retain the
+ordinary marker fallback; no strategic tuning is performed. The two-token
+Richese Nexus Cunning route retains its separate one-marker invoice and cannot
+silently inherit a selected ordinary paid group. Its combined High timing,
+other specialized routes/modules and comprehensive acceptance remain unfinished.
+
+Evidence paths: [shared quote](../game/richese-homeworld-shipment.ts),
+[selector](../components/richese-homeworld-forces.tsx),
+[native chronology](../tests/fixture-richese-homeworld-shipment.ts),
+[native rules](../tests/richese-homeworld-shipment-runtime.test.ts),
+[actual purchased-rate pricing](../tests/richese-homeworld-shipment-price.test.ts),
+[quote tests](../tests/richese-homeworld-shipment.test.ts) and
+[control callbacks](../tests/richese-homeworld-forces-controls.test.ts).
+Frozen evidence covers 15 related files, 123 cases: 122 originally passed, with
+only an old orphaned-pair assertion expecting obsolete text. Both message checks
+now match the unchanged guard; its full 6/6 file and final types/lint/build pass.
+Exact hashes preserve the other 2,800 source files. Five native runtime/SSR
+journeys pass: Basic 56, Advanced 60, actual capped-reveal 85, original opposing
+Karama cancellation 56 and actual purchased-rate 27 source actions. Funding uses
+real bribes/Mentat and Charity; no played resource, hand, phase or custody is
+installed. The selector callback, original responses and physical deposits are
+executed. A separate projected ally/rate UI case is explicitly controlled.
+Private source-bound proof/HTML is retained in
+`/home/quintine/.local/share/dune/checkpoints/20261025-richese-homeworld-shipment/`.
+This is a first usable card-effect implementation, not full Homeworld/module
+certification, saved-game assurance or deployed acceptance.
+
 ### Stable occupation runtime follow-up — 5 October 2026
 
 Original fresh `homeworld-occupation` connects bank Collection/immediate sharing,

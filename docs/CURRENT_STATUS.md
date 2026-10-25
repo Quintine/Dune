@@ -16,6 +16,37 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**High Richese mixed shipment — 25 October. Prototyped / Partial.**
+Native High Richese now selects paid physical reserve forces beside one
+concealed No-Field. The marker keeps its own token/event and amount 1; the
+additional group has an original signed count and one combined invoice.
+Actual companions enter immediately; the hidden value remains in reserves.
+The group may cross Low, after which normal Low movement rules apply, and later
+revelation uses the remaining stock. Original No-Field cancellation, native
+Guild interception and separate rate/payment continue. Smuggler retains its
+independent free counter. Persistent controls and four minimal policies are
+connected; combined tariff/rounding and grouped threshold timing are explicit
+provisional compositions, without strategy tuning.
+[Source, behavior and boundaries](HOMEWORLD_RULES.md#high-richese-mixed-shipment-prototype--25-october-2026).
+
+Disjoint helper/control and native-fixture lanes, bounded source/correctness
+review and root integration cover **15 files, 123 cases**. The original union
+passed 122; the sole failure was two stale orphaned-pair message assertions
+against an unchanged existing guard. Repairing them passes the full **6/6**
+file plus final types/lint/build, with the other 2,800 source files unchanged.
+Five native selector-callback/engine/GameTable SSR journeys pass: Basic 56 and
+Advanced 60 earn actual main 35/cache 10 setup, a real bribe of 7 completed at Mentat,
+then eleven paid arrivals beside a still-hidden marker. Capped-reveal 85 earns
+actual bribes of 10 and 2 and Charity before sixteen arrivals leave only four reserves;
+the printed 5 token then reveals only four. Native cancellation 56 spends original
+opposing Karama, leaves the whole declaration unused and permits normal
+replacement. Purchased-rate 27 spends that actual card to price marker+one
+paid force at one spice. All original physical zones remain; no played state
+is installed. A separate controlled rate/ally projection catches the repaired
+UI fee after native discount cancellation. No full-mode/final-assurance,
+hydration/browser/mobile/deployed acceptance or saved-room/D1/server/reset/
+restart/deployment operation is claimed.
+
 **Ix High paid-Cyborg revival bonus — 25 October. Prototyped / Partial.**
 An ordinary paid Cyborg return now automatically returns up to two additional
 physical Suboids from Tanks. Selected free types, original invoice and native
@@ -43,9 +74,9 @@ is claimed; no saved-room/D1/server/reset/restart/deployment operation occurred.
 
 A bounded ordinary-faction and Treachery-card lookup found no further wholly
 absent native power; that is not complete source coverage.
-The remaining **High Richese No-Field plus reserve shipment** is a concrete
-Homeworld content gap, distinct from its existing Smuggler companion. Preserve
-the user's specific unfunded-Karama/Kull deferral while continuing other rules.
+That pass identified the High Richese content gap now prototyped above. The
+user's specific unfunded-Karama/Kull deferral still applies; source/timing and
+interaction refinement plus complete-mode/final assurance remain unfinished.
 
 **Current Traitor-declaration Truthtrance — 25 October. Prototyped / Partial.**
 A structured revealed-battle question now binds an actual unsubmitted voter to
