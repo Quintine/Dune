@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 26 October 2026 — Concealed No-Field Planetologist extra range
+
+**Prototyped / Partial.** Compose marker-as-one-force with Planetologist's
+ordinary +1 range/cap3 under the existing choose-recommended authority. Richese
+can select its own marker alone or with physical counters from the same origin.
+Current trainer/token/event, every selected sector's route, entry and one
+movement remain authoritative. The marker stays concealed, including0, without
+materializing or debiting reserves. Owner controls separate marker and counters,
+label the composition provisional and guard actual submit callbacks. Switching
+to gather clears marker selection. Minimal policy applies its candidate cap
+after reachability so legal boosted routes remain available. No strategic AI,
+new saved field/action, mode admission or transport combination is introduced.
+
+Frozen **8-file60/60**, types/lint/build and **twelve native engine/GameTable SSR/
+actual selected-props submit-callback paths** pass. Public R/A/E +choam/Skills
+sources earn actual leader training and paid shipments in both Basic/Advanced;
+all0/3/5 values travel alone or with one genuinely shipped companion. Sources
+use Basic37/74 and Advanced41/79–80 actions. Two-to-four continuation actions
+finish the original same-turn Collection, retaining45 Treachery,14 Skills and15
+Traitor cards. Fifteen native and thirteen controlled cases cover the slice,
+rejections, current guards and four minimal profiles. Feedback repairs premature
+AI candidate truncation, an existing Suk case's missing battle-outcome readiness,
+test typing and unused imports. Earlier failed reports remain available.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261026-planetologist-no-field-proof-v4/`;
+journeys/HTML: adjacent `20261026-planetologist-no-field-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation. SSR/
+selected-props callbacks do not prove DOM/hydration or browser/mobile/deployed
+acceptance. Gather, special transport, complete modes and final assurance remain
+open. [Source and execution](PLANETOLOGIST_RULES.md#concealed-no-field-ordinary-range--26-october-2026).
+
 ## 26 October 2026 — Typed Emperor Face Dance reserve return
 
 **Prototyped / Partial.** Remove the Advanced/Homeworld assignment fence and

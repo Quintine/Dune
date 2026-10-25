@@ -1,5 +1,16 @@
 # Rule decision index
 
+## Planetologist and concealed No-Field range — 26 October 2026
+
+Under 14 October choose-recommended authority, compose No-Field's printed
+movement as one force (E2 pp5–6,10–12) with Planetologist's ordinary +1 range,
+capped at3. Richese's own concealed marker, including0, may move alone or with
+selected same-origin physical forces without revealing/materializing its value.
+This is provisional composition, not a located joint publisher FAQ. Preserve
+current trainer/token/event, path/entry, one movement and existing arrival.
+Gather, flight, Guild and Homeworld combinations remain separate; no mode opens.
+[Source and execution](PLANETOLOGIST_RULES.md#concealed-no-field-ordinary-range--26-october-2026).
+
 ## Typed Emperor Face Dance reserve return — 26 October 2026
 
 Under 14 October choose-recommended authority, route Advanced/Homeworld

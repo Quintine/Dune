@@ -2,6 +2,19 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Planetologist ordinary extra range — 26 October 2026
+
+The own concealed marker can now use Planetologist's ordinary extra-range
+alternative, alone or with selected same-territory physical counters. The
+marker-as-one-force plus normal-range composition is explicitly provisional;
+no joint FAQ is claimed. Current token/event, living trainer, actual source,
+storm/path/entry and one movement remain authoritative. The marker stays
+concealed, including value0, without materializing or debiting reserves.
+Controls keep marker and physical counts distinct; minimal policy offers legal
+boosted marker routes without strategic refinement. Gather, flight, Guild and
+Homeworld combinations remain separate.
+[Source and execution](PLANETOLOGIST_RULES.md#concealed-no-field-ordinary-range--26-october-2026).
+
 ## Owned movement-promise preparation — 25 October 2026
 
 The [movement contract](TRUTHTRANCE_MOVEMENT_PROMISES.md#native-advanced-and-no-field-preparation--25-october-2026)

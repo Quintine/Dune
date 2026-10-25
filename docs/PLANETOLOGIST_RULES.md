@@ -1,8 +1,56 @@
 # Planetologist rule contract
 
-Updated 24 October 2026. This note audits the movement and battle effects of the
+Updated 26 October 2026. This note audits the movement and battle effects of the
 Planetologist Leader Skill against its physical card, the common Leader Skills
 rules, the GF9 base battle rules and designer Jack Reda's walkthrough. The connected prototype is described below; other Leader Skill effects remain separate work.
+
+## Concealed No-Field ordinary range — 26 October 2026
+
+The printed No-Field rules (E2 pp5–6,10–12, recorded in the
+[token contract](RICHESE_NO_FIELD_RULES.md#verified-lifecycle)) let a concealed
+marker move as one force, including value0. Planetologist's physical normal band
+adds one to ordinary movement range, capped at three. Under the 14 October
+choose-recommended authority, compose these rules for Richese's own marker,
+alone or with selected physical forces from that same territory. This is an
+explicit provisional composition, not a located joint publisher FAQ.
+
+The existing `move` payload carries `planetologist:'range'`, the selected
+`forces`, and the owner's current `noField` identity/`event`. Normalized movement
+validates the living uncaptured trainer, current physical token and source,
+storm/path/entry and each selected sector using the unchanged range quote. The
+original marker moves once and remains concealed; no token value is converted
+to counters, no reserve is debited and no shipment payment is made. One movement
+is spent, its event rotates, and existing arrival/turn continuation remains.
+City ornithopters retain the maximum of three rather than granting four.
+
+The Planetologist form exposes the owner's marker separately from counters,
+including marker-only selection with an empty physical group. Same-origin
+companions remain ordinary physical counters. Actual callbacks retain movement,
+ownership, response, automatic-action and busy guards. Minimal policy adds only
+legal marker routes that need the extra range; no difficulty tuning occurs.
+
+The two-origin gather alternative, physical/Discovery Ornithopter, Guild and
+Homeworld combinations retain their separate boundaries. This change adds no
+saved field, new action kind, skill assignment, mode admission or publication
+acceptance. Full interactions and final browser/deployed assurance remain due.
+
+**Frozen evidence:** v4 passes8 files,60/60, types/lint/build and twelve native
+engine/GameTable SSR/actual selected-props submit-callback paths. Original public
+R/A/E +choam/Skills starts train the original leader and ship real0/3/5 markers;
+the companion was genuinely shipped on the previous turn. Basic sources use37/74
+actions and Advanced41/79–80. Two-to-four continuation actions move the original
+marker two territories and reach the same turn's Collection. Each retains45
+Treachery,14 Skills and15 Traitor cards. Fifteen native cases include all twelve
+sources plus rejections, controlled dead/captured eligibility supplements and
+four minimal profiles; thirteen controlled cases cover actual submission and
+current guards. Feedback corrects the candidate cutoff, old Suk readiness
+chronology, fixture typing and unused imports.
+
+Report/logs: private `20261026-planetologist-no-field-proof-v4/` under
+`/home/quintine/.local/share/dune/checkpoints/`; journeys/HTML: adjacent
+`20261026-planetologist-no-field-runtime/`. No saved-room/D1/server, reset/restart,
+deployment or recovery operation. SSR/selected-props callbacks do not certify
+DOM/hydration, browser/mobile/deployed acceptance or complete combinations/modes.
 
 ## Printed effect and legal card role
 

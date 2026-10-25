@@ -84,6 +84,7 @@ void test('scarce native No-Field five materializes only three after both plans 
   assert.equal(player(game, 'richese').forces['wind_pass:14'], 3);
   game = applyAction(game, staged.actor, { type: 'traitorCall', call: false });
   game = applyAction(game, staged.target, { type: 'traitorCall', call: false });
+  game = finishAdvancedNativeSkillAftermath(game);
   assert.equal(game.decision?.kind, 'sukRescue');
   if (game.decision?.kind !== 'sukRescue') throw new Error('Native real casualties must retain skilled rescue.');
   const pending = game;

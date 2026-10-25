@@ -52,7 +52,7 @@ import {
 } from './homeworld-options';
 import { matchesPlanClaim, respectsBattlePromises } from './battle-promises';
 import { ecazOccupancyRelation } from './ecaz-occupy';
-import { territoryEntryBlock, strongholdPathBlocked } from './occupancy';
+import { territoryEntryBlock } from './occupancy';
 import { strongholdBattleEffects } from './stronghold-battle';
 import {
   eliteRevivalRemaining,
@@ -3471,36 +3471,27 @@ function policyActions(g: GameView): Action[] {
     }
     if (marker && noField && !g.homeworldMobility?.noFieldMovementBlocked && (me.moved ?? 0) < (me.movesAllowed ?? 1)) {
       const from = location(marker.location.territory, marker.location.sector);
-      const range =
-        fighterCount(me, 'arrakeen') || fighterCount(me, 'carthag') ? 3 : 1;
+      const markerPlanetologist = !!planetologistLeader(g, me.id) &&
+        !g.ornithopter?.active && planetologistMovementModeSupported(g);
+      let markerMoves = 0;
       if (marker.location.sector !== g.storm)
-        for (const to of markerTargets.slice(0, 24)) {
+        for (const to of markerTargets) {
           if (from === to.key || (materialized === 0 && to.enemy > 0)) continue;
-          if (
-            g.balisetRestrictions.some(
-              (b) => b.player === me.id && b.territory === to.t,
-            ) &&
-            marker.location.territory !== to.t
-          )
-            continue;
-          if (
-            gameDistance(g, from, to.key, (key) => {
-              const loc = splitLocation(key);
-              return (
-                loc.sector === g.storm ||
-                strongholdPathBlocked(g.players, me.id, loc.territory)
-              );
-            }) > range
-          )
-            continue;
+          const ordinary = botGroundMoveAllowed(g, me, from, to.key, 0);
+          if (!ordinary && !(markerPlanetologist &&
+            botGroundMoveAllowed(g, me, from, to.key, 0, 'range'))) continue;
           actions.push({
             type: 'move',
+            ...(!ordinary ? { planetologist: 'range' } : {}),
             forces: {},
             noField: marker.tokenId,
             event: noField.event,
             territory: to.t,
             sector: to.s,
           });
+          // Bound legal choices after reachability, so unreachable high-ranked
+          // destinations cannot hide the only usable ordinary/skill route.
+          if (++markerMoves === 24) break;
         }
     }
     // Generate paid Guild-source candidates before applying ordinary prices or Fremen range.

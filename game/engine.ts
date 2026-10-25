@@ -17364,8 +17364,12 @@ function validatePlanetologistMove(g: Game, p: Player, move: Pick<MovementOrder,
     'This Planetologist movement no longer has its living, uncaptured skilled leader.');
   requireRule(planetologistMovementModeSupported(g),
     'Planetologist movement combined with expansion factions is still being implemented.');
-  requireRule(!move.noField && !move.ornithopterEvent && !move.discoveryFlight,
-    'Planetologist combined with special movement cards or No-Field is still being implemented.');
+  requireRule(!move.ornithopterEvent && !move.discoveryFlight,
+    'Planetologist combined with special movement cards is still being implemented.');
+  // Selected composition: the concealed marker moves as one force, so the
+  // ordinary extra-range band applies without revealing or materializing it.
+  requireRule(!move.noField || skill.mode === 'range',
+    'Planetologist gathering with a No-Field is still being implemented.');
   requireRule(skill.mode === 'gather'
     ? Array.isArray(move.origins) && move.origins.length === 2 && new Set(move.origins).size === 2 && move.origins[0] === move.origin
     : move.origins === undefined,

@@ -16,6 +16,36 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Planetologist and Richese No-Field range — 26 October. Prototyped / Partial.**
+The owner's concealed marker can use the ordinary extra-range alternative alone
+or with selected same-territory physical forces. Shared range/entry quotes retain
+the three-territory cap, living trainer, original token/event and one movement.
+The marker remains concealed, including0, without materializing or withdrawing
+reserves. The form separates its checkbox from physical counters, labels the
+composition provisional and guards actual submission. Minimal policy retains
+legal boosted candidates by applying its limit after reachability. Existing
+action/state/mode shapes stay; gather and special transport remain separate.
+
+Two disjoint native/control lanes and root integration pass **8 files,60/60**,
+types/lint/build and **twelve native engine/GameTable SSR/actual selected-props
+submit-callback paths** on unchanged source. Genuine public R/A/E +choam/Skills
+sources train the original leader, earn an actual paid marker shipment and,
+for companions, an earlier paid physical shipment. Basic sources use37/74 actions;
+Advanced sources use41/79–80. Two-to-four continuation actions move distance two
+and finish same-turn Collection. Each retains45 Treachery,14 Skills and15 Traitor
+cards. Fifteen native cases and thirteen controlled cases cover sources,
+rejections, current guards and all four minimal profiles. Feedback fixes the AI
+candidate cutoff and an old Suk fixture's missing outcome acknowledgements;
+test typing and unused imports are corrected.
+
+Frozen v4 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-planetologist-no-field-proof-v4/`;
+journeys/HTML: adjacent `20261026-planetologist-no-field-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+SSR/selected-props callbacks do not prove DOM/hydration, browser/mobile/deployed
+acceptance or complete modes/combinations. Final assurance remains open.
+[Source and execution](PLANETOLOGIST_RULES.md#concealed-no-field-ordinary-range--26-october-2026).
+
 **Typed Emperor Face Dance return — 26 October. Prototyped / Partial.**
 Advanced/Homeworld returns from Arrakis and visitor battles now use existing
 native reserve quotes: normal survivors to Kaitain, Sardaukar to Salusa. This
@@ -74,15 +104,15 @@ deployed acceptance. Full Truthtrance, modes/combinations and final assurance
 remain open. [Battle controls](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md#grouped-battle-plan-authoring--26-october-2026);
 [shipment controls](COMPOUND_SHIPMENT_PROMISES.md#full-pure-shipment-authoring--26-october-2026).
 
-Next scoped interaction: Planetologist's ordinary extra range for Richese's own
-concealed No-Field marker. The live combined-movement fence still rejects it;
-the printed marker-as-one-force and ordinary-range rules support a narrow
-composition, not a located joint FAQ. Start with marker-only ordinary movement,
-existing token/history and native trained-leader setup. Keep gather, flight,
-Ornithopter, Guild and Homeworld routes outside that first slice. See
-[No-Field source](RICHESE_NO_FIELD_RULES.md) and
-[Planetologist contract](PLANETOLOGIST_RULES.md). This scope does not establish
-Basic completion or authorize a combination/recovery campaign.
+Next scoped interaction: Planetologist's two-origin gather with Richese's own
+concealed marker. The normalized group already records its source and selected
+physical origins; the remaining gather fence, controls and native earned-source
+chronology need integration. Each origin must retain its ordinary range, with
+one shared destination and one movement. This prospective composition is not a
+located joint FAQ or permission to enable flight/Guild/Homeworld combinations.
+See [No-Field source](RICHESE_NO_FIELD_RULES.md) and
+[Planetologist contract](PLANETOLOGIST_RULES.md). Complete rules and final
+assurance remain unfinished.
 
 **Truthtrance compound current-fact authoring — 26 October. Prototyped / Partial.**
 The form now exposes two-through-eight-term AND/OR groups and nesting, with

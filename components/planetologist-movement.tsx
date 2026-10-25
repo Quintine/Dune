@@ -4,145 +4,61 @@ import { useId, useState } from 'react';
 import type { Action, GameView } from '@/game/engine';
 import {
   planetologistLeader,
-  planetologistMovementModeSupported,
-  selectedOriginElites,
-  planetologistGatherAdvisorEntry,
   type PlanetologistMoveMode,
 } from '@/game/planetologist-movement';
-import { botGroundMoveAllowed } from '@/game/bot-mobility';
-import { isAdvisor } from '@/game/advisors';
-import { quoteAdvisorGatherMatching, AdvisorGatherMatchingError } from '@/game/advisor-gather-matching';
 import {
   gameTerritories,
-  location,
   splitLocation,
   territory,
 } from '@/game/board';
-import { Button } from './ui/button';
+import {
+  PlanetologistMovementAction,
+  planetologistMoveDraft,
+  planetologistMovementBlocked,
+  planetologistNoFieldMarker,
+} from './planetologist-movement-action';
 import { Input } from './ui/input';
+
+export { planetologistMoveDraft } from './planetologist-movement-action';
 
 type Counts = Record<string, number>;
 
-export function planetologistMoveDraft(
-  game: GameView,
-  mode: PlanetologistMoveMode,
-  destination: string,
-  sector: number,
-  forces: Counts,
-  elites: Counts,
-): { action: Action | null; blocked: string | null } {
-  const me = game.players.find((player) => player.id === game.me);
-  if (!me || !planetologistLeader(game, me.id))
-    return {
-      action: null,
-      blocked: 'A living, uncaptured Planetologist is required.',
-    };
-  if (
-    !planetologistMovementModeSupported(game)
-  )
-    return {
-      action: null,
-      blocked:
-        'Planetologist movement with expansion factions awaits its movement audit.',
-    };
-  const selected = Object.entries(forces).filter(([, count]) => count > 0);
-  for (const [from, count] of selected) {
-    const owned = me.forces[from] ?? 0;
-    if (!Number.isSafeInteger(count) || count < 1 || count > owned)
-      return { action: null, blocked: 'Choose available whole force counts.' };
-    const elite = elites[from] ?? 0;
-    const ownedElite = me.elites?.forces[from] ?? 0;
-    const minimumElite = Math.max(0, count - (owned - ownedElite));
-    if (
-      !Number.isSafeInteger(elite) ||
-      elite < minimumElite ||
-      elite > Math.min(count, ownedElite)
-    )
-      return {
-        action: null,
-        blocked: 'Choose an available normal and elite mix for every source.',
-      };
-  }
-  const origins = new Set(
-    selected.map(([from]) => splitLocation(from).territory),
-  );
-  if (
-    (mode === 'range' && origins.size !== 1) ||
-    (mode === 'gather' && origins.size !== 2)
-  )
-    return {
-      action: null,
-      blocked:
-        mode === 'range'
-          ? 'Select forces from one territory.'
-          : 'Select forces from exactly two different territories.',
-    };
-  const entry = planetologistGatherAdvisorEntry(game, me, [...origins], destination);
-  if (entry.blocked) return { action: null, blocked: entry.blocked };
-  const target = location(destination, sector);
-  if (
-    selected.some(
-      ([from]) =>
-        !botGroundMoveAllowed(game, me, from, target,
-          selectedOriginElites(selected, elites, splitLocation(from).territory), mode),
-    )
-  )
-    return {
-      action: null,
-      blocked:
-        mode === 'range'
-          ? 'The selected route is beyond the boosted range or is blocked.'
-          : 'Each selected source must reach the destination using its normal range.',
-    };
-  if(mode==='gather'){
-    try{
-      quoteAdvisorGatherMatching(game,{owner:me.id,move:me.moved??0,destination,sector,
-        advisors:isAdvisor(me,destination),group:Object.fromEntries(selected)});
-    }catch(error){if(!(error instanceof AdvisorGatherMatchingError))throw error;return {action:null,blocked:error.message};}
-  }
-  return {
-    action: {
-      type: 'move',
-      planetologist: mode,
-      ...(entry.requiresFlip ? { fighters: true } : {}),
-      forces: Object.fromEntries(selected),
-      ...(me.elites
-        ? {
-            eliteForces: Object.fromEntries(
-              selected.map(([from]) => [from, elites[from] ?? 0]),
-            ),
-          }
-        : {}),
-      territory: destination,
-      sector,
-    },
-    blocked: null,
-  };
-}
-
-export function PlanetologistMovement({
-  game,
-  act,
-  busy,
-  destination,
-  sector,
-  unavailableReason,
-}: {
+type Props = {
   game: GameView;
   act: (action: Action) => void;
   busy: boolean;
   destination: string;
   sector: number;
   unavailableReason?: string | null;
-}) {
+};
+
+export function PlanetologistMovement(props: Props) {
+  const marker = planetologistNoFieldMarker(props.game);
+  const me = props.game.players.find(player => player.id === props.game.me);
+  return <PlanetologistMovementDraft
+    key={JSON.stringify([props.game.me, props.game.turn, me?.moved, marker?.tokenId, marker?.event, marker?.location])}
+    {...props}
+  />;
+}
+
+function PlanetologistMovementDraft({
+  game,
+  act,
+  busy,
+  destination,
+  sector,
+  unavailableReason,
+}: Props) {
   const id = useId();
   const [mode, setMode] = useState<PlanetologistMoveMode>('range');
   const [forces, setForces] = useState<Counts>({});
   const [elites, setElites] = useState<Counts>({});
+  const [includeNoField, setIncludeNoField] = useState(false);
   const me = game.players.find((player) => player.id === game.me);
   const leader = me && planetologistLeader(game, me.id);
   if (!me || !leader) return null;
   const sources = Object.entries(me.forces).filter(([, count]) => count > 0);
+  const marker = planetologistNoFieldMarker(game);
   const draft = planetologistMoveDraft(
     game,
     mode,
@@ -150,18 +66,9 @@ export function PlanetologistMovement({
     sector,
     forces,
     elites,
+    includeNoField,
   );
-  const blocked =
-    unavailableReason ??
-    (game.phase !== 5 || game.active !== me.id
-      ? 'Planetologist movement is available only during your movement turn.'
-      : game.ornithopter?.active
-        ? 'Finish the current Ornithopter movement first.'
-        : game.truthtrance || game.nexusTraitors?.pending
-          ? 'Resolve the current private response first.'
-          : me.autopilot || game.automaticContinuationPending
-            ? 'Wait for the current automatic action to finish.'
-            : draft.blocked);
+  const blocked = planetologistMovementBlocked(game, draft, unavailableReason);
   const leaderName =
     game.allLeaders.find((candidate) => candidate.id === leader)?.name ??
     leader;
@@ -184,9 +91,11 @@ export function PlanetologistMovement({
         id={`${id}-mode`}
         value={mode}
         disabled={busy}
-        onChange={(event) =>
-          setMode(event.target.value as PlanetologistMoveMode)
-        }
+        onChange={(event) => {
+          const nextMode = event.target.value as PlanetologistMoveMode;
+          setMode(nextMode);
+          if (nextMode !== 'range') setIncludeNoField(false);
+        }}
       >
         <option value="range">One territory farther, maximum three</option>
         <option value="gather">Gather from two territories</option>
@@ -195,6 +104,29 @@ export function PlanetologistMovement({
         Destination: {territory(destination).name}, sector {sector}. Select the
         physical forces to move below.
       </p>
+      {marker && (
+        <>
+          <label className="flex min-h-11 items-center gap-3" htmlFor={`${id}-no-field`}>
+            <input
+              id={`${id}-no-field`}
+              type="checkbox"
+              checked={includeNoField}
+              disabled={busy || mode !== 'range' || !!game.homeworldMobility?.noFieldMovementBlocked}
+              onChange={(event) => setIncludeNoField(event.target.checked)}
+            />
+            Include your concealed No-Field from {territory(marker.location.territory).name}, sector {marker.location.sector}
+          </label>
+          <p className="fine" aria-label="Provisional Planetologist No-Field range">
+            Provisional range composition: the concealed marker moves as one
+            force with Planetologist’s extra range, up to three territories.
+            Move it alone or with physical forces from its own territory; its
+            value stays concealed. No direct joint FAQ settles this combination.
+          </p>
+          {game.homeworldMobility?.noFieldMovementBlocked && (
+            <p className="notice">{game.homeworldMobility.noFieldMovementBlocked}</p>
+          )}
+        </>
+      )}
       {draft.action?.fighters === true && (
         <p className="notice">
           Provisional mixed-gather policy: both groups arrive as fighters. The
@@ -258,25 +190,21 @@ export function PlanetologistMovement({
           );
         })
       ) : (
-        <p className="fine">No board forces are available to move.</p>
+        <p className="fine">No physical board forces are available to move.</p>
       )}
       {blocked && (
         <output className="notice" id={`${id}-reason`}>
           {blocked}
         </output>
       )}
-      <Button
-        className="min-h-11 whitespace-normal motion-reduce:transition-none"
-        disabled={busy || !!blocked || !draft.action}
-        aria-describedby={blocked ? `${id}-reason` : undefined}
-        onClick={() => {
-          if (!busy && !blocked && draft.action) act(draft.action);
-        }}
-      >
-        Move with Planetologist
-      </Button>
+      <PlanetologistMovementAction
+        game={game} mode={mode} destination={destination} sector={sector}
+        forces={forces} elites={elites} includeNoField={includeNoField}
+        busy={busy} unavailableReason={unavailableReason} reasonId={`${id}-reason`} act={act}
+      />
       <p className="fine">
-        This does not combine with a No-Field or either Ornithopter movement.
+        Concealed No-Fields cannot join gather, either Ornithopter card movement
+        or Discovery flight.
         Normal movement and arrival rules still apply.
       </p>
     </section>
