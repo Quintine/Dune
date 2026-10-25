@@ -187,7 +187,7 @@ for (const advanced of [false, true]) for (const scope of scopes) for (const mod
 }
 
 for (const advanced of [false, true]) for (const mode of modes) void test(
-  `${advanced ? 'Advanced' : 'Basic'} Homeworld Sapho ${mode}: actual paid current shipment closes the unstarted Movement window`, () => {
+  `${advanced ? 'Advanced' : 'Basic'} Homeworld Sapho ${mode}: paid shipment expires the old unstarted quote and new tail options preserve the current turn`, () => {
     const f = createSemutaHomeworldSaphoFixture('movement', mode, advanced);
     const origin = 'red_chasm:7';
     const actor = f.game.active!;
@@ -199,8 +199,16 @@ for (const advanced of [false, true]) for (const mode of modes) void test(
       game => !game.response && !game.decision && !game.pendingTreacheryDiscard && !game.phaseOpening);
     assert.equal(player(started, actor).shipped, true);
     const paid = resources(started), original = stock(started);
-    assert.ok(!viewGame(started, f.owner).saphoOptions.some(option => option.scope === 'movement'));
+    const options = viewGame(started, f.owner).saphoOptions.filter(option => option.scope === 'movement');
+    assert.ok(options.length > 0, 'The unstarted holder can reorder later unstarted combined turns');
+    assert.ok(options.every(option => option.scope === 'movement' && option.afterCurrent === actor));
+    assert.ok(options.every(option => option.event !== f.action.event),
+      'Queued tail options have a new source; the original unstarted quote expires');
+    const queue = [...started.movementRemaining!];
+    assert.equal(started.active, actor);
     assert.throws(() => applyAction(started, f.owner, f.action));
+    assert.equal(started.active, actor);
+    assert.deepEqual(started.movementRemaining, queue);
     assert.deepEqual(resources(started), paid);
     assert.deepEqual(stock(started), original);
     assert.equal(player(started, f.owner).hand.some(card => card.id === f.card), true);

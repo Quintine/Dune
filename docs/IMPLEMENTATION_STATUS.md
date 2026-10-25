@@ -1,5 +1,49 @@
 # Dune implementation status
 
+## 25 October 2026 — Sapho reorders the waiting tail behind a started turn
+
+**Prototyped / Partial.** An unstarted different Sapho holder may provisionally
+move first/last among later unstarted combined shipment/movement turns. Retain
+the active actor's entire turn, original shipment/payment/movement counters,
+completed turns and physical storm order. The actual current queue binds the
+action event; last protection retains original `movement:turn`. Guild keeps
+native next-boundary Take/Wait, including after first; last remains after Guild.
+Preparation-only windows, current-holder splitting and pending card/arrival/
+payment preparations stay blocked. This selects the source review's retained-
+current recommendation under14 October authority, not a publisher clarification.
+[Source and boundaries](JUICE_OF_SAPHO_RUNTIME.md#order-after-a-started-combined-turn--25-october-2026).
+
+Owner-only options add `afterCurrent` display metadata; human and minimal bot
+actions explicitly submit only card/scope/event/mode. Persistent controls name
+the actor who finishes. Semuta's optional continuation field binds that same
+active actor through claim/pass; absent-field legacy signatures keep their path.
+Three disjoint helper/controls/source lanes freeze before root integration.
+Final **11 files,133/133**, types/lint/build and eleven actual engine/GameTable
+SSR/button-callback journeys pass unchanged. New helper8/controls6/engine14
+cases include both rules bands, actual Guild Take/Wait, stale/no-op/active-holder
+rejection, all four profiles and exact Semuta disposal.
+
+Seven native journeys earn cache1 Sapho, then actually ship one counter before
+use: Basic46/Advanced53 original actions; granted Guild55 pays one spice. Each
+of the four original turns finishes once, in8–13 continuation actions, keeping
+all45 cards. Four separately labelled Basic/Advanced Homeworld supplements use
+inherited conserved Sapho/Semuta custody, then real paid shipment and claim/pass;
+their card acquisition is controlled and not claimed as native.
+
+Initial related125/133 exposes a preparation-only guard gap, stale blanket-
+started tests and an old cyclic test skipping its required public discard
+acknowledgement. The guard is restored for preparation without actual shipment/
+movement. Old cases now test queued options and unchanged active actors while
+retaining stale original-action rejection. Types require scoped option/card
+narrowing; lint removes one unused import and redundant test copy. No rule or
+start guard is weakened to pass. Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261025-sapho-started-lint-fixed/`;
+journey data/HTML in adjacent `20261025-sapho-started-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+Engine/SSR/callback evidence does not prove hydration, DOM/browser/mobile or
+deployed acceptance. Other ordered phases, split-own-turn interpretation,
+broader combinations, full rules/modes and final assurance remain open.
+
 ## 25 October 2026 — Richese Nexus reaches original Karama acquisitions
 
 **Prototyped / Partial.** Immediate ordinary Karama and private Advanced special

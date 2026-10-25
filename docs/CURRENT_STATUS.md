@@ -16,6 +16,43 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Sapho behind a started combined turn — 25 October. Prototyped / Partial.**
+An unstarted holder may now provisionally reorder only later unstarted turns
+behind another actor's begun combined turn. That actor finishes unchanged;
+shipment/movement counters, payment, completed turns and physical storm order
+remain. First means first in the waiting tail; last stays after Guild. Native
+Advanced Guild retains its next-boundary choice. Preparation-only windows and
+splitting the holder's own begun turn remain blocked. The public queue binds
+the queued action event; owner-only `afterCurrent` metadata explains timing,
+while human/bot submissions keep card/scope/event/mode only. Original movement
+last protection and Semuta's exact disposal continuation retain the active
+actor. [Selected policy and source](JUICE_OF_SAPHO_RUNTIME.md#order-after-a-started-combined-turn--25-october-2026).
+
+Three disjoint lanes and root integration pass **11 files, 133/133**, types/
+lint/build and **11 engine/GameTable SSR/real button-callback journeys** on
+unchanged source. New helper8, controls6 and engine14 cases cover first/last,
+stale/no-op/active-holder rejection, all four profiles, actual Guild Take/Wait
+and Semuta claim/pass. Seven native journeys earn paid cache1 Sapho and start
+the current turn with a real positive shipment: Basic46/Advanced53 source
+actions; already-taken Guild55 pays its own one-spice shipment. They complete
+all four turns once, using8–13 native continuations and preserving all45 cards.
+Four separately labelled Basic/Advanced Homeworld supplements inherit conserved
+Sapho/Semuta custody, then actually pay for shipment and use the real discard
+claim/pass continuation. These do not claim native card acquisition.
+
+Initial feedback catches the preparation-only guard gap; it is repaired without
+opening pending preparations. Old blanket-started assertions now check queued
+options plus unchanged current actors and stale original-quote rejection. An
+older cyclic case now finishes its real public discard acknowledgement before
+the next bid. Test-only type narrowing/card binding, one unused import and a
+redundant array copy are corrected; no rule/start guard is weakened. Private
+source-bound report/logs: `/home/quintine/.local/share/dune/checkpoints/20261025-sapho-started-lint-fixed/`;
+journeys/HTML: adjacent `20261025-sapho-started-runtime/`.
+No saved-room/D1/server/reset/restart/deployment or recovery operation occurs.
+These are engine/SSR/callback results, not hydration, DOM/browser/mobile or
+deployed acceptance. Other ordered phases, split-own-turn policy, wider valid
+combinations, complete rules/modes and final assurance remain unfinished.
+
 **Karama acquisitions reach Richese Nexus veto — 25 October. Prototyped / Partial.**
 The existing preview now covers immediate ordinary Karama and private Advanced
 special purchase. Uniform acknowledgements precede original costs. Under the

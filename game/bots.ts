@@ -1182,7 +1182,7 @@ function saphoAction(g: GameView): Action | null {
     (options[0].scope === 'movement' && earlySpice) || battleFirst ? 'first' : 'last';
   const option =
     options.find((candidate) => candidate.mode === preferred) ?? options[0];
-  return { type: 'card', card: card.id, ...option };
+  return { type: 'card', card: card.id, scope: option.scope, event: option.event, mode: option.mode };
 }
 function tupileCleanupActions(g: GameView): Action[] {
   const me = g.players.find((player) => player.id === g.me);

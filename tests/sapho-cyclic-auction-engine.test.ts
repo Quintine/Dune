@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { viewGame } from '../game/engine';
 import { botActions } from '../game/bots';
 import {
-  actSaphoCyclic, completeSaphoCyclicAuction, createSaphoCyclicAuctionFixture, saphoCyclicAction,
+  actSaphoCyclic, advanceSaphoCyclic, completeSaphoCyclicAuction, createSaphoCyclicAuctionFixture, saphoCyclicAction,
   saphoCyclicBid, saphoCyclicLot, saphoCyclicPlayer as player, type SaphoCyclicAuctionFixture,
 } from './fixture-sapho-cyclic-auction';
 
@@ -144,6 +144,9 @@ void test('genuine pending passes survive Sapho and cannot receive a repeat turn
     assert.equal(saphoCyclicLot(game).active,f.owner);
     const before = saphoCyclicLot(game);
     game = actSaphoCyclic(game,f.owner,saphoCyclicAction(game,'last'));
+    // Fresh Basic Richese also offers its original public used-card response.
+    // Finish that real boundary before another bidder acts; do not skip it.
+    game = advanceSaphoCyclic(game,state=>!state.pendingTreacheryDiscard);
     assert.deepEqual(saphoCyclicLot(game).passed,before.passed);
     const nextPass = saphoCyclicBid(game,null);
     game = actSaphoCyclic(game,nextPass.actor,nextPass.action);

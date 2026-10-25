@@ -13,6 +13,72 @@ contract supersede the earlier absence of that mode below. The
 and a fixed public final opportunity in fresh Richese battles; old battles keep
 their early protocol.
 
+## Order after a started combined turn — 25 October 2026
+
+**Prototyped / Partial.** The printed card permits first/last in a turn-ordered
+phase/action. The [source review](JUICE_OF_SAPHO_SOURCE_UPDATE.md#movement-firstlast)
+finds no entitlement to split an already-started combined shipment/movement
+turn. Under the 14 October choose-recommendation authority, adopt its bounded
+recommendation: retain that current actor and reorder only later unstarted
+turns. The current actor finishes normally; the changed tail then takes effect.
+This is visibly provisional online timing, not a new publisher clarification.
+
+An unstarted holder at a clean boundary after another player's actual shipment
+or movement may go first among the tail, or last including after Guild. It
+cannot split its own begun turn, displace an active Guild, replay a completed
+turn, reset shipment/movement counters or intervene during unresolved card,
+arrival, payment or movement preparations. Existing last protection and no-op
+rules remain. Advanced Guild receives its native next-boundary choice; moving
+first in the tail does not consume or suppress that privilege.
+
+The pure [movement-order quote](../game/sapho-movement-order.ts) binds the
+original phase event, current actor and whole remaining public order in the
+queued action event. Its returned last protection retains the original
+`movement:turn` event. The owner-only option adds display metadata `afterCurrent`;
+human and minimal bot actions explicitly send only card/scope/event/mode.
+Persistent controls name the actor who must finish. Existing clean options and
+physical storm order remain. Semuta's new optional continuation field keeps
+that same current actor through the original discard claim/pass; absent-field
+legacy continuation/signature bytes retain their original path.
+
+This supersedes only the earlier blanket partly-completed-turn exclusion for
+an **unstarted different holder** behind the current actor. No split-turn mode
+or new ordered phase is invented. Wider combinations, full modes and final
+assurance/deployed acceptance remain open.
+
+Frozen **11 files, 133/133**, types/lint/build and eleven actual engine/
+GameTable SSR/isolated button-callback journeys pass on unchanged source. New
+helper8, controls6 and engine14 cases cover native Basic/Advanced first/last,
+actual paid current shipment, unchanged current resources/counters, native
+Guild Take/Wait, old-event/no-op/active-holder rejection, exact metadata-free
+actions, all four minimal profiles and Semuta claim/pass.
+
+Seven native journeys genuinely earn the cache1 purchase, then ship one actual
+counter before intervention. Observed source prefixes are Basic46/Advanced53;
+the original granted Guild source55 pays one spice for its native shipment.
+All original four turns finish once in8–13 continuation actions and retain45
+physical cards. Four separate Basic/Advanced Homeworld supplements inherit
+explicitly **controlled conserved Sapho/Semuta custody**, rather than earning
+those cards. They then make a real paid shipment, stage the used Sapho and
+claim/pass through the exact current-turn continuation. Their source counts
+are recorded per journey; no native acquisition is claimed for that supplement.
+
+First related proof125/133 reveals a real preparation-only guard omission and
+legacy blanket-started expectations. A Hajr/preparation without actual shipment
+or movement remains blocked. Revised old tests retain stale original-quote
+rejection, actor/counter/grant identity and cost preservation. A cyclic test
+finishes the existing public discard response before its next bid. Test typing,
+an unused import and a redundant copy are repaired without relaxing legality.
+Private frozen report: `/home/quintine/.local/share/dune/checkpoints/20261025-sapho-started-lint-fixed/report.json`;
+journeys/HTML: adjacent `20261025-sapho-started-runtime/`. No saved rooms,
+databases, server, resets, restarts, deployment or recovery campaign is touched.
+Broader combinations, complete modes, hydration/browser/mobile/deployed and
+final assurance remain due. The engine/SSR evidence does not certify them.
+Evidence: [native and labelled supplemental sources](../tests/fixture-sapho-started-movement.ts),
+[engine cases](../tests/sapho-started-movement-engine.test.ts),
+[quote cases](../tests/sapho-movement-order.test.ts),
+[controls/callback cases](../tests/sapho-started-movement-controls.test.tsx).
+
 ## Extortion payer order — 18 October 2026
 
 First/last now has a provisional adapter for native Moritani Extortion's unanswered
@@ -196,7 +262,13 @@ The [battle-order follow-up](SAPHO_BATTLE_ORDER.md) connects first/last at a cle
 boundary between actual battles. It does not implement the separate aggressor
 mode discussed below.
 
-Later battle aggressor intervention, other ordered actions and partly completed movement remain unfinished. The current-lot cyclic prototype above supersedes the earlier normal/Black Market absence claim. First/Guild competing priority is guarded. Reacquiring and replaying Sapho while an existing movement protection remains is also guarded. Silent submission is simultaneous and receives no fabricated order or tie change.
+Later sections supersede the earlier early-only aggressor, cyclic-auction and
+blanket started-movement exclusions. Queued movement now supports an unstarted
+different holder behind the active turn under the selected provisional policy.
+Other ordered actions, splitting the holder's own started turn and competing
+first/Guild precedence beyond the retained native choice remain unfinished.
+Reacquiring and replaying Sapho while existing last protection remains is still
+guarded. Silent submission stays simultaneous with its original storm tie order.
 
 The battle audit in [the battle review](JUICE_OF_SAPHO_BATTLE_REVIEW.md) found a real Stone Burner counterexample: a plan admitted with original aggressor tie priority can become allocation-ambiguous after late Sapho. A complete implementation needs the actual allocation continuation (and a usable, possession-independent late intervention boundary), not rejection based on an opponent's hidden plan. No aggressor handler has been enabled around that defect.
 

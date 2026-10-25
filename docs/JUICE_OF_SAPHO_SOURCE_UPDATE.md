@@ -25,6 +25,14 @@ At an actual boundary between combined turns, reorder the remaining **unstarted*
 
 If another faction is halfway through shipment/movement, retaining that active turn and applying the order change at its completion is a defensible bounded implementation, but it must be described as a supported boundary, not a verified entitlement to interrupt that faction. Moving the active faction itself to last after shipping would split a combined turn: sources inspected do not resolve it. The current engine's `movementRemaining` membership alone cannot distinguish unstarted from partly completed. An active seat may have committed movement before shipping was skipped, used a card, or have an outstanding shipment reaction. Both flags and pending declarations matter.
 
+The 25 October prototype selects the retained-current recommendation under
+14 October authority: an unstarted different holder may reorder the remaining
+tail at a clean boundary, while the started current actor finishes unchanged.
+It binds the actual public queue, preserves counters and future Guild timing,
+and blocks unresolved preparations and a split of the holder's own turn.
+This is provisional implementation timing, not a fresh publisher ruling.
+[Selected runtime](JUICE_OF_SAPHO_RUNTIME.md#order-after-a-started-combined-turn--25-october-2026).
+
 Sapho-first versus Guild-first remains a competing-priority question. The card expressly resolves only last. Preserving a pending Guild decision, or deferring first until after Guild's resolved choice, is an implementation restriction; globally suppressing Guild is a substantive interpretation. Do not cancel an already granted Guild turn or consume its power in a silent order rewrite.
 
 ### Finite Once Around first/last

@@ -394,7 +394,7 @@ void test('All four AI profiles use the private Sapho first option after a compl
   }
 });
 
-void test('Shipment and movement commitments both prevent splitting the active combined turn', () => {
+void test('after shipment or movement another holder may queue last without splitting the active combined turn', () => {
   let g = movement();
   g = applyAction(g, 'a', {
     type: 'ship',
@@ -403,8 +403,18 @@ void test('Shipment and movement commitments both prevent splitting the active c
     amount: 1,
   });
   assert.equal(g.players[0].shipped, true);
-  assert.deepEqual(viewGame(g, 'e').saphoOptions, []);
   reject(g, 'e', action(g, 'last'));
+  const shipped = reload(g).players[0];
+  const shipmentOption = viewGame(g, 'e').saphoOptions.find(option => option.scope === 'movement' && option.mode === 'last');
+  assert.ok(shipmentOption && shipmentOption.scope === 'movement');
+  assert.equal(shipmentOption.afterCurrent, 'a');
+  g = applyAction(reload(g), 'e', { type: 'card', card,
+    scope: shipmentOption.scope, mode: shipmentOption.mode, event: shipmentOption.event });
+  assert.equal(g.active, 'a');
+  assert.deepEqual(g.players[0], shipped);
+  assert.deepEqual(g.movementRemaining, ['a', 'g', 'e']);
+  assert.equal(g.players[1].hand.some(c => c.id === card), false);
+  assert.equal(g.discard.filter(c => c.id === card).length, 1);
   let moved = movement();
   moved.players[0].forces = { 'arrakeen:10': 1 };
   moved.players[0].reserves = 19;
@@ -418,6 +428,17 @@ void test('Shipment and movement commitments both prevent splitting the active c
   assert.equal(moved.players[0].moved, 1);
   reject(moved, 'e', action(moved, 'last'));
   reject(moved, 'e', action(moved, 'first'));
+  const active = reload(moved).players[0];
+  const movementOption = viewGame(moved, 'e').saphoOptions.find(option => option.scope === 'movement' && option.mode === 'last');
+  assert.ok(movementOption && movementOption.scope === 'movement');
+  assert.equal(movementOption.afterCurrent, 'a');
+  moved = applyAction(reload(moved), 'e', { type: 'card', card,
+    scope: movementOption.scope, mode: movementOption.mode, event: movementOption.event });
+  assert.equal(moved.active, 'a');
+  assert.deepEqual(moved.players[0], active);
+  assert.deepEqual(moved.movementRemaining, ['a', 'g', 'e']);
+  assert.equal(moved.players[1].hand.some(c => c.id === card), false);
+  assert.equal(moved.discard.filter(c => c.id === card).length, 1);
 });
 
 void test('Completed holder and already-first/already-last movement no-ops cannot consume Sapho', () => {
@@ -524,7 +545,7 @@ void test('early Guild timing makes the previous penultimate faction actually la
   assert.deepEqual(acted, ['g', 'a', 'e']);
 });
 
-void test('a granted early Guild turn becomes ineligible for Sapho interruption after shipment starts', () => {
+void test('after Guild shipment another holder may queue last while Guild cannot split its own started turn', () => {
   for (const holder of ['a', 'g']) {
     let g = movement(holder, true);
     g = applyAction(g, 'g', { type: 'decision', take: true });
@@ -538,11 +559,28 @@ void test('a granted early Guild turn becomes ineligible for Sapho interruption 
       g = applyAction(g, 'g', { type: 'decision', allow: true });
     assert.equal(g.players[2].shipped, true);
     assert.equal(g.active, 'g');
-    assert.deepEqual(viewGame(g, holder).saphoOptions, []);
     reject(g, holder, action(g, 'last'));
     assert.ok(
       g.players.find((p) => p.id === holder)!.hand.some((c) => c.id === card),
     );
+    const options = viewGame(g, holder).saphoOptions;
+    if (holder === 'g') {
+      assert.deepEqual(options, []);
+      continue;
+    }
+    const option = options.find(option => option.scope === 'movement' && option.mode === 'last');
+    assert.ok(option && option.scope === 'movement');
+    assert.equal(option.afterCurrent, 'g');
+    const before = reload(g);
+    g = applyAction(reload(g), holder, { type: 'card', card,
+      scope: option.scope, mode: option.mode, event: option.event });
+    assert.equal(g.active, 'g');
+    assert.deepEqual(g.players[2], before.players[2]);
+    assert.equal(g.guildTimingGranted, before.guildTimingGranted);
+    assert.equal(g.guildTimingLocked, before.guildTimingLocked);
+    assert.deepEqual(g.movementRemaining, ['g', 'e', 'a']);
+    assert.equal(g.players[0].hand.some(c => c.id === card), false);
+    assert.equal(g.discard.filter(c => c.id === card).length, 1);
   }
 });
 

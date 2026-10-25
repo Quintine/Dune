@@ -381,11 +381,10 @@ import {
 import { canceledResponseSource, KaramaContextError } from './karama-context';
 import { validateSavedTruthtrance } from './truthtrance';
 import {
-  reorderOrderedOpportunity,
-  protectOrderedOpportunityLast,
   validateOrderedOpportunity,
   type OrderedOpportunity,
 } from './ordered-opportunity';
+import { reorderSaphoMovementOrder, saphoMovementOrderEvent, SaphoMovementOrderError, type SaphoMovementOrderContext } from './sapho-movement-order';
 import {
   matchesShipment,
   parseShipmentClaim,
@@ -1523,6 +1522,8 @@ export type Game = {
           event: string;
           mode: 'first' | 'last';
           previousActive: string;
+          /** New queued order retains this already-started combined turn. */
+          afterCurrent?: string;
           resume: NonNullable<Game['pendingNullentropy']>['resume'];
           stateSignature: string;
         }
@@ -5626,6 +5627,7 @@ function saphoMovementDiscardSignature(g: Game, c: SaphoMovementDiscardContinuat
   return JSON.stringify({
     player: c.player, card: c.card, event: c.event, mode: c.mode,
     previousActive: c.previousActive,
+    ...(c.afterCurrent !== undefined ? { afterCurrent: c.afterCurrent } : {}),
     parent: nullentropyParentSignature(g, c.resume, c.event),
     turn: g.turn, phase: g.phase, advanced: g.advanced,
     active: g.active, order: g.order,
@@ -6658,8 +6660,13 @@ function treacheryDiscardIntegrity(g: Game) {
       new Set(g.movementRemaining).size === g.movementRemaining.length &&
       g.movementRemaining.every(id => g.order.includes(id)) &&
       g.movementRemaining.includes(c.previousActive) &&
+      (c.afterCurrent === undefined ||
+        typeof c.afterCurrent === 'string' && c.afterCurrent === c.previousActive &&
+        c.afterCurrent !== c.player && g.movementRemaining[0] === c.afterCurrent &&
+        saphoMovementStarted(g, getPlayer(g,c.afterCurrent)) &&
+        g.movementRemaining.filter(id=>id!==c.afterCurrent).every(id=>!saphoMovementStarted(g,getPlayer(g,id)))) &&
       (c.mode === 'first'
-        ? g.movementRemaining[0] === c.player &&
+        ? g.movementRemaining[c.afterCurrent === undefined ? 0 : 1] === c.player &&
           c.previousActive !== c.player && !g.saphoMovementLast
         : c.mode === 'last' &&
           g.movementRemaining.at(-1) === c.player &&
@@ -21811,6 +21818,8 @@ type SaphoOption = {
   scope: 'onceAround' | 'cyclicAuction' | 'movement' | 'battleOrder' | 'extortion';
   event: string;
   mode: 'first' | 'last';
+  /** Display only; action submission keeps scope/event/mode. */
+  afterCurrent?: string;
 } | { scope: 'battleAggressor'; event: string; mode: 'aggressor' };
 function saphoCyclicRule<T>(quote: () => T): T {
   try { return quote(); }
@@ -21953,6 +21962,24 @@ function saphoMovementQueue(g: Game): OrderedOpportunity | null {
   validateOrderedOpportunity(state);
   return state;
 }
+function saphoMovementOrderContext(g: Game): SaphoMovementOrderContext | null {
+  const queue=saphoMovementQueue(g);
+  if (!queue) return null;
+  const active=getPlayer(g,queue.current!);
+  // A prepared extra move alone is not the clean post-shipment/movement
+  // boundary supported by queued order. Finish that preparation first.
+  if (queue.currentStarted && !active.shipped && active.moved===0) return null;
+  const guild=g.advanced ? byFaction(g,'guild') : undefined;
+  return {queue,started:queue.remaining.filter(id=>saphoMovementStarted(g,getPlayer(g,id))),
+    guild:guild ? {player:guild.id,granted:!!g.guildTimingGranted,locked:!!g.guildTimingLocked} : null};
+}
+function saphoMovementRule<T>(calculate: () => T): T {
+  try { return calculate(); }
+  catch (error) {
+    if (error instanceof SaphoMovementOrderError) throw new RuleError(error.message);
+    throw error;
+  }
+}
 /** Own custody and public finite scopes only; no opponent hand scan. */
 function saphoOptions(g: Game, p: Player): SaphoOption[] {
   if (!saphoCleanWindow(g)) return [];
@@ -22017,24 +22044,15 @@ function saphoOptions(g: Game, p: Player): SaphoOption[] {
     if (remaining.at(-1) !== p.id)
       options.push({ scope: 'onceAround', event: lot.event, mode: 'last' });
   }
-  const queue = saphoMovementQueue(g);
-  if (
-    queue &&
-    !queue.currentStarted &&
-    queue.remaining.includes(p.id) &&
-    !g.saphoMovementLast
-  ) {
-    if (
-      !queue.remaining.some((id) => saphoMovementStarted(g, getPlayer(g, id))) &&
-      !(
-        g.advanced && !g.guildTimingLocked && g.guildTimingGranted &&
-        getPlayer(g, queue.current!).faction === 'guild'
-      ) &&
-      queue.current !== p.id
-    )
-      options.push({ scope: 'movement', event: queue.event, mode: 'first' });
-    if (queue.remaining.at(-1) !== p.id)
-      options.push({ scope: 'movement', event: queue.event, mode: 'last' });
+  const movement=saphoMovementOrderContext(g);
+  if (movement) for (const mode of ['first','last'] as const) {
+    try {
+      const quote=reorderSaphoMovementOrder(movement,{event:saphoMovementOrderEvent(movement),player:p.id,mode});
+      options.push({scope:'movement',event:quote.event,mode,
+        ...(quote.afterCurrent ? {afterCurrent:quote.afterCurrent} : {})});
+    } catch(error) {
+      if (!(error instanceof SaphoMovementOrderError)) throw error;
+    }
   }
   return options;
 }
@@ -22201,31 +22219,24 @@ function playSapho(g: Game, p: Player, action: Action) {
       }
     }
   } else {
-    const queue = saphoMovementQueue(g)!;
-    const next =
-      option.mode === 'last'
-        ? protectOrderedOpportunityLast(queue, {
-            event: option.event,
-            player: p.id,
-          })
-        : reorderOrderedOpportunity(queue, {
-            event: option.event,
-            player: p.id,
-            position: 'first',
-          });
-    g.movementRemaining = [...next.remaining];
+    const context=saphoMovementOrderContext(g);
+    requireRule(context,'The original movement order is no longer available.');
+    const quote=saphoMovementRule(()=>reorderSaphoMovementOrder(context,
+      {event:option.event,player:p.id,mode:option.mode}));
+    g.movementRemaining = [...quote.next.remaining];
     if (option.mode === 'last')
-      g.saphoMovementLast = { event: option.event, turn: g.turn, player: p.id };
+      g.saphoMovementLast = { event: context.queue.event, turn: g.turn, player: p.id };
     const used = discard(g, p, 'richese-juice-of-sapho');
     log(
       g,
-      `${p.name} discarded Juice of Sapho to take the ${option.mode} remaining combined shipment and movement turn${option.mode === 'last' ? ', including after the Spacing Guild' : ''}. Completed turns and physical storm order are unchanged.${option.mode === 'first' && g.advanced && g.movementRemaining.some(id => id !== p.id && getPlayer(g, id).faction === 'guild') ? ' The Guild retains its next legal timing choice and may still take its turn before this reordered turn.' : ''}`,
+      `${p.name} discarded Juice of Sapho to take the ${option.mode} remaining combined shipment and movement turn${option.mode === 'last' ? ', including after the Spacing Guild' : ''}.${quote.afterCurrent ? ` Provisional queued order: ${getPlayer(g,quote.afterCurrent).name} finishes the current combined turn unchanged; only later unstarted turns reorder.` : ''} Completed turns and physical storm order are unchanged.${option.mode === 'first' && g.advanced && g.movementRemaining.some(id => id !== p.id && getPlayer(g, id).faction === 'guild') ? ' The Guild retains its next legal timing choice and may still take its turn before this reordered turn.' : ''}`,
       { faction: p.faction, name: 'Juice of Sapho' },
     );
     if (g.semutaPreview) {
       const continuation: SaphoMovementDiscardContinuation = {
         kind: 'saphoMovementDiscard', player: p.id, card: used.id,
-        event: option.event, mode: option.mode, previousActive: g.active!,
+        event: context.queue.event, mode: option.mode, previousActive: g.active!,
+        ...(quote.afterCurrent ? {afterCurrent:quote.afterCurrent} : {}),
         resume: { response: g.response, decision: g.decision,
           pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
         stateSignature: '',

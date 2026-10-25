@@ -497,13 +497,14 @@ export const RULE_TOPICS: RuleTopic[] = [
       'In ordinary cyclic bidding or native Advanced normal Black Market, provisional first/last changes the current lot only, anchored at the live next bidder. Later circuits use that local cycle. Keep standing bids, allied funding and passes; a passed holder waits for a real raise, and the high bidder has no pending bid to reorder. Every purchase still requires a strict raise. Full effective-cycle no-ops cannot consume the card. The next lot uses its normal physical opener.',
       'Discarding Sapho frees a hand slot. A full-hand holder can join a still-open lot through this order change. Once Around completed opportunities cannot repeat. A cyclic pass stays spent until a genuine raise reopens it; a finished lot cannot reopen.',
       'The movement controls change complete shipment and movement turns at a boundary before the current player begins. First moves you ahead of the remaining unstarted turns, including after earlier players have fully finished. In Advanced, provisional first ordering retains an unspent Guild’s native next-boundary take/wait choice; Guild may still act ahead. An already granted current Guild turn cannot be displaced, and a Karama-locked privilege stays locked. Last stays after the Guild even if the Guild later chooses to wait.',
+      'At a clean boundary after another player has begun shipment and movement, an unstarted holder may provisionally reorder only later unstarted turns. First means first after that current actor finishes; last remains after Guild. The current actor keeps its entire turn and original counters/resources. This does not split your own started turn or interrupt pending card/arrival/payment preparations. Guild retains its next-boundary timing choice. The panel names the actor who must finish.',
       'Between completed battles, choose first or last among remaining battle choosers. The priority lasts for the rest of the Battle phase. You still need a real unresolved battle. Others may choose battles against you before your own turn; last is not immunity. This scope changes the chooser, not each battle’s aggressor or tie advantage.',
       'In a fresh Richese battle, use unreserved Sapho at a clean boundary before both combatants finish final battle actions, including after sealed plans and revealed declarations. Habbanya still precedes ordinary aggressor tie priority. Participants, plans, promises, weapon choices and votes do not swap or replay. Older battles retain their pre-plan opportunity.',
       'During a clean native Extortion payer decision, use Sapho to take your optional choice first/last among unanswered non-Moritani players. Earlier declines, collected bank5 and the one-payment3 limit remain. The next payer event changes even when that player stays next. You may decline instead of paying.',
       'Finish existing shipment, movement, card preparation and pending decisions before changing order. The exact Extortion payer window is a supported exception for its own order only. Your hand panel lists available choices. Reserved cards and positions you already hold cannot be selected.',
       'Completed bids and turns stay completed. Storm order, committed funding and movement counters do not reset. Refreshing preserves the same remaining opportunities and any declared last position.',
       'In the explicitly opted-in Semuta preview, clean Once Around and movement-order discards pause after their bidder/turn queues reorder; a clean between-battles chooser discard pauses after changing battle priority but before the next chooser acts; an aggressor discard pauses after changing ordinary tie priority. Fresh late continuations also bind revealed choices and the public final revision; old continuation bytes remain unchanged. Every seat receives the same neutral offer. Claim or decline moves only the used card or leaves it discarded; each committed queue or unresolved battle continues once. Direct combined late claim/capture proof remains open.',
-      'Both combatants receive the same persistent final battle opportunity after original votes and native late defense, regardless of held cards or result. Finish explicitly; a Sapho priority change clears both finish marks with a fresh event. The second finish closes priority before Stone counts and outcome settlement. This shared online procedure and cyclic lot duration are provisional conventions. Other phase ordering and partly completed combined-turn intervention remain unfinished. Silent bids retain simultaneous timing and storm tie order.',
+      'Both combatants receive the same persistent final battle opportunity after original votes and native late defense, regardless of held cards or result. Finish explicitly; a Sapho priority change clears both finish marks with a fresh event. The second finish closes priority before Stone counts and outcome settlement. This shared online procedure, cyclic lot duration and queued movement timing are provisional conventions. Other phase ordering and splitting your own started combined turn remain unfinished. Silent bids retain simultaneous timing and storm tie order.',
     ],
     example:
       'Atreides bids 2. Before taking its bid, the Emperor uses Sapho to go last. Richese bids 3, then the Emperor must bid at least 4 to win. Atreides does not receive another bid.',
@@ -518,13 +519,13 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Finite Once Around, provisional current-lot cyclic ordinary/normal Black Market, clean combined-turn and remaining Battle-phase ordering, and clean late aggressor in fresh Richese battles. Public final readiness closes before physical allocation/settlement; plans, votes, original participants and committed cards remain. Local cycles preserve passes/funding and native following openers. Other timing modes remain unfinished.',
+          'Finite Once Around, current-lot cyclic bidding, clean combined-turn and queued unstarted-tail movement, remaining battle-choice and late aggressor modes are connected. Queued movement retains the started actor, resources/counters and native Guild choice; exact Semuta disposal preserves that same current actor. Tail timing is visibly provisional. Other phases and split-own-turn mode remain unfinished.',
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Owner-only first/last and clean unresolved-battle aggressor actions, public aggressor/tie priority and remaining battle order. Persistent final controls show both combatants and fresh-event readiness; a public Sapho use clears both finish marks. Cyclic controls retain current-lot duration and pending-bid limits. Older battles keep early timing.',
+          'Owner-only first/last and unresolved-battle aggressor controls retain public priority. Queued movement names the started actor who finishes first, explains provisional tail ordering and sends only original action fields; afterCurrent is display metadata. Final battle/cyclic controls retain their existing scope. Older battles keep early timing.',
       },
       {
         area: 'AI',
@@ -544,6 +545,11 @@ export const RULE_TOPICS: RuleTopic[] = [
         detail:
           '18 October Extortion:9-file115/115, types/lint/build and six original-action/rendered-table programmes pass. Public Basic/Advanced cache1, placed/revealed Terror, paid entry1, native Mentat placement-before-bank5 and an earlier decline use120/139 source actions. First/payment3 and last/payment3 or all-decline use2–4 continuations, preserving one payment and native token retirement/rotation. Four profiles make eight legal holder/payer proposals and complete. Pure replay/no-op/recovered reuse cases are separate. One deliberate-invalid-mode test cast was repaired; all checks then passed. Prior Guild, aggressor and cyclic evidence remains in linked feature docs. No browser clicks, visual/deployed, direct combined Semuta claim/capture, complete-mode or final-assurance acceptance',
         evidence: [
+          'game/sapho-movement-order.ts',
+          'tests/sapho-movement-order.test.ts',
+          'tests/sapho-started-movement-controls.test.tsx',
+          'tests/fixture-sapho-started-movement.ts',
+          'tests/sapho-started-movement-engine.test.ts',
           'game/sapho-extortion.ts',
           'tests/sapho-extortion.test.ts',
           'tests/fixture-sapho-extortion.ts',
