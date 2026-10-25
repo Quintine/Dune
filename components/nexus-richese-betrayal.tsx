@@ -17,8 +17,9 @@ export function NexusRicheseBetrayal({ game, act, busy }: {
   const canRespond = reaction.canPass && !reaction.hasPassed;
   const canUse = canRespond && reaction.canUse && !reaction.blocked;
   const disabled = busy || game.status !== 'playing';
+  const blind = reaction.source === 'normal';
   // The receipt grants no card-face entitlement. Only the already-public cache
-  // face is shown; a Black Market face is never inferred from a seller's hand.
+  // face is shown; concealed ordinary and Black Market faces stay private.
   const card = reaction.source === 'cache' && game.richeseAuction?.source === 'cache'
     ? game.richeseAuction.card
     : null;
@@ -27,11 +28,18 @@ export function NexusRicheseBetrayal({ game, act, busy }: {
     <section aria-label="Richese Nexus Betrayal response" className="notice min-w-0 space-y-3">
       <h3>Richese Nexus Betrayal · before payment</h3>
       <p>
-        {buyer?.name ?? 'The buyer'} won {reaction.source === 'cache' ? 'the public cache lot' : 'the concealed Black Market lot'} for {reaction.price} spice.
-        {reaction.kind === 'purchase'
+        {buyer?.name ?? 'The buyer'} won {reaction.source === 'cache' ? 'the public cache lot' : blind ? 'the concealed ordinary auction lot' : 'the concealed Black Market lot'} for {reaction.price} spice.
+        {blind
+          ? ' This response does not disclose the card’s family or grant inspection before you spend.'
+          : reaction.kind === 'purchase'
           ? ` ${target?.name ?? 'Richese'} is buying its own cache card. Betrayal discards that card without payment or delivery.`
           : ` Payment would go to ${target?.name ?? 'Richese'}. Betrayal sends the same payment to the Spice Bank instead; the buyer still receives the card.`}
       </p>
+      {blind && <p className="fine">
+        Provisional online rule: spend the Richese Nexus before learning whether this purchase can be stopped.
+        If it is a Richese card, that card is discarded without payment or delivery.
+        Otherwise your Nexus remains spent and the original purchase continues.
+      </p>}
       {card && <div className="space-y-2"><CardRules card={card} /><CardInspector card={card} /></div>}
       {reaction.source === 'blackMarket' && <p>The card remains face down; this response does not grant inspection.</p>}
       <p className="fine">
@@ -59,7 +67,7 @@ export function NexusRicheseBetrayal({ game, act, busy }: {
                 disabled={disabled}
                 onClick={() => { if (!disabled) act({ type: 'richeseBetrayalUse', event: reaction.event }); }}
               >
-                {reaction.kind === 'purchase' ? 'Use Richese Nexus · discard purchase without payment' : 'Use Richese Nexus · divert payment to Spice Bank'}
+                {blind ? 'Spend Richese Nexus · attempt to stop this purchase' : reaction.kind === 'purchase' ? 'Use Richese Nexus · discard purchase without payment' : 'Use Richese Nexus · divert payment to Spice Bank'}
               </Button>
             </div>
           )}

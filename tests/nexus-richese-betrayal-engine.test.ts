@@ -155,7 +155,7 @@ void test('orphaned/corrupt source receipts fail before projection, normalizatio
     g => {delete g.pendingRicheseBetrayal;},
     g => {delete g.richeseBetrayal;},
     g => {g.richeseBetrayal!.current = null;},
-    g => {g.pendingRicheseBetrayal!.quote.amount++;},
+    g => {const frame=g.pendingRicheseBetrayal!;assert.ok('quote' in frame);frame.quote.amount++;},
     g => {g.pendingRicheseBetrayal!.receipt.invoice.card.name = 'forged face';},
     g => {player(g,f.buyer).spice--;},
     g => {player(g,f.target).hand.splice(0,1);},

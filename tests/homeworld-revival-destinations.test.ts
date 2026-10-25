@@ -77,7 +77,7 @@ void test('Tleilax Homeworld transfers preserve exact custody, permit own-world 
   assert.deepEqual(g, allied);
 });
 
-void test('storm uses the selected actual sector and mobile stronghold pointer; its classification remains gated', () => {
+void test('revival keeps storm and HMS route restrictions distinct, including the sheltered interior', () => {
   for (const faction of ['fremen', 'tleilaxu'] as const) {
     const { g, grant } = fixture(faction);
     g.storm = 10;
@@ -85,11 +85,16 @@ void test('storm uses the selected actual sector and mobile stronghold pointer; 
     g.players[0].forces['hidden_mobile_stronghold:0'] = 1;
     let choices = homeworldRevivalDestinations(g, 'p', grant);
     assert.match(choices.find((c) => c.id === 'arrakeen:10')!.blocked!, /storm/);
-    assert.match(choices.find((c) => c.id === 'hidden_mobile_stronghold:0')!.blocked!, /storm/);
+    const route = faction === 'fremen' ? /Force Movement/ : /Only Ixians/;
+    assert.match(choices.find((c) => c.id === 'hidden_mobile_stronghold:0')!.blocked!, route);
+    assert.doesNotMatch(choices.find((c) => c.id === 'hidden_mobile_stronghold:0')!.blocked!, /storm|await|ruling/);
     assert.equal(choices.find((c) => c.id === 'polar_sink:0')!.blocked, null);
     g.storm = 18;
     choices = homeworldRevivalDestinations(g, 'p', grant);
-    assert.match(choices.find((c) => c.id === 'hidden_mobile_stronghold:0')!.blocked!, /classification|ruling/);
+    assert.match(choices.find((c) => c.id === 'hidden_mobile_stronghold:0')!.blocked!, route);
+    const before = structuredClone(g);
+    assert.throws(() => quoteHomeworldRevivalDestination(g, 'p', grant, 'hidden_mobile_stronghold:0'), route);
+    assert.deepEqual(g, before);
   }
 });
 

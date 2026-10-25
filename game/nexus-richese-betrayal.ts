@@ -1,4 +1,5 @@
 import type { Card } from './cards';
+import type { Game } from './engine';
 import { nexusCardMode, validateNexusCards, validateNexusPlayers, type NexusPlayer, type NexusState } from './nexus-cards';
 import type { RicheseAuction } from './richese-auction';
 import { richeseCardDefinition } from './richese-cards';
@@ -8,7 +9,7 @@ export type RicheseBetrayalInvoice = {
   kind: 'purchase' | 'sale';
   target: string;
   buyer: string;
-  source: 'cache' | 'blackMarket';
+  source: 'cache' | 'blackMarket' | 'normal';
   price: number;
   ownPayment: number;
   allyPayment: number;
@@ -87,18 +88,20 @@ function validateInvoice(players: readonly NexusPlayer[], invoice: RicheseBetray
   const target = players.find(p => p.id === invoice.target);
   const buyer = players.find(p => p.id === invoice.buyer);
   requireBetrayal(target?.faction === 'richese' && buyer &&
-    ['cache', 'blackMarket'].includes(invoice.source) &&
+    ['cache', 'blackMarket', 'normal'].includes(invoice.source) &&
     whole(invoice.price) && invoice.price > 0 && whole(invoice.ownPayment) && whole(invoice.allyPayment) &&
     invoice.allyPayment <= invoice.price && invoice.ownPayment === invoice.price - invoice.allyPayment &&
     (invoice.allyPayment === 0 ? invoice.donor === null :
       text(invoice.donor) && invoice.donor !== invoice.buyer && players.some(p => p.id === invoice.donor)) &&
     validCard(invoice.card), 'Richese Betrayal needs a positive original price, exact funding split and physical card.');
   if (invoice.kind === 'purchase') {
-    requireBetrayal(invoice.source === 'cache' && buyer.id === target.id && richeseCardDefinition(invoice.card) &&
+    requireBetrayal((invoice.source === 'normal' || invoice.source === 'cache' && richeseCardDefinition(invoice.card)) &&
+      buyer.id === target.id &&
       invoice.originalRecipient === (players.find(p => p.faction === 'emperor')?.id ?? null),
-      'Richese self-veto requires a real public cache purchase paid to Emperor or bank.');
+      'Richese self-veto requires an original cache or normal purchase paid to Emperor or bank.');
   } else {
-    requireBetrayal(invoice.kind === 'sale' && buyer.id !== target.id && invoice.originalRecipient === target.id &&
+    requireBetrayal(invoice.kind === 'sale' && invoice.source !== 'normal' &&
+      buyer.id !== target.id && invoice.originalRecipient === target.id &&
       (invoice.source !== 'cache' || richeseCardDefinition(invoice.card)),
       'Richese sale diversion requires another buyer and income originally owed to Richese.');
   }
@@ -141,6 +144,51 @@ export function quoteRicheseBetrayalInvoice(input: {
       'Richese Betrayal has lost or duplicated its exact source card.');
   }
   return invoice;
+}
+
+/** Bind an ordinary Richese purchase without using the concealed card's family
+ * to decide whether the blind Nexus counter is available. Native settlement
+ * separately proves the payer's actual wallet and pledged ally funding. */
+export function quoteRicheseNormalBetrayalInvoice(input: {
+  players: readonly NexusPlayer[];
+  auction: Pick<NonNullable<Game['auction']>, 'cards' | 'index' | 'bid' | 'bidder' | 'allyPayment'>;
+  donor: string | null;
+  originalRecipient: string | null;
+  physicalCards: readonly Card[];
+}): RicheseBetrayalInvoice {
+  requireBetrayal(plain(input), 'Richese Betrayal needs an original normal auction.');
+  validatePlayers(input.players);
+  const auction = input.auction;
+  requireBetrayal(plain(auction) && Array.isArray(auction.cards) && auction.cards.every(validCard) &&
+    whole(auction.index) && auction.index < auction.cards.length && whole(auction.bid) && auction.bid > 0 &&
+    text(auction.bidder) && input.players.some(player => player.id === auction.bidder && player.faction === 'richese'),
+    'Richese Betrayal needs the native Richese winner and its current positive normal lot.');
+  const allyPayment = auction.allyPayment === undefined ? 0 : auction.allyPayment;
+  const invoice: RicheseBetrayalInvoice = {
+    kind: 'purchase', target: auction.bidder, buyer: auction.bidder, source: 'normal',
+    price: auction.bid, ownPayment: auction.bid - allyPayment, allyPayment,
+    donor: input.donor, originalRecipient: input.originalRecipient,
+    card: { ...auction.cards[auction.index] },
+  };
+  validateInvoice(input.players, invoice);
+  const buyer = input.players.find(player => player.id === invoice.buyer)!;
+  requireBetrayal(!invoice.donor || buyer.ally === invoice.donor &&
+    input.players.find(player => player.id === invoice.donor)?.ally === buyer.id,
+    'Richese Betrayal cannot substitute an unallied contributor.');
+  for (const cards of [auction.cards, input.physicalCards]) {
+    requireBetrayal(Array.isArray(cards) && cards.every(validCard), 'Richese Betrayal needs physical source custody.');
+    const matches = cards.filter(card => card.id === invoice.card.id);
+    requireBetrayal(matches.length === 1 && sameCard(matches[0], invoice.card),
+      'Richese Betrayal has lost or duplicated its exact source card.');
+  }
+  return invoice;
+}
+
+/** Evaluate only after the physical Nexus has been committed. A normal-lot
+ * miss still records a used counter; it grants no earlier face inspection. */
+export function richeseBetrayalVetoesPurchase(invoice: RicheseBetrayalInvoice): boolean {
+  return invoice.kind === 'purchase' &&
+    (invoice.source !== 'normal' || !!richeseCardDefinition(invoice.card));
 }
 
 /** Public held-presence only: private Nexus identities never affect timing. */

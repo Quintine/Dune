@@ -420,8 +420,8 @@ for (const kind of ['purchase', 'sale'] as const) {
       { name: 'changed payer split', change: g => { g.pendingRicheseBetrayal!.receipt.invoice.ownPayment++; } },
       { name: 'changed physical face', change: g => { g.pendingRicheseBetrayal!.receipt.invoice.card.name += ' forged'; } },
       { name: 'foreign buyer', change: g => { g.pendingRicheseBetrayal!.receipt.invoice.buyer = f.holder; } },
-      { name: 'changed source quote', change: g => { g.pendingRicheseBetrayal!.quote.amount++; } },
-      { name: 'changed original lot', change: g => { g.pendingRicheseBetrayal!.lot.cardId = g.deck[0].id; } },
+      { name: 'changed source quote', change: g => { const frame=g.pendingRicheseBetrayal!;assert.ok('quote' in frame);frame.quote.amount++; } },
+      { name: 'changed original lot', change: g => { const frame=g.pendingRicheseBetrayal!;assert.ok('lot' in frame);frame.lot.cardId = g.deck[0].id; } },
       { name: 'foreign required acknowledgement', change: g => { g.pendingRicheseBetrayal!.receipt.required.push(f.target); } },
       { name: 'forged pass', change: g => { g.pendingRicheseBetrayal!.receipt.passed.push(f.holder); } },
       { name: 'lost exact source custody', change: g => {

@@ -9,7 +9,8 @@ export function botNexusRicheseBetrayalActions(game: GameView): Action[] {
   const own = game.players.find((player) => player.id === game.me);
   if (!(own?.bot ?? own?.autopilot)) return [];
   return [{
-    type: reaction.canUse && !reaction.blocked ? 'richeseBetrayalUse' : 'richeseBetrayalPass',
+    // Minimal policies keep the card instead of guessing a concealed ordinary lot.
+    type: reaction.source !== 'normal' && reaction.canUse && !reaction.blocked ? 'richeseBetrayalUse' : 'richeseBetrayalPass',
     event: reaction.event,
   }];
 }

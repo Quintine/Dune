@@ -2,6 +2,96 @@
 
 Audited 10 September 2026, with a bounded Betrayal implementation contract added 30 September. This separates the ordinary Secret Ally shipment, native Cunning's two-marker operation and Betrayal's two auction outcomes. It does not certify full-family implementation or open the Nexus release gate. See [common Nexus rules](NEXUS_CARD_RULES.md), [auction custody and source boundaries](RICHESE_AUCTION_RULES.md), [No-Field custody](RICHESE_NO_FIELD_RULES.md), and [allied No-Field distinctions](RICHESE_ALLIED_SHIPMENT_AUDIT.md).
 
+## Ordinary winning-bid Betrayal — 25 October 2026
+
+**Prototyped / Partial.** The printed purchase-veto alternative has no cache-
+origin limit. A Richese-family card may reach the ordinary discard/deck after
+actual play. A positive native Richese winning bid in the existing supported
+Richese/CHOAM Nexus profile now opens the neutral acknowledgement before native
+Emperor funding and the original spice/Karama payment chooser. Keep the actual
+ordinary auction; do not fabricate a Richese cache lot, paid sale or acquisition.
+
+**Selected blind-attempt convention:** under the 14 October recommended-option
+authority, all publicly possible responders acknowledge the same boundary for
+either hidden family. Privately eligible Use commits the physical Richese Nexus
+first. Only then does an actual Richese-family card cause veto: discard that
+exact reserved card without payment, delivery or purchase bonus, then advance
+its native lot/round once. The exact face is not publicly announced. On another
+family, the Nexus remains spent and the original purchase resumes. This is a
+visibly provisional online convention, not printed voluntary-discard permission
+or an established physical-table ruling for failed attempts.
+
+Pass keeps the Nexus. All-pass and a spent miss resume the original payment
+choice and later native funding/income/delivery exactly once; the same closed
+winning quote does not open a new counter. A later payment method can still
+be Karama. The receipt's initial split is an unpaid winning quote, not proof
+that spice was debited or that a later native funding effect already occurred.
+No earlier bid, source card, price or recipient is changed by this pause.
+
+The native Richese Nexus face is recorded in the original GF9 component
+photograph linked below; E2 pp4–6 covers face-down bidding and Richese cards
+entering normal discard. The family symbol is on the face. No identifying back
+or mandatory public family announcement was established by this review. Do not
+invent a public family flag or family-dependent Use availability. Only public
+held-Nexus presence determines the acknowledgement roster; ordinary card and
+payment/Nexus identities remain in existing private views. A costed outcome is
+not prior inspection. The persistent control explains both consequences before
+commitment. Minimal profiles pass blind ordinary attempts; strategy is deferred.
+
+Fresh normal frames bind their original live pool index, round, opaque lot ID,
+physical card, winning quote and source controls. Public event IDs contain no
+card identifier. Intrinsic receipt shape and old cache/Black Market signature
+bytes remain unchanged. The legacy alternatives keep their existing native
+continuations. Proactive immediate Karama acquisition and private special-
+Karama acquisition remain separate outstanding producers. Wider profile,
+combination, recovery/privacy assurance and deployed acceptance are not claimed.
+
+Evidence: [invoice/outcome helper](../game/nexus-richese-betrayal.ts),
+[normal source cases](../tests/nexus-richese-betrayal-normal.test.ts),
+[isolated controls](../components/nexus-richese-betrayal.tsx),
+[controls/profile cases](../tests/nexus-richese-betrayal-normal-controls.test.tsx),
+[controlled recycle producer](../tests/fixture-richese-normal-betrayal.ts),
+[actual continuation cases](../tests/richese-normal-betrayal-engine.test.ts).
+The source distinguishes genuinely earned setup/cache play/discard/Nexus/bids
+from the one controlled placement of an already discarded card into the unopened
+ordinary deck. It does not claim a native full-deck exhaustion/reshuffle journey.
+The older bounded contract's normal-self-purchase exclusion below is superseded
+only for this original winning-bid boundary.
+
+
+Frozen **17 files, 153/153**, types/lint/build and nine actual auction-action/
+engine/GameTable SSR journeys pass on unchanged source. Eight helper and six
+connected component callback/profile cases accompany fourteen ordinary-source
+engine cases. Basic116/Advanced124 original actions earn audit/setup, actual
+cache Richese Karama retention and first normal winning-bid Karama payment,
+then native Worm/alliance/Nexus draw and the new bid3 boundary. Only one labelled
+recycle from that true discard into an unopened deck is controlled; native
+full-deck exhaustion is not claimed. An additional original125-action case earns
+a real phase3 two-spice ally pledge. Main/cache45 and Nexus12 inventories remain
+physical. Success, pass, miss, paid/free original choice and aided invoice are
+exercised; all four minimal profiles legally pass blind normal attempts.
+
+The ordinary frame adds private `normal:{round,lot,index}` beside the existing
+receipt/signature. Public `richeseBetrayalReaction.source` additionally accepts
+`normal`; its other fields/actions are unchanged. The lot UUID is opaque and
+contains no private card identity. Legacy pending-source mutation tests narrow
+the old quote/lot branch for TypeScript; the deferred recovery test has only
+that type guard change and no recovery campaign is run.
+
+The first runtime catches a fixture pledge made in Charity; the actual action
+is moved to Bidding. First related proof is152/153 because Advanced could earn
+another Karama in the deliberately no-retained-K source; ordering an actual
+still-unopened first Shield repairs that source without replacing a dealt or
+played hand. Final type feedback replaces two mutations of a readonly fixture
+array with equivalent malformed copies. No rules, profiles or start guards
+are relaxed. Private matching code fingerprints, logs and rendered HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-richese-normal-betrayal/`.
+Exact native discard/reshuffle, proactive immediate Karama, private special
+acquisition, wider combinations, complete modes, final recovery/privacy/rules
+assurance and browser/mobile/deployed acceptance remain unfinished. These
+journeys are engine/SSR, not parent hydration or DOM clicks. No saved-room/D1/
+server/reset/restart/deployment operation occurred.
+
 ## Purchased Karama rate with native Cunning — 25 October 2026
 
 **Prototyped / Partial.** The native unallied two-token Cunning shipment now

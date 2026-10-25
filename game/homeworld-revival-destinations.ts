@@ -35,12 +35,14 @@ export function homeworldRevivalDestinations(
       const effectiveSector = t.id === MOBILE_STRONGHOLD
         ? splitLocation(g.mobileStronghold!.location!).sector : sector;
       let blocked = grant.blocked;
+      if (!blocked && t.id === MOBILE_STRONGHOLD)
+        blocked = grant.kind === 'fedaykin'
+          ? 'Southern Hemisphere placement does not bypass the mobile stronghold’s entry route. Reach its pointing territory and enter by Force Movement.'
+          : 'Only Ixians may enter the mobile stronghold directly from off-planet reserves. Tleilax revival deployment does not grant that route.';
       if (!blocked && effectiveSector !== 0 && effectiveSector === g.storm)
         blocked = grant.kind === 'fedaykin'
-          ? 'Fedaykin revival placement into storm awaits its own permission ruling.'
+          ? 'Southern Hemisphere placement must use a sector outside the storm. The Fremen storm-shipment exception does not grant revival placement.'
           : 'Revival deployment cannot enter a sector in storm.';
-      if (!blocked && t.id === MOBILE_STRONGHOLD)
-        blocked = 'Revival placement in the Hidden Mobile Stronghold awaits its shipment-classification ruling.';
       blocked ??= territoryEntryBlock(g.players, p.id, t.id);
       return { id: location(t.id, sector), name: `${t.name}${sector ? ` · sector ${sector}` : ''}`,
         territory: t.id, sector, blocked };

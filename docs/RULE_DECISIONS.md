@@ -1,5 +1,34 @@
 # Rule decision index
 
+## Richese Nexus ordinary-purchase blind attempt — 25 October 2026
+
+The printed Richese veto is not cache-only, but an ordinary recycled card's
+family may be concealed. Under the 14 October recommended-option authority,
+use uniform publicly possible acknowledgements and a committed blind attempt:
+spend the singleton Nexus before checking family. Actual Richese card: discard
+without payment/acquisition and advance the native lot. Other family: spend
+remains, original purchase continues. Pass retains the card; the same closed
+quote does not reopen. No prior family flag or exact-face reveal is introduced.
+This spend-on-miss convention is explicitly provisional online composition;
+primary rules did not establish general voluntary Nexus discard or an identifying
+family back. Existing cache/Black Market alternatives, private eligibility,
+native later payment choice and source/profile guards remain. Proactive and
+special Karama acquisition are still outstanding producers.
+[Printed source, knowledge policy and scope](NEXUS_RICHESE_RULES.md#ordinary-winning-bid-betrayal--25-october-2026).
+
+## Revived placement retains storm and HMS routes — 25 October 2026
+
+Under the 14 October recommended-option authority, keep Southern placement
+outside storm rather than importing the Fremen **shipment** exception. Retain
+the HMS pointing-territory/Force Movement route for Southern and the Ixian-only
+direct off-planet route for Tleilax. Southern's applications are explicitly
+provisional composition, not a new publisher Homeworld FAQ. HMS itself remains
+storm-protected; its route reason takes precedence over the outside pointer's
+storm. Prior named-entry reactions grant no route permission and the separate
+Moritani Cunning user ruling supplies no general HMS ban. Supplied physical10,
+32 and34 support the distinctions; fresh publisher PDF fallback returned403.
+[Selected policy and source limits](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md#selected-storm-and-hms-route-policy--25-october-2026).
+
 ## Current Traitor-declaration Truthtrance — 25 October 2026
 
 Compose the existing general current-turn rule with an actual unsubmitted
@@ -1307,7 +1336,7 @@ These are unresolved in the cited records. Do not infer an answer from elapsed t
 | Repeat Karama on a canceled compulsory cache lot | After one Karama cancels the compulsory Richese cache auction and restores the ordinary pool, the engine currently still accepts a second Karama against the resumed window and re-derives the ordinary count from the frozen pre-cache field. Whether a repeat cancellation should be refused is not settled; the invariant that a canceled lot never restores more than its frozen pre-cache count does hold. | [Richese auction source](RICHESE_AUCTION_RULES.md), [exhausted-cache runtime](IMPLEMENTATION_STATUS.md) |
 | Base special Karama | Unfunded auction recovery, stopped-shipment settlement and Atreides full-plan commitment order remain provisional. Supplied physical27 F now sets its before-public-reveal deadline, including quiet later use after declining the initial offer. Ordinary preparation priority and target-first sequencing remain implementation compositions, with sealed plans retained and no added reading acknowledgement. | [Explicit base interpretations](BASE_ADVANCED_READINESS_20260907.md#explicit-unresolved-base-interpretations), [current full-plan timing](ATREIDES_FULL_PLAN_TIMING.md#before-reveal-window--24-october-2026) |
 | Homeworld high-threshold revival deployment | The publisher does not state whether a return that itself first reaches the high threshold may deploy on that same return. The content-first prototype evaluates the resulting population, so the crossing return qualifies; this is a visibly provisional composition, not a located timing ruling. The Tleilaxu low-income start-condition snapshot is unchanged, and partial groups, split destinations, storm placement, allied-Homeworld limits and other entry effects retain their documented boundaries. | [Benefits contract](HOMEWORLD_BENEFITS_RULES.md#provisional-high-threshold-revival-deployment--9-october-2026), [resumption record](IMPLEMENTATION_STATUS.md#9-october-2026--gated-captures-resumed-under-the-basic-occupation-and-odd-force-occupy-prototypes) |
-| Revived force arrival / BG | Advanced Intrusion follows supplied p28 entry wording. Provisionally treat off-planet Tleilax SEND to Arrakis as earning ordinary BG Spiritual accompaniment; Southern is on-planet and Homeworld destinations are separate. Keep committed return/placement, ordinary counters, original income and one deferred Ambassador entry; add no fee/ordinary allowance/Guild stop/phase4 industry. Phase4 Spiritual binds the exact return or owned Guild child. Terror continuation remains explicitly unfinished. | [Current source and policy](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md#revival-arrival-responses--25-october-2026) |
+| Revived force arrival / BG | Advanced Intrusion follows supplied p28 entry wording. Provisionally treat off-planet Tleilax SEND to Arrakis as earning ordinary BG Spiritual accompaniment; Southern is on-planet and Homeworld destinations are separate. Keep committed return/placement, ordinary counters, original income and one deferred Ambassador entry; add no fee/ordinary allowance/Guild stop/phase4 industry. Phase4 Spiritual binds the exact return or owned Guild child. The later Terror continuation retains the original return, ordered Ambassador opportunity and actual Sneak children; complete combinations remain unfinished. | [Current source and policy](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md#revival-arrival-responses--25-october-2026) |
 | Occupied Homeworlds | The publisher question about retention after departure, replacement or contest, unique-power composition and shared income remains open; the first-occupier/current-occupier question was already sent. The content-first Basic benefit selector now uses the visibly provisional current-sole policy above (Tupile excepted), which is an implementation choice, not an answer to that question. | [Occupation questions](HOMEWORLD_OCCUPATION_RULES.md#questions-the-retrieved-sources-do-not-settle), [lifecycle audit](HOMEWORLD_OCCUPATION_LIFECYCLE_AUDIT.md), [Basic policy](HOMEWORLD_OCCUPATION_RULES.md#basic-current-sole-benefit-policy--9-october-2026) |
 | Nexus responses and composition | Betrayal private-response timing, Emperor fewer-than-five, fresh advisor/storm cases, Duke restoration and remaining faction-specific combinations remain source-bound. Tleilaxu Secret Ally now has the explicitly provisional recommended combined policy in its own row below; it is not borrowed authority from native revival or Ghola. | [Common boundaries](NEXUS_CARD_RULES.md#remaining-source-questions-and-release-boundaries) and individual faction source/runtime documents |
 | Tleilaxu Secret Ally revival | Under choose-recommended-option priority, a quiet unallied actual holder with Tleilaxu absent returns one mandatory own dead leader free, using the ordinary leader slot, and zero-to-five exact counters at one bank spice each. The card shares an ordinary ceiling expanded to at least five; prior normal returns count, larger native/Recruits allowances remain, and the fixed card group is never doubled. Only the unavailable-roster trigger is waived; repeated-death/face-down and special custody rules remain, with original ordinary cycles preserved. No force-only use, native Tleilaxu income or nonexistent cancellation owner is invented. This is provisional implementation policy, not publisher clarification or a separately answered numerical user ruling. | [Recommended combined policy](NEXUS_TLEILAXU_RULES.md#recommended-combined-revival-prototype--14-october-2026) |

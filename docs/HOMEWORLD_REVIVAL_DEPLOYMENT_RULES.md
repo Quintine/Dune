@@ -2,6 +2,32 @@
 
 Primary-source audit, 10 September 2026. This is a source and implementation-boundary contract, not a runtime completion claim. The coordinator has already asked about threshold restoration and splitting several revived Fedaykin; those answers remain pending.
 
+## Selected storm and HMS route policy — 25 October 2026
+
+Use the existing out-of-storm destinations and native HMS entry route, under
+the 14 October recommended-option authority. The supplied authorized revision,
+physical10/logical8 movement rule and physical32/logical30 Fremen B, separates
+ordinary storm restrictions from the named **shipment** exception. Southern
+**placement** does not inherit that exceptional shipment permission. This is
+selected provisional composition for Southern, not a new Southern FAQ.
+
+Physical34/logical32 Ix B restricts non-Ix entry to reaching the pointing
+territory and then using Force Movement; HMS itself remains storm- and
+worm-protected. Southern placement grants no such route override. Tleilax's
+off-planet SEND likewise retains the Ixian direct-shipment restriction. Existing
+BG/Terror/Ambassador entry reactions do not grant a shipment or movement route.
+An occupied interior does not create a revival destination merely because it is
+sheltered. Display the route restriction first, even when the pointing sector
+is in storm; do not describe the HMS interior as exposed to that storm.
+
+These choices replace the old waiting-for-ruling labels without opening an
+unsupported route, spending another allowance or changing the eligible group.
+They do not borrow the source-specific Moritani Cunning HMS exclusion as a
+universal user ban. Fresh source review used the supplied44-page PDF visually;
+E1/November publisher PDF retrieval returned403, so no fresh publisher
+confirmation is claimed. The earlier audit and checkpoints below remain dated
+evidence; their unresolved storm/HMS labels are superseded by this policy.
+
 ## Revival Terror continuation — 25 October 2026
 
 **Prototyped / Partial.** The adopted physical SEND-entry interpretation now

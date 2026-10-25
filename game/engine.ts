@@ -531,7 +531,7 @@ import { STORM_START_SECTOR, PLAYER_CIRCLE_SECTORS } from './player-positions';
 import { cashInCards } from './choam-karama';
 import { kullBlocksKarama, activeKullRestrictions, validateKullPhaseRestrictions, validateKullAttemptStamp, kullNativeCostCards, kullNexusCostCards, kullCounterCards, type KullPhaseRestriction } from './choam-kull';
 import { kullCancellationPurpose, kullSpecialPurpose, kullPurposeLabel, type KullPurpose } from './kull-purpose';
-import { quoteRicheseBetrayalInvoice, requiredRicheseBetrayalResponders, richeseBetrayalEligibility, richeseBetrayalEvent, createRicheseBetrayalReceipt, validateRicheseBetrayalCursor, type RicheseBetrayalCursor, type RicheseBetrayalReceipt } from './nexus-richese-betrayal';
+import { quoteRicheseBetrayalInvoice, quoteRicheseNormalBetrayalInvoice, richeseBetrayalVetoesPurchase, requiredRicheseBetrayalResponders, richeseBetrayalEligibility, richeseBetrayalEvent, createRicheseBetrayalReceipt, validateRicheseBetrayalCursor, type RicheseBetrayalCursor, type RicheseBetrayalReceipt } from './nexus-richese-betrayal';
 import { saleOptions, quoteSale, type ChoamMarket } from './choam-market';
 import { highKaitainDiscardsAvailable, quoteKaitainDiscards, homeworldWorthlessSaleBlock } from './homeworld-card-economy';
 import { biddingEndError, biddingEndQuiet, biddingEndPubliclyEmpty, type BiddingEnd } from './bidding-end';
@@ -1370,10 +1370,14 @@ export type Game = {
   richeseBetrayal?: RicheseBetrayalCursor;
   pendingRicheseBetrayal?: {
     receipt: RicheseBetrayalReceipt;
+    signature: string;
+  } & ({
     lot: RicheseAuction;
     quote: Extract<RicheseSettlementQuote, {kind:'sold'}>;
-    signature: string;
-  } | null;
+  } | {
+    /** The actual unpaid ordinary pool, never a fabricated Richese cache lot. */
+    normal: { round: string; lot: string; index: number };
+  }) | null;
   /** Original normal-auction obligation; neutral acknowledgements precede funding. */
   nexusEmperorPayment?: { sequence: number; current: string | null; completed: EmperorPaymentReceipt[] };
   pendingNexusEmperorPayment?: { receipt: EmperorPaymentReceipt } | null;
@@ -12718,6 +12722,12 @@ function richeseBetrayalResponders(g: Game): string[] {
   })));
 }
 function richeseBetrayalSourceSignature(g: Game, frame: NonNullable<Game['pendingRicheseBetrayal']>): string {
+  if ('normal' in frame) return JSON.stringify({
+    event:frame.receipt.event,normal:frame.normal,turn:g.turn,phase:g.phase,status:g.status,
+    round:g.richeseBidding,auction:g.auction,order:g.order,aid:g.aid,
+    players:g.players.map(p => ({id:p.id,faction:p.faction,ally:p.ally,hand:p.hand,spice:p.spice})),
+    active:g.active,decision:g.decision,response:g.response,phaseOpening:g.phaseOpening,
+  });
   return JSON.stringify({
     event:frame.receipt.event,lot:frame.lot,quote:frame.quote,turn:g.turn,phase:g.phase,status:g.status,
     round:g.richeseBidding,auction:g.richeseAuction,order:g.order,positions:normalizedPlayerPositions(g),
@@ -12735,6 +12745,38 @@ function richeseBetrayalInvoice(g: Game, quote: Extract<RicheseSettlementQuote,{
     sourceCards:lot.source === 'cache' ? g.richeseCache! : getPlayer(g,lot.owner).hand,
     physicalCards:physicalTreacheryCards(g),
   }));
+}
+function normalRicheseBetrayalInvoice(g: Game) {
+  const auction = g.auction!;
+  return nexusRule(() => quoteRicheseNormalBetrayalInvoice({
+    players:g.players,auction,donor:auction.allyPayment ? getPlayer(g,auction.bidder!).ally : null,
+    originalRecipient:byFaction(g,'emperor')?.id ?? null,physicalCards:physicalTreacheryCards(g),
+  }));
+}
+/** This is an unpaid ordinary winner, not a fabricated cache sale. Family is
+ * deliberately absent from admission, acknowledgement and payment choices. */
+function normalRicheseBetrayalPreflight(g: Game) {
+  requireRule(richeseBetrayalModeSupported(g) && g.status === 'playing' && g.phase === 3 &&
+    g.richeseBidding?.stage === 'normal' && g.richeseBidding.turn === g.turn &&
+    g.auction && !g.richeseAuction && !g.currentAuctionSale &&
+    !g.response && !g.decision && !g.phaseOpening && !g.truthtrance &&
+    !g.pendingKarama && !g.pendingNullentropy && !g.pendingTreacheryDiscard &&
+    !g.pendingNexusEmperorPayment && !g.pendingNexusEmperorSellerPurchase &&
+    !g.pendingKull && !g.pendingChoamWorthless && !g.choamMarket && !g.pendingIxAlly &&
+    !g.pendingRicheseGift && !g.pendingRichesePurchaseIncome && !g.biddingEnd &&
+    !g.bureaucratPayments?.pending && !pendingNexusTraitors(g),
+  'Richese ordinary-purchase Betrayal needs its original unpaid normal winner.');
+  const auction=g.auction!;
+  const next=quoteNormalAuctionNext({order:auction.saphoOrder ?? g.order,
+    eligible:g.order.filter(id=>getPlayer(g,id).hand.length<handLimit(getPlayer(g,id))),
+    active:auction.active,bid:auction.bid,bidder:auction.bidder,passed:auction.passed});
+  requireRule(next.kind !== 'bid' && next.kind !== 'unbid' && next.player === auction.bidder,
+    'Finish the original bidding cycle before its neutral Betrayal acknowledgement.');
+  // Native payment still chooses spice/Karama and validates the actual wallet
+  // or escrow. This boundary neither debits a bid nor spends a payment card.
+  const invoice=normalRicheseBetrayalInvoice(g);
+  currentAuctionContinuationQuote(g,{kind:'next'});
+  return invoice;
 }
 function richeseBetrayalSourcePreflight(g: Game, quote: Extract<RicheseSettlementQuote,{kind:'sold'}>): void {
   requireRule(richeseBetrayalModeSupported(g) && g.status === 'playing' && g.phase === 3 &&
@@ -12795,22 +12837,35 @@ function richeseBetrayalIntegrity(g: Game): void {
   nexusCardsIntegrity(g);
   nexusRule(() => validateRicheseBetrayalCursor(g,cursor,frame?.receipt ?? null));
   if (frame) {
-    requireRule(Object.keys(frame).sort().join(',') === 'lot,quote,receipt,signature' &&
-      frame.quote?.kind === 'sold' && frame.lot && typeof frame.signature === 'string',
-    'The saved Richese Betrayal source frame is malformed.');
-    richeseBetrayalSourcePreflight(g,frame.quote);
-    requireRule(frame.signature === richeseBetrayalSourceSignature(g,frame) &&
-      JSON.stringify(frame.lot) === JSON.stringify(g.richeseAuction) &&
-      JSON.stringify(frame.quote) === JSON.stringify(richeseSettlementQuote(g)) &&
-      JSON.stringify(frame.receipt.invoice) === JSON.stringify(richeseBetrayalInvoice(g,frame.quote)) &&
-      frame.receipt.round === g.richeseBidding!.event && frame.receipt.lot === g.richeseAuction!.event &&
-      frame.receipt.turn === g.turn &&
-      JSON.stringify(frame.receipt.required) === JSON.stringify(richeseBetrayalResponders(g)),
-    'The saved Richese Betrayal opportunity lost its original quote, custody, responders or source continuation.');
+    if ('normal' in frame) {
+      const invoice=normalRicheseBetrayalPreflight(g);
+      requireRule(Object.keys(frame).sort().join(',') === 'normal,receipt,signature' &&
+        Object.keys(frame.normal).sort().join(',') === 'index,lot,round' &&
+        frame.normal.index === g.auction!.index && frame.normal.round === g.richeseBidding!.event &&
+        frame.normal.lot === frame.receipt.lot && frame.receipt.round === frame.normal.round &&
+        frame.receipt.turn === g.turn && frame.receipt.invoice.source === 'normal' &&
+        JSON.stringify(frame.receipt.invoice) === JSON.stringify(invoice) &&
+        frame.signature === richeseBetrayalSourceSignature(g,frame) &&
+        JSON.stringify(frame.receipt.required) === JSON.stringify(richeseBetrayalResponders(g)),
+      'The ordinary Richese reaction lost its original unpaid pool, invoice or acknowledgements.');
+    } else {
+      requireRule(Object.keys(frame).sort().join(',') === 'lot,quote,receipt,signature' &&
+        frame.quote?.kind === 'sold' && frame.lot && typeof frame.signature === 'string',
+      'The saved Richese Betrayal source frame is malformed.');
+      richeseBetrayalSourcePreflight(g,frame.quote);
+      requireRule(frame.signature === richeseBetrayalSourceSignature(g,frame) &&
+        JSON.stringify(frame.lot) === JSON.stringify(g.richeseAuction) &&
+        JSON.stringify(frame.quote) === JSON.stringify(richeseSettlementQuote(g)) &&
+        JSON.stringify(frame.receipt.invoice) === JSON.stringify(richeseBetrayalInvoice(g,frame.quote)) &&
+        frame.receipt.round === g.richeseBidding!.event && frame.receipt.lot === g.richeseAuction!.event &&
+        frame.receipt.turn === g.turn &&
+        JSON.stringify(frame.receipt.required) === JSON.stringify(richeseBetrayalResponders(g)),
+      'The saved Richese Betrayal opportunity lost its original quote, custody, responders or source continuation.');
+    }
   }
   const sale = g.currentAuctionSale;
   const completed = cursor.completed.at(-1);
-  if (completed && completed.lot === g.richeseAuction?.event) {
+  if (completed && completed.invoice.source !== 'normal' && completed.lot === g.richeseAuction?.event) {
     const waiting = g.pendingNexusEmperorSellerPurchase;
     requireRule(g.status === 'playing' && g.phase === 3 && completed.turn === g.turn &&
       completed.round === g.richeseBidding?.event &&
@@ -12868,6 +12923,27 @@ function beginRicheseBetrayal(g: Game, quote: Extract<RicheseSettlementQuote,{ki
   g.pendingRicheseBetrayal = frame;
   return true;
 }
+function beginNormalRicheseBetrayal(g: Game): boolean {
+  if (!g.richeseBetrayalPreview || !g.auction?.bidder ||
+      getPlayer(g,g.auction.bidder).faction !== 'richese') return false;
+  const invoice=normalRicheseBetrayalPreflight(g), cursor=g.richeseBetrayal!;
+  const round=g.richeseBidding!.event;
+  // Passing or a spent miss resumes this exact invoice, never its raw action.
+  if (cursor.completed.some(receipt=>receipt.round===round && receipt.invoice.source==='normal' &&
+      JSON.stringify(receipt.invoice)===JSON.stringify(invoice))) return false;
+  const required=richeseBetrayalResponders(g);
+  if (!required.length) return false;
+  const sequence=cursor.sequence+1,lot=crypto.randomUUID();
+  const receipt=nexusRule(()=>createRicheseBetrayalReceipt(g,{
+    event:richeseBetrayalEvent(g.turn,sequence,round,lot),turn:g.turn,sequence,round,lot,
+    invoice,required,passed:[],stage:'pending',actor:null,nexusDiscardIndex:null,
+  }));
+  const frame:NonNullable<Game['pendingRicheseBetrayal']>={receipt,
+    normal:{round,lot,index:g.auction.index},signature:''};
+  frame.signature=richeseBetrayalSourceSignature(g,frame);
+  cursor.sequence=sequence;cursor.current=receipt.event;g.pendingRicheseBetrayal=frame;
+  return true;
+}
 function decideRicheseBetrayal(g: Game, p: Player, action: Action): void {
   const frame = g.pendingRicheseBetrayal!, receipt = frame.receipt;
   requireRule(['richeseBetrayalPass','richeseBetrayalUse'].includes(action.type) &&
@@ -12890,6 +12966,19 @@ function decideRicheseBetrayal(g: Game, p: Player, action: Action): void {
   g.richeseBetrayal!.completed.push(next);
   g.richeseBetrayal!.current = null;
   g.pendingRicheseBetrayal = null;
+  if ('normal' in frame) {
+    // Cost precedes the private family test. A miss cannot be a free oracle.
+    if (use && richeseBetrayalVetoesPurchase(receipt.invoice)) {
+      const continuation=currentAuctionContinuationQuote(g,{kind:'next'});
+      g.discard.push(g.auction!.cards[g.auction!.index]);
+      log(g,`${p.name} spent Richese Nexus Betrayal and prevented the ordinary purchase. The reserved card was discarded without payment or acquisition; its face stays private.`);
+      commitAuctionContinuation(g,continuation);
+    } else {
+      if (use) log(g,`${p.name} spent a committed Richese Nexus Betrayal attempt. The original ordinary purchase continues; the response grants no card inspection.`);
+      auctionNext(g);
+    }
+    return;
+  }
   if (use && receipt.invoice.kind === 'purchase') {
     const card = frame.quote.card;
     g.richeseCache = g.richeseCache!.filter(c => c.id !== card.id);
@@ -13968,6 +14057,7 @@ function auctionNext(g: Game) {
       finishNormalBidding(g);
       return;
     }
+    if (beginNormalRicheseBetrayal(g)) return;
     if (beginNexusEmperorPayment(g)) return;
     g.decision = { kind: 'auctionPayment', player: next.player };
     g.active = next.player;

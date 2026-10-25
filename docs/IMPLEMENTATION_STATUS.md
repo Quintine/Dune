@@ -1,5 +1,52 @@
 # Dune implementation status
 
+## 25 October 2026 — Original normal auction reaches Richese Nexus purchase veto
+
+**Ordinary-deck Richese Nexus purchase veto — 25 October. Prototyped / Partial.**
+A positive native Richese ordinary win now opens the existing neutral response
+before payment choice. The card’s identity is concealed. Under the selected visible
+provisional convention, Use commits the physical Richese Nexus first: an actual
+Richese-family card is discarded without payment/acquisition/bonus, while a miss
+spends the Nexus and resumes the original purchase. Pass keeps the card. The
+same closed quote never reopens. Normal spice/Karama choice, actual allied aid,
+Emperor income and next-lot continuation retain their native behavior; no paid
+sale or cache lot is fabricated. Public event IDs contain no card identifier.
+[Printed source, protocol and boundaries](NEXUS_RICHESE_RULES.md#ordinary-winning-bid-betrayal--25-october-2026).
+
+Three disjoint helper/controls/source lanes, bounded review and root integration
+pass **17 files, 153/153**, types/lint/build and nine actual auction-action/engine/
+GameTable SSR journeys. Source116 Basic/124 Advanced uses genuine original audit
+initialization/setup, an actual kept cache Richese Karama spent on a real first
+normal purchase, later Worm/alliance/Nexus draw, then real bid3/passes. The one
+controlled recycle moves that genuinely discarded card into the still-unopened
+next deck; full exhaustion/reshuffle is not claimed. Original main/cache45 and
+Nexus12 remain physical. Source125 includes a real phase3 two-spice ally pledge.
+Veto, pass, miss and retained native Karama payment run in both rules bands.
+The Advanced pledge case preserves the original aid split; four minimal profiles
+pass blind attempts. Eight helper and
+six actual component callback/profile cases supplement fourteen engine cases.
+These are not parent hydration, DOM/browser/mobile or deployed evidence.
+
+Fixture feedback moves an early pledge into legal Bidding and fixes the first
+unopened ordinary face so the no-Karama branch cannot accidentally buy another
+Karama. Two readonly malformed-array test constructions are type-corrected;
+legacy source-quote mutators only narrow the new frame union. No game rule or
+start guard is weakened. Private source-bound logs/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-richese-normal-betrayal/`.
+No saved-room/D1/server/reset/restart/deployment operation or recovery campaign
+occurred. Proactive immediate/private special Karama producers, wider valid
+combinations, final assurance and exact-revision deployed acceptance remain due.
+
+**Selected revival storm/HMS route reasons — 25 October.** Source review retains
+the current routes: Southern's named placement does not inherit Fremen storm
+shipment permission or bypass the HMS pointing-territory/Force Movement route;
+Tleilax retains the Ixian direct off-planet restriction. Southern applications
+are visibly provisional. Reasons replace obsolete waiting labels and identify
+the route before an outside pointing-sector storm; HMS itself stays sheltered.
+Existing destinations are not opened. Focused quote/control/engine/HMS files
+pass in the same batch. [Policy and source limits](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md#selected-storm-and-hms-route-policy--25-october-2026).
+
+
 ## 25 October 2026 — Original revival reaches Terror and ordered arrival children
 
 **Revival Terror continuation — 25 October. Prototyped / Partial.**

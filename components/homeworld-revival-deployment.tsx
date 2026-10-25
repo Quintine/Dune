@@ -54,6 +54,14 @@ function DeploymentChoice({ game, act, busy }: Props) {
       <p className="fine">
         {offer.normal} ordinary · {offer.elite} starred · {amount} total
       </p>
+      <p className="fine">
+        {offer.kind === 'fedaykin'
+          ? 'Southern placement uses a sector outside the storm.'
+          : 'Tleilax placement keeps the storm restriction.'}
+        {game.players.some(player => player.faction === 'ixians') && (offer.kind === 'fedaykin'
+          ? ' It does not grant the Force Movement route needed to enter the Hidden Mobile Stronghold.'
+          : ' It does not grant the Ixian route directly into the Hidden Mobile Stronghold.')}
+      </p>
       {game.players.some(player => player.faction === 'beneGesserit') && <p className="fine">
         {offer.kind === 'tleilax'
           ? 'Arrakis placement is followed by the normal Bene Gesserit free-force choice.'
