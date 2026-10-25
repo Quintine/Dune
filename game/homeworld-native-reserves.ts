@@ -164,7 +164,8 @@ function nativeReserveDeposits(
 
 /** Authorized native-reserve deposits: E3 p.10 restores Advanced Emperor's
  * normal forces to Kaitain and Sardaukar to Salusa. Used by revival and by the
- * Nexus Secret Ally reserve return (user ruling 7 October 2026); it does not
+ * Nexus Secret Ally reserve return (user ruling 7 October 2026) and selected
+ * provisional Face Dance return composition (26 October 2026); it does not
  * validate Tanks, cost, revival allowances or route permission. */
 export function quoteNativeReserveDeposit(
   context: HomeworldCustodyContext,

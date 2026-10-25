@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Typed Emperor Face Dance reserve return — 26 October 2026
+
+Under 14 October choose-recommended authority, route Advanced/Homeworld
+Emperor's exact normal survivors to Kaitain and Sardaukar to Salusa from either
+Arrakis or a visitor Homeworld battle. This is a visible provisional composition
+of authorized physical38,A.1–3's reserve return and E3p10's initial/revival split,
+not an express Face Dance destination ruling. Preserve occupied-face immunity,
+original victory/rewards, actual casualties and one leader death/no new bounty.
+No revival cost/allowance/income or historical-origin reconstruction occurs.
+Native Tleilaxu replacements use their actual stocks; already-present natives at
+Tleilax remain a no-op. [Source and execution](HOMEWORLD_REPLACEMENT_RULES.md#typed-emperor-face-dance-return--26-october-2026).
+
 ## Remaining structured Truthtrance authoring — 26 October 2026
 
 Expose the existing full grouped battle-plan and pure-shipment inputs rather

@@ -1,8 +1,59 @@
 # Homeworld replacement: source audit and adapter contract
 
-Audited 9 September 2026. Read alongside [Homeworld rules](HOMEWORLD_RULES.md).
-This document authorizes no runtime activation and adds no occupation or Ghola
-ruling. No production files changed in this audit.
+Original audit 9 September 2026; typed Emperor return follow-up 26 October.
+Read alongside [Homeworld rules](HOMEWORLD_RULES.md). The historical source
+audit below adds no occupation or Ghola ruling; current execution is recorded
+separately here and does not certify full Homeworlds or expansion modes.
+
+## Typed Emperor Face Dance return — 26 October 2026
+
+The Advanced/Homeworld Emperor assignment fence is removed. Both Arrakis and
+visitor-Homeworld returns now use the existing native reserve quotes: living
+normal survivors return to Kaitain and Sardaukar to Salusa Secundus. Their
+actual types, battle casualties and original reserve pools remain distinct.
+This destination composition is explicitly provisional under the 14 October
+choose-recommended authority, not an express publisher Face Dance assignment.
+The authorized supplied rulebook's physical38,A.1–3 retains the original victory,
+sends the leader to Tanks without another bounty and returns surviving
+non-advisor forces to reserves. E3p10's initial/revival split supports the
+selected routing by composition; it does not prescribe historical-origin return.
+
+`addNativeReserves` commits `quoteNativeReserveDeposit` for Arrakis or
+`quoteHomeworldReserveReturn` for the exact visitor pool. Arrakis counters leave
+their actual sectors before deposit; a Homeworld return withdraws its exact
+typed visitors and deposits to the appropriate native stocks. This is a live
+reserve return, with no revival cost, allowance or income. Other winning-side
+return targets and original victory/rewards retain their existing contract.
+Tleilax's occupied-face protection for its occupier/ally remains authoritative.
+
+Tleilaxu Arrakis replacements withdraw the selected actual native reserves;
+board-source counters move from their original positions. At Tleilax, already
+present native reserve selections remain a physical no-op and only selected
+external counters add to that pool. Unselected native/third-party forces stay.
+Zero replacements and decline remain usable. Leader death, revelation/cycling,
+advisor follow-ups and original aftermath are not replayed as another battle.
+
+The owner has persistent provisional routing guidance and the same reveal/
+decline action shape. Shared projected survivor/source choices drive the
+selectors and guarded actual callbacks. No new confirmation, saved field,
+rule-module admission, provider/deployment action or revival permission is added.
+
+**Frozen evidence:** v4 passes13 files,118/118, types/lint/build and sixteen
+engine/GameTable SSR/actual action-callback paths. Nine genuine public Advanced
+E/T/A/Ix/Homeworld routes earn mixed/normal/Sardaukar armies through63 setup/
+shipment/battle actions and use four continuation actions through Collection.
+Seven explicitly controlled conserved visitor routes retain their disclosed
+position/card exchange; six return paths reach Collection and decline stops
+before a legitimate next battle. All47 Treachery and16 Traitor/Face Dancer cards
+remain in each path. Four minimal profiles and invalid/stale/source/ownership
+cases have focused test coverage. Feedback corrected fixture expansion, sector
+and typing errors plus an unused import; the sector guard remains.
+
+Report/logs: private `20261026-emperor-face-dance-return-proof-v4/` under
+`/home/quintine/.local/share/dune/checkpoints/`; journeys/HTML: adjacent
+`20261026-emperor-face-dance-return-runtime/`. No saved-room/D1/server, reset/
+restart, deployment or recovery operation. SSR/callbacks do not certify DOM/
+hydration, browser/mobile/deployed acceptance, complete combinations or modes.
 
 ## Sources and explicit rules
 
@@ -32,8 +83,9 @@ Sardaukar and revived Sardaukar go to Salusa, revived normal forces to Kaitain.
 An expressly permitted transfer can subsequently mix the types. Those placement
 sentences do not expressly assign forces returned by Face Dance. The
 [designer's expansion page](https://futurepastimes.com/dune-ecaz-moritani)
-supplies no additional replacement ruling. No community compilation was adopted
-as an erratum.
+supplies no additional replacement ruling. That original audit adopted no
+community compilation; the 1 October user authorization of the identified local
+Advanced rulebook supersedes its old source restriction, as applied above.
 
 ## Physical interpretation and remaining assignment boundary
 
@@ -52,11 +104,11 @@ include Tleilaxu garrisons on other foreign Homeworlds.
 
 **Returning winner:** preserve every normal/special identity and return only
 that winning army, not third parties. A single native Homeworld has an
-unambiguous destination. Advanced Emperor's allocation remains unverified:
-neither arbitrary player choice, universal Salusa routing for stars, nor
-restoration to a historical shipment origin is expressly prescribed for this
-effect. Keep this assignment boundary visible rather than presenting a revival
-helper's default as a confirmed Face Dance rule.
+unambiguous destination. Advanced Emperor's allocation now uses the visible
+26 October provisional normal→Kaitain/star→Salusa composition above. The source
+still does not expressly prescribe a destination for this effect; this is not
+arbitrary player choice, restoration to a historical shipment origin or a claim
+that the revival helper proves a publisher Face Dance ruling.
 
 **Ixian adapter:** treating substitution as ordinary battle cleanup at a
 Homeworld is an application of existing combat mechanics, not a new shipment

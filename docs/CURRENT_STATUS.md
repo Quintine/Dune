@@ -16,6 +16,34 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Typed Emperor Face Dance return — 26 October. Prototyped / Partial.**
+Advanced/Homeworld returns from Arrakis and visitor battles now use existing
+native reserve quotes: normal survivors to Kaitain, Sardaukar to Salusa. This
+selected composition is visibly provisional. Tleilaxu Arrakis replacements
+withdraw actual native stocks; at Tleilax only external replacements add forces.
+Occupied-home immunity, original victory/rewards, casualties, one leader death
+and aftermath remain. Reveal/decline controls use shared projected choices and
+guard their actual callbacks. No revival/income, saved field or mode gate opens.
+
+Three disjoint native/Homeworld/control lanes and root integration pass
+**13 files,118/118**, types/lint/build and **sixteen engine/GameTable SSR/actual
+reveal-or-decline callback paths** on unchanged source. Nine genuine public
+Advanced E/T/A/Ix/Homeworld routes earn mixed, normal-only and Sardaukar-only
+armies through63 setup/shipment/battle actions, then take four continuation
+actions through Collection. Seven explicitly controlled conserved visitor routes
+use actual battle and return/decline; six finish Collection, while decline stops
+before the legitimate next battle. Each retains all47 Treachery and16 Traitor/
+Face Dancer cards. Feedback corrected test expansion/sector/type fixtures and
+an unused import; no application sector guard was relaxed.
+
+Frozen v4 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-emperor-face-dance-return-proof-v4/`;
+journeys/HTML: adjacent `20261026-emperor-face-dance-return-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+SSR/callbacks do not prove DOM/hydration, browser/mobile/deployed acceptance or
+complete Homeworlds/modes/combinations. Final assurance remains open.
+[Source, physical contract and evidence](HOMEWORLD_REPLACEMENT_RULES.md#typed-emperor-face-dance-return--26-october-2026).
+
 **Remaining structured Truthtrance authoring — 26 October. Prototyped / Partial.**
 Battle-plan and pure-shipment forms now expose their full existing grouped
 inputs. Add/wrap/nest, switch AND/OR, remove/collapse and whole-field validation
@@ -46,14 +74,15 @@ deployed acceptance. Full Truthtrance, modes/combinations and final assurance
 remain open. [Battle controls](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md#grouped-battle-plan-authoring--26-october-2026);
 [shipment controls](COMPOUND_SHIPMENT_PROMISES.md#full-pure-shipment-authoring--26-october-2026).
 
-Next concrete independent rule gap: Advanced/Homeworld Face Dance blocks an
-Emperor winner's army return. Scope exact typed normal→Kaitain and Sardaukar→
-Salusa return through the existing native reserve helpers, separately from
-revival/payment/income. The live guard and both Arrakis/Homeworld return paths
-need integration; removing its message alone misroutes elites. See
-`faceDanceReturnBlock`, `addNativeReserves`, `game/homeworld-native-reserves.ts`
-and [the replacement contract](HOMEWORLD_REPLACEMENT_RULES.md). This next scope
-does not establish Basic completion or authorize a custody/recovery campaign.
+Next scoped interaction: Planetologist's ordinary extra range for Richese's own
+concealed No-Field marker. The live combined-movement fence still rejects it;
+the printed marker-as-one-force and ordinary-range rules support a narrow
+composition, not a located joint FAQ. Start with marker-only ordinary movement,
+existing token/history and native trained-leader setup. Keep gather, flight,
+Ornithopter, Guild and Homeworld routes outside that first slice. See
+[No-Field source](RICHESE_NO_FIELD_RULES.md) and
+[Planetologist contract](PLANETOLOGIST_RULES.md). This scope does not establish
+Basic completion or authorize a combination/recovery campaign.
 
 **Truthtrance compound current-fact authoring — 26 October. Prototyped / Partial.**
 The form now exposes two-through-eight-term AND/OR groups and nesting, with

@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 26 October 2026 — Typed Emperor Face Dance reserve return
+
+**Prototyped / Partial.** Remove the Advanced/Homeworld assignment fence and
+route actual normal survivors to Kaitain and Sardaukar to Salusa through native
+reserve quotes. This selected composition is explicit and provisional, not a
+publisher Face Dance destination ruling. Arrakis replacements withdraw real
+Tleilaxu native stock; at Tleilax selected native reserves stay put and only
+external counters add. Original victory, rewards, casualties, leader death and
+aftermath remain, with existing occupied-home immunity. Persistent routing
+guidance and shared projected source/survivor choices feed guarded actual
+reveal/decline callbacks. No revival fee/income, action, saved field or mode opens.
+
+Frozen **13-file118/118**, types/lint/build and **sixteen engine/GameTable SSR/
+actual callback paths** pass. Nine genuine public Advanced E/T/A/Ix/Homeworld
+routes use63 setup/shipment/battle actions, mixed/normal/Sardaukar survivors and
+four continuation actions through Collection. Seven labelled conserved visitor
+routes use actual battle and return/decline; six reach Collection, decline stops
+before another legal battle. Each retains47 Treachery and16 Traitor/Face Dancer
+cards. Native and visitor tests also cover zero/native/external selections,
+rejections and four minimal profiles. Feedback corrected fixture expansion,
+sector and TypeScript issues plus an unused engine import. The legal sector
+check remains; earlier failed reports are retained.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261026-emperor-face-dance-return-proof-v4/`;
+journeys/HTML: adjacent `20261026-emperor-face-dance-return-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation.
+SSR/callbacks do not prove DOM/hydration, browser/mobile/deployed acceptance or
+complete Homeworlds/modes/combinations. Final assurance remains due.
+[Source and contract](HOMEWORLD_REPLACEMENT_RULES.md#typed-emperor-face-dance-return--26-october-2026).
+
 ## 26 October 2026 — Grouped battle-plan and full pure shipment authoring
 
 **Prototyped / Partial.** Deliver the remaining structured Truthtrance form

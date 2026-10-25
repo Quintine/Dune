@@ -2,37 +2,31 @@
 import { useState } from 'react';
 import { territory, splitLocation } from '@/game/board';
 import type { Action, GameView } from '@/game/engine';
-import { fighterCount } from '@/game/advisors';
-import { Button } from './ui/button';
+import { FaceDanceActions, faceDanceForceChoices } from './face-dance-actions';
 import { Input } from './ui/input';
-export function FaceDanceDecision({
+
+type Props = { game: GameView; act: (action: Action) => void; busy: boolean };
+
+export function FaceDanceDecision(props: Props) {
+  const { game } = props;
+  const d = game.decision;
+  if (
+    d?.kind !== 'faceDance' ||
+    d.player !== game.me ||
+    !game.players.some((player) => player.id === game.me)
+  )
+    return null;
+  return <FaceDanceChoice key={`${d.territory}:${d.winner}:${d.identity}`} {...props} />;
+}
+
+function FaceDanceChoice({
   game: g,
   act,
   busy,
-}: {
-  game: GameView;
-  act: (a: Action) => void;
-  busy: boolean;
-}) {
+}: Props) {
   const d = g.decision;
   const me = g.players.find((p) => p.id === g.me)!;
-  const world =
-    d?.kind === 'faceDance'
-      ? g.combatLocations?.find(
-          (place) => place.id === d.territory && place.kind === 'homeworld',
-        )
-      : undefined;
-  const foreign =
-    d?.kind === 'faceDance' ? world?.forces?.[d.winner] : undefined;
-  const maximum =
-    d?.kind === 'faceDance'
-      ? world
-        ? (foreign?.normal ?? 0) + (foreign?.elite ?? 0)
-        : d.winners
-          ? g.players.reduce((sum, player) => sum +
-            (d.winners!.includes(player.id) ? fighterCount(player, d.territory) : 0), 0)
-          : fighterCount(g.players.find((player) => player.id === d.winner)!, d.territory)
-      : 0;
+  const { world, maximum, availableSources } = faceDanceForceChoices(g);
   const [sources, setSources] = useState<Record<string, number>>(
     world
       ? {}
@@ -48,9 +42,9 @@ export function FaceDanceDecision({
     (c) => !c.revealed && c.leader === d.identity,
   );
   const total = Object.values(sources).reduce((sum, n) => sum + n, 0);
-  const availableSources = world
-    ? me.forces
-    : { reserves: me.reserves, ...me.forces };
+  const emperorReturn = g.advanced && !!g.homeworlds?.worlds &&
+    g.players.some((player) => player.faction === 'emperor' &&
+      (player.id === d.winner || d.winners?.includes(player.id)));
   return (
     <>
       <h2>Face Dancer opportunity</h2>
@@ -63,6 +57,13 @@ export function FaceDanceDecision({
         <output className="notice block">
           {d.blocked}
         </output>
+      )}
+      {emperorReturn && (
+        <p className="fine" aria-label="Provisional Emperor Face Dance return">
+          Provisional return: the Emperor’s normal forces return to Kaitain;
+          Sardaukar return to Salusa Secundus. This is a reserve return with no
+          revival fee or income, new battle or additional battle reward.
+        </p>
       )}
       {held ? (
         <>
@@ -115,40 +116,11 @@ export function FaceDanceDecision({
           <p>
             {total} / {maximum} replacement forces selected
           </p>
-          <Button
-            disabled={
-              busy ||
-              !!d.blocked ||
-              total > maximum ||
-              Object.entries(sources).some(
-                ([key, n]) =>
-                  n < 0 ||
-                  !Number.isSafeInteger(n) ||
-                  n > (availableSources[key] ?? 0),
-              )
-            }
-            onClick={() =>
-              act({
-                type: 'decision',
-                reveal: true,
-                sources,
-                ...(world ? {} : { sector }),
-              })
-            }
-          >
-            Reveal Face Dancer
-          </Button>
         </>
       ) : (
         <p>You have no unrevealed Face Dancer matching the winning leader.</p>
       )}
-      <Button
-        variant="outline"
-        disabled={busy}
-        onClick={() => act({ type: 'decision', reveal: false })}
-      >
-        Decline Face Dancer
-      </Button>
+      <FaceDanceActions game={g} sources={sources} sector={sector} busy={busy} act={act} />
     </>
   );
 }

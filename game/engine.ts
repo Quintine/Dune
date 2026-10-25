@@ -105,7 +105,7 @@ import { createHomeworldOccupationHistory, observeHomeworldOccupation, validateH
 import { tupileIntelligenceTargets, quoteTupileIntelligenceRequest, type TupileIntelligenceCategory } from './tupile-intelligence';
 import { quoteTupileIntelligenceAnswer } from './tupile-intelligence-answer';
 import { createTupileIntelligenceState, appendTupileIntelligenceObservation, validateTupileIntelligenceState, type TupileIntelligenceState } from './tupile-intelligence-state';
-import { homeworldForceGroups, quoteHomeworldCustody } from './homeworld-custody';
+import { homeworldForceGroups } from './homeworld-custody';
 import { quoteHomeworldShipment, type HomeworldShipmentIntent } from './homeworld-shipment';
 import { quoteGuildHomeworldShipment } from './guild-homeworld-shipment';
 import { quoteJunctionTransport } from './junction-transport';
@@ -9311,8 +9311,7 @@ function faceDanceReturnBlock(g: Game, winner: string): string | null {
     const quote = homeworldRule(() => quoteOccupiedHomeworldFaceDancer(g, target));
     if (quote.blocked) return quote.blocked;
   }
-  return g.advanced && g.homeworlds && getPlayer(g, winner).faction === 'emperor'
-    ? 'Face Dance returning the Emperor’s army awaits the Kaitain/Salusa reserve-placement ruling.' : null;
+  return null;
 }
 function homeworldSubstitutionIntegrity(g: Game) {
   const pending = g.pendingIxSubstitution;
@@ -36150,7 +36149,11 @@ function applyActionInner(
         requireRule(home || validGameLocation(g, decision.territory, sector), 'Choose a sector in the battle territory.');
         // This is replacement, not shipment or movement: no transport cost or worm/storm transit.
         for (const source of selected) {
-          if (source.key === 'reserves') { if (!home) p.reserves -= source.count; }
+          if (source.key === 'reserves') {
+            // Native reserves already at the Homeworld stay there. An Arrakis
+            // replacement withdraws the actual stock before placing it.
+            if (!home) withdrawNativeReserves(g, p, source.count, 0);
+          }
           else {
             p.forces[source.key] -= source.count;
             if (!p.forces[source.key]) delete p.forces[source.key];
@@ -36163,30 +36166,21 @@ function applyActionInner(
           : winningArmies.map(owner => [owner.id, at(owner, decision.territory)] as const))
           .filter(([, count]) => count > 0));
         if (home) {
-          const destination = `homeworld:${winner.faction}`;
           const external = selected.filter((source) => source.key !== 'reserves').reduce((n, source) => n + source.count, 0);
-          const quote = quoteHomeworldCustody(homeworldContext(g), g.homeworlds!.custody!, [
-            { homeworld: home.id, player: winner.id, withdraw: army, deposit: {normal: 0, elite: 0} },
-            { homeworld: destination, player: winner.id, withdraw: {normal: 0, elite: 0}, deposit: army },
-            { homeworld: home.id, player: p.id, withdraw: {normal: 0, elite: 0}, deposit: {normal: external, elite: 0} },
-          ]);
-          g.homeworlds!.custody = quote.state;
-          for (const update of quote.players) {
-            const owner = getPlayer(g, update.id);
-            owner.reserves = update.reserves;
-            if (owner.elites) owner.elites.reserves = update.eliteReserves;
-          }
+          // Selected provisional composition: return each physical type to its
+          // native stock (Emperor normal→Kaitain, Sardaukar→Salusa). This is not
+          // revival and does not restore a historical shipment origin.
+          addNativeReserves(g, winner, army.normal + army.elite, army.elite, home.id);
+          if (external) addNativeReserves(g, p, external, 0);
         } else {
         for (const owner of winningArmies)
           for (const key of Object.keys(owner.forces).filter(
             (key) => splitLocation(key).territory === decision.territory,
           )) {
-            owner.reserves += owner.forces[key];
-            if (owner.elites) {
-              owner.elites.reserves += owner.elites.forces[key] ?? 0;
-              delete owner.elites.forces[key];
-            }
+            const amount = owner.forces[key], elite = owner.elites?.forces[key] ?? 0;
+            if (owner.elites) delete owner.elites.forces[key];
             delete owner.forces[key];
+            addNativeReserves(g, owner, amount, elite);
           }
         }
         const leader = g.players
