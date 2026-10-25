@@ -16,6 +16,38 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on native movement cancellation costs — 26 October. Prototyped / Partial.**
+Printed-role Karama stopping ordinary Fremen/Cyborg range, Advanced Guild timing
+or HMS movement/collection now offers its exact used cost before prevention.
+`karamaMovementDiscard` retains the original declaration, physical group, move
+index/queue and Storm inputs. Claim/pass finishes native denial once: Fremen/Ix
+keep an unused move and legal reduced-range replacement; Guild follows the
+original queue under its timing lock; HMS neither moves nor collects, then begins
+the original Storm turn once. Native quotes and Fremen's canonical order remain
+authoritative. Existing persistent controls and minimal profiles serve all four.
+[Source and boundaries](SEMUTA_SOURCE_UPDATE_20260907.md#movement-cancellation-costs--26-october-2026).
+
+Two disjoint source lanes, bounded native review and root integration pass
+**16 files,205/205**, types/lint/build and **16 native engine/GameTable SSR/real
+Semuta-callback journeys**, including actual range-one replacements. Twenty-two
+new cases cover both rule bands where applicable, Guild TAKE/WAIT, positive HMS
+collection, native allowance, relevant rejection and all four profiles. Real
+cache1 Semuta and original dealt Karama precede every cost. Fremen70/83 Basic/
+Advanced actions include actual free reserve entry; Guild77/80 uses real circle/
+Storm controls. Ix117/123 inherits paid acquisition75/80 then pays2 to ship a
+Cyborg. HMS154/160 declares a real three-step route over an eight-spice opportunity
+with six original passengers; denial retains it and initializes Storm once.
+Original45/57 cards remain physical. No played hand, force, clock, queue, route,
+Spice or pending receipt is installed. Fixture feedback repairs one absence
+assertion and two numeric sort comparators; native rule guards remain intact.
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-movement-lint/`;
+journeys/HTML: adjacent `20261026-semuta-movement-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results, not hydration, DOM/browser/mobile or
+deployed evidence. Card-flight/complex parents, wider combinations, complete
+modes and final assurance remain unfinished.
+
 **Semuta on information/advisor cancellation costs — 26 October. Prototyped / Partial.**
 Printed-role Karama stopping ordinary Basic Spiritual Advisors, Atreides Movement
 foresight, Advanced Fremen next-Storm knowledge or native Face Dancer replacement

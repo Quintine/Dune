@@ -2,6 +2,69 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Movement cancellation costs — 26 October 2026
+
+**Prototyped / Partial.** Printed-role Karama stopping ordinary native Fremen
+range, Ixian Cyborg range, Advanced Guild timing or HMS movement/collection now
+offers its exact used cost before prevention. `karamaMovementDiscard` binds the
+original typed response and pending declaration. Existing persistent neutral
+controls, private claim/pass and minimal profiles serve each source. This is the
+existing physical Semuta fresh-discard convention, not a new publisher ruling.
+
+The native [movement cancellation quote](../game/karama-movement-cancellation.ts)
+validates denial without transferring forces, quoting a new collection or
+choosing a future Storm. Fremen additionally retains its canonical pending-order
+validation. Ixian denial keeps its native declaration-only validation rather than
+requiring an allowed movement. The cost is already physically spent; preflight
+never supplies it again as an unspent card.
+
+After claim/pass, retire the fresh group, restore the original response and finish
+native prevention once. Fremen/Ixian packets clear while their current move index
+and physical group stay unspent; the native one-use restriction remains and a
+legal reduced-range replacement is available. Guild locks the prevented timing
+privilege and activates the original first remaining actor. A canceled HMS route
+neither relocates nor collects, then calls the original Storm-turn beginning once.
+Advanced may then naturally draw/consume a real Storm source and reach its next
+control; no forecast, shuffle, reset or collection is pre-executed for Semuta.
+
+A new-kind-only signature binds the original packets, physical typed groups,
+movement queue/blocks, HMS pointer/route/collection/spice and native Storm reset
+inputs, including leader use and Hajr. Earlier receipt kinds omit this branch.
+Competing battle, shipment, arrival, Spiritual, CHOAM, worm and card-flight parents
+remain separate. No broad profile or release gate opens.
+
+[Fremen/Guild source](../tests/fixture-semuta-fremen-guild-movement.ts) and
+[engine cases](../tests/semuta-fremen-guild-movement-engine.test.ts),
+[Ixian source](../tests/fixture-semuta-ixian-movement.ts) and
+[engine cases](../tests/semuta-ixian-movement-engine.test.ts) record the native
+action paths. Wider producers/combinations, complete modes and final assurance
+remain open.
+
+Frozen **16 files,205/205**, types/lint/build and **16 actual native engine/
+GameTable SSR/real Semuta-callback journeys** pass on unchanged source, including
+legal range-one replacements. Twenty-two new cases cover both applicable rule
+bands, TAKE/WAIT, positive collection, native allowance, stale/underlying rejection
+and all four minimal profiles.
+
+Real cache1 Semuta and original dealt Karama supply each source. Fremen70/83
+Basic/Advanced action prefixes include actual free reinforcement at Great Flat15;
+Guild77/80 uses real lobby circle choices and first-Storm dials. Ix117/123 inherits
+the paid acquisition75/80, then pays2 to ship one Cyborg before declaring its
+range-two group. HMS154/160 retains its six original passengers and declares
+Polar0 → Hagga12 → Plastic12 → Broken Land12 over an actual eight-spice opportunity.
+No movement/collection or new Storm occurs before the fresh cost. Prevention
+keeps the pile/HMS intact and begins Storm once; Advanced reveals its actual card
+only afterward. Original45/57 cards remain physical. No played-state hand, force,
+wallet, clock, queue, route, Spice or pending receipt is installed.
+
+Feedback repairs an absent-versus-null opening assertion and two test-only numeric
+sort comparators. Native gameplay guards remain intact. Private source-bound
+report/logs: `/home/quintine/.local/share/dune/checkpoints/20261026-semuta-movement-lint/`;
+journeys/HTML: adjacent `20261026-semuta-movement-runtime/`.
+No saved-room/database/server/reset/restart/deployment/recovery operation occurs.
+Engine/SSR/callback evidence leaves hydration, DOM/browser/mobile, broader
+combinations, complete modes and exact-revision deployed acceptance open.
+
 ## Terminal information and advisor cancellation costs — 26 October 2026
 
 **Prototyped / Partial.** Printed-role Karama stopping ordinary Basic Spiritual

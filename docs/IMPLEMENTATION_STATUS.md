@@ -1,5 +1,38 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta claims native movement cancellation costs
+
+**Prototyped / Partial.** Printed-role Karama stopping ordinary Fremen/Cyborg
+range, Advanced Guild timing or HMS movement/collection now offers its exact cost
+before native denial. `karamaMovementDiscard` binds the original declaration,
+physical group, move/queue, route/collection and Storm-reset inputs. Native pure
+quotes retain authority, with Fremen's additional canonical order check; no allowed
+Ixian movement trial or future Storm is executed in preflight. Claim/pass resumes
+once. Fremen/Ix retain the unused move and a legal replacement; Guild follows the
+original first actor under its lock; HMS neither moves nor collects, then begins
+the original Storm turn once. Existing controls and minimal bots serve all four.
+[Source and limits](SEMUTA_SOURCE_UPDATE_20260907.md#movement-cancellation-costs--26-october-2026).
+
+Two disjoint source lanes, bounded native review and root integration pass
+**16 files,205/205**, types/lint/build and **16 native engine/GameTable SSR/actual
+Semuta-callback journeys**, including real reduced-range replacements. Twenty-two
+new cases cover applicable modes, TAKE/WAIT, positive HMS collection, native
+allowance, relevant rejection and all four profiles. Actual cache1 Semuta and
+original dealt Karama precede all costs: Fremen70/83 Basic/Advanced actions;
+Guild77/80 with real circles/Storm; Ix117/123 with inherited75/80 acquisition and
+paid2 Cyborg shipment; HMS154/160 with six original passengers and a three-step
+route over eight Spice. Original45/57 cards remain physical. No played-state
+hand, force, wallet, clock, queue, route, Spice or receipt is installed.
+
+Feedback repairs one absence assertion and two numeric sort comparators in the
+new tests. No native gameplay guard is weakened. Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-movement-lint/`;
+journeys/HTML: adjacent `20261026-semuta-movement-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results; hydration, DOM/browser/mobile, card-flight/
+complex parents, broader combinations, full modes and deployed/final assurance
+remain open.
+
 ## 26 October 2026 — Semuta claims information and advisor cancellation costs
 
 **Prototyped / Partial.** Exact printed-role Karama stopping ordinary Basic
