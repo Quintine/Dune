@@ -12,6 +12,7 @@ import {
 import { TERROR_KINDS } from './moritani-terror';
 import { validateTerrorEntrySignature } from './terror-entry-receipt';
 import { overlapOwnsWormTerror } from './arrival-overlap';
+import { validateRevivalTerrorEntry, type RevivalArrivalContext } from './revival-terror-entry';
 
 export class MoritaniAllianceCancellationError extends Error {
   constructor(message: string) {
@@ -30,7 +31,7 @@ export type MoritaniAllianceCancellationContext = Pick<
   | 'moritaniTerror'
   | 'pendingAmbassador'
   | 'ecazAmbassadors'
-> & TerrorLocationContext;
+> & TerrorLocationContext & RevivalArrivalContext;
 export type MoritaniAllianceCancellationQuote = {
   kind: 'moritaniAlliance';
   owner: string;
@@ -86,6 +87,7 @@ export function quoteMoritaniAllianceCancellation(
   const entrants = g.players.filter((p) => p.id === entry.entrant);
   try {
     validateTerrorEntrySignature(entry);
+    if (entry.revivalArrival !== undefined) validateRevivalTerrorEntry(g, entry);
   } catch (error) {
     throw new MoritaniAllianceCancellationError((error as Error).message);
   }
@@ -164,7 +166,9 @@ export function quoteMoritaniAllianceCancellation(
       'Only an Ambassador entry may carry its event.',
     );
     requireSource(
-      entry.cause === 'wormRide'
+      entry.revivalArrival !== undefined
+        ? entry.resume === 'none'
+        : entry.cause === 'wormRide'
         ? g.phase === 1 &&
             (entry.resume === 'wormRide' || overlapOwnsWormTerror(g, entry)) &&
             entrants[0].faction === 'fremen'

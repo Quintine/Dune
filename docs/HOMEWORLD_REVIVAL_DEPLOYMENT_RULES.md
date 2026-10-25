@@ -2,6 +2,77 @@
 
 Primary-source audit, 10 September 2026. This is a source and implementation-boundary contract, not a runtime completion claim. The coordinator has already asked about threshold restoration and splitting several revived Fedaykin; those answers remain pending.
 
+## Revival Terror continuation — 25 October 2026
+
+**Prototyped / Partial.** The adopted physical SEND-entry interpretation now
+connects eligible Terror territories to the original revived group. The native
+Moritani owner keeps its Reveal/Decline and Enemy of My Enemy choices, all six
+printed effects and original card, force, leader and deferred-payment mechanics.
+The original revival income waits for the complete entry; no shipment fee,
+ordinary shipment allowance or Revival-phase Heighliner income is introduced.
+This is the provisional composition selected under the 14 October instruction,
+not a publisher FAQ.
+
+A new public source binds the exact original return, destination and physical
+group. Terror receipts and ordered overlaps retain it through native discard
+continuations. Historical source-absent receipt bytes remain unchanged. When
+Terror and Ambassador tokens both qualify, their owners keep the existing
+storm-order opportunities; resolving one never overwrites the other's prompt.
+
+A positive Sneak Attack is its own committed reserve entry. It captures the
+actual Moritani group and original Terror receipt, then waits for the original
+overlap before opening its BG and Ambassador reactions. The original revival
+continues after these children. Zero forces produces no new arrival. The new
+phase-four Intrusion counter binds that actual Sneak source and retains the
+independent Spiritual followup. Other phases retain their existing Spiritual
+packet format. New source metadata is historical evidence after a committed
+effect, not a fresh shipment permission or a requirement that victims survive.
+
+Evidence paths: [source helper](../game/revival-terror-entry.ts),
+[Terror receipt](../game/terror-entry-receipt.ts),
+[ordered overlap](../game/arrival-overlap.ts),
+[arrival history](../game/homeworld-arrival.ts),
+[native source](../tests/fixture-revival-terror.ts),
+[printed effects](../tests/revival-terror-runtime.test.ts).
+The following BG checkpoint is retained as prior evidence; its Terror fence is
+superseded by this continuation. Southern storm, HMS classification, broader
+combinations, complete modes and comprehensive assurance remain open.
+
+Frozen **23 files, 310/310**, types/lint/build and six native engine/GameTable
+SSR journeys pass on unchanged source. Default Basic71/Advanced73 original
+actions earn actual High19/Tanks1 through paid Hagga13 shipment, next-Storm13
+loss and real first-Mentat Terror placement, then ordinary free revive1. All
+six effects, decline, original Karama versus Enemy of My Enemy and four minimal
+policies use native controls. Both storm orders and Sabotage discard ownership
+are exercised. Optional native Advanced BG/Ecaz programme146 uses actual independent
+three-card/Nexus selection and original50; defaults retain47. Ecaz's legal
+Basin9 setup really loses six in the first sweep. Basic Ecaz's actual token
+uses Arrakeen10 while Storm11 excludes Carthag11. No source played hand/wallet/
+force/phase/Tank/response is installed.
+
+Eight source and ten controlled arrival cases include exact packet/clock/actor,
+legacy bytes, Southern support and captured Polar origin. Nine additional
+native integration cases check both overlaps, fresh Sabotage discard, Sneak's
+original second owner before its own BG/entrant Ambassador and an independent
+original Karama versus the Sneak-derived Spiritual packet. The direct cancelled-
+alliance preflight now admits its exact revived parent before card cost. A
+bounded source review also removes a redundant original-territory fence from
+captured Sneak history. Other-phase Spiritual formats remain unchanged.
+
+The first frozen quick check passes; runtime then catches an unsupported fixture
+roster. The source now uses actual admitted options instead of bypassing that
+start guard. Further fixture feedback corrects Ecaz setup territory/owner and
+Basic's in-storm Ambassador target. A private runtime assertion also follows
+the native hidden-supply rekey after accepted alliance, rather than requiring
+the old token ID. Initial related proof was 224/228; final 310/310 adds the original
+alliance files and the actual preflight repair. No rules are relaxed to obtain
+a green fixture. Logs/HTML and matching code fingerprint remain private under
+`/home/quintine/.local/share/dune/checkpoints/20261025-revival-terror/`.
+These are engine/SSR journeys, not DOM callbacks, hydration, browser/mobile or
+deployed acceptance. Wider nested combinations, complete modes and final
+assurance remain open. No saved-room/D1/server/reset/restart/deployment operation
+occurred.
+
 ## Revival arrival responses — 25 October 2026
 
 **Prototyped / Partial.** The original positive revived group now opens native

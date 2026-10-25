@@ -572,6 +572,11 @@ export function MoritaniEntry({
         {entrant?.name ?? 'Another faction'} entered{' '}
         {territory(entry.territory).name}, sector {entry.sector}, {arrival}.
       </p>
+      {entry.revivalArrival && <p className="text-sm leading-6">
+        The revived group is already placed. Finish this Terror effect and any
+        Ambassador reaction before the original revival continues. Resolving
+        this entry uses no ordinary shipment or additional revival payment.
+      </p>}
       {token && (
         <div className="mb-4 grid grid-cols-1">
           <TokenInspector token={token} owner />

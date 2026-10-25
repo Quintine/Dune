@@ -2,6 +2,7 @@ import { validAmbassadorResume } from './ambassador-resume';
 import { validateDiscoveryEntryArrivalChild, validateDiscoveryEntryRound } from './discovery-entry';
 import { ambassadorPhaseAllowed } from './ambassador-phase';
 import { validateHomeworldRevivalReturn } from './homeworld-revival-return';
+import { validateRevivalArrivalSource } from './revival-terror-entry';
 import { HomeworldCustodyError } from './homeworld-custody';
 import {
   validateGuildAmbassadorArrivalContext,
@@ -516,7 +517,13 @@ export function quoteMovementCancellation(
   if (response.advisorResume === 'wormRide') return null;
   if (response.advisorRevivalEvent !== undefined) {
     const parent = g.homeworldRevivalReturn;
-    try { validateHomeworldRevivalReturn(g, parent); }
+    const terror = response.advisorRevivalTerror;
+    try {
+      validateHomeworldRevivalReturn(g, parent);
+      if (terror) validateRevivalArrivalSource(g, {event:response.advisorRevivalEvent,terror},
+        {entrant:terror.owner,territory:terror.territory,sector:terror.sector,
+          amount:terror.amount,elite:terror.elite,cause:'shipment'});
+    }
     catch (error) {
       if (error instanceof HomeworldCustodyError) throw new MovementCancellationError(error.message);
       throw error;
@@ -525,17 +532,21 @@ export function quoteMovementCancellation(
       parent?.stage === 'arrival' && parent.event === response.advisorRevivalEvent &&
       parent.turn === g.turn && parent.phase === g.phase && parent.player !== owner.id &&
       typeof parent.destination === 'string' && sectorKey(g, parent.destination) &&
-      response.location === splitLocation(parent.destination).territory &&
+      response.location === (terror?.territory ?? splitLocation(parent.destination).territory) &&
       response.advisorResume === undefined && response.advisorRemaining === undefined,
     'The canceled Intrusion lost its original committed revived-force arrival.');
     const followup = response.advisorFollowup;
-    requireContext(followup === undefined || (parent.quote.kind === 'tleilax' &&
-      followup.shipment === parent.player && followup.destination === parent.destination &&
-      followup.revivalEvent === parent.event),
+    requireContext(followup === undefined || ((terror || parent.quote.kind === 'tleilax') &&
+      followup.shipment === (terror?.owner ?? parent.player) &&
+      followup.destination === (terror ? location(terror.territory,terror.sector) : parent.destination) &&
+      followup.revivalEvent === parent.event &&
+      JSON.stringify(followup.revivalTerror) === JSON.stringify(terror)),
     'The revived Intrusion lost its original Spiritual Advisor followup.');
     return { kind: 'advisorFlip', successor: followup &&
       homeworldSpiritualAdvisorLimit(g, owner.id, 'polar_sink') > 0 ? 'advisor' : 'none' };
   }
+  requireContext(response.advisorRevivalTerror === undefined,
+    'A Sneak Intrusion must retain its original revival event.');
   requireContext(
     g.phase === 5,
     'This advisor cancellation is outside its shipment and movement phase.',

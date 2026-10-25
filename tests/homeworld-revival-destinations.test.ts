@@ -105,18 +105,18 @@ void test('BG fighters do not refuse SEND destinations before their original Int
   assert.equal(target().blocked, null);
 });
 
-void test('the unfinished Revival Terror continuation stays fenced without reading a token face', () => {
+void test('revival Terror destinations remain available without reading private token faces', () => {
   const { g, grant } = fixture('tleilaxu');
   g.moritaniTerror = createTerrorState(() => 0);
   const token = g.moritaniTerror.tokens[0];
   g.moritaniTerror = placeTerror(g.moritaniTerror, token.id, 'arrakeen', 1);
   for (const t of g.moritaniTerror.tokens) Object.defineProperty(t, 'kind', { get() { throw new Error('private Terror face read'); } });
   const target = () => homeworldRevivalDestinations(g, 'p', grant).find((c) => c.id === 'arrakeen:10')!;
-  assert.match(target().blocked!, /Terror.*continuation/);
+  assert.equal(target().blocked, null);
   g.players[2].reserves = 7;
   assert.equal(target().blocked, null);
   grant.normal = 3;
-  assert.match(target().blocked!, /Terror.*continuation/);
+  assert.equal(target().blocked, null);
   g.players[2].ally = 'p'; g.players[0].ally = 'm';
   assert.equal(target().blocked, null);
 });

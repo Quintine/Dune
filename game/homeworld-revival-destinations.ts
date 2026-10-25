@@ -6,7 +6,6 @@ import { homeworldContext } from './homeworld-game';
 import { HOMEWORLD_CARDS } from './homeworld-cards';
 import { homeworldForceGroups, quoteHomeworldCustody, HomeworldCustodyError } from './homeworld-custody';
 import { quoteNativeReserveWithdrawal } from './homeworld-native-reserves';
-import { lowGrummanRevealBlock } from './homeworld-collection';
 import type { HomeworldRevivalDeploymentQuote } from './homeworld-revival-deployment';
 
 type Context = Pick<Game, 'advanced' | 'players' | 'homeworlds' | 'storm' | 'mobileStronghold' | 'moritaniTerror'>;
@@ -30,8 +29,6 @@ export function homeworldRevivalDestinations(
   const p = g.players.find((seat) => seat.id === player);
   if (!p || !g.homeworlds?.custody)
     throw new HomeworldCustodyError('Revival placement needs its seated native Homeworld owner.');
-  const amount = grant.normal + grant.elite;
-  const moritani = g.players.find(seat => seat.faction === 'moritani');
   const destinations: HomeworldRevivalDestination[] = gameTerritories(g).flatMap((t) => {
     if (grant.kind === 'fedaykin' && presenceAt(p, t.id) === 0) return [];
     return t.sectors.map((sector) => {
@@ -45,10 +42,6 @@ export function homeworldRevivalDestinations(
       if (!blocked && t.id === MOBILE_STRONGHOLD)
         blocked = 'Revival placement in the Hidden Mobile Stronghold awaits its shipment-classification ruling.';
       blocked ??= territoryEntryBlock(g.players, p.id, t.id);
-      if (!blocked && moritani && p.id !== moritani.id && p.id !== moritani.ally &&
-        !lowGrummanRevealBlock(g, moritani.id, amount) &&
-        g.moritaniTerror?.tokens.some(token => token.status === 'placed' && token.location === t.id))
-        blocked = 'Revival SEND into Terror awaits its original entry continuation.';
       return { id: location(t.id, sector), name: `${t.name}${sector ? ` · sector ${sector}` : ''}`,
         territory: t.id, sector, blocked };
     });

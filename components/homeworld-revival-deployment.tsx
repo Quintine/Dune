@@ -61,6 +61,11 @@ function DeploymentChoice({ game, act, busy }: Props) {
         {' '}The revived group is already placed before those responses. Preventing
         a Bene Gesserit power does not undo your revival or use your ordinary shipment.
       </p>}
+      {game.players.some(player => player.faction === 'moritani') && <p className="fine">
+        Entry into an eligible Terror territory gives Moritani its normal choice
+        after the group is placed. Your original revival waits for that effect
+        and any Ambassador reaction; no ordinary shipment is used.
+      </p>}
       <label className="block space-y-1">
         <span>Revival destination</span>
         <select

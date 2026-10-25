@@ -149,6 +149,7 @@ import {
 } from './homeworld-revival-return';
 import { homeworldRevivalDestinations, quoteHomeworldRevivalDestination } from './homeworld-revival-destinations';
 import { terrorEntrySignature, terrorSelectionSignature, validateTerrorEntrySignature } from './terror-entry-receipt';
+import { validateRevivalArrivalSource, validateRevivalTerrorEntry, type RevivalEntryParent } from './revival-terror-entry';
 import { arrivalOverlapSignature, overlapOwnsAmbassadorDiscard, overlapOwnsTerrorDiscard, overlapOwnsWormTerror } from './arrival-overlap';
 import { ambassadorPlacementDestination, ambassadorPlacementDestinations, quoteEcazAmbassadorPlacement } from './ecaz-ambassador-placement';
 import { GuildAmbassadorMarkerError, markerDestinations, markerOwner, quoteGuildAmbassadorMarker,
@@ -1026,6 +1027,7 @@ export type Decision =
       destination?: string;
       ambassadorEvent?: string;
       revivalEvent?: string;
+      revivalTerror?: RevivalEntryParent['terror'];
     }
   | {
       kind: 'intrusion';
@@ -1035,7 +1037,8 @@ export type Decision =
       discoveryEntry?: DiscoveryEntryArrivalChild;
       ambassadorEvent?: string;
       revivalEvent?: string;
-      followup?: { shipment: string; destination: string; revivalEvent?: string };
+      revivalTerror?: RevivalEntryParent['terror'];
+      followup?: { shipment: string; destination: string; revivalEvent?: string; revivalTerror?: RevivalEntryParent['terror'] };
     }
   | { kind: 'advisorBattle'; player: string; territories: string[] }
   | {
@@ -1112,8 +1115,9 @@ export type ResponseWindow = {
   discoveryEntry?: DiscoveryEntryArrivalChild;
   advisorAmbassadorEvent?: string;
   advisorRevivalEvent?: string;
+  advisorRevivalTerror?: RevivalEntryParent['terror'];
   advisorRemaining?: string[];
-  advisorFollowup?: { shipment: string; destination: string; revivalEvent?: string };
+  advisorFollowup?: { shipment: string; destination: string; revivalEvent?: string; revivalTerror?: RevivalEntryParent['terror'] };
   amount?: number;
   elite?: number;
   recipient?: string;
@@ -1210,7 +1214,6 @@ type PendingHomeworldShipment = HomeworldShipmentIntent & {
   allyPayment: number;
   pools: ReturnType<typeof quoteHomeworldShipment>['sources'] | ReturnType<typeof quoteGuildHomeworldShipment>['boardSources'];
 };
-type RevivalEntryParent = { event: string; spiritual?: SpiritualAdvisorSource };
 type PendingShipment = {
   /** Only new declarations use the bonus; legacy quoted shipments retain their original price. */
   smuggler?: SmugglerShipment;
@@ -1925,6 +1928,7 @@ export type Game = {
   dukeVidal?: DukeState;
   dukeAcquisitionTurn?: number;
   pendingTerrorEntry?: {
+    revivalArrival?: RevivalEntryParent;
     /** Original public arrival, absent only in legacy saves. */
     entrySignature?: string;
     candidates?: string[];
@@ -1981,9 +1985,12 @@ export type Game = {
     turn: number;
     phase: number;
     revivalArrival?: RevivalEntryParent;
+    /** A committed revival Sneak group waits for the original overlap before BG reactions. */
+    revivalSneakAdvisor?: true;
   }[] | null;
   /** One committed entry with two independently optional expansion reactions. */
   pendingArrivalOverlap?: {
+    revivalArrival?: RevivalEntryParent;
     event: string;
     signature: string;
     turn: number;
@@ -7268,6 +7275,7 @@ function treacheryDiscardIntegrity(g: Game) {
       (t) => t.id === entry?.token,
     );
     if (entry?.cause === 'ambassador') ambassadorRelocationIntegrity(g);
+    if (entry?.revivalArrival) homeworldRule(() => validateRevivalTerrorEntry(g, entry));
     const sabotage = source === 'sabotage';
     const discarder = sabotage ? entrant : owner;
     requireRule(
@@ -7288,6 +7296,7 @@ function treacheryDiscardIntegrity(g: Game) {
           'guildTransport',
           'advisor',
           'wormRide',
+          'homeworldRevival',
           'ambassador',
         ].includes(entry.cause) &&
         ['none', 'wormRide', 'ambassador'].includes(entry.resume) &&
@@ -7297,7 +7306,7 @@ function treacheryDiscardIntegrity(g: Game) {
             ? (entry.resume === 'wormRide' || overlapOwnsWormTerror(g, entry)) &&
               g.phase === 1 &&
               entrant.faction === 'fremen'
-            : entry.resume === 'none') &&
+            : entry.resume === 'none' && (entry.cause !== 'homeworldRevival' || !!entry.revivalArrival)) &&
         Number.isSafeInteger(entry.amount) &&
         entry.amount >= 0 &&
         Number.isSafeInteger(entry.elite) &&
@@ -7323,6 +7332,7 @@ function treacheryDiscardIntegrity(g: Game) {
     const { entry, aftermath, handBefore } = continuation;
     atomicsIntegrity(g);
     if (entry?.cause === 'ambassador') ambassadorRelocationIntegrity(g);
+    if (entry?.revivalArrival) homeworldRule(() => validateRevivalTerrorEntry(g, entry));
     const owner = byFaction(g, 'moritani');
     const token = g.moritaniTerror?.tokens.find(row => row.id === entry?.token);
     requireRule(!g.pendingTerrorEntry && !g.pendingExchange && !g.summonedWorm &&
@@ -7332,8 +7342,8 @@ function treacheryDiscardIntegrity(g: Game) {
         : entry.cause === 'wormRide' ?
           (entry.resume === 'wormRide' || overlapOwnsWormTerror(g,entry)) && g.phase === 1 &&
           g.players.some(player => player.id === entry.entrant && player.faction === 'fremen')
-          : entry.resume === 'none') &&
-      ['shipment', 'movement', 'guildTransport', 'advisor', 'wormRide', 'ambassador'].includes(entry.cause) &&
+          : entry.resume === 'none' && (entry.cause !== 'homeworldRevival' || !!entry.revivalArrival)) &&
+      ['shipment', 'movement', 'guildTransport', 'advisor', 'wormRide', 'homeworldRevival', 'ambassador'].includes(entry.cause) &&
       entry.entrant !== owner?.id && entry.territory === aftermath.territory &&
       terrorEntryLocationAllowed(g,entry) && validGameLocation(g, entry.territory, entry.sector) &&
       token?.kind === 'atomics' && token.status === 'removed' &&
@@ -17479,7 +17489,8 @@ function ambassadorEffectBlock(
     return 'The entrant has no held Traitor Card to inspect.';
   return null;
 }
-function arrivalOverlapModeSupported(g: Game): boolean {
+function arrivalOverlapModeSupported(g: Game, revivalArrival?: RevivalEntryParent): boolean {
+  if (revivalArrival && g.homeworlds && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if (bareBasicSemutaProfile(g) && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if ((independentNexusProfile(g) || independentDiscoveryProfile(g)) && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if ((mixedE3NexusLeaderSkillsProfile(g) || mixedE3NexusProfile(g)) &&
@@ -17504,9 +17515,11 @@ function arrivalOverlapIntegrity(g: Game) {
     (continuation?.kind === 'ambassador' ? continuation.entry : null);
   const terror = g.pendingTerrorEntry ??
     (continuation?.kind === 'terrorDiscard' || continuation?.kind === 'terrorAtomics' ? continuation.entry : null);
+  if (record.revivalArrival)
+    homeworldRule(() => validateRevivalArrivalSource(g, record.revivalArrival!, record));
   const active = record.stage === 'first' ? record.first :
     record.first === 'ambassador' ? 'terror' : 'ambassador';
-  requireRule(g.status === 'playing' && arrivalOverlapModeSupported(g) &&
+  requireRule(g.status === 'playing' && arrivalOverlapModeSupported(g, record.revivalArrival) &&
     record.turn === g.turn && record.phase === g.phase &&
     typeof record.event === 'string' && record.event.length > 0 &&
     typeof record.signature === 'string' &&
@@ -17544,6 +17557,7 @@ function arrivalOverlapIntegrity(g: Game) {
         terror.territory === record.territory &&
         terror.turn === record.turn && terror.phase === record.phase &&
         terror.cause === record.cause &&
+        JSON.stringify(terror.revivalArrival) === JSON.stringify(record.revivalArrival) &&
         record.terrorTokens.includes(terror.token)),
     'The saved Ambassador/Terror overlap lost its original ordered arrival.');
 }
@@ -17578,7 +17592,7 @@ function openAmbassadorEntry(
       'This entry has lost its original revived group.');
     g.pendingAmbassador.revivalEvent = frame.event;
     homeworldRule(() => appendHomeworldArrivalAmbassador(frame, g.pendingAmbassador!, undefined,
-      revivalArrival.spiritual));
+      revivalArrival.spiritual, revivalArrival.terror));
   }
   log(g, `${owner.name} may trigger the ${faction(token.effect).name} Ambassador because ${entrant.name} entered ${territory(to).name}. The entrant’s remaining actions wait for this opportunity.`);
   return true;
@@ -17602,6 +17616,9 @@ function openTerritoryEntry(
   resume: 'none' | 'wormRide' = 'none',
   revivalArrival?: RevivalEntryParent,
 ) {
+  if (revivalArrival)
+    homeworldRule(() => validateRevivalArrivalSource(g, revivalArrival,
+      {entrant:entrant.id,territory:to,sector,amount,elite,cause}));
   // The arrival's own interaction (guild payment, advisor choice, storm
   // protection) settles first; the entry then opens from the automatic pass.
   if (g.response || g.decision || g.pendingTerrorEntry || g.pendingAmbassador ||
@@ -17638,6 +17655,8 @@ function openTerritoryEntry(
       elite,
       cause,
       resume,
+      undefined,
+      revivalArrival,
     );
   const moritani = byFaction(g, 'moritani');
   const terrorTokens = moritani &&
@@ -17650,8 +17669,7 @@ function openTerritoryEntry(
     'Finish the other arrival reaction before opening this entry.');
   if (!terrorTokens.length)
     return openAmbassadorEntry(g, owner, token, entrant, to, sector, resume, cause, revivalArrival);
-  requireRule(!revivalArrival, 'Revival deployment with overlapping Terror and Ambassador reactions is still being implemented.');
-  requireRule(arrivalOverlapModeSupported(g) && !g.pendingArrivalOverlap &&
+  requireRule(arrivalOverlapModeSupported(g, revivalArrival) && !g.pendingArrivalOverlap &&
     moritani && g.order.includes(owner.id) && g.order.includes(moritani.id),
     'Ambassador and Terror overlap still needs a supported classic Ecaz/Moritani table.');
   const first = g.order.indexOf(owner.id) < g.order.indexOf(moritani.id)
@@ -17661,13 +17679,14 @@ function openTerritoryEntry(
     entrant: entrant.id, territory: to, sector, amount, elite, cause, resume,
     ecaz: owner.id, moritani: moritani.id, first, stage: 'first',
     ambassadorToken: token.id, terrorTokens: terrorTokens.map(t => t.id),
+    ...(revivalArrival ? {revivalArrival:structuredClone(revivalArrival)} : {}),
   };
   overlap.signature = arrivalOverlapSignature(overlap);
   g.pendingArrivalOverlap = overlap;
   log(g, `${owner.name} and ${moritani.name} both have optional reactions to ${entrant.name}'s entry in ${territory(to).name}; ${first === 'ambassador' ? owner.name : moritani.name} acts first in storm order.`);
   if (first === 'terror')
-    return openTerrorEntry(g, entrant, to, sector, amount, elite, cause, 'none');
-  openAmbassadorEntry(g, owner, token, entrant, to, sector, 'none', cause);
+    return openTerrorEntry(g, entrant, to, sector, amount, elite, cause, 'none', undefined, revivalArrival);
+  openAmbassadorEntry(g, owner, token, entrant, to, sector, 'none', cause, revivalArrival);
   overlap.ambassadorEvent = g.pendingAmbassador!.event;
   return true;
 }
@@ -17706,7 +17725,7 @@ function finishAmbassador(g: Game, deferResume = false) {
       overlap.stage = 'second';
       requireRule(openTerrorEntry(g, getPlayer(g, overlap.entrant),
         overlap.territory, overlap.sector, overlap.amount, overlap.elite,
-        overlap.cause, 'none'),
+        overlap.cause, 'none', undefined, overlap.revivalArrival),
       'The originally triggered Terror token is no longer in the stronghold.');
       return;
     }
@@ -19944,6 +19963,7 @@ function terrorEntryIntegrity(g: Game) {
   for (const entry of entries) {
     if (!entry) continue;
     homeworldRule(() => validateTerrorEntrySignature(entry));
+    if (entry.revivalArrival) homeworldRule(() => validateRevivalTerrorEntry(g, entry));
     if (entry.entrySignature === undefined) continue;
     requireRule(entry.turn === g.turn && entry.phase === g.phase &&
       g.players.some((p) => p.id === entry.entrant && p.faction !== 'moritani') &&
@@ -19983,7 +20003,11 @@ function openTerrorEntry(
   cause: NonNullable<Game['pendingTerrorEntry']>['cause'],
   resume: 'none' | 'wormRide' | 'ambassador' = 'none',
   ambassadorEvent?: string,
+  revivalArrival?: RevivalEntryParent,
 ) {
+  if (revivalArrival)
+    homeworldRule(() => validateRevivalArrivalSource(g, revivalArrival,
+      {entrant:entrant.id,territory:to,sector,amount,elite,cause}));
   const moritani = byFaction(g, 'moritani');
   const overlap = g.pendingArrivalOverlap;
   const originallyTriggered = !!overlap &&
@@ -20018,6 +20042,7 @@ function openTerrorEntry(
     stage: tokens.length > 1 ? 'select' : 'offer',
     resume,
     ...(ambassadorEvent ? { ambassadorEvent } : {}),
+    ...(revivalArrival ? {revivalArrival:structuredClone(revivalArrival)} : {}),
   };
   if (!TERROR_STRONGHOLDS.includes(to)) {
     const proofs = tokens.map(token => {
@@ -20055,7 +20080,7 @@ function finishTerrorEntry(g: Game) {
         t.location === overlap.territory);
       requireRule(token, 'The originally triggered Ambassador token is no longer present.');
       openAmbassadorEntry(g, getPlayer(g, overlap.ecaz), token,
-        getPlayer(g, overlap.entrant), overlap.territory, overlap.sector, 'none', overlap.cause);
+        getPlayer(g, overlap.entrant), overlap.territory, overlap.sector, 'none', overlap.cause, overlap.revivalArrival);
       overlap.ambassadorEvent = g.pendingAmbassador!.event;
       return;
     }
@@ -20375,7 +20400,18 @@ function decideTerror(g: Game, p: Player, action: Action) {
         `${p.name} sent ${amount} reserves into ${territory(entry.territory).name} through Sneak Attack.`,
       );
     } else log(g, `${p.name} sent no forces through Sneak Attack.`);
+    const revivalArrival: RevivalEntryParent | undefined = amount > 0 && entry.revivalArrival
+      ? {event:entry.revivalArrival.event,terror:{event:entry.entrySignature!,owner:p.id,
+        territory:entry.territory,sector:entry.sector,amount,elite:0}} : undefined;
     finishTerrorEntry(g);
+    // Keep the original two-owner opportunity intact before this new group's
+    // reactions; never overwrite an Ambassador opened by finishing Terror.
+    if (revivalArrival) {
+      (g.pendingArrivalReaction ??= []).push({entrant:p.id,territory:entry.territory,
+        sector:entry.sector,amount,elite:0,cause:'shipment',resume:'none',turn:g.turn,
+        phase:g.phase,revivalArrival,revivalSneakAdvisor:true});
+      return;
+    }
     // The Terror effect is the arrival itself, so the adopted order resolves
     // the committed entry first and then offers the Bene Gesserit reactions
     // the same off-planet reserve entry already uses for ordinary shipments.
@@ -20696,7 +20732,8 @@ function completeSpiritualAdvisorArrival(g:Game){
       {...order,amount:order.amount as 1|2,advisors:isAdvisor(bg,order.territory)});
   }else{
     openTerritoryEntry(g,bg,order.territory,order.sector,order.amount,0,'advisor','none',
-      frame.source!.revivalEvent ? {event:frame.source!.revivalEvent,spiritual:frame.source} : undefined);
+      frame.source!.revivalEvent ? {event:frame.source!.revivalEvent,spiritual:frame.source,
+        ...(frame.decision.revivalTerror ? {terror:frame.decision.revivalTerror} : {})} : undefined);
   }
 }
 type TransportMatchingIntent=NonNullable<Game['pendingAdvisorTransportMatching']>['intent'];
@@ -22120,8 +22157,9 @@ function finishAdvisorReaction(
     discoveryEntry?: DiscoveryEntryArrivalChild;
     advisorAmbassadorEvent?: string;
     advisorRevivalEvent?: string;
+    advisorRevivalTerror?: RevivalEntryParent['terror'];
     advisorRemaining?: string[];
-    advisorFollowup?: { shipment: string; destination: string; revivalEvent?: string };
+    advisorFollowup?: { shipment: string; destination: string; revivalEvent?: string; revivalTerror?: RevivalEntryParent['terror'] };
   },
 ) {
   const bg = byFaction(g, 'beneGesserit')!;
@@ -22147,7 +22185,8 @@ function intrusion(
     discoveryEntry?: DiscoveryEntryArrivalChild;
     ambassadorEvent?: string;
     revivalEvent?: string;
-    followup?: { shipment: string; destination: string; revivalEvent?: string };
+    revivalTerror?: RevivalEntryParent['terror'];
+    followup?: { shipment: string; destination: string; revivalEvent?: string; revivalTerror?: RevivalEntryParent['terror'] };
   } = {},
 ) {
   const bg = byFaction(g, 'beneGesserit');
@@ -27956,8 +27995,9 @@ function stampHomeworldRevivalProgress(g: Game) {
 }
 function homeworldRevivalReturnIntegrity(g: Game) {
   const frame = g.homeworldRevivalReturn;
-  homeworldRule(() => validateHomeworldRevivalReturn(g, frame));
   const continuation = g.pendingTreacheryDiscard?.continuation;
+  homeworldRule(() => validateHomeworldRevivalReturn(
+    continuation?.kind === 'ambassador' ? {...g,pendingAmbassador:continuation.entry} : g, frame));
   const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume,
     g.pendingRicheseGift?.resume, g.pendingRichesePurchaseIncome?.resume,
     continuation && 'resume' in continuation ? continuation.resume : null];
@@ -33403,6 +33443,19 @@ function settleAutomaticContinuations(g: Game) {
       if (!g.pendingArrivalReaction.length) g.pendingArrivalReaction = null;
       const entrant = g.players.find(p => p.id === deferred.entrant);
       requireRule(!!entrant, 'The deferred arrival entry has lost its entrant.');
+      if (deferred.revivalSneakAdvisor) {
+        requireRule(deferred.revivalArrival?.terror && !deferred.revivalArrival.spiritual &&
+          deferred.turn === g.turn && deferred.phase === g.phase,
+          'The queued Sneak reactions have lost their committed revival entry.');
+        homeworldRule(() => validateRevivalArrivalSource(g, deferred.revivalArrival!, deferred));
+        const bg = byFaction(g, 'beneGesserit');
+        const source = {revivalEvent:deferred.revivalArrival!.event,
+          revivalTerror:deferred.revivalArrival!.terror};
+        const followup = bg && bg.id !== entrant!.id && spiritualAdvisorMaximum(g,bg.id) > 0
+          ? {shipment:entrant!.id,destination:location(deferred.territory,deferred.sector),...source} : undefined;
+        if (!intrusion(g,entrant!,deferred.territory,{...source,...(followup ? {followup} : {})}) && followup)
+          g.decision = {kind:'advisor',player:bg!.id,...followup};
+      }
       openTerritoryEntry(g, entrant!, deferred.territory, deferred.sector,
         deferred.amount, deferred.elite, deferred.cause, deferred.resume, deferred.revivalArrival);
       if (deferred.revivalArrival) resumeHomeworldRevivalReturn(g);
@@ -35287,6 +35340,7 @@ function applyActionInner(
             : undefined,
         advisorAmbassadorEvent: decision.ambassadorEvent,
         advisorRevivalEvent: decision.revivalEvent,
+        advisorRevivalTerror: decision.revivalTerror,
         discoveryEntry: decision.discoveryEntry,
       };
       if (action.accept)
@@ -37829,6 +37883,7 @@ export function viewGame(state: Game, id: string) {
             sector: entry.sector,
             cause: entry.cause,
             stage: entry.stage,
+            ...(entry.revivalArrival ? {revivalArrival:true} : {}),
             ...(me.faction === 'moritani' && entry.stage === 'select'
               ? { candidates: entry.candidates!.map((id) => {
                 const candidate = g.moritaniTerror!.tokens.find((t) => t.id === id)!;

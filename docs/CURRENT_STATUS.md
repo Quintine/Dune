@@ -16,6 +16,40 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Revival Terror continuation — 25 October. Prototyped / Partial.**
+Physical revived entry now reaches native Terror Reveal/Decline, all six effects
+and Enemy of My Enemy. Exact original return/group metadata survives token
+selection, independent Karama, native discard and storm-ordered Ambassador
+opportunities. Positive Sneak captures its actual reserve group, preserves the
+original second owner's prompt, then opens its own BG/Ambassador children.
+Original revival income resumes once after all children; no new fee, ordinary
+allowance or phase4 industry income is introduced. SEND composition remains
+explicitly provisional; full modes and publication remain gated.
+[Source and scope](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md#revival-terror-continuation--25-october-2026).
+
+Three disjoint lanes, bounded review and root integration pass **23 files,
+310/310**, types/lint/build and six native engine/GameTable SSR journeys.
+Default public Basic71/Advanced73 actions earn actual paid Hagga13 shipment,
+real Storm casualty, ordinary free revive1 and a token really placed at first
+Mentat. Printed effects, independent original Karama and all four minimal
+policies run legally. Genuine optional Advanced BG/Ecaz source146 uses the already
+admitted independent three-card/Nexus profile and original50; default sources
+retain47. Real Ecaz Basin9 setup incurs native Storm losses. Basic Ecaz uses
+Arrakeen10 because first Storm11 forbids placing at Carthag11. Both owner
+orders, Sabotage discards and Sneak-derived reactions keep their original
+parents. Controlled public-source cases supplement native paths, including
+Polar captures; no installed played source hand/wallet/force/phase/Tank is used.
+
+Feedback fixes a phase5-only alliance-cancellation preflight, which now checks
+the original revived source before spending Karama. Fixture-only repairs use
+actual admitted options, legal setup ownership/destinations and native returned-
+Terror supply rekeying; no start gate or rule was weakened. Historical receipt
+bytes remain unchanged without new metadata. Private source-bound proof/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-revival-terror/`.
+No saved-room/D1/server/reset/restart/deployment operation occurred. DOM callbacks,
+hydration, browser/mobile/deployed acceptance, wider nested combinations and
+comprehensive rules/recovery/privacy assurance remain open.
+
 **Revived force BG arrival responses — 25 October. Prototyped / Partial.**
 Actual revived placement now permits native Advanced Intrusion. Off-planet
 Tleilax→Arrakis also earns ordinary BG Spiritual accompaniment under an explicit

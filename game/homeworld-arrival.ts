@@ -2,6 +2,7 @@ import type { Game } from './engine';
 import { location, splitLocation, validLocation } from './board';
 import { HomeworldCustodyError } from './homeworld-custody';
 import type { SpiritualAdvisorSource } from './spiritual-advisor';
+import { validRevivalTerrorPacket, validateRevivalTerrorPacket, type RevivalTerrorPacket } from './revival-terror-entry';
 
 export type HomeworldAmbassadorArrival = {
   event: string;
@@ -9,6 +10,7 @@ export type HomeworldAmbassadorArrival = {
   destination: string;
   parent?: string;
   spiritual?: SpiritualAdvisorSource;
+  terror?: RevivalTerrorPacket;
   completed: boolean;
 };
 export type HomeworldArrivalFrame = {
@@ -53,6 +55,7 @@ function spiritualSource(
   const source = entry.spiritual as (SpiritualAdvisorSource & { revivalEvent?: string }) | undefined;
   if (!source || !keys(source, ['event', 'owner', 'turn', 'phase', 'territory', 'sector', 'amount', 'revivalEvent'])) fail();
   const destination = splitLocation(frame.destination!);
+  const origin = entry.terror?.territory ?? destination.territory;
   if (
     Object.keys(source).sort().join(',') !== 'amount,event,owner,phase,revivalEvent,sector,territory,turn' ||
     !text(source.event) ||
@@ -67,12 +70,28 @@ function spiritualSource(
     !Number.isSafeInteger(source.sector) ||
     !validLocation(source.territory, source.sector) ||
     !validLocation(destination.territory, destination.sector) ||
-    (source.territory !== destination.territory && source.territory !== 'polar_sink') ||
+    (source.territory !== origin && source.territory !== 'polar_sink') ||
     (source.amount !== 1 && source.amount !== 2) ||
     entry.parent !== undefined ||
     entry.destination !== location(source.territory, source.sector)
   ) fail();
   return source as SpiritualAdvisorSource & { revivalEvent: string };
+}
+
+function terrorPacket(source: RevivalTerrorPacket) {
+  return [source.event, source.owner, source.territory, source.sector, source.amount, source.elite];
+}
+
+/** Sneak Attack is a distinct committed packet, not another disposition of the
+ * original revived counters. Its captured Terror witness stays engine-owned. */
+function terrorSource(frame: HomeworldArrivalFrame, entry: HomeworldAmbassadorArrival): RevivalTerrorPacket {
+  const source = entry.terror;
+  const destination = splitLocation(frame.destination!);
+  if (!validRevivalTerrorPacket(source) || entry.parent !== undefined ||
+    !validLocation(destination.territory, destination.sector) ||
+    (entry.spiritual === undefined && (entry.entrant !== source.owner ||
+      entry.destination !== location(source.territory, source.sector)))) fail();
+  return source;
 }
 
 /** Arrival provenance is fixed separately from the original revival grant. */
@@ -82,6 +101,8 @@ export function homeworldArrivalSignature(
   if (!text(frame.destination) || !Array.isArray(frame.ambassadors)) fail();
   const seen = new Set<string>();
   const spiritualEvents = new Set<string>();
+  const terrorEvents = new Map<string, string>();
+  const terrorRoots = new Set<string>();
   let primary = false;
   for (const [index, entry] of frame.ambassadors.entries()) {
     if (
@@ -91,6 +112,7 @@ export function homeworldArrivalSignature(
         'destination',
         'parent',
         'spiritual',
+        'terror',
         'completed',
       ]) ||
       !text(entry.event) ||
@@ -101,10 +123,21 @@ export function homeworldArrivalSignature(
       seen.has(entry.event)
     )
       fail();
+    if (entry.terror !== undefined) {
+      const source = terrorSource(frame, entry), packet = JSON.stringify(terrorPacket(source));
+      if (terrorEvents.has(source.event) && terrorEvents.get(source.event) !== packet) fail();
+      terrorEvents.set(source.event, packet);
+      if (entry.spiritual === undefined) {
+        if (terrorRoots.has(source.event)) fail();
+        terrorRoots.add(source.event);
+      }
+    }
     if (entry.spiritual !== undefined) {
       const source = spiritualSource(frame, entry);
       if (spiritualEvents.has(source.event)) fail();
       spiritualEvents.add(source.event);
+    } else if (entry.terror !== undefined) {
+      // Its separate public packet was checked above; it is not the primary root.
     } else if (entry.parent === undefined) {
       if (primary || entry.entrant !== frame.player || entry.destination !== frame.destination) fail();
       primary = true;
@@ -135,6 +168,7 @@ export function homeworldArrivalSignature(
         entry.spiritual.amount,
         spiritualSource(frame, entry).revivalEvent,
       ]]),
+      ...(entry.terror === undefined ? [] : [['terror', terrorPacket(entry.terror)]]),
     ]),
   ]);
 }
@@ -152,6 +186,7 @@ export function appendHomeworldArrivalAmbassador(
   },
   parent?: string,
   spiritual?: SpiritualAdvisorSource,
+  terror?: RevivalTerrorPacket,
 ): void {
   if (
     frame.stage !== 'arrival' ||
@@ -169,6 +204,7 @@ export function appendHomeworldArrivalAmbassador(
     completed: false,
     ...(parent === undefined ? {} : { parent }),
     ...(spiritual === undefined ? {} : { spiritual }),
+    ...(terror === undefined ? {} : { terror }),
   };
   const ambassadors = [
     ...frame.ambassadors!,
@@ -179,6 +215,7 @@ export function appendHomeworldArrivalAmbassador(
     ambassadors,
   });
   if (spiritual !== undefined) appended.spiritual = structuredClone(spiritual);
+  if (terror !== undefined) appended.terror = structuredClone(terror);
   frame.ambassadors = ambassadors;
   frame.arrivalSignature = arrivalSignature;
 }
@@ -231,11 +268,20 @@ export function validateHomeworldArrival(
       (frame.turn !== g.turn || frame.phase !== g.phase)) ||
     frame.arrivalSignature !== homeworldArrivalSignature(frame) ||
     frame.ambassadors!.some((entry) => {
+      if (entry.terror !== undefined) {
+        if (tag !== 'revivalEvent') return true;
+        validateRevivalTerrorPacket({ turn: frame.turn, phase: frame.phase, players: g.players,
+          revivalPlayer: frame.player }, entry.terror, frame.destination!, frame.event);
+      }
       if (entry.spiritual !== undefined) {
         const entrants = g.players.filter((seat) => seat.id === entry.entrant);
         const owners = g.players.filter((seat) => seat.id === frame.player);
         return tag !== 'revivalEvent' || entrants.length !== 1 ||
-          entrants[0].faction !== 'beneGesserit' || owners.length !== 1 || owners[0].faction !== 'tleilaxu';
+          entrants[0].faction !== 'beneGesserit' || owners.length !== 1 ||
+          (entry.terror === undefined && owners[0].faction !== 'tleilaxu');
+      }
+      if (entry.terror !== undefined) {
+        return !g.players.some(seat => seat.id === entry.entrant && seat.faction === 'moritani');
       }
       return !g.players.some((seat) => seat.id === entry.entrant &&
         (entry.parent === undefined || seat.faction === 'beneGesserit'));
