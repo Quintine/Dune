@@ -2805,7 +2805,7 @@ export function GameTable({
               <span className="eyebrow">Player decision</span>
               <h2>
                 {g.decision.kind === 'ecazBattleLead'
-                  ? 'Ecaz · choose the combined-army lead'
+                  ? g.decision.lowEcaz ? 'Low Ecaz · opponent chooses the lead' : 'Ecaz · choose the combined-army lead'
                   : g.decision.kind === 'caladanReinforcement'
                   ? 'Caladan victory reinforcement'
                   : g.decision.kind === 'grummanCollection'

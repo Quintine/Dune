@@ -132,6 +132,17 @@ The reverse galleries were also inspected directly (`/tmp/dune-rules/homeworld-r
 
 These faces require actual rule integrations, not a generic faction-disabled flag. Tleilax's phase-start condition, Tupile's once-per-faction private question and hand-limit cleanup, Grumman's reveal immunity, split income and displaced Bidding/bonus ownership have different lifecycles. Occupied Ecaz is an explicit additional Duke authority and revival permission; it does not by itself answer every existing loan-expiry, revival-custody or death-cycle question.
 
+## Low Ecaz battle lead — 25 October 2026
+
+The printed Low Ecaz penalty now owns the original combined-battle choice:
+its opposing faction chooses Ecaz or the ally as lead at native population
+zero through six. High at seven and games without Homeworlds retain Ecaz's
+ordinary choice. Both rules bands use the same public identities and original
+plan/physical-army/payment rules. Existing opened choices retain their owner;
+Karama against Occupy afterward keeps the selected lead. No new coalition,
+profile or occupation-retention rule is introduced.
+[Canonical contract and focused evidence](ECAZ_OCCUPY_RULES.md#low-ecaz-opponent-owned-lead-choice--25-october-2026).
+
 ## Native custody and population
 
 The planet disc holds that faction's native reserve forces. A Homeworld is a distinct off-planet location, not an Arrakis territory, additional stronghold, private hand zone or a new supply of pieces. Invaders retain their own faction and physical force types; native reserves and foreign garrisons must be distinguishable. Total faction inventory continues to include forces on Arrakis, on every Homeworld, and in the Tanks.

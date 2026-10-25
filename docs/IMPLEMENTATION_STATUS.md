@@ -1,5 +1,51 @@
 # Dune implementation status
 
+## 25 October 2026 — Low Ecaz gives the allied battle choice to its opponent
+
+The native Homeworld Low face's printed opponent-choice penalty now connects
+to the original combined-battle opener. A focused quote uses current native
+Ecaz population, delegating at0–6 and retaining Ecaz at7+ or without Worlds.
+The original decision captures the actual opposing player and optional public
+Low marker. Existing opened decisions retain their saved chooser. Controls,
+unavailable reasons, log and the existing four-profile legality adapter name
+that owner, without new acknowledgements, payments or strategic tuning.
+
+Both original allied lead choices preserve their own plan/cards/spice, the
+physical variable ally, mandatory Ecaz contribution and native aggressor order.
+Subsequent Karama may prevent Occupy but keeps the selected lead and spares the
+excluded army; it does not undo the independent Homeworld penalty. This is a
+printed-rule integration, not a new numeric/timing ruling, profile admission,
+Homeworld-location coalition or occupation-retention policy.
+[Canonical component contract](ECAZ_OCCUPY_RULES.md#low-ecaz-opponent-owned-lead-choice--25-october-2026).
+
+Disjoint helper/control and native-source lanes, bounded read-only review and
+root integration pass **9 files, 160/160**, types/lint/build and six native
+actual component-callback/engine/GameTable SSR journeys. Public Basic74 and
+Advanced83 source actions earn original setup (six Ecaz in Basin), actual worm
+alliance and paid eight-counter city shipment, leaving Low6/four spice. Either
+opponent-selected lead reaches Collection in each mode. Original Guild Karama
+keeps the selected allied lead, spends its genuine card and spares Ecaz8.
+An actual seven-counter shipment earns High7/five spice and the ordinary Ecaz
+callback. Ten native cases cover denial/stale input, both leads/cancellation,
+threshold and all four original profiles in both modes. Seven helper/control
+cases include explicitly controlled projections rather than invented native
+source proof. No played hand/wallet/army/phase/alliance or decision is installed.
+
+Initial source feedback repairs a fixture's setup-phase step. Frozen quick
+passes; its runtime then exposes a fixture bot spending Guild's starting Karama
+to stop Emperor's Advanced shipment before any coalition. An explicit original
+Allow keeps that shipment and the actual card for the intended battle counter.
+The final frozen related union and all runtime paths pass; no rule, assertion
+or source requirement is weakened. Private logs/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-low-ecaz-battle-lead/`.
+`frozen-fixture-fix/report.json` passes identical source tree
+`d08994fe70cb09a26ff5f755bcb2c1e12ab74472578951f497d505625b3c25d6`,
+2,813 files, base `96de962`. Final prose-only evidence changes are separately
+hash/link checked without repeating unchanged runtime checks. Broader modules,
+full modes, browser/mobile/deployed and final assurance remain open. SSR and
+callbacks are not parent hydration acceptance. No saved-room/D1/server/reset/
+restart/deployment operation occurred.
+
 ## 25 October 2026 — Purchased Karama rates compose with native Richese Cunning
 
 The native unallied pair now accepts its original independent purchased rate.

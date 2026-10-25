@@ -20,6 +20,8 @@ export function nextHomeworldEcazStep(game: Game): HomeworldEcazStep | null {
     return { actor: game.decision.player, action: { type: 'decision', decline: true } };
   if (game.decision?.kind === 'moritaniPlacement')
     return { actor: game.decision.player, action: { type: 'decision', decline: true } };
+  if (game.decision?.kind === 'guildShipment')
+    return { actor: game.decision.player, action: { type: 'decision', allow: true } };
   if (!game.phaseOpening && !game.decision && game.phase === 0 && game.stormPending === null) {
     const actor = game.stormDialers.find(id => game.stormDials[id] === undefined);
     if (actor) return { actor, action: { type: 'stormDial', amount: game.turn === 1 ? 0 : 1 } };
@@ -45,12 +47,15 @@ export function createHomeworldEcazOccupyFixture(options: {
   tech?: boolean; strongholds?: boolean;
   /** No-World control uses the same genuine alliance/Arrakis route. */
   homeworlds?: boolean;
+  /** Original paid Ecaz packet; the default source keeps its four-counter army. */
+  ecazForces?: number;
   /** Select only actual offered setup choices; the captured initial stays untouched. */
   finishSetup?: (initial: Game) => Game;
 } = {}): HomeworldEcazOccupyFixture {
   const advanced = options.advanced ?? true;
   const homeworlds = options.homeworlds ?? true;
   const ally = options.allyFaction ?? 'emperor';
+  const ecazForces = options.ecazForces ?? 4;
   let game = createGame('WORLDECAZOCCUPY', newPlayer('ecaz', 'Ecaz', 'ecaz'), advanced, ['ecaz']);
   joinGame(game, newPlayer(ally, ally === 'emperor' ? 'Emperor' : 'Moritani', ally));
   joinGame(game, newPlayer('guild', 'Guild', 'guild'));
@@ -102,7 +107,7 @@ export function createHomeworldEcazOccupyFixture(options: {
     const actor = game.active!;
     if (strongholdTerritory && actor === 'ecaz' && !game.players.find(player => player.id === actor)!.shipped) {
       ship(actor, { type: 'ship', territory: strongholdTerritory,
-        sector: territory(strongholdTerritory).sectors[0], amount: 4, elite: 0, allyPayment: 0, smuggler: false });
+        sector: territory(strongholdTerritory).sectors[0], amount: ecazForces, elite: 0, allyPayment: 0, smuggler: false });
       reach(homeworldEcazClean);
     }
     act(actor, { type: 'endMovement' });
@@ -128,7 +133,7 @@ export function createHomeworldEcazOccupyFixture(options: {
     const actor = game.active!;
     if (!shipped.has(actor) && !(strongholdTerritory && actor === 'ecaz')) {
       ship(actor, { type: 'ship', territory: battleTerritory, sector,
-        amount: actor === 'guild' ? 2 : 4,
+        amount: actor === 'ecaz' ? ecazForces : actor === 'guild' ? 2 : 4,
         elite: actor === ally && ally === 'emperor' && (advanced || homeworlds) ? 2 : 0, allyPayment: 0 });
       shipped.add(actor);
       reach(homeworldEcazClean);
@@ -143,5 +148,5 @@ export function createHomeworldEcazOccupyFixture(options: {
   if (!options.skills) assert.equal(game.decision?.kind, 'ecazBattleLead');
   return { game, initial, afterSetup, actions, afterFirstMentat, strongholdTerritory,
     ecaz: 'ecaz', ally, opponent: 'guild',
-    territory: battleTerritory, location, ecazForces: 4 };
+    territory: battleTerritory, location, ecazForces };
 }

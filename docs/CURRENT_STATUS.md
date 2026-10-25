@@ -16,6 +16,32 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Low Ecaz opponent-owned battle lead — 25 October. Prototyped / Partial.**
+The original combined-battle opener now applies the printed Low penalty:
+at native population zero through six, the opponent chooses Ecaz or its ally
+as lead. High at seven and no-World games retain Ecaz's ordinary choice.
+Persistent controls name the captured chooser; the same minimal policy adapter
+serves that owner. Selected leaders/cards/payment, physical armies, aggressor
+normalization and later Occupy cancellation remain unchanged. Existing opened
+decisions retain their saved owner. No new numerical ruling or mode admission.
+[Component source and scope](ECAZ_OCCUPY_RULES.md#low-ecaz-opponent-owned-lead-choice--25-october-2026).
+
+Disjoint helper/controls and native-source work, bounded review and root
+integration pass **9 files, 160/160**, types/lint/build and six native actual
+component-callback/engine/GameTable SSR journeys. Public Basic 74/Advanced 83
+actions earn actual Ecaz6 Basin placement, real worm alliance and paid eight-
+counter shipment, leaving Low6/four spice. The opponent selects either lead;
+both modes reach Collection. Original Guild Karama keeps the chosen allied
+lead while sparing Ecaz's eight counters. A real seven-counter shipment leaves
+High7 and the ordinary Ecaz callback. Both rules bands retain all four legal
+opponent profiles. Seven helper/control cases include labelled controlled
+projections, not earned source substitutes. Setup-driver phase selection and
+unintended early Guild stopping were repaired without changing game legality.
+No played source hand/wallet/forces/phase/alliance is installed. No saved-room,
+D1, server, reset, restart or deployment operation occurred. Broader modules,
+full modes, browser/mobile/deployed and final assurance remain open; SSR and
+callbacks do not certify hydration.
+
 **Purchased Karama rate with native Richese Cunning — 25 October. Prototyped / Partial.**
 The original independent rate now halves Cunning's one billable pair unit plus
 any High paid companions, rounded once and paid to the bank. The original

@@ -2,6 +2,62 @@
 
 Historical primary-source audit, 2026-09-07, corrected after independent verification. The publisher/designer odd-force conflict remains unresolved as a publisher correction. Under the 8 October Basic-first prototype instruction, Basic now provisionally uses the main p8 paragraph: ceiling contribution/loss and floor survivors, with a visible control warning. This is not a numerical ruling by the user or designer. Advanced retains its separately authorized source. The earlier false attribution to Jack Reda remains withdrawn.
 
+## Low Ecaz opponent-owned lead choice — 25 October 2026
+
+**Prototyped / Partial.** The verified Ecaz Low face says that when Ecaz and
+its ally both fight another faction, that opponent chooses which allied
+faction fights. The [component audit](HOMEWORLD_COMPONENT_AUDIT.md#verified-low-side-effects)
+and [native population manifest](HOMEWORLD_COMPONENT_AUDIT.md#canonical-physical-manifest)
+bind Low to zero through six native reserves and High to seven or more.
+This is a printed penalty, not a new numerical or timing interpretation.
+The original combined-battle opener now assigns its existing two-choice
+control to the actual opposing faction at Low; at High or without Homeworlds,
+Ecaz retains that choice. No extra acknowledgement, payment or card is added.
+
+The selected lead still owns its leaders, hand and spice. The physical ally
+still supplies the original variable army while Ecaz's fixed contribution is
+unchanged. Original battle-order scheduling and aggressor normalization remain.
+Karama may subsequently prevent Occupy, keeping the selected lead and excluding
+the other army; it does not undo the Homeworld's mandatory chooser penalty.
+Choices use only the original public allied identities, never rival hand
+contents. Only the captured decision owner may choose; stale events and foreign
+actors remain rejected. Already-opened decisions retain their saved owner
+rather than reopening a choice or changing an in-flight parent.
+
+The persistent panel and unavailable reasons name the actual chooser and
+explain Low Ecaz. The four existing profiles consume the same original legal
+lead options without strategic tuning. This applies to newly opened admitted
+Arrakis coalitions in either rules band; it adds no coalition to Homeworld
+locations, new profile or occupation-retention rule.
+
+Evidence paths: [chooser quote](../game/ecaz-homeworld-lead.ts),
+[quote cases](../tests/ecaz-homeworld-lead.test.ts),
+[native source](../tests/fixture-low-ecaz-battle-lead.ts),
+[native cases](../tests/low-ecaz-battle-lead-runtime.test.ts),
+[controls](../components/ecaz-occupy.tsx) and
+[shared choices](../game/ecaz-occupy-options.ts).
+Full rules/mode and browser/mobile/deployed acceptance remain open.
+
+Frozen **9 files, 160/160**, types/lint/build and six native actual component-
+callback/engine/GameTable SSR journeys pass. Basic 74/Advanced 83 source actions
+use original public setup, actual Ecaz6 Basin placement, real worm alliance and
+a paid eight-counter city shipment: native Low6/four spice. Both opponent-
+selected leads in both modes reach Collection. Actual Guild Karama preserves
+the selected allied lead and spares Ecaz8; the High7 boundary is earned through
+an actual seven-counter shipment and accepts the ordinary Ecaz callback.
+All four original opponent profiles select legally in both bands. Seven helper/
+control cases supplement the ten native cases with clearly controlled contexts;
+no controlled source substitutes for those actual setup and shipment actions.
+The first source smoke repairs an incorrectly selected setup-phase control;
+the first frozen runtime identifies Guild's default bot stopping Emperor's
+Advanced shipment before battle. Explicitly allowing that original shipment
+preserves both armies and its genuinely dealt battle Karama; no engine rule is
+bypassed. Private source-bound proof/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-low-ecaz-battle-lead/`.
+No saved-room/D1/server/reset/restart/deployment operation occurred. Other
+profiles/modules, full-mode/comprehensive assurance and browser/mobile/deployed
+acceptance remain open; SSR/callbacks are not parent hydration.
+
 ## Bare Basic native families — 24 October 2026
 
 **Prototyped / Partial.** Fresh public Basic Ecaz tables now admit native Ixians,
@@ -315,7 +371,7 @@ Advanced ordinary-win Ecaz survivors = floor(E / 2)
 Advanced ordinary-win Ecaz losses = ceil(E / 2), separately from ally dial losses
 ```
 
-Ecaz chooses the lead faction; that faction supplies its actual leader/cards/
+Ecaz chooses the lead faction unless its Low Homeworld assigns that choice to the opponent; the selected faction supplies its actual leader/cards/
 plan and spice, while the active variable dial always uses **Ecaz's ally's**
 force pool plus the fixed Ecaz contribution, regardless of lead.
 **Physical p19 / logical p17 Ecaz Karama row** explicitly
@@ -570,7 +626,7 @@ Jack Reda independently confirms the stronghold exception and explains the two m
 Implementation must therefore distinguish:
 
 - **Battle-order actor:** determined by the normal battle sequence before Ecaz's selection.
-- **Selected battling faction:** Ecaz chooses this after battle order is determined. It supplies its own permitted leader, hand and Battle Plan; it is not permission to browse or play the ally's hand.
+- **Selected battling faction:** Ecaz chooses this after battle order is determined, except that Low Ecaz gives the choice to the opponent. It supplies its own permitted leader, hand and Battle Plan; it is not permission to browse or play the ally's hand.
 - **Dialed force owner:** always Ecaz's ally while Occupy operates.
 - **Fixed-contribution owner:** always Ecaz, with the printed half-force contribution and separately attributed casualties.
 

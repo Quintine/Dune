@@ -59,6 +59,7 @@ import { quoteNexusMoritaniRetention, nexusMoritaniRetentionSignature, type Nexu
 import { quoteNexusChoamBetrayal, validateNexusChoamBetrayal, nexusChoamBetrayalSignature, type NexusChoamBetrayal } from './nexus-choam-betrayal';
 import { quoteEcazInquiry, ecazInquiryAnswer, ecazInquiryHistory, ecazInquirySignature, validateEcazInquiry, type EcazInquiryReceipt } from './nexus-ecaz-inquiry';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
+import { quoteEcazBattleLead } from './ecaz-homeworld-lead';
 import { sourceForRicheseCunning, richeseCunningRateMatches, validRicheseCunningRateSource, RicheseCunningRateError, type RicheseCunningRateSource } from './richese-cunning-rate';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusLegacyRevivalModeSupported, quoteEmperorNexusRevival, createEmperorNexusRevival, settleEmperorNexusRevival, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, emperorNexusBankPurchaseModeSupported, emperorNexusSellerPurchaseModeSupported, quoteEmperorNexusSellerPurchase, createEmperorNexusSellerPurchase, emperorNexusAmbassadorPurchaseModeSupported, quoteEmperorNexusAmbassadorPurchase, createEmperorNexusAmbassadorPurchase, quoteEmperorNexusSpecialPurchase, createEmperorNexusSpecialPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
@@ -880,7 +881,7 @@ export type Auction = {
   allyPayment?: number;
 };
 export type Decision =
-  | { kind: 'ecazBattleLead'; player: string; event: string; choices: string[] }
+  | { kind: 'ecazBattleLead'; player: string; event: string; choices: string[]; lowEcaz?: true }
   | { kind: 'harassWithdraw'; player: string; event: string }
   | ({ kind: 'smugglerCollection' } & SmugglerBattleCollectionOffer)
   | ({ kind: 'sandmasterVictorySpice' } & SandmasterVictorySpiceOffer)
@@ -34114,7 +34115,7 @@ function applyActionInner(
     ecazBattleProfile(g);
     g.decision = null;
     g.response = { kind: 'ecazOccupy', owner: occupy.ecaz, passed: [] };
-    log(g, `${getPlayer(g, action.lead).name} leads the combined Ecaz battle, using their own leaders, cards and spice.`, { faction: 'ecaz', name: 'Occupy' });
+    log(g, `${p.name} chose ${getPlayer(g, action.lead).name} to lead the combined Ecaz battle, using the lead’s own leaders, cards and spice.`, { faction: 'ecaz', name: 'Occupy' });
     return g;
   }
   if (
@@ -37176,7 +37177,12 @@ function applyActionInner(
     };
     if (combined) {
       g.battle.ecazOccupy = { event: battleEvent, ecaz: ecaz!.id, ally: ally!.id, lead: null, canceled: false };
-      g.decision = { kind: 'ecazBattleLead', player: ecaz!.id, event: battleEvent, choices: [ecaz!.id, ally!.id] };
+      const opponent = [choice.attacker, choice.defender].find(id => id !== ecaz!.id && id !== ally!.id)!;
+      const leadChoice = homeworldRule(() => quoteEcazBattleLead(g, ecaz!.id, opponent));
+      g.decision = { kind: 'ecazBattleLead', ...leadChoice, event: battleEvent, choices: [ecaz!.id, ally!.id] };
+      if (leadChoice.lowEcaz)
+        log(g, `${getPlayer(g, opponent).name} chooses the allied battle lead because Ecaz is at Low population.`,
+          { faction: 'ecaz', name: 'Low Ecaz' });
     } else {
       createMentatQuestion(g);
       beginStrongholdBattle(g);

@@ -19,9 +19,10 @@ export function ecazOccupyLeadOptions(game: GameView) {
   const battle = game.battle;
   if (decision?.kind !== 'ecazBattleLead' || !battle?.ecazOccupy ||
     decision.event !== battle.event || decision.event !== battle.ecazOccupy.event) return [];
+  const chooser = game.players.find(player => player.id === decision.player)?.name ?? decision.player;
   const blocked = game.status !== 'playing' || game.phase !== 6
     ? 'This battle is not awaiting a lead choice.'
-    : decision.player !== game.me ? 'Only Ecaz chooses the lead.' : null;
+    : decision.player !== game.me ? `Only ${chooser} chooses the lead.` : null;
   return decision.choices.map((lead) => ({
     lead,
     label: game.players.find((player) => player.id === lead)?.name ?? lead,

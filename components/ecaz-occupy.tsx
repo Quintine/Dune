@@ -12,14 +12,19 @@ export function EcazOccupyLeadChoice({ game, act, busy }: {
   const options = ecazOccupyLeadOptions(game);
   const occupy = game.battle?.ecazOccupy;
   if (!occupy || !options.length) return null;
+  const decision = game.decision?.kind === 'ecazBattleLead' ? game.decision : null;
+  const chooser = game.players.find((player) => player.id === decision?.player)?.name ?? decision?.player ?? 'The current chooser';
   const ecaz = game.players.find((player) => player.id === occupy.ecaz)?.name ?? 'Ecaz';
   const ally = game.players.find((player) => player.id === occupy.ally)?.name ?? 'Ecaz’s ally';
   return <section aria-label="Ecaz combined-army lead" className="space-y-3">
     <p>
-      {ecaz} chooses who forms the plan. The lead uses their own leaders,
+      {chooser} chooses who forms the plan. The lead uses their own leaders,
       Treachery cards and spice. With Occupy active, {ally} supplies the variable
       dialed army regardless of who leads; Ecaz’s contribution is mandatory and free.
     </p>
+    {decision?.lowEcaz && <p className="fine">
+      {ecaz} was at Low population when this battle opened, so its Homeworld penalty gives the opponent this choice.
+    </p>}
     {!game.advanced && <p className="fine">
       Basic prototype: Ecaz’s half-force contribution and winning losses round up;
       survivors round down. The main printed rule is used provisionally because
