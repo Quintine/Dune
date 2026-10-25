@@ -3,7 +3,10 @@ import { gameDistance, gameTerritories, location, splitLocation, validGameLocati
 import { isAdvisor } from './advisors';
 import { presenceAt } from './force-presence';
 import { strongholdPathBlocked, territoryEntryBlock } from './occupancy';
-import { botEntryAllowed, botMovementRange } from './bot-mobility';
+import { botEntryAllowed, botMovementRange, botGroundMoveAllowed } from './bot-mobility';
+import { planetologistLeader, planetologistMovementModeSupported, planetologistGatherAdvisorEntry,
+  selectedOriginElites } from './planetologist-movement';
+import { quoteAdvisorGatherMatching, AdvisorGatherMatchingError } from './advisor-gather-matching';
 import { nexusGuildMovementAvailable } from './nexus-guild-cunning-options';
 import { validateCohortSelection } from './ornithopter';
 
@@ -26,6 +29,12 @@ export function discoveryFlightMove(game: GameView, move: Action | null): Quote 
     held.acquiredTurn !== offer.acquiredTurn || held.acquiredTurn >= game.turn)
     return fail('This carried token is no longer available.');
   if (!move || move.type !== 'move') return fail('Select a movement group and destination above.');
+  const skill = move.planetologist;
+  if (skill !== undefined && ((skill !== 'range' && skill !== 'gather') ||
+    !planetologistLeader(game, me.id) || !planetologistMovementModeSupported(game)))
+    return fail('Choose a current living Planetologist and movement alternative.');
+  if (skill && (game.ornithopter?.active || move.movementCard !== undefined || move.ornithopterEvent !== undefined))
+    return fail('Choose one Ornithopter flight source for this Planetologist movement.');
   if (typeof move.territory !== 'string' || !whole(move.sector) ||
     !validGameLocation(game, move.territory, move.sector))
     return fail('Select an available destination and sector.');
@@ -36,14 +45,16 @@ export function discoveryFlightMove(game: GameView, move: Action | null): Quote 
   if (!entries) return fail('Select forces from one territory.');
   const forces: Record<string, number> = {}, elites: Record<string, number> = {};
   let origin: string | undefined;
+  const origins = new Set<string>();
   for (const [key, count] of entries) {
     const source = splitLocation(key);
     if (!validGameLocation(game, source.territory, source.sector) ||
       !whole(count) || count > (me.forces[key] ?? 0))
       return fail('The selected forces are no longer available.');
     if (!count) continue;
-    if (origin && origin !== source.territory) return fail('Select forces from one territory.');
-    origin = source.territory;
+    origins.add(source.territory);
+    if (origins.size > (skill === 'gather' ? 2 : 1)) return fail('Select forces from one territory, or exactly two with Planetologist gathering.');
+    origin ??= source.territory;
     const availableElite = me.elites?.forces[key] ?? 0;
     const selectedElite = move.forces !== undefined
       ? object(move.eliteForces) ? move.eliteForces[key] : undefined : move.elite;
@@ -63,12 +74,30 @@ export function discoveryFlightMove(game: GameView, move: Action | null): Quote 
   if (marker === null) return fail('Choose the current deployed No-Field.');
   if (marker) {
     const markerOrigin = splitLocation(marker.from).territory;
-    if (origin && origin !== markerOrigin) return fail('The selected No-Field and forces must share a territory.');
-    origin = markerOrigin;
+    origins.add(markerOrigin);
+    if (origins.size > (skill === 'gather' ? 2 : 1)) return fail('The selected No-Field and forces must share a territory.');
+    origin ??= markerOrigin;
   }
   if (!origin) return fail('Select at least one force or the deployed No-Field.');
   const sources = [...Object.keys(forces), ...(marker ? [marker.from] : [])];
   if (sources.some(key => key === destination)) return fail('Choose a different destination.');
+  if (skill) {
+    if (origins.size !== (skill === 'gather' ? 2 : 1)) return fail('Choose the correct number of Planetologist origins.');
+    if (marker && game.homeworldMobility?.noFieldMovementBlocked)
+      return fail(game.homeworldMobility.noFieldMovementBlocked);
+    const entry = planetologistGatherAdvisorEntry(game, me, [...origins], move.territory);
+    if (entry.blocked) return fail(entry.blocked);
+    if (sources.some(from => !botGroundMoveAllowed(game, me, from, destination,
+      selectedOriginElites(Object.entries(forces), elites, splitLocation(from).territory), skill, 3)))
+      return fail('This route is blocked or more than three territories away.');
+    if (skill === 'gather') {
+      try { quoteAdvisorGatherMatching(game, { owner: me.id, move: me.moved ?? 0,
+        destination: move.territory, sector: move.sector, advisors: isAdvisor(me, move.territory), group: forces }); }
+      catch (error) { if (!(error instanceof AdvisorGatherMatchingError)) throw error; return fail(error.message); }
+    }
+    return { action: { ...move, ...(entry.requiresFlip ? { fighters: true } : {}),
+      discoveryOrnithopter: offer.token }, blocked: null };
+  }
   if (!botEntryAllowed(game, me, move.territory, move.sector, 'move', origin))
     return fail('The selected destination is unavailable to this group.');
   if (origin !== move.territory && game.balisetRestrictions.some(b =>

@@ -103,6 +103,7 @@ export function botGroundMoveAllowed(
   to: string,
   elite: number,
   planetologist?: PlanetologistMoveMode,
+  fixedRange?: 3,
 ) {
   const source = splitLocation(from),
     target = splitLocation(to);
@@ -130,7 +131,8 @@ export function botGroundMoveAllowed(
     )
   )
     return false;
-  return groundMoveRouteDistance(g, p, from, to) <= botMovementRange(g, p, elite, planetologist);
+  return groundMoveRouteDistance(g, p, from, to) <=
+    (fixedRange ?? botMovementRange(g, p, elite, planetologist));
 }
 /** Fremen reinforcement radius is static territory geometry, not a ground route. */
 export function fremenReserveEntry(to: string) {

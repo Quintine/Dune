@@ -1,5 +1,17 @@
 # Richese Ornithopter: movement integration audit
 
+## Planetologist movement composition — 26 October 2026
+
+Both physical modes now compose provisionally with either Planetologist
+alternative. Fixed range stays3; twoGroups uses current normal range with
+optional +1/cap3 or normal-range gathering. Each accepted gather counts as one
+card movement. Its full selected map leaves the original unmoved cohort, and
+the second move cannot reuse transported counters/marker after merging.
+Card custody, one discard, existing credits, early ending and Hajr remain.
+[Selected matrix, source and contract](PLANETOLOGIST_RULES.md#physical-and-discovery-flight-composition--26-october-2026)
+also distinguishes the separate Discovery token and its signed two-origin quote.
+This is explicit composition, not a joint FAQ or complete-mode acceptance.
+
 ## Guild Cunning and earned Hajr movement — 18 October 2026
 
 The [printed Guild Nexus](NEXUS_GUILD_RULES.md#primary-evidence) grants only a

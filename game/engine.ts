@@ -17364,8 +17364,8 @@ function validatePlanetologistMove(g: Game, p: Player, move: Pick<MovementOrder,
     'This Planetologist movement no longer has its living, uncaptured skilled leader.');
   requireRule(planetologistMovementModeSupported(g),
     'Planetologist movement combined with expansion factions is still being implemented.');
-  requireRule(!move.ornithopterEvent && !move.discoveryFlight,
-    'Planetologist combined with special movement cards is still being implemented.');
+  requireRule(!(move.ornithopterEvent && move.discoveryFlight),
+    'Choose one Ornithopter flight source for this Planetologist movement.');
   // Selected composition: the concealed marker moves as one force for either
   // alternative. Gathering retains each origin's ordinary range; no +1 stacks.
   requireRule(skill.mode === 'gather'
@@ -39389,6 +39389,7 @@ export function viewGame(state: Game, id: string) {
     },
     expansions: g.expansions,
     ecazTreachery: !!g.ecazTreachery,
+    discoveryEnabled: g.discoveryEnabled === true,
     turn: g.turn,
     phase: g.phase,
     phaseOpening: g.phaseOpening ? { passed: g.phaseOpening.passed } : null,

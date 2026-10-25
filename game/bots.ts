@@ -104,6 +104,7 @@ import {
   guildTransportCost,
 } from './bot-mobility';
 import { planetologistMovementModeSupported, planetologistLeader, planetologistGatherAdvisorEntry } from './planetologist-movement';
+import { botPlanetologistFlightActions } from './bot-planetologist-flight';
 import { quoteSandmasterStronghold, sandmasterDefaultChoice, sandmasterDestinationCollection } from './sandmaster-movement';
 import { sandmasterWormCollection, sandmasterCunningCollection } from './sandmaster-worm';
 import { fremenCunningPublicDestinationBlock } from './nexus-fremen-cunning';
@@ -3371,11 +3372,13 @@ function policyActions(g: GameView): Action[] {
     const movementAvailable = nexusGuildMovementAvailable(g);
     const hajr = nexusGuildHajrAction(g);
     if (hajr) return [hajr];
-    const cardMoves = ornithopterMoves(g);
-    const discoveryMoves = g.discoveryOrnithopter && !g.discoveryOrnithopter.blocked
-      ? discoveryFlightBotActions(g,
-        destinations(g).filter(target => target.score > -1000)
-          .map(target => ({ territory: target.t, sector: target.s })))
+    const flightTargets = destinations(g).filter(target => target.score > -1000)
+      .map(target => ({ territory: target.t, sector: target.s }));
+    const skillCardMoves = botPlanetologistFlightActions(g, flightTargets, ['range3', 'twoGroups']);
+    const cardMoves = [...skillCardMoves, ...ornithopterMoves(g)];
+    const discoveryMoves = g.discoveryOrnithopter && !g.discoveryOrnithopter.blocked && !g.ornithopter?.active
+      ? [...botPlanetologistFlightActions(g, flightTargets, ['discovery']),
+        ...discoveryFlightBotActions(g, flightTargets)]
       : [];
     if (discoveryMoves.length && (me.shipped || me.reserves === 0))
       return discoveryMoves;
@@ -3826,6 +3829,9 @@ function policyActions(g: GameView): Action[] {
         Number(b.gather) - Number(a.gather),
     );
     actions.push(...groundMoves.map((candidate) => candidate.action));
+    // Moving before an unused shipment is legal; retain these candidates after
+    // the existing shipment choices without changing their ordinary priority.
+    actions.push(...skillCardMoves);
     if (reveal && !actions.length) actions.push(reveal);
     if (me.shipped || !actions.some((action) => action.type === 'ship' || action.type === 'homeworldShip'))
       actions.unshift(...emperorHomeworldMoveActions(g));

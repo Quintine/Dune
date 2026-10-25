@@ -5048,9 +5048,9 @@ export function GameTable({
                       destination={selected}
                       sector={sector}
                       unavailableReason={
-                        !movementAvailable
+                        !movementAvailable && !g.ornithopter?.active
                           ? 'No ordinary movement is currently available.'
-                          : (me.moved ?? 0) >= (me.movesAllowed ?? 1)
+                          : !g.ornithopter?.active && (me.moved ?? 0) >= (me.movesAllowed ?? 1)
                             ? 'No ordinary movement remains this turn.'
                             : selectedDestinationInStorm
                               ? 'Choose a destination outside the storm.'

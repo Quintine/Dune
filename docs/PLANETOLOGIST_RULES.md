@@ -4,6 +4,73 @@ Updated 26 October 2026. This note audits the movement and battle effects of the
 Planetologist Leader Skill against its physical card, the common Leader Skills
 rules, the GF9 base battle rules and designer Jack Reda's walkthrough. The connected prototype is described below; other Leader Skill effects remain separate work.
 
+## Physical and Discovery flight composition — 26 October 2026
+
+The physical Planetologist face permits forces from two territories in a single
+movement to a common destination, or +1 normal range capped at3. The physical
+Ornithopter face permits one group up to3 or two different groups using normal
+movement. Discovery's publisher E3p13 text supplies3 instead of normal movement
+for one later movement action. Existing [physical-card provenance](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#authority)
+and [skill-card text](LEADER_SKILLS_RULES.md) remain the source contracts; both
+physical faces were freshly inspected. No joint publisher FAQ was located.
+
+Under 14 October choose-recommended authority, use this provisional composition:
+
+| Flight source | Planetologist range | Planetologist gather |
+| --- | --- | --- |
+| Physical range3 | One origin, fixed3, never4 | Both origins fixed3 to one destination; one card movement |
+| Physical twoGroups | Each current movement may add1/cap3 to normal range | Each selected sector uses ordinary range; each gather counts as one of the two card movements |
+| Carried Discovery | One origin, fixed3, never4 | Both origins fixed3 to one destination; one ordinary movement action |
+
+Treating the single gather as one card movement is the material interpretation,
+despite the physical card's ordinary one-group wording. It is visible guidance,
+not an express joint ruling. The two alternatives stay exclusive per action;
+different card movements may choose different Planetologist alternatives. A
+skilled movement uses one flight source, not physical and Discovery together.
+
+The original physical card is reserved/played and discarded once through its
+existing frame. A first gather subtracts every selected source from the original
+unmoved cohort. A second selection must fit both those exact normal/elite/marker
+quotas and current custody; merged first arrivals cannot be reused, while
+untouched residual forces from an original territory may move. Only completing
+the second card movement earns its existing movement credit. Early ending
+abandons it without an extra credit. Existing Hajr timing/allowances remain.
+
+Discovery still requires acquisition on an earlier turn, current ownership and
+one actual commit before consumption. Its existing receipt string additionally
+binds the selected skill/leader and both normalized gather origins. Ordinary
+single-origin no-skill signatures retain their exact legacy bytes. New skill
+receipts cannot be replayed after changing an origin, trainer or alternative.
+No new saved root field, action or module gate is introduced.
+
+Projected transport choices share exact ranges, current source events and
+cohort checks with actual submission and minimal policy. The existing enabled
+Discovery configuration is now projected explicitly so already-admitted native
+Skills/Discovery games retain the engine's movement profile in their own view.
+This fixes a reproduced projection mismatch; no new module combination opens.
+Full transport interactions, browser/deployed acceptance and assurance remain due.
+
+**Frozen evidence:** v3 passes20 files,196/196, types/lint/build and sixteen
+native engine/GameTable SSR/actual selected-props submit-callback paths. Twelve
+public physical-card routes retain the actual paid card1, shipment4/cost8 and
+ordinary split, using Basic74 / Advanced79–80 source actions. Four public
+Skills/Discovery routes acquire the original token through turn-one Collection
+and use it on turn two, using Basic65 / Advanced71 actions. All six compositions
+and all four twoGroups first/second skill pairs finish same-turn Collection in
+two-to-four continuation actions. Physical routes retain45 Treachery, Discovery
+33; each retains14 Skills/15 Traitors, and Discovery all8 token identities.
+Sixteen physical engine cases, seven Discovery cases, fifteen controlled cases
+and legacy-receipt/native-profile regressions cover the slice and minimal profiles.
+Feedback removes a redundant random Traitor-deal replay, connects the original
+Discovery selector, preserves legal pre-shipment policy choices after ordinary
+shipments and completes controlled projection fields.
+
+Report/logs: private `20261026-planetologist-flight-proof-v3/` under
+`/home/quintine/.local/share/dune/checkpoints/`; journeys/HTML: adjacent
+`20261026-planetologist-flight-runtime/`. No saved-room/D1/server, reset/restart,
+deployment or recovery operation. SSR/selected-props callbacks do not certify
+DOM/hydration, browser/mobile/deployed acceptance or complete combinations/modes.
+
 ## Concealed No-Field two-origin gathering — 26 October 2026
 
 Compose the printed No-Field marker-as-one-force rule (E2 pp5–6,10–12) with

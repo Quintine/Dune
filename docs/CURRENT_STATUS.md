@@ -16,6 +16,40 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Planetologist flight composition — 26 October. Prototyped / Partial.**
+Both skill alternatives now compose with physical range3/twoGroups and carried
+Discovery. Fixed3 stays3; twoGroups applies normal+1/cap3 or ordinary gathering
+per accepted movement. A gather counts as one card movement under visible
+provisional policy. Exact original cohorts prevent reuse after merging while
+allowing untouched residual groups. Shared projected flight choices feed actual
+controls and minimal policy; original allowances, credits and one disposal stay.
+Discovery receipts bind skill/leader/both origins while retaining legacy ordinary
+bytes. The reproduced native Discovery profile mismatch is fixed by projecting
+its existing enabled flag. No new mode, saved root field or strategic AI opens.
+
+Three disjoint physical/Discovery/control lanes and root integration pass
+**20 files,196/196**, types/lint/build and **sixteen native engine/GameTable SSR/
+actual selected-props submit-callback paths** on unchanged source. Twelve public
+E/R/A +choam/Skills routes earn the actual cache card for1, a paid four-counter
+shipment for8 and ordinary split; prefixes use Basic74 / Advanced79–80 actions.
+Four public G/E/H Skills/Discovery routes acquire the actual token through
+turn-one Collection and use it on turn two; prefixes use Basic65 / Advanced71.
+Two-to-four continuation actions finish the original Collection. Physical routes
+retain45 Treachery, Discovery routes33; each keeps14 Skills/15 Traitors, and the
+Discovery inventory keeps all8 identities. Sixteen physical engine cases, seven
+Discovery cases, fifteen controlled cases and receipt/profile regressions cover
+the slice. Feedback removes a redundant random Traitor-deal replay, integrates
+the old Discovery selector, retains legal pre-shipment AI candidates after
+shipment choices and completes the controlled Discovery projection shape.
+
+Frozen v3 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-planetologist-flight-proof-v3/`;
+journeys/HTML: adjacent `20261026-planetologist-flight-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+SSR/selected-props callbacks do not certify DOM/hydration, browser/mobile/deployed
+acceptance or full combinations/modes. Final assurance remains due.
+[Source matrix and execution](PLANETOLOGIST_RULES.md#physical-and-discovery-flight-composition--26-october-2026).
+
 **Planetologist No-Field gathering — 26 October. Prototyped / Partial.**
 The own concealed marker and selected physical counters can gather from exactly
 two territories to one destination. Each selected sector keeps ordinary range;
@@ -132,12 +166,16 @@ deployed acceptance. Full Truthtrance, modes/combinations and final assurance
 remain open. [Battle controls](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md#grouped-battle-plan-authoring--26-october-2026);
 [shipment controls](COMPOUND_SHIPMENT_PROMISES.md#full-pure-shipment-authoring--26-october-2026).
 
-Next scoped source check: the live Planetologist/card-movement refusal in
-`validatePlanetologistMove`, against the existing
-[Ornithopter contract](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md) and
-[Planetologist contract](PLANETOLOGIST_RULES.md). Distinguish printed movement
-limits from missing compositions before implementation. Bounded allied-marker
-review found an existing legal voluntary-reveal→endMovement route; the supplied
+Next source-supported interaction: Sandmaster collection along physical
+Ornithopter range3/twoGroups and carried Discovery routes. Its printed moving-
+forces band excludes none of these items. The live `validateSandmasterOrder`
+and `game/sandmaster-movement.ts` adapters still refuse them. Preserve chosen
+paths, exact piles, one collection per entered territory per movement, current
+range, original cohorts and one commitment/disposal. A second card movement
+requotes current spice; income never enlarges unmoved quotas. Use actual trained
+sources and produced Spice blows, not changed played assignments or staged piles.
+Bounded allied-marker review found an existing legal voluntary-reveal→endMovement
+route; the supplied
 physical15/36 text does not expressly add alliance separation as a forced reveal
 trigger. Preserve that route rather than calling it a deadlock or inventing an
 automatic reveal. Complete rules and final assurance remain unfinished.

@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Planetologist physical and Discovery flight — 26 October 2026
+
+Under 14 October choose-recommended authority, compose both skill alternatives
+with physical Ornithopter range3/twoGroups and carried Discovery. Fixed3 remains3;
+twoGroups applies normal+1/cap3 or ordinary-range gathering independently to each
+movement. Count one two-origin gather as one card movement and preserve disjoint
+original cohorts, current custody and existing credits/disposal. Discovery
+gather uses fixed3 for both origins in one ordinary action and consumes its
+earlier-acquired token once. This counting/range policy is visibly provisional,
+not a located joint FAQ; physical-card one-group wording is acknowledged.
+Use one flight source per skilled move; no module gate opens.
+[Source matrix and contract](PLANETOLOGIST_RULES.md#physical-and-discovery-flight-composition--26-october-2026).
 ## Planetologist concealed No-Field gathering — 26 October 2026
 
 Under 14 October choose-recommended authority, compose the printed moving-marker

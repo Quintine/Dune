@@ -29,6 +29,43 @@ function fixture() {
   return { context, token, move };
 }
 const reload = <T>(value: T): T => JSON.parse(JSON.stringify(value));
+
+void test('ordinary Discovery receipt signatures retain their legacy bytes with no Planetologist suffix', () => {
+  const { context, token, move } = fixture();
+  assert.equal(quoteDiscoveryFlight(context, token, move).selection,
+    '["p","false_wall_west",[["false_wall_west:16",2,1],["false_wall_west:17",1,0]],1,3,"the_great_flat",15,false,false,null,null]');
+});
+
+void test('Discovery Planetologist receipts bind both normalized origins and the exact skill choice', () => {
+  const { context, token, move } = fixture();
+  const gather: DiscoveryFlightMovement = { ...move,
+    origins: ['false_wall_west', 'wind_pass'], planetologist: { leader: 'p-leader', mode: 'gather' },
+    group: [['false_wall_west:16', 2], ['wind_pass:14', 1]],
+    eliteGroup: { 'false_wall_west:16': 1, 'wind_pass:14': 0 } };
+  const receipt = quoteDiscoveryFlight(context, token, gather);
+  assert.doesNotThrow(() => validateDiscoveryFlight(context, receipt, gather));
+  for (const changed of [
+    { ...gather, planetologist: { leader: 'other-leader', mode: 'gather' as const } },
+    { ...gather, origins: ['false_wall_west', 'sihaya_ridge'] },
+    { ...gather, planetologist: { leader: 'p-leader', mode: 'range' as const } },
+  ]) assert.throws(() => validateDiscoveryFlight(context, receipt, changed), DiscoveryFlightError);
+  const range = { ...move, planetologist: { leader: 'p-leader', mode: 'range' as const } };
+  assert.notEqual(quoteDiscoveryFlight(context, token, range).selection,
+    quoteDiscoveryFlight(context, token, move).selection);
+});
+
+void test('Discovery gathering rejects unused duplicate third or untrained origins before spending the token', () => {
+  const { context, token, move } = fixture(), before = structuredClone(context);
+  const gather: DiscoveryFlightMovement = { ...move,
+    origins: ['false_wall_west', 'wind_pass'], planetologist: { leader: 'p-leader', mode: 'gather' } };
+  for (const changed of [gather, { ...gather, origins: ['false_wall_west', 'false_wall_west'] },
+    { ...gather, origins: ['wind_pass', 'false_wall_west'] },
+    { ...gather, origins: ['false_wall_west', 'wind_pass', 'sihaya_ridge'] },
+    { ...gather, planetologist: undefined }, { ...gather, origins: undefined }])
+    assert.throws(() => quoteDiscoveryFlight(context, token, changed), DiscoveryFlightError);
+  assert.deepEqual(context, before);
+});
+
 function rejectedUnchanged<T>(input: T, work: () => unknown) {
   const before = structuredClone(input);
   assert.throws(work, DiscoveryFlightError);

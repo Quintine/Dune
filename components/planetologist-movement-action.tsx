@@ -13,6 +13,8 @@ import { isAdvisor } from '@/game/advisors';
 import { quoteAdvisorGatherMatching, AdvisorGatherMatchingError } from '@/game/advisor-gather-matching';
 import { location, splitLocation, validGameLocation } from '@/game/board';
 import { nexusGuildMovementAvailable } from '@/game/nexus-guild-cunning-options';
+import { planetologistFlightSelection, type PlanetologistFlight } from '@/game/planetologist-flight';
+import { validateCohortSelection } from '@/game/ornithopter';
 import { Button } from './ui/button';
 
 type Counts = Record<string, number>;
@@ -49,6 +51,7 @@ export function planetologistMoveDraft(
   forces: Counts,
   elites: Counts,
   includeNoField = false,
+  flight: PlanetologistFlight = 'ordinary',
 ): Draft {
   const me = game.players.find((player) => player.id === game.me);
   if (!me || !planetologistLeader(game, me.id))
@@ -58,6 +61,8 @@ export function planetologistMoveDraft(
       action: null,
       blocked: 'Planetologist movement with expansion factions awaits its movement audit.',
     };
+  const transport = planetologistFlightSelection(game, flight);
+  if (transport.blocked) return { action: null, blocked: transport.blocked };
   if (mode !== 'range' && mode !== 'gather')
     return { action: null, blocked: 'Choose a Planetologist movement mode.' };
   if (!Number.isSafeInteger(sector) || !validGameLocation(game, destination, sector))
@@ -103,13 +108,25 @@ export function planetologistMoveDraft(
   const target = location(destination, sector);
   const sources = [...selected.map(([from]) => from), ...(marker ? [location(marker.location.territory, marker.location.sector)] : [])];
   if (sources.some(from => !botGroundMoveAllowed(game, me, from, target,
-    selectedOriginElites(selected, elites, splitLocation(from).territory), mode)))
+    selectedOriginElites(selected, elites, splitLocation(from).territory), mode, transport.rangeOverride)))
     return {
       action: null,
-      blocked: mode === 'range'
+      blocked: transport.rangeOverride
+        ? 'The selected route is blocked or more than three territories away.'
+        : mode === 'range'
         ? 'The selected route is beyond the boosted range or is blocked.'
         : 'Each selected source must reach the destination using its normal range.',
     };
+  if (transport.cohort) {
+    try {
+      validateCohortSelection(transport.cohort, me.forces, me.elites?.forces ?? {},
+        Object.fromEntries(selected), Object.fromEntries(selected.map(([from]) => [from, elites[from] ?? 0])),
+        marker ? { tokenId: marker.tokenId, event: marker.event,
+          from: location(marker.location.territory, marker.location.sector) } : undefined);
+    } catch {
+      return { action: null, blocked: 'Choose original forces and any unmoved marker from the current Ornithopter cohort.' };
+    }
+  }
   if (mode === 'gather') {
     try {
       quoteAdvisorGatherMatching(game, { owner: me.id, move: me.moved ?? 0, destination, sector,
@@ -126,25 +143,29 @@ export function planetologistMoveDraft(
       forces: Object.fromEntries(selected),
       ...(me.elites ? { eliteForces: Object.fromEntries(selected.map(([from]) => [from, elites[from] ?? 0])) } : {}),
       ...(marker ? { noField: marker.tokenId, event: marker.event } : {}),
+      ...transport.fields,
       territory: destination, sector,
     },
     blocked: null,
   };
 }
 
-export function planetologistMovementBlocked(game: GameView, draft: Draft, unavailableReason?: string | null): string | null {
+export function planetologistMovementBlocked(game: GameView, draft: Draft, unavailableReason?: string | null,
+  flight: PlanetologistFlight = 'ordinary'): string | null {
   const me = game.players.find(player => player.id === game.me);
+  const transport = planetologistFlightSelection(game, flight);
+  const currentCard = !transport.blocked && typeof transport.fields.ornithopterEvent === 'string';
   return unavailableReason ||
     (!me || game.status !== 'playing' || game.phase !== 5 || game.active !== me.id
       ? 'Planetologist movement is available only during your movement turn.'
-      : game.ornithopter?.active
-        ? 'Finish the current Ornithopter movement first.'
+      : transport.blocked
+        ? transport.blocked
         : game.response || game.decision || game.phaseOpening || game.truthtrance ||
           game.nexusTraitors?.pending || game.nexusCards?.waiting.length
           ? 'Resolve the current response or decision first.'
           : me.autopilot || game.automaticContinuationPending
             ? 'Wait for the current automatic action to finish.'
-            : !nexusGuildMovementAvailable(game)
+            : !currentCard && !nexusGuildMovementAvailable(game)
               ? 'No ordinary movement remains this turn.'
               : draft.blocked);
 }
@@ -157,6 +178,7 @@ export interface PlanetologistMovementActionProps {
   forces: Counts;
   elites: Counts;
   includeNoField?: boolean;
+  flight?: PlanetologistFlight;
   busy: boolean;
   unavailableReason?: string | null;
   reasonId?: string;
@@ -165,9 +187,10 @@ export interface PlanetologistMovementActionProps {
 
 /** Hook-free leaf owns the actual guarded submission callback. */
 export function PlanetologistMovementAction({ game, mode, destination, sector, forces, elites,
-  includeNoField = false, busy, unavailableReason, reasonId, act }: PlanetologistMovementActionProps) {
-  const draft = planetologistMoveDraft(game, mode, destination, sector, forces, elites, includeNoField);
-  const blocked = planetologistMovementBlocked(game, draft, unavailableReason);
+  includeNoField = false, flight = 'ordinary', busy, unavailableReason, reasonId, act }: PlanetologistMovementActionProps) {
+  const draft = planetologistMoveDraft(game, mode, destination, sector, forces, elites, includeNoField, flight);
+  const blocked = planetologistMovementBlocked(game, draft, unavailableReason, flight);
+  const transport = planetologistFlightSelection(game, flight);
   const marker = includeNoField ? planetologistNoFieldMarker(game) : null;
   return <Button
     className="min-h-11 whitespace-normal motion-reduce:transition-none"
@@ -176,8 +199,10 @@ export function PlanetologistMovementAction({ game, mode, destination, sector, f
     aria-describedby={blocked ? reasonId : undefined}
     onClick={() => {
       if (busy || blocked || !draft.action) return;
-      const current = planetologistMoveDraft(game, mode, destination, sector, forces, elites, includeNoField);
-      if (planetologistMovementBlocked(game, current, unavailableReason) || !current.action) return;
+      const current = planetologistMoveDraft(game, mode, destination, sector, forces, elites, includeNoField, flight);
+      if (planetologistMovementBlocked(game, current, unavailableReason, flight) || !current.action) return;
+      const currentTransport = planetologistFlightSelection(game, flight);
+      if (JSON.stringify(currentTransport.fields) !== JSON.stringify(transport.fields)) return;
       const currentMarker = includeNoField ? planetologistNoFieldMarker(game) : null;
       if (includeNoField && (!marker || !currentMarker || marker.tokenId !== currentMarker.tokenId ||
         marker.event !== currentMarker.event || marker.location.territory !== currentMarker.location.territory ||

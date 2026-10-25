@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 26 October 2026 — Planetologist physical and Discovery flight matrix
+
+**Prototyped / Partial.** Connect both skill alternatives to physical range3,
+physical twoGroups and carried Discovery. Fixed range stays3; the two normal card
+movements choose +1/cap3 or ordinary-range gathering independently. A gather
+counts as one card movement under visible provisional composition. Whole-map
+cohorts exclude moved arrivals and preserve original typed residuals. Shared
+owned transport choices drive actual controls and minimal policy. Discovery
+signatures bind skill/leader/origins; legacy ordinary signatures retain their
+exact bytes. Projecting the existing Discovery-enabled flag fixes a reproduced
+native Skills view mismatch without opening a new module combination.
+
+Frozen **20-file196/196**, types/lint/build and **sixteen native engine/GameTable
+SSR/actual selected-props submit-callback paths** pass. Twelve public E/R/A
++choam/Skills routes earn card1, shipment8 and a real split (Basic74 / Advanced
+79–80 source actions); four public G/E/H Skills/Discovery routes earn actual
+turn-one Collection acquisition and later use (Basic65 / Advanced71). Two-to-four
+continuation actions finish same-turn Collection. Physical routes retain45 cards,
+Discovery33; each retains14 Skills/15 Traitors, Discovery all8 token identities.
+Sixteen physical, seven Discovery and fifteen controlled cases plus receipt/
+profile regressions cover the slice and four minimal policies. Feedback repairs
+a redundant random setup replay, the old single-origin Discovery selector,
+pre-shipment policy candidate visibility and controlled projection typing.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261026-planetologist-flight-proof-v3/`;
+journeys/HTML: adjacent `20261026-planetologist-flight-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation. No new
+saved root field, action or mode gate. SSR/selected-props callbacks do not prove
+DOM/hydration, browser/mobile/deployed acceptance or complete combinations.
+Full rules and final assurance remain open.
+[Source matrix and contract](PLANETOLOGIST_RULES.md#physical-and-discovery-flight-composition--26-october-2026).
+
 ## 26 October 2026 — Concealed No-Field two-origin Planetologist gathering
 
 **Prototyped / Partial.** The own marker supplies one of exactly two origins,

@@ -78,7 +78,7 @@ void test('the owned marker has a usable checkbox origin and persistent provisio
       assert.match(html, /value stays concealed/);
       assert.match(html, /No direct joint FAQ settles this combination/);
       assert.match(html, /No physical board forces are available to move/);
-      assert.match(html, /Concealed No-Fields cannot join either Ornithopter card movement or Discovery flight/);
+      assert.match(html, /Only one flight source may be used for each movement/);
       assert.doesNotMatch(html, /controlled-zero|controlled-three|controlled-five|Confirm|Acknowledge|countdown/);
     }
     assert.deepEqual(game, before);

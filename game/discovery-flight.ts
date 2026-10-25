@@ -23,6 +23,8 @@ export type DiscoveryFlightMovement = {
   eliteGroup: Readonly<Record<string, number>>;
   elite: number;
   origin: string;
+  origins?: readonly string[];
+  planetologist?: { leader: string; mode: 'range' | 'gather' };
   total: number;
   to: string;
   sector: number;
@@ -86,9 +88,19 @@ function selection(move: DiscoveryFlightMovement): string {
     (move.lockedTurn === undefined || integer(move.lockedTurn)) &&
     Array.isArray(move.group) && record(move.eliteGroup),
   'Bind the Discovery Ornithopter to an ordinary declared movement group.');
+  const skill = move.planetologist;
+  requireFlight(skill === undefined || (record(skill) && name(skill.leader) &&
+    (skill.mode === 'range' || skill.mode === 'gather')),
+  'The Discovery flight has an invalid Planetologist selection.');
+  const origins = move.origins ?? [move.origin];
+  requireFlight(skill?.mode === 'gather'
+    ? Array.isArray(move.origins) && origins.length === 2 &&
+      origins.every(name) && new Set(origins).size === 2 && origins[0] === move.origin
+    : move.origins === undefined,
+  'A Discovery gather must retain exactly two normalized Planetologist origins.');
   const group = move.group;
   requireFlight(group.every(part => Array.isArray(part) && part.length === 2 &&
-    validSource(part[0], move.origin) && integer(part[1]) && part[1] > 0) &&
+    origins.some(origin => validSource(part[0], origin)) && integer(part[1]) && part[1] > 0) &&
     new Set(group.map(([key]) => key)).size === group.length,
   'The Discovery flight has invalid or repeated source forces.');
   requireFlight(Object.entries(move.eliteGroup).every(([key, count]) => integer(count) &&
@@ -102,6 +114,9 @@ function selection(move: DiscoveryFlightMovement): string {
   if (move.noField) requireFlight(record(move.noField) &&
     name(move.noField.tokenId) && name(move.noField.event) && validSource(move.noField.from, move.origin),
   'The Discovery flight has lost its selected No-Field marker.');
+  requireFlight(origins.every(origin => group.some(([key]) => validSource(key, origin)) ||
+    (move.noField && validSource(move.noField.from, origin))),
+  'Every Discovery gather origin must supply actual selected forces or its marker.');
   const destination = `${move.to}:${move.sector}`;
   requireFlight(group.every(([key]) => key !== destination) && move.noField?.from !== destination,
     'The Discovery flight must move its selected group to a different location.');
@@ -112,6 +127,8 @@ function selection(move: DiscoveryFlightMovement): string {
     move.elite, move.total, move.to, move.sector, move.advisors, move.wantsFighters,
     move.lockedTurn ?? null,
     move.noField ? [move.noField.tokenId, move.noField.event, move.noField.from] : null,
+    // Preserve existing no-skill single-origin receipt signatures byte for byte.
+    ...(skill ? [[skill.leader, skill.mode, [...origins]]] : []),
   ]);
 }
 
