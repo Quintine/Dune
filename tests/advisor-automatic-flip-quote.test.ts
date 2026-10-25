@@ -78,7 +78,7 @@ void test('quotes exclude held, occupied and physically empty advisor groups whi
   ctx.players[1].forces = { ...ctx.players[1].forces, 'arrakeen:10': 1 };
   assert.deepEqual(quoteAutomaticAdvisorFlips(ctx), []);
   for (const patch of [
-    { advanced: false }, { status: 'lobby' }, { status: 'setup', phase: 0 }, { phase: 2 }, { phase: 4 }, { phase: 7 },
+    { advanced: false }, { status: 'lobby' }, { status: 'setup', phase: 0 }, { phase: 2 }, { phase: 7 },
   ]) {
     assert.deepEqual(quoteAutomaticAdvisorFlips({ ...context(), ...patch }), []);
   }

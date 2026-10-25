@@ -22,7 +22,7 @@ export type AmbassadorPhaseContext = Pick<
   | 'pendingAmbassador'
 >;
 
-/** Extra phases belong only to the recorded arrival and its actual BG suffixes. */
+/** Extra phases belong only to the recorded arrival and its actual BG arrivals. */
 export function ambassadorPhaseAllowed(g: AmbassadorPhaseContext): boolean {
   const entry = g.pendingAmbassador;
   const candidates: {

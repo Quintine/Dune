@@ -54,6 +54,13 @@ function DeploymentChoice({ game, act, busy }: Props) {
       <p className="fine">
         {offer.normal} ordinary · {offer.elite} starred · {amount} total
       </p>
+      {game.players.some(player => player.faction === 'beneGesserit') && <p className="fine">
+        {offer.kind === 'tleilax'
+          ? 'Arrakis placement is followed by the normal Bene Gesserit free-force choice.'
+          : 'In Advanced play, entry into Bene Gesserit fighters permits Intrusion.'}
+        {' '}The revived group is already placed before those responses. Preventing
+        a Bene Gesserit power does not undo your revival or use your ordinary shipment.
+      </p>}
       <label className="block space-y-1">
         <span>Revival destination</span>
         <select

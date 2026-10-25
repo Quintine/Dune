@@ -18,6 +18,17 @@ room migration is needed. The subsequent
 [Caladan checkpoint](HOMEWORLD_VICTORY_REINFORCEMENT_RUNTIME.md) and implementation
 status record the combined verification.
 
+## BG arrival continuation — 25 October 2026
+
+High revived placement now uses native Advanced Intrusion and, for off-planet
+Tleilax→Arrakis, an independent BG Spiritual choice. The original group and
+revival-income response wait through those native counters and the deferred
+entry. Phase4 packets bind the actual return or owned Guild child; stale and
+foreign parents do not become shipment authority. Persistent guides and minimal
+policies use the same original controls.
+[Source, explicit SEND composition and remaining Terror fence](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md#revival-arrival-responses--25-october-2026).
+
+
 ## Supported return and placement
 
 Southern selects only the newly revived physical Fedaykin from a successful

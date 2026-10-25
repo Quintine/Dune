@@ -2,7 +2,7 @@ import type { FactionId } from './catalog';
 import { gameTerritories, splitLocation, type MobileBoard } from './board';
 import { presenceAt, type ForcePresence } from './force-presence';
 import { stormExposesTerritory, stormSectorAfter } from './disaster-rules';
-import { validateSpiritualAdvisorSource, type SpiritualAdvisorSource } from './spiritual-advisor';
+import { validateSpiritualAdvisorSource, type SpiritualAdvisorSource, type SpiritualAdvisorContext } from './spiritual-advisor';
 
 export type AdvisorStance = {
   lockedTurn?: number;
@@ -115,6 +115,9 @@ export type AutomaticAdvisorFlipContext = AdvisorSettlementContext & MobileBoard
   status: string;
   turn: number;
   phase: number;
+  homeworldRevivalReturn?: SpiritualAdvisorContext['homeworldRevivalReturn'];
+  pendingSpiritualAdvisor?: SpiritualAdvisorContext['pendingSpiritualAdvisor'];
+  pendingAmbassador?: SpiritualAdvisorContext['pendingAmbassador'];
   choamMentatPending?: boolean;
   lastBattleContext?: {
     event: string;
@@ -167,7 +170,7 @@ function otherPresence(ctx: AdvisorSettlementContext, player: AutomaticAdvisorFl
 
 function currentWindow(ctx: AutomaticAdvisorFlipContext) {
   return ctx.advanced === true && ctx.status === 'playing' &&
-    [0, 1, 3, 5, 6, 8].includes(ctx.phase) && positive(ctx.turn);
+    [0, 1, 3, 4, 5, 6, 8].includes(ctx.phase) && positive(ctx.turn);
 }
 
 /** A supported committed producer opens a response for these current groups.
@@ -487,7 +490,7 @@ export function validateAutomaticAdvisorFlip(
     (source.producer === 'specialRelocation'
       ? record(source.relocation) && (source.relocation.kind === 'discovery'
         ? source.phase === 0 : source.relocation.kind === 'ambassador' && [1, 3, 5, 8].includes(source.phase))
-      : source.producer === 'spiritualArrival' ? [1, 3, 5, 8].includes(source.phase)
+      : source.producer === 'spiritualArrival' ? [1, 3, 4, 5, 8].includes(source.phase)
       : source.phase === (source.producer === 'storm' ? 0 : source.producer === 'gamont' ? 8 :
         source.producer === 'battleLosses' || source.producer === 'faceDance' ? 6 : 5)) &&
     currentWindow(ctx) && source.phase === ctx.phase,

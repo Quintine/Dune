@@ -1,5 +1,56 @@
 # Dune implementation status
 
+## 25 October 2026 — Revival placement reaches BG arrival responses and deferred entry
+
+High revived placement now opens native Advanced Intrusion; Tleilax off-planet
+Free Revival onto Arrakis provisionally earns normal Spiritual accompaniment.
+The supplied p28 entry wording supports Intrusion, while SEND→Spiritual remains
+explicit composition under the14 October instruction. Southern is on-planet;
+Homeworld destinations remain separate. The original group stays committed
+through independent Karama, matching and alone conversion. No fee, ordinary
+allowance, Guild stop, purchased-rate use or phase4 industry is introduced.
+[Canonical source and remaining Terror fence](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md#revival-arrival-responses--25-october-2026).
+
+Spiritual phase4 sources bind the original return and its board destination,
+or an actual current Guild Ambassador child. Other-phase formats remain exact
+and old signature bytes stay unchanged. Intrusion cancellation separately binds
+its original returned group/location and optional Tleilax followup before card
+cost. The return waits for Spiritual, queued entry and original Ambassador work.
+Draining a no-reaction deferred entry now completes that parent immediately;
+its original revival-income response resumes once without another human action.
+Fresh Basic Guild children carry the same source tag. Public guides and four
+minimal policies use the native controls; strategy remains deferred.
+
+Three disjoint helper/arrival/native lanes, bounded read-only review and root
+integration pass **19 files, 246/246**, types/lint/build and eight native engine/
+GameTable SSR journeys. Actual public Basic68/Advanced71 source actions earn
+original 47-card E1 setup, native one-counter sand payment, real next-Storm13
+loss and High19/Tanks1. Ordinary free revive1 then reaches actual placement,
+BG decline/Polar2, Advanced accompaniment, resident Intrusion and independent
+original Karama against each BG advantage. Resident72 first earns a paid BG
+fighter in Carthag. Original Tleilax bank income1 is held then paid once. No
+native-source played hand/wallet/forces/phase/stance is installed. Native policy
+paths, eight source cases and eight controlled arrival-root cases remain scoped
+evidence, not strategic calibration or native combined-Ecaz certification.
+
+Feedback corrects the native fixture's expected final income, the phase5-only
+Intrusion preflight and deferred-parent completion. One related old scenario
+expected accompaniment into retained BG fighters, contrary to the adopted
+Advanced rule; it now rejects that action and uses legal Polar/alone conversion.
+Separate controlled conserved-army cases retain real phase4 Fremen Ambassador
+relocation and Southern cancellation without inventing Spiritual. No rule or
+source requirement is weakened. The initial list also catches an incorrect
+victory-test fragment before the final valid selection; no empty suite is
+counted as success. Private proof/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-revival-bg-arrival/`.
+`frozen-parent-fix/report.json` passes identical tree
+`d34e5d39322ab56739eb1c82244c8e866ff87007231187ac743dbb54d6620a61`,
+2,817 files, base `33523d1`. Final prose-only evidence overlay is hash/link checked.
+Terror entry/overlap remains explicitly unfinished; other source boundaries,
+full modes, comprehensive assurance and browser/mobile/deployed acceptance remain
+open. SSR is not DOM callbacks or parent hydration. No saved-room/D1/server/
+reset/restart/deployment operation occurred.
+
 ## 25 October 2026 — Low Ecaz gives the allied battle choice to its opponent
 
 The native Homeworld Low face's printed opponent-choice penalty now connects

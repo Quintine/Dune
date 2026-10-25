@@ -2,6 +2,90 @@
 
 Primary-source audit, 10 September 2026. This is a source and implementation-boundary contract, not a runtime completion claim. The coordinator has already asked about threshold restoration and splitting several revived Fedaykin; those answers remain pending.
 
+## Revival arrival responses — 25 October 2026
+
+**Prototyped / Partial.** The original positive revived group now opens native
+Advanced BG Intrusion at a destination containing BG fighters. The authorized
+supplied revision's physical page28 F uses entry, so this real physical arrival
+meets its condition. On Tleilax's off-planet Free Revival deployment to Arrakis,
+BG additionally receives its ordinary Spiritual Advisor choice. The face says
+**send**, not **ship**: classifying that transfer as qualifying off-planet
+shipping for this independent BG advantage is an explicit provisional
+composition under the 14 October recommended-choice instruction, consistent
+with the earlier Moritani Sneak Attack SEND composition. It is not a new
+publisher FAQ. Southern's on-planet group earns no Spiritual accompaniment;
+a Homeworld destination earns no board-entry response.
+
+The original group is already physically placed. Resolve Intrusion and its
+ordinary Karama response, then the eligible Spiritual choice and its independent
+whole-packet response, matching and mandatory-alone conversion. Preventing a BG
+advantage never reverses the revival, its committed placement or ordinary quota.
+The remaining original entry waits for those children and reaches its actual
+Ambassador once, without replaying forces. Tleilax's original free-revival bank
+income remains held until arrival finishes and settles once; it is not an extra
+shipping fee or a second free-revival event. Add no Guild special-stop window,
+ordinary shipment/movement use, purchased-rate consumption or Revival-phase
+Heighliner income.
+
+Phase-four Spiritual sources name the exact original revival event and current
+board destination, or an actual owned Guild Ambassador child of that return.
+No unrelated phase-four packet is admitted. Existing source formats and signature
+bytes remain unchanged outside the new provenance. The original return waits
+for pending Spiritual, queued entry and Ambassador work. An independent BG
+Ambassador root carries its actual committed public packet; old Guild suffixes
+retain their original parent links. This is continuation support, not a new
+power or a second placement. Persistent guides describe the existing group and
+independent counter consequences; minimal policies use the same native choices.
+
+The old blanket Spiritual and fighter-Intrusion destination fences are removed.
+**Revival entry into an eligible Terror token remains gated** while its original
+entry/overlap continuation is connected: existing overlap/discard code assumes
+Shipment and Movement. Its classification policy is selected, but that native
+consumer is unfinished, not silently certified by this BG checkpoint. Group/
+quantity, Southern storm, Hidden Mobile Stronghold and other existing destination
+restrictions remain. Comprehensive assurance and complete modes remain open.
+
+Evidence paths: [destination quote](../game/homeworld-revival-destinations.ts),
+[Spiritual source](../game/spiritual-advisor.ts),
+[automatic conversion](../game/advisor-automatic-flip.ts),
+[original arrival](../game/homeworld-arrival.ts),
+[native source](../tests/fixture-revival-arrival-reactions.ts),
+[native cases](../tests/revival-arrival-reactions-runtime.test.ts),
+[source cases](../tests/spiritual-advisor-revival.test.ts) and
+[controlled arrival-root cases](../tests/homeworld-revival-spiritual-arrival.test.ts).
+This dated section supersedes the older BG classification fences below;
+quantity/splitting and other pending source boundaries are not resolved here.
+
+Frozen **19 files, 246/246**, types/lint/build and eight native engine/GameTable
+SSR journeys pass. Public Basic68/Advanced71 source actions earn original E1
+setup/47 cards, a paid one-counter sand shipment, its real next-Storm13 loss and
+High19/Tanks1 before ordinary Free Revival. Resident72 first earns BG's actual
+paid Carthag fighter. Native choices cover decline, High Wallach two to Polar,
+Advanced accompaniment, Intrusion and independent original Karama against each
+BG advantage. Original Tleilax free-revival bank income1 settles once after the
+children; expecting unchanged final spice was an incorrect first fixture
+assertion, not a new charge. All four minimal policies propose legal actions.
+
+Eight source and eight controlled arrival-root cases supplement those native
+programmes. Separate conserved-board cases cover Southern Intrusion cancellation
+without Spiritual and Tleilax entry into an actual Fremen Ambassador relocation.
+An older scenario expected forbidden accompaniment into retained BG fighters;
+it now asserts rejection, legal Polar fallback and mandatory alone conversion.
+No illegal BG suffix is retained merely to keep a historical test green.
+The original Fremen relocation remains separately exercised. Native combined
+Ecaz, visual/browser/deployed and parent hydration are not claimed.
+
+Runtime exposes and repairs the phase5-only Intrusion cancellation preflight;
+its new branch validates the original revived arrival before card cost. A
+no-followup Southern case also repairs completion immediately after deferred
+entry drains, rather than requiring another human action. Bounded review adds
+the revival tag to a fresh Basic Guild advisor child. After the cancellation repair, runtime
+passes before the related stale assertion fails; final frozen proof includes
+all repairs on identical source. Private source-bound logs/HTML:
+`/home/quintine/.local/share/dune/checkpoints/20261025-revival-bg-arrival/`.
+No saved-room/D1/server/reset/restart/deployment operation occurred. Terror and
+other named boundaries, complete modes and final assurance remain open.
+
 ## Printed effects and provenance
 
 The high faces were visually reread in the original 3024×4032 component photograph, locally `/tmp/dune-card-economy-homeworlds.jpg`, associated with [BGG image 7767034](https://boardgamegeek.com/image/7767034/dune-ecaz-and-moritani). See the [component audit](HOMEWORLD_COMPONENT_AUDIT.md) for provenance. The photographed publisher components are evidence; community explanations are not substituted for rules.

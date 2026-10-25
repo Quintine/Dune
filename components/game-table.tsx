@@ -2544,6 +2544,7 @@ export function GameTable({
                   {g.players.find((player) => player.id === g.response?.owner)?.name} declared {g.response.amount ?? 1} free {(g.response.amount ?? 1) === 1 ? 'force' : 'forces'} to {territory(splitLocation(g.response.location ?? 'polar_sink:0').territory).name}.
                   {' '}Allow the arrival or cancel Spiritual Advisors. Canceling prevents the whole declared group.
                   {g.response.spiritualAdvisorSource&&<> Matching or an alone conversion may follow separately. The other faction’s shipment is already committed.</>}
+                  {g.response.spiritualAdvisorSource?.revivalEvent&&<> The revived group stays placed; this response does not cancel its revival.</>}
                 </p>
               )}
               {g.response.kind === 'moritaniRetention' &&
@@ -3755,7 +3756,10 @@ export function GameTable({
               ) : g.decision.kind === 'advisor' ? (
                 <>
                   <p className="muted">
-                    Another faction has shipped from off-planet. You may send
+                    {g.decision.revivalEvent
+                      ? 'Tleilaxu’s free-revived group has arrived from off-planet. You may send'
+                      : 'Another faction has shipped from off-planet. You may send'}
+                    {' '}
                     up to {g.homeworldMobility?.advisorSinkMaximum ?? 1} reserve forces to the Polar Sink for free.
                   </p>
                   {g.advanced&&<p className="notice">Retained fighters outside the Polar Sink require Polar Sink or decline, unless Intrusion already changed them to advisors. Polar matching and an alone conversion have separate responses.</p>}

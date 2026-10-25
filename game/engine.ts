@@ -144,7 +144,6 @@ import {
   type HomeworldRevivalProgress,
   validateHomeworldRevivalReturn,
   homeworldRevivalResumeSignature,
-  appendHomeworldRevivalAmbassador,
   homeworldRevivalArrivalSignature,
   type HomeworldRevivalReturn,
 } from './homeworld-revival-return';
@@ -1026,6 +1025,7 @@ export type Decision =
       shipment: string;
       destination?: string;
       ambassadorEvent?: string;
+      revivalEvent?: string;
     }
   | {
       kind: 'intrusion';
@@ -1034,7 +1034,8 @@ export type Decision =
       wormRide?: boolean;
       discoveryEntry?: DiscoveryEntryArrivalChild;
       ambassadorEvent?: string;
-      followup?: { shipment: string; destination: string };
+      revivalEvent?: string;
+      followup?: { shipment: string; destination: string; revivalEvent?: string };
     }
   | { kind: 'advisorBattle'; player: string; territories: string[] }
   | {
@@ -1110,8 +1111,9 @@ export type ResponseWindow = {
   advisorGatherMove?: { turn: number; move: number; order: MovementOrder };
   discoveryEntry?: DiscoveryEntryArrivalChild;
   advisorAmbassadorEvent?: string;
+  advisorRevivalEvent?: string;
   advisorRemaining?: string[];
-  advisorFollowup?: { shipment: string; destination: string };
+  advisorFollowup?: { shipment: string; destination: string; revivalEvent?: string };
   amount?: number;
   elite?: number;
   recipient?: string;
@@ -1208,6 +1210,7 @@ type PendingHomeworldShipment = HomeworldShipmentIntent & {
   allyPayment: number;
   pools: ReturnType<typeof quoteHomeworldShipment>['sources'] | ReturnType<typeof quoteGuildHomeworldShipment>['boardSources'];
 };
+type RevivalEntryParent = { event: string; spiritual?: SpiritualAdvisorSource };
 type PendingShipment = {
   /** Only new declarations use the bonus; legacy quoted shipments retain their original price. */
   smuggler?: SmugglerShipment;
@@ -1977,6 +1980,7 @@ export type Game = {
     resume: 'none' | 'wormRide';
     turn: number;
     phase: number;
+    revivalArrival?: RevivalEntryParent;
   }[] | null;
   /** One committed entry with two independently optional expansion reactions. */
   pendingArrivalOverlap?: {
@@ -17547,6 +17551,7 @@ function openAmbassadorEntry(
   g: Game, owner: Player, token: AmbassadorToken, entrant: Player, to: string,
   sector: number, resume: 'none' | 'wormRide',
   arrivalCause?: NonNullable<Game['pendingTerrorEntry']>['cause'],
+  revivalArrival?: RevivalEntryParent,
 ): boolean {
   g.pendingAmbassador = {
     ...(arrivalCause ? { arrivalCause } : {}),
@@ -17567,6 +17572,14 @@ function openAmbassadorEntry(
         : [],
   };
   g.decision = { kind: 'ecazAmbassador', player: owner.id };
+  if (revivalArrival) {
+    const frame = g.homeworldRevivalReturn;
+    requireRule(frame?.stage === 'arrival' && frame.event === revivalArrival.event,
+      'This entry has lost its original revived group.');
+    g.pendingAmbassador.revivalEvent = frame.event;
+    homeworldRule(() => appendHomeworldArrivalAmbassador(frame, g.pendingAmbassador!, undefined,
+      revivalArrival.spiritual));
+  }
   log(g, `${owner.name} may trigger the ${faction(token.effect).name} Ambassador because ${entrant.name} entered ${territory(to).name}. The entrant’s remaining actions wait for this opportunity.`);
   return true;
 }
@@ -17587,6 +17600,7 @@ function openTerritoryEntry(
   elite: number,
   cause: NonNullable<Game['pendingTerrorEntry']>['cause'],
   resume: 'none' | 'wormRide' = 'none',
+  revivalArrival?: RevivalEntryParent,
 ) {
   // The arrival's own interaction (guild payment, advisor choice, storm
   // protection) settles first; the entry then opens from the automatic pass.
@@ -17595,6 +17609,7 @@ function openTerritoryEntry(
     (g.pendingArrivalReaction ??= []).push({
       entrant: entrant.id, territory: to, sector, amount, elite, cause, resume,
       turn: g.turn, phase: g.phase,
+      ...(revivalArrival ? { revivalArrival } : {}),
     });
     return true;
   }
@@ -17634,7 +17649,8 @@ function openTerritoryEntry(
   requireRule(!g.response && !g.decision && !g.pendingTerrorEntry && !g.pendingAmbassador,
     'Finish the other arrival reaction before opening this entry.');
   if (!terrorTokens.length)
-    return openAmbassadorEntry(g, owner, token, entrant, to, sector, resume, cause);
+    return openAmbassadorEntry(g, owner, token, entrant, to, sector, resume, cause, revivalArrival);
+  requireRule(!revivalArrival, 'Revival deployment with overlapping Terror and Ambassador reactions is still being implemented.');
   requireRule(arrivalOverlapModeSupported(g) && !g.pendingArrivalOverlap &&
     moritani && g.order.includes(owner.id) && g.order.includes(moritani.id),
     'Ambassador and Terror overlap still needs a supported classic Ecaz/Moritani table.');
@@ -18447,6 +18463,7 @@ function continueGuildAmbassadorShipment(g: Game, event: string) {
         shipment: p.id,
         destination: location(order.territory, order.sector),
         ambassadorEvent: event,
+        ...(g.phase === 4 && entry.revivalEvent ? {revivalEvent:entry.revivalEvent} : {}),
       };
       return;
     }
@@ -20524,9 +20541,9 @@ function quoteSpiritualOrder(g:Game,decision:Extract<Decision,{kind:'advisor'}>,
 }
 function spiritualAdvisorChoices(g:Game,id:string){
   const decision=g.decision;
-  if(!g.advanced||decision?.kind!=='advisor'||decision.player!==id)return null;
+  if(decision?.kind!=='advisor'||decision.player!==id||(!g.advanced&&!decision.revivalEvent))return null;
   const destination=decision.destination?splitLocation(decision.destination).territory:null;
-  const choices=[...(destination?gameTerritories(g).find(t=>t.id===destination)?.sectors.map(sector=>
+  const choices=[...(g.advanced&&destination?gameTerritories(g).find(t=>t.id===destination)?.sectors.map(sector=>
     ({accompany:true,territory:destination,sector,amount:1}))??[]:[]),
     ...Array.from({length:Math.max(1,spiritualAdvisorMaximum(g,id))},(_,index)=>
       ({accompany:false,territory:'polar_sink',sector:0,amount:index+1}))];
@@ -20546,7 +20563,7 @@ function spiritualAdvisorChoices(g:Game,id:string){
 }
 function spiritualFrameBody(g:Game){
   const frame=g.pendingSpiritualAdvisor;
-  requireRule(frame&&g.advanced&&g.status==='playing'&&frame.turn===g.turn&&frame.phase===g.phase&&
+  requireRule(frame&&(g.advanced||frame.phase===4&&!!frame.decision.revivalEvent)&&g.status==='playing'&&frame.turn===g.turn&&frame.phase===g.phase&&
     getPlayer(g,frame.decision.player).faction==='beneGesserit'&&
     frame.signature===JSON.stringify([frame.event,spiritualParentSignature(g,frame.decision)]),
     'Spiritual Advisors lost the original committed foreign shipment.');
@@ -20598,7 +20615,9 @@ function beginSpiritualAdvisor(g:Game,decision:Extract<Decision,{kind:'advisor'}
       signature:JSON.stringify([event,spiritualParentSignature(g,decision)]),stage:'offer',denied:[]};
   }
   const source:SpiritualAdvisorSource={event:frame.event,owner:decision.player,turn:g.turn,phase:g.phase,
-    territory:order.territory,sector:order.sector,amount:order.amount};
+    territory:order.territory,sector:order.sector,amount:order.amount,
+    ...(g.phase===4&&(decision.revivalEvent||g.pendingAmbassador?.revivalEvent)
+      ?{revivalEvent:decision.revivalEvent??g.pendingAmbassador!.revivalEvent}: {})};
   if(spiritualAdvisorArrival(g,source.owner,source.territory).matching)
     requireRule(!frame.denied.includes(spiritualAdvisorMatchingKey(source)),
       'Matching this free packet here was prevented. Choose another legal packet or decline.');
@@ -20676,7 +20695,8 @@ function completeSpiritualAdvisorArrival(g:Game){
       advisorAmbassadorEvent:frame.decision.ambassadorEvent},
       {...order,amount:order.amount as 1|2,advisors:isAdvisor(bg,order.territory)});
   }else{
-    openTerritoryEntry(g,bg,order.territory,order.sector,order.amount,0,'advisor');
+    openTerritoryEntry(g,bg,order.territory,order.sector,order.amount,0,'advisor','none',
+      frame.source!.revivalEvent ? {event:frame.source!.revivalEvent,spiritual:frame.source} : undefined);
   }
 }
 type TransportMatchingIntent=NonNullable<Game['pendingAdvisorTransportMatching']>['intent'];
@@ -22099,8 +22119,9 @@ function finishAdvisorReaction(
     advisorResume?: ResponseWindow['advisorResume'];
     discoveryEntry?: DiscoveryEntryArrivalChild;
     advisorAmbassadorEvent?: string;
+    advisorRevivalEvent?: string;
     advisorRemaining?: string[];
-    advisorFollowup?: { shipment: string; destination: string };
+    advisorFollowup?: { shipment: string; destination: string; revivalEvent?: string };
   },
 ) {
   const bg = byFaction(g, 'beneGesserit')!;
@@ -22125,7 +22146,8 @@ function intrusion(
     wormRide?: boolean;
     discoveryEntry?: DiscoveryEntryArrivalChild;
     ambassadorEvent?: string;
-    followup?: { shipment: string; destination: string };
+    revivalEvent?: string;
+    followup?: { shipment: string; destination: string; revivalEvent?: string };
   } = {},
 ) {
   const bg = byFaction(g, 'beneGesserit');
@@ -27959,7 +27981,8 @@ function resumeHomeworldRevivalReturn(g: Game) {
   if (!frame || frame.stage === 'complete' || frame.stage === 'choice' ||
       g.pendingTreacheryDiscard || g.pendingNullentropy || g.truthtrance ||
       g.pendingExchange || g.pendingRicheseGift || g.pendingAmbassador ||
-      g.pendingTerrorEntry || g.pendingKarama || g.decision) return;
+      g.pendingTerrorEntry || g.pendingKarama || g.decision || g.pendingSpiritualAdvisor ||
+      g.pendingArrivalReaction?.length || g.pendingArrivalOverlap) return;
   if (frame.stage === 'arrival') {
     if (!g.response) completeHomeworldRevivalReturn(g);
     return;
@@ -28014,11 +28037,14 @@ function decideHomeworldRevivalReturn(g: Game, p: Player, action: Action) {
   frame.arrivalSignature = homeworldRevivalArrivalSignature(frame);
   if (quote.selected.territory) {
     place(p, quote.selected.territory, quote.selected.sector!, amount, frame.quote.elite);
-    openTerritoryEntry(g, p, quote.selected.territory, quote.selected.sector!, amount, frame.quote.elite, 'homeworldRevival');
-    if (g.pendingAmbassador) {
-      g.pendingAmbassador.revivalEvent = frame.event;
-      appendHomeworldRevivalAmbassador(frame, g.pendingAmbassador);
-    }
+    const bg = byFaction(g, 'beneGesserit');
+    const followup = frame.quote.kind === 'tleilax' && bg && bg.id !== p.id &&
+      spiritualAdvisorMaximum(g, bg.id) > 0
+      ? {shipment:p.id,destination:quote.selected.id,revivalEvent:frame.event} : undefined;
+    if (!intrusion(g, p, quote.selected.territory, {revivalEvent:frame.event,...(followup ? {followup} : {})}) && followup)
+      g.decision = {kind:'advisor',player:bg!.id,...followup};
+    openTerritoryEntry(g, p, quote.selected.territory, quote.selected.sector!, amount,
+      frame.quote.elite, 'homeworldRevival', 'none', {event:frame.event});
   }
   log(g, `${p.name} placed ${amount} newly revived ${frame.quote.kind === 'fedaykin' ? 'Fedaykin' : 'free forces'} in ${quote.selected.name}. No additional revival payment or shipment allowance was used.`,
     { faction: p.faction, name: frame.quote.kind === 'fedaykin' ? 'Southern Hemisphere revival' : 'Tleilax free revival' });
@@ -33378,7 +33404,8 @@ function settleAutomaticContinuations(g: Game) {
       const entrant = g.players.find(p => p.id === deferred.entrant);
       requireRule(!!entrant, 'The deferred arrival entry has lost its entrant.');
       openTerritoryEntry(g, entrant!, deferred.territory, deferred.sector,
-        deferred.amount, deferred.elite, deferred.cause, deferred.resume);
+        deferred.amount, deferred.elite, deferred.cause, deferred.resume, deferred.revivalArrival);
+      if (deferred.revivalArrival) resumeHomeworldRevivalReturn(g);
       continue;
     }
     const response = g.response;
@@ -35259,6 +35286,7 @@ function applyActionInner(
             ? ('wormRide' as const)
             : undefined,
         advisorAmbassadorEvent: decision.ambassadorEvent,
+        advisorRevivalEvent: decision.revivalEvent,
         discoveryEntry: decision.discoveryEntry,
       };
       if (action.accept)
@@ -35297,7 +35325,7 @@ function applyActionInner(
         };
       } else movementTurn(g);
     } else if (decision.kind === 'advisor') {
-      if(g.advanced){
+      if(g.advanced||decision.revivalEvent!==undefined){
         requireRule(typeof action.accept==='boolean','Choose the free Spiritual shipment or decline.');
         if(action.accept){
           beginSpiritualAdvisor(g,decision,action);

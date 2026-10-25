@@ -52,75 +52,102 @@ function allow(g: Game, kind: string) {
   return g;
 }
 
-void test('actual phase-four revived arrival holds income through Guild shipment, BG child and Fremen relocation across JSON', () => {
+void test('actual phase-four revived arrival rejects fighter accompaniment and holds income through the Guild Polar alternative', () => {
   let g = open();
   const original = structuredClone(g.homeworldRevivalReturn!);
   const beforeIncome = p(g, 't').spice;
   const parent = g.pendingAmbassador!.event;
-  g = applyAction(reload(g), 'ec', {
-    type: 'decision',
-    event: parent,
-    trigger: true,
-    beneficiary: 'a',
-  });
+  g = applyAction(reload(g), 'ec', { type: 'decision', event: parent, trigger: true, beneficiary: 'a' });
   assert.equal(g.pendingAmbassador?.stage, 'ship');
-  g = applyAction(reload(g), 'a', {
-    type: 'decision',
-    event: parent,
-    amount: 2,
-    territory: 'sietch_tabr',
-    sector: 14,
-  });
+  g = applyAction(reload(g), 'a', { type: 'decision', event: parent, amount: 2, territory: 'sietch_tabr', sector: 14 });
   assert.equal(g.decision?.kind, 'intrusion');
   g = applyAction(reload(g), 'bg', { type: 'decision', accept: false });
   assert.equal(g.decision?.kind, 'advisor');
-  g = applyAction(reload(g), 'bg', {
-    type: 'decision',
-    accept: true,
-    accompany: true,
-  });
+  const before = reload(g);
+  assert.throws(() => applyAction(g, 'bg', { type: 'decision', accept: true, accompany: true }), /cannot accompany/);
+  assert.deepEqual(g, before);
+  g = applyAction(reload(g), 'bg', { type: 'decision', accept: true, accompany: false, amount: 1 });
   assert.equal(g.response?.kind, 'advisor');
   g = allow(g, 'advisor');
-  assert.equal(g.pendingAmbassador?.stage, 'offer');
-  assert.equal(g.pendingAmbassador?.entrant, 'bg');
-  assert.equal(g.homeworldRevivalReturn?.ambassadors?.length, 2);
-  assert.equal(g.homeworldRevivalReturn!.ambassadors![1].parent, parent);
-  assert.equal(p(g, 't').spice, beforeIncome);
-  assert.deepEqual(
-    g.homeworldRevivalReturn!.resumeResponse,
-    original.resumeResponse,
-  );
-  inventory(g);
-  assert.deepEqual(normalizeAutomaticGame(reload(g)), reload(g));
-  g = applyAction(reload(g), 'ec', {
-    type: 'decision',
-    event: g.pendingAmbassador!.event,
-    trigger: true,
-    beneficiary: 'ec',
-  });
-  assert.equal(g.pendingAmbassador?.stage, 'move');
-  g = applyAction(reload(g), 'ec', {
-    type: 'decision',
-    event: g.pendingAmbassador!.event,
-    forces: { 'red_chasm:7': 1 },
-    territory: 'carthag',
-    sector: 11,
-  });
+  g = allow(g, 'advisorFlip');
   assert.equal(g.pendingAmbassador ?? null, null);
+  assert.equal(g.homeworldRevivalReturn?.ambassadors?.length, 1);
+  assert.equal(g.homeworldRevivalReturn!.ambassadors![0].completed, true);
   assert.equal(g.homeworldRevivalReturn?.stage, 'complete');
   assert.deepEqual(g.response, original.resumeResponse);
   assert.equal(p(g, 't').spice, beforeIncome);
   g = allow(g, 'revivalIncome');
-  assert.equal(
-    p(g, 't').spice,
-    beforeIncome + original.resumeResponse!.amount!,
-  );
+  assert.equal(p(g, 't').spice, beforeIncome + original.resumeResponse!.amount!);
   assert.equal(p(g, 'f').forces['arrakeen:10'], 13);
   assert.equal(p(g, 'a').forces['sietch_tabr:14'], 2);
-  assert.equal(p(g, 'bg').forces['sietch_tabr:14'], 2);
-  assert.equal(p(g, 'ec').forces['carthag:11'], 1);
+  assert.equal(p(g, 'bg').forces['sietch_tabr:14'], 1);
+  assert.equal(p(g, 'bg').forces['polar_sink:0'], 1);
+  assert.equal(p(g, 'ec').forces['red_chasm:7'], 1);
+  assert.ok(g.ecazAmbassadors!.tokens.some(token => token.effect === 'fremen' && token.zone === 'placed' && token.location === 'sietch_tabr'));
   inventory(g);
   assert.deepEqual(normalizeAutomaticGame(reload(g)), reload(g));
+});
+
+void test('a controlled native World source completes revived Tleilax Intrusion and Spiritual declines before its Fremen Ambassador relocation', () => {
+  let g = fixture();
+  // This existing fixture conserves staged native armies/cards. The return,
+  // Intrusion, Spiritual choice and Ambassador continuations are real actions.
+  g = applyAction(g, 't', { type: 'revive', amount: 1, elite: 0 });
+  const event = g.homeworldRevivalReturn!.event;
+  const beforeIncome = p(g, 't').spice;
+  g = applyAction(g, 't', { type: 'decision', event, destination: 'sietch_tabr:14' });
+  assert.equal(g.decision?.kind, 'intrusion');
+  g = applyAction(g, 'bg', { type: 'decision', accept: false });
+  assert.equal(g.decision?.kind, 'advisor');
+  g = applyAction(g, 'bg', { type: 'decision', accept: false });
+  assert.equal(g.pendingAmbassador?.stage, 'offer');
+  assert.equal(g.pendingAmbassador?.entrant, 't');
+  const entry = g.pendingAmbassador!;
+  assert.equal(entry.revivalEvent, event);
+  g = applyAction(g, 'ec', { type: 'decision', event: entry.event, trigger: true, beneficiary: 'ec' });
+  assert.equal(g.pendingAmbassador?.stage, 'move');
+  g = applyAction(g, 'ec', { type: 'decision', event: entry.event,
+    forces: { 'red_chasm:7': 1 }, territory: 'carthag', sector: 11 });
+  assert.equal(g.homeworldRevivalReturn?.stage, 'complete');
+  assert.equal(g.pendingAmbassador ?? null, null);
+  assert.equal(p(g, 'ec').forces['carthag:11'], 1);
+  assert.equal(p(g, 't').forces['sietch_tabr:14'], 1);
+  assert.equal(p(g, 't').spice, beforeIncome);
+  g = allow(g, 'revivalIncome');
+  assert.equal(p(g, 't').spice, beforeIncome + 1);
+  inventory(g);
+});
+
+void test('a controlled conserved Southern return permits Intrusion Karama without inventing Spiritual accompaniment', () => {
+  let g = fixture();
+  // Move existing Fremen/BG counters to a non-stronghold in this controlled
+  // fixture. No revival, entry, response or continuation is installed.
+  p(g, 'f').forces['arrakeen:10']--;
+  p(g, 'f').forces['imperial_basin:9'] = 1;
+  delete p(g, 'bg').forces['sietch_tabr:14'];
+  p(g, 'bg').forces['imperial_basin:9'] = 1;
+  inventory(g);
+  g = applyAction(g, 'f', { type: 'revive', amount: 1, elite: 1 });
+  if (g.decision?.kind === 'revivalStop')
+    g = applyAction(g, 't', { type: 'decision', decline: true });
+  while (g.homeworldRevivalReturn?.stage !== 'choice' && g.response) g = allow(g, g.response.kind);
+  assert.equal(g.homeworldRevivalReturn?.stage, 'choice');
+  const event = g.homeworldRevivalReturn!.event;
+  g = applyAction(g, 'f', { type: 'decision', event, destination: 'imperial_basin:9' });
+  assert.equal(g.decision?.kind, 'intrusion');
+  g = applyAction(g, 'bg', { type: 'decision', accept: true });
+  assert.equal(g.response?.kind, 'advisorFlip');
+  assert.equal(g.response?.advisorRevivalEvent, event);
+  assert.equal(g.response?.advisorFollowup, undefined);
+  const karama = p(g, 'ec').hand.find(card => card.effect === 'karama')!;
+  g = applyAction(g, 'ec', { type: 'card', card: karama.id, mode: 'cancel' });
+  assert.equal(g.pendingAmbassador ?? null, null);
+  assert.equal(g.homeworldRevivalReturn?.stage, 'complete');
+  assert.equal(g.decision, null);
+  assert.equal(p(g, 'bg').advisors?.imperial_basin, undefined);
+  assert.equal(p(g, 'f').forces['imperial_basin:9'], 2);
+  assert.equal(g.discard.filter(card => card.id === karama.id).length, 1);
+  inventory(g);
 });
 
 void test('an actual revival Ambassador offer rejects edited original arrival identities before view or action', () => {

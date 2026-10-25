@@ -40,11 +40,11 @@ void test('Southern lists existing territories only and withdraws the entire typ
   assert.deepEqual(g, before);
 });
 
-void test('BG accompaniment uncertainty applies to Tleilax arrival on Arrakis, never Homeworld destinations', () => {
+void test('Tleilax SEND destinations remain available before their original Spiritual Advisor continuation', () => {
   const { g, grant } = fixture('tleilaxu');
   g.players[1].reserves = 20;
   const choices = homeworldRevivalDestinations(g, 'p', grant);
-  assert.match(choices.find((c) => c.id === 'polar_sink:0')!.blocked!, /Spiritual Advisors/);
+  assert.equal(choices.find((c) => c.id === 'polar_sink:0')!.blocked, null);
   const home = choices.filter((c) => c.homeworld);
   assert.ok(home.length > 0);
   assert.ok(home.every((c) => c.blocked === null));
@@ -93,11 +93,11 @@ void test('storm uses the selected actual sector and mobile stronghold pointer; 
   }
 });
 
-void test('BG Intrusion gate requires Advanced fighters at the destination, not advisors or another location', () => {
+void test('BG fighters do not refuse SEND destinations before their original Intrusion continuation', () => {
   const { g, grant } = fixture('fremen');
   g.players[1].forces = { 'arrakeen:10': 1 };
   const target = () => homeworldRevivalDestinations(g, 'p', grant).find((c) => c.id === 'arrakeen:10')!;
-  assert.match(target().blocked!, /Intrusion/);
+  assert.equal(target().blocked, null);
   g.advanced = false;
   assert.equal(target().blocked, null);
   g.advanced = true;
@@ -105,18 +105,18 @@ void test('BG Intrusion gate requires Advanced fighters at the destination, not 
   assert.equal(target().blocked, null);
 });
 
-void test('Terror boundary reads public placement and original physical count, never a secret token face', () => {
+void test('the unfinished Revival Terror continuation stays fenced without reading a token face', () => {
   const { g, grant } = fixture('tleilaxu');
   g.moritaniTerror = createTerrorState(() => 0);
   const token = g.moritaniTerror.tokens[0];
   g.moritaniTerror = placeTerror(g.moritaniTerror, token.id, 'arrakeen', 1);
   for (const t of g.moritaniTerror.tokens) Object.defineProperty(t, 'kind', { get() { throw new Error('private Terror face read'); } });
   const target = () => homeworldRevivalDestinations(g, 'p', grant).find((c) => c.id === 'arrakeen:10')!;
-  assert.match(target().blocked!, /Terror/);
+  assert.match(target().blocked!, /Terror.*continuation/);
   g.players[2].reserves = 7;
   assert.equal(target().blocked, null);
   grant.normal = 3;
-  assert.match(target().blocked!, /Terror/);
+  assert.match(target().blocked!, /Terror.*continuation/);
   g.players[2].ally = 'p'; g.players[0].ally = 'm';
   assert.equal(target().blocked, null);
 });

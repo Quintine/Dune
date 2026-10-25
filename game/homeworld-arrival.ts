@@ -1,12 +1,14 @@
 import type { Game } from './engine';
-import { location, validLocation } from './board';
+import { location, splitLocation, validLocation } from './board';
 import { HomeworldCustodyError } from './homeworld-custody';
+import type { SpiritualAdvisorSource } from './spiritual-advisor';
 
 export type HomeworldAmbassadorArrival = {
   event: string;
   entrant: string;
   destination: string;
   parent?: string;
+  spiritual?: SpiritualAdvisorSource;
   completed: boolean;
 };
 export type HomeworldArrivalFrame = {
@@ -42,12 +44,45 @@ function keys(value: unknown, allowed: string[]): boolean {
   );
 }
 
+/** This is the public source of an already committed Spiritual Advisor arrival,
+ * not another permission or a reconstruction from current BG reserves. */
+function spiritualSource(
+  frame: HomeworldArrivalFrame,
+  entry: HomeworldAmbassadorArrival,
+): SpiritualAdvisorSource & { revivalEvent: string } {
+  const source = entry.spiritual as (SpiritualAdvisorSource & { revivalEvent?: string }) | undefined;
+  if (!source || !keys(source, ['event', 'owner', 'turn', 'phase', 'territory', 'sector', 'amount', 'revivalEvent'])) fail();
+  const destination = splitLocation(frame.destination!);
+  if (
+    Object.keys(source).sort().join(',') !== 'amount,event,owner,phase,revivalEvent,sector,territory,turn' ||
+    !text(source.event) ||
+    !text(source.owner) ||
+    source.owner !== entry.entrant ||
+    source.owner === frame.player ||
+    source.revivalEvent !== frame.event ||
+    frame.phase !== 4 || source.phase !== 4 ||
+    source.turn !== frame.turn ||
+    !Number.isSafeInteger(source.turn) || source.turn < 1 ||
+    !text(source.territory) ||
+    !Number.isSafeInteger(source.sector) ||
+    !validLocation(source.territory, source.sector) ||
+    !validLocation(destination.territory, destination.sector) ||
+    (source.territory !== destination.territory && source.territory !== 'polar_sink') ||
+    (source.amount !== 1 && source.amount !== 2) ||
+    entry.parent !== undefined ||
+    entry.destination !== location(source.territory, source.sector)
+  ) fail();
+  return source as SpiritualAdvisorSource & { revivalEvent: string };
+}
+
 /** Arrival provenance is fixed separately from the original revival grant. */
 export function homeworldArrivalSignature(
   frame: HomeworldArrivalFrame,
 ): string {
   if (!text(frame.destination) || !Array.isArray(frame.ambassadors)) fail();
   const seen = new Set<string>();
+  const spiritualEvents = new Set<string>();
+  let primary = false;
   for (const [index, entry] of frame.ambassadors.entries()) {
     if (
       !keys(entry, [
@@ -55,6 +90,7 @@ export function homeworldArrivalSignature(
         'entrant',
         'destination',
         'parent',
+        'spiritual',
         'completed',
       ]) ||
       !text(entry.event) ||
@@ -62,14 +98,17 @@ export function homeworldArrivalSignature(
       !text(entry.destination) ||
       typeof entry.completed !== 'boolean' ||
       (index < frame.ambassadors.length - 1 && !entry.completed) ||
-      seen.has(entry.event) ||
-      (index === 0
-        ? entry.parent !== undefined ||
-          entry.entrant !== frame.player ||
-          entry.destination !== frame.destination
-        : !text(entry.parent) || !seen.has(entry.parent))
+      seen.has(entry.event)
     )
       fail();
+    if (entry.spiritual !== undefined) {
+      const source = spiritualSource(frame, entry);
+      if (spiritualEvents.has(source.event)) fail();
+      spiritualEvents.add(source.event);
+    } else if (entry.parent === undefined) {
+      if (primary || entry.entrant !== frame.player || entry.destination !== frame.destination) fail();
+      primary = true;
+    } else if (index === 0 || !text(entry.parent) || !seen.has(entry.parent)) fail();
     seen.add(entry.event);
   }
   if (frame.destination === 'decline' && frame.ambassadors.length !== 0) fail();
@@ -84,6 +123,18 @@ export function homeworldArrivalSignature(
       entry.destination,
       entry.parent ?? null,
       entry.completed,
+      // Legacy rows remain exactly five values. Only a new independent
+      // Spiritual root adds its canonical, public placement source.
+      ...(entry.spiritual === undefined ? [] : [[
+        entry.spiritual.event,
+        entry.spiritual.owner,
+        entry.spiritual.turn,
+        entry.spiritual.phase,
+        entry.spiritual.territory,
+        entry.spiritual.sector,
+        entry.spiritual.amount,
+        spiritualSource(frame, entry).revivalEvent,
+      ]]),
     ]),
   ]);
 }
@@ -100,6 +151,7 @@ export function appendHomeworldArrivalAmbassador(
     phase: number;
   },
   parent?: string,
+  spiritual?: SpiritualAdvisorSource,
 ): void {
   if (
     frame.stage !== 'arrival' ||
@@ -110,20 +162,23 @@ export function appendHomeworldArrivalAmbassador(
     (parent !== undefined && parent !== frame.ambassadors!.at(-1)?.event)
   )
     fail();
+  const appended: HomeworldAmbassadorArrival = {
+    event: entry.event,
+    entrant: entry.entrant,
+    destination: location(entry.territory, entry.sector),
+    completed: false,
+    ...(parent === undefined ? {} : { parent }),
+    ...(spiritual === undefined ? {} : { spiritual }),
+  };
   const ambassadors = [
     ...frame.ambassadors!,
-    {
-      event: entry.event,
-      entrant: entry.entrant,
-      destination: location(entry.territory, entry.sector),
-      completed: false,
-      ...(parent === undefined ? {} : { parent }),
-    },
+    appended,
   ];
   const arrivalSignature = homeworldArrivalSignature({
     ...frame,
     ambassadors,
   });
+  if (spiritual !== undefined) appended.spiritual = structuredClone(spiritual);
   frame.ambassadors = ambassadors;
   frame.arrivalSignature = arrivalSignature;
 }
@@ -175,14 +230,16 @@ export function validateHomeworldArrival(
     (frame.stage === 'arrival' &&
       (frame.turn !== g.turn || frame.phase !== g.phase)) ||
     frame.arrivalSignature !== homeworldArrivalSignature(frame) ||
-    frame.ambassadors!.some(
-      (entry, index) =>
-        !g.players.some(
-          (seat) =>
-            seat.id === entry.entrant &&
-            (index === 0 || seat.faction === 'beneGesserit'),
-        ),
-    )
+    frame.ambassadors!.some((entry) => {
+      if (entry.spiritual !== undefined) {
+        const entrants = g.players.filter((seat) => seat.id === entry.entrant);
+        const owners = g.players.filter((seat) => seat.id === frame.player);
+        return tag !== 'revivalEvent' || entrants.length !== 1 ||
+          entrants[0].faction !== 'beneGesserit' || owners.length !== 1 || owners[0].faction !== 'tleilaxu';
+      }
+      return !g.players.some((seat) => seat.id === entry.entrant &&
+        (entry.parent === undefined || seat.faction === 'beneGesserit'));
+    })
   )
     fail();
   const unfinished = frame.ambassadors!.find((entry) => !entry.completed);

@@ -1,6 +1,8 @@
 import { validAmbassadorResume } from './ambassador-resume';
 import { validateDiscoveryEntryArrivalChild, validateDiscoveryEntryRound } from './discovery-entry';
 import { ambassadorPhaseAllowed } from './ambassador-phase';
+import { validateHomeworldRevivalReturn } from './homeworld-revival-return';
+import { HomeworldCustodyError } from './homeworld-custody';
 import {
   validateGuildAmbassadorArrivalContext,
   GuildAmbassadorContinuationError,
@@ -512,6 +514,28 @@ export function quoteMovementCancellation(
     'Only an Ambassador arrival may carry its event.',
   );
   if (response.advisorResume === 'wormRide') return null;
+  if (response.advisorRevivalEvent !== undefined) {
+    const parent = g.homeworldRevivalReturn;
+    try { validateHomeworldRevivalReturn(g, parent); }
+    catch (error) {
+      if (error instanceof HomeworldCustodyError) throw new MovementCancellationError(error.message);
+      throw error;
+    }
+    requireContext(g.advanced && response.advisors === true &&
+      parent?.stage === 'arrival' && parent.event === response.advisorRevivalEvent &&
+      parent.turn === g.turn && parent.phase === g.phase && parent.player !== owner.id &&
+      typeof parent.destination === 'string' && sectorKey(g, parent.destination) &&
+      response.location === splitLocation(parent.destination).territory &&
+      response.advisorResume === undefined && response.advisorRemaining === undefined,
+    'The canceled Intrusion lost its original committed revived-force arrival.');
+    const followup = response.advisorFollowup;
+    requireContext(followup === undefined || (parent.quote.kind === 'tleilax' &&
+      followup.shipment === parent.player && followup.destination === parent.destination &&
+      followup.revivalEvent === parent.event),
+    'The revived Intrusion lost its original Spiritual Advisor followup.');
+    return { kind: 'advisorFlip', successor: followup &&
+      homeworldSpiritualAdvisorLimit(g, owner.id, 'polar_sink') > 0 ? 'advisor' : 'none' };
+  }
   requireContext(
     g.phase === 5,
     'This advisor cancellation is outside its shipment and movement phase.',

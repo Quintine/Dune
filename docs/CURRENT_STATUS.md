@@ -16,6 +16,35 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Revived force BG arrival responses — 25 October. Prototyped / Partial.**
+Actual revived placement now permits native Advanced Intrusion. Off-planet
+Tleilax→Arrakis also earns ordinary BG Spiritual accompaniment under an explicit
+provisional SEND composition; Southern remains on-planet. The original group
+stays placed through independent BG counters, matching and alone conversion.
+Original income waits for Spiritual, queued entry and Ambassador work, then
+finishes without another human action. Phase4 packets and Intrusion cancellation
+bind their exact return; actual Guild child destinations retain their own source.
+Persistent controls and existing minimal policies are connected. Terror's
+revival-entry continuation remains unfinished and fenced.
+[Source, current policy and limits](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md#revival-arrival-responses--25-october-2026).
+
+Three disjoint helper/arrival/native lanes, bounded review and root integration
+pass **19 files, 246/246**, types/lint/build and eight native engine/GameTable SSR
+journeys. Public Basic68/Advanced71 actions earn actual High19/Tanks1 through
+paid sand shipment and native Storm13, then ordinary free revive1. Decline,
+High Wallach two to Polar, Advanced accompaniment, resident Intrusion and both
+independent original-Karama counters preserve the placed force and original
+bank income1. Actual resident branch72 earns BG's paid fighter first. Four
+existing profiles act legally; strategic tuning remains deferred. Controlled
+source/arrival cases supplement native paths, including separate Southern
+cancellation and Fremen Ambassador relocation; no native combined Ecaz game is
+claimed. The old illegal retained-fighter accompaniment assertion now tests
+rejection and legal Polar fallback. Cancellation-phase and queued-completion
+bugs are repaired; the fresh Basic Guild child now carries its revival tag.
+No native-source hand/wallet/force/phase/stance is installed. No saved-room/D1/
+server/reset/restart/deployment operation occurred. Browser/mobile/deployed,
+hydration, full modes and comprehensive assurance remain open.
+
 **Low Ecaz opponent-owned battle lead — 25 October. Prototyped / Partial.**
 The original combined-battle opener now applies the printed Low penalty:
 at native population zero through six, the opponent chooses Ecaz or its ally
