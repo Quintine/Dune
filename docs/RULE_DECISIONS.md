@@ -1,5 +1,23 @@
 # Rule decision index
 
+## Sapho in ordered Advanced Revival — 26 October 2026
+
+The printed Sapho first/last alternative applies to the now-connected ordered
+Advanced Revival from supplied physical9/printed7. Change only unfinished
+opportunities for the current phase; original physical First Player order and
+completed opportunities remain. A real held card is discarded once.
+
+Under standing 14 October choose-recommended authority, retain a started current
+participant and reorder only its unstarted tail, as in the earlier movement
+protocol. First means immediately after that actor finishes. A holder cannot
+split its own started opportunity. This is explicit provisional online timing,
+not a new publisher clarification. Existing opted-in Semuta claim/pass completes
+the same physical discard before the changed queue resumes. Native requests,
+quotas and response ownership remain; Basic/unstamped concurrent Revival and
+other Sapho scopes retain their contracts. Recovered-card reuse has no invented
+once-per-phase cap. No module or complete-mode gate opens.
+[Source, behavior and evidence](ADVANCED_REVIVAL_ORDER.md#sapho-firstlast--26-october-2026).
+
 ## Advanced Revival player order — 26 October 2026
 
 Supplied authorized revision physical9/printed7 expressly orders **Force
@@ -13,8 +31,8 @@ the adjacent “in addition” leader paragraph. It is not separately printed
 whole-phase ordering. Native reactions/support remain with their authorized
 responder; Emperor-funded extra forces use the beneficiary's opportunity.
 Card effects, Nexus and special Karama retain distinct timing. Explicit Finish
-withdraws an outstanding own leader negotiation. Sapho's additional adapter
-follows separately; no full-mode gate opens.
+withdraws an outstanding own leader negotiation. The later Sapho adapter above
+uses that native opportunity; no full-mode gate opens.
 [Source, behavior and evidence](ADVANCED_REVIVAL_ORDER.md).
 
 ## Sandmaster flight and concealed-marker collection — 26 October 2026

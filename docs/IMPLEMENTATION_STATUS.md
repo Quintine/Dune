@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 26 October 2026 — Sapho first/last in ordered Advanced Revival
+
+**Prototyped / Partial.** Apply printed first/last to unfinished Advanced Revival
+opportunities. Original physical order and completed turns remain; a started
+current player finishes first under explicit provisional queued timing. Actual
+card use upgrades only that phase to version2 public history with bound boundary/
+revision; replay cannot unlock a started player or reopen a completed turn.
+Native start/finish retain history. New Semuta continuation completes the same
+discard through pass/claim before the queue resumes. Clean/queued labels and
+actual callbacks use existing card/scope/event/mode fields; minimal policies use
+shared options. Original version1 creation and legacy concurrent timing remain.
+
+Frozen **16-file211/211**, types/lint/build and **ten runtime paths** with18
+GameTable SSR renders and actual Sapho/Finish callbacks pass on unchanged source.
+Eight paths are native: actual public R/A/E/G +choam cache1 (44 source actions),
+paid normal1 shipment2 and later card1 Storm death/free1 return (101), clean/
+started first/last and all four minimal profiles. Each native continuation uses
+one card plus four actual Finish actions, retaining45 Treachery identities and
+native return/quotas. Two controlled conserved-card Semuta sources claim/pass
+the actual discard; their acquisitions are explicitly supplemental.
+
+Feedback selects legal original dials preserving the real First Player for the
+later return, honors Basic's existing Semuta window before Extortion answers,
+corrects name selectors and narrows control-test types. Report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-sapho-revival-order-proof-v3/`;
+journeys/HTML: adjacent `20261026-sapho-revival-order-runtime/`. No saved-room/
+D1/server, reset/restart, deployment or recovery operation. Browser/mobile,
+deployed, full combinations and complete-mode acceptance remain due.
+[Source and protocol](ADVANCED_REVIVAL_ORDER.md#sapho-firstlast--26-october-2026).
+
 ## 26 October 2026 — Advanced native Revival player order
 
 **Prototyped / Partial.** Adopt supplied Advanced physical9/printed7 First

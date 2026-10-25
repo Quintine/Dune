@@ -10,7 +10,7 @@ type Props = { game: GameView; act: (action: Action) => void; busy: boolean };
 export function revivalTurnOrderBlock(game: GameView): string | null {
   const order = game.revivalOrder;
   if (!game.advanced || !order) return null;
-  if (order.version !== 1 || order.turn !== game.turn || game.status !== 'playing' || game.phase !== 4)
+  if ((order.version !== 1 && order.version !== 2) || order.turn !== game.turn || game.status !== 'playing' || game.phase !== 4)
     return 'This Revival turn is no longer current.';
   if (!game.players.some(player => player.id === game.me) || !order.original.includes(game.me))
     return 'This seat has no Revival turn in the current order.';
@@ -62,8 +62,9 @@ export function RevivalTurn({ game, act, busy }: Props) {
     <p>Completed Revival turns: {order.completed.map(name).join(', ') || 'None yet'}.</p>
     <p className="fine" aria-label="Provisional Revival grouping">
       Provisional grouping: finish your force, leader and Kwisatz Haderach revival
-      choices together before ending your turn. Revival turns follow the printed
-      storm order for forces. Tleilaxu can still answer another player’s requests.
+      choices together before ending your turn. Revival turns begin in the printed
+      storm order for forces. Juice of Sapho may change the remaining order;
+      completed Revival turns stay finished. Tleilaxu can still answer another player’s requests.
     </p>
     {blocked && <output className="fine block">{blocked}</output>}
     <FinishRevivalTurn game={game} act={act} busy={busy} />

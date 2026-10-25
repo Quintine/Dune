@@ -153,6 +153,10 @@ export function completeSaphoExtortion(fixture: SaphoExtortionFixture, mode: 'fi
   const actions: SaphoExtortionStep[] = [], answers: { before: Game; step: SaphoExtortionStep; after: Game }[] = [];
   const previous = saphoExtortionAnswer(game, false), action = saphoExtortionAction(game, mode);
   game = actSaphoExtortion(game, fixture.owner, action, actions);
+  // Public Basic Richese now keeps its actual Semuta discard opportunity.
+  // Complete those native all-seat passes before answering the same payer.
+  if (game.pendingTreacheryDiscard)
+    game = advanceSaphoExtortion(game,saphoExtortionPending,actions);
   const ordered = structuredClone(game);
   for (let count = 0; game.moritaniExtortion && count < fixture.game.players.length; count++) {
     assert.ok(saphoExtortionPending(game));

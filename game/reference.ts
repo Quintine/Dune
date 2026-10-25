@@ -46,7 +46,7 @@ export const PHASE_HELP = [
   'Reveal a spice blow, resolve worms and card responses, then finish any Nexus and Fremen rides.',
   'Claim charity once if below two spice. Advanced Bene Gesserit receives two spice regardless of wealth. Then mark yourself ready.',
   'Bid or pass in turn. A winning bidder chooses how to pay before income and bonus-card responses resolve.',
-  'Return eligible forces and leaders from the tanks to your reserves. New Advanced Revival phases proceed from the First Player counterclockwise: finish your own force and leader choices before the next player acts. Basic and already-opened older phases retain their current readiness timing.',
+  'Return eligible forces and leaders from the tanks to your reserves. New Advanced Revival phases begin from the First Player counterclockwise; Sapho may change unfinished positions. Finish your own force and leader choices before the next player acts. Basic and already-opened older phases retain their current readiness timing.',
   'Ship before moving. Select a destination sector and, for a move, the forces leaving one territory.',
   'Choose a battle, resolve faction powers, seal plans, decide traitors, then choose which winning cards to keep.',
   'Forces collect spice in their own sector. Review the results, then continue to Mentat Pause.',
@@ -501,9 +501,10 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Between completed battles, choose first or last among remaining battle choosers. The priority lasts for the rest of the Battle phase. You still need a real unresolved battle. Others may choose battles against you before your own turn; last is not immunity. This scope changes the chooser, not each battle’s aggressor or tie advantage.',
       'In a fresh Richese battle, use unreserved Sapho at a clean boundary before both combatants finish final battle actions, including after sealed plans and revealed declarations. Habbanya still precedes ordinary aggressor tie priority. Participants, plans, promises, weapon choices and votes do not swap or replay. Older battles retain their pre-plan opportunity.',
       'During a clean native Extortion payer decision, use Sapho to take your optional choice first/last among unanswered non-Moritani players. Earlier declines, collected bank5 and the one-payment3 limit remain. The next payer event changes even when that player stays next. You may decline instead of paying.',
+      'During ordered Advanced Revival, take your unfinished opportunity first or last, then discard Sapho. If the current player has already begun a native return or negotiation, provisional queued timing lets that player finish unchanged; first means first among the later unstarted turns. You cannot split your own started turn, repeat a completed turn or consume the card for a position you already hold. Basic and older concurrent Revival phases have no ordered scope.',
       'Finish existing shipment, movement, card preparation and pending decisions before changing order. The exact Extortion payer window is a supported exception for its own order only. Your hand panel lists available choices. Reserved cards and positions you already hold cannot be selected.',
       'Completed bids and turns stay completed. Storm order, committed funding and movement counters do not reset. Refreshing preserves the same remaining opportunities and any declared last position.',
-      'In the explicitly opted-in Semuta preview, clean Once Around and movement-order discards pause after their bidder/turn queues reorder; a clean between-battles chooser discard pauses after changing battle priority but before the next chooser acts; an aggressor discard pauses after changing ordinary tie priority. Fresh late continuations also bind revealed choices and the public final revision; old continuation bytes remain unchanged. Every seat receives the same neutral offer. Claim or decline moves only the used card or leaves it discarded; each committed queue or unresolved battle continues once. Direct combined late claim/capture proof remains open.',
+      'In the explicitly opted-in Semuta preview, clean Once Around, movement and ordered-Revival discards pause after their queues reorder; a clean between-battles chooser discard pauses after changing battle priority but before the next chooser acts; an aggressor discard pauses after changing ordinary tie priority. Revival retains its current participant, requests and allowances through claim/pass. Fresh late continuations also bind revealed choices and the public final revision; old continuation bytes remain unchanged. Every seat receives the same neutral offer. Claim or decline moves only the used card or leaves it discarded; each committed queue or unresolved battle continues once. Direct combined late claim/capture proof remains open.',
       'Both combatants receive the same persistent final battle opportunity after original votes and native late defense, regardless of held cards or result. Finish explicitly; a Sapho priority change clears both finish marks with a fresh event. The second finish closes priority before Stone counts and outcome settlement. This shared online procedure, cyclic lot duration and queued movement timing are provisional conventions. Other phase ordering and splitting your own started combined turn remain unfinished. Silent bids retain simultaneous timing and storm tie order.',
     ],
     example:
@@ -519,7 +520,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Finite Once Around, current-lot cyclic bidding, clean combined-turn and queued unstarted-tail movement, remaining battle-choice and late aggressor modes are connected. Queued movement retains the started actor, resources/counters and native Guild choice; exact Semuta disposal preserves that same current actor. Tail timing is visibly provisional. Other phases and split-own-turn mode remain unfinished.',
+          'Finite Once Around, current-lot cyclic bidding, clean/queued movement and ordered Advanced Revival, remaining battle-choice and late aggressor modes are connected. Queued timing retains the started actor; Revival keeps its requests/allowances and separate physical order through exact Semuta disposal. Tail timing is visibly provisional. Other phases and split-own-turn mode remain unfinished.',
       },
       {
         area: 'Player controls',
@@ -546,6 +547,11 @@ export const RULE_TOPICS: RuleTopic[] = [
           '18 October Extortion:9-file115/115, types/lint/build and six original-action/rendered-table programmes pass. Public Basic/Advanced cache1, placed/revealed Terror, paid entry1, native Mentat placement-before-bank5 and an earlier decline use120/139 source actions. First/payment3 and last/payment3 or all-decline use2–4 continuations, preserving one payment and native token retirement/rotation. Four profiles make eight legal holder/payer proposals and complete. Pure replay/no-op/recovered reuse cases are separate. One deliberate-invalid-mode test cast was repaired; all checks then passed. Prior Guild, aggressor and cyclic evidence remains in linked feature docs. No browser clicks, visual/deployed, direct combined Semuta claim/capture, complete-mode or final-assurance acceptance',
         evidence: [
           'game/sapho-movement-order.ts',
+          'game/revival-order.ts',
+          'tests/sapho-revival-order.test.ts',
+          'tests/fixture-sapho-revival-order.ts',
+          'tests/sapho-revival-order-engine.test.ts',
+          'tests/sapho-revival-order-controls.test.tsx',
           'tests/sapho-movement-order.test.ts',
           'tests/sapho-started-movement-controls.test.tsx',
           'tests/fixture-sapho-started-movement.ts',
@@ -3789,7 +3795,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Tleilaxu can answer another player’s request, grant a larger limit or offer an ally discount outside its own turn. Fremen can grant allied free revival. Emperor can fund its ally’s extra forces during that ally’s opportunity. Finish every accepted return and its required responses before ending the turn.',
       'Choose Finish Revival turn when done. An unanswered leader request is withdrawn by this explicit finish. Completed native turns stay finished. Card effects, Nexus cards, special Karama and their responses keep their separate timing; taking part in a response does not consume your own turn.',
       'Basic retains concurrent readiness. An already-opened older Advanced Revival finishes its saved readiness timing; the next new Advanced Revival uses player order. This does not redeal or restart a game.',
-      'Sapho’s additional Revival-order adapter remains unfinished. Full Advanced games, optional combinations and final multiplayer/deployed acceptance remain open.',
+      'Sapho may change an unfinished Revival position first or last. A started current player finishes first under visibly provisional queued timing. Native requests, allowances and completed turns remain; only the remaining queue changes. Full Advanced games, optional combinations and final multiplayer/deployed acceptance remain open.',
     ],
     checklist: [
       {area:'Implementation',status:'Partial',detail:'Fresh Advanced Revival has one current native opportunity, explicit completion and retained response ownership. Leader grouping is an explicit composition; Basic and unstamped current phases retain prior timing.',evidence:['game/revival-order.ts','game/engine.ts']},

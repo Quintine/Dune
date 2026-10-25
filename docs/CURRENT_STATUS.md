@@ -16,6 +16,34 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Sapho in ordered Advanced Revival — 26 October. Prototyped / Partial.**
+First/last changes unfinished opportunities, preserving physical First Player
+order and completed participants. A started current player finishes first under
+visibly provisional tail timing. Actual card disposal upgrades the phase frame
+to version2 public use history; original version1 creation/bytes remain. Native
+start/finish retain the changed queue, requests and allowances. Existing opted-in
+Semuta claim/pass completes the same physical discard before play resumes.
+Named clean/queued controls and existing minimal policies use shared options.
+
+Three disjoint helper/native/control lanes and root integration pass **16 files,
+211/211**, types/lint/build and **ten runtime paths**,18 GameTable SSR renders
+and actual selected-props Sapho/Finish callbacks. Eight paths are native: public
+R/A/E/G +choam earns Sapho for1 (44 source actions), then actual normal1 shipment
+for2, later card-Storm death and free1 return (101) exercise clean/started first
+and last. Four minimal profiles each use one real card and four Finish actions.
+Native45 Treachery identities, current returned counter/quotas and physical order
+remain. Two labelled controlled-card Semuta paths prove actual discard pass/claim;
+their acquisitions have no native played chronology claim.
+
+Feedback uses legal first-Storm dials to keep the actual First Player through
+the later card1, completes Basic's existing Semuta window before Extortion payer
+answers, corrects name selectors and narrows control-test types. Frozen report:
+`/home/quintine/.local/share/dune/checkpoints/20261026-sapho-revival-order-proof-v3/`;
+journeys/HTML: adjacent `20261026-sapho-revival-order-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+SSR/callback proof leaves browser/mobile/deployed and full-mode acceptance open.
+The full goal remains unfinished. [Source, protocol and evidence](ADVANCED_REVIVAL_ORDER.md#sapho-firstlast--26-october-2026).
+
 **Advanced Revival player order — 26 October. Prototyped / Partial.** Supplied
 Advanced physical9/printed7 explicitly orders Force Revival from the First
 Player counterclockwise. New Advanced phases now connect that native order,
@@ -45,7 +73,7 @@ Combined report/manifest:
 journeys/HTML: adjacent `20261026-advanced-revival-order-runtime/`.
 No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
 SSR/callback proof does not establish browser/mobile/deployed or full-mode
-acceptance. Sapho's additional Revival adapter follows this native prerequisite;
+acceptance. The later Sapho checkpoint above uses this native prerequisite;
 the full goal remains unfinished. [Source and contract](ADVANCED_REVIVAL_ORDER.md).
 
 **Independent-effect delivery inventory — 26 October. Prototyped / Partial.**
@@ -60,8 +88,8 @@ legal policies finds connected first versions for the following families:
 | Independent Ecaz cards | Recruits, Reinforcements and Harass & Withdraw, including normal selection/deal; [variant contract](ECAZ_TREACHERY_RULES.md). | Provisional accounting/timing, excluded profiles and full-mode acceptance. |
 
 This is code-traced delivery evidence; no new tests or runtime journeys were
-run for the inventory. The latest executable proof remains the Sandmaster
-checkpoint below. Older absence labels in catalogue metadata and dated source
+run for the inventory. Newer executable checkpoints appear above. Older absence
+labels in catalogue metadata and dated source
 audits must be checked against the connected paths before assigning new work.
 The next scoping pass targets specific missing timing/source functions and
 excluded faction/module integrations. Full rules compliance, final assurance,

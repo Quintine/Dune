@@ -1,6 +1,6 @@
 # Juice of Sapho: finite ordering implementation
 
-Updated 18 October 2026. **Partial card implementation; full modes and
+Updated 26 October 2026. **Partial card implementation; full modes and
 publication acceptance remain gated.** The earlier source audit remains the
 printed-evidence baseline. The current-lot prototype below selects an explicit
 provisional cyclic convention under the 14 October choose-recommended direction;
@@ -12,6 +12,27 @@ contract supersede the earlier absence of that mode below. The
 [aggressor prototype](SAPHO_AGGRESSOR.md) now includes clean late intervention
 and a fixed public final opportunity in fresh Richese battles; old battles keep
 their early protocol.
+
+## Ordered Advanced Revival — 26 October 2026
+
+**Prototyped / Partial.** First/last now applies to the unfinished opportunities
+of the [native Advanced Revival](ADVANCED_REVIVAL_ORDER.md#sapho-firstlast--26-october-2026).
+A clean unstarted current player may move last; another unstarted holder may
+move first or last. If a native request has started the current opportunity,
+visibly provisional queued timing keeps that participant first and changes
+only its later unstarted tail. Completed turns stay complete; native quotas,
+requests and physical First Player order remain. Basic and older concurrent
+phases receive no invented sequence.
+
+Actual card disposal upgrades that phase to validated version2 use history.
+Original version1 frames retain their bytes and native behavior. Current actor,
+completed/remaining opportunities and started state bind the exact event and
+use revision. The opted-in Semuta continuation claims or leaves the physical
+discard before the same queue resumes. A legal recovered card can be used
+again at a new meaningful position; there is no extra once-per-phase cap.
+Shared options feed existing minimal policies and named clean/queued controls.
+Native/source and controlled continuation evidence remain distinct in the
+linked contract; full card/mode/deployed acceptance remains unfinished.
 
 ## Order after a started combined turn — 25 October 2026
 
