@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 26 October 2026 — Independent-effect delivery inventory
+
+**Prototyped / Partial.** Three disjoint read-only traces inspect actual
+helpers, engine handlers, owned controls and minimal legal policies for all10
+Richese cache effects, all6 Moritani Terror effects and the independent3-card
+Ecaz variant, including its normal selection/deal. Each family has connected
+first versions; no missing standalone primitive was established. The earlier
+inventory records all28 Leader Skill bands. Current-dashboard wording now
+distinguishes these delivered primitives from remaining timing/source policies,
+excluded combinations and full-mode acceptance.
+
+This documentation checkpoint adds no implementation or runtime evidence.
+Existing Partial classifications, provisional rulings and mode/publication gates
+remain. No tests, saved-room/D1/server, reset/restart, deployment or recovery
+operations occur. Link/anchor review and whitespace checks cover the changed
+documentation. The latest executable proof remains the Sandmaster checkpoint
+below. [Current scope and evidence](CURRENT_STATUS.md#current-checkpoint-and-work).
+
 ## 26 October 2026 — Sandmaster flight and concealed-marker routes
 
 **Prototyped / Partial.** Physical range3/twoGroups, carried Discovery and the
