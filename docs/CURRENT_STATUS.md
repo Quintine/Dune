@@ -16,6 +16,45 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on Richese cancellation costs — 25 October. Prototyped / Partial.**
+Printed-role Karama stopping the compulsory cache auction or allied Richese
+gift now offers its exact used cost before native prevention finishes. Claim/
+pass cannot undo that use, transfer the prevented gift, recount the ordinary
+pool or reopen the cache opportunity. The native typed continuation preserves
+cache stock/frozen count and independent Black Market reduction, or the exact
+gift/recipient and suspended parent. Existing neutral controls, private choice,
+full-hand exchange and minimal policies serve both sources. New tagged receipt
+kinds bind those original sources; no producer action or cost discard replays.
+[Source and boundaries](SEMUTA_SOURCE_UPDATE_20260907.md#richese-cancellation-costs--25-october-2026).
+
+Two disjoint native-source lanes, bounded read-only review and root integration
+pass **20 files,235/235**, types/lint/build and **20 actual native engine/
+GameTable SSR/real Semuta-callback journeys** on unchanged source. Twelve cache
+and ten gift cases cover Basic/Advanced claim/pass, first/last cache, actual
+Black Market reduction, full4 exchange, pending EmperorIncome1, stale/foreign/
+underlying replies and all four minimal profiles. Cache prefixes94/101 earn
+Semuta through paid cache1; Advanced108 actually sells an original Black Market
+card for1 and restores frozen ordinary3 rather than4. Gift prefixes121/128
+earn both cache cards through real Silent1/zero submissions and accept actual
+Worm2 alliance. Parent116/123 retains native income; full130/137 buys normal1
+and keeps hand4 after exchange. All45 physical cards remain; no played hand,
+wallet, force, clock, alliance or pending frame is installed.
+
+Source feedback uses Silent for the paid Richese self-purchases because Once
+Around closes automatically when only its owner remains. Related206/219 finds
+older Ix/Moritani producers skipping the shared final battle readiness. Their
+drivers now submit the real owned readiness actions before cleanup; mechanical
+substitution/retention assertions stay. Types require explicit reaction/card
+narrowing only. The stale repeat-cache warning is corrected from current native
+guards, without a blanket ban on later unrelated Karama. Existing gift-retry
+protection remains. Private report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261025-semuta-richese-reaction-typed/`;
+journeys/HTML: adjacent `20261025-semuta-richese-runtime/`.
+No saved-room/D1/server/reset/restart/deployment/recovery operation occurs.
+These are engine/SSR/callback results, not hydration, DOM/browser/mobile or
+deployed evidence. Other printed cancellation producers, broader valid
+combinations, complete modes and final assurance remain unfinished.
+
 **Sapho behind a started combined turn — 25 October. Prototyped / Partial.**
 An unstarted holder may now provisionally reorder only later unstarted turns
 behind another actor's begun combined turn. That actor finishes unchanged;

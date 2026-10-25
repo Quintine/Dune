@@ -2,6 +2,75 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Richese cancellation costs — 25 October 2026
+
+**Prototyped / Partial.** Printed-role Karama stopping the compulsory Richese
+cache auction or an allied Richese card gift now offers that exact used cost
+through the original neutral Semuta response. This follows the existing used-
+card timing convention: disposal precedes the native prevention continuation.
+Claim/pass moves only the cost; it does not undo its use or replay the attempt.
+The generic persistent controls, exact private candidate choice and minimal
+legal profiles remain. A Worthless conversion retains its separate existing
+lane; this is not new conversion immunity or Kull admission.
+
+`karamaRicheseAuctionDiscard` binds the original undealt declaration, frozen
+before-cache/ordinary counts, independent completed Black Market reduction,
+cache/deck/order and source controls. After claim/pass, native prevention marks
+the cache canceled and prepares the original ordinary pool once. It neither
+recounts capacity after Karama leaves a hand nor removes a cached card.
+
+`karamaRicheseGiftDiscard` binds the exact pending private gift/recipient,
+existing prevention history and native suspended parent. The donor retains the
+prevented card; the recipient gets none. Original cancellation history and
+parent restoration execute once through the existing typed Karama continuation.
+Recovering the spent cost cannot transfer that gift, cancel its prevention or
+replay a paid purchase/income. The gift face remains within existing ally-only
+inspection. New tagged exceptions permit only this original live gift frame;
+the native gift/cancellation validators remain authoritative.
+
+The old decision-index observation about a second cache cancellation was stale:
+current validation already requires an uncanceled declaration with no dealt
+pool; completion marks canceled and advances its stage. A later Karama may
+legitimately target a different native response, such as Atreides inspection.
+No blanket prohibition or newly discovered publisher repeat ruling is added.
+Existing same-card gift retry protection is unchanged.
+
+Evidence: [cache source](../tests/fixture-semuta-richese-cache-karama.ts),
+[cache cases](../tests/semuta-richese-cache-karama-engine.test.ts),
+[gift source](../tests/fixture-semuta-richese-gift-karama.ts),
+[gift cases](../tests/semuta-richese-gift-karama-engine.test.ts).
+Full combinations, recovery/privacy/custody assurance and deployed acceptance
+remain open; this does not certify complete Semuta or faction modes.
+
+Frozen **20 files,235/235**, types/lint/build and twenty actual native engine/
+GameTable SSR/real Semuta callback journeys pass on unchanged source. New
+cache12/gift10 cases cover both rules bands, first/last, claim/pass, actual
+Black Market reduction, full4 exchange, an original EmperorIncome1 parent,
+underlying/stale/foreign rejection and all four minimal profiles.
+
+Native cache prefixes94 Basic/101 Advanced earn Semuta through a paid cache1
+purchase and reach a later original declaration; Advanced108 actually sells
+an original Black Market card for1, retaining its frozen3 count. Gift121/128
+earns Semuta and Distrans through two real Silent auctions (Richese1, others0)
+and accepts an actual Worm2 alliance. Parent116/123 keeps the native paid-cache
+income1 response; full130/137 adds a real normal1 purchase and exchanges at
+hand4. Initial deal and unopened stock/lotteries are selected explicitly;
+no played-state custody, resource, clock, alliance or receipt is installed.
+Original45-card inventory remains physical in all twenty journeys.
+
+First gift source feedback selects Silent because native Once Around closes
+an owner-only unbid remainder; no paid self-bid is fabricated. Related206/219
+reveals older Ix/Moritani fixtures stopping before shared final battle readiness.
+They now submit both real owned readiness actions before original cleanup,
+retaining all substitution/retention assertions. Test-only reaction/card typing
+is corrected. No production rule or guard is weakened for a green check.
+Private matching source-bound report:
+`/home/quintine/.local/share/dune/checkpoints/20261025-semuta-richese-reaction-typed/report.json`;
+journeys and HTML in adjacent `20261025-semuta-richese-runtime/`.
+No saved-room/database/server/reset/restart/deployment/recovery operation occurs.
+Engine/SSR/callback evidence does not certify hydration, DOM/browser/mobile,
+full combinations, complete modes or exact-revision deployed acceptance.
+
 ## Basic shared Ambassador and Terror arrival — 24 October 2026
 
 **Prototyped / Partial.** The existing bare Basic Richese profile now admits

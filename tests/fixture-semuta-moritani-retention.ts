@@ -4,6 +4,7 @@ import { botActions } from '../game/bots';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import type { Difficulty } from '../game/bot-profiles';
 import type { Card } from '../game/cards';
+import { finishSemutaBattleOutcome } from './fixture-semuta-homeworld-choam';
 
 export type SemutaMoritaniStep = { actor: string; action: Action };
 export type SemutaMoritaniOptions = { winnerMandatory?: boolean; karamaHolder?: 'r' | 'm' | 'w' | 'l'; semutaHolder?: 'r' | 'l' };
@@ -115,7 +116,7 @@ export function resolveSemutaMoritaniBattle(f: SemutaMoritaniFixture, actions?: 
   game = semutaMoritaniAct(game, { actor: 'l', action: { type: 'battlePlan', dial: 0, support: 0,
     leader: f.loserLeader, weapon: f.weapon, defense: f.defense } }, actions);
   for (const actor of ['w', 'l']) game = semutaMoritaniAct(game, { actor, action: { type: 'traitorCall', call: false } }, actions);
-  return game;
+  return finishSemutaBattleOutcome(game, actions);
 }
 export function passSemutaMoritaniDiscard(game: Game, actions?: SemutaMoritaniStep[]): Game {
   const event = game.pendingTreacheryDiscard!.batch.event;

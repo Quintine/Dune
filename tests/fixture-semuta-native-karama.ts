@@ -9,6 +9,7 @@ import {
   finishSemutaMoritaniWinner, chooseSemutaMoritaniRetention,
   type SemutaMoritaniFixture,
 } from './fixture-semuta-moritani-retention';
+import { finishSemutaBattleOutcome } from './fixture-semuta-homeworld-choam';
 
 export type SemutaNativeKaramaStep = { actor: string; action: Action };
 export type SemutaNativeKaramaFixture = {
@@ -101,6 +102,7 @@ export function semutaNativeKaramaPreCost(f: SemutaNativeKaramaFixture, actions?
   game = semutaNativeKaramaAct(game, { actor: ix.winner, action: { type: 'decision', activate: true } }, actions);
   for (const actor of [ix.winner, ix.loser])
     game = semutaNativeKaramaAct(game, { actor, action: { type: 'traitorCall', call: false } }, actions);
+  game = finishSemutaBattleOutcome(game, actions);
   assert.deepEqual(game.pendingTreacheryDiscard?.batch.entries.map(entry => entry.card.id), [ix.snooper]);
   game = semutaNativeKaramaReact(game, f, false, actions);
   assert.equal(game.decision?.kind, 'ixSubstitution');
