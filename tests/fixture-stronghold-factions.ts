@@ -144,6 +144,10 @@ export function nextStrongholdFactionsNativeStep(game: Game): StrongholdFactions
     }
     if (game.phase === 3 && game.auction) return { actor: game.auction.active, action: { type: 'passBid' } };
     if (game.phase === 5) return { actor: game.active!, action: { type: 'endMovement' } };
+    if (game.phase === 4 && game.revivalOrder) {
+      const actor = game.revivalOrder.remaining[0];
+      return actor ? {actor,action:{type:'ready'}} : null;
+    }
     if ([1, 2, 4, 7, 8].includes(game.phase) || (game.phase === 0 && game.stormPending !== null)) {
       const actor = game.players.find(p => !game.ready.includes(p.id))?.id;
       if (actor) return { actor, action: { type: 'ready' } };

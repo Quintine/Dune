@@ -1,5 +1,12 @@
 # Six-base-faction Advanced readiness audit
 
+**26 October follow-up:** supplied Advanced physical9/printed7 orders Force
+Revival from the First Player counterclockwise. A fresh-phase cutover now
+connects that native queue, controls and minimal policies, with explicit
+force/leader grouping and unchanged Basic/already-opened legacy timing.
+[Current contract and evidence](ADVANCED_REVIVAL_ORDER.md). This supersedes
+the original concurrent Revival behavior without certifying complete Advanced.
+
 Read-only runtime audit, 7 September 2026. Scope is classic GF9 Advanced with any valid selection of the six original factions, two through six players, **no expansion and no optional module**. This document does not enable a mode or certify complete rules compliance. It reads the full active goal and preserves its wider twelve-faction scope.
 
 ## Finding

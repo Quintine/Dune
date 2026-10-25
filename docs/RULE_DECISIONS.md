@@ -1,5 +1,22 @@
 # Rule decision index
 
+## Advanced Revival player order — 26 October 2026
+
+Supplied authorized revision physical9/printed7 expressly orders **Force
+Revival** from the First Player counterclockwise. Newly opened Advanced
+Revival phases now use that source. Basic and an already-opened unstamped
+Advanced phase retain their prior readiness timing; no live conversion occurs.
+
+Keeping native leader/KH/foreign-Ghola choices and requester negotiations inside
+the same participant opportunity is an explicit implementation composition of
+the adjacent “in addition” leader paragraph. It is not separately printed
+whole-phase ordering. Native reactions/support remain with their authorized
+responder; Emperor-funded extra forces use the beneficiary's opportunity.
+Card effects, Nexus and special Karama retain distinct timing. Explicit Finish
+withdraws an outstanding own leader negotiation. Sapho's additional adapter
+follows separately; no full-mode gate opens.
+[Source, behavior and evidence](ADVANCED_REVIVAL_ORDER.md).
+
 ## Sandmaster flight and concealed-marker collection — 26 October 2026
 
 Compose the moving-forces normal band with both physical Ornithopter modes,

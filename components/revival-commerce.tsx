@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { Action, GameView } from '@/game/engine';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { revivalTurnOrderBlock } from './revival-turn';
 export function RevivalCommerce({
   game: g,
   act,
@@ -18,6 +19,7 @@ export function RevivalCommerce({
   const [selection, setSelection] = useState('');
   const [prices, setPrices] = useState<Record<string, number>>({});
   if (!tleilaxu) return null;
+  const orderBlocked = revivalTurnOrderBlock(g);
   const name = (id: string) =>
     id === 'kwisatz'
       ? 'Kwisatz Haderach'
@@ -43,6 +45,7 @@ export function RevivalCommerce({
                 Your native skilled leader keeps its own assignment.
               </p>
             )}
+            {orderBlocked && <p className="fine">{orderBlocked}</p>}
             {g.players
               .filter((p) => p.id !== me.id)
               .flatMap((p) => p.leaders)
@@ -57,21 +60,18 @@ export function RevivalCommerce({
                 const cost = g.revival.discount
                   ? Math.ceil(l.strength / 2)
                   : l.strength;
+                const unavailable = busy || !!orderBlocked ||
+                  cost > (me.spice ?? 0) || me.gholaBlocked?.includes(l.id) ||
+                  me.leaders.filter(leader => !leader.dead && controlsLeader(me, leader)).length >= 5;
                 return (
                   <Button
                     key={l.id}
                     variant="outline"
-                    disabled={
-                      busy ||
-                      cost > (me.spice ?? 0) ||
-                      me.gholaBlocked?.includes(l.id) ||
-                      me.leaders.filter(
-                        (leader) => !leader.dead && controlsLeader(me, leader),
-                      ).length >= 5
-                    }
-                    onClick={() =>
-                      act({ type: 'reviveForeignGhola', leader: l.id })
-                    }
+                    disabled={unavailable}
+                    onClick={() => {
+                      if (!unavailable && !revivalTurnOrderBlock(g))
+                        act({ type: 'reviveForeignGhola', leader: l.id });
+                    }}
                   >
                     Revive {l.name} as a ghola · {cost} spice
                   </Button>
@@ -93,9 +93,10 @@ export function RevivalCommerce({
                   g.revivalRules.limitBlocked ||
                   g.revivalRules.expanded.includes(p.id)
                 }
-                onClick={() =>
-                  act({ type: 'tleilaxuRevivalLimit', target: p.id })
-                }
+                onClick={() => {
+                  if (!busy && !g.revivalRules.limitBlocked && !g.revivalRules.expanded.includes(p.id))
+                    act({ type: 'tleilaxuRevivalLimit', target: p.id });
+                }}
               >
                 Allow five revivals
               </Button>
@@ -108,7 +109,10 @@ export function RevivalCommerce({
               g.revivalRules.discountBlocked ||
               g.revivalRules.allyDiscount === me.ally
             }
-            onClick={() => act({ type: 'tleilaxuAllyDiscount' })}
+            onClick={() => {
+              if (!busy && !g.revivalRules.discountBlocked && g.revivalRules.allyDiscount !== me.ally)
+                act({ type: 'tleilaxuAllyDiscount' });
+            }}
           >
             Offer ally half-price revival
           </Button>
@@ -134,20 +138,20 @@ export function RevivalCommerce({
             </label>
             <Button
               disabled={busy}
-              onClick={() =>
-                act({
+              onClick={() => {
+                if (!busy) act({
                   type: 'quoteLeaderRevival',
                   target: id,
                   amount: prices[id] ?? 0,
-                })
-              }
+                });
+              }}
             >
               Quote this price
             </Button>
             <Button
               variant="outline"
               disabled={busy}
-              onClick={() => act({ type: 'declineLeaderRevival', target: id })}
+              onClick={() => { if (!busy) act({ type: 'declineLeaderRevival', target: id }); }}
             >
               Decline request
             </Button>
@@ -181,6 +185,7 @@ export function RevivalCommerce({
         A request and its quoted price are visible only to you and Tleilaxu. No
         spice is paid until you accept and the response resolves.
       </p>
+      {orderBlocked && <p className="fine">{orderBlocked}</p>}
       {request ? (
         <>
           <p>
@@ -193,16 +198,21 @@ export function RevivalCommerce({
           </p>
           {request.price !== null && !request.declined && (
             <Button
-              disabled={busy || request.price > (me.spice ?? 0)}
-              onClick={() => act({ type: 'acceptLeaderRevival' })}
+              disabled={busy || !!orderBlocked || request.price > (me.spice ?? 0)}
+              onClick={() => {
+                if (!busy && !revivalTurnOrderBlock(g) && request.price! <= (me.spice ?? 0))
+                  act({ type: 'acceptLeaderRevival' });
+              }}
             >
               Accept revival price
             </Button>
           )}
           <Button
             variant="outline"
-            disabled={busy}
-            onClick={() => act({ type: 'cancelLeaderRequest' })}
+            disabled={busy || !!orderBlocked}
+            onClick={() => {
+              if (!busy && !revivalTurnOrderBlock(g)) act({ type: 'cancelLeaderRequest' });
+            }}
           >
             Withdraw request
           </Button>
@@ -214,6 +224,7 @@ export function RevivalCommerce({
             <select
               id="revival-request-leader"
               value={selection}
+              disabled={busy || !!orderBlocked}
               onChange={(e) => setSelection(e.target.value)}
             >
               <option value="">Choose a dead leader</option>
@@ -229,10 +240,11 @@ export function RevivalCommerce({
             </select>
           </label>
           <Button
-            disabled={busy || !selection}
-            onClick={() =>
-              act({ type: 'requestLeaderRevival', leader: selection })
-            }
+            disabled={busy || !!orderBlocked || !selection}
+            onClick={() => {
+              if (!busy && !revivalTurnOrderBlock(g) && selection)
+                act({ type: 'requestLeaderRevival', leader: selection });
+            }}
           >
             Request a quote
           </Button>

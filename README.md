@@ -19,6 +19,12 @@ or use the same selector as host in an existing lobby. Everyone must
 ready again after changing rules, then the host chooses **Begin Advanced preview**.
 This mode is unfinished; see [preview scope and limits](docs/ADVANCED_PREVIEW.md).
 
+New Advanced Revival phases follow First Player order counterclockwise. Finish
+your native force and leader choices with **Finish Revival turn** before the
+next player acts; support responses keep their own authorized actors. Basic
+and already-opened older Revival phases retain their current readiness timing.
+See [Revival source and preview scope](docs/ADVANCED_REVIVAL_ORDER.md).
+
 Choose expansion families when creating the room. Before starting, the host can
 select **Leader Skills**, **Ecaz Treachery Cards** (the independent three-card
 variant), **Nexus Cards**, **Discoveries**, **Homeworlds**, **Tech Tokens** or

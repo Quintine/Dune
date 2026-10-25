@@ -3189,8 +3189,6 @@ function policyActions(g: GameView): Action[] {
         prevention.targets.some(choice => choice.player === player.id && !choice.blocked));
       if (target) return [{ type: 'card', mode: 'special', card: prevention.cards[0], target: target.id }];
     }
-    if (g.revival.prevented)
-      return g.ready.includes(me.id) ? [] : [{ type: 'ready' }];
     const actions: Action[] = [];
     const tleilaxu = g.players.find((p) => p.faction === 'tleilaxu');
     const ordinaryLeaderAvailable = g.revival.leaders.some((l) => !l.early);
@@ -3365,13 +3363,21 @@ function policyActions(g: GameView): Action[] {
       actions.push({ type: 'reviveLeader', leader: leader.id });
     if (
       !g.ready.includes(me.id) &&
-      !(
+      (g.revival.prevented || !(
         g.revivalRequests[me.id]?.price === null &&
         !g.revivalRequests[me.id]?.declined
-      )
+      ))
     )
       actions.push({ type: 'ready' });
-    return actions;
+    return actions.filter(action => {
+      if (['revive','reviveLeader','reviveKwisatz','reviveForeignGhola','requestLeaderRevival',
+        'acceptLeaderRevival','cancelLeaderRequest','ready'].includes(action.type))
+        return !g.revival.orderBlocked &&
+          (action.type === 'ready' || action.type === 'cancelLeaderRequest' || !g.revival.prevented);
+      if (action.type === 'emperorRevival' && g.revivalOrder)
+        return g.revivalOrder.remaining[0] === me.ally;
+      return true;
+    });
   }
   if (g.phase === 5) {
     const kulon = choamPowerBotPlay(g, 'kulon', (card) => technologyCardValue(g, card));

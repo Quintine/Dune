@@ -172,6 +172,7 @@ import { IxHomeworldRevivalBonus } from './ix-homeworld-revival';
 import { controlsLeader } from '@/game/leader-control';
 import { leaderStrengthLabel, harvesterAvailable } from '@/game/cards';
 import { RevivalCommerce } from './revival-commerce';
+import { RevivalTurn } from './revival-turn';
 import { FaceDanceDecision } from './face-dance-decision';
 import { CHEAP_HERO_TRAITOR, matchingTraitor } from '@/game/traitors';
 import {
@@ -4374,6 +4375,7 @@ export function GameTable({
               )}
               {g.phase === 4 && (
                 <>
+                  <RevivalTurn game={g} act={act} busy={busy} />
                   {g.revival.prevented && (
                     <p className="notice">
                       Tleilaxu prevented your force and leader revivals for
@@ -4501,6 +4503,7 @@ export function GameTable({
                               elite: ally.elites ? allyEliteAmount : 0,
                             },
                             cost > (me.spice ?? 0) ||
+                              (!!g.revivalOrder && g.revivalOrder.remaining[0] !== ally.id) ||
                               amount > 3 - (g.emperorExtra[ally.id] ?? 0),
                           )}
                         </div>
@@ -4512,7 +4515,7 @@ export function GameTable({
                       {
                         type: 'reviveKwisatz',
                       },
-                      !g.revival.kwisatz.affordable,
+                      !!g.revival.orderBlocked || !g.revival.kwisatz.affordable,
                     )}
                   {(g.emperorExtra[me.id] ?? 0) > 0 && (
                     <p className="fine">
@@ -4535,7 +4538,7 @@ export function GameTable({
                             )
                           : undefined,
                     },
-                    g.revival.prevented ||
+                    !!g.revival.orderBlocked || g.revival.prevented ||
                       !me.tanks ||
                       eliteAmount > g.revival.eliteRemaining ||
                       amount > g.revival.forcesRemaining ||
@@ -4620,7 +4623,7 @@ export function GameTable({
                                 type: 'reviveLeader',
                                 leader: selectedRevival?.id ?? '',
                               },
-                              !selectedRevival?.affordable,
+                              !!g.revival.orderBlocked || !selectedRevival?.affordable,
                             )}
                           </>
                         );
@@ -5778,7 +5781,7 @@ export function GameTable({
                   )}
                 </>
               )}
-              {[1, 2, 4, 7, 8].includes(g.phase) &&
+              {[1, 2, 4, 7, 8].includes(g.phase) && !(g.phase === 4 && g.revivalOrder) &&
                 actionButton(
                   g.ready.includes(me.id)
                     ? 'Waiting for the table'

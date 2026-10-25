@@ -241,11 +241,19 @@ void test('actual dealt Hajr retires once and the final native end still applies
   const actor = fixture.actor;
   const card = game.players.find(p => p.id === actor)!.hand.find(c => c.effect === 'hajr')!;
   const own = group(game, actor, fixture.lossTerritories);
+  // Advanced Hajr follows a completed movement. Earn that native window with
+  // one ordinary counter; the remaining shared group still has a real loss.
+  game = settleAdvancedSourceResponses(applyAction(game,actor,{type:'move',
+    from:'imperial_basin:9',amount:1,territory:'shield_wall',sector:9,elite:0}));
   game = applyAction(game, actor, {type: 'card', card: card.id});
-  assert.deepEqual(group(game, actor, fixture.lossTerritories), own);
+  const remaining = group(game,actor,fixture.lossTerritories);
+  assert.equal(remaining.amount,own.amount-1);
+  assert.ok(remaining.amount>0);
+  assert.equal(remaining.tanks,own.tanks);
   assert.equal(game.discard.filter(c => c.id === card.id).length, 1);
   assert.ok(game.hajr.includes(actor));
   game = applyAction(reload(game), actor, {type: 'endMovement'});
-  assert.equal(group(game, actor, fixture.lossTerritories).tanks, own.tanks + own.amount);
+  assert.equal(group(game, actor, fixture.lossTerritories).tanks, own.tanks + remaining.amount);
+  assert.equal(game.players.find(p=>p.id===actor)!.forces['shield_wall:9'],1);
   assert.equal(game.discard.filter(c => c.id === card.id).length, 1);
 });

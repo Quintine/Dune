@@ -16,6 +16,38 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Advanced Revival player order — 26 October. Prototyped / Partial.** Supplied
+Advanced physical9/printed7 explicitly orders Force Revival from the First
+Player counterclockwise. New Advanced phases now connect that native order,
+ordinary returns, negotiations and explicit Finish. Grouping native leader/KH/
+foreign-Ghola choices in the same opportunity is an explicit composition.
+Required responders remain authorized out of turn; Emperor-funded extras use
+the beneficiary's opportunity. Basic and an already-opened unstamped phase keep
+their readiness timing. Card/Nexus/special-Karama timing remains distinct.
+Persistent actor/remaining/completed controls and guarded Finish feed minimal
+policies, including a prevented Tleilaxu still answering another request.
+
+Three disjoint helper/native/control lanes and root integration pass **12 files,
+105/105**, types/lint/build and **nine runtime paths**,13 GameTable SSR renders
+and actual selected-props Finish callbacks. Seven paths are native: E/A/T +ix first
+Revival (41 source actions), actual paid normal1 shipment for2, next card Storm
+loss and turn-two free return (99), Basic readiness (38), and four minimal
+policies completing in5 further actions each. Native47 Treachery identities,
+ordinary return and separate Tleilaxu bank1 remain. Two labelled controlled
+old-envelope/leader-death paths supplement that played evidence.
+
+Feedback repairs stale source-driver readiness and Hajr timing, mistaken
+Storm-dial/compulsory-income-pause assumptions, semantic status markup and a
+nullable test ledger. Tests/types/lint/build pass in `proof-v5`; correcting only
+the private Vinext SSR loader produces runtime `proof-v6` on identical source.
+Combined report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-advanced-revival-order-proof-v6/`;
+journeys/HTML: adjacent `20261026-advanced-revival-order-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+SSR/callback proof does not establish browser/mobile/deployed or full-mode
+acceptance. Sapho's additional Revival adapter follows this native prerequisite;
+the full goal remains unfinished. [Source and contract](ADVANCED_REVIVAL_ORDER.md).
+
 **Independent-effect delivery inventory — 26 October. Prototyped / Partial.**
 A bounded read-only trace of the helpers, engine, owned controls and minimal
 legal policies finds connected first versions for the following families:

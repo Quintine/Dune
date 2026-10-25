@@ -1,4 +1,6 @@
 import { ordinaryDiscardIncomeMatches } from './ordinary-discard-income';
+import { createRevivalOrder, validateRevivalOrder, revivalOrderBlock, startRevivalOrder,
+  finishRevivalOrder, RevivalOrderError, type RevivalOrder } from './revival-order';
 import { semutaTerminalArrivalSupported } from './semuta-terminal-arrival';
 import { semutaDisasterArrivalSupported } from './semuta-disaster-arrival';
 import { semutaAdvisorArrivalSupported } from './semuta-advisor-arrival';
@@ -1307,6 +1309,7 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  revivalOrder?: RevivalOrder;
   pendingAutomaticAdvisorFlips?: AutomaticAdvisorFlipSource[];
   pendingAutomaticAdvisorTransport?: AutomaticAdvisorTransport;
   pendingAutomaticAdvisorGamont?: { receipt: AutomaticAdvisorGamont; card: string; nexusEvent?: string };
@@ -17990,6 +17993,7 @@ function earlyGroundMovementPolicy(g: Game, player: Player): Action[] | null {
   const current = completion.early?.find(step => step.phase === g.phase)?.action;
   if (g.decision?.kind === 'auctionPayment')
     return [current?.type === 'decision' ? current : { type: 'decision', karama: false }];
+  if (g.phase === 4 && nativeRevivalOrderBlock(g,player.id)) return [];
   if (g.phase === 2 || g.phase === 4) return current ? [current] : g.ready.includes(player.id) ? [] : [{ type: 'ready' }];
   return null;
 }
@@ -17998,13 +18002,13 @@ function movementTruthAnswers(g: Game, p: Player, claim: MovementClaim): TruthAn
   const answers: TruthAnswer[] = [];
   for (const answer of [true, false]) {
     const promise = { ...claim, turn: g.turn, player: p.id, asker: g.players.find(other => other.id !== p.id)!.id, answer };
-    const answerSource = g.phase === 2 || g.phase === 4 ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
+    const answerSource = g.phase === 2 || (g.phase === 4 && !g.revivalOrder) ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
     if (groundMovementCompletion(answerSource, p.id, [...live, promise])) answers.push(answer ? 'yes' : 'no');
   }
   return answers.length ? answers : ['unknown'];
 }
 function bindMovementTruth(g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) {
-  if ((g.phase === 2 || g.phase === 4) && g.ready.includes(p.id)) {
+  if ((g.phase === 2 || (g.phase === 4 && !g.revivalOrder)) && g.ready.includes(p.id)) {
     g.ready = g.ready.filter(id => id !== p.id);
     log(g, `${p.name} has a new Truthtrance movement commitment and must confirm readiness again after any needed preparation.`);
   }
@@ -23556,7 +23560,7 @@ function advancePhase(g: Game) {
     requireRule(!g.moritaniExtortion, 'Settle Extortion before leaving Mentat Pause.');
   if (g.phase === 6) boardResolution(() => quoteBattlePhaseAdvance(g));
   commitPhaseResources(g, currentPhaseResources(g));
-  g.ready = [];
+  if (!(g.phase === 4 && g.revivalOrder)) g.ready = [];
   g.active = null;
   const choam = byFaction(g, 'choam');
   if (g.phase === 8 && choam) {
@@ -23595,6 +23599,10 @@ function finishEcazPlacement(g: Game) {
 }
 function completePhase(g: Game) {
   if (closeNexusCards(g)) return;
+  if (g.phase === 4 && g.revivalOrder) {
+    delete g.revivalOrder;
+    g.ready = [];
+  }
   if (g.phase === 6) {
     delete g.battleOrder;
     delete g.battleOrderUseEvents;
@@ -23632,6 +23640,33 @@ function openPhase(g: Game, initialize = true) {
   if (g.expansions.includes('ix')) g.phaseOpening = { passed: [], initialize };
   else if (initialize) beginPhase(g);
 }
+function revivalOrderContext(g: Game) {
+  return {turn:g.turn,order:g.order,ready:g.ready};
+}
+function revivalOrderRule<T>(calculate: () => T): T {
+  try { return calculate(); }
+  catch (error) {
+    if (error instanceof RevivalOrderError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function revivalOrderIntegrity(g: Game) {
+  if (!g.revivalOrder) return;
+  requireRule(g.advanced && g.status === 'playing' && g.phase === 4,
+    'The ordered Revival belongs to its original Advanced phase.');
+  revivalOrderRule(() => validateRevivalOrder(revivalOrderContext(g),g.revivalOrder!));
+  requireRule(g.active === (g.revivalOrder.remaining[0] ?? null),
+    'Revival must retain its current player through the complete opportunity.');
+}
+function nativeRevivalOrderBlock(g: Game, player: string): string | null {
+  return g.revivalOrder
+    ? revivalOrderRule(() => revivalOrderBlock(revivalOrderContext(g),g.revivalOrder!,player))
+    : null;
+}
+function startNativeRevivalOrder(g: Game, player: string) {
+  if (g.revivalOrder)
+    g.revivalOrder = revivalOrderRule(() => startRevivalOrder(revivalOrderContext(g),g.revivalOrder!,player));
+}
 function beginPhase(g: Game) {
   if (g.phase === 0) {
     g.auditorInsight = null;
@@ -23660,6 +23695,11 @@ function beginPhase(g: Game) {
       p.revived = 0;
       p.freeForcesRevived = 0;
       p.leaderRevived = false;
+    }
+    if (g.advanced) {
+      g.revivalOrder = revivalOrderRule(() => createRevivalOrder(revivalOrderContext(g)));
+      g.active = g.revivalOrder.remaining[0] ?? null;
+      log(g, 'Advanced Force Revival proceeds from the First Player counterclockwise. Finish your Revival turn after your native force and leader choices; authorized responses and card timing remain available.');
     }
   }
   if (g.phase === 3) setAuction(g);
@@ -26152,6 +26192,7 @@ function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string
   }
   return revivalSeeds.map(seed => {
     seed.game.phase = 5; seed.game.ready = []; seed.game.karamaShipping = null;
+    delete seed.game.revivalOrder;
     const p = getPlayer(seed.game, owner); p.shipped = false; p.moved = 0;
     return seed;
   });
@@ -26356,6 +26397,7 @@ function earlyShipmentGuidance(g: Game, p: Player): { preparation: { actions: Ac
       ? [{type:'richeseBid',event:lot.event,amount:lot.method === 'silent' ? 0 : null,allyPayment:0}] : []};
     return { preparation: null, policy: g.auction?.active === p.id ? [{ type: 'passBid' }] : [] };
   }
+  if (g.phase === 4 && nativeRevivalOrderBlock(g,p.id)) return {preparation:null,policy:[]};
   if (g.phase === 2 || g.phase === 4)
     return { preparation: current ? { actions: [current] } : null,
       policy: current ? [current] : g.ready.includes(p.id) ? [] : [{ type: 'ready' }] };
@@ -26373,8 +26415,8 @@ function shipmentTruthAnswers(
       ...prior,
       { ...claim, turn: g.turn, player: p.id, asker: '', answer },
     ];
-    // A new commitment reopens its respondent's owned Charity/Revival Ready.
-    const answerSource = g.phase === 2 || g.phase === 4
+    // Concurrent legacy readiness can reopen; a completed ordered turn cannot.
+    const answerSource = g.phase === 2 || (g.phase === 4 && !g.revivalOrder)
       ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
     if (findShipmentCompletion(answerSource, p, promises))
       answers.push(answer ? 'yes' : 'no');
@@ -26389,7 +26431,7 @@ function bindShipmentTruth(
   asker: string,
   mixed?: MixedShipmentExpression,
 ) {
-  if ((g.phase === 2 || g.phase === 4) && g.ready.includes(p.id)) {
+  if ((g.phase === 2 || (g.phase === 4 && !g.revivalOrder)) && g.ready.includes(p.id)) {
     g.ready = g.ready.filter(id => id !== p.id);
     log(g, `${p.name} has a new Truthtrance shipment commitment and must confirm readiness again after completing any needed preparation.`);
   }
@@ -34289,6 +34331,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  revivalOrderIntegrity(state);
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
   if (state.spiceBankerIncomePreview) {
@@ -34541,6 +34584,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   arrivalOverlapIntegrity(g);
   guildBetrayalIntegrity(g);
   harkonnenNexusBetrayalIntegrity(g);
+  revivalOrderIntegrity(g);
   return g;
 }
 function finishActionContinuations(g: Game) {
@@ -37592,6 +37636,7 @@ function applyActionInner(
         g.phase === 4,
         'Extra revivals are available during Revival.',
       );
+      if (execution === 'live') startNativeRevivalOrder(g,recipient.id);
     }
     const maximum =
       t === 'emperorGift'
@@ -37700,6 +37745,8 @@ function applyActionInner(
       'Tleilaxu leader negotiations require the Revival phase.',
     );
     g.revivalRequests ??= {};
+    if (execution === 'live' && t !== 'quoteLeaderRevival' && t !== 'declineLeaderRevival')
+      startNativeRevivalOrder(g,id);
     if (t === 'cancelLeaderRequest') {
       delete g.revivalRequests[id];
       return g;
@@ -37783,6 +37830,7 @@ function applyActionInner(
       g.advanced && g.phase === 4 && p.faction === 'tleilaxu',
       'Foreign gholas require advanced Tleilaxu during Revival.',
     );
+    if (execution === 'live') startNativeRevivalOrder(g,id);
     requireRule(action.leader !== DUKE_VIDAL_ID,
       'Only Ecaz may revive Duke Vidal, including with Ghola.');
     const leader = g.players
@@ -37826,6 +37874,7 @@ function applyActionInner(
   }
   if (t === 'revive') {
     requireRule(g.phase === 4, 'Revival is not the current phase.');
+    if (execution === 'live') startNativeRevivalOrder(g,id);
     const n = integer(action.amount, 1, forceRevivalRemaining(g, p), 'Forces');
     const elite = eliteChoice(n, p.tanks, p.elites?.tanks ?? 0, action.elite);
     requireRule(
@@ -37876,6 +37925,7 @@ function applyActionInner(
       g.phase === 4 && (!p.leaderRevived || p.faction === 'tleilaxu'),
       'Only one leader revival is permitted this phase.',
     );
+    if (execution === 'live') startNativeRevivalOrder(g,id);
     requireRule(
       !revivalPrevented(g, p.id),
       'Tleilaxu prevented this faction’s normal revivals for this turn.',
@@ -38836,6 +38886,12 @@ function applyActionInner(
       'Complete the current phase action first.',
     );
     requireRule(!g.ready.includes(id), 'You are already ready.');
+    if (g.phase === 4 && g.revivalOrder) {
+      g.revivalOrder = revivalOrderRule(() => finishRevivalOrder(revivalOrderContext(g),g.revivalOrder!,id));
+      g.active = g.revivalOrder.remaining[0] ?? null;
+      if (g.revivalRequests) delete g.revivalRequests[id];
+      log(g, `${p.name} finished their Revival turn.`,{faction:p.faction,name:'Revival turn complete'});
+    }
     g.ready.push(id);
     if (g.ready.length === g.players.length) {
       if (g.phase === 0) startStormMovement(g, g.stormPending!);
@@ -38850,6 +38906,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  revivalOrderIntegrity(state);
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
   harkonnenNexusBetrayalIntegrity(state);
@@ -39711,7 +39768,9 @@ export function viewGame(state: Game, id: string) {
         ([player]) => player === id || me.faction === 'tleilaxu',
       ),
     ),
+    revivalOrder: g.revivalOrder ? structuredClone(g.revivalOrder) : null,
     revival: {
+      orderBlocked: nativeRevivalOrderBlock(g,id),
       pending: !!g.pendingRevival,
       specialKaramaBlock: null,
       leaders: leaderRevivals.leaders,

@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 26 October 2026 — Advanced native Revival player order
+
+**Prototyped / Partial.** Adopt supplied Advanced physical9/printed7 First
+Player/counterclockwise Force Revival order for fresh phases. Native self
+returns, requester negotiations and explicit Finish use the current participant;
+leader/KH/foreign-Ghola grouping is visible implementation composition. Required
+support/response actors retain their permissions; Emperor-funded extras use the
+beneficiary's opportunity. Basic and already-opened unstamped phases retain
+readiness. Card/Nexus/special-Karama timing stays distinct. Controls show the
+public order and guard actual Finish; minimal policies preserve responder quotes
+even when their own returns are prevented. Early commitments cannot reopen
+completed native turns.
+
+Frozen **12-file105/105**, types/lint/build and **nine runtime/control paths**
+with13 GameTable SSR renders pass: seven native and two labelled controlled
+supplements. Genuine E/A/T +ix source programmes use41 first-Revival actions,
+99 through paid normal1 shipment2 and later card-Storm death/free return, and38
+for Basic. Four policies complete ordered Revival in5 further actions each.
+Native47 Treachery identities, one ordinary return and separate Tleilaxu bank1
+remain. Feedback repairs source-driver readiness, stale Hajr timing, source
+Storm/income assumptions, semantic markup and a nullable test ledger. The private
+SSR loader correction changes no application source; `proof-v5` checks and
+`proof-v6` runtime share the exact source tree.
+
+Combined report/manifest: `/home/quintine/.local/share/dune/checkpoints/20261026-advanced-revival-order-proof-v6/`;
+journeys/HTML: adjacent `20261026-advanced-revival-order-runtime/`. No saved-room/
+D1/server, reset/restart, deployment or recovery operation. Browser/mobile,
+deployed and full-mode acceptance remain due; Sapho's additional adapter follows
+the native prerequisite. [Source and scope](ADVANCED_REVIVAL_ORDER.md).
+
 ## 26 October 2026 — Independent-effect delivery inventory
 
 **Prototyped / Partial.** Three disjoint read-only traces inspect actual
