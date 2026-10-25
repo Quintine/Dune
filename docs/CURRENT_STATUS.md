@@ -16,6 +16,46 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on Homeworld, battle and Face Dance conversions — 26 October. Prototyped / Partial.**
+Existing `karamaAdvisorFlipDiscard` now offers exact printed-role costs after
+committed typed Homeworld transport, completed battle losses and completed Face
+Dance replacement. Pure native validators retain original parent/queue, physical
+results and cleanup. Claim/pass applies only conversion denial, then resumes the
+original turn, winner-card choice or aftermath once. Producer-specific signature
+additions keep earlier formats. No live battle or unfinished mandatory-cost guard
+is relaxed; existing persistent controls/minimal bots serve the new sources.
+
+Three disjoint source lanes and root integration pass **13 files,151/151**,
+types/lint/build and **ten native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Twenty-two new cases cover five original sources,
+claim/pass, native allowance, exact custody/cleanup, source rejection and four
+profiles. Homeworld86/81 uses original Advanced R/C/BG/A/G with lobby-selected
+Worlds, cache1 and dealt A Karama: G5→Junction costs3; actual high-Junction sponsor
+and A10→Caladan cost5. Deposits/fees stay committed before the original shipper
+really ends its turn. Battle85/90 uses R/C/BG/A/H, actual A9/H1 movement and an
+unsupported last A normal: Shield/dial0.5/support0. Normal and genuine mutual
+Traitors preserve actual losses; a winner's held Shield stays outside the fresh
+group, then native cleanup keeps it through real controls. Face Dance325 uses
+R/C/BG/T/A/E and selected CHOAM+Ix: actual deferred A9/E10 funds T5→24, real T20
+shipment/battle loss exhausts reserves, and the original matching Face Dancer
+actually returns A9/kills its leader before conversion. Claim/pass preserves that
+spent card/cycle and completes aftermath/Collection once. All45/57 Treachery cards
+remain physical; no played hand, army, stance, wallet, custody, clock, card, battle
+or parent is installed.
+
+Narrow feedback moves the World-custody assertion from undealt setup to actual
+afterSetup; native initialization stays unchanged. Traitor selection uses the
+actual registered pool, including native Auditor handling, rather than a fixed
+count. Other matching/relocation/spiritual parents, broader modules and complete
+modes/final assurance remain open.
+
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-advisor-aftermath-proof/`;
+journeys/HTML: adjacent `20261026-semuta-advisor-aftermath-runtime/`.
+No room/D1/server, reset/restart, deployment or recovery operation occurs. These
+are engine, SSR and component-callback results; DOM/hydration, browser/mobile and
+deployed/final acceptance remain open. [Source and scope](SEMUTA_SOURCE_UPDATE_20260907.md#homeworld-battle-and-face-dance-conversion-costs--26-october-2026).
+
 **Semuta on committed transport, Gamont and Storm conversions — 26 October. Prototyped / Partial.**
 `karamaAdvisorFlipDiscard` now offers the exact used cancellation cost for
 mandatory conversions after Guild cross/return, Trip to Gamont and current-sector

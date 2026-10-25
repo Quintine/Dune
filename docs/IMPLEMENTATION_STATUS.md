@@ -1,5 +1,41 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta on World, battle and Face Dance conversion costs
+
+**Prototyped / Partial.** Existing advisor cost continuation retains committed
+typed World transport, completed battle losses and completed Face Dance through
+fresh claim/pass. Pure native parent validation keeps payment/custody, casualties,
+card obligations and actual return/replacement. Only conversion denial runs before
+original turn/cleanup/aftermath. Producer-specific signatures preserve earlier
+formats; live-battle and unfinished mandatory-cost guards remain. Existing
+persistent controls/minimal bots serve the new sources; mode gates stay intact.
+[Source and scope](SEMUTA_SOURCE_UPDATE_20260907.md#homeworld-battle-and-face-dance-conversion-costs--26-october-2026).
+
+Three disjoint source lanes and root integration pass **13 files,151/151**,
+types/lint/build and **ten native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Twenty-two new cases cover five original sources,
+claim/pass, native allowance, source rejection, exact custody/cleanup and four
+profiles. Actual cache1 and dealt Karama supply all45/57-card sources. World86/81
+earns the real lobby module, native G5→Junction3 or sponsored A10→Caladan5,
+preserves paid typed deposits and closes only the original shipper turn.
+Battle85/90 earns actual A9/H1 movement, unsupported last A normal at dial0.5,
+original Thufir5/Shield versus Iakin2, and separately real mutual-Traitor votes.
+The actual registered pool includes Auditor handling; a winner's held Shield is
+never fresh and remains through real optional cleanup. Face Dance325 earns
+actual deferred19/T5→24, real20 shipment/battle loss and reserve exhaustion,
+then actual zero-source replacement returns A9/kills its leader/reveals the
+held dancer before conversion and native Collection. No played state, card,
+custody, loss, clock, outcome or parent is installed.
+
+Narrow feedback asserts World custody after actual setup, keeping undealt setup
+null; production initialization and source rules stay intact.
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-advisor-aftermath-proof/`;
+journeys/HTML: adjacent `20261026-semuta-advisor-aftermath-runtime/`.
+No room/D1/server, reset/restart, deployment or recovery operation occurs.
+DOM/hydration, browser/mobile, other advisor parents/modules, complete modes and
+deployed/final assurance remain open.
+
 ## 26 October 2026 — Semuta on committed transport, Gamont and Storm costs
 
 **Prototyped / Partial.** Existing advisor-conversion cost continuation now

@@ -6089,7 +6089,7 @@ function semutaAdvisorFlipKaramaResponse(g: Game, response: ResponseWindow, play
       (!!g.pendingAutomaticAdvisorFlips?.length !== !!response.automaticAdvisorFlip)) return false;
   if ((g.auction || g.richeseAuction) && !response.advisorPreparationSource) return false;
   if (response.automaticAdvisorFlip &&
-      g.pendingAutomaticAdvisorFlips?.some(source => !['groundMovement','guildTransport','gamont','storm'].includes(source.producer))) return false;
+      g.pendingAutomaticAdvisorFlips?.some(source => !['groundMovement','guildTransport','gamont','storm','homeworldTransport','battleLosses','faceDance'].includes(source.producer))) return false;
   const context: Game = {...g,pendingTreacheryDiscard:null,response};
   try {
     // Native source quotes validate denial without requiring the spent card,
@@ -6354,6 +6354,19 @@ function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinu
       dials:g.stormDials, dialers:g.stormDialers, card:g.stormCard, known:g.stormCardKnown,
       spice:g.spice, wall:g.shieldWallDestroyed,
       ecological:g.ecologicalStorm, maker:g.greatMaker,
+    } : advisorProducer === 'homeworldTransport' ? {
+      homeworld:g.pendingAutomaticAdvisorHomeworldTransport, custody:g.homeworlds,
+      occupation:g.homeworldOccupationHistory, percentages:g.homeworldOccupiedPercentageLedger,
+      income:g.pendingHomeworldOccupiedIncome,
+    } : advisorProducer === 'battleLosses' ? {
+      battle:g.pendingAutomaticAdvisorBattle, context:g.lastBattleContext,
+      cards:g.pendingWinnerDiscards, rescue:g.pendingSukRescue,
+      capture:g.pendingCapture, auditor:g.pendingAuditor, income:g.pendingChoamBattleIncome,
+      tech:g.pendingTech, faceDance:g.pendingFaceDance,
+    } : advisorProducer === 'faceDance' ? {
+      faceDance:g.pendingAutomaticAdvisorFaceDance, context:g.lastBattleContext,
+      pending:g.pendingFaceDance, custody:g.homeworlds,
+      players:g.players.map(p => ({id:p.id, faceDancers:p.faceDancers, replaced:p.faceDancerReplacedTurn})),
     } : undefined,
     order: g.order,
     players: g.players.map(p => ({

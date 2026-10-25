@@ -2,6 +2,99 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Homeworld, battle and Face Dance conversion costs — 26 October 2026
+
+**Prototyped / Partial.** Existing `karamaAdvisorFlipDiscard` now offers fresh
+printed-role cancellation costs for mandatory conversion after typed Homeworld
+transport, completed battle losses and completed Face Dance replacement. Existing
+persistent neutral controls, private claim/pass and minimal legal profiles serve
+these sources. This extends the original
+[conversion contracts](ADVISOR_AUTOMATIC_FLIPS.md), not source authority, native
+rule calculations or mode admission. Continuously-alone duration retains its
+existing provisional policy.
+
+The original [automatic-conversion validator](../game/advisor-automatic-flip.ts)
+and native private-parent validators remain authoritative. Battle conversion
+still requires the actual completed battle, all mandatory costs finished and
+its original cleanup cursor. Face Dance still requires completed reveal, return/
+replacement and card cycle. Homeworld transport still validates its original paid
+source and typed deposit. No live battle, pending return or unfinished card cost
+becomes eligible merely because Semuta exists. Preflight executes no producer,
+conversion or cleanup. Producer-specific signature additions bind only these new
+parents, preserving earlier receipt bytes.
+
+After the fresh group retires, restore the original response and apply native
+denial once:
+
+- Homeworld transport keeps actual fee, normal/elite sources and typed deposit.
+  Conversion denial retains the held advisors; native completion consumes the
+  original private transport parent before its existing arrival/turn suffix.
+  No payment, custody transfer, approval or transport replays.
+- Battle losses keep actual casualties, plans/votes, bounty and previous card
+  disposal. The original winner-card list stays an obligation, not another fresh
+  discard. Denial keeps the advisor hold, then the original optional winner-card
+  reply/aftermath resumes once. Allowance changes only the held group's stance.
+- Face Dance keeps the actually returned army, killed leader, revealed spent
+  dancer and completed physical card cycle. Denial preserves the held advisor
+  occurrence and resumes native aftermath. It creates neither another Face
+  Dance nor replacement counters that the source did not supply.
+
+Three disjoint source lanes, bounded native/diff review and root integration pass
+**13 files,151/151**, types/lint/build and **ten native engine/GameTable SSR/
+actual Semuta-callback journeys** on unchanged source. Twenty-two new cases cover
+five sources, claim/pass, allowance, exact typed custody/cleanup, source rejection
+and four minimal profiles. Every cost uses original setup, real cache1 Semuta and
+originally dealt Karama. All45/57 Treachery cards remain physical; no played hand,
+army, stance, wallet, custody, clock, card, battle, receipt or parent is installed.
+
+Homeworld86/81 uses fresh Advanced R/C/BG/A/G with the real lobby World option and
+original Semuta World initializer. Actual BG advisors coexist with native G5 at
+Tuek's or A10 at Arrakeen. G takes its real early turn and returns5 to Junction
+for3; the other source earns actual G Wait/high-Junction sponsorship and returns
+A10 to Caladan for5. Original permission/rate/income choices complete before
+conversion; actual shipper endMovement closes only that turn. Both paid typed
+deposits survive cost claim/pass unchanged.
+
+Battle85/90 uses original Advanced R/C/BG/A/H. R holds the original Karama;
+CHOAM actually buys Semuta. Actual A9 and H1 movements leave one A normal beside
+BG's advisor at Arrakeen. A's original Thufir5/Shield, dial0.5/support0 defeats
+unarmed Iakin2/dial0 while spending its unsupported last normal. The separate
+mutual-Traitor source uses native registered Traitor setup and actual held
+opposing identities/votes. Its permutation derives the real pool including
+native Auditor handling, without an assumed count. Earlier mandatory disposal
+gets only real passes. Normal cleanup keeps the still-held Shield through an
+actual discard-empty reply; both sources then reach native Collection7.
+
+Face Dance325 uses original Advanced R/C/BG/T/A/E, CHOAM+Ix57 and no other modules.
+Actual T1 A9/E10 bribes defer19 until real Mentat collection, taking native T5 to24.
+T really ships20 to Arrakeen for20. A's real unarmed5/dial1/support1 beats T's weak
+leader/dial0; all T20 enter Tanks and reserves are truly empty. The actually held
+matching Face Dancer, supplied no replacement source, returns A9, kills the
+winning leader and completes its reveal/cycle before the BG counter. Denial
+preserves this result through Collection; allowance earns native fighter income.
+The exhausted stock and earlier payments/losses are never assigned to simulate
+an outcome.
+
+Narrow feedback fixes only the World fixture's clock: custody is undealt/null
+in original setup and asserted after actual setup completes. Production
+initialization, source guards and rule calculations remain unchanged. Other
+matching, relocation/spiritual parents, broader modules, complete modes and
+final assurance remain open.
+
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-advisor-aftermath-proof/`;
+journeys/HTML: adjacent `20261026-semuta-advisor-aftermath-runtime/`.
+No room/D1/server, reset/restart, deployment or recovery operation occurs. These
+are engine, SSR and actual component callbacks; DOM/hydration, browser/mobile
+and deployed/final acceptance remain open.
+
+Evidence: [World sources](../tests/fixture-semuta-advisor-homeworld.ts),
+[World cases](../tests/semuta-advisor-homeworld-engine.test.ts),
+[battle sources](../tests/fixture-semuta-advisor-battle.ts),
+[battle cases](../tests/semuta-advisor-battle-engine.test.ts),
+[Face Dance source](../tests/fixture-semuta-advisor-face-dance.ts) and
+[Face Dance cases](../tests/semuta-advisor-face-dance-engine.test.ts).
+
 ## Committed transport, Gamont and Storm conversion costs — 26 October 2026
 
 **Prototyped / Partial.** The existing `karamaAdvisorFlipDiscard` now offers
