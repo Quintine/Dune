@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Existing-ally Ecaz Ambassador Duke acquisition — 26 October 2026
+
+Connect printed Ambassador benefit sharing (publisher E3 p8, authorized
+Advanced physical30,F) to the current reciprocal ally. Under 14 October
+choose-recommended authority, use ordinary direct-acquisition tenure until battle
+use, including unused persistence, rather than the new-alliance turn loan.
+Existing source `ecaz` identifies that direct power for either recipient; no new
+source kind or standing transfer action is added. Fresh entry/token/current
+alliance, same-recipient no-op, physical custody, occupied-Ecaz priority and
+Ecaz-only revival remain checked. This tenure composition is visibly provisional,
+not a publisher worked example or complete mode admission.
+[Source and execution](ECAZ_DUKE_ACQUISITION.md#existing-ally-direct-acquisition--26-october-2026).
+
 ## Caladan reinforcement before Face Dance — 26 October 2026
 
 Under the 14 October choose-recommended authority, grant the original winning

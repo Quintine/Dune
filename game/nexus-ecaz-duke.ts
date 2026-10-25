@@ -297,7 +297,7 @@ export function validateNexusEcazDuke(
         (before.source === 'moritani' &&
           (g.players.find(player => player.id === before.controller)?.faction !== 'moritani' ||
             before.acquiredTurn !== receipt.turn)) ||
-        ((before.source === 'ecaz' || before.source === 'ecazNexus') &&
+        (before.source === 'ecazNexus' &&
           g.players.find(player => player.id === before.controller)?.faction !== 'ecaz') ||
         (before.source === 'ecazNexus' && before.acquiredTurn !== receipt.turn)) ||
     before.controller === receipt.owner ||
@@ -345,7 +345,7 @@ function validateCapturedReceipt(g: Game, receipt: CapturedReceipt, index: numbe
       : !controller || !turn(before.acquiredTurn) || before.acquiredTurn > receipt.turn ||
         !['moritani', 'ecaz', 'ecazNexus', 'ally'].includes(before.source as string) ||
         (before.source === 'moritani' && controller.faction !== 'moritani') ||
-        ((before.source === 'ecaz' || before.source === 'ecazNexus') && controller.faction !== 'ecaz')) ||
+        (before.source === 'ecazNexus' && controller.faction !== 'ecaz')) ||
     !(hidden === null || (object(hidden) &&
       keys(hidden, 'captor,controller,dead,deaths,usedAt') &&
       hidden.captor === leader.capturedBy && hidden.dead === false &&

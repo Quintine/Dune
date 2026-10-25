@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 26 October 2026 — Existing-ally Ecaz Ambassador Duke acquisition
+
+**Prototyped / Partial.** Connect the printed benefit-sharing branch to the
+current reciprocal ally at a fresh Ecaz-token entry. Reuse ordinary source
+`ecaz` as the granting power with until-battle tenure, including unused control
+across turns. Keep the distinct new-alliance `ally` loan turn-long; this shared
+composition is explicitly provisional under 14 October authority. Per-recipient
+private controls, authoritative blockers and all four minimal profiles are
+connected. Preserve same-disc identity/history, occupied-Ecaz priority, Ecaz-only
+revival, exceptional custody and table/profile restrictions. Later Ecaz Cunning
+receipts admit ordinary shared tenure without changing native Nexus tenure.
+
+Frozen **19-file189/189**, types/lint/build and **four native engine/GameTable
+SSR/actual hook-free callback journeys** pass. Genuine public Basic92/Advanced104-
+action sources earn self acquisition, unused turn-end retention, Nexus alliance
+and fresh entry with Ecaz holding Duke. The actual ally choice resumes the
+entrant; a real Duke battle releases the same disc, while the alternate native-
+leader battle retains unused Duke into turn3. All33 physical Treachery and12
+Nexus cards remain. Pure/control supplements cover recipient/custody guards,
+projection/busy/foreign behavior and current living/captured Nexus receipts.
+Feedback repaired obsolete self-only bot expectations, test array intersections,
+one now-valid ordinary-source receipt mutation and an unused fixture import.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261026-ecaz-duke-ally-proof-v5/`;
+journeys/HTML: adjacent `20261026-ecaz-duke-ally-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation. SSR and
+leaf callbacks do not claim DOM/hydration or browser/mobile/deployed acceptance.
+Complete rules/combinations, mode gates and final assurance remain open.
+[Source and selected tenure](ECAZ_DUKE_ACQUISITION.md#existing-ally-direct-acquisition--26-october-2026).
+
 ## 26 October 2026 — Caladan reinforcement before Face Dance
 
 **Prototyped / Partial.** Select optional original-winner reinforcement before

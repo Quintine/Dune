@@ -30,6 +30,21 @@ function game(advanced = false): Game {
   } as unknown as Game;
 }
 
+void test('Ecaz Cunning validates an ordinary Ambassador acquisition held by another seated recipient', () => {
+  // Controlled prior custody: ordinary sharing can outlast the earlier alliance.
+  const g = game();
+  g.dukeVidal = acquireDuke(g.dukeVidal!, 'atreides-seat', 2, 'ecaz');
+  assert.equal(quoteNexusEcazDuke(g, 'ecaz-seat')!.blocked, null);
+  const record = createNexusEcazDukeReceipt(g, 'ecaz-seat');
+  assert.equal(record.before.controller, 'atreides-seat');
+  assert.equal(record.before.source, 'ecaz');
+  g.dukeVidal = acquireDuke(g.dukeVidal!, 'ecaz-seat', g.turn, 'ecazNexus');
+  g.nexusCards!.cards = discardNexusCard(g.nexusCards!.cards!, 'ecaz-seat', g.players);
+  g.nexusEcazDukeHistory = [record];
+  g.nexusEcazDukeEvents = [record.event];
+  assert.doesNotThrow(() => validateNexusEcazDuke(g, record, 0));
+});
+
 void test('native physical Ecaz Cunning overrides Moritani at a quiet Battle boundary', () => {
   const g = game(true);
   g.dukeVidal = acquireDuke(g.dukeVidal!, 'moritani-seat', 3, 'moritani');
@@ -253,7 +268,9 @@ void test('damaged and re-signed impossible history cannot forge the original Du
   invalid(record => { record.before.acquiredTurn = 4; });
   invalid(record => { record.before.acquiredTurn = 2; });
   invalid(record => { record.before.source = null; });
-  invalid(record => { record.before.source = 'ecaz'; });
+  // Ordinary Ecaz tenure may now belong to a shared recipient; Nexus tenure
+  // still cannot be forged for a non-Ecaz controller.
+  invalid(record => { record.before.source = 'ecazNexus'; });
   invalid(record => {
     record.before.acquiredTurn = 2;
     record.event = nexusEcazDukeEvent(3, 6, 'ecaz-seat', 0, 'moritani-seat', 2);

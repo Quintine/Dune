@@ -2003,7 +2003,9 @@ function policyActions(g: GameView): Action[] {
         return [{ ...action, forces, elite: Math.min(elite, forces) }];
       }
       if (entry.stage === 'offer') {
-        if (entry.effect === 'ecaz')
+        if (entry.effect === 'ecaz') {
+          const recipient = entry.beneficiaries.find(option => !option.blocked)?.player ??
+            (entry.dukeAcquisition && !entry.dukeAcquisition.blocked ? entry.owner : null);
           return [
             entry.allianceOffer && !entry.allianceOffer.blocked
               ? {
@@ -2012,15 +2014,16 @@ function policyActions(g: GameView): Action[] {
                   beneficiary: entry.owner,
                   choice: 'alliance',
                 }
-              : entry.dukeAcquisition && !entry.dukeAcquisition.blocked
+              : recipient
                 ? {
                     ...action,
                     trigger: true,
-                    beneficiary: entry.owner,
+                    beneficiary: recipient,
                     choice: 'duke',
                   }
                 : { ...action, decline: true },
           ];
+        }
         const available = entry.beneficiaries.filter(
           (option) =>
             !option.blocked &&

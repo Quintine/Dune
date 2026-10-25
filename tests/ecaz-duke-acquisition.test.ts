@@ -286,10 +286,17 @@ void test('explicit Duke choice/owner/event and eligibility are checked before t
   reject(g, 'ec', { ...action, event: 'stale' });
   reject(g, 'ec', { ...action, choice: undefined });
   reject(g, 'ec', { ...action, choice: 'loan' });
+  reject(g, 'ec', { ...action, beneficiary: 'al' });
   const allied = reload(g);
   p(allied, 'ec').ally = 'al';
   p(allied, 'al').ally = 'ec';
-  reject(allied, 'ec', { ...action, beneficiary: 'al' });
+  const shared = applyAction(allied, 'ec', { ...action, beneficiary: 'al' });
+  assert.equal(shared.dukeVidal!.controller, 'al');
+  assert.equal(shared.dukeVidal!.source, 'ecaz');
+  assert.deepEqual(shared.players, allied.players);
+  const staleAlly = reload(allied);
+  p(staleAlly, 'al').ally = null;
+  reject(staleAlly, 'ec', { ...action, beneficiary: 'al' });
   for (const mutate of [
     (b: Game) => {
       delete b.dukeVidal;

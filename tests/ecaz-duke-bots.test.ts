@@ -149,12 +149,6 @@ const unavailable: [string, (g: Game) => void][] = [
     },
   ],
   [
-    'already controlled by Ecaz',
-    (g) => {
-      g.dukeVidal = acquireDuke(g.dukeVidal!, 'ec', 1, 'ecaz');
-    },
-  ],
-  [
     'Advanced Harkonnen table remains gated',
     (g) => {
       g.advanced = true;
@@ -199,7 +193,23 @@ void test('only the actual owner gets the choice, and bots cannot acquire from a
       assert.deepEqual(botActions(botView(g, level, id)), []);
     }
 });
-void test('all profiles rely on the server descriptor, with safe decline for a missing descriptor', () => {
+void test('all profiles share an Ecaz-held Duke with its offered existing ally', () => {
+  const state = fixture(false, true);
+  state.dukeVidal = acquireDuke(state.dukeVidal!, 'ec', 1, 'ecaz');
+  const g = enter(state);
+  for (const level of DIFFICULTIES) {
+    const selected = action(g, level);
+    assert.deepEqual(selected, { type: 'decision', event: g.pendingAmbassador!.event,
+      trigger: true, beneficiary: 'al', choice: 'duke' });
+    const done = applyAction(g, 'ec', selected);
+    assert.equal(done.dukeVidal!.controller, 'al');
+    assert.equal(done.dukeVidal!.source, 'ecaz');
+    assert.deepEqual(done.players, g.players);
+    assert.equal(done.ecazAmbassadors!.tokens.find(token => token.effect === 'ecaz')!.zone, 'supply');
+    assert.deepEqual(done.ecazAmbassadors!.cohort, g.ecazAmbassadors!.cohort);
+  }
+});
+void test('all profiles rely on offered recipient descriptors, with safe decline when all are missing', () => {
   const g = enter(fixture(false, true));
   for (const level of DIFFICULTIES) {
     const view = botView(g, level);
@@ -210,6 +220,8 @@ void test('all profiles rely on the server descriptor, with safe decline for a m
     });
     assert.equal(botActions(view)[0].choice, 'duke');
     view.ambassadorEntry!.dukeAcquisition = null;
+    assert.equal(botActions(view)[0].choice, 'duke');
+    view.ambassadorEntry!.beneficiaries = [];
     assert.deepEqual(botActions(view), [
       { type: 'decision', event: g.pendingAmbassador!.event, decline: true },
     ]);

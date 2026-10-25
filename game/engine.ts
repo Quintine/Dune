@@ -18562,11 +18562,10 @@ function ambassadorEffectBlock(
     return 'This Ambassador effect is still being implemented.';
   if (effect === 'ecaz') {
     const owner = byFaction(g, 'ecaz');
-    if (!owner || beneficiary.id !== owner.id)
-      return 'Assigning the Ecaz Ambassador effect to an ally is still being implemented.';
+    if (!owner) return 'Duke Vidal is unavailable for this acquisition.';
     if (g.players.some((p) => p.leaders.some((l) => l.id === DUKE_VIDAL_ID)))
       return 'Duke Vidal is unavailable for this acquisition.';
-    return occupiedEcazDukePriority(g) ?? ecazDukeAcquisitionBlock(g, owner.id);
+    return occupiedEcazDukePriority(g) ?? ecazDukeAcquisitionBlock(g, owner.id, beneficiary.id);
   }
   if (
     effect === 'ixians' &&
@@ -20924,8 +20923,8 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
     let acquiredDuke: DukeState | null = null;
     if (token.effect === 'ecaz') {
       requireRule(
-        action.choice === 'duke' && beneficiary.id === owner.id,
-        'Choose the Ecaz Ambassador’s direct acquisition of Duke Vidal for Ecaz.',
+        action.choice === 'duke',
+        'Choose the Ecaz Ambassador’s direct acquisition of Duke Vidal for its beneficiary.',
       );
       requireRule(
         canTriggerAmbassador({
@@ -20940,7 +20939,7 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
       );
       try {
         requireRule(!occupiedEcazDukePriority(g), occupiedEcazDukePriority(g) ?? 'Duke Vidal is reserved by occupied Ecaz.');
-        acquiredDuke = quoteEcazDukeAcquisition(g, owner.id);
+        acquiredDuke = quoteEcazDukeAcquisition(g, owner.id, beneficiary.id);
       } catch (error) {
         if (error instanceof EcazDukeAcquisitionError)
           throw new RuleError(error.message);
@@ -20959,7 +20958,7 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
       g.dukeVidal = acquiredDuke;
       log(
         g,
-        `${owner.name} acquired Duke Prad Vidal${previous ? ` from ${getPlayer(g, previous).name}` : ''} through the Ecaz Ambassador. Ecaz keeps the shared Duke until battle use or Moritani acquisition; the entrant’s remaining actions resume.`,
+        `${beneficiary.name} acquired Duke Prad Vidal${previous ? ` from ${getPlayer(g, previous).name}` : ''} through the Ecaz Ambassador. ${beneficiary.name} keeps the shared Duke until battle use or another rule takes him away; the entrant’s remaining actions resume.`,
         { faction: owner.faction, name: 'Ecaz Ambassador — Duke Vidal' },
       );
       finishAmbassador(g);

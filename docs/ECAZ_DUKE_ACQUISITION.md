@@ -1,8 +1,50 @@
 # Ecaz Ambassador: direct Duke acquisition
 
-Integrated 7 September 2026. Ecaz can now choose **Acquire Duke Vidal for Ecaz** when an eligible entrant reaches its reusable Ambassador in supported development games. The server transfers the existing shared disc, returns the token to supply and resumes the entrant’s remaining actions. There is no additional confirmation or new generic Ambassador cancellation response.
+Integrated 7 September 2026; existing-ally extension 26 October 2026. Ecaz can choose **Acquire Duke Vidal** for itself or its current reciprocal ally when an eligible entrant reaches its reusable Ambassador in supported development games. The server transfers the existing shared disc, returns the token to supply and resumes the entrant’s remaining actions. There is no additional confirmation or new generic Ambassador cancellation response.
 
-The direct acquisition and tenure follow the publisher’s [Ecaz & Moritani rules, pp.7–9](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf). Fresh indexed publisher retrieval rechecked eligibility outside Tanks, captured or ghola custody. The prior [Duke source audit](DUKE_VIDAL_RULES.md) and [remaining effects readiness review](ECAZ_REMAINING_EFFECTS_READINESS.md) record the separate unresolved combinations. This implements the direct self-acquisition choice; it does not certify the token’s alliance and loan alternatives, full Ecaz or a complete expansion game.
+The direct acquisition and tenure follow the publisher’s [Ecaz & Moritani rules, pp.7–9](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf). Fresh indexed publisher retrieval rechecked eligibility outside Tanks, captured or ghola custody. The prior [Duke source audit](DUKE_VIDAL_RULES.md) and [remaining effects readiness review](ECAZ_REMAINING_EFFECTS_READINESS.md) record the separate unresolved combinations. The current direct choice supports self or the existing reciprocal ally as recorded below; this does not certify full Ecaz or a complete expansion game.
+
+## Existing-ally direct acquisition — 26 October 2026
+
+The triggered reusable Ecaz Ambassador may now grant its direct acquisition to
+the current reciprocal ally instead of Ecaz. Publisher E3 p8's general benefit
+sharing and the authorized Advanced physical30,F support the recipient. Under
+14 October choose-recommended authority, select ordinary direct-acquisition
+tenure until battle use, including unused control across turns; this is
+provisional composition, not a publisher worked example. It is distinct from
+the newly formed alliance's optional Basic/automatic Advanced turn-long loan.
+
+Reuse source `ecaz` for the same direct power and physical disc; changing the
+recipient needs no new saved source kind. Qualification is rechecked at this
+actual token entry. A living Ecaz-held or set-aside disc can go to the ally;
+choosing its existing controller still rejects a no-op. Death history and
+`usedAt` remain, and no roster or Traitor gains a duplicate. Captive, concealed,
+Ghola, dead, duplicated-disc and existing table/profile exclusions remain.
+Occupied-Ecaz priority is checked before acquisition; only Ecaz may revive Duke.
+There is no standing gift/transfer action outside a fresh eligible entry.
+A living current-turn Nexus grant may likewise become this ordinary acquisition;
+the original card stays spent. Later Ecaz Cunning receipts recognize ordinary
+source `ecaz` as its granting power even when a former ally holds that tenure,
+including its captured underlay. Native Nexus tenure still requires the native
+Ecaz controller; no custody or mode gate is relaxed.
+
+The private owner sees separate offered beneficiaries and per-recipient reasons.
+All four minimal profiles use the first legal direct recipient after any
+eligible alliance alternative. Generic exceptional-custody reasons retain the
+existing projection boundary. Broader combinations and final assurance remain.
+
+Frozen verification passes **19 files,189/189**, types/lint/build and four native
+engine/GameTable SSR/actual hook-free choice-callback journeys. Genuine public
+Basic92/Advanced104-action sources play self acquisition, unused turn-end
+retention, Nexus alliance and fresh entry. The actual ally grant is followed
+either by Duke battle use/release or a native-leader battle and retained unused
+Duke into turn3. All33 original Treachery and12 Nexus cards remain. The quote,
+engine, controls and original acquisition/bot/Nexus tests cover the related
+guards; controlled receipt supplements are not complete custody campaigns.
+Private report/logs: `/home/quintine/.local/share/dune/checkpoints/20261026-ecaz-duke-ally-proof-v5/`;
+journeys/HTML: adjacent `20261026-ecaz-duke-ally-runtime/`.
+No saved-room/D1/server or recovery operation occurs. Browser/mobile/deployed
+acceptance and full combinations remain due; SSR/callbacks do not prove hydration.
 
 ## No-Skills native Nexus scope extension — 15 October 2026
 
@@ -69,19 +111,19 @@ grant wording. Types pass; no broad suite or deployed acceptance was run.
 
 `game/ecaz-duke-acquisition.ts` quotes a detached next `DukeState` using the existing custody helper. It requires a current seated Ecaz owner and the existing canonical shared disc. It preserves identity, death history and `usedAt`; it never appends a leader to a native roster, adds a Traitor card, manufactures a replacement disc, samples randomness or grants new battle-use permissions. Starting-force initialization remains the normal disc-creation boundary.
 
-The actual entry event, turn/phase, decision owner, physical placed Ecaz token, entrant eligibility and explicit `choice:'duke'`/self-beneficiary are checked before the token commits. Current native-roster duplication rejects through the same availability descriptor. An existing ally does not prevent Ecaz from acquiring for itself. An eligible Duke controlled by Moritani transfers as the same physical disc. The controller/source/turn update and token return occur in one authoritative action, followed by the existing Ambassador suffix.
+The actual entry event, turn/phase, decision owner, physical placed Ecaz token, entrant eligibility and explicit `choice:'duke'`/current self-or-reciprocal-ally beneficiary are checked before the token commits. Current native-roster duplication rejects through the same availability descriptor. An existing ally does not prevent Ecaz from acquiring for itself. An eligible Duke controlled by Moritani transfers as the same physical disc. The controller/source/turn update and token return occur in one authoritative action, followed by the existing Ambassador suffix.
 
 The reusable token does not belong to the five-token random cohort. Its trigger leaves that cohort unchanged and never replenishes it. The chronicle distinguishes reusable return from ordinary set-aside tokens and records previous Duke control, the new tenure and resumption of the entrant’s actions. Successful acquisition emits an automatic notice using Ecaz’s faction color and the existing configurable 1.5-second notice queue.
 
-The existing leader lifecycle supplies Duke to Ecaz’s battle-plan options and consumes temporary custody after battle use. Death retains the same disc in Tanks. Unused source-Ecaz control persists across turns, while a later qualifying Moritani acquisition still takes the same disc. Existing Advanced-Harkonnen and exceptional custody limits remain in force; this feature does not order the unresolved capture/return combination.
+The existing leader lifecycle supplies Duke to the chosen recipient’s battle-plan options and consumes temporary custody after battle use. Death retains the same disc in Tanks. Unused source-Ecaz control persists across turns, while a later qualifying Moritani acquisition still takes the same disc. Existing Advanced-Harkonnen and exceptional custody limits remain in force; this feature does not order the unresolved capture/return combination.
 
-Already controlling Duke, acquisition for an ally, alliance formation and loans remain explicitly unfinished. The same-owner restriction is a development boundary, not an asserted printed prohibition on a no-op trigger. Unsupported or unavailable commands preserve the placed token; declining the opportunity also preserves Duke and resumes the entrant.
+Same-recipient acquisition remains a rejected no-op before token consumption; the self case retains its historical development boundary rather than asserting a printed prohibition. Existing-ally acquisition is now connected as above, and Basic/Advanced new-alliance choices retain their distinct earlier prototypes. Unsupported or unavailable commands preserve the placed token; declining the opportunity also preserves Duke and resumes the entrant.
 
 ## Controls, privacy and AI
 
-Only the actual owner’s Ecaz-token offer contains the `dukeAcquisition` descriptor. The entry panel renders its explicit acquisition button, current availability reason, portrait inspector and leave-in-place alternative. Other seats cannot submit the choice. Exceptional or concealed custody yields a generic unavailable reason rather than exposing a captor/ghola identity; concealed-state private variants cannot vary the availability descriptor. Advanced-Harkonnen configurations are uniformly unavailable before inspecting that custody.
+Only the actual owner’s Ecaz-token offer contains the `dukeAcquisition` descriptor and per-recipient benefit choices. The entry panel renders the offered acquisition buttons and availability reasons, one portrait inspector and the leave-in-place alternative. The self descriptor remains a compatibility fallback when the benefit list is absent. Other seats cannot submit the choice. Exceptional or concealed custody yields a generic unavailable reason rather than exposing a captor/ghola identity. Existing profile restrictions are checked before that custody; the dated no-Skills Harkonnen extensions above supersede the original blanket table restriction.
 
-All four AI profiles use the owner’s projected descriptor to acquire or decline. They do not inspect raw Duke custody, foreign hands, spice or Traitor cards. Enabling the Ecaz handler does not add Ecaz to BG’s random-token copy choices.
+All four AI profiles use the owner’s projected choices to acquire for a legal recipient or decline, after any eligible alliance alternative. They do not inspect raw Duke custody, foreign hands, spice or Traitor cards. Enabling the Ecaz handler does not add Ecaz to BG’s random-token copy choices.
 
 The complete Ambassador gameplay explanation remains readable in the token inspector, including printed alternatives that are not implemented yet. Separate coverage copy identifies those limits. Duke’s shared inspector and internal reference now distinguish unused Ecaz tenure from Moritani end-turn expiry. The public Ambassador inventory is collapsed by default behind a native keyboard-accessible summary showing supply/placed counts; expanding it retains every zone and inspector. Actual entry and placement choices remain open.
 
@@ -89,13 +131,16 @@ The complete Ambassador gameplay explanation remains readable in the token inspe
 
 | Facet | Evidence | Remaining |
 | --- | --- | --- |
-| Implementation | Shared acquisition quote, atomic real entry, token return, original movement/worm suffix, same-disc battle/turn lifecycle | Alliance/loan alternatives, same-owner no-op, Duke revival/capture and full Occupy |
-| Player controls | Explicit action, availability text, complete token guide, Duke portrait, private-owner descriptor, compact inventory | Mobile viewport acceptance of this new panel and broader faction journeys |
-| AI | Eleven tests cover all four policies in Basic/Advanced, with/without ally, unavailable choices and privacy | Strength calibration and full expansion games |
+| Implementation | Shared self/ally quote, atomic real entry, token return, original movement/worm suffix, same-disc battle/turn lifecycle | Same-recipient no-op policy and wider revival/capture/occupation combinations |
+| Player controls | Per-recipient actions/reasons, persistent tenure guidance, complete token guide, Duke portrait, private-owner descriptor, compact inventory | Browser/mobile acceptance of the ally choices and broader faction journeys |
+| AI | All four minimal policies use projected legal recipients in Basic/Advanced; related bot regressions pass | Strength calibration and full expansion games |
 | Documentation | Internal Ecaz/Duke topics, five-facet checklist, Ambassador guide and shared-disc support metadata updated | Complete expansion reference and component inventory |
-| Verification | Thirteen pure/engine, eleven AI and four production-room SQLite tests; actual browser acquisition and subsequent battle | Every legal expansion/module combination and all nested arrival interactions |
+| Verification | Current 19-file189/189 union and four native SSR/callback journeys; historical self-acquisition results below are separately dated | Every legal expansion/module combination and all nested arrival interactions |
 
-## Validation results
+## Historical validation results — 7 September 2026
+
+The following counts and artifacts describe the original self-acquisition
+checkpoint, not verification of the 26 October ally extension.
 
 **2,474 rules/client/component +224 multiplayer tests pass: 2,698 total.** The new slice adds 24 rules/AI and four persistence tests. Full logs: `/tmp/dune-ecaz-duke-rules-final.log` (74.44 seconds), `/tmp/dune-ecaz-duke-multiplayer-final.log` (24.74 seconds). Final typecheck, lint and production build pass in `/tmp/dune-ecaz-duke-{type,lint,build}-final.log`. A final build followed the dedicated Duke inspector’s support-text correction.
 
@@ -105,7 +150,10 @@ Production SQL tests reauthenticate through freshly loaded room code, race two i
 
 The unchanged `/tmp/dune-sapho-base-fullgames.ts` public-start Basic runner completed **20/20 games**, counts 2–6 and all four homogeneous difficulty levels, seed 20261017: **10,450 accepted actions, zero rejected candidates/stalls and 476 JSON round trips**, 65.48 seconds. `/tmp/dune-ecaz-duke-fullgames-final.json` records unchanged game-source hashes during and after execution; combined fingerprint `1c5199b54891e91ac7fbcdbd71a18c545c2bc45a10b67cfa9a777278266ae93c`. This is a shared-engine/AI regression sample, not coverage of the gated Ecaz feature in full games.
 
-## Browser playtest and preservation
+## Historical browser playtest and preservation — 7 September 2026
+
+This is the original self-acquisition playtest. Its room/database counts and
+server session are historical; no hourly maintenance or restart is now scheduled.
 
 Existing isolated QA room `8S3MRDEK` was backed up at v86, preserving both authenticated seat IDs. A conserved Advanced Ecaz/Moritani position stages an already Moritani-controlled Duke, a placed reusable Ecaz Ambassador and Ecaz forces in Arrakeen. The actual Moritani shipment of two forces creates the Ecaz offer at v87. Browser acquisition reaches v88 with the same disc now controlled by Ecaz, the token in supply, five random companions unchanged and the entrant’s paid shipment/counters intact. Refresh preserves the result.
 

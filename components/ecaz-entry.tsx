@@ -13,6 +13,7 @@ import { LeaderInspector } from './leader-inspector';
 import { AmbassadorInspector, AMBASSADOR_COVERAGE } from './ecaz-ambassadors';
 import { AmbassadorMovement } from './ambassador-movement';
 import { AmbassadorShipment } from './ambassador-shipment';
+import { EcazDukeAcquisitionChoices } from './ecaz-duke-acquisition-choices';
 
 const buttonClass = 'min-h-11 whitespace-normal motion-reduce:transition-none';
 
@@ -51,11 +52,6 @@ export function EcazEntry({
     (choice) => !choice.blocked && selected.includes(choice.card.id),
   );
   const legalSelection = entry.effect === 'choam' || chosen.length === 1;
-  const dukeBlock =
-    entry.dukeAcquisition?.blocked ??
-    (entry.dukeAcquisition
-      ? null
-      : 'Duke acquisition is unavailable for this opportunity.');
   const allianceBlock =
     entry.allianceOffer?.blocked ??
     (entry.allianceOffer ? null : 'This alliance opportunity is unavailable.');
@@ -84,11 +80,6 @@ export function EcazEntry({
         <>
           {entry.effect === 'ecaz' ? (
             <>
-              <p className="m-0 text-sm leading-6">
-                Acquire Duke Vidal for Ecaz. The Ambassador returns to your
-                supply. Ecaz keeps Duke until battle use or until Moritani takes
-                him.
-              </p>
               {duke && (
                 <LeaderInspector
                   identity={{
@@ -99,26 +90,7 @@ export function EcazEntry({
                   }}
                 />
               )}
-              <Button
-                className={buttonClass}
-                disabled={busy || !!dukeBlock}
-                aria-describedby={dukeBlock ? `${id}-duke-block` : undefined}
-                onClick={() => {
-                  if (!dukeBlock)
-                    send({
-                      trigger: true,
-                      beneficiary: entry.owner,
-                      choice: 'duke',
-                    });
-                }}
-              >
-                Acquire Duke Vidal for Ecaz
-              </Button>
-              {dukeBlock && (
-                <p id={`${id}-duke-block`} className="m-0 text-sm leading-6">
-                  {dukeBlock}
-                </p>
-              )}
+              <EcazDukeAcquisitionChoices game={game} act={act} busy={busy} />
               <Button
                 className={buttonClass}
                 disabled={busy || !!allianceBlock}

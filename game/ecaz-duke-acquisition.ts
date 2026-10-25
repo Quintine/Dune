@@ -4,11 +4,11 @@ import { acquireDuke, DUKE_VIDAL_ID, type DukeState } from './duke-vidal';
 import { independentDiscoveryProfile, nexusCoreProfile, type FactionModuleProfile } from './faction-module-profile';
 import { mixedE3NexusProfile, pairedE3NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 
-export type EcazDukeContext = Partial<FactionModuleProfile> & {
+export type EcazDukeContext = Omit<Partial<FactionModuleProfile>, 'players'> & {
   status: Game['status'];
   turn: number;
   advanced: boolean;
-  players: readonly { id: string; faction: FactionId }[];
+  players: readonly { id: string; faction: FactionId; ally?: string | null }[];
   dukeVidal?: DukeState;
 };
 type Failure = 'context' | 'custody' | 'table' | 'alreadyControlled';
@@ -34,14 +34,17 @@ const tableBlock =
   'Duke Vidal acquisition with Advanced Harkonnen is still being implemented.';
 const alreadyBlock =
   'Acquiring Duke Vidal when Ecaz already controls him is still being implemented.';
+const allyAlreadyBlock = 'The chosen beneficiary already controls Duke Vidal.';
 const unavailable = 'Duke Vidal is unavailable for this acquisition.';
 
-/** Direct Ecaz self-acquisition only. The caller owns the actual entry event,
- * physical Ambassador and explicit choice; this quote never creates a disc,
- * commits the token, grants an ally loan, or changes leader battle eligibility. */
+/** Ordinary Ambassador acquisition for Ecaz or its current reciprocal ally.
+ * Both use source Ecaz's until-battle tenure, not the new-alliance turn loan.
+ * The caller owns the actual entry event, physical Ambassador, occupied-Ecaz
+ * priority and explicit choice. No disc or new battle permission is created. */
 export function quoteEcazDukeAcquisition(
   g: EcazDukeContext,
   ownerId: string,
+  recipientId: string = ownerId,
 ): DukeState {
   requireDuke(
     g.status === 'playing' &&
@@ -50,9 +53,18 @@ export function quoteEcazDukeAcquisition(
       typeof g.advanced === 'boolean' &&
       Array.isArray(g.players) &&
       new Set(g.players.map((p) => p.id)).size === g.players.length &&
+      g.players.filter((p) => p.faction === 'ecaz').length === 1 &&
       g.players.filter((p) => p.id === ownerId && p.faction === 'ecaz')
         .length === 1,
     'This acquisition needs the current seated Ecaz owner.',
+    'context',
+  );
+  const owner = g.players.find((p) => p.id === ownerId)!;
+  const recipient = g.players.find((p) => p.id === recipientId);
+  requireDuke(
+    recipient && (recipientId === ownerId ||
+      (owner.ally === recipientId && recipient.ally === ownerId)),
+    'Choose Ecaz or its current reciprocal ally for this acquisition.',
     'context',
   );
   requireDuke(
@@ -86,7 +98,8 @@ export function quoteEcazDukeAcquisition(
   // This explicit unfinished case is public controller information. Check it
   // before private capture/ghola details so its projected reason cannot vary
   // with an undisclosed custody marker.
-  requireDuke(duke.controller !== ownerId, alreadyBlock, 'alreadyControlled');
+  requireDuke(duke.controller !== recipientId,
+    recipientId === ownerId ? alreadyBlock : allyAlreadyBlock, 'alreadyControlled');
   requireDuke(
     duke.controller === null
       ? duke.acquiredTurn === null && duke.source === null
@@ -94,7 +107,7 @@ export function quoteEcazDukeAcquisition(
           whole(duke.acquiredTurn) &&
           duke.acquiredTurn > 0 &&
           duke.acquiredTurn <= g.turn &&
-          ['ecaz', 'moritani', 'ally'].includes(duke.source!),
+          ['ecaz', 'ecazNexus', 'moritani', 'ally'].includes(duke.source!),
     'The shared Duke Vidal disc has invalid current custody.',
   );
   requireDuke(
@@ -103,21 +116,23 @@ export function quoteEcazDukeAcquisition(
   );
   // acquireDuke clones every existing leader field, including usedAt and death
   // history; retaining those fields does not permit a second battle use.
-  return acquireDuke(duke, ownerId, g.turn, 'ecaz');
+  return acquireDuke(duke, recipientId, g.turn, 'ecaz');
 }
 /** An owner-offer descriptor may be publicly compared. Exceptional custody
  * never produces a distinct reason that discloses a hidden captured/ghola ID. */
 export function ecazDukeAcquisitionBlock(
   g: EcazDukeContext,
   ownerId: string,
+  recipientId: string = ownerId,
 ): string | null {
   try {
-    quoteEcazDukeAcquisition(g, ownerId);
+    quoteEcazDukeAcquisition(g, ownerId, recipientId);
     return null;
   } catch (error) {
     if (error instanceof EcazDukeAcquisitionError) {
       if (error.reason === 'table') return tableBlock;
-      if (error.reason === 'alreadyControlled') return alreadyBlock;
+      if (error.reason === 'alreadyControlled')
+        return recipientId === ownerId ? alreadyBlock : allyAlreadyBlock;
     }
     return unavailable;
   }

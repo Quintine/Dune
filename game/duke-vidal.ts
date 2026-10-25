@@ -1,6 +1,8 @@
 import type { Leader } from './cards';
 
 export const DUKE_VIDAL_ID = 'duke-vidal';
+/** Granting power, rather than controller faction: ordinary Ecaz acquisition
+ * may belong to its existing ally and still differs from a new-alliance loan. */
 export type DukeSource = 'moritani' | 'ecaz' | 'ecazNexus' | 'ally' | 'homeworldEcaz';
 export type DukeState = {
   leader: Leader;
@@ -291,7 +293,7 @@ export const DUKE_VIDAL_RULES = Object.freeze({
     'At the end of Shipment and Movement, Moritani gains the living Duke when its forces face battles in at least two different strongholds, excluding battles involving Ecaz. This checks the battles about to occur, rather than past battle results or several opponents in one stronghold.',
     'Moritani may use Duke Vidal for one battle. An unused living, uncaptured Duke is set aside at the end of the turn; Moritani must qualify again on a later turn to acquire him again.',
     'Karama may prevent Moritani from acquiring Duke Vidal. It does not strip him from Moritani once already controlled and does not cancel his ordinary battle use.',
-    'The Ecaz Ambassador may acquire Duke Vidal when he is not dead, captured or a ghola. Ecaz keeps him until battle use or until Moritani takes him. The Ambassador’s separate alliance choice can permit a loan to the faction that has just allied with Ecaz for that turn.',
+    'A triggered Ecaz Ambassador may acquire the living Duke outside captured or Ghola custody for Ecaz or its current reciprocal ally. The chosen recipient keeps him until battle use or another rule takes him away, including unused control across turns. This shared tenure is provisional. The separate newly formed alliance can instead grant a loan for the current turn.',
     'Occupied Ecaz reserves the living Duke for its occupier or reciprocal ally. A sole recipient receives him automatically; an allied occupier chooses at an otherwise quiet boundary before either Battle Plan seals. The provisional grant permits one battle and expires unused at turn end; occupation loss ends its own tenure without restoring an old holder. Only Ecaz may revive him.',
     'Battle death sends the same disc to the Tanks and preserves its death history. Only Ecaz may revive Duke Vidal, including when using the Ghola Treachery Card. His printed revival price is five spice, distinct from his battle strength of six, and this revival does not require other leaders to be dead.',
     'Ecaz can begin ordinary leader revival when five of its leaders are in the Tanks, counting Duke Vidal, even if it still has another living leader. These special rules do not create an extra native leader or an extra Traitor card.',
@@ -304,7 +306,7 @@ export const DUKE_VIDAL_RULES = Object.freeze({
     ambassadorAcquisition: 'ecaz-self-implemented',
     ambassadorAlliance: 'consent-implemented',
     ambassadorNewAllyLoan: 'basic-prototype',
-    ambassadorAllyAcquisition: 'unresolved',
+    ambassadorAllyAcquisition: 'ordinary-tenure-prototype',
     allyLoanReturn: 'basic-set-aside-provisional',
     sourceAudit: 'docs/DUKE_VIDAL_RULES.md',
   }),

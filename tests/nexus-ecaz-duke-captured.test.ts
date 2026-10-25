@@ -33,6 +33,18 @@ function position(): Game {
   } as unknown as Game;
 }
 
+void test('Cunning validates captured ordinary Ambassador tenure held by a former ally recipient', () => {
+  // Controlled custody input, separate from the native token/alliance source.
+  const g = position();
+  const shared = acquireDuke(g.dukeVidal!, 'g', 2, 'ecaz');
+  g.dukeVidal = captureDuke(shared, 'h', 'g', 3, 'carthag');
+  assert.equal(quoteNexusEcazDuke(g, 'e')!.blocked, null);
+  const receipt = createNexusEcazDukeReceipt(g, 'e');
+  assert.equal(receipt.before.controller, 'g');
+  assert.equal(receipt.before.source, 'ecaz');
+  assert.doesNotThrow(() => validateNexusEcazDuke(g, receipt, 0));
+});
+
 void test('Cunning sees actual capture over its own underlying Ecaz tenure and liberates it for this turn only', () => {
   const g = position();
   const owned = acquireDuke(g.dukeVidal!, 'e', 1, 'ecaz');

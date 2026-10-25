@@ -16,6 +16,39 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Shared Ecaz Ambassador Duke — 26 October. Prototyped / Partial.**
+The triggered token can now grant its living Duke to Ecaz's current reciprocal
+ally. Per-recipient controls and all four minimal profiles use the server's
+offered choices. Ordinary source `ecaz` records the granting power and keeps
+unused tenure across turns until battle use; the new-alliance `ally` loan stays
+turn-long. This composition is visibly provisional. Current entry/alliance,
+same-recipient no-op, exceptional custody, occupied-Ecaz priority and Ecaz-only
+revival guards remain. Later Nexus receipts recognize ordinary shared tenure.
+
+Three disjoint quote/native/control lanes and root integration pass **19 files,
+189/189**, types/lint/build and **four native engine/GameTable SSR/actual leaf-
+callback journeys** on unchanged source. Genuine public Basic92/Advanced104-
+action sources play self acquisition, turn-end retention, a real Nexus alliance
+and fresh token entry. After the ally click, real battle use releases the same
+disc; the alternate native-leader battle retains unused Duke into turn3. All33
+original Treachery and12 Nexus cards remain. Pure/controlled supplements cover
+recipient legality, stale/foreign choices, exceptional custody and Nexus receipts.
+
+Frozen v5 report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-ecaz-duke-ally-proof-v5/`;
+journeys/HTML: adjacent `20261026-ecaz-duke-ally-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
+Actual hook-free callbacks and SSR are not DOM/hydration or browser/mobile/
+deployed acceptance. Complete rules/combinations, mode gates and final assurance
+remain open. [Source and selected tenure](ECAZ_DUKE_ACQUISITION.md#existing-ally-direct-acquisition--26-october-2026).
+
+Next concrete Basic function gap: Distrans rejects even an untouched ordinary
+auction lot before the first bid/pass. Scope that pre-bid transfer under the
+14 October recommended-policy authority, retaining the actual card, lot/order,
+hand-limit eligibility and active-bid restrictions. See
+[the timing audit](RICHESE_DISTRANS_ENGINE_AUDIT.md), `distransBlock` and
+`tests/distrans-engine.test.ts`; broader special-auction timing remains separate.
+
 **Caladan reinforcement before Face Dance — 26 October. Prototyped / Partial.**
 The original winning army may now take its optional reinforcement before native
 replacement. The later reveal uses the live10/11 Arrakis or3/4 Homeworld force
@@ -41,13 +74,6 @@ No saved-room/D1/server, reset/restart, deployment or recovery operation occurs.
 No clicked-control/DOM/hydration or browser/mobile/deployed acceptance is claimed.
 Complete rules/combinations, mode gates and final assurance remain open.
 [Source, policy and child scope](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#reinforcement-before-face-dance--26-october-2026).
-
-Next concrete Basic function gap: an existing Ecaz ally still cannot receive the
-triggered Ecaz Ambassador's living Duke acquisition. Printed sharing supports
-that branch; scope direct-acquisition tenure separately from the new-alliance
-turn loan, preserving occupied-Ecaz priority and the user's Ecaz-only revival.
-See [the Ambassador audit](ECAZ_AMBASSADOR_EFFECTS_AUDIT.md),
-`ambassadorEffectBlock`, `game/ecaz-duke-acquisition.ts` and `components/ecaz-entry.tsx`.
 
 **Residual Poison after Cunning — 26 October. Prototyped / Partial.**
 The printed pre-leader window now stays available after two completed nonleader
