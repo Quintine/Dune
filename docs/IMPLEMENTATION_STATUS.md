@@ -1,5 +1,39 @@
 # Dune implementation status
 
+## 26 October 2026 — Semuta on native market and allied revival costs
+
+**Prototyped / Partial.** Two typed used-cost continuations add CHOAM sale,
+Richese Black Market, native Ixian ally replacement and Fremen allied grant.
+Pure native validation retains the declaration, paid delivered card or current
+rate source. Claim/pass restores and denies once; sale revenue, replacement
+discard/draw and granted free rate remain unapplied. Existing persistent
+controls/minimal bots serve these sources. Original preview gates remain.
+[Source and limits](SEMUTA_SOURCE_UPDATE_20260907.md#native-market-and-allied-revival-grant-cancellation-costs--26-october-2026).
+
+Three disjoint source lanes and root integration pass **14 files,147/147**,
+types/lint/build and **16 native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Twenty-five new cases cover eight sources,
+claim/pass, allowance, exact retention/native suffixes, real post-denial revival,
+relevant rejection and four profiles. All costs use original dealt Karama and
+actual cache1 Semuta. Duplicate sale43/46 Basic/Advanced actually buys the second
+Shield for1; Basic Worthless source39 keeps its original card. Advanced Black
+Market82 restores original Shield/cache9/count3-before-cache/2-normal without a
+sale. Fremen145/169 earns actual three Storm losses, turn2 F/E pact and intrinsic
+free1; denial preserves that return and permits the actual remaining2 for4,
+while allowance makes those2 free. Native Ixian ally223/245 keeps original
+inspection/HMS/pool setup, actual turn2 I/F pact and purchase1; denial retains
+the delivered card/deck, allowance really discards/draws once. All45/57 cards
+remain physical; no played state, income, loss or result is installed.
+
+Narrow feedback uses actual duplicate Shields instead of differently named
+projectile faces; production rules require no repair or new interpretation.
+Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-markets-grant-proof/`;
+journeys/HTML: adjacent `20261026-semuta-markets-grant-runtime/`. No room/D1/server,
+reset/restart, deployment or recovery operation occurs. DOM/hydration,
+browser/mobile, wider parents/combinations, complete modes and deployed/final
+assurance remain open.
+
 ## 26 October 2026 — Semuta on native Ecaz/Moritani power costs
 
 **Prototyped / Partial.** One typed used-cost continuation connects native

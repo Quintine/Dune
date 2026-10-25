@@ -16,6 +16,43 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta on native markets and Fremen allied revival — 26 October. Prototyped / Partial.**
+Fresh printed-role cancellation costs now pause through `karamaMarketDiscard`
+for CHOAM sales, Richese Black Market and native Ixian ally replacement, and
+`karamaFremenGrantDiscard` for Fremen's allied free-revival grant. Pure native
+validators retain the declared sale/lot, delivered purchase or original grant.
+Claim/pass applies native denial once: no canceled sale payout, replacement
+discard/draw or new free-rate permission is pre-applied. Existing persistent
+controls and minimal bots serve the new sources; preview gates remain unchanged.
+
+Three disjoint source lanes and root integration pass **14 files,147/147**,
+types/lint/build and **16 native engine/GameTable SSR/actual Semuta-callback
+journeys** on unchanged source. Twenty-five new cases cover eight sources,
+claim/pass, allowance, original suffixes, relevant rejection and four minimal
+profiles. Real cache1 Semuta and original dealt Karama supply every cost.
+CHOAM duplicate3 sources43/46 Basic/Advanced really buy the second exact-name
+Shield for1; Basic Worthless2 source39 uses its original card. Denial keeps the
+card/witness, revenue0 and native market chooser. Advanced Black Market82 keeps
+Richese's original Shield and compulsory cache accounting3-before/2-normal.
+Fremen145/169 uses actual paid3 Hagga13 shipment6, real Storm deaths3, turn2 F/E
+Nexus pact and completed intrinsic free1. Denial keeps that return and lets the
+ally really revive the remaining2 for4; allowance makes those2 free. Native Ix
+ally223/245 uses original inspection/HMS setup, real turn2 I/F Nexus pact and
+actual ordinary purchase1. Denial retains that delivered card, prior payment
+and untouched deck before the native next lot; allowance really discards and
+draws once through the original fresh group. All45/57 cards remain physical.
+No played hand, wallet, force, pact, loss, income, clock or pending frame is installed.
+
+Narrow feedback selects actual duplicate Shields: the differently named
+projectile cards cannot witness a duplicate sale. No production rule repair or
+new interpretation follows. Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-markets-grant-proof/`;
+journeys/HTML: adjacent `20261026-semuta-markets-grant-runtime/`. No room/D1/server,
+reset/restart, deployment or recovery operation occurs. These are engine, SSR
+and component-callback results; DOM/hydration, browser/mobile, wider parents and
+combinations, complete modes and deployed/final assurance remain open.
+[Source and limits](SEMUTA_SOURCE_UPDATE_20260907.md#native-market-and-allied-revival-grant-cancellation-costs--26-october-2026).
+
 **Semuta on Ecaz/Moritani cancellation costs — 26 October. Prototyped / Partial.**
 Six native powers now offer their printed-role Karama cost through
 `karamaEcazMoritaniDiscard`: Ecaz/Moritani placement, Moritani Duke acquisition,

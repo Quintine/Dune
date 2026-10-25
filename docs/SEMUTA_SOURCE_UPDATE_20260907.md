@@ -2,6 +2,84 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Native market and allied revival-grant cancellation costs — 26 October 2026
+
+**Prototyped / Partial.** `karamaMarketDiscard` now offers fresh printed-role
+Karama stopping a native CHOAM sale, Richese Black Market or Ixian ally
+replacement; `karamaFremenGrantDiscard` does the same for Fremen's allied
+free-revival grant. Existing persistent neutral controls, private claim/pass and
+minimal legal profiles serve these sources. This composes the existing physical
+fresh-discard contract with native powers; it adds no publisher ruling.
+
+Pure [CHOAM sale cancellation](../game/choam-sale-cancellation.ts),
+[auction continuation](../game/auction-continuation-quote.ts), original Richese
+settlement and [Fremen grant validation](../game/fremen-revival-grant.ts) own
+legality and native denial. Preflight does not require the already spent cost
+as another held card. It neither sells/pays, draws a replacement, grants a rate
+nor advances a chooser/phase. Exact source-qualified admission retains the
+pending Ixian replacement or CHOAM market only for its new used-cost subtype.
+Subtype-only signatures bind original declaration, paid sale/card/deck, grant,
+prior normal-revival counters, resources, pacts and current continuation; older
+signature formats retain their bytes.
+
+After claim/pass the fresh group retires, the original response restores and
+native denial executes once:
+
+- A declared CHOAM sale keeps its card and any witness in hand, earns nothing and
+  returns the original market with that declaration blocked. Allowance actually
+  disposes the card and credits its native2/3; only a real resulting fresh group
+  is handled. Its owner cannot use Semuta to recover their own sale card.
+- Richese Black Market follows the original unbid settlement, keeps the offered
+  physical card and restores the compulsory-cache declaration/count. No bid,
+  purchase, payment or extra ordinary-pool reduction is invented. Allowance
+  opens actual bidding; the control programme then submits real zero bids.
+- Native Ixian ally denial clears only replacement, retains the delivered paid
+  card and prior invoice, skips discard/draw and continues the original sale.
+  Allowance really discards that card; its actual fresh group resolves before
+  one replacement draw and the original next lot. Cache/absent-faction Nexus
+  replacement remain their separate native contracts.
+- Fremen denial blocks only the original ally's grant for this Revival. Intrinsic
+  rates, prior free returns and total limits remain. Allowance grants the native
+  rate without replaying completed returns; subsequent revival uses the shared
+  original quote/payment path.
+
+Three disjoint source lanes, bounded native/diff review and root integration pass
+**14 files,147/147**, types/lint/build and **16 native engine/GameTable SSR/actual
+Semuta-callback journeys** on unchanged source. Twenty-five new cases cover eight
+sources, claim/pass, native allowance, exact retained purchases and continuations,
+real post-denial revival, relevant rejection and four minimal profiles.
+
+Every source uses original setup/deal and actual cache1 Semuta. CHOAM duplicate3
+sources43/46 Basic/Advanced earn an exact-name Shield witness through normal
+purchase1; Basic original Worthless2 is source39. Advanced Black Market82 offers
+Richese's real Shield, retains cache9 and normal count3-before-cache/2-normal.
+In Fremen-grant145/169, Emperor ships three normals to Hagga13 for6, loses
+those3 to the next Storm, forms F/E at the turn2 Nexus and completes intrinsic
+free1. At the grant source, two remain in Tanks with wallet4; denial really
+returns2 for4 and keeps free-used1, while allowance returns2 free and reaches
+free-used3. Native Ixian ally223/245 uses original Ix inspection/HMS/pool setup,
+real turn2 Ix/Fremen pact and paid ordinary purchase1. Denial keeps the exact
+paid card/deck; allowance actually discards/draws once. All45/57 Treachery cards
+remain physical. No played hand, wallet, force, pact, loss, income, clock,
+response, outcome or pending frame is installed.
+
+Narrow feedback replaces an impossible same-name projectile fixture with actual
+duplicate Shields; the base projectile faces have different names. Native rule
+calculations and gates need no feedback change. No new mode or combined overlay
+is admitted. Private source-bound report/logs:
+`/home/quintine/.local/share/dune/checkpoints/20261026-semuta-markets-grant-proof/`;
+journeys/HTML: adjacent `20261026-semuta-markets-grant-runtime/`. No room/D1/server,
+reset/restart, deployment or recovery operation occurs. DOM/hydration,
+browser/mobile, wider parents/combinations, complete modes and production/final
+assurance remain open.
+
+Evidence: [market sources](../tests/fixture-semuta-native-markets.ts),
+[market cases](../tests/semuta-native-markets-engine.test.ts),
+[Fremen sources](../tests/fixture-semuta-fremen-grant-cost.ts),
+[Fremen cases](../tests/semuta-fremen-grant-cost-engine.test.ts),
+[Ixian ally sources](../tests/fixture-semuta-ix-ally-cost.ts) and
+[Ixian ally cases](../tests/semuta-ix-ally-cost-engine.test.ts).
+
 ## Ecaz and Moritani cancellation costs — 26 October 2026
 
 **Prototyped / Partial.** `karamaEcazMoritaniDiscard` offers the fresh printed-role
