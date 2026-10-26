@@ -17,6 +17,8 @@ export type MixedActionExpressionLimits = {
   maxLeaves?: number;
   maxNodes?: number;
   maxTerms?: number;
+  /** Travel expressions may consist entirely of future actions. */
+  requireFact?: boolean;
 };
 export class MixedActionQuestionError extends Error {}
 
@@ -65,7 +67,8 @@ export function parseMixedActionExpression<A>(
   check(Number.isSafeInteger(maxDepth) && maxDepth >= 0 &&
     Number.isSafeInteger(maxLeaves) && maxLeaves >= 1 &&
     (limits.maxNodes === undefined || Number.isSafeInteger(limits.maxNodes) && limits.maxNodes >= 1) &&
-    (limits.maxTerms === undefined || Number.isSafeInteger(limits.maxTerms) && limits.maxTerms >= 2),
+    (limits.maxTerms === undefined || Number.isSafeInteger(limits.maxTerms) && limits.maxTerms >= 2) &&
+    (limits.requireFact === undefined || typeof limits.requireFact === 'boolean'),
   'Choose valid logical depth and clause limits.');
   let leaves = 0;
   let nodes = 0;
@@ -115,8 +118,9 @@ export function parseMixedActionExpression<A>(
     return { kind: node.kind, terms: node.terms.map(term => parse(term, depth + 1)) };
   };
   const mixed = parse(value, 0);
-  check(hasFact && hasAction,
-    'A mixed question must include a current fact and a future-action statement.');
+  check(hasAction && (limits.requireFact === false || hasFact), limits.requireFact === false
+    ? 'An action question must include a future-action statement.'
+    : 'A mixed question must include a current fact and a future-action statement.');
   return mixed;
 }
 

@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 26 October 2026 — Combined shipment and physical movement commitments
+
+**Prototyped / Partial.**
+One whole AND/OR answer now combines the future original reserve shipment and
+physical ground groups, optionally with frozen current facts. Distinct receipts
+and maximum-per-destination movement retain native costs/pieces/entitlements;
+No negates the whole tree and lasts through actual own turn end. Private lazy
+signed alternatives reuse the original joint preparation/completion search;
+no chosen route enters real native ledgers. Accepted-order prefixes connect
+new travel, shipment and scalar/whole/mixed movement answers. Full editor,
+raw Ask/private answers, persistent own history, exact guarded native guide
+and four minimal profiles connect. Scope is current phase5 active/unused waiting
+native turns, with original optional-module and mode gates retained.
+
+Root integration with disjoint helper/controls/native lanes passes **24 files,
+237/237**, types/lint/build and **six native paths**,21 GameTable SSR renders/
+six actual answer callbacks/six guide callbacks plus one editor callback followed
+by native Ask. Original active19 adds7 for paid shipment2 plus real move/own end;
+edited OR19 adds6 for a manual move without shipping. Both No-to-AND routes19
+add6 and settle only at own end. Frozen Hajr/spice facts19 add10 for real bribe3,
+shipment2, nonmatching move, actual Hajr and required second move. Waiting19
+adds8 while retaining the other owner's real turn before ship/move. All33
+original Treachery identities remain physical; four profiles really complete.
+
+Ten helper, nine controls and18 native cases supplement existing shipment/
+movement/preparation/funding suites. Nine genuine H/A/E two-Truth cases use the
+original Harkonnen two-card opening and27-action prefix (bidding20 + continuation7),
+covering both acceptance orders across three native ledger kinds, whole No and
+incompatible second-answer rejection without erasing earlier history/receipts.
+Focused feedback repairs native receipt shape, bot lookup and test assumptions;
+v1 JSX andv2 generic narrowing repairs precede passing v3. Bounded review then
+finds missing Guild-allied Fremen reserve transport: native variant/tariff/guide
+repairs pass three conserved controlled cases and enumeration/guide checks.
+Complete v4 passes. Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-travel-proof-v4/`;
+journeys/HTML: adjacent `20261026-truth-travel-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Earlier phases, other cross-action families/correlated unknowns, opposing-release/
+optional/faction/preparation compositions and final rules/browser/deployed/
+assurance remain. No complete mode is certified.
+[Authority, event semantics and native branch/order evidence](TRUTHTRANCE_TRAVEL_PROMISES.md).
+
+
 ## 26 October 2026 — Current facts with original Traitor declarations
 
 **Prototyped / Partial.**

@@ -1,5 +1,10 @@
 # Truthtrance nonbattle readiness and first implementation slice
 
+The [combined travel follow-up](TRUTHTRANCE_TRAVEL_PROMISES.md) adds full AND/OR
+shipment and physical ground-movement conditions in the current native phase5
+interval, optionally with frozen facts. Each event retains its physical meaning;
+other cross-action families, earlier timing and broader enforcement remain open.
+
 The [mixed current Traitor-decision follow-up](TRUTHTRANCE_MIXED_TRAITOR.md)
 combines answer-time facts with current revealed native Reveal/Decline choices.
 Original eligibility, actual declaration receipts and Cunning protection remain;

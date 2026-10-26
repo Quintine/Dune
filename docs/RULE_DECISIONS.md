@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Combined shipment and physical movement commitments — 26 October 2026
+
+Publisher November2020 FAQp8 permits current-turn AND/OR action commitments;
+supplied Advanced physical39 supplies the authorized compliance/release source.
+Compose original reserve shipment and physical ground-group events in one whole
+answer. A shipment is not a move; movement minima use one actual group, never
+summed smaller moves. Facts freeze at answer; whole No uses De Morgan, not
+separate No answers. Preserve native costs, preparation and legal alternatives
+through a private lazy signed-branch search, without installing a chosen branch.
+This first cross-action envelope is current phase5 active/unused waiting native
+turns, provisionally applying the existing owned-action witness interpretation.
+It is not a printed restriction on questions or a complete arbitrary-promise
+solver. [Contract and evidence](TRUTHTRANCE_TRAVEL_PROMISES.md).
+
 ## Current facts combined with original Traitor declarations — 26 October 2026
 
 Compose recorded publisher FAQp8 AND/OR/current-turn and supplied Advanced

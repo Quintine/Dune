@@ -1,3 +1,5 @@
+import { TravelPromiseError, liveTravelPromises, travelBranches, recordTravelShipment, recordTravelMovement,
+  finishTravelTurn, validateTravelPromises, type TravelClaim, type TravelPromise, type TravelBranchLeaf } from './travel-expression-promises';
 import { mixedTraitorRequirement, type MixedTraitorClaim } from './mixed-traitor-question';
 import type { MixedBattleActionClaim, MixedBattleClaim } from './mixed-battle-question';
 import { AllianceExpressionPromiseError, allianceExpressionOutcomes, findAllianceExpressionPlans,
@@ -2162,6 +2164,9 @@ export type Game = {
   };
   truthtrance?: TruthWindow | null;
   truthHistory?: TruthRecord[];
+  travelPromises?: TravelPromise[];
+  /** Accepted order shared by phase-five travel, shipment and movement answers. */
+  travelPromiseOrder?: { kind: 'shipment' | 'movement' | 'movementExpression' | 'travel'; index: number }[];
   mixedTraitorQuestions?: (MixedTraitorClaim & {
     event: string; turn: number; player: string; asker: string; answer: boolean;
     binding: boolean; fulfilled: boolean; released: boolean;
@@ -6942,6 +6947,8 @@ function truthtranceDiscardSignature(g: Game, next: TruthDiscardContinuation) {
     battle: g.battle,
     shipmentPromises: g.shipmentPromises,
     movementPromises: g.movementPromises,
+    ...(g.travelPromiseOrder ? { travelPromiseOrder: g.travelPromiseOrder, travelPromises: g.travelPromises } : {}),
+    ...(next.record.question.kind === 'travel' ? { movementExpressionPromises: g.movementExpressionPromises } : {}),
     ...(next.record.question.kind === 'mixedTraitorCall' ? { mixedTraitorQuestions: g.mixedTraitorQuestions } : {}),
     ...(next.record.question.kind === 'mixedBattlePlan' ? { mixedBattleQuestions: g.mixedBattleQuestions } : {}),
     ...(['allianceExpression', 'mixedAlliance'].includes(next.record.question.kind) ? {
@@ -18649,7 +18656,141 @@ function projectMovementBoxRecovery(source: Game, actor: string, box: string, se
     throw error;
   }
 }
+function travelRule<T>(operation: () => T): T {
+  try { return operation(); }
+  catch (error) { if (error instanceof TravelPromiseError) throw new RuleError(error.message); throw error; }
+}
+function travelTargetAvailable(g: Game, actor: string): boolean {
+  return g.phase === 5 && movementPromiseTargetAvailable(g, actor);
+}
+function appendTravelOrder(g: Game, kind: NonNullable<Game['travelPromiseOrder']>[number]['kind'], index: number) {
+  g.travelPromiseOrder?.push({ kind, index });
+}
+function initializeTravelOrder(g: Game) {
+  if (g.travelPromiseOrder) return;
+  const movement = [
+    ...(g.movementPromises ?? []).map((promise, index) => ({ kind: 'movement' as const, index, event: promise.event })),
+    ...(g.movementExpressionPromises ?? []).map((promise, index) => ({ kind: 'movementExpression' as const, index, event: promise.event })),
+  ];
+  const sequence = g.movementPromiseSequence ?? [];
+  const order = (event: string | undefined) => event === undefined ? -1 : sequence.indexOf(event);
+  movement.sort((a, b) => order(a.event) - order(b.event));
+  g.travelPromiseOrder = [
+    ...(g.shipmentPromises ?? []).map((_, index) => ({ kind: 'shipment' as const, index })),
+    ...movement.map(({ kind, index }) => ({ kind, index })),
+    ...(g.travelPromises ?? []).map((_, index) => ({ kind: 'travel' as const, index })),
+  ];
+}
+/** Only detached witness states receive signed native constraints. No selected
+ * DNF route is installed into the real shipment or movement ledgers. */
+function travelCompletion(source: Game, actor: string,
+  movements = liveMovementPromises(source.movementPromises ?? [], actor, source.turn),
+  expressions = liveMovementExpressionPromises(source.movementExpressionPromises ?? [], actor, source.turn),
+  shipments = liveShipmentPromises(source.shipmentPromises ?? [], actor, source.turn)): MovementCompletion | null {
+  const travel = liveTravelPromises(source.travelPromises ?? [], actor, source.turn);
+  const search = (index: number, leaves: TravelBranchLeaf[]): MovementCompletion | null => {
+    if (index < travel.length) {
+      for (const branch of travelBranches(travel[index])) {
+        const result = search(index + 1, [...leaves, ...branch]);
+        if (result) return result;
+      }
+      return null;
+    }
+    const trial = { ...source, travelPromises: undefined, travelPromiseOrder: undefined,
+      shipmentPromises: [...shipments], movementPromises: [...movements], movementExpressionPromises: [...expressions] };
+    for (const leaf of leaves) {
+      const promise = { territory: leaf.territory, minimum: leaf.minimum, turn: source.turn,
+        player: actor, asker: source.players.find(player => player.id !== actor)!.id, answer: leaf.answer };
+      if (leaf.kind === 'ship') trial.shipmentPromises.push(promise);
+      else trial.movementPromises.push(promise);
+    }
+    return groundMovementCompletionNative(trial, actor, trial.movementPromises, trial.movementExpressionPromises);
+  };
+  return travelRule(() => search(0, []));
+}
+function travelTruthAnswers(g: Game, p: Player, claim: TravelClaim): TruthAnswer[] {
+  if (claim.turn !== g.turn || !travelTargetAvailable(g, p.id)) return [];
+  const answers: TruthAnswer[] = [];
+  for (const answer of [true, false]) {
+    const compiled = compileMixedActionExpression(claim.mixed,
+      fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
+    if (compiled.kind === 'constant' && compiled.value !== answer) continue;
+    const promise: TravelPromise = { ...structuredClone(claim), event: 'candidate', player: p.id,
+      asker: g.players.find(player => player.id !== p.id)!.id, answer, compiled,
+      shipment: { pending: shipmentAvailable(g, p), event: null }, progress: [], movementClosed: false,
+      fulfilled: compiled.kind === 'constant', released: false };
+    const trial = { ...g, travelPromises: [...(g.travelPromises ?? []), promise] };
+    if (travelCompletion(trial, p.id) && bribeCompatibleLaterPromises(trial, p, {})) answers.push(answer ? 'yes' : 'no');
+  }
+  return answers.length ? answers : ['unknown'];
+}
+function bindTravelTruth(g: Game, p: Player, claim: TravelClaim, answer: boolean, asker: string) {
+  requireRule(travelTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
+    'Choose a whole travel answer compatible with the original shipment and ground movements.');
+  const compiled = compileMixedActionExpression(claim.mixed,
+    fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
+  initializeTravelOrder(g);
+  (g.travelPromises ??= []).push({ ...structuredClone(claim), event: crypto.randomUUID(), player: p.id, asker, answer,
+    compiled, shipment: { pending: shipmentAvailable(g, p), event: null }, progress: [], movementClosed: false,
+    fulfilled: compiled.kind === 'constant', released: false });
+  appendTravelOrder(g, 'travel', g.travelPromises!.length - 1);
+}
+function reconcileTravelPromises(g: Game, actor?: string, action?: Action) {
+  if (!g.travelPromises?.length) return;
+  travelRule(() => validateTravelPromises(g.travelPromises!, g.players.map(player => player.id)));
+  for (const promise of g.travelPromises) if (!promise.fulfilled && !promise.released &&
+    (promise.turn !== g.turn || g.phase > 5 || g.status !== 'playing')) promise.released = true;
+  if (g.phase !== 5) return;
+  initializeTravelOrder(g);
+  for (const p of g.players) {
+    if (!liveTravelPromises(g.travelPromises, p.id, g.turn).length) continue;
+    const voluntary = actor === p.id && action?.type !== 'passResponse';
+    if (g.truthtrance || g.phaseOpening || g.pendingFremenMove?.order.player === p.id ||
+      g.pendingIxMove?.player === p.id || g.pendingChoamMove?.player === p.id ||
+      g.pendingAdvisorMatching?.intent.kind === 'movement' && g.pendingAdvisorMatching.intent.order.player === p.id ||
+      g.response?.kind === 'advisorFlip' && g.response.owner === p.id ||
+      g.pendingAutomaticAdvisorFlips?.some(source => source.owner === p.id ||
+        source.producer === 'groundMovement' && source.mover === p.id)) continue;
+    if (!voluntary && (g.response || g.decision || g.pendingAmbassador || g.pendingTerrorEntry ||
+      g.pendingArrivalOverlap || g.pendingArrivalReaction?.length || g.pendingTreacheryDiscard)) continue;
+    const shipments: ShipmentPromise[] = [], movements: MovementPromise[] = [], expressions: MovementExpressionPromise[] = [], travel: TravelPromise[] = [];
+    for (const entry of g.travelPromiseOrder!) {
+      const ledger = entry.kind === 'shipment' ? g.shipmentPromises : entry.kind === 'movement' ? g.movementPromises
+        : entry.kind === 'movementExpression' ? g.movementExpressionPromises : g.travelPromises;
+      const promise = ledger?.[entry.index];
+      if (!promise || promise.player !== p.id || promise.turn !== g.turn || promise.fulfilled || promise.released) continue;
+      if (entry.kind === 'shipment') shipments.push(promise as ShipmentPromise);
+      else if (entry.kind === 'movement') movements.push(promise as MovementPromise);
+      else if (entry.kind === 'movementExpression') expressions.push(promise as MovementExpressionPromise);
+      else travel.push(promise as TravelPromise);
+      const trial = { ...g, shipmentPromises: shipments, movementPromises: movements,
+        movementExpressionPromises: expressions, travelPromises: travel };
+      if (travelCompletion(trial, p.id)) continue;
+      requireRule(!voluntary, 'Your action would remove the last legal completion of an accepted travel commitment.');
+      promise.released = true;
+      log(g, `${p.name} can no longer fulfill an accepted Truthtrance commitment; that answer is no longer binding.`);
+    }
+  }
+}
+function projectedTravelPromises(g: Game, actor: string) {
+  return (g.travelPromises ?? []).filter(promise => promise.player === actor).map(promise => ({
+    event: promise.event, player: promise.player, asker: promise.asker, turn: promise.turn, mixed: structuredClone(promise.mixed),
+    answer: promise.answer, fulfilled: promise.fulfilled, released: promise.released,
+  }));
+}
+function projectedTravelGuide(g: Game, player: Player): { event: string; action: Action } | null {
+  const promise = liveTravelPromises(g.travelPromises ?? [], player.id, g.turn)[0];
+  const policy = promise && g.phase === 5 && g.active === player.id ? projectedGroundMovementPolicy(g, player) : null;
+  const action = policy?.[0];
+  return promise && action ? { event: promise.event, action: { ...structuredClone(action), travelPromiseEvent: promise.event } } : null;
+}
 function groundMovementCompletion(source: Game, actor: string,
+  promises = liveMovementPromises(source.movementPromises ?? [], actor, source.turn),
+  expressions = liveMovementExpressionPromises(source.movementExpressionPromises ?? [], actor, source.turn)): MovementCompletion | null {
+  return liveTravelPromises(source.travelPromises ?? [], actor, source.turn).length
+    ? travelCompletion(source, actor, promises, expressions) : groundMovementCompletionNative(source, actor, promises, expressions);
+}
+function groundMovementCompletionNative(source: Game, actor: string,
   promises = liveMovementPromises(source.movementPromises ?? [], actor, source.turn),
   expressions = liveMovementExpressionPromises(source.movementExpressionPromises ?? [], actor, source.turn)): MovementCompletion | null {
   if (!movementPromiseModeSupported(source) || source.phase < 0 || source.phase > 5) return null;
@@ -18728,8 +18869,12 @@ function groundMovementCompletionAtMovement(game: Game, actor: string, promises:
       }
       yield* movementShipmentPreparations(state, owner, (source, actor, action) => {
         const payer = getPlayer(source, actor), share = Number(action.allyPayment);
-        const cost = reserveShipmentCost({ faction: payer.faction, halfRate: shipmentHalfRate(source, payer) },
-          territory(String(action.territory)).type, Number(action.amount));
+        const destinationType = territory(String(action.territory)).type;
+        const cost = action.type === 'guildShip'
+          ? guildShipmentCost(destinationType, Number(action.amount), source.karamaShipping?.player === actor ||
+            !(source.guildRateBlocked?.turn === source.turn && source.guildRateBlocked.player === actor))
+          : reserveShipmentCost({ faction: payer.faction, halfRate: shipmentHalfRate(source, payer) },
+            destinationType, Number(action.amount));
         if (share > cost || share > (aidFor(source, payer)?.amount ?? 0) || cost - share > payer.spice) return null;
         try { return groundMovementProbe(applyActionInner(source, actor, action, 'movementPreparation'), actor); }
         catch (error) { if (error instanceof RuleError) return null; throw error; }
@@ -18789,7 +18934,8 @@ function groundMovementCompletionAtMovement(game: Game, actor: string, promises:
 function hasMovementPromises(g: Game, player: string, positive = false): boolean {
   return [...liveMovementPromises(g.movementPromises ?? [], player, g.turn),
     ...liveMovementExpressionPromises(g.movementExpressionPromises ?? [], player, g.turn)]
-    .some(promise => !positive || promise.answer);
+    .some(promise => !positive || promise.answer) ||
+    liveTravelPromises(g.travelPromises ?? [], player, g.turn).some(promise => !positive || promise.answer);
 }
 function movementExpressionIntegrity(g: Game) {
   try { validateMovementExpressionPromises(g.movementExpressionPromises ?? [], g.players.map(player => player.id)); }
@@ -18852,6 +18998,7 @@ function bindMovementTruth(g: Game, p: Player, claim: MovementClaim, answer: boo
   const promise: MovementPromise = { ...claim, event: crypto.randomUUID(), turn: g.turn, player: p.id, asker, answer };
   (g.movementPromises ??= []).push(promise);
   (g.movementPromiseSequence ??= []).push(promise.event!);
+  appendTravelOrder(g, 'movement', g.movementPromises!.length - 1);
 }
 function movementExpressionTruthAnswers(g: Game, p: Player, claim: MovementExpressionClaim): TruthAnswer[] {
   if (claim.turn !== g.turn || !movementPromiseTargetAvailable(g, p.id)) return [];
@@ -18876,6 +19023,7 @@ function bindMovementExpressionTruth(g: Game, p: Player, claim: MovementExpressi
     player: p.id, asker, answer, progress: [] };
   (g.movementExpressionPromises ??= []).push(promise);
   (g.movementPromiseSequence ??= []).push(promise.event);
+  appendTravelOrder(g, 'movementExpression', g.movementExpressionPromises!.length - 1);
 }
 function compileMixedMovement(g: Game, p: Player, claim: MixedMovementClaim, answer: boolean) {
   const compiled = compileMixedActionExpression(claim.mixed,
@@ -18952,6 +19100,8 @@ function checkGroundMovementPromises(g: Game, p: Player, move: MovementOrder) {
   const live = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn), event = groundMovementEvent(move);
   requireRule(movementEventAllowed(live, event), 'This movement would break your accepted No answer.');
   const projected = projectGroundMovement(g, move);
+  if (projected.travelPromises) projected.travelPromises = travelRule(() =>
+    recordTravelMovement(projected.travelPromises!, p.id, g.turn, event));
   projected.movementPromises = settleMovementEvent(g.movementPromises ?? [], p.id, g.turn, event);
   try { projected.movementExpressionPromises = recordMovementExpressionEvent(g.movementExpressionPromises ?? [], p.id, g.turn, event); }
   catch (error) { if (error instanceof MovementExpressionPromiseError) throw new RuleError(error.message); throw error; }
@@ -18960,6 +19110,8 @@ function checkGroundMovementPromises(g: Game, p: Player, move: MovementOrder) {
 }
 function recordGroundMovementPromises(g: Game, p: Player, move: MovementOrder) {
   if (move.source === 'ambassador') return;
+  if (g.travelPromises) g.travelPromises = travelRule(() =>
+    recordTravelMovement(g.travelPromises!, p.id, g.turn, groundMovementEvent(move)));
   const old = g.movementPromises ?? [], expressions = g.movementExpressionPromises ?? [];
   if (g.movementPromises) {
     g.movementPromises = settleMovementEvent(old, p.id, g.turn, groundMovementEvent(move));
@@ -19430,6 +19582,7 @@ function finishBasicAlliedShipment(g: Game, p: Player) {
 /** A played movement card is already retired before queue advancement. */
 function finishMovementTurn(g: Game, id: string) {
   const p = getPlayer(g, id);
+  if (g.travelPromises) g.travelPromises = travelRule(() => finishTravelTurn(g.travelPromises!, id, g.turn));
   try {
     if (g.movementPromises) g.movementPromises = finishMovementPromises(g.movementPromises, p.id, g.turn);
     for (const promise of liveMovementExpressionPromises(g.movementExpressionPromises ?? [], p.id, g.turn)) {
@@ -27204,6 +27357,8 @@ function findShipmentCompletion(
     state.turn,
   ),
 ): ShipmentCompletion | null {
+  if (liveTravelPromises(state.travelPromises ?? [], owner.id, state.turn).length)
+    return travelCompletion(state, owner.id, undefined, undefined, promises);
   if (
     !shipmentPromiseTurnAvailable(state, owner.id, shipmentAvailable(state,owner))
   )
@@ -27442,6 +27597,7 @@ function bindShipmentTruth(
     ...(mixed ? {mixed} : {}),
     answer,
   });
+  appendTravelOrder(g, 'shipment', g.shipmentPromises!.length - 1);
 }
 function checkShipmentPromises(
   g: Game,
@@ -27461,6 +27617,8 @@ function finishShipmentPromises(
   shipment: { territory: string; amount: number } | null,
 ) {
   checkShipmentPromises(g, p, shipment);
+  if (g.travelPromises) g.travelPromises = travelRule(() => recordTravelShipment(g.travelPromises!, p.id, g.turn,
+    shipment ? { territory: shipment.territory, amount: shipment.amount } : null));
   for (const promise of liveShipmentPromises(
     g.shipmentPromises ?? [],
     p.id,
@@ -27481,6 +27639,7 @@ function ownGuildStopPromiseBlock(g: Game, p: Player): string | null {
  * the respondent's promise cannot veto the opponent's printed power. */
 function settleStoppedShipmentPromises(g: Game, p: Player, actor: string) {
   if (actor === p.id) checkShipmentPromises(g, p, null);
+  if (g.travelPromises) g.travelPromises = travelRule(() => recordTravelShipment(g.travelPromises!, p.id, g.turn, null));
   for (const promise of liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn)) {
     if (matchesShipment(promise, null) === promise.answer) promise.fulfilled = true;
     else {
@@ -36157,6 +36316,11 @@ export function applyAction(state: Game, id: string, action: Action): Game {
       Object.keys(guide.action).every(key => action[key] === guide.action[key]),
     'This alliance commitment guide is stale or belongs to another Nexus choice.');
   }
+  if (action.travelPromiseEvent !== undefined) {
+    const guide = projectedTravelGuide(state, getPlayer(state, id));
+    requireRule(guide && movementGuideActionMatches(action, guide.action),
+      'This travel guide is stale or belongs to another opportunity.');
+  }
   if (action.movementExpressionPromiseEvent !== undefined) {
     const guide = projectedMovementExpressionGuide(state, getPlayer(state, id));
     requireRule(guide && guide.phase === state.phase && movementGuideActionMatches(action, guide.action),
@@ -36187,6 +36351,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     'This revival commitment guide is stale or belongs to another native opportunity.');
   }
   const g = applyActionInner(state, id, action);
+  reconcileTravelPromises(g, id, action);
   reconcileBidPromises(g, { actor: id, action });
   reconcileRevivalPromises(g, { actor: id, action });
   reconcileBribePromises(g, { actor: id, action });
@@ -36513,6 +36678,7 @@ function settleAutomaticContinuations(g: Game) {
     if (g.pendingNexusEmperorSellerPurchase || g.pendingAmbassador?.nexusPurchase) return;
     // Opposing/automatic consequences can release a now-impossible promise;
     // they are not the original actor voluntarily spending a promised resource.
+    reconcileTravelPromises(g);
     reconcileBattlePromises(g);
     reconcileShipmentPromises(g);
     reconcileBidPromises(g);
@@ -36617,6 +36783,7 @@ export function normalizeAutomaticGame(state: Game): Game {
     treacheryDiscardIntegrity(g);
     return g;
   }
+  reconcileTravelPromises(g);
   reconcileBattlePromises(g);
   reconcileShipmentPromises(g);
   reconcileBidPromises(g);
@@ -36896,6 +37063,8 @@ function applyActionInner(
         bindMixedBid: bindMixedBidTruth,
         bidAnswers: bidTruthAnswers,
         bindBid: bindBidTruth,
+        travelAnswers: travelTruthAnswers,
+        bindTravel: bindTravelTruth,
         mixedTraitorAnswers: mixedTraitorTruthAnswers,
         bindMixedTraitor: bindMixedTraitorTruth,
         traitorAnswers: traitorTruthAnswers,
@@ -40687,6 +40856,11 @@ export function viewGame(state: Game, id: string) {
     ...(g.advanced&&g.decision?.kind==='advisor'&&g.decision.player===id
       ? {spiritualAdvisorChoices:spiritualAdvisorChoices(g,id)} : {}),
     truthMovementTargets: g.players.filter(p => movementPromiseTargetAvailable(g, p.id)).map(p => p.id),
+    truthTravelTargets: g.players.filter(p => travelTargetAvailable(g, p.id)).map(p => p.id),
+    truthTravelAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.kind === 'travel' &&
+      g.truthtrance.question.target === id ? travelTruthAnswers(g, me, g.truthtrance.question) : null,
+    travelPromises: projectedTravelPromises(g, id),
+    travelPromiseGuide: projectedTravelGuide(g, me),
     truthMixedTraitorTargets: g.players.filter(p => { const context = traitorTruthContext(g, p.id); return context && context.submitted === undefined; }).map(p => p.id),
     truthMixedTraitorAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.kind === 'mixedTraitorCall' &&
       g.truthtrance.question.target === id ? mixedTraitorTruthAnswers(g, me, g.truthtrance.question) : null,

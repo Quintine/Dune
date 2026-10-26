@@ -1,5 +1,9 @@
 'use client';
 
+import { TravelClaimFields, travelClaimInputError } from './travel-claim-fields';
+import { TravelAnswers } from './travel-promises';
+import type { TravelActionClaim } from '@/game/travel-expression-promises';
+
 import { MixedTraitorFields, mixedTraitorInputError } from './mixed-traitor-fields';
 import type { TraitorActionClaim } from '@/game/mixed-traitor-question';
 
@@ -89,7 +93,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid' | 'allianceExpression' | 'mixedAlliance' | 'mixedBattlePlan' | 'mixedTraitorCall'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid' | 'allianceExpression' | 'mixedAlliance' | 'mixedBattlePlan' | 'mixedTraitorCall' | 'travel'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -166,6 +170,11 @@ export function Truthtrance({
     { kind: 'action', action: { call: true } },
   ] });
   const mixedTraitorError = mixedTraitorInputError(mixedTraitor, g, target);
+  const [travel, setTravel] = useState<MixedActionExpression<TravelActionClaim>>({ kind: 'and', terms: [
+    { kind: 'action', action: { kind: 'ship', territory: 'carthag', minimum: 1 } },
+    { kind: 'action', action: { kind: 'move', territory: 'arrakeen', minimum: 1 } },
+  ] });
+  const travelError = travelClaimInputError(travel, g, target);
   const [shipment, setShipment] = useState<ShipmentExpression>({ territory: 'carthag', minimum: 6 });
   const [mixed, setMixed] = useState<MixedShipmentExpression>({
     kind: 'and',
@@ -202,6 +211,7 @@ export function Truthtrance({
             claim: planClaim,
           }
         : kind === 'mixedBattlePlan' ? { kind, target, battle: g.battle?.event ?? null, territory: g.battle?.territory ?? '', mixed: mixedBattle }
+        : kind === 'travel' ? { kind, target, turn: g.turn, mixed: travel }
         : kind === 'mixedTraitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '', mixed: mixedTraitor }
         : kind === 'traitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '' }
         : kind === 'mixedMovement' ? { kind, target, turn: g.turn, mixed: mixedMovement }
@@ -431,6 +441,8 @@ export function Truthtrance({
                       <div key={answer}>{button(answer === 'unknown' ? 'I don’t know yet' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}</div>
                     ))}
                   </>
+                ) : w.question!.kind === 'travel' ? (
+                  <TravelAnswers game={g} act={act} busy={busy} />
                 ) : w.question!.kind === 'traitorCall' || w.question!.kind === 'mixedTraitorCall' ? (
                   <TraitorDecisionAnswers game={g} act={act} busy={busy} />
                 ) : w.question!.kind === 'battlePlan' ? (
@@ -557,6 +569,7 @@ export function Truthtrance({
                   <option value="mixedBid">Combine current facts and ordinary bids</option>
                   <option value="traitorCall">Bind this battle’s Traitor declaration</option>
                   <option value="mixedTraitorCall">Combine current facts and this Traitor declaration</option>
+                  <option value="travel">Combine this turn’s shipment and ground movements</option>
                   <option value="shipment">
                     Bind a shipment from reserves
                   </option>
@@ -572,7 +585,15 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'mixedTraitorCall' ? (
+              {kind === 'travel' ? (
+                <>
+                  <TravelClaimFields value={travel} game={g} target={target}
+                    disabled={busy || !g.truthTravelTargets.includes(target)} onChange={setTravel} />
+                  {!g.truthTravelTargets.includes(target) && <p className="notice">Choose an active or unused native Shipment and Movement opportunity in this phase.</p>}
+                  <p className="notice" aria-label="Public travel question preview">{travelError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'mixedTraitorCall' ? (
+
                 <>
                   <MixedTraitorFields value={mixedTraitor} game={g} target={target}
                     disabled={busy || !g.truthMixedTraitorTargets.includes(target)} onChange={setMixedTraitor} />
@@ -812,6 +833,7 @@ export function Truthtrance({
                 (kind === 'revival' && (!!revivalClaimInputError(revivalClaim) || !g.truthRevivalTargets.includes(target))) ||
                 (kind === 'mixedBid' && (!!mixedBidError || !g.truthMixedBidTargets.includes(target))) ||
                 (kind === 'bid' && (!!bidClaimInputError(bidClaim) || !g.truthBidTargets.includes(target))) ||
+                (kind === 'travel' && (!!travelError || !g.truthTravelTargets.includes(target))) ||
                 (kind === 'mixedTraitorCall' && (!!mixedTraitorError || !g.truthMixedTraitorTargets.includes(target))) ||
                 (kind === 'traitorCall' && !g.truthTraitorTargets.includes(target)) ||
                   (kind === 'mixedShipment' &&

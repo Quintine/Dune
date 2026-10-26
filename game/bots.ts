@@ -1374,6 +1374,10 @@ function policyActions(g: GameView): Action[] {
         const answer = g.truthBidAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];
       }
+      if (w.question.kind === 'travel') {
+        const answer = g.truthTravelAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'mixedTraitorCall') {
         const answer = g.truthMixedTraitorAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];
@@ -4259,6 +4263,9 @@ export function botActions(g: GameView): Action[] {
   if (g.movementExpressionPromiseGuide && g.status === 'playing' &&
       !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending)
     return [g.movementExpressionPromiseGuide.action];
+  if (g.travelPromiseGuide && g.status === 'playing' && g.phase === 5 && g.active === g.me &&
+      !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending)
+    return [g.travelPromiseGuide.action];
   if (g.movementPromisePolicy && g.status === 'playing' &&
       !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending)
     return g.movementPromisePolicy;

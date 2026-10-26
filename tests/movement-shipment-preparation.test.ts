@@ -26,6 +26,22 @@ void test('spent shipment and paid Box decisions cannot start another preparatio
   assert.deepEqual([...movementShipmentPreparations(game, 'owner', () => assert.fail('Finish the paid decision'))], []);
 });
 
+void test('Fremen reserve preparation retains Guild transport variants only with a reciprocal native ally', () => {
+  const game = source(), owner = game.players[0]; owner.faction = 'fremen';
+  const guild: Game['players'][number] = { ...owner, id: 'ally', faction: 'guild', ally: owner.id };
+  game.players.push(guild);
+  const matching = (action: Record<string, unknown>) => action.type === 'guildShip' && action.from === 'reserves' &&
+    action.territory === 'carthag' && action.sector === 11 && action.amount === 2 && action.allyPayment === 1;
+  const choices = [...movementShipmentPreparations(game, owner.id, (state, _actor, action) =>
+    matching(action) ? structuredClone(state) : null)];
+  assert.equal(choices.length, 2);
+  assert.deepEqual(choices.map(choice => choice.actions[0].elite), [0, 1]);
+  guild.ally = null;
+  assert.deepEqual([...movementShipmentPreparations(game, owner.id, (_state, _actor, action) => {
+    assert.notEqual(action.type, 'guildShip'); return null;
+  })], []);
+});
+
 void test('owned No-Field shipment candidates preserve marker identity, one-force tariff shares and last-use restrictions', () => {
   const game = source(), owner = game.players[0]; owner.faction = 'richese';
   owner.noField = { tokens: [{ id: 'zero', value: 0 }, { id: 'three', value: 3 }, { id: 'five', value: 5 }],

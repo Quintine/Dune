@@ -2,13 +2,15 @@ import { gameDistance, gameTerritories, splitLocation, territory } from './board
 import type { Action, Game } from './engine';
 import { liveMovementPromises } from './movement-promises';
 
-/** Ordinary physical reserve shipments, not an AI shortlist. The authoritative
+/** Physical reserve shipments, not an AI shortlist. The authoritative
  * dispatcher supplies cost, funding, route and arrival legality. */
 export function* movementShipmentPreparations(game: Game, actor: string,
   project: (game: Game, actor: string, action: Action) => Game | null,
 ): Generator<{ game: Game; actions: Action[] }> {
   const player = game.players.find(player => player.id === actor);
   if (!player || player.shipped || game.pendingNullentropy) return;
+  const guildReserve = player.faction === 'fremen' && game.players.some(ally =>
+    ally.faction === 'guild' && ally.id === player.ally && ally.ally === actor);
   const present = (territory: string) => Object.entries(player.forces)
     .filter(([key]) => splitLocation(key).territory === territory)
     .reduce((sum, [, amount]) => sum + amount, 0);
@@ -43,6 +45,11 @@ export function* movementShipmentPreparations(game: Game, actor: string,
           const action: Action = { type: 'ship', territory: destination.id, sector, amount, elite, allyPayment };
           const next = project(game, actor, action);
           if (next) yield { game: next, actions: [action] };
+          if (guildReserve) {
+            const transport: Action = { ...action, type: 'guildShip', from: 'reserves' };
+            const transported = project(game, actor, transport);
+            if (transported) yield { game: transported, actions: [transport] };
+          }
         }
       }
     }

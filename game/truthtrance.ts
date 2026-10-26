@@ -1,3 +1,4 @@
+import { parseTravelActionClaim, type TravelClaim } from './travel-expression-promises';
 import { parseTraitorActionClaim, type MixedTraitorClaim } from './mixed-traitor-question';
 import { parseBattleActionClaim, MIXED_BATTLE_MAX_NODES, MIXED_BATTLE_MAX_TERMS, MIXED_BATTLE_MAX_DEPTH,
   MIXED_BATTLE_MAX_LEAVES, type MixedBattleClaim } from './mixed-battle-question';
@@ -78,6 +79,7 @@ export type TruthFact =
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type MixedMovementClaim = { turn: number; mixed: MixedActionExpression<MovementClaim> };
 export type TruthQuestion =
+  | ({ kind: 'travel'; target: string } & TravelClaim)
   | ({ kind: 'mixedTraitorCall'; target: string } & MixedTraitorClaim)
   | ({ kind: 'mixedBattlePlan'; target: string } & MixedBattleClaim)
   | ({ kind: 'allianceExpression'; target: string } & AllianceExpressionClaim)
@@ -369,6 +371,15 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       claim.turn === g.turn && claim.lot === g.auction.index + 1,
     'Choose the current ordinary bid lot in a supported table and finish pending decisions.');
     return { kind: 'bid', target: v.target, ...claim };
+  }
+  if (v.kind === 'travel') {
+    check(Object.keys(v).sort().join(',') === 'kind,mixed,target,turn' && g.status === 'playing' &&
+      g.phase === 5 && v.turn === g.turn,
+    'Choose a current Shipment and Movement turn for this combined travel question.');
+    const respondent = g.players.find(player => player.id === v.target)!;
+    return { kind: 'travel', target: v.target as string, turn: g.turn,
+      mixed: parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent), parseTravelActionClaim,
+        { requireFact: false }) };
   }
   if (v.kind === 'mixedTraitorCall') {
     check(Object.keys(v).sort().join(',') === 'battle,kind,mixed,target,territory' &&
@@ -670,6 +681,8 @@ export function truthQuestionText(
       return `you currently hold ${f.compare === 'eq' ? 'exactly' : f.compare === 'gte' ? 'at least' : 'at most'} ${f.value} spice`;
     return `(${f.terms.map(clause).join(f.kind === 'and' ? ' AND ' : ' OR ')})`;
   };
+  if (q.kind === 'travel') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
+    action => `you ${action.kind === 'ship' ? shipmentClaimText(action) : movementClaimText(action)}`)} this turn?`;
   if (q.kind === 'mixedTraitorCall') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => action.call ? 'you declare the opposing leader a Traitor in this battle'
       : 'you decline to declare the opposing leader a Traitor in this battle')}?`;
@@ -739,6 +752,8 @@ export function resolveTruthAction(
     bindMixedBid?: (g: Game, p: Player, claim: MixedBidClaim, answer: boolean, asker: string) => void;
     bidAnswers?: (g: Game, p: Player, claim: BidClaim) => TruthAnswer[];
     bindBid?: (g: Game, p: Player, claim: BidClaim, answer: boolean, asker: string) => void;
+    travelAnswers?: (g: Game, p: Player, claim: TravelClaim) => TruthAnswer[];
+    bindTravel?: (g: Game, p: Player, claim: TravelClaim, answer: boolean, asker: string) => void;
     mixedTraitorAnswers?: (g: Game, p: Player, claim: MixedTraitorClaim) => TruthAnswer[];
     bindMixedTraitor?: (g: Game, p: Player, claim: MixedTraitorClaim, answer: boolean, asker: string) => void;
     traitorAnswers?: (g: Game, p: Player) => TruthAnswer[];
@@ -906,6 +921,9 @@ export function resolveTruthAction(
         if (w.question.kind === 'bid')
           check(effects.bidAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a bidder with a remaining ordinary opportunity in this lot.');
+        if (w.question.kind === 'travel')
+          check(effects.travelAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose an unused or active native Shipment and Movement opportunity.');
         if (w.question.kind === 'mixedTraitorCall')
           check(effects.mixedTraitorAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a whole mixed Traitor question for an actual current voter.');
@@ -1029,6 +1047,11 @@ export function resolveTruthAction(
           check(effects.bidAnswers && effects.bindBid && effects.bidAnswers(g, p, q).includes(a.answer),
             'Choose an answer consistent with this lot, your legal bids and earlier answers.');
           if (a.answer !== 'unknown') effects.bindBid(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'travel') {
+          check(effects.travelAnswers && effects.bindTravel && effects.travelAnswers(g, p, q).includes(a.answer),
+            'Choose a whole travel answer compatible with native actions and earlier commitments.');
+          if (a.answer !== 'unknown') effects.bindTravel(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'mixedTraitorCall') {
           check(effects.mixedTraitorAnswers && effects.bindMixedTraitor && effects.mixedTraitorAnswers(g, p, q).includes(a.answer),

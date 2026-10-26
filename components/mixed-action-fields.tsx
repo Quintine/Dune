@@ -19,6 +19,7 @@ export type MixedActionConfig<A> = {
   maxDepth: number;
   maxNodes?: number;
   maxTerms?: number;
+  requireFact?: boolean;
   newAction: () => A;
   parseAction: (value: unknown, game: GameView, target: string) => A;
   renderAction: (props: { value: A; id: string; game: GameView; target: string;
@@ -57,7 +58,8 @@ export function mixedActionInputError<A>(value: unknown, game: GameView, target:
       return fact;
     }, input => config.parseAction(input, game, target), { maxDepth: config.maxDepth, maxLeaves: config.maxLeaves,
       ...(config.maxNodes === undefined ? {} : { maxNodes: config.maxNodes }),
-      ...(config.maxTerms === undefined ? {} : { maxTerms: config.maxTerms }) });
+      ...(config.maxTerms === undefined ? {} : { maxTerms: config.maxTerms }),
+      ...(config.requireFact === undefined ? {} : { requireFact: config.requireFact }) });
     return null;
   } catch (error) {
     return error instanceof Error ? error.message : config.fallbackError;

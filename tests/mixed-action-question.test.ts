@@ -69,6 +69,21 @@ void test('mixed action parsing requires both families and preserves raw nested 
     assert.throws(() => decode(input), MixedActionQuestionError);
 });
 
+void test('optional current facts permit all-action travel questions without weakening other defaults or budgets', () => {
+  for (const original of [action(), group('or', action(), action('arrakeen')),
+    group('and', fact(), action())])
+    assert.deepEqual(decode(original, { requireFact: false }), original);
+  for (const original of [fact(), group('and', fact(), fact(10))])
+    assert.throws(() => decode(original, { requireFact: false }), MixedActionQuestionError);
+  assert.throws(() => decode(action(), { requireFact: true }), MixedActionQuestionError);
+  assert.throws(() => decode(group('and', action(), action()), { requireFact: false, maxLeaves: 1 }),
+    MixedActionQuestionError);
+  assert.throws(() => decode(group('and', action(), action()), { requireFact: false, maxDepth: 0 }),
+    MixedActionQuestionError);
+  for (const requireFact of [null, 0, 'false'])
+    assert.throws(() => decode(action(), { requireFact } as unknown as MixedActionExpressionLimits), MixedActionQuestionError);
+});
+
 void test('mixed action public parsing rejects frozen constants, metadata and malformed groups everywhere', () => {
   const invalid: unknown[] = [null, [], {}, { kind: 'and', terms: [] },
     { kind: 'or', terms: [fact()] }, { kind: 'xor', terms: [fact(), action()] },

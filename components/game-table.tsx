@@ -1,4 +1,5 @@
 'use client';
+import { TravelPromises } from './travel-promises';
 import { MixedTraitorPromises } from './mixed-traitor-promises';
 import { MixedBattlePromises } from './mixed-battle-promises';
 import { TraitorDecisionPromises } from './traitor-decision-promises';
@@ -2064,6 +2065,7 @@ export function GameTable({
           {g.status === 'playing' && <MixedBidPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <MixedBattlePromises game={g} />}
           {g.status === 'playing' && <MixedTraitorPromises game={g} />}
+          {g.status === 'playing' && <TravelPromises game={g} busy={busy} act={act} />}
           {g.guildBetrayalReaction ? (
             <NexusGuildBetrayal game={g} act={act} busy={reactionBusy} />
           ) : g.richeseBetrayalReaction ? (
