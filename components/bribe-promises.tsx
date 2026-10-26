@@ -25,7 +25,9 @@ export function BribePromiseGuideButton(props: BribePromiseProps) {
       current.bribePromiseGuide === guide && current.bribePromiseGuide.action === action && JSON.stringify(action) === signature &&
       action.type === 'bribe' && typeof event === 'string' &&
       (liveBribePromises(current.bribePromises, actor, turn).some(promise => promise.event === event) ||
-        liveBribeExpressionPromises(current.bribeExpressionPromises, actor, turn).some(promise => promise.event === event)) &&
+        liveBribeExpressionPromises(current.bribeExpressionPromises, actor, turn).some(promise => promise.event === event) ||
+        current.mixedBribePromises.some(promise => promise.event === event && promise.player === actor && promise.turn === turn &&
+          !promise.fulfilled && !promise.released)) &&
       !!me && !me.autopilot && !!target && target.id !== actor && target.id !== me.ally &&
       options.blocked === null && Number.isSafeInteger(options.available) &&
       typeof action.amount === 'number' && action.amount <= options.available &&
@@ -64,6 +66,6 @@ export function BribePromises(props: BribePromiseProps) {
       Ordinary bribes can be paid out of turn when the current bribe controls permit them; original timing and payment rules still apply.
       {' '}<a href="/rules#truthtrance-bribe">Bribe promise rules</a>.
     </p>
-    <BribePromiseGuideButton {...props} />
+    {liveBribePromises(own, props.game.me, props.game.turn).length > 0 && <BribePromiseGuideButton {...props} />}
   </section>;
 }

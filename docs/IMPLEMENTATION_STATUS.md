@@ -1,5 +1,52 @@
 # Dune implementation status
 
+## 26 October 2026 — Current facts with ordinary payments and shared mixed authoring
+
+**Prototyped / Partial.** Full mixed fact/payment AND/OR questions freeze current
+facts before actual ordinary payer debits. Conservative unknown compilation
+creates only the native residual needed by the selected whole answer; decisive
+constants require no payment. One physical bribe ledger owns cumulative progress,
+funding, accepted order, restrictions, receipts and actual turn-end deadlines.
+Raw metadata links the original question/event; pure projection hides residuals
+and own mixed projection exposes only raw/aggregate/progress/status. Existing
+uniform Yes readiness reopening and new-record-only discard signatures preserve
+native timing and earlier record shapes. No old answer is reactivated.
+
+Shared generic mixed fields extract the existing movement tree editor. Its
+thin movement adapter retains API/IDs/data attributes/callback traversal while
+payment fields provide current nonally recipients and safe integer minima.
+Both retain nested facts,16 leaves/depth4, editable invalid drafts, raw preview/
+Ask and private answers. Scalar/grouped/mixed panels use live guide ownership;
+a fulfilled historical row cannot duplicate or suppress a later payment guide.
+Four minimal profiles answer and pay; strategy/calibration remain deferred.
+
+Root integration and disjoint control/native lanes pass **21 files,216/216**,
+types/lint/build and **ten native paths**,33 GameTable SSR renders/13 guide
+callbacks plus two editor callbacks followed by native Ask. Original H/A/E
+base33 Basic20/Advanced23 prefixes add22: actual H3/A2 payment debits reduce E10
+to5 without changing its answer-time fact; exact receipts collect once at the
+real opening. Edited true OR is immediate Yes; false AND is immediate No while
+actual payment stays legal. Native unknown OR Yes pays; unknown AND No caps the
+future total. A32-action actual Mentat prefix adds37, reopens only the payer and
+earns late receipt at the following opening. Original H/A/T Ix47 102-action
+prefixes add16 in either accepted order: real H1/A1 then native leader2 fulfills
+both at T0. Shared movement adapter still edits/asks its raw question correctly.
+All33/47 original cards remain physical. Four profiles actually answer/pay on
+both Basic/Advanced original sources.
+
+Nineteen native,two native funding,nine controlled and existing generic/scalar/
+grouped/movement cases cover current debit snapshots, constants/unknowns,
+prior intervals, split payments, shared budgets/caps, exact wire/event/ownership,
+raw projection and late deadlines. One older controls assertion changes from
+historical scalar ownership to live ownership. The first frozen v1 batch passes.
+Proof/report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-mixed-bribe-proof-v1/`;
+journeys/HTML: adjacent `20261026-truth-mixed-bribe-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Other action families, correlated unknowns, future preparation, optional/wider
+compositions, final rules/recovery/privacy/custody and browser/deployed remain.
+[Contract](TRUTHTRANCE_MIXED_BRIBES.md).
+
 ## 26 October 2026 — Current facts with future ground moves
 
 **Prototyped / Partial.** Full mixed questions combine current facts and future

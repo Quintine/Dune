@@ -16,6 +16,39 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / current facts and ordinary payments — 26 October. Prototyped / Partial.**
+Full mixed AND/OR questions now freeze facts before real payer debits, then bind
+only the native cumulative payment obligation needed for the whole answer.
+Constants require no payment; unknowns retain the conservative guarantee.
+Original purse/accepted order/nonallies/timing/receipts and actual turn end stay.
+Raw original question/aggregate/progress are own-projected without frozen clause
+values or compiled residuals. Movement/payments share the full mixed editor;
+movement API/IDs/callbacks stay. Scalar/pure/mixed panels use live ownership for
+one exact guide. Private answers and four minimal policies are connected.
+
+Root integration with disjoint controls/native lanes passes **21 files,216/216**,
+types/lint/build and **ten native paths**,33 GameTable SSR renders/13 actual
+guide callbacks plus two editor callbacks followed by native Ask. Genuine
+base33 Basic20/Advanced23 prefixes add22: factual E10 stays binding while H3/A2
+debits leave E5; each exact share credits once at its actual opening. Edited
+true OR has no payment binding; false AND permits a real payment. Native unknown
+OR Yes pays, AND No caps cumulative payments. A32-action Mentat prefix adds37:
+only payer readiness reopens and late receipts wait for the next actual opening.
+Original H/A/T Ix47 102-action prefixes add16 in both accepted orders: H1/A1
+then native leader2 ends T0. The shared movement editor still submits native Ask.
+All33/47 cards remain physical; four policies actually answer and pay.
+
+Nineteen native,two native funding and nine controlled cases supplement existing
+generic/scalar/grouped/movement coverage. One old historical-scalar guide
+expectation now follows live ownership. The first frozen v1 batch passes;
+proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-mixed-bribe-proof-v1/`;
+journeys/HTML: adjacent `20261026-truth-mixed-bribe-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Other families, correlated unknowns, future preparations, wider compositions,
+browser/mobile/deployed and final rules/assurance remain required.
+[Authority, original payment boundaries and evidence](TRUTHTRANCE_MIXED_BRIBES.md).
+
 **Truthtrance / current facts and future movement — 26 October. Prototyped / Partial.**
 Full mixed AND/OR questions now freeze current facts at actual answer time and
 bind only the remaining native ground-movement obligation. Unknown facts use

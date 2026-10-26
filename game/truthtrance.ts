@@ -1,3 +1,4 @@
+import { parseBribePaymentClaim, type MixedBribeClaim } from './mixed-bribe-question';
 import { parseMixedActionExpression, mixedActionExpressionText, type MixedActionExpression } from './mixed-action-question';
 import { parseMovementExpressionClaim, movementExpressionText, type MovementExpressionClaim } from './movement-expression-promises';
 import { parseBribeExpressionClaim, bribeExpressionRecipients, bribeExpressionText,
@@ -70,6 +71,7 @@ export type TruthFact =
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type MixedMovementClaim = { turn: number; mixed: MixedActionExpression<MovementClaim> };
 export type TruthQuestion =
+  | ({ kind: 'mixedBribe'; target: string } & MixedBribeClaim)
   | ({ kind: 'mixedMovement'; target: string } & MixedMovementClaim)
   | ({ kind: 'movementExpression'; target: string } & MovementExpressionClaim)
   | ({ kind: 'bribeExpression'; target: string } & BribeExpressionClaim)
@@ -259,6 +261,20 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       claim.partner !== v.target && g.players.some(player => player.id === claim.partner),
     'Choose the current ordinary Nexus and another named partner in a supported table.');
     return { kind: 'alliance', target: v.target, ...claim };
+  }
+  if (v.kind === 'mixedBribe') {
+    check(Object.keys(v).sort().join(',') === 'kind,mixed,target,turn' && v.turn === g.turn &&
+      bribePromiseModeSupported(g) && g.status === 'playing' && g.phase >= 0 && g.phase <= 8 &&
+      !g.response && !g.decision && !g.phaseOpening && !g.pendingTreacheryDiscard && !g.pendingKarama,
+      'Supply the current turn, complete mixed bribe question and a supported quiet native window.');
+    const respondent = g.players.find(player => player.id === v.target)!;
+    const mixed = parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent), input => {
+      const action = parseBribePaymentClaim(input);
+      check(action.recipient !== respondent.id && action.recipient !== respondent.ally &&
+        g.players.some(player => player.id === action.recipient), 'Choose another current non-allied ordinary bribe recipient.');
+      return action;
+    });
+    return { kind: 'mixedBribe', target: v.target as string, turn: g.turn, mixed };
   }
   if (v.kind === 'bribeExpression') {
     check(Object.keys(v).sort().join(',') === 'claim,kind,target,turn',
@@ -578,6 +594,8 @@ export function truthQuestionText(
       return `you currently hold ${f.compare === 'eq' ? 'exactly' : f.compare === 'gte' ? 'at least' : 'at most'} ${f.value} spice`;
     return `(${f.terms.map(clause).join(f.kind === 'and' ? ' AND ' : ' OR ')})`;
   };
+  if (q.kind === 'mixedBribe') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
+    action => `you ${bribeExpressionText({ kind: 'payment', ...action }, playerName)} from now until this turn ends`)}?`;
   if (q.kind === 'mixedMovement') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => `you ${movementClaimText(action)} before your Movement opportunity ends`)}?`;
   return `Is it true that ${q.kind === 'mixedShipment'
@@ -612,6 +630,8 @@ export function resolveTruthAction(
     bindMovement?: (g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) => void;
     allianceAnswers?: (g: Game, p: Player, claim: AllianceClaim) => TruthAnswer[];
     bindAlliance?: (g: Game, p: Player, claim: AllianceClaim, answer: boolean, asker: string) => void;
+    mixedBribeAnswers?: (g: Game, p: Player, claim: MixedBribeClaim) => TruthAnswer[];
+    bindMixedBribe?: (g: Game, p: Player, claim: MixedBribeClaim, answer: boolean, asker: string) => void;
     bribeExpressionAnswers?: (g: Game, p: Player, claim: BribeExpressionClaim) => TruthAnswer[];
     bindBribeExpression?: (g: Game, p: Player, claim: BribeExpressionClaim, answer: boolean, asker: string) => void;
     bribeAnswers?: (g: Game, p: Player, claim: BribeClaim) => TruthAnswer[];
@@ -757,6 +777,9 @@ export function resolveTruthAction(
         if (w.question.kind === 'movementExpression')
           check(effects.movementExpressionAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a supported whole ground-movement question.');
+        if (w.question.kind === 'mixedBribe')
+          check(effects.mixedBribeAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a mixed current-fact and ordinary-payment question compatible with earlier answers.');
         if (w.question.kind === 'bribeExpression')
           check(effects.bribeExpressionAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a whole bribe expression compatible with earlier answers.');
@@ -844,6 +867,11 @@ export function resolveTruthAction(
           check(effects.allianceAnswers && effects.bindAlliance && effects.allianceAnswers(g, p, q).includes(a.answer),
             'Choose an answer consistent with actual alliance consent and earlier commitments.');
           if (a.answer !== 'unknown') effects.bindAlliance(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'mixedBribe') {
+          check(effects.mixedBribeAnswers && effects.bindMixedBribe && effects.mixedBribeAnswers(g, p, q).includes(a.answer),
+            'Choose a whole mixed-bribe answer compatible with current facts, funds and earlier commitments.');
+          if (a.answer !== 'unknown') effects.bindMixedBribe(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'bribeExpression') {
           check(effects.bribeExpressionAnswers && effects.bindBribeExpression && effects.bribeExpressionAnswers(g, p, q).includes(a.answer),

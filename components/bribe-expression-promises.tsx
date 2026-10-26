@@ -2,6 +2,7 @@
 
 import type { Action, GameView } from '@/game/engine';
 import { bribeExpressionRecipients, bribeExpressionText, liveBribeExpressionPromises } from '@/game/bribe-expression-promises';
+import { liveBribePromises } from '@/game/bribe-promises';
 import { BribePromiseGuideButton } from './bribe-promises';
 
 type BribeExpressionPromiseProps = { game: GameView; busy: boolean; send: (action: Action) => void };
@@ -37,6 +38,6 @@ export function BribeExpressionPromises(props: BribeExpressionPromiseProps) {
       ? 'Late payments still honor this turn’s answers; their recipients collect at next turn’s Mentat opening.'
       : 'Your next Mentat opening is still ahead. Accepted payments count now and their recipients collect at that opening.'}
       {' '}No stays binding until the actual turn ends; opening collection does not end it.</p>}
-    {!game.bribePromises.some(promise => promise.player === game.me) && <BribePromiseGuideButton {...props} />}
+    {live && !liveBribePromises(game.bribePromises, game.me, game.turn).length && <BribePromiseGuideButton {...props} />}
   </section>;
 }

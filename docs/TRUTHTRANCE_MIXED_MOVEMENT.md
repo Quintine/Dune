@@ -1,5 +1,9 @@
 # Truthtrance current facts and future ground movement
 
+The [mixed ordinary-payment follow-up](TRUTHTRANCE_MIXED_BRIBES.md) reuses
+this compiler and extracts the editor into `components/mixed-action-fields.tsx`.
+The movement wrapper retains its public API, IDs, callbacks and native behavior.
+
 ## Mixed aggregate prototype — 26 October 2026
 
 **Prototyped / Partial.** The packet is

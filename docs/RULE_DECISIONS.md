@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Current facts combined with ordinary payments — 26 October 2026
+
+Reuse the current-fact/movement snapshot composition and recorded publisher
+FAQp8/current-turn/AND/OR plus supplied Advanced physical39 compliance/unknown
+text. Facts freeze before real payer debits; unknown takes false for Yes and
+true for No. Only an action residual binds native cumulative ordinary payments.
+Decisive constant aggregates need none. Raw original question/whole answer are
+projected without individual frozen values or compiled branches. Preserve the
+original current purse, accepted order, nonallies, pending/Double guards,
+opening-only receipts and actual turn end. This remains provisional online
+composition, not a dedicated publisher mixed-payment algorithm or a correlated
+unknown solver. No mode/save/server/publication gate changes.
+[Contract and evidence](TRUTHTRANCE_MIXED_BRIBES.md).
+
 ## Current facts combined with future movement — 26 October 2026
 
 Reuse recorded publisher FAQp8 current-turn/AND/OR authority and supplied

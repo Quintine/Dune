@@ -1,5 +1,7 @@
 'use client';
 
+import { MixedBribeFields, mixedBribeInputError } from './mixed-bribe-fields';
+import type { BribePaymentClaim } from '@/game/mixed-bribe-question';
 import { MixedMovementFields, mixedMovementInputError } from './mixed-movement-fields';
 import type { MixedActionExpression } from '@/game/mixed-action-question';
 import { MovementExpressionFields, movementExpressionInputError } from './movement-expression-fields';
@@ -73,7 +75,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -116,6 +118,11 @@ export function Truthtrance({
     { kind: 'action', action: { territory: 'carthag', minimum: 1 } },
   ] });
   const mixedMovementError = mixedMovementInputError(mixedMovement, g, target);
+  const [mixedBribe, setMixedBribe] = useState<MixedActionExpression<BribePaymentClaim>>({ kind: 'and', terms: [
+    { kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 10 } },
+    { kind: 'action', action: { recipient: g.me, minimum: 3 } },
+  ] });
+  const mixedBribeError = mixedBribeInputError(mixedBribe, g, target);
   const [shipment, setShipment] = useState<ShipmentExpression>({ territory: 'carthag', minimum: 6 });
   const [mixed, setMixed] = useState<MixedShipmentExpression>({
     kind: 'and',
@@ -158,6 +165,7 @@ export function Truthtrance({
         : kind === 'revivalExpression' ? { kind, target, turn: g.turn, claim: revivalExpression }
         : kind === 'leaderRevival' ? { kind, target, ...leaderRevivalClaim }
         : kind === 'alliance' ? { kind, target, ...allianceClaim }
+        : kind === 'mixedBribe' ? { kind, target, turn: g.turn, mixed: mixedBribe }
         : kind === 'bribeExpression' ? { kind, target, turn: g.turn, claim: bribeExpression }
         : kind === 'bribe' ? { kind, target, ...bribeClaim }
         : kind === 'revival' ? { kind, target, ...revivalClaim }
@@ -287,6 +295,13 @@ export function Truthtrance({
                   <>
                     <p className="notice">This answer concerns actual membership when this Nexus closes. An offer alone does not form an alliance. Yes remains binding after formation; No requires ending without this named partner. Consent that is not yet available may be unknown, letting the holder ask again or save the card.</p>
                     {(g.truthAllianceAnswers ?? []).map(answer => <div key={answer}>
+                      {button(answer === 'unknown' ? 'I don’t know yet' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
+                  </>
+                ) : w.question!.kind === 'mixedBribe' ? (
+                  <>
+                    <p className="notice">This answers the whole current-fact and future-payment question. Facts freeze at this answer; later spending does not rewrite them. Unknown facts require a guaranteed whole answer. Only actual future ordinary payer payments count; receipts remain deferred until their next Mentat opening. Individual fact answers and reduced obligations are not published.</p>
+                    {(g.truthMixedBribeAnswers ?? []).map(answer => <div key={answer}>
                       {button(answer === 'unknown' ? 'I don’t know yet' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}
                     </div>)}
                   </>
@@ -454,6 +469,7 @@ export function Truthtrance({
                   <option value="alliance">Bind alliance membership at this Nexus close</option>
                   <option value="bribe">Bind ordinary bribe payments this turn</option>
                   <option value="bribeExpression">Combine ordinary bribe payments with AND/OR</option>
+                  <option value="mixedBribe">Combine current facts and ordinary payments</option>
                   <option value="revivalExpression">Bind combined force and leader revivals</option>
                   <option value="leaderRevival">Bind a named leader revival this turn</option>
                   <option value="revival">Bind ordinary force revivals this turn</option>
@@ -497,6 +513,14 @@ export function Truthtrance({
                   <p className="fine">The final actual partnership in the current ordinary Nexus is binding. Yes uses an already held partnership or an actual incoming invitation the respondent can accept; another player’s future consent is not invented. No may require breaking a temporary alliance before readiness.</p>
                   {!g.truthAllianceTargets.includes(target) && <p className="notice">Choose a supported participant in a quiet open ordinary Nexus. Optional modules and broader alliance questions remain unfinished.</p>}
                   <p className="notice" aria-label="Public alliance question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'mixedBribe' ? (
+                <>
+                  <MixedBribeFields value={mixedBribe} game={g} target={target}
+                    disabled={busy || !g.truthMixedBribeTargets.includes(target)} onChange={setMixedBribe} />
+                  <p className="fine">Current facts freeze when answered. Later ordinary payer payments add together until this turn ends. No negates the whole mixed question. Current funds and earlier promises stay available; late Mentat receipts wait until next turn&apos;s opening.</p>
+                  {!g.truthMixedBribeTargets.includes(target) && <p className="notice">Choose a supported quiet native window and finish pending decisions. Optional modules remain unfinished.</p>}
+                  <p className="notice" aria-label="Public mixed bribe question preview">{mixedBribeError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
               ) : kind === 'bribeExpression' ? (
                 <>
@@ -653,6 +677,7 @@ export function Truthtrance({
                 (kind === 'revivalExpression' && (!!revivalExpressionInputError(revivalExpression) || !validRevivalExpressionNames || !g.truthRevivalExpressionTargets.includes(target))) ||
                 (kind === 'leaderRevival' && (!!leaderRevivalClaimInputError(leaderRevivalClaim, leaderRevivalChoices) || !g.truthLeaderRevivalTargets.includes(target))) ||
                 (kind === 'alliance' && (!!allianceClaimInputError(allianceClaim, alliancePartners) || !g.truthAllianceTargets.includes(target))) ||
+                (kind === 'mixedBribe' && (!!mixedBribeError || !g.truthMixedBribeTargets.includes(target))) ||
                 (kind === 'bribeExpression' && (!!bribeExpressionError || !validBribeExpressionRecipients || !g.truthBribeExpressionTargets.includes(target))) ||
                 (kind === 'bribe' && (!!bribeClaimInputError(bribeClaim, bribeRecipients) || !g.truthBribeTargets.includes(target))) ||
                 (kind === 'revival' && (!!revivalClaimInputError(revivalClaim) || !g.truthRevivalTargets.includes(target))) ||

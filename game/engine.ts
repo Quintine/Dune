@@ -1,9 +1,10 @@
+import type { BribePaymentClaim, MixedBribeClaim } from './mixed-bribe-question';
 import { compileMixedActionExpression, MixedActionQuestionError, type CompiledMixedAction } from './mixed-action-question';
 import { MovementExpressionPromiseError, liveMovementExpressionPromises, recordMovementExpressionEvent,
   validateMovementExpressionPromises, type MovementExpression, type MovementExpressionClaim, type MovementExpressionPromise } from './movement-expression-promises';
 import { BribeExpressionPromiseError, bribeExpressionRecipients, bribeCompletionCandidates,
   liveBribeExpressionPromises, recordBribeExpressionPayment, validateBribeExpressionPromises,
-  type BribeExpressionClaim, type BribeExpressionPromise } from './bribe-expression-promises';
+  type BribeExpression, type BribeExpressionClaim, type BribeExpressionPromise } from './bribe-expression-promises';
 import { RevivalExpressionPromiseError, liveRevivalExpressionPromises, revivalExpressionBranches,
   evaluateRevivalExpression, recordRevivalExpressionReturn, validateRevivalExpressionPromises,
   type RevivalExpression, type RevivalExpressionClaim, type RevivalExpressionPromise, type RevivalExpressionReturn } from './revival-expression-promises';
@@ -2162,6 +2163,10 @@ export type Game = {
   revivalPromiseSequence?: string[];
   bribePromises?: BribePromise[];
   bribeExpressionPromises?: BribeExpressionPromise[];
+  /** Public original mixed questions; native residuals own physical payment rules. */
+  mixedBribeQuestions?: (MixedBribeClaim & {
+    event: string; player: string; asker: string; answer: boolean; binding: boolean;
+  })[];
   bribePromiseSequence?: string[];
   alliancePromises?: AlliancePromise[];
   movementPromises?: MovementPromise[];
@@ -6908,6 +6913,9 @@ function truthtranceDiscardSignature(g: Game, next: TruthDiscardContinuation) {
     battle: g.battle,
     shipmentPromises: g.shipmentPromises,
     movementPromises: g.movementPromises,
+    ...(next.record.question.kind === 'mixedBribe' ? {
+      mixedBribeQuestions: g.mixedBribeQuestions, bribeExpressionPromises: g.bribeExpressionPromises,
+    } : {}),
     ...(next.record.question.kind === 'mixedMovement' ? {
       mixedMovementQuestions: g.mixedMovementQuestions, movementExpressionPromises: g.movementExpressionPromises,
     } : {}),
@@ -15193,6 +15201,54 @@ function bindBribeExpressionTruth(g: Game, p: Player, claim: BribeExpressionClai
   (g.bribeExpressionPromises ??= []).push(promise);
   (g.bribePromiseSequence ??= []).push(promise.event);
   reopenBribePayer(g, p, answer);
+}
+function compileMixedBribe(g: Game, p: Player, claim: MixedBribeClaim, answer: boolean) {
+  const compiled = compileMixedActionExpression(claim.mixed,
+    fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
+  if (compiled.kind === 'constant') return { constant: compiled.value };
+  const payments = (node: CompiledMixedAction<BribePaymentClaim>): BribeExpression => {
+    if (node.kind === 'action') return { kind: 'payment', ...node.action };
+    requireRule(node.kind !== 'constant', 'Retain the full privately compiled mixed-bribe obligation.');
+    return { kind: node.kind, terms: node.terms.map(payments) };
+  };
+  return { residual: { turn: claim.turn, claim: payments(compiled) } };
+}
+function mixedBribeTruthAnswers(g: Game, p: Player, claim: MixedBribeClaim): TruthAnswer[] {
+  if (claim.turn !== g.turn || !bribeQuestionWindow(g)) return [];
+  const answers: TruthAnswer[] = [];
+  for (const answer of [true, false]) {
+    const compiled = compileMixedBribe(g, p, claim, answer);
+    if (compiled.constant !== undefined ? compiled.constant === answer :
+      bribeExpressionTruthAnswers(g, p, compiled.residual!).includes(answer ? 'yes' : 'no')) answers.push(answer ? 'yes' : 'no');
+  }
+  return answers.length ? answers : ['unknown'];
+}
+function bindMixedBribeTruth(g: Game, p: Player, claim: MixedBribeClaim, answer: boolean, asker: string) {
+  requireRule(mixedBribeTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
+    'Choose a mixed bribe answer compatible with the whole current-fact and payment question.');
+  const compiled = compileMixedBribe(g, p, claim, answer);
+  let event: string;
+  if (compiled.residual) {
+    bindBribeExpressionTruth(g, p, compiled.residual, answer, asker);
+    event = g.bribeExpressionPromises!.at(-1)!.event;
+  } else {
+    requireRule(compiled.constant === answer, 'Retain the truthful whole mixed-bribe answer.');
+    reopenBribePayer(g, p, answer);
+    event = crypto.randomUUID();
+  }
+  (g.mixedBribeQuestions ??= []).push({ turn: claim.turn, mixed: structuredClone(claim.mixed),
+    event, player: p.id, asker, answer, binding: !!compiled.residual });
+}
+function isMixedBribeEvent(g: Game, event: string): boolean {
+  return !!g.mixedBribeQuestions?.some(question => question.event === event);
+}
+function projectedMixedBribePromises(g: Game, player: string) {
+  return (g.mixedBribeQuestions ?? []).filter(question => question.player === player).map(question => {
+    const bound = g.bribeExpressionPromises?.find(promise => promise.event === question.event);
+    return { event: question.event, player: question.player, asker: question.asker, turn: question.turn,
+      mixed: structuredClone(question.mixed), answer: question.answer, progress: structuredClone(bound?.progress ?? []),
+      fulfilled: !question.binding || bound?.fulfilled === true, released: bound?.released === true };
+  });
 }
 function reconcileBribePromises(g: Game, voluntary?: { actor: string; action: Action }) {
   type Promise = BribePromise | BribeExpressionPromise;
@@ -36455,6 +36511,8 @@ function applyActionInner(
         bindBribe: bindBribeTruth,
         bribeExpressionAnswers: bribeExpressionTruthAnswers,
         bindBribeExpression: bindBribeExpressionTruth,
+        mixedBribeAnswers: mixedBribeTruthAnswers,
+        bindMixedBribe: bindMixedBribeTruth,
         revivalExpressionAnswers: revivalExpressionTruthAnswers,
         bindRevivalExpression: bindRevivalExpressionTruth,
         leaderRevivalAnswers: leaderRevivalTruthAnswers,
@@ -40319,7 +40377,11 @@ export function viewGame(state: Game, id: string) {
     truthBribeExpressionTargets: bribeQuestionWindow(g) ? g.players.map(player => player.id) : [],
     truthBribeExpressionAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
       g.truthtrance.question.kind === 'bribeExpression' ? bribeExpressionTruthAnswers(g, me, g.truthtrance.question) : null,
-    bribeExpressionPromises: (g.bribeExpressionPromises ?? []).filter(promise => promise.player === id).map(promise => structuredClone(promise)),
+    bribeExpressionPromises: (g.bribeExpressionPromises ?? []).filter(promise => promise.player === id && !isMixedBribeEvent(g, promise.event)).map(promise => structuredClone(promise)),
+    truthMixedBribeTargets: bribeQuestionWindow(g) ? g.players.map(player => player.id) : [],
+    truthMixedBribeAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
+      g.truthtrance.question.kind === 'mixedBribe' ? mixedBribeTruthAnswers(g, me, g.truthtrance.question) : null,
+    mixedBribePromises: projectedMixedBribePromises(g, id),
     truthRevivalTargets: revivalQuestionWindow(g) ? g.players.filter(player => revivalOpportunity(g, player.id)).map(player => player.id) : [],
     truthRevivalAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
       g.truthtrance.question.kind === 'revival' ? revivalTruthAnswers(g, me, g.truthtrance.question) : null,

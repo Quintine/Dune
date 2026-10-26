@@ -168,7 +168,8 @@ void test('one shared guide handles scalar and whole promises without duplicatin
   const game = projected(); assert.match(markup(game), /data-testid="bribe-promise-guide"/);
   game.bribePromises = [{ event: 'scalar-history', player: 'p', asker: 'a', turn: 1, recipient: 'r', minimum: 1,
     answer: true, progress: 1, fulfilled: true }];
-  assert.doesNotMatch(markup(game), /data-testid="bribe-promise-guide"/);
+  // Historical scalar records do not own a newly live expression guide.
+  assert.match(markup(game), /data-testid="bribe-promise-guide"/);
   const both = renderToStaticMarkup(createElement('div', null,
     createElement(BribePromises, { game, busy: false, send() {} }),
     createElement(BribeExpressionPromises, { game, busy: false, send() {} })));
