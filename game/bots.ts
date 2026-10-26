@@ -1336,6 +1336,11 @@ function policyActions(g: GameView): Action[] {
         const answer = g.truthLeaderRevivalAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];
       }
+      if (w.question.kind === 'allianceExpression' || w.question.kind === 'mixedAlliance') {
+        const choices = w.question.kind === 'allianceExpression' ? g.truthAllianceExpressionAnswers : g.truthMixedAllianceAnswers;
+        const answer = choices?.find(answer => answer !== 'unknown') ?? choices?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'alliance') {
         const answer = g.truthAllianceAnswers?.find(answer => answer !== 'unknown') ?? g.truthAllianceAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];

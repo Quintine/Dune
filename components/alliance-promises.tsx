@@ -2,6 +2,7 @@
 
 import type { Action, GameView } from '@/game/engine';
 import { allianceClaimText, alliancePromiseModeSupported } from '@/game/alliance-promises';
+import { evaluateAllianceExpression } from '@/game/alliance-expression-promises';
 import { quoteNexusAlliance } from '@/game/nexus-alliance';
 import { Button } from './ui/button';
 
@@ -22,13 +23,21 @@ export function AlliancePromiseGuideButton(props: AlliancePromiseProps) {
     const current = props.game, me = current.players.find(player => player.id === current.me);
     const live = current.alliancePromises.filter(promise => promise.player === actor && promise.turn === turn &&
       !promise.fulfilled && !promise.released);
-    let ownedAction = action.type === 'ready' && !!me && live.every(promise => (me.ally === promise.partner) === promise.answer);
+    const pure = current.allianceExpressionPromises.filter(promise => promise.player === actor && promise.turn === turn &&
+      !promise.fulfilled && !promise.released);
+    const mixed = current.mixedAlliancePromises.filter(promise => promise.player === actor && promise.turn === turn &&
+      !promise.fulfilled && !promise.released);
+    // Pure membership is visible. The server alone knows a mixed question's
+    // frozen facts and reduced future obligation; never reconstruct it here.
+    const matches = (ally: string | null) => live.every(promise => (ally === promise.partner) === promise.answer) &&
+      pure.every(promise => evaluateAllianceExpression(promise.claim, ally) === promise.answer);
+    let ownedAction = action.type === 'ready' && !!me && matches(me.ally);
     if (action.type === 'alliance') {
       if (action.target === null) ownedAction = true;
       else if (typeof action.target === 'string' && action.target !== actor && current.players.some(player => player.id === action.target)) {
         try {
           const quote = quoteNexusAlliance({ ...publicContext(current), actor, target: action.target });
-          ownedAction = !!quote.formed && live.every(promise => (quote.allies[actor] === promise.partner) === promise.answer);
+          ownedAction = !!quote.formed && matches(quote.allies[actor]);
         } catch { ownedAction = false; }
       }
     }
@@ -37,7 +46,7 @@ export function AlliancePromiseGuideButton(props: AlliancePromiseProps) {
       current.me === actor && current.turn === turn && current.alliancePromiseNexus?.turn === turn &&
       current.alliancePromiseGuide === guide && current.alliancePromiseGuide.action === action && JSON.stringify(action) === signature &&
       JSON.stringify(publicContext(current)) === contextSignature && typeof event === 'string' &&
-      live.some(promise => promise.event === event) && ownedAction && !!me && !me.autopilot &&
+      [...live, ...pure, ...mixed].some(promise => promise.event === event) && ownedAction && !!me && !me.autopilot &&
       !current.truthtrance && !current.response && !current.decision && !current.phaseOpening &&
       !current.automaticContinuationPending && !current.roomControl?.paused && !current.roomControl?.closed;
   };
@@ -55,6 +64,7 @@ export function AlliancePromiseGuideButton(props: AlliancePromiseProps) {
 export function AlliancePromises(props: AlliancePromiseProps) {
   const own = props.game.alliancePromises.filter(promise => promise.player === props.game.me);
   if (!own.length) return null;
+  const live = own.some(promise => promise.turn === props.game.alliancePromiseNexus?.turn && !promise.fulfilled && !promise.released);
   const name = (id: string) => props.game.players.find(player => player.id === id)?.name ?? 'the named partner';
   return <section className="notice space-y-3" aria-label="Your Truthtrance alliance promises" id="alliance-promise-guidance">
     <h3>Your alliance promises</h3>
@@ -76,6 +86,6 @@ export function AlliancePromises(props: AlliancePromiseProps) {
       Honor any earlier promises first; their own controls handle required payments.
       {' '}<a href="/rules#truthtrance-alliance">Alliance promise rules</a>.
     </p>
-    <AlliancePromiseGuideButton {...props} />
+    {live && <AlliancePromiseGuideButton {...props} />}
   </section>;
 }

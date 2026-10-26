@@ -1,3 +1,5 @@
+import { parseAllianceExpressionClaim, allianceExpressionText, type AllianceExpressionClaim } from './alliance-expression-promises';
+import { parseAllianceActionClaim, type MixedAllianceClaim } from './mixed-alliance-question';
 import { parseBidActionClaim, MIXED_BID_MAX_DEPTH, MIXED_BID_MAX_LEAVES, type MixedBidClaim } from './mixed-bid-question';
 import { parseRevivalActionClaim, type MixedRevivalClaim } from './mixed-revival-question';
 import { parseBribePaymentClaim, type MixedBribeClaim } from './mixed-bribe-question';
@@ -73,6 +75,8 @@ export type TruthFact =
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type MixedMovementClaim = { turn: number; mixed: MixedActionExpression<MovementClaim> };
 export type TruthQuestion =
+  | ({ kind: 'allianceExpression'; target: string } & AllianceExpressionClaim)
+  | ({ kind: 'mixedAlliance'; target: string } & MixedAllianceClaim)
   | ({ kind: 'mixedBid'; target: string } & MixedBidClaim)
   | ({ kind: 'mixedRevival'; target: string } & MixedRevivalClaim)
   | ({ kind: 'mixedBribe'; target: string } & MixedBribeClaim)
@@ -263,6 +267,19 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       !g.pendingTreacheryDiscard && claim.turn === g.turn,
     'Choose a supported current-turn ordinary leader-revival question in a quiet window.');
     return { kind: 'leaderRevival', target: v.target, ...claim };
+  }
+  if (v.kind === 'allianceExpression' || v.kind === 'mixedAlliance') {
+    check(Object.keys(v).sort().join(',') === (v.kind === 'allianceExpression' ? 'claim,kind,target,turn' : 'kind,mixed,target,turn'),
+      'Supply the current Nexus turn, complete alliance expression and respondent.');
+    check(alliancePromiseModeSupported(g) && g.status === 'playing' && g.phase === 1 && g.nexus &&
+      !g.spiceWindow && !g.spiceResolution && !g.response && !g.decision && !g.phaseOpening &&
+      !g.pendingTreacheryDiscard && !g.pendingKarama && v.turn === g.turn,
+    'Choose the current ordinary Nexus in a quiet supported window.');
+    if (v.kind === 'allianceExpression') return { kind: 'allianceExpression', target: v.target as string,
+      ...parseAllianceExpressionClaim({ turn: v.turn, claim: v.claim }) };
+    const respondent = g.players.find(player => player.id === v.target)!;
+    return { kind: 'mixedAlliance', target: v.target as string, turn: g.turn,
+      mixed: parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent), parseAllianceActionClaim) };
   }
   if (v.kind === 'alliance') {
     check(Object.keys(v).sort().join(',') === 'kind,partner,target,turn',
@@ -595,6 +612,7 @@ export function truthQuestionText(
   if (q.kind === 'freeform') return q.text;
   if (q.kind === 'revivalExpression') return `Will you ${revivalExpressionText(q.claim, id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))} from now until your Revival opportunity ends this turn?`;
   if (q.kind === 'leaderRevival') return `Will you ${leaderRevivalClaimText(q, id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))}?`;
+  if (q.kind === 'allianceExpression') return `Is it true that you ${allianceExpressionText(q.claim, playerName)}?`;
   if (q.kind === 'alliance') return `Will you ${allianceClaimText(q, playerName)}?`;
   if (q.kind === 'bribeExpression') return `Will you ${bribeExpressionText(q.claim, playerName)} from now until this turn ends?`;
   if (q.kind === 'bribe') return `Will you ${bribeClaimText(q, playerName)}?`;
@@ -620,6 +638,8 @@ export function truthQuestionText(
       return `you currently hold ${f.compare === 'eq' ? 'exactly' : f.compare === 'gte' ? 'at least' : 'at most'} ${f.value} spice`;
     return `(${f.terms.map(clause).join(f.kind === 'and' ? ' AND ' : ' OR ')})`;
   };
+  if (q.kind === 'mixedAlliance') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
+    action => `you ${allianceClaimText({ turn: q.turn, partner: action.partner }, playerName)}`)}?`;
   if (q.kind === 'mixedBid') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => `you ${bidClaimText({ turn: q.turn, lot: q.lot, minimum: action.minimum })}`)}?`;
   if (q.kind === 'mixedRevival') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
@@ -658,6 +678,10 @@ export function resolveTruthAction(
     bindMovementExpression?: (g: Game, p: Player, claim: MovementExpressionClaim, answer: boolean, asker: string) => void;
     movementAnswers?: (g: Game, p: Player, claim: MovementClaim) => TruthAnswer[];
     bindMovement?: (g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) => void;
+    allianceExpressionAnswers?: (g: Game, p: Player, claim: AllianceExpressionClaim) => TruthAnswer[];
+    bindAllianceExpression?: (g: Game, p: Player, claim: AllianceExpressionClaim, answer: boolean, asker: string) => void;
+    mixedAllianceAnswers?: (g: Game, p: Player, claim: MixedAllianceClaim) => TruthAnswer[];
+    bindMixedAlliance?: (g: Game, p: Player, claim: MixedAllianceClaim, answer: boolean, asker: string) => void;
     allianceAnswers?: (g: Game, p: Player, claim: AllianceClaim) => TruthAnswer[];
     bindAlliance?: (g: Game, p: Player, claim: AllianceClaim, answer: boolean, asker: string) => void;
     mixedBribeAnswers?: (g: Game, p: Player, claim: MixedBribeClaim) => TruthAnswer[];
@@ -805,6 +829,12 @@ export function resolveTruthAction(
         if (w.question.kind === 'leaderRevival')
           check(effects.leaderRevivalAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a named leader question with a compatible native completion.');
+        if (w.question.kind === 'allianceExpression')
+          check(effects.allianceExpressionAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a whole final-alliance question compatible with the current Nexus.');
+        if (w.question.kind === 'mixedAlliance')
+          check(effects.mixedAllianceAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a mixed fact/final-alliance question compatible with the current Nexus.');
         if (w.question.kind === 'alliance')
           check(effects.allianceAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a current Nexus question with a compatible answer.');
@@ -907,6 +937,16 @@ export function resolveTruthAction(
           check(effects.leaderRevivalAnswers && effects.bindLeaderRevival && effects.leaderRevivalAnswers(g, p, q).includes(a.answer),
             'Choose a named leader-revival answer compatible with native eligibility and earlier promises.');
           if (a.answer !== 'unknown') effects.bindLeaderRevival(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'allianceExpression') {
+          check(effects.allianceExpressionAnswers && effects.bindAllianceExpression && effects.allianceExpressionAnswers(g, p, q).includes(a.answer),
+            'Choose a whole alliance answer compatible with original consent and earlier answers.');
+          if (a.answer !== 'unknown') effects.bindAllianceExpression(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'mixedAlliance') {
+          check(effects.mixedAllianceAnswers && effects.bindMixedAlliance && effects.mixedAllianceAnswers(g, p, q).includes(a.answer),
+            'Choose a mixed alliance answer compatible with the whole question and original consent.');
+          if (a.answer !== 'unknown') effects.bindMixedAlliance(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'alliance') {
           check(effects.allianceAnswers && effects.bindAlliance && effects.allianceAnswers(g, p, q).includes(a.answer),

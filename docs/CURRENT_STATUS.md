@@ -16,6 +16,42 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / whole and mixed final Nexus alliances — 26 October. Prototyped / Partial.**
+Full AND/OR partner trees and mixed current facts now retain every compatible
+native consent route. Finite final outcomes reuse the original reciprocal
+quote and financial preparations; OR fixes no partner. Whole No and Yes stay
+binding through actual Nexus close, preserving temporary formation, opposing
+withdrawal/departure and accepted-order release. Scalar/whole/mixed share one
+sequence; earlier scalar behavior stays. Mixed facts freeze before payment,
+constants need no alliance, and all definite answers uniformly reopen only own
+readiness. Full editors/raw Ask/private answers/own aggregates and one exact
+native guide connect to four minimal profiles without projecting residuals.
+
+Root integration with disjoint rules/controls/native lanes passes **24 files,
+226/226**, types/lint/build and **twelve native paths**,42 GameTable SSR renders/
+17 guide callbacks plus one editor callback followed by native Ask. Original
+H/A/E base33 Basic48/Advanced49 dual-invitation prefixes add9 for real OR
+acceptance/Ready/close, or10 with actual bribe3 E10→7 and frozen mixed fact.
+Manual other-partner acceptance stays legal. Existing-pair48 adds9 for whole
+OR No/break/close. Edited constant48 adds11 and reopens only respondent Ready;
+false AND47 adds9 with later real acceptance. Unknown47 adds9/10 for actual Yes
+partnership or temporary No pair/break. Dual withdrawals48 add11: one survives,
+last releases, reoffer does not rebind. Earlier owed bribe48 adds12 with actual
+3 payment/manual alternate/final E7. All33 original cards remain physical.
+
+Sixteen focused helper,28 native/funding and15 controlled cases supplement
+existing scalar/Nexus/funding proof. Two original Truths retain scalar No or
+Yes, owed payments and whole-first contradiction in accepted order. A bounded
+read-only planner/release review finds no concrete issue. V1 catches two native
+profile test fields needing explicit TruthAnswer narrowing; complete v2 passes.
+Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-alliance-expression-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-alliance-expression-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Earlier-phase diplomacy, other families/correlated unknowns, further preparations,
+optional/wider compositions and final rules/browser/deployed/assurance remain.
+[Authority, consent/financial model and evidence](TRUTHTRANCE_ALLIANCE_EXPRESSIONS.md).
+
 **Truthtrance / current facts and ordinary bids — 26 October. Prototyped / Partial.**
 Full mixed AND/OR questions freeze facts before actual current-lot declarations
 and winning invoices. Remaining same-interval minima reduce exactly (AND max,

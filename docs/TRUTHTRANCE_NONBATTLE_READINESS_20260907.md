@@ -1,5 +1,10 @@
 # Truthtrance nonbattle readiness and first implementation slice
 
+The [whole/mixed final-alliance follow-up](TRUTHTRANCE_ALLIANCE_EXPRESSIONS.md)
+adds full AND/OR partner conditions and answer-time facts at the current ordinary
+Nexus close. Actual native consent, final membership and financial preparation
+remain; broader diplomacy and cross-action combinations remain unfinished.
+
 The [mixed current-lot bid follow-up](TRUTHTRANCE_MIXED_BIDS.md) composes
 answer-time facts with future accepted ordinary declarations. Native scalar
 thresholds exactly represent remaining same-lot AND/OR minima; phase-wide and

@@ -1,5 +1,22 @@
 # Rule decision index
 
+## Whole and mixed final Nexus alliances — 26 October 2026
+
+Compose recorded publisher FAQp8 AND/OR/current-turn authority and supplied
+Advanced physical39 compliance/release/unknown with the existing final Nexus
+membership interval. Supplied physical15 retains reciprocal pairing, at most
+one alliance and own departure rights. Evaluate whole partner trees against
+one final partner or None; No negates the complete tree. Enumerate every truth-
+compatible outcome, then reuse original native consent quotes and financial
+preparations without fixing an OR route. Do not invent foreign consent.
+Facts in mixed questions freeze at the answer; unknown is false for definite
+Yes and true for No. Only a needed residual binds the native whole ledger.
+Scalar/whole/mixed answers share accepted order and actual close; decisive
+mixed constants need no alliance, with uniform own readiness reopening.
+This online interval/witness/release model remains provisional; no dedicated
+publisher solver, correlated unknown inference, mode or publication change.
+[Contract and evidence](TRUTHTRANCE_ALLIANCE_EXPRESSIONS.md).
+
 ## Current facts combined with ordinary bids — 26 October 2026
 
 Reuse recorded publisher FAQp8 current-turn/AND/OR and supplied Advanced

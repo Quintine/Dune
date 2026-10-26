@@ -19,6 +19,10 @@ import { LeaderRevivalClaimFields, leaderRevivalClaimInputError } from './leader
 import type { LeaderRevivalClaim } from '@/game/leader-revival-promises';
 import { MovementClaimFields } from './movement-claim-fields';
 import { AllianceClaimFields, allianceClaimInputError } from './alliance-claim-fields';
+import { AllianceExpressionFields, allianceExpressionInputError } from './alliance-expression-fields';
+import { MixedAllianceFields, mixedAllianceInputError } from './mixed-alliance-fields';
+import type { AllianceExpression } from '@/game/alliance-expression-promises';
+import type { AllianceActionClaim } from '@/game/mixed-alliance-question';
 import type { AllianceClaim } from '@/game/alliance-promises';
 import { BribeClaimFields, bribeClaimInputError } from './bribe-claim-fields';
 import type { BribeClaim } from '@/game/bribe-promises';
@@ -79,7 +83,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid' | 'allianceExpression' | 'mixedAlliance'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -97,6 +101,15 @@ export function Truthtrance({
   const [alliancePartner, setAlliancePartner] = useState(g.me);
   const allianceClaim: AllianceClaim = { turn: g.turn, partner: alliancePartner };
   const alliancePartners = g.players.filter(player => player.id !== target);
+  const [allianceExpression, setAllianceExpression] = useState<AllianceExpression>({ kind: 'or', terms: [
+    { kind: 'partner', partner: g.me }, { kind: 'partner', partner: '' },
+  ] });
+  const allianceExpressionError = allianceExpressionInputError(allianceExpression, alliancePartners);
+  const [mixedAlliance, setMixedAlliance] = useState<MixedActionExpression<AllianceActionClaim>>({ kind: 'and', terms: [
+    { kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 10 } },
+    { kind: 'action', action: { partner: g.me } },
+  ] });
+  const mixedAllianceError = mixedAllianceInputError(mixedAlliance, g, target);
   const [bribeSelection, setBribeSelection] = useState<Pick<BribeClaim, 'recipient' | 'minimum'>>({ recipient: g.me, minimum: 3 });
   const bribeClaim: BribeClaim = { turn: g.turn, ...bribeSelection };
   const bribeRespondent = g.players.find(player => player.id === target);
@@ -179,6 +192,8 @@ export function Truthtrance({
         : kind === 'mixedRevival' ? { kind, target, turn: g.turn, mixed: mixedRevival }
         : kind === 'revivalExpression' ? { kind, target, turn: g.turn, claim: revivalExpression }
         : kind === 'leaderRevival' ? { kind, target, ...leaderRevivalClaim }
+        : kind === 'allianceExpression' ? { kind, target, turn: g.turn, claim: allianceExpression }
+        : kind === 'mixedAlliance' ? { kind, target, turn: g.turn, mixed: mixedAlliance }
         : kind === 'alliance' ? { kind, target, ...allianceClaim }
         : kind === 'mixedBribe' ? { kind, target, turn: g.turn, mixed: mixedBribe }
         : kind === 'bribeExpression' ? { kind, target, turn: g.turn, claim: bribeExpression }
@@ -319,6 +334,13 @@ export function Truthtrance({
                     <p className="notice">This concerns a future actual ordinary return of the named leader before your Revival opportunity ends. Native cost, eligibility, cycle and order still apply. A request alone, Ghola card, special or foreign-ghola return does not fulfill it.</p>
                     {(g.truthLeaderRevivalAnswers ?? []).map(answer => <div key={answer}>
                       {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'unknown'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
+                  </>
+                ) : w.question!.kind === 'allianceExpression' || w.question!.kind === 'mixedAlliance' ? (
+                  <>
+                    <p className="notice">Answer the whole expression about actual final membership when this Nexus closes. Offers and temporary formation do not settle a binding answer. OR preserves each consent-supported partner choice; No negates the complete expression. Other participants retain their own consent and withdrawal rights. Current facts in mixed questions freeze now; individual factual answers remain private.</p>
+                    {((w.question!.kind === 'allianceExpression' ? g.truthAllianceExpressionAnswers : g.truthMixedAllianceAnswers) ?? []).map(answer => <div key={answer}>
+                      {button(answer === 'unknown' ? 'I don’t know yet' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}
                     </div>)}
                   </>
                 ) : w.question!.kind === 'alliance' ? (
@@ -497,6 +519,8 @@ export function Truthtrance({
                   <option value="movementExpression">Combine ground moves with AND/OR</option>
                   <option value="mixedMovement">Combine current facts and future ground moves</option>
                   <option value="alliance">Bind alliance membership at this Nexus close</option>
+                  <option value="allianceExpression">Combine final alliance partners with AND/OR</option>
+                  <option value="mixedAlliance">Combine current facts and final alliance partners</option>
                   <option value="bribe">Bind ordinary bribe payments this turn</option>
                   <option value="bribeExpression">Combine ordinary bribe payments with AND/OR</option>
                   <option value="mixedBribe">Combine current facts and ordinary payments</option>
@@ -521,7 +545,21 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'mixedBid' ? (
+              {kind === 'allianceExpression' ? (
+                <>
+                  <AllianceExpressionFields value={allianceExpression} partners={alliancePartners}
+                    disabled={busy || !g.truthAllianceExpressionTargets.includes(target)} onChange={setAllianceExpression} />
+                  {!g.truthAllianceExpressionTargets.includes(target) && <p className="notice">Choose a supported participant in a quiet ordinary Nexus.</p>}
+                  <p className="notice" aria-label="Public whole alliance question preview">{allianceExpressionError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'mixedAlliance' ? (
+                <>
+                  <MixedAllianceFields value={mixedAlliance} game={g} target={target}
+                    disabled={busy || !g.truthMixedAllianceTargets.includes(target)} onChange={setMixedAlliance} />
+                  {!g.truthMixedAllianceTargets.includes(target) && <p className="notice">Choose a supported participant in a quiet ordinary Nexus.</p>}
+                  <p className="notice" aria-label="Public mixed alliance question preview">{mixedAllianceError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'mixedBid' ? (
                 <>
                   <MixedBidFields value={mixedBid} game={g} target={target}
                     disabled={busy || !g.truthMixedBidTargets.includes(target)} onChange={setMixedBid} />
@@ -723,6 +761,8 @@ export function Truthtrance({
                 (kind === 'mixedRevival' && (!!mixedRevivalError || !g.truthMixedRevivalTargets.includes(target))) ||
                 (kind === 'revivalExpression' && (!!revivalExpressionInputError(revivalExpression) || !validRevivalExpressionNames || !g.truthRevivalExpressionTargets.includes(target))) ||
                 (kind === 'leaderRevival' && (!!leaderRevivalClaimInputError(leaderRevivalClaim, leaderRevivalChoices) || !g.truthLeaderRevivalTargets.includes(target))) ||
+                (kind === 'allianceExpression' && (!!allianceExpressionError || !g.truthAllianceExpressionTargets.includes(target))) ||
+                (kind === 'mixedAlliance' && (!!mixedAllianceError || !g.truthMixedAllianceTargets.includes(target))) ||
                 (kind === 'alliance' && (!!allianceClaimInputError(allianceClaim, alliancePartners) || !g.truthAllianceTargets.includes(target))) ||
                 (kind === 'mixedBribe' && (!!mixedBribeError || !g.truthMixedBribeTargets.includes(target))) ||
                 (kind === 'bribeExpression' && (!!bribeExpressionError || !validBribeExpressionRecipients || !g.truthBribeExpressionTargets.includes(target))) ||
