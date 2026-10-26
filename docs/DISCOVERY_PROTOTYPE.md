@@ -162,6 +162,11 @@ Two original ruling captures and all broader release/assurance gates remain.
 
 ## Native Homeworld Nexus composition — 6 October 2026
 
+The [26 October fresh occupation follow-up](HOMEWORLD_RULES.md#original-world-nexus-and-discovery-occupation--26-october-2026)
+supplies mandatory World occupation state in existing admitted Discovery
+setups, with or without original Nexus/Skills. Native setup, nested entry,
+physical rewards and each original module envelope remain authoritative.
+
 Original paired Ixians+Tleilaxu OR CHOAM+Richese Nexus/Discovery entries,
 with or without Skills, now retain Homeworlds and optional Tech3+/Advanced
 Strongholds2+. Standalone Ecaz OR Moritani/classic Homeworld/Nexus composes

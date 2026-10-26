@@ -16,6 +16,38 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Homeworld occupation / original Nexus and Discovery — 26 October. Prototyped / Partial.**
+Shared fresh World setup now initializes mandatory occupation benefits in its
+existing Nexus and/or Discovery envelopes, optionally Skills and phase modules.
+Original start/role limits remain; existing occupation resources/history cannot
+be overwritten. Live predicates retain original reaction/native flags and
+active printed Sandtrout where those module profiles permit it. Legacy Semuta
+keeps its separate scope; played games gain no stamp.
+
+Disjoint profile/control/native lanes and root integration pass **19 files,
+105/105**, types/lint/build and **three native runtime paths**,19 GameTable SSR
+renders. Original A/Emperor/Fremen base33 starts use36/40/46 actions for Basic
+Nexus/Tech, Basic Discovery/Skills and Advanced combined modules. Another7/10/10
+actions retain real Caladan qualification/Collection2, optional deferred Banker1
+at Mentat, distinct phase rewards and earned Stronghold cards. Four minimal
+policies each submit a legal next action in every source.
+
+Discovery paths use original Hagga/Cistern lotteries, actual ordinary city-range3
+movement, Collection inspection/reveal and next-Storm free entry. Seventeen
+additional Basic Nexus actions select an unopened ordinary worm, form a real
+A/F alliance and give unallied Emperor its actual closing draw. Original33,
+optional14/12, Discovery7 cards/8 tokens and all physical counters remain.
+Feedback filters an empty Salusa source only at the cross-World fixture adapter,
+updates two older native Revival actors, and requires the actual new Junction2
+occupation receipt in an older CHOAM battle balance; printed economics remain.
+
+Frozen report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-world-module-occupation-proof-v2/`;
+journeys/HTML: adjacent `20261026-world-module-occupation-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or assurance campaign.
+SSR/public actions leave browser/mobile/deployed, wider combinations and
+complete-mode acceptance open. [Source and contract](HOMEWORLD_RULES.md#original-world-nexus-and-discovery-occupation--26-october-2026).
+
 **Leader Skills / mandatory World occupation — 26 October. Prototyped / Partial.**
 Existing clean registered World/all14 starts now initialize original occupation
 benefits beside normal Banker, with optional independent cards and phase modules.

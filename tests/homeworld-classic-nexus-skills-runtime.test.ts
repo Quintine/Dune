@@ -178,7 +178,11 @@ for (const advanced of [false, true]) {
     assert.equal(player(done, f.owner).tanks, advanced ? 3 : 4);
     assert.equal(player(done, f.owner).elites?.tanks ?? 0, advanced ? 1 : 0);
     assert.equal(done.nexusCards!.cards!.hands[f.owner], 'fremen', 'Battle rescue never spends the unrelated physically held Nexus singleton.');
-    const window = revivalWindow(done, f.actions, f.staging), offer = viewGame(window, f.owner).nexusFremenRevival!;
+    const opened = revivalWindow(done, f.actions, f.staging);
+    if (opened.revivalOrder) assert.ok(opened.revivalOrder.remaining.includes(f.owner));
+    const window = advance(opened, g => g.phase === 4 && clean(g) &&
+      (!g.revivalOrder || g.revivalOrder.remaining[0] === f.owner), f.actions);
+    const offer = viewGame(window, f.owner).nexusFremenRevival!;
     assert.equal(offer.blocked, null);
     assert.equal(viewGame(window, f.opponent).nexusFremenRevival, null);
     legalPolicies(window, f.owner);

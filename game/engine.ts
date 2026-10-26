@@ -17,7 +17,7 @@ import { MovementClaimError, liveMovementPromises, movementEventAllowed, movemen
 import { findMovementCompletion, type MovementCompletion } from './movement-promise-search';
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile, selectedFactionStrongholdProfile, selectedIndependentCardsProfile } from './faction-module-profile';
-import { homeworldOccupationLeaderSkillsProfile, homeworldPhaseModulesProfile } from './homeworld-module-profile';
+import { homeworldOccupationLeaderSkillsProfile, homeworldOccupationModulesProfile, homeworldPhaseModulesProfile } from './homeworld-module-profile';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
@@ -12098,7 +12098,6 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
     mixedE3 || standaloneE3NexusLeaderSkillsProfile(g) || pairedE3 || guildBetrayalNexusLeaderSkillsProfile(g), false,
     independentDiscoveryProfile(g) || classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g) || (g.discoveryEnabled === true && classicNexus), true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g), independent);
-  if (homeworldOccupationLeaderSkillsProfile(initialized)) initializeHomeworldOccupationState(initialized);
   if (advancedMoritaniLeaderSkillsProfile(initialized) || ((independentDiscoveryProfile(initialized) || independentNexusProfile(initialized) || mixedE3 || pairedE3) && initialized.advanced &&
     byFaction(initialized, 'moritani'))) initializeMoritaniAssassinateState(initialized);
   if ((independentDiscoveryProfile(initialized) || independentNexusProfile(initialized) || nativeEcazLeaderSkillsProfile(initialized) || mixedE3 || homeworlds || nativeDiscoveryLeaderSkillsProfile(initialized) || pairedE3) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
@@ -12177,7 +12176,6 @@ export function initializeEcazTreacheryGameForAudit(state: Game): Game {
     requireFreshFactionInventory(g);
   }
   const initialized = initializeSetupGameForAudit(g, homeworlds, independentNexusProfile(g), false, discovery, false, false, true, true);
-  if (homeworlds && homeworldPhaseModulesProfile(initialized)) initializeHomeworldOccupationState(initialized);
   if (byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   if (moritaniAssassinateModeSupported(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
@@ -12191,6 +12189,13 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   homeworldShipmentIntegrity(state);
   const g = structuredClone(state);
   requireFreshSetup(g, homeworlds || nexus || ix || factions);
+  if (homeworlds) requireRule(g.homeworlds?.custody === null &&
+    [g.homeworldOccupationPreview, g.homeworldOccupationHistory,
+      g.pendingHomeworldOccupiedIncome, g.homeworldOccupiedIncomeHistory,
+      g.homeworldOccupiedPercentageLedger, g.pendingHomeworldOccupiedPercentage,
+      g.pendingHomeworldOccupiedBonus, g.homeworldTupilePreview, g.homeworldTupileState,
+      g.pendingHomeworldTupileCleanup, g.homeworldEcazVictoryPreview].every(value => value === undefined),
+  'Fresh Homeworld setup cannot replace existing occupation resources or history.');
   const homeworldSkills = leaderSkills && homeworldLeaderSkillsProfile(g);
   const skillStronghold = leaderSkills && strongholdLeaderSkillsProfile(g);
   const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold || homeworldSkills || classicDiscoveryLeaderSkillsProfile(g));
@@ -12292,6 +12297,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
     g.semutaPreview = true;
   }
   initializeSetup(g, strongholdFactions || !!g.strongholdCards);
+  if (homeworlds) initializeHomeworldOccupationState(g);
   if (nativeTech && byFaction(g, 'ecaz')) g.ecazOccupyPreview = true;
   return normalizeAutomaticGame(g);
 }
@@ -24223,7 +24229,7 @@ function homeworldOccupiedIncomeIntegrity(g: Game) {
     return;
   }
   requireRule(g.homeworldOccupationPreview === true && g.homeworlds &&
-    (homeworldPhaseModulesProfile(g) || homeworldOccupationLeaderSkillsProfile(g) || (!g.nexusCards &&
+    (homeworldPhaseModulesProfile(g) || homeworldOccupationLeaderSkillsProfile(g) || homeworldOccupationModulesProfile(g) || (!g.nexusCards &&
       (!g.leaderSkills || !g.expansions.length && homeworldLeaderSkillsProfile(g)) &&
       !g.techTokens && !g.strongholdCards && !g.discoveryEnabled)) &&
     Array.isArray(history) && pending !== undefined,

@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 26 October 2026 — Original World Nexus and Discovery occupation
+
+**Prototyped / Partial.** Shared fresh World setup
+initializes mandatory original occupation state in existing Nexus and/or
+Discovery envelopes, optionally Skills and phase modules. Original entry and
+native role predicates remain; played games and existing occupation resources
+are not replaced. Live original reaction/Discovery/Sandtrout contexts retain
+their actual predicates; legacy Semuta keeps its separate scope.
+
+Disjoint profile/control/native lanes plus root integration pass **19 files,
+105/105**, types/lint/build and **three native paths**,19 GameTable SSR renders.
+Public A/E/F base33 starts use36/40/46 actions plus7/10/10 continuations: Basic
+Nexus/Tech, Basic Discovery/Skills and Advanced combined original modules.
+Actual Caladan Bank10 evacuation/Bank1 entry earns Collection2; optional Banker1
+waits for Mentat beside original phase income and earned Strongholds. Four
+minimal policies each submit a legal next action per source. Original Hagga/
+Cistern supply, city-range3 movement, inspection/reveal and next-Storm entry
+remain actual actions. Seventeen further Basic Nexus actions form a real A/F
+alliance after an unopened ordinary worm and give unallied Emperor its closing
+physical draw. Original33/optional14/12 and Discovery7/8 inventories remain.
+
+Feedback adapts empty Salusa selections, two older Advanced Revival actors and
+an old CHOAM balance: its actual World victory now must supply the sole Junction
+qualification and settled printed2 receipt. Original support economics,
+typed losses, native custody and source-local held cards remain. Frozen proof:
+`/home/quintine/.local/share/dune/checkpoints/20261026-world-module-occupation-proof-v2/`;
+journeys/HTML: adjacent `20261026-world-module-occupation-runtime/`.
+No saved-room/D1/server/reset/restart/deployment or assurance campaign.
+Wider combinations, browser/mobile/deployed and complete-mode acceptance remain.
+[Source and scope](HOMEWORLD_RULES.md#original-world-nexus-and-discovery-occupation--26-october-2026).
+
 ## 26 October 2026 — Registered World Skills occupation benefits
 
 **Prototyped / Partial.** Existing clean registered

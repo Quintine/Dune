@@ -20,6 +20,8 @@ export type MixedPhaseModulesOptions = {
   homeworlds?: boolean;
   skills?: boolean;
   training?: Partial<Record<FactionId, LeaderSkillId>>;
+  nexus?: boolean;
+  discoveries?: boolean;
 };
 export const MIXED_PHASE_NATIVE_FACTIONS = ['ixians', 'tleilaxu', 'choam', 'richese', 'ecaz', 'moritani'] as const;
 export const actMixedPhaseModules = actAdvisorPreparation;
@@ -28,7 +30,8 @@ export const mixedPhaseModulesPlayer = (game: Game, actor: string) => {
 };
 export const mixedPhaseModulesClean = (game: Game) => !game.phaseOpening && !game.response &&
   !game.decision && !game.pendingTreacheryDiscard && !game.pendingRevival && !game.truthtrance &&
-  !game.pendingShipment && !game.pendingKarama && !game.currentAuctionSale;
+  !game.pendingShipment && !game.pendingKarama && !game.currentAuctionSale &&
+  game.nexusCards?.phase?.stage !== 'drawing';
 
 /** Current physical zones, excluding the ordinary auction's historical aliases. */
 export function mixedPhaseModulesInventory(game: Game): string[] {
@@ -43,8 +46,19 @@ export function mixedPhaseModulesInventory(game: Game): string[] {
 /** Native decisions only. Optional Terror placement is declined so the positive
  * shipment source does not depend on a separately selected Terror effect. */
 export function nextMixedPhaseModules(game: Game): MixedPhaseModulesStep | null {
+  if (!game.phaseOpening && !game.response && !game.decision && !game.truthtrance &&
+    !game.pendingTreacheryDiscard && game.nexusCards?.phase?.stage === 'drawing') {
+    const phase = game.nexusCards.phase, actor = phase.eligible.find(id => !phase.done.includes(id));
+    assert.ok(actor);
+    return { actor, action: { type: 'nexusCardChoice', turn: game.turn,
+      card: game.nexusCards.cards!.hands[actor] ?? null, choice: 'keep', ownRedraws: 0 } };
+  }
   if (!game.phaseOpening && !game.response && !game.pendingTreacheryDiscard && game.decision) {
     const d = game.decision;
+    if (d.kind === 'discoveryEntry' || d.kind === 'greatMakerRide')
+      return { actor: d.player, action: { type: 'decision', event: d.event, accept: false } };
+    if (d.kind === 'greatMakerVote')
+      return { actor: d.player, action: { type: 'decision', event: d.event, yes: false } };
     if (d.kind === 'moritaniSetup') return { actor: d.player,
       action: { type: 'decision', territory: 'carthag', sector: territory('carthag').sectors[0] } };
     if (d.kind === 'moritaniPlacement' || d.kind === 'choamStorm' || d.kind === 'choamMovement' ||
@@ -103,6 +117,8 @@ export function createMixedPhaseModulesFixture(options: MixedPhaseModulesOptions
   const act = (actor: string, action: Action) => { game = actMixedPhaseModules(game, actor, action, actions); };
   if (options.homeworlds) act(host, { type: 'homeworlds', enabled: true });
   if (options.skills) act(host, { type: 'moduleOption', module: 'leaderSkills', enabled: true });
+  if (options.nexus) act(host, { type: 'moduleOption', module: 'nexusCards', enabled: true });
+  if (options.discoveries) act(host, { type: 'moduleOption', module: 'discoveries', enabled: true });
   if (options.independent) act(host, { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
   if (options.tech) act(host, { type: 'techTokens', enabled: true });
   if (options.strongholds) act(host, { type: 'strongholdCards', enabled: true });
@@ -160,6 +176,7 @@ export function createMixedPhaseModulesFixture(options: MixedPhaseModulesOptions
   return { game, sourceGame: structuredClone(game), independent: options.independent ?? false,
     homeworlds: options.homeworlds ?? false,
     skills: options.skills ?? false,
+    nexus: options.nexus ?? false, discoveries: options.discoveries ?? false,
     initial, lobby, setup, afterSetup, firstStorm,
     originalInventory, originalSpice, spiceOrder, actions, sourceActions: structuredClone(actions),
     sourceActionCount: actions.length, staging: [] as string[] };
@@ -172,12 +189,14 @@ export function createMixedPhaseModulesFixture(options: MixedPhaseModulesOptions
 export function createMixedPhaseModulesProgramme(options: {
   advanced?: boolean; strongholds?: boolean; independent?: boolean; homeworlds?: boolean;
   skills?: boolean; training?: Partial<Record<FactionId, LeaderSkillId>>;
+  nexus?: boolean; discoveries?: boolean;
 } = {}) {
   const advanced = options.advanced ?? false, strongholds = options.strongholds ?? advanced;
   const source = createMixedPhaseModulesFixture({ factions: MIXED_PHASE_NATIVE_FACTIONS,
     expansions: ['ix', 'choam', 'ecaz'], advanced, tech: true, strongholds,
     independent: options.independent, homeworlds: options.homeworlds,
-    skills: options.skills, training: options.training });
+    skills: options.skills, training: options.training,
+    nexus: options.nexus, discoveries: options.discoveries });
   let game = source.game;
   const actions = [...source.actions];
   const act = (actor: string, action: Action) => { game = actMixedPhaseModules(game, actor, action, actions); };

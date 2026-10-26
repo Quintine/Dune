@@ -293,6 +293,11 @@ void test('original Moritani private rescue → assassination → exact death Sk
     g = advance(g, s => s.turn === turn + 1 && s.phase === 1 && clean(s), f.actions);
     orderSpice(g);
     g = advance(g, s => s.phase === 4 && clean(s), f.actions);
+    if (g.revivalOrder) {
+      assert.ok(g.revivalOrder.remaining.includes(f.opponent));
+      g = advance(g, s => s.phase === 4 && clean(s) &&
+        s.revivalOrder?.remaining[0] === f.opponent, f.actions);
+    }
     if (index < discs.length - 1) reject(g, f.opponent, { type: 'reviveLeader', leader: target }, /All leaders must die/);
   }
   assert.equal(player(g, f.opponent).leaders.filter(l => l.dead).length, 5);

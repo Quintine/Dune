@@ -336,10 +336,28 @@ void test('actual CHOAM Special fuels matching Cunning once; original native pay
   assert.equal(game.lastBattleContext!.winner, f.native);
   assert.equal(player(game, f.native).tanks, player(beforePlans, f.native).tanks + 2);
   assert.deepEqual(army(game, f.native, 'homeworld:guild'), { normal: 1, elite: 0 });
-  // Collection may already have opened; separate its stronghold/harvest income from support.
+  // Collection may already have opened. The actual victory also empties
+  // Junction, leaving CHOAM's one survivor as its qualified sole occupier.
+  // Its printed two-spice occupied award is separate from support and from
+  // the held Arrakeen card at another battle source.
   const collection = game.phase === 7 && clean(game) ? quoteSpiceCollection(game).receipts.find(r => r.player === f.native) : undefined;
+  const occupied = game.homeworldOccupiedIncomeHistory!.slice(beforePlans.homeworldOccupiedIncomeHistory!.length);
+  assert.equal(occupied.length, 1, 'The real Collection phase records its occupied-World award once.');
+  const junction = occupied[0].queue.find(row => row.world === 'homeworld:guild'); assert.ok(junction);
+  assert.equal(junction.card, 'junction'); assert.equal(junction.native, f.guild);
+  assert.equal(junction.occupier, f.native); assert.equal(junction.spice, 2);
+  assert.deepEqual(army(game, f.guild, 'homeworld:guild'), { normal: 0, elite: 0 });
+  const qualification = game.homeworldOccupationHistory!.qualifications.find(row =>
+    row.event === junction.qualification && row.world === junction.world && row.player === f.native);
+  assert.ok(qualification); assert.equal(qualification.cause, 'sole');
+  assert.ok(!beforePlans.homeworldOccupationHistory!.qualifications.some(row => row.event === qualification.event),
+    'The actual World battle earns the qualification after the plans were sealed.');
+  const award = occupied[0].receipts.find(row => row.world === junction.world);
+  assert.ok(award?.status === 'settled');
+  assert.deepEqual(award.credits, [{ player: f.native, amount: 2 }]);
+  const occupiedIncome = award.credits.filter(credit => credit.player === f.native).reduce((sum, credit) => sum + credit.amount, 0);
   assert.equal(player(game, f.native).spice, player(beforePlans, f.native).spice - 2 +
-    (collection?.strongholds ?? 0) + (collection?.collected ?? 0));
+    (collection?.strongholds ?? 0) + (collection?.collected ?? 0) + occupiedIncome);
   assert.equal(game.discard.filter(c => c.id === fuel.id).length, 1);
   inventory(game);
 });

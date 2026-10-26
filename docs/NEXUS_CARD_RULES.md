@@ -348,6 +348,11 @@ combination/assurance acceptance remain deferred.
 
 ## Original World Nexus core — 18 October 2026
 
+The [26 October fresh occupation follow-up](HOMEWORLD_RULES.md#original-world-nexus-and-discovery-occupation--26-october-2026)
+initializes original World occupation benefits for already admitted Nexus
+setups through shared fresh setup. Original entry, physical card and reaction
+profiles below retain their own limits; this does not widen their admission.
+
 **Prototyped / Partial.** Fresh original base33 classic Homeworld+Nexus now
 initializes the actual Guild/Harkonnen/Ixian reaction states through the public
 core capability, optionally all14 Skills and original Tech3+/Advanced

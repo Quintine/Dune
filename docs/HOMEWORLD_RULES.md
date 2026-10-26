@@ -2,6 +2,60 @@
 
 Source audit, 9 September 2026. No runtime activation. The primary module source is the [GF9 Ecaz & Moritani rulebook](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf), especially printed pp.4, 9–10 and the Homeworld FAQ on pp.15–16. The local publisher-text transcription is `/tmp/dune-rules/ecaz-audit.txt`; fresh official indexed pp.9, 10 and 15 were checked against it. Direct PDF retrieval currently returns HTTP 403. Physical card faces are separately audited in [Homeworld component audit](HOMEWORLD_COMPONENT_AUDIT.md); a rulebook statement and a card-face statement are not interchangeable evidence.
 
+## Original World Nexus and Discovery occupation — 26 October 2026
+
+Every original admitted fresh World setup now initializes occupation benefit
+state in the shared setup path, including its existing Nexus and/or Discovery
+envelopes, with optional Skills and original phase modules. Entry predicates
+remain authoritative for selected families, roles, physical components and
+module prerequisites. This supplies omitted printed World behavior without
+opening any new start permission. Legacy Semuta retains its separate scope.
+
+Native locations, original qualification history, occupied Collection and
+percentage ledgers, native Tupile and Ecaz World victory initialize together.
+Fresh setup rejects existing occupation resources or history rather than
+overwriting them; played games gain no stamp. Original nested Discovery entry,
+Nexus custody/reactions and Skill training remain in their existing handlers.
+The live occupied-income context uses the same original module predicates,
+including their actual initialized reaction/native flags.
+
+Authority remains the audited World/occupied components below and the supplied
+Advanced physical21/printed19 variant independence. Occupied bank Collection,
+ordinary territory Collection, other-payer Banker at Mentat, token payout and
+earned Stronghold/Nexus cards keep their original events and arithmetic.
+There is no new numeric ruling or retrospective income grant.
+
+Frozen root integration passes **19 files,105/105**, types/lint/build and three
+native runtime paths with19 GameTable SSR renders. Public original A/E/F base33
+starts use36/40/46 actions for Basic Nexus/Tech, Basic Discovery/Skills and
+Advanced Nexus/Discovery/Skills/Tech/Strongholds;7/10/10 continuation actions
+retain actual Bank10 evacuation, Bank1 entry, sole Caladan qualification,
+Collection2 and optional Banker1 deferred until Mentat. Native phase-token and
+ordinary Collection rewards, plus earned first end-Mentat cards, stay separate.
+Four minimal policies each submit a legal next action per source.
+
+Discovery selects only the original unopened Hagga card and Cistern supply
+lottery. Actual city-range3 movement earns Collection inspection/reveal and
+next-Storm free entry. A further17 Basic Nexus actions select an unopened
+ordinary worm, form an actual A/F alliance and let unallied Emperor draw its
+physical Nexus at the real close. Original33 cards, optional14 Skills/12 Nexus,
+seven Discovery Spice cards and eight tokens remain; no played card, force,
+wallet, skill, qualification, phase, owner or receipt is installed.
+
+Feedback keeps the Emperor native-withdrawal quote but omits its empty Salusa
+group from a cross-World shipment, matching the existing human selector. Two
+old tests await actual Advanced Revival actors. An older CHOAM World battle now
+requires its newly earned sole Junction qualification and settled printed2
+receipt before adding that award to the original support/Collection balance.
+This corrects an omitted benefit, not support pricing or held-card locality.
+
+Report/source manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-world-module-occupation-proof-v2/`;
+journeys/HTML: adjacent `20261026-world-module-occupation-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or separate assurance campaign.
+SSR/public actions leave broader combinations, browser/mobile/deployed and
+complete-mode acceptance open.
+
 ## Registered World Skills occupation — 26 October 2026
 
 Fresh World/all14 Skills starts now initialize the existing occupation benefit

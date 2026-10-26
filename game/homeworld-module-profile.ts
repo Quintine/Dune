@@ -1,6 +1,26 @@
 import { FACTIONS } from './catalog';
-import type { FactionModuleProfile } from './faction-module-profile';
-import { homeworldLeaderSkillsProfile } from './leader-skill-profile';
+import { independentDiscoveryProfile, nexusCoreProfile, type FactionModuleProfile } from './faction-module-profile';
+import {
+  classicNexusLeaderSkillsProfile,
+  homeworldLeaderSkillsProfile,
+  nativeDiscoveryLeaderSkillsProfile,
+  pairedNexusLeaderSkillsProfile,
+} from './leader-skill-profile';
+import {
+  classicDiscoveryLeaderSkillsProfile,
+  classicDiscoveryNexusProfile,
+  homeworldDiscoveryProfile,
+  pairedDiscoveryNexusProfile,
+} from './discovery-module-profile';
+import {
+  classicNexusModulesProfile,
+  mixedE1E2NexusProfile,
+  mixedE3NexusProfile,
+  pairedE3NexusProfile,
+  pairedNexusModulesProfile,
+  singleE1E2NexusProfile,
+  standaloneE3NexusProfile,
+} from './nexus-module-profile';
 
 export type HomeworldPhaseModulesProfile = FactionModuleProfile & {
   homeworldOccupationPreview?: unknown;
@@ -71,4 +91,44 @@ export function homeworldOccupationLeaderSkillsProfile(game: HomeworldPhaseModul
     (!game.homeworldTupilePreview || game.homeworldOccupationPreview === true && choam) &&
     (!game.homeworldEcazVictoryPreview || game.homeworldOccupationPreview === true && ecaz) &&
     homeworldLeaderSkillsProfile(game);
+}
+
+/** Occupation benefits for already-admitted original World/Nexus or Discovery
+ * setups. Pass the actual configuration to its unchanged admission predicates:
+ * live effect stamps and Discovery frames are not replacement module choices. */
+export function homeworldOccupationModulesProfile(game: HomeworldPhaseModulesProfile): boolean {
+  if (!game || typeof game !== 'object' || !game.homeworlds || typeof game.advanced !== 'boolean' ||
+    !registeredRoster(game) || !optionalFlag(game.ecazTreachery) ||
+    (game.techTokens && game.players.length < 3) || (game.strongholdCards && !game.advanced) ||
+    (!game.nexusCards && game.discoveryEnabled !== true) ||
+    (game.discoveryEnabled !== true && (game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker)) ||
+    game.semutaPreview || game.advancedPreview || game.kullPreview ||
+    game.nexusKullPreview || game.richeseBetrayalPreview) return false;
+  if (![game.ecazOccupyPreview, game.moritaniAssassinatePreview, game.homeworldOccupationPreview,
+    game.homeworldTupilePreview, game.homeworldEcazVictoryPreview, game.spiceBankerIncomePreview,
+    game.guildBetrayalPreview, game.nexusIxianReplacementPreview, game.nexusIxianBetrayalPreview,
+    game.nexusHarkonnenBetrayalPreview].every(optionalFlag)) return false;
+  const seated = (faction: string) => game.players.some(player => player.faction === faction);
+  if ((game.ecazOccupyPreview && !seated('ecaz')) ||
+    (game.moritaniAssassinatePreview && (!game.advanced || !seated('moritani'))) ||
+    (game.homeworldTupilePreview && (game.homeworldOccupationPreview !== true || !seated('choam'))) ||
+    (game.homeworldEcazVictoryPreview && (game.homeworldOccupationPreview !== true || !seated('ecaz'))) ||
+    (game.spiceBankerIncomePreview && !game.leaderSkills) ||
+    (game.guildBetrayalPreview && (!game.nexusCards || !seated('guild'))) ||
+    (game.nexusIxianReplacementPreview && (!game.nexusCards || seated('ixians'))) ||
+    (game.nexusIxianBetrayalPreview && (!game.nexusCards || !seated('ixians'))) ||
+    (game.nexusHarkonnenBetrayalPreview && (!game.nexusCards || !seated('harkonnen')))) return false;
+
+  if (game.leaderSkills) return homeworldLeaderSkillsProfile(game) &&
+    (game.discoveryEnabled !== true || independentDiscoveryProfile(game) ||
+      classicDiscoveryLeaderSkillsProfile(game) || nativeDiscoveryLeaderSkillsProfile(game) ||
+      classicNexusLeaderSkillsProfile(game));
+  if (game.discoveryEnabled === true) return homeworldDiscoveryProfile(game) ||
+    classicDiscoveryNexusProfile(game) || pairedDiscoveryNexusProfile(game);
+  return nexusCoreProfile(game) || classicNexusModulesProfile(game) || pairedNexusModulesProfile(game) ||
+    singleE1E2NexusProfile(game) || mixedE1E2NexusProfile(game) || standaloneE3NexusProfile(game) ||
+    pairedE3NexusProfile(game) || mixedE3NexusProfile(game) ||
+    // The original paired initializer also admits bare E1/E2 World/Nexus.
+    // This public configuration predicate describes that same undealt roster.
+    pairedNexusLeaderSkillsProfile(game);
 }
