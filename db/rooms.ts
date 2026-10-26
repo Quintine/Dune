@@ -6,6 +6,9 @@ import {
   joinGame,
   newPlayer,
   viewGame,
+  synchronizeAuctionClock,
+  advanceAuctionClock,
+  hasAuctionClockOpportunity,
   RuleError,
   type Action,
   type Game,
@@ -266,15 +269,23 @@ export async function createRoom(
     throw error;
   }
 }
-type RoomControlRow = { room_control: string };
+type RoomControlRow = { room_control: string; closure_revision?: number };
 // SQLite constructs an explicit public allowlist, consistent with delegation views.
 const roomControlProjection = `json_patch(json_object(
   'paused', json(CASE WHEN c.paused = 1 THEN 'true' ELSE 'false' END),
   'joinLocked', json(CASE WHEN c.join_locked = 1 THEN 'true' ELSE 'false' END),
   'revision', COALESCE(c.revision, 0), 'updatedAt', c.updated_at
 ), CASE WHEN EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) THEN '{"closed":true}' ELSE '{}' END) AS room_control`;
+const roomClosureRevision = `COALESCE((SELECT revision FROM room_closures WHERE room_code = rooms.code), 0) AS closure_revision`;
+const roomClockControlFence = `AND COALESCE((SELECT revision FROM room_controls WHERE room_code = rooms.code), 0) = ?
+  AND COALESCE((SELECT revision FROM room_closures WHERE room_code = rooms.code), 0) = ?`;
 function publicRoomControl(row: RoomControlRow): RoomControl {
   return JSON.parse(row.room_control) as RoomControl;
+}
+function roomClockAuthority(row: RoomControlRow) {
+  const controlRevision = publicRoomControl(row).revision;
+  const closureRevision = row.closure_revision ?? 0;
+  return { controlRevision, closureRevision, controlEpoch: `${controlRevision}:${closureRevision}` };
 }
 function attachRoomControl(view: GameView, row: RoomControlRow) {
   const control = publicRoomControl(row);
@@ -284,7 +295,7 @@ function attachRoomControl(view: GameView, row: RoomControlRow) {
 }
 async function readRoomSnapshot(code: string) {
   const row = await db()
-    .prepare(`SELECT rooms.state, rooms.version, ${roomControlProjection}
+    .prepare(`SELECT rooms.state, rooms.version, ${roomControlProjection}, ${roomClosureRevision}
       FROM rooms LEFT JOIN room_controls c ON c.room_code = rooms.code WHERE rooms.code = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1)`)
     .bind(code)
     .first<{ state: string; version: number } & RoomControlRow>();
@@ -294,7 +305,7 @@ async function readRoomSnapshot(code: string) {
   }
   const g: Game = JSON.parse(row.state);
   g.version = row.version;
-  return { game: g, control: publicRoomControl(row) };
+  return { game: g, control: publicRoomControl(row), ...roomClockAuthority(row) };
 }
 export async function readRoom(code: string) {
   const row = await db()
@@ -442,7 +453,15 @@ export async function act(
   action: Action,
   clock: RoomsClock = roomsClock,
 ) {
-  const { game: current, control } = await readRoomSnapshot(code);
+  // Authenticate before a trusted preflight can advance the shared table.
+  const seat = await db().prepare('SELECT player_id FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0')
+    .bind(code, auth.playerId, auth.tokenHash).first();
+  if (!seat) {
+    await requireRoomNotRemoved(code);
+    throw new RuleError('Your seat could not be verified.');
+  }
+  await continueRoomAuctionClock(code, clock);
+  const { game: current, control, controlEpoch, controlRevision, closureRevision } = await readRoomSnapshot(code);
   const takingBackControl =
     action?.type === 'setAutopilot' && action.difficulty === null;
   if (control.closed) throw new RoomClosedError();
@@ -460,14 +479,14 @@ export async function act(
     throw new RuleError('Take back control before making a game decision.');
   // This is a wake-up request, not another game action. The route schedules the
   // persisted worker; repeated or early wake-ups cannot bypass its deadline.
-  if (action.type === 'advanceBots') return readSeatView(code, auth);
-  const next = applyAction(current, id, action);
-  queueRoomBots(next, current, clock.now());
-  next.version++;
+  if (action.type === 'advanceBots') return readSeatView(code, auth, clock);
   const now = clock.now();
+  const next = synchronizeAuctionClock(applyAction(current, id, action), now, controlEpoch, control.paused || control.closed);
+  queueRoomBots(next, current, now);
+  next.version++;
   const update = db()
     .prepare(
-      'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND (? = 1 OR NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)',
+      `UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND (? = 1 OR NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) ${roomClockControlFence}`,
     )
     .bind(
       JSON.stringify(next),
@@ -478,6 +497,8 @@ export async function act(
       code,
       auth.playerId,
       auth.tokenHash,
+      controlRevision,
+      closureRevision,
     );
   const results =
     action.type === 'setAutopilot'
@@ -497,14 +518,14 @@ export async function act(
       'Another action arrived first. Your view has refreshed; try again.',
     );
   }
-  return readSeatView(code, auth);
+  return readSeatView(code, auth, clock);
 }
 
-/** Check the credential and load its private state in one database statement. */
-export async function readSeatView(code: string, auth: SeatAuth) {
-  const row = await db()
+/** Verify the credential before clock preflight, then project the current private row. */
+export async function readSeatView(code: string, auth: SeatAuth, clock: Pick<RoomsClock, 'now'> = roomsClock) {
+  const load = () => db()
     .prepare(
-      `SELECT rooms.state, rooms.version, ${roomControlProjection},
+      `SELECT rooms.state, rooms.version, ${roomControlProjection}, ${roomClosureRevision},
         CASE WHEN COUNT(delegations.grant_id) = 0 THEN NULL ELSE
           json_group_array(json_object(
             'grantId', delegations.grant_id,
@@ -547,13 +568,25 @@ export async function readSeatView(code: string, auth: SeatAuth) {
         seat_ai_delegations: string | null;
       }
     >();
+  let row = await load();
   if (!row) {
     await requireRoomNotRemoved(code);
     throw new RuleError('Your seat could not be verified.');
   }
+  // Never resume a room for an unverified viewer. Reload through the same
+  // credential boundary if arming or a due native action changes its version.
+  if (await continueRoomAuctionClock(code, { now: () => clock.now(), sleep: ms => roomsClock.sleep(ms) })) {
+    row = await load();
+    if (!row) {
+      await requireRoomNotRemoved(code);
+      throw new RuleError('Your seat could not be verified.');
+    }
+  }
   const g: Game = JSON.parse(row.state);
   g.version = row.version;
-  const view = viewGame(g, auth.playerId) as GameView;
+  const control = publicRoomControl(row), now = clock.now();
+  const projected = synchronizeAuctionClock(g, now, roomClockAuthority(row).controlEpoch, control.paused || control.closed);
+  const view = viewGame(projected, auth.playerId, now) as GameView;
   attachRoomControl(view, row);
   if (row.seat_ai_delegations) {
     const delegations = JSON.parse(
@@ -571,9 +604,12 @@ export function needsAutomaticRoomRecovery(
     battle?: { revealed: boolean; territory: string } | null;
     automaticContinuationPending?: boolean;
     grummanCollection?: { event: string; stage?: string } | null;
+    auction?: { clockVersion?: number } | null;
+    auctionClock?: unknown;
   },
 ) {
   return (
+    state.auction?.clockVersion === 1 || !!state.auctionClock ||
     state.automaticContinuationPending === true ||
     state.grummanCollection?.stage === 'waiting' ||
     !!state.pendingTreacheryDiscard ||
@@ -603,6 +639,58 @@ async function readWorkerRoomSnapshot(code: string) {
   }
 }
 
+/** One ordinary bid deadline through the existing trusted clock and room CAS.
+ * A worker may wait once for at most ten seconds, then rereads all authority.
+ * No durable alarm is claimed: a later authenticated read/action resumes a
+ * persisted deadline after the process stops. Administrative revision changes
+ * deliberately rearm a full budget after a pause or closure. A true result
+ * requests a fresh private read after a commit or a lost authority fence. */
+export async function continueRoomAuctionClock(
+  code: string,
+  clock: RoomsClock = roomsClock,
+  wait = false,
+): Promise<boolean> {
+  let changed = false, waited = false;
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const snapshot = await readWorkerRoomSnapshot(code);
+    if (!snapshot || snapshot.control.paused || snapshot.control.closed) return changed;
+    const { game: current, controlEpoch, controlRevision, closureRevision } = snapshot;
+    if (!hasAuctionClockOpportunity(current) && !current.auctionClock) return changed;
+    const now = clock.now();
+    const next = advanceAuctionClock(current, now, controlEpoch);
+    const nativeProgress = JSON.stringify(next.auction) !== JSON.stringify(current.auction) ||
+      next.phase !== current.phase || next.turn !== current.turn;
+    if (JSON.stringify(next) !== JSON.stringify(current)) {
+      queueRoomBots(next, current, now);
+      next.version = current.version + 1;
+      const result = await db().prepare(
+        `UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ?
+          AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1)
+          AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1)
+          AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)
+          ${roomClockControlFence}`,
+      ).bind(JSON.stringify(next), now, code, current.version, controlRevision, closureRevision).run();
+      if (result.meta.changes !== 1) {
+        // A lost game/control fence also requires an authenticated caller to
+        // reload its private row, even when this worker committed no write.
+        changed = true;
+        continue;
+      }
+      changed = true;
+      if (nativeProgress || !wait) return changed;
+    }
+    const timer = next.auctionClock;
+    if (!wait || waited || !timer || timer.startedAt === null) return changed;
+    const delay = Math.max(0, timer.remainingMs - Math.max(0, clock.now() - timer.startedAt));
+    if (delay <= 0) return changed;
+    waited = true;
+    await clock.sleep(Math.min(delay, 10000));
+    // A human bid, seat change or administrative revision may have won while
+    // asleep. Only a fresh snapshot can arm, suspend or expire its own event.
+  }
+  return changed;
+}
+
 /** Persist an old automatic continuation through the same version fence as current actions. */
 export async function continueRoomAutomatic(
   code: string,
@@ -611,7 +699,7 @@ export async function continueRoomAutomatic(
   for (let attempt = 0; attempt < 4; attempt++) {
     const snapshot = await readWorkerRoomSnapshot(code);
     if (!snapshot) return;
-    const { game: current, control } = snapshot;
+    const { game: current, control, controlEpoch, controlRevision, closureRevision } = snapshot;
     if (control.paused || control.closed) return;
     if (
       !needsAutomaticRoomRecovery(current) ||
@@ -621,15 +709,15 @@ export async function continueRoomAutomatic(
           current.status === 'finished'))
     )
       return;
-    const next = normalizeAutomaticGame(current);
+    const next = synchronizeAuctionClock(normalizeAutomaticGame(current), clock.now(), controlEpoch);
     if (JSON.stringify(next) === JSON.stringify(current)) return;
     queueRoomBots(next, current, clock.now());
     next.version = current.version + 1;
     const result = await db()
       .prepare(
-        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)',
+        `UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1) ${roomClockControlFence}`,
       )
-      .bind(JSON.stringify(next), clock.now(), code, current.version)
+      .bind(JSON.stringify(next), clock.now(), code, current.version, controlRevision, closureRevision)
       .run();
     if (result.meta.changes === 1) return;
   }
@@ -645,6 +733,7 @@ export async function continueRoomBots(
   clock: RoomsClock = roomsClock,
 ) {
   for (let batch = 0; batch < batches; batch++) {
+    await continueRoomAuctionClock(code, clock);
     let snapshot = await readWorkerRoomSnapshot(code);
     if (!snapshot) return;
     let current = snapshot.game;
@@ -657,6 +746,7 @@ export async function continueRoomBots(
     const delay = (current.botNextActionAt ?? clock.now()) - clock.now();
     if (delay > 0) {
       await clock.sleep(Math.min(delay, ONLINE_BOT_INTERVAL_MS));
+      await continueRoomAuctionClock(code, clock);
       // A human may have taken control or another worker committed while asleep.
       snapshot = await readWorkerRoomSnapshot(code);
       if (!snapshot) return;
@@ -671,16 +761,16 @@ export async function continueRoomBots(
     }
     // Offline simulations retain runBots' fast default. Online persistence makes
     // at most one AI decision visible per successful compare-and-swap.
-    const next = runBots(current, 1);
+    const next = synchronizeAuctionClock(runBots(current, 1), clock.now(), snapshot.controlEpoch);
     if (next.botsPending)
       next.botNextActionAt = clock.now() + ONLINE_BOT_INTERVAL_MS;
     else delete next.botNextActionAt;
     next.version = current.version + 1;
     const result = await db()
       .prepare(
-        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)',
+        `UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1) ${roomClockControlFence}`,
       )
-      .bind(JSON.stringify(next), clock.now(), code, current.version)
+      .bind(JSON.stringify(next), clock.now(), code, current.version, snapshot.controlRevision, snapshot.closureRevision)
       .run();
     // A different worker, seat recovery, or Take back control won. Re-read its authority.
     if (result.meta.changes !== 1) continue;

@@ -9,7 +9,7 @@ export function loadRoomContinuation(
   rooms: Pick<
     typeof Rooms,
     'continueRoomAutomatic' | 'continueRoomBots'
-  >,
+  > & Partial<Pick<typeof Rooms, 'continueRoomAuctionClock'>>,
 ) {
   const exports = {};
   runInNewContext(
@@ -28,7 +28,7 @@ export function loadRoomContinuation(
     {
       exports,
       require: (name: string) => {
-        if (name === './rooms') return rooms;
+        if (name === './rooms') return { continueRoomAuctionClock: async () => false, ...rooms };
         throw new Error('Unexpected continuation dependency ' + name);
       },
     },

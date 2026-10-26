@@ -45,7 +45,7 @@ export const PHASE_HELP = [
   'Complete the table’s storm dials or card reveal. After the distance is revealed, play any storm cards and confirm movement.',
   'Reveal a spice blow, resolve worms and card responses, then finish any Nexus and Fremen rides.',
   'Claim charity once if below two spice. Advanced Bene Gesserit receives two spice regardless of wealth. Then mark yourself ready.',
-  'Bid or pass in turn. A winning bidder chooses how to pay before income and bonus-card responses resolve.',
+  'Bid or pass in turn. New ordinary lots allow ten seconds per bidder while native decisions hold the clock. A winning bidder chooses how to pay before income and bonus-card responses resolve.',
   'Return eligible forces and leaders from the tanks to your reserves. New Advanced Revival phases begin from the First Player counterclockwise; Sapho may change unfinished positions. Finish your own force and leader choices before the next player acts. Basic and already-opened older phases retain their current readiness timing.',
   'Ship before moving. Select a destination sector and, for a move, the forces leaving one territory.',
   'Choose a battle, resolve faction powers, seal plans, decide traitors, then choose which winning cards to keep.',
@@ -126,6 +126,7 @@ const phaseDetails = [
   [
     'Before each auction, resolve the Atreides foresight response. The card stays hidden until that response is allowed. Cancellation affects this card only.',
     'The highlighted player may raise the bid or pass. A new high bid clears previous passes.',
+    'New ordinary lots give the current bidder ten seconds once bidding is ready. Silence becomes a native pass; if passing would break a binding Truthtrance answer, the online convention submits only its required legal bid. Native decisions hold remaining time. Administrative controls re-arm the clock after resumption. Old open unstamped lots retain their saved protocol.',
     'Holding Karama permits a bid above your available spice. If outbid, keep the card. A winning bid above your funds requires Karama.',
     'After everyone else passes, the winner chooses spice payment or Karama. The table then resolves applicable Emperor-income and Harkonnen-bonus responses.',
     'In the fresh local ixian-betrayal preview, native Ixian Bidding inspection and Advanced Technology first finish their original Karama responses, then pause for neutral Nexus acknowledgements before their effects. A legal rival Use prevents only the current attempt; all required passes allow it. See Ixian Nexus Betrayal for both alternatives, private-card limits and the unchanged public release gate.',
@@ -2573,7 +2574,7 @@ export const RULE_TOPICS: RuleTopic[] = [
             : phase === 4
               ? ['ecaz-ambassadors', 'tleilaxu-revival']
               : phase === 3
-                ? ['ix-technology', 'nexus-ixian-betrayal', 'nexus-ixian-replacement', 'richese-cards']
+                ? ['ordinary-auction-clock', 'ix-technology', 'nexus-ixian-betrayal', 'nexus-ixian-replacement', 'richese-cards']
                 : phase === 1
                   ? ['card-harvester', 'faction-fremen']
                   : phase === 0
@@ -2581,6 +2582,28 @@ export const RULE_TOPICS: RuleTopic[] = [
                     : undefined,
     }),
   ),
+  {
+    id: 'ordinary-auction-clock',
+    title: 'Ordinary auction: ten seconds to bid',
+    category: 'Turn phases', coverage: 'Partial', developmentStage: 'Prototyped',
+    summary: 'The server times each new ordinary bidding opportunity and uses the native pass when its ten seconds expire.',
+    steps: [
+      'Watch the persistent ordinary-auction countdown. Bid or pass before it reaches zero; server time decides the deadline. The local display never submits a pass.',
+      'Inspection, Truthtrance, cancellation, payment and other current native decisions hold the remaining budget. Unrelated polls do not grant more time. The next actual bidder receives ten seconds.',
+      'If passing would violate a binding Truthtrance answer, the explicit online convention submits only its required legal bid. Normal payment is owed if that bid wins; no extra strategic bid is chosen.',
+      'Administrative room-control or closure changes conservatively re-arm ten seconds once play resumes, including pauses no client observed. Paused, closed and removed rooms do not progress.',
+      'An already-open older unstamped lot keeps its saved untimed protocol; the next new native lot is timed. Pure offline games do not use wall time. A stored online deadline is evaluated on the next authenticated request after a stopped host.',
+      'Silent and Once-Around procedures retain their own timing. Full special-auction, browser, deployed and comprehensive acceptance remain unfinished.',
+    ],
+    related: ['bidding', 'truthtrance-bid', 'truthtrance-turn-actions', 'ai-pacing'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Versioned native source, trusted clock, held budget, canonical pass and required-Truth bid use the original room and native rule paths.', evidence: ['game/auction-clock.ts', 'game/engine.ts', 'db/rooms.ts', 'db/room-continuation.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Persistent countdown distinguishes starting, running, interrupted, paused and server-resolution states; no client action is dispatched.', evidence: ['components/auction-countdown.tsx', 'components/game-table.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Existing online AI pacing runs alongside the deadline; no strategy refinement or calibration is added.', evidence: ['db/room-continuation.ts', 'db/rooms.ts', 'tests/bot-pacing.test.ts'] },
+      { area: 'Documentation', status: 'Implemented', detail: 'Printed Basic/Advanced source, provisional online conventions and legacy timing boundaries are explicit.', evidence: ['docs/AUCTION_TIME_LIMIT.md', 'docs/RULE_DECISIONS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused helper, native, display and trusted-room clock tests; final hosted and full-mode acceptance remains.', evidence: ['tests/auction-clock.test.ts', 'tests/auction-clock-runtime.test.ts', 'tests/auction-countdown.test.tsx', 'tests/rooms-auction-clock.test.ts'] },
+    ],
+  },
   {
     id: 'storm-cards',
     title: 'Storm Cards: forecast and revealed faces',

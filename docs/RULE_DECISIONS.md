@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Ordinary-auction ten-second deadline — 26 October 2026
+
+Publisher Basic printed8 and supplied Advanced physical8/printed6 require a
+bid within ten seconds, otherwise pass. New versioned ordinary lots use trusted
+server time and native pass/order/settlement; old open unstamped lots retain
+their saved protocol. Native decisions suspend remaining time. The standing
+choose-recommended policy provisionally submits only a required legal Truth
+bid if passing would violate a binding answer; normal payment remains owed.
+Room-control/closure revisions conservatively re-arm ten seconds after play
+resumes, including unobserved pauses. These online compositions are explicit,
+not publisher timing examples. Special-auction and full-mode gates remain.
+[Contract and source](AUCTION_TIME_LIMIT.md).
+
 ## Combined final Nexus membership — 26 October 2026
 
 Compose final current-Nexus membership with the whole native turn-action

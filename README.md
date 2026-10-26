@@ -14,6 +14,13 @@ npm run dev -- --host 0.0.0.0
 
 Open `http://localhost:3000`. Create a room, share its eight-character invitation, and add human or AI seats. The host can configure Easy, Medium, Hard and Brutal AI opponents. Current calibration demonstrates a substantially weaker Easy policy; it does not yet demonstrate a consistent ordering among the upper three levels.
 
+New ordinary-auction lots show a **ten-second bidding countdown**. Native
+inspection and response decisions hold the clock. At expiry, the server passes
+or submits only a bid required by a binding Truthtrance answer; normal payment
+remains due. Administrative controls re-arm time after resumption. Already-open
+older unstamped lots retain their saved timing. See the
+[time-limit scope and online conventions](docs/AUCTION_TIME_LIMIT.md).
+
 For Advanced play, choose **Rules → Advanced preview** before creating a room,
 or use the same selector as host in an existing lobby. Everyone must
 ready again after changing rules, then the host chooses **Begin Advanced preview**.

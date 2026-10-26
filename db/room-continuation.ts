@@ -1,4 +1,4 @@
-import { continueRoomAutomatic, continueRoomBots } from './rooms';
+import { continueRoomAutomatic, continueRoomAuctionClock, continueRoomBots } from './rooms';
 
 // Coalesce polls and control requests inside this isolate. Database CAS fences
 // other isolates, restarts, seat recovery and human actions.
@@ -7,8 +7,13 @@ export function resumeRoom(code: string): Promise<void> {
   const existing = continuations.get(code);
   if (existing) return existing;
   const pending = (async () => {
-    await continueRoomAutomatic(code);
-    await continueRoomBots(code);
+    await Promise.all([
+      (async () => {
+        await continueRoomAutomatic(code);
+        await continueRoomBots(code);
+      })(),
+      continueRoomAuctionClock(code, undefined, true),
+    ]);
   })().finally(() => {
     if (continuations.get(code) === pending) continuations.delete(code);
   });

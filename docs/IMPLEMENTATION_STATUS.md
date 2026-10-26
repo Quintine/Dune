@@ -1,5 +1,52 @@
 # Dune implementation status
 
+## 27 October 2026 — Ordinary-auction ten-second deadline
+
+**Ordinary-auction ten-second bidding — 27 October. Prototyped / Partial.**
+New ordinary lots in Basic and Advanced now use trusted server time. Silence
+follows the actual native pass; when a binding Truthtrance answer forbids it,
+the provisional online convention submits the lowest legal required bid across
+whole-answer alternatives. Native quote bounds select that amount without
+speculatively settling purchases. Winning bids retain normal payment.
+
+Inspection, Truthtrance and other native decisions hold remaining time. The
+countdown persists while another control owns the table. Administrative room-
+control/closure revisions conservatively re-arm ten seconds on resumption,
+including unobserved pauses. Those online conventions are explicit. Old open
+unstamped lots retain their saved timing; future new lots are timed. Only
+trusted room time can advance the clock. Existing online AI pacing runs in
+parallel; no strategy or calibration changes are made.
+
+The frozen batch passes **17 files,199/199**, types/lint/build. Thirteen helper,
+four display, nine native and14 SQLite/fake-clock cases provide40 new checks.
+They cover exact deadlines, native interruption, late/forged-time requests,
+minimal compelled bids, actual purchases, source changes, old lots, authenticated
+access and existing version/control fences. Six runtime paths pass: five native
+journeys plus one real local HTTP room, with14 GameTable SSR renders and43 HTTP
+requests. Basic source20 and Advanced source23 time out through actual pass;
+source22 covers whole bid3/pay2, held Truth time and alternatives5/3 choosing3.
+The public HTTP path reaches bidding through12 actual controls after lobby/start,
+accepts bid1, records the next bidder's timeout/pass and rejects late bid2.
+Original native inventories remain; no played source state is installed.
+
+Runtime-first feedback catches the hidden held countdown and moves it into the
+persistent notice area. Types/lint feedback is repaired. The affected union
+then catches two test assumptions: a pass can retire the lot, and cross-context
+async callbacks need an event-loop barrier. Both exact repaired cases pass.
+V5's manifest proves only those two test files changed after V4's passing runtime;
+all production, native fixtures and the runtime script are identical. The six
+runtime journeys are reused, then final quick checks,199 tests and build pass.
+
+Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-auction-clock-proof-v5/`;
+reused journeys/HTML: adjacent `20261026-auction-clock-runtime-v4/`.
+The stopped local server was started without resetting storage and remains
+healthy after build (HTTP200). Three dedicated local QA rooms from iteration
+are preserved; no existing room was acted on. No reset, deletion, restart or
+deployment is performed. Special-auction timing, wider interactions and final
+browser/deployed/recovery/privacy/custody acceptance remain; no mode is certified.
+[Source, conventions and scope](AUCTION_TIME_LIMIT.md).
+
 ## 26 October 2026 — Combined current battle decisions
 
 **Truthtrance / combined current battle decisions — 26 October. Prototyped / Partial.**

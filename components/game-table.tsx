@@ -262,6 +262,7 @@ import {
   splitLocation,
 } from '@/game/board';
 import type { Action, GameView, Plan } from '@/game/engine';
+import { AuctionCountdown } from './auction-countdown';
 import { PLAYER_CIRCLE_SECTORS } from '@/game/player-positions';
 import { SeatAutopilot } from './seat-autopilot';
 import {
@@ -2088,6 +2089,11 @@ export function GameTable({
           {g.status === 'playing' && <MixedTraitorPromises game={g} />}
           {g.status === 'playing' && <TravelPromises game={g} busy={busy} act={act} />}
           {g.status === 'playing' && <TurnActionPromises game={g} busy={busy} act={act} fillPlan={fillBattlePlan} />}
+          {g.status === 'playing' && g.phase === 3 && g.auction && (
+            <AuctionCountdown clock={g.auctionClock}
+              playerName={g.players.find(player => player.id === g.auction!.active)?.name ?? 'The current bidder'}
+              paused={g.roomControl?.paused || g.roomControl?.closed} />
+          )}
           {g.guildBetrayalReaction ? (
             <NexusGuildBetrayal game={g} act={act} busy={reactionBusy} />
           ) : g.richeseBetrayalReaction ? (
@@ -6540,7 +6546,7 @@ export function GameTable({
             <p>
               Still in progress: expansion factions and modules, advanced rules,
               several special cards, optional faction reactions, ally support,
-              auction deadlines, and a printed-board connectivity audit.
+              special-auction timing, and a printed-board connectivity audit.
             </p>
             <a href="/rules">
               Open the rules coverage ledger <ArrowRight size={14} />

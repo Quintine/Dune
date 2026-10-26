@@ -1,3 +1,5 @@
+import { AuctionClockError, AUCTION_BID_MS, quoteAuctionClock, viewAuctionClock,
+  type AuctionClock, type AuctionClockView } from './auction-clock';
 import { TurnActionError, liveTurnActionPromises, turnActionBranches, recordTurnActionPayment,
   recordTurnActionShipment, recordTurnActionMovement, closeTurnActionTransport, finishTurnActionTurn,
   validateTurnActionPromises, recordTurnActionBid, closeTurnActionBidding, recordTurnActionRevival,
@@ -918,6 +920,8 @@ export type Battle = {
   voice?: { target: string; kind: Card['kind'] | 'stoneBurner' | 'mirrorWeapon'; must: boolean };
 };
 export type Auction = {
+  /** New ordinary lots use trusted online timing; old open lots stay unstamped. */
+  clockVersion?: 1;
   /** Sapho changes this lot's cycle, never physical order or the next opener. */
   saphoOrder?: string[];
   peekKnown?: boolean;
@@ -2544,6 +2548,8 @@ export type Game = {
     nexusMoritaniRetention?: NexusMoritaniRetentionReceipt;
   } | null;
   auction: Auction | null;
+  /** Private source and trusted time. Player views expose the countdown only. */
+  auctionClock?: AuctionClock;
   battle: Battle | null;
   nexus: boolean;
   allianceOffers: Record<string, string>;
@@ -14501,6 +14507,7 @@ function setAuction(g: Game, cards?: Card[]) {
     (id) => eligible.includes(id),
   )!;
   g.auction = {
+    clockVersion: 1,
     ...(g.homeworldOccupationPreview ? { occupiedEvent: crypto.randomUUID() } : {}),
     cards,
     index: 0,
@@ -15877,6 +15884,115 @@ function guardPromisedBid(g: Game, p: Player, action: Action, amount?: number) {
   requireRule(!bidRequired(g.bidPromises ?? [], p.id, opportunity),
     'Place the qualifying bid required by your Truthtrance Yes before passing or taking a lower bid.');
 }
+function ordinaryAuctionClockOpportunity(g: Game) {
+  const auction = g.auction;
+  if (g.status !== 'playing' || g.phase !== 3 || auction?.clockVersion !== 1 ||
+    !auction.cards[auction.index] || !g.players.some(player => player.id === auction.active)) return null;
+  return { player: auction.active, source: JSON.stringify({ turn: g.turn,
+    index: auction.index, card: auction.cards[auction.index].id, active: auction.active,
+    bid: auction.bid, bidder: auction.bidder, passed: auction.passed,
+    opener: auction.opener, order: auction.saphoOrder ?? g.order }) };
+}
+export function hasAuctionClockOpportunity(g: Game): boolean {
+  return ordinaryAuctionClockOpportunity(g) !== null;
+}
+function ordinaryAuctionClockBlocked(g: Game): boolean {
+  return !!(g.active !== g.auction?.active || g.richeseAuction || g.truthtrance || g.response ||
+    g.decision || g.phaseOpening || g.pendingTreacheryDiscard ||
+    g.pendingNullentropy || g.pendingKull || g.pendingHomeworldTupileCleanup ||
+    g.pendingRicheseBetrayal || g.pendingGuildBetrayal ||
+    g.pendingNexusEmperorPayment || g.pendingNexusEmperorSellerPurchase || g.pendingAmbassador ||
+    g.pendingNexusHarkonnenBetrayal || g.pendingNexusIxianBetrayal || g.pendingNexusIxianReplacement ||
+    g.pendingTerrorEntry || g.pendingArrivalOverlap || g.pendingArrivalReaction?.length ||
+    g.pendingFremenMove || g.pendingIxMove || g.pendingChoamMove || g.pendingAdvisorMatching ||
+    pendingNexusTraitors(g));
+}
+function auctionClockQuote(g: Game, now: number, controlEpoch: string, blocked = false) {
+  const opportunity = ordinaryAuctionClockOpportunity(g);
+  try {
+    return quoteAuctionClock({ clock: g.auctionClock, opportunity, now, controlEpoch,
+      blocked: blocked || ordinaryAuctionClockBlocked(g),
+      event: opportunity && (!g.auctionClock || g.auctionClock.source !== opportunity.source ||
+        g.auctionClock.player !== opportunity.player || g.auctionClock.controlEpoch !== controlEpoch)
+        ? crypto.randomUUID() : g.auctionClock?.event ?? 'no-auction' });
+  } catch (error) {
+    if (error instanceof AuctionClockError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+/** Only trusted room time calls this. Pure actions and offline games never
+ * consult wall time, and legacy unclocked lots are not retroactively timed. */
+export function synchronizeAuctionClock(source: Game, now: number, controlEpoch: string, blocked = false): Game {
+  const quote = auctionClockQuote(source, now, controlEpoch, blocked);
+  if (JSON.stringify(source.auctionClock) === JSON.stringify(quote.clock)) return source;
+  const next = { ...source };
+  if (quote.clock) next.auctionClock = quote.clock;
+  else delete next.auctionClock;
+  return next;
+}
+/** Bid predicates change only at their declared minima. Testing those finite
+ * breakpoints through detached exact native bounds finds the least compelled
+ * bid without scanning a large purse or speculatively settling a purchase. */
+function minimumCompelledAuctionBid(game: Game, actor: string): Action | null {
+  const opportunity = bidOpportunity(game), player = getPlayer(game, actor);
+  if (!opportunity || !game.auction) return null;
+  const amounts = new Set<number>([game.auction.bid + 1]);
+  for (const promise of liveBidPromises(game.bidPromises ?? [], actor, opportunity)) amounts.add(promise.minimum);
+  const visit = (node: TurnActionClaim['mixed']): void => {
+    if (node.kind === 'action') {
+      if (node.action.kind === 'bid' && node.action.lot === opportunity.lot) amounts.add(node.action.minimum);
+    } else if (node.kind !== 'fact') node.terms.forEach(visit);
+  };
+  for (const promise of liveTurnActionPromises(game.turnActionPromises ?? [], actor, game.turn)) visit(promise.mixed);
+  const maximum = normalBidMaximum(game, player);
+  const whole = liveTurnActionPromises(game.turnActionPromises ?? [], actor, game.turn).length > 0;
+  for (const amount of [...amounts].filter(value => Number.isSafeInteger(value) && value > game.auction!.bid && value <= maximum).sort((a, b) => a - b)) {
+    const metadata = { turn: game.turn, lot: opportunity.lot, source: opportunity.source,
+      player: actor, asker: game.players.find(seat => seat.id !== actor)!.id };
+    const bounds: BidPromise[] = [{ ...metadata, event: 'auction-clock-minimum', minimum: amount, answer: true }];
+    if (amount < Number.MAX_SAFE_INTEGER)
+      bounds.push({ ...metadata, event: 'auction-clock-maximum', minimum: amount + 1, answer: false });
+    const trial = { ...game, bidPromises: [...(game.bidPromises ?? []), ...bounds] };
+    const action = whole ? turnActionCompletion(trial, actor)?.bid : bidPromiseCompletion(trial, player);
+    if (action?.type === 'bid' && action.amount === amount) return action;
+  }
+  return null;
+}
+/** A deadline uses the same native pass as a human. If an accepted Truthtrance
+ * answer forbids passing, execute only its quoted required legal bid instead
+ * of letting silence evade that answer or make a strategic bid for the seat. */
+export function advanceAuctionClock(source: Game, now: number, controlEpoch: string, blocked = false): Game {
+  const game = synchronizeAuctionClock(source, now, controlEpoch, blocked);
+  const quote = auctionClockQuote(game, now, controlEpoch, blocked);
+  if (!quote.expired || !game.auctionClock) return game;
+  const actor = game.auctionClock.player;
+  let next: Game, compelled = false;
+  try { next = applyAction(game, actor, { type: 'passBid' }); }
+  catch (error) {
+    if (!(error instanceof RuleError)) throw error;
+    const whole = liveTurnActionPromises(game.turnActionPromises ?? [], actor, game.turn).length
+      ? turnActionCompletion(game, actor)?.bid : undefined;
+    const opportunity = bidOpportunity(game);
+    const required = opportunity && bidRequired(game.bidPromises ?? [], actor, opportunity);
+    if (!whole && !required) throw error;
+    const completion = minimumCompelledAuctionBid(game, actor);
+    requireRule(completion, 'The expired ordinary bid needs a legal completion of its binding Truthtrance answer.');
+    next = applyAction(game, actor, completion);
+    compelled = true;
+  }
+  log(next, compelled
+    ? `${getPlayer(game, actor).name}'s ten-second bidding time expired. The legal bid required by their binding Truthtrance answer was submitted.`
+    : `${getPlayer(game, actor).name}'s ten-second bidding time expired; they passed this bid.`);
+  return synchronizeAuctionClock(next, now, controlEpoch, blocked);
+}
+function projectedAuctionClock(g: Game, now?: number): AuctionClockView | null {
+  const opportunity = ordinaryAuctionClockOpportunity(g);
+  if (!opportunity) return null;
+  const clock = g.auctionClock;
+  if (!clock || clock.source !== opportunity.source || clock.player !== opportunity.player)
+    return { event: null, player: opportunity.player, remainingMs: AUCTION_BID_MS, running: false };
+  return viewAuctionClock(clock, now ?? clock.startedAt ?? 0);
+}
 function auctionNext(g: Game) {
   const a = g.auction!;
   const eligible = g.order.filter((id) => {
@@ -16063,7 +16179,7 @@ function commitNormalAuctionRetirement(g: Game, next: NormalAuctionRetirementQuo
     g.auction = null;
     finishNormalBidding(g);
   } else {
-    g.auction = next.auction;
+    g.auction = { ...next.auction, clockVersion: 1 };
     g.active = next.active;
     if (next.offer?.kind === 'ixTechnology') g.decision = next.offer;
     else if (next.offer) offerAuctionPeek(g);
@@ -41412,7 +41528,7 @@ function applyActionInner(
   }
   throw new RuleError('That action is not available.');
 }
-export function viewGame(state: Game, id: string) {
+export function viewGame(state: Game, id: string, now?: number) {
   revivalOrderIntegrity(state);
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
@@ -41518,6 +41634,7 @@ export function viewGame(state: Game, id: string) {
       ? findReachableBattlePlan(g, me)
       : null;
   return {
+    auctionClock: projectedAuctionClock(g, now),
     harkonnenExchangeInspection: projectedHarkonnenInspection(g, id),
     ecazPoisonIncome: (g.ecazPoisonIncome ?? []).filter((income) => income.player === id)
       .map(({turn, phase, amount, count}) => ({turn, phase, amount, count})),
@@ -42648,6 +42765,7 @@ export function viewGame(state: Game, id: string) {
       : null,
     auction: g.auction
       ? {
+          ...(g.auction.clockVersion === 1 ? { clockVersion: 1 as const } : {}),
           bid: g.auction.bid,
           bidder: g.auction.bidder,
           active: g.auction.active,
