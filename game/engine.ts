@@ -599,6 +599,7 @@ import { resolveBattleWeapons } from './effective-weapons';
 import { choamGholaEvent, choamGholaSkillOfferEvent, choamGholaSkillSignature, choamMarketGholaError, choamSaleGholaTiming, type ChoamMarketGhola } from './choam-market-ghola';
 import { quoteAdvisorPreparationWindow, quoteAdvisorPreparation, validateAdvisorPreparation, projectAdvisorPreparationWindow, AdvisorPreparationError, type AdvisorPreparationWindow, type AdvisorPreparationSource } from './advisor-preparation-window';
 import { quoteFremenRevivalGrant, validateFremenRevivalGrant, projectFremenRevivalGrant, FremenRevivalGrantError, type FremenRevivalGrantSource } from './fremen-revival-grant';
+import { splitOrdinaryPayments, type OrdinaryPayment } from './ordinary-payment-plan';
 import {
   charityAmount,
   charityQuote,
@@ -15117,7 +15118,7 @@ function alliancePromisePlan(g: Game, p: Player, promises = g.alliancePromises ?
       if (accepts) getPlayer(future, p.id).ally = accepts;
       if (accepts && hasBribePromises(trial, p.id, true) && !bribePromiseCompletion(future, getPlayer(future, p.id))) {
         const payment = bribePromiseCompletion(trial, actor)?.find(action => action.target === accepts);
-        if (!payment) continue;
+        if (!payment || typeof payment.amount !== 'number' || payment.amount > uncommittedSpice(trial, actor)) continue;
         const amount = payment.amount as number;
         actor.spice -= amount;
         getPlayer(trial, accepts).bribes += amount;
@@ -15365,6 +15366,64 @@ function bribeQuestionWindow(g: Game): boolean {
   return bribePromiseTurn(g) && !bribeTimingBlock({ ...g, truthtrance: null,
     inflation: g.inflation?.side === 'double' ? null : g.inflation });
 }
+/** One owned claim, using the same entitlement as real Charity and existing
+ * preparation quotes. Future phase projection consumes no hidden card. */
+function forecastOrdinaryCharity(source: Game, owner: string): Game | null {
+  const before = getPlayer(source, owner);
+  if (source.phase > 2 || before.charityTurn === source.turn ||
+    source.phase === 2 && source.ready.includes(owner)) return null;
+  const g = structuredClone(source); g.phase = 2; g.ready = [];
+  g.truthtrance = null; g.response = null; g.decision = null; g.phaseOpening = null;
+  g.pendingKarama = null; g.pendingTreacheryDiscard = null;
+  g.spiceWindow = null; g.spiceResolution = null; g.spiceSequence = null; g.nexus = false;
+  g.stormCardWindowOpen = false; g.thumperWindowOpen = false; g.amalWindowOpen = false;
+  const player = getPlayer(g, owner);
+  if (charityQuote(g, player).total <= 0) return null;
+  try {
+    if (source.phase < 2 && byFaction(g, 'choam') && g.choamCharity?.turn !== g.turn) {
+      if (player.faction === 'choam') return null;
+      // Another faction's ordinary entitlement survives either CHOAM opening
+      // outcome. Quote the beneficiary only, without choosing that response.
+      player.spice += charityQuote(g, player).total; player.charityTurn = g.turn;
+      return g;
+    }
+    const next = applyActionInner(g, owner, { type: 'charity' }, 'shipmentPreparation');
+    const response = next.response;
+    if (response?.kind === 'bgCharity' && response.owner === owner) {
+      next.response = null;
+      payCharity(next, getPlayer(next, owner), response.amount ?? 2, response.charityHomeworld ?? 0);
+    }
+    return next;
+  } catch (error) { if (error instanceof RuleError) return null; throw error; }
+}
+function quoteOrdinaryPayments(g: Game, actor: string, payments: readonly OrdinaryPayment[]) {
+  const owner = getPlayer(g, actor);
+  for (const payment of payments) {
+    const recipient = getPlayer(g, payment.recipient);
+    requireRule(recipient.id !== actor && recipient.id !== owner.ally &&
+      payment.amount <= uncommittedSpice(g, owner), 'Retain legal ordinary payment funding and recipients.');
+    checkBureaucratContributors(g, recipient.id, [{ payer: actor, amount: payment.amount }]);
+    recordBribePayment(g, actor, recipient.id, payment.amount);
+    owner.spice -= payment.amount; recipient.bribes += payment.amount;
+  }
+}
+function* ordinaryPaymentSeeds(source: Game, actor: string, payments: readonly OrdinaryPayment[],
+  beforeFuture: (game: Game) => void = () => {}): Generator<{ game: Game; actions: Action[] }> {
+  if (!Number.isSafeInteger(payments.reduce((sum, payment) => sum + payment.amount, 0))) return;
+  const split = splitOrdinaryPayments(payments, Math.max(0, uncommittedSpice(source, getPlayer(source, actor))));
+  try {
+    const current = structuredClone(source);
+    quoteOrdinaryPayments(current, actor, split.before);
+    beforeFuture(current);
+    const actions: Action[] = split.before.map(payment => ({ type: 'bribe', target: payment.recipient, amount: payment.amount }));
+    if (!split.after.length) { yield { game: current, actions }; return; }
+    const claimed = forecastOrdinaryCharity(current, actor);
+    if (!claimed) return;
+    quoteOrdinaryPayments(claimed, actor, split.after);
+    yield { game: claimed, actions: [...actions, { type: 'charity' },
+      ...split.after.map(payment => ({ type: 'bribe', target: payment.recipient, amount: payment.amount }))] };
+  } catch (error) { if (!(error instanceof RuleError)) throw error; }
+}
 /** Shared funded completion; alternatives are quotations and never become a
  * stored route. Record its future payments before checking the remaining purse
  * so a satisfied bribe is not reserved for a second time by another family. */
@@ -15375,29 +15434,19 @@ function bribePromiseCompletion(g: Game, p: Player, promises = g.bribePromises ?
     return turnActionCompletion({ ...g, bribePromises: promises, bribeExpressionPromises: expressions }, p.id)?.payments ?? null;
   for (const required of bribePromiseRule(() => bribeCompletionCandidates(promises, expressions, p.id, g.turn))) {
     if (!required.length) return [];
-    const trial = structuredClone(g), actor = getPlayer(trial, p.id);
-    trial.truthtrance = null;
-    if (bribeTimingBlock(trial)) return null;
-    const total = required.reduce((sum, payment) => sum + payment.amount, 0);
-    if (!Number.isSafeInteger(total) || total > uncommittedSpice(trial, actor)) continue;
-    trial.bribePromises = structuredClone(promises);
-    trial.bribeExpressionPromises = structuredClone(expressions);
-    try {
-      for (const payment of required) {
-        if (payment.recipient === p.id || payment.recipient === p.ally ||
-          !g.players.some(player => player.id === payment.recipient)) throw new RuleError('Choose a non-allied bribe recipient.');
-        recordBribePayment(trial, p.id, payment.recipient, payment.amount);
-      }
-      actor.spice -= total;
+    const source = structuredClone(g); source.truthtrance = null;
+    if (bribeTimingBlock(source)) return null;
+    source.bribePromises = structuredClone(promises);
+    source.bribeExpressionPromises = structuredClone(expressions);
+    for (const seed of ordinaryPaymentSeeds(source, p.id, required)) try {
+      const trial = seed.game;
       const voluntary = { actor: p.id, action: { type: 'bribe' } };
-      for (const payment of required)
-        checkBureaucratContributors(trial, payment.recipient, [{ payer: p.id, amount: payment.amount }]);
       reconcileBattlePromises(trial, voluntary);
       reconcileShipmentPromises(trial, voluntary);
       reconcileGroundMovementPromises(trial, p.id, voluntary.action, g.phase);
       reconcileBidPromises(trial, voluntary);
       reconcileRevivalPromises(trial, voluntary);
-      return required.map(payment => ({ type: 'bribe', target: payment.recipient, amount: payment.amount }));
+      return seed.actions;
     } catch (error) { if (!(error instanceof RuleError)) throw error; }
   }
   return null;
@@ -15411,21 +15460,23 @@ function bribeCompatibleLaterPromises(g: Game, p: Player,
 function bribeTruthAnswers(g: Game, p: Player, claim: BribeClaim): ('yes' | 'no' | 'unknown')[] {
   if (!bribeQuestionWindow(g) || claim.turn !== g.turn || claim.recipient === p.id ||
     claim.recipient === p.ally || !g.players.some(player => player.id === claim.recipient)) return [];
-  return (['yes', 'no'] as const).filter(answer => !!bribePromiseCompletion(g, p, [...(g.bribePromises ?? []),
+  const source = g.phase === 2 ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
+  return (['yes', 'no'] as const).filter(answer => !!bribePromiseCompletion(source, p, [...(g.bribePromises ?? []),
     { ...claim, event: 'candidate', player: p.id, asker: g.truthtrance?.queue[0]?.player ?? g.host,
       answer: answer === 'yes', progress: 0 }]));
 }
 function bribeExpressionTruthAnswers(g: Game, p: Player, claim: BribeExpressionClaim): ('yes' | 'no' | 'unknown')[] {
   if (!bribeQuestionWindow(g) || claim.turn !== g.turn || bribeExpressionRecipients(claim.claim)
     .some(recipient => recipient === p.id || recipient === p.ally || !g.players.some(player => player.id === recipient))) return [];
-  return (['yes', 'no'] as const).filter(answer => !!bribePromiseCompletion(g, p, g.bribePromises ?? [],
+  const source = g.phase === 2 ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
+  return (['yes', 'no'] as const).filter(answer => !!bribePromiseCompletion(source, p, g.bribePromises ?? [],
     [...(g.bribeExpressionPromises ?? []), { ...claim, event: 'candidate', player: p.id,
       asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes', progress: [] }]));
 }
 function reopenBribePayer(g: Game, p: Player, answer: boolean) {
-  if (answer && (g.phase === 8 || g.phase === 7 && bribesCloseBeforeNextMentat(g)) && g.ready.includes(p.id)) {
+  if (answer && (g.phase === 2 || g.phase === 8 || g.phase === 7 && bribesCloseBeforeNextMentat(g)) && g.ready.includes(p.id)) {
     g.ready = g.ready.filter(player => player !== p.id);
-    log(g, `${p.name} has a new Truthtrance bribe commitment and must finish ${g.phase === 8 ? 'Mentat Pause' : 'Collection'} again after paying it.`);
+    log(g, `${p.name} has a new Truthtrance bribe commitment and must finish ${g.phase === 2 ? 'Charity' : g.phase === 8 ? 'Mentat Pause' : 'Collection'} again after its required preparation.`);
   }
 }
 function bindBribeTruth(g: Game, p: Player, claim: BribeClaim, answer: boolean, asker: string) {
@@ -15509,10 +15560,12 @@ function reconcileBribePromises(g: Game, voluntary?: { actor: string; action: Ac
   const pending = g.response || g.decision || g.phaseOpening || g.pendingTreacheryDiscard ||
     g.pendingKarama || g.pendingKull || g.pendingRicheseBetrayal;
   if (pending && voluntary) {
-    const available = Math.max(0, uncommittedSpice(g, getPlayer(g, voluntary.actor)));
+    const future = structuredClone(g); future.truthtrance = null;
+    if (future.phaseOpening) projectTurnActionOpeningEnd(future);
+    future.response = null; future.decision = null; future.pendingKarama = null; future.pendingTreacheryDiscard = null;
     let affordable = false;
     for (const required of bribeCompletionCandidates(g.bribePromises ?? [], g.bribeExpressionPromises ?? [], voluntary.actor, g.turn)) {
-      if (required.reduce((sum, payment) => sum + payment.amount, 0) <= available) { affordable = true; break; }
+      if (!ordinaryPaymentSeeds(future, voluntary.actor, required).next().done) { affordable = true; break; }
     }
     requireRule(affordable,
     'Keep the current spice needed by your Truthtrance bribe answer.');
@@ -15530,14 +15583,25 @@ function reconcileBribePromises(g: Game, voluntary?: { actor: string; action: Ac
     } else kept.push(promise);
   }
 }
+function ordinaryPaymentActionAvailable(g: Game, player: Player, action: Action): boolean {
+  if (action.type === 'charity') return g.phase === 2 && !g.ready.includes(player.id) &&
+    player.charityTurn !== g.turn && charityQuote(g, player).total > 0 &&
+    (!byFaction(g, 'choam') || g.choamCharity?.turn === g.turn) &&
+    !g.truthtrance && !g.phaseOpening && !g.response && !g.decision && !g.pendingTreacheryDiscard;
+  return action.type === 'bribe' && !bribeTimingBlock(g) && typeof action.amount === 'number' &&
+    action.amount > 0 && action.amount <= uncommittedSpice(g, player);
+}
 function projectedBribePromiseGuide(g: Game, player: string): { action: Action } | null {
   if (!bribeQuestionWindow(g) || g.truthtrance) return null;
-  const action = bribePromiseCompletion(g, getPlayer(g, player))?.[0];
-  if (!action) return null;
+  const joint = liveTurnActionPromises(g.turnActionPromises ?? [], player, g.turn).length
+    ? turnActionCompletion(g, player) : null;
+  if (joint?.paymentsAfterPreparations && joint.cardPreparations?.length) return null;
+  const action = joint ? joint.payments[0] : bribePromiseCompletion(g, getPlayer(g, player))?.[0];
+  if (!action || !ordinaryPaymentActionAvailable(g, getPlayer(g, player), action)) return null;
   const candidates = [...liveBribePromises(g.bribePromises ?? [], player, g.turn),
     ...liveBribeExpressionPromises(g.bribeExpressionPromises ?? [], player, g.turn)]
-    .filter(promise => promise.answer && ('claim' in promise ? bribeExpressionRecipients(promise.claim).includes(action.target as string)
-      : promise.recipient === action.target));
+    .filter(promise => promise.answer && (action.type === 'charity' || ('claim' in promise ? bribeExpressionRecipients(promise.claim).includes(action.target as string)
+      : promise.recipient === action.target)));
   const sequence = g.bribePromiseSequence ?? [];
   candidates.sort((a, b) => sequence.indexOf(a.event) - sequence.indexOf(b.event));
   return candidates[0] ? { action: { ...action, bribePromiseEvent: candidates[0].event } } : null;
@@ -19151,6 +19215,22 @@ function* turnActionPrintedPreparationSeeds(source: Game, actor: string, cards: 
     for (const window of turnActionWindowCardSeeds(card.game, actor, windows))
       yield { game: window.game, actions: [...card.actions, ...window.actions] };
 }
+/** Preserve current-window chronology when Charity is in a later phase.
+ * A second order also permits an owned printed effect before its payments. */
+function* turnActionFundedPreparations(source: Game, actor: string, required: readonly OrdinaryPayment[],
+  cards: readonly TurnActionCardRequirement[], windows: readonly TurnActionWindowCardRequirement[],
+  afterCurrentPayments: (game: Game) => void):
+  Generator<{ game: Game; actions: Action[]; payments: Action[]; cardsFirst: boolean }> {
+  for (const paid of ordinaryPaymentSeeds(source, actor, required, afterCurrentPayments))
+    for (const prepared of turnActionPrintedPreparationSeeds(paid.game, actor, cards, windows))
+      yield { ...prepared, payments: paid.actions, cardsFirst: false };
+  if (required.length && (cards.length || windows.some(required => required.answer)))
+    for (const prepared of turnActionPrintedPreparationSeeds(structuredClone(source), actor, cards, windows)) {
+      if (!prepared.actions.length) continue;
+      for (const paid of ordinaryPaymentSeeds(prepared.game, actor, required, afterCurrentPayments))
+        yield { game: paid.game, actions: prepared.actions, payments: paid.actions, cardsFirst: true };
+    }
+}
 function recordNativeTurnActionWindowCard(g: Game, actor: string, effect: WindowCardEffect, source: string) {
   if (g.turnActionPromises) g.turnActionPromises = turnActionRule(() =>
     recordTurnActionWindowCardPlay(g.turnActionPromises!, actor, g.turn, effect, source));
@@ -19519,7 +19599,7 @@ function turnActionAllianceCanClose(g: Game, player: Player): boolean {
     return !!turnActionCompletion(source, player.id);
   } catch (error) { if (error instanceof RuleError) return false; throw error; }
 }
-type TurnActionCompletion = MovementCompletion & { payments: Action[]; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[]; battlePlan?: BattleCompletion; traitor?: Action; cardPreparations?: Action[]; battlePower?: Action };
+type TurnActionCompletion = MovementCompletion & { payments: Action[]; paymentsAfterPreparations?: boolean; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[]; battlePlan?: BattleCompletion; traitor?: Action; cardPreparations?: Action[]; battlePower?: Action };
 /** Forecast deterministic opening work only. Auction/deck draws and foreign
  * choices stay at the real table; fixed Mentat receipts arrive after Amal. */
 function projectTurnActionOpeningEnd(g: Game) {
@@ -19676,35 +19756,32 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
         pendingNullentropy: ownedBox ? undefined : trial.pendingNullentropy } : trial;
       if (required.length && bribeTimingBlock(paymentWindow)) continue;
       const total = required.reduce((sum, payment) => sum + payment.amount, 0);
-      if (!Number.isSafeInteger(total) || total > 0 && total > uncommittedSpice(trial, owner) ||
+      if (!Number.isSafeInteger(total) ||
         required.some(payment => payment.recipient === actor || payment.recipient === owner.ally ||
           !trial.players.some(player => player.id === payment.recipient))) continue;
       for (const alliancePlan of alliancePlans) {
-        const paid = structuredClone(trial), paidOwner = getPlayer(paid, actor);
         try {
-          for (const payment of required) recordBribePayment(paid, actor, payment.recipient, payment.amount);
-          paidOwner.spice -= total;
-          for (const action of alliancePlan?.steps ?? []) {
-            const quote = normalNexusAllianceQuote(paid, getPlayer(paid, action.player), action.target);
-            for (const player of paid.players) player.ally = quote.allies[player.id];
-            paid.allianceOffers = quote.offers;
-            if (quote.formed) for (const id of quote.formed) getPlayer(paid, id).allySinceTurn = paid.turn;
-            paid.ready = [];
-          }
-          if (alliancePlan) {
-            const opportunity = allianceOpportunity(paid)!;
-            paid.alliancePromises = (paid.alliancePromises ?? []).map(promise => promise.player === actor &&
-              promise.turn === opportunity.turn && promise.source === opportunity.source && !promise.released
-              ? { ...promise, fulfilled: true } : promise);
-            paid.allianceExpressionPromises = (paid.allianceExpressionPromises ?? []).map(promise => promise.player === actor &&
-              promise.turn === opportunity.turn && promise.source === opportunity.source && !promise.released
-              ? { ...promise, fulfilled: true } : promise);
-          }
+          const prepareAlliance = (paid: Game) => {
+            for (const action of alliancePlan?.steps ?? []) {
+              const quote = normalNexusAllianceQuote(paid, getPlayer(paid, action.player), action.target);
+              for (const player of paid.players) player.ally = quote.allies[player.id];
+              paid.allianceOffers = quote.offers;
+              if (quote.formed) for (const id of quote.formed) getPlayer(paid, id).allySinceTurn = paid.turn;
+              paid.ready = [];
+            }
+            if (alliancePlan) {
+              const opportunity = allianceOpportunity(paid)!;
+              paid.alliancePromises = (paid.alliancePromises ?? []).map(promise => promise.player === actor &&
+                promise.turn === opportunity.turn && promise.source === opportunity.source && !promise.released
+                ? { ...promise, fulfilled: true } : promise);
+              paid.allianceExpressionPromises = (paid.allianceExpressionPromises ?? []).map(promise => promise.player === actor &&
+                promise.turn === opportunity.turn && promise.source === opportunity.source && !promise.released
+                ? { ...promise, fulfilled: true } : promise);
+            }
+          };
           const voluntary = { actor, action: { type: 'bribe' } };
-          for (const payment of required)
-            checkBureaucratContributors(paid, payment.recipient, [{ payer: actor, amount: payment.amount }]);
-          for (const cardSeed of turnActionPrintedPreparationSeeds(paid, actor, cardRequirements,
-            source.phaseOpening ? windowRequirements.filter(required => required.effect !== 'amal') : windowRequirements)) {
+          for (const cardSeed of turnActionFundedPreparations(trial, actor, required, cardRequirements,
+            source.phaseOpening ? windowRequirements.filter(required => required.effect !== 'amal') : windowRequirements, prepareAlliance)) {
             const funded = cardSeed.game, payer = getPlayer(funded, actor);
             try {
               reconcileBattlePromises(funded, voluntary);
@@ -19749,11 +19826,12 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
               if (completion) {
                 if (alliancePlan?.uncertain) { unknownConsent!.value = true; continue; }
                 const cardPreparations = [...opening.actions, ...cardSeed.actions];
-                return { ...completion, ...(cardPreparations.length ? { cardPreparations } : {}), ...(bid ? { bid } : {}), ...(revival ? { revival } : {}),
+                return { ...completion, ...(cardPreparations.length ? { cardPreparations } : {}),
+                  ...(cardSeed.cardsFirst ? { paymentsAfterPreparations: true } : {}), ...(bid ? { bid } : {}), ...(revival ? { revival } : {}),
                   ...(battlePlan ? { battlePlan } : {}), ...(traitor ? { traitor } : {}),
                   ...(power.action ? { battlePower: power.action } : {}),
                   ...(alliancePlan ? { alliance: alliancePlan.steps.map(step => ({ type: 'alliance', target: step.target })) } : {}),
-                  payments: required.map(payment => ({ type: 'bribe', target: payment.recipient, amount: payment.amount })) };
+                  payments: cardSeed.payments };
               }
             } catch (error) { if (!(error instanceof RuleError)) throw error; }
           }
@@ -19900,7 +19978,7 @@ function reconcileTurnActionPromises(g: Game, actor?: string, action?: Action, s
   for (const p of g.players) {
     const early = g.phase < 5 || sourcePhase < 5;
     const voluntary = actor === p.id && action?.type !== 'passResponse' && (!early || !!action &&
-      (['card', 'bribe', 'alliance', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revealNoField', 'revive',
+      (['card', 'bribe', 'charity', 'alliance', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revealNoField', 'revive',
         'reviveLeader', 'reviveKwisatz', 'acceptLeaderRevival', 'emperorRevival', 'decision', 'passBid', 'karama', 'specialKarama'].includes(action.type) ||
         action.type === 'richeseBid' && typeof action.amount === 'number' && action.amount > 0 ||
         action.type === 'ready' && [2, 4, 7, 8].includes(sourcePhase)));
@@ -19961,7 +20039,9 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
     return action ? { event: row.event, action: { ...action,
       turnActionPromiseEvent: row.event, turnActionPromisePhase: g.phase } } : null;
   }
-  let action = !bribeTimingBlock(g) ? completion.payments[0] : undefined;
+  const nextPayment = completion.payments[0];
+  let action = (!completion.paymentsAfterPreparations || !completion.cardPreparations?.length) && nextPayment &&
+    ordinaryPaymentActionAvailable(g, player, nextPayment) ? nextPayment : undefined;
   if (!action) {
     const preparation = completion.cardPreparations?.[0];
     const shipmentTarget = preparation?.type === 'card' && preparation.mode === 'shipment'
@@ -20136,7 +20216,7 @@ function reconcileTravelPromises(g: Game, actor?: string, action?: Action, sourc
     if (!liveTravelPromises(g.travelPromises, p.id, g.turn).length) continue;
     const early = g.phase < 5 || sourcePhase < 5;
     const voluntary = actor === p.id && action?.type !== 'passResponse' && (!early || !!action &&
-      (['card', 'bribe', 'alliance', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revealNoField', 'revive',
+      (['card', 'bribe', 'charity', 'alliance', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revealNoField', 'revive',
         'reviveLeader', 'reviveKwisatz', 'emperorRevival', 'decision'].includes(action.type) ||
         action.type === 'richeseBid' && typeof action.amount === 'number' && action.amount > 0 ||
         action.type === 'ready' && [2, 4].includes(sourcePhase)));
@@ -20605,7 +20685,7 @@ function reconcileGroundMovementPromises(g: Game, actor?: string, action?: Actio
         source.producer === 'groundMovement' && source.mover === p.id)) continue;
     const early = g.phase < 5 || sourcePhase < 5;
     const voluntary = actor === p.id && action?.type !== 'passResponse' && (!early || !!action &&
-      (['card', 'bribe', 'alliance', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revealNoField', 'revive', 'reviveLeader', 'reviveKwisatz', 'emperorRevival', 'decision'].includes(action.type) ||
+      (['card', 'bribe', 'charity', 'alliance', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revealNoField', 'revive', 'reviveLeader', 'reviveKwisatz', 'emperorRevival', 'decision'].includes(action.type) ||
         action.type === 'richeseBid' && typeof action.amount === 'number' && action.amount > 0 ||
         action.type === 'ready' && [2, 4].includes(sourcePhase)));
     const busy = !!(g.response || g.decision || g.phaseOpening || g.pendingTreacheryDiscard ||
@@ -28720,30 +28800,11 @@ function earlyRevivalCompletionSeeds(initial: Game, source: Game, owner: string)
   if (source.phase <= 2 && !(source.phase === 2 && source.ready.includes(owner))) {
     const charitySeeds: ShipmentCompletionSeed[] = [];
     for (const seed of seeds) {
-      const g = structuredClone(seed.game); g.phase = 2;
-      const p = getPlayer(g, owner);
-      if (p.charityTurn === g.turn || charityQuote(g, p).total <= 0) continue;
-      try {
+      const next = forecastOrdinaryCharity(seed.game, owner);
+      if (next) {
         const action: Action = { type: 'charity' };
-        // Before CHOAM's opening response, another faction's fixed ordinary
-        // entitlement is unchanged by its outcome. Quote only that entitlement:
-        // no CHOAM income, payment or invented receipt enters this forecast.
-        let next: Game;
-        if (source.phase < 2 && byFaction(g, 'choam') && g.choamCharity?.turn !== g.turn) {
-          if (p.faction === 'choam') continue;
-          p.spice += charityQuote(g, p).total; p.charityTurn = g.turn; next = g;
-        } else {
-          next = applyActionInner(g, owner, action, 'shipmentPreparation');
-          // Wealthy Advanced BG claims before its counter pays. Witness only
-          // that owned allowed outcome; the actual table keeps every response.
-          const response = next.response;
-          if (response?.kind === 'bgCharity' && response.owner === owner) {
-            next.response = null;
-            payCharity(next,getPlayer(next,owner),response.amount ?? 2,response.charityHomeworld ?? 0);
-          }
-        }
         charitySeeds.push({ game: next, actions: [action], early: [{ phase: 2, action }] });
-      } catch (error) { if (!(error instanceof RuleError)) throw error; }
+      }
     }
     seeds.push(...charitySeeds);
   }
@@ -29180,7 +29241,7 @@ function reconcileShipmentPromises(
         voluntary.action.type === 'richeseBid' && typeof voluntary.action.amount === 'number' && voluntary.action.amount > 0 ||
         voluntary.action.type === 'ready' && [2, 4].includes(voluntary.phase ?? g.phase));
     const ownVoluntary = voluntary?.actor === p.id &&
-      (['card', 'bribe', 'alliance', 'pledgeAid', 'emperorGift', 'richeseGift'].includes(voluntary.action.type) ||
+      (['card', 'bribe', 'charity', 'alliance', 'pledgeAid', 'emperorGift', 'richeseGift'].includes(voluntary.action.type) ||
         earlyVoluntary ||
         future && voluntary.action.type === 'decision');
     // A foreign pending parent may spend or refund its approved funding. Wait

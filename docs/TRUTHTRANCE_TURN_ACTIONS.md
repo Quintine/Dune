@@ -1,5 +1,48 @@
 # Truthtrance combined current-turn actions
 
+## Charity-funded installments — 27 October 2026
+
+**Prototyped / Partial.** Ordinary payment witnesses can now schedule one
+remaining owned Charity claim and the actual installments around it. After
+printed Amal reduces cash 10 to 5, a real payment of 5 can precede the normal
+two-spice claim; a later payment of 1 completes 6. Different recipients share
+the same cash and claim. Charity itself never counts as a bribe, and actual
+recipient receipts remain deferred to their original Mentat opening.
+
+The shared private planner partitions exact deficits, validates native Charity
+and stamps the hypothetical claim once. The same helper serves existing
+movement/Revival preparation. The final purse funds every later obligation:
+after Amal, payment 6 plus a two-spice desert shipment is unfunded; payment 5
+plus that shipment can use the single claim. An early claim at cash 1 cannot
+strand a previously accepted seven-spice payment: pay the remaining 1 first,
+then claim 2 and pay the remaining 2. Actual rejected actions stay immutable.
+
+Current printed windows precede future Charity. A required Thumper spends its
+physical cost before the later claim; quotes do not consume hidden normal
+Spice cards or turn future money into current cash. Native card preparations
+can precede payments where their effect/order requires it. Any original Nexus
+agreement must fit before the future phase and retain recipient restrictions.
+No chosen branch, timeline or prospective income is installed in a real game.
+
+Bare, grouped, mixed and combined payment questions use guarded current-phase
+payment/Charity packets. Positive acceptance reopens owned Charity readiness;
+own Ready cannot forfeit the necessary claim. After an actual claim or phase
+expiry it cannot be reserved again. Cumulative No caps and original history
+persist. Four profiles consume legal guides; strategy and calibration remain
+deferred. Native phase controls handle waiting before the actual Charity phase.
+
+Other future income, unresolved CHOAM own-opening income, wider card/optional
+compositions, complete modes and final assurance remain open. Existing native
+ordinary entitlement for another faction is quoted without choosing CHOAM's
+foreign opening response. This is a bounded extension, not full planning of all
+possible deals or later collection.
+Frozen evidence: 24 affected files, 349/349, types/lint/build and seven
+native/SSR/control journeys pass (55 GameTable renders, 7 answer callbacks,
+23 whole and 3 scalar guide callbacks). Private proof:
+`/home/quintine/.local/share/dune/checkpoints/20261027-truth-charity-proof-v3/`;
+journeys/HTML: adjacent `20261027-truth-charity-runtime/run-v3/`.
+This is local native/SSR evidence, not browser hydration or deployed acceptance.
+
 ## Printed Amal and phase openings — 27 October 2026
 
 **Prototyped / Partial.** Whole questions can now be asked during a supported

@@ -40,6 +40,13 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   if (!guide) return null;
   const actor = game.me, turn = game.turn, phase = game.phase, event = guide.event, action = guide.action;
   const act = props.act, fillPlan = props.fillPlan, battle = game.battle;
+  const charity = game.charity;
+  const charityOwner = action.type === 'charity' ? game.players.find(player => player.id === actor) : undefined;
+  const charitySource = (current: GameView) => {
+    const owner = current.players.find(player => player.id === actor);
+    return JSON.stringify({ quote: current.charity, claimed: owner?.charityClaimed, spice: owner?.spice });
+  };
+  const charitySignature = action.type === 'charity' ? charitySource(game) : null;
   const battleSignature = JSON.stringify(publicBattleContext(game));
   const power: NativeBattlePower | null = action.type === 'voice' ? 'voice' : action.type === 'prescience' ? 'prescience'
     : action.type === 'declineBattlePower' && (battle?.preparation?.kind === 'voice' || battle?.preparation?.kind === 'prescience')
@@ -263,8 +270,13 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     const battlePreparation = genericCard && planWindow;
     const declaration = action.type === 'traitorCall' && typeof action.call === 'boolean' && !!battle && currentBattle && battle.revealed &&
       battle.traitorVoters.includes(actor) && !battle.traitorSubmitted.includes(actor);
+    const charityClaim = action.type === 'charity' && phase === 2 && !!me && me === charityOwner &&
+      Object.keys(action).every(key => ['type', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key)) &&
+      !current.ready.includes(actor) && me.charityClaimed === false && current.charity === charity &&
+      charitySource(current) === charitySignature && current.charity.incomePending === false &&
+      Number.isSafeInteger(current.charity.amount) && current.charity.amount > 0;
     const opportunity = openingReady || earlyWindowReady || earlyWindowBox || printedWindow || ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
-      ? !current.ready.includes(actor) && (['charity', 'ready'].includes(action.type) || genericCard)
+      ? charityClaim || !current.ready.includes(actor) && (action.type === 'ready' || genericCard)
       : phase === 3
         ? invoice || nativePass || requiredBid || action.type === 'passBid' && !current.richeseAuction && currentAuction && current.auction?.active === actor
         : phase === 4
@@ -309,7 +321,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       ? game.players.find(player => player.id === actor)?.ally ? 'Break your current alliance while preserving your whole answer'
         : 'Withdraw your alliance offer while preserving your whole answer'
       : `Accept ${recipient}’s alliance invitation while preserving your whole answer`
-    : action.type === 'charity' ? 'Claim Charity while preserving your whole answer'
+    : action.type === 'charity' ? `Claim ${game.charity.amount} Charity spice while preserving your whole answer`
     : action.type === 'ready' ? amalReadyAction ? 'Pass this original phase opening while preserving your whole answer'
       : phase === 8 ? 'Ready to end this turn while honoring your whole answer'
       : earlyWindowReadyAction && (phase === 0 || !!game.spiceWindow) ? `Accept this ${phase === 0 ? 'Storm' : 'fresh spice-blow'} window while preserving your whole answer`
@@ -367,6 +379,8 @@ export function TurnActionPromises(props: TurnActionProps) {
     <p className="fine">Count the sum of future real ordinary payments to each named recipient after the answer.
       Earlier payments, gifts and ally aid do not count. The sender pays immediately; the recipient collects at the next Mentat opening.
       Payments made during Mentat Pause wait until next turn&apos;s Mentat opening; collection never counts twice.
+      A legal timeline may use payments now, one remaining Charity claim and later installments.
+      The future claim is not current spendable spice; only actual payments add to the recorded total.
       Bid conditions count the highest accepted future declaration in the named current ordinary lot, never the sum of smaller bids.
       A qualifying bid counts even when another player wins; winning still requires the original payment.
       Force Revival conditions count cumulative future ordinary returns; normal and elite physical counters each count once.

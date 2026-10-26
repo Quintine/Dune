@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Truthtrance Charity-funded installments — 27 October 2026
+
+Prototyped / Partial. Extend ordinary payment witnesses with one remaining owned
+Charity claim under its native wealth, phase, token and once-per-turn rules.
+Real prepayments may reduce wealth before the claim; the later installment
+still counts only when actually paid. Keep current card/Nexus windows before
+future Charity and share the resulting purse with every other commitment.
+Own premature claiming or passing cannot evade an answer. Recipient receipts
+remain deferred. This is bounded composition of existing Charity/bribery and
+Truthtrance authority, without inventing future auction/collection income,
+foreign gifts or a selected public route. Unresolved CHOAM own-opening income
+and wider optional combinations retain their separate boundaries.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#charity-funded-installments--27-october-2026).
+
 ## Truthtrance printed Amal and phase openings — 27 October 2026
 
 Prototyped / Partial. Extend the existing whole current-turn answer composition

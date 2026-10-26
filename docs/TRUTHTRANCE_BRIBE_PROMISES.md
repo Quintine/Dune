@@ -1,5 +1,12 @@
 # Truthtrance ordinary bribe-payment promises
 
+**27 October Charity follow-up:** an owned remaining ordinary claim can follow
+actual prepayments and fund a later installment, with current-phase guides for
+both actions. Positive answers reopen Charity readiness, and own passing or an
+underfunding early claim cannot evade the answer. This supersedes only the
+ordinary-Charity exclusion below. Other future income/preparations remain
+bounded. [Current contract](TRUTHTRANCE_TURN_ACTIONS.md#charity-funded-installments--27-october-2026).
+
 **26 October timing follow-up:** [Mentat bribes](MENTAT_BRIBES.md) extend the
 current-turn window through phase8. Yes must finish before Mentat Ready; No
 remains live across opening collection until the actual next turn. Late receipts

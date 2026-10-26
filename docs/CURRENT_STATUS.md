@@ -20,6 +20,34 @@ open mode gates.
 Continue remaining Basic functions before Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance / Charity-funded installments — 27 October. Prototyped / Partial.**
+One remaining owned claim can fund payments after actual prepayments. Whole,
+bare, grouped and mixed questions share that timeline, cumulative caps and the
+final purse. Current card windows retain their order before future Charity.
+Actual phase-2 guides claim once; positive acceptance retains own readiness.
+A premature claim cannot evade a promised payment.
+
+Frozen **24 files, 349/349**, types/lint/build and seven native journeys
+pass, including existing early-movement regressions. Journeys include 55
+GameTable SSR renders, 7 actual answer callbacks and 26 exact guide callbacks
+(23 whole, 3 scalar). Genuine selected-Ix sources use 14 original opening
+actions, 18 after real Amal/closure, or 17 before printed Thumper; inventories and
+all source/further-action counts derive from native arrays.
+
+Actual paths prove Amal cash 5 then pay 5/Charity 2/pay 1, Thumper before its future
+claim, separate recipient 3+3 installments, one claim shared with shipment, and
+manual pay 4→cash 1: claiming early would strand owed 3 and rejects; pay 1/claim 2/pay 2
+fulfills 7. Claimed/expired income and two-Truth overbooking reject; No caps and
+history remain. A narrow fixture question annotation and unused import are
+corrected during feedback. No strategic AI or comprehensive assurance runs.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-charity-proof-v3/`;
+journeys/HTML: adjacent `20261027-truth-charity-runtime/run-v3/`.
+No HTTP/storage boundary, saved-game/database, restart or deployed operation
+changes. Unresolved CHOAM own-opening income, other future income, broader deals/
+optional combinations, full modes and final acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#charity-funded-installments--27-october-2026).
+
 **Truthtrance / phase-opening Amal — 27 October. Prototyped / Partial.**
 Supported original openings now admit whole questions and actual printed Amal
 conditions. Native halving precedes ordinary payments. Definite answers reopen

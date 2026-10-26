@@ -85,6 +85,10 @@ function projected(phase = 5, next: Action = { type: 'move', forces: { 'arrakeen
   game.turnActionPromises = [{ event, player: 'p', asker: 'a', turn: 2, mixed: claim(), answer: true, fulfilled: false, released: false }];
   game.turnActionGuide = { event, action: { ...next, turnActionPromiseEvent: event, turnActionPromisePhase: phase } };
   game.truthTurnActionAnswers = null;
+  if (next.type === 'charity') {
+    const me = game.players.find(player => player.id === 'p')!; me.spice = 0; me.charityClaimed = false;
+    game.charity = { ...game.charity, ordinary: 2, homeworld: 0, total: 2, amount: 2, incomePending: false };
+  }
   if (next.type === 'card' && typeof next.card === 'string') {
     const cardId = next.card, effect = (['hajr', 'ghola', 'weather', 'atomics', 'harvester', 'thumper', 'amal'] as const)
       .find(effect => cardId.includes(effect)) ?? 'karama';
@@ -1453,6 +1457,41 @@ void test('turn-action current early native opportunities retain exact preparati
   }
   assert.match(markup(auction({ type: 'bid', amount: 8, allyPayment: 0 })), /Place the required bid of 8/);
   assert.match(markup(auction({ type: 'decision', karama: true, card: 'controlled-owned-karama' })), /Use the quoted Karama for the current auction payment/);
+});
+
+void test('whole payment timelines forward an exact positive unused Charity quote without treating it as current cash', () => {
+  const game = projected(2, { type: 'charity' }), sent: Action[] = [];
+  game.turnActionPromises[0].mixed = payment(3); game.bribeOptions.available = 0; game.bribeOptions.targets = [];
+  const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+  assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+  assert.deepEqual(sent[0], { type: 'charity', turnActionPromiseEvent: event, turnActionPromisePhase: 2 });
+  assert.equal(game.players.find(player => player.id === 'p')!.spice, 0);
+  assert.match(markup(game), /Claim 2 Charity spice while preserving your whole answer/);
+  assert.match(markup(game), /future claim is not current spendable spice/);
+});
+
+void test('whole Charity guides reject claimed, stale, unready native quotes and extra fields without generic fallback', () => {
+  for (const change of [
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.charityClaimed = true; },
+    (game: GameView) => { game.charity.amount = 0; },
+    (game: GameView) => { game.charity.incomePending = true; },
+    (game: GameView) => { game.charity = { ...game.charity }; },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.spice = 1; },
+    (game: GameView) => { game.ready.push('p'); },
+    (game: GameView) => { game.phase = 3; },
+  ]) {
+    const game = projected(2, { type: 'charity' }), saved = guide({ game, busy: false, act() { assert.fail('A stale whole-answer Charity claim cannot send'); } });
+    assert.equal(saved.props.disabled, false); change(game); press(saved);
+  }
+  for (const extra of [{ target: 'r' }, { amount: 2 }, { card: 'private-card' }, { mode: 'shipment' }]) {
+    const game = projected(2, { type: 'charity' }); Object.assign(game.turnActionGuide!.action, extra);
+    const button = guide({ game, busy: false, act() { assert.fail('Charity accepts no extra native parameters'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+  const pending = projected(2, { type: 'charity' }); pending.charity.incomePending = true;
+  assert.equal(guide({ game: pending, busy: false, act() { assert.fail('Pending CHOAM income cannot be counted as an ordinary claim'); } }).props.disabled, true);
+  const ready = projected(2, { type: 'charity' }); ready.ready.push('p');
+  assert.equal(guide({ game: ready, busy: false, act() { assert.fail('A readied owner cannot open this preparation guide'); } }).props.disabled, true);
 });
 
 void test('turn-action current paid Box choices are exact through phases zero to eight without private custody reads', () => {

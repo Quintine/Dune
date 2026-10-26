@@ -66,6 +66,14 @@ function projected(phase = 3): GameView {
   game.bribePromiseGuide = { action: { type: 'bribe', target: 'r', amount: 2, bribePromiseEvent: 'controlled-bribe-event' } };
   return game;
 }
+function charityGame(amount = 2): GameView {
+  const game = projected(2), me = game.players.find(player => player.id === 'p')!;
+  me.spice = 2 - amount; me.charityClaimed = false; game.ready = [];
+  game.charity = { ...game.charity, ordinary: amount, homeworld: 0, total: amount, amount, incomePending: false };
+  game.bribeOptions = { ...game.bribeOptions, available: me.spice, targets: [] };
+  game.bribePromiseGuide = { action: { type: 'charity', bribePromiseEvent: 'controlled-bribe-event' } };
+  return game;
+}
 
 void test('bribe claim fields keep the turn fixed and accept only current recipients and positive safe whole minima', () => {
   const value: BribeClaim = { turn: 2, recipient: 'r', minimum: 3 }, changes: BribeClaim[] = [];
@@ -128,6 +136,53 @@ void test('actual guide callbacks forward exact ordinary bribes out of turn thro
     assert.equal(game.active, 'a'); assert.equal(game.auction!.active, 'a');
     press(guide({ ...props, busy: true })); assert.equal(sent.length, 1);
   }
+});
+
+void test('ordinary payment guides forward exact currently quoted Charity claims and explain later installments', () => {
+  for (const amount of [1, 2]) {
+    const game = charityGame(amount), sent: Action[] = [], ownCash = game.players.find(player => player.id === 'p')!.spice;
+    const button = guide({ game, busy: false, send(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.bribePromiseGuide!.action);
+    assert.deepEqual(sent[0], { type: 'charity', bribePromiseEvent: 'controlled-bribe-event' });
+    assert.equal(game.players.find(player => player.id === 'p')!.spice, ownCash, 'The UI does not install future Charity as cash.');
+    const html = markup(game); assert.match(html, new RegExp(`Claim ${amount} Charity spice to continue your payments`));
+    assert.match(html, /payments now, one remaining Charity claim and later installments/);
+    assert.match(html, /future claim is not current spendable spice/);
+  }
+});
+
+void test('Charity payment callbacks reject changed native claims, quotes, cash, Ready, phase and callback ownership', () => {
+  for (const change of [
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.charityClaimed = true; },
+    (game: GameView) => { game.charity.amount = 0; },
+    (game: GameView) => { game.charity = { ...game.charity }; },
+    (game: GameView) => { game.charity.incomePending = true; },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.spice = 1; },
+    (game: GameView) => { game.ready.push('p'); },
+    (game: GameView) => { game.phase = 3; },
+    (game: GameView) => { game.bribePromises[0].fulfilled = true; },
+    (game: GameView) => { game.bribePromiseGuide!.action.bribePromiseEvent = 'different-event'; },
+  ]) {
+    const game = charityGame(), saved = guide({ game, busy: false, send() { assert.fail('A stale Charity continuation cannot send'); } });
+    assert.equal(saved.props.disabled, false); change(game); press(saved);
+  }
+  const pending = charityGame(); pending.charity.incomePending = true;
+  assert.equal(guide({ game: pending, busy: false, send() { assert.fail('CHOAM income must finish before an ordinary claim'); } }).props.disabled, true);
+  for (const game of [charityGame(), projected()]) {
+    const props = { game, busy: false, send() { assert.fail('A saved payment callback cannot use a replaced sender'); } };
+    const saved = guide(props); props.send = () => assert.fail('A replacement sender cannot receive an old quoted action'); press(saved);
+  }
+});
+
+void test('Charity payment guides reject extra native parameters and unrelated nonpayment fallbacks', () => {
+  for (const extra of [{ target: 'r' }, { amount: 1 }, { card: 'private-card' }, { mode: 'shipment' }]) {
+    const game = charityGame(); Object.assign(game.bribePromiseGuide!.action, extra);
+    const button = guide({ game, busy: false, send() { assert.fail('Charity accepts only its exact native action and event'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+  const unrelated = projected(2); unrelated.bribePromiseGuide!.action.type = 'bid';
+  const button = guide({ game: unrelated, busy: false, send() { assert.fail('An unrelated action cannot pass the ordinary bribe path'); } });
+  assert.equal(button.props.disabled, true); press(button);
 });
 
 void test('controlled quiet Mentat guide forwards the exact payment for an already-ready payer and explains next-turn collection', () => {

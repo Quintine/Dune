@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 27 October 2026 — Charity-funded payment installments
+
+Prototyped / Partial. Bare and combined payments can use one owned remaining
+Charity claim after actual prepayments, preserving current card windows and the
+same final purse for movement/Revival. Current-phase guides, readiness, cumulative
+caps and bad-order rejection are connected. Frozen 24 files, 349/349, types/
+lint/build and seven journeys (55 SSR renders, 7 answers, 26 guides) pass,
+including existing early-movement cases. No strategic tuning, deployment or saved-
+game operation occurs. Wider income/deals and complete acceptance remain.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#charity-funded-installments--27-october-2026).
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-charity-proof-v3/`.
+
 ## 27 October 2026 — Phase-opening Amal commitments
 
 Prototyped / Partial. Original opening questions, actual printed Amal costs,
