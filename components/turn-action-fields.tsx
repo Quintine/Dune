@@ -4,6 +4,8 @@ import { TERRITORIES } from '@/game/board';
 import type { GameView } from '@/game/engine';
 import type { MixedActionExpression } from '@/game/mixed-action-question';
 import { parseBattleActionClaim } from '@/game/mixed-battle-question';
+import { battlePowerOf, nativeBattlePowerOpportunity, type BattlePowerClaim } from '@/game/battle-power-question';
+import { battleCardLabel, VOICE_KINDS } from '@/game/battle-cards';
 import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES, type TurnActionLeaf } from '@/game/turn-action-promises';
 import { BattleClaimFields } from './battle-promises';
 import { MixedActionFields, mixedActionInputError, type MixedActionConfig } from './mixed-action-fields';
@@ -36,10 +38,18 @@ const currentBattle = (game: GameView, target: string, kind: 'battlePlan' | 'tra
   return battle.revealed && game.truthMixedTraitorTargets.includes(target) && battle.traitorVoters.includes(target) &&
     !battle.traitorSubmitted.includes(target) ? battle : null;
 };
+const powerOpportunity = (game: GameView, target: string, claim: BattlePowerClaim) => {
+  try { return nativeBattlePowerOpportunity(game, target, battlePowerOf(claim)); }
+  catch { return null; }
+};
+const newPowerClaim = (game: GameView, target: string): BattlePowerClaim =>
+  nativeBattlePowerOpportunity(game, target, 'voice') ? { kind: 'voice', use: true }
+    : nativeBattlePowerOpportunity(game, target, 'prescience') ? { kind: 'prescience', use: true }
+      : { kind: 'voice', use: true };
 const config: MixedActionConfig<TurnActionLeaf> = {
   prefix: 'turn-action',
   legend: 'Current battle and this-turn action conditions, with optional current facts',
-  actionLabel: 'printed card play, battle, alliance, bid, Revival, payment, shipment or ground-movement condition',
+  actionLabel: 'native battle power, printed card play, battle, alliance, bid, Revival, payment, shipment or ground-movement condition',
   actionTiming: 'Current battle or future native action · this turn',
   actionHelp: <>Ordinary payment conditions sum future real bribes to the same recipient after the answer this turn.
     Earlier payments, gifts and ally aid do not count. The sender pays immediately; the recipient collects at the next Mentat opening.
@@ -56,6 +66,10 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     An open plan commitment settles when both plans are revealed, not merely when your own plan is sealed.
     Traitor conditions concern one original Reveal or decline declaration in the current revealed battle.
     The declaration counts before a later Karama or betrayal response can prevent its effect.
+    Native Voice and Prescience conditions concern your original use or explicit decline, exact Voice command,
+    or requested Prescience field in this battle. They count before later Karama prevention.
+    A requested field is not the opponent&apos;s answer or inspected value. Borrowed Nexus and special powers do not count.
+    These conditions close at the actual native choice or when its original source expires.
     Printed-card conditions ask you to play Hajr or Tleilaxu Ghola in its printed role after this answer this turn.
     An earlier play, discard, sale, Karama role or recovery alone does not count; an actual later replay after Box recovery does.
     Hajr counts when played even if its extra movement is unused. Tleilaxu Ghola is a card play, separate from ordinary Revival.
@@ -87,10 +101,16 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         throw new Error('Choose this player’s current native battle or unsubmitted Traitor declaration.');
       if (action.kind === 'battlePlan') parseBattleActionClaim(action.claim, game.allLeaders.map(leader => leader.id));
     }
+    if (action.kind === 'battlePower') {
+      const opportunity = powerOpportunity(game, target, action.claim);
+      if (!opportunity || action.battle !== opportunity.event || action.territory !== opportunity.territory)
+        throw new Error('Choose this player’s original native Voice or Prescience opportunity in the current battle.');
+    }
     return action;
   },
   renderAction: ({ value, id, game, target, disabled, onChange }) => {
     const choices = recipients(game, target), leaderChoices = leaders(game, target), lot = currentLot(game), partnerChoices = partners(game, target);
+    const currentPower = value.kind === 'battlePower' ? powerOpportunity(game, target, value.claim) : null;
     return <>
       <label htmlFor={`${id}-action`}>Future action</label>
       <select id={`${id}-action`} value={value.kind} disabled={disabled} onChange={event => {
@@ -98,6 +118,10 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         if (kind === value.kind) return;
         const minimum = 'minimum' in value ? value.minimum : 1;
         if (kind === 'cardPlay') onChange({ kind, effect: 'hajr' });
+        if (kind === 'battlePower') {
+          const claim = newPowerClaim(game, target), opportunity = powerOpportunity(game, target, claim);
+          onChange({ kind, battle: opportunity?.event ?? '', territory: opportunity?.territory ?? '', claim });
+        }
         if (kind === 'battlePlan') onChange({ kind, battle: game.battle?.event ?? '', territory: game.battle?.territory ?? '',
           claim: { kind: 'dial', compare: 'eq', value: 0 } });
         if (kind === 'traitorCall') onChange({ kind, battle: game.battle?.event ?? '', territory: game.battle?.territory ?? '', call: true });
@@ -110,6 +134,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
           territory: value.kind === 'ship' || value.kind === 'move' ? value.territory : 'carthag', minimum });
       }}>
         <option value="cardPlay">Play Hajr or Tleilaxu Ghola in its printed role</option>
+        <option value="battlePower">Declare native Voice or Prescience in this battle</option>
         <option value="battlePlan">Use an actual current battle-plan choice</option>
         <option value="traitorCall">Make the current Traitor declaration</option>
         <option value="alliance">End this Nexus allied with a named partner</option>
@@ -130,6 +155,75 @@ const config: MixedActionConfig<TurnActionLeaf> = {
           <option value="hajr">Play Hajr in its printed role after this answer this turn</option>
           <option value="ghola">Play Tleilaxu Ghola in its printed role after this answer this turn</option>
         </select>
+      </> : value.kind === 'battlePower' ? <>
+        <label htmlFor={`${id}-power-claim`}>Original native declaration</label>
+        <select id={`${id}-power-claim`} value={value.claim.kind} disabled={disabled} onChange={event => {
+          const kind = event.currentTarget.value;
+          const claim: BattlePowerClaim | null = kind === 'voice' || kind === 'prescience' ? { kind, use: true }
+            : kind === 'voiceCommand' ? { kind, cardType: 'poison', must: false }
+              : kind === 'prescienceField' ? { kind, field: 'leader' } : null;
+          if (claim) {
+            const opportunity = powerOpportunity(game, target, claim);
+            onChange({ ...value, claim, battle: opportunity?.event ?? '', territory: opportunity?.territory ?? '' });
+          }
+        }}>
+          <option value="voice">Use or explicitly decline native Voice</option>
+          <option value="voiceCommand">Declare an exact native Voice command</option>
+          <option value="prescience">Use or explicitly decline native Prescience</option>
+          <option value="prescienceField">Request an exact native Prescience field</option>
+        </select>
+        <label htmlFor={`${id}-power-battle`}>Original current battle opportunity</label>
+        <select id={`${id}-power-battle`} value={currentPower?.event === value.battle && currentPower.territory === value.territory ? value.battle : ''}
+          disabled={disabled} aria-invalid={!currentPower || currentPower.event !== value.battle || currentPower.territory !== value.territory} onChange={event => {
+          const opportunity = powerOpportunity(game, target, value.claim);
+          if (event.currentTarget.value === '') onChange({ ...value, battle: '', territory: '' });
+          else if (opportunity?.event === event.currentTarget.value)
+            onChange({ ...value, battle: opportunity.event, territory: opportunity.territory });
+        }}>
+          <option value="">Choose an owned native opportunity</option>
+          {currentPower && <option value={currentPower.event}>
+            {game.combatLocations.find(location => location.id === currentPower.territory)?.name ?? currentPower.territory}
+          </option>}
+        </select>
+        {value.claim.kind === 'voice' || value.claim.kind === 'prescience' ? <>
+          <label htmlFor={`${id}-power-use`}>Original choice</label>
+          <select id={`${id}-power-use`} value={value.claim.use ? 'use' : 'decline'} disabled={disabled}
+            aria-invalid={typeof value.claim.use !== 'boolean'} onChange={event => {
+              if (event.currentTarget.value === 'use' || event.currentTarget.value === 'decline')
+                onChange({ ...value, claim: { kind: value.claim.kind as 'voice' | 'prescience', use: event.currentTarget.value === 'use' } });
+            }}>
+            <option value="use">Use this native power</option><option value="decline">Explicitly decline this native power</option>
+          </select>
+        </> : value.claim.kind === 'voiceCommand' ? <>
+          <label htmlFor={`${id}-power-card-type`}>Voice card type</label>
+          <select id={`${id}-power-card-type`} value={VOICE_KINDS.includes(value.claim.cardType) ? value.claim.cardType : ''}
+            disabled={disabled} aria-invalid={!VOICE_KINDS.includes(value.claim.cardType)} onChange={event => {
+              if (value.claim.kind === 'voiceCommand' && (event.currentTarget.value === '' || VOICE_KINDS.includes(event.currentTarget.value)))
+                onChange({ ...value, claim: { ...value.claim, cardType: event.currentTarget.value } });
+            }}>
+            <option value="">Choose a native Voice card type</option>
+            {VOICE_KINDS.map(kind => <option key={kind} value={kind}>{battleCardLabel(kind)}</option>)}
+          </select>
+          <label htmlFor={`${id}-power-must`}>Exact Voice command</label>
+          <select id={`${id}-power-must`} value={value.claim.must ? 'must' : 'cannot'} disabled={disabled}
+            aria-invalid={typeof value.claim.must !== 'boolean'} onChange={event => {
+              if (value.claim.kind === 'voiceCommand' && (event.currentTarget.value === 'must' || event.currentTarget.value === 'cannot'))
+                onChange({ ...value, claim: { ...value.claim, must: event.currentTarget.value === 'must' } });
+            }}>
+            <option value="cannot">Opponent cannot play this type</option><option value="must">Opponent must play this type</option>
+          </select>
+        </> : value.claim.kind === 'prescienceField' ? <>
+          <label htmlFor={`${id}-power-field`}>Requested Prescience field</label>
+          <select id={`${id}-power-field`} value={value.claim.field} disabled={disabled} onChange={event => {
+            const field = event.currentTarget.value;
+            if (field === 'leader' || field === 'weapon' || field === 'defense' || field === 'dial')
+              onChange({ ...value, claim: { kind: 'prescienceField', field } });
+          }}>
+            <option value="leader">Leader</option><option value="weapon">Weapon</option>
+            <option value="defense">Defense</option><option value="dial">Number dialed</option>
+          </select>
+        </> : null}
+        {!currentPower && <p className="fine">This respondent has no original native opportunity for this power in the current battle.</p>}
       </> : value.kind === 'battlePlan' || value.kind === 'traitorCall' ? <>
         <label htmlFor={`${id}-battle`}>Current battle</label>
         <select id={`${id}-battle`} value={game.battle?.event === value.battle && game.battle.territory === value.territory ? value.battle ?? '' : ''}

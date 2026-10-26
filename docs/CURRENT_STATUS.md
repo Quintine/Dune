@@ -16,9 +16,44 @@ open mode gates.
 
 
 ## Current checkpoint and work
-**Next: remaining Basic action families and native timing.**
-Continue broader card-play and owned battle-power declarations before Advanced
-and wider interactions. Prototype labels and final acceptance gates remain.
+**Next: remaining Basic card/action declarations and native timing.**
+Continue remaining Basic functions before Advanced and wider interactions.
+Prototype labels and final acceptance gates remain.
+
+**Truthtrance / native Voice and Prescience — 27 October. Prototyped / Partial.**
+Whole turn answers now include original native power use/explicit Decline,
+exact Voice command or requested Prescience field. All predicates concern the
+same one choice. Native owner and reciprocal allied beneficiary remain; a
+pending Prescience clause waits for the original foreign Voice decision.
+Requests do not describe hidden answers. Declaration receipts close before
+later printed Karama prevention; source expiry never invents Decline.
+
+Own declarations retain a completion before opening the next foreign response
+or inspection. Focused feedback catches that early handoff and fixes it at the
+actual declaration. An OR payment already fulfilled stays immutable when a
+later optional power choice occurs; its test oracle is corrected. Genuine-source
+inspection also catches the prepared-marker interpretation and sanctuary source
+before verification. Player-view nullability and lint feedback are repaired.
+
+The frozen batch passes **18 files,281/281**, types/lint/build. Thirty-eight new
+cases comprise8 public quotation/predicate,10 aggregate,6 control and14 native
+cases. Eight runtime journeys pass with33 GameTable SSR renders,8 actual answer
+callbacks and13 exact native guide callbacks. They cover use/Decline, both
+printed Karama cancellations, whole No, cleanup/late Mentat payment, two real
+remote allies and waiting for foreign Voice. Four profiles maintain only
+minimal legal participation; strategic work remains deferred.
+
+Original Basic A/BG/E sources actually deal Truth and buy Karama1. Own Voice44
+and Prescience45 prefixes use BG's paid1 Arrakeen reserve against originalA10.
+Remote Voice73 uses a real BG–Emperor Nexus alliance; remote Prescience84 uses
+Atreides–Emperor consent and BG/Emperor paid2 reserves in Imperial Basin.
+All source counts derive from actual arrays; no played state is installed.
+Proof/manifest: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-power-proof-v3/`;
+journeys/HTML: adjacent `20261027-truth-power-runtime-v3/`.
+No HTTP/storage boundary, database, reset/deletion, server restart or deployed
+operation changes. Borrowed Nexus/special powers, broader card/action families
+and final browser/deployed/recovery/privacy/custody acceptance remain open.
+[Contract and scope](TRUTHTRANCE_TURN_ACTIONS.md#native-voice-and-prescience-declarations--27-october-2026).
 
 **Truthtrance / printed Hajr and Ghola plays — 27 October. Prototyped / Partial.**
 Whole current-turn questions now include actual future printed Hajr/Ghola use,

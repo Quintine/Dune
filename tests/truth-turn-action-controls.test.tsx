@@ -10,6 +10,7 @@ import { baseDeck } from '../game/cards';
 import { createGame, joinGame, newPlayer, viewGame, type Action, type GameView, type Plan } from '../game/engine';
 import type { MixedActionExpression } from '../game/mixed-action-question';
 import type { MixedBattleActionClaim } from '../game/mixed-battle-question';
+import type { BattlePowerClaim } from '../game/battle-power-question';
 import { createRevivalOrder } from '../game/revival-order';
 import { createRicheseAuction, projectRicheseAuction } from '../game/richese-auction';
 import type { TurnActionLeaf } from '../game/turn-action-promises';
@@ -34,6 +35,8 @@ const planClaim = (claim: MixedBattleActionClaim = { kind: 'dial', compare: 'eq'
   ({ kind: 'action', action: { kind: 'battlePlan', battle: 'controlled-native-battle', territory: 'arrakeen', claim } });
 const traitorClaim = (call = true): Expression =>
   ({ kind: 'action', action: { kind: 'traitorCall', battle: 'controlled-native-battle', territory: 'arrakeen', call } });
+const powerClaim = (claim: BattlePowerClaim = { kind: 'voice', use: true }): Expression =>
+  ({ kind: 'action', action: { kind: 'battlePower', battle: 'controlled-native-battle', territory: 'arrakeen', claim } });
 const claim = (): Expression => ({ kind: 'or', terms: [payment(), { kind: 'and', terms: [fact(), physical('ship', 3), physical('move', 4, 'arrakeen')] }] });
 
 function elements(node: ReactNode): Element[] {
@@ -112,6 +115,16 @@ function combat(revealed = false, next: Action = { type: 'battlePlan', dial: 3, 
   } as unknown as NonNullable<GameView['battle']>;
   game.truthMixedBattleTargets = ['p', 'a']; game.truthMixedTraitorTargets = revealed ? ['p', 'a'] : [];
   game.turnActionPromises[0].mixed = { kind: 'or', terms: [revealed ? traitorClaim() : planClaim(), payment()] };
+  return game;
+}
+function battlePower(power: 'voice' | 'prescience' = 'voice', next?: Action, allied = false): GameView {
+  const game = combat(false, next ?? (power === 'voice' ? { type: 'voice', kind: 'poison', must: false } : { type: 'prescience', field: 'weapon' }));
+  const me = game.players.find(player => player.id === 'p')!, other = game.players.find(player => player.id === 'a')!;
+  me.faction = power === 'voice' ? 'beneGesserit' : 'atreides'; other.faction = 'emperor';
+  game.battle!.attacker = allied ? 'a' : 'p'; game.battle!.defender = 'r';
+  if (allied) { me.ally = 'a'; other.ally = 'p'; }
+  game.battle!.preparation = { kind: power, owner: 'p', beneficiary: allied ? 'a' : 'p' };
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [powerClaim({ kind: power, use: true }), payment()] };
   return game;
 }
 function revival(next: Action = { type: 'revive', amount: 3, elite: 1 }): GameView {
@@ -490,6 +503,135 @@ void test('turn-action combat callbacks retain current battle ownership and raw 
   const html = markup(game);
   assert.match(html, /sealing your own plan does not finish it/); assert.match(html, /original Reveal or decline declaration/);
   assert.match(html, /You answered Yes/); assert.doesNotMatch(html, /controlled-native-battle|Fill the quoted battle plan|compiled/);
+});
+
+void test('native battle-power editor uses public owned opportunities and repairs all four strict declaration forms', () => {
+  const game = battlePower(), e = editor(physical(), false, game);
+  for (const player of game.players) for (const key of ['hand', 'leaders', 'traitors', 'spice', 'tanks', 'forces'])
+    Object.defineProperty(player, key, { get() { throw Error(`No private ${key} power authoring read`); }, configurable: true });
+  for (const key of ['plans', 'prescience', 'voice', 'compliantPlan'])
+    Object.defineProperty(game.battle!, key, { get() { throw Error(`No hidden battle ${key} read`); }, configurable: true });
+  for (const key of ['combat', 'compiled', 'battlePowers'])
+    Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} read`); }, configurable: true });
+  select(e.tree(), '1', 'action', 'battlePower'); assert.deepEqual(e.value, powerClaim()); assert.equal(e.error(), null);
+  select(e.tree(), '1', 'power-use', 'decline'); assert.deepEqual(e.value, powerClaim({ kind: 'voice', use: false }));
+  select(e.tree(), '1', 'power-claim', 'voiceCommand'); select(e.tree(), '1', 'power-card-type', 'shield');
+  select(e.tree(), '1', 'power-must', 'must'); assert.deepEqual(e.value, powerClaim({ kind: 'voiceCommand', cardType: 'shield', must: true }));
+  select(e.tree(), '1', 'power-card-type', ''); assert.ok(e.error()); assert.match(e.html(), /aria-invalid="true"/);
+  select(e.tree(), '1', 'power-card-type', 'projectile'); assert.equal(e.error(), null);
+  game.battle!.event = 'new-native-battle'; assert.ok(e.error()); assert.match(e.html(), /Choose an owned native opportunity/);
+  select(e.tree(), '1', 'power-battle', 'new-native-battle'); assert.equal(e.error(), null);
+  select(e.tree(), '1', 'power-claim', 'prescience'); assert.ok(e.error(), 'Voice ownership grants no Prescience entitlement.');
+  game.players.find(player => player.id === 'p')!.faction = 'atreides';
+  game.battle!.preparation = { kind: 'prescience', owner: 'p', beneficiary: 'p' };
+  select(e.tree(), '1', 'power-battle', 'new-native-battle'); assert.equal(e.error(), null);
+  select(e.tree(), '1', 'power-use', 'decline');
+  select(e.tree(), '1', 'power-claim', 'prescienceField'); select(e.tree(), '1', 'power-field', 'dial'); assert.equal(e.error(), null);
+  assert.match(e.html(), /requested field is not the opponent/);
+  for (const claim of [{ kind: 'voice', use: 'yes' }, { kind: 'voiceCommand', cardType: 'invented', must: true },
+    { kind: 'prescienceField', field: 'weapon', value: 'private-card' }, { kind: 'prescienceField', field: 'support' }])
+    assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'battlePower', battle: 'new-native-battle', territory: 'arrakeen', claim } }, game, 'p'));
+});
+
+void test('native power defaults follow actual owned ordering and share the full sixteen-leaf four-level editor budget', () => {
+  const game = battlePower('prescience'), e = editor(physical(), false, game);
+  select(e.tree(), '1', 'action', 'battlePower'); assert.deepEqual(e.value, powerClaim({ kind: 'prescience', use: true }));
+  const full = editor({ kind: 'or', terms: [powerClaim({ kind: 'prescience', use: true }), fact()] }, false, game);
+  for (let count = 3; count <= 16; count++) { click(control(full.tree(), 'add-action-1')); select(full.tree(), `1.${count}`, 'action', 'battlePower'); }
+  assert.equal(full.error(), null); assert.match(full.html(), /16 \/ 16 conditions/); assert.equal(control(full.tree(), 'add-action-1').props.disabled, true);
+  const deep = editor({ kind: 'and', terms: [fact(), powerClaim({ kind: 'prescienceField', field: 'leader' })] }, false, game);
+  click(control(deep.tree(), 'or-1.2')); click(control(deep.tree(), 'and-1.2.1')); click(control(deep.tree(), 'or-1.2.1.1'));
+  assert.equal(deep.error(), null); assert.match(deep.html(), /4 \/ 4 levels of grouping/);
+  const frozen = editor(powerClaim({ kind: 'prescienceField', field: 'leader' }), true, game);
+  select(frozen.tree(), '1', 'power-claim', 'voice'); select(frozen.tree(), '1', 'power-field', 'dial');
+  select(frozen.tree(), '1', 'power-battle', ''); assert.equal(frozen.changes, 0);
+  const future = battlePower('prescience'); future.players.find(player => player.id === 'a')!.faction = 'beneGesserit';
+  future.players.find(player => player.id === 'a')!.ally = 'r'; future.players.find(player => player.id === 'r')!.ally = 'a';
+  future.battle!.preparation = { kind: 'voice', owner: 'a', beneficiary: 'r' };
+  const futureEditor = editor(physical(), false, future); select(futureEditor.tree(), '1', 'action', 'battlePower');
+  assert.deepEqual(futureEditor.value, powerClaim({ kind: 'prescience', use: true })); assert.equal(futureEditor.error(), null);
+});
+
+void test('native power guides forward exact original allied-owner declarations and explicit declines without inspecting answers', () => {
+  for (const power of ['voice', 'prescience'] as const) for (const decline of [false, true]) {
+    const game = battlePower(power, decline ? { type: 'declineBattlePower' } : undefined, true), sent: Action[] = [];
+    for (const key of ['combat', 'compiled', 'battlePowers'])
+      Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} guide read`); }, configurable: true });
+    for (const key of ['plans', 'prescience', 'voice', 'insight'])
+      Object.defineProperty(game.battle!, key, { get() { throw Error(`No inspected ${key} guide read`); }, configurable: true });
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } }); assert.equal(button.props.disabled, false); press(button);
+    assert.equal(sent[0], game.turnActionGuide!.action); assert.equal(sent[0].turnActionPromiseEvent, event);
+    assert.equal(sent[0].turnActionPromisePhase, 6);
+    if (decline) assert.match(renderToStaticMarkup(button), /Explicitly decline native/);
+    else if (power === 'voice') { assert.equal(sent[0].kind, 'poison'); assert.equal(sent[0].must, false); }
+    else { assert.equal(sent[0].field, 'weapon'); assert.match(renderToStaticMarkup(button), /Request the weapon field/); }
+  }
+});
+
+void test('saved native power callbacks reject changed battle source, preparation, beneficiary, owner and modal priority', () => {
+  for (const power of ['voice', 'prescience'] as const) for (const change of [
+    (game: GameView) => { game.battle!.event = 'later-native-battle'; },
+    (game: GameView) => { game.battle!.territory = 'carthag'; },
+    (game: GameView) => { game.battle!.preparation = { ...game.battle!.preparation! }; },
+    (game: GameView) => { game.battle!.preparation!.owner = 'a'; },
+    (game: GameView) => { game.battle!.preparation!.beneficiary = 'r'; },
+    (game: GameView) => { game.battle!.preparation!.kind = 'prescienceAnswer'; },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.ally = null; },
+    (game: GameView) => { game.battle!.defender = 'p'; },
+    (game: GameView) => { game.battle!.revealed = true; },
+    (game: GameView) => { game.response = { kind: 'voice', owner: 'p', passed: [] }; },
+    (game: GameView) => { game.truthtrance = answering(6).truthtrance; },
+    (game: GameView) => { game.phase = 5; },
+    (game: GameView) => { game.turnActionGuide!.action.field = 'dial'; },
+  ]) {
+    const game = battlePower(power, undefined, true), button = guide({ game, busy: false, act() { assert.fail('A stale native declaration cannot send'); } });
+    assert.equal(button.props.disabled, false); change(game); press(button);
+  }
+  const game = battlePower(), props: Props = { game, busy: false, act() { assert.fail('A stale callback cannot send'); } };
+  const button = guide(props); props.act = () => assert.fail('A replaced action callback cannot send'); press(button);
+  const busy = battlePower(), busyProps = { game: busy, busy: false, act() { assert.fail('A busy power cannot send'); } };
+  const busyButton = guide(busyProps); busyProps.busy = true; press(busyButton);
+});
+
+void test('native power guides refuse future stages, borrowed powers, inspected answers and forged packet fields', () => {
+  for (const [power, action, kind] of [
+    ['voice', { type: 'voice', kind: 'invented', must: true }, 'voice'],
+    ['voice', { type: 'voice', kind: 'poison', must: 'yes' }, 'voice'],
+    ['voice', { type: 'voice', kind: 'poison', must: true, value: 'private-answer' }, 'voice'],
+    ['voice', { type: 'declineBattlePower', field: 'weapon' }, 'voice'],
+    ['voice', { type: 'voice', kind: 'poison', must: true }, 'nexusVoice'],
+    ['prescience', { type: 'prescience', field: 'support' }, 'prescience'],
+    ['prescience', { type: 'prescience', field: 'weapon', value: 'private-card' }, 'prescience'],
+    ['prescience', { type: 'prescience', field: 'weapon' }, 'prescienceAnswer'],
+    ['prescience', { type: 'declineBattlePower' }, 'nexusPrescienceAnswer'],
+  ] as const) {
+    const game = battlePower(power, action); game.battle!.preparation!.kind = kind;
+    const button = guide({ game, busy: false, act() { assert.fail('An invalid power packet cannot send'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+  const future = battlePower('prescience'); future.players.find(player => player.id === 'a')!.faction = 'beneGesserit';
+  future.players.find(player => player.id === 'a')!.ally = 'r'; future.players.find(player => player.id === 'r')!.ally = 'a';
+  future.battle!.preparation = { kind: 'voice', owner: 'a', beneficiary: 'r' };
+  const button = guide({ game: future, busy: false, act() { assert.fail('Ordered future Prescience cannot send yet'); } });
+  assert.equal(button.props.disabled, true); press(button);
+  for (const power of ['voice', 'prescience'] as const) for (const decline of [false, true]) {
+    const game = battlePower(power, decline ? { type: 'declineBattlePower' } : undefined), sent: Action[] = [];
+    game.battle!.preparation!.blocked = 'Native use is currently blocked; explicit Decline remains available.';
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, !decline); press(button); assert.equal(sent.length, decline ? 1 : 0);
+  }
+});
+
+void test('native power history keeps raw declarations distinct from effects and inspected values', () => {
+  const game = battlePower(); game.turnActionGuide = null; game.battle = null;
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [powerClaim({ kind: 'voiceCommand', cardType: 'shield', must: true }),
+    powerClaim({ kind: 'prescienceField', field: 'weapon' }), fact()] };
+  for (const key of ['combat', 'compiled', 'battlePowers', 'declarations', 'preparation'])
+    Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private history ${key} read`); }, configurable: true });
+  const html = markup(game); assert.match(html, /Voice/); assert.match(html, /Prescience/); assert.match(html, /You answered Yes/);
+  assert.match(html, /before later Karama prevention/); assert.match(html, /requested field is not the inspected answer or value/);
+  assert.match(html, /close at the actual native choice or when its original source expires/);
+  assert.doesNotMatch(html, /controlled-native-battle|battlePowers|declarations|private-card/);
 });
 
 void test('turn-action printed-role editor uses public names without holdings or private stages and retains the shared logical budget', () => {

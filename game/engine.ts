@@ -2,10 +2,13 @@ import { AuctionClockError, AUCTION_BID_MS, quoteAuctionClock, viewAuctionClock,
   type AuctionClock, type AuctionClockView } from './auction-clock';
 import { PrintedCardPlayError, printedCardPlayCount, recordPrintedCardPlay,
   type PrintedCardEffect, type PrintedCardPlayCounts } from './printed-card-play';
+import { battlePowerOf, battlePowerMatches, nativeBattlePowerOpportunity,
+  type NativeBattlePower, type BattlePowerDeclaration } from './battle-power-question';
 import { TurnActionError, liveTurnActionPromises, turnActionBranches, recordTurnActionPayment,
   recordTurnActionShipment, recordTurnActionMovement, closeTurnActionTransport, closeTurnActionPayments, finishTurnActionTurn,
   validateTurnActionPromises, recordTurnActionBid, closeTurnActionBidding, recordTurnActionRevival, recordTurnActionCardPlay,
   closeTurnActionRevival, settleTurnActionAlliance, recordTurnActionPlan, recordTurnActionTraitor, closeTurnActionCombat,
+  recordTurnActionBattlePower, closeTurnActionBattlePower,
   type TurnActionPlanValue, type TurnActionCombat, type TurnActionClaim, type TurnActionPromise, type TurnActionBranchLeaf, type TurnActionPreparation } from './turn-action-promises';
 import { TravelPromiseError, liveTravelPromises, travelBranches, recordTravelShipment, recordTravelMovement,
   finishTravelTurn, validateTravelPromises, type TravelClaim, type TravelPromise, type TravelBranchLeaf } from './travel-expression-promises';
@@ -18959,6 +18962,51 @@ function recordTurnActionRevealedPlans(g: Game) {
       g.turn, battle.event!, battle.territory, values));
   }
 }
+type TurnActionPowerRequirement = Extract<TurnActionBranchLeaf, { kind: 'battlePower' }>;
+/** These declarations cost no resource and affect the other combatant's plan,
+ * never the provider's own plan. Quote the original choice, not a speculative
+ * inspected answer or an invented foreign Voice/Prescience continuation. */
+function turnActionPowerCompletion(g: Game, actor: string, requirements: readonly TurnActionPowerRequirement[]):
+  { action?: Action } | null {
+  let action: Action | undefined;
+  for (const power of ['voice', 'prescience'] as const) {
+    const required = requirements.filter(leaf => battlePowerOf(leaf.claim) === power);
+    if (!required.length) continue;
+    const source = nativeBattlePowerOpportunity(g, actor, power);
+    if (!source || required.some(leaf => leaf.battle !== source.event || leaf.territory !== source.territory ||
+      leaf.owner !== source.owner || leaf.beneficiary !== source.beneficiary || leaf.target !== source.target)) return null;
+    const choices: { declaration: BattlePowerDeclaration; action: Action }[] = [
+      { declaration: { power, use: false }, action: { type: 'declineBattlePower' } },
+    ];
+    if (power === 'voice') {
+      for (const kind of ['poison', ...VOICE_KINDS.filter(kind => kind !== 'poison')]) for (const must of [false, true]) {
+        try {
+          quoteVoiceCommand(g, source.target, kind, must);
+          choices.push({ declaration: { power, use: true, cardType: kind, must }, action: { type: 'voice', kind, must } });
+        } catch (error) { if (!(error instanceof RuleError)) throw error; }
+      }
+    } else for (const field of ['leader', 'weapon', 'defense', 'dial'] as PlanField[])
+      if (field !== 'dial' || !battleNoFieldPlan(g, source.target))
+        choices.push({ declaration: { power, use: true, field }, action: { type: 'prescience', field } });
+    const choice = choices.find(choice => required.every(leaf => battlePowerMatches(leaf.claim, choice.declaration) === leaf.answer));
+    if (!choice) return null;
+    if (source.ready) action ??= choice.action;
+  }
+  return action ? { action } : {};
+}
+function recordNativeTurnActionPower(g: Game, actor: string, declaration: BattlePowerDeclaration) {
+  const battle = g.battle;
+  if (!g.turnActionPromises || !battle?.event) return;
+  const previous = g.turnActionPromises;
+  const recorded = turnActionRule(() => recordTurnActionBattlePower(previous, actor,
+    g.turn, battle.event!, battle.territory, declaration));
+  // Check this accepted declaration before its next foreign response or
+  // inspection can temporarily suspend the ordinary joint reconciler.
+  if (recorded.some((promise, index) => promise !== previous[index]))
+    requireRule(!!turnActionCompletion({ ...g, turnActionPromises: recorded }, actor),
+      'This native declaration would remove the last legal completion of your whole Truthtrance answer.');
+  g.turnActionPromises = recorded;
+}
 /** A disappeared original opportunity is absence, never a synthetic zero plan
  * or Decline. Declaration effects can later change; only the native hook
  * records a declaration receipt. */
@@ -18975,8 +19023,18 @@ function reconcileTurnActionCombat(g: Game) {
     const lostTraitor = combat.traitor && !combat.traitor.closed && (!context ||
       context.submitted !== undefined || context.beneficiary !== combat.traitor.beneficiary ||
       context.target !== combat.traitor.target || context.leader !== combat.traitor.leader);
-    return !current || lostTraitor
-      ? turnActionRule(() => closeTurnActionCombat([promise], promise.turn, combat.event))[0] : promise;
+    if (!current || lostTraitor) return turnActionRule(() => closeTurnActionCombat([promise], promise.turn, combat.event))[0];
+    let updated = promise;
+    for (const power of ['voice', 'prescience'] as const) {
+      const stage = updated.combat?.powers?.[power];
+      if (!stage || stage.closed) continue;
+      const source = nativeBattlePowerOpportunity(g, promise.player, power);
+      if (!source || source.event !== combat.event || source.territory !== combat.territory ||
+        source.beneficiary !== stage.beneficiary || source.target !== stage.target)
+        updated = turnActionRule(() => closeTurnActionBattlePower([updated], promise.player,
+          promise.turn, combat.event, combat.territory, power))[0];
+    }
+    return updated;
   });
 }
 function turnActionTraitorChoices(g: Game, actor: string, choices: boolean[]): boolean[] {
@@ -19085,7 +19143,7 @@ function turnActionAllianceCanClose(g: Game, player: Player): boolean {
     return !!turnActionCompletion(source, player.id);
   } catch (error) { if (error instanceof RuleError) return false; throw error; }
 }
-type TurnActionCompletion = MovementCompletion & { payments: Action[]; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[]; battlePlan?: BattleCompletion; traitor?: Action; cardPreparations?: Action[] };
+type TurnActionCompletion = MovementCompletion & { payments: Action[]; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[]; battlePlan?: BattleCompletion; traitor?: Action; cardPreparations?: Action[]; battlePower?: Action };
 /** Whole-answer alternatives stay private. Only detached native rows quote a
  * route, sharing actual interval progress and the remaining physical purse. */
 function turnActionCompletion(source: Game, actor: string, unknownConsent?: { value: boolean }): TurnActionCompletion | null {
@@ -19155,6 +19213,9 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
       }
     });
     if (invalidCombat) return null;
+    const power = turnActionPowerCompletion(trial, actor,
+      leaves.filter((leaf): leaf is TurnActionPowerRequirement => leaf.kind === 'battlePower'));
+    if (!power) return null;
     const alliancePlans = turnActionAlliancePlans(trial, actor, !!unknownConsent);
     for (const required of bribePromiseRule(() => bribeCompletionCandidates(
       trial.bribePromises!, trial.bribeExpressionPromises ?? [], actor, source.turn))) {
@@ -19239,6 +19300,7 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
                 if (alliancePlan?.uncertain) { unknownConsent!.value = true; continue; }
                 return { ...completion, ...(cardSeed.actions.length ? { cardPreparations: cardSeed.actions } : {}), ...(bid ? { bid } : {}), ...(revival ? { revival } : {}),
                   ...(battlePlan ? { battlePlan } : {}), ...(traitor ? { traitor } : {}),
+                  ...(power.action ? { battlePower: power.action } : {}),
                   ...(alliancePlan ? { alliance: alliancePlan.steps.map(step => ({ type: 'alliance', target: step.target })) } : {}),
                   payments: required.map(payment => ({ type: 'bribe', target: payment.recipient, amount: payment.amount })) };
               }
@@ -19257,12 +19319,14 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
     fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
   const open = turnActionTransportOpen(g, p.id);
   let bid = false, revival = false, alliance = false, plan = false, traitor = false, cardHajr = false, cardGhola = false;
+  const powers = new Set<NativeBattlePower>();
   const visit = (node: TurnActionClaim['mixed']): void => {
     if (node.kind === 'action') {
       if (node.action.kind === 'bid') bid = true;
       if (node.action.kind === 'alliance') alliance = true;
       if (node.action.kind === 'battlePlan') plan = true;
       if (node.action.kind === 'traitorCall') traitor = true;
+      if (node.action.kind === 'battlePower') powers.add(battlePowerOf(node.action.claim));
       if (node.action.kind === 'cardPlay' && node.action.effect === 'hajr') cardHajr = true;
       if (node.action.kind === 'cardPlay' && node.action.effect === 'ghola') cardGhola = true;
       if (node.action.kind === 'forces' || node.action.kind === 'leader') revival = true;
@@ -19278,12 +19342,20 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
     revival: revival ? { total: 0, normal: 0, elite: 0, leaders: [], closed: g.phase > 4 ||
       g.phase === 4 && !!g.revivalOrder && !g.revivalOrder.remaining.includes(p.id) } : null,
   } : undefined;
-  const battle = plan || traitor ? g.battle : null;
-  requireRule(!plan && !traitor || !!battle?.event, 'Retain the original current battle.');
+  const battle = plan || traitor || powers.size > 0 ? g.battle : null;
+  requireRule(!plan && !traitor && powers.size === 0 || !!battle?.event, 'Retain the original current battle.');
   const context = traitor ? traitorTruthContext(g, p.id) : null;
   requireRule(!traitor || context && context.submitted === undefined, 'Retain the original unsubmitted Traitor decision.');
+  const powerStage = (power: NativeBattlePower) => {
+    if (!powers.has(power)) return null;
+    const source = nativeBattlePowerOpportunity(g, p.id, power);
+    requireRule(source && battle && source.event === battle.event && source.territory === battle.territory,
+      'Retain your original owned Voice or Prescience opportunity.');
+    return { beneficiary: source.beneficiary, target: source.target, closed: false, values: null };
+  };
   const combat: TurnActionCombat | undefined = battle?.event ? { event: battle.event, territory: battle.territory,
     plan: plan ? { closed: false, values: null } : null,
+    ...(powers.size ? { powers: { voice: powerStage('voice'), prescience: powerStage('prescience') } } : {}),
     traitor: context ? { beneficiary: context.beneficiary, target: context.target, leader: context.leader,
       closed: false, call: null } : null } : undefined;
   let promise: TurnActionPromise = { turn: claim.turn, mixed: structuredClone(claim.mixed), event, player: p.id, asker, answer, compiled,
@@ -19444,7 +19516,8 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   }
   if (!action && g.phase === 6 && g.battle) {
     const battle = g.battle;
-    if (completion.battlePlan && !completion.battlePlan.waitingForIncome && !battle.revealed && !battle.plans[player.id] &&
+    if (completion.battlePower) action = completion.battlePower;
+    if (!action && completion.battlePlan && !completion.battlePlan.waitingForIncome && !battle.revealed && !battle.plans[player.id] &&
       (!battle.preLeader || battle.preLeader.closed) && !battle.preparation &&
       (!battle.fullPlan || battle.plans[battle.fullPlan.target] || battle.fullPlan.target === player.id))
       action = completion.battlePlan.actions[0] ?? { type: 'battlePlan', ...completion.battlePlan.plan };
@@ -41317,6 +41390,7 @@ function applyActionInner(
       'You do not own this battle power decision.',
     );
     const kind = b.preparation.kind;
+    recordNativeTurnActionPower(g, id, { power: kind === 'voice' ? 'voice' : 'prescience', use: false });
     if (kind === 'voice') battlePreparation(g, 'prescience');
     else finishBattlePreparation(g);
     log(
@@ -41341,6 +41415,7 @@ function applyActionInner(
       action.field !== 'dial' || !battleNoFieldPlan(g, target),
       'Atreides may not inspect the number dialed in a No-Field battle.',
     );
+    recordNativeTurnActionPower(g, id, { power: 'prescience', use: true, field: action.field as PlanField });
     b.prescience = { player: beneficiary, field: action.field as PlanField };
     b.preparation = {
       kind: 'prescienceAnswer',
@@ -41409,6 +41484,7 @@ function applyActionInner(
     );
     const target = b.attacker === b.preparation.beneficiary ? b.defender : b.attacker;
     b.voice = quoteVoiceCommand(g, target, action.kind, action.must);
+    recordNativeTurnActionPower(g, id, { power: 'voice', use: true, cardType: b.voice.kind, must: b.voice.must });
     battlePreparation(g, 'prescience');
     g.response = { kind: 'voice', owner: id, passed: [] };
     return g;

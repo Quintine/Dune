@@ -365,3 +365,63 @@ reused journeys/HTML: adjacent `20261027-truth-printed-runtime-v5/`.
 This is local engine/SSR/control evidence. No HTTP/storage boundary changes,
 server restart, reset/deletion or deployed operation occurs. Full browser,
 deployed, recovery/privacy/custody and wider-combination acceptance remain.
+
+## Native Voice and Prescience declarations — 27 October 2026
+
+**Prototyped / Partial.** Add a source-bound action leaf:
+`{kind:'battlePower',battle,territory,claim}`. Its four predicates concern native
+Voice use/explicit Decline, an exact Voice category plus require/forbid command,
+native Prescience use/explicit Decline, or its requested plan field. They never
+describe the inspected answer or promise that the later effect survives Karama.
+This composes the existing general current-turn Truth authority with original
+native power timing; it is not a new publisher-specific power-promise ruling.
+
+The original respondent must own that native power opportunity, personally or
+as an eligible reciprocal ally's provider. Prescience can be pending behind
+the actual original Voice decision, but cannot execute before that stage ends.
+Native command quotations, No-Field restrictions and response ownership remain.
+Borrowed Nexus and special powers keep their existing separate envelopes.
+
+Whole AND/OR/No treats every predicate about this one choice as correlated.
+An actual declaration closes its stage and fixes only the raw named predicate
+values, before a later prevention response. An expired source with no native
+declaration records absence, never an invented Decline. Own manual choices
+must preserve the whole answer or a legal alternative, including later payment.
+No selected route is stored. Native declaration quotations spend no spice or
+card and do not invent the other player's future inspected answer.
+
+Optional private power stages extend original combat metadata; older rows keep
+their existing shape. Public own history remains the original raw question and
+aggregate status. The source-bound guide forwards the real native declaration
+packet; human battle plans still fill for review before separate sealing.
+Four profiles retain only minimal legal participation. Full rules,
+browser/deployed, assurance and AI strategy gates remain open.
+
+The frozen batch passes18 related files and281 tests, types/lint/build. Eight
+public opportunity/predicate, ten aggregate, six control and fourteen native
+cases add38 checks. Eight original native journeys provide33 full GameTable
+SSR renders,8 actual answer callbacks and13 exact native guide callbacks.
+Original own Voice44, Prescience45, remote Voice73 and remote Prescience84
+prefixes include genuine setup/deal, paid Karama1, paid reserve shipments and,
+for remote providers, ordinary Worm/Nexus consent. The remote Prescience battle
+uses two real paid2 Imperial Basin shipments, never the Polar Sink sanctuary.
+Arrays derive every count; original physical cards and Traitors remain.
+
+Runtime paths cover both power declarations followed by actual printed Karama,
+explicit Decline, a declined power followed by late Mentat payment after battle
+cleanup, both allied providers, waiting for the foreign Voice stage and whole
+No through actual turn end. Native tests also cover incompatible same-choice
+predicates, manual OR alternatives, exact event/phase/owner/stale guides,
+requested fields without disclosed values and all four minimal profiles.
+
+Focused feedback repairs own evasion through a newly opened foreign response:
+record and check the actual declaration before giving away control. A later
+native choice cannot rewrite an already fulfilled OR answer; that test oracle
+is corrected. Genuine-source work rejects the prepared-marker and sanctuary
+assumptions. Player-view nullability and lint feedback are repaired. These are
+local engine/SSR/control checks, not browser/hydration/deployed acceptance.
+Proof/manifest: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-power-proof-v3/`;
+journeys/HTML: adjacent `20261027-truth-power-runtime-v3/`.
+No HTTP/storage boundary, database, reset/deletion, server restart or deployed
+operation changes. Borrowed Nexus and special power composition, broader
+future actions and all final assurance/release gates remain open.

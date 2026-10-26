@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { battlePowerOf, type BattlePowerClaim, type BattlePowerDeclaration } from '../game/battle-power-question';
 import {
   compileMixedActionExpression,
   type MixedActionExpression,
@@ -10,6 +11,7 @@ import {
   TurnActionError,
   closeTurnActionBidding,
   closeTurnActionCombat,
+  closeTurnActionBattlePower,
   closeTurnActionPayments,
   closeTurnActionRevival,
   closeTurnActionTransport,
@@ -18,6 +20,7 @@ import {
   parseTurnActionLeaf,
   recordTurnActionBid,
   recordTurnActionCardPlay,
+  recordTurnActionBattlePower,
   recordTurnActionPlan,
   recordTurnActionTraitor,
   recordTurnActionMovement,
@@ -51,6 +54,8 @@ const plan = (claim: TurnActionPlanValue['claim'] = { kind: 'dial', compare: 'gt
 const call = (call = true, battle = 'battle:1'): Expression =>
   ({ kind: 'action', action: { kind: 'traitorCall', battle, territory: 'carthag', call } });
 const card = (effect: 'hajr' | 'ghola' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
+const power = (claim: BattlePowerClaim = { kind: 'voice', use: true }): Expression =>
+  ({ kind: 'action', action: { kind: 'battlePower', battle: 'battle:1', territory: 'carthag', claim } });
 const fact = (): Expression => ({ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 5 } });
 const group = (kind: 'and' | 'or', ...terms: Expression[]): Expression => ({ kind, terms });
 const signedTravel = (kind: 'ship' | 'move', territory = 'carthag', minimum = 3,
@@ -87,6 +92,17 @@ function cards(mixed: Expression, answer = true, id = 'turn-action:1'): TurnActi
   return { ...promise(mixed, answer, id), cardPlays: {
     hajr: { played: false, closed: false }, ghola: { played: false, closed: false },
   } };
+}
+function powers(mixed: Expression, answer = true, id = 'turn-action:1'): TurnActionPromise {
+  const row: TurnActionPromise = { ...promise(mixed, answer, id), combat: { event: 'battle:1', territory: 'carthag',
+    plan: null, traitor: null, powers: { voice: null, prescience: null } } };
+  const visit = (node: Expression): void => {
+    if (node.kind === 'action' && node.action.kind === 'battlePower')
+      row.combat!.powers![battlePowerOf(node.action.claim)] = { beneficiary: 'respondent', target: 'other', closed: false, values: null };
+    else if (node.kind !== 'action' && node.kind !== 'fact') node.terms.forEach(visit);
+  };
+  visit(mixed);
+  return row;
 }
 
 void test('turn-action leaves retain exact native fields, safe payment minima and no payment twenty-force cap', () => {
@@ -1067,4 +1083,171 @@ void test('payment-only closure keeps whole No binding through later Ghola and v
   const malformed = { ...orNo, cardPlays: { hajr: null, ghola: { played: false, closed: 'yes' } } };
   assert.throws(() => closeTurnActionPayments([malformed as unknown as TurnActionPromise], 'respondent', 1), TurnActionError);
   validateTurnActionPromises(closed, seats);
+});
+
+void test('battle-power raw atoms and folded alternatives require exact original per-power stages', () => {
+  const original = { kind: 'battlePower', battle: 'battle:1', territory: 'carthag', claim: { kind: 'voice', use: true } };
+  assert.deepEqual(parseTurnActionLeaf(original), original);
+  for (const value of [{ ...original, owner: 'respondent' }, { ...original, answer: true }, { ...original, battle: '' },
+    { ...original, claim: { kind: 'prescienceField', field: 'dial', value: 4 } }])
+    assert.throws(() => parseTurnActionLeaf(value), TurnActionError);
+  assert.throws(() => turnActionValue(promise(power())), TurnActionError);
+  assert.throws(() => turnActionValue(promise(group('or', fact(), power()))), TurnActionError);
+  const old = combat(plan());
+  validateTurnActionPromises([old], seats);
+  assert.equal('powers' in closeTurnActionCombat([old], 1, 'battle:1')[0].combat!, false);
+});
+
+void test('whole power AND keeps exact native source context and one declaration evaluates all original predicates', () => {
+  const command: BattlePowerClaim = { kind: 'voiceCommand', cardType: 'projectile', must: true };
+  const row = powers(group('and', power(), power(command), pay()));
+  assert.deepEqual(branches(row), [[
+    { kind: 'battlePower', battle: 'battle:1', territory: 'carthag', claim: { kind: 'voice', use: true },
+      owner: 'respondent', beneficiary: 'respondent', target: 'other', answer: true },
+    { kind: 'battlePower', battle: 'battle:1', territory: 'carthag', claim: command,
+      owner: 'respondent', beneficiary: 'respondent', target: 'other', answer: true }, signedPay(),
+  ]]);
+  const declared = recordTurnActionBattlePower([row], 'respondent', 1, 'battle:1', 'carthag',
+    { power: 'voice', use: true, cardType: 'projectile', must: true });
+  assert.deepEqual(declared[0].combat!.powers!.voice!.values, [
+    { claim: { kind: 'voice', use: true }, value: true }, { claim: command, value: true },
+  ]);
+  assert.deepEqual(branches(declared[0]), [[signedPay()]]);
+  assert.equal(declared[0].fulfilled, false);
+  assert.equal(recordTurnActionPayment(declared, 'respondent', 1, payment())[0].fulfilled, true);
+  assert.equal(row.combat!.powers!.voice!.values, null);
+});
+
+void test('whole OR retains actual Voice and Prescience alternatives without storing a selected route', () => {
+  const mixed = group('or', power({ kind: 'voiceCommand', cardType: 'poison', must: false }),
+    power({ kind: 'prescienceField', field: 'weapon' }));
+  const row = powers(mixed);
+  assert.equal(branches(row).length, 2);
+  const voice = recordTurnActionBattlePower([row], 'respondent', 1, 'battle:1', 'carthag',
+    { power: 'voice', use: true, cardType: 'poison', must: false });
+  assert.equal(voice[0].fulfilled, true);
+  const prescience = recordTurnActionBattlePower([row], 'respondent', 1, 'battle:1', 'carthag',
+    { power: 'prescience', use: true, field: 'weapon' });
+  assert.equal(prescience[0].fulfilled, true);
+  assert.deepEqual(prescience[0].mixed, mixed);
+  const otherVoice = recordTurnActionBattlePower([row], 'respondent', 1, 'battle:1', 'carthag',
+    { power: 'voice', use: true, cardType: 'projectile', must: true });
+  assert.equal(otherVoice[0].fulfilled, false);
+  assert.equal(branches(otherVoice[0]).length, 1);
+});
+
+void test('explicit power Decline differs from absent opportunity and preserves requested-field semantics', () => {
+  const mixed = group('or', power({ kind: 'prescience', use: false }), pay());
+  const row = powers(mixed);
+  const declined = recordTurnActionBattlePower([row], 'respondent', 1, 'battle:1', 'carthag', { power: 'prescience', use: false });
+  assert.equal(declined[0].fulfilled, true);
+  assert.deepEqual(declined[0].combat!.powers!.prescience!.values,
+    [{ claim: { kind: 'prescience', use: false }, value: true }]);
+  const absent = closeTurnActionBattlePower([row], 'respondent', 1, 'battle:1', 'carthag', 'prescience');
+  assert.equal(absent[0].fulfilled, false);
+  assert.equal(absent[0].combat!.powers!.prescience!.values, null);
+  assert.deepEqual(branches(absent[0]), [[signedPay()]]);
+  const field = powers(group('and', power({ kind: 'prescienceField', field: 'dial' }), pay()));
+  const requested = recordTurnActionBattlePower([field], 'respondent', 1, 'battle:1', 'carthag', { power: 'prescience', use: true, field: 'dial' });
+  assert.deepEqual(branches(requested[0]), [[signedPay()]]);
+});
+
+void test('whole power No applies De Morgan and actual declarations or later payments reject aggregate violations atomically', () => {
+  const no = powers(group('and', power(), pay()), false);
+  assert.equal(branches(no).length, 2);
+  const declaration: BattlePowerDeclaration = { power: 'voice', use: true, cardType: 'shield', must: false };
+  const declared = recordTurnActionBattlePower([no], 'respondent', 1, 'battle:1', 'carthag', declaration);
+  assert.deepEqual(branches(declared[0]), [[signedPay('recipient', 3, 0, false)]]);
+  const before = structuredClone(declared);
+  assert.throws(() => recordTurnActionPayment(declared, 'respondent', 1, payment()), TurnActionError);
+  assert.deepEqual(declared, before);
+  const paid = recordTurnActionPayment([no], 'respondent', 1, payment());
+  assert.throws(() => recordTurnActionBattlePower(paid, 'respondent', 1, 'battle:1', 'carthag', declaration), TurnActionError);
+  const yes = powers(group('and', power(), pay()), true, 'turn-action:2');
+  const plainNo = powers(power(), false, 'turn-action:3');
+  assert.throws(() => recordTurnActionBattlePower([yes, plainNo], 'respondent', 1, 'battle:1', 'carthag', declaration), TurnActionError);
+  assert.equal(yes.combat!.powers!.voice!.values, null);
+  assert.equal(plainNo.combat!.powers!.voice!.values, null);
+});
+
+void test('closing one power preserves the open plan, Traitor and other power rather than expiring the entire battle', () => {
+  const row = powers(group('or', power(), power({ kind: 'prescience', use: true }), plan(), call(), pay()));
+  row.combat!.plan = { closed: false, values: null };
+  row.combat!.traitor = { beneficiary: 'respondent', target: 'other', leader: 'other-0', closed: false, call: null };
+  const closed = closeTurnActionBattlePower([row], 'respondent', 1, 'battle:1', 'carthag', 'voice')[0];
+  assert.deepEqual(closed.combat!.powers!.voice, { beneficiary: 'respondent', target: 'other', closed: true, values: null });
+  assert.equal(closed.combat!.powers!.prescience, row.combat!.powers!.prescience);
+  assert.equal(closed.combat!.plan, row.combat!.plan);
+  assert.equal(closed.combat!.traitor, row.combat!.traitor);
+  assert.equal(branches(closed).length, 4);
+  const allClosed = closeTurnActionCombat([closed], 1, 'battle:1')[0];
+  assert.equal(allClosed.combat!.powers!.prescience!.closed, true);
+  assert.equal(allClosed.combat!.plan!.closed, true);
+  assert.equal(allClosed.combat!.traitor!.closed, true);
+  assert.deepEqual(branches(allClosed), [[signedPay()]]);
+});
+
+void test('original power source and owner bind receipts once before any later prevention or alternative declaration', () => {
+  const row = powers(group('and', power(), pay()));
+  const declaration: BattlePowerDeclaration = { power: 'voice', use: true, cardType: 'projectile', must: true };
+  for (const [player, turn, event, territory] of [['other', 1, 'battle:1', 'carthag'], ['respondent', 2, 'battle:1', 'carthag'],
+    ['respondent', 1, 'other-battle', 'carthag'], ['respondent', 1, 'battle:1', 'homeworld:guild']] as const)
+    assert.equal(recordTurnActionBattlePower([row], player, turn, event, territory, declaration)[0], row);
+  const actual = recordTurnActionBattlePower([row], 'respondent', 1, 'battle:1', 'carthag', declaration)[0];
+  assert.equal(recordTurnActionBattlePower([actual], 'respondent', 1, 'battle:1', 'carthag', { power: 'voice', use: false })[0], actual);
+  assert.equal(closeTurnActionBattlePower([actual], 'respondent', 1, 'battle:1', 'carthag', 'voice')[0], actual);
+  const expired = closeTurnActionCombat([actual], 1, 'battle:1')[0];
+  assert.deepEqual(expired.combat!.powers!.voice!.values, actual.combat!.powers!.voice!.values);
+  const fresh = powers(group('and', power(), pay()), true, 'turn-action:2');
+  assert.equal(fresh.combat!.powers!.voice!.values, null);
+  validateTurnActionPromises([actual], seats);
+});
+
+void test('unresolved power expiry releases without inventing Decline while terminal and actual receipts remain immutable', () => {
+  const pending = powers(power({ kind: 'voice', use: false }));
+  const expired = finishTurnActionTurn([pending], 'respondent', 1)[0];
+  assert.equal(expired.released, true);
+  assert.equal(expired.combat!.powers!.voice!.closed, false);
+  assert.equal(expired.combat!.powers!.voice!.values, null);
+  const no = powers(power(), false, 'turn-action:2');
+  const closedNo = closeTurnActionBattlePower([no], 'respondent', 1, 'battle:1', 'carthag', 'voice')[0];
+  assert.equal(closedNo.fulfilled, true);
+  const used = recordTurnActionBattlePower([powers(power(), true, 'turn-action:3')], 'respondent', 1, 'battle:1', 'carthag',
+    { power: 'voice', use: true, cardType: 'poison', must: false })[0];
+  const terminal = [expired, closedNo, used];
+  for (const transform of [
+    (rows: TurnActionPromise[]) => closeTurnActionCombat(rows, 1, 'battle:1'),
+    (rows: TurnActionPromise[]) => closeTurnActionBattlePower(rows, 'respondent', 1, 'battle:1', 'carthag', 'voice'),
+    (rows: TurnActionPromise[]) => recordTurnActionBattlePower(rows, 'respondent', 1, 'battle:1', 'carthag', { power: 'voice', use: false }),
+  ]) assert.ok(transform(terminal).every((record, index) => record === terminal[index]));
+  validateTurnActionPromises(terminal, seats);
+});
+
+void test('native power stages reject premature, incomplete, duplicate and wrong-power predicate receipts', () => {
+  const row = powers(group('and', power(), pay()));
+  const stage = row.combat!.powers!.voice!;
+  for (const powerStages of [undefined, null, {}, { voice: null, prescience: null },
+    { ...row.combat!.powers, hidden: true },
+    { ...row.combat!.powers, voice: { ...stage, values: [{ claim: { kind: 'voice', use: true }, value: true }] } },
+    { ...row.combat!.powers, voice: { ...stage, closed: true, values: [] } },
+    { ...row.combat!.powers, voice: { ...stage, closed: true, values: [
+      { claim: { kind: 'voice', use: true }, value: true }, { claim: { kind: 'voice', use: true }, value: true }] } },
+    { ...row.combat!.powers, voice: { ...stage, closed: true, values: [{ claim: { kind: 'prescience', use: true }, value: true }] } },
+    { ...row.combat!.powers, voice: { ...stage, beneficiary: 'other' } },
+    { ...row.combat!.powers, voice: { ...stage, closed: 'yes' } }])
+    assert.throws(() => turnActionValue({ ...row, combat: { ...row.combat!, powers: powerStages } } as TurnActionPromise), TurnActionError);
+  const foreign = { ...row, combat: { ...row.combat!, powers: { ...row.combat!.powers!, voice: { ...stage, target: 'missing' } } } };
+  assert.throws(() => validateTurnActionPromises([foreign], seats), TurnActionError);
+  assert.throws(() => recordTurnActionBattlePower([row], 'respondent', 1, 'battle:1', 'carthag',
+    { power: 'prescience', use: true, field: 'weapon', value: 'Lasgun' } as never), TurnActionError);
+});
+
+void test('power predicates deduplicate only exact original clauses and retain the shared sixteen-leaf limit', () => {
+  const repeated = powers(group('and', power(), power(), pay()));
+  assert.equal(branches(repeated)[0].length, 2);
+  const actual = recordTurnActionBattlePower([repeated], 'respondent', 1, 'battle:1', 'carthag',
+    { power: 'voice', use: true, cardType: 'shield', must: true });
+  assert.equal(actual[0].combat!.powers!.voice!.values!.length, 1);
+  assert.doesNotThrow(() => turnActionValue(powers(group('or', ...Array.from({ length: 16 }, () => power())))));
+  assert.throws(() => turnActionValue(powers(group('or', ...Array.from({ length: 17 }, () => power())))), TurnActionError);
 });

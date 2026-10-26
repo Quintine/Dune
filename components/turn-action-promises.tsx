@@ -7,6 +7,8 @@ import { nativePromiseScopeSupported } from '@/game/native-promise-scope';
 import { quoteNexusAlliance } from '@/game/nexus-alliance';
 import { ordinaryCardAvailability } from '@/game/card-availability';
 import { gholaForcePreparations } from '@/game/ghola-force-preparation';
+import { nativeBattlePowerOpportunity, type NativeBattlePower } from '@/game/battle-power-question';
+import { battleCardLabel, VOICE_KINDS } from '@/game/battle-cards';
 import { truthQuestionText, type TruthAnswer } from '@/game/truthtrance';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
 import { Button } from './ui/button';
@@ -18,6 +20,7 @@ const publicAllianceContext = (game: GameView) => ({
 const publicBattleContext = (game: GameView) => game.battle && ({
   event: game.battle.event, territory: game.battle.territory, attacker: game.battle.attacker, defender: game.battle.defender,
   revealed: game.battle.revealed, submitted: game.battle.submitted,
+  preparation: game.battle.preparation,
   traitorVoters: game.battle.traitorVoters, traitorSubmitted: game.battle.traitorSubmitted,
 });
 
@@ -28,6 +31,11 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const actor = game.me, turn = game.turn, phase = game.phase, event = guide.event, action = guide.action;
   const act = props.act, fillPlan = props.fillPlan, battle = game.battle;
   const battleSignature = JSON.stringify(publicBattleContext(game));
+  const power: NativeBattlePower | null = action.type === 'voice' ? 'voice' : action.type === 'prescience' ? 'prescience'
+    : action.type === 'declineBattlePower' && (battle?.preparation?.kind === 'voice' || battle?.preparation?.kind === 'prescience')
+      ? battle.preparation.kind : null;
+  const powerSource = power ? nativeBattlePowerOpportunity(game, actor, power) : null;
+  const powerSignature = JSON.stringify(powerSource), powerPreparation = battle?.preparation;
   const signature = JSON.stringify(action), auction = game.auction, decision = game.decision;
   const native = game.richeseAuction, order = game.revivalOrder, revival = game.revival;
   const auctionSource = (current: GameView) => current.auction && JSON.stringify({
@@ -117,12 +125,22 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     }
     const currentBattle = phase === 6 && !!battle && current.battle === battle &&
       JSON.stringify(publicBattleContext(current)) === battleSignature;
+    const powerPacket = Object.keys(action).every(key => ['type', 'turnActionPromiseEvent', 'turnActionPromisePhase',
+      ...(action.type === 'voice' ? ['kind', 'must'] : action.type === 'prescience' ? ['field'] : [])].includes(key)) &&
+      (action.type === 'voice' ? typeof action.kind === 'string' && VOICE_KINDS.includes(action.kind) && typeof action.must === 'boolean'
+        : action.type === 'prescience' ? ['leader', 'weapon', 'defense', 'dial'].includes(String(action.field))
+          : action.type === 'declineBattlePower');
+    const ownedPower = currentBattle && !!power && !!powerSource && powerSource.ready && powerSource.owner === actor &&
+      powerSource.event === battle?.event && powerSource.territory === battle?.territory &&
+      current.battle?.preparation === powerPreparation && powerPreparation?.kind === power && powerPacket &&
+      (action.type === 'declineBattlePower' || !powerPreparation.blocked) &&
+      JSON.stringify(nativeBattlePowerOpportunity(current, actor, power)) === powerSignature;
     const planWindow = !!battle && currentBattle && !battle.revealed && [battle.attacker, battle.defender].includes(actor) && !battle.submitted.includes(actor);
     const plan = action.type === 'battlePlan' && planWindow && !!fillPlan && props.fillPlan === fillPlan;
     const battlePreparation = genericCard && planWindow;
     const declaration = action.type === 'traitorCall' && typeof action.call === 'boolean' && !!battle && currentBattle && battle.revealed &&
       battle.traitorVoters.includes(actor) && !battle.traitorSubmitted.includes(actor);
-    const opportunity = payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
+    const opportunity = ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
       ? !current.ready.includes(actor) && (['charity', 'ready'].includes(action.type) || genericCard)
       : phase === 3
         ? invoice || nativePass || requiredBid || action.type === 'passBid' && !current.richeseAuction && currentAuction && current.auction?.active === actor
@@ -156,6 +174,9 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       ? `Play Tleilaxu Ghola to return ${gholaLeader} while honoring your whole answer`
       : `Play Tleilaxu Ghola to return ${amount} physical forces while honoring your whole answer`
     : action.type === 'battlePlan' ? 'Fill the quoted battle plan for review before sealing'
+    : action.type === 'voice' ? `Declare native Voice: opponent ${action.must ? 'must' : 'cannot'} play ${battleCardLabel(String(action.kind))}`
+    : action.type === 'prescience' ? `Request the ${String(action.field)} field with native Prescience while honoring your whole answer`
+    : action.type === 'declineBattlePower' ? `Explicitly decline native ${power === 'voice' ? 'Voice' : 'Prescience'} while honoring your whole answer`
     : action.type === 'traitorCall' ? action.call ? 'Reveal traitor while honoring your whole answer' : 'Decline traitor while honoring your whole answer'
     : action.type === 'alliance' ? action.target === null
       ? game.players.find(player => player.id === actor)?.ally ? 'Break your current alliance while preserving your whole answer'
@@ -225,6 +246,9 @@ export function TurnActionPromises(props: TurnActionProps) {
       Battle conditions describe your actual plan in the named current battle. An open plan condition settles when both plans are revealed;
       sealing your own plan does not finish it. A plan already fixed can decide its condition at the answer.
       Traitor conditions describe your original Reveal or decline declaration, before any later Karama or betrayal prevention.
+      Native Voice and Prescience conditions describe your original use or explicit decline, exact Voice command,
+      or requested Prescience field, before later Karama prevention. The requested field is not the inspected answer or value.
+      Borrowed Nexus and special powers do not count. These conditions close at the actual native choice or when its original source expires.
       Printed-card conditions count actual future Hajr or Tleilaxu Ghola plays in their printed role after the answer this turn.
       Earlier plays, discards, sales, Karama roles and recovery alone do not count; an actual later Box replay does.
       Hajr counts even if its extra movement is unused and closes at your own Movement turn end.

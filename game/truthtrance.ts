@@ -1,6 +1,7 @@
 import { parseTravelActionClaim, type TravelClaim } from './travel-expression-promises';
 import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES,
   type TurnActionClaim } from './turn-action-promises';
+import { battlePowerOf, nativeBattlePowerOpportunity } from './battle-power-question';
 import { parseTraitorActionClaim, type MixedTraitorClaim } from './mixed-traitor-question';
 import { parseBattleActionClaim, MIXED_BATTLE_MAX_NODES, MIXED_BATTLE_MAX_TERMS, MIXED_BATTLE_MAX_DEPTH,
   MIXED_BATTLE_MAX_LEAVES, type MixedBattleClaim } from './mixed-battle-question';
@@ -384,7 +385,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
     const respondent = g.players.find(player => player.id === v.target)!;
     const mixed = parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent), input => {
       const action = parseTurnActionLeaf(input);
-      if (action.kind === 'battlePlan' || action.kind === 'traitorCall') {
+      if (action.kind === 'battlePlan' || action.kind === 'traitorCall' || action.kind === 'battlePower') {
         const battle = g.battle;
         check(g.phase === 6 && battle && typeof battle.event === 'string' && battle.event.length > 0 &&
           action.battle === battle.event && action.territory === battle.territory,
@@ -392,7 +393,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
         if (action.kind === 'battlePlan') {
           check([battle.attacker, battle.defender].includes(respondent.id), 'Ask an actual combatant about their own current native plan.');
           action.claim = parseBattleActionClaim(action.claim, battleLeaderIdentities(g).map(leader => leader.id));
-        } else {
+        } else if (action.kind === 'traitorCall') {
           const voters = [battle.attacker, battle.defender];
           if (battle.ecazOccupy?.lead) for (const id of [battle.ecazOccupy.ecaz, battle.ecazOccupy.ally])
             if (!voters.includes(id)) voters.push(id);
@@ -400,6 +401,10 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
           if (harkonnen?.ally && voters.includes(harkonnen.ally) && !voters.includes(harkonnen.id)) voters.push(harkonnen.id);
           check(battle.revealed && voters.includes(respondent.id) && battle.traitorCalls[respondent.id] === undefined,
             'Choose an actual current revealed, unsubmitted native Traitor voter.');
+        } else {
+          const opportunity = nativeBattlePowerOpportunity(g, respondent.id, battlePowerOf(action.claim));
+          check(opportunity && opportunity.event === action.battle && opportunity.territory === action.territory,
+            'Choose the original owned native Voice or Prescience declaration opportunity.');
         }
       }
       if (action.kind === 'payment') check(action.recipient !== respondent.id && action.recipient !== respondent.ally &&
@@ -730,6 +735,12 @@ export function truthQuestionText(
   if (q.kind === 'turnActions') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => {
       if (action.kind === 'cardPlay') return `you play ${action.effect === 'hajr' ? 'Hajr' : 'Tleilaxu Ghola'} in its printed role after this answer this turn`;
+      if (action.kind === 'battlePower') {
+        const claim = action.claim, where = `in this original battle in ${locationName(action.territory)}`;
+        if (claim.kind === 'voiceCommand') return `you actually declare native Voice ${claim.must ? 'requiring' : 'forbidding'} ${claim.cardType} ${where} (later prevention does not change the declaration)`;
+        if (claim.kind === 'prescienceField') return `you actually request the ${claim.field} field through native Prescience ${where} (this describes the requested field, not its answer value)`;
+        return `you actually ${claim.use ? 'declare use of' : 'explicitly decline'} native ${claim.kind === 'voice' ? 'Voice' : 'Prescience'} ${where}`;
+      }
       if (action.kind === 'payment') return `you ${bribeClaimText({ turn: q.turn, ...action }, playerName)}`;
       if (action.kind === 'bid') return `you ${bidClaimText({ turn: q.turn, ...action })}`;
       if (action.kind === 'battlePlan') return `in your own native plan in this original battle in ${locationName(action.territory)}, ${planClaimText(action.claim, leaderName)}`;

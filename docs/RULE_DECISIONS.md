@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Truthtrance native battle-power declarations — 27 October 2026
+
+Compose the existing FAQp8/current-turn AND/OR authority and supplied Advanced
+physical39 compliance/release with original Voice/Prescience decisions. Count
+actual use or explicit Decline, exact Voice command or requested Prescience
+field after the answer in that original battle, before later Karama prevention.
+A requested field is not the inspected answer. Source expiry is absence and
+does not invent Decline. Native owner, reciprocal allied beneficiary, Voice-
+before-Prescience order, command restrictions and costs remain authoritative.
+The current native envelope excludes borrowed Nexus and special powers; this
+is a provisional online composition, not a dedicated publisher power-promise
+ruling. Wider combinations and full-mode acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#native-voice-and-prescience-declarations--27-october-2026).
+
 ## Ordinary-auction ten-second deadline — 26 October 2026
 
 Publisher Basic printed8 and supplied Advanced physical8/printed6 require a
