@@ -9,6 +9,9 @@ import { ordinaryCardAvailability } from '@/game/card-availability';
 import { gholaForcePreparations } from '@/game/ghola-force-preparation';
 import { nativeBattlePowerOpportunity, type NativeBattlePower } from '@/game/battle-power-question';
 import { battleCardLabel, VOICE_KINDS } from '@/game/battle-cards';
+import { windowCardOpportunity, type WindowCardEffect } from '@/game/window-card-play';
+import type { TurnActionLeaf } from '@/game/turn-action-promises';
+import type { MixedActionExpression } from '@/game/mixed-action-question';
 import { truthQuestionText, type TruthAnswer } from '@/game/truthtrance';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
 import { Button } from './ui/button';
@@ -23,6 +26,11 @@ const publicBattleContext = (game: GameView) => game.battle && ({
   preparation: game.battle.preparation,
   traitorVoters: game.battle.traitorVoters, traitorSubmitted: game.battle.traitorSubmitted,
 });
+const isWindowEffect = (effect: unknown): effect is WindowCardEffect => effect === 'weather' || effect === 'atomics' || effect === 'harvester';
+const windowRoleNames: Record<WindowCardEffect, string> = { weather: 'Weather Control', atomics: 'Family Atomics', harvester: 'Harvester' };
+const namesWindow = (mixed: MixedActionExpression<TurnActionLeaf>, effect: WindowCardEffect, source: string): boolean =>
+  mixed.kind === 'action' ? mixed.action.kind === 'windowCardPlay' && mixed.action.effect === effect && mixed.action.source === source
+    : mixed.kind !== 'fact' && mixed.terms.some(term => namesWindow(term, effect, source));
 
 /** One projected native packet; no client branch selection or completion solver. */
 export function TurnActionGuideButton(props: TurnActionProps) {
@@ -56,6 +64,24 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const cardOwner = action.type === 'card' ? game.players.find(player => player.id === actor) : undefined;
   const heldCard = cardOwner?.hand?.find(card => card.id === action.card);
   const cardSignature = heldCard && JSON.stringify({ id: heldCard.id, kind: heldCard.kind, effect: heldCard.effect });
+  const windowEffect = isWindowEffect(heldCard?.effect) ? heldCard.effect : null;
+  const cardWindow = windowEffect ? windowCardOpportunity(game, windowEffect) : null;
+  const earlyWindowReadyAction = action.type === 'ready' && (phase === 0 || phase === 1);
+  const windowPromise = action.type === 'card' || earlyWindowReadyAction
+    ? game.turnActionPromises.find(promise => promise.event === event && promise.player === actor && promise.turn === turn) : null;
+  const windowQuestion = windowPromise && JSON.stringify(windowPromise.mixed);
+  const publicWindowState = (current: GameView) => JSON.stringify({
+    opportunity: windowEffect ? windowCardOpportunity(current, windowEffect)
+      : (['weather', 'atomics', 'harvester'] as const).map(effect => windowCardOpportunity(current, effect)),
+    stormOpen: current.stormCardWindowOpen,
+    stormPending: current.stormPending, wallDestroyed: current.shieldWallDestroyed,
+    blow: current.spiceWindow,
+    ...(windowEffect === 'atomics' ? { forces: current.players.find(player => player.id === actor)?.forces,
+      advisors: current.players.find(player => player.id === actor)?.advisors } : {}),
+  });
+  const windowSignature = windowEffect || heldCard?.effect === 'nullentropyBox' || earlyWindowReadyAction ? publicWindowState(game) : null;
+  const originalBlow = windowEffect === 'harvester' || earlyWindowReadyAction && phase === 1 ? game.spiceWindow : null;
+  const earlyBoxSignature = box && JSON.stringify({ card: box.card.id, blocked: box.blocked, search: box.search?.event });
   const ghola = heldCard?.effect === 'ghola' ? game.ghola : null, gholaSignature = JSON.stringify(ghola);
   const hajrSource = (current: GameView) => {
     const player = current.players.find(player => player.id === actor);
@@ -83,7 +109,37 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     const printedGhola = gholaSource && !!ghola && (action.leader !== undefined
       ? typeof action.leader === 'string' && (action.leader === 'kwisatz' ? ghola.kwisatz : ghola.leaders.some(leader => leader.id === action.leader))
       : action.elite === undefined ? forceChoices.length === 1 : forceChoices.some(choice => choice.elite === action.elite));
-    const genericCard = ownCard && !!heldCard && heldCard.effect !== 'ghola' && heldCard.effect !== 'hajr';
+    const windowPacket = Object.keys(action).every(key => ['type', 'card', 'turnActionPromiseEvent', 'turnActionPromisePhase',
+      ...(windowEffect === 'weather' ? ['amount'] : [])].includes(key)) &&
+      (windowEffect !== 'weather' || typeof action.amount === 'number' && Number.isSafeInteger(action.amount) && action.amount >= 0 && action.amount <= 10);
+    const printedWindow = ownCard && !!heldCard && heldCard.kind === 'special' && !!windowEffect && !!cardWindow &&
+      action.mode === undefined && windowPacket && !!windowPromise &&
+      current.turnActionPromises.includes(windowPromise) && JSON.stringify(windowPromise.mixed) === windowQuestion &&
+      namesWindow(windowPromise.mixed, windowEffect, cardWindow.source) &&
+      (windowEffect !== 'harvester' || current.spiceWindow === originalBlow) && publicWindowState(current) === windowSignature &&
+      ordinaryCardAvailability(current, heldCard.id, windowEffect === 'weather' ? { amount: action.amount } : undefined)?.available === true;
+    const genericCard = ownCard && !!heldCard && heldCard.effect !== 'ghola' && heldCard.effect !== 'hajr' && !isWindowEffect(heldCard.effect);
+    const earlyWindowBox = (phase === 0 || phase === 1) && genericCard && heldCard?.effect === 'nullentropyBox' &&
+      action.mode === undefined && Object.keys(action).every(key => ['type', 'card', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key)) &&
+      !!box && current.nullentropy === box &&
+      JSON.stringify({ card: box.card.id, blocked: box.blocked, search: box.search?.event }) === earlyBoxSignature &&
+      !box.blocked && !box.search && box.card.id === heldCard.id &&
+      !!windowPromise && current.turnActionPromises.includes(windowPromise) && JSON.stringify(windowPromise.mixed) === windowQuestion &&
+      (['weather', 'atomics', 'harvester'] as const).some(effect => {
+        const opportunity = windowCardOpportunity(current, effect);
+        return !!opportunity && namesWindow(windowPromise.mixed, effect, opportunity.source);
+      }) && publicWindowState(current) === windowSignature;
+    const earlyWindowReady = earlyWindowReadyAction && !current.ready.includes(actor) &&
+      Object.keys(action).every(key => ['type', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key)) &&
+      !!windowPromise && current.turnActionPromises.includes(windowPromise) && JSON.stringify(windowPromise.mixed) === windowQuestion &&
+      publicWindowState(current) === windowSignature &&
+      (phase === 0 ? current.stormPending !== null && (['weather', 'atomics'] as const).some(effect => {
+        const opportunity = windowCardOpportunity(current, effect);
+        return !!opportunity && namesWindow(windowPromise.mixed, effect, opportunity.source);
+      }) : current.spiceWindow === originalBlow && (() => {
+        const opportunity = windowCardOpportunity(current, 'harvester');
+        return !!opportunity && namesWindow(windowPromise.mixed, 'harvester', opportunity.source);
+      })());
     const options = current.bribeOptions;
     const target = action.type === 'bribe' && typeof action.target === 'string'
       ? current.players.find(player => player.id === action.target) : undefined;
@@ -140,7 +196,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     const battlePreparation = genericCard && planWindow;
     const declaration = action.type === 'traitorCall' && typeof action.call === 'boolean' && !!battle && currentBattle && battle.revealed &&
       battle.traitorVoters.includes(actor) && !battle.traitorSubmitted.includes(actor);
-    const opportunity = ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
+    const opportunity = earlyWindowReady || earlyWindowBox || printedWindow || ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
       ? !current.ready.includes(actor) && (['charity', 'ready'].includes(action.type) || genericCard)
       : phase === 3
         ? invoice || nativePass || requiredBid || action.type === 'passBid' && !current.richeseAuction && currentAuction && current.auction?.active === actor
@@ -173,6 +229,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     : action.type === 'card' && heldCard?.effect === 'ghola' ? action.leader !== undefined
       ? `Play Tleilaxu Ghola to return ${gholaLeader} while honoring your whole answer`
       : `Play Tleilaxu Ghola to return ${amount} physical forces while honoring your whole answer`
+    : action.type === 'card' && windowEffect ? `Play ${windowRoleNames[windowEffect]} in its original native window${windowEffect === 'weather' ? ` with storm distance ${amount}` : ''} while honoring your whole answer`
     : action.type === 'battlePlan' ? 'Fill the quoted battle plan for review before sealing'
     : action.type === 'voice' ? `Declare native Voice: opponent ${action.must ? 'must' : 'cannot'} play ${battleCardLabel(String(action.kind))}`
     : action.type === 'prescience' ? `Request the ${String(action.field)} field with native Prescience while honoring your whole answer`
@@ -184,7 +241,8 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       : `Accept ${recipient}’s alliance invitation while preserving your whole answer`
     : action.type === 'charity' ? 'Claim Charity while preserving your whole answer'
     : action.type === 'ready' ? phase === 8 ? 'Ready to end this turn while honoring your whole answer'
-      : phase === 1 ? 'Confirm Ready for this Nexus while preserving your whole answer'
+      : earlyWindowReadyAction && (phase === 0 || !!game.spiceWindow) ? `Accept this ${phase === 0 ? 'Storm' : 'fresh spice-blow'} window while preserving your whole answer`
+        : phase === 1 ? 'Confirm Ready for this Nexus while preserving your whole answer'
         : 'Finish this preparation phase while preserving your whole answer'
     : action.type === 'passBid' ? 'Pass this bid while preserving your whole answer'
     : action.type === 'bid' ? `Place the required bid of ${amount} while preserving your whole answer`
@@ -253,6 +311,9 @@ export function TurnActionPromises(props: TurnActionProps) {
       Earlier plays, discards, sales, Karama roles and recovery alone do not count; an actual later Box replay does.
       Hajr counts even if its extra movement is unused and closes at your own Movement turn end.
       Tleilaxu Ghola is separate from ordinary Revival and remains open until the actual turn ends.
+      Weather Control, Family Atomics and Harvester conditions count an actual accepted future printed-role play after the answer
+      in the original open Storm or fresh spice-blow window. Earlier plays, disposal, other roles and recovery alone do not count.
+      They do not promise a selected storm distance or resulting spice amount. Each condition closes only when its original native window closes.
       Shipment conditions concern one future original reserve shipment. Ground-movement conditions count the maximum physical forces in one actual future move,
       never the sum of smaller moves. Earlier shipment and movement do not count.
       Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.

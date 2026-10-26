@@ -4,12 +4,14 @@ import { PrintedCardPlayError, printedCardPlayCount, recordPrintedCardPlay,
   type PrintedCardEffect, type PrintedCardPlayCounts } from './printed-card-play';
 import { battlePowerOf, battlePowerMatches, nativeBattlePowerOpportunity,
   type NativeBattlePower, type BattlePowerDeclaration } from './battle-power-question';
+import { windowCardOpportunity, type WindowCardEffect } from './window-card-play';
 import { TurnActionError, liveTurnActionPromises, turnActionBranches, recordTurnActionPayment,
   recordTurnActionShipment, recordTurnActionMovement, closeTurnActionTransport, closeTurnActionPayments, finishTurnActionTurn,
   validateTurnActionPromises, recordTurnActionBid, closeTurnActionBidding, recordTurnActionRevival, recordTurnActionCardPlay,
   closeTurnActionRevival, settleTurnActionAlliance, recordTurnActionPlan, recordTurnActionTraitor, closeTurnActionCombat,
   recordTurnActionBattlePower, closeTurnActionBattlePower,
-  type TurnActionPlanValue, type TurnActionCombat, type TurnActionClaim, type TurnActionPromise, type TurnActionBranchLeaf, type TurnActionPreparation } from './turn-action-promises';
+  recordTurnActionWindowCardPlay, closeTurnActionWindowCardPlay,
+  type TurnActionPlanValue, type TurnActionCombat, type TurnActionClaim, type TurnActionPromise, type TurnActionBranchLeaf, type TurnActionPreparation, type TurnActionWindowCards } from './turn-action-promises';
 import { TravelPromiseError, liveTravelPromises, travelBranches, recordTravelShipment, recordTravelMovement,
   finishTravelTurn, validateTravelPromises, type TravelClaim, type TravelPromise, type TravelBranchLeaf } from './travel-expression-promises';
 import { mixedTraitorRequirement, type MixedTraitorClaim } from './mixed-traitor-question';
@@ -2500,6 +2502,8 @@ export type Game = {
   }[];
   stormDials: Record<string, number>;
   stormPending: number | null;
+  /** Actual original Storm card window; absent older games use native phase/resolution. */
+  stormCardWindowOpen?: boolean;
   stormCard: number | null;
   stormCardKnown: boolean;
   stormResolution: {
@@ -2563,6 +2567,8 @@ export type Game = {
   winner: string[];
   shieldWallDestroyed: boolean;
   spiceWindow: {
+    /** Stable identity for a genuinely newly drawn fresh blow. */
+    event?: string;
     territory: string;
     sector: number;
     amount: number;
@@ -4947,6 +4953,7 @@ function finishNullentropy(
 }
 function beginNullentropy(g: Game, owner: Player, cardId: string) {
   const { candidates } = validateNullentropyBegin(g, owner, cardId);
+  reopenTurnActionWindowReady(g, owner.id);
   owner.spice -= 2;
   const event = crypto.randomUUID();
   g.pendingNullentropy = {
@@ -12530,6 +12537,7 @@ function finishSetup(g: Game) {
       .map((leader) => ({ leader, revealed: false }));
   }
   g.status = 'playing';
+  g.stormCardWindowOpen = true;
   if (g.homeworlds?.custody) {
     g.homeworldOccupationHistory = homeworldRule(() => createHomeworldOccupationHistory(homeworldContext(g), g.homeworlds!.custody!, g.turn, crypto.randomUUID()));
     g.homeworlds.historyVersion = 1;
@@ -12588,6 +12596,7 @@ function moveStorm(g: Game, n: number) {
   offerChoamStorm(g);
 }
 function startStormMovement(g: Game, n: number) {
+  g.stormCardWindowOpen = false;
   const offer = nexusRule(() => discoveryStormOffer(g));
   if (offer && !offer.blocked) {
     g.ecologicalStorm = nexusRule(() => createDiscoveryStorm(g,crypto.randomUUID()));
@@ -13488,7 +13497,7 @@ function continueSpice(g: Game, injected?: SpiceCard) {
     if (card.discovery) resolveDiscoveryBlow(g, card);
     g.spiceDiscard[sequence.pile].push(card);
     const amount = card.amount * (doubleNext ? 2 : 1);
-    g.spiceWindow = { ...card, amount, harvested: false };
+    g.spiceWindow = { ...card, event: crypto.randomUUID(), amount, harvested: false };
     const placement = quoteSpicePlacement(g.spice, g.storm, { ...card, amount });
     if (!placement.blocked) {
       g.spice[placement.key] = placement.total;
@@ -18908,6 +18917,105 @@ function* turnActionCardSeeds(source: Game, actor: string, requirements: readonl
       if (projected) yield* plays(projected, [{ type: 'card', card: box.id }]);
     }
 }
+type TurnActionWindowCardRequirement = Extract<TurnActionBranchLeaf, { kind: 'windowCardPlay' }>;
+const isWindowCardEffect = (effect: unknown): effect is WindowCardEffect =>
+  effect === 'weather' || effect === 'atomics' || effect === 'harvester';
+function* nativeWindowCardActions(g: Game, actor: string, effect: WindowCardEffect): Generator<Action> {
+  if (!windowCardOpportunity(g, effect)) return;
+  const player = getPlayer(g, actor);
+  for (const card of player.hand.filter(card => card.effect === effect && !transferCardBlock(g, player, card)))
+    for (const amount of effect === 'weather' ? Array.from({ length: 11 }, (_, value) => value) : [undefined]) {
+      const availability = ordinaryCardAvailability({ status: g.status, phase: g.phase, turn: g.turn,
+        active: g.active, me: actor, shieldWallDestroyed: g.shieldWallDestroyed,
+        stormCardWindowOpen: g.stormCardWindowOpen, stormResolution: g.stormResolution,
+        spiceWindow: g.spiceWindow, truthtrance: g.truthtrance, response: g.response,
+        decision: g.decision, phaseOpening: g.phaseOpening, players: [player] }, card.id, { amount });
+      if (availability?.available) yield { type: 'card', card: card.id, ...(amount === undefined ? {} : { amount }) };
+    }
+}
+/** Execute real printed effects on detached states before sharing their
+ * resulting terrain, pieces and recovery costs with the other action families. */
+function* turnActionWindowCardSeeds(source: Game, actor: string, requirements: readonly TurnActionWindowCardRequirement[]):
+  Generator<{ game: Game; actions: Action[] }> {
+  const key = (required: TurnActionWindowCardRequirement) => JSON.stringify([required.effect, required.source]);
+  const search = function* (game: Game, actions: Action[], played: ReadonlySet<string>): Generator<{ game: Game; actions: Action[] }> {
+    const pending = requirements.filter(required => required.answer && !played.has(key(required)));
+    if (!pending.length) {
+      if (requirements.every(required => played.has(key(required)) === required.answer)) yield { game, actions };
+      return;
+    }
+    for (const required of pending) {
+      if (windowCardOpportunity(game, required.effect)?.source !== required.source) continue;
+      const play = function* (state: Game, prefix: Action[]): Generator<{ game: Game; actions: Action[] }> {
+        for (const action of nativeWindowCardActions(state, actor, required.effect)) {
+          try {
+            const next = applyActionInner(state, actor, action, 'movementPreparation');
+            yield* search(next, [...actions, ...prefix, action], new Set([...played, key(required)]));
+          } catch (error) { if (!(error instanceof RuleError)) throw error; }
+        }
+      };
+      yield* play(game, []);
+      const paid = game.pendingNullentropy;
+      if (paid?.player === actor) {
+        if (!nullentropyIntegrity(game)) for (const card of eligibleNullentropyCards(game.discard).filter(card => card.effect === required.effect)) {
+          const recovered = projectMovementBoxRecovery(game, actor, paid.box, card.id, true);
+          if (recovered) yield* play(recovered, [{ type: 'decision', event: paid.event, card: card.id }]);
+        }
+      } else for (const box of getPlayer(game, actor).hand.filter(card => card.effect === 'nullentropyBox'))
+        for (const known of knownMovementDiscards(game.movementDiscardKnowledge, actor, game.discard).filter(card => card.effect === required.effect)) {
+          const recovered = projectMovementBoxRecovery(game, actor, box.id, known.id, false);
+          if (recovered) yield* play(recovered, [{ type: 'card', card: box.id }]);
+        }
+    }
+  };
+  yield* search(source, [], new Set());
+}
+function* turnActionPrintedPreparationSeeds(source: Game, actor: string, cards: readonly TurnActionCardRequirement[],
+  windows: readonly TurnActionWindowCardRequirement[]): Generator<{ game: Game; actions: Action[] }> {
+  if (!windows.length) { yield* turnActionCardSeeds(source, actor, cards); return; }
+  for (const window of turnActionWindowCardSeeds(structuredClone(source), actor, windows))
+    for (const card of turnActionCardSeeds(window.game, actor, cards))
+      yield { game: card.game, actions: [...window.actions, ...card.actions] };
+  // An owned Ghola can supply its real allowed income before a paid Box route.
+  if (cards.length) for (const card of turnActionCardSeeds(structuredClone(source), actor, cards))
+    for (const window of turnActionWindowCardSeeds(card.game, actor, windows))
+      yield { game: window.game, actions: [...card.actions, ...window.actions] };
+}
+function recordNativeTurnActionWindowCard(g: Game, actor: string, effect: WindowCardEffect, source: string) {
+  if (g.turnActionPromises) g.turnActionPromises = turnActionRule(() =>
+    recordTurnActionWindowCardPlay(g.turnActionPromises!, actor, g.turn, effect, source));
+}
+function reconcileTurnActionWindowCards(g: Game) {
+  if (!g.turnActionPromises) return;
+  for (const promise of g.turnActionPromises) {
+    if (promise.fulfilled || promise.released) continue;
+    for (const effect of ['weather', 'atomics', 'harvester'] as const) {
+      const stage = promise.windowCards?.[effect];
+      if (!stage || stage.closed || promise.turn === g.turn && windowCardOpportunity(g, effect)?.source === stage.source) continue;
+      g.turnActionPromises = turnActionRule(() => closeTurnActionWindowCardPlay(g.turnActionPromises!,
+        promise.player, promise.turn, effect, stage.source));
+    }
+  }
+}
+/** A concurrent Ready grants permission to close this window. Quote that
+ * closure without installing it before the real global continuation. */
+function ownTurnActionWindowClosure(g: Game, actor: string): TurnActionPromise[] {
+  let closed = g.turnActionPromises ?? [];
+  for (const promise of liveTurnActionPromises(closed, actor, g.turn))
+    for (const effect of ['weather', 'atomics', 'harvester'] as const) {
+      const stage = promise.windowCards?.[effect];
+      if (stage && !stage.closed) closed = turnActionRule(() =>
+        closeTurnActionWindowCardPlay(closed, actor, g.turn, effect, stage.source));
+    }
+  return closed;
+}
+function reopenTurnActionWindowReady(g: Game, actor: string) {
+  if (g.ready.includes(actor) && liveTurnActionPromises(g.turnActionPromises ?? [], actor, g.turn).some(promise =>
+    (['weather', 'atomics', 'harvester'] as const).some(effect => {
+      const stage = promise.windowCards?.[effect];
+      return stage && !stage.closed && windowCardOpportunity(g, effect)?.source === stage.source;
+    }))) g.ready = g.ready.filter(player => player !== actor);
+}
 /** Check the actual spent card and returned pieces before a later foreign
  * income/discard response can hide an own voluntary loss of feasibility. */
 function guardTurnActionPrintedCardCost(g: Game, player: Player, used: Card) {
@@ -19254,7 +19362,8 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
           const voluntary = { actor, action: { type: 'bribe' } };
           for (const payment of required)
             checkBureaucratContributors(paid, payment.recipient, [{ payer: actor, amount: payment.amount }]);
-          for (const cardSeed of turnActionCardSeeds(paid, actor, cardRequirements)) {
+          for (const cardSeed of turnActionPrintedPreparationSeeds(paid, actor, cardRequirements,
+            leaves.filter((leaf): leaf is TurnActionWindowCardRequirement => leaf.kind === 'windowCardPlay'))) {
             const funded = cardSeed.game, payer = getPlayer(funded, actor);
             try {
               reconcileBattlePromises(funded, voluntary);
@@ -19320,6 +19429,7 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
   const open = turnActionTransportOpen(g, p.id);
   let bid = false, revival = false, alliance = false, plan = false, traitor = false, cardHajr = false, cardGhola = false;
   const powers = new Set<NativeBattlePower>();
+  const windowCards: TurnActionWindowCards = {};
   const visit = (node: TurnActionClaim['mixed']): void => {
     if (node.kind === 'action') {
       if (node.action.kind === 'bid') bid = true;
@@ -19327,6 +19437,9 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
       if (node.action.kind === 'battlePlan') plan = true;
       if (node.action.kind === 'traitorCall') traitor = true;
       if (node.action.kind === 'battlePower') powers.add(battlePowerOf(node.action.claim));
+      if (node.action.kind === 'windowCardPlay') windowCards[node.action.effect] = {
+        source: node.action.source, played: false, closed: false,
+      };
       if (node.action.kind === 'cardPlay' && node.action.effect === 'hajr') cardHajr = true;
       if (node.action.kind === 'cardPlay' && node.action.effect === 'ghola') cardGhola = true;
       if (node.action.kind === 'forces' || node.action.kind === 'leader') revival = true;
@@ -19359,6 +19472,7 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
     traitor: context ? { beneficiary: context.beneficiary, target: context.target, leader: context.leader,
       closed: false, call: null } : null } : undefined;
   let promise: TurnActionPromise = { turn: claim.turn, mixed: structuredClone(claim.mixed), event, player: p.id, asker, answer, compiled,
+    ...(Object.keys(windowCards).length ? { windowCards } : {}),
     ...(cardHajr || cardGhola ? { cardPlays: { hajr: cardHajr ? { played: false, closed: !open } : null,
       ghola: cardGhola ? { played: false, closed: false } : null } } : {}),
     ...(combat ? { combat } : {}),
@@ -19371,8 +19485,8 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
     g.turn, combat.event, combat.territory, turnActionPlanValues(g, p.id, [claim.mixed])))[0];
   return promise;
 }
-function turnActionAnswerSource(g: Game, player: string, alliance = false): Game {
-  return g.phase === 1 && alliance || g.phase === 2 || g.phase === 4 && !g.revivalOrder || g.phase === 8 ||
+function turnActionAnswerSource(g: Game, player: string, alliance = false, window = false): Game {
+  return g.phase === 0 && window || g.phase === 1 && (alliance || window) || g.phase === 2 || g.phase === 4 && !g.revivalOrder || g.phase === 8 ||
     g.phase === 7 && bribesCloseBeforeNextMentat(g)
     ? { ...g, ready: g.ready.filter(id => id !== player) } : g;
 }
@@ -19384,7 +19498,7 @@ function turnActionTruthAnswers(g: Game, p: Player, claim: TurnActionClaim): Tru
     try { promise = turnActionPromise(g, p, claim, answer, 'candidate', g.players.find(other => other.id !== p.id)!.id); }
     catch (error) { if (error instanceof RuleError) continue; throw error; }
     if (promise.compiled.kind === 'constant' && promise.compiled.value !== answer) continue;
-    const trial = { ...turnActionAnswerSource(g, p.id, !!promise.alliance),
+    const trial = { ...turnActionAnswerSource(g, p.id, !!promise.alliance, !!promise.windowCards),
       turnActionPromises: [...(g.turnActionPromises ?? []), promise], travelPromiseOrder: undefined };
     if (turnActionCompletion(trial, p.id, answer && promise.alliance ? consent : undefined)) answers.push(answer ? 'yes' : 'no');
   }
@@ -19395,7 +19509,7 @@ function bindTurnActionTruth(g: Game, p: Player, claim: TurnActionClaim, answer:
   requireRule(turnActionTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
     'Choose a whole turn-action answer compatible with current funding and native actions.');
   const promise = turnActionPromise(g, p, claim, answer, crypto.randomUUID(), asker);
-  g.ready = turnActionAnswerSource(g, p.id, !!promise.alliance).ready;
+  g.ready = turnActionAnswerSource(g, p.id, !!promise.alliance, !!promise.windowCards).ready;
   g.turnActionPromises ??= [];
   initializeTurnActionOrder(g);
   g.turnActionPromises.push(promise);
@@ -19403,6 +19517,7 @@ function bindTurnActionTruth(g: Game, p: Player, claim: TurnActionClaim, answer:
 }
 function reconcileTurnActionPromises(g: Game, actor?: string, action?: Action, sourcePhase = g.phase) {
   reconcileTurnActionCombat(g);
+  reconcileTurnActionWindowCards(g);
   turnActionRule(() => validateTurnActionPromises(g.turnActionPromises!, g.players.map(player => player.id)));
   for (const p of g.players) {
     for (const turn of new Set(g.turnActionPromises!.filter(promise => promise.player === p.id &&
@@ -19526,11 +19641,29 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   }
   if (!action && g.phase === 1 && allianceQuestionWindow(g) && !g.ready.includes(player.id))
     action = completion.alliance?.[0] ?? { type: 'ready' };
+  if (!action && !g.ready.includes(player.id) &&
+    (g.phase === 0 && g.stormPending !== null || g.phase === 1 && g.spiceWindow)) {
+    const closed = ownTurnActionWindowClosure(g, player.id);
+    if (closed !== g.turnActionPromises && turnActionCompletion({ ...g, turnActionPromises: closed }, player.id))
+      action = { type: 'ready' };
+  }
   if (!action && [7, 8].includes(g.phase) && !g.ready.includes(player.id)) action = { type: 'ready' };
   if (!action) return null;
+  // The joint quotation can prepare a later answer while an earlier unrelated
+  // answer remains live. Window controls must bind the row naming that source.
+  const held = action.type === 'card' ? player.hand.find(card => card.id === action.card) : undefined;
+  const printedWindow = isWindowCardEffect(held?.effect) ? held.effect : null;
+  const windows: WindowCardEffect[] = printedWindow ? [printedWindow]
+    : action.type === 'ready' || held?.effect === 'nullentropyBox' ? ['weather', 'atomics', 'harvester'] : [];
+  const guidePromise = windows.length ? liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn).find(row =>
+    windows.some(effect => {
+      const stage = row.windowCards?.[effect];
+      return stage && !stage.closed && (!printedWindow || !stage.played) &&
+        windowCardOpportunity(g, effect)?.source === stage.source;
+    })) ?? promise : promise;
   const packet = { ...structuredClone(action) };
   for (const key of ['bidPromiseEvent', 'revivalExpressionPromiseEvent', 'leaderRevivalPromiseEvent', 'revivalPromiseEvent']) delete packet[key];
-  return { event: promise.event, action: { ...packet, turnActionPromiseEvent: promise.event, turnActionPromisePhase: g.phase } };
+  return { event: guidePromise.event, action: { ...packet, turnActionPromiseEvent: guidePromise.event, turnActionPromisePhase: g.phase } };
 }
 function travelRule<T>(operation: () => T): T {
   try { return operation(); }
@@ -25909,6 +26042,7 @@ function payCharity(g: Game, player: Player, amount: number, homeworld = 0) {
   techIncome(g, 'production', player);
 }
 function beginStormTurn(g: Game) {
+  g.stormCardWindowOpen = true;
   if (g.dukeVidal) delete g.dukeVidal.leader.usedAt;
   for (const p of g.players) if (p.elites) p.elites.revived = 0;
   g.stormDialers = g.lastBattle;
@@ -41670,6 +41804,8 @@ function applyActionInner(
         response: g.response,
         decision: g.decision,
         shieldWallDestroyed: g.shieldWallDestroyed,
+        stormCardWindowOpen: g.stormCardWindowOpen,
+        stormResolution: g.stormResolution,
         spiceWindow: g.spiceWindow,
         players: [
           {
@@ -41690,6 +41826,11 @@ function applyActionInner(
     );
     if (availability && !availability.available)
       throw new RuleError(availability.reason);
+    if (isWindowCardEffect(c.effect)) {
+      const source = windowCardOpportunity(g, c.effect);
+      requireRule(source, 'Retain the original open Storm or fresh spice-blow window.');
+      recordNativeTurnActionWindowCard(g, id, c.effect, source.source);
+    }
     if (c.effect === 'hajr') {
       p.hajrPlays = hajrPlayCount(g,p) + 1;
       recordNativePrintedCardPlay(g, p.id, 'hajr');
@@ -41732,7 +41873,7 @@ function applyActionInner(
         'This card’s timing and effect are still being implemented.',
       );
     const used = discard(g, p, c.id);
-    if (execution === 'live' && (c.effect === 'hajr' || c.effect === 'ghola'))
+    if (execution === 'live' && (c.effect === 'hajr' || c.effect === 'ghola' || isWindowCardEffect(c.effect)))
       guardTurnActionPrintedCardCost(g, p, used);
     log(
       g,
@@ -41748,6 +41889,11 @@ function applyActionInner(
   }
   if (t === 'ready') {
     if (allianceQuestionWindow(g)) guardAlliancePromiseReady(g, p);
+    if (g.turnActionPromises && (g.phase === 0 || g.phase === 1 && g.spiceWindow)) {
+      const closed = ownTurnActionWindowClosure(g, p.id);
+      requireRule(closed === g.turnActionPromises || !!turnActionCompletion({ ...g, turnActionPromises: closed }, p.id),
+        'Play your required window card or retain another legal whole-answer alternative before accepting this window.');
+    }
     const bribeWindowCloses = g.phase === 8 || g.phase === 7 && bribesCloseBeforeNextMentat(g);
     if (bribeWindowCloses && g.turnActionPromises) {
       // Known Double closes payments at the next opening, while Ghola keeps
@@ -42503,6 +42649,8 @@ export function viewGame(state: Game, id: string, now?: number) {
     fremenVictory,
     ecazHomeworldVictory,
     shieldWallDestroyed: g.shieldWallDestroyed,
+    stormCardWindowOpen: g.status === 'playing' && g.phase === 0 &&
+      g.stormCardWindowOpen !== false && !g.stormResolution,
     stormDialers: g.stormDialers,
     stormSubmitted: Object.keys(g.stormDials),
     karamaShipping: g.karamaShipping

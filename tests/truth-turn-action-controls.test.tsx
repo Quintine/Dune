@@ -11,6 +11,7 @@ import { createGame, joinGame, newPlayer, viewGame, type Action, type GameView, 
 import type { MixedActionExpression } from '../game/mixed-action-question';
 import type { MixedBattleActionClaim } from '../game/mixed-battle-question';
 import type { BattlePowerClaim } from '../game/battle-power-question';
+import type { WindowCardEffect } from '../game/window-card-play';
 import { createRevivalOrder } from '../game/revival-order';
 import { createRicheseAuction, projectRicheseAuction } from '../game/richese-auction';
 import type { TurnActionLeaf } from '../game/turn-action-promises';
@@ -31,6 +32,8 @@ const forceRevival = (counter: 'total' | 'normal' | 'elite' = 'total', minimum =
 const leaderRevival = (leader: string): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
 const finalAlliance = (partner = 'r'): Expression => ({ kind: 'action', action: { kind: 'alliance', partner } });
 const printedCard = (effect: 'hajr' | 'ghola' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
+const windowClaim = (effect: WindowCardEffect = 'weather', source = effect === 'harvester' ? 'controlled-native-blow' : 'storm:2'): Expression =>
+  ({ kind: 'action', action: { kind: 'windowCardPlay', effect, source } });
 const planClaim = (claim: MixedBattleActionClaim = { kind: 'dial', compare: 'eq', value: 3 }): Expression =>
   ({ kind: 'action', action: { kind: 'battlePlan', battle: 'controlled-native-battle', territory: 'arrakeen', claim } });
 const traitorClaim = (call = true): Expression =>
@@ -79,7 +82,8 @@ function projected(phase = 5, next: Action = { type: 'move', forces: { 'arrakeen
   game.turnActionGuide = { event, action: { ...next, turnActionPromiseEvent: event, turnActionPromisePhase: phase } };
   game.truthTurnActionAnswers = null;
   if (next.type === 'card' && typeof next.card === 'string') {
-    const effect = next.card.includes('hajr') ? 'hajr' : next.card.includes('ghola') ? 'ghola' : 'karama';
+    const cardId = next.card, effect = (['hajr', 'ghola', 'weather', 'atomics', 'harvester'] as const)
+      .find(effect => cardId.includes(effect)) ?? 'karama';
     const face = baseDeck().find(card => card.effect === effect); assert.ok(face);
     const me = game.players.find(player => player.id === 'p')!;
     me.hand = [{ ...face, id: next.card }]; me.hajrAvailable = effect === 'hajr';
@@ -125,6 +129,16 @@ function battlePower(power: 'voice' | 'prescience' = 'voice', next?: Action, all
   if (allied) { me.ally = 'a'; other.ally = 'p'; }
   game.battle!.preparation = { kind: power, owner: 'p', beneficiary: allied ? 'a' : 'p' };
   game.turnActionPromises[0].mixed = { kind: 'or', terms: [powerClaim({ kind: power, use: true }), payment()] };
+  return game;
+}
+function windowCard(effect: WindowCardEffect = 'weather', next?: Action): GameView {
+  const game = projected(effect === 'harvester' ? 1 : 0, next ?? { type: 'card', card: `controlled-${effect}`,
+    ...(effect === 'weather' ? { amount: 4 } : {}) });
+  game.stormCardWindowOpen = true; game.shieldWallDestroyed = false; game.stormPending = null;
+  game.spiceWindow = effect === 'harvester' ? { event: 'controlled-native-blow', territory: 'carthag', sector: 11,
+    amount: 6, harvested: false } : null;
+  game.players.find(player => player.id === 'p')!.forces = { 'shield_wall:8': 1 };
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [windowClaim(effect), payment()] };
   return game;
 }
 function revival(next: Action = { type: 'revive', amount: 3, elite: 1 }): GameView {
@@ -632,6 +646,163 @@ void test('native power history keeps raw declarations distinct from effects and
   assert.match(html, /before later Karama prevention/); assert.match(html, /requested field is not the inspected answer or value/);
   assert.match(html, /close at the actual native choice or when its original source expires/);
   assert.doesNotMatch(html, /controlled-native-battle|battlePowers|declarations|private-card/);
+});
+
+void test('window-role editor and raw history use original public sources without hidden holdings or eligibility reads', () => {
+  const game = windowCard(), e = editor(physical(), false, game);
+  for (const player of game.players) for (const key of ['hand', 'spice', 'forces', 'advisors', 'tanks', 'leaders', 'traitors'])
+    Object.defineProperty(player, key, { get() { throw Error(`No private window authoring ${key} read`); }, configurable: true });
+  for (const key of ['windowCards', 'compiled', 'cardPlays'])
+    Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} read`); }, configurable: true });
+  select(e.tree(), '1', 'action', 'windowCardPlay'); assert.deepEqual(e.value, windowClaim()); assert.equal(e.error(), null);
+  select(e.tree(), '1', 'window-effect', 'atomics'); assert.deepEqual(e.value, windowClaim('atomics')); assert.equal(e.error(), null);
+  game.shieldWallDestroyed = true; assert.ok(e.error()); assert.match(e.html(), /no current original open native window/);
+  select(e.tree(), '1', 'window-effect', 'weather'); assert.equal(e.error(), null, 'Weather needs no wall or private forces.');
+  game.stormCardWindowOpen = false; assert.ok(e.error()); game.stormCardWindowOpen = true;
+  select(e.tree(), '1', 'window-effect', 'harvester'); assert.ok(e.error());
+  game.phase = 1; game.spiceWindow = { event: 'new-original-blow', territory: 'carthag', sector: 11, amount: 6, harvested: false };
+  select(e.tree(), '1', 'window-source', 'new-original-blow'); assert.deepEqual(e.value, windowClaim('harvester', 'new-original-blow'));
+  assert.equal(e.error(), null);
+  delete game.spiceWindow.event; assert.ok(e.error()); select(e.tree(), '1', 'window-source', 'legacy-spice-blow:2:carthag:11');
+  assert.deepEqual(e.value, windowClaim('harvester', 'legacy-spice-blow:2:carthag:11')); assert.equal(e.error(), null);
+  game.spiceWindow.harvesterClosed = true; assert.ok(e.error()); game.spiceWindow.harvesterClosed = false;
+  game.turnActionGuide = null; game.turnActionPromises[0].mixed = { kind: 'or', terms: [windowClaim(), windowClaim('atomics'), windowClaim('harvester')] };
+  const html = markup(game); assert.match(html, /Weather Control/); assert.match(html, /Family Atomics/); assert.match(html, /Harvester/);
+  assert.match(html, /recovery alone do not count/); assert.match(html, /original native window closes/);
+  assert.match(html, /do not promise a selected storm distance or resulting spice amount/);
+  assert.doesNotMatch(html, /windowCards|compiled|controlled-weather/);
+});
+
+void test('window-role editor retains strict repairable drafts and the shared sixteen-leaf four-level budget', () => {
+  const game = windowCard(), e = editor(windowClaim(), false, game);
+  select(e.tree(), '1', 'window-source', ''); assert.ok(e.error()); assert.deepEqual(e.value, windowClaim('weather', ''));
+  select(e.tree(), '1', 'window-source', 'storm:2'); assert.equal(e.error(), null);
+  for (const action of [{ kind: 'windowCardPlay', effect: 'weather', source: 'storm:2', amount: 4 },
+    { kind: 'windowCardPlay', effect: 'ghola', source: 'storm:2' },
+    { kind: 'windowCardPlay', effect: 'weather', source: 'storm:1' }])
+    assert.ok(turnActionInputError({ kind: 'action', action }, game, 'p'));
+  const full = editor({ kind: 'or', terms: [windowClaim(), fact()] }, false, game);
+  for (let count = 3; count <= 16; count++) { click(control(full.tree(), 'add-action-1')); select(full.tree(), `1.${count}`, 'action', 'windowCardPlay'); }
+  assert.equal(full.error(), null); assert.match(full.html(), /16 \/ 16 conditions/); assert.equal(control(full.tree(), 'add-action-1').props.disabled, true);
+  const deep = editor({ kind: 'and', terms: [fact(), windowClaim()] }, false, game);
+  click(control(deep.tree(), 'or-1.2')); click(control(deep.tree(), 'and-1.2.1')); click(control(deep.tree(), 'or-1.2.1.1'));
+  assert.equal(deep.error(), null); assert.match(deep.html(), /4 \/ 4 levels of grouping/);
+  const frozen = editor(windowClaim(), true, game); select(frozen.tree(), '1', 'window-effect', 'atomics');
+  select(frozen.tree(), '1', 'window-source', ''); assert.equal(frozen.changes, 0);
+});
+
+void test('printed window guides forward exact owned Weather, Atomics and Harvester native packets out of turn', () => {
+  for (const effect of ['weather', 'atomics', 'harvester'] as const) {
+    const game = windowCard(effect), sent: Action[] = []; game.active = 'a';
+    for (const key of ['windowCards', 'compiled', 'cardPlays'])
+      Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} guide read`); }, configurable: true });
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } }); assert.equal(button.props.disabled, false); press(button);
+    assert.equal(sent[0], game.turnActionGuide!.action); assert.equal(sent[0].turnActionPromiseEvent, event);
+    assert.equal(sent[0].turnActionPromisePhase, effect === 'harvester' ? 1 : 0);
+    assert.match(renderToStaticMarkup(button), /original native window/);
+  }
+  for (const amount of [0, 10]) {
+    const game = windowCard('weather', { type: 'card', card: 'controlled-weather', amount });
+    let sent = 0; const button = guide({ game, busy: false, act() { sent++; } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent, 1);
+  }
+});
+
+void test('saved window-card callbacks reject source closure, public window mutation, physical card changes and modal handoffs', () => {
+  for (const effect of ['weather', 'atomics', 'harvester'] as const) for (const change of [
+    (game: GameView) => { if (effect === 'harvester') game.spiceWindow!.event = 'later-blow'; else game.stormCardWindowOpen = false; },
+    (game: GameView) => { if (effect === 'harvester') game.spiceWindow!.amount *= 2; else game.stormPending = 7; },
+    (game: GameView) => { game.turnActionPromises[0].mixed = windowClaim(effect, 'different-original-source'); },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.hand = []; },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.hand![0].effect = 'ghola'; },
+    (game: GameView) => { game.response = { kind: 'voice', owner: 'a', passed: [] }; },
+    (game: GameView) => { game.truthtrance = answering(game.phase).truthtrance; },
+  ]) {
+    const game = windowCard(effect), button = guide({ game, busy: false, act() { assert.fail('A stale window card cannot send'); } });
+    assert.equal(button.props.disabled, false); change(game); press(button);
+  }
+  const game = windowCard('harvester'), button = guide({ game, busy: false, act() { assert.fail('A replaced original blow cannot send'); } });
+  game.spiceWindow = { ...game.spiceWindow! }; press(button);
+  const atomics = windowCard('atomics'), atomicButton = guide({ game: atomics, busy: false, act() { assert.fail('Changed native Atomics eligibility cannot send'); } });
+  atomics.players.find(player => player.id === 'p')!.forces = {}; press(atomicButton);
+});
+
+void test('window-role guides reject unsupported packets, missing native eligibility and generic card fallback', () => {
+  for (const amount of [undefined, -1, 11, 1.5, NaN, Infinity]) {
+    const game = windowCard('weather', { type: 'card', card: 'controlled-weather', amount });
+    const button = guide({ game, busy: false, act() { assert.fail('An invalid Weather distance cannot send'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+  for (const effect of ['weather', 'atomics', 'harvester'] as const) {
+    for (const extra of [{ mode: 'shipment' }, { leader: 'foreign-leader' }, { forces: { 'shield_wall:8': 1 } },
+      ...(effect === 'weather' ? [] : [{ amount: 2 }])]) {
+      const game = windowCard(effect); Object.assign(game.turnActionGuide!.action, extra);
+      const button = guide({ game, busy: false, act() { assert.fail('An unsupported native window packet cannot send'); } });
+      assert.equal(button.props.disabled, true); press(button);
+    }
+    for (const phase of [2, 4, 5, 6]) {
+      const game = windowCard(effect); game.phase = phase; game.turnActionGuide!.action.turnActionPromisePhase = phase;
+      const button = guide({ game, busy: false, act() { assert.fail('A window role cannot bypass validation through generic preparation'); } });
+      assert.equal(button.props.disabled, true); press(button);
+    }
+    const wrongSource = windowCard(effect); wrongSource.turnActionPromises[0].mixed = payment();
+    assert.equal(guide({ game: wrongSource, busy: false, act() { assert.fail('A printed window guide needs its original raw source'); } }).props.disabled, true);
+  }
+  const atomics = windowCard('atomics'); atomics.players.find(player => player.id === 'p')!.forces = {};
+  assert.equal(guide({ game: atomics, busy: false, act() { assert.fail('Atomics needs actual owned native forces'); } }).props.disabled, true);
+});
+
+void test('early owned Box guides require the exact quoted Box and live original global question window', () => {
+  for (const effect of ['weather', 'harvester'] as const) {
+    const game = windowCard(effect), me = game.players.find(player => player.id === 'p')!;
+    me.hand = [{ id: 'controlled-box', name: 'Nullentropy Box', kind: 'special', effect: 'nullentropyBox' }];
+    game.nullentropy = { card: me.hand[0], blocked: null, search: null };
+    game.turnActionGuide!.action = { type: 'card', card: me.hand[0].id, turnActionPromiseEvent: event, turnActionPromisePhase: game.phase };
+    const sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    game.nullentropy.blocked = 'The native Box opening is no longer legal.'; press(button); assert.equal(sent.length, 1);
+    game.nullentropy.blocked = null;
+    if (effect === 'harvester') game.spiceWindow!.harvesterClosed = true; else game.stormCardWindowOpen = false;
+    press(button); assert.equal(sent.length, 1);
+    const unrelated = windowCard(effect); unrelated.turnActionPromises[0].mixed = payment();
+    unrelated.players.find(player => player.id === 'p')!.hand = me.hand;
+    unrelated.nullentropy = { card: me.hand[0], blocked: null, search: null };
+    unrelated.turnActionGuide!.action = { ...game.turnActionGuide!.action };
+    assert.equal(guide({ game: unrelated, busy: false, act() { assert.fail('An unrelated row cannot create a new early Box control'); } }).props.disabled, true);
+  }
+});
+
+void test('window Ready guides retain the exact live raw source, known Storm distance and fresh-blow callback ownership', () => {
+  const readyWindow = (effect: WindowCardEffect) => {
+    const game = windowCard(effect); game.stormPending = effect === 'harvester' ? null : 4;
+    game.turnActionGuide!.action = { type: 'ready', turnActionPromiseEvent: event, turnActionPromisePhase: game.phase };
+    if (effect === 'harvester') { game.turnActionPromises[0].answer = false; game.turnActionPromises[0].mixed = windowClaim(effect); }
+    Object.defineProperty(game.turnActionPromises[0], 'windowCards', { get() { throw Error('Ready must not read private window receipts'); } });
+    return game;
+  };
+  for (const effect of ['weather', 'atomics', 'harvester'] as const) {
+    const game = readyWindow(effect), sent: Action[] = [];
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    assert.match(renderToStaticMarkup(button), /Accept this .* window while preserving your whole answer/);
+    game.ready.push('p'); press(button); assert.equal(sent.length, 1, 'An accepted window cannot be reopened by the saved Ready callback.');
+    for (const change of [
+      (game: GameView) => { game.turnActionPromises[0].mixed = windowClaim(effect, 'later-original-source'); },
+      (game: GameView) => { if (effect === 'harvester') game.spiceWindow!.event = 'later-blow'; else game.stormCardWindowOpen = false; },
+      (game: GameView) => { if (effect === 'harvester') game.spiceWindow!.harvesterClosed = true; else game.stormPending = null; },
+    ]) {
+      const stale = readyWindow(effect), saved = guide({ game: stale, busy: false, act() { assert.fail('A changed original Ready source cannot send'); } });
+      assert.equal(saved.props.disabled, false); change(stale); press(saved);
+    }
+    const extra = readyWindow(effect); extra.turnActionGuide!.action.amount = 4;
+    assert.equal(guide({ game: extra, busy: false, act() { assert.fail('Window Ready accepts no extra native fields'); } }).props.disabled, true);
+    const unrelated = readyWindow(effect); unrelated.turnActionPromises[0].mixed = payment();
+    assert.equal(guide({ game: unrelated, busy: false, act() { assert.fail('Window Ready needs its own original raw window clause'); } }).props.disabled, true);
+  }
+  const unknownStorm = readyWindow('weather'); unknownStorm.stormPending = null;
+  assert.equal(guide({ game: unknownStorm, busy: false, act() { assert.fail('Storm Ready waits for a known native movement'); } }).props.disabled, true);
+  const replaced = readyWindow('harvester'), saved = guide({ game: replaced, busy: false, act() { assert.fail('A replaced fresh blow cannot accept an old Ready callback'); } });
+  replaced.spiceWindow = { ...replaced.spiceWindow! }; press(saved);
 });
 
 void test('turn-action printed-role editor uses public names without holdings or private stages and retains the shared logical budget', () => {

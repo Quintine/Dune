@@ -3178,6 +3178,7 @@ function policyActions(g: GameView): Action[] {
     }
     if (
       g.spiceWindow &&
+      !g.ready.includes(me.id) &&
       harvesterAvailable(g.spiceWindow) &&
       countAt(me, g.spiceWindow.territory)
     ) {

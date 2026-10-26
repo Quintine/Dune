@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { battlePowerOf, type BattlePowerClaim, type BattlePowerDeclaration } from '../game/battle-power-question';
+import type { WindowCardEffect } from '../game/window-card-play';
 import {
   compileMixedActionExpression,
   type MixedActionExpression,
@@ -12,6 +13,7 @@ import {
   closeTurnActionBidding,
   closeTurnActionCombat,
   closeTurnActionBattlePower,
+  closeTurnActionWindowCardPlay,
   closeTurnActionPayments,
   closeTurnActionRevival,
   closeTurnActionTransport,
@@ -21,6 +23,7 @@ import {
   recordTurnActionBid,
   recordTurnActionCardPlay,
   recordTurnActionBattlePower,
+  recordTurnActionWindowCardPlay,
   recordTurnActionPlan,
   recordTurnActionTraitor,
   recordTurnActionMovement,
@@ -56,6 +59,8 @@ const call = (call = true, battle = 'battle:1'): Expression =>
 const card = (effect: 'hajr' | 'ghola' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
 const power = (claim: BattlePowerClaim = { kind: 'voice', use: true }): Expression =>
   ({ kind: 'action', action: { kind: 'battlePower', battle: 'battle:1', territory: 'carthag', claim } });
+const windowCard = (effect: WindowCardEffect = 'weather', source = effect === 'harvester' ? 'spice-blow:1' : 'storm:1'): Expression =>
+  ({ kind: 'action', action: { kind: 'windowCardPlay', effect, source } });
 const fact = (): Expression => ({ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 5 } });
 const group = (kind: 'and' | 'or', ...terms: Expression[]): Expression => ({ kind, terms });
 const signedTravel = (kind: 'ship' | 'move', territory = 'carthag', minimum = 3,
@@ -99,6 +104,16 @@ function powers(mixed: Expression, answer = true, id = 'turn-action:1'): TurnAct
   const visit = (node: Expression): void => {
     if (node.kind === 'action' && node.action.kind === 'battlePower')
       row.combat!.powers![battlePowerOf(node.action.claim)] = { beneficiary: 'respondent', target: 'other', closed: false, values: null };
+    else if (node.kind !== 'action' && node.kind !== 'fact') node.terms.forEach(visit);
+  };
+  visit(mixed);
+  return row;
+}
+function windowed(mixed: Expression, answer = true, id = 'turn-action:1'): TurnActionPromise {
+  const row: TurnActionPromise = { ...promise(mixed, answer, id), windowCards: {} };
+  const visit = (node: Expression): void => {
+    if (node.kind === 'action' && node.action.kind === 'windowCardPlay')
+      row.windowCards![node.action.effect] = { source: node.action.source, played: false, closed: false };
     else if (node.kind !== 'action' && node.kind !== 'fact') node.terms.forEach(visit);
   };
   visit(mixed);
@@ -1250,4 +1265,134 @@ void test('power predicates deduplicate only exact original clauses and retain t
   assert.equal(actual[0].combat!.powers!.voice!.values!.length, 1);
   assert.doesNotThrow(() => turnActionValue(powers(group('or', ...Array.from({ length: 16 }, () => power())))));
   assert.throws(() => turnActionValue(powers(group('or', ...Array.from({ length: 17 }, () => power())))), TurnActionError);
+});
+
+void test('window-card raw leaves name only a printed role and exact original source, including folded clauses', () => {
+  for (const effect of ['weather', 'atomics', 'harvester'] as const) {
+    const original = { kind: 'windowCardPlay', effect, source: effect === 'harvester' ? 'spice-blow:1' : 'storm:1' };
+    assert.deepEqual(parseTurnActionLeaf(original), original);
+    assert.notEqual(parseTurnActionLeaf(original), original);
+    for (const invalid of [{ ...original, source: '' }, { ...original, card: 'physical-id' }, { ...original, amount: 12 },
+      { ...original, distance: 4 }, { ...original, answer: true }, { ...original, played: true }])
+      assert.throws(() => parseTurnActionLeaf(invalid), TurnActionError);
+    assert.throws(() => turnActionValue(promise(windowCard(effect))), TurnActionError);
+    assert.throws(() => turnActionValue(promise(group('or', fact(), windowCard(effect)))), TurnActionError);
+  }
+  for (const effect of ['hajr', 'ghola', 'Weather Control', null])
+    assert.throws(() => parseTurnActionLeaf({ kind: 'windowCardPlay', effect, source: 'storm:1' }), TurnActionError);
+});
+
+void test('whole window-card AND and OR keep dynamic printed-play alternatives with no effect amount', () => {
+  const weather = { kind: 'windowCardPlay', effect: 'weather', source: 'storm:1', answer: true };
+  const atomics = { kind: 'windowCardPlay', effect: 'atomics', source: 'storm:1', answer: true };
+  const and = windowed(group('and', windowCard(), windowCard('atomics'), pay()));
+  const or = windowed(group('or', windowCard(), windowCard('atomics')), true, 'turn-action:2');
+  assert.deepEqual(branches(and), [[weather, atomics, signedPay()]]);
+  assert.deepEqual(branches(or), [[weather], [atomics]]);
+  const played = recordTurnActionWindowCardPlay([and, or], 'respondent', 1, 'weather', 'storm:1');
+  assert.deepEqual(branches(played[0]), [[atomics, signedPay()]]);
+  assert.equal(played[1].fulfilled, true);
+  const both = recordTurnActionWindowCardPlay(played, 'respondent', 1, 'atomics', 'storm:1');
+  assert.equal(both[0].fulfilled, false);
+  assert.deepEqual(branches(both[0]), [[signedPay()]]);
+  assert.equal(recordTurnActionPayment(both, 'respondent', 1, payment())[0].fulfilled, true);
+  assert.equal(and.windowCards!.weather!.played, false);
+});
+
+void test('whole window-card No negates the aggregate and actual plays or later payments reject atomically', () => {
+  const no = windowed(group('and', windowCard(), windowCard('atomics')), false);
+  assert.deepEqual(branches(no), [[{ kind: 'windowCardPlay', effect: 'weather', source: 'storm:1', answer: false }],
+    [{ kind: 'windowCardPlay', effect: 'atomics', source: 'storm:1', answer: false }]]);
+  const weather = recordTurnActionWindowCardPlay([no], 'respondent', 1, 'weather', 'storm:1');
+  const before = structuredClone(weather);
+  assert.throws(() => recordTurnActionWindowCardPlay(weather, 'respondent', 1, 'atomics', 'storm:1'), TurnActionError);
+  assert.deepEqual(weather, before);
+  const orNo = windowed(group('or', windowCard(), windowCard('atomics')), false);
+  assert.throws(() => recordTurnActionWindowCardPlay([orNo], 'respondent', 1, 'weather', 'storm:1'), TurnActionError);
+  const paidNo = windowed(group('and', windowCard(), pay()), false);
+  const declared = recordTurnActionWindowCardPlay([paidNo], 'respondent', 1, 'weather', 'storm:1');
+  assert.throws(() => recordTurnActionPayment(declared, 'respondent', 1, payment()), TurnActionError);
+  const yes = windowed(group('and', windowCard(), pay()), true, 'turn-action:2');
+  assert.throws(() => recordTurnActionWindowCardPlay([yes, orNo], 'respondent', 1, 'weather', 'storm:1'), TurnActionError);
+  assert.equal(yes.windowCards!.weather!.played, false);
+});
+
+void test('exact player turn effect and source binding preserves separate original-window answer intervals', () => {
+  const mixed = group('and', windowCard('harvester'), pay());
+  const original = windowed(mixed);
+  for (const [player, turn, effect, source] of [
+    ['other', 1, 'harvester', 'spice-blow:1'], ['respondent', 2, 'harvester', 'spice-blow:1'],
+    ['respondent', 1, 'weather', 'spice-blow:1'], ['respondent', 1, 'harvester', 'spice-blow:2'],
+  ] as const) {
+    assert.equal(recordTurnActionWindowCardPlay([original], player, turn, effect, source)[0], original);
+    assert.equal(closeTurnActionWindowCardPlay([original], player, turn, effect, source)[0], original);
+  }
+  const played = recordTurnActionWindowCardPlay([original], 'respondent', 1, 'harvester', 'spice-blow:1')[0];
+  const fresh = windowed(mixed, true, 'turn-action:2');
+  assert.equal(fresh.windowCards!.harvester!.played, false);
+  const replay = recordTurnActionWindowCardPlay([played, fresh], 'respondent', 1, 'harvester', 'spice-blow:1');
+  assert.equal(replay[0], played);
+  assert.equal(replay[1].windowCards!.harvester!.played, true);
+  assert.equal(recordTurnActionWindowCardPlay(replay, 'respondent', 1, 'harvester', 'spice-blow:1')[1], replay[1]);
+});
+
+void test('closing one native window records absence only there and retains other window and later payment alternatives', () => {
+  const original = windowed(group('or', windowCard(), windowCard('atomics'), pay()));
+  const closed = closeTurnActionWindowCardPlay([original], 'respondent', 1, 'weather', 'storm:1');
+  assert.deepEqual(closed[0].windowCards!.weather, { source: 'storm:1', played: false, closed: true });
+  assert.equal(closed[0].windowCards!.atomics, original.windowCards!.atomics);
+  assert.equal(closed[0].paymentClosed, false);
+  assert.equal(branches(closed[0]).length, 2);
+  assert.equal(recordTurnActionWindowCardPlay(closed, 'respondent', 1, 'weather', 'storm:1')[0], closed[0]);
+  assert.equal(recordTurnActionWindowCardPlay(closed, 'respondent', 1, 'atomics', 'storm:1')[0].fulfilled, true);
+  const all = closeTurnActionWindowCardPlay(closed, 'respondent', 1, 'atomics', 'storm:1');
+  assert.deepEqual(branches(all[0]), [[signedPay()]]);
+  assert.equal(recordTurnActionPayment(all, 'respondent', 1, payment())[0].fulfilled, true);
+  const played = recordTurnActionWindowCardPlay([original], 'respondent', 1, 'weather', 'storm:1')[0];
+  assert.equal(played.fulfilled, true);
+  assert.equal(closeTurnActionWindowCardPlay([played], 'respondent', 1, 'weather', 'storm:1')[0], played);
+});
+
+void test('full-turn expiry closes remaining window stages while payment or transport closure preserves their real deadline', () => {
+  const no = windowed(windowCard('harvester'), false);
+  assert.equal(closeTurnActionPayments([no], 'respondent', 1)[0].windowCards!.harvester, no.windowCards!.harvester);
+  assert.equal(closeTurnActionTransport([no], 'respondent', 1)[0].windowCards!.harvester, no.windowCards!.harvester);
+  const finished = finishTurnActionTurn([no], 'respondent', 1)[0];
+  assert.equal(finished.fulfilled, true);
+  assert.deepEqual(finished.windowCards!.harvester, { source: 'spice-blow:1', played: false, closed: true });
+  const yes = windowed(windowCard(), true, 'turn-action:2');
+  assert.equal(finishTurnActionTurn([yes], 'respondent', 1)[0].released, true);
+  const terminal = [finished, finishTurnActionTurn([yes], 'respondent', 1)[0]];
+  for (const transform of [
+    (rows: TurnActionPromise[]) => recordTurnActionWindowCardPlay(rows, 'respondent', 1, 'harvester', 'spice-blow:1'),
+    (rows: TurnActionPromise[]) => closeTurnActionWindowCardPlay(rows, 'respondent', 1, 'weather', 'storm:1'),
+    (rows: TurnActionPromise[]) => finishTurnActionTurn(rows, 'respondent', 1),
+  ]) assert.ok(transform(terminal).every((row, index) => row === terminal[index]));
+  validateTurnActionPromises(terminal, seats);
+});
+
+void test('strict window stages contain only exact raw named effects and sources without extra counters or physical IDs', () => {
+  const original = windowed(group('and', windowCard(), pay()));
+  const stage = original.windowCards!.weather!;
+  for (const windowCards of [undefined, null, {}, { weather: null }, { weather: { ...stage, source: 'storm:2' } },
+    { weather: { ...stage, played: 1 } }, { weather: { ...stage, closed: 'yes' } }, { weather: { ...stage, count: 1 } },
+    { weather: stage, atomics: { source: 'storm:1', played: false, closed: false } }, { weather: stage, ghola: stage }])
+    assert.throws(() => turnActionValue({ ...original, windowCards } as TurnActionPromise), TurnActionError);
+  assert.throws(() => turnActionValue(windowed(group('or', windowCard(), windowCard('weather', 'storm:2')))), TurnActionError);
+  const old = cards(group('and', card(), pay()));
+  assert.equal('windowCards' in recordTurnActionWindowCardPlay([old], 'respondent', 1, 'weather', 'storm:1')[0], false);
+  assert.equal('windowCards' in finishTurnActionTurn([old], 'respondent', 1)[0], false);
+  assert.throws(() => recordTurnActionWindowCardPlay([original], 'respondent', 1, 'hajr' as never, 'storm:1'), TurnActionError);
+  assert.throws(() => closeTurnActionWindowCardPlay([original], 'respondent', 1, 'weather', ''), TurnActionError);
+});
+
+void test('window-card clauses deduplicate only their exact original source and share the sixteen-leaf budget', () => {
+  const repeated = windowed(group('and', windowCard(), windowCard(), pay()));
+  assert.equal(branches(repeated)[0].length, 2);
+  assert.doesNotThrow(() => turnActionValue(windowed(group('or', ...Array.from({ length: 16 }, () => windowCard())))));
+  assert.throws(() => turnActionValue(windowed(group('or', ...Array.from({ length: 17 }, () => windowCard())))), TurnActionError);
+  const foreign = { ...windowed(windowCard()), compiled: { kind: 'action', action: {
+    kind: 'windowCardPlay', effect: 'weather', source: 'storm:2',
+  } } };
+  assert.throws(() => turnActionValue(foreign as TurnActionPromise), TurnActionError);
 });

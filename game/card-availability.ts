@@ -38,6 +38,8 @@ export type OrdinaryCardState = {
   decision?: object | null;
   choamMarket?: { owner: string } | null;
   shieldWallDestroyed: boolean;
+  stormCardWindowOpen?: boolean;
+  stormResolution?: unknown;
   spiceWindow?: {
     harvested: boolean;
     harvesters?: number;
@@ -128,7 +130,7 @@ export function ordinaryCardAvailability(
         );
       break;
     case 'weather':
-      if (state.phase !== 0)
+      if (state.phase !== 0 || state.stormCardWindowOpen === false || state.stormResolution)
         return blocked('Play Weather Control before the storm moves.');
       if (
         selection &&
@@ -140,7 +142,7 @@ export function ordinaryCardAvailability(
         return blocked('Storm movement must be an integer from 0 to 10.');
       break;
     case 'atomics':
-      if (state.shieldWallDestroyed || state.phase !== 0)
+      if (state.shieldWallDestroyed || state.phase !== 0 || state.stormCardWindowOpen === false || state.stormResolution)
         return blocked('Play Family Atomics before storm movement.');
       if (
         !TERRITORIES.some(

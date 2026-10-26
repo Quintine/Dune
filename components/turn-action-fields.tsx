@@ -6,6 +6,7 @@ import type { MixedActionExpression } from '@/game/mixed-action-question';
 import { parseBattleActionClaim } from '@/game/mixed-battle-question';
 import { battlePowerOf, nativeBattlePowerOpportunity, type BattlePowerClaim } from '@/game/battle-power-question';
 import { battleCardLabel, VOICE_KINDS } from '@/game/battle-cards';
+import { windowCardOpportunity, type WindowCardEffect } from '@/game/window-card-play';
 import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES, type TurnActionLeaf } from '@/game/turn-action-promises';
 import { BattleClaimFields } from './battle-promises';
 import { MixedActionFields, mixedActionInputError, type MixedActionConfig } from './mixed-action-fields';
@@ -46,6 +47,8 @@ const newPowerClaim = (game: GameView, target: string): BattlePowerClaim =>
   nativeBattlePowerOpportunity(game, target, 'voice') ? { kind: 'voice', use: true }
     : nativeBattlePowerOpportunity(game, target, 'prescience') ? { kind: 'prescience', use: true }
       : { kind: 'voice', use: true };
+const windowEffects: WindowCardEffect[] = ['weather', 'atomics', 'harvester'];
+const windowRoleNames: Record<WindowCardEffect, string> = { weather: 'Weather Control', atomics: 'Family Atomics', harvester: 'Harvester' };
 const config: MixedActionConfig<TurnActionLeaf> = {
   prefix: 'turn-action',
   legend: 'Current battle and this-turn action conditions, with optional current facts',
@@ -74,6 +77,9 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     An earlier play, discard, sale, Karama role or recovery alone does not count; an actual later replay after Box recovery does.
     Hajr counts when played even if its extra movement is unused. Tleilaxu Ghola is a card play, separate from ordinary Revival.
     Hajr conditions close at your own Movement turn end; Tleilaxu Ghola conditions close at the actual turn end.
+    Weather Control, Family Atomics and Harvester conditions count an actual accepted future printed-role play after this answer
+    in the original open Storm or fresh spice-blow window. Earlier plays, disposal, other roles and recovery alone do not count.
+    They do not ask for a selected storm distance or resulting spice amount. Each condition closes only when its original native window closes.
     Shipment conditions concern the single future original reserve shipment after the answer.
     Ground-movement conditions use the maximum physical forces in one actual future move to that destination; smaller moves never add together.
     Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.
@@ -106,11 +112,17 @@ const config: MixedActionConfig<TurnActionLeaf> = {
       if (!opportunity || action.battle !== opportunity.event || action.territory !== opportunity.territory)
         throw new Error('Choose this player’s original native Voice or Prescience opportunity in the current battle.');
     }
+    if (action.kind === 'windowCardPlay') {
+      const opportunity = windowCardOpportunity(game, action.effect);
+      if (!opportunity || opportunity.turn !== game.turn || action.source !== opportunity.source)
+        throw new Error('Choose the original currently open Storm or fresh spice-blow window for this printed role.');
+    }
     return action;
   },
   renderAction: ({ value, id, game, target, disabled, onChange }) => {
     const choices = recipients(game, target), leaderChoices = leaders(game, target), lot = currentLot(game), partnerChoices = partners(game, target);
     const currentPower = value.kind === 'battlePower' ? powerOpportunity(game, target, value.claim) : null;
+    const currentWindow = value.kind === 'windowCardPlay' ? windowCardOpportunity(game, value.effect) : null;
     return <>
       <label htmlFor={`${id}-action`}>Future action</label>
       <select id={`${id}-action`} value={value.kind} disabled={disabled} onChange={event => {
@@ -118,6 +130,10 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         if (kind === value.kind) return;
         const minimum = 'minimum' in value ? value.minimum : 1;
         if (kind === 'cardPlay') onChange({ kind, effect: 'hajr' });
+        if (kind === 'windowCardPlay') {
+          const effect = windowEffects.find(effect => windowCardOpportunity(game, effect)) ?? 'weather';
+          onChange({ kind, effect, source: windowCardOpportunity(game, effect)?.source ?? '' });
+        }
         if (kind === 'battlePower') {
           const claim = newPowerClaim(game, target), opportunity = powerOpportunity(game, target, claim);
           onChange({ kind, battle: opportunity?.event ?? '', territory: opportunity?.territory ?? '', claim });
@@ -134,6 +150,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
           territory: value.kind === 'ship' || value.kind === 'move' ? value.territory : 'carthag', minimum });
       }}>
         <option value="cardPlay">Play Hajr or Tleilaxu Ghola in its printed role</option>
+        <option value="windowCardPlay">Play Weather Control, Family Atomics or Harvester in this window</option>
         <option value="battlePower">Declare native Voice or Prescience in this battle</option>
         <option value="battlePlan">Use an actual current battle-plan choice</option>
         <option value="traitorCall">Make the current Traitor declaration</option>
@@ -155,6 +172,30 @@ const config: MixedActionConfig<TurnActionLeaf> = {
           <option value="hajr">Play Hajr in its printed role after this answer this turn</option>
           <option value="ghola">Play Tleilaxu Ghola in its printed role after this answer this turn</option>
         </select>
+      </> : value.kind === 'windowCardPlay' ? <>
+        <label htmlFor={`${id}-window-effect`}>Printed role in the original window</label>
+        <select id={`${id}-window-effect`} value={windowEffects.includes(value.effect) ? value.effect : ''}
+          disabled={disabled} aria-invalid={!windowEffects.includes(value.effect)} onChange={event => {
+            const effect = event.currentTarget.value;
+            if (effect === 'weather' || effect === 'atomics' || effect === 'harvester')
+              onChange({ kind: 'windowCardPlay', effect, source: windowCardOpportunity(game, effect)?.source ?? '' });
+          }}>
+          <option value="">Choose a printed role</option>
+          {windowEffects.map(effect => <option key={effect} value={effect}>{windowRoleNames[effect]}</option>)}
+        </select>
+        <label htmlFor={`${id}-window-source`}>Original native window</label>
+        <select id={`${id}-window-source`} value={currentWindow?.source === value.source ? value.source : ''}
+          disabled={disabled} aria-invalid={!currentWindow || currentWindow.source !== value.source} onChange={event => {
+            const opportunity = windowCardOpportunity(game, value.effect);
+            if (event.currentTarget.value === '') onChange({ ...value, source: '' });
+            else if (opportunity?.source === event.currentTarget.value) onChange({ ...value, source: opportunity.source });
+          }}>
+          <option value="">Choose the original open window</option>
+          {currentWindow && <option value={currentWindow.source}>{value.effect === 'harvester'
+            ? `Turn ${currentWindow.turn} · Fresh spice blow in ${game.combatLocations.find(location => location.id === game.spiceWindow?.territory)?.name ?? game.spiceWindow?.territory}`
+            : `Turn ${currentWindow.turn} · Before this Storm movement`}</option>}
+        </select>
+        {!currentWindow && <p className="fine">This printed role has no current original open native window.</p>}
       </> : value.kind === 'battlePower' ? <>
         <label htmlFor={`${id}-power-claim`}>Original native declaration</label>
         <select id={`${id}-power-claim`} value={value.claim.kind} disabled={disabled} onChange={event => {

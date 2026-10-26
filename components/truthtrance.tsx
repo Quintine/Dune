@@ -581,7 +581,7 @@ export function Truthtrance({
                   <option value="mixedBid">Combine current facts and ordinary bids</option>
                   <option value="traitorCall">Bind this battle’s Traitor declaration</option>
                   <option value="mixedTraitorCall">Combine current facts and this Traitor declaration</option>
-                  <option value="turnActions">Combine native battle powers, Hajr/Ghola plays and this turn’s other actions</option>
+                  <option value="turnActions">Combine printed card plays, native battle powers and this turn’s other actions</option>
                   <option value="travel">Combine this turn’s shipment and ground movements</option>
                   <option value="shipment">
                     Bind a shipment from reserves
@@ -603,6 +603,7 @@ export function Truthtrance({
                   <TurnActionFields value={turnActions} game={g} target={target}
                     disabled={busy || !g.truthTurnActionTargets.includes(target)} onChange={setTurnActions} />
                   {!g.truthTurnActionTargets.includes(target) && <p className="notice">Choose a player with supported native Voice or Prescience, printed card plays, current battle, Traitor declaration, alliance, ordinary bid, Revival, payment, shipment or ground-movement opportunities this turn.
+                    Weather Control, Family Atomics and Harvester refer only to their original current Storm or fresh spice-blow window.
                     Ordinary payments may remain available after their Shipment and Movement opportunity ends.</p>}
                   <p className="notice" aria-label="Public turn-action question preview">{turnActionsError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>

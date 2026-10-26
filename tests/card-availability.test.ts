@@ -82,6 +82,14 @@ function agrees(effect: Effect, change: (g: Game) => void, expected: boolean) {
 void test('the four shared availability checks agree with legal server effects', () => {
   for (const effect of effects) agrees(effect, () => {}, true);
 });
+void test('Storm cards close at actual movement even while the Storm phase continues', () => {
+  for (const effect of ['weather', 'atomics'] as const) {
+    agrees(effect, game => { game.stormCardWindowOpen = false; }, false);
+    agrees(effect, game => {
+      game.stormResolution = { from: game.storm, distance: 1, traversed: 0, pending: [] };
+    }, false);
+  }
+});
 void test('all four cards report pending table windows and reject without mutation', () => {
   const pauses: ((g: Game) => void)[] = [
     (g) => {

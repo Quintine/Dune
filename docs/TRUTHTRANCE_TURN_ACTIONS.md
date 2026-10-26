@@ -425,3 +425,72 @@ journeys/HTML: adjacent `20261027-truth-power-runtime-v3/`.
 No HTTP/storage boundary, database, reset/deletion, server restart or deployed
 operation changes. Borrowed Nexus and special power composition, broader
 future actions and all final assurance/release gates remain open.
+
+## Original Storm and fresh-blow card plays — 27 October 2026
+
+**Prototyped / Partial.** Add a source-bound action leaf:
+`{kind:'windowCardPlay',effect:'weather'|'atomics'|'harvester',source}`. It asks
+about an actual future printed-role play after this answer in that original
+Storm or fresh-blow window. It does not predicate the selected Weather distance
+or resulting spice amount. Earlier play, disposal, another role and recovery
+alone do not count. Existing Hajr/Ghola shapes and counters remain unchanged.
+This composes existing general current-turn Truth authority and native card
+contracts; it is not a new publisher-specific card-promise ruling.
+
+The original Storm window stays open through dial reveal and closes when actual
+movement starts, including continued Storm decisions in phase0. Each newly drawn
+fresh blow gets one stable public identity, retained across Harvester plays;
+older windows use a stable turn/territory/sector fallback. A subsequent actual
+blow has a different source, including the second Advanced blow in phase1.
+Harvester retains its existing stacking/replay and destroyed-window policy.
+
+Private per-answer stages retain exactly the raw named effects, sources and
+played/closed booleans. Public own history remains raw question/aggregate only.
+Detached witnesses execute actual effects and known owned recovery costs before
+sharing resulting pieces, terrain and purse with other obligations. Original
+Weather selection0..10, Atomics qualifying fighters/casualties and Harvester's
+fresh-blow arithmetic remain native. No branch or speculative card is installed.
+
+Definite window answers uniformly reopen own concurrent readiness. Own Ready
+quotes closure without closing the real source early and must retain a whole
+completion, including legal later alternatives. Actual source expiry closes
+only that source's stages. No remains binding while the real window is open.
+Guides use exact own native card/Box/paid-selection or window-Ready packets.
+An owned paid Box preparation reopens its respondent's window acceptance so
+its cost cannot leave an owed recovered play behind an earlier Ready.
+Minimal profiles can accept a No-Harvester window; automatic Harvester never
+reopens their already accepted blow. Complete rules, browser/deployed,
+assurance and AI strategy gates remain open.
+
+Final proof covers18 files/303 passing cases, types/lint/build. Eight source,
+eight aggregate, seven control, fifteen native/controlled-view and one shared
+availability case add39 checks. Nine original native journeys provide37 full
+GameTable SSR renders,10 actual answer callbacks and14 exact guide callbacks.
+Original Weather6/8, Atomics36 and Harvester14 prefixes preserve33 Treachery
+and15 Traitors. Atomics actually kills the two prior paid4 Wall counters.
+Weather's manual10, late Mentat payment, foreign Weather, whole No and the
+second actual Advanced blow retain their actual original source semantics.
+
+The first native source check catches the missing first Storm open marker;
+setup now opens it as well as later turns. A two-question regression catches
+a guide tagged to an unrelated earlier Hajr row: source-specific card/Box/
+Ready guides now select a live row naming the actual original window. An
+unopened paired Truth/Hajr deal makes this real: A binds Hajr/pay2, E binds
+Weather, payment leaves Hajr live, the correct Weather callback fulfills E's
+answer, then native Movement/Hajr fulfills A's earlier answer. Neither branch
+is stored as a separate answer. Types feedback is repaired.
+
+V2's earlier20-file/324 run precedes this view-only guide correction. V3 reruns
+the affected18 files and adds the paired case. The two unchanged early-travel
+files'22 cases remain earlier-source evidence and are not counted in303.
+The No-Harvester policy additionally uses a controlled public bot view with one
+original counter rearranged to the fresh territory; the real native Game and
+army are unchanged. Native profile actions still use the actual Ready packet.
+Bounded known-Box review finds no recursive whole-question search or double
+fee; actual window Box-combination acceptance remains open.
+Proof/manifest: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-window-proof-v3/`;
+journeys/HTML: adjacent `20261027-truth-window-runtime-v3/`.
+This is local engine/SSR/control evidence. No HTTP/storage boundary, database,
+reset/deletion, server restart or deployed operation changes. Broader card,
+recovery and module combinations and all final assurance/release gates remain
+open.

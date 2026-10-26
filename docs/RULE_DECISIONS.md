@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Truthtrance original-window ordinary card plays — 27 October 2026
+
+Compose the existing FAQp8/current-turn AND/OR authority and supplied Advanced
+physical39 compliance/release with printed Weather Control, Family Atomics and
+Harvester. The question binds the actual original Storm/fresh-blow window and
+counts an accepted future printed-role play after the answer, not an earlier
+play or a selected distance/amount predicate. Storm movement closes Weather
+and Atomics; each fresh blow has its own identity. Existing Harvester stacking,
+replay, destroyed-blow policy and physical cards remain authoritative. Own Ready
+must retain a completion after window closure; temporary readiness does not
+release No caps. This is provisional composition, not a new dedicated publisher
+promise ruling. Wider future-card questions and final acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#original-storm-and-fresh-blow-card-plays--27-october-2026).
+
 ## Truthtrance native battle-power declarations — 27 October 2026
 
 Compose the existing FAQp8/current-turn AND/OR authority and supplied Advanced

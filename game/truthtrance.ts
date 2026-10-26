@@ -2,6 +2,7 @@ import { parseTravelActionClaim, type TravelClaim } from './travel-expression-pr
 import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES,
   type TurnActionClaim } from './turn-action-promises';
 import { battlePowerOf, nativeBattlePowerOpportunity } from './battle-power-question';
+import { windowCardOpportunity } from './window-card-play';
 import { parseTraitorActionClaim, type MixedTraitorClaim } from './mixed-traitor-question';
 import { parseBattleActionClaim, MIXED_BATTLE_MAX_NODES, MIXED_BATTLE_MAX_TERMS, MIXED_BATTLE_MAX_DEPTH,
   MIXED_BATTLE_MAX_LEAVES, type MixedBattleClaim } from './mixed-battle-question';
@@ -385,6 +386,11 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
     const respondent = g.players.find(player => player.id === v.target)!;
     const mixed = parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent), input => {
       const action = parseTurnActionLeaf(input);
+      if (action.kind === 'windowCardPlay') {
+        const opportunity = windowCardOpportunity(g, action.effect);
+        check(opportunity && opportunity.turn === g.turn && opportunity.source === action.source,
+          'Choose the exact current original Storm or fresh-blow printed-card window.');
+      }
       if (action.kind === 'battlePlan' || action.kind === 'traitorCall' || action.kind === 'battlePower') {
         const battle = g.battle;
         check(g.phase === 6 && battle && typeof battle.event === 'string' && battle.event.length > 0 &&
@@ -734,6 +740,9 @@ export function truthQuestionText(
   };
   if (q.kind === 'turnActions') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => {
+      if (action.kind === 'windowCardPlay') return `you play ${action.effect === 'weather' ? 'Weather Control' :
+        action.effect === 'atomics' ? 'Family Atomics' : 'Harvester'} in its printed role after this answer in this original ${
+        action.effect === 'harvester' ? 'fresh Spice Blow' : 'Storm window'} this turn`;
       if (action.kind === 'cardPlay') return `you play ${action.effect === 'hajr' ? 'Hajr' : 'Tleilaxu Ghola'} in its printed role after this answer this turn`;
       if (action.kind === 'battlePower') {
         const claim = action.claim, where = `in this original battle in ${locationName(action.territory)}`;

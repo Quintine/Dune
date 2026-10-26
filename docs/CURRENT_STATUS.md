@@ -16,9 +16,49 @@ open mode gates.
 
 
 ## Current checkpoint and work
-**Next: remaining Basic card/action declarations and native timing.**
+**Next: remaining Basic card/action coverage and native timing.**
 Continue remaining Basic functions before Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
+
+**Truthtrance / original-window card plays — 27 October. Prototyped / Partial.**
+Weather Control, Family Atomics and Harvester now have source-bound future
+printed-play conditions in whole turn answers. Real Storm movement closes its
+card window; each fresh blow gets a stable identity, so a later Advanced blow
+cannot inherit the first blow's No. Original effects, costs, forces and typed
+Weather0..10 remain. Definite answers reopen own acceptance; Ready must retain
+a completion after source closure. A No cap lasts through actual closure.
+
+Focused sources earn Harkonnen's real two-counter Shield Wall shipment at
+cost4 before Storm2, then actual Atomics sends both to Tanks. Weather6 before
+dials, Weather8 after reveal, Atomics36 and Harvester14 prefixes derive from
+actual arrays and preserve original33 Treachery/15 Traitors. An actual paired
+A/E Truth deal with H Weather/Hajr proves two questions: Weather's button must
+bind its matching later row while the earlier Hajr answer remains live. It then
+continues to real Movement/Hajr and fulfills both. Feedback fixes that guide
+binding; first Storm opening and type feedback are also repaired.
+
+The final frozen batch passes **18 files,303/303**, types/lint/build. Thirty-nine
+new cases include8 source,8 aggregate,7 control,15 native/controlled-view and1
+shared availability case. Nine runtime journeys pass with37 GameTable SSR
+renders,10 actual answer callbacks and14 exact guide callbacks. They cover
+all three effects, manual Weather10 after reveal, actual Wall casualties,
+late payment after source close, foreign Weather, whole No, distinct Advanced
+blows and the two-question callback. Four minimal profiles can honor both play
+and No-Harvester acceptance. The tempting after-Ready Harvester policy uses a
+controlled public view; its real played Game/army remains unchanged.
+
+The earlier V2 batch passed20 files/324 before the guide follow-up. V3 repeats
+the affected18 files and adds the paired-question case; two unchanged early-
+travel files (22 cases) are retained only as V2 evidence, not final-source
+certification. Bounded Box review finds no recursive whole search or double fee;
+window Box/other combinations still need native acceptance. No new assurance
+campaign or AI strategy/calibration is run.
+Proof/manifest: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-window-proof-v3/`;
+journeys/HTML: adjacent `20261027-truth-window-runtime-v3/`.
+No HTTP/storage boundary, database, reset/deletion, restart or deployed operation
+changes. Wider card/action families and final browser/deployed/recovery/privacy/
+custody acceptance remain open.
+[Contract and scope](TRUTHTRANCE_TURN_ACTIONS.md#original-storm-and-fresh-blow-card-plays--27-october-2026).
 
 **Truthtrance / native Voice and Prescience — 27 October. Prototyped / Partial.**
 Whole turn answers now include original native power use/explicit Decline,
