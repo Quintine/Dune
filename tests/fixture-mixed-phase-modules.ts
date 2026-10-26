@@ -13,6 +13,7 @@ export type MixedPhaseModulesOptions = {
   advanced?: boolean;
   tech?: boolean;
   strongholds?: boolean;
+  independent?: boolean;
 };
 export const MIXED_PHASE_NATIVE_FACTIONS = ['ixians', 'tleilaxu', 'choam', 'richese', 'ecaz', 'moritani'] as const;
 export const actMixedPhaseModules = actAdvisorPreparation;
@@ -74,6 +75,7 @@ export function createMixedPhaseModulesFixture(options: MixedPhaseModulesOptions
   for (const faction of others) joinGame(game, newPlayer(faction, faction, faction));
   const initial = structuredClone(game), actions: MixedPhaseModulesStep[] = [];
   const act = (actor: string, action: Action) => { game = actMixedPhaseModules(game, actor, action, actions); };
+  if (options.independent) act(host, { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
   if (options.tech) act(host, { type: 'techTokens', enabled: true });
   if (options.strongholds) act(host, { type: 'strongholdCards', enabled: true });
   for (const player of game.players) act(player.id, { type: 'ready' });
@@ -95,7 +97,8 @@ export function createMixedPhaseModulesFixture(options: MixedPhaseModulesOptions
   game = advanceMixedPhaseModules(game, state => state.phase === 1 && mixedPhaseModulesClean(state), actions);
   const firstStorm = structuredClone(game);
   assert.deepEqual(mixedPhaseModulesInventory(game), originalInventory);
-  return { game, sourceGame: structuredClone(game), initial, lobby, setup, afterSetup, firstStorm,
+  return { game, sourceGame: structuredClone(game), independent: options.independent ?? false,
+    initial, lobby, setup, afterSetup, firstStorm,
     originalInventory, originalSpice, spiceOrder, actions, sourceActions: structuredClone(actions),
     sourceActionCount: actions.length, staging: [] as string[] };
 }
@@ -104,10 +107,10 @@ export function createMixedPhaseModulesFixture(options: MixedPhaseModulesOptions
  * accrue Heighliners once; native first Mentat claims precede a real later
  * Storm casualty (Basic dials2 / Advanced card1) and that owner's free return. Sources remain ordinary public
  * entry plus original native choices, with no played-state installation. */
-export function createMixedPhaseModulesProgramme(options: { advanced?: boolean; strongholds?: boolean } = {}) {
+export function createMixedPhaseModulesProgramme(options: { advanced?: boolean; strongholds?: boolean; independent?: boolean } = {}) {
   const advanced = options.advanced ?? false, strongholds = options.strongholds ?? advanced;
   const source = createMixedPhaseModulesFixture({ factions: MIXED_PHASE_NATIVE_FACTIONS,
-    expansions: ['ix', 'choam', 'ecaz'], advanced, tech: true, strongholds });
+    expansions: ['ix', 'choam', 'ecaz'], advanced, tech: true, strongholds, independent: options.independent });
   let game = source.game;
   const actions = [...source.actions];
   const act = (actor: string, action: Action) => { game = actMixedPhaseModules(game, actor, action, actions); };

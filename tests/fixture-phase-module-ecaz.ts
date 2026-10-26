@@ -7,6 +7,10 @@ import { ownedTech } from '../game/tech-tokens';
 import { stageEcazOccupyCard } from './fixture-ecaz-occupy';
 import { nextRicheseStrongholdsNativeStep } from './fixture-richese-strongholds';
 import { actAdvisorPreparation } from './fixture-advisor-preparation';
+import { ecazTreacheryCards } from '../game/ecaz-cards';
+import { usesNativeBattleSpecial } from '../game/battle-card-slots';
+import { REINFORCEMENTS_CARD } from '../game/reinforcements';
+import { HARASS_WITHDRAW_CARD } from '../game/harass-withdraw';
 
 export type PhaseModuleEcazStep = { actor: string; action: Action };
 export const phaseModuleEcazClean = (game: Game) => !game.phaseOpening && !game.response &&
@@ -19,7 +23,8 @@ export function phaseModuleEcazInventory(game: Game) {
     ...(game.ixSetupCards ?? []), ...(game.ixAuction?.cards ?? []),
     ...(game.auction?.cards.slice(game.auction.index + Number(!!game.currentAuctionSale)) ?? [])]
     .map(card => card.id).sort();
-  assert.deepEqual(cards, treacheryDeck(game.expansions).map(card => card.id).sort());
+  assert.deepEqual(cards, [...treacheryDeck(game.expansions), ...(game.ecazTreachery ? ecazTreacheryCards() : [])]
+    .map(card => card.id).sort());
   assert.equal(new Set(cards).size, cards.length);
   for (const player of game.players) {
     assert.equal(player.reserves + player.tanks + Object.values(player.forces).reduce((sum, count) => sum + count, 0), 20);
@@ -75,7 +80,7 @@ function orderBlow(game: Game, worm: boolean, position: number) {
  * real end-Mentat checkpoint earns Ecaz's Tabr card. Explicit conserved board
  * and Shield staging is a later coalition supplement, not natural invasion or
  * acquisition evidence. Never stage a wallet, phase, token owner or outcome. */
-export function createPhaseModuleEcazFixture(options: { advanced?: boolean; lead?: 'ecaz' | 'ally' } = {}) {
+export function createPhaseModuleEcazFixture(options: { advanced?: boolean; lead?: 'ecaz' | 'ally'; independent?: boolean } = {}) {
   const advanced = options.advanced ?? false, lead = options.lead ?? 'ecaz';
   const ecaz = 'ecaz', ally = 'ixians', opponent = 'emperor', actor = lead === 'ecaz' ? ecaz : ally;
   let game = createGame('PHASEMODULEECAZ', newPlayer(ecaz, 'Ecaz', 'ecaz'), advanced, ['ix', 'choam', 'ecaz']);
@@ -85,6 +90,7 @@ export function createPhaseModuleEcazFixture(options: { advanced?: boolean; lead
   const reach = (until: (state: Game) => boolean) => { game = advancePhaseModuleEcaz(game, until, actions); };
   act(ecaz, { type: 'techTokens', enabled: true });
   if (advanced) act(ecaz, { type: 'strongholdCards', enabled: true });
+  if (options.independent) act(ecaz, { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
   for (const player of game.players) act(player.id, { type: 'ready' });
   const ready = structuredClone(game);
   act(ecaz, advanced ? { type: 'start', advancedPreview: true } : { type: 'start' });
@@ -167,7 +173,14 @@ export function quotePhaseModuleEcazBattle(game: Game) {
     const player = phaseModuleEcazPlayer(game, actor), own = viewGame(game, actor).battle!; assert.ok(own.ownForces);
     return { id: actor, faction: player.faction, ally: player.ally, spice: player.spice, hand: player.hand,
       plan: battle.plans[actor], leader: player.leaders.find(leader => leader.id === battle.plans[actor].leader),
-      forces: own.ownForces, stronghold: own.strongholdEffects[actor] };
+      forces: own.ownForces, stronghold: own.strongholdEffects[actor],
+      ...(usesNativeBattleSpecial(battle.plans[actor], REINFORCEMENTS_CARD)
+        ? { reinforcementsReserves: { normal: player.reserves - (player.elites?.reserves ?? 0),
+          elite: player.elites?.reserves ?? 0 } } : {}),
+      ...(usesNativeBattleSpecial(battle.plans[actor], HARASS_WITHDRAW_CARD) && own.harassWithdraw
+        ? { harassWithdraw: { ...own.harassWithdraw, blocked: null },
+          ...(battle.harassAllocation?.player === actor && battle.harassAllocation.stage === 'selected' && battle.harassAllocation.selection
+            ? { harassSelection: battle.harassAllocation.selection } : {}) } : {}) };
   };
   return quoteBattleResolution({ advanced: game.advanced, turn: game.turn, territory: battle.territory,
     ecazOccupy: profile, aggressor: view.aggressor, attacker: side(battle.attacker), defender: side(battle.defender),

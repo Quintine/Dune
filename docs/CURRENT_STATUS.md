@@ -16,6 +16,37 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Selected-deck independent cards / phase modules — 26 October. Prototyped / Partial.**
+Clean independent cards now compose registered paired/mixed/all-three selected
+families and classic-only unused decks with optional Tech3–6 Basic/Advanced and
+Strongholds2–6 Advanced. Basic mixed Ecaz also starts bare cards without an
+incidental Tech prerequisite. Mandatory coalition/assassination use existing
+handlers; separate World/Skills/Nexus/Discovery/Semuta profiles remain.
+
+Disjoint profile, native Recruits and phase/control lanes plus root integration
+pass **11 files,75/75**, types/lint/build and **nine runtime paths**,26 GameTable
+SSR renders and two actual selected-props Recruits callbacks, including busy
+guards. Five paths are native: bare Basic E/I/T all3/independent50 starts in21
+actions; Basic/Advanced all-six programmes retain60 identities, real token
+payouts/earned cards (249/265). Actual native Recruits costs1 after real Ix
+inspection, Moritani ships3 for6, loses3 to the next native Storm, then plays
+the card and returns3 free under doubled2→4/limit7. Native Tleilaxu bank1 and
+Axlotl delayed1 stay separate (241/261 source plus18/15 continuation actions).
+All four minimal policies submit legal next actions from the new phase-five
+boundaries. Original module controls/preview Start use SSR plus public actions.
+
+Four controlled Ecaz/Ixian supplements retain actual setup/alliance/earned Tabr,
+then conserved original cards/armies prove same-plan Reinforcements fee3,
+score-only+2, card-user-only typed Harass returns, fixed/variable losses,
+holder-only income, one disposal and actual selected-winner Tech. They are not
+native invasion/acquisition histories. Feedback removes an assumed compulsory
+outcome acknowledgement and narrows a nullable test-quote selection.
+Frozen report/manifest: `/home/quintine/.local/share/dune/checkpoints/20261026-selected-independent-phase-proof-v2/`;
+journeys/HTML: adjacent `20261026-selected-independent-phase-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or assurance operation.
+Broader combinations, complete modes and browser/mobile/deployed acceptance
+remain open. [Source and contract](ECAZ_TREACHERY_RULES.md#selected-independent-cards-and-phase-modules--26-october-2026).
+
 **Selected-deck Tech / Stronghold composition — 26 October. Prototyped / Partial.**
 Fresh normal starts now compose Tech3–6 Basic/Advanced and Strongholds2–6
 Advanced across paired E3, mixed/all-three families and classic-only selected

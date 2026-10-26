@@ -16,7 +16,7 @@ import { movementShipmentPreparations } from './movement-shipment-preparation';
 import { MovementClaimError, liveMovementPromises, movementEventAllowed, movementPromiseModeSupported, movementPromiseTargetAvailable, settleMovementEvent, finishMovementPromises, validMovementClaim, type MovementClaim, type MovementPromise } from './movement-promises';
 import { findMovementCompletion, type MovementCompletion } from './movement-promise-search';
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
-import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile, selectedFactionStrongholdProfile } from './faction-module-profile';
+import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile, selectedFactionStrongholdProfile, selectedIndependentCardsProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
@@ -11852,8 +11852,8 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
   // Native Basic uses the same physical coalition and selected decks.
   // Family/roster checks below remain authoritative; optional configurations
   // retain their separate registered profiles rather than inheriting admission.
-  const basicNatives = g.advanced === false &&
-    !g.ecazTreachery && (!g.techTokens || nativeFactionTechProfile(g)) && !g.strongholdCards;
+  const basicNatives = g.advanced === false && !g.strongholdCards &&
+    ((!g.ecazTreachery && (!g.techTokens || nativeFactionTechProfile(g))) || selectedIndependentCardsProfile(g));
   if ((independentNexusProfile(g) || independentDiscoveryProfile(g)) && byFaction(g, 'ecaz')) return true;
   if (g.leaderSkills && nativeEcazLeaderSkillsProfile(g)) return true;
   if (g.ecazOccupyPreview === true && (mixedE3NexusProfile(g) || standaloneE3NexusProfile(g) || pairedE3NexusProfile(g)) &&
@@ -12128,6 +12128,7 @@ function ecazHomeworldProfile(g: Game): boolean {
 }
 /** Independent cards compose original phase modules, not unrelated previews. */
 function independentCardModulesProfile(g: Game): boolean {
+  if ((g.techTokens || g.strongholdCards) && selectedIndependentCardsProfile(g)) return true;
   if ((g.techTokens || g.strongholdCards) && (independentNexusProfile(g) || independentDiscoveryProfile(g))) return true;
   if ((g.techTokens || g.strongholdCards) && g.leaderSkills && !g.sandtrout &&
       independentTreacheryLeaderSkillsProfile(g)) return true;

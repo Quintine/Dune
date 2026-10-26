@@ -15,6 +15,8 @@ export type FactionModuleProfile = {
   discoveryStash?: unknown;
   greatMaker?: unknown;
   ecazTreachery?: unknown;
+  sandtrout?: unknown;
+  spiceBankerIncomePreview?: unknown;
   semutaPreview?: unknown;
   advancedPreview?: unknown;
   kullPreview?: unknown;
@@ -132,11 +134,11 @@ export function selectedPhaseModuleRoster(
 /** Keep unrelated overlays outside this phase-only permission. Semuta's caller
  * additionally retains its old roster envelope below, rather than inheriting
  * new selected-family admission through its explicit context flag. */
-function phaseModuleContext(game: FactionModuleProfile, semuta = false): boolean {
+function phaseModuleContext(game: FactionModuleProfile, semuta = false, independent = false): boolean {
   return typeof game.advanced === 'boolean' &&
     !(game.strongholdCards && !game.advanced) && !game.leaderSkills &&
     !game.homeworlds && !game.nexusCards && !game.discoveryEnabled && !game.discoveries &&
-    !game.discoveryStash && !game.greatMaker && !game.ecazTreachery &&
+    !game.discoveryStash && !game.greatMaker && (independent ? game.ecazTreachery === true : !game.ecazTreachery) &&
     (!game.semutaPreview || (semuta && game.semutaPreview === true)) &&
     !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
     !game.guildBetrayalPreview && !game.richeseBetrayalPreview &&
@@ -191,6 +193,19 @@ export function nativeFactionTechProfile(game: FactionModuleProfile, semuta = fa
 export function selectedFactionStrongholdProfile(game: FactionModuleProfile): boolean {
   return !!game && game.advanced === true && phaseModuleContext(game) &&
     selectedPhaseModuleRoster(game) && (!game.techTokens || game.players.length >= 3);
+}
+
+/** Independent physical cards with optional original phase modules. This is a
+ * selected-deck permission; base-only, World and trained compositions retain
+ * their separate original profiles and physical freshness stays external. */
+export function selectedIndependentCardsProfile(game: FactionModuleProfile): boolean {
+  if (!game || game.ecazTreachery !== true ||
+    !selectedPhaseModuleRoster(game) || !phaseModuleContext(game, false, true) ||
+    (game.techTokens && game.players.length < 3) || game.sandtrout || game.spiceBankerIncomePreview) return false;
+  return (!game.ecazOccupyPreview || game.ecazOccupyPreview === true &&
+      game.players.some(player => player.faction === 'ecaz')) &&
+    (!game.moritaniAssassinatePreview || game.moritaniAssassinatePreview === true && game.advanced &&
+      game.players.some(player => player.faction === 'moritani'));
 }
 
 export type MixedE3NativeRoster = {

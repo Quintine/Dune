@@ -2,6 +2,59 @@
 
 Audit: 2026-09-06. Scope: Reinforcements, Recruits, and Harass & Withdraw. This document records component evidence and implementation boundaries; it does not certify an implemented expansion. No runtime files were changed.
 
+## Selected independent cards and phase modules — 26 October 2026
+
+The printed independent-variant rule (E3 pp9,11 above), together with supplied
+Advanced physical21/printed19 variant independence, now composes clean selected
+decks across registered paired/mixed/all-three native rosters and classic-only
+unused decks. Each actual native still needs its selected family. Basic mixed
+Ecaz also admits bare independent cards without an incidental Tech requirement.
+Optional original Tech requires3–6 Basic/Advanced seats; Strongholds requires
+2–6 Advanced, or3–6 beside Tech. Base/no-selected-deck play keeps its existing
+route. Original36/38/50 Treachery and separate native Richese cache remain.
+
+One public profile feeds setup and existing effect consumers. Mandatory Ecaz
+Occupy and Advanced Moritani Assassinate retain native handlers; the existing
+captured-leader target contract applies to Advanced Harkonnen/Moritani without
+Skills/Worlds. Real first-Storm token ownership and actual end-Mentat card claims
+remain separate from card acquisition. This does not widen bare mixed E3 Worlds,
+Skills/Nexus/Discovery/Sandtrout or explicit Semuta; their own profiles remain.
+
+Recruits still doubles current ordinary free rates and the ordinary seven
+ceiling. Completed Revival turns do not reopen, and actual free returns earn
+one pending Axlotl pile rather than immediate spending money. Separate native
+Tleilaxu bank income remains. Reinforcements retains its existing provisional
+normal-first three-reserve fee and score-only +2; it supplies no on-board
+counters or support. Same-plan Harass retains only the card user's physical
+undialed return, leaving the other coalition owner separate. Existing reveal/
+fee/return, Stronghold-holder income, cleanup and selected-winner Tech order
+remain inherited interpretations, not newly located combined rulings.
+
+Frozen root proof passes11 files,75/75, types/lint/build and nine runtime paths,
+26 GameTable SSR renders and two actual selected-props Recruits callbacks with
+busy guards. Five paths are native: bare Basic mixed21 actions/card50, all-six
+Basic249/Advanced265 programmes/card60, and genuine Recruits241/261 sources plus
+18/15 continuation actions. Actual Ix inspection returns another card; Moritani
+bids/pays1, ships3 for6, loses3 to native Basic dials2/Advanced card1, plays
+Recruits and returns3 free at current doubled2→4/limit7. Original Tleilaxu
+bank1 and Axlotl delayed1 stay distinct. Four minimal policies submit legal
+next actions from the new phase-five boundaries.
+
+Four explicitly controlled Ecaz/Ixian supplements retain actual setup, reciprocal
+alliance and earned Advanced Tabr. Conserved original cards/armies then prove
+same-plan fee3/+2 score, only the selected card user's typed undialed return,
+fixed Ecaz versus variable Suboid casualties, holder-only Tabr1, one disposal
+per card and original selected-winner Tech after cleanup. No fee/return creates
+shipment or free-Revival token income. These are not natural card acquisitions
+or invasion histories, complete combination campaigns or new numerical rulings.
+Feedback removes an assumed compulsory outcome acknowledgement and narrows
+nullable selection in the test quote. Report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-selected-independent-phase-proof-v2/`;
+journeys/HTML: adjacent `20261026-selected-independent-phase-runtime/`.
+No saved-game/server/reset/restart/deployment or assurance operation occurs.
+Complete modes, wider combinations and browser/mobile/deployed acceptance remain
+unfinished. No saved game is retrofitted or reset.
+
 ## Classic independent Nexus composition — 18 October 2026
 
 The original independent-variant authority below now also connects fresh

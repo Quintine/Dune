@@ -264,6 +264,10 @@ No saved-game/server/reset/restart/deployment or assurance operation occurs.
 Complete-mode, wider interactions, browser/mobile, deployed and publication
 acceptance remain open.
 
+Independent cards additionally use the [current selected-deck profile](ECAZ_TREACHERY_RULES.md#selected-independent-cards-and-phase-modules--26-october-2026)
+with optional original phase modules. This is separate from the card-free
+profile above and does not require Skills merely to select mixed decks.
+
 ## Standalone E3 Stronghold composition — 4 October 2026
 
 Fresh `stronghold-factions` additionally admits Advanced native Ecaz OR native

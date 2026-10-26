@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 26 October 2026 — Selected independent cards and phase modules
+
+**Prototyped / Partial.** Clean selected-deck
+independent cards now compose registered paired/mixed/all-three native and
+classic-only unused rosters, with optional Tech3–6 Basic/Advanced and
+Strongholds2–6 Advanced. Basic mixed Ecaz also admits bare cards without Tech.
+Existing printed calculations/native handlers remain; separate World/Skills/
+Nexus/Discovery/Semuta profiles and complete-mode gates stay unchanged.
+
+Frozen root proof passes **11 files,75/75**, types/lint/build and **nine runtime
+paths**,26 GameTable SSR renders and two actual selected-props Recruits callbacks
+with busy guards. Five native paths include bare mixed Basic21 actions/card50,
+all-six Basic249/Advanced265 programmes/card60, and genuine Recruits sources241/
+261 plus18/15 continuations. Real Ix inspection and Mori bid1 buy the card;
+actual shipment3/cost6 and next Storm supply Tanks3. Recruits doubles2→4/limit7;
+free3 keeps native Tleilaxu bank1 distinct from Axlotl delayed1. All four minimal
+policies submit legal next actions. Four labelled controlled coalition paths
+add actual same-plan reserve fee, owner-only typed return, original holder
+income, disposal and winner Tech; no natural invasion/acquisition claim.
+
+Feedback removes an assumed compulsory outcome acknowledgement and narrows a
+nullable test-quote selection. Report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-selected-independent-phase-proof-v2/`;
+journeys/HTML: adjacent `20261026-selected-independent-phase-runtime/`. No saved
+game/server/reset/restart/deployment or assurance operation. Broader combinations,
+browser/mobile/deployed and complete-mode acceptance remain open.
+[Source and scope](ECAZ_TREACHERY_RULES.md#selected-independent-cards-and-phase-modules--26-october-2026).
+
 ## 26 October 2026 — Selected-deck Tech / Stronghold composition
 
 **Prototyped / Partial.** Fresh clean normal starts
