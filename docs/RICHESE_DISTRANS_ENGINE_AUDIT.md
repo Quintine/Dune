@@ -2,6 +2,17 @@
 
 Audit date: 2026-09-06. Read `docs/RICHESE_ACQUISITION_RULES.md` first. This audit does not activate the card or certify the remaining Richese effects.
 
+## Future printed-use commitment — 27 October 2026
+
+Whole Truthtrance questions can name actual future printed Distrans use this
+turn, without fixing its recipient or given card. The same native validator
+owns custody, capacity and timing; its actual transfer/disposal records use.
+Private completion retains other physical-card and money commitments. Current
+exact guides reuse the actual private choices. An ordinary lot also retains its
+standing state through the used card's Semuta window. Neither behavior adds a
+fee, recipient consent, new bid opportunity or new start permission.
+[Contract and evidence](TRUTHTRANCE_TURN_ACTIONS.md#printed-transfer-and-order-cards--27-october-2026).
+
 ## Untouched ordinary lot — 26 October 2026
 
 The printed exception excludes use during a bid, without defining its complete

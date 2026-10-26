@@ -4,7 +4,7 @@ import { handLimit, viewGame, type Action, type Game } from '../game/engine';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import {
-  actDistransPrebid, buyDistransPrebidLot, createDistransPrebidFixture,
+  actDistransPrebid, advanceDistransPrebid, buyDistransPrebidLot, createDistransPrebidFixture,
   distransPrebidClean, distransPrebidInventory, distransPrebidPlayer as player,
   distransPrebidPosition, distransPrebidUntouched, finishDistransPrebidLot,
   playDistransPrebid, type DistransPrebidFixture, type DistransPrebidStep,
@@ -51,7 +51,7 @@ function source(fixture: DistransPrebidFixture) {
       player(purchase.before, purchase.winner).spice - 1);
   }
 }
-function transferred(f: DistransPrebidFixture, before: Game, after: Game) {
+function transferred(f: DistransPrebidFixture, before: Game, after: Game, actions: DistransPrebidStep[] = []) {
   assert.deepEqual(distransPrebidPosition(after), distransPrebidPosition(before),
     'Transfer retains the original physical pool, index, opener, active owner, order and every wallet');
   assert.deepEqual(player(after, f.holder).hand,
@@ -63,7 +63,13 @@ function transferred(f: DistransPrebidFixture, before: Game, after: Game) {
   assert.equal(player(after, f.recipient).hand.length, player(before, f.recipient).hand.length + 1);
   assert.equal(after.discard.filter(card => card.id === f.card).length, 1);
   assert.deepEqual(distransPrebidInventory(after), f.originalInventory);
+  const from = actions.length;
+  after = advanceDistransPrebid(after, distransPrebidClean, actions);
+  assert.ok(actions.slice(from).every(step => step.action.type === 'semutaPass'),
+    'Complete only the actual neutral fresh-discard controls before resuming this lot');
+  assert.deepEqual(distransPrebidPosition(after), distransPrebidPosition(before));
   assert.ok(distransPrebidUntouched(after), 'The transfer does not count as the first bid or pass');
+  return after;
 }
 function completeBid(game: Game, bidder: string, actions: DistransPrebidStep[] = []) {
   assert.ok(game.auction);
@@ -89,7 +95,7 @@ for (const advanced of [false, true]) {
     const before = structuredClone(f.game), actions: DistransPrebidStep[] = [];
     let game = playDistransPrebid(f, f.game, actions);
     assert.deepEqual(f.game, before);
-    transferred(f, before, game);
+    game = transferred(f, before, game, actions);
     rejected(game, f.holder, f.action);
     const bidder = game.auction!.active;
     game = actDistransPrebid(game, bidder, { type: 'bid', amount: 1, allyPayment: 0 }, actions);
@@ -124,7 +130,7 @@ for (const advanced of [false, true]) {
       assert.equal(viewGame(game, f.holder).distrans!.blocked, null);
       const before = structuredClone(game);
       game = playDistransPrebid(f, game);
-      transferred(f, before, game);
+      game = transferred(f, before, game);
       rejected(game, f.holder, f.action);
       assert.deepEqual(distransPrebidInventory(game), f.originalInventory);
     });
@@ -138,7 +144,7 @@ for (const advanced of [false, true]) {
     assert.equal(player(f.game, f.holder).hand.length, handLimit(player(f.game, f.holder)));
     const before = structuredClone(f.game);
     let game = playDistransPrebid(f);
-    transferred(f, before, game);
+    game = transferred(f, before, game);
     assert.equal(player(game, f.holder).hand.length, 2);
     const purchased = buyDistransPrebidLot(game, f.holder);
     game = purchased.game;
@@ -154,8 +160,7 @@ for (const advanced of [false, true]) {
     assert.equal(f.game.auction!.index, 2);
     assert.equal(f.game.auction!.active, f.recipient);
     const before = structuredClone(f.game);
-    const filled = playDistransPrebid(f);
-    transferred(f, before, filled);
+    const filled = transferred(f, before, playDistransPrebid(f));
     assert.equal(filled.auction!.active, f.recipient);
     assert.equal(filled.active, f.recipient);
     assert.equal(player(filled, f.recipient).hand.length, handLimit(player(filled, f.recipient)));
@@ -206,7 +211,7 @@ for (const advanced of [false, true]) {
     rejected(f.game, f.holder, { ...f.action, give: f.card });
     rejected(f.game, f.holder, { ...f.action, target: 'absent-seat' });
     rejected(f.game, f.holder, { ...f.action, give: player(f.game, f.recipient).hand[0].id });
-    const game = playDistransPrebid(f);
+    const game = transferred(f, f.game, playDistransPrebid(f));
     rejected(game, f.holder, f.action);
     assert.deepEqual(distransPrebidInventory(game), f.originalInventory);
   });

@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Truthtrance printed transfer/order use — 27 October 2026
+
+Prototyped / Partial. Future Distrans and Sapho predicates concern actual native
+printed use, not the selected transfer or order result. Reuse current validators,
+physical costs and a shared completion purse; unknown acquisitions provide no
+new effect. Their No intervals close at turn end. Upcoming original Movement
+uses public order/entry counters without inventing income or foreign actions.
+Existing native no-op, Guild and retained-current timing remains authoritative.
+Completed Truthtrance/Distrans costs can now pause an ordinary auction for
+Semuta while retaining its standing bid; Semuta has no printed bid exception,
+while Distrans's separate existing timing policy remains. This is bounded
+composition, not a new publisher priority ruling or full-mode certificate.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-transfer-and-order-cards--27-october-2026).
+
 ## Truthtrance printed Box activation — 27 October 2026
 
 Prototyped / Partial. A future printed Nullentropy Box play counts when its real

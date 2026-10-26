@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 27 October 2026 — Printed transfer/order commitments
+
+Prototyped / Partial. Distrans and Sapho actual use share native costs/options
+with other whole commitments, retaining private choices and full-turn No caps.
+Upcoming native Movement creates no income or foreign actions. Completed normal-
+auction Truth/Distrans costs now retain their original standing lot through
+Semuta. Native no-ops remain; actual early pay9/Sapho and paid Box/replay paths
+retain physical chronology. Human controls and four legal profiles connect.
+
+Frozen 25 affected test files pass **410/410**, with types/lint/build and
+six journey groups/eight original-source programmes. Runtime includes 39
+GameTable SSR renders, 8 answer callbacks, 7 whole-guide callbacks,
+1 native Sapho callback and 2 real Semuta commit callbacks. Actual cache
+purchases, unopened Truth deals, budgets, current turns and inventories remain.
+Source/continuation counts derive from arrays; no played state is installed.
+No strategic AI, recovery campaign, saved-game operation, restart or deployment
+occurs. Broader future actions/calendars and full acceptance remain unfinished.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-transfer-and-order-cards--27-october-2026).
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-transfer-order-proof-v3/`.
+
 ## 27 October 2026 — Printed Nullentropy Box commitments
 
 Prototyped / Partial. Actual paid activation records the future printed play;

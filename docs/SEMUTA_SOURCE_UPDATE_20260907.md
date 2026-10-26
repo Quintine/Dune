@@ -2,6 +2,19 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Completed ordinary-auction Truth/Distrans costs — 27 October 2026
+
+The native preview now preserves an ordinary lot while offering a completed
+Truthtrance or Distrans discard to Semuta. A standing ordinary bid remains
+committed. Existing signed continuations retain the lot, bid, actor, hands and
+prices; claim/pass does not replay the card effect or begin another auction.
+The printed Semuta effect has no during-bid exclusion. Distrans's own distinct
+bid-start guard remains, so it can produce this cost only before an ordinary
+bid/pass or in another already allowed native window. This removes an unfinished
+composition fence, not a new source priority ruling. Future Semuta commitment
+coverage and broader optional/auction families remain separate.
+[Connected contract and evidence](TRUTHTRANCE_TURN_ACTIONS.md#printed-transfer-and-order-cards--27-october-2026).
+
 ## Guild Ambassador and Revival Spiritual costs — 26 October 2026
 
 **Prototyped / Partial.** Existing `karamaTerminalDiscard` and

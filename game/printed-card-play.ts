@@ -1,4 +1,4 @@
-export const PRINTED_CARD_EFFECTS = ['hajr', 'ghola', 'nullentropyBox'] as const;
+export const PRINTED_CARD_EFFECTS = ['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho'] as const;
 export type PrintedCardEffect = typeof PRINTED_CARD_EFFECTS[number];
 export type PrintedCardPlayCounts = {
   turn: number;
@@ -41,7 +41,7 @@ function validateCounts(counts: unknown): asserts counts is PrintedCardPlayCount
 
 function validateRequest(player: unknown, turn: unknown, cardEffect: unknown): void {
   check(identifier(player) && positive(turn) && effect(cardEffect),
-    'Choose the printed Hajr, Ghola or Nullentropy Box play, current turn and exact player.');
+    'Choose a supported printed-card play, current turn and exact player.');
 }
 
 /** Private native witness baseline only. Per-answer promises track their own

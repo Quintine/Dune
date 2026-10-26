@@ -5156,6 +5156,8 @@ function distransBlock(g: Game, owner: Player, card: Card): string | null {
     return 'Distrans is available during an active game.';
   if (g.truthtrance)
     return 'Resolve the active Truthtrance question before changing hands.';
+  const promised = printedRolePlayBlock(g, owner.id, 'distrans');
+  if (promised) return promised;
   const reserved = transferCardBlock(g, owner, card);
   if (reserved) return reserved;
   return distransAuctionBlock(g);
@@ -8586,6 +8588,11 @@ function semutaOfferSupported(
   continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   entries: FreshDiscardBatch['entries'],
 ) {
+  // These completed public costs retain the original ordinary lot through the
+  // existing signed continuation. Semuta itself has no during-bid exception;
+  // native Distrans still cannot produce a transfer after that bid starts.
+  const ordinaryAuctionDiscard = g.phase === 3 && !!g.auction && !g.richeseAuction && !g.currentAuctionSale &&
+    (continuation.kind === 'truthtranceDiscard' || continuation.kind === 'distransDiscard');
   const richeseGiftDiscard = continuation.kind === 'karamaRicheseGiftDiscard';
   const richeseDiscard = richeseGiftDiscard || continuation.kind === 'karamaRicheseAuctionDiscard';
   const auctionAdvantageDiscard = continuation.kind === 'karamaAuctionAdvantageDiscard';
@@ -8903,7 +8910,7 @@ function semutaOfferSupported(
           continuation.use.response.kind === 'emperorIncome'
           ? !!g.currentAuctionSale && (g.currentAuctionSale.origin === 'normal'
             ? !!g.auction && !g.richeseAuction : !!g.richeseAuction && !g.auction)
-          : (continuation.kind === 'saphoAuctionDiscard' && continuation.cyclic === 'normal') || !g.auction)) &&
+          : ordinaryAuctionDiscard || (continuation.kind === 'saphoAuctionDiscard' && continuation.cyclic === 'normal') || !g.auction)) &&
     (advisorDiscard || auctionCostDiscard || bonusDiscard || auctionAdvantageDiscard || richeseGiftDiscard || bgDiscard || continuation.kind === 'specialKaramaDiscard' || continuation.kind === 'saphoAuctionDiscard' ||
       continuation.kind === 'ixAllyCard' ||
       (continuation.kind === 'karamaIncomeDiscard' &&
@@ -19009,6 +19016,14 @@ function printedCardRule<T>(operation: () => T): T {
 function nativePrintedCardCount(g: Game, player: string, effect: PrintedCardEffect): number {
   return printedCardRule(() => printedCardPlayCount(g.printedCardPlays, player, g.turn, effect));
 }
+/** Read-only immediate No constraints also protect native controls and minimal
+ * policies that choose a card outside the dedicated whole-answer guide. */
+function printedRolePlayBlock(g: Game, player: string, effect: PrintedCardEffect): string | null {
+  if (!g.turnActionPromises) return null;
+  try { turnActionRule(() => recordTurnActionCardPlay(g.turnActionPromises!, player, g.turn, effect)); }
+  catch (error) { if (error instanceof RuleError) return error.message; throw error; }
+  return null;
+}
 function recordNativePrintedCardPlay(g: Game, player: string, effect: PrintedCardEffect) {
   const policy = (g as TurnActionCardProbe)._turnActionCardPolicy;
   requireRule(policy?.player !== player || !policy.forbidden.includes(effect),
@@ -19022,6 +19037,18 @@ function turnActionCardsMatch(g: Game, actor: string, requirements: readonly Tur
 }
 function* nativePrintedCardActions(g: Game, actor: string, effect: PrintedCardEffect): Generator<Action> {
   const player = getPlayer(g, actor);
+  if (effect === 'distrans') {
+    const quote = distransView(g, player);
+    if (quote && !quote.blocked) for (const choice of quote.choices) if (!choice.blocked)
+      for (const card of choice.cards)
+        yield { type: 'card', card: quote.card.id, target: choice.recipient, give: card.id };
+    return;
+  }
+  if (effect === 'juiceOfSapho') {
+    for (const option of saphoOptions(g, player))
+      yield { type: 'card', card: 'richese-juice-of-sapho', scope: option.scope, event: option.event, mode: option.mode };
+    return;
+  }
   if (effect === 'nullentropyBox') {
     for (const card of player.hand.filter(card => card.effect === effect)) {
       try { validateNullentropyBegin(g, player, card.id); yield { type: 'card', card: card.id }; }
@@ -19072,9 +19099,32 @@ function guardTurnActionBoxCost(source: Game, owner: Player, box: string) {
   for (const seed of turnActionBoxSeeds(source, owner.id, box)) if (turnActionCompletion(seed.game, owner.id)) return;
   throw new RuleError('The two-spice Box payment must preserve your accepted whole Truthtrance answers.');
 }
+/** Native transfer/order effects retain their physical cost and public queue.
+ * No recipient consent, unseen acquisition or income is assumed. */
+function* turnActionTransferOrderSeeds(source: Game, actor: string, requirements: readonly TurnActionCardRequirement[]):
+  Generator<{ game: Game; actions: Action[] }> {
+  const search = function* (game: Game, actions: Action[]): Generator<{ game: Game; actions: Action[] }> {
+    const pending = [...new Set(requirements.filter(required => required.answer &&
+      (required.effect === 'distrans' || required.effect === 'juiceOfSapho') &&
+      nativePrintedCardCount(game, actor, required.effect) <= required.baseline).map(required => required.effect))];
+    for (const effect of pending) for (const action of nativePrintedCardActions(game, actor, effect)) {
+      try {
+        const played = applyActionInner(game, actor, action, 'movementPreparation');
+        const active = played.active, extortion = played.decision?.kind === 'moritaniExtortion' ? played.decision : null;
+        const projected = groundMovementProbe(played, actor);
+        projected.active = active;
+        if (extortion) projected.decision = extortion;
+        yield* search(projected, [...actions, action]);
+      } catch (error) { if (!(error instanceof RuleError)) throw error; }
+    }
+    // Prefer a legal current printed use; retain deferral as an alternative.
+    yield { game, actions };
+  };
+  yield* search(source, []);
+}
 /** Current Ghola and known owned Box routes share the original physical cost.
  * A separate Movement forecast retains the later-play alternative. */
-function* turnActionCardSeeds(source: Game, actor: string, requirements: readonly TurnActionCardRequirement[]):
+function* turnActionOwnedCardSeeds(source: Game, actor: string, requirements: readonly TurnActionCardRequirement[]):
   Generator<{ game: Game; actions: Action[] }> {
   const gholaDue = requirements.some(required => required.effect === 'ghola' && required.answer &&
     nativePrintedCardCount(source, actor, 'ghola') <= required.baseline);
@@ -19114,6 +19164,24 @@ function* turnActionCardSeeds(source: Game, actor: string, requirements: readonl
       const projected = projectMovementBoxRecovery(source, actor, box.id, known.id, false);
       if (projected) yield* plays(projected, [{ type: 'card', card: box.id }]);
     }
+}
+function* turnActionCardSeeds(source: Game, actor: string, requirements: readonly TurnActionCardRequirement[]):
+  Generator<{ game: Game; actions: Action[] }> {
+  if (!requirements.some(required => required.answer &&
+    (required.effect === 'distrans' || required.effect === 'juiceOfSapho') &&
+    nativePrintedCardCount(source, actor, required.effect) <= required.baseline)) {
+    yield* turnActionOwnedCardSeeds(source, actor, requirements);
+    return;
+  }
+  for (const side of turnActionTransferOrderSeeds(source, actor, requirements))
+    for (const owned of turnActionOwnedCardSeeds(side.game, actor, requirements))
+      yield { game: owned.game, actions: [...side.actions, ...owned.actions] };
+  // Recovery or Ghola may first provide a known physical card or native income.
+  for (const owned of turnActionOwnedCardSeeds(source, actor, requirements)) {
+    if (!owned.actions.length) continue;
+    for (const side of turnActionTransferOrderSeeds(owned.game, actor, requirements))
+      if (side.actions.length) yield { game: side.game, actions: [...owned.actions, ...side.actions] };
+  }
 }
 type TurnActionWindowCardRequirement = Extract<TurnActionBranchLeaf, { kind: 'windowCardPlay' }>;
 const isWindowCardEffect = (effect: unknown): effect is WindowCardEffect =>
@@ -19346,6 +19414,12 @@ function guardTurnActionPrintedCardCost(g: Game, player: Player, used: Card) {
   const trial = structuredClone(g), owner = getPlayer(trial, player.id);
   owner.spice += pendingBattleRevivalIncome(trial, owner);
   trial.truthtrance = null; trial.response = null; trial.pendingKarama = null;
+  if (used.effect === 'juiceOfSapho' || used.effect === 'distrans') {
+    // The effect is committed before its optional used-card claim. The actual
+    // claim/counter choices stay at the table, without projected income.
+    trial.pendingTreacheryDiscard = null;
+    if (trial.decision?.kind === 'moritaniExtortion') trial.decision = null;
+  }
   // The Ghola effect/cost is complete; forecast beyond its owned interruption
   // without executing or borrowing the original market's pending income.
   if (trial.pendingChoamMarketGhola?.player === player.id) trial.pendingChoamMarketGhola = null;
@@ -19830,7 +19904,8 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
       // permanent restrictions such as Inflation Double remain authoritative.
       const ownedInvoice = trial.decision?.kind === 'auctionPayment' && trial.decision.player === actor;
       const ownedBox = trial.decision?.kind === 'nullentropy' && trial.pendingNullentropy?.player === actor;
-      const paymentWindow = ownedInvoice || ownedBox ? { ...trial, decision: null,
+      const extortion = trial.decision?.kind === 'moritaniExtortion';
+      const paymentWindow = ownedInvoice || ownedBox || extortion ? { ...trial, decision: null,
         pendingNullentropy: ownedBox ? undefined : trial.pendingNullentropy } : trial;
       if (required.length && bribeTimingBlock(paymentWindow)) continue;
       const total = required.reduce((sum, payment) => sum + payment.amount, 0);
@@ -19925,7 +20000,8 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
   const compiled = compileMixedActionExpression(claim.mixed,
     fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
   const open = turnActionTransportOpen(g, p.id);
-  let bid = false, revival = false, alliance = false, plan = false, traitor = false, cardHajr = false, cardGhola = false, cardBox = false;
+  let bid = false, revival = false, alliance = false, plan = false, traitor = false;
+  const printedCards = new Set<PrintedCardEffect>();
   const powers = new Set<NativeBattlePower>();
   const windowCards: TurnActionWindowCards = {};
   const visit = (node: TurnActionClaim['mixed']): void => {
@@ -19938,9 +20014,7 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
       if (node.action.kind === 'windowCardPlay') windowCards[node.action.effect] = {
         source: node.action.source, played: false, closed: false,
       };
-      if (node.action.kind === 'cardPlay' && node.action.effect === 'hajr') cardHajr = true;
-      if (node.action.kind === 'cardPlay' && node.action.effect === 'ghola') cardGhola = true;
-      if (node.action.kind === 'cardPlay' && node.action.effect === 'nullentropyBox') cardBox = true;
+      if (node.action.kind === 'cardPlay') printedCards.add(node.action.effect);
       if (node.action.kind === 'forces' || node.action.kind === 'leader') revival = true;
     } else if (node.kind !== 'fact') node.terms.forEach(visit);
   };
@@ -19972,9 +20046,10 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
       closed: false, call: null } : null } : undefined;
   let promise: TurnActionPromise = { turn: claim.turn, mixed: structuredClone(claim.mixed), event, player: p.id, asker, answer, compiled,
     ...(Object.keys(windowCards).length ? { windowCards } : {}),
-    ...(cardHajr || cardGhola || cardBox ? { cardPlays: { hajr: cardHajr ? { played: false, closed: !open } : null,
-      ghola: cardGhola ? { played: false, closed: false } : null,
-      ...(cardBox ? { nullentropyBox: { played: false, closed: false } } : {}) } } : {}),
+    ...(printedCards.size ? { cardPlays: { hajr: printedCards.has('hajr') ? { played: false, closed: !open } : null,
+      ghola: printedCards.has('ghola') ? { played: false, closed: false } : null,
+      ...Object.fromEntries([...printedCards].filter(effect => effect !== 'hajr' && effect !== 'ghola')
+        .map(effect => [effect, { played: false, closed: false }])) } } : {}),
     ...(combat ? { combat } : {}),
     ...(preparation ? { preparation } : {}),
     ...(nexus ? { alliance: { source: nexus.source, partner: null, closed: false } } : {}),
@@ -20109,8 +20184,10 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   const promise = liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn)[0];
   const ownedBox = g.decision?.kind === 'nullentropy' && g.pendingNullentropy?.player === player.id;
   const ownedInvoice = g.decision?.kind === 'auctionPayment' && g.decision.player === player.id;
+  const saphoExtortion = g.decision?.kind === 'moritaniExtortion' &&
+    saphoOptions(g, player).some(option => option.scope === 'extortion');
   if (!promise || g.truthtrance || g.response || g.pendingTreacheryDiscard ||
-    g.decision && !ownedBox && !ownedInvoice) return null;
+    g.decision && !ownedBox && !ownedInvoice && !saphoExtortion) return null;
   const completion = turnActionCompletion(g, player.id);
   if (!completion) return null;
   if (g.phaseOpening) {
@@ -20136,8 +20213,10 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
     const shipmentTarget = preparation?.type === 'card' && preparation.mode === 'shipment'
       ? preparation.target ?? player.id : null;
     if ((preparation?.type !== 'bid' || g.auction?.active === player.id) &&
+      (!preparation || turnActionCurrentPrintedPreparation(g, player, preparation)) &&
       (shipmentTarget === null || shipmentTarget === g.active)) action = preparation;
   }
+  if (saphoExtortion && (action?.type !== 'card' || action.scope !== 'extortion')) return null;
   if (!action && g.phase <= 5) {
     const lot = g.phase === 3 && !g.decision ? bidOpportunity(g) : null;
     if (lot && g.auction?.active === player.id) action = completion.bid ??
@@ -20193,7 +20272,10 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   const windows: WindowCardEffect[] = printedWindow ? [printedWindow]
     : action.type === 'decision' && action.karama === true ? ['karamaAuction']
       : action.type === 'ready' || held?.effect === 'nullentropyBox' ? [...WINDOW_CARD_EFFECTS] : [];
-  const guidePromise = windows.length ? liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn).find(row =>
+  const sideRole = held?.effect === 'distrans' || held?.effect === 'juiceOfSapho' ? held.effect : null;
+  const guidePromise = sideRole ? liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn).find(row =>
+    row.cardPlays?.[sideRole] && !row.cardPlays[sideRole]!.played && !row.cardPlays[sideRole]!.closed) ?? promise
+    : windows.length ? liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn).find(row =>
     windows.some(effect => {
       const stage = row.windowCards?.[effect];
       return stage && !stage.closed && (!printedWindow || !stage.played) &&
@@ -20202,6 +20284,15 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   const packet = { ...structuredClone(action) };
   for (const key of ['bidPromiseEvent', 'revivalExpressionPromiseEvent', 'leaderRevivalPromiseEvent', 'revivalPromiseEvent']) delete packet[key];
   return { event: guidePromise.event, action: { ...packet, turnActionPromiseEvent: guidePromise.event, turnActionPromisePhase: g.phase } };
+}
+/** A future calendar quote is not a current native action. Use the same live
+ * transfer/order choices as manual controls before offering a guided packet. */
+function turnActionCurrentPrintedPreparation(g: Game, player: Player, action: Action): boolean {
+  if (action.type !== 'card') return true;
+  const card = player.hand.find(card => card.id === action.card);
+  if (card?.effect !== 'distrans' && card?.effect !== 'juiceOfSapho') return true;
+  return [...nativePrintedCardActions(g, player.id, card.effect)].some(choice =>
+    ['type', 'card', 'target', 'give', 'scope', 'event', 'mode'].every(key => choice[key] === action[key]));
 }
 function travelRule<T>(operation: () => T): T {
   try { return operation(); }
@@ -20406,6 +20497,23 @@ function groundMovementCompletionNative(source: Game, actor: string,
       return null;
     }
     for (const seed of earlyShipmentCompletionSeeds(game, source, actor, cardPlays.length > 0)) {
+      if (cardPlays.some(required => required.effect === 'juiceOfSapho' && required.answer &&
+        nativePrintedCardCount(seed.game, actor, required.effect) <= required.baseline)) {
+        // Upcoming native Movement has a public order, not a singleton owned
+        // probe. Reset only its ordinary entry counters; grant no future cash,
+        // cards or foreign moves, and retain earlier owned preparation once.
+        const future = charityForecastContext(seed.game);
+        future.phase = 5; future.movementRemaining = [...source.order];
+        future.saphoMovementLast = null; future.guildTimingGranted = false; future.guildTimingLocked = false;
+        for (const player of future.players) resetPlayerMovement(player);
+        future.active = future.movementRemaining[0] ?? null;
+        for (const prepared of turnActionTransferOrderSeeds(future, actor, cardPlays)) {
+          if (!prepared.actions.length) continue;
+          const completion = groundMovementCompletionAtMovement(groundMovementProbe(prepared.game, actor), actor,
+            promises, expressions, cardPlays);
+          if (completion) return { actions: [...seed.actions, ...prepared.actions, ...completion.actions], early: seed.early };
+        }
+      }
       resetGroundMovementForecast(seed.game, actor);
       const completion = groundMovementCompletionAtMovement(seed.game, actor, promises, expressions, cardPlays);
       if (completion) return { actions: [...seed.actions, ...completion.actions], early: seed.early };
@@ -25601,6 +25709,7 @@ function saphoMovementRule<T>(calculate: () => T): T {
 /** Own custody and public finite scopes only; no opponent hand scan. */
 function saphoOptions(g: Game, p: Player): SaphoOption[] {
   if (!saphoCleanWindow(g)) return [];
+  if (printedRolePlayBlock(g, p.id, 'juiceOfSapho')) return [];
   const card = p.hand.find((c) => c.id === 'richese-juice-of-sapho');
   if (
     !card ||
@@ -25703,6 +25812,7 @@ function playSapho(g: Game, p: Player, action: Action) {
     option,
     'This Juice of Sapho opportunity is unavailable, already completed or expired.',
   );
+  recordNativePrintedCardPlay(g, p.id, 'juiceOfSapho');
   if (option.scope === 'battleAggressor') {
     const b = g.battle!;
     const next = saphoAggressorRule(() => changeSaphoAggressor(b.saphoAggressor,
@@ -38825,7 +38935,9 @@ function applyActionInner(
     return g;
   }
   if (t === 'card' && action.card === 'richese-juice-of-sapho') {
+    const used = p.hand.find(card => card.id === action.card);
     playSapho(g, p, action);
+    if (execution === 'live' && used) guardTurnActionPrintedCardCost(g, p, used);
     return g;
   }
   if (t === 'tupileIntelligence') {
@@ -38955,6 +39067,8 @@ function applyActionInner(
     p.hand = result.ownerHand;
     recipient.hand = result.recipientHand;
     g.discard.push(result.discarded);
+    recordNativePrintedCardPlay(g, p.id, 'distrans');
+    if (execution === 'live') guardTurnActionPrintedCardCost(g, p, result.discarded);
     log(
       g,
       `${p.name} played Distrans to give ${recipient.name} one private Treachery Card, then discarded Distrans. No spice, purchase bonus or recipient confirmation is required.`,

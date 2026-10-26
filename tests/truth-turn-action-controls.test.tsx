@@ -7,6 +7,7 @@ import { TurnActionAnswers, TurnActionGuideButton, TurnActionPromises } from '..
 import { TruthFactFields } from '../components/mixed-shipment-fields';
 import { BattleClaimFields } from '../components/battle-promises';
 import { baseDeck, ixSpecialCards } from '../game/cards';
+import { richeseCards } from '../game/richese-cards';
 import { createGame, joinGame, newPlayer, viewGame, type Action, type GameView, type Plan } from '../game/engine';
 import type { MixedActionExpression } from '../game/mixed-action-question';
 import type { MixedBattleActionClaim } from '../game/mixed-battle-question';
@@ -31,7 +32,7 @@ const forceRevival = (counter: 'total' | 'normal' | 'elite' = 'total', minimum =
   ({ kind: 'action', action: { kind: 'forces', counter, minimum } });
 const leaderRevival = (leader: string): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
 const finalAlliance = (partner = 'r'): Expression => ({ kind: 'action', action: { kind: 'alliance', partner } });
-const printedCard = (effect: 'hajr' | 'ghola' | 'nullentropyBox' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
+const printedCard = (effect: 'hajr' | 'ghola' | 'nullentropyBox' | 'distrans' | 'juiceOfSapho' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
 const shipmentPriceSource = (recipient = 'p', cunning?: string) => JSON.stringify(['karamaShipment', 2, recipient,
   ...(cunning ? ['cunning', cunning] : ['original'])]);
 const windowClaim = (effect: WindowCardEffect = 'weather', source = effect === 'harvester' ? 'controlled-native-blow'
@@ -147,6 +148,25 @@ function boxPlay(phase = 7): GameView {
   const me = game.players.find(player => player.id === 'p')!; me.hand = [card]; me.handLimit = 4; me.spice = 3;
   game.active = 'a'; game.nullentropy = { card, blocked: null, search: null };
   game.turnActionPromises[0].mixed = { kind: 'and', terms: [printedCard('nullentropyBox'), payment()] };
+  return game;
+}
+function distransPlay(): GameView {
+  const card = richeseCards().find(card => card.effect === 'distrans'), given = baseDeck().find(card => card.name === 'Shield');
+  assert.ok(card); assert.ok(given);
+  const game = projected(2, { type: 'card', card: card.id, target: 'r', give: given.id });
+  const me = game.players.find(player => player.id === 'p')!; me.hand = [card, given]; me.handLimit = 4;
+  const recipient = game.players.find(player => player.id === 'r')!; recipient.handCount = 1; recipient.handLimit = 4;
+  game.active = 'a'; game.distrans = { card, blocked: null, choices: [{ recipient: 'r', blocked: null, cards: [given], unavailable: [] }] };
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard('distrans'), payment()] };
+  return game;
+}
+function saphoPlay(phase = 5, option: NonNullable<GameView['saphoOptions']>[number] =
+  { scope: 'movement', event: 'controlled-movement-order', mode: 'last', afterCurrent: 'a' }): GameView {
+  const card = richeseCards().find(card => card.effect === 'juiceOfSapho'); assert.ok(card);
+  const game = projected(phase, { type: 'card', card: card.id, scope: option.scope, event: option.event, mode: option.mode });
+  const me = game.players.find(player => player.id === 'p')!; me.hand = [card]; me.handLimit = 4;
+  game.active = 'a'; game.saphoOptions = [option];
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard('juiceOfSapho'), payment()] };
   return game;
 }
 function nexus(next: Action = { type: 'alliance', target: 'r' }): GameView {
@@ -1261,14 +1281,21 @@ void test('turn-action printed-role editor uses public names without holdings or
     Object.defineProperty(player, key, { get() { throw Error(`No private ${key} authoring inspection`); }, configurable: true });
   Object.defineProperty(game, 'ghola', { get() { throw Error('No private Ghola authoring inspection'); }, configurable: true });
   Object.defineProperty(game, 'nullentropy', { get() { throw Error('No private Box authoring inspection'); }, configurable: true });
+  Object.defineProperty(game, 'distrans', { get() { throw Error('No private Distrans authoring inspection'); }, configurable: true });
+  Object.defineProperty(game, 'saphoOptions', { get() { throw Error('No private Sapho authoring inspection'); }, configurable: true });
   Object.defineProperty(game.turnActionPromises[0], 'cardPlays', { get() { throw Error('No private card-play stage'); } });
   const e = editor(physical(), false, game); select(e.tree(), '1', 'action', 'cardPlay');
   assert.deepEqual(e.value, printedCard()); assert.equal(e.error(), null);
   const choices = elements(find(e.tree(), 'id', 'truth-turn-action-1-effect')).filter(element => element.type === 'option');
-  assert.deepEqual(choices.map(choice => choice.props.value), ['hajr', 'ghola', 'nullentropyBox']);
+  assert.deepEqual(choices.map(choice => choice.props.value), ['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho']);
   select(e.tree(), '1', 'effect', 'ghola'); assert.deepEqual(e.value, printedCard('ghola')); assert.equal(e.error(), null);
   select(e.tree(), '1', 'effect', 'karama'); assert.deepEqual(e.value, printedCard('ghola'));
   select(e.tree(), '1', 'effect', 'nullentropyBox'); assert.deepEqual(e.value, printedCard('nullentropyBox')); assert.equal(e.error(), null);
+  for (const effect of ['distrans', 'juiceOfSapho'] as const) {
+    select(e.tree(), '1', 'effect', effect); assert.deepEqual(e.value, printedCard(effect)); assert.equal(e.error(), null);
+    for (const extra of [{ target: 'r' }, { give: 'private-card' }, { scope: 'movement' }, { event: 'private-source' }, { mode: 'first' }])
+      assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'cardPlay', effect, ...extra } }, game, 'p'));
+  }
   assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'cardPlay', effect: 'ghola', card: 'private-card-id' } }, game, 'p'));
   assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'cardPlay', effect: 'karama' } }, game, 'p'));
   for (const extra of [{ card: 'private-box-id' }, { selected: 'private-recovery' }, { amount: 2 }])
@@ -1280,12 +1307,15 @@ void test('turn-action printed-role editor uses public names without holdings or
   assert.match(html, /Play Tleilaxu Ghola in its printed role after this answer this turn/);
   assert.match(html, /Activate Nullentropy Box and pay 2 spice after this answer this turn/);
   assert.match(html, /The selected recovered card stays private and is not promised/);
+  assert.match(html, /Play Distrans in its printed role after this answer this turn/);
+  assert.match(html, /Play Juice of Sapho in its printed role after this answer this turn/);
+  assert.match(html, /not a particular recipient, transferred card or order outcome/);
   assert.match(html, /Hajr counts when played even if its extra movement is unused/);
   assert.match(html, /an actual later replay after Box recovery does/); assert.doesNotMatch(html, /private-card-id|controlled-ghola|controlled-hajr/);
   const full = editor({ kind: 'or', terms: [printedCard(), printedCard('nullentropyBox')] }, false, game);
   for (let count = 3; count <= 16; count++) {
     click(control(full.tree(), 'add-action-1')); select(full.tree(), `1.${count}`, 'action', 'cardPlay');
-    select(full.tree(), `1.${count}`, 'effect', 'nullentropyBox');
+    select(full.tree(), `1.${count}`, 'effect', count % 2 ? 'distrans' : 'juiceOfSapho');
   }
   assert.equal(full.error(), null); assert.match(full.html(), /16 \/ 16 conditions/);
   assert.equal(control(full.tree(), 'add-action-1').props.disabled, true);
@@ -1428,17 +1458,127 @@ void test('printed Box activation accepts no private selection or extra native p
   assert.equal(guide({ game, busy: false, act() { assert.fail('A turn-end Box activation requires its matching raw role'); } }).props.disabled, true);
 });
 
+void test('printed Distrans guide forwards its exact owned transfer quote without inspecting foreign hands', () => {
+  const game = distransPlay(), sent: Action[] = [];
+  for (const player of game.players.filter(player => player.id !== 'p'))
+    Object.defineProperty(player, 'hand', { get() { throw Error('Distrans uses the native capacity quote, not foreign hands'); }, configurable: true });
+  Object.defineProperty(game.turnActionPromises[0], 'cardPlays', { get() { throw Error('No private Distrans receipt inspection'); } });
+  const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+  assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+  assert.deepEqual(sent[0], { type: 'card', card: game.distrans!.card.id, target: 'r', give: game.distrans!.choices[0].cards[0].id,
+    turnActionPromiseEvent: event, turnActionPromisePhase: 2 });
+  assert.match(markup(game), /Give Shield to Recipient with Distrans/);
+});
+
+void test('printed Distrans callbacks reject stale availability, physical cards, capacity and raw source', () => {
+  const changes: ((game: GameView) => void)[] = [
+    game => { game.distrans = null; },
+    game => { game.distrans = { ...game.distrans! }; },
+    game => { game.distrans!.blocked = 'Finish the current native interaction.'; },
+    game => { game.distrans!.choices[0].blocked = 'The recipient is full.'; },
+    game => { game.distrans!.choices[0].cards = []; },
+    game => { game.players.find(player => player.id === 'p')!.hand!.pop(); },
+    game => { game.players.find(player => player.id === 'r')!.handCount = 4; },
+    game => { game.players.find(player => player.id === 'r')!.handLimit = 3; },
+    game => { game.turnActionPromises[0].mixed = payment(); },
+    game => { game.phase = 3; },
+    game => { game.decision = { kind: 'auctionPayment', player: 'p' }; },
+    game => { game.turnActionGuide!.action.give = 'different-held-card'; },
+  ];
+  for (const change of changes) {
+    const game = distransPlay(), sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); change(game); press(button); assert.deepEqual(sent, []);
+  }
+  for (const change of [
+    (game: GameView) => { game.turnActionGuide!.action.target = 'p'; },
+    (game: GameView) => { game.turnActionGuide!.action.target = 'a'; },
+    (game: GameView) => { game.turnActionGuide!.action.give = game.distrans!.card.id; },
+    (game: GameView) => { game.turnActionGuide!.action.give = 'unquoted-card'; },
+  ]) {
+    const game = distransPlay(); change(game);
+    const button = guide({ game, busy: false, act() { assert.fail('Distrans must use its current quoted recipient and other held card'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+});
+
+void test('printed Sapho guides forward every quoted native scope and retain display metadata outside the action', () => {
+  const options: [number, NonNullable<GameView['saphoOptions']>[number]][] = [
+    [3, { scope: 'onceAround', event: 'controlled-once-around', mode: 'first' }],
+    [3, { scope: 'cyclicAuction', event: 'controlled-cyclic', mode: 'last' }],
+    [4, { scope: 'revival', event: 'controlled-revival', mode: 'last', afterCurrent: 'a' }],
+    [5, { scope: 'movement', event: 'controlled-movement', mode: 'first', afterCurrent: 'a' }],
+    [6, { scope: 'battleOrder', event: 'controlled-battle-order', mode: 'last' }],
+    [6, { scope: 'battleAggressor', event: 'controlled-aggressor', mode: 'aggressor' }],
+    [8, { scope: 'extortion', event: 'controlled-extortion-order', mode: 'first' }],
+  ];
+  for (const [phase, option] of options) {
+    const game = saphoPlay(phase, option), sent: Action[] = [];
+    if (option.scope === 'extortion') game.decision = { kind: 'moritaniExtortion', player: 'p', event: 'controlled-native-extortion' };
+    for (const player of game.players.filter(player => player.id !== 'p'))
+      Object.defineProperty(player, 'hand', { get() { throw Error('Sapho uses the native option, not foreign hands'); }, configurable: true });
+    Object.defineProperty(game.turnActionPromises[0], 'cardPlays', { get() { throw Error('No private Sapho receipt inspection'); } });
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    assert.deepEqual(sent[0], { type: 'card', card: 'richese-juice-of-sapho', scope: option.scope, event: option.event, mode: option.mode,
+      turnActionPromiseEvent: event, turnActionPromisePhase: phase });
+    assert.equal(Object.hasOwn(sent[0], 'afterCurrent'), false);
+    assert.match(markup(game), /Play Juice of Sapho:/);
+  }
+});
+
+void test('printed Sapho callbacks and both role guides reject stale quotes or modified packets without generic fallback', () => {
+  for (const change of [
+    (game: GameView) => { game.saphoOptions = []; },
+    (game: GameView) => { game.saphoOptions = [...game.saphoOptions]; },
+    (game: GameView) => { game.saphoOptions[0].event = 'different-native-source'; },
+    (game: GameView) => { game.saphoOptions[0].mode = 'first'; },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.hand = []; },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.handLimit = 5; },
+    (game: GameView) => { game.turnActionPromises[0].mixed = payment(); },
+    (game: GameView) => { game.phaseOpening = { passed: [] }; },
+    (game: GameView) => { game.response = { kind: 'guildIncome', owner: 'a', amount: 1, passed: [] }; },
+  ]) {
+    const game = saphoPlay(), sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); change(game); press(button); assert.deepEqual(sent, []);
+  }
+  for (const change of [
+    (game: GameView) => {
+      const current = game.decision; assert.ok(current?.kind === 'moritaniExtortion');
+      game.decision = { ...current, event: 'next-native-extortion' };
+    },
+    (game: GameView) => { game.decision = null; },
+  ]) {
+    const game = saphoPlay(8, { scope: 'extortion', event: 'controlled-extortion-order', mode: 'first' });
+    game.decision = { kind: 'moritaniExtortion', player: 'p', event: 'controlled-native-extortion' };
+    const saved = guide({ game, busy: false, act() { assert.fail('A changed Extortion source cannot submit an earlier Sapho option'); } });
+    assert.equal(saved.props.disabled, false); change(game); press(saved);
+  }
+  for (const create of [distransPlay, () => saphoPlay(4, { scope: 'revival', event: 'controlled-revival', mode: 'last' })]) {
+    for (const extra of [{ amount: 1 }, { mode: 'shipment' }, { target: 'a' }, { give: 'unquoted-card' },
+      { scope: 'unsupported' }, { event: 'different-source' }, { afterCurrent: 'a' }]) {
+      const game = create(); Object.assign(game.turnActionGuide!.action, extra);
+      const button = guide({ game, busy: false, act() { assert.fail('Printed-role guides forward only the exact native action fields'); } });
+      assert.equal(button.props.disabled, true); press(button);
+    }
+    const game = create(), sent: Action[] = [], props = { game, busy: false, act(action: Action) { sent.push(action); } }, button = guide(props);
+    assert.equal(button.props.disabled, false); props.busy = true; press(button); assert.deepEqual(sent, []);
+  }
+});
+
 void test('printed-card history retains only raw aggregate conditions and their distinct native deadlines', () => {
   const game = projected(8); game.turnActionGuide = null;
-  game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard(), { kind: 'and', terms: [fact(), printedCard('ghola'), printedCard('nullentropyBox')] }] };
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard(), { kind: 'and', terms: [fact(), printedCard('ghola'), printedCard('nullentropyBox'), printedCard('distrans'), printedCard('juiceOfSapho')] }] };
+  game.turnActionPromises[0].answer = false;
   for (const key of ['cardPlays', 'compiled', 'combat', 'preparation'])
     Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
   const html = markup(game);
-  assert.match(html, /Hajr/); assert.match(html, /Tleilaxu Ghola/); assert.match(html, /You answered Yes/);
+  assert.match(html, /Hajr/); assert.match(html, /Tleilaxu Ghola/); assert.match(html, /You answered No/);
   assert.match(html, /Hajr counts even if its extra movement is unused/);
   assert.match(html, /Earlier plays, discards, sales, Karama roles and recovery alone do not count/);
   assert.match(html, /actual later Box replay does/); assert.match(html, /Ghola is separate from ordinary Revival/);
   assert.match(html, /you activate Nullentropy Box/); assert.match(html, /Box conditions close at the actual turn end/);
+  assert.match(html, /Distrans/); assert.match(html, /Juice of Sapho/);
+  assert.match(html, /The deadline is the actual turn end, including for a whole No answer/);
   assert.match(html, /remains open until the actual turn ends/); assert.doesNotMatch(html, /cardPlays|compiled|controlled-hajr|controlled-ghola/);
 });
 

@@ -55,6 +55,27 @@ void test('Box raw question parsing needs no hidden possession and eagerly rejec
   }
 });
 
+void test('Distrans and Sapho questions name only actual printed use this turn without transfer or order choices', () => {
+  const game = fixture();
+  for (const effect of ['distrans', 'juiceOfSapho'] as const) {
+    assert.ok(!game.players.find(player => player.id === 'e')!.hand.some(card => card.effect === effect));
+    const action = { kind: 'cardPlay' as const, effect };
+    const question: TruthQuestion = { kind: 'turnActions', target: 'e', turn: 2,
+      mixed: { kind: 'or', terms: [{ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 0 } },
+        { kind: 'action', action }] } };
+    assert.doesNotThrow(() => validateTruthQuestionReceipt(game, 'a', question));
+    const text = truthQuestionText(question, id => id, id => id);
+    assert.match(text, effect === 'distrans' ? /complete a printed Distrans transfer and discard Distrans after this answer this turn/ :
+      /play Juice of Sapho in its printed role after this answer this turn/);
+    assert.doesNotMatch(text, /Ghola|first|last|aggressor|private-card|recipient/);
+    for (const extra of [{ recipient: 'h' }, { give: 'private-card' }, { scope: 'movement' }, { mode: 'first' }, { outcome: true }]) {
+      const invalid = { ...question, mixed: { kind: 'or', terms: [{ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 0 } },
+        { kind: 'action', action: { ...action, ...extra } }] } } as TruthQuestion;
+      assert.throws(() => validateTruthQuestionReceipt(game, 'a', invalid));
+    }
+  }
+});
+
 function fixture() {
   const g = createGame('TRUTH22', newPlayer('a', 'Atreides', 'atreides'));
   g.players.push(

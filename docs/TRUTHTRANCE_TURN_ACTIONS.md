@@ -1,5 +1,55 @@
 # Truthtrance combined current-turn actions
 
+## Printed transfer and order cards — 27 October 2026
+
+**Prototyped / Partial.** `cardPlay/distrans` and `cardPlay/juiceOfSapho`
+count actual native printed use after answering this turn. Distrans transfers
+another held eligible card and disposes its own physical cost. Sapho uses one
+currently supported native order/aggressor option and disposes its card. The
+predicate names neither a transfer recipient/card nor a Sapho scope, mode or
+outcome. Earlier use, recovery alone and another role do not count. Both No
+intervals last through Mentat; only Hajr retains Movement-end expiry.
+
+Native validators own capacity, reservations, timing, completed actions and
+legal choices. Private completion applies those same costs/effects before
+checking every other commitment. Distrans and Sapho add no spice fee. A giver
+cannot lose another required physical card to satisfy a transfer, and another
+player's started combined turn remains unsplit. Current guide packets must
+still match the exact current native choices; later calendar actions are not
+sent early. Existing known recovery remains possible, without borrowing an
+unseen future acquired effect. No route or choice is installed in the real game.
+
+Earlier Sapho questions can quote an upcoming original Movement opportunity
+with the public order and normal entry counters. Existing earlier owned
+preparation and the same purse remain. That quote grants no new income, cards,
+foreign move or Guild decision. Native first/last/no-op and retained-current
+policies remain; an already-last tail cannot consume Sapho merely to stay last.
+Other future ordering calendars and broader preparations remain partial.
+
+Completed public Truthtrance/Distrans costs now retain an ordinary auction
+through their signed Semuta continuation, including a standing normal bid.
+Semuta has no printed during-bid exclusion; Distrans keeps its separate existing
+bid-start guard. The neutral window and real claim preserve the original lot,
+bid, price and actor, without replaying a transfer or starting another auction.
+This extends the native discard path, not future Semuta commitment coverage.
+
+Strict optional role stages preserve old row bytes. Human editors, persistent
+guidance, exact native callbacks and four minimally legal profiles connect the
+new roles. Immediate No restrictions also block the native manual choices and
+minimal-policy fallback. Strategy/calibration remain deferred. This is bounded software
+composition of existing Truthtrance and native card contracts, not a dedicated
+publisher worked example. Wider future actions/income, combinations, complete
+modes and final assurance/deployed acceptance remain open.
+Frozen 25 affected test files pass **410/410**, with types/lint/build and
+six journey groups/eight original-source programmes. Runtime includes 39
+GameTable SSR renders, 8 answer callbacks, 7 whole-guide callbacks,
+1 native Sapho callback and 2 real Semuta commit callbacks. Actual cache
+purchases, unopened Truth deals, budgets, current turns and inventories remain.
+Source/continuation counts derive from arrays; no played state is installed.
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-transfer-order-proof-v3/`;
+journeys/HTML: adjacent `20261027-truth-transfer-order-runtime/run/`.
+This is local native/SSR/callback evidence, not hydration or deployed acceptance.
+
 ## Printed Nullentropy Box — 27 October 2026
 
 **Prototyped / Partial.** `cardPlay/nullentropyBox` concerns an accepted printed

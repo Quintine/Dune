@@ -168,7 +168,7 @@ export function parseTurnActionLeaf(value: unknown): TurnActionLeaf {
     }
     if (value.kind === 'cardPlay') {
       check(keys(value, 'effect,kind') && PRINTED_CARD_EFFECTS.some(effect => effect === value.effect),
-        'Choose only the printed Hajr, Tleilaxu Ghola or Nullentropy Box play after this answer.');
+        'Choose only a supported printed-card play after this answer.');
       return { kind: 'cardPlay', effect: value.effect as PrintedCardEffect };
     }
     if (value.kind === 'battlePlan' || value.kind === 'traitorCall') {
@@ -336,10 +336,11 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
     }
   }
   if ('cardPlays' in promise) {
-    check(object(promise.cardPlays) && (keys(promise.cardPlays, 'ghola,hajr') ||
-      keys(promise.cardPlays, [...PRINTED_CARD_EFFECTS].sort().join(','))), 'Retain only the native printed-card play stages.');
+    check(object(promise.cardPlays) && Object.hasOwn(promise.cardPlays, 'hajr') && Object.hasOwn(promise.cardPlays, 'ghola') &&
+      Object.keys(promise.cardPlays).every(key => PRINTED_CARD_EFFECTS.some(effect => effect === key)),
+    'Retain only the native printed-card play stages and original Hajr/Ghola keys.');
     for (const effect of PRINTED_CARD_EFFECTS) {
-      if (effect === 'nullentropyBox' && !Object.hasOwn(promise.cardPlays, effect)) continue;
+      if (!Object.hasOwn(promise.cardPlays, effect)) continue;
       const stage = promise.cardPlays[effect];
       check(stage === null || object(stage) && keys(stage, 'closed,played') && typeof stage.played === 'boolean' &&
         typeof stage.closed === 'boolean', 'Retain the actual printed-role play and native stage closure.');
@@ -700,7 +701,7 @@ export function closeTurnActionBattlePower<T extends TurnActionPromise>(promises
  * success, disposal, recovery and real card custody; none count as this event. */
 export function recordTurnActionCardPlay<T extends TurnActionPromise>(promises: readonly T[], player: string,
   turn: number, effect: PrintedCardEffect): T[] {
-  check(PRINTED_CARD_EFFECTS.some(candidate => candidate === effect), 'Record an accepted printed Hajr, Tleilaxu Ghola or Nullentropy Box play.');
+  check(PRINTED_CARD_EFFECTS.some(candidate => candidate === effect), 'Record an accepted supported printed-card play.');
   const updates = new Map<T, T>();
   for (const promise of liveTurnActionPromises(promises, player, turn)) {
     readPromise(promise);

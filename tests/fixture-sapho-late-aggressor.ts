@@ -18,6 +18,16 @@ export function actSaphoLate(game: Game, actor: string, action: Action, actions:
   actions.push({ actor, action: structuredClone(action) }); return next;
 }
 export function nextSaphoLateStep(game: Game, stone = false): SaphoLateStep | null {
+  const pending = game.pendingTreacheryDiscard;
+  if (pending) {
+    const reaction = pending.reaction;
+    if (reaction?.stage === 'offer') {
+      const actor = game.players.find(player => !reaction.passed.includes(player.id)); assert.ok(actor);
+      return { actor: actor.id, action: { type: 'semutaPass', event: pending.batch.event } };
+    }
+    if (pending.reaction) return null; // A committed private choice needs its owner.
+    return { actor: game.players[0].id, action: { type: 'advanceBots' } };
+  }
   if (!game.response && !game.phaseOpening && game.decision) {
     const decision = game.decision;
     if (decision.kind === 'stoneAllocation' || decision.kind === 'battleLosses') return null;
@@ -47,6 +57,11 @@ export function advanceSaphoLate(game: Game, until: (state: Game) => boolean,
     game = actSaphoLate(game, step.actor, step.action, actions);
   }
   throw Error('The original late Sapho programme did not reach its finite boundary');
+}
+/** Resolve the actual fresh cost without acknowledging or advancing the
+ * original battle opportunity that resumes after its neutral Semuta passes. */
+export function settleSaphoLateDiscard(game: Game, actions: SaphoLateStep[] = []): Game {
+  return advanceSaphoLate(game, state => !state.pendingTreacheryDiscard, actions);
 }
 
 /** Original public host, paid cache Sapho and paid opposing Arrakeen forces.
@@ -138,7 +153,7 @@ export function prepareSaphoLateOutcome(fixture: SaphoLateAggressorFixture, opti
 } = {}) {
   const useAt = options.useAt ?? 'none';
   let game = structuredClone(fixture.game), used: Action | null = null, afterUse: Game | null = null;
-  let beforeUse: Game | null = null, acknowledged: Game | null = null;
+  let beforeUse: Game | null = null, afterDiscard: Game | null = null, acknowledged: Game | null = null;
   const actions: SaphoLateStep[] = [];
   const act = (actor: string, action: Action) => { game = actSaphoLate(game, actor, action, actions); };
   act(fixture.plans[0].actor, fixture.plans[0].action);
@@ -146,6 +161,7 @@ export function prepareSaphoLateOutcome(fixture: SaphoLateAggressorFixture, opti
   if (useAt === 'onePlan') {
     beforeUse = structuredClone(game); used = saphoLateAggressorAction(game, fixture.owner);
     act(fixture.owner, used); afterUse = structuredClone(game);
+    game = settleSaphoLateDiscard(game, actions); afterDiscard = structuredClone(game);
   }
   act(fixture.plans[1].actor, fixture.plans[1].action);
   const revealed = structuredClone(game);
@@ -157,8 +173,9 @@ export function prepareSaphoLateOutcome(fixture: SaphoLateAggressorFixture, opti
     }
     beforeUse = structuredClone(game); used = saphoLateAggressorAction(game, fixture.owner);
     act(fixture.owner, used); afterUse = structuredClone(game);
+    game = settleSaphoLateDiscard(game, actions); afterDiscard = structuredClone(game);
   }
-  return { game, onePlan, revealed, opened, beforeUse, used, afterUse, acknowledged, useAt, actions };
+  return { game, onePlan, revealed, opened, beforeUse, used, afterUse, afterDiscard, acknowledged, useAt, actions };
 }
 
 /** Readies and later Stone/typed losses are chosen solely from actual owned
@@ -171,6 +188,9 @@ export function completeSaphoLateAggressor(fixture: SaphoLateAggressorFixture,
   }[] = [];
   for (let count = 0; count < 700; count++) {
     if (!game.battle && saphoLateClean(game)) return { game, actions, readies, allocations };
+    if (game.pendingTreacheryDiscard) {
+      game = settleSaphoLateDiscard(game, actions); continue;
+    }
     const decision = !game.response && !game.phaseOpening ? game.decision : null;
     const window = game.battle?.outcomeWindow;
     let step: SaphoLateStep | null;

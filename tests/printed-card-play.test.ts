@@ -9,7 +9,7 @@ import {
 } from '../game/printed-card-play';
 
 void test('Box accepted activation counts extend the shared roles without changing earlier Hajr or Ghola baselines', () => {
-  assert.deepEqual(PRINTED_CARD_EFFECTS, ['hajr', 'ghola', 'nullentropyBox']);
+  assert.deepEqual(PRINTED_CARD_EFFECTS, ['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho']);
   assert.equal(printedCardPlayCount(undefined, 'richese', 3, 'nullentropyBox'), 0);
   const ghola = recordPrintedCardPlay(undefined, 'richese', 3, 'ghola');
   const first = recordPrintedCardPlay(ghola, 'richese', 3, 'nullentropyBox');
@@ -31,6 +31,31 @@ void test('Box activation counts retain safe overflow and strict per-player role
     [{ ...full.plays[0], effect: 'Nullentropy Box' }], [{ ...full.plays[0], count: 0 }]])
     assert.throws(() => printedCardPlayCount({ turn: 3, plays } as PrintedCardPlayCounts,
       'richese', 4, 'nullentropyBox'), PrintedCardPlayError);
+});
+
+void test('Distrans and Sapho count separate accepted printed uses and replay without recording native choices', () => {
+  const original = recordPrintedCardPlay(undefined, 'richese', 2, 'nullentropyBox');
+  let counts = original;
+  const before = structuredClone(original);
+  for (const effect of ['distrans', 'juiceOfSapho'] as const) {
+    assert.equal(printedCardPlayCount(counts, 'richese', 2, effect), 0);
+    counts = recordPrintedCardPlay(counts, 'richese', 2, effect);
+    counts = recordPrintedCardPlay(counts, 'richese', 2, effect);
+    assert.equal(printedCardPlayCount(counts, 'richese', 2, effect), 2);
+    assert.equal(printedCardPlayCount(counts, 'other', 2, effect), 0);
+    assert.equal(printedCardPlayCount(counts, 'richese', 3, effect), 0);
+    const full: PrintedCardPlayCounts = { turn: 2, plays: [{ player: 'richese', effect, count: Number.MAX_SAFE_INTEGER }] };
+    assert.throws(() => recordPrintedCardPlay(full, 'richese', 2, effect), PrintedCardPlayError);
+    for (const choice of [{ recipient: 'other' }, { give: 'private-given-card' }, { scope: 'movement' }, { mode: 'first' }]) {
+      const invalid = { turn: 2, plays: [{ player: 'richese', effect, count: 1, ...choice }] } as PrintedCardPlayCounts;
+      assert.throws(() => printedCardPlayCount(invalid, 'richese', 3, effect), PrintedCardPlayError);
+    }
+  }
+  assert.deepEqual(before, { turn: 2, plays: [{ player: 'richese', effect: 'nullentropyBox', count: 1 }] });
+  assert.deepEqual(original, before);
+  assert.equal(printedCardPlayCount(counts, 'richese', 2, 'nullentropyBox'), 1);
+  assert.deepEqual(recordPrintedCardPlay(counts, 'richese', 3, 'distrans'),
+    { turn: 3, plays: [{ player: 'richese', effect: 'distrans', count: 1 }] });
 });
 
 void test('missing legacy counts and other turn/player/effect baselines read as zero', () => {

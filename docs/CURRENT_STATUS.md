@@ -20,6 +20,36 @@ open mode gates.
 Continue remaining Basic functions before Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance / printed transfer and order cards — 27 October. Prototyped / Partial.**
+Actual Distrans and Sapho use can be promised without fixing a transfer or order
+choice. Costs, current native options, whole AND/OR/No, original turn-end caps,
+frozen facts, exact human guides and four legal profiles connect. Upcoming
+Movement uses public order/counters without new income. A real ordinary-auction
+Semuta claim retains the original lot and standing bid.
+
+Frozen 25 affected test files pass **410/410**, with types/lint/build and
+six journey groups/eight original-source programmes. Runtime includes 39
+GameTable SSR renders, 8 answer callbacks, 7 whole-guide callbacks,
+1 native Sapho callback and 2 real Semuta commit callbacks. Actual cache
+purchases, unopened Truth deals, budgets, current turns and inventories remain.
+Source/continuation counts derive from arrays; no played state is installed.
+
+Focused feedback finds the unfinished ordinary-auction discard fence and a
+fixture that expected an already-last Guild-TAKE tail to move last again. The
+native Semuta continuation is connected; older prebid/late-battle drivers now
+finish the real discard before continuing. Current legal roles take guide
+priority over deferral, and immediate No blocks native controls/policy fallback.
+The Sapho no-op rule is preserved.
+Real early Revival/pay9/Movement uses Sapho free after cash reaches zero.
+A separate actual turn2 Box recovery does not itself count as Distrans replay.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-transfer-order-proof-v3/`;
+journeys/HTML: adjacent `20261027-truth-transfer-order-runtime/run/`.
+No HTTP/storage boundary, saved-game/database, restart or deployed operation
+changes. Future Semuta promises, other future calendars/funding, combinations,
+complete modes and final assurance/browser/deployed acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-transfer-and-order-cards--27-october-2026).
+
 **Truthtrance / printed Nullentropy Box — 27 October. Prototyped / Partial.**
 Whole questions can name actual printed activation after answering. The accepted
 two-spice fee records use before private selection; the selected card is outside

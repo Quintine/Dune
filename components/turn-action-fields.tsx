@@ -76,13 +76,15 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     or requested Prescience field in this battle. They count before later Karama prevention.
     A requested field is not the opponent&apos;s answer or inspected value. Borrowed Nexus and special powers do not count.
     These conditions close at the actual native choice or when its original source expires.
-    Printed-card conditions ask you to play Hajr, Tleilaxu Ghola or Nullentropy Box in its printed role after this answer this turn.
+    Printed-card conditions ask you to play Hajr, Tleilaxu Ghola, Nullentropy Box, Distrans or Juice of Sapho in its printed role after this answer this turn.
     An earlier play, discard, sale, Karama role or recovery alone does not count; an actual later replay after Box recovery does.
     Hajr counts when played even if its extra movement is unused. Tleilaxu Ghola is a card play, separate from ordinary Revival.
     Hajr conditions close at your own Movement turn end; Tleilaxu Ghola conditions close at the actual turn end.
     Nullentropy Box counts when its printed activation is accepted and you pay 2 spice to begin the private search.
     Earlier activation or recovery alone does not count. The selected recovered card stays private and is not promised by this condition.
     Box conditions close at the actual turn end; complete the paid search with the existing native controls.
+    Distrans and Juice of Sapho conditions count an actual later printed use, not a particular recipient, transferred card or order outcome.
+    Their native controls retain those choices. The deadline is the actual turn end, including for a whole No answer.
     Weather Control, Family Atomics and Harvester conditions count an actual accepted future printed-role play after this answer
     in the original open Storm or fresh spice-blow window. Earlier plays, disposal, other roles and recovery alone do not count.
     They do not ask for a selected storm distance or resulting spice amount. Each condition closes only when its original native window closes.
@@ -169,7 +171,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         if (kind === 'ship' || kind === 'move') onChange({ kind,
           territory: value.kind === 'ship' || value.kind === 'move' ? value.territory : 'carthag', minimum });
       }}>
-        <option value="cardPlay">Play Hajr, Tleilaxu Ghola or Nullentropy Box in its printed role</option>
+        <option value="cardPlay">Play Hajr, Tleilaxu Ghola, Nullentropy Box, Distrans or Juice of Sapho in its printed role</option>
         <option value="windowCardPlay">Use a printed card in this original native window or shipment-price opportunity</option>
         <option value="battlePower">Declare native Voice or Prescience in this battle</option>
         <option value="battlePlan">Use an actual current battle-plan choice</option>
@@ -185,13 +187,15 @@ const config: MixedActionConfig<TurnActionLeaf> = {
       {value.kind === 'cardPlay' ? <>
         <label htmlFor={`${id}-effect`}>Printed card role after this answer</label>
         <select id={`${id}-effect`} value={value.effect} disabled={disabled}
-          aria-invalid={value.effect !== 'hajr' && value.effect !== 'ghola' && value.effect !== 'nullentropyBox'} onChange={event => {
+          aria-invalid={!['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho'].includes(value.effect)} onChange={event => {
             const effect = event.currentTarget.value;
-            if (effect === 'hajr' || effect === 'ghola' || effect === 'nullentropyBox') onChange({ kind: 'cardPlay', effect });
+            if (effect === 'hajr' || effect === 'ghola' || effect === 'nullentropyBox' || effect === 'distrans' || effect === 'juiceOfSapho') onChange({ kind: 'cardPlay', effect });
           }}>
           <option value="hajr">Play Hajr in its printed role after this answer this turn</option>
           <option value="ghola">Play Tleilaxu Ghola in its printed role after this answer this turn</option>
           <option value="nullentropyBox">Activate Nullentropy Box and pay 2 spice after this answer this turn</option>
+          <option value="distrans">Play Distrans in its printed role after this answer this turn</option>
+          <option value="juiceOfSapho">Play Juice of Sapho in its printed role after this answer this turn</option>
         </select>
       </> : value.kind === 'windowCardPlay' ? <>
         <label htmlFor={`${id}-window-effect`}>Printed role in the original window</label>

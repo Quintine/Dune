@@ -40,7 +40,8 @@ export function advanceSaphoStartedMovement(game: Game, until: (state: Game) => 
 /** Original public Basic or Advanced setup, actual cache1 purchase and positive
  * shipment. Only unopened original deal/Spice ordering and original scalar
  * lotteries are selected; no played custody, resources, phase or queue is set. */
-export function createSaphoStartedMovementFixture(options: { advanced?: boolean; guildTake?: boolean } = {}) {
+export function createSaphoStartedMovementFixture(options: { advanced?: boolean; guildTake?: boolean;
+  truthFor?: readonly ('richese' | 'guild')[] } = {}) {
   const advanced = options.advanced ?? false, guildTake = options.guildTake ?? false;
   assert.ok(!guildTake || advanced, 'Flexible Guild TAKE is an original Advanced rule');
   const owner = 'emperor', guild = 'guild', canceler = 'atreides';
@@ -59,10 +60,23 @@ export function createSaphoStartedMovementFixture(options: { advanced?: boolean;
   const index = game.deck.findIndex(card => card.effect === 'karama'); assert.ok(index >= 0);
   const counter = game.deck[index].id;
   [game.deck[1], game.deck[index]] = [game.deck[index], game.deck[1]];
+  const truthFor = options.truthFor ?? [];
+  assert.ok(truthFor.length <= 2 && new Set(truthFor).size === truthFor.length,
+    'Select at most the two original unopened Truthtrance cards');
+  const startingTruthSelection = truthFor.map(actor => {
+    const position = game.players.findIndex(player => player.id === actor);
+    const from = game.deck.findIndex((card, index) => index >= position && card.effect === 'truthtrance');
+    assert.ok(position >= 0 && from >= position, 'The selected original Truth must remain in the unopened starting deal');
+    const card = game.deck[from].id;
+    [game.deck[position], game.deck[from]] = [game.deck[from], game.deck[position]];
+    return { actor, position, from, card };
+  });
   const beforeStartingDeal = structuredClone(game);
   reach(state => state.status === 'playing');
   const afterSetup = structuredClone(game), front: Game['spiceDeck'] = [];
   assert.ok(saphoStartedMovementPlayer(game, canceler).hand.some(card => card.id === counter));
+  for (const row of startingTruthSelection)
+    assert.ok(saphoStartedMovementPlayer(game, row.actor).hand.some(card => card.id === row.card));
   const spiceInventory = game.spiceDeck.map(card => JSON.stringify(card)).sort();
   for (let count = 0; count < (advanced ? 2 : 1); count++) {
     const at = game.spiceDeck.findIndex(card => 'territory' in card && !card.discovery); assert.ok(at >= 0);
@@ -114,7 +128,7 @@ export function createSaphoStartedMovementFixture(options: { advanced?: boolean;
   const source = structuredClone(game);
   return { game, source, advanced, guildTake, owner, guild, canceler, counter, karama: counter,
     card: STARTED_MOVEMENT_SAPHO, current, actor: current, beforeShipment, shipment,
-    lobby, setup, beforeStartingDeal, afterSetup, acquired, acquisition, timing,
+    lobby, setup, beforeStartingDeal, startingTruthSelection, afterSetup, acquired, acquisition, timing,
     originalInventory, originalCards: originalInventory, actions, steps: actions, sourceActionCount: actions.length,
     staging: [
       'Actual public ready/start (Advanced uses the original preview acknowledgement), original setup and paid cache1 purchase give Emperor the physical Sapho. Only an unopened original Atreides Karama deal position, one Basic/two Advanced original land Spice positions and scoped scalar lotteries are selected.',

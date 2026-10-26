@@ -103,8 +103,9 @@ function cards(mixed: Expression, answer = true, id = 'turn-action:1'): TurnActi
     hajr: { played: false, closed: false }, ghola: { played: false, closed: false },
   } };
   const visit = (node: Expression): void => {
-    if (node.kind === 'action' && node.action.kind === 'cardPlay' && node.action.effect === 'nullentropyBox')
-      row.cardPlays!.nullentropyBox = { played: false, closed: false };
+    if (node.kind === 'action' && node.action.kind === 'cardPlay' &&
+      node.action.effect !== 'hajr' && node.action.effect !== 'ghola')
+      row.cardPlays![node.action.effect] = { played: false, closed: false };
     else if (node.kind !== 'action' && node.kind !== 'fact') node.terms.forEach(visit);
   };
   visit(mixed);
@@ -936,7 +937,7 @@ void test('printed card-play leaves contain only the printed effect and every ra
     assert.throws(() => turnActionValue(promise(group('or', fact(), card(effect)))), TurnActionError,
       'Compiler folding never removes the original raw interval requirement');
   }
-  for (const effect of ['', 'Hajr', 'karama', 'thumper', null])
+  for (const effect of ['', 'Hajr', 'karama', 'thumper', 'semutaDrug', null])
     assert.throws(() => parseTurnActionLeaf({ kind: 'cardPlay', effect }), TurnActionError);
   validateTurnActionPromises([cards(group('and', card(), card('ghola')))], seats);
 });
@@ -1688,4 +1689,75 @@ void test('optional Box stage preserves legacy bytes and strict raw folded metad
   validateTurnActionPromises([optional], seats);
   for (const extra of [{ selected: 'Shield' }, { card: 'physical-box' }, { minimum: 2 }, { recipient: 'other' }])
     assert.throws(() => parseTurnActionLeaf({ kind: 'cardPlay', effect: 'nullentropyBox', ...extra }), TurnActionError);
+});
+
+void test('each optional printed stage subset preserves legacy and Box bytes while rejecting unknown choice metadata', () => {
+  const base = cards(card('ghola'), false);
+  const optional = ['nullentropyBox', 'distrans', 'juiceOfSapho'] as const;
+  for (let mask = 0; mask < 8; mask++) {
+    const cardPlays = { ...base.cardPlays! };
+    optional.forEach((effect, index) => { if (mask & (1 << index)) cardPlays[effect] = null; });
+    const row = { ...base, cardPlays }, before = JSON.stringify(row);
+    validateTurnActionPromises([row], seats);
+    assert.equal(recordTurnActionCardPlay([row], 'respondent', 1, 'distrans')[0], row);
+    assert.equal(JSON.stringify(row), before);
+    const closed = finishTurnActionTurn([row], 'respondent', 1)[0];
+    assert.deepEqual(Object.keys(closed.cardPlays!).sort(), Object.keys(cardPlays).sort());
+  }
+  for (const effect of ['distrans', 'juiceOfSapho'] as const) {
+    const row = cards(card(effect)), stage = row.cardPlays![effect]!;
+    for (const extra of [{ recipient: 'other' }, { give: 'private-card' }, { scope: 'movement' }, { mode: 'last' }, { outcome: true }]) {
+      assert.throws(() => parseTurnActionLeaf({ kind: 'cardPlay', effect, ...extra }), TurnActionError);
+      const invalid = { ...row, cardPlays: { ...row.cardPlays!, [effect]: { ...stage, ...extra } } };
+      assert.throws(() => turnActionValue(invalid), TurnActionError);
+    }
+  }
+  const unsupported = { ...base, cardPlays: { ...base.cardPlays!, semutaDrug: null } } as TurnActionPromise;
+  assert.throws(() => turnActionValue(unsupported), TurnActionError);
+});
+
+void test('Distrans and Sapho whole alternatives share only actual later native receipts without selecting a transfer or mode', () => {
+  const joint = cards(group('and', card('distrans'), card('juiceOfSapho'), pay()));
+  const alternative = cards(group('or', card('distrans'), card('juiceOfSapho')), true, 'turn-action:2');
+  assert.deepEqual(branches(joint), [[{ kind: 'cardPlay', effect: 'distrans', answer: true },
+    { kind: 'cardPlay', effect: 'juiceOfSapho', answer: true }, signedPay()]]);
+  assert.equal(recordTurnActionCardPlay([joint], 'other', 1, 'distrans')[0], joint);
+  assert.equal(recordTurnActionCardPlay([joint], 'respondent', 2, 'distrans')[0], joint);
+  const transferred = recordTurnActionCardPlay([joint, alternative], 'respondent', 1, 'distrans');
+  assert.equal(transferred[1].fulfilled, true);
+  assert.deepEqual(branches(transferred[0]), [[{ kind: 'cardPlay', effect: 'juiceOfSapho', answer: true }, signedPay()]]);
+  const used = recordTurnActionCardPlay(transferred, 'respondent', 1, 'juiceOfSapho');
+  assert.deepEqual(branches(used[0]), [[signedPay()]]);
+  assert.equal(recordTurnActionPayment(used, 'respondent', 1, payment())[0].fulfilled, true);
+  const fresh = cards(card('distrans'), true, 'turn-action:3');
+  assert.equal(fresh.cardPlays!.distrans!.played, false);
+  const replay = recordTurnActionCardPlay([used[0], fresh], 'respondent', 1, 'distrans');
+  assert.equal(replay[0], used[0]);
+  assert.equal(replay[1].fulfilled, true);
+  assert.equal(joint.cardPlays!.distrans!.played, false);
+  validateTurnActionPromises(used, seats);
+});
+
+void test('Distrans and Sapho No retain turn deadlines through Movement and payment closure and fail atomically on actual use', () => {
+  for (const effect of ['distrans', 'juiceOfSapho'] as const) {
+    const yes = cards(group('and', card(effect), pay()));
+    const no = cards(card(effect), false, 'turn-action:2');
+    const before = structuredClone([yes, no]);
+    assert.throws(() => recordTurnActionCardPlay([yes, no], 'respondent', 1, effect), TurnActionError);
+    assert.deepEqual([yes, no], before);
+    const transport = closeTurnActionTransport([no], 'respondent', 1);
+    const closedPayments = closeTurnActionPayments(transport, 'respondent', 1);
+    assert.deepEqual(closedPayments[0].cardPlays![effect], { played: false, closed: false });
+    assert.equal(closedPayments[0].fulfilled, false);
+    const expired = finishTurnActionTurn(closedPayments, 'respondent', 1)[0];
+    assert.equal(expired.fulfilled, true);
+    assert.deepEqual(expired.cardPlays![effect], { played: false, closed: true });
+    assert.equal(recordTurnActionCardPlay([expired], 'respondent', 1, effect)[0], expired);
+    assert.equal(finishTurnActionTurn([yes], 'respondent', 1)[0].released, true);
+    const wholeNo = cards(group('and', card(effect), pay()), false, 'turn-action:3');
+    const used = recordTurnActionCardPlay([wholeNo], 'respondent', 1, effect);
+    assert.throws(() => recordTurnActionPayment(used, 'respondent', 1, payment()), TurnActionError);
+    assert.deepEqual(used[0].payments, []);
+    validateTurnActionPromises([expired], seats);
+  }
 });

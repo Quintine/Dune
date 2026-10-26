@@ -752,9 +752,13 @@ export function truthQuestionText(
           action.effect === 'atomics' ? 'Family Atomics' : 'Harvester'} in its printed role after this answer in this original ${
           action.effect === 'harvester' ? 'fresh Spice Blow' : 'Storm window'} this turn`;
       }
-      if (action.kind === 'cardPlay') return action.effect === 'nullentropyBox'
-        ? 'you activate Nullentropy Box in its printed role and pay its 2-spice search cost after this answer this turn'
-        : `you play ${action.effect === 'hajr' ? 'Hajr' : 'Tleilaxu Ghola'} in its printed role after this answer this turn`;
+      if (action.kind === 'cardPlay') {
+        if (action.effect === 'nullentropyBox')
+          return 'you activate Nullentropy Box in its printed role and pay its 2-spice search cost after this answer this turn';
+        if (action.effect === 'distrans') return 'you complete a printed Distrans transfer and discard Distrans after this answer this turn';
+        return `you play ${action.effect === 'hajr' ? 'Hajr' : action.effect === 'ghola' ? 'Tleilaxu Ghola' :
+          'Juice of Sapho'} in its printed role after this answer this turn`;
+      }
       if (action.kind === 'battlePower') {
         const claim = action.claim, where = `in this original battle in ${locationName(action.territory)}`;
         if (claim.kind === 'voiceCommand') return `you actually declare native Voice ${claim.must ? 'requiring' : 'forbidding'} ${claim.cardType} ${where} (later prevention does not change the declaration)`;

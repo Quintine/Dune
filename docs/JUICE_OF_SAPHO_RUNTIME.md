@@ -13,6 +13,16 @@ contract supersede the earlier absence of that mode below. The
 and a fixed public final opportunity in fresh Richese battles; old battles keep
 their early protocol.
 
+## Future printed-use commitment — 27 October 2026
+
+Whole Truthtrance questions can now name actual printed Sapho use after
+answering in this turn. They do not fix a scope/mode/result. Current native
+options and an upcoming original Movement quote share the original resources;
+only a current exact option becomes an action guide. Native no-op, Guild,
+retained-current and own-started-turn policies remain. No lasts to turn end,
+independently of Movement expiry. Other future ordering calendars remain partial.
+[Contract and evidence](TRUTHTRANCE_TURN_ACTIONS.md#printed-transfer-and-order-cards--27-october-2026).
+
 ## Ordered Advanced Revival — 26 October 2026
 
 **Prototyped / Partial.** First/last now applies to the unfinished opportunities

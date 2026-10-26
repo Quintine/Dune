@@ -50,7 +50,9 @@ void test('genuine Basic and Advanced late Sapho changes an ordinary revealed ti
     assert.equal(late.afterUse!.discard.filter(card => card.id === f.card).length, 1);
     assert.equal(player(late.afterUse!).tanks, player(f.game).tanks);
     const stale = saphoLateOutcomeReady(late.beforeUse!, f.opponent);
-    assert.throws(() => actSaphoLate(late.afterUse!, f.opponent, stale), /event|stale|window|opportunity/i);
+    assert.ok(!late.game.pendingTreacheryDiscard, 'The actual fresh Sapho cost finishes before testing the resumed event');
+    assert.equal(late.game.battle!.outcomeWindow!.event, late.afterUse!.battle!.outcomeWindow!.event);
+    assert.throws(() => actSaphoLate(late.game, f.opponent, stale), /event|stale|window|opportunity/i);
     const changed = completeSaphoLateAggressor(f, late);
     assert.equal(changed.readies.length, 2, 'Both participants must acknowledge the revised public opportunity');
     assert.equal(changed.game.lastBattleContext!.winner, f.owner);

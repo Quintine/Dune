@@ -8,7 +8,8 @@ import { nextSemutaGuildIncomeNativeStep } from './fixture-semuta-guild-income';
 export const DISTRANS_PREBID_CARD = 'richese-distrans';
 export type DistransPrebidStep = { actor: string; action: Action };
 export type DistransPrebidCapacity = 'ordinary' | 'donorFull' | 'recipientLastSlot' | 'recipientFull';
-export type DistransPrebidOptions = { advanced?: boolean; capacity?: DistransPrebidCapacity };
+export type DistransPrebidOptions = { advanced?: boolean; capacity?: DistransPrebidCapacity;
+  truthFor?: readonly ('r' | 'a' | 'e')[] };
 
 export function distransPrebidPlayer(game: Game, id: string) {
   const player = game.players.find(player => player.id === id);
@@ -128,10 +129,14 @@ export function createDistransPrebidFixture(options: DistransPrebidOptions = {})
   const setup = structuredClone(game);
   assert.equal(game.status, 'setup');
   assert.ok(game.players.every(player => player.hand.length === 0));
+  const truthFor = options.truthFor ?? [];
+  assert.ok(truthFor.length <= 2 && new Set(truthFor).size === truthFor.length,
+    'Select at most the two original unopened Truthtrance cards');
   const startingDealSelection: { actor: string; position: number; from: number; card: string }[] = [];
   for (const [actor, kind] of [['r', 'projectile'], ['g', 'shield'], ['a', 'poison'], ['e', 'snooper']] as const) {
     const position = game.players.findIndex(player => player.id === actor);
-    const from = game.deck.findIndex((card, index) => index >= position && card.kind === kind);
+    const truth = truthFor.some(id => id === actor);
+    const from = game.deck.findIndex((card, index) => index >= position && (truth ? card.effect === 'truthtrance' : card.kind === kind));
     assert.ok(from >= position, `The original ${actor} starting card remains unopened`);
     const card = game.deck[from].id;
     [game.deck[position], game.deck[from]] = [game.deck[from], game.deck[position]];
@@ -182,6 +187,7 @@ export function createDistransPrebidFixture(options: DistransPrebidOptions = {})
   const give = startingDealSelection.find(row => row.actor === 'g')!.card;
   const action: Action = { type: 'card', card: DISTRANS_PREBID_CARD, target: recipient, give };
   return { game, advanced, capacity, holder: 'g', donor: 'g', recipient, card: DISTRANS_PREBID_CARD, give, action,
+    startingTruthSelection: startingDealSelection.filter(row => truthFor.some(id => id === row.actor)),
     initial, setup, beforeStartingDeal, startingDealSelection, afterSetup, beforeStorm,
     acquisition, acquired, firstLot, purchases, originalInventory, actions, sourceActionCount: actions.length,
     staging: ['Only unopened starting Treachery/Spice positions and scalar lotteries are selected. All cache/ordinary purchases, hands, prices, clocks and continuations are native public actions.'] };
