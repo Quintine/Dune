@@ -16,6 +16,31 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**World occupation / live Sandtrout — 26 October. Prototyped / Partial.**
+A real original Basic World/Tech draw reproduced an occupation-context rejection.
+Clean World and World/all14 profiles now retain canonical pending Sandtrout as
+live card state; original Nexus/Discovery contexts also reject malformed flags.
+Start/role limits and printed effects remain unchanged.
+
+Root profile/pure integration and one disjoint native lane pass **11 files,
+70/70**, types/lint/build and **three native paths**,19 GameTable SSR renders.
+Basic and first-turn ignored-worm sources use25+66 actions; Advanced all14/Tech/
+Strongholds uses30+71. Original A/E/Ix +Ix setup retains47 Treachery,22 Spice and
+optional14 Skills. Actual A2 Caladan→Broken Land costs4; waiting Sandtrout spans
+Collection/Mentat/Storm, then suppresses the real next worm without killing that
+army or removing its ground spice. Only immediate Hagga doubles; Advanced's
+second ordinary pile remains undoubled. Ix Heighliners1, deferred E Banker1 at
+Mentat and earned Strongholds stay separate. Four minimal policies each submit
+a legal next action per source. No played flag/card/force/wallet/clock is installed.
+
+The persistent waiting notice appears at the source, Collection, Mentat and next
+Storm, then clears after suppression. Frozen report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-world-sandtrout-proof-v1/`;
+journeys/HTML: adjacent `20261026-world-sandtrout-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or assurance campaign.
+SSR/public-action evidence leaves browser/mobile/deployed, wider combinations
+and complete-mode acceptance open. [Source and contract](HOMEWORLD_RULES.md#live-world-sandtrout--26-october-2026).
+
 **Homeworld occupation / original Nexus and Discovery — 26 October. Prototyped / Partial.**
 Shared fresh World setup now initializes mandatory occupation benefits in its
 existing Nexus and/or Discovery envelopes, optionally Skills and phase modules.

@@ -2,6 +2,47 @@
 
 Source audit, 9 September 2026. No runtime activation. The primary module source is the [GF9 Ecaz & Moritani rulebook](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf), especially printed pp.4, 9–10 and the Homeworld FAQ on pp.15–16. The local publisher-text transcription is `/tmp/dune-rules/ecaz-audit.txt`; fresh official indexed pp.9, 10 and 15 were checked against it. Direct PDF retrieval currently returns HTTP 403. Physical card faces are separately audited in [Homeworld component audit](HOMEWORLD_COMPONENT_AUDIT.md); a rulebook statement and a card-face statement are not interchangeable evidence.
 
+## Live World Sandtrout — 26 October 2026
+
+An actual original Sandtrout draw exposed a context error in clean World/Tech:
+the pending printed Spice Card was treated as an unrelated module, causing
+occupation validation to reject the draw. Clean World and World/all14 profiles
+now retain their original capability while the canonical boolean card flag is
+pending. Original World Nexus/Discovery profiles retain the same live behavior;
+malformed non-boolean effect flags are rejected. Fresh setup still requires
+unused gameplay state, so no pre-existing effect can be installed at Start.
+
+The [existing original Spice contract](IX_PROTOTYPE.md#original-spice-cards-and-selected-policy--24-october-2026)
+remains authoritative: break alliances, hold the card across turns, preserve
+the provisional first-turn ignoring priority, suppress the next active worm,
+and double only its immediate territory replacement. No numerical, timing,
+roster, role or module selection is changed by this fix. Existing World/Skill
+benefits and original minimal participation remain available while it waits.
+
+Frozen integration passes **11 files,70/70**, types/lint/build and three native
+runtime paths with19 GameTable SSR renders. Original public A/E/Ix +Ix World/
+Tech starts retain47 Treachery and22 Spice; Advanced adds original14 training
+and Strongholds. Basic and first-turn ignored-worm paths use25+66 actions;
+Advanced uses30+71. Only original unopened lotteries are selected.
+
+Actual A2 Caladan→Broken Land shipment pays4 and supplies a real later worm
+victim. Waiting Sandtrout spans Collection/Mentat/Storm; its later suppression
+preserves both that army and its ground spice, grants no Nexus/ride, and doubles
+only immediate Hagga. Advanced's next ordinary blow remains undoubled. Ix's
+Heighliners1 pays at phase end; E Banker1 waits for Mentat, beside earned first
+end-Mentat Strongholds. Four minimal policies each submit a legal next action
+per source. No played card, force, wallet, effect flag, occupation or clock is
+installed. All original Spice cards remain, including the one set aside while
+pending and the same physical discard after suppression.
+
+Actual table SSR retains the existing waiting notice at the source, Collection,
+Mentat and next Storm, then clears it after suppression. Report/source manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-world-sandtrout-proof-v1/`;
+journeys/HTML: adjacent `20261026-world-sandtrout-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or separate assurance campaign.
+SSR/public actions leave broader combinations, browser/mobile/deployed and
+complete-mode acceptance open.
+
 ## Original World Nexus and Discovery occupation — 26 October 2026
 
 Every original admitted fresh World setup now initializes occupation benefit
@@ -62,8 +103,9 @@ Fresh World/all14 Skills starts now initialize the existing occupation benefit
 state whenever the unchanged registered World/Skills admission accepts that
 clean context. Original selected families, native role exclusions, Tech3+ and
 Advanced Strongholds2+ remain; optional independent cards remain optional.
-This introduces no new start permission. Nexus/Discovery/Sandtrout/Semuta and
-other reaction contexts retain their own existing scopes.
+This introduces no new start permission. Nexus/Discovery/Semuta and other
+reaction contexts retain their own existing scopes. Pending printed Sandtrout
+uses the [live-state clarification](#live-world-sandtrout--26-october-2026) above.
 
 Shared fresh state includes qualification history, occupied Collection and
 percentage ledgers, native CHOAM Tupile and native Ecaz World victory. Skills

@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 26 October 2026 — Live World Sandtrout
+
+**Prototyped / Partial.** A real original Basic
+World/Tech Sandtrout draw reproduced an occupation-context rejection. Clean
+World and World/all14 selectors now treat the canonical pending card flag as
+live state, preserving the existing module/role admission and fresh-start rules.
+Original Nexus/Discovery contexts also reject malformed effect flags. Printed
+mechanics and the existing provisional timing policy remain unchanged.
+
+Root profile/pure integration and a disjoint native lane pass **11 files,70/70**,
+types/lint/build and **three native paths**,19 GameTable SSR renders. Basic and
+first-turn ignored-worm paths use25+66 actions; Advanced World/all14/Tech/
+Strongholds uses30+71. Actual A2 Caladan→Broken Land pays4, producing a real
+later worm victim. Pending Sandtrout spans Collection/Mentat/Storm; suppression
+preserves that army and ground spice, doubles only immediate Hagga and gives no
+Nexus/ride. Advanced's next ordinary pile stays undoubled. Original47 Treachery,
+22 Spice and optional14 Skills remain. Ix Heighliners1, deferred E Banker1 and
+earned Strongholds retain their separate payouts. Four minimal policies each
+submit a legal next action per source; no played state is installed.
+
+The persistent notice appears through waiting phases and clears after
+suppression. Frozen report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-world-sandtrout-proof-v1/`;
+journeys/HTML: adjacent `20261026-world-sandtrout-runtime/`.
+No saved-room/D1/server/reset/restart/deployment or assurance campaign.
+Broader combinations, browser/mobile/deployed and complete-mode acceptance remain.
+[Source and scope](HOMEWORLD_RULES.md#live-world-sandtrout--26-october-2026).
+
 ## 26 October 2026 — Original World Nexus and Discovery occupation
 
 **Prototyped / Partial.** Shared fresh World setup

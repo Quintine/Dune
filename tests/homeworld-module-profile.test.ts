@@ -61,13 +61,21 @@ void test('independent-card selection is an exact optional boolean rather than a
   for (const ecazTreachery of [null, 0, 1, 'true', {}]) assert.equal(supported(profile(undefined, undefined, { ecazTreachery })), false);
 });
 
-void test('Skills, Nexus, Discovery, active Sandtrout and unrelated reaction selectors remain outside the clean World scope', () => {
+void test('Skills, Nexus, Discovery and unrelated reaction selectors remain outside the clean World scope', () => {
   for (const field of [
-    'leaderSkills', 'nexusCards', 'discoveryEnabled', 'discoveries', 'discoveryStash', 'greatMaker', 'sandtrout',
+    'leaderSkills', 'nexusCards', 'discoveryEnabled', 'discoveries', 'discoveryStash', 'greatMaker',
     'spiceBankerIncomePreview', 'semutaPreview', 'advancedPreview', 'kullPreview', 'nexusKullPreview',
     'guildBetrayalPreview', 'richeseBetrayalPreview', 'nexusIxianReplacementPreview', 'nexusIxianBetrayalPreview',
     'nexusHarkonnenBetrayalPreview',
   ] as const) assert.equal(supported({ ...profile(), [field]: true }), false, field);
+});
+
+void test('a pending original Sandtrout preserves the live World context without becoming a module selection', () => {
+  const game = profile(['ixians', 'emperor', 'atreides'], ['ix'], {
+    homeworldOccupationPreview: true, techTokens: createTechTokens(),
+  });
+  for (const sandtrout of [undefined, false, true]) assert.equal(supported({ ...game, sandtrout }), true);
+  for (const sandtrout of [null, 0, 1, 'true', {}]) assert.equal(supported({ ...game, sandtrout }), false);
 });
 
 void test('canonical occupation and native benefit stamps retain their actual seated source and required parent', () => {

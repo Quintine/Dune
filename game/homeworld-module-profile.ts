@@ -49,13 +49,14 @@ const optionalFlag = (value: unknown) => value === undefined || typeof value ===
 
 /** Configuration permission only: original setup validates freshness, and live
  * custody/history validators retain their own physical and occupation rules.
- * Optional independent cards do not require either phase module. */
+ * Optional independent cards do not require either phase module. Sandtrout is
+ * a live printed-card flag; fresh setup checks that no effect is already held. */
 export function homeworldPhaseModulesProfile(game: HomeworldPhaseModulesProfile): boolean {
   if (!game || typeof game !== 'object' || !game.homeworlds || typeof game.advanced !== 'boolean' ||
-    !registeredRoster(game) || !optionalFlag(game.ecazTreachery) ||
+    !registeredRoster(game) || !optionalFlag(game.ecazTreachery) || !optionalFlag(game.sandtrout) ||
     (game.techTokens && game.players.length < 3) || (game.strongholdCards && !game.advanced) ||
     game.leaderSkills || game.nexusCards || game.discoveryEnabled || game.discoveries ||
-    game.discoveryStash || game.greatMaker || game.sandtrout || game.spiceBankerIncomePreview ||
+    game.discoveryStash || game.greatMaker || game.spiceBankerIncomePreview ||
     game.semutaPreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.guildBetrayalPreview || game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
     game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
@@ -75,10 +76,10 @@ export function homeworldPhaseModulesProfile(game: HomeworldPhaseModulesProfile)
  * only selects the clean occupation context and accepts its native stamps. */
 export function homeworldOccupationLeaderSkillsProfile(game: HomeworldPhaseModulesProfile): boolean {
   if (!game || typeof game !== 'object' || !game.homeworlds || !game.leaderSkills ||
-    typeof game.advanced !== 'boolean' || !registeredRoster(game) || !optionalFlag(game.ecazTreachery) ||
+    typeof game.advanced !== 'boolean' || !registeredRoster(game) || !optionalFlag(game.ecazTreachery) || !optionalFlag(game.sandtrout) ||
     (game.techTokens && game.players.length < 3) || (game.strongholdCards && !game.advanced) ||
     game.nexusCards || game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
-    game.sandtrout || game.semutaPreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
+    game.semutaPreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.guildBetrayalPreview || game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
     game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
   if (![game.ecazOccupyPreview, game.moritaniAssassinatePreview, game.homeworldOccupationPreview,
@@ -98,7 +99,7 @@ export function homeworldOccupationLeaderSkillsProfile(game: HomeworldPhaseModul
  * live effect stamps and Discovery frames are not replacement module choices. */
 export function homeworldOccupationModulesProfile(game: HomeworldPhaseModulesProfile): boolean {
   if (!game || typeof game !== 'object' || !game.homeworlds || typeof game.advanced !== 'boolean' ||
-    !registeredRoster(game) || !optionalFlag(game.ecazTreachery) ||
+    !registeredRoster(game) || !optionalFlag(game.ecazTreachery) || !optionalFlag(game.sandtrout) ||
     (game.techTokens && game.players.length < 3) || (game.strongholdCards && !game.advanced) ||
     (!game.nexusCards && game.discoveryEnabled !== true) ||
     (game.discoveryEnabled !== true && (game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker)) ||

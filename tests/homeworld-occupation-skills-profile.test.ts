@@ -57,14 +57,27 @@ void test('required modules, physical seat bounds and existing phase limits do n
   ]) assert.equal(supported(game), false);
 });
 
-void test('occupation benefit context excludes Nexus, Discovery, Sandtrout and unrelated reaction selectors without changing library admission', () => {
+void test('occupation benefit context excludes Nexus, Discovery and unrelated reaction selectors without changing library admission', () => {
   for (const field of ['nexusCards', 'discoveryEnabled', 'discoveries', 'discoveryStash', 'greatMaker',
-    'sandtrout', 'semutaPreview', 'advancedPreview', 'kullPreview', 'nexusKullPreview', 'guildBetrayalPreview',
+    'semutaPreview', 'advancedPreview', 'kullPreview', 'nexusKullPreview', 'guildBetrayalPreview',
     'richeseBetrayalPreview', 'nexusIxianReplacementPreview', 'nexusIxianBetrayalPreview', 'nexusHarkonnenBetrayalPreview',
   ] as const) assert.equal(supported({ ...profile(), [field]: true }), false, field);
   const nexus = profile(undefined, undefined, { nexusCards: { cards: null, phase: null } });
   assert.equal(admitted(nexus), true, 'Existing Nexus/World/all14 library entry stays independently admitted');
   assert.equal(supported(nexus), false, 'This clean benefit slice does not claim that separate combination');
+});
+
+void test('pending printed Sandtrout retains occupation and all14 roles under the same original World admission', () => {
+  const game = profile(['ixians', 'emperor', 'atreides'], ['ix'], { advanced: true,
+    homeworldOccupationPreview: true, spiceBankerIncomePreview: true,
+    techTokens: createTechTokens(), strongholdCards: createStrongholdCards(),
+  });
+  for (const sandtrout of [undefined, false, true]) {
+    const active = { ...game, sandtrout };
+    assert.equal(admitted(active), true);
+    assert.equal(supported(active), true);
+  }
+  for (const sandtrout of [null, 0, 1, 'true', {}]) assert.equal(supported({ ...game, sandtrout }), false);
 });
 
 void test('canonical Banker and native occupation stamps require their actual parent factions and retain the Advanced assassination band', () => {

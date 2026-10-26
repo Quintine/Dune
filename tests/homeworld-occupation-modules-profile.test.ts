@@ -135,7 +135,7 @@ void test('unrelated previews and mismatched native, parent, reaction or Banker 
     assert.equal(supported({ ...game, [field]: 'forged' }), false, field);
 });
 
-void test('live native Discovery, active printed Sandtrout and occupied custody stay configuration-neutral without changing clean helpers', () => {
+void test('live native Discovery, active printed Sandtrout and occupied custody stay configuration-neutral in original module contexts', () => {
   const custody = { visitors: { 'homeworld:ixians': { emperor: { normal: 1, elite: 1 } } } };
   const discoveries = { turn: 2, tokens: [], encounters: [] };
   const game = profile(['ixians', 'tleilaxu', 'emperor'], ['ix'], { nexusCards: nexus(), discoveryEnabled: true,
@@ -148,7 +148,8 @@ void test('live native Discovery, active printed Sandtrout and occupied custody 
   const plain = profile(); const trained = { ...plain, leaderSkills: true };
   assert.equal(clean(plain), true); assert.equal(cleanSkills(trained), true);
   assert.equal(supported(plain), false); assert.equal(supported(trained), false);
-  assert.equal(clean({ ...plain, sandtrout: true }), false); assert.equal(cleanSkills({ ...trained, sandtrout: true }), false);
+  assert.equal(clean({ ...plain, sandtrout: true }), true); assert.equal(cleanSkills({ ...trained, sandtrout: true }), true);
+  for (const sandtrout of [null, 0, 1, 'true', {}]) assert.equal(supported({ ...game, sandtrout }), false);
   for (const value of [null, {}, { ...game, expansions: 'ix' }, { ...game, players: [{ faction: 'ixians' }, null] }])
     assert.equal(supported(value as unknown as HomeworldPhaseModulesProfile), false);
 });

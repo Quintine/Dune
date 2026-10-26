@@ -1,5 +1,10 @@
 # Ixians & Tleilaxu functional prototype
 
+The [26 October live World follow-up](HOMEWORLD_RULES.md#live-world-sandtrout--26-october-2026)
+keeps occupation capabilities available while an original Sandtrout waits.
+It corrects a module-context rejection; the original Spice effects and
+provisional compositions below retain their existing source and timing.
+
 ## Original Spice cards and selected policy — 24 October 2026
 
 Normal lobbies now offer labelled Basic/Advanced expansion previews through
