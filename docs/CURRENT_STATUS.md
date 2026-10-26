@@ -16,6 +16,47 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / earlier combined shipment and movement — 26 October. Prototyped / Partial.**
+The combined travel question now uses the existing clean native phases0–5
+forecast in Basic/Advanced. Original current Charity/Revival/auction obligations
+share funding; required native bid/Revival actions precede pass or Ready.
+An old prior-turn shipped flag never counts as current progress or closes the
+future shipment. Every definite answer uniformly reopens only concurrent
+Charity/legacy Revival readiness, including constants; completed ordered
+Advanced Revival remains complete. Exact current-phase native packets include
+phase/event metadata, preserving owned cash/Karama invoices and paid Box search.
+Mandatory early progress can release impossibility; discretionary spending or
+completion cannot remove the last route. Private histories and four minimal
+profiles retain the original whole-answer/native-event meaning.
+
+Root integration with disjoint controls/native lanes and bounded review passes
+**23 files,197/197**, types/lint/build and **three native paths**,25 GameTable SSR
+renders/three actual answer callbacks/16 guide callbacks. Original owned-Karama
+Revival-source Charity53 adds32 for native Ready, bid2, actual owned cash invoice,
+Revival and later paid ship2/ground2. Original Hajr Charity13 adds16 for frozen
+spice, real bribe3, paid shipment, ground move, physical Hajr and second move.
+Original earned post-Storm41 adds24: the real prior shipment flag remains true
+when answering, current progress starts empty, then the later ship/move fulfills.
+Original physical card inventories remain; no played source state is installed.
+
+Nineteen native cases cover phases0–4, readiness, native auctions, current costs,
+prior-turn flags and four profiles; ten early control cases guard current source/
+phase/owner. Two genuine two-Truth bid cases retain funding and required bids in
+both orders. Three conserved controlled Revival cases reject double reservation
+and perform the required return before Ready, including four minimal profiles.
+V1 catches an allied-destination test assumption; the corrected Basin escrow
+case defers release to actual foreign income/cancellation. Native bid/Revival
+resource and guide repairs pass focused regressions. V2 passes all source checks;
+only its private smoke driver over-settles the invoice. Corrected runtime v3
+passes on the identical snapshot and explicitly reuses v2's unchanged checks.
+Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-travel-early-proof-v3/`;
+journeys/HTML: adjacent `20261026-truth-travel-early-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Other cross-action families, wider preparation/module compositions and final
+rules/browser/deployed/assurance remain. No complete mode is certified.
+[Authority, early forecast and source-bound evidence](TRUTHTRANCE_TRAVEL_PROMISES.md#earlier-native-phases--26-october-2026).
+
 **Truthtrance / combined shipment and physical movement — 26 October. Prototyped / Partial.**
 One whole AND/OR answer now combines the future original reserve shipment and
 physical ground groups, optionally with frozen current facts. Distinct receipts

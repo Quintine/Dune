@@ -54,7 +54,8 @@ function projected(next: Action = { type: 'move', forces: { 'arrakeen:10': 3, 'a
   game.status = 'playing'; game.turn = 2; game.phase = 5; game.active = 'p'; game.ready = [];
   game.travelPromises = [{ event: 'controlled-travel-event', player: 'p', asker: 'a', turn: 2,
     mixed: claim(), answer: true, fulfilled: false, released: false }];
-  game.travelPromiseGuide = { event: 'controlled-travel-event', action: { ...next, travelPromiseEvent: 'controlled-travel-event' } };
+  game.travelPromiseGuide = { event: 'controlled-travel-event', action: { ...next,
+    travelPromiseEvent: 'controlled-travel-event', travelPromisePhase: game.phase } };
   game.truthTravelAnswers = null;
   return game;
 }
@@ -206,6 +207,7 @@ void test('travel guide rejects stale view, actor, source, turn, phase, native o
     game => { game.travelPromiseGuide = { ...game.travelPromiseGuide!, action: { ...game.travelPromiseGuide!.action } }; },
     game => { game.travelPromiseGuide!.event = 'changed'; },
     game => { game.travelPromiseGuide!.action.travelPromiseEvent = 'changed'; },
+    game => { game.travelPromiseGuide!.action.travelPromisePhase = 4; },
     game => { (game.travelPromiseGuide!.action.forces as Record<string, number>)['arrakeen:10'] = 2; },
     game => { (game.travelPromiseGuide!.action.eliteForces as Record<string, number>)['arrakeen:10'] = 0; },
     game => { game.travelPromises[0].event = 'expired'; }, game => { game.travelPromises[0].player = 'a'; },

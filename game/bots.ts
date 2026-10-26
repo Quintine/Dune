@@ -4263,7 +4263,8 @@ export function botActions(g: GameView): Action[] {
   if (g.movementExpressionPromiseGuide && g.status === 'playing' &&
       !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending)
     return [g.movementExpressionPromiseGuide.action];
-  if (g.travelPromiseGuide && g.status === 'playing' && g.phase === 5 && g.active === g.me &&
+  if (g.travelPromiseGuide && g.status === 'playing' && g.phase >= 0 && g.phase <= 5 &&
+      (g.phase < 5 || g.active === g.me) &&
       !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending)
     return [g.travelPromiseGuide.action];
   if (g.movementPromisePolicy && g.status === 'playing' &&

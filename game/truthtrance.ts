@@ -374,8 +374,8 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
   }
   if (v.kind === 'travel') {
     check(Object.keys(v).sort().join(',') === 'kind,mixed,target,turn' && g.status === 'playing' &&
-      g.phase === 5 && v.turn === g.turn,
-    'Choose a current Shipment and Movement turn for this combined travel question.');
+      Number.isInteger(g.phase) && g.phase >= 0 && g.phase <= 5 && v.turn === g.turn,
+    'Choose this turn’s upcoming or active Shipment and Movement for this combined travel question.');
     const respondent = g.players.find(player => player.id === v.target)!;
     return { kind: 'travel', target: v.target as string, turn: g.turn,
       mixed: parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent), parseTravelActionClaim,

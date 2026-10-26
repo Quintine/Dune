@@ -225,11 +225,12 @@ void test('native waiting travel answer preserves the current owner queue until 
   game = finish(game, f.target); physicalTruthOnce(game, f.truth); assert.deepEqual(inventory(game), f.originalCards);
 });
 
-void test('native travel authoring excludes earlier phases and a respondent whose own movement interval has closed', () => {
+void test('native travel authoring admits upcoming Charity and excludes a respondent whose own movement interval has closed', () => {
   const charity = fixture({ window: 'charity' }); assert.equal(charity.game.phase, 2);
   const declaredCharity = declare(charity);
-  assert.ok(!viewGame(declaredCharity.game, charity.asker).truthTravelTargets.includes(charity.target));
-  rejected(declaredCharity.game, charity.asker, charity.questionAction);
+  assert.ok(viewGame(declaredCharity.game, charity.asker).truthTravelTargets.includes(charity.target));
+  const askedCharity = act(declaredCharity.game, charity.asker, charity.questionAction);
+  assert.equal(askedCharity.truthtrance?.question?.kind, 'travel'); assert.equal(askedCharity.phase, 2);
   assert.equal(declaredCharity.game.discard.filter(card => card.id === charity.truth).length, 0);
   const f = fixture(); let game = finish(f.game, f.target);
   assert.equal(game.active, f.asker); assert.ok(!game.movementRemaining?.includes(f.target));
@@ -257,8 +258,10 @@ void test('native travel projection keeps only the owner raw aggregate while exa
   assert.deepEqual(own.travelPromises, [row]);
   const guide = own.travelPromiseGuide; assert.ok(guide);
   assert.equal(guide.event, row.event); assert.equal(guide.action.travelPromiseEvent, row.event);
+  assert.equal(guide.action.travelPromisePhase, 5);
   rejected(game, f.asker, guide.action);
   rejected(game, f.target, { ...guide.action, travelPromiseEvent: 'stale-native-travel-event' });
+  rejected(game, f.target, { ...guide.action, travelPromisePhase: 4 });
   rejected(game, f.target, { ...guide.action, amount: Number(guide.action.amount) + 1 });
   const wire: Action = JSON.parse(JSON.stringify(guide.action)); game = settle(act(game, f.target, wire));
   assert.equal(promise(game, f.target).event, row.event); rejected(game, f.target, wire);

@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Earlier combined travel and native preparation — 26 October 2026
+
+Extend the recorded combined shipment/ground prototype through the existing
+native phases0–5 envelope, reusing the provisional owned-stage forecast and
+publisher FAQp8/current-turn plus supplied Advanced physical39 authority.
+Prior-turn shipment flags never become current future-event progress. Earlier
+Charity/Revival readiness uniformly reopens for every definite answer, including
+constants, so public Ready does not disclose a frozen private branch. Completed
+ordered Advanced Revival stays complete. Prior Revival/bribe obligations share
+funding with travel. Current-phase native guides carry exact phase/event source;
+mandatory early progress can release impossibility, discretionary spending or
+preparation completion cannot evade it. Broader cross-action/module/full-mode
+acceptance remains unfinished. [Contract/evidence](TRUTHTRANCE_TRAVEL_PROMISES.md#earlier-native-phases--26-october-2026).
+
 ## Combined shipment and physical movement commitments — 26 October 2026
 
 Publisher November2020 FAQp8 permits current-turn AND/OR action commitments;

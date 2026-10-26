@@ -1,5 +1,90 @@
 # Truthtrance combined shipment and physical movement
 
+## Earlier native phases — 26 October 2026
+
+**Prototyped / Partial.** The same raw question now uses the existing clean
+native movement-target envelope in Storm, Spice Blow, Charity, Bidding, Revival
+and Shipment and Movement (phases0–5), in both Basic and Advanced. Registered
+factions retain their existing selected native-deck and optional-module scope.
+This supersedes only the earlier phase5 entry restriction documented below.
+No shipment, movement, payment or card action happens merely by answering.
+
+Reuse the existing owned-stage forecast described in
+[earlier native movement](TRUTHTRANCE_MOVEMENT_PROMISES.md#native-early-advanced-and-choam-opening--26-october-2026).
+Original Charity/normal Revival/current auction liabilities and owned known
+preparations remain authoritative. No unknown future card, foreign gift or
+favorable future Storm supplies a witness. Prior Revival and bribe obligations
+share the same future purse; a final Revival aggregate must retain combined
+travel feasibility rather than spend the same spice twice.
+
+An early record starts with its future shipment pending even when the actual
+player still has last turn's `shipped` flag. That old physical event never
+counts as this answer's progress. Original phase5 initialization remains in
+charge of real allowances. Actual current-turn native shipment/ground hooks
+record the same distinct receipts and physical maxima; no new event is granted.
+
+A definite answer uniformly reopens only the respondent's concurrent Charity
+or legacy Revival readiness, including constant answers. This avoids exposing
+a private fact branch through a public Ready difference. Constant answers are
+still terminal without action receipts or a private future guide. Ordered
+Advanced Revival never reopens an already completed owned turn. A required
+owned preparation or optional spending must preserve the last legal route;
+mandatory early progress and completed opposing effects can release actual
+impossibility rather than trapping the actor. Pending native outcomes retain
+priority.
+
+The private guide now offers only an entitled action in the current phase:
+Charity, Ready, ordinary Revival, current native bid pass or an owned invoice,
+then the existing phase5 transport/movement/card controls. Original cash or
+physical Karama payment remains a choice of the actual invoice; exact projected
+packets preserve that source. Required native bid/Revival commitments take
+priority over passing or Ready in the guide; their native joint completion
+retains travel funding. Pending allied auction escrow waits for its actual
+foreign payment/income outcome before impossible travel can release. A source-bound paid Box search retains its actual
+phase. No future transport is exposed before phase5. Each packet includes
+`travelPromisePhase` as well as its event: an old Charity Ready cannot be
+replayed as a later Revival Ready. The server and saved callbacks verify the
+current source and exact packet. Four minimal profiles use that same path.
+
+New source/control evidence: `tests/fixture-truth-travel-early.ts`,
+`tests/truth-travel-early-runtime.test.ts`,
+`tests/truth-travel-early-controls.test.tsx`. Separate conserved controlled
+`tests/truth-travel-early-revival.test.ts` cases actually declare both original
+Truth cards in opposite acceptance orders to reject a shared-purse conflict;
+they claim no setup/casualty history. Native
+`tests/truth-travel-early-bid.test.ts` uses genuine Harkonnen opening custody to
+protect pending bid funding and legal required declarations in both answer
+orders.
+
+Frozen verification passes **23 files,197/197**, types/lint/build and three native
+runtime journeys with 25 GameTable SSR renders, three actual answer callbacks and
+16 guide callbacks. Original owned-Karama Charity53 adds32: real bid2 and current
+cash invoice precede Revival and later paid ship2/ground2. Hajr Charity13 adds16:
+frozen spice, actual bribe3, paid shipment and two real groups with original Hajr.
+Earned post-Storm41 adds24, retaining its true prior shipped flag while the new
+future shipment remains pending with empty progress. Every original physical
+card inventory remains. Nineteen native and ten early control cases supplement
+existing movement/shipment/Revival/funding evidence. Two original Harkonnen
+opening-custody bid cases exercise both answer orders; three conserved controlled
+Revival cases exercise incompatibility and required actual returns. Four minimal
+profiles consume legal current-phase guides.
+
+V1 source feedback finds a controlled ally's Carthag garrison invalidates the
+chosen destination, so the escrow case uses the original audit's Basin route.
+Actual foreign invoice/income deferral and native required-bid/Revival guide/
+funding corrections pass focused regressions. V2 passes types/lint, the full
+197-case union and build. Its private smoke driver then auto-settles an owned
+invoice before inspecting it. Only that driver changes; corrected runtime v3
+advances one native action at a time. `verified-proof.json` explicitly reuses
+v2's three passing checks on an identical before/after source snapshot.
+Proof and per-file manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-travel-early-proof-v3/`;
+journeys/HTML: adjacent `20261026-truth-travel-early-runtime/`.
+This is local engine/SSR/actual-callback evidence, not DOM/hydration/browser/
+mobile/deployed acceptance or complete-mode certification.
+Other cross-action families, wider owned preparations/module compositions and
+final rules/browser/mobile/deployed/recovery/privacy/custody acceptance remain.
+
 ## Native travel prototype — 26 October 2026
 
 **Prototyped / Partial.** The question is `{kind:'travel',target,turn,mixed}`.

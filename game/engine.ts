@@ -15708,6 +15708,7 @@ function bidPromiseCompletion(g: Game, p: Player, promises = g.bidPromises ?? []
       // The detached accepted declaration satisfies its own Bid Yes before
       // another promise checks the remaining purse; it is not a second bid.
       trial.bidPromises = recordPromisedBid(promises, p.id, opportunity, action.amount as number);
+      reconcileTravelPromises(trial, p.id, action, g.phase);
       reconcileShipmentPromises(trial, { actor: p.id, action, phase: g.phase });
       reconcileGroundMovementPromises(trial, p.id, action, g.phase);
       reconcileRevivalPromises(trial, { actor: p.id, action });
@@ -18661,7 +18662,7 @@ function travelRule<T>(operation: () => T): T {
   catch (error) { if (error instanceof TravelPromiseError) throw new RuleError(error.message); throw error; }
 }
 function travelTargetAvailable(g: Game, actor: string): boolean {
-  return g.phase === 5 && movementPromiseTargetAvailable(g, actor);
+  return movementPromiseTargetAvailable(g, actor);
 }
 function appendTravelOrder(g: Game, kind: NonNullable<Game['travelPromiseOrder']>[number]['kind'], index: number) {
   g.travelPromiseOrder?.push({ kind, index });
@@ -18717,10 +18718,18 @@ function travelTruthAnswers(g: Game, p: Player, claim: TravelClaim): TruthAnswer
     if (compiled.kind === 'constant' && compiled.value !== answer) continue;
     const promise: TravelPromise = { ...structuredClone(claim), event: 'candidate', player: p.id,
       asker: g.players.find(player => player.id !== p.id)!.id, answer, compiled,
-      shipment: { pending: shipmentAvailable(g, p), event: null }, progress: [], movementClosed: false,
+      shipment: { pending: g.phase < 5 || shipmentAvailable(g, p), event: null }, progress: [], movementClosed: false,
       fulfilled: compiled.kind === 'constant', released: false };
-    const trial = { ...g, travelPromises: [...(g.travelPromises ?? []), promise] };
-    if (travelCompletion(trial, p.id) && bribeCompatibleLaterPromises(trial, p, {})) answers.push(answer ? 'yes' : 'no');
+    const answerSource = g.phase === 2 || (g.phase === 4 && !g.revivalOrder)
+      ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
+    // Candidate witnesses must include the new row, which has no accepted-order
+    // slot until the real answer binds. The authoritative order stays untouched.
+    const trial = { ...answerSource, travelPromises: [...(g.travelPromises ?? []), promise], travelPromiseOrder: undefined };
+    const lot = bidOpportunity(trial);
+    if (travelCompletion(trial, p.id) && revivalCompatibleLaterPromises(trial, p, {}) &&
+      bribeCompatibleLaterPromises(trial, p, {}) &&
+      (!lot || !bidRequired(trial.bidPromises ?? [], p.id, lot) || !!bidPromiseCompletion(trial, p)))
+      answers.push(answer ? 'yes' : 'no');
   }
   return answers.length ? answers : ['unknown'];
 }
@@ -18729,30 +18738,39 @@ function bindTravelTruth(g: Game, p: Player, claim: TravelClaim, answer: boolean
     'Choose a whole travel answer compatible with the original shipment and ground movements.');
   const compiled = compileMixedActionExpression(claim.mixed,
     fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
+  reopenMovementPreparation(g, p);
   initializeTravelOrder(g);
   (g.travelPromises ??= []).push({ ...structuredClone(claim), event: crypto.randomUUID(), player: p.id, asker, answer,
-    compiled, shipment: { pending: shipmentAvailable(g, p), event: null }, progress: [], movementClosed: false,
+    compiled, shipment: { pending: g.phase < 5 || shipmentAvailable(g, p), event: null }, progress: [], movementClosed: false,
     fulfilled: compiled.kind === 'constant', released: false });
   appendTravelOrder(g, 'travel', g.travelPromises!.length - 1);
 }
-function reconcileTravelPromises(g: Game, actor?: string, action?: Action) {
+function reconcileTravelPromises(g: Game, actor?: string, action?: Action, sourcePhase = g.phase) {
   if (!g.travelPromises?.length) return;
   travelRule(() => validateTravelPromises(g.travelPromises!, g.players.map(player => player.id)));
   for (const promise of g.travelPromises) if (!promise.fulfilled && !promise.released &&
     (promise.turn !== g.turn || g.phase > 5 || g.status !== 'playing')) promise.released = true;
-  if (g.phase !== 5) return;
+  if (g.phase < 0 || g.phase > 5) return;
   initializeTravelOrder(g);
   for (const p of g.players) {
     if (!liveTravelPromises(g.travelPromises, p.id, g.turn).length) continue;
-    const voluntary = actor === p.id && action?.type !== 'passResponse';
-    if (g.truthtrance || g.phaseOpening || g.pendingFremenMove?.order.player === p.id ||
+    const early = g.phase < 5 || sourcePhase < 5;
+    const voluntary = actor === p.id && action?.type !== 'passResponse' && (!early || !!action &&
+      (['card', 'bribe', 'alliance', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revealNoField', 'revive',
+        'reviveLeader', 'reviveKwisatz', 'emperorRevival', 'decision'].includes(action.type) ||
+        action.type === 'richeseBid' && typeof action.amount === 'number' && action.amount > 0 ||
+        action.type === 'ready' && [2, 4].includes(sourcePhase)));
+    if (g.truthtrance || !voluntary && g.phaseOpening || g.pendingFremenMove?.order.player === p.id ||
       g.pendingIxMove?.player === p.id || g.pendingChoamMove?.player === p.id ||
       g.pendingAdvisorMatching?.intent.kind === 'movement' && g.pendingAdvisorMatching.intent.order.player === p.id ||
       g.response?.kind === 'advisorFlip' && g.response.owner === p.id ||
       g.pendingAutomaticAdvisorFlips?.some(source => source.owner === p.id ||
         source.producer === 'groundMovement' && source.mover === p.id)) continue;
     if (!voluntary && (g.response || g.decision || g.pendingAmbassador || g.pendingTerrorEntry ||
-      g.pendingArrivalOverlap || g.pendingArrivalReaction?.length || g.pendingTreacheryDiscard)) continue;
+      g.pendingArrivalOverlap || g.pendingArrivalReaction?.length || g.pendingTreacheryDiscard ||
+      g.phase === 3 && !g.currentAuctionSale &&
+        (g.auction?.bidder === p.ally && (g.auction?.allyPayment ?? 0) > 0 ||
+          g.richeseAuction && !g.richeseAuction.outcome))) continue;
     const shipments: ShipmentPromise[] = [], movements: MovementPromise[] = [], expressions: MovementExpressionPromise[] = [], travel: TravelPromise[] = [];
     for (const entry of g.travelPromiseOrder!) {
       const ledger = entry.kind === 'shipment' ? g.shipmentPromises : entry.kind === 'movement' ? g.movementPromises
@@ -18780,9 +18798,31 @@ function projectedTravelPromises(g: Game, actor: string) {
 }
 function projectedTravelGuide(g: Game, player: Player): { event: string; action: Action } | null {
   const promise = liveTravelPromises(g.travelPromises ?? [], player.id, g.turn)[0];
-  const policy = promise && g.phase === 5 && g.active === player.id ? projectedGroundMovementPolicy(g, player) : null;
+  const lot = promise && g.phase === 3 && !g.decision ? bidOpportunity(g) : null;
+  const needsBid = !!lot && bidRequired(g.bidPromises ?? [], player.id, lot);
+  const requiredBid = needsBid ? projectedBidPromiseGuide(g, player.id) : null;
+  const needsRevival = !!promise && g.phase <= 4 && [
+    ...liveRevivalPromises(g.revivalPromises ?? [], player.id, g.turn),
+    ...liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], player.id, g.turn),
+    ...liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [], player.id, g.turn),
+  ].some(record => record.answer);
+  const requiredRevival = !requiredBid && needsRevival
+    ? projectedRevivalExpressionPromiseGuide(g, player.id) ?? projectedLeaderRevivalPromiseGuide(g, player.id) ??
+      projectedRevivalPromiseGuide(g, player.id) : null;
+  const prior = requiredBid ?? requiredRevival;
+  const paidBox = g.decision?.kind === 'nullentropy' && g.pendingNullentropy?.player === player.id;
+  if (promise && (needsBid || needsRevival) && !paidBox) {
+    if (!prior) return null;
+    const action = { ...structuredClone(prior.action) };
+    delete action.bidPromiseEvent;
+    delete action.revivalExpressionPromiseEvent;
+    delete action.leaderRevivalPromiseEvent;
+    delete action.revivalPromiseEvent;
+    return { event: promise.event, action: { ...action, travelPromiseEvent: promise.event, travelPromisePhase: g.phase } };
+  }
+  const policy = promise && (g.phase < 5 || g.active === player.id) ? projectedGroundMovementPolicy(g, player) : null;
   const action = policy?.[0];
-  return promise && action ? { event: promise.event, action: { ...structuredClone(action), travelPromiseEvent: promise.event } } : null;
+  return promise && action ? { event: promise.event, action: { ...structuredClone(action), travelPromiseEvent: promise.event, travelPromisePhase: g.phase } } : null;
 }
 function groundMovementCompletion(source: Game, actor: string,
   promises = liveMovementPromises(source.movementPromises ?? [], actor, source.turn),
@@ -27617,7 +27657,7 @@ function finishShipmentPromises(
   shipment: { territory: string; amount: number } | null,
 ) {
   checkShipmentPromises(g, p, shipment);
-  if (g.travelPromises) g.travelPromises = travelRule(() => recordTravelShipment(g.travelPromises!, p.id, g.turn,
+  if (g.phase === 5 && g.travelPromises) g.travelPromises = travelRule(() => recordTravelShipment(g.travelPromises!, p.id, g.turn,
     shipment ? { territory: shipment.territory, amount: shipment.amount } : null));
   for (const promise of liveShipmentPromises(
     g.shipmentPromises ?? [],
@@ -27639,7 +27679,7 @@ function ownGuildStopPromiseBlock(g: Game, p: Player): string | null {
  * the respondent's promise cannot veto the opponent's printed power. */
 function settleStoppedShipmentPromises(g: Game, p: Player, actor: string) {
   if (actor === p.id) checkShipmentPromises(g, p, null);
-  if (g.travelPromises) g.travelPromises = travelRule(() => recordTravelShipment(g.travelPromises!, p.id, g.turn, null));
+  if (g.phase === 5 && g.travelPromises) g.travelPromises = travelRule(() => recordTravelShipment(g.travelPromises!, p.id, g.turn, null));
   for (const promise of liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn)) {
     if (matchesShipment(promise, null) === promise.answer) promise.fulfilled = true;
     else {
@@ -31016,6 +31056,7 @@ function revivalKeepsLaterPromises(g: Game, p: Player, revival?: PendingRevival)
   if (!trial.ready.includes(p.id)) trial.ready.push(p.id);
   try {
     const action = { type: 'ready' };
+    reconcileTravelPromises(trial, p.id, action, g.phase);
     reconcileShipmentPromises(trial, { actor: p.id, action, phase: g.phase });
     reconcileGroundMovementPromises(trial, p.id, action, g.phase);
     return true;
@@ -36316,9 +36357,9 @@ export function applyAction(state: Game, id: string, action: Action): Game {
       Object.keys(guide.action).every(key => action[key] === guide.action[key]),
     'This alliance commitment guide is stale or belongs to another Nexus choice.');
   }
-  if (action.travelPromiseEvent !== undefined) {
+  if (action.travelPromiseEvent !== undefined || action.travelPromisePhase !== undefined) {
     const guide = projectedTravelGuide(state, getPlayer(state, id));
-    requireRule(guide && movementGuideActionMatches(action, guide.action),
+    requireRule(guide && action.travelPromisePhase === state.phase && movementGuideActionMatches(action, guide.action),
       'This travel guide is stale or belongs to another opportunity.');
   }
   if (action.movementExpressionPromiseEvent !== undefined) {
@@ -36351,7 +36392,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     'This revival commitment guide is stale or belongs to another native opportunity.');
   }
   const g = applyActionInner(state, id, action);
-  reconcileTravelPromises(g, id, action);
+  reconcileTravelPromises(g, id, action, state.phase);
   reconcileBidPromises(g, { actor: id, action });
   reconcileRevivalPromises(g, { actor: id, action });
   reconcileBribePromises(g, { actor: id, action });

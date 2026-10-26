@@ -589,7 +589,7 @@ export function Truthtrance({
                 <>
                   <TravelClaimFields value={travel} game={g} target={target}
                     disabled={busy || !g.truthTravelTargets.includes(target)} onChange={setTravel} />
-                  {!g.truthTravelTargets.includes(target) && <p className="notice">Choose an active or unused native Shipment and Movement opportunity in this phase.</p>}
+                  {!g.truthTravelTargets.includes(target) && <p className="notice">Choose this turn’s upcoming, active or unused native Shipment and Movement opportunity.</p>}
                   <p className="notice" aria-label="Public travel question preview">{travelError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
               ) : kind === 'mixedTraitorCall' ? (
