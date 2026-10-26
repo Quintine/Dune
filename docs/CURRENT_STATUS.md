@@ -16,6 +16,37 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / grouped native Revival — 26 October. Prototyped / Partial.**
+Whole AND/OR questions now combine future physical force minima and named
+personal native leader/Kwisatz returns in quiet bare native phases0–4. One
+event/progress ledger and lazy private alternatives reuse the native quote,
+shared purse/allowance and accepted order. No negates the whole expression;
+no quoted branch is stored. Full16-leaf/depth4 editing, persistent progress,
+exact phase/event guides and minimal legal AI are connected. Earlier scalar,
+bid/bribe/shipment/movement obligations retain funding. Provisional future
+interval/source/release meaning and all mode/publication gates remain.
+
+Root integration with disjoint pure/native/control lanes passes **17 files,
+165/165**, types/lint/build and **eight native paths**,29 GameTable SSR renders/
+11 actual guide callbacks plus one real editor callback followed by native Ask.
+Inherited H/A/T Ix47 Basic102/Advanced108-action prefixes add13/12 actions:
+actual free force1/bank1 leaves T5 and partial progress; native leader2 ends T3
+and fulfills the whole AND. OR accepts the real edited tree and a manual leader
+route instead of the suggested force. No AND permits either first leaf and
+rejects completing both; No OR rejects either qualifying return. An83-action
+post-Storm prefix adds34 through actual phases. Actual bribe3 leaves T1; owned
+free income then pays leader2 and completes the AND at T0. All47 cards remain.
+
+Twelve pure,14 native,six controlled UI and five native funding cases cover
+invalid decisive subtrees, lazy alternatives, prior/Ghola exclusion, joint
+scalar claims, exact ownership and bribe/shipment budgets in either order.
+Frozen v2 report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-revival-expression-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-revival-expression-runtime/`.
+No saved-room/D1/server/reset/restart/deployment operation is performed.
+Other families, browser/mobile/deployed and final assurance remain due.
+[Source and boundaries](TRUTHTRANCE_REVIVAL_EXPRESSIONS.md).
+
 **Truthtrance / named ordinary leader revival — 26 October. Prototyped / Partial.**
 Quiet phases0–4 now support future personal native leader/Kwisatz return
 questions in bare native Basic/Advanced. Original identity/custody, cohort,

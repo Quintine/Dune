@@ -1,4 +1,6 @@
 'use client';
+import { RevivalExpressionFields, revivalExpressionInputError } from './revival-expression-fields';
+import type { RevivalExpression } from '@/game/revival-expression-promises';
 import { LeaderRevivalClaimFields, leaderRevivalClaimInputError } from './leader-revival-claim-fields';
 import type { LeaderRevivalClaim } from '@/game/leader-revival-promises';
 import { MovementClaimFields } from './movement-claim-fields';
@@ -63,7 +65,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -71,6 +73,13 @@ export function Truthtrance({
   const leaderRevivalFaction = g.players.find(player => player.id === target)?.faction;
   const leaderRevivalChoices = [...g.allLeaders.filter(leader => leader.faction === leaderRevivalFaction),
     ...(g.advanced && leaderRevivalFaction === 'atreides' ? [{ id: 'kwisatz', name: 'Kwisatz Haderach' }] : [])];
+  const [revivalExpression, setRevivalExpression] = useState<RevivalExpression>({ kind: 'and', terms: [
+    { kind: 'forces', counter: 'total', minimum: 1 }, { kind: 'leader', leader: revivalLeader },
+  ] });
+  const revivalExpressionNamesValid = (node: RevivalExpression): boolean => node.kind === 'and' || node.kind === 'or'
+    ? node.terms.every(revivalExpressionNamesValid) : node.kind === 'forces' ||
+      node.kind === 'leader' && leaderRevivalChoices.some(leader => leader.id === node.leader);
+  const validRevivalExpressionNames = revivalExpressionNamesValid(revivalExpression);
   const [alliancePartner, setAlliancePartner] = useState(g.me);
   const allianceClaim: AllianceClaim = { turn: g.turn, partner: alliancePartner };
   const alliancePartners = g.players.filter(player => player.id !== target);
@@ -121,6 +130,7 @@ export function Truthtrance({
           }
         : kind === 'traitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '' }
         : kind === 'movement' ? { kind, target, ...movement }
+        : kind === 'revivalExpression' ? { kind, target, turn: g.turn, claim: revivalExpression }
         : kind === 'leaderRevival' ? { kind, target, ...leaderRevivalClaim }
         : kind === 'alliance' ? { kind, target, ...allianceClaim }
         : kind === 'bribe' ? { kind, target, ...bribeClaim }
@@ -232,6 +242,13 @@ export function Truthtrance({
                         )}
                       </div>
                     ))}
+                  </>
+                ) : w.question!.kind === 'revivalExpression' ? (
+                  <>
+                    <p className="notice">Answer the whole AND/OR expression. Yes requires the complete statement to become true through actual future ordinary returns; No keeps the whole statement false. Legal alternatives remain available and no branch is fixed by this answer.</p>
+                    {(g.truthRevivalExpressionAnswers ?? []).map(answer => <div key={answer}>
+                      {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'unknown'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
                   </>
                 ) : w.question!.kind === 'leaderRevival' ? (
                   <>
@@ -387,6 +404,7 @@ export function Truthtrance({
                   <option value="movement">Bind ground movement this turn</option>
                   <option value="alliance">Bind alliance membership at this Nexus close</option>
                   <option value="bribe">Bind ordinary bribe payments this turn</option>
+                  <option value="revivalExpression">Bind combined force and leader revivals</option>
                   <option value="leaderRevival">Bind a named leader revival this turn</option>
                   <option value="revival">Bind ordinary force revivals this turn</option>
                   <option value="bid">Bind a bid in this ordinary lot</option>
@@ -405,7 +423,15 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'leaderRevival' ? (
+              {kind === 'revivalExpression' ? (
+                <>
+                  <RevivalExpressionFields value={revivalExpression} leaders={leaderRevivalChoices}
+                    disabled={busy || !g.truthRevivalExpressionTargets.includes(target)} onChange={setRevivalExpression} />
+                  {!validRevivalExpressionNames && <p className="notice">Choose each named leader from the respondent’s public roster.</p>}
+                  {!g.truthRevivalExpressionTargets.includes(target) && <p className="notice">Choose a supported participant with an ordinary Revival opportunity still ahead this turn.</p>}
+                  <p className="notice" aria-label="Public grouped revival question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'leaderRevival' ? (
                 <>
                   <LeaderRevivalClaimFields value={leaderRevivalClaim} leaders={leaderRevivalChoices}
                     disabled={busy || !g.truthLeaderRevivalTargets.includes(target)}
@@ -544,6 +570,7 @@ export function Truthtrance({
                 'Ask publicly',
                 { type: 'truthAsk', question },
                 (kind === 'movement' && (!validMovementClaim(movement) || !g.truthMovementTargets.includes(target))) ||
+                (kind === 'revivalExpression' && (!!revivalExpressionInputError(revivalExpression) || !validRevivalExpressionNames || !g.truthRevivalExpressionTargets.includes(target))) ||
                 (kind === 'leaderRevival' && (!!leaderRevivalClaimInputError(leaderRevivalClaim, leaderRevivalChoices) || !g.truthLeaderRevivalTargets.includes(target))) ||
                 (kind === 'alliance' && (!!allianceClaimInputError(allianceClaim, alliancePartners) || !g.truthAllianceTargets.includes(target))) ||
                 (kind === 'bribe' && (!!bribeClaimInputError(bribeClaim, bribeRecipients) || !g.truthBribeTargets.includes(target))) ||
@@ -569,7 +596,7 @@ export function TruthHistory({ game: g }: { game: GameView }) {
     <details className="notice truthtrance-history">
       <summary>Truthtrance answers · Turn {g.turn}</summary>
       <p className="fine">
-        Supported battle-plan, Nexus-alliance, bid, force/leader revival, bribe, movement and reserve-shipment
+        Supported battle-plan, Nexus-alliance, bid, force/leader and grouped revival, bribe, movement and reserve-shipment
         answers are enforced. Current-turn freeform promises remain binding when possible,
         but their automatic enforcement is unfinished.
       </p>

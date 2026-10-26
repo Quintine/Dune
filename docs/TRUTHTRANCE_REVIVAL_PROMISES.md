@@ -1,5 +1,10 @@
 # Truthtrance native force-revival promises
 
+The [grouped follow-up](TRUTHTRANCE_REVIVAL_EXPRESSIONS.md) adds whole AND/OR
+questions across future ordinary force minima and named native leader returns.
+It retains dynamic alternatives and the shared native purse/allowance rather
+than changing this scalar question's meaning. Broader families remain due.
+
 The [named-leader follow-up](TRUTHTRANCE_LEADER_REVIVAL_PROMISES.md) adds a
 separate future personal native leader/KH return question sharing the ordinary
 force planner's purse and native slots. Leaders still do not count toward the

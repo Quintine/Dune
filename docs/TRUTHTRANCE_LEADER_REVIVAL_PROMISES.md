@@ -1,5 +1,9 @@
 # Truthtrance named leader revival promises
 
+The [grouped follow-up](TRUTHTRANCE_REVIVAL_EXPRESSIONS.md) combines these named
+returns and ordinary force minima with whole AND/OR, preserving dynamic choices
+and the shared native planner. Scalar questions keep their existing meaning.
+
 ## Native future-return prototype — 26 October 2026
 
 **Prototyped / Partial.** Registered bare native Basic/Advanced tables support

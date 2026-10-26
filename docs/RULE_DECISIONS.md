@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Truthtrance grouped native Revival — 26 October 2026
+
+Apply recorded publisher FAQp8 AND/OR/current-turn authority and supplied
+Advanced physical39 general compliance to cumulative ordinary force and named
+personal native leader/KH returns. Whole No negates the tree, not each leaf.
+Yes fulfills on actual monotone whole-expression progress; No lasts through
+the existing native deadline. Under standing14October priority, preserve all
+owned legal alternatives dynamically rather than pinning a quoted OR route or
+an AND-No reason. Shared purse, allowance and accepted-order release retain
+earlier scalar/financial/movement obligations. Source/interval/owned solver
+composition remains provisional; no dedicated publisher solver ruling is
+claimed. Bare native phases0–4 and existing gates remain.
+[Contract](TRUTHTRANCE_REVIVAL_EXPRESSIONS.md).
+
 ## Truthtrance named native leader returns — 26 October 2026
 
 Compose general current-turn Truthtrance authority (FAQp8; supplied Advanced

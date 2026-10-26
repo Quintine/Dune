@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 26 October 2026 — Whole AND/OR native Revival commitments
+
+**Prototyped / Partial.** Force minima and named personal native leader/KH
+returns now compose in full grouped questions. The entire parser validates
+16 leaves/depth4 before evaluation. One future-event ledger records actual
+ordinary returns; lazy signed alternatives reuse native quotes and earlier
+constraints. No negates the whole expression, and every real action rebuilds
+choices without pinning an OR route or an AND-No reason. Shared funding,
+allowance, accepted order, native deadlines, exact controls and minimal legal
+AI are connected. Provisional source/interval/release composition and mode gates
+remain. Special/card/foreign/prior returns do not fulfill this ordinary claim.
+
+Root integration with disjoint pure/native/control lanes passes **17 files,
+165/165**, types/lint/build and **eight native paths**,29 GameTable SSR renders/
+11 actual guide callbacks plus one real expression-edit callback followed by
+native Ask. Genuine inherited H/A/T Ix47 Basic102/Advanced108 prefixes add13/12
+actions: actual free force1/bank1 then native leader2 completes the AND at T3.
+Edited OR permits manual alternate leader fulfillment; No AND accepts either
+first return and blocks only completing both, while No OR blocks either.
+An83-action post-Storm prefix adds34 real steps to completion. Actual bribe3
+leaves T1; force income then funds leader2 and fulfills the full AND at T0.
+All47 original cards remain, with no new physical source staging or lotteries.
+
+Twelve pure,14 native,six controlled UI and five native funding cases retain
+whole-tree validation, dynamic alternatives, prior/Ghola exclusions, two
+original Truths, waiting and earlier scalar/financial/movement budgets.
+Type feedback makes leader/group branches explicit in editor and identity
+checks. Frozen v2 proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-revival-expression-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-revival-expression-runtime/`.
+No saved-room/D1/server/reset/restart/deployment operation is performed.
+Other future families, cross-opportunity expressions, optional compositions,
+browser/mobile/deployed and final assurance remain required.
+[Contract](TRUTHTRANCE_REVIVAL_EXPRESSIONS.md).
+
 ## 26 October 2026 — Truthtrance named personal native leader returns
 
 **Prototyped / Partial.** Named leader/Kwisatz future-return questions now work
