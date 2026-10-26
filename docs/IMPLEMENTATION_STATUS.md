@@ -1,5 +1,50 @@
 # Dune implementation status
 
+## 26 October 2026 — Whole AND/OR ordinary-bribe commitments
+
+**Prototyped / Partial.** A full grouped question binds actual cumulative future
+ordinary payments to named non-allied recipients. Whole No negates the complete
+expression, and signed lazy alternatives are rebuilt after real payer events.
+Same-recipient thresholds share progress; separate questions retain their own
+future intervals. Scalar and whole answers share actual funds and accepted
+order while preserving other native commitments. Quotes record the payment
+before costing the remaining purse, preventing duplicate reservation. Original
+native debit, deferred receipt and actual turn-end deadlines remain.
+
+Full16/depth4 authoring, guarded public preview/Ask, target-only answers,
+persistent own progress and one exact native payment guide connect to all four
+minimal policies. New Mentat Yes reopens only its payer; known automatic Double
+retains the earlier Collection boundary. Own spending/alliance/Ready cannot erase
+every completion; no OR branch is saved. General FAQ/Advanced authority and
+provisional cumulative/funding/release composition remain explicit.
+
+Root integration and disjoint pure/control/native lanes pass **19 files,
+188/188**, types/lint/build and **eight native paths**,31 GameTable SSR renders/
+12 actual guide callbacks plus one editor callback followed by native Ask.
+Genuine H/A/E base33 Basic20/Advanced23 prefixes add22 actions: H3/A2 spends
+E10→5, remains deferred and credits exact recipients at real opening collection.
+Edited OR permits manual alternate payment; No AND permits one qualifying
+recipient while No OR blocks either. A32-action original Mentat prefix adds37,
+reopens only the ready payer and earns late receipts at the next actual opening.
+H/A/T Ix47 102-action sources add16 in both accepted orders: real H1/A1 then
+native leader2 completes both ledgers at T0. Original33/47 inventories remain.
+Four minimal policies actually answer and pay on both Basic/Advanced sources.
+
+Fourteen pure,eight controlled,17 native and two native funding cases retain
+invalid decisive-subtree rejection, lazy branches, prior exclusion, overflow,
+scalar caps/shared thresholds, exact events and later turn boundaries. Initial
+type feedback fixes positive leaf narrowing in the editor. A focused case also
+corrects the fixture expectation: an earlier H7 Yes makes H7 OR A4 necessarily
+Yes. The wider union exposes a stale early-Advanced movement exclusion; its
+existing canonical26October feature admits both modes, and the test now follows
+that scope without changing movement runtime. Frozen v3 report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-bribe-expression-proof-v3/`;
+journeys/HTML: adjacent `20261026-truth-bribe-expression-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Optional compositions, future owned preparation, cross-family expressions,
+browser/mobile/deployed and final rules/assurance acceptance remain required.
+[Contract](TRUTHTRANCE_BRIBE_EXPRESSIONS.md).
+
 ## 26 October 2026 — Ordinary Mentat bribes and actual turn-end promises
 
 **Prototyped / Partial.** Remove the inherited blanket phase8 payment ban.

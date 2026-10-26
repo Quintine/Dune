@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Whole AND/OR ordinary bribe payments — 26 October 2026
+
+Apply publisher November2020 FAQp8 current-turn/AND/OR authority and supplied
+Advanced physical39 general compliance/release authority to future ordinary
+payer payments. Keep the existing cumulative after-answer interval and
+opening-only receipt source; late Mentat payments wait for next turn's opening.
+Whole No uses De Morgan, not one negative promise per leaf. Dynamic funded
+alternatives share the purse with scalar bribes and existing obligations;
+actual accepted order governs forced release. Current-funding, interval and
+release composition remain explicit software interpretation under standing
+14October priority, not a dedicated publisher payment-expression algorithm.
+No mode, save, server or publication permission changes.
+[Contract and evidence](TRUTHTRANCE_BRIBE_EXPRESSIONS.md).
+
 ## Late Mentat bribes and actual turn-end commitments — 26 October 2026
 
 Remove the inherited whole-Mentat bribe ban. Publisher base printed12's

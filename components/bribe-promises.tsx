@@ -3,6 +3,7 @@
 import type { Action, GameView } from '@/game/engine';
 import { bribeAction } from '@/game/bribe-options';
 import { bribeClaimText, bribePromiseModeSupported, liveBribePromises } from '@/game/bribe-promises';
+import { liveBribeExpressionPromises } from '@/game/bribe-expression-promises';
 import { Button } from './ui/button';
 
 type BribePromiseProps = { game: GameView; busy: boolean; send: (action: Action) => void };
@@ -23,7 +24,8 @@ export function BribePromiseGuideButton(props: BribePromiseProps) {
       current.turn === turn && current.me === actor &&
       current.bribePromiseGuide === guide && current.bribePromiseGuide.action === action && JSON.stringify(action) === signature &&
       action.type === 'bribe' && typeof event === 'string' &&
-      liveBribePromises(current.bribePromises, actor, turn).some(promise => promise.event === event) &&
+      (liveBribePromises(current.bribePromises, actor, turn).some(promise => promise.event === event) ||
+        liveBribeExpressionPromises(current.bribeExpressionPromises, actor, turn).some(promise => promise.event === event)) &&
       !!me && !me.autopilot && !!target && target.id !== actor && target.id !== me.ally &&
       options.blocked === null && Number.isSafeInteger(options.available) &&
       typeof action.amount === 'number' && action.amount <= options.available &&

@@ -1,3 +1,5 @@
+import { parseBribeExpressionClaim, bribeExpressionRecipients, bribeExpressionText,
+  type BribeExpressionClaim } from './bribe-expression-promises';
 import { parseRevivalExpressionClaim, revivalExpressionText, revivalExpressionPromiseModeSupported, type RevivalExpressionClaim } from './revival-expression-promises';
 import { parseLeaderRevivalClaim, leaderRevivalClaimText, leaderRevivalPromiseModeSupported, type LeaderRevivalClaim } from './leader-revival-promises';
 import { parseAllianceClaim, allianceClaimText, alliancePromiseModeSupported, type AllianceClaim } from './alliance-promises';
@@ -65,6 +67,7 @@ export type TruthFact =
   | { kind: 'spice'; compare: 'eq' | 'gte' | 'lte'; value: number }
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type TruthQuestion =
+  | ({ kind: 'bribeExpression'; target: string } & BribeExpressionClaim)
   | ({ kind: 'revivalExpression'; target: string } & RevivalExpressionClaim)
   | ({ kind: 'leaderRevival'; target: string } & LeaderRevivalClaim)
   | ({ kind: 'alliance'; target: string } & AllianceClaim)
@@ -251,6 +254,18 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       claim.partner !== v.target && g.players.some(player => player.id === claim.partner),
     'Choose the current ordinary Nexus and another named partner in a supported table.');
     return { kind: 'alliance', target: v.target, ...claim };
+  }
+  if (v.kind === 'bribeExpression') {
+    check(Object.keys(v).sort().join(',') === 'claim,kind,target,turn',
+      'Supply the current turn, complete bribe expression and respondent.');
+    const claim = parseBribeExpressionClaim({ turn: v.turn, claim: v.claim });
+    const respondent = g.players.find(player => player.id === v.target)!;
+    check(bribePromiseModeSupported(g) && g.status === 'playing' && g.phase >= 0 && g.phase <= 8 &&
+      claim.turn === g.turn && bribeExpressionRecipients(claim.claim).every(recipient =>
+        recipient !== respondent.id && recipient !== respondent.ally && g.players.some(player => player.id === recipient)) &&
+      !g.response && !g.decision && !g.phaseOpening && !g.pendingTreacheryDiscard && !g.pendingKarama,
+    'Choose current-turn ordinary bribe statements to non-allied participants in a supported table.');
+    return { kind: 'bribeExpression', target: v.target, ...claim };
   }
   if (v.kind === 'bribe') {
     check(Object.keys(v).sort().join(',') === 'kind,minimum,recipient,target,turn',
@@ -514,6 +529,7 @@ export function truthQuestionText(
   if (q.kind === 'revivalExpression') return `Will you ${revivalExpressionText(q.claim, id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))} from now until your Revival opportunity ends this turn?`;
   if (q.kind === 'leaderRevival') return `Will you ${leaderRevivalClaimText(q, id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))}?`;
   if (q.kind === 'alliance') return `Will you ${allianceClaimText(q, playerName)}?`;
+  if (q.kind === 'bribeExpression') return `Will you ${bribeExpressionText(q.claim, playerName)} from now until this turn ends?`;
   if (q.kind === 'bribe') return `Will you ${bribeClaimText(q, playerName)}?`;
   if (q.kind === 'revival') return `Will you ${revivalClaimText(q)}?`;
   if (q.kind === 'bid') return `Will you ${bidClaimText(q)}?`;
@@ -564,6 +580,8 @@ export function resolveTruthAction(
     bindMovement?: (g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) => void;
     allianceAnswers?: (g: Game, p: Player, claim: AllianceClaim) => TruthAnswer[];
     bindAlliance?: (g: Game, p: Player, claim: AllianceClaim, answer: boolean, asker: string) => void;
+    bribeExpressionAnswers?: (g: Game, p: Player, claim: BribeExpressionClaim) => TruthAnswer[];
+    bindBribeExpression?: (g: Game, p: Player, claim: BribeExpressionClaim, answer: boolean, asker: string) => void;
     bribeAnswers?: (g: Game, p: Player, claim: BribeClaim) => TruthAnswer[];
     bindBribe?: (g: Game, p: Player, claim: BribeClaim, answer: boolean, asker: string) => void;
     revivalExpressionAnswers?: (g: Game, p: Player, claim: RevivalExpressionClaim) => TruthAnswer[];
@@ -701,6 +719,9 @@ export function resolveTruthAction(
         if (w.question.kind === 'alliance')
           check(effects.allianceAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a current Nexus question with a compatible answer.');
+        if (w.question.kind === 'bribeExpression')
+          check(effects.bribeExpressionAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a whole bribe expression compatible with earlier answers.');
         if (w.question.kind === 'bribe')
           check(effects.bribeAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a current bribe question compatible with earlier answers.');
@@ -774,6 +795,11 @@ export function resolveTruthAction(
           check(effects.allianceAnswers && effects.bindAlliance && effects.allianceAnswers(g, p, q).includes(a.answer),
             'Choose an answer consistent with actual alliance consent and earlier commitments.');
           if (a.answer !== 'unknown') effects.bindAlliance(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'bribeExpression') {
+          check(effects.bribeExpressionAnswers && effects.bindBribeExpression && effects.bribeExpressionAnswers(g, p, q).includes(a.answer),
+            'Choose a whole bribe answer consistent with actual funding and earlier promises.');
+          if (a.answer !== 'unknown') effects.bindBribeExpression(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'bribe') {
           check(effects.bribeAnswers && effects.bindBribe && effects.bribeAnswers(g, p, q).includes(a.answer),

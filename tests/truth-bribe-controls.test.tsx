@@ -159,6 +159,26 @@ void test('controlled bribe callbacks expire when their original phase changes b
   }
 });
 
+void test('the shared bribe guide honors its exact live scalar or whole-expression event when both ledgers exist', () => {
+  for (const source of ['scalar', 'expression'] as const) {
+    const game = projected(), sent: Action[] = [];
+    game.bribeExpressionPromises = [{ event: 'controlled-whole-bribe-event', player: 'p', asker: 'a', turn: 2,
+      claim: { kind: 'or', terms: [{ kind: 'payment', recipient: 'r', minimum: 3 }, { kind: 'payment', recipient: 'a', minimum: 2 }] },
+      answer: true, progress: [] }];
+    game.bribePromiseGuide!.action.bribePromiseEvent = source === 'scalar' ? game.bribePromises[0].event : game.bribeExpressionPromises[0].event;
+    const button = guide({ game, busy: false, send(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button);
+    assert.equal(sent[0], game.bribePromiseGuide!.action);
+    if (source === 'scalar') game.bribePromises[0].fulfilled = true;
+    else game.bribeExpressionPromises[0].released = true;
+    press(button); assert.equal(sent.length, 1, 'A different live event does not preserve the old callback.');
+    game.bribePromiseGuide = { action: { ...game.bribePromiseGuide!.action,
+      bribePromiseEvent: source === 'scalar' ? game.bribeExpressionPromises[0].event : game.bribePromises[0].event } };
+    const current = guide({ game, busy: false, send(action) { sent.push(action); } });
+    assert.equal(current.props.disabled, false); press(current); assert.equal(sent.length, 2);
+  }
+});
+
 void test('stale bribe guides respect current scope, exact recipient, strictly clear timing and projected payment bounds', () => {
   const changes: ((game: GameView) => void)[] = [
     game => { game.me = 'a'; }, game => { game.turn = 3; }, game => { game.status = 'setup'; },

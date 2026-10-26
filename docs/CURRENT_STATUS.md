@@ -16,6 +16,38 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / whole AND/OR ordinary payments — 26 October. Prototyped / Partial.**
+Full grouped questions now combine named cumulative future ordinary payments.
+Whole No uses De Morgan; legal routes remain dynamic after actual payments.
+Scalar/whole answers share the real purse and accepted order, retain prior
+bid/revival/shipment/movement/battle funding, and use original deferred receipts.
+The full editor, private answers, own progress, one exact native guide and four
+minimal policies are connected. Current-funded interval/release composition
+remains provisional; optional modules and complete-mode gates remain open.
+
+Root integration with disjoint pure/control/native lanes passes **19 files,
+188/188**, types/lint/build and **eight native paths**,31 GameTable SSR renders/
+12 actual guide callbacks plus one real editor callback followed by native Ask.
+Original H/A/E base33 Basic20/Advanced23-action sources add22 actions: actual
+H3 and A2 payments spend E10→5 and credit each exact share at the opening.
+Edited OR permits the manual alternate route; No AND allows one qualifying
+recipient and blocks both; No OR blocks either. A32-action real Mentat source
+adds37: new Yes reopens only the payer and late receipts collect at the actual
+next opening. Original H/A/T Ix47 102-action sources add16 in either answer
+order: H1/A1 then native leader2 fulfills both promises at T0. Cards stay physical.
+
+Fourteen pure,eight controlled,17 native and two native funding cases cover
+whole-tree validation, dynamic branches, intervals/caps, scalar overlap, exact
+ownership/events and four minimal profiles. Type feedback repairs editor leaf
+narrowing; the wider union corrects one stale early-Advanced movement-profile
+expectation to the already delivered canonical scope. Frozen v3 proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-bribe-expression-proof-v3/`;
+journeys/HTML: adjacent `20261026-truth-bribe-expression-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Cross-family expressions, owned future preparation, broader compositions,
+browser/mobile/deployed and final assurance remain required.
+[Authority, provisional scope and evidence](TRUTHTRANCE_BRIBE_EXPRESSIONS.md).
+
 **Ordinary Mentat bribes / turn-end commitments — 26 October. Prototyped / Partial.**
 Quiet Mentat payments now debit the payer and wait for next turn's actual
 Mentat opening. The original opening-only receipt mechanism stays. Bribe No

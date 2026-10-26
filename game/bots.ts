@@ -1331,6 +1331,10 @@ function policyActions(g: GameView): Action[] {
         const answer = g.truthAllianceAnswers?.find(answer => answer !== 'unknown') ?? g.truthAllianceAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];
       }
+      if (w.question.kind === 'bribeExpression') {
+        const answer = g.truthBribeExpressionAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'bribe') {
         const answer = g.truthBribeAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];

@@ -1,4 +1,7 @@
 'use client';
+
+import { BribeExpressionFields, bribeExpressionInputError } from './bribe-expression-fields';
+import { bribeExpressionRecipients, type BribeExpression } from '@/game/bribe-expression-promises';
 import { RevivalExpressionFields, revivalExpressionInputError } from './revival-expression-fields';
 import type { RevivalExpression } from '@/game/revival-expression-promises';
 import { LeaderRevivalClaimFields, leaderRevivalClaimInputError } from './leader-revival-claim-fields';
@@ -65,7 +68,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -87,6 +90,12 @@ export function Truthtrance({
   const bribeClaim: BribeClaim = { turn: g.turn, ...bribeSelection };
   const bribeRespondent = g.players.find(player => player.id === target);
   const bribeRecipients = g.players.filter(player => player.id !== target && player.id !== bribeRespondent?.ally);
+  const [bribeExpression, setBribeExpression] = useState<BribeExpression>({ kind: 'and', terms: [
+    { kind: 'payment', recipient: g.me, minimum: 3 }, { kind: 'payment', recipient: '', minimum: 2 },
+  ] });
+  const bribeExpressionError = bribeExpressionInputError(bribeExpression);
+  const validBribeExpressionRecipients = !bribeExpressionError && bribeExpressionRecipients(bribeExpression)
+    .every(recipient => bribeRecipients.some(player => player.id === recipient));
   const [revivalSelection, setRevivalSelection] = useState<Pick<RevivalClaim, 'counter' | 'minimum'>>({ counter: 'total', minimum: 1 });
   const revivalClaim: RevivalClaim = { turn: g.turn, ...revivalSelection };
   const [bidMinimum, setBidMinimum] = useState(1);
@@ -133,6 +142,7 @@ export function Truthtrance({
         : kind === 'revivalExpression' ? { kind, target, turn: g.turn, claim: revivalExpression }
         : kind === 'leaderRevival' ? { kind, target, ...leaderRevivalClaim }
         : kind === 'alliance' ? { kind, target, ...allianceClaim }
+        : kind === 'bribeExpression' ? { kind, target, turn: g.turn, claim: bribeExpression }
         : kind === 'bribe' ? { kind, target, ...bribeClaim }
         : kind === 'revival' ? { kind, target, ...revivalClaim }
         : kind === 'bid' ? { kind, target, ...bidClaim }
@@ -262,6 +272,13 @@ export function Truthtrance({
                     <p className="notice">This answer concerns actual membership when this Nexus closes. An offer alone does not form an alliance. Yes remains binding after formation; No requires ending without this named partner. Consent that is not yet available may be unknown, letting the holder ask again or save the card.</p>
                     {(g.truthAllianceAnswers ?? []).map(answer => <div key={answer}>
                       {button(answer === 'unknown' ? 'I don’t know yet' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
+                  </>
+                ) : w.question!.kind === 'bribeExpression' ? (
+                  <>
+                    <p className="notice">Yes requires the whole AND/OR question to become true through your future ordinary payments. No keeps the whole expression false, and may permit some payments. Earlier payments and later recipient collection do not count. Keep the funds needed by every answer; late Mentat receipts wait for next turn&apos;s opening.</p>
+                    {(g.truthBribeExpressionAnswers ?? []).map(answer => <div key={answer}>
+                      {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'I don’t know'}`, { type: 'truthAnswer', answer })}
                     </div>)}
                   </>
                 ) : w.question!.kind === 'bribe' ? (
@@ -404,6 +421,7 @@ export function Truthtrance({
                   <option value="movement">Bind ground movement this turn</option>
                   <option value="alliance">Bind alliance membership at this Nexus close</option>
                   <option value="bribe">Bind ordinary bribe payments this turn</option>
+                  <option value="bribeExpression">Combine ordinary bribe payments with AND/OR</option>
                   <option value="revivalExpression">Bind combined force and leader revivals</option>
                   <option value="leaderRevival">Bind a named leader revival this turn</option>
                   <option value="revival">Bind ordinary force revivals this turn</option>
@@ -447,6 +465,16 @@ export function Truthtrance({
                   <p className="fine">The final actual partnership in the current ordinary Nexus is binding. Yes uses an already held partnership or an actual incoming invitation the respondent can accept; another player’s future consent is not invented. No may require breaking a temporary alliance before readiness.</p>
                   {!g.truthAllianceTargets.includes(target) && <p className="notice">Choose a supported participant in a quiet open ordinary Nexus. Optional modules and broader alliance questions remain unfinished.</p>}
                   <p className="notice" aria-label="Public alliance question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'bribeExpression' ? (
+                <>
+                  <BribeExpressionFields value={bribeExpression} recipients={bribeRecipients}
+                    disabled={busy || !g.truthBribeExpressionTargets.includes(target)} onChange={setBribeExpression} />
+                  <p className="fine">Count only ordinary payer payments after this answer until this turn ends. AND requires all conditions; OR permits any full alternative. No negates the whole expression. Original payment costs, non-allied recipients, earlier obligations and deferred receipts remain.</p>
+                  {!g.truthBribeExpressionTargets.includes(target) && <p className="notice">Choose a supported participant before this turn ends and finish pending decisions.</p>}
+                  <p className="notice" aria-label="Public combined bribe question preview">{bribeExpressionError
+                    ? bribeExpressionError : !validBribeExpressionRecipients ? 'Choose a non-allied recipient for every condition.'
+                      : truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
               ) : kind === 'bribe' ? (
                 <>
@@ -573,6 +601,7 @@ export function Truthtrance({
                 (kind === 'revivalExpression' && (!!revivalExpressionInputError(revivalExpression) || !validRevivalExpressionNames || !g.truthRevivalExpressionTargets.includes(target))) ||
                 (kind === 'leaderRevival' && (!!leaderRevivalClaimInputError(leaderRevivalClaim, leaderRevivalChoices) || !g.truthLeaderRevivalTargets.includes(target))) ||
                 (kind === 'alliance' && (!!allianceClaimInputError(allianceClaim, alliancePartners) || !g.truthAllianceTargets.includes(target))) ||
+                (kind === 'bribeExpression' && (!!bribeExpressionError || !validBribeExpressionRecipients || !g.truthBribeExpressionTargets.includes(target))) ||
                 (kind === 'bribe' && (!!bribeClaimInputError(bribeClaim, bribeRecipients) || !g.truthBribeTargets.includes(target))) ||
                 (kind === 'revival' && (!!revivalClaimInputError(revivalClaim) || !g.truthRevivalTargets.includes(target))) ||
                 (kind === 'bid' && (!!bidClaimInputError(bidClaim) || !g.truthBidTargets.includes(target))) ||
