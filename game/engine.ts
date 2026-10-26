@@ -18,6 +18,8 @@ import { findMovementCompletion, type MovementCompletion } from './movement-prom
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile, selectedFactionStrongholdProfile, selectedIndependentCardsProfile } from './faction-module-profile';
 import { homeworldOccupationLeaderSkillsProfile, homeworldOccupationModulesProfile, homeworldPhaseModulesProfile } from './homeworld-module-profile';
+import { BidPromiseError, bidPromiseModeSupported, bidPromiseRange, bidRequired, liveBidPromises,
+  recordPromisedBid, validateBidPromises, type BidClaim, type BidOpportunity, type BidPromise } from './bid-promises';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
@@ -2133,6 +2135,7 @@ export type Game = {
   truthtrance?: TruthWindow | null;
   truthHistory?: TruthRecord[];
   shipmentPromises?: ShipmentPromise[];
+  bidPromises?: BidPromise[];
   movementPromises?: MovementPromise[];
   /** Server-only certainty of movement-relevant cards still in the discard. */
   movementDiscardKnowledge?: MovementDiscardKnowledge;
@@ -15074,6 +15077,132 @@ function decideNexusEmperorPayment(g: Game, p: Player, action: Action): void {
   g.decision = null;
   if (action.use) settleAuction(g, false);
   else recoverAuctionPayment(g, getPlayer(g, source.winner));
+}
+function normalBidMaximum(g: Game, p: Player): number {
+  return (g.kullPreview ? p.hand.some(card => canUseAsKaramaRole(g, p, card)) : !!karamaCard(g, p))
+    ? Number.MAX_SAFE_INTEGER : p.spice + (aidFor(g, p)?.amount ?? 0);
+}
+/** Same native quote for ordinary controls and the detached current-lot guide. */
+function normalBidQuote(g: Game, p: Player, amount: unknown, requestedAid?: unknown) {
+  requireRule(g.auction, 'The ordinary auction is no longer present.');
+  const capacity = normalAuctionHandBlock(p.hand.length, handLimit(p));
+  requireRule(!capacity, capacity ?? 'Your Treachery hand is full.');
+  const quote = quoteNormalAuctionBid({ currentBid: g.auction.bid, amount, maximum: normalBidMaximum(g, p) });
+  if (!quote.ok) throw new RuleError(quote.reason);
+  requireRule(!g.kullPreview || (p.id === byFaction(g, 'choam')?.id &&
+    !kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, p.id, 'auction-free-purchase')) ||
+    quote.amount <= p.spice + (aidFor(g, p)?.amount ?? 0),
+  'Kull preview defers an unfunded Karama-dependent overbid before acceptance.');
+  const allyPayment = quote.amount <= p.spice + (aidFor(g, p)?.amount ?? 0)
+    ? contribution(g, p, quote.amount, requestedAid) : 0;
+  const parties = auctionBureaucratParties(g, p, quote.amount, allyPayment);
+  checkBureaucratContributors(g, parties.payee, parties.shares);
+  return { amount: quote.amount, allyPayment };
+}
+function bidOpportunity(g: Game): BidOpportunity | null {
+  const a = g.auction;
+  if (g.status !== 'playing' || g.phase !== 3 || !a || g.currentAuctionSale ||
+    !a.cards[a.index] || !bidPromiseModeSupported(g)) return null;
+  return { turn: g.turn, lot: a.index + 1,
+    source: JSON.stringify(['ordinaryBid', g.turn, a.index, a.cards[a.index].id]),
+    bid: a.bid, bidder: a.bidder, passed: a.passed,
+    eligible: g.players.filter(player => player.hand.length < handLimit(player)).map(player => player.id) };
+}
+function bidQuestionWindow(g: Game): boolean {
+  return !!bidOpportunity(g) && !g.response && !g.decision && !g.phaseOpening && !g.richeseAuction &&
+    !g.ixAuction && !g.pendingKarama && !g.pendingTreacheryDiscard;
+}
+function bidPromiseCompletion(g: Game, p: Player, promises = g.bidPromises ?? []): Action | null {
+  const opportunity = bidOpportunity(g);
+  if (!opportunity) return null;
+  if (!bidRequired(promises, p.id, opportunity)) return { type: 'passBid' };
+  const range = bidPromiseRange(promises, p.id, opportunity, normalBidMaximum(g, p));
+  if (!range) return null;
+  try {
+    const action: Action = { type: 'bid', ...normalBidQuote(g, p, range.minimum) };
+    if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length ||
+      liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).length) {
+      const trial = structuredClone(g);
+      trial.truthtrance = null;
+      trial.auction!.bid = action.amount as number;
+      trial.auction!.bidder = p.id;
+      trial.auction!.allyPayment = action.allyPayment as number;
+      reconcileShipmentPromises(trial, { actor: p.id, action, phase: g.phase });
+      reconcileGroundMovementPromises(trial, p.id, action, g.phase);
+    }
+    return action;
+  }
+  catch (error) { if (error instanceof RuleError) return null; throw error; }
+}
+function bidTruthAnswers(g: Game, p: Player, claim: BidClaim): ('yes' | 'no' | 'unknown')[] {
+  const opportunity = bidOpportunity(g);
+  if (!opportunity || !bidQuestionWindow(g) || claim.turn !== opportunity.turn || claim.lot !== opportunity.lot ||
+    !opportunity.eligible.includes(p.id) || opportunity.passed.includes(p.id) || opportunity.bidder === p.id) return [];
+  return (['yes', 'no'] as const).filter(answer => !!bidPromiseCompletion(g, p, [...(g.bidPromises ?? []),
+    { ...claim, event: 'candidate', source: opportunity.source, player: p.id,
+      asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes' }]));
+}
+function bindBidTruth(g: Game, p: Player, claim: BidClaim, answer: boolean, asker: string) {
+  const opportunity = bidOpportunity(g);
+  requireRule(opportunity && bidTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
+    'This ordinary bid answer no longer has a legal completion.');
+  (g.bidPromises ??= []).push({ ...claim, event: crypto.randomUUID(), source: opportunity.source,
+    player: p.id, asker, answer });
+}
+function bidPromiseIntegrity(g: Game) {
+  try { validateBidPromises(g.bidPromises ?? [], g.players.map(player => player.id)); }
+  catch (error) { if (error instanceof BidPromiseError) throw new RuleError(error.message); throw error; }
+}
+function reconcileBidPromises(g: Game, voluntary?: { actor: string; action: Action }) {
+  bidPromiseIntegrity(g);
+  if (g.truthtrance || g.response || g.decision || g.phaseOpening || g.pendingTreacheryDiscard ||
+    g.pendingKarama || g.pendingKull || g.pendingRicheseBetrayal) return;
+  const opportunity = bidOpportunity(g);
+  const kept: BidPromise[] = [];
+  const no = (g.bidPromises ?? []).filter(promise => !promise.answer && !promise.fulfilled && !promise.released);
+  for (const promise of g.bidPromises ?? []) {
+    if (promise.fulfilled || promise.released) continue;
+    const same = opportunity && promise.turn === opportunity.turn && promise.source === opportunity.source;
+    if (!promise.answer && same) continue;
+    const own = voluntary?.actor === promise.player &&
+      ['bid', 'passBid', 'card', 'bribe', 'pledgeAid', 'emperorGift', 'richeseGift', 'richeseBid', 'decision', 'karama', 'specialKarama'].includes(voluntary.action.type);
+    const possible = same && bidPromiseCompletion(g, getPlayer(g, promise.player), [...no, ...kept, promise]);
+    if (promise.answer && !possible) {
+      requireRule(!own, 'You cannot voluntarily evade your Truthtrance bid answer.');
+      promise.released = true;
+      log(g, `${getPlayer(g, promise.player).name} can no longer fulfill the Truthtrance bid answer for ordinary lot ${promise.lot}; that answer is no longer binding.`);
+    } else if (!promise.answer) promise.fulfilled = true;
+    else kept.push(promise);
+  }
+}
+function projectedBidPromises(g: Game, player: string) {
+  return (g.bidPromises ?? []).filter(promise => promise.player === player).map(promise => ({
+    event: promise.event, player: promise.player, asker: promise.asker, turn: promise.turn,
+    lot: promise.lot, minimum: promise.minimum, answer: promise.answer,
+    ...(promise.fulfilled === undefined ? {} : { fulfilled: promise.fulfilled }),
+    ...(promise.released === undefined ? {} : { released: promise.released }),
+  }));
+}
+function projectedBidPromiseGuide(g: Game, player: string): { action: Action } | null {
+  const opportunity = bidOpportunity(g);
+  if (!opportunity || !bidQuestionWindow(g) || g.truthtrance || g.auction?.active !== player) return null;
+  const promise = liveBidPromises(g.bidPromises ?? [], player, opportunity)[0];
+  if (!promise) return null;
+  const action = bidPromiseCompletion(g, getPlayer(g, player));
+  return action ? { action: { ...action, bidPromiseEvent: promise.event } } : null;
+}
+function guardPromisedBid(g: Game, p: Player, action: Action, amount?: number) {
+  const opportunity = bidOpportunity(g);
+  const live = opportunity ? liveBidPromises(g.bidPromises ?? [], p.id, opportunity) : [];
+  if (action.bidPromiseEvent !== undefined) requireRule(typeof action.bidPromiseEvent === 'string' &&
+    live.some(promise => promise.event === action.bidPromiseEvent), 'This bid commitment guide is stale.');
+  if (!opportunity) return;
+  if (amount !== undefined && live.length) {
+    try { g.bidPromises = recordPromisedBid(g.bidPromises ?? [], p.id, opportunity, amount); }
+    catch (error) { if (error instanceof BidPromiseError) throw new RuleError(error.message); throw error; }
+  }
+  requireRule(!bidRequired(g.bidPromises ?? [], p.id, opportunity),
+    'Place the qualifying bid required by your Truthtrance Yes before passing or taking a lower bid.');
 }
 function auctionNext(g: Game) {
   const a = g.auction!;
@@ -34438,6 +34567,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  bidPromiseIntegrity(state);
   revivalOrderIntegrity(state);
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
@@ -34542,6 +34672,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     return normalizeAutomaticGame(state);
   }
   const g = applyActionInner(state, id, action);
+  reconcileBidPromises(g, { actor: id, action });
   reconcileGroundMovementPromises(g, id, action, state.phase);
   reconcileTraitorTruth(g, id, action);
   harkonnenNexusBetrayalIntegrity(g);
@@ -34663,6 +34794,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   leaderSkillsIntegrity(g);
   reconcileBattlePromises(g, { actor: id, action });
   reconcileShipmentPromises(g, { actor: id, action, phase: state.phase });
+  reconcileBidPromises(g, { actor: id, action });
   settleAutomaticContinuations(g);
   observeOccupation(g);
   reconcileHomeworldEcazDuke(g);
@@ -34863,6 +34995,7 @@ function settleAutomaticContinuations(g: Game) {
     // they are not the original actor voluntarily spending a promised resource.
     reconcileBattlePromises(g);
     reconcileShipmentPromises(g);
+    reconcileBidPromises(g);
     reconcileGroundMovementPromises(g);
     reconcileTraitorTruth(g);
     requireRule(
@@ -34876,6 +35009,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  bidPromiseIntegrity(state);
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
   harkonnenNexusBetrayalIntegrity(state);
@@ -34959,6 +35093,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   }
   reconcileBattlePromises(g);
   reconcileShipmentPromises(g);
+  reconcileBidPromises(g);
   reconcileGroundMovementPromises(g);
   reconcileTraitorTruth(g);
   settleAutomaticContinuations(g);
@@ -35204,6 +35339,8 @@ function applyActionInner(
         bindShipment: bindShipmentTruth,
         movementAnswers: movementTruthAnswers,
         bindMovement: bindMovementTruth,
+        bidAnswers: bidTruthAnswers,
+        bindBid: bindBidTruth,
         traitorAnswers: traitorTruthAnswers,
         bindTraitor: bindTraitorTruth,
         battleAnswers: battleTruthAnswers,
@@ -35213,7 +35350,7 @@ function applyActionInner(
     )
       return g;
   } catch (error) {
-    if (error instanceof TruthError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof TraitorDecisionError)
+    if (error instanceof TruthError || error instanceof BidPromiseError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof TraitorDecisionError)
       throw new RuleError(error.message);
     throw error;
   }
@@ -37700,31 +37837,16 @@ function applyActionInner(
     );
     const a = g.auction;
     if (t === 'bid') {
-      const capacity = normalAuctionHandBlock(p.hand.length, handLimit(p));
-      requireRule(!capacity, capacity ?? 'Your Treachery hand is full.');
-      const quotedBid = quoteNormalAuctionBid({
-        currentBid: a.bid,
-        amount: action.amount,
-        maximum: (g.kullPreview ? p.hand.some(card => canUseAsKaramaRole(g, p, card)) : !!karamaCard(g, p))
-          ? Number.MAX_SAFE_INTEGER
-          : p.spice + (aidFor(g, p)?.amount ?? 0),
-      });
-      if (!quotedBid.ok) throw new RuleError(quotedBid.reason);
-      requireRule(!g.kullPreview ||
-        (p.id === byFaction(g, 'choam')?.id &&
-          !kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, p.id, 'auction-free-purchase')) ||
-        quotedBid.amount <= p.spice + (aidFor(g, p)?.amount ?? 0),
-      'Kull preview defers an unfunded Karama-dependent overbid before acceptance.');
+      const quotedBid = normalBidQuote(g, p, action.amount, action.allyPayment);
+      guardPromisedBid(g, p, action, quotedBid.amount);
       a.bid = quotedBid.amount;
-      a.allyPayment =
-        a.bid <= p.spice + (aidFor(g, p)?.amount ?? 0)
-          ? contribution(g, p, a.bid, action.allyPayment)
-          : 0;
-      const parties = auctionBureaucratParties(g,p,a.bid,a.allyPayment);
-      checkBureaucratContributors(g,parties.payee,parties.shares);
+      a.allyPayment = quotedBid.allyPayment;
       a.bidder = id;
       a.passed = [];
-    } else if (!a.passed.includes(id)) a.passed.push(id);
+    } else {
+      guardPromisedBid(g, p, action);
+      if (!a.passed.includes(id)) a.passed.push(id);
+    }
     auctionNext(g);
     return g;
   }
@@ -39173,6 +39295,15 @@ export function viewGame(state: Game, id: string) {
       g.truthtrance.question.kind === 'battlePlan'
         ? battleTruthAnswers(g, me, g.truthtrance.question.claim)
         : null,
+    bidPromiseLot: (() => { const lot = bidOpportunity(g); return lot ? { turn: lot.turn, lot: lot.lot } : null; })(),
+    truthBidTargets: bidQuestionWindow(g) ? g.players.filter(player => {
+      const lot = bidOpportunity(g)!;
+      return lot.eligible.includes(player.id) && !lot.passed.includes(player.id) && lot.bidder !== player.id;
+    }).map(player => player.id) : [],
+    truthBidAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
+      g.truthtrance.question.kind === 'bid' ? bidTruthAnswers(g, me, g.truthtrance.question) : null,
+    bidPromises: projectedBidPromises(g, id),
+    bidPromiseGuide: projectedBidPromiseGuide(g, id),
     truthtrance: g.truthtrance ?? null,
     truthHistory: g.truthHistory ?? [],
     truthAnswer:

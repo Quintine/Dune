@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 26 October 2026 — Truthtrance ordinary bid commitments
+
+**Prototyped / Partial.** Registered bare native
+Basic/Advanced ordinary lots now support a structured future minimum bid with
+real Yes/No, exact lot expiry, joint constraints, original funding/payment and
+forced-impossibility release. Prior bids and payment do not fulfill it; a real
+declaration does, even when another bidder wins. Current-lot/next-opportunity
+timing remains provisional under general current-turn authority. No start gate
+changes; full module/native-special and broader commitment work remain.
+
+Root model/shared integration and disjoint pure/control/native lanes pass
+**14 files,175/175**, types/lint/build and **four native paths**,17 GameTable SSR
+renders/two actual guide callbacks. Original H/A/E Basic22/Advanced25 sources
+plus8 actions each bind Yes4, submit the exact guide bid before money changes,
+then pay4. Four minimal profiles per source submit legal next actions. Original
+waiting sources20+12/9 prove No4 permits3 and expires before next-lot4; A's10
+prices out E10 and releases Yes8 before original A payment/native E income10.
+
+Fourteen native cases also cover two original copies No6/Yes4, actual loss after
+declaration, original Karama11/free purchase, own funding/stale-event guards,
+and earlier shipment Yes9: bid Yes4 is unavailable, but an actual paid1 card
+leaves9 for the actual nine-force shipment. Native card inventory remains33;
+no played card/purse/force/auction/question/promise is installed. Controlled
+UI supplements retain their staging labels. Frozen report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-bid-proof-v1/`;
+journeys/HTML: adjacent `20261026-truth-bid-runtime/`.
+No saved-room/D1/server/reset/restart/deployment or assurance campaign.
+Browser/mobile/deployed, broader promises/modules and complete-mode acceptance remain.
+[Source and contract](TRUTHTRANCE_BID_PROMISES.md).
+
 ## 26 October 2026 — Live World Sandtrout
 
 **Prototyped / Partial.** A real original Basic

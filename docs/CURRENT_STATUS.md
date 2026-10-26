@@ -16,6 +16,36 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / ordinary bid commitments — 26 October. Prototyped / Partial.**
+Registered bare native Basic/Advanced ordinary lots now support a structured
+future minimum bid. Actual declarations fulfill Yes; No persists to exact lot
+close. Original funding, payment, native turn order and earlier commitments
+remain. Current-lot/next-owned-opportunity timing is explicitly provisional;
+no game-start gate opens and optional/native-special compositions remain due.
+
+Root shared integration with disjoint model-regression/control/native lanes
+passes **14 files,175/175**, types/lint/build and **four native runtime paths**,
+17 GameTable SSR renders and two actual guide callbacks. Native Basic/Advanced
+H/A/E active sources use22/25 actions plus8 each: H really holds both original
+Truthtrances, E answers, bids4 before cash changes, then pays its original4.
+Four minimal profiles each submit a legal native guide action per source.
+
+Twenty-action waiting sources add12 No/expiry or9 opposing-release actions.
+E may bid3 below No4, then bid4 in the next lot. A's real10 bid prices out E10,
+releasing Yes8; A later pays10 and native E collects10. Other new cases retain
+two-copy No6/Yes4, actual loss after fulfillment, Karama11/free purchase,
+voluntary funding guards, exact event/ownership, and an earlier shipment Yes9
+that rules out bid Yes4 but permits a paid1 card and actual9-force shipment.
+All33 original cards remain; no played hand/purse/force/auction/promise is installed.
+
+Persistent own controls expose no private lot identity and preserve original
+winning-payment instructions. Frozen report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-bid-proof-v1/`;
+journeys/HTML: adjacent `20261026-truth-bid-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or assurance campaign.
+SSR/callback proof leaves browser/mobile/deployed, broader promises/modules
+and complete-mode acceptance open. [Source and contract](TRUTHTRANCE_BID_PROMISES.md).
+
 **World occupation / live Sandtrout — 26 October. Prototyped / Partial.**
 A real original Basic World/Tech draw reproduced an occupation-context rejection.
 Clean World and World/all14 profiles now retain canonical pending Sandtrout as

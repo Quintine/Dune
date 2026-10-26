@@ -1,5 +1,11 @@
 # Truthtrance nonbattle readiness and first implementation slice
 
+The [26 October ordinary-bid follow-up](TRUTHTRANCE_BID_PROMISES.md) adds a
+structured current-lot bid commitment. The historical absence table below is
+superseded for that slice, as well as the previously linked fact, shipment and
+movement work. Native force-revival promises and broader action commitments
+remain unfinished; do not reimplement existing recorded-knowledge predicates.
+
 ## Grouped battle-plan authoring — 26 October 2026
 
 The existing battle-plan question now has a complete bounded expression form,

@@ -1,5 +1,21 @@
 # Rule decision index
 
+## Truthtrance ordinary bid commitments — 26 October 2026
+
+Apply the existing November2020 FAQ p8 current-turn commitment authority to one
+future accepted minimum bid in the current ordinary lot. Under standing
+choose-recommended priority, use the next owned available opportunity rather
+than assuming a future rival raise; current-highest/passed/full-hand targets
+have no fresh opportunity. Actual declaration fulfills Yes without promising a
+win; No persists to lot close. Original winning payment remains binding.
+
+This exact-lot/interval/owned-funding and accepted-order release model is a
+provisional software composition, not a dedicated publisher bidding ruling.
+Keep current cash/aid/Karama, earlier commitments and original quote/custody
+rules. No new start permission; optional modules and native special auctions
+remain outside the first registered native Basic/Advanced prototype.
+[Source, controls and boundaries](TRUTHTRANCE_BID_PROMISES.md).
+
 ## Sapho in ordered Advanced Revival — 26 October 2026
 
 The printed Sapho first/last alternative applies to the now-connected ordered

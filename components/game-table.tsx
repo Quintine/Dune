@@ -24,6 +24,7 @@ import {
   liveShipmentPromises,
 } from '@/game/shipment-promises';
 import { ShipmentPromises } from './shipment-promises';
+import { BidPromises } from './bid-promises';
 import { HomeworldShipment } from './homeworld-shipment';
 import { HomeworldRevivalDeployment } from './homeworld-revival-deployment';
 import { CaladanReinforcement } from './caladan-reinforcement';
@@ -2030,6 +2031,7 @@ export function GameTable({
           {g.status === 'playing' && g.phase < 5 && (
             <ShipmentPromises game={g} act={act} busy={busy} />
           )}
+          {g.status === 'playing' && <BidPromises game={g} send={act} busy={busy} />}
           {g.guildBetrayalReaction ? (
             <NexusGuildBetrayal game={g} act={act} busy={reactionBusy} />
           ) : g.richeseBetrayalReaction ? (

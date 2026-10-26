@@ -1,5 +1,7 @@
 'use client';
 import { MovementClaimFields } from './movement-claim-fields';
+import { BidClaimFields, bidClaimInputError } from './bid-claim-fields';
+import type { BidClaim } from '@/game/bid-promises';
 import { TraitorDecisionAnswers } from './traitor-decision-promises';
 import { validMovementClaim, type MovementClaim } from '@/game/movement-promises';
 import { TruthShipmentQuestion } from './truth-shipment-question';
@@ -53,8 +55,11 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid'
   >('fact');
+  const [bidMinimum, setBidMinimum] = useState(1);
+  const bidClaim: BidClaim = { turn: g.bidPromiseLot?.turn ?? g.turn,
+    lot: g.bidPromiseLot?.lot ?? 1, minimum: bidMinimum };
   const [movement, setMovement] = useState<MovementClaim>({ territory: 'carthag', minimum: 6 });
   const [shipment, setShipment] = useState<ShipmentExpression>({ territory: 'carthag', minimum: 6 });
   const [mixed, setMixed] = useState<MixedShipmentExpression>({
@@ -93,6 +98,7 @@ export function Truthtrance({
           }
         : kind === 'traitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '' }
         : kind === 'movement' ? { kind, target, ...movement }
+        : kind === 'bid' ? { kind, target, ...bidClaim }
         : kind === 'shipment'
           ? {
               kind,
@@ -199,6 +205,13 @@ export function Truthtrance({
                         )}
                       </div>
                     ))}
+                  </>
+                ) : w.question!.kind === 'bid' ? (
+                  <>
+                    <p className="notice">Yes requires one qualifying bid in this ordinary lot while possible. No forbids qualifying bids until it closes. A bid does not promise a win; winning still requires the original payment. Keep the funding needed by your answer.</p>
+                    {(g.truthBidAnswers ?? []).map(answer => <div key={answer}>
+                      {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'I don’t know'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
                   </>
                 ) : w.question!.kind === 'movement' ? (
                   <>
@@ -317,6 +330,7 @@ export function Truthtrance({
                     Verified current facts
                   </option>
                   <option value="movement">Bind ground movement this turn</option>
+                  <option value="bid">Bind a bid in this ordinary lot</option>
                   <option value="traitorCall">Bind this battle’s Traitor declaration</option>
                   <option value="shipment">
                     Bind a shipment from reserves
@@ -332,7 +346,15 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'traitorCall' ? (
+              {kind === 'bid' ? (
+                <>
+                  <BidClaimFields value={bidClaim} disabled={busy || !g.bidPromiseLot}
+                    onChange={claim => setBidMinimum(claim.minimum)} />
+                  <p className="fine">One accepted bid from now until this lot closes. Earlier bids do not count. A larger opposing bid may make Yes impossible; your own pass, lower bid or voluntary spending cannot evade it.</p>
+                  {!g.truthBidTargets.includes(target) && <p className="notice">Choose a bidder with an unused opportunity in the current ordinary lot and finish pending decisions. Registered native Basic and Advanced tables without optional modules are supported; other auctions and module compositions remain unfinished.</p>}
+                  <p className="notice" aria-label="Public bid question preview">{truthQuestionText(question, leaderName, locationName)}</p>
+                </>
+              ) : kind === 'traitorCall' ? (
                 <>
                   <p className="notice">Choose a still-unsubmitted voter in the current revealed battle. A definite answer binds that player’s original declaration, without reopening any sealed vote or promising that a later response will allow it.</p>
                   {!g.truthTraitorTargets.includes(target) && <p>Reveal both plans and choose a voter who has not submitted their Traitor decision.</p>}
@@ -429,6 +451,7 @@ export function Truthtrance({
                 'Ask publicly',
                 { type: 'truthAsk', question },
                 (kind === 'movement' && (!validMovementClaim(movement) || !g.truthMovementTargets.includes(target))) ||
+                (kind === 'bid' && (!!bidClaimInputError(bidClaim) || !g.truthBidTargets.includes(target))) ||
                 (kind === 'traitorCall' && !g.truthTraitorTargets.includes(target)) ||
                   (kind === 'mixedShipment' &&
                     (!!invalidMixed || !shipmentAvailable)) ||
@@ -449,7 +472,7 @@ export function TruthHistory({ game: g }: { game: GameView }) {
     <details className="notice truthtrance-history">
       <summary>Truthtrance answers · Turn {g.turn}</summary>
       <p className="fine">
-        Structured battle-plan and supported reserve-shipment answers are
+        Structured battle-plan, ordinary-bid and supported reserve-shipment answers are
         enforced. Current-turn freeform promises remain binding when possible,
         but their automatic enforcement is unfinished.
       </p>

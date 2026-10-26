@@ -1307,12 +1307,17 @@ function policyActions(g: GameView): Action[] {
       ? [{ type: 'decision', event: search.event, card: ordered[0].id }]
       : [];
   }
+  if (g.bidPromiseGuide) return [g.bidPromiseGuide.action];
   if (g.truthtrance) {
     const w = g.truthtrance;
     if (w.stage === 'priority')
       return w.passed.includes(me.id) ? [] : [{ type: 'truthPass' }];
     if (w.stage === 'answer') {
       if (w.question?.target !== me.id) return [];
+      if (w.question.kind === 'bid') {
+        const answer = g.truthBidAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'traitorCall') {
         const answers = g.truthTraitorAnswers ?? [];
         const answer = answers.find(answer => answer === 'yes') ?? answers[0];

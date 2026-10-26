@@ -46,6 +46,7 @@ import { canUseAsTruthtranceRole } from './shrine';
 import { isKnowledgeFact, parseKnowledgeFact, knowledgeFactAnswer, knowledgeFactText, truthKnowledgeOf, type KnowledgeFact, type TruthKnowledge } from './truthtrance-knowledge';
 import { parseNoFieldValueFact, noFieldValueFactMatches, noFieldValueFactText, type NoFieldValueFact } from './truthtrance-no-field-value';
 import { parseFaceDancerFact, faceDancerFactMatches, faceDancerFactText, type FaceDancerFact } from './truthtrance-face-dancer';
+import { parseBidClaim, bidClaimText, bidPromiseModeSupported, type BidClaim } from './bid-promises';
 
 export type TruthFact =
   | KnowledgeFact
@@ -59,6 +60,7 @@ export type TruthFact =
   | { kind: 'spice'; compare: 'eq' | 'gte' | 'lte'; value: number }
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type TruthQuestion =
+  | ({ kind: 'bid'; target: string } & BidClaim)
   | { kind: 'traitorCall'; target: string; battle: string; territory: string }
   | ({ kind: 'movement'; target: string } & MovementClaim)
   | ({ kind: 'shipment'; target: string } & ShipmentClaim)
@@ -210,6 +212,17 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       g.players.some((p) => p.id === v.target),
     'Ask one other player.',
   );
+  if (v.kind === 'bid') {
+    check(Object.keys(v).sort().join(',') === 'kind,lot,minimum,target,turn',
+      'Supply the current ordinary lot, turn, bid minimum and respondent.');
+    const claim = parseBidClaim(v);
+    check(bidPromiseModeSupported(g) && g.status === 'playing' && g.phase === 3 && g.auction &&
+      !g.currentAuctionSale && !g.richeseAuction && !g.ixAuction && !g.response && !g.decision &&
+      !g.phaseOpening && !g.pendingKarama && !g.pendingTreacheryDiscard &&
+      claim.turn === g.turn && claim.lot === g.auction.index + 1,
+    'Choose the current ordinary bid lot in a supported table and finish pending decisions.');
+    return { kind: 'bid', target: v.target, ...claim };
+  }
   if (v.kind === 'traitorCall') {
     check(Object.keys(v).sort().join(',') === 'battle,kind,target,territory' &&
       g.status === 'playing' && g.phase === 6 && g.battle?.revealed &&
@@ -434,6 +447,7 @@ export function truthQuestionText(
   locationName: (id: string) => string,
 ): string {
   if (q.kind === 'freeform') return q.text;
+  if (q.kind === 'bid') return `Will you ${bidClaimText(q)}?`;
   if (q.kind === 'traitorCall') return `In this revealed battle in ${locationName(q.territory)}, will you declare the opposing leader a Traitor?`;
   if (q.kind === 'movement') return `Will you ${movementClaimText(q)} before your Shipment and Movement turn ends?`;
   if (q.kind === 'shipment')
@@ -479,6 +493,8 @@ export function resolveTruthAction(
     ) => void;
     movementAnswers?: (g: Game, p: Player, claim: MovementClaim) => TruthAnswer[];
     bindMovement?: (g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) => void;
+    bidAnswers?: (g: Game, p: Player, claim: BidClaim) => TruthAnswer[];
+    bindBid?: (g: Game, p: Player, claim: BidClaim, answer: boolean, asker: string) => void;
     traitorAnswers?: (g: Game, p: Player) => TruthAnswer[];
     bindTraitor?: (g: Game, p: Player, answer: boolean, asker: string) => void;
     battleAnswers: (g: Game, p: Player, claim: PlanClaim) => TruthAnswer[];
@@ -597,6 +613,9 @@ export function resolveTruthAction(
           'Waiting for the Truthtrance holder to ask a question.',
         );
         w.question = parseQuestion(g, p.id, a.question);
+        if (w.question.kind === 'bid')
+          check(effects.bidAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a bidder with a remaining ordinary opportunity in this lot.');
         if (w.question.kind === 'traitorCall')
           check(effects.traitorAnswers?.(g, g.players.find(other => other.id === w.question!.target)!).length,
             'Choose an actual unsubmitted native Traitor voter.');
@@ -646,6 +665,11 @@ export function resolveTruthAction(
           check(effects.movementAnswers && effects.bindMovement && effects.movementAnswers(g, p, q).includes(a.answer),
             'Choose an answer consistent with legal ground movement and earlier promises.');
           if (a.answer !== 'unknown') effects.bindMovement(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'bid') {
+          check(effects.bidAnswers && effects.bindBid && effects.bidAnswers(g, p, q).includes(a.answer),
+            'Choose an answer consistent with this lot, your legal bids and earlier answers.');
+          if (a.answer !== 'unknown') effects.bindBid(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'traitorCall') {
           check(effects.traitorAnswers && effects.bindTraitor && effects.traitorAnswers(g, p).includes(a.answer),
