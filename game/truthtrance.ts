@@ -1,3 +1,4 @@
+import { parseRevivalActionClaim, type MixedRevivalClaim } from './mixed-revival-question';
 import { parseBribePaymentClaim, type MixedBribeClaim } from './mixed-bribe-question';
 import { parseMixedActionExpression, mixedActionExpressionText, type MixedActionExpression } from './mixed-action-question';
 import { parseMovementExpressionClaim, movementExpressionText, type MovementExpressionClaim } from './movement-expression-promises';
@@ -71,6 +72,7 @@ export type TruthFact =
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type MixedMovementClaim = { turn: number; mixed: MixedActionExpression<MovementClaim> };
 export type TruthQuestion =
+  | ({ kind: 'mixedRevival'; target: string } & MixedRevivalClaim)
   | ({ kind: 'mixedBribe'; target: string } & MixedBribeClaim)
   | ({ kind: 'mixedMovement'; target: string } & MixedMovementClaim)
   | ({ kind: 'movementExpression'; target: string } & MovementExpressionClaim)
@@ -232,6 +234,15 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       g.players.some((p) => p.id === v.target),
     'Ask one other player.',
   );
+  if (v.kind === 'mixedRevival') {
+    check(Object.keys(v).sort().join(',') === 'kind,mixed,target,turn' && v.turn === g.turn &&
+      revivalExpressionPromiseModeSupported(g) && g.status === 'playing' && g.phase >= 0 && g.phase <= 4 &&
+      !g.response && !g.decision && !g.phaseOpening && !g.pendingRevival && !g.pendingKarama && !g.pendingTreacheryDiscard,
+      'Supply the current turn, complete mixed Revival question and a quiet supported native window.');
+    const respondent = g.players.find(player => player.id === v.target)!;
+    return { kind: 'mixedRevival', target: v.target as string, turn: g.turn,
+      mixed: parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent), parseRevivalActionClaim) };
+  }
   if (v.kind === 'revivalExpression') {
     check(Object.keys(v).sort().join(',') === 'claim,kind,target,turn', 'Supply the current turn, full revival expression and respondent.');
     const claim = parseRevivalExpressionClaim({ turn: v.turn, claim: v.claim });
@@ -594,6 +605,8 @@ export function truthQuestionText(
       return `you currently hold ${f.compare === 'eq' ? 'exactly' : f.compare === 'gte' ? 'at least' : 'at most'} ${f.value} spice`;
     return `(${f.terms.map(clause).join(f.kind === 'and' ? ' AND ' : ' OR ')})`;
   };
+  if (q.kind === 'mixedRevival') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
+    action => `you ${revivalExpressionText(action, id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))} before your Revival opportunity ends`)}?`;
   if (q.kind === 'mixedBribe') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => `you ${bribeExpressionText({ kind: 'payment', ...action }, playerName)} from now until this turn ends`)}?`;
   if (q.kind === 'mixedMovement') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
@@ -636,6 +649,8 @@ export function resolveTruthAction(
     bindBribeExpression?: (g: Game, p: Player, claim: BribeExpressionClaim, answer: boolean, asker: string) => void;
     bribeAnswers?: (g: Game, p: Player, claim: BribeClaim) => TruthAnswer[];
     bindBribe?: (g: Game, p: Player, claim: BribeClaim, answer: boolean, asker: string) => void;
+    mixedRevivalAnswers?: (g: Game, p: Player, claim: MixedRevivalClaim) => TruthAnswer[];
+    bindMixedRevival?: (g: Game, p: Player, claim: MixedRevivalClaim, answer: boolean, asker: string) => void;
     revivalExpressionAnswers?: (g: Game, p: Player, claim: RevivalExpressionClaim) => TruthAnswer[];
     bindRevivalExpression?: (g: Game, p: Player, claim: RevivalExpressionClaim, answer: boolean, asker: string) => void;
     leaderRevivalAnswers?: (g: Game, p: Player, claim: LeaderRevivalClaim) => TruthAnswer[];
@@ -762,6 +777,9 @@ export function resolveTruthAction(
           'Waiting for the Truthtrance holder to ask a question.',
         );
         w.question = parseQuestion(g, p.id, a.question);
+        if (w.question.kind === 'mixedRevival')
+          check(effects.mixedRevivalAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a mixed current-fact and ordinary-return question compatible with the native opportunity.');
         if (w.question.kind === 'revivalExpression')
           check(effects.revivalExpressionAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a whole revival expression with a compatible native completion.');
@@ -852,6 +870,11 @@ export function resolveTruthAction(
           check(effects.movementAnswers && effects.bindMovement && effects.movementAnswers(g, p, q).includes(a.answer),
             'Choose an answer consistent with legal ground movement and earlier promises.');
           if (a.answer !== 'unknown') effects.bindMovement(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'mixedRevival') {
+          check(effects.mixedRevivalAnswers && effects.bindMixedRevival && effects.mixedRevivalAnswers(g, p, q).includes(a.answer),
+            'Choose a whole mixed-Revival answer compatible with current facts and owned native returns.');
+          if (a.answer !== 'unknown') effects.bindMixedRevival(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'revivalExpression') {
           check(effects.revivalExpressionAnswers && effects.bindRevivalExpression && effects.revivalExpressionAnswers(g, p, q).includes(a.answer),

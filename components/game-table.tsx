@@ -30,6 +30,7 @@ import { AlliancePromises } from './alliance-promises';
 import { BribePromises } from './bribe-promises';
 import { BribeExpressionPromises } from './bribe-expression-promises';
 import { MixedBribePromises } from './mixed-bribe-promises';
+import { MixedRevivalPromises } from './mixed-revival-promises';
 import { RevivalPromises } from './revival-promises';
 import { RevivalExpressionPromises } from './revival-expression-promises';
 import { LeaderRevivalPromises } from './leader-revival-promises';
@@ -2047,6 +2048,7 @@ export function GameTable({
           {g.status === 'playing' && <MixedBribePromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <AlliancePromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <RevivalExpressionPromises game={g} send={act} busy={busy} />}
+          {g.status === 'playing' && <MixedRevivalPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <LeaderRevivalPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <RevivalPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <BidPromises game={g} send={act} busy={busy} />}

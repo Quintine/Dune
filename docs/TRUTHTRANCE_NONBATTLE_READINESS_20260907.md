@@ -1,5 +1,10 @@
 # Truthtrance nonbattle readiness and first implementation slice
 
+The [mixed ordinary-Revival follow-up](TRUTHTRANCE_MIXED_REVIVAL.md) composes
+answer-time facts with future native force/personal-leader AND/OR returns.
+It supersedes that mixed-family absence only, using the existing whole Revival
+ledger; broader future-action families and combinations remain unfinished.
+
 The [named-leader follow-up](TRUTHTRANCE_LEADER_REVIVAL_PROMISES.md) adds actual
 personal native leader/KH return commitments alongside the separate force
 ledger. It supersedes that named-return absence only; broader promises remain.

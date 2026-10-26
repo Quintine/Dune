@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Current facts combined with ordinary Revival — 26 October 2026
+
+Reuse the recorded publisher FAQp8 current-turn/AND/OR and supplied Advanced
+physical39 compliance/release/unknown authority, existing mixed snapshot
+composition and native whole Revival interval. Facts freeze before actual
+returns, owned income or payments. Unknown is false for definite Yes and true
+for No; only a necessary action residual binds the existing force/personal
+leader ledger. Constants need no return. Raw question/aggregate/progress omit
+frozen per-fact values and compiled branches. Native costs, eligibility, slots,
+order, preparations, accepted funding and actual deadlines remain. This online
+composition stays provisional; no separate publisher mixed-Revival algorithm
+or correlated-unknown solver is claimed. No mode/save/server/publication change.
+[Contract and evidence](TRUTHTRANCE_MIXED_REVIVAL.md).
+
 ## Current facts combined with ordinary payments — 26 October 2026
 
 Reuse the current-fact/movement snapshot composition and recorded publisher

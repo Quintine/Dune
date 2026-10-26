@@ -1,6 +1,8 @@
 'use client';
 
 import { MixedBribeFields, mixedBribeInputError } from './mixed-bribe-fields';
+import { MixedRevivalFields, mixedRevivalInputError } from './mixed-revival-fields';
+import type { RevivalActionClaim } from '@/game/mixed-revival-question';
 import type { BribePaymentClaim } from '@/game/mixed-bribe-question';
 import { MixedMovementFields, mixedMovementInputError } from './mixed-movement-fields';
 import type { MixedActionExpression } from '@/game/mixed-action-question';
@@ -75,7 +77,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -123,6 +125,11 @@ export function Truthtrance({
     { kind: 'action', action: { recipient: g.me, minimum: 3 } },
   ] });
   const mixedBribeError = mixedBribeInputError(mixedBribe, g, target);
+  const [mixedRevival, setMixedRevival] = useState<MixedActionExpression<RevivalActionClaim>>({ kind: 'and', terms: [
+    { kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 4 } },
+    { kind: 'action', action: { kind: 'forces', counter: 'total', minimum: 1 } },
+  ] });
+  const mixedRevivalError = mixedRevivalInputError(mixedRevival, g, target);
   const [shipment, setShipment] = useState<ShipmentExpression>({ territory: 'carthag', minimum: 6 });
   const [mixed, setMixed] = useState<MixedShipmentExpression>({
     kind: 'and',
@@ -162,6 +169,7 @@ export function Truthtrance({
         : kind === 'mixedMovement' ? { kind, target, turn: g.turn, mixed: mixedMovement }
         : kind === 'movementExpression' ? { kind, target, turn: g.turn, claim: movementExpression }
         : kind === 'movement' ? { kind, target, ...movement }
+        : kind === 'mixedRevival' ? { kind, target, turn: g.turn, mixed: mixedRevival }
         : kind === 'revivalExpression' ? { kind, target, turn: g.turn, claim: revivalExpression }
         : kind === 'leaderRevival' ? { kind, target, ...leaderRevivalClaim }
         : kind === 'alliance' ? { kind, target, ...allianceClaim }
@@ -276,6 +284,13 @@ export function Truthtrance({
                         )}
                       </div>
                     ))}
+                  </>
+                ) : w.question!.kind === 'mixedRevival' ? (
+                  <>
+                    <p className="notice">Answer the complete mixed question. Current facts freeze now; only future ordinary returns can fulfill any remaining Revival conditions. No keeps the whole expression false. Native eligibility, costs, limits and turn order still apply. An unknown fact requires a future commitment that guarantees your answer; otherwise choose I don’t know.</p>
+                    {(g.truthMixedRevivalAnswers ?? []).map(answer => <div key={answer}>
+                      {button(answer === 'unknown' ? 'I don’t know' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
                   </>
                 ) : w.question!.kind === 'revivalExpression' ? (
                   <>
@@ -470,6 +485,7 @@ export function Truthtrance({
                   <option value="bribe">Bind ordinary bribe payments this turn</option>
                   <option value="bribeExpression">Combine ordinary bribe payments with AND/OR</option>
                   <option value="mixedBribe">Combine current facts and ordinary payments</option>
+                  <option value="mixedRevival">Combine current facts and ordinary Revival</option>
                   <option value="revivalExpression">Bind combined force and leader revivals</option>
                   <option value="leaderRevival">Bind a named leader revival this turn</option>
                   <option value="revival">Bind ordinary force revivals this turn</option>
@@ -489,7 +505,14 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'revivalExpression' ? (
+              {kind === 'mixedRevival' ? (
+                <>
+                  <MixedRevivalFields value={mixedRevival} game={g} target={target}
+                    disabled={busy || !g.truthMixedRevivalTargets.includes(target)} onChange={setMixedRevival} />
+                  {!g.truthMixedRevivalTargets.includes(target) && <p className="notice">Choose a supported participant with an ordinary Revival opportunity still ahead this turn.</p>}
+                  <p className="notice" aria-label="Public mixed revival question preview">{mixedRevivalError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'revivalExpression' ? (
                 <>
                   <RevivalExpressionFields value={revivalExpression} leaders={leaderRevivalChoices}
                     disabled={busy || !g.truthRevivalExpressionTargets.includes(target)} onChange={setRevivalExpression} />
@@ -674,6 +697,7 @@ export function Truthtrance({
                 (kind === 'mixedMovement' && (!!mixedMovementError || !g.truthMixedMovementTargets.includes(target))) ||
                 (kind === 'movementExpression' && (!!movementExpressionError || !g.truthMovementExpressionTargets.includes(target))) ||
                 (kind === 'movement' && (!validMovementClaim(movement) || !g.truthMovementTargets.includes(target))) ||
+                (kind === 'mixedRevival' && (!!mixedRevivalError || !g.truthMixedRevivalTargets.includes(target))) ||
                 (kind === 'revivalExpression' && (!!revivalExpressionInputError(revivalExpression) || !validRevivalExpressionNames || !g.truthRevivalExpressionTargets.includes(target))) ||
                 (kind === 'leaderRevival' && (!!leaderRevivalClaimInputError(leaderRevivalClaim, leaderRevivalChoices) || !g.truthLeaderRevivalTargets.includes(target))) ||
                 (kind === 'alliance' && (!!allianceClaimInputError(allianceClaim, alliancePartners) || !g.truthAllianceTargets.includes(target))) ||

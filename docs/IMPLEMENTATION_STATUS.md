@@ -1,5 +1,41 @@
 # Dune implementation status
 
+## 26 October 2026 — Current facts with ordinary force and named-leader Revival
+
+**Prototyped / Partial.**
+Full mixed AND/OR questions now freeze facts at the answer and bind only the
+necessary native force/personal-leader obligation. Constants need no return;
+unknowns retain the conservative whole-answer guarantee. Original costs,
+cycles/slots/order, owned preparations/income, accepted funding and actual
+Basic/Advanced deadlines remain. Own raw question/aggregate/typed progress
+hide frozen fact values and compiled branches. Full shared editor, guarded
+Ask/private answers, one exact live guide and four minimal policies connect.
+
+Root integration with disjoint controls/native lanes passes **21 files,202/202**,
+types/lint/build and **nine native paths**,25 GameTable SSR renders/12 actual
+guide callbacks plus one editor callback followed by native Ask. Original H/A/T
+Ix47 Basic102/Advanced108 prefixes add13/12: native guide leader2 then free-force
+bank1 ends T3 without changing the original T4 fact. Unit journeys retain the
+manual force-first T4→T5→T3 alternative. Edited true OR has no binding; false AND
+allows a real return despite the later fact change. Native unknown OR Yes must
+return; AND No forbids it until actual phase close. Advanced83 post-Storm adds37
+through real phases/ordered returns. Two original Truths preserve earlier native
+budgets: bribe3/freeforce bank1/leader2 ends T0; an actual personal quoted price3
+is accepted/debited/transferred once. All47 original cards remain physical.
+
+Twenty-three native,eight original-funding and nine controlled cases supplement
+existing shared/scalar/grouped/early coverage. V1 passes quick/202 cases/build;
+only its external smoke assumption of force-first guidance is corrected. V2
+reuses the identical-source passed checks and passes corrected runtime; explicit
+combined provenance is in `verified-proof.json`. Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-mixed-revival-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-mixed-revival-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Other families, correlated unknowns, further preparations, wider compositions,
+browser/mobile/deployed and final rules/assurance remain required.
+[Authority, ordinary-return boundaries and evidence](TRUTHTRANCE_MIXED_REVIVAL.md).
+
+
 ## 26 October 2026 — Current facts with ordinary payments and shared mixed authoring
 
 **Prototyped / Partial.** Full mixed fact/payment AND/OR questions freeze current

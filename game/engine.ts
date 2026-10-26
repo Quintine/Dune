@@ -1,3 +1,4 @@
+import type { RevivalActionClaim, MixedRevivalClaim } from './mixed-revival-question';
 import type { BribePaymentClaim, MixedBribeClaim } from './mixed-bribe-question';
 import { compileMixedActionExpression, MixedActionQuestionError, type CompiledMixedAction } from './mixed-action-question';
 import { MovementExpressionPromiseError, liveMovementExpressionPromises, recordMovementExpressionEvent,
@@ -2159,6 +2160,10 @@ export type Game = {
   revivalPromises?: RevivalPromise[];
   leaderRevivalPromises?: LeaderRevivalPromise[];
   revivalExpressionPromises?: RevivalExpressionPromise[];
+  /** Original mixed questions link to the existing ordinary-return ledger. */
+  mixedRevivalQuestions?: (MixedRevivalClaim & {
+    event: string; player: string; asker: string; answer: boolean; binding: boolean;
+  })[];
   /** Shared accepted order for typed force and named leader answers. */
   revivalPromiseSequence?: string[];
   bribePromises?: BribePromise[];
@@ -6913,6 +6918,9 @@ function truthtranceDiscardSignature(g: Game, next: TruthDiscardContinuation) {
     battle: g.battle,
     shipmentPromises: g.shipmentPromises,
     movementPromises: g.movementPromises,
+    ...(next.record.question.kind === 'mixedRevival' ? {
+      mixedRevivalQuestions: g.mixedRevivalQuestions, revivalExpressionPromises: g.revivalExpressionPromises,
+    } : {}),
     ...(next.record.question.kind === 'mixedBribe' ? {
       mixedBribeQuestions: g.mixedBribeQuestions, bribeExpressionPromises: g.bribeExpressionPromises,
     } : {}),
@@ -30746,6 +30754,60 @@ function bindRevivalExpressionTruth(g: Game, p: Player, claim: RevivalExpression
   (g.revivalExpressionPromises ??= []).push(promise);
   (g.revivalPromiseSequence ??= []).push(promise.event);
 }
+function mixedRevivalIdentities(g: Game, p: Player, mixed: MixedRevivalClaim['mixed']): boolean {
+  if (mixed.kind === 'fact') return true;
+  if (mixed.kind === 'action') return revivalExpressionIdentity(g, p, mixed.action);
+  return mixed.terms.every(term => mixedRevivalIdentities(g, p, term));
+}
+function compileMixedRevival(g: Game, p: Player, claim: MixedRevivalClaim, answer: boolean) {
+  const compiled = compileMixedActionExpression(claim.mixed,
+    fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
+  if (compiled.kind === 'constant') return { constant: compiled.value };
+  const returns = (node: CompiledMixedAction<RevivalActionClaim>): RevivalExpression => {
+    if (node.kind === 'action') return { ...node.action };
+    requireRule(node.kind !== 'constant', 'Retain the complete privately compiled mixed-Revival obligation.');
+    return { kind: node.kind, terms: node.terms.map(returns) };
+  };
+  return { residual: { turn: claim.turn, claim: returns(compiled) } };
+}
+function mixedRevivalTruthAnswers(g: Game, p: Player, claim: MixedRevivalClaim): TruthAnswer[] {
+  if (claim.turn !== g.turn || !revivalQuestionWindow(g) || !revivalOpportunity(g, p.id) ||
+    !mixedRevivalIdentities(g, p, claim.mixed)) return [];
+  const answers: TruthAnswer[] = [];
+  for (const answer of [true, false]) {
+    const compiled = compileMixedRevival(g, p, claim, answer);
+    if (compiled.constant !== undefined ? compiled.constant === answer :
+      revivalExpressionTruthAnswers(g, p, compiled.residual!).includes(answer ? 'yes' : 'no')) answers.push(answer ? 'yes' : 'no');
+  }
+  return answers.length ? answers : ['unknown'];
+}
+function bindMixedRevivalTruth(g: Game, p: Player, claim: MixedRevivalClaim, answer: boolean, asker: string) {
+  requireRule(mixedRevivalTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
+    'Choose a mixed Revival answer compatible with the whole current-fact and ordinary-return question.');
+  const compiled = compileMixedRevival(g, p, claim, answer);
+  let event: string;
+  if (compiled.residual) {
+    bindRevivalExpressionTruth(g, p, compiled.residual, answer, asker);
+    event = g.revivalExpressionPromises!.at(-1)!.event;
+  } else {
+    requireRule(compiled.constant === answer, 'Retain the truthful whole mixed-Revival answer.');
+    event = crypto.randomUUID();
+  }
+  (g.mixedRevivalQuestions ??= []).push({ turn: claim.turn, mixed: structuredClone(claim.mixed),
+    event, player: p.id, asker, answer, binding: !!compiled.residual });
+}
+function isMixedRevivalEvent(g: Game, event: string): boolean {
+  return !!g.mixedRevivalQuestions?.some(question => question.event === event);
+}
+function projectedMixedRevivalPromises(g: Game, player: string) {
+  return (g.mixedRevivalQuestions ?? []).filter(question => question.player === player).map(question => {
+    const bound = g.revivalExpressionPromises?.find(promise => promise.event === question.event);
+    return { event: question.event, player: question.player, asker: question.asker, turn: question.turn,
+      mixed: structuredClone(question.mixed), answer: question.answer,
+      progress: structuredClone(bound?.progress ?? { total: 0, normal: 0, elite: 0, leaders: [] }),
+      fulfilled: !question.binding || bound?.fulfilled === true, released: bound?.released === true };
+  });
+}
 function guardRevivalExpressionReady(g: Game, p: Player) {
   requireRule(liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [], p.id, g.turn)
     .every(promise => evaluateRevivalExpression(promise.claim, promise.progress) === promise.answer),
@@ -36515,6 +36577,8 @@ function applyActionInner(
         bindMixedBribe: bindMixedBribeTruth,
         revivalExpressionAnswers: revivalExpressionTruthAnswers,
         bindRevivalExpression: bindRevivalExpressionTruth,
+        mixedRevivalAnswers: mixedRevivalTruthAnswers,
+        bindMixedRevival: bindMixedRevivalTruth,
         leaderRevivalAnswers: leaderRevivalTruthAnswers,
         bindLeaderRevival: bindLeaderRevivalTruth,
         revivalAnswers: revivalTruthAnswers,
@@ -40395,7 +40459,11 @@ export function viewGame(state: Game, id: string) {
     truthRevivalExpressionTargets: revivalQuestionWindow(g) ? g.players.filter(player => revivalOpportunity(g, player.id)).map(player => player.id) : [],
     truthRevivalExpressionAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
       g.truthtrance.question.kind === 'revivalExpression' ? revivalExpressionTruthAnswers(g, me, g.truthtrance.question) : null,
-    revivalExpressionPromises: (g.revivalExpressionPromises ?? []).filter(promise => promise.player === id).map(promise => structuredClone(promise)),
+    revivalExpressionPromises: (g.revivalExpressionPromises ?? []).filter(promise => promise.player === id && !isMixedRevivalEvent(g, promise.event)).map(promise => structuredClone(promise)),
+    truthMixedRevivalTargets: revivalQuestionWindow(g) ? g.players.filter(p => revivalOpportunity(g, p.id)).map(p => p.id) : [],
+    truthMixedRevivalAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
+      g.truthtrance.question.kind === 'mixedRevival' ? mixedRevivalTruthAnswers(g, me, g.truthtrance.question) : null,
+    mixedRevivalPromises: projectedMixedRevivalPromises(g, id),
     revivalExpressionPromiseGuide: projectedRevivalExpressionPromiseGuide(g, id),
     bidPromises: projectedBidPromises(g, id),
     bidPromiseGuide: projectedBidPromiseGuide(g, id),

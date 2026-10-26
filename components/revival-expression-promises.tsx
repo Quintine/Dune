@@ -39,7 +39,9 @@ export function RevivalExpressionPromiseGuideButton(props: RevivalExpressionProm
       current.status === 'playing' && current.phase === phase && current.me === actor && current.turn === turn && opportunity &&
       current.revivalExpressionPromiseGuide === guide && current.revivalExpressionPromiseGuide.phase === phase &&
       current.revivalExpressionPromiseGuide.action === action && JSON.stringify(action) === signature && typeof event === 'string' &&
-      liveRevivalExpressionPromises(current.revivalExpressionPromises, actor, turn).some(promise => promise.event === event) && !!me && !me.autopilot &&
+      (liveRevivalExpressionPromises(current.revivalExpressionPromises, actor, turn).some(promise => promise.event === event) ||
+        (current.mixedRevivalPromises ?? []).some(promise => promise.event === event && promise.player === actor &&
+          promise.turn === turn && !promise.fulfilled && !promise.released)) && !!me && !me.autopilot &&
       !current.truthtrance && !current.response && (!current.decision || payment) && !current.phaseOpening &&
       !current.automaticContinuationPending && !current.roomControl?.paused && !current.roomControl?.closed;
   };
@@ -92,6 +94,6 @@ export function RevivalExpressionPromises(props: RevivalExpressionPromiseProps) 
     {waiting && <p>Your Revival opportunity is still ahead; {props.game.phase < 4
       ? 'continue the current phase and preserve the resources for your whole answer.'
       : 'this promise remains visible while the current actor finishes.'}</p>}
-    <RevivalExpressionPromiseGuideButton {...props} />
+    {live && <RevivalExpressionPromiseGuideButton {...props} />}
   </section>;
 }
