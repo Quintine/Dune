@@ -1,5 +1,9 @@
 # Truthtrance nonbattle readiness and first implementation slice
 
+The [named-leader follow-up](TRUTHTRANCE_LEADER_REVIVAL_PROMISES.md) adds actual
+personal native leader/KH return commitments alongside the separate force
+ledger. It supersedes that named-return absence only; broader promises remain.
+
 The [current-Nexus alliance follow-up](TRUTHTRANCE_ALLIANCE_PROMISES.md) adds
 actual final-membership commitments using owned reciprocal consent, with
 unknown/save when consent is unavailable. This supersedes the historical

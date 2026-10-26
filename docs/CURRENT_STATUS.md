@@ -16,6 +16,38 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / named ordinary leader revival — 26 October. Prototyped / Partial.**
+Quiet phases0–4 now support future personal native leader/Kwisatz return
+questions in bare native Basic/Advanced. Original identity/custody, cohort,
+cost, slot and response outcomes remain. Force/leader answers share one purse,
+native allowance and accepted order; existing bid/bribe/shipment/movement
+commitments retain funding. Persistent exact guides prepare, return or finish;
+minimal legal AI is connected. An actual priced personal negotiation can be
+accepted without inventing foreign agreement. Native Tleilaxu self free-return
+income can prepare the payment. The interval/witness/release composition is
+provisional; optional compositions and complete-mode acceptance remain open.
+
+Root integration and disjoint pure/native/control lanes pass **19 files,208/208**,
+types/lint/build and **six native paths**,23 GameTable SSR renders/nine actual
+guide callbacks. Original H/A/T Ix47 Basic102/Advanced108-action sources earn a
+real projectile death, leaving T4 with one dead/four living leaders;12/11 further
+actions bind and return that native leader for2. Other paths keep No through a
+free-force return, earn actual bank1 after a bribe leaves T1, and carry an early
+post-Storm question through real phases. A103-action original projectile/Tooth
+source earns two real deaths;15 further actions request/quote3, bind, reprice4,
+reject the old guide and actually return A's named leader for4. All47 cards stay
+physical. Ten pure,16 native,six controlled UI and two native funding cases
+cover joint clauses, earlier bribes and legal profiles. Ghola cannot voluntarily
+erase the only ordinary-return Yes before its later income response.
+
+Frozen v4 report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-leader-revival-proof-v4/`;
+journeys/HTML: adjacent `20261026-truth-leader-revival-runtime/`.
+No saved-room/D1/server/reset/restart/deployment operation is performed.
+Original normal-cohort/Auditor/Duke/KH commitment and opposing-release journeys,
+browser/mobile/deployed and final assurance remain due.
+[Source and boundaries](TRUTHTRANCE_LEADER_REVIVAL_PROMISES.md).
+
 **Truthtrance / current-Nexus alliance membership — 26 October. Prototyped / Partial.**
 Named final partnership questions now use actual reciprocal consent in quiet
 ordinary Nexus negotiation on registered bare native Basic/Advanced tables.

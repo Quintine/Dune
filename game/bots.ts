@@ -1309,6 +1309,7 @@ function policyActions(g: GameView): Action[] {
   }
   if (g.bribePromiseGuide) return [g.bribePromiseGuide.action];
   if (g.alliancePromiseGuide) return [g.alliancePromiseGuide.action];
+  if (g.leaderRevivalPromiseGuide) return [g.leaderRevivalPromiseGuide.action];
   if (g.revivalPromiseGuide) return [g.revivalPromiseGuide.action];
   if (g.bidPromiseGuide) return [g.bidPromiseGuide.action];
   if (g.truthtrance) {
@@ -1317,6 +1318,10 @@ function policyActions(g: GameView): Action[] {
       return w.passed.includes(me.id) ? [] : [{ type: 'truthPass' }];
     if (w.stage === 'answer') {
       if (w.question?.target !== me.id) return [];
+      if (w.question.kind === 'leaderRevival') {
+        const answer = g.truthLeaderRevivalAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'alliance') {
         const answer = g.truthAllianceAnswers?.find(answer => answer !== 'unknown') ?? g.truthAllianceAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];

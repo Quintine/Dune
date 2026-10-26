@@ -27,6 +27,7 @@ import { ShipmentPromises } from './shipment-promises';
 import { AlliancePromises } from './alliance-promises';
 import { BribePromises } from './bribe-promises';
 import { RevivalPromises } from './revival-promises';
+import { LeaderRevivalPromises } from './leader-revival-promises';
 import { BidPromises } from './bid-promises';
 import { HomeworldShipment } from './homeworld-shipment';
 import { HomeworldRevivalDeployment } from './homeworld-revival-deployment';
@@ -2036,6 +2037,7 @@ export function GameTable({
           )}
           {g.status === 'playing' && <BribePromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <AlliancePromises game={g} send={act} busy={busy} />}
+          {g.status === 'playing' && <LeaderRevivalPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <RevivalPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <BidPromises game={g} send={act} busy={busy} />}
           {g.guildBetrayalReaction ? (

@@ -1,3 +1,6 @@
+import { LeaderRevivalPromiseError, liveLeaderRevivalPromises, leaderRevivalRequirements,
+  leaderRevivalPromisesSatisfied, recordPromisedLeaderRevival, validateLeaderRevivalPromises,
+  type LeaderRevivalClaim, type LeaderRevivalPromise } from './leader-revival-promises';
 import { AlliancePromiseError, alliancePromiseModeSupported, liveAlliancePromises, alliancePromiseRequirements,
   alliancePromisesMatch, findAlliancePromisePlan, validateAlliancePromises, type AllianceClaim, type AllianceOpportunity, type AlliancePromise } from './alliance-promises';
 import { BribePromiseError, bribePromiseModeSupported, liveBribePromises, recordPromisedBribe,
@@ -2143,6 +2146,9 @@ export type Game = {
   shipmentPromises?: ShipmentPromise[];
   bidPromises?: BidPromise[];
   revivalPromises?: RevivalPromise[];
+  leaderRevivalPromises?: LeaderRevivalPromise[];
+  /** Shared accepted order for typed force and named leader answers. */
+  revivalPromiseSequence?: string[];
   bribePromises?: BribePromise[];
   alliancePromises?: AlliancePromise[];
   movementPromises?: MovementPromise[];
@@ -15100,7 +15106,7 @@ function bribePromiseCompletion(g: Game, p: Player, promises = g.bribePromises ?
   } catch (error) { if (error instanceof RuleError) return null; throw error; }
 }
 function bribeCompatibleLaterPromises(g: Game, p: Player,
-  later: Pick<Partial<Game>, 'shipmentPromises' | 'movementPromises' | 'revivalPromises' | 'battle'>): boolean {
+  later: Pick<Partial<Game>, 'shipmentPromises' | 'movementPromises' | 'revivalPromises' | 'leaderRevivalPromises' | 'battle'>): boolean {
   if (!liveBribePromises(g.bribePromises ?? [], p.id, g.turn).some(promise => promise.answer)) return true;
   return !!bribePromiseCompletion({ ...g, ...later }, p);
 }
@@ -15170,7 +15176,8 @@ function projectedBribes(g: Game, p: Player): BribeOptions {
     promise.player === p.id && !promise.released && !g.battle?.revealed && !g.battle?.plans[p.id]);
   const shipmentPromises = liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length > 0;
   const movementPromises = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).some(promise => promise.answer);
-  const revivalPromises = liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).some(promise => promise.answer);
+  const revivalPromises = liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).some(promise => promise.answer) ||
+    liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], p.id, g.turn).some(promise => promise.answer);
   const bribePromises = liveBribePromises(g.bribePromises ?? [], p.id, g.turn).length > 0;
   // Reuse the authoritative promise checks on an isolated resource-only copy.
   // No payment, receipt or live continuation is created by this projection.
@@ -15403,6 +15410,7 @@ function bidPromiseCompletion(g: Game, p: Player, promises = g.bidPromises ?? []
     if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length ||
       liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).length ||
       liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length ||
+      liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], p.id, g.turn).length ||
       liveBribePromises(g.bribePromises ?? [], p.id, g.turn).length) {
       const trial = structuredClone(g);
       trial.truthtrance = null;
@@ -29955,6 +29963,27 @@ function projectOwnedOrdinaryRevival(g: Game, owner: string) {
   commitRevivalForcePieces(g, p, quote.pending);
   g.pendingRevival = null; g.decision = null; g.response = null;
 }
+/** Physical leader/cohort/slot accounting shared by actual returns and private
+ * allowed-outcome quotes. Income, skills, logs and continuations stay native. */
+function commitRevivalLeaderPieces(g: Game, p: Player, revival: PendingRevival) {
+  let leader: Leader | undefined;
+  if (revival.kind === 'kwisatz') {
+    p.kwisatz!.dead = false;
+    p.kwisatz!.revivalCycle = Math.max(p.revivalCycle, p.kwisatz!.revivalCycle ?? 1) + 1;
+  } else {
+    const sharedDuke = revival.kind === 'leader' && revival.leader === DUKE_VIDAL_ID;
+    leader = sharedDuke ? g.dukeVidal!.leader : g.players.flatMap(owner => owner.leaders).find(l => l.id === revival.leader)!;
+    recordEcazLeaderReturn(g, leader);
+    if (revival.kind === 'foreignGhola') leader.gholaBy = p.id;
+    else delete leader.gholaBy;
+    leader.dead = false;
+    delete leader.concealed;
+    if (sharedDuke) g.dukeVidal = consumeDuke(g.dukeVidal!);
+  }
+  p.leaderRevived = true;
+  if (g.revivalRequests) delete g.revivalRequests[p.id];
+  return leader;
+}
 function finishRevival(
   g: Game,
   quote: RevivalResumeQuote = currentRevivalResumeQuote(g, 'finish'),
@@ -30022,36 +30051,27 @@ function finishRevival(
       { faction: p.faction, name: 'Revival' });
     stageHomeworldRevivalReturn(g, p, source, group, deploymentGrant);
   } else {
+    if ((revival.kind === 'leader' || revival.kind === 'kwisatz') &&
+      liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], p.id, g.turn).length)
+      g.leaderRevivalPromises = leaderRevivalPromiseRule(() => recordPromisedLeaderRevival(
+        g.leaderRevivalPromises ?? [], p.id, g.turn, revival.kind === 'kwisatz' ? 'kwisatz' : revival.leader!));
+    const leader = commitRevivalLeaderPieces(g, p, revival);
     if (revival.kind === 'kwisatz') {
-      p.kwisatz!.dead = false;
-      p.kwisatz!.revivalCycle =
-        Math.max(p.revivalCycle, p.kwisatz!.revivalCycle ?? 1) + 1;
       log(g, `${p.name} revived Kwisatz Haderach.`, { faction: p.faction, name: 'Revival' });
     } else {
       const sharedDuke = revival.kind === 'leader' && revival.leader === DUKE_VIDAL_ID;
-      const leader = sharedDuke
-        ? g.dukeVidal!.leader
-        : g.players.flatMap((owner) => owner.leaders).find((l) => l.id === revival.leader)!;
-      recordEcazLeaderReturn(g, leader);
-      if (revival.kind === 'foreignGhola') leader.gholaBy = p.id;
-      else delete leader.gholaBy;
-      leader.dead = false;
-      delete leader.concealed;
-      if (sharedDuke) g.dukeVidal = consumeDuke(g.dukeVidal!);
       // Automatic Karama response chains may commit after the action's before/after
-      if (revival.kind === 'leader' && g.leaderSkills && !isAuditorLeader(leader) &&
-          !leader.capturedBy && p.leaders.some(own => own.id === leader.id)) {
+      if (revival.kind === 'leader' && g.leaderSkills && !isAuditorLeader(leader!) &&
+          !leader!.capturedBy && p.leaders.some(own => own.id === leader!.id)) {
         g.leaderSkills = skillRule(() => offerRevivedLeaderSkill(
-          g.leaderSkills!, p.id, leader.id, crypto.randomUUID()));
+          g.leaderSkills!, p.id, leader!.id, crypto.randomUUID()));
       }
       log(
         g,
-        `${p.name} revived ${leader.name}${revival.kind === 'foreignGhola' ? ' as a ghola' : ''}.${sharedDuke ? ' The living shared disc is set aside, unclaimed.' : ''}`,
+        `${p.name} revived ${leader!.name}${revival.kind === 'foreignGhola' ? ' as a ghola' : ''}.${sharedDuke ? ' The living shared disc is set aside, unclaimed.' : ''}`,
         { faction: p.faction, name: 'Revival' },
       );
     }
-    p.leaderRevived = true;
-    if (g.revivalRequests) delete g.revivalRequests[p.id];
   }
   g.pendingRevival = null;
   if (quote.freeIncome) {
@@ -30112,11 +30132,119 @@ function normalForceRevivalQuote(g: Game, p: Player, action: Action): PendingRev
     checks,
   };
 }
+function normalLeaderRevivalQuote(g: Game, p: Player, action: Action): { revival: PendingRevival; cycle: number | null } {
+  const t = action.type;
+  requireRule(
+    g.phase === 4 && (!p.leaderRevived || p.faction === 'tleilaxu'),
+    'Only one leader revival is permitted this phase.',
+  );
+  requireRule(
+    !revivalPrevented(g, p.id),
+    'Tleilaxu prevented this faction’s normal revivals for this turn.',
+  );
+  const options = leaderRevivalOptions(g, p);
+  const duke = t === 'reviveLeader' && action.leader === DUKE_VIDAL_ID;
+  if (duke) {
+    requireRule(p.faction === 'ecaz', 'Only Ecaz may revive Duke Vidal.');
+    const blocked = ecazDukeRevivalBlock(g, p.id);
+    requireRule(!blocked, blocked ?? 'Duke Vidal is unavailable for revival.');
+  }
+  const dukeQuote = duke ? quoteEcazDukeRevival(g, p.id, !!revivalDiscount(g, p)) : null;
+  const l = t === 'reviveLeader'
+    ? duke ? g.dukeVidal!.leader : p.leaders.find((l) => l.id === action.leader)
+    : undefined;
+  if (t === 'reviveKwisatz')
+    requireRule(
+      g.advanced && p.faction === 'atreides' && p.kwisatz?.dead,
+      'Kwisatz Haderach is not in the tanks.',
+    );
+  else
+    requireRule(
+      l?.dead && !l.capturedBy && !l.gholaBy,
+      'Choose a dead leader.',
+    );
+  const option = options.leaders.find((option) => option.id === l?.id);
+  const normal =
+    t === 'reviveKwisatz' ? !!options.kwisatz : !!option && !option.early;
+  requireRule(
+    normal || p.faction === 'tleilaxu',
+    'All leaders must die before a new revival cycle can begin.',
+  );
+  const checks: PendingRevival['checks'] = [];
+  if (!normal) {
+    requireRule(
+      !g.revivalRules?.earlyBlocked.includes(`${p.id}:${l!.id}`),
+      'Early revival of that leader was canceled this phase.',
+    );
+    checks.push('earlyRevival');
+  }
+  requireRule(
+    t === 'reviveKwisatz' ? !!options.kwisatz : !!option,
+    'That leader is unavailable for revival this phase.',
+  );
+  const normalCost = dukeQuote?.normalCost ?? l?.strength ?? 2;
+  const cost = dukeQuote?.cost ?? (revivalDiscount(g, p) ? Math.ceil(normalCost / 2) : normalCost);
+  requireRule(p.spice >= cost, 'Not enough spice.');
+  if (cost < normalCost) checks.push('revivalDiscount');
+  return { cycle: p.faction !== 'ecaz' && (!duke || options.cycle > p.revivalCycle) ? options.cycle : null,
+  revival: { player: p.id, kind: t === 'reviveKwisatz' ? 'kwisatz' : 'leader', leader: l?.id,
+    normalCost, cost, free: 0, checks } };
+}
+function personalLeaderRequestQuote(g: Game, p: Player, requested: string | undefined) {
+  const tleilaxu = byFaction(g, 'tleilaxu');
+  requireRule(g.phase === 4 && tleilaxu, 'Tleilaxu leader negotiations require the Revival phase.');
+  requireRule(
+    p.id !== tleilaxu!.id && !p.leaderRevived,
+    'Only one negotiated leader revival is permitted per faction per phase.',
+  );
+  requireRule(requested, 'Request a leader first.');
+  requireRule(
+    !revivalPrevented(g, p.id),
+    'Tleilaxu prevented this faction’s normal revivals for this turn.',
+  );
+  const buyback = p.leaders.some(
+    (l) => l.id === requested && l.gholaBy === tleilaxu!.id,
+  );
+  requireRule(
+    buyback || p.leaders.some(nativeAvailable),
+    'When all native leaders are unavailable, use ordinary revival rules.',
+  );
+  if (requested === 'kwisatz')
+    requireRule(
+      g.advanced && p.faction === 'atreides' && p.kwisatz?.dead,
+      'Kwisatz Haderach is not in the tanks.',
+    );
+  else
+    requireRule(
+      p.leaders.some((l) => l.id === requested && l.dead && !l.capturedBy),
+      'Choose one of your dead native leaders.',
+    );
+  requireRule(
+    !g.revivalRules?.earlyBlocked.includes(`${p.id}:${requested}`),
+    'Early revival of that leader was canceled this phase.',
+  );
+}
+function negotiatedLeaderRevivalQuote(g: Game, p: Player): ReturnType<typeof normalLeaderRevivalQuote> {
+  const request = g.revivalRequests?.[p.id];
+  requireRule(request, 'Request a leader first.');
+  personalLeaderRequestQuote(g, p, request?.leader);
+  requireRule(!request?.declined, 'That request was declined.');
+  const price = request?.price;
+  requireRule(typeof price === 'number', 'Wait for Tleilaxu to quote a price.');
+  requireRule(p.spice >= price, 'Not enough spice for the agreed revival.');
+  return { cycle: null, revival: { player: p.id, kind: request.leader === 'kwisatz' ? 'kwisatz' : 'leader',
+    leader: request.leader, normalCost: price, cost: price, free: 0, checks: ['earlyRevival'] } };
+}
 function revivalPromiseRule<T>(calculate: () => T): T {
   try { return calculate(); }
   catch (error) { if (error instanceof RevivalPromiseError) throw new RuleError(error.message); throw error; }
 }
+function leaderRevivalPromiseRule<T>(calculate: () => T): T {
+  try { return calculate(); }
+  catch (error) { if (error instanceof LeaderRevivalPromiseError) throw new RuleError(error.message); throw error; }
+}
 function revivalPromiseIntegrity(g: Game) {
+  leaderRevivalPromiseRule(() => validateLeaderRevivalPromises(g.leaderRevivalPromises ?? [], g.players.map(player => player.id)));
   revivalPromiseRule(() => validateRevivalPromises(g.revivalPromises ?? [], g.players.map(player => player.id)));
 }
 /** An unused native opportunity this turn, including earlier phases and waiting
@@ -30130,15 +30258,26 @@ function revivalQuestionWindow(g: Game): boolean {
     !g.response && !g.decision && !g.phaseOpening && !g.pendingRevival &&
     !g.pendingKarama && !g.pendingTreacheryDiscard;
 }
+function stagePromisedForceReturn(g: Game, p: Player, revival: PendingRevival) {
+  const quote = currentRevivalResumeQuote({ ...g, pendingRevival: { ...revival, checks: [] } }, 'finish');
+  requireRule(quote.outcome === 'revive', 'This ordinary force return cannot complete.');
+  g.revivalPromises = revivalPromiseRule(() => recordPromisedRevival(g.revivalPromises ?? [], p.id,
+    g.turn, { amount: revival.amount!, elite: revival.elite ?? 0 }));
+  p.spice -= revival.cost;
+  commitRevivalForcePieces(g, p, revival);
+  if (quote.freeIncome) {
+    g.revivalFreeIncome ??= {};
+    g.revivalFreeIncome[quote.freeIncome.player] = quote.freeIncome.turn;
+  }
+  if (quote.nextResponse?.kind === 'revivalIncome' && quote.nextResponse.owner === p.id)
+    p.spice += quote.nextResponse.amount ?? 0;
+}
 function revivalKeepsLaterPromises(g: Game, p: Player, revival?: PendingRevival): boolean {
   if (!liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length &&
     !liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).length) return true;
   const trial = structuredClone(g), actor = getPlayer(trial, p.id);
   trial.truthtrance = null;
-  if (revival) {
-    actor.spice -= revival.cost;
-    commitRevivalForcePieces(trial, actor, revival);
-  }
+  if (revival) stagePromisedForceReturn(trial, actor, revival);
   // This is the final aggregate: later witnesses cannot invent another ordinary
   // revival that would bypass this question's typed No or paid-return budget.
   if (!trial.ready.includes(p.id)) trial.ready.push(p.id);
@@ -30155,6 +30294,44 @@ function revivalKeepsLaterPromises(g: Game, p: Player, revival?: PendingRevival)
 function currentRevivalPromiseCompletion(g: Game, p: Player, promises: RevivalPromise[]): Action | null {
   if (g.phase !== 4) return null;
   if (!revivalOpportunity(g, p.id)) return null;
+  const leaders = leaderRevivalRequirements(g.leaderRevivalPromises ?? [], p.id, g.turn);
+  if (!leaders) return null;
+  // One completion owner reserves the actual leader price, physical cohort and
+  // slot before searching force returns against the resulting shared purse.
+  // Required identities are bounded by native discs; no scored AI shortlist.
+  if (leaders.required.length) {
+    for (const leader of leaders.required) {
+      const actions: Action[] = [leader === 'kwisatz' ? { type: 'reviveKwisatz' } : { type: 'reviveLeader', leader }];
+      const request = g.revivalRequests?.[p.id];
+      if (request?.leader === leader && typeof request.price === 'number' && !request.declined)
+        actions.push({ type: 'acceptLeaderRevival', leaderRevivalPrice: request.price });
+      for (const action of actions) try {
+        const trial = structuredClone(g), actor = getPlayer(trial, p.id);
+        trial.truthtrance = null;
+        const quote = action.type === 'acceptLeaderRevival' ? negotiatedLeaderRevivalQuote(trial, actor)
+          : normalLeaderRevivalQuote(trial, actor, action);
+        stagePromisedLeaderReturn(trial, actor, quote);
+        if (currentRevivalPromiseCompletion(trial, actor, promises)) return action;
+      } catch (error) { if (!(error instanceof RuleError)) throw error; }
+    }
+    if (p.faction === 'tleilaxu' && g.revivalFreeIncome?.[p.id] !== g.turn && !revivalPrevented(g, p.id)) {
+      const maximum = forceRevivalRemaining(g, p), tanksElite = p.elites?.tanks ?? 0;
+      for (let amount = 1; amount <= maximum; amount++)
+        for (let elite = Math.max(0, amount - (p.tanks - tanksElite)); elite <= Math.min(amount, eliteRevivalRemaining(p, g.advanced)); elite++) {
+          const action: Action = { type: 'revive', amount, elite };
+          try {
+            const trial = structuredClone(g), actor = getPlayer(trial, p.id);
+            trial.truthtrance = null; trial.revivalPromises = promises;
+            const quote = normalForceRevivalQuote(trial, actor, action);
+            if (quote.free <= 0) continue;
+            stagePromisedForceReturn(trial, actor, quote);
+            if (currentRevivalPromiseCompletion(trial, actor, trial.revivalPromises ?? [])) return action;
+          } catch (error) { if (!(error instanceof RuleError)) throw error; }
+        }
+    }
+    return null;
+  }
+
   if (revivalPromisesSatisfied(promises, p.id, g.turn, { amount: 0, elite: 0 }) &&
     revivalKeepsLaterPromises(g, p)) return { type: 'ready' };
   if (revivalPrevented(g, p.id)) return null;
@@ -30168,7 +30345,7 @@ function currentRevivalPromiseCompletion(g: Game, p: Player, promises: RevivalPr
         const action: Action = { type: 'revive', amount, elite, ...(p.faction === 'ixians' ? { freeElite } : {}) };
         try {
           const revival = normalForceRevivalQuote(g, p, action);
-          if (revivalKeepsLaterPromises(g, p, revival)) return action;
+          if (revivalKeepsLaterPromises({ ...g, revivalPromises: promises }, p, revival)) return action;
         } catch (error) { if (!(error instanceof RuleError)) throw error; }
       }
     }
@@ -30193,7 +30370,8 @@ function revivalPromiseCompletion(g: Game, p: Player, promises = g.revivalPromis
   return revivalPromisePlan(g, p, promises)?.action ?? null;
 }
 function revivalCompatibleLaterPromises(g: Game, p: Player, later: Pick<Partial<Game>, 'shipmentPromises' | 'movementPromises'>): boolean {
-  if (!liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length) return true;
+  if (!liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length &&
+    !liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], p.id, g.turn).length) return true;
   const trial = { ...g, ...later };
   return !!revivalPromiseCompletion(trial, getPlayer(trial, p.id));
 }
@@ -30214,31 +30392,93 @@ function revivalTruthAnswers(g: Game, p: Player, claim: RevivalClaim): ('yes' | 
 function bindRevivalTruth(g: Game, p: Player, claim: RevivalClaim, answer: boolean, asker: string) {
   requireRule(revivalTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
     'This revival answer no longer has a legal completion.');
-  (g.revivalPromises ??= []).push({ ...claim, event: crypto.randomUUID(), player: p.id, asker, answer, progress: 0 });
+  const promise = { ...claim, event: crypto.randomUUID(), player: p.id, asker, answer, progress: 0 };
+  (g.revivalPromises ??= []).push(promise);
+  (g.revivalPromiseSequence ??= []).push(promise.event);
 }
+function stagePromisedLeaderReturn(g: Game, p: Player, quote: ReturnType<typeof normalLeaderRevivalQuote>) {
+  const revival = quote.revival;
+  const leader = revival.kind === 'kwisatz' ? 'kwisatz' : revival.leader!;
+  if (revival.kind === 'leader' || revival.kind === 'kwisatz')
+    g.leaderRevivalPromises = leaderRevivalPromiseRule(() => recordPromisedLeaderRevival(
+      g.leaderRevivalPromises ?? [], p.id, g.turn, leader));
+  if (quote.cycle !== null) p.revivalCycle = quote.cycle;
+  p.spice -= revival.cost;
+  commitRevivalLeaderPieces(g, p, revival);
+}
+function leaderRevivalIdentity(g: Game, p: Player, leader: string): boolean {
+  return leader === 'kwisatz' ? g.advanced && p.faction === 'atreides' :
+    leader === DUKE_VIDAL_ID ? p.faction === 'ecaz' && !!g.dukeVidal : p.leaders.some(l => l.id === leader);
+}
+function leaderRevivalTruthAnswers(g: Game, p: Player, claim: LeaderRevivalClaim): ('yes' | 'no' | 'unknown')[] {
+  if (!revivalQuestionWindow(g) || !revivalOpportunity(g, p.id) || claim.turn !== g.turn ||
+    !leaderRevivalIdentity(g, p, claim.leader)) return [];
+  return (['yes', 'no'] as const).filter(answer => {
+    const promises = [...(g.leaderRevivalPromises ?? []), { ...claim, event: 'candidate', player: p.id,
+      asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes' }];
+    const trial = { ...g, leaderRevivalPromises: promises };
+    if (!revivalPromiseCompletion(trial, p) || !bribeCompatibleLaterPromises(trial, p, {})) return false;
+    const lot = bidOpportunity(trial);
+    return !lot || !bidRequired(trial.bidPromises ?? [], p.id, lot) || !!bidPromiseCompletion(trial, p);
+  });
+}
+function bindLeaderRevivalTruth(g: Game, p: Player, claim: LeaderRevivalClaim, answer: boolean, asker: string) {
+  requireRule(leaderRevivalTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
+    'Choose a named leader-revival answer compatible with native eligibility and earlier answers.');
+  const promise = { ...claim, event: crypto.randomUUID(), player: p.id, asker, answer };
+  (g.leaderRevivalPromises ??= []).push(promise);
+  (g.revivalPromiseSequence ??= []).push(promise.event);
+}
+function guardPromisedLeaderRevival(g: Game, p: Player, action: Action,
+  quote?: ReturnType<typeof normalLeaderRevivalQuote>) {
+  if (!liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], p.id, g.turn).length &&
+    !liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length &&
+    !liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length &&
+    !liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).length &&
+    !liveBribePromises(g.bribePromises ?? [], p.id, g.turn).some(promise => promise.answer)) return;
+  if (!quote) {
+    requireRule(leaderRevivalPromisesSatisfied(g.leaderRevivalPromises ?? [], p.id, g.turn, []),
+      'Complete the named leader returns required by your Truthtrance Yes before finishing Revival.');
+    return;
+  }
+  const trial = structuredClone(g), actor = getPlayer(trial, p.id);
+  trial.truthtrance = null;
+  if (!trial.revivalOrder) trial.ready = trial.ready.filter(player => player !== p.id);
+  stagePromisedLeaderReturn(trial, actor, quote);
+  requireRule(!!revivalPromiseCompletion(trial, actor) && bribeCompatibleLaterPromises(trial, actor, {}),
+    'This leader request would prevent you from honoring your Revival answers.');
+}
+/** Reconcile the shared purse in actual answer order across both ledgers.
+ * Existing records without an order stamp precede newly accepted answers. */
 function reconcileRevivalPromises(g: Game, voluntary?: { actor: string; action: Action }) {
-  if (!g.revivalPromises?.some(promise => !promise.fulfilled && !promise.released)) return;
+  const pending = [...(g.revivalPromises ?? []), ...(g.leaderRevivalPromises ?? [])]
+    .filter(promise => !promise.fulfilled && !promise.released);
+  if (!pending.length) return;
   revivalPromiseIntegrity(g);
   if (g.truthtrance || g.response || g.decision || g.phaseOpening || g.pendingRevival ||
     g.pendingTreacheryDiscard || g.pendingKarama || g.pendingKull || g.pendingRicheseBetrayal) return;
-  const kept: RevivalPromise[] = [];
-  const no = g.revivalPromises.filter(promise => !promise.answer && !promise.fulfilled && !promise.released);
-  for (const promise of g.revivalPromises) {
-    if (promise.fulfilled || promise.released) continue;
-    const same = g.status === 'playing' && g.phase >= 0 && g.phase <= 4 && g.turn === promise.turn;
-    if (!promise.answer) {
-      if (!same || g.revivalOrder && !g.revivalOrder.remaining.includes(promise.player)) promise.fulfilled = true;
-      continue;
-    }
-    if (!same || !revivalPromiseCompletion(g, getPlayer(g, promise.player), [...no, ...kept, promise])) {
+  const isForce = (promise: RevivalPromise | LeaderRevivalPromise): promise is RevivalPromise => 'counter' in promise;
+  const same = (promise: RevivalPromise | LeaderRevivalPromise) =>
+    g.status === 'playing' && g.phase >= 0 && g.phase <= 4 && g.turn === promise.turn;
+  for (const promise of pending.filter(promise => !promise.answer))
+    if (!same(promise) || g.revivalOrder && !g.revivalOrder.remaining.includes(promise.player)) promise.fulfilled = true;
+  const force: RevivalPromise[] = pending.filter(isForce).filter(promise => !promise.answer && !promise.fulfilled);
+  const leaders: LeaderRevivalPromise[] = pending.filter(promise => !isForce(promise) && !promise.answer && !promise.fulfilled) as LeaderRevivalPromise[];
+  const sequence = g.revivalPromiseSequence ?? [];
+  const positives = pending.filter(promise => promise.answer).sort((a,b) => sequence.indexOf(a.event) - sequence.indexOf(b.event));
+  for (const promise of positives) {
+    const trial = { ...g, revivalPromises: isForce(promise) ? [...force, promise] : force,
+      leaderRevivalPromises: isForce(promise) ? leaders : [...leaders, promise] };
+    if (!same(promise) || !revivalPromiseCompletion(trial, getPlayer(trial, promise.player))) {
       requireRule(voluntary?.actor !== promise.player,
-        'You cannot voluntarily evade your Truthtrance revival answer.');
+        'You cannot voluntarily evade your Truthtrance Revival answer.');
       promise.released = true;
-      log(g, `${getPlayer(g, promise.player).name} can no longer fulfill the Truthtrance revival answer; that answer is no longer binding.`);
-    } else kept.push(promise);
+      log(g, `${getPlayer(g, promise.player).name} can no longer fulfill the Truthtrance ${isForce(promise) ? 'force' : 'named leader'}-revival answer; that answer is no longer binding.`);
+    } else if (isForce(promise)) force.push(promise);
+    else leaders.push(promise);
   }
 }
-function projectedRevivalPromiseGuide(g: Game, player: string): { phase: number; action: Action } | null {
+function projectedTypedRevivalPromiseGuide(g: Game, player: string, namedLeader: boolean): { phase: number; action: Action } | null {
   const ownPayment = g.phase === 3 && !g.response && !g.phaseOpening && g.decision?.kind === 'auctionPayment' && g.decision.player === player;
   if ((!revivalQuestionWindow(g) && !ownPayment) || g.truthtrance || !revivalOpportunity(g, player) ||
     g.pendingRevival || g.pendingKarama || g.pendingTreacheryDiscard ||
@@ -30247,8 +30487,10 @@ function projectedRevivalPromiseGuide(g: Game, player: string): { phase: number;
   // cannot evade it merely because Revival comes later in this turn.
   const lot = g.phase === 3 && !ownPayment && !g.richeseAuction && !g.ixAuction ? bidOpportunity(g) : null;
   if (lot && bidRequired(g.bidPromises ?? [], player, lot)) return null;
-  const promise = liveRevivalPromises(g.revivalPromises ?? [], player, g.turn)[0];
+  const named = liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], player, g.turn);
+  const promise = namedLeader ? named[0] : !named.length ? liveRevivalPromises(g.revivalPromises ?? [], player, g.turn)[0] : null;
   if (!promise) return null;
+  const event = namedLeader ? { leaderRevivalPromiseEvent: promise.event } : { revivalPromiseEvent: promise.event };
   const plan = revivalPromisePlan(g, getPlayer(g, player));
   if (!plan) return null;
   if (g.phase === 3 && g.richeseAuction && !ownPayment) {
@@ -30256,7 +30498,7 @@ function projectedRevivalPromiseGuide(g: Game, player: string): { phase: number;
     const available = !native.outcome && native.eligible.includes(player) &&
       (native.method === 'silent' ? !Object.hasOwn(native.sealed, player) : native.active === player);
     return available ? { phase: 3, action: { type: 'richeseBid', event: native.event,
-      amount: native.method === 'silent' ? 0 : null, allyPayment: 0, revivalPromiseEvent: promise.event } } : null;
+      amount: native.method === 'silent' ? 0 : null, allyPayment: 0, ...event } } : null;
   }
   if (g.phase === 3 && g.ixAuction) return null;
   const current = plan.early.find(step => step.phase === g.phase)?.action;
@@ -30264,14 +30506,21 @@ function projectedRevivalPromiseGuide(g: Game, player: string): { phase: number;
     ? current ?? { type: 'ready' } : g.phase === 3 ? ownPayment
       ? current?.type === 'decision' ? current : { type: 'decision', karama: false }
       : g.auction?.active === player ? { type: 'passBid' } : null : null;
-  return action ? { phase: g.phase, action: { ...action, revivalPromiseEvent: promise.event } } : null;
+  return action ? { phase: g.phase, action: { ...action, ...event } } : null;
+}
+function projectedRevivalPromiseGuide(g: Game, player: string) {
+  return projectedTypedRevivalPromiseGuide(g, player, false);
+}
+function projectedLeaderRevivalPromiseGuide(g: Game, player: string) {
+  return projectedTypedRevivalPromiseGuide(g, player, true);
 }
 function guardPromisedRevival(g: Game, p: Player, action: Action, revival?: PendingRevival) {
   const live = liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn);
   if (action.revivalPromiseEvent !== undefined) requireRule(revivalOpportunity(g, p.id) &&
     typeof action.revivalPromiseEvent === 'string' && live.some(promise => promise.event === action.revivalPromiseEvent),
   'This revival commitment guide is stale.');
-  if (!live.length) return;
+  if (!live.length && !liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], p.id, g.turn).length &&
+    !liveBribePromises(g.bribePromises ?? [], p.id, g.turn).some(promise => promise.answer)) return;
   if (!revival) {
     requireRule(revivalPromisesSatisfied(g.revivalPromises ?? [], p.id, g.turn, { amount: 0, elite: 0 }),
       'Complete the force returns required by your Truthtrance Yes before finishing Revival.');
@@ -30281,14 +30530,10 @@ function guardPromisedRevival(g: Game, p: Player, action: Action, revival?: Pend
   // completed real return below records progress; an opposing stop records none.
   const trial = structuredClone(g), actor = getPlayer(trial, p.id);
   trial.truthtrance = null;
-  trial.revivalPromises = revivalPromiseRule(() => recordPromisedRevival(trial.revivalPromises ?? [], p.id,
-    g.turn, { amount: revival.amount!, elite: revival.elite ?? 0 }));
-  // Legacy concurrent Ready does not forbid a later native request. Its No
-  // stays binding to phase close; only the detached completion probe reopens.
+  // Legacy concurrent Ready may reopen; quoted progress remains detached.
   if (!trial.revivalOrder) trial.ready = trial.ready.filter(player => player !== p.id);
-  actor.spice -= revival.cost;
-  commitRevivalForcePieces(trial, actor, revival);
-  requireRule(!!revivalPromiseCompletion(trial, actor),
+  stagePromisedForceReturn(trial, actor, revival);
+  requireRule(!!revivalPromiseCompletion(trial, actor) && bribeCompatibleLaterPromises(trial, actor, {}),
     'This request would prevent you from completing your Truthtrance revival answer.');
 }
 function beginRevival(g: Game, revival: PendingRevival) {
@@ -35216,6 +35461,12 @@ export function applyAction(state: Game, id: string, action: Action): Game {
       Object.keys(guide.action).every(key => action[key] === guide.action[key]),
     'This bribe commitment guide is stale or belongs to another payment.');
   }
+  if (action.leaderRevivalPromiseEvent !== undefined) {
+    const guide = projectedLeaderRevivalPromiseGuide(state, id);
+    requireRule(guide && Object.keys(action).sort().join(',') === Object.keys(guide.action).sort().join(',') &&
+      Object.keys(guide.action).every(key => action[key] === guide.action[key]),
+    'This named leader-revival commitment guide is stale or belongs to another opportunity.');
+  }
   if (action.revivalPromiseEvent !== undefined) {
     const guide = projectedRevivalPromiseGuide(state, id);
     requireRule(guide && Object.keys(action).sort().join(',') === Object.keys(guide.action).sort().join(',') &&
@@ -35908,6 +36159,8 @@ function applyActionInner(
         bindAlliance: bindAllianceTruth,
         bribeAnswers: bribeTruthAnswers,
         bindBribe: bindBribeTruth,
+        leaderRevivalAnswers: leaderRevivalTruthAnswers,
+        bindLeaderRevival: bindLeaderRevivalTruth,
         revivalAnswers: revivalTruthAnswers,
         bindRevival: bindRevivalTruth,
         bidAnswers: bidTruthAnswers,
@@ -35921,7 +36174,7 @@ function applyActionInner(
     )
       return g;
   } catch (error) {
-    if (error instanceof TruthError || error instanceof AlliancePromiseError || error instanceof BribePromiseError || error instanceof RevivalPromiseError || error instanceof BidPromiseError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof TraitorDecisionError)
+    if (error instanceof TruthError || error instanceof LeaderRevivalPromiseError || error instanceof AlliancePromiseError || error instanceof BribePromiseError || error instanceof RevivalPromiseError || error instanceof BidPromiseError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof TraitorDecisionError)
       throw new RuleError(error.message);
     throw error;
   }
@@ -38465,7 +38718,9 @@ function applyActionInner(
         'Not enough spice for these extra revivals.',
       );
     if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length ||
-      liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).some(promise => promise.answer)) {
+      liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).some(promise => promise.answer) ||
+      liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).some(promise => promise.answer) ||
+      liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], p.id, g.turn).some(promise => promise.answer)) {
       // A later responder cannot erase the owner's voluntary gift/revival
       // invoice. Check its allowed outcome before opening the response.
       const afterPayment = structuredClone(g);
@@ -38473,6 +38728,7 @@ function applyActionInner(
         ? amount : paidForceRevivalCost(recipient, amount, elite);
       reconcileShipmentPromises(afterPayment, { actor: p.id, action });
       reconcileGroundMovementPromises(afterPayment, p.id, action, g.phase);
+      reconcileRevivalPromises(afterPayment, { actor: p.id, action });
     }
     g.response = {
       kind: t,
@@ -38560,62 +38816,14 @@ function applyActionInner(
       }
       return g;
     }
-    requireRule(
-      p.id !== tleilaxu.id && !p.leaderRevived,
-      'Only one negotiated leader revival is permitted per faction per phase.',
-    );
-    const requested =
-      t === 'requestLeaderRevival'
-        ? stringField(action.leader)
-        : g.revivalRequests[id]?.leader;
-    requireRule(requested, 'Request a leader first.');
-    requireRule(
-      !revivalPrevented(g, p.id),
-      'Tleilaxu prevented this faction’s normal revivals for this turn.',
-    );
-    const buyback = p.leaders.some(
-      (l) => l.id === requested && l.gholaBy === tleilaxu.id,
-    );
-    requireRule(
-      buyback || p.leaders.some(nativeAvailable),
-      'When all native leaders are unavailable, use ordinary revival rules.',
-    );
-    if (requested === 'kwisatz')
-      requireRule(
-        g.advanced && p.faction === 'atreides' && p.kwisatz?.dead,
-        'Kwisatz Haderach is not in the tanks.',
-      );
-    else
-      requireRule(
-        p.leaders.some((l) => l.id === requested && l.dead && !l.capturedBy),
-        'Choose one of your dead native leaders.',
-      );
-    requireRule(
-      !g.revivalRules?.earlyBlocked.includes(`${p.id}:${requested}`),
-      'Early revival of that leader was canceled this phase.',
-    );
-    if (t === 'requestLeaderRevival')
+    if (t === 'requestLeaderRevival') {
+      const requested = stringField(action.leader);
+      personalLeaderRequestQuote(g, p, requested);
       g.revivalRequests[id] = { leader: requested, price: null };
-    else {
-      const price = g.revivalRequests[id]?.price;
-      requireRule(
-        !g.revivalRequests[id]?.declined,
-        'That request was declined.',
-      );
-      requireRule(
-        typeof price === 'number',
-        'Wait for Tleilaxu to quote a price.',
-      );
-      requireRule(p.spice >= price, 'Not enough spice for the agreed revival.');
-      beginRevival(g, {
-        player: id,
-        kind: requested === 'kwisatz' ? 'kwisatz' : 'leader',
-        leader: requested,
-        normalCost: price,
-        cost: price,
-        free: 0,
-        checks: ['earlyRevival'],
-      });
+    } else {
+      const quote = negotiatedLeaderRevivalQuote(g, p);
+      if (execution === 'live') guardPromisedLeaderRevival(g, p, action, quote);
+      beginRevival(g, quote.revival);
     }
     return g;
   }
@@ -38652,7 +38860,7 @@ function applyActionInner(
     const normalCost = leader.strength;
     const cost = revivalDiscount(g, p) ? Math.ceil(normalCost / 2) : normalCost;
     requireRule(p.spice >= cost, 'Not enough spice for this ghola.');
-    beginRevival(g, {
+    const revival: PendingRevival = {
       player: id,
       kind: 'foreignGhola',
       leader: leader.id,
@@ -38663,7 +38871,9 @@ function applyActionInner(
         cost < normalCost
           ? ['foreignGhola', 'revivalDiscount']
           : ['foreignGhola'],
-    });
+    };
+    if (execution === 'live') guardPromisedLeaderRevival(g, p, action, { revival, cycle: null });
+    beginRevival(g, revival);
     return g;
   }
   if (t === 'revive') {
@@ -38675,71 +38885,14 @@ function applyActionInner(
     return g;
   }
   if (t === 'reviveKwisatz' || t === 'reviveLeader') {
-    requireRule(
-      g.phase === 4 && (!p.leaderRevived || p.faction === 'tleilaxu'),
-      'Only one leader revival is permitted this phase.',
-    );
-    if (execution === 'live') startNativeRevivalOrder(g,id);
-    requireRule(
-      !revivalPrevented(g, p.id),
-      'Tleilaxu prevented this faction’s normal revivals for this turn.',
-    );
-    const options = leaderRevivalOptions(g, p);
-    const duke = t === 'reviveLeader' && action.leader === DUKE_VIDAL_ID;
-    if (duke) {
-      requireRule(p.faction === 'ecaz', 'Only Ecaz may revive Duke Vidal.');
-      const blocked = ecazDukeRevivalBlock(g, p.id);
-      requireRule(!blocked, blocked ?? 'Duke Vidal is unavailable for revival.');
+    const quote = normalLeaderRevivalQuote(g, p, action);
+    if (execution === 'live') {
+      startNativeRevivalOrder(g, id);
+      guardPromisedLeaderRevival(g, p, action, quote);
     }
-    const dukeQuote = duke ? quoteEcazDukeRevival(g, id, !!revivalDiscount(g, p)) : null;
-    const l = t === 'reviveLeader'
-      ? duke ? g.dukeVidal!.leader : p.leaders.find((l) => l.id === action.leader)
-      : undefined;
-    if (t === 'reviveKwisatz')
-      requireRule(
-        g.advanced && p.faction === 'atreides' && p.kwisatz?.dead,
-        'Kwisatz Haderach is not in the tanks.',
-      );
-    else
-      requireRule(
-        l?.dead && !l.capturedBy && !l.gholaBy,
-        'Choose a dead leader.',
-      );
-    const option = options.leaders.find((option) => option.id === l?.id);
-    const normal =
-      t === 'reviveKwisatz' ? !!options.kwisatz : !!option && !option.early;
-    requireRule(
-      normal || p.faction === 'tleilaxu',
-      'All leaders must die before a new revival cycle can begin.',
-    );
-    const checks: PendingRevival['checks'] = [];
-    if (!normal) {
-      requireRule(
-        !g.revivalRules?.earlyBlocked.includes(`${id}:${l!.id}`),
-        'Early revival of that leader was canceled this phase.',
-      );
-      checks.push('earlyRevival');
-    }
-    requireRule(
-      t === 'reviveKwisatz' ? !!options.kwisatz : !!option,
-      'That leader is unavailable for revival this phase.',
-    );
-    const normalCost = dukeQuote?.normalCost ?? l?.strength ?? 2;
-    const cost = dukeQuote?.cost ?? (revivalDiscount(g, p) ? Math.ceil(normalCost / 2) : normalCost);
-    requireRule(p.spice >= cost, 'Not enough spice.');
-    if (cost < normalCost) checks.push('revivalDiscount');
     // Ecaz records its physical cohort only after the return actually commits.
-    if (p.faction !== 'ecaz' && (!duke || options.cycle > p.revivalCycle))
-      p.revivalCycle = options.cycle;
-    beginRevival(g, {
-      player: id,
-      kind: t === 'reviveKwisatz' ? 'kwisatz' : 'leader',
-      leader: l?.id,
-      normalCost,
-      cost,
-      free: 0,
-      checks,
-    });
+    if (quote.cycle !== null) p.revivalCycle = quote.cycle;
+    beginRevival(g, quote.revival);
     return g;
   }
   if (t === 'revealNoField') {
@@ -39597,6 +39750,14 @@ function applyActionInner(
       if (cunning) { cunning.hajrPlays = p.hajrPlays; saveGuildCunning(g,cunning); }
     } else if (c.effect === 'ghola') {
       applyGholaEffect(g, p, action, c.id);
+      if (execution === 'live' && (liveRevivalPromises(g.revivalPromises ?? [], id, g.turn).some(promise => promise.answer) ||
+        liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], id, g.turn).some(promise => promise.answer))) {
+        // The voluntary physical return must not evade an ordinary-return Yes
+        // by opening a later income response owned by a different actor.
+        const trial = structuredClone(g);
+        trial.truthtrance = null; trial.response = null;
+        reconcileRevivalPromises(trial, { actor: id, action });
+      }
     } else if (c.effect === 'harvester') {
       const blow = g.spiceWindow!;
       if (blow.sector !== g.storm) {
@@ -39637,7 +39798,7 @@ function applyActionInner(
     if (allianceQuestionWindow(g)) guardAlliancePromiseReady(g, p);
     if (g.phase === 7) requireRule(!liveBribePromises(g.bribePromises ?? [], p.id, g.turn).some(promise => promise.answer),
       'Complete your Truthtrance bribe payments before finishing Collection.');
-    if (g.phase === 4) guardPromisedRevival(g, p, action);
+    if (g.phase === 4) { guardPromisedRevival(g, p, action); guardPromisedLeaderRevival(g, p, action); }
     requireRule(
       [1, 2, 4, 7, 8].includes(g.phase) ||
         (g.phase === 0 && g.stormPending !== null),
@@ -39850,6 +40011,11 @@ export function viewGame(state: Game, id: string) {
       g.truthtrance.question.kind === 'revival' ? revivalTruthAnswers(g, me, g.truthtrance.question) : null,
     revivalPromises: (g.revivalPromises ?? []).filter(promise => promise.player === id).map(promise => ({ ...promise })),
     revivalPromiseGuide: projectedRevivalPromiseGuide(g, id),
+    truthLeaderRevivalTargets: revivalQuestionWindow(g) ? g.players.filter(player => revivalOpportunity(g, player.id)).map(player => player.id) : [],
+    truthLeaderRevivalAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
+      g.truthtrance.question.kind === 'leaderRevival' ? leaderRevivalTruthAnswers(g, me, g.truthtrance.question) : null,
+    leaderRevivalPromises: (g.leaderRevivalPromises ?? []).filter(promise => promise.player === id).map(promise => ({ ...promise })),
+    leaderRevivalPromiseGuide: projectedLeaderRevivalPromiseGuide(g, id),
     bidPromises: projectedBidPromises(g, id),
     bidPromiseGuide: projectedBidPromiseGuide(g, id),
     truthtrance: g.truthtrance ?? null,

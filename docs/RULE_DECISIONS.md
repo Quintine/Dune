@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Truthtrance named native leader returns — 26 October 2026
+
+Compose general current-turn Truthtrance authority (FAQp8; supplied Advanced
+physical39) with original personal leader/KH return. Supplied physical9 retains
+cohort, price, ordinary slot and exceptions; native Basic/Advanced protocols
+remain. Under standing14October priority, Yes means an actual named future
+native return before this opportunity closes; No forbids it. Requests and card/
+special/foreign-ghola returns do not fulfill it. Accepted personal early
+negotiations count only when actually returned; never invent foreign agreement
+or a price. Force/leader commitments share one purse/slot planner and accepted
+release order. This source/interval/owned-witness policy is provisional software
+meaning, not a dedicated publisher ruling. Bare native scope and mode gates
+remain. [Contract](TRUTHTRANCE_LEADER_REVIVAL_PROMISES.md).
+
 ## Truthtrance current-Nexus alliance membership — 26 October 2026
 
 Apply general current-turn Truthtrance authority (FAQp8; supplied Advanced

@@ -1,5 +1,10 @@
 # Truthtrance native force-revival promises
 
+The [named-leader follow-up](TRUTHTRANCE_LEADER_REVIVAL_PROMISES.md) adds a
+separate future personal native leader/KH return question sharing the ordinary
+force planner's purse and native slots. Leaders still do not count toward the
+force-counter question below; broader special/card revival remains unfinished.
+
 ## Earlier-turn follow-up — 26 October 2026
 
 **Prototyped / Partial.** The same ordinary-return question now works in quiet

@@ -1,3 +1,4 @@
+import { parseLeaderRevivalClaim, leaderRevivalClaimText, leaderRevivalPromiseModeSupported, type LeaderRevivalClaim } from './leader-revival-promises';
 import { parseAllianceClaim, allianceClaimText, alliancePromiseModeSupported, type AllianceClaim } from './alliance-promises';
 import { parseBribeClaim, bribeClaimText, bribePromiseModeSupported, type BribeClaim } from './bribe-promises';
 import { parseRevivalClaim, revivalClaimText, revivalPromiseModeSupported, type RevivalClaim } from './revival-promises';
@@ -63,6 +64,7 @@ export type TruthFact =
   | { kind: 'spice'; compare: 'eq' | 'gte' | 'lte'; value: number }
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type TruthQuestion =
+  | ({ kind: 'leaderRevival'; target: string } & LeaderRevivalClaim)
   | ({ kind: 'alliance'; target: string } & AllianceClaim)
   | ({ kind: 'bribe'; target: string } & BribeClaim)
   | ({ kind: 'revival'; target: string } & RevivalClaim)
@@ -218,6 +220,16 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       g.players.some((p) => p.id === v.target),
     'Ask one other player.',
   );
+  if (v.kind === 'leaderRevival') {
+    check(Object.keys(v).sort().join(',') === 'kind,leader,target,turn',
+      'Supply the current turn, exact named leader and respondent.');
+    const claim = parseLeaderRevivalClaim(v);
+    check(leaderRevivalPromiseModeSupported(g) && g.status === 'playing' && g.phase >= 0 && g.phase <= 4 &&
+      !g.response && !g.decision && !g.phaseOpening && !g.pendingRevival && !g.pendingKarama &&
+      !g.pendingTreacheryDiscard && claim.turn === g.turn,
+    'Choose a supported current-turn ordinary leader-revival question in a quiet window.');
+    return { kind: 'leaderRevival', target: v.target, ...claim };
+  }
   if (v.kind === 'alliance') {
     check(Object.keys(v).sort().join(',') === 'kind,partner,target,turn',
       'Supply the current Nexus turn, named alliance partner and respondent.');
@@ -488,6 +500,7 @@ export function truthQuestionText(
   playerName: (id: string) => string = id => id,
 ): string {
   if (q.kind === 'freeform') return q.text;
+  if (q.kind === 'leaderRevival') return `Will you ${leaderRevivalClaimText(q, id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))}?`;
   if (q.kind === 'alliance') return `Will you ${allianceClaimText(q, playerName)}?`;
   if (q.kind === 'bribe') return `Will you ${bribeClaimText(q, playerName)}?`;
   if (q.kind === 'revival') return `Will you ${revivalClaimText(q)}?`;
@@ -541,6 +554,8 @@ export function resolveTruthAction(
     bindAlliance?: (g: Game, p: Player, claim: AllianceClaim, answer: boolean, asker: string) => void;
     bribeAnswers?: (g: Game, p: Player, claim: BribeClaim) => TruthAnswer[];
     bindBribe?: (g: Game, p: Player, claim: BribeClaim, answer: boolean, asker: string) => void;
+    leaderRevivalAnswers?: (g: Game, p: Player, claim: LeaderRevivalClaim) => TruthAnswer[];
+    bindLeaderRevival?: (g: Game, p: Player, claim: LeaderRevivalClaim, answer: boolean, asker: string) => void;
     revivalAnswers?: (g: Game, p: Player, claim: RevivalClaim) => TruthAnswer[];
     bindRevival?: (g: Game, p: Player, claim: RevivalClaim, answer: boolean, asker: string) => void;
     bidAnswers?: (g: Game, p: Player, claim: BidClaim) => TruthAnswer[];
@@ -663,6 +678,9 @@ export function resolveTruthAction(
           'Waiting for the Truthtrance holder to ask a question.',
         );
         w.question = parseQuestion(g, p.id, a.question);
+        if (w.question.kind === 'leaderRevival')
+          check(effects.leaderRevivalAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a named leader question with a compatible native completion.');
         if (w.question.kind === 'alliance')
           check(effects.allianceAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a current Nexus question with a compatible answer.');
@@ -724,6 +742,11 @@ export function resolveTruthAction(
           check(effects.movementAnswers && effects.bindMovement && effects.movementAnswers(g, p, q).includes(a.answer),
             'Choose an answer consistent with legal ground movement and earlier promises.');
           if (a.answer !== 'unknown') effects.bindMovement(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'leaderRevival') {
+          check(effects.leaderRevivalAnswers && effects.bindLeaderRevival && effects.leaderRevivalAnswers(g, p, q).includes(a.answer),
+            'Choose a named leader-revival answer compatible with native eligibility and earlier promises.');
+          if (a.answer !== 'unknown') effects.bindLeaderRevival(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'alliance') {
           check(effects.allianceAnswers && effects.bindAlliance && effects.allianceAnswers(g, p, q).includes(a.answer),

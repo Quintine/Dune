@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 26 October 2026 — Truthtrance named personal native leader returns
+
+**Prototyped / Partial.** Named leader/Kwisatz future-return questions now work
+in quiet phases0–4 on bare native Basic/Advanced. Shared native quote and physical
+accounting retain identity, custody, cost, cohort and slots; one force/leader
+completion owns their purse and accepted order. Existing priced personal early
+negotiations and native Tleilaxu self free-return income can prepare real returns.
+Other financial/movement commitments remain; card/special/foreign-ghola returns
+do not fulfill the named claim. Persistent exact guides and minimal legal AI
+connect preparation, actual return and Finish. Provisional interval/witness/
+release meaning and all mode gates remain explicit.
+
+Root integration with disjoint pure/native/control lanes passes **19 files,
+208/208**, types/lint/build and **six native paths**,23 GameTable SSR renders/
+nine actual callbacks. Original H/A/T Ix47 Basic102/Advanced108 prefixes earn
+the actual projectile death and T4;12/11 further actions bind and return Hidar
+for2. A No path permits an independent free return and its actual bank1 without
+returning the leader. Actual bribe3 leaves T1; free return/income then funds2.
+A genuine83-action post-Storm source adds33 actions through native phases.
+A103-action projectile/Tooth source earns both native deaths;15 more actions
+request, quote3, bind, reprice4, reject stale3 and actually return A's leader.
+All47 cards remain; no played hand, purse, clock, death or promise is installed.
+Ten pure,16 native,six controlled UI and two native funding cases cover No,
+prior/source separation, joint answers/budgets, waiting and minimal policies.
+Feedback fixes voluntary Ghola evasion before its later income response and
+retains turn-wide bribe No beyond Revival; optional record reads are guarded.
+
+Frozen v4 proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-leader-revival-proof-v4/`;
+journeys/HTML: adjacent `20261026-truth-leader-revival-runtime/`.
+No saved-room/D1/server/reset/restart/deployment operation is performed.
+Original normal-cohort/Auditor/Duke/KH commitment and opposing-release journeys,
+wider preparations/compositions, browser/deployed and final assurance remain due.
+[Contract](TRUTHTRANCE_LEADER_REVIVAL_PROMISES.md).
+
 ## 26 October 2026 — Truthtrance current-Nexus alliance membership
 
 **Prototyped / Partial.** Current quiet ordinary Nexus questions bind the
