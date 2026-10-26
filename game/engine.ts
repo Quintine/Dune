@@ -1,3 +1,5 @@
+import { BribePromiseError, bribePromiseModeSupported, liveBribePromises, recordPromisedBribe,
+  bribePromiseRequirements, validateBribePromises, type BribeClaim, type BribePromise } from './bribe-promises';
 import { ordinaryDiscardIncomeMatches } from './ordinary-discard-income';
 import { createRevivalOrder, validateRevivalOrder, revivalOrderBlock, startRevivalOrder,
   saphoRevivalOrderEvent, reorderSaphoRevivalOrder,
@@ -2139,6 +2141,7 @@ export type Game = {
   shipmentPromises?: ShipmentPromise[];
   bidPromises?: BidPromise[];
   revivalPromises?: RevivalPromise[];
+  bribePromises?: BribePromise[];
   movementPromises?: MovementPromise[];
   /** Server-only certainty of movement-relevant cards still in the discard. */
   movementDiscardKnowledge?: MovementDiscardKnowledge;
@@ -14892,6 +14895,120 @@ function pledgeAid(g: Game, p: Player, requested: unknown) {
   g.aid[p.id] = { recipient: p.ally, amount };
   log(g, `${p.name} updated the spice available to their ally this phase.`);
 }
+function bribePromiseRule<T>(calculate: () => T): T {
+  try { return calculate(); }
+  catch (error) { if (error instanceof BribePromiseError) throw new RuleError(error.message); throw error; }
+}
+function bribePromiseIntegrity(g: Game) {
+  bribePromiseRule(() => validateBribePromises(g.bribePromises ?? [], g.players.map(player => player.id)));
+}
+function bribePromiseTurn(g: Game): boolean {
+  return g.status === 'playing' && g.phase >= 0 && g.phase < 8 && bribePromiseModeSupported(g);
+}
+function bribeQuestionWindow(g: Game): boolean {
+  // A current Double side can fix No without authorizing any payment. Every
+  // original pending-decision guard still applies to the structured question.
+  return bribePromiseTurn(g) && !bribeTimingBlock({ ...g, truthtrance: null,
+    inflation: g.inflation?.side === 'double' ? null : g.inflation });
+}
+/** First funded native prototype: reserve a jointly legal payment now, rather
+ * than inventing future income or moving incoming bribes before Mentat. */
+function bribePromiseCompletion(g: Game, p: Player, promises = g.bribePromises ?? []): Action[] | null {
+  if (!bribePromiseTurn(g)) return null;
+  const required = bribePromiseRequirements(promises, p.id, g.turn);
+  if (!required) return null;
+  if (!required.length) return [];
+  const trial = structuredClone(g), actor = getPlayer(trial, p.id);
+  trial.truthtrance = null;
+  if (bribeTimingBlock(trial)) return null;
+  const total = required.reduce((sum, payment) => sum + payment.amount, 0);
+  if (total > uncommittedSpice(trial, actor)) return null;
+  trial.bribePromises = structuredClone(promises);
+  for (const payment of required) {
+    if (payment.recipient === p.id || payment.recipient === p.ally ||
+      !g.players.some(player => player.id === payment.recipient)) return null;
+    trial.bribePromises = bribePromiseRule(() => recordPromisedBribe(trial.bribePromises ?? [], p.id,
+      g.turn, payment));
+  }
+  actor.spice -= total;
+  // This is a private compatibility quotation. It creates neither a payment
+  // receipt nor recipient cash; the real native action owns both operations.
+  try {
+    const voluntary = { actor: p.id, action: { type: 'bribe' } };
+    for (const payment of required)
+      checkBureaucratContributors(trial, payment.recipient, [{ payer: p.id, amount: payment.amount }]);
+    reconcileBattlePromises(trial, voluntary);
+    reconcileShipmentPromises(trial, voluntary);
+    reconcileGroundMovementPromises(trial, p.id, voluntary.action, g.phase);
+    reconcileBidPromises(trial, voluntary);
+    reconcileRevivalPromises(trial, voluntary);
+    return required.map(payment => ({ type: 'bribe', target: payment.recipient, amount: payment.amount }));
+  } catch (error) { if (error instanceof RuleError) return null; throw error; }
+}
+function bribeCompatibleLaterPromises(g: Game, p: Player,
+  later: Pick<Partial<Game>, 'shipmentPromises' | 'movementPromises' | 'revivalPromises' | 'battle'>): boolean {
+  if (!liveBribePromises(g.bribePromises ?? [], p.id, g.turn).some(promise => promise.answer)) return true;
+  return !!bribePromiseCompletion({ ...g, ...later }, p);
+}
+function bribeTruthAnswers(g: Game, p: Player, claim: BribeClaim): ('yes' | 'no' | 'unknown')[] {
+  if (!bribeQuestionWindow(g) || claim.turn !== g.turn || claim.recipient === p.id ||
+    claim.recipient === p.ally || !g.players.some(player => player.id === claim.recipient)) return [];
+  return (['yes', 'no'] as const).filter(answer => !!bribePromiseCompletion(g, p, [...(g.bribePromises ?? []),
+    { ...claim, event: 'candidate', player: p.id, asker: g.truthtrance?.queue[0]?.player ?? g.host,
+      answer: answer === 'yes', progress: 0 }]));
+}
+function bindBribeTruth(g: Game, p: Player, claim: BribeClaim, answer: boolean, asker: string) {
+  requireRule(bribeTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
+    'Choose a bribe answer compatible with the current funds and earlier answers.');
+  (g.bribePromises ??= []).push({ ...claim, event: crypto.randomUUID(), player: p.id, asker, answer, progress: 0 });
+  if (answer && g.phase === 7 && g.ready.includes(p.id)) {
+    g.ready = g.ready.filter(player => player !== p.id);
+    log(g, `${p.name} has a new Truthtrance bribe commitment and must finish Collection again after paying it.`);
+  }
+}
+function reconcileBribePromises(g: Game, voluntary?: { actor: string; action: Action }) {
+  if (!g.bribePromises?.some(promise => !promise.fulfilled && !promise.released)) return;
+  bribePromiseIntegrity(g);
+  if (g.truthtrance) return;
+  const kept: BribePromise[] = [];
+  const no = g.bribePromises.filter(promise => !promise.answer && !promise.fulfilled && !promise.released);
+  const pending = g.response || g.decision || g.phaseOpening || g.pendingTreacheryDiscard ||
+    g.pendingKarama || g.pendingKull || g.pendingRicheseBetrayal;
+  if (pending && voluntary) {
+    const required = bribePromiseRequirements(g.bribePromises, voluntary.actor, g.turn);
+    requireRule(required && required.reduce((sum, payment) => sum + payment.amount, 0) <=
+      Math.max(0, uncommittedSpice(g, getPlayer(g, voluntary.actor))),
+    'Keep the current spice needed by your Truthtrance bribe answer.');
+  }
+  if (pending) return;
+  for (const promise of g.bribePromises) {
+    if (promise.fulfilled || promise.released) continue;
+    const same = bribePromiseTurn(g) && promise.turn === g.turn;
+    if (!promise.answer) { if (!same) promise.fulfilled = true; continue; }
+    if (!same || !bribePromiseCompletion(g, getPlayer(g, promise.player), [...no, ...kept, promise])) {
+      requireRule(voluntary?.actor !== promise.player,
+        'You cannot voluntarily evade your Truthtrance bribe answer.');
+      promise.released = true;
+      log(g, `${getPlayer(g, promise.player).name} can no longer fulfill the Truthtrance bribe answer; that answer is no longer binding.`);
+    } else kept.push(promise);
+  }
+}
+function projectedBribePromiseGuide(g: Game, player: string): { action: Action } | null {
+  if (!bribeQuestionWindow(g) || g.truthtrance) return null;
+  const action = bribePromiseCompletion(g, getPlayer(g, player))?.[0];
+  if (!action) return null;
+  const promise = liveBribePromises(g.bribePromises ?? [], player, g.turn)
+    .find(promise => promise.answer && promise.recipient === action.target);
+  return promise ? { action: { ...action, bribePromiseEvent: promise.event } } : null;
+}
+function bribePaymentPreservesPromises(g: Game, p: Player, recipient: string, amount: number): boolean {
+  const trial = structuredClone(g), actor = getPlayer(trial, p.id);
+  try {
+    trial.bribePromises = recordPromisedBribe(trial.bribePromises ?? [], p.id, g.turn, { recipient, amount });
+    actor.spice -= amount;
+    return !!bribePromiseCompletion(trial, actor);
+  } catch (error) { if (error instanceof BribePromiseError || error instanceof RuleError) return false; throw error; }
+}
 function projectedBribes(g: Game, p: Player): BribeOptions {
   const available = Math.max(0, uncommittedSpice(g, p));
   const blocked = bribeTimingBlock(g);
@@ -14899,9 +15016,11 @@ function projectedBribes(g: Game, p: Player): BribeOptions {
     promise.player === p.id && !promise.released && !g.battle?.revealed && !g.battle?.plans[p.id]);
   const shipmentPromises = liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length > 0;
   const movementPromises = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).some(promise => promise.answer);
+  const revivalPromises = liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).some(promise => promise.answer);
+  const bribePromises = liveBribePromises(g.bribePromises ?? [], p.id, g.turn).length > 0;
   // Reuse the authoritative promise checks on an isolated resource-only copy.
   // No payment, receipt or live continuation is created by this projection.
-  const maximum = !blocked && (battlePromises || shipmentPromises || movementPromises)
+  const maximum = !blocked && (battlePromises || shipmentPromises || movementPromises || revivalPromises)
     ? maximumBribe(available, amount => {
         const probe = structuredClone(g);
         getPlayer(probe, p.id).spice -= amount;
@@ -14909,6 +15028,7 @@ function projectedBribes(g: Game, p: Player): BribeOptions {
           if (battlePromises) reconcileBattlePromises(probe, { actor: p.id, action: { type: 'bribe' } });
           if (shipmentPromises) reconcileShipmentPromises(probe, { actor: p.id, action: { type: 'bribe' } });
           if (movementPromises && !groundMovementCompletion(probe, p.id)) return false;
+          if (revivalPromises) reconcileRevivalPromises(probe, { actor: p.id, action: { type: 'bribe' } });
           return true;
         } catch (error) {
           if (error instanceof RuleError) return false;
@@ -14920,8 +15040,11 @@ function projectedBribes(g: Game, p: Player): BribeOptions {
     available, incoming: p.bribes, blocked,
     targets: g.players.filter(target => target.id !== p.id && target.id !== p.ally).map(target => {
       let limit = maximum;
+      if (!blocked && bribePromises) limit = maximumBribe(limit,
+        amount => bribePaymentPreservesPromises(g, p, target.id, amount));
       let limitation: string | null = maximum < available
         ? 'Some spice must remain available to fulfill your Truthtrance answer.' : null;
+      if (limit < maximum) limitation = 'Your Truthtrance bribe answers limit this recipient’s payment.';
       if (!blocked && limit >= 5) {
         try { checkBureaucratContributors(g, target.id, [{ payer: p.id, amount: limit }]); }
         catch (error) {
@@ -15125,15 +15248,20 @@ function bidPromiseCompletion(g: Game, p: Player, promises = g.bidPromises ?? []
     const action: Action = { type: 'bid', ...normalBidQuote(g, p, range.minimum) };
     if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length ||
       liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).length ||
-      liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length) {
+      liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length ||
+      liveBribePromises(g.bribePromises ?? [], p.id, g.turn).length) {
       const trial = structuredClone(g);
       trial.truthtrance = null;
       trial.auction!.bid = action.amount as number;
       trial.auction!.bidder = p.id;
       trial.auction!.allyPayment = action.allyPayment as number;
+      // The detached accepted declaration satisfies its own Bid Yes before
+      // another promise checks the remaining purse; it is not a second bid.
+      trial.bidPromises = recordPromisedBid(promises, p.id, opportunity, action.amount as number);
       reconcileShipmentPromises(trial, { actor: p.id, action, phase: g.phase });
       reconcileGroundMovementPromises(trial, p.id, action, g.phase);
       reconcileRevivalPromises(trial, { actor: p.id, action });
+      reconcileBribePromises(trial, { actor: p.id, action });
     }
     return action;
   }
@@ -18211,7 +18339,8 @@ function movementTruthAnswers(g: Game, p: Player, claim: MovementClaim): TruthAn
     const promise = { ...claim, turn: g.turn, player: p.id, asker: g.players.find(other => other.id !== p.id)!.id, answer };
     const answerSource = g.phase === 2 || (g.phase === 4 && !g.revivalOrder) ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
     if (groundMovementCompletion(answerSource, p.id, [...live, promise]) &&
-      revivalCompatibleLaterPromises(answerSource, p, { movementPromises: [...(g.movementPromises ?? []), promise] }))
+      revivalCompatibleLaterPromises(answerSource, p, { movementPromises: [...(g.movementPromises ?? []), promise] }) &&
+      bribeCompatibleLaterPromises(answerSource, p, { movementPromises: [...(g.movementPromises ?? []), promise] }))
       answers.push(answer ? 'yes' : 'no');
   }
   return answers.length ? answers : ['unknown'];
@@ -26426,6 +26555,9 @@ function earlyRevivalCompletionSeeds(initial: Game, source: Game, owner: string)
 }
 function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string): ShipmentCompletionSeed[] {
   const seeds = earlyRevivalCompletionSeeds(initial, source, owner);
+  // A real Movement quote already owns its active Karama/rate and allowances.
+  // Only earlier phases may pass through the future Revival/Movement reset.
+  if (source.phase > 4) return seeds;
   const revivalSeeds: ShipmentCompletionSeed[] = [];
   for (const seed of seeds) {
     const g = structuredClone(seed.game); g.phase = 4;
@@ -26670,7 +26802,8 @@ function shipmentTruthAnswers(
     const answerSource = g.phase === 2 || (g.phase === 4 && !g.revivalOrder)
       ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
     if (findShipmentCompletion(answerSource, p, promises) &&
-      revivalCompatibleLaterPromises(answerSource, p, { shipmentPromises: [...(g.shipmentPromises ?? []), promises[promises.length - 1]] }))
+      revivalCompatibleLaterPromises(answerSource, p, { shipmentPromises: [...(g.shipmentPromises ?? []), promises[promises.length - 1]] }) &&
+      bribeCompatibleLaterPromises(answerSource, p, { shipmentPromises: [...(g.shipmentPromises ?? []), promises[promises.length - 1]] }))
       answers.push(answer ? 'yes' : 'no');
   }
   return answers.length ? answers : ['unknown'];
@@ -26803,7 +26936,8 @@ function battleTruthAnswers(
     if (
       findReachableBattlePlan(g, p, {
         promises: [...promises, { player: p.id, asker: '', claim, answer }],
-      })
+      }) && bribeCompatibleLaterPromises(g, p, { battle: g.battle ? { ...g.battle,
+        truthPromises: [...promises, { player: p.id, asker: '', claim, answer }] } : null })
     )
       answers.push(answer ? 'yes' : 'no');
   return answers.length ? answers : ['unknown'];
@@ -29914,7 +30048,8 @@ function revivalTruthAnswers(g: Game, p: Player, claim: RevivalClaim): ('yes' | 
   return (['yes', 'no'] as const).filter(answer => {
     const promises = [...(g.revivalPromises ?? []), { ...claim, event: 'candidate', player: p.id,
       asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes', progress: 0 }];
-    if (!revivalPromiseCompletion(g, p, promises)) return false;
+    if (!revivalPromiseCompletion(g, p, promises) ||
+      !bribeCompatibleLaterPromises(g, p, { revivalPromises: promises })) return false;
     const lot = bidOpportunity(g);
     // An earlier Bid Yes reserves a future declaration even before it becomes
     // the actual leading invoice. Check that declaration with this candidate.
@@ -34810,6 +34945,7 @@ function normalizeCardNames(g: Game) {
 export function applyAction(state: Game, id: string, action: Action): Game {
   bidPromiseIntegrity(state);
   revivalPromiseIntegrity(state);
+  bribePromiseIntegrity(state);
   revivalOrderIntegrity(state);
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
@@ -34913,6 +35049,12 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     );
     return normalizeAutomaticGame(state);
   }
+  if (action.bribePromiseEvent !== undefined) {
+    const guide = projectedBribePromiseGuide(state, id);
+    requireRule(guide && Object.keys(action).sort().join(',') === Object.keys(guide.action).sort().join(',') &&
+      Object.keys(guide.action).every(key => action[key] === guide.action[key]),
+    'This bribe commitment guide is stale or belongs to another payment.');
+  }
   if (action.revivalPromiseEvent !== undefined) {
     const guide = projectedRevivalPromiseGuide(state, id);
     requireRule(guide && Object.keys(action).sort().join(',') === Object.keys(guide.action).sort().join(',') &&
@@ -34922,6 +35064,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   const g = applyActionInner(state, id, action);
   reconcileBidPromises(g, { actor: id, action });
   reconcileRevivalPromises(g, { actor: id, action });
+  reconcileBribePromises(g, { actor: id, action });
   reconcileGroundMovementPromises(g, id, action, state.phase);
   reconcileTraitorTruth(g, id, action);
   harkonnenNexusBetrayalIntegrity(g);
@@ -35045,6 +35188,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   reconcileShipmentPromises(g, { actor: id, action, phase: state.phase });
   reconcileBidPromises(g, { actor: id, action });
   reconcileRevivalPromises(g, { actor: id, action });
+  reconcileBribePromises(g, { actor: id, action });
   settleAutomaticContinuations(g);
   observeOccupation(g);
   reconcileHomeworldEcazDuke(g);
@@ -35247,6 +35391,7 @@ function settleAutomaticContinuations(g: Game) {
     reconcileShipmentPromises(g);
     reconcileBidPromises(g);
     reconcileRevivalPromises(g);
+    reconcileBribePromises(g);
     reconcileGroundMovementPromises(g);
     reconcileTraitorTruth(g);
     requireRule(
@@ -35262,6 +35407,7 @@ function settleAutomaticContinuations(g: Game) {
 export function normalizeAutomaticGame(state: Game): Game {
   bidPromiseIntegrity(state);
   revivalPromiseIntegrity(state);
+  bribePromiseIntegrity(state);
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
   harkonnenNexusBetrayalIntegrity(state);
@@ -35347,6 +35493,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   reconcileShipmentPromises(g);
   reconcileBidPromises(g);
   reconcileRevivalPromises(g);
+  reconcileBribePromises(g);
   reconcileGroundMovementPromises(g);
   reconcileTraitorTruth(g);
   settleAutomaticContinuations(g);
@@ -35592,6 +35739,8 @@ function applyActionInner(
         bindShipment: bindShipmentTruth,
         movementAnswers: movementTruthAnswers,
         bindMovement: bindMovementTruth,
+        bribeAnswers: bribeTruthAnswers,
+        bindBribe: bindBribeTruth,
         revivalAnswers: revivalTruthAnswers,
         bindRevival: bindRevivalTruth,
         bidAnswers: bidTruthAnswers,
@@ -35605,7 +35754,7 @@ function applyActionInner(
     )
       return g;
   } catch (error) {
-    if (error instanceof TruthError || error instanceof RevivalPromiseError || error instanceof BidPromiseError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof TraitorDecisionError)
+    if (error instanceof TruthError || error instanceof BribePromiseError || error instanceof RevivalPromiseError || error instanceof BidPromiseError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof TraitorDecisionError)
       throw new RuleError(error.message);
     throw error;
   }
@@ -37905,6 +38054,8 @@ function applyActionInner(
     );
     const n = integer(action.amount, 1, uncommittedSpice(g, p), 'Spice');
     checkBureaucratContributors(g,target.id,[{payer:p.id,amount:n}]);
+    if (liveBribePromises(g.bribePromises ?? [], p.id, g.turn).length)
+      g.bribePromises = bribePromiseRule(() => recordPromisedBribe(g.bribePromises ?? [], p.id, g.turn, { recipient: target.id, amount: n }));
     p.spice -= n;
     log(
       g,
@@ -37953,6 +38104,9 @@ function applyActionInner(
     if (target !== null) {
       other = getPlayer(g, target);
       requireRule(other.id !== id, 'Choose another player.');
+      requireRule(!liveBribePromises(g.bribePromises ?? [], p.id, g.turn)
+        .some(promise => promise.answer && promise.recipient === other!.id),
+      'Pay your promised ordinary bribe before offering that recipient an alliance.');
       const blocked = homeworldAllianceReason(g, id, other.id);
       requireRule(!blocked, blocked ?? 'This alliance is unavailable.');
     }
@@ -38093,12 +38247,15 @@ function applyActionInner(
     const a = g.auction;
     if (t === 'bid') {
       const quotedBid = normalBidQuote(g, p, action.amount, action.allyPayment);
-      if (liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).some(promise => promise.answer)) {
+      if (liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).some(promise => promise.answer) ||
+        liveBribePromises(g.bribePromises ?? [], p.id, g.turn).some(promise => promise.answer)) {
         const trial = structuredClone(g);
         trial.auction!.bid = quotedBid.amount;
         trial.auction!.bidder = p.id;
         trial.auction!.allyPayment = quotedBid.allyPayment;
+        guardPromisedBid(trial, getPlayer(trial, p.id), action, quotedBid.amount);
         reconcileRevivalPromises(trial, { actor: p.id, action });
+        reconcileBribePromises(trial, { actor: p.id, action });
       }
       guardPromisedBid(g, p, action, quotedBid.amount);
       a.bid = quotedBid.amount;
@@ -39331,6 +39488,8 @@ function applyActionInner(
     return g;
   }
   if (t === 'ready') {
+    if (g.phase === 7) requireRule(!liveBribePromises(g.bribePromises ?? [], p.id, g.turn).some(promise => promise.answer),
+      'Complete your Truthtrance bribe payments before finishing Collection.');
     if (g.phase === 4) guardPromisedRevival(g, p, action);
     requireRule(
       [1, 2, 4, 7, 8].includes(g.phase) ||
@@ -39525,6 +39684,11 @@ export function viewGame(state: Game, id: string) {
     }).map(player => player.id) : [],
     truthBidAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
       g.truthtrance.question.kind === 'bid' ? bidTruthAnswers(g, me, g.truthtrance.question) : null,
+    truthBribeTargets: bribeQuestionWindow(g) ? g.players.map(player => player.id) : [],
+    truthBribeAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
+      g.truthtrance.question.kind === 'bribe' ? bribeTruthAnswers(g, me, g.truthtrance.question) : null,
+    bribePromises: (g.bribePromises ?? []).filter(promise => promise.player === id).map(promise => ({ ...promise })),
+    bribePromiseGuide: projectedBribePromiseGuide(g, id),
     truthRevivalTargets: revivalQuestionWindow(g) ? g.players.filter(player => revivalOpportunity(g, player.id)).map(player => player.id) : [],
     truthRevivalAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
       g.truthtrance.question.kind === 'revival' ? revivalTruthAnswers(g, me, g.truthtrance.question) : null,

@@ -1,5 +1,7 @@
 'use client';
 import { MovementClaimFields } from './movement-claim-fields';
+import { BribeClaimFields, bribeClaimInputError } from './bribe-claim-fields';
+import type { BribeClaim } from '@/game/bribe-promises';
 import { RevivalClaimFields, revivalClaimInputError } from './revival-claim-fields';
 import type { RevivalClaim } from '@/game/revival-promises';
 import { BidClaimFields, bidClaimInputError } from './bid-claim-fields';
@@ -57,8 +59,12 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe'
   >('fact');
+  const [bribeSelection, setBribeSelection] = useState<Pick<BribeClaim, 'recipient' | 'minimum'>>({ recipient: g.me, minimum: 3 });
+  const bribeClaim: BribeClaim = { turn: g.turn, ...bribeSelection };
+  const bribeRespondent = g.players.find(player => player.id === target);
+  const bribeRecipients = g.players.filter(player => player.id !== target && player.id !== bribeRespondent?.ally);
   const [revivalSelection, setRevivalSelection] = useState<Pick<RevivalClaim, 'counter' | 'minimum'>>({ counter: 'total', minimum: 1 });
   const revivalClaim: RevivalClaim = { turn: g.turn, ...revivalSelection };
   const [bidMinimum, setBidMinimum] = useState(1);
@@ -102,6 +108,7 @@ export function Truthtrance({
           }
         : kind === 'traitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '' }
         : kind === 'movement' ? { kind, target, ...movement }
+        : kind === 'bribe' ? { kind, target, ...bribeClaim }
         : kind === 'revival' ? { kind, target, ...revivalClaim }
         : kind === 'bid' ? { kind, target, ...bidClaim }
         : kind === 'shipment'
@@ -175,7 +182,7 @@ export function Truthtrance({
           </p>
           {w.question && (
             <blockquote>
-              <p>{truthQuestionText(w.question, leaderName, locationName)}</p>
+              <p>{truthQuestionText(w.question, leaderName, locationName, name)}</p>
               <p className="fine">Asked of {name(w.question.target)}</p>
             </blockquote>
           )}
@@ -210,6 +217,13 @@ export function Truthtrance({
                         )}
                       </div>
                     ))}
+                  </>
+                ) : w.question!.kind === 'bribe' ? (
+                  <>
+                    <p className="notice">Yes requires cumulative ordinary bribe payments to this named recipient while possible. No keeps all later payments below the minimum. Earlier payments, gifts and allied aid do not count. You pay now; the recipient spends the receipt at Mentat Pause.</p>
+                    {(g.truthBribeAnswers ?? []).map(answer => <div key={answer}>
+                      {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'I don’t know'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
                   </>
                 ) : w.question!.kind === 'revival' ? (
                   <>
@@ -342,6 +356,7 @@ export function Truthtrance({
                     Verified current facts
                   </option>
                   <option value="movement">Bind ground movement this turn</option>
+                  <option value="bribe">Bind ordinary bribe payments this turn</option>
                   <option value="revival">Bind ordinary force revivals this turn</option>
                   <option value="bid">Bind a bid in this ordinary lot</option>
                   <option value="traitorCall">Bind this battle’s Traitor declaration</option>
@@ -359,14 +374,22 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'revival' ? (
+              {kind === 'bribe' ? (
+                <>
+                  <BribeClaimFields value={bribeClaim} recipients={bribeRecipients} disabled={busy || !g.truthBribeTargets.includes(target)}
+                    onChange={claim => setBribeSelection({ recipient: claim.recipient, minimum: claim.minimum })} />
+                  <p className="fine">Count cumulative ordinary payer payments after this answer, before this turn ends. Keep the current spendable spice needed by every Yes. Actual bribe timing and deferred recipient receipts remain; optional modules and future-income preparation remain unfinished.</p>
+                  {!g.truthBribeTargets.includes(target) && <p className="notice">Choose a supported participant before Mentat Pause and finish pending decisions.</p>}
+                  <p className="notice" aria-label="Public bribe question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'revival' ? (
                 <>
                   <RevivalClaimFields value={revivalClaim} disabled={busy || !g.truthRevivalTargets.includes(target)}
                     onChange={claim => setRevivalSelection({ counter: claim.counter, minimum: claim.minimum })} />
                   {g.phase < 4 && <p className="notice">Revival comes later this turn. Keep its required funding; actual Charity or an owned auction payment may prepare the return. Unknown future draws, gifts and casualties are not assumed.</p>}
                   <p className="fine">Count physical total, normal or elite counters returned by ordinary native Revival after the answer. Smaller requests add together. Earlier returns, Ghola, Emperor-funded extras and other special returns do not count. Current native limits, prices and response choices remain.</p>
                   {!g.truthRevivalTargets.includes(target) && <p className="notice">Choose a respondent whose native Revival opportunity remains this turn and finish pending decisions. Registered native Basic and Advanced tables without optional modules are supported first.</p>}
-                  <p className="notice" aria-label="Public revival question preview">{truthQuestionText(question, leaderName, locationName)}</p>
+                  <p className="notice" aria-label="Public revival question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
               ) : kind === 'bid' ? (
                 <>
@@ -374,13 +397,13 @@ export function Truthtrance({
                     onChange={claim => setBidMinimum(claim.minimum)} />
                   <p className="fine">One accepted bid from now until this lot closes. Earlier bids do not count. A larger opposing bid may make Yes impossible; your own pass, lower bid or voluntary spending cannot evade it.</p>
                   {!g.truthBidTargets.includes(target) && <p className="notice">Choose a bidder with an unused opportunity in the current ordinary lot and finish pending decisions. Registered native Basic and Advanced tables without optional modules are supported; other auctions and module compositions remain unfinished.</p>}
-                  <p className="notice" aria-label="Public bid question preview">{truthQuestionText(question, leaderName, locationName)}</p>
+                  <p className="notice" aria-label="Public bid question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
               ) : kind === 'traitorCall' ? (
                 <>
                   <p className="notice">Choose a still-unsubmitted voter in the current revealed battle. A definite answer binds that player’s original declaration, without reopening any sealed vote or promising that a later response will allow it.</p>
                   {!g.truthTraitorTargets.includes(target) && <p>Reveal both plans and choose a voter who has not submitted their Traitor decision.</p>}
-                  {g.battle?.revealed && <p className="notice" aria-label="Public Traitor question preview">{truthQuestionText(question, leaderName, locationName)}</p>}
+                  {g.battle?.revealed && <p className="notice" aria-label="Public Traitor question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>}
                 </>
               ) : kind === 'movement' ? (
                 <>
@@ -390,7 +413,7 @@ export function Truthtrance({
                   {g.advanced && <p className="fine">Advanced movement counts physical forces, including each elite once. Hajr remains available only immediately after a completed movement and its required arrival decisions.</p>}
                   <p className="fine">An owned No-Field may prepare a route through its normal shipment, movement or voluntary reveal. The concealed marker does not count toward the promised physical minimum; revelation uses only available reserves.</p>
                   {!g.truthMovementTargets.includes(target) && <p className="notice">Choose a supported Basic or Advanced respondent with declared native families and an unused turn this round, and finish pending decisions. Optional modules remain unfinished.</p>}
-                  <p className="notice" aria-label="Public movement question preview">{truthQuestionText(question, leaderName, locationName)}</p>
+                  <p className="notice" aria-label="Public movement question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
               ) : kind === 'shipment' || kind === 'mixedShipment' ? (
 
@@ -424,7 +447,7 @@ export function Truthtrance({
                     </p>
                   )}
                   {kind === 'mixedShipment' && <p className="notice" aria-label="Public grouped question preview">
-                    {invalidMixed ?? truthQuestionText(question, leaderName, locationName)}
+                    {invalidMixed ?? truthQuestionText(question, leaderName, locationName, name)}
                   </p>}
                 </>
               ) : kind === 'battlePlan' ? (
@@ -473,6 +496,7 @@ export function Truthtrance({
                 'Ask publicly',
                 { type: 'truthAsk', question },
                 (kind === 'movement' && (!validMovementClaim(movement) || !g.truthMovementTargets.includes(target))) ||
+                (kind === 'bribe' && (!!bribeClaimInputError(bribeClaim, bribeRecipients) || !g.truthBribeTargets.includes(target))) ||
                 (kind === 'revival' && (!!revivalClaimInputError(revivalClaim) || !g.truthRevivalTargets.includes(target))) ||
                 (kind === 'bid' && (!!bidClaimInputError(bidClaim) || !g.truthBidTargets.includes(target))) ||
                 (kind === 'traitorCall' && !g.truthTraitorTargets.includes(target)) ||
@@ -495,8 +519,8 @@ export function TruthHistory({ game: g }: { game: GameView }) {
     <details className="notice truthtrance-history">
       <summary>Truthtrance answers · Turn {g.turn}</summary>
       <p className="fine">
-        Structured battle-plan, ordinary-bid and supported reserve-shipment answers are
-        enforced. Current-turn freeform promises remain binding when possible,
+        Supported battle-plan, bid, revival, bribe, movement and reserve-shipment
+        answers are enforced. Current-turn freeform promises remain binding when possible,
         but their automatic enforcement is unfinished.
       </p>
       <ol>
@@ -509,6 +533,7 @@ export function TruthHistory({ game: g }: { game: GameView }) {
                   ? 'Cheap Hero / Heroine'
                   : (g.allLeaders.find((l) => l.id === id)?.name ?? id),
                 id => g.combatLocations.find(place => place.id === id)!.name,
+                name,
               )}
             </p>
             <strong>

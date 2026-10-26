@@ -1,5 +1,23 @@
 # Rule decision index
 
+## Truthtrance ordinary bribe-payment commitments — 26 October 2026
+
+Apply general current-turn Truthtrance authority (FAQp8; supplied Advanced
+physical39) to cumulative future ordinary payments to one named non-allied
+recipient. Supplied physical16 retains payer transfer and deferred Mentat
+collection; physical29 prohibits spice bribes under Inflation Double. Under
+standing14October choose-recommended authority, count accepted real payer
+payments after each answer, across split payments, retaining original receipts.
+Earlier payments, gifts and allied aid do not satisfy this ordinary-bribe claim.
+
+This exact-recipient/cumulative/current-funding protocol is provisional, not a
+dedicated publisher Truthtrance-bribe ruling. Current unpaid bids and sealed
+battle support stay reserved; earlier commitments remain compatible. The first
+prototype uses the existing software window0–7 and excludes optional modules,
+forecast income/withdrawal/card preparations and broader deals. The inherited
+Mentat timing restriction is not newly claimed as publisher source text. No
+start or publication gate opens. [Contract](TRUTHTRANCE_BRIBE_PROMISES.md).
+
 ## Earlier-turn native Revival promises — 26 October 2026
 
 Extend the existing general current-turn Truthtrance composition from phase4

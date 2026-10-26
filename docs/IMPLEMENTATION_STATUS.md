@@ -1,5 +1,45 @@
 # Dune implementation status
 
+## 26 October 2026 — Truthtrance ordinary bribe-payment promises
+
+**Prototyped / Partial.** Funded ordinary bribe questions now bind cumulative
+future payer payments to a named non-allied recipient during this turn. Actual
+accepted payments count; recipient collection remains deferred to original
+Mentat. Split payments, overlapping same-recipient Yes, distinct-recipient cash
+reserves and No caps are connected. Public named questions, target-only answers,
+persistent progress and guarded out-of-turn guides use native packets. Current
+unpaid bid/sealed-battle liabilities and earlier typed obligations retain funds;
+new supported answers preserve earlier Bribe Yes. Own spending, alliance offers
+and Collection Ready cannot evade Yes; binding after Ready reopens that payer.
+Current-funding/timing/release meaning remains provisional. Optional modules,
+future preparation and broader deals remain due; no start/publication gate opens.
+
+Root integration and disjoint pure/native/control lanes with bounded quote
+review pass **15 files,171/171**, types/lint/build and **five native paths**,
+21 GameTable SSR renders/five actual payment callbacks. Original public H/A/E
+Basic20/Advanced23 prefixes add21 steps: out-of-turn E pays3 from10, H cash stays
+unchanged, then actual Mentat credits exactly3. Advanced city Collection2 stays
+separate; four minimal policies per source submit a legal payment. All33 cards
+remain. A20+23 No3 path pays1+1, rejects the threshold, credits2 and permits a new3
+after real expiry. A29+12 Collection source retains the Ready deadline. An
+Advanced23+24 two-original-Truth source reserves H3/A2, pays both and later
+credits each exact nonally. Nineteen native/ten pure/six control cases also retain
+prior/recipient isolation, current and future funding, exact events and actual
+already-ready Collection reopening. Native sources install no played hand,
+purse, clock or promise; controlled UI staging is explicit.
+
+Feedback repairs an inherited actual-phase5 preparation fallthrough that cleared
+an active Karama shipping rate; direct Movement quotes now retain their native
+rate/allowances. Existing active-Karama/ally-escrow cases pass. Planned accepted
+bids satisfy their own detached Bid Yes before nested bribe checks, avoiding a
+false second-bid requirement while real fulfillment remains native acceptance.
+Frozen v2 proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-bribe-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-bribe-runtime/`.
+No saved-room/D1/server/reset/restart or deployment operation is performed.
+Broader rules, browser/mobile/deployed and final assurance remain open.
+[Contract](TRUTHTRANCE_BRIBE_PROMISES.md).
+
 ## 26 October 2026 — Earlier-turn native Revival promises
 
 **Prototyped / Partial.** Ordinary cumulative physical return questions now

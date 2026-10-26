@@ -1307,6 +1307,7 @@ function policyActions(g: GameView): Action[] {
       ? [{ type: 'decision', event: search.event, card: ordered[0].id }]
       : [];
   }
+  if (g.bribePromiseGuide) return [g.bribePromiseGuide.action];
   if (g.revivalPromiseGuide) return [g.revivalPromiseGuide.action];
   if (g.bidPromiseGuide) return [g.bidPromiseGuide.action];
   if (g.truthtrance) {
@@ -1315,6 +1316,10 @@ function policyActions(g: GameView): Action[] {
       return w.passed.includes(me.id) ? [] : [{ type: 'truthPass' }];
     if (w.stage === 'answer') {
       if (w.question?.target !== me.id) return [];
+      if (w.question.kind === 'bribe') {
+        const answer = g.truthBribeAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'revival') {
         const answer = g.truthRevivalAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];

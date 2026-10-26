@@ -1,3 +1,4 @@
+import { parseBribeClaim, bribeClaimText, bribePromiseModeSupported, type BribeClaim } from './bribe-promises';
 import { parseRevivalClaim, revivalClaimText, revivalPromiseModeSupported, type RevivalClaim } from './revival-promises';
 import { parseMovementClaim, movementClaimText, movementPromiseTargetAvailable, MovementClaimError, type MovementClaim } from './movement-promises';
 import { shipmentAvailable } from './shipment-opportunity';
@@ -61,6 +62,7 @@ export type TruthFact =
   | { kind: 'spice'; compare: 'eq' | 'gte' | 'lte'; value: number }
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type TruthQuestion =
+  | ({ kind: 'bribe'; target: string } & BribeClaim)
   | ({ kind: 'revival'; target: string } & RevivalClaim)
   | ({ kind: 'bid'; target: string } & BidClaim)
   | { kind: 'traitorCall'; target: string; battle: string; territory: string }
@@ -214,6 +216,17 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       g.players.some((p) => p.id === v.target),
     'Ask one other player.',
   );
+  if (v.kind === 'bribe') {
+    check(Object.keys(v).sort().join(',') === 'kind,minimum,recipient,target,turn',
+      'Supply the current turn, named bribe recipient, minimum and respondent.');
+    const claim = parseBribeClaim(v), respondent = g.players.find(player => player.id === v.target)!;
+    check(bribePromiseModeSupported(g) && g.status === 'playing' && g.phase >= 0 && g.phase < 8 &&
+      claim.turn === g.turn && claim.recipient !== respondent.id && claim.recipient !== respondent.ally &&
+      g.players.some(player => player.id === claim.recipient) && !g.response && !g.decision && !g.phaseOpening &&
+      !g.pendingTreacheryDiscard && !g.pendingKarama,
+    'Choose a current-turn ordinary bribe to another non-allied participant in a supported table.');
+    return { kind: 'bribe', target: v.target, ...claim };
+  }
   if (v.kind === 'revival') {
     check(Object.keys(v).sort().join(',') === 'counter,kind,minimum,target,turn',
       'Supply the current Revival turn, physical counter type, minimum and respondent.');
@@ -459,8 +472,10 @@ export function truthQuestionText(
   q: TruthQuestion,
   leaderName: (id: string) => string,
   locationName: (id: string) => string,
+  playerName: (id: string) => string = id => id,
 ): string {
   if (q.kind === 'freeform') return q.text;
+  if (q.kind === 'bribe') return `Will you ${bribeClaimText(q, playerName)}?`;
   if (q.kind === 'revival') return `Will you ${revivalClaimText(q)}?`;
   if (q.kind === 'bid') return `Will you ${bidClaimText(q)}?`;
   if (q.kind === 'traitorCall') return `In this revealed battle in ${locationName(q.territory)}, will you declare the opposing leader a Traitor?`;
@@ -508,6 +523,8 @@ export function resolveTruthAction(
     ) => void;
     movementAnswers?: (g: Game, p: Player, claim: MovementClaim) => TruthAnswer[];
     bindMovement?: (g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) => void;
+    bribeAnswers?: (g: Game, p: Player, claim: BribeClaim) => TruthAnswer[];
+    bindBribe?: (g: Game, p: Player, claim: BribeClaim, answer: boolean, asker: string) => void;
     revivalAnswers?: (g: Game, p: Player, claim: RevivalClaim) => TruthAnswer[];
     bindRevival?: (g: Game, p: Player, claim: RevivalClaim, answer: boolean, asker: string) => void;
     bidAnswers?: (g: Game, p: Player, claim: BidClaim) => TruthAnswer[];
@@ -630,6 +647,9 @@ export function resolveTruthAction(
           'Waiting for the Truthtrance holder to ask a question.',
         );
         w.question = parseQuestion(g, p.id, a.question);
+        if (w.question.kind === 'bribe')
+          check(effects.bribeAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a current bribe question compatible with earlier answers.');
         if (w.question.kind === 'revival')
           check(effects.revivalAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a respondent with a remaining native Revival opportunity.');
@@ -645,7 +665,7 @@ export function resolveTruthAction(
         )!;
         effects.log(
           g,
-          `${p.name} asks ${target.name}: ${truthQuestionText(w.question, (id) => (id === CHEAP_HERO_TRAITOR ? 'Cheap Hero / Heroine' : battleLeaderIdentities(g).find((leader) => leader.id === id)!.name), id => combatLocationName(g, id))}`,
+          `${p.name} asks ${target.name}: ${truthQuestionText(w.question, (id) => (id === CHEAP_HERO_TRAITOR ? 'Cheap Hero / Heroine' : battleLeaderIdentities(g).find((leader) => leader.id === id)!.name), id => combatLocationName(g, id), id => g.players.find(player => player.id === id)!.name)}`,
         );
       } else if (a.type === 'truthSave') {
         check(
@@ -685,6 +705,11 @@ export function resolveTruthAction(
           check(effects.movementAnswers && effects.bindMovement && effects.movementAnswers(g, p, q).includes(a.answer),
             'Choose an answer consistent with legal ground movement and earlier promises.');
           if (a.answer !== 'unknown') effects.bindMovement(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'bribe') {
+          check(effects.bribeAnswers && effects.bindBribe && effects.bribeAnswers(g, p, q).includes(a.answer),
+            'Choose an answer consistent with actual ordinary bribe funding and earlier promises.');
+          if (a.answer !== 'unknown') effects.bindBribe(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'revival') {
           check(effects.revivalAnswers && effects.bindRevival && effects.revivalAnswers(g, p, q).includes(a.answer),

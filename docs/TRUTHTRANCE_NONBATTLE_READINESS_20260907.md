@@ -1,5 +1,10 @@
 # Truthtrance nonbattle readiness and first implementation slice
 
+The [ordinary-bribe follow-up](TRUTHTRANCE_BRIBE_PROMISES.md) adds a funded
+current-turn named-recipient payment commitment. Its cumulative payer progress
+and original deferred receipt supersede the historical bribe absence entry;
+future preparations and broader negotiated deals remain required.
+
 The [26 October ordinary-bid follow-up](TRUTHTRANCE_BID_PROMISES.md) adds a
 structured current-lot bid commitment. The historical absence table below is
 superseded for that slice, as well as the previously linked fact, shipment and
