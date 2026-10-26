@@ -2088,7 +2088,9 @@ export function GameTable({
           {g.status === 'playing' && <MixedBattlePromises game={g} />}
           {g.status === 'playing' && <MixedTraitorPromises game={g} />}
           {g.status === 'playing' && <TravelPromises game={g} busy={busy} act={act} />}
-          {g.status === 'playing' && <TurnActionPromises game={g} busy={busy} act={act} fillPlan={fillBattlePlan} />}
+          {g.status === 'playing' && <TurnActionPromises game={g} busy={g.semutaReaction &&
+            ['semutaCommit', 'semutaSelect', 'semutaPass'].includes(g.turnActionGuide?.action.type ?? '')
+            ? reactionBusy || reactionOwnsControls : busy} act={act} fillPlan={fillBattlePlan} />}
           {g.status === 'playing' && g.phase === 3 && g.auction && (
             <AuctionCountdown clock={g.auctionClock}
               playerName={g.players.find(player => player.id === g.auction!.active)?.name ?? 'The current bidder'}

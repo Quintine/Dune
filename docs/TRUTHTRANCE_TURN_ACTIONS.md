@@ -1,5 +1,50 @@
 # Truthtrance combined current-turn actions
 
+## Printed Semuta exchange — 27 October 2026
+
+**Prototyped / Partial.** `cardPlay/semutaDrug` means the completed printed
+exchange and disposal after answering this turn. A multi-card inspection
+commitment is irreversible but does not itself satisfy the predicate. The
+selected card, event and inspection are not question fields. Earlier use,
+recovery alone and other roles do not count; the No interval lasts through
+the original turn's Mentat.
+
+The exact already-declared foreign Truthtrance cost supplies a guaranteed fresh
+singleton only where the original native Semuta admission permits it. The
+completion quote exchanges the actual physical card before later payment or
+preparation, sharing the real purse without a fee, income or another queued
+question's disposal. Current native fresh windows also quote their original
+offer or owned selection. No arbitrary future opponent discard is invented.
+An uncommitted hidden acquisition supplies no specific effect. It can supply
+the generic other physical card needed by Distrans, retaining native transfer
+reservations and capacity. Exact current guides are recomputed after acquisition.
+
+Immediate No and remaining-completion checks precede an inspection commitment.
+A required Yes cannot pass its only modelled fresh trigger; an OR alternative
+can pass and complete later. Actual selection records the play and checks the
+result before the original typed suffix resumes. Neutral foreign acknowledgments,
+native reservations, net-zero hand exchange, original auction/battle controls
+and other players' rights remain. Persistent human guides bind the whole answer
+and exact native event; four minimal profiles consume those same guides.
+
+This is bounded composition of the existing Truthtrance and printed Semuta
+contracts, not a publisher worked example. Native earned cache/Truth singleton
+sources and explicitly controlled multi-card supplements are distinguished.
+Broader future-trigger calendars, full combinations/modes and final assurance,
+browser/hydration and deployed acceptance remain open.
+
+Frozen **22 affected test files, 396/396**, types/lint/build and five
+runtime groups/six programmes pass. Five programmes use genuine earned cache
+Semuta and original Truth deals; one clearly labelled conserved-acquisition
+supplement generates its later multi-card batch through real battle controls.
+Runtime includes 30 GameTable SSR renders, 6 actual answer callbacks,
+8 whole-guide callbacks and 1 native Semuta callback.
+Source/further counts derive from actual arrays; inherited supplement history
+is explicitly unavailable. No new native acquisition is claimed for that setup.
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-semuta-play-proof-v4/`;
+journeys/HTML: adjacent `20261027-truth-semuta-play-runtime/run/`.
+This is local native/SSR/callback evidence, not hydration or deployed acceptance.
+
 ## Printed transfer and order cards — 27 October 2026
 
 **Prototyped / Partial.** `cardPlay/distrans` and `cardPlay/juiceOfSapho`

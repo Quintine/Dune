@@ -5036,8 +5036,8 @@ function savedTransferResponses(g: Game) {
     canceled(g.pendingRicheseGift?.resume.pendingKarama),
   ];
 }
-function transferCardBlock(g: Game, owner: Player, card: Card) {
-  if ((g as TurnActionCardProbe)._turnActionUnknownCards?.includes(card.id))
+function transferCardBlock(g: Game, owner: Player, card: Card, opaqueTransfer = false) {
+  if (!opaqueTransfer && (g as TurnActionCardProbe)._turnActionUnknownCards?.includes(card.id))
     return 'An unseen future acquired card cannot fund this completion.';
   if (isPortableSnooper(card) && homeworldSavedDecisions(g).some((d) => d.kind === 'homeworldDefense' && d.player === owner.id))
     return 'Resolve the Homeworld late-defense choice before transferring its Portable Snooper.';
@@ -5191,7 +5191,9 @@ function validateDistrans(
       error instanceof Error ? error.message : 'Invalid Distrans transfer.',
     );
   }
-  const reserved = transferCardBlock(g, owner, result.transferred);
+  // Distrans needs another physical card, not knowledge of that card's effect.
+  // Detached opaque acquisitions may supply this generic transfer only.
+  const reserved = transferCardBlock(g, owner, result.transferred, true);
   requireRule(!reserved, reserved ?? 'This card is already committed.');
   validateTransferCompletion(
     g,
@@ -8995,7 +8997,10 @@ function semutaSpendingBlock(g: Game, owner: Player, card: Card): string | null 
     : preventedGift ? {...g,...gift!.resume,pendingRicheseGift:null} : g,owner,card);
 }
 
-function projectedSemutaReaction(g: Game, me: Player) {
+function projectedSemutaReaction(g: Game, me: Player): {
+  event: string; stage: 'select' | 'offer'; passed: boolean; canCommit: boolean;
+  blocked: string | null; candidates: Card[]; passBlocked?: string;
+} | null {
   const pending = g.pendingTreacheryDiscard;
   const reaction = pending?.reaction;
   if (!pending || !reaction) return null;
@@ -9010,15 +9015,20 @@ function projectedSemutaReaction(g: Game, me: Player) {
     richeseCardDefinition(card)?.card.effect === 'semutaDrug');
   const held = !!semuta;
   const blocked = !held || passed ? null
-    : semutaSpendingBlock(g, me, semuta!) ??
+    : semutaSpendingBlock(g, me, semuta!) ?? printedRolePlayBlock(g, me.id, 'semutaDrug') ??
       (me.hand.length > handLimit(me)
         ? 'Resolve your excess hand cards before using Semuta Drug.'
         : pending.batch.entries.every(entry => entry.discardedBy === me.id)
           ? 'No other player discarded a card in this fresh event.'
-          : null);
+          : hasTurnActionSemutaStage(g, me.id) && !turnActionSemutaCompletion(g, me.id, 'use')
+            ? 'Retain a legal completion of your whole Truthtrance answer before committing Semuta.' : null);
+  const passBlocked = !passed && hasTurnActionSemutaStage(g, me.id) &&
+    !turnActionSemutaCompletion(g, me.id, 'pass')
+    ? 'Your whole Truthtrance answer still needs this fresh Semuta exchange.' : null;
   return {
     event: pending.batch.event, stage: 'offer' as const, passed,
     canCommit: held && !passed && !blocked, blocked, candidates: [] as Card[],
+    ...(passBlocked ? { passBlocked } : {}),
   };
 }
 
@@ -9086,6 +9096,11 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
       g.players.map(p => p.id), owner.id, pending.batch.entries.filter(entry => entry.discardedBy !== owner.id), claim!.card));
     rememberMovementDiscards(g, pending.batch.entries.filter(entry => entry.discardedBy === owner.id)
       .map(entry => ({ ...entry, publicFace: false })));
+    recordNativePrintedCardPlay(g, owner.id, 'semutaDrug');
+    // Check the completed exchange before its typed suffix can draw, pay or
+    // offer another player's decision. The suffix itself stays authoritative.
+    const quoted = turnActionFreshDiscardTail(g, next);
+    guardTurnActionPrintedCardCost(quoted, getPlayer(quoted, owner.id), result.usedCard);
     log(g, `${owner.name} played Semuta Drug and recovered one freshly discarded Treachery Card. The acquired card stays private.`,
       { faction: owner.faction, name: 'Semuta Drug' });
   }
@@ -9327,6 +9342,9 @@ function applySemutaReaction(g: Game, id: string, action: Action) {
     if (action.type === 'semutaPass') {
       requireRule(Object.keys(action).sort().join(',') === 'event,type',
         'Pass only the current fresh discard.');
+      if (hasTurnActionSemutaStage(g, id))
+        requireRule(!!turnActionSemutaCompletion(g, id, 'pass'),
+          'Retain a legal completion of your whole Truthtrance answer before passing this fresh discard.');
       if (reaction.passed.length + 1 === g.players.length)
         finishTreacheryDiscard(g, undefined, id);
       else reaction.passed.push(id);
@@ -9335,6 +9353,11 @@ function applySemutaReaction(g: Game, id: string, action: Action) {
     requireRule(action.type === 'semutaCommit' &&
       Object.keys(action).sort().join(',') === 'event,type',
     'Choose whether to commit Semuta to this discard.');
+    const forbidden = printedRolePlayBlock(g, id, 'semutaDrug');
+    requireRule(!forbidden, forbidden ?? 'Retain your whole Truthtrance answer.');
+    if (hasTurnActionSemutaStage(g, id))
+      requireRule(!!turnActionSemutaCompletion(g, id, 'use'),
+        'This Semuta commitment would remove the last legal completion of your whole Truthtrance answer.');
     const candidates = semutaCandidates(g, player).map(card => card.id);
     pending.reaction = { stage: 'select', player: id, candidates };
     if (candidates.length === 1) finishTreacheryDiscard(g, { player: id, card: candidates[0] });
@@ -9347,6 +9370,9 @@ function applySemutaReaction(g: Game, id: string, action: Action) {
     id === reaction.player && typeof action.card === 'string' &&
     reaction.candidates.includes(action.card),
   'Choose one committed Semuta card from this fresh discard.');
+  if (hasTurnActionSemutaStage(g, id))
+    requireRule(!!turnActionSemutaCompletion(g, id, 'use', action.card),
+      'Choose a fresh card that retains a legal completion of your whole Truthtrance answer.');
   finishTreacheryDiscard(g, { player: id, card: action.card });
 }
 function place(p: Player, t: string, s: number, n: number, elite = 0) {
@@ -19008,6 +19034,7 @@ type TurnActionCardProbe = Game & {
   _turnActionPriceCursor?: { order: string[]; index: number };
   _turnActionShipmentReceipt?: { player: string; event?: { territory: string; amount: number } | null };
   _turnActionThumperForecast?: true;
+  _turnActionFreshDiscard?: { batch: FreshDiscardBatch; continuation: TruthDiscardContinuation };
 };
 function printedCardRule<T>(operation: () => T): T {
   try { return operation(); }
@@ -19037,6 +19064,9 @@ function turnActionCardsMatch(g: Game, actor: string, requirements: readonly Tur
 }
 function* nativePrintedCardActions(g: Game, actor: string, effect: PrintedCardEffect): Generator<Action> {
   const player = getPlayer(g, actor);
+  // Semuta belongs only to its exact fresh-discard window, projected before
+  // ordinary payment/card preparation rather than as a generic card action.
+  if (effect === 'semutaDrug') return;
   if (effect === 'distrans') {
     const quote = distransView(g, player);
     if (quote && !quote.blocked) for (const choice of quote.choices) if (!choice.blocked)
@@ -19751,7 +19781,7 @@ function turnActionAllianceCanClose(g: Game, player: Player): boolean {
     return !!turnActionCompletion(source, player.id);
   } catch (error) { if (error instanceof RuleError) return false; throw error; }
 }
-type TurnActionCompletion = MovementCompletion & { payments: Action[]; paymentsAfterPreparations?: boolean; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[]; battlePlan?: BattleCompletion; traitor?: Action; cardPreparations?: Action[]; battlePower?: Action };
+type TurnActionCompletion = MovementCompletion & { payments: Action[]; paymentsAfterPreparations?: boolean; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[]; battlePlan?: BattleCompletion; traitor?: Action; cardPreparations?: Action[]; battlePower?: Action; freshDiscard?: Action };
 /** Forecast deterministic opening work only. Auction/deck draws and foreign
  * choices stay at the real table; fixed Mentat receipts arrive after Amal. */
 function projectTurnActionOpeningEnd(g: Game) {
@@ -19815,6 +19845,82 @@ function guardTurnActionOpening(g: Game, actor: string, pass: boolean) {
 /** Whole-answer alternatives stay private. Only detached native rows quote a
  * route, sharing actual interval progress and the remaining physical purse. */
 function turnActionCompletion(source: Game, actor: string, unknownConsent?: { value: boolean }): TurnActionCompletion | null {
+  if (hasTurnActionSemutaStage(source, actor) &&
+      (source.pendingTreacheryDiscard?.reaction || (source as TurnActionCardProbe)._turnActionFreshDiscard))
+    return turnActionSemutaCompletion(source, actor, 'either', undefined, unknownConsent);
+  return turnActionCompletionAfterFreshDiscard(source, actor, unknownConsent);
+}
+function hasTurnActionSemutaStage(g: Game, actor: string): boolean {
+  return liveTurnActionPromises(g.turnActionPromises ?? [], actor, g.turn)
+    .some(promise => !!promise.cardPlays?.semutaDrug);
+}
+/** Remove only this reaction from a detached continuation quote. Native
+ * suffixes, hidden draws, queued questions and opposing choices remain live. */
+function turnActionFreshDiscardTail(source: Game,
+  continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation']): Game {
+  const game = structuredClone(source);
+  game.pendingTreacheryDiscard = null;
+  delete (game as TurnActionCardProbe)._turnActionFreshDiscard;
+  game.truthtrance = null;
+  if ('resume' in continuation) {
+    game.response = structuredClone(continuation.resume.response);
+    game.decision = structuredClone(continuation.resume.decision);
+    game.pendingKarama = structuredClone(continuation.resume.pendingKarama);
+    game.phaseOpening = structuredClone(continuation.resume.phaseOpening);
+  }
+  return game;
+}
+/** Fresh use precedes every later witness. An uncommitted hidden face cannot
+ * fund a specific effect: only public cards, or the entitled selector's actual
+ * candidates, are known. One opaque alternative suffices for generic custody. */
+function turnActionSemutaCompletion(source: Game, actor: string, mode: 'use' | 'pass' | 'either',
+  selected?: string, unknownConsent?: { value: boolean }): TurnActionCompletion | null {
+  const pending = source.pendingTreacheryDiscard, forecast = (source as TurnActionCardProbe)._turnActionFreshDiscard;
+  const batch = pending?.batch ?? forecast?.batch;
+  const continuation = pending?.continuation ?? forecast?.continuation;
+  if (!batch || !continuation) return null;
+  const reaction = pending?.reaction;
+  const selecting = reaction?.stage === 'select';
+  if (selecting && reaction.player !== actor) return null;
+  const owner = getPlayer(source, actor);
+  const tail = turnActionFreshDiscardTail(source, continuation);
+  if (mode !== 'pass' && (!reaction || selecting || !reaction.passed.includes(actor))) {
+    const semuta = owner.hand.find(card => card.id === SEMUTA_DRUG_ID && card.effect === 'semutaDrug');
+    if (semuta && owner.hand.length <= handLimit(owner) && !semutaSpendingBlock(source, owner, semuta) &&
+        !printedRolePlayBlock(source, actor, 'semutaDrug')) {
+      let usedOpaque = false;
+      for (const entry of batch.entries) {
+        if (entry.discardedBy === actor || selected !== undefined && entry.card.id !== selected ||
+            selecting && !reaction.candidates.includes(entry.card.id)) continue;
+        const known = selecting || entry.publicFace;
+        if (!known && usedOpaque) continue;
+        if (!known) usedOpaque = true;
+        try {
+          const result = resolveSemutaDrug({ batch, event: batch.event, turn: source.turn, phase: source.phase,
+            owner: actor, ownerHand: owner.hand, discard: source.discard, semutaId: SEMUTA_DRUG_ID,
+            handLimit: handLimit(owner), incomingReservedSlots: 0, reservedTargetIds: [] }, entry.card.id);
+          const game = structuredClone(tail), player = getPlayer(game, actor);
+          player.hand = result.ownerHand; game.discard = result.discard;
+          if (!known) (game as TurnActionCardProbe)._turnActionUnknownCards = [
+            ...((game as TurnActionCardProbe)._turnActionUnknownCards ?? []), result.claimedCard.id,
+          ];
+          recordNativePrintedCardPlay(game, actor, 'semutaDrug');
+          setMovementDiscardKnowledge(game, recordMovementClaimKnowledge(game.movementDiscardKnowledge,
+            game.players.map(p => p.id), actor, batch.entries.filter(candidate => candidate.discardedBy !== actor), entry.card.id));
+          const completion = turnActionCompletionAfterFreshDiscard(game, actor, unknownConsent);
+          if (completion) return { ...completion, freshDiscard: selecting
+            ? { type: 'semutaSelect', event: batch.event, card: entry.card.id }
+            : { type: 'semutaCommit', event: batch.event } };
+        } catch (error) { if (!(error instanceof RuleError)) throw error; }
+      }
+    }
+  }
+  if (mode === 'use' || selecting) return null;
+  const completion = turnActionCompletionAfterFreshDiscard(tail, actor, unknownConsent);
+  return completion ? { ...completion, ...(reaction?.stage === 'offer' && !reaction.passed.includes(actor)
+    ? { freshDiscard: { type: 'semutaPass', event: batch.event } } : {}) } : null;
+}
+function turnActionCompletionAfterFreshDiscard(source: Game, actor: string, unknownConsent?: { value: boolean }): TurnActionCompletion | null {
   const records = [
     ...liveTravelPromises(source.travelPromises ?? [], actor, source.turn).map(promise =>
       () => travelRule(() => travelBranches(promise))),
@@ -20060,7 +20166,8 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
     g.turn, combat.event, combat.territory, turnActionPlanValues(g, p.id, [claim.mixed])))[0];
   return promise;
 }
-function turnActionAnswerSource(g: Game, player: string, alliance = false, window = false): Game {
+function turnActionAnswerSource(g: Game, player: string, alliance = false, window = false,
+  fresh?: { claim: TurnActionClaim; answer: boolean }): Game {
   const source = g.phase === 0 && window || g.phase === 1 && (alliance || window) || g.phase === 2 || g.phase === 4 && !g.revivalOrder || g.phase === 8 ||
     g.phase === 7 && bribesCloseBeforeNextMentat(g)
     ? { ...g, ready: g.ready.filter(id => id !== player) } : g;
@@ -20074,6 +20181,24 @@ function turnActionAnswerSource(g: Game, player: string, alliance = false, windo
   // answer. Quote it once, without playing another queued card or a reaction.
   const card = discard(projected, owner, consumed.card);
   rememberMovementDiscards(projected, [{ card, discardedBy: owner.id, publicFace: true }]);
+  if (fresh) {
+    const continuation: TruthDiscardContinuation = { kind: 'truthtranceDiscard', consumed,
+      historyIndex: g.truthHistory?.length ?? 0,
+      record: { turn: g.turn, phase: g.phase, asker: consumed.player,
+        question: { kind: 'turnActions', target: player, ...fresh.claim }, answer: fresh.answer ? 'yes' : 'no' },
+      remaining: g.truthtrance!.queue.length > 1 ? { stage: 'ask', queue: g.truthtrance!.queue.slice(1),
+        passed: g.truthtrance!.passed, question: null } : null,
+      resume: { response: projected.response, decision: projected.decision,
+        pendingKarama: projected.pendingKarama, phaseOpening: projected.phaseOpening },
+      promise: null, parentSignature: '' };
+    const entries = [{ card, discardedBy: owner.id, publicFace: true }];
+    const admission = { ...projected, truthtrance: null, response: null, decision: null,
+      pendingKarama: null, phaseOpening: null };
+    if (semutaOfferSupported(admission, continuation, entries))
+      (projected as TurnActionCardProbe)._turnActionFreshDiscard = { continuation,
+        batch: { event: 'turn-action:declared-truth-discard', turn: g.turn, phase: g.phase,
+          cause: 'truthtrance', entries } };
+  }
   return projected;
 }
 function turnActionTruthAnswers(g: Game, p: Player, claim: TurnActionClaim): TruthAnswer[] {
@@ -20084,7 +20209,7 @@ function turnActionTruthAnswers(g: Game, p: Player, claim: TurnActionClaim): Tru
     try { promise = turnActionPromise(g, p, claim, answer, 'candidate', g.players.find(other => other.id !== p.id)!.id); }
     catch (error) { if (error instanceof RuleError) continue; throw error; }
     if (promise.compiled.kind === 'constant' && promise.compiled.value !== answer) continue;
-    const trial = { ...turnActionAnswerSource(g, p.id, !!promise.alliance, !!promise.windowCards),
+    const trial = { ...turnActionAnswerSource(g, p.id, !!promise.alliance, !!promise.windowCards, { claim, answer }),
       turnActionPromises: [...(g.turnActionPromises ?? []), promise], travelPromiseOrder: undefined };
     if (turnActionCompletion(trial, p.id, answer && promise.alliance ? consent : undefined)) answers.push(answer ? 'yes' : 'no');
   }
@@ -20182,6 +20307,14 @@ function projectedTurnActionPromises(g: Game, player: string) {
 }
 function projectedTurnActionGuide(g: Game, player: Player): { event: string; action: Action } | null {
   const promise = liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn)[0];
+  if (g.pendingTreacheryDiscard?.reaction) {
+    const row = liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn)
+      .find(row => !!row.cardPlays?.semutaDrug);
+    if (!row) return null;
+    const action = turnActionCompletion(g, player.id)?.freshDiscard;
+    return action ? { event: row.event, action: { ...action,
+      turnActionPromiseEvent: row.event, turnActionPromisePhase: g.phase } } : null;
+  }
   const ownedBox = g.decision?.kind === 'nullentropy' && g.pendingNullentropy?.player === player.id;
   const ownedInvoice = g.decision?.kind === 'auctionPayment' && g.decision.player === player.id;
   const saphoExtortion = g.decision?.kind === 'moritaniExtortion' &&
@@ -38087,6 +38220,14 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     getPlayer(state, id);
     if (state.pendingTreacheryDiscard.reaction &&
       ['semutaPass', 'semutaCommit', 'semutaSelect'].includes(action?.type)) {
+      if (action.turnActionPromiseEvent !== undefined || action.turnActionPromisePhase !== undefined) {
+        const guide = projectedTurnActionGuide(state, getPlayer(state, id));
+        requireRule(guide && action.turnActionPromisePhase === state.phase && movementGuideActionMatches(action, guide.action),
+          'This turn-action guide is stale or belongs to another fresh discard.');
+        action = { ...action };
+        delete action.turnActionPromiseEvent;
+        delete action.turnActionPromisePhase;
+      }
       const g = structuredClone(state);
       applySemutaReaction(g, id, action);
       treacheryDiscardIntegrity(g);

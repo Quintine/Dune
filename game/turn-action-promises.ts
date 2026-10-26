@@ -698,7 +698,8 @@ export function closeTurnActionBattlePower<T extends TurnActionPromise>(promises
 }
 
 /** Accepted printed-role play only. Native callers separately own effect
- * success, disposal, recovery and real card custody; none count as this event. */
+ * success, disposal, recovery and real card custody; none alone count as this
+ * event. Semuta requires its physical exchange, not commitment or inspection. */
 export function recordTurnActionCardPlay<T extends TurnActionPromise>(promises: readonly T[], player: string,
   turn: number, effect: PrintedCardEffect): T[] {
   check(PRINTED_CARD_EFFECTS.some(candidate => candidate === effect), 'Record an accepted supported printed-card play.');

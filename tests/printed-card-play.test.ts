@@ -9,7 +9,7 @@ import {
 } from '../game/printed-card-play';
 
 void test('Box accepted activation counts extend the shared roles without changing earlier Hajr or Ghola baselines', () => {
-  assert.deepEqual(PRINTED_CARD_EFFECTS, ['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho']);
+  assert.deepEqual(PRINTED_CARD_EFFECTS, ['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho', 'semutaDrug']);
   assert.equal(printedCardPlayCount(undefined, 'richese', 3, 'nullentropyBox'), 0);
   const ghola = recordPrintedCardPlay(undefined, 'richese', 3, 'ghola');
   const first = recordPrintedCardPlay(ghola, 'richese', 3, 'nullentropyBox');
@@ -56,6 +56,24 @@ void test('Distrans and Sapho count separate accepted printed uses and replay wi
   assert.equal(printedCardPlayCount(counts, 'richese', 2, 'nullentropyBox'), 1);
   assert.deepEqual(recordPrintedCardPlay(counts, 'richese', 3, 'distrans'),
     { turn: 3, plays: [{ player: 'richese', effect: 'distrans', count: 1 }] });
+});
+
+void test('Semuta counts actual physical resolutions separately from other roles without accepting commitment or selected-card metadata', () => {
+  const original = recordPrintedCardPlay(undefined, 'richese', 4, 'distrans');
+  assert.equal(printedCardPlayCount(original, 'richese', 4, 'semutaDrug'), 0);
+  const used = recordPrintedCardPlay(original, 'richese', 4, 'semutaDrug');
+  const replay = recordPrintedCardPlay(used, 'richese', 4, 'semutaDrug');
+  assert.equal(printedCardPlayCount(replay, 'richese', 4, 'semutaDrug'), 2);
+  assert.equal(printedCardPlayCount(replay, 'other', 4, 'semutaDrug'), 0);
+  assert.equal(printedCardPlayCount(replay, 'richese', 5, 'semutaDrug'), 0);
+  assert.deepEqual(original, { turn: 4, plays: [{ player: 'richese', effect: 'distrans', count: 1 }] });
+  for (const extra of [{ committed: true }, { stage: 'select' }, { selected: 'private-fresh-card' }, { event: 'discard:4:2:1' }]) {
+    const invalid = { turn: 4, plays: [{ player: 'richese', effect: 'semutaDrug', count: 1, ...extra }] } as PrintedCardPlayCounts;
+    assert.throws(() => printedCardPlayCount(invalid, 'richese', 4, 'semutaDrug'), PrintedCardPlayError);
+  }
+  const full: PrintedCardPlayCounts = { turn: 4, plays: [{ player: 'richese', effect: 'semutaDrug', count: Number.MAX_SAFE_INTEGER }] };
+  assert.throws(() => recordPrintedCardPlay(full, 'richese', 4, 'semutaDrug'), PrintedCardPlayError);
+  assert.equal(printedCardPlayCount(full, 'richese', 4, 'semutaDrug'), Number.MAX_SAFE_INTEGER);
 });
 
 void test('missing legacy counts and other turn/player/effect baselines read as zero', () => {

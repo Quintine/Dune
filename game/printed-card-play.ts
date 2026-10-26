@@ -1,4 +1,4 @@
-export const PRINTED_CARD_EFFECTS = ['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho'] as const;
+export const PRINTED_CARD_EFFECTS = ['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho', 'semutaDrug'] as const;
 export type PrintedCardEffect = typeof PRINTED_CARD_EFFECTS[number];
 export type PrintedCardPlayCounts = {
   turn: number;
@@ -55,7 +55,8 @@ export function printedCardPlayCount(counts: PrintedCardPlayCounts | undefined, 
 }
 
 /** Call once for each actually accepted printed-role play, never for an effect,
- * sale, discard, recovery or role conversion. Genuine reacquisition may replay. */
+ * sale, discard, recovery or role conversion. Semuta requires its physical
+ * exchange, not commitment or candidate inspection. Genuine reacquisition may replay. */
 export function recordPrintedCardPlay(counts: PrintedCardPlayCounts | undefined, player: string,
   turn: number, cardEffect: PrintedCardEffect): PrintedCardPlayCounts {
   validateRequest(player, turn, cardEffect);

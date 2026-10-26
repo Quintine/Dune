@@ -66,6 +66,9 @@ void test('offer never inspects an uncommitted candidate or rival custody; unabl
   reaction.blocked = null;
   reaction.canCommit = false;
   assert.deepEqual(botSemutaActions(v), [{ type: 'semutaPass', event }]);
+  reaction.passBlocked = 'Retain the required whole-answer exchange.';
+  assert.deepEqual(botSemutaActions(v), []);
+  delete reaction.passBlocked;
   reaction.passed = true;
   assert.deepEqual(botSemutaActions(v), []);
   v.semutaReaction = null;

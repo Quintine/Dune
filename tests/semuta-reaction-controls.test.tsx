@@ -76,4 +76,8 @@ void test('passed, blocked, busy and waiting seats hide or disable unavailable c
   assert.match(markup(offer(), true), /disabled=""[^>]*>Continue/);
   assert.match(markup(offer({ stage: 'select', candidates: [first, second] }), true),
     /disabled=""[^>]*>Claim Projectile/);
+  const required = markup(offer({ canCommit: true, passBlocked: 'Keep this required fresh exchange.' }));
+  assert.match(required, /Keep this required fresh exchange/);
+  assert.match(required, /disabled=""[^>]*>Continue/);
+  assert.doesNotMatch(required, /disabled=""[^>]*>Commit Semuta Drug/);
 });

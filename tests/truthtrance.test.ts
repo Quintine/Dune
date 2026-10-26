@@ -76,6 +76,24 @@ void test('Distrans and Sapho questions name only actual printed use this turn w
   }
 });
 
+void test('Semuta future-use questions require completed physical exchange without naming a fresh target or inspection', () => {
+  const game = fixture();
+  assert.ok(!game.players.find(player => player.id === 'e')!.hand.some(card => card.effect === 'semutaDrug'));
+  const action = { kind: 'cardPlay' as const, effect: 'semutaDrug' as const };
+  const question: TruthQuestion = { kind: 'turnActions', target: 'e', turn: 2,
+    mixed: { kind: 'or', terms: [{ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 0 } },
+      { kind: 'action', action }] } };
+  assert.doesNotThrow(() => validateTruthQuestionReceipt(game, 'a', question));
+  const text = truthQuestionText(question, id => id, id => id);
+  assert.match(text, /complete a printed Semuta Drug exchange and discard Semuta Drug after this answer this turn/);
+  assert.doesNotMatch(text, /inspect|commit|private-fresh-card|Ghola|Sapho/);
+  for (const extra of [{ selected: 'private-fresh-card' }, { committed: true }, { stage: 'select' }, { event: 'discard:2:4:1' }]) {
+    const invalid = { ...question, mixed: { kind: 'or', terms: [{ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 0 } },
+      { kind: 'action', action: { ...action, ...extra } }] } } as TruthQuestion;
+    assert.throws(() => validateTruthQuestionReceipt(game, 'a', invalid));
+  }
+});
+
 function fixture() {
   const g = createGame('TRUTH22', newPlayer('a', 'Atreides', 'atreides'));
   g.players.push(

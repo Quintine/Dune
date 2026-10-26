@@ -26,15 +26,16 @@ export function SemutaReaction({
         <>
           <p>A Treachery card was just discarded. Continue when you are ready.</p>
           {reaction.blocked && <p className="fine">{reaction.blocked}</p>}
+          {reaction.passBlocked && <p className="fine">{reaction.passBlocked}</p>}
           {reaction.passed ? (
             <p aria-live="polite">You continued. Waiting for other seats.</p>
           ) : (
             <div className="flex flex-wrap gap-2">
               <Button
                 className="game-action min-h-11 whitespace-normal"
-                disabled={busy}
+                disabled={busy || !!reaction.passBlocked}
                 onClick={() => {
-                  if (!busy) act({ type: 'semutaPass', event: reaction.event });
+                  if (!busy && !reaction.passBlocked) act({ type: 'semutaPass', event: reaction.event });
                 }}
               >
                 Continue

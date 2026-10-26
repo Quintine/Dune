@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { baseDeck } from '../game/cards';
 import { viewGame, type Game } from '../game/engine';
+import { createDistransPrebidFixture } from './fixture-distrans-prebid';
 import {
   askTruthTurnCombat as ask,
   createTruthTurnCombatFixture as fixture,
@@ -79,4 +80,20 @@ void test('detached opaque weapon forecast retains an independent positive dial-
   assert.deepEqual(f.game, original);
   assert.equal(Object.hasOwn(asked, '_turnActionUnknownCards'), false);
   physical(asked, f); physical(opaque, f); physical(f.game, f);
+});
+
+void test('detached opaque acquisition supplies generic Distrans transfer, but cannot activate Distrans itself', () => {
+  const f = createDistransPrebidFixture(), original = structuredClone(f.game);
+  const recipient = f.action.target as string, given = f.action.give as string;
+  assert.ok(viewGame(f.game, f.holder).distrans?.choices.some(choice =>
+    choice.recipient === recipient && choice.cards.some(card => card.id === given)));
+  const opaque = opaqueQuote(f.game, given), before = structuredClone(opaque);
+  assert.ok(viewGame(opaque, f.holder).distrans?.choices.some(choice =>
+    choice.recipient === recipient && choice.cards.some(card => card.id === given)),
+  'A generic other-card transfer does not require an unseen specific effect');
+  assert.deepEqual(opaque, before);
+  const unknownRole = opaqueQuote(f.game, f.card);
+  assert.match(viewGame(unknownRole, f.holder).distrans?.blocked ?? '', /unseen future acquired card/i);
+  assert.deepEqual(f.game, original);
+  assert.equal(Object.hasOwn(f.game, '_turnActionUnknownCards'), false);
 });

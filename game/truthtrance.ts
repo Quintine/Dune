@@ -756,6 +756,7 @@ export function truthQuestionText(
         if (action.effect === 'nullentropyBox')
           return 'you activate Nullentropy Box in its printed role and pay its 2-spice search cost after this answer this turn';
         if (action.effect === 'distrans') return 'you complete a printed Distrans transfer and discard Distrans after this answer this turn';
+        if (action.effect === 'semutaDrug') return 'you complete a printed Semuta Drug exchange and discard Semuta Drug after this answer this turn';
         return `you play ${action.effect === 'hajr' ? 'Hajr' : action.effect === 'ghola' ? 'Tleilaxu Ghola' :
           'Juice of Sapho'} in its printed role after this answer this turn`;
       }

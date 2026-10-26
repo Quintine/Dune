@@ -1,5 +1,29 @@
 # Dune implementation status
 
+## 27 October 2026 — Printed Semuta exchange commitments
+
+Prototyped / Partial. Completed physical exchange/disposal counts after the
+answer; inspection alone does not. Current native events and the exact declared
+foreign Truth cost precede later shared-purse actions. Immediate No and surviving
+completion checks precede inspection, and actual result checks precede the typed
+suffix. Exact human guides and four minimal profiles preserve native controls.
+
+Frozen **22 affected test files, 396/396**, types/lint/build and five
+runtime groups/six programmes pass. Five programmes use genuine earned cache
+Semuta and original Truth deals; one clearly labelled conserved-acquisition
+supplement generates its later multi-card batch through real battle controls.
+Runtime includes 30 GameTable SSR renders, 6 actual answer callbacks,
+8 whole-guide callbacks and 1 native Semuta callback.
+Source/further counts derive from actual arrays; inherited supplement history
+is explicitly unavailable. No new native acquisition is claimed for that setup.
+Tests also exercise genuine paid Box recovery/new-interval replay; a detached
+opaque quote supplement permits only generic Distrans fuel, not a specific
+unseen effect. Optional projection/fixture types, a const and a double-spent standing-bid
+test assumption are repaired after initial feedback; native reservations remain. No full AI, saved-game operation, restart or deployment occurs.
+Broader future calendars/combinations and all final acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-semuta-exchange--27-october-2026).
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-semuta-play-proof-v4/`.
+
 ## 27 October 2026 — Printed transfer/order commitments
 
 Prototyped / Partial. Distrans and Sapho actual use share native costs/options

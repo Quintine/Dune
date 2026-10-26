@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Truthtrance printed Semuta use — 27 October 2026
+
+Prototyped / Partial. Count the completed physical exchange and Semuta disposal,
+not its irreversible private-inspection commitment. The selected card is outside
+the predicate, and No closes at turn end. Quote only the current supported fresh
+window or the exact already-declared foreign Truth cost; do not invent later
+foreign discards. Immediate No and completion preflight precede inspection;
+selection checks the real result before its native suffix. Unknown acquisitions
+cannot supply specific effects, but may supply Distrans's generic other-card
+transfer with existing reservations/capacity. This composes existing printed
+contracts without a new publisher priority ruling or full-mode certificate.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-semuta-exchange--27-october-2026).
+
 ## Truthtrance printed transfer/order use — 27 October 2026
 
 Prototyped / Partial. Future Distrans and Sapho predicates concern actual native

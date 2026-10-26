@@ -36,7 +36,7 @@ const namesWindow = (mixed: MixedActionExpression<TurnActionLeaf>, effect: Windo
 const namesBoxPlay = (mixed: MixedActionExpression<TurnActionLeaf>): boolean => mixed.kind === 'action'
   ? mixed.action.kind === 'cardPlay' && mixed.action.effect === 'nullentropyBox'
     : mixed.kind !== 'fact' && mixed.terms.some(namesBoxPlay);
-const namesPrintedPlay = (mixed: MixedActionExpression<TurnActionLeaf>, effect: 'distrans' | 'juiceOfSapho'): boolean => mixed.kind === 'action'
+const namesPrintedPlay = (mixed: MixedActionExpression<TurnActionLeaf>, effect: 'distrans' | 'juiceOfSapho' | 'semutaDrug'): boolean => mixed.kind === 'action'
   ? mixed.action.kind === 'cardPlay' && mixed.action.effect === effect
     : mixed.kind !== 'fact' && mixed.terms.some(term => namesPrintedPlay(term, effect));
 
@@ -78,6 +78,17 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const box = game.nullentropy, search = box?.search;
   const windowPromise = game.turnActionPromises.find(promise => promise.event === event && promise.player === actor && promise.turn === turn);
   const windowQuestion = windowPromise && JSON.stringify(windowPromise.mixed);
+  const semutaAction = action.type === 'semutaCommit' || action.type === 'semutaSelect' || action.type === 'semutaPass';
+  const semuta = semutaAction ? game.semutaReaction : null;
+  const semutaSource = (reaction: GameView['semutaReaction']) => reaction && JSON.stringify({
+    event: reaction.event, stage: reaction.stage, passed: reaction.passed, canCommit: reaction.canCommit, blocked: reaction.blocked,
+    passBlocked: reaction.passBlocked,
+    ...(reaction.stage === 'select' ? { candidates: reaction.candidates.map(card => ({ id: card.id, kind: card.kind, effect: card.effect })) } : {}),
+  });
+  const semutaSignature = semutaAction ? semutaSource(semuta) : null;
+  const semutaContext = (current: GameView) => JSON.stringify({ truth: current.truthtrance, response: current.response,
+    decision: current.decision, opening: current.phaseOpening, automatic: current.automaticContinuationPending });
+  const semutaContextSignature = semutaAction ? semutaContext(game) : null;
   const boxRoleNamed = !!windowPromise && namesBoxPlay(windowPromise.mixed);
   const opening = game.phaseOpening, openingSignature = JSON.stringify(opening);
   const currentAmalWindow = windowCardOpportunity(game, 'amal');
@@ -158,6 +169,15 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const hajrSignature = heldCard?.effect === 'hajr' ? hajrSource(game) : null;
   const canAct = () => {
     const current = props.game, me = current.players.find(player => player.id === actor);
+    const semutaPacket = semutaAction && Object.keys(action).every(key => ['type', 'event', 'turnActionPromiseEvent', 'turnActionPromisePhase',
+      ...(action.type === 'semutaSelect' ? ['card'] : [])].includes(key));
+    const nativeSemuta = semutaPacket && !!semuta && current.semutaReaction === semuta && semutaSource(current.semutaReaction) === semutaSignature &&
+      semutaContext(current) === semutaContextSignature && action.event === semuta.event && !!windowPromise &&
+      current.turnActionPromises.includes(windowPromise) && JSON.stringify(windowPromise.mixed) === windowQuestion &&
+      namesPrintedPlay(windowPromise.mixed, 'semutaDrug') &&
+      (semuta.stage === 'offer' ? !semuta.passed && (action.type === 'semutaPass' && !semuta.passBlocked ||
+        action.type === 'semutaCommit' && semuta.canCommit && semuta.blocked === null)
+        : action.type === 'semutaSelect' && typeof action.card === 'string' && semuta.candidates.some(card => card.id === action.card));
     const ownPhysicalCard = (action.type === 'card' || printedInvoiceAction) && !!heldCard && !!me && me === cardOwner &&
       me.hand?.find(card => card.id === action.card) === heldCard &&
       JSON.stringify({ id: heldCard.id, kind: heldCard.kind, effect: heldCard.effect }) === cardSignature;
@@ -250,7 +270,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     const genericCard = ownCard && action.type === 'card' && !auctionPurchaseAction && !printedShipmentAction && quotedBoxCard &&
       (!boxRoleNamed || heldCard?.effect !== 'nullentropyBox' || printedBox) &&
       (!shipmentPriceAction || (action.target ?? actor) === current.active) &&
-      !!heldCard && heldCard.effect !== 'ghola' && heldCard.effect !== 'hajr' && heldCard.effect !== 'distrans' && heldCard.effect !== 'juiceOfSapho' && !isWindowEffect(heldCard.effect);
+      !!heldCard && heldCard.effect !== 'ghola' && heldCard.effect !== 'hajr' && heldCard.effect !== 'distrans' && heldCard.effect !== 'juiceOfSapho' && heldCard.effect !== 'semutaDrug' && !isWindowEffect(heldCard.effect);
     const earlyWindowBox = (phase === 0 || phase === 1 || phase === 3 || phase === 5) && genericCard && heldCard?.effect === 'nullentropyBox' &&
       action.mode === undefined && Object.keys(action).every(key => ['type', 'card', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key)) &&
       !!box && current.nullentropy === box &&
@@ -333,7 +353,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       !current.ready.includes(actor) && me.charityClaimed === false && current.charity === charity &&
       charitySource(current) === charitySignature && current.charity.incomePending === false &&
       Number.isSafeInteger(current.charity.amount) && current.charity.amount > 0;
-    const opportunity = printedDistrans || printedSapho || printedBox || openingReady || earlyWindowReady || earlyWindowBox || printedWindow || ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
+    const opportunity = nativeSemuta || printedDistrans || printedSapho || printedBox || openingReady || earlyWindowReady || earlyWindowBox || printedWindow || ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
       ? charityClaim || !current.ready.includes(actor) && (action.type === 'ready' || genericCard)
       : phase === 3
         ? invoice || nativePass || requiredBid || action.type === 'passBid' && !current.richeseAuction && currentAuction && current.auction?.active === actor
@@ -351,8 +371,9 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       current.turnActionPromises.some(promise => promise.event === event && promise.player === actor && promise.turn === turn &&
         !promise.fulfilled && !promise.released) &&
       (!amalReadyAction || openingReady) &&
-      !!me && !me.autopilot && !current.truthtrance && !current.response && (!current.decision || paidBox || invoice || saphoDecision || earlyWindowBox && ownInvoiceSource) &&
-      (!current.phaseOpening || allowedOpeningAction) && !current.automaticContinuationPending && !current.roomControl?.paused && !current.roomControl?.closed;
+      !!me && !me.autopilot && (!current.semutaReaction || nativeSemuta) && (!current.truthtrance || nativeSemuta) && (!current.response || nativeSemuta) &&
+      (!current.decision || nativeSemuta || paidBox || invoice || saphoDecision || earlyWindowBox && ownInvoiceSource) &&
+      (!current.phaseOpening || nativeSemuta || allowedOpeningAction) && (!current.automaticContinuationPending || nativeSemuta) && !current.roomControl?.paused && !current.roomControl?.closed;
   };
   const amount = action.forces && typeof action.forces === 'object'
     ? Object.values(action.forces as Record<string, number>).reduce((sum, count) => sum + count, 0)
@@ -366,6 +387,10 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       : action.scope === 'extortion' ? 'Extortion order' : action.scope === 'revival' ? 'remaining Revival order' : 'the quoted native order';
   const sector = typeof action.sector === 'number' ? `, sector ${action.sector}` : '';
   const label = action.type === 'bribe' ? `Pay ${amount} spice to ${recipient} while honoring your whole answer`
+    : action.type === 'semutaCommit' ? 'Commit Semuta Drug to this fresh discard while honoring your whole answer'
+    : action.type === 'semutaSelect' ? `Complete Semuta Drug by claiming ${semuta?.stage === 'select'
+      ? semuta.candidates.find(card => card.id === action.card)?.name ?? 'the quoted card' : 'the quoted card'} while honoring your whole answer`
+    : action.type === 'semutaPass' ? 'Continue without committing Semuta Drug to this fresh discard while preserving your whole answer'
     : action.type === 'card' && heldCard?.effect === 'hajr' ? 'Play Hajr in its printed role while honoring your whole answer'
     : action.type === 'card' && heldCard?.effect === 'ghola' ? action.leader !== undefined
       ? `Play Tleilaxu Ghola to return ${gholaLeader} while honoring your whole answer`
@@ -468,7 +493,7 @@ export function TurnActionPromises(props: TurnActionProps) {
       Native Voice and Prescience conditions describe your original use or explicit decline, exact Voice command,
       or requested Prescience field, before later Karama prevention. The requested field is not the inspected answer or value.
       Borrowed Nexus and special powers do not count. These conditions close at the actual native choice or when its original source expires.
-      Printed-card conditions count actual future Hajr, Tleilaxu Ghola, Nullentropy Box, Distrans or Juice of Sapho plays in their printed role after the answer this turn.
+      Printed-card conditions count actual future Hajr, Tleilaxu Ghola, Nullentropy Box, Distrans, Juice of Sapho or Semuta Drug plays in their printed role after the answer this turn.
       Earlier plays, discards, sales, Karama roles and recovery alone do not count; an actual later Box replay does.
       Hajr counts even if its extra movement is unused and closes at your own Movement turn end.
       Tleilaxu Ghola is separate from ordinary Revival and remains open until the actual turn ends.
@@ -477,6 +502,9 @@ export function TurnActionPromises(props: TurnActionProps) {
       Box conditions close at the actual turn end; complete the paid search with the existing native controls.
       Distrans and Juice of Sapho conditions count the actual later printed use, not a particular recipient, transferred card or order outcome.
       Their native controls retain those choices. The deadline is the actual turn end, including for a whole No answer.
+      Semuta Drug counts only when its native transfer and disposal actually complete after the answer.
+      Committing to inspect multiple candidates, an earlier play or recovery alone does not count; the selected card is not promised.
+      A committed private choice cannot be canceled. Its deadline, including for a whole No answer, is the actual turn end.
       Weather Control, Family Atomics and Harvester conditions count an actual accepted future printed-role play after the answer
       in the original open Storm or fresh spice-blow window. Earlier plays, disposal, other roles and recovery alone do not count.
       They do not promise a selected storm distance or resulting spice amount. Each condition closes only when its original native window closes.
@@ -536,10 +564,12 @@ export function TurnActionAnswers(props: TurnActionProps) {
       A remaining alliance condition stays open through temporary membership until that close. Neither answer promises another player’s consent.
       Current battle-plan conditions use the actual native plan; an open condition settles when both plans are revealed.
       Traitor conditions use the original Reveal or decline declaration, before later Karama or betrayal prevention.
-      Hajr, Tleilaxu Ghola, Nullentropy Box, Distrans and Juice of Sapho conditions require actual later printed-role plays, not earlier play, disposal or recovery alone.
+      Hajr, Tleilaxu Ghola, Nullentropy Box, Distrans, Juice of Sapho and Semuta Drug conditions require actual later printed-role plays, not earlier play, disposal or recovery alone.
       Box counts at accepted activation and payment of 2 spice; the recovered card is private and is not promised by this condition.
       Hajr closes at your own Movement turn end even if its extra move is unused; Ghola and Box close at the actual turn end.
       Distrans and Juice of Sapho, including No, close at the actual turn end; a recipient, transferred card or order outcome is not promised.
+      Semuta Drug counts the completed native transfer and disposal, not a multi-choice inspection commitment or recovery alone.
+      Its selected card is not promised; a committed private choice cannot be canceled. Its whole No deadline is the actual turn end.
       Bids close with their lot; Revival closes with your native Revival opportunity.
       Shipment and movement close at your own Movement turn end; payment conditions last until the actual turn ends.
       A known Inflation Double opening can close payments earlier without closing Ghola.

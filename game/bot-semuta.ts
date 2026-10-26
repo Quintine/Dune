@@ -24,5 +24,6 @@ export function botSemutaActions(g: GameView): Action[] {
   );
   if (reaction.canCommit && !reaction.blocked && hasSemuta)
     return [{ type: 'semutaCommit', event: reaction.event }];
+  if (reaction.passBlocked) return [];
   return [{ type: 'semutaPass', event: reaction.event }];
 }

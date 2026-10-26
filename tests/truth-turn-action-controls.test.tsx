@@ -32,7 +32,7 @@ const forceRevival = (counter: 'total' | 'normal' | 'elite' = 'total', minimum =
   ({ kind: 'action', action: { kind: 'forces', counter, minimum } });
 const leaderRevival = (leader: string): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
 const finalAlliance = (partner = 'r'): Expression => ({ kind: 'action', action: { kind: 'alliance', partner } });
-const printedCard = (effect: 'hajr' | 'ghola' | 'nullentropyBox' | 'distrans' | 'juiceOfSapho' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
+const printedCard = (effect: 'hajr' | 'ghola' | 'nullentropyBox' | 'distrans' | 'juiceOfSapho' | 'semutaDrug' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
 const shipmentPriceSource = (recipient = 'p', cunning?: string) => JSON.stringify(['karamaShipment', 2, recipient,
   ...(cunning ? ['cunning', cunning] : ['original'])]);
 const windowClaim = (effect: WindowCardEffect = 'weather', source = effect === 'harvester' ? 'controlled-native-blow'
@@ -167,6 +167,18 @@ function saphoPlay(phase = 5, option: NonNullable<GameView['saphoOptions']>[numb
   const me = game.players.find(player => player.id === 'p')!; me.hand = [card]; me.handLimit = 4;
   game.active = 'a'; game.saphoOptions = [option];
   game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard('juiceOfSapho'), payment()] };
+  return game;
+}
+function semutaPlay(stage: 'offer' | 'select' = 'offer', next?: Action): GameView {
+  const card = richeseCards().find(card => card.effect === 'semutaDrug'), candidate = baseDeck().find(card => card.name === 'Shield');
+  assert.ok(card); assert.ok(candidate);
+  const reactionEvent = 'controlled-fresh-discard';
+  const game = projected(3, next ?? (stage === 'offer' ? { type: 'semutaCommit', event: reactionEvent }
+    : { type: 'semutaSelect', event: reactionEvent, card: candidate.id }));
+  game.players.find(player => player.id === 'p')!.hand = [card]; game.active = 'a';
+  game.semutaReaction = { event: reactionEvent, stage, passed: stage === 'select', canCommit: stage === 'offer', blocked: null,
+    candidates: stage === 'select' ? [candidate] : [] };
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard('semutaDrug'), payment()] };
   return game;
 }
 function nexus(next: Action = { type: 'alliance', target: 'r' }): GameView {
@@ -1283,15 +1295,16 @@ void test('turn-action printed-role editor uses public names without holdings or
   Object.defineProperty(game, 'nullentropy', { get() { throw Error('No private Box authoring inspection'); }, configurable: true });
   Object.defineProperty(game, 'distrans', { get() { throw Error('No private Distrans authoring inspection'); }, configurable: true });
   Object.defineProperty(game, 'saphoOptions', { get() { throw Error('No private Sapho authoring inspection'); }, configurable: true });
+  Object.defineProperty(game, 'semutaReaction', { get() { throw Error('No private Semuta authoring inspection'); }, configurable: true });
   Object.defineProperty(game.turnActionPromises[0], 'cardPlays', { get() { throw Error('No private card-play stage'); } });
   const e = editor(physical(), false, game); select(e.tree(), '1', 'action', 'cardPlay');
   assert.deepEqual(e.value, printedCard()); assert.equal(e.error(), null);
   const choices = elements(find(e.tree(), 'id', 'truth-turn-action-1-effect')).filter(element => element.type === 'option');
-  assert.deepEqual(choices.map(choice => choice.props.value), ['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho']);
+  assert.deepEqual(choices.map(choice => choice.props.value), ['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho', 'semutaDrug']);
   select(e.tree(), '1', 'effect', 'ghola'); assert.deepEqual(e.value, printedCard('ghola')); assert.equal(e.error(), null);
   select(e.tree(), '1', 'effect', 'karama'); assert.deepEqual(e.value, printedCard('ghola'));
   select(e.tree(), '1', 'effect', 'nullentropyBox'); assert.deepEqual(e.value, printedCard('nullentropyBox')); assert.equal(e.error(), null);
-  for (const effect of ['distrans', 'juiceOfSapho'] as const) {
+  for (const effect of ['distrans', 'juiceOfSapho', 'semutaDrug'] as const) {
     select(e.tree(), '1', 'effect', effect); assert.deepEqual(e.value, printedCard(effect)); assert.equal(e.error(), null);
     for (const extra of [{ target: 'r' }, { give: 'private-card' }, { scope: 'movement' }, { event: 'private-source' }, { mode: 'first' }])
       assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'cardPlay', effect, ...extra } }, game, 'p'));
@@ -1309,17 +1322,19 @@ void test('turn-action printed-role editor uses public names without holdings or
   assert.match(html, /The selected recovered card stays private and is not promised/);
   assert.match(html, /Play Distrans in its printed role after this answer this turn/);
   assert.match(html, /Play Juice of Sapho in its printed role after this answer this turn/);
+  assert.match(html, /Complete a printed Semuta Drug transfer and disposal after this answer this turn/);
+  assert.match(html, /Committing to inspect multiple candidates, an earlier play or recovery alone does not count/);
   assert.match(html, /not a particular recipient, transferred card or order outcome/);
   assert.match(html, /Hajr counts when played even if its extra movement is unused/);
   assert.match(html, /an actual later replay after Box recovery does/); assert.doesNotMatch(html, /private-card-id|controlled-ghola|controlled-hajr/);
   const full = editor({ kind: 'or', terms: [printedCard(), printedCard('nullentropyBox')] }, false, game);
   for (let count = 3; count <= 16; count++) {
     click(control(full.tree(), 'add-action-1')); select(full.tree(), `1.${count}`, 'action', 'cardPlay');
-    select(full.tree(), `1.${count}`, 'effect', count % 2 ? 'distrans' : 'juiceOfSapho');
+    select(full.tree(), `1.${count}`, 'effect', count % 3 === 0 ? 'semutaDrug' : count % 2 ? 'distrans' : 'juiceOfSapho');
   }
   assert.equal(full.error(), null); assert.match(full.html(), /16 \/ 16 conditions/);
   assert.equal(control(full.tree(), 'add-action-1').props.disabled, true);
-  const deep = editor({ kind: 'and', terms: [fact(), printedCard('nullentropyBox')] }, false, game);
+  const deep = editor({ kind: 'and', terms: [fact(), printedCard('semutaDrug')] }, false, game);
   click(control(deep.tree(), 'or-1.2')); click(control(deep.tree(), 'and-1.2.1')); click(control(deep.tree(), 'or-1.2.1.1'));
   assert.equal(deep.error(), null); assert.match(deep.html(), /4 \/ 4 levels of grouping/);
   const frozen = editor(printedCard(), true, game); select(frozen.tree(), '1', 'effect', 'ghola');
@@ -1565,9 +1580,102 @@ void test('printed Sapho callbacks and both role guides reject stale quotes or m
   }
 });
 
+void test('Semuta offer guides forward exact native commit or pass without reading candidates or holdings', () => {
+  for (const type of ['semutaCommit', 'semutaPass']) {
+    const game = semutaPlay('offer', { type, event: 'controlled-fresh-discard' }), sent: Action[] = [];
+    if (type === 'semutaPass') {
+      game.semutaReaction!.canCommit = false; game.semutaReaction!.blocked = 'The physical card is unavailable.';
+      game.turnActionPromises[0].answer = false;
+    }
+    Object.defineProperty(game.semutaReaction!, 'candidates', { get() { throw Error('Offer guides cannot inspect private candidates'); } });
+    for (const player of game.players)
+      Object.defineProperty(player, 'hand', { get() { throw Error('The native Semuta quote already owns custody'); }, configurable: true });
+    Object.defineProperty(game.turnActionPromises[0], 'cardPlays', { get() { throw Error('No private Semuta receipt inspection'); } });
+    game.decision = { kind: 'auctionPayment', player: 'a' };
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    assert.deepEqual(sent[0], { type, event: 'controlled-fresh-discard', turnActionPromiseEvent: event, turnActionPromisePhase: 3 });
+    assert.match(markup(game), type === 'semutaCommit' ? /Commit Semuta Drug to this fresh discard/ : /Continue without committing Semuta Drug/);
+  }
+});
+
+void test('Semuta selection guides use only the actual current private candidate and cannot pass or commit again', () => {
+  const game = semutaPlay('select'), sent: Action[] = [];
+  const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+  assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+  assert.match(markup(game), /Complete Semuta Drug by claiming Shield/);
+  assert.match(markup(game), /Committing to inspect multiple candidates, an earlier play or recovery alone does not count/);
+  for (const type of ['semutaPass', 'semutaCommit']) {
+    const choosing = semutaPlay('select', { type, event: 'controlled-fresh-discard' });
+    const disabled = guide({ game: choosing, busy: false, act() { assert.fail('A committed private choice cannot be canceled'); } });
+    assert.equal(disabled.props.disabled, true); press(disabled);
+  }
+  for (const change of [
+    (state: GameView) => { state.semutaReaction!.candidates = []; },
+    (state: GameView) => { state.turnActionGuide!.action.card = 'foreign-or-unquoted-card'; },
+  ]) {
+    const choosing = semutaPlay('select'); change(choosing);
+    const disabled = guide({ game: choosing, busy: false, act() { assert.fail('Only the actual selector receives a legal current candidate'); } });
+    assert.equal(disabled.props.disabled, true); press(disabled);
+  }
+});
+
+void test('Semuta whole guides reject stale native stages, events, ownership, choices and parent modals', () => {
+  const changes: ((game: GameView) => void)[] = [
+    game => { game.semutaReaction = null; },
+    game => { game.semutaReaction = { ...game.semutaReaction! }; },
+    game => { game.semutaReaction!.event = 'next-fresh-discard'; },
+    game => { game.semutaReaction!.stage = 'select'; },
+    game => { game.semutaReaction!.passed = true; },
+    game => { game.semutaReaction!.canCommit = false; },
+    game => { game.semutaReaction!.blocked = 'The physical card became reserved.'; },
+    game => { game.semutaReaction!.passBlocked = 'The original whole answer now requires this exchange.'; },
+    game => { game.turnActionPromises[0].mixed = payment(); },
+    game => { game.me = 'a'; },
+    game => { game.phase = 4; },
+    game => { game.turnActionGuide!.action.event = 'old-offer-event'; },
+    game => { game.decision = { kind: 'auctionPayment', player: 'a' }; },
+  ];
+  for (const change of changes) {
+    const game = semutaPlay(), sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); change(game); press(button); assert.deepEqual(sent, []);
+  }
+  for (const change of [
+    (game: GameView) => { game.semutaReaction!.candidates = []; },
+    (game: GameView) => { game.semutaReaction!.candidates[0].kind = 'worthless'; },
+  ]) {
+    const choosing = semutaPlay('select'), sent: Action[] = [], saved = guide({ game: choosing, busy: false, act(action) { sent.push(action); } });
+    assert.equal(saved.props.disabled, false); change(choosing); press(saved); assert.deepEqual(sent, []);
+  }
+  const props = { game: semutaPlay(), busy: false, act() { assert.fail('Busy Semuta callbacks cannot send'); } }, busy = guide(props);
+  assert.equal(busy.props.disabled, false); props.busy = true; press(busy);
+  for (const field of ['paused', 'closed'] as const) {
+    const game = semutaPlay(); game.roomControl = { paused: false, joinLocked: false, revision: 1, updatedAt: null, [field]: true };
+    assert.equal(guide({ game, busy: false, act() { assert.fail('Room controls retain priority'); } }).props.disabled, true);
+  }
+});
+
+void test('Semuta guides reject extra fields, offer-stage selection and fake card-role actions without fallback', () => {
+  for (const type of ['semutaCommit', 'semutaPass', 'semutaSelect']) for (const extra of [{ amount: 1 }, { target: 'a' }, { mode: 'claim' }, { give: 'private-card' }, { card: 'unopened-candidate' }]) {
+    const game = semutaPlay(type === 'semutaSelect' ? 'select' : 'offer', { type, event: 'controlled-fresh-discard',
+      ...(type === 'semutaSelect' ? { card: baseDeck().find(card => card.name === 'Shield')!.id } : {}), ...extra });
+    const button = guide({ game, busy: false, act() { assert.fail('Only the exact native Semuta packet is permitted'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+  const offer = semutaPlay('offer', { type: 'semutaSelect', event: 'controlled-fresh-discard', card: 'unopened-candidate' });
+  Object.defineProperty(offer.semutaReaction!, 'candidates', { get() { throw Error('Offer-stage selection cannot inspect candidates'); } });
+  assert.equal(guide({ game: offer, busy: false, act() { assert.fail('A private choice has not opened'); } }).props.disabled, true);
+  const physical = richeseCards().find(card => card.effect === 'semutaDrug'); assert.ok(physical);
+  const forged = projected(2, { type: 'card', card: physical.id }); forged.players.find(player => player.id === 'p')!.hand = [physical];
+  forged.turnActionPromises[0].mixed = printedCard('semutaDrug');
+  assert.equal(guide({ game: forged, busy: false, act() { assert.fail('Semuta is played through a real fresh-discard reaction'); } }).props.disabled, true);
+  const unrelated = projected(); unrelated.semutaReaction = semutaPlay().semutaReaction;
+  assert.equal(guide({ game: unrelated, busy: false, act() { assert.fail('A pending fresh discard owns its native controls'); } }).props.disabled, true);
+});
+
 void test('printed-card history retains only raw aggregate conditions and their distinct native deadlines', () => {
   const game = projected(8); game.turnActionGuide = null;
-  game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard(), { kind: 'and', terms: [fact(), printedCard('ghola'), printedCard('nullentropyBox'), printedCard('distrans'), printedCard('juiceOfSapho')] }] };
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard(), { kind: 'and', terms: [fact(), printedCard('ghola'), printedCard('nullentropyBox'), printedCard('distrans'), printedCard('juiceOfSapho'), printedCard('semutaDrug')] }] };
   game.turnActionPromises[0].answer = false;
   for (const key of ['cardPlays', 'compiled', 'combat', 'preparation'])
     Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
@@ -1579,6 +1687,8 @@ void test('printed-card history retains only raw aggregate conditions and their 
   assert.match(html, /you activate Nullentropy Box/); assert.match(html, /Box conditions close at the actual turn end/);
   assert.match(html, /Distrans/); assert.match(html, /Juice of Sapho/);
   assert.match(html, /The deadline is the actual turn end, including for a whole No answer/);
+  assert.match(html, /Semuta Drug counts only when its native transfer and disposal actually complete after the answer/);
+  assert.match(html, /A committed private choice cannot be canceled/);
   assert.match(html, /remains open until the actual turn ends/); assert.doesNotMatch(html, /cardPlays|compiled|controlled-hajr|controlled-ghola/);
 });
 

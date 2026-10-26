@@ -20,6 +20,38 @@ open mode gates.
 Continue remaining Basic functions before Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance / printed Semuta exchange — 27 October. Prototyped / Partial.**
+Whole questions now count actual exchange/disposal after answering, with no
+selected-card predicate or credit for inspection alone. Current fresh events,
+the exact declared foreign Truth cost, shared payments, native capacity and
+No/remaining-completion preflight connect. Exact human guides and four legal
+profiles preserve the native suffix; a required Yes cannot pass its sole known
+trigger, while OR retains later alternatives.
+
+Frozen **22 affected test files, 396/396**, types/lint/build and five
+runtime groups/six programmes pass. Five programmes use genuine earned cache
+Semuta and original Truth deals; one clearly labelled conserved-acquisition
+supplement generates its later multi-card batch through real battle controls.
+Runtime includes 30 GameTable SSR renders, 6 actual answer callbacks,
+8 whole-guide callbacks and 1 native Semuta callback.
+Source/further counts derive from actual arrays; inherited supplement history
+is explicitly unavailable. No new native acquisition is claimed for that setup.
+
+Focused cases include whole No AND/OR, cumulative payment caps, exact stale/JSON
+packets, both actual multi-card choices, prior-use exclusion and genuine later
+Box1/search2 recovery followed by a new original-Truth replay. A detached opaque
+quote supplement permits generic Distrans transfer while retaining the specific-
+effect prohibition. Initial feedback repairs an optional projection type,
+fixture excess-property typing, a const declaration and a test that double-spent
+a standing bid reservation. The native reservation remains authoritative.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-semuta-play-proof-v4/`;
+journeys/HTML: adjacent `20261027-truth-semuta-play-runtime/run/`.
+No HTTP/storage boundary, saved-game/database, restart or deployed operation
+changes. Broader future-trigger calendars/funding, combinations, complete modes
+and final assurance/browser/deployed acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-semuta-exchange--27-october-2026).
+
 **Truthtrance / printed transfer and order cards — 27 October. Prototyped / Partial.**
 Actual Distrans and Sapho use can be promised without fixing a transfer or order
 choice. Costs, current native options, whole AND/OR/No, original turn-end caps,

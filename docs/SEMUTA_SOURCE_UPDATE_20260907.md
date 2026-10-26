@@ -2,6 +2,18 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Printed-use Truthtrance promises — 27 October 2026
+
+The combined current-turn question can name the actual completed Semuta exchange
+and disposal without selecting its recovered card. Inspection commitment alone
+does not count. Reuse native fresh-event admission, physical exchange and typed
+continuations; check immediate No and a surviving completion before inspection.
+The current declared foreign Truth cost is a known trigger, while unknown future
+opponent discards are not forecast. No lasts through the original turn end.
+This is bounded composition, with original cache/Truth singleton sources and
+separately labelled controlled multi-card supplements; full acceptance stays open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-semuta-exchange--27-october-2026).
+
 ## Completed ordinary-auction Truth/Distrans costs — 27 October 2026
 
 The native preview now preserves an ordinary lot while offering a completed
