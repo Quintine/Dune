@@ -1,8 +1,8 @@
 import { harvesterAvailable } from './cards';
 
-export const WINDOW_CARD_EFFECTS = ['weather', 'atomics', 'harvester', 'karamaAuction', 'karamaShipment'] as const;
+export const WINDOW_CARD_EFFECTS = ['weather', 'atomics', 'harvester', 'karamaAuction', 'karamaShipment', 'thumper'] as const;
 export type WindowCardEffect = typeof WINDOW_CARD_EFFECTS[number];
-export function windowCardNativeEffect(effect: WindowCardEffect): 'weather' | 'atomics' | 'harvester' | 'karama' {
+export function windowCardNativeEffect(effect: WindowCardEffect): 'weather' | 'atomics' | 'harvester' | 'karama' | 'thumper' {
   return effect === 'karamaAuction' || effect === 'karamaShipment' ? 'karama' : effect;
 }
 export type KaramaShipmentOpportunity = { effect: 'karamaShipment'; source: string; turn: number; recipient: string };
@@ -17,6 +17,10 @@ export type WindowCardGame = {
   shieldWallDestroyed: boolean;
   stormCardWindowOpen?: boolean;
   stormResolution?: unknown;
+  thumperWindowOpen?: boolean;
+  spiceSequence?: unknown;
+  spiceResolution?: unknown;
+  nexus?: unknown;
   spiceWindow?: {
     event?: string;
     territory: string;
@@ -119,6 +123,12 @@ export function karamaShipmentOpportunities(game: WindowCardGame): KaramaShipmen
  * force conditions and chosen effect parameters remain native engine rules. */
 function globalWindowCardOpportunity(game: WindowCardGame, effect: WindowCardEffect): WindowCardOpportunity | null {
   if (game.status !== 'playing' || !whole(game.turn) || game.turn < 1) return null;
+  if (effect === 'thumper') {
+    if (game.phase !== 1 || game.thumperWindowOpen !== undefined && typeof game.thumperWindowOpen !== 'boolean' ||
+      game.thumperWindowOpen === false || game.thumperWindowOpen === undefined &&
+      (game.spiceSequence || game.spiceResolution || game.spiceWindow || game.nexus)) return null;
+    return { effect, source: `first-spice-reveal:${game.turn}`, turn: game.turn };
+  }
   if (effect === 'karamaAuction') {
     if (game.phase !== 3 || game.richeseAuction != null || game.currentAuctionSale != null || game.ixAuction != null ||
       !object(game.auction)) return null;

@@ -26,9 +26,10 @@ const publicBattleContext = (game: GameView) => game.battle && ({
   preparation: game.battle.preparation,
   traitorVoters: game.battle.traitorVoters, traitorSubmitted: game.battle.traitorSubmitted,
 });
-const isWindowEffect = (effect: unknown): effect is Exclude<WindowCardEffect, 'karamaAuction' | 'karamaShipment'> => effect === 'weather' || effect === 'atomics' || effect === 'harvester';
+const isWindowEffect = (effect: unknown): effect is Exclude<WindowCardEffect, 'karamaAuction' | 'karamaShipment'> =>
+  effect === 'weather' || effect === 'atomics' || effect === 'harvester' || effect === 'thumper';
 const windowRoleNames: Record<WindowCardEffect, string> = { weather: 'Weather Control', atomics: 'Family Atomics', harvester: 'Harvester',
-  karamaAuction: 'printed Karama for this ordinary lot', karamaShipment: 'printed Karama for this shipment price' };
+  karamaAuction: 'printed Karama for this ordinary lot', karamaShipment: 'printed Karama for this shipment price', thumper: 'Thumper' };
 const namesWindow = (mixed: MixedActionExpression<TurnActionLeaf>, effect: WindowCardEffect, source?: string): boolean =>
   mixed.kind === 'action' ? mixed.action.kind === 'windowCardPlay' && mixed.action.effect === effect && (source === undefined || mixed.action.source === source)
     : mixed.kind !== 'fact' && mixed.terms.some(term => namesWindow(term, effect, source));
@@ -84,6 +85,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     opportunity: windowEffect ? windowCardOpportunity(current, windowEffect)
       : WINDOW_CARD_EFFECTS.map(effect => windowCardOpportunity(current, effect)),
     stormOpen: current.stormCardWindowOpen,
+    thumperOpen: current.thumperWindowOpen, thumperReady: current.thumperReady, nexus: current.nexus,
     stormPending: current.stormPending, wallDestroyed: current.shieldWallDestroyed,
     blow: current.spiceWindow,
     ...(current.phase === 3 ? { auction: auctionSource(current) } : {}),
@@ -97,6 +99,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const earlyBoxSignature = box && JSON.stringify({ card: box.card.id, blocked: box.blocked, search: box.search?.event });
   const auctionCards = game.karamaAuctionCards, auctionCardsSignature = JSON.stringify(auctionCards);
   const shipmentCards = game.karamaShipmentCards, shipmentCardsSignature = JSON.stringify(shipmentCards);
+  const thumperCards = game.thumperCards, thumperCardsSignature = JSON.stringify(thumperCards);
   const auctionHandSource = (current: GameView) => {
     const player = current.players.find(player => player.id === actor);
     return JSON.stringify({ hand: player?.hand?.map(card => ({ id: card.id, kind: card.kind, effect: card.effect })), limit: player?.handLimit });
@@ -149,11 +152,15 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       phase === 5 && current.active === cardWindow.recipient && action.target === cardWindow.recipient &&
       Array.isArray(current.karamaShipmentCards) && current.karamaShipmentCards === shipmentCards &&
       JSON.stringify(current.karamaShipmentCards) === shipmentCardsSignature && current.karamaShipmentCards.includes(heldCard.id);
+    const nativeThumperCard = windowEffect === 'thumper' && !!heldCard && phase === 1 && !current.spiceWindow && !current.nexus &&
+      Array.isArray(current.thumperCards) && current.thumperCards === thumperCards &&
+      JSON.stringify(current.thumperCards) === thumperCardsSignature && current.thumperCards.includes(heldCard.id);
     const printedWindow = action.type === 'card' && printedWindowSource && !!heldCard && windowPacket &&
       (windowEffect === 'karamaAuction' ? action.mode === 'purchase' && nativeAuctionCard && !!me && !current.decision &&
         Number.isSafeInteger(me.handLimit) && Array.isArray(me.hand) && me.hand.length < me.handLimit
         : windowEffect === 'karamaShipment' ? action.mode === 'shipment' && nativeShipmentCard
-          : action.mode === undefined && ordinaryCardAvailability(current, heldCard.id, windowEffect === 'weather' ? { amount: action.amount } : undefined)?.available === true);
+          : windowEffect === 'thumper' ? action.mode === undefined && nativeThumperCard
+            : action.mode === undefined && ordinaryCardAvailability(current, heldCard.id, windowEffect === 'weather' ? { amount: action.amount } : undefined)?.available === true);
     const printedAuctionInvoice = printedInvoiceAction && printedWindowSource && nativeAuctionCard &&
       Object.keys(action).every(key => ['type', 'card', 'karama', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key));
     const quotedBoxCard = heldCard?.effect !== 'nullentropyBox' || !!box && current.nullentropy === box &&
@@ -179,8 +186,10 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       (phase === 0 ? current.stormPending !== null && (['weather', 'atomics'] as const).some(effect => {
         const opportunity = windowCardOpportunity(current, effect);
         return !!opportunity && namesWindow(windowPromise.mixed, effect, opportunity.source);
-      }) : current.spiceWindow === originalBlow && (() => {
-        const opportunity = windowCardOpportunity(current, 'harvester');
+      }) : (() => {
+        const thumper = current.thumperReady && windowCardOpportunity(current, 'thumper');
+        if (thumper && namesWindow(windowPromise.mixed, 'thumper', thumper.source)) return true;
+        const opportunity = current.spiceWindow === originalBlow && windowCardOpportunity(current, 'harvester');
         return !!opportunity && namesWindow(windowPromise.mixed, 'harvester', opportunity.source);
       })());
     const options = current.bribeOptions;
@@ -285,6 +294,8 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     : action.type === 'charity' ? 'Claim Charity while preserving your whole answer'
     : action.type === 'ready' ? phase === 8 ? 'Ready to end this turn while honoring your whole answer'
       : earlyWindowReadyAction && (phase === 0 || !!game.spiceWindow) ? `Accept this ${phase === 0 ? 'Storm' : 'fresh spice-blow'} window while preserving your whole answer`
+        : earlyWindowReadyAction && game.thumperReady && !!windowPromise && namesWindow(windowPromise.mixed, 'thumper', `first-spice-reveal:${turn}`)
+          ? 'Ready for the original first spice reveal while preserving your whole answer'
         : phase === 1 ? 'Confirm Ready for this Nexus while preserving your whole answer'
         : 'Finish this preparation phase while preserving your whole answer'
     : action.type === 'passBid' ? 'Pass this bid while preserving your whole answer'
@@ -365,12 +376,17 @@ export function TurnActionPromises(props: TurnActionProps) {
       unused native shipment price. The giver may be another player. The price grant counts separately from an actual force shipment;
       it does not require the recipient to ship forces. Other roles, Worthless conversion and recovery alone do not count.
       This condition closes when that original shipment-price opportunity ends.
+      Thumper conditions count an actual accepted future printed play before this turn&apos;s original first spice reveal.
+      Earlier plays, disposal, other roles and recovery alone do not count. A later reveal is a different opportunity.
+      This condition closes when the actual first spice draw begins.
       Shipment conditions concern one future original reserve shipment. Ground-movement conditions count the maximum physical forces in one actual future move,
       never the sum of smaller moves. Earlier shipment and movement do not count.
       Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.
       Shipment and movement close at your own Movement turn end; ordinary payments remain possible until the actual turn ends.
       A known Inflation Double opening can close payments earlier without closing Ghola.
       Original costs, timing, cards, preparation and action rights still apply. This claim grants no extra action.</p>
+    {own.some(promise => promise.turn === 1 && namesWindow(promise.mixed, 'thumper')) && <p className="notice">
+      On turn 1, playing Thumper still discards the card, but its worm encounter is ignored and the normal Spice Card draw continues.</p>}
     {live && <p>{game.phase === 8 ? 'Honor remaining Ghola or payment conditions before this turn ends. Late payment recipients collect next turn.'
       : game.phase < 5 ? 'Your Movement turn is still ahead. Preserve the needed forces, spice and cards and complete any offered native preparation.'
         : 'Use the current native controls to honor your whole answer. Payment conditions can remain after your Movement turn ends.'}</p>}

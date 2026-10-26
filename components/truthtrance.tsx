@@ -606,6 +606,7 @@ export function Truthtrance({
                     Weather Control, Family Atomics and Harvester refer only to their original current Storm or fresh spice-blow window.
                     Printed Karama auction use refers only to the current ordinary lot, through immediate purchase or its winning invoice.
                     Printed Karama shipment use grants the named active recipient’s current native shipment price; it does not require an actual force shipment.
+                    Thumper refers only to this turn’s original first spice reveal. On turn 1 its card is still discarded, but the worm encounter is ignored.
                     Ordinary payments may remain available after their Shipment and Movement opportunity ends.</p>}
                   <p className="notice" aria-label="Public turn-action question preview">{turnActionsError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>

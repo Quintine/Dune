@@ -2505,6 +2505,8 @@ export type Game = {
   stormPending: number | null;
   /** Actual original Storm card window; absent older games use native phase/resolution. */
   stormCardWindowOpen?: boolean;
+  /** Original first Spice reveal; temporary summoned-worm controls do not retire it. */
+  thumperWindowOpen?: boolean;
   stormCard: number | null;
   stormCardKnown: boolean;
   stormResolution: {
@@ -12779,7 +12781,20 @@ function refillSpice(g: Game) {
     g.spiceDiscard = [[], []];
   }
 }
+class ThumperForecastBoundary extends Error {}
+// Live-action causality stays outside persisted games and signed responses.
+const thumperDrawOwners = new WeakMap<Game, string>();
+const thumperForcedDraws = new WeakSet<Game>();
 function drawSpice(g: Game) {
+  // A promise may quote the known injected encounter, never the next hidden
+  // card or a hidden discard reshuffle.
+  if ((g as TurnActionCardProbe)._turnActionThumperForecast) throw new ThumperForecastBoundary();
+  const thumperOwner = thumperDrawOwners.get(g);
+  if (thumperOwner !== undefined) {
+    thumperDrawOwners.delete(g);
+    guardThumperKnownEncounter(g, thumperOwner);
+    thumperForcedDraws.add(g);
+  }
   refillSpice(g);
   return g.spiceDeck.shift();
 }
@@ -13415,6 +13430,7 @@ function decideGreatMakerRide(g: Game, p: Player, action: Action) {
   completeGreatMaker(g);
 }
 function blowSpice(g: Game, thumper = false) {
+  g.thumperWindowOpen = false;
   g.nexus = !!g.summonedBeforeBlow;
   if (!g.summonedBeforeBlow) g.wormRides = [];
   g.summonedBeforeBlow = false;
@@ -18893,6 +18909,7 @@ type TurnActionCardProbe = Game & {
   _turnActionUnknownCards?: string[];
   _turnActionPriceCursor?: { order: string[]; index: number };
   _turnActionShipmentReceipt?: { player: string; event?: { territory: string; amount: number } | null };
+  _turnActionThumperForecast?: true;
 };
 function printedCardRule<T>(operation: () => T): T {
   try { return operation(); }
@@ -18990,6 +19007,16 @@ function quotedShipmentKaramaCards(g: Game, player: Player): string[] {
     } catch (error) { if (error instanceof RuleError) return false; throw error; }
   }).map(card => card.id);
 }
+function thumperReadyStartsDraw(g: Game): boolean {
+  return !!windowCardOpportunity(g, 'thumper') && !g.truthtrance && !g.phaseOpening && !g.response &&
+    !g.decision && !g.pendingTreacheryDiscard && !g.spiceWindow && (!g.nexus || !!g.summonedBeforeBlow);
+}
+function quotedThumperCards(g: Game, player: Player): string[] {
+  if (!windowCardOpportunity(g, 'thumper') || g.truthtrance || g.phaseOpening || g.response || g.decision ||
+    g.pendingTreacheryDiscard || g.spiceSequence || g.spiceResolution || g.spiceWindow || g.nexus) return [];
+  return player.hand.filter(card => card.kind === 'special' && card.effect === 'thumper' &&
+    !transferCardBlock(g, player, card)).map(card => card.id);
+}
 function* nativeWindowCardActions(g: Game, actor: string, effect: WindowCardEffect): Generator<Action> {
   if (!windowCardOpportunity(g, effect)) return;
   const player = getPlayer(g, actor);
@@ -19002,6 +19029,10 @@ function* nativeWindowCardActions(g: Game, actor: string, effect: WindowCardEffe
     const opportunity = windowCardOpportunity(g, effect);
     if (opportunity?.effect === 'karamaShipment') for (const card of quotedShipmentKaramaCards(g, player))
       yield { type: 'card', card, mode: 'shipment', target: opportunity.recipient };
+    return;
+  }
+  if (effect === 'thumper') {
+    for (const card of quotedThumperCards(g, player)) yield { type: 'card', card };
     return;
   }
   for (const card of player.hand.filter(card => card.effect === windowCardNativeEffect(effect) && !transferCardBlock(g, player, card)))
@@ -19154,6 +19185,37 @@ function guardTurnActionPrintedCardCost(g: Game, player: Player, used: Card) {
   rememberMovementDiscards(trial, [{ card: used, discardedBy: player.id, publicFace: true }]);
   requireRule(!!turnActionCompletion(trial, player.id),
     'This printed card play would remove the last legal completion of your whole Truthtrance answer.');
+}
+/** This detached owned forecast starts after the known encounter, before any
+ * normal hidden draw. It grants no spice, cards or foreign decisions. */
+function projectAfterKnownThumper(g: Game) {
+  g.phase = 2; g.active = null; g.ready = [];
+  g.spiceSequence = null; g.spiceResolution = null; g.spiceWindow = null;
+  g.nexus = false;
+}
+function forecastThumperEncounter(g: Game) {
+  let reachedDraw = false;
+  (g as TurnActionCardProbe)._turnActionThumperForecast = true;
+  try { blowSpice(g, true); }
+  catch (error) {
+    if (!(error instanceof ThumperForecastBoundary)) throw error;
+    reachedDraw = true;
+  } finally { delete (g as TurnActionCardProbe)._turnActionThumperForecast; }
+  requireRule(reachedDraw,
+    'This owned Thumper forecast cannot resolve a foreign worm reaction.');
+  projectAfterKnownThumper(g);
+}
+/** Reject voluntary loss from the printed cost and known injected worm before
+ * a normal hidden draw can cause an independently involuntary loss. */
+function guardThumperKnownEncounter(g: Game, actor: string) {
+  const trial = structuredClone(g);
+  projectAfterKnownThumper(trial);
+  const action: Action = { type: 'card' };
+  reconcileTravelPromises(trial, actor, action, 1);
+  reconcileBidPromises(trial, { actor, action });
+  reconcileRevivalPromises(trial, { actor, action });
+  reconcileBribePromises(trial, { actor, action });
+  reconcileGroundMovementPromises(trial, actor, action, 1);
 }
 /** The owned purchase irrevocably ends bidding before its foreign income or
  * discard reactions. Quote that boundary without completing those reactions. */
@@ -19847,7 +19909,7 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   if (!action && g.phase === 1 && allianceQuestionWindow(g) && !g.ready.includes(player.id))
     action = completion.alliance?.[0] ?? { type: 'ready' };
   if (!action && !g.ready.includes(player.id) &&
-    (g.phase === 0 && g.stormPending !== null || g.phase === 1 && g.spiceWindow)) {
+    (g.phase === 0 && g.stormPending !== null || g.phase === 1 && (g.spiceWindow || thumperReadyStartsDraw(g)))) {
     const closed = ownTurnActionWindowClosure(g, player.id);
     if (closed !== g.turnActionPromises && turnActionCompletion({ ...g, turnActionPromises: closed }, player.id))
       action = { type: 'ready' };
@@ -26070,6 +26132,7 @@ function completePhase(g: Game) {
 }
 /** Open the same public window for every Ix table, independently of who holds Amal. */
 function openPhase(g: Game, initialize = true) {
+  if (g.phase === 1) g.thumperWindowOpen = true;
   if (g.phase === 1 && g.nexusCards && g.nexusCards.phase?.turn !== g.turn)
     g.nexusCards.phase = createNexusCardPhase(g.turn);
   if (initialize && g.phase === 4 && g.homeworlds) {
@@ -37732,11 +37795,14 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     return stage && !stage.closed && (windowCardOpportunity(g, 'karamaAuction')?.source !== stage.source ||
       g.decision?.kind === 'auctionPayment' && g.decision.player !== id);
   })) guardTurnActionAuctionClosure(g, id, liveTurnActionPromises(state.turnActionPromises ?? [], id, state.turn));
-  reconcileTravelPromises(g, id, action, state.phase);
-  reconcileBidPromises(g, { actor: id, action });
-  reconcileRevivalPromises(g, { actor: id, action });
-  reconcileBribePromises(g, { actor: id, action });
-  reconcileGroundMovementPromises(g, id, action, state.phase);
+  const forcedThumperDraw = thumperForcedDraws.delete(g);
+  const promiseActor = forcedThumperDraw ? undefined : id;
+  const voluntary = forcedThumperDraw ? undefined : { actor: id, action };
+  reconcileTravelPromises(g, promiseActor, action, state.phase);
+  reconcileBidPromises(g, voluntary);
+  reconcileRevivalPromises(g, voluntary);
+  reconcileBribePromises(g, voluntary);
+  reconcileGroundMovementPromises(g, promiseActor, action, state.phase);
   reconcileTraitorTruth(g, id, action);
   harkonnenNexusBetrayalIntegrity(g);
   if (g.pendingNexusHarkonnenBetrayal) return g;
@@ -41988,7 +42054,11 @@ function applyActionInner(
           !g.nexus,
         'Use Thumper at the beginning of Spice Blow, before the first draw.',
       );
+      const window = windowCardOpportunity(g, 'thumper');
+      requireRule(window, 'Retain the original unused first Spice reveal.');
+      recordNativeTurnActionWindowCard(g, id, 'thumper', window.source);
       const used = discard(g, p, c.id);
+      rememberMovementDiscards(g, [{ card: used, discardedBy: id, publicFace: true }]);
       log(
         g,
         `${p.name} played Thumper in place of the next spice-card reveal.`,
@@ -42007,7 +42077,12 @@ function applyActionInner(
           return g;
         }
       }
-      blowSpice(g, true);
+      if (execution === 'movementPreparation') forecastThumperEncounter(g);
+      else {
+        thumperDrawOwners.set(g, id);
+        try { blowSpice(g, true); }
+        finally { thumperDrawOwners.delete(g); }
+      }
       return g;
     }
     const availability = ordinaryCardAvailability(
@@ -42109,7 +42184,7 @@ function applyActionInner(
   }
   if (t === 'ready') {
     if (allianceQuestionWindow(g)) guardAlliancePromiseReady(g, p);
-    if (g.turnActionPromises && (g.phase === 0 || g.phase === 1 && g.spiceWindow)) {
+    if (g.turnActionPromises && (g.phase === 0 || g.phase === 1 && (g.spiceWindow || thumperReadyStartsDraw(g)))) {
       const closed = ownTurnActionWindowClosure(g, p.id);
       requireRule(closed === g.turnActionPromises || !!turnActionCompletion({ ...g, turnActionPromises: closed }, p.id),
         'Play your required window card or retain another legal whole-answer alternative before accepting this window.');
@@ -42361,6 +42436,9 @@ export function viewGame(state: Game, id: string, now?: number) {
     karamaAuctionCards: quotedAuctionKaramaCards(g, me),
     karamaShipmentCards: quotedShipmentKaramaCards(g, me),
     karamaShipmentWindows: karamaShipmentOpportunities(g),
+    thumperCards: quotedThumperCards(g, me),
+    thumperReady: thumperReadyStartsDraw(g),
+    thumperWindowOpen: !!windowCardOpportunity(g, 'thumper'),
     truthBidTargets: bidQuestionWindow(g) ? g.players.filter(player => {
       const lot = bidOpportunity(g)!;
       return lot.eligible.includes(player.id) && !lot.passed.includes(player.id) && lot.bidder !== player.id;
@@ -42840,7 +42918,7 @@ export function viewGame(state: Game, id: string, now?: number) {
     spiceWindow: g.spiceWindow ?? null,
     spicePile: g.spiceSequence?.pile ?? 0,
     beforeSpiceDraw:
-      g.phase === 1 &&
+      !!windowCardOpportunity(g, 'thumper') &&
       g.nexusCards?.phase?.stage !== 'drawing' &&
       !g.spiceSequence &&
       !g.spiceResolution &&

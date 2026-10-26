@@ -2,7 +2,7 @@ import { parseTravelActionClaim, type TravelClaim } from './travel-expression-pr
 import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES,
   type TurnActionClaim } from './turn-action-promises';
 import { battlePowerOf, nativeBattlePowerOpportunity } from './battle-power-question';
-import { windowCardOpportunity } from './window-card-play';
+import { parseKaramaShipmentSource, windowCardOpportunity } from './window-card-play';
 import { parseTraitorActionClaim, type MixedTraitorClaim } from './mixed-traitor-question';
 import { parseBattleActionClaim, MIXED_BATTLE_MAX_NODES, MIXED_BATTLE_MAX_TERMS, MIXED_BATTLE_MAX_DEPTH,
   MIXED_BATTLE_MAX_LEAVES, type MixedBattleClaim } from './mixed-battle-question';
@@ -740,9 +740,17 @@ export function truthQuestionText(
   };
   if (q.kind === 'turnActions') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => {
-      if (action.kind === 'windowCardPlay') return `you play ${action.effect === 'weather' ? 'Weather Control' :
-        action.effect === 'atomics' ? 'Family Atomics' : 'Harvester'} in its printed role after this answer in this original ${
-        action.effect === 'harvester' ? 'fresh Spice Blow' : 'Storm window'} this turn`;
+      if (action.kind === 'windowCardPlay') {
+        if (action.effect === 'karamaAuction') return 'you spend a printed Karama after this answer on this original ordinary auction lot, by immediate purchase or its winning invoice';
+        if (action.effect === 'karamaShipment') {
+          const recipient = parseKaramaShipmentSource(action.source)?.recipient;
+          return `you spend a printed Karama after this answer on ${recipient ? playerName(recipient) : 'the named beneficiary'}’s original unused shipment price`;
+        }
+        if (action.effect === 'thumper') return 'you play Thumper after this answer before this turn’s original first Spice reveal, even if its worm encounter is ignored or suppressed';
+        return `you play ${action.effect === 'weather' ? 'Weather Control' :
+          action.effect === 'atomics' ? 'Family Atomics' : 'Harvester'} in its printed role after this answer in this original ${
+          action.effect === 'harvester' ? 'fresh Spice Blow' : 'Storm window'} this turn`;
+      }
       if (action.kind === 'cardPlay') return `you play ${action.effect === 'hajr' ? 'Hajr' : 'Tleilaxu Ghola'} in its printed role after this answer this turn`;
       if (action.kind === 'battlePower') {
         const claim = action.claim, where = `in this original battle in ${locationName(action.territory)}`;

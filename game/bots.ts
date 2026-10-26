@@ -3157,6 +3157,8 @@ function policyActions(g: GameView): Action[] {
     const prior = g.spiceDiscardTop[0];
     if (
       thumper &&
+      !g.ready.includes(me.id) &&
+      g.thumperCards?.includes(thumper.id) === true &&
       g.beforeSpiceDraw &&
       g.turn > 1 &&
       prior &&

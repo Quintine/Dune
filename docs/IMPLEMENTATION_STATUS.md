@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 27 October 2026 — Printed Thumper promises
+
+Prototyped / Partial. Original first-reveal sources, actual printed costs and
+usable native controls/guides are connected. Quotation stops after the known
+injected encounter before any hidden draw; actual voluntary casualties are
+checked separately from forced later draws. Genuine three-counter comparisons
+prove the boundary after correcting a valid two-counter Charity replacement.
+Frozen checks pass: 14 files, 299/299 tests, types/lint/build and seven journeys
+(40 SSR renders, 7 answer callbacks and 12 guide callbacks). No deployment or saved-game operation occurs. Wider compositions
+and full acceptance remain. [Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-thumper--27-october-2026).
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-thumper-proof-v2/`.
+
 ## 27 October 2026 — Printed Karama shipment-price promises
 
 Prototyped / Partial. Printed grant costs, beneficiary-specific original sources,

@@ -1,5 +1,43 @@
 # Truthtrance combined current-turn actions
 
+## Printed Thumper — 27 October 2026
+
+**Prototyped / Partial.** `windowCardPlay/thumper` binds
+`first-spice-reveal:turn`. It counts the actual printed card spent after the
+answer before this original first reveal, independently of ignored or suppressed
+worm outcomes. Earlier plays, other roles, recovery alone and a later turn do
+not count. Temporary Amal/Truthtrance openings preserve the source. Actual first
+draw retires it permanently; own Ready must preserve a completion, while a whole
+No's payment cap lasts through its proper deadline. Current facts freeze and
+whole AND/OR alternatives retain their existing semantics.
+
+Detached quotation executes the known injected encounter and its real physical
+casualties/Sandtrout consumption, stopping before the next hidden draw or shuffle.
+It then quotes owned future preparation without invented income, cards or foreign
+decisions. Actual live play checks voluntary cost/casualties before that draw;
+independently forced hidden casualties can release genuine impossibility.
+No selected branch or causal guard is persisted or published.
+
+The shared source/owner/card quotes feed human controls, persistent first-turn
+warning, exact native play/Ready guides and four minimally legal profiles.
+Question/history text names the actual Thumper or Karama role and shipment
+beneficiary. Original selected-Ix H/A/E sources deal both real Truthtrances and
+the physical Thumper, preserve 47 Treachery and the actual Traitor/Spice inventory,
+and earn later bodies by prior native shipment/collection. Three-body comparisons
+use actual cost 6 and collection 6, retain purse 10, and include future Charity's
+legitimate two-counter replacement route when assessing impossibility.
+
+Foreign worm reactions, Semuta/Box and other optional combinations, full modes,
+comprehensive assurance and deployed acceptance remain open. Source/effect
+precedence remains [provisional](IX_PROTOTYPE.md#original-spice-cards-and-selected-policy--24-october-2026).
+Frozen evidence: 14 related files, 299/299, types/lint/build and seven
+native/SSR/control journeys pass (40 GameTable renders, 7 answer callbacks,
+12 guide callbacks). First-turn sources use 17 native actions; later genuine
+body sources use 74. Private proof is
+`/home/quintine/.local/share/dune/checkpoints/20261027-truth-thumper-proof-v2/`;
+journeys/HTML are in adjacent `20261027-truth-thumper-runtime/run-v2/`.
+This is local native/SSR evidence, not browser hydration or deployed acceptance.
+
 ## Printed Karama shipment pricing — 27 October 2026
 
 **Prototyped / Partial.** `windowCardPlay/karamaShipment` names the current

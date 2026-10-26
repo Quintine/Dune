@@ -61,7 +61,7 @@ const power = (claim: BattlePowerClaim = { kind: 'voice', use: true }): Expressi
   ({ kind: 'action', action: { kind: 'battlePower', battle: 'battle:1', territory: 'carthag', claim } });
 const windowSource = (effect: WindowCardEffect) => effect === 'karamaShipment'
   ? JSON.stringify(['karamaShipment', 1, 'recipient', 'original']) : effect === 'karamaAuction' ? 'ordinary-auction:1:1' :
-  effect === 'harvester' ? 'spice-blow:1' : 'storm:1';
+  effect === 'thumper' ? 'first-spice-reveal:1' : effect === 'harvester' ? 'spice-blow:1' : 'storm:1';
 const windowCard = (effect: WindowCardEffect = 'weather', source = windowSource(effect)): Expression =>
   ({ kind: 'action', action: { kind: 'windowCardPlay', effect, source } });
 const fact = (): Expression => ({ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 5 } });
@@ -1519,4 +1519,56 @@ void test('closing a shipment-price opportunity retains actual play and later wh
   assert.equal(expired.fulfilled, true);
   assert.deepEqual(expired.windowCards!.karamaShipment, { source, played: false, closed: true });
   validateTurnActionPromises([expired], seats);
+});
+
+void test('Thumper receipt means accepted printed play after this answer and carries no worm result or chosen destination', () => {
+  const original = windowed(windowCard('thumper'));
+  const leaf = { kind: 'windowCardPlay', effect: 'thumper', source: 'first-spice-reveal:1' };
+  for (const extra of [{ worm: true }, { territory: 'carthag' }, { suppressed: true }, { card: 'physical-thumper' }])
+    assert.throws(() => parseTurnActionLeaf({ ...leaf, ...extra }), TurnActionError);
+  const played = recordTurnActionWindowCardPlay([original], 'respondent', 1, 'thumper', 'first-spice-reveal:1')[0];
+  assert.equal(played.fulfilled, true, 'No worm effect or successful outcome is part of the receipt');
+  assert.equal(original.windowCards!.thumper!.played, false);
+  const fresh = windowed(windowCard('thumper'), true, 'turn-action:2');
+  assert.equal(fresh.windowCards!.thumper!.played, false);
+  assert.equal(closeTurnActionWindowCardPlay([fresh], 'respondent', 1, 'thumper', 'first-spice-reveal:1')[0].fulfilled, false);
+  assert.equal(recordTurnActionWindowCardPlay([played], 'respondent', 1, 'thumper', 'first-spice-reveal:1')[0], played);
+  validateTurnActionPromises([played], seats);
+});
+
+void test('Thumper No binds only the exact actor turn and original first reveal until actual source closure', () => {
+  const no = windowed(windowCard('thumper'), false);
+  for (const [player, turn, source] of [['other', 1, 'first-spice-reveal:1'],
+    ['respondent', 2, 'first-spice-reveal:1'], ['respondent', 1, 'first-spice-reveal:2']] as const) {
+    assert.equal(recordTurnActionWindowCardPlay([no], player, turn, 'thumper', source)[0], no);
+    assert.equal(closeTurnActionWindowCardPlay([no], player, turn, 'thumper', source)[0], no);
+  }
+  assert.equal(closeTurnActionPayments([no], 'respondent', 1)[0].fulfilled, false);
+  assert.throws(() => recordTurnActionWindowCardPlay([no], 'respondent', 1, 'thumper', 'first-spice-reveal:1'), TurnActionError);
+  assert.equal(no.windowCards!.thumper!.played, false);
+  const closed = closeTurnActionWindowCardPlay([no], 'respondent', 1, 'thumper', 'first-spice-reveal:1')[0];
+  assert.equal(closed.fulfilled, true);
+  assert.equal(recordTurnActionWindowCardPlay([closed], 'respondent', 1, 'thumper', 'first-spice-reveal:1')[0], closed);
+  validateTurnActionPromises([closed], seats);
+});
+
+void test('Thumper whole AND No and OR Yes retain their later payment correlation after first-reveal closure', () => {
+  const no = windowed(group('and', windowCard('thumper'), pay()), false);
+  const granted = recordTurnActionWindowCardPlay([no], 'respondent', 1, 'thumper', 'first-spice-reveal:1');
+  const closed = closeTurnActionWindowCardPlay(granted, 'respondent', 1, 'thumper', 'first-spice-reveal:1');
+  assert.equal(closed[0].fulfilled, false);
+  assert.deepEqual(branches(closed[0]), [[signedPay('recipient', 3, 0, false)]]);
+  assert.throws(() => recordTurnActionPayment(closed, 'respondent', 1, payment()), TurnActionError);
+  assert.deepEqual(closed[0].payments, []);
+  const expiry = finishTurnActionTurn(closed, 'respondent', 1)[0];
+  assert.equal(expiry.fulfilled, true);
+  const alternative = windowed(group('or', windowCard('thumper'), pay()), true, 'turn-action:2');
+  const absent = closeTurnActionWindowCardPlay([alternative], 'respondent', 1, 'thumper', 'first-spice-reveal:1');
+  assert.deepEqual(branches(absent[0]), [[signedPay()]]);
+  assert.equal(recordTurnActionPayment(absent, 'respondent', 1, payment())[0].fulfilled, true);
+  const and = windowed(group('and', windowCard('thumper'), pay()), true, 'turn-action:3');
+  const paid = recordTurnActionPayment([and], 'respondent', 1, payment());
+  assert.equal(paid[0].fulfilled, false);
+  assert.equal(recordTurnActionWindowCardPlay(paid, 'respondent', 1, 'thumper', 'first-spice-reveal:1')[0].fulfilled, true);
+  validateTurnActionPromises([expiry], seats);
 });

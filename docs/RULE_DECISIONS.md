@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Truthtrance printed Thumper — 27 October 2026
+
+Prototyped / Partial. Extend existing whole current-turn answers to an actual
+future printed Thumper cost before this turn's original first Spice reveal.
+Temporary opening/Truthtrance windows retain the interval; the actual first
+draw closes it. Counting the cost does not promise a worm outcome: existing
+first-turn ignoring and waiting-Sandtrout suppression stay provisional under
+the [original card policy](IX_PROTOTYPE.md#original-spice-cards-and-selected-policy--24-october-2026).
+Quote the known injected encounter without reading or reshuffling hidden Spice
+cards. Own voluntary cost/casualties must retain accepted answers before the
+next normal draw; that draw can independently release actual impossibility.
+Foreign worm decisions and wider compositions are not certified by this slice.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-thumper--27-october-2026).
+
 ## Truthtrance printed Karama shipment pricing — 27 October 2026
 
 Prototyped / Partial. Compose the existing current-turn AND/OR authority with

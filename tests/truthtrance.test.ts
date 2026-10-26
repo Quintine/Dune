@@ -14,10 +14,21 @@ import { botActions, runBots } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import {
   truthFactAnswer,
+  truthQuestionText,
   type TruthFact,
   type TruthQuestion,
 } from '../game/truthtrance';
 import { CHEAP_HERO_TRAITOR } from '../game/traitors';
+
+void test('whole card questions name Thumper and the actual printed Karama role and shipment beneficiary', () => {
+  const question = (effect: 'thumper' | 'karamaAuction' | 'karamaShipment', source: string) =>
+    truthQuestionText({ kind: 'turnActions', target: 'emperor', turn: 2, mixed: { kind: 'action', action: {
+      kind: 'windowCardPlay', effect, source,
+    } } }, id => id, id => id, id => id === 'emperor' ? 'Emperor' : id);
+  assert.match(question('thumper', 'first-spice-reveal:2'), /Thumper.*original first Spice reveal.*ignored or suppressed/);
+  assert.match(question('karamaAuction', 'ordinary-auction:2:1'), /Karama.*original ordinary auction lot.*winning invoice/);
+  assert.match(question('karamaShipment', '["karamaShipment",2,"emperor","original"]'), /Karama.*Emperor’s original unused shipment price/);
+});
 
 function fixture() {
   const g = createGame('TRUTH22', newPlayer('a', 'Atreides', 'atreides'));

@@ -6,7 +6,7 @@ import { TurnActionFields, turnActionInputError } from '../components/turn-actio
 import { TurnActionAnswers, TurnActionGuideButton, TurnActionPromises } from '../components/turn-action-promises';
 import { TruthFactFields } from '../components/mixed-shipment-fields';
 import { BattleClaimFields } from '../components/battle-promises';
-import { baseDeck } from '../game/cards';
+import { baseDeck, ixSpecialCards } from '../game/cards';
 import { createGame, joinGame, newPlayer, viewGame, type Action, type GameView, type Plan } from '../game/engine';
 import type { MixedActionExpression } from '../game/mixed-action-question';
 import type { MixedBattleActionClaim } from '../game/mixed-battle-question';
@@ -35,7 +35,8 @@ const printedCard = (effect: 'hajr' | 'ghola' = 'hajr'): Expression => ({ kind: 
 const shipmentPriceSource = (recipient = 'p', cunning?: string) => JSON.stringify(['karamaShipment', 2, recipient,
   ...(cunning ? ['cunning', cunning] : ['original'])]);
 const windowClaim = (effect: WindowCardEffect = 'weather', source = effect === 'harvester' ? 'controlled-native-blow'
-  : effect === 'karamaAuction' ? 'ordinary-auction:2:2' : effect === 'karamaShipment' ? shipmentPriceSource() : 'storm:2'): Expression =>
+  : effect === 'karamaAuction' ? 'ordinary-auction:2:2' : effect === 'karamaShipment' ? shipmentPriceSource()
+    : effect === 'thumper' ? 'first-spice-reveal:2' : 'storm:2'): Expression =>
   ({ kind: 'action', action: { kind: 'windowCardPlay', effect, source } });
 const planClaim = (claim: MixedBattleActionClaim = { kind: 'dial', compare: 'eq', value: 3 }): Expression =>
   ({ kind: 'action', action: { kind: 'battlePlan', battle: 'controlled-native-battle', territory: 'arrakeen', claim } });
@@ -85,9 +86,9 @@ function projected(phase = 5, next: Action = { type: 'move', forces: { 'arrakeen
   game.turnActionGuide = { event, action: { ...next, turnActionPromiseEvent: event, turnActionPromisePhase: phase } };
   game.truthTurnActionAnswers = null;
   if (next.type === 'card' && typeof next.card === 'string') {
-    const cardId = next.card, effect = (['hajr', 'ghola', 'weather', 'atomics', 'harvester'] as const)
+    const cardId = next.card, effect = (['hajr', 'ghola', 'weather', 'atomics', 'harvester', 'thumper'] as const)
       .find(effect => cardId.includes(effect)) ?? 'karama';
-    const face = baseDeck().find(card => card.effect === effect); assert.ok(face);
+    const face = [...baseDeck(), ...ixSpecialCards()].find(card => card.effect === effect); assert.ok(face);
     const me = game.players.find(player => player.id === 'p')!;
     me.hand = [{ ...face, id: next.card }]; me.hajrAvailable = effect === 'hajr';
     if (effect === 'ghola') {
@@ -122,6 +123,12 @@ function shipmentKarama(recipient = 'p', cunning?: string): GameView {
     turn: 2, recipient: player, source: shipmentPriceSource(player, player === recipient ? cunning : undefined) }));
   game.karamaShipmentCards = ['controlled-printed-karama'];
   game.turnActionPromises[0].mixed = { kind: 'or', terms: [windowClaim('karamaShipment', shipmentPriceSource(recipient, cunning)), payment()] };
+  return game;
+}
+function firstReveal(next: Action = { type: 'card', card: 'controlled-thumper' }): GameView {
+  const game = projected(1, next); game.thumperWindowOpen = true; game.thumperReady = true; game.spiceWindow = null; game.nexus = false;
+  game.thumperCards = ['controlled-thumper']; game.active = 'a';
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [windowClaim('thumper'), payment()] };
   return game;
 }
 function nexus(next: Action = { type: 'alliance', target: 'r' }): GameView {
@@ -1018,6 +1025,114 @@ void test('a current shipment-price question retains a quoted Box route for an o
     assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
     game.nullentropy.blocked = 'The native Box is no longer available.'; press(button); assert.equal(sent.length, 1);
   }
+});
+
+void test('Thumper authoring uses the original public first-reveal source and preserves repairable shared logical drafts', () => {
+  const game = firstReveal(), e = editor(physical(), false, game);
+  for (const player of game.players) for (const key of ['hand', 'spice', 'forces', 'leaders', 'traitors'])
+    Object.defineProperty(player, key, { get() { throw Error(`No private Thumper authoring ${key} read`); }, configurable: true });
+  for (const key of ['thumperCards', 'spiceSequence', 'spiceResolution'])
+    Object.defineProperty(game, key, { get() { throw Error(`No native Thumper authoring ${key} read`); }, configurable: true });
+  select(e.tree(), '1', 'action', 'windowCardPlay'); assert.deepEqual(e.value, windowClaim('thumper')); assert.equal(e.error(), null);
+  assert.match(e.html(), /Before the original first spice reveal/);
+  game.nexus = true; game.response = { kind: 'voice', owner: 'a', passed: [] };
+  assert.equal(e.error(), null, 'A temporary native control does not change the original public first-reveal source.');
+  game.nexus = false; game.response = null;
+  select(e.tree(), '1', 'window-source', ''); assert.ok(e.error());
+  select(e.tree(), '1', 'window-source', 'first-spice-reveal:2'); assert.equal(e.error(), null);
+  game.thumperWindowOpen = false; assert.ok(e.error()); assert.match(e.html(), /no current original open native window/);
+  game.thumperWindowOpen = true;
+  for (const extra of [{ amount: 0 }, { mode: 'shipment' }, { target: 'p' }])
+    assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'windowCardPlay', effect: 'thumper', source: 'first-spice-reveal:2', ...extra } }, game, 'p'));
+  const fullGame = firstReveal(), full = editor({ kind: 'or', terms: [windowClaim('thumper'), fact()] }, false, fullGame);
+  for (let count = 3; count <= 16; count++) { click(control(full.tree(), 'add-action-1')); select(full.tree(), `1.${count}`, 'action', 'windowCardPlay'); }
+  assert.equal(full.error(), null); assert.match(full.html(), /16 \/ 16 conditions/);
+  const deep = editor({ kind: 'and', terms: [fact(), windowClaim('thumper')] }, false, fullGame);
+  click(control(deep.tree(), 'or-1.2')); click(control(deep.tree(), 'and-1.2.1')); click(control(deep.tree(), 'or-1.2.1.1'));
+  assert.equal(deep.error(), null); assert.match(deep.html(), /4 \/ 4 levels of grouping/);
+});
+
+void test('Thumper play and same-source Ready guides forward exact native packets while first-turn history retains its printed warning', () => {
+  const played = firstReveal(), sent: Action[] = [];
+  Object.defineProperty(played.turnActionPromises[0], 'windowCards', { get() { throw Error('No private Thumper receipt read'); } });
+  const button = guide({ game: played, busy: false, act(action) { sent.push(action); } });
+  assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], played.turnActionGuide!.action);
+  assert.equal(sent[0].type, 'card'); assert.equal(sent[0].card, 'controlled-thumper'); assert.equal(sent[0].turnActionPromisePhase, 1);
+  const alreadyReady = firstReveal(); alreadyReady.ready.push('p'); alreadyReady.thumperReady = false;
+  let latePlay = 0; const lateThumper = guide({ game: alreadyReady, busy: false, act() { latePlay++; } });
+  assert.equal(lateThumper.props.disabled, false); press(lateThumper); assert.equal(latePlay, 1, 'The native card quote can permit a held Thumper after own readiness.');
+  const keeper = firstReveal({ type: 'ready' }), readied: Action[] = [];
+  keeper.thumperCards = []; keeper.players.find(player => player.id === 'p')!.hand = [];
+  keeper.turnActionPromises[0].answer = false; keeper.turnActionPromises[0].mixed = windowClaim('thumper');
+  const ready = guide({ game: keeper, busy: false, act(action) { readied.push(action); } });
+  assert.equal(ready.props.disabled, false); press(ready); assert.equal(readied[0], keeper.turnActionGuide!.action);
+  assert.match(renderToStaticMarkup(ready), /Ready for the original first spice reveal/);
+  keeper.ready.push('p'); press(ready); assert.equal(readied.length, 1);
+  const summoned = firstReveal({ type: 'ready' }); summoned.nexus = true; summoned.thumperCards = [];
+  Object.defineProperty(summoned, 'summonedBeforeBlow', { get() { throw Error('Use the native public Ready quote, not private summoned timing'); } });
+  let summonedReady = 0; const quotedReady = guide({ game: summoned, busy: false, act() { summonedReady++; } });
+  assert.equal(quotedReady.props.disabled, false); press(quotedReady); assert.equal(summonedReady, 1);
+  const first = firstReveal(); first.turn = 1; first.turnActionGuide = null;
+  first.turnActionPromises[0].turn = 1; first.turnActionPromises[0].mixed = windowClaim('thumper', 'first-spice-reveal:1');
+  const html = markup(first); assert.match(html, /On turn 1, playing Thumper still discards the card/);
+  assert.match(html, /worm encounter is ignored and the normal Spice Card draw continues/);
+  assert.match(html, /closes when the actual first spice draw begins/); assert.doesNotMatch(html, /windowCards|controlled-thumper/);
+  assert.match(editor(windowClaim('thumper', 'first-spice-reveal:1'), false, first).html(), /On turn 1, playing Thumper still discards the card/);
+});
+
+void test('saved Thumper play and Ready callbacks reject original-source expiry and native modal changes', () => {
+  for (const action of [{ type: 'card', card: 'controlled-thumper' }, { type: 'ready' }]) for (const change of [
+    (game: GameView) => { game.thumperWindowOpen = false; },
+    (game: GameView) => { game.thumperReady = false; },
+    (game: GameView) => { game.nexus = true; },
+    (game: GameView) => { game.spiceWindow = { event: 'later-native-blow', territory: 'carthag', sector: 11, amount: 6, harvested: false }; },
+    (game: GameView) => { game.phaseOpening = { passed: [] }; },
+    (game: GameView) => { game.response = { kind: 'voice', owner: 'a', passed: [] }; },
+    (game: GameView) => { game.decision = { kind: 'auctionPayment', player: 'p' }; },
+    (game: GameView) => { game.turnActionPromises[0].mixed = windowClaim('thumper', 'first-spice-reveal:1'); },
+  ]) {
+    const game = firstReveal(action), saved = guide({ game, busy: false, act() { assert.fail('A stale first-reveal native action cannot send'); } });
+    assert.equal(saved.props.disabled, false); change(game); press(saved);
+  }
+  for (const change of [
+    (game: GameView) => { game.thumperCards = []; },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.hand = []; },
+    (game: GameView) => { const card = game.players.find(player => player.id === 'p')!.hand?.[0]; assert.ok(card); card.effect = 'ghola'; },
+  ]) {
+    const game = firstReveal(), saved = guide({ game, busy: false, act() { assert.fail('A changed Thumper quote or physical card cannot send'); } });
+    assert.equal(saved.props.disabled, false); change(game); press(saved);
+  }
+});
+
+void test('Thumper guides reject unsupported native packets, unavailable quotes and generic preparation fallback', () => {
+  for (const extra of [{ amount: 0 }, { mode: 'shipment' }, { target: 'p' }, { leader: 'foreign-leader' }]) {
+    const game = firstReveal(); Object.assign(game.turnActionGuide!.action, extra);
+    const button = guide({ game, busy: false, act() { assert.fail('Thumper accepts only its exact native printed-play packet'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+  for (const phase of [0, 2, 4, 5, 6, 8]) {
+    const game = firstReveal(); game.phase = phase; game.active = 'p'; game.turnActionGuide!.action.turnActionPromisePhase = phase;
+    const button = guide({ game, busy: false, act() { assert.fail('A held Thumper cannot become generic native preparation'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+  const unquoted = firstReveal(); unquoted.thumperCards = [];
+  assert.equal(guide({ game: unquoted, busy: false, act() { assert.fail('The root native quote must make Thumper available'); } }).props.disabled, true);
+  const unrelated = firstReveal(); unrelated.turnActionPromises[0].mixed = payment();
+  assert.equal(guide({ game: unrelated, busy: false, act() { assert.fail('Thumper requires its original own raw first-reveal source'); } }).props.disabled, true);
+  const extraReady = firstReveal({ type: 'ready', amount: 0 });
+  assert.equal(guide({ game: extraReady, busy: false, act() { assert.fail('First-reveal Ready accepts no extra native fields'); } }).props.disabled, true);
+  const unavailableReady = firstReveal({ type: 'ready' }); unavailableReady.thumperReady = false;
+  assert.equal(guide({ game: unavailableReady, busy: false, act() { assert.fail('An open source alone cannot invent a native Ready stage'); } }).props.disabled, true);
+});
+
+void test('Thumper first-reveal questions retain the quoted phase-one Box route before the actual first draw', () => {
+  const game = firstReveal(), me = game.players.find(player => player.id === 'p')!;
+  const box = { id: 'controlled-box', name: 'Nullentropy Box', kind: 'special' as const, effect: 'nullentropyBox' };
+  me.hand = [box]; game.nullentropy = { card: box, blocked: null, search: null };
+  game.turnActionGuide!.action = { type: 'card', card: box.id, turnActionPromiseEvent: event, turnActionPromisePhase: 1 };
+  const sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+  assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+  game.thumperWindowOpen = false; press(button); assert.equal(sent.length, 1);
 });
 
 void test('turn-action printed-role editor uses public names without holdings or private stages and retains the shared logical budget', () => {

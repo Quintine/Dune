@@ -23,8 +23,44 @@ function shipments(): WindowCardGame {
 }
 
 void test('window roles expose a shared exhaustive tuple and exact native printed-card mapping', () => {
-  assert.deepEqual(WINDOW_CARD_EFFECTS, ['weather', 'atomics', 'harvester', 'karamaAuction', 'karamaShipment']);
-  assert.deepEqual(WINDOW_CARD_EFFECTS.map(windowCardNativeEffect), ['weather', 'atomics', 'harvester', 'karama', 'karama']);
+  assert.deepEqual(WINDOW_CARD_EFFECTS, ['weather', 'atomics', 'harvester', 'karamaAuction', 'karamaShipment', 'thumper']);
+  assert.deepEqual(WINDOW_CARD_EFFECTS.map(windowCardNativeEffect), ['weather', 'atomics', 'harvester', 'karama', 'karama', 'thumper']);
+});
+
+void test('Thumper binds the public first-reveal entitlement without any hidden deck or physical-card source', () => {
+  const source = { ...storm(), phase: 1, thumperWindowOpen: true }, before = structuredClone(source);
+  assert.deepEqual(windowCardOpportunity(source, 'thumper'), { effect: 'thumper', source: 'first-spice-reveal:3', turn: 3 });
+  assert.equal(windowCardOpportunity(source, 'thumper', 'first-spice-reveal:3')!.source, 'first-spice-reveal:3');
+  assert.equal(windowCardOpportunity(source, 'thumper', 'first-spice-reveal:4'), null);
+  assert.equal(windowCardOpportunity({ ...source, turn: 4 }, 'thumper')!.source, 'first-spice-reveal:4');
+  assert.deepEqual(source, before);
+});
+
+void test('an explicitly open first-reveal entitlement survives temporary controls and summoned-worm or Nexus state', () => {
+  const source = { ...storm(), phase: 1, thumperWindowOpen: true };
+  for (const waiting of [{ response: {} }, { decision: {} }, { truthtrance: {} }, { phaseOpening: {} },
+    { nexus: true }, { spiceResolution: { kind: 'summonedWorm' } }, { spiceSequence: { skipped: [] } },
+    { spiceWindow: blow().spiceWindow }])
+    assert.equal(windowCardOpportunity({ ...source, ...waiting }, 'thumper')!.source, 'first-spice-reveal:3');
+});
+
+void test('first real reveal or printed Thumper closes the first-reveal source through later Nexus and second-blow windows', () => {
+  const source = { ...storm(), phase: 1, thumperWindowOpen: false };
+  for (const later of [{}, { nexus: true }, { spiceSequence: {} }, { spiceResolution: {} },
+    { spiceWindow: blow().spiceWindow }, { response: {} }])
+    assert.equal(windowCardOpportunity({ ...source, ...later }, 'thumper'), null);
+  for (const invalid of [{ phase: 0 }, { phase: 2 }, { status: 'setup' }, { turn: 0 }, { turn: 1.5 },
+    { turn: Number.MAX_SAFE_INTEGER + 1 }, { thumperWindowOpen: 'yes' }, { thumperWindowOpen: null }])
+    assert.equal(windowCardOpportunity({ ...source, thumperWindowOpen: true, ...invalid } as WindowCardGame, 'thumper'), null);
+});
+
+void test('legacy absent Thumper flag retains the original native clean first-reveal fallback', () => {
+  const source = { ...storm(), phase: 1 };
+  assert.equal(windowCardOpportunity(source, 'thumper')!.source, 'first-spice-reveal:3');
+  for (const started of [{ spiceSequence: {} }, { spiceResolution: {} }, { spiceWindow: blow().spiceWindow }, { nexus: true }])
+    assert.equal(windowCardOpportunity({ ...source, ...started }, 'thumper'), null);
+  for (const waiting of [{ response: {} }, { decision: {} }, { truthtrance: {} }, { phaseOpening: {} }])
+    assert.equal(windowCardOpportunity({ ...source, ...waiting }, 'thumper')!.source, 'first-spice-reveal:3');
 });
 
 void test('shipment-price windows retain every unused original entitlement while new questions select only the active recipient', () => {

@@ -20,6 +20,30 @@ open mode gates.
 Continue remaining Basic functions before Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance / printed Thumper — 27 October. Prototyped / Partial.**
+Original-first-reveal promises now connect real printed costs, persistent
+first-turn warning, exact native play/Ready controls and four legal profiles.
+Actual ignored/suppressed encounters still count. Known injected casualties
+enter the shared quote; the next hidden Spice Card does not. Voluntary loss is
+checked before that draw, while unavoidable later loss can release impossibility.
+
+Frozen **14 files, 299/299**, types/lint/build and seven native journeys
+pass, with 40 GameTable SSR renders, 7 actual answer callbacks and 12 exact guide
+callbacks. Genuine selected-Ix H/A/E sources use 17 first-turn or 74 earned-body
+native actions, retaining 47 Treachery and complete original Traitor/Spice
+inventories. Three-counter comparisons pay 6, collect 6, retain 10, then really
+move 3 under suppression or lose 3 to a later worm. A two-counter negative oracle
+was corrected: native Charity 2 can legally replace two counters through a city.
+The three-counter case exposes and fixes the hidden-draw forecast boundary.
+Question/history text also names the actual Karama role/beneficiary.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-thumper-proof-v2/`;
+journeys/HTML: adjacent `20261027-truth-thumper-runtime/run-v2/`.
+No HTTP/storage boundary, saved-game/database, restart or deployed operation
+changes. Foreign worm decisions, Semuta/Box and wider combinations, complete
+modes and final assurance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-thumper--27-october-2026).
+
 **Truthtrance / printed Karama shipment pricing — 27 October. Prototyped / Partial.**
 Whole answers can name a future printed price cost for the original beneficiary.
 Own and foreign givers share actual fees correctly: own pay9 plus shipment1 is
