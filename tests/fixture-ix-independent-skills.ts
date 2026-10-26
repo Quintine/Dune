@@ -258,7 +258,8 @@ export function createIxIndependentSkillsRevivalFixture(options: IxIndependentSk
   const afterBattle = finishIxIndependentSkillsBattle(f, { rescue: 'none' });
   const bribe: IxIndependentSkillsStep = { actor: f.opponent, action: { type: 'bribe', target: f.ixians, amount: 3 } };
   let game = stepIxIndependentSkills(afterBattle, bribe);
-  game = advanceIxIndependentSkills(game, g => g.turn === 2 && g.phase === 4 && ixIndependentSkillsClean(g) && !g.pendingRevival);
+  game = advanceIxIndependentSkills(game, g => g.turn === 2 && g.phase === 4 && ixIndependentSkillsClean(g) && !g.pendingRevival &&
+    (!g.revivalOrder || g.revivalOrder.remaining[0] === f.ixians));
   const staging = [...f.staging]; conserveCard(game, f.ixians, RECRUITS_CARD_ID, staging);
   const beforeRecruits = structuredClone(game);
   const priorReturn: IxIndependentSkillsStep = { actor: f.ixians, action: { type: 'revive', amount: 1, elite: 0 } };

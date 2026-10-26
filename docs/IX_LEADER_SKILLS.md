@@ -23,6 +23,12 @@ scope above. The real private Ixian starting-card choice still precedes skill
 offers/assignments, Traitors and Face Dancers; the first Storm retains actual
 HMS placement and all seven Cyborgs/thirteen Suboids.
 
+Fresh Advanced Ixian setup with Harkonnen now includes the extra starting card
+in the inspected pool; both Harkonnen cards come from its shuffled remainder.
+Basic and already-opened old-count Advanced drafts keep the separate extra
+draw. Selection and the complete card deal still precede Skill assignment.
+[Source cutover](IX_PROTOTYPE.md#advanced-starting-draft-source-cutover--27-october-2026).
+
 Create and ready a fresh local lobby, then follow the backed-up version-checked
 [prototype entry](IX_PROTOTYPE.md) using profile `leader-skills`.
 The shared initializer retains the [Tleilaxu integration](TLEILAXU_LEADER_SKILLS.md).

@@ -1,5 +1,50 @@
 # Ixians & Tleilaxu functional prototype
 
+## Advanced starting draft source cutover — 27 October 2026
+
+**Prototyped / Partial.** The user-authorized Advanced revision, physical34 /
+printed32 A, explicitly adds one card to the original Ixian starting pool when
+Harkonnen is seated, then deals Harkonnen two from the shuffled remainder.
+Fresh Advanced setup now follows that complete pool: Ixians may choose any
+of its N+1 physical cards, including the added card. Every other faction still
+starts with one, Harkonnen with two, and no later extra card is drawn.
+See the [source adoption](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026).
+
+Basic remains different. The publisher-authored E1 book, printed8, draws one
+card per faction; its printed11 Q&A explicitly retains Harkonnen's extra draw
+from the top of the deck after Ixian setup. Fresh retrieval of the official
+GF9 URL returned403; the [publisher-file mirror](https://cdn.1j1ju.com/medias/20/16/31-dune-ixians-tleilaxu-rulebook.pdf#page=11)
+was reread, including the original FAQ. This is an Advanced-source cutover,
+not a claim that the supplied revision changed Basic or the classic edition.
+
+The recorded pool's original size identifies the procedure. Existing Advanced
+N-card pools and historical short pools retain the prior one-per-other-player
+deal and separate Harkonnen bonus; no card is inserted into a saved choice.
+Fresh Advanced without Harkonnen still draws N. The shared pure deal plan
+preserves original seat order and exact recipient quantities. Actual native
+choice, shuffle, private views and existing legal AI use the offered cards.
+
+With Leader Skills, Ixian selection and the complete physical starting-card
+deal still precede offers/training. Without Skills, the existing setup order
+remains. The persistent choice panel explains the current saved procedure;
+no new action, confirmation, hand access or module gate is introduced.
+
+Focused paths: [deal plan](../game/ixian-starting-cards.ts),
+[native source](../tests/fixture-ix-starting-pool.ts),
+[native cases](../tests/ix-starting-pool-runtime.test.ts),
+[controls](../components/ix-technology.tsx).
+Frozen **15 files, 153/153**, types/lint/build and six genuine setup programmes
+pass. Runtime records 14 GameTable SSR, 6 private choice-panel renders and
+6 actual starting-card callbacks, with source/further action arrays
+28/16. Initializers are not counted actions or public-start acceptance.
+Basic/Advanced, all14 order and two no-Hark controls use actual original deals;
+old-count completion is a labelled conserved unit supplement. Seventeen new
+focused cases and the corrected old source expectations pass. The existing
+server returned HTTP200 without restart. Wider combinations, complete modes
+and final rules/recovery/privacy/browser/deployed acceptance remain.
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-ix-starting-pool-proof-v2/`;
+journeys/HTML: adjacent `20261027-ix-starting-pool-runtime/run/`.
+
 The [26 October live World follow-up](HOMEWORLD_RULES.md#live-world-sandtrout--26-october-2026)
 keeps occupation capabilities available while an original Sandtrout waits.
 It corrects a module-context rejection; the original Spice effects and

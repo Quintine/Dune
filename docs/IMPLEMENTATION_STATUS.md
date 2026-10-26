@@ -1,5 +1,32 @@
 # Dune implementation status
 
+## 27 October 2026 — Source-aligned Advanced Ixian starting draft
+
+Prototyped / Partial. Fresh Advanced setup with Harkonnen now includes its extra starting card in the
+original Ixian pool; both Harkonnen cards come from the shuffled remainder.
+Basic retains its publisher-FAQ top-deck bonus. Already-opened Advanced
+old-count drafts keep their saved completion without a redeal. The persistent
+choice panel explains the actual procedure; Skills setup order is unchanged.
+
+Frozen **15 affected files, 153/153**, types/lint/build and 6 genuine setup
+programmes pass: Basic/Advanced with Harkonnen, with/without all14 Skills,
+and two no-Hark controls. Runtime records 14 GameTable SSR renders,
+6 IxTechnology renders and 6 actual starting-card callbacks. Recorded
+arrays supply aggregate source/further action counts 28/16; preview
+initialization is outside those counts and is not public-start acceptance.
+Seventeen new pure/native cases include exact fourth-card selection, physical
+dealing, Skills order, old-count completion, rejected packets and four minimal
+legal policies. The conserved legacy supplement is labelled as a unit boundary,
+not a native historical-save journey. Related feedback updates the old pool
+expectation and advances an older Revival fixture through preceding real turns.
+
+The existing server returned HTTP200 without restart. This checkpoint has local
+native/SSR/callback evidence; final rules, recovery, privacy, browser and deployed
+acceptance remain. No HTTP/storage boundary or saved-game/database operation.
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-ix-starting-pool-proof-v2/`;
+journeys/HTML: adjacent `20261027-ix-starting-pool-runtime/run/`.
+[Source contract](IX_PROTOTYPE.md#advanced-starting-draft-source-cutover--27-october-2026).
+
 ## 27 October 2026 — Trained native E3 capture in Advanced
 
 Prototyped / Partial. Fresh bare Advanced E3/all14 setups now connect Harkonnen with actual Ecaz

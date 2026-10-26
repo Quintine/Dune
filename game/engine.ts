@@ -571,6 +571,7 @@ import {
   type MoritaniRetention,
 } from './moritani-retention';
 import { ordinaryCardAvailability } from './card-availability';
+import { IxStartingCardError, ixStartingCardPoolSize, ixStartingCardDealPlan } from './ixian-starting-cards';
 import { ecazDukeRevivalBlock, quoteEcazDukeRevival } from './ecaz-duke-revival';
 import {
   reserveShipmentCost,
@@ -10897,11 +10898,18 @@ function initializeStartingForces(g: Game) {
   if (g.homeworlds)
     g.homeworlds.custody = createHomeworldCustody(homeworldContext(g));
 }
+function ixStartingRule<T>(operation: () => T): T {
+  try { return operation(); } catch (error) {
+    if (error instanceof IxStartingCardError) throw new RuleError(error.message);
+    throw error;
+  }
+}
 function dealStartingTreachery(g: Game) {
   const ixians = byFaction(g, 'ixians');
   if (ixians) {
     g.ixSetupCards = [];
-    for (const _player of g.players) {
+    const poolSize = ixStartingRule(() => ixStartingCardPoolSize(g));
+    for (let index = 0; index < poolSize; index++) {
       const card = draw(g);
       if (card) g.ixSetupCards.push(card);
     }
@@ -39997,23 +40005,26 @@ function applyActionInner(
         g.status === 'setup' && p.faction === 'ixians' && g.ixSetupCards,
         'Ixian starting-card selection is not available.',
       );
+      const plan = ixStartingRule(() => ixStartingCardDealPlan(g, g.ixSetupCards!.length));
       const card = g.ixSetupCards.find((c) => c.id === action.card);
       requireRule(card, 'Choose one of the starting cards.');
       p.hand.push(card);
       const remainder = shuffle(g.ixSetupCards.filter((c) => c.id !== card.id));
-      for (const other of g.players.filter((other) => other.id !== p.id)) {
-        const dealt = remainder.shift();
-        if (dealt) other.hand.push(dealt);
+      for (const seat of plan.seats) {
+        const other = getPlayer(g, seat.player);
+        for (let count = 0; count < seat.amount; count++) {
+          const dealt = remainder.shift();
+          if (dealt) other.hand.push(dealt);
+        }
       }
-      const harkonnen = byFaction(g, 'harkonnen');
-      if (harkonnen) {
+      if (plan.deckBonus) {
         const bonus = draw(g);
-        if (bonus) harkonnen.hand.push(bonus);
+        if (bonus) getPlayer(g, plan.deckBonus).hand.push(bonus);
       }
       g.ixSetupCards = null;
       log(
         g,
-        `${p.name} selected a starting card. The other starting cards were shuffled and dealt privately.`,
+        `${p.name} selected a starting card. The other starting cards were shuffled and dealt privately.${plan.kind === 'advanced-pool' ? ' Harkonnen received both starting cards from that inspected pool.' : ''}`,
       );
     } else if (decision.kind === 'ixAuction') {
       requireRule(

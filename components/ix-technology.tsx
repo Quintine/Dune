@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { HelpTip } from './help-tip';
 import { CardInspector } from './card-inspector';
 import type { Action, GameView } from '@/game/engine';
+import { ixStartingCardDealPlan } from '@/game/ixian-starting-cards';
 export function IxTechnology({
   game: g,
   act,
@@ -28,6 +29,20 @@ export function IxTechnology({
       : kind === 'ixAuction'
         ? g.ixTechnology?.pool
         : me.hand;
+  let startingExplanation = 'Choose your starting card from the recorded pool. The remaining cards are shuffled and dealt privately.';
+  if (kind === 'ixSetup' && cards?.length) {
+    try {
+      const plan = ixStartingCardDealPlan(g, cards.length);
+      startingExplanation = plan.kind === 'advanced-pool'
+        ? 'Choose your starting card from the full Advanced pool, including Harkonnen’s extra card. The remainder is shuffled: two cards go to Harkonnen and one to every other faction. No extra card is drawn from the deck.'
+        : plan.deckBonus
+          ? `${g.advanced ? 'This recorded draft keeps the earlier starting procedure. ' : ''}Choose your starting card. The remaining cards are shuffled and dealt privately, one to each other faction; Harkonnen then draws its extra card from the deck.`
+          : 'Choose your starting card. The remaining cards are shuffled and dealt privately, one to each other faction.';
+    } catch {
+      // A transient/incomplete view keeps the generic prompt; the server owns
+      // the saved draft, recipient quantities and final physical deal.
+    }
+  }
   if (kind === 'ixAllyCard')
     return (
       <>
@@ -61,7 +76,7 @@ export function IxTechnology({
     <>
       <p>
         {kind === 'ixSetup'
-          ? 'Choose your starting card. The remaining cards are shuffled and dealt privately, one to each other faction; Harkonnen then draws its extra card.'
+          ? startingExplanation
           : kind === 'ixAuction'
             ? 'Privately choose one card from the original Ixian pool to return to the deck. The remaining pool will be shuffled for auction. This choice does not transfer unrelated Ixian Technology.'
             : 'Exchange one card from your hand for the upcoming card, before Atreides looks. You commit your offered card before learning what you receive. This advantage can be attempted once this round.'}{' '}

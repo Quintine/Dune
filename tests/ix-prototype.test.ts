@@ -231,7 +231,7 @@ void test('all AI profiles complete genuine private Ix setup through JSON contin
       assert.ok(g.players.every((p) => p.hand.length === 0));
 
       g = reachIxChoice(g, difficulty);
-      assert.equal(g.ixSetupCards?.length, ROSTER.length);
+      assert.equal(g.ixSetupCards?.length, ROSTER.length + (advanced ? 1 : 0));
       const ids = g.ixSetupCards!.map((card) => card.id);
       assert.deepEqual(viewGame(g, 'i').ixTechnology?.setup, g.ixSetupCards);
       for (const observer of ['t', 'a', 'h']) {

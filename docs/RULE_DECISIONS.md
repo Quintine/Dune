@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Ixian starting draft with Harkonnen — 27 October 2026
+
+Supplied Advanced physical34/printed32 A explicitly draws N+1 when Harkonnen
+is in play, lets Ixians choose from that entire pool, then deals Harkonnen two
+from the shuffled remainder. Fresh Advanced setup follows this source. Basic
+retains publisher E1 printed8 and11's N-card pool plus Harkonnen's separate
+top-deck bonus. Already-opened Advanced old-count pools keep their saved
+procedure without new cards or a redeal. Skills order and unrelated Bidding
+powers remain separate. This is the adopted Advanced source difference,
+not a newly invented combined-effect ruling or a Basic change.
+[Exact source and cutover](IX_PROTOTYPE.md#advanced-starting-draft-source-cutover--27-october-2026).
+
 ## Trained native E3 leaders and Advanced capture — 27 October 2026
 
 Fresh bare all14/E3 setups now admit Advanced Harkonnen with actual Ecaz and/or
