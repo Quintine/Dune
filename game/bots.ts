@@ -1143,7 +1143,12 @@ function plans(g: GameView): Action[] {
     );
   if (b.compliantPlan && commitments.every(
     (element) => fixed(element.field, b.compliantPlan![element.field]),
-  )) ranked.push({ type: 'battlePlan', ...b.compliantPlan });
+  )) {
+    const action: Action = { type: 'battlePlan', ...b.compliantPlan };
+    if ((g.mixedBattlePromises ?? []).some(promise => promise.player === me.id && promise.turn === g.turn &&
+      promise.battle === b.event && !promise.fulfilled && !promise.released)) ranked.unshift(action);
+    else ranked.push(action);
+  }
   return ecazOccupyPolicyActions(g, ranked);
 }
 
@@ -1320,6 +1325,10 @@ function policyActions(g: GameView): Action[] {
       return w.passed.includes(me.id) ? [] : [{ type: 'truthPass' }];
     if (w.stage === 'answer') {
       if (w.question?.target !== me.id) return [];
+      if (w.question.kind === 'mixedBattlePlan') {
+        const answer = g.truthMixedBattleAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'mixedBid') {
         const answer = g.truthMixedBidAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];

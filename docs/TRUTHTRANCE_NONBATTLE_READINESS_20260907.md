@@ -1,5 +1,10 @@
 # Truthtrance nonbattle readiness and first implementation slice
 
+The [mixed current battle-plan follow-up](TRUTHTRANCE_MIXED_BATTLE.md) combines
+answer-time facts with original native plan conditions. Full raw logical
+budgets and actual reveal settlement preserve current battle mechanics; this
+does not add arbitrary future card-play or cross-action promise enforcement.
+
 The [whole/mixed final-alliance follow-up](TRUTHTRANCE_ALLIANCE_EXPRESSIONS.md)
 adds full AND/OR partner conditions and answer-time facts at the current ordinary
 Nexus close. Actual native consent, final membership and financial preparation

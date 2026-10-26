@@ -1,5 +1,22 @@
 # Rule decision index
 
+## Current facts combined with current battle plans — 26 October 2026
+
+Compose recorded publisher FAQp8 AND/OR/current-turn authority and supplied
+Advanced physical39 compliance/release/unknown with existing native battle-plan
+questions. Facts freeze before future preparation/payment/card changes. Unknown
+is false for definite Yes and true for No; a necessary residual enters the
+original BattlePromise/plan solver, preserving Voice/Prescience/inspections and
+funding. Constants and already fixed plans are terminal; open aggregates wait
+for actual reveal, never solver previews or just their own sealing. Raw mixed
+clauses/aggregate hide frozen values and residuals from all public pure rows.
+Native16-clause/8-child/depth4 input limits span the complete mixed tree;
+other mixed families keep their defaults. An older eventless battle receives
+only additive source identity during actual Ask, never passive reading.
+Snapshot/witness/release is provisional online composition, not a dedicated
+publisher solver or correlated-unknown inference. No mode/publication change.
+[Contract and evidence](TRUTHTRANCE_MIXED_BATTLE.md).
+
 ## Whole and mixed final Nexus alliances — 26 October 2026
 
 Compose recorded publisher FAQp8 AND/OR/current-turn authority and supplied

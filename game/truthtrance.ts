@@ -1,3 +1,5 @@
+import { parseBattleActionClaim, MIXED_BATTLE_MAX_NODES, MIXED_BATTLE_MAX_TERMS, MIXED_BATTLE_MAX_DEPTH,
+  MIXED_BATTLE_MAX_LEAVES, type MixedBattleClaim } from './mixed-battle-question';
 import { parseAllianceExpressionClaim, allianceExpressionText, type AllianceExpressionClaim } from './alliance-expression-promises';
 import { parseAllianceActionClaim, type MixedAllianceClaim } from './mixed-alliance-question';
 import { parseBidActionClaim, MIXED_BID_MAX_DEPTH, MIXED_BID_MAX_LEAVES, type MixedBidClaim } from './mixed-bid-question';
@@ -75,6 +77,7 @@ export type TruthFact =
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type MixedMovementClaim = { turn: number; mixed: MixedActionExpression<MovementClaim> };
 export type TruthQuestion =
+  | ({ kind: 'mixedBattlePlan'; target: string } & MixedBattleClaim)
   | ({ kind: 'allianceExpression'; target: string } & AllianceExpressionClaim)
   | ({ kind: 'mixedAlliance'; target: string } & MixedAllianceClaim)
   | ({ kind: 'mixedBid'; target: string } & MixedBidClaim)
@@ -428,6 +431,22 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       throw error;
     }
   }
+  if (v.kind === 'mixedBattlePlan') {
+    check(Object.keys(v).sort().join(',') === 'battle,kind,mixed,target,territory' &&
+      g.phase === 6 && g.battle && [g.battle.attacker, g.battle.defender].includes(v.target) &&
+      v.territory === g.battle.territory && (typeof v.battle === 'string' && v.battle.length > 0 || v.battle === null) &&
+      v.battle === (g.battle.event ?? null), 'Choose the exact current battle and another seated combatant.');
+    const respondent = g.players.find(player => player.id === v.target)!;
+    const mixed = parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent),
+      value => parseBattleActionClaim(value, battleLeaderIdentities(g).map(leader => leader.id)),
+      { maxLeaves: MIXED_BATTLE_MAX_LEAVES, maxDepth: MIXED_BATTLE_MAX_DEPTH,
+        maxNodes: MIXED_BATTLE_MAX_NODES, maxTerms: MIXED_BATTLE_MAX_TERMS });
+    // Older active battles lacked an event. Initialize only in this explicit
+    // Ask transaction, preserving passive views and every physical choice.
+    g.battle.event ??= crypto.randomUUID();
+    return { kind: 'mixedBattlePlan', target: v.target as string, battle: g.battle.event,
+      territory: g.battle.territory, mixed };
+  }
   if (v.kind === 'battlePlan') {
     check(
       g.phase === 6 &&
@@ -638,6 +657,8 @@ export function truthQuestionText(
       return `you currently hold ${f.compare === 'eq' ? 'exactly' : f.compare === 'gte' ? 'at least' : 'at most'} ${f.value} spice`;
     return `(${f.terms.map(clause).join(f.kind === 'and' ? ' AND ' : ' OR ')})`;
   };
+  if (q.kind === 'mixedBattlePlan') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
+    action => `${planClaimText(action, leaderName)} in this battle`)}?`;
   if (q.kind === 'mixedAlliance') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => `you ${allianceClaimText({ turn: q.turn, partner: action.partner }, playerName)}`)}?`;
   if (q.kind === 'mixedBid') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
@@ -704,6 +725,8 @@ export function resolveTruthAction(
     bindBid?: (g: Game, p: Player, claim: BidClaim, answer: boolean, asker: string) => void;
     traitorAnswers?: (g: Game, p: Player) => TruthAnswer[];
     bindTraitor?: (g: Game, p: Player, answer: boolean, asker: string) => void;
+    mixedBattleAnswers?: (g: Game, p: Player, claim: MixedBattleClaim) => TruthAnswer[];
+    bindMixedBattle?: (g: Game, p: Player, claim: MixedBattleClaim, answer: boolean, asker: string) => void;
     battleAnswers: (g: Game, p: Player, claim: PlanClaim) => TruthAnswer[];
     bindBattle: (
       g: Game,
@@ -820,6 +843,9 @@ export function resolveTruthAction(
           'Waiting for the Truthtrance holder to ask a question.',
         );
         w.question = parseQuestion(g, p.id, a.question);
+        if (w.question.kind === 'mixedBattlePlan')
+          check(effects.mixedBattleAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a whole mixed battle-plan question compatible with this battle.');
         if (w.question.kind === 'mixedRevival')
           check(effects.mixedRevivalAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a mixed current-fact and ordinary-return question compatible with the native opportunity.');
@@ -987,6 +1013,11 @@ export function resolveTruthAction(
           check(effects.traitorAnswers && effects.bindTraitor && effects.traitorAnswers(g, p).includes(a.answer),
             'Choose an answer compatible with your current legal Traitor declaration and earlier answers.');
           if (a.answer !== 'unknown') effects.bindTraitor(g, p, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'mixedBattlePlan') {
+          check(effects.mixedBattleAnswers && effects.bindMixedBattle && effects.mixedBattleAnswers(g, p, q).includes(a.answer),
+            'Choose a mixed battle-plan answer compatible with the complete fact/plan question.');
+          if (a.answer !== 'unknown') effects.bindMixedBattle(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'battlePlan') {
           check(

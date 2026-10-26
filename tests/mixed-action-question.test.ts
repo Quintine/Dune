@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   compileMixedActionExpression,
+  mixedActionExpressionSize,
   mixedActionExpressionText,
   MixedActionQuestionError,
   parseMixedActionExpression,
@@ -144,6 +145,53 @@ void test('one four-level budget includes nested current-fact AND/OR and support
   for (const limits of [{ maxDepth: -1 }, { maxDepth: 1.5 }, { maxLeaves: 0 },
     { maxLeaves: Infinity }, { maxLeaves: Number.MAX_SAFE_INTEGER + 1 }])
     assert.throws(() => decode(simple, limits), MixedActionQuestionError);
+});
+
+void test('shared logical size counts actual fact groups once and measures every group arity', () => {
+  const embedded: Expression = { kind: 'fact', fact: { kind: 'or', terms: [
+    { kind: 'spice', compare: 'gte', value: 5 },
+    { kind: 'and', terms: [
+      { kind: 'spice', compare: 'gte', value: 10 },
+      { kind: 'spice', compare: 'gte', value: 15 },
+      { kind: 'spice', compare: 'gte', value: 20 },
+    ] },
+  ] } };
+  assert.deepEqual(mixedActionExpressionSize(fact()), { leaves: 1, depth: 0, nodes: 1, maxTerms: 0 });
+  assert.deepEqual(mixedActionExpressionSize(action()), { leaves: 1, depth: 0, nodes: 1, maxTerms: 0 });
+  assert.deepEqual(mixedActionExpressionSize(embedded), { leaves: 4, depth: 2, nodes: 6, maxTerms: 3 });
+  assert.deepEqual(mixedActionExpressionSize(group('and', embedded, action())),
+    { leaves: 5, depth: 3, nodes: 8, maxTerms: 3 });
+});
+
+void test('optional node limits share one full budget across action leaves and embedded fact groups', () => {
+  const embedded = (length: number): Expression => ({ kind: 'fact', fact: {
+    kind: 'or', terms: Array.from({ length }, () => ({ kind: 'spice', compare: 'gte', value: 5 })),
+  } });
+  const atLimit = group('and', embedded(7), ...Array.from({ length: 7 }, () => action()));
+  assert.deepEqual(mixedActionExpressionSize(atLimit), { leaves: 14, depth: 2, nodes: 16, maxTerms: 8 });
+  assert.deepEqual(decode(atLimit, { maxNodes: 16 }), atLimit);
+  const overLimit = group('and', ...Array.from({ length: 7 }, () => action()), embedded(8));
+  assert.doesNotThrow(() => decode(overLimit));
+  assert.throws(() => decode(overLimit, { maxNodes: 16 }), MixedActionQuestionError);
+  assert.throws(() => decode(group('and', fact(), action()), { maxNodes: 2 }), MixedActionQuestionError);
+  for (const maxNodes of [0, -1, 1.5, Infinity, Number.MAX_SAFE_INTEGER + 1])
+    assert.throws(() => decode(atLimit, { maxNodes }), MixedActionQuestionError);
+});
+
+void test('optional group limits include late fact subgroups while absent limits preserve wider legacy groups', () => {
+  const wideOuter = group('or', fact(), ...Array.from({ length: 8 }, () => action()));
+  const wideFact: Expression = { kind: 'fact', fact: { kind: 'and', terms:
+    Array.from({ length: 9 }, () => ({ kind: 'spice', compare: 'gte', value: 5 })),
+  } };
+  const wideEmbedded = group('or', fact(), action(), wideFact);
+  for (const original of [wideOuter, wideEmbedded]) {
+    assert.deepEqual(decode(original), original);
+    assert.throws(() => decode(original, { maxTerms: 8 }), MixedActionQuestionError);
+  }
+  const eight = group('and', fact(), ...Array.from({ length: 7 }, () => action()));
+  assert.deepEqual(decode(eight, { maxTerms: 8 }), eight);
+  for (const maxTerms of [0, 1, -1, 1.5, Infinity, Number.MAX_SAFE_INTEGER + 1])
+    assert.throws(() => decode(eight, { maxTerms }), MixedActionQuestionError);
 });
 
 void test('known facts fold whole AND/OR questions independently of the selected Yes or No answer', () => {

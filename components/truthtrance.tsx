@@ -1,5 +1,8 @@
 'use client';
 
+import { MixedBattleFields, mixedBattleInputError } from './mixed-battle-fields';
+import type { MixedBattleActionClaim } from '@/game/mixed-battle-question';
+
 import { MixedBribeFields, mixedBribeInputError } from './mixed-bribe-fields';
 import { MixedRevivalFields, mixedRevivalInputError } from './mixed-revival-fields';
 import { MixedBidFields, mixedBidInputError } from './mixed-bid-fields';
@@ -83,7 +86,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid' | 'allianceExpression' | 'mixedAlliance'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid' | 'allianceExpression' | 'mixedAlliance' | 'mixedBattlePlan'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -150,6 +153,11 @@ export function Truthtrance({
     { kind: 'action', action: { minimum: 4 } },
   ] });
   const mixedBidError = mixedBidInputError(mixedBid, g, target);
+  const [mixedBattle, setMixedBattle] = useState<MixedActionExpression<MixedBattleActionClaim>>({ kind: 'and', terms: [
+    { kind: 'fact', fact: { kind: 'hand', name: 'Shield' } },
+    { kind: 'action', action: { kind: 'dial', compare: 'eq', value: 0 } },
+  ] });
+  const mixedBattleError = mixedBattleInputError(mixedBattle, g, target);
   const [shipment, setShipment] = useState<ShipmentExpression>({ territory: 'carthag', minimum: 6 });
   const [mixed, setMixed] = useState<MixedShipmentExpression>({
     kind: 'and',
@@ -185,6 +193,7 @@ export function Truthtrance({
             territory: g.battle?.territory ?? '',
             claim: planClaim,
           }
+        : kind === 'mixedBattlePlan' ? { kind, target, battle: g.battle?.event ?? null, territory: g.battle?.territory ?? '', mixed: mixedBattle }
         : kind === 'traitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '' }
         : kind === 'mixedMovement' ? { kind, target, turn: g.turn, mixed: mixedMovement }
         : kind === 'movementExpression' ? { kind, target, turn: g.turn, claim: movementExpression }
@@ -307,6 +316,13 @@ export function Truthtrance({
                         )}
                       </div>
                     ))}
+                  </>
+                ) : w.question!.kind === 'mixedBattlePlan' ? (
+                  <>
+                    <p className="notice">Answer the complete current-fact and battle-plan question. Current facts freeze now; any remaining plan conditions use your native legal plans and preparation. No negates the whole expression. A binding open plan settles only when the plans are actually revealed; a plan already submitted is fixed. Voice, Prescience, card eligibility and normal costs still apply.</p>
+                    {(g.truthMixedBattleAnswers ?? []).map(answer => <div key={answer}>
+                      {button(answer === 'unknown' ? 'I don’t know yet' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
                   </>
                 ) : w.question!.kind === 'mixedBid' ? (
                   <>
@@ -538,6 +554,7 @@ export function Truthtrance({
                     Combine current facts and this-turn shipment
                   </option>
                   <option value="freeform">Write a game question</option>
+                  {g.battle && <option value="mixedBattlePlan">Combine current facts and this battle plan</option>}
                   {g.battle && (
                     <option value="battlePlan">
                       Bind a battle-plan choice
@@ -545,7 +562,14 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'allianceExpression' ? (
+              {kind === 'mixedBattlePlan' ? (
+                <>
+                  <MixedBattleFields value={mixedBattle} game={g} target={target}
+                    disabled={busy || !g.truthMixedBattleTargets.includes(target)} onChange={setMixedBattle} />
+                  {!g.truthMixedBattleTargets.includes(target) && <p className="notice">Choose another combatant in the current battle.</p>}
+                  <p className="notice" aria-label="Public mixed battle question preview">{mixedBattleError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'allianceExpression' ? (
                 <>
                   <AllianceExpressionFields value={allianceExpression} partners={alliancePartners}
                     disabled={busy || !g.truthAllianceExpressionTargets.includes(target)} onChange={setAllianceExpression} />
@@ -761,6 +785,7 @@ export function Truthtrance({
                 (kind === 'mixedRevival' && (!!mixedRevivalError || !g.truthMixedRevivalTargets.includes(target))) ||
                 (kind === 'revivalExpression' && (!!revivalExpressionInputError(revivalExpression) || !validRevivalExpressionNames || !g.truthRevivalExpressionTargets.includes(target))) ||
                 (kind === 'leaderRevival' && (!!leaderRevivalClaimInputError(leaderRevivalClaim, leaderRevivalChoices) || !g.truthLeaderRevivalTargets.includes(target))) ||
+                (kind === 'mixedBattlePlan' && (!!mixedBattleError || !g.truthMixedBattleTargets.includes(target))) ||
                 (kind === 'allianceExpression' && (!!allianceExpressionError || !g.truthAllianceExpressionTargets.includes(target))) ||
                 (kind === 'mixedAlliance' && (!!mixedAllianceError || !g.truthMixedAllianceTargets.includes(target))) ||
                 (kind === 'alliance' && (!!allianceClaimInputError(allianceClaim, alliancePartners) || !g.truthAllianceTargets.includes(target))) ||

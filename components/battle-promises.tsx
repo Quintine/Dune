@@ -123,19 +123,18 @@ export function BattleClaimFields({
     </>
   );
 }
-export function BattlePromises({
-  game: g,
-  fill,
-  act,
-  busy,
-}: {
+export function BattlePromises(props: {
   game: GameView;
   fill: (plan: Plan) => void;
   act: (action: Action) => void;
   busy: boolean;
 }) {
+  const { game: g, fill, act } = props;
   const b = g.battle;
-  if (!b || (!b.truthPromises.length && !b.compliantPreparation)) return null;
+  if (!b) return null;
+  const mixedRows = (g.mixedBattlePromises ?? []).filter(promise => promise.player === g.me && promise.turn === g.turn &&
+    promise.battle === b.event && promise.territory === b.territory && !promise.fulfilled && !promise.released);
+  if (!b.truthPromises.length && !b.compliantPreparation && (!b.compliantPlan || !mixedRows.length)) return null;
   const me = g.players.find((p) => p.id === g.me)!;
   const name = (id: string | null) =>
     id === null
@@ -144,6 +143,39 @@ export function BattlePromises({
         g.allLeaders.find((l) => l.id === id)?.name ??
         id);
   const plan = b.compliantPlan;
+  const preparation = b.compliantPreparation;
+  const nextPreparation = preparation?.actions[0];
+  const actor = g.me, turn = g.turn, event = b.event, territory = b.territory;
+  const attacker = b.attacker, defender = b.defender;
+  const mixed = mixedRows
+    .map(promise => ({ promise, event: promise.event, asker: promise.asker, answer: promise.answer,
+      mixed: promise.mixed, signature: JSON.stringify(promise.mixed) }));
+  const mixedAssistance = mixed.length > 0;
+  const planSignature = JSON.stringify(plan), preparationSignature = JSON.stringify(preparation);
+  // Native completion owns feasibility. For mixed assistance, a saved callback
+  // also has to belong to this exact live question and current private guide.
+  const canUseMixedAssistance = () => !mixedAssistance || (
+    !props.busy && props.game === g && g.status === 'playing' && g.phase === 6 && g.me === actor && g.turn === turn &&
+    g.battle === b && typeof event === 'string' && b.event === event && b.territory === territory &&
+    b.attacker === attacker && b.defender === defender && [attacker, defender].includes(actor) &&
+    !b.revealed && !b.submitted.includes(actor) && mixed.length > 0 &&
+    mixed.every(context => g.mixedBattlePromises.includes(context.promise) && context.promise.event === context.event &&
+      context.promise.asker === context.asker && context.promise.answer === context.answer &&
+      context.promise.mixed === context.mixed && JSON.stringify(context.promise.mixed) === context.signature &&
+      context.promise.player === actor &&
+      context.promise.turn === turn && context.promise.battle === event && context.promise.territory === territory &&
+      !context.promise.fulfilled && !context.promise.released) &&
+    g.mixedBattlePromises.filter(promise => promise.player === actor && promise.turn === turn &&
+      promise.battle === event && promise.territory === territory && !promise.fulfilled && !promise.released).length === mixed.length &&
+    !g.truthtrance && !g.response && !g.decision && !g.phaseOpening && !g.automaticContinuationPending &&
+    !g.roomControl?.paused && !g.roomControl?.closed && !!me &&
+    g.players.find(player => player.id === actor) === me && !me.autopilot
+  );
+  const canPrepare = () => !props.busy && !g.truthtrance && !g.response && !g.decision && !g.phaseOpening &&
+    canUseMixedAssistance() && (!mixedAssistance || b.compliantPreparation === preparation &&
+      b.compliantPreparation?.actions[0] === nextPreparation && JSON.stringify(preparation) === preparationSignature && props.act === act);
+  const canFill = () => !props.busy && canUseMixedAssistance() && (!mixedAssistance ||
+    b.compliantPlan === plan && !b.compliantPreparation && JSON.stringify(plan) === planSignature && props.fill === fill);
   return (
     <section
       className="notice truthtrance-history"
@@ -198,24 +230,18 @@ export function BattlePromises({
               : 'The revival is complete. Resolve its income response before reviewing and sealing the plan.'}{' '}
             Other legal ways to keep your answer remain available.
           </p>
-          {b.compliantPreparation.actions[0] && (
+          {b.compliantPreparation.actions[0] && (!mixedAssistance || mixed.length > 0 && !b.revealed && !b.submitted.includes(actor)) && (
             <Button
               variant="outline"
-              disabled={
-                busy ||
-                !!g.truthtrance ||
-                !!g.response ||
-                !!g.decision ||
-                !!g.phaseOpening
-              }
-              onClick={() => act(b.compliantPreparation!.actions[0])}
+              disabled={!canPrepare()}
+              onClick={() => { if (canPrepare() && nextPreparation) act(nextPreparation); }}
             >
               Complete next preparation
             </Button>
           )}
         </div>
       )}
-      {plan && (
+      {plan && (!mixedAssistance || mixed.length > 0 && !b.revealed && !b.submitted.includes(actor)) && (
         <details>
           <summary>Review a compliant plan · private</summary>
           <p>
@@ -240,7 +266,7 @@ export function BattlePromises({
             These choices satisfy your current commitments. Review and change
             the other elements before sealing your plan.
           </p>
-          <Button variant="outline" disabled={busy} onClick={() => fill(plan)}>
+          <Button variant="outline" disabled={!canFill()} onClick={() => { if (canFill()) fill(plan); }}>
             Fill these plan choices
           </Button>
         </details>

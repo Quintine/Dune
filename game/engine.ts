@@ -1,3 +1,4 @@
+import type { MixedBattleActionClaim, MixedBattleClaim } from './mixed-battle-question';
 import { AllianceExpressionPromiseError, allianceExpressionOutcomes, findAllianceExpressionPlans,
   allianceExpressionPromisesMatch, evaluateAllianceExpression, validateAllianceExpressionPromises,
   type AllianceExpression, type AllianceExpressionClaim, type AllianceExpressionPromise } from './alliance-expression-promises';
@@ -2160,6 +2161,10 @@ export type Game = {
   };
   truthtrance?: TruthWindow | null;
   truthHistory?: TruthRecord[];
+  mixedBattleQuestions?: (Omit<MixedBattleClaim, 'battle'> & {
+    event: string; battle: string; turn: number; player: string; asker: string; answer: boolean;
+    binding: boolean; fulfilled: boolean; released: boolean;
+  })[];
   shipmentPromises?: ShipmentPromise[];
   bidPromises?: BidPromise[];
   /** Raw mixed question linked to one private native current-lot obligation. */
@@ -6932,6 +6937,7 @@ function truthtranceDiscardSignature(g: Game, next: TruthDiscardContinuation) {
     battle: g.battle,
     shipmentPromises: g.shipmentPromises,
     movementPromises: g.movementPromises,
+    ...(next.record.question.kind === 'mixedBattlePlan' ? { mixedBattleQuestions: g.mixedBattleQuestions } : {}),
     ...(['allianceExpression', 'mixedAlliance'].includes(next.record.question.kind) ? {
       allianceExpressionPromises: g.allianceExpressionPromises, alliancePromiseSequence: g.alliancePromiseSequence,
       mixedAllianceQuestions: g.mixedAllianceQuestions,
@@ -27559,10 +27565,68 @@ function bindBattleTruth(
       answer,
     });
 }
+function compileMixedBattle(g: Game, p: Player, claim: MixedBattleClaim, answer: boolean) {
+  const compiled = compileMixedActionExpression(claim.mixed,
+    fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
+  if (compiled.kind === 'constant') return { constant: compiled.value };
+  const plan = (node: CompiledMixedAction<MixedBattleActionClaim>): PlanClaim => {
+    if (node.kind === 'action') return { ...node.action };
+    requireRule(node.kind !== 'constant', 'Retain the privately compiled mixed battle-plan obligation.');
+    return { kind: node.kind, terms: node.terms.map(plan) };
+  };
+  return { residual: plan(compiled) };
+}
+function mixedBattleTruthAnswers(g: Game, p: Player, claim: MixedBattleClaim): TruthAnswer[] {
+  const b = g.battle;
+  if (g.phase !== 6 || !b || claim.battle !== (b.event ?? null) || claim.territory !== b.territory ||
+    ![b.attacker, b.defender].includes(p.id)) return [];
+  const answers: TruthAnswer[] = [];
+  for (const answer of [true, false]) {
+    const compiled = compileMixedBattle(g, p, claim, answer);
+    if (compiled.constant !== undefined ? compiled.constant === answer :
+      battleTruthAnswers(g, p, compiled.residual!).includes(answer ? 'yes' : 'no')) answers.push(answer ? 'yes' : 'no');
+  }
+  return answers.length ? answers : ['unknown'];
+}
+function bindMixedBattleTruth(g: Game, p: Player, claim: MixedBattleClaim, answer: boolean, asker: string) {
+  const b = g.battle;
+  requireRule(b && typeof b.event === 'string' && b.event === claim.battle &&
+    mixedBattleTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
+  'Choose a mixed battle-plan answer compatible with this actual battle and earlier commitments.');
+  const compiled = compileMixedBattle(g, p, claim, answer), event = crypto.randomUUID();
+  const before = b.truthPromises?.length ?? 0;
+  if (compiled.residual) bindBattleTruth(g, p, compiled.residual, answer, asker);
+  const bound = b.truthPromises?.[before];
+  if (bound) bound.event = event;
+  (g.mixedBattleQuestions ??= []).push({ event, battle: b.event, territory: claim.territory, turn: g.turn,
+    mixed: structuredClone(claim.mixed), player: p.id, asker, answer,
+    binding: !!bound, fulfilled: !bound, released: false });
+}
+function reconcileMixedBattleQuestions(g: Game) {
+  const b = g.battle;
+  for (const question of g.mixedBattleQuestions ?? []) {
+    if (!question.binding || question.fulfilled || question.released) continue;
+    if (!b || b.event !== question.battle) { question.released = true; continue; }
+    const bound = b.truthPromises?.find(promise => promise.event === question.event);
+    if (bound?.released) question.released = true;
+    else if (b.revealed && bound) question.fulfilled = true;
+  }
+}
+function isMixedBattleEvent(g: Game, event: string | undefined): boolean {
+  return typeof event === 'string' && !!g.mixedBattleQuestions?.some(question => question.event === event);
+}
+function projectedMixedBattlePromises(g: Game, player: string) {
+  return (g.mixedBattleQuestions ?? []).filter(question => question.player === player).map(question => ({
+    event: question.event, battle: question.battle, territory: question.territory, turn: question.turn,
+    player: question.player, asker: question.asker, mixed: structuredClone(question.mixed), answer: question.answer,
+    fulfilled: question.fulfilled, released: question.released,
+  }));
+}
 function reconcileBattlePromises(
   g: Game,
   voluntary?: { actor: string; action: Action },
 ) {
+  reconcileMixedBattleQuestions(g);
   if (g.pendingKull || g.pendingRicheseBetrayal) return;
   const b = g.battle;
   if (
@@ -27597,6 +27661,7 @@ function reconcileBattlePromises(
       );
     }
   }
+  reconcileMixedBattleQuestions(g);
 }
 function feasiblePrescience(
   g: Game,
@@ -36778,6 +36843,8 @@ function applyActionInner(
         bindBid: bindBidTruth,
         traitorAnswers: traitorTruthAnswers,
         bindTraitor: bindTraitorTruth,
+        mixedBattleAnswers: mixedBattleTruthAnswers,
+        bindMixedBattle: bindMixedBattleTruth,
         battleAnswers: battleTruthAnswers,
         bindBattle: bindBattleTruth,
         cardBlock: transferCardBlock,
@@ -40195,6 +40262,7 @@ function applyActionInner(
           revealPlayerNoField(g, owner, 'battle');
       }
       b.revealed = true;
+      reconcileMixedBattleQuestions(g);
       for (const plan of Object.values(b.plans)) {
         const l = g.players
           .flatMap((p) => p.leaders)
@@ -40605,6 +40673,10 @@ export function viewGame(state: Game, id: string) {
       )
         ? findShipmentCompletion(g, me)
         : null,
+    truthMixedBattleTargets: g.phase === 6 && g.battle ? [g.battle.attacker, g.battle.defender] : [],
+    truthMixedBattleAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
+      g.truthtrance.question.kind === 'mixedBattlePlan' ? mixedBattleTruthAnswers(g, me, g.truthtrance.question) : null,
+    mixedBattlePromises: projectedMixedBattlePromises(g, id),
     truthBattleAnswers:
       g.truthtrance?.stage === 'answer' &&
       g.truthtrance.question?.target === id &&
@@ -41701,7 +41773,7 @@ export function viewGame(state: Game, id: string) {
           ownForces: [b.attacker, b.defender].includes(id)
             ? planCombatForces(g, me, getPlayer(g, b.attacker === id ? b.defender : b.attacker))
             : null,
-          truthPromises: b.truthPromises ?? [],
+          truthPromises: (b.truthPromises ?? []).filter(promise => !isMixedBattleEvent(g, promise.event)),
           compliantPlan:
             completion &&
             !completion.actions.length &&

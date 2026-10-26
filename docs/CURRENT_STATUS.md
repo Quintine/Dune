@@ -16,6 +16,42 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / current facts and current battle plans — 26 October. Prototyped / Partial.**
+Full mixed AND/OR questions freeze current facts and bind only a needed native
+PlanClaim residual. Native dial/support/cards/leader/KH, prior promises, Voice/
+Prescience/preparation/funding remain. Constants and already fixed submitted/
+revealed plans are terminal; open aggregates stay pending through solver/Fill/
+own seal, completing only at actual reveal before synchronous cleanup. Own
+raw history survives the battle without exposing residuals to any public pure
+ledger. Shared editor native16-node/8-child/depth4 limits leave other families'
+defaults unchanged. Exact native assistance, Ask/private answers and four minimal
+profiles connect. Legacy identity initializes only in actual Ask, preserving all
+physical choices; no passive-view migration occurs.
+
+Root integration with disjoint mapping/helper/control/native lanes passes
+**18 files,173/173**, types/lint/build and **nine native paths**,27 GameTable SSR
+renders/five actual Fill callbacks plus one editor callback followed by native
+Ask. Original two-seat Basic base33 beforePlans24 prefixes add8 for actual
+seals/reveal/cleanup, edited true OR/no binding, false AND/real projectile,
+unknown Yes/projectile or No/unarmed, and already sealed/revealed fixed answers.
+A24-prefix adds9 for actual bribe3 E9→6; reveal fulfills then original killed-
+leader1 income ends E7. Original beforePreparation23 adds10 for actual ordinary
+Prescience/weapon answer/sealing. All33 original cards remain physical. Four
+profiles actually answer and seal the private native fallback.
+
+Six strict helper/three shared-budget,17 runtime/funding and nine controlled cases
+supplement existing plan/preparation/fact/other mixed controls. Ordinary private
+preparation without Truthtrance records stays usable. Narrow integration and
+v1 type repairs precede v2's funding expectation repair: original Dr. Yueh's
+actual death earns strength1, preserving native rewards. Complete v3 passes.
+Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-mixed-battle-proof-v3/`;
+journeys/HTML: adjacent `20261026-truth-mixed-battle-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Mixed Traitor/other families, correlated unknowns, wider Advanced/card/Voice/
+Ghola/preparation compositions and final rules/browser/deployed/assurance remain.
+[Authority, native plan interval/budgets and evidence](TRUTHTRANCE_MIXED_BATTLE.md).
+
 **Truthtrance / whole and mixed final Nexus alliances — 26 October. Prototyped / Partial.**
 Full AND/OR partner trees and mixed current facts now retain every compatible
 native consent route. Finite final outcomes reuse the original reciprocal

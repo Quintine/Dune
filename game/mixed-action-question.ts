@@ -12,8 +12,35 @@ export type CompiledMixedAction<A> =
   | { kind: 'action'; action: A }
   | { kind: 'and' | 'or'; terms: CompiledMixedAction<A>[] };
 
-export type MixedActionExpressionLimits = { maxDepth?: number; maxLeaves?: number };
+export type MixedActionExpressionLimits = {
+  maxDepth?: number;
+  maxLeaves?: number;
+  maxNodes?: number;
+  maxTerms?: number;
+};
 export class MixedActionQuestionError extends Error {}
+
+type ExpressionSize = { leaves: number; depth: number; nodes: number; maxTerms: number };
+const leafSize = (): ExpressionSize => ({ leaves: 1, depth: 0, nodes: 1, maxTerms: 0 });
+function groupSize(children: ExpressionSize[]): ExpressionSize {
+  return {
+    leaves: children.reduce((sum, child) => sum + child.leaves, 0),
+    depth: 1 + Math.max(0, ...children.map(child => child.depth)),
+    nodes: 1 + children.reduce((sum, child) => sum + child.nodes, 0),
+    maxTerms: Math.max(children.length, ...children.map(child => child.maxTerms)),
+  };
+}
+function factSize(fact: TruthFact): ExpressionSize {
+  return fact.kind === 'and' || fact.kind === 'or'
+    ? groupSize(fact.terms.map(factSize)) : leafSize();
+}
+
+/** A fact wrapper contributes its actual logical subtree, not a second node. */
+export function mixedActionExpressionSize<A>(mixed: MixedActionExpression<A>): ExpressionSize {
+  if (mixed.kind === 'fact') return factSize(mixed.fact);
+  if (mixed.kind === 'action') return leafSize();
+  return groupSize(mixed.terms.map(mixedActionExpressionSize));
+}
 
 function check(value: unknown, message: string): asserts value {
   if (!value) throw new MixedActionQuestionError(message);
@@ -36,19 +63,31 @@ export function parseMixedActionExpression<A>(
   const maxDepth = limits.maxDepth ?? 4;
   const maxLeaves = limits.maxLeaves ?? 16;
   check(Number.isSafeInteger(maxDepth) && maxDepth >= 0 &&
-    Number.isSafeInteger(maxLeaves) && maxLeaves >= 1,
+    Number.isSafeInteger(maxLeaves) && maxLeaves >= 1 &&
+    (limits.maxNodes === undefined || Number.isSafeInteger(limits.maxNodes) && limits.maxNodes >= 1) &&
+    (limits.maxTerms === undefined || Number.isSafeInteger(limits.maxTerms) && limits.maxTerms >= 2),
   'Choose valid logical depth and clause limits.');
   let leaves = 0;
+  let nodes = 0;
   let hasFact = false;
   let hasAction = false;
   const count = (depth: number, leaf: boolean): void => {
     check(depth <= maxDepth && (!leaf || ++leaves <= maxLeaves),
       `Truthtrance supports at most ${maxLeaves} logical clauses and ${maxDepth} levels of grouping.`);
+    check(limits.maxNodes === undefined || ++nodes <= limits.maxNodes,
+      `Truthtrance supports at most ${limits.maxNodes} logical nodes, including groups.`);
+  };
+  const countTerms = (terms: readonly unknown[]): void => {
+    check(limits.maxTerms === undefined || terms.length <= limits.maxTerms,
+      `Truthtrance supports at most ${limits.maxTerms} terms in each AND/OR group.`);
   };
   const countFact = (fact: TruthFact, depth: number): void => {
     const group = fact.kind === 'and' || fact.kind === 'or';
     count(depth, !group);
-    if (group) for (const term of fact.terms) countFact(term, depth + 1);
+    if (group) {
+      countTerms(fact.terms);
+      for (const term of fact.terms) countFact(term, depth + 1);
+    }
   };
   const parse = (input: unknown, depth: number): MixedActionExpression<A> => {
     const node = record(input);
@@ -72,6 +111,7 @@ export function parseMixedActionExpression<A>(
       (node.kind === 'and' || node.kind === 'or') && Array.isArray(node.terms) &&
       node.terms.length >= 2 && node.terms.length <= maxLeaves,
     'Join two or more current facts or future actions with AND or OR.');
+    countTerms(node.terms);
     return { kind: node.kind, terms: node.terms.map(term => parse(term, depth + 1)) };
   };
   const mixed = parse(value, 0);

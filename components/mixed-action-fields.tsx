@@ -2,7 +2,7 @@
 
 import type { ReactElement, ReactNode } from 'react';
 import type { GameView } from '@/game/engine';
-import { parseMixedActionExpression, type MixedActionExpression } from '@/game/mixed-action-question';
+import { mixedActionExpressionSize, parseMixedActionExpression, type MixedActionExpression } from '@/game/mixed-action-question';
 import type { TruthFact } from '@/game/truthtrance';
 import { truthFactExpressionError } from '@/game/truth-fact-expression';
 import { TruthFactFields, invalidTruthFact } from './mixed-shipment-fields';
@@ -17,6 +17,8 @@ export type MixedActionConfig<A> = {
   fallbackError: string;
   maxLeaves: number;
   maxDepth: number;
+  maxNodes?: number;
+  maxTerms?: number;
   newAction: () => A;
   parseAction: (value: unknown, game: GameView, target: string) => A;
   renderAction: (props: { value: A; id: string; game: GameView; target: string;
@@ -25,21 +27,14 @@ export type MixedActionConfig<A> = {
 
 const newFact = <A,>(): MixedActionExpression<A> => ({ kind: 'fact', fact: { kind: 'hand', name: 'Shield' } });
 const newFactLeaf = (): TruthFact => ({ kind: 'hand', name: 'Shield' });
-function factSize(fact: TruthFact): { leaves: number; depth: number } {
-  if (fact.kind !== 'and' && fact.kind !== 'or') return { leaves: 1, depth: 0 };
-  const sizes = fact.terms.map(factSize);
-  return { leaves: sizes.reduce((sum, child) => sum + child.leaves, 0), depth: 1 + Math.max(0, ...sizes.map(child => child.depth)) };
-}
-function sizeOf<A>(node: MixedActionExpression<A>): { leaves: number; depth: number } {
-  if (node.kind === 'fact') return factSize(node.fact);
-  if (node.kind === 'action') return { leaves: 1, depth: 0 };
-  const sizes = node.terms.map(sizeOf);
-  return { leaves: sizes.reduce((sum, child) => sum + child.leaves, 0), depth: 1 + Math.max(0, ...sizes.map(child => child.depth)) };
-}
 function structuralError<A>(node: MixedActionExpression<A>, config: MixedActionConfig<A>): string | null {
-  const size = sizeOf(node);
+  const size = mixedActionExpressionSize(node);
   if (size.leaves > config.maxLeaves || size.depth > config.maxDepth)
     return 'Use at most sixteen conditions and four levels of grouping.';
+  if (config.maxNodes !== undefined && size.nodes > config.maxNodes)
+    return `Use at most ${config.maxNodes} total clauses, including groups.`;
+  if (config.maxTerms !== undefined && size.maxTerms > config.maxTerms)
+    return `Use at most ${config.maxTerms} conditions in each AND/OR group.`;
   if (node.kind === 'fact') return truthFactExpressionError(node.fact);
   if (node.kind === 'action') return null;
   if (node.terms.length < 2) return 'Join two or more conditions with AND or OR.';
@@ -60,7 +55,9 @@ export function mixedActionInputError<A>(value: unknown, game: GameView, target:
       if (error) throw new Error(error);
       if (invalidTruthFact(fact, game, target)) throw new Error('Resolve the marked current-fact fields.');
       return fact;
-    }, input => config.parseAction(input, game, target), { maxDepth: config.maxDepth, maxLeaves: config.maxLeaves });
+    }, input => config.parseAction(input, game, target), { maxDepth: config.maxDepth, maxLeaves: config.maxLeaves,
+      ...(config.maxNodes === undefined ? {} : { maxNodes: config.maxNodes }),
+      ...(config.maxTerms === undefined ? {} : { maxTerms: config.maxTerms }) });
     return null;
   } catch (error) {
     return error instanceof Error ? error.message : config.fallbackError;
@@ -79,7 +76,7 @@ export function MixedActionFields<A>({ value, game, target, disabled, onChange, 
 }) {
   const newAction = (): MixedActionExpression<A> => ({ kind: 'action', action: config.newAction() });
   const attrs = (suffix: string, value: string) => ({ [`data-${config.prefix}-${suffix}`]: value });
-  const size = sizeOf(value), error = mixedActionInputError(value, game, target, config);
+  const size = mixedActionExpressionSize(value), error = mixedActionInputError(value, game, target, config);
   const commit = (next: MixedActionExpression<A>) => {
     if (!disabled && !structuralError(next, config)) onChange(next);
   };
@@ -171,9 +168,11 @@ export function MixedActionFields<A>({ value, game, target, disabled, onChange, 
       AND requires every condition; OR requires at least one. No makes the whole grouped claim false, not necessarily every condition.
       Only the aggregate answer is shared; an unknown current fact can still allow a definite whole answer.</p>
     <p className="fine">{config.actionHelp}</p>
-    <p className="fine">App input limits: {config.maxLeaves} conditions and {config.maxDepth} levels of grouping.
+    <p className="fine">App input limits: {config.maxNodes === undefined ? `${config.maxLeaves} conditions` : `${config.maxNodes} total clauses, including groups`}
+      {config.maxTerms !== undefined && `, ${config.maxTerms} conditions per group`} and {config.maxDepth} levels of grouping.
       These are input limits, not additional printed rules.</p>
-    <p className="fine">{size.leaves} / {config.maxLeaves} conditions · {size.depth} / {config.maxDepth} levels of grouping</p>
+    <p className="fine">{config.maxNodes === undefined ? `${size.leaves} / ${config.maxLeaves} conditions`
+      : `${size.nodes} / ${config.maxNodes} total clauses`} · {size.depth} / {config.maxDepth} levels of grouping</p>
     {error && <p role="alert">{error}</p>}
     {render(value, '1', next => next)}
   </fieldset>;

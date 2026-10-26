@@ -14,6 +14,8 @@ export type PlanClaim =
   | { kind: 'kwisatz'; use: boolean }
   | { kind: 'and' | 'or'; terms: PlanClaim[] };
 export type BattlePromise = {
+  /** Optional link for new mixed questions; older pure records retain their shape. */
+  event?: string;
   player: string;
   asker: string;
   claim: PlanClaim;
