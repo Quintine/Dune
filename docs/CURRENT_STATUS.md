@@ -20,6 +20,29 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**CHOAM total support income — 27 October. Prototyped / Partial.**
+Advanced income now adds eligible support before rounding down once:3+5 yields4
+and3+3 yields3. Original `support - allyPayment` eligibility retains Arrakeen's
+Bank contribution and CHOAM-own/ally exclusions. Payments, free support, Traitor
+suppression, native aftermath and Karama paths are unchanged; this is separate
+from Banker/Bureaucrat per-invoice rules. Already queued receipts retain their
+recorded amounts. [Source and scope](CHOAM_SUPPORT_INCOME.md).
+
+Frozen **4 affected files, 71/71**, types/lint/build and two controlled battle
+programmes pass. 13 actual choose/plan/Traitor/response/closing packets and
+6 GameTable SSR renders verify automatic4 once and cancelable4 with unchanged
+combatant debits3/5. The existing unit source assigns phase/wallets/forces and
+zero-strength leaders, with a conserved original Karama in one case; this is
+explicitly controlled evidence, not native original setup/full-game proof.
+No control callbacks are claimed. New quote/engine odd-total regressions retain
+the original subsidy, aid, Traitor, explosion and free-support scenarios.
+
+The existing server returned HTTP200 without restart. No database or saved-game
+operation. Full modes, wider compositions and final rules/recovery/privacy/
+browser/deployed acceptance remain. Proof:
+`/home/quintine/.local/share/dune/checkpoints/20261027-choam-support-income-proof-v1/`;
+journeys/HTML: adjacent `20261027-choam-support-income-runtime/run/`.
+
 **Advanced Charity player order — 27 October. Prototyped / Partial.**
 New Advanced phases proceed from the First Player counterclockwise. Only the
 current seat may claim or Finish; CHOAM income and wealthy BG responses retain
@@ -72,18 +95,12 @@ Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-ix-starting-pool-p
 journeys/HTML: adjacent `20261027-ix-starting-pool-runtime/run/`.
 [Source contract](IX_PROTOTYPE.md#advanced-starting-draft-source-cutover--27-october-2026).
 
-**Next source-identified functions:** CHOAM's total-support rounding
-(supplied physical29 F) and Family Atomics' full timing/sector/removal contract
-(physical39; the revision's stricter requirements remain Advanced-only after
-bounded Basic comparison). The bounded CHOAM source comparison supports a
-rounding-only correction: retain eligible `support - allyPayment`, including
-Arrakeen's expressly sourced Bank contribution; preserve CHOAM-own/CHOAM-aid
-exclusions and free-force support. Aggregate before flooring; unrelated
-Banker/Bureaucrat per-invoice rulings stay distinct. This is next implementation,
-not a passed new effect. Charity Sapho composition waits for the interaction pass.
-These findings are concrete divergences, not a complete rules audit. The bounded
-six-classic-faction pass found connected independent functions; optional modules,
-interactions and final acceptance remain open.
+**Next source-identified function:** Family Atomics' full timing/sector/removal
+contract (supplied physical39). The revision's stricter requirements remain
+Advanced-only after bounded Basic comparison. Charity Sapho composition remains
+for the interaction pass. These findings are concrete divergences, not a complete
+rules audit. The bounded six-classic-faction pass found connected independent
+functions; optional modules, interactions and final acceptance remain open.
 
 **Native E3 trained capture — 27 October. Prototyped / Partial.**
 Fresh bare Advanced E3/all14 setups now connect Harkonnen with actual Ecaz

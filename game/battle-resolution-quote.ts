@@ -670,16 +670,19 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     }
   const choam = input.participants.find((p) => p.faction === 'choam');
   // Preserve existing source-backed income, including Stronghold bank support;
-  // CHOAM's prepaid ally contribution is excluded from this receipt.
+  // CHOAM's prepaid ally contribution is excluded from this receipt. The
+  // adopted Advanced source rounds once after totaling the eligible support.
   const choamAmount =
     input.advanced && choam && !ac && !dc
-      ? [a, d].reduce(
-          (sum, s) =>
-            sum +
-            (s.id === choam.id
-              ? 0
-              : Math.floor((s.plan.support - (s.plan.allyPayment ?? 0)) / 2)),
-          0,
+      ? Math.floor(
+          [a, d].reduce(
+            (sum, s) =>
+              sum +
+              (s.id === choam.id
+                ? 0
+                : s.plan.support - (s.plan.allyPayment ?? 0)),
+            0,
+          ) / 2,
         )
       : 0;
   const result =

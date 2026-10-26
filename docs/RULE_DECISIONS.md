@@ -1,5 +1,15 @@
 # Rule decision index
 
+## CHOAM total support rounding — 27 October 2026
+
+Supplied Advanced physical29/printed27 F calls for half the total eligible
+force-support spice, rounded down once. Move the floor outside the existing
+non-CHOAM `support - allyPayment` sum. Retain Arrakeen's publisher-confirmed Bank
+contribution, CHOAM's own/ally exclusions, free support and original payment/
+Traitor/cancellation paths. This is the adopted source correction, distinct
+from existing Banker/Bureaucrat per-invoice rulings. Wider hypothetical funding
+and discount combinations remain unverified. [Source and scope](CHOAM_SUPPORT_INCOME.md).
+
 ## Advanced Charity player order — 27 October 2026
 
 Supplied physical8/printed6 expressly begins Charity with the First Player and

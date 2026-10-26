@@ -297,6 +297,17 @@ void test('Habbanya selects ordinary and Stone ties; canceled free-support and e
     { normal: 2, elite: 1, paidNormal: 0, paidElite: 0 },
   ]);
 });
+void test('CHOAM quotes half of the total other-faction support with one final floor', () => {
+  const g = input();
+  g.participants = [...g.participants, { id: 'c', faction: 'choam' }];
+  g.attacker.plan.dial = g.attacker.plan.support = 3;
+  g.defender.plan.dial = g.defender.plan.support = 5;
+  const before = structuredClone(g), q = quoteBattleResolution(g);
+  assert.deepEqual(q.choamIncome, { owner: 'c', amount: 4 });
+  assert.deepEqual(q.payments.map(payment => payment.ownPayment), [3, 5]);
+  assert.deepEqual(q.payments.map(payment => payment.bankSupport), [0, 0]);
+  assert.deepEqual(g, before);
+});
 void test('funding consumes explicit current escrow and includes Stronghold bank support in CHOAM income without debiting the bank or donor twice', () => {
   const g = input();
   g.participants = [

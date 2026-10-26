@@ -4747,16 +4747,17 @@ export const RULE_TOPICS: RuleTopic[] = [
     title: 'CHOAM combat funding and force income',
     category: 'Advanced & expansions',
     coverage: 'Partial',
+    developmentStage: 'Prototyped',
     summary:
       'Finance an ally’s supported forces and receive a share of other players’ combat payments.',
     steps: [
       'In advanced play, CHOAM may pay some or all of its ally’s force support. At the start of an allied battle, choose the amount of unspent spice to reserve for the phase. CHOAM can update this pledge during ordinary Battle controls. Only a current mutual ally may use it.',
       'A Karama response can prevent allied funding for the current battle. Reserved spice stays with the pledge, but the ally must plan with its own funds. Later battles get a fresh response and may use the remaining pledge.',
       'When sealing a plan, choose total spice support and optionally CHOAM’s share. With no explicit share, your own spice is used first and the pledge covers the shortfall. The chosen amounts remain reserved until resolution; CHOAM cannot withdraw a committed share. Unspent pledged spice returns at the end of Battle, after the closing market.',
-      'When other players pay for battle forces, CHOAM receives half of each player’s actual payment, rounded down. Its own force payments and any spice it supplies for its ally go to the bank without generating a rebate. For example, payments of three and five from two other players produce one plus two spice for CHOAM.',
+      'When other factions support battle forces, add the eligible support from both sides, then halve the total and round down once. Payments of three and five produce four spice for CHOAM. Retain the Arrakeen Bank contribution, while excluding CHOAM’s own support and the spice it supplies for its ally. Free-supported forces and separate battle-strength spending add no support spice.',
       'Any revealed traitor prevents all CHOAM force-payment income from that battle. A sole traitor winner pays no support, including its pledged allied share. If both sides reveal traitors, both pay their support but CHOAM still gets no income. A lasgun–shield explosion without a traitor still pays support and generates income.',
       'After casualty and winner-card choices, a separate Karama response precedes CHOAM’s income. Cancellation sends the amount to the bank and does not refund the combatants. Complete the response before post-battle technology, capture and Face Dancer rewards continue.',
-      'Pledges and unrevealed payment splits stay private to their authorized viewers. Battle guides and all four AI levels account for reserved allied funds when finding legal plans. The precise ordering with later expansion powers, rounding across simultaneous payers, allied-payment interpretation and the alliance cancellation window remain under final audit. CHOAM starts stay disabled pending its remaining powers.',
+      'Pledges and unrevealed payment splits stay private to their authorized viewers. Battle guides and all four AI levels account for reserved allied funds when finding legal plans. The precise ordering with later expansion powers, wider allied-payment compositions and the alliance cancellation window remain under final audit. CHOAM starts remain previews; complete faction and combination acceptance is unfinished.',
     ],
     related: [
       'faction-choam',
@@ -4765,6 +4766,13 @@ export const RULE_TOPICS: RuleTopic[] = [
       'battle',
       'card-karama',
       'card-truthtrance',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Support income floors the eligible battle total once; original support, Arrakeen contribution, allied exclusions, Traitor and aftermath rules remain.', evidence: ['game/battle-resolution-quote.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Existing funding, plan and cancellation controls retain automatic uncontested income; no extra collection confirmation.', evidence: ['components/choam-battle-funding.tsx', 'components/game-table.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Existing minimal policies use shared resolution and payment rules; strategy/calibration remain deferred.', evidence: ['game/bots.ts', 'tests/choam-combat.test.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'Adopted total-rounding source and unchanged native eligible support are explicit.', evidence: ['docs/CHOAM_SUPPORT_INCOME.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused quote/payment regressions cover odd support sums and existing exclusions; full modes, wider compositions and deployed acceptance remain.', evidence: ['tests/battle-resolution-quote.test.ts', 'tests/choam-combat.test.ts'] },
     ],
   },
   {

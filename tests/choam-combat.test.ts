@@ -196,16 +196,28 @@ void test('the ally can choose CHOAM to pay despite having its own spice; forged
   assert.equal(result.response, null);
   assert.equal(player(result, 'c').spice, 7); // Six after funding, plus one from opponent; no self rebate.
 });
-void test('income rounds down each other player payment and is collected only once after combat choices', () => {
+void test('income rounds down the combined support and is collected only once after combat choices', () => {
   let g = settle(plan(plan(start(fixture(false)), 'g', 3), 'e', 3));
   assert.equal(g.response, null);
-  assert.equal(player(g, 'c').spice, 12); // No cancellation choice: income settles immediately.
+  assert.equal(player(g, 'c').spice, 13); // Half of 3 + 3; uncontested income settles immediately.
+  assert.equal(player(g, 'g').spice, 7);
+  assert.equal(player(g, 'e').spice, 7);
   g = allow(g);
-  assert.equal(player(g, 'c').spice, 12);
+  assert.equal(player(g, 'c').spice, 13);
   assert.equal(g.pendingChoamBattleIncome, null);
   assert.equal(g.decision?.kind, 'choamMarket');
   g = send(g, 'c', { type: 'decision', done: true });
-  assert.equal(player(g, 'c').spice, 12);
+  assert.equal(player(g, 'c').spice, 13);
+});
+void test('two other combatants paying three and five yield four CHOAM income without changing either debit', () => {
+  let g = settle(plan(plan(start(fixture(false)), 'g', 3), 'e', 5));
+  assert.equal(player(g, 'c').spice, 14);
+  assert.equal(player(g, 'g').spice, 7);
+  assert.equal(player(g, 'e').spice, 5);
+  assert.equal(g.pendingChoamBattleIncome, null);
+  assert.equal(g.decision?.kind, 'choamMarket');
+  g = send(g, 'c', { type: 'decision', done: true });
+  assert.equal(player(g, 'c').spice, 14);
 });
 void test('Karama redirects just this battle income to the bank without refunding force payments', () => {
   const initial = fixture(false);

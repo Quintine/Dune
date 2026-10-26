@@ -1,5 +1,29 @@
 # Dune implementation status
 
+## 27 October 2026 — CHOAM aggregate support rounding
+
+Prototyped / Partial. Advanced income now adds eligible support before rounding down once:3+5 yields4
+and3+3 yields3. Original `support - allyPayment` eligibility retains Arrakeen's
+Bank contribution and CHOAM-own/ally exclusions. Payments, free support, Traitor
+suppression, native aftermath and Karama paths are unchanged; this is separate
+from Banker/Bureaucrat per-invoice rules. Already queued receipts retain their
+recorded amounts. [Source and scope](CHOAM_SUPPORT_INCOME.md).
+
+Frozen **4 affected files, 71/71**, types/lint/build and two controlled battle
+programmes pass. 13 actual choose/plan/Traitor/response/closing packets and
+6 GameTable SSR renders verify automatic4 once and cancelable4 with unchanged
+combatant debits3/5. The existing unit source assigns phase/wallets/forces and
+zero-strength leaders, with a conserved original Karama in one case; this is
+explicitly controlled evidence, not native original setup/full-game proof.
+No control callbacks are claimed. New quote/engine odd-total regressions retain
+the original subsidy, aid, Traitor, explosion and free-support scenarios.
+
+The existing server returned HTTP200 without restart. No database or saved-game
+operation. Full modes, wider compositions and final rules/recovery/privacy/
+browser/deployed acceptance remain. Proof:
+`/home/quintine/.local/share/dune/checkpoints/20261027-choam-support-income-proof-v1/`;
+journeys/HTML: adjacent `20261027-choam-support-income-runtime/run/`.
+
 ## 27 October 2026 — Ordered Advanced Charity
 
 Prototyped / Partial. New Advanced phases proceed from the First Player counterclockwise. Only the
