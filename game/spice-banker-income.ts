@@ -8,6 +8,8 @@ export type BankerIncomeSourceKind =
   | 'leader-revival'
   | 'kh-revival'
   | 'emperor-extra-revival'
+  | 'ambassador-placement'
+  | 'kaitain-disposal'
   | 'battle-support';
 export type BankerIncomeContext = {
   turn: number;
@@ -66,7 +68,8 @@ export class BankerIncomeError extends Error {
 const LIMIT = 50_000;
 const sourcePhases: Record<BankerIncomeSourceKind, number> = {
   auction: 3, shipment: 5, 'force-revival': 4, 'leader-revival': 4,
-  'kh-revival': 4, 'emperor-extra-revival': 4, 'battle-support': 6,
+  'kh-revival': 4, 'emperor-extra-revival': 4, 'ambassador-placement': 4,
+  'kaitain-disposal': 3, 'battle-support': 6,
 };
 const text = (value: unknown): value is string =>
   typeof value === 'string' && value.length > 0 && value.length <= 512 && value.trim() === value;

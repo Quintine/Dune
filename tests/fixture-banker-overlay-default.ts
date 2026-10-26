@@ -4,7 +4,7 @@ import {
   viewGame, type Action, type Game, type Player,
 } from '../game/engine';
 import { TERRITORIES } from '../game/board';
-import { botEntryAllowed } from '../game/bot-mobility';
+import { botEntryAllowed, botGroundMoveAllowed, groundMoveRouteDistance } from '../game/bot-mobility';
 import { reserveShipmentCost } from '../game/shipment-price';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import type { Card } from '../game/cards';
@@ -28,7 +28,7 @@ export type BankerOverlayOptions = {
   semuta?: BankerOverlaySemuta;
 };
 export type BankerOverlayPlan = {
-  /** Play Atreides' conserved printed Hajr when its own movement begins. */
+  /** Basic plays at own movement; Advanced first completes an actual movement. */
   hajr?: boolean;
   /** Seat committing its own printed Semuta Drug at that fresh discard; null passes. */
   claim?: string | null;
@@ -154,6 +154,20 @@ export function nextBankerOverlayNativeStep(
     const holder = game.players.find(player => player.id === 'a' && player.id === game.active &&
       !game.hajr.includes(player.id) && player.hand.some(card => card.effect === 'hajr'));
     if (holder) {
+      if (game.advanced && (holder.hajrWindow?.turn !== game.turn || holder.hajrWindow.move !== holder.moved)) {
+        assert.equal(holder.moved, 0,
+          'Earn the original immediate Hajr opportunity with the still-unused first Force Movement.');
+        const own = viewGame(game, holder.id), seat = own.players.find(player => player.id === holder.id)!;
+        const movement = Object.entries(holder.forces).filter(([key, count]) => count > (holder.elites?.forces[key] ?? 0))
+          .flatMap(([from]) => TERRITORIES.filter(destination => destination.type === 'sand' &&
+            !game.players.some(player => Object.keys(player.forces).some(key => key.startsWith(`${destination.id}:`))) &&
+            !Object.keys(game.spice).some(key => key.startsWith(`${destination.id}:`) && game.spice[key] > 0))
+            .flatMap(destination => destination.sectors.map(sector => ({ from, territory: destination.id, sector }))))
+          .find(move => groundMoveRouteDistance(own, seat, move.from, `${move.territory}:${move.sector}`) === 1 &&
+            botGroundMoveAllowed(own, seat, move.from, `${move.territory}:${move.sector}`, 0));
+        assert.ok(movement, 'The original Atreides army must have a clear adjacent empty sand destination.');
+        return { actor: holder.id, action: { type: 'move', ...movement, amount: 1, elite: 0 } };
+      }
       const card = holder.hand.find(candidate => candidate.effect === 'hajr')!;
       return { actor: holder.id, action: { type: 'card', card: card.id } };
     }
@@ -378,11 +392,13 @@ export function shipBankerOverlayIncome(fixture: BankerOverlayFixture): Game {
   return advanceBankerOverlay(game, bankerOverlayClean, { hajr: false, claim: null });
 }
 
-/** Reach the holder's own movement turn, play the conserved printed Hajr, and
- * assert the registered Semuta overlay offers its reaction on that fresh discard. */
-export function openBankerOverlayHajr(state: Game, fixture: BankerOverlayFixture): Game {
+/** Reach the holder's own movement turn, complete the first real movement in
+ * Advanced, then play Hajr immediately after its original arrival finishes.
+ * Basic retains its original timing. No immediate-use window is installed. */
+export function openBankerOverlayHajr(state: Game, fixture: BankerOverlayFixture,
+  actions?: RicheseSkillsTechStep[]): Game {
   const game = advanceBankerOverlay(state, candidate => !!candidate.pendingTreacheryDiscard,
-    { hajr: true, claim: null });
+    { hajr: true, claim: null }, actions);
   const pending = game.pendingTreacheryDiscard;
   assert.ok(pending, 'The conserved printed Hajr must produce one real fresh discard.');
   assert.equal(pending.continuation.kind, 'ordinaryCardDiscard');

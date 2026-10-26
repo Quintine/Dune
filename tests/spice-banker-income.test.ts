@@ -149,7 +149,8 @@ void test('concealed battle trainer needs actual revealed selection and resolved
 void test('all named native producer kinds are phase-bound and empty bank settlement never triggers', () => {
   const kinds = [
     ['auction', 3], ['shipment', 5], ['force-revival', 4], ['leader-revival', 4],
-    ['kh-revival', 4], ['emperor-extra-revival', 4], ['battle-support', 6],
+    ['kh-revival', 4], ['emperor-extra-revival', 4], ['ambassador-placement', 4],
+    ['kaitain-disposal', 3], ['battle-support', 6],
   ] as const;
   for (const [kind, phase] of kinds) {
     const ctx = context(1, phase);
@@ -160,6 +161,79 @@ void test('all named native producer kinds are phase-bound and empty bank settle
     authority.phase = phase === 3 ? 4 : 3;
     assert.throws(() => validateBankerIncomeSource(ctx, authority), BankerIncomeError);
   }
+});
+void test('Ambassador placement and Kaitain disposal require one atomic four-spice other-payer BANK leg', () => {
+  for (const [kind, phase] of [['ambassador-placement', 4], ['kaitain-disposal', 3]] as const) {
+    const ctx = context(1, phase);
+    let state = createBankerIncomeState(ctx);
+    for (const event of ['first-two', 'second-two']) {
+      state = earn(state, ctx, { ...source(ctx, event, 2), kind });
+    }
+    assert.deepEqual(projectBankerIncome(state, ctx), { deferred: [], usedThisPhase: [] });
+    const split = { ...source(ctx, 'two-other-payers'), kind };
+    split.bankLegs = [{ payer: 'b', amount: 2 }, { payer: 'c', amount: 2 }];
+    state = earn(state, ctx, split);
+    assert.equal(state.sources[2].grant, null);
+    state = earn(state, ctx, { ...source(ctx, 'atomic-four'), kind });
+    state = earn(state, ctx, { ...source(ctx, 'later-five', 5), kind });
+    assert.equal(state.sources[3].grant?.amount, 1);
+    assert.equal(state.sources[4].grant, null);
+    assert.deepEqual(projectBankerIncome(state, ctx), {
+      deferred: [{ owner: 'a', amount: 1 }], usedThisPhase: ['a'],
+    });
+  }
+});
+void test('new native BANK sources do not pay the owner, an unrevealed trainer or a captive normal band', () => {
+  for (const [kind, phase] of [['ambassador-placement', 4], ['kaitain-disposal', 3]] as const) {
+    const ctx = context(1, phase);
+    const state = createBankerIncomeState(ctx);
+    const self = { ...source(ctx, 'own-bank-payment', 4, 'a'), kind };
+    const noBankPayment = { ...source(ctx, 'no-bank-leg', 0), kind };
+    const noTrainer = { ...source(ctx, 'no-trainer'), kind, trainer: null };
+    const unrevealed = { ...source(ctx, 'unrevealed-trainer'), kind };
+    unrevealed.trainer!.faceUp = false;
+    for (const authority of [self, noBankPayment, noTrainer, unrevealed]) {
+      assert.equal(quoteBankerIncome(state, ctx, authority).receipt.grant, null);
+    }
+    const captiveContext = context(1, phase);
+    captiveContext.players[0].leaders[0].capturedBy = 'b';
+    const captive = { ...source(captiveContext, 'captive-trainer'), kind };
+    captive.trainer!.captured = true;
+    assert.equal(quoteBankerIncome(state, captiveContext, captive).receipt.grant, null);
+    const absentContext = context(1, phase);
+    absentContext.assignments = [];
+    immutableReject(state, () => quoteBankerIncome(state, absentContext, { ...source(ctx), kind }));
+  }
+});
+void test('Kaitain, new Ecaz placement and shipment earn once per phase into the same deferred Mentat pile', () => {
+  const auctionContext = context(1, 3);
+  let state = earn(createBankerIncomeState(auctionContext), auctionContext,
+    { ...source(auctionContext, 'kaitain-four'), kind: 'kaitain-disposal' });
+  state = earn(state, auctionContext, source(auctionContext, 'later-auction-five', 5));
+  assert.equal(state.sources[1].grant, null);
+  const revivalContext = context(1, 4);
+  state = earn(state, revivalContext,
+    { ...source(revivalContext, 'ecaz-placement-four'), kind: 'ambassador-placement' });
+  state = earn(state, revivalContext,
+    { ...source(revivalContext, 'later-leader-revival-five', 5), kind: 'leader-revival' });
+  assert.equal(state.sources[3].grant, null);
+  const movementContext = context(1, 5);
+  for (const event of ['first-shipment-five', 'later-shipment-five']) {
+    state = earn(state, movementContext, { ...source(movementContext, event, 5), kind: 'shipment' });
+  }
+  assert.equal(state.sources[5].grant, null);
+  assert.equal(state.version, 1);
+  assert.deepEqual(projectBankerIncome(state, movementContext), {
+    deferred: [{ owner: 'a', amount: 3 }], usedThisPhase: ['a'],
+  });
+  immutableReject(state, () => quoteBankerIncomeCollection(state, movementContext, opening));
+  const mentat = context(1, 8);
+  const restored = JSON.parse(JSON.stringify(state)) as BankerIncomeState;
+  validateBankerIncomeState(restored, mentat);
+  const collection = quoteBankerIncomeCollection(restored, mentat, opening);
+  assert.deepEqual(collection.credits, [{ owner: 'a', amount: 3 }]);
+  assert.deepEqual(collection.collection.grants, [1, 3, 5]);
+  assert.deepEqual(projectBankerIncome(collection.next, mentat), { deferred: [], usedThisPhase: [] });
 });
 void test('native Mentat atomically collects every original-owner grant once despite trainer/card changes', () => {
   const ctx = context();

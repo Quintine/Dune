@@ -26591,6 +26591,9 @@ function decideBiddingEnd(g: Game, p: Player, action: Action) {
     p.spice -= quote.cost;
     const entries = quote.cards.map((card) => ({ card: discard(g, p, card.id),
       discardedBy: p.id, publicFace: false }));
+    awardBankerIncome(g, bankerIncomePayment(g, 'kaitain-disposal', [
+      { payer: p.id, amount: quote.cost, recipient: 'bank' },
+    ]));
     log(g, `${p.name} paid ${quote.cost} spice to the bank and discarded ${entries.length} Treachery Card${entries.length === 1 ? '' : 's'} through high-population Kaitain. No new auction begins.`,
       { faction: p.faction, name: 'Kaitain disposal' });
     stageTreacheryDiscard(g, 'kaitain', entries, { kind: 'kaitainDiscard',
@@ -33982,6 +33985,9 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       );
       owner.spice -= quote.cost;
       g.ecazAmbassadors = quote.state;
+      awardBankerIncome(g, bankerIncomePayment(g, 'ambassador-placement', [
+        { payer: owner.id, amount: quote.cost, recipient: 'bank' },
+      ]));
       g.pendingEcazPlacement = null;
       log(
         g,

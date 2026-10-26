@@ -43,6 +43,12 @@ selected card. A stale or invalid selection must spend nothing. The batch is an
 implementation transaction, not a new printed once-only restriction. No extra
 auction begins because disposal opened a hand slot after auctions ended.
 
+The 27 October Banker input connects this actual Bank invoice to the normal
+skill: two cards selected together cost four and may earn one deferred spice
+for a different eligible trainer. Two separate one-card payments do not add to
+four. Original disposal costs/custody and the phase cap stay authoritative.
+[Payment/collection contract](SPICE_BANKER_RUNTIME.md#native-placement-and-disposal-payments--27-october-2026).
+
 The payment is disposal expenditure, not a card purchase, shipment or battle
 support payment. No retrieved rule names a faction recipient: bank payment with
 no commercial-income response is the implementation inference. Separate

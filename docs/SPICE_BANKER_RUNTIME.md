@@ -1,5 +1,77 @@
 # Spice Banker battle commitment and normal income prototypes
 
+## Native placement and disposal payments — 27 October 2026
+
+**Prototyped / Partial.** Ordinary Banker now receives two previously omitted
+native Bank invoices: an accepted Ecaz Ambassador placement in Revival and an
+accepted high-Kaitain selected-card disposal at Bidding's end. The photographed
+publisher Banker face, reread from the archived fourteen-card image, grants
+one deferred spice when another player pays at least four to the Bank, once
+per phase. It names no exclusion for these payment purposes. This applies the
+existing normal band; it introduces no new payment, optional claim or response.
+See [card provenance](LEADER_SKILLS_RULES.md#sources-and-local-evidence).
+
+Ecaz's current placement price is the next number in its native sequence.
+Declaring a cost-four placement does not pay it or grant income. Re-quote and
+commit the actual allowed four-spice Bank payment and physical token first;
+Karama denial spends no placement fee and grants no Banker spice. Prior
+one/two/three-spice placements remain separate invoices and do not add to four.
+Further qualifying placements in that phase reuse the physical card's cap.
+
+Kaitain retains its [existing atomic disposal transaction](HOMEWORLD_CARD_ECONOMY_RULES.md#kaitain-implementation-contract)
+and inferred Bank recipient: two selected cards cost four in one invoice,
+while two separate one-card actions pay two each and do not combine. Actual
+payment and physical discards precede the grant; later native discard children
+do not undo or replay that payment. Neither normal disposal nor its Banker
+grant opens a Karama window against the immune Homeworld power.
+
+Both sources use the existing version1 ledger and actual living native
+trainer, per-payer threshold and once-per-phase eligibility. A grant cannot
+finance its own fee or a later action. The public front-shield notice displays
+the unavailable pile; native Mentat collects it once. Existing historical
+receipts retain their format, and no old missed income is reconstructed.
+Foreign-ghola purchases already use their common paid-revival invoice; Rihani
+draw/exchange pays no Bank fee. This bounded source check does not certify
+every possible payment interaction or complete modes.
+
+Focused paths: [income rule](../game/spice-banker-income.ts),
+[native fixtures](../tests/fixture-banker-native-payments.ts),
+[native cases](../tests/banker-native-payments-runtime.test.ts),
+[public pile](../components/spice-banker-income.tsx).
+Accepted Ecaz Ambassador fees and high-Kaitain atomic disposal invoices now
+supply ordinary Banker income. Declaration/cancellation and self-payments earn
+nothing; separate small invoices do not aggregate. The physical phase cap,
+unavailable front-shield pile and original automatic Mentat collection remain.
+Kaitain retains its existing Bank-recipient/atomic-transaction interpretation.
+
+Frozen **17 affected files, 187/187**, types/lint/build and three native
+programmes pass. Fresh supported Skills preview initialization supplies actual
+Banker offers/training and World custody. Original cheap Emperor purchases
+supply held cards; actual poison disposal earns Ecaz's fifth-placement funding.
+No played hand, wallet, army, phase or future income receipt is installed.
+
+Runtime records 32 GameTable SSR renders, 16 placement renders,
+6 front-shield renders, 13 actual placement callbacks and 3 finish
+callbacks. 4 Kaitain actions use the native shared quote/engine; its stateful
+button was not operated. Recorded arrays supply aggregate source/further counts
+101/63; the preview initializer and inherited World-selection action
+are explicitly outside those recorded counts. No public-start claim is made.
+
+Twelve new native cases and three helper regressions cover actual thresholds,
+pending/denied/stale packets, real Karama cancellation, self-exclusion, a
+funded fifth placement, cross-phase grants and four legal Collection policies.
+Related feedback repairs three old Advanced Semuta fixture paths by completing
+one real Force Movement before Hajr; product timing is unchanged.
+
+The existing local server returned HTTP200 without restart. No HTTP/storage
+boundary, saved-game/database or deployed operation changes. This is local
+native/SSR/callback evidence, not browser hydration or complete modes.
+Wider interactions and final rules/recovery/privacy/deployed acceptance remain.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-banker-native-payments-proof-v2/`;
+journeys/HTML: adjacent `20261027-banker-native-payments-runtime/run/`.
+
+
 ## Mandatory ordinary Skills default — 17 October 2026
 
 Fresh supported all-fourteen Leader Skills setups now include normal Banker

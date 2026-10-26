@@ -1,5 +1,16 @@
 # Rule decision index
 
+## Banker on native placement and disposal — 27 October 2026
+
+Apply the printed normal Bank-four threshold to accepted Ecaz Ambassador fees
+and high-Kaitain disposal invoices. Declaration or cancellation supplies no
+paid Ecaz fee. Kaitain retains its existing inferred Bank recipient and atomic
+selected-group transaction; separate small payments do not aggregate. One
+physical Banker grants at most once in each phase and keeps the gain unavailable
+until native Mentat. This is ordinary skill/effect composition, not a new
+publisher combined-effect ruling or a retrospective award to old games.
+[Source and exact boundaries](SPICE_BANKER_RUNTIME.md#native-placement-and-disposal-payments--27-october-2026).
+
 ## Individual Southern revival allocation — 27 October 2026
 
 Under the 14 October recommended-option authority, fresh Basic multi-Fedaykin
