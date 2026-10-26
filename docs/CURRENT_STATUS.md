@@ -20,6 +20,38 @@ open mode gates.
 Continue remaining Basic functions before Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance / printed flight and pre-leader cards — 27 October. Prototyped / Partial.**
+Ornithopter counts its accepted initial physical declaration, with actual
+Movement-end closure and no credit for later groups/disposal. Residual Poison
+counts actual native random death/disposal through turn end. Neither predicate
+selects a flight mode/destination or victim. Shared payment/action funding,
+No guards, exact human controls and four legal profiles connect.
+
+Frozen **25 affected files, 367/367**, types/lint/build and four runtime
+groups/seven genuine native programmes pass. Actual Basic/Advanced setup,
+original Truth deals, cache1 purchases, funded shipments and pre-leader battle
+supply every role. Runtime includes 38 GameTable SSR renders,
+2 standalone native-component renders, 7 actual answer callbacks,
+8 whole-guide callbacks, 1 native flight callback and 1 native
+poison callback. Source/further counts derive from recorded action arrays;
+no played state, victim or future action receipt is installed.
+
+Fourteen new cases cover both actual flight modes/groups, active-flight new
+intervals, own closure/leader-commitment rejection, foreign-plan release, full
+budget/frozen facts, No AND/OR caps, stale/JSON packets and legal profiles.
+Poison quotation neither samples RNG nor creates hypothetical Tanks/bounty.
+Initial feedback repairs the new driver: decline native Prescience before
+acknowledging shared readiness, retaining the actual open pre-leader source.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-flight-poison-proof-v2/`;
+journeys/HTML: adjacent `20261027-truth-flight-poison-runtime/run/`.
+No HTTP/storage boundary, saved-game/database or deployed operation changes.
+The local dev process/listener was absent at the health probe. It was started
+and the root returned HTTP200; no existing process was interrupted. This is
+readiness evidence, not a saved-seat restoration certificate. Broader future calendars/preparations, combinations, complete modes
+and final assurance/browser/deployed acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-flight-and-pre-leader-cards--27-october-2026).
+
 **Truthtrance / printed Semuta exchange — 27 October. Prototyped / Partial.**
 Whole questions now count actual exchange/disposal after answering, with no
 selected-card predicate or credit for inspection alone. Current fresh events,

@@ -951,7 +951,7 @@ export function closeTurnActionPayments<T extends TurnActionPromise>(promises: r
   });
 }
 
-/** Close transport and its native Hajr stage; later Ghola or payment can still complete the tree.
+/** Close transport and its native Hajr/Ornithopter stages; later card or payment alternatives can complete the tree.
  * The native joint solver, rather than this ledger, rejects own illegal closure. */
 export function closeTurnActionTransport<T extends TurnActionPromise>(promises: readonly T[], player: string,
   turn: number): T[] {
@@ -962,6 +962,7 @@ export function closeTurnActionTransport<T extends TurnActionPromise>(promises: 
     return settle(promise, { ...promise, transportClosed: true,
       shipment: { ...promise.shipment, pending: false }, ...(promise.cardPlays ? { cardPlays: {
         ...promise.cardPlays, hajr: promise.cardPlays.hajr ? { ...promise.cardPlays.hajr, closed: true } : null,
+        ...(promise.cardPlays.ornithopter ? { ornithopter: { ...promise.cardPlays.ornithopter, closed: true } } : {}),
       } } : {}) });
   });
 }

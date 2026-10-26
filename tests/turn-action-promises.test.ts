@@ -1693,7 +1693,7 @@ void test('optional Box stage preserves legacy bytes and strict raw folded metad
 
 void test('each optional printed stage subset preserves legacy and Box bytes while rejecting unknown choice metadata', () => {
   const base = cards(card('ghola'), false);
-  const optional = ['nullentropyBox', 'distrans', 'juiceOfSapho', 'semutaDrug'] as const;
+  const optional = PRINTED_CARD_EFFECTS.filter(effect => effect !== 'hajr' && effect !== 'ghola');
   for (let mask = 0; mask < (1 << optional.length); mask++) {
     const cardPlays = { ...base.cardPlays! };
     optional.forEach((effect, index) => { if (mask & (1 << index)) cardPlays[effect] = null; });
@@ -1806,4 +1806,60 @@ void test('Semuta No remains binding through other deadlines and physical use or
   assert.throws(() => recordTurnActionPayment(used, 'respondent', 1, payment()), TurnActionError);
   assert.deepEqual(used[0].payments, []);
   validateTurnActionPromises([expired], seats);
+});
+
+void test('Movement end closes only the owner Ornithopter interval while Residual Poison retains its actual turn deadline', () => {
+  const no = cards(group('or', card('ornithopter'), card('residualPoison')), false);
+  assert.equal(closeTurnActionTransport([no], 'other', 1)[0], no);
+  assert.equal(closeTurnActionTransport([no], 'respondent', 2)[0], no);
+  assert.throws(() => recordTurnActionCardPlay([no], 'respondent', 1, 'ornithopter'), TurnActionError);
+  const moved = closeTurnActionTransport([no], 'respondent', 1);
+  assert.deepEqual(moved[0].cardPlays!.ornithopter, { played: false, closed: true });
+  assert.deepEqual(moved[0].cardPlays!.residualPoison, { played: false, closed: false });
+  assert.equal(moved[0].fulfilled, false);
+  assert.equal(recordTurnActionCardPlay(moved, 'respondent', 1, 'ornithopter')[0], moved[0]);
+  assert.throws(() => recordTurnActionCardPlay(moved, 'respondent', 1, 'residualPoison'), TurnActionError);
+  const paidClose = closeTurnActionPayments(moved, 'respondent', 1);
+  assert.equal(paidClose[0].fulfilled, false);
+  const expired = finishTurnActionTurn(paidClose, 'respondent', 1)[0];
+  assert.equal(expired.fulfilled, true);
+  assert.deepEqual(expired.cardPlays!.residualPoison, { played: false, closed: true });
+  const orniOnly = cards(card('ornithopter'), false, 'turn-action:2');
+  const closed = closeTurnActionTransport([orniOnly], 'respondent', 1)[0];
+  assert.equal(closed.fulfilled, true);
+  assert.equal(recordTurnActionCardPlay([closed], 'respondent', 1, 'ornithopter')[0], closed);
+  const old = cards(card('ghola'), false, 'turn-action:3');
+  assert.equal(Object.hasOwn(closeTurnActionTransport([old], 'respondent', 1)[0].cardPlays!, 'ornithopter'), false);
+  const explicitNull = { ...old, cardPlays: { ...old.cardPlays!, ornithopter: null } };
+  assert.equal(closeTurnActionTransport([explicitNull], 'respondent', 1)[0].cardPlays!.ornithopter, null);
+  validateTurnActionPromises([expired, closed], seats);
+});
+
+void test('Ornithopter and Residual Poison whole receipts preserve dynamic alternatives and reject selected modes or victims', () => {
+  const joint = cards(group('and', card('ornithopter'), card('residualPoison'), pay()));
+  const alternative = cards(group('or', card('ornithopter'), card('residualPoison')), true, 'turn-action:2');
+  for (const effect of ['ornithopter', 'residualPoison'] as const) {
+    for (const extra of [{ mode: 'twoGroups' }, { group: 2 }, { victim: 'private-leader' }, { outcome: 'killed' }]) {
+      assert.throws(() => parseTurnActionLeaf({ kind: 'cardPlay', effect, ...extra }), TurnActionError);
+      const invalid = { ...joint, cardPlays: { ...joint.cardPlays!, [effect]: { played: false, closed: false, ...extra } } };
+      assert.throws(() => turnActionValue(invalid), TurnActionError);
+    }
+  }
+  const flight = recordTurnActionCardPlay([joint, alternative], 'respondent', 1, 'ornithopter');
+  assert.equal(flight[1].fulfilled, true);
+  assert.deepEqual(branches(flight[0]), [[{ kind: 'cardPlay', effect: 'residualPoison', answer: true }, signedPay()]]);
+  assert.equal(recordTurnActionCardPlay(flight, 'respondent', 1, 'ornithopter')[0], flight[0]);
+  const moved = closeTurnActionTransport(flight, 'respondent', 1);
+  const poisoned = recordTurnActionCardPlay(moved, 'respondent', 1, 'residualPoison');
+  assert.deepEqual(branches(poisoned[0]), [[signedPay()]]);
+  assert.equal(recordTurnActionPayment(poisoned, 'respondent', 1, payment())[0].fulfilled, true);
+  const no = cards(group('and', card('ornithopter'), card('residualPoison')), false, 'turn-action:3');
+  const one = recordTurnActionCardPlay([no], 'respondent', 1, 'ornithopter');
+  const before = structuredClone(one);
+  assert.throws(() => recordTurnActionCardPlay(one, 'respondent', 1, 'residualPoison'), TurnActionError);
+  assert.deepEqual(one, before);
+  const fresh = cards(card('ornithopter'), true, 'turn-action:4');
+  assert.equal(fresh.cardPlays!.ornithopter!.played, false);
+  assert.equal(recordTurnActionCardPlay([fresh], 'respondent', 1, 'ornithopter')[0].fulfilled, true);
+  validateTurnActionPromises(poisoned, seats);
 });

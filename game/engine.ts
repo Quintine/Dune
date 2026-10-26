@@ -18375,6 +18375,8 @@ function ornithopterBlock(
     return 'Use Ornithopter during your own Shipment and Movement turn.';
   if (g.truthtrance || g.response || g.decision || g.phaseOpening)
     return 'Resolve the current interaction before declaring a movement.';
+  const promised = printedRolePlayBlock(g, p.id, 'ornithopter');
+  if (promised) return promised;
   if (g.ornithopter)
     return 'Finish the already played Ornithopter movement first.';
   if (p.moved >= movesAllowed(g,p))
@@ -19064,9 +19066,21 @@ function turnActionCardsMatch(g: Game, actor: string, requirements: readonly Tur
 }
 function* nativePrintedCardActions(g: Game, actor: string, effect: PrintedCardEffect): Generator<Action> {
   const player = getPlayer(g, actor);
-  // Semuta belongs only to its exact fresh-discard window, projected before
-  // ordinary payment/card preparation rather than as a generic card action.
-  if (effect === 'semutaDrug') return;
+  // Semuta owns a fresh-discard window; Ornithopter uses real movement
+  // declarations. Neither is a generic card-button preparation.
+  if (effect === 'semutaDrug' || effect === 'ornithopter') return;
+  if (effect === 'residualPoison') {
+    const battle = g.battle;
+    if (!battle?.event || ![battle.attacker, battle.defender].includes(actor)) return;
+    const target = battle.attacker === actor ? battle.defender : battle.attacker;
+    for (const card of player.hand.filter(card => card.effect === effect)) {
+      try {
+        validateResidualPoison(g, player, card.id, target, battle.event);
+        yield { type: 'card', card: card.id, target, event: battle.event };
+      } catch (error) { if (!(error instanceof RuleError)) throw error; }
+    }
+    return;
+  }
   if (effect === 'distrans') {
     const quote = distransView(g, player);
     if (quote && !quote.blocked) for (const choice of quote.choices) if (!choice.blocked)
@@ -19129,17 +19143,19 @@ function guardTurnActionBoxCost(source: Game, owner: Player, box: string) {
   for (const seed of turnActionBoxSeeds(source, owner.id, box)) if (turnActionCompletion(seed.game, owner.id)) return;
   throw new RuleError('The two-spice Box payment must preserve your accepted whole Truthtrance answers.');
 }
-/** Native transfer/order effects retain their physical cost and public queue.
- * No recipient consent, unseen acquisition or income is assumed. */
+/** Native transfer/order and pre-leader costs retain their physical cards and
+ * queues. No unseen acquisition, random casualty or income is assumed. */
 function* turnActionTransferOrderSeeds(source: Game, actor: string, requirements: readonly TurnActionCardRequirement[]):
   Generator<{ game: Game; actions: Action[] }> {
   const search = function* (game: Game, actions: Action[]): Generator<{ game: Game; actions: Action[] }> {
     const pending = [...new Set(requirements.filter(required => required.answer &&
-      (required.effect === 'distrans' || required.effect === 'juiceOfSapho') &&
+      (required.effect === 'distrans' || required.effect === 'juiceOfSapho' || required.effect === 'residualPoison') &&
       nativePrintedCardCount(game, actor, required.effect) <= required.baseline).map(required => required.effect))];
     for (const effect of pending) for (const action of nativePrintedCardActions(game, actor, effect)) {
       try {
-        const played = applyActionInner(game, actor, action, 'movementPreparation');
+        const played = effect === 'residualPoison'
+          ? projectResidualPoisonPrintedCost(game, actor, String(action.card))
+          : applyActionInner(game, actor, action, 'movementPreparation');
         const active = played.active, extortion = played.decision?.kind === 'moritaniExtortion' ? played.decision : null;
         const projected = groundMovementProbe(played, actor);
         projected.active = active;
@@ -19198,7 +19214,7 @@ function* turnActionOwnedCardSeeds(source: Game, actor: string, requirements: re
 function* turnActionCardSeeds(source: Game, actor: string, requirements: readonly TurnActionCardRequirement[]):
   Generator<{ game: Game; actions: Action[] }> {
   if (!requirements.some(required => required.answer &&
-    (required.effect === 'distrans' || required.effect === 'juiceOfSapho') &&
+    (required.effect === 'distrans' || required.effect === 'juiceOfSapho' || required.effect === 'residualPoison') &&
     nativePrintedCardCount(source, actor, required.effect) <= required.baseline)) {
     yield* turnActionOwnedCardSeeds(source, actor, requirements);
     return;
@@ -20155,7 +20171,7 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
     ...(printedCards.size ? { cardPlays: { hajr: printedCards.has('hajr') ? { played: false, closed: !open } : null,
       ghola: printedCards.has('ghola') ? { played: false, closed: false } : null,
       ...Object.fromEntries([...printedCards].filter(effect => effect !== 'hajr' && effect !== 'ghola')
-        .map(effect => [effect, { played: false, closed: false }])) } } : {}),
+        .map(effect => [effect, { played: false, closed: effect === 'ornithopter' && !open }])) } } : {}),
     ...(combat ? { combat } : {}),
     ...(preparation ? { preparation } : {}),
     ...(nexus ? { alliance: { source: nexus.source, partner: null, closed: false } } : {}),
@@ -20398,14 +20414,16 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   if (!action) return null;
   // The joint quotation can prepare a later answer while an earlier unrelated
   // answer remains live. Window controls must bind the row naming that source.
-  const held = action.type === 'card' ? player.hand.find(card => card.id === action.card) : undefined;
+  const held = action.type === 'card' ? player.hand.find(card => card.id === action.card)
+    : action.type === 'move' ? player.hand.find(card => card.id === action.movementCard) : undefined;
   const printedWindow = held?.kind === 'special' && held.effect === 'karama' && action.mode === 'purchase'
     ? 'karamaAuction' : held?.kind === 'special' && held.effect === 'karama' && action.mode === 'shipment'
       ? 'karamaShipment' : isWindowCardEffect(held?.effect) ? held.effect : null;
   const windows: WindowCardEffect[] = printedWindow ? [printedWindow]
     : action.type === 'decision' && action.karama === true ? ['karamaAuction']
       : action.type === 'ready' || held?.effect === 'nullentropyBox' ? [...WINDOW_CARD_EFFECTS] : [];
-  const sideRole = held?.effect === 'distrans' || held?.effect === 'juiceOfSapho' ? held.effect : null;
+  const sideRole = held?.effect === 'distrans' || held?.effect === 'juiceOfSapho' ||
+    held?.effect === 'residualPoison' || held?.effect === 'ornithopter' ? held.effect : null;
   const guidePromise = sideRole ? liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn).find(row =>
     row.cardPlays?.[sideRole] && !row.cardPlays[sideRole]!.played && !row.cardPlays[sideRole]!.closed) ?? promise
     : windows.length ? liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn).find(row =>
@@ -20423,7 +20441,7 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
 function turnActionCurrentPrintedPreparation(g: Game, player: Player, action: Action): boolean {
   if (action.type !== 'card') return true;
   const card = player.hand.find(card => card.id === action.card);
-  if (card?.effect !== 'distrans' && card?.effect !== 'juiceOfSapho') return true;
+  if (card?.effect !== 'distrans' && card?.effect !== 'juiceOfSapho' && card?.effect !== 'residualPoison') return true;
   return [...nativePrintedCardActions(g, player.id, card.effect)].some(choice =>
     ['type', 'card', 'target', 'give', 'scope', 'event', 'mode'].every(key => choice[key] === action[key]));
 }
@@ -20685,8 +20703,10 @@ function groundMovementCompletionAtMovement(game: Game, actor: string, promises:
         .every(promise => matchesShipment(promise, null) === promise.answer);
     },
     needsProgress(state, owner) {
-      return state.advanced && !hajrAvailable(state, getPlayer(state, owner)) && cardPlays.some(required =>
-        required.effect === 'hajr' && required.answer && nativePrintedCardCount(state, owner, 'hajr') <= required.baseline);
+      return cardPlays.some(required => required.answer &&
+        nativePrintedCardCount(state, owner, required.effect) <= required.baseline &&
+        (required.effect === 'ornithopter' || required.effect === 'hajr' && state.advanced &&
+          !hajrAvailable(state, getPlayer(state, owner))));
     },
     progressKey(state, owner) {
       return cardPlays.map(required => [required.effect, nativePrintedCardCount(state, owner, required.effect) > required.baseline]);
@@ -21182,6 +21202,7 @@ function declareGroundMovement(g: Game, p: Player, action: Action, quoteOnly = f
       : `That destination is blocked or more than ${speed} territories away.`,
   );
   validateFlightSelection(g, p, move);
+  if (action.movementCard !== undefined) recordNativePrintedCardPlay(g, id, 'ornithopter');
   const matching = quoteMatchingMovement(g, move);
   const gatherMatching=quoteGatherMatching(g,move);
   if (quoteOnly) return move;
@@ -27886,6 +27907,8 @@ function validateResidualPoison(
   );
   const reserved = transferCardBlock(g, p, card);
   requireRule(!reserved, reserved ?? 'The card is committed.');
+  const promised = printedRolePlayBlock(g, p.id, 'residualPoison');
+  requireRule(!promised, promised ?? 'Retain your whole Truthtrance answer.');
   const target = getPlayer(g, targetId),
     controlled = controlledLeaders(g, target);
   const candidates = noFieldRule(() =>
@@ -27904,6 +27927,15 @@ function validateResidualPoison(
   });
   return { b, card, target, candidates };
 }
+/** A private completion pays the printed cost without drawing a random victim
+ * or borrowing a hypothetical casualty for later Ghola/revival preparation. */
+function projectResidualPoisonPrintedCost(source: Game, actor: string, card: string): Game {
+  const game = structuredClone(source), player = getPlayer(game, actor);
+  const used = discard(game, player, card);
+  recordNativePrintedCardPlay(game, actor, 'residualPoison');
+  rememberMovementDiscards(game, [{ card: used, discardedBy: actor, publicFace: true }]);
+  return game;
+}
 function playResidualPoison(
   g: Game,
   p: Player,
@@ -27918,6 +27950,12 @@ function playResidualPoison(
     targetId,
     event,
   );
+  // Check deliberate physical expenditure before random selection. The
+  // native victim itself remains automatic and is never chosen by a witness.
+  if (liveTurnActionPromises(g.turnActionPromises ?? [], p.id, g.turn).length) {
+    const quoted = projectResidualPoisonPrintedCost(g, p.id, card.id);
+    guardTurnActionPrintedCardCost(quoted, getPlayer(quoted, p.id), card);
+  }
   const selected = shuffle(candidates)[0];
   const victim = controlledLeaders(g, target).find(
     (l) => l.id === selected.id,
@@ -27936,6 +27974,8 @@ function playResidualPoison(
   const harkonnen = byFaction(g, 'harkonnen');
   if (harkonnen) returnCaptives(g, harkonnen);
   const used = discard(g, p, card.id);
+  recordNativePrintedCardPlay(g, p.id, 'residualPoison');
+  guardTurnActionPrintedCardCost(g, p, used);
   log(
     g,
     `${p.name} played Residual Poison against ${target.name}. ${victim.name} was randomly selected from the available leaders and sent to the Tanks. No spice is awarded, no forces are lost, and battle preparation continues.`,

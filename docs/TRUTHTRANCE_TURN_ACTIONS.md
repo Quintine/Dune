@@ -1,5 +1,52 @@
 # Truthtrance combined current-turn actions
 
+## Printed flight and pre-leader cards — 27 October 2026
+
+**Prototyped / Partial.** `cardPlay/ornithopter` counts the first accepted
+native declaration placing the physical card into its played flight after
+answering. It does not name a mode, group, destination or completed number of
+moves. Subsequent groups and eventual disposal do not count again. A previously
+active flight supplies no later-play credit. Its interval closes at the actual
+owner's Movement end; later payment alternatives retain their own deadlines.
+
+Native movement validation still owns the first group, range, stance, routes,
+original cohort, remaining ordinary/Hajr entitlement and later arrival windows.
+The shared completion search can use either printed mode and owned earlier
+preparation, sharing the real purse with other actions. No new move, force,
+income or foreign continuation is granted merely by asking. Immediate No also
+blocks the native card choices. Current guides use the actual held card or
+existing flight event; a future calendar witness is not sent early.
+
+`cardPlay/residualPoison` counts actual printed use with the native random death
+and physical disposal after answering this turn. No victim, selected outcome or
+leader field is accepted. The current native pre-leader validator retains its
+actual opponent, event, available pool and leader-commitment restrictions.
+The private witness spends/counts the card without sampling a victim or adding
+hypothetical Tanks for Ghola or revival. Deliberate cost preflight precedes the
+real random draw; the actual result is checked before its original Semuta or
+preparation suffix. The No interval lasts through the full turn, including later
+native opportunities; a particular unknown future battle is not invented.
+
+Human editors, persistent text, exact guides and four minimally legal profiles
+reuse native controls. Earlier use, recovery alone and another role supply no
+credit. Whole AND/OR/No, frozen facts and remaining payment/transport/battle
+constraints remain shared. This is bounded composition of the existing printed
+card contracts, not a new publisher worked example. Wider future calendars,
+preparations/combinations, full modes and final assurance/deployed acceptance
+remain open.
+
+Frozen **25 affected files, 367/367**, types/lint/build and four runtime
+groups/seven genuine native programmes pass. Actual Basic/Advanced setup,
+original Truth deals, cache1 purchases, funded shipments and pre-leader battle
+supply every role. Runtime includes 38 GameTable SSR renders,
+2 standalone native-component renders, 7 actual answer callbacks,
+8 whole-guide callbacks, 1 native flight callback and 1 native
+poison callback. Source/further counts derive from recorded action arrays;
+no played state, victim or future action receipt is installed.
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-flight-poison-proof-v2/`;
+journeys/HTML: adjacent `20261027-truth-flight-poison-runtime/run/`.
+This is local native/SSR/callback evidence, not hydration or deployed acceptance.
+
 ## Printed Semuta exchange — 27 October 2026
 
 **Prototyped / Partial.** `cardPlay/semutaDrug` means the completed printed

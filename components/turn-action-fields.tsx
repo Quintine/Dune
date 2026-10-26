@@ -76,7 +76,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     or requested Prescience field in this battle. They count before later Karama prevention.
     A requested field is not the opponent&apos;s answer or inspected value. Borrowed Nexus and special powers do not count.
     These conditions close at the actual native choice or when its original source expires.
-    Printed-card conditions ask you to play Hajr, Tleilaxu Ghola, Nullentropy Box, Distrans, Juice of Sapho or Semuta Drug in its printed role after this answer this turn.
+    Printed-card conditions ask you to play Hajr, Tleilaxu Ghola, Nullentropy Box, Distrans, Juice of Sapho, Semuta Drug, Ornithopter or Residual Poison in its printed role after this answer this turn.
     An earlier play, discard, sale, Karama role or recovery alone does not count; an actual later replay after Box recovery does.
     Hajr counts when played even if its extra movement is unused. Tleilaxu Ghola is a card play, separate from ordinary Revival.
     Hajr conditions close at your own Movement turn end; Tleilaxu Ghola conditions close at the actual turn end.
@@ -88,6 +88,10 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     Semuta Drug counts only after its native transfer and disposal complete after this answer.
     Committing to inspect multiple candidates, an earlier play or recovery alone does not count; the selected card is not promised.
     A committed private choice cannot be canceled. The condition, including a whole No answer, has the actual turn-end deadline.
+    Ornithopter counts its actual physical flight declaration after this answer, when the card enters its played zone.
+    Later groups and disposal do not count again. This condition closes at your own Movement turn end; it names no flight mode or destination.
+    Residual Poison counts the actual printed play, random leader death and disposal after this answer, not a selected victim.
+    Its deadline, including for a whole No answer, is the original turn end. Earlier play, disposal or recovery alone does not count.
     Weather Control, Family Atomics and Harvester conditions count an actual accepted future printed-role play after this answer
     in the original open Storm or fresh spice-blow window. Earlier plays, disposal, other roles and recovery alone do not count.
     They do not ask for a selected storm distance or resulting spice amount. Each condition closes only when its original native window closes.
@@ -174,7 +178,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         if (kind === 'ship' || kind === 'move') onChange({ kind,
           territory: value.kind === 'ship' || value.kind === 'move' ? value.territory : 'carthag', minimum });
       }}>
-        <option value="cardPlay">Play Hajr, Tleilaxu Ghola, Nullentropy Box, Distrans, Juice of Sapho or Semuta Drug in its printed role</option>
+        <option value="cardPlay">Use a named printed card role after this answer</option>
         <option value="windowCardPlay">Use a printed card in this original native window or shipment-price opportunity</option>
         <option value="battlePower">Declare native Voice or Prescience in this battle</option>
         <option value="battlePlan">Use an actual current battle-plan choice</option>
@@ -190,9 +194,9 @@ const config: MixedActionConfig<TurnActionLeaf> = {
       {value.kind === 'cardPlay' ? <>
         <label htmlFor={`${id}-effect`}>Printed card role after this answer</label>
         <select id={`${id}-effect`} value={value.effect} disabled={disabled}
-          aria-invalid={!['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho', 'semutaDrug'].includes(value.effect)} onChange={event => {
+          aria-invalid={!['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho', 'semutaDrug', 'ornithopter', 'residualPoison'].includes(value.effect)} onChange={event => {
             const effect = event.currentTarget.value;
-            if (effect === 'hajr' || effect === 'ghola' || effect === 'nullentropyBox' || effect === 'distrans' || effect === 'juiceOfSapho' || effect === 'semutaDrug') onChange({ kind: 'cardPlay', effect });
+            if (effect === 'hajr' || effect === 'ghola' || effect === 'nullentropyBox' || effect === 'distrans' || effect === 'juiceOfSapho' || effect === 'semutaDrug' || effect === 'ornithopter' || effect === 'residualPoison') onChange({ kind: 'cardPlay', effect });
           }}>
           <option value="hajr">Play Hajr in its printed role after this answer this turn</option>
           <option value="ghola">Play Tleilaxu Ghola in its printed role after this answer this turn</option>
@@ -200,6 +204,8 @@ const config: MixedActionConfig<TurnActionLeaf> = {
           <option value="distrans">Play Distrans in its printed role after this answer this turn</option>
           <option value="juiceOfSapho">Play Juice of Sapho in its printed role after this answer this turn</option>
           <option value="semutaDrug">Complete a printed Semuta Drug transfer and disposal after this answer this turn</option>
+          <option value="ornithopter">Declare a physical Ornithopter flight after this answer this turn</option>
+          <option value="residualPoison">Complete a printed Residual Poison play after this answer this turn</option>
         </select>
       </> : value.kind === 'windowCardPlay' ? <>
         <label htmlFor={`${id}-window-effect`}>Printed role in the original window</label>

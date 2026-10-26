@@ -1,5 +1,20 @@
 # Rule decision index
 
+## Truthtrance printed flight/pre-leader use — 27 October 2026
+
+Prototyped / Partial. Ornithopter counts accepted initial physical placement in
+its native flight, not each movement or disposal, and closes at owner Movement
+end. Residual Poison counts actual printed random death/disposal without a
+victim predicate, through the original turn end. Reuse native legality/costs;
+private completion neither samples a victim nor grants hypothetical casualties.
+Current actions bind the real held card, movement or battle event and actual
+opponent. Immediate No and own expenditure retain the whole answer. This is
+bounded composition of existing printed contracts, not a new publisher timing
+ruling or complete-mode certificate.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-flight-and-pre-leader-cards--27-october-2026),
+[flight source](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md),
+[poison source](RICHESE_RESIDUAL_POISON_ENGINE_AUDIT.md).
+
 ## Truthtrance printed Semuta use — 27 October 2026
 
 Prototyped / Partial. Count the completed physical exchange and Semuta disposal,

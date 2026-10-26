@@ -9,7 +9,8 @@ import {
 } from '../game/printed-card-play';
 
 void test('Box accepted activation counts extend the shared roles without changing earlier Hajr or Ghola baselines', () => {
-  assert.deepEqual(PRINTED_CARD_EFFECTS, ['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho', 'semutaDrug']);
+  assert.deepEqual(PRINTED_CARD_EFFECTS, ['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho', 'semutaDrug',
+    'ornithopter', 'residualPoison']);
   assert.equal(printedCardPlayCount(undefined, 'richese', 3, 'nullentropyBox'), 0);
   const ghola = recordPrintedCardPlay(undefined, 'richese', 3, 'ghola');
   const first = recordPrintedCardPlay(ghola, 'richese', 3, 'nullentropyBox');
@@ -74,6 +75,25 @@ void test('Semuta counts actual physical resolutions separately from other roles
   const full: PrintedCardPlayCounts = { turn: 4, plays: [{ player: 'richese', effect: 'semutaDrug', count: Number.MAX_SAFE_INTEGER }] };
   assert.throws(() => recordPrintedCardPlay(full, 'richese', 4, 'semutaDrug'), PrintedCardPlayError);
   assert.equal(printedCardPlayCount(full, 'richese', 4, 'semutaDrug'), Number.MAX_SAFE_INTEGER);
+});
+
+void test('Ornithopter placement and Residual Poison use retain separate exact-role counts without group or victim metadata', () => {
+  const original = recordPrintedCardPlay(undefined, 'richese', 3, 'ghola');
+  let counts = original;
+  for (const effect of ['ornithopter', 'residualPoison'] as const) {
+    assert.equal(printedCardPlayCount(counts, 'richese', 3, effect), 0);
+    counts = recordPrintedCardPlay(counts, 'richese', 3, effect);
+    assert.equal(printedCardPlayCount(counts, 'richese', 3, effect), 1);
+    assert.equal(printedCardPlayCount(counts, 'other', 3, effect), 0);
+    assert.equal(printedCardPlayCount(counts, 'richese', 4, effect), 0);
+    for (const extra of [{ mode: 'twoGroups' }, { group: 2 }, { victim: 'private-leader' }, { outcome: 'killed' }]) {
+      const invalid = { turn: 3, plays: [{ player: 'richese', effect, count: 1, ...extra }] } as PrintedCardPlayCounts;
+      assert.throws(() => printedCardPlayCount(invalid, 'richese', 3, effect), PrintedCardPlayError);
+    }
+    const full: PrintedCardPlayCounts = { turn: 3, plays: [{ player: 'richese', effect, count: Number.MAX_SAFE_INTEGER }] };
+    assert.throws(() => recordPrintedCardPlay(full, 'richese', 3, effect), PrintedCardPlayError);
+  }
+  assert.deepEqual(original, { turn: 3, plays: [{ player: 'richese', effect: 'ghola', count: 1 }] });
 });
 
 void test('missing legacy counts and other turn/player/effect baselines read as zero', () => {

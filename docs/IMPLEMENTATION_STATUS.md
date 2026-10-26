@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 27 October 2026 — Printed flight and pre-leader commitments
+
+Prototyped / Partial. First native Ornithopter declaration and actual Residual
+Poison use connect to whole answers, shared funding and exact current controls.
+Movement-end versus turn-end intervals remain separate. Later flight groups or
+disposal supply no replay credit; a poison witness does not sample a victim or
+grant hypothetical casualties/bounty. Immediate No and deliberate own costs
+retain remaining commitments. Four minimal profiles use the same native guides.
+
+Frozen **25 affected files, 367/367**, types/lint/build and four runtime
+groups/seven genuine native programmes pass. Actual Basic/Advanced setup,
+original Truth deals, cache1 purchases, funded shipments and pre-leader battle
+supply every role. Runtime includes 38 GameTable SSR renders,
+2 standalone native-component renders, 7 actual answer callbacks,
+8 whole-guide callbacks, 1 native flight callback and 1 native
+poison callback. Source/further counts derive from recorded action arrays;
+no played state, victim or future action receipt is installed.
+Fourteen new cases and the actual callbacks cover new intervals, full-budget
+payments, frozen facts, No caps, current source/leader boundaries and both modes.
+The new fixture's native Prescience-decline order is repaired after focused
+feedback, without installing a pre-leader window or modifying product timing.
+The absent local dev process was started and its root returned HTTP200; no
+running server was interrupted. This does not certify saved-seat restoration.
+No full AI, saved-game operation or deployment occurs. Wider preparations,
+calendars, combinations and all final acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-flight-and-pre-leader-cards--27-october-2026).
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-flight-poison-proof-v2/`.
+
 ## 27 October 2026 — Printed Semuta exchange commitments
 
 Prototyped / Partial. Completed physical exchange/disposal counts after the

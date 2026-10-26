@@ -7,6 +7,7 @@ import { nativePromiseScopeSupported } from '@/game/native-promise-scope';
 import { quoteNexusAlliance } from '@/game/nexus-alliance';
 import { ordinaryCardAvailability } from '@/game/card-availability';
 import { gholaForcePreparations } from '@/game/ghola-force-preparation';
+import { richeseCardDefinition } from '@/game/richese-cards';
 import { nativeBattlePowerOpportunity, type NativeBattlePower } from '@/game/battle-power-question';
 import { battleCardLabel, VOICE_KINDS } from '@/game/battle-cards';
 import { WINDOW_CARD_EFFECTS, windowCardNativeEffect, windowCardOpportunity, type WindowCardEffect } from '@/game/window-card-play';
@@ -36,7 +37,7 @@ const namesWindow = (mixed: MixedActionExpression<TurnActionLeaf>, effect: Windo
 const namesBoxPlay = (mixed: MixedActionExpression<TurnActionLeaf>): boolean => mixed.kind === 'action'
   ? mixed.action.kind === 'cardPlay' && mixed.action.effect === 'nullentropyBox'
     : mixed.kind !== 'fact' && mixed.terms.some(namesBoxPlay);
-const namesPrintedPlay = (mixed: MixedActionExpression<TurnActionLeaf>, effect: 'distrans' | 'juiceOfSapho' | 'semutaDrug'): boolean => mixed.kind === 'action'
+const namesPrintedPlay = (mixed: MixedActionExpression<TurnActionLeaf>, effect: 'distrans' | 'juiceOfSapho' | 'semutaDrug' | 'residualPoison'): boolean => mixed.kind === 'action'
   ? mixed.action.kind === 'cardPlay' && mixed.action.effect === effect
     : mixed.kind !== 'fact' && mixed.terms.some(term => namesPrintedPlay(term, effect));
 
@@ -144,13 +145,32 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     const owner = current.players.find(player => player.id === actor);
     return JSON.stringify({ hand: owner?.hand?.map(card => ({ id: card.id, kind: card.kind, effect: card.effect })), limit: owner?.handLimit });
   };
-  const printedHandSignature = heldCard?.effect === 'distrans' || heldCard?.effect === 'juiceOfSapho' ? printedHandSource(game) : null;
+  const printedHandSignature = heldCard?.effect === 'distrans' || heldCard?.effect === 'juiceOfSapho' || heldCard?.effect === 'residualPoison' ? printedHandSource(game) : null;
   const distransCapacitySource = (current: GameView) => {
     const recipient = current.players.find(player => player.id === action.target);
     return JSON.stringify(recipient && { id: recipient.id, count: recipient.handCount, limit: recipient.handLimit });
   };
   const distransCapacitySignature = heldCard?.effect === 'distrans' ? distransCapacitySource(game) : null;
   const saphoDecisionSignature = heldCard?.effect === 'juiceOfSapho' ? JSON.stringify(decision) : null;
+  const residual = heldCard?.effect === 'residualPoison' ? game.residualPoison : null;
+  const residualSource = (current: GameView) => JSON.stringify({ quote: current.residualPoison,
+    battle: publicBattleContext(current), preLeader: current.battle?.preLeader });
+  const residualSignature = heldCard?.effect === 'residualPoison' ? residualSource(game) : null;
+  const flightFields = ['movementCard', 'ornithopter', 'ornithopterEvent'];
+  const flightTagged = action.type === 'move' && flightFields.some(key => Object.hasOwn(action, key));
+  const flightNeeded = action.type === 'move' && (flightTagged || !!game.ornithopter?.active);
+  const flight = flightNeeded ? game.ornithopter : null, flightSignature = flightNeeded ? JSON.stringify(flight) : null;
+  const flightOwner = flightNeeded ? game.players.find(player => player.id === actor) : undefined;
+  const flightInitial = action.type === 'move' && Object.hasOwn(action, 'movementCard');
+  const flightCard = flightInitial && typeof action.movementCard === 'string'
+    ? flightOwner?.hand?.find(card => card.id === action.movementCard) : undefined;
+  const flightOwnerSource = (current: GameView) => {
+    const owner = current.players.find(player => player.id === actor);
+    return JSON.stringify({ forces: owner?.forces, elites: owner?.elites?.forces, advisors: owner?.advisors,
+      moved: owner?.moved, movesAllowed: owner?.movesAllowed, shipped: owner?.shipped,
+      ...(flightInitial ? { hand: owner?.hand?.map(card => ({ id: card.id, kind: card.kind, effect: card.effect })) } : {}) });
+  };
+  const flightOwnerSignature = flightNeeded ? flightOwnerSource(game) : null;
   const auctionCards = game.karamaAuctionCards, auctionCardsSignature = JSON.stringify(auctionCards);
   const shipmentCards = game.karamaShipmentCards, shipmentCardsSignature = JSON.stringify(shipmentCards);
   const thumperCards = game.thumperCards, thumperCardsSignature = JSON.stringify(thumperCards);
@@ -178,6 +198,22 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       (semuta.stage === 'offer' ? !semuta.passed && (action.type === 'semutaPass' && !semuta.passBlocked ||
         action.type === 'semutaCommit' && semuta.canCommit && semuta.blocked === null)
         : action.type === 'semutaSelect' && typeof action.card === 'string' && semuta.candidates.some(card => card.id === action.card));
+    const flightPacket = Object.keys(action).every(key => ['type', 'from', 'amount', 'elite', 'forces', 'eliteForces', 'territory', 'sector',
+      'fighters', 'noField', 'event', 'planetologist', 'turnActionPromiseEvent', 'turnActionPromisePhase',
+      ...(flightInitial ? ['movementCard', 'ornithopter'] : ['ornithopterEvent'])].includes(key));
+    const flightSource = flightNeeded && phase === 5 && current.active === actor && !!me && me === flightOwner && !!flight &&
+      current.ornithopter === flight && JSON.stringify(current.ornithopter) === flightSignature && flightOwnerSource(current) === flightOwnerSignature &&
+      flight.blocked === null && flightPacket && !!windowPromise && current.turnActionPromises.includes(windowPromise) &&
+      JSON.stringify(windowPromise.mixed) === windowQuestion;
+    const nativeFlight = flightSource && !!flight && (flightInitial ? !flight.active && !!flightCard &&
+      me?.hand?.find(card => card.id === action.movementCard) === flightCard && flightCard.kind === 'special' &&
+      richeseCardDefinition(flightCard)?.card.effect === 'ornithopter' && flight.card.id === flightCard.id &&
+      richeseCardDefinition(flight.card)?.card.effect === 'ornithopter' &&
+      (action.ornithopter === 'range3' || action.ornithopter === 'twoGroups') &&
+      flight.modes.some(mode => mode.mode === action.ornithopter && mode.blocked === null)
+      : !!flight.active && Number.isSafeInteger(flight.active.remaining) && flight.active.remaining > 0 &&
+        action.ornithopterEvent === flight.active.event);
+    const movementPacket = action.type !== 'move' || (!flightTagged && !current.ornithopter?.active) || nativeFlight;
     const ownPhysicalCard = (action.type === 'card' || printedInvoiceAction) && !!heldCard && !!me && me === cardOwner &&
       me.hand?.find(card => card.id === action.card) === heldCard &&
       JSON.stringify({ id: heldCard.id, kind: heldCard.kind, effect: heldCard.effect }) === cardSignature;
@@ -267,10 +303,17 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       Object.keys(action).every(key => ['type', 'card', 'scope', 'event', 'mode', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key));
     const saphoDecision = printedSapho && phase === 8 && action.scope === 'extortion' && current.decision === decision &&
       current.decision?.kind === 'moritaniExtortion' && JSON.stringify(current.decision) === saphoDecisionSignature;
+    const printedResidual = printedRoleSource && heldCard?.effect === 'residualPoison' && namesPrintedPlay(windowPromise!.mixed, 'residualPoison') &&
+      richeseCardDefinition(heldCard)?.card.effect === 'residualPoison' && !!residual && current.residualPoison === residual &&
+      residualSource(current) === residualSignature && residual.blocked === null && residual.card.id === heldCard.id &&
+      richeseCardDefinition(residual.card)?.card.effect === 'residualPoison' && phase === 6 && !!battle && current.battle === battle &&
+      !battle.revealed && [battle.attacker, battle.defender].includes(actor) && action.event === battle.event && action.event === residual.event &&
+      action.target === residual.target && action.target === (battle.attacker === actor ? battle.defender : battle.attacker) &&
+      Object.keys(action).every(key => ['type', 'card', 'event', 'target', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key));
     const genericCard = ownCard && action.type === 'card' && !auctionPurchaseAction && !printedShipmentAction && quotedBoxCard &&
       (!boxRoleNamed || heldCard?.effect !== 'nullentropyBox' || printedBox) &&
       (!shipmentPriceAction || (action.target ?? actor) === current.active) &&
-      !!heldCard && heldCard.effect !== 'ghola' && heldCard.effect !== 'hajr' && heldCard.effect !== 'distrans' && heldCard.effect !== 'juiceOfSapho' && heldCard.effect !== 'semutaDrug' && !isWindowEffect(heldCard.effect);
+      !!heldCard && heldCard.effect !== 'ghola' && heldCard.effect !== 'hajr' && heldCard.effect !== 'distrans' && heldCard.effect !== 'juiceOfSapho' && heldCard.effect !== 'semutaDrug' && heldCard.effect !== 'ornithopter' && heldCard.effect !== 'residualPoison' && !isWindowEffect(heldCard.effect);
     const earlyWindowBox = (phase === 0 || phase === 1 || phase === 3 || phase === 5) && genericCard && heldCard?.effect === 'nullentropyBox' &&
       action.mode === undefined && Object.keys(action).every(key => ['type', 'card', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key)) &&
       !!box && current.nullentropy === box &&
@@ -353,7 +396,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       !current.ready.includes(actor) && me.charityClaimed === false && current.charity === charity &&
       charitySource(current) === charitySignature && current.charity.incomePending === false &&
       Number.isSafeInteger(current.charity.amount) && current.charity.amount > 0;
-    const opportunity = nativeSemuta || printedDistrans || printedSapho || printedBox || openingReady || earlyWindowReady || earlyWindowBox || printedWindow || ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
+    const opportunity = nativeSemuta || printedResidual || printedDistrans || printedSapho || printedBox || openingReady || earlyWindowReady || earlyWindowBox || printedWindow || ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
       ? charityClaim || !current.ready.includes(actor) && (action.type === 'ready' || genericCard)
       : phase === 3
         ? invoice || nativePass || requiredBid || action.type === 'passBid' && !current.richeseAuction && currentAuction && current.auction?.active === actor
@@ -367,7 +410,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     return !props.busy && props.act === act && current === game && nativePromiseScopeSupported(current) && current.status === 'playing' &&
       Number.isSafeInteger(phase) && phase >= 0 && phase <= 8 && current.phase === phase && current.turn === turn && current.me === actor &&
       current.turnActionGuide === guide && guide.event === event && guide.action === action &&
-      action.turnActionPromiseEvent === event && action.turnActionPromisePhase === phase && JSON.stringify(action) === signature && opportunity &&
+      action.turnActionPromiseEvent === event && action.turnActionPromisePhase === phase && JSON.stringify(action) === signature && opportunity && movementPacket &&
       current.turnActionPromises.some(promise => promise.event === event && promise.player === actor && promise.turn === turn &&
         !promise.fulfilled && !promise.released) &&
       (!amalReadyAction || openingReady) &&
@@ -401,6 +444,8 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     : action.type === 'card' && heldCard?.effect === 'distrans' ? `Give ${distrans?.choices.find(choice => choice.recipient === action.target)?.cards.find(card => card.id === action.give)?.name ?? 'the quoted card'} to ${recipient} with Distrans while honoring your whole answer`
     : action.type === 'card' && heldCard?.effect === 'juiceOfSapho' ? `Play Juice of Sapho: ${action.scope === 'battleAggressor'
       ? 'become this battle’s aggressor' : `${saphoScope}, ${String(action.mode)}`} while honoring your whole answer`
+    : action.type === 'card' && heldCard?.effect === 'residualPoison' ? `Play Residual Poison against ${recipient} while honoring your whole answer; the native leader death is random`
+    : action.type === 'move' && flightInitial ? `Declare Ornithopter ${action.ornithopter === 'range3' ? 'three-territory' : 'two-group'} flight and move ${amount} physical forces to ${destination}${sector} while honoring your whole answer`
     : action.type === 'card' && windowEffect ? `Play ${windowRoleNames[windowEffect]} in its original native window${windowEffect === 'weather' ? ` with storm distance ${amount}` : ''} while honoring your whole answer`
     : action.type === 'battlePlan' ? 'Fill the quoted battle plan for review before sealing'
     : action.type === 'voice' ? `Declare native Voice: opponent ${action.must ? 'must' : 'cannot'} play ${battleCardLabel(String(action.kind))}`
@@ -493,7 +538,7 @@ export function TurnActionPromises(props: TurnActionProps) {
       Native Voice and Prescience conditions describe your original use or explicit decline, exact Voice command,
       or requested Prescience field, before later Karama prevention. The requested field is not the inspected answer or value.
       Borrowed Nexus and special powers do not count. These conditions close at the actual native choice or when its original source expires.
-      Printed-card conditions count actual future Hajr, Tleilaxu Ghola, Nullentropy Box, Distrans, Juice of Sapho or Semuta Drug plays in their printed role after the answer this turn.
+      Printed-card conditions count actual future Hajr, Tleilaxu Ghola, Nullentropy Box, Distrans, Juice of Sapho, Semuta Drug, Ornithopter or Residual Poison plays in their printed role after the answer this turn.
       Earlier plays, discards, sales, Karama roles and recovery alone do not count; an actual later Box replay does.
       Hajr counts even if its extra movement is unused and closes at your own Movement turn end.
       Tleilaxu Ghola is separate from ordinary Revival and remains open until the actual turn ends.
@@ -505,6 +550,10 @@ export function TurnActionPromises(props: TurnActionProps) {
       Semuta Drug counts only when its native transfer and disposal actually complete after the answer.
       Committing to inspect multiple candidates, an earlier play or recovery alone does not count; the selected card is not promised.
       A committed private choice cannot be canceled. Its deadline, including for a whole No answer, is the actual turn end.
+      Ornithopter counts its actual physical flight declaration after the answer, when the card enters its played zone.
+      Later groups and disposal do not count again. Its deadline is your own Movement turn end; no flight mode or destination is promised.
+      Residual Poison counts the actual printed play, random leader death and disposal after the answer; no victim is promised.
+      Its whole No deadline is the original turn end. Earlier play, disposal or recovery alone does not count.
       Weather Control, Family Atomics and Harvester conditions count an actual accepted future printed-role play after the answer
       in the original open Storm or fresh spice-blow window. Earlier plays, disposal, other roles and recovery alone do not count.
       They do not promise a selected storm distance or resulting spice amount. Each condition closes only when its original native window closes.
@@ -564,12 +613,15 @@ export function TurnActionAnswers(props: TurnActionProps) {
       A remaining alliance condition stays open through temporary membership until that close. Neither answer promises another player’s consent.
       Current battle-plan conditions use the actual native plan; an open condition settles when both plans are revealed.
       Traitor conditions use the original Reveal or decline declaration, before later Karama or betrayal prevention.
-      Hajr, Tleilaxu Ghola, Nullentropy Box, Distrans, Juice of Sapho and Semuta Drug conditions require actual later printed-role plays, not earlier play, disposal or recovery alone.
+      Printed-card conditions require the actual later named printed use, not earlier play, disposal or recovery alone.
       Box counts at accepted activation and payment of 2 spice; the recovered card is private and is not promised by this condition.
       Hajr closes at your own Movement turn end even if its extra move is unused; Ghola and Box close at the actual turn end.
       Distrans and Juice of Sapho, including No, close at the actual turn end; a recipient, transferred card or order outcome is not promised.
       Semuta Drug counts the completed native transfer and disposal, not a multi-choice inspection commitment or recovery alone.
       Its selected card is not promised; a committed private choice cannot be canceled. Its whole No deadline is the actual turn end.
+      Ornithopter counts its physical flight declaration once, before later groups or disposal, and closes at your own Movement turn end.
+      Residual Poison counts its actual printed play, random leader death and disposal. No mode, destination or victim is promised;
+      its whole No deadline is the original turn end.
       Bids close with their lot; Revival closes with your native Revival opportunity.
       Shipment and movement close at your own Movement turn end; payment conditions last until the actual turn ends.
       A known Inflation Double opening can close payments earlier without closing Ghola.

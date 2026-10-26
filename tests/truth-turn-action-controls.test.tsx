@@ -32,7 +32,7 @@ const forceRevival = (counter: 'total' | 'normal' | 'elite' = 'total', minimum =
   ({ kind: 'action', action: { kind: 'forces', counter, minimum } });
 const leaderRevival = (leader: string): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
 const finalAlliance = (partner = 'r'): Expression => ({ kind: 'action', action: { kind: 'alliance', partner } });
-const printedCard = (effect: 'hajr' | 'ghola' | 'nullentropyBox' | 'distrans' | 'juiceOfSapho' | 'semutaDrug' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
+const printedCard = (effect: 'hajr' | 'ghola' | 'nullentropyBox' | 'distrans' | 'juiceOfSapho' | 'semutaDrug' | 'ornithopter' | 'residualPoison' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
 const shipmentPriceSource = (recipient = 'p', cunning?: string) => JSON.stringify(['karamaShipment', 2, recipient,
   ...(cunning ? ['cunning', cunning] : ['original'])]);
 const windowClaim = (effect: WindowCardEffect = 'weather', source = effect === 'harvester' ? 'controlled-native-blow'
@@ -179,6 +179,27 @@ function semutaPlay(stage: 'offer' | 'select' = 'offer', next?: Action): GameVie
   game.semutaReaction = { event: reactionEvent, stage, passed: stage === 'select', canCommit: stage === 'offer', blocked: null,
     candidates: stage === 'select' ? [candidate] : [] };
   game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard('semutaDrug'), payment()] };
+  return game;
+}
+function flightPlay(mode: 'range3' | 'twoGroups' = 'range3', continuation = false): GameView {
+  const card = richeseCards().find(card => card.effect === 'ornithopter'); assert.ok(card);
+  const game = projected(5, { type: 'move', forces: { 'arrakeen:10': 3, 'arrakeen:11': 1 }, eliteForces: { 'arrakeen:10': 1 },
+    territory: 'carthag', sector: 11, fighters: false,
+    ...(continuation ? { ornithopterEvent: 'controlled-flight' } : { movementCard: card.id, ornithopter: mode }) });
+  const me = game.players.find(player => player.id === 'p')!; me.hand = continuation ? [] : [card];
+  me.forces = { 'arrakeen:10': 4, 'arrakeen:11': 1 }; me.moved = continuation ? 1 : 0;
+  game.ornithopter = { card, blocked: null, modes: [{ mode: 'range3', blocked: null }, { mode: 'twoGroups', blocked: null }],
+    active: continuation ? { event: 'controlled-flight', mode, completed: 1, remaining: 1,
+      cohort: { forces: { 'arrakeen:10': 4, 'arrakeen:11': 1 }, elites: { 'arrakeen:10': 1 } } } : null };
+  game.turnActionPromises[0].mixed = { kind: 'and', terms: [printedCard('ornithopter'), physical('move', 4, 'carthag'), payment()] };
+  return game;
+}
+function residualPlay(): GameView {
+  const card = richeseCards().find(card => card.effect === 'residualPoison'); assert.ok(card);
+  const game = combat(false, { type: 'card', card: card.id, event: 'controlled-native-battle', target: 'a' });
+  game.players.find(player => player.id === 'p')!.hand = [card];
+  game.residualPoison = { card, event: 'controlled-native-battle', target: 'a', blocked: null };
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard('residualPoison'), payment()] };
   return game;
 }
 function nexus(next: Action = { type: 'alliance', target: 'r' }): GameView {
@@ -1296,17 +1317,20 @@ void test('turn-action printed-role editor uses public names without holdings or
   Object.defineProperty(game, 'distrans', { get() { throw Error('No private Distrans authoring inspection'); }, configurable: true });
   Object.defineProperty(game, 'saphoOptions', { get() { throw Error('No private Sapho authoring inspection'); }, configurable: true });
   Object.defineProperty(game, 'semutaReaction', { get() { throw Error('No private Semuta authoring inspection'); }, configurable: true });
+  Object.defineProperty(game, 'ornithopter', { get() { throw Error('No private flight authoring inspection'); }, configurable: true });
+  Object.defineProperty(game, 'residualPoison', { get() { throw Error('No private poison authoring inspection'); }, configurable: true });
   Object.defineProperty(game.turnActionPromises[0], 'cardPlays', { get() { throw Error('No private card-play stage'); } });
   const e = editor(physical(), false, game); select(e.tree(), '1', 'action', 'cardPlay');
   assert.deepEqual(e.value, printedCard()); assert.equal(e.error(), null);
   const choices = elements(find(e.tree(), 'id', 'truth-turn-action-1-effect')).filter(element => element.type === 'option');
-  assert.deepEqual(choices.map(choice => choice.props.value), ['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho', 'semutaDrug']);
+  assert.deepEqual(choices.map(choice => choice.props.value), ['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho', 'semutaDrug', 'ornithopter', 'residualPoison']);
   select(e.tree(), '1', 'effect', 'ghola'); assert.deepEqual(e.value, printedCard('ghola')); assert.equal(e.error(), null);
   select(e.tree(), '1', 'effect', 'karama'); assert.deepEqual(e.value, printedCard('ghola'));
   select(e.tree(), '1', 'effect', 'nullentropyBox'); assert.deepEqual(e.value, printedCard('nullentropyBox')); assert.equal(e.error(), null);
-  for (const effect of ['distrans', 'juiceOfSapho', 'semutaDrug'] as const) {
+  for (const effect of ['distrans', 'juiceOfSapho', 'semutaDrug', 'ornithopter', 'residualPoison'] as const) {
     select(e.tree(), '1', 'effect', effect); assert.deepEqual(e.value, printedCard(effect)); assert.equal(e.error(), null);
-    for (const extra of [{ target: 'r' }, { give: 'private-card' }, { scope: 'movement' }, { event: 'private-source' }, { mode: 'first' }])
+    for (const extra of [{ target: 'r' }, { give: 'private-card' }, { scope: 'movement' }, { event: 'private-source' }, { mode: 'first' },
+      { territory: 'carthag' }, { ornithopter: 'range3' }, { victim: 'private-leader' }])
       assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'cardPlay', effect, ...extra } }, game, 'p'));
   }
   assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'cardPlay', effect: 'ghola', card: 'private-card-id' } }, game, 'p'));
@@ -1324,17 +1348,20 @@ void test('turn-action printed-role editor uses public names without holdings or
   assert.match(html, /Play Juice of Sapho in its printed role after this answer this turn/);
   assert.match(html, /Complete a printed Semuta Drug transfer and disposal after this answer this turn/);
   assert.match(html, /Committing to inspect multiple candidates, an earlier play or recovery alone does not count/);
+  assert.match(html, /Declare a physical Ornithopter flight after this answer this turn/);
+  assert.match(html, /Complete a printed Residual Poison play after this answer this turn/);
+  assert.match(html, /Later groups and disposal do not count again/);
   assert.match(html, /not a particular recipient, transferred card or order outcome/);
   assert.match(html, /Hajr counts when played even if its extra movement is unused/);
   assert.match(html, /an actual later replay after Box recovery does/); assert.doesNotMatch(html, /private-card-id|controlled-ghola|controlled-hajr/);
   const full = editor({ kind: 'or', terms: [printedCard(), printedCard('nullentropyBox')] }, false, game);
   for (let count = 3; count <= 16; count++) {
     click(control(full.tree(), 'add-action-1')); select(full.tree(), `1.${count}`, 'action', 'cardPlay');
-    select(full.tree(), `1.${count}`, 'effect', count % 3 === 0 ? 'semutaDrug' : count % 2 ? 'distrans' : 'juiceOfSapho');
+    select(full.tree(), `1.${count}`, 'effect', count % 2 ? 'ornithopter' : 'residualPoison');
   }
   assert.equal(full.error(), null); assert.match(full.html(), /16 \/ 16 conditions/);
   assert.equal(control(full.tree(), 'add-action-1').props.disabled, true);
-  const deep = editor({ kind: 'and', terms: [fact(), printedCard('semutaDrug')] }, false, game);
+  const deep = editor({ kind: 'and', terms: [fact(), printedCard('residualPoison')] }, false, game);
   click(control(deep.tree(), 'or-1.2')); click(control(deep.tree(), 'and-1.2.1')); click(control(deep.tree(), 'or-1.2.1.1'));
   assert.equal(deep.error(), null); assert.match(deep.html(), /4 \/ 4 levels of grouping/);
   const frozen = editor(printedCard(), true, game); select(frozen.tree(), '1', 'effect', 'ghola');
@@ -1673,9 +1700,106 @@ void test('Semuta guides reject extra fields, offer-stage selection and fake car
   assert.equal(guide({ game: unrelated, busy: false, act() { assert.fail('A pending fresh discard owns its native controls'); } }).props.disabled, true);
 });
 
+void test('Ornithopter guides preserve exact native initial modes and played-zone continuation without requiring a new role atom', () => {
+  for (const mode of ['range3', 'twoGroups'] as const) {
+    const game = flightPlay(mode), sent: Action[] = [];
+    Object.defineProperty(game.turnActionPromises[0], 'cardPlays', { get() { throw Error('No private flight receipt inspection'); } });
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    assert.equal(sent[0].movementCard, 'richese-ornithopter'); assert.equal(sent[0].ornithopter, mode);
+    assert.equal(Object.hasOwn(sent[0], 'ornithopterEvent'), false);
+    assert.deepEqual(sent[0].eliteForces, { 'arrakeen:10': 1 }); assert.equal(sent[0].fighters, false);
+    assert.match(markup(game), /Declare Ornithopter/);
+  }
+  const game = flightPlay('twoGroups', true), sent: Action[] = [];
+  game.turnActionPromises[0].mixed = claim();
+  assert.equal(game.players.find(player => player.id === 'p')!.hand!.length, 0);
+  const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+  assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+  assert.equal(sent[0].ornithopterEvent, 'controlled-flight'); assert.equal(Object.hasOwn(sent[0], 'movementCard'), false);
+  assert.equal(Object.hasOwn(sent[0], 'ornithopter'), false);
+  const preparation = flightPlay(); preparation.turnActionPromises[0].mixed = claim();
+  assert.equal(guide({ game: preparation, busy: false, act() {} }).props.disabled, false);
+});
+
+void test('Ornithopter quotes and active events cannot be bypassed by generic move packets or stale callbacks', () => {
+  for (const change of [
+    (game: GameView) => { game.ornithopter = null; },
+    (game: GameView) => { game.ornithopter = { ...game.ornithopter! }; },
+    (game: GameView) => { game.ornithopter!.modes[0].blocked = 'A binding No prevents this printed use.'; },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.hand = []; },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.forces['arrakeen:10'] = 1; },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.moved = 1; },
+    (game: GameView) => { game.active = 'a'; },
+    (game: GameView) => { game.turnActionPromises[0].mixed = payment(); },
+    (game: GameView) => { game.response = { kind: 'guildIncome', owner: 'a', amount: 1, passed: [] }; },
+  ]) {
+    const game = flightPlay(), sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); change(game); press(button); assert.deepEqual(sent, []);
+  }
+  for (const extra of [{ movementCard: 'unheld-flight-card' }, { ornithopter: 'unsupported' }, { ornithopterEvent: 'old-flight' },
+    { target: 'a' }, { leader: 'private-leader' }, { mode: 'range3' }]) {
+    const game = flightPlay(); Object.assign(game.turnActionGuide!.action, extra);
+    assert.equal(guide({ game, busy: false, act() { assert.fail('A new flight must use the current native declaration'); } }).props.disabled, true);
+  }
+  for (const extra of [{ ornithopterEvent: 'old-flight' }, { movementCard: 'richese-ornithopter' }, { ornithopter: 'twoGroups' }]) {
+    const game = flightPlay('twoGroups', true); Object.assign(game.turnActionGuide!.action, extra);
+    assert.equal(guide({ game, busy: false, act() { assert.fail('A continuation cannot declare or recount its played card'); } }).props.disabled, true);
+  }
+  const missingEvent = flightPlay('twoGroups', true); delete missingEvent.turnActionGuide!.action.ornithopterEvent;
+  assert.equal(guide({ game: missingEvent, busy: false, act() { assert.fail('An active flight requires its current event'); } }).props.disabled, true);
+  const current = flightPlay('twoGroups', true), sent: Action[] = [], saved = guide({ game: current, busy: false, act(action) { sent.push(action); } });
+  assert.equal(saved.props.disabled, false); current.ornithopter!.active!.event = 'next-flight'; press(saved); assert.deepEqual(sent, []);
+  const direct = flightPlay(); direct.turnActionGuide!.action = { type: 'card', card: 'richese-ornithopter',
+    turnActionPromiseEvent: event, turnActionPromisePhase: 5 };
+  assert.equal(guide({ game: direct, busy: false, act() { assert.fail('Ornithopter requires a physical native flight declaration'); } }).props.disabled, true);
+  const no = flightPlay(); no.turnActionPromises[0].answer = false; no.ornithopter!.blocked = 'A binding No prevents this printed use.';
+  assert.equal(guide({ game: no, busy: false, act() { assert.fail('The generic route cannot bypass the native No quote'); } }).props.disabled, true);
+});
+
+void test('Residual Poison guides use the exact canonical card and actual current opponent without inspecting leaders', () => {
+  const game = residualPlay(), sent: Action[] = [];
+  for (const player of game.players) {
+    Object.defineProperty(player, 'leaders', { get() { throw Error('The native quote owns the random victim pool'); }, configurable: true });
+    if (player.id !== 'p') Object.defineProperty(player, 'hand', { get() { throw Error('No foreign custody inspection'); }, configurable: true });
+  }
+  Object.defineProperty(game.turnActionPromises[0], 'cardPlays', { get() { throw Error('No private poison receipt inspection'); } });
+  const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+  assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+  assert.deepEqual(sent[0], { type: 'card', card: 'richese-residual-poison', event: 'controlled-native-battle', target: 'a',
+    turnActionPromiseEvent: event, turnActionPromisePhase: 6 });
+  assert.match(markup(game), /Play Residual Poison against Asker/); assert.match(markup(game), /the native leader death is random/);
+});
+
+void test('Residual Poison rejects blocked No quotes, stale battles, false targets and victim selectors without generic fallback', () => {
+  for (const change of [
+    (game: GameView) => { game.residualPoison = null; },
+    (game: GameView) => { game.residualPoison = { ...game.residualPoison! }; },
+    (game: GameView) => { game.residualPoison!.blocked = 'A binding No prevents this printed use.'; },
+    (game: GameView) => { game.residualPoison!.event = 'next-battle'; },
+    (game: GameView) => { game.battle!.revealed = true; },
+    (game: GameView) => { game.battle!.event = 'next-battle'; },
+    (game: GameView) => { game.battle!.defender = 'r'; },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.hand = []; },
+    (game: GameView) => { game.turnActionPromises[0].mixed = planClaim(); },
+    (game: GameView) => { game.decision = { kind: 'auctionPayment', player: 'p' }; },
+  ]) {
+    const game = residualPlay(), sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); change(game); press(button); assert.deepEqual(sent, []);
+  }
+  for (const extra of [{ event: 'old-battle' }, { target: 'p' }, { target: 'r' }, { leader: 'selected-victim' },
+    { victim: 'selected-victim' }, { amount: 1 }, { mode: 'poison' }, { random: 0 }]) {
+    const game = residualPlay(); Object.assign(game.turnActionGuide!.action, extra);
+    const button = guide({ game, busy: false, act() { assert.fail('Only the actual printed Residual Poison packet is allowed'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+  const no = residualPlay(); no.turnActionPromises[0].answer = false; no.residualPoison!.blocked = 'A binding No prevents this printed use.';
+  assert.equal(guide({ game: no, busy: false, act() { assert.fail('Generic preparation cannot bypass the native No quote'); } }).props.disabled, true);
+});
+
 void test('printed-card history retains only raw aggregate conditions and their distinct native deadlines', () => {
   const game = projected(8); game.turnActionGuide = null;
-  game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard(), { kind: 'and', terms: [fact(), printedCard('ghola'), printedCard('nullentropyBox'), printedCard('distrans'), printedCard('juiceOfSapho'), printedCard('semutaDrug')] }] };
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard(), { kind: 'and', terms: [fact(), printedCard('ghola'), printedCard('nullentropyBox'), printedCard('distrans'), printedCard('juiceOfSapho'), printedCard('semutaDrug'), printedCard('ornithopter'), printedCard('residualPoison')] }] };
   game.turnActionPromises[0].answer = false;
   for (const key of ['cardPlays', 'compiled', 'combat', 'preparation'])
     Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
@@ -1689,6 +1813,10 @@ void test('printed-card history retains only raw aggregate conditions and their 
   assert.match(html, /The deadline is the actual turn end, including for a whole No answer/);
   assert.match(html, /Semuta Drug counts only when its native transfer and disposal actually complete after the answer/);
   assert.match(html, /A committed private choice cannot be canceled/);
+  assert.match(html, /Ornithopter counts its actual physical flight declaration after the answer/);
+  assert.match(html, /Later groups and disposal do not count again/);
+  assert.match(html, /Residual Poison counts the actual printed play, random leader death and disposal after the answer/);
+  assert.match(html, /Its whole No deadline is the original turn end/);
   assert.match(html, /remains open until the actual turn ends/); assert.doesNotMatch(html, /cardPlays|compiled|controlled-hajr|controlled-ghola/);
 });
 
@@ -1720,8 +1848,6 @@ void test('turn-action guide forwards exact shipment, movement, preparation and 
     projected().turnActionGuide!.action,
     { type: 'ship', territory: 'arrakeen', sector: 10, amount: 4, elite: 1, allyPayment: 0 },
     { type: 'guildShip', from: 'reserves', territory: 'carthag', sector: 11, amount: 6, elite: 0, allyPayment: 3 },
-    { type: 'move', territory: 'carthag', sector: 11, forces: { 'arrakeen:10': 4 }, eliteForces: {},
-      movementCard: 'controlled-ornithopter', ornithopter: 'twoGroups', ornithopterEvent: 'controlled-flight' },
     { type: 'card', card: 'controlled-hajr' }, { type: 'prepareAdvisors', territory: 'arrakeen' },
     { type: 'revealNoField', territory: 'arrakeen', sector: 10 }, { type: 'endMovement' },
   ];
