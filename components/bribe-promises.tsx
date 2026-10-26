@@ -60,6 +60,11 @@ export function BribePromiseGuideButton(props: BribePromiseProps) {
 export function BribePromises(props: BribePromiseProps) {
   const own = props.game.bribePromises.filter(promise => promise.player === props.game.me);
   if (!own.length) return null;
+  const live = liveBribePromises(own, props.game.me, props.game.turn).length > 0;
+  const pendingChoamIncome = live && props.game.status === 'playing' &&
+    props.game.players.find(player => player.id === props.game.me)?.faction === 'choam' &&
+    Number.isSafeInteger(props.game.phase) && props.game.phase >= 0 && props.game.phase <= 2 &&
+    props.game.charity.incomePending && !props.game.charity.incomeCanceled && props.game.charity.multiplier > 0;
   const name = (id: string) => props.game.players.find(player => player.id === id)?.name ?? 'the named recipient';
   return <section className="notice space-y-3" aria-label="Your Truthtrance bribe promises" id="bribe-promise-guidance">
     <h3>Your bribe promises</h3>
@@ -74,6 +79,10 @@ export function BribePromises(props: BribePromiseProps) {
       No forbids reaching that minimum during the rest of this turn. Smaller payments to the named recipient add together.
       Prior payments, gifts and ally aid do not count.
     </p>
+    {pendingChoamIncome && <p className="fine" data-testid="choam-pending-payment-income">
+      Automatic CHOAM income resolves at the Charity opening. It is not current spendable cash.
+      Your ordinary Charity claim is separate. Karama or opposing claims can change the funding.
+      Current payment guides may still offer legal prepayments.</p>}
     <p className="fine">
       The sender pays immediately. The recipient collects the payment at the start of Mentat Pause.
       Payments made during Mentat Pause wait until the start of next turn&apos;s Mentat Pause.
@@ -82,6 +91,6 @@ export function BribePromises(props: BribePromiseProps) {
       The future claim is not current spendable spice; only actual payments add to the recorded total.
       {' '}<a href="/rules#truthtrance-bribe">Bribe promise rules</a>.
     </p>
-    {liveBribePromises(own, props.game.me, props.game.turn).length > 0 && <BribePromiseGuideButton {...props} />}
+    {live && <BribePromiseGuideButton {...props} />}
   </section>;
 }

@@ -122,6 +122,40 @@ void test('own bribe promises persist with named cumulative progress, delayed sp
   assert.equal(BribePromises({ game: { ...game, me: 'missing' }, busy: false, send() {} }), null);
 });
 
+void test('own pending automatic CHOAM income guidance preserves legal current prepayment callbacks', () => {
+  for (const phase of [0, 2]) {
+    const game = projected(phase); game.players.find(player => player.id === 'p')!.faction = 'choam'; game.expansions = ['choam'];
+    game.charity.incomePending = true; game.charity.incomeCanceled = false;
+    const html = markup(game); assert.match(html, /data-testid="choam-pending-payment-income"/);
+    assert.match(html, /Automatic CHOAM income resolves at the Charity opening/); assert.match(html, /not current spendable cash/);
+    assert.match(html, /ordinary Charity claim is separate/); assert.match(html, /Karama or opposing claims can change the funding/);
+    assert.match(html, /may still offer legal prepayments/);
+    if (phase === 0) {
+      const sent: Action[] = [], button = guide({ game, busy: false, send(action) { sent.push(action); } });
+      assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.bribePromiseGuide!.action);
+      game.bribeOptions.available = 0; press(button); assert.equal(sent.length, 1, 'Pending automatic income does not raise the current payment quote.');
+    }
+  }
+});
+
+void test('automatic CHOAM payment note is owner-only, live-only and ends when income resolves or is canceled', () => {
+  for (const change of [
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.faction = 'emperor'; game.players.find(player => player.id === 'a')!.faction = 'choam'; },
+    (game: GameView) => { game.me = 'a'; },
+    (game: GameView) => { game.charity.incomePending = false; },
+    (game: GameView) => { game.charity.multiplier = 0; },
+    (game: GameView) => { game.charity.incomePending = false; game.charity.incomeCanceled = true; },
+    (game: GameView) => { game.phase = 3; },
+    (game: GameView) => { game.bribePromises[0].fulfilled = true; },
+    (game: GameView) => { game.bribePromises[0].released = true; },
+  ]) {
+    const game = projected(1); game.players.find(player => player.id === 'p')!.faction = 'choam'; game.expansions = ['choam'];
+    game.charity.incomePending = true; game.charity.incomeCanceled = false; game.bribePromiseGuide = null;
+    assert.match(markup(game), /data-testid="choam-pending-payment-income"/); change(game);
+    assert.doesNotMatch(markup(game), /data-testid="choam-pending-payment-income"/);
+  }
+});
+
 void test('actual guide callbacks forward exact ordinary bribes out of turn throughout their supported phases', () => {
   for (const phase of [0, 3, 4, 7]) {
     const game = projected(phase), sent: Action[] = [];

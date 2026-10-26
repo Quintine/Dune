@@ -1470,6 +1470,38 @@ void test('whole payment timelines forward an exact positive unused Charity quot
   assert.match(markup(game), /future claim is not current spendable spice/);
 });
 
+void test('whole CHOAM commitments explain pending automatic income while ordinary Charity still waits for its native quote', () => {
+  const game = projected(2, { type: 'charity' }); game.players.find(player => player.id === 'p')!.faction = 'choam'; game.expansions = ['choam'];
+  game.charity.incomePending = true; game.charity.incomeCanceled = false;
+  const html = markup(game); assert.match(html, /data-testid="choam-pending-payment-income"/);
+  assert.match(html, /not current spendable cash/); assert.match(html, /ordinary Charity claim is separate/);
+  assert.match(html, /Karama or opposing claims can change the funding/); assert.match(html, /may still offer legal prepayments/);
+  const sent: Action[] = [], pending = guide({ game, busy: false, act(action) { sent.push(action); } });
+  assert.equal(pending.props.disabled, true); press(pending); assert.equal(sent.length, 0);
+  game.charity.incomePending = false; game.charity.incomeCanceled = true;
+  press(pending); assert.equal(sent.length, 0, 'The old source quote remains stale after automatic income is canceled.');
+  assert.doesNotMatch(markup(game), /data-testid="choam-pending-payment-income"/);
+  const current = guide({ game, busy: false, act(action) { sent.push(action); } });
+  assert.equal(current.props.disabled, false); press(current); assert.equal(sent[0], game.turnActionGuide!.action);
+});
+
+void test('whole automatic-income guidance stays private to live CHOAM owners before the Charity opening resolves', () => {
+  for (const change of [
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.faction = 'emperor'; game.players.find(player => player.id === 'a')!.faction = 'choam'; },
+    (game: GameView) => { game.me = 'a'; },
+    (game: GameView) => { game.charity.incomePending = false; game.charity.incomeCanceled = true; },
+    (game: GameView) => { game.charity.multiplier = 0; },
+    (game: GameView) => { game.phase = 3; },
+    (game: GameView) => { game.turnActionPromises[0].fulfilled = true; },
+    (game: GameView) => { game.turnActionPromises[0].released = true; },
+  ]) {
+    const game = projected(1); game.players.find(player => player.id === 'p')!.faction = 'choam'; game.expansions = ['choam'];
+    game.charity.incomePending = true; game.charity.incomeCanceled = false; game.turnActionGuide = null;
+    assert.match(markup(game), /data-testid="choam-pending-payment-income"/); change(game);
+    assert.doesNotMatch(markup(game), /data-testid="choam-pending-payment-income"/);
+  }
+});
+
 void test('whole Charity guides reject claimed, stale, unready native quotes and extra fields without generic fallback', () => {
   for (const change of [
     (game: GameView) => { game.players.find(player => player.id === 'p')!.charityClaimed = true; },

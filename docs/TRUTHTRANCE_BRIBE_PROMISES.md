@@ -1,5 +1,13 @@
 # Truthtrance ordinary bribe-payment promises
 
+**27 October CHOAM follow-up:** the owned automatic opening receipt can fund
+later installments once, independently of one remaining ordinary Charity claim.
+Current payments use current cash. Native counters and opposing claims retain
+their rights, including a claim settling on CHOAM's last response pass. Persistent
+owner guidance explains the wait. This supersedes the opening-income exclusion
+below, not other future revenue or broader optional-combination boundaries.
+[Current contract](TRUTHTRANCE_TURN_ACTIONS.md#choam-opening-income--27-october-2026).
+
 **27 October Charity follow-up:** an owned remaining ordinary claim can follow
 actual prepayments and fund a later installment, with current-phase guides for
 both actions. Positive answers reopen Charity readiness, and own passing or an

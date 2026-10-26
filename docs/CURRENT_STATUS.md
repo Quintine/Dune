@@ -20,6 +20,34 @@ open mode gates.
 Continue remaining Basic functions before Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance / CHOAM opening-income installments — 27 October. Prototyped / Partial.**
+Whole, bare, grouped and mixed payments can share one native automatic CHOAM
+receipt plus one distinct ordinary Charity claim. Current guides spend only
+actual cash. Native Karama cancellation and opposing claims retain their rights,
+including an Advanced BG claim settling on CHOAM's final response pass. Persistent
+owner guidance explains the wait and separate claim. Four legal profiles use
+these guides; strategy and calibration remain deferred.
+
+Final frozen **5 files, 108/108**, types/lint/build and seven native journeys
+pass. The preceding 24-file run passes 339/340, including early movement; its
+one failure expected discard before the answer. That test assertion is repaired
+and all 11 new cases pass in the final union. Product source is identical across
+these runs, with an explicit private inheritance receipt. Journeys include 57
+GameTable SSR renders, 2 isolated answer renders, 7 actual answer callbacks
+and 17 exact guide callbacks (14 whole, 3 scalar). Genuine selected-Ix sources
+use 18 Basic or 25 four-seat Advanced opening actions. Inventories and further
+counts derive from native arrays; CHOAM starts with its actual two spice.
+Actual paths cover 2→automatic 6, four-seat 2→8→ordinary 2, canceled funding,
+shared desert shipment and the last-pass forced claim. Counter eligibility is
+supplied by an original unopened-deal Karama, preserving the native response.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-choam-income-proof-v3/`;
+journeys/HTML: adjacent `20261027-truth-choam-income-runtime/run-v3/`.
+No HTTP/storage boundary, saved-game/database, restart or deployed operation
+changes. This is local native/SSR evidence. Other future revenue, wider deals/
+optional combinations, complete modes and final acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#choam-opening-income--27-october-2026).
+
 **Truthtrance / Charity-funded installments — 27 October. Prototyped / Partial.**
 One remaining owned claim can fund payments after actual prepayments. Whole,
 bare, grouped and mixed questions share that timeline, cumulative caps and the

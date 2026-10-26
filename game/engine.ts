@@ -15366,17 +15366,35 @@ function bribeQuestionWindow(g: Game): boolean {
   return bribePromiseTurn(g) && !bribeTimingBlock({ ...g, truthtrance: null,
     inflation: g.inflation?.side === 'double' ? null : g.inflation });
 }
-/** One owned claim, using the same entitlement as real Charity and existing
- * preparation quotes. Future phase projection consumes no hidden card. */
-function forecastOrdinaryCharity(source: Game, owner: string): Game | null {
-  const before = getPlayer(source, owner);
-  if (source.phase > 2 || before.charityTurn === source.turn ||
-    source.phase === 2 && source.ready.includes(owner)) return null;
+/** Advance only the owned financial forecast, without drawing hidden cards or
+ * completing foreign choices at the real table. */
+function charityForecastContext(source: Game): Game {
   const g = structuredClone(source); g.phase = 2; g.ready = [];
   g.truthtrance = null; g.response = null; g.decision = null; g.phaseOpening = null;
   g.pendingKarama = null; g.pendingTreacheryDiscard = null;
   g.spiceWindow = null; g.spiceResolution = null; g.spiceSequence = null; g.nexus = false;
   g.stormCardWindowOpen = false; g.thumperWindowOpen = false; g.amalWindowOpen = false;
+  return g;
+}
+/** The permitted opening outcome is a possible native receipt. An actual
+ * opposing cancellation still settles independently and can remove it. */
+function forecastChoamOpeningIncome(source: Game, owner: string): Game | null {
+  if (source.status !== 'playing' || source.phase < 0 || source.phase > 2 ||
+    getPlayer(source, owner).faction !== 'choam' || source.choamCharity?.turn === source.turn) return null;
+  const g = charityForecastContext(source), player = getPlayer(g, owner);
+  const amount = choamOpeningIncome(g, player);
+  if (amount <= 0) return null;
+  player.spice += amount;
+  g.choamCharity = { turn: g.turn, canceled: false };
+  return g;
+}
+/** One owned claim, using the same entitlement as real Charity and existing
+ * preparation quotes. Opening income never consumes this separate claim. */
+function forecastOrdinaryCharity(source: Game, owner: string): Game | null {
+  const before = getPlayer(source, owner);
+  if (source.phase > 2 || before.charityTurn === source.turn ||
+    source.phase === 2 && source.ready.includes(owner)) return null;
+  const g = charityForecastContext(source);
   const player = getPlayer(g, owner);
   if (charityQuote(g, player).total <= 0) return null;
   try {
@@ -15417,6 +15435,9 @@ function* ordinaryPaymentSeeds(source: Game, actor: string, payments: readonly O
     beforeFuture(current);
     const actions: Action[] = split.before.map(payment => ({ type: 'bribe', target: payment.recipient, amount: payment.amount }));
     if (!split.after.length) { yield { game: current, actions }; return; }
+    const income = forecastChoamOpeningIncome(current, actor);
+    if (income) for (const paid of ordinaryPaymentSeeds(income, actor, split.after))
+      yield { game: paid.game, actions: [...actions, ...paid.actions] };
     const claimed = forecastOrdinaryCharity(current, actor);
     if (!claimed) return;
     quoteOrdinaryPayments(claimed, actor, split.after);
@@ -28788,15 +28809,8 @@ type ShipmentCompletionSeed = { game: Game; actions: Action[]; early: { phase: n
 function earlyRevivalCompletionSeeds(initial: Game, source: Game, owner: string): ShipmentCompletionSeed[] {
   let seeds: ShipmentCompletionSeed[] = [{ game: initial, actions: [], early: [] }];
   if (source.phase > 4) return seeds;
-  if (source.phase <= 2 && source.choamCharity?.turn !== source.turn && getPlayer(source,owner).faction === 'choam') {
-    // The owned opening is automatic, not an executable future claim. Witness
-    // its allowed fixed income only; the real table retains the counter.
-    const projected = structuredClone(initial);
-    const choam = getPlayer(projected,owner);
-    choam.spice += choamOpeningIncome(projected,choam);
-    projected.choamCharity = {turn:projected.turn,canceled:false};
-    seeds.push({game:projected,actions:[],early:[]});
-  }
+  const openingIncome = forecastChoamOpeningIncome(initial, owner);
+  if (openingIncome) seeds.push({ game: openingIncome, actions: [], early: [] });
   if (source.phase <= 2 && !(source.phase === 2 && source.ready.includes(owner))) {
     const charitySeeds: ShipmentCompletionSeed[] = [];
     for (const seed of seeds) {
@@ -37957,7 +37971,9 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   })) guardTurnActionAuctionClosure(g, id, liveTurnActionPromises(state.turnActionPromises ?? [], id, state.turn));
   const forcedThumperDraw = thumperForcedDraws.delete(g);
   const promiseActor = forcedThumperDraw ? undefined : id;
-  const voluntary = forcedThumperDraw ? undefined : { actor: id, action };
+  // A final counter pass settles the opposing claimant's effect; it does not
+  // turn that forced debit into the passer's voluntary payment or expenditure.
+  const voluntary = forcedThumperDraw || action.type === 'passResponse' ? undefined : { actor: id, action };
   reconcileTravelPromises(g, promiseActor, action, state.phase);
   reconcileBidPromises(g, voluntary);
   reconcileRevivalPromises(g, voluntary);

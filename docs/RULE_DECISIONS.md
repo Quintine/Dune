@@ -1,5 +1,22 @@
 # Rule decision index
 
+## Truthtrance CHOAM opening-income promises — 27 October 2026
+
+Prototyped / Partial. Compose the native CHOAM opening receipt with ordinary
+payment witnesses, using the existing amount and current-turn receipt marker
+once. A separate eligible ordinary Charity claim remains available once, and
+all installments share the resulting purse with other commitments. The allowed
+opening outcome supplies a possible detached witness; it grants no current
+cash or right to choose an opponent's counter. Actual cancellation or another
+faction's claim can release a now-unfunded answer under the bounded planner.
+A payer's final response pass settles the opposing claimant's effect rather
+than making its debit voluntary; optional protective Karama use remains a
+native choice. This extends the existing whole-answer settlement convention to
+legacy financial promises. It is software composition, not a dedicated
+publisher worked example or complete future-income solver.
+[Native income authority and provisional shortfall policy](CHOAM_CHARITY_FUNDING.md#source-and-selected-prototype-policy--24-october-2026);
+[promise contract](TRUTHTRANCE_TURN_ACTIONS.md#choam-opening-income--27-october-2026).
+
 ## Truthtrance Charity-funded installments — 27 October 2026
 
 Prototyped / Partial. Extend ordinary payment witnesses with one remaining owned
@@ -10,8 +27,8 @@ future Charity and share the resulting purse with every other commitment.
 Own premature claiming or passing cannot evade an answer. Recipient receipts
 remain deferred. This is bounded composition of existing Charity/bribery and
 Truthtrance authority, without inventing future auction/collection income,
-foreign gifts or a selected public route. Unresolved CHOAM own-opening income
-and wider optional combinations retain their separate boundaries.
+foreign gifts or a selected public route. The later CHOAM opening-income
+extension is recorded above; wider optional combinations remain bounded.
 [Contract](TRUTHTRANCE_TURN_ACTIONS.md#charity-funded-installments--27-october-2026).
 
 ## Truthtrance printed Amal and phase openings — 27 October 2026

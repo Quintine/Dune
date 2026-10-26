@@ -1,5 +1,52 @@
 # Truthtrance combined current-turn actions
 
+## CHOAM opening income — 27 October 2026
+
+**Prototyped / Partial.** Whole, bare, grouped and mixed ordinary payment
+witnesses can use CHOAM's own automatic opening receipt. They first spend actual
+available cash, then wait for the real Charity opening before using its income.
+The detached calendar reuses the native amount, including configured Inflation
+and Homeworld additions, and the current-turn receipt prevents repeated credit.
+The automatic receipt does not consume the separate ordinary Charity claim.
+For three seats, native starting cash 2 plus opening income 6 can fund 8; after
+those actual installments, a remaining eligible ordinary claim of 2 can fund 10.
+Different recipients and later physical shipment share this one purse.
+
+The allowed receipt is a possible witness rather than a selected foreign
+response. Actual Karama cancellation removes that modeled funding; a smaller
+cash-plus-ordinary-claim answer can survive. Another faction's actual ordinary
+claim debits CHOAM under its existing funding policy and may release a now-
+unfunded answer. This also applies when CHOAM takes the final response pass on
+Advanced Bene Gesserit's claim: the opposing claim owns the debit. Passing does
+not become voluntary spending or require using a held protective Karama. The
+same settlement attribution now applies to legacy financial promises.
+
+No future-income action, actual wallet, ordinary claim or chosen route is
+installed by a quote. Earlier card windows cannot spend the later receipt.
+Human guides send only currently affordable payments or an actually legal
+ordinary claim; native response controls resolve the opening. Persistent
+owner-only text explains pending income, the separate claim and possible
+opposition. Busy, owner, event, modal and current-quote checks remain. Four
+profiles use the native guides; strategy and calibration remain deferred.
+
+This is bounded composition of existing payment, Charity and Truthtrance
+authority. Unknown future market/card/collection income, gifts and wider
+optional compositions are not modeled. Release means impossibility in that
+bounded witness, not an exhaustive proof against every possible negotiated
+future. Full modes, comprehensive review and final acceptance remain open.
+Native source/policy: [CHOAM funding](CHOAM_CHARITY_FUNDING.md).
+Final frozen evidence: 5 affected files, 108/108, types/lint/build and seven
+native/SSR/control journeys pass (57 GameTable renders, 2 isolated answer renders,
+7 answer callbacks, 14 whole and 3 scalar guide callbacks). Sources use
+18 Basic or 25 four-seat Advanced native actions with actual opening cash 2,
+47 Treachery Cards and original Traitor/Spice inventories. Private proof:
+`/home/quintine/.local/share/dune/checkpoints/20261027-truth-choam-income-proof-v3/`;
+journeys/HTML: adjacent `20261027-truth-choam-income-runtime/run-v3/`.
+The preceding 24-file run passes 339/340, including early movement. Its one
+incorrect pre-answer discard assertion is repaired and all 11 new cases pass
+in the final union; product source is unchanged, with recorded inheritance.
+This is local native/SSR evidence, not browser hydration or deployed acceptance.
+
 ## Charity-funded installments — 27 October 2026
 
 **Prototyped / Partial.** Ordinary payment witnesses can now schedule one
@@ -31,8 +78,8 @@ expiry it cannot be reserved again. Cumulative No caps and original history
 persist. Four profiles consume legal guides; strategy and calibration remain
 deferred. Native phase controls handle waiting before the actual Charity phase.
 
-Other future income, unresolved CHOAM own-opening income, wider card/optional
-compositions, complete modes and final assurance remain open. Existing native
+The later CHOAM opening-income extension is recorded above. Other future income,
+wider card/optional compositions, complete modes and final assurance remain open. Existing native
 ordinary entitlement for another faction is quoted without choosing CHOAM's
 foreign opening response. This is a bounded extension, not full planning of all
 possible deals or later collection.

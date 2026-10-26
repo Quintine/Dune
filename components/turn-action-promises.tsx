@@ -361,6 +361,10 @@ export function TurnActionPromises(props: TurnActionProps) {
   const game = props.game, own = game.turnActionPromises.filter(promise => promise.player === game.me);
   if (!own.length) return null;
   const live = own.some(promise => promise.turn === game.turn && !promise.fulfilled && !promise.released);
+  const pendingChoamIncome = live && game.status === 'playing' &&
+    game.players.find(player => player.id === game.me)?.faction === 'choam' &&
+    Number.isSafeInteger(game.phase) && game.phase >= 0 && game.phase <= 2 &&
+    game.charity.incomePending && !game.charity.incomeCanceled && game.charity.multiplier > 0;
   return <section className="notice space-y-3" aria-label="Your Truthtrance turn-action promises" id="turn-action-promise-guidance">
     <h3>Your battle and turn-action promises</h3>
     <ul>{own.map(promise => <li key={promise.event}>
@@ -376,6 +380,10 @@ export function TurnActionPromises(props: TurnActionProps) {
       Separate No answers each create their own restriction. Legal alternatives remain available; no fixed branch is selected for you.
       Current facts freeze at the answer and create no promise to keep cards, spice or forces afterward.
       Only the aggregate answer is shared. Individual fact answers and any reduced future branch remain private.</p>
+    {pendingChoamIncome && <p className="fine" data-testid="choam-pending-payment-income">
+      Automatic CHOAM income resolves at the Charity opening. It is not current spendable cash.
+      Your ordinary Charity claim is separate. Karama or opposing claims can change the funding.
+      Current payment guides may still offer legal prepayments.</p>}
     <p className="fine">Count the sum of future real ordinary payments to each named recipient after the answer.
       Earlier payments, gifts and ally aid do not count. The sender pays immediately; the recipient collects at the next Mentat opening.
       Payments made during Mentat Pause wait until next turn&apos;s Mentat opening; collection never counts twice.
