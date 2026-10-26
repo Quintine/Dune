@@ -1,3 +1,4 @@
+import { parseAllianceClaim, allianceClaimText, alliancePromiseModeSupported, type AllianceClaim } from './alliance-promises';
 import { parseBribeClaim, bribeClaimText, bribePromiseModeSupported, type BribeClaim } from './bribe-promises';
 import { parseRevivalClaim, revivalClaimText, revivalPromiseModeSupported, type RevivalClaim } from './revival-promises';
 import { parseMovementClaim, movementClaimText, movementPromiseTargetAvailable, MovementClaimError, type MovementClaim } from './movement-promises';
@@ -62,6 +63,7 @@ export type TruthFact =
   | { kind: 'spice'; compare: 'eq' | 'gte' | 'lte'; value: number }
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type TruthQuestion =
+  | ({ kind: 'alliance'; target: string } & AllianceClaim)
   | ({ kind: 'bribe'; target: string } & BribeClaim)
   | ({ kind: 'revival'; target: string } & RevivalClaim)
   | ({ kind: 'bid'; target: string } & BidClaim)
@@ -216,6 +218,17 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       g.players.some((p) => p.id === v.target),
     'Ask one other player.',
   );
+  if (v.kind === 'alliance') {
+    check(Object.keys(v).sort().join(',') === 'kind,partner,target,turn',
+      'Supply the current Nexus turn, named alliance partner and respondent.');
+    const claim = parseAllianceClaim(v);
+    check(alliancePromiseModeSupported(g) && g.status === 'playing' && g.phase === 1 && g.nexus &&
+      !g.spiceWindow && !g.spiceResolution && !g.response && !g.decision && !g.phaseOpening &&
+      !g.pendingTreacheryDiscard && !g.pendingKarama && claim.turn === g.turn &&
+      claim.partner !== v.target && g.players.some(player => player.id === claim.partner),
+    'Choose the current ordinary Nexus and another named partner in a supported table.');
+    return { kind: 'alliance', target: v.target, ...claim };
+  }
   if (v.kind === 'bribe') {
     check(Object.keys(v).sort().join(',') === 'kind,minimum,recipient,target,turn',
       'Supply the current turn, named bribe recipient, minimum and respondent.');
@@ -475,6 +488,7 @@ export function truthQuestionText(
   playerName: (id: string) => string = id => id,
 ): string {
   if (q.kind === 'freeform') return q.text;
+  if (q.kind === 'alliance') return `Will you ${allianceClaimText(q, playerName)}?`;
   if (q.kind === 'bribe') return `Will you ${bribeClaimText(q, playerName)}?`;
   if (q.kind === 'revival') return `Will you ${revivalClaimText(q)}?`;
   if (q.kind === 'bid') return `Will you ${bidClaimText(q)}?`;
@@ -523,6 +537,8 @@ export function resolveTruthAction(
     ) => void;
     movementAnswers?: (g: Game, p: Player, claim: MovementClaim) => TruthAnswer[];
     bindMovement?: (g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) => void;
+    allianceAnswers?: (g: Game, p: Player, claim: AllianceClaim) => TruthAnswer[];
+    bindAlliance?: (g: Game, p: Player, claim: AllianceClaim, answer: boolean, asker: string) => void;
     bribeAnswers?: (g: Game, p: Player, claim: BribeClaim) => TruthAnswer[];
     bindBribe?: (g: Game, p: Player, claim: BribeClaim, answer: boolean, asker: string) => void;
     revivalAnswers?: (g: Game, p: Player, claim: RevivalClaim) => TruthAnswer[];
@@ -647,6 +663,9 @@ export function resolveTruthAction(
           'Waiting for the Truthtrance holder to ask a question.',
         );
         w.question = parseQuestion(g, p.id, a.question);
+        if (w.question.kind === 'alliance')
+          check(effects.allianceAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a current Nexus question with a compatible answer.');
         if (w.question.kind === 'bribe')
           check(effects.bribeAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a current bribe question compatible with earlier answers.');
@@ -705,6 +724,11 @@ export function resolveTruthAction(
           check(effects.movementAnswers && effects.bindMovement && effects.movementAnswers(g, p, q).includes(a.answer),
             'Choose an answer consistent with legal ground movement and earlier promises.');
           if (a.answer !== 'unknown') effects.bindMovement(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'alliance') {
+          check(effects.allianceAnswers && effects.bindAlliance && effects.allianceAnswers(g, p, q).includes(a.answer),
+            'Choose an answer consistent with actual alliance consent and earlier commitments.');
+          if (a.answer !== 'unknown') effects.bindAlliance(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'bribe') {
           check(effects.bribeAnswers && effects.bindBribe && effects.bribeAnswers(g, p, q).includes(a.answer),

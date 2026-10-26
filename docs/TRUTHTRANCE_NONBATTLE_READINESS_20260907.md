@@ -1,5 +1,10 @@
 # Truthtrance nonbattle readiness and first implementation slice
 
+The [current-Nexus alliance follow-up](TRUTHTRANCE_ALLIANCE_PROMISES.md) adds
+actual final-membership commitments using owned reciprocal consent, with
+unknown/save when consent is unavailable. This supersedes the historical
+alliance-commitment absence entry for that interval; broader diplomacy remains.
+
 The [ordinary-bribe follow-up](TRUTHTRANCE_BRIBE_PROMISES.md) adds a funded
 current-turn named-recipient payment commitment. Its cumulative payer progress
 and original deferred receipt supersede the historical bribe absence entry;

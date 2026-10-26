@@ -16,6 +16,38 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / current-Nexus alliance membership — 26 October. Prototyped / Partial.**
+Named final partnership questions now use actual reciprocal consent in quiet
+ordinary Nexus negotiation on registered bare native Basic/Advanced tables.
+Yes remains live after acceptance until closure; No permits a temporary pair
+that is broken before Ready. Unknown can preserve the original card until a
+real offer. Persistent break/accept/Ready guides, minimal legal AI, reopening
+readiness and opposing-impossibility release are connected. Earlier payments
+retain their own guides and must finish before accepting their recipient.
+The interval/owned-consent/release meaning is provisional; wider diplomacy and
+optional compositions remain due. No start/module gate opens.
+
+Root shared integration with disjoint pure/native/control lanes and bounded
+actor-order review passes **15 files,150/150**, types/lint/build and **six native
+paths**,22 GameTable SSR renders/ten actual alliance callbacks plus one prior-
+bribe callback. Original H/A/E Basic47/Advanced48-action sources earn the Worm
+Nexus and real invitation; another9/12 actions bind, accept and settle at actual
+closure. Other paths break an existing pair for No, save/redeclare the same
+physical Truth after actual consent, release after opposing withdrawal, and pay
+an earlier promised3 before accepting. All33 original cards remain. Two explicit
+controlled prior-debt supplements prove actual-actor reconciliation order;
+native journeys install no played hand, purse, clock, alliance or promise.
+
+Frozen v2 report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-alliance-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-alliance-runtime/`.
+Final link review corrects one rules-reference target; its separate reference
+test, types/lint and build are recorded in adjacent
+`20261026-truth-alliance-reference-proof-v1/` without repeating unchanged rules.
+No saved-room/D1/server/reset/restart or deployment operation is performed.
+Broader rules, browser/mobile/deployed and final assurance remain open.
+[Source and boundaries](TRUTHTRANCE_ALLIANCE_PROMISES.md).
+
 **Truthtrance / ordinary bribe commitments — 26 October. Prototyped / Partial.**
 Registered bare native Basic/Advanced tables now support funded current-turn
 cumulative ordinary payments to one named non-allied recipient. Actual payer

@@ -1,3 +1,5 @@
+import { AlliancePromiseError, alliancePromiseModeSupported, liveAlliancePromises, alliancePromiseRequirements,
+  alliancePromisesMatch, findAlliancePromisePlan, validateAlliancePromises, type AllianceClaim, type AllianceOpportunity, type AlliancePromise } from './alliance-promises';
 import { BribePromiseError, bribePromiseModeSupported, liveBribePromises, recordPromisedBribe,
   bribePromiseRequirements, validateBribePromises, type BribeClaim, type BribePromise } from './bribe-promises';
 import { ordinaryDiscardIncomeMatches } from './ordinary-discard-income';
@@ -2142,6 +2144,7 @@ export type Game = {
   bidPromises?: BidPromise[];
   revivalPromises?: RevivalPromise[];
   bribePromises?: BribePromise[];
+  alliancePromises?: AlliancePromise[];
   movementPromises?: MovementPromise[];
   /** Server-only certainty of movement-relevant cards still in the discard. */
   movementDiscardKnowledge?: MovementDiscardKnowledge;
@@ -14895,6 +14898,157 @@ function pledgeAid(g: Game, p: Player, requested: unknown) {
   g.aid[p.id] = { recipient: p.ally, amount };
   log(g, `${p.name} updated the spice available to their ally this phase.`);
 }
+function alliancePromiseRule<T>(calculate: () => T): T {
+  try { return calculate(); }
+  catch (error) { if (error instanceof AlliancePromiseError) throw new RuleError(error.message); throw error; }
+}
+function alliancePromiseIntegrity(g: Game) {
+  alliancePromiseRule(() => validateAlliancePromises(g.alliancePromises ?? [], g.players.map(player => player.id)));
+}
+function allianceOpportunity(g: Game): AllianceOpportunity | null {
+  if (g.status !== 'playing' || g.phase !== 1 || !g.nexus || !alliancePromiseModeSupported(g)) return null;
+  return { turn: g.turn, source: JSON.stringify(['ordinaryNexus', g.turn,
+    g.spiceDiscard.map(pile => pile.length), g.spiceSequence?.pile ?? null, g.spiceSequence?.skipped?.length ?? 0]) };
+}
+function allianceQuestionWindow(g: Game): boolean {
+  return !!allianceOpportunity(g) && !g.spiceWindow && !g.spiceResolution && !g.response &&
+    !g.decision && !g.phaseOpening && !g.pendingTreacheryDiscard && !g.pendingKarama;
+}
+/** The original native reciprocal quote owns identity and pairing legality. */
+function normalNexusAllianceQuote(g: Game, p: Player, target: string | null) {
+  if (target !== null) {
+    const other = getPlayer(g, target);
+    requireRule(other.id !== p.id, 'Choose another player.');
+    requireRule(!liveBribePromises(g.bribePromises ?? [], p.id, g.turn)
+      .some(promise => promise.answer && promise.recipient === other.id),
+    'Pay your promised ordinary bribe before offering that recipient an alliance.');
+    const blocked = homeworldAllianceReason(g, p.id, other.id);
+    requireRule(!blocked, blocked ?? 'This alliance is unavailable.');
+  }
+  return nexusRule(() => quoteNexusAlliance({ players: g.players.map(player => ({ id: player.id, ally: player.ally })),
+    offers: g.allianceOffers, actor: p.id, target }));
+}
+function alliancePromisePlan(g: Game, p: Player, promises = g.alliancePromises ?? []) {
+  const opportunity = allianceOpportunity(g);
+  if (!opportunity) return null;
+  const actions = findAlliancePromisePlan(promises, p.id, opportunity, { players: g.players, offers: g.allianceOffers });
+  if (!actions) return null;
+  // Keeping an already matching membership spends nothing and changes no
+  // alliance. An unrelated foreign loss is not a prospective cost of Ready.
+  if (!actions.length) return { actions, bribePreparation: false };
+  const trial = structuredClone(g), actor = getPlayer(trial, p.id);
+  trial.truthtrance = null;
+  let bribePreparation = false;
+  try {
+    // An already owed, currently payable bribe may precede accepting its named
+    // recipient. Keep that payment on its existing guide and native action.
+    const accepts = actions.find(action => action.target !== null)?.target;
+    if (accepts && liveBribePromises(trial.bribePromises ?? [], p.id, g.turn)
+      .some(promise => promise.answer && promise.recipient === accepts)) {
+      const payment = bribePromiseCompletion(trial, actor)?.find(action => action.target === accepts);
+      if (!payment) return null;
+      const amount = payment.amount as number;
+      actor.spice -= amount;
+      getPlayer(trial, accepts).bribes += amount;
+      trial.bribePromises = bribePromiseRule(() => recordPromisedBribe(trial.bribePromises ?? [], p.id,
+        g.turn, { recipient: accepts, amount }));
+      bribePreparation = true;
+    }
+    for (const action of actions) {
+      const quote = normalNexusAllianceQuote(trial, actor, action.target);
+      for (const player of trial.players) player.ally = quote.allies[player.id];
+      trial.allianceOffers = quote.offers;
+      if (quote.formed) for (const id of quote.formed) getPlayer(trial, id).allySinceTurn = g.turn;
+      trial.ready = [];
+    }
+    const voluntary = { actor: p.id, action: { type: 'alliance' } };
+    reconcileShipmentPromises(trial, voluntary);
+    reconcileGroundMovementPromises(trial, p.id, voluntary.action, g.phase);
+    reconcileRevivalPromises(trial, voluntary);
+    reconcileBribePromises(trial, voluntary);
+    return { actions, bribePreparation };
+  } catch (error) { if (error instanceof RuleError) return null; throw error; }
+}
+function allianceTruthAnswers(g: Game, p: Player, claim: AllianceClaim): ('yes' | 'no' | 'unknown')[] {
+  const opportunity = allianceOpportunity(g);
+  if (!opportunity || !allianceQuestionWindow(g) || claim.turn !== g.turn || claim.partner === p.id ||
+    !g.players.some(player => player.id === claim.partner)) return [];
+  const prior = alliancePromiseRequirements(g.alliancePromises ?? [], p.id, opportunity);
+  const answers: ('yes' | 'no' | 'unknown')[] = (['yes', 'no'] as const).filter(answer =>
+    !!alliancePromisePlan(g, p, [...(g.alliancePromises ?? []), { ...claim, event: 'candidate', source: opportunity.source,
+      player: p.id, asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes' }]));
+  const foreignConsent = p.ally !== claim.partner &&
+    (getPlayer(g, claim.partner).ally !== null || g.allianceOffers[claim.partner] !== p.id);
+  if (!answers.includes('yes') && foreignConsent && prior?.partner === null &&
+    !prior.forbidden.includes(claim.partner)) answers.push('unknown');
+  return answers;
+}
+function bindAllianceTruth(g: Game, p: Player, claim: AllianceClaim, answer: boolean, asker: string) {
+  const opportunity = allianceOpportunity(g);
+  requireRule(opportunity && allianceTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
+    'Choose an alliance answer compatible with actual consent and earlier answers.');
+  (g.alliancePromises ??= []).push({ ...claim, event: crypto.randomUUID(), source: opportunity.source,
+    player: p.id, asker, answer });
+  if (g.ready.includes(p.id)) {
+    g.ready = g.ready.filter(player => player !== p.id);
+    log(g, `${p.name} has a new Truthtrance alliance commitment and must confirm Nexus readiness again.`);
+  }
+}
+function reconcileAlliancePromises(g: Game, voluntary?: { actor: string; action: Action }) {
+  if (!g.alliancePromises?.some(promise => !promise.fulfilled && !promise.released)) return;
+  alliancePromiseIntegrity(g);
+  if (g.truthtrance || g.response || g.decision || g.phaseOpening || g.spiceWindow || g.spiceResolution ||
+    g.pendingTreacheryDiscard || g.pendingKarama || g.pendingKull || g.pendingRicheseBetrayal) return;
+  const opportunity = allianceOpportunity(g), kept: AlliancePromise[] = [];
+  for (const promise of g.alliancePromises) {
+    if (promise.fulfilled || promise.released) continue;
+    const same = opportunity && promise.turn === opportunity.turn && promise.source === opportunity.source;
+    const player = getPlayer(g, promise.player), matches = (player.ally === promise.partner) === promise.answer;
+    const possible = same && alliancePromisePlan(g, player, [...kept, promise]);
+    if (!same && matches) { promise.fulfilled = true; continue; }
+    if (!possible) {
+      requireRule(voluntary?.actor !== promise.player,
+        'You cannot voluntarily evade your Truthtrance alliance answer.');
+      promise.released = true;
+      log(g, `${player.name} can no longer fulfill the Truthtrance alliance answer; that answer is no longer binding.`);
+    } else {
+      kept.push(promise);
+      if (!matches && g.ready.includes(player.id)) g.ready = g.ready.filter(id => id !== player.id);
+    }
+  }
+}
+function guardAlliancePromiseReady(g: Game, p: Player) {
+  const opportunity = allianceOpportunity(g);
+  if (!opportunity) return;
+  requireRule(alliancePromisesMatch(g.alliancePromises ?? [], p.id, opportunity, p.ally),
+    'Match your Truthtrance alliance answers before finishing this Nexus.');
+}
+function settleAlliancePromises(g: Game) {
+  const opportunity = allianceOpportunity(g);
+  if (!opportunity) return;
+  for (const player of g.players) guardAlliancePromiseReady(g, player);
+  for (const promise of g.alliancePromises ?? [])
+    if (promise.turn === opportunity.turn && promise.source === opportunity.source && !promise.fulfilled && !promise.released)
+      promise.fulfilled = true;
+}
+function projectedAlliancePromises(g: Game, player: string) {
+  return (g.alliancePromises ?? []).filter(promise => promise.player === player).map(promise => ({
+    event: promise.event, player: promise.player, asker: promise.asker, turn: promise.turn,
+    partner: promise.partner, answer: promise.answer,
+    ...(promise.fulfilled === undefined ? {} : { fulfilled: promise.fulfilled }),
+    ...(promise.released === undefined ? {} : { released: promise.released }),
+  }));
+}
+function projectedAlliancePromiseGuide(g: Game, player: string): { action: Action } | null {
+  const opportunity = allianceOpportunity(g);
+  if (!opportunity || !allianceQuestionWindow(g) || g.truthtrance || g.ready.includes(player)) return null;
+  const promise = liveAlliancePromises(g.alliancePromises ?? [], player, opportunity)[0];
+  if (!promise) return null;
+  const plan = alliancePromisePlan(g, getPlayer(g, player));
+  if (!plan || plan.bribePreparation) return null;
+  const action: Action = plan.actions[0] ?? { type: 'ready' };
+  return { action: { ...action, alliancePromiseEvent: promise.event } };
+}
 function bribePromiseRule<T>(calculate: () => T): T {
   try { return calculate(); }
   catch (error) { if (error instanceof BribePromiseError) throw new RuleError(error.message); throw error; }
@@ -18387,7 +18541,7 @@ function reconcileGroundMovementPromises(g: Game, actor?: string, action?: Actio
         source.producer === 'groundMovement' && source.mover === p.id)) continue;
     const early = g.phase < 5 || sourcePhase < 5;
     const voluntary = actor === p.id && action?.type !== 'passResponse' && (!early || !!action &&
-      (['card', 'bribe', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revealNoField', 'revive', 'reviveLeader', 'reviveKwisatz', 'emperorRevival', 'decision'].includes(action.type) ||
+      (['card', 'bribe', 'alliance', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revealNoField', 'revive', 'reviveLeader', 'reviveKwisatz', 'emperorRevival', 'decision'].includes(action.type) ||
         action.type === 'richeseBid' && typeof action.amount === 'number' && action.amount > 0 ||
         action.type === 'ready' && [2, 4].includes(sourcePhase)));
     const busy = !!(g.response || g.decision || g.phaseOpening || g.pendingTreacheryDiscard ||
@@ -26891,7 +27045,7 @@ function reconcileShipmentPromises(
         voluntary.action.type === 'richeseBid' && typeof voluntary.action.amount === 'number' && voluntary.action.amount > 0 ||
         voluntary.action.type === 'ready' && [2, 4].includes(voluntary.phase ?? g.phase));
     const ownVoluntary = voluntary?.actor === p.id &&
-      (['card', 'bribe', 'pledgeAid', 'emperorGift', 'richeseGift'].includes(voluntary.action.type) ||
+      (['card', 'bribe', 'alliance', 'pledgeAid', 'emperorGift', 'richeseGift'].includes(voluntary.action.type) ||
         earlyVoluntary ||
         future && voluntary.action.type === 'decision');
     // A foreign pending parent may spend or refund its approved funding. Wait
@@ -34946,6 +35100,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   bidPromiseIntegrity(state);
   revivalPromiseIntegrity(state);
   bribePromiseIntegrity(state);
+  alliancePromiseIntegrity(state);
   revivalOrderIntegrity(state);
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
@@ -35048,6 +35203,12 @@ export function applyAction(state: Game, id: string, action: Action): Game {
       'Finish the committed discard continuation before another game action.',
     );
     return normalizeAutomaticGame(state);
+  }
+  if (action.alliancePromiseEvent !== undefined) {
+    const guide = projectedAlliancePromiseGuide(state, id);
+    requireRule(guide && Object.keys(action).sort().join(',') === Object.keys(guide.action).sort().join(',') &&
+      Object.keys(guide.action).every(key => action[key] === guide.action[key]),
+    'This alliance commitment guide is stale or belongs to another Nexus choice.');
   }
   if (action.bribePromiseEvent !== undefined) {
     const guide = projectedBribePromiseGuide(state, id);
@@ -35189,6 +35350,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   reconcileBidPromises(g, { actor: id, action });
   reconcileRevivalPromises(g, { actor: id, action });
   reconcileBribePromises(g, { actor: id, action });
+  reconcileAlliancePromises(g, { actor: id, action });
   settleAutomaticContinuations(g);
   observeOccupation(g);
   reconcileHomeworldEcazDuke(g);
@@ -35393,6 +35555,7 @@ function settleAutomaticContinuations(g: Game) {
     reconcileRevivalPromises(g);
     reconcileBribePromises(g);
     reconcileGroundMovementPromises(g);
+    reconcileAlliancePromises(g);
     reconcileTraitorTruth(g);
     requireRule(
       JSON.stringify(g) !== before,
@@ -35408,6 +35571,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   bidPromiseIntegrity(state);
   revivalPromiseIntegrity(state);
   bribePromiseIntegrity(state);
+  alliancePromiseIntegrity(state);
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
   harkonnenNexusBetrayalIntegrity(state);
@@ -35495,6 +35659,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   reconcileRevivalPromises(g);
   reconcileBribePromises(g);
   reconcileGroundMovementPromises(g);
+  reconcileAlliancePromises(g);
   reconcileTraitorTruth(g);
   settleAutomaticContinuations(g);
   observeOccupation(g);
@@ -35739,6 +35904,8 @@ function applyActionInner(
         bindShipment: bindShipmentTruth,
         movementAnswers: movementTruthAnswers,
         bindMovement: bindMovementTruth,
+        allianceAnswers: allianceTruthAnswers,
+        bindAlliance: bindAllianceTruth,
         bribeAnswers: bribeTruthAnswers,
         bindBribe: bindBribeTruth,
         revivalAnswers: revivalTruthAnswers,
@@ -35754,7 +35921,7 @@ function applyActionInner(
     )
       return g;
   } catch (error) {
-    if (error instanceof TruthError || error instanceof BribePromiseError || error instanceof RevivalPromiseError || error instanceof BidPromiseError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof TraitorDecisionError)
+    if (error instanceof TruthError || error instanceof AlliancePromiseError || error instanceof BribePromiseError || error instanceof RevivalPromiseError || error instanceof BidPromiseError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof TraitorDecisionError)
       throw new RuleError(error.message);
     throw error;
   }
@@ -38100,29 +38267,8 @@ function applyActionInner(
     const formerAlly = p.ally ? getPlayer(g, p.ally).name : null;
     const formerOffer = g.allianceOffers[id];
     const formerOfferName = g.players.find((player) => player.id === formerOffer)?.name;
-    let other: Player | null = null;
-    if (target !== null) {
-      other = getPlayer(g, target);
-      requireRule(other.id !== id, 'Choose another player.');
-      requireRule(!liveBribePromises(g.bribePromises ?? [], p.id, g.turn)
-        .some(promise => promise.answer && promise.recipient === other!.id),
-      'Pay your promised ordinary bribe before offering that recipient an alliance.');
-      const blocked = homeworldAllianceReason(g, id, other.id);
-      requireRule(!blocked, blocked ?? 'This alliance is unavailable.');
-    }
-    const quote = nexusRule(() =>
-      quoteNexusAlliance(
-        {
-          players: g.players.map((player) => ({
-            id: player.id,
-            ally: player.ally,
-          })),
-          offers: g.allianceOffers,
-          actor: id,
-          target,
-        },
-      ),
-    );
+    const other = target === null ? null : getPlayer(g, target);
+    const quote = normalNexusAllianceQuote(g, p, target);
     for (const player of g.players) player.ally = quote.allies[player.id];
     g.allianceOffers = quote.offers;
     if (target === null) {
@@ -39488,6 +39634,7 @@ function applyActionInner(
     return g;
   }
   if (t === 'ready') {
+    if (allianceQuestionWindow(g)) guardAlliancePromiseReady(g, p);
     if (g.phase === 7) requireRule(!liveBribePromises(g.bribePromises ?? [], p.id, g.turn).some(promise => promise.answer),
       'Complete your Truthtrance bribe payments before finishing Collection.');
     if (g.phase === 4) guardPromisedRevival(g, p, action);
@@ -39505,6 +39652,9 @@ function applyActionInner(
     }
     g.ready.push(id);
     if (g.ready.length === g.players.length) {
+      // Every quiet negotiation closes before its native continuation, whether
+      // that continuation draws Spice or begins worm rides.
+      if (g.phase === 1 && allianceQuestionWindow(g)) settleAlliancePromises(g);
       if (g.phase === 0) startStormMovement(g, g.stormPending!);
       else if (g.phase === 1 && g.spiceWindow) finishSpiceWindow(g);
       else if (g.phase === 1 && (!g.nexus || g.summonedBeforeBlow))
@@ -39684,6 +39834,12 @@ export function viewGame(state: Game, id: string) {
     }).map(player => player.id) : [],
     truthBidAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
       g.truthtrance.question.kind === 'bid' ? bidTruthAnswers(g, me, g.truthtrance.question) : null,
+    alliancePromiseNexus: (() => { const nexus = allianceOpportunity(g); return nexus ? { turn: nexus.turn } : null; })(),
+    truthAllianceTargets: allianceQuestionWindow(g) ? g.players.map(player => player.id) : [],
+    truthAllianceAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
+      g.truthtrance.question.kind === 'alliance' ? allianceTruthAnswers(g, me, g.truthtrance.question) : null,
+    alliancePromises: projectedAlliancePromises(g, id),
+    alliancePromiseGuide: projectedAlliancePromiseGuide(g, id),
     truthBribeTargets: bribeQuestionWindow(g) ? g.players.map(player => player.id) : [],
     truthBribeAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
       g.truthtrance.question.kind === 'bribe' ? bribeTruthAnswers(g, me, g.truthtrance.question) : null,

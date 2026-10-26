@@ -1,5 +1,24 @@
 # Rule decision index
 
+## Truthtrance current-Nexus alliance membership — 26 October 2026
+
+Apply general current-turn Truthtrance authority (FAQp8; supplied Advanced
+physical39) to actual named partnership when the current ordinary Nexus closes.
+Supplied physical15 and the settled ordinary Nexus quote retain reciprocal
+consent, at most one partnership, own departure and another chance to form a
+pair. A proposal alone is not membership. No allows a temporary pair if it is
+broken before the close; Yes stays live after formation until actual closure.
+
+Under standing14October choose-recommended priority, quote only currently owned
+actions using existing membership or a real incoming invitation. Never invent
+foreign acceptance or lock another player’s consent. No/unknown may apply when
+consent is unavailable; earlier own clauses can fix an answer. Definite binding
+reopens own readiness; actual final matching settles before the native draw/ride
+continuation. Opposing withdrawal/break may release Yes; own evasion rejects.
+This interval/witness/release model is a provisional software composition, not
+a dedicated publisher alliance-Truthtrance ruling. Bare native scope first;
+no optional/start/publication gate opens. [Contract](TRUTHTRANCE_ALLIANCE_PROMISES.md).
+
 ## Truthtrance ordinary bribe-payment commitments — 26 October 2026
 
 Apply general current-turn Truthtrance authority (FAQp8; supplied Advanced

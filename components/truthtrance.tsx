@@ -1,5 +1,7 @@
 'use client';
 import { MovementClaimFields } from './movement-claim-fields';
+import { AllianceClaimFields, allianceClaimInputError } from './alliance-claim-fields';
+import type { AllianceClaim } from '@/game/alliance-promises';
 import { BribeClaimFields, bribeClaimInputError } from './bribe-claim-fields';
 import type { BribeClaim } from '@/game/bribe-promises';
 import { RevivalClaimFields, revivalClaimInputError } from './revival-claim-fields';
@@ -59,8 +61,11 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance'
   >('fact');
+  const [alliancePartner, setAlliancePartner] = useState(g.me);
+  const allianceClaim: AllianceClaim = { turn: g.turn, partner: alliancePartner };
+  const alliancePartners = g.players.filter(player => player.id !== target);
   const [bribeSelection, setBribeSelection] = useState<Pick<BribeClaim, 'recipient' | 'minimum'>>({ recipient: g.me, minimum: 3 });
   const bribeClaim: BribeClaim = { turn: g.turn, ...bribeSelection };
   const bribeRespondent = g.players.find(player => player.id === target);
@@ -108,6 +113,7 @@ export function Truthtrance({
           }
         : kind === 'traitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '' }
         : kind === 'movement' ? { kind, target, ...movement }
+        : kind === 'alliance' ? { kind, target, ...allianceClaim }
         : kind === 'bribe' ? { kind, target, ...bribeClaim }
         : kind === 'revival' ? { kind, target, ...revivalClaim }
         : kind === 'bid' ? { kind, target, ...bidClaim }
@@ -217,6 +223,13 @@ export function Truthtrance({
                         )}
                       </div>
                     ))}
+                  </>
+                ) : w.question!.kind === 'alliance' ? (
+                  <>
+                    <p className="notice">This answer concerns actual membership when this Nexus closes. An offer alone does not form an alliance. Yes remains binding after formation; No requires ending without this named partner. Consent that is not yet available may be unknown, letting the holder ask again or save the card.</p>
+                    {(g.truthAllianceAnswers ?? []).map(answer => <div key={answer}>
+                      {button(answer === 'unknown' ? 'I don’t know yet' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
                   </>
                 ) : w.question!.kind === 'bribe' ? (
                   <>
@@ -356,6 +369,7 @@ export function Truthtrance({
                     Verified current facts
                   </option>
                   <option value="movement">Bind ground movement this turn</option>
+                  <option value="alliance">Bind alliance membership at this Nexus close</option>
                   <option value="bribe">Bind ordinary bribe payments this turn</option>
                   <option value="revival">Bind ordinary force revivals this turn</option>
                   <option value="bid">Bind a bid in this ordinary lot</option>
@@ -374,7 +388,15 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'bribe' ? (
+              {kind === 'alliance' ? (
+                <>
+                  <AllianceClaimFields value={allianceClaim} partners={alliancePartners} disabled={busy || !g.truthAllianceTargets.includes(target)}
+                    onChange={claim => setAlliancePartner(claim.partner)} />
+                  <p className="fine">The final actual partnership in the current ordinary Nexus is binding. Yes uses an already held partnership or an actual incoming invitation the respondent can accept; another player’s future consent is not invented. No may require breaking a temporary alliance before readiness.</p>
+                  {!g.truthAllianceTargets.includes(target) && <p className="notice">Choose a supported participant in a quiet open ordinary Nexus. Optional modules and broader alliance questions remain unfinished.</p>}
+                  <p className="notice" aria-label="Public alliance question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'bribe' ? (
                 <>
                   <BribeClaimFields value={bribeClaim} recipients={bribeRecipients} disabled={busy || !g.truthBribeTargets.includes(target)}
                     onChange={claim => setBribeSelection({ recipient: claim.recipient, minimum: claim.minimum })} />
@@ -496,6 +518,7 @@ export function Truthtrance({
                 'Ask publicly',
                 { type: 'truthAsk', question },
                 (kind === 'movement' && (!validMovementClaim(movement) || !g.truthMovementTargets.includes(target))) ||
+                (kind === 'alliance' && (!!allianceClaimInputError(allianceClaim, alliancePartners) || !g.truthAllianceTargets.includes(target))) ||
                 (kind === 'bribe' && (!!bribeClaimInputError(bribeClaim, bribeRecipients) || !g.truthBribeTargets.includes(target))) ||
                 (kind === 'revival' && (!!revivalClaimInputError(revivalClaim) || !g.truthRevivalTargets.includes(target))) ||
                 (kind === 'bid' && (!!bidClaimInputError(bidClaim) || !g.truthBidTargets.includes(target))) ||
@@ -519,7 +542,7 @@ export function TruthHistory({ game: g }: { game: GameView }) {
     <details className="notice truthtrance-history">
       <summary>Truthtrance answers · Turn {g.turn}</summary>
       <p className="fine">
-        Supported battle-plan, bid, revival, bribe, movement and reserve-shipment
+        Supported battle-plan, Nexus-alliance, bid, revival, bribe, movement and reserve-shipment
         answers are enforced. Current-turn freeform promises remain binding when possible,
         but their automatic enforcement is unfinished.
       </p>

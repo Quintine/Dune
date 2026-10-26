@@ -24,6 +24,7 @@ import {
   liveShipmentPromises,
 } from '@/game/shipment-promises';
 import { ShipmentPromises } from './shipment-promises';
+import { AlliancePromises } from './alliance-promises';
 import { BribePromises } from './bribe-promises';
 import { RevivalPromises } from './revival-promises';
 import { BidPromises } from './bid-promises';
@@ -2034,6 +2035,7 @@ export function GameTable({
             <ShipmentPromises game={g} act={act} busy={busy} />
           )}
           {g.status === 'playing' && <BribePromises game={g} send={act} busy={busy} />}
+          {g.status === 'playing' && <AlliancePromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <RevivalPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <BidPromises game={g} send={act} busy={busy} />}
           {g.guildBetrayalReaction ? (

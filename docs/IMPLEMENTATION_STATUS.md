@@ -1,5 +1,39 @@
 # Dune implementation status
 
+## 26 October 2026 — Truthtrance current-Nexus alliance membership
+
+**Prototyped / Partial.** Current quiet ordinary Nexus questions bind the
+respondent's actual named partnership at closure in bare native Basic/Advanced.
+Canonical reciprocal consent, original break/accept actions, persistent native
+guides, minimal legal AI and reopened readiness are connected. Yes stays live
+after formation; No allows a temporary pair ended before Ready. Unknown saves
+the physical card; opposing withdrawal/break can release impossible Yes.
+Earlier payable bribes use their original guide before alliance acceptance.
+Earlier financial impossibility is reconciled with its actual actor first.
+Interval/owned-consent/release meaning is provisional; optional compositions,
+wider diplomacy and complete-mode acceptance remain open. No start gate opens.
+
+Root integration and disjoint pure/native/control lanes pass **15 files,150/150**,
+types/lint/build and **six native paths**,22 GameTable SSR renders/ten actual
+alliance callbacks plus one prior-bribe callback. Original public H/A/E
+Basic47/Advanced48-action sources earn the actual Worm Nexus and reciprocal
+invitation;9/12 further actions bind, accept and settle at actual closure.
+Other original paths cover No requiring a real break, unknown/save/redeclaration
+of the same physical card, opposing withdrawal/reoffer and stale rejection,
+and earlier Bribe Yes3 paid before acceptance. All33 original cards remain.
+Ten pure,13 native,six control and three interaction cases retain joint clauses,
+minimal policies and actual Ready. Two interaction cases explicitly control
+only an inherited prior-debt record; native journeys install no played state.
+
+Frozen v2 proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-alliance-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-alliance-runtime/`.
+One final rules-reference link correction has separate reference-test,
+types/lint/build proof in adjacent `20261026-truth-alliance-reference-proof-v1/`.
+No saved-room/D1/server/reset/restart or deployment operation is performed.
+Browser/mobile/deployed and comprehensive assurance remain due.
+[Contract](TRUTHTRANCE_ALLIANCE_PROMISES.md).
+
 ## 26 October 2026 — Truthtrance ordinary bribe-payment promises
 
 **Prototyped / Partial.** Funded ordinary bribe questions now bind cumulative
