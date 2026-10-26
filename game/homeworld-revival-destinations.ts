@@ -18,7 +18,8 @@ export type HomeworldRevivalDestination = {
   blocked: string | null;
 };
 
-/** Only the complete earned group to one destination is admitted here.
+/** Legacy calls place the complete earned group in one destination. New Southern
+ * allocations may quote an exact subset of the original eligible stars.
  * The engine owns provisional SEND-entry reactions and their continuation. No token face,
  * opposing hand, spice balance or concealed denomination influences these lists. */
 export function homeworldRevivalDestinations(
@@ -68,11 +69,15 @@ export function quoteHomeworldRevivalDestination(
   player: string,
   grant: HomeworldRevivalDeploymentQuote,
   destination: string,
+  fedaykinAmount?: number,
 ) {
+  if (fedaykinAmount !== undefined && (grant.kind !== 'fedaykin' || grant.normal !== 0 ||
+    !Number.isSafeInteger(fedaykinAmount) || fedaykinAmount < 1 || fedaykinAmount > grant.elite))
+    throw new HomeworldCustodyError('Choose only a positive subset of the original revived Fedaykin grant.');
   const selected = homeworldRevivalDestinations(g, player, grant).find((d) => d.id === destination);
   if (!selected || selected.blocked)
     throw new HomeworldCustodyError(selected?.blocked ?? 'Choose a currently eligible revival destination.');
-  const forces = { normal: grant.normal, elite: grant.elite };
+  const forces = { normal: grant.normal, elite: fedaykinAmount ?? grant.elite };
   const context = homeworldContext(g);
   if (selected.homeworld) {
     const native = homeworldForceGroups(context, g.homeworlds!.custody!)

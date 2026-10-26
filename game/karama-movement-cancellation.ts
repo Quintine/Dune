@@ -1,7 +1,7 @@
 import { validAmbassadorResume } from './ambassador-resume';
 import { validateDiscoveryEntryArrivalChild, validateDiscoveryEntryRound } from './discovery-entry';
 import { ambassadorPhaseAllowed } from './ambassador-phase';
-import { validateHomeworldRevivalReturn } from './homeworld-revival-return';
+import { currentHomeworldRevivalArrival, validateHomeworldRevivalReturn } from './homeworld-revival-return';
 import { validateRevivalArrivalSource } from './revival-terror-entry';
 import { HomeworldCustodyError } from './homeworld-custody';
 import {
@@ -516,10 +516,10 @@ export function quoteMovementCancellation(
   );
   if (response.advisorResume === 'wormRide') return null;
   if (response.advisorRevivalEvent !== undefined) {
-    const parent = g.homeworldRevivalReturn;
+    const root = g.homeworldRevivalReturn, parent = currentHomeworldRevivalArrival(root);
     const terror = response.advisorRevivalTerror;
     try {
-      validateHomeworldRevivalReturn(g, parent);
+      validateHomeworldRevivalReturn(g, root);
       if (terror) validateRevivalArrivalSource(g, {event:response.advisorRevivalEvent,terror},
         {entrant:terror.owner,territory:terror.territory,sector:terror.sector,
           amount:terror.amount,elite:terror.elite,cause:'shipment'});
@@ -536,7 +536,7 @@ export function quoteMovementCancellation(
       response.advisorResume === undefined && response.advisorRemaining === undefined,
     'The canceled Intrusion lost its original committed revived-force arrival.');
     const followup = response.advisorFollowup;
-    requireContext(followup === undefined || ((terror || parent.quote.kind === 'tleilax') &&
+    requireContext(followup === undefined || ((terror || root?.quote.kind === 'tleilax') &&
       followup.shipment === (terror?.owner ?? parent.player) &&
       followup.destination === (terror ? location(terror.territory,terror.sector) : parent.destination) &&
       followup.revivalEvent === parent.event &&

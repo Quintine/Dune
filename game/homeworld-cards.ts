@@ -124,7 +124,7 @@ export const HOMEWORLD_CARDS: readonly HomeworldCard[] = Object.freeze([
     2,
     2,
     [
-      'When a starred Fedaykin force is revived, you may immediately place it in any territory where you already have forces.',
+      'Newly revived starred Fedaykin forces may immediately be placed in a territory where you already have forces.',
     ],
     ['No additional penalty.'],
     [

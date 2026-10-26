@@ -2,6 +2,70 @@
 
 Primary-source audit, 10 September 2026. This is a source and implementation-boundary contract, not a runtime completion claim. The coordinator has already asked about threshold restoration and splitting several revived Fedaykin; those answers remain pending.
 
+## Individual Southern allocation — 27 October 2026
+
+**Prototyped / Partial.** Under the 14 October recommended-option instruction,
+new Basic returns of two or three eligible Fedaykin use a visibly provisional
+per-star interpretation. The photographed publisher Southern high face uses
+plural forces; neither that face nor the supplied revised rules explicitly
+settles splitting or a strict partial placement. This policy is not a publisher
+clarification or an answer to the earlier user question. The supplied revision,
+physical22, delegates Homeworld abilities to their cards; physical32 retains
+the Advanced one-Fedaykin revival limit. The original component provenance is
+recorded [below](#printed-effects-and-provenance).
+
+Complete the original revival into reserves once, then fix its eligible new
+stars and resulting-population entitlement. Choose one through all remaining
+stars and a currently legal territory already containing Fremen forces. Finish
+that portion's native arrival before offering a fresh portion, which may use
+another destination. Leaving the remainder in reserves ends the allocation.
+Destinations are quoted against the current board; old reserves, ordinary
+forces and a new free allowance cannot join the original batch. No second
+revival, payment or shipment/movement allowance is introduced. Restore the
+original deferred income once, after every portion and child finishes.
+
+The version2 return retains its immutable original root and grant. Each portion
+has its own event, exact starred subset, destination and ordinary arrival
+history. Ambassador and Terror consumers bind the current child rather than
+the aggregate root. The next choice cannot precede an unfinished arrival.
+Public controls show the original total, remaining, placed and kept counts;
+all four profiles have the same legal fallback without strategic tuning.
+Single-star/Advanced returns, Tleilax's whole free group and existing
+unversioned/version1 returns keep their prior procedure. The selected storm/HMS
+routes and existing source-specific arrival policies below remain applicable.
+
+Focused evidence paths: [return](../game/homeworld-revival-return.ts),
+[destinations](../game/homeworld-revival-destinations.ts),
+[controls](../components/homeworld-revival-deployment.tsx),
+[native source](../tests/fixture-southern-allocation.ts),
+[native cases](../tests/southern-allocation-runtime.test.ts).
+Frozen **24 affected files, 256/256**, types/lint/build and seven genuine
+native programmes pass. Actual Basic Homeworld setup, a paid Emperor invasion,
+real battle/starred casualties and the next Storm earn the original revival.
+Runtime includes 21 GameTable SSR renders, 12 button-group SSR renders and
+12 actual quantity/destination/reserves callbacks. Source/further counts
+(414/20, aggregate across programmes) derive from recorded action arrays.
+No played state, Tank, phase or upcoming revival receipt is installed.
+
+Twelve new native cases cover split, partial/whole/declined placement, actual
+two-star entitlement, stale/overdraw/other-owner rejection, pending ownership,
+one deferred Tleilax payment, Ecaz interruption and four legal profiles.
+Seven helper and four control cases cover exact subsets, fixed grants, current
+children and callback boundaries. Early feedback repairs new fixture shipment/
+leader selection and the one-spice normalized income oracle. Related feedback
+updates whole-only expectations and native Advanced source-order drivers.
+
+The existing local server returned HTTP200; no restart was needed. No HTTP/storage boundary,
+saved-game/database or deployed operation changes. This is local native/SSR/
+callback evidence, not browser hydration, complete modes or final acceptance.
+Wider combinations and final rules/recovery/privacy/deployed proof remain open.
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-southern-allocation-proof-v2/`;
+journeys/HTML: adjacent `20261027-southern-allocation-runtime/run/`.
+
+The dated audit's whole-group boundary below records the earlier common
+subset; this explicit provisional policy supersedes it only for fresh Basic
+multi-Fedaykin allocation. It does not resolve unrelated pending questions.
+
 ## Selected storm and HMS route policy — 25 October 2026
 
 Use the existing out-of-storm destinations and native HMS entry route, under

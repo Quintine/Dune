@@ -5,6 +5,7 @@ import type { Action, GameView } from '@/game/engine';
 import {
   homeworldRevivalDeploymentCanAct,
   homeworldRevivalDeploymentChoice,
+  homeworldRevivalDeploymentQuantities,
 } from '@/game/homeworld-revival-deployment-options';
 import { Button } from './ui/button';
 
@@ -37,9 +38,11 @@ function DeploymentChoice({ game, act, busy }: Props) {
   const [destination, setDestination] = useState(
     offer.destinations.find((target) => !target.blocked)?.id ?? '',
   );
+  const [amount, setAmount] = useState(offer.allocation !== undefined ? 1 : offer.normal + offer.elite);
   const canAct = homeworldRevivalDeploymentCanAct(game);
-  const choice = homeworldRevivalDeploymentChoice(game, destination);
-  const amount = offer.normal + offer.elite;
+  const quantities = homeworldRevivalDeploymentQuantities(game);
+  const choice = homeworldRevivalDeploymentChoice(game, destination, amount);
+  const allocation = offer.allocation;
   return (
     <section aria-label="Revival deployment" className="space-y-3">
       <h3>
@@ -47,12 +50,21 @@ function DeploymentChoice({ game, act, busy }: Props) {
           ? 'Place revived Fedaykin'
           : 'Place revived forces'}
       </h3>
-      <p>
+      {allocation !== undefined ? <>
+        <p>Choose how many remaining starred forces to place now. After this placement&apos;s native arrival effects finish,
+          you may place another portion at a different legal destination, or leave all remaining stars in reserves.
+          The eligible batch is fixed by this one original revival.</p>
+        <p className="notice">Provisional per-star interpretation: Southern&apos;s face says &ldquo;forces&rdquo;;
+          the individual allocation has no publisher clarification.</p>
+        {allocation && <p className="fine" aria-label="Southern revival allocation">
+          {allocation.remaining} starred remaining of {allocation.total} · {allocation.placed} placed · {allocation.kept} kept in reserves
+        </p>}
+      </> : <p>
         Place the entire eligible revived group in one destination, or leave it
         in reserves.
-      </p>
+      </p>}
       <p className="fine">
-        {offer.normal} ordinary · {offer.elite} starred · {amount} total
+        {offer.normal} ordinary · {offer.elite} starred · {offer.normal + offer.elite} total
       </p>
       <p className="fine">
         {offer.kind === 'fedaykin'
@@ -98,32 +110,57 @@ function DeploymentChoice({ game, act, busy }: Props) {
           ))}
         </select>
       </label>
+      {allocation !== undefined && <label className="block space-y-1">
+        <span>Starred forces to place now</span>
+        <select aria-label="Starred forces to place now" className="w-full" value={amount}
+          disabled={busy || !canAct || quantities.length === 0} onChange={event => {
+            const next = Number(event.target.value);
+            if (quantities.includes(next)) setAmount(next);
+          }}>
+          {quantities.length === 0 && <option value="">No current placement quantity</option>}
+          {quantities.map(quantity => <option key={quantity} value={quantity}>{quantity}</option>)}
+        </select>
+      </label>}
       {choice.blocked && (
         <p className="fine" aria-live="polite">
           {choice.blocked}
         </p>
       )}
-      <div className="flex flex-wrap gap-2">
+      <HomeworldRevivalDeploymentButtons game={game} act={act} busy={busy} destination={destination} amount={amount} />
+    </section>
+  );
+}
+
+/** Submit the current native choice only; the engine owns arrival and allocation. */
+export function HomeworldRevivalDeploymentButtons(props: Props & { destination: string; amount: number }) {
+  const { game, destination, amount } = props;
+  const offer = game.homeworldRevivalDeployment, event = offer?.event, actor = game.me, act = props.act;
+  const signature = JSON.stringify(offer);
+  const current = () => !props.busy && props.game === game && props.act === act && game.me === actor &&
+    !!offer && game.homeworldRevivalDeployment === offer && offer.event === event && JSON.stringify(offer) === signature &&
+    homeworldRevivalDeploymentCanAct(game);
+  const choice = homeworldRevivalDeploymentChoice(game, destination, amount);
+  return <div className="flex flex-wrap gap-2">
         <Button
           className="game-action"
-          disabled={busy || !choice.action}
+          data-revival-deployment-action="place"
+          disabled={!current() || !choice.action}
           onClick={() => {
-            if (choice.action) act(choice.action);
+            if (!current()) return;
+            const fresh = homeworldRevivalDeploymentChoice(game, destination, amount);
+            if (fresh.action) props.act(fresh.action);
           }}
         >
           Place {amount} revived {amount === 1 ? 'force' : 'forces'}
         </Button>
         <Button
           className="game-action"
+          data-revival-deployment-action="reserves"
           variant="outline"
-          disabled={busy || !canAct}
-          onClick={() =>
-            act({ type: 'decision', event: offer.event, decline: true })
-          }
+          disabled={!current()}
+          onClick={() => { if (current()) props.act({ type: 'decision', event, decline: true }); }}
         >
-          Leave in reserves
+          {offer?.allocation !== undefined ? 'Leave all remaining in reserves' : 'Leave in reserves'}
         </Button>
-      </div>
-    </section>
-  );
+      </div>;
 }

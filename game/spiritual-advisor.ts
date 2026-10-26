@@ -1,6 +1,7 @@
 import { gameTerritories, splitLocation, type MobileBoard } from './board';
 import type { FactionId } from './catalog';
 import type { Game } from './engine';
+import { currentHomeworldRevivalArrival } from './homeworld-revival-return';
 import { presenceAt, type ForcePresence } from './force-presence';
 
 export type SpiritualAdvisorSource = {
@@ -157,7 +158,7 @@ export function validateSpiritualAdvisorSource(ctx: SpiritualAdvisorContext, sou
     'Victory Spiritual Advisors need the original Guild shipment territory or Polar Sink.');
   }
   if (source.phase === 4) {
-    const parent = ctx.homeworldRevivalReturn;
+    const parent = currentHomeworldRevivalArrival(ctx.homeworldRevivalReturn);
     requireSpiritual(identifier(source.revivalEvent) && record(parent) &&
       parent.event === source.revivalEvent && parent.turn === ctx.turn && parent.phase === 4 &&
       parent.stage === 'arrival' && identifier(parent.destination),

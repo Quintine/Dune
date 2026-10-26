@@ -4,7 +4,9 @@ import { createGame, newPlayer, type Game } from '../game/engine';
 import { createHomeworldCustody, HomeworldCustodyError } from '../game/homeworld-custody';
 import { homeworldContext } from '../game/homeworld-game';
 import { appendHomeworldArrivalAmbassador, homeworldArrivalSignature } from '../game/homeworld-arrival';
-import { makeHomeworldRevivalReturn, makeHomeworldRevivalProgress } from '../game/homeworld-revival-return';
+import { makeHomeworldRevivalReturn, makeHomeworldRevivalProgress, makeSouthernRevivalAllocation,
+  currentHomeworldRevivalArrival, openSouthernRevivalChoice, commitSouthernRevivalChoice,
+  completeSouthernRevivalChild } from '../game/homeworld-revival-return';
 import { terrorEntrySignature, validateTerrorEntrySignature } from '../game/terror-entry-receipt';
 import {
   revivalOwnsTerrorEntry, validateRevivalTerrorEntry, validateRevivalArrivalSource,
@@ -37,6 +39,34 @@ function fixture(fremen = false) {
   entry.entrySignature = terrorEntrySignature(entry);
   return { g, frame, entry };
 }
+
+void test('Southern live Terror source binds each actual child subset and never the whole root or a retired child', () => {
+  const { g, entry } = fixture(true);
+  g.players[0].reserves = 3; g.players[0].elites!.reserves = 2;
+  const root = makeSouthernRevivalAllocation({ event: 'southern-root', turn: 2, phase: 4, player: 'native', source: 'normal',
+    group: { amount: 2, elite: 2, free: 2 },
+    quote: { kind: 'fedaykin', normal: 0, elite: 2, beforePopulation: 1, afterPopulation: 3, blocked: null } });
+  root.resumeResponse = null; root.resumeSignature = 'null';
+  openSouthernRevivalChoice(root, 'southern-child-1');
+  commitSouthernRevivalChoice(root, 'southern-child-1', { amount: 1, destination: 'arrakeen:10' });
+  g.homeworldRevivalReturn = root; g.homeworldRevivalProgress = makeHomeworldRevivalProgress(root);
+  Object.assign(entry, { amount: 1, elite: 1, revivalArrival: { event: 'southern-child-1' } });
+  entry.entrySignature = terrorEntrySignature(entry);
+  validateRevivalTerrorEntry(g, entry);
+  assert.throws(() => validateRevivalArrivalSource(g, { event: root.event }, entry), HomeworldCustodyError);
+  assert.throws(() => validateRevivalArrivalSource(g, entry.revivalArrival!, { ...entry, amount: 2, elite: 2 }), HomeworldCustodyError);
+  const historical = packet(entry);
+  validateRevivalTerrorPacket({ ...g, revivalPlayer: root.player }, historical, 'arrakeen:10', 'southern-child-1');
+  completeSouthernRevivalChild(root, 'southern-child-1', 'southern-child-2');
+  commitSouthernRevivalChoice(root, 'southern-child-2', { amount: 1, destination: 'polar_sink:0' });
+  g.homeworldRevivalProgress = makeHomeworldRevivalProgress(root);
+  assert.equal(currentHomeworldRevivalArrival(root)!.event, 'southern-child-2');
+  assert.throws(() => validateRevivalTerrorEntry(g, entry), HomeworldCustodyError);
+  // The old captured history remains historical without reopening its live source.
+  validateRevivalTerrorPacket({ ...g, revivalPlayer: root.player }, historical, 'arrakeen:10', 'southern-child-1');
+  validateRevivalArrivalSource(g, { event: 'southern-child-2' },
+    { entrant: 'native', territory: 'polar_sink', sector: 0, amount: 1, elite: 1, cause: 'homeworldRevival' });
+});
 function spiritual(parent: RevivalEntryParent, territory = 'arrakeen', sector = 10): RevivalEntryParent {
   return { ...structuredClone(parent), spiritual: { event: 'original-spiritual-packet', owner: 'bg', turn: 2, phase: 4,
     territory, sector, amount: 1, revivalEvent: parent.event } };

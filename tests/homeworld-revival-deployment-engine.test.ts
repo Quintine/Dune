@@ -75,8 +75,8 @@ void test('actual high Southern revival moves every newly revived Basic star onc
   );
   stable(g);
   const action = choice(g, 'f');
-  for (const amount of [0, 1, 3])
-    reject(g, 'f', { ...action, amount }, /entire/);
+  for (const amount of [0, 3])
+    reject(g, 'f', { ...action, amount }, /Fedaykin must be an integer/);
   g = applyAction(reload(g), 'f', action);
   assert.equal(p(g, 'f').reserves, old.reserves + 1);
   assert.equal(p(g, 'f').elites!.reserves, old.elites!.reserves);
@@ -346,13 +346,18 @@ void test('real deployment projections expose destinations only to their owner a
   assert.deepEqual(homeworldRevivalDeploymentActions(observer), []);
   assert.equal(observer.decision?.kind, 'homeworldRevivalDeployment');
   for (const profile of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) {
-    const view = viewGame(reload(original), 'f');
-    view.players.find((player) => player.id === 'f')!.bot = profile;
-    const proposed = homeworldRevivalDeploymentActions(view);
-    assert.equal(proposed.length, 1);
-    assert.deepEqual(botActions(view), proposed);
-    const done = applyAction(reload(original), 'f', proposed[0]);
+    let done = reload(original), choices = 0;
+    while (done.homeworldRevivalReturn!.stage !== 'complete' && choices < 3) {
+      const view = viewGame(reload(done), 'f');
+      view.players.find((player) => player.id === 'f')!.bot = profile;
+      const proposed = homeworldRevivalDeploymentActions(view);
+      assert.ok(proposed.length > 0);
+      assert.deepEqual(botActions(view), proposed);
+      done = applyAction(reload(done), 'f', proposed[0]);
+      choices++;
+    }
     assert.equal(done.homeworldRevivalReturn!.stage, 'complete');
+    assert.ok(choices > 0 && choices <= 2);
     assert.equal(viewGame(done, 'f').homeworldRevivalDeployment, null);
     stable(done);
   }

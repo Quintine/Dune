@@ -27,6 +27,41 @@ function fixture(faction: 'fremen' | 'tleilaxu', advanced = true) {
   return { g, grant };
 }
 
+void test('Southern subset quotes debit only selected original stars while omitted quantities retain whole-group behavior', () => {
+  const { g, grant } = fixture('fremen', false), before = structuredClone(g);
+  const one = quoteHomeworldRevivalDestination(g, 'p', grant, 'arrakeen:10', 1);
+  assert.equal(one.transfer.players.find(player => player.id === 'p')!.reserves, 9);
+  assert.equal(one.transfer.players.find(player => player.id === 'p')!.eliteReserves, 1);
+  const full = quoteHomeworldRevivalDestination(g, 'p', grant, 'polar_sink:0');
+  assert.equal(full.transfer.players.find(player => player.id === 'p')!.reserves, 8);
+  assert.equal(full.transfer.players.find(player => player.id === 'p')!.eliteReserves, 0);
+  for (const amount of [0, -1, 1.5, 3, NaN, Infinity])
+    assert.throws(() => quoteHomeworldRevivalDestination(g, 'p', grant, 'polar_sink:0', amount));
+  const t = fixture('tleilaxu', false);
+  assert.throws(() => quoteHomeworldRevivalDestination(t.g, 'p', t.grant, 'polar_sink:0', 1));
+  assert.equal(quoteHomeworldRevivalDestination(t.g, 'p', t.grant, 'polar_sink:0').transfer.players
+    .find(player => player.id === 'p')!.reserves, 9);
+  assert.deepEqual(g, before);
+});
+
+void test('later Southern groups retain the fixed earned grant below threshold but quote current destination presence', () => {
+  const { g, grant } = fixture('fremen', false);
+  g.players[0].reserves = 6;
+  g.homeworlds = { custody: createHomeworldCustody(homeworldContext(g)) };
+  const originalGrant = { ...grant, beforePopulation: 3, afterPopulation: 6 };
+  const first = quoteHomeworldRevivalDestination(g, 'p', originalGrant, 'arrakeen:10', 1);
+  const owner = first.transfer.players.find(player => player.id === 'p')!;
+  g.players[0].reserves = owner.reserves; g.players[0].elites!.reserves = owner.eliteReserves;
+  g.homeworlds.custody = first.transfer.state;
+  assert.equal(g.players[0].reserves, 5);
+  // A completed first child may change the board; never reuse its destination quote.
+  g.players[0].forces = { 'polar_sink:0': 1 };
+  assert.throws(() => quoteHomeworldRevivalDestination(g, 'p', originalGrant, 'arrakeen:10', 1));
+  const second = quoteHomeworldRevivalDestination(g, 'p', originalGrant, 'polar_sink:0', 1);
+  assert.equal(second.transfer.players.find(player => player.id === 'p')!.eliteReserves, 0);
+  assert.deepEqual(originalGrant, { ...grant, beforePopulation: 3, afterPopulation: 6 });
+});
+
 void test('Southern lists existing territories only and withdraws the entire typed star group without mutation', () => {
   const { g, grant } = fixture('fremen', false);
   const before = structuredClone(g);

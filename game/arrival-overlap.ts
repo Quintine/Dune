@@ -1,4 +1,5 @@
 import type { Game } from './engine';
+import { currentHomeworldRevivalArrival } from './homeworld-revival-return';
 import { validateRevivalArrivalSource, revivalOwnsTerrorEntry, validRevivalEntryParent,
   revivalEntryParentTuple, type RevivalEntryParent } from './revival-terror-entry';
 
@@ -47,7 +48,7 @@ function ordinaryDiscardOverlap(g: DiscardContext, owner: Overlap['first']): Ove
 
 export function overlapOwnsAmbassadorDiscard(g: DiscardContext, entry: AmbassadorEntry): boolean {
   const overlap = ordinaryDiscardOverlap({ ...g, pendingAmbassador: entry }, 'ambassador');
-  const arrival = g.homeworldRevivalReturn?.ambassadors?.find(record => record.event === entry.event);
+  const arrival = currentHomeworldRevivalArrival(g.homeworldRevivalReturn)?.ambassadors?.find(record => record.event === entry.event);
   return !!overlap && entry.stage === 'cards' && entry.resume === 'none' &&
     entry.event === overlap.ambassadorEvent && entry.owner === overlap.ecaz &&
     entry.token === overlap.ambassadorToken && entry.entrant === overlap.entrant &&

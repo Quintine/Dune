@@ -20,6 +20,41 @@ open mode gates.
 Continue remaining Basic functions before Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Southern individual revival allocation — 27 October. Prototyped / Partial.**
+Fresh Basic multi-Fedaykin returns permit separate portions/destinations or
+keeping the remainder in reserves. One original grant/payment/income stays
+fixed; each portion finishes its native arrival before the next choice.
+Controls show original/remaining/placed/kept stars. The per-star interpretation
+is visibly provisional under the 14 October instruction, not publisher
+clarification or a claimed answer to the earlier splitting question.
+
+Frozen **24 affected files, 256/256**, types/lint/build and seven genuine
+native programmes pass. Actual Basic Homeworld setup, a paid Emperor invasion,
+real battle/starred casualties and the next Storm earn the original revival.
+Runtime includes 21 GameTable SSR renders, 12 button-group SSR renders and
+12 actual quantity/destination/reserves callbacks. Source/further counts
+(414/20, aggregate across programmes) derive from recorded action arrays.
+No played state, Tank, phase or upcoming revival receipt is installed.
+
+Twelve new native cases cover split, partial/whole/declined placement, actual
+two-star entitlement, stale/overdraw/other-owner rejection, pending ownership,
+one deferred Tleilax payment, Ecaz interruption and four legal profiles.
+Seven helper and four control cases cover exact subsets, fixed grants, current
+children and callback boundaries. Early feedback repairs new fixture shipment/
+leader selection and the one-spice normalized income oracle. Related feedback
+updates whole-only expectations and native Advanced source-order drivers.
+
+The existing local server returned HTTP200; no restart was needed. No HTTP/storage boundary,
+saved-game/database or deployed operation changes. This is local native/SSR/
+callback evidence, not browser hydration, complete modes or final acceptance.
+Wider combinations and final rules/recovery/privacy/deployed proof remain open.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-southern-allocation-proof-v2/`;
+journeys/HTML: adjacent `20261027-southern-allocation-runtime/run/`.
+[Contract](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md#individual-southern-allocation--27-october-2026).
+The bounded classic/expansion scoping pass found usable independent first
+versions in sampled functions; it does not certify all Basic or Advanced rules.
+
 **Truthtrance / printed flight and pre-leader cards — 27 October. Prototyped / Partial.**
 Ornithopter counts its accepted initial physical declaration, with actual
 Movement-end closure and no credit for later groups/disposal. Residual Poison

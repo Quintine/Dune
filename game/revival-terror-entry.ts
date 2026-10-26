@@ -1,7 +1,7 @@
 import type { Game } from './engine';
 import { gameTerritories, location, splitLocation, validLocation } from './board';
 import { HomeworldCustodyError } from './homeworld-custody';
-import { validateHomeworldRevivalReturn } from './homeworld-revival-return';
+import { currentHomeworldRevivalArrival, currentHomeworldRevivalGroup, validateHomeworldRevivalReturn } from './homeworld-revival-return';
 import type { SpiritualAdvisorSource } from './spiritual-advisor';
 
 export type RevivalTerrorPacket = {
@@ -19,7 +19,7 @@ export type RevivalEntryParent = {
 };
 type TerrorEntry = NonNullable<Game['pendingTerrorEntry']>;
 export type RevivalArrivalDetails = Pick<TerrorEntry, 'entrant' | 'territory' | 'sector' | 'amount' | 'elite' | 'cause'>;
-export type RevivalArrivalContext = Pick<Game, 'status' | 'turn' | 'phase' | 'players' |
+export type RevivalArrivalContext = Pick<Game, 'status' | 'advanced' | 'turn' | 'phase' | 'players' |
   'homeworldRevivalReturn' | 'homeworldRevivalProgress' | 'homeworlds' |
   'pendingAmbassador' | 'pendingTreacheryDiscard' | 'mobileStronghold' | 'discoveries'>;
 type HistoricalContext = Pick<Game, 'turn' | 'phase'> & {
@@ -138,18 +138,21 @@ export function revivalEntryParentTuple(parent: RevivalEntryParent): unknown[] {
 export function validateRevivalArrivalSource(g: RevivalArrivalContext, parent: RevivalEntryParent, details: RevivalArrivalDetails): void {
   if (!validRevivalEntryParent(parent)) fail();
   const frame = g.homeworldRevivalReturn;
-  if (g.status !== 'playing' || !frame || frame.stage !== 'arrival' || frame.event !== parent.event ||
-    frame.turn !== g.turn || frame.phase !== g.phase || !text(frame.destination)) fail();
+  const arrival = frame ? currentHomeworldRevivalArrival(frame) : null;
+  const group = frame ? currentHomeworldRevivalGroup(frame) : null;
+  if (g.status !== 'playing' || !frame || !arrival || !group || frame.stage !== 'arrival' ||
+    arrival.stage !== 'arrival' || arrival.event !== parent.event || frame.turn !== g.turn || frame.phase !== g.phase ||
+    !text(arrival.destination)) fail();
   const continuation = g.pendingTreacheryDiscard?.continuation;
   const context = !g.pendingAmbassador && continuation?.kind === 'ambassador'
     ? { ...g, pendingAmbassador: continuation.entry } : g;
   validateHomeworldRevivalReturn(context, frame);
-  const original = splitLocation(frame.destination);
-  if (frame.destination !== location(original.territory, original.sector) ||
+  const original = splitLocation(arrival.destination);
+  if (arrival.destination !== location(original.territory, original.sector) ||
     !gameTerritories(g).some(place => place.id === original.territory && place.sectors.includes(original.sector)) ||
     !gameTerritories(g).some(place => place.id === details.territory && place.sectors.includes(details.sector)) ||
     !count(details.amount) || details.amount < 1 || !count(details.elite, details.amount)) fail();
-  if (parent.terror) validateRevivalTerrorPacket({ ...g, revivalPlayer: frame.player }, parent.terror, frame.destination, frame.event);
+  if (parent.terror) validateRevivalTerrorPacket({ ...g, revivalPlayer: frame.player }, parent.terror, arrival.destination, arrival.event);
   if (parent.spiritual) {
     const source = parent.spiritual;
     const origin = parent.terror?.territory ?? original.territory;
@@ -165,7 +168,7 @@ export function validateRevivalArrivalSource(g: RevivalArrivalContext, parent: R
       details.sector !== packet.sector || details.amount !== packet.amount || details.elite !== packet.elite) fail();
   } else if (details.entrant !== frame.player || details.cause !== 'homeworldRevival' ||
     details.territory !== original.territory || details.sector !== original.sector ||
-    details.amount !== frame.quote.normal + frame.quote.elite || details.elite !== frame.quote.elite) fail();
+    details.amount !== group.amount || details.elite !== group.elite) fail();
 }
 
 export function validateRevivalTerrorEntry(g: RevivalArrivalContext, entry: TerrorEntry): void {

@@ -66,6 +66,8 @@ export function passRevivalArrivalReactions(game: Game, actions: RevivalArrivalR
 /** Earn the original returned-group decision; no destination or BG reaction is chosen. */
 export function openRevivalArrivalReactions(game: Game, fixture: { owner: string; revivalAction: Action },
   actions: RevivalArrivalReactionsStep[] = []): Game {
+  game = advanceRevivalArrivalReactions(game, state => state.phase === 4 && revivalArrivalReactionsClean(state) &&
+    (!state.revivalOrder || state.revivalOrder.remaining[0] === fixture.owner), actions);
   game = actRevivalArrivalReactions(game, fixture.owner, fixture.revivalAction, actions);
   game = advanceRevivalArrivalReactions(game, state =>
     state.decision?.kind === 'homeworldRevivalDeployment' && !state.response && !state.phaseOpening, actions);
@@ -169,7 +171,8 @@ export function createRevivalArrivalReactionsFixture(options: { advanced?: boole
   assert.equal(game.storm, 13);
   assert.equal(revivalArrivalReactionsPlayer(game, owner).forces[casualtyLocation], undefined);
   assert.equal(revivalArrivalReactionsPlayer(game, owner).tanks, 1);
-  reach(state => state.turn === 2 && state.phase === 4 && revivalArrivalReactionsClean(state));
+  reach(state => state.turn === 2 && state.phase === 4 && revivalArrivalReactionsClean(state) &&
+    (!state.revivalOrder || state.revivalOrder.remaining[0] === owner));
   assert.equal(revivalArrivalReactionsPlayer(game, owner).tanks, 1);
   assert.equal(revivalArrivalReactionsPlayer(game, owner).reserves, 19);
   assert.equal(revivalArrivalReactionsPlayer(game, bg).reserves, resident ? 18 : 19);
@@ -194,7 +197,7 @@ export function createRevivalArrivalReactionsFixture(options: { advanced?: boole
     dealOrder, spiceOrder, originalSpice, originalInventory, originalCards: originalInventory,
     steps: actions, actions, sourceActionCount: actions.length,
     staging: [
-      'Public Basic/Advanced Bene Gesserit/Tleilaxu with actual Homeworlds lobby setting and original 47-card E1 deck. Only two original unopened starting-deal positions, unopened ordinary land Spice positions and native scalar shuffle order are selected. BG starts with one actual Polar fighter (Advanced uses its original advisorSetup); Tleilaxu receives its original Karama and original three Face Dancers. Actual first dials end Storm at11 in Basic (10+0) or12 in Advanced (11+0). Tleilaxu pays two spice to ship one native counter into Hagga Basin13; BG really declines that first Spiritual offer. The next native Storm (Basic 1+1 dials; Advanced original six-card shuffle/draw1) ends at13 and destroys the counter. Original phase controls reach the clean second Revival with Tanks1 and High19 native Tleilaxu/BG. Optional resident branch has BG actually pay to ship one fighter to Carthag11, leaving High18. No played hand, wallet, army, Tank, phase, stance, threshold, placement or reaction is installed. Source stops before ordinary free revive1; caller owns placement and every BG entry reaction.',
+      'Public Basic/Advanced Bene Gesserit/Tleilaxu with actual Homeworlds lobby setting and original 47-card E1 deck. Only two original unopened starting-deal positions, unopened ordinary land Spice positions and native scalar shuffle order are selected. BG starts with one actual Polar fighter (Advanced uses its original advisorSetup); Tleilaxu receives its original Karama and original three Face Dancers. Actual first dials end Storm at11 in Basic (10+0) or12 in Advanced (11+0). Tleilaxu pays two spice to ship one native counter into Hagga Basin13; BG really declines that first Spiritual offer. The next native Storm (Basic 1+1 dials; Advanced original six-card shuffle/draw1) ends at13 and destroys the counter. Original phase controls reach the clean second Revival with Tanks1 and High19 native Tleilaxu/BG, finishing preceding Advanced seats through their actual Ready controls until Tleilaxu owns the opportunity. Optional resident branch has BG actually pay to ship one fighter to Carthag11, leaving High18. No played hand, wallet, army, Tank, phase, stance, threshold, placement or reaction is installed. Source stops before ordinary free revive1; caller owns placement and every BG entry reaction.',
     ],
   };
 }

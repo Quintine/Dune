@@ -10,8 +10,132 @@ import {
   validateHomeworldRevivalReturn,
   homeworldRevivalResumeSignature,
   homeworldRevivalArrivalSignature,
+  makeSouthernRevivalAllocation,
+  southernRevivalRemaining,
+  southernRevivalSummary,
+  currentHomeworldRevivalArrival,
+  currentHomeworldRevivalGroup,
+  openSouthernRevivalChoice,
+  commitSouthernRevivalChoice,
+  completeSouthernRevivalChild,
+  appendHomeworldRevivalAmbassador,
+  completeHomeworldRevivalAmbassador,
   type HomeworldRevivalReturn,
 } from '../game/homeworld-revival-return';
+
+function southernFixture(stars = 3) {
+  const { g, original } = fixture();
+  g.advanced = false;
+  original.group.elite = stars;
+  original.quote.elite = stars;
+  g.players[0].elites!.reserves = stars;
+  const root = makeSouthernRevivalAllocation(original);
+  g.homeworldRevivalProgress = makeHomeworldRevivalProgress(root);
+  return { g, root, original };
+}
+function openSouthern(root: HomeworldRevivalReturn, event: string, response: Game['response'] = null) {
+  root.resumeResponse = structuredClone(response);
+  root.resumeSignature = homeworldRevivalResumeSignature(response);
+  openSouthernRevivalChoice(root, event);
+}
+
+void test('Southern v2 allocates three original stars to distinct current groups and reserves while holding one original income', () => {
+  const { g, root } = southernFixture();
+  validateHomeworldRevivalReturn(g, root);
+  assert.equal(currentHomeworldRevivalArrival(root), null);
+  assert.equal(currentHomeworldRevivalGroup(root), null);
+  const response: Game['response'] = { kind: 'revivalIncome', owner: 'v', recipient: 'p', amount: 1, passed: [] };
+  openSouthern(root, 'child-1', response);
+  const original = structuredClone({ event: root.event, source: root.source, group: root.group, quote: root.quote,
+    signature: root.signature, resumeResponse: root.resumeResponse, resumeSignature: root.resumeSignature });
+  const destinations = ['arrakeen:10', 'polar_sink:0', 'decline'];
+  for (const [index, destination] of destinations.entries()) {
+    const event = `child-${index + 1}`;
+    assert.equal(currentHomeworldRevivalArrival(root)!.event, event);
+    assert.equal(currentHomeworldRevivalGroup(root), null);
+    commitSouthernRevivalChoice(root, event, { amount: 1, destination });
+    assert.deepEqual(currentHomeworldRevivalGroup(root), { amount: 1, elite: 1 });
+    if (destination !== 'decline') { g.players[0].reserves--; g.players[0].elites!.reserves--; }
+    g.homeworldRevivalProgress = makeHomeworldRevivalProgress(root);
+    validateHomeworldRevivalReturn(g, root);
+    completeSouthernRevivalChild(root, event, index < 2 ? `child-${index + 2}` : undefined);
+    g.homeworldRevivalProgress = makeHomeworldRevivalProgress(root);
+    validateHomeworldRevivalReturn(g, root);
+  }
+  assert.equal(root.stage, 'complete');
+  assert.deepEqual(southernRevivalSummary(root), { total: 3, remaining: 0, placed: 2, kept: 1 });
+  assert.equal(g.players[0].elites!.reserves, 1);
+  assert.equal(root.allocation!.children.length, 3);
+  assert.deepEqual({ event: root.event, source: root.source, group: root.group, quote: root.quote,
+    signature: root.signature, resumeResponse: root.resumeResponse, resumeSignature: root.resumeSignature }, original);
+  validateHomeworldRevivalReturn(g, JSON.parse(JSON.stringify(root)) as HomeworldRevivalReturn);
+});
+
+void test('Southern v2 is a fresh Basic multi-star grant while minimal legacy identities and original whole frames remain unchanged', () => {
+  const legacy = fixture(), before = JSON.stringify(legacy.frame);
+  assert.equal(currentHomeworldRevivalArrival(legacy.frame), legacy.frame);
+  assert.deepEqual(currentHomeworldRevivalGroup(legacy.frame), { amount: 2, elite: 2 });
+  const minimal = { event: 'legacy', turn: 1, phase: 4, stage: 'arrival' as const, destination: 'arrakeen:10' };
+  assert.equal(currentHomeworldRevivalArrival(minimal), minimal);
+  assert.equal(currentHomeworldRevivalArrival(null), null);
+  assert.equal(currentHomeworldRevivalArrival(undefined), null);
+  assert.equal(JSON.stringify(legacy.frame), before);
+  assert.equal('allocation' in legacy.frame, false);
+  assert.throws(() => makeSouthernRevivalAllocation(fixture('tleilax').original));
+  const one = fixture().original; one.group.elite = 1; one.quote.elite = 1;
+  assert.throws(() => makeSouthernRevivalAllocation(one));
+  const { g, root } = southernFixture(2);
+  assert.throws(() => validateHomeworldRevivalReturn({ ...g, advanced: true }, root));
+  validateHomeworldRevivalReturn(g, root);
+});
+
+void test('Southern child selection rejects stale events, duplicate decisions and over-allocation before changing the root', () => {
+  const { g, root } = southernFixture(2);
+  openSouthern(root, 'child-1');
+  for (const selection of [{ amount: 0, destination: 'decline' }, { amount: 3, destination: 'arrakeen:10' },
+    { amount: 1.5, destination: 'polar_sink:0' }, { amount: 1, destination: '' }]) {
+    const before = structuredClone(root);
+    assert.throws(() => commitSouthernRevivalChoice(root, 'child-1', selection));
+    assert.deepEqual(root, before);
+  }
+  commitSouthernRevivalChoice(root, 'child-1', { amount: 1, destination: 'decline' });
+  const before = structuredClone(root);
+  for (const next of [undefined, 'child-1', root.event]) {
+    assert.throws(() => completeSouthernRevivalChild(root, 'child-1', next));
+    assert.deepEqual(root, before);
+  }
+  completeSouthernRevivalChild(root, 'child-1', 'child-2');
+  assert.equal(southernRevivalRemaining(root), 1);
+  assert.throws(() => commitSouthernRevivalChoice(root, 'child-1', { amount: 1, destination: 'decline' }));
+  assert.throws(() => commitSouthernRevivalChoice(root, 'child-2', { amount: 2, destination: 'decline' }));
+  g.homeworldRevivalProgress = makeHomeworldRevivalProgress(root);
+  validateHomeworldRevivalReturn(g, root);
+  const changed = structuredClone(root); changed.allocation!.children[0].amount = 2;
+  assert.throws(() => makeHomeworldRevivalProgress(changed));
+  const regranted = structuredClone(root); regranted.quote.afterPopulation++;
+  assert.throws(() => makeHomeworldRevivalProgress(regranted));
+});
+
+void test('Southern children retain their own Ambassador completion before the next unique decision', () => {
+  const { g, root } = southernFixture(2);
+  openSouthern(root, 'child-1');
+  commitSouthernRevivalChoice(root, 'child-1', { amount: 1, destination: 'arrakeen:10' });
+  g.players[0].reserves--; g.players[0].elites!.reserves--;
+  g.homeworldRevivalProgress = makeHomeworldRevivalProgress(root);
+  const ambassador = { event: 'child-1-ambassador', entrant: 'p', territory: 'arrakeen', sector: 10, turn: 2, phase: 4 };
+  appendHomeworldRevivalAmbassador(root, ambassador);
+  const pending = { ...ambassador, revivalEvent: 'child-1' } as NonNullable<Game['pendingAmbassador']>;
+  validateHomeworldRevivalReturn({ ...g, pendingAmbassador: pending }, root);
+  assert.throws(() => completeSouthernRevivalChild(root, 'child-1', 'child-2'));
+  completeHomeworldRevivalAmbassador(root, ambassador.event);
+  validateHomeworldRevivalReturn({ ...g, pendingAmbassador: null }, root);
+  completeSouthernRevivalChild(root, 'child-1', 'child-2');
+  g.homeworldRevivalProgress = makeHomeworldRevivalProgress(root);
+  assert.equal(root.allocation!.children[0].ambassadors![0].completed, true);
+  assert.equal(currentHomeworldRevivalArrival(root)!.event, 'child-2');
+  assert.throws(() => completeHomeworldRevivalAmbassador(root, ambassador.event));
+  validateHomeworldRevivalReturn({ ...g, pendingAmbassador: null }, root);
+});
 
 function fixture(
   kind: 'fedaykin' | 'tleilax' = 'fedaykin',

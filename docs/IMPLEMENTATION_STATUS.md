@@ -1,5 +1,38 @@
 # Dune implementation status
 
+## 27 October 2026 — Individual Southern revival allocation
+
+Prototyped / Partial. Fresh Basic multi-Fedaykin roots retain one exact revival
+and income while offering sequential starred portions, current destinations
+and remaining-reserves disposition. Native arrival ownership binds each child;
+Advanced, Tleilax and existing whole-group returns retain their procedure.
+The per-star interpretation is explicit provisional composition, not a located
+publisher clarification or an inferred user answer. No strategic AI tuning.
+
+Frozen **24 affected files, 256/256**, types/lint/build and seven genuine
+native programmes pass. Actual Basic Homeworld setup, a paid Emperor invasion,
+real battle/starred casualties and the next Storm earn the original revival.
+Runtime includes 21 GameTable SSR renders, 12 button-group SSR renders and
+12 actual quantity/destination/reserves callbacks. Source/further counts
+(414/20, aggregate across programmes) derive from recorded action arrays.
+No played state, Tank, phase or upcoming revival receipt is installed.
+
+Twelve new native cases cover split, partial/whole/declined placement, actual
+two-star entitlement, stale/overdraw/other-owner rejection, pending ownership,
+one deferred Tleilax payment, Ecaz interruption and four legal profiles.
+Seven helper and four control cases cover exact subsets, fixed grants, current
+children and callback boundaries. Early feedback repairs new fixture shipment/
+leader selection and the one-spice normalized income oracle. Related feedback
+updates whole-only expectations and native Advanced source-order drivers.
+
+The existing local server returned HTTP200; no restart was needed. No HTTP/storage boundary,
+saved-game/database or deployed operation changes. This is local native/SSR/
+callback evidence, not browser hydration, complete modes or final acceptance.
+Wider combinations and final rules/recovery/privacy/deployed proof remain open.
+
+[Contract](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md#individual-southern-allocation--27-october-2026).
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-southern-allocation-proof-v2/`.
+
 ## 27 October 2026 — Printed flight and pre-leader commitments
 
 Prototyped / Partial. First native Ornithopter declaration and actual Residual

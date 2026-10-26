@@ -1,7 +1,7 @@
 import type { Game } from './engine';
 import { location } from './board';
 import { validAmbassadorResume } from './ambassador-resume';
-import { validateHomeworldRevivalReturn } from './homeworld-revival-return';
+import { currentHomeworldRevivalArrival, validateHomeworldRevivalReturn } from './homeworld-revival-return';
 import { validateHomeworldVictoryReturn } from './homeworld-victory-return';
 import {
   validateHomeworldArrival,
@@ -29,7 +29,7 @@ export function ambassadorPhaseAllowed(g: AmbassadorPhaseContext): boolean {
     tag: HomeworldArrivalTag;
     frame: HomeworldArrivalFrame | undefined;
   }[] = [
-    { tag: 'revivalEvent', frame: g.homeworldRevivalReturn },
+    { tag: 'revivalEvent', frame: currentHomeworldRevivalArrival(g.homeworldRevivalReturn) ?? undefined },
     { tag: 'victoryEvent', frame: g.homeworldVictoryReinforcement },
   ];
   const matching = candidates.filter(

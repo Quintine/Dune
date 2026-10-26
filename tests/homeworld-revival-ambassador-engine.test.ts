@@ -14,8 +14,20 @@ import {
 
 import { homeworldRevivalAmbassadorFixture as fixture } from './fixture-homeworld-revival-ambassador';
 
+function revivalOpportunity(g: Game, actor: string) {
+  for (let count = 0; g.revivalOrder && g.revivalOrder.remaining[0] !== actor && count < g.players.length; count++) {
+    const preceding = g.revivalOrder.remaining[0]; assert.ok(preceding);
+    assert.equal(g.phase, 4);
+    assert.equal(g.response ?? null, null); assert.equal(g.decision ?? null, null);
+    g = applyAction(g, preceding, { type: 'ready' });
+  }
+  assert.equal(g.phase, 4);
+  if (g.revivalOrder) assert.equal(g.revivalOrder.remaining[0], actor);
+  return g;
+}
+
 function open() {
-  let g = fixture();
+  let g = revivalOpportunity(fixture(), 'f');
   g = applyAction(g, 'f', { type: 'revive', amount: 1, elite: 1 });
   if (g.decision?.kind === 'revivalStop')
     g = applyAction(g, 't', { type: 'decision', decline: true });
@@ -89,7 +101,7 @@ void test('actual phase-four revived arrival rejects fighter accompaniment and h
 });
 
 void test('a controlled native World source completes revived Tleilax Intrusion and Spiritual declines before its Fremen Ambassador relocation', () => {
-  let g = fixture();
+  let g = revivalOpportunity(fixture(), 't');
   // This existing fixture conserves staged native armies/cards. The return,
   // Intrusion, Spiritual choice and Ambassador continuations are real actions.
   g = applyAction(g, 't', { type: 'revive', amount: 1, elite: 0 });
@@ -119,7 +131,7 @@ void test('a controlled native World source completes revived Tleilax Intrusion 
 });
 
 void test('a controlled conserved Southern return permits Intrusion Karama without inventing Spiritual accompaniment', () => {
-  let g = fixture();
+  let g = revivalOpportunity(fixture(), 'f');
   // Move existing Fremen/BG counters to a non-stronghold in this controlled
   // fixture. No revival, entry, response or continuation is installed.
   p(g, 'f').forces['arrakeen:10']--;

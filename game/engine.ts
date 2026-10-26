@@ -196,6 +196,14 @@ import {
 } from './homeworld-revival-deployment';
 import {
   makeHomeworldRevivalReturn,
+  makeSouthernRevivalAllocation,
+  southernRevivalRemaining,
+  southernRevivalSummary,
+  currentHomeworldRevivalArrival,
+  currentHomeworldRevivalGroup,
+  openSouthernRevivalChoice,
+  commitSouthernRevivalChoice,
+  completeSouthernRevivalChild,
   makeHomeworldRevivalProgress,
   type HomeworldRevivalProgress,
   validateHomeworldRevivalReturn,
@@ -21701,7 +21709,7 @@ function openAmbassadorEntry(
   };
   g.decision = { kind: 'ecazAmbassador', player: owner.id };
   if (revivalArrival) {
-    const frame = g.homeworldRevivalReturn;
+    const frame = currentHomeworldRevivalArrival(g.homeworldRevivalReturn);
     requireRule(frame?.stage === 'arrival' && frame.event === revivalArrival.event,
       'This entry has lost its original revived group.');
     g.pendingAmbassador.revivalEvent = frame.event;
@@ -21807,7 +21815,7 @@ function openTerritoryEntry(
 function finishAmbassador(g: Game, deferResume = false) {
   const pending = g.pendingAmbassador!;
   if (pending.revivalEvent !== undefined || pending.victoryEvent !== undefined) {
-    const arrival = pending.revivalEvent !== undefined ? g.homeworldRevivalReturn : g.homeworldVictoryReinforcement;
+    const arrival = pending.revivalEvent !== undefined ? currentHomeworldRevivalArrival(g.homeworldRevivalReturn) : g.homeworldVictoryReinforcement;
     requireRule(arrival && ambassadorPhaseAllowed(g),
       'This Ambassador has lost its original Homeworld arrival completion.');
     completeHomeworldArrivalAmbassador(arrival, pending.event);
@@ -21884,7 +21892,7 @@ function currentFremenAmbassador(g: Game, event?: string, completed = false) {
 function ambassadorRelocationIntegrity(g: Game) {
   const entry = g.pendingAmbassador;
   if (entry && (entry.revivalEvent !== undefined || entry.victoryEvent !== undefined ||
-      g.homeworldRevivalReturn?.ambassadors?.some((record) => record.event === entry.event) ||
+      currentHomeworldRevivalArrival(g.homeworldRevivalReturn)?.ambassadors?.some((record) => record.event === entry.event) ||
       g.homeworldVictoryReinforcement?.ambassadors?.some((record) => record.event === entry.event)))
     requireRule(ambassadorPhaseAllowed(g),
       'This Ambassador has lost its original Homeworld revival arrival.');
@@ -22754,7 +22762,7 @@ function finishGuildAmbassadorAdvisorArrival(g:Game,response:ResponseWindow,
     const parent = g.pendingAmbassador!;
     const arrivalTag = parent.revivalEvent !== undefined ? 'revivalEvent' :
       parent.victoryEvent !== undefined ? 'victoryEvent' : undefined;
-    const arrival = arrivalTag === 'revivalEvent' ? g.homeworldRevivalReturn :
+    const arrival = arrivalTag === 'revivalEvent' ? currentHomeworldRevivalArrival(g.homeworldRevivalReturn) :
       arrivalTag === 'victoryEvent' ? g.homeworldVictoryReinforcement : undefined;
     if (arrivalTag !== undefined)
       requireRule(arrival && ambassadorPhaseAllowed(g),
@@ -32441,7 +32449,9 @@ function stageHomeworldRevivalReturn(
   grant: ReturnType<typeof currentHomeworldRevivalGrant>, card?: string,
 ) {
   if (!grant) return;
-  g.homeworldRevivalReturn = homeworldRule(() => makeHomeworldRevivalReturn({
+  const makeReturn = !g.advanced && grant.kind === 'fedaykin' && grant.elite > 1
+    ? makeSouthernRevivalAllocation : makeHomeworldRevivalReturn;
+  g.homeworldRevivalReturn = homeworldRule(() => makeReturn({
     event: crypto.randomUUID(), turn: g.turn, phase: g.phase, player: p.id,
     source, group, quote: grant, ...(card ? { card } : {}),
   }));
@@ -32449,7 +32459,7 @@ function stageHomeworldRevivalReturn(
 }
 function stampHomeworldRevivalProgress(g: Game) {
   const frame = g.homeworldRevivalReturn!;
-  if (frame.progressVersion === 1)
+  if (frame.progressVersion === 1 || frame.progressVersion === 2)
     g.homeworldRevivalProgress = makeHomeworldRevivalProgress(frame);
 }
 function homeworldRevivalReturnIntegrity(g: Game) {
@@ -32461,19 +32471,48 @@ function homeworldRevivalReturnIntegrity(g: Game) {
     g.pendingRicheseGift?.resume, g.pendingRichesePurchaseIncome?.resume,
     continuation && 'resume' in continuation ? continuation.resume : null];
   const decisions = contexts.flatMap((context) => context?.decision?.kind === 'homeworldRevivalDeployment' ? [context.decision] : []);
+  const arrival = currentHomeworldRevivalArrival(frame);
   requireRule(decisions.every((decision) => frame?.stage === 'choice' &&
-    decision.player === frame.player && decision.event === frame.event),
+    decision.player === frame.player && decision.event === arrival?.event),
     'The revival placement decision has lost its original returned group.');
   if (frame?.stage === 'choice')
     requireRule(decisions.length > 0, 'The returned group has lost its owned placement choice.');
 }
 function completeHomeworldRevivalReturn(g: Game) {
   const frame = g.homeworldRevivalReturn!;
-  requireRule(!frame.ambassadors?.some((entry) => !entry.completed),
+  const arrival = currentHomeworldRevivalArrival(frame);
+  requireRule(arrival && !arrival.ambassadors?.some((entry) => !entry.completed),
     'Finish the revived group’s Ambassador opportunity before its original revival income.');
-  frame.stage = 'complete';
+  if (frame.progressVersion === 2) {
+    homeworldRule(() => completeSouthernRevivalChild(frame, arrival.event,
+      southernRevivalRemaining(frame) > 0 ? crypto.randomUUID() : undefined));
+    stampHomeworldRevivalProgress(g);
+    if (frame.stage === 'choice') {
+      openHomeworldRevivalDecision(g);
+      return;
+    }
+  } else frame.stage = 'complete';
   stampHomeworldRevivalProgress(g);
   g.response = structuredClone(frame.resumeResponse ?? null);
+}
+/** Every portion waits for its genuine arrival children before a fresh choice.
+ * The original revival grant and deferred income are never issued again. */
+function openHomeworldRevivalDecision(g: Game) {
+  const frame = g.homeworldRevivalReturn!, arrival = currentHomeworldRevivalArrival(frame);
+  requireRule(frame.stage === 'choice' && arrival, 'Retain the current revival placement choice.');
+  const destinations = homeworldRule(() => homeworldRevivalDestinations(g, frame.player, frame.quote));
+  if (!destinations.length || destinations.every((d) => d.blocked && !d.blocked.includes('await'))) {
+    if (frame.progressVersion === 2) homeworldRule(() => commitSouthernRevivalChoice(frame, arrival.event,
+      { amount: southernRevivalRemaining(frame), destination: 'decline' }));
+    else {
+      frame.destination = 'decline'; frame.ambassadors = [];
+      frame.arrivalSignature = homeworldRevivalArrivalSignature(frame);
+    }
+    completeHomeworldRevivalReturn(g);
+    log(g, `${getPlayer(g, frame.player).name} left the remaining revived group in reserves because no placement destination is available.`);
+    return;
+  }
+  g.decision = { kind: 'homeworldRevivalDeployment', player: frame.player, event: arrival.event };
 }
 function resumeHomeworldRevivalReturn(g: Game) {
   const frame = g.homeworldRevivalReturn;
@@ -32493,57 +32532,61 @@ function resumeHomeworldRevivalReturn(g: Game) {
   frame.resumeResponse = structuredClone(g.response);
   frame.resumeSignature = homeworldRevivalResumeSignature(frame.resumeResponse);
   g.response = null;
-  frame.stage = 'choice';
+  if (frame.progressVersion === 2) homeworldRule(() => openSouthernRevivalChoice(frame, crypto.randomUUID()));
+  else frame.stage = 'choice';
   stampHomeworldRevivalProgress(g);
-  const destinations = homeworldRule(() => homeworldRevivalDestinations(g, frame.player, frame.quote));
-  if (!destinations.length || destinations.every((d) => d.blocked && !d.blocked.includes('await'))) {
-    frame.destination = 'decline';
-    frame.ambassadors = [];
-    frame.arrivalSignature = homeworldRevivalArrivalSignature(frame);
-    completeHomeworldRevivalReturn(g);
-    log(g, `${getPlayer(g, frame.player).name} left the revived group in reserves because no placement destination is available.`);
-    return;
-  }
-  g.decision = { kind: 'homeworldRevivalDeployment', player: frame.player, event: frame.event };
+  openHomeworldRevivalDecision(g);
 }
 function decideHomeworldRevivalReturn(g: Game, p: Player, action: Action) {
-  const frame = g.homeworldRevivalReturn;
-  requireRule(frame?.stage === 'choice' && frame.player === p.id && action.event === frame.event,
+  const frame = g.homeworldRevivalReturn, arrival = currentHomeworldRevivalArrival(frame);
+  requireRule(frame?.stage === 'choice' && arrival && frame.player === p.id && action.event === arrival.event,
     'Choose the current returned group’s placement.');
+  const allocation = frame.progressVersion === 2;
+  if (allocation) requireRule(Object.keys(action).every(key => ['type', 'event', 'decline', 'destination', 'amount'].includes(key)),
+    'Choose only the current returned stars, destination or remaining-reserve option.');
   if (action.decline === true) {
     requireRule(action.destination === undefined && action.amount === undefined,
       'Leaving the group in reserves does not select a destination or quantity.');
-    frame.destination = 'decline';
-    frame.ambassadors = [];
-    frame.arrivalSignature = homeworldRevivalArrivalSignature(frame);
+    if (allocation) homeworldRule(() => commitSouthernRevivalChoice(frame, arrival.event,
+      { amount: southernRevivalRemaining(frame), destination: 'decline' }));
+    else {
+      frame.destination = 'decline'; frame.ambassadors = [];
+      frame.arrivalSignature = homeworldRevivalArrivalSignature(frame);
+    }
     completeHomeworldRevivalReturn(g);
     log(g, `${p.name} left the newly revived group in reserves.`);
     return;
   }
-  const amount = frame.quote.normal + frame.quote.elite;
-  requireRule((action.amount === undefined || action.amount === amount) && typeof action.destination === 'string',
-    'Place the entire eligible revived group in one destination.');
-  const quote = homeworldRule(() => quoteHomeworldRevivalDestination(g, p.id, frame.quote, action.destination as string));
+  const amount = allocation ? action.amount === undefined ? 1 : integer(action.amount, 1, southernRevivalRemaining(frame), 'Revived Fedaykin')
+    : frame.quote.normal + frame.quote.elite;
+  requireRule((allocation || action.amount === undefined || action.amount === amount) && typeof action.destination === 'string',
+    allocation ? 'Choose a legal destination for the selected revived stars.' : 'Place the entire eligible revived group in one destination.');
+  const quote = homeworldRule(() => quoteHomeworldRevivalDestination(g, p.id, frame.quote, action.destination as string,
+    allocation ? amount : undefined));
+  if (allocation) homeworldRule(() => commitSouthernRevivalChoice(frame, arrival.event,
+    { amount, destination: quote.selected.id }));
   const seat = quote.transfer.players.find((seat) => seat.id === p.id)!;
   p.reserves = seat.reserves;
   if (p.elites) p.elites.reserves = seat.eliteReserves;
   g.homeworlds!.custody = quote.transfer.state;
   observeOccupation(g);
-  frame.destination = quote.selected.id;
-  frame.stage = 'arrival';
+  if (!allocation) {
+    frame.destination = quote.selected.id; frame.stage = 'arrival';
+    frame.ambassadors = [];
+    frame.arrivalSignature = homeworldRevivalArrivalSignature(frame);
+  }
   stampHomeworldRevivalProgress(g);
-  frame.ambassadors = [];
-  frame.arrivalSignature = homeworldRevivalArrivalSignature(frame);
+  const group = currentHomeworldRevivalGroup(frame)!;
   if (quote.selected.territory) {
-    place(p, quote.selected.territory, quote.selected.sector!, amount, frame.quote.elite);
+    place(p, quote.selected.territory, quote.selected.sector!, amount, group.elite);
     const bg = byFaction(g, 'beneGesserit');
     const followup = frame.quote.kind === 'tleilax' && bg && bg.id !== p.id &&
       spiritualAdvisorMaximum(g, bg.id) > 0
-      ? {shipment:p.id,destination:quote.selected.id,revivalEvent:frame.event} : undefined;
-    if (!intrusion(g, p, quote.selected.territory, {revivalEvent:frame.event,...(followup ? {followup} : {})}) && followup)
+      ? {shipment:p.id,destination:quote.selected.id,revivalEvent:arrival.event} : undefined;
+    if (!intrusion(g, p, quote.selected.territory, {revivalEvent:arrival.event,...(followup ? {followup} : {})}) && followup)
       g.decision = {kind:'advisor',player:bg!.id,...followup};
     openTerritoryEntry(g, p, quote.selected.territory, quote.selected.sector!, amount,
-      frame.quote.elite, 'homeworldRevival', 'none', {event:frame.event});
+      group.elite, 'homeworldRevival', 'none', {event:arrival.event});
   }
   log(g, `${p.name} placed ${amount} newly revived ${frame.quote.kind === 'fedaykin' ? 'Fedaykin' : 'free forces'} in ${quote.selected.name}. No additional revival payment or shipment allowance was used.`,
     { faction: p.faction, name: frame.quote.kind === 'fedaykin' ? 'Southern Hemisphere revival' : 'Tleilax free revival' });
@@ -32551,8 +32594,10 @@ function decideHomeworldRevivalReturn(g: Game, p: Player, action: Action) {
 function projectedHomeworldRevivalReturn(g: Game, player: string) {
   const frame = g.homeworldRevivalReturn;
   if (frame?.stage !== 'choice') return null;
-  return { event: frame.event, player: frame.player, kind: frame.quote.kind,
-    normal: frame.quote.normal, elite: frame.quote.elite, blocked: frame.quote.blocked,
+  const allocation = frame.progressVersion === 2 ? southernRevivalSummary(frame) : undefined;
+  return { event: currentHomeworldRevivalArrival(frame)!.event, player: frame.player, kind: frame.quote.kind,
+    normal: frame.quote.normal, elite: allocation?.remaining ?? frame.quote.elite, blocked: frame.quote.blocked,
+    ...(allocation ? { allocation } : {}),
     destinations: player === frame.player
       ? homeworldRule(() => homeworldRevivalDestinations(g, player, frame.quote)) : [],
   };
