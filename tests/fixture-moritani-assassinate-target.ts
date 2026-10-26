@@ -127,7 +127,9 @@ function declareCapture(source: Game, target: string, actions: AssassinateTarget
  * the first original battle, captures Burseg through its native lottery and
  * keeps or executes him. A different living Emperor disc then beats Moritani.
  * Stop at that actual assassination opportunity, before any reveal/decline. */
-export function createMoritaniAssassinateTargetFixture(options: { execute?: boolean } = {}) {
+export function createMoritaniAssassinateTargetFixture(options: {
+  execute?: boolean; techTokens?: boolean; strongholds?: boolean;
+} = {}) {
   const captor = 'harkonnen', opponent = 'emperor', owner = 'moritani', target = 'emperor-3';
   let game = createGame('MORITANIASSASSINATETARGET', newPlayer(captor, 'Harkonnen', 'harkonnen'), true, ['ecaz']);
   joinGame(game, newPlayer(opponent, 'Emperor', 'emperor'));
@@ -139,13 +141,22 @@ export function createMoritaniAssassinateTargetFixture(options: { execute?: bool
     const before = structuredClone(game), start = actions.length; run();
     return { before, steps: structuredClone(actions.slice(start)), after: structuredClone(game) };
   };
+  const moduleSelections: AssassinateTargetTransition[] = [];
+  if (options.techTokens) moduleSelections.push(transition(() => {
+    act(game.host, { type: 'techTokens', enabled: true });
+  }));
+  if (options.strongholds) moduleSelections.push(transition(() => {
+    act(game.host, { type: 'strongholdCards', enabled: true });
+  }));
   for (const player of game.players) act(player.id, { type: 'ready' });
   const lobby = structuredClone(game); act(game.host, { type: 'start', advancedPreview: true });
   const setup = structuredClone(game);
   assert.equal(game.status, 'setup'); assert.equal(game.advanced, true);
   assert.deepEqual(game.players.map(player => player.faction), [captor, opponent, owner]);
-  assert.ok(!game.homeworlds && !game.nexusCards && !game.leaderSkills && !game.techTokens &&
-    !game.strongholdCards && !game.discoveryEnabled && !game.ecazTreachery);
+  assert.ok(!game.homeworlds && !game.nexusCards && !game.leaderSkills &&
+    !game.discoveryEnabled && !game.ecazTreachery && !game.semutaPreview);
+  assert.equal(!!game.techTokens, options.techTokens ?? false);
+  assert.equal(!!game.strongholdCards, options.strongholds ?? false);
   assert.ok(game.players.every(player => player.hand.length === 0));
   assert.ok(assassinateTargetPlayer(game, owner).traitorChoices.includes(target),
     'The identity-order original third-seat Traitor offer really contains Burseg');
@@ -239,13 +250,16 @@ export function createMoritaniAssassinateTargetFixture(options: { execute?: bool
     owner, moritani: owner, opponent, emperor: opponent, captor, harkonnen: captor, target,
     winningDisc: 'emperor-0', territory: 'imperial_basin', sector: 11, location: 'imperial_basin:11',
     event: receipt.event, receipt: structuredClone(receipt), execute: !!options.execute,
+    techTokens: !!options.techTokens, strongholds: !!options.strongholds, moduleSelections,
     potentialBounty: victim.strength, action: reveal,
     reveal, revealStep: { actor: owner, action: reveal } satisfies AssassinateTargetStep,
     decline, actions, sourceActionCount: actions.length, originalInventory, originalTraitors,
     originalSpice, dealOrder, spiceOrder,
     staging: [
       'Actual public native Advanced Harkonnen/Emperor/Moritani ready/start and private setup. Original scalar shuffle order naturally offers emperor-3 in Moritani’s third-seat Traitor packet; Moritani actually chooses it.',
-      'Select four original unopened ordinary Treachery positions and two original unopened ordinary Spice positions. Native Moritani setup really places six counters in empty Imperial Basin11. No optional module is selected.',
+      `Select four original unopened ordinary Treachery positions and two original unopened ordinary Spice positions. Native Moritani setup really places six counters in empty Imperial Basin11. ${options.techTokens || options.strongholds
+        ? `Actual fresh lobby controls select ${[options.techTokens ? 'original Tech Tokens' : '', options.strongholds ? 'six Advanced Stronghold Cards' : ''].filter(Boolean).join(' and ')} before normal start; no other overlay is selected.`
+        : 'No optional module is selected.'}`,
       'Emperor actually pays two to ship two reserves to Carthag11, then really moves one to Imperial Basin11. Native first Storm, dual Spice, Charity, Bidding, Revival and movement turns execute normally.',
       'Harkonnen actually wins Carthag with Feyd6 against Bashar2, without weapons or leader deaths. Scope only the ensuing native capture permutation to choose unused Burseg3; no candidate body, captive flag, death or concealment is assigned. The original capturedLeader action really keeps or executes that disc.',
       'A different surviving native Emperor disc, Fenring6, really wins Imperial Basin against Moritani’s Vando1. The original printed-Emperor assassination opportunity opens while Moritani still physically holds Burseg’s original Traitor Card.',

@@ -192,6 +192,17 @@ export function createMoritaniForeignGholaWinnerFixture(): ForeignGholaWinnerFix
   // Turn two revival: the genuine half-price foreign return, settled by the engine.
   g = advanceMixedE3Moritani(guildBattle.after,
     (s) => s.turn === 2 && s.phase === 4 && mixedE3MoritaniClean(s), actions);
+  // A fresh Advanced phase now has native player order. Finish only the
+  // preceding actual owners; the paid foreign return belongs to Tleilaxu's
+  // still-unstarted opportunity, not the opening actor's turn.
+  while (g.revivalOrder && g.revivalOrder.remaining[0] !== tleilaxu) {
+    assert.ok(g.revivalOrder.remaining.includes(tleilaxu),
+      'The original Tleilaxu Revival opportunity must remain pending.');
+    const actor = g.revivalOrder.remaining[0]; assert.ok(actor);
+    g = stepMixedE3Moritani(g, { actor, action: { type: 'ready' } }, actions);
+    g = advanceMixedE3Moritani(g,
+      (s) => s.phase === 4 && mixedE3MoritaniClean(s), actions);
+  }
   const beforeRevival = mixedE3MoritaniReload(g);
   const cost = Math.ceil(killedGuild.strength / 2);
   assert.ok(mixedE3MoritaniPlayer(beforeRevival, tleilaxu).spice >= cost,

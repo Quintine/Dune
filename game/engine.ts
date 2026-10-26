@@ -16,7 +16,7 @@ import { movementShipmentPreparations } from './movement-shipment-preparation';
 import { MovementClaimError, liveMovementPromises, movementEventAllowed, movementPromiseModeSupported, movementPromiseTargetAvailable, settleMovementEvent, finishMovementPromises, validMovementClaim, type MovementClaim, type MovementPromise } from './movement-promises';
 import { findMovementCompletion, type MovementCompletion } from './movement-promise-search';
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
-import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile } from './faction-module-profile';
+import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile, selectedFactionStrongholdProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
@@ -9836,7 +9836,7 @@ function moritaniAssassinateModeSupported(g: Game) {
       (f.expansion === 'base' || g.expansions.includes(f.expansion)))) &&
     (!g.nexusCards || (!!g.leaderSkills && standaloneE3NexusLeaderSkillsProfile(g))) &&
     (!g.leaderSkills || advancedMoritaniLeaderSkillsProfile(g)) &&
-    (!g.strongholdCards || e3StrongholdFactionProfile(g) || independentCardModulesProfile(g) ||
+    (!g.strongholdCards || selectedFactionStrongholdProfile(g) || e3StrongholdFactionProfile(g) || independentCardModulesProfile(g) ||
       (!!g.leaderSkills && strongholdLeaderSkillsProfile(g))) &&
     (!g.homeworlds || g.homeworldOccupationPreview === true || ecazHomeworldProfile(g) ||
       (!!g.leaderSkills && homeworldLeaderSkillsProfile(g))) &&
@@ -11841,7 +11841,7 @@ function initializeFactionExpansionsGame(state: Game, semuta = false): Game {
   requireRule(!state.homeworlds && !state.nexusCards && !state.leaderSkills &&
     !state.discoveryEnabled && !state.discoveries && !state.discoveryStash && !state.greatMaker &&
     (!state.techTokens || nativeFactionTechProfile(state)) && !state.strongholdCards,
-    'The faction prototype excludes other optional modules; Tech Tokens require a supported native three-through-six-seat lobby.');
+    'The faction prototype excludes other optional modules; Tech Tokens require a supported selected-deck three-through-six-seat lobby.');
   requireFreshFactionInventory(state);
   const initialized = initializeSetupGameForAudit(state, false, false, false, false, false, false, true, false, false, semuta);
   if (byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
@@ -11849,11 +11849,11 @@ function initializeFactionExpansionsGame(state: Game, semuta = false): Game {
   return initialized;
 }
 function ecazOccupyCompositionSupported(g: Game): boolean {
-  // Bare native Basic uses the same physical coalition and selected decks.
+  // Native Basic uses the same physical coalition and selected decks.
   // Family/roster checks below remain authoritative; optional configurations
   // retain their separate registered profiles rather than inheriting admission.
   const basicNatives = g.advanced === false &&
-    !g.ecazTreachery && !g.techTokens && !g.strongholdCards;
+    !g.ecazTreachery && (!g.techTokens || nativeFactionTechProfile(g)) && !g.strongholdCards;
   if ((independentNexusProfile(g) || independentDiscoveryProfile(g)) && byFaction(g, 'ecaz')) return true;
   if (g.leaderSkills && nativeEcazLeaderSkillsProfile(g)) return true;
   if (g.ecazOccupyPreview === true && (mixedE3NexusProfile(g) || standaloneE3NexusProfile(g) || pairedE3NexusProfile(g)) &&
@@ -11888,7 +11888,7 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
       (['ecaz', 'moritani', 'ixians', 'tleilaxu', 'choam', 'richese'].includes(p.faction) &&
         g.expansions.includes(faction(p.faction).expansion))) &&
     !g.homeworlds && !g.nexusCards && !g.leaderSkills &&
-    (!g.strongholdCards || e3StrongholdFactionProfile(g) || independentCardModulesProfile(g)) &&
+    (!g.strongholdCards || selectedFactionStrongholdProfile(g) || e3StrongholdFactionProfile(g) || independentCardModulesProfile(g)) &&
     (!g.techTokens || nativeFactionTechProfile(g) || independentCardModulesProfile(g)) &&
     !g.discoveryEnabled && !g.discoveries &&
     !g.discoveryStash && !g.greatMaker &&
@@ -11897,7 +11897,7 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
 /** Fresh native Occupy profile; Basic odd counts use the main printed rule provisionally. */
 export function initializeEcazOccupyGameForAudit(state: Game): Game {
   requireRule(ecazOccupyCompositionSupported(state),
-    'Occupy requires supported native factions and their selected decks; bare Basic native families exclude optional modules.');
+    'Occupy requires supported native factions and their selected decks; Basic phase modules admit Tech Tokens only.');
   requireFreshBaseRuntime(state);
   requireFreshFactionInventory(state);
   const g = initializeSetupGameForAudit(state, false, false, false, false, false, false, true, state.ecazTreachery === true);
@@ -11917,8 +11917,8 @@ function nativeStrongholdFactionRoster(g: Game): boolean {
 }
 /** Shared fresh native Stronghold setup; other overlays retain their own admission. */
 export function initializeStrongholdFactionsGameForAudit(state: Game): Game {
-  requireRule(e3StrongholdFactionProfile(state) || nativeStrongholdFactionRoster(state),
-    'Stronghold factions require supported Advanced native factions, classic opponents and their selected distinct decks.');
+  requireRule(selectedFactionStrongholdProfile(state) || e3StrongholdFactionProfile(state) || nativeStrongholdFactionRoster(state),
+    'Stronghold factions require supported Advanced factions and their selected distinct decks.');
   requireRule(!state.homeworlds && !state.nexusCards && !state.leaderSkills &&
     !state.discoveryEnabled && !state.discoveries && !state.discoveryStash && !state.greatMaker &&
     (!state.techTokens || nativeFactionTechProfile(state)) && !state.ecazTreachery &&
@@ -11927,8 +11927,8 @@ export function initializeStrongholdFactionsGameForAudit(state: Game): Game {
   requireFreshFactionInventory(state);
   requireFreshBaseRuntime(state);
   const initialized = initializeSetupGameForAudit(state, false, false, false, false, false, false, true, false, true);
-  if (e3StrongholdFactionProfile(initialized) && byFaction(initialized, 'moritani'))
-    initializeMoritaniAssassinateState(initialized);
+  if (byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
+  if (moritaniAssassinateModeSupported(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
 }
 function requireFreshFactionInventory(state: Game) {

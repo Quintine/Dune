@@ -24,6 +24,9 @@ export type FactionModuleProfile = {
   nexusIxianReplacementPreview?: unknown;
   nexusIxianBetrayalPreview?: unknown;
   nexusHarkonnenBetrayalPreview?: unknown;
+  /** Native runtime stamps, not independent optional-module selections. */
+  ecazOccupyPreview?: unknown;
+  moritaniAssassinatePreview?: unknown;
 };
 
 type NexusCoreConfiguration = Partial<FactionModuleProfile> & Pick<FactionModuleProfile, 'expansions'> & {
@@ -105,19 +108,46 @@ export function independentNexusProfile(game: NexusCoreConfiguration): boolean {
   return game.ecazTreachery === true && nexusCoreProfile(game);
 }
 
-/** Original E1/E2 families or standalone Ecaz/Moritani; explicit Semuta context only. */
-export function nativeFactionTechProfile(game: FactionModuleProfile, semuta = false): boolean {
-  if (typeof game.advanced !== 'boolean' || !game.techTokens ||
-    game.players.length < 3 || game.players.length > 6 ||
-    game.expansions.length < 1 || game.expansions.length > 2 ||
-    (game.strongholdCards && !game.advanced) || game.leaderSkills ||
-    game.homeworlds || game.nexusCards || game.discoveryEnabled || game.discoveries ||
-    game.discoveryStash || game.greatMaker || game.ecazTreachery ||
-    (game.semutaPreview && (!semuta || game.semutaPreview !== true)) ||
-    game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
-    game.guildBetrayalPreview || game.richeseBetrayalPreview ||
-    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
-    game.nexusHarkonnenBetrayalPreview) return false;
+/** Selected decks do not require their native factions to be seated. This is
+ * roster validity only; each phase module retains its own mode and seat limits. */
+export function selectedPhaseModuleRoster(
+  game: Pick<FactionModuleProfile, 'expansions' | 'players'>,
+): boolean {
+  if (!game || typeof game !== 'object' || !Array.isArray(game.expansions) ||
+    game.expansions.length < 1 || game.expansions.length > 3 ||
+    !game.expansions.every(id => id === 'ix' || id === 'choam' || id === 'ecaz') ||
+    new Set(game.expansions).size !== game.expansions.length ||
+    !Array.isArray(game.players) || game.players.length < 2 || game.players.length > 6) return false;
+  const seated = new Set<string>();
+  for (const player of game.players) {
+    if (!player || typeof player !== 'object' || Array.isArray(player) ||
+      typeof player.faction !== 'string' || seated.has(player.faction)) return false;
+    const faction = FACTIONS.find(faction => faction.id === player.faction);
+    if (!faction || (faction.expansion !== 'base' && !game.expansions.includes(faction.expansion))) return false;
+    seated.add(player.faction);
+  }
+  return true;
+}
+
+/** Keep unrelated overlays outside this phase-only permission. Semuta's caller
+ * additionally retains its old roster envelope below, rather than inheriting
+ * new selected-family admission through its explicit context flag. */
+function phaseModuleContext(game: FactionModuleProfile, semuta = false): boolean {
+  return typeof game.advanced === 'boolean' &&
+    !(game.strongholdCards && !game.advanced) && !game.leaderSkills &&
+    !game.homeworlds && !game.nexusCards && !game.discoveryEnabled && !game.discoveries &&
+    !game.discoveryStash && !game.greatMaker && !game.ecazTreachery &&
+    (!game.semutaPreview || (semuta && game.semutaPreview === true)) &&
+    !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
+    !game.guildBetrayalPreview && !game.richeseBetrayalPreview &&
+    !game.nexusIxianReplacementPreview && !game.nexusIxianBetrayalPreview &&
+    !game.nexusHarkonnenBetrayalPreview;
+}
+
+/** Exact earlier E1/E2 or one-E3-native scope for existing Semuta consumers. */
+function legacySemutaTechRoster(game: FactionModuleProfile): boolean {
+  if (!Array.isArray(game.players) || game.players.length < 3 || game.players.length > 6 ||
+    !Array.isArray(game.expansions) || game.expansions.length < 1 || game.expansions.length > 2) return false;
   const e3 = game.expansions.length === 1 && game.expansions[0] === 'ecaz';
   if (!e3) {
     for (let i = 0; i < game.expansions.length; i++) {
@@ -130,6 +160,7 @@ export function nativeFactionTechProfile(game: FactionModuleProfile, semuta = fa
   let harkonnen = false;
   for (let i = 0; i < game.players.length; i++) {
     const player = game.players[i];
+    if (!player || typeof player !== 'object') return false;
     for (let j = 0; j < i; j++) if (player.faction === game.players[j].faction) return false;
     let expansion: string | undefined;
     for (const faction of FACTIONS)
@@ -145,6 +176,21 @@ export function nativeFactionTechProfile(game: FactionModuleProfile, semuta = fa
   }
   return native > 0 && (!e3 || native === 1) &&
     !(game.advanced && moritani && harkonnen);
+}
+
+/** Tech-only Basic/Advanced or original Advanced Strongholds at three-six seats.
+ * Explicit Semuta validation keeps its earlier family/native/Harkonnen scope. */
+export function nativeFactionTechProfile(game: FactionModuleProfile, semuta = false): boolean {
+  return !!game && phaseModuleContext(game, semuta) && !!game.techTokens &&
+    (semuta ? legacySemutaTechRoster(game) :
+      selectedPhaseModuleRoster(game) && game.players.length >= 3);
+}
+
+/** Clean selected-deck Strongholds. The original initializer may create their
+ * unused state when absent; physical freshness and native stamps stay external. */
+export function selectedFactionStrongholdProfile(game: FactionModuleProfile): boolean {
+  return !!game && game.advanced === true && phaseModuleContext(game) &&
+    selectedPhaseModuleRoster(game) && (!game.techTokens || game.players.length >= 3);
 }
 
 export type MixedE3NativeRoster = {

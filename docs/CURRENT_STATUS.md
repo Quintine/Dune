@@ -16,6 +16,37 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Selected-deck Tech / Stronghold composition — 26 October. Prototyped / Partial.**
+Fresh normal starts now compose Tech3–6 Basic/Advanced and Strongholds2–6
+Advanced across paired E3, mixed/all-three families and classic-only selected
+decks. Mandatory Ecaz Occupy and Advanced Moritani Assassinate continue through
+their original handlers, including native captured-leader targets. Explicit
+Semuta retains its earlier narrower envelope; unrelated profiles stay separate.
+
+Disjoint profile, native target and setup/control lanes plus the bounded Ecaz
+supplement pass **14 files,120/120**, types/lint/build and **ten runtime paths**,
+26 GameTable SSR renders on unchanged source. Six paths are native: all six
+expansion factions publicly start all3 decks, ship actual CHOAM1/city1 and
+Moritani1/desert2, accrue/pay Heighliners once, earn first Mentat cards in
+Advanced, lose a counter to Basic dials2/Advanced card1 and return it freely
+with separate Tleilaxu bank1 and actual Axlotl phase-end1 (248/264 actions).
+Four actual Harkonnen/Moritani capture/assassination sources use48–49 actions,
+then original winner Tech and one actual Mentat replacement. Inventories remain
+57 and33 respectively. All four minimal policies submit legal next actions.
+
+Four labelled controlled Ecaz/Ixian coalition paths supplement that native
+evidence: actual public setup/Nexus/alliance/earned Tabr, conserved armies and
+Shield, real selected lead, fixed Ecaz and one Suboid loss, holder-only income
+and winner Tech after cleanup. No natural invasion/acquisition claim is made.
+Feedback corrects Basic Storm/closing-window assumptions, decorative Start
+markup, separately admitted overlays, old battle acknowledgements and native
+foreign-Ghola turn/phase completion; one fixture type narrowing is repaired.
+Frozen report/manifest: `/home/quintine/.local/share/dune/checkpoints/20261026-selected-phase-modules-proof-v3/`;
+journeys/HTML: adjacent `20261026-selected-phase-modules-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or assurance operation occurs.
+SSR and engine proof leave browser/mobile/deployed, wider interactions and full
+mode/publication acceptance open. [Current source and scope](STRONGHOLD_CARDS.md#selected-deck-phase-modules--26-october-2026).
+
 **Sapho in ordered Advanced Revival — 26 October. Prototyped / Partial.**
 First/last changes unfinished opportunities, preserving physical First Player
 order and completed participants. A started current player finishes first under

@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 26 October 2026 — Selected-deck Tech / Stronghold composition
+
+**Prototyped / Partial.** Fresh clean normal starts
+compose original Tech3–6 Basic/Advanced and Strongholds2–6 Advanced across
+registered paired/mixed/all-three selected families and classic-only unused
+decks. Mandatory Ecaz Occupy and Advanced Moritani Assassinate retain their
+native handlers. The existing captured-leader target contract supersedes the
+old plain-phase Harkonnen/Moritani fence; explicit Semuta retains its narrower
+legacy admission. No played-game retrofit or full-mode gate change.
+
+Root integration passes **14 files,120/120**, types/lint/build and **ten runtime
+paths**,26 GameTable SSR renders on unchanged source. Native all-six-faction
+Basic/Advanced programmes use248/264 source actions: CHOAM city1/Moritani desert2,
+deferred Heighliners1, actual Advanced Mentat claims, Basic dials2/Advanced card1
+casualty, free return and separate Tleilaxu bank1/Axlotl end-phase1. Four native
+Harkonnen capture/assassination sources use48–49 actions plus actual replacement
+and Tech cleanup. Each retains its original57/33-card inventory respectively;
+all four minimal policies submit legal next actions. Four explicitly conserved
+Ecaz/Ixian coalition supplements retain actual setup/alliance/claims and then
+prove typed losses, holder-only income and actual selected-winner Tech.
+
+Feedback repairs Basic source/closing-window assumptions, decorative Start
+markup and overlay scope, old battle acknowledgements, ordered foreign-Ghola
+turn/phase completion and one fixture type narrowing. Frozen report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-selected-phase-modules-proof-v3/`;
+journeys/HTML: adjacent `20261026-selected-phase-modules-runtime/`. No saved-game,
+server, reset/restart, deployment or assurance operation. Broader interactions,
+browser/mobile/deployed and complete-mode acceptance remain open.
+[Current source and scope](STRONGHOLD_CARDS.md#selected-deck-phase-modules--26-october-2026).
+
 ## 26 October 2026 — Sapho first/last in ordered Advanced Revival
 
 **Prototyped / Partial.** Apply printed first/last to unfinished Advanced Revival

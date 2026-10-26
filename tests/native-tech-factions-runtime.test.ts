@@ -85,10 +85,9 @@ void test('native Tech seats three through six complete actual Basic/Advanced se
   }
 });
 
-void test('native Tech rejects below-three, missing-family, wrong-deck and already-owned inventory without dealing', () => {
+void test('native Tech rejects below-three, wrong-deck and already-owned inventory without dealing', () => {
   const invalid = [
     lobby(['ixians', 'guild']),
-    lobby(['emperor', 'fremen', 'guild']),
     lobby(['ixians', 'emperor', 'guild'], ['choam']),
   ];
   const owned = lobby(['ixians', 'emperor', 'guild']);

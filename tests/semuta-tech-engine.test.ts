@@ -37,6 +37,16 @@ for (const advanced of [false, true]) {
     state = applyAction(state, 'e', { type: 'battlePlan', dial: 0, support: 0,
       leader: player(state, 'e').leaders[0].id, defense: f.defense });
     for (const id of ['a', 'e']) state = applyAction(state, id, { type: 'traitorCall', call: false });
+    // Traitor votes now open the original signed final-action opportunity;
+    // both combatants must finish it before mandatory disposal can be offered.
+    let acknowledgements = 0;
+    while (state.battle?.outcomeWindow && !state.battle.outcomeWindow.closed) {
+      const window = state.battle.outcomeWindow;
+      const actor = [window.attacker, window.defender].find(id => !window.ready.includes(id)); assert.ok(actor);
+      state = applyAction(state, actor, { type: 'battleOutcomeReady', event: window.event });
+      acknowledgements++;
+    }
+    assert.equal(acknowledgements, 2);
     assert.equal(state.pendingTreacheryDiscard?.reaction?.stage, 'offer');
     const winner = applyAction(pass(reload(state)), 'a', { type: 'decision', discard: [f.weapon] });
     assert.equal(winner.pendingTreacheryDiscard?.reaction?.stage, 'offer');

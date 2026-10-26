@@ -98,12 +98,14 @@ export function createMoritaniAssassinateGholaTargetFixture() {
   while (source.actions[sourceActionCount]?.action.type === 'passResponse') sourceActionCount++;
   const sourceActions = structuredClone(source.actions.slice(0, sourceActionCount));
 
-  let game = mixedE3MoritaniReload(prefix);
+  const actions: MixedE3MoritaniStep[] = [];
+  // Complete the remaining actual Revival opportunities and closing windows.
+  // The later conserved position is arranged only after native Shipment and
+  // Movement opens; its real end-turn actions then produce the Battle phase.
+  let game = advanceMixedE3Moritani(mixedE3MoritaniReload(prefix),
+    state => state.phase === 5 && mixedE3MoritaniClean(state), actions);
+  assert.ok(!game.revivalOrder, 'Native phase completion retires the original Revival frame.');
   const swap = swapHeldTraitor(game, owner, target);
-  game.phase = 6;
-  game.ready = [];
-  game.order = [opponent, owner, ...game.order.filter(id => id !== opponent && id !== owner)];
-  game.active = opponent;
   for (const player of game.players) {
     player.reserves += Object.values(player.forces).reduce((sum, count) => sum + count, 0);
     player.forces = {};
@@ -136,7 +138,6 @@ export function createMoritaniAssassinateGholaTargetFixture() {
     .sort((first, second) => first.strength - second.strength)[0];
   assert.ok(winningDisc && losingDisc && winningDisc.strength > losingDisc.strength,
     'Different living native Guild and Moritani discs must produce the unarmed loss.');
-  const actions: MixedE3MoritaniStep[] = [];
   game = openMixedE3MoritaniBattle(game, opponent, owner, actions);
   game = advanceMixedE3Moritani(game, state => !!state.battle && mixedE3MoritaniClean(state) &&
     !state.battle.preparation && state.battle.preLeader?.closed !== false, actions);
@@ -170,7 +171,7 @@ export function createMoritaniAssassinateGholaTargetFixture() {
     ...source.staging,
     'Reuse only the source fixture’s genuine native Guild death and paid Tleilaxu foreign-revival prefix. The later source winning-Ghola battle is not used as this target witness.',
     `Explicitly swap Moritani’s physical ${swap.previous} Traitor Card with ${target} from the ${swap.zone}; preserve the complete original Traitor/Face Dancer census. This is controlled card positioning, not a new deal or a natural draw.`,
-    'Explicitly stage the later phase-six/order/army position: return every current board counter to its own reserves, retain all Tanks and elite stocks, then place three normal Guild and three normal Moritani counters together outside the unchanged storm. No wallet, hand, mode, target disc or custody field is assigned.',
+    'Actually finish remaining native Revival opportunities and closing windows. At the original Shipment and Movement phase, explicitly stage only the conserved army position: return every current board counter to its own reserves, retain all Tanks and elite stocks, then place three normal Guild and three normal Moritani counters together outside the unchanged storm. Native end-turn actions open Battle; no phase, order, active player, wallet, hand, mode, target disc or custody field is assigned.',
     'Use actual chooseBattle, ordinary preparation, two unarmed private Battle Plans and normal Traitor declines. A different living native Guild disc wins; the original paid foreign Ghola remains unchanged in the Guild roster with Tleilaxu custody. Stop at the real Moritani Assassinate Leaders decision.',
   ];
   return { game, owner, opponent, target, event, potentialBounty: choice.potentialBounty,

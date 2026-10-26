@@ -116,6 +116,13 @@ rejected.
 
 ## Native Tech composition — 4 October 2026
 
+**Current scope:** the [26 October selected-deck phase contract](STRONGHOLD_CARDS.md#selected-deck-phase-modules--26-october-2026)
+supersedes the dated plain phase-only roster exclusions below. Normal lobby
+starts admit paired/mixed/all-three selected families and classic-only selected
+decks, Tech3–6 Basic/Advanced and Strongholds2–6 Advanced. Mandatory native
+Ecaz/Moritani handlers compose; explicit Semuta and other optional profiles keep
+their own envelopes. Complete-mode and deployed acceptance remain open.
+
 Enable original Tech Tokens in a fresh ready lobby before using the existing
 `factions` entry. This bounded composition needs three through six unique seats,
 at least one native selected E1/E2 faction with distinct required `ix`/`choam`

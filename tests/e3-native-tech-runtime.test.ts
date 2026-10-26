@@ -295,11 +295,17 @@ for (const strongholds of [false, true])
 
 for (const strongholds of [false, true]) {
   const initialize = strongholds ? initializeStrongholdFactionsGameForAudit : initializeFactionExpansionsGameForAudit;
-  void test(`${strongholds ? 'Stronghold+Tech' : 'plain Tech'} initializer rejects paired E3 and mixed selected families without admitting unrelated overlays`, () => {
-    assert.throws(() => initialize(lobby(['ecaz', 'moritani', 'guild'])));
-    assert.throws(() => initialize(lobby(['ecaz', 'ixians', 'guild'], true, ['ecaz', 'ix'])));
-    assert.throws(() => initialize(lobby(['moritani', 'choam', 'guild'], true, ['ecaz', 'choam'])));
-    assert.throws(() => initialize(lobby(['moritani', 'harkonnen', 'guild'])));
+  void test(`${strongholds ? 'Stronghold+Tech' : 'plain Tech'} initializer admits selected mixed families while excluding unrelated overlays and used inventory`, () => {
+    for (const admitted of [lobby(['ecaz', 'moritani', 'guild']),
+      lobby(['ecaz', 'ixians', 'guild'], true, ['ecaz', 'ix']),
+      lobby(['moritani', 'choam', 'guild'], true, ['ecaz', 'choam']),
+      lobby(['moritani', 'harkonnen', 'guild'])]) {
+      const setup = initialize(admitted);
+      assert.equal(setup.status, 'setup');
+      assert.deepEqual(setup.expansions, admitted.expansions);
+      assert.equal(!!setup.strongholdCards, strongholds);
+      assert.equal(!!setup.moritaniAssassinate, admitted.players.some(p => p.faction === 'moritani'));
+    }
     assert.throws(() => initialize(lobby(['ecaz', 'guild'])));
     if (strongholds) assert.throws(() => initialize(lobby(['ecaz', 'guild', 'emperor'], false)));
     for (const overlay of ['leaderSkills', 'homeworlds', 'nexusCards', 'discoveryEnabled', 'ecazTreachery',

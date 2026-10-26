@@ -199,6 +199,71 @@ All original responses, market finish and phase-opening readiness remain.
 Read the [combined scope and exact outcomes](LEADER_SKILLS_RUNTIME.md#advanced-stronghold-composition--4-october-2026).
 This is bounded Development Verified, not complete-module/public/deployed proof.
 
+## Selected-deck phase modules — 26 October 2026
+
+Fresh normal lobby starts now compose original Tech Tokens with any registered
+two-to-six-seat selected-deck roster, including paired Ecaz/Moritani, mixed
+E1/E2/E3, all six expansion natives and classic-only rosters with unused selected
+decks. Tech independently requires three seats. Stronghold Cards independently
+require Advanced; they may be selected alone at two seats or beside Tech at
+three through six. Every native faction still needs its selected family. No
+duplicate/unknown families or seats are admitted, and the base no-expansion
+route remains separate.
+
+The authorized Advanced PDF physical21/printed19 permits these variants
+together or separately irrespective of factions. This extends admission rather
+than changing their original printed calculations: real first-Storm owners,
+one pending owner-count pile per matching phase, actual phase-end payout,
+winner Tech after cleanup and actual end-Mentat Stronghold claims. No held
+Stronghold is assigned at setup or automatically shared with an allied plan.
+Basic keeps the original Tech mechanics; this does not import Advanced combat
+or Stronghold Cards into Basic.
+
+Mandatory Basic/Advanced Ecaz Occupy and Advanced Moritani Assassinate use the
+same admitted phase profile. Harkonnen/Moritani no longer inherits the old
+standalone phase exclusion: the 24 October native Assassinate target contract
+already handles captured/concealed leaders and original custodians. This is
+distinct from random Terror Assassination. Existing provisional Occupy odd-force
+rounding and skill/capture interpretations retain their own contracts.
+
+This clean phase-only profile excludes Skills, Worlds, Nexus, Discovery,
+independent Ecaz cards and other preview selectors. Their separately registered
+profiles remain. Explicit Semuta validation retains its previous E1/E2 or
+exactly-one-E3-native Tech envelope and older Stronghold envelope; it does not
+inherit new paired/mixed/classic-only permission. Played games receive no
+module retrofit. The dated 4 October scopes below are historical; this section
+supersedes their plain phase-only roster exclusions.
+
+The broadened profile remains Prototyped / Partial. Frozen root proof passes
+14 files,120/120, types/lint/build and ten runtime paths with26 GameTable SSR
+renders. Two all-six-native public programmes use248 Basic /264 Advanced source
+actions and57 physical Treachery identities: actual city/desert shipments,
+one Heighliners pile/payout, earned Advanced first-Mentat cards, later native
+Storm loss and free return, separate Tleilaxu bank1/Axlotl delayed1. Four actual
+Harkonnen capture/assassination paths use48–49 actions and33 identities, actual
+winner-token transfer and one native private replacement. Four minimal policies
+submit legal next actions from each six-native phase-five boundary.
+
+Four controlled Ecaz/Ixian supplements use real normal all3-deck start, worm
+Nexus, reciprocal alliance and earned Tabr. Conserved physical armies/Shield
+then expose both selected leads, original fixed Ecaz and one Suboid casualty,
+holder-only Advanced Tabr1 and selected-winner Tech after actual card cleanup.
+These positions and the Shield acquisition are explicitly staged; they are
+not natural battle histories or full combination campaigns. The new setup
+controls use SSR plus public actions, without a DOM click claim.
+
+Feedback corrects Basic later dials1+1 versus Advanced card1, actual closing
+windows, nested decorative Begin markup and independent-overlay admission.
+Old Semuta tests now acknowledge actual battle-outcome windows, while the
+foreign-Ghola source finishes preceding/current Revival turns and reaches
+Battle through native phase completion instead of assigning phase/order.
+One callback-state fixture narrowing is corrected. Report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-selected-phase-modules-proof-v3/`;
+journeys/HTML: adjacent `20261026-selected-phase-modules-runtime/`.
+No saved-game/server/reset/restart/deployment or assurance operation occurs.
+Complete-mode, wider interactions, browser/mobile, deployed and publication
+acceptance remain open.
+
 ## Standalone E3 Stronghold composition — 4 October 2026
 
 Fresh `stronghold-factions` additionally admits Advanced native Ecaz OR native
