@@ -97,11 +97,17 @@ for (const options of [
     assert.equal(paid.free, 2);
     assert.deepEqual(paid.nativeAfter, { normal: 2, elite: 1 });
     programme.accrued(paid.game);
-    let game = applyAction(paid.game, native, { type: 'ready' });
-    assert.ok(game.ready.includes(native));
+    let game = paid.game;
+    if (!options.advanced) {
+      game = applyAction(game, native, { type: 'ready' });
+      assert.ok(game.ready.includes(native));
+    } else {
+      assert.equal(game.revivalOrder?.remaining[0], native);
+      assert.equal(game.revivalOrder?.started, true, 'Keep the original Advanced opportunity open for later requests');
+    }
     const beforePlayWallets = wallets(game);
     game = applyAction(game, f.owner, play);
-    assert.deepEqual(wallets(game), beforePlayWallets, 'Reopening never refunds the prior paid cyborg');
+    assert.deepEqual(wallets(game), beforePlayWallets, 'Recruits never refunds the prior paid cyborg');
     assert.equal(player(game, native).revived, 3);
     assert.equal(player(game, native).freeForcesRevived, 2);
     assert.equal(viewGame(game, native).revival.freeRemaining, 2);
@@ -120,7 +126,9 @@ for (const options of [
     assert.equal(last.price, 5);
     assert.equal(last.walletDelta, 5);
     assert.equal(last.free, 0);
-    assert.deepEqual(last.nativeAfter, { normal: 3, elite: 4 });
+    assert.equal(last.ixSuboidBonus, 2, 'Current High Ix grants two additional physical Suboids for the paid Cyborg');
+    assert.deepEqual(last.nativeAfter, { normal: 5, elite: 4 });
+    assert.equal(player(last.game, native).tanks, 5);
     assert.equal(player(last.game, native).spice, player(f.game, native).spice - 8);
     assert.equal(player(last.game, native).revived, 7);
     assert.equal(player(last.game, native).freeForcesRevived, 4);
@@ -202,10 +210,11 @@ void test('Basic all14 native Ix: actual paid cyborgs accrue Banker separately f
   const last = requestNativeWorldRecruits(crossing.game, native, 2, 1, 0);
   assert.deepEqual({ cost: last.price, wallet: last.walletDelta, free: last.free },
     { cost: 5, wallet: 5, free: 0 });
-  assert.deepEqual(last.nativeAfter, { normal: 3, elite: 4 });
+  assert.equal(last.ixSuboidBonus, 2, 'The High bonus is physical stock, not another paid invoice or ordinary allowance');
+  assert.deepEqual(last.nativeAfter, { normal: 5, elite: 4 });
   assert.equal(player(last.game, native).revived, 7);
   assert.equal(player(last.game, native).freeForcesRevived, 4);
-  assert.equal(player(last.game, native).tanks, 7);
+  assert.equal(player(last.game, native).tanks, 5);
   assert.equal(player(last.game, native).elites!.tanks, 0);
   assert.equal(deferred(last.game), 1);
   const receipt = last.game.spiceBankerIncome!.sources.at(-1)!;

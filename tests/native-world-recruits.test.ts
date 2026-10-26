@@ -25,7 +25,7 @@ function continueToShipment(game: Game): Game {
 for (const advanced of [false, true]) {
   const mode = advanced ? 'Advanced' : 'Basic';
 
-  void test(`${mode} native Ix deposits paid cyborgs and free suboids, reopens with Recruits, then reprices after population five`, () => {
+  void test(`${mode} native Ix deposits paid cyborgs and free suboids, ${advanced ? 'keeps its opportunity open' : 'reopens'} with Recruits, then reprices after population five`, () => {
     const fixture = createNativeWorldRecruitsFixture({ advanced, faction: 'ixians' });
     const native = fixture.native;
     assert.equal(nativeWorldRecruitsPlayer(fixture.game, native).spice, 10);
@@ -39,7 +39,9 @@ for (const advanced of [false, true]) {
     assert.equal(paid.walletDelta, 3);
     assert.equal(paid.free, 2);
     assert.deepEqual(paid.nativeAfter, { normal: 2, elite: 1 });
-    let game = applyAction(paid.game, native, { type: 'ready' });
+    let game = paid.game;
+    if (!advanced) game = applyAction(game, native, { type: 'ready' });
+    else assert.equal(game.revivalOrder?.remaining[0], native);
     game = applyAction(game, fixture.owner, play);
     assert.equal(nativeWorldRecruitsPlayer(game, native).spice, 7, 'Activation never refunds the paid cyborg');
     assert.equal(viewGame(game, native).revival.freeRemaining, 2);
@@ -56,11 +58,12 @@ for (const advanced of [false, true]) {
     const last = requestNativeWorldRecruits(game, native, 2, 1, 0);
     assert.equal(last.price, 5, 'One paid cyborg plus one paid suboid still costs five');
     assert.equal(last.walletDelta, 5);
-    assert.deepEqual(last.nativeAfter, { normal: 3, elite: 4 });
+    assert.equal(last.ixSuboidBonus, 2, 'A paid Cyborg at current High returns two extra physical Suboids');
+    assert.deepEqual(last.nativeAfter, { normal: 5, elite: 4 });
     assert.equal(nativeWorldRecruitsPlayer(last.game, native).freeForcesRevived, 4);
     assert.equal(nativeWorldRecruitsPlayer(last.game, native).revived, 7);
     assert.equal(nativeWorldRecruitsPlayer(last.game, native).spice, 2);
-    assert.equal(nativeWorldRecruitsPlayer(last.game, native).tanks, 7);
+    assert.equal(nativeWorldRecruitsPlayer(last.game, native).tanks, 5);
     assert.equal(nativeWorldRecruitsPlayer(last.game, native).elites!.tanks, 0);
     rejectsUnchanged(last.game, native, { type: 'revive', amount: 1, elite: 0 });
     assert.equal(last.game.discard.filter(c => c.id === RECRUITS_CARD_ID).length, 1);
@@ -180,12 +183,14 @@ for (const advanced of [false, true]) {
     continueToShipment(returned.game);
   });
 
-  void test(`${mode} ordinary native Richese reopens a ready revival, receives six free plus one paid, and still stops at seven`, () => {
+  void test(`${mode} ordinary native Richese ${advanced ? 'keeps its opportunity open' : 'reopens a ready revival'}, receives six free plus one paid, and still stops at seven`, () => {
     const fixture = createNativeWorldRecruitsFixture({ advanced, faction: 'richese' });
     const spice = nativeWorldRecruitsPlayer(fixture.game, fixture.native).spice;
     const first = requestNativeWorldRecruits(fixture.game, fixture.native, 3);
     assert.equal(first.price, 0);
-    let game = applyAction(first.game, fixture.native, { type: 'ready' });
+    let game = first.game;
+    if (!advanced) game = applyAction(game, fixture.native, { type: 'ready' });
+    else assert.equal(game.revivalOrder?.remaining[0], fixture.native);
     game = applyAction(game, fixture.owner, play);
     assert.equal(viewGame(game, fixture.native).revival.freeRemaining, 3);
     rejectsUnchanged(game, fixture.native, { type: 'revive', amount: 5, elite: 0 });

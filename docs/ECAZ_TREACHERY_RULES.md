@@ -4,6 +4,12 @@ Audit: 2026-09-06. Scope: Reinforcements, Recruits, and Harass & Withdraw. This 
 
 ## Selected independent cards and phase modules — 26 October 2026
 
+The later [clean World contract](HOMEWORLD_RULES.md#clean-homeworlds-and-phase-modules--26-october-2026)
+additionally admits registered bare mixed E3 Worlds with optional independent
+cards/phase modules and their mandatory occupation state. It supersedes the
+dated plain-World roster exclusions in this document; other registered modules
+and complete-mode gates remain separate.
+
 The printed independent-variant rule (E3 pp9,11 above), together with supplied
 Advanced physical21/printed19 variant independence, now composes clean selected
 decks across registered paired/mixed/all-three native rosters and classic-only

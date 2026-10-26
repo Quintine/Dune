@@ -17,6 +17,7 @@ import { MovementClaimError, liveMovementPromises, movementEventAllowed, movemen
 import { findMovementCompletion, type MovementCompletion } from './movement-promise-search';
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile, selectedFactionStrongholdProfile, selectedIndependentCardsProfile } from './faction-module-profile';
+import { homeworldPhaseModulesProfile } from './homeworld-module-profile';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
@@ -9836,12 +9837,12 @@ function moritaniAssassinateModeSupported(g: Game) {
       (f.expansion === 'base' || g.expansions.includes(f.expansion)))) &&
     (!g.nexusCards || (!!g.leaderSkills && standaloneE3NexusLeaderSkillsProfile(g))) &&
     (!g.leaderSkills || advancedMoritaniLeaderSkillsProfile(g)) &&
-    (!g.strongholdCards || selectedFactionStrongholdProfile(g) || e3StrongholdFactionProfile(g) || independentCardModulesProfile(g) ||
+    (!g.strongholdCards || homeworldPhaseModulesProfile(g) || selectedFactionStrongholdProfile(g) || e3StrongholdFactionProfile(g) || independentCardModulesProfile(g) ||
       (!!g.leaderSkills && strongholdLeaderSkillsProfile(g))) &&
     (!g.homeworlds || g.homeworldOccupationPreview === true || ecazHomeworldProfile(g) ||
       (!!g.leaderSkills && homeworldLeaderSkillsProfile(g))) &&
     !g.discoveryEnabled && !g.discoveries &&
-    (!g.techTokens || nativeFactionTechProfile(g) || independentCardModulesProfile(g) ||
+    (!g.techTokens || homeworldPhaseModulesProfile(g) || nativeFactionTechProfile(g) || independentCardModulesProfile(g) ||
       (!!g.leaderSkills && nativeTechLeaderSkillsProfile(g)));
 }
 function moritaniAssassinateContext(g: Game, receipt: MoritaniAssassinateReceipt) {
@@ -10836,26 +10837,34 @@ export function initializeHomeworldGameForAudit(state: Game): Game {
     !!state.homeworlds,
     'Enable the Homeworld module in the audit lobby first.',
   );
+  if (homeworldPhaseModulesProfile(state)) return initializeHomeworldOccupationGameForAudit(state);
   return initializeSetupGameForAudit(state, true);
 }
 /** Fresh occupation prototype; ambiguity remains source-gated rather than assigned a controller. */
 export function initializeHomeworldOccupationGameForAudit(state: Game, leaderSkills = false): Game {
   requireRule(state.homeworlds?.custody === null && !state.homeworldOccupationPreview &&
     !state.homeworldOccupationHistory && !state.nexusCards && !state.leaderSkills &&
-    !state.techTokens && !state.strongholdCards && !state.discoveryEnabled &&
+    ((!state.techTokens && !state.strongholdCards) || (!leaderSkills && homeworldPhaseModulesProfile(state))) && !state.discoveryEnabled &&
     !state.discoveries && !state.discoveryStash && !state.greatMaker && !state.ecazTreachery &&
     typeof state.advanced === 'boolean' && state.expansions.length <= 3 &&
     state.expansions.every((id, index) => (id === 'ix' || id === 'choam' || id === 'ecaz') &&
       state.expansions.indexOf(id) === index) &&
     state.players.every(p => FACTIONS.some(f => f.id === p.faction &&
       (f.expansion === 'base' || state.expansions.includes(f.expansion)))),
-  'Occupation requires a fresh Homeworld lobby with original selected faction decks and no other modules.');
+  'Occupation requires a fresh Homeworld lobby with original selected faction decks and supported original phase modules.');
   requireFreshBaseRuntime(state);
   requireFreshFactionInventory(state);
   requireRule(!leaderSkills || !state.expansions.length && homeworldLeaderSkillsProfile(state),
     'Occupation with Leader Skills requires original classic Homeworlds without other modules.');
   const g = leaderSkills ? initializeLeaderSkillsGameForAudit(state)
     : initializeSetupGameForAudit(state, true, false, false, false, false, false, true);
+  initializeHomeworldOccupationState(g);
+  if (moritaniAssassinateModeSupported(g)) initializeMoritaniAssassinateState(g);
+  return g;
+}
+/** Original occupation benefits belong to fresh World setup, beside its native
+ * custody/history; phase modules do not replace those printed benefits. */
+function initializeHomeworldOccupationState(g: Game): void {
   g.homeworldOccupationPreview = true;
   g.pendingHomeworldOccupiedIncome = null;
   g.homeworldOccupiedIncomeHistory = [];
@@ -10871,8 +10880,6 @@ export function initializeHomeworldOccupationGameForAudit(state: Game, leaderSki
     g.homeworldEcazVictoryPreview = true;
     g.ecazOccupyPreview = true;
   }
-  if (moritaniAssassinateModeSupported(g)) initializeMoritaniAssassinateState(g);
-  return g;
 }
 /** Shared classic/supported-native Nexus setup; existing composition guards apply. */
 export function initializeNexusGameForAudit(state: Game): Game {
@@ -11849,6 +11856,7 @@ function initializeFactionExpansionsGame(state: Game, semuta = false): Game {
   return initialized;
 }
 function ecazOccupyCompositionSupported(g: Game): boolean {
+  if (homeworldPhaseModulesProfile(g) && byFaction(g, 'ecaz')) return true;
   // Native Basic uses the same physical coalition and selected decks.
   // Family/roster checks below remain authoritative; optional configurations
   // retain their separate registered profiles rather than inheriting admission.
@@ -12105,13 +12113,15 @@ function independentCardRoster(g: Game): boolean {
     return family === 'base' || g.expansions.includes(family);
   });
 }
-/** Bare card World/phase rosters keep their E3 envelope; Skills uses the shared registered capability. */
+/** Legacy World/card envelope; clean registered profiles are admitted before
+ * this fallback, while other module contexts keep their original scope. */
 function independentCardModuleRoster(g: Game): boolean {
   return independentCardRoster(g) &&
     (!g.players.some(player => player.faction === 'ecaz' || player.faction === 'moritani') ||
       (g.expansions.length === 1 && g.expansions[0] === 'ecaz'));
 }
 function ecazHomeworldProfile(g: Game): boolean {
+  if (homeworldPhaseModulesProfile(g)) return true;
   if (g.homeworlds && (independentNexusProfile(g) || independentDiscoveryProfile(g))) return true;
   if (g.homeworlds && g.leaderSkills && !g.sandtrout && independentTreacheryLeaderSkillsProfile(g)) return true;
   return !!g.homeworlds && g.ecazTreachery === true && independentCardModuleRoster(g) &&
@@ -12128,6 +12138,7 @@ function ecazHomeworldProfile(g: Game): boolean {
 }
 /** Independent cards compose original phase modules, not unrelated previews. */
 function independentCardModulesProfile(g: Game): boolean {
+  if ((g.techTokens || g.strongholdCards) && g.ecazTreachery === true && homeworldPhaseModulesProfile(g)) return true;
   if ((g.techTokens || g.strongholdCards) && selectedIndependentCardsProfile(g)) return true;
   if ((g.techTokens || g.strongholdCards) && (independentNexusProfile(g) || independentDiscoveryProfile(g))) return true;
   if ((g.techTokens || g.strongholdCards) && g.leaderSkills && !g.sandtrout &&
@@ -12160,7 +12171,12 @@ export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   const homeworlds = !!g.homeworlds;
   requireRule(!homeworlds || ecazHomeworldProfile(g),
     'Independent World cards need a supported selected-deck roster with original phase modules and supported Nexus selections.');
+  if (homeworlds && homeworldPhaseModulesProfile(g)) {
+    requireFreshBaseRuntime(g);
+    requireFreshFactionInventory(g);
+  }
   const initialized = initializeSetupGameForAudit(g, homeworlds, independentNexusProfile(g), false, discovery, false, false, true, true);
+  if (homeworlds && homeworldPhaseModulesProfile(initialized)) initializeHomeworldOccupationState(initialized);
   if (byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   if (moritaniAssassinateModeSupported(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
@@ -12188,10 +12204,11 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       mixedE3NexusLeaderSkillsProfile(g) || singleE1E2NexusLeaderSkillsProfile(g) || mixedE1E2NexusLeaderSkillsProfile(g) ||
       pairedE3NexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g))));
   const independentModules = ecazTreachery && independentCardModulesProfile(g);
-  requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules || discoveryComposition || independentModules) &&
+  const worldPhaseModules = homeworlds && homeworldPhaseModulesProfile(g);
+  requireRule(!g.techTokens || ((worldPhaseModules || skillTech || nativeTech || nexusModules || discoveryComposition || independentModules) &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
   'Tech Tokens require a fresh supported three-through-six-seat lobby with unused tokens.');
-  requireRule(!g.strongholdCards || strongholdFactions || ((skillStronghold || homeworldSkills || nexusModules || discoveryComposition || independentModules) &&
+  requireRule(!g.strongholdCards || strongholdFactions || ((worldPhaseModules || skillStronghold || homeworldSkills || nexusModules || discoveryComposition || independentModules) &&
     JSON.stringify(g.strongholdCards) === JSON.stringify(createStrongholdCards())),
   'Stronghold Cards require a fresh supported Advanced lobby with unused cards.');
   requireRule(
@@ -12202,8 +12219,8 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       (discovery || !g.discoveryEnabled) &&
       (nexus || !g.nexusCards) &&
       (ecazTreachery || !g.ecazTreachery) &&
-      (!g.techTokens || skillTech || nativeTech || nexusModules || discoveryComposition || independentModules) &&
-      (strongholdFactions || skillStronghold || homeworldSkills || nexusModules || discoveryComposition || independentModules || !g.strongholdCards) &&
+      (!g.techTokens || worldPhaseModules || skillTech || nativeTech || nexusModules || discoveryComposition || independentModules) &&
+      (worldPhaseModules || strongholdFactions || skillStronghold || homeworldSkills || nexusModules || discoveryComposition || independentModules || !g.strongholdCards) &&
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
         FACTIONS.some(
@@ -18648,6 +18665,7 @@ function ambassadorEffectBlock(
   return null;
 }
 function arrivalOverlapModeSupported(g: Game, revivalArrival?: RevivalEntryParent): boolean {
+  if (homeworldPhaseModulesProfile(g) && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if (revivalArrival && g.homeworlds && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if (bareBasicSemutaProfile(g) && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if ((independentNexusProfile(g) || independentDiscoveryProfile(g)) && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
@@ -24203,9 +24221,10 @@ function homeworldOccupiedIncomeIntegrity(g: Game) {
       'Occupied income requires its original fresh occupation profile.');
     return;
   }
-  requireRule(g.homeworldOccupationPreview === true && g.homeworlds && !g.nexusCards &&
-    (!g.leaderSkills || !g.expansions.length && homeworldLeaderSkillsProfile(g)) &&
-    !g.techTokens && !g.strongholdCards && !g.discoveryEnabled &&
+  requireRule(g.homeworldOccupationPreview === true && g.homeworlds &&
+    (homeworldPhaseModulesProfile(g) || (!g.nexusCards &&
+      (!g.leaderSkills || !g.expansions.length && homeworldLeaderSkillsProfile(g)) &&
+      !g.techTokens && !g.strongholdCards && !g.discoveryEnabled)) &&
     Array.isArray(history) && pending !== undefined,
   'The fresh occupation profile lost its original Homeworld module or income ledger.');
   const turns = new Set<number>();

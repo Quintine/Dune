@@ -60,6 +60,16 @@ export function createWorldPhaseRecruitsFixture(options: WorldPhaseRecruitsOptio
   let lobby = createGame('WORLDPHASERECRUITS', newPlayer(emperor, 'Emperor', 'emperor'), advanced);
   for (const [id, faction] of [[fremen, 'fremen'], [atreides, 'atreides'], [guild, 'guild']] as const)
     joinGame(lobby, newPlayer(id, faction, faction));
+  const lobbySteps: RecruitsHomeworldStep[] = [];
+  if (advanced) {
+    // First Storm0 ends at1; the native later card1..6 ends at2..7.
+    // Actual printed circles14/17 therefore keep Atreides before Fremen,
+    // without completing the latter before its later typed requests.
+    for (const [actor, position] of [[atreides, 5], [fremen, 6]] as const) {
+      const action: Action = { type: 'seatPosition', position };
+      lobby = applyAction(lobby, actor, action); lobbySteps.push({ actor, action });
+    }
+  }
   lobby = applyAction(lobby, emperor, { type: 'homeworlds', enabled: true });
   lobby.techTokens = createTechTokens();
   if (strongholds) lobby.strongholdCards = createStrongholdCards();
@@ -96,6 +106,13 @@ export function createWorldPhaseRecruitsFixture(options: WorldPhaseRecruitsOptio
     }
     throw Error('Original World revival decisions did not settle');
   };
+  const awaitOwner = (actor: string) => {
+    while (game.revivalOrder && game.revivalOrder.remaining[0] !== actor) {
+      assert.ok(game.revivalOrder.remaining.includes(actor), 'The later native request must retain its pending opportunity.');
+      const preceding = game.revivalOrder.remaining[0]; assert.ok(preceding);
+      act(preceding, { type: 'ready' }); settle();
+    }
+  };
   const actions = {
     paidReturn: { type: 'revive', amount: 3, elite: 0 },
     readyAtreides: { type: 'ready' },
@@ -112,13 +129,16 @@ export function createWorldPhaseRecruitsFixture(options: WorldPhaseRecruitsOptio
     atreides: structuredClone(viewGame(game, atreides).revival),
   };
   const wallets = Object.fromEntries(game.players.map(p => [p.id, p.spice]));
+  awaitOwner(atreides);
   act(atreides, actions.paidReturn); settle();
   const afterPaidReturn = structuredClone(game);
-  act(atreides, actions.readyAtreides);
+  if (!advanced) act(atreides, actions.readyAtreides);
   const beforePlay = structuredClone(game);
   act(emperor, actions.play);
   const afterPlay = structuredClone(game);
   act(atreides, actions.reopenedReturn); settle();
+  if (advanced) act(atreides, actions.readyAtreides);
+  awaitOwner(fremen);
   const beforeFremen = structuredClone(game);
   act(fremen, actions.typedReturn); settle();
   const afterTypedReturn = structuredClone(game);
@@ -149,11 +169,12 @@ export function createWorldPhaseRecruitsFixture(options: WorldPhaseRecruitsOptio
       doubled: { fremenFree: 7, atreidesFree: 4, limit: 7 },
       afterThreshold: { freeRemaining: 5, forcesRemaining: 5, homeworldBonus: 0 },
     },
-    nativeSteps: source.nativeSteps, steps,
+    nativeSteps: [...lobbySteps, ...source.nativeSteps], steps,
     staging: [...source.staging,
       'Select unused original Tech Tokens and optional Advanced Strongholds in the undealt lobby, before readiness and original setup.',
       'Fix only the original first-Storm unused-token shuffle; restore native later Storm entropy. Custody and held-token count are read, never assigned.',
-      'Atreides pays for three original native returns before Recruits; its recorded paid counter remains paid after reopening. Fremen then returns one typed Fedaykin and five normal counters on separate current-rate requests.',
+      ...(advanced ? ['Select original lobby circles14 for Atreides and17 for Fremen. Finish preceding native turns; keep Atreides current through both requests before advancing to still-pending Fremen. No played queue or phase is changed.'] : []),
+      'Atreides pays for three original native returns before Recruits; its recorded paid counter remains paid after activation. Basic retains ready/reopening; Advanced keeps that opportunity open. Fremen then returns one typed Fedaykin and five normal counters on separate current-rate requests.',
     ],
   };
 }

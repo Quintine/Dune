@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 26 October 2026 — Clean Homeworld occupation and phase modules
+
+**Prototyped / Partial.** Clean registered classic/
+selected-family Worlds with optional independent cards, Tech3–6 and Advanced
+Strongholds2–6 now initialize original occupation benefits beside physical
+locations. Shared fresh state retains qualification, Collection/percentage,
+native Tupile and Ecaz World victory. No incidental Skills/Nexus, played-game
+retrofit or new numeric policy; legacy module contexts retain their scope.
+
+Disjoint profile/phase/control/native source lanes and root integration pass
+**16 files,115/115**, types/lint/build and **six native runtime paths**,18
+GameTable SSR renders. Bare mixed Basic21/card47 and classic10/card33 starts
+retain original setup; all-six Basic250/card57 and Advanced267/card60 programmes
+retain native sources, Storm loss/free return, delayed token income and claims.
+Four minimal policies each submit legal next actions. A/Ecaz/Ix actual sources
+use57/62 actions/card50: paid Atreides10 empties Caladan, Ecaz1/fee1 earns sole
+qualification, and20 continuations keep occupied bank2, Heighliners phase-end1,
+Advanced ordinary Arrakeen2 and first Mentat cards separate. No played-state
+install or controlled positioning claim is required.
+
+Feedback corrects Advanced normal Collection and test typing, then repairs old
+ordered Revival/Basic reopen/source-circle and existing High-Ix bonus2 fixture
+assumptions without changing physical fees, quotas, Banker or delayed income.
+Report/manifest: `/home/quintine/.local/share/dune/checkpoints/20261026-homeworld-phase-proof-v3/`;
+journeys/HTML: adjacent `20261026-homeworld-phase-runtime/`. No saved-room/D1,
+server/reset/restart/deployment or separate assurance campaign. Broader
+combinations, browser/mobile/deployed and complete-mode acceptance remain open.
+[Current source and scope](HOMEWORLD_RULES.md#clean-homeworlds-and-phase-modules--26-october-2026).
+
 ## 26 October 2026 — Selected independent cards and phase modules
 
 **Prototyped / Partial.** Clean selected-deck

@@ -7,6 +7,7 @@ import { nativeShipmentSources } from '../game/homeworld-options';
 import { homeworldShipmentChoice } from '../game/homeworld-shipment-options';
 import { forceRevivalQuote } from '../game/revival';
 import { RECRUITS_CARD_ID } from '../game/recruits';
+import { ixHomeworldRevivalEnabled, quoteIxSuboidBonus } from '../game/ix-homeworld-revival';
 import type { IndependentCardModulesOptions } from './fixture-independent-card-modules';
 import { createIndependentCardModulesFixture } from './fixture-independent-card-modules';
 import { nextHarassHomeworldStep } from './fixture-harass-homeworld';
@@ -47,6 +48,8 @@ export const nativeWorldRecruitsClean = (game: Game) =>
  * An unrequested Face Dancer is declined; every other window keeps its original
  * continuation and the whole remaining programme is driven by it. */
 export function nextNativeWorldRecruitsStep(game: Game): NativeWorldRecruitsStep | null {
+  if (game.phase === 4 && nativeWorldRecruitsClean(game) && !game.pendingRevival && game.revivalOrder?.remaining[0])
+    return { actor: game.revivalOrder.remaining[0], action: { type: 'ready' } };
   if (!game.response && !game.phaseOpening && game.decision?.kind === 'faceDance')
     return { actor: game.decision.player, action: { type: 'decision', reveal: false } };
   return nextHarassHomeworldStep(game);
@@ -182,6 +185,7 @@ export function createNativeWorldRecruitsFixture(options: {
   assert.equal(nativeWorldRecruitsPlayer(game, native).tanks, native === 'ixians' ? 14 : 20);
   game = advanceNativeWorldRecruits(game,
     g => g.turn === 2 && g.phase === 4 && nativeWorldRecruitsClean(g), steps);
+  game = awaitNativeWorldRecruitsActor(game, options.imperialCasualties ? visitor : native, steps);
   takeHarassCard(game, owner, RECRUITS_CARD_ID);
   staging.push(`Conserve the existing physical Recruits to ${owner} at the real second Revival; this is not a purchase.`);
   assertNativeWorldRecruitsInventory(game);
@@ -190,13 +194,34 @@ export function createNativeWorldRecruitsFixture(options: {
     location, steps, staging };
 }
 
+/** Complete only preceding original owners. A finished opportunity cannot be
+ * reopened; Basic and an unstamped legacy phase retain concurrent timing. */
+export function awaitNativeWorldRecruitsActor(game: Game, actor: string,
+  preparation: NativeWorldRecruitsStep[] = []): Game {
+  while (game.revivalOrder && game.revivalOrder.remaining[0] !== actor) {
+    assert.ok(game.revivalOrder.remaining.includes(actor), 'The requested native Revival opportunity must still be pending.');
+    const preceding = game.revivalOrder.remaining[0]; assert.ok(preceding);
+    const step: NativeWorldRecruitsStep = { actor: preceding, action: { type: 'ready' } };
+    preparation.push(step); game = applyAction(game, step.actor, step.action);
+    game = advanceNativeWorldRecruits(game, state => state.phase === 4 && nativeWorldRecruitsClean(state), preparation);
+  }
+  return game;
+}
+
 /** Capture the quote, accepted request, response/deployment choices and physical
  * deposit. Keep invoice price separate from Tleilaxu's own free-return income. */
 export function requestNativeWorldRecruits(game: Game, actor: string, amount: number, elite = 0,
   freeElite?: number) {
+  const preparation: NativeWorldRecruitsStep[] = [];
+  game = awaitNativeWorldRecruitsActor(game, actor, preparation);
   const before = structuredClone(game);
   const player = nativeWorldRecruitsPlayer(before, actor);
   const quote = forceRevivalQuote(before, player, amount, elite, freeElite);
+  const ixSuboidBonus = player.faction === 'ixians' ? quoteIxSuboidBonus({
+    enabled: ixHomeworldRevivalEnabled(before, actor) && !before.revivalRules?.freeBlocked?.includes(actor),
+    amount, elite, free: quote.free, freeElite: freeElite ?? Math.min(quote.free, elite),
+    normalTanks: player.tanks - (player.elites?.tanks ?? 0),
+  }) : 0;
   const step: NativeWorldRecruitsStep = { actor,
     action: { type: 'revive', amount, elite, ...(freeElite === undefined ? {} : { freeElite }) } };
   const nativeBefore = combatArmy(before, actor, `homeworld:${player.faction}`);
@@ -204,7 +229,7 @@ export function requestNativeWorldRecruits(game: Game, actor: string, amount: nu
   const continuations: NativeWorldRecruitsStep[] = [];
   game = advanceNativeWorldRecruits(requested, nativeWorldRecruitsClean, continuations);
   const after = nativeWorldRecruitsPlayer(game, actor);
-  return { before, requested, game, step, continuations, quote,
+  return { before, requested, game, step, preparation, continuations, quote, ixSuboidBonus,
     rate: viewGame(before, actor).revival,
     price: quote.cost, walletDelta: player.spice - after.spice,
     free: (after.freeForcesRevived ?? 0) - (player.freeForcesRevived ?? 0),

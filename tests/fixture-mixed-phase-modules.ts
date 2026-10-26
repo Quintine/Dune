@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
-import { createGame, joinGame, newPlayer, type Action, type Game } from '../game/engine';
+import { createGame, joinGame, newPlayer, viewGame, type Action, type Game } from '../game/engine';
 import { TERRITORIES, MOBILE_STRONGHOLD, location, territory } from '../game/board';
 import type { FactionId } from '../game/catalog';
+import { withNativeShipmentSources } from '../game/homeworld-options';
 import { actAdvisorPreparation } from './fixture-advisor-preparation';
 import { nextRicheseStrongholdsNativeStep } from './fixture-richese-strongholds';
 
@@ -14,6 +15,7 @@ export type MixedPhaseModulesOptions = {
   tech?: boolean;
   strongholds?: boolean;
   independent?: boolean;
+  homeworlds?: boolean;
 };
 export const MIXED_PHASE_NATIVE_FACTIONS = ['ixians', 'tleilaxu', 'choam', 'richese', 'ecaz', 'moritani'] as const;
 export const actMixedPhaseModules = actAdvisorPreparation;
@@ -75,6 +77,7 @@ export function createMixedPhaseModulesFixture(options: MixedPhaseModulesOptions
   for (const faction of others) joinGame(game, newPlayer(faction, faction, faction));
   const initial = structuredClone(game), actions: MixedPhaseModulesStep[] = [];
   const act = (actor: string, action: Action) => { game = actMixedPhaseModules(game, actor, action, actions); };
+  if (options.homeworlds) act(host, { type: 'homeworlds', enabled: true });
   if (options.independent) act(host, { type: 'moduleOption', module: 'ecazTreachery', enabled: true });
   if (options.tech) act(host, { type: 'techTokens', enabled: true });
   if (options.strongholds) act(host, { type: 'strongholdCards', enabled: true });
@@ -98,6 +101,7 @@ export function createMixedPhaseModulesFixture(options: MixedPhaseModulesOptions
   const firstStorm = structuredClone(game);
   assert.deepEqual(mixedPhaseModulesInventory(game), originalInventory);
   return { game, sourceGame: structuredClone(game), independent: options.independent ?? false,
+    homeworlds: options.homeworlds ?? false,
     initial, lobby, setup, afterSetup, firstStorm,
     originalInventory, originalSpice, spiceOrder, actions, sourceActions: structuredClone(actions),
     sourceActionCount: actions.length, staging: [] as string[] };
@@ -107,13 +111,21 @@ export function createMixedPhaseModulesFixture(options: MixedPhaseModulesOptions
  * accrue Heighliners once; native first Mentat claims precede a real later
  * Storm casualty (Basic dials2 / Advanced card1) and that owner's free return. Sources remain ordinary public
  * entry plus original native choices, with no played-state installation. */
-export function createMixedPhaseModulesProgramme(options: { advanced?: boolean; strongholds?: boolean; independent?: boolean } = {}) {
+export function createMixedPhaseModulesProgramme(options: {
+  advanced?: boolean; strongholds?: boolean; independent?: boolean; homeworlds?: boolean;
+} = {}) {
   const advanced = options.advanced ?? false, strongholds = options.strongholds ?? advanced;
   const source = createMixedPhaseModulesFixture({ factions: MIXED_PHASE_NATIVE_FACTIONS,
-    expansions: ['ix', 'choam', 'ecaz'], advanced, tech: true, strongholds, independent: options.independent });
+    expansions: ['ix', 'choam', 'ecaz'], advanced, tech: true, strongholds,
+    independent: options.independent, homeworlds: options.homeworlds });
   let game = source.game;
   const actions = [...source.actions];
   const act = (actor: string, action: Action) => { game = actMixedPhaseModules(game, actor, action, actions); };
+  const ship = (actor: string, action: Action) => {
+    const selected = game.homeworlds ? withNativeShipmentSources(viewGame(game, actor), action) : action;
+    assert.ok(selected, 'The current native World pools must fund the exact typed shipment');
+    act(actor, selected);
+  };
   const reach = (until: (state: Game) => boolean) => { game = advanceMixedPhaseModules(game, until, actions); };
   const transition = (run: () => void): MixedPhaseModulesTransition => {
     const before = structuredClone(game), from = actions.length; run();
@@ -123,7 +135,7 @@ export function createMixedPhaseModulesProgramme(options: { advanced?: boolean; 
   const tabr = territory('sietch_tabr').sectors[0], choamLocation = location('sietch_tabr', tabr);
   assert.ok(game.players.every(player => !player.forces[choamLocation]));
   const choamShipment = transition(() => {
-    act('choam', { type: 'ship', territory: 'sietch_tabr', sector: tabr, amount: 1, elite: 0, allyPayment: 0 });
+    ship('choam', { type: 'ship', territory: 'sietch_tabr', sector: tabr, amount: 1, elite: 0, allyPayment: 0 });
     reach(mixedPhaseModulesClean);
   });
   reach(state => state.turn === 1 && state.phase === 5 && state.active === 'moritani' && mixedPhaseModulesClean(state));
@@ -133,7 +145,7 @@ export function createMixedPhaseModulesProgramme(options: { advanced?: boolean; 
   assert.ok(target, 'The next original Storm sector has an empty desert shipment destination');
   const casualtyLocation = location(target.id, sector);
   const moritaniShipment = transition(() => {
-    act('moritani', { type: 'ship', territory: target.id, sector, amount: 1, elite: 0, allyPayment: 0 });
+    ship('moritani', { type: 'ship', territory: target.id, sector, amount: 1, elite: 0, allyPayment: 0 });
     reach(mixedPhaseModulesClean);
   });
   // Capture the actual phase-closing action, rather than folding later income

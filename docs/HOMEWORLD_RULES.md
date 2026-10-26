@@ -2,6 +2,64 @@
 
 Source audit, 9 September 2026. No runtime activation. The primary module source is the [GF9 Ecaz & Moritani rulebook](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf), especially printed pp.4, 9–10 and the Homeworld FAQ on pp.15–16. The local publisher-text transcription is `/tmp/dune-rules/ecaz-audit.txt`; fresh official indexed pp.9, 10 and 15 were checked against it. Direct PDF retrieval currently returns HTTP 403. Physical card faces are separately audited in [Homeworld component audit](HOMEWORLD_COMPONENT_AUDIT.md); a rulebook statement and a card-face statement are not interchangeable evidence.
 
+## Clean Homeworlds and phase modules — 26 October 2026
+
+Fresh clean Homeworld starts now use registered classic or selected-family
+rosters, including paired/mixed/all-three native families and unused decks,
+without incidental Skills, Nexus or independent-card requirements. Every native
+needs its family selected; classic empty-deck selection is valid. Optional
+independent cards retain36/38/50 and any separate Richese cache. Optional Tech
+requires3–6 Basic/Advanced seats; Strongholds requires2–6 Advanced, or3–6 beside
+Tech. Skills/Nexus/Discovery/Sandtrout and explicit Semuta keep separate profiles.
+
+The existing genuine occupation entry supplies the shared fresh state: original
+qualification history, occupied Collection/percentage ledgers, native CHOAM
+Tupile leases and native Ecaz World-victory marker. Normal clean World and
+independent-card World starts now initialize those printed benefits as well as
+native locations. Original advanced Moritani assassination and Arrakis Ecaz
+coalition/arrival rules compose the same public profile. Existing games receive
+no added stamp, ownership assignment, module retrofit or reset.
+
+Authority remains the audited E3 pp9–10/15–16 and physical occupied faces below,
+with the user-authorized Advanced physical21/printed19 variant independence and
+existing Advanced qualification cutover. No new income amount, expiry policy,
+occupation share, tariff or victory interpretation is introduced. Original
+Tupile, auction-controller, percentage and Duke contracts remain. Tech accrues
+and pays at its matching phase; held Stronghold cards are earned only at actual
+end-Mentat. A World is not a seventh Stronghold Card or ordinary Arrakis site.
+
+Public-profile, native phase/control and native occupation lanes plus root
+integration pass16 files,115/115, types/lint/build and six native runtime paths,
+18 GameTable SSR renders. Bare mixed Basic starts in21 actions/card47 and classic
+no-deck in10/card33. All-six Basic World/Tech and Advanced World/independent/Tech/
+Strongholds use250/267 actions/card57/60, with actual native source allocations,
+matching delayed income, native free return and earned cards. Four minimal
+policies each submit legal next actions from both phase-five boundaries.
+
+Actual A/Ecaz/Ix all3-deck World/independent50 sources use57 Basic /62 Advanced
+actions. Atreides pays10 to ship its10 native Caladan reserves to already-held
+Arrakeen; Ecaz pays1 to ship1 original native reserve to empty Caladan. The
+accepted sole arrival creates the real qualification and printed bank2
+entitlement. Twenty continuation actions complete actual End Movement, pay
+Heighliners1 once, credit the unallied Caladan2 automatically, and reach the
+actual first END-Mentat claims. Advanced ordinary Arrakeen Collection2 remains
+separate; no seventh card or early held ownership appears. No played force,
+wallet, phase, qualifier, receipt or ownership is installed; no controlled
+positioning supplements are needed for this proof.
+
+Feedback corrects the Advanced ordinary-income expectation and test type
+narrowing. Related old World/Recruits sources now finish actual preceding
+Advanced owners, retain the current owner's opportunity across requests, keep
+Basic ready/reopen and choose original legal lobby circles for later actors.
+Existing High-Ix paid-Cyborg bonus2 moves real additional Suboids; payments,
+ordinary/free limits, Banker and delayed Axlotl remain distinct. An explicit
+legacy occupation-Skills entry still cannot inherit this clean phase scope.
+Report/manifest: `/home/quintine/.local/share/dune/checkpoints/20261026-homeworld-phase-proof-v3/`;
+journeys/HTML: adjacent `20261026-homeworld-phase-runtime/`.
+No saved-room/D1/server/reset/restart/deployment or separate assurance campaign.
+This is Prototyped / Partial; complete combinations, browser/mobile/deployed
+and release acceptance remain open.
+
 ## High Richese mixed shipment prototype — 25 October 2026
 
 **Prototyped / Partial.** Native Richese at High may select actual paid reserve

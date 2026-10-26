@@ -43,7 +43,13 @@ for (const options of cases) {
     assert.deepEqual({ revived: paid.revived, free: paid.freeForcesRevived, reserves: paid.reserves,
       tanks: paid.tanks, spice: paid.spice },
     { revived: 3, free: 2, reserves: 13, tanks: 7, spice: player(start, atreides).spice - 2 });
-    assert.ok(f.beforePlay.ready.includes(atreides));
+    if (!options.advanced) assert.ok(f.beforePlay.ready.includes(atreides));
+    else {
+      assert.equal(f.beforePlay.revivalOrder?.remaining[0], atreides);
+      assert.equal(f.beforePlay.revivalOrder?.started, true);
+      assert.equal(f.beforePlay.ready.includes(atreides), false);
+      assert.equal(f.beforeFremen.revivalOrder?.remaining[0], fremen);
+    }
     assert.equal(viewGame(f.afterPlay, fremen).revival.freeRemaining, 7);
     assert.equal(viewGame(f.afterPlay, fremen).revival.limit, 7);
     assert.equal(viewGame(f.afterPlay, atreides).revival.freeRemaining, 2,

@@ -16,6 +16,38 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Homeworld occupation / original phase modules — 26 October. Prototyped / Partial.**
+Clean registered classic/no-deck and selected-family Worlds now compose optional
+independent cards, Tech3–6 Basic/Advanced and Strongholds2–6 Advanced without
+incidental Skills/Nexus. Fresh starts include original occupation qualification,
+Collection/percentage ledgers, native Tupile and Ecaz World victory beside native
+locations. Mandatory Ecaz/Moritani handlers compose; legacy module contexts and
+existing games remain separate.
+
+Three disjoint profile/native/control lanes and root integration pass **16 files,
+115/115**, types/lint/build and **six native runtime paths**,18 GameTable SSR
+renders. Bare mixed Basic uses21 actions/card47; classic/no-deck uses10/card33.
+All-six Basic World/Tech and Advanced World/cards/Tech/Strongholds use250/267
+actions/card57/60, actual native sources, Storm loss/free return, delayed token
+income and earned cards. Four minimal policies each submit legal next actions.
+
+Actual A/Ecaz/Ix all3 World/card50 sources use57/62 actions: Atreides ships10
+Caladan reserves to Arrakeen for10, then Ecaz ships1 to empty Caladan for1.
+Accepted sole arrival creates the original qualification. Twenty continuation
+actions keep unallied occupied Caladan bank2 separate from Heighliners end-phase1,
+Advanced ordinary Arrakeen Collection2 and first END-Mentat Arrakeen/HMS cards.
+No force, wallet, qualification, payout, phase or ownership is installed.
+
+Feedback corrects the Advanced ordinary-income expectation, nullable/type
+narrowing, and related old Revival fixtures: real current-owner completion,
+Basic-only reopening, original lobby circles and existing High-Ix bonus2 retain
+paid/free/Banker/phase-end ledgers. Frozen report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-homeworld-phase-proof-v3/`;
+journeys/HTML: adjacent `20261026-homeworld-phase-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or separate assurance campaign.
+SSR/public-action proof leaves browser/mobile/deployed, wider combinations and
+complete-mode acceptance open. [Source and contract](HOMEWORLD_RULES.md#clean-homeworlds-and-phase-modules--26-october-2026).
+
 **Selected-deck independent cards / phase modules — 26 October. Prototyped / Partial.**
 Clean independent cards now compose registered paired/mixed/all-three selected
 families and classic-only unused decks with optional Tech3–6 Basic/Advanced and
