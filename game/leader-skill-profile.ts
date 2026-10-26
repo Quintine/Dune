@@ -383,6 +383,16 @@ export function nativeEcazLeaderSkillsProfile(game: LeaderSkillProfile): boolean
   return native;
 }
 
+/** Only the bare E3 capture composition gains admission; callers check its native roster. */
+function bareAdvancedE3CaptureEnvelope(game: LeaderSkillProfile): boolean {
+  return game.advanced === true && game.expansions.length === 1 && game.expansions[0] === 'ecaz' &&
+    noOtherLeaderSkillModules(game) && !game.discoveryStash && !game.greatMaker &&
+    !game.semutaPreview && !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
+    !game.guildBetrayalPreview && !game.richeseBetrayalPreview &&
+    !game.nexusIxianReplacementPreview && !game.nexusIxianBetrayalPreview &&
+    !game.nexusHarkonnenBetrayalPreview;
+}
+
 
 /** Every registered seat uses its selected ordinary family; no faction or Nexus prerequisite. */
 export function selectedDeckLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
@@ -416,7 +426,7 @@ export function selectedDeckLeaderSkillsProfile(game: LeaderSkillProfile): boole
     if (player.faction === 'harkonnen') harkonnen = true;
   }
   // E3's existing Nexus/Discovery/preview envelopes retain their original predicates.
-  if (nativeE3 && ((game.advanced && harkonnen) || game.nexusCards ||
+  if (nativeE3 && ((game.advanced && harkonnen && !bareAdvancedE3CaptureEnvelope(game)) || game.nexusCards ||
       game.discoveries || game.discoveryEnabled || game.discoveryStash ||
       game.greatMaker || game.semutaPreview)) return false;
   return !game.moritaniAssassinatePreview || (game.advanced && moritani);

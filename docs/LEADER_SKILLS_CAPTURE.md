@@ -1,8 +1,79 @@
 # Leader Skills and Harkonnen capture
 
-Updated 13 September 2026. This note resolves the public-state boundary for a
+Original source interpretation, 13 September 2026. This note resolves the public-state boundary for a
 skilled leader captured by Harkonnen. It records a source interpretation for
 implementation; it does not claim the Leader Skills module is complete.
+
+## Native E3 Advanced capture entry — 27 October 2026
+
+**Prototyped / Partial.** Fresh bare Leader Skills setups may now include
+Advanced Harkonnen with Ecaz and/or Moritani and classic factions. Select the
+E3 deck alone, two through six distinct registered seats and all14 Skills.
+No new capture permission, optional-module flag or rule interpretation is
+introduced. The existing photographed card/expansion capture procedure and
+13 October assignment ruling below apply equally to these native leaders.
+
+This first entry contains no Homeworlds, Nexus, Discoveries, independent cards,
+Tech, Strongholds or Semuta. Their separate module gates remain unchanged.
+The ordinary mandatory Banker ledger and actual native Moritani assassination
+state are parts of the original Skills/native setup, not additional modules.
+Selecting an unused E3 deck never invents a native faction or power.
+
+A successful native capture still opens its ordinary cancellation before the
+actual random disc. The known trainer/card then accompanies that one captive
+publicly; other captured leaders retain their existing procedure. Keep/execute
+remains a real Harkonnen choice. An unavailable normal/top skill is not lent to
+the captor or retained by the captive's original faction. Use the actual captive
+in one later native battle to receive only its lower effect. A survivor returns
+with the same original assignment; a killed or executed trainer returns its
+physical skill once through existing death handling. No replacement assignment
+is fabricated while it remains alive in captivity.
+
+Native Moritani's existing post-loss assassination opportunity and winner
+cleanup retain their actual order before original Harkonnen capture. The Ecaz
+Duke remains separate and cannot train. Admission does not authorize hidden
+target substitution or grant a power from a selected but unseated faction.
+
+Focused paths: [bare profile](../game/leader-skill-profile.ts),
+[profile cases](../tests/e3-harkonnen-skills-profile.test.ts),
+[fresh source](../tests/fixture-e3-harkonnen-capture.ts),
+[native cases](../tests/e3-harkonnen-capture-runtime.test.ts).
+Fresh bare Advanced E3/all14 setups now connect Harkonnen with actual Ecaz
+and/or Moritani and classics. The known trainer/card follows native capture;
+only its selected lower effect applies, a survivor returns the same assignment,
+and death/execution returns one physical Skill. Canonical Banker/native
+Moritani state remains. Other optional-module entry gates stay unchanged.
+
+Frozen **15 affected files, 110/110**, types/lint/build and six fresh native
+programmes pass: four later captive battles and two executions, using Ecaz and
+Moritani sources. Actual preview initialization, original skill/card deals,
+training, first Storm1+0, Guild Wait, paid shipments2/1 and original Carthag
+movement earn the first battle/candidate lottery. No played hand, army, purse,
+clock, capture or continuation is installed. No public-start claim is made.
+
+Runtime includes 36 GameTable SSR renders, 6 actual Capture callbacks,
+4 Retain callbacks and 2 Execute callbacks. 8 later Battle Plan packets
+use native actions with leader-selector SSR; stateful select/seal callbacks
+were not operated. Recorded arrays supply aggregate source/capture/later-battle
+counts 336/30/34, not unique cross-programme actions.
+
+Twelve new native cases cover both trainers, exact Warmaster lower3 without
+its normal1, same-assignment survival, original poison death, execution2,
+actual dealt Karama cancellation/decline and four legal policies. Five profile
+cases cover fresh/live native stamps, two–six distinct seats, the paired native
+roster and retained overlay gates; these are not full-game proofs for every
+roster. Early feedback fixes the new source's first-Storm/printed Battle order
+through real dials. A related older foreign-ghola source now finishes preceding
+Advanced Revival turns through native controls before its own request.
+
+The existing local server returned HTTP200 without restart. No HTTP/storage
+boundary, saved-game/database or deployed operation changes. Local native/SSR/
+callback evidence does not certify browser hydration, full modes, broader
+combinations or final rules/recovery/privacy/deployed acceptance.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-e3-harkonnen-capture-proof-v2/`;
+journeys/HTML: adjacent `20261027-e3-harkonnen-capture-runtime/run/`.
+
 
 ## Strongest source-supported answer
 

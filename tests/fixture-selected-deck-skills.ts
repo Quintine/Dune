@@ -195,7 +195,7 @@ export function createSelectedDeckSkillsProgramme(options: SelectedDeckSkillsOpt
 }
 
 /** Original poison weapons kill both committed discs for real, then the same
- * bare table continues into the actual Revival phase of the next turn. */
+ * bare table continues into its actual native Revival opportunity next turn. */
 export function createSelectedDeckSkillsRevivalCase(options: { advanced?: boolean } = {}) {
   const programme = createSelectedDeckSkillsProgramme({ advanced: options.advanced,
     factions: ['tleilaxu', 'guild', 'ixians'], skill: 'mentat', poison: 'both' });
@@ -212,7 +212,8 @@ export function createSelectedDeckSkillsRevivalCase(options: { advanced?: boolea
   assert.equal(trainer.dead, true, 'The defender’s conserved poison kills the committed Tleilaxu disc');
   assert.ok(guild.leaders.filter(disc => !disc.dead).length > 0);
   game = advanceSelectedDeckSkills(game,
-    g => g.turn === 2 && g.phase === 4 && g.status === 'playing' && selectedDeckSkillsClean(g), actions);
+    g => g.turn === 2 && g.phase === 4 && g.status === 'playing' && selectedDeckSkillsClean(g) &&
+      (!g.revivalOrder || g.revivalOrder.remaining[0] === tleilaxu), actions);
   return { ...programme, tleilaxu, actions, game, dead: dead.id, trainer: trainer.id,
     advanced: programme.afterSetup.advanced };
 }

@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Trained native E3 leaders and Advanced capture — 27 October 2026
+
+Fresh bare all14/E3 setups now admit Advanced Harkonnen with actual Ecaz and/or
+Moritani and classics. This removes a software entry boundary for the existing
+printed Skill-travels/lower-band-only rule and the 13 October assignment ruling;
+it is not a new capture interpretation. Real cancellation/random capture,
+Keep/Execute, later selected captive use and native survivor/death handling
+retain their original controls and pieces. Mandatory Banker and native Moritani
+state remain. All unrelated optional-module gates and complete-mode acceptance
+stay separate. No played capture is reconstructed or save converted.
+[Entry, source and limits](LEADER_SKILLS_CAPTURE.md#native-e3-advanced-capture-entry--27-october-2026).
+
 ## Banker on native placement and disposal — 27 October 2026
 
 Apply the printed normal Bank-four threshold to accepted Ecaz Ambassador fees
