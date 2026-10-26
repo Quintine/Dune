@@ -1,5 +1,20 @@
 # Rule decision index
 
+## Truthtrance printed Karama shipment pricing — 27 October 2026
+
+Prototyped / Partial. Compose the existing current-turn AND/OR authority with
+an actual printed Karama cost for the named beneficiary's original unused
+shipment. The cost counts independently of delivery or later use of its native
+price. It halves the native tariff, not the physical force count or the tariff
+to zero. Other roles, converted costs and earlier plays do not count. Keep an
+inactive beneficiary's remaining entitlement; a distinct Cunning event never
+inherits the original interval. Its source quotation does not open the existing
+optional-module promise fence. Own shipment/turn close must retain the whole
+answer before a foreign counter; foreign delivery/end retains its rights.
+Private witnesses share the actual beneficiary fee and giver cost without
+inventing another player's purse. This remains bounded prototype composition.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-karama-shipment-pricing--27-october-2026).
+
 ## Truthtrance current-lot printed Karama — 27 October 2026
 
 Prototyped / Partial. Reuse the current-turn AND/OR authority below for a

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { WINDOW_CARD_EFFECTS, windowCardNativeEffect, windowCardOpportunity, type WindowCardGame } from '../game/window-card-play';
+import { WINDOW_CARD_EFFECTS, karamaShipmentOpportunities, parseKaramaShipmentSource, windowCardNativeEffect, windowCardOpportunity,
+  type WindowCardGame } from '../game/window-card-play';
 
 function storm(): WindowCardGame {
   return { status: 'playing', phase: 0, turn: 3, shieldWallDestroyed: false };
@@ -14,10 +15,133 @@ function auction(): WindowCardGame {
 function publicAuction(): WindowCardGame {
   return { ...storm(), phase: 3, auction: { bid: 4, bidder: 'respondent', remaining: 2 }, bidPromiseLot: { turn: 3, lot: 1 } };
 }
+const shipmentSource = (recipient: string, turn = 3) => JSON.stringify(['karamaShipment', turn, recipient, 'original']);
+function shipments(): WindowCardGame {
+  return { ...storm(), phase: 5, active: 'first', movementRemaining: ['first', 'later', 'done'],
+    players: [{ id: 'first', shipped: false }, { id: 'later', shipped: false }, { id: 'done', shipped: true }],
+    karamaShipping: null };
+}
 
 void test('window roles expose a shared exhaustive tuple and exact native printed-card mapping', () => {
-  assert.deepEqual(WINDOW_CARD_EFFECTS, ['weather', 'atomics', 'harvester', 'karamaAuction']);
-  assert.deepEqual(WINDOW_CARD_EFFECTS.map(windowCardNativeEffect), ['weather', 'atomics', 'harvester', 'karama']);
+  assert.deepEqual(WINDOW_CARD_EFFECTS, ['weather', 'atomics', 'harvester', 'karamaAuction', 'karamaShipment']);
+  assert.deepEqual(WINDOW_CARD_EFFECTS.map(windowCardNativeEffect), ['weather', 'atomics', 'harvester', 'karama', 'karama']);
+});
+
+void test('shipment-price windows retain every unused original entitlement while new questions select only the active recipient', () => {
+  const source = shipments(), before = structuredClone(source);
+  assert.deepEqual(karamaShipmentOpportunities(source), [
+    { effect: 'karamaShipment', turn: 3, source: shipmentSource('first'), recipient: 'first' },
+    { effect: 'karamaShipment', turn: 3, source: shipmentSource('later'), recipient: 'later' },
+  ]);
+  assert.equal(windowCardOpportunity(source, 'karamaShipment')!.source, shipmentSource('first'));
+  assert.equal(windowCardOpportunity(source, 'karamaShipment', shipmentSource('later'))!.source, shipmentSource('later'));
+  assert.equal(windowCardOpportunity({ ...source, active: 'later' }, 'karamaShipment', shipmentSource('first'))!.source,
+    shipmentSource('first'));
+  assert.deepEqual(source, before);
+});
+
+void test('shipment source decoding identifies original and Cunning beneficiaries even after a grant or shipment closes them', () => {
+  assert.deepEqual(parseKaramaShipmentSource(shipmentSource('first')), { turn: 3, recipient: 'first', kind: 'original' });
+  const source = JSON.stringify(['karamaShipment', 3, 'first', 'cunning', 'cunning:1']);
+  assert.deepEqual(parseKaramaShipmentSource(source), { turn: 3, recipient: 'first', kind: 'cunning', event: 'cunning:1' });
+  for (const invalid of [undefined, null, [], '{}', `${source} `,
+    JSON.stringify(['karamaShipment', 0, 'first', 'original']),
+    JSON.stringify(['karamaShipment', 3.5, 'first', 'original']),
+    JSON.stringify(['karamaShipment', Number.MAX_SAFE_INTEGER + 1, 'first', 'original']),
+    JSON.stringify(['karamaShipment', 3, ' first', 'original']),
+    JSON.stringify(['karamaShipment', 3, 'first', 'cunning']),
+    JSON.stringify(['karamaShipment', 3, 'first', 'cunning', '']),
+    JSON.stringify(['karamaShipment', 3, 'first', 'original', 'extra'])])
+    assert.equal(parseKaramaShipmentSource(invalid), null);
+  assert.equal(windowCardOpportunity({ ...shipments(), karamaShipping: { player: 'first' } }, 'karamaShipment',
+    shipmentSource('first')), null);
+  assert.equal(parseKaramaShipmentSource(shipmentSource('first'))!.recipient, 'first');
+});
+
+void test('a shipment-price grant closes only its beneficiary and actual shipment or turn completion closes that original source', () => {
+  const source = shipments();
+  const granted = { ...source, karamaShipping: { player: 'first' } };
+  assert.equal(windowCardOpportunity(granted, 'karamaShipment'), null);
+  assert.deepEqual(karamaShipmentOpportunities(granted).map(window => window.recipient), ['later']);
+  const shipped = { ...source, players: source.players!.map(player => ({ ...player, shipped: true })) };
+  assert.deepEqual(karamaShipmentOpportunities(shipped), []);
+  const finished = { ...source, active: 'later', movementRemaining: ['later', 'done'] };
+  assert.equal(windowCardOpportunity(finished, 'karamaShipment', shipmentSource('first')), null);
+  assert.equal(windowCardOpportunity({ ...source, phase: 6 }, 'karamaShipment', shipmentSource('first')), null);
+  assert.equal(windowCardOpportunity({ ...source, turn: 4 }, 'karamaShipment', shipmentSource('first')), null);
+});
+
+void test('temporary native modal priority preserves original shipment entitlements without offering an inactive question', () => {
+  for (const modal of [{ response: {} }, { decision: {} }, { truthtrance: {} }, { phaseOpening: {} }]) {
+    const source = { ...shipments(), active: 'later', ...modal };
+    assert.equal(windowCardOpportunity(source, 'karamaShipment')!.source, shipmentSource('later'));
+    assert.equal(windowCardOpportunity(source, 'karamaShipment', shipmentSource('first'))!.source, shipmentSource('first'));
+  }
+  assert.equal(windowCardOpportunity(storm(), 'weather', 'storm:3')!.source, 'storm:3');
+  assert.equal(windowCardOpportunity(storm(), 'weather', 'storm:4'), null);
+  assert.equal(windowCardOpportunity(auction(), 'karamaAuction', 'ordinary-auction:3:2'), null);
+});
+
+void test('current Cunning second shipment has its own event source and never reopens an unused original shipment', () => {
+  const source = shipments(), receipt = { turn: 3, owner: 'first', event: 'cunning:1' };
+  const second = { ...source, nexusGuildCunningHistory: [{ receipt, stage: 'secondShipment' }] };
+  const expected = JSON.stringify(['karamaShipment', 3, 'first', 'cunning', 'cunning:1']);
+  assert.equal(windowCardOpportunity(second, 'karamaShipment')!.source, expected);
+  const projected = { ...source, players: source.players!.map(({ id }) => ({ id })),
+    karamaShipmentWindows: karamaShipmentOpportunities(second) };
+  assert.equal(windowCardOpportunity(projected, 'karamaShipment')!.source, expected);
+  assert.equal(windowCardOpportunity(second, 'karamaShipment', shipmentSource('first')), null);
+  assert.equal(windowCardOpportunity({ ...second, active: 'later' }, 'karamaShipment', expected), null);
+  assert.equal(windowCardOpportunity({ ...second, karamaShipping: { player: 'first' } }, 'karamaShipment', expected), null);
+  for (const stage of ['pending', 'extraMove', 'completed', 'canceled']) {
+    const closed = { ...source, nexusGuildCunningHistory: [{ receipt, stage }] };
+    assert.equal(windowCardOpportunity(closed, 'karamaShipment'), null);
+    assert.equal(windowCardOpportunity(closed, 'karamaShipment', shipmentSource('first')), null);
+    assert.ok(windowCardOpportunity(closed, 'karamaShipment', shipmentSource('later')));
+  }
+  const old = { ...source, nexusGuildCunningHistory: [{ receipt: { ...receipt, turn: 2 }, stage: 'completed' }] };
+  assert.equal(windowCardOpportunity(old, 'karamaShipment')!.source, shipmentSource('first'));
+});
+
+void test('public shipment projections require no shipped history and return copies of strictly coherent source rows', () => {
+  const native = shipments(), windows = karamaShipmentOpportunities(native);
+  const source = { ...native, players: native.players!.map(({ id }) => ({ id })), karamaShipmentWindows: windows };
+  const before = structuredClone(source), projected = karamaShipmentOpportunities(source);
+  assert.deepEqual(projected, windows);
+  assert.notEqual(projected, windows);
+  assert.notEqual(projected[0], windows[0]);
+  projected[0].recipient = 'changed-copy';
+  assert.deepEqual(source, before);
+  assert.equal(windowCardOpportunity(source, 'karamaShipment', shipmentSource('later'))!.source, shipmentSource('later'));
+});
+
+void test('malformed public shipment windows cannot invent a recipient turn entitlement or Cunning source', () => {
+  const native = shipments(), window = karamaShipmentOpportunities(native)[0];
+  for (const invalid of [{ ...window, recipient: 'unseated' }, { ...window, turn: 2 }, { ...window, effect: 'karamaAuction' },
+    { ...window, source: '' }, { ...window, source: `${window.source} ` }, { ...window, source: shipmentSource('later') },
+    { ...window, source: JSON.stringify(['karamaShipment', 3, 'first', 'cunning']) },
+    { ...window, source: JSON.stringify(['karamaShipment', 3, 'first', 'cunning', '']) },
+    { ...window, card: 'private-card' }])
+    assert.deepEqual(karamaShipmentOpportunities({ ...native, karamaShipmentWindows: [invalid] } as WindowCardGame), []);
+  for (const invalid of [[window, window], [window, { ...window,
+    source: JSON.stringify(['karamaShipment', 3, 'first', 'cunning', 'cunning:1']) }]])
+    assert.deepEqual(karamaShipmentOpportunities({ ...native, karamaShipmentWindows: invalid }), []);
+  assert.deepEqual(karamaShipmentOpportunities({ ...native, active: 'later', karamaShipmentWindows: [{ ...window,
+    source: JSON.stringify(['karamaShipment', 3, 'first', 'cunning', 'cunning:1']) }] }), []);
+  assert.deepEqual(karamaShipmentOpportunities({ ...native, movementRemaining: ['later'], active: 'later',
+    karamaShipmentWindows: [window] }), []);
+  assert.deepEqual(karamaShipmentOpportunities({ ...native, karamaShipping: { player: 'first' },
+    karamaShipmentWindows: [window] }), []);
+});
+
+void test('malformed native shipment metadata cannot create a price opportunity', () => {
+  const source = shipments();
+  for (const invalid of [{ players: [{ id: 'first' }] }, { players: [{ id: 'first', shipped: false }, { id: 'first', shipped: false }] },
+    { movementRemaining: ['first', 'first'] }, { movementRemaining: ['missing'] }, { movementRemaining: null },
+    { active: 'missing' }, { karamaShipping: { player: 'missing' } }, { status: 'setup' }, { turn: 0 },
+    { nexusGuildCunningHistory: [{ receipt: { turn: 4, owner: 'first', event: 'cunning:1' }, stage: 'secondShipment' }] },
+    { nexusGuildCunningHistory: [{ receipt: { turn: 3, owner: 'missing', event: 'cunning:1' }, stage: 'secondShipment' }] }])
+    assert.deepEqual(karamaShipmentOpportunities({ ...source, ...invalid }), []);
 });
 
 void test('ordinary Karama binds the same public current-lot source from native and projected auction shapes', () => {

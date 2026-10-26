@@ -32,8 +32,10 @@ const forceRevival = (counter: 'total' | 'normal' | 'elite' = 'total', minimum =
 const leaderRevival = (leader: string): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
 const finalAlliance = (partner = 'r'): Expression => ({ kind: 'action', action: { kind: 'alliance', partner } });
 const printedCard = (effect: 'hajr' | 'ghola' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
+const shipmentPriceSource = (recipient = 'p', cunning?: string) => JSON.stringify(['karamaShipment', 2, recipient,
+  ...(cunning ? ['cunning', cunning] : ['original'])]);
 const windowClaim = (effect: WindowCardEffect = 'weather', source = effect === 'harvester' ? 'controlled-native-blow'
-  : effect === 'karamaAuction' ? 'ordinary-auction:2:2' : 'storm:2'): Expression =>
+  : effect === 'karamaAuction' ? 'ordinary-auction:2:2' : effect === 'karamaShipment' ? shipmentPriceSource() : 'storm:2'): Expression =>
   ({ kind: 'action', action: { kind: 'windowCardPlay', effect, source } });
 const planClaim = (claim: MixedBattleActionClaim = { kind: 'dial', compare: 'eq', value: 3 }): Expression =>
   ({ kind: 'action', action: { kind: 'battlePlan', battle: 'controlled-native-battle', territory: 'arrakeen', claim } });
@@ -111,6 +113,15 @@ function auctionKarama(invoice = false): GameView {
   game.karamaAuctionCards = [id];
   game.turnActionPromises[0].mixed = { kind: 'or', terms: [windowClaim('karamaAuction'), payment()] };
   if (!invoice) { game.auction!.active = 'a'; game.active = 'a'; }
+  return game;
+}
+function shipmentKarama(recipient = 'p', cunning?: string): GameView {
+  const game = projected(5, { type: 'card', card: 'controlled-printed-karama', mode: 'shipment', target: recipient });
+  game.active = recipient; game.movementRemaining = ['p', 'a', 'r']; game.karamaShipping = null;
+  game.karamaShipmentWindows = game.movementRemaining.map(player => ({ effect: 'karamaShipment' as const,
+    turn: 2, recipient: player, source: shipmentPriceSource(player, player === recipient ? cunning : undefined) }));
+  game.karamaShipmentCards = ['controlled-printed-karama'];
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [windowClaim('karamaShipment', shipmentPriceSource(recipient, cunning)), payment()] };
   return game;
 }
 function nexus(next: Action = { type: 'alliance', target: 'r' }): GameView {
@@ -916,6 +927,96 @@ void test('current ordinary-lot printed-role questions retain quoted owned Box r
     const sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
     assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
     game.bidPromiseLot = { turn: 2, lot: 3 }; press(button); assert.equal(sent.length, 1);
+  }
+});
+
+void test('shipment-price picker names the current public beneficiary without reading card or native funding quotes', () => {
+  const game = shipmentKarama('a'), e = editor(physical(), false, game);
+  for (const player of game.players) for (const key of ['hand', 'spice', 'forces', 'leaders', 'traitors', 'reserves'])
+    Object.defineProperty(player, key, { get() { throw Error(`No private shipment-price authoring ${key} read`); }, configurable: true });
+  Object.defineProperty(game, 'karamaShipmentCards', { get() { throw Error('The public picker must not inspect the giver’s native card quote'); } });
+  select(e.tree(), '1', 'action', 'windowCardPlay'); assert.deepEqual(e.value, windowClaim('karamaShipment', shipmentPriceSource('a')));
+  assert.equal(e.error(), null); assert.match(e.html(), /Asker’s current native shipment price/);
+  select(e.tree(), '1', 'window-source', ''); assert.ok(e.error());
+  select(e.tree(), '1', 'window-source', shipmentPriceSource('p')); assert.ok(e.error(), 'An inactive entitlement is not a new public picker option.');
+  select(e.tree(), '1', 'window-source', shipmentPriceSource('a')); assert.equal(e.error(), null);
+  game.active = 'p'; assert.ok(e.error()); select(e.tree(), '1', 'window-source', shipmentPriceSource('p')); assert.equal(e.error(), null);
+  const cunning = shipmentPriceSource('p', 'controlled-cunning-window');
+  game.karamaShipmentWindows = game.karamaShipmentWindows.map(window => window.recipient === 'p' ? { ...window, source: cunning } : window);
+  assert.ok(e.error()); select(e.tree(), '1', 'window-source', cunning); assert.equal(e.error(), null);
+  assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'windowCardPlay', effect: 'karamaShipment', source: cunning, target: 'p' } }, game, 'p'));
+  const fullGame = shipmentKarama(), full = editor({ kind: 'or', terms: [windowClaim('karamaShipment'), fact()] }, false, fullGame);
+  for (let count = 3; count <= 16; count++) { click(control(full.tree(), 'add-action-1')); select(full.tree(), `1.${count}`, 'action', 'windowCardPlay'); }
+  assert.equal(full.error(), null); assert.match(full.html(), /16 \/ 16 conditions/);
+  const deep = editor({ kind: 'and', terms: [fact(), windowClaim('karamaShipment')] }, false, fullGame);
+  click(control(deep.tree(), 'or-1.2')); click(control(deep.tree(), 'and-1.2.1')); click(control(deep.tree(), 'or-1.2.1.1'));
+  assert.equal(deep.error(), null); assert.match(deep.html(), /4 \/ 4 levels of grouping/);
+});
+
+void test('printed shipment-price guides forward exact own or foreign-giver grants and explain the distinct actual shipment', () => {
+  for (const recipient of ['p', 'a']) for (const cunning of [undefined, 'controlled-cunning-window']) {
+    const game = shipmentKarama(recipient, cunning), sent: Action[] = [];
+    for (const key of ['windowCards', 'compiled', 'preparation'])
+      Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} shipment-price read`); }, configurable: true });
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    assert.equal(sent[0].type, 'card'); assert.equal(sent[0].mode, 'shipment'); assert.equal(sent[0].target, recipient);
+    assert.equal(sent[0].turnActionPromiseEvent, event); assert.equal(sent[0].turnActionPromisePhase, 5);
+    assert.match(renderToStaticMarkup(button), /grant .* this native shipment price/);
+    game.turnActionGuide = null;
+    const html = markup(game); assert.match(html, /price grant counts separately from an actual force shipment/);
+    assert.match(html, /does not require the recipient to ship forces/); assert.match(html, /original shipment-price opportunity ends/);
+    assert.doesNotMatch(html, /windowCards|compiled|controlled-printed-karama/);
+  }
+});
+
+void test('saved shipment-price guides expire with the active source, target, quote, physical card and grant state', () => {
+  for (const recipient of ['p', 'a']) for (const change of [
+    (game: GameView) => { game.active = recipient === 'p' ? 'a' : 'p'; },
+    (game: GameView) => { game.karamaShipmentWindows = game.karamaShipmentWindows.map(window => window.recipient === recipient
+      ? { ...window, source: shipmentPriceSource(recipient, 'later-cunning-window') } : window); },
+    (game: GameView) => { game.turnActionGuide!.action.target = recipient === 'p' ? 'a' : 'p'; },
+    (game: GameView) => { game.karamaShipmentCards = []; },
+    (game: GameView) => { const card = game.players.find(player => player.id === 'p')!.hand?.[0]; assert.ok(card); card.kind = 'worthless'; },
+    (game: GameView) => { game.karamaShipping = { player: recipient, owner: 'p' }; },
+    (game: GameView) => { game.turnActionPromises[0].mixed = windowClaim('karamaShipment', shipmentPriceSource('r')); },
+  ]) {
+    const game = shipmentKarama(recipient), saved = guide({ game, busy: false, act() { assert.fail('A stale shipment-price grant cannot send'); } });
+    assert.equal(saved.props.disabled, false); change(game); press(saved);
+  }
+  const game = shipmentKarama('a'), props: Props = { game, busy: false, act() { assert.fail('A replaced grant callback cannot send'); } };
+  const saved = guide(props); props.act = () => assert.fail('A replaced callback cannot receive an old grant'); press(saved);
+});
+
+void test('current printed shipment roles reject forged grants and inactive targets without blocking older native preparation guides', () => {
+  for (const extra of [{ target: 'r' }, { target: undefined }, { amount: 3 }, { leader: 'foreign-leader' }, { mode: 'purchase' }]) {
+    const game = shipmentKarama(); Object.assign(game.turnActionGuide!.action, extra);
+    const button = guide({ game, busy: false, act() { assert.fail('An unsupported shipment-price packet cannot send'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+  const converted = shipmentKarama(), card = converted.players.find(player => player.id === 'p')!.hand?.[0]; assert.ok(card);
+  card.kind = 'worthless'; delete card.effect;
+  assert.equal(guide({ game: converted, busy: false, act() { assert.fail('Worthless conversion is not printed shipment-role use'); } }).props.disabled, true);
+  const unquoted = shipmentKarama(); unquoted.karamaShipmentCards = [];
+  assert.equal(guide({ game: unquoted, busy: false, act() { assert.fail('An absent native shipment card quote cannot be bypassed'); } }).props.disabled, true);
+  const inactive = shipmentKarama('a'); inactive.active = 'p';
+  assert.equal(guide({ game: inactive, busy: false, act() { assert.fail('An inactive beneficiary cannot receive this grant control'); } }).props.disabled, true);
+  for (const mixed of [payment(), windowClaim('karamaShipment', shipmentPriceSource('a'))]) {
+    const legacy = shipmentKarama(); legacy.turnActionPromises[0].mixed = mixed; legacy.karamaShipmentCards = [];
+    const sent: Action[] = [], button = guide({ game: legacy, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], legacy.turnActionGuide!.action);
+  }
+});
+
+void test('a current shipment-price question retains a quoted Box route for an owned or foreign giver', () => {
+  for (const recipient of ['p', 'a']) {
+    const game = shipmentKarama(recipient), me = game.players.find(player => player.id === 'p')!;
+    const box = { id: 'controlled-box', name: 'Nullentropy Box', kind: 'special' as const, effect: 'nullentropyBox' };
+    me.hand = [box]; game.nullentropy = { card: box, blocked: null, search: null };
+    game.turnActionGuide!.action = { type: 'card', card: box.id, turnActionPromiseEvent: event, turnActionPromisePhase: 5 };
+    const sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    game.nullentropy.blocked = 'The native Box is no longer available.'; press(button); assert.equal(sent.length, 1);
   }
 });
 

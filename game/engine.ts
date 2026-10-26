@@ -4,7 +4,8 @@ import { PrintedCardPlayError, printedCardPlayCount, recordPrintedCardPlay,
   type PrintedCardEffect, type PrintedCardPlayCounts } from './printed-card-play';
 import { battlePowerOf, battlePowerMatches, nativeBattlePowerOpportunity,
   type NativeBattlePower, type BattlePowerDeclaration } from './battle-power-question';
-import { WINDOW_CARD_EFFECTS, windowCardNativeEffect, windowCardOpportunity, type WindowCardEffect } from './window-card-play';
+import { WINDOW_CARD_EFFECTS, windowCardNativeEffect, windowCardOpportunity, karamaShipmentOpportunities,
+  parseKaramaShipmentSource, type WindowCardEffect } from './window-card-play';
 import { TurnActionError, liveTurnActionPromises, turnActionBranches, recordTurnActionPayment,
   recordTurnActionShipment, recordTurnActionMovement, closeTurnActionTransport, closeTurnActionPayments, finishTurnActionTurn,
   validateTurnActionPromises, recordTurnActionBid, closeTurnActionBidding, recordTurnActionRevival, recordTurnActionCardPlay,
@@ -16246,10 +16247,12 @@ function karamaSpendingBlock(g: Game, p: Player, card: Card, purpose?: KullPurpo
   if ((g as TurnActionCardProbe)._turnActionUnknownCards?.includes(card.id))
     return 'An unseen future auction card cannot fund this completion.';
   const policy = (g as TurnActionCardProbe)._turnActionWindowCardPolicy;
-  if (purpose === 'auction-free-purchase' && card.kind === 'special' && card.effect === 'karama' &&
-    policy?.player === p.id && policy.forbidden.some(required => required.effect === 'karamaAuction' &&
+  if (card.kind === 'special' && card.effect === 'karama' && policy?.player === p.id &&
+    policy.forbidden.some(required =>
+      (required.effect === 'karamaAuction' && purpose === 'auction-free-purchase' ||
+        required.effect === 'karamaShipment' && purpose === 'shipment-price') &&
       windowCardOpportunity(g, required.effect)?.source === required.source))
-    return 'Retain this lot without a forbidden printed Karama purchase.';
+    return 'Retain this opportunity without a forbidden printed Karama cost.';
   const kullBlock = kullKaramaBlock(g, p, purpose);
   if (kullBlock) return kullBlock;
   if (g.pendingKull?.stage === 'counter' &&
@@ -17446,6 +17449,7 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
   if (use.kind === 'shipment') use = { ...use, card: card.id };
   const auctionRows = liveTurnActionPromises(g.turnActionPromises ?? [], p.id, g.turn);
   let auctionWindow: string | undefined;
+  const shipmentWindow = use.kind === 'shipment' ? windowCardOpportunity(g, 'karamaShipment') : null;
   if (card.kind === 'special' && card.effect === 'karama' &&
     (use.kind === 'purchase' || use.kind === 'auctionPayment')) {
     const window = windowCardOpportunity(g, 'karamaAuction');
@@ -17453,12 +17457,21 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
     auctionWindow = window.source;
     recordNativeTurnActionWindowCard(g, p.id, 'karamaAuction', window.source);
   }
+  if (shipmentWindow && card.kind === 'special' && card.effect === 'karama')
+    recordNativeTurnActionWindowCard(g, p.id, 'karamaShipment', shipmentWindow.source);
   const used = discard(g, p, card.id);
   if (auctionWindow && auctionRows.some(row => row.windowCards?.karamaAuction?.source === auctionWindow))
     guardTurnActionAuctionClosure(g, p.id, auctionRows);
-  if (!auctionWindow && card.kind === 'special' && card.effect === 'karama' && auctionRows.some(row => {
-    const stage = row.windowCards?.karamaAuction;
-    return stage && !stage.closed && windowCardOpportunity(g, 'karamaAuction')?.source === stage.source;
+  if (shipmentWindow && use.kind === 'shipment') {
+    const trial = structuredClone(g);
+    trial.karamaShipping = { player: use.recipient, owner: p.id, card: card.id };
+    guardTurnActionShipmentPriceBoundary(trial, p.id, auctionRows, shipmentWindow.source);
+  }
+  if (!auctionWindow && !shipmentWindow && card.kind === 'special' && card.effect === 'karama' && auctionRows.some(row => {
+    return (['karamaAuction', 'karamaShipment'] as const).some(effect => {
+      const stage = row.windowCards?.[effect];
+      return stage && !stage.closed && windowCardOpportunity(g, effect, stage.source)?.source === stage.source;
+    });
   })) guardTurnActionPrintedCardCost(g, p, used);
   const semutaRoleCost = g.semutaPreview && semutaKaramaRoleCost(g, p.id, card);
   const guildShipmentDiscard = semutaRoleCost &&
@@ -18878,6 +18891,8 @@ type TurnActionCardProbe = Game & {
   _turnActionCardPolicy?: { player: string; forbidden: PrintedCardEffect[] };
   _turnActionWindowCardPolicy?: { player: string; forbidden: { effect: WindowCardEffect; source: string }[] };
   _turnActionUnknownCards?: string[];
+  _turnActionPriceCursor?: { order: string[]; index: number };
+  _turnActionShipmentReceipt?: { player: string; event?: { territory: string; amount: number } | null };
 };
 function printedCardRule<T>(operation: () => T): T {
   try { return operation(); }
@@ -18963,12 +18978,30 @@ function quotedAuctionKaramaCards(g: Game, player: Player): string[] {
     } catch (error) { if (error instanceof RuleError) return false; throw error; }
   }).map(card => card.id);
 }
+function quotedShipmentKaramaCards(g: Game, player: Player): string[] {
+  const opportunity = windowCardOpportunity(g, 'karamaShipment');
+  if (!opportunity || opportunity.effect !== 'karamaShipment' || g.truthtrance || g.response || g.decision ||
+    g.phaseOpening || g.pendingKarama || g.pendingTreacheryDiscard || g.pendingKull) return [];
+  return player.hand.filter(card => {
+    if (card.kind !== 'special' || card.effect !== 'karama' || karamaSpendingBlock(g, player, card, 'shipment-price')) return false;
+    try {
+      validateKaramaUse(g, player, { kind: 'shipment', recipient: opportunity.recipient }, card);
+      return true;
+    } catch (error) { if (error instanceof RuleError) return false; throw error; }
+  }).map(card => card.id);
+}
 function* nativeWindowCardActions(g: Game, actor: string, effect: WindowCardEffect): Generator<Action> {
   if (!windowCardOpportunity(g, effect)) return;
   const player = getPlayer(g, actor);
   if (effect === 'karamaAuction') {
     for (const card of quotedAuctionKaramaCards(g, player)) yield g.decision?.kind === 'auctionPayment'
       ? { type: 'decision', karama: true, card } : { type: 'card', card, mode: 'purchase' };
+    return;
+  }
+  if (effect === 'karamaShipment') {
+    const opportunity = windowCardOpportunity(g, effect);
+    if (opportunity?.effect === 'karamaShipment') for (const card of quotedShipmentKaramaCards(g, player))
+      yield { type: 'card', card, mode: 'shipment', target: opportunity.recipient };
     return;
   }
   for (const card of player.hand.filter(card => card.effect === windowCardNativeEffect(effect) && !transferCardBlock(g, player, card)))
@@ -18993,8 +19026,27 @@ function* turnActionWindowCardSeeds(source: Game, actor: string, requirements: r
       return;
     }
     for (const required of pending) {
-      if (windowCardOpportunity(game, required.effect)?.source !== required.source) continue;
+      if (windowCardOpportunity(game, required.effect, required.source)?.source !== required.source) continue;
       const play = function* (state: Game, prefix: Action[]): Generator<{ game: Game; actions: Action[] }> {
+        if (required.effect === 'karamaShipment') {
+          const opportunity = windowCardOpportunity(state, required.effect, required.source);
+          if (opportunity?.effect !== 'karamaShipment') return;
+          const prior = (state as TurnActionCardProbe)._turnActionPriceCursor;
+          const order = prior?.order ?? [...(typeof state.active === 'string' ? [state.active] : []),
+            ...(state.movementRemaining ?? []).filter(id => id !== state.active)];
+          const index = order.indexOf(opportunity.recipient);
+          if (index < (prior?.index ?? 0)) return;
+          const advanced = structuredClone(state);
+          advanced.active = opportunity.recipient;
+          if (advanced.karamaShipping && advanced.karamaShipping.player !== opportunity.recipient) {
+            if (order.indexOf(advanced.karamaShipping.player) >= index) return;
+            // A later native turn has retired the earlier recipient's unused
+            // price grant. Quote no foreign force, payment or arrival outcome.
+            advanced.karamaShipping = null;
+          }
+          (advanced as TurnActionCardProbe)._turnActionPriceCursor = { order, index };
+          state = advanced;
+        }
         const lot = required.effect === 'karamaAuction' ? bidOpportunity(state) : null;
         if (lot && bidRequired(state.bidPromises ?? [], actor, lot)) {
           // Quote after any owned recovery, so its actual two-spice cost and
@@ -19064,7 +19116,7 @@ function reconcileTurnActionWindowCards(g: Game) {
       const stage = promise.windowCards?.[effect];
       const foreignInvoice = effect === 'karamaAuction' && g.decision?.kind === 'auctionPayment' &&
         g.decision.player !== promise.player;
-      if (!stage || stage.closed || !foreignInvoice && promise.turn === g.turn && windowCardOpportunity(g, effect)?.source === stage.source) continue;
+      if (!stage || stage.closed || !foreignInvoice && promise.turn === g.turn && windowCardOpportunity(g, effect, stage.source)?.source === stage.source) continue;
       g.turnActionPromises = turnActionRule(() => closeTurnActionWindowCardPlay(g.turnActionPromises!,
         promise.player, promise.turn, effect, stage.source));
     }
@@ -19086,7 +19138,7 @@ function reopenTurnActionWindowReady(g: Game, actor: string) {
   if (g.ready.includes(actor) && liveTurnActionPromises(g.turnActionPromises ?? [], actor, g.turn).some(promise =>
     WINDOW_CARD_EFFECTS.some(effect => {
       const stage = promise.windowCards?.[effect];
-      return stage && !stage.closed && windowCardOpportunity(g, effect)?.source === stage.source;
+      return stage && !stage.closed && windowCardOpportunity(g, effect, stage.source)?.source === stage.source;
     }))) g.ready = g.ready.filter(player => player !== actor);
 }
 /** Check the actual spent card and returned pieces before a later foreign
@@ -19124,6 +19176,49 @@ function guardTurnActionAuctionClosure(g: Game, actor: string, original: readonl
     'Finish your required bid or alternative before closing this Karama lot.');
   reconcileBidPromises(trial, { actor, action: { type: 'card' } });
   requireRule(!!turnActionCompletion(trial, actor), 'Retain a whole Truthtrance completion after this auction closes.');
+}
+/** A native shipment declaration must retain the answer if delivery succeeds;
+ * the owner cannot rely on another faction stopping it. Grant costs instead
+ * quote the resulting native rate before its optional conversion/discard suffix. */
+function guardTurnActionShipmentPriceBoundary(g: Game, actor: string, original: readonly TurnActionPromise[],
+  source?: string, shipment?: { territory: string; amount: number } | null) {
+  const relevant = original.filter(row => {
+    const stage = row.windowCards?.karamaShipment;
+    const identity = stage && parseKaramaShipmentSource(stage.source);
+    return !row.fulfilled && !row.released && identity?.turn === g.turn &&
+      (source ? stage!.source === source : identity.recipient === actor);
+  });
+  if (!relevant.length) return;
+  const trial = structuredClone(g);
+  trial.truthtrance = null; trial.response = null; trial.decision = null;
+  trial.pendingKarama = null; trial.phaseOpening = null; trial.pendingTreacheryDiscard = null;
+  const forbidden = relevant.map(row => ({ effect: 'karamaShipment' as const, source: row.windowCards!.karamaShipment!.source }));
+  (trial as TurnActionCardProbe)._turnActionWindowCardPolicy = { player: actor, forbidden };
+  for (const row of relevant) trial.turnActionPromises = turnActionRule(() => closeTurnActionWindowCardPlay(
+    trial.turnActionPromises ?? [], actor, row.turn, 'karamaShipment', row.windowCards!.karamaShipment!.source));
+  if (shipment !== undefined) trial.turnActionPromises = turnActionRule(() => recordTurnActionShipment(
+    trial.turnActionPromises ?? [], actor, g.turn, shipment ? { territory: shipment.territory, amount: shipment.amount } : null));
+  requireRule(!relevant.some(row => trial.turnActionPromises?.find(next => next.event === row.event)?.released),
+    'Play your promised printed Karama or complete its alternative before closing this shipment.');
+  requireRule(!!turnActionCompletion(trial, actor), 'Retain a whole Truthtrance completion after this shipment-price opportunity closes.');
+}
+/** Quote successful native delivery before another faction owns a response.
+ * Use its actual fee, forces and canonical shipment receipt, not a second price
+ * calculation or an assumption that the Guild will stop the declaration. */
+function guardTurnActionShipmentPriceDelivery(g: Game, shipment: PendingShipment) {
+  const original = liveTurnActionPromises(g.turnActionPromises ?? [], shipment.player, g.turn);
+  if (!original.some(row => {
+    const source = parseKaramaShipmentSource(row.windowCards?.karamaShipment?.source);
+    return source?.turn === g.turn && source.recipient === shipment.player;
+  })) return;
+  const trial = structuredClone(g);
+  delete trial.turnActionPromises;
+  (trial as TurnActionCardProbe)._turnActionShipmentReceipt = { player: shipment.player };
+  commitShipment(trial, structuredClone(shipment), undefined, true);
+  const receipt = (trial as TurnActionCardProbe)._turnActionShipmentReceipt!.event;
+  requireRule(receipt !== undefined, 'Retain the actual native shipment delivery before its counter response.');
+  trial.turnActionPromises = structuredClone(g.turnActionPromises);
+  guardTurnActionShipmentPriceBoundary(trial, shipment.player, original, undefined, receipt);
 }
 function turnActionTargetAvailable(g: Game, _actor: string): boolean {
   return bribeQuestionWindow(g) && movementPromiseModeSupported(g);
@@ -19378,7 +19473,11 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
     const forbiddenWindows = leaves.flatMap(leaf => leaf.kind === 'windowCardPlay' && !leaf.answer
       ? [{ effect: leaf.effect, source: leaf.source }] : []);
     if (forbiddenWindows.length) (trial as TurnActionCardProbe)._turnActionWindowCardPolicy = {
-      player: actor, forbidden: forbiddenWindows,
+      player: actor, forbidden: [
+        ...((trial as TurnActionCardProbe)._turnActionWindowCardPolicy?.player === actor
+          ? (trial as TurnActionCardProbe)._turnActionWindowCardPolicy!.forbidden : []),
+        ...forbiddenWindows,
+      ],
     };
     trial.bribePromises ??= [];
     trial.shipmentPromises ??= [];
@@ -19704,7 +19803,10 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   let action = !bribeTimingBlock(g) ? completion.payments[0] : undefined;
   if (!action) {
     const preparation = completion.cardPreparations?.[0];
-    if (preparation?.type !== 'bid' || g.auction?.active === player.id) action = preparation;
+    const shipmentTarget = preparation?.type === 'card' && preparation.mode === 'shipment'
+      ? preparation.target ?? player.id : null;
+    if ((preparation?.type !== 'bid' || g.auction?.active === player.id) &&
+      (shipmentTarget === null || shipmentTarget === g.active)) action = preparation;
   }
   if (!action && g.phase <= 5) {
     const lot = g.phase === 3 && !g.decision ? bidOpportunity(g) : null;
@@ -19756,7 +19858,8 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   // answer remains live. Window controls must bind the row naming that source.
   const held = action.type === 'card' ? player.hand.find(card => card.id === action.card) : undefined;
   const printedWindow = held?.kind === 'special' && held.effect === 'karama' && action.mode === 'purchase'
-    ? 'karamaAuction' : isWindowCardEffect(held?.effect) ? held.effect : null;
+    ? 'karamaAuction' : held?.kind === 'special' && held.effect === 'karama' && action.mode === 'shipment'
+      ? 'karamaShipment' : isWindowCardEffect(held?.effect) ? held.effect : null;
   const windows: WindowCardEffect[] = printedWindow ? [printedWindow]
     : action.type === 'decision' && action.karama === true ? ['karamaAuction']
       : action.type === 'ready' || held?.effect === 'nullentropyBox' ? [...WINDOW_CARD_EFFECTS] : [];
@@ -28852,6 +28955,8 @@ function checkShipmentPromises(
     ),
     'Honor your Truthtrance shipment answer before using this shipment opportunity.',
   );
+  if (g.phase === 5 && g.active === p.id) guardTurnActionShipmentPriceBoundary(g, p.id,
+    liveTurnActionPromises(g.turnActionPromises ?? [], p.id, g.turn), undefined, shipment);
 }
 function finishShipmentPromises(
   g: Game,
@@ -28859,6 +28964,9 @@ function finishShipmentPromises(
   shipment: { territory: string; amount: number } | null,
 ) {
   checkShipmentPromises(g, p, shipment);
+  const probe = (g as TurnActionCardProbe)._turnActionShipmentReceipt;
+  if (probe?.player === p.id && probe.event === undefined)
+    probe.event = shipment ? { territory: shipment.territory, amount: shipment.amount } : null;
   if (g.phase === 5 && g.turnActionPromises) g.turnActionPromises = turnActionRule(() =>
     recordTurnActionShipment(g.turnActionPromises!, p.id, g.turn, shipment ? { territory: shipment.territory, amount: shipment.amount } : null));
   if (g.phase === 5 && g.travelPromises) g.travelPromises = travelRule(() => recordTravelShipment(g.travelPromises!, p.id, g.turn,
@@ -35299,6 +35407,7 @@ function finishGuildTransportRateResponse(g: Game, response: ResponseWindow, can
 function offerShipment(g: Game, shipment: PendingShipment, matchingApproved = false) {
   validatePhysicalShipment(g, shipment);
   validateShipmentArrival(g, shipment);
+  guardTurnActionShipmentPriceDelivery(g, shipment);
   if (!shipment.ambassadorMarker) checkShipmentIncomeFunding(g, getPlayer(g, shipment.player), shipment.cost, shipment.allyPayment);
   const p = getPlayer(g, shipment.player),
     id = p.id;
@@ -42250,6 +42359,8 @@ export function viewGame(state: Game, id: string, now?: number) {
         : null,
     bidPromiseLot: (() => { const lot = bidOpportunity(g); return lot ? { turn: lot.turn, lot: lot.lot } : null; })(),
     karamaAuctionCards: quotedAuctionKaramaCards(g, me),
+    karamaShipmentCards: quotedShipmentKaramaCards(g, me),
+    karamaShipmentWindows: karamaShipmentOpportunities(g),
     truthBidTargets: bidQuestionWindow(g) ? g.players.filter(player => {
       const lot = bidOpportunity(g)!;
       return lot.eligible.includes(player.id) && !lot.passed.includes(player.id) && lot.bidder !== player.id;

@@ -1,5 +1,80 @@
 # Truthtrance combined current-turn actions
 
+## Printed Karama shipment pricing — 27 October 2026
+
+**Prototyped / Partial.** `windowCardPlay/karamaShipment` names the current
+beneficiary's unused native shipment. Its public source is canonical JSON
+`['karamaShipment',turn,recipient,'original']`. The separate Cunning source adds
+`'cunning',event` instead; the existing optional-module promise fence remains.
+Only an actual future physical printed Karama cost for that beneficiary counts.
+Spending in another role, converted Worthless/Shrine costs, earlier uses, card
+recovery alone, a later beneficiary or a later opportunity do not count.
+
+The native price grant counts when its cost is committed, even if the recipient
+never ships. It grants pricing rather than forces, movement or free shipment.
+The actual recipient retains its native route, force/elite selection and bank
+tariff, such as two spice becoming one for the original one-counter desert
+shipment. A different giver spends the card; the recipient still pays the fee.
+Whole answers share the real purse: own pay9 plus that fee1 can be funded by10,
+whereas own pay10 plus fee1 cannot. A foreign giver's pay10 does not spend the
+beneficiary's fee or turn the giver's promised bribe into collected income.
+
+Exact accepted sources remain through another actor's turn while the original
+recipient remains entitled. Actual grant, shipment, end or phase expiry closes
+that source; the earlier No cap cannot become credit for another recipient.
+Private quotations can advance through the native remaining turn order only
+for the owned grant, without selecting foreign forces, payments or arrivals.
+The guide waits until its actual beneficiary is active. New questions and
+editors select the current opportunity rather than creating future turn rights.
+
+Actual cost records before later discard/conversion continuation. Native own
+shipping or ending quotes prospective physical delivery and price closure before
+opening a foreign response, so neither a required printed play nor a whole No
+can be evaded at that handoff. Foreign recipient actions retain their rights;
+impossibility can release only the affected interval while a funded payment
+alternative survives. Definite answers retain the original whole-AND/OR/frozen
+fact interpretation and per-answer played/closed receipt.
+
+Public source lists contain no cards or funding. Owner-only printed-card quotes
+feed source/beneficiary/custody-bound controls, including a giver outside the
+active seat. Existing unrelated shipment preparations retain native guards.
+Four profiles use the shared guide; strategy and calibration remain deferred.
+The original H/A/E source keeps33 Treachery/15 Traitors, both actual Harkonnen
+Truthtrances and Emperor's printed Karama, then follows native auction passes
+and Movement turns. No played hand, purse, army, allowance or promise is installed.
+Broader Box/Kull/conversion, Cunning and other module combinations, complete modes
+and final browser/deployed/recovery/privacy/custody acceptance remain open.
+
+
+Frozen evidence: **18 files,300/300**, types/lint/build. Thirty-three new cases
+include8 source/parser,3 aggregate,5 control,15 native and2 four-player funding
+checks. Eight genuine engine/control journeys use 33 GameTable SSR renders, 9 actual answer callbacks and 9 exact guide callbacks.
+They cover pay9/fee1, foreign pay10/recipient fee1, unused grants, whole No before
+delivery, actual foreign release/two questions, late Mentat payment and both
+foreign Guild funding handoffs. Four profiles use the native guide.
+
+Basic original H/A/E prefixes are own34/foreign32, with33 Treachery/15 Traitors.
+The additional original H/A/E/G source has33/20; its actual pre-answer bribe
+produces the2/4 wallets and recorded 52/52 source actions. It opens an
+actual Guild stop without giving Guild a Karama, then native income resolves
+before the funded payment. This supplements the Advanced setup/source checks;
+it does not certify a complete mode or a module combination.
+
+Narrow feedback repairs full native receipt normalization and type guards.
+The four-player case first fails because the full fee could remove the payment
+alternative before Guild control. Successful native delivery is now projected
+with its own canonical receipt and post-fee purse before that handoff. The
+private runtime driver also stops assuming its OR guide must choose payment;
+the legal manual payment route and the guide's printed branch both remain.
+Proof/manifest: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-karama-shipment-proof-v4/`;
+journeys/HTML: adjacent `20261027-truth-karama-shipment-runtime-v4/`.
+Evidence: [original source adapter](../tests/fixture-truth-turn-karama-shipment.ts),
+[native cases](../tests/truth-turn-karama-shipment-runtime.test.ts),
+[four-player fee boundary](../tests/truth-turn-karama-shipment-funding.test.ts),
+[controls](../tests/truth-turn-action-controls.test.tsx).
+Local SSR/callbacks are not browser/hydration or deployed acceptance. No native
+Box/Kull/conversion/Cunning combination or final assurance is claimed.
+
 ## Current-lot printed Karama — 27 October 2026
 
 **Prototyped / Partial.** `windowCardPlay` now accepts `karamaAuction` with

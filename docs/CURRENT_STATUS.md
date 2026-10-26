@@ -20,6 +20,35 @@ open mode gates.
 Continue remaining Basic functions before Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance / printed Karama shipment pricing — 27 October. Prototyped / Partial.**
+Whole answers can name a future printed price cost for the original beneficiary.
+Own and foreign givers share actual fees correctly: own pay9 plus shipment1 is
+funded by10; a foreign giver can pay10 while the beneficiary pays its own1.
+Actual cost counts even when the price is unused. Original entitlements persist
+through another actor; other beneficiaries, roles and Cunning events keep their
+own intervals. Exact native quotation feeds human controls and four profiles.
+
+Frozen **18 files,300/300**, types/lint/build and eight journeys pass, with
+33 GameTable SSR renders, 9 actual answer callbacks and 9 exact guide callbacks.
+Thirty-three new cases comprise8 source/parser,3 aggregate,5 controls,15 native
+and2 foreign-handoff funding cases. Original H/A/E33/15 sources use Basic own34
+or foreign32 actual actions. The actual H/A/E/G33/20 Advanced funding sources
+use 52/52 actions before the question; their native pre-answer bribes
+leave2/4. Unfunded delivery rejects before Guild's stop; funded delivery really
+declines that stop, settles income and then pays the alternative. Source counts
+come from arrays. Advanced source quotation is not complete Advanced acceptance.
+
+Focused feedback fixes strict receipt normalization and two type guards.
+The added four-player regression exposes an actual pre-response funding gap;
+the repaired preflight uses successful native delivery, its real fee and its
+canonical receipt before handing control away. A private-driver oracle is also
+corrected: its guide may legitimately choose the printed OR branch, while the
+manual payment alternative remains legal. Native Box/Cunning/conversion and
+wider combinations, complete modes and final assurance remain open.
+Proof/manifest: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-karama-shipment-proof-v4/`; journeys/HTML: adjacent `20261027-truth-karama-shipment-runtime-v4/`.
+No HTTP/storage boundary, saved-room/database, reset/deletion, server restart
+or deployed operation changes. [Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-karama-shipment-pricing--27-october-2026).
+
 **Truthtrance / current-lot printed Karama — 27 October. Prototyped / Partial.**
 A whole turn answer can now name the actual printed Karama cost for the current
 ordinary lot: immediate free purchase or its winning invoice. Its public source

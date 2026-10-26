@@ -59,7 +59,8 @@ const call = (call = true, battle = 'battle:1'): Expression =>
 const card = (effect: 'hajr' | 'ghola' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
 const power = (claim: BattlePowerClaim = { kind: 'voice', use: true }): Expression =>
   ({ kind: 'action', action: { kind: 'battlePower', battle: 'battle:1', territory: 'carthag', claim } });
-const windowSource = (effect: WindowCardEffect) => effect === 'karamaAuction' ? 'ordinary-auction:1:1' :
+const windowSource = (effect: WindowCardEffect) => effect === 'karamaShipment'
+  ? JSON.stringify(['karamaShipment', 1, 'recipient', 'original']) : effect === 'karamaAuction' ? 'ordinary-auction:1:1' :
   effect === 'harvester' ? 'spice-blow:1' : 'storm:1';
 const windowCard = (effect: WindowCardEffect = 'weather', source = windowSource(effect)): Expression =>
   ({ kind: 'action', action: { kind: 'windowCardPlay', effect, source } });
@@ -1465,4 +1466,57 @@ void test('closing the auction role preserves a later payment alternative and fu
   assert.throws(() => turnActionValue(wrongStage), TurnActionError);
   assert.throws(() => turnActionValue(windowed(group('or', windowCard('karamaAuction'),
     windowCard('karamaAuction', 'ordinary-auction:1:2')))), TurnActionError);
+});
+
+void test('shipment-price receipt records the actual printed grant without requiring use and keeps whole transport correlation', () => {
+  const source = windowSource('karamaShipment');
+  const grantOnly = windowed(windowCard('karamaShipment'));
+  const joint = windowed(group('and', windowCard('karamaShipment'), travel('ship'), pay()), true, 'turn-action:2');
+  const granted = recordTurnActionWindowCardPlay([grantOnly, joint], 'respondent', 1, 'karamaShipment', source);
+  assert.equal(granted[0].fulfilled, true, 'The accepted price grant counts even if its beneficiary never ships');
+  assert.deepEqual(branches(granted[1]), [[signedTravel('ship'), signedPay()]]);
+  const shipped = recordTurnActionShipment(granted, 'respondent', 1, event());
+  assert.deepEqual(branches(shipped[1]), [[signedPay()]]);
+  assert.equal(recordTurnActionPayment(shipped, 'respondent', 1, payment())[1].fulfilled, true);
+  assert.equal(joint.windowCards!.karamaShipment!.played, false);
+  validateTurnActionPromises(granted, seats);
+});
+
+void test('shipment-price No remains attached to its original recipient while another recipient has a compatible live interval', () => {
+  const first = windowSource('karamaShipment');
+  const later = JSON.stringify(['karamaShipment', 1, 'other', 'original']);
+  const no = windowed(windowCard('karamaShipment', first), false);
+  const yes = windowed(group('or', windowCard('karamaShipment', later), pay()), true, 'turn-action:2');
+  const granted = recordTurnActionWindowCardPlay([no, yes], 'respondent', 1, 'karamaShipment', later);
+  assert.equal(granted[0], no);
+  assert.equal(granted[1].fulfilled, true);
+  assert.throws(() => recordTurnActionWindowCardPlay(granted, 'respondent', 1, 'karamaShipment', first), TurnActionError);
+  assert.equal(no.windowCards!.karamaShipment!.played, false);
+  const cunning = JSON.stringify(['karamaShipment', 1, 'recipient', 'cunning', 'cunning:1']);
+  assert.equal(recordTurnActionWindowCardPlay(granted, 'respondent', 1, 'karamaShipment', cunning)[0], no);
+  assert.equal(closeTurnActionWindowCardPlay(granted, 'respondent', 1, 'karamaShipment', later)[0], no);
+  const closed = closeTurnActionWindowCardPlay(granted, 'respondent', 1, 'karamaShipment', first);
+  assert.equal(closed[0].fulfilled, true);
+  assert.equal(closed[1], granted[1]);
+  validateTurnActionPromises(closed, seats);
+});
+
+void test('closing a shipment-price opportunity retains actual play and later whole payment alternatives through turn expiry', () => {
+  const source = windowSource('karamaShipment');
+  const yes = windowed(group('and', windowCard('karamaShipment'), pay()));
+  const no = windowed(group('and', windowCard('karamaShipment'), pay()), false, 'turn-action:2');
+  const granted = recordTurnActionWindowCardPlay([yes, no], 'respondent', 1, 'karamaShipment', source);
+  const closed = closeTurnActionWindowCardPlay(granted, 'respondent', 1, 'karamaShipment', source);
+  assert.deepEqual(closed[0].windowCards!.karamaShipment, { source, played: true, closed: true });
+  assert.deepEqual(branches(closed[0]), [[signedPay()]]);
+  assert.equal(closed[1].fulfilled, false);
+  assert.throws(() => recordTurnActionPayment(closed, 'respondent', 1, payment()), TurnActionError);
+  assert.equal(recordTurnActionPayment([closed[0]], 'respondent', 1, payment())[0].fulfilled, true);
+  const alternative = windowed(group('or', windowCard('karamaShipment'), pay()), true, 'turn-action:3');
+  const absent = closeTurnActionWindowCardPlay([alternative], 'respondent', 1, 'karamaShipment', source);
+  assert.deepEqual(branches(absent[0]), [[signedPay()]]);
+  const expired = finishTurnActionTurn([no], 'respondent', 1)[0];
+  assert.equal(expired.fulfilled, true);
+  assert.deepEqual(expired.windowCards!.karamaShipment, { source, played: false, closed: true });
+  validateTurnActionPromises([expired], seats);
 });

@@ -389,7 +389,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       if (action.kind === 'windowCardPlay') {
         const opportunity = windowCardOpportunity(g, action.effect);
         check(opportunity && opportunity.turn === g.turn && opportunity.source === action.source,
-          'Choose the exact current original Storm or fresh-blow printed-card window.');
+          'Choose the exact current native printed-card opportunity.');
       }
       if (action.kind === 'battlePlan' || action.kind === 'traitorCall' || action.kind === 'battlePower') {
         const battle = g.battle;

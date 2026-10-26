@@ -26,9 +26,9 @@ const publicBattleContext = (game: GameView) => game.battle && ({
   preparation: game.battle.preparation,
   traitorVoters: game.battle.traitorVoters, traitorSubmitted: game.battle.traitorSubmitted,
 });
-const isWindowEffect = (effect: unknown): effect is Exclude<WindowCardEffect, 'karamaAuction'> => effect === 'weather' || effect === 'atomics' || effect === 'harvester';
+const isWindowEffect = (effect: unknown): effect is Exclude<WindowCardEffect, 'karamaAuction' | 'karamaShipment'> => effect === 'weather' || effect === 'atomics' || effect === 'harvester';
 const windowRoleNames: Record<WindowCardEffect, string> = { weather: 'Weather Control', atomics: 'Family Atomics', harvester: 'Harvester',
-  karamaAuction: 'printed Karama for this ordinary lot' };
+  karamaAuction: 'printed Karama for this ordinary lot', karamaShipment: 'printed Karama for this shipment price' };
 const namesWindow = (mixed: MixedActionExpression<TurnActionLeaf>, effect: WindowCardEffect, source?: string): boolean =>
   mixed.kind === 'action' ? mixed.action.kind === 'windowCardPlay' && mixed.action.effect === effect && (source === undefined || mixed.action.source === source)
     : mixed.kind !== 'fact' && mixed.terms.some(term => namesWindow(term, effect, source));
@@ -67,12 +67,17 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const currentAuctionWindow = windowCardOpportunity(game, 'karamaAuction');
   const auctionRoleNamed = !!windowPromise && !!currentAuctionWindow && namesWindow(windowPromise.mixed, 'karamaAuction', currentAuctionWindow.source);
   const auctionPurchaseAction = action.type === 'card' && action.mode === 'purchase';
+  const currentShipmentWindow = windowCardOpportunity(game, 'karamaShipment');
+  const shipmentRoleNamed = !!windowPromise && !!currentShipmentWindow && namesWindow(windowPromise.mixed, 'karamaShipment', currentShipmentWindow.source);
+  const shipmentPriceAction = action.type === 'card' && action.mode === 'shipment';
+  const printedShipmentAction = shipmentPriceAction && shipmentRoleNamed;
   const printedInvoiceAction = action.type === 'decision' && action.karama === true && auctionRoleNamed;
   const cardOwner = action.type === 'card' || printedInvoiceAction ? game.players.find(player => player.id === actor) : undefined;
   const heldCard = cardOwner?.hand?.find(card => card.id === action.card);
   const cardSignature = heldCard && JSON.stringify({ id: heldCard.id, kind: heldCard.kind, effect: heldCard.effect });
   const windowEffect = (auctionPurchaseAction || printedInvoiceAction) && heldCard?.effect === windowCardNativeEffect('karamaAuction')
-    ? 'karamaAuction' : isWindowEffect(heldCard?.effect) ? heldCard.effect : null;
+    ? 'karamaAuction' : printedShipmentAction && heldCard?.effect === windowCardNativeEffect('karamaShipment')
+      ? 'karamaShipment' : isWindowEffect(heldCard?.effect) ? heldCard.effect : null;
   const cardWindow = windowEffect ? windowCardOpportunity(game, windowEffect) : null;
   const earlyWindowReadyAction = action.type === 'ready' && (phase === 0 || phase === 1);
   const publicWindowState = (current: GameView) => JSON.stringify({
@@ -82,6 +87,8 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     stormPending: current.stormPending, wallDestroyed: current.shieldWallDestroyed,
     blow: current.spiceWindow,
     ...(current.phase === 3 ? { auction: auctionSource(current) } : {}),
+    ...(current.phase === 5 ? { shipment: { active: current.active, remaining: current.movementRemaining,
+      windows: current.karamaShipmentWindows, grant: current.karamaShipping } } : {}),
     ...(windowEffect === 'atomics' ? { forces: current.players.find(player => player.id === actor)?.forces,
       advisors: current.players.find(player => player.id === actor)?.advisors } : {}),
   });
@@ -89,6 +96,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const originalBlow = windowEffect === 'harvester' || earlyWindowReadyAction && phase === 1 ? game.spiceWindow : null;
   const earlyBoxSignature = box && JSON.stringify({ card: box.card.id, blocked: box.blocked, search: box.search?.event });
   const auctionCards = game.karamaAuctionCards, auctionCardsSignature = JSON.stringify(auctionCards);
+  const shipmentCards = game.karamaShipmentCards, shipmentCardsSignature = JSON.stringify(shipmentCards);
   const auctionHandSource = (current: GameView) => {
     const player = current.players.find(player => player.id === actor);
     return JSON.stringify({ hand: player?.hand?.map(card => ({ id: card.id, kind: card.kind, effect: card.effect })), limit: player?.handLimit });
@@ -126,7 +134,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       ? typeof action.leader === 'string' && (action.leader === 'kwisatz' ? ghola.kwisatz : ghola.leaders.some(leader => leader.id === action.leader))
       : action.elite === undefined ? forceChoices.length === 1 : forceChoices.some(choice => choice.elite === action.elite));
     const windowPacket = Object.keys(action).every(key => ['type', 'card', 'turnActionPromiseEvent', 'turnActionPromisePhase',
-      ...(windowEffect === 'weather' ? ['amount'] : windowEffect === 'karamaAuction' ? ['mode'] : [])].includes(key)) &&
+      ...(windowEffect === 'weather' ? ['amount'] : windowEffect === 'karamaAuction' ? ['mode'] : windowEffect === 'karamaShipment' ? ['mode', 'target'] : [])].includes(key)) &&
       (windowEffect !== 'weather' || typeof action.amount === 'number' && Number.isSafeInteger(action.amount) && action.amount >= 0 && action.amount <= 10);
     const printedWindowSource = ownPhysicalCard && !!heldCard && heldCard.kind === 'special' && !!windowEffect && !!cardWindow &&
       heldCard.effect === windowCardNativeEffect(windowEffect) && !!windowPromise &&
@@ -137,14 +145,24 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       Array.isArray(current.karamaAuctionCards) &&
       current.karamaAuctionCards === auctionCards && JSON.stringify(current.karamaAuctionCards) === auctionCardsSignature &&
       current.karamaAuctionCards.includes(heldCard.id) && auctionHandSource(current) === auctionHandSignature;
+    const nativeShipmentCard = windowEffect === 'karamaShipment' && !!heldCard && cardWindow?.effect === 'karamaShipment' &&
+      phase === 5 && current.active === cardWindow.recipient && action.target === cardWindow.recipient &&
+      Array.isArray(current.karamaShipmentCards) && current.karamaShipmentCards === shipmentCards &&
+      JSON.stringify(current.karamaShipmentCards) === shipmentCardsSignature && current.karamaShipmentCards.includes(heldCard.id);
     const printedWindow = action.type === 'card' && printedWindowSource && !!heldCard && windowPacket &&
       (windowEffect === 'karamaAuction' ? action.mode === 'purchase' && nativeAuctionCard && !!me && !current.decision &&
         Number.isSafeInteger(me.handLimit) && Array.isArray(me.hand) && me.hand.length < me.handLimit
-        : action.mode === undefined && ordinaryCardAvailability(current, heldCard.id, windowEffect === 'weather' ? { amount: action.amount } : undefined)?.available === true);
+        : windowEffect === 'karamaShipment' ? action.mode === 'shipment' && nativeShipmentCard
+          : action.mode === undefined && ordinaryCardAvailability(current, heldCard.id, windowEffect === 'weather' ? { amount: action.amount } : undefined)?.available === true);
     const printedAuctionInvoice = printedInvoiceAction && printedWindowSource && nativeAuctionCard &&
       Object.keys(action).every(key => ['type', 'card', 'karama', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key));
-    const genericCard = ownCard && action.type === 'card' && !auctionPurchaseAction && !!heldCard && heldCard.effect !== 'ghola' && heldCard.effect !== 'hajr' && !isWindowEffect(heldCard.effect);
-    const earlyWindowBox = (phase === 0 || phase === 1 || phase === 3) && genericCard && heldCard?.effect === 'nullentropyBox' &&
+    const quotedBoxCard = heldCard?.effect !== 'nullentropyBox' || !!box && current.nullentropy === box &&
+      JSON.stringify({ card: box.card.id, blocked: box.blocked, search: box.search?.event }) === earlyBoxSignature &&
+      !box.blocked && !box.search && box.card.id === heldCard.id;
+    const genericCard = ownCard && action.type === 'card' && !auctionPurchaseAction && !printedShipmentAction && quotedBoxCard &&
+      (!shipmentPriceAction || (action.target ?? actor) === current.active) &&
+      !!heldCard && heldCard.effect !== 'ghola' && heldCard.effect !== 'hajr' && !isWindowEffect(heldCard.effect);
+    const earlyWindowBox = (phase === 0 || phase === 1 || phase === 3 || phase === 5) && genericCard && heldCard?.effect === 'nullentropyBox' &&
       action.mode === undefined && Object.keys(action).every(key => ['type', 'card', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key)) &&
       !!box && current.nullentropy === box &&
       JSON.stringify({ card: box.card.id, blocked: box.blocked, search: box.search?.event }) === earlyBoxSignature &&
@@ -253,6 +271,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       ? `Play Tleilaxu Ghola to return ${gholaLeader} while honoring your whole answer`
       : `Play Tleilaxu Ghola to return ${amount} physical forces while honoring your whole answer`
     : action.type === 'card' && windowEffect === 'karamaAuction' ? 'Spend a printed Karama to purchase this ordinary lot while honoring your whole answer'
+    : action.type === 'card' && windowEffect === 'karamaShipment' ? `Spend a printed Karama to grant ${recipient} this native shipment price while honoring your whole answer`
     : action.type === 'card' && windowEffect ? `Play ${windowRoleNames[windowEffect]} in its original native window${windowEffect === 'weather' ? ` with storm distance ${amount}` : ''} while honoring your whole answer`
     : action.type === 'battlePlan' ? 'Fill the quoted battle plan for review before sealing'
     : action.type === 'voice' ? `Declare native Voice: opponent ${action.must ? 'must' : 'cannot'} play ${battleCardLabel(String(action.kind))}`
@@ -342,6 +361,10 @@ export function TurnActionPromises(props: TurnActionProps) {
       A current-lot Karama condition requires spending a printed Karama for this original ordinary lot, through immediate purchase
       or its winning invoice. Other Karama roles, Worthless conversion and a successful bid alone do not count.
       Recovery alone does not count. This condition closes with the original ordinary lot.
+      A shipment-price Karama condition requires spending a printed Karama to grant the named active recipient this original
+      unused native shipment price. The giver may be another player. The price grant counts separately from an actual force shipment;
+      it does not require the recipient to ship forces. Other roles, Worthless conversion and recovery alone do not count.
+      This condition closes when that original shipment-price opportunity ends.
       Shipment conditions concern one future original reserve shipment. Ground-movement conditions count the maximum physical forces in one actual future move,
       never the sum of smaller moves. Earlier shipment and movement do not count.
       Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.

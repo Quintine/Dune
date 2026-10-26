@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 27 October 2026 — Printed Karama shipment-price promises
+
+Prototyped / Partial. Printed grant costs, beneficiary-specific original sources,
+actual self/foreign fees and native guides are connected. The own closing
+preflight checks successful delivery before foreign Guild control; an actual
+four-player regression proves funded and unfunded branches. Final frozen
+18 files/300, types/lint/build and eight native/SSR/callback journeys pass.
+No deployment or saved-game operations occur. Broader combinations and final
+acceptance remain. [Current evidence](CURRENT_STATUS.md#current-checkpoint-and-work)
+and [canonical contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-karama-shipment-pricing--27-october-2026).
+Private source-bound proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-karama-shipment-proof-v4/`.
+
 ## 27 October 2026 — Current-lot printed Karama promises
 
 **Truthtrance / current-lot printed Karama — 27 October. Prototyped / Partial.**

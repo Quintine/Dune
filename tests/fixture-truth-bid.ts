@@ -54,12 +54,14 @@ export function finishTruthBid(game: Game, actions: TruthBidStep[] = []): Game {
 export function createTruthBidFixture(options: {
   advanced?: boolean; window?: 'waiting' | 'active'; targetKarama?: boolean;
   firstLotEffect?: 'hajr';
+  extraGuild?: boolean;
 } = {}) {
   const advanced = options.advanced ?? false, window = options.window ?? 'waiting';
   const asker = 'harkonnen', opponent = 'atreides', target = 'emperor';
   let game = createGame('TRUTHBIDSOURCE', newPlayer(asker, 'Harkonnen', 'harkonnen'), advanced);
   joinGame(game, newPlayer(opponent, 'Atreides', 'atreides'));
   joinGame(game, newPlayer(target, 'Emperor', 'emperor'));
+  if (options.extraGuild) joinGame(game, newPlayer('guild', 'Guild', 'guild'));
   const initial = structuredClone(game), actions: TruthBidStep[] = [];
   const act = (actor: string, action: Action) => { game = actTruthBid(game, actor, action, actions); };
   const reach = (until: (state: Game) => boolean) => { game = advanceTruthBid(game, until, actions); };
@@ -75,7 +77,9 @@ export function createTruthBidFixture(options: {
   const lotCards = [game.deck.find(card => options.firstLotEffect ? card.effect === options.firstLotEffect : card.kind === 'projectile'), game.deck.find(card => card.kind === 'poison'),
     game.deck.find(card => card.kind === 'snooper')];
   assert.ok(filler && targetCard && lotCards.every(Boolean));
-  const deal = [truths[0].id, truths[1].id, filler.id, targetCard.id];
+  const guildCard = options.extraGuild ? game.deck.find(card => card.kind === 'hero') : null;
+  assert.ok(!options.extraGuild || guildCard);
+  const deal = [truths[0].id, truths[1].id, filler.id, targetCard.id, ...(guildCard ? [guildCard.id] : [])];
   const prefix = [...deal, ...lotCards.map(card => card!.id)];
   const dealOrder = prefix.map((id, position) => {
     const from = game.deck.findIndex(card => card.id === id); assert.ok(from >= position);
@@ -88,6 +92,7 @@ export function createTruthBidFixture(options: {
   assert.deepEqual(truthBidPlayer(game, asker).hand.map(card => card.id), truths.map(card => card.id));
   assert.deepEqual(truthBidPlayer(game, opponent).hand.map(card => card.id), [filler.id]);
   assert.deepEqual(truthBidPlayer(game, target).hand.map(card => card.id), [targetCard.id]);
+  if (guildCard) assert.deepEqual(truthBidPlayer(game, 'guild').hand.map(card => card.id), [guildCard.id]);
   const originalSpice = game.spiceDeck.map(card => JSON.stringify(card)).sort();
   const spiceOrder = [0, 1].map(position => {
     const from = game.spiceDeck.findIndex((card, index) => index >= position && 'territory' in card && !card.discovery);
@@ -111,7 +116,7 @@ export function createTruthBidFixture(options: {
     lotCard: game.auction!.cards[game.auction!.index].id, lotCards: lotCards.map(card => card!.id),
     deal, dealOrder, spiceOrder, originalSpice, originalCards, originalInventory: originalCards,
     actions, sourceActions: structuredClone(actions), sourceActionCount: actions.length,
-    staging: [] as string[], sourceDisclosure: 'Genuine public H/A/E base33 setup. Only original unopened four-card starting deal, three ordinary lot positions, two ordinary Spice positions and scalar lotteries are selected. Harkonnen owns both physical Truthtrances; active Emperor additionally follows real H/A passes. No played hand, wallet, force, lot, Truthtrance or promise is installed.' };
+    staging: [] as string[], sourceDisclosure: `Genuine public ${options.extraGuild ? 'H/A/E/G' : 'H/A/E'} base33 setup. Only original unopened ${options.extraGuild ? 'five' : 'four'}-card starting deal, three ordinary lot positions, two ordinary Spice positions and scalar lotteries are selected. Harkonnen owns both physical Truthtrances; active Emperor additionally follows real H/A passes. No played hand, wallet, force, lot, Truthtrance or promise is installed.` };
 }
 export type TruthBidFixture = ReturnType<typeof createTruthBidFixture>;
 
