@@ -1,5 +1,10 @@
 # Truthtrance nonbattle readiness and first implementation slice
 
+The [mixed current Traitor-decision follow-up](TRUTHTRANCE_MIXED_TRAITOR.md)
+combines answer-time facts with current revealed native Reveal/Decline choices.
+Original eligibility, actual declaration receipts and Cunning protection remain;
+unrevealed future leaders and cross-action promises remain unfinished.
+
 The [mixed current battle-plan follow-up](TRUTHTRANCE_MIXED_BATTLE.md) combines
 answer-time facts with original native plan conditions. Full raw logical
 budgets and actual reveal settlement preserve current battle mechanics; this

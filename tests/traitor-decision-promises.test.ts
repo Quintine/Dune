@@ -134,12 +134,15 @@ void test('promise validation accepts only the bounded public source and typed f
   assert.equal(validateTraitorDecisionPromise(promise({ fulfilled: false, released: false })), true);
   assert.equal(validateTraitorDecisionPromise(promise({ fulfilled: true })), true);
   assert.equal(validateTraitorDecisionPromise(promise({ released: true })), true);
+  assert.equal(validateTraitorDecisionPromise(promise({ event: 'mixed-traitor-event' })), true);
   for (const invalid of [
     null, [], 'promise', 4, {}, { ...promise(), turn: 0 }, { ...promise(), turn: 1.5 },
     { ...promise(), turn: Number.MAX_SAFE_INTEGER + 1 }, { ...promise(), battle: '' },
     { ...promise(), player: ' ' }, { ...promise(), beneficiary: null }, { ...promise(), target: 4 },
     { ...promise(), leader: '' }, { ...promise(), asker: '' }, { ...promise(), answer: 'yes' },
     { ...promise(), fulfilled: 1 }, { ...promise(), released: 'false' },
+    { ...promise(), event: '' }, { ...promise(), event: '  ' }, { ...promise(), event: null },
+    { ...promise(), event: 7 }, { ...promise(), event: undefined },
     { ...promise(), canReveal: true }, { ...promise(), submitted: false },
     { ...promise(), card: 'private-card' }, { ...promise(), hand: [] },
   ]) {
@@ -149,6 +152,42 @@ void test('promise validation accepts only the bounded public source and typed f
     const missing = { ...promise() } as Record<string, unknown>;
     delete missing[key];
     assert.equal(validateTraitorDecisionPromise(missing), false, key);
+  }
+});
+
+void test('an optional mixed event links only its new native promise and survives cloning, fulfillment and release', () => {
+  const ctx = context();
+  const historical = promise({ battle: 'older-battle', event: 'older-mixed-event' });
+  const ledger = [historical];
+  const before = structuredClone({ ctx, ledger });
+  for (const answer of [false, true]) {
+    const accepted = bindTraitorDecisionPromise(ctx, ledger, 'fremen', answer, 'mixed-traitor-event');
+    assert.deepEqual(accepted, [historical, promise({ asker: 'fremen', answer, event: 'mixed-traitor-event' })]);
+    assert.notEqual(accepted[0], historical);
+    assert.deepEqual(settleTraitorDecisionPromises(ctx, accepted, answer), [
+      historical, promise({ asker: 'fremen', answer, event: 'mixed-traitor-event', fulfilled: true }),
+    ]);
+    assert.deepEqual(reconcileTraitorDecisionPromises(context({ canReveal: false }), accepted), [
+      historical, promise({ asker: 'fremen', answer, event: 'mixed-traitor-event', ...(answer ? { released: true } : {}) }),
+    ]);
+    assert.deepEqual(accepted, [historical, promise({ asker: 'fremen', answer, event: 'mixed-traitor-event' })]);
+  }
+  assert.deepEqual({ ctx, ledger }, before);
+});
+
+void test('omitted or undefined event arguments retain the original pure shape and invalid event links reject without mutation', () => {
+  const ctx = context(), ledger = [promise()];
+  const before = structuredClone({ ctx, ledger });
+  for (const bound of [
+    bindTraitorDecisionPromise(ctx, ledger, 'fremen', true),
+    bindTraitorDecisionPromise(ctx, ledger, 'fremen', true, undefined),
+  ]) {
+    assert.deepEqual(bound, [promise(), promise({ asker: 'fremen' })]);
+    assert.equal(Object.hasOwn(bound[1], 'event'), false);
+  }
+  for (const event of ['', ' ', null, 7, false, {}]) {
+    assert.throws(() => bindTraitorDecisionPromise(ctx, ledger, 'fremen', true, event as string), TraitorDecisionError);
+    assert.deepEqual({ ctx, ledger }, before);
   }
 });
 

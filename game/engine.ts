@@ -1,3 +1,4 @@
+import { mixedTraitorRequirement, type MixedTraitorClaim } from './mixed-traitor-question';
 import type { MixedBattleActionClaim, MixedBattleClaim } from './mixed-battle-question';
 import { AllianceExpressionPromiseError, allianceExpressionOutcomes, findAllianceExpressionPlans,
   allianceExpressionPromisesMatch, evaluateAllianceExpression, validateAllianceExpressionPromises,
@@ -2161,6 +2162,10 @@ export type Game = {
   };
   truthtrance?: TruthWindow | null;
   truthHistory?: TruthRecord[];
+  mixedTraitorQuestions?: (MixedTraitorClaim & {
+    event: string; turn: number; player: string; asker: string; answer: boolean;
+    binding: boolean; fulfilled: boolean; released: boolean;
+  })[];
   mixedBattleQuestions?: (Omit<MixedBattleClaim, 'battle'> & {
     event: string; battle: string; turn: number; player: string; asker: string; answer: boolean;
     binding: boolean; fulfilled: boolean; released: boolean;
@@ -6937,6 +6942,7 @@ function truthtranceDiscardSignature(g: Game, next: TruthDiscardContinuation) {
     battle: g.battle,
     shipmentPromises: g.shipmentPromises,
     movementPromises: g.movementPromises,
+    ...(next.record.question.kind === 'mixedTraitorCall' ? { mixedTraitorQuestions: g.mixedTraitorQuestions } : {}),
     ...(next.record.question.kind === 'mixedBattlePlan' ? { mixedBattleQuestions: g.mixedBattleQuestions } : {}),
     ...(['allianceExpression', 'mixedAlliance'].includes(next.record.question.kind) ? {
       allianceExpressionPromises: g.allianceExpressionPromises, alliancePromiseSequence: g.alliancePromiseSequence,
@@ -28198,11 +28204,58 @@ function traitorTruthAnswers(g: Game, p: Player): TruthAnswer[] {
   return context ? traitorDecisionRule(() => traitorDecisionChoices(context, g.battle?.traitorDecisionPromises ?? []))
     .map(call => call ? 'yes' as const : 'no' as const) : [];
 }
-function bindTraitorTruth(g: Game, p: Player, answer: boolean, asker: string) {
+function bindTraitorTruth(g: Game, p: Player, answer: boolean, asker: string, event?: string) {
   const context = traitorTruthContext(g, p.id);
   requireRule(context, 'Retain the current unsubmitted Traitor decision.');
   g.battle!.traitorDecisionPromises = traitorDecisionRule(() =>
-    bindTraitorDecisionPromise(context, g.battle!.traitorDecisionPromises ?? [], asker, answer));
+    bindTraitorDecisionPromise(context, g.battle!.traitorDecisionPromises ?? [], asker, answer, event));
+}
+function compileMixedTraitor(g: Game, p: Player, claim: MixedTraitorClaim, answer: boolean) {
+  return mixedTraitorRequirement(compileMixedActionExpression(claim.mixed,
+    fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer), answer);
+}
+function mixedTraitorTruthAnswers(g: Game, p: Player, claim: MixedTraitorClaim): TruthAnswer[] {
+  const context = traitorTruthContext(g, p.id);
+  if (!context || context.submitted !== undefined || context.battle !== claim.battle ||
+    g.battle?.territory !== claim.territory) return [];
+  const native = traitorTruthAnswers(g, p), answers: TruthAnswer[] = [];
+  for (const answer of [true, false]) {
+    const requirement = compileMixedTraitor(g, p, claim, answer);
+    if (requirement.possible && (requirement.call === null || native.includes(requirement.call ? 'yes' : 'no')))
+      answers.push(answer ? 'yes' : 'no');
+  }
+  return answers.length ? answers : ['unknown'];
+}
+function bindMixedTraitorTruth(g: Game, p: Player, claim: MixedTraitorClaim, answer: boolean, asker: string) {
+  requireRule(mixedTraitorTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
+    'Choose a whole mixed Traitor answer compatible with the current native declaration.');
+  const requirement = compileMixedTraitor(g, p, claim, answer);
+  requireRule(requirement.possible, 'Retain the guaranteed whole mixed Traitor answer.');
+  const event = crypto.randomUUID(), binding = requirement.call !== null;
+  if (requirement.call !== null) bindTraitorTruth(g, p, requirement.call, asker, event);
+  (g.mixedTraitorQuestions ??= []).push({ battle: claim.battle, territory: claim.territory,
+    mixed: structuredClone(claim.mixed), event, turn: g.turn,
+    player: p.id, asker, answer, binding, fulfilled: !binding, released: false });
+}
+function reconcileMixedTraitorQuestions(g: Game) {
+  const b = g.battle;
+  for (const question of g.mixedTraitorQuestions ?? []) {
+    if (!question.binding || question.fulfilled || question.released) continue;
+    if (!b || b.event !== question.battle) { question.released = true; continue; }
+    const bound = b.traitorDecisionPromises?.find(promise => promise.event === question.event);
+    if (bound?.released) question.released = true;
+    else if (bound?.fulfilled) question.fulfilled = true;
+  }
+}
+function isMixedTraitorEvent(g: Game, event: string | undefined): boolean {
+  return typeof event === 'string' && !!g.mixedTraitorQuestions?.some(question => question.event === event);
+}
+function projectedMixedTraitorPromises(g: Game, player: string) {
+  return (g.mixedTraitorQuestions ?? []).filter(question => question.player === player).map(question => ({
+    event: question.event, player: question.player, asker: question.asker, turn: question.turn,
+    battle: question.battle, territory: question.territory, mixed: structuredClone(question.mixed), answer: question.answer,
+    fulfilled: question.fulfilled, released: question.released,
+  }));
 }
 function traitorTruthIntegrity(g: Game) {
   const b = g.battle, promises = b?.traitorDecisionPromises;
@@ -28219,13 +28272,14 @@ function traitorTruthIntegrity(g: Game) {
     }
   }
   const question = g.truthtrance?.question;
-  if (question?.kind === 'traitorCall') {
+  if (question?.kind === 'traitorCall' || question?.kind === 'mixedTraitorCall') {
     const context = traitorTruthContext(g, question.target);
     requireRule(context && context.submitted === undefined && context.battle === question.battle,
       'This Truthtrance requires the original unsubmitted native Traitor voter.');
   }
 }
 function reconcileTraitorTruth(g: Game, actor?: string, action?: Action) {
+  reconcileMixedTraitorQuestions(g);
   const b = g.battle;
   if (!b?.traitorDecisionPromises?.length) return;
   for (const player of new Set(b.traitorDecisionPromises.map(promise => promise.player))) {
@@ -28240,6 +28294,7 @@ function reconcileTraitorTruth(g: Game, actor?: string, action?: Action) {
     }
     b.traitorDecisionPromises = next;
   }
+  reconcileMixedTraitorQuestions(g);
 }
 function traitorReturnPromiseBlock(g: Game, p: Player, returned: readonly string[]): string | null {
   const promises = g.battle?.traitorDecisionPromises;
@@ -36841,6 +36896,8 @@ function applyActionInner(
         bindMixedBid: bindMixedBidTruth,
         bidAnswers: bidTruthAnswers,
         bindBid: bindBidTruth,
+        mixedTraitorAnswers: mixedTraitorTruthAnswers,
+        bindMixedTraitor: bindMixedTraitorTruth,
         traitorAnswers: traitorTruthAnswers,
         bindTraitor: bindTraitorTruth,
         mixedBattleAnswers: mixedBattleTruthAnswers,
@@ -40291,6 +40348,7 @@ function applyActionInner(
     const context = traitorTruthContext(g, id);
     if (context && b.traitorDecisionPromises)
       b.traitorDecisionPromises = traitorDecisionRule(() => settleTraitorDecisionPromises(context, b.traitorDecisionPromises!, action.call as boolean));
+    reconcileMixedTraitorQuestions(g);
     if (g.nexusCards?.cards || b.ecazOccupy) ensureTraitorDeclarations(g);
     if (action.call) {
       const blocked = traitorCallBlock(g, b, id);
@@ -40629,6 +40687,10 @@ export function viewGame(state: Game, id: string) {
     ...(g.advanced&&g.decision?.kind==='advisor'&&g.decision.player===id
       ? {spiritualAdvisorChoices:spiritualAdvisorChoices(g,id)} : {}),
     truthMovementTargets: g.players.filter(p => movementPromiseTargetAvailable(g, p.id)).map(p => p.id),
+    truthMixedTraitorTargets: g.players.filter(p => { const context = traitorTruthContext(g, p.id); return context && context.submitted === undefined; }).map(p => p.id),
+    truthMixedTraitorAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.kind === 'mixedTraitorCall' &&
+      g.truthtrance.question.target === id ? mixedTraitorTruthAnswers(g, me, g.truthtrance.question) : null,
+    mixedTraitorPromises: projectedMixedTraitorPromises(g, id),
     truthTraitorTargets: g.players.filter(p => { const context = traitorTruthContext(g, p.id); return context && context.submitted === undefined; }).map(p => p.id),
     truthTraitorAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.kind === 'traitorCall' &&
       g.truthtrance.question.target === id ? traitorTruthAnswers(g, me) : null,
@@ -41882,7 +41944,7 @@ export function viewGame(state: Game, id: string) {
           traitorSubmitted: Object.keys(b.traitorCalls),
           traitorCallChoices: (() => { const context = traitorTruthContext(g, id); return context
             ? traitorDecisionRule(() => traitorDecisionChoices(context, b.traitorDecisionPromises ?? [])) : null; })(),
-          ownTraitorPromises: (b.traitorDecisionPromises ?? []).filter(promise => promise.player === id),
+          ownTraitorPromises: (b.traitorDecisionPromises ?? []).filter(promise => promise.player === id && !isMixedTraitorEvent(g, promise.event)),
           traitorVoters: traitorVoters(g, b),
           preparation: b.preparation && g.homeworldOccupationPreview && b.preparation.kind === 'voice'
             ? { ...b.preparation, blocked: homeworldRule(() => quoteOccupiedHomeworldVoice(g,

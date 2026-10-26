@@ -1,4 +1,5 @@
 'use client';
+import { MixedTraitorPromises } from './mixed-traitor-promises';
 import { MixedBattlePromises } from './mixed-battle-promises';
 import { TraitorDecisionPromises } from './traitor-decision-promises';
 import { MovementPromises } from './movement-promises';
@@ -394,7 +395,9 @@ export function GameTable({
     )
   );
   const canDeclineTraitor = traitorBattle?.traitorCallChoices?.includes(false) ?? true;
-  const noTraitorReason = traitorBattle?.ownTraitorPromises?.some(promise => !promise.answer && !promise.fulfilled && !promise.released)
+  const noTraitorReason = traitorBattle?.ownTraitorPromises?.some(promise => !promise.answer && !promise.fulfilled && !promise.released) ||
+    (!canRevealTraitor && canDeclineTraitor && g.mixedTraitorPromises.some(promise =>
+      promise.battle === traitorBattle?.event && !promise.fulfilled && !promise.released))
     ? 'Your accepted Truthtrance answer requires declining this Traitor declaration.' : traitorPlan?.kwisatz
     ? 'Kwisatz Haderach prevents this leader from turning traitor.'
     : 'You do not hold the opposing leader as a traitor.';
@@ -2060,6 +2063,7 @@ export function GameTable({
           {g.status === 'playing' && <BidPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <MixedBidPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <MixedBattlePromises game={g} />}
+          {g.status === 'playing' && <MixedTraitorPromises game={g} />}
           {g.guildBetrayalReaction ? (
             <NexusGuildBetrayal game={g} act={act} busy={reactionBusy} />
           ) : g.richeseBetrayalReaction ? (

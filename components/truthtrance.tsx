@@ -1,5 +1,8 @@
 'use client';
 
+import { MixedTraitorFields, mixedTraitorInputError } from './mixed-traitor-fields';
+import type { TraitorActionClaim } from '@/game/mixed-traitor-question';
+
 import { MixedBattleFields, mixedBattleInputError } from './mixed-battle-fields';
 import type { MixedBattleActionClaim } from '@/game/mixed-battle-question';
 
@@ -86,7 +89,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid' | 'allianceExpression' | 'mixedAlliance' | 'mixedBattlePlan'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid' | 'allianceExpression' | 'mixedAlliance' | 'mixedBattlePlan' | 'mixedTraitorCall'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -158,6 +161,11 @@ export function Truthtrance({
     { kind: 'action', action: { kind: 'dial', compare: 'eq', value: 0 } },
   ] });
   const mixedBattleError = mixedBattleInputError(mixedBattle, g, target);
+  const [mixedTraitor, setMixedTraitor] = useState<MixedActionExpression<TraitorActionClaim>>({ kind: 'and', terms: [
+    { kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 1 } },
+    { kind: 'action', action: { call: true } },
+  ] });
+  const mixedTraitorError = mixedTraitorInputError(mixedTraitor, g, target);
   const [shipment, setShipment] = useState<ShipmentExpression>({ territory: 'carthag', minimum: 6 });
   const [mixed, setMixed] = useState<MixedShipmentExpression>({
     kind: 'and',
@@ -194,6 +202,7 @@ export function Truthtrance({
             claim: planClaim,
           }
         : kind === 'mixedBattlePlan' ? { kind, target, battle: g.battle?.event ?? null, territory: g.battle?.territory ?? '', mixed: mixedBattle }
+        : kind === 'mixedTraitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '', mixed: mixedTraitor }
         : kind === 'traitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '' }
         : kind === 'mixedMovement' ? { kind, target, turn: g.turn, mixed: mixedMovement }
         : kind === 'movementExpression' ? { kind, target, turn: g.turn, claim: movementExpression }
@@ -422,7 +431,7 @@ export function Truthtrance({
                       <div key={answer}>{button(answer === 'unknown' ? 'I don’t know yet' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}</div>
                     ))}
                   </>
-                ) : w.question!.kind === 'traitorCall' ? (
+                ) : w.question!.kind === 'traitorCall' || w.question!.kind === 'mixedTraitorCall' ? (
                   <TraitorDecisionAnswers game={g} act={act} busy={busy} />
                 ) : w.question!.kind === 'battlePlan' ? (
                   <>
@@ -547,6 +556,7 @@ export function Truthtrance({
                   <option value="bid">Bind a bid in this ordinary lot</option>
                   <option value="mixedBid">Combine current facts and ordinary bids</option>
                   <option value="traitorCall">Bind this battle’s Traitor declaration</option>
+                  <option value="mixedTraitorCall">Combine current facts and this Traitor declaration</option>
                   <option value="shipment">
                     Bind a shipment from reserves
                   </option>
@@ -562,7 +572,14 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'mixedBattlePlan' ? (
+              {kind === 'mixedTraitorCall' ? (
+                <>
+                  <MixedTraitorFields value={mixedTraitor} game={g} target={target}
+                    disabled={busy || !g.truthMixedTraitorTargets.includes(target)} onChange={setMixedTraitor} />
+                  {!g.truthMixedTraitorTargets.includes(target) && <p className="notice">Choose an actual voter with an unsubmitted Traitor decision in this revealed battle.</p>}
+                  <p className="notice" aria-label="Public mixed Traitor question preview">{mixedTraitorError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'mixedBattlePlan' ? (
                 <>
                   <MixedBattleFields value={mixedBattle} game={g} target={target}
                     disabled={busy || !g.truthMixedBattleTargets.includes(target)} onChange={setMixedBattle} />
@@ -795,6 +812,7 @@ export function Truthtrance({
                 (kind === 'revival' && (!!revivalClaimInputError(revivalClaim) || !g.truthRevivalTargets.includes(target))) ||
                 (kind === 'mixedBid' && (!!mixedBidError || !g.truthMixedBidTargets.includes(target))) ||
                 (kind === 'bid' && (!!bidClaimInputError(bidClaim) || !g.truthBidTargets.includes(target))) ||
+                (kind === 'mixedTraitorCall' && (!!mixedTraitorError || !g.truthMixedTraitorTargets.includes(target))) ||
                 (kind === 'traitorCall' && !g.truthTraitorTargets.includes(target)) ||
                   (kind === 'mixedShipment' &&
                     (!!invalidMixed || !shipmentAvailable)) ||

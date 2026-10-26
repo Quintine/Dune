@@ -13,6 +13,8 @@ export type TraitorDecisionContext = {
 export type TraitorDecisionPromise = Omit<TraitorDecisionContext, 'canReveal' | 'submitted'> & {
   asker: string;
   answer: boolean;
+  /** Link to the owner's mixed-question record; pure declaration receipts omit it. */
+  event?: string;
   fulfilled?: boolean;
   released?: boolean;
 };
@@ -40,11 +42,12 @@ export function validateTraitorDecisionPromise(value: unknown): value is Traitor
   if (!record(value)) return false;
   const required = ['answer', 'asker', 'battle', 'beneficiary', 'leader', 'player', 'target', 'turn'];
   if (!required.every(key => Object.hasOwn(value, key)) ||
-    Object.keys(value).some(key => !required.includes(key) && key !== 'fulfilled' && key !== 'released')) return false;
+    Object.keys(value).some(key => !required.includes(key) && key !== 'event' && key !== 'fulfilled' && key !== 'released')) return false;
   return turnNumber(value.turn) && identifier(value.battle) && identifier(value.player) &&
     identifier(value.beneficiary) && identifier(value.target) &&
     (value.leader === null || identifier(value.leader)) && identifier(value.asker) &&
-    typeof value.answer === 'boolean' && optionalBoolean(value.fulfilled) && optionalBoolean(value.released);
+    typeof value.answer === 'boolean' && (!Object.hasOwn(value, 'event') || identifier(value.event)) &&
+    optionalBoolean(value.fulfilled) && optionalBoolean(value.released);
 }
 
 function validateContext(context: TraitorDecisionContext) {
@@ -85,13 +88,16 @@ export function bindTraitorDecisionPromise(
   promises: readonly TraitorDecisionPromise[],
   asker: string,
   answer: boolean,
+  event?: string,
 ): TraitorDecisionPromise[] {
-  requireDecision(identifier(asker) && typeof answer === 'boolean', 'Choose a definite Traitor decision answer and its asker.');
+  requireDecision(identifier(asker) && typeof answer === 'boolean' && (event === undefined || identifier(event)),
+    'Choose a definite Traitor decision answer, its asker and an optional public event.');
   requireDecision(traitorDecisionChoices(context, promises).includes(answer),
     'This answer has no compatible current Traitor declaration.');
   return [...promises.map(promise => ({ ...promise })), {
     turn: context.turn, battle: context.battle, player: context.player,
     beneficiary: context.beneficiary, target: context.target, leader: context.leader, asker, answer,
+    ...(event === undefined ? {} : { event }),
   }];
 }
 

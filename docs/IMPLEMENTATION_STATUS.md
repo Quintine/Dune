@@ -1,5 +1,43 @@
 # Dune implementation status
 
+## 26 October 2026 — Current facts with original Traitor declarations
+
+**Prototyped / Partial.**
+Full mixed AND/OR questions freeze current facts and reduce Reveal/Decline leaves
+over one original native decision. Constants/tautologies bind nothing; a forced
+choice enters the existing native ledger with an optional mixed event link.
+Current ineligibility cannot erase a Decline that survives a later matching
+draw. Original matching/protection/prior-answer rules remain. Actual declaration
+fulfills before synchronous cleanup or later effect cancellation. Own raw history
+persists with turn/location while reduced choices stay out of public pure rows.
+Full editor, Ask/private answers, native buttons/reasons and four minimal profiles
+connect without a second declaration control or physical eligibility solver.
+
+Root integration with disjoint rules/controls/native lanes passes **18 files,
+149/149**, types/lint/build and **eleven native paths**,29 GameTable SSR renders/
+eleven actual answer callbacks plus one editor callback followed by native Ask.
+Original Basic26 adds6 for actual declaration/cleanup, edited true OR, false AND,
+No-to-Decline requiring Reveal, call tautology and both unknown polarities; a real
+bribe3 adds7 and retains the answer-time fact. Original remote allied72 adds9
+for an actual Reveal/Karama-prevented effect with its receipt retained. Original
+Cunning77 adds8 for protected matching return/safe return/Reveal, or matching
+return/frozen fact/Decline. All original Treachery identities remain physical.
+
+Seven strict helper cases, native event regressions,19 native/controlled runtime
+cases and eight control cases supplement existing Traitor/Nexus/cheap-hero coverage. Native
+cases also retain exact Cunning parent and fulfilled receipt through a later
+actual draw/return. V1 passes quick checks then finds a missing test import shim;
+loaded controls catch missing location text and an arrow-icon assertion. Those,
+and the native disabled-choice explanation, are repaired; complete v2 passes.
+Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-mixed-traitor-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-mixed-traitor-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Other families/cross-action/unknown-fact correlations, wider preparations and
+final rules/browser/deployed/assurance remain. This certifies no complete mode.
+[Authority, boolean reduction and native receipt evidence](TRUTHTRANCE_MIXED_TRAITOR.md).
+
+
 ## 26 October 2026 — Current facts with current battle-plan conditions
 
 **Prototyped / Partial.**

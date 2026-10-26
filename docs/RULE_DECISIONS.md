@@ -1,5 +1,20 @@
 # Rule decision index
 
+## Current facts combined with original Traitor declarations — 26 October 2026
+
+Compose recorded publisher FAQp8 AND/OR/current-turn and supplied Advanced
+physical39 compliance/release/unknown authority with the existing revealed
+native voter interval. Facts freeze at actual answer; unknown is false for
+Yes/true for No. All Reveal/Decline leaves name one actual decision, so their
+correlation is exact: reduce the whole residual over both logical values,
+then intersect any forced choice with original eligibility and prior answers.
+Current ineligibility cannot erase a forced Decline. Constants/tautologies add
+no native restriction; a bound aggregate fulfills on actual declaration before
+Karama/Nexus effect prevention. Original matching-card Cunning protection and
+fulfilled receipts remain. This stays provisional online composition, not a
+publisher-specific mixed solver or unknown-fact correlation model. No mode gate.
+[Contract and evidence](TRUTHTRANCE_MIXED_TRAITOR.md).
+
 ## Current facts combined with current battle plans — 26 October 2026
 
 Compose recorded publisher FAQp8 AND/OR/current-turn authority and supplied

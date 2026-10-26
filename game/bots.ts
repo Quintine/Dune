@@ -1374,6 +1374,10 @@ function policyActions(g: GameView): Action[] {
         const answer = g.truthBidAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];
       }
+      if (w.question.kind === 'mixedTraitorCall') {
+        const answer = g.truthMixedTraitorAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'traitorCall') {
         const answers = g.truthTraitorAnswers ?? [];
         const answer = answers.find(answer => answer === 'yes') ?? answers[0];
