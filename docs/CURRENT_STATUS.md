@@ -20,6 +20,44 @@ open mode gates.
 Continue remaining Basic functions before Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance / current-lot printed Karama — 27 October. Prototyped / Partial.**
+A whole turn answer can now name the actual printed Karama cost for the current
+ordinary lot: immediate free purchase or its winning invoice. Its public source
+stays tied to that lot. A real bid must precede purchase when both are required;
+the guide keeps native bidder priority and out-of-turn purchase rights. Whole
+No shares actual bid/payment funding without assuming a forbidden free invoice.
+Other roles and later lots do not credit the original interval.
+
+Original H/A/E sources deal both real Truthtrances and Emperor's printed Karama,
+with33 Treachery/15 Traitors. Holding that Karama adds three actual Atreides
+inspection response passes: Basic waiting23/active25, Advanced26/28. The actual
+Hbid1/Apass source25 supports Ebid3 then purchase or both renewed opponents'
+passes before invoice. Counts derive from action arrays. An unopened Hajr lot
+supplement checks that unseen acquired cards do not fund a future-card witness;
+actual acquisition restores owned knowledge while prior answers remain binding.
+
+The final frozen batch passes **16 files,267/267**, types/lint/build. Thirty-one
+new cases comprise6 source,4 aggregate,5 controls,14 native and2 forecast/closure
+cases. Five journeys pass with22 GameTable SSR renders,5 actual answer callbacks
+and9 exact guide callbacks: frozen fact/pay10/free purchase, bid-before-purchase,
+bid-before-invoice, whole No's cumulative cap and the native spice alternative.
+Four profiles consume legal guides without strategic refinement.
+
+Feedback repairs purpose-specific overbid funding and an overbroad pre-effect
+guard that rejected existing Revival invoices. Type guards and fixture oracles
+are corrected: bids reopen both opponents, No retains its payment deadline and
+Karama shipment is half price rather than free. Bounded review moves required
+bidding after any quoted Box recovery, so its fee participates in the same quote;
+that Box composition has no native acceptance claim in this batch. No broad
+assurance or calibration campaign is run.
+
+Proof/manifest: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-karama-proof-v3/`;
+journeys/HTML: adjacent `20261027-truth-karama-runtime-v3/`.
+No HTTP/storage boundary, saved-room/database, reset/deletion, restart or deployed
+operation changes. Wider Karama/card/action families, optional compositions and
+final browser/deployed/recovery/privacy/custody acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#current-lot-printed-karama--27-october-2026).
+
 **Truthtrance / original-window card plays — 27 October. Prototyped / Partial.**
 Weather Control, Family Atomics and Harvester now have source-bound future
 printed-play conditions in whole turn answers. Real Storm movement closes its

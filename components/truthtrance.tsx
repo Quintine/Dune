@@ -604,6 +604,7 @@ export function Truthtrance({
                     disabled={busy || !g.truthTurnActionTargets.includes(target)} onChange={setTurnActions} />
                   {!g.truthTurnActionTargets.includes(target) && <p className="notice">Choose a player with supported native Voice or Prescience, printed card plays, current battle, Traitor declaration, alliance, ordinary bid, Revival, payment, shipment or ground-movement opportunities this turn.
                     Weather Control, Family Atomics and Harvester refer only to their original current Storm or fresh spice-blow window.
+                    Printed Karama auction use refers only to the current ordinary lot, through immediate purchase or its winning invoice.
                     Ordinary payments may remain available after their Shipment and Movement opportunity ends.</p>}
                   <p className="notice" aria-label="Public turn-action question preview">{turnActionsError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>

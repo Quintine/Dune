@@ -32,7 +32,8 @@ const forceRevival = (counter: 'total' | 'normal' | 'elite' = 'total', minimum =
 const leaderRevival = (leader: string): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
 const finalAlliance = (partner = 'r'): Expression => ({ kind: 'action', action: { kind: 'alliance', partner } });
 const printedCard = (effect: 'hajr' | 'ghola' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
-const windowClaim = (effect: WindowCardEffect = 'weather', source = effect === 'harvester' ? 'controlled-native-blow' : 'storm:2'): Expression =>
+const windowClaim = (effect: WindowCardEffect = 'weather', source = effect === 'harvester' ? 'controlled-native-blow'
+  : effect === 'karamaAuction' ? 'ordinary-auction:2:2' : 'storm:2'): Expression =>
   ({ kind: 'action', action: { kind: 'windowCardPlay', effect, source } });
 const planClaim = (claim: MixedBattleActionClaim = { kind: 'dial', compare: 'eq', value: 3 }): Expression =>
   ({ kind: 'action', action: { kind: 'battlePlan', battle: 'controlled-native-battle', territory: 'arrakeen', claim } });
@@ -100,6 +101,16 @@ function auction(next: Action = { type: 'passBid' }): GameView {
   game.bidPromiseLot = { turn: 2, lot: 2 };
   game.auction = { bid: 7, bidder: next.type === 'decision' ? 'p' : 'a', active: 'p', remaining: 2, inspectionBlocked: null, card: null };
   if (next.type === 'decision') { game.auction.active = 'a'; game.decision = { kind: 'auctionPayment', player: 'p' }; }
+  return game;
+}
+function auctionKarama(invoice = false): GameView {
+  const card = baseDeck().find(card => card.kind === 'special' && card.effect === 'karama'); assert.ok(card);
+  const id = 'controlled-printed-karama';
+  const game = auction(invoice ? { type: 'decision', karama: true, card: id } : { type: 'card', card: id, mode: 'purchase' });
+  const me = game.players.find(player => player.id === 'p')!; me.hand = [{ ...card, id }]; me.handLimit = 4;
+  game.karamaAuctionCards = [id];
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [windowClaim('karamaAuction'), payment()] };
+  if (!invoice) { game.auction!.active = 'a'; game.active = 'a'; }
   return game;
 }
 function nexus(next: Action = { type: 'alliance', target: 'r' }): GameView {
@@ -803,6 +814,109 @@ void test('window Ready guides retain the exact live raw source, known Storm dis
   assert.equal(guide({ game: unknownStorm, busy: false, act() { assert.fail('Storm Ready waits for a known native movement'); } }).props.disabled, true);
   const replaced = readyWindow('harvester'), saved = guide({ game: replaced, busy: false, act() { assert.fail('A replaced fresh blow cannot accept an old Ready callback'); } });
   replaced.spiceWindow = { ...replaced.spiceWindow! }; press(saved);
+});
+
+void test('current ordinary-lot Karama picker is public, source-bound and repairable within the shared logical budget', () => {
+  const game = auctionKarama(), e = editor(physical(), false, game);
+  for (const player of game.players) for (const key of ['hand', 'spice', 'leaders', 'traitors', 'forces'])
+    Object.defineProperty(player, key, { get() { throw Error(`No private Karama authoring ${key} read`); }, configurable: true });
+  Object.defineProperty(game, 'karamaAuctionCards', { get() { throw Error('The public question must not inspect the owner’s native card quote'); } });
+  select(e.tree(), '1', 'action', 'windowCardPlay'); assert.deepEqual(e.value, windowClaim('karamaAuction')); assert.equal(e.error(), null);
+  assert.match(e.html(), /Spend a printed Karama for this current ordinary lot/); assert.match(e.html(), /Ordinary lot 2/);
+  select(e.tree(), '1', 'window-source', ''); assert.ok(e.error());
+  select(e.tree(), '1', 'window-source', 'ordinary-auction:2:2'); assert.equal(e.error(), null);
+  game.bidPromiseLot = { turn: 2, lot: 3 }; assert.ok(e.error());
+  select(e.tree(), '1', 'window-source', 'ordinary-auction:2:3'); assert.equal(e.error(), null);
+  const originalAuction = game.auction;
+  game.auction = null; assert.ok(e.error()); assert.match(e.html(), /no current original open native window/); game.auction = originalAuction;
+  for (const extra of [{ card: 'private-karama' }, { mode: 'purchase' }, { amount: 0 }])
+    assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'windowCardPlay', effect: 'karamaAuction', source: 'ordinary-auction:2:3', ...extra } }, game, 'p'));
+  const fullGame = auctionKarama(), full = editor({ kind: 'or', terms: [windowClaim('karamaAuction'), fact()] }, false, fullGame);
+  for (let count = 3; count <= 16; count++) { click(control(full.tree(), 'add-action-1')); select(full.tree(), `1.${count}`, 'action', 'windowCardPlay'); }
+  assert.equal(full.error(), null); assert.match(full.html(), /16 \/ 16 conditions/);
+  const deep = editor({ kind: 'and', terms: [fact(), windowClaim('karamaAuction')] }, false, fullGame);
+  click(control(deep.tree(), 'or-1.2')); click(control(deep.tree(), 'and-1.2.1')); click(control(deep.tree(), 'or-1.2.1.1'));
+  assert.equal(deep.error(), null); assert.match(deep.html(), /4 \/ 4 levels of grouping/);
+});
+
+void test('printed current-lot Karama guides forward exact purchase and winning-invoice packets using native owner quotes', () => {
+  for (const invoice of [false, true]) {
+    const game = auctionKarama(invoice), sent: Action[] = [];
+    for (const key of ['windowCards', 'compiled', 'cardPlays'])
+      Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} Karama guide read`); }, configurable: true });
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    assert.equal(sent[0].card, 'controlled-printed-karama'); assert.equal(sent[0].turnActionPromisePhase, 3);
+    assert.equal(sent[0].turnActionPromiseEvent, event);
+    if (invoice) assert.match(renderToStaticMarkup(button), /printed Karama on this ordinary-lot winning invoice/);
+    else { assert.equal(sent[0].mode, 'purchase'); assert.equal(game.auction!.active, 'a', 'The native purchase remains possible outside the bidder’s turn.'); }
+    game.turnActionGuide = null;
+    const html = markup(game); assert.match(html, /printed Karama/); assert.match(html, /immediate purchase/);
+    assert.match(html, /Worthless conversion and a successful bid alone do not count/); assert.match(html, /closes with the original ordinary lot/);
+    assert.doesNotMatch(html, /windowCards|controlled-printed-karama/);
+  }
+});
+
+void test('saved printed-Karama auction callbacks expire with lot, native quote, physical card, owner and callback changes', () => {
+  for (const invoice of [false, true]) for (const change of [
+    (game: GameView) => { game.bidPromiseLot = { turn: 2, lot: 3 }; },
+    (game: GameView) => { game.auction = { ...game.auction! }; },
+    (game: GameView) => { game.auction!.active = 'r'; },
+    (game: GameView) => { game.karamaAuctionCards = []; },
+    (game: GameView) => { const card = game.players.find(player => player.id === 'p')!.hand?.[0]; assert.ok(card); card.kind = 'worthless'; },
+    (game: GameView) => { game.turnActionPromises[0].mixed = windowClaim('karamaAuction', 'ordinary-auction:2:1'); },
+    (game: GameView) => { game.me = 'a'; },
+  ]) {
+    const game = auctionKarama(invoice), button = guide({ game, busy: false, act() { assert.fail('A stale ordinary-lot printed Karama cannot send'); } });
+    assert.equal(button.props.disabled, false); change(game); press(button);
+  }
+  const game = auctionKarama(), props: Props = { game, busy: false, act() { assert.fail('A saved Karama callback cannot send after replacement'); } };
+  const saved = guide(props); props.act = () => assert.fail('The replacement callback cannot receive an old purchase'); press(saved);
+  const full = auctionKarama(), fullButton = guide({ game: full, busy: false, act() { assert.fail('A newly full hand cannot purchase the lot'); } });
+  full.players.find(player => player.id === 'p')!.handLimit = 1; press(fullButton);
+  assert.equal(guide({ game: full, busy: false, act() { assert.fail('An initially full hand cannot purchase the lot'); } }).props.disabled, true);
+});
+
+void test('printed auction-role guides refuse conversion, unsupported packets and generic purchase fallback while retaining unrelated invoices', () => {
+  for (const invoice of [false, true]) for (const extra of [{ amount: 0 }, { target: 'r' }, { leader: 'foreign-leader' },
+    ...(invoice ? [{ mode: 'purchase' }] : [{ mode: 'shipment' }])]) {
+    const game = auctionKarama(invoice); Object.assign(game.turnActionGuide!.action, extra);
+    const button = guide({ game, busy: false, act() { assert.fail('An unsupported auction-role packet cannot send'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+  for (const invoice of [false, true]) {
+    const game = auctionKarama(invoice), card = game.players.find(player => player.id === 'p')!.hand?.[0]; assert.ok(card);
+    card.kind = 'worthless'; delete card.effect;
+    assert.equal(guide({ game, busy: false, act() { assert.fail('Worthless conversion is not printed Karama use'); } }).props.disabled, true);
+    const missingQuote = auctionKarama(invoice); missingQuote.karamaAuctionCards = [];
+    assert.equal(guide({ game: missingQuote, busy: false, act() { assert.fail('A native card quote is required'); } }).props.disabled, true);
+  }
+  for (const phase of [2, 4, 5, 6]) {
+    const game = auctionKarama(); game.phase = phase; game.turnActionGuide!.action.turnActionPromisePhase = phase;
+    assert.equal(guide({ game, busy: false, act() { assert.fail('A purchase cannot become generic preparation'); } }).props.disabled, true);
+  }
+  const foreign = auctionKarama(true); foreign.decision = { kind: 'auctionPayment', player: 'a' };
+  assert.equal(guide({ game: foreign, busy: false, act() { assert.fail('A foreign invoice cannot consume this printed Karama'); } }).props.disabled, true);
+  const prior = auctionKarama(true); prior.turnActionPromises[0].mixed = payment(); prior.karamaAuctionCards = [];
+  for (const player of prior.players) Object.defineProperty(player, 'hand', { get() { throw Error('Existing unrelated invoice guides keep their original native authority'); } });
+  const sent: Action[] = [], oldInvoice = guide({ game: prior, busy: false, act(action) { sent.push(action); } });
+  assert.equal(oldInvoice.props.disabled, false); press(oldInvoice); assert.equal(sent[0], prior.turnActionGuide!.action);
+  const later = auctionKarama(true); later.bidPromiseLot = { turn: 2, lot: 3 }; later.karamaAuctionCards = [];
+  for (const player of later.players) Object.defineProperty(player, 'hand', { get() { throw Error('An older raw window cannot impose printed-role eligibility on an unrelated later invoice'); } });
+  const laterSent: Action[] = [], laterInvoice = guide({ game: later, busy: false, act(action) { laterSent.push(action); } });
+  assert.equal(laterInvoice.props.disabled, false); press(laterInvoice); assert.equal(laterSent[0], later.turnActionGuide!.action);
+});
+
+void test('current ordinary-lot printed-role questions retain quoted owned Box routes before purchase and inside their own invoice', () => {
+  for (const invoice of [false, true]) {
+    const game = auctionKarama(invoice), me = game.players.find(player => player.id === 'p')!;
+    me.hand = [{ id: 'controlled-box', name: 'Nullentropy Box', kind: 'special', effect: 'nullentropyBox' }];
+    game.nullentropy = { card: me.hand[0], blocked: null, search: null };
+    game.turnActionGuide!.action = { type: 'card', card: me.hand[0].id, turnActionPromiseEvent: event, turnActionPromisePhase: 3 };
+    const sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    game.bidPromiseLot = { turn: 2, lot: 3 }; press(button); assert.equal(sent.length, 1);
+  }
 });
 
 void test('turn-action printed-role editor uses public names without holdings or private stages and retains the shared logical budget', () => {

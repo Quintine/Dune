@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { windowCardOpportunity, type WindowCardGame } from '../game/window-card-play';
+import { WINDOW_CARD_EFFECTS, windowCardNativeEffect, windowCardOpportunity, type WindowCardGame } from '../game/window-card-play';
 
 function storm(): WindowCardGame {
   return { status: 'playing', phase: 0, turn: 3, shieldWallDestroyed: false };
@@ -8,6 +8,68 @@ function storm(): WindowCardGame {
 function blow(): WindowCardGame {
   return { ...storm(), phase: 1, spiceWindow: { event: 'spice-blow:1', territory: 'hagga_basin', sector: 5, harvested: false } };
 }
+function auction(): WindowCardGame {
+  return { ...storm(), phase: 3, auction: { cards: [{ id: 'private-card:1' }, { id: 'private-card:2' }], index: 0 } };
+}
+function publicAuction(): WindowCardGame {
+  return { ...storm(), phase: 3, auction: { bid: 4, bidder: 'respondent', remaining: 2 }, bidPromiseLot: { turn: 3, lot: 1 } };
+}
+
+void test('window roles expose a shared exhaustive tuple and exact native printed-card mapping', () => {
+  assert.deepEqual(WINDOW_CARD_EFFECTS, ['weather', 'atomics', 'harvester', 'karamaAuction']);
+  assert.deepEqual(WINDOW_CARD_EFFECTS.map(windowCardNativeEffect), ['weather', 'atomics', 'harvester', 'karama']);
+});
+
+void test('ordinary Karama binds the same public current-lot source from native and projected auction shapes', () => {
+  const expected = { effect: 'karamaAuction', source: 'ordinary-auction:3:1', turn: 3 };
+  assert.deepEqual(windowCardOpportunity(auction(), 'karamaAuction'), expected);
+  assert.deepEqual(windowCardOpportunity(publicAuction(), 'karamaAuction'), expected);
+  assert.deepEqual(windowCardOpportunity({ ...auction(), bidPromiseLot: { turn: 3, lot: 1 } }, 'karamaAuction'), expected);
+  const otherFace = { ...auction(), auction: { cards: [{ id: 'different-hidden-card' }], index: 0 } };
+  assert.deepEqual(windowCardOpportunity(otherFace, 'karamaAuction'), expected);
+});
+
+void test('ordinary lot responses and a winning unpaid invoice retain Karama source until actual lot close', () => {
+  for (const source of [auction(), publicAuction()]) {
+    for (const modal of [{ response: { kind: 'karama' } }, { decision: { kind: 'auctionPayment', player: 'respondent' } },
+      { truthtrance: {} }, { phaseOpening: {} }])
+      assert.equal(windowCardOpportunity({ ...source, ...modal }, 'karamaAuction')!.source, 'ordinary-auction:3:1');
+    for (const exclusion of [{ richeseAuction: {} }, { currentAuctionSale: {} }, { ixAuction: {} },
+      { phase: 4 }, { status: 'setup' }, { auction: null }])
+      assert.equal(windowCardOpportunity({ ...source, ...exclusion }, 'karamaAuction'), null);
+  }
+});
+
+void test('Karama lot progression changes only the public source and never mutates physical auction metadata', () => {
+  const source = auction(), before = structuredClone(source);
+  assert.equal(windowCardOpportunity(source, 'karamaAuction')!.source, 'ordinary-auction:3:1');
+  assert.equal(windowCardOpportunity({ ...source, auction: { cards: [{}, {}], index: 1 } }, 'karamaAuction')!.source,
+    'ordinary-auction:3:2');
+  assert.equal(windowCardOpportunity({ ...publicAuction(), bidPromiseLot: { turn: 3, lot: 2 } }, 'karamaAuction')!.source,
+    'ordinary-auction:3:2');
+  assert.equal(windowCardOpportunity({ ...source, turn: 4 }, 'karamaAuction')!.source, 'ordinary-auction:4:1');
+  assert.deepEqual(source, before);
+});
+
+void test('malformed or exhausted native auction arrays and indices cannot fall back to a public lot', () => {
+  for (const native of [{ cards: [], index: 0 }, { cards: [{}], index: 1 }, { cards: [{}], index: -1 },
+    { cards: [{}], index: 0.5 }, { cards: [{}], index: Number.MAX_SAFE_INTEGER + 1 },
+    { cards: [null], index: 0 }, { cards: [undefined], index: 0 }, { cards: ['private-card'], index: 0 },
+    { cards: {}, index: 0 }, { cards: [{}] }, { index: 0 }, { cards: [{}], index: undefined }]) {
+    assert.equal(windowCardOpportunity({ ...auction(), auction: native }, 'karamaAuction'), null);
+    assert.equal(windowCardOpportunity({ ...publicAuction(), auction: native }, 'karamaAuction'), null);
+  }
+});
+
+void test('projected lot metadata is positive safe coherent and cannot invent an absent ordinary auction', () => {
+  for (const bidPromiseLot of [null, undefined, { turn: 3, lot: 0 }, { turn: 3, lot: -1 }, { turn: 3, lot: 1.5 },
+    { turn: 3, lot: Number.MAX_SAFE_INTEGER + 1 }, { turn: 4, lot: 1 }, { turn: 3, lot: '1' },
+    { turn: 3, lot: 1, card: 'private-card' }, { lot: 1 }])
+    assert.equal(windowCardOpportunity({ ...publicAuction(), bidPromiseLot } as WindowCardGame, 'karamaAuction'), null);
+  assert.equal(windowCardOpportunity({ ...auction(), bidPromiseLot: { turn: 3, lot: 2 } }, 'karamaAuction'), null);
+  assert.equal(windowCardOpportunity({ ...publicAuction(), auction: [] }, 'karamaAuction'), null);
+  assert.equal(windowCardOpportunity({ ...storm(), phase: 3, auction: {} }, 'karamaAuction'), null);
+});
 
 void test('Weather and Family Atomics share the exact original current Storm source before movement', () => {
   assert.deepEqual(windowCardOpportunity(storm(), 'weather'), { effect: 'weather', source: 'storm:3', turn: 3 });

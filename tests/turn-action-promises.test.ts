@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { battlePowerOf, type BattlePowerClaim, type BattlePowerDeclaration } from '../game/battle-power-question';
-import type { WindowCardEffect } from '../game/window-card-play';
+import { WINDOW_CARD_EFFECTS, type WindowCardEffect } from '../game/window-card-play';
 import {
   compileMixedActionExpression,
   type MixedActionExpression,
@@ -59,7 +59,9 @@ const call = (call = true, battle = 'battle:1'): Expression =>
 const card = (effect: 'hajr' | 'ghola' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
 const power = (claim: BattlePowerClaim = { kind: 'voice', use: true }): Expression =>
   ({ kind: 'action', action: { kind: 'battlePower', battle: 'battle:1', territory: 'carthag', claim } });
-const windowCard = (effect: WindowCardEffect = 'weather', source = effect === 'harvester' ? 'spice-blow:1' : 'storm:1'): Expression =>
+const windowSource = (effect: WindowCardEffect) => effect === 'karamaAuction' ? 'ordinary-auction:1:1' :
+  effect === 'harvester' ? 'spice-blow:1' : 'storm:1';
+const windowCard = (effect: WindowCardEffect = 'weather', source = windowSource(effect)): Expression =>
   ({ kind: 'action', action: { kind: 'windowCardPlay', effect, source } });
 const fact = (): Expression => ({ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 5 } });
 const group = (kind: 'and' | 'or', ...terms: Expression[]): Expression => ({ kind, terms });
@@ -1268,8 +1270,8 @@ void test('power predicates deduplicate only exact original clauses and retain t
 });
 
 void test('window-card raw leaves name only a printed role and exact original source, including folded clauses', () => {
-  for (const effect of ['weather', 'atomics', 'harvester'] as const) {
-    const original = { kind: 'windowCardPlay', effect, source: effect === 'harvester' ? 'spice-blow:1' : 'storm:1' };
+  for (const effect of WINDOW_CARD_EFFECTS) {
+    const original = { kind: 'windowCardPlay', effect, source: windowSource(effect) };
     assert.deepEqual(parseTurnActionLeaf(original), original);
     assert.notEqual(parseTurnActionLeaf(original), original);
     for (const invalid of [{ ...original, source: '' }, { ...original, card: 'physical-id' }, { ...original, amount: 12 },
@@ -1278,7 +1280,7 @@ void test('window-card raw leaves name only a printed role and exact original so
     assert.throws(() => turnActionValue(promise(windowCard(effect))), TurnActionError);
     assert.throws(() => turnActionValue(promise(group('or', fact(), windowCard(effect)))), TurnActionError);
   }
-  for (const effect of ['hajr', 'ghola', 'Weather Control', null])
+  for (const effect of ['hajr', 'ghola', 'karama', 'Weather Control', null])
     assert.throws(() => parseTurnActionLeaf({ kind: 'windowCardPlay', effect, source: 'storm:1' }), TurnActionError);
 });
 
@@ -1395,4 +1397,72 @@ void test('window-card clauses deduplicate only their exact original source and 
     kind: 'windowCardPlay', effect: 'weather', source: 'storm:2',
   } } };
   assert.throws(() => turnActionValue(foreign as TurnActionPromise), TurnActionError);
+});
+
+void test('printed auction Karama receipt is separate from the bid and preserves their joint payment remainder', () => {
+  const original = { ...windowed(group('and', windowCard('karamaAuction'), bid(5), pay())), preparation: {
+    bid: { lot: 1, source: 'private-original-lot:1', maximum: 0, closed: false }, revival: null,
+  } };
+  const signed = { kind: 'windowCardPlay', effect: 'karamaAuction', source: 'ordinary-auction:1:1', answer: true };
+  const bidPlaced = recordTurnActionBid([original], 'respondent', 1, { lot: 1, source: 'private-original-lot:1', amount: 5 });
+  assert.deepEqual(branches(bidPlaced[0]), [[signed, signedPay()]]);
+  assert.equal(bidPlaced[0].windowCards!.karamaAuction!.played, false);
+  const rolePlayed = recordTurnActionWindowCardPlay(bidPlaced, 'respondent', 1, 'karamaAuction', 'ordinary-auction:1:1');
+  assert.deepEqual(branches(rolePlayed[0]), [[signedPay()]]);
+  const complete = recordTurnActionPayment(rolePlayed, 'respondent', 1, payment());
+  assert.equal(complete[0].fulfilled, true);
+  assert.equal(original.windowCards!.karamaAuction!.played, false);
+  validateTurnActionPromises(complete, seats);
+});
+
+void test('auction Karama replay receipts affect only future answers for the exact original player turn and lot', () => {
+  const original = windowed(group('and', windowCard('karamaAuction'), pay()));
+  for (const [player, turn, source] of [['other', 1, 'ordinary-auction:1:1'],
+    ['respondent', 2, 'ordinary-auction:1:1'], ['respondent', 1, 'ordinary-auction:1:2']] as const) {
+    assert.equal(recordTurnActionWindowCardPlay([original], player, turn, 'karamaAuction', source)[0], original);
+    assert.equal(closeTurnActionWindowCardPlay([original], player, turn, 'karamaAuction', source)[0], original);
+  }
+  const played = recordTurnActionWindowCardPlay([original], 'respondent', 1, 'karamaAuction', 'ordinary-auction:1:1')[0];
+  const fresh = windowed(windowCard('karamaAuction'), true, 'turn-action:2');
+  const replay = recordTurnActionWindowCardPlay([played, fresh], 'respondent', 1, 'karamaAuction', 'ordinary-auction:1:1');
+  assert.equal(replay[0], played);
+  assert.equal(replay[1].fulfilled, true);
+  assert.equal(fresh.windowCards!.karamaAuction!.played, false);
+  const closed = closeTurnActionWindowCardPlay([original], 'respondent', 1, 'karamaAuction', 'ordinary-auction:1:1')[0];
+  assert.equal(recordTurnActionWindowCardPlay([closed], 'respondent', 1, 'karamaAuction', 'ordinary-auction:1:1')[0], closed);
+});
+
+void test('whole No retains its auction Karama cap until source close and rejects a later correlated payment atomically', () => {
+  const no = windowed(windowCard('karamaAuction'), false);
+  assert.throws(() => recordTurnActionWindowCardPlay([no], 'respondent', 1, 'karamaAuction', 'ordinary-auction:1:1'), TurnActionError);
+  assert.equal(no.windowCards!.karamaAuction!.played, false);
+  assert.equal(closeTurnActionWindowCardPlay([no], 'respondent', 1, 'karamaAuction', 'ordinary-auction:1:2')[0], no);
+  assert.equal(closeTurnActionPayments([no], 'respondent', 1)[0].fulfilled, false);
+  const closed = closeTurnActionWindowCardPlay([no], 'respondent', 1, 'karamaAuction', 'ordinary-auction:1:1')[0];
+  assert.equal(closed.fulfilled, true);
+  assert.equal(recordTurnActionWindowCardPlay([closed], 'respondent', 1, 'karamaAuction', 'ordinary-auction:1:1')[0], closed);
+  const correlated = windowed(group('and', windowCard('karamaAuction'), pay()), false, 'turn-action:2');
+  const played = recordTurnActionWindowCardPlay([correlated], 'respondent', 1, 'karamaAuction', 'ordinary-auction:1:1');
+  assert.equal(played[0].fulfilled, false);
+  assert.equal(recordTurnActionWindowCardPlay(played, 'respondent', 1, 'karamaAuction', 'ordinary-auction:1:1')[0], played[0]);
+  assert.throws(() => recordTurnActionPayment(played, 'respondent', 1, payment()), TurnActionError);
+  assert.deepEqual(played[0].payments, []);
+  validateTurnActionPromises([closed], seats);
+});
+
+void test('closing the auction role preserves a later payment alternative and full expiry includes the new stage', () => {
+  const alternative = windowed(group('or', windowCard('karamaAuction'), pay()));
+  const closed = closeTurnActionWindowCardPlay([alternative], 'respondent', 1, 'karamaAuction', 'ordinary-auction:1:1');
+  assert.deepEqual(branches(closed[0]), [[signedPay()]]);
+  assert.equal(closed[0].paymentClosed, false);
+  assert.equal(recordTurnActionPayment(closed, 'respondent', 1, payment())[0].fulfilled, true);
+  const no = windowed(windowCard('karamaAuction'), false, 'turn-action:2');
+  const finished = finishTurnActionTurn([no], 'respondent', 1)[0];
+  assert.deepEqual(finished.windowCards!.karamaAuction, { source: 'ordinary-auction:1:1', played: false, closed: true });
+  assert.equal(finished.fulfilled, true);
+  validateTurnActionPromises([finished], seats);
+  const wrongStage = { ...alternative, windowCards: { karamaAuction: { source: 'ordinary-auction:1:2', played: false, closed: false } } };
+  assert.throws(() => turnActionValue(wrongStage), TurnActionError);
+  assert.throws(() => turnActionValue(windowed(group('or', windowCard('karamaAuction'),
+    windowCard('karamaAuction', 'ordinary-auction:1:2')))), TurnActionError);
 });

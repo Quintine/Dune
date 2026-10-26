@@ -7,7 +7,7 @@ import { RevivalExpressionPromiseError, type RevivalExpressionReturn } from './r
 import { parseBattleActionClaim, type MixedBattleActionClaim } from './mixed-battle-question';
 import { PlanClaimError } from './battle-promises';
 import type { PrintedCardEffect } from './printed-card-play';
-import type { WindowCardEffect } from './window-card-play';
+import { WINDOW_CARD_EFFECTS, type WindowCardEffect } from './window-card-play';
 import { BattlePowerQuestionError, battlePowerMatches, battlePowerOf, parseBattlePowerClaim,
   type BattlePowerClaim, type BattlePowerDeclaration, type NativeBattlePower } from './battle-power-question';
 import {
@@ -119,7 +119,7 @@ const positive = (value: unknown): value is number => whole(value) && value > 0;
 const physical = (value: unknown): value is number => whole(value) && value <= 20;
 const printedTerritory = (value: unknown): value is string =>
   typeof value === 'string' && TERRITORIES.some(destination => destination.id === value);
-const windowEffect = (value: unknown): value is WindowCardEffect => value === 'weather' || value === 'atomics' || value === 'harvester';
+const windowEffect = (value: unknown): value is WindowCardEffect => WINDOW_CARD_EFFECTS.some(effect => effect === value);
 
 /** Identity membership is decoded by Truthtrance; here retain one strict atom. */
 function parseCombatClaim(value: unknown): MixedBattleActionClaim {
@@ -145,7 +145,7 @@ export function parseTurnActionLeaf(value: unknown): TurnActionLeaf {
   try {
     if (value.kind === 'windowCardPlay') {
       check(keys(value, 'effect,kind,source') && windowEffect(value.effect) && identifier(value.source),
-        'Choose one original Storm or fresh-blow printed-card play after this answer.');
+        'Choose one original Storm, fresh-blow or ordinary-lot printed-card play after this answer.');
       return { kind: 'windowCardPlay', effect: value.effect, source: value.source };
     }
     if (value.kind === 'battlePower') {
@@ -958,7 +958,7 @@ export function finishTurnActionTurn<T extends TurnActionPromise>(promises: read
     if (!live.has(promise)) return promise;
     readPromise(promise);
     const windowCards: TurnActionWindowCards = {};
-    for (const effect of ['weather', 'atomics', 'harvester'] as const) {
+    for (const effect of WINDOW_CARD_EFFECTS) {
       const stage = promise.windowCards?.[effect];
       if (stage) windowCards[effect] = { ...stage, closed: true };
     }
@@ -993,7 +993,7 @@ export function validateTurnActionPromises(promises: readonly TurnActionPromise[
       (!promise.combat?.traitor || promise.combat.traitor.closed) &&
       (!promise.combat?.powers?.voice || promise.combat.powers.voice.closed) &&
       (!promise.combat?.powers?.prescience || promise.combat.powers.prescience.closed) &&
-      (['weather', 'atomics', 'harvester'] as const).every(effect => promise.windowCards?.[effect]?.closed ?? true) &&
+      WINDOW_CARD_EFFECTS.every(effect => promise.windowCards?.[effect]?.closed ?? true) &&
       (!promise.cardPlays?.hajr || promise.cardPlays.hajr.closed) && (!promise.cardPlays?.ghola || promise.cardPlays.ghola.closed);
     const recipientsValid = (node: MixedActionExpression<TurnActionLeaf>): boolean => node.kind === 'action'
       ? node.action.kind === 'alliance' ? players.includes(node.action.partner) && node.action.partner !== promise.player :

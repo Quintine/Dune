@@ -53,6 +53,7 @@ export function finishTruthBid(game: Game, actions: TruthBidStep[] = []): Game {
  * auction, question, answer or promise is installed. */
 export function createTruthBidFixture(options: {
   advanced?: boolean; window?: 'waiting' | 'active'; targetKarama?: boolean;
+  firstLotEffect?: 'hajr';
 } = {}) {
   const advanced = options.advanced ?? false, window = options.window ?? 'waiting';
   const asker = 'harkonnen', opponent = 'atreides', target = 'emperor';
@@ -71,7 +72,7 @@ export function createTruthBidFixture(options: {
   const truths = game.deck.filter(card => card.effect === 'truthtrance'); assert.equal(truths.length, 2);
   const filler = game.deck.find(card => card.name === 'Baliset');
   const targetCard = game.deck.find(card => options.targetKarama ? card.effect === 'karama' : card.kind === 'shield');
-  const lotCards = [game.deck.find(card => card.kind === 'projectile'), game.deck.find(card => card.kind === 'poison'),
+  const lotCards = [game.deck.find(card => options.firstLotEffect ? card.effect === options.firstLotEffect : card.kind === 'projectile'), game.deck.find(card => card.kind === 'poison'),
     game.deck.find(card => card.kind === 'snooper')];
   assert.ok(filler && targetCard && lotCards.every(Boolean));
   const deal = [truths[0].id, truths[1].id, filler.id, targetCard.id];

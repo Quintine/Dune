@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Truthtrance current-lot printed Karama — 27 October 2026
+
+Prototyped / Partial. Reuse the current-turn AND/OR authority below for a
+future physical printed Karama spent on the original ordinary lot, either
+immediate purchase or the winning invoice. Bids and card costs stay distinct;
+the native bid must precede a purchase when both are required. Whole No keeps
+its current-lot restriction and residual payment cap. Other roles, converted
+costs, later lots and recovery alone do not count. Unseen acquired cards do not
+fund a detached future-card witness; actual owned knowledge remains usable.
+This extends the existing bounded promise composition, not printed exhaustive
+future-action coverage. Kull, conversion and wider combination acceptance stay
+separate. [Contract](TRUTHTRANCE_TURN_ACTIONS.md#current-lot-printed-karama--27-october-2026).
+
 ## Truthtrance original-window ordinary card plays — 27 October 2026
 
 Compose the existing FAQp8/current-turn AND/OR authority and supplied Advanced

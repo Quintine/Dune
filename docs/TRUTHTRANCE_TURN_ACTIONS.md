@@ -1,5 +1,75 @@
 # Truthtrance combined current-turn actions
 
+## Current-lot printed Karama — 27 October 2026
+
+**Prototyped / Partial.** `windowCardPlay` now accepts `karamaAuction` with
+public `ordinary-auction:turn:lot` identity. It describes a future physical
+printed Karama cost for this original ordinary lot: immediate purchase or its
+winning invoice. A bid alone, another Karama role, converted Worthless/Shrine
+cost, earlier play, recovery alone or a later lot does not satisfy it. A modal
+response preserves the original source; another player's winning invoice ends
+the respondent's opportunity. Original pricing, physical card delivery and
+hand capacity stay native.
+
+Whole AND/OR and No share the existing per-answer played/closed receipt. Actual
+cost records only after pre-cost interception has allowed spending. The original
+native bid must precede closing a lot when both are required. A detached quote
+can prepare that bid and then purchase; the guide waits for the real bidder
+turn. An actual invoice instead uses its own Karama/spice decision. Own closing
+actions must retain the whole answer before a later foreign response can mask
+that loss. Foreign actions retain their rights and can release impossibility.
+
+The false branch forbids a printed free invoice in its detached native bid
+funding quote. The remaining purse cannot simultaneously fund an unfunded bid
+and a payment by silently assuming that forbidden cost. Conversely, a real
+printed free purchase and a funded bribe share one purse without inventing a
+spice payment. Unknown acquired lot/bonus cards remain physical hand occupants
+but cannot fund another future-card witness before their actual acquisition;
+known Atreides inspection retains its original authority. This keeps the
+existing bounded current-funding interpretation, not exhaustive future draws.
+
+The editor uses only public lot identity. Owner-only physical cost quotations
+feed exact purchase and current-source invoice controls. Purchase keeps its
+native out-of-turn availability. Current source/raw row/held cost, auction and
+callback snapshots reject stale guides. A later lot's unrelated invoice keeps
+its existing controls. Four profiles consume the shared guide without strategy
+or difficulty calibration. Wider Karama roles, Kull/conversion/Box compositions,
+complete modes and final browser/deployed/recovery/privacy/custody acceptance
+remain open.
+
+Native evidence uses the original H/A/E base33 and fifteen Traitors, both actual
+Harkonnen Truthtrances and Emperor's actual printed Karama. Holding that Karama
+adds three actual Atreides inspection response passes. Recorded Basic source
+prefixes are waiting23/active25; Advanced26/28. The live-opponent source uses
+the original waiting23, a real H bid1 and A pass for25 actions. It then earns
+the required E bid3; the new bid reopens both H and A before E's invoice.
+All counts derive from original action arrays. The unseen-Hajr supplement
+selects its original unopened lot position, with no played hand or promise
+installation. No saved-room, database, reset/deletion, restart or deployment
+operation belongs to this batch.
+
+
+Frozen evidence: **16 files,267/267**, types/lint/build;31 new checks include
+6 public-source,4 aggregate,5 controls,14 original native and2 forecast/closure
+cases. Five actual engine/control-callback journeys use22 GameTable SSR renders,
+5 answer callbacks and9 exact guide callbacks. They prove the real free purchase,
+pay10/frozen fact, native bid-before-purchase/invoice, whole No cap and paid spice
+alternative. Four profiles use the shared guide. Local SSR/callback evidence
+does not certify hydration, browser/mobile or deployed play.
+
+Targeted feedback corrects purpose-specific bid funding and limits the pre-cost
+guard so original Revival/free-Karama invoices retain their post-purchase funds.
+Fixture feedback retains real extra inspection passes, reopened bidder order,
+full-turn No deadlines and half-price shipment. A bounded review moves required
+bidding inside the shared post-Box quote; no combined native Box recovery proof
+is claimed. Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261027-truth-karama-proof-v3/`;
+journeys/HTML: adjacent `20261027-truth-karama-runtime-v3/`.
+Evidence: [original sources](../tests/fixture-truth-turn-karama.ts),
+[native cases](../tests/truth-turn-karama-runtime.test.ts),
+[forecast and own closure](../tests/truth-turn-karama-forecast.test.ts),
+[controls](../tests/truth-turn-action-controls.test.tsx).
+
 ## Native current-turn action prototype
 
 **Prototyped / Partial.** New raw question:

@@ -4,7 +4,7 @@ import { PrintedCardPlayError, printedCardPlayCount, recordPrintedCardPlay,
   type PrintedCardEffect, type PrintedCardPlayCounts } from './printed-card-play';
 import { battlePowerOf, battlePowerMatches, nativeBattlePowerOpportunity,
   type NativeBattlePower, type BattlePowerDeclaration } from './battle-power-question';
-import { windowCardOpportunity, type WindowCardEffect } from './window-card-play';
+import { WINDOW_CARD_EFFECTS, windowCardNativeEffect, windowCardOpportunity, type WindowCardEffect } from './window-card-play';
 import { TurnActionError, liveTurnActionPromises, turnActionBranches, recordTurnActionPayment,
   recordTurnActionShipment, recordTurnActionMovement, closeTurnActionTransport, closeTurnActionPayments, finishTurnActionTurn,
   validateTurnActionPromises, recordTurnActionBid, closeTurnActionBidding, recordTurnActionRevival, recordTurnActionCardPlay,
@@ -5028,6 +5028,8 @@ function savedTransferResponses(g: Game) {
   ];
 }
 function transferCardBlock(g: Game, owner: Player, card: Card) {
+  if ((g as TurnActionCardProbe)._turnActionUnknownCards?.includes(card.id))
+    return 'An unseen future auction card cannot fund this completion.';
   if (isPortableSnooper(card) && homeworldSavedDecisions(g).some((d) => d.kind === 'homeworldDefense' && d.player === owner.id))
     return 'Resolve the Homeworld late-defense choice before transferring its Portable Snooper.';
 
@@ -15710,7 +15712,8 @@ function decideNexusEmperorPayment(g: Game, p: Player, action: Action): void {
   else recoverAuctionPayment(g, getPlayer(g, source.winner));
 }
 function normalBidMaximum(g: Game, p: Player): number {
-  return (g.kullPreview ? p.hand.some(card => canUseAsKaramaRole(g, p, card)) : !!karamaCard(g, p))
+  return (g.kullPreview ? p.hand.some(card => canUseAsKaramaRole(g, p, card))
+    : !!karamaCard(g, p, undefined, 'auction-free-purchase'))
     ? Number.MAX_SAFE_INTEGER : p.spice + (aidFor(g, p)?.amount ?? 0);
 }
 /** Same native quote for ordinary controls and the detached current-lot guide. */
@@ -16240,6 +16243,13 @@ function kullKaramaBlock(g: Game, p: Player, purpose?: KullPurpose): string | nu
 }
 /** Physical custody plus the intended effect; promise feasibility is checked at commit. */
 function karamaSpendingBlock(g: Game, p: Player, card: Card, purpose?: KullPurpose): string | null {
+  if ((g as TurnActionCardProbe)._turnActionUnknownCards?.includes(card.id))
+    return 'An unseen future auction card cannot fund this completion.';
+  const policy = (g as TurnActionCardProbe)._turnActionWindowCardPolicy;
+  if (purpose === 'auction-free-purchase' && card.kind === 'special' && card.effect === 'karama' &&
+    policy?.player === p.id && policy.forbidden.some(required => required.effect === 'karamaAuction' &&
+      windowCardOpportunity(g, required.effect)?.source === required.source))
+    return 'Retain this lot without a forbidden printed Karama purchase.';
   const kullBlock = kullKaramaBlock(g, p, purpose);
   if (kullBlock) return kullBlock;
   if (g.pendingKull?.stage === 'counter' &&
@@ -17434,7 +17444,22 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
     'Kull preview cannot accept this unproven Truthtrance counter continuation.');
   if (!kullOffered && beginKullAttempt(g, p, card, { kind: 'ordinary', use }, promiseProven)) return;
   if (use.kind === 'shipment') use = { ...use, card: card.id };
+  const auctionRows = liveTurnActionPromises(g.turnActionPromises ?? [], p.id, g.turn);
+  let auctionWindow: string | undefined;
+  if (card.kind === 'special' && card.effect === 'karama' &&
+    (use.kind === 'purchase' || use.kind === 'auctionPayment')) {
+    const window = windowCardOpportunity(g, 'karamaAuction');
+    requireRule(window, 'Retain the original ordinary Karama auction lot.');
+    auctionWindow = window.source;
+    recordNativeTurnActionWindowCard(g, p.id, 'karamaAuction', window.source);
+  }
   const used = discard(g, p, card.id);
+  if (auctionWindow && auctionRows.some(row => row.windowCards?.karamaAuction?.source === auctionWindow))
+    guardTurnActionAuctionClosure(g, p.id, auctionRows);
+  if (!auctionWindow && card.kind === 'special' && card.effect === 'karama' && auctionRows.some(row => {
+    const stage = row.windowCards?.karamaAuction;
+    return stage && !stage.closed && windowCardOpportunity(g, 'karamaAuction')?.source === stage.source;
+  })) guardTurnActionPrintedCardCost(g, p, used);
   const semutaRoleCost = g.semutaPreview && semutaKaramaRoleCost(g, p.id, card);
   const guildShipmentDiscard = semutaRoleCost &&
     use.kind === 'cancel' && semutaGuildShipmentKaramaResponse(g, use.response);
@@ -18849,7 +18874,11 @@ function turnActionRule<T>(operation: () => T): T {
 type TurnActionCardRequirement = { effect: PrintedCardEffect; answer: boolean; baseline: number };
 /** This field exists only on detached completion clones and is never returned
  * as a real game or installed as a selected whole-answer branch. */
-type TurnActionCardProbe = Game & { _turnActionCardPolicy?: { player: string; forbidden: PrintedCardEffect[] } };
+type TurnActionCardProbe = Game & {
+  _turnActionCardPolicy?: { player: string; forbidden: PrintedCardEffect[] };
+  _turnActionWindowCardPolicy?: { player: string; forbidden: { effect: WindowCardEffect; source: string }[] };
+  _turnActionUnknownCards?: string[];
+};
 function printedCardRule<T>(operation: () => T): T {
   try { return operation(); }
   catch (error) { if (error instanceof PrintedCardPlayError) throw new RuleError(error.message); throw error; }
@@ -18919,11 +18948,30 @@ function* turnActionCardSeeds(source: Game, actor: string, requirements: readonl
 }
 type TurnActionWindowCardRequirement = Extract<TurnActionBranchLeaf, { kind: 'windowCardPlay' }>;
 const isWindowCardEffect = (effect: unknown): effect is WindowCardEffect =>
-  effect === 'weather' || effect === 'atomics' || effect === 'harvester';
+  WINDOW_CARD_EFFECTS.some(candidate => candidate === effect);
+/** Own physical costs only. Whole-answer completion remains the guide's job. */
+function quotedAuctionKaramaCards(g: Game, player: Player): string[] {
+  const invoice = g.decision?.kind === 'auctionPayment' && g.decision.player === player.id;
+  if (!windowCardOpportunity(g, 'karamaAuction') || g.truthtrance || g.response || g.phaseOpening ||
+    g.pendingKarama || g.pendingTreacheryDiscard || g.pendingKull || g.decision && !invoice) return [];
+  return player.hand.filter(card => {
+    if (card.kind !== 'special' || card.effect !== 'karama' ||
+      karamaSpendingBlock(g, player, card, 'auction-free-purchase')) return false;
+    try {
+      validateKaramaUse(g, player, { kind: invoice ? 'auctionPayment' : 'purchase' }, card);
+      return true;
+    } catch (error) { if (error instanceof RuleError) return false; throw error; }
+  }).map(card => card.id);
+}
 function* nativeWindowCardActions(g: Game, actor: string, effect: WindowCardEffect): Generator<Action> {
   if (!windowCardOpportunity(g, effect)) return;
   const player = getPlayer(g, actor);
-  for (const card of player.hand.filter(card => card.effect === effect && !transferCardBlock(g, player, card)))
+  if (effect === 'karamaAuction') {
+    for (const card of quotedAuctionKaramaCards(g, player)) yield g.decision?.kind === 'auctionPayment'
+      ? { type: 'decision', karama: true, card } : { type: 'card', card, mode: 'purchase' };
+    return;
+  }
+  for (const card of player.hand.filter(card => card.effect === windowCardNativeEffect(effect) && !transferCardBlock(g, player, card)))
     for (const amount of effect === 'weather' ? Array.from({ length: 11 }, (_, value) => value) : [undefined]) {
       const availability = ordinaryCardAvailability({ status: g.status, phase: g.phase, turn: g.turn,
         active: g.active, me: actor, shieldWallDestroyed: g.shieldWallDestroyed,
@@ -18947,9 +18995,32 @@ function* turnActionWindowCardSeeds(source: Game, actor: string, requirements: r
     for (const required of pending) {
       if (windowCardOpportunity(game, required.effect)?.source !== required.source) continue;
       const play = function* (state: Game, prefix: Action[]): Generator<{ game: Game; actions: Action[] }> {
+        const lot = required.effect === 'karamaAuction' ? bidOpportunity(state) : null;
+        if (lot && bidRequired(state.bidPromises ?? [], actor, lot)) {
+          // Quote after any owned recovery, so its actual two-spice cost and
+          // recovered physical Karama participate in this same native bid.
+          const bid = bidPromiseCompletion(state, getPlayer(state, actor));
+          if (!bid || bid.type !== 'bid') return;
+          const accepted = structuredClone(state);
+          accepted.auction!.bid = bid.amount as number;
+          accepted.auction!.bidder = actor;
+          accepted.auction!.allyPayment = bid.allyPayment as number;
+          accepted.bidPromises = recordPromisedBid(accepted.bidPromises ?? [], actor, lot, bid.amount as number);
+          yield* play(accepted, [...prefix, bid]);
+          return;
+        }
         for (const action of nativeWindowCardActions(state, actor, required.effect)) {
           try {
             const next = applyActionInner(state, actor, action, 'movementPreparation');
+            if (required.effect === 'karamaAuction') {
+              const before = getPlayer(state, actor), after = getPlayer(next, actor);
+              const known = before.faction === 'atreides' && state.auction?.peekKnown
+                ? state.auction.cards[state.auction.index]?.id : null;
+              (next as TurnActionCardProbe)._turnActionUnknownCards = [...new Set([
+                ...((state as TurnActionCardProbe)._turnActionUnknownCards ?? []),
+                ...after.hand.filter(card => card.id !== known && !before.hand.some(held => held.id === card.id)).map(card => card.id),
+              ])];
+            }
             yield* search(next, [...actions, ...prefix, action], new Set([...played, key(required)]));
           } catch (error) { if (!(error instanceof RuleError)) throw error; }
         }
@@ -18957,12 +19028,12 @@ function* turnActionWindowCardSeeds(source: Game, actor: string, requirements: r
       yield* play(game, []);
       const paid = game.pendingNullentropy;
       if (paid?.player === actor) {
-        if (!nullentropyIntegrity(game)) for (const card of eligibleNullentropyCards(game.discard).filter(card => card.effect === required.effect)) {
+        if (!nullentropyIntegrity(game)) for (const card of eligibleNullentropyCards(game.discard).filter(card => card.effect === windowCardNativeEffect(required.effect))) {
           const recovered = projectMovementBoxRecovery(game, actor, paid.box, card.id, true);
           if (recovered) yield* play(recovered, [{ type: 'decision', event: paid.event, card: card.id }]);
         }
       } else for (const box of getPlayer(game, actor).hand.filter(card => card.effect === 'nullentropyBox'))
-        for (const known of knownMovementDiscards(game.movementDiscardKnowledge, actor, game.discard).filter(card => card.effect === required.effect)) {
+        for (const known of knownMovementDiscards(game.movementDiscardKnowledge, actor, game.discard).filter(card => card.effect === windowCardNativeEffect(required.effect))) {
           const recovered = projectMovementBoxRecovery(game, actor, box.id, known.id, false);
           if (recovered) yield* play(recovered, [{ type: 'card', card: box.id }]);
         }
@@ -18989,9 +19060,11 @@ function reconcileTurnActionWindowCards(g: Game) {
   if (!g.turnActionPromises) return;
   for (const promise of g.turnActionPromises) {
     if (promise.fulfilled || promise.released) continue;
-    for (const effect of ['weather', 'atomics', 'harvester'] as const) {
+    for (const effect of WINDOW_CARD_EFFECTS) {
       const stage = promise.windowCards?.[effect];
-      if (!stage || stage.closed || promise.turn === g.turn && windowCardOpportunity(g, effect)?.source === stage.source) continue;
+      const foreignInvoice = effect === 'karamaAuction' && g.decision?.kind === 'auctionPayment' &&
+        g.decision.player !== promise.player;
+      if (!stage || stage.closed || !foreignInvoice && promise.turn === g.turn && windowCardOpportunity(g, effect)?.source === stage.source) continue;
       g.turnActionPromises = turnActionRule(() => closeTurnActionWindowCardPlay(g.turnActionPromises!,
         promise.player, promise.turn, effect, stage.source));
     }
@@ -19002,7 +19075,7 @@ function reconcileTurnActionWindowCards(g: Game) {
 function ownTurnActionWindowClosure(g: Game, actor: string): TurnActionPromise[] {
   let closed = g.turnActionPromises ?? [];
   for (const promise of liveTurnActionPromises(closed, actor, g.turn))
-    for (const effect of ['weather', 'atomics', 'harvester'] as const) {
+    for (const effect of WINDOW_CARD_EFFECTS) {
       const stage = promise.windowCards?.[effect];
       if (stage && !stage.closed) closed = turnActionRule(() =>
         closeTurnActionWindowCardPlay(closed, actor, g.turn, effect, stage.source));
@@ -19011,7 +19084,7 @@ function ownTurnActionWindowClosure(g: Game, actor: string): TurnActionPromise[]
 }
 function reopenTurnActionWindowReady(g: Game, actor: string) {
   if (g.ready.includes(actor) && liveTurnActionPromises(g.turnActionPromises ?? [], actor, g.turn).some(promise =>
-    (['weather', 'atomics', 'harvester'] as const).some(effect => {
+    WINDOW_CARD_EFFECTS.some(effect => {
       const stage = promise.windowCards?.[effect];
       return stage && !stage.closed && windowCardOpportunity(g, effect)?.source === stage.source;
     }))) g.ready = g.ready.filter(player => player !== actor);
@@ -19029,6 +19102,28 @@ function guardTurnActionPrintedCardCost(g: Game, player: Player, used: Card) {
   rememberMovementDiscards(trial, [{ card: used, discardedBy: player.id, publicFace: true }]);
   requireRule(!!turnActionCompletion(trial, player.id),
     'This printed card play would remove the last legal completion of your whole Truthtrance answer.');
+}
+/** The owned purchase irrevocably ends bidding before its foreign income or
+ * discard reactions. Quote that boundary without completing those reactions. */
+function guardTurnActionAuctionClosure(g: Game, actor: string, original: readonly TurnActionPromise[]) {
+  const relevant = original.filter(row => row.windowCards?.karamaAuction && !row.fulfilled && !row.released);
+  if (!relevant.length) return;
+  const trial = structuredClone(g);
+  trial.truthtrance = null; trial.response = null; trial.decision = null;
+  trial.pendingKarama = null; trial.phaseOpening = null; trial.pendingTreacheryDiscard = null;
+  trial.auction = null; trial.currentAuctionSale = null;
+  for (const row of relevant) {
+    const stage = row.windowCards!.karamaAuction!;
+    trial.turnActionPromises = turnActionRule(() => closeTurnActionWindowCardPlay(trial.turnActionPromises ?? [],
+      actor, row.turn, 'karamaAuction', stage.source));
+    const bid = row.preparation?.bid;
+    if (bid) trial.turnActionPromises = turnActionRule(() => closeTurnActionBidding(trial.turnActionPromises!,
+      row.turn, bid.source, actor));
+  }
+  requireRule(!relevant.some(row => trial.turnActionPromises?.find(next => next.event === row.event)?.released),
+    'Finish your required bid or alternative before closing this Karama lot.');
+  reconcileBidPromises(trial, { actor, action: { type: 'card' } });
+  requireRule(!!turnActionCompletion(trial, actor), 'Retain a whole Truthtrance completion after this auction closes.');
 }
 function turnActionTargetAvailable(g: Game, _actor: string): boolean {
   return bribeQuestionWindow(g) && movementPromiseModeSupported(g);
@@ -19279,6 +19374,11 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
       ? [{ effect: leaf.effect, answer: leaf.answer, baseline: nativePrintedCardCount(source, actor, leaf.effect) }] : []);
     if (cardRequirements.length) (trial as TurnActionCardProbe)._turnActionCardPolicy = {
       player: actor, forbidden: cardRequirements.filter(required => !required.answer).map(required => required.effect),
+    };
+    const forbiddenWindows = leaves.flatMap(leaf => leaf.kind === 'windowCardPlay' && !leaf.answer
+      ? [{ effect: leaf.effect, source: leaf.source }] : []);
+    if (forbiddenWindows.length) (trial as TurnActionCardProbe)._turnActionWindowCardPolicy = {
+      player: actor, forbidden: forbiddenWindows,
     };
     trial.bribePromises ??= [];
     trial.shipmentPromises ??= [];
@@ -19602,7 +19702,10 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   const completion = turnActionCompletion(g, player.id);
   if (!completion) return null;
   let action = !bribeTimingBlock(g) ? completion.payments[0] : undefined;
-  if (!action) action = completion.cardPreparations?.[0];
+  if (!action) {
+    const preparation = completion.cardPreparations?.[0];
+    if (preparation?.type !== 'bid' || g.auction?.active === player.id) action = preparation;
+  }
   if (!action && g.phase <= 5) {
     const lot = g.phase === 3 && !g.decision ? bidOpportunity(g) : null;
     if (lot && g.auction?.active === player.id) action = completion.bid ??
@@ -19652,9 +19755,11 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   // The joint quotation can prepare a later answer while an earlier unrelated
   // answer remains live. Window controls must bind the row naming that source.
   const held = action.type === 'card' ? player.hand.find(card => card.id === action.card) : undefined;
-  const printedWindow = isWindowCardEffect(held?.effect) ? held.effect : null;
+  const printedWindow = held?.kind === 'special' && held.effect === 'karama' && action.mode === 'purchase'
+    ? 'karamaAuction' : isWindowCardEffect(held?.effect) ? held.effect : null;
   const windows: WindowCardEffect[] = printedWindow ? [printedWindow]
-    : action.type === 'ready' || held?.effect === 'nullentropyBox' ? ['weather', 'atomics', 'harvester'] : [];
+    : action.type === 'decision' && action.karama === true ? ['karamaAuction']
+      : action.type === 'ready' || held?.effect === 'nullentropyBox' ? [...WINDOW_CARD_EFFECTS] : [];
   const guidePromise = windows.length ? liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn).find(row =>
     windows.some(effect => {
       const stage = row.windowCards?.[effect];
@@ -27769,6 +27874,7 @@ function gholaOptions(g: Game, p: Player) {
     .filter(
       (c) =>
         c.effect === 'ghola' &&
+        !(g as TurnActionCardProbe)._turnActionUnknownCards?.includes(c.id) &&
         !(
           g.richeseAuction?.source === 'blackMarket' &&
           !g.currentAuctionSale &&
@@ -37512,6 +37618,11 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     'This revival commitment guide is stale or belongs to another native opportunity.');
   }
   const g = applyActionInner(state, id, action);
+  if (state.phase === 3 && liveTurnActionPromises(state.turnActionPromises ?? [], id, state.turn).some(row => {
+    const stage = row.windowCards?.karamaAuction;
+    return stage && !stage.closed && (windowCardOpportunity(g, 'karamaAuction')?.source !== stage.source ||
+      g.decision?.kind === 'auctionPayment' && g.decision.player !== id);
+  })) guardTurnActionAuctionClosure(g, id, liveTurnActionPromises(state.turnActionPromises ?? [], id, state.turn));
   reconcileTravelPromises(g, id, action, state.phase);
   reconcileBidPromises(g, { actor: id, action });
   reconcileRevivalPromises(g, { actor: id, action });
@@ -42138,6 +42249,7 @@ export function viewGame(state: Game, id: string, now?: number) {
         ? battleTruthAnswers(g, me, g.truthtrance.question.claim)
         : null,
     bidPromiseLot: (() => { const lot = bidOpportunity(g); return lot ? { turn: lot.turn, lot: lot.lot } : null; })(),
+    karamaAuctionCards: quotedAuctionKaramaCards(g, me),
     truthBidTargets: bidQuestionWindow(g) ? g.players.filter(player => {
       const lot = bidOpportunity(g)!;
       return lot.eligible.includes(player.id) && !lot.passed.includes(player.id) && lot.bidder !== player.id;
