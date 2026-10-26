@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Current facts combined with ordinary bids — 26 October 2026
+
+Reuse recorded publisher FAQp8 current-turn/AND/OR and supplied Advanced
+physical39 compliance/release/unknown authority, mixed fact snapshots and the
+existing exact current-lot native bid interval. Facts freeze before declaration
+or later winning payment. Unknown is false for definite Yes and true for No.
+Remaining positive minima in the same interval reduce exactly: AND maximum,
+OR minimum; whole No retains the resulting cap. Constants need no bid binding.
+Native eligibility, funding/Karama, declaration-versus-invoice, accepted order
+and actual lot close remain. No publisher-specific mixed-bid algorithm or
+correlated-unknown solver is claimed; the online opportunity/release model
+stays provisional. No mode/save/server/publication operation is granted.
+[Contract and evidence](TRUTHTRANCE_MIXED_BIDS.md).
+
 ## Current facts combined with ordinary Revival — 26 October 2026
 
 Reuse the recorded publisher FAQp8 current-turn/AND/OR and supplied Advanced

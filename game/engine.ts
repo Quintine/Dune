@@ -1,3 +1,4 @@
+import { mixedBidMinimum, type MixedBidClaim } from './mixed-bid-question';
 import type { RevivalActionClaim, MixedRevivalClaim } from './mixed-revival-question';
 import type { BribePaymentClaim, MixedBribeClaim } from './mixed-bribe-question';
 import { compileMixedActionExpression, MixedActionQuestionError, type CompiledMixedAction } from './mixed-action-question';
@@ -2157,6 +2158,10 @@ export type Game = {
   truthHistory?: TruthRecord[];
   shipmentPromises?: ShipmentPromise[];
   bidPromises?: BidPromise[];
+  /** Raw mixed question linked to one private native current-lot obligation. */
+  mixedBidQuestions?: (MixedBidClaim & {
+    event: string; player: string; asker: string; answer: boolean; binding: boolean;
+  })[];
   revivalPromises?: RevivalPromise[];
   leaderRevivalPromises?: LeaderRevivalPromise[];
   revivalExpressionPromises?: RevivalExpressionPromise[];
@@ -6918,6 +6923,9 @@ function truthtranceDiscardSignature(g: Game, next: TruthDiscardContinuation) {
     battle: g.battle,
     shipmentPromises: g.shipmentPromises,
     movementPromises: g.movementPromises,
+    ...(next.record.question.kind === 'mixedBid' ? {
+      mixedBidQuestions: g.mixedBidQuestions, bidPromises: g.bidPromises,
+    } : {}),
     ...(next.record.question.kind === 'mixedRevival' ? {
       mixedRevivalQuestions: g.mixedRevivalQuestions, revivalExpressionPromises: g.revivalExpressionPromises,
     } : {}),
@@ -15572,6 +15580,50 @@ function bindBidTruth(g: Game, p: Player, claim: BidClaim, answer: boolean, aske
   (g.bidPromises ??= []).push({ ...claim, event: crypto.randomUUID(), source: opportunity.source,
     player: p.id, asker, answer });
 }
+function compileMixedBid(g: Game, p: Player, claim: MixedBidClaim, answer: boolean) {
+  const compiled = compileMixedActionExpression(claim.mixed,
+    fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
+  return compiled.kind === 'constant' ? { constant: compiled.value } :
+    { residual: { turn: claim.turn, lot: claim.lot, minimum: mixedBidMinimum(compiled) } };
+}
+function mixedBidTruthAnswers(g: Game, p: Player, claim: MixedBidClaim): TruthAnswer[] {
+  const opportunity = bidOpportunity(g);
+  if (!opportunity || !bidQuestionWindow(g) || claim.turn !== opportunity.turn || claim.lot !== opportunity.lot ||
+    !opportunity.eligible.includes(p.id) || opportunity.passed.includes(p.id) || opportunity.bidder === p.id) return [];
+  const answers: TruthAnswer[] = [];
+  for (const answer of [true, false]) {
+    const compiled = compileMixedBid(g, p, claim, answer);
+    if (compiled.constant !== undefined ? compiled.constant === answer :
+      bidTruthAnswers(g, p, compiled.residual!).includes(answer ? 'yes' : 'no')) answers.push(answer ? 'yes' : 'no');
+  }
+  return answers.length ? answers : ['unknown'];
+}
+function bindMixedBidTruth(g: Game, p: Player, claim: MixedBidClaim, answer: boolean, asker: string) {
+  requireRule(mixedBidTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
+    'Choose a mixed bid answer compatible with the whole current-fact and ordinary-lot question.');
+  const compiled = compileMixedBid(g, p, claim, answer);
+  let event: string;
+  if (compiled.residual) {
+    bindBidTruth(g, p, compiled.residual, answer, asker);
+    event = g.bidPromises!.at(-1)!.event;
+  } else {
+    requireRule(compiled.constant === answer, 'Retain the truthful whole mixed-bid answer.');
+    event = crypto.randomUUID();
+  }
+  (g.mixedBidQuestions ??= []).push({ turn: claim.turn, lot: claim.lot, mixed: structuredClone(claim.mixed),
+    event, player: p.id, asker, answer, binding: !!compiled.residual });
+}
+function isMixedBidEvent(g: Game, event: string): boolean {
+  return !!g.mixedBidQuestions?.some(question => question.event === event);
+}
+function projectedMixedBidPromises(g: Game, player: string) {
+  return (g.mixedBidQuestions ?? []).filter(question => question.player === player).map(question => {
+    const bound = g.bidPromises?.find(promise => promise.event === question.event);
+    return { event: question.event, player: question.player, asker: question.asker, turn: question.turn, lot: question.lot,
+      mixed: structuredClone(question.mixed), answer: question.answer,
+      fulfilled: !question.binding || bound?.fulfilled === true, released: bound?.released === true };
+  });
+}
 function bidPromiseIntegrity(g: Game) {
   try { validateBidPromises(g.bidPromises ?? [], g.players.map(player => player.id)); }
   catch (error) { if (error instanceof BidPromiseError) throw new RuleError(error.message); throw error; }
@@ -15599,7 +15651,7 @@ function reconcileBidPromises(g: Game, voluntary?: { actor: string; action: Acti
   }
 }
 function projectedBidPromises(g: Game, player: string) {
-  return (g.bidPromises ?? []).filter(promise => promise.player === player).map(promise => ({
+  return (g.bidPromises ?? []).filter(promise => promise.player === player && !isMixedBidEvent(g, promise.event)).map(promise => ({
     event: promise.event, player: promise.player, asker: promise.asker, turn: promise.turn,
     lot: promise.lot, minimum: promise.minimum, answer: promise.answer,
     ...(promise.fulfilled === undefined ? {} : { fulfilled: promise.fulfilled }),
@@ -36583,6 +36635,8 @@ function applyActionInner(
         bindLeaderRevival: bindLeaderRevivalTruth,
         revivalAnswers: revivalTruthAnswers,
         bindRevival: bindRevivalTruth,
+        mixedBidAnswers: mixedBidTruthAnswers,
+        bindMixedBid: bindMixedBidTruth,
         bidAnswers: bidTruthAnswers,
         bindBid: bindBidTruth,
         traitorAnswers: traitorTruthAnswers,
@@ -40465,6 +40519,13 @@ export function viewGame(state: Game, id: string) {
       g.truthtrance.question.kind === 'mixedRevival' ? mixedRevivalTruthAnswers(g, me, g.truthtrance.question) : null,
     mixedRevivalPromises: projectedMixedRevivalPromises(g, id),
     revivalExpressionPromiseGuide: projectedRevivalExpressionPromiseGuide(g, id),
+    truthMixedBidTargets: bidQuestionWindow(g) ? g.players.filter(player => {
+      const lot = bidOpportunity(g)!;
+      return lot.eligible.includes(player.id) && !lot.passed.includes(player.id) && lot.bidder !== player.id;
+    }).map(player => player.id) : [],
+    truthMixedBidAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
+      g.truthtrance.question.kind === 'mixedBid' ? mixedBidTruthAnswers(g, me, g.truthtrance.question) : null,
+    mixedBidPromises: projectedMixedBidPromises(g, id),
     bidPromises: projectedBidPromises(g, id),
     bidPromiseGuide: projectedBidPromiseGuide(g, id),
     truthtrance: g.truthtrance ?? null,

@@ -20,8 +20,10 @@ export function BidPromiseGuideButton(props: BidPromiseProps) {
       current.turn === turn && current.bidPromiseLot?.turn === turn && current.bidPromiseLot.lot === number &&
       current.bidPromiseGuide === guide && current.bidPromiseGuide.action === action && JSON.stringify(action) === signature &&
       typeof event === 'string' && (action.type === 'bid' || action.type === 'passBid') &&
-      current.bidPromises.some(promise => promise.event === event && promise.player === actor &&
-        promise.turn === turn && promise.lot === number && !promise.fulfilled && !promise.released) &&
+      (current.bidPromises.some(promise => promise.event === event && promise.player === actor &&
+        promise.turn === turn && promise.lot === number && !promise.fulfilled && !promise.released) ||
+        current.mixedBidPromises.some(promise => promise.event === event && promise.player === actor &&
+          promise.turn === turn && promise.lot === number && !promise.fulfilled && !promise.released)) &&
       !!me && !me.autopilot && !current.truthtrance && !current.response && !current.decision &&
       !current.phaseOpening && !current.automaticContinuationPending && !current.roomControl?.paused && !current.roomControl?.closed;
   };
@@ -37,7 +39,7 @@ export function BidPromises(props: BidPromiseProps) {
   const own = props.game.bidPromises.filter(promise => promise.player === props.game.me);
   if (!own.length) return null;
   const waiting = own.some(promise => !promise.fulfilled && !promise.released &&
-    promise.turn === props.game.turn && promise.lot === props.game.bidPromiseLot?.lot);
+    props.game.bidPromiseLot?.turn === props.game.turn && promise.turn === props.game.turn && promise.lot === props.game.bidPromiseLot.lot);
   return <section className="notice space-y-3" aria-label="Your Truthtrance bid promises" id="bid-promise-guidance">
     <h3>Your bid promises</h3>
     <ul>{own.map(promise => <li key={promise.event}>
@@ -57,6 +59,6 @@ export function BidPromises(props: BidPromiseProps) {
       Ordinary bids keep their existing funding and payment rules.
     </p>
     {waiting && props.game.auction?.active !== props.game.me && <p>Your next bid opportunity is still ahead; this promise remains visible while others bid.</p>}
-    <BidPromiseGuideButton {...props} />
+    {waiting && <BidPromiseGuideButton {...props} />}
   </section>;
 }

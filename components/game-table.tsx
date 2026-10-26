@@ -31,6 +31,7 @@ import { BribePromises } from './bribe-promises';
 import { BribeExpressionPromises } from './bribe-expression-promises';
 import { MixedBribePromises } from './mixed-bribe-promises';
 import { MixedRevivalPromises } from './mixed-revival-promises';
+import { MixedBidPromises } from './mixed-bid-promises';
 import { RevivalPromises } from './revival-promises';
 import { RevivalExpressionPromises } from './revival-expression-promises';
 import { LeaderRevivalPromises } from './leader-revival-promises';
@@ -2052,6 +2053,7 @@ export function GameTable({
           {g.status === 'playing' && <LeaderRevivalPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <RevivalPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <BidPromises game={g} send={act} busy={busy} />}
+          {g.status === 'playing' && <MixedBidPromises game={g} send={act} busy={busy} />}
           {g.guildBetrayalReaction ? (
             <NexusGuildBetrayal game={g} act={act} busy={reactionBusy} />
           ) : g.richeseBetrayalReaction ? (

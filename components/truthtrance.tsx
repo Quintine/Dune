@@ -2,6 +2,8 @@
 
 import { MixedBribeFields, mixedBribeInputError } from './mixed-bribe-fields';
 import { MixedRevivalFields, mixedRevivalInputError } from './mixed-revival-fields';
+import { MixedBidFields, mixedBidInputError } from './mixed-bid-fields';
+import type { BidActionClaim } from '@/game/mixed-bid-question';
 import type { RevivalActionClaim } from '@/game/mixed-revival-question';
 import type { BribePaymentClaim } from '@/game/mixed-bribe-question';
 import { MixedMovementFields, mixedMovementInputError } from './mixed-movement-fields';
@@ -77,7 +79,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -130,6 +132,11 @@ export function Truthtrance({
     { kind: 'action', action: { kind: 'forces', counter: 'total', minimum: 1 } },
   ] });
   const mixedRevivalError = mixedRevivalInputError(mixedRevival, g, target);
+  const [mixedBid, setMixedBid] = useState<MixedActionExpression<BidActionClaim>>({ kind: 'and', terms: [
+    { kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 10 } },
+    { kind: 'action', action: { minimum: 4 } },
+  ] });
+  const mixedBidError = mixedBidInputError(mixedBid, g, target);
   const [shipment, setShipment] = useState<ShipmentExpression>({ territory: 'carthag', minimum: 6 });
   const [mixed, setMixed] = useState<MixedShipmentExpression>({
     kind: 'and',
@@ -177,6 +184,7 @@ export function Truthtrance({
         : kind === 'bribeExpression' ? { kind, target, turn: g.turn, claim: bribeExpression }
         : kind === 'bribe' ? { kind, target, ...bribeClaim }
         : kind === 'revival' ? { kind, target, ...revivalClaim }
+        : kind === 'mixedBid' ? { kind, target, turn: bidClaim.turn, lot: bidClaim.lot, mixed: mixedBid }
         : kind === 'bid' ? { kind, target, ...bidClaim }
         : kind === 'shipment'
           ? {
@@ -284,6 +292,13 @@ export function Truthtrance({
                         )}
                       </div>
                     ))}
+                  </>
+                ) : w.question!.kind === 'mixedBid' ? (
+                  <>
+                    <p className="notice">Answer the whole mixed question. Current facts freeze now; any remaining bid conditions concern future accepted declarations in this ordinary lot. No keeps the whole expression false. Passing, funding, Karama and the original winning payment still follow the auction rules. An unknown fact requires a commitment that guarantees the whole answer; otherwise choose I don’t know.</p>
+                    {(g.truthMixedBidAnswers ?? []).map(answer => <div key={answer}>
+                      {button(answer === 'unknown' ? 'I don’t know' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
                   </>
                 ) : w.question!.kind === 'mixedRevival' ? (
                   <>
@@ -490,6 +505,7 @@ export function Truthtrance({
                   <option value="leaderRevival">Bind a named leader revival this turn</option>
                   <option value="revival">Bind ordinary force revivals this turn</option>
                   <option value="bid">Bind a bid in this ordinary lot</option>
+                  <option value="mixedBid">Combine current facts and ordinary bids</option>
                   <option value="traitorCall">Bind this battle’s Traitor declaration</option>
                   <option value="shipment">
                     Bind a shipment from reserves
@@ -505,7 +521,14 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'mixedRevival' ? (
+              {kind === 'mixedBid' ? (
+                <>
+                  <MixedBidFields value={mixedBid} game={g} target={target}
+                    disabled={busy || !g.truthMixedBidTargets.includes(target)} onChange={setMixedBid} />
+                  {!g.truthMixedBidTargets.includes(target) && <p className="notice">Choose an eligible participant with a future bid opportunity in this quiet ordinary lot.</p>}
+                  <p className="notice" aria-label="Public mixed bid question preview">{mixedBidError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'mixedRevival' ? (
                 <>
                   <MixedRevivalFields value={mixedRevival} game={g} target={target}
                     disabled={busy || !g.truthMixedRevivalTargets.includes(target)} onChange={setMixedRevival} />
@@ -705,6 +728,7 @@ export function Truthtrance({
                 (kind === 'bribeExpression' && (!!bribeExpressionError || !validBribeExpressionRecipients || !g.truthBribeExpressionTargets.includes(target))) ||
                 (kind === 'bribe' && (!!bribeClaimInputError(bribeClaim, bribeRecipients) || !g.truthBribeTargets.includes(target))) ||
                 (kind === 'revival' && (!!revivalClaimInputError(revivalClaim) || !g.truthRevivalTargets.includes(target))) ||
+                (kind === 'mixedBid' && (!!mixedBidError || !g.truthMixedBidTargets.includes(target))) ||
                 (kind === 'bid' && (!!bidClaimInputError(bidClaim) || !g.truthBidTargets.includes(target))) ||
                 (kind === 'traitorCall' && !g.truthTraitorTargets.includes(target)) ||
                   (kind === 'mixedShipment' &&

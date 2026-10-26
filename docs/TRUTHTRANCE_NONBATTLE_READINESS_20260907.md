@@ -1,5 +1,10 @@
 # Truthtrance nonbattle readiness and first implementation slice
 
+The [mixed current-lot bid follow-up](TRUTHTRANCE_MIXED_BIDS.md) composes
+answer-time facts with future accepted ordinary declarations. Native scalar
+thresholds exactly represent remaining same-lot AND/OR minima; phase-wide and
+native special auction commitments remain unfinished.
+
 The [mixed ordinary-Revival follow-up](TRUTHTRANCE_MIXED_REVIVAL.md) composes
 answer-time facts with future native force/personal-leader AND/OR returns.
 It supersedes that mixed-family absence only, using the existing whole Revival

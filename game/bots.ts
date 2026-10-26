@@ -1320,6 +1320,10 @@ function policyActions(g: GameView): Action[] {
       return w.passed.includes(me.id) ? [] : [{ type: 'truthPass' }];
     if (w.stage === 'answer') {
       if (w.question?.target !== me.id) return [];
+      if (w.question.kind === 'mixedBid') {
+        const answer = g.truthMixedBidAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'mixedRevival') {
         const answer = g.truthMixedRevivalAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];

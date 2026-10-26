@@ -16,6 +16,39 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / current facts and ordinary bids — 26 October. Prototyped / Partial.**
+Full mixed AND/OR questions freeze facts before actual current-lot declarations
+and winning invoices. Remaining same-interval minima reduce exactly (AND max,
+OR min) to the existing native bid ledger; constants need no bid. Whole No,
+original opportunity/funding/Karama/payment/accepted release and actual close
+remain. Own raw question/aggregate status hides reduced minima, frozen values
+and physical lot source. Shared full editor, fixed public lot, raw Ask/private
+answers, one live exact guide and four minimal policies connect.
+
+Root integration with disjoint controls/native lanes passes **20 files,225/225**,
+types/lint/build and **ten native paths**,33 GameTable SSR renders/six actual
+guide callbacks plus one editor callback followed by native Ask. Original H/A/E
+base33 Basic22/Advanced25 prefixes add11: accepted4 fulfills before actual
+invoice changes E10→6, retaining the original fact. Edited true OR needs no
+binding; false AND permits a real qualifying bid. Native unknown OR Yes requires
+actual4; AND No permits lower3 only through the real close. Nested AND4/OR7,5
+requires5. Waiting20 adds12: A10 releases E's impossible answer and actual A
+payment earns original E income10. Waiting20 adds14: bribe7 fails, bribe6 plus
+actual bid4/invoice ends E0. Original Karama25 adds12: actual11 declaration and
+physical free invoice. All33 cards remain physical; four policies actually bid.
+
+Six pure,19 native,three original-funding and nine controlled cases supplement
+existing shared/scalar/auction evidence. Two original Truths keep No6/Yes4 with
+one real5 declaration and retain shipment9 funding. V1 types pass; lint catches
+a nested shared-editor helper call. The adapter restores established tail
+composition with fixed timing in the legend; all v2 checks pass. Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-mixed-bid-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-mixed-bid-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Other families, correlated unknowns, phase-wide/special auctions, further
+preparations/compositions and final rules/browser/deployed/assurance remain.
+[Authority, exact native reduction and evidence](TRUTHTRANCE_MIXED_BIDS.md).
+
 **Truthtrance / current facts and ordinary Revival — 26 October. Prototyped / Partial.**
 Full mixed AND/OR questions now freeze facts at the answer and bind only the
 necessary native force/personal-leader obligation. Constants need no return;

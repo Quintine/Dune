@@ -1,3 +1,4 @@
+import { parseBidActionClaim, MIXED_BID_MAX_DEPTH, MIXED_BID_MAX_LEAVES, type MixedBidClaim } from './mixed-bid-question';
 import { parseRevivalActionClaim, type MixedRevivalClaim } from './mixed-revival-question';
 import { parseBribePaymentClaim, type MixedBribeClaim } from './mixed-bribe-question';
 import { parseMixedActionExpression, mixedActionExpressionText, type MixedActionExpression } from './mixed-action-question';
@@ -72,6 +73,7 @@ export type TruthFact =
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type MixedMovementClaim = { turn: number; mixed: MixedActionExpression<MovementClaim> };
 export type TruthQuestion =
+  | ({ kind: 'mixedBid'; target: string } & MixedBidClaim)
   | ({ kind: 'mixedRevival'; target: string } & MixedRevivalClaim)
   | ({ kind: 'mixedBribe'; target: string } & MixedBribeClaim)
   | ({ kind: 'mixedMovement'; target: string } & MixedMovementClaim)
@@ -321,6 +323,19 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       !g.pendingKarama && !g.pendingTreacheryDiscard,
     'Choose a remaining native Revival opportunity this turn in a supported table and finish pending decisions.');
     return { kind: 'revival', target: v.target, ...claim };
+  }
+  if (v.kind === 'mixedBid') {
+    check(Object.keys(v).sort().join(',') === 'kind,lot,mixed,target,turn',
+      'Supply the current ordinary lot, turn, complete mixed bid question and respondent.');
+    const claim = parseBidClaim({ turn: v.turn, lot: v.lot, minimum: 1 });
+    check(bidPromiseModeSupported(g) && g.status === 'playing' && g.phase === 3 && g.auction &&
+      !g.currentAuctionSale && !g.richeseAuction && !g.ixAuction && !g.response && !g.decision &&
+      !g.phaseOpening && !g.pendingKarama && !g.pendingTreacheryDiscard && claim.turn === g.turn &&
+      claim.lot === g.auction.index + 1, 'Choose the current ordinary lot in a quiet supported window.');
+    const respondent = g.players.find(player => player.id === v.target)!;
+    return { kind: 'mixedBid', target: v.target as string, turn: claim.turn, lot: claim.lot,
+      mixed: parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent), parseBidActionClaim,
+        { maxLeaves: MIXED_BID_MAX_LEAVES, maxDepth: MIXED_BID_MAX_DEPTH }) };
   }
   if (v.kind === 'bid') {
     check(Object.keys(v).sort().join(',') === 'kind,lot,minimum,target,turn',
@@ -605,6 +620,8 @@ export function truthQuestionText(
       return `you currently hold ${f.compare === 'eq' ? 'exactly' : f.compare === 'gte' ? 'at least' : 'at most'} ${f.value} spice`;
     return `(${f.terms.map(clause).join(f.kind === 'and' ? ' AND ' : ' OR ')})`;
   };
+  if (q.kind === 'mixedBid') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
+    action => `you ${bidClaimText({ turn: q.turn, lot: q.lot, minimum: action.minimum })}`)}?`;
   if (q.kind === 'mixedRevival') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => `you ${revivalExpressionText(action, id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))} before your Revival opportunity ends`)}?`;
   if (q.kind === 'mixedBribe') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
@@ -657,6 +674,8 @@ export function resolveTruthAction(
     bindLeaderRevival?: (g: Game, p: Player, claim: LeaderRevivalClaim, answer: boolean, asker: string) => void;
     revivalAnswers?: (g: Game, p: Player, claim: RevivalClaim) => TruthAnswer[];
     bindRevival?: (g: Game, p: Player, claim: RevivalClaim, answer: boolean, asker: string) => void;
+    mixedBidAnswers?: (g: Game, p: Player, claim: MixedBidClaim) => TruthAnswer[];
+    bindMixedBid?: (g: Game, p: Player, claim: MixedBidClaim, answer: boolean, asker: string) => void;
     bidAnswers?: (g: Game, p: Player, claim: BidClaim) => TruthAnswer[];
     bindBid?: (g: Game, p: Player, claim: BidClaim, answer: boolean, asker: string) => void;
     traitorAnswers?: (g: Game, p: Player) => TruthAnswer[];
@@ -807,6 +826,9 @@ export function resolveTruthAction(
         if (w.question.kind === 'revival')
           check(effects.revivalAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a respondent with a remaining native Revival opportunity.');
+        if (w.question.kind === 'mixedBid')
+          check(effects.mixedBidAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a mixed current-fact and bid question with an available ordinary-lot opportunity.');
         if (w.question.kind === 'bid')
           check(effects.bidAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a bidder with a remaining ordinary opportunity in this lot.');
@@ -910,6 +932,11 @@ export function resolveTruthAction(
           check(effects.revivalAnswers && effects.bindRevival && effects.revivalAnswers(g, p, q).includes(a.answer),
             'Choose an answer consistent with native force revivals and earlier answers.');
           if (a.answer !== 'unknown') effects.bindRevival(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'mixedBid') {
+          check(effects.mixedBidAnswers && effects.bindMixedBid && effects.mixedBidAnswers(g, p, q).includes(a.answer),
+            'Choose a whole mixed-bid answer compatible with current facts and native ordinary declarations.');
+          if (a.answer !== 'unknown') effects.bindMixedBid(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'bid') {
           check(effects.bidAnswers && effects.bindBid && effects.bidAnswers(g, p, q).includes(a.answer),
