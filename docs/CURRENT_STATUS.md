@@ -16,6 +16,36 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / combined payments, shipment and movement — 26 October. Prototyped / Partial.**
+One whole current-turn AND/OR question now combines ordinary cumulative payer
+payments, one future original reserve shipment and physical ground-group maxima,
+with optional frozen facts. Private signed alternatives share native funding,
+fees, pieces and prior obligations without installing a chosen route. Transport
+closes at actual own Movement end; a funded payment alternative can remain
+through Mentat. Actual payer payments count once, independently of delayed
+recipient receipts. Full controls, persistent own history, exact phase/event
+native guides and four minimal profiles connect.
+
+Root integration with disjoint helper/controls/native lanes and bounded review
+passes **23 files,234/234**, types/lint/build and **three native paths**,11
+GameTable SSR renders/three actual answer callbacks/five guide callbacks.
+Original two-Truth source27 adds9 for frozen facts, real pay2, paid ship1/move1;
+source27 adds14 for own transport close followed by late Mentat payment.
+Original Advanced Mentat35 adds9 for late payment and actual turn continuation.
+Original physical inventories remain; no played source state is installed.
+Four genuine funding cases reject incompatible Bid/payment and Revival/payment
+answers in both acceptance orders while preserving and fulfilling earlier rows.
+A controlled public Inflation Double variant checks the real payment fence.
+Cumulative partial payments retain their remaining funded alternative.
+
+Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-turn-action-proof-v1/`;
+journeys/HTML: adjacent `20261026-truth-turn-action-runtime/`.
+Other action families, broader preparations/modules and final rules/browser/
+deployed/recovery/privacy/custody acceptance remain. No database/save/server/
+reset/restart/deployment operation is performed; no complete mode is certified.
+[Contract, authority and evidence](TRUTHTRANCE_TURN_ACTIONS.md).
+
 **Truthtrance / earlier combined shipment and movement — 26 October. Prototyped / Partial.**
 The combined travel question now uses the existing clean native phases0–5
 forecast in Basic/Advanced. Original current Charity/Revival/auction obligations

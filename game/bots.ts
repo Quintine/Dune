@@ -1374,6 +1374,10 @@ function policyActions(g: GameView): Action[] {
         const answer = g.truthBidAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];
       }
+      if (w.question.kind === 'turnActions') {
+        const answer = g.truthTurnActionAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'travel') {
         const answer = g.truthTravelAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];
@@ -4260,6 +4264,9 @@ export function botActions(g: GameView): Action[] {
   if (g.homeworldTupileBlocked) return [];
   if (g.decision?.kind === 'homeworldTupileCleanup' || g.homeworldTupileCleanup)
     return tupileCleanupActions(g);
+  if (g.turnActionGuide && g.status === 'playing' &&
+      !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending)
+    return [g.turnActionGuide.action];
   if (g.movementExpressionPromiseGuide && g.status === 'playing' &&
       !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending)
     return [g.movementExpressionPromiseGuide.action];

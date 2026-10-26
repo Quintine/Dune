@@ -1,5 +1,20 @@
 # Rule decision index
 
+## Combined payments and native transport — 26 October 2026
+
+Compose the existing publisher November2020 FAQp8 current-turn AND/OR and
+supplied Advanced physical39 compliance/release authority. Ordinary payer
+payments are cumulative future events; shipment and physical ground groups
+retain their separate native meaning. One whole answer preserves alternatives
+without installing a selected branch. Transport closes at actual own Movement
+end; a funded payment alternative can remain through current-turn Mentat.
+Earlier obligations share native resources and actual payment intervals.
+This extends the provisional funded-current-purse/owned-stage interpretation,
+not the complete printed range of questions. No fees, gifts or later recipient
+receipts count as ordinary payer progress. Uniform definite-answer readiness
+reopening preserves the existing private boundary. Broader action/module and
+complete-mode acceptance remain. [Contract/evidence](TRUTHTRANCE_TURN_ACTIONS.md).
+
 ## Earlier combined travel and native preparation — 26 October 2026
 
 Extend the recorded combined shipment/ground prototype through the existing
