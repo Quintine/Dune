@@ -25,6 +25,7 @@ const bid = (minimum = 3, lot = 2): Expression => ({ kind: 'action', action: { k
 const forceRevival = (counter: 'total' | 'normal' | 'elite' = 'total', minimum = 1): Expression =>
   ({ kind: 'action', action: { kind: 'forces', counter, minimum } });
 const leaderRevival = (leader: string): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
+const finalAlliance = (partner = 'r'): Expression => ({ kind: 'action', action: { kind: 'alliance', partner } });
 const claim = (): Expression => ({ kind: 'or', terms: [payment(), { kind: 'and', terms: [fact(), physical('ship', 3), physical('move', 4, 'arrakeen')] }] });
 
 function elements(node: ReactNode): Element[] {
@@ -73,6 +74,14 @@ function auction(next: Action = { type: 'passBid' }): GameView {
   game.bidPromiseLot = { turn: 2, lot: 2 };
   game.auction = { bid: 7, bidder: next.type === 'decision' ? 'p' : 'a', active: 'p', remaining: 2, inspectionBlocked: null, card: null };
   if (next.type === 'decision') { game.auction.active = 'a'; game.decision = { kind: 'auctionPayment', player: 'p' }; }
+  return game;
+}
+function nexus(next: Action = { type: 'alliance', target: 'r' }): GameView {
+  const game = projected(1, next);
+  game.nexus = true; game.spiceWindow = null; game.active = 'a';
+  game.alliancePromiseNexus = { turn: 2 }; game.truthMixedAllianceTargets = ['p', 'a', 'r'];
+  game.allianceOffers = { r: 'p' };
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [finalAlliance(), payment()] };
   return game;
 }
 function revival(next: Action = { type: 'revive', amount: 3, elite: 1 }): GameView {
@@ -251,6 +260,120 @@ void test('turn-action preparation history and guides use original public leaves
   assert.match(answerMarkup, /ordinary force returns add together/); assert.match(answerMarkup, /Bids close with their lot/);
 });
 
+void test('turn-action alliance fields offer every public other partner including the current ally only in the open native Nexus', () => {
+  const game = nexus(); game.players.find(player => player.id === 'p')!.ally = 'r'; game.players.find(player => player.id === 'r')!.ally = 'p';
+  for (const player of game.players) for (const key of ['hand', 'traitors', 'faceDancers', 'spice', 'forces', 'reserves', 'leaders', 'tanks'])
+    Object.defineProperty(player, key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
+  Object.defineProperty(game.turnActionPromises[0], 'alliance', { get() { throw Error('No private alliance binding'); } });
+  const e = editor(physical(), false, game);
+  select(e.tree(), '1', 'action', 'alliance'); assert.deepEqual(e.value, finalAlliance('')); assert.ok(e.error());
+  const options = elements(find(e.tree(), 'id', 'truth-turn-action-1-partner')).filter(element => element.type === 'option');
+  assert.deepEqual(options.map(option => option.props.value), ['', 'a', 'r']);
+  select(e.tree(), '1', 'partner', 'r'); assert.equal(e.error(), null); assert.deepEqual(e.value, finalAlliance());
+  select(e.tree(), '1', 'partner', 'p'); select(e.tree(), '1', 'partner', 'missing'); assert.deepEqual(e.value, finalAlliance());
+  for (const partner of ['', 'p', 'missing', ' r ']) assert.ok(turnActionInputError(finalAlliance(partner), game, 'p'));
+  select(e.tree(), '1', 'partner', ''); assert.ok(e.error()); select(e.tree(), '1', 'partner', 'a'); assert.equal(e.error(), null);
+  assert.match(e.html(), /actual final membership when this current Nexus closes/);
+  assert.match(e.html(), /No can allow temporary membership followed by a break/);
+  const frozen = editor(finalAlliance(), true, game); select(frozen.tree(), '1', 'partner', 'a'); select(frozen.tree(), '1', 'action', 'payment');
+  assert.equal(frozen.changes, 0); assert.deepEqual(frozen.value, finalAlliance());
+  for (const change of [
+    (current: GameView) => { current.status = 'setup'; }, (current: GameView) => { current.phase = 2; },
+    (current: GameView) => { current.nexus = false; },
+    (current: GameView) => { current.spiceWindow = { territory: 'hagga_basin', sector: 12, amount: 6, harvested: false }; },
+    (current: GameView) => { current.alliancePromiseNexus = null; }, (current: GameView) => { current.alliancePromiseNexus!.turn = 1; },
+    (current: GameView) => { current.truthMixedAllianceTargets = []; },
+    (current: GameView) => { current.response = { kind: 'guildIncome', owner: 'a', amount: 1, passed: [] }; },
+    (current: GameView) => { current.decision = { kind: 'auctionPayment', player: 'p' }; },
+    (current: GameView) => { current.phaseOpening = { passed: [] }; },
+    (current: GameView) => { current.automaticContinuationPending = true; },
+  ]) {
+    const current = nexus(); change(current); const invalid = editor(finalAlliance(), false, current);
+    assert.ok(invalid.error()); assert.match(invalid.html(), /Alliance conditions require the current open Nexus/);
+  }
+});
+
+void test('turn-action alliance leaves retain the complete sixteen-clause and four-level optional-fact expression', () => {
+  const game = nexus(), e = editor({ kind: 'or', terms: [finalAlliance(), fact()] }, false, game);
+  for (let count = 3; count <= 16; count++) {
+    click(control(e.tree(), 'add-action-1')); select(e.tree(), `1.${count}`, 'action', 'alliance');
+    select(e.tree(), `1.${count}`, 'partner', count % 2 ? 'a' : 'r');
+  }
+  assert.equal(e.error(), null); assert.match(e.html(), /16 \/ 16 conditions/);
+  const full = structuredClone(e.value), changes = e.changes;
+  for (const key of ['add-action-1', 'add-fact-1', 'nested-and-1', 'nested-or-1', 'and-1.1', 'or-1']) {
+    assert.equal(control(e.tree(), key).props.disabled, true); click(control(e.tree(), key));
+  }
+  assert.deepEqual(e.value, full); assert.equal(e.changes, changes);
+  const deep = editor({ kind: 'and', terms: [fact(), finalAlliance()] }, false, game);
+  click(control(deep.tree(), 'or-1.2')); click(control(deep.tree(), 'and-1.2.1')); click(control(deep.tree(), 'or-1.2.1.1'));
+  assert.match(deep.html(), /4 \/ 4 levels of grouping/); assert.equal(deep.error(), null);
+  assert.equal(control(deep.tree(), 'and-1.2.1.1.1').props.disabled, true);
+});
+
+void test('turn-action Nexus guide forwards only exact breaks, withdrawals, reciprocal acceptances and Ready without private alliance reads', () => {
+  for (const advanced of [false, true]) for (const kind of ['accept', 'break', 'withdraw', 'ready'] as const) {
+    const game = nexus(kind === 'ready' ? { type: 'ready' } : { type: 'alliance', target: kind === 'accept' ? 'r' : null });
+    game.advanced = advanced;
+    if (kind === 'break') { game.players.find(player => player.id === 'p')!.ally = 'r'; game.players.find(player => player.id === 'r')!.ally = 'p'; }
+    if (kind === 'withdraw') game.allianceOffers = { p: 'r' };
+    if (kind === 'ready') {
+      game.players.find(player => player.id === 'p')!.ally = 'r'; game.players.find(player => player.id === 'r')!.ally = 'p';
+      game.turnActionPromises[0].mixed = { kind: 'and', terms: [finalAlliance(), payment()] }; game.turnActionPromises[0].answer = false;
+    }
+    for (const key of ['alliance', 'compiled', 'preparation', 'progress', 'payments'])
+      Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
+    for (const player of game.players) for (const key of ['hand', 'traitors', 'faceDancers', 'spice', 'forces', 'reserves'])
+      Object.defineProperty(player, key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
+    const sent: Action[] = [], button = guide({ game, busy: false, act(value) { sent.push(value); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    assert.equal(game.turnActionPromises[0].fulfilled, false, 'A guide dispatch does not announce final Nexus fulfillment.');
+    const html = markup(game);
+    assert.match(html, kind === 'accept' ? /Accept Recipient’s alliance invitation/ : kind === 'break' ? /Break your current alliance/
+      : kind === 'withdraw' ? /Withdraw your alliance offer/ : /Confirm Ready for this Nexus/);
+    assert.match(html, /forming an alliance does not fulfill it early/);
+    assert.doesNotMatch(html, /Fulfilled: this whole commitment is complete/);
+  }
+  const invalid = [nexus(), nexus(), nexus(), nexus()];
+  invalid[0].allianceOffers = {};
+  invalid[1].turnActionGuide!.action.target = 'p';
+  invalid[2].turnActionGuide!.action.target = 'missing';
+  invalid[3].players.find(player => player.id === 'r')!.ally = 'a';
+  for (const game of invalid) {
+    const sent: Action[] = [], button = guide({ game, busy: false, act(value) { sent.push(value); } });
+    assert.equal(button.props.disabled, true); press(button); assert.deepEqual(sent, []);
+  }
+});
+
+void test('turn-action Nexus callbacks expire with public consent, membership, readiness, source and quiet-window changes', () => {
+  const changes: ((game: GameView) => void)[] = [
+    game => { game.nexus = false; }, game => { game.phase = 2; }, game => { game.turn = 3; }, game => { game.me = 'a'; },
+    game => { game.spiceWindow = { territory: 'hagga_basin', sector: 12, amount: 6, harvested: false }; },
+    game => { game.alliancePromiseNexus = null; }, game => { game.alliancePromiseNexus = { turn: 2 }; },
+    game => { game.alliancePromiseNexus!.turn = 1; }, game => { game.allianceOffers = {}; }, game => { game.allianceOffers.a = 'p'; },
+    game => { game.ready.push('p'); }, game => { game.ready.push('a'); },
+    game => { game.players.find(player => player.id === 'p')!.ally = 'a'; }, game => { game.players.find(player => player.id === 'a')!.ally = 'r'; },
+    game => { game.players = game.players.filter(player => player.id !== 'r'); },
+    game => { game.turnActionGuide = { ...game.turnActionGuide! }; }, game => { game.turnActionGuide!.action = { ...game.turnActionGuide!.action }; },
+    game => { game.turnActionGuide!.action.turnActionPromisePhase = 2; }, game => { game.turnActionGuide!.action.turnActionPromiseEvent = 'stale'; },
+    game => { game.turnActionPromises[0].event = 'stale'; }, game => { game.turnActionPromises[0].fulfilled = true; },
+    game => { game.truthtrance = answering(1).truthtrance; }, game => { game.phaseOpening = { passed: [] }; },
+    game => { game.response = { kind: 'guildIncome', owner: 'a', amount: 1, passed: [] }; }, game => { game.decision = { kind: 'auctionPayment', player: 'p' }; },
+    game => { game.automaticContinuationPending = true; }, game => { game.roomControl = { paused: true, joinLocked: false, revision: 1, updatedAt: null }; },
+  ];
+  for (const action of [{ type: 'alliance', target: 'r' }, { type: 'ready' }] satisfies Action[]) for (const change of changes) {
+    const game = nexus(action), sent: Action[] = [], button = guide({ game, busy: false, act(value) { sent.push(value); } });
+    assert.equal(button.props.disabled, false); change(game); press(button); assert.deepEqual(sent, []);
+  }
+  const busy = { game: nexus(), busy: false, act() { assert.fail('Busy Nexus guide cannot send'); } };
+  const button = guide(busy); busy.busy = true; press(button);
+  const replaced = { game: nexus(), busy: false, act() { assert.fail('Replaced Nexus view cannot send'); } };
+  const old = guide(replaced); replaced.game = { ...replaced.game }; press(old);
+  const source = nexus({ type: 'ready' }); source.nexus = false;
+  const retained = guide({ game: source, busy: false, act() { assert.fail('A closed rendered Nexus cannot become a fresh opportunity'); } });
+  source.nexus = true; press(retained);
+});
+
 void test('turn-action history retains original own whole questions and terminal status without private compiled branches', () => {
   const game = projected(); game.turnActionGuide = null;
   game.turnActionPromises.push(
@@ -259,7 +382,7 @@ void test('turn-action history retains original own whole questions and terminal
     { ...game.turnActionPromises[0], event: 'controlled-release', released: true },
     { ...game.turnActionPromises[0], event: 'controlled-foreign', player: 'a', mixed: { kind: 'and', terms: [fact({ kind: 'hand', name: 'Poison Blade' }), physical('ship', 19, 'sietch_tabr')] } },
   );
-  for (const promise of game.turnActionPromises) for (const key of ['compiled', 'binding', 'factAnswers', 'residual', 'route', 'payments', 'progress', 'preparation', 'prep', 'bids', 'returns', 'leaders'])
+  for (const promise of game.turnActionPromises) for (const key of ['compiled', 'binding', 'factAnswers', 'residual', 'route', 'payments', 'progress', 'preparation', 'prep', 'bids', 'returns', 'leaders', 'alliance'])
     Object.defineProperty(promise, key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
   const html = markup(game);
   for (const text of [/Turn 1/, /You answered Yes/, /You answered No/, /you hold Shield/, / OR /, / AND /,
@@ -314,7 +437,7 @@ void test('turn-action ordinary-payment guide retains native out-of-turn timing 
   assert.match(markup(game), /Ready to end this turn while honoring your whole answer/);
   game.ready.push('p'); press(button); assert.equal(sent.length, 1);
   for (const phase of [1, 7]) {
-    const current = projected(phase, { type: 'ready' }); current.nexus = true; current.spiceWindow = null;
+    const current = phase === 1 ? nexus({ type: 'ready' }) : projected(phase, { type: 'ready' });
     const dispatched: Action[] = [], ready = guide({ game: current, busy: false, act(value) { dispatched.push(value); } });
     assert.equal(ready.props.disabled, false); press(ready); assert.equal(dispatched[0], current.turnActionGuide!.action);
     if (phase === 1) { current.nexus = false; press(ready); assert.equal(dispatched.length, 1); }

@@ -581,7 +581,7 @@ export function Truthtrance({
                   <option value="mixedBid">Combine current facts and ordinary bids</option>
                   <option value="traitorCall">Bind this battle’s Traitor declaration</option>
                   <option value="mixedTraitorCall">Combine current facts and this Traitor declaration</option>
-                  <option value="turnActions">Combine this turn’s bids, Revival, payments, shipment and ground movements</option>
+                  <option value="turnActions">Combine this Nexus’s alliances with this turn’s bids, Revival, payments, shipment and ground movements</option>
                   <option value="travel">Combine this turn’s shipment and ground movements</option>
                   <option value="shipment">
                     Bind a shipment from reserves
@@ -602,7 +602,7 @@ export function Truthtrance({
                 <>
                   <TurnActionFields value={turnActions} game={g} target={target}
                     disabled={busy || !g.truthTurnActionTargets.includes(target)} onChange={setTurnActions} />
-                  {!g.truthTurnActionTargets.includes(target) && <p className="notice">Choose a player with a supported ordinary bid, Revival, payment, shipment or ground-movement opportunity this turn.
+                  {!g.truthTurnActionTargets.includes(target) && <p className="notice">Choose a player with a supported alliance, ordinary bid, Revival, payment, shipment or ground-movement opportunity this turn.
                     Ordinary payments may remain available after their Shipment and Movement opportunity ends.</p>}
                   <p className="notice" aria-label="Public turn-action question preview">{turnActionsError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>

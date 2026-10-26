@@ -170,3 +170,70 @@ families and full-mode acceptance remain unfinished. Existing native stage
 promises retain their original scope. No comprehensive rule/recovery/privacy/
 custody or deployed gate opens, and this batch performs no database/save/server/
 reset/restart/deployment operation.
+
+## Combined final Nexus membership — 26 October 2026
+
+**Prototyped / Partial.** Add `{kind:'alliance',partner}` to the existing
+whole current-turn grammar, only during the current quiet ordinary native Nexus.
+Every raw partner is seated and different from the respondent, even when facts
+fold its branch away. Existing native consent and pairing scope remains.
+
+Optional private `alliance:{source,partner,closed}` binds the original Nexus.
+An open stage has no recorded final partner. Temporary invitations and pairs do
+not fulfill a clause; actual source close snapshots final membership. Whole No
+may permit a temporary pair and later require a break. Later ordinary payments
+and native preparation/transport retain their original separate deadlines.
+
+Native signed partner constraints reuse the existing reciprocal consent plans,
+while original payment and physical resource quotes fund the whole branch. No
+selected route or final-state witness enters real native ledgers or public
+views. Missing foreign consent cannot create a definite Yes; existing native
+Unknown/save/reask semantics require an otherwise funded native branch. A
+detached consent-only witness can establish Unknown, never Yes or a guide; it
+still runs native pairing, payment and later-stage resource checks. Known
+financial impossibility, including when consent is also absent, stays No.
+Every definite answer uniformly reopens own Nexus readiness, including constants.
+Actual closing preflight requires a whole completion after final membership is
+fixed; later actions retain any residual payment commitment. Actual ordinary
+payments uniformly reopen own current-Nexus readiness for the raw alliance
+history, including privately folded terminal constants. A new payment can
+require a later break before Ready. An owed payment is protected before offering
+its recipient a partnership; compatible alternatives remain available.
+
+The frozen source passes **19 files,221/221**, types/lint, production build and
+four native paths with37 GameTable SSR renders, four actual answer callbacks
+and16 guide callbacks. Original source47 +21 forms the final pair, pays2 and
+later ships1 for its real fee2. Allied source48 +29 performs own Ready, pay2,
+required break and whole No through actual turn end. Source47 +24 fixes None
+at the Nexus, then pays during late Mentat. No-consent source46 +6 answers
+Unknown and saves the actual original Truth, retaining both physical cards and
+installing no partner or promise. All original physical inventories remain;
+no played state is installed. These are local engine/SSR/callback journeys,
+not browser, hydration or deployed acceptance.
+
+Twenty-eight helper and21 control cases support18 new native cases. They cover
+actual final source close, both OR routes, paid temporary membership, whole No,
+later payment, foreign invitation withdrawal and departure, no reactivation,
+exact current own packets, uniform definite-answer readiness and four profiles.
+Focused additions distinguish known unaffordability even when consent is also
+missing, require renewed Ready after payment, protect an owed payee before a
+prospective alliance, and keep terminal constant receipts unchanged while
+uniformly reopening readiness.
+
+Bounded review finds an Unknown path that checked consent before the branch's
+money. A tagged private consent scenario now runs native pairing and all other
+resource checks; it can supply Unknown only, never a definite answer or guide.
+V1's runtime-first proof catches a private-driver assumption: the legal No guide
+may choose a break instead of Ready. V2 explicitly takes the legal manual Ready
+route before the payment/break sequence. Source is unchanged by that driver
+repair; types/lint, related tests and build run once after the smoke passes.
+
+Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-turn-alliance-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-turn-alliance-runtime/`.
+
+Current battle-plan and Traitor-declaration compositions, wider native
+preparation/order/module combinations, unknown-fact correlations and complete
+rules/browser/deployed/recovery/privacy/custody acceptance remain. All existing
+preview gates and deferred full AI refinement/calibration remain. This batch
+performs no database/save/server/reset/restart/deployment operation.

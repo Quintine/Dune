@@ -1,5 +1,21 @@
 # Rule decision index
 
+## Combined final Nexus membership — 26 October 2026
+
+Compose final current-Nexus membership with the whole native turn-action
+question, reusing existing publisher FAQp8/current-turn and supplied Advanced
+physical39 compliance/release authority plus the recorded reciprocal-alliance
+contract. Invitations and temporary pairs are not final membership. Actual
+original Nexus close fixes the partner; later payment/physical alternatives
+keep their own deadlines. Own Ready must retain completion after that snapshot.
+Definite answers and later ordinary payer actions uniformly reopen own Nexus
+readiness, including folded constants. Missing consent can permit Unknown/save
+only for an otherwise funded native branch, never an invented Yes; known
+unaffordability remains No. Signed native partner witnesses are private and
+never become a stored route. Existing pair/mode scope and other players'
+withdrawal rights remain. Broader action/module and full-mode acceptance stays
+open. [Contract/evidence](TRUTHTRANCE_TURN_ACTIONS.md#combined-final-nexus-membership--26-october-2026).
+
 ## Combined ordinary bids and Revival — 26 October 2026
 
 Extend the recorded current-turn AND/OR composition to the original ordinary

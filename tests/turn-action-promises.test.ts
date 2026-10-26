@@ -19,6 +19,7 @@ import {
   recordTurnActionPayment,
   recordTurnActionShipment,
   recordTurnActionRevival,
+  settleTurnActionAlliance,
   turnActionBranches,
   turnActionHasPayments,
   turnActionValue,
@@ -38,6 +39,7 @@ const bid = (minimum = 3, lot = 1): Expression => ({ kind: 'action', action: { k
 const forces = (minimum = 3, counter: 'total' | 'normal' | 'elite' = 'total'): Expression =>
   ({ kind: 'action', action: { kind: 'forces', counter, minimum } });
 const leader = (leader = 'atreides-0'): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
+const alliance = (partner = 'recipient'): Expression => ({ kind: 'action', action: { kind: 'alliance', partner } });
 const fact = (): Expression => ({ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 5 } });
 const group = (kind: 'and' | 'or', ...terms: Expression[]): Expression => ({ kind, terms });
 const signedTravel = (kind: 'ship' | 'move', territory = 'carthag', minimum = 3,
@@ -60,6 +62,9 @@ function prepared(mixed: Expression, answer = true, id = 'turn-action:1'): TurnA
     bid: { lot: 1, source: 'original-lot:1', maximum: 0, closed: false },
     revival: { total: 0, normal: 0, elite: 0, leaders: [], closed: false },
   } };
+}
+function nexus(mixed: Expression, answer = true, id = 'turn-action:1'): TurnActionPromise {
+  return { ...promise(mixed, answer, id), alliance: { source: 'nexus:1', partner: null, closed: false } };
 }
 
 void test('turn-action leaves retain exact native fields, safe payment minima and no payment twenty-force cap', () => {
@@ -556,4 +561,125 @@ void test('preparation metadata and actual events reject foreign sources, mismat
   const before = structuredClone(full);
   assert.throws(() => recordTurnActionRevival([full], 'respondent', 1, { kind: 'forces', amount: 1, elite: 0 }), TurnActionError);
   assert.deepEqual(full, before);
+});
+
+void test('final-alliance leaves use exact public partner fields and require a private original Nexus stage', () => {
+  const leaf = { kind: 'alliance', partner: 'recipient' };
+  assert.deepEqual(parseTurnActionLeaf(leaf), leaf);
+  assert.notEqual(parseTurnActionLeaf(leaf), leaf);
+  for (const invalid of [{ ...leaf, partner: '' }, { ...leaf, partner: ' recipient' },
+    { ...leaf, source: 'nexus:1' }, { ...leaf, closed: true }, { ...leaf, answer: true },
+    { ...leaf, turn: 1 }, { ...leaf, minimum: 1 }])
+    assert.throws(() => parseTurnActionLeaf(invalid), TurnActionError);
+  assert.throws(() => turnActionValue(promise(alliance())), TurnActionError);
+  const folded = promise(group('or', fact(), alliance()));
+  assert.equal(folded.compiled.kind, 'constant');
+  assert.throws(() => turnActionValue(folded), TurnActionError, 'Original alliance clauses require their source even after folding');
+  validateTurnActionPromises([nexus(group('and', alliance(), pay()))], seats);
+  validateTurnActionPromises([{ ...prepared(group('and', bid(), forces())),
+    alliance: { source: 'nexus:1', partner: null, closed: false } }], seats);
+  assert.equal('alliance' in closeTurnActionTransport([promise(pay())], 'respondent', 1)[0], false);
+});
+
+void test('open final membership remains unresolved and lazy branches retain whole AND OR and No meaning', () => {
+  const original = nexus(group('or', alliance(), pay()));
+  assert.equal(turnActionValue(original), false);
+  assert.deepEqual(branches(original), [[{ kind: 'alliance', partner: 'recipient', source: 'nexus:1', answer: true }], [signedPay()]]);
+  assert.deepEqual(branches(nexus(group('and', alliance(), pay()), false)), [
+    [{ kind: 'alliance', partner: 'recipient', source: 'nexus:1', answer: false }],
+    [signedPay('recipient', 3, 0, false)],
+  ]);
+  assert.deepEqual(branches(nexus(group('or', alliance(), pay()), false)), [[
+    { kind: 'alliance', partner: 'recipient', source: 'nexus:1', answer: false }, signedPay('recipient', 3, 0, false),
+  ]]);
+  assert.deepEqual(branches(nexus(group('and', alliance(), alliance()))), [[
+    { kind: 'alliance', partner: 'recipient', source: 'nexus:1', answer: true },
+  ]]);
+  assert.deepEqual(branches(nexus(group('and', alliance(), alliance('other')))), [],
+    'One final source has only one final partner');
+  assert.deepEqual(branches(nexus(group('or', alliance(), alliance('other')))), [
+    [{ kind: 'alliance', partner: 'recipient', source: 'nexus:1', answer: true }],
+    [{ kind: 'alliance', partner: 'other', source: 'nexus:1', answer: true }],
+  ]);
+});
+
+void test('exact Nexus closure snapshots final membership once and preserves later payment alternatives', () => {
+  const original = nexus(group('and', alliance(), pay()));
+  assert.equal(settleTurnActionAlliance([original], 1, 'other-nexus', { respondent: 'recipient' })[0], original);
+  assert.equal(settleTurnActionAlliance([original], 2, 'nexus:1', { respondent: 'recipient' })[0], original);
+  const closed = settleTurnActionAlliance([original], 1, 'nexus:1', { respondent: 'recipient' });
+  assert.deepEqual(closed[0].alliance, { source: 'nexus:1', partner: 'recipient', closed: true });
+  assert.equal(closed[0].fulfilled, false);
+  assert.deepEqual(branches(closed[0]), [[signedPay()]]);
+  assert.equal(settleTurnActionAlliance(closed, 1, 'nexus:1', { respondent: 'other' })[0], closed[0]);
+  assert.equal(recordTurnActionPayment(closed, 'respondent', 1, payment())[0].fulfilled, true);
+  assert.deepEqual(original.alliance, { source: 'nexus:1', partner: null, closed: false });
+  const alternative = settleTurnActionAlliance([nexus(group('or', alliance(), pay()))], 1, 'nexus:1', { respondent: null });
+  assert.equal(alternative[0].fulfilled, false);
+  assert.equal(alternative[0].released, false);
+  assert.deepEqual(branches(alternative[0]), [[signedPay()]]);
+  assert.equal(recordTurnActionPayment(alternative, 'respondent', 1, payment())[0].fulfilled, true);
+  validateTurnActionPromises(alternative, seats);
+});
+
+void test('a whole No made true by final membership releases while later actual payments still reject live No violations', () => {
+  const no = nexus(alliance(), false);
+  const conflict = settleTurnActionAlliance([no], 1, 'nexus:1', { respondent: 'recipient' });
+  assert.equal(conflict[0].released, true);
+  assert.equal(conflict[0].fulfilled, false);
+  assert.equal(turnActionValue(conflict[0]), true);
+  validateTurnActionPromises(conflict, seats);
+  const beforePayment = nexus(group('and', alliance(), pay()), false);
+  const matching = settleTurnActionAlliance([beforePayment], 1, 'nexus:1', { respondent: 'recipient' });
+  assert.equal(matching[0].released, false);
+  assert.equal(matching[0].fulfilled, false);
+  assert.deepEqual(branches(matching[0]), [[signedPay('recipient', 3, 0, false)]]);
+  assert.throws(() => recordTurnActionPayment(matching, 'respondent', 1, payment()), TurnActionError);
+  const paidFirst = recordTurnActionPayment([beforePayment], 'respondent', 1, payment());
+  assert.equal(paidFirst[0].released, false);
+  const conflictAfterPayment = settleTurnActionAlliance(paidFirst, 1, 'nexus:1', { respondent: 'recipient' });
+  assert.equal(conflictAfterPayment[0].released, true);
+  const nonmatching = settleTurnActionAlliance([beforePayment], 1, 'nexus:1', { respondent: null });
+  assert.equal(nonmatching[0].fulfilled, false, 'Whole No still waits for its remaining payment opportunity');
+  const finished = finishTurnActionTurn(nonmatching, 'respondent', 1);
+  assert.equal(finished[0].fulfilled, true);
+  const plainNo = settleTurnActionAlliance([no], 1, 'nexus:1', { respondent: 'other' });
+  assert.equal(plainNo[0].fulfilled, true);
+  assert.equal(plainNo[0].released, false);
+});
+
+void test('expiry releases an unresolved original Nexus without inventing membership and preserves every terminal row', () => {
+  const originals = [nexus(alliance()), nexus(alliance(), false, 'turn-action:2')];
+  const finished = finishTurnActionTurn(originals, 'respondent', 1);
+  for (const record of finished) {
+    assert.equal(record.released, true);
+    assert.equal(record.fulfilled, false);
+    assert.deepEqual(record.alliance, { source: 'nexus:1', partner: null, closed: false });
+  }
+  const paid = recordTurnActionPayment([nexus(group('or', alliance(), pay()), true, 'turn-action:3')],
+    'respondent', 1, payment())[0];
+  assert.equal(paid.fulfilled, true);
+  assert.equal(finishTurnActionTurn([paid], 'respondent', 1)[0], paid);
+  const terminal = [...finished, paid];
+  assert.ok(settleTurnActionAlliance(terminal, 1, 'nexus:1', { respondent: 'recipient' })
+    .every((row, index) => row === terminal[index]));
+  assert.ok(recordTurnActionPayment(terminal, 'respondent', 1, payment())
+    .every((row, index) => row === terminal[index]));
+  validateTurnActionPromises(terminal, seats);
+});
+
+void test('final-membership stages reject temporary pairs, extra metadata, missing snapshot players and foreign partner clauses', () => {
+  const original = nexus(group('and', alliance(), pay()));
+  for (const stage of [undefined, null, {}, { source: '', partner: null, closed: false },
+    { source: 'nexus:1', partner: 'recipient', closed: false }, { source: 'nexus:1', partner: 'respondent', closed: true },
+    { source: 'nexus:1', partner: null, closed: 'yes' }, { source: 'nexus:1', partner: null, closed: false, offers: {} }])
+    assert.throws(() => turnActionValue({ ...original, alliance: stage } as TurnActionPromise), TurnActionError);
+  assert.throws(() => settleTurnActionAlliance([original], 1, 'nexus:1', {}), TurnActionError);
+  assert.throws(() => settleTurnActionAlliance([original], 1, 'nexus:1', { respondent: 'respondent' }), TurnActionError);
+  for (const partner of ['missing', 'respondent'])
+    assert.throws(() => validateTurnActionPromises([nexus(alliance(partner))], seats), TurnActionError);
+  const foreignSnapshot = { ...original, alliance: { source: 'nexus:1', partner: 'missing', closed: true } };
+  assert.throws(() => validateTurnActionPromises([foreignSnapshot], seats), TurnActionError);
+  const foreignCompiled = { ...original, compiled: { kind: 'action', action: { kind: 'alliance', partner: 'other' } } };
+  assert.throws(() => turnActionValue(foreignCompiled as TurnActionPromise), TurnActionError);
 });

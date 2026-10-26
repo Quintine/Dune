@@ -20,11 +20,16 @@ const leaders = (game: GameView, target: string) => {
     ...(game.advanced && faction === 'atreides' ? [{ id: 'kwisatz', name: 'Kwisatz Haderach' }] : [])];
 };
 const currentLot = (game: GameView) => game.bidPromiseLot?.turn === game.turn ? game.bidPromiseLot : null;
+const partners = (game: GameView, target: string) => game.players.some(player => player.id === target)
+  ? game.players.filter(player => player.id !== target) : [];
+const currentNexus = (game: GameView, target: string) => game.status === 'playing' && game.phase === 1 && game.nexus && !game.spiceWindow &&
+  game.alliancePromiseNexus?.turn === game.turn && game.truthMixedAllianceTargets.includes(target) &&
+  !game.response && !game.decision && !game.phaseOpening && !game.automaticContinuationPending;
 const config: MixedActionConfig<TurnActionLeaf> = {
   prefix: 'turn-action',
-  legend: 'Future bids, Revival, payments, shipment and ground movements, with optional current facts',
-  actionLabel: 'bid, Revival, payment, shipment or ground-movement condition',
-  actionTiming: 'Future ordinary bid, Revival, payment, reserve shipment or ground move · this turn',
+  legend: 'Future alliances, bids, Revival, payments, shipment and ground movements, with optional current facts',
+  actionLabel: 'alliance, bid, Revival, payment, shipment or ground-movement condition',
+  actionTiming: 'Future alliance, ordinary bid, Revival, payment, reserve shipment or ground move · this turn',
   actionHelp: <>Ordinary payment conditions sum future real bribes to the same recipient after the answer this turn.
     Earlier payments, gifts and ally aid do not count. The sender pays immediately; the recipient collects at the next Mentat opening.
     Payments made during Mentat Pause wait until next turn&apos;s Mentat opening; collection never counts twice.
@@ -33,13 +38,16 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     Ordinary Revival conditions count cumulative future normal and elite physical force returns, with each counter counted once,
     or an actual future return of a named native leader. Smaller ordinary force returns add together.
     Earlier returns, requests alone, Ghola, foreign leaders and special card returns do not count.
+    Alliance conditions concern actual final membership when this current Nexus closes. Offers alone are not alliances.
+    A remaining alliance condition settles at the actual close; forming an alliance does not fulfill it early.
+    No can allow temporary membership followed by a break before the close. You cannot promise another player&apos;s consent.
     Shipment conditions concern the single future original reserve shipment after the answer.
     Ground-movement conditions use the maximum physical forces in one actual future move to that destination; smaller moves never add together.
     Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.
     Shipment and movement close at your own Movement turn end, while payment conditions last until the actual turn ends.
     AND requires every condition; OR keeps legal alternatives. No makes the whole expression false, not every condition separately.
     Original costs, timing, cards, preparation and action rights still apply; this claim grants no extra action.</>,
-  fallbackError: 'Choose a future ordinary bid, Revival, payment, reserve shipment or ground-movement condition, with optional current facts.',
+  fallbackError: 'Choose a future alliance, ordinary bid, Revival, payment, reserve shipment or ground-movement condition, with optional current facts.',
   maxLeaves: TURN_ACTION_MAX_LEAVES,
   maxDepth: TURN_ACTION_MAX_DEPTH,
   requireFact: false,
@@ -52,16 +60,19 @@ const config: MixedActionConfig<TurnActionLeaf> = {
       throw new Error('Choose the current public ordinary lot for the future bid.');
     if (action.kind === 'leader' && !leaders(game, target).some(leader => leader.id === action.leader))
       throw new Error('Choose a public native leader for the respondent’s faction.');
+    if (action.kind === 'alliance' && (!currentNexus(game, target) || !partners(game, target).some(partner => partner.id === action.partner)))
+      throw new Error('Choose a public other partner during the current open Nexus.');
     return action;
   },
   renderAction: ({ value, id, game, target, disabled, onChange }) => {
-    const choices = recipients(game, target), leaderChoices = leaders(game, target), lot = currentLot(game);
+    const choices = recipients(game, target), leaderChoices = leaders(game, target), lot = currentLot(game), partnerChoices = partners(game, target);
     return <>
       <label htmlFor={`${id}-action`}>Future action</label>
       <select id={`${id}-action`} value={value.kind} disabled={disabled} onChange={event => {
         const kind = event.currentTarget.value;
         if (kind === value.kind) return;
-        const minimum = value.kind === 'leader' ? 1 : value.minimum;
+        const minimum = value.kind === 'leader' || value.kind === 'alliance' ? 1 : value.minimum;
+        if (kind === 'alliance') onChange({ kind, partner: '' });
         if (kind === 'payment') onChange({ kind, recipient: '', minimum });
         if (kind === 'bid') onChange({ kind, lot: lot?.lot ?? NaN, minimum });
         if (kind === 'forces') onChange({ kind, counter: 'total', minimum });
@@ -69,6 +80,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         if (kind === 'ship' || kind === 'move') onChange({ kind,
           territory: value.kind === 'ship' || value.kind === 'move' ? value.territory : 'carthag', minimum });
       }}>
+        <option value="alliance">End this Nexus allied with a named partner</option>
         <option value="bid">Place an ordinary-lot bid</option>
         <option value="forces">Revive ordinary physical forces</option>
         <option value="leader">Revive a named ordinary leader</option>
@@ -76,7 +88,18 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         <option value="ship">Ship from reserves</option>
         <option value="move">Make ground movement</option>
       </select>
-      {value.kind === 'bid' ? <>
+      {value.kind === 'alliance' ? <>
+        <label htmlFor={`${id}-partner`}>Final Nexus alliance partner</label>
+        <select id={`${id}-partner`} value={partnerChoices.some(partner => partner.id === value.partner) ? value.partner : ''}
+          disabled={disabled} aria-invalid={!partnerChoices.some(partner => partner.id === value.partner)} onChange={event => {
+            const partner = event.currentTarget.value;
+            if (partner === '' || partnerChoices.some(choice => choice.id === partner)) onChange({ ...value, partner });
+          }}>
+          <option value="">Choose a partner</option>
+          {partnerChoices.map(partner => <option key={partner.id} value={partner.id}>{partner.name}</option>)}
+        </select>
+        {!currentNexus(game, target) && <p className="fine">Alliance conditions require the current open Nexus.</p>}
+      </> : value.kind === 'bid' ? <>
         <label htmlFor={`${id}-lot`}>Current ordinary lot</label>
         <select id={`${id}-lot`} value={lot?.lot === value.lot ? String(value.lot) : ''} disabled={disabled}
           aria-invalid={lot?.lot !== value.lot} onChange={event => {
@@ -128,7 +151,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
           {TERRITORIES.map(destination => <option key={destination.id} value={destination.id}>{destination.name}</option>)}
         </select>
       </>}
-      {value.kind !== 'leader' && <>
+      {value.kind !== 'leader' && value.kind !== 'alliance' && <>
         <label htmlFor={`${id}-minimum`}>{value.kind === 'payment' ? 'Minimum future ordinary payments in spice'
           : value.kind === 'bid' ? 'Minimum future accepted bid in spice'
             : value.kind === 'forces' ? 'Minimum future ordinary force returns'

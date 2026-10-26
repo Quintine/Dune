@@ -16,6 +16,44 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / combined final Nexus membership — 26 October. Prototyped / Partial.**
+The whole turn-action question now includes final original-Nexus membership
+alongside payments and later native preparations/transport. Temporary offers,
+pairs and own Ready never become final membership. Actual Nexus close records
+the partner once; whole No can permit a paid temporary pair followed by a break.
+Own Ready preserves a completion after that snapshot, including later payment
+alternatives. Existing reciprocal consent, withdrawal rights, prices and stages
+remain. Missing consent permits Unknown only for an otherwise funded native
+branch; known financial impossibility stays No. No foreign consent or selected
+route enters real state. Older rows remain valid without alliance metadata.
+
+Root integration with disjoint helper/control/native lanes and bounded review
+passes **19 files,221/221**, types/lint/build and **four native paths**,37
+GameTable SSR renders/four actual answer callbacks/16 guide callbacks.
+Original source47 adds21 for final pair, pay2 and later paid shipment1. Original
+allied source48 adds29 for own Ready, pay2, required break and No through actual
+turn end. Source47 adds24 for final None followed by late Mentat payment.
+No-consent source46 adds6 for actual Unknown and original TruthSave, with both
+physical Truths retained. Original inventories remain; no played source state
+is installed.
+
+Twenty-eight helper,21 control and18 new native cases cover final-source timing,
+whole alternatives, consent/known finance, temporary pairs, foreign withdrawal,
+late payments, uniform readiness including constants, proposal/payment funding,
+exact own guides and four minimal profiles. Review repairs an Unknown path that
+ignored known cost. A detached consent witness is resource-checked and cannot
+supply Yes or a guide. Runtime-first v1 catches its driver's assumption that a
+legal No guide chooses Ready; v2 explicitly takes the legal manual Ready path
+before testing the later required break, then passes all checks on the same
+source. No repeated source checks are spent on that driver repair.
+Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-turn-alliance-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-turn-alliance-runtime/`.
+Current battle-plan/Traitor compositions, wider preparations/modules and final
+rules/browser/deployed/recovery/privacy/custody acceptance remain. No database/
+save/server/reset/restart/deployment operation is performed; no full mode is
+certified. [Contract and source](TRUTHTRANCE_TURN_ACTIONS.md#combined-final-nexus-membership--26-october-2026).
+
 **Truthtrance / combined ordinary bidding and Revival — 26 October. Prototyped / Partial.**
 The whole current-turn question now includes original ordinary-lot bids, typed
 ordinary force returns and personal native leader returns alongside payments

@@ -392,6 +392,10 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       if (action.kind === 'leader') check(leaders(respondent.faction).some(leader => leader.id === action.leader) ||
         action.leader === 'kwisatz' && g.advanced && respondent.faction === 'atreides',
       'Choose a personal native faction leader, or the Advanced Atreides Kwisatz Haderach.');
+      if (action.kind === 'alliance') check(alliancePromiseModeSupported(g) && g.phase === 1 && g.nexus &&
+        !g.spiceWindow && !g.spiceResolution && action.partner !== respondent.id &&
+        g.players.some(player => player.id === action.partner),
+      'Choose another seated final alliance partner in the current quiet native Nexus.');
       return action;
     }, { requireFact: false, maxDepth: TURN_ACTION_MAX_DEPTH, maxLeaves: TURN_ACTION_MAX_LEAVES });
     return { kind: 'turnActions', target: v.target as string, turn: g.turn, mixed };
@@ -709,6 +713,7 @@ export function truthQuestionText(
     action => {
       if (action.kind === 'payment') return `you ${bribeClaimText({ turn: q.turn, ...action }, playerName)}`;
       if (action.kind === 'bid') return `you ${bidClaimText({ turn: q.turn, ...action })}`;
+      if (action.kind === 'alliance') return `you will ${allianceClaimText({ turn: q.turn, partner: action.partner }, playerName)} (final membership; temporary offers or pairs do not settle this clause)`;
       if (action.kind === 'forces' || action.kind === 'leader') return `you ${revivalExpressionText(action,
         id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))} from now until your ordinary Revival opportunity ends this turn`;
       return `you ${action.kind === 'ship' ? shipmentClaimText(action) : movementClaimText(action)} before your Shipment and Movement turn ends`;

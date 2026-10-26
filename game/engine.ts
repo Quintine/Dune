@@ -1,7 +1,7 @@
 import { TurnActionError, liveTurnActionPromises, turnActionBranches, recordTurnActionPayment,
   recordTurnActionShipment, recordTurnActionMovement, closeTurnActionTransport, finishTurnActionTurn,
   validateTurnActionPromises, recordTurnActionBid, closeTurnActionBidding, recordTurnActionRevival,
-  closeTurnActionRevival, type TurnActionClaim, type TurnActionPromise, type TurnActionBranchLeaf, type TurnActionPreparation } from './turn-action-promises';
+  closeTurnActionRevival, settleTurnActionAlliance, type TurnActionClaim, type TurnActionPromise, type TurnActionBranchLeaf, type TurnActionPreparation } from './turn-action-promises';
 import { TravelPromiseError, liveTravelPromises, travelBranches, recordTravelShipment, recordTravelMovement,
   finishTravelTurn, validateTravelPromises, type TravelClaim, type TravelPromise, type TravelBranchLeaf } from './travel-expression-promises';
 import { mixedTraitorRequirement, type MixedTraitorClaim } from './mixed-traitor-question';
@@ -26,7 +26,7 @@ import { LeaderRevivalPromiseError, liveLeaderRevivalPromises, leaderRevivalRequ
   leaderRevivalPromisesSatisfied, recordPromisedLeaderRevival, validateLeaderRevivalPromises,
   type LeaderRevivalClaim, type LeaderRevivalPromise } from './leader-revival-promises';
 import { AlliancePromiseError, alliancePromiseModeSupported,
-  alliancePromisesMatch, validateAlliancePromises, type AllianceClaim, type AllianceOpportunity, type AlliancePromise } from './alliance-promises';
+  alliancePromisesMatch, findAlliancePromisePlan, validateAlliancePromises, type AllianceClaim, type AllianceOpportunity, type AlliancePromise } from './alliance-promises';
 import { BribePromiseError, bribePromiseModeSupported, liveBribePromises, recordPromisedBribe,
   validateBribePromises, type BribeClaim, type BribePromise } from './bribe-promises';
 import { ordinaryDiscardIncomeMatches } from './ordinary-discard-income';
@@ -15036,6 +15036,16 @@ function normalNexusAllianceQuote(g: Game, p: Player, target: string | null) {
       requireRule(!!bribePromiseCompletion(future, actor),
         'Pay the necessary ordinary bribe before offering an alliance that would prevent your whole answer.');
     }
+    const namedPayment = (node: TurnActionClaim['mixed']): boolean => node.kind === 'action'
+      ? node.action.kind === 'payment' && node.action.recipient === other.id
+      : node.kind !== 'fact' && node.terms.some(namedPayment);
+    if (liveTurnActionPromises(g.turnActionPromises ?? [], p.id, g.turn).some(promise => namedPayment(promise.mixed))) {
+      const future = structuredClone(g), owner = getPlayer(future, p.id), partner = getPlayer(future, other.id);
+      for (const seat of future.players) if (seat.ally === owner.id || seat.ally === partner.id) seat.ally = null;
+      owner.ally = partner.id; partner.ally = owner.id;
+      requireRule(!!turnActionCompletion(future, owner.id),
+        'Pay the necessary ordinary bribe before offering an alliance that would prevent your whole turn answer.');
+    }
     const blocked = homeworldAllianceReason(g, p.id, other.id);
     requireRule(!blocked, blocked ?? 'This alliance is unavailable.');
   }
@@ -15231,6 +15241,10 @@ function guardAlliancePromiseReady(g: Game, p: Player) {
   requireRule(alliancePromisesMatch(g.alliancePromises ?? [], p.id, opportunity, p.ally) &&
     allianceExpressionPromisesMatch(g.allianceExpressionPromises ?? [], p.id, opportunity, p.ally),
   'Match your Truthtrance alliance answers before finishing this Nexus.');
+  if (liveTurnActionPromises(g.turnActionPromises ?? [], p.id, g.turn)
+    .some(promise => promise.alliance?.source === opportunity.source && !promise.alliance.closed))
+    requireRule(turnActionAllianceCanClose(g, p),
+      'Retain a whole Truthtrance completion when this Nexus fixes final membership.');
 }
 function settleAlliancePromises(g: Game) {
   const opportunity = allianceOpportunity(g);
@@ -15239,6 +15253,7 @@ function settleAlliancePromises(g: Game) {
   for (const promise of orderedAllianceCommitments(g))
     if (promise.turn === opportunity.turn && promise.source === opportunity.source && !promise.fulfilled && !promise.released)
       promise.fulfilled = true;
+  if (g.turnActionPromises) g.turnActionPromises = turnActionAllianceSnapshot(g, opportunity);
 }
 function projectedAllianceExpressionPromises(g: Game, player: string) {
   return (g.allianceExpressionPromises ?? []).filter(promise => promise.player === player && !isMixedAllianceEvent(g, promise.event))
@@ -18708,10 +18723,86 @@ function initializeTurnActionOrder(g: Game) {
     if (!g.travelPromiseOrder!.some(entry => entry.kind === kind && entry.index === index))
       g.travelPromiseOrder!.push({ kind, index });
 }
-type TurnActionCompletion = MovementCompletion & { payments: Action[]; bid?: Action; revival?: RevivalPromisePlan };
+/** All admissible final native partners use the original reciprocal quote.
+ * Exact outcome rows live only in this witness; no route is persisted. */
+type TurnActionAllianceRoute = { steps: { player: string; target: string | null }[]; uncertain: boolean };
+function turnActionAlliancePlans(g: Game, actor: string, includeUnknown = false): (TurnActionAllianceRoute | undefined)[] {
+  const scalars = g.alliancePromises ?? [], groups = g.allianceExpressionPromises ?? [];
+  const active = [...scalars, ...groups].some(promise => promise.player === actor &&
+    promise.turn === g.turn && !promise.fulfilled && !promise.released);
+  if (!active) return [undefined];
+  const opportunity = allianceOpportunity(g);
+  if (!opportunity) return [];
+  if ([...scalars, ...groups].some(promise => promise.player === actor && promise.turn === g.turn &&
+    !promise.fulfilled && !promise.released && promise.source !== opportunity.source)) return [];
+  const outcomes = allianceExpressionOutcomes(scalars, groups, actor, opportunity,
+    { players: g.players, offers: g.allianceOffers });
+  const plans: TurnActionAllianceRoute[] = [], seen = new Set<string>();
+  for (const partner of outcomes) {
+    const exact: AlliancePromise[] = (partner === null ? g.players.filter(player => player.id !== actor)
+      .map(player => ({ partner: player.id, answer: false })) : [{ partner, answer: true }])
+      .map((claim, index) => ({ ...claim, turn: opportunity.turn, source: opportunity.source,
+        event: `turn-alliance-outcome:${index}`, player: actor, asker: g.players.find(player => player.id !== actor)!.id }));
+    const plan = alliancePromiseRule(() => findAlliancePromisePlan([...scalars, ...exact], actor, opportunity,
+      { players: g.players, offers: g.allianceOffers }));
+    if (plan !== null) {
+      const route = { steps: plan.map(action => ({ player: actor, target: action.target })), uncertain: false };
+      const key = JSON.stringify(route);
+      if (!seen.has(key)) { seen.add(key); plans.push(route); }
+      continue;
+    }
+    if (!includeUnknown || partner === null || getPlayer(g, actor).ally === partner ||
+      getPlayer(g, partner).ally === null && g.allianceOffers[partner] === actor) continue;
+    // This detached consent scenario is used only to decide Unknown, never
+    // Yes or a guide. Native break/offer/accept quotes still validate every
+    // step; original payments and all other resource checks run below.
+    let players = g.players.map(player => ({ id: player.id, ally: player.ally })), offers = { ...g.allianceOffers };
+    const steps: TurnActionAllianceRoute['steps'] = [];
+    const add = (player: string, target: string | null) => {
+      const quote = nexusRule(() => quoteNexusAlliance({ players, offers, actor: player, target }));
+      players = players.map(seat => ({ ...seat, ally: quote.allies[seat.id] })); offers = quote.offers;
+      steps.push({ player, target });
+    };
+    try {
+      if (players.find(player => player.id === actor)!.ally !== null) add(actor, null);
+      if (players.find(player => player.id === partner)!.ally !== null) add(partner, null);
+      add(partner, actor);
+      if (players.find(player => player.id === actor)!.ally !== partner) add(actor, partner);
+      const route = { steps, uncertain: true }, key = JSON.stringify(route);
+      if (!seen.has(key)) { seen.add(key); plans.push(route); }
+    } catch (error) { if (!(error instanceof RuleError)) throw error; }
+  }
+  return plans;
+}
+function turnActionAllianceSnapshot(g: Game, opportunity: AllianceOpportunity): TurnActionPromise[] {
+  return turnActionRule(() => settleTurnActionAlliance(g.turnActionPromises ?? [], opportunity.turn,
+    opportunity.source, Object.fromEntries(g.players.map(player => [player.id, player.ally]))));
+}
+/** Own Ready must retain a completion after membership has become final;
+ * partner changes are no longer available in that detached closing state. */
+function turnActionAllianceCanClose(g: Game, player: Player): boolean {
+  const opportunity = allianceOpportunity(g);
+  if (!opportunity) return false;
+  if (!alliancePromisesMatch(g.alliancePromises ?? [], player.id, opportunity, player.ally) ||
+    !allianceExpressionPromisesMatch(g.allianceExpressionPromises ?? [], player.id, opportunity, player.ally)) return false;
+  try {
+    const closed = turnActionAllianceSnapshot(g, opportunity);
+    if ((g.turnActionPromises ?? []).some((promise, index) => promise.player === player.id &&
+      promise.turn === g.turn && !promise.fulfilled && !promise.released && closed[index].released)) return false;
+    const source = { ...g, turnActionPromises: closed,
+      alliancePromises: (g.alliancePromises ?? []).map(promise => promise.player === player.id &&
+        promise.turn === opportunity.turn && promise.source === opportunity.source && !promise.released
+        ? { ...promise, fulfilled: true } : promise),
+      allianceExpressionPromises: (g.allianceExpressionPromises ?? []).map(promise => promise.player === player.id &&
+        promise.turn === opportunity.turn && promise.source === opportunity.source && !promise.released
+        ? { ...promise, fulfilled: true } : promise) };
+    return !!turnActionCompletion(source, player.id);
+  } catch (error) { if (error instanceof RuleError) return false; throw error; }
+}
+type TurnActionCompletion = MovementCompletion & { payments: Action[]; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[] };
 /** Whole-answer alternatives stay private. Only detached native rows quote a
  * route, sharing actual interval progress and the remaining physical purse. */
-function turnActionCompletion(source: Game, actor: string): TurnActionCompletion | null {
+function turnActionCompletion(source: Game, actor: string, unknownConsent?: { value: boolean }): TurnActionCompletion | null {
   const records = [
     ...liveTravelPromises(source.travelPromises ?? [], actor, source.turn).map(promise =>
       () => travelRule(() => travelBranches(promise))),
@@ -18749,7 +18840,10 @@ function turnActionCompletion(source: Game, actor: string): TurnActionCompletion
       else if (leaf.kind === 'forces') (trial.revivalPromises ??= []).push({ ...metadata,
         counter: leaf.counter, minimum: leaf.minimum, progress: leaf.progress });
       else if (leaf.kind === 'leader') (trial.leaderRevivalPromises ??= []).push({ ...metadata, leader: leaf.leader });
+      else if (leaf.kind === 'alliance') (trial.alliancePromises ??= []).push({ ...metadata,
+        source: leaf.source, partner: leaf.partner });
     });
+    const alliancePlans = turnActionAlliancePlans(trial, actor, !!unknownConsent);
     for (const required of bribePromiseRule(() => bribeCompletionCandidates(
       trial.bribePromises!, trial.bribeExpressionPromises ?? [], actor, source.turn))) {
       // A quoted payment follows only a currently owned modal continuation;
@@ -18763,36 +18857,58 @@ function turnActionCompletion(source: Game, actor: string): TurnActionCompletion
       if (!Number.isSafeInteger(total) || total > 0 && total > uncommittedSpice(trial, owner) ||
         required.some(payment => payment.recipient === actor || payment.recipient === owner.ally ||
           !trial.players.some(player => player.id === payment.recipient))) continue;
-      const funded = structuredClone(trial), payer = getPlayer(funded, actor);
-      try {
-        for (const payment of required) recordBribePayment(funded, actor, payment.recipient, payment.amount);
-        payer.spice -= total;
-        const voluntary = { actor, action: { type: 'bribe' } };
-        for (const payment of required)
-          checkBureaucratContributors(funded, payment.recipient, [{ payer: actor, amount: payment.amount }]);
-        reconcileBattlePromises(funded, voluntary);
-        reconcileBidPromises(funded, voluntary);
-        reconcileRevivalPromises(funded, voluntary);
-        const lot = bidOpportunity(funded);
-        const needsBid = !!lot && bidRequired(funded.bidPromises ?? [], actor, lot);
-        const bid = needsBid ? bidPromiseCompletion(funded, payer) : undefined;
-        if (needsBid && !bid) continue;
-        const needsRevival = [
-          ...liveRevivalPromises(funded.revivalPromises ?? [], actor, source.turn),
-          ...liveLeaderRevivalPromises(funded.leaderRevivalPromises ?? [], actor, source.turn),
-          ...liveRevivalExpressionPromises(funded.revivalExpressionPromises ?? [], actor, source.turn),
-        ].some(promise => promise.answer);
-        const revival = needsRevival ? revivalPromisePlan(funded, payer) : undefined;
-        if (needsRevival && !revival) continue;
-        const transport = [
-          ...liveShipmentPromises(funded.shipmentPromises ?? [], actor, source.turn),
-          ...liveMovementPromises(funded.movementPromises ?? [], actor, source.turn),
-          ...liveMovementExpressionPromises(funded.movementExpressionPromises ?? [], actor, source.turn),
-        ];
-        const completion = transport.length ? groundMovementCompletionNative(funded, actor) : { actions: [] };
-        if (completion) return { ...completion, ...(bid ? { bid } : {}), ...(revival ? { revival } : {}),
-          payments: required.map(payment => ({ type: 'bribe', target: payment.recipient, amount: payment.amount })) };
-      } catch (error) { if (!(error instanceof RuleError)) throw error; }
+      for (const alliancePlan of alliancePlans) {
+        const funded = structuredClone(trial), payer = getPlayer(funded, actor);
+        try {
+          for (const payment of required) recordBribePayment(funded, actor, payment.recipient, payment.amount);
+          payer.spice -= total;
+          for (const action of alliancePlan?.steps ?? []) {
+            const quote = normalNexusAllianceQuote(funded, getPlayer(funded, action.player), action.target);
+            for (const player of funded.players) player.ally = quote.allies[player.id];
+            funded.allianceOffers = quote.offers;
+            if (quote.formed) for (const id of quote.formed) getPlayer(funded, id).allySinceTurn = funded.turn;
+            funded.ready = [];
+          }
+          if (alliancePlan) {
+            const opportunity = allianceOpportunity(funded)!;
+            funded.alliancePromises = (funded.alliancePromises ?? []).map(promise => promise.player === actor &&
+              promise.turn === opportunity.turn && promise.source === opportunity.source && !promise.released
+              ? { ...promise, fulfilled: true } : promise);
+            funded.allianceExpressionPromises = (funded.allianceExpressionPromises ?? []).map(promise => promise.player === actor &&
+              promise.turn === opportunity.turn && promise.source === opportunity.source && !promise.released
+              ? { ...promise, fulfilled: true } : promise);
+          }
+          const voluntary = { actor, action: { type: 'bribe' } };
+          for (const payment of required)
+            checkBureaucratContributors(funded, payment.recipient, [{ payer: actor, amount: payment.amount }]);
+          reconcileBattlePromises(funded, voluntary);
+          reconcileBidPromises(funded, voluntary);
+          reconcileRevivalPromises(funded, voluntary);
+          const lot = bidOpportunity(funded);
+          const needsBid = !!lot && bidRequired(funded.bidPromises ?? [], actor, lot);
+          const bid = needsBid ? bidPromiseCompletion(funded, payer) : undefined;
+          if (needsBid && !bid) continue;
+          const needsRevival = [
+            ...liveRevivalPromises(funded.revivalPromises ?? [], actor, source.turn),
+            ...liveLeaderRevivalPromises(funded.leaderRevivalPromises ?? [], actor, source.turn),
+            ...liveRevivalExpressionPromises(funded.revivalExpressionPromises ?? [], actor, source.turn),
+          ].some(promise => promise.answer);
+          const revival = needsRevival ? revivalPromisePlan(funded, payer) : undefined;
+          if (needsRevival && !revival) continue;
+          const transport = [
+            ...liveShipmentPromises(funded.shipmentPromises ?? [], actor, source.turn),
+            ...liveMovementPromises(funded.movementPromises ?? [], actor, source.turn),
+            ...liveMovementExpressionPromises(funded.movementExpressionPromises ?? [], actor, source.turn),
+          ];
+          const completion = transport.length ? groundMovementCompletionNative(funded, actor) : { actions: [] };
+          if (completion) {
+            if (alliancePlan?.uncertain) { unknownConsent!.value = true; continue; }
+            return { ...completion, ...(bid ? { bid } : {}), ...(revival ? { revival } : {}),
+              ...(alliancePlan ? { alliance: alliancePlan.steps.map(step => ({ type: 'alliance', target: step.target })) } : {}),
+              payments: required.map(payment => ({ type: 'bribe', target: payment.recipient, amount: payment.amount })) };
+          }
+        } catch (error) { if (!(error instanceof RuleError)) throw error; }
+      }
     }
     return null;
   };
@@ -18803,16 +18919,19 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
   const compiled = compileMixedActionExpression(claim.mixed,
     fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
   const open = turnActionTransportOpen(g, p.id);
-  let bid = false, revival = false;
+  let bid = false, revival = false, alliance = false;
   const visit = (node: TurnActionClaim['mixed']): void => {
     if (node.kind === 'action') {
       if (node.action.kind === 'bid') bid = true;
+      if (node.action.kind === 'alliance') alliance = true;
       if (node.action.kind === 'forces' || node.action.kind === 'leader') revival = true;
     } else if (node.kind !== 'fact') node.terms.forEach(visit);
   };
   visit(claim.mixed);
   const lot = bid ? bidOpportunity(g) : null;
   requireRule(!bid || !!lot, 'Retain the original current ordinary auction lot.');
+  const nexus = alliance ? allianceOpportunity(g) : null;
+  requireRule(!alliance || !!nexus, 'Retain the original current native Nexus.');
   const preparation: TurnActionPreparation | undefined = bid || revival ? {
     bid: lot ? { lot: lot.lot, source: lot.source, maximum: 0, closed: false } : null,
     revival: revival ? { total: 0, normal: 0, elite: 0, leaders: [], closed: g.phase > 4 ||
@@ -18820,32 +18939,34 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
   } : undefined;
   return { turn: claim.turn, mixed: structuredClone(claim.mixed), event, player: p.id, asker, answer, compiled,
     ...(preparation ? { preparation } : {}),
+    ...(nexus ? { alliance: { source: nexus.source, partner: null, closed: false } } : {}),
     shipment: { pending: open && (g.phase < 5 || shipmentAvailable(g, p)), event: null },
     progress: [], payments: [], transportClosed: !open, paymentClosed: false,
     fulfilled: compiled.kind === 'constant' && compiled.value === answer, released: false };
 }
-function turnActionAnswerSource(g: Game, player: string): Game {
-  return g.phase === 2 || g.phase === 4 && !g.revivalOrder || g.phase === 8 ||
+function turnActionAnswerSource(g: Game, player: string, alliance = false): Game {
+  return g.phase === 1 && alliance || g.phase === 2 || g.phase === 4 && !g.revivalOrder || g.phase === 8 ||
     g.phase === 7 && bribesCloseBeforeNextMentat(g)
     ? { ...g, ready: g.ready.filter(id => id !== player) } : g;
 }
 function turnActionTruthAnswers(g: Game, p: Player, claim: TurnActionClaim): TruthAnswer[] {
   if (claim.turn !== g.turn || !turnActionTargetAvailable(g, p.id)) return [];
-  const answers: TruthAnswer[] = [];
+  const answers: TruthAnswer[] = [], consent = { value: false };
   for (const answer of [true, false]) {
     const promise = turnActionPromise(g, p, claim, answer, 'candidate', g.players.find(other => other.id !== p.id)!.id);
     if (promise.compiled.kind === 'constant' && promise.compiled.value !== answer) continue;
-    const trial = { ...turnActionAnswerSource(g, p.id),
+    const trial = { ...turnActionAnswerSource(g, p.id, !!promise.alliance),
       turnActionPromises: [...(g.turnActionPromises ?? []), promise], travelPromiseOrder: undefined };
-    if (turnActionCompletion(trial, p.id)) answers.push(answer ? 'yes' : 'no');
+    if (turnActionCompletion(trial, p.id, answer && promise.alliance ? consent : undefined)) answers.push(answer ? 'yes' : 'no');
   }
+  if (!answers.includes('yes') && consent.value) answers.push('unknown');
   return answers.length ? answers : ['unknown'];
 }
 function bindTurnActionTruth(g: Game, p: Player, claim: TurnActionClaim, answer: boolean, asker: string) {
   requireRule(turnActionTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
     'Choose a whole turn-action answer compatible with current funding and native actions.');
   const promise = turnActionPromise(g, p, claim, answer, crypto.randomUUID(), asker);
-  g.ready = turnActionAnswerSource(g, p.id).ready;
+  g.ready = turnActionAnswerSource(g, p.id, !!promise.alliance).ready;
   g.turnActionPromises ??= [];
   initializeTurnActionOrder(g);
   g.turnActionPromises.push(promise);
@@ -18881,6 +19002,10 @@ function reconcileTurnActionPromises(g: Game, actor?: string, action?: Action, s
       if (promise.answer) promise.released = true; else promise.fulfilled = true;
     }
   if (!bribePromiseTurn(g) || g.truthtrance) return;
+  const nexus = allianceOpportunity(g);
+  if (nexus && action?.type === 'bribe' && g.turnActionPromises!.some(promise =>
+    promise.player === actor && promise.turn === g.turn && promise.alliance?.source === nexus.source))
+    g.ready = g.ready.filter(player => player !== actor);
   initializeTurnActionOrder(g);
   for (const p of g.players) {
     const early = g.phase < 5 || sourcePhase < 5;
@@ -18912,6 +19037,9 @@ function reconcileTurnActionPromises(g: Game, actor?: string, action?: Action, s
       promise.released = true;
       log(g, `${p.name} can no longer fulfill an accepted Truthtrance commitment; that answer is no longer binding.`);
     }
+    if (nexus && g.ready.includes(p.id) && liveTurnActionPromises(g.turnActionPromises!, p.id, g.turn)
+      .some(promise => promise.alliance?.source === nexus.source && !promise.alliance.closed) &&
+      !turnActionAllianceCanClose(g, p)) g.ready = g.ready.filter(player => player !== p.id);
   }
 }
 function projectedTurnActionPromises(g: Game, player: string) {
@@ -18955,6 +19083,8 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
     } else if (!action && g.phase === 5 && g.active === player.id && !promise.transportClosed)
       action = completion.actions[0] ?? { type: 'endMovement' };
   }
+  if (!action && g.phase === 1 && allianceQuestionWindow(g) && !g.ready.includes(player.id))
+    action = completion.alliance?.[0] ?? { type: 'ready' };
   if (!action && [7, 8].includes(g.phase) && !g.ready.includes(player.id)) action = { type: 'ready' };
   if (!action) return null;
   const packet = { ...structuredClone(action) };
