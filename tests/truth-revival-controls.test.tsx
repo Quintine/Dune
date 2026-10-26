@@ -61,7 +61,7 @@ function projected(action: 'revive' | 'ready' = 'revive', advanced = false): Gam
   game.active = advanced ? 'p' : null;
   game.revivalPromises = [{ event: 'controlled-revival-event', player: 'p', asker: 'a', turn: 2,
     counter: 'total', minimum: 3, answer: action === 'revive', progress: 1 }];
-  game.revivalPromiseGuide = { action: action === 'revive'
+  game.revivalPromiseGuide = { phase: 4, action: action === 'revive'
     ? { type: 'revive', amount: 2, elite: 0, freeElite: 0, revivalPromiseEvent: 'controlled-revival-event' }
     : { type: 'ready', revivalPromiseEvent: 'controlled-revival-event' } };
   return game;
@@ -129,7 +129,7 @@ void test('stale Revival guides guard readiness, current ordered actor, event, q
     game => { game.revivalOrder!.remaining = ['a', 'p']; game.active = 'a'; },
     game => { game.revivalOrder!.turn = 1; }, game => { game.active = null; },
     game => { game.revivalOrder = null; }, game => { game.revivalOrder = { ...game.revivalOrder!, remaining: ['p', 'a'] }; },
-    game => { game.revivalPromiseGuide = { action: { ...game.revivalPromiseGuide!.action } }; },
+    game => { game.revivalPromiseGuide = { phase: 4, action: { ...game.revivalPromiseGuide!.action } }; },
     game => { game.revivalPromiseGuide = null; }, game => { game.revivalPromiseGuide!.action.amount = 3; },
     game => { game.revivalPromises[0].event = 'another-event'; }, game => { game.revivalPromises[0].player = 'a'; },
     game => { game.revivalPromises[0].fulfilled = true; }, game => { game.revivalPromises[0].released = true; },

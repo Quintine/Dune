@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 26 October 2026 — Earlier-turn native Revival promises
+
+**Prototyped / Partial.** Ordinary cumulative physical return questions now
+support quiet phases0–4 with this turn's native Revival opportunity ahead.
+The shared owned preparation extracts existing Charity/opening-income and
+auction-liability witnesses; actual current Tanks/elite usage, held-card spend,
+future normal quota reset and earlier commitments remain. Phase-bound guides
+claim Charity, ready/pass or pay an owned ordinary invoice, then use actual
+native Revival order and returns. Yes retains its funding, No persists to the
+actual boundary, and ordinary bids cannot evade earlier Yes. Earlier Bid Yes
+also constrains later Revival answers. No start/module/publication gate opens.
+
+Root integration with disjoint early-native/control lanes and bounded quote
+review passes **17 files,165/165**, types/lint/build and **six native paths**,
+47 GameTable SSR renders/20 actual guide callbacks. Original H/A/E post-Storm
+Basic41/Advanced42-action sources add21/24 steps through real intervening phases
+and return3 for1free+4paid. Poor Basic48/Advanced52 sources really bribe4 away;
+16 more actions earn actual Charity2 and later return2 for2. Four minimal
+policies per poor source submit legal Charity. Progress stays0 during preparation.
+
+A66-action real turn3 Storm source retains prior ordinary return1;26 actions
+use the actual next quota reset and new return2 for2. A59-action original
+dealt-Karama source adds17: real unfunded bid5, its owned payment guide, one
+spent Karama,4 preserved and native return3/payment4. All33 cards remain; no
+played hand, purse, force/Tanks, clock or promise is installed. Fourteen native
+and seven early-control cases cover No, native later prevention, phase/actor
+replay and joint bid/revival funding in both answer orders. Controlled Richese
+zero/pass callbacks retain actual event/owner; a dedicated original Revival
+journey and escrow-withdrawal/retained-card witness remain due. Frozen proof:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-revival-early-proof-v1/`;
+journeys/HTML: adjacent `20261026-truth-revival-early-runtime/`.
+No saved-room/D1/server/reset/restart/deployment or assurance campaign.
+Browser/mobile/deployed, broader compositions and complete rules remain open.
+[Contract](TRUTHTRANCE_REVIVAL_PROMISES.md#earlier-turn-follow-up--26-october-2026).
+
 ## 26 October 2026 — Truthtrance native force-revival commitments
 
 **Prototyped / Partial.** Cumulative future ordinary native force returns now

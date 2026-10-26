@@ -50,7 +50,7 @@ export function finishTruthRevival(game: Game, actions: TruthRevivalStep[] = [])
  * Only unopened deal/Spice positions and scalar lotteries are selected; no
  * played hand, purse, army, Tanks, clock, question or promise is installed. */
 export function createTruthRevivalFixture(options: {
-  advanced?: boolean; window?: 'active' | 'waiting'; targetGhola?: boolean; stopper?: boolean;
+  advanced?: boolean; window?: 'active' | 'waiting'; targetGhola?: boolean; targetKarama?: boolean; stopper?: boolean;
 } = {}) {
   const advanced = options.advanced ?? false, window = options.window ?? 'active', stopper = options.stopper ?? false;
   assert.ok(!stopper || advanced, 'The native Tleilaxu special Karama witness uses its actual Advanced power');
@@ -73,8 +73,8 @@ export function createTruthRevivalFixture(options: {
   const originalCards = truthRevivalInventory(game); assert.equal(originalCards.length, stopper ? 47 : 33);
   const truths = game.deck.filter(card => card.effect === 'truthtrance'); assert.equal(truths.length, 2);
   const filler = game.deck.find(card => card.name === 'Baliset');
-  const targetCard = game.deck.find(card => options.targetGhola ? card.effect === 'ghola' : card.kind === 'shield');
-  const karama = stopper ? game.deck.find(card => card.effect === 'karama') : null;
+  const targetCard = game.deck.find(card => options.targetGhola ? card.effect === 'ghola' : options.targetKarama ? card.effect === 'karama' : card.kind === 'shield');
+  const karama = stopper ? game.deck.find(card => card.effect === 'karama' && card.id !== targetCard?.id) : null;
   assert.ok(filler && targetCard && (!stopper || karama));
   const deal = [truths[0].id, truths[1].id, filler.id, targetCard.id, ...(karama ? [karama.id] : [])];
   const dealOrder = deal.map((id, position) => {
@@ -126,6 +126,7 @@ export function createTruthRevivalFixture(options: {
     advanced, window, stopper: stopper ? 'tleilaxu' : null, asker, opponent, target, actor: asker,
     truths: truths.map(card => card.id), truth: truths[0].id, card: truths[0].id,
     ghola: options.targetGhola ? targetCard.id : null, karama: karama?.id ?? null, special,
+    auctionKarama: options.targetKarama ? targetCard.id : null,
     destination: destination.id, sector, location, elite, shipmentAction, shipment, continuation, storm, arrival, opened,
     quote, question, declarationAction: { type: 'card', card: truths[0].id } as Action,
     questionAction: { type: 'truthAsk', question } as Action, revivalAction: { type: 'revive', amount: 3, elite } as Action,

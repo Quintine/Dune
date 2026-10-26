@@ -15124,7 +15124,8 @@ function bidPromiseCompletion(g: Game, p: Player, promises = g.bidPromises ?? []
   try {
     const action: Action = { type: 'bid', ...normalBidQuote(g, p, range.minimum) };
     if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length ||
-      liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).length) {
+      liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).length ||
+      liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length) {
       const trial = structuredClone(g);
       trial.truthtrance = null;
       trial.auction!.bid = action.amount as number;
@@ -15132,6 +15133,7 @@ function bidPromiseCompletion(g: Game, p: Player, promises = g.bidPromises ?? []
       trial.auction!.allyPayment = action.allyPayment as number;
       reconcileShipmentPromises(trial, { actor: p.id, action, phase: g.phase });
       reconcileGroundMovementPromises(trial, p.id, action, g.phase);
+      reconcileRevivalPromises(trial, { actor: p.id, action });
     }
     return action;
   }
@@ -26337,7 +26339,7 @@ type ShipmentCompletion = { actions: Action[]; early?: { phase: number; action: 
 type ShipmentCompletionSeed = { game: Game; actions: Action[]; early: { phase: number; action: Action }[] };
 /** Private owned-stage witnesses, not an early action or a simulation of rival
  * choices, unknown draws, future gifts or the unresolved Storm outcome. */
-function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string): ShipmentCompletionSeed[] {
+function earlyRevivalCompletionSeeds(initial: Game, source: Game, owner: string): ShipmentCompletionSeed[] {
   let seeds: ShipmentCompletionSeed[] = [{ game: initial, actions: [], early: [] }];
   if (source.phase > 4) return seeds;
   if (source.phase <= 2 && source.choamCharity?.turn !== source.turn && getPlayer(source,owner).faction === 'choam') {
@@ -26412,13 +26414,21 @@ function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string
     }
     seeds = fundingSeeds;
   }
-  const revivalSeeds: ShipmentCompletionSeed[] = [];
-  for (const seed of seeds) {
+  return seeds.map(seed => {
     const g = structuredClone(seed.game); g.phase = 4;
     if (source.phase < 4) {
       g.revivalRules = newRevivalRules(); g.revivalRequests = {}; g.freeRevival = []; g.emperorExtra = {};
+      g.ready = []; g.active = owner; delete g.revivalOrder;
       const p = getPlayer(g, owner); p.revived = 0; p.freeForcesRevived = 0; p.leaderRevived = false;
     }
+    return { ...seed, game: g };
+  });
+}
+function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string): ShipmentCompletionSeed[] {
+  const seeds = earlyRevivalCompletionSeeds(initial, source, owner);
+  const revivalSeeds: ShipmentCompletionSeed[] = [];
+  for (const seed of seeds) {
+    const g = structuredClone(seed.game); g.phase = 4;
     revivalSeeds.push({ ...seed, game: g });
     if (source.phase === 4 && source.ready.includes(owner)) continue;
     const p = getPlayer(g, owner);
@@ -29821,14 +29831,14 @@ function revivalPromiseRule<T>(calculate: () => T): T {
 function revivalPromiseIntegrity(g: Game) {
   revivalPromiseRule(() => validateRevivalPromises(g.revivalPromises ?? [], g.players.map(player => player.id)));
 }
-/** The current native phase only; a waiting ordered participant still owns a
- * future opportunity. Basic readiness may reopen, so No lasts to phase close. */
+/** An unused native opportunity this turn, including earlier phases and waiting
+ * ordered participants. Basic readiness may reopen, so No lasts to phase close. */
 function revivalOpportunity(g: Game, player: string): boolean {
-  return g.status === 'playing' && g.phase === 4 && revivalPromiseModeSupported(g) &&
-    !g.ready.includes(player) && (!g.revivalOrder || g.revivalOrder.remaining.includes(player));
+  return g.status === 'playing' && g.phase >= 0 && g.phase <= 4 && revivalPromiseModeSupported(g) &&
+    (g.phase < 4 || !g.ready.includes(player) && (!g.revivalOrder || g.revivalOrder.remaining.includes(player)));
 }
 function revivalQuestionWindow(g: Game): boolean {
-  return g.status === 'playing' && g.phase === 4 && revivalPromiseModeSupported(g) &&
+  return g.status === 'playing' && g.phase >= 0 && g.phase <= 4 && revivalPromiseModeSupported(g) &&
     !g.response && !g.decision && !g.phaseOpening && !g.pendingRevival &&
     !g.pendingKarama && !g.pendingTreacheryDiscard;
 }
@@ -29854,7 +29864,8 @@ function revivalKeepsLaterPromises(g: Game, p: Player, revival?: PendingRevival)
 /** A final aggregate can be requested together, including Ixian free-Cyborg
  * selection. The native quote owns prices, typed Tanks, free quota and limits;
  * no future gift, card draw or foreign decision is invented. */
-function revivalPromiseCompletion(g: Game, p: Player, promises = g.revivalPromises ?? []): Action | null {
+function currentRevivalPromiseCompletion(g: Game, p: Player, promises: RevivalPromise[]): Action | null {
+  if (g.phase !== 4) return null;
   if (!revivalOpportunity(g, p.id)) return null;
   if (revivalPromisesSatisfied(promises, p.id, g.turn, { amount: 0, elite: 0 }) &&
     revivalKeepsLaterPromises(g, p)) return { type: 'ready' };
@@ -29875,6 +29886,24 @@ function revivalPromiseCompletion(g: Game, p: Player, promises = g.revivalPromis
     }
   return null;
 }
+type RevivalPromisePlan = { action: Action; early: { phase: number; action: Action }[] };
+function revivalPromisePlan(g: Game, p: Player, promises = g.revivalPromises ?? []): RevivalPromisePlan | null {
+  if (!revivalOpportunity(g, p.id)) return null;
+  if (g.phase === 4) {
+    const action = currentRevivalPromiseCompletion(g, p, promises);
+    return action ? { action, early: [] } : null;
+  }
+  const initial = structuredClone(g);
+  initial.truthtrance = null;
+  for (const seed of earlyRevivalCompletionSeeds(initial, g, p.id)) {
+    const action = currentRevivalPromiseCompletion(seed.game, getPlayer(seed.game, p.id), promises);
+    if (action) return { action, early: seed.early };
+  }
+  return null;
+}
+function revivalPromiseCompletion(g: Game, p: Player, promises = g.revivalPromises ?? []): Action | null {
+  return revivalPromisePlan(g, p, promises)?.action ?? null;
+}
 function revivalCompatibleLaterPromises(g: Game, p: Player, later: Pick<Partial<Game>, 'shipmentPromises' | 'movementPromises'>): boolean {
   if (!liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length) return true;
   const trial = { ...g, ...later };
@@ -29882,9 +29911,16 @@ function revivalCompatibleLaterPromises(g: Game, p: Player, later: Pick<Partial<
 }
 function revivalTruthAnswers(g: Game, p: Player, claim: RevivalClaim): ('yes' | 'no' | 'unknown')[] {
   if (!revivalQuestionWindow(g) || !revivalOpportunity(g, p.id) || claim.turn !== g.turn) return [];
-  return (['yes', 'no'] as const).filter(answer => !!revivalPromiseCompletion(g, p, [...(g.revivalPromises ?? []),
-    { ...claim, event: 'candidate', player: p.id, asker: g.truthtrance?.queue[0]?.player ?? g.host,
-      answer: answer === 'yes', progress: 0 }]));
+  return (['yes', 'no'] as const).filter(answer => {
+    const promises = [...(g.revivalPromises ?? []), { ...claim, event: 'candidate', player: p.id,
+      asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes', progress: 0 }];
+    if (!revivalPromiseCompletion(g, p, promises)) return false;
+    const lot = bidOpportunity(g);
+    // An earlier Bid Yes reserves a future declaration even before it becomes
+    // the actual leading invoice. Check that declaration with this candidate.
+    return !lot || !bidRequired(g.bidPromises ?? [], p.id, lot) ||
+      !!bidPromiseCompletion({ ...g, revivalPromises: promises }, p);
+  });
 }
 function bindRevivalTruth(g: Game, p: Player, claim: RevivalClaim, answer: boolean, asker: string) {
   requireRule(revivalTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
@@ -29900,7 +29936,7 @@ function reconcileRevivalPromises(g: Game, voluntary?: { actor: string; action: 
   const no = g.revivalPromises.filter(promise => !promise.answer && !promise.fulfilled && !promise.released);
   for (const promise of g.revivalPromises) {
     if (promise.fulfilled || promise.released) continue;
-    const same = g.status === 'playing' && g.phase === 4 && g.turn === promise.turn;
+    const same = g.status === 'playing' && g.phase >= 0 && g.phase <= 4 && g.turn === promise.turn;
     if (!promise.answer) {
       if (!same || g.revivalOrder && !g.revivalOrder.remaining.includes(promise.player)) promise.fulfilled = true;
       continue;
@@ -29913,13 +29949,33 @@ function reconcileRevivalPromises(g: Game, voluntary?: { actor: string; action: 
     } else kept.push(promise);
   }
 }
-function projectedRevivalPromiseGuide(g: Game, player: string): { action: Action } | null {
-  if (!revivalQuestionWindow(g) || g.truthtrance || !revivalOpportunity(g, player) ||
-    nativeRevivalOrderBlock(g, player)) return null;
+function projectedRevivalPromiseGuide(g: Game, player: string): { phase: number; action: Action } | null {
+  const ownPayment = g.phase === 3 && !g.response && !g.phaseOpening && g.decision?.kind === 'auctionPayment' && g.decision.player === player;
+  if ((!revivalQuestionWindow(g) && !ownPayment) || g.truthtrance || !revivalOpportunity(g, player) ||
+    g.pendingRevival || g.pendingKarama || g.pendingTreacheryDiscard ||
+    g.phase === 4 && nativeRevivalOrderBlock(g, player)) return null;
+  // The separate bid guide owns a jointly binding Yes declaration. Passing
+  // cannot evade it merely because Revival comes later in this turn.
+  const lot = g.phase === 3 && !ownPayment && !g.richeseAuction && !g.ixAuction ? bidOpportunity(g) : null;
+  if (lot && bidRequired(g.bidPromises ?? [], player, lot)) return null;
   const promise = liveRevivalPromises(g.revivalPromises ?? [], player, g.turn)[0];
   if (!promise) return null;
-  const action = revivalPromiseCompletion(g, getPlayer(g, player));
-  return action ? { action: { ...action, revivalPromiseEvent: promise.event } } : null;
+  const plan = revivalPromisePlan(g, getPlayer(g, player));
+  if (!plan) return null;
+  if (g.phase === 3 && g.richeseAuction && !ownPayment) {
+    const native = g.richeseAuction;
+    const available = !native.outcome && native.eligible.includes(player) &&
+      (native.method === 'silent' ? !Object.hasOwn(native.sealed, player) : native.active === player);
+    return available ? { phase: 3, action: { type: 'richeseBid', event: native.event,
+      amount: native.method === 'silent' ? 0 : null, allyPayment: 0, revivalPromiseEvent: promise.event } } : null;
+  }
+  if (g.phase === 3 && g.ixAuction) return null;
+  const current = plan.early.find(step => step.phase === g.phase)?.action;
+  const action = g.phase === 4 ? plan.action : g.phase === 2 && !g.ready.includes(player)
+    ? current ?? { type: 'ready' } : g.phase === 3 ? ownPayment
+      ? current?.type === 'decision' ? current : { type: 'decision', karama: false }
+      : g.auction?.active === player ? { type: 'passBid' } : null : null;
+  return action ? { phase: g.phase, action: { ...action, revivalPromiseEvent: promise.event } } : null;
 }
 function guardPromisedRevival(g: Game, p: Player, action: Action, revival?: PendingRevival) {
   const live = liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn);
@@ -34857,8 +34913,12 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     );
     return normalizeAutomaticGame(state);
   }
-  if (action.revivalPromiseEvent !== undefined) requireRule(action.type === 'revive' || action.type === 'ready',
-    'This revival commitment guide cannot authorize another action.');
+  if (action.revivalPromiseEvent !== undefined) {
+    const guide = projectedRevivalPromiseGuide(state, id);
+    requireRule(guide && Object.keys(action).sort().join(',') === Object.keys(guide.action).sort().join(',') &&
+      Object.keys(guide.action).every(key => action[key] === guide.action[key]),
+    'This revival commitment guide is stale or belongs to another native opportunity.');
+  }
   const g = applyActionInner(state, id, action);
   reconcileBidPromises(g, { actor: id, action });
   reconcileRevivalPromises(g, { actor: id, action });
@@ -38033,6 +38093,13 @@ function applyActionInner(
     const a = g.auction;
     if (t === 'bid') {
       const quotedBid = normalBidQuote(g, p, action.amount, action.allyPayment);
+      if (liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).some(promise => promise.answer)) {
+        const trial = structuredClone(g);
+        trial.auction!.bid = quotedBid.amount;
+        trial.auction!.bidder = p.id;
+        trial.auction!.allyPayment = quotedBid.allyPayment;
+        reconcileRevivalPromises(trial, { actor: p.id, action });
+      }
       guardPromisedBid(g, p, action, quotedBid.amount);
       a.bid = quotedBid.amount;
       a.allyPayment = quotedBid.allyPayment;
@@ -39265,7 +39332,6 @@ function applyActionInner(
   }
   if (t === 'ready') {
     if (g.phase === 4) guardPromisedRevival(g, p, action);
-    else requireRule(action.revivalPromiseEvent === undefined, 'This revival commitment guide is stale.');
     requireRule(
       [1, 2, 4, 7, 8].includes(g.phase) ||
         (g.phase === 0 && g.stormPending !== null),

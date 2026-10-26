@@ -6,29 +6,49 @@ import { Button } from './ui/button';
 
 type RevivalPromiseProps = { game: GameView; busy: boolean; send: (action: Action) => void };
 
-/** Preserve the server's exact native return/Ready quote. The client checks
- * only the live personalized event and current owned action opportunity. */
+/** Preserve the server's exact preparation or native return/Ready quote. The
+ * client checks only its live event and current owned action opportunity. */
 export function RevivalPromiseGuideButton(props: RevivalPromiseProps) {
   const game = props.game, guide = game.revivalPromiseGuide;
   if (!guide) return null;
-  const actor = game.me, turn = game.turn, order = game.revivalOrder;
+  const actor = game.me, turn = game.turn, phase = guide.phase, order = game.revivalOrder;
   const action = guide.action, event = action.revivalPromiseEvent, signature = JSON.stringify(action);
   const canAct = () => {
     const current = props.game, me = current.players.find(player => player.id === current.me);
+    const payment = phase === 3 && action.type === 'decision' &&
+      current.decision?.kind === 'auctionPayment' && current.decision.player === actor;
+    const native = current.richeseAuction;
+    const nativePass = phase === 3 && action.type === 'richeseBid' && native &&
+      native.event === action.event && !native.outcome && native.eligible.includes(actor) &&
+      (native.method === 'silent' ? !native.submitted.includes(actor) && action.amount === 0
+        : native.active === actor && action.amount === null) && action.allyPayment === 0;
+    const opportunity = phase === 2
+      ? !current.ready.includes(actor) && (action.type === 'charity' || action.type === 'ready')
+      : phase === 3
+        ? payment || nativePass || action.type === 'passBid' && !native && current.auction?.active === actor
+        : phase === 4 && !current.ready.includes(actor) && (action.type === 'revive' || action.type === 'ready') &&
+          current.revivalOrder === order && (!current.revivalOrder || current.revivalOrder.turn === turn &&
+            current.revivalOrder.remaining[0] === actor && current.active === actor);
     return !props.busy && current === game && revivalPromiseModeSupported(current) &&
-      current.status === 'playing' && current.phase === 4 && current.me === actor && current.turn === turn &&
-      !current.ready.includes(actor) && current.revivalOrder === order &&
-      (!current.revivalOrder || current.revivalOrder.turn === turn && current.revivalOrder.remaining[0] === actor && current.active === actor) &&
-      current.revivalPromiseGuide === guide && current.revivalPromiseGuide.action === action && JSON.stringify(action) === signature &&
-      typeof event === 'string' && (action.type === 'revive' || action.type === 'ready') &&
+      current.status === 'playing' && current.phase === phase && current.me === actor && current.turn === turn && opportunity &&
+      current.revivalPromiseGuide === guide && current.revivalPromiseGuide.phase === phase &&
+      current.revivalPromiseGuide.action === action && JSON.stringify(action) === signature && typeof event === 'string' &&
       liveRevivalPromises(current.revivalPromises, actor, turn).some(promise => promise.event === event) && !!me && !me.autopilot &&
-      !current.truthtrance && !current.response && !current.decision && !current.phaseOpening &&
+      !current.truthtrance && !current.response && (!current.decision || payment) && !current.phaseOpening &&
       !current.automaticContinuationPending && !current.roomControl?.paused && !current.roomControl?.closed;
   };
   return <Button className="game-action min-h-11 whitespace-normal" data-testid="revival-promise-guide"
     disabled={!canAct()} onClick={() => { if (canAct()) props.send(action); }}>
-    {action.type === 'revive'
-      ? `Revive ${typeof action.amount === 'number' ? action.amount : 'the suggested number of'} forces while honoring your answers`
+    {action.type === 'charity' ? 'Claim Charity for your later Revival'
+      : action.type === 'richeseBid' ? action.amount === 0
+        ? 'Submit zero in this Silent auction while preserving your Revival answers'
+        : 'Pass this Richese bid while preserving your Revival answers'
+      : action.type === 'passBid' ? 'Pass this bid while preserving your Revival answers'
+      : action.type === 'decision' ? action.karama === true
+        ? 'Use the quoted Karama auction payment for your later Revival'
+        : 'Pay the current auction price while preserving your Revival answers'
+      : action.type === 'revive' ? `Revive ${typeof action.amount === 'number' ? action.amount : 'the suggested number of'} forces while honoring your answers`
+      : phase === 2 ? 'Finish Charity while preserving your Revival answers'
       : 'Finish Revival while honoring your answers'}
   </Button>;
 }
@@ -57,7 +77,13 @@ export function RevivalPromises(props: RevivalPromiseProps) {
       Original revival costs, limits and turn order still apply. Optional modules remain outside this commitment.
       {' '}<a href="/rules#truthtrance-revival">Revival promise rules</a>.
     </p>
-    {waiting && <p>Your Revival opportunity is still ahead; this promise remains visible while the current actor finishes.</p>}
+    {props.game.phase < 4 && <p>
+      A current preparation may claim Charity, pass an auction bid, or complete an already committed auction payment.
+      These steps preserve your later Revival; they do not count as returned forces.
+    </p>}
+    {waiting && <p>Your Revival opportunity is still ahead; {props.game.phase < 4
+      ? 'continue the current phase and keep the required spice and forces available.'
+      : 'this promise remains visible while the current actor finishes.'}</p>}
     <RevivalPromiseGuideButton {...props} />
   </section>;
 }

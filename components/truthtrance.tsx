@@ -342,7 +342,7 @@ export function Truthtrance({
                     Verified current facts
                   </option>
                   <option value="movement">Bind ground movement this turn</option>
-                  <option value="revival">Bind ordinary force revivals this phase</option>
+                  <option value="revival">Bind ordinary force revivals this turn</option>
                   <option value="bid">Bind a bid in this ordinary lot</option>
                   <option value="traitorCall">Bind this battle’s Traitor declaration</option>
                   <option value="shipment">
@@ -363,8 +363,9 @@ export function Truthtrance({
                 <>
                   <RevivalClaimFields value={revivalClaim} disabled={busy || !g.truthRevivalTargets.includes(target)}
                     onChange={claim => setRevivalSelection({ counter: claim.counter, minimum: claim.minimum })} />
+                  {g.phase < 4 && <p className="notice">Revival comes later this turn. Keep its required funding; actual Charity or an owned auction payment may prepare the return. Unknown future draws, gifts and casualties are not assumed.</p>}
                   <p className="fine">Count physical total, normal or elite counters returned by ordinary native Revival after the answer. Smaller requests add together. Earlier returns, Ghola, Emperor-funded extras and other special returns do not count. Current native limits, prices and response choices remain.</p>
-                  {!g.truthRevivalTargets.includes(target) && <p className="notice">Choose a respondent whose native opportunity remains in the current Revival phase and finish pending decisions. Registered native Basic and Advanced tables without optional modules are supported first.</p>}
+                  {!g.truthRevivalTargets.includes(target) && <p className="notice">Choose a respondent whose native Revival opportunity remains this turn and finish pending decisions. Registered native Basic and Advanced tables without optional modules are supported first.</p>}
                   <p className="notice" aria-label="Public revival question preview">{truthQuestionText(question, leaderName, locationName)}</p>
                 </>
               ) : kind === 'bid' ? (

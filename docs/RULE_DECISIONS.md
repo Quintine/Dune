@@ -1,5 +1,21 @@
 # Rule decision index
 
+## Earlier-turn native Revival promises — 26 October 2026
+
+Extend the existing general current-turn Truthtrance composition from phase4
+to quiet phases0–4 with an unused native Revival opportunity this turn. Keep
+current Tanks, actual elite usage and known owned resources; reset only normal
+Revival quotas at its real future boundary. Reuse native Charity/owned opening
+and auction-liability witnesses, carrying spent Karama into later quotations.
+Do not invent future casualties, draws, gifts or rival payments.
+
+This remains a provisional online composition of FAQp8 and supplied Advanced
+physical39, not a dedicated earlier-phase publisher ruling. Native ownership,
+original responses, phase-bound guided packets and current-turn expiry remain.
+Own voluntary actions preserve Yes; completed opposing outcomes may release it.
+Optional modules and broader revival claims remain required; no start gate opens.
+[Contract and evidence](TRUTHTRANCE_REVIVAL_PROMISES.md#earlier-turn-follow-up--26-october-2026).
+
 ## Truthtrance native force-revival commitments — 26 October 2026
 
 Apply general current-turn Truthtrance authority (November2020 FAQ p8; supplied

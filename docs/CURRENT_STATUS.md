@@ -16,6 +16,42 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / earlier-turn native Revival promises — 26 October. Prototyped / Partial.**
+Structured ordinary-return questions now work in quiet phases0–4, retaining
+current Tanks/elite usage and projecting the real future normal quota reset.
+Shared owned Charity/opening-income and auction-liability witnesses support
+phase-bound preparation guides, actual return/Ready, stale-event rejection and
+joint bid/revival funding in either question order. Ordinary bid acceptance
+cannot reserve funds needed by an earlier Yes. Original native responses and
+actual return accounting remain. No new start/module gate opens.
+
+Root shared integration with disjoint early-native/control lanes and bounded
+quote review passes **17 files,165/165**, types/lint/build and **six native
+paths**,47 GameTable SSR renders/20 actual guide callbacks on unchanged source.
+Original H/A/E post-Storm Basic41/Advanced42-action prefixes use another21/24
+steps through actual Spice, Charity and Bidding to bind/return3 for1free+4paid.
+Basic48/Advanced52-action poor sources really bribe away4 first;16 more actions
+earn actual Charity2, preserve progress0 through preparation and return2 for2.
+All four minimal policies submit legal Charity in both source modes.
+
+A66-action actual turn3 Storm source retains a prior-turn ordinary return1;
+another26 actions use the real new quota reset and return2 for2 with progress
+starting0. An original dealt-Karama59-action Bidding source adds17 actions:
+actual bid5 opens its own payment guide, spends that one Karama, keeps4 and
+later returns3 for4. All33 physical cards remain; no played hand, purse,
+force/Tanks, clock or promise is installed. Fourteen native/seven early-control
+cases also retain No through phases, actual native Tleilaxu prevention and
+compatible/incompatible bid commitments in both answer orders. Richese zero/pass
+controls have controlled projection evidence; their dedicated original Revival
+journey and pre-invoice escrow-withdrawal/retained-Karama preparation remain due.
+
+Frozen report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-revival-early-proof-v1/`;
+journeys/HTML: adjacent `20261026-truth-revival-early-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or assurance campaign.
+SSR/callbacks leave browser/mobile/deployed, broader compositions and complete
+rules acceptance open. [Source and boundaries](TRUTHTRANCE_REVIVAL_PROMISES.md#earlier-turn-follow-up--26-october-2026).
+
 **Truthtrance / native force-revival commitments — 26 October. Prototyped / Partial.**
 Registered bare native Basic/Advanced Revival now supports cumulative future
 physical total/normal/elite returns. Only actual ordinary returns after the

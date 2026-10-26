@@ -218,12 +218,12 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
     check(Object.keys(v).sort().join(',') === 'counter,kind,minimum,target,turn',
       'Supply the current Revival turn, physical counter type, minimum and respondent.');
     const claim = parseRevivalClaim(v);
-    check(revivalPromiseModeSupported(g) && g.status === 'playing' && g.phase === 4 &&
-      claim.turn === g.turn && !g.ready.includes(v.target as string) &&
-      (!g.revivalOrder || g.revivalOrder.remaining.includes(v.target as string)) &&
+    check(revivalPromiseModeSupported(g) && g.status === 'playing' && g.phase >= 0 && g.phase <= 4 &&
+      claim.turn === g.turn && (g.phase < 4 || !g.ready.includes(v.target as string) &&
+      (!g.revivalOrder || g.revivalOrder.remaining.includes(v.target as string))) &&
       !g.pendingRevival && !g.response && !g.decision && !g.phaseOpening &&
       !g.pendingKarama && !g.pendingTreacheryDiscard,
-    'Choose a remaining native Revival opportunity in a supported table and finish pending decisions.');
+    'Choose a remaining native Revival opportunity this turn in a supported table and finish pending decisions.');
     return { kind: 'revival', target: v.target, ...claim };
   }
   if (v.kind === 'bid') {
