@@ -5824,7 +5824,7 @@ export function GameTable({
                   )}
                 </>
               )}
-              {[1, 2, 4, 7, 8].includes(g.phase) && !(g.phase === 4 && g.revivalOrder) &&
+              {[1, 2, 4, 7, 8].includes(g.phase) && !(g.phase === 4 && g.revivalOrder) && !(g.phase === 2 && g.charityOrder) &&
                 actionButton(
                   g.ready.includes(me.id)
                     ? 'Waiting for the table'

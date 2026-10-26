@@ -1,5 +1,10 @@
 # CHOAM Charity funding
 
+The [27 October Advanced player-order cutover](ADVANCED_CHARITY_ORDER.md)
+now sequences fresh Advanced claims and Finish. Basic/old unstamped phases
+retain concurrent timing. The funding calculations and provisional shortfall
+policy below are unchanged; earlier evidence does not certify the new order.
+
 ## Source and selected prototype policy — 24 October 2026
 
 Publisher E2 physical p7 says CHOAM collects two spice per faction before

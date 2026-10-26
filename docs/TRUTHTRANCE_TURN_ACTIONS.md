@@ -262,8 +262,12 @@ agreement must fit before the future phase and retain recipient restrictions.
 No chosen branch, timeline or prospective income is installed in a real game.
 
 Bare, grouped, mixed and combined payment questions use guarded current-phase
-payment/Charity packets. Positive acceptance reopens owned Charity readiness;
-own Ready cannot forfeit the necessary claim. After an actual claim or phase
+payment/Charity packets. Positive acceptance reopens Basic/unstamped Charity
+readiness. The [new ordered Advanced phase](ADVANCED_CHARITY_ORDER.md) instead
+retains a remaining owned entitlement while guides wait for its real turn;
+completed turns cannot reopen. Own Finish checks commitments before advancing,
+including the last player whose Finish immediately opens another phase.
+Own Ready cannot forfeit the necessary claim. After an actual claim or phase
 expiry it cannot be reserved again. Cumulative No caps and original history
 persist. Four profiles consume legal guides; strategy and calibration remain
 deferred. Native phase controls handle waiting before the actual Charity phase.

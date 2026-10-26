@@ -144,6 +144,10 @@ export function nextStrongholdFactionsNativeStep(game: Game): StrongholdFactions
     }
     if (game.phase === 3 && game.auction) return { actor: game.auction.active, action: { type: 'passBid' } };
     if (game.phase === 5) return { actor: game.active!, action: { type: 'endMovement' } };
+    if (game.phase === 2 && game.charityOrder) {
+      const actor = game.charityOrder.remaining[0];
+      return actor ? {actor,action:{type:'ready'}} : null;
+    }
     if (game.phase === 4 && game.revivalOrder) {
       const actor = game.revivalOrder.remaining[0];
       return actor ? {actor,action:{type:'ready'}} : null;

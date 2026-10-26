@@ -44,7 +44,7 @@ export type RuleTopic = {
 export const PHASE_HELP = [
   'Complete the table’s storm dials or card reveal. After the distance is revealed, play any storm cards and confirm movement.',
   'Reveal a spice blow, resolve worms and card responses, then finish any Nexus and Fremen rides.',
-  'Claim charity once if below two spice. Advanced Bene Gesserit receives two spice regardless of wealth. Then mark yourself ready.',
+  'Claim charity once if below two spice. Advanced Bene Gesserit receives two regardless of wealth. New Advanced phases follow the First Player counterclockwise: claim if eligible, then finish your Charity turn. Basic and older unstamped phases retain concurrent readiness.',
   'Bid or pass in turn. New ordinary lots allow ten seconds per bidder while native decisions hold the clock. A winning bidder chooses how to pay before income and bonus-card responses resolve.',
   'Return eligible forces and leaders from the tanks to your reserves. New Advanced Revival phases begin from the First Player counterclockwise; Sapho may change unfinished positions. Finish your own force and leader choices before the next player acts. Basic and already-opened older phases retain their current readiness timing.',
   'Ship before moving. Select a destination sector and, for a move, the forces leaving one territory.',
@@ -121,7 +121,8 @@ const phaseDetails = [
   ],
   [
     'If CHOAM is present, first resolve its income response. CHOAM then pays other factions’ charity; if its income was canceled, charity comes from the bank. Use Claim charity when eligible to bring ordinary available spice to two.',
-    'Mark yourself ready after making your choice. Other players complete their choices independently.',
+    'New Advanced Charity follows the First Player counterclockwise. Only the current player may claim or finish; a claim and any cancellation response finish before the player chooses Finish Charity turn. You may finish without claiming. Waiting and completed seats cannot take another Charity turn.',
+    'Basic and already-opened older unstamped Advanced Charity keep concurrent readiness. Mark yourself ready after making your choice. New Truthtrance answers do not reopen completed ordered turns. Sapho first/last composition for the newly ordered phase remains unfinished.',
   ],
   [
     'Before each auction, resolve the Atreides foresight response. The card stays hidden until that response is allowed. Cancellation affects this card only.',
@@ -2576,6 +2577,8 @@ export const RULE_TOPICS: RuleTopic[] = [
               ? ['ecaz-ambassadors', 'tleilaxu-revival']
               : phase === 3
                 ? ['ordinary-auction-clock', 'ix-technology', 'nexus-ixian-betrayal', 'nexus-ixian-replacement', 'richese-cards']
+                : phase === 2
+                  ? ['advanced-charity-order', 'choam-economy', 'bg-charity-karama']
                 : phase === 1
                   ? ['card-harvester', 'faction-fremen']
                   : phase === 0
@@ -2583,6 +2586,27 @@ export const RULE_TOPICS: RuleTopic[] = [
                     : undefined,
     }),
   ),
+  {
+    id: 'advanced-charity-order',
+    title: 'Advanced Charity player order',
+    category: 'Turn phases', coverage: 'Partial', developmentStage: 'Prototyped',
+    summary: 'New Advanced Charity phases give each faction one opportunity, beginning with the First Player counterclockwise.',
+    steps: [
+      'Resolve CHOAM opening income before any ordinary claim. When it is your turn, claim if eligible and then finish your Charity turn. Finishing without a claim passes your opportunity.',
+      'A claim and its native responses retain the current player. Completing a Karama response does not finish or consume the responder’s own Charity turn.',
+      'Waiting and completed seats cannot claim or finish. A new Truthtrance answer cannot reopen a completed ordered turn, while a remaining owned future claim may still support a binding answer.',
+      'Basic and already-opened unstamped Advanced phases keep concurrent readiness. Inflation, Homeworld bonuses and CHOAM funding retain their existing calculation and limitations.',
+      'Sapho first/last composition, broader interactions and full Advanced acceptance remain unfinished.',
+    ],
+    related: ['charity', 'choam-economy', 'bg-charity-karama', 'truthtrance-turn-actions'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Fresh native order, current-only claim/finish and original response/closing lifecycle are connected; Sapho composition remains.', evidence: ['game/charity-order.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Persistent current/wait/completed status and native claim/finish controls retain funding explanations.', evidence: ['components/charity-claim.tsx', 'components/game-table.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Existing policies wait for their actual opportunity and use the native claim and finish actions; strategy and calibration remain deferred.', evidence: ['game/bots.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'Source cutover, Basic/legacy behavior, remaining entitlements and interaction boundaries are explicit.', evidence: ['docs/ADVANCED_CHARITY_ORDER.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused helper, native and control sources; frozen runtime evidence and complete-mode acceptance are separate.', evidence: ['tests/charity-order.test.ts', 'tests/advanced-charity-order-engine.test.ts', 'tests/charity-claim-controls.test.tsx'] },
+    ],
+  },
   {
     id: 'ordinary-auction-clock',
     title: 'Ordinary auction: ten seconds to bid',

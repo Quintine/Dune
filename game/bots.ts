@@ -3213,6 +3213,7 @@ function policyActions(g: GameView): Action[] {
       .every(p => fighterCount(p, t) < countAt(me, t)));
     if (territory) return [{ type: 'prepareAdvisors', territory }];
   }
+  if (g.phase === 2 && g.charity.orderBlocked) return [];
   if (
     g.phase === 2 &&
     !me.charityClaimed &&

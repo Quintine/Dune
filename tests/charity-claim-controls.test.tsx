@@ -30,25 +30,35 @@ function projected({
     choamCharity: { turn: 3, canceled: false },
   });
   game.players[0].spice = spice;
-  return viewGame(game, 'p');
+  const view = viewGame(game, 'p');
+  view.charityOrder = null;
+  view.charity.orderBlocked = null;
+  return view;
+}
+
+function ordered(remaining = ['p', 'other'], order = ['p', 'other']): GameView {
+  const game = projected({ advanced: true, spice: 1 });
+  game.charityOrder = { version: 1, turn: game.turn, order, remaining };
+  game.charity.orderBlocked = remaining[0] === 'p' ? null : 'Wait for the current Charity turn.';
+  return game;
 }
 
 function markup(game: GameView, busy = false) {
   return renderToStaticMarkup(createElement(CharityClaim, { game, busy, act() {} }));
 }
 
-function click(node: ReactNode): boolean {
+function click(node: ReactNode, selector = 'charity-claim-submit'): boolean {
   for (const child of Children.toArray(node)) {
     if (!isValidElement<{
       children?: ReactNode;
       onClick?: () => void;
       'data-testid'?: string;
     }>(child)) continue;
-    if (child.props['data-testid'] === 'charity-claim-submit' && child.props.onClick) {
+    if (child.props['data-testid'] === selector && child.props.onClick) {
       child.props.onClick();
       return true;
     }
-    if (click(child.props.children)) return true;
+    if (click(child.props.children, selector)) return true;
   }
   return false;
 }
@@ -59,11 +69,66 @@ function claim(game: GameView, busy = false): Action[] {
   return actions;
 }
 
+function finish(game: GameView, busy = false): Action[] {
+  const actions: Action[] = [];
+  click(CharityClaim({ game, busy, act(action) { actions.push(action); } }), 'charity-turn-finish');
+  return actions;
+}
+
 void test('the actual charity control submits one ordinary claim action from its current entitlement', () => {
   const game = projected({ spice: 1 });
   assert.match(markup(game), /If you have fewer than two spice, claim charity once to reach two/);
   assert.match(markup(game), /Claim 1 charity spice/);
   assert.deepEqual(claim(game), [{ type: 'charity' }]);
+});
+
+void test('stamped current Charity controls submit exact claim and finish packets without changing funding guidance', () => {
+  const game = ordered(), html = markup(game);
+  assert.match(html, /First Player counterclockwise, one player at a time/);
+  assert.match(html, /It is your Charity turn/); assert.match(html, /Finish Charity turn/);
+  assert.match(html, /CHOAM pays as much of the ordinary claim as it can/);
+  assert.deepEqual(claim(game), [{ type: 'charity' }]);
+  assert.deepEqual(finish(game), [{ type: 'ready' }]);
+  game.players[0].charityClaimed = true; game.charity.amount = 0;
+  assert.deepEqual(claim(game), []); assert.deepEqual(finish(game), [{ type: 'ready' }]);
+});
+
+void test('waiting and completed Charity turns show public names and cannot claim or finish', () => {
+  const waiting = ordered(['other', 'p'], ['other', 'p']);
+  const complete = ordered(['other']);
+  for (const game of [waiting, complete]) {
+    Object.defineProperty(game.players[1], 'spice', { get() { throw Error('Turn status cannot inspect a rival wallet'); } });
+    assert.match(markup(game), /Waiting for Other to finish Charity/);
+    assert.deepEqual(claim(game), []); assert.deepEqual(finish(game), []);
+  }
+  assert.match(markup(waiting), /Your turn comes later in the public order/);
+  assert.match(markup(complete), /Your Charity turn is complete/);
+  const ended = ordered([]); assert.match(markup(ended), /All Charity turns are complete/);
+  assert.deepEqual(finish(ended), []);
+});
+
+void test('stamped Charity claim and finish retain native pending-income and modal priority', () => {
+  for (const change of [
+    (game: GameView) => { game.charity.incomePending = true; },
+    (game: GameView) => { game.response = { kind: 'bgCharity', owner: 'other', passed: [], amount: 2 }; },
+    (game: GameView) => { game.decision = { kind: 'auctionPayment', player: 'p' }; },
+    (game: GameView) => { game.phaseOpening = { passed: [] }; },
+    (game: GameView) => { game.truthtrance = {} as NonNullable<GameView['truthtrance']>; },
+    (game: GameView) => { game.nexusTraitors = { offer: null, pending: {} as NonNullable<NonNullable<GameView['nexusTraitors']>['pending']> }; },
+    (game: GameView) => { game.automaticContinuationPending = true; },
+  ]) {
+    const game = ordered(); change(game); assert.deepEqual(claim(game), []); assert.deepEqual(finish(game), []);
+  }
+  const game = ordered(); assert.deepEqual(claim(game, true), []); assert.deepEqual(finish(game, true), []);
+  assert.match(markup(game, true), /data-testid="charity-turn-finish"[^>]*disabled/);
+});
+
+void test('Basic and unstamped Advanced Charity keep their existing claim control without a new finish action', () => {
+  for (const advanced of [false, true]) {
+    const game = projected({ advanced });
+    assert.deepEqual(claim(game), [{ type: 'charity' }]); assert.deepEqual(finish(game), []);
+    assert.doesNotMatch(markup(game), /charity-turn-finish|charity-turn-status|First Player counterclockwise/);
+  }
 });
 
 void test('busy, pending income, a completed claim and zero entitlement block the actual callback', () => {

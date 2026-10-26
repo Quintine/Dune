@@ -26,7 +26,10 @@ for (const advanced of [false, true]) {
   void test(`${advanced ? 'Advanced' : 'Basic'} native other-faction full claim uses provisional shortfall funding`, () => {
     for (const choamSpice of [0, 1] as const) {
       const f = fixture({ advanced, choamSpice }), before = structuredClone(f.game);
-      const g = act(f.game, f.guild, f.otherClaim);
+      let g = structuredClone(f.game);
+      while (g.charityOrder && g.charityOrder.remaining[0] !== f.guild)
+        g = act(g, g.charityOrder.remaining[0], { type: 'ready' });
+      g = act(g, f.guild, f.otherClaim);
       assert.equal(player(g, f.choam).spice, 0);
       assert.equal(player(g, f.guild).spice, 2);
       assert.equal(player(g, f.recipient).bribes, 13 - choamSpice);
@@ -37,17 +40,21 @@ for (const advanced of [false, true]) {
       assert.throws(() => act(g, f.guild, f.otherClaim), /once per turn|fewer than/);
     }
   });
-  void test(`${advanced ? 'Advanced' : 'Basic'} each low faction keeps exactly one independent claim in either order`, () => {
+  void test(`${advanced ? 'Advanced' : 'Basic'} each low faction keeps exactly one claim ${advanced ? 'in native player order' : 'in either order'}`, () => {
     const f = fixture({ advanced, choamSpice: 1, guildSpice: 1 });
-    for (const order of [[f.choam, f.guild], [f.guild, f.choam]]) {
+    for (const order of advanced ? [[f.choam, f.guild]] : [[f.choam, f.guild], [f.guild, f.choam]]) {
       let g = structuredClone(f.game);
-      for (const actor of order) g = act(g, actor, { type: 'charity' });
+      for (const actor of order) {
+        while (g.charityOrder && g.charityOrder.remaining[0] !== actor)
+          g = act(g, g.charityOrder.remaining[0], { type: 'ready' });
+        g = act(g, actor, { type: 'charity' });
+      }
       assert.equal(player(g, f.guild).spice, 2);
       assert.equal(player(g, f.choam).spice, order[0] === f.choam ? 1 : 2);
       assert.equal(player(g, f.recipient).bribes, 11);
       for (const actor of order) {
         assert.equal(viewGame(g, actor).players.find(p => p.id === actor)!.charityClaimed, true);
-        assert.throws(() => act(g, actor, { type: 'charity' }), /once per turn|fewer than/);
+        assert.throws(() => act(g, actor, { type: 'charity' }), /once per turn|fewer than|Charity opportunity/);
       }
       assert.deepEqual(inventory(g), f.originalInventory);
     }

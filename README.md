@@ -32,6 +32,12 @@ next player acts; support responses keep their own authorized actors. Basic
 and already-opened older Revival phases retain their current readiness timing.
 See [Revival source and preview scope](docs/ADVANCED_REVIVAL_ORDER.md).
 
+New Advanced Charity phases also follow First Player order counterclockwise.
+Wait for your turn, claim if eligible, then choose **Finish Charity turn**.
+CHOAM opening income and any cancellation response finish before the next seat
+acts. Basic and already-opened older phases retain concurrent readiness.
+See [Charity order and remaining scope](docs/ADVANCED_CHARITY_ORDER.md).
+
 Choose expansion families when creating the room. Before starting, the host can
 select **Leader Skills**, **Ecaz Treachery Cards** (the independent three-card
 variant), **Nexus Cards**, **Discoveries**, **Homeworlds**, **Tech Tokens** or

@@ -44,6 +44,8 @@ import { ordinaryDiscardIncomeMatches } from './ordinary-discard-income';
 import { createRevivalOrder, validateRevivalOrder, revivalOrderBlock, startRevivalOrder,
   saphoRevivalOrderEvent, reorderSaphoRevivalOrder,
   finishRevivalOrder, RevivalOrderError, type RevivalOrder } from './revival-order';
+import { createCharityOrder, validateCharityOrder, charityOrderBlock,
+  finishCharityOrder, CharityOrderError, type CharityOrder } from './charity-order';
 import { semutaTerminalArrivalSupported } from './semuta-terminal-arrival';
 import { semutaDisasterArrivalSupported } from './semuta-disaster-arrival';
 import { semutaAdvisorArrivalSupported } from './semuta-advisor-arrival';
@@ -1372,6 +1374,7 @@ type RicheseAllyOffer = {
 };
 export type Game = {
   revivalOrder?: RevivalOrder;
+  charityOrder?: CharityOrder;
   pendingAutomaticAdvisorFlips?: AutomaticAdvisorFlipSource[];
   pendingAutomaticAdvisorTransport?: AutomaticAdvisorTransport;
   pendingAutomaticAdvisorGamont?: { receipt: AutomaticAdvisorGamont; card: string; nexusEvent?: string };
@@ -15422,6 +15425,9 @@ function bribeQuestionWindow(g: Game): boolean {
  * completing foreign choices at the real table. */
 function charityForecastContext(source: Game): Game {
   const g = structuredClone(source); g.phase = 2; g.ready = [];
+  // A detached witness quotes a remaining owned opportunity, never an early
+  // claim at the real table or a replay of a completed ordered turn.
+  delete g.charityOrder;
   g.truthtrance = null; g.response = null; g.decision = null; g.phaseOpening = null;
   g.pendingKarama = null; g.pendingTreacheryDiscard = null;
   g.spiceWindow = null; g.spiceResolution = null; g.spiceSequence = null; g.nexus = false;
@@ -15445,7 +15451,8 @@ function forecastChoamOpeningIncome(source: Game, owner: string): Game | null {
 function forecastOrdinaryCharity(source: Game, owner: string): Game | null {
   const before = getPlayer(source, owner);
   if (source.phase > 2 || before.charityTurn === source.turn ||
-    source.phase === 2 && source.ready.includes(owner)) return null;
+    source.phase === 2 && (source.ready.includes(owner) ||
+      source.charityOrder && !source.charityOrder.remaining.includes(owner))) return null;
   const g = charityForecastContext(source);
   const player = getPlayer(g, owner);
   if (charityQuote(g, player).total <= 0) return null;
@@ -15533,7 +15540,7 @@ function bribeCompatibleLaterPromises(g: Game, p: Player,
 function bribeTruthAnswers(g: Game, p: Player, claim: BribeClaim): ('yes' | 'no' | 'unknown')[] {
   if (!bribeQuestionWindow(g) || claim.turn !== g.turn || claim.recipient === p.id ||
     claim.recipient === p.ally || !g.players.some(player => player.id === claim.recipient)) return [];
-  const source = g.phase === 2 ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
+  const source = g.phase === 2 && !g.charityOrder ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
   return (['yes', 'no'] as const).filter(answer => !!bribePromiseCompletion(source, p, [...(g.bribePromises ?? []),
     { ...claim, event: 'candidate', player: p.id, asker: g.truthtrance?.queue[0]?.player ?? g.host,
       answer: answer === 'yes', progress: 0 }]));
@@ -15541,13 +15548,13 @@ function bribeTruthAnswers(g: Game, p: Player, claim: BribeClaim): ('yes' | 'no'
 function bribeExpressionTruthAnswers(g: Game, p: Player, claim: BribeExpressionClaim): ('yes' | 'no' | 'unknown')[] {
   if (!bribeQuestionWindow(g) || claim.turn !== g.turn || bribeExpressionRecipients(claim.claim)
     .some(recipient => recipient === p.id || recipient === p.ally || !g.players.some(player => player.id === recipient))) return [];
-  const source = g.phase === 2 ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
+  const source = g.phase === 2 && !g.charityOrder ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
   return (['yes', 'no'] as const).filter(answer => !!bribePromiseCompletion(source, p, g.bribePromises ?? [],
     [...(g.bribeExpressionPromises ?? []), { ...claim, event: 'candidate', player: p.id,
       asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes', progress: [] }]));
 }
 function reopenBribePayer(g: Game, p: Player, answer: boolean) {
-  if (answer && (g.phase === 2 || g.phase === 8 || g.phase === 7 && bribesCloseBeforeNextMentat(g)) && g.ready.includes(p.id)) {
+  if (answer && (g.phase === 2 && !g.charityOrder || g.phase === 8 || g.phase === 7 && bribesCloseBeforeNextMentat(g)) && g.ready.includes(p.id)) {
     g.ready = g.ready.filter(player => player !== p.id);
     log(g, `${p.name} has a new Truthtrance bribe commitment and must finish ${g.phase === 2 ? 'Charity' : g.phase === 8 ? 'Mentat Pause' : 'Collection'} again after its required preparation.`);
   }
@@ -15658,6 +15665,7 @@ function reconcileBribePromises(g: Game, voluntary?: { actor: string; action: Ac
 }
 function ordinaryPaymentActionAvailable(g: Game, player: Player, action: Action): boolean {
   if (action.type === 'charity') return g.phase === 2 && !g.ready.includes(player.id) &&
+    !nativeCharityOrderBlock(g, player.id) &&
     player.charityTurn !== g.turn && charityQuote(g, player).total > 0 &&
     (!byFaction(g, 'choam') || g.choamCharity?.turn === g.turn) &&
     !g.truthtrance && !g.phaseOpening && !g.response && !g.decision && !g.pendingTreacheryDiscard;
@@ -19493,6 +19501,7 @@ function guardTurnActionPrintedCardCost(g: Game, player: Player, used: Card) {
  * normal hidden draw. It grants no spice, cards or foreign decisions. */
 function projectAfterKnownThumper(g: Game) {
   g.phase = 2; g.active = null; g.ready = [];
+  delete g.charityOrder;
   g.spiceSequence = null; g.spiceResolution = null; g.spiceWindow = null;
   g.nexus = false;
 }
@@ -20200,7 +20209,7 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
 }
 function turnActionAnswerSource(g: Game, player: string, alliance = false, window = false,
   fresh?: { claim: TurnActionClaim; answer: boolean }): Game {
-  const source = g.phase === 0 && window || g.phase === 1 && (alliance || window) || g.phase === 2 || g.phase === 4 && !g.revivalOrder || g.phase === 8 ||
+  const source = g.phase === 0 && window || g.phase === 1 && (alliance || window) || g.phase === 2 && !g.charityOrder || g.phase === 4 && !g.revivalOrder || g.phase === 8 ||
     g.phase === 7 && bribesCloseBeforeNextMentat(g)
     ? { ...g, ready: g.ready.filter(id => id !== player) } : g;
   const opened = source.phaseOpening ? { ...source, phaseOpening: { ...source.phaseOpening,
@@ -20392,7 +20401,8 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
       ...liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [], player.id, g.turn),
     ].some(row => row.answer);
     if (!action && completion.revival && !ownedBox &&
-      !(g.phase === 4 && nativeRevivalOrderBlock(g, player.id)))
+      !(g.phase === 4 && nativeRevivalOrderBlock(g, player.id)) &&
+      !(g.phase === 2 && nativeCharityOrderBlock(g, player.id)))
       action = g.phase === 4 ? completion.revival.action
         : g.phase === 2 || g.phase === 3 && ownedInvoice
           ? completion.revival.early.find(step => step.phase === g.phase)?.action : undefined;
@@ -20404,7 +20414,8 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
         if (ownedInvoice) action = current?.type === 'decision' ? current : { type: 'decision', karama: false };
         else if (g.auction?.active === player.id) action = { type: 'passBid' };
       } else if ([2, 4].includes(g.phase) && !g.ready.includes(player.id) &&
-        !(g.phase === 4 && nativeRevivalOrderBlock(g, player.id))) action = current ?? { type: 'ready' };
+        !(g.phase === 4 && nativeRevivalOrderBlock(g, player.id)) &&
+        !(g.phase === 2 && nativeCharityOrderBlock(g, player.id))) action = current ?? { type: 'ready' };
     } else if (!action && g.phase === 5 && g.active === player.id && !promise.transportClosed)
       action = completion.actions[0] ?? { type: 'endMovement' };
   }
@@ -20526,7 +20537,7 @@ function travelTruthAnswers(g: Game, p: Player, claim: TravelClaim): TruthAnswer
       asker: g.players.find(player => player.id !== p.id)!.id, answer, compiled,
       shipment: { pending: g.phase < 5 || shipmentAvailable(g, p), event: null }, progress: [], movementClosed: false,
       fulfilled: compiled.kind === 'constant', released: false };
-    const answerSource = g.phase === 2 || (g.phase === 4 && !g.revivalOrder)
+    const answerSource = (g.phase === 2 && !g.charityOrder) || (g.phase === 4 && !g.revivalOrder)
       ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
     // Candidate witnesses must include the new row, which has no accepted-order
     // slot until the real answer binds. The authoritative order stays untouched.
@@ -20877,6 +20888,7 @@ function earlyGroundMovementPolicy(g: Game, player: Player): Action[] | null {
   if (g.decision?.kind === 'auctionPayment')
     return [current?.type === 'decision' ? current : { type: 'decision', karama: false }];
   if (g.phase === 4 && nativeRevivalOrderBlock(g,player.id)) return [];
+  if (g.phase === 2 && nativeCharityOrderBlock(g,player.id)) return [];
   if (g.phase === 2 || g.phase === 4) return current ? [current] : g.ready.includes(player.id) ? [] : [{ type: 'ready' }];
   return null;
 }
@@ -20885,7 +20897,7 @@ function movementTruthAnswers(g: Game, p: Player, claim: MovementClaim): TruthAn
   const answers: TruthAnswer[] = [];
   for (const answer of [true, false]) {
     const promise = { ...claim, turn: g.turn, player: p.id, asker: g.players.find(other => other.id !== p.id)!.id, answer };
-    const answerSource = g.phase === 2 || (g.phase === 4 && !g.revivalOrder) ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
+    const answerSource = (g.phase === 2 && !g.charityOrder) || (g.phase === 4 && !g.revivalOrder) ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
     if (groundMovementCompletion(answerSource, p.id, [...live, promise]) &&
       revivalCompatibleLaterPromises(answerSource, p, { movementPromises: [...(g.movementPromises ?? []), promise] }) &&
       bribeCompatibleLaterPromises(answerSource, p, { movementPromises: [...(g.movementPromises ?? []), promise] }))
@@ -20894,7 +20906,7 @@ function movementTruthAnswers(g: Game, p: Player, claim: MovementClaim): TruthAn
   return answers.length ? answers : ['unknown'];
 }
 function reopenMovementPreparation(g: Game, p: Player) {
-  if ((g.phase === 2 || (g.phase === 4 && !g.revivalOrder)) && g.ready.includes(p.id)) {
+  if (((g.phase === 2 && !g.charityOrder) || (g.phase === 4 && !g.revivalOrder)) && g.ready.includes(p.id)) {
     g.ready = g.ready.filter(id => id !== p.id);
     log(g, `${p.name} has a new Truthtrance movement commitment and must confirm readiness again after any needed preparation.`);
   }
@@ -20908,7 +20920,7 @@ function bindMovementTruth(g: Game, p: Player, claim: MovementClaim, answer: boo
 }
 function movementExpressionTruthAnswers(g: Game, p: Player, claim: MovementExpressionClaim): TruthAnswer[] {
   if (claim.turn !== g.turn || !movementPromiseTargetAvailable(g, p.id)) return [];
-  const answerSource = g.phase === 2 || (g.phase === 4 && !g.revivalOrder) ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
+  const answerSource = (g.phase === 2 && !g.charityOrder) || (g.phase === 4 && !g.revivalOrder) ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
   const answers: TruthAnswer[] = [];
   for (const answer of [true, false]) {
     const promise: MovementExpressionPromise = { ...structuredClone(claim), event: 'candidate', player: p.id,
@@ -26618,7 +26630,7 @@ function advancePhase(g: Game) {
     requireRule(!g.moritaniExtortion, 'Settle Extortion before leaving Mentat Pause.');
   if (g.phase === 6) boardResolution(() => quoteBattlePhaseAdvance(g));
   commitPhaseResources(g, currentPhaseResources(g));
-  if (!(g.phase === 4 && g.revivalOrder)) g.ready = [];
+  if (!(g.phase === 4 && g.revivalOrder) && !(g.phase === 2 && g.charityOrder)) g.ready = [];
   g.active = null;
   const choam = byFaction(g, 'choam');
   if (g.phase === 8 && choam) {
@@ -26657,6 +26669,10 @@ function finishEcazPlacement(g: Game) {
 }
 function completePhase(g: Game) {
   if (closeNexusCards(g)) return;
+  if (g.phase === 2 && g.charityOrder) {
+    delete g.charityOrder;
+    g.ready = [];
+  }
   if (g.phase === 4 && g.revivalOrder) {
     delete g.revivalOrder;
     g.ready = [];
@@ -26703,6 +26719,43 @@ function openPhase(g: Game, initialize = true) {
 function revivalOrderContext(g: Game) {
   return {turn:g.turn,order:g.order,ready:g.ready};
 }
+function charityOrderContext(g: Game) {
+  return {turn:g.turn,order:g.order,players:g.players,ready:g.ready};
+}
+function charityOrderRule<T>(calculate: () => T): T {
+  try { return calculate(); }
+  catch (error) {
+    if (error instanceof CharityOrderError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function charityOrderIntegrity(g: Game) {
+  if (!g.charityOrder) return;
+  requireRule(g.advanced && g.status === 'playing' && g.phase === 2,
+    'The ordered Charity belongs to its original Advanced phase.');
+  charityOrderRule(() => validateCharityOrder(charityOrderContext(g),g.charityOrder!));
+  requireRule(g.active === (g.charityOrder.remaining[0] ?? null),
+    'Charity must retain its current player through the complete opportunity.');
+}
+function nativeCharityOrderBlock(g: Game, player: string): string | null {
+  return g.charityOrder
+    ? charityOrderRule(() => charityOrderBlock(charityOrderContext(g),g.charityOrder!,player))
+    : null;
+}
+function guardCharityOrderFinish(g: Game, player: string, frame: CharityOrder, action: Action) {
+  // Check the closed owned opportunity before the last Finish can open a
+  // different phase/response and defer reconciliation past its voluntary actor.
+  const closed = structuredClone(g);
+  closed.charityOrder = frame;
+  closed.ready.push(player);
+  closed.active = frame.remaining[0] ?? null;
+  const voluntary = { actor: player, action };
+  reconcileTravelPromises(closed, player, action, g.phase);
+  reconcileRevivalPromises(closed, voluntary);
+  reconcileBribePromises(closed, voluntary);
+  reconcileShipmentPromises(closed, voluntary);
+  reconcileGroundMovementPromises(closed, player, action, g.phase);
+}
 function revivalOrderRule<T>(calculate: () => T): T {
   try { return calculate(); }
   catch (error) {
@@ -26744,7 +26797,14 @@ function beginPhase(g: Game) {
     g.auditorInsight = null;
     retireNexusChoamInsight(g);
   }
-  if (g.phase === 2) openAdvisorPreparation(g);
+  if (g.phase === 2) {
+    if (g.advanced && !g.charityOrder) {
+      g.charityOrder = charityOrderRule(() => createCharityOrder(charityOrderContext(g)));
+      g.active = g.charityOrder.remaining[0] ?? null;
+      log(g, 'Advanced Charity proceeds from the First Player counterclockwise. Claim if eligible, then finish your Charity turn; CHOAM opening income and authorized responses resolve first.');
+    }
+    openAdvisorPreparation(g);
+  }
   if (g.phase === 2 && g.choamCharity?.turn !== g.turn) {
     const choam = byFaction(g, 'choam');
     if (choam && charityMultiplier(g) === 0) {
@@ -29235,6 +29295,7 @@ function earlyRevivalCompletionSeeds(initial: Game, source: Game, owner: string)
   }
   return seeds.map(seed => {
     const g = structuredClone(seed.game); g.phase = 4;
+    delete g.charityOrder;
     if (source.phase < 4) {
       g.revivalRules = newRevivalRules(); g.revivalRequests = {}; g.freeRevival = []; g.emperorExtra = {};
       g.ready = []; g.active = owner; delete g.revivalOrder;
@@ -29510,6 +29571,7 @@ function earlyShipmentGuidance(g: Game, p: Player): { preparation: { actions: Ac
     return { preparation: null, policy: g.auction?.active === p.id ? [{ type: 'passBid' }] : [] };
   }
   if (g.phase === 4 && nativeRevivalOrderBlock(g,p.id)) return {preparation:null,policy:[]};
+  if (g.phase === 2 && nativeCharityOrderBlock(g,p.id)) return {preparation:null,policy:[]};
   if (g.phase === 2 || g.phase === 4)
     return { preparation: current ? { actions: [current] } : null,
       policy: current ? [current] : g.ready.includes(p.id) ? [] : [{ type: 'ready' }] };
@@ -29528,7 +29590,7 @@ function shipmentTruthAnswers(
       { ...claim, turn: g.turn, player: p.id, asker: '', answer },
     ];
     // Concurrent legacy readiness can reopen; a completed ordered turn cannot.
-    const answerSource = g.phase === 2 || (g.phase === 4 && !g.revivalOrder)
+    const answerSource = (g.phase === 2 && !g.charityOrder) || (g.phase === 4 && !g.revivalOrder)
       ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
     if (findShipmentCompletion(answerSource, p, promises) &&
       revivalCompatibleLaterPromises(answerSource, p, { shipmentPromises: [...(g.shipmentPromises ?? []), promises[promises.length - 1]] }) &&
@@ -29545,7 +29607,7 @@ function bindShipmentTruth(
   asker: string,
   mixed?: MixedShipmentExpression,
 ) {
-  if ((g.phase === 2 || (g.phase === 4 && !g.revivalOrder)) && g.ready.includes(p.id)) {
+  if (((g.phase === 2 && !g.charityOrder) || (g.phase === 4 && !g.revivalOrder)) && g.ready.includes(p.id)) {
     g.ready = g.ready.filter(id => id !== p.id);
     log(g, `${p.name} has a new Truthtrance shipment commitment and must confirm readiness again after completing any needed preparation.`);
   }
@@ -33352,7 +33414,8 @@ function projectedTypedRevivalPromiseGuide(g: Game, player: string, kind: 'force
   const ownPayment = g.phase === 3 && !g.response && !g.phaseOpening && g.decision?.kind === 'auctionPayment' && g.decision.player === player;
   if ((!revivalQuestionWindow(g) && !ownPayment) || g.truthtrance || !revivalOpportunity(g, player) ||
     g.pendingRevival || g.pendingKarama || g.pendingTreacheryDiscard ||
-    g.phase === 4 && nativeRevivalOrderBlock(g, player)) return null;
+    g.phase === 4 && nativeRevivalOrderBlock(g, player) ||
+    g.phase === 2 && nativeCharityOrderBlock(g, player)) return null;
   // The separate bid guide owns a jointly binding Yes declaration. Passing
   // cannot evade it merely because Revival comes later in this turn.
   const lot = g.phase === 3 && !ownPayment && !g.richeseAuction && !g.ixAuction ? bidOpportunity(g) : null;
@@ -38228,6 +38291,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   bribePromiseIntegrity(state);
   alliancePromiseIntegrity(state);
   revivalOrderIntegrity(state);
+  charityOrderIntegrity(state);
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
   if (state.spiceBankerIncomePreview) {
@@ -38558,6 +38622,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   guildBetrayalIntegrity(g);
   harkonnenNexusBetrayalIntegrity(g);
   revivalOrderIntegrity(g);
+  charityOrderIntegrity(g);
   return g;
 }
 function finishActionContinuations(g: Game) {
@@ -41510,6 +41575,8 @@ function applyActionInner(
     return g;
   }
   if (t === 'charity') {
+    const orderBlock = nativeCharityOrderBlock(g, id);
+    requireRule(!orderBlock, orderBlock ?? 'Wait for your Charity turn.');
     const advancedBG = g.advanced && p.faction === 'beneGesserit';
     const quote = charityQuote(g, p);
     const amount = quote.total;
@@ -42799,6 +42866,10 @@ function applyActionInner(
     return g;
   }
   if (t === 'ready') {
+    if (g.phase === 2) {
+      const orderBlock = nativeCharityOrderBlock(g, id);
+      requireRule(!orderBlock, orderBlock ?? 'Wait for your Charity turn.');
+    }
     if (allianceQuestionWindow(g)) guardAlliancePromiseReady(g, p);
     if (g.turnActionPromises && (g.phase === 0 || g.phase === 1 && (g.spiceWindow || thumperReadyStartsDraw(g)))) {
       const closed = ownTurnActionWindowClosure(g, p.id);
@@ -42837,6 +42908,13 @@ function applyActionInner(
       'Complete the current phase action first.',
     );
     requireRule(!g.ready.includes(id), 'You are already ready.');
+    if (g.phase === 2 && g.charityOrder) {
+      const finished = charityOrderRule(() => finishCharityOrder(charityOrderContext(g),g.charityOrder!,id));
+      guardCharityOrderFinish(g, id, finished, action);
+      g.charityOrder = finished;
+      g.active = g.charityOrder.remaining[0] ?? null;
+      log(g, `${p.name} finished their Charity turn.`,{faction:p.faction,name:'Charity turn complete'});
+    }
     if (g.phase === 4 && g.revivalOrder) {
       g.revivalOrder = revivalOrderRule(() => finishRevivalOrder(revivalOrderContext(g),g.revivalOrder!,id));
       g.active = g.revivalOrder.remaining[0] ?? null;
@@ -42861,6 +42939,7 @@ function applyActionInner(
 }
 export function viewGame(state: Game, id: string, now?: number) {
   revivalOrderIntegrity(state);
+  charityOrderIntegrity(state);
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
   harkonnenNexusBetrayalIntegrity(state);
@@ -43751,7 +43830,9 @@ export function viewGame(state: Game, id: string, now?: number) {
       incomeCanceled:
         g.choamCharity?.turn === g.turn && g.choamCharity.canceled,
       incomeHomeworld: choamPlayer ? homeworldLowBonus(g, choamPlayer.id) : 0,
+      orderBlocked: nativeCharityOrderBlock(g, id),
     },
+    charityOrder: g.charityOrder ? structuredClone(g.charityOrder) : null,
     moritaniAssassinate: projectedMoritaniAssassinate(g,id),
     moritaniRetention: g.moritaniRetention ?? null,
     nexusMoritaniRetention: quoteNexusMoritaniRetention(g, id),

@@ -172,9 +172,13 @@ void test('Advanced BG forced settlement after CHOAM passes last releases the fi
   const f = fixture({ advanced: true, bg: true }); assert.ok(f.bg);
   assert.ok(f.providerCard); assert.deepEqual(player(f.game, f.target).hand.map(card => card.id), [f.providerCard]);
   for (const kind of ['turnActions', 'bribe'] as const) {
-    let game = bind(f, 'yes', question(f, kind, f.maximum), structuredClone(f.game)).game;
+    let game = bind(f, 'yes', question(f, kind, f.minimum), structuredClone(f.game)).game;
     game = pay(game, f, f.startCash); game = allow(reachIncome(game));
     assert.equal(player(game, f.target).spice, f.incomeAmount); assert.equal(player(game, f.bg).spice, 5);
+    // CHOAM's current cash meets this fixed-income answer. Finish its actual
+    // turn before BG acts; the closed ordinary claim cannot repair a later debit.
+    while (game.charityOrder!.remaining[0] !== f.bg)
+      game = act(game, game.charityOrder!.remaining[0], { type: 'ready' });
     game = act(game, f.bg, f.charity); assert.equal(game.response?.kind, 'bgCharity');
     assert.equal(player(game, f.target).spice, f.incomeAmount); assert.ok(!promise(game, kind).released);
     while (game.response?.kind === 'bgCharity') {

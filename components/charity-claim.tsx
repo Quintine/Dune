@@ -4,21 +4,37 @@ import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { Action, GameView } from '@/game/engine';
 
-export function CharityClaim({
-  game,
-  act,
-  busy,
-}: {
+type Props = {
   game: GameView;
   act: (action: Action) => void;
   busy: boolean;
-}) {
+};
+
+export function CharityClaim(props: Props) {
+  const { game, act, busy } = props;
   const me = game.players.find((player) => player.id === game.me);
   if (game.status !== 'playing' || game.phase !== 2 || !me) return null;
-  const disabled = busy || !!game.truthtrance || !!game.nexusTraitors?.pending ||
-    !!me.charityClaimed || game.charity.incomePending || game.charity.amount === 0;
+  const actor = game.me, turn = game.turn, order = game.charityOrder;
+  const currentActor = order?.remaining[0];
+  const currentName = game.players.find(player => player.id === currentActor)?.name ?? 'the current player';
+  const ownTurn = !order || order.version === 1 && order.turn === turn && order.remaining[0] === actor;
+  const blocked = busy || !!game.truthtrance || !!game.nexusTraitors?.pending || game.charity.incomePending ||
+    !!game.response || !!game.decision || !!game.phaseOpening || !!game.automaticContinuationPending ||
+    !ownTurn || !!game.charity.orderBlocked;
+  const canClaim = !blocked && !me.charityClaimed && game.charity.amount > 0;
+  const canFinish = !!order && !blocked;
   return (
     <>
+      {order && <div className="fine" data-testid="charity-turn-status">
+        <p>Advanced Charity proceeds from the First Player counterclockwise, one player at a time.</p>
+        <p>{order.version !== 1 || order.turn !== turn
+          ? 'This Charity turn order is no longer current.'
+          : !currentActor ? 'All Charity turns are complete.'
+            : !order.remaining.includes(actor) ? `Your Charity turn is complete. Waiting for ${currentName} to finish Charity.`
+              : currentActor === actor ? 'It is your Charity turn. Claim if eligible, then finish your turn to continue.'
+                : `Waiting for ${currentName} to finish Charity. Your turn comes later in the public order.`}</p>
+        {game.charity.orderBlocked && <p>{game.charity.orderBlocked}</p>}
+      </div>}
       <p className="muted">
         {game.charity.multiplier === 0
           ? 'Inflation cancels charity for every faction this turn.'
@@ -38,9 +54,9 @@ export function CharityClaim({
       <Button
         data-testid="charity-claim-submit"
         className="game-action"
-        disabled={disabled}
+        disabled={!canClaim}
         onClick={() => {
-          if (!disabled) act({ type: 'charity' });
+          if (canClaim) act({ type: 'charity' });
         }}
       >
         {game.charity.amount > 0
@@ -48,6 +64,14 @@ export function CharityClaim({
           : 'Claim charity'}
         <ArrowRight size={15} />
       </Button>
+      {order && <Button
+        data-testid="charity-turn-finish"
+        className="game-action"
+        disabled={!canFinish}
+        onClick={() => { if (canFinish) act({ type: 'ready' }); }}
+      >
+        Finish Charity turn
+      </Button>}
     </>
   );
 }

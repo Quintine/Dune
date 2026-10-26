@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Advanced Charity player order — 27 October 2026
+
+Supplied physical8/printed6 expressly begins Charity with the First Player and
+proceeds counterclockwise. New Advanced phases stamp that native order; only
+the current seat claims or finishes. CHOAM opening income and wealthy Bene
+Gesserit responses precede completion. Basic/old unstamped phases retain their
+procedure. Completed ordered turns cannot reopen through Truthtrance, while
+remaining owned future entitlements can still supply detached witnesses.
+The claim-then-Finish control is explicit software composition of the optional
+claim and printed order. Sapho composition and broader interactions remain.
+[Source, lifecycle and boundaries](ADVANCED_CHARITY_ORDER.md).
+
 ## Ixian starting draft with Harkonnen — 27 October 2026
 
 Supplied Advanced physical34/printed32 A explicitly draws N+1 when Harkonnen

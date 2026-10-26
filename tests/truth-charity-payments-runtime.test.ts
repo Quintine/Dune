@@ -149,7 +149,7 @@ void test('already claimed or genuinely expired Charity cannot be reserved again
   game = answer(asked, expired.target, 'no'); physical(game, expired);
 });
 
-void test('a phase2 positive answer reopens real own Ready and cannot forfeit its necessary Charity claim', () => {
+void test('a Basic phase2 positive answer reopens real own Ready and cannot forfeit its necessary Charity claim', () => {
   for (const kind of ['turnActions', 'bribe'] as const) {
     const f = fixture({ source: 'phase2' }); let source = pay(f.game, f, 5);
     source = act(source, f.target, { type: 'ready' }); assert.ok(source.ready.includes(f.target));
@@ -159,6 +159,47 @@ void test('a phase2 positive answer reopens real own Ready and cannot forfeit it
     assert.ok(guide); assert.equal(guide.action.type, 'charity'); game = act(game, f.target, guide.action);
     game = pay(game, f, 1); assert.equal(promise(game, kind).fulfilled, true); assert.equal(player(game, f.target).spice, 1);
     assert.equal(player(game, f.recipient).bribes, 6); assert.equal(player(game, f.target).charityTurn, game.turn); physical(game, f);
+  }
+});
+
+void test('Advanced future Charity can fund an answer but its real claim guide waits for the original owned turn', () => {
+  const f = fixture({ source: 'phase2', advanced: true });
+  assert.notEqual(f.game.charityOrder!.remaining[0], f.target);
+  let game = bind(f, 'yes').game;
+  game = pay(game, f, 5);
+  assert.equal(player(game, f.target).spice, 0);
+  assert.notEqual(viewGame(game, f.target).turnActionGuide?.action.type, 'charity');
+  rejected(game, f.target, f.charity);
+  while (game.charityOrder!.remaining[0] !== f.target)
+    game = act(game, game.charityOrder!.remaining[0], { type: 'ready' });
+  const guide = viewGame(game, f.target).turnActionGuide;
+  assert.equal(guide?.action.type, 'charity');
+  rejected(game, f.target, { type: 'ready' });
+  game = act(game, f.target, guide!.action);
+  game = pay(game, f, 1);
+  assert.equal(promise(game).fulfilled, true);
+  assert.equal(player(game, f.target).spice, 1);
+  physical(game, f);
+});
+
+void test('new Advanced answers cannot reopen an actually completed Charity opportunity for another claim', () => {
+  for (const kind of ['turnActions', 'bribe'] as const) {
+    const f = fixture({ source: 'phase2', advanced: true }), respondent = 'atreides';
+    let game = act(f.game, respondent, { type: 'bribe', target: f.asker, amount: player(f.game, respondent).spice });
+    while (!game.ready.includes(respondent))
+      game = act(game, game.charityOrder!.remaining[0], { type: 'ready' });
+    assert.equal(game.phase, 2); assert.equal(game.active, f.target);
+    const queue = structuredClone(game.charityOrder), ready = [...game.ready];
+    const raw: TruthQuestion = { ...question(f, kind, 1), target: respondent };
+    const asked = ask(declare(f, game).game, f.asker, raw);
+    const view = viewGame(asked, respondent);
+    assert.deepEqual(kind === 'turnActions' ? view.truthTurnActionAnswers : view.truthBribeAnswers, ['no']);
+    rejected(asked, respondent, { type: 'truthAnswer', answer: 'yes' });
+    game = answer(asked, respondent, 'no');
+    assert.deepEqual(game.charityOrder, queue); assert.deepEqual(game.ready, ready);
+    rejected(game, respondent, f.charity);
+    assert.notEqual(player(game, respondent).charityTurn, game.turn);
+    physical(game, f);
   }
 });
 

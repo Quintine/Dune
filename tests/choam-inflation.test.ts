@@ -35,9 +35,19 @@ function fixture(advanced = false) {
 }
 function ready(state: Game) {
   let g = state;
-  for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
+  const players = g.phase === 2 && g.charityOrder ? [...g.charityOrder.remaining] : g.players.map(p => p.id);
+  for (const player of players) g = applyAction(g, player, { type: 'ready' });
   while (g.decision?.kind === 'choamMarket')
     g = applyAction(g, g.decision.player, { type: 'decision', done: true });
+  return g;
+}
+function charityTurn(state: Game, player: string) {
+  let g = state;
+  while (g.phase === 2 && g.charityOrder && g.charityOrder.remaining[0] !== player) {
+    const current = g.charityOrder.remaining[0];
+    assert.ok(current, 'the requested Charity opportunity must still be pending');
+    g = applyAction(g, current, { type: 'ready' });
+  }
   return g;
 }
 function allow(state: Game) {
@@ -79,7 +89,7 @@ function nextCharity(state: Game) {
   return ready(g);
 }
 function mentat(state: Game) {
-  const g = structuredClone(state);
+  const g = structuredClone(state.phase === 2 && state.charityOrder ? ready(state) : state);
   g.phase = 7;
   g.ready = [];
   return ready(g);
@@ -186,8 +196,10 @@ void test('Double changes ordinary payout, preserves ordinary eligibility and do
     assert.equal(charityAmount(g, g.players[1]), ordinary);
     assert.equal(charityAmount(g, g.players[2]), bg);
     const before = g.players[0].spice;
+    g = charityTurn(g, 'e');
     if (ordinary) g = applyAction(g, 'e', { type: 'charity' });
     else assert.throws(() => applyAction(g, 'e', { type: 'charity' }), /fewer/);
+    g = charityTurn(g, 'b');
     g = allow(applyAction(g, 'b', { type: 'charity' }));
     assert.equal(g.players[1].spice, starting + ordinary);
     assert.equal(g.players[2].spice, starting + bg);
@@ -198,10 +210,12 @@ void test('Cancel suppresses all claims and CHOAM income, including wealthy adva
   let g = nextCharity(allow(place(ready(fixture(true)), 'cancel')));
   assert.equal(g.response, null);
   assert.equal(g.players[0].spice, 20);
-  for (const p of g.players) {
+  for (const id of g.order) {
+    g = charityTurn(g, id);
+    const p = g.players.find(player => player.id === id)!;
     assert.equal(charityAmount(g, p), 0);
-    assert.throws(() => applyAction(g, p.id, { type: 'charity' }), /fewer/);
-    assert.equal(viewGame(g, p.id).charity.incomePending, false);
+    assert.throws(() => applyAction(g, id, { type: 'charity' }), /fewer/);
+    assert.equal(viewGame(g, id).charity.incomePending, false);
   }
   g = ready(g);
   assert.equal(g.phase, 3);
@@ -211,7 +225,9 @@ void test('canceling doubled CHOAM income preserves doubled charity from the ban
   g.players[0].spice = 0;
   g.players[1].spice = 1;
   g = applyAction(g, 'c', { type: 'charity' });
+  g = charityTurn(g, 'e');
   g = applyAction(g, 'e', { type: 'charity' });
+  g = charityTurn(g, 'b');
   g = allow(applyAction(g, 'b', { type: 'charity' }));
   assert.deepEqual(
     g.players.map((p) => p.spice),
@@ -222,6 +238,7 @@ void test('canceling doubled CHOAM income preserves doubled charity from the ban
 void test('canceling doubled wealthy Bene Gesserit charity does not charge CHOAM', () => {
   let g = allow(nextCharity(allow(place(ready(fixture(true))))));
   const before = g.players[0].spice;
+  g = charityTurn(g, 'b');
   g = cancel(applyAction(contest(g), 'b', { type: 'charity' }));
   assert.equal(g.players[0].spice, before);
   assert.equal(g.players[2].spice, 20);
@@ -327,7 +344,11 @@ void test('all AI levels place Inflation legally, finish its response and do not
       p.bot = difficulty;
       p.spice = 0;
     });
-    for (const p of g.players)
-      assert.equal(botActions(viewGame(g, p.id))[0].type, 'ready');
+    for (const id of g.order) {
+      assert.equal(g.charityOrder?.remaining[0], id);
+      const actions = botActions(viewGame(g, g.charityOrder!.remaining[0]));
+      assert.equal(actions[0]?.type, 'ready');
+      g = applyAction(g, id, actions[0]);
+    }
   }
 });

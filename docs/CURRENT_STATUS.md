@@ -20,6 +20,32 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Advanced Charity player order — 27 October. Prototyped / Partial.**
+New Advanced phases proceed from the First Player counterclockwise. Only the
+current seat may claim or Finish; CHOAM income and wealthy BG responses retain
+their original timing. Basic/old unstamped phases stay concurrent. A completed
+turn cannot reopen through Truthtrance; remaining future entitlement remains
+quotable, with executable guidance waiting for the actual owner. A native case
+found and repaired last-Finish evasion before a phase-opening interruption.
+
+Frozen **15 affected files, 147/147**, types/lint/build and 4 fresh native
+start programmes pass: three explicit Advanced previews (allowed income,
+canceled income, canceled wealthy BG) and a Basic concurrent low-claim control.
+Runtime records 11 GameTable SSR, 26 claim-panel renders, 8 actual claim
+callbacks and 9 Finish callbacks. Recorded source/further arrays total
+101/30 across programmes. Original unopened deal/Spice positions and scalar
+lotteries are selected; actual bribes create poverty. Responses/card cancellation
+and closing packets use native actions directly, without a clicked-control claim.
+Nineteen new helper/native/control/Truth cases pass; old payment and Inflation
+sources now finish actual preceding turns. Sapho composition remains missing.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-advanced-charity-order-proof-v4/`;
+journeys/HTML: adjacent `20261027-advanced-charity-order-runtime/run-v2/`.
+Passed tests/types/lint carry from v3 under an identical source hash; v4 repairs
+only a private smoke assumption about automatic uncontested BG resolution.
+The existing server returned HTTP200 without restart. Browser/deployed,
+complete modes and final assurance remain. [Contract](ADVANCED_CHARITY_ORDER.md).
+
 **Ixian Advanced starting draft — 27 October. Prototyped / Partial.**
 Fresh Advanced setup with Harkonnen now includes its extra starting card in the
 original Ixian pool; both Harkonnen cards come from the shuffled remainder.
@@ -46,14 +72,18 @@ Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-ix-starting-pool-p
 journeys/HTML: adjacent `20261027-ix-starting-pool-runtime/run/`.
 [Source contract](IX_PROTOTYPE.md#advanced-starting-draft-source-cutover--27-october-2026).
 
-**Next source-identified functions:** Advanced Charity's First Player claim
-order (supplied physical8), CHOAM's total-support rounding (physical29; final
-eligibility composition still needs its source check), and Family Atomics'
-full timing/sector/removal contract (physical39; the revision's stricter
-requirements remain Advanced-only after the bounded Basic source comparison).
-These are concrete remaining code/source divergences, not a complete rules
-audit. The bounded six-classic-faction pass found connected independent
-functions; optional modules, interactions and final acceptance remain open.
+**Next source-identified functions:** CHOAM's total-support rounding
+(supplied physical29 F) and Family Atomics' full timing/sector/removal contract
+(physical39; the revision's stricter requirements remain Advanced-only after
+bounded Basic comparison). The bounded CHOAM source comparison supports a
+rounding-only correction: retain eligible `support - allyPayment`, including
+Arrakeen's expressly sourced Bank contribution; preserve CHOAM-own/CHOAM-aid
+exclusions and free-force support. Aggregate before flooring; unrelated
+Banker/Bureaucrat per-invoice rulings stay distinct. This is next implementation,
+not a passed new effect. Charity Sapho composition waits for the interaction pass.
+These findings are concrete divergences, not a complete rules audit. The bounded
+six-classic-faction pass found connected independent functions; optional modules,
+interactions and final acceptance remain open.
 
 **Native E3 trained capture — 27 October. Prototyped / Partial.**
 Fresh bare Advanced E3/all14 setups now connect Harkonnen with actual Ecaz

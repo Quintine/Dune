@@ -40,9 +40,19 @@ function fixture(advanced = false, ix = false) {
 }
 function ready(state: Game) {
   let g = state;
-  for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
+  const players = g.phase === 2 && g.charityOrder ? [...g.charityOrder.remaining] : g.players.map(p => p.id);
+  for (const player of players) g = applyAction(g, player, { type: 'ready' });
   while (g.decision?.kind === 'choamMarket')
     g = applyAction(g, g.decision.player, { type: 'decision', done: true });
+  return g;
+}
+function charityTurn(state: Game, player: string) {
+  let g = state;
+  while (g.phase === 2 && g.charityOrder && g.charityOrder.remaining[0] !== player) {
+    const current = g.charityOrder.remaining[0];
+    assert.ok(current, 'the requested Charity opportunity must still be pending');
+    g = applyAction(g, current, { type: 'ready' });
+  }
   return g;
 }
 function allow(state: Game) {
@@ -162,6 +172,7 @@ void test('clean BG charity Karama cancellation offers Semuta without awarding e
   g = allow(ready(g));
   contest(g);
   g.players[2].spice = 12;
+  g = charityTurn(g, 'b');
   g = applyAction(g, 'b', { type: 'charity' });
   assert.equal(g.response?.kind, 'bgCharity');
   assert.equal(viewGame(g, 'b').players[2].charityClaimed, true);
@@ -210,9 +221,11 @@ void test('CHOAM pays ordinary charity by actual need and advanced Bene Gesserit
       let g = allow(ready(fixture(advanced)));
       g.players[1].spice = starting;
       g.players[2].spice = starting;
+      g = charityTurn(g, 'e');
       g = applyAction(g, 'e', { type: 'charity' });
       assert.equal(g.players[1].spice, 2);
       assert.equal(g.players[0].spice, 6 - (2 - starting));
+      g = charityTurn(g, 'b');
       g = applyAction(g, 'b', { type: 'charity' });
       assert.equal(g.players[2].spice, advanced ? starting + 2 : 2);
       assert.equal(
@@ -230,6 +243,7 @@ void test('wealthy Bene Gesserit payment waits for its response; cancellation ne
     let g = allow(ready(fixture(true)));
     contest(g);
     g.players[2].spice = 12;
+    g = charityTurn(g, 'b');
     g = applyAction(g, 'b', { type: 'charity' });
     assert.equal(g.response?.kind, 'bgCharity');
     assert.equal(g.players[0].spice, 6);
@@ -245,6 +259,7 @@ void test('wealthy BG response preserves cancellation before provisional shortfa
     contest(g);
     g = applyAction(g, 'c', { type: 'bribe', target: 'e', amount: 6 });
     g.players[2].spice = 12;
+    g = charityTurn(g, 'b');
     g = applyAction(g, 'b', { type: 'charity' });
     assert.equal(g.response?.kind, 'bgCharity');
     assert.equal(g.players[0].spice, 0);
@@ -260,7 +275,10 @@ void test('Karama cancels CHOAM income, restores bank payments and permits CHOAM
   let g = cancel(ready(contest(fixture(true))));
   assert.equal(g.players[0].spice, 0);
   assert.deepEqual(g.choamCharity, { turn: 1, canceled: true });
-  for (const id of ['c', 'e', 'b']) g = applyAction(g, id, { type: 'charity' });
+  for (const id of g.order) {
+    g = charityTurn(g, id);
+    g = applyAction(g, id, { type: 'charity' });
+  }
   assert.deepEqual(
     g.players.map((p) => p.spice),
     [2, 2, 2],
@@ -336,6 +354,7 @@ void test('charity projections expose the payer and own entitlement without leak
     incomePending: false,
     incomeCanceled: false,
     incomeHomeworld: 0,
+    orderBlocked: null,
   });
   assert.equal(v.players[0].spice, undefined);
   assert.equal(v.players[0].handLimit, 5);
@@ -346,9 +365,12 @@ void test('ordinary funded claims still accrue and settle Spice Production once'
   g.techTokens = createTechTokens();
   g.techTokens.production.owner = 'e';
   g = allow(ready(g));
-  g = applyAction(g, 'b', { type: 'charity' });
+  g = charityTurn(g, 'e');
   assert.equal(g.techTokens!.production.spice, 0);
   g = applyAction(g, 'e', { type: 'charity' });
+  assert.equal(g.techTokens!.production.spice, 1);
+  g = charityTurn(g, 'b');
+  g = applyAction(g, 'b', { type: 'charity' });
   assert.equal(g.techTokens!.production.spice, 1);
   g = ready(g);
   assert.equal(g.players[1].spice, 3);
@@ -419,10 +441,20 @@ void test('all AI levels proceed after automatic CHOAM income and claim funded c
       assert.ok(actions.length);
       g = applyAction(g, p.id, actions[0]);
     }
+    assert.equal(g.charityOrder?.remaining[0], 'c');
+    const choam = botActions(viewGame(g, g.charityOrder!.remaining[0]));
+    assert.equal(choam[0]?.type, 'ready');
+    g = applyAction(g, 'c', choam[0]);
     for (const id of ['e', 'b']) {
-      const actions = botActions(viewGame(g, id));
-      assert.equal(actions[0].type, 'charity');
+      assert.equal(g.charityOrder?.remaining[0], id);
+      const actions = botActions(viewGame(g, g.charityOrder!.remaining[0]));
+      assert.equal(actions[0]?.type, 'charity');
       g = applyAction(g, id, actions[0]);
+      if (id === 'e') {
+        const finish = botActions(viewGame(g, g.charityOrder!.remaining[0]));
+        assert.equal(finish[0]?.type, 'ready');
+        g = applyAction(g, id, finish[0]);
+      }
     }
     assert.deepEqual(
       g.players.map((p) => p.spice),
