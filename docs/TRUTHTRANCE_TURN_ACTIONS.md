@@ -295,3 +295,73 @@ correlations and final rules/recovery/privacy/custody acceptance remain. Full
 AI strategy and calibration stay deferred. Native mode/module preview fences
 remain; this batch performs no database/save/server/reset/restart/deployment
 operation and does not certify any complete mode.
+
+## Printed Hajr and Ghola plays — 27 October 2026
+
+**Prototyped / Partial.** Add one atomic named-effect leaf:
+`{kind:'cardPlay',effect:'hajr'|'ghola'}`. It asks about an actual accepted use in
+that printed role after this answer during the current turn. Hajr counts even
+if its extra move remains unused; Ghola card use is distinct from ordinary
+force or leader Revival. Earlier plays, disposals, sales, role conversions and
+recovery alone do not count. A legitimate later physical replay can count.
+This is an explicit composition of the existing current-turn Truth authority
+and native card contracts, not a new publisher per-card promise ruling.
+
+Per-answer optional private stages retain played/closed booleans only. Native
+private counters supply detached witness baselines; earlier counts are never
+installed as future answer progress. Old raw records remain valid without the
+new stages. Original raw conditions and aggregate status remain the only own
+history; physical card IDs and selected completion branches stay private.
+
+Hajr's remaining opportunity closes at the owner's actual Movement end; Ghola
+continues through the full current turn. Whole alternatives retain payments
+and other native deadlines. A known Inflation Double opening closes payments
+before Mentat without closing a remaining Ghola alternative; Ready quotes only
+that payment closure. Full turn expiry still closes both families.
+Basic Hajr uses its original own-turn timing;
+Advanced must earn its actual immediate window through real completed movement
+and required arrival decisions. Recovery supplies no extra timing privilege.
+
+Detached native witnesses share the real purse, Tanks, card cost, leader and
+movement allowance with ordinary Revival, payments, transport and current plan
+constraints. No branch is stored in the real ledger. Known owned Box routes
+can recover a real eligible card; unknown future draws/gifts/casualties are not
+invented. Broader future preparation/funding and module combinations remain.
+The current Basic Richese public replay source includes Semuta and remains
+outside this whole-turn composition's existing envelope; recovery evidence
+uses an original supported Advanced source instead of removing that marker.
+Its actual first move and first Hajr precede the answer. The future paid Box
+must precede a second real movement before Hajr can be replayed: a voluntary
+Box play closes any earlier immediate Advanced window, including in detached
+forecasts. Exact guide metadata is checked before passing the original native
+action to strict card controls; it never becomes a Box selection field.
+Native accepted printed plays, rather than their later income effects, record
+receipts. Own post-cost completion is checked before foreign income/discard
+responses can mask voluntary evasion. Human controls and four minimal profiles
+receive the same exact native packet. All existing mode, final assurance and
+AI strategy/calibration gates remain open.
+
+The frozen source-bound proof covers22 related files and278 passing cases:
+V5's234 cases in twenty unchanged files plus V6's44/44 in the two repaired
+files. Six counter, ten aggregate helper, four control and sixteen native/
+controlled-token cases add36 checks. Final types/lint/build pass. Seven native
+journeys provide33 complete GameTable SSR renders,7 actual answer callbacks
+and17 exact guide callbacks. They exercise Basic Hajr/frozen facts/payment,
+Advanced actual first movement, Ghola/ordinary shared Tanks and purse, Hidar,
+Advanced typed source selection, paid Advanced replay and whole No through
+Mentat. The forced Sardaukar return is separately covered by the native test;
+a minimal guide may choose a legal normal force instead.
+
+The initial runtime expectation incorrectly demanded an elite guide selection;
+its native packet can legally choose a normal force. The original Basic replay
+source is rejected by the existing Semuta fence, so the supported Advanced
+chronology is used. Targeted feedback repairs the real shared-Tanks, early
+payment-closure, Box-window forecast and strict native packet issues. Type/lint
+feedback is repaired. The final two test-oracle fixes change no production or
+fixture behavior; the per-file manifest preserves the passing runtime evidence.
+
+Proof/manifest: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-printed-proof-v6/`;
+reused journeys/HTML: adjacent `20261027-truth-printed-runtime-v5/`.
+This is local engine/SSR/control evidence. No HTTP/storage boundary changes,
+server restart, reset/deletion or deployed operation occurs. Full browser,
+deployed, recovery/privacy/custody and wider-combination acceptance remain.

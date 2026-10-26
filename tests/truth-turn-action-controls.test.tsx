@@ -6,6 +6,7 @@ import { TurnActionFields, turnActionInputError } from '../components/turn-actio
 import { TurnActionAnswers, TurnActionGuideButton, TurnActionPromises } from '../components/turn-action-promises';
 import { TruthFactFields } from '../components/mixed-shipment-fields';
 import { BattleClaimFields } from '../components/battle-promises';
+import { baseDeck } from '../game/cards';
 import { createGame, joinGame, newPlayer, viewGame, type Action, type GameView, type Plan } from '../game/engine';
 import type { MixedActionExpression } from '../game/mixed-action-question';
 import type { MixedBattleActionClaim } from '../game/mixed-battle-question';
@@ -28,6 +29,7 @@ const forceRevival = (counter: 'total' | 'normal' | 'elite' = 'total', minimum =
   ({ kind: 'action', action: { kind: 'forces', counter, minimum } });
 const leaderRevival = (leader: string): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
 const finalAlliance = (partner = 'r'): Expression => ({ kind: 'action', action: { kind: 'alliance', partner } });
+const printedCard = (effect: 'hajr' | 'ghola' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
 const planClaim = (claim: MixedBattleActionClaim = { kind: 'dial', compare: 'eq', value: 3 }): Expression =>
   ({ kind: 'action', action: { kind: 'battlePlan', battle: 'controlled-native-battle', territory: 'arrakeen', claim } });
 const traitorClaim = (call = true): Expression =>
@@ -73,6 +75,17 @@ function projected(phase = 5, next: Action = { type: 'move', forces: { 'arrakeen
   game.turnActionPromises = [{ event, player: 'p', asker: 'a', turn: 2, mixed: claim(), answer: true, fulfilled: false, released: false }];
   game.turnActionGuide = { event, action: { ...next, turnActionPromiseEvent: event, turnActionPromisePhase: phase } };
   game.truthTurnActionAnswers = null;
+  if (next.type === 'card' && typeof next.card === 'string') {
+    const effect = next.card.includes('hajr') ? 'hajr' : next.card.includes('ghola') ? 'ghola' : 'karama';
+    const face = baseDeck().find(card => card.effect === effect); assert.ok(face);
+    const me = game.players.find(player => player.id === 'p')!;
+    me.hand = [{ ...face, id: next.card }]; me.hajrAvailable = effect === 'hajr';
+    if (effect === 'ghola') {
+      me.tanks = 5; me.elites = { reserves: 4, tanks: 1, forces: {}, revived: 0 };
+      game.ghola = { cards: [next.card], leaders: [{ id: 'controlled-dead-leader', name: 'Returned Commander', strength: 3 }],
+        kwisatz: false, maxForces: 5, eliteRemaining: 1, eliteBlock: null, available: true, reason: null };
+    }
+  }
   return game;
 }
 function auction(next: Action = { type: 'passBid' }): GameView {
@@ -479,6 +492,117 @@ void test('turn-action combat callbacks retain current battle ownership and raw 
   assert.match(html, /You answered Yes/); assert.doesNotMatch(html, /controlled-native-battle|Fill the quoted battle plan|compiled/);
 });
 
+void test('turn-action printed-role editor uses public names without holdings or private stages and retains the shared logical budget', () => {
+  const game = projected();
+  for (const player of game.players) for (const key of ['hand', 'spice', 'traitors', 'faceDancers', 'tanks', 'leaders', 'hajrAvailable'])
+    Object.defineProperty(player, key, { get() { throw Error(`No private ${key} authoring inspection`); }, configurable: true });
+  Object.defineProperty(game, 'ghola', { get() { throw Error('No private Ghola authoring inspection'); }, configurable: true });
+  Object.defineProperty(game.turnActionPromises[0], 'cardPlays', { get() { throw Error('No private card-play stage'); } });
+  const e = editor(physical(), false, game); select(e.tree(), '1', 'action', 'cardPlay');
+  assert.deepEqual(e.value, printedCard()); assert.equal(e.error(), null);
+  const choices = elements(find(e.tree(), 'id', 'truth-turn-action-1-effect')).filter(element => element.type === 'option');
+  assert.deepEqual(choices.map(choice => choice.props.value), ['hajr', 'ghola']);
+  select(e.tree(), '1', 'effect', 'ghola'); assert.deepEqual(e.value, printedCard('ghola')); assert.equal(e.error(), null);
+  select(e.tree(), '1', 'effect', 'karama'); assert.deepEqual(e.value, printedCard('ghola'));
+  assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'cardPlay', effect: 'ghola', card: 'private-card-id' } }, game, 'p'));
+  assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'cardPlay', effect: 'karama' } }, game, 'p'));
+  const html = e.html(); assert.match(html, /Play Hajr in its printed role after this answer this turn/);
+  assert.match(html, /Play Tleilaxu Ghola in its printed role after this answer this turn/);
+  assert.match(html, /Hajr counts when played even if its extra movement is unused/);
+  assert.match(html, /an actual later replay after Box recovery does/); assert.doesNotMatch(html, /private-card-id|controlled-ghola|controlled-hajr/);
+  const full = editor({ kind: 'or', terms: [printedCard(), printedCard('ghola')] }, false, game);
+  for (let count = 3; count <= 16; count++) { click(control(full.tree(), 'add-action-1')); select(full.tree(), `1.${count}`, 'action', 'cardPlay'); }
+  assert.equal(full.error(), null); assert.match(full.html(), /16 \/ 16 conditions/);
+  assert.equal(control(full.tree(), 'add-action-1').props.disabled, true);
+  const deep = editor({ kind: 'and', terms: [fact(), printedCard('ghola')] }, false, game);
+  click(control(deep.tree(), 'or-1.2')); click(control(deep.tree(), 'and-1.2.1')); click(control(deep.tree(), 'or-1.2.1.1'));
+  assert.equal(deep.error(), null); assert.match(deep.html(), /4 \/ 4 levels of grouping/);
+  const frozen = editor(printedCard(), true, game); select(frozen.tree(), '1', 'effect', 'ghola');
+  select(frozen.tree(), '1', 'action', 'payment'); assert.equal(frozen.changes, 0); assert.deepEqual(frozen.value, printedCard());
+});
+
+void test('printed Ghola guides forward exact native force, leader and KH choices out of turn and reject unavailable or forged choices', () => {
+  for (let phase = 0; phase <= 8; phase++) {
+    const game = projected(phase, { type: 'card', card: 'controlled-ghola', amount: 3, elite: 1 }); game.active = 'a'; game.advanced = true;
+    game.turnActionPromises[0].mixed = printedCard('ghola');
+    Object.defineProperty(game.turnActionPromises[0], 'cardPlays', { get() { throw Error('No private Ghola stage inspection'); } });
+    const sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    assert.match(markup(game), /Play Tleilaxu Ghola to return 3 physical forces/);
+  }
+  for (const leader of ['controlled-dead-leader', 'kwisatz']) {
+    const game = projected(7, { type: 'card', card: 'controlled-ghola', leader }); game.active = 'a';
+    if (leader === 'kwisatz') { game.advanced = true; game.players.find(player => player.id === 'p')!.faction = 'atreides'; game.ghola.kwisatz = true; }
+    const sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    assert.match(markup(game), leader === 'kwisatz' ? /return Kwisatz Haderach/ : /return Returned Commander/);
+    if (leader === 'kwisatz') game.ghola.kwisatz = false; else game.ghola.leaders = [];
+    press(button); assert.equal(sent.length, 1);
+  }
+  for (const change of [
+    (game: GameView) => { game.ghola = { ...game.ghola }; }, (game: GameView) => { game.ghola.available = false; },
+    (game: GameView) => { game.ghola.cards = []; }, (game: GameView) => { game.ghola.maxForces = 0; },
+    (game: GameView) => { game.ghola.eliteRemaining = 0; }, (game: GameView) => { game.players.find(player => player.id === 'p')!.hand = []; },
+    (game: GameView) => { game.phase = 7; }, (game: GameView) => { game.truthtrance = answering(2).truthtrance; },
+  ]) {
+    const game = projected(2, { type: 'card', card: 'controlled-ghola', amount: 3, elite: 1 }), sent: Action[] = [];
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } }); assert.equal(button.props.disabled, false);
+    change(game); press(button); assert.deepEqual(sent, []);
+  }
+  for (const malformed of [
+    { card: 'missing-ghola' }, { amount: 0 }, { amount: 6 }, { amount: 1.5 }, { amount: 3, elite: 2 }, { amount: 3, elite: -1 },
+    { amount: 5, elite: 0 }, { leader: 'foreign-living-leader' }, { mode: 'shipment' },
+  ]) {
+    const game = projected(2, { type: 'card', card: 'controlled-ghola', amount: 3, elite: 1 });
+    Object.assign(game.turnActionGuide!.action, malformed);
+    const sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, true); press(button); assert.deepEqual(sent, []);
+  }
+});
+
+void test('printed Hajr guides require the actual held card and current own immediate Movement opportunity', () => {
+  for (const advanced of [false, true]) {
+    const game = projected(5, { type: 'card', card: 'controlled-hajr' }); game.advanced = advanced;
+    game.turnActionPromises[0].mixed = printedCard();
+    Object.defineProperty(game.turnActionPromises[0], 'cardPlays', { get() { throw Error('No private Hajr stage inspection'); } });
+    const sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    assert.match(markup(game), /Play Hajr in its printed role while honoring your whole answer/);
+  }
+  for (const change of [
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.hajrAvailable = false; },
+    (game: GameView) => { const player = game.players.find(player => player.id === 'p')!; player.moved = (player.moved ?? 0) + 1; },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.hajrPlays = 1; },
+    (game: GameView) => { game.players.find(player => player.id === 'p')!.hand = []; },
+    (game: GameView) => { game.active = 'a'; }, (game: GameView) => { game.phase = 4; },
+    (game: GameView) => { game.response = { kind: 'guildIncome', owner: 'a', amount: 1, passed: [] }; },
+  ]) {
+    const game = projected(5, { type: 'card', card: 'controlled-hajr' }), sent: Action[] = [];
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } }); assert.equal(button.props.disabled, false);
+    change(game); press(button); assert.deepEqual(sent, []);
+  }
+  for (const phase of [0, 2, 4, 6, 8]) {
+    const game = projected(phase, { type: 'card', card: 'controlled-hajr' }), sent: Action[] = [];
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, true); press(button); assert.deepEqual(sent, []);
+  }
+  const missing = projected(5, { type: 'card', card: 'controlled-hajr' }); missing.turnActionGuide!.action.card = 'missing-hajr';
+  assert.equal(guide({ game: missing, busy: false, act() { assert.fail('A missing Hajr cannot dispatch'); } }).props.disabled, true);
+});
+
+void test('printed-card history retains only raw aggregate conditions and their distinct native deadlines', () => {
+  const game = projected(8); game.turnActionGuide = null;
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard(), { kind: 'and', terms: [fact(), printedCard('ghola')] }] };
+  for (const key of ['cardPlays', 'compiled', 'combat', 'preparation'])
+    Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
+  const html = markup(game);
+  assert.match(html, /Hajr/); assert.match(html, /Tleilaxu Ghola/); assert.match(html, /You answered Yes/);
+  assert.match(html, /Hajr counts even if its extra movement is unused/);
+  assert.match(html, /Earlier plays, discards, sales, Karama roles and recovery alone do not count/);
+  assert.match(html, /actual later Box replay does/); assert.match(html, /Ghola is separate from ordinary Revival/);
+  assert.match(html, /remains open until the actual turn ends/); assert.doesNotMatch(html, /cardPlays|compiled|controlled-hajr|controlled-ghola/);
+});
+
 void test('turn-action history retains original own whole questions and terminal status without private compiled branches', () => {
   const game = projected(); game.turnActionGuide = null;
   game.turnActionPromises.push(
@@ -534,7 +658,7 @@ void test('turn-action ordinary-payment guide retains native out-of-turn timing 
     const sent: Action[] = [], button = guide({ game, busy: false, act(value) { sent.push(value); } });
     assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
     assert.match(markup(game), /Pay 3 spice to Recipient while honoring your whole answer/);
-    if (phase === 8) assert.match(markup(game), /Late recipients collect next turn/);
+    if (phase === 8) assert.match(markup(game), /Late payment recipients collect next turn/);
   }
   const game = projected(8, { type: 'ready' }); game.active = null;
   const sent: Action[] = [], button = guide({ game, busy: false, act(value) { sent.push(value); } });
@@ -570,7 +694,7 @@ void test('turn-action current early native opportunities retain exact preparati
     auction({ type: 'decision', karama: false }), auction({ type: 'decision', karama: true, card: 'controlled-owned-karama' }),
     revival(), revival({ type: 'ready' }), revival({ type: 'reviveLeader', leader: 'controlled-leader', early: true, allyPayment: 2 }),
     revival({ type: 'acceptLeaderRevival', leaderRevivalPrice: 3 }), revival({ type: 'reviveKwisatz' }),
-    revival({ type: 'card', card: 'controlled-ghola' }), richese('silent'), richese('onceAround'),
+    revival({ type: 'card', card: 'controlled-ghola', amount: 1, elite: 0 }), richese('silent'), richese('onceAround'),
   ];
   for (const game of cases) {
     const sent: Action[] = [], button = guide({ game, busy: false, act(value) { sent.push(value); } });

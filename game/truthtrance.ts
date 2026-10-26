@@ -729,6 +729,7 @@ export function truthQuestionText(
   };
   if (q.kind === 'turnActions') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => {
+      if (action.kind === 'cardPlay') return `you play ${action.effect === 'hajr' ? 'Hajr' : 'Tleilaxu Ghola'} in its printed role after this answer this turn`;
       if (action.kind === 'payment') return `you ${bribeClaimText({ turn: q.turn, ...action }, playerName)}`;
       if (action.kind === 'bid') return `you ${bidClaimText({ turn: q.turn, ...action })}`;
       if (action.kind === 'battlePlan') return `in your own native plan in this original battle in ${locationName(action.territory)}, ${planClaimText(action.claim, leaderName)}`;

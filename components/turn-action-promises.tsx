@@ -5,6 +5,8 @@ import { bribeAction } from '@/game/bribe-options';
 import { alliancePromiseModeSupported } from '@/game/alliance-promises';
 import { nativePromiseScopeSupported } from '@/game/native-promise-scope';
 import { quoteNexusAlliance } from '@/game/nexus-alliance';
+import { ordinaryCardAvailability } from '@/game/card-availability';
+import { gholaForcePreparations } from '@/game/ghola-force-preparation';
 import { truthQuestionText, type TruthAnswer } from '@/game/truthtrance';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
 import { Button } from './ui/button';
@@ -43,8 +45,37 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const nexus = game.alliancePromiseNexus, nexusOpen = game.nexus, nexusSpiceWindow = game.spiceWindow;
   const nexusSignature = JSON.stringify({ ...publicAllianceContext(game), ready: game.ready });
   const box = game.nullentropy, search = box?.search;
+  const cardOwner = action.type === 'card' ? game.players.find(player => player.id === actor) : undefined;
+  const heldCard = cardOwner?.hand?.find(card => card.id === action.card);
+  const cardSignature = heldCard && JSON.stringify({ id: heldCard.id, kind: heldCard.kind, effect: heldCard.effect });
+  const ghola = heldCard?.effect === 'ghola' ? game.ghola : null, gholaSignature = JSON.stringify(ghola);
+  const hajrSource = (current: GameView) => {
+    const player = current.players.find(player => player.id === actor);
+    return JSON.stringify({ moved: player?.moved, movesAllowed: player?.movesAllowed,
+      hajrPlays: player?.hajrPlays, available: player?.hajrAvailable });
+  };
+  const hajrSignature = heldCard?.effect === 'hajr' ? hajrSource(game) : null;
   const canAct = () => {
     const current = props.game, me = current.players.find(player => player.id === actor);
+    const ownCard = action.type === 'card' && !!heldCard && !!me && me === cardOwner &&
+      me.hand?.find(card => card.id === action.card) === heldCard &&
+      JSON.stringify({ id: heldCard.id, kind: heldCard.kind, effect: heldCard.effect }) === cardSignature;
+    const printedHajr = ownCard && !!heldCard && !!me && heldCard.kind === 'special' && heldCard.effect === 'hajr' && action.mode === undefined &&
+      phase === 5 && current.active === actor && me.hajrAvailable === true && hajrSource(current) === hajrSignature &&
+      ordinaryCardAvailability(current, heldCard.id)?.available === true;
+    const gholaSource = ownCard && !!heldCard && heldCard.kind === 'special' && heldCard.effect === 'ghola' && action.mode === undefined &&
+      !!ghola && current.ghola === ghola && JSON.stringify(current.ghola) === gholaSignature &&
+      ghola.available && ghola.cards.includes(heldCard.id);
+    const forceChoices = gholaSource && !!heldCard && !!me && !!ghola && action.leader === undefined && typeof action.amount === 'number' &&
+      Number.isSafeInteger(action.amount) && action.amount >= 1 && action.amount <= 5 &&
+      Number.isSafeInteger(ghola.maxForces) && ghola.maxForces >= 0 && ghola.maxForces <= 5
+      ? [...gholaForcePreparations({ cards: [heldCard.id], tanks: me.tanks, eliteTanks: me.elites?.tanks ?? 0,
+        maxForces: ghola.maxForces, eliteRemaining: ghola.eliteRemaining })].filter(choice => choice.amount === action.amount)
+      : [];
+    const printedGhola = gholaSource && !!ghola && (action.leader !== undefined
+      ? typeof action.leader === 'string' && (action.leader === 'kwisatz' ? ghola.kwisatz : ghola.leaders.some(leader => leader.id === action.leader))
+      : action.elite === undefined ? forceChoices.length === 1 : forceChoices.some(choice => choice.elite === action.elite));
+    const genericCard = ownCard && !!heldCard && heldCard.effect !== 'ghola' && heldCard.effect !== 'hajr';
     const options = current.bribeOptions;
     const target = action.type === 'bribe' && typeof action.target === 'string'
       ? current.players.find(player => player.id === action.target) : undefined;
@@ -88,18 +119,18 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       JSON.stringify(publicBattleContext(current)) === battleSignature;
     const planWindow = !!battle && currentBattle && !battle.revealed && [battle.attacker, battle.defender].includes(actor) && !battle.submitted.includes(actor);
     const plan = action.type === 'battlePlan' && planWindow && !!fillPlan && props.fillPlan === fillPlan;
-    const battlePreparation = action.type === 'card' && planWindow;
+    const battlePreparation = genericCard && planWindow;
     const declaration = action.type === 'traitorCall' && typeof action.call === 'boolean' && !!battle && currentBattle && battle.revealed &&
       battle.traitorVoters.includes(actor) && !battle.traitorSubmitted.includes(actor);
-    const opportunity = payment || paidBox || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
-      ? !current.ready.includes(actor) && ['charity', 'ready', 'card'].includes(action.type)
+    const opportunity = payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
+      ? !current.ready.includes(actor) && (['charity', 'ready'].includes(action.type) || genericCard)
       : phase === 3
         ? invoice || nativePass || requiredBid || action.type === 'passBid' && !current.richeseAuction && currentAuction && current.auction?.active === actor
         : phase === 4
-          ? !current.ready.includes(actor) && revivalTurn && ['revive', 'reviveLeader', 'reviveKwisatz', 'acceptLeaderRevival', 'ready', 'card'].includes(action.type)
+          ? !current.ready.includes(actor) && revivalTurn && (['revive', 'reviveLeader', 'reviveKwisatz', 'acceptLeaderRevival', 'ready'].includes(action.type) || genericCard)
           : phase === 5
             ? current.active === actor && (action.type === 'guildShip' && action.from === 'reserves' ||
-              ['ship', 'move', 'endMovement', 'card', 'prepareAdvisors', 'revealNoField'].includes(action.type))
+              ['ship', 'move', 'endMovement', 'prepareAdvisors', 'revealNoField'].includes(action.type) || genericCard)
             : (phase === 7 || phase === 8) &&
               action.type === 'ready' && !current.ready.includes(actor));
     return !props.busy && props.act === act && current === game && nativePromiseScopeSupported(current) && current.status === 'playing' &&
@@ -116,8 +147,14 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     : typeof action.amount === 'number' ? action.amount : 0;
   const destination = game.combatLocations.find(location => location.id === action.territory)?.name ?? 'the quoted destination';
   const recipient = game.players.find(player => player.id === action.target)?.name ?? 'the quoted recipient';
+  const gholaLeader = action.leader === 'kwisatz' ? 'Kwisatz Haderach'
+    : ghola?.leaders.find(leader => leader.id === action.leader)?.name ?? 'the quoted leader';
   const sector = typeof action.sector === 'number' ? `, sector ${action.sector}` : '';
   const label = action.type === 'bribe' ? `Pay ${amount} spice to ${recipient} while honoring your whole answer`
+    : action.type === 'card' && heldCard?.effect === 'hajr' ? 'Play Hajr in its printed role while honoring your whole answer'
+    : action.type === 'card' && heldCard?.effect === 'ghola' ? action.leader !== undefined
+      ? `Play Tleilaxu Ghola to return ${gholaLeader} while honoring your whole answer`
+      : `Play Tleilaxu Ghola to return ${amount} physical forces while honoring your whole answer`
     : action.type === 'battlePlan' ? 'Fill the quoted battle plan for review before sealing'
     : action.type === 'traitorCall' ? action.call ? 'Reveal traitor while honoring your whole answer' : 'Decline traitor while honoring your whole answer'
     : action.type === 'alliance' ? action.target === null
@@ -188,12 +225,17 @@ export function TurnActionPromises(props: TurnActionProps) {
       Battle conditions describe your actual plan in the named current battle. An open plan condition settles when both plans are revealed;
       sealing your own plan does not finish it. A plan already fixed can decide its condition at the answer.
       Traitor conditions describe your original Reveal or decline declaration, before any later Karama or betrayal prevention.
+      Printed-card conditions count actual future Hajr or Tleilaxu Ghola plays in their printed role after the answer this turn.
+      Earlier plays, discards, sales, Karama roles and recovery alone do not count; an actual later Box replay does.
+      Hajr counts even if its extra movement is unused and closes at your own Movement turn end.
+      Tleilaxu Ghola is separate from ordinary Revival and remains open until the actual turn ends.
       Shipment conditions concern one future original reserve shipment. Ground-movement conditions count the maximum physical forces in one actual future move,
       never the sum of smaller moves. Earlier shipment and movement do not count.
       Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.
       Shipment and movement close at your own Movement turn end; ordinary payments remain possible until the actual turn ends.
+      A known Inflation Double opening can close payments earlier without closing Ghola.
       Original costs, timing, cards, preparation and action rights still apply. This claim grants no extra action.</p>
-    {live && <p>{game.phase === 8 ? 'Complete any remaining ordinary payment before the actual turn ends. Late recipients collect next turn.'
+    {live && <p>{game.phase === 8 ? 'Honor remaining Ghola or payment conditions before this turn ends. Late payment recipients collect next turn.'
       : game.phase < 5 ? 'Your Movement turn is still ahead. Preserve the needed forces, spice and cards and complete any offered native preparation.'
         : 'Use the current native controls to honor your whole answer. Payment conditions can remain after your Movement turn ends.'}</p>}
     {live && <TurnActionGuideButton {...props} />}
@@ -226,8 +268,11 @@ export function TurnActionAnswers(props: TurnActionProps) {
       A remaining alliance condition stays open through temporary membership until that close. Neither answer promises another player’s consent.
       Current battle-plan conditions use the actual native plan; an open condition settles when both plans are revealed.
       Traitor conditions use the original Reveal or decline declaration, before later Karama or betrayal prevention.
+      Hajr and Tleilaxu Ghola conditions require actual later printed-role plays, not earlier play, disposal or recovery alone.
+      Hajr closes at your own Movement turn end even if its extra move is unused; Ghola closes at the actual turn end.
       Bids close with their lot; Revival closes with your native Revival opportunity.
       Shipment and movement close at your own Movement turn end; payment conditions last until the actual turn ends.
+      A known Inflation Double opening can close payments earlier without closing Ghola.
       Original rights, preparation, timing and costs still apply. Only your whole answer is shared.</p>
     {answers.map(answer => {
       const action: Action = { type: 'truthAnswer', answer };

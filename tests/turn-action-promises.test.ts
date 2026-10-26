@@ -10,12 +10,14 @@ import {
   TurnActionError,
   closeTurnActionBidding,
   closeTurnActionCombat,
+  closeTurnActionPayments,
   closeTurnActionRevival,
   closeTurnActionTransport,
   finishTurnActionTurn,
   liveTurnActionPromises,
   parseTurnActionLeaf,
   recordTurnActionBid,
+  recordTurnActionCardPlay,
   recordTurnActionPlan,
   recordTurnActionTraitor,
   recordTurnActionMovement,
@@ -48,6 +50,7 @@ const plan = (claim: TurnActionPlanValue['claim'] = { kind: 'dial', compare: 'gt
   ({ kind: 'action', action: { kind: 'battlePlan', battle, territory: 'carthag', claim } });
 const call = (call = true, battle = 'battle:1'): Expression =>
   ({ kind: 'action', action: { kind: 'traitorCall', battle, territory: 'carthag', call } });
+const card = (effect: 'hajr' | 'ghola' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
 const fact = (): Expression => ({ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 5 } });
 const group = (kind: 'and' | 'or', ...terms: Expression[]): Expression => ({ kind, terms });
 const signedTravel = (kind: 'ship' | 'move', territory = 'carthag', minimum = 3,
@@ -80,6 +83,11 @@ function combat(mixed: Expression, answer = true, id = 'turn-action:1'): TurnAct
       leader: 'other-0', closed: false, call: null } } };
 }
 const dial = (value = true): TurnActionPlanValue => ({ claim: { kind: 'dial', compare: 'gte', value: 2 }, value });
+function cards(mixed: Expression, answer = true, id = 'turn-action:1'): TurnActionPromise {
+  return { ...promise(mixed, answer, id), cardPlays: {
+    hajr: { played: false, closed: false }, ghola: { played: false, closed: false },
+  } };
+}
 
 void test('turn-action leaves retain exact native fields, safe payment minima and no payment twenty-force cap', () => {
   for (const kind of ['ship', 'move'] as const) {
@@ -871,4 +879,192 @@ void test('native off-board combat locations retain exact event and location bin
   assert.equal(closeTurnActionCombat([original], 1, 'battle:1')[0].combat!.plan!.closed, true);
   for (const kind of ['ship', 'move'])
     assert.throws(() => parseTurnActionLeaf({ kind, territory, minimum: 1 }), TurnActionError);
+});
+
+void test('printed card-play leaves contain only the printed effect and every raw clause retains its own stage', () => {
+  for (const effect of ['hajr', 'ghola'] as const) {
+    const original = { kind: 'cardPlay', effect };
+    assert.deepEqual(parseTurnActionLeaf(original), original);
+    assert.notEqual(parseTurnActionLeaf(original), original);
+    for (const invalid of [{ ...original, card: 'physical-card' }, { ...original, played: true },
+      { ...original, minimum: 1 }, { ...original, printed: true }, { ...original, answer: true }])
+      assert.throws(() => parseTurnActionLeaf(invalid), TurnActionError);
+    assert.throws(() => turnActionValue(promise(card(effect))), TurnActionError);
+    assert.throws(() => turnActionValue(promise(group('or', fact(), card(effect)))), TurnActionError,
+      'Compiler folding never removes the original raw interval requirement');
+  }
+  for (const effect of ['', 'Hajr', 'karama', 'thumper', null])
+    assert.throws(() => parseTurnActionLeaf({ kind: 'cardPlay', effect }), TurnActionError);
+  validateTurnActionPromises([cards(group('and', card(), card('ghola')))], seats);
+});
+
+void test('whole printed-card AND and OR retain dynamic alternatives and settle only actual future printed-role plays', () => {
+  const hajr = { kind: 'cardPlay', effect: 'hajr', answer: true };
+  const ghola = { kind: 'cardPlay', effect: 'ghola', answer: true };
+  const and = cards(group('and', card(), card('ghola'), pay()));
+  const or = cards(group('or', card(), card('ghola')), true, 'turn-action:2');
+  assert.deepEqual(branches(and), [[hajr, ghola, signedPay()]]);
+  assert.deepEqual(branches(or), [[hajr], [ghola]]);
+  const played = recordTurnActionCardPlay([and, or], 'respondent', 1, 'hajr');
+  assert.equal(played[0].fulfilled, false);
+  assert.equal(played[1].fulfilled, true);
+  assert.deepEqual(branches(played[0]), [[ghola, signedPay()]]);
+  const gholaPlayed = recordTurnActionCardPlay(played, 'respondent', 1, 'ghola');
+  assert.equal(gholaPlayed[0].fulfilled, false);
+  assert.deepEqual(branches(gholaPlayed[0]), [[signedPay()]]);
+  assert.equal(recordTurnActionPayment(gholaPlayed, 'respondent', 1, payment())[0].fulfilled, true);
+  assert.equal(gholaPlayed[1], played[1]);
+  assert.equal(and.cardPlays!.hajr!.played, false);
+  assert.equal(recordTurnActionCardPlay([or], 'respondent', 1, 'ghola')[0].fulfilled, true);
+});
+
+void test('whole card-play No applies De Morgan and rejects the actual accepted play completing its aggregate', () => {
+  const andNo = cards(group('and', card(), card('ghola')), false);
+  assert.deepEqual(branches(andNo), [[{ kind: 'cardPlay', effect: 'hajr', answer: false }],
+    [{ kind: 'cardPlay', effect: 'ghola', answer: false }]]);
+  const one = recordTurnActionCardPlay([andNo], 'respondent', 1, 'hajr');
+  assert.deepEqual(branches(one[0]), [[{ kind: 'cardPlay', effect: 'ghola', answer: false }]]);
+  const before = structuredClone(one);
+  assert.throws(() => recordTurnActionCardPlay(one, 'respondent', 1, 'ghola'), TurnActionError);
+  assert.deepEqual(one, before);
+  const orNo = cards(group('or', card(), card('ghola')), false);
+  assert.deepEqual(branches(orNo), [[{ kind: 'cardPlay', effect: 'hajr', answer: false },
+    { kind: 'cardPlay', effect: 'ghola', answer: false }]]);
+  for (const effect of ['hajr', 'ghola'] as const)
+    assert.throws(() => recordTurnActionCardPlay([orNo], 'respondent', 1, effect), TurnActionError);
+  assert.deepEqual(branches(cards(group('and', card(), card()))), [[{ kind: 'cardPlay', effect: 'hajr', answer: true }]]);
+});
+
+void test('earlier card receipts do not satisfy a later answer and genuine replay updates only matching live intervals', () => {
+  const mixed = group('and', card(), pay());
+  const old = cards(mixed);
+  const played = recordTurnActionCardPlay([old], 'respondent', 1, 'hajr')[0];
+  const fresh = cards(mixed, true, 'turn-action:2');
+  const other = { ...cards(mixed, true, 'turn-action:3'), player: 'other' };
+  const laterTurn = { ...cards(mixed, true, 'turn-action:4'), turn: 2 };
+  assert.equal(turnActionValue(fresh), false);
+  assert.equal(fresh.cardPlays!.hajr!.played, false);
+  const replay = recordTurnActionCardPlay([played, fresh, other, laterTurn], 'respondent', 1, 'hajr');
+  assert.equal(replay[0], played, 'One boolean receipt never counts or duplicates a later replay');
+  assert.equal(replay[1].cardPlays!.hajr!.played, true);
+  assert.equal(replay[2], other);
+  assert.equal(replay[3], laterTurn);
+  assert.equal(old.cardPlays!.hajr!.played, false);
+  assert.equal(fresh.cardPlays!.hajr!.played, false);
+});
+
+void test('actual transport closure closes Hajr while Ghola and ordinary payment alternatives retain their own deadline', () => {
+  const original = cards(group('or', card(), card('ghola'), pay()));
+  const closed = closeTurnActionTransport([original], 'respondent', 1);
+  assert.deepEqual(closed[0].cardPlays, { hajr: { played: false, closed: true }, ghola: { played: false, closed: false } });
+  assert.deepEqual(branches(closed[0]), [[{ kind: 'cardPlay', effect: 'ghola', answer: true }], [signedPay()]]);
+  assert.equal(recordTurnActionCardPlay(closed, 'respondent', 1, 'hajr')[0], closed[0]);
+  assert.equal(recordTurnActionCardPlay(closed, 'respondent', 1, 'ghola')[0].fulfilled, true);
+  assert.equal(recordTurnActionPayment(closed, 'respondent', 1, payment())[0].fulfilled, true);
+  const no = cards(group('and', card(), card('ghola')), false);
+  const noClosed = closeTurnActionTransport([no], 'respondent', 1);
+  assert.equal(noClosed[0].fulfilled, false, 'Whole No waits for its remaining relevant native family');
+  const gholaPlayed = recordTurnActionCardPlay(noClosed, 'respondent', 1, 'ghola');
+  assert.equal(gholaPlayed[0].fulfilled, false);
+  assert.equal(finishTurnActionTurn(gholaPlayed, 'respondent', 1)[0].fulfilled, true);
+  assert.equal(closeTurnActionTransport([cards(card(), false)], 'respondent', 1)[0].fulfilled, true);
+  validateTurnActionPromises(closed, seats);
+});
+
+void test('full-turn closure settles absence, releases unmet Yes and leaves terminal card receipts immutable', () => {
+  const no = cards(card('ghola'), false);
+  const yes = cards(card('ghola'), true, 'turn-action:2');
+  const fulfilled = recordTurnActionCardPlay([cards(card(), true, 'turn-action:3')], 'respondent', 1, 'hajr')[0];
+  const finished = finishTurnActionTurn([no, yes, fulfilled], 'respondent', 1);
+  assert.equal(finished[0].fulfilled, true);
+  assert.equal(finished[1].released, true);
+  assert.equal(finished[2], fulfilled);
+  assert.deepEqual(finished[0].cardPlays, { hajr: { played: false, closed: true }, ghola: { played: false, closed: true } });
+  for (const transform of [
+    (rows: TurnActionPromise[]) => recordTurnActionCardPlay(rows, 'respondent', 1, 'hajr'),
+    (rows: TurnActionPromise[]) => recordTurnActionCardPlay(rows, 'respondent', 1, 'ghola'),
+    (rows: TurnActionPromise[]) => closeTurnActionTransport(rows, 'respondent', 1),
+    (rows: TurnActionPromise[]) => finishTurnActionTurn(rows, 'respondent', 1),
+  ]) assert.ok(transform(finished).every((row, index) => row === finished[index]));
+  validateTurnActionPromises(finished, seats);
+});
+
+void test('strict printed-card stages preserve old rows and reject metadata, missing effects and foreign compiled clauses', () => {
+  const original = cards(group('and', card(), card('ghola')));
+  for (const cardPlays of [undefined, null, {}, { hajr: null, ghola: null },
+    { hajr: { played: false, closed: false } },
+    { ...original.cardPlays, card: 'physical-card' },
+    { ...original.cardPlays, hajr: { played: 1, closed: false } },
+    { ...original.cardPlays, ghola: { played: false, closed: 'yes' } },
+    { ...original.cardPlays, hajr: { played: false, closed: false, count: 1 } }])
+    assert.throws(() => turnActionValue({ ...original, cardPlays } as TurnActionPromise), TurnActionError);
+  const old = promise(pay());
+  assert.equal('cardPlays' in recordTurnActionCardPlay([old], 'respondent', 1, 'hajr')[0], false);
+  assert.equal('cardPlays' in closeTurnActionTransport([old], 'respondent', 1)[0], false);
+  assert.equal('cardPlays' in finishTurnActionTurn([old], 'respondent', 1)[0], false);
+  const optional = { ...prepared(group('and', bid(), forces())), cardPlays: { hajr: null, ghola: null } };
+  validateTurnActionPromises([optional], seats);
+  const foreign = { ...cards(card()), compiled: { kind: 'action', action: { kind: 'cardPlay', effect: 'ghola' } } };
+  assert.throws(() => turnActionValue(foreign as TurnActionPromise), TurnActionError);
+  assert.throws(() => recordTurnActionCardPlay([original], 'respondent', 1, 'karama' as never), TurnActionError);
+});
+
+void test('card-play events reject all affected No violations atomically and share the outer logical budget', () => {
+  const yes = cards(group('and', card(), pay()));
+  const no = cards(card(), false, 'turn-action:2');
+  const before = structuredClone([yes, no]);
+  assert.throws(() => recordTurnActionCardPlay([yes, no], 'respondent', 1, 'hajr'), TurnActionError);
+  assert.deepEqual([yes, no], before);
+  assert.doesNotThrow(() => turnActionValue(cards(group('or', ...Array.from({ length: 16 }, () => card())))));
+  assert.throws(() => turnActionValue(cards(group('or', ...Array.from({ length: 17 }, () => card())))), TurnActionError);
+});
+
+void test('payment expiry preserves a later Ghola OR alternative while an AND still requires its missing payment', () => {
+  const or = cards(group('or', card('ghola'), pay()));
+  const and = cards(group('and', card('ghola'), pay()), true, 'turn-action:2');
+  const closed = closeTurnActionPayments([or, and], 'respondent', 1);
+  for (const row of closed) {
+    assert.equal(row.paymentClosed, true);
+    assert.equal(row.transportClosed, false);
+    assert.deepEqual(row.shipment, { pending: true, event: null });
+    assert.deepEqual(row.cardPlays, or.cardPlays);
+    assert.equal(row.cardPlays!.ghola!.closed, false);
+    assert.equal(row.fulfilled, false);
+    assert.equal(row.released, false);
+  }
+  assert.deepEqual(branches(closed[0]), [[{ kind: 'cardPlay', effect: 'ghola', answer: true }]]);
+  assert.deepEqual(branches(closed[1]), []);
+  assert.ok(recordTurnActionPayment(closed, 'respondent', 1, payment()).every((row, index) => row === closed[index]));
+  const laterGhola = recordTurnActionCardPlay(closed, 'respondent', 1, 'ghola');
+  assert.equal(laterGhola[0].fulfilled, true);
+  assert.equal(laterGhola[1].fulfilled, false);
+  assert.equal(finishTurnActionTurn(laterGhola, 'respondent', 1)[1].released, true);
+  const expiredTooEarly = finishTurnActionTurn([or], 'respondent', 1)[0];
+  assert.equal(expiredTooEarly.released, true);
+  assert.equal(expiredTooEarly.cardPlays!.ghola!.closed, true);
+  assert.equal(closeTurnActionPayments(laterGhola, 'respondent', 1)[0], laterGhola[0], 'Terminal rows remain identical');
+  assert.equal(closeTurnActionPayments(closed, 'respondent', 1)[1], closed[1], 'Repeated payment closure retains the same row');
+  assert.equal(or.paymentClosed, false);
+  validateTurnActionPromises(closed, seats);
+});
+
+void test('payment-only closure keeps whole No binding through later Ghola and validates its untouched native stage', () => {
+  const orNo = cards(group('or', card('ghola'), pay()), false);
+  const andNo = cards(group('and', card('ghola'), pay()), false, 'turn-action:2');
+  const closed = closeTurnActionPayments([orNo, andNo], 'respondent', 1);
+  assert.equal(closed[0].fulfilled, false);
+  assert.equal(closed[1].fulfilled, false);
+  assert.deepEqual(branches(closed[0]), [[{ kind: 'cardPlay', effect: 'ghola', answer: false }]]);
+  assert.throws(() => recordTurnActionCardPlay([closed[0]], 'respondent', 1, 'ghola'), TurnActionError);
+  const played = recordTurnActionCardPlay([closed[1]], 'respondent', 1, 'ghola');
+  assert.equal(played[0].fulfilled, false);
+  assert.equal(finishTurnActionTurn(played, 'respondent', 1)[0].fulfilled, true);
+  const paymentOnlyNo = closeTurnActionPayments([promise(pay(), false)], 'respondent', 1)[0];
+  assert.equal(paymentOnlyNo.fulfilled, true);
+  const other = { ...orNo, player: 'other' }, nextTurn = { ...orNo, turn: 2 };
+  assert.equal(closeTurnActionPayments([other], 'respondent', 1)[0], other);
+  assert.equal(closeTurnActionPayments([nextTurn], 'respondent', 1)[0], nextTurn);
+  const malformed = { ...orNo, cardPlays: { hajr: null, ghola: { played: false, closed: 'yes' } } };
+  assert.throws(() => closeTurnActionPayments([malformed as unknown as TurnActionPromise], 'respondent', 1), TurnActionError);
+  validateTurnActionPromises(closed, seats);
 });

@@ -8,6 +8,10 @@ import { evaluateMovementExpression, liveMovementExpressionPromises, movementExp
 export type MovementPromiseAdapter = {
   allowance: (game: Game, player: Player) => number;
   canFinish: (game: Game, player: string) => boolean;
+  /** A required preparation may itself need a real first move, such as the
+   * native Advanced Hajr window, even without a positive destination claim. */
+  needsProgress?: (game: Game, player: string) => boolean;
+  progressKey?: (game: Game, player: string) => unknown;
   preparations: (game: Game, player: string) => Iterable<{ game: Game; actions: Action[] }>;
   reachable: (game: Game, player: Player, origin: string, destination: string, sector: number) => boolean;
   project: (game: Game, player: string, action: Action) => { game: Game; event: MovementEvent } | null;
@@ -75,14 +79,14 @@ export function findMovementCompletion(source: Game, actor: string,
       game.discard.map(card => card.id), game.movementDiscardKnowledge?.[actor], game.pendingNullentropy,
       game.choamWorthlessBlocked, game.hajr, game.ornithopter ? [game.ornithopter.mode, game.ornithopter.startingMove, game.ornithopter.completed, game.ornithopter.cohort] : null,
       live.map(promise => [promise.territory, promise.minimum, promise.answer]),
-      liveWhole.map(promise => [promise.claim, promise.answer, promise.progress])]);
+      liveWhole.map(promise => [promise.claim, promise.answer, promise.progress]), adapter.progressKey?.(game, actor)]);
     if (failed.has(key)) return null;
     const destinations = gameTerritories(game).filter(destination => !destination.id.startsWith('homeworld:'));
     const wanted = new Set([...live.filter(promise => promise.answer).map(promise => promise.territory),
       ...positiveWhole.flatMap(promise => movementExpressionTerritories(promise.claim))]);
     destinations.sort((a, b) => Number(wanted.has(b.id)) - Number(wanted.has(a.id)) ||
       (marker ? Number(['arrakeen', 'carthag'].includes(b.id)) - Number(['arrakeen', 'carthag'].includes(a.id)) : 0));
-    if (needsMove && (marker || !live.some(promise => promise.answer && promise.minimum > physical)) &&
+    if ((needsMove || adapter.needsProgress?.(game, actor)) && (marker || !live.some(promise => promise.answer && promise.minimum > physical)) &&
       !game.pendingNullentropy && player.moved < adapter.allowance(game, player)) {
       const origins = [...new Set([...Object.keys(player.forces).filter(key => player.forces[key] > 0)
         .map(key => splitLocation(key).territory), ...(marker ? [marker.location.territory] : [])])];

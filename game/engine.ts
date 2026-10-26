@@ -1,8 +1,10 @@
 import { AuctionClockError, AUCTION_BID_MS, quoteAuctionClock, viewAuctionClock,
   type AuctionClock, type AuctionClockView } from './auction-clock';
+import { PrintedCardPlayError, printedCardPlayCount, recordPrintedCardPlay,
+  type PrintedCardEffect, type PrintedCardPlayCounts } from './printed-card-play';
 import { TurnActionError, liveTurnActionPromises, turnActionBranches, recordTurnActionPayment,
-  recordTurnActionShipment, recordTurnActionMovement, closeTurnActionTransport, finishTurnActionTurn,
-  validateTurnActionPromises, recordTurnActionBid, closeTurnActionBidding, recordTurnActionRevival,
+  recordTurnActionShipment, recordTurnActionMovement, closeTurnActionTransport, closeTurnActionPayments, finishTurnActionTurn,
+  validateTurnActionPromises, recordTurnActionBid, closeTurnActionBidding, recordTurnActionRevival, recordTurnActionCardPlay,
   closeTurnActionRevival, settleTurnActionAlliance, recordTurnActionPlan, recordTurnActionTraitor, closeTurnActionCombat,
   type TurnActionPlanValue, type TurnActionCombat, type TurnActionClaim, type TurnActionPromise, type TurnActionBranchLeaf, type TurnActionPreparation } from './turn-action-promises';
 import { TravelPromiseError, liveTravelPromises, travelBranches, recordTravelShipment, recordTravelMovement,
@@ -2176,6 +2178,8 @@ export type Game = {
   truthHistory?: TruthRecord[];
   travelPromises?: TravelPromise[];
   turnActionPromises?: TurnActionPromise[];
+  /** Actual accepted printed-role uses; old games need no baseline retrofit. */
+  printedCardPlays?: PrintedCardPlayCounts;
   /** Accepted order shared by phase-five travel, shipment and movement answers. */
   travelPromiseOrder?: { kind: 'shipment' | 'movement' | 'movementExpression' | 'travel' | 'bribe' | 'bribeExpression' | 'turnActions'; index: number }[];
   mixedTraitorQuestions?: (MixedTraitorClaim & {
@@ -18804,7 +18808,12 @@ function projectMovementBoxRecovery(source: Game, actor: string, box: string, se
   try {
     if (paid) requireRule(game.pendingNullentropy?.player === actor && !nullentropyIntegrity(game),
       'Retain the original paid search.');
-    else { validateNullentropyBegin(game, owner, box); owner.spice -= 2; }
+    else {
+      validateNullentropyBegin(game, owner, box); owner.spice -= 2;
+      // The real voluntary Box play closes Advanced Hajr's immediate window.
+      // Recovery cannot preserve that window across its own card action.
+      if (game.advanced) delete owner.hajrWindow;
+    }
     const context = nullentropyContext(game), player = getPlayer(context, actor);
     let result: ReturnType<typeof resolveNullentropyBox>;
     try { result = resolveNullentropyBox(player.hand, box, context.discard, selected,
@@ -18824,6 +18833,91 @@ function projectMovementBoxRecovery(source: Game, actor: string, box: string, se
 function turnActionRule<T>(operation: () => T): T {
   try { return operation(); }
   catch (error) { if (error instanceof TurnActionError) throw new RuleError(error.message); throw error; }
+}
+type TurnActionCardRequirement = { effect: PrintedCardEffect; answer: boolean; baseline: number };
+/** This field exists only on detached completion clones and is never returned
+ * as a real game or installed as a selected whole-answer branch. */
+type TurnActionCardProbe = Game & { _turnActionCardPolicy?: { player: string; forbidden: PrintedCardEffect[] } };
+function printedCardRule<T>(operation: () => T): T {
+  try { return operation(); }
+  catch (error) { if (error instanceof PrintedCardPlayError) throw new RuleError(error.message); throw error; }
+}
+function nativePrintedCardCount(g: Game, player: string, effect: PrintedCardEffect): number {
+  return printedCardRule(() => printedCardPlayCount(g.printedCardPlays, player, g.turn, effect));
+}
+function recordNativePrintedCardPlay(g: Game, player: string, effect: PrintedCardEffect) {
+  const policy = (g as TurnActionCardProbe)._turnActionCardPolicy;
+  requireRule(policy?.player !== player || !policy.forbidden.includes(effect),
+    'Retain a native completion without this forbidden printed-role card play.');
+  g.printedCardPlays = printedCardRule(() => recordPrintedCardPlay(g.printedCardPlays, player, g.turn, effect));
+  if (g.turnActionPromises) g.turnActionPromises = turnActionRule(() =>
+    recordTurnActionCardPlay(g.turnActionPromises!, player, g.turn, effect));
+}
+function turnActionCardsMatch(g: Game, actor: string, requirements: readonly TurnActionCardRequirement[]): boolean {
+  return requirements.every(required => (nativePrintedCardCount(g, actor, required.effect) > required.baseline) === required.answer);
+}
+function* nativePrintedCardActions(g: Game, actor: string, effect: PrintedCardEffect): Generator<Action> {
+  const player = getPlayer(g, actor);
+  if (effect === 'hajr') {
+    if (g.phase === 5 && g.active === actor && hajrAvailable(g, player))
+      for (const card of player.hand.filter(card => card.effect === 'hajr' && !transferCardBlock(g, player, card)))
+        yield { type: 'card', card: card.id };
+    return;
+  }
+  const ghola = gholaOptions(g, player);
+  if (!ghola.available) return;
+  for (const card of ghola.cards) {
+    for (const leader of ghola.leaders) yield { type: 'card', card, leader: leader.id };
+    if (ghola.kwisatz) yield { type: 'card', card, leader: 'kwisatz' };
+  }
+  yield* gholaForcePreparations({ cards: ghola.cards, tanks: player.tanks,
+    eliteTanks: player.elites?.tanks ?? 0, maxForces: ghola.maxForces, eliteRemaining: ghola.eliteRemaining });
+}
+/** Current Ghola and known owned Box routes share the original physical cost.
+ * A separate Movement forecast retains the later-play alternative. */
+function* turnActionCardSeeds(source: Game, actor: string, requirements: readonly TurnActionCardRequirement[]):
+  Generator<{ game: Game; actions: Action[] }> {
+  const gholaDue = requirements.some(required => required.effect === 'ghola' && required.answer &&
+    nativePrintedCardCount(source, actor, 'ghola') <= required.baseline);
+  yield { game: gholaDue ? structuredClone(source) : source, actions: [] };
+  if (!gholaDue) return;
+  const player = getPlayer(source, actor);
+  const plays = function* (game: Game, prefix: Action[]): Generator<{ game: Game; actions: Action[] }> {
+    for (const action of nativePrintedCardActions(game, actor, 'ghola')) {
+      try {
+        const played = applyActionInner(game, actor, action, 'movementPreparation');
+        const owner = getPlayer(played, actor);
+        owner.spice += pendingBattleRevivalIncome(played, owner);
+        yield { game: groundMovementProbe(played, actor), actions: [...prefix, action] };
+      } catch (error) { if (!(error instanceof RuleError)) throw error; }
+    }
+  };
+  yield* plays(source, []);
+  const paid = source.pendingNullentropy;
+  if (paid?.player === actor) {
+    if (!nullentropyIntegrity(source)) for (const card of eligibleNullentropyCards(source.discard).filter(card => card.effect === 'ghola')) {
+      const projected = projectMovementBoxRecovery(source, actor, paid.box, card.id, true);
+      if (projected) yield* plays(projected, [{ type: 'decision', event: paid.event, card: card.id }]);
+    }
+  } else for (const box of player.hand.filter(card => card.effect === 'nullentropyBox'))
+    for (const known of knownMovementDiscards(source.movementDiscardKnowledge, actor, source.discard).filter(card => card.effect === 'ghola')) {
+      const projected = projectMovementBoxRecovery(source, actor, box.id, known.id, false);
+      if (projected) yield* plays(projected, [{ type: 'card', card: box.id }]);
+    }
+}
+/** Check the actual spent card and returned pieces before a later foreign
+ * income/discard response can hide an own voluntary loss of feasibility. */
+function guardTurnActionPrintedCardCost(g: Game, player: Player, used: Card) {
+  if (!liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn).length) return;
+  const trial = structuredClone(g), owner = getPlayer(trial, player.id);
+  owner.spice += pendingBattleRevivalIncome(trial, owner);
+  trial.truthtrance = null; trial.response = null; trial.pendingKarama = null;
+  // The Ghola effect/cost is complete; forecast beyond its owned interruption
+  // without executing or borrowing the original market's pending income.
+  if (trial.pendingChoamMarketGhola?.player === player.id) trial.pendingChoamMarketGhola = null;
+  rememberMovementDiscards(trial, [{ card: used, discardedBy: player.id, publicFace: true }]);
+  requireRule(!!turnActionCompletion(trial, player.id),
+    'This printed card play would remove the last legal completion of your whole Truthtrance answer.');
 }
 function turnActionTargetAvailable(g: Game, _actor: string): boolean {
   return bribeQuestionWindow(g) && movementPromiseModeSupported(g);
@@ -18991,7 +19085,7 @@ function turnActionAllianceCanClose(g: Game, player: Player): boolean {
     return !!turnActionCompletion(source, player.id);
   } catch (error) { if (error instanceof RuleError) return false; throw error; }
 }
-type TurnActionCompletion = MovementCompletion & { payments: Action[]; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[]; battlePlan?: BattleCompletion; traitor?: Action };
+type TurnActionCompletion = MovementCompletion & { payments: Action[]; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[]; battlePlan?: BattleCompletion; traitor?: Action; cardPreparations?: Action[] };
 /** Whole-answer alternatives stay private. Only detached native rows quote a
  * route, sharing actual interval progress and the remaining physical purse. */
 function turnActionCompletion(source: Game, actor: string, unknownConsent?: { value: boolean }): TurnActionCompletion | null {
@@ -19015,6 +19109,11 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
     delete trial.travelPromises;
     delete trial.travelPromiseOrder;
     const owner = getPlayer(trial, actor);
+    const cardRequirements: TurnActionCardRequirement[] = leaves.flatMap(leaf => leaf.kind === 'cardPlay'
+      ? [{ effect: leaf.effect, answer: leaf.answer, baseline: nativePrintedCardCount(source, actor, leaf.effect) }] : []);
+    if (cardRequirements.length) (trial as TurnActionCardProbe)._turnActionCardPolicy = {
+      player: actor, forbidden: cardRequirements.filter(required => !required.answer).map(required => required.effect),
+    };
     trial.bribePromises ??= [];
     trial.shipmentPromises ??= [];
     trial.movementPromises ??= [];
@@ -19071,70 +19170,79 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
         required.some(payment => payment.recipient === actor || payment.recipient === owner.ally ||
           !trial.players.some(player => player.id === payment.recipient))) continue;
       for (const alliancePlan of alliancePlans) {
-        const funded = structuredClone(trial), payer = getPlayer(funded, actor);
+        const paid = structuredClone(trial), paidOwner = getPlayer(paid, actor);
         try {
-          for (const payment of required) recordBribePayment(funded, actor, payment.recipient, payment.amount);
-          payer.spice -= total;
+          for (const payment of required) recordBribePayment(paid, actor, payment.recipient, payment.amount);
+          paidOwner.spice -= total;
           for (const action of alliancePlan?.steps ?? []) {
-            const quote = normalNexusAllianceQuote(funded, getPlayer(funded, action.player), action.target);
-            for (const player of funded.players) player.ally = quote.allies[player.id];
-            funded.allianceOffers = quote.offers;
-            if (quote.formed) for (const id of quote.formed) getPlayer(funded, id).allySinceTurn = funded.turn;
-            funded.ready = [];
+            const quote = normalNexusAllianceQuote(paid, getPlayer(paid, action.player), action.target);
+            for (const player of paid.players) player.ally = quote.allies[player.id];
+            paid.allianceOffers = quote.offers;
+            if (quote.formed) for (const id of quote.formed) getPlayer(paid, id).allySinceTurn = paid.turn;
+            paid.ready = [];
           }
           if (alliancePlan) {
-            const opportunity = allianceOpportunity(funded)!;
-            funded.alliancePromises = (funded.alliancePromises ?? []).map(promise => promise.player === actor &&
+            const opportunity = allianceOpportunity(paid)!;
+            paid.alliancePromises = (paid.alliancePromises ?? []).map(promise => promise.player === actor &&
               promise.turn === opportunity.turn && promise.source === opportunity.source && !promise.released
               ? { ...promise, fulfilled: true } : promise);
-            funded.allianceExpressionPromises = (funded.allianceExpressionPromises ?? []).map(promise => promise.player === actor &&
+            paid.allianceExpressionPromises = (paid.allianceExpressionPromises ?? []).map(promise => promise.player === actor &&
               promise.turn === opportunity.turn && promise.source === opportunity.source && !promise.released
               ? { ...promise, fulfilled: true } : promise);
           }
           const voluntary = { actor, action: { type: 'bribe' } };
           for (const payment of required)
-            checkBureaucratContributors(funded, payment.recipient, [{ payer: actor, amount: payment.amount }]);
-          reconcileBattlePromises(funded, voluntary);
-          const battle = funded.battle;
-          const needsPlan = !!battle && !battle.revealed && [battle.attacker, battle.defender].includes(actor) &&
-            !!battle.truthPromises?.some(promise => promise.player === actor && !promise.released);
-          const battlePlan = needsPlan ? findReachableBattlePlan(funded, payer) : undefined;
-          if (needsPlan && !battlePlan) continue;
-          const traitorContext = traitorTruthContext(funded, actor);
-          const needsTraitor = requestedTraitor || !!battle?.traitorDecisionPromises?.some(promise =>
-            promise.player === actor && !promise.fulfilled && !promise.released);
-          let traitor: Action | undefined;
-          if (needsTraitor) {
-            if (!traitorContext || traitorContext.submitted !== undefined) continue;
-            const choices = traitorDecisionRule(() => traitorDecisionChoices(traitorContext, battle?.traitorDecisionPromises ?? []));
-            if (!choices.length) continue;
-            traitor = { type: 'traitorCall', call: choices[0] };
-          }
-          reconcileBidPromises(funded, voluntary);
-          reconcileRevivalPromises(funded, voluntary);
-          const lot = bidOpportunity(funded);
-          const needsBid = !!lot && bidRequired(funded.bidPromises ?? [], actor, lot);
-          const bid = needsBid ? bidPromiseCompletion(funded, payer) : undefined;
-          if (needsBid && !bid) continue;
-          const needsRevival = [
-            ...liveRevivalPromises(funded.revivalPromises ?? [], actor, source.turn),
-            ...liveLeaderRevivalPromises(funded.leaderRevivalPromises ?? [], actor, source.turn),
-            ...liveRevivalExpressionPromises(funded.revivalExpressionPromises ?? [], actor, source.turn),
-          ].some(promise => promise.answer);
-          const revival = needsRevival ? revivalPromisePlan(funded, payer) : undefined;
-          if (needsRevival && !revival) continue;
-          const transport = [
-            ...liveShipmentPromises(funded.shipmentPromises ?? [], actor, source.turn),
-            ...liveMovementPromises(funded.movementPromises ?? [], actor, source.turn),
-            ...liveMovementExpressionPromises(funded.movementExpressionPromises ?? [], actor, source.turn),
-          ];
-          const completion = transport.length ? groundMovementCompletionNative(funded, actor) : { actions: [] };
-          if (completion) {
-            if (alliancePlan?.uncertain) { unknownConsent!.value = true; continue; }
-            return { ...completion, ...(bid ? { bid } : {}), ...(revival ? { revival } : {}),
-              ...(battlePlan ? { battlePlan } : {}), ...(traitor ? { traitor } : {}),
-              ...(alliancePlan ? { alliance: alliancePlan.steps.map(step => ({ type: 'alliance', target: step.target })) } : {}),
-              payments: required.map(payment => ({ type: 'bribe', target: payment.recipient, amount: payment.amount })) };
+            checkBureaucratContributors(paid, payment.recipient, [{ payer: actor, amount: payment.amount }]);
+          for (const cardSeed of turnActionCardSeeds(paid, actor, cardRequirements)) {
+            const funded = cardSeed.game, payer = getPlayer(funded, actor);
+            try {
+              reconcileBattlePromises(funded, voluntary);
+              const battle = funded.battle;
+              const needsPlan = !!battle && !battle.revealed && [battle.attacker, battle.defender].includes(actor) &&
+                !!battle.truthPromises?.some(promise => promise.player === actor && !promise.released);
+              const battlePlan = needsPlan ? findReachableBattlePlan(funded, payer, { cardPlays: cardRequirements }) : undefined;
+              if (needsPlan && !battlePlan) continue;
+              const traitorContext = traitorTruthContext(funded, actor);
+              const needsTraitor = requestedTraitor || !!battle?.traitorDecisionPromises?.some(promise =>
+                promise.player === actor && !promise.fulfilled && !promise.released);
+              let traitor: Action | undefined;
+              if (needsTraitor) {
+                if (!traitorContext || traitorContext.submitted !== undefined) continue;
+                const choices = traitorDecisionRule(() => traitorDecisionChoices(traitorContext, battle?.traitorDecisionPromises ?? []));
+                if (!choices.length) continue;
+                traitor = { type: 'traitorCall', call: choices[0] };
+              }
+              reconcileBidPromises(funded, voluntary);
+              reconcileRevivalPromises(funded, voluntary);
+              const lot = bidOpportunity(funded);
+              const needsBid = !!lot && bidRequired(funded.bidPromises ?? [], actor, lot);
+              const bid = needsBid ? bidPromiseCompletion(funded, payer) : undefined;
+              if (needsBid && !bid) continue;
+              const needsRevival = [
+                ...liveRevivalPromises(funded.revivalPromises ?? [], actor, source.turn),
+                ...liveLeaderRevivalPromises(funded.leaderRevivalPromises ?? [], actor, source.turn),
+                ...liveRevivalExpressionPromises(funded.revivalExpressionPromises ?? [], actor, source.turn),
+              ].some(promise => promise.answer);
+              const revival = needsRevival ? revivalPromisePlan(funded, payer) : undefined;
+              if (needsRevival && !revival) continue;
+              const transport = [
+                ...liveShipmentPromises(funded.shipmentPromises ?? [], actor, source.turn),
+                ...liveMovementPromises(funded.movementPromises ?? [], actor, source.turn),
+                ...liveMovementExpressionPromises(funded.movementExpressionPromises ?? [], actor, source.turn),
+              ];
+              const cardsPending = !turnActionCardsMatch(funded, actor, cardRequirements);
+              const forecastCards = cardsPending && source.phase <= 5 && turnActionTransportOpen(source, actor);
+              const completion = transport.length || forecastCards
+                ? groundMovementCompletionNative(funded, actor, undefined, undefined, cardRequirements)
+                : !cardsPending || battlePlan?.cardPlaysComplete ? { actions: [] } : null;
+              if (completion) {
+                if (alliancePlan?.uncertain) { unknownConsent!.value = true; continue; }
+                return { ...completion, ...(cardSeed.actions.length ? { cardPreparations: cardSeed.actions } : {}), ...(bid ? { bid } : {}), ...(revival ? { revival } : {}),
+                  ...(battlePlan ? { battlePlan } : {}), ...(traitor ? { traitor } : {}),
+                  ...(alliancePlan ? { alliance: alliancePlan.steps.map(step => ({ type: 'alliance', target: step.target })) } : {}),
+                  payments: required.map(payment => ({ type: 'bribe', target: payment.recipient, amount: payment.amount })) };
+              }
+            } catch (error) { if (!(error instanceof RuleError)) throw error; }
           }
         } catch (error) { if (!(error instanceof RuleError)) throw error; }
       }
@@ -19148,13 +19256,15 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
   const compiled = compileMixedActionExpression(claim.mixed,
     fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
   const open = turnActionTransportOpen(g, p.id);
-  let bid = false, revival = false, alliance = false, plan = false, traitor = false;
+  let bid = false, revival = false, alliance = false, plan = false, traitor = false, cardHajr = false, cardGhola = false;
   const visit = (node: TurnActionClaim['mixed']): void => {
     if (node.kind === 'action') {
       if (node.action.kind === 'bid') bid = true;
       if (node.action.kind === 'alliance') alliance = true;
       if (node.action.kind === 'battlePlan') plan = true;
       if (node.action.kind === 'traitorCall') traitor = true;
+      if (node.action.kind === 'cardPlay' && node.action.effect === 'hajr') cardHajr = true;
+      if (node.action.kind === 'cardPlay' && node.action.effect === 'ghola') cardGhola = true;
       if (node.action.kind === 'forces' || node.action.kind === 'leader') revival = true;
     } else if (node.kind !== 'fact') node.terms.forEach(visit);
   };
@@ -19177,6 +19287,8 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
     traitor: context ? { beneficiary: context.beneficiary, target: context.target, leader: context.leader,
       closed: false, call: null } : null } : undefined;
   let promise: TurnActionPromise = { turn: claim.turn, mixed: structuredClone(claim.mixed), event, player: p.id, asker, answer, compiled,
+    ...(cardHajr || cardGhola ? { cardPlays: { hajr: cardHajr ? { played: false, closed: !open } : null,
+      ghola: cardGhola ? { played: false, closed: false } : null } } : {}),
     ...(combat ? { combat } : {}),
     ...(preparation ? { preparation } : {}),
     ...(nexus ? { alliance: { source: nexus.source, partner: null, closed: false } } : {}),
@@ -19303,6 +19415,7 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   const completion = turnActionCompletion(g, player.id);
   if (!completion) return null;
   let action = !bribeTimingBlock(g) ? completion.payments[0] : undefined;
+  if (!action) action = completion.cardPreparations?.[0];
   if (!action && g.phase <= 5) {
     const lot = g.phase === 3 && !g.decision ? bidOpportunity(g) : null;
     if (lot && g.auction?.active === player.id) action = completion.bid ??
@@ -19526,12 +19639,13 @@ function groundMovementCompletion(source: Game, actor: string,
 }
 function groundMovementCompletionNative(source: Game, actor: string,
   promises = liveMovementPromises(source.movementPromises ?? [], actor, source.turn),
-  expressions = liveMovementExpressionPromises(source.movementExpressionPromises ?? [], actor, source.turn)): MovementCompletion | null {
+  expressions = liveMovementExpressionPromises(source.movementExpressionPromises ?? [], actor, source.turn),
+  cardPlays: readonly TurnActionCardRequirement[] = []): MovementCompletion | null {
   if (!movementPromiseModeSupported(source) || source.phase < 0 || source.phase > 5) return null;
   const game = groundMovementProbe(source, actor);
   if (source.phase === 5 && source.phaseOpening?.initialize) {
     resetGroundMovementForecast(game, actor);
-    return groundMovementCompletionAtMovement(game, actor, promises, expressions);
+    return groundMovementCompletionAtMovement(game, actor, promises, expressions, cardPlays);
   }
   if (source.phase < 5) {
     const paid = source.pendingNullentropy;
@@ -19539,20 +19653,22 @@ function groundMovementCompletionNative(source: Game, actor: string,
       if (nullentropyIntegrity(source)) return null;
       for (const card of eligibleNullentropyCards(source.discard)) {
         const projected = projectMovementBoxRecovery(source, actor, paid.box, card.id, true);
-        const completion = projected && groundMovementCompletion(projected, actor, promises, expressions);
+        const completion = projected && (cardPlays.length
+          ? groundMovementCompletionNative(projected, actor, promises, expressions, cardPlays)
+          : groundMovementCompletion(projected, actor, promises, expressions));
         if (completion) return { ...completion,
           actions: [{ type: 'decision', event: paid.event, card: card.id }, ...completion.actions] };
       }
       return null;
     }
-    for (const seed of earlyShipmentCompletionSeeds(game, source, actor)) {
+    for (const seed of earlyShipmentCompletionSeeds(game, source, actor, cardPlays.length > 0)) {
       resetGroundMovementForecast(seed.game, actor);
-      const completion = groundMovementCompletionAtMovement(seed.game, actor, promises, expressions);
+      const completion = groundMovementCompletionAtMovement(seed.game, actor, promises, expressions, cardPlays);
       if (completion) return { actions: [...seed.actions, ...completion.actions], early: seed.early };
     }
     return null;
   }
-  return groundMovementCompletionAtMovement(game, actor, promises, expressions);
+  return groundMovementCompletionAtMovement(game, actor, promises, expressions, cardPlays);
 }
 function resetGroundMovementForecast(game: Game, actor: string) {
   resetPlayerMovement(getPlayer(game, actor));
@@ -19561,13 +19677,34 @@ function resetGroundMovementForecast(game: Game, actor: string) {
   game.movementRemaining = [actor];
 }
 function groundMovementCompletionAtMovement(game: Game, actor: string, promises: readonly MovementPromise[],
-  expressions: readonly MovementExpressionPromise[]): MovementCompletion | null {
+  expressions: readonly MovementExpressionPromise[], cardPlays: readonly TurnActionCardRequirement[] = []): MovementCompletion | null {
   if (!movementPromiseTargetAvailable(game.pendingNullentropy?.player === actor ? { ...game, decision: null } : game, actor)) return null;
+  const owner = getPlayer(game, actor), paidBox = game.pendingNullentropy?.player === actor;
+  for (const required of cardPlays.filter(required => required.answer &&
+    nativePrintedCardCount(game, actor, required.effect) <= required.baseline)) {
+    const held = owner.hand.some(card => card.effect === required.effect);
+    const recoverable = paidBox ? eligibleNullentropyCards(game.discard)
+      : owner.hand.some(card => card.effect === 'nullentropyBox')
+        ? knownMovementDiscards(game.movementDiscardKnowledge, actor, game.discard) : [];
+    if (!held && !recoverable.some(card => card.effect === required.effect)) return null;
+    if (required.effect === 'ghola') {
+      const options = gholaOptions(game, owner);
+      if (!options.maxForces && !options.leaders.length && !options.kwisatz) return null;
+    }
+  }
   return findMovementCompletion(game, actor, promises, {
     allowance: movesAllowed,
     canFinish(state, owner) {
-      return !state.pendingNullentropy && liveShipmentPromises(state.shipmentPromises ?? [], owner, state.turn)
+      return !state.pendingNullentropy && turnActionCardsMatch(state, owner, cardPlays) &&
+        liveShipmentPromises(state.shipmentPromises ?? [], owner, state.turn)
         .every(promise => matchesShipment(promise, null) === promise.answer);
+    },
+    needsProgress(state, owner) {
+      return state.advanced && !hajrAvailable(state, getPlayer(state, owner)) && cardPlays.some(required =>
+        required.effect === 'hajr' && required.answer && nativePrintedCardCount(state, owner, 'hajr') <= required.baseline);
+    },
+    progressKey(state, owner) {
+      return cardPlays.map(required => [required.effect, nativePrintedCardCount(state, owner, required.effect) > required.baseline]);
     },
     *preparations(state, owner) {
       const player = getPlayer(state, owner), paid = state.pendingNullentropy;
@@ -19583,6 +19720,12 @@ function groundMovementCompletionAtMovement(game: Game, actor: string, promises:
         }
         return;
       }
+      for (const required of cardPlays.filter(required => required.answer &&
+        nativePrintedCardCount(state, owner, required.effect) <= required.baseline))
+        for (const action of nativePrintedCardActions(state, owner, required.effect)) {
+          try { yield { game: groundMovementProbe(applyActionInner(state, owner, action, 'movementPreparation'), owner), actions: [action] }; }
+          catch (error) { if (!(error instanceof RuleError)) throw error; }
+        }
       if (state.advanced && player.faction === 'beneGesserit') {
         for (const territory of quoteAdvisorPreparationWindow(state, owner).territories) {
           const action: Action = { type: 'prepareAdvisors', territory };
@@ -27603,6 +27746,7 @@ function playMarketGhola(g: Game, p: Player, action: Action) {
   }
   if (g.response) (g.response as ResponseWindow).intent = g.pendingChoamMarketGhola.event;
   const used = discard(g, p, card.id);
+  guardTurnActionPrintedCardCost(g, p, used);
   log(g, `${p.name} played ${card.name}. The declared CHOAM sale waits for this revival and its income to finish.`,
     { faction: p.faction, name: 'Ghola revival' });
   stageOrdinaryCardDiscard(g, p, used);
@@ -27674,6 +27818,7 @@ function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
   }
   techIncome(g, 'axlotl', p);
   collectRevivalIncome(g, p, 0, false, true);
+  recordNativePrintedCardPlay(g, p.id, 'ghola');
 }
 /** Search complete legal plans without learning or consulting the opponent's sealed choices. */
 function findLegalBattlePlan(
@@ -27796,6 +27941,7 @@ type BattleCompletion = {
   plan: Plan;
   actions: Action[];
   waitingForIncome: boolean;
+  cardPlaysComplete?: true;
 };
 function gholaPreparationActions(g: Game, p: Player): Action[] {
   const card = p.hand.find((c) => c.effect === 'ghola');
@@ -27848,11 +27994,12 @@ function pendingBattleRevivalIncome(g: Game, p: Player): number {
 function findReachableBattlePlan(
   g: Game,
   p: Player,
-  options: Parameters<typeof findLegalBattlePlan>[2] = {},
+  options: Parameters<typeof findLegalBattlePlan>[2] & { cardPlays?: readonly TurnActionCardRequirement[] } = {},
 ): BattleCompletion | null {
+  const cardPlays = options.cardPlays ?? [];
   const immediate = findLegalBattlePlan(g, p, options);
-  if (immediate)
-    return { plan: immediate, actions: [], waitingForIncome: false };
+  if (immediate && turnActionCardsMatch(g, p.id, cardPlays))
+    return { plan: immediate, actions: [], waitingForIncome: false, ...(cardPlays.length ? { cardPlaysComplete: true } : {}) };
   if (g.battle!.revealed || g.battle!.plans[p.id]) return null;
   const initial = structuredClone(g);
   const player = getPlayer(initial, p.id);
@@ -27875,8 +28022,8 @@ function findReachableBattlePlan(
       actor = getPlayer(node.state, p.id);
     if (node.actions.length || pending) {
       const plan = findLegalBattlePlan(node.state, actor, options);
-      if (plan)
-        return { plan, actions: node.actions, waitingForIncome: pending > 0 };
+      if (plan && turnActionCardsMatch(node.state, p.id, cardPlays))
+        return { plan, actions: node.actions, waitingForIncome: pending > 0, ...(cardPlays.length ? { cardPlaysComplete: true } : {}) };
     }
     for (const action of [
       ...(node.state.status === 'playing' && node.state.phase === 6 && actor.faction === 'ixians' &&
@@ -28065,7 +28212,40 @@ function earlyRevivalCompletionSeeds(initial: Game, source: Game, owner: string)
     return { ...seed, game: g };
   });
 }
-function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string): ShipmentCompletionSeed[] {
+/** Materialize required ordinary returns before a later printed-card witness
+ * can use the same Tanks or leader. These are the native cumulative quotes,
+ * not an independent optimistic Revival reservation beside the card route. */
+function completeTurnActionRevivalSeed(seed: ShipmentCompletionSeed, owner: string): ShipmentCompletionSeed | null {
+  const game = structuredClone(seed.game), actions = [...seed.actions], early = [...seed.early];
+  const visited = new Set<string>();
+  const pending = () => [
+    ...liveRevivalPromises(game.revivalPromises ?? [], owner, game.turn),
+    ...liveLeaderRevivalPromises(game.leaderRevivalPromises ?? [], owner, game.turn),
+    ...liveRevivalExpressionPromises(game.revivalExpressionPromises ?? [], owner, game.turn),
+  ].some(promise => promise.answer);
+  while (pending()) {
+    const player = getPlayer(game, owner);
+    const signature = JSON.stringify([player.tanks, player.elites, player.spice, player.leaders,
+      player.kwisatz, player.revived, player.leaderRevived, game.revivalPromises,
+      game.leaderRevivalPromises, game.revivalExpressionPromises]);
+    if (visited.has(signature)) return null;
+    visited.add(signature);
+    const action = currentRevivalPromiseCompletion(game, player, game.revivalPromises ?? []);
+    if (!action || action.type === 'ready') return null;
+    try {
+      if (action.type === 'revive') stagePromisedForceReturn(game, player, normalForceRevivalQuote(game, player, action));
+      else if (['reviveLeader', 'reviveKwisatz', 'acceptLeaderRevival'].includes(action.type)) {
+        const quote = action.type === 'acceptLeaderRevival' ? negotiatedLeaderRevivalQuote(game, player)
+          : normalLeaderRevivalQuote(game, player, action);
+        stagePromisedLeaderReturn(game, player, quote);
+      } else return null;
+      actions.push(action); early.push({ phase: 4, action });
+    } catch (error) { if (error instanceof RuleError) return null; throw error; }
+  }
+  return { game, actions, early };
+}
+function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string,
+  completeRevival = false): ShipmentCompletionSeed[] {
   const seeds = earlyRevivalCompletionSeeds(initial, source, owner);
   // A real Movement quote already owns its active Karama/rate and allowances.
   // Only earlier phases may pass through the future Revival/Movement reset.
@@ -28085,7 +28265,11 @@ function earlyShipmentCompletionSeeds(initial: Game, source: Game, owner: string
       } catch (error) { if (!(error instanceof RuleError)) throw error; }
     }
   }
-  return revivalSeeds.map(seed => {
+  const completed = completeRevival ? revivalSeeds.flatMap(seed => {
+    const next = completeTurnActionRevivalSeed(seed, owner);
+    return next ? [next] : [];
+  }) : revivalSeeds;
+  return completed.map(seed => {
     seed.game.phase = 5; seed.game.ready = []; seed.game.karamaShipping = null;
     delete seed.game.revivalOrder;
     const p = getPlayer(seed.game, owner); p.shipped = false; p.moved = 0;
@@ -37079,6 +37263,12 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     const guide = projectedTurnActionGuide(state, getPlayer(state, id));
     requireRule(guide && action.turnActionPromisePhase === state.phase && movementGuideActionMatches(action, guide.action),
       'This turn-action guide is stale or belongs to another opportunity.');
+    // Validate the exact guide envelope before the native dispatcher receives
+    // its original action. Strict card controls such as Box accept no extra
+    // selection fields; promise metadata is not a native card selection.
+    action = { ...action };
+    delete action.turnActionPromiseEvent;
+    delete action.turnActionPromisePhase;
   }
   if (action.travelPromiseEvent !== undefined || action.travelPromisePhase !== undefined) {
     const guide = projectedTravelGuide(state, getPlayer(state, id));
@@ -41426,6 +41616,7 @@ function applyActionInner(
       throw new RuleError(availability.reason);
     if (c.effect === 'hajr') {
       p.hajrPlays = hajrPlayCount(g,p) + 1;
+      recordNativePrintedCardPlay(g, p.id, 'hajr');
       if (!g.hajr.includes(id)) g.hajr.push(id);
       delete p.hajrWindow;
       const cunning = currentGuildCunning(g,id);
@@ -41465,6 +41656,8 @@ function applyActionInner(
         'This card’s timing and effect are still being implemented.',
       );
     const used = discard(g, p, c.id);
+    if (execution === 'live' && (c.effect === 'hajr' || c.effect === 'ghola'))
+      guardTurnActionPrintedCardCost(g, p, used);
     log(
       g,
       `${p.name} played ${c.name}.`,
@@ -41481,10 +41674,15 @@ function applyActionInner(
     if (allianceQuestionWindow(g)) guardAlliancePromiseReady(g, p);
     const bribeWindowCloses = g.phase === 8 || g.phase === 7 && bribesCloseBeforeNextMentat(g);
     if (bribeWindowCloses && g.turnActionPromises) {
-      const closed = turnActionRule(() => finishTurnActionTurn(g.turnActionPromises!, p.id, g.turn));
+      // Known Double closes payments at the next opening, while Ghola keeps
+      // its actual Mentat opportunity. Only full turn expiry closes both.
+      const closed = turnActionRule(() => g.phase === 8
+        ? finishTurnActionTurn(g.turnActionPromises!, p.id, g.turn)
+        : closeTurnActionPayments(g.turnActionPromises!, p.id, g.turn));
       requireRule(!g.turnActionPromises.some((promise, index) => promise.player === p.id && promise.turn === g.turn &&
-        !promise.fulfilled && !promise.released && closed[index].released),
-      'Complete your whole Truthtrance payment answer before closing this turn’s payments.');
+        !promise.fulfilled && !promise.released && closed[index].released) &&
+        (g.phase === 8 || !!turnActionCompletion({ ...g, turnActionPromises: closed }, p.id)),
+      'Complete your whole Truthtrance answer or retain a legal alternative before closing its opportunity.');
     }
     if (bribeWindowCloses) requireRule(!hasBribePromises(g, p.id, true),
       g.phase === 8 ? 'Complete your Truthtrance bribe payments before finishing Mentat Pause.'

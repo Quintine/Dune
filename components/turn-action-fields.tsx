@@ -39,7 +39,7 @@ const currentBattle = (game: GameView, target: string, kind: 'battlePlan' | 'tra
 const config: MixedActionConfig<TurnActionLeaf> = {
   prefix: 'turn-action',
   legend: 'Current battle and this-turn action conditions, with optional current facts',
-  actionLabel: 'battle, alliance, bid, Revival, payment, shipment or ground-movement condition',
+  actionLabel: 'printed card play, battle, alliance, bid, Revival, payment, shipment or ground-movement condition',
   actionTiming: 'Current battle or future native action · this turn',
   actionHelp: <>Ordinary payment conditions sum future real bribes to the same recipient after the answer this turn.
     Earlier payments, gifts and ally aid do not count. The sender pays immediately; the recipient collects at the next Mentat opening.
@@ -56,6 +56,10 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     An open plan commitment settles when both plans are revealed, not merely when your own plan is sealed.
     Traitor conditions concern one original Reveal or decline declaration in the current revealed battle.
     The declaration counts before a later Karama or betrayal response can prevent its effect.
+    Printed-card conditions ask you to play Hajr or Tleilaxu Ghola in its printed role after this answer this turn.
+    An earlier play, discard, sale, Karama role or recovery alone does not count; an actual later replay after Box recovery does.
+    Hajr counts when played even if its extra movement is unused. Tleilaxu Ghola is a card play, separate from ordinary Revival.
+    Hajr conditions close at your own Movement turn end; Tleilaxu Ghola conditions close at the actual turn end.
     Shipment conditions concern the single future original reserve shipment after the answer.
     Ground-movement conditions use the maximum physical forces in one actual future move to that destination; smaller moves never add together.
     Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.
@@ -93,6 +97,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         const kind = event.currentTarget.value;
         if (kind === value.kind) return;
         const minimum = 'minimum' in value ? value.minimum : 1;
+        if (kind === 'cardPlay') onChange({ kind, effect: 'hajr' });
         if (kind === 'battlePlan') onChange({ kind, battle: game.battle?.event ?? '', territory: game.battle?.territory ?? '',
           claim: { kind: 'dial', compare: 'eq', value: 0 } });
         if (kind === 'traitorCall') onChange({ kind, battle: game.battle?.event ?? '', territory: game.battle?.territory ?? '', call: true });
@@ -104,6 +109,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         if (kind === 'ship' || kind === 'move') onChange({ kind,
           territory: value.kind === 'ship' || value.kind === 'move' ? value.territory : 'carthag', minimum });
       }}>
+        <option value="cardPlay">Play Hajr or Tleilaxu Ghola in its printed role</option>
         <option value="battlePlan">Use an actual current battle-plan choice</option>
         <option value="traitorCall">Make the current Traitor declaration</option>
         <option value="alliance">End this Nexus allied with a named partner</option>
@@ -114,7 +120,17 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         <option value="ship">Ship from reserves</option>
         <option value="move">Make ground movement</option>
       </select>
-      {value.kind === 'battlePlan' || value.kind === 'traitorCall' ? <>
+      {value.kind === 'cardPlay' ? <>
+        <label htmlFor={`${id}-effect`}>Printed card role after this answer</label>
+        <select id={`${id}-effect`} value={value.effect} disabled={disabled}
+          aria-invalid={value.effect !== 'hajr' && value.effect !== 'ghola'} onChange={event => {
+            const effect = event.currentTarget.value;
+            if (effect === 'hajr' || effect === 'ghola') onChange({ kind: 'cardPlay', effect });
+          }}>
+          <option value="hajr">Play Hajr in its printed role after this answer this turn</option>
+          <option value="ghola">Play Tleilaxu Ghola in its printed role after this answer this turn</option>
+        </select>
+      </> : value.kind === 'battlePlan' || value.kind === 'traitorCall' ? <>
         <label htmlFor={`${id}-battle`}>Current battle</label>
         <select id={`${id}-battle`} value={game.battle?.event === value.battle && game.battle.territory === value.territory ? value.battle ?? '' : ''}
           disabled={disabled} aria-invalid={!currentBattle(game, target, value.kind) || game.battle?.event !== value.battle || game.battle?.territory !== value.territory}

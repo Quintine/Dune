@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 27 October 2026 — Future printed Hajr and Ghola plays
+
+**Truthtrance / printed Hajr and Ghola plays — 27 October. Prototyped / Partial.**
+Whole current-turn questions now include actual future printed Hajr/Ghola use,
+with existing AND/OR/No semantics and frozen facts. Hajr counts even when its
+extra move is unused and closes at own Movement end; Ghola closes at turn end.
+Earlier plays, disposal, alternative roles and recovery alone do not count.
+Ordinary Revival and Ghola share real Tanks/purse but retain separate receipts
+and quotas. A known Double opening closes payments without closing Ghola.
+
+Runtime-first feedback fixes shared Revival resources, Advanced Box forecasts
+that preserved a spent Hajr window, and guide metadata reaching strict native
+card controls. The supported Advanced source47 actually moves once and plays
+Hajr before the answer; Box2/recovery must precede a second real move and replay.
+The Basic Richese source's Semuta composition remains excluded. No played
+cards, purse, casualties, timing window or progress are installed in a source.
+
+Evidence covers **22 files,278/278** across source-bound runs: V5 retains234
+passing cases in twenty unchanged files; V6 reruns both repaired files44/44.
+The only intervening changes fix two test oracles: guidance wording and the
+actual one-spice Tleilaxu Ghola income. A per-file manifest verifies unchanged
+production, fixtures and runtime script. Final types/lint/build pass. Thirty-six
+new cases include16 native/controlled-token checks; four profiles maintain only
+minimal legal participation. Seven runtime paths pass with33 GameTable SSR
+renders,7 actual answer callbacks and17 exact native guide callbacks.
+
+Proof/manifest: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-printed-proof-v6/`;
+reused journeys/HTML: adjacent `20261027-truth-printed-runtime-v5/`.
+Original Hajr19/Advanced23, Ghola forces53, leader102, typed-source58,
+Advanced replay47 and whole-No force42 prefixes derive from actual arrays.
+No HTTP/storage boundary changed; no database, reset/deletion, restart or
+deployed operation is performed. Wider card/power families, Semuta compositions
+and final browser/deployed/recovery/privacy/custody acceptance remain open.
+[Contract and scope](TRUTHTRANCE_TURN_ACTIONS.md#printed-hajr-and-ghola-plays--27-october-2026).
+
 ## 27 October 2026 — Ordinary-auction ten-second deadline
 
 **Ordinary-auction ten-second bidding — 27 October. Prototyped / Partial.**
