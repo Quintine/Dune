@@ -1,5 +1,51 @@
 # Truthtrance combined current-turn actions
 
+## Printed Amal and phase openings — 27 October 2026
+
+**Prototyped / Partial.** Whole questions can now be asked during a supported
+native phase opening. `windowCardPlay/amal` binds
+`phase-opening:turn:phase` and counts an actual printed cost after this answer.
+It retains Amal's native half-available-spice reduction and pass reset, rather
+than promising a later selected balance. Temporary priority/discard suspension
+keeps the original interval. Actual opening completion retires it; a later phase
+or earlier printed play cannot inherit the receipt. Definite answers reopen the
+respondent's own opening pass, including constant answers and No.
+
+Amal must precede ordinary payments in the same opening. The private quote
+executes its real cost/reduction first, then quotes post-opening payments with
+the remaining physical purse. It does not prepay while payments are blocked.
+Known Mentat incoming bribes remain outside the reduction and arrive after
+confirmations: original cash 10 becomes 5, then an actual prior four-spice receipt
+becomes spendable 9. With no incoming payment, a final Mentat payment of 5 can be
+funded after Amal; 6 cannot. These are closing-Mentat comparisons, not a claim that
+early-phase future Charity, collection or third-party income has been scheduled.
+The existing bounded current-purse quotation remains; broader future-income
+funding and combinations remain open.
+
+Only deterministic native opening preparation is projected. Bidding cards are
+not drawn by a quote, and foreign choices are not selected. Own printed loss or
+opening acceptance cannot discard an existing completion. A real foreign Amal
+propagates actual impossibility to the affected answer before the later last
+passer, retaining original history and payment progress. Basic and already-open
+native timing remain; this does not change the printed Amal effect or turn on
+new optional modules.
+
+Source-bound owner quotes feed the editor, actual answer callbacks, exact native
+Amal/Ready guides and four minimally legal profiles. Opening Ready uses its own
+pass list, independently of ordinary phase readiness; other native card guides
+and Box recovery retain their existing modal boundaries. Fresh H/A/E selected-Ix
+sources deal both original Truthtrances and the physical Amal, and reach their
+openings through real setup/dials/phases. No dealt wallet, army or receipt is
+installed. Semuta/Box, uncertain shared collection, broader future-action
+families, full modes and final deployed acceptance remain open.
+Frozen evidence: 17 related files, 350/350, types/lint/build and seven
+native/SSR/control journeys pass (42 GameTable renders, 7 answer callbacks,
+11 guide callbacks). Recorded original sources use 6, 14 or 56/57 native
+actions. Private proof:
+`/home/quintine/.local/share/dune/checkpoints/20261027-truth-amal-proof-v2/`;
+journeys/HTML: adjacent `20261027-truth-amal-runtime/run-v2/`.
+This is local native/SSR evidence, not browser hydration or deployed acceptance.
+
 ## Printed Thumper — 27 October 2026
 
 **Prototyped / Partial.** `windowCardPlay/thumper` binds

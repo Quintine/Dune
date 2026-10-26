@@ -145,7 +145,7 @@ export function parseTurnActionLeaf(value: unknown): TurnActionLeaf {
   try {
     if (value.kind === 'windowCardPlay') {
       check(keys(value, 'effect,kind,source') && windowEffect(value.effect) && identifier(value.source),
-        'Choose one original Storm, first-reveal, fresh-blow, ordinary-lot or shipment-price printed-card play after this answer.');
+        'Choose one original phase-opening, Storm, first-reveal, fresh-blow, ordinary-lot or shipment-price printed-card play after this answer.');
       return { kind: 'windowCardPlay', effect: value.effect, source: value.source };
     }
     if (value.kind === 'battlePower') {

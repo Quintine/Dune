@@ -1,8 +1,8 @@
 import { harvesterAvailable } from './cards';
 
-export const WINDOW_CARD_EFFECTS = ['weather', 'atomics', 'harvester', 'karamaAuction', 'karamaShipment', 'thumper'] as const;
+export const WINDOW_CARD_EFFECTS = ['weather', 'atomics', 'harvester', 'karamaAuction', 'karamaShipment', 'thumper', 'amal'] as const;
 export type WindowCardEffect = typeof WINDOW_CARD_EFFECTS[number];
-export function windowCardNativeEffect(effect: WindowCardEffect): 'weather' | 'atomics' | 'harvester' | 'karama' | 'thumper' {
+export function windowCardNativeEffect(effect: WindowCardEffect): 'weather' | 'atomics' | 'harvester' | 'karama' | 'thumper' | 'amal' {
   return effect === 'karamaAuction' || effect === 'karamaShipment' ? 'karama' : effect;
 }
 export type KaramaShipmentOpportunity = { effect: 'karamaShipment'; source: string; turn: number; recipient: string };
@@ -18,6 +18,7 @@ export type WindowCardGame = {
   stormCardWindowOpen?: boolean;
   stormResolution?: unknown;
   thumperWindowOpen?: boolean;
+  amalWindowOpen?: boolean;
   spiceSequence?: unknown;
   spiceResolution?: unknown;
   nexus?: unknown;
@@ -123,6 +124,16 @@ export function karamaShipmentOpportunities(game: WindowCardGame): KaramaShipmen
  * force conditions and chosen effect parameters remain native engine rules. */
 function globalWindowCardOpportunity(game: WindowCardGame, effect: WindowCardEffect): WindowCardOpportunity | null {
   if (game.status !== 'playing' || !whole(game.turn) || game.turn < 1) return null;
+  if (effect === 'amal') {
+    if (!whole(game.phase) || game.phase > 8 || game.amalWindowOpen !== undefined && typeof game.amalWindowOpen !== 'boolean' ||
+      game.amalWindowOpen === false) return null;
+    if (game.amalWindowOpen === undefined) {
+      const opening = game.phaseOpening;
+      if (!object(opening) || !Array.isArray(opening.passed) || !opening.passed.every(identifier) ||
+        new Set(opening.passed).size !== opening.passed.length) return null;
+    }
+    return { effect, source: `phase-opening:${game.turn}:${game.phase}`, turn: game.turn };
+  }
   if (effect === 'thumper') {
     if (game.phase !== 1 || game.thumperWindowOpen !== undefined && typeof game.thumperWindowOpen !== 'boolean' ||
       game.thumperWindowOpen === false || game.thumperWindowOpen === undefined &&

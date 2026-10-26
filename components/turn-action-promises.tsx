@@ -27,9 +27,9 @@ const publicBattleContext = (game: GameView) => game.battle && ({
   traitorVoters: game.battle.traitorVoters, traitorSubmitted: game.battle.traitorSubmitted,
 });
 const isWindowEffect = (effect: unknown): effect is Exclude<WindowCardEffect, 'karamaAuction' | 'karamaShipment'> =>
-  effect === 'weather' || effect === 'atomics' || effect === 'harvester' || effect === 'thumper';
+  effect === 'weather' || effect === 'atomics' || effect === 'harvester' || effect === 'thumper' || effect === 'amal';
 const windowRoleNames: Record<WindowCardEffect, string> = { weather: 'Weather Control', atomics: 'Family Atomics', harvester: 'Harvester',
-  karamaAuction: 'printed Karama for this ordinary lot', karamaShipment: 'printed Karama for this shipment price', thumper: 'Thumper' };
+  karamaAuction: 'printed Karama for this ordinary lot', karamaShipment: 'printed Karama for this shipment price', thumper: 'Thumper', amal: 'Amal' };
 const namesWindow = (mixed: MixedActionExpression<TurnActionLeaf>, effect: WindowCardEffect, source?: string): boolean =>
   mixed.kind === 'action' ? mixed.action.kind === 'windowCardPlay' && mixed.action.effect === effect && (source === undefined || mixed.action.source === source)
     : mixed.kind !== 'fact' && mixed.terms.some(term => namesWindow(term, effect, source));
@@ -65,6 +65,10 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const box = game.nullentropy, search = box?.search;
   const windowPromise = game.turnActionPromises.find(promise => promise.event === event && promise.player === actor && promise.turn === turn);
   const windowQuestion = windowPromise && JSON.stringify(windowPromise.mixed);
+  const opening = game.phaseOpening, openingSignature = JSON.stringify(opening);
+  const currentAmalWindow = windowCardOpportunity(game, 'amal');
+  const amalRoleNamed = !!windowPromise && !!currentAmalWindow && namesWindow(windowPromise.mixed, 'amal', currentAmalWindow.source);
+  const amalReadyAction = action.type === 'ready' && !!opening && amalRoleNamed;
   const currentAuctionWindow = windowCardOpportunity(game, 'karamaAuction');
   const auctionRoleNamed = !!windowPromise && !!currentAuctionWindow && namesWindow(windowPromise.mixed, 'karamaAuction', currentAuctionWindow.source);
   const auctionPurchaseAction = action.type === 'card' && action.mode === 'purchase';
@@ -86,6 +90,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       : WINDOW_CARD_EFFECTS.map(effect => windowCardOpportunity(current, effect)),
     stormOpen: current.stormCardWindowOpen,
     thumperOpen: current.thumperWindowOpen, thumperReady: current.thumperReady, nexus: current.nexus,
+    amalOpen: current.amalWindowOpen, amalReady: current.amalReady, opening: current.phaseOpening,
     stormPending: current.stormPending, wallDestroyed: current.shieldWallDestroyed,
     blow: current.spiceWindow,
     ...(current.phase === 3 ? { auction: auctionSource(current) } : {}),
@@ -94,12 +99,13 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     ...(windowEffect === 'atomics' ? { forces: current.players.find(player => player.id === actor)?.forces,
       advisors: current.players.find(player => player.id === actor)?.advisors } : {}),
   });
-  const windowSignature = windowEffect || heldCard?.effect === 'nullentropyBox' || earlyWindowReadyAction ? publicWindowState(game) : null;
+  const windowSignature = windowEffect || heldCard?.effect === 'nullentropyBox' || earlyWindowReadyAction || amalReadyAction ? publicWindowState(game) : null;
   const originalBlow = windowEffect === 'harvester' || earlyWindowReadyAction && phase === 1 ? game.spiceWindow : null;
   const earlyBoxSignature = box && JSON.stringify({ card: box.card.id, blocked: box.blocked, search: box.search?.event });
   const auctionCards = game.karamaAuctionCards, auctionCardsSignature = JSON.stringify(auctionCards);
   const shipmentCards = game.karamaShipmentCards, shipmentCardsSignature = JSON.stringify(shipmentCards);
   const thumperCards = game.thumperCards, thumperCardsSignature = JSON.stringify(thumperCards);
+  const amalCards = game.amalCards, amalCardsSignature = JSON.stringify(amalCards);
   const auctionHandSource = (current: GameView) => {
     const player = current.players.find(player => player.id === actor);
     return JSON.stringify({ hand: player?.hand?.map(card => ({ id: card.id, kind: card.kind, effect: card.effect })), limit: player?.handLimit });
@@ -155,12 +161,23 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     const nativeThumperCard = windowEffect === 'thumper' && !!heldCard && phase === 1 && !current.spiceWindow && !current.nexus &&
       Array.isArray(current.thumperCards) && current.thumperCards === thumperCards &&
       JSON.stringify(current.thumperCards) === thumperCardsSignature && current.thumperCards.includes(heldCard.id);
+    const currentOpening = !!opening && current.phaseOpening === opening && JSON.stringify(current.phaseOpening) === openingSignature &&
+      !opening.passed.includes(actor);
+    const nativeAmalCard = windowEffect === 'amal' && !!heldCard && currentOpening &&
+      Array.isArray(current.amalCards) && current.amalCards === amalCards && JSON.stringify(current.amalCards) === amalCardsSignature &&
+      current.amalCards.includes(heldCard.id);
     const printedWindow = action.type === 'card' && printedWindowSource && !!heldCard && windowPacket &&
       (windowEffect === 'karamaAuction' ? action.mode === 'purchase' && nativeAuctionCard && !!me && !current.decision &&
         Number.isSafeInteger(me.handLimit) && Array.isArray(me.hand) && me.hand.length < me.handLimit
         : windowEffect === 'karamaShipment' ? action.mode === 'shipment' && nativeShipmentCard
           : windowEffect === 'thumper' ? action.mode === undefined && nativeThumperCard
-            : action.mode === undefined && ordinaryCardAvailability(current, heldCard.id, windowEffect === 'weather' ? { amount: action.amount } : undefined)?.available === true);
+            : windowEffect === 'amal' ? action.mode === undefined && nativeAmalCard
+              : action.mode === undefined && ordinaryCardAvailability(current, heldCard.id, windowEffect === 'weather' ? { amount: action.amount } : undefined)?.available === true);
+    const openingReady = amalReadyAction && currentOpening && current.amalReady === true &&
+      Object.keys(action).every(key => ['type', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key)) &&
+      !!windowPromise && current.turnActionPromises.includes(windowPromise) && JSON.stringify(windowPromise.mixed) === windowQuestion &&
+      publicWindowState(current) === windowSignature;
+    const allowedOpeningAction = openingReady || windowEffect === 'amal' && printedWindow;
     const printedAuctionInvoice = printedInvoiceAction && printedWindowSource && nativeAuctionCard &&
       Object.keys(action).every(key => ['type', 'card', 'karama', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key));
     const quotedBoxCard = heldCard?.effect !== 'nullentropyBox' || !!box && current.nullentropy === box &&
@@ -246,7 +263,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     const battlePreparation = genericCard && planWindow;
     const declaration = action.type === 'traitorCall' && typeof action.call === 'boolean' && !!battle && currentBattle && battle.revealed &&
       battle.traitorVoters.includes(actor) && !battle.traitorSubmitted.includes(actor);
-    const opportunity = earlyWindowReady || earlyWindowBox || printedWindow || ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
+    const opportunity = openingReady || earlyWindowReady || earlyWindowBox || printedWindow || ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
       ? !current.ready.includes(actor) && (['charity', 'ready'].includes(action.type) || genericCard)
       : phase === 3
         ? invoice || nativePass || requiredBid || action.type === 'passBid' && !current.richeseAuction && currentAuction && current.auction?.active === actor
@@ -263,8 +280,9 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       action.turnActionPromiseEvent === event && action.turnActionPromisePhase === phase && JSON.stringify(action) === signature && opportunity &&
       current.turnActionPromises.some(promise => promise.event === event && promise.player === actor && promise.turn === turn &&
         !promise.fulfilled && !promise.released) &&
+      (!amalReadyAction || openingReady) &&
       !!me && !me.autopilot && !current.truthtrance && !current.response && (!current.decision || paidBox || invoice || earlyWindowBox && ownInvoiceSource) &&
-      !current.phaseOpening && !current.automaticContinuationPending && !current.roomControl?.paused && !current.roomControl?.closed;
+      (!current.phaseOpening || allowedOpeningAction) && !current.automaticContinuationPending && !current.roomControl?.paused && !current.roomControl?.closed;
   };
   const amount = action.forces && typeof action.forces === 'object'
     ? Object.values(action.forces as Record<string, number>).reduce((sum, count) => sum + count, 0)
@@ -292,7 +310,8 @@ export function TurnActionGuideButton(props: TurnActionProps) {
         : 'Withdraw your alliance offer while preserving your whole answer'
       : `Accept ${recipient}’s alliance invitation while preserving your whole answer`
     : action.type === 'charity' ? 'Claim Charity while preserving your whole answer'
-    : action.type === 'ready' ? phase === 8 ? 'Ready to end this turn while honoring your whole answer'
+    : action.type === 'ready' ? amalReadyAction ? 'Pass this original phase opening while preserving your whole answer'
+      : phase === 8 ? 'Ready to end this turn while honoring your whole answer'
       : earlyWindowReadyAction && (phase === 0 || !!game.spiceWindow) ? `Accept this ${phase === 0 ? 'Storm' : 'fresh spice-blow'} window while preserving your whole answer`
         : earlyWindowReadyAction && game.thumperReady && !!windowPromise && namesWindow(windowPromise.mixed, 'thumper', `first-spice-reveal:${turn}`)
           ? 'Ready for the original first spice reveal while preserving your whole answer'
@@ -379,6 +398,9 @@ export function TurnActionPromises(props: TurnActionProps) {
       Thumper conditions count an actual accepted future printed play before this turn&apos;s original first spice reveal.
       Earlier plays, disposal, other roles and recovery alone do not count. A later reveal is a different opportunity.
       This condition closes when the actual first spice draw begins.
+      Amal conditions count an actual accepted future printed play in this original phase opening.
+      Earlier plays, disposal, other roles and recovery alone do not count. The condition closes with this opening.
+      Amal halves available cash before ordinary payments become legal; preserve enough remaining cash for any payment condition.
       Shipment conditions concern one future original reserve shipment. Ground-movement conditions count the maximum physical forces in one actual future move,
       never the sum of smaller moves. Earlier shipment and movement do not count.
       Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.
@@ -400,6 +422,7 @@ export function TurnActionAnswers(props: TurnActionProps) {
   if (window?.stage !== 'answer' || question?.kind !== 'turnActions' || question.target !== game.me || !game.truthTurnActionAnswers) return null;
   const actor = game.me, turn = game.turn, phase = game.phase, source = window.queue[0], answers = game.truthTurnActionAnswers;
   const signature = JSON.stringify(question), sourceSignature = JSON.stringify(source);
+  const opening = game.phaseOpening, openingSignature = JSON.stringify(opening);
   const canAnswer = (answer: TruthAnswer) => {
     const current = props.game, me = current.players.find(player => player.id === actor);
     return !props.busy && current === game && current.status === 'playing' &&
@@ -408,7 +431,8 @@ export function TurnActionAnswers(props: TurnActionProps) {
       window.question === question && question.target === actor && JSON.stringify(question) === signature &&
       !!source && window.queue[0] === source && JSON.stringify(source) === sourceSignature &&
       current.truthTurnActionAnswers === answers && answers.includes(answer) &&
-      !!me && !me.autopilot && !current.response && !current.decision && !current.phaseOpening &&
+      !!me && !me.autopilot && !current.response && !current.decision &&
+      current.phaseOpening === opening && JSON.stringify(current.phaseOpening) === openingSignature &&
       !current.automaticContinuationPending && !current.roomControl?.paused && !current.roomControl?.closed;
   };
   return <section aria-label="Answer the whole battle and turn-action question" className="space-y-3">
@@ -425,6 +449,7 @@ export function TurnActionAnswers(props: TurnActionProps) {
       Bids close with their lot; Revival closes with your native Revival opportunity.
       Shipment and movement close at your own Movement turn end; payment conditions last until the actual turn ends.
       A known Inflation Double opening can close payments earlier without closing Ghola.
+      An original-opening Amal play halves available cash before ordinary payments become legal.
       Original rights, preparation, timing and costs still apply. Only your whole answer is shared.</p>
     {answers.map(answer => {
       const action: Action = { type: 'truthAnswer', answer };

@@ -1565,6 +1565,7 @@ function policyActions(g: GameView): Action[] {
     // Rival spice is private. Low own losses inform this choice.
     if (
       amal &&
+      g.amalCards?.includes(amal.id) === true &&
       g.turn > 1 &&
       (me.spice ?? 0) <= (level === 0 ? 4 : 2) &&
       (level > 0 || variation(g, 'amal') > 0.4)

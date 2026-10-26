@@ -61,7 +61,8 @@ const power = (claim: BattlePowerClaim = { kind: 'voice', use: true }): Expressi
   ({ kind: 'action', action: { kind: 'battlePower', battle: 'battle:1', territory: 'carthag', claim } });
 const windowSource = (effect: WindowCardEffect) => effect === 'karamaShipment'
   ? JSON.stringify(['karamaShipment', 1, 'recipient', 'original']) : effect === 'karamaAuction' ? 'ordinary-auction:1:1' :
-  effect === 'thumper' ? 'first-spice-reveal:1' : effect === 'harvester' ? 'spice-blow:1' : 'storm:1';
+  effect === 'amal' ? 'phase-opening:1:2' : effect === 'thumper' ? 'first-spice-reveal:1' :
+    effect === 'harvester' ? 'spice-blow:1' : 'storm:1';
 const windowCard = (effect: WindowCardEffect = 'weather', source = windowSource(effect)): Expression =>
   ({ kind: 'action', action: { kind: 'windowCardPlay', effect, source } });
 const fact = (): Expression => ({ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 5 } });
@@ -1571,4 +1572,49 @@ void test('Thumper whole AND No and OR Yes retain their later payment correlatio
   assert.equal(paid[0].fulfilled, false);
   assert.equal(recordTurnActionWindowCardPlay(paid, 'respondent', 1, 'thumper', 'first-spice-reveal:1')[0].fulfilled, true);
   validateTurnActionPromises([expiry], seats);
+});
+
+void test('Amal No caps actual printed cost in only the original answer interval and preserves whole No payment correlation', () => {
+  const source = windowSource('amal'), no = windowed(windowCard('amal'), false);
+  for (const [player, turn, opening] of [['other', 1, source], ['respondent', 2, source],
+    ['respondent', 1, 'phase-opening:1:3']] as const) {
+    assert.equal(recordTurnActionWindowCardPlay([no], player, turn, 'amal', opening)[0], no);
+    assert.equal(closeTurnActionWindowCardPlay([no], player, turn, 'amal', opening)[0], no);
+  }
+  assert.throws(() => recordTurnActionWindowCardPlay([no], 'respondent', 1, 'amal', source), TurnActionError);
+  assert.equal(no.windowCards!.amal!.played, false);
+  const closed = closeTurnActionWindowCardPlay([no], 'respondent', 1, 'amal', source)[0];
+  assert.equal(closed.fulfilled, true);
+  assert.equal(recordTurnActionWindowCardPlay([closed], 'respondent', 1, 'amal', source)[0], closed);
+  const wholeNo = windowed(group('and', windowCard('amal'), pay()), false, 'turn-action:2');
+  const played = recordTurnActionWindowCardPlay([wholeNo], 'respondent', 1, 'amal', source);
+  assert.equal(played[0].fulfilled, false);
+  const later = closeTurnActionWindowCardPlay(played, 'respondent', 1, 'amal', source);
+  assert.deepEqual(branches(later[0]), [[signedPay('recipient', 3, 0, false)]]);
+  assert.throws(() => recordTurnActionPayment(later, 'respondent', 1, payment()), TurnActionError);
+  assert.deepEqual(later[0].payments, []);
+  assert.equal(finishTurnActionTurn(later, 'respondent', 1)[0].fulfilled, true);
+  validateTurnActionPromises([closed], seats);
+});
+
+void test('Amal whole AND and OR keep printed receipt and later payment alternatives without storing a halving choice', () => {
+  const source = windowSource('amal');
+  const and = windowed(group('and', windowCard('amal'), pay()));
+  const or = windowed(group('or', windowCard('amal'), pay()), true, 'turn-action:2');
+  for (const extra of [{ amount: 3 }, { target: 'recipient' }, { half: 2 }, { card: 'physical-amal' }])
+    assert.throws(() => parseTurnActionLeaf({ kind: 'windowCardPlay', effect: 'amal', source, ...extra }), TurnActionError);
+  const played = recordTurnActionWindowCardPlay([and, or], 'respondent', 1, 'amal', source);
+  assert.deepEqual(branches(played[0]), [[signedPay()]]);
+  assert.equal(played[1].fulfilled, true);
+  const closed = closeTurnActionWindowCardPlay(played, 'respondent', 1, 'amal', source);
+  assert.equal(closed[1], played[1]);
+  assert.equal(recordTurnActionPayment(closed, 'respondent', 1, payment())[0].fulfilled, true);
+  const missed = closeTurnActionWindowCardPlay([or], 'respondent', 1, 'amal', source);
+  assert.deepEqual(branches(missed[0]), [[signedPay()]]);
+  assert.equal(recordTurnActionPayment(missed, 'respondent', 1, payment())[0].fulfilled, true);
+  const no = windowed(windowCard('amal'), false, 'turn-action:3');
+  const expired = finishTurnActionTurn([no], 'respondent', 1)[0];
+  assert.deepEqual(expired.windowCards!.amal, { source, played: false, closed: true });
+  assert.equal(expired.fulfilled, true);
+  validateTurnActionPromises([expired], seats);
 });

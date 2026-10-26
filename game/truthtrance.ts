@@ -381,7 +381,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
   if (v.kind === 'turnActions') {
     check(Object.keys(v).sort().join(',') === 'kind,mixed,target,turn' && v.turn === g.turn &&
       bribePromiseModeSupported(g) && g.status === 'playing' && Number.isInteger(g.phase) && g.phase >= 0 && g.phase <= 8 &&
-      !g.response && !g.decision && !g.phaseOpening && !g.pendingTreacheryDiscard && !g.pendingKarama,
+      !g.response && !g.decision && (!g.phaseOpening || !!windowCardOpportunity(g, 'amal')) && !g.pendingTreacheryDiscard && !g.pendingKarama,
     'Supply the current turn, complete turn-action question and a supported quiet native window.');
     const respondent = g.players.find(player => player.id === v.target)!;
     const mixed = parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent), input => {
@@ -741,6 +741,7 @@ export function truthQuestionText(
   if (q.kind === 'turnActions') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => {
       if (action.kind === 'windowCardPlay') {
+        if (action.effect === 'amal') return 'you play Amal after this answer during this original phase opening, halving available spice before ordinary payments';
         if (action.effect === 'karamaAuction') return 'you spend a printed Karama after this answer on this original ordinary auction lot, by immediate purchase or its winning invoice';
         if (action.effect === 'karamaShipment') {
           const recipient = parseKaramaShipmentSource(action.source)?.recipient;

@@ -23,8 +23,47 @@ function shipments(): WindowCardGame {
 }
 
 void test('window roles expose a shared exhaustive tuple and exact native printed-card mapping', () => {
-  assert.deepEqual(WINDOW_CARD_EFFECTS, ['weather', 'atomics', 'harvester', 'karamaAuction', 'karamaShipment', 'thumper']);
-  assert.deepEqual(WINDOW_CARD_EFFECTS.map(windowCardNativeEffect), ['weather', 'atomics', 'harvester', 'karama', 'karama', 'thumper']);
+  assert.deepEqual(WINDOW_CARD_EFFECTS, ['weather', 'atomics', 'harvester', 'karamaAuction', 'karamaShipment', 'thumper', 'amal']);
+  assert.deepEqual(WINDOW_CARD_EFFECTS.map(windowCardNativeEffect), ['weather', 'atomics', 'harvester', 'karama', 'karama', 'thumper', 'amal']);
+});
+
+void test('Amal names each original phase opening with only its public turn and phase identity', () => {
+  for (let phase = 0; phase <= 8; phase++) {
+    const source = { ...storm(), phase, amalWindowOpen: true };
+    assert.deepEqual(windowCardOpportunity(source, 'amal'), { effect: 'amal', source: `phase-opening:3:${phase}`, turn: 3 });
+  }
+  for (const phase of [-1, 0.5, 9, NaN, Infinity])
+    assert.equal(windowCardOpportunity({ ...storm(), phase, amalWindowOpen: true }, 'amal'), null);
+});
+
+void test('explicit Amal entitlement survives temporary Truth and discard suspension but actual close never reopens it', () => {
+  const source = { ...storm(), phase: 4, amalWindowOpen: true, phaseOpening: { passed: ['first'] } };
+  for (const suspended of [{ truthtrance: {} }, { response: {} }, { decision: {} }, { phaseOpening: null },
+    { phaseOpening: null, pendingTreacheryDiscard: {} }]) {
+    const waiting = { ...source, ...suspended };
+    assert.equal(windowCardOpportunity(waiting, 'amal')!.source, 'phase-opening:3:4');
+    assert.equal(windowCardOpportunity({ ...waiting, amalWindowOpen: false }, 'amal'), null);
+  }
+  assert.equal(windowCardOpportunity({ ...source, amalWindowOpen: false, phaseOpening: { passed: [] } }, 'amal'), null);
+});
+
+void test('legacy Amal openings accept the public passed list without requiring native initialization metadata', () => {
+  for (const phaseOpening of [{ passed: [] }, { passed: ['first', 'later'] }, { passed: [], initialize: true }])
+    assert.equal(windowCardOpportunity({ ...storm(), phase: 2, phaseOpening }, 'amal')!.source, 'phase-opening:3:2');
+  for (const phaseOpening of [undefined, null, [], {}, { passed: null }, { passed: 'first' },
+    { passed: ['first', 'first'] }, { passed: [''] }, { passed: [' first'] }, { passed: [1] }])
+    assert.equal(windowCardOpportunity({ ...storm(), phaseOpening }, 'amal'), null);
+});
+
+void test('Amal rejects invalid flags and stale opening identities without changing the original state', () => {
+  const source = { ...storm(), phase: 7, amalWindowOpen: true }, before = structuredClone(source);
+  assert.equal(windowCardOpportunity(source, 'amal', 'phase-opening:3:7')!.source, 'phase-opening:3:7');
+  for (const expected of ['phase-opening:3:6', 'phase-opening:4:7', 'phase-opening:03:7', 'phase-opening:3:7 '])
+    assert.equal(windowCardOpportunity(source, 'amal', expected), null);
+  for (const invalid of [{ amalWindowOpen: 'true' }, { amalWindowOpen: null }, { amalWindowOpen: 1 },
+    { status: 'setup' }, { turn: 0 }, { turn: 1.5 }, { turn: Number.MAX_SAFE_INTEGER + 1 }])
+    assert.equal(windowCardOpportunity({ ...source, ...invalid } as WindowCardGame, 'amal'), null);
+  assert.deepEqual(source, before);
 });
 
 void test('Thumper binds the public first-reveal entitlement without any hidden deck or physical-card source', () => {

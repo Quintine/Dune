@@ -36,7 +36,7 @@ const shipmentPriceSource = (recipient = 'p', cunning?: string) => JSON.stringif
   ...(cunning ? ['cunning', cunning] : ['original'])]);
 const windowClaim = (effect: WindowCardEffect = 'weather', source = effect === 'harvester' ? 'controlled-native-blow'
   : effect === 'karamaAuction' ? 'ordinary-auction:2:2' : effect === 'karamaShipment' ? shipmentPriceSource()
-    : effect === 'thumper' ? 'first-spice-reveal:2' : 'storm:2'): Expression =>
+    : effect === 'thumper' ? 'first-spice-reveal:2' : effect === 'amal' ? 'phase-opening:2:4' : 'storm:2'): Expression =>
   ({ kind: 'action', action: { kind: 'windowCardPlay', effect, source } });
 const planClaim = (claim: MixedBattleActionClaim = { kind: 'dial', compare: 'eq', value: 3 }): Expression =>
   ({ kind: 'action', action: { kind: 'battlePlan', battle: 'controlled-native-battle', territory: 'arrakeen', claim } });
@@ -86,7 +86,7 @@ function projected(phase = 5, next: Action = { type: 'move', forces: { 'arrakeen
   game.turnActionGuide = { event, action: { ...next, turnActionPromiseEvent: event, turnActionPromisePhase: phase } };
   game.truthTurnActionAnswers = null;
   if (next.type === 'card' && typeof next.card === 'string') {
-    const cardId = next.card, effect = (['hajr', 'ghola', 'weather', 'atomics', 'harvester', 'thumper'] as const)
+    const cardId = next.card, effect = (['hajr', 'ghola', 'weather', 'atomics', 'harvester', 'thumper', 'amal'] as const)
       .find(effect => cardId.includes(effect)) ?? 'karama';
     const face = [...baseDeck(), ...ixSpecialCards()].find(card => card.effect === effect); assert.ok(face);
     const me = game.players.find(player => player.id === 'p')!;
@@ -129,6 +129,12 @@ function firstReveal(next: Action = { type: 'card', card: 'controlled-thumper' }
   const game = projected(1, next); game.thumperWindowOpen = true; game.thumperReady = true; game.spiceWindow = null; game.nexus = false;
   game.thumperCards = ['controlled-thumper']; game.active = 'a';
   game.turnActionPromises[0].mixed = { kind: 'or', terms: [windowClaim('thumper'), payment()] };
+  return game;
+}
+function openingAmal(phase = 4, next: Action = { type: 'card', card: 'controlled-amal' }): GameView {
+  const game = projected(phase, next); game.amalWindowOpen = true; game.phaseOpening = { passed: [] };
+  game.amalCards = ['controlled-amal']; game.amalReady = true; game.active = 'a'; game.ready = ['p'];
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [windowClaim('amal', `phase-opening:2:${phase}`), payment()] };
   return game;
 }
 function nexus(next: Action = { type: 'alliance', target: 'r' }): GameView {
@@ -1133,6 +1139,108 @@ void test('Thumper first-reveal questions retain the quoted phase-one Box route 
   const sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
   assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
   game.thumperWindowOpen = false; press(button); assert.equal(sent.length, 1);
+});
+
+void test('Amal editor uses the public original phase opening and preserves repairable sixteen-leaf four-level expressions', () => {
+  const game = openingAmal(), e = editor(physical(), false, game);
+  for (const player of game.players) for (const key of ['hand', 'spice', 'forces', 'leaders', 'traitors'])
+    Object.defineProperty(player, key, { get() { throw Error(`No private Amal authoring ${key} read`); }, configurable: true });
+  for (const key of ['amalCards', 'amalReady']) Object.defineProperty(game, key, { get() { throw Error(`No native Amal authoring ${key} quote read`); } });
+  select(e.tree(), '1', 'action', 'windowCardPlay'); assert.deepEqual(e.value, windowClaim('amal')); assert.equal(e.error(), null);
+  assert.match(e.html(), /Original Revival opening/); assert.match(e.html(), /Amal halves available cash before ordinary payments become legal/);
+  game.phaseOpening!.passed.push('p'); assert.equal(e.error(), null, 'The public source is separate from individual native eligibility.');
+  game.phaseOpening = null; assert.equal(e.error(), null, 'The explicit original source survives temporary controls.');
+  select(e.tree(), '1', 'window-source', ''); assert.ok(e.error()); select(e.tree(), '1', 'window-source', 'phase-opening:2:4'); assert.equal(e.error(), null);
+  game.phase = 0; assert.ok(e.error()); select(e.tree(), '1', 'window-source', 'phase-opening:2:0'); assert.equal(e.error(), null);
+  game.amalWindowOpen = false; assert.ok(e.error()); assert.match(e.html(), /no current original open native window/);
+  const fullGame = openingAmal(), full = editor({ kind: 'or', terms: [windowClaim('amal'), fact()] }, false, fullGame);
+  for (let count = 3; count <= 16; count++) { click(control(full.tree(), 'add-action-1')); select(full.tree(), `1.${count}`, 'action', 'windowCardPlay'); }
+  assert.equal(full.error(), null); assert.match(full.html(), /16 \/ 16 conditions/);
+  const deep = editor({ kind: 'and', terms: [fact(), windowClaim('amal')] }, false, fullGame);
+  click(control(deep.tree(), 'or-1.2')); click(control(deep.tree(), 'and-1.2.1')); click(control(deep.tree(), 'or-1.2.1.1'));
+  assert.equal(deep.error(), null); assert.match(deep.html(), /4 \/ 4 levels of grouping/);
+});
+
+void test('Amal play and Ready guides use exact native packets and opening passes rather than ordinary readiness', () => {
+  for (const phase of [0, 4]) for (const ready of [false, true]) {
+    const game = openingAmal(phase, ready ? { type: 'ready' } : { type: 'card', card: 'controlled-amal' }), sent: Action[] = [];
+    for (const key of ['windowCards', 'compiled', 'preparation'])
+      Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private Amal ${key} read`); }, configurable: true });
+    if (ready) { game.amalCards = []; game.players.find(player => player.id === 'p')!.hand = []; }
+    assert.ok(game.ready.includes('p')); assert.ok(!game.phaseOpening!.passed.includes('p'));
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    assert.equal(sent[0].turnActionPromiseEvent, event); assert.equal(sent[0].turnActionPromisePhase, phase);
+    if (ready) assert.match(renderToStaticMarkup(button), /Pass this original phase opening/);
+    else assert.equal(sent[0].card, 'controlled-amal');
+    game.turnActionGuide = null;
+    const html = markup(game); assert.match(html, /condition closes with this opening/);
+    assert.match(html, /Amal halves available cash before ordinary payments become legal/); assert.doesNotMatch(html, /windowCards|controlled-amal/);
+  }
+});
+
+void test('saved Amal callbacks retain opening identity, passed list, original source, owner quotes and physical custody', () => {
+  for (const ready of [false, true]) for (const change of [
+    (game: GameView) => { game.phaseOpening = { passed: [] }; },
+    (game: GameView) => { game.phaseOpening!.passed.push('a'); },
+    (game: GameView) => { game.phaseOpening!.passed.push('p'); },
+    (game: GameView) => { game.phaseOpening = null; game.ready = []; },
+    (game: GameView) => { game.amalWindowOpen = false; },
+    (game: GameView) => { game.turnActionPromises[0].mixed = windowClaim('amal', 'phase-opening:2:3'); },
+    (game: GameView) => { game.response = { kind: 'voice', owner: 'a', passed: [] }; },
+  ]) {
+    const game = openingAmal(4, ready ? { type: 'ready' } : { type: 'card', card: 'controlled-amal' });
+    const saved = guide({ game, busy: false, act() { assert.fail('An obsolete original-opening action cannot send'); } });
+    assert.equal(saved.props.disabled, false); change(game); press(saved);
+  }
+  const quoted = openingAmal(), saved = guide({ game: quoted, busy: false, act() { assert.fail('A removed physical Amal quote cannot send'); } });
+  quoted.amalCards = []; press(saved);
+  const cardGame = openingAmal(), cardButton = guide({ game: cardGame, busy: false, act() { assert.fail('A changed physical Amal cannot send'); } });
+  const card = cardGame.players.find(player => player.id === 'p')!.hand?.[0]; assert.ok(card); card.effect = 'ghola'; press(cardButton);
+  const readyGame = openingAmal(4, { type: 'ready' }), readyButton = guide({ game: readyGame, busy: false, act() { assert.fail('A removed native Amal Ready quote cannot send'); } });
+  readyGame.amalReady = false; press(readyButton);
+});
+
+void test('Amal opening exception rejects extra fields, unquoted actions, Box and generic card fallback', () => {
+  for (const ready of [false, true]) for (const extra of [{ amount: 0 }, { mode: 'shipment' }, { target: 'p' }, { event: 'literal-event' }, { phase: 4 }]) {
+    const game = openingAmal(4, ready ? { type: 'ready' } : { type: 'card', card: 'controlled-amal' });
+    Object.assign(game.turnActionGuide!.action, extra);
+    const button = guide({ game, busy: false, act() { assert.fail('Only the original native Amal packet and existing envelope may send'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+  const unquoted = openingAmal(); unquoted.amalCards = [];
+  assert.equal(guide({ game: unquoted, busy: false, act() { assert.fail('The actual Amal card must be natively quoted'); } }).props.disabled, true);
+  const unavailableReady = openingAmal(4, { type: 'ready' }); unavailableReady.amalReady = false; unavailableReady.ready = [];
+  assert.equal(guide({ game: unavailableReady, busy: false, act() { assert.fail('Ordinary Ready cannot bypass an unavailable opening Ready'); } }).props.disabled, true);
+  const outside = openingAmal(); outside.phaseOpening = null;
+  assert.equal(guide({ game: outside, busy: false, act() { assert.fail('An explicit source alone does not create a native Amal action'); } }).props.disabled, true);
+  const other = openingAmal(5, { type: 'card', card: 'controlled-owned-karama' }); other.ready = []; other.active = 'p';
+  assert.equal(guide({ game: other, busy: false, act() { assert.fail('Other native cards keep the phase-opening veto'); } }).props.disabled, true);
+  const boxed = openingAmal(0), me = boxed.players.find(player => player.id === 'p')!;
+  const box = { id: 'controlled-box', name: 'Nullentropy Box', kind: 'special' as const, effect: 'nullentropyBox' };
+  me.hand = [box]; boxed.nullentropy = { card: box, blocked: null, search: null };
+  boxed.turnActionGuide!.action = { type: 'card', card: box.id, turnActionPromiseEvent: event, turnActionPromisePhase: 0 };
+  assert.equal(guide({ game: boxed, busy: false, act() { assert.fail('A quoted Box cannot bypass the native opening priority'); } }).props.disabled, true);
+});
+
+void test('native turn-action answers work in an unchanged quoted opening and reject changed passed or modal sources', () => {
+  for (const mixed of [windowClaim('amal'), claim()]) {
+    const game = answering(4); game.phaseOpening = { passed: ['a'] }; game.amalWindowOpen = true;
+    game.truthtrance!.question = { kind: 'turnActions', target: 'p', turn: 2, mixed };
+    const sent: Action[] = [], tree = TurnActionAnswers({ game, busy: false, act(action) { sent.push(action); } });
+    const button = find(tree, 'data-turn-action-answer', 'yes'); assert.equal(button.props.disabled, false); click(button);
+    assert.deepEqual(sent, [{ type: 'truthAnswer', answer: 'yes' }]);
+    game.phaseOpening.passed.push('r'); click(button); assert.equal(sent.length, 1);
+  }
+  for (const change of [
+    (game: GameView) => { game.phaseOpening = { passed: [] }; },
+    (game: GameView) => { game.phaseOpening = null; },
+    (game: GameView) => { game.decision = { kind: 'auctionPayment', player: 'p' }; },
+  ]) {
+    const game = answering(4); game.phaseOpening = { passed: [] };
+    const button = find(TurnActionAnswers({ game, busy: false, act() { assert.fail('A changed opening answer source cannot send'); } }), 'data-turn-action-answer', 'yes');
+    assert.equal(button.props.disabled, false); change(game); click(button);
+  }
 });
 
 void test('turn-action printed-role editor uses public names without holdings or private stages and retains the shared logical budget', () => {

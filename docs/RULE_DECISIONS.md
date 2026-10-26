@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Truthtrance printed Amal and phase openings — 27 October 2026
+
+Prototyped / Partial. Extend the existing whole current-turn answer composition
+to the original phase-opening interval, including actual printed Amal costs
+after answering. Its native reduction still rounds the loss upward; it does
+not cancel a phase. The original phase/turn source remains through temporary
+priority and pass resets. Ordinary payments wait until the opening ends, so
+private quotation applies Amal before reserving those payments. Known Mentat
+bribe receipts arrive afterward, without reading hidden cards or choosing
+foreign responses. Own costs/acceptance retain a completion; a foreign Amal
+can release genuine loss before the last passer acts. This is bounded product
+composition, not an exhaustive publisher worked example or complete mode gate.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-amal-and-phase-openings--27-october-2026).
+
 ## Truthtrance printed Thumper — 27 October 2026
 
 Prototyped / Partial. Extend existing whole current-turn answers to an actual

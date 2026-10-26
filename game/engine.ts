@@ -2507,6 +2507,8 @@ export type Game = {
   stormCardWindowOpen?: boolean;
   /** Original first Spice reveal; temporary summoned-worm controls do not retire it. */
   thumperWindowOpen?: boolean;
+  /** Original phase opening; a discard response can temporarily suspend its controls. */
+  amalWindowOpen?: boolean;
   stormCard: number | null;
   stormCardKnown: boolean;
   stormResolution: {
@@ -19017,9 +19019,23 @@ function quotedThumperCards(g: Game, player: Player): string[] {
   return player.hand.filter(card => card.kind === 'special' && card.effect === 'thumper' &&
     !transferCardBlock(g, player, card)).map(card => card.id);
 }
+function quotedAmalCards(g: Game, player: Player): string[] {
+  if (!windowCardOpportunity(g, 'amal') || !g.phaseOpening || g.phaseOpening.passed.includes(player.id) ||
+    g.truthtrance || g.pendingTreacheryDiscard) return [];
+  return player.hand.filter(card => card.kind === 'special' && card.effect === 'amal' &&
+    !transferCardBlock(g, player, card)).map(card => card.id);
+}
+function quotedAmalReady(g: Game, actor: string): boolean {
+  return !!windowCardOpportunity(g, 'amal') && !!g.phaseOpening && !g.phaseOpening.passed.includes(actor) &&
+    !g.truthtrance && !g.pendingTreacheryDiscard;
+}
 function* nativeWindowCardActions(g: Game, actor: string, effect: WindowCardEffect): Generator<Action> {
   if (!windowCardOpportunity(g, effect)) return;
   const player = getPlayer(g, actor);
+  if (effect === 'amal') {
+    for (const card of quotedAmalCards(g, player)) yield { type: 'card', card };
+    return;
+  }
   if (effect === 'karamaAuction') {
     for (const card of quotedAuctionKaramaCards(g, player)) yield g.decision?.kind === 'auctionPayment'
       ? { type: 'decision', karama: true, card } : { type: 'card', card, mode: 'purchase' };
@@ -19155,10 +19171,10 @@ function reconcileTurnActionWindowCards(g: Game) {
 }
 /** A concurrent Ready grants permission to close this window. Quote that
  * closure without installing it before the real global continuation. */
-function ownTurnActionWindowClosure(g: Game, actor: string): TurnActionPromise[] {
+function ownTurnActionWindowClosure(g: Game, actor: string, effects: readonly WindowCardEffect[] = WINDOW_CARD_EFFECTS): TurnActionPromise[] {
   let closed = g.turnActionPromises ?? [];
   for (const promise of liveTurnActionPromises(closed, actor, g.turn))
-    for (const effect of WINDOW_CARD_EFFECTS) {
+    for (const effect of effects) {
       const stage = promise.windowCards?.[effect];
       if (stage && !stage.closed) closed = turnActionRule(() =>
         closeTurnActionWindowCardPlay(closed, actor, g.turn, effect, stage.source));
@@ -19283,10 +19299,10 @@ function guardTurnActionShipmentPriceDelivery(g: Game, shipment: PendingShipment
   guardTurnActionShipmentPriceBoundary(trial, shipment.player, original, undefined, receipt);
 }
 function turnActionTargetAvailable(g: Game, _actor: string): boolean {
-  return bribeQuestionWindow(g) && movementPromiseModeSupported(g);
+  return bribeQuestionWindow(g.phaseOpening ? { ...g, phaseOpening: null } : g) && movementPromiseModeSupported(g);
 }
 function turnActionTransportOpen(g: Game, actor: string): boolean {
-  return g.phase < 5 || g.phase === 5 && !!g.movementRemaining?.includes(actor);
+  return g.phase < 5 || g.phase === 5 && (!!g.phaseOpening?.initialize || !!g.movementRemaining?.includes(actor));
 }
 /** Read only the original predicates while the native sealed cards are still
  * held. Receipts contain booleans, never copies of private hands or plans. */
@@ -19504,6 +19520,66 @@ function turnActionAllianceCanClose(g: Game, player: Player): boolean {
   } catch (error) { if (error instanceof RuleError) return false; throw error; }
 }
 type TurnActionCompletion = MovementCompletion & { payments: Action[]; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[]; battlePlan?: BattleCompletion; traitor?: Action; cardPreparations?: Action[]; battlePower?: Action };
+/** Forecast deterministic opening work only. Auction/deck draws and foreign
+ * choices stay at the real table; fixed Mentat receipts arrive after Amal. */
+function projectTurnActionOpeningEnd(g: Game) {
+  const initialize = g.phaseOpening?.initialize;
+  g.phaseOpening = null; g.amalWindowOpen = false;
+  if (!initialize) return;
+  if ([4, 5, 7].includes(g.phase)) beginPhase(g);
+  if (g.phase === 8) {
+    advanceMentatInflation(g);
+    for (const player of g.players) { player.spice += player.bribes; player.bribes = 0; }
+  }
+}
+/** Amal must precede payments in this opening. Other native card windows may
+ * still be used after its confirmations, with the resulting physical purse. */
+function prepareTurnActionOpening(source: Game, actor: string, requirements: readonly TurnActionWindowCardRequirement[]):
+  { game: Game; actions: Action[] } | null {
+  if (!source.phaseOpening) return { game: source, actions: [] };
+  const opening = requirements.filter(required => required.effect === 'amal');
+  let game = source;
+  const actions: Action[] = [];
+  if (opening.some(required => required.answer)) {
+    const opportunity = windowCardOpportunity(source, 'amal');
+    if (!opportunity || opening.some(required => !required.answer || required.source !== opportunity.source)) return null;
+    const action = nativeWindowCardActions(source, actor, 'amal').next().value;
+    if (!action) return null;
+    try { game = applyActionInner(source, actor, action, 'movementPreparation'); }
+    catch (error) { if (error instanceof RuleError) return null; throw error; }
+    actions.push(action);
+  }
+  projectTurnActionOpeningEnd(game);
+  return { game, actions };
+}
+/** Check the owner before a discard/pass hands the opening away. Propagate
+ * only genuine foreign releases, so the later last passer cannot inherit
+ * responsibility for another player's already completed Amal reduction. */
+function guardTurnActionOpening(g: Game, actor: string, pass: boolean) {
+  const keys = ['turnActionPromises', 'travelPromises', 'shipmentPromises', 'movementPromises',
+    'movementExpressionPromises', 'bidPromises', 'revivalPromises', 'leaderRevivalPromises',
+    'revivalExpressionPromises', 'bribePromises', 'bribeExpressionPromises'] as const;
+  if (!keys.some(key => g[key]?.some(row => !row.fulfilled && !row.released))) return;
+  const trial = structuredClone(g);
+  if (pass && trial.turnActionPromises) trial.turnActionPromises = ownTurnActionWindowClosure(trial, actor, ['amal']);
+  projectTurnActionOpeningEnd(trial);
+  const action: Action = { type: 'card' };
+  reconcileTravelPromises(trial, actor, action, g.phase);
+  reconcileBidPromises(trial, { actor, action });
+  reconcileRevivalPromises(trial, { actor, action });
+  reconcileBribePromises(trial, { actor, action });
+  reconcileGroundMovementPromises(trial, actor, action, g.phase);
+  if (pass) return;
+  for (const key of keys) {
+    const quoted = trial[key];
+    g[key]?.forEach((row, index) => {
+      if (row.player !== actor && !row.fulfilled && !row.released && quoted?.[index]?.released) {
+        row.released = true;
+        log(g, `${getPlayer(g, row.player).name} can no longer fulfill a Truthtrance answer after another player's Amal; that answer is no longer binding.`);
+      }
+    });
+  }
+}
 /** Whole-answer alternatives stay private. Only detached native rows quote a
  * route, sharing actual interval progress and the remaining physical purse. */
 function turnActionCompletion(source: Game, actor: string, unknownConsent?: { value: boolean }): TurnActionCompletion | null {
@@ -19521,12 +19597,11 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
       }
       return null;
     }
-    const trial = structuredClone(source);
+    let trial = structuredClone(source);
     trial.truthtrance = null;
     delete trial.turnActionPromises;
     delete trial.travelPromises;
     delete trial.travelPromiseOrder;
-    const owner = getPlayer(trial, actor);
     const cardRequirements: TurnActionCardRequirement[] = leaves.flatMap(leaf => leaf.kind === 'cardPlay'
       ? [{ effect: leaf.effect, answer: leaf.answer, baseline: nativePrintedCardCount(source, actor, leaf.effect) }] : []);
     if (cardRequirements.length) (trial as TurnActionCardProbe)._turnActionCardPolicy = {
@@ -19541,6 +19616,11 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
         ...forbiddenWindows,
       ],
     };
+    const windowRequirements = leaves.filter((leaf): leaf is TurnActionWindowCardRequirement => leaf.kind === 'windowCardPlay');
+    const opening = prepareTurnActionOpening(trial, actor, windowRequirements);
+    if (!opening) return null;
+    trial = opening.game;
+    const owner = getPlayer(trial, actor);
     trial.bribePromises ??= [];
     trial.shipmentPromises ??= [];
     trial.movementPromises ??= [];
@@ -19624,7 +19704,7 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
           for (const payment of required)
             checkBureaucratContributors(paid, payment.recipient, [{ payer: actor, amount: payment.amount }]);
           for (const cardSeed of turnActionPrintedPreparationSeeds(paid, actor, cardRequirements,
-            leaves.filter((leaf): leaf is TurnActionWindowCardRequirement => leaf.kind === 'windowCardPlay'))) {
+            source.phaseOpening ? windowRequirements.filter(required => required.effect !== 'amal') : windowRequirements)) {
             const funded = cardSeed.game, payer = getPlayer(funded, actor);
             try {
               reconcileBattlePromises(funded, voluntary);
@@ -19668,7 +19748,8 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
                 : !cardsPending || battlePlan?.cardPlaysComplete ? { actions: [] } : null;
               if (completion) {
                 if (alliancePlan?.uncertain) { unknownConsent!.value = true; continue; }
-                return { ...completion, ...(cardSeed.actions.length ? { cardPreparations: cardSeed.actions } : {}), ...(bid ? { bid } : {}), ...(revival ? { revival } : {}),
+                const cardPreparations = [...opening.actions, ...cardSeed.actions];
+                return { ...completion, ...(cardPreparations.length ? { cardPreparations } : {}), ...(bid ? { bid } : {}), ...(revival ? { revival } : {}),
                   ...(battlePlan ? { battlePlan } : {}), ...(traitor ? { traitor } : {}),
                   ...(power.action ? { battlePower: power.action } : {}),
                   ...(alliancePlan ? { alliance: alliancePlan.steps.map(step => ({ type: 'alliance', target: step.target })) } : {}),
@@ -19739,7 +19820,7 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
     ...(combat ? { combat } : {}),
     ...(preparation ? { preparation } : {}),
     ...(nexus ? { alliance: { source: nexus.source, partner: null, closed: false } } : {}),
-    shipment: { pending: open && (g.phase < 5 || shipmentAvailable(g, p)), event: null },
+    shipment: { pending: open && (g.phase < 5 || !!g.phaseOpening?.initialize || shipmentAvailable(g, p)), event: null },
     progress: [], payments: [], transportClosed: !open, paymentClosed: false,
     fulfilled: compiled.kind === 'constant' && compiled.value === answer, released: false };
   if (combat?.plan && battle?.plans[p.id]) promise = turnActionRule(() => recordTurnActionPlan([promise], p.id,
@@ -19747,9 +19828,11 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
   return promise;
 }
 function turnActionAnswerSource(g: Game, player: string, alliance = false, window = false): Game {
-  return g.phase === 0 && window || g.phase === 1 && (alliance || window) || g.phase === 2 || g.phase === 4 && !g.revivalOrder || g.phase === 8 ||
+  const source = g.phase === 0 && window || g.phase === 1 && (alliance || window) || g.phase === 2 || g.phase === 4 && !g.revivalOrder || g.phase === 8 ||
     g.phase === 7 && bribesCloseBeforeNextMentat(g)
     ? { ...g, ready: g.ready.filter(id => id !== player) } : g;
+  return source.phaseOpening ? { ...source, phaseOpening: { ...source.phaseOpening,
+    passed: source.phaseOpening.passed.filter(id => id !== player) } } : source;
 }
 function turnActionTruthAnswers(g: Game, p: Player, claim: TurnActionClaim): TruthAnswer[] {
   if (claim.turn !== g.turn || !turnActionTargetAvailable(g, p.id)) return [];
@@ -19770,7 +19853,8 @@ function bindTurnActionTruth(g: Game, p: Player, claim: TurnActionClaim, answer:
   requireRule(turnActionTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
     'Choose a whole turn-action answer compatible with current funding and native actions.');
   const promise = turnActionPromise(g, p, claim, answer, crypto.randomUUID(), asker);
-  g.ready = turnActionAnswerSource(g, p.id, !!promise.alliance, !!promise.windowCards).ready;
+  const reopened = turnActionAnswerSource(g, p.id, !!promise.alliance, !!promise.windowCards);
+  g.ready = reopened.ready; g.phaseOpening = reopened.phaseOpening;
   g.turnActionPromises ??= [];
   initializeTurnActionOrder(g);
   g.turnActionPromises.push(promise);
@@ -19858,10 +19942,25 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   const promise = liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn)[0];
   const ownedBox = g.decision?.kind === 'nullentropy' && g.pendingNullentropy?.player === player.id;
   const ownedInvoice = g.decision?.kind === 'auctionPayment' && g.decision.player === player.id;
-  if (!promise || g.truthtrance || g.response || g.phaseOpening || g.pendingTreacheryDiscard ||
+  if (!promise || g.truthtrance || g.response || g.pendingTreacheryDiscard ||
     g.decision && !ownedBox && !ownedInvoice) return null;
   const completion = turnActionCompletion(g, player.id);
   if (!completion) return null;
+  if (g.phaseOpening) {
+    const opportunity = windowCardOpportunity(g, 'amal');
+    const row = liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn).find(row =>
+      row.windowCards?.amal && !row.windowCards.amal.closed && row.windowCards.amal.source === opportunity?.source);
+    if (!row) return null;
+    const preparation = completion.cardPreparations?.[0];
+    let action = preparation?.type === 'card' && quotedAmalCards(g, player).includes(preparation.card as string)
+      ? preparation : undefined;
+    if (!action && quotedAmalReady(g, player.id)) {
+      const closed = ownTurnActionWindowClosure(g, player.id, ['amal']);
+      if (turnActionCompletion({ ...g, turnActionPromises: closed }, player.id)) action = { type: 'ready' };
+    }
+    return action ? { event: row.event, action: { ...action,
+      turnActionPromiseEvent: row.event, turnActionPromisePhase: g.phase } } : null;
+  }
   let action = !bribeTimingBlock(g) ? completion.payments[0] : undefined;
   if (!action) {
     const preparation = completion.cardPreparations?.[0];
@@ -26133,6 +26232,7 @@ function completePhase(g: Game) {
 /** Open the same public window for every Ix table, independently of who holds Amal. */
 function openPhase(g: Game, initialize = true) {
   if (g.phase === 1) g.thumperWindowOpen = true;
+  g.amalWindowOpen = g.expansions.includes('ix');
   if (g.phase === 1 && g.nexusCards && g.nexusCards.phase?.turn !== g.turn)
     g.nexusCards.phase = createNexusCardPhase(g.turn);
   if (initialize && g.phase === 4 && g.homeworlds) {
@@ -26169,6 +26269,18 @@ function nativeRevivalOrderBlock(g: Game, player: string): string | null {
 function startNativeRevivalOrder(g: Game, player: string) {
   if (g.revivalOrder)
     g.revivalOrder = revivalOrderRule(() => startRevivalOrder(revivalOrderContext(g),g.revivalOrder!,player));
+}
+function advanceMentatInflation(g: Game) {
+  if (!g.inflation || g.inflation.updatedTurn >= g.turn) return;
+  if (g.inflation.flipped) {
+    g.inflation = null;
+    log(g, 'The Inflation token was removed from the game.');
+  } else {
+    g.inflation.side = g.inflation.side === 'double' ? 'cancel' : 'double';
+    g.inflation.flipped = true;
+    g.inflation.updatedTurn = g.turn;
+    log(g, `Inflation flipped to ${g.inflation.side} for next turn’s charity.`);
+  }
 }
 function beginPhase(g: Game) {
   if (g.phase === 0) {
@@ -26227,20 +26339,7 @@ function beginPhase(g: Game) {
     collectBankerIncome(g);
     drawHarkonnenNexusBetrayalReplacement(g);
     replaceMoritaniAssassinationTraitors(g);
-    if (g.inflation && g.inflation.updatedTurn < g.turn) {
-      if (g.inflation.flipped) {
-        g.inflation = null;
-        log(g, 'The Inflation token was removed from the game.');
-      } else {
-        g.inflation.side = g.inflation.side === 'double' ? 'cancel' : 'double';
-        g.inflation.flipped = true;
-        g.inflation.updatedTurn = g.turn;
-        log(
-          g,
-          `Inflation flipped to ${g.inflation.side} for next turn’s charity.`,
-        );
-      }
-    }
+    advanceMentatInflation(g);
     for (const p of g.players) {
       p.spice += p.bribes;
       p.bribes = 0;
@@ -38776,10 +38875,12 @@ function applyActionInner(
       'You have already passed the phase opening.',
     );
     if (t === 'ready') {
+      if (execution === 'live') guardTurnActionOpening(g, id, true);
       g.phaseOpening.passed.push(id);
       if (g.phaseOpening.passed.length === g.players.length) {
         const initialize = g.phaseOpening.initialize;
         g.phaseOpening = null;
+        g.amalWindowOpen = false;
         if (initialize) beginPhase(g);
       }
     } else {
@@ -38790,13 +38891,18 @@ function applyActionInner(
         t === 'card' && card && !action.mode,
         'Play Amal or pass the phase opening before taking other actions.',
       );
+      const window = windowCardOpportunity(g, 'amal');
+      requireRule(window && quotedAmalCards(g, p).includes(card.id), 'Retain your original native Amal opening and physical card.');
+      recordNativeTurnActionWindowCard(g, id, 'amal', window.source);
       const before = g.semutaPreview
         ? g.players.map(player => ({ player: player.id, spice: player.spice }))
         : null;
       const used = discard(g, p, card.id);
+      rememberMovementDiscards(g, [{ card: used, discardedBy: id, publicFace: true }]);
       for (const player of g.players)
         player.spice = Math.floor(player.spice / 2);
       g.phaseOpening.passed = [];
+      if (execution === 'live') guardTurnActionOpening(g, id, false);
       log(
         g,
         `${p.name} played Amal. Each faction returned half its available spice to the bank, rounded up.`,
@@ -42123,7 +42229,7 @@ function applyActionInner(
       throw new RuleError(availability.reason);
     if (isWindowCardEffect(c.effect)) {
       const source = windowCardOpportunity(g, c.effect);
-      requireRule(source, 'Retain the original open Storm or fresh spice-blow window.');
+      requireRule(source, 'Retain this card’s original native timing window.');
       recordNativeTurnActionWindowCard(g, id, c.effect, source.source);
     }
     if (c.effect === 'hajr') {
@@ -42439,6 +42545,9 @@ export function viewGame(state: Game, id: string, now?: number) {
     thumperCards: quotedThumperCards(g, me),
     thumperReady: thumperReadyStartsDraw(g),
     thumperWindowOpen: !!windowCardOpportunity(g, 'thumper'),
+    amalCards: quotedAmalCards(g, me),
+    amalReady: quotedAmalReady(g, id),
+    amalWindowOpen: !!windowCardOpportunity(g, 'amal'),
     truthBidTargets: bidQuestionWindow(g) ? g.players.filter(player => {
       const lot = bidOpportunity(g)!;
       return lot.eligible.includes(player.id) && !lot.passed.includes(player.id) && lot.bidder !== player.id;

@@ -172,6 +172,7 @@ void test('zero/one spice become zero and charity remains available after the op
   const before = fixture();
   before.phase = 2;
   before.phaseOpening = { passed: [], initialize: true };
+  before.amalWindowOpen = true;
   before.players[0].spice = 0;
   before.players[1].spice = 1;
   let g = ready(play(before));

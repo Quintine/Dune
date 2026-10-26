@@ -1,6 +1,7 @@
 'use client';
 
 import { TERRITORIES } from '@/game/board';
+import { PHASES } from '@/game/catalog';
 import type { GameView } from '@/game/engine';
 import type { MixedActionExpression } from '@/game/mixed-action-question';
 import { parseBattleActionClaim } from '@/game/mixed-battle-question';
@@ -50,7 +51,7 @@ const newPowerClaim = (game: GameView, target: string): BattlePowerClaim =>
 const windowRoleNames: Record<WindowCardEffect, string> = { weather: 'Weather Control', atomics: 'Family Atomics', harvester: 'Harvester',
   karamaAuction: 'Spend a printed Karama for this current ordinary lot',
   karamaShipment: 'Spend a printed Karama for the current shipment-price opportunity',
-  thumper: 'Play Thumper before this turn’s first spice reveal' };
+  thumper: 'Play Thumper before this turn’s first spice reveal', amal: 'Play Amal in this original phase opening' };
 const config: MixedActionConfig<TurnActionLeaf> = {
   prefix: 'turn-action',
   legend: 'Current battle and this-turn action conditions, with optional current facts',
@@ -92,6 +93,9 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     Thumper conditions count an actual accepted future printed play before this turn&apos;s original first spice reveal.
     Earlier plays, disposal, other roles and recovery alone do not count. A later reveal is a different opportunity.
     This condition closes when the actual first spice draw begins.
+    Amal conditions count an actual accepted future printed play in this original phase opening.
+    Earlier plays, disposal, other roles and recovery alone do not count. The condition closes with this opening.
+    Amal halves available cash before ordinary payments become legal; preserve enough remaining cash for any payment condition.
     Shipment conditions concern the single future original reserve shipment after the answer.
     Ground-movement conditions use the maximum physical forces in one actual future move to that destination; smaller moves never add together.
     Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.
@@ -143,7 +147,8 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         const minimum = 'minimum' in value ? value.minimum : 1;
         if (kind === 'cardPlay') onChange({ kind, effect: 'hajr' });
         if (kind === 'windowCardPlay') {
-          const effect = WINDOW_CARD_EFFECTS.find(effect => windowCardOpportunity(game, effect)) ?? 'weather';
+          const effect = windowCardOpportunity(game, 'amal') ? 'amal'
+            : WINDOW_CARD_EFFECTS.find(effect => windowCardOpportunity(game, effect)) ?? 'weather';
           onChange({ kind, effect, source: windowCardOpportunity(game, effect)?.source ?? '' });
         }
         if (kind === 'battlePower') {
@@ -189,7 +194,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         <select id={`${id}-window-effect`} value={WINDOW_CARD_EFFECTS.includes(value.effect) ? value.effect : ''}
           disabled={disabled} aria-invalid={!WINDOW_CARD_EFFECTS.includes(value.effect)} onChange={event => {
             const effect = event.currentTarget.value;
-            if (effect === 'weather' || effect === 'atomics' || effect === 'harvester' || effect === 'karamaAuction' || effect === 'karamaShipment' || effect === 'thumper')
+            if (effect === 'weather' || effect === 'atomics' || effect === 'harvester' || effect === 'karamaAuction' || effect === 'karamaShipment' || effect === 'thumper' || effect === 'amal')
               onChange({ kind: 'windowCardPlay', effect, source: windowCardOpportunity(game, effect)?.source ?? '' });
           }}>
           <option value="">Choose a printed role</option>
@@ -207,6 +212,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
             ? `Turn ${currentWindow.turn} · Fresh spice blow in ${game.combatLocations.find(location => location.id === game.spiceWindow?.territory)?.name ?? game.spiceWindow?.territory}`
             : value.effect === 'karamaAuction' ? `Turn ${currentWindow.turn} · Ordinary lot ${game.bidPromiseLot?.lot}`
               : value.effect === 'thumper' ? `Turn ${currentWindow.turn} · Before the original first spice reveal`
+              : value.effect === 'amal' ? `Turn ${currentWindow.turn} · Original ${PHASES[game.phase]} opening`
               : currentWindow.effect === 'karamaShipment' ? `Turn ${currentWindow.turn} · ${game.players.find(player => player.id === currentWindow.recipient)?.name ?? currentWindow.recipient}’s current native shipment price`
               : `Turn ${currentWindow.turn} · Before this Storm movement`}</option>}
         </select>

@@ -20,6 +20,34 @@ open mode gates.
 Continue remaining Basic functions before Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance / phase-opening Amal — 27 October. Prototyped / Partial.**
+Supported original openings now admit whole questions and actual printed Amal
+conditions. Native halving precedes ordinary payments. Definite answers reopen
+own opening passes; exact card/Ready guides and four legal profiles are connected.
+A known four-spice Mentat receipt arrives after cash 10 becomes 5, permitting 9.
+Own costs/acceptance retain completion; a foreign Amal releases genuine final-
+Mentat impossibility before another player takes the last pass.
+
+Frozen **17 files, 350/350**, types/lint/build and seven native journeys
+pass, with 42 GameTable SSR renders, 7 actual answer callbacks and 11 exact
+guide callbacks. Genuine selected-Ix sources use 6 actions at the first Storm
+opening, 14 at the first Spice opening and 56/57 at the recorded Mentat sources.
+Complete original card/Traitor/Spice inventories remain. New cases include
+actual escrow, source closure, cumulative caps, native priority and stale guides.
+
+Related feedback preserves Amal priority over a queued Fremen forecast response,
+updates the older manufactured unit fixture's lifecycle flag, and corrects native
+quote versus commitment assumptions. Source proof derives the actual Collection
+transition; Advanced earns the current native city bonus, Basic does not.
+A bounded inventory found the checked historical independent absences superseded;
+this is no Basic/Advanced certificate. Broader future-income scheduling, Semuta/
+Box, uncertain collection, other compositions and final acceptance remain open.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-amal-proof-v2/`;
+journeys/HTML: adjacent `20261027-truth-amal-runtime/run-v2/`.
+No HTTP/storage boundary, saved-game/database, restart or deployed operation
+changes. [Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-amal-and-phase-openings--27-october-2026).
+
 **Truthtrance / printed Thumper — 27 October. Prototyped / Partial.**
 Original-first-reveal promises now connect real printed costs, persistent
 first-turn warning, exact native play/Ready controls and four legal profiles.

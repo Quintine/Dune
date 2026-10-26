@@ -1,5 +1,18 @@
 # Dune implementation status
 
+## 27 October 2026 — Phase-opening Amal commitments
+
+Prototyped / Partial. Original opening questions, actual printed Amal costs,
+native half-before-payments, known later Mentat receipts and exact controls/
+minimal profiles are connected. Own costs retain completion; actual foreign
+loss releases before the last passer. Frozen 17 files, 350/350, types/lint/
+build and seven journeys (42 SSR renders, 7 answer callbacks, 11 guide
+callbacks) pass. Native Fremen forecast priority is preserved and source/test
+oracles are corrected. Broader funding/compositions and full acceptance remain.
+No deployment or saved-game operation occurs.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-amal-and-phase-openings--27-october-2026).
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-amal-proof-v2/`.
+
 ## 27 October 2026 — Printed Thumper promises
 
 Prototyped / Partial. Original first-reveal sources, actual printed costs and
