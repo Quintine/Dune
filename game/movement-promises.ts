@@ -6,6 +6,8 @@ import type { Game } from './engine';
 export type MovementClaim = { territory: string; minimum: number };
 export type MovementEvent = { territory: string; amount: number };
 export type MovementPromise = MovementClaim & {
+  /** New answers share accepted order with whole expressions; older saves omit it. */
+  event?: string;
   turn: number;
   player: string;
   asker: string;

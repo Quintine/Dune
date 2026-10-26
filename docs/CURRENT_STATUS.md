@@ -16,6 +16,38 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / whole AND/OR ground moves — 26 October. Prototyped / Partial.**
+Full grouped questions now combine future physical ground-group minima at
+printed Arrakis destinations. Maximum-per-destination progress never sums
+smaller moves. Whole No retains all legal alternatives; the shared owned-action
+search handles scalar/whole claims and real Hajr/other preparations. Actual
+commitment, native counters, earlier funding and accepted release order remain.
+Full authoring, private answers, own progress, exact nested event/phase guide
+and four minimal profiles are connected. Online interval/search composition
+stays provisional; modes and optional-module gates remain open.
+
+Root integration with disjoint pure/search,control and native lanes passes
+**22 files,177/177**, types/lint/build and **eight native paths**,33 GameTable SSR
+renders/12 actual guide callbacks plus one editor callback followed by native
+Ask. Original Basic20/Advanced23-action base33 sources add8: actual move/Hajr/
+move completes AND and consumes that physical Hajr once. Edited OR accepts the
+manual alternate route. No AND permits one qualifying move; No OR blocks either.
+Two real one-force moves place2 at Basin but keep maximum1. A13-action Charity
+source adds14 through actual phases/paid shipment and later ground moves.
+Original Advanced Fremen27 adds8: pending range records nothing, then the actual
+elite commits and fulfills. All33 original cards remain physical.
+
+Eleven pure,five search-adapter,eight controlled and13 native cases retain
+full-tree validation, real entitlements, prior exclusion, exact wire/stale
+nested actions and four policies. One fixture-only String conversion resolves
+lint feedback before the passing frozen v2 batch. Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-movement-expression-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-movement-expression-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Cross-family/current-fact expressions, wider optional/faction/card compositions,
+browser/mobile/deployed and final assurance remain required.
+[Authority, interval and evidence](TRUTHTRANCE_MOVEMENT_EXPRESSIONS.md).
+
 **Truthtrance / whole AND/OR ordinary payments — 26 October. Prototyped / Partial.**
 Full grouped questions now combine named cumulative future ordinary payments.
 Whole No uses De Morgan; legal routes remain dynamic after actual payments.

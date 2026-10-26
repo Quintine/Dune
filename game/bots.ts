@@ -1,3 +1,4 @@
+import { liveMovementExpressionPromises } from './movement-expression-promises';
 import { discoveryBotActions } from './discovery-options';
 import { normalAuctionHandBlock } from './normal-auction';
 import { atreidesFullPlanAction } from './atreides-full-plan';
@@ -1350,6 +1351,10 @@ function policyActions(g: GameView): Action[] {
       if (w.question.kind === 'traitorCall') {
         const answers = g.truthTraitorAnswers ?? [];
         const answer = answers.find(answer => answer === 'yes') ?? answers[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
+      if (w.question.kind === 'movementExpression') {
+        const answer = g.truthMovementExpressionAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];
       }
       if (w.question.kind === 'movement') {
@@ -2768,7 +2773,8 @@ function policyActions(g: GameView): Action[] {
       ];
     }
     if(d.kind==='advisor'&&!d.ambassadorEvent&&(liveShipmentPromises(g.shipmentPromises??[],me.id,g.turn).length ||
-      liveMovementPromises(g.movementPromises??[],me.id,g.turn).some(promise=>promise.answer)))
+      (liveMovementPromises(g.movementPromises??[],me.id,g.turn).some(promise=>promise.answer) ||
+        liveMovementExpressionPromises(g.movementExpressionPromises??[],me.id,g.turn).some(promise=>promise.answer))))
       return [{type:'decision',accept:false}];
     if (d.kind === 'advisor' && (g.spiritualAdvisorChoices??g.guildAmbassadorAdvisorChoices)) {
       const choices = (g.spiritualAdvisorChoices??g.guildAmbassadorAdvisorChoices)!.choices.filter(
@@ -2787,7 +2793,8 @@ function policyActions(g: GameView): Action[] {
       ];
     }
     if (d.kind === 'advisor' && (liveShipmentPromises(g.shipmentPromises ?? [], me.id, g.turn).length ||
-      liveMovementPromises(g.movementPromises ?? [], me.id, g.turn).some(promise => promise.answer)))
+      (liveMovementPromises(g.movementPromises ?? [], me.id, g.turn).some(promise => promise.answer) ||
+        liveMovementExpressionPromises(g.movementExpressionPromises ?? [], me.id, g.turn).some(promise => promise.answer))))
       // A waiting promise may need these reserves. Declining is the minimal
       // legal policy until optional accompaniment strategy is implemented.
       return [{ type: 'decision', accept: false }];
@@ -4215,6 +4222,9 @@ export function botActions(g: GameView): Action[] {
   if (g.homeworldTupileBlocked) return [];
   if (g.decision?.kind === 'homeworldTupileCleanup' || g.homeworldTupileCleanup)
     return tupileCleanupActions(g);
+  if (g.movementExpressionPromiseGuide && g.status === 'playing' &&
+      !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending)
+    return [g.movementExpressionPromiseGuide.action];
   if (g.movementPromisePolicy && g.status === 'playing' &&
       !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending)
     return g.movementPromisePolicy;

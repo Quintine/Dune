@@ -1,3 +1,5 @@
+import { MovementExpressionPromiseError, liveMovementExpressionPromises, recordMovementExpressionEvent,
+  validateMovementExpressionPromises, type MovementExpressionClaim, type MovementExpressionPromise } from './movement-expression-promises';
 import { BribeExpressionPromiseError, bribeExpressionRecipients, bribeCompletionCandidates,
   liveBribeExpressionPromises, recordBribeExpressionPayment, validateBribeExpressionPromises,
   type BribeExpressionClaim, type BribeExpressionPromise } from './bribe-expression-promises';
@@ -2161,6 +2163,8 @@ export type Game = {
   bribePromiseSequence?: string[];
   alliancePromises?: AlliancePromise[];
   movementPromises?: MovementPromise[];
+  movementExpressionPromises?: MovementExpressionPromise[];
+  movementPromiseSequence?: string[];
   /** Server-only certainty of movement-relevant cards still in the discard. */
   movementDiscardKnowledge?: MovementDiscardKnowledge;
   ixSetupCards?: Card[] | null;
@@ -4829,7 +4833,7 @@ function finishNullentropy(
   movementPreview.discard = preview.discard;
   setMovementDiscardKnowledge(movementPreview, recordMovementBoxKnowledge(movementPreview.movementDiscardKnowledge,
     movementPreview.players.map(p => p.id), player, preview.discard));
-  requireRule(!liveMovementPromises(g.movementPromises ?? [], player, g.turn).some(promise => promise.answer) ||
+  requireRule(!hasMovementPromises(g, player, true) ||
     groundMovementCompletion(movementPreview, player) !== null,
   'Choose a card that preserves your accepted ground-movement promises. The paid search remains available.');
   // All rejection paths precede this single server shuffle. The paid record and
@@ -13789,7 +13793,7 @@ function beginRichesePreCostBetrayal(g: Game, source:
   const owner=invoice.buyer;
   if (liveShipmentPromises(g.shipmentPromises ?? [],owner,g.turn).length ||
       g.battle?.truthPromises?.some(p=>p.player===owner && !p.released) ||
-      liveMovementPromises(g.movementPromises ?? [],owner,g.turn).some(p=>p.answer)) {
+      hasMovementPromises(g, owner, true)) {
     const projected=structuredClone(g);
     if (source.kind==='ordinary') {
       const p=getPlayer(projected,owner);
@@ -15142,7 +15146,7 @@ function bribePromiseCompletion(g: Game, p: Player, promises = g.bribePromises ?
   return null;
 }
 function bribeCompatibleLaterPromises(g: Game, p: Player,
-  later: Pick<Partial<Game>, 'shipmentPromises' | 'movementPromises' | 'revivalPromises' | 'leaderRevivalPromises' | 'revivalExpressionPromises' | 'battle'>): boolean {
+  later: Pick<Partial<Game>, 'shipmentPromises' | 'movementPromises' | 'revivalPromises' | 'leaderRevivalPromises' | 'revivalExpressionPromises' | 'movementExpressionPromises' | 'battle'>): boolean {
   return !hasBribePromises(g, p.id, true) || !!bribePromiseCompletion({ ...g, ...later }, p);
 }
 function bribeTruthAnswers(g: Game, p: Player, claim: BribeClaim): ('yes' | 'no' | 'unknown')[] {
@@ -15236,7 +15240,7 @@ function bribePaymentPreservesPromises(g: Game, p: Player, recipient: string, am
     const voluntary = { actor: p.id, action: { type: 'bribe' } };
     reconcileBattlePromises(trial, voluntary);
     reconcileShipmentPromises(trial, voluntary);
-    if (liveMovementPromises(trial.movementPromises ?? [], p.id, g.turn).some(promise => promise.answer) &&
+    if (hasMovementPromises(trial, p.id, true) &&
       !groundMovementCompletion(trial, p.id)) return false;
     reconcileRevivalPromises(trial, voluntary);
     return !hasBribePromises(trial, p.id) || !!bribePromiseCompletion(trial, actor);
@@ -15247,7 +15251,7 @@ function projectedBribes(g: Game, p: Player): BribeOptions {
   const constrained = hasBribePromises(g, p.id) ||
     g.battle?.truthPromises?.some(promise => promise.player === p.id && !promise.released && !g.battle?.revealed && !g.battle?.plans[p.id]) ||
     liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length ||
-    liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).some(promise => promise.answer) ||
+    hasMovementPromises(g, p.id, true) ||
     liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).some(promise => promise.answer) ||
     liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], p.id, g.turn).some(promise => promise.answer) ||
     liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [], p.id, g.turn).some(promise => promise.answer);
@@ -15458,7 +15462,7 @@ function bidPromiseCompletion(g: Game, p: Player, promises = g.bidPromises ?? []
   try {
     const action: Action = { type: 'bid', ...normalBidQuote(g, p, range.minimum) };
     if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length ||
-      liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).length ||
+      hasMovementPromises(g, p.id) ||
       liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length ||
       liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], p.id, g.turn).length ||
       liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [], p.id, g.turn).length ||
@@ -18376,12 +18380,13 @@ function projectMovementBoxRecovery(source: Game, actor: string, box: string, se
   }
 }
 function groundMovementCompletion(source: Game, actor: string,
-  promises = liveMovementPromises(source.movementPromises ?? [], actor, source.turn)): MovementCompletion | null {
+  promises = liveMovementPromises(source.movementPromises ?? [], actor, source.turn),
+  expressions = liveMovementExpressionPromises(source.movementExpressionPromises ?? [], actor, source.turn)): MovementCompletion | null {
   if (!movementPromiseModeSupported(source) || source.phase < 0 || source.phase > 5) return null;
   const game = groundMovementProbe(source, actor);
   if (source.phase === 5 && source.phaseOpening?.initialize) {
     resetGroundMovementForecast(game, actor);
-    return groundMovementCompletionAtMovement(game, actor, promises);
+    return groundMovementCompletionAtMovement(game, actor, promises, expressions);
   }
   if (source.phase < 5) {
     const paid = source.pendingNullentropy;
@@ -18389,7 +18394,7 @@ function groundMovementCompletion(source: Game, actor: string,
       if (nullentropyIntegrity(source)) return null;
       for (const card of eligibleNullentropyCards(source.discard)) {
         const projected = projectMovementBoxRecovery(source, actor, paid.box, card.id, true);
-        const completion = projected && groundMovementCompletion(projected, actor, promises);
+        const completion = projected && groundMovementCompletion(projected, actor, promises, expressions);
         if (completion) return { ...completion,
           actions: [{ type: 'decision', event: paid.event, card: card.id }, ...completion.actions] };
       }
@@ -18397,12 +18402,12 @@ function groundMovementCompletion(source: Game, actor: string,
     }
     for (const seed of earlyShipmentCompletionSeeds(game, source, actor)) {
       resetGroundMovementForecast(seed.game, actor);
-      const completion = groundMovementCompletionAtMovement(seed.game, actor, promises);
+      const completion = groundMovementCompletionAtMovement(seed.game, actor, promises, expressions);
       if (completion) return { actions: [...seed.actions, ...completion.actions], early: seed.early };
     }
     return null;
   }
-  return groundMovementCompletionAtMovement(game, actor, promises);
+  return groundMovementCompletionAtMovement(game, actor, promises, expressions);
 }
 function resetGroundMovementForecast(game: Game, actor: string) {
   resetPlayerMovement(getPlayer(game, actor));
@@ -18410,7 +18415,8 @@ function resetGroundMovementForecast(game: Game, actor: string) {
   game.ornithopter = null;
   game.movementRemaining = [actor];
 }
-function groundMovementCompletionAtMovement(game: Game, actor: string, promises: readonly MovementPromise[]): MovementCompletion | null {
+function groundMovementCompletionAtMovement(game: Game, actor: string, promises: readonly MovementPromise[],
+  expressions: readonly MovementExpressionPromise[]): MovementCompletion | null {
   if (!movementPromiseTargetAvailable(game.pendingNullentropy?.player === actor ? { ...game, decision: null } : game, actor)) return null;
   return findMovementCompletion(game, actor, promises, {
     allowance: movesAllowed,
@@ -18508,22 +18514,29 @@ function groundMovementCompletionAtMovement(game: Game, actor: string, promises:
         return { game: projectGroundMovement(copy, move), event: groundMovementEvent(move) };
       } catch (error) { if (error instanceof RuleError) return null; throw error; }
     },
-  });
+  }, expressions);
+}
+function hasMovementPromises(g: Game, player: string, positive = false): boolean {
+  return [...liveMovementPromises(g.movementPromises ?? [], player, g.turn),
+    ...liveMovementExpressionPromises(g.movementExpressionPromises ?? [], player, g.turn)]
+    .some(promise => !positive || promise.answer);
+}
+function movementExpressionIntegrity(g: Game) {
+  try { validateMovementExpressionPromises(g.movementExpressionPromises ?? [], g.players.map(player => player.id)); }
+  catch (error) { if (error instanceof MovementExpressionPromiseError) throw new RuleError(error.message); throw error; }
 }
 function projectedGroundMovementPolicy(g: Game, player: Player): Action[] | null {
-  const live = liveMovementPromises(g.movementPromises ?? [], player.id, g.turn);
   const paid = g.pendingNullentropy?.player === player.id;
   if (!paid && g.phase < 5) return earlyGroundMovementPolicy(g, player);
-  if (g.truthtrance || !live.length || (!paid && g.active !== player.id) ||
-      (paid && !live.some(promise => promise.answer))) return null;
+  if (g.truthtrance || !hasMovementPromises(g, player.id) || (!paid && g.active !== player.id) ||
+      (paid && !hasMovementPromises(g, player.id, true))) return null;
   const available = paid ? groundMovementProbe(g, player.id) : g;
   if (!movementPromiseTargetAvailable(paid ? { ...available, decision: null } : available, player.id)) return null;
   const completion = groundMovementCompletion(g, player.id);
   return completion ? completion.actions.length ? completion.actions.slice(0, 1) : [{ type: 'endMovement' }] : null;
 }
 function earlyGroundMovementPolicy(g: Game, player: Player): Action[] | null {
-  const live = liveMovementPromises(g.movementPromises ?? [], player.id, g.turn);
-  if (g.status !== 'playing' || !movementPromiseModeSupported(g) || !live.some(promise => promise.answer) ||
+  if (g.status !== 'playing' || !movementPromiseModeSupported(g) || !hasMovementPromises(g, player.id, true) ||
     g.truthtrance || g.response || g.phaseOpening || g.pendingTreacheryDiscard ||
     (g.decision && !(g.decision.kind === 'auctionPayment' && g.decision.player === player.id))) return null;
   // Passing cannot spend the reserved route. In particular, a foreign Silent
@@ -18558,38 +18571,99 @@ function movementTruthAnswers(g: Game, p: Player, claim: MovementClaim): TruthAn
   }
   return answers.length ? answers : ['unknown'];
 }
-function bindMovementTruth(g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) {
+function reopenMovementPreparation(g: Game, p: Player) {
   if ((g.phase === 2 || (g.phase === 4 && !g.revivalOrder)) && g.ready.includes(p.id)) {
     g.ready = g.ready.filter(id => id !== p.id);
     log(g, `${p.name} has a new Truthtrance movement commitment and must confirm readiness again after any needed preparation.`);
   }
-  (g.movementPromises ??= []).push({ ...claim, turn: g.turn, player: p.id, asker, answer });
+}
+function bindMovementTruth(g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) {
+  reopenMovementPreparation(g, p);
+  const promise: MovementPromise = { ...claim, event: crypto.randomUUID(), turn: g.turn, player: p.id, asker, answer };
+  (g.movementPromises ??= []).push(promise);
+  (g.movementPromiseSequence ??= []).push(promise.event!);
+}
+function movementExpressionTruthAnswers(g: Game, p: Player, claim: MovementExpressionClaim): TruthAnswer[] {
+  if (claim.turn !== g.turn || !movementPromiseTargetAvailable(g, p.id)) return [];
+  const answerSource = g.phase === 2 || (g.phase === 4 && !g.revivalOrder) ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
+  const answers: TruthAnswer[] = [];
+  for (const answer of [true, false]) {
+    const promise: MovementExpressionPromise = { ...structuredClone(claim), event: 'candidate', player: p.id,
+      asker: g.players.find(other => other.id !== p.id)!.id, answer, progress: [] };
+    const expressions = [...(g.movementExpressionPromises ?? []), promise];
+    const trial = { ...answerSource, movementExpressionPromises: expressions };
+    if (groundMovementCompletion(trial, p.id) &&
+      revivalCompatibleLaterPromises(answerSource, p, { movementExpressionPromises: expressions }) &&
+      bribeCompatibleLaterPromises(answerSource, p, { movementExpressionPromises: expressions })) answers.push(answer ? 'yes' : 'no');
+  }
+  return answers.length ? answers : ['unknown'];
+}
+function bindMovementExpressionTruth(g: Game, p: Player, claim: MovementExpressionClaim, answer: boolean, asker: string) {
+  requireRule(movementExpressionTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
+    'Choose a whole movement answer compatible with owned actions and earlier answers.');
+  reopenMovementPreparation(g, p);
+  const promise: MovementExpressionPromise = { ...structuredClone(claim), event: crypto.randomUUID(),
+    player: p.id, asker, answer, progress: [] };
+  (g.movementExpressionPromises ??= []).push(promise);
+  (g.movementPromiseSequence ??= []).push(promise.event);
+}
+/** Nested native force records survive JSON transport; record key order is
+ * immaterial but fields, values and the originating guide event must match. */
+function canonicalMovementGuideValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonicalMovementGuideValue);
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value)
+    .sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, canonicalMovementGuideValue(item)]));
+  return value;
+}
+function movementGuideActionMatches(actual: Action, expected: Action): boolean {
+  return Object.keys(actual).sort().join(',') === Object.keys(expected).sort().join(',') &&
+    JSON.stringify(canonicalMovementGuideValue(actual)) === JSON.stringify(canonicalMovementGuideValue(expected));
+}
+function projectedMovementExpressionGuide(g: Game, player: Player): { phase: number; action: Action } | null {
+  if (g.truthtrance) return null;
+  const live = liveMovementExpressionPromises(g.movementExpressionPromises ?? [], player.id, g.turn);
+  const promise = live.find(promise => promise.answer) ?? live[0];
+  if (!promise) return null;
+  const action = projectedGroundMovementPolicy(g, player)?.[0];
+  return action ? { phase: g.phase, action: { ...structuredClone(action), movementExpressionPromiseEvent: promise.event } } : null;
 }
 function checkGroundMovementPromises(g: Game, p: Player, move: MovementOrder) {
-  const live = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn);
-  if (!live.length) return;
-  const event = groundMovementEvent(move);
+  if (move.source === 'ambassador' || !hasMovementPromises(g, p.id)) return;
+  const live = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn), event = groundMovementEvent(move);
   requireRule(movementEventAllowed(live, event), 'This movement would break your accepted No answer.');
   const projected = projectGroundMovement(g, move);
   projected.movementPromises = settleMovementEvent(g.movementPromises ?? [], p.id, g.turn, event);
+  try { projected.movementExpressionPromises = recordMovementExpressionEvent(g.movementExpressionPromises ?? [], p.id, g.turn, event); }
+  catch (error) { if (error instanceof MovementExpressionPromiseError) throw new RuleError(error.message); throw error; }
   requireRule(groundMovementCompletion(projected, p.id) !== null,
     'Leave a legal completion for your accepted ground-movement promises.');
 }
 function recordGroundMovementPromises(g: Game, p: Player, move: MovementOrder) {
   if (move.source === 'ambassador') return;
-  if (!g.movementPromises) return;
-  const old = g.movementPromises;
-  g.movementPromises = settleMovementEvent(old, p.id, g.turn, groundMovementEvent(move));
-  g.movementPromises.forEach((promise, index) => {
-    if (promise.fulfilled && !old[index].fulfilled)
-      log(g, `${p.name} fulfilled a Truthtrance ground-movement promise with this committed move.`);
-  });
+  const old = g.movementPromises ?? [], expressions = g.movementExpressionPromises ?? [];
+  if (g.movementPromises) {
+    g.movementPromises = settleMovementEvent(old, p.id, g.turn, groundMovementEvent(move));
+    g.movementPromises.forEach((promise, index) => {
+      if (promise.fulfilled && !old[index].fulfilled)
+        log(g, `${p.name} fulfilled a Truthtrance ground-movement promise with this committed move.`);
+    });
+  }
+  if (g.movementExpressionPromises) {
+    try { g.movementExpressionPromises = recordMovementExpressionEvent(expressions, p.id, g.turn, groundMovementEvent(move)); }
+    catch (error) { if (error instanceof MovementExpressionPromiseError) throw new RuleError(error.message); throw error; }
+    g.movementExpressionPromises.forEach((promise, index) => {
+      if (promise.fulfilled && !expressions[index].fulfilled)
+        log(g, `${p.name} fulfilled a whole Truthtrance movement answer with this committed move.`);
+    });
+  }
 }
 function reconcileGroundMovementPromises(g: Game, actor?: string, action?: Action, sourcePhase = g.phase) {
-  // A declared native movement is awaiting a real opponent choice. It is not
-  // impossible and must not be fulfilled before physical commitment.
+  movementExpressionIntegrity(g);
+  type Promise = MovementPromise | MovementExpressionPromise;
+  const isExpression = (promise: Promise): promise is MovementExpressionPromise => 'claim' in promise;
   for (const p of g.players) {
-    const live = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn);
+    const live: Promise[] = [...liveMovementPromises(g.movementPromises ?? [], p.id, g.turn),
+      ...liveMovementExpressionPromises(g.movementExpressionPromises ?? [], p.id, g.turn)];
     if (!live.some(promise => promise.answer)) continue;
     if (g.pendingFremenMove?.order.player === p.id || g.pendingIxMove?.player === p.id ||
       g.pendingChoamMove?.player === p.id ||
@@ -18609,13 +18683,16 @@ function reconcileGroundMovementPromises(g: Game, actor?: string, action?: Actio
         (g.auction?.bidder === p.ally && (g.auction?.allyPayment ?? 0) > 0 ||
           g.richeseAuction && !g.richeseAuction.outcome));
     if (busy && !voluntary) continue;
-    if (groundMovementCompletion(g, p.id, live)) continue;
+    const sequence = g.movementPromiseSequence ?? [];
+    const completion = (promises: Promise[]) => groundMovementCompletion(g, p.id,
+      promises.filter((promise): promise is MovementPromise => !isExpression(promise)), promises.filter(isExpression));
+    if (completion(live)) continue;
     requireRule(!voluntary, 'Your action would remove the last legal completion of an accepted ground-movement promise.');
     const kept = live.filter(promise => !promise.answer);
-    // Keep still-feasible earlier answers and every No constraint; an opposing
-    // loss does not erase independent promises that remain possible.
-    for (const promise of live.filter(promise => promise.answer)) {
-      if (groundMovementCompletion(g, p.id, [...kept, promise])) { kept.push(promise); continue; }
+    const positive = live.filter(promise => promise.answer).sort((a, b) =>
+      sequence.indexOf(a.event ?? '') - sequence.indexOf(b.event ?? ''));
+    for (const promise of positive) {
+      if (completion([...kept, promise])) { kept.push(promise); continue; }
       promise.released = true;
       log(g, `${p.name}'s Truthtrance ground-movement promise is released because no owned legal completion remains possible.`);
     }
@@ -19035,6 +19112,10 @@ function finishMovementTurn(g: Game, id: string) {
   const p = getPlayer(g, id);
   try {
     if (g.movementPromises) g.movementPromises = finishMovementPromises(g.movementPromises, p.id, g.turn);
+    for (const promise of liveMovementExpressionPromises(g.movementExpressionPromises ?? [], p.id, g.turn)) {
+      requireRule(!promise.answer, 'Complete your whole Truthtrance movement Yes before finishing movement.');
+      promise.fulfilled = true;
+    }
   } catch (error) {
     if (error instanceof MovementClaimError) throw new RuleError(error.message);
     throw error;
@@ -30339,7 +30420,7 @@ function stagePromisedForceReturn(g: Game, p: Player, revival: PendingRevival) {
 }
 function revivalKeepsLaterPromises(g: Game, p: Player, revival?: PendingRevival): boolean {
   if (!liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length &&
-    !liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).length) return true;
+    !hasMovementPromises(g, p.id)) return true;
   const trial = structuredClone(g), actor = getPlayer(trial, p.id);
   trial.truthtrance = null;
   if (revival) stagePromisedForceReturn(trial, actor, revival);
@@ -30462,7 +30543,7 @@ function revivalPromisePlan(g: Game, p: Player, promises = g.revivalPromises ?? 
 function revivalPromiseCompletion(g: Game, p: Player, promises = g.revivalPromises ?? []): Action | null {
   return revivalPromisePlan(g, p, promises)?.action ?? null;
 }
-function revivalCompatibleLaterPromises(g: Game, p: Player, later: Pick<Partial<Game>, 'shipmentPromises' | 'movementPromises'>): boolean {
+function revivalCompatibleLaterPromises(g: Game, p: Player, later: Pick<Partial<Game>, 'shipmentPromises' | 'movementPromises' | 'movementExpressionPromises'>): boolean {
   if (!liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length &&
     !liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], p.id, g.turn).length &&
     !liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [], p.id, g.turn).length) return true;
@@ -30561,7 +30642,7 @@ function guardPromisedLeaderRevival(g: Game, p: Player, action: Action,
     !liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], p.id, g.turn).length &&
     !liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length &&
     !liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length &&
-    !liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).length &&
+    !hasMovementPromises(g, p.id) &&
     !hasBribePromises(g, p.id, true)) return;
   if (!quote) {
     requireRule(leaderRevivalPromisesSatisfied(g.leaderRevivalPromises ?? [], p.id, g.turn, []),
@@ -35594,6 +35675,11 @@ export function applyAction(state: Game, id: string, action: Action): Game {
       Object.keys(guide.action).every(key => action[key] === guide.action[key]),
     'This alliance commitment guide is stale or belongs to another Nexus choice.');
   }
+  if (action.movementExpressionPromiseEvent !== undefined) {
+    const guide = projectedMovementExpressionGuide(state, getPlayer(state, id));
+    requireRule(guide && guide.phase === state.phase && movementGuideActionMatches(action, guide.action),
+      'This whole movement guide is stale or belongs to another opportunity.');
+  }
   if (action.bribePromiseEvent !== undefined) {
     const guide = projectedBribePromiseGuide(state, id);
     requireRule(guide && Object.keys(action).sort().join(',') === Object.keys(guide.action).sort().join(',') &&
@@ -36300,6 +36386,8 @@ function applyActionInner(
         bindShipment: bindShipmentTruth,
         movementAnswers: movementTruthAnswers,
         bindMovement: bindMovementTruth,
+        movementExpressionAnswers: movementExpressionTruthAnswers,
+        bindMovementExpression: bindMovementExpressionTruth,
         allianceAnswers: allianceTruthAnswers,
         bindAlliance: bindAllianceTruth,
         bribeAnswers: bribeTruthAnswers,
@@ -36323,7 +36411,7 @@ function applyActionInner(
     )
       return g;
   } catch (error) {
-    if (error instanceof TruthError || error instanceof RevivalExpressionPromiseError || error instanceof LeaderRevivalPromiseError || error instanceof AlliancePromiseError || error instanceof BribePromiseError || error instanceof BribeExpressionPromiseError || error instanceof RevivalPromiseError || error instanceof BidPromiseError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof TraitorDecisionError)
+    if (error instanceof TruthError || error instanceof RevivalExpressionPromiseError || error instanceof LeaderRevivalPromiseError || error instanceof AlliancePromiseError || error instanceof BribePromiseError || error instanceof BribeExpressionPromiseError || error instanceof RevivalPromiseError || error instanceof BidPromiseError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof MovementExpressionPromiseError || error instanceof TraitorDecisionError)
       throw new RuleError(error.message);
     throw error;
   }
@@ -37853,7 +37941,7 @@ function applyActionInner(
         if(action.accept){
           beginSpiritualAdvisor(g,decision,action);
           if(liveShipmentPromises(g.shipmentPromises??[],p.id,g.turn).length ||
-            liveMovementPromises(g.movementPromises??[],p.id,g.turn).some(promise=>promise.answer)){
+            hasMovementPromises(g, p.id, true)){
             const afterAdvisor=structuredClone(g);
             for(let step=0;step<4&&afterAdvisor.response&&(afterAdvisor.response.spiritualAdvisorSource ||
               afterAdvisor.response.automaticAdvisorFlip?.producer==='spiritualArrival');step++)
@@ -37940,7 +38028,7 @@ function applyActionInner(
           amount,
         };
         if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length ||
-          liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).some(promise => promise.answer)) {
+          hasMovementPromises(g, p.id, true)) {
           // Accepting accompaniment is voluntary even though a later responder
           // commits its reserve withdrawal. Check that allowed outcome now.
           const afterAdvisor = structuredClone(g);
@@ -38866,7 +38954,7 @@ function applyActionInner(
         'Not enough spice for these extra revivals.',
       );
     if (liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length ||
-      liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).some(promise => promise.answer) ||
+      hasMovementPromises(g, p.id, true) ||
       liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).some(promise => promise.answer) ||
       liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], p.id, g.turn).some(promise => promise.answer) ||
       liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [], p.id, g.turn).some(promise => promise.answer)) {
@@ -39298,7 +39386,7 @@ function applyActionInner(
       // unsupported arrival combinations before saving its private intent.
       validateShipmentArrival(g, shipment);
       checkShipmentIncomeFunding(g, p, cost, allyPayment);
-      if (liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).some(promise => promise.answer)) {
+      if (hasMovementPromises(g, p.id, true)) {
         const afterShipment = structuredClone(g);
         commitShipment(afterShipment, shipment, undefined, true);
         reconcileGroundMovementPromises(afterShipment, p.id, action, g.phase);
@@ -39497,7 +39585,7 @@ function applyActionInner(
     return g;
   }
   if (t === 'endMovement') {
-    requireRule(!liveMovementPromises(g.movementPromises ?? [], id, g.turn).some(promise => promise.answer),
+    requireRule(!hasMovementPromises(g, id, true),
       'Complete your accepted ground-movement promises before ending movement.');
     finishShipmentPromises(g, p, null);
     requireRule(
@@ -40107,6 +40195,11 @@ export function viewGame(state: Game, id: string) {
       ? movementTruthAnswers(g, me, g.truthtrance.question) : null,
     movementPromises: g.movementPromises ?? [],
     movementPromisePolicy: projectedGroundMovementPolicy(g, me),
+    truthMovementExpressionTargets: g.players.filter(p => movementPromiseTargetAvailable(g, p.id)).map(p => p.id),
+    truthMovementExpressionAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.kind === 'movementExpression' &&
+      g.truthtrance.question.target === id ? movementExpressionTruthAnswers(g, me, g.truthtrance.question) : null,
+    movementExpressionPromises: (g.movementExpressionPromises ?? []).filter(promise => promise.player === id).map(promise => structuredClone(promise)),
+    movementExpressionPromiseGuide: projectedMovementExpressionGuide(g, me),
     truthShipmentSupported: g.players.some(p => shipmentPromiseModeSupported(g, p.id)),
     truthShipmentTargets: !g.response && !g.decision && !g.phaseOpening && !g.pendingShipment
       ? g.players.filter(p => shipmentPromiseModeSupported(g, p.id) &&

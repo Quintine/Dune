@@ -1,5 +1,51 @@
 # Dune implementation status
 
+## 26 October 2026 — Whole AND/OR future ground moves
+
+**Prototyped / Partial.** Full grouped questions bind actual future physical
+movement minima at named printed Arrakis destinations. One group must meet a
+leaf; maximum progress never adds smaller moves. Whole No negates the complete
+expression. The existing owned-action search jointly retains scalar/whole
+obligations, dynamic alternatives, original allowances and real preparations.
+No question grants a move or fulfills through shipment, marker, HMS relocation
+or Ambassador relocation. Physical advisors/elites retain native counting.
+Pending range decisions record no event until actual physical commitment.
+
+Full16/depth4 editing, guarded preview/Ask, target-only answers, own maximum
+progress and exact event/phase native guides connect to the table/four minimal
+policies. Nested force records compare by content over JSON transport. Native
+Hajr timing and earlier funding/card preservation remain. New scalar and whole
+movement questions share accepted release order; old unstamped records precede
+new ones. No closes at actual owner finish; Yes cannot evade by Finish. The
+source-backed general AND/OR authority and provisional online interval/search
+composition remain explicit; no complete-mode gate opens.
+
+Root integration with disjoint pure/search,control and native lanes passes
+**22 files,177/177**, types/lint/build and **eight native paths**,33 actual
+GameTable SSR renders/12 guide callbacks plus one editor meaning callback then
+native Ask. Genuine base33 Basic20/Advanced23-action prefixes add8: real move,
+physical Hajr and second move fulfill the whole AND. OR accepts a manually
+chosen alternate destination. No AND permits one qualifying move and rejects
+both; No OR rejects either. Two actual one-force moves leave2 tokens at Basin
+but maximum1, so no two-force leaf is fulfilled. Earlier Charity13 adds14 actual
+phase/readiness/shipment/movement steps. Advanced Fremen27 adds8: a live range
+response preserves original forces/progress, then actual elite commitment
+fulfills. All33 original cards remain physical. Four policies actually answer
+and complete AND on both Basic/Advanced sources.
+
+Eleven pure,five adapter,eight controlled and13 native cases include strict
+validation, max-versus-sum, actual Hajr, unavailable second entitlement, prior
+exclusion, optimistic OR/prior-progress bounds, wire/stale nested guides and
+actual native counters. Initial quick passes types then flags one test-fixture
+template conversion; String(sector) repairs lint before the frozen v2 batch.
+Proof/report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-movement-expression-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-movement-expression-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Dedicated wider funding/cross-family/current-fact/module composition, final
+rules/recovery/privacy/custody and browser/mobile/deployed acceptance remain.
+[Contract](TRUTHTRANCE_MOVEMENT_EXPRESSIONS.md).
+
 ## 26 October 2026 — Whole AND/OR ordinary-bribe commitments
 
 **Prototyped / Partial.** A full grouped question binds actual cumulative future

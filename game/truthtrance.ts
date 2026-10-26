@@ -1,3 +1,4 @@
+import { parseMovementExpressionClaim, movementExpressionText, type MovementExpressionClaim } from './movement-expression-promises';
 import { parseBribeExpressionClaim, bribeExpressionRecipients, bribeExpressionText,
   type BribeExpressionClaim } from './bribe-expression-promises';
 import { parseRevivalExpressionClaim, revivalExpressionText, revivalExpressionPromiseModeSupported, type RevivalExpressionClaim } from './revival-expression-promises';
@@ -67,6 +68,7 @@ export type TruthFact =
   | { kind: 'spice'; compare: 'eq' | 'gte' | 'lte'; value: number }
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type TruthQuestion =
+  | ({ kind: 'movementExpression'; target: string } & MovementExpressionClaim)
   | ({ kind: 'bribeExpression'; target: string } & BribeExpressionClaim)
   | ({ kind: 'revivalExpression'; target: string } & RevivalExpressionClaim)
   | ({ kind: 'leaderRevival'; target: string } & LeaderRevivalClaim)
@@ -309,6 +311,14 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
     'Choose the current revealed battle and a still-unsubmitted Traitor decision.');
     return { kind: 'traitorCall', target: v.target as string, battle: v.battle, territory: v.territory as string };
   }
+  if (v.kind === 'movementExpression') {
+    check(Object.keys(v).sort().join(',') === 'claim,kind,target,turn',
+      'Supply the current turn, complete movement expression and respondent.');
+    const claim = parseMovementExpressionClaim({ turn: v.turn, claim: v.claim });
+    check(claim.turn === g.turn && movementPromiseTargetAvailable(g, v.target as string),
+      'Choose a supported unused ground-movement opportunity with pending decisions finished.');
+    return { kind: 'movementExpression', target: v.target as string, ...claim };
+  }
   if (v.kind === 'movement') {
     check(Object.keys(v).sort().join(',') === 'kind,minimum,target,territory',
       'Supply one ground-movement destination, minimum and respondent.');
@@ -534,6 +544,7 @@ export function truthQuestionText(
   if (q.kind === 'revival') return `Will you ${revivalClaimText(q)}?`;
   if (q.kind === 'bid') return `Will you ${bidClaimText(q)}?`;
   if (q.kind === 'traitorCall') return `In this revealed battle in ${locationName(q.territory)}, will you declare the opposing leader a Traitor?`;
+  if (q.kind === 'movementExpression') return `Will you ${movementExpressionText(q.claim)} before your Shipment and Movement turn ends?`;
   if (q.kind === 'movement') return `Will you ${movementClaimText(q)} before your Shipment and Movement turn ends?`;
   if (q.kind === 'shipment')
     return `Will you ${shipmentClaimText(q)} this turn?`;
@@ -576,6 +587,8 @@ export function resolveTruthAction(
       asker: string,
       mixed?: MixedShipmentExpression,
     ) => void;
+    movementExpressionAnswers?: (g: Game, p: Player, claim: MovementExpressionClaim) => TruthAnswer[];
+    bindMovementExpression?: (g: Game, p: Player, claim: MovementExpressionClaim, answer: boolean, asker: string) => void;
     movementAnswers?: (g: Game, p: Player, claim: MovementClaim) => TruthAnswer[];
     bindMovement?: (g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) => void;
     allianceAnswers?: (g: Game, p: Player, claim: AllianceClaim) => TruthAnswer[];
@@ -719,6 +732,9 @@ export function resolveTruthAction(
         if (w.question.kind === 'alliance')
           check(effects.allianceAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a current Nexus question with a compatible answer.');
+        if (w.question.kind === 'movementExpression')
+          check(effects.movementExpressionAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a supported whole ground-movement question.');
         if (w.question.kind === 'bribeExpression')
           check(effects.bribeExpressionAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a whole bribe expression compatible with earlier answers.');
@@ -775,6 +791,12 @@ export function resolveTruthAction(
           if (a.answer !== 'unknown')
             effects.bindShipment(g, p, claim, a.answer === 'yes', current.player,
               q.kind === 'mixedShipment' ? q.mixed : undefined);
+        }
+        if (q.kind === 'movementExpression') {
+          check(effects.movementExpressionAnswers && effects.bindMovementExpression &&
+            effects.movementExpressionAnswers(g, p, q).includes(a.answer),
+            'Choose a whole movement answer compatible with owned actions and earlier promises.');
+          if (a.answer !== 'unknown') effects.bindMovementExpression(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'movement') {
           check(effects.movementAnswers && effects.bindMovement && effects.movementAnswers(g, p, q).includes(a.answer),

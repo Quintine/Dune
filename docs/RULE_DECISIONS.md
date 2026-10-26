@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Whole AND/OR future ground moves — 26 October 2026
+
+Compose the recorded publisher November2020 FAQp8 current-turn/AND/OR authority
+and supplied Advanced physical39 Truthtrance compliance/release text with the
+existing ordinary ground-movement interval. Each leaf requires one actual
+future physical group, not cumulative smaller moves; maximum progress records
+that event. Whole No negates the complete expression. Native owned entitlements,
+Hajr timing, preparations, counter responses and earlier funding remain.
+The online opportunity interval/search/accepted-order release composition stays
+provisional under standing14October priority. No mode or publication gate opens.
+[Contract and evidence](TRUTHTRANCE_MOVEMENT_EXPRESSIONS.md).
+
 ## Whole AND/OR ordinary bribe payments — 26 October 2026
 
 Apply publisher November2020 FAQp8 current-turn/AND/OR authority and supplied

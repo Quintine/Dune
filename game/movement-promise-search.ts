@@ -1,6 +1,9 @@
 import type { Action, Game, Player } from './engine';
 import { gameTerritories, splitLocation } from './board';
 import { liveMovementPromises, movementEventAllowed, movementMatches, settleMovementEvent, type MovementEvent, type MovementPromise } from './movement-promises';
+import { evaluateMovementExpression, liveMovementExpressionPromises, movementExpressionTerritories,
+  MovementExpressionPromiseError, recordMovementExpressionEvent, type MovementExpression,
+  type MovementExpressionPromise } from './movement-expression-promises';
 
 export type MovementPromiseAdapter = {
   allowance: (game: Game, player: Player) => number;
@@ -37,11 +40,16 @@ function* groups(player: Player, keys: string[], amount: number, index = 0,
  * The adapter shares authoritative movement validation/physical commitment.
  * Opposing arrival outcomes are not simulated or assumed. */
 export function findMovementCompletion(source: Game, actor: string,
-  promises: readonly MovementPromise[], adapter: MovementPromiseAdapter): MovementCompletion | null {
+  promises: readonly MovementPromise[], adapter: MovementPromiseAdapter,
+  expressions: readonly MovementExpressionPromise[] = source.movementExpressionPromises ?? []): MovementCompletion | null {
   const failed = new Set<string>();
-  const search = (game: Game, pending: readonly MovementPromise[], actions: Action[]): MovementCompletion | null => {
+  const retainWhole = expressions.length > 0 || source.movementExpressionPromises !== undefined;
+  const search = (game: Game, pending: readonly MovementPromise[], whole: readonly MovementExpressionPromise[],
+    actions: Action[]): MovementCompletion | null => {
     const live = liveMovementPromises(pending, actor, game.turn);
-    const needsMove = live.some(promise => promise.answer);
+    const liveWhole = liveMovementExpressionPromises(whole, actor, game.turn);
+    const positiveWhole = liveWhole.filter(promise => promise.answer);
+    const needsMove = live.some(promise => promise.answer) || positiveWhole.length > 0;
     if (!needsMove && adapter.canFinish(game, actor)) return { actions };
     const player = game.players.find(candidate => candidate.id === actor)!;
     const physical = Object.values(player.forces).reduce((sum, amount) => sum + amount, 0);
@@ -52,8 +60,12 @@ export function findMovementCompletion(source: Game, actor: string,
     const marker = player.faction === 'richese' ? player.noField?.deployed : null;
     const markerValue = marker ? player.noField!.tokens.find(token => token.id === marker.tokenId)?.value ?? 0 : 0;
     const revealable = Math.min(markerValue, player.reserves + recovery);
-    if (live.some(promise => promise.answer && promise.minimum > physical +
-      (player.shipped ? revealable : player.reserves + recovery))) return null;
+    const possiblePhysical = physical + (player.shipped ? revealable : player.reserves + recovery);
+    if (live.some(promise => promise.answer && promise.minimum > possiblePhysical) ||
+      positiveWhole.some(promise => !evaluateMovementExpression(promise.claim,
+        movementExpressionTerritories(promise.claim).map(territory => ({ territory,
+          maximum: Math.max(promise.progress.find(entry => entry.territory === territory)?.maximum ?? 0,
+            Math.min(20, possiblePhysical)) }))))) return null;
     const key = JSON.stringify([player.forces, player.elites, player.advisors, player.moved, player.shipped, player.reserves, player.tanks, player.hand.map(card => card.id),
       player.hajrPlays, player.hajrWindow, player.ornithopterExtraMoves, player.spice, game.choamMovement,
       player.fremenMovementBlocked, player.ixMovementBlocked, player.advisorFlipMovementBlocked, game.advisorMatchingDenied,
@@ -62,11 +74,13 @@ export function findMovementCompletion(source: Game, actor: string,
       game.aid, game.karamaShipping, game.guildRateBlocked, game.shipmentPromises,
       game.discard.map(card => card.id), game.movementDiscardKnowledge?.[actor], game.pendingNullentropy,
       game.choamWorthlessBlocked, game.hajr, game.ornithopter ? [game.ornithopter.mode, game.ornithopter.startingMove, game.ornithopter.completed, game.ornithopter.cohort] : null,
-      live.map(promise => [promise.territory, promise.minimum, promise.answer])]);
+      live.map(promise => [promise.territory, promise.minimum, promise.answer]),
+      liveWhole.map(promise => [promise.claim, promise.answer, promise.progress])]);
     if (failed.has(key)) return null;
     const destinations = gameTerritories(game).filter(destination => !destination.id.startsWith('homeworld:'));
-    destinations.sort((a, b) => Number(live.some(p => p.answer && p.territory === b.id)) -
-      Number(live.some(p => p.answer && p.territory === a.id)) ||
+    const wanted = new Set([...live.filter(promise => promise.answer).map(promise => promise.territory),
+      ...positiveWhole.flatMap(promise => movementExpressionTerritories(promise.claim))]);
+    destinations.sort((a, b) => Number(wanted.has(b.id)) - Number(wanted.has(a.id)) ||
       (marker ? Number(['arrakeen', 'carthag'].includes(b.id)) - Number(['arrakeen', 'carthag'].includes(a.id)) : 0));
     if (needsMove && (marker || !live.some(promise => promise.answer && promise.minimum > physical)) &&
       !game.pendingNullentropy && player.moved < adapter.allowance(game, player)) {
@@ -90,12 +104,20 @@ export function findMovementCompletion(source: Game, actor: string,
         const total = keys.reduce((sum, key) => sum + player.forces[key], 0);
         const carriesMarker = marker?.location.territory === origin && !!player.noFieldEvent;
         const amounts = [...(carriesMarker ? [0] : []), ...Array.from({ length: total }, (_, i) => i + 1)];
-        amounts.sort((a, b) => Number(live.some(p => p.answer && p.territory === destination.id && b >= p.minimum)) -
-          Number(live.some(p => p.answer && p.territory === destination.id && a >= p.minimum)) || a - b);
+        const helpsWhole = (expression: MovementExpression, amount: number): boolean => 'terms' in expression
+          ? expression.terms.some(term => helpsWhole(term, amount))
+          : expression.territory === destination.id && amount >= expression.minimum;
+        const helps = (amount: number) => live.some(p => p.answer && p.territory === destination.id && amount >= p.minimum) ||
+          positiveWhole.some(promise => helpsWhole(promise.claim, amount));
+        amounts.sort((a, b) => Number(helps(b)) - Number(helps(a)) || a - b);
         for (const amount of amounts) {
           const event = { territory: destination.id, amount };
           if (!movementEventAllowed(live, event)) continue;
           if (!mayMoveAgain && live.some(promise => promise.answer && !movementMatches(promise, event))) continue;
+          let projectedWhole: MovementExpressionPromise[];
+          try { projectedWhole = recordMovementExpressionEvent(whole, actor, game.turn, event); }
+          catch (error) { if (error instanceof MovementExpressionPromiseError) continue; throw error; }
+          if (!mayMoveAgain && liveMovementExpressionPromises(projectedWhole, actor, game.turn).some(promise => promise.answer)) continue;
           const markers: Partial<Action>[] = carriesMarker
             ? [...(amount ? [{}] : []), { noField: marker!.tokenId, event: player.noFieldEvent }] : [{}];
           for (const group of groups(player, keys, amount)) for (const mode of modes) for (const stance of stances) for (const selected of markers) {
@@ -103,19 +125,26 @@ export function findMovementCompletion(source: Game, actor: string,
             const next = adapter.project(game, actor, action);
             if (!next) continue;
             const settled = settleMovementEvent(pending, actor, game.turn, next.event);
+            // The projection owns the exact physical amount (markers excluded).
+            // Keep promise progress on detached states only.
+            let settledWhole: MovementExpressionPromise[];
+            try { settledWhole = recordMovementExpressionEvent(whole, actor, game.turn, next.event); }
+            catch (error) { if (error instanceof MovementExpressionPromiseError) continue; throw error; }
             next.game.movementPromises = structuredClone(settled);
-            const result = search(next.game, settled, [...actions, action]);
+            if (retainWhole) next.game.movementExpressionPromises = structuredClone(settledWhole);
+            const result = search(next.game, settled, settledWhole, [...actions, action]);
             if (result) return result;
           }
         }
       }
     }
     for (const prepared of adapter.preparations(game, actor)) {
-      const result = search(prepared.game, live, [...actions, ...prepared.actions]);
+      const result = search(prepared.game, live, whole, [...actions, ...prepared.actions]);
       if (result) return result;
     }
     failed.add(key); return null;
   };
   const initial = structuredClone(source); initial.movementPromises = structuredClone([...promises]);
-  return search(initial, promises, []);
+  if (retainWhole) initial.movementExpressionPromises = structuredClone([...expressions]);
+  return search(initial, promises, expressions, []);
 }

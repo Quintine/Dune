@@ -1,5 +1,8 @@
 'use client';
 
+import { MovementExpressionFields, movementExpressionInputError } from './movement-expression-fields';
+import type { MovementExpression } from '@/game/movement-expression-promises';
+import { TERRITORIES } from '@/game/board';
 import { BribeExpressionFields, bribeExpressionInputError } from './bribe-expression-fields';
 import { bribeExpressionRecipients, type BribeExpression } from '@/game/bribe-expression-promises';
 import { RevivalExpressionFields, revivalExpressionInputError } from './revival-expression-fields';
@@ -68,7 +71,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -102,6 +105,10 @@ export function Truthtrance({
   const bidClaim: BidClaim = { turn: g.bidPromiseLot?.turn ?? g.turn,
     lot: g.bidPromiseLot?.lot ?? 1, minimum: bidMinimum };
   const [movement, setMovement] = useState<MovementClaim>({ territory: 'carthag', minimum: 6 });
+  const [movementExpression, setMovementExpression] = useState<MovementExpression>({ kind: 'and', terms: [
+    { kind: 'move', territory: 'imperial_basin', minimum: 1 }, { kind: 'move', territory: 'carthag', minimum: 1 },
+  ] });
+  const movementExpressionError = movementExpressionInputError(movementExpression);
   const [shipment, setShipment] = useState<ShipmentExpression>({ territory: 'carthag', minimum: 6 });
   const [mixed, setMixed] = useState<MixedShipmentExpression>({
     kind: 'and',
@@ -138,6 +145,7 @@ export function Truthtrance({
             claim: planClaim,
           }
         : kind === 'traitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '' }
+        : kind === 'movementExpression' ? { kind, target, turn: g.turn, claim: movementExpression }
         : kind === 'movement' ? { kind, target, ...movement }
         : kind === 'revivalExpression' ? { kind, target, turn: g.turn, claim: revivalExpression }
         : kind === 'leaderRevival' ? { kind, target, ...leaderRevivalClaim }
@@ -302,6 +310,13 @@ export function Truthtrance({
                       {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'I don’t know'}`, { type: 'truthAnswer', answer })}
                     </div>)}
                   </>
+                ) : w.question!.kind === 'movementExpression' ? (
+                  <>
+                    <p className="notice">Yes requires the whole AND/OR question to become true through your future physical ground moves. No keeps the whole expression false and may permit some moves. Each condition needs one qualifying group; smaller moves never add together. Original movement allowances, cards and responses still apply.</p>
+                    {(g.truthMovementExpressionAnswers ?? []).map(answer => <div key={answer}>
+                      {button(answer === 'unknown' ? 'I don’t know yet' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
+                  </>
                 ) : w.question!.kind === 'movement' ? (
                   <>
                     <p className="notice">Yes requires one matching ground movement before your turn ends, while possible. No forbids every matching move through later Hajr or Ornithopter opportunities. Separate smaller groups do not add together. The No-Field marker itself is not a physical force counter.</p>
@@ -419,6 +434,7 @@ export function Truthtrance({
                     Verified current facts
                   </option>
                   <option value="movement">Bind ground movement this turn</option>
+                  <option value="movementExpression">Combine ground moves with AND/OR</option>
                   <option value="alliance">Bind alliance membership at this Nexus close</option>
                   <option value="bribe">Bind ordinary bribe payments this turn</option>
                   <option value="bribeExpression">Combine ordinary bribe payments with AND/OR</option>
@@ -506,6 +522,16 @@ export function Truthtrance({
                   <p className="notice">Choose a still-unsubmitted voter in the current revealed battle. A definite answer binds that player’s original declaration, without reopening any sealed vote or promising that a later response will allow it.</p>
                   {!g.truthTraitorTargets.includes(target) && <p>Reveal both plans and choose a voter who has not submitted their Traitor decision.</p>}
                   {g.battle?.revealed && <p className="notice" aria-label="Public Traitor question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>}
+                </>
+              ) : kind === 'movementExpression' ? (
+                <>
+                  <MovementExpressionFields value={movementExpression} territories={TERRITORIES}
+                    disabled={busy || !g.truthMovementExpressionTargets.includes(target)} onChange={setMovementExpression} />
+                  <p className="fine">Each condition requires one future physical group of its minimum. AND may require several moves and owned extra-movement cards; OR keeps alternatives. No negates the whole question. Shipment, the concealed No-Field marker, HMS relocation and Ambassador relocation do not fulfill a ground-move condition.</p>
+                  {g.phase < 5 && <p className="notice">Movement comes later. Preserve its forces, spice and cards; any current owned preparation appears when available.</p>}
+                  {g.advanced && <p className="fine">Advanced Hajr remains immediately after a completed movement and its required arrival decisions.</p>}
+                  {!g.truthMovementExpressionTargets.includes(target) && <p className="notice">Choose a supported respondent with an unused movement opportunity and finish pending decisions. Optional modules remain unfinished.</p>}
+                  <p className="notice" aria-label="Public combined movement question preview">{movementExpressionError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
               ) : kind === 'movement' ? (
                 <>
@@ -597,6 +623,7 @@ export function Truthtrance({
               {!['fact', 'battlePlan', 'shipment'].includes(kind) && button(
                 'Ask publicly',
                 { type: 'truthAsk', question },
+                (kind === 'movementExpression' && (!!movementExpressionError || !g.truthMovementExpressionTargets.includes(target))) ||
                 (kind === 'movement' && (!validMovementClaim(movement) || !g.truthMovementTargets.includes(target))) ||
                 (kind === 'revivalExpression' && (!!revivalExpressionInputError(revivalExpression) || !validRevivalExpressionNames || !g.truthRevivalExpressionTargets.includes(target))) ||
                 (kind === 'leaderRevival' && (!!leaderRevivalClaimInputError(leaderRevivalClaim, leaderRevivalChoices) || !g.truthLeaderRevivalTargets.includes(target))) ||

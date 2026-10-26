@@ -1,5 +1,10 @@
 # Truthtrance ground-movement promises
 
+The [whole AND/OR movement follow-up](TRUTHTRANCE_MOVEMENT_EXPRESSIONS.md)
+adds full grouped future destinations/minima to the same owned-action search.
+Each leaf still requires one actual qualifying group, never a sum; the new
+ledger retains whole No and dynamic alternatives without changing scalar claims.
+
 ## Native early Advanced and CHOAM opening — 26 October 2026
 
 **Prototyped / Partial.** Both Basic and Advanced now admit clean current-round
