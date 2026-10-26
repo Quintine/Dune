@@ -52,6 +52,7 @@ import {
   type PlanClaim,
 } from './battle-promises';
 import { gameTerritories } from './board';
+import { leaders } from './cards';
 import { combatLocationName } from './combat-location';
 import { parseForceCountFact, forceCountFactMatches, forceCountFactText, forceCountCounterError, type ForceCountFact, type ForceCountPlayer } from './truthtrance-force-count';
 import type { Action, Game, Player } from './engine';
@@ -385,6 +386,12 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       const action = parseTurnActionLeaf(input);
       if (action.kind === 'payment') check(action.recipient !== respondent.id && action.recipient !== respondent.ally &&
         g.players.some(player => player.id === action.recipient), 'Choose another current non-allied ordinary bribe recipient.');
+      if (action.kind === 'bid') check(bidPromiseModeSupported(g) && g.phase === 3 && g.auction &&
+        !g.currentAuctionSale && !g.richeseAuction && !g.ixAuction && action.lot === g.auction.index + 1,
+      'Choose the current ordinary bid lot in a supported native auction.');
+      if (action.kind === 'leader') check(leaders(respondent.faction).some(leader => leader.id === action.leader) ||
+        action.leader === 'kwisatz' && g.advanced && respondent.faction === 'atreides',
+      'Choose a personal native faction leader, or the Advanced Atreides Kwisatz Haderach.');
       return action;
     }, { requireFact: false, maxDepth: TURN_ACTION_MAX_DEPTH, maxLeaves: TURN_ACTION_MAX_LEAVES });
     return { kind: 'turnActions', target: v.target as string, turn: g.turn, mixed };
@@ -699,8 +706,13 @@ export function truthQuestionText(
     return `(${f.terms.map(clause).join(f.kind === 'and' ? ' AND ' : ' OR ')})`;
   };
   if (q.kind === 'turnActions') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
-    action => action.kind === 'payment' ? `you ${bribeClaimText({ turn: q.turn, ...action }, playerName)}` :
-      `you ${action.kind === 'ship' ? shipmentClaimText(action) : movementClaimText(action)} before your Shipment and Movement turn ends`)}?`;
+    action => {
+      if (action.kind === 'payment') return `you ${bribeClaimText({ turn: q.turn, ...action }, playerName)}`;
+      if (action.kind === 'bid') return `you ${bidClaimText({ turn: q.turn, ...action })}`;
+      if (action.kind === 'forces' || action.kind === 'leader') return `you ${revivalExpressionText(action,
+        id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))} from now until your ordinary Revival opportunity ends this turn`;
+      return `you ${action.kind === 'ship' ? shipmentClaimText(action) : movementClaimText(action)} before your Shipment and Movement turn ends`;
+    })}?`;
   if (q.kind === 'travel') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => `you ${action.kind === 'ship' ? shipmentClaimText(action) : movementClaimText(action)}`)} this turn?`;
   if (q.kind === 'mixedTraitorCall') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,

@@ -21,6 +21,10 @@ const fact = (value: TruthFact = { kind: 'hand', name: 'Shield' }): Expression =
 const physical = (kind: 'ship' | 'move' = 'ship', minimum = 1, territory = 'carthag'): Expression =>
   ({ kind: 'action', action: { kind, territory, minimum } });
 const payment = (minimum = 3, recipient = 'r'): Expression => ({ kind: 'action', action: { kind: 'payment', recipient, minimum } });
+const bid = (minimum = 3, lot = 2): Expression => ({ kind: 'action', action: { kind: 'bid', lot, minimum } });
+const forceRevival = (counter: 'total' | 'normal' | 'elite' = 'total', minimum = 1): Expression =>
+  ({ kind: 'action', action: { kind: 'forces', counter, minimum } });
+const leaderRevival = (leader: string): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
 const claim = (): Expression => ({ kind: 'or', terms: [payment(), { kind: 'and', terms: [fact(), physical('ship', 3), physical('move', 4, 'arrakeen')] }] });
 
 function elements(node: ReactNode): Element[] {
@@ -66,6 +70,7 @@ function projected(phase = 5, next: Action = { type: 'move', forces: { 'arrakeen
 }
 function auction(next: Action = { type: 'passBid' }): GameView {
   const game = projected(3, next);
+  game.bidPromiseLot = { turn: 2, lot: 2 };
   game.auction = { bid: 7, bidder: next.type === 'decision' ? 'p' : 'a', active: 'p', remaining: 2, inspectionBlocked: null, card: null };
   if (next.type === 'decision') { game.auction.active = 'a'; game.decision = { kind: 'auctionPayment', player: 'p' }; }
   return game;
@@ -121,15 +126,20 @@ void test('turn-action editor keeps all action families and optional facts in th
 });
 
 void test('turn-action editor preserves sixteen clauses and four shared grouping levels without truncation', () => {
-  const e = editor({ kind: 'or', terms: [payment(), physical('move', 4)] });
-  for (let count = 3; count <= 16; count++) { click(control(e.tree(), 'add-action-1')); minimum(e.tree(), `1.${count}`, count); }
+  const game = auction(), e = editor({ kind: 'or', terms: [payment(), physical('move', 4)] }, false, game);
+  for (let count = 3; count <= 16; count++) {
+    click(control(e.tree(), 'add-action-1')); minimum(e.tree(), `1.${count}`, count);
+    if (count % 4 === 0) select(e.tree(), `1.${count}`, 'action', 'forces');
+    if (count % 4 === 1) select(e.tree(), `1.${count}`, 'action', 'leader');
+    if (count % 4 === 2) select(e.tree(), `1.${count}`, 'action', 'bid');
+  }
   assert.equal(e.error(), null); assert.match(e.html(), /16 \/ 16 conditions/);
   const full = structuredClone(e.value), changes = e.changes;
   for (const key of ['add-action-1', 'add-fact-1', 'nested-and-1', 'nested-or-1', 'and-1.1', 'or-1']) {
     assert.equal(control(e.tree(), key).props.disabled, true); click(control(e.tree(), key));
   }
   assert.deepEqual(e.value, full); assert.equal(e.changes, changes);
-  const deep = editor({ kind: 'and', terms: [fact(), payment()] });
+  const deep = editor({ kind: 'and', terms: [fact(), forceRevival()] });
   click(control(deep.tree(), 'or-1.2')); click(control(deep.tree(), 'and-1.2.1')); click(control(deep.tree(), 'or-1.2.1.1'));
   assert.match(deep.html(), /4 \/ 4 levels of grouping/);
   assert.equal(control(deep.tree(), 'and-1.2.1.1.1').props.disabled, true);
@@ -138,7 +148,7 @@ void test('turn-action editor preserves sixteen clauses and four shared grouping
 });
 
 void test('turn-action inputs keep invalid drafts repairable and reject disabled callbacks', () => {
-  for (const expression of [physical(), payment()]) {
+  for (const expression of [physical(), payment(), forceRevival()]) {
     for (const invalid of [NaN, 0, -1, 1.5, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
       const e = editor(expression); minimum(e.tree(), '1', invalid); assert.ok(e.error());
       if (!Number.isFinite(invalid)) assert.match(e.html(), /value=""/);
@@ -173,6 +183,74 @@ void test('turn-action fields use public recipients and printed destinations wit
   assert.match(editor(physical(), false, game).html(), /Carthag/);
 });
 
+void test('turn-action bid leaves use only the current public ordinary lot and retain repairable drafts', () => {
+  const game = auction(), e = editor(payment(), false, game);
+  Object.defineProperty(game.auction!, 'card', { get() { throw Error('No hidden lot face inspection'); }, configurable: true });
+  select(e.tree(), '1', 'action', 'bid'); assert.deepEqual(e.value, bid()); assert.equal(e.error(), null);
+  assert.match(e.html(), /Turn 2 · Ordinary lot 2/);
+  for (const invalid of [NaN, 0, -1, 1.5, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+    minimum(e.tree(), '1', invalid); assert.ok(e.error()); minimum(e.tree(), '1', 3); assert.equal(e.error(), null);
+  }
+  minimum(e.tree(), '1', Number.MAX_SAFE_INTEGER); assert.equal(e.error(), null);
+  select(e.tree(), '1', 'lot', ''); assert.ok(e.error()); assert.deepEqual(e.value, bid(Number.MAX_SAFE_INTEGER, NaN));
+  select(e.tree(), '1', 'lot', '999'); assert.deepEqual(e.value, bid(Number.MAX_SAFE_INTEGER, NaN));
+  select(e.tree(), '1', 'lot', '2'); assert.equal(e.error(), null);
+  game.bidPromiseLot = { turn: 2, lot: 3 }; assert.ok(e.error()); assert.match(e.html(), /aria-invalid="true"/);
+  assert.deepEqual(elements(find(e.tree(), 'id', 'truth-turn-action-1-lot')).filter(element => element.type === 'option')
+    .map(element => element.props.value), ['', 3]);
+  select(e.tree(), '1', 'lot', '3'); assert.equal(e.error(), null);
+  game.bidPromiseLot = { turn: 1, lot: 3 }; assert.ok(e.error()); assert.match(e.html(), /No public ordinary lot is currently available/);
+  game.bidPromiseLot = null; assert.ok(e.error()); select(e.tree(), '1', 'action', 'forces');
+  minimum(e.tree(), '1', 2); assert.equal(e.error(), null);
+});
+
+void test('turn-action Revival leaves use public faction names and physical counters without casualties, custody or private preparation', () => {
+  const game = auction(); game.advanced = true; game.players.find(player => player.id === 'p')!.faction = 'atreides';
+  const ownLeader = game.allLeaders.find(leader => leader.faction === 'atreides'); assert.ok(ownLeader);
+  const foreignLeader = game.allLeaders.find(leader => leader.faction === 'emperor'); assert.ok(foreignLeader);
+  for (const player of game.players) for (const key of ['hand', 'traitors', 'faceDancers', 'spice', 'forces', 'reserves', 'leaders', 'tanks', 'capturedLeaders'])
+    Object.defineProperty(player, key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
+  Object.defineProperty(game, 'revival', { get() { throw Error('No private Revival eligibility inspection'); }, configurable: true });
+  const e = editor(forceRevival('total', 20), false, game); assert.equal(e.error(), null);
+  select(e.tree(), '1', 'counter', 'normal'); assert.deepEqual(e.value, forceRevival('normal', 20));
+  select(e.tree(), '1', 'counter', 'elite'); assert.deepEqual(e.value, forceRevival('elite', 20));
+  minimum(e.tree(), '1', 21); assert.ok(e.error()); minimum(e.tree(), '1', 1); assert.equal(e.error(), null);
+  select(e.tree(), '1', 'action', 'leader'); assert.deepEqual(e.value, leaderRevival(ownLeader.id));
+  const choices = elements(find(e.tree(), 'id', 'truth-turn-action-1-leader')).filter(element => element.type === 'option')
+    .map(element => element.props.value);
+  assert.ok(choices.includes('kwisatz')); assert.ok(choices.includes(ownLeader.id)); assert.ok(!choices.includes(foreignLeader.id));
+  select(e.tree(), '1', 'leader', foreignLeader.id); assert.deepEqual(e.value, leaderRevival(ownLeader.id));
+  assert.ok(turnActionInputError(leaderRevival(foreignLeader.id), game, 'p'));
+  select(e.tree(), '1', 'leader', ''); assert.ok(e.error()); select(e.tree(), '1', 'leader', 'kwisatz'); assert.equal(e.error(), null);
+  assert.match(e.html(), /Kwisatz Haderach/); game.advanced = false; assert.ok(e.error());
+  select(e.tree(), '1', 'leader', ownLeader.id); assert.equal(e.error(), null);
+  for (const initial of [bid(), forceRevival(), leaderRevival(ownLeader.id)]) {
+    const frozen = editor(initial, true, game), original = structuredClone(frozen.value);
+    select(frozen.tree(), '1', 'action', 'payment');
+    if (initial.kind === 'action' && initial.action.kind === 'bid') { select(frozen.tree(), '1', 'lot', ''); minimum(frozen.tree(), '1', 7); }
+    if (initial.kind === 'action' && initial.action.kind === 'forces') { select(frozen.tree(), '1', 'counter', 'elite'); minimum(frozen.tree(), '1', 7); }
+    if (initial.kind === 'action' && initial.action.kind === 'leader') select(frozen.tree(), '1', 'leader', '');
+    assert.equal(frozen.changes, 0); assert.deepEqual(frozen.value, original);
+  }
+});
+
+void test('turn-action preparation history and guides use original public leaves without reading private stage progress', () => {
+  const game = auction({ type: 'bid', amount: 8, allyPayment: 0 }), named = game.allLeaders.find(leader => leader.faction === 'emperor');
+  assert.ok(named);
+  game.turnActionPromises[0].mixed = { kind: 'and', terms: [bid(8), forceRevival('elite', 2), leaderRevival(named.id), payment(), physical(), fact()] };
+  for (const key of ['preparation', 'compiled', 'progress', 'payments'])
+    Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
+  const html = markup(game);
+  assert.match(html, /ordinary lot 2/); assert.match(html, /8 spice/); assert.match(html, /elite forces/); assert.match(html, new RegExp(named.name));
+  assert.match(html, /Bid conditions close with their named ordinary lot/); assert.match(html, /Revival conditions close with your native Revival opportunity/);
+  assert.doesNotMatch(html, /compiled|bidProgress|revivalProgress/);
+  const sent: Action[] = []; press(guide({ game, busy: false, act(value) { sent.push(value); } }));
+  assert.equal(sent[0], game.turnActionGuide!.action);
+  const answerGame = answering(3); answerGame.truthtrance!.question = { kind: 'turnActions', target: 'p', turn: 2, mixed: game.turnActionPromises[0].mixed };
+  const answerMarkup = renderToStaticMarkup(createElement(TurnActionAnswers, { game: answerGame, busy: false, act() {} }));
+  assert.match(answerMarkup, /ordinary force returns add together/); assert.match(answerMarkup, /Bids close with their lot/);
+});
+
 void test('turn-action history retains original own whole questions and terminal status without private compiled branches', () => {
   const game = projected(); game.turnActionGuide = null;
   game.turnActionPromises.push(
@@ -181,13 +259,14 @@ void test('turn-action history retains original own whole questions and terminal
     { ...game.turnActionPromises[0], event: 'controlled-release', released: true },
     { ...game.turnActionPromises[0], event: 'controlled-foreign', player: 'a', mixed: { kind: 'and', terms: [fact({ kind: 'hand', name: 'Poison Blade' }), physical('ship', 19, 'sietch_tabr')] } },
   );
-  for (const promise of game.turnActionPromises) for (const key of ['compiled', 'binding', 'factAnswers', 'residual', 'route', 'payments', 'progress'])
+  for (const promise of game.turnActionPromises) for (const key of ['compiled', 'binding', 'factAnswers', 'residual', 'route', 'payments', 'progress', 'preparation', 'prep', 'bids', 'returns', 'leaders'])
     Object.defineProperty(promise, key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
   const html = markup(game);
   for (const text of [/Turn 1/, /You answered Yes/, /You answered No/, /you hold Shield/, / OR /, / AND /,
     /Fulfilled: this whole commitment is complete/, /Released: this whole commitment is no longer possible/,
     /No negates the whole expression, not each condition separately/, /Separate No answers each create their own restriction/,
     /maximum physical forces in one actual future move/, /Individual fact answers and any reduced future branch remain private/,
+    /highest accepted future declaration/, /cumulative future ordinary returns/, /Revival conditions close with your native Revival opportunity/,
     /ordinary payments remain possible until the actual turn ends/]) assert.match(html, text);
   assert.doesNotMatch(html, /Poison Blade|19 physical|controlled-foreign|controlled-complete|factAnswers/);
   assert.equal(TurnActionPromises({ game: { ...game, me: 'missing' }, busy: false, act() {} }), null);
@@ -293,6 +372,7 @@ void test('turn-action native guides reject stale auction, invoice, Revival and 
     [() => auction({ type: 'bid', amount: 8, allyPayment: 0 }), [
       game => { game.auction = { ...game.auction! }; }, game => { game.auction!.active = 'a'; },
       game => { game.auction!.bid = 8; }, game => { game.auction!.remaining = 1; },
+      game => { game.bidPromiseLot = { turn: 2, lot: 3 }; },
     ]],
     [() => auction({ type: 'decision', karama: false }), [
       game => { game.decision = { ...game.decision! }; }, game => { game.decision = null; },

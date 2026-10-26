@@ -16,6 +16,42 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / combined ordinary bidding and Revival — 26 October. Prototyped / Partial.**
+The whole current-turn question now includes original ordinary-lot bids, typed
+ordinary force returns and personal native leader returns alongside payments
+and transport. Private native constraints share actual resources and preserve
+alternative whole answers. Bids count the largest future accepted declaration,
+not summed bids or the later invoice. A bid No survives temporary passes and
+reentry until the same physical lot closes. Basic Revival No lasts to phase
+close; ordered Advanced closes at actual own finish. Later payment alternatives
+can remain. Own guides retain current native stage, including actual owned
+cash/Karama invoices. Older rows remain valid without private preparation data.
+
+Root integration with disjoint helper/control/native lanes and bounded review
+passes **19 files,203/203**, types/lint/build and **four native paths**,33
+GameTable SSR renders/four actual answer callbacks/15 guide callbacks.
+Original source22 adds18 for bid3, pay2 and later paid shipment1. Source50 adds14
+for bid1, two ordinary force returns and pay1 from the same four-spice purse.
+Personal leader source102 adds8 for Hidar, a real free force return/income and
+pay2. Owned-Karama source59 adds17: wait for the actual invoice, spend the real
+held card, then pay for three force returns. Original physical inventories
+remain; no played source state is installed.
+
+Twenty-two helper,17 control and18 new native cases cover intervals, maxima,
+typed cumulative progress, whole answers, Basic/Advanced closure and four minimal
+profiles. Review repairs bid-pass expiry and an out-of-stage invoice guide.
+An additional actual probe repairs zero-payment overbid funding: the owned
+Karama can preserve current cash for later Revival; the deferred Kull scope
+stays fenced. V1's source checks pass, but its private leader smoke omits the
+force clause it expected. The corrected v2 source and all four journeys pass.
+Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-turn-preparation-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-turn-preparation-runtime/`.
+Broader preparation/order/module compositions, other action families and final
+rules/browser/deployed/recovery/privacy/custody acceptance remain. No saved-game/
+database/server/reset/restart/deployment operation is performed.
+[Contract and scope](TRUTHTRANCE_TURN_ACTIONS.md#combined-ordinary-bidding-and-revival--26-october-2026).
+
 **Truthtrance / combined payments, shipment and movement — 26 October. Prototyped / Partial.**
 One whole current-turn AND/OR question now combines ordinary cumulative payer
 payments, one future original reserve shipment and physical ground-group maxima,

@@ -1,6 +1,7 @@
 import { TurnActionError, liveTurnActionPromises, turnActionBranches, recordTurnActionPayment,
   recordTurnActionShipment, recordTurnActionMovement, closeTurnActionTransport, finishTurnActionTurn,
-  validateTurnActionPromises, type TurnActionClaim, type TurnActionPromise, type TurnActionBranchLeaf } from './turn-action-promises';
+  validateTurnActionPromises, recordTurnActionBid, closeTurnActionBidding, recordTurnActionRevival,
+  closeTurnActionRevival, type TurnActionClaim, type TurnActionPromise, type TurnActionBranchLeaf, type TurnActionPreparation } from './turn-action-promises';
 import { TravelPromiseError, liveTravelPromises, travelBranches, recordTravelShipment, recordTravelMovement,
   finishTravelTurn, validateTravelPromises, type TravelClaim, type TravelPromise, type TravelBranchLeaf } from './travel-expression-promises';
 import { mixedTraitorRequirement, type MixedTraitorClaim } from './mixed-traitor-question';
@@ -15839,6 +15840,17 @@ function guardPromisedBid(g: Game, p: Player, action: Action, amount?: number) {
   if (action.bidPromiseEvent !== undefined) requireRule(typeof action.bidPromiseEvent === 'string' &&
     live.some(promise => promise.event === action.bidPromiseEvent), 'This bid commitment guide is stale.');
   if (!opportunity) return;
+  if (g.turnActionPromises) {
+    if (amount !== undefined) g.turnActionPromises = turnActionRule(() =>
+      recordTurnActionBid(g.turnActionPromises!, p.id, g.turn, {
+        lot: opportunity.lot, source: opportunity.source, amount }));
+    // A pass can be reset by a later bid in this same physical lot. Close only
+    // the private Yes-alternative witness; keep actual No caps until lot close.
+    const afterPass = amount === undefined ? { ...g, turnActionPromises: turnActionRule(() =>
+      closeTurnActionBidding(g.turnActionPromises!, g.turn, opportunity.source, p.id)) } : g;
+    requireRule(!!turnActionCompletion(afterPass, p.id),
+      'Retain a legal whole Truthtrance completion after this ordinary bid or pass.');
+  }
   if (amount !== undefined && live.length) {
     try { g.bidPromises = recordPromisedBid(g.bidPromises ?? [], p.id, opportunity, amount); }
     catch (error) { if (error instanceof BidPromiseError) throw new RuleError(error.message); throw error; }
@@ -15861,6 +15873,9 @@ function auctionNext(g: Game) {
     passed: a.passed,
   });
   if (next.kind !== 'bid') {
+    const lot = bidOpportunity(g);
+    if (lot && g.turnActionPromises) g.turnActionPromises = turnActionRule(() =>
+      closeTurnActionBidding(g.turnActionPromises!, g.turn, lot.source));
     if (next.kind === 'unbid') {
       g.deck = [...a.cards.slice(a.index), ...g.deck];
       g.auction = null;
@@ -18693,7 +18708,7 @@ function initializeTurnActionOrder(g: Game) {
     if (!g.travelPromiseOrder!.some(entry => entry.kind === kind && entry.index === index))
       g.travelPromiseOrder!.push({ kind, index });
 }
-type TurnActionCompletion = MovementCompletion & { payments: Action[] };
+type TurnActionCompletion = MovementCompletion & { payments: Action[]; bid?: Action; revival?: RevivalPromisePlan };
 /** Whole-answer alternatives stay private. Only detached native rows quote a
  * route, sharing actual interval progress and the remaining physical purse. */
 function turnActionCompletion(source: Game, actor: string): TurnActionCompletion | null {
@@ -18727,7 +18742,13 @@ function turnActionCompletion(source: Game, actor: string): TurnActionCompletion
         recipient: leaf.recipient, minimum: leaf.minimum, progress: leaf.progress });
       else if (leaf.kind === 'ship') trial.shipmentPromises!.push({ ...metadata,
         territory: leaf.territory, minimum: leaf.minimum });
-      else trial.movementPromises!.push({ ...metadata, territory: leaf.territory, minimum: leaf.minimum });
+      else if (leaf.kind === 'move') trial.movementPromises!.push({ ...metadata,
+        territory: leaf.territory, minimum: leaf.minimum });
+      else if (leaf.kind === 'bid') (trial.bidPromises ??= []).push({ ...metadata,
+        lot: leaf.lot, source: leaf.source, minimum: leaf.minimum });
+      else if (leaf.kind === 'forces') (trial.revivalPromises ??= []).push({ ...metadata,
+        counter: leaf.counter, minimum: leaf.minimum, progress: leaf.progress });
+      else if (leaf.kind === 'leader') (trial.leaderRevivalPromises ??= []).push({ ...metadata, leader: leaf.leader });
     });
     for (const required of bribePromiseRule(() => bribeCompletionCandidates(
       trial.bribePromises!, trial.bribeExpressionPromises ?? [], actor, source.turn))) {
@@ -18739,7 +18760,7 @@ function turnActionCompletion(source: Game, actor: string): TurnActionCompletion
         pendingNullentropy: ownedBox ? undefined : trial.pendingNullentropy } : trial;
       if (required.length && bribeTimingBlock(paymentWindow)) continue;
       const total = required.reduce((sum, payment) => sum + payment.amount, 0);
-      if (!Number.isSafeInteger(total) || total > uncommittedSpice(trial, owner) ||
+      if (!Number.isSafeInteger(total) || total > 0 && total > uncommittedSpice(trial, owner) ||
         required.some(payment => payment.recipient === actor || payment.recipient === owner.ally ||
           !trial.players.some(player => player.id === payment.recipient))) continue;
       const funded = structuredClone(trial), payer = getPlayer(funded, actor);
@@ -18752,14 +18773,25 @@ function turnActionCompletion(source: Game, actor: string): TurnActionCompletion
         reconcileBattlePromises(funded, voluntary);
         reconcileBidPromises(funded, voluntary);
         reconcileRevivalPromises(funded, voluntary);
+        const lot = bidOpportunity(funded);
+        const needsBid = !!lot && bidRequired(funded.bidPromises ?? [], actor, lot);
+        const bid = needsBid ? bidPromiseCompletion(funded, payer) : undefined;
+        if (needsBid && !bid) continue;
+        const needsRevival = [
+          ...liveRevivalPromises(funded.revivalPromises ?? [], actor, source.turn),
+          ...liveLeaderRevivalPromises(funded.leaderRevivalPromises ?? [], actor, source.turn),
+          ...liveRevivalExpressionPromises(funded.revivalExpressionPromises ?? [], actor, source.turn),
+        ].some(promise => promise.answer);
+        const revival = needsRevival ? revivalPromisePlan(funded, payer) : undefined;
+        if (needsRevival && !revival) continue;
         const transport = [
           ...liveShipmentPromises(funded.shipmentPromises ?? [], actor, source.turn),
           ...liveMovementPromises(funded.movementPromises ?? [], actor, source.turn),
           ...liveMovementExpressionPromises(funded.movementExpressionPromises ?? [], actor, source.turn),
         ];
         const completion = transport.length ? groundMovementCompletionNative(funded, actor) : { actions: [] };
-        if (completion) return { ...completion, payments: required.map(payment =>
-          ({ type: 'bribe', target: payment.recipient, amount: payment.amount })) };
+        if (completion) return { ...completion, ...(bid ? { bid } : {}), ...(revival ? { revival } : {}),
+          payments: required.map(payment => ({ type: 'bribe', target: payment.recipient, amount: payment.amount })) };
       } catch (error) { if (!(error instanceof RuleError)) throw error; }
     }
     return null;
@@ -18771,7 +18803,23 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
   const compiled = compileMixedActionExpression(claim.mixed,
     fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
   const open = turnActionTransportOpen(g, p.id);
+  let bid = false, revival = false;
+  const visit = (node: TurnActionClaim['mixed']): void => {
+    if (node.kind === 'action') {
+      if (node.action.kind === 'bid') bid = true;
+      if (node.action.kind === 'forces' || node.action.kind === 'leader') revival = true;
+    } else if (node.kind !== 'fact') node.terms.forEach(visit);
+  };
+  visit(claim.mixed);
+  const lot = bid ? bidOpportunity(g) : null;
+  requireRule(!bid || !!lot, 'Retain the original current ordinary auction lot.');
+  const preparation: TurnActionPreparation | undefined = bid || revival ? {
+    bid: lot ? { lot: lot.lot, source: lot.source, maximum: 0, closed: false } : null,
+    revival: revival ? { total: 0, normal: 0, elite: 0, leaders: [], closed: g.phase > 4 ||
+      g.phase === 4 && !!g.revivalOrder && !g.revivalOrder.remaining.includes(p.id) } : null,
+  } : undefined;
   return { turn: claim.turn, mixed: structuredClone(claim.mixed), event, player: p.id, asker, answer, compiled,
+    ...(preparation ? { preparation } : {}),
     shipment: { pending: open && (g.phase < 5 || shipmentAvailable(g, p)), event: null },
     progress: [], payments: [], transportClosed: !open, paymentClosed: false,
     fulfilled: compiled.kind === 'constant' && compiled.value === answer, released: false };
@@ -18814,6 +18862,14 @@ function reconcileTurnActionPromises(g: Game, actor?: string, action?: Action, s
       'You cannot voluntarily close an unfulfilled whole Truthtrance answer.');
       g.turnActionPromises = finished;
     }
+    const lot = bidOpportunity(g);
+    for (const promise of liveTurnActionPromises(g.turnActionPromises!, p.id, g.turn)) {
+      const bid = promise.preparation?.bid;
+      if (bid && (!lot || lot.source !== bid.source))
+        g.turnActionPromises = turnActionRule(() => closeTurnActionBidding(g.turnActionPromises!, g.turn, bid.source, p.id));
+    }
+    if (g.phase > 4 || g.phase === 4 && g.revivalOrder && !g.revivalOrder.remaining.includes(p.id))
+      g.turnActionPromises = turnActionRule(() => closeTurnActionRevival(g.turnActionPromises!, p.id, g.turn));
     if (g.phase > 5) g.turnActionPromises = turnActionRule(() =>
       closeTurnActionTransport(g.turnActionPromises!, p.id, g.turn));
   }
@@ -18830,7 +18886,7 @@ function reconcileTurnActionPromises(g: Game, actor?: string, action?: Action, s
     const early = g.phase < 5 || sourcePhase < 5;
     const voluntary = actor === p.id && action?.type !== 'passResponse' && (!early || !!action &&
       (['card', 'bribe', 'alliance', 'pledgeAid', 'emperorGift', 'bid', 'richeseGift', 'revealNoField', 'revive',
-        'reviveLeader', 'reviveKwisatz', 'emperorRevival', 'decision'].includes(action.type) ||
+        'reviveLeader', 'reviveKwisatz', 'acceptLeaderRevival', 'emperorRevival', 'decision', 'passBid', 'karama', 'specialKarama'].includes(action.type) ||
         action.type === 'richeseBid' && typeof action.amount === 'number' && action.amount > 0 ||
         action.type === 'ready' && [2, 4, 7, 8].includes(sourcePhase)));
     if (g.phaseOpening || g.response || g.decision || g.pendingTreacheryDiscard || g.pendingAmbassador ||
@@ -18875,12 +18931,18 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   let action = !bribeTimingBlock(g) ? completion.payments[0] : undefined;
   if (!action && g.phase <= 5) {
     const lot = g.phase === 3 && !g.decision ? bidOpportunity(g) : null;
-    if (lot && bidRequired(g.bidPromises ?? [], player.id, lot)) action = projectedBidPromiseGuide(g, player.id)?.action;
+    if (lot && g.auction?.active === player.id) action = completion.bid ??
+      (bidRequired(g.bidPromises ?? [], player.id, lot) ? projectedBidPromiseGuide(g, player.id)?.action : undefined);
     const revival = [
       ...liveRevivalPromises(g.revivalPromises ?? [], player.id, g.turn),
       ...liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], player.id, g.turn),
       ...liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [], player.id, g.turn),
     ].some(row => row.answer);
+    if (!action && completion.revival && !ownedBox &&
+      !(g.phase === 4 && nativeRevivalOrderBlock(g, player.id)))
+      action = g.phase === 4 ? completion.revival.action
+        : g.phase === 2 || g.phase === 3 && ownedInvoice
+          ? completion.revival.early.find(step => step.phase === g.phase)?.action : undefined;
     if (!action && revival && !ownedBox) action = (projectedRevivalExpressionPromiseGuide(g, player.id) ??
       projectedLeaderRevivalPromiseGuide(g, player.id) ?? projectedRevivalPromiseGuide(g, player.id))?.action;
     if (!action && g.phase < 5) {
@@ -31272,6 +31334,8 @@ function revivalExpressionRule<T>(calculate: () => T): T {
   catch (error) { if (error instanceof RevivalExpressionPromiseError) throw new RuleError(error.message); throw error; }
 }
 function recordRevivalExpressionEvent(g: Game, player: string, event: RevivalExpressionReturn) {
+  if (g.turnActionPromises) g.turnActionPromises = turnActionRule(() =>
+    recordTurnActionRevival(g.turnActionPromises!, player, g.turn, event));
   if (liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [], player, g.turn).length)
     g.revivalExpressionPromises = revivalExpressionRule(() => recordRevivalExpressionReturn(
       g.revivalExpressionPromises ?? [], player, g.turn, event));
@@ -41023,7 +41087,17 @@ function applyActionInner(
     if (bribeWindowCloses) requireRule(!hasBribePromises(g, p.id, true),
       g.phase === 8 ? 'Complete your Truthtrance bribe payments before finishing Mentat Pause.'
         : 'Pay your Truthtrance bribes before the known Inflation Double opening prevents them.');
-    if (g.phase === 4) { guardPromisedRevival(g, p, action); guardPromisedLeaderRevival(g, p, action); guardRevivalExpressionReady(g, p); }
+    if (g.phase === 4) {
+      if (g.turnActionPromises) {
+        const closed = turnActionRule(() => closeTurnActionRevival(g.turnActionPromises!, p.id, g.turn));
+        requireRule(!!turnActionCompletion({ ...g, turnActionPromises: closed }, p.id),
+          'Complete your whole Truthtrance Revival answer or retain another legal alternative.');
+        // Basic No retains its cap until phase close, even if a new Truth later
+        // reopens concurrent Ready. Ordered Advanced finish closes it now.
+        if (g.revivalOrder) g.turnActionPromises = closed;
+      }
+      guardPromisedRevival(g, p, action); guardPromisedLeaderRevival(g, p, action); guardRevivalExpressionReady(g, p);
+    }
     requireRule(
       [1, 2, 4, 7, 8].includes(g.phase) ||
         (g.phase === 0 && g.stormPending !== null),

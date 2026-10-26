@@ -1,5 +1,8 @@
 import { TERRITORIES } from './board';
 import { BribePromiseError, parseBribeClaim } from './bribe-promises';
+import { BidPromiseError, parseBidClaim } from './bid-promises';
+import { parseRevivalActionClaim, type RevivalActionClaim } from './mixed-revival-question';
+import { RevivalExpressionPromiseError, type RevivalExpressionReturn } from './revival-expression-promises';
 import {
   MixedActionQuestionError,
   parseMixedActionExpression,
@@ -18,11 +21,20 @@ import type { TruthFact } from './truthtrance';
 export const TURN_ACTION_MAX_LEAVES = 16;
 export const TURN_ACTION_MAX_DEPTH = 4;
 
-export type TurnActionLeaf = TravelActionClaim | { kind: 'payment'; recipient: string; minimum: number };
+export type TurnActionLeaf = TravelActionClaim | { kind: 'payment'; recipient: string; minimum: number } |
+  { kind: 'bid'; lot: number; minimum: number } | RevivalActionClaim;
 export type TurnActionClaim = { turn: number; mixed: MixedActionExpression<TurnActionLeaf> };
 export type TurnActionPayment = { recipient: string; amount: number };
 export type TurnActionBranchLeaf = TravelBranchLeaf |
-  { kind: 'payment'; recipient: string; minimum: number; progress: number; answer: boolean };
+  { kind: 'payment'; recipient: string; minimum: number; progress: number; answer: boolean } |
+  { kind: 'bid'; lot: number; source: string; minimum: number; answer: boolean } |
+  { kind: 'forces'; counter: 'total' | 'normal' | 'elite'; minimum: number; progress: number; answer: boolean } |
+  { kind: 'leader'; leader: string; answer: boolean };
+export type TurnActionPreparation = {
+  bid: { lot: number; source: string; maximum: number; closed: boolean } | null;
+  revival: { total: number; normal: number; elite: number; leaders: string[]; closed: boolean } | null;
+};
+export type TurnActionBid = { lot: number; source: string; amount: number };
 export type TurnActionPromise = TurnActionClaim & {
   event: string;
   player: string;
@@ -39,6 +51,8 @@ export type TurnActionPromise = TurnActionClaim & {
   paymentClosed: boolean;
   fulfilled: boolean;
   released: boolean;
+  /** Optional only for original shipment/movement/payment records. */
+  preparation?: TurnActionPreparation;
 };
 
 export class TurnActionError extends Error {
@@ -67,14 +81,21 @@ const printedTerritory = (value: unknown): value is string =>
 
 /** Public leaves carry only their native destination/recipient and minimum. */
 export function parseTurnActionLeaf(value: unknown): TurnActionLeaf {
-  check(object(value), 'Choose one future reserve shipment, ground movement or ordinary bribe payment.');
+  check(object(value), 'Choose one future ordinary bid, Revival, reserve shipment, ground movement or bribe payment.');
   try {
+    if (value.kind === 'bid') {
+      check(keys(value, 'kind,lot,minimum'), 'Supply only the current ordinary lot and positive bid minimum.');
+      const claim = parseBidClaim({ turn: 1, lot: value.lot, minimum: value.minimum });
+      return { kind: 'bid', lot: claim.lot, minimum: claim.minimum };
+    }
+    if (value.kind === 'forces' || value.kind === 'leader') return parseRevivalActionClaim(value);
     if (value.kind !== 'payment') return parseTravelActionClaim(value);
     check(keys(value, 'kind,minimum,recipient'), 'Supply only the ordinary payment recipient and minimum.');
     const claim = parseBribeClaim({ turn: 1, recipient: value.recipient, minimum: value.minimum });
     return { kind: 'payment', recipient: claim.recipient, minimum: claim.minimum };
   } catch (error) {
-    if (error instanceof TravelPromiseError || error instanceof BribePromiseError)
+    if (error instanceof TravelPromiseError || error instanceof BribePromiseError || error instanceof BidPromiseError ||
+      error instanceof RevivalExpressionPromiseError)
       throw new TurnActionError(error.message);
     throw error;
   }
@@ -95,8 +116,11 @@ function storedFact(value: unknown, depth = 0): TruthFact {
 }
 
 function actionKey(action: TurnActionLeaf): string {
-  return JSON.stringify(action.kind === 'payment'
-    ? [action.kind, action.recipient, action.minimum] : [action.kind, action.territory, action.minimum]);
+  if (action.kind === 'leader') return JSON.stringify([action.kind, action.leader]);
+  if (action.kind === 'forces') return JSON.stringify([action.kind, action.counter, action.minimum]);
+  if (action.kind === 'bid') return JSON.stringify([action.kind, action.lot, action.minimum]);
+  return JSON.stringify(action.kind === 'payment' ? [action.kind, action.recipient, action.minimum] :
+    [action.kind, action.territory, action.minimum]);
 }
 
 function readCompiled(value: unknown, originals: ReadonlySet<string>): CompiledMixedAction<TurnActionLeaf> {
@@ -131,8 +155,9 @@ function validateEvent(event: unknown): asserts event is TravelEvent {
 }
 
 function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnActionLeaf> {
-  check(object(promise) && keys(promise,
-    'answer,asker,compiled,event,fulfilled,mixed,paymentClosed,payments,player,progress,released,shipment,transportClosed,turn') &&
+  const fields = 'answer,asker,compiled,event,fulfilled,mixed,paymentClosed,payments,player,progress,released,shipment,transportClosed,turn';
+  check(object(promise) && (keys(promise, fields) || keys(promise,
+    'answer,asker,compiled,event,fulfilled,mixed,paymentClosed,payments,player,preparation,progress,released,shipment,transportClosed,turn')) &&
     positive(promise.turn) && identifier(promise.event) && identifier(promise.player) && identifier(promise.asker),
   'Retain the complete original turn-action commitment and its metadata.');
   let mixed: MixedActionExpression<TurnActionLeaf>;
@@ -147,14 +172,38 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
   const originals = new Set<string>();
   const destinations = new Set<string>();
   const recipients = new Set<string>();
+  const lots = new Set<number>();
+  let hasRevival = false;
   const visit = (node: MixedActionExpression<TurnActionLeaf>): void => {
     if (node.kind === 'action') {
       originals.add(actionKey(node.action));
       if (node.action.kind === 'move') destinations.add(node.action.territory);
       if (node.action.kind === 'payment') recipients.add(node.action.recipient);
+      if (node.action.kind === 'bid') lots.add(node.action.lot);
+      if (node.action.kind === 'forces' || node.action.kind === 'leader') hasRevival = true;
     } else if (node.kind !== 'fact') node.terms.forEach(visit);
   };
   visit(mixed);
+  check(!lots.size || !!promise.preparation?.bid, 'Retain the original private lot binding for every ordinary bid leaf.');
+  check(!hasRevival || !!promise.preparation?.revival, 'Retain this answer’s ordinary Revival interval.');
+  if ('preparation' in promise) {
+    const preparation = promise.preparation;
+    check(object(preparation) && keys(preparation, 'bid,revival'), 'Retain only the private native preparation stages.');
+    if (preparation.bid !== null) {
+      const bid = preparation.bid;
+      check(object(bid) && keys(bid, 'closed,lot,maximum,source') && positive(bid.lot) && identifier(bid.source) &&
+        whole(bid.maximum) && typeof bid.closed === 'boolean' && [...lots].every(lot => lot === bid.lot),
+      'Retain one original ordinary lot, source, actual maximum accepted bid and closure.');
+    }
+    if (preparation.revival !== null) {
+      const revival = preparation.revival;
+      check(object(revival) && keys(revival, 'closed,elite,leaders,normal,total') && physical(revival.total) &&
+        physical(revival.normal) && physical(revival.elite) && revival.total === revival.normal + revival.elite &&
+        Array.isArray(revival.leaders) && revival.leaders.every(identifier) &&
+        new Set(revival.leaders).size === revival.leaders.length && typeof revival.closed === 'boolean',
+      'Retain typed actual ordinary force returns, unique personal leaders and Revival closure.');
+    }
+  }
   const compiled = readCompiled(promise.compiled, originals);
   check(typeof promise.answer === 'boolean' && typeof promise.fulfilled === 'boolean' &&
     typeof promise.released === 'boolean' && typeof promise.transportClosed === 'boolean' &&
@@ -185,6 +234,9 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
 }
 
 function actionValue(action: TurnActionLeaf, promise: TurnActionPromise): boolean {
+  if (action.kind === 'bid') return (promise.preparation?.bid?.maximum ?? 0) >= action.minimum;
+  if (action.kind === 'forces') return (promise.preparation?.revival?.[action.counter] ?? 0) >= action.minimum;
+  if (action.kind === 'leader') return promise.preparation?.revival?.leaders.includes(action.leader) ?? false;
   if (action.kind === 'payment') return (promise.payments.find(payment =>
     payment.recipient === action.recipient)?.amount ?? 0) >= action.minimum;
   if (action.kind === 'ship') return promise.shipment.event !== null &&
@@ -200,6 +252,8 @@ function evaluate(node: CompiledMixedAction<TurnActionLeaf>, promise: TurnAction
 }
 
 function actionClosed(action: TurnActionLeaf, promise: TurnActionPromise): boolean {
+  if (action.kind === 'bid') return promise.preparation!.bid!.closed;
+  if (action.kind === 'forces' || action.kind === 'leader') return promise.preparation!.revival!.closed;
   return action.kind === 'payment' ? promise.paymentClosed : action.kind === 'ship'
     ? !promise.shipment.pending : promise.transportClosed;
 }
@@ -233,21 +287,30 @@ export function liveTurnActionPromises<T extends TurnActionPromise>(promises: re
 }
 
 function sameAction(left: TurnActionBranchLeaf, right: TurnActionBranchLeaf): boolean {
-  return left.kind === right.kind && (left.kind === 'payment'
-    ? right.kind === 'payment' && left.recipient === right.recipient && left.progress === right.progress
-    : right.kind !== 'payment' && left.territory === right.territory);
+  if (left.kind !== right.kind) return false;
+  if (left.kind === 'leader') return right.kind === 'leader' && left.leader === right.leader;
+  if (left.kind === 'forces') return right.kind === 'forces' && left.counter === right.counter && left.progress === right.progress;
+  if (left.kind === 'bid') return right.kind === 'bid' && left.lot === right.lot && left.source === right.source;
+  if (left.kind === 'payment') return right.kind === 'payment' && left.recipient === right.recipient && left.progress === right.progress;
+  return (right.kind === 'ship' || right.kind === 'move') && left.territory === right.territory;
 }
 
 /** Called within one record only: payment progress belongs to that interval. */
 function mergeBranches(left: TurnActionBranchLeaf[], right: TurnActionBranchLeaf[]): TurnActionBranchLeaf[] | null {
   const merged = left.map(leaf => ({ ...leaf }));
   for (const leaf of right) {
+    if (leaf.kind === 'leader') {
+      const prior = merged.find(other => sameAction(other, leaf));
+      if (prior && prior.answer !== leaf.answer) return null;
+      if (!prior) merged.push({ ...leaf });
+      continue;
+    }
     const same = merged.find(other => sameAction(other, leaf) && other.answer === leaf.answer);
-    if (same) same.minimum = leaf.answer ? Math.max(same.minimum, leaf.minimum) : Math.min(same.minimum, leaf.minimum);
+    if (same && same.kind !== 'leader') same.minimum = leaf.answer ? Math.max(same.minimum, leaf.minimum) : Math.min(same.minimum, leaf.minimum);
     else merged.push({ ...leaf });
     const yes = merged.find(other => sameAction(other, leaf) && other.answer);
     const no = merged.find(other => sameAction(other, leaf) && !other.answer);
-    if (yes && no && yes.minimum >= no.minimum) return null;
+    if (yes && no && yes.kind !== 'leader' && no.kind !== 'leader' && yes.minimum >= no.minimum) return null;
     if (leaf.kind === 'ship' && leaf.answer && merged.some(other =>
       other.kind === 'ship' && other.answer && other.territory !== leaf.territory)) return null;
   }
@@ -264,9 +327,11 @@ export function* turnActionBranches(promise: TurnActionPromise): Generator<TurnA
       const action = node.action;
       const achieved = actionValue(action, promise);
       if (achieved || actionClosed(action, promise)) { if (achieved === answer) yield []; return; }
-      yield [action.kind === 'payment' ? { ...action, answer,
-        progress: promise.payments.find(payment => payment.recipient === action.recipient)?.amount ?? 0 }
-        : { ...action, answer }];
+      if (action.kind === 'bid') yield [{ ...action, source: promise.preparation!.bid!.source, answer }];
+      else if (action.kind === 'forces') yield [{ ...action, progress: promise.preparation!.revival![action.counter], answer }];
+      else if (action.kind === 'payment') yield [{ ...action, answer,
+        progress: promise.payments.find(payment => payment.recipient === action.recipient)?.amount ?? 0 }];
+      else yield [{ ...action, answer }];
       return;
     }
     const conjunction = node.kind === 'and' ? answer : !answer;
@@ -293,6 +358,73 @@ function settle<T extends TurnActionPromise>(promise: T, update: T): T {
   check(promise.answer || !satisfied, 'This action conflicts with your whole Truthtrance turn-action No answer.');
   return promise.answer && satisfied || !promise.answer && relevantClosed(compiled, update)
     ? { ...update, fulfilled: true } : update;
+}
+
+/** Only an actually accepted ordinary declaration counts for its original lot.
+ * Repeated declarations retain their largest amount, never their sum or invoice. */
+export function recordTurnActionBid<T extends TurnActionPromise>(promises: readonly T[], player: string,
+  turn: number, event: TurnActionBid): T[] {
+  check(object(event) && keys(event, 'amount,lot,source') && positive(event.lot) && identifier(event.source) && positive(event.amount),
+    'Retain the original ordinary lot, private source and positive actual accepted bid.');
+  const updates = new Map<T, T>();
+  for (const promise of liveTurnActionPromises(promises, player, turn)) {
+    readPromise(promise);
+    const stage = promise.preparation?.bid;
+    if (!stage || stage.closed || stage.source !== event.source || stage.lot !== event.lot || event.amount <= stage.maximum) continue;
+    updates.set(promise, settle(promise, { ...promise, preparation: { ...promise.preparation!,
+      bid: { ...stage, maximum: event.amount } } }));
+  }
+  return promises.map(promise => updates.get(promise) ?? promise);
+}
+
+/** Close this physical ordinary lot, or one respondent's actual opportunity. */
+export function closeTurnActionBidding<T extends TurnActionPromise>(promises: readonly T[], turn: number,
+  source: string, player?: string): T[] {
+  check(Array.isArray(promises) && positive(turn) && identifier(source) &&
+    (player === undefined || identifier(player)), 'Choose the original ordinary lot and optional respondent.');
+  for (const promise of promises) check(object(promise), 'Retain an original turn-action record.');
+  return promises.map(promise => {
+    if (promise.turn !== turn || player !== undefined && promise.player !== player || promise.fulfilled || promise.released) return promise;
+    readPromise(promise);
+    const stage = promise.preparation?.bid;
+    if (!stage || stage.closed || stage.source !== source) return promise;
+    return settle(promise, { ...promise, preparation: { ...promise.preparation!, bid: { ...stage, closed: true } } });
+  });
+}
+
+/** Completed ordinary native returns only. Card/special/foreign returns must
+ * not call this hook, and each personal identity is recorded only once. */
+export function recordTurnActionRevival<T extends TurnActionPromise>(promises: readonly T[], player: string,
+  turn: number, event: RevivalExpressionReturn): T[] {
+  check(object(event) && (event.kind === 'forces' && keys(event, 'amount,elite,kind') && physical(event.amount) &&
+    physical(event.elite) && event.elite <= event.amount ||
+    event.kind === 'leader' && keys(event, 'kind,leader') && identifier(event.leader)),
+  'Retain an actual typed ordinary force return or personal leader identity.');
+  const updates = new Map<T, T>();
+  for (const promise of liveTurnActionPromises(promises, player, turn)) {
+    readPromise(promise);
+    const stage = promise.preparation?.revival;
+    if (!stage || stage.closed || event.kind === 'forces' && event.amount === 0 ||
+      event.kind === 'leader' && stage.leaders.includes(event.leader)) continue;
+    const revival = event.kind === 'forces' ? { ...stage, total: stage.total + event.amount,
+      normal: stage.normal + event.amount - event.elite, elite: stage.elite + event.elite, leaders: [...stage.leaders] } :
+      { ...stage, leaders: [...stage.leaders, event.leader] };
+    updates.set(promise, settle(promise, { ...promise, preparation: { ...promise.preparation!, revival } }));
+  }
+  return promises.map(promise => updates.get(promise) ?? promise);
+}
+
+/** The respondent's ordinary Revival stage closes independently of transport. */
+export function closeTurnActionRevival<T extends TurnActionPromise>(promises: readonly T[], player: string,
+  turn: number): T[] {
+  const live = new Set(liveTurnActionPromises(promises, player, turn));
+  return promises.map(promise => {
+    if (!live.has(promise)) return promise;
+    readPromise(promise);
+    const stage = promise.preparation?.revival;
+    if (!stage || stage.closed) return promise;
+    return settle(promise, { ...promise, preparation: { ...promise.preparation!, revival: { ...stage, closed: true } } });
+  });
 }
 
 /** Exactly one original completed future reserve shipment or actual skip. */
@@ -379,7 +511,10 @@ export function finishTurnActionTurn<T extends TurnActionPromise>(promises: read
     if (!live.has(promise)) return promise;
     readPromise(promise);
     const closed = { ...promise, transportClosed: true, paymentClosed: true,
-      shipment: { ...promise.shipment, pending: false } };
+      shipment: { ...promise.shipment, pending: false }, ...(promise.preparation ? { preparation: {
+        bid: promise.preparation.bid ? { ...promise.preparation.bid, closed: true } : null,
+        revival: promise.preparation.revival ? { ...promise.preparation.revival, closed: true } : null,
+      } } : {}) };
     const fulfilled = turnActionValue(closed) === promise.answer;
     return { ...closed, fulfilled, released: !fulfilled };
   });
@@ -393,6 +528,9 @@ export function validateTurnActionPromises(promises: readonly TurnActionPromise[
   for (const promise of promises) {
     const compiled = readPromise(promise);
     const satisfied = evaluate(compiled, promise);
+    const allClosed = promise.transportClosed && promise.paymentClosed &&
+      (!promise.preparation?.bid || promise.preparation.bid.closed) &&
+      (!promise.preparation?.revival || promise.preparation.revival.closed);
     const recipientsValid = (node: MixedActionExpression<TurnActionLeaf>): boolean => node.kind === 'action'
       ? node.action.kind !== 'payment' || players.includes(node.action.recipient) && node.action.recipient !== promise.player
       : node.kind === 'fact' || node.terms.every(recipientsValid);
@@ -401,7 +539,7 @@ export function validateTurnActionPromises(promises: readonly TurnActionPromise[
       (promise.released || (promise.answer || !satisfied) &&
         (!promise.answer || promise.fulfilled === satisfied) &&
         (!promise.fulfilled || satisfied === promise.answer && (promise.answer || relevantClosed(compiled, promise))) &&
-        (!(promise.transportClosed && promise.paymentClosed) || promise.fulfilled)),
+        (!allClosed || promise.fulfilled)),
     'The turn-action commitment lost its event, participants or whole-answer progress.');
     events.add(promise.event);
   }

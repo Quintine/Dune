@@ -8,13 +8,17 @@ import {
   TURN_ACTION_MAX_DEPTH,
   TURN_ACTION_MAX_LEAVES,
   TurnActionError,
+  closeTurnActionBidding,
+  closeTurnActionRevival,
   closeTurnActionTransport,
   finishTurnActionTurn,
   liveTurnActionPromises,
   parseTurnActionLeaf,
+  recordTurnActionBid,
   recordTurnActionMovement,
   recordTurnActionPayment,
   recordTurnActionShipment,
+  recordTurnActionRevival,
   turnActionBranches,
   turnActionHasPayments,
   turnActionValue,
@@ -30,6 +34,10 @@ const travel = (kind: 'ship' | 'move', territory = 'carthag', minimum = 3): Expr
   ({ kind: 'action', action: { kind, territory, minimum } });
 const pay = (recipient = 'recipient', minimum = 3): Expression =>
   ({ kind: 'action', action: { kind: 'payment', recipient, minimum } });
+const bid = (minimum = 3, lot = 1): Expression => ({ kind: 'action', action: { kind: 'bid', lot, minimum } });
+const forces = (minimum = 3, counter: 'total' | 'normal' | 'elite' = 'total'): Expression =>
+  ({ kind: 'action', action: { kind: 'forces', counter, minimum } });
+const leader = (leader = 'atreides-0'): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
 const fact = (): Expression => ({ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 5 } });
 const group = (kind: 'and' | 'or', ...terms: Expression[]): Expression => ({ kind, terms });
 const signedTravel = (kind: 'ship' | 'move', territory = 'carthag', minimum = 3,
@@ -47,6 +55,12 @@ function promise(mixed: Expression, answer = true, id = 'turn-action:1'): TurnAc
   };
 }
 const branches = (record: TurnActionPromise) => [...turnActionBranches(record)];
+function prepared(mixed: Expression, answer = true, id = 'turn-action:1'): TurnActionPromise {
+  return { ...promise(mixed, answer, id), preparation: {
+    bid: { lot: 1, source: 'original-lot:1', maximum: 0, closed: false },
+    revival: { total: 0, normal: 0, elite: 0, leaders: [], closed: false },
+  } };
+}
 
 void test('turn-action leaves retain exact native fields, safe payment minima and no payment twenty-force cap', () => {
   for (const kind of ['ship', 'move'] as const) {
@@ -376,4 +390,170 @@ void test('stored rows reject missing or extra metadata, foreign private leaves 
     { ...payment(), amount: 1.5 }, { ...payment(), amount: Number.MAX_SAFE_INTEGER + 1 },
     { ...payment(), recipient: '' }, { ...payment(), received: true }])
     assert.throws(() => recordTurnActionPayment([original], 'respondent', 1, invalid as never), TurnActionError);
+});
+
+void test('new preparation leaves reuse strict native bid and typed Revival parsers without changing old rows', () => {
+  for (const leaf of [{ kind: 'bid', lot: 1, minimum: Number.MAX_SAFE_INTEGER },
+    { kind: 'forces', counter: 'elite', minimum: 20 }, { kind: 'leader', leader: 'atreides-0' }]) {
+    assert.deepEqual(parseTurnActionLeaf(leaf), leaf);
+    assert.notEqual(parseTurnActionLeaf(leaf), leaf);
+  }
+  for (const leaf of [{ kind: 'bid', lot: 0, minimum: 1 }, { kind: 'bid', lot: 1, minimum: 0 },
+    { kind: 'bid', lot: 1, minimum: 1, source: 'hidden' }, { kind: 'bid', lot: 1, minimum: 1, progress: 0 },
+    { kind: 'forces', counter: 'normal', minimum: 21 }, { kind: 'forces', counter: 'other', minimum: 1 },
+    { kind: 'forces', counter: 'normal', minimum: 1, amount: 1 },
+    { kind: 'leader', leader: '' }, { kind: 'leader', leader: 'atreides-0', answer: true }])
+    assert.throws(() => parseTurnActionLeaf(leaf), TurnActionError);
+  const old = promise(group('and', pay(), travel('move')));
+  validateTurnActionPromises([old], seats);
+  assert.equal('preparation' in recordTurnActionPayment([old], 'respondent', 1, payment())[0], false);
+  for (const mixed of [bid(), forces(), leader()])
+    assert.throws(() => turnActionValue(promise(mixed)), TurnActionError);
+  const folded = prepared(group('or', fact(), bid()));
+  delete folded.preparation;
+  assert.throws(() => turnActionValue(folded), TurnActionError, 'Folded original bid leaves still retain their physical source');
+});
+
+void test('bid progress retains a maximum accepted declaration from one future original lot and answer interval', () => {
+  const original = prepared(group('and', bid(7), pay()));
+  const once = recordTurnActionBid([original], 'respondent', 1, { lot: 1, source: 'original-lot:1', amount: 3 });
+  const twice = recordTurnActionBid(once, 'respondent', 1, { lot: 1, source: 'original-lot:1', amount: 5 });
+  assert.equal(twice[0].preparation!.bid!.maximum, 5);
+  assert.equal(turnActionValue(twice[0]), false, 'Three and five never combine into an eight-spice bid');
+  assert.deepEqual(branches(twice[0]), [[{ kind: 'bid', lot: 1, source: 'original-lot:1', minimum: 7, answer: true }, signedPay()]]);
+  for (const event of [{ lot: 1, source: 'other-lot', amount: 9 }, { lot: 2, source: 'original-lot:1', amount: 9 },
+    { lot: 1, source: 'original-lot:1', amount: 4 }])
+    assert.equal(recordTurnActionBid(twice, 'respondent', 1, event)[0], twice[0]);
+  const fresh = prepared(group('and', bid(7), pay()), true, 'turn-action:2');
+  const combined = recordTurnActionBid([twice[0], fresh], 'respondent', 1, { lot: 1, source: 'original-lot:1', amount: 4 });
+  assert.equal(combined[0].preparation!.bid!.maximum, 5);
+  assert.equal(combined[1].preparation!.bid!.maximum, 4);
+  const accepted = recordTurnActionBid(combined, 'respondent', 1, { lot: 1, source: 'original-lot:1', amount: 7 });
+  assert.deepEqual(branches(accepted[0]), [[signedPay()]]);
+  assert.equal(original.preparation!.bid!.maximum, 0);
+  assert.equal(recordTurnActionBid(accepted, 'other', 1, { lot: 1, source: 'original-lot:1', amount: 20 })[0], accepted[0]);
+  assert.equal(recordTurnActionBid(accepted, 'respondent', 2, { lot: 1, source: 'original-lot:1', amount: 20 })[0], accepted[0]);
+});
+
+void test('ordinary Revival accumulates typed physical returns and records each personal leader identity once', () => {
+  const original = prepared(group('and', forces(5), forces(3, 'normal'), forces(2, 'elite'), leader(), pay()));
+  const once = recordTurnActionRevival([original], 'respondent', 1, { kind: 'forces', amount: 3, elite: 1 });
+  assert.deepEqual(once[0].preparation!.revival, { total: 3, normal: 2, elite: 1, leaders: [], closed: false });
+  assert.deepEqual(branches(once[0]), [[
+    { kind: 'forces', counter: 'total', minimum: 5, progress: 3, answer: true },
+    { kind: 'forces', counter: 'normal', minimum: 3, progress: 2, answer: true },
+    { kind: 'forces', counter: 'elite', minimum: 2, progress: 1, answer: true },
+    { kind: 'leader', leader: 'atreides-0', answer: true }, signedPay(),
+  ]]);
+  const twice = recordTurnActionRevival(once, 'respondent', 1, { kind: 'forces', amount: 2, elite: 1 });
+  const returned = recordTurnActionRevival(twice, 'respondent', 1, { kind: 'leader', leader: 'atreides-0' });
+  assert.deepEqual(returned[0].preparation!.revival, { total: 5, normal: 3, elite: 2, leaders: ['atreides-0'], closed: false });
+  assert.equal(recordTurnActionRevival(returned, 'respondent', 1, { kind: 'leader', leader: 'atreides-0' })[0], returned[0]);
+  assert.deepEqual(branches(returned[0]), [[signedPay()]]);
+  assert.equal(recordTurnActionPayment(returned, 'respondent', 1, payment())[0].fulfilled, true);
+  assert.equal(original.preparation!.revival!.total, 0);
+  const fresh = prepared(group('and', forces(5), pay()), true, 'turn-action:2');
+  const intervals = recordTurnActionRevival([returned[0], fresh], 'respondent', 1, { kind: 'forces', amount: 1, elite: 0 });
+  assert.equal(intervals[0].preparation!.revival!.total, 6);
+  assert.equal(intervals[1].preparation!.revival!.total, 1);
+});
+
+void test('cross-preparation whole No uses De Morgan and rejects the actual event completing its aggregate', () => {
+  const original = prepared(group('and', bid(4), group('or', forces(2), leader())), false);
+  assert.deepEqual(branches(original), [[{ kind: 'bid', lot: 1, source: 'original-lot:1', minimum: 4, answer: false }],
+    [{ kind: 'forces', counter: 'total', minimum: 2, progress: 0, answer: false },
+      { kind: 'leader', leader: 'atreides-0', answer: false }]]);
+  const accepted = recordTurnActionBid([original], 'respondent', 1, { lot: 1, source: 'original-lot:1', amount: 4 });
+  const before = structuredClone(accepted);
+  assert.throws(() => recordTurnActionRevival(accepted, 'respondent', 1, { kind: 'forces', amount: 2, elite: 0 }), TurnActionError);
+  assert.throws(() => recordTurnActionRevival(accepted, 'respondent', 1, { kind: 'leader', leader: 'atreides-0' }), TurnActionError);
+  assert.deepEqual(accepted, before);
+  const orNo = prepared(group('or', bid(4), leader()), false);
+  assert.throws(() => recordTurnActionBid([orNo], 'respondent', 1, { lot: 1, source: 'original-lot:1', amount: 4 }), TurnActionError);
+  assert.throws(() => recordTurnActionRevival([orNo], 'respondent', 1, { kind: 'leader', leader: 'atreides-0' }), TurnActionError);
+});
+
+void test('Bidding and Revival close independently while transport closure preserves both preparation alternatives', () => {
+  const original = prepared(group('or', bid(), forces(), pay()));
+  const transport = closeTurnActionTransport([original], 'respondent', 1);
+  assert.equal(transport[0].preparation!.bid!.closed, false);
+  assert.equal(transport[0].preparation!.revival!.closed, false);
+  const wrong = closeTurnActionBidding(transport, 1, 'other-lot');
+  assert.equal(wrong[0], transport[0]);
+  assert.equal(closeTurnActionBidding(transport, 1, 'original-lot:1', 'other')[0], transport[0]);
+  const bidding = closeTurnActionBidding(transport, 1, 'original-lot:1', 'respondent');
+  assert.equal(bidding[0].preparation!.bid!.closed, true);
+  assert.equal(bidding[0].preparation!.revival!.closed, false);
+  const revival = closeTurnActionRevival(bidding, 'respondent', 1);
+  assert.deepEqual(branches(revival[0]), [[signedPay()]]);
+  assert.equal(revival[0].released, false);
+  assert.equal(recordTurnActionBid(revival, 'respondent', 1, { lot: 1, source: 'original-lot:1', amount: 20 })[0], revival[0]);
+  assert.equal(recordTurnActionRevival(revival, 'respondent', 1, { kind: 'forces', amount: 20, elite: 0 })[0], revival[0]);
+  const no = prepared(group('and', bid(), leader()), false);
+  const bidClosed = closeTurnActionBidding([no], 1, 'original-lot:1');
+  assert.equal(bidClosed[0].fulfilled, false);
+  assert.equal(closeTurnActionRevival(bidClosed, 'respondent', 1)[0].fulfilled, true);
+  const paidOnlyClosed = { ...original, transportClosed: true, paymentClosed: true,
+    shipment: { pending: false, event: null } };
+  validateTurnActionPromises([paidOnlyClosed], seats);
+});
+
+void test('same-source bid and force bounds merge strongest thresholds without combining distinct typed counters', () => {
+  const mixed = group('and', bid(3), bid(5), forces(2, 'normal'), forces(4, 'normal'), forces(1, 'elite'), leader(), leader());
+  assert.deepEqual(branches(prepared(mixed)), [[
+    { kind: 'bid', lot: 1, source: 'original-lot:1', minimum: 5, answer: true },
+    { kind: 'forces', counter: 'normal', minimum: 4, progress: 0, answer: true },
+    { kind: 'forces', counter: 'elite', minimum: 1, progress: 0, answer: true },
+    { kind: 'leader', leader: 'atreides-0', answer: true },
+  ]]);
+  const no = prepared(group('or', bid(3), bid(5), forces(2), forces(4)), false);
+  assert.deepEqual(branches(no), [[
+    { kind: 'bid', lot: 1, source: 'original-lot:1', minimum: 3, answer: false },
+    { kind: 'forces', counter: 'total', minimum: 2, progress: 0, answer: false },
+  ]]);
+});
+
+void test('full expiry closes every preparation stage while terminal rows preserve their original progress and deadlines', () => {
+  const original = prepared(group('and', bid(), forces(), leader(), pay()));
+  const no = prepared(group('and', bid(), forces(), leader(), pay()), false, 'turn-action:2');
+  const finished = finishTurnActionTurn([original, no], 'respondent', 1);
+  assert.equal(finished[0].released, true);
+  assert.equal(finished[1].fulfilled, true);
+  for (const row of finished) {
+    assert.equal(row.preparation!.bid!.closed, true);
+    assert.equal(row.preparation!.revival!.closed, true);
+  }
+  for (const transform of [
+    (rows: TurnActionPromise[]) => recordTurnActionBid(rows, 'respondent', 1, { lot: 1, source: 'original-lot:1', amount: 20 }),
+    (rows: TurnActionPromise[]) => recordTurnActionRevival(rows, 'respondent', 1, { kind: 'forces', amount: 20, elite: 0 }),
+    (rows: TurnActionPromise[]) => closeTurnActionBidding(rows, 1, 'original-lot:1'),
+    (rows: TurnActionPromise[]) => closeTurnActionRevival(rows, 'respondent', 1),
+  ]) assert.ok(transform(finished).every((row, index) => row === finished[index]));
+  validateTurnActionPromises(finished, seats);
+});
+
+void test('preparation metadata and actual events reject foreign sources, mismatched stages and impossible typed totals', () => {
+  const original = prepared(group('and', bid(), forces(), leader()));
+  for (const preparation of [undefined, null, {}, { bid: null, revival: null },
+    { ...original.preparation, hidden: true },
+    { ...original.preparation, bid: { ...original.preparation!.bid!, lot: 2 } },
+    { ...original.preparation, bid: { ...original.preparation!.bid!, source: '' } },
+    { ...original.preparation, bid: { ...original.preparation!.bid!, maximum: -1 } },
+    { ...original.preparation, bid: { ...original.preparation!.bid!, maximum: Number.MAX_SAFE_INTEGER + 1 } },
+    { ...original.preparation, revival: { ...original.preparation!.revival!, total: 2, normal: 1 } },
+    { ...original.preparation, revival: { ...original.preparation!.revival!, leaders: ['atreides-0', 'atreides-0'] } },
+    { ...original.preparation, revival: { ...original.preparation!.revival!, closed: 'yes' } }])
+    assert.throws(() => turnActionValue({ ...original, preparation } as TurnActionPromise), TurnActionError);
+  assert.throws(() => turnActionValue(prepared(group('or', bid(1, 1), bid(1, 2)))), TurnActionError);
+  for (const invalid of [{ lot: 0, source: 'original-lot:1', amount: 1 }, { lot: 1, source: '', amount: 1 },
+    { lot: 1, source: 'original-lot:1', amount: 0 }, { lot: 1, source: 'original-lot:1', amount: 1, answer: true }])
+    assert.throws(() => recordTurnActionBid([original], 'respondent', 1, invalid), TurnActionError);
+  for (const invalid of [{ kind: 'forces', amount: 2, elite: 3 }, { kind: 'forces', amount: 21, elite: 0 },
+    { kind: 'forces', amount: 2, elite: 0, source: 'ghola' }, { kind: 'leader', leader: 'atreides-0', card: 'ghola' }])
+    assert.throws(() => recordTurnActionRevival([original], 'respondent', 1, invalid as never), TurnActionError);
+  const full = { ...original, preparation: { ...original.preparation!,
+    revival: { total: 20, normal: 20, elite: 0, leaders: [], closed: false } } };
+  const before = structuredClone(full);
+  assert.throws(() => recordTurnActionRevival([full], 'respondent', 1, { kind: 'forces', amount: 1, elite: 0 }), TurnActionError);
+  assert.deepEqual(full, before);
 });

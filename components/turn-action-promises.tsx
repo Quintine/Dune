@@ -18,7 +18,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const native = game.richeseAuction, order = game.revivalOrder, revival = game.revival;
   const auctionSource = (current: GameView) => current.auction && JSON.stringify({
     bid: current.auction.bid, bidder: current.auction.bidder, active: current.auction.active,
-    remaining: current.auction.remaining, allyPayment: current.auction.allyPayment,
+    remaining: current.auction.remaining, allyPayment: current.auction.allyPayment, lot: current.bidPromiseLot,
   });
   const nativeSource = (current: GameView) => current.richeseAuction && JSON.stringify({
     event: current.richeseAuction.event, method: current.richeseAuction.method,
@@ -119,10 +119,10 @@ export function TurnActionPromises(props: TurnActionProps) {
   if (!own.length) return null;
   const live = own.some(promise => promise.turn === game.turn && !promise.fulfilled && !promise.released);
   return <section className="notice space-y-3" aria-label="Your Truthtrance turn-action promises" id="turn-action-promise-guidance">
-    <h3>Your payment, shipment and movement promises</h3>
+    <h3>Your bid, Revival, payment, shipment and movement promises</h3>
     <ul>{own.map(promise => <li key={promise.event}>
       Turn {promise.turn}: You answered {promise.answer ? 'Yes' : 'No'} to {truthQuestionText({ kind: 'turnActions', target: promise.player,
-        turn: promise.turn, mixed: promise.mixed }, id => id === CHEAP_HERO_TRAITOR ? 'Cheap Hero / Heroine'
+        turn: promise.turn, mixed: promise.mixed }, id => id === 'kwisatz' ? 'Kwisatz Haderach' : id === CHEAP_HERO_TRAITOR ? 'Cheap Hero / Heroine'
         : game.allLeaders.find(leader => leader.id === id)?.name ?? id,
       id => game.combatLocations.find(location => location.id === id)?.name ?? id,
       id => game.players.find(player => player.id === id)?.name ?? id)}.
@@ -136,8 +136,14 @@ export function TurnActionPromises(props: TurnActionProps) {
     <p className="fine">Count the sum of future real ordinary payments to each named recipient after the answer.
       Earlier payments, gifts and ally aid do not count. The sender pays immediately; the recipient collects at the next Mentat opening.
       Payments made during Mentat Pause wait until next turn&apos;s Mentat opening; collection never counts twice.
+      Bid conditions count the highest accepted future declaration in the named current ordinary lot, never the sum of smaller bids.
+      A qualifying bid counts even when another player wins; winning still requires the original payment.
+      Force Revival conditions count cumulative future ordinary returns; normal and elite physical counters each count once.
+      Named leader conditions require an actual future ordinary native return. Earlier returns, requests alone, Ghola,
+      foreign leaders and special card returns do not count.
       Shipment conditions concern one future original reserve shipment. Ground-movement conditions count the maximum physical forces in one actual future move,
       never the sum of smaller moves. Earlier shipment and movement do not count.
+      Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.
       Shipment and movement close at your own Movement turn end; ordinary payments remain possible until the actual turn ends.
       Original costs, timing, cards, preparation and action rights still apply. This claim grants no extra action.</p>
     {live && <p>{game.phase === 8 ? 'Complete any remaining ordinary payment before the actual turn ends. Late recipients collect next turn.'
@@ -164,9 +170,12 @@ export function TurnActionAnswers(props: TurnActionProps) {
       !!me && !me.autopilot && !current.response && !current.decision && !current.phaseOpening &&
       !current.automaticContinuationPending && !current.roomControl?.paused && !current.roomControl?.closed;
   };
-  return <section aria-label="Answer the whole payment, shipment and movement question" className="space-y-3">
+  return <section aria-label="Answer the whole bid, Revival, payment, shipment and movement question" className="space-y-3">
     <p className="notice">Answer the whole expression. Current facts freeze now; OR keeps legal alternatives and No keeps the whole expression false.
       Future real ordinary payments add together per recipient. Only one future original reserve shipment and actual future ground-movement groups count.
+      Ordinary bids use the maximum future accepted declaration in the named current lot; ordinary force returns add together,
+      while named leaders must actually return through ordinary native Revival.
+      Bids close with their lot; Revival closes with your native Revival opportunity.
       Shipment and movement close at your own Movement turn end; payment conditions last until the actual turn ends.
       Original rights, preparation, timing and costs still apply. Only your whole answer is shared.</p>
     {answers.map(answer => {

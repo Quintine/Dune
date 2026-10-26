@@ -200,7 +200,7 @@ export function Truthtrance({
   const [fact, setFact] = useState<TruthFact>({ kind: 'hand', name: 'Shield' });
   const factId = useId();
   const leaderName = (id: string) =>
-    id === CHEAP_HERO_TRAITOR
+    id === 'kwisatz' ? 'Kwisatz Haderach' : id === CHEAP_HERO_TRAITOR
       ? 'Cheap Hero / Heroine'
       : (g.allLeaders.find((l) => l.id === id)?.name ?? id);
   const name = (id: string) => g.players.find((p) => p.id === id)!.name;
@@ -581,7 +581,7 @@ export function Truthtrance({
                   <option value="mixedBid">Combine current facts and ordinary bids</option>
                   <option value="traitorCall">Bind this battle’s Traitor declaration</option>
                   <option value="mixedTraitorCall">Combine current facts and this Traitor declaration</option>
-                  <option value="turnActions">Combine this turn’s payments, shipment and ground movements</option>
+                  <option value="turnActions">Combine this turn’s bids, Revival, payments, shipment and ground movements</option>
                   <option value="travel">Combine this turn’s shipment and ground movements</option>
                   <option value="shipment">
                     Bind a shipment from reserves
@@ -602,7 +602,7 @@ export function Truthtrance({
                 <>
                   <TurnActionFields value={turnActions} game={g} target={target}
                     disabled={busy || !g.truthTurnActionTargets.includes(target)} onChange={setTurnActions} />
-                  {!g.truthTurnActionTargets.includes(target) && <p className="notice">Choose a player with a supported payment, shipment or ground-movement opportunity this turn.
+                  {!g.truthTurnActionTargets.includes(target) && <p className="notice">Choose a player with a supported ordinary bid, Revival, payment, shipment or ground-movement opportunity this turn.
                     Ordinary payments may remain available after their Shipment and Movement opportunity ends.</p>}
                   <p className="notice" aria-label="Public turn-action question preview">{turnActionsError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
@@ -887,7 +887,7 @@ export function TruthHistory({ game: g }: { game: GameView }) {
             <p>
               {name(r.asker)} → {name(r.question.target)}:{' '}
               {truthQuestionText(r.question, (id) =>
-                id === CHEAP_HERO_TRAITOR
+                id === 'kwisatz' ? 'Kwisatz Haderach' : id === CHEAP_HERO_TRAITOR
                   ? 'Cheap Hero / Heroine'
                   : (g.allLeaders.find((l) => l.id === id)?.name ?? id),
                 id => g.combatLocations.find(place => place.id === id)!.name,

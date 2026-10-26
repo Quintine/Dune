@@ -1,5 +1,21 @@
 # Rule decision index
 
+## Combined ordinary bids and Revival — 26 October 2026
+
+Extend the recorded current-turn AND/OR composition to the original ordinary
+lot's future accepted bid declarations and ordinary personal native Revival.
+Bid maxima never sum or become purchase payments. Force returns accumulate by
+physical type; earlier/card/special/foreign returns stay excluded. Personal
+leader identities and original costs/cycles/slots remain. Bids remain bound to
+the original physical lot despite temporary passes that another bid can reset.
+Basic Revival No closes with the phase; ordered Advanced closes at actual own
+finish. Own completion must preserve the whole answer or an affordable later
+alternative. Exact future owned invoice preparations are guides only at their
+actual native decision. These are provisional native-solver compositions of
+publisher FAQp8 and supplied Advanced physical39, not a complete arbitrary
+promise solver or new action rights. Broader preparation/module and full-mode
+acceptance remain. [Contract/evidence](TRUTHTRANCE_TURN_ACTIONS.md#combined-ordinary-bidding-and-revival--26-october-2026).
+
 ## Combined payments and native transport — 26 October 2026
 
 Compose the existing publisher November2020 FAQp8 current-turn AND/OR and
