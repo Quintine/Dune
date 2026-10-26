@@ -19,7 +19,7 @@ export function Bribes({ game: g, act, busy }: {
   return (
     <details className="notice bribe-panel">
       <summary>Bribes{options.incoming > 0 ? ` · ${options.incoming} spice awaiting Mentat` : ''}</summary>
-      <p id={description}>Pay another non-allied faction now. The amount is public; the recipient can spend their share only from the next Mentat Pause. A message or promise alone does not pay spice.</p>
+      <p id={description}>Pay another non-allied faction now. The amount is public; the recipient collects their share at the start of Mentat Pause. Payments made during Mentat Pause wait until the start of next turn&apos;s Mentat Pause. A message or promise alone does not pay spice.</p>
       <p>Your incoming bribes: <strong>{options.incoming} spice</strong>, separate from your spendable supply.</p>
       {options.blocked ? <output className="bribe-status">{options.blocked}</output> : null}
       {options.targets.length === 0 ? <p>No non-allied recipient is available.</p> : (

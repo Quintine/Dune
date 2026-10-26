@@ -6,7 +6,7 @@ import { DIFFICULTIES } from '../game/bot-profiles';
 import {
   actTruthBribe as act, advanceTruthBribe as advance, answerTruthBribe as answer,
   askTruthBribe as ask, bindTruthBribe as bind, completeTruthBribe as complete,
-  createTruthBribeFixture as fixture, declareTruthBribe as declare, settleTruthBribe as settle,
+  createTruthBribeFixture as fixture, declareTruthBribe as declare, settleTruthBribe as settle, finishTruthBribe as finish,
   truthBribeBalances as balances, truthBribeClean as clean, truthBribeInventory as inventory, truthBribePlayer as player,
 } from './fixture-truth-bribe';
 import { createTruthRevivalFixture } from './fixture-truth-revival';
@@ -135,30 +135,59 @@ void test('native already committed auction spice cannot supply an unfunded thre
   assert.equal(player(game, f.target).spice, 10); assert.deepEqual(inventory(game), f.originalCards);
 });
 
-void test('native last Collection readiness cannot erase an unpaid Bribe Yes before actual Mentat', () => {
+void test('native unpaid Bribe Yes passes Collection but cannot finish Mentat before its late payment', () => {
   const f = fixture({ phase: 7 }); let game = act(f.game, f.asker, { type: 'ready' });
   game = act(game, f.opponent, { type: 'ready' }); assert.equal(game.phase, 7);
   game = bind(f, 'yes', 3, f.recipient, game).game;
+  const before = player(game, f.recipient).spice;
+  game = act(game, f.target, { type: 'ready' });
+  assert.equal(game.phase, 8); assert.equal(player(game, f.recipient).spice, before);
+  assert.ok(!promise(game, f.target, f.recipient).fulfilled);
+  assert.ok(!promise(game, f.target, f.recipient).released);
   rejected(game, f.target, { type: 'ready' });
-  const guide = viewGame(game, f.target).bribePromiseGuide; assert.ok(guide); game = act(game, f.target, guide.action);
-  const before = player(game, f.recipient).spice; game = act(game, f.target, { type: 'ready' });
-  assert.equal(game.phase, 8); assert.equal(player(game, f.recipient).spice, before + 3);
-  assert.equal(player(game, f.recipient).bribes, 0); assert.deepEqual(inventory(game), f.originalCards);
+  const guide = viewGame(game, f.target).bribePromiseGuide; assert.ok(guide);
+  game = act(game, f.target, guide.action);
+  assert.equal(player(game, f.recipient).spice, before);
+  assert.equal(player(game, f.recipient).bribes, 3);
+  game = finish(game);
+  assert.equal(game.turn, 2); assert.equal(player(game, f.recipient).bribes, 3);
+  assert.deepEqual(inventory(game), f.originalCards);
 });
 
-void test('a real already-ready Collection payer reopens readiness when accepting a new Bribe Yes', () => {
+void test('a new Bribe Yes retains already-ready Collection status and permits its original out-of-turn payment', () => {
   const f = fixture({ phase: 7 });
   let game = act(f.game, f.target, { type: 'ready' });
   assert.equal(game.phase, 7); assert.ok(game.ready.includes(f.target));
   game = bind(f, 'yes', 3, f.recipient, game).game;
-  assert.equal(game.phase, 7); assert.ok(!game.ready.includes(f.target));
-  rejected(game, f.target, { type: 'ready' });
+  assert.equal(game.phase, 7); assert.ok(game.ready.includes(f.target));
   const guide = viewGame(game, f.target).bribePromiseGuide; assert.ok(guide);
   game = act(game, f.target, guide.action);
+  assert.ok(game.ready.includes(f.target));
   assert.equal(player(game, f.recipient).bribes, 3);
   const result = complete(f, game);
   assert.equal(player(result.mentat.after, f.recipient).spice - player(result.mentat.before, f.recipient).spice, 3);
   assert.deepEqual(inventory(result.game), f.originalCards);
+});
+
+void test('controlled known Inflation Double closure reopens a ready payer and requires payment before Collection readiness', () => {
+  const f = fixture({ phase: 7 });
+  const controlled = structuredClone(f.game);
+  // Only the token frame is controlled; the real H/A/E source has no CHOAM
+  // player and does not claim a native token-placement history.
+  controlled.inflation = { side: 'cancel', placedTurn: 0, updatedTurn: 0, flipped: false };
+  let game = act(controlled, f.target, { type: 'ready' });
+  assert.ok(game.ready.includes(f.target));
+  game = bind(f, 'yes', 3, f.recipient, game).game;
+  assert.ok(!game.ready.includes(f.target));
+  const before = structuredClone(game);
+  assert.throws(() => act(game, f.target, { type: 'ready' }), /Inflation Double/);
+  assert.deepEqual(game, before);
+  const guide = viewGame(game, f.target).bribePromiseGuide; assert.ok(guide);
+  game = act(game, f.target, guide.action);
+  game = act(game, f.target, { type: 'ready' });
+  assert.ok(game.ready.includes(f.target));
+  assert.equal(promise(game, f.target, f.recipient).fulfilled, true);
+  assert.deepEqual(inventory(game), f.originalCards);
 });
 
 void test('native Truth bribe owner current-turn and guided event checks retain out-of-turn legal payment', () => {

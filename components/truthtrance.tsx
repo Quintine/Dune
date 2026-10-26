@@ -266,7 +266,7 @@ export function Truthtrance({
                   </>
                 ) : w.question!.kind === 'bribe' ? (
                   <>
-                    <p className="notice">Yes requires cumulative ordinary bribe payments to this named recipient while possible. No keeps all later payments below the minimum. Earlier payments, gifts and allied aid do not count. You pay now; the recipient spends the receipt at Mentat Pause.</p>
+                    <p className="notice">Yes requires cumulative ordinary bribe payments to this named recipient while possible. No keeps all later payments below the minimum. Earlier payments, gifts and allied aid do not count. You pay now; the recipient collects at the next Mentat opening. Payments during Mentat wait until next turn&apos;s opening.</p>
                     {(g.truthBribeAnswers ?? []).map(answer => <div key={answer}>
                       {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'I don’t know'}`, { type: 'truthAnswer', answer })}
                     </div>)}
@@ -453,7 +453,7 @@ export function Truthtrance({
                   <BribeClaimFields value={bribeClaim} recipients={bribeRecipients} disabled={busy || !g.truthBribeTargets.includes(target)}
                     onChange={claim => setBribeSelection({ recipient: claim.recipient, minimum: claim.minimum })} />
                   <p className="fine">Count cumulative ordinary payer payments after this answer, before this turn ends. Keep the current spendable spice needed by every Yes. Actual bribe timing and deferred recipient receipts remain; optional modules and future-income preparation remain unfinished.</p>
-                  {!g.truthBribeTargets.includes(target) && <p className="notice">Choose a supported participant before Mentat Pause and finish pending decisions.</p>}
+                  {!g.truthBribeTargets.includes(target) && <p className="notice">Choose a supported participant before this turn ends and finish pending decisions.</p>}
                   <p className="notice" aria-label="Public bribe question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
               ) : kind === 'revival' ? (

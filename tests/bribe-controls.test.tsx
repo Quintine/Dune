@@ -31,7 +31,7 @@ function reject(g: Game, actor: string, action: object) {
   assert.equal(JSON.stringify(g), before);
 }
 
-void test('out-of-turn bribes debit once, stay private as escrow and collect once at Mentat after JSON restoration', () => {
+void test('out-of-turn bribes collect at a controlled Mentat opening and late payments remain deferred after JSON restoration', () => {
   let g = game();
   g.active = 'e';
   const before = JSON.stringify(g);
@@ -55,8 +55,14 @@ void test('out-of-turn bribes debit once, stay private as escrow and collect onc
   assert.equal(g.phase, 8);
   assert.equal(g.players[1].spice, 14);
   assert.equal(options(g, 'h').incoming, 0);
-  assert.match(options(g).blocked!, /Mentat/);
+  assert.equal(options(g).blocked, null);
   assert.deepEqual(options(JSON.parse(JSON.stringify(g)), 'h'), options(g, 'h'));
+  g = applyAction(g, 'a', bribeAction(options(g), 'h', 2)!);
+  assert.equal(g.phase, 8);
+  assert.equal(g.players[0].spice, 4);
+  assert.equal(g.players[1].spice, 14);
+  assert.equal(options(g, 'h').incoming, 2);
+  assert.equal(options(g, 'h').available, 14);
 });
 
 void test('invalid amounts, self/allied recipients and stale client options never authorize a payment', () => {
@@ -73,7 +79,6 @@ void test('invalid amounts, self/allied recipients and stale client options neve
     reject(g, 'a', { type: 'bribe', target: 'e', amount });
   }
   for (const paused of [
-    { phase: 8 },
     { inflation: { side: 'double', turn: 2 } },
     { phaseOpening: { passed: [], initialize: false } },
     { response: { kind: 'emperorGift', owner: 'e', recipient: 'h', amount: 1, passed: [] } },
@@ -126,12 +131,14 @@ void test('bribe controls render recipient choices, private escrow and disabled 
   assert.match(html, /4 spice awaiting Mentat/);
   assert.match(html, /Bribe recipient/);
   assert.match(html, /Harkonnen recipient/);
-  assert.match(html, /the next Mentat Pause/);
+  assert.match(html, /collects their share at the start of Mentat Pause/);
+  assert.match(html, /Payments made during Mentat Pause wait until the start of next turn&#x27;s Mentat Pause/);
   assert.match(html, /disabled=""[^>]*>Pay bribe/);
   assert.match(html, /rules\?topic=bribes#bribes/);
   assert.ok((render(g, true).match(/disabled=""/g) ?? []).length >= 3);
   g.phase = 8;
-  assert.match(render(g), /Bribes cannot be made during Mentat Pause/);
+  assert.equal(options(g).blocked, null);
+  assert.match(render(g), /Payments made during Mentat Pause wait until the start of next turn&#x27;s Mentat Pause/);
   g.status = 'lobby';
   assert.equal(render(g), '');
 });

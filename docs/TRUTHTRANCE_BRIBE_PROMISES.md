@@ -1,10 +1,16 @@
 # Truthtrance ordinary bribe-payment promises
 
+**26 October timing follow-up:** [Mentat bribes](MENTAT_BRIBES.md) extend the
+current-turn window through phase8. Yes must finish before Mentat Ready; No
+remains live across opening collection until the actual next turn. Late receipts
+wait for the next opening. This supersedes the historical Collection deadline
+and Mentat exclusion below, without reopening already terminal old answers.
+
 ## Funded current-turn prototype — 26 October 2026
 
 **Prototyped / Partial.** Bind cumulative future ordinary spice payments to one
 named non-allied recipient during this turn. Registered bare native Basic and
-Advanced tables use their existing bribe window in phases0–7. This adds no start
+Advanced tables use their bribe window in phases0–8. This adds no start
 permission and does not certify complete rules, all deals or optional modules.
 Future income, pledge withdrawal, card preparation and wider negotiated effects
 remain required work; the first answer witness uses currently spendable funds.
@@ -31,8 +37,8 @@ real purse and every No cap.
 
 This current-funding/cumulative/recipient and accepted-order release model is
 provisional software composition, not a dedicated publisher bribe-specific
-Truthtrance ruling. The existing software bribe window excludes Mentat; that
-inherited restriction is not newly attributed to the supplied physical16 text.
+Truthtrance ruling. The inherited software Mentat ban has been removed by the
+linked timing follow-up; it was not a supplied physical16 restriction.
 No can be fixed while Inflation shows Double; Yes needs a legal funded payment.
 Wider timing/source reconciliation remains part of complete rules acceptance.
 
@@ -62,13 +68,17 @@ profiles use feasible answers and the exact native guide. Strategy and difficult
 calibration remain deferred.
 
 Own voluntary spending or an alliance offer to the unpaid named recipient cannot
-evade Yes. Collection Ready requires its payment; a new Collection Yes reopens
-that respondent's readiness. Pending consequences finish before forced release;
+evade Yes. Mentat Ready requires its payment; a new Mentat Yes reopens only
+that respondent's readiness. Collection readiness stays intact except before a
+known automatic Double closure. Pending consequences finish before forced release;
 known own spending retains the promised current funds. Completed opposing
 impossibility releases only incompatible Yes answers in accepted order. No ends
 at the original turn boundary and never binds the next turn.
 
 ## Evidence and remaining gates
+
+The following first-slice evidence predates the linked timing cutover; its
+Collection deadline/reopening assertions are superseded by the Mentat follow-up.
 
 Pure model, original-deal/payment/deferred-collection and controlled/native UI
 cases live in `tests/bribe-promises.test.ts`, `tests/fixture-truth-bribe.ts`,

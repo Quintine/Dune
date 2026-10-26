@@ -41,7 +41,8 @@ export function BribeClaimFields(props: {
     {error && <p role="alert">{error}</p>}
     <p className="fine" id="truth-bribe-help">
       Count cumulative future ordinary bribe payments to this recipient after the answer; smaller payments add together.
-      Earlier payments, gifts and ally aid do not count. The sender pays now; the recipient can spend the payment at Mentat Pause.
+      Earlier payments, gifts and ally aid do not count. The sender pays now; the recipient collects the payment at the start of Mentat Pause.
+      Payments made during Mentat Pause wait until the start of next turn&apos;s Mentat Pause.
     </p>
   </fieldset>;
 }

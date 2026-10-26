@@ -1,5 +1,21 @@
 # Rule decision index
 
+## Late Mentat bribes and actual turn-end commitments — 26 October 2026
+
+Remove the inherited whole-Mentat bribe ban. Publisher base printed12's
+enumerated restrictions supply no such ban; the supplied Advanced physical16
+collects only at Mentat start. Under standing14October priority, keep the
+existing opening collection in both modes and carry later receipts to next
+turn's opening. Basic's exact late interval is a documented software
+interpretation, not a newly fetched dedicated publisher ruling; direct FAQ
+retrieval returned403 and only indexed/previously recorded text was available.
+Native payer debit and deferred recipient accounting remain. Bribe No spans the
+opening to actual turn advance; unpaid Yes blocks Mentat Ready, reopening only
+that ready payer on a new answer. A known automatic Double closure still
+requires payment before Collection Ready. Terminal old answers stay terminal;
+there is no database rewrite or mode/publication gate change.
+[Contract and sources](MENTAT_BRIBES.md).
+
 ## Truthtrance grouped native Revival — 26 October 2026
 
 Apply recorded publisher FAQp8 AND/OR/current-turn authority and supplied

@@ -256,7 +256,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
     check(Object.keys(v).sort().join(',') === 'kind,minimum,recipient,target,turn',
       'Supply the current turn, named bribe recipient, minimum and respondent.');
     const claim = parseBribeClaim(v), respondent = g.players.find(player => player.id === v.target)!;
-    check(bribePromiseModeSupported(g) && g.status === 'playing' && g.phase >= 0 && g.phase < 8 &&
+    check(bribePromiseModeSupported(g) && g.status === 'playing' && g.phase >= 0 && g.phase <= 8 &&
       claim.turn === g.turn && claim.recipient !== respondent.id && claim.recipient !== respondent.ally &&
       g.players.some(player => player.id === claim.recipient) && !g.response && !g.decision && !g.phaseOpening &&
       !g.pendingTreacheryDiscard && !g.pendingKarama,

@@ -12,14 +12,15 @@ type BribePromiseProps = { game: GameView; busy: boolean; send: (action: Action)
 export function BribePromiseGuideButton(props: BribePromiseProps) {
   const game = props.game, guide = game.bribePromiseGuide;
   if (!guide) return null;
-  const actor = game.me, turn = game.turn, action = guide.action;
+  const actor = game.me, turn = game.turn, phase = game.phase, action = guide.action;
   const event = action.bribePromiseEvent, signature = JSON.stringify(action);
   const canAct = () => {
     const current = props.game, me = current.players.find(player => player.id === current.me), options = current.bribeOptions;
     const target = typeof action.target === 'string' ? current.players.find(player => player.id === action.target) : undefined;
     const limit = options.targets.find(recipient => recipient.id === action.target);
     return !props.busy && current === game && bribePromiseModeSupported(current) && current.status === 'playing' &&
-      Number.isSafeInteger(current.phase) && current.phase >= 0 && current.phase <= 7 && current.turn === turn && current.me === actor &&
+      Number.isSafeInteger(current.phase) && current.phase >= 0 && current.phase <= 8 && current.phase === phase &&
+      current.turn === turn && current.me === actor &&
       current.bribePromiseGuide === guide && current.bribePromiseGuide.action === action && JSON.stringify(action) === signature &&
       action.type === 'bribe' && typeof event === 'string' &&
       liveBribePromises(current.bribePromises, actor, turn).some(promise => promise.event === event) &&
@@ -56,7 +57,8 @@ export function BribePromises(props: BribePromiseProps) {
       Prior payments, gifts and ally aid do not count.
     </p>
     <p className="fine">
-      The sender pays immediately. The recipient can spend the payment only at Mentat Pause.
+      The sender pays immediately. The recipient collects the payment at the start of Mentat Pause.
+      Payments made during Mentat Pause wait until the start of next turn&apos;s Mentat Pause.
       Ordinary bribes can be paid out of turn when the current bribe controls permit them; original timing and payment rules still apply.
       {' '}<a href="/rules#truthtrance-bribe">Bribe promise rules</a>.
     </p>

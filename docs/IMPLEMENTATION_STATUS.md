@@ -1,5 +1,41 @@
 # Dune implementation status
 
+## 26 October 2026 — Ordinary Mentat bribes and actual turn-end promises
+
+**Prototyped / Partial.** Remove the inherited blanket phase8 payment ban.
+Native ordinary payments debit current spice and keep recipient shares deferred
+until the next real Mentat opening. No new immediate cash or second collection
+is created. Current-turn Truth bribe questions now include phase8 in engine,
+parser, controls and guides. No spans the opening until real turn advance;
+unpaid Yes blocks Mentat Ready. New Yes reopens only its already-ready payer;
+Collection readiness stays except before a known automatic Double closure.
+That closure retains its earlier deadline and reopens an already-ready payer.
+Existing terminal answers stay terminal; source/Basic interpretation is explicit.
+
+Root integration and disjoint control/native lanes pass **13 files,119/119**,
+types/lint/build and **six native paths**,26 GameTable SSR renders/two actual
+guide callbacks. Genuine H/A/E base33 sources reach first quiet Mentat in
+Basic32/Advanced35 actions, with both original Truths still unplayed.
+Late3 costs E10→7 and remains deferred through real next Storm/Collection;
+30/31 further actions earn exactly3 at the next opening. Advanced city income2
+is separate. Other paths bind a new phase8 Yes after readiness, carry a phase7
+Yes unpaid across Collection, cap No payments across that receipt and expire
+only on actual turn advance, and pay while already ready. All33 cards remain.
+Four minimal profiles execute the exact legal payment; strategy stays deferred.
+
+The first frozen batch passed quick but exposed four native Mentat questions
+still rejected by the inherited parser phase gate. The repaired parser and
+ready-before-known-Double case passed five focused cases before the v2 batch.
+Twelve native cases supplement existing controls/funding/Inflation coverage;
+the controlled token-only closure case claims no native CHOAM placement history.
+Frozen proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-mentat-bribes-proof-v2/`;
+journeys/HTML: adjacent `20261026-mentat-bribes-runtime/`.
+Broader faction/skill/module timing, original Inflation journeys,
+browser/mobile/deployed and final assurance remain required. No saved-game,
+database, server, reset, restart or deployment operation is performed.
+[Contract and source interpretation](MENTAT_BRIBES.md).
+
 ## 26 October 2026 — Whole AND/OR native Revival commitments
 
 **Prototyped / Partial.** Force minima and named personal native leader/KH

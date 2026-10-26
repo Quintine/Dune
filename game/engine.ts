@@ -34,7 +34,7 @@ import { BidPromiseError, bidPromiseModeSupported, bidPromiseRange, bidRequired,
   recordPromisedBid, validateBidPromises, type BidClaim, type BidOpportunity, type BidPromise } from './bid-promises';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
-import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
+import { bribeTimingBlock, bribesCloseBeforeNextMentat, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteAtreidesFullPlan } from './atreides-full-plan';
 import { quoteTleilaxuSpecialKarama } from './tleilaxu-special-karama';
 import { quoteAutomaticAdvisorFlips, validateAutomaticAdvisorFlip, AutomaticAdvisorFlipError, type AdvisorStance, type AutomaticAdvisorFlipSource, type AutomaticAdvisorTransport, type AutomaticAdvisorGamont, type AutomaticAdvisorBattle, type AutomaticAdvisorHomeworldTransport, type AutomaticAdvisorFaceDance, type AutomaticAdvisorStorm, type AutomaticAdvisorRelocation } from './advisor-automatic-flip';
@@ -15067,7 +15067,7 @@ function bribePromiseIntegrity(g: Game) {
   bribePromiseRule(() => validateBribePromises(g.bribePromises ?? [], g.players.map(player => player.id)));
 }
 function bribePromiseTurn(g: Game): boolean {
-  return g.status === 'playing' && g.phase >= 0 && g.phase < 8 && bribePromiseModeSupported(g);
+  return g.status === 'playing' && g.phase >= 0 && g.phase <= 8 && bribePromiseModeSupported(g);
 }
 function bribeQuestionWindow(g: Game): boolean {
   // A current Double side can fix No without authorizing any payment. Every
@@ -15125,9 +15125,9 @@ function bindBribeTruth(g: Game, p: Player, claim: BribeClaim, answer: boolean, 
   requireRule(bribeTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
     'Choose a bribe answer compatible with the current funds and earlier answers.');
   (g.bribePromises ??= []).push({ ...claim, event: crypto.randomUUID(), player: p.id, asker, answer, progress: 0 });
-  if (answer && g.phase === 7 && g.ready.includes(p.id)) {
+  if (answer && (g.phase === 8 || g.phase === 7 && bribesCloseBeforeNextMentat(g)) && g.ready.includes(p.id)) {
     g.ready = g.ready.filter(player => player !== p.id);
-    log(g, `${p.name} has a new Truthtrance bribe commitment and must finish Collection again after paying it.`);
+    log(g, `${p.name} has a new Truthtrance bribe commitment and must finish ${g.phase === 8 ? 'Mentat Pause' : 'Collection'} again after paying it.`);
   }
 }
 function reconcileBribePromises(g: Game, voluntary?: { actor: string; action: Action }) {
@@ -38581,7 +38581,7 @@ function applyActionInner(
     p.spice -= n;
     log(
       g,
-      `${p.name} paid a ${n}-spice bribe to ${target.name}; its recipient share becomes spendable at the next Mentat Pause.`,
+      `${p.name} paid a ${n}-spice bribe to ${target.name}; its recipient share becomes spendable ${g.phase === 8 ? 'at the start of next turn’s Mentat Pause' : 'at the next Mentat Pause opening'}.`,
     );
     const source = stampBureaucratPayment(g,'bribe',p.id,target.id,n).bureaucratPayment;
     if (!offerBureaucratPayment(g,source,{kind:'bribe'})) target.bribes += n;
@@ -39900,8 +39900,10 @@ function applyActionInner(
   }
   if (t === 'ready') {
     if (allianceQuestionWindow(g)) guardAlliancePromiseReady(g, p);
-    if (g.phase === 7) requireRule(!liveBribePromises(g.bribePromises ?? [], p.id, g.turn).some(promise => promise.answer),
-      'Complete your Truthtrance bribe payments before finishing Collection.');
+    const bribeWindowCloses = g.phase === 8 || g.phase === 7 && bribesCloseBeforeNextMentat(g);
+    if (bribeWindowCloses) requireRule(!liveBribePromises(g.bribePromises ?? [], p.id, g.turn).some(promise => promise.answer),
+      g.phase === 8 ? 'Complete your Truthtrance bribe payments before finishing Mentat Pause.'
+        : 'Pay your Truthtrance bribes before the known Inflation Double opening prevents them.');
     if (g.phase === 4) { guardPromisedRevival(g, p, action); guardPromisedLeaderRevival(g, p, action); guardRevivalExpressionReady(g, p); }
     requireRule(
       [1, 2, 4, 7, 8].includes(g.phase) ||

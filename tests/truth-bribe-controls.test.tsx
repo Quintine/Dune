@@ -75,6 +75,8 @@ void test('bribe claim fields keep the turn fixed and accept only current recipi
   assert.match(html, /Turn 2/); assert.match(html, /Recipient/); assert.match(html, /min="1"/);
   assert.match(html, /max="9007199254740991"/); assert.match(html, /smaller payments add together/);
   assert.match(html, /Earlier payments, gifts and ally aid do not count/);
+  assert.match(html, /recipient collects the payment at the start of Mentat Pause/);
+  assert.match(html, /Payments made during Mentat Pause wait until the start of next turn&#x27;s Mentat Pause/);
   minimum(props, 1); minimum(props, Number.MAX_SAFE_INTEGER); recipient(props, 'a');
   assert.deepEqual(changes, [{ ...value, minimum: 1 }, { ...value, minimum: Number.MAX_SAFE_INTEGER }, { ...value, recipient: 'a' }]);
   for (const next of [0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
@@ -102,7 +104,8 @@ void test('own bribe promises persist with named cumulative progress, delayed sp
     assert.match(html, /No forbids reaching that minimum during the rest of this turn/);
     assert.match(html, /Smaller payments to the named recipient add together/);
     assert.match(html, /Prior payments, gifts and ally aid do not count/);
-    assert.match(html, /The sender pays immediately/); assert.match(html, /recipient can spend the payment only at Mentat Pause/);
+    assert.match(html, /The sender pays immediately/); assert.match(html, /recipient collects the payment at the start of Mentat Pause/);
+    assert.match(html, /Payments made during Mentat Pause wait until the start of next turn&#x27;s Mentat Pause/);
     assert.match(html, /Fulfilled: this commitment is complete/); assert.match(html, /Released: this commitment is no longer possible/);
     assert.match(html, /href="\/rules#truthtrance-bribe"/);
     assert.doesNotMatch(html, /at least 99|foreign-event|controlled-bribe-event/);
@@ -127,10 +130,39 @@ void test('actual guide callbacks forward exact ordinary bribes out of turn thro
   }
 });
 
+void test('controlled quiet Mentat guide forwards the exact payment for an already-ready payer and explains next-turn collection', () => {
+  const game = projected(8), sent: Action[] = [];
+  game.auction = null; game.active = null; game.ready = ['p'];
+  const before = structuredClone(game);
+  const button = guide({ game, busy: false, send(action) { sent.push(action); } });
+  assert.equal(button.props.disabled, false);
+  press(button);
+  assert.deepEqual(sent, [game.bribePromiseGuide!.action]);
+  assert.equal(sent[0], game.bribePromiseGuide!.action);
+  assert.deepEqual(game, before);
+  assert.match(markup(game), /Payments made during Mentat Pause wait until the start of next turn&#x27;s Mentat Pause/);
+});
+
+void test('controlled bribe callbacks expire when their original phase changes between otherwise supported windows', () => {
+  for (const [original, current] of [[3, 8], [8, 7], [7, 8]]) {
+    const game = projected(original), sent: Action[] = [];
+    const props = { game, busy: false, send(action: Action) { sent.push(action); } };
+    const button = guide(props);
+    assert.equal(button.props.disabled, false);
+    game.phase = current;
+    press(button);
+    assert.deepEqual(sent, []);
+    const currentButton = guide(props);
+    assert.equal(currentButton.props.disabled, false);
+    press(currentButton);
+    assert.deepEqual(sent, [game.bribePromiseGuide!.action]);
+  }
+});
+
 void test('stale bribe guides respect current scope, exact recipient, strictly clear timing and projected payment bounds', () => {
   const changes: ((game: GameView) => void)[] = [
     game => { game.me = 'a'; }, game => { game.turn = 3; }, game => { game.status = 'setup'; },
-    game => { game.phase = 8; }, game => { game.phase = -1; },
+    game => { game.phase = 9; }, game => { game.phase = -1; },
     game => { game.bribePromiseGuide = { action: { ...game.bribePromiseGuide!.action } }; },
     game => { game.bribePromiseGuide = null; }, game => { game.bribePromiseGuide!.action.amount = 3; },
     game => { game.bribePromises[0].event = 'expired'; }, game => { game.bribePromises[0].player = 'a'; },

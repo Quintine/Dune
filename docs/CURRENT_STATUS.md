@@ -16,6 +16,35 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Ordinary Mentat bribes / turn-end commitments — 26 October. Prototyped / Partial.**
+Quiet Mentat payments now debit the payer and wait for next turn's actual
+Mentat opening. The original opening-only receipt mechanism stays. Bribe No
+survives opening collection until actual turn advance; unpaid Yes blocks
+Mentat Ready and a new Yes reopens only its ready payer. A known automatic
+Inflation Double closure still requires payment before Collection Ready,
+including reopening an already-ready payer. Native packet, allied/self,
+funding, pending-choice and Bureaucrat guards remain.
+
+Root integration with disjoint control/native lanes passes **13 files,
+119/119**, types/lint/build and **six native paths**,26 GameTable SSR renders/
+two actual guide callbacks. Original H/A/E base33 Basic32/Advanced35-action
+Mentat sources add30/31 actions: late3 spends E10→7, survives next Storm and
+Collection, then credits exactly3 at the next opening. Advanced city income2
+is accounted separately. A new phase8 Yes reopens only its payer; a phase7 Yes
+crosses Collection unpaid and pays late. No caps pre/post-opening payments
+until the actual next turn. Already-ready ordinary payments retain readiness.
+All33 physical cards remain; four minimal profiles use the exact legal guide.
+
+Twelve native cases and existing controlled tests cover the changed timing;
+the known future Double supplement controls only a token frame and does not
+claim an original CHOAM placement journey. Frozen v2 proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-mentat-bribes-proof-v2/`;
+journeys/HTML: adjacent `20261026-mentat-bribes-runtime/`.
+Broader faction/skill/module timing, original Inflation journeys,
+browser/mobile/deployed and final assurance remain open. No saved-game,
+database, server, restart or deployment operation is performed; mode gates stay.
+[Source, explicit Basic interpretation and boundaries](MENTAT_BRIBES.md).
+
 **Truthtrance / grouped native Revival — 26 October. Prototyped / Partial.**
 Whole AND/OR questions now combine future physical force minima and named
 personal native leader/Kwisatz returns in quiet bare native phases0–4. One

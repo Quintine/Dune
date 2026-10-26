@@ -1,5 +1,9 @@
 # Ordinary bribe controls
 
+**26 October follow-up:** [quiet Mentat payments](MENTAT_BRIBES.md) are now
+allowed after opening collection, with their receipts deferred to the next
+turn's actual opening. This supersedes the original blanket Mentat restriction.
+
 21 September 2026. A connected prototype exposes the existing authoritative
 ordinary bribe action beneath the table. This does not complete negotiation,
 Leader Skills or expansion acceptance.
@@ -10,8 +14,8 @@ Choose a non-allied recipient and a positive whole amount, then explicitly pay.
 The payer loses spice immediately. The recipient's share is deferred until the
 next Mentat Pause; it is not current spending money. The public chronicle records
 the amount and recipient, while the panel exposes only its owning seat's supply
-and incoming escrow. Self/allied targets, Mentat payments and Inflation Double
-remain prohibited. Bribes are allowed out of turn at otherwise open boundaries.
+and incoming escrow. Self/allied targets and Inflation Double remain prohibited.
+Bribes are allowed out of turn at otherwise open boundaries, including Mentat.
 
 These preserve the existing rules and [Bureaucrat source contract](BUREAUCRAT_PAYMENTS.md).
 The official [November FAQ, p. 9](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=9)

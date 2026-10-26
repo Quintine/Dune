@@ -7,10 +7,10 @@ export interface BribeOptions {
   targets: { id: string; maximum: number; limitation: string | null }[];
 }
 
-/** Mirror only the existing bribe timing gates; bribes are allowed out of turn. */
+/** Ordinary bribes remain out of turn, including after Mentat's opening
+ * collection. Late receipts wait for the next opening, not another collection. */
 export function bribeTimingBlock(g: Game): string | null {
   if (g.status !== 'playing') return 'Bribes require a game in progress.';
-  if (g.phase === 8) return 'Bribes cannot be made during Mentat Pause.';
   if (g.inflation?.side === 'double') return 'Bribes are prohibited while Inflation shows Double.';
   if (g.pendingTreacheryDiscard || g.pendingNullentropy || g.bureaucratPayments?.pending ||
       ['name', 'reveal'].includes(g.battle?.mentatQuestion?.stage ?? '') ||
@@ -19,6 +19,13 @@ export function bribeTimingBlock(g: Game): string | null {
       g.phaseOpening || g.response || g.decision)
     return 'Finish the current decision or response before paying a bribe.';
   return null;
+}
+
+/** The existing automatic token lifecycle will turn an unflipped Cancel into
+ * Double at this opening. An owed payment must precede that known closure. */
+export function bribesCloseBeforeNextMentat(g: Pick<Game, 'turn' | 'inflation'>): boolean {
+  const token = g.inflation;
+  return !!token && token.updatedTurn < g.turn && !token.flipped && token.side === 'cancel';
 }
 
 /** Payment only removes spendable spice, so a preserved completion is monotonic. */
