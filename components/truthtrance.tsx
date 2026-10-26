@@ -1,5 +1,7 @@
 'use client';
 
+import { MixedMovementFields, mixedMovementInputError } from './mixed-movement-fields';
+import type { MixedActionExpression } from '@/game/mixed-action-question';
 import { MovementExpressionFields, movementExpressionInputError } from './movement-expression-fields';
 import type { MovementExpression } from '@/game/movement-expression-promises';
 import { TERRITORIES } from '@/game/board';
@@ -71,7 +73,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -109,6 +111,11 @@ export function Truthtrance({
     { kind: 'move', territory: 'imperial_basin', minimum: 1 }, { kind: 'move', territory: 'carthag', minimum: 1 },
   ] });
   const movementExpressionError = movementExpressionInputError(movementExpression);
+  const [mixedMovement, setMixedMovement] = useState<MixedActionExpression<MovementClaim>>({ kind: 'or', terms: [
+    { kind: 'fact', fact: { kind: 'hand', name: 'Hajr' } },
+    { kind: 'action', action: { territory: 'carthag', minimum: 1 } },
+  ] });
+  const mixedMovementError = mixedMovementInputError(mixedMovement, g, target);
   const [shipment, setShipment] = useState<ShipmentExpression>({ territory: 'carthag', minimum: 6 });
   const [mixed, setMixed] = useState<MixedShipmentExpression>({
     kind: 'and',
@@ -145,6 +152,7 @@ export function Truthtrance({
             claim: planClaim,
           }
         : kind === 'traitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '' }
+        : kind === 'mixedMovement' ? { kind, target, turn: g.turn, mixed: mixedMovement }
         : kind === 'movementExpression' ? { kind, target, turn: g.turn, claim: movementExpression }
         : kind === 'movement' ? { kind, target, ...movement }
         : kind === 'revivalExpression' ? { kind, target, turn: g.turn, claim: revivalExpression }
@@ -310,6 +318,13 @@ export function Truthtrance({
                       {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'I don’t know'}`, { type: 'truthAnswer', answer })}
                     </div>)}
                   </>
+                ) : w.question!.kind === 'mixedMovement' ? (
+                  <>
+                    <p className="notice">This answers the whole current-fact and future-movement question. Facts are fixed at this answer; later card or spice changes do not rewrite it. Unknown facts require an answer you can guarantee through the remaining legal movement. Individual fact answers and compiled branches are not published.</p>
+                    {(g.truthMixedMovementAnswers ?? []).map(answer => <div key={answer}>
+                      {button(answer === 'unknown' ? 'I don’t know yet' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
+                  </>
                 ) : w.question!.kind === 'movementExpression' ? (
                   <>
                     <p className="notice">Yes requires the whole AND/OR question to become true through your future physical ground moves. No keeps the whole expression false and may permit some moves. Each condition needs one qualifying group; smaller moves never add together. Original movement allowances, cards and responses still apply.</p>
@@ -435,6 +450,7 @@ export function Truthtrance({
                   </option>
                   <option value="movement">Bind ground movement this turn</option>
                   <option value="movementExpression">Combine ground moves with AND/OR</option>
+                  <option value="mixedMovement">Combine current facts and future ground moves</option>
                   <option value="alliance">Bind alliance membership at this Nexus close</option>
                   <option value="bribe">Bind ordinary bribe payments this turn</option>
                   <option value="bribeExpression">Combine ordinary bribe payments with AND/OR</option>
@@ -522,6 +538,14 @@ export function Truthtrance({
                   <p className="notice">Choose a still-unsubmitted voter in the current revealed battle. A definite answer binds that player’s original declaration, without reopening any sealed vote or promising that a later response will allow it.</p>
                   {!g.truthTraitorTargets.includes(target) && <p>Reveal both plans and choose a voter who has not submitted their Traitor decision.</p>}
                   {g.battle?.revealed && <p className="notice" aria-label="Public Traitor question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>}
+                </>
+              ) : kind === 'mixedMovement' ? (
+                <>
+                  <MixedMovementFields value={mixedMovement} game={g} target={target}
+                    disabled={busy || !g.truthMixedMovementTargets.includes(target)} onChange={setMixedMovement} />
+                  <p className="fine">Current facts freeze when answered. Only future actual physical ground moves can fulfill movement conditions; smaller groups never add together. No negates the whole mixed question. Native entitlements, owned preparations and earlier obligations remain.</p>
+                  {!g.truthMixedMovementTargets.includes(target) && <p className="notice">Choose a supported unused movement opportunity and finish pending decisions. Optional modules remain unfinished.</p>}
+                  <p className="notice" aria-label="Public mixed movement question preview">{mixedMovementError ?? truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
               ) : kind === 'movementExpression' ? (
                 <>
@@ -623,6 +647,7 @@ export function Truthtrance({
               {!['fact', 'battlePlan', 'shipment'].includes(kind) && button(
                 'Ask publicly',
                 { type: 'truthAsk', question },
+                (kind === 'mixedMovement' && (!!mixedMovementError || !g.truthMixedMovementTargets.includes(target))) ||
                 (kind === 'movementExpression' && (!!movementExpressionError || !g.truthMovementExpressionTargets.includes(target))) ||
                 (kind === 'movement' && (!validMovementClaim(movement) || !g.truthMovementTargets.includes(target))) ||
                 (kind === 'revivalExpression' && (!!revivalExpressionInputError(revivalExpression) || !validRevivalExpressionNames || !g.truthRevivalExpressionTargets.includes(target))) ||

@@ -2,6 +2,7 @@
 import { TraitorDecisionPromises } from './traitor-decision-promises';
 import { MovementPromises } from './movement-promises';
 import { MovementExpressionPromises } from './movement-expression-promises';
+import { MixedMovementPromises } from './mixed-movement-promises';
 import { HomeworldEcazDuke } from './homeworld-ecaz-duke';
 import { integerInputValue } from '../lib/integer-input';
 import { normalAuctionHandBlock } from '@/game/normal-auction';
@@ -1989,6 +1990,7 @@ export function GameTable({
           <HomeworldEcazDuke game={g} act={act} busy={reactionBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <MovementPromises game={g} act={act} busy={reactionBusy} />
           <MovementExpressionPromises game={g} send={act} busy={reactionBusy} />
+          <MixedMovementPromises game={g} send={act} busy={reactionBusy} />
           {!reactionOwnsControls && g.semutaReaction && <SemutaReaction game={g} act={act} busy={reactionBusy} />}
           {g.karamaBlocked && <p className="notice" role="status">{g.karamaBlocked}</p>}
           {g.karamaPurposeBlocks?.map(({purpose, message}) => <p key={purpose} className="notice" role="status">{message}</p>)}

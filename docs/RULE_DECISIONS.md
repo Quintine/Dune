@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Current facts combined with future movement — 26 October 2026
+
+Reuse recorded publisher FAQp8 current-turn/AND/OR authority and supplied
+Advanced physical39 compliance/release/unknown authority. Current facts freeze
+at answer time; the public original tree and aggregate never expose separate
+frozen answers or compiled residuals. A definite Yes uses unknown facts as false
+and a definite No uses them as true, then the remaining positive AND/OR movement
+conditions must guarantee the selected answer. This conservative online
+composition extends the existing mixed-shipment model; it is not a dedicated
+publisher movement algorithm or correlated-unknown solver. Native obligations,
+physical custody, opportunity/deadline and earlier funding stay. No mode gate,
+save rewrite, server or publication operation is granted.
+[Contract and evidence](TRUTHTRANCE_MIXED_MOVEMENT.md).
+
 ## Whole AND/OR future ground moves — 26 October 2026
 
 Compose the recorded publisher November2020 FAQp8 current-turn/AND/OR authority

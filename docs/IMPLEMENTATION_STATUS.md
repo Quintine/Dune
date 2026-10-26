@@ -1,5 +1,52 @@
 # Dune implementation status
 
+## 26 October 2026 — Current facts with future ground moves
+
+**Prototyped / Partial.** Full mixed questions combine current facts and future
+physical movement conditions under one16-leaf/depth4 budget including nested
+facts. All facts are read before folding. Known values freeze at actual answer;
+unknown takes false for Yes/true for No, then the residual must guarantee the
+whole answer. No separate fact answers or reduced branches are published.
+This conservative snapshot/compliance model remains provisional and does not
+infer correlated unknowns or open complete-mode gates.
+
+The reusable mixed compiler yields a constant aggregate or pure action tree.
+Only a real residual binds the existing native movement-expression ledger;
+raw metadata links original question/event without duplicating physical rules.
+Decisive constants need no future movement. Original search, funding, physical
+counters/cards, Hajr timing and actual owner deadline remain. New mixed discard
+signatures include their metadata/residual without changing older record shape.
+Public pure views filter those private residuals; only own original question,
+aggregate status and recorded maxima are projected. Uniform early readiness and
+no separate mixed movement-fulfillment log avoid direct compiled-branch cues.
+Full authoring, guarded preview/Ask, private answers, one exact native guide and
+four minimal profiles connect to actual actions; strategy remains deferred.
+
+Root integration with disjoint generic/control/native lanes passes **19 files,
+172/172**, types/lint/build and **nine native paths**,29 GameTable SSR renders/
+16 actual guide callbacks plus one actual AND→OR editor callback then native Ask.
+Genuine base33 Basic20/Advanced23-action prefixes add8: held Hajr is true at
+answer, actual movement/Hajr disposal/second movement still fulfills AND after
+current custody becomes false. Edited true OR is immediate Yes; false AND is
+immediate No with legal movement. False OR requires a real group; true AND No
+blocks one. Native unknown non-Fremen forecast OR Yes must move, AND No must
+avoid the group. Original Charity13 adds14 real later-phase/native steps.
+All33 cards remain physical. Four profiles actually answer and follow owned
+movement preparation on both Basic/Advanced sources.
+
+Twelve generic,eight controlled and16 native cases cover strict decisive
+subtrees/forged constants, shared limits, eager immutable snapshots, known/
+unknown whole answers, current card disposal, prior/max progress, exact wire
+packets and owned-only raw projection. Initial type feedback repairs one nested
+test union and two aggregate status fixture fields; the repaired frozen v2
+source then passes every step. Proof/report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-mixed-movement-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-mixed-movement-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Other action families, correlated-unknown reasoning, wider composition,
+final rules/recovery/privacy/custody and browser/mobile/deployed acceptance remain.
+[Contract](TRUTHTRANCE_MIXED_MOVEMENT.md).
+
 ## 26 October 2026 — Whole AND/OR future ground moves
 
 **Prototyped / Partial.** Full grouped questions bind actual future physical

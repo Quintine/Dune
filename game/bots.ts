@@ -1353,6 +1353,10 @@ function policyActions(g: GameView): Action[] {
         const answer = answers.find(answer => answer === 'yes') ?? answers[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];
       }
+      if (w.question.kind === 'mixedMovement') {
+        const answer = g.truthMixedMovementAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'movementExpression') {
         const answer = g.truthMovementExpressionAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];

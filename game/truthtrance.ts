@@ -1,3 +1,4 @@
+import { parseMixedActionExpression, mixedActionExpressionText, type MixedActionExpression } from './mixed-action-question';
 import { parseMovementExpressionClaim, movementExpressionText, type MovementExpressionClaim } from './movement-expression-promises';
 import { parseBribeExpressionClaim, bribeExpressionRecipients, bribeExpressionText,
   type BribeExpressionClaim } from './bribe-expression-promises';
@@ -67,7 +68,9 @@ export type TruthFact =
   | { kind: 'traitor'; leader: string }
   | { kind: 'spice'; compare: 'eq' | 'gte' | 'lte'; value: number }
   | { kind: 'and' | 'or'; terms: TruthFact[] };
+export type MixedMovementClaim = { turn: number; mixed: MixedActionExpression<MovementClaim> };
 export type TruthQuestion =
+  | ({ kind: 'mixedMovement'; target: string } & MixedMovementClaim)
   | ({ kind: 'movementExpression'; target: string } & MovementExpressionClaim)
   | ({ kind: 'bribeExpression'; target: string } & BribeExpressionClaim)
   | ({ kind: 'revivalExpression'; target: string } & RevivalExpressionClaim)
@@ -310,6 +313,18 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       v.territory === g.battle.territory && g.battle.traitorCalls[v.target as string] === undefined,
     'Choose the current revealed battle and a still-unsubmitted Traitor decision.');
     return { kind: 'traitorCall', target: v.target as string, battle: v.battle, territory: v.territory as string };
+  }
+  if (v.kind === 'mixedMovement') {
+    check(Object.keys(v).sort().join(',') === 'kind,mixed,target,turn' && v.turn === g.turn &&
+      movementPromiseTargetAvailable(g, v.target as string),
+      'Supply the current turn, complete mixed movement question and supported unused respondent.');
+    const respondent = g.players.find(player => player.id === v.target)!;
+    const mixed = parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent), action => {
+      check(action && typeof action === 'object' && !Array.isArray(action) &&
+        Object.keys(action).sort().join(',') === 'minimum,territory', 'Supply only a printed movement destination and physical minimum.');
+      return parseMovementClaim(action);
+    });
+    return { kind: 'mixedMovement', target: v.target as string, turn: g.turn, mixed };
   }
   if (v.kind === 'movementExpression') {
     check(Object.keys(v).sort().join(',') === 'claim,kind,target,turn',
@@ -563,6 +578,8 @@ export function truthQuestionText(
       return `you currently hold ${f.compare === 'eq' ? 'exactly' : f.compare === 'gte' ? 'at least' : 'at most'} ${f.value} spice`;
     return `(${f.terms.map(clause).join(f.kind === 'and' ? ' AND ' : ' OR ')})`;
   };
+  if (q.kind === 'mixedMovement') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
+    action => `you ${movementClaimText(action)} before your Movement opportunity ends`)}?`;
   return `Is it true that ${q.kind === 'mixedShipment'
     ? mixedShipmentExpressionText(q.mixed,clause) : clause(q.fact)}?`;
 }
@@ -587,6 +604,8 @@ export function resolveTruthAction(
       asker: string,
       mixed?: MixedShipmentExpression,
     ) => void;
+    mixedMovementAnswers?: (g: Game, p: Player, claim: MixedMovementClaim) => TruthAnswer[];
+    bindMixedMovement?: (g: Game, p: Player, claim: MixedMovementClaim, answer: boolean, asker: string) => void;
     movementExpressionAnswers?: (g: Game, p: Player, claim: MovementExpressionClaim) => TruthAnswer[];
     bindMovementExpression?: (g: Game, p: Player, claim: MovementExpressionClaim, answer: boolean, asker: string) => void;
     movementAnswers?: (g: Game, p: Player, claim: MovementClaim) => TruthAnswer[];
@@ -732,6 +751,9 @@ export function resolveTruthAction(
         if (w.question.kind === 'alliance')
           check(effects.allianceAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a current Nexus question with a compatible answer.');
+        if (w.question.kind === 'mixedMovement')
+          check(effects.mixedMovementAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a supported mixed current-fact and ground-movement question.');
         if (w.question.kind === 'movementExpression')
           check(effects.movementExpressionAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a supported whole ground-movement question.');
@@ -791,6 +813,11 @@ export function resolveTruthAction(
           if (a.answer !== 'unknown')
             effects.bindShipment(g, p, claim, a.answer === 'yes', current.player,
               q.kind === 'mixedShipment' ? q.mixed : undefined);
+        }
+        if (q.kind === 'mixedMovement') {
+          check(effects.mixedMovementAnswers && effects.bindMixedMovement &&
+            effects.mixedMovementAnswers(g, p, q).includes(a.answer), 'Choose a compatible whole mixed-movement answer.');
+          if (a.answer !== 'unknown') effects.bindMixedMovement(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'movementExpression') {
           check(effects.movementExpressionAnswers && effects.bindMovementExpression &&

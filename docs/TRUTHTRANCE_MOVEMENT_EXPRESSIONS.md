@@ -1,5 +1,9 @@
 # Truthtrance combined future ground moves
 
+The [mixed current-fact follow-up](TRUTHTRANCE_MIXED_MOVEMENT.md) adds a raw
+mixed question compiled privately into these same native movement obligations.
+Its original tree/aggregate is projected separately; compiled facts are hidden.
+
 ## Whole AND/OR prototype — 26 October 2026
 
 **Prototyped / Partial.** A structured question combines future ordinary

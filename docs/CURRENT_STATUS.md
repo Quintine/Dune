@@ -16,6 +16,38 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / current facts and future movement — 26 October. Prototyped / Partial.**
+Full mixed AND/OR questions now freeze current facts at actual answer time and
+bind only the remaining native ground-movement obligation. Unknown facts use
+the conservative case guaranteeing the selected aggregate; decisive constants
+need no future move. Public input rejects frozen constants/metadata, and own
+projection retains raw question/aggregate/max progress without compiled clause
+answers or residuals. Original entitlements/funding, physical commitment,
+Hajr timing and owner finish remain. Full editor, private answers, one shared
+native guide and four minimal policies are connected; scope remains provisional.
+
+Root integration with disjoint generic/control/native lanes passes **19 files,
+172/172**, types/lint/build and **nine native paths**,29 GameTable SSR renders/
+16 actual guide callbacks plus one editor callback followed by native Ask.
+Original base33 Basic20/Advanced23 prefixes add8: a true held-Hajr AND two moves
+stays binding after the real physical Hajr is discarded. Edited true OR answers
+Yes without a native binding; false AND answers No while a move stays legal.
+False OR requires a real group, and true AND No forbids it. An untouched
+non-Fremen forecast supplies unknown: OR Yes actually moves; AND No must avoid
+that qualifying move. Charity13 adds14 actual later-phase/native steps.
+All33 original cards remain physical; four policies actually answer and move.
+
+Twelve generic,eight controlled and16 native cases retain shared nested limits,
+eager fact snapshots, whole No, repairable drafts, original raw projection,
+exact wire/stale packets and one shared guide. Two fixture type repairs precede
+the passing frozen v2 proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-mixed-movement-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-mixed-movement-runtime/`.
+No saved-game/database/server/reset/restart/deployment operation is performed.
+Other action families, correlated unknowns, wider combinations,
+browser/mobile/deployed and final rules/assurance remain required.
+[Authority, snapshot interpretation and evidence](TRUTHTRANCE_MIXED_MOVEMENT.md).
+
 **Truthtrance / whole AND/OR ground moves — 26 October. Prototyped / Partial.**
 Full grouped questions now combine future physical ground-group minima at
 printed Arrakis destinations. Maximum-per-destination progress never sums

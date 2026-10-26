@@ -42,7 +42,9 @@ export function MovementExpressionPromiseGuideButton(props: MovementExpressionPr
       Number.isSafeInteger(phase) && phase >= 0 && phase <= 5 && current.phase === phase && current.turn === turn && current.me === actor &&
       current.movementExpressionPromiseGuide === guide && current.movementExpressionPromiseGuide.phase === phase &&
       current.movementExpressionPromiseGuide.action === action && JSON.stringify(action) === signature && opportunity &&
-      typeof event === 'string' && liveMovementExpressionPromises(current.movementExpressionPromises, actor, turn).some(promise => promise.event === event) &&
+      typeof event === 'string' && (liveMovementExpressionPromises(current.movementExpressionPromises, actor, turn).some(promise => promise.event === event) ||
+        current.mixedMovementPromises.some(promise => promise.event === event && promise.player === actor && promise.turn === turn &&
+          !promise.fulfilled && !promise.released)) &&
       !!me && !me.autopilot && !current.truthtrance && !current.response && (!current.decision || paidBox || payment) &&
       !current.phaseOpening && !current.automaticContinuationPending && !current.roomControl?.paused && !current.roomControl?.closed;
   };
@@ -113,6 +115,6 @@ export function MovementExpressionPromises(props: MovementExpressionPromiseProps
       {game.phase < 5 && ' Complete any current preparation below before confirming readiness.'}
       {game.decision?.kind === 'nullentropy' && game.decision.player === game.me && ' Your already-paid Box search can finish now.'}
     </p>}
-    {!liveMovementPromises(game.movementPromises ?? [], game.me, game.turn).length && <MovementExpressionPromiseGuideButton {...props} />}
+    {live && !liveMovementPromises(game.movementPromises ?? [], game.me, game.turn).length && <MovementExpressionPromiseGuideButton {...props} />}
   </section>;
 }

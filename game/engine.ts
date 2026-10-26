@@ -1,5 +1,6 @@
+import { compileMixedActionExpression, MixedActionQuestionError, type CompiledMixedAction } from './mixed-action-question';
 import { MovementExpressionPromiseError, liveMovementExpressionPromises, recordMovementExpressionEvent,
-  validateMovementExpressionPromises, type MovementExpressionClaim, type MovementExpressionPromise } from './movement-expression-promises';
+  validateMovementExpressionPromises, type MovementExpression, type MovementExpressionClaim, type MovementExpressionPromise } from './movement-expression-promises';
 import { BribeExpressionPromiseError, bribeExpressionRecipients, bribeCompletionCandidates,
   liveBribeExpressionPromises, recordBribeExpressionPayment, validateBribeExpressionPromises,
   type BribeExpressionClaim, type BribeExpressionPromise } from './bribe-expression-promises';
@@ -599,6 +600,7 @@ import {
   type TruthQueueEntry,
   type TruthRecord,
   type TruthAnswer,
+  type MixedMovementClaim,
 } from './truthtrance';
 import type { MixedShipmentExpression } from './mixed-shipment-question';
 import { controlsLeader, nativeAvailable } from './leader-control';
@@ -2164,6 +2166,10 @@ export type Game = {
   alliancePromises?: AlliancePromise[];
   movementPromises?: MovementPromise[];
   movementExpressionPromises?: MovementExpressionPromise[];
+  /** Original mixed questions only; actual obligations remain in the native ledger. */
+  mixedMovementQuestions?: (MixedMovementClaim & {
+    event: string; player: string; asker: string; answer: boolean; binding: boolean;
+  })[];
   movementPromiseSequence?: string[];
   /** Server-only certainty of movement-relevant cards still in the discard. */
   movementDiscardKnowledge?: MovementDiscardKnowledge;
@@ -6902,6 +6908,9 @@ function truthtranceDiscardSignature(g: Game, next: TruthDiscardContinuation) {
     battle: g.battle,
     shipmentPromises: g.shipmentPromises,
     movementPromises: g.movementPromises,
+    ...(next.record.question.kind === 'mixedMovement' ? {
+      mixedMovementQuestions: g.mixedMovementQuestions, movementExpressionPromises: g.movementExpressionPromises,
+    } : {}),
     active: g.active,
     order: g.order,
     status: g.status,
@@ -18607,6 +18616,56 @@ function bindMovementExpressionTruth(g: Game, p: Player, claim: MovementExpressi
   (g.movementExpressionPromises ??= []).push(promise);
   (g.movementPromiseSequence ??= []).push(promise.event);
 }
+function compileMixedMovement(g: Game, p: Player, claim: MixedMovementClaim, answer: boolean) {
+  const compiled = compileMixedActionExpression(claim.mixed,
+    fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
+  if (compiled.kind === 'constant') return { constant: compiled.value };
+  const movement = (node: CompiledMixedAction<MovementClaim>): MovementExpression => {
+    if (node.kind === 'action') return { kind: 'move', ...node.action };
+    requireRule(node.kind !== 'constant', 'Retain the complete compiled mixed-movement residual.');
+    return { kind: node.kind, terms: node.terms.map(movement) };
+  };
+  return { residual: { turn: claim.turn, claim: movement(compiled) } };
+}
+function mixedMovementTruthAnswers(g: Game, p: Player, claim: MixedMovementClaim): TruthAnswer[] {
+  if (claim.turn !== g.turn || !movementPromiseTargetAvailable(g, p.id)) return [];
+  const answers: TruthAnswer[] = [];
+  for (const answer of [true, false]) {
+    const compiled = compileMixedMovement(g, p, claim, answer);
+    if (compiled.constant !== undefined ? compiled.constant === answer :
+      movementExpressionTruthAnswers(g, p, compiled.residual!).includes(answer ? 'yes' : 'no')) answers.push(answer ? 'yes' : 'no');
+  }
+  return answers.length ? answers : ['unknown'];
+}
+function bindMixedMovementTruth(g: Game, p: Player, claim: MixedMovementClaim, answer: boolean, asker: string) {
+  requireRule(mixedMovementTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
+    'Choose a whole mixed-movement answer compatible with current facts and owned actions.');
+  const compiled = compileMixedMovement(g, p, claim, answer);
+  let event: string;
+  if (compiled.residual) {
+    bindMovementExpressionTruth(g, p, compiled.residual, answer, asker);
+    event = g.movementExpressionPromises!.at(-1)!.event;
+  } else {
+    requireRule(compiled.constant === answer, 'Retain the truthful whole mixed-movement answer.');
+    // Uniform early readiness avoids publishing whether a private fact made a
+    // residual necessary. Only the original aggregate answer is public.
+    reopenMovementPreparation(g, p);
+    event = crypto.randomUUID();
+  }
+  (g.mixedMovementQuestions ??= []).push({ turn: claim.turn, mixed: structuredClone(claim.mixed),
+    event, player: p.id, asker, answer, binding: !!compiled.residual });
+}
+function isMixedMovementEvent(g: Game, event: string): boolean {
+  return !!g.mixedMovementQuestions?.some(question => question.event === event);
+}
+function projectedMixedMovementPromises(g: Game, player: string) {
+  return (g.mixedMovementQuestions ?? []).filter(question => question.player === player).map(question => {
+    const bound = g.movementExpressionPromises?.find(promise => promise.event === question.event);
+    return { event: question.event, player: question.player, asker: question.asker, turn: question.turn,
+      mixed: structuredClone(question.mixed), answer: question.answer, progress: structuredClone(bound?.progress ?? []),
+      fulfilled: !question.binding || bound?.fulfilled === true, released: bound?.released === true };
+  });
+}
 /** Nested native force records survive JSON transport; record key order is
  * immaterial but fields, values and the originating guide event must match. */
 function canonicalMovementGuideValue(value: unknown): unknown {
@@ -18652,7 +18711,7 @@ function recordGroundMovementPromises(g: Game, p: Player, move: MovementOrder) {
     try { g.movementExpressionPromises = recordMovementExpressionEvent(expressions, p.id, g.turn, groundMovementEvent(move)); }
     catch (error) { if (error instanceof MovementExpressionPromiseError) throw new RuleError(error.message); throw error; }
     g.movementExpressionPromises.forEach((promise, index) => {
-      if (promise.fulfilled && !expressions[index].fulfilled)
+      if (promise.fulfilled && !expressions[index].fulfilled && !isMixedMovementEvent(g, promise.event))
         log(g, `${p.name} fulfilled a whole Truthtrance movement answer with this committed move.`);
     });
   }
@@ -36388,6 +36447,8 @@ function applyActionInner(
         bindMovement: bindMovementTruth,
         movementExpressionAnswers: movementExpressionTruthAnswers,
         bindMovementExpression: bindMovementExpressionTruth,
+        mixedMovementAnswers: mixedMovementTruthAnswers,
+        bindMixedMovement: bindMixedMovementTruth,
         allianceAnswers: allianceTruthAnswers,
         bindAlliance: bindAllianceTruth,
         bribeAnswers: bribeTruthAnswers,
@@ -36411,7 +36472,7 @@ function applyActionInner(
     )
       return g;
   } catch (error) {
-    if (error instanceof TruthError || error instanceof RevivalExpressionPromiseError || error instanceof LeaderRevivalPromiseError || error instanceof AlliancePromiseError || error instanceof BribePromiseError || error instanceof BribeExpressionPromiseError || error instanceof RevivalPromiseError || error instanceof BidPromiseError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof MovementExpressionPromiseError || error instanceof TraitorDecisionError)
+    if (error instanceof TruthError || error instanceof RevivalExpressionPromiseError || error instanceof LeaderRevivalPromiseError || error instanceof AlliancePromiseError || error instanceof BribePromiseError || error instanceof BribeExpressionPromiseError || error instanceof RevivalPromiseError || error instanceof BidPromiseError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof MovementExpressionPromiseError || error instanceof MixedActionQuestionError || error instanceof TraitorDecisionError)
       throw new RuleError(error.message);
     throw error;
   }
@@ -40198,7 +40259,11 @@ export function viewGame(state: Game, id: string) {
     truthMovementExpressionTargets: g.players.filter(p => movementPromiseTargetAvailable(g, p.id)).map(p => p.id),
     truthMovementExpressionAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.kind === 'movementExpression' &&
       g.truthtrance.question.target === id ? movementExpressionTruthAnswers(g, me, g.truthtrance.question) : null,
-    movementExpressionPromises: (g.movementExpressionPromises ?? []).filter(promise => promise.player === id).map(promise => structuredClone(promise)),
+    movementExpressionPromises: (g.movementExpressionPromises ?? []).filter(promise => promise.player === id && !isMixedMovementEvent(g, promise.event)).map(promise => structuredClone(promise)),
+    truthMixedMovementTargets: g.players.filter(p => movementPromiseTargetAvailable(g, p.id)).map(p => p.id),
+    truthMixedMovementAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.kind === 'mixedMovement' &&
+      g.truthtrance.question.target === id ? mixedMovementTruthAnswers(g, me, g.truthtrance.question) : null,
+    mixedMovementPromises: projectedMixedMovementPromises(g, id),
     movementExpressionPromiseGuide: projectedMovementExpressionGuide(g, me),
     truthShipmentSupported: g.players.some(p => shipmentPromiseModeSupported(g, p.id)),
     truthShipmentTargets: !g.response && !g.decision && !g.phaseOpening && !g.pendingShipment
