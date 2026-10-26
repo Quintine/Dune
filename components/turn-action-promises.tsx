@@ -33,6 +33,9 @@ const windowRoleNames: Record<WindowCardEffect, string> = { weather: 'Weather Co
 const namesWindow = (mixed: MixedActionExpression<TurnActionLeaf>, effect: WindowCardEffect, source?: string): boolean =>
   mixed.kind === 'action' ? mixed.action.kind === 'windowCardPlay' && mixed.action.effect === effect && (source === undefined || mixed.action.source === source)
     : mixed.kind !== 'fact' && mixed.terms.some(term => namesWindow(term, effect, source));
+const namesBoxPlay = (mixed: MixedActionExpression<TurnActionLeaf>): boolean => mixed.kind === 'action'
+  ? mixed.action.kind === 'cardPlay' && mixed.action.effect === 'nullentropyBox'
+    : mixed.kind !== 'fact' && mixed.terms.some(namesBoxPlay);
 
 /** One projected native packet; no client branch selection or completion solver. */
 export function TurnActionGuideButton(props: TurnActionProps) {
@@ -72,6 +75,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const box = game.nullentropy, search = box?.search;
   const windowPromise = game.turnActionPromises.find(promise => promise.event === event && promise.player === actor && promise.turn === turn);
   const windowQuestion = windowPromise && JSON.stringify(windowPromise.mixed);
+  const boxRoleNamed = !!windowPromise && namesBoxPlay(windowPromise.mixed);
   const opening = game.phaseOpening, openingSignature = JSON.stringify(opening);
   const currentAmalWindow = windowCardOpportunity(game, 'amal');
   const amalRoleNamed = !!windowPromise && !!currentAmalWindow && namesWindow(windowPromise.mixed, 'amal', currentAmalWindow.source);
@@ -108,7 +112,16 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   });
   const windowSignature = windowEffect || heldCard?.effect === 'nullentropyBox' || earlyWindowReadyAction || amalReadyAction ? publicWindowState(game) : null;
   const originalBlow = windowEffect === 'harvester' || earlyWindowReadyAction && phase === 1 ? game.spiceWindow : null;
-  const earlyBoxSignature = box && JSON.stringify({ card: box.card.id, blocked: box.blocked, search: box.search?.event });
+  const boxSource = (quote: GameView['nullentropy']) => quote && JSON.stringify({
+    card: { id: quote.card.id, kind: quote.card.kind, effect: quote.card.effect },
+    blocked: quote.blocked, search: quote.search?.event, fullHandExchange: quote.fullHandExchange,
+  });
+  const earlyBoxSignature = boxSource(box);
+  const boxOwnerSource = (current: GameView) => {
+    const owner = current.players.find(player => player.id === actor);
+    return JSON.stringify({ cash: owner?.spice, hand: owner?.hand?.map(card => card.id), limit: owner?.handLimit });
+  };
+  const boxOwnerSignature = heldCard?.effect === 'nullentropyBox' ? boxOwnerSource(game) : null;
   const auctionCards = game.karamaAuctionCards, auctionCardsSignature = JSON.stringify(auctionCards);
   const shipmentCards = game.karamaShipmentCards, shipmentCardsSignature = JSON.stringify(shipmentCards);
   const thumperCards = game.thumperCards, thumperCardsSignature = JSON.stringify(thumperCards);
@@ -188,15 +201,20 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     const printedAuctionInvoice = printedInvoiceAction && printedWindowSource && nativeAuctionCard &&
       Object.keys(action).every(key => ['type', 'card', 'karama', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key));
     const quotedBoxCard = heldCard?.effect !== 'nullentropyBox' || !!box && current.nullentropy === box &&
-      JSON.stringify({ card: box.card.id, blocked: box.blocked, search: box.search?.event }) === earlyBoxSignature &&
-      !box.blocked && !box.search && box.card.id === heldCard.id;
+      boxSource(box) === earlyBoxSignature && boxOwnerSource(current) === boxOwnerSignature &&
+      box.blocked === null && !box.search && box.card.id === heldCard.id && box.card.kind === 'special' && box.card.effect === 'nullentropyBox' &&
+      Object.keys(action).every(key => ['type', 'card', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key));
+    const printedBox = ownCard && !!heldCard && heldCard.kind === 'special' && heldCard.effect === 'nullentropyBox' &&
+      quotedBoxCard && !!windowPromise && current.turnActionPromises.includes(windowPromise) &&
+      JSON.stringify(windowPromise.mixed) === windowQuestion && namesBoxPlay(windowPromise.mixed);
     const genericCard = ownCard && action.type === 'card' && !auctionPurchaseAction && !printedShipmentAction && quotedBoxCard &&
+      (!boxRoleNamed || heldCard?.effect !== 'nullentropyBox' || printedBox) &&
       (!shipmentPriceAction || (action.target ?? actor) === current.active) &&
       !!heldCard && heldCard.effect !== 'ghola' && heldCard.effect !== 'hajr' && !isWindowEffect(heldCard.effect);
     const earlyWindowBox = (phase === 0 || phase === 1 || phase === 3 || phase === 5) && genericCard && heldCard?.effect === 'nullentropyBox' &&
       action.mode === undefined && Object.keys(action).every(key => ['type', 'card', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key)) &&
       !!box && current.nullentropy === box &&
-      JSON.stringify({ card: box.card.id, blocked: box.blocked, search: box.search?.event }) === earlyBoxSignature &&
+      boxSource(box) === earlyBoxSignature &&
       !box.blocked && !box.search && box.card.id === heldCard.id &&
       !!windowPromise && current.turnActionPromises.includes(windowPromise) && JSON.stringify(windowPromise.mixed) === windowQuestion &&
       WINDOW_CARD_EFFECTS.some(effect => {
@@ -275,7 +293,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       !current.ready.includes(actor) && me.charityClaimed === false && current.charity === charity &&
       charitySource(current) === charitySignature && current.charity.incomePending === false &&
       Number.isSafeInteger(current.charity.amount) && current.charity.amount > 0;
-    const opportunity = openingReady || earlyWindowReady || earlyWindowBox || printedWindow || ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
+    const opportunity = printedBox || openingReady || earlyWindowReady || earlyWindowBox || printedWindow || ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
       ? charityClaim || !current.ready.includes(actor) && (action.type === 'ready' || genericCard)
       : phase === 3
         ? invoice || nativePass || requiredBid || action.type === 'passBid' && !current.richeseAuction && currentAuction && current.auction?.active === actor
@@ -311,6 +329,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       : `Play Tleilaxu Ghola to return ${amount} physical forces while honoring your whole answer`
     : action.type === 'card' && windowEffect === 'karamaAuction' ? 'Spend a printed Karama to purchase this ordinary lot while honoring your whole answer'
     : action.type === 'card' && windowEffect === 'karamaShipment' ? `Spend a printed Karama to grant ${recipient} this native shipment price while honoring your whole answer`
+    : action.type === 'card' && heldCard?.effect === 'nullentropyBox' ? 'Pay 2 spice to activate Nullentropy Box while honoring your whole answer'
     : action.type === 'card' && windowEffect ? `Play ${windowRoleNames[windowEffect]} in its original native window${windowEffect === 'weather' ? ` with storm distance ${amount}` : ''} while honoring your whole answer`
     : action.type === 'battlePlan' ? 'Fill the quoted battle plan for review before sealing'
     : action.type === 'voice' ? `Declare native Voice: opponent ${action.must ? 'must' : 'cannot'} play ${battleCardLabel(String(action.kind))}`
@@ -403,10 +422,13 @@ export function TurnActionPromises(props: TurnActionProps) {
       Native Voice and Prescience conditions describe your original use or explicit decline, exact Voice command,
       or requested Prescience field, before later Karama prevention. The requested field is not the inspected answer or value.
       Borrowed Nexus and special powers do not count. These conditions close at the actual native choice or when its original source expires.
-      Printed-card conditions count actual future Hajr or Tleilaxu Ghola plays in their printed role after the answer this turn.
+      Printed-card conditions count actual future Hajr, Tleilaxu Ghola or Nullentropy Box plays in their printed role after the answer this turn.
       Earlier plays, discards, sales, Karama roles and recovery alone do not count; an actual later Box replay does.
       Hajr counts even if its extra movement is unused and closes at your own Movement turn end.
       Tleilaxu Ghola is separate from ordinary Revival and remains open until the actual turn ends.
+      Nullentropy Box counts when its printed activation is accepted and you pay 2 spice to begin the private search.
+      Earlier activation or recovery alone does not count. The selected recovered card stays private and is not promised by this condition.
+      Box conditions close at the actual turn end; complete the paid search with the existing native controls.
       Weather Control, Family Atomics and Harvester conditions count an actual accepted future printed-role play after the answer
       in the original open Storm or fresh spice-blow window. Earlier plays, disposal, other roles and recovery alone do not count.
       They do not promise a selected storm distance or resulting spice amount. Each condition closes only when its original native window closes.
@@ -466,8 +488,9 @@ export function TurnActionAnswers(props: TurnActionProps) {
       A remaining alliance condition stays open through temporary membership until that close. Neither answer promises another player’s consent.
       Current battle-plan conditions use the actual native plan; an open condition settles when both plans are revealed.
       Traitor conditions use the original Reveal or decline declaration, before later Karama or betrayal prevention.
-      Hajr and Tleilaxu Ghola conditions require actual later printed-role plays, not earlier play, disposal or recovery alone.
-      Hajr closes at your own Movement turn end even if its extra move is unused; Ghola closes at the actual turn end.
+      Hajr, Tleilaxu Ghola and Nullentropy Box conditions require actual later printed-role plays, not earlier play, disposal or recovery alone.
+      Box counts at accepted activation and payment of 2 spice; the recovered card is private and is not promised by this condition.
+      Hajr closes at your own Movement turn end even if its extra move is unused; Ghola and Box close at the actual turn end.
       Bids close with their lot; Revival closes with your native Revival opportunity.
       Shipment and movement close at your own Movement turn end; payment conditions last until the actual turn ends.
       A known Inflation Double opening can close payments earlier without closing Ghola.

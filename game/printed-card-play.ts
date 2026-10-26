@@ -1,4 +1,5 @@
-export type PrintedCardEffect = 'hajr' | 'ghola';
+export const PRINTED_CARD_EFFECTS = ['hajr', 'ghola', 'nullentropyBox'] as const;
+export type PrintedCardEffect = typeof PRINTED_CARD_EFFECTS[number];
 export type PrintedCardPlayCounts = {
   turn: number;
   plays: { player: string; effect: PrintedCardEffect; count: number }[];
@@ -23,7 +24,7 @@ const identifier = (value: unknown): value is string =>
   typeof value === 'string' && value.length > 0 && value === value.trim();
 const positive = (value: unknown): value is number =>
   typeof value === 'number' && Number.isSafeInteger(value) && value > 0;
-const effect = (value: unknown): value is PrintedCardEffect => value === 'hajr' || value === 'ghola';
+const effect = (value: unknown): value is PrintedCardEffect => PRINTED_CARD_EFFECTS.some(candidate => candidate === value);
 
 function validateCounts(counts: unknown): asserts counts is PrintedCardPlayCounts {
   check(object(counts) && keys(counts, 'plays,turn') && positive(counts.turn) && Array.isArray(counts.plays),
@@ -40,7 +41,7 @@ function validateCounts(counts: unknown): asserts counts is PrintedCardPlayCount
 
 function validateRequest(player: unknown, turn: unknown, cardEffect: unknown): void {
   check(identifier(player) && positive(turn) && effect(cardEffect),
-    'Choose the printed Hajr or Ghola play, current turn and exact player.');
+    'Choose the printed Hajr, Ghola or Nullentropy Box play, current turn and exact player.');
 }
 
 /** Private native witness baseline only. Per-answer promises track their own

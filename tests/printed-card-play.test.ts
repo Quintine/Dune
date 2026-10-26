@@ -2,10 +2,36 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   PrintedCardPlayError,
+  PRINTED_CARD_EFFECTS,
   printedCardPlayCount,
   recordPrintedCardPlay,
   type PrintedCardPlayCounts,
 } from '../game/printed-card-play';
+
+void test('Box accepted activation counts extend the shared roles without changing earlier Hajr or Ghola baselines', () => {
+  assert.deepEqual(PRINTED_CARD_EFFECTS, ['hajr', 'ghola', 'nullentropyBox']);
+  assert.equal(printedCardPlayCount(undefined, 'richese', 3, 'nullentropyBox'), 0);
+  const ghola = recordPrintedCardPlay(undefined, 'richese', 3, 'ghola');
+  const first = recordPrintedCardPlay(ghola, 'richese', 3, 'nullentropyBox');
+  const replay = recordPrintedCardPlay(first, 'richese', 3, 'nullentropyBox');
+  assert.equal(printedCardPlayCount(replay, 'richese', 3, 'nullentropyBox'), 2);
+  assert.equal(printedCardPlayCount(replay, 'richese', 3, 'ghola'), 1);
+  assert.equal(printedCardPlayCount(ghola, 'richese', 3, 'nullentropyBox'), 0);
+  assert.deepEqual(first.plays[1], { player: 'richese', effect: 'nullentropyBox', count: 1 });
+  assert.deepEqual(recordPrintedCardPlay(replay, 'richese', 4, 'nullentropyBox'),
+    { turn: 4, plays: [{ player: 'richese', effect: 'nullentropyBox', count: 1 }] });
+});
+
+void test('Box activation counts retain safe overflow and strict per-player role metadata', () => {
+  const full: PrintedCardPlayCounts = { turn: 3, plays: [{ player: 'richese', effect: 'nullentropyBox', count: Number.MAX_SAFE_INTEGER }] };
+  const before = structuredClone(full);
+  assert.throws(() => recordPrintedCardPlay(full, 'richese', 3, 'nullentropyBox'), PrintedCardPlayError);
+  assert.deepEqual(full, before);
+  for (const plays of [[...full.plays, ...full.plays], [{ ...full.plays[0], card: 'physical-box' }],
+    [{ ...full.plays[0], effect: 'Nullentropy Box' }], [{ ...full.plays[0], count: 0 }]])
+    assert.throws(() => printedCardPlayCount({ turn: 3, plays } as PrintedCardPlayCounts,
+      'richese', 4, 'nullentropyBox'), PrintedCardPlayError);
+});
 
 void test('missing legacy counts and other turn/player/effect baselines read as zero', () => {
   assert.equal(printedCardPlayCount(undefined, 'atreides', 1, 'hajr'), 0);

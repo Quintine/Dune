@@ -31,7 +31,7 @@ const forceRevival = (counter: 'total' | 'normal' | 'elite' = 'total', minimum =
   ({ kind: 'action', action: { kind: 'forces', counter, minimum } });
 const leaderRevival = (leader: string): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
 const finalAlliance = (partner = 'r'): Expression => ({ kind: 'action', action: { kind: 'alliance', partner } });
-const printedCard = (effect: 'hajr' | 'ghola' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
+const printedCard = (effect: 'hajr' | 'ghola' | 'nullentropyBox' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
 const shipmentPriceSource = (recipient = 'p', cunning?: string) => JSON.stringify(['karamaShipment', 2, recipient,
   ...(cunning ? ['cunning', cunning] : ['original'])]);
 const windowClaim = (effect: WindowCardEffect = 'weather', source = effect === 'harvester' ? 'controlled-native-blow'
@@ -139,6 +139,14 @@ function openingAmal(phase = 4, next: Action = { type: 'card', card: 'controlled
   const game = projected(phase, next); game.amalWindowOpen = true; game.phaseOpening = { passed: [] };
   game.amalCards = ['controlled-amal']; game.amalReady = true; game.active = 'a'; game.ready = ['p'];
   game.turnActionPromises[0].mixed = { kind: 'or', terms: [windowClaim('amal', `phase-opening:2:${phase}`), payment()] };
+  return game;
+}
+function boxPlay(phase = 7): GameView {
+  const game = projected(phase, { type: 'card', card: 'controlled-box' });
+  const card = { id: 'controlled-box', name: 'Nullentropy Box', kind: 'special' as const, effect: 'nullentropyBox' };
+  const me = game.players.find(player => player.id === 'p')!; me.hand = [card]; me.handLimit = 4; me.spice = 3;
+  game.active = 'a'; game.nullentropy = { card, blocked: null, search: null };
+  game.turnActionPromises[0].mixed = { kind: 'and', terms: [printedCard('nullentropyBox'), payment()] };
   return game;
 }
 function nexus(next: Action = { type: 'alliance', target: 'r' }): GameView {
@@ -1252,24 +1260,36 @@ void test('turn-action printed-role editor uses public names without holdings or
   for (const player of game.players) for (const key of ['hand', 'spice', 'traitors', 'faceDancers', 'tanks', 'leaders', 'hajrAvailable'])
     Object.defineProperty(player, key, { get() { throw Error(`No private ${key} authoring inspection`); }, configurable: true });
   Object.defineProperty(game, 'ghola', { get() { throw Error('No private Ghola authoring inspection'); }, configurable: true });
+  Object.defineProperty(game, 'nullentropy', { get() { throw Error('No private Box authoring inspection'); }, configurable: true });
   Object.defineProperty(game.turnActionPromises[0], 'cardPlays', { get() { throw Error('No private card-play stage'); } });
   const e = editor(physical(), false, game); select(e.tree(), '1', 'action', 'cardPlay');
   assert.deepEqual(e.value, printedCard()); assert.equal(e.error(), null);
   const choices = elements(find(e.tree(), 'id', 'truth-turn-action-1-effect')).filter(element => element.type === 'option');
-  assert.deepEqual(choices.map(choice => choice.props.value), ['hajr', 'ghola']);
+  assert.deepEqual(choices.map(choice => choice.props.value), ['hajr', 'ghola', 'nullentropyBox']);
   select(e.tree(), '1', 'effect', 'ghola'); assert.deepEqual(e.value, printedCard('ghola')); assert.equal(e.error(), null);
   select(e.tree(), '1', 'effect', 'karama'); assert.deepEqual(e.value, printedCard('ghola'));
+  select(e.tree(), '1', 'effect', 'nullentropyBox'); assert.deepEqual(e.value, printedCard('nullentropyBox')); assert.equal(e.error(), null);
   assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'cardPlay', effect: 'ghola', card: 'private-card-id' } }, game, 'p'));
   assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'cardPlay', effect: 'karama' } }, game, 'p'));
+  for (const extra of [{ card: 'private-box-id' }, { selected: 'private-recovery' }, { amount: 2 }])
+    assert.ok(turnActionInputError({ kind: 'action', action: { kind: 'cardPlay', effect: 'nullentropyBox', ...extra } }, game, 'p'));
+  const draft = editor({ kind: 'action', action: { kind: 'cardPlay', effect: 'unknown-role' } } as unknown as Expression, false, game);
+  assert.ok(draft.error()); select(draft.tree(), '1', 'effect', 'nullentropyBox');
+  assert.deepEqual(draft.value, printedCard('nullentropyBox')); assert.equal(draft.error(), null);
   const html = e.html(); assert.match(html, /Play Hajr in its printed role after this answer this turn/);
   assert.match(html, /Play Tleilaxu Ghola in its printed role after this answer this turn/);
+  assert.match(html, /Activate Nullentropy Box and pay 2 spice after this answer this turn/);
+  assert.match(html, /The selected recovered card stays private and is not promised/);
   assert.match(html, /Hajr counts when played even if its extra movement is unused/);
   assert.match(html, /an actual later replay after Box recovery does/); assert.doesNotMatch(html, /private-card-id|controlled-ghola|controlled-hajr/);
-  const full = editor({ kind: 'or', terms: [printedCard(), printedCard('ghola')] }, false, game);
-  for (let count = 3; count <= 16; count++) { click(control(full.tree(), 'add-action-1')); select(full.tree(), `1.${count}`, 'action', 'cardPlay'); }
+  const full = editor({ kind: 'or', terms: [printedCard(), printedCard('nullentropyBox')] }, false, game);
+  for (let count = 3; count <= 16; count++) {
+    click(control(full.tree(), 'add-action-1')); select(full.tree(), `1.${count}`, 'action', 'cardPlay');
+    select(full.tree(), `1.${count}`, 'effect', 'nullentropyBox');
+  }
   assert.equal(full.error(), null); assert.match(full.html(), /16 \/ 16 conditions/);
   assert.equal(control(full.tree(), 'add-action-1').props.disabled, true);
-  const deep = editor({ kind: 'and', terms: [fact(), printedCard('ghola')] }, false, game);
+  const deep = editor({ kind: 'and', terms: [fact(), printedCard('nullentropyBox')] }, false, game);
   click(control(deep.tree(), 'or-1.2')); click(control(deep.tree(), 'and-1.2.1')); click(control(deep.tree(), 'or-1.2.1.1'));
   assert.equal(deep.error(), null); assert.match(deep.html(), /4 \/ 4 levels of grouping/);
   const frozen = editor(printedCard(), true, game); select(frozen.tree(), '1', 'effect', 'ghola');
@@ -1345,9 +1365,72 @@ void test('printed Hajr guides require the actual held card and current own imme
   assert.equal(guide({ game: missing, busy: false, act() { assert.fail('A missing Hajr cannot dispatch'); } }).props.disabled, true);
 });
 
+void test('printed Box guides activate the quoted physical card without inspecting private recovery choices', () => {
+  for (const phase of [0, 6, 8]) {
+    const game = boxPlay(phase), sent: Action[] = [];
+    Object.defineProperty(game, 'discard', { get() { throw Error('The activation guide does not search the discard'); }, configurable: true });
+    Object.defineProperty(game.turnActionPromises[0], 'cardPlays', { get() { throw Error('No private Box receipt inspection'); } });
+    const button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); press(button); assert.equal(sent[0], game.turnActionGuide!.action);
+    assert.deepEqual(sent[0], { type: 'card', card: 'controlled-box', turnActionPromiseEvent: event, turnActionPromisePhase: phase });
+    const html = markup(game);
+    assert.match(html, /Pay 2 spice to activate Nullentropy Box/);
+    assert.match(html, /you activate Nullentropy Box in its printed role and pay its 2-spice search cost/);
+    assert.match(html, /The selected recovered card stays private and is not promised/);
+    assert.match(html, /complete the paid search with the existing native controls/);
+    assert.doesNotMatch(html, /cardPlays|controlled-box|recovered-card-id/);
+  }
+});
+
+void test('printed Box activation callbacks reject changed native quotes, custody, source and paid-search state', () => {
+  const changes: ((game: GameView) => void)[] = [
+    game => { game.nullentropy = null; },
+    game => { game.nullentropy = { ...game.nullentropy! }; },
+    game => { game.nullentropy!.blocked = 'The printed search cost is not currently available.'; },
+    game => { game.nullentropy!.card = { ...game.nullentropy!.card, id: 'different-box' }; },
+    game => { game.players.find(player => player.id === 'p')!.hand = []; },
+    game => { game.players.find(player => player.id === 'p')!.hand![0].kind = 'worthless'; },
+    game => { game.players.find(player => player.id === 'p')!.spice = 2; },
+    game => { game.players.find(player => player.id === 'p')!.handLimit = 5; },
+    game => { game.turnActionPromises[0].mixed = payment(); },
+    game => { game.phase = 8; },
+    game => { game.turnActionGuide!.event = 'different-answer'; },
+    game => { game.phaseOpening = { passed: [] }; },
+    game => { game.response = { kind: 'guildIncome', owner: 'a', amount: 1, passed: [] }; },
+    game => {
+      game.nullentropy!.search = { event: 'now-paid-search', cards: [] };
+      Object.defineProperty(game.nullentropy!.search, 'cards', { get() { throw Error('An activation guide cannot inspect paid recovery choices'); } });
+    },
+  ];
+  for (const change of changes) {
+    const game = boxPlay(2), sent: Action[] = [], button = guide({ game, busy: false, act(action) { sent.push(action); } });
+    assert.equal(button.props.disabled, false); change(game); press(button); assert.deepEqual(sent, []);
+  }
+  for (const change of [
+    (game: GameView) => { game.nullentropy = null; },
+    (game: GameView) => { game.nullentropy!.blocked = 'No legal search is currently quoted.'; },
+    (game: GameView) => { game.nullentropy!.search = { event: 'already-paid', cards: [] }; },
+  ]) {
+    const game = boxPlay(); change(game);
+    const button = guide({ game, busy: false, act() { assert.fail('An unavailable or already paid Box cannot activate'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+});
+
+void test('printed Box activation accepts no private selection or extra native parameters through generic preparation', () => {
+  for (const extra of [{ amount: 2 }, { mode: 'shipment' }, { target: 'a' }, { leader: 'private-leader' },
+    { selected: 'recovered-card-id' }, { cards: ['recovered-card-id'] }]) {
+    const game = boxPlay(2); Object.assign(game.turnActionGuide!.action, extra);
+    const button = guide({ game, busy: false, act() { assert.fail('A Box activation must remain the exact quoted card packet'); } });
+    assert.equal(button.props.disabled, true); press(button);
+  }
+  const game = boxPlay(8); game.turnActionPromises[0].mixed = payment();
+  assert.equal(guide({ game, busy: false, act() { assert.fail('A turn-end Box activation requires its matching raw role'); } }).props.disabled, true);
+});
+
 void test('printed-card history retains only raw aggregate conditions and their distinct native deadlines', () => {
   const game = projected(8); game.turnActionGuide = null;
-  game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard(), { kind: 'and', terms: [fact(), printedCard('ghola')] }] };
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [printedCard(), { kind: 'and', terms: [fact(), printedCard('ghola'), printedCard('nullentropyBox')] }] };
   for (const key of ['cardPlays', 'compiled', 'combat', 'preparation'])
     Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
   const html = markup(game);
@@ -1355,6 +1438,7 @@ void test('printed-card history retains only raw aggregate conditions and their 
   assert.match(html, /Hajr counts even if its extra movement is unused/);
   assert.match(html, /Earlier plays, discards, sales, Karama roles and recovery alone do not count/);
   assert.match(html, /actual later Box replay does/); assert.match(html, /Ghola is separate from ordinary Revival/);
+  assert.match(html, /you activate Nullentropy Box/); assert.match(html, /Box conditions close at the actual turn end/);
   assert.match(html, /remains open until the actual turn ends/); assert.doesNotMatch(html, /cardPlays|compiled|controlled-hajr|controlled-ghola/);
 });
 

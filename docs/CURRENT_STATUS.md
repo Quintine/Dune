@@ -20,6 +20,34 @@ open mode gates.
 Continue remaining Basic functions before Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance / printed Nullentropy Box — 27 October. Prototyped / Partial.**
+Whole questions can name actual printed activation after answering. The accepted
+two-spice fee records use before private selection; the selected card is outside
+the predicate. Shared payment/shipment funding, whole AND/OR/No, frozen facts,
+late Ready, exact human guides and four legal profiles are connected. Unknown
+unpaid recovery cannot fund another effect or battle card. Basic retains native
+Semuta continuation; Kull, legacy bribe and module envelopes remain separate.
+
+Frozen **20 files, 311/311**, types/lint/build and five journey groups
+(six Basic/Advanced programmes) pass. Runtime evidence includes 36 GameTable SSR
+renders, 6 actual answer callbacks, 4 guide callbacks, 2 native Box
+activation callbacks and 1 paid Take callback. Genuine sources earn the
+cache Box and ordinary Hajr purchases; Basic keeps its actual Semuta pause.
+Source/continuation counts and inventories derive from native arrays. A separate
+explicit detached supplement checks opaque battle-card quotation and claims no
+new native acquisition. No full rules/combination certificate is implied.
+
+Feedback fixes Basic's separate parser/whole reconciliation admission, a malformed
+test cast and a const declaration. Bounded review also excludes opaque weapon,
+defense and Hero identities from private battle witnesses. The Guild sheet now
+reflects its already integrated separate permission cancellation.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-box-play-proof-v3/`; journeys/HTML: adjacent `20261027-truth-box-play-runtime/run/`.
+No HTTP/storage boundary, saved-game/database, restart or deployed operation
+changes. Broader future actions/funding, optional combinations, full modes,
+browser/hydration and final assurance/deployed acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-nullentropy-box--27-october-2026).
+
 **Truthtrance / CHOAM opening-income installments — 27 October. Prototyped / Partial.**
 Whole, bare, grouped and mixed payments can share one native automatic CHOAM
 receipt plus one distinct ordinary Charity claim. Current guides spend only

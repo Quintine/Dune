@@ -2,6 +2,17 @@
 
 Audit: 2026-09-06, with Basic and Advanced runtime amendments on 8 October below. This is a source/continuation contract, not complete Richese certification. Read with [the acquisition audit](RICHESE_ACQUISITION_RULES.md). The full-hand publisher question remains unresolved; the user's first-version instruction permits the visibly qualified prototype, not a new timing ruling.
 
+## Printed-use Truthtrance commitment — 27 October 2026
+
+Whole turn-action questions can now name a future printed Box activation. Actual
+accepted payment records it before private selection, and the fee shares the
+remaining purse with other obligations. No recovered identity is promised or
+exposed. Unpaid unknown recovery cannot fund another effect. Current exact
+guides and existing paid-selection controls retain their separate ownership and
+native priority. Basic keeps its real Semuta continuation. This does not change
+the printed cost, disposal order or existing provisional capacity/refund policy.
+[Current contract and evidence](TRUTHTRANCE_TURN_ACTIONS.md#printed-nullentropy-box--27-october-2026).
+
 ## Shipping-price cost recovery — 26 October 2026
 
 Box can now search while the original purchased-shipment cost remains in

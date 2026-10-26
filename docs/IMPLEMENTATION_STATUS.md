@@ -1,5 +1,27 @@
 # Dune implementation status
 
+## 27 October 2026 — Printed Nullentropy Box commitments
+
+Prototyped / Partial. Actual paid activation records the future printed play;
+private selection remains native and supplies no assumed unknown effect.
+One purse funds Box, payments and physical actions. Basic's real Semuta pause,
+whole No and late readiness retain their original controls. Opaque battle
+candidates now exclude unknown weapons/defenses/Heroes; a detached supplement
+labels its forecast-only metadata. The stale Guild permission sentence is fixed.
+
+Frozen **20 files, 311/311**, types/lint/build and five journey groups
+(six Basic/Advanced programmes) pass. Runtime evidence includes 36 GameTable SSR
+renders, 6 actual answer callbacks, 4 guide callbacks, 2 native Box
+activation callbacks and 1 paid Take callback. Genuine sources earn the
+cache Box and ordinary Hajr purchases; Basic keeps its actual Semuta pause.
+Source/continuation counts and inventories derive from native arrays. A separate
+explicit detached supplement checks opaque battle-card quotation and claims no
+new native acquisition. No full rules/combination certificate is implied.
+No strategic AI, saved-game operation, server restart or deployment occurs.
+Wider future actions/funding, full modes and final acceptance remain unfinished.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-nullentropy-box--27-october-2026).
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-box-play-proof-v3/`.
+
 ## 27 October 2026 — CHOAM opening-income payment installments
 
 Prototyped / Partial. Payment witnesses can use the owned automatic native

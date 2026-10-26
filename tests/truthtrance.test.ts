@@ -15,6 +15,7 @@ import { DIFFICULTIES } from '../game/bot-profiles';
 import {
   truthFactAnswer,
   truthQuestionText,
+  validateTruthQuestionReceipt,
   type TruthFact,
   type TruthQuestion,
 } from '../game/truthtrance';
@@ -29,6 +30,29 @@ void test('whole card questions name Amal, Thumper and the actual printed Karama
   assert.match(question('amal', 'phase-opening:2:8'), /Amal.*original phase opening.*before ordinary payments/);
   assert.match(question('karamaAuction', 'ordinary-auction:2:1'), /Karama.*original ordinary auction lot.*winning invoice/);
   assert.match(question('karamaShipment', '["karamaShipment",2,"emperor","original"]'), /Karama.*Emperor’s original unused shipment price/);
+});
+
+void test('whole Box questions describe future printed activation and its search payment without choosing the recovered card', () => {
+  const question: TruthQuestion = { kind: 'turnActions', target: 'e', turn: 2,
+    mixed: { kind: 'action', action: { kind: 'cardPlay', effect: 'nullentropyBox' } } };
+  const text = truthQuestionText(question, id => id, id => id);
+  assert.match(text, /activate Nullentropy Box.*printed role.*pay its 2-spice search cost after this answer this turn/);
+  assert.doesNotMatch(text, /Ghola|selected|recover.*Shield/);
+});
+
+void test('Box raw question parsing needs no hidden possession and eagerly rejects extra selected-card data in folded clauses', () => {
+  const game = fixture();
+  assert.ok(!game.players.find(player => player.id === 'e')!.hand.some(card => card.effect === 'nullentropyBox'));
+  const action = { kind: 'cardPlay' as const, effect: 'nullentropyBox' as const };
+  const question: TruthQuestion = { kind: 'turnActions', target: 'e', turn: 2,
+    mixed: { kind: 'or', terms: [{ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 0 } },
+      { kind: 'action', action }] } };
+  assert.doesNotThrow(() => validateTruthQuestionReceipt(game, 'a', question));
+  for (const extra of [{ selected: 'Shield' }, { card: 'physical-box' }, { cost: 2 }, { recipient: 'h' }]) {
+    const invalid = { ...question, mixed: { kind: 'or', terms: [{ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 0 } },
+      { kind: 'action', action: { ...action, ...extra } }] } };
+    assert.throws(() => validateTruthQuestionReceipt(game, 'a', invalid as TruthQuestion));
+  }
 });
 
 function fixture() {

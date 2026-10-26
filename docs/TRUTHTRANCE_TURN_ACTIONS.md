@@ -1,5 +1,53 @@
 # Truthtrance combined current-turn actions
 
+## Printed Nullentropy Box — 27 October 2026
+
+**Prototyped / Partial.** `cardPlay/nullentropyBox` concerns an accepted printed
+Box activation after answering in this turn. Its actual two-spice payment
+commits the search and records the play once, before the native private choice.
+The question does not name the recovered card. An earlier activation, recovering
+the used Box or another role is not a new play. No remains binding through the
+current turn, including Mentat; Movement end does not close this card's interval.
+
+The detached witness pays the same native fee and preserves the physical
+exchange without selecting/shuffling a real game. Known owned recovery routes
+retain their existing meaning; an unpaid unknown recovered card is opaque and
+cannot supply another promised effect. Payments, shipment, Revival and battle
+share the remaining purse. Printed-cost preflight rejects voluntary loss before
+paid inspection can suspend the table. The current declared Truthtrance's exact
+guaranteed discard is available after its answer, without disposing of another
+queued question or choosing an opponent's Semuta response.
+
+Basic native Richese keeps its existing Semuta marker and original discard
+continuation. Whole-answer admission and reconciliation now support that quiet
+native envelope. A pending claim/search retains native priority; the separate
+legacy bribe, Kull and optional-module envelopes are unchanged. This adds no game
+start permission or full combination certification.
+
+The editor names the printed role, exact current Box guides use current native
+availability, and paid selection remains in the existing private search panel.
+No candidates or selected identity enter an unpaid guide. Accepted-order
+promises, whole AND/OR/No, frozen facts and four minimally legal profiles remain
+connected. Old Hajr/Ghola rows keep their shape; only Box questions add the
+optional Box stage. Full strategy and calibration remain deferred.
+
+This is bounded composition of existing Truthtrance and the
+[native Box policy](NULLENTROPY_BOX_ENGINE_AUDIT.md#verified-authority-and-remaining-boundaries),
+not a separate publisher worked example. Empty-search/capacity policies retain
+their existing provisional scope. Other future actions and funding, wider
+combinations, complete rules and final assurance/deployed acceptance remain open.
+Frozen **20 files, 311/311**, types/lint/build and five journey groups
+(six Basic/Advanced programmes) pass. Runtime evidence includes 36 GameTable SSR
+renders, 6 actual answer callbacks, 4 guide callbacks, 2 native Box
+activation callbacks and 1 paid Take callback. Genuine sources earn the
+cache Box and ordinary Hajr purchases; Basic keeps its actual Semuta pause.
+Source/continuation counts and inventories derive from native arrays. A separate
+explicit detached supplement checks opaque battle-card quotation and claims no
+new native acquisition. No full rules/combination certificate is implied.
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-truth-box-play-proof-v3/`;
+journeys/HTML: adjacent `20261027-truth-box-play-runtime/run/`.
+This is local native/SSR evidence, not browser hydration or deployed acceptance.
+
 ## CHOAM opening income — 27 October 2026
 
 **Prototyped / Partial.** Whole, bare, grouped and mixed ordinary payment

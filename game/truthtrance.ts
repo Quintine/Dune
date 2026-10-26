@@ -1,6 +1,6 @@
 import { parseTravelActionClaim, type TravelClaim } from './travel-expression-promises';
 import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES,
-  type TurnActionClaim } from './turn-action-promises';
+  turnActionPromiseModeSupported, type TurnActionClaim } from './turn-action-promises';
 import { battlePowerOf, nativeBattlePowerOpportunity } from './battle-power-question';
 import { parseKaramaShipmentSource, windowCardOpportunity } from './window-card-play';
 import { parseTraitorActionClaim, type MixedTraitorClaim } from './mixed-traitor-question';
@@ -380,7 +380,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
   }
   if (v.kind === 'turnActions') {
     check(Object.keys(v).sort().join(',') === 'kind,mixed,target,turn' && v.turn === g.turn &&
-      bribePromiseModeSupported(g) && g.status === 'playing' && Number.isInteger(g.phase) && g.phase >= 0 && g.phase <= 8 &&
+      turnActionPromiseModeSupported(g) && g.status === 'playing' && Number.isInteger(g.phase) && g.phase >= 0 && g.phase <= 8 &&
       !g.response && !g.decision && (!g.phaseOpening || !!windowCardOpportunity(g, 'amal')) && !g.pendingTreacheryDiscard && !g.pendingKarama,
     'Supply the current turn, complete turn-action question and a supported quiet native window.');
     const respondent = g.players.find(player => player.id === v.target)!;
@@ -752,7 +752,9 @@ export function truthQuestionText(
           action.effect === 'atomics' ? 'Family Atomics' : 'Harvester'} in its printed role after this answer in this original ${
           action.effect === 'harvester' ? 'fresh Spice Blow' : 'Storm window'} this turn`;
       }
-      if (action.kind === 'cardPlay') return `you play ${action.effect === 'hajr' ? 'Hajr' : 'Tleilaxu Ghola'} in its printed role after this answer this turn`;
+      if (action.kind === 'cardPlay') return action.effect === 'nullentropyBox'
+        ? 'you activate Nullentropy Box in its printed role and pay its 2-spice search cost after this answer this turn'
+        : `you play ${action.effect === 'hajr' ? 'Hajr' : 'Tleilaxu Ghola'} in its printed role after this answer this turn`;
       if (action.kind === 'battlePower') {
         const claim = action.claim, where = `in this original battle in ${locationName(action.territory)}`;
         if (claim.kind === 'voiceCommand') return `you actually declare native Voice ${claim.must ? 'requiring' : 'forbidding'} ${claim.cardType} ${where} (later prevention does not change the declaration)`;

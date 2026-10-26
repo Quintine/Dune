@@ -6,8 +6,9 @@ import { parseRevivalActionClaim, type RevivalActionClaim } from './mixed-reviva
 import { RevivalExpressionPromiseError, type RevivalExpressionReturn } from './revival-expression-promises';
 import { parseBattleActionClaim, type MixedBattleActionClaim } from './mixed-battle-question';
 import { PlanClaimError } from './battle-promises';
-import type { PrintedCardEffect } from './printed-card-play';
+import { PRINTED_CARD_EFFECTS, type PrintedCardEffect } from './printed-card-play';
 import { WINDOW_CARD_EFFECTS, type WindowCardEffect } from './window-card-play';
+import { nativePromiseScopeSupported, type NativePromiseScope } from './native-promise-scope';
 import { BattlePowerQuestionError, battlePowerMatches, battlePowerOf, parseBattlePowerClaim,
   type BattlePowerClaim, type BattlePowerDeclaration, type NativeBattlePower } from './battle-power-question';
 import {
@@ -27,6 +28,15 @@ import type { TruthFact } from './truthtrance';
 
 export const TURN_ACTION_MAX_LEAVES = 16;
 export const TURN_ACTION_MAX_DEPTH = 4;
+
+/** Native whole answers retain Semuta's own discard continuation. Other
+ * unsupported interruption/module envelopes stay separately gated. */
+export function turnActionPromiseModeSupported(game: NativePromiseScope & {
+  kullPreview?: unknown; nexusKullPreview?: unknown; richeseBetrayalPreview?: unknown;
+}): boolean {
+  return nativePromiseScopeSupported(game) && !game.kullPreview &&
+    !game.nexusKullPreview && !game.richeseBetrayalPreview;
+}
 
 export type TurnActionLeaf = TravelActionClaim | { kind: 'payment'; recipient: string; minimum: number } |
   { kind: 'bid'; lot: number; minimum: number } | RevivalActionClaim | { kind: 'alliance'; partner: string } |
@@ -68,7 +78,10 @@ export type TurnActionCombat = {
   traitor: { beneficiary: string; target: string; leader: string | null; closed: boolean; call: boolean | null } | null;
   powers?: Record<NativeBattlePower, TurnActionPowerStage | null>;
 };
-export type TurnActionCardPlays = Record<PrintedCardEffect, { played: boolean; closed: boolean } | null>;
+type PrintedCardStage = { played: boolean; closed: boolean } | null;
+/** The first two keys retain the legacy schema; later printed roles are optional. */
+export type TurnActionCardPlays = Record<'hajr' | 'ghola', PrintedCardStage> &
+  Partial<Record<Exclude<PrintedCardEffect, 'hajr' | 'ghola'>, PrintedCardStage>>;
 export type TurnActionWindowCards = Partial<Record<WindowCardEffect, { source: string; played: boolean; closed: boolean }>>;
 export type TurnActionPromise = TurnActionClaim & {
   event: string;
@@ -154,9 +167,9 @@ export function parseTurnActionLeaf(value: unknown): TurnActionLeaf {
       return { kind: 'battlePower', battle: value.battle, territory: value.territory, claim: parsePowerClaim(value.claim) };
     }
     if (value.kind === 'cardPlay') {
-      check(keys(value, 'effect,kind') && (value.effect === 'hajr' || value.effect === 'ghola'),
-        'Choose only the printed Hajr or Tleilaxu Ghola play after this answer.');
-      return { kind: 'cardPlay', effect: value.effect };
+      check(keys(value, 'effect,kind') && PRINTED_CARD_EFFECTS.some(effect => effect === value.effect),
+        'Choose only the printed Hajr, Tleilaxu Ghola or Nullentropy Box play after this answer.');
+      return { kind: 'cardPlay', effect: value.effect as PrintedCardEffect };
     }
     if (value.kind === 'battlePlan' || value.kind === 'traitorCall') {
       check(keys(value, value.kind === 'battlePlan' ? 'battle,claim,kind,territory' : 'battle,call,kind,territory') &&
@@ -323,8 +336,10 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
     }
   }
   if ('cardPlays' in promise) {
-    check(object(promise.cardPlays) && keys(promise.cardPlays, 'ghola,hajr'), 'Retain only the native printed-card play stages.');
-    for (const effect of ['hajr', 'ghola'] as const) {
+    check(object(promise.cardPlays) && (keys(promise.cardPlays, 'ghola,hajr') ||
+      keys(promise.cardPlays, [...PRINTED_CARD_EFFECTS].sort().join(','))), 'Retain only the native printed-card play stages.');
+    for (const effect of PRINTED_CARD_EFFECTS) {
+      if (effect === 'nullentropyBox' && !Object.hasOwn(promise.cardPlays, effect)) continue;
       const stage = promise.cardPlays[effect];
       check(stage === null || object(stage) && keys(stage, 'closed,played') && typeof stage.played === 'boolean' &&
         typeof stage.closed === 'boolean', 'Retain the actual printed-role play and native stage closure.');
@@ -685,7 +700,7 @@ export function closeTurnActionBattlePower<T extends TurnActionPromise>(promises
  * success, disposal, recovery and real card custody; none count as this event. */
 export function recordTurnActionCardPlay<T extends TurnActionPromise>(promises: readonly T[], player: string,
   turn: number, effect: PrintedCardEffect): T[] {
-  check(effect === 'hajr' || effect === 'ghola', 'Record an accepted printed Hajr or Tleilaxu Ghola play.');
+  check(PRINTED_CARD_EFFECTS.some(candidate => candidate === effect), 'Record an accepted printed Hajr, Tleilaxu Ghola or Nullentropy Box play.');
   const updates = new Map<T, T>();
   for (const promise of liveTurnActionPromises(promises, player, turn)) {
     readPromise(promise);
@@ -966,10 +981,10 @@ export function finishTurnActionTurn<T extends TurnActionPromise>(promises: read
       shipment: { ...promise.shipment, pending: false }, ...(promise.preparation ? { preparation: {
         bid: promise.preparation.bid ? { ...promise.preparation.bid, closed: true } : null,
         revival: promise.preparation.revival ? { ...promise.preparation.revival, closed: true } : null,
-      } } : {}), ...(promise.cardPlays ? { cardPlays: {
-        hajr: promise.cardPlays.hajr ? { ...promise.cardPlays.hajr, closed: true } : null,
-        ghola: promise.cardPlays.ghola ? { ...promise.cardPlays.ghola, closed: true } : null,
-      } } : {}), ...(promise.windowCards ? { windowCards } : {}) };
+      } } : {}), ...(promise.cardPlays ? { cardPlays: Object.fromEntries(PRINTED_CARD_EFFECTS
+        .filter(effect => Object.hasOwn(promise.cardPlays!, effect)).map(effect => [effect, promise.cardPlays![effect]
+          ? { ...promise.cardPlays![effect]!, closed: true } : null])) as TurnActionCardPlays } : {}),
+      ...(promise.windowCards ? { windowCards } : {}) };
     const unresolvedCombat = promise.combat && (promise.combat.plan && !promise.combat.plan.closed ||
       promise.combat.traitor && !promise.combat.traitor.closed || promise.combat.powers?.voice && !promise.combat.powers.voice.closed ||
       promise.combat.powers?.prescience && !promise.combat.powers.prescience.closed);
@@ -994,7 +1009,7 @@ export function validateTurnActionPromises(promises: readonly TurnActionPromise[
       (!promise.combat?.powers?.voice || promise.combat.powers.voice.closed) &&
       (!promise.combat?.powers?.prescience || promise.combat.powers.prescience.closed) &&
       WINDOW_CARD_EFFECTS.every(effect => promise.windowCards?.[effect]?.closed ?? true) &&
-      (!promise.cardPlays?.hajr || promise.cardPlays.hajr.closed) && (!promise.cardPlays?.ghola || promise.cardPlays.ghola.closed);
+      PRINTED_CARD_EFFECTS.every(effect => promise.cardPlays?.[effect]?.closed ?? true);
     const recipientsValid = (node: MixedActionExpression<TurnActionLeaf>): boolean => node.kind === 'action'
       ? node.action.kind === 'alliance' ? players.includes(node.action.partner) && node.action.partner !== promise.player :
         node.action.kind !== 'payment' || players.includes(node.action.recipient) && node.action.recipient !== promise.player

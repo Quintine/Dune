@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Truthtrance printed Box activation — 27 October 2026
+
+Prototyped / Partial. A future printed Nullentropy Box play counts when its real
+two-spice search payment is accepted, before private selection. The selected
+card is outside the predicate. Reuse native cost, exchange and known recovery
+rules; an unpaid unknown card cannot supply another promised effect. Share
+funding with every other commitment and check voluntary loss before inspection.
+The exact already-declared Truthtrance cost is a guaranteed future discard,
+without choosing a foreign reaction. Native Basic Semuta quiet windows now
+retain whole answers through their real discard continuation; legacy bribe,
+Kull and module envelopes stay separate. This is explicit software composition,
+not a dedicated publisher Truthtrance example or full mode acceptance.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#printed-nullentropy-box--27-october-2026).
+
 ## Truthtrance CHOAM opening-income promises — 27 October 2026
 
 Prototyped / Partial. Compose the native CHOAM opening receipt with ordinary

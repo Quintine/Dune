@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { battlePowerOf, type BattlePowerClaim, type BattlePowerDeclaration } from '../game/battle-power-question';
 import { WINDOW_CARD_EFFECTS, type WindowCardEffect } from '../game/window-card-play';
+import { PRINTED_CARD_EFFECTS, type PrintedCardEffect } from '../game/printed-card-play';
 import {
   compileMixedActionExpression,
   type MixedActionExpression,
@@ -56,7 +57,7 @@ const plan = (claim: TurnActionPlanValue['claim'] = { kind: 'dial', compare: 'gt
   ({ kind: 'action', action: { kind: 'battlePlan', battle, territory: 'carthag', claim } });
 const call = (call = true, battle = 'battle:1'): Expression =>
   ({ kind: 'action', action: { kind: 'traitorCall', battle, territory: 'carthag', call } });
-const card = (effect: 'hajr' | 'ghola' = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
+const card = (effect: PrintedCardEffect = 'hajr'): Expression => ({ kind: 'action', action: { kind: 'cardPlay', effect } });
 const power = (claim: BattlePowerClaim = { kind: 'voice', use: true }): Expression =>
   ({ kind: 'action', action: { kind: 'battlePower', battle: 'battle:1', territory: 'carthag', claim } });
 const windowSource = (effect: WindowCardEffect) => effect === 'karamaShipment'
@@ -98,9 +99,16 @@ function combat(mixed: Expression, answer = true, id = 'turn-action:1'): TurnAct
 }
 const dial = (value = true): TurnActionPlanValue => ({ claim: { kind: 'dial', compare: 'gte', value: 2 }, value });
 function cards(mixed: Expression, answer = true, id = 'turn-action:1'): TurnActionPromise {
-  return { ...promise(mixed, answer, id), cardPlays: {
+  const row: TurnActionPromise = { ...promise(mixed, answer, id), cardPlays: {
     hajr: { played: false, closed: false }, ghola: { played: false, closed: false },
   } };
+  const visit = (node: Expression): void => {
+    if (node.kind === 'action' && node.action.kind === 'cardPlay' && node.action.effect === 'nullentropyBox')
+      row.cardPlays!.nullentropyBox = { played: false, closed: false };
+    else if (node.kind !== 'action' && node.kind !== 'fact') node.terms.forEach(visit);
+  };
+  visit(mixed);
+  return row;
 }
 function powers(mixed: Expression, answer = true, id = 'turn-action:1'): TurnActionPromise {
   const row: TurnActionPromise = { ...promise(mixed, answer, id), combat: { event: 'battle:1', territory: 'carthag',
@@ -917,7 +925,7 @@ void test('native off-board combat locations retain exact event and location bin
 });
 
 void test('printed card-play leaves contain only the printed effect and every raw clause retains its own stage', () => {
-  for (const effect of ['hajr', 'ghola'] as const) {
+  for (const effect of PRINTED_CARD_EFFECTS) {
     const original = { kind: 'cardPlay', effect };
     assert.deepEqual(parseTurnActionLeaf(original), original);
     assert.notEqual(parseTurnActionLeaf(original), original);
@@ -1617,4 +1625,67 @@ void test('Amal whole AND and OR keep printed receipt and later payment alternat
   assert.deepEqual(expired.windowCards!.amal, { source, played: false, closed: true });
   assert.equal(expired.fulfilled, true);
   validateTurnActionPromises([expired], seats);
+});
+
+void test('Box AND and OR branches count only an actual future printed activation in each answer interval', () => {
+  const original = cards(group('and', card('nullentropyBox'), card('ghola'), pay()));
+  const alternative = cards(group('or', card('nullentropyBox'), pay()), true, 'turn-action:2');
+  const signed = { kind: 'cardPlay', effect: 'nullentropyBox', answer: true };
+  assert.deepEqual(branches(original), [[signed, { kind: 'cardPlay', effect: 'ghola', answer: true }, signedPay()]]);
+  for (const [player, turn] of [['other', 1], ['respondent', 2]] as const)
+    assert.equal(recordTurnActionCardPlay([original], player, turn, 'nullentropyBox')[0], original);
+  const used = recordTurnActionCardPlay([original, alternative], 'respondent', 1, 'nullentropyBox');
+  assert.deepEqual(branches(used[0]), [[{ kind: 'cardPlay', effect: 'ghola', answer: true }, signedPay()]]);
+  assert.equal(used[1].fulfilled, true);
+  const fresh = cards(card('nullentropyBox'), true, 'turn-action:3');
+  assert.equal(fresh.cardPlays!.nullentropyBox!.played, false, 'An earlier accepted play or later recovery is not a future receipt');
+  const replay = recordTurnActionCardPlay([used[0], fresh], 'respondent', 1, 'nullentropyBox');
+  assert.equal(replay[0], used[0]);
+  assert.equal(replay[1].fulfilled, true);
+  assert.equal(original.cardPlays!.nullentropyBox!.played, false);
+  const ghola = recordTurnActionCardPlay([used[0]], 'respondent', 1, 'ghola');
+  assert.equal(recordTurnActionPayment(ghola, 'respondent', 1, payment())[0].fulfilled, true);
+  validateTurnActionPromises(used, seats);
+});
+
+void test('Box No remains binding through transport and payment closure and settles only at the turn deadline', () => {
+  const no = cards(card('nullentropyBox'), false);
+  const moved = closeTurnActionTransport([no], 'respondent', 1);
+  assert.deepEqual(moved[0].cardPlays!.nullentropyBox, { played: false, closed: false });
+  const unpaid = closeTurnActionPayments(moved, 'respondent', 1);
+  assert.equal(unpaid[0].fulfilled, false);
+  assert.throws(() => recordTurnActionCardPlay(unpaid, 'respondent', 1, 'nullentropyBox'), TurnActionError);
+  assert.equal(unpaid[0].cardPlays!.nullentropyBox!.played, false);
+  const expired = finishTurnActionTurn(unpaid, 'respondent', 1)[0];
+  assert.equal(expired.fulfilled, true);
+  assert.deepEqual(expired.cardPlays!.nullentropyBox, { played: false, closed: true });
+  assert.equal(recordTurnActionCardPlay([expired], 'respondent', 1, 'nullentropyBox')[0], expired);
+  const wholeNo = cards(group('and', card('nullentropyBox'), pay()), false, 'turn-action:2');
+  const used = recordTurnActionCardPlay([wholeNo], 'respondent', 1, 'nullentropyBox');
+  assert.throws(() => recordTurnActionPayment(used, 'respondent', 1, payment()), TurnActionError);
+  assert.deepEqual(used[0].payments, []);
+  const yes = cards(card('nullentropyBox'), true, 'turn-action:3');
+  assert.equal(finishTurnActionTurn([yes], 'respondent', 1)[0].released, true);
+  validateTurnActionPromises([expired], seats);
+});
+
+void test('optional Box stage preserves legacy bytes and strict raw folded metadata without recording a selected card', () => {
+  const old = cards(card('ghola'), false);
+  const before = JSON.stringify(old);
+  const unchanged = recordTurnActionCardPlay([old], 'respondent', 1, 'nullentropyBox')[0];
+  assert.equal(unchanged, old);
+  assert.equal(JSON.stringify(unchanged), before);
+  assert.equal(Object.hasOwn(closeTurnActionTransport([old], 'respondent', 1)[0].cardPlays!, 'nullentropyBox'), false);
+  assert.equal(Object.hasOwn(finishTurnActionTurn([old], 'respondent', 1)[0].cardPlays!, 'nullentropyBox'), false);
+  const row = cards(group('or', fact(), card('nullentropyBox')));
+  const stage = row.cardPlays!.nullentropyBox!;
+  for (const value of [undefined, null, { ...stage, selected: 'physical-recovered-card' },
+    { ...stage, cost: 2 }, { ...stage, played: 1 }, { ...stage, closed: 'yes' }])
+    assert.throws(() => turnActionValue({ ...row, cardPlays: { hajr: null, ghola: null,
+      nullentropyBox: value } } as unknown as TurnActionPromise), TurnActionError);
+  assert.throws(() => turnActionValue({ ...row, cardPlays: { hajr: null, ghola: null } }), TurnActionError);
+  const optional = { ...old, cardPlays: { ...old.cardPlays!, nullentropyBox: null } };
+  validateTurnActionPromises([optional], seats);
+  for (const extra of [{ selected: 'Shield' }, { card: 'physical-box' }, { minimum: 2 }, { recipient: 'other' }])
+    assert.throws(() => parseTurnActionLeaf({ kind: 'cardPlay', effect: 'nullentropyBox', ...extra }), TurnActionError);
 });
