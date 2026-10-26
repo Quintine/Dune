@@ -9,12 +9,15 @@ import {
   TURN_ACTION_MAX_LEAVES,
   TurnActionError,
   closeTurnActionBidding,
+  closeTurnActionCombat,
   closeTurnActionRevival,
   closeTurnActionTransport,
   finishTurnActionTurn,
   liveTurnActionPromises,
   parseTurnActionLeaf,
   recordTurnActionBid,
+  recordTurnActionPlan,
+  recordTurnActionTraitor,
   recordTurnActionMovement,
   recordTurnActionPayment,
   recordTurnActionShipment,
@@ -27,6 +30,7 @@ import {
   type TurnActionBranchLeaf,
   type TurnActionLeaf,
   type TurnActionPromise,
+  type TurnActionPlanValue,
 } from '../game/turn-action-promises';
 
 type Expression = MixedActionExpression<TurnActionLeaf>;
@@ -40,6 +44,10 @@ const forces = (minimum = 3, counter: 'total' | 'normal' | 'elite' = 'total'): E
   ({ kind: 'action', action: { kind: 'forces', counter, minimum } });
 const leader = (leader = 'atreides-0'): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
 const alliance = (partner = 'recipient'): Expression => ({ kind: 'action', action: { kind: 'alliance', partner } });
+const plan = (claim: TurnActionPlanValue['claim'] = { kind: 'dial', compare: 'gte', value: 2 }, battle = 'battle:1'): Expression =>
+  ({ kind: 'action', action: { kind: 'battlePlan', battle, territory: 'carthag', claim } });
+const call = (call = true, battle = 'battle:1'): Expression =>
+  ({ kind: 'action', action: { kind: 'traitorCall', battle, territory: 'carthag', call } });
 const fact = (): Expression => ({ kind: 'fact', fact: { kind: 'spice', compare: 'gte', value: 5 } });
 const group = (kind: 'and' | 'or', ...terms: Expression[]): Expression => ({ kind, terms });
 const signedTravel = (kind: 'ship' | 'move', territory = 'carthag', minimum = 3,
@@ -66,6 +74,12 @@ function prepared(mixed: Expression, answer = true, id = 'turn-action:1'): TurnA
 function nexus(mixed: Expression, answer = true, id = 'turn-action:1'): TurnActionPromise {
   return { ...promise(mixed, answer, id), alliance: { source: 'nexus:1', partner: null, closed: false } };
 }
+function combat(mixed: Expression, answer = true, id = 'turn-action:1'): TurnActionPromise {
+  return { ...promise(mixed, answer, id), combat: { event: 'battle:1', territory: 'carthag',
+    plan: { closed: false, values: null }, traitor: { beneficiary: 'respondent', target: 'other',
+      leader: 'other-0', closed: false, call: null } } };
+}
+const dial = (value = true): TurnActionPlanValue => ({ claim: { kind: 'dial', compare: 'gte', value: 2 }, value });
 
 void test('turn-action leaves retain exact native fields, safe payment minima and no payment twenty-force cap', () => {
   for (const kind of ['ship', 'move'] as const) {
@@ -682,4 +696,179 @@ void test('final-membership stages reject temporary pairs, extra metadata, missi
   assert.throws(() => validateTurnActionPromises([foreignSnapshot], seats), TurnActionError);
   const foreignCompiled = { ...original, compiled: { kind: 'action', action: { kind: 'alliance', partner: 'other' } } };
   assert.throws(() => turnActionValue(foreignCompiled as TurnActionPromise), TurnActionError);
+});
+
+void test('combat leaves accept only one original native plan atom or actual declaration in the original battle', () => {
+  const claims: TurnActionPlanValue['claim'][] = [{ kind: 'dial', compare: 'eq', value: 1.5 },
+    { kind: 'support', compare: 'gte', value: 2 }, { kind: 'weapon', name: null },
+    { kind: 'defense', name: null }, { kind: 'leader', leader: 'structural-leader-id' }, { kind: 'kwisatz', use: false }];
+  for (const claim of claims) {
+    const leaf = { kind: 'battlePlan', battle: 'battle:1', territory: 'carthag', claim };
+    assert.deepEqual(parseTurnActionLeaf(leaf), leaf);
+    assert.notEqual(parseTurnActionLeaf(leaf), leaf);
+  }
+  for (const choice of [true, false]) assert.deepEqual(parseTurnActionLeaf({ kind: 'traitorCall', battle: 'battle:1',
+    territory: 'carthag', call: choice }), { kind: 'traitorCall', battle: 'battle:1', territory: 'carthag', call: choice });
+  const original = { kind: 'battlePlan', battle: 'battle:1', territory: 'carthag', claim: dial().claim };
+  for (const leaf of [{ ...original, battle: '' }, { ...original, territory: '' }, { ...original, answer: true },
+    { ...original, claim: { kind: 'and', terms: [dial().claim, dial().claim] } },
+    { ...original, claim: { kind: 'dial', compare: 'eq', value: 1.25 } },
+    { ...original, claim: { kind: 'leader', leader: ' untrimmed' } },
+    { kind: 'traitorCall', battle: 'battle:1', territory: 'carthag', call: 'yes' },
+    { kind: 'traitorCall', battle: 'battle:1', territory: 'carthag', call: true, canReveal: true }])
+    assert.throws(() => parseTurnActionLeaf(leaf), TurnActionError);
+  for (const mixed of [plan(), call(), group('or', fact(), plan()), group('or', fact(), call())])
+    assert.throws(() => turnActionValue(promise(mixed)), TurnActionError);
+});
+
+void test('combat whole AND OR and No branches retain original plan atoms and actual declaration polarity', () => {
+  const planLeaf = { kind: 'battlePlan', battle: 'battle:1', territory: 'carthag', claim: dial().claim, answer: true };
+  const traitorLeaf = { kind: 'traitorCall', battle: 'battle:1', territory: 'carthag', call: true, answer: true,
+    beneficiary: 'respondent', target: 'other', leader: 'other-0' };
+  assert.deepEqual(branches(combat(group('and', plan(), call(), pay()))), [[planLeaf, traitorLeaf, signedPay()]]);
+  assert.deepEqual(branches(combat(group('or', plan(), call(), pay()))), [[planLeaf], [traitorLeaf], [signedPay()]]);
+  assert.deepEqual(branches(combat(group('and', plan(), call()), false)), [
+    [{ ...planLeaf, answer: false }], [{ ...traitorLeaf, answer: false }],
+  ]);
+  assert.deepEqual(branches(combat(group('or', call(true), call(false)), false)), [],
+    'No declaration satisfies No to the OR of actual Reveal and actual Decline');
+  assert.deepEqual(branches(combat(group('and', call(true), call(false)))), [],
+    'One original native declaration cannot both Reveal and Decline');
+  assert.deepEqual(branches(combat(group('and', plan(), plan()))), [[planLeaf]]);
+});
+
+void test('one actual plan receipt projects exact original predicates into distinct answer intervals and then permits later payment', () => {
+  const weapon: TurnActionPlanValue = { claim: { kind: 'weapon', name: null }, value: true };
+  const first = combat(group('and', plan(), pay()));
+  const second = combat(group('and', plan(weapon.claim), plan(weapon.claim), pay()), true, 'turn-action:2');
+  const rows = recordTurnActionPlan([first, second], 'respondent', 1, 'battle:1', 'carthag', [dial(), weapon]);
+  assert.deepEqual(rows[0].combat!.plan, { closed: true, values: [dial()] });
+  assert.deepEqual(rows[1].combat!.plan, { closed: true, values: [weapon] });
+  assert.deepEqual(branches(rows[0]), [[signedPay()]]);
+  assert.equal(rows[0].fulfilled, false);
+  assert.equal(recordTurnActionPayment(rows, 'respondent', 1, payment())[0].fulfilled, true);
+  const fresh = combat(group('and', plan(), pay()), true, 'turn-action:3');
+  assert.equal(fresh.combat!.plan!.values, null);
+  assert.equal(recordTurnActionPlan(rows, 'respondent', 1, 'battle:1', 'carthag', [dial(false), weapon])[0], rows[0]);
+  assert.equal(recordTurnActionPlan([fresh], 'respondent', 1, 'other-battle', 'carthag', [dial()])[0], fresh);
+  assert.equal(recordTurnActionPlan([fresh], 'respondent', 1, 'battle:1', 'arrakeen', [dial()])[0], fresh);
+  assert.equal(recordTurnActionPlan([fresh], 'respondent', 2, 'battle:1', 'carthag', [dial()])[0], fresh);
+  assert.equal(recordTurnActionPlan([fresh], 'other', 1, 'battle:1', 'carthag', [dial()])[0], fresh);
+  assert.equal(first.combat!.plan!.values, null);
+  validateTurnActionPromises(rows, seats);
+});
+
+void test('actual plan and declaration events reject whole No violations atomically and retain dynamic alternatives', () => {
+  const no = combat(group('and', plan(), call()), false);
+  const planned = recordTurnActionPlan([no], 'respondent', 1, 'battle:1', 'carthag', [dial()]);
+  const before = structuredClone(planned);
+  assert.throws(() => recordTurnActionTraitor(planned, 'respondent', 1, 'battle:1', 'carthag', true), TurnActionError);
+  assert.deepEqual(planned, before);
+  const declined = recordTurnActionTraitor(planned, 'respondent', 1, 'battle:1', 'carthag', false);
+  assert.equal(declined[0].fulfilled, true);
+  const yes = combat(group('and', plan(), pay()), true, 'turn-action:2');
+  const planNo = combat(plan(), false, 'turn-action:3');
+  assert.throws(() => recordTurnActionPlan([yes, planNo], 'respondent', 1, 'battle:1', 'carthag', [dial()]), TurnActionError);
+  assert.equal(yes.combat!.plan!.values, null);
+  const declineNo = combat(call(false), false);
+  assert.throws(() => recordTurnActionTraitor([declineNo], 'respondent', 1, 'battle:1', 'carthag', false), TurnActionError);
+  const revealed = recordTurnActionTraitor([combat(group('and', call(), pay()))], 'respondent', 1, 'battle:1', 'carthag', true);
+  assert.equal(revealed[0].combat!.traitor!.call, true);
+  assert.equal(recordTurnActionTraitor(revealed, 'respondent', 1, 'battle:1', 'carthag', false)[0], revealed[0],
+    'Later prevention/effect handling cannot retract the original declaration');
+});
+
+void test('combat closure without a receipt makes every plan and both declaration predicates false', () => {
+  const zero = plan({ kind: 'dial', compare: 'eq', value: 0 });
+  const yes = combat(group('or', zero, call(false)));
+  const no = combat(group('or', zero, call(false)), false, 'turn-action:2');
+  const closed = closeTurnActionCombat([yes, no], 1, 'battle:1');
+  assert.equal(turnActionValue(closed[0]), false);
+  assert.deepEqual(closed[0].combat!.plan, { closed: true, values: null });
+  assert.equal(closed[0].combat!.traitor!.closed, true);
+  assert.equal(closed[0].combat!.traitor!.call, null);
+  assert.equal(closed[0].fulfilled, false);
+  assert.equal(closed[1].fulfilled, true);
+  assert.equal(closeTurnActionCombat([yes], 1, 'other-battle')[0], yes);
+  const finished = finishTurnActionTurn(closed, 'respondent', 1);
+  assert.equal(finished[0].released, true);
+  const received = recordTurnActionPlan([combat(group('and', plan(), pay()))], 'respondent', 1, 'battle:1', 'carthag', [dial()]);
+  const preserved = closeTurnActionCombat(received, 1, 'battle:1');
+  assert.deepEqual(preserved[0].combat!.plan, { closed: true, values: [dial()] });
+  assert.deepEqual(branches(preserved[0]), [[signedPay()]]);
+});
+
+void test('combat expiry releases unresolved original stages without inventing a plan or declaration and preserves terminal rows', () => {
+  const yes = combat(plan()), no = combat(call(false), false, 'turn-action:2');
+  const expired = finishTurnActionTurn([yes, no], 'respondent', 1);
+  for (const row of expired) {
+    assert.equal(row.released, true);
+    assert.equal(row.fulfilled, false);
+    assert.deepEqual(row.combat, yes.combat);
+  }
+  const terminal = recordTurnActionPlan([combat(plan(), true, 'turn-action:3')], 'respondent', 1, 'battle:1', 'carthag', [dial()])[0];
+  assert.equal(terminal.fulfilled, true);
+  assert.equal(finishTurnActionTurn([terminal], 'respondent', 1)[0], terminal);
+  for (const transform of [
+    (rows: TurnActionPromise[]) => closeTurnActionCombat(rows, 1, 'battle:1'),
+    (rows: TurnActionPromise[]) => recordTurnActionPlan(rows, 'respondent', 1, 'battle:1', 'carthag', [dial()]),
+    (rows: TurnActionPromise[]) => recordTurnActionTraitor(rows, 'respondent', 1, 'battle:1', 'carthag', true),
+  ]) assert.ok(transform([...expired, terminal]).every((row, index) => row === [...expired, terminal][index]));
+  validateTurnActionPromises([...expired, terminal], seats);
+});
+
+void test('combat metadata rejects missing original stages, mismatched source, premature values and incomplete or foreign receipts', () => {
+  const original = combat(group('and', plan(), call(), pay()));
+  const stage = original.combat!;
+  for (const value of [undefined, null, {}, { ...stage, event: 'other-battle' }, { ...stage, territory: 'arrakeen' },
+    { ...stage, plan: null }, { ...stage, traitor: null }, { ...stage, canReveal: true },
+    { ...stage, plan: { closed: false, values: [dial()] } },
+    { ...stage, plan: { closed: true, values: [] } },
+    { ...stage, plan: { closed: true, values: [dial(), dial()] } },
+    { ...stage, plan: { closed: true, values: [{ claim: { kind: 'weapon', name: null }, value: true }] } },
+    { ...stage, traitor: { ...stage.traitor!, call: false } },
+    { ...stage, traitor: { ...stage.traitor!, beneficiary: 'other', target: 'other' } }])
+    assert.throws(() => turnActionValue({ ...original, combat: value } as TurnActionPromise), TurnActionError);
+  assert.throws(() => recordTurnActionPlan([original], 'respondent', 1, 'battle:1', 'carthag', []), TurnActionError);
+  assert.throws(() => recordTurnActionPlan([original], 'respondent', 1, 'battle:1', 'carthag', [dial(), dial()]), TurnActionError);
+  assert.throws(() => recordTurnActionPlan([original], 'respondent', 1, 'battle:1', 'carthag',
+    [{ ...dial(), value: 'yes' }] as never), TurnActionError);
+  assert.throws(() => recordTurnActionTraitor([original], 'respondent', 1, 'battle:1', 'carthag', null as never), TurnActionError);
+  const foreign = { ...original, combat: { ...stage, traitor: { ...stage.traitor!, target: 'missing' } } };
+  assert.throws(() => validateTurnActionPromises([foreign], seats), TurnActionError);
+});
+
+void test('combat clauses share the outer logical budget and can coexist with strict earlier optional stages', () => {
+  const sixteen = combat(group('or', ...Array.from({ length: 16 }, () => plan())));
+  assert.doesNotThrow(() => turnActionValue(sixteen));
+  assert.throws(() => turnActionValue(combat(group('or', ...Array.from({ length: 17 }, () => plan())))), TurnActionError);
+  const mixed = group('and', plan(), call(), bid(), forces(), alliance(), pay());
+  const row = { ...prepared(mixed), alliance: { source: 'nexus:1', partner: null, closed: false }, combat: combat(mixed).combat };
+  validateTurnActionPromises([row], seats);
+  const old = prepared(group('and', bid(), forces(), pay()));
+  assert.equal('combat' in closeTurnActionCombat([old], 1, 'battle:1')[0], false);
+});
+
+void test('native off-board combat locations retain exact event and location bindings without widening travel destinations', () => {
+  const territory = 'homeworld:guild';
+  const mixed: Expression = { kind: 'and', terms: [
+    { kind: 'action', action: { kind: 'battlePlan', battle: 'battle:1', territory, claim: dial().claim } },
+    { kind: 'action', action: { kind: 'traitorCall', battle: 'battle:1', territory, call: false } },
+    pay(),
+  ] };
+  const original = combat(mixed);
+  original.combat!.territory = territory;
+  validateTurnActionPromises([original], seats);
+  assert.equal(recordTurnActionPlan([original], 'respondent', 1, 'other-battle', territory, [dial()])[0], original);
+  assert.equal(recordTurnActionPlan([original], 'respondent', 1, 'battle:1', 'homeworld:emperor', [dial()])[0], original);
+  const planned = recordTurnActionPlan([original], 'respondent', 1, 'battle:1', territory, [dial()]);
+  assert.equal(recordTurnActionTraitor(planned, 'respondent', 1, 'other-battle', territory, false)[0], planned[0]);
+  assert.equal(recordTurnActionTraitor(planned, 'respondent', 1, 'battle:1', 'homeworld:emperor', false)[0], planned[0]);
+  const declared = recordTurnActionTraitor(planned, 'respondent', 1, 'battle:1', territory, false);
+  assert.deepEqual(branches(declared[0]), [[signedPay()]]);
+  assert.equal(recordTurnActionPayment(declared, 'respondent', 1, payment())[0].fulfilled, true);
+  assert.equal(closeTurnActionCombat([original], 1, 'other-battle')[0], original);
+  assert.equal(closeTurnActionCombat([original], 1, 'battle:1')[0].combat!.plan!.closed, true);
+  for (const kind of ['ship', 'move'])
+    assert.throws(() => parseTurnActionLeaf({ kind, territory, minimum: 1 }), TurnActionError);
 });

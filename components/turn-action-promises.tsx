@@ -1,6 +1,6 @@
 'use client';
 
-import type { Action, GameView } from '@/game/engine';
+import type { Action, GameView, Plan } from '@/game/engine';
 import { bribeAction } from '@/game/bribe-options';
 import { alliancePromiseModeSupported } from '@/game/alliance-promises';
 import { nativePromiseScopeSupported } from '@/game/native-promise-scope';
@@ -9,9 +9,14 @@ import { truthQuestionText, type TruthAnswer } from '@/game/truthtrance';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
 import { Button } from './ui/button';
 
-type TurnActionProps = { game: GameView; busy: boolean; act: (action: Action) => void };
+type TurnActionProps = { game: GameView; busy: boolean; act: (action: Action) => void; fillPlan?: (plan: Plan) => void };
 const publicAllianceContext = (game: GameView) => ({
   players: game.players.map(player => ({ id: player.id, ally: player.ally })), offers: game.allianceOffers,
+});
+const publicBattleContext = (game: GameView) => game.battle && ({
+  event: game.battle.event, territory: game.battle.territory, attacker: game.battle.attacker, defender: game.battle.defender,
+  revealed: game.battle.revealed, submitted: game.battle.submitted,
+  traitorVoters: game.battle.traitorVoters, traitorSubmitted: game.battle.traitorSubmitted,
 });
 
 /** One projected native packet; no client branch selection or completion solver. */
@@ -19,6 +24,8 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const game = props.game, guide = game.turnActionGuide;
   if (!guide) return null;
   const actor = game.me, turn = game.turn, phase = game.phase, event = guide.event, action = guide.action;
+  const act = props.act, fillPlan = props.fillPlan, battle = game.battle;
+  const battleSignature = JSON.stringify(publicBattleContext(game));
   const signature = JSON.stringify(action), auction = game.auction, decision = game.decision;
   const native = game.richeseAuction, order = game.revivalOrder, revival = game.revival;
   const auctionSource = (current: GameView) => current.auction && JSON.stringify({
@@ -77,7 +84,14 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       try { ownedAlliance = !!quoteNexusAlliance({ ...publicAllianceContext(current), actor, target: action.target }).formed; }
       catch { ownedAlliance = false; }
     }
-    const opportunity = payment || paidBox || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
+    const currentBattle = phase === 6 && !!battle && current.battle === battle &&
+      JSON.stringify(publicBattleContext(current)) === battleSignature;
+    const planWindow = !!battle && currentBattle && !battle.revealed && [battle.attacker, battle.defender].includes(actor) && !battle.submitted.includes(actor);
+    const plan = action.type === 'battlePlan' && planWindow && !!fillPlan && props.fillPlan === fillPlan;
+    const battlePreparation = action.type === 'card' && planWindow;
+    const declaration = action.type === 'traitorCall' && typeof action.call === 'boolean' && !!battle && currentBattle && battle.revealed &&
+      battle.traitorVoters.includes(actor) && !battle.traitorSubmitted.includes(actor);
+    const opportunity = payment || paidBox || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
       ? !current.ready.includes(actor) && ['charity', 'ready', 'card'].includes(action.type)
       : phase === 3
         ? invoice || nativePass || requiredBid || action.type === 'passBid' && !current.richeseAuction && currentAuction && current.auction?.active === actor
@@ -88,7 +102,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
               ['ship', 'move', 'endMovement', 'card', 'prepareAdvisors', 'revealNoField'].includes(action.type))
             : (phase === 7 || phase === 8) &&
               action.type === 'ready' && !current.ready.includes(actor));
-    return !props.busy && current === game && nativePromiseScopeSupported(current) && current.status === 'playing' &&
+    return !props.busy && props.act === act && current === game && nativePromiseScopeSupported(current) && current.status === 'playing' &&
       Number.isSafeInteger(phase) && phase >= 0 && phase <= 8 && current.phase === phase && current.turn === turn && current.me === actor &&
       current.turnActionGuide === guide && guide.event === event && guide.action === action &&
       action.turnActionPromiseEvent === event && action.turnActionPromisePhase === phase && JSON.stringify(action) === signature && opportunity &&
@@ -104,6 +118,8 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const recipient = game.players.find(player => player.id === action.target)?.name ?? 'the quoted recipient';
   const sector = typeof action.sector === 'number' ? `, sector ${action.sector}` : '';
   const label = action.type === 'bribe' ? `Pay ${amount} spice to ${recipient} while honoring your whole answer`
+    : action.type === 'battlePlan' ? 'Fill the quoted battle plan for review before sealing'
+    : action.type === 'traitorCall' ? action.call ? 'Reveal traitor while honoring your whole answer' : 'Decline traitor while honoring your whole answer'
     : action.type === 'alliance' ? action.target === null
       ? game.players.find(player => player.id === actor)?.ally ? 'Break your current alliance while preserving your whole answer'
         : 'Withdraw your alliance offer while preserving your whole answer'
@@ -131,7 +147,11 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     : action.type === 'revealNoField' ? 'Reveal your No-Field while preserving your whole answer'
     : 'Use the offered native card preparation while preserving your whole answer';
   return <Button className="game-action min-h-11 whitespace-normal" data-testid="turn-action-promise-guide"
-    disabled={!canAct()} onClick={() => { if (canAct()) props.act(action); }}>{label}</Button>;
+    disabled={!canAct()} onClick={() => {
+      if (!canAct()) return;
+      if (action.type === 'battlePlan') fillPlan?.(action as Action & Plan);
+      else act(action);
+    }}>{label}</Button>;
 }
 
 /** Own original whole questions and aggregate status only. */
@@ -140,7 +160,7 @@ export function TurnActionPromises(props: TurnActionProps) {
   if (!own.length) return null;
   const live = own.some(promise => promise.turn === game.turn && !promise.fulfilled && !promise.released);
   return <section className="notice space-y-3" aria-label="Your Truthtrance turn-action promises" id="turn-action-promise-guidance">
-    <h3>Your alliance, bid, Revival, payment, shipment and movement promises</h3>
+    <h3>Your battle and turn-action promises</h3>
     <ul>{own.map(promise => <li key={promise.event}>
       Turn {promise.turn}: You answered {promise.answer ? 'Yes' : 'No'} to {truthQuestionText({ kind: 'turnActions', target: promise.player,
         turn: promise.turn, mixed: promise.mixed }, id => id === 'kwisatz' ? 'Kwisatz Haderach' : id === CHEAP_HERO_TRAITOR ? 'Cheap Hero / Heroine'
@@ -165,6 +185,9 @@ export function TurnActionPromises(props: TurnActionProps) {
       Alliance conditions concern final actual membership at this Nexus close. Offers alone are not alliances.
       A remaining alliance condition settles only at the actual close; forming an alliance does not fulfill it early.
       No can allow temporary membership followed by a break before the close. Neither answer promises another player’s consent.
+      Battle conditions describe your actual plan in the named current battle. An open plan condition settles when both plans are revealed;
+      sealing your own plan does not finish it. A plan already fixed can decide its condition at the answer.
+      Traitor conditions describe your original Reveal or decline declaration, before any later Karama or betrayal prevention.
       Shipment conditions concern one future original reserve shipment. Ground-movement conditions count the maximum physical forces in one actual future move,
       never the sum of smaller moves. Earlier shipment and movement do not count.
       Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.
@@ -194,13 +217,15 @@ export function TurnActionAnswers(props: TurnActionProps) {
       !!me && !me.autopilot && !current.response && !current.decision && !current.phaseOpening &&
       !current.automaticContinuationPending && !current.roomControl?.paused && !current.roomControl?.closed;
   };
-  return <section aria-label="Answer the whole alliance, bid, Revival, payment, shipment and movement question" className="space-y-3">
+  return <section aria-label="Answer the whole battle and turn-action question" className="space-y-3">
     <p className="notice">Answer the whole expression. Current facts freeze now; OR keeps legal alternatives and No keeps the whole expression false.
       Future real ordinary payments add together per recipient. Only one future original reserve shipment and actual future ground-movement groups count.
       Ordinary bids use the maximum future accepted declaration in the named current lot; ordinary force returns add together,
       while named leaders must actually return through ordinary native Revival.
       Alliance conditions use actual final membership when the current Nexus closes; offers alone do not count.
       A remaining alliance condition stays open through temporary membership until that close. Neither answer promises another player’s consent.
+      Current battle-plan conditions use the actual native plan; an open condition settles when both plans are revealed.
+      Traitor conditions use the original Reveal or decline declaration, before later Karama or betrayal prevention.
       Bids close with their lot; Revival closes with your native Revival opportunity.
       Shipment and movement close at your own Movement turn end; payment conditions last until the actual turn ends.
       Original rights, preparation, timing and costs still apply. Only your whole answer is shared.</p>

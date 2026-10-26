@@ -7,8 +7,8 @@
 `{kind:'payment',recipient,minimum}` or native
 `{kind:'ship'|'move',territory,minimum}`. Optional current facts and full AND/OR
 share sixteen logical leaves/four grouping levels. Old travel/payment question
-shapes and mode gates remain. Current ordinary-lot bids and personal native
-Revival leaves extend this envelope as detailed below.
+shapes and mode gates remain. Current ordinary-lot bids, personal native Revival, final Nexus membership
+and current battle decisions extend this envelope as detailed below.
 
 ## Authority and meaning
 
@@ -237,3 +237,61 @@ preparation/order/module combinations, unknown-fact correlations and complete
 rules/browser/deployed/recovery/privacy/custody acceptance remain. All existing
 preview gates and deferred full AI refinement/calibration remain. This batch
 performs no database/save/server/reset/restart/deployment operation.
+
+## Combined current battle decisions — 26 October 2026
+
+**Prototyped / Partial.** Add atomic
+`{kind:'battlePlan',battle,territory,claim}` predicates and
+`{kind:'traitorCall',battle,territory,call}` to the shared whole question.
+The exact current original battle and combat location bind every raw clause,
+including folded ones. Plan clauses use the existing native atomic claim
+parser and public printed identities; declaration clauses require an original
+current revealed-battle unsubmitted voter. No extra eligibility is granted.
+
+Optional private combat metadata holds source, evaluated original plan
+predicates and actual declaration context. Future plan receipts are captured
+at native reveal before cleanup; an already submitted own plan can be fixed
+at answer as in the existing native question. Original declaration counts
+before later Karama/prevention; a later prevented effect is not a new choice.
+Closure without the original event records absence, not dialzero or Decline.
+Whole alternatives and later ordinary payments retain their original meaning.
+
+Native virtual plan/decision constraints quote original legality, preparations,
+resources and physical custody. They never become real selected branch rows.
+Human plan guidance fills the existing complete form for review rather than
+sealing automatically; four minimal profiles can submit the native packet.
+Older records remain valid without combat metadata. Public native Traitor
+choices and later pure/mixed plan or Traitor questions retain a completion of
+earlier whole commitments even when there is no separate bribe ledger. Pending
+native income must finish before a plan or preparation guide is offered.
+
+The frozen batch passes **20 files,249/249**, types/lint/build and four actual
+native paths:22 GameTable SSR renders, four actual answer callbacks, six guide
+callbacks and one human plan-fill callback followed by separate native sealing.
+Source24 +9 performs frozen-spice fact, pay2 and the original physical projectile
+plan. Source24 +11 fixes a false plan receipt before cleanup and completes its
+payment alternative in late Mentat. Source26 +11 declares Reveal under a whole
+No, honors the cumulative payment cap and closes the actual turn. Original
+remote allied Harkonnen source72 +10 pays2, declares Reveal and receives actual
+physical Karama prevention; the declaration receipt stays true. Original
+physical inventories remain. No played source state is installed.
+
+Thirty-seven helper and24 control cases support13 new native cases, including
+four profiles. A genuine H/A/E two-Truth continuation earns an A/E battle from
+source27 by native movement, paid shipment and preparation. After A pays2 under
+a whole No, the second native dial question offers only the compatible No;
+both actual plans and turn closure fulfill the earlier answer. Bounded review
+repairs the new-only ledger preflight and pending-income guide fence. V1's
+runtime passes before type errors; narrow type feedback repairs them. V2 passes
+runtime, quick checks, the affected union and build on one frozen source.
+
+Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-turn-combat-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-turn-combat-runtime-v2/`.
+
+These are local engine/SSR/callback journeys, not browser, hydration or deployed
+acceptance. Wider preparation/order/action/module combinations, unknown-fact
+correlations and final rules/recovery/privacy/custody acceptance remain. Full
+AI strategy and calibration stay deferred. Native mode/module preview fences
+remain; this batch performs no database/save/server/reset/restart/deployment
+operation and does not certify any complete mode.

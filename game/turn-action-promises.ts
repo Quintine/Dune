@@ -4,6 +4,8 @@ import { BidPromiseError, parseBidClaim } from './bid-promises';
 import { AlliancePromiseError, parseAllianceClaim } from './alliance-promises';
 import { parseRevivalActionClaim, type RevivalActionClaim } from './mixed-revival-question';
 import { RevivalExpressionPromiseError, type RevivalExpressionReturn } from './revival-expression-promises';
+import { parseBattleActionClaim, type MixedBattleActionClaim } from './mixed-battle-question';
+import { PlanClaimError } from './battle-promises';
 import {
   MixedActionQuestionError,
   parseMixedActionExpression,
@@ -23,7 +25,9 @@ export const TURN_ACTION_MAX_LEAVES = 16;
 export const TURN_ACTION_MAX_DEPTH = 4;
 
 export type TurnActionLeaf = TravelActionClaim | { kind: 'payment'; recipient: string; minimum: number } |
-  { kind: 'bid'; lot: number; minimum: number } | RevivalActionClaim | { kind: 'alliance'; partner: string };
+  { kind: 'bid'; lot: number; minimum: number } | RevivalActionClaim | { kind: 'alliance'; partner: string } |
+  { kind: 'battlePlan'; battle: string; territory: string; claim: MixedBattleActionClaim } |
+  { kind: 'traitorCall'; battle: string; territory: string; call: boolean };
 export type TurnActionClaim = { turn: number; mixed: MixedActionExpression<TurnActionLeaf> };
 export type TurnActionPayment = { recipient: string; amount: number };
 export type TurnActionBranchLeaf = TravelBranchLeaf |
@@ -31,13 +35,23 @@ export type TurnActionBranchLeaf = TravelBranchLeaf |
   { kind: 'bid'; lot: number; source: string; minimum: number; answer: boolean } |
   { kind: 'forces'; counter: 'total' | 'normal' | 'elite'; minimum: number; progress: number; answer: boolean } |
   { kind: 'leader'; leader: string; answer: boolean } |
-  { kind: 'alliance'; partner: string; source: string; answer: boolean };
+  { kind: 'alliance'; partner: string; source: string; answer: boolean } |
+  { kind: 'battlePlan'; battle: string; territory: string; claim: MixedBattleActionClaim; answer: boolean } |
+  { kind: 'traitorCall'; battle: string; territory: string; call: boolean; answer: boolean;
+    beneficiary: string; target: string; leader: string | null };
 export type TurnActionPreparation = {
   bid: { lot: number; source: string; maximum: number; closed: boolean } | null;
   revival: { total: number; normal: number; elite: number; leaders: string[]; closed: boolean } | null;
 };
 export type TurnActionBid = { lot: number; source: string; amount: number };
 export type TurnActionAlliance = { source: string; partner: string | null; closed: boolean };
+export type TurnActionPlanValue = { claim: MixedBattleActionClaim; value: boolean };
+export type TurnActionCombat = {
+  event: string;
+  territory: string;
+  plan: { closed: boolean; values: TurnActionPlanValue[] | null } | null;
+  traitor: { beneficiary: string; target: string; leader: string | null; closed: boolean; call: boolean | null } | null;
+};
 export type TurnActionPromise = TurnActionClaim & {
   event: string;
   player: string;
@@ -58,6 +72,7 @@ export type TurnActionPromise = TurnActionClaim & {
   preparation?: TurnActionPreparation;
   /** Final membership is recorded only by the original Nexus closing event. */
   alliance?: TurnActionAlliance;
+  combat?: TurnActionCombat;
 };
 
 export class TurnActionError extends Error {
@@ -84,10 +99,27 @@ const physical = (value: unknown): value is number => whole(value) && value <= 2
 const printedTerritory = (value: unknown): value is string =>
   typeof value === 'string' && TERRITORIES.some(destination => destination.id === value);
 
+/** Identity membership is decoded by Truthtrance; here retain one strict atom. */
+function parseCombatClaim(value: unknown): MixedBattleActionClaim {
+  try {
+    return parseBattleActionClaim(value, object(value) && value.kind === 'leader' && identifier(value.leader)
+      ? [value.leader] : []);
+  } catch (error) { if (error instanceof PlanClaimError) throw new TurnActionError(error.message); throw error; }
+}
+const planKey = (claim: MixedBattleActionClaim): string => JSON.stringify(parseCombatClaim(claim));
+
 /** Public leaves carry only their native destination/recipient and minimum. */
 export function parseTurnActionLeaf(value: unknown): TurnActionLeaf {
   check(object(value), 'Choose one future ordinary bid, Revival, final Nexus alliance, reserve shipment, ground movement or bribe payment.');
   try {
+    if (value.kind === 'battlePlan' || value.kind === 'traitorCall') {
+      check(keys(value, value.kind === 'battlePlan' ? 'battle,claim,kind,territory' : 'battle,call,kind,territory') &&
+        identifier(value.battle) && identifier(value.territory), 'Retain the exact original current battle and native location.');
+      if (value.kind === 'battlePlan') return { kind: 'battlePlan', battle: value.battle,
+        territory: value.territory, claim: parseCombatClaim(value.claim) };
+      check(typeof value.call === 'boolean', 'Choose the actual Reveal or Decline declaration.');
+      return { kind: 'traitorCall', battle: value.battle, territory: value.territory, call: value.call };
+    }
     if (value.kind === 'alliance') {
       check(keys(value, 'kind,partner'), 'Supply only one final Nexus alliance partner.');
       const claim = parseAllianceClaim({ turn: 1, partner: value.partner });
@@ -126,6 +158,8 @@ function storedFact(value: unknown, depth = 0): TruthFact {
 }
 
 function actionKey(action: TurnActionLeaf): string {
+  if (action.kind === 'battlePlan') return JSON.stringify([action.kind, action.battle, action.territory, planKey(action.claim)]);
+  if (action.kind === 'traitorCall') return JSON.stringify([action.kind, action.battle, action.territory, action.call]);
   if (action.kind === 'alliance') return JSON.stringify([action.kind, action.partner]);
   if (action.kind === 'leader') return JSON.stringify([action.kind, action.leader]);
   if (action.kind === 'forces') return JSON.stringify([action.kind, action.counter, action.minimum]);
@@ -170,6 +204,7 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
   const fields = 'answer,asker,compiled,event,fulfilled,mixed,paymentClosed,payments,player,progress,released,shipment,transportClosed,turn'.split(',');
   if ('preparation' in promise) fields.push('preparation');
   if ('alliance' in promise) fields.push('alliance');
+  if ('combat' in promise) fields.push('combat');
   check(keys(promise, fields.sort().join(',')) &&
     positive(promise.turn) && identifier(promise.event) && identifier(promise.player) && identifier(promise.asker),
   'Retain the complete original turn-action commitment and its metadata.');
@@ -188,6 +223,9 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
   const lots = new Set<number>();
   let hasRevival = false;
   let hasAlliance = false;
+  const combatSources = new Set<string>();
+  const planClaims = new Set<string>();
+  let hasTraitor = false;
   const visit = (node: MixedActionExpression<TurnActionLeaf>): void => {
     if (node.kind === 'action') {
       originals.add(actionKey(node.action));
@@ -196,12 +234,47 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
       if (node.action.kind === 'bid') lots.add(node.action.lot);
       if (node.action.kind === 'forces' || node.action.kind === 'leader') hasRevival = true;
       if (node.action.kind === 'alliance') hasAlliance = true;
+      if (node.action.kind === 'battlePlan' || node.action.kind === 'traitorCall')
+        combatSources.add(JSON.stringify([node.action.battle, node.action.territory]));
+      if (node.action.kind === 'battlePlan') planClaims.add(planKey(node.action.claim));
+      if (node.action.kind === 'traitorCall') hasTraitor = true;
     } else if (node.kind !== 'fact') node.terms.forEach(visit);
   };
   visit(mixed);
   check(!lots.size || !!promise.preparation?.bid, 'Retain the original private lot binding for every ordinary bid leaf.');
   check(!hasRevival || !!promise.preparation?.revival, 'Retain this answer’s ordinary Revival interval.');
   check(!hasAlliance || !!promise.alliance, 'Retain the original private Nexus binding for every final-alliance leaf.');
+  check(!planClaims.size || !!promise.combat?.plan, 'Retain the original private plan stage for every battle-plan clause.');
+  check(!hasTraitor || !!promise.combat?.traitor, 'Retain the original private Traitor declaration stage.');
+  if ('combat' in promise) {
+    const combat = promise.combat;
+    check(object(combat) && keys(combat, 'event,plan,territory,traitor') && identifier(combat.event) &&
+      identifier(combat.territory) && [...combatSources].every(source => source === JSON.stringify([combat.event, combat.territory])),
+    'Retain one original current combat event and territory.');
+    if (combat.plan !== null) {
+      check(object(combat.plan) && keys(combat.plan, 'closed,values') && typeof combat.plan.closed === 'boolean' &&
+        (combat.plan.closed || combat.plan.values === null), 'Retain an open plan or an actual closed plan receipt.');
+      if (combat.plan.values !== null) {
+        check(Array.isArray(combat.plan.values) && combat.plan.values.length === planClaims.size,
+          'Retain every distinct original plan predicate exactly once.');
+        const seen = new Set<string>();
+        for (const entry of combat.plan.values) {
+          check(object(entry) && keys(entry, 'claim,value') && typeof entry.value === 'boolean', 'Retain definite actual native plan values.');
+          const key = planKey(entry.claim);
+          check(planClaims.has(key) && !seen.has(key), 'Retain only unique original plan predicates in the actual receipt.');
+          seen.add(key);
+        }
+      }
+    }
+    if (combat.traitor !== null) {
+      const traitor = combat.traitor;
+      check(object(traitor) && keys(traitor, 'beneficiary,call,closed,leader,target') && identifier(traitor.beneficiary) &&
+        identifier(traitor.target) && traitor.beneficiary !== traitor.target &&
+        (traitor.leader === null || identifier(traitor.leader)) && typeof traitor.closed === 'boolean' &&
+        (traitor.call === null || typeof traitor.call === 'boolean') && (traitor.closed || traitor.call === null),
+      'Retain the public original Traitor context and actual declaration only after it closes.');
+    }
+  }
   if ('alliance' in promise) {
     const alliance = promise.alliance;
     check(object(alliance) && keys(alliance, 'closed,partner,source') && identifier(alliance.source) &&
@@ -257,6 +330,10 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
 }
 
 function actionValue(action: TurnActionLeaf, promise: TurnActionPromise): boolean {
+  if (action.kind === 'battlePlan') return promise.combat?.plan?.values?.find(entry =>
+    planKey(entry.claim) === planKey(action.claim))?.value ?? false;
+  if (action.kind === 'traitorCall') return !!promise.combat?.traitor?.closed &&
+    promise.combat.traitor.call !== null && promise.combat.traitor.call === action.call;
   if (action.kind === 'alliance') return !!promise.alliance?.closed && promise.alliance.partner === action.partner;
   if (action.kind === 'bid') return (promise.preparation?.bid?.maximum ?? 0) >= action.minimum;
   if (action.kind === 'forces') return (promise.preparation?.revival?.[action.counter] ?? 0) >= action.minimum;
@@ -276,6 +353,8 @@ function evaluate(node: CompiledMixedAction<TurnActionLeaf>, promise: TurnAction
 }
 
 function actionClosed(action: TurnActionLeaf, promise: TurnActionPromise): boolean {
+  if (action.kind === 'battlePlan') return promise.combat!.plan!.closed;
+  if (action.kind === 'traitorCall') return promise.combat!.traitor!.closed;
   if (action.kind === 'alliance') return promise.alliance!.closed;
   if (action.kind === 'bid') return promise.preparation!.bid!.closed;
   if (action.kind === 'forces' || action.kind === 'leader') return promise.preparation!.revival!.closed;
@@ -315,6 +394,11 @@ function sameAction(left: TurnActionBranchLeaf, right: TurnActionBranchLeaf): bo
   if (left.kind !== right.kind) return false;
   if (left.kind === 'leader') return right.kind === 'leader' && left.leader === right.leader;
   if (left.kind === 'alliance') return right.kind === 'alliance' && left.partner === right.partner && left.source === right.source;
+  if (left.kind === 'battlePlan') return right.kind === 'battlePlan' && left.battle === right.battle &&
+    left.territory === right.territory && planKey(left.claim) === planKey(right.claim);
+  if (left.kind === 'traitorCall') return right.kind === 'traitorCall' && left.battle === right.battle &&
+    left.territory === right.territory && left.call === right.call && left.beneficiary === right.beneficiary &&
+    left.target === right.target && left.leader === right.leader;
   if (left.kind === 'forces') return right.kind === 'forces' && left.counter === right.counter && left.progress === right.progress;
   if (left.kind === 'bid') return right.kind === 'bid' && left.lot === right.lot && left.source === right.source;
   if (left.kind === 'payment') return right.kind === 'payment' && left.recipient === right.recipient && left.progress === right.progress;
@@ -325,7 +409,14 @@ function sameAction(left: TurnActionBranchLeaf, right: TurnActionBranchLeaf): bo
 function mergeBranches(left: TurnActionBranchLeaf[], right: TurnActionBranchLeaf[]): TurnActionBranchLeaf[] | null {
   const merged = left.map(leaf => ({ ...leaf }));
   for (const leaf of right) {
-    if (leaf.kind === 'leader' || leaf.kind === 'alliance') {
+    if (leaf.kind === 'traitorCall') {
+      const prior = merged.find(other => other.kind === 'traitorCall' && other.battle === leaf.battle &&
+        other.territory === leaf.territory && other.beneficiary === leaf.beneficiary && other.target === leaf.target && other.leader === leaf.leader);
+      if (prior?.kind === 'traitorCall' && (prior.answer ? prior.call : !prior.call) !== (leaf.answer ? leaf.call : !leaf.call)) return null;
+      if (!prior) merged.push({ ...leaf });
+      continue;
+    }
+    if (leaf.kind === 'leader' || leaf.kind === 'alliance' || leaf.kind === 'battlePlan') {
       const prior = merged.find(other => sameAction(other, leaf));
       if (prior && prior.answer !== leaf.answer) return null;
       if (leaf.kind === 'alliance' && leaf.answer && merged.some(other => other.kind === 'alliance' &&
@@ -334,12 +425,12 @@ function mergeBranches(left: TurnActionBranchLeaf[], right: TurnActionBranchLeaf
       continue;
     }
     const same = merged.find(other => sameAction(other, leaf) && other.answer === leaf.answer);
-    if (same && same.kind !== 'leader' && same.kind !== 'alliance')
+    if (same && 'minimum' in same)
       same.minimum = leaf.answer ? Math.max(same.minimum, leaf.minimum) : Math.min(same.minimum, leaf.minimum);
     else merged.push({ ...leaf });
     const yes = merged.find(other => sameAction(other, leaf) && other.answer);
     const no = merged.find(other => sameAction(other, leaf) && !other.answer);
-    if (yes && no && yes.kind !== 'leader' && no.kind !== 'leader' && yes.kind !== 'alliance' && no.kind !== 'alliance' &&
+    if (yes && no && 'minimum' in yes && 'minimum' in no &&
       yes.minimum >= no.minimum) return null;
     if (leaf.kind === 'ship' && leaf.answer && merged.some(other =>
       other.kind === 'ship' && other.answer && other.territory !== leaf.territory)) return null;
@@ -358,7 +449,10 @@ export function* turnActionBranches(promise: TurnActionPromise): Generator<TurnA
       const achieved = actionValue(action, promise);
       if (achieved || actionClosed(action, promise)) { if (achieved === answer) yield []; return; }
       if (action.kind === 'bid') yield [{ ...action, source: promise.preparation!.bid!.source, answer }];
-      else if (action.kind === 'alliance') yield [{ ...action, source: promise.alliance!.source, answer }];
+      else if (action.kind === 'traitorCall') {
+        const { beneficiary, target, leader } = promise.combat!.traitor!;
+        yield [{ ...action, beneficiary, target, leader, answer }];
+      } else if (action.kind === 'alliance') yield [{ ...action, source: promise.alliance!.source, answer }];
       else if (action.kind === 'forces') yield [{ ...action, progress: promise.preparation!.revival![action.counter], answer }];
       else if (action.kind === 'payment') yield [{ ...action, answer,
         progress: promise.payments.find(payment => payment.recipient === action.recipient)?.amount ?? 0 }];
@@ -389,6 +483,73 @@ function settle<T extends TurnActionPromise>(promise: T, update: T): T {
   check(promise.answer || !satisfied, 'This action conflicts with your whole Truthtrance turn-action No answer.');
   return promise.answer && satisfied || !promise.answer && relevantClosed(compiled, update)
     ? { ...update, fulfilled: true } : update;
+}
+
+/** A union receipt may serve several answers; each stored row retains exactly
+ * its original distinct atomic predicates and no unrelated native plan values. */
+export function recordTurnActionPlan<T extends TurnActionPromise>(promises: readonly T[], player: string,
+  turn: number, event: string, territory: string, values: readonly TurnActionPlanValue[]): T[] {
+  check(identifier(event) && identifier(territory) && Array.isArray(values), 'Retain the actual original battle-plan event and predicate values.');
+  const receipt = new Map<string, TurnActionPlanValue>();
+  for (const entry of values) {
+    check(object(entry) && keys(entry, 'claim,value') && typeof entry.value === 'boolean', 'Retain definite actual plan predicate values.');
+    const claim = parseCombatClaim(entry.claim), key = planKey(claim);
+    check(!receipt.has(key), 'Retain each actual plan predicate once.');
+    receipt.set(key, { claim, value: entry.value });
+  }
+  const updates = new Map<T, T>();
+  for (const promise of liveTurnActionPromises(promises, player, turn)) {
+    readPromise(promise);
+    const combat = promise.combat;
+    if (!combat?.plan || combat.plan.closed || combat.event !== event || combat.territory !== territory) continue;
+    const claims = new Set<string>();
+    const visit = (node: MixedActionExpression<TurnActionLeaf>): void => {
+      if (node.kind === 'action' && node.action.kind === 'battlePlan') claims.add(planKey(node.action.claim));
+      else if (node.kind !== 'fact' && node.kind !== 'action') node.terms.forEach(visit);
+    };
+    visit(promise.mixed);
+    const actual = [...claims].map(key => {
+      const value = receipt.get(key);
+      check(value, 'Retain the actual value of every original plan predicate.');
+      return { claim: { ...value.claim }, value: value.value };
+    });
+    updates.set(promise, settle(promise, { ...promise, combat: { ...combat, plan: { closed: true, values: actual } } }));
+  }
+  return promises.map(promise => updates.get(promise) ?? promise);
+}
+
+/** The actual native declaration is independent of later prevention/effect. */
+export function recordTurnActionTraitor<T extends TurnActionPromise>(promises: readonly T[], player: string,
+  turn: number, event: string, territory: string, call: boolean): T[] {
+  check(identifier(event) && identifier(territory) && typeof call === 'boolean',
+    'Retain the actual original battle and Reveal or Decline declaration.');
+  const updates = new Map<T, T>();
+  for (const promise of liveTurnActionPromises(promises, player, turn)) {
+    readPromise(promise);
+    const combat = promise.combat;
+    if (!combat?.traitor || combat.traitor.closed || combat.event !== event || combat.territory !== territory) continue;
+    updates.set(promise, settle(promise, { ...promise, combat: { ...combat,
+      traitor: { ...combat.traitor, closed: true, call } } }));
+  }
+  return promises.map(promise => updates.get(promise) ?? promise);
+}
+
+/** Closing without the original native event records absence, never a zero
+ * dial or Decline. Existing closed receipts and terminal rows stay untouched. */
+export function closeTurnActionCombat<T extends TurnActionPromise>(promises: readonly T[], turn: number,
+  event: string): T[] {
+  check(Array.isArray(promises) && positive(turn) && identifier(event), 'Choose the original combat opportunity.');
+  for (const promise of promises) check(object(promise), 'Retain an original turn-action record.');
+  return promises.map(promise => {
+    if (promise.turn !== turn || promise.fulfilled || promise.released) return promise;
+    readPromise(promise);
+    const combat = promise.combat;
+    if (!combat || combat.event !== event || (!combat.plan || combat.plan.closed) && (!combat.traitor || combat.traitor.closed)) return promise;
+    return settle(promise, { ...promise, combat: { ...combat,
+      plan: combat.plan && !combat.plan.closed ? { closed: true, values: null } : combat.plan,
+      traitor: combat.traitor && !combat.traitor.closed ? { ...combat.traitor, closed: true, call: null } : combat.traitor,
+    } });
+  });
 }
 
 /** Only the exact original Nexus closure records final membership. Temporary
@@ -569,7 +730,9 @@ export function finishTurnActionTurn<T extends TurnActionPromise>(promises: read
         bid: promise.preparation.bid ? { ...promise.preparation.bid, closed: true } : null,
         revival: promise.preparation.revival ? { ...promise.preparation.revival, closed: true } : null,
       } } : {}) };
-    const fulfilled = !(promise.alliance && !promise.alliance.closed) && turnActionValue(closed) === promise.answer;
+    const unresolvedCombat = promise.combat && (promise.combat.plan && !promise.combat.plan.closed ||
+      promise.combat.traitor && !promise.combat.traitor.closed);
+    const fulfilled = !(promise.alliance && !promise.alliance.closed) && !unresolvedCombat && turnActionValue(closed) === promise.answer;
     return { ...closed, fulfilled, released: !fulfilled };
   });
 }
@@ -585,7 +748,8 @@ export function validateTurnActionPromises(promises: readonly TurnActionPromise[
     const allClosed = promise.transportClosed && promise.paymentClosed &&
       (!promise.preparation?.bid || promise.preparation.bid.closed) &&
       (!promise.preparation?.revival || promise.preparation.revival.closed) &&
-      (!promise.alliance || promise.alliance.closed);
+      (!promise.alliance || promise.alliance.closed) && (!promise.combat?.plan || promise.combat.plan.closed) &&
+      (!promise.combat?.traitor || promise.combat.traitor.closed);
     const recipientsValid = (node: MixedActionExpression<TurnActionLeaf>): boolean => node.kind === 'action'
       ? node.action.kind === 'alliance' ? players.includes(node.action.partner) && node.action.partner !== promise.player :
         node.action.kind !== 'payment' || players.includes(node.action.recipient) && node.action.recipient !== promise.player
@@ -593,6 +757,8 @@ export function validateTurnActionPromises(promises: readonly TurnActionPromise[
     check(!events.has(promise.event) && players.includes(promise.player) && players.includes(promise.asker) &&
       promise.player !== promise.asker && recipientsValid(promise.mixed) &&
       (!promise.alliance || promise.alliance.partner === null || players.includes(promise.alliance.partner)) &&
+      (!promise.combat?.traitor || players.includes(promise.combat.traitor.beneficiary) &&
+        players.includes(promise.combat.traitor.target) && promise.combat.traitor.target !== promise.player) &&
       (promise.released || (promise.answer || !satisfied) &&
         (!promise.answer || promise.fulfilled === satisfied) &&
         (!promise.fulfilled || satisfied === promise.answer && (promise.answer || relevantClosed(compiled, promise))) &&

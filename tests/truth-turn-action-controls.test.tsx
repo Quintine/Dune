@@ -5,8 +5,10 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { TurnActionFields, turnActionInputError } from '../components/turn-action-fields';
 import { TurnActionAnswers, TurnActionGuideButton, TurnActionPromises } from '../components/turn-action-promises';
 import { TruthFactFields } from '../components/mixed-shipment-fields';
-import { createGame, joinGame, newPlayer, viewGame, type Action, type GameView } from '../game/engine';
+import { BattleClaimFields } from '../components/battle-promises';
+import { createGame, joinGame, newPlayer, viewGame, type Action, type GameView, type Plan } from '../game/engine';
 import type { MixedActionExpression } from '../game/mixed-action-question';
+import type { MixedBattleActionClaim } from '../game/mixed-battle-question';
 import { createRevivalOrder } from '../game/revival-order';
 import { createRicheseAuction, projectRicheseAuction } from '../game/richese-auction';
 import type { TurnActionLeaf } from '../game/turn-action-promises';
@@ -26,6 +28,10 @@ const forceRevival = (counter: 'total' | 'normal' | 'elite' = 'total', minimum =
   ({ kind: 'action', action: { kind: 'forces', counter, minimum } });
 const leaderRevival = (leader: string): Expression => ({ kind: 'action', action: { kind: 'leader', leader } });
 const finalAlliance = (partner = 'r'): Expression => ({ kind: 'action', action: { kind: 'alliance', partner } });
+const planClaim = (claim: MixedBattleActionClaim = { kind: 'dial', compare: 'eq', value: 3 }): Expression =>
+  ({ kind: 'action', action: { kind: 'battlePlan', battle: 'controlled-native-battle', territory: 'arrakeen', claim } });
+const traitorClaim = (call = true): Expression =>
+  ({ kind: 'action', action: { kind: 'traitorCall', battle: 'controlled-native-battle', territory: 'arrakeen', call } });
 const claim = (): Expression => ({ kind: 'or', terms: [payment(), { kind: 'and', terms: [fact(), physical('ship', 3), physical('move', 4, 'arrakeen')] }] });
 
 function elements(node: ReactNode): Element[] {
@@ -84,6 +90,17 @@ function nexus(next: Action = { type: 'alliance', target: 'r' }): GameView {
   game.turnActionPromises[0].mixed = { kind: 'or', terms: [finalAlliance(), payment()] };
   return game;
 }
+function combat(revealed = false, next: Action = { type: 'battlePlan', dial: 3, support: 2, bankerSpice: 1, allyPayment: 1,
+  leader: 'controlled-leader', weapon: 'controlled-weapon', defense: 'controlled-defense', kwisatz: true,
+  planetologistSpecial: true, reinforcementsSources: { arrakeen: { normal: 1, elite: 0 } } }): GameView {
+  const game = projected(6, next);
+  game.battle = { event: 'controlled-native-battle', territory: 'arrakeen', attacker: 'p', defender: 'a', revealed,
+    submitted: [], traitorVoters: ['p', 'a'], traitorSubmitted: [], plans: {}, truthPromises: [],
+  } as unknown as NonNullable<GameView['battle']>;
+  game.truthMixedBattleTargets = ['p', 'a']; game.truthMixedTraitorTargets = revealed ? ['p', 'a'] : [];
+  game.turnActionPromises[0].mixed = { kind: 'or', terms: [revealed ? traitorClaim() : planClaim(), payment()] };
+  return game;
+}
 function revival(next: Action = { type: 'revive', amount: 3, elite: 1 }): GameView {
   const game = projected(4, next);
   game.revivalOrder = createRevivalOrder({ turn: 2, order: ['p', 'a', 'r'], ready: [] });
@@ -115,6 +132,11 @@ function answering(phase = 5): GameView {
     question: { kind: 'turnActions', target: 'p', turn: 2, mixed: claim() } };
   game.truthTurnActionAnswers = ['yes', 'no', 'unknown'];
   return game;
+}
+function editPlan(tree: ReactNode, path: string, claim: MixedBattleActionClaim) {
+  const fields = elements(find(tree, 'data-turn-action-plan-fields', `truth-turn-action-${path}`))
+    .find(element => element.type === BattleClaimFields); assert.ok(fields);
+  (fields.props.onChange as (claim: MixedBattleActionClaim) => void)(claim);
 }
 
 void test('turn-action editor keeps all action families and optional facts in the original whole expression', () => {
@@ -372,6 +394,89 @@ void test('turn-action Nexus callbacks expire with public consent, membership, r
   const source = nexus({ type: 'ready' }); source.nexus = false;
   const retained = guide({ game: source, busy: false, act() { assert.fail('A closed rendered Nexus cannot become a fresh opportunity'); } });
   source.nexus = true; press(retained);
+});
+
+void test('turn-action current battle editor reuses atomic plan fields and public declaration sources within the global logical budget', () => {
+  const game = combat(), e = editor(physical(), false, game);
+  for (const player of game.players) for (const key of ['hand', 'leaders', 'traitors', 'faceDancers', 'spice', 'forces', 'reserves', 'tanks'])
+    Object.defineProperty(player, key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
+  for (const key of ['plans', 'cards', 'ownForces', 'compliantPlan', 'compliantPreparation'])
+    Object.defineProperty(game.battle!, key, { get() { throw Error(`No private battle ${key} inspection`); }, configurable: true });
+  select(e.tree(), '1', 'action', 'battlePlan'); editPlan(e.tree(), '1', { kind: 'dial', compare: 'eq', value: 3 });
+  assert.deepEqual(e.value, planClaim()); assert.equal(e.error(), null);
+  for (const invalid of [NaN, -1, 0.25, Infinity, 40.5]) {
+    editPlan(e.tree(), '1', { kind: 'dial', compare: 'eq', value: invalid }); assert.ok(e.error());
+    editPlan(e.tree(), '1', { kind: 'dial', compare: 'gte', value: 0.5 }); assert.equal(e.error(), null);
+  }
+  const foreign = game.allLeaders.find(leader => leader.faction === 'atreides'); assert.ok(foreign);
+  editPlan(e.tree(), '1', { kind: 'leader', leader: foreign.id }); assert.equal(e.error(), null);
+  assert.match(e.html(), /Cheap Hero \/ Heroine/);
+  editPlan(e.tree(), '1', { kind: 'weapon', name: 'Shield' }); assert.equal(e.error(), null);
+  assert.match(e.html(), /already sealed or revealed/);
+  game.battle!.event = 'later-native-battle'; assert.ok(e.error()); select(e.tree(), '1', 'battle', 'later-native-battle'); assert.equal(e.error(), null);
+  game.battle!.revealed = true; assert.equal(e.error(), null, 'A publicly fixed plan remains a valid question source.');
+  select(e.tree(), '1', 'action', 'traitorCall'); assert.ok(e.error()); game.truthMixedTraitorTargets = ['p', 'a'];
+  select(e.tree(), '1', 'call', 'decline'); assert.equal(e.error(), null);
+  game.battle!.traitorSubmitted.push('p'); assert.ok(e.error());
+  const frozen = editor(planClaim(), true, combat()); editPlan(frozen.tree(), '1', { kind: 'support', compare: 'eq', value: 7 });
+  select(frozen.tree(), '1', 'battle', ''); assert.equal(frozen.changes, 0); assert.deepEqual(frozen.value, planClaim());
+  const fullGame = combat(), full = editor({ kind: 'or', terms: [planClaim(), fact()] }, false, fullGame);
+  for (let count = 3; count <= 16; count++) { click(control(full.tree(), 'add-action-1')); select(full.tree(), `1.${count}`, 'action', 'battlePlan'); }
+  assert.equal(full.error(), null); assert.match(full.html(), /16 \/ 16 conditions/);
+  assert.doesNotMatch(full.html(), /truth-battle-plan-expression/);
+  assert.equal(control(full.tree(), 'add-action-1').props.disabled, true);
+  const deep = editor({ kind: 'and', terms: [fact(), planClaim()] }, false, fullGame);
+  click(control(deep.tree(), 'or-1.2')); click(control(deep.tree(), 'and-1.2.1')); click(control(deep.tree(), 'or-1.2.1.1'));
+  assert.equal(deep.error(), null); assert.match(deep.html(), /4 \/ 4 levels of grouping/);
+});
+
+void test('turn-action battle-plan guide fills the exact native packet for human review and never seals automatically', () => {
+  const game = combat(), filled: Plan[] = [], sent: Action[] = [];
+  for (const key of ['combat', 'compiled', 'preparation'])
+    Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
+  for (const key of ['plans', 'ownForces', 'compliantPlan', 'compliantPreparation'])
+    Object.defineProperty(game.battle!, key, { get() { throw Error(`No private battle ${key} inspection`); }, configurable: true });
+  const props = { game, busy: false, fillPlan(plan: Plan) { filled.push(plan); }, act(action: Action) { sent.push(action); } };
+  const button = guide(props); assert.equal(button.props.disabled, false); press(button);
+  assert.equal(filled[0], game.turnActionGuide!.action); assert.deepEqual(sent, []);
+  assert.equal(filled[0].dial, 3); assert.equal(filled[0].support, 2); assert.equal(filled[0].allyPayment, 1);
+  assert.equal(filled[0].bankerSpice, 1); assert.equal(filled[0].weapon, 'controlled-weapon'); assert.equal(filled[0].defense, 'controlled-defense');
+  assert.deepEqual(filled[0].reinforcementsSources, { arrakeen: { normal: 1, elite: 0 } });
+  assert.equal(filled[0].kwisatz, true); assert.equal(filled[0].planetologistSpecial, true);
+  assert.equal((filled[0] as Plan & Action).turnActionPromiseEvent, event);
+  assert.match(renderToStaticMarkup(createElement(TurnActionPromises, props)), /Fill the quoted battle plan for review before sealing/);
+  const noFill = guide({ game, busy: false, act() { assert.fail('A human plan guide cannot auto seal without a fill callback'); } });
+  assert.equal(noFill.props.disabled, true); press(noFill);
+  props.fillPlan = () => assert.fail('A replaced fill callback cannot receive a saved plan'); press(button); assert.equal(filled.length, 1);
+  const preparation = combat(false, { type: 'card', card: 'controlled-ghola', leader: 'controlled-dead-leader' }), prepared: Action[] = [];
+  press(guide({ game: preparation, busy: false, act(action) { prepared.push(action); } }));
+  assert.equal(prepared[0], preparation.turnActionGuide!.action);
+  const declaration = combat(true, { type: 'traitorCall', call: false }), declared: Action[] = [];
+  declaration.battle!.attacker = 'r'; declaration.battle!.traitorVoters = ['p'];
+  press(guide({ game: declaration, busy: false, act(action) { declared.push(action); } }));
+  assert.equal(declared[0], declaration.turnActionGuide!.action, 'A native allied voter retains their own declaration packet.');
+});
+
+void test('turn-action combat callbacks retain current battle ownership and raw history without private stage reconstruction', () => {
+  const cases: [() => GameView, ((game: GameView) => void)[]][] = [
+    [() => combat(), [game => { game.battle!.submitted.push('p'); }, game => { game.battle!.revealed = true; }, game => { game.battle!.attacker = 'r'; }]],
+    [() => combat(true, { type: 'traitorCall', call: true }), [game => { game.battle!.traitorSubmitted.push('p'); },
+      game => { game.battle!.revealed = false; }, game => { game.battle!.traitorVoters = ['a']; }]],
+  ];
+  for (const [build, specific] of cases) for (const change of [...specific,
+    (game: GameView) => { game.battle = { ...game.battle! }; }, (game: GameView) => { game.battle!.event = 'later-battle'; },
+    (game: GameView) => { game.battle!.territory = 'carthag'; }, (game: GameView) => { game.phase = 5; },
+    (game: GameView) => { game.truthtrance = answering(6).truthtrance; },
+  ]) {
+    const game = build(), button = guide({ game, busy: false, fillPlan() { assert.fail('Stale battle cannot fill'); }, act() { assert.fail('Stale battle cannot send'); } });
+    assert.equal(button.props.disabled, false); change(game); press(button);
+  }
+  const game = combat(); game.turnActionGuide = null; game.battle = null;
+  for (const key of ['combat', 'compiled', 'binding', 'preparation'])
+    Object.defineProperty(game.turnActionPromises[0], key, { get() { throw Error(`No private ${key} inspection`); }, configurable: true });
+  const html = markup(game);
+  assert.match(html, /sealing your own plan does not finish it/); assert.match(html, /original Reveal or decline declaration/);
+  assert.match(html, /You answered Yes/); assert.doesNotMatch(html, /controlled-native-battle|Fill the quoted battle plan|compiled/);
 });
 
 void test('turn-action history retains original own whole questions and terminal status without private compiled branches', () => {

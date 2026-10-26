@@ -384,6 +384,24 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
     const respondent = g.players.find(player => player.id === v.target)!;
     const mixed = parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent), input => {
       const action = parseTurnActionLeaf(input);
+      if (action.kind === 'battlePlan' || action.kind === 'traitorCall') {
+        const battle = g.battle;
+        check(g.phase === 6 && battle && typeof battle.event === 'string' && battle.event.length > 0 &&
+          action.battle === battle.event && action.territory === battle.territory,
+        'Choose this original current battle event and territory.');
+        if (action.kind === 'battlePlan') {
+          check([battle.attacker, battle.defender].includes(respondent.id), 'Ask an actual combatant about their own current native plan.');
+          action.claim = parseBattleActionClaim(action.claim, battleLeaderIdentities(g).map(leader => leader.id));
+        } else {
+          const voters = [battle.attacker, battle.defender];
+          if (battle.ecazOccupy?.lead) for (const id of [battle.ecazOccupy.ecaz, battle.ecazOccupy.ally])
+            if (!voters.includes(id)) voters.push(id);
+          const harkonnen = g.players.find(player => player.faction === 'harkonnen');
+          if (harkonnen?.ally && voters.includes(harkonnen.ally) && !voters.includes(harkonnen.id)) voters.push(harkonnen.id);
+          check(battle.revealed && voters.includes(respondent.id) && battle.traitorCalls[respondent.id] === undefined,
+            'Choose an actual current revealed, unsubmitted native Traitor voter.');
+        }
+      }
       if (action.kind === 'payment') check(action.recipient !== respondent.id && action.recipient !== respondent.ally &&
         g.players.some(player => player.id === action.recipient), 'Choose another current non-allied ordinary bribe recipient.');
       if (action.kind === 'bid') check(bidPromiseModeSupported(g) && g.phase === 3 && g.auction &&
@@ -713,6 +731,8 @@ export function truthQuestionText(
     action => {
       if (action.kind === 'payment') return `you ${bribeClaimText({ turn: q.turn, ...action }, playerName)}`;
       if (action.kind === 'bid') return `you ${bidClaimText({ turn: q.turn, ...action })}`;
+      if (action.kind === 'battlePlan') return `in your own native plan in this original battle in ${locationName(action.territory)}, ${planClaimText(action.claim, leaderName)}`;
+      if (action.kind === 'traitorCall') return `you actually declare ${action.call ? 'Reveal' : 'Decline'} in this original battle in ${locationName(action.territory)} (later prevention does not change the declaration)`;
       if (action.kind === 'alliance') return `you will ${allianceClaimText({ turn: q.turn, partner: action.partner }, playerName)} (final membership; temporary offers or pairs do not settle this clause)`;
       if (action.kind === 'forces' || action.kind === 'leader') return `you ${revivalExpressionText(action,
         id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))} from now until your ordinary Revival opportunity ends this turn`;

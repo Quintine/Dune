@@ -261,7 +261,7 @@ import {
   territory,
   splitLocation,
 } from '@/game/board';
-import type { Action, GameView } from '@/game/engine';
+import type { Action, GameView, Plan } from '@/game/engine';
 import { PLAYER_CIRCLE_SECTORS } from '@/game/player-positions';
 import { SeatAutopilot } from './seat-autopilot';
 import {
@@ -570,6 +570,26 @@ export function GameTable({
   });
   const [aidAmount, setAidAmount] = useState(0);
   const [allyPayment, setAllyPayment] = useState('');
+  const fillBattlePlan = (plan: Plan) => {
+    setDial(plan.dial);
+    setSupport(plan.support);
+    setBankerSpice(plan.bankerSpice ?? 0);
+    setAllyPayment(plan.allyPayment === undefined ? '' : String(plan.allyPayment));
+    setLeader(plan.leader ?? '');
+    setWeapon(plan.weapon ?? '');
+    setDefense(plan.defense ?? '');
+    setPlanetologistDraft({
+      key: `${g.battle?.event ?? ''}:${plan.leader ?? ''}:${plan.weapon ?? ''}`,
+      enabled: plan.planetologistSpecial === true,
+    });
+    setKwisatz(!!plan.kwisatz);
+    if (plan.reinforcementsSources) {
+      const chosen = JSON.stringify(plan.reinforcementsSources);
+      const index = reinforcementsSourceChoices?.findIndex(choice => JSON.stringify(choice) === chosen);
+      if (index !== undefined && index >= 0)
+        setReinforcementsSourceDraft({ key: reinforcementsSourceKey, index });
+    }
+  };
   const [combineSectors, setCombineSectors] = useState(false);
   const [moveNoField, setMoveNoField] = useState(false);
   const [moveForces, setMoveForces] = useState<Record<string, number>>({});
@@ -2067,7 +2087,7 @@ export function GameTable({
           {g.status === 'playing' && <MixedBattlePromises game={g} />}
           {g.status === 'playing' && <MixedTraitorPromises game={g} />}
           {g.status === 'playing' && <TravelPromises game={g} busy={busy} act={act} />}
-          {g.status === 'playing' && <TurnActionPromises game={g} busy={busy} act={act} />}
+          {g.status === 'playing' && <TurnActionPromises game={g} busy={busy} act={act} fillPlan={fillBattlePlan} />}
           {g.guildBetrayalReaction ? (
             <NexusGuildBetrayal game={g} act={act} busy={reactionBusy} />
           ) : g.richeseBetrayalReaction ? (
@@ -5311,30 +5331,7 @@ export function GameTable({
                       act={act}
                       game={g}
                       busy={busy}
-                      fill={(plan) => {
-                        setDial(plan.dial);
-                        setSupport(plan.support);
-                        setBankerSpice(plan.bankerSpice ?? 0);
-                        setAllyPayment(
-                          plan.allyPayment === undefined
-                            ? ''
-                            : String(plan.allyPayment),
-                        );
-                        setLeader(plan.leader ?? '');
-                        setWeapon(plan.weapon ?? '');
-                        setDefense(plan.defense ?? '');
-                        setPlanetologistDraft({
-                          key: `${g.battle?.event ?? ''}:${plan.leader ?? ''}:${plan.weapon ?? ''}`,
-                          enabled: plan.planetologistSpecial === true,
-                        });
-                        setKwisatz(!!plan.kwisatz);
-                        if (plan.reinforcementsSources) {
-                          const chosen = JSON.stringify(plan.reinforcementsSources);
-                          const index = reinforcementsSourceChoices?.findIndex(choice => JSON.stringify(choice) === chosen);
-                          if (index !== undefined && index >= 0)
-                            setReinforcementsSourceDraft({ key: reinforcementsSourceKey, index });
-                        }
-                      }}
+                      fill={fillBattlePlan}
                     />
                   )}
                   {g.battle.preLeader && !g.battle.preLeader.closed ? (

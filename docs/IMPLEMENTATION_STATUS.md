@@ -1,5 +1,41 @@
 # Dune implementation status
 
+## 26 October 2026 — Combined current battle decisions
+
+**Truthtrance / combined current battle decisions — 26 October. Prototyped / Partial.**
+Whole turn-action questions now combine atomic current battle-plan predicates
+or the original revealed-battle Traitor declaration with payments and frozen
+facts. Native legality, physical cards, costs and preparation remain. Future
+plan receipts settle at both-plan reveal before cleanup; an already sealed own
+plan fixes its value at answer. A prevented Reveal retains its original
+choice. Missing events are neither a zero plan nor a Decline. Human guidance
+fills the existing complete plan for review before separate sealing.
+
+The frozen batch passes **20 files,249/249**, types/lint/build and **four native
+paths**,22 GameTable SSR renders/four actual answer callbacks/six guide callbacks/
+one plan-fill callback. Original source24 adds9 for frozen fact, pay2 and the
+actual original projectile plan; source24 adds11 for a false plan receipt,
+cleanup and late Mentat payment. Source26 adds11 for whole No, actual Reveal,
+a real payment cap and turn closure. Remote allied Harkonnen source72 adds10
+for pay2, Reveal and physical Karama prevention. Original inventories remain.
+
+Thirty-seven helper,24 control and13 new native cases cover signed alternatives,
+exact sources, fixed own plans, original declarations, cleanup, late payments
+and four minimal profiles. Bounded review fixes later native plan/Traitor answer
+preflight against a new-only whole ledger and waits for pending native income.
+A genuine two-Truth regression preserves a paid earlier No through the second
+question and actual battle/turn closure. V1 passes runtime then finds type
+errors; narrow type feedback repairs them. V2 passes all frozen checks.
+
+Proof/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-turn-combat-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-turn-combat-runtime-v2/`.
+Wider preparations, action/module combinations and final rules/browser/deployed/
+recovery/privacy/custody acceptance remain. These are local native/SSR/callback
+journeys, not deployed acceptance. No database/save/server/reset/restart/
+deployment operation is performed; no full mode is certified.
+[Contract and source](TRUTHTRANCE_TURN_ACTIONS.md#combined-current-battle-decisions--26-october-2026).
+
 ## 26 October 2026 — Combined final Nexus membership
 
 **Truthtrance / combined final Nexus membership — 26 October. Prototyped / Partial.**

@@ -3,7 +3,9 @@
 import { TERRITORIES } from '@/game/board';
 import type { GameView } from '@/game/engine';
 import type { MixedActionExpression } from '@/game/mixed-action-question';
+import { parseBattleActionClaim } from '@/game/mixed-battle-question';
 import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES, type TurnActionLeaf } from '@/game/turn-action-promises';
+import { BattleClaimFields } from './battle-promises';
 import { MixedActionFields, mixedActionInputError, type MixedActionConfig } from './mixed-action-fields';
 import { Input } from './ui/input';
 
@@ -25,11 +27,20 @@ const partners = (game: GameView, target: string) => game.players.some(player =>
 const currentNexus = (game: GameView, target: string) => game.status === 'playing' && game.phase === 1 && game.nexus && !game.spiceWindow &&
   game.alliancePromiseNexus?.turn === game.turn && game.truthMixedAllianceTargets.includes(target) &&
   !game.response && !game.decision && !game.phaseOpening && !game.automaticContinuationPending;
+const currentBattle = (game: GameView, target: string, kind: 'battlePlan' | 'traitorCall') => {
+  const battle = game.battle;
+  if (game.status !== 'playing' || game.phase !== 6 || !battle || !battle.event || game.response || game.decision ||
+    game.phaseOpening || game.automaticContinuationPending) return null;
+  if (kind === 'battlePlan') return game.truthMixedBattleTargets.includes(target) &&
+    [battle.attacker, battle.defender].includes(target) ? battle : null;
+  return battle.revealed && game.truthMixedTraitorTargets.includes(target) && battle.traitorVoters.includes(target) &&
+    !battle.traitorSubmitted.includes(target) ? battle : null;
+};
 const config: MixedActionConfig<TurnActionLeaf> = {
   prefix: 'turn-action',
-  legend: 'Future alliances, bids, Revival, payments, shipment and ground movements, with optional current facts',
-  actionLabel: 'alliance, bid, Revival, payment, shipment or ground-movement condition',
-  actionTiming: 'Future alliance, ordinary bid, Revival, payment, reserve shipment or ground move · this turn',
+  legend: 'Current battle and this-turn action conditions, with optional current facts',
+  actionLabel: 'battle, alliance, bid, Revival, payment, shipment or ground-movement condition',
+  actionTiming: 'Current battle or future native action · this turn',
   actionHelp: <>Ordinary payment conditions sum future real bribes to the same recipient after the answer this turn.
     Earlier payments, gifts and ally aid do not count. The sender pays immediately; the recipient collects at the next Mentat opening.
     Payments made during Mentat Pause wait until next turn&apos;s Mentat opening; collection never counts twice.
@@ -41,13 +52,17 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     Alliance conditions concern actual final membership when this current Nexus closes. Offers alone are not alliances.
     A remaining alliance condition settles at the actual close; forming an alliance does not fulfill it early.
     No can allow temporary membership followed by a break before the close. You cannot promise another player&apos;s consent.
+    Battle-plan conditions concern one actual native plan in this current battle, including a plan already sealed or revealed.
+    An open plan commitment settles when both plans are revealed, not merely when your own plan is sealed.
+    Traitor conditions concern one original Reveal or decline declaration in the current revealed battle.
+    The declaration counts before a later Karama or betrayal response can prevent its effect.
     Shipment conditions concern the single future original reserve shipment after the answer.
     Ground-movement conditions use the maximum physical forces in one actual future move to that destination; smaller moves never add together.
     Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.
     Shipment and movement close at your own Movement turn end, while payment conditions last until the actual turn ends.
     AND requires every condition; OR keeps legal alternatives. No makes the whole expression false, not every condition separately.
     Original costs, timing, cards, preparation and action rights still apply; this claim grants no extra action.</>,
-  fallbackError: 'Choose a future alliance, ordinary bid, Revival, payment, reserve shipment or ground-movement condition, with optional current facts.',
+  fallbackError: 'Choose a current battle or future native action condition, with optional current facts.',
   maxLeaves: TURN_ACTION_MAX_LEAVES,
   maxDepth: TURN_ACTION_MAX_DEPTH,
   requireFact: false,
@@ -62,6 +77,12 @@ const config: MixedActionConfig<TurnActionLeaf> = {
       throw new Error('Choose a public native leader for the respondent’s faction.');
     if (action.kind === 'alliance' && (!currentNexus(game, target) || !partners(game, target).some(partner => partner.id === action.partner)))
       throw new Error('Choose a public other partner during the current open Nexus.');
+    if (action.kind === 'battlePlan' || action.kind === 'traitorCall') {
+      const battle = currentBattle(game, target, action.kind);
+      if (!battle || action.battle !== battle.event || action.territory !== battle.territory)
+        throw new Error('Choose this player’s current native battle or unsubmitted Traitor declaration.');
+      if (action.kind === 'battlePlan') parseBattleActionClaim(action.claim, game.allLeaders.map(leader => leader.id));
+    }
     return action;
   },
   renderAction: ({ value, id, game, target, disabled, onChange }) => {
@@ -71,7 +92,10 @@ const config: MixedActionConfig<TurnActionLeaf> = {
       <select id={`${id}-action`} value={value.kind} disabled={disabled} onChange={event => {
         const kind = event.currentTarget.value;
         if (kind === value.kind) return;
-        const minimum = value.kind === 'leader' || value.kind === 'alliance' ? 1 : value.minimum;
+        const minimum = 'minimum' in value ? value.minimum : 1;
+        if (kind === 'battlePlan') onChange({ kind, battle: game.battle?.event ?? '', territory: game.battle?.territory ?? '',
+          claim: { kind: 'dial', compare: 'eq', value: 0 } });
+        if (kind === 'traitorCall') onChange({ kind, battle: game.battle?.event ?? '', territory: game.battle?.territory ?? '', call: true });
         if (kind === 'alliance') onChange({ kind, partner: '' });
         if (kind === 'payment') onChange({ kind, recipient: '', minimum });
         if (kind === 'bid') onChange({ kind, lot: lot?.lot ?? NaN, minimum });
@@ -80,6 +104,8 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         if (kind === 'ship' || kind === 'move') onChange({ kind,
           territory: value.kind === 'ship' || value.kind === 'move' ? value.territory : 'carthag', minimum });
       }}>
+        <option value="battlePlan">Use an actual current battle-plan choice</option>
+        <option value="traitorCall">Make the current Traitor declaration</option>
         <option value="alliance">End this Nexus allied with a named partner</option>
         <option value="bid">Place an ordinary-lot bid</option>
         <option value="forces">Revive ordinary physical forces</option>
@@ -88,7 +114,34 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         <option value="ship">Ship from reserves</option>
         <option value="move">Make ground movement</option>
       </select>
-      {value.kind === 'alliance' ? <>
+      {value.kind === 'battlePlan' || value.kind === 'traitorCall' ? <>
+        <label htmlFor={`${id}-battle`}>Current battle</label>
+        <select id={`${id}-battle`} value={game.battle?.event === value.battle && game.battle.territory === value.territory ? value.battle ?? '' : ''}
+          disabled={disabled} aria-invalid={!currentBattle(game, target, value.kind) || game.battle?.event !== value.battle || game.battle?.territory !== value.territory}
+          onChange={event => {
+            const selected = event.currentTarget.value;
+            if (selected === '') onChange({ ...value, battle: '', territory: '' });
+            else if (game.battle && selected === game.battle.event)
+              onChange({ ...value, battle: game.battle.event, territory: game.battle.territory });
+          }}>
+          <option value="">Choose the current battle</option>
+          {game.battle?.event && <option value={game.battle.event}>{game.combatLocations.find(location => location.id === game.battle?.territory)?.name ?? game.battle.territory}</option>}
+        </select>
+        {value.kind === 'battlePlan' ? <fieldset disabled={disabled} data-turn-action-plan-fields={id}>
+          <BattleClaimFields game={game} value={value.claim} onChange={claim => {
+            if (!disabled && !('terms' in claim)) onChange({ ...value, claim });
+          }} />
+        </fieldset> : <>
+          <label htmlFor={`${id}-call`}>Original Traitor declaration</label>
+          <select id={`${id}-call`} value={value.call ? 'reveal' : 'decline'} disabled={disabled}
+            aria-invalid={typeof value.call !== 'boolean'} onChange={event => {
+              if (event.currentTarget.value === 'reveal') onChange({ ...value, call: true });
+              if (event.currentTarget.value === 'decline') onChange({ ...value, call: false });
+            }}>
+            <option value="reveal">Reveal traitor</option><option value="decline">Decline traitor</option>
+          </select>
+        </>}
+      </> : value.kind === 'alliance' ? <>
         <label htmlFor={`${id}-partner`}>Final Nexus alliance partner</label>
         <select id={`${id}-partner`} value={partnerChoices.some(partner => partner.id === value.partner) ? value.partner : ''}
           disabled={disabled} aria-invalid={!partnerChoices.some(partner => partner.id === value.partner)} onChange={event => {
@@ -151,7 +204,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
           {TERRITORIES.map(destination => <option key={destination.id} value={destination.id}>{destination.name}</option>)}
         </select>
       </>}
-      {value.kind !== 'leader' && value.kind !== 'alliance' && <>
+      {'minimum' in value && <>
         <label htmlFor={`${id}-minimum`}>{value.kind === 'payment' ? 'Minimum future ordinary payments in spice'
           : value.kind === 'bid' ? 'Minimum future accepted bid in spice'
             : value.kind === 'forces' ? 'Minimum future ordinary force returns'

@@ -1,7 +1,8 @@
 import { TurnActionError, liveTurnActionPromises, turnActionBranches, recordTurnActionPayment,
   recordTurnActionShipment, recordTurnActionMovement, closeTurnActionTransport, finishTurnActionTurn,
   validateTurnActionPromises, recordTurnActionBid, closeTurnActionBidding, recordTurnActionRevival,
-  closeTurnActionRevival, settleTurnActionAlliance, type TurnActionClaim, type TurnActionPromise, type TurnActionBranchLeaf, type TurnActionPreparation } from './turn-action-promises';
+  closeTurnActionRevival, settleTurnActionAlliance, recordTurnActionPlan, recordTurnActionTraitor, closeTurnActionCombat,
+  type TurnActionPlanValue, type TurnActionCombat, type TurnActionClaim, type TurnActionPromise, type TurnActionBranchLeaf, type TurnActionPreparation } from './turn-action-promises';
 import { TravelPromiseError, liveTravelPromises, travelBranches, recordTravelShipment, recordTravelMovement,
   finishTravelTurn, validateTravelPromises, type TravelClaim, type TravelPromise, type TravelBranchLeaf } from './travel-expression-promises';
 import { mixedTraitorRequirement, type MixedTraitorClaim } from './mixed-traitor-question';
@@ -600,6 +601,7 @@ import {
 } from './charity';
 import {
   PlanClaimError,
+  matchesPlanClaim,
   respectsBattlePromises,
   type PlanClaim,
   type BattlePromise,
@@ -15358,7 +15360,9 @@ function bribePromiseCompletion(g: Game, p: Player, promises = g.bribePromises ?
 }
 function bribeCompatibleLaterPromises(g: Game, p: Player,
   later: Pick<Partial<Game>, 'shipmentPromises' | 'movementPromises' | 'revivalPromises' | 'leaderRevivalPromises' | 'revivalExpressionPromises' | 'movementExpressionPromises' | 'battle'>): boolean {
-  return !hasBribePromises(g, p.id, true) || !!bribePromiseCompletion({ ...g, ...later }, p);
+  return !hasBribePromises(g, p.id, true) &&
+    !liveTurnActionPromises(g.turnActionPromises ?? [], p.id, g.turn).length ||
+    !!bribePromiseCompletion({ ...g, ...later }, p);
 }
 function bribeTruthAnswers(g: Game, p: Player, claim: BribeClaim): ('yes' | 'no' | 'unknown')[] {
   if (!bribeQuestionWindow(g) || claim.turn !== g.turn || claim.recipient === p.id ||
@@ -18711,6 +18715,78 @@ function turnActionTargetAvailable(g: Game, _actor: string): boolean {
 function turnActionTransportOpen(g: Game, actor: string): boolean {
   return g.phase < 5 || g.phase === 5 && !!g.movementRemaining?.includes(actor);
 }
+/** Read only the original predicates while the native sealed cards are still
+ * held. Receipts contain booleans, never copies of private hands or plans. */
+function turnActionPlanValues(g: Game, actor: string, expressions: readonly TurnActionClaim['mixed'][]): TurnActionPlanValue[] {
+  const battle = g.battle, plan = battle?.plans[actor];
+  requireRule(battle?.event && plan, 'Retain the actual original submitted battle plan.');
+  const owner = getPlayer(g, actor), sealed = { ...plan, kwisatz: !!plan.kwisatz };
+  const values = new Map<string, TurnActionPlanValue>();
+  const visit = (node: TurnActionClaim['mixed']): void => {
+    if (node.kind === 'action') {
+      const action = node.action;
+      if (action.kind !== 'battlePlan' || action.battle !== battle.event || action.territory !== battle.territory) return;
+      const value = matchesPlanClaim(action.claim, sealed, owner.hand);
+      requireRule(typeof value === 'boolean', 'Evaluate every original predicate against the actual native plan.');
+      values.set(JSON.stringify(action.claim), { claim: structuredClone(action.claim), value });
+    } else if (node.kind !== 'fact') node.terms.forEach(visit);
+  };
+  expressions.forEach(visit);
+  return [...values.values()];
+}
+function recordTurnActionRevealedPlans(g: Game) {
+  const battle = g.battle;
+  if (!g.turnActionPromises || !battle?.event || !battle.revealed) return;
+  for (const actor of [battle.attacker, battle.defender]) {
+    const records = liveTurnActionPromises(g.turnActionPromises, actor, g.turn).filter(promise => {
+      const combat = promise.combat;
+      return combat && combat.event === battle.event && combat.territory === battle.territory &&
+        combat.plan && !combat.plan.closed;
+    });
+    if (!records.length || !battle.plans[actor]) continue;
+    const values = turnActionPlanValues(g, actor, records.map(promise => promise.mixed));
+    g.turnActionPromises = turnActionRule(() => recordTurnActionPlan(g.turnActionPromises!, actor,
+      g.turn, battle.event!, battle.territory, values));
+  }
+}
+/** A disappeared original opportunity is absence, never a synthetic zero plan
+ * or Decline. Declaration effects can later change; only the native hook
+ * records a declaration receipt. */
+function reconcileTurnActionCombat(g: Game) {
+  if (!g.turnActionPromises) return;
+  recordTurnActionRevealedPlans(g);
+  g.turnActionPromises = g.turnActionPromises.map(promise => {
+    const combat = promise.combat;
+    if (!combat || promise.fulfilled || promise.released) return promise;
+    const current = g.status === 'playing' && g.turn === promise.turn && g.phase === 6 &&
+      g.battle?.event === combat.event && g.battle.territory === combat.territory;
+    const context = current && combat.traitor && !combat.traitor.closed
+      ? traitorTruthContext(g, promise.player) : null;
+    const lostTraitor = combat.traitor && !combat.traitor.closed && (!context ||
+      context.submitted !== undefined || context.beneficiary !== combat.traitor.beneficiary ||
+      context.target !== combat.traitor.target || context.leader !== combat.traitor.leader);
+    return !current || lostTraitor
+      ? turnActionRule(() => closeTurnActionCombat([promise], promise.turn, combat.event))[0] : promise;
+  });
+}
+function turnActionTraitorChoices(g: Game, actor: string, choices: boolean[]): boolean[] {
+  if (!liveTurnActionPromises(g.turnActionPromises ?? [], actor, g.turn).some(promise =>
+    promise.combat?.traitor && !promise.combat.traitor.closed)) return choices;
+  const context = traitorTruthContext(g, actor), battle = g.battle;
+  if (!context || context.submitted !== undefined || !battle?.event) return choices;
+  return choices.filter(call => {
+    try {
+      const promises = turnActionRule(() => recordTurnActionTraitor(g.turnActionPromises!, actor,
+        g.turn, battle.event!, battle.territory, call));
+      const trial = { ...g, turnActionPromises: promises, battle: { ...battle,
+        traitorCalls: { ...battle.traitorCalls, [actor]: call },
+        traitorDecisionPromises: traitorDecisionRule(() =>
+          settleTraitorDecisionPromises(context, battle.traitorDecisionPromises ?? [], call)),
+      } };
+      return !!turnActionCompletion(trial, actor);
+    } catch (error) { if (error instanceof RuleError) return false; throw error; }
+  });
+}
 function initializeTurnActionOrder(g: Game) {
   initializeTravelOrder(g);
   const payments = [
@@ -18799,7 +18875,7 @@ function turnActionAllianceCanClose(g: Game, player: Player): boolean {
     return !!turnActionCompletion(source, player.id);
   } catch (error) { if (error instanceof RuleError) return false; throw error; }
 }
-type TurnActionCompletion = MovementCompletion & { payments: Action[]; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[] };
+type TurnActionCompletion = MovementCompletion & { payments: Action[]; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[]; battlePlan?: BattleCompletion; traitor?: Action };
 /** Whole-answer alternatives stay private. Only detached native rows quote a
  * route, sharing actual interval progress and the remaining physical purse. */
 function turnActionCompletion(source: Game, actor: string, unknownConsent?: { value: boolean }): TurnActionCompletion | null {
@@ -18826,6 +18902,7 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
     trial.bribePromises ??= [];
     trial.shipmentPromises ??= [];
     trial.movementPromises ??= [];
+    let invalidCombat = false, requestedTraitor = false;
     leaves.forEach((leaf, i) => {
       const metadata = { event: `turn-action-witness:${i}`, player: actor, turn: source.turn,
         asker: source.players.find(player => player.id !== actor)!.id, answer: leaf.answer };
@@ -18842,7 +18919,27 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
       else if (leaf.kind === 'leader') (trial.leaderRevivalPromises ??= []).push({ ...metadata, leader: leaf.leader });
       else if (leaf.kind === 'alliance') (trial.alliancePromises ??= []).push({ ...metadata,
         source: leaf.source, partner: leaf.partner });
+      else if (leaf.kind === 'battlePlan') {
+        const battle = trial.battle;
+        if (!battle || battle.event !== leaf.battle || battle.territory !== leaf.territory ||
+          ![battle.attacker, battle.defender].includes(actor)) invalidCombat = true;
+        else (battle.truthPromises ??= []).push({ event: metadata.event, player: actor,
+          asker: metadata.asker, claim: leaf.claim, answer: leaf.answer });
+      } else if (leaf.kind === 'traitorCall') {
+        const context = traitorTruthContext(trial, actor);
+        if (!context || context.submitted !== undefined || context.battle !== leaf.battle ||
+          trial.battle?.territory !== leaf.territory || context.beneficiary !== leaf.beneficiary ||
+          context.target !== leaf.target || context.leader !== leaf.leader) invalidCombat = true;
+        else {
+          requestedTraitor = true;
+          (trial.battle!.traitorDecisionPromises ??= []).push({ event: metadata.event,
+            turn: trial.turn, battle: context.battle, player: actor, asker: metadata.asker,
+            beneficiary: context.beneficiary, target: context.target, leader: context.leader,
+            answer: leaf.answer ? leaf.call : !leaf.call });
+        }
+      }
     });
+    if (invalidCombat) return null;
     const alliancePlans = turnActionAlliancePlans(trial, actor, !!unknownConsent);
     for (const required of bribePromiseRule(() => bribeCompletionCandidates(
       trial.bribePromises!, trial.bribeExpressionPromises ?? [], actor, source.turn))) {
@@ -18882,6 +18979,21 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
           for (const payment of required)
             checkBureaucratContributors(funded, payment.recipient, [{ payer: actor, amount: payment.amount }]);
           reconcileBattlePromises(funded, voluntary);
+          const battle = funded.battle;
+          const needsPlan = !!battle && !battle.revealed && [battle.attacker, battle.defender].includes(actor) &&
+            !!battle.truthPromises?.some(promise => promise.player === actor && !promise.released);
+          const battlePlan = needsPlan ? findReachableBattlePlan(funded, payer) : undefined;
+          if (needsPlan && !battlePlan) continue;
+          const traitorContext = traitorTruthContext(funded, actor);
+          const needsTraitor = requestedTraitor || !!battle?.traitorDecisionPromises?.some(promise =>
+            promise.player === actor && !promise.fulfilled && !promise.released);
+          let traitor: Action | undefined;
+          if (needsTraitor) {
+            if (!traitorContext || traitorContext.submitted !== undefined) continue;
+            const choices = traitorDecisionRule(() => traitorDecisionChoices(traitorContext, battle?.traitorDecisionPromises ?? []));
+            if (!choices.length) continue;
+            traitor = { type: 'traitorCall', call: choices[0] };
+          }
           reconcileBidPromises(funded, voluntary);
           reconcileRevivalPromises(funded, voluntary);
           const lot = bidOpportunity(funded);
@@ -18904,6 +19016,7 @@ function turnActionCompletion(source: Game, actor: string, unknownConsent?: { va
           if (completion) {
             if (alliancePlan?.uncertain) { unknownConsent!.value = true; continue; }
             return { ...completion, ...(bid ? { bid } : {}), ...(revival ? { revival } : {}),
+              ...(battlePlan ? { battlePlan } : {}), ...(traitor ? { traitor } : {}),
               ...(alliancePlan ? { alliance: alliancePlan.steps.map(step => ({ type: 'alliance', target: step.target })) } : {}),
               payments: required.map(payment => ({ type: 'bribe', target: payment.recipient, amount: payment.amount })) };
           }
@@ -18919,11 +19032,13 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
   const compiled = compileMixedActionExpression(claim.mixed,
     fact => truthFactAnswer(p, fact, truthKnowledgeOf(g, p)), answer);
   const open = turnActionTransportOpen(g, p.id);
-  let bid = false, revival = false, alliance = false;
+  let bid = false, revival = false, alliance = false, plan = false, traitor = false;
   const visit = (node: TurnActionClaim['mixed']): void => {
     if (node.kind === 'action') {
       if (node.action.kind === 'bid') bid = true;
       if (node.action.kind === 'alliance') alliance = true;
+      if (node.action.kind === 'battlePlan') plan = true;
+      if (node.action.kind === 'traitorCall') traitor = true;
       if (node.action.kind === 'forces' || node.action.kind === 'leader') revival = true;
     } else if (node.kind !== 'fact') node.terms.forEach(visit);
   };
@@ -18937,12 +19052,24 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
     revival: revival ? { total: 0, normal: 0, elite: 0, leaders: [], closed: g.phase > 4 ||
       g.phase === 4 && !!g.revivalOrder && !g.revivalOrder.remaining.includes(p.id) } : null,
   } : undefined;
-  return { turn: claim.turn, mixed: structuredClone(claim.mixed), event, player: p.id, asker, answer, compiled,
+  const battle = plan || traitor ? g.battle : null;
+  requireRule(!plan && !traitor || !!battle?.event, 'Retain the original current battle.');
+  const context = traitor ? traitorTruthContext(g, p.id) : null;
+  requireRule(!traitor || context && context.submitted === undefined, 'Retain the original unsubmitted Traitor decision.');
+  const combat: TurnActionCombat | undefined = battle?.event ? { event: battle.event, territory: battle.territory,
+    plan: plan ? { closed: false, values: null } : null,
+    traitor: context ? { beneficiary: context.beneficiary, target: context.target, leader: context.leader,
+      closed: false, call: null } : null } : undefined;
+  let promise: TurnActionPromise = { turn: claim.turn, mixed: structuredClone(claim.mixed), event, player: p.id, asker, answer, compiled,
+    ...(combat ? { combat } : {}),
     ...(preparation ? { preparation } : {}),
     ...(nexus ? { alliance: { source: nexus.source, partner: null, closed: false } } : {}),
     shipment: { pending: open && (g.phase < 5 || shipmentAvailable(g, p)), event: null },
     progress: [], payments: [], transportClosed: !open, paymentClosed: false,
     fulfilled: compiled.kind === 'constant' && compiled.value === answer, released: false };
+  if (combat?.plan && battle?.plans[p.id]) promise = turnActionRule(() => recordTurnActionPlan([promise], p.id,
+    g.turn, combat.event, combat.territory, turnActionPlanValues(g, p.id, [claim.mixed])))[0];
+  return promise;
 }
 function turnActionAnswerSource(g: Game, player: string, alliance = false): Game {
   return g.phase === 1 && alliance || g.phase === 2 || g.phase === 4 && !g.revivalOrder || g.phase === 8 ||
@@ -18953,7 +19080,9 @@ function turnActionTruthAnswers(g: Game, p: Player, claim: TurnActionClaim): Tru
   if (claim.turn !== g.turn || !turnActionTargetAvailable(g, p.id)) return [];
   const answers: TruthAnswer[] = [], consent = { value: false };
   for (const answer of [true, false]) {
-    const promise = turnActionPromise(g, p, claim, answer, 'candidate', g.players.find(other => other.id !== p.id)!.id);
+    let promise: TurnActionPromise;
+    try { promise = turnActionPromise(g, p, claim, answer, 'candidate', g.players.find(other => other.id !== p.id)!.id); }
+    catch (error) { if (error instanceof RuleError) continue; throw error; }
     if (promise.compiled.kind === 'constant' && promise.compiled.value !== answer) continue;
     const trial = { ...turnActionAnswerSource(g, p.id, !!promise.alliance),
       turnActionPromises: [...(g.turnActionPromises ?? []), promise], travelPromiseOrder: undefined };
@@ -18973,6 +19102,7 @@ function bindTurnActionTruth(g: Game, p: Player, claim: TurnActionClaim, answer:
   appendTravelOrder(g, 'turnActions', g.turnActionPromises.length - 1);
 }
 function reconcileTurnActionPromises(g: Game, actor?: string, action?: Action, sourcePhase = g.phase) {
+  reconcileTurnActionCombat(g);
   turnActionRule(() => validateTurnActionPromises(g.turnActionPromises!, g.players.map(player => player.id)));
   for (const p of g.players) {
     for (const turn of new Set(g.turnActionPromises!.filter(promise => promise.player === p.id &&
@@ -19082,6 +19212,15 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
         !(g.phase === 4 && nativeRevivalOrderBlock(g, player.id))) action = current ?? { type: 'ready' };
     } else if (!action && g.phase === 5 && g.active === player.id && !promise.transportClosed)
       action = completion.actions[0] ?? { type: 'endMovement' };
+  }
+  if (!action && g.phase === 6 && g.battle) {
+    const battle = g.battle;
+    if (completion.battlePlan && !completion.battlePlan.waitingForIncome && !battle.revealed && !battle.plans[player.id] &&
+      (!battle.preLeader || battle.preLeader.closed) && !battle.preparation &&
+      (!battle.fullPlan || battle.plans[battle.fullPlan.target] || battle.fullPlan.target === player.id))
+      action = completion.battlePlan.actions[0] ?? { type: 'battlePlan', ...completion.battlePlan.plan };
+    if (!action && completion.traitor && battle.revealed && battle.traitorCalls[player.id] === undefined)
+      action = completion.traitor;
   }
   if (!action && g.phase === 1 && allianceQuestionWindow(g) && !g.ready.includes(player.id))
     action = completion.alliance?.[0] ?? { type: 'ready' };
@@ -28854,7 +28993,8 @@ function traitorDecisionRule<T>(operation: () => T): T {
 }
 function traitorTruthAnswers(g: Game, p: Player): TruthAnswer[] {
   const context = traitorTruthContext(g, p.id);
-  return context ? traitorDecisionRule(() => traitorDecisionChoices(context, g.battle?.traitorDecisionPromises ?? []))
+  return context ? turnActionTraitorChoices(g, p.id,
+    traitorDecisionRule(() => traitorDecisionChoices(context, g.battle?.traitorDecisionPromises ?? [])))
     .map(call => call ? 'yes' as const : 'no' as const) : [];
 }
 function bindTraitorTruth(g: Game, p: Player, answer: boolean, asker: string, event?: string) {
@@ -28950,6 +29090,12 @@ function reconcileTraitorTruth(g: Game, actor?: string, action?: Action) {
   reconcileMixedTraitorQuestions(g);
 }
 function traitorReturnPromiseBlock(g: Game, p: Player, returned: readonly string[]): string | null {
+  if (liveTurnActionPromises(g.turnActionPromises ?? [], p.id, g.turn).some(promise =>
+    promise.combat?.traitor && !promise.combat.traitor.closed)) {
+    const trial = structuredClone(g);
+    getPlayer(trial, p.id).traitors = p.traitors.filter(card => !returned.includes(card));
+    if (!turnActionCompletion(trial, p.id)) return 'Keep the identity needed by your whole Traitor declaration answer, or retain another legal alternative.';
+  }
   const promises = g.battle?.traitorDecisionPromises;
   if (!promises?.some(promise => promise.player === p.id && promise.answer && !promise.fulfilled && !promise.released)) return null;
   const context = traitorTruthContext(g, p.id, p.traitors.filter(card => !returned.includes(card)));
@@ -40992,6 +41138,7 @@ function applyActionInner(
           revealPlayerNoField(g, owner, 'battle');
       }
       b.revealed = true;
+      recordTurnActionRevealedPlans(g);
       reconcileMixedBattleQuestions(g);
       for (const plan of Object.values(b.plans)) {
         const l = g.players
@@ -41029,6 +41176,15 @@ function applyActionInner(
     }
     if (action.call && b.traitorDeclarationVersion)
       b.traitorDeclarations![id] = nexusRule(() => createTraitorDeclaration(traitorDeclarationContext(g), id));
+    if (g.turnActionPromises && b.event) {
+      requireRule(!liveTurnActionPromises(g.turnActionPromises, id, g.turn).some(promise => {
+        const combat = promise.combat, stage = combat?.traitor;
+        return combat && combat.event === b.event && combat.territory === b.territory && stage && !stage.closed &&
+          (!context || stage.beneficiary !== context.beneficiary || stage.target !== context.target || stage.leader !== context.leader);
+      }), 'Retain the original Traitor beneficiary, target and opposing leader.');
+      g.turnActionPromises = turnActionRule(() => recordTurnActionTraitor(g.turnActionPromises!, id,
+        g.turn, b.event!, b.territory, action.call as boolean));
+    }
     b.traitorCalls[id] = action.call;
     if (action.call && g.moritaniAssassinate?.owner === id) {
       requireRule(b.event && !g.moritaniAssassinateCallEvents!.includes(b.event), 'This normal traitor call was already recorded.');
@@ -42642,7 +42798,8 @@ export function viewGame(state: Game, id: string) {
               : {},
           traitorSubmitted: Object.keys(b.traitorCalls),
           traitorCallChoices: (() => { const context = traitorTruthContext(g, id); return context
-            ? traitorDecisionRule(() => traitorDecisionChoices(context, b.traitorDecisionPromises ?? [])) : null; })(),
+            ? turnActionTraitorChoices(g, id,
+              traitorDecisionRule(() => traitorDecisionChoices(context, b.traitorDecisionPromises ?? []))) : null; })(),
           ownTraitorPromises: (b.traitorDecisionPromises ?? []).filter(promise => promise.player === id && !isMixedTraitorEvent(g, promise.event)),
           traitorVoters: traitorVoters(g, b),
           preparation: b.preparation && g.homeworldOccupationPreview && b.preparation.kind === 'voice'
