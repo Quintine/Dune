@@ -7,7 +7,7 @@ import { quoteStableHomeworldOccupation } from '../game/homeworld-stable-occupat
 import {
   createMixedPhaseModulesFixture, actMixedPhaseModules, mixedPhaseModulesClean,
   mixedPhaseModulesInventory, mixedPhaseModulesPlayer, nextMixedPhaseModules,
-  type MixedPhaseModulesStep, type MixedPhaseModulesTransition,
+  type MixedPhaseModulesOptions, type MixedPhaseModulesStep, type MixedPhaseModulesTransition,
 } from './fixture-mixed-phase-modules';
 
 export type HomeworldPhaseOccupationStep = MixedPhaseModulesStep;
@@ -48,12 +48,12 @@ export function finishHomeworldPhaseOccupation(game: Game, actions: HomeworldPha
  * original scalar and unopened Spice lotteries are controlled. No card, army,
  * wallet, World owner, qualification, income ledger or clock is installed.
  * Stop at the real final Movement actor before automatic Collection credit. */
-export function createHomeworldPhaseOccupationFixture(options: { advanced?: boolean } = {}) {
+export function createHomeworldPhaseOccupationFixture(options: { advanced?: boolean } & Pick<MixedPhaseModulesOptions, 'skills' | 'training'> = {}) {
   const advanced = options.advanced ?? false, native = 'atreides', owner = 'ecaz', techOwner = 'ixians';
   const world = 'homeworld:atreides', card = 'caladan' as const;
   const source = createMixedPhaseModulesFixture({ factions: [native, owner, techOwner],
     expansions: ['ix', 'choam', 'ecaz'], advanced, homeworlds: true,
-    tech: true, strongholds: advanced, independent: true });
+    tech: true, strongholds: advanced, independent: true, skills: options.skills, training: options.training });
   let game = source.game;
   const actions = [...source.actions];
   const act = (actor: string, action: Action) => { game = actHomeworldPhaseOccupation(game, actor, action, actions); };

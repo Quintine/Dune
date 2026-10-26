@@ -16,6 +16,35 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Leader Skills / mandatory World occupation — 26 October. Prototyped / Partial.**
+Existing clean registered World/all14 starts now initialize original occupation
+benefits beside normal Banker, with optional independent cards and phase modules.
+Roster, role and phase limits remain; Nexus/Discovery/Semuta retain separate
+contexts. Original offers train eligible native leaders through actual controls.
+
+Disjoint profile/training/native lanes and root integration pass **21 files,
+158/158**, types/lint/build and **six native runtime paths**,18 GameTable SSR
+renders. Bare mixed/classic starts use25/13 actions and47/33 cards. All-six Basic
+and Advanced use257/274 actions,57/60 cards, actual Storm losses/free returns,
+earned token income/cards and four legal minimal-policy actions each.
+
+A/Ecaz/Ix sources use61/66 actions/card50 plus20 continuations: Atreides pays10
+to empty Caladan; Ecaz Banker earns deferred1 from that other payer, then pays1
+to occupy Caladan. Actual occupied Collection2 leaves Banker1 deferred until
+actual Mentat. Heighliners1, Advanced ordinary Arrakeen2 and earned first
+end-Mentat cards stay separate. No played card, force, wallet, qualification,
+phase, owner or receipt is installed. All original14 Skills remain physical.
+
+Feedback repairs older Banker/Tleilaxu fixtures to await current Advanced
+Revival actors/beneficiaries, selecting original lobby circles where a later
+opportunity is required. Payment, diversion, free-return and skill-custody
+assertions remain. Frozen report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-world-skills-occupation-proof-v3/`;
+journeys/HTML: adjacent `20261026-world-skills-occupation-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or assurance campaign.
+SSR/public-action evidence leaves browser/mobile/deployed, wider combinations
+and complete-mode acceptance open. [Source and contract](HOMEWORLD_RULES.md#registered-world-skills-occupation--26-october-2026).
+
 **Homeworld occupation / original phase modules — 26 October. Prototyped / Partial.**
 Clean registered classic/no-deck and selected-family Worlds now compose optional
 independent cards, Tech3–6 Basic/Advanced and Strongholds2–6 Advanced without

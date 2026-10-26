@@ -17,7 +17,7 @@ import { MovementClaimError, liveMovementPromises, movementEventAllowed, movemen
 import { findMovementCompletion, type MovementCompletion } from './movement-promise-search';
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile, selectedFactionStrongholdProfile, selectedIndependentCardsProfile } from './faction-module-profile';
-import { homeworldPhaseModulesProfile } from './homeworld-module-profile';
+import { homeworldOccupationLeaderSkillsProfile, homeworldPhaseModulesProfile } from './homeworld-module-profile';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
@@ -10858,7 +10858,7 @@ export function initializeHomeworldOccupationGameForAudit(state: Game, leaderSki
     'Occupation with Leader Skills requires original classic Homeworlds without other modules.');
   const g = leaderSkills ? initializeLeaderSkillsGameForAudit(state)
     : initializeSetupGameForAudit(state, true, false, false, false, false, false, true);
-  initializeHomeworldOccupationState(g);
+  if (!g.homeworldOccupationPreview) initializeHomeworldOccupationState(g);
   if (moritaniAssassinateModeSupported(g)) initializeMoritaniAssassinateState(g);
   return g;
 }
@@ -12098,6 +12098,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
     mixedE3 || standaloneE3NexusLeaderSkillsProfile(g) || pairedE3 || guildBetrayalNexusLeaderSkillsProfile(g), false,
     independentDiscoveryProfile(g) || classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g) || (g.discoveryEnabled === true && classicNexus), true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g), independent);
+  if (homeworldOccupationLeaderSkillsProfile(initialized)) initializeHomeworldOccupationState(initialized);
   if (advancedMoritaniLeaderSkillsProfile(initialized) || ((independentDiscoveryProfile(initialized) || independentNexusProfile(initialized) || mixedE3 || pairedE3) && initialized.advanced &&
     byFaction(initialized, 'moritani'))) initializeMoritaniAssassinateState(initialized);
   if ((independentDiscoveryProfile(initialized) || independentNexusProfile(initialized) || nativeEcazLeaderSkillsProfile(initialized) || mixedE3 || homeworlds || nativeDiscoveryLeaderSkillsProfile(initialized) || pairedE3) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
@@ -24222,7 +24223,7 @@ function homeworldOccupiedIncomeIntegrity(g: Game) {
     return;
   }
   requireRule(g.homeworldOccupationPreview === true && g.homeworlds &&
-    (homeworldPhaseModulesProfile(g) || (!g.nexusCards &&
+    (homeworldPhaseModulesProfile(g) || homeworldOccupationLeaderSkillsProfile(g) || (!g.nexusCards &&
       (!g.leaderSkills || !g.expansions.length && homeworldLeaderSkillsProfile(g)) &&
       !g.techTokens && !g.strongholdCards && !g.discoveryEnabled)) &&
     Array.isArray(history) && pending !== undefined,

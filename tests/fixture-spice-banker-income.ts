@@ -12,7 +12,7 @@ import {quoteSpiceCollection} from '../game/board-resolution-quote';
 import {leaderSkillStrongholdCount} from '../game/leader-skill-battle-board';
 import type {Card} from '../game/cards';
 
-export type SpiceBankerIncomeFixtureOptions = {initial?:Game;advanced?:boolean;kind?:BankerIncomeSourceKind|'cross-shipment'|'return-shipment';ownerIsPayer?:boolean;payerFaction?:FactionId;bankerFaction?:FactionId;stageKarama?:boolean;stageIncomeCounter?:boolean;amount?:number;allySplit?:number;emperor?:boolean;guild?:boolean;seatIds?:string[];trainerSelected?:boolean;trainerDies?:boolean;trainerHidden?:boolean};
+export type SpiceBankerIncomeFixtureOptions = {initial?:Game;advanced?:boolean;kind?:BankerIncomeSourceKind|'cross-shipment'|'return-shipment';ownerIsPayer?:boolean;payerFaction?:FactionId;bankerFaction?:FactionId;revivalBeforeBanker?:FactionId;stageKarama?:boolean;stageIncomeCounter?:boolean;amount?:number;allySplit?:number;emperor?:boolean;guild?:boolean;seatIds?:string[];trainerSelected?:boolean;trainerDies?:boolean;trainerHidden?:boolean};
 export type SpiceBankerIncomeNativeStep = {actor:string;action:Action};
 export type SpiceBankerIncomeFixture = {game:Game;beforePayment:Game;actor:string;payer:string;paymentAction:Action;owner:string;leader:string;event:string;kind:NonNullable<SpiceBankerIncomeFixtureOptions['kind']>;amount:number;bankLegs:{payer:string;amount:number}[]};
 
@@ -36,6 +36,10 @@ export function nextSpiceBankerIncomeNativeStep(game:Game):SpiceBankerIncomeNati
     if(game.battle?.revealed) {
       const voter=viewGame(game,game.host).battle!.traitorVoters.find(id=>game.battle!.traitorCalls[id]===undefined);
       if(voter) return {actor:voter,action:{type:'traitorCall',call:false}};
+    }
+    if(game.phase===4&&game.revivalOrder) {
+      const actor=game.revivalOrder.remaining[0];
+      if(actor) return {actor,action:{type:'ready'}};
     }
     if([1,2,4,7,8].includes(game.phase)||(game.phase===0&&game.stormPending!==null)) {
       const seat=game.players.find(p=>!game.ready.includes(p.id));
@@ -99,6 +103,21 @@ function setup(initial:Game):Game {
 function phase(game:Game,target:number):Game {
   for(let i=0;(game.phase!==target||game.phaseOpening||game.response||game.decision)&&i<1000;i++) game=step(game);
   assert.equal(game.phase,target);return game;
+}
+
+/** Finish preceding native opportunities through their real Ready actions.
+ * Basic and an already-open unstamped Revival retain concurrent timing. */
+export function awaitSpiceBankerIncomeRevivalActor(state:Game,actor:string):Game {
+  let game=state;
+  assert.equal(game.phase,4);
+  for(let i=0;game.revivalOrder&&i<200;i++) {
+    assert.ok(game.revivalOrder.remaining.includes(actor),'The requested native Revival opportunity must still be pending.');
+    if(game.phaseOpening||game.response||game.decision) game=step(game);
+    else if(game.revivalOrder.remaining[0]===actor) return game;
+    else game=applyAction(game,game.revivalOrder.remaining[0],{type:'ready'});
+  }
+  assert.ok(!game.revivalOrder,'The native Revival actor must be reached before continuing.');
+  return game;
 }
 
 /** Reuse real custody first; any explicit staging transfers the canonical card
@@ -170,6 +189,17 @@ export function createSpiceBankerIncomeFixture(options:SpiceBankerIncomeFixtureO
       const opponentFaction=bankerFaction==='harkonnen'?'atreides':'harkonnen';
       joinGame(game,newPlayer(ids[1],'Opponent',opponentFaction));
     }
+    if(options.revivalBeforeBanker) {
+      assert.ok(game.advanced);
+      const preceding=game.players.find(p=>p.faction===options.revivalBeforeBanker)!;
+      const banker=game.players.find(p=>p.faction===bankerFaction)!;
+      assert.ok(preceding&&banker&&preceding.id!==banker.id);
+      // First Storm0 ends at1; the native next card1..6 ends at2..7.
+      // Original printed circles14/17 keep the future skilled payer before
+      // the original Banker without reopening an already completed turn.
+      game=applyAction(game,preceding.id,{type:'seatPosition',position:5});
+      game=applyAction(game,banker.id,{type:'seatPosition',position:6});
+    }
   }
   game=setup(game);
   const assignment=game.leaderSkills!.assignments.find(a=>a.skill==='spice-banker')!;
@@ -220,7 +250,11 @@ export function createSpiceBankerIncomeFixture(options:SpiceBankerIncomeFixtureO
       game=stageSpiceBankerIncomeTrainerBattle(game,{trainerOwner:actor,death:true,kwisatz:kind==='kh-revival'});
       game=advanceSpiceBankerIncomeToMentat(game);
     }
-    game=phase(game,4);const payer=game.players.find(p=>p.id===actor)!;
+    game=phase(game,4);
+    const beneficiary=kind==='emperor-extra-revival'
+      ?game.players.find(p=>p.faction!=='emperor'&&p.id!==owner)!.id:actor;
+    game=awaitSpiceBankerIncomeRevivalActor(game,beneficiary);
+    const payer=game.players.find(p=>p.id===actor)!;
     if(kind==='force-revival') {
       payer.reserves-=3;payer.tanks+=3;paymentAction={type:'revive',amount:3};amount=forceRevivalQuote(game,payer,3).cost;
     } else if(kind==='leader-revival') {
@@ -378,6 +412,7 @@ export function createSpiceBankerIncomeReassignmentFixture(state:Game):SpiceBank
   let game=stageSpiceBankerIncomeTrainerBattle(state,{death:true,reassignToOpponent:true});
   game=advanceSpiceBankerIncomeToMentat(game);
   game=phase(game,4);
+  game=awaitSpiceBankerIncomeRevivalActor(game,actor);
   const trainer=game.players.find(p=>p.id===actor)!.leaders.find(l=>l.id===leader)!;
   assert.ok(trainer.dead&&game.players.find(p=>p.id===actor)!.spice>=trainer.strength);
   assert.ok(game.leaderSkills!.deck.slice(0,2).includes('spice-banker'),'The actual singleton return shuffle must supply the native two-card offer.');

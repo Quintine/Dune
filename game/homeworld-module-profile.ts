@@ -1,5 +1,6 @@
 import { FACTIONS } from './catalog';
 import type { FactionModuleProfile } from './faction-module-profile';
+import { homeworldLeaderSkillsProfile } from './leader-skill-profile';
 
 export type HomeworldPhaseModulesProfile = FactionModuleProfile & {
   homeworldOccupationPreview?: unknown;
@@ -47,4 +48,27 @@ export function homeworldPhaseModulesProfile(game: HomeworldPhaseModulesProfile)
     (!game.moritaniAssassinatePreview || game.advanced && moritani) &&
     (!game.homeworldTupilePreview || game.homeworldOccupationPreview === true && choam) &&
     (!game.homeworldEcazVictoryPreview || game.homeworldOccupationPreview === true && ecaz);
+}
+
+/** Occupation benefits for an already-admitted original World/all14 setup.
+ * The same unchanged library admission predicate remains authoritative; this
+ * only selects the clean occupation context and accepts its native stamps. */
+export function homeworldOccupationLeaderSkillsProfile(game: HomeworldPhaseModulesProfile): boolean {
+  if (!game || typeof game !== 'object' || !game.homeworlds || !game.leaderSkills ||
+    typeof game.advanced !== 'boolean' || !registeredRoster(game) || !optionalFlag(game.ecazTreachery) ||
+    (game.techTokens && game.players.length < 3) || (game.strongholdCards && !game.advanced) ||
+    game.nexusCards || game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
+    game.sandtrout || game.semutaPreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
+    game.guildBetrayalPreview || game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
+    game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
+  if (![game.ecazOccupyPreview, game.moritaniAssassinatePreview, game.homeworldOccupationPreview,
+    game.homeworldTupilePreview, game.homeworldEcazVictoryPreview, game.spiceBankerIncomePreview].every(optionalFlag)) return false;
+  const ecaz = game.players.some(player => player.faction === 'ecaz');
+  const moritani = game.players.some(player => player.faction === 'moritani');
+  const choam = game.players.some(player => player.faction === 'choam');
+  return (!game.ecazOccupyPreview || ecaz) &&
+    (!game.moritaniAssassinatePreview || game.advanced && moritani) &&
+    (!game.homeworldTupilePreview || game.homeworldOccupationPreview === true && choam) &&
+    (!game.homeworldEcazVictoryPreview || game.homeworldOccupationPreview === true && ecaz) &&
+    homeworldLeaderSkillsProfile(game);
 }

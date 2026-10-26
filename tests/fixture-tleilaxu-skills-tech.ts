@@ -83,13 +83,19 @@ export function advanceTleilaxuSkillsTechToPhase(state: Game, target: number): G
   assert.ok(game.phase >= target && !game.phaseOpening && !game.response && !game.decision);
   return game;
 }
-function setup(options: TleilaxuSkillsTechOptions) {
+function setup(options: TleilaxuSkillsTechOptions & { revivalTleilaxuFirst?: boolean }) {
   const faction = options.winner ?? 'guild';
   let initial = options.initial ? structuredClone(options.initial)
     : createGame('TLEISKILLTECH', newPlayer(faction, faction, faction), options.advanced ?? true, ['ix']);
   if (!options.initial) {
     joinGame(initial, newPlayer('tleilaxu', 'Tleilaxu', 'tleilaxu'));
     joinGame(initial, newPlayer('emperor', 'Emperor', 'emperor'));
+    if (options.revivalTleilaxuFirst && initial.advanced) {
+      // Original lobby circles keep the native Tleilaxu opportunity before
+      // Guild, allowing both free returns without reopening a completed turn.
+      initial = applyAction(initial, 'tleilaxu', { type: 'seatPosition', position: 5 });
+      initial = applyAction(initial, faction, { type: 'seatPosition', position: 6 });
+    }
   }
   assert.equal(initial.status, 'lobby');
   assert.ok(initial.players.length >= 3 && initial.players.length <= 6);
@@ -213,7 +219,7 @@ export type TleilaxuSkillsTechRevivalFixture = {
  * untrained original discs' dead states are controlled, never funding. The
  * native dead disc makes genuine room in Tleilaxu's five-leader active pool. */
 export function createTleilaxuSkillsTechRevivalFixture(options: Pick<TleilaxuSkillsTechOptions, 'initial' | 'advanced'> = {}): TleilaxuSkillsTechRevivalFixture {
-  const { game: started } = setup({ ...options, winner: 'guild' });
+  const { game: started } = setup({ ...options, winner: 'guild', revivalTleilaxuFirst: true });
   const game = advanceTleilaxuSkillsTechToPhase(started, 4);
   const tleilaxu = advancedNativePlayer(game, 'tleilaxu').id;
   const other = advancedNativePlayer(game, 'guild').id;

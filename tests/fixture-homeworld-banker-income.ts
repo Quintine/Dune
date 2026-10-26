@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  applyAction, createGame, initializeHomeworldOccupationGameForAudit, joinGame, newPlayer,
+  applyAction, createGame, initializeLeaderSkillsGameForAudit, joinGame, newPlayer,
   viewGame, type Action, type Game, type Player,
 } from '../game/engine';
 import { territory } from '../game/board';
@@ -189,9 +189,10 @@ export function withHomeworldBankerEntropy<T>(run: () => T): T {
   }
 }
 
-/** Fresh classic Advanced Homeworld admission through the real Banker
- * initializer. Only the original all-fourteen skill shuffle is controlled; the
- * decks, hands, offers, traitors and native custody stay original. */
+/** Fresh classic Advanced Homeworld admission through the ordinary Skills
+ * initializer, which also creates mandatory original occupation state. Only the
+ * original all-fourteen skill shuffle is controlled; decks, hands, offers,
+ * traitors and native custody stay original, with no occupation retrofit. */
 function admitHomeworldBankerGame(): Game {
   let game = createGame('HOMEWORLDBANKER', newPlayer(SEATS[0], 'Banker', SEATS[0]), true);
   for (const faction of SEATS.slice(1)) joinGame(game, newPlayer(faction, faction, faction));
@@ -200,7 +201,7 @@ function admitHomeworldBankerGame(): Game {
   const canonical = LEADER_SKILL_CARDS.map(card => card.id);
   const rest = canonical.filter(id => !REQUESTED_SKILLS.includes(id));
   const desired = REQUESTED_SKILLS.flatMap(id => [id, rest.shift()!]).concat(rest);
-  return originalLottery(permutationDraws(canonical, desired), () => initializeHomeworldOccupationGameForAudit(game, true));
+  return originalLottery(permutationDraws(canonical, desired), () => initializeLeaderSkillsGameForAudit(game));
 }
 
 /** Genuine setup selections: each requested skill is chosen from its real

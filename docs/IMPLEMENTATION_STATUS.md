@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 26 October 2026 — Registered World Skills occupation benefits
+
+**Prototyped / Partial.** Existing clean registered
+World/all14 starts now include original occupation state beside normal Banker,
+without changing admission, roles, phase-module limits or played games. Native
+Skill offers/trainers and qualification/income handlers remain original.
+
+Disjoint permission, public training/control and native income sources feed
+root integration: **21 files,158/158**, types/lint/build and **six native runtime
+paths**,18 GameTable SSR renders. Bare mixed/classic starts use25/13 actions,
+47/33 cards; all-six Basic/Advanced use257/274 actions,57/60 cards and four legal
+minimal-policy actions each. Native Storm losses, free returns, token income,
+earned cards and original14 Skill custody remain.
+
+A/Ecaz/Ix World/card50 sources use61/66 actual actions plus20 continuations.
+Atreides Bank10 shipment empties Caladan and earns Ecaz deferred Banker1; Ecaz
+Bank1 entry earns sole occupation. Actual occupied Collection2, Heighliners1,
+Advanced ordinary Arrakeen2, Mentat Banker1 and first end-Mentat cards retain
+separate receipts. No played-state card, force, wallet, qualification, phase,
+owner or receipt is installed. Feedback repairs old Banker/Tleilaxu Advanced
+Revival drivers and original lobby-circle timing; economics/custody assertions
+remain. Frozen report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-world-skills-occupation-proof-v3/`;
+journeys/HTML: adjacent `20261026-world-skills-occupation-runtime/`.
+No saved-game/D1/server/reset/restart/deployment or separate assurance campaign.
+Browser/mobile/deployed, wider combinations and complete-mode acceptance remain.
+[Source and contract](HOMEWORLD_RULES.md#registered-world-skills-occupation--26-october-2026).
+
 ## 26 October 2026 — Clean Homeworld occupation and phase modules
 
 **Prototyped / Partial.** Clean registered classic/

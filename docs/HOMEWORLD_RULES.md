@@ -2,6 +2,53 @@
 
 Source audit, 9 September 2026. No runtime activation. The primary module source is the [GF9 Ecaz & Moritani rulebook](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf), especially printed pp.4, 9–10 and the Homeworld FAQ on pp.15–16. The local publisher-text transcription is `/tmp/dune-rules/ecaz-audit.txt`; fresh official indexed pp.9, 10 and 15 were checked against it. Direct PDF retrieval currently returns HTTP 403. Physical card faces are separately audited in [Homeworld component audit](HOMEWORLD_COMPONENT_AUDIT.md); a rulebook statement and a card-face statement are not interchangeable evidence.
 
+## Registered World Skills occupation — 26 October 2026
+
+Fresh World/all14 Skills starts now initialize the existing occupation benefit
+state whenever the unchanged registered World/Skills admission accepts that
+clean context. Original selected families, native role exclusions, Tech3+ and
+Advanced Strongholds2+ remain; optional independent cards remain optional.
+This introduces no new start permission. Nexus/Discovery/Sandtrout/Semuta and
+other reaction contexts retain their own existing scopes.
+
+Shared fresh state includes qualification history, occupied Collection and
+percentage ledgers, native CHOAM Tupile and native Ecaz World victory. Skills
+training remains original fourteen-card offers and actual eligible leader
+choices. Existing normal Banker state is retained; the legacy explicit
+classic occupation-Skills wrapper does not initialize occupation twice.
+Native actions, printed incomes, skill posture, physical forces and private
+choices continue through existing handlers. Played games receive no new stamp.
+
+Authority is the same audited Homeworld/occupied components below and supplied
+Advanced physical21/printed19 variant/Skill independence. Banker observes an
+eligible payment by another faction; the trainer cannot earn from its own
+payment. Its earned bank spice waits for actual Mentat, separately from current
+occupied Collection, ordinary Collection and phase-token payout. This is
+existing arithmetic/order, not a new combined ruling or retrospective refund.
+
+Frozen integration passes **21 files,158/158**, types/lint/build and six native
+runtime paths with18 GameTable SSR renders. Bare mixed/classic original starts
+use25/13 actions,47/33 cards. All-six Basic/Advanced World Skills programmes use
+257/274 actions,57/60 cards, actual Storm/free-return/token/card outcomes and
+four accepted minimal-policy actions each. Every original Skill Card remains
+in its physical deck, offer or trained slot.
+
+Actual A/Ecaz/Ix all3 World/card50 sources use61/66 actions plus20 continuations:
+Atreides pays Bank10 to empty Caladan, earning Ecaz Banker deferred1. Ecaz then
+pays1 for sole Caladan entry. Actual occupied Collection2, Heighliners1 and
+Advanced ordinary Arrakeen2 retain distinct receipts; Banker1 waits until actual
+Mentat, followed by earned first end-Mentat cards. No played-state skill, card,
+army, wallet, qualification, phase, owner or receipt is installed. Related old
+Banker/Tleilaxu fixtures now follow current Advanced Revival actors/beneficiaries
+and original lobby-circle sequencing without changing economic assertions.
+
+Report/source manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-world-skills-occupation-proof-v3/`;
+journeys/HTML: adjacent `20261026-world-skills-occupation-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or separate assurance campaign.
+SSR/public actions do not certify browser/mobile/deployed acceptance, wider
+module combinations or complete modes; those remain open.
+
 ## Clean Homeworlds and phase modules — 26 October 2026
 
 Fresh clean Homeworld starts now use registered classic or selected-family

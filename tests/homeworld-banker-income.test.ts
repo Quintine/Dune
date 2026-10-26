@@ -59,6 +59,11 @@ void test('fresh classic Homeworld Banker admission keeps the original board, fo
   const f = createHomeworldBankerFixture();
   assert.equal(f.initial.spiceBankerIncomePreview, true);
   assert.equal(f.initial.homeworldOccupationPreview, true);
+  assert.equal(f.initial.pendingHomeworldOccupiedIncome, null);
+  assert.deepEqual(f.initial.homeworldOccupiedIncomeHistory, []);
+  assert.ok(f.initial.homeworldOccupiedPercentageLedger,
+    'Ordinary fresh World Skills admission supplies its original occupation ledger.');
+  assert.deepEqual(f.initial.homeworldOccupiedPercentageLedger.receipts, []);
   assert.ok(f.initial.spiceBankerIncome, 'The fresh Homeworld Banker game owns the real income ledger.');
   assert.equal(f.initial.status, 'setup');
   assert.equal(f.setup.status, 'playing');

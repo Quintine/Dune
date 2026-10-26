@@ -6,7 +6,7 @@ import { DIFFICULTIES } from '../game/bot-profiles';
 import { validateLeaderSkills } from '../game/leader-skills';
 import { quoteSukRescue } from '../game/suk-graduate';
 import { ownedTech } from '../game/tech-tokens';
-import { quoteSpiceBankerIncomeBattleEconomics } from './fixture-spice-banker-income';
+import { awaitSpiceBankerIncomeRevivalActor, quoteSpiceBankerIncomeBattleEconomics } from './fixture-spice-banker-income';
 import {
   createTleilaxuSkillsTechFixture, createTleilaxuSkillsTechRevivalFixture,
   advanceTleilaxuSkillsTechToPhase, settleTleilaxuSkillsTechRevival,
@@ -159,11 +159,17 @@ void test('four original native policies replace the actual winner using legal s
 void test('only-Tleilaxu real free revival excludes Axlotl; another faction real free revival accrues and pays exactly its owned-token count', () => {
   for (const anotherFaction of [false, true]) {
     const f = createTleilaxuSkillsTechRevivalFixture();
-    let game = settleTleilaxuSkillsTechRevival(applyAction(f.game, f.tleilaxu, f.ownFreeAction));
+    let game = awaitSpiceBankerIncomeRevivalActor(f.game, f.tleilaxu);
+    assert.equal(game.revivalOrder!.remaining[0], f.tleilaxu);
+    assert.ok(game.revivalOrder!.remaining.includes(f.other));
+    game = settleTleilaxuSkillsTechRevival(applyAction(game, f.tleilaxu, f.ownFreeAction));
     assert.equal(player(game, f.tleilaxu).tanks, 0);
     assert.equal(player(game, f.tleilaxu).freeForcesRevived, 1);
     assert.deepEqual(game.techTokens, f.game.techTokens, 'The native Tleilaxu-only free revival is not an Axlotl trigger.');
     if (anotherFaction) {
+      game = awaitSpiceBankerIncomeRevivalActor(game, f.other);
+      assert.equal(game.revivalOrder!.remaining[0], f.other);
+      assert.ok(game.revivalOrder!.completed.includes(f.tleilaxu));
       game = settleTleilaxuSkillsTechRevival(applyAction(game, f.other, f.otherFreeAction));
       assert.equal(player(game, f.other).tanks, 0);
       assert.equal(player(game, f.other).freeForcesRevived, 1);
@@ -181,7 +187,9 @@ void test('only-Tleilaxu real free revival excludes Axlotl; another faction real
 void test('real native foreign Ghola revival grants no new Tleilaxu skill and preserves its living native trainer', () => {
   const f = createTleilaxuSkillsTechRevivalFixture();
   const assignments = structuredClone(f.game.leaderSkills!.assignments);
-  const after = settleTleilaxuSkillsTechRevival(applyAction(f.game, f.tleilaxu, f.foreignGholaAction));
+  const current = awaitSpiceBankerIncomeRevivalActor(f.game, f.tleilaxu);
+  assert.equal(current.revivalOrder!.remaining[0], f.tleilaxu);
+  const after = settleTleilaxuSkillsTechRevival(applyAction(current, f.tleilaxu, f.foreignGholaAction));
   const foreign = after.players.flatMap(p => p.leaders).find(l => l.id === f.foreignLeader)!;
   assert.equal(foreign.dead, false); assert.equal(foreign.gholaBy, f.tleilaxu);
   assert.deepEqual(after.leaderSkills!.assignments, assignments);

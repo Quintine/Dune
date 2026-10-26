@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {applyAction,viewGame,type Game} from '../game/engine';
-import {advanceSpiceBankerIncomeToMentat,createSpiceBankerIncomeFixture,createSpiceBankerIncomeReassignmentFixture,nextSpiceBankerIncomeNativeStep,quoteSpiceBankerIncomeBattleEconomics,stageSpiceBankerIncomeTrainerBattle,type SpiceBankerIncomeFixture,type SpiceBankerIncomeFixtureOptions} from './fixture-spice-banker-income';
+import {advanceSpiceBankerIncomeToMentat,awaitSpiceBankerIncomeRevivalActor,createSpiceBankerIncomeFixture,createSpiceBankerIncomeReassignmentFixture,nextSpiceBankerIncomeNativeStep,quoteSpiceBankerIncomeBattleEconomics,stageSpiceBankerIncomeTrainerBattle,type SpiceBankerIncomeFixture,type SpiceBankerIncomeFixtureOptions} from './fixture-spice-banker-income';
 import {forceRevivalQuote} from '../game/revival';
 
 function pay(fixture:SpiceBankerIncomeFixture,action=fixture.paymentAction):Game {
@@ -49,6 +49,10 @@ for(const kind of ['shipment','force-revival','leader-revival','emperor-extra-re
   void test(`actual ${kind} original native cost and effect commit once with deferred normal Banker income`,()=>{
     const fixture=createSpiceBankerIncomeFixture({kind,advanced:true,...(kind==='force-revival'?{payerFaction:'emperor' as const}:{})});
     const payerBefore=fixture.game.players.find(p=>p.id===fixture.payer)!;
+    if(fixture.game.phase===4) {
+      assert.ok(fixture.game.revivalOrder);
+      assert.equal(fixture.game.revivalOrder.remaining[0],kind==='emperor-extra-revival'?payerBefore.ally:fixture.payer);
+    }
     const balance=payerBefore.spice,forces=payerBefore.reserves,tanks=payerBefore.tanks;
     if(kind==='leader-revival') {
       assert.ok(payerBefore.leaders.every(l=>l.dead));
@@ -282,8 +286,10 @@ void test('deferred automatic spice cannot fund a bid before actual Mentat colle
   assert.equal(JSON.stringify(game),before);
 });
 void test('a real singleton skill return and different-faction native revival retain old owner custody but use the new eligible owner',()=>{
-  const fixture=createSpiceBankerIncomeFixture({advanced:true});const paid=pay(fixture);
+  const fixture=createSpiceBankerIncomeFixture({advanced:true,revivalBeforeBanker:'harkonnen'});const paid=pay(fixture);
   const lifecycle=createSpiceBankerIncomeReassignmentFixture(paid);
+  assert.equal(lifecycle.game.revivalOrder!.remaining[0],lifecycle.actor);
+  assert.ok(lifecycle.game.revivalOrder!.remaining.includes(fixture.owner));
   assert.equal(lifecycle.game.spiceBankerIncome!.sources.find(r=>r.grant)!.grant!.owner,fixture.owner);
   assert.equal(lifecycle.game.spiceBankerIncome!.collections[0].credits.find(c=>c.owner===fixture.owner)!.amount,1);
   let game=applyAction(lifecycle.game,lifecycle.actor,lifecycle.revivalAction);
@@ -295,6 +301,9 @@ void test('a real singleton skill return and different-faction native revival re
   game=applyAction(game,lifecycle.actor,{type:'leaderSkill',event:offer.event,skill:'spice-banker',leader:lifecycle.leader});
   assert.equal(game.leaderSkills!.assignments.find(a=>a.skill==='spice-banker')!.owner,lifecycle.actor);
   const balance=game.players.find(p=>p.id===lifecycle.actor)!.spice;
+  game=awaitSpiceBankerIncomeRevivalActor(game,fixture.owner);
+  assert.equal(game.revivalOrder!.remaining[0],fixture.owner);
+  assert.ok(game.revivalOrder!.completed.includes(lifecycle.actor));
   game=applyAction(game,fixture.owner,{type:'reviveLeader',leader:fixture.leader});game=nativeCounters(game);
   assert.equal(deferred(game,lifecycle.actor),1);
   assert.equal(deferred(game,fixture.owner),0);

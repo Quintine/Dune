@@ -281,6 +281,16 @@ no browser errors/root overflow. Local working-tree evidence is not deployed
 revision-matched, full-mode, calibration or deferred assurance acceptance.
 
 
+## Registered World Skills occupation — 26 October 2026
+
+The existing clean registered World/all14 starts now initialize mandatory
+occupation benefit state alongside native locations and normal Banker state.
+Roster, role, ordinary Skill offers and original phase-module limits remain;
+no new admission or played-game conversion is introduced. Other registered
+module contexts keep their separate scopes. The [World source and income
+contract](HOMEWORLD_RULES.md#registered-world-skills-occupation--26-october-2026)
+distinguishes occupied Collection, other-payer Banker at Mentat and token payout.
+
 ## World Skills and selected decks — 17 October 2026
 
 Fresh ordinary all14 setup now validates selected ordinary decks and actual
