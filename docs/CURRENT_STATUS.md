@@ -16,6 +16,41 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance / native force-revival commitments — 26 October. Prototyped / Partial.**
+Registered bare native Basic/Advanced Revival now supports cumulative future
+physical total/normal/elite returns. Only actual ordinary returns after the
+answer count; native quotas, free/paid prices, typed Tanks, elite limits,
+responses and ordered ownership remain. Split requests do not bypass No;
+voluntary spending/Finish cannot evade Yes. Earlier shipment/movement promises
+retain their funding in either answer order. Timing/counting is provisional;
+optional modules, earlier-phase and special/card revival claims remain due.
+
+Root shared integration with disjoint pure/control/native lanes passes
+**22 files,288/288**, types/lint/build and **five native paths**,20 GameTable SSR
+renders/five actual guide callbacks. Original public H/A/E Basic53/Advanced58
+sources use actual E3 desert shipment for6 and real next-Storm losses before
+turn2 Revival. Another9/8 actions bind and return3:1 free plus4 paid, including
+one physical Sardaukar in Advanced. All four minimal profiles submit a legal
+native return in both source modes. An Advanced No2 path returns1 and finishes
+below its cap in8 actions.
+
+Original native Tleilaxu/Ix47 sources use143 actions and an actually held Karama.
+Another19 allowed or15 stopped actions retain pending progress0, then either
+real typed return3/payment4 or opposing special prevention/release with no
+return/payment. Original33/47 cards remain. Seventeen new native cases plus
+pure10/control6/funding2 cover cumulative and typed constraints, prior/Ghola
+exclusion, two original Truth copies, Basic post-Ready No, waiting ownership,
+stale callbacks and earlier/later shipment funding. No played hand, force,
+Tanks, purse, clock, question or promise is installed in these native sources.
+One observed older Nexus Fremen fixture now waits for its actual ordered actor.
+
+Frozen v2 report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-revival-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-revival-runtime/`.
+No saved-room/D1/server, reset/restart, deployment or assurance campaign.
+SSR/callback proof leaves browser/mobile/deployed and complete-mode acceptance
+open. [Source, controls and boundaries](TRUTHTRANCE_REVIVAL_PROMISES.md).
+
 **Truthtrance / ordinary bid commitments — 26 October. Prototyped / Partial.**
 Registered bare native Basic/Advanced ordinary lots now support a structured
 future minimum bid. Actual declarations fulfill Yes; No persists to exact lot

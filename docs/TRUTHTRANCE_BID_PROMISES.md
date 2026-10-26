@@ -6,8 +6,9 @@
 future ordinary bid declaration of at least a chosen positive whole amount in
 the current lot. Registered native Basic/Advanced tables use their selected
 decks and ordinary auctions. Optional modules, independent cards, Semuta/Kull,
-native special auctions, phase-wide/grouped bidding claims and force-revival
-promises remain required work. This does not change game-start permissions.
+native special auctions and phase-wide/grouped bidding claims remain required
+work. The [native force-revival follow-up](TRUTHTRANCE_REVIVAL_PROMISES.md) adds
+current-phase ordinary returns; broader revival promises remain due. This does not change game-start permissions.
 
 ## Authority and selected interpretation
 

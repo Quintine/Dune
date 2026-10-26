@@ -18,6 +18,8 @@ import { findMovementCompletion, type MovementCompletion } from './movement-prom
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile, selectedFactionStrongholdProfile, selectedIndependentCardsProfile } from './faction-module-profile';
 import { homeworldOccupationLeaderSkillsProfile, homeworldOccupationModulesProfile, homeworldPhaseModulesProfile } from './homeworld-module-profile';
+import { RevivalPromiseError, revivalPromiseModeSupported, liveRevivalPromises, recordPromisedRevival,
+  revivalPromisesSatisfied, validateRevivalPromises, type RevivalClaim, type RevivalPromise } from './revival-promises';
 import { BidPromiseError, bidPromiseModeSupported, bidPromiseRange, bidRequired, liveBidPromises,
   recordPromisedBid, validateBidPromises, type BidClaim, type BidOpportunity, type BidPromise } from './bid-promises';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
@@ -2136,6 +2138,7 @@ export type Game = {
   truthHistory?: TruthRecord[];
   shipmentPromises?: ShipmentPromise[];
   bidPromises?: BidPromise[];
+  revivalPromises?: RevivalPromise[];
   movementPromises?: MovementPromise[];
   /** Server-only certainty of movement-relevant cards still in the discard. */
   movementDiscardKnowledge?: MovementDiscardKnowledge;
@@ -18205,7 +18208,9 @@ function movementTruthAnswers(g: Game, p: Player, claim: MovementClaim): TruthAn
   for (const answer of [true, false]) {
     const promise = { ...claim, turn: g.turn, player: p.id, asker: g.players.find(other => other.id !== p.id)!.id, answer };
     const answerSource = g.phase === 2 || (g.phase === 4 && !g.revivalOrder) ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
-    if (groundMovementCompletion(answerSource, p.id, [...live, promise])) answers.push(answer ? 'yes' : 'no');
+    if (groundMovementCompletion(answerSource, p.id, [...live, promise]) &&
+      revivalCompatibleLaterPromises(answerSource, p, { movementPromises: [...(g.movementPromises ?? []), promise] }))
+      answers.push(answer ? 'yes' : 'no');
   }
   return answers.length ? answers : ['unknown'];
 }
@@ -26654,7 +26659,8 @@ function shipmentTruthAnswers(
     // Concurrent legacy readiness can reopen; a completed ordered turn cannot.
     const answerSource = g.phase === 2 || (g.phase === 4 && !g.revivalOrder)
       ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
-    if (findShipmentCompletion(answerSource, p, promises))
+    if (findShipmentCompletion(answerSource, p, promises) &&
+      revivalCompatibleLaterPromises(answerSource, p, { shipmentPromises: [...(g.shipmentPromises ?? []), promises[promises.length - 1]] }))
       answers.push(answer ? 'yes' : 'no');
   }
   return answers.length ? answers : ['unknown'];
@@ -29699,6 +29705,8 @@ function finishRevival(
     const source = revival.nexusEmperorEvent ? 'nexusEmperor' :
       revival.emperorExtra ? 'emperorExtra' : 'normal';
     const group = { amount: n, elite, free: revival.free };
+    if (source === 'normal' && liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length)
+      g.revivalPromises = revivalPromiseRule(() => recordPromisedRevival(g.revivalPromises ?? [], p.id, g.turn, { amount: n, elite }));
     commitRevivalForcePieces(g, p, revival);
     finishNexusEmperorRevival(g, revival, 'returned');
     if (quote.techIncome) {
@@ -29760,6 +29768,183 @@ function finishRevival(
       if (incomePayment?.legs[0]?.recipient === 'player') g.response.spiceBankerIncomePayment = incomePayment;
     }
   }
+}
+function normalForceRevivalQuote(g: Game, p: Player, action: Action): PendingRevival {
+  const n = integer(action.amount, 1, forceRevivalRemaining(g, p), 'Forces');
+  const elite = eliteChoice(n, p.tanks, p.elites?.tanks ?? 0, action.elite);
+  requireRule(
+    elite <= eliteRevivalRemaining(p, g.advanced),
+    'Only one elite force may be revived per turn.',
+  );
+  const availableFree = forceRevivalQuote(g, p, n).free;
+  const freeElite =
+    p.faction === 'ixians'
+      ? integer(
+          action.freeElite ?? Math.min(availableFree, elite),
+          Math.max(0, availableFree - (n - elite)),
+          Math.min(availableFree, elite),
+          'Free cyborg revivals',
+        )
+      : 0;
+  const quote = forceRevivalQuote(g, p, n, elite, freeElite);
+  requireRule(quote.cost <= p.spice, 'Not enough spice for revival.');
+  const ixSuboidBonus = p.faction === 'ixians' ? quoteIxSuboidBonus({
+    enabled: ixHomeworldRevivalEnabled(g, p.id) && !g.revivalRules?.freeBlocked?.includes(p.id), amount: n, elite,
+    free: quote.free, freeElite,
+    normalTanks: p.tanks - (p.elites?.tanks ?? 0),
+  }) : 0;
+  const checks: PendingRevival['checks'] = [];
+  const choamBenefit = p.faction === 'choam' && !g.revivalRules?.choamBlocked;
+  const uncancelableLimit = Math.max(
+    g.recruits?.turn === g.turn ? 7 : Math.max(3, freeRevivalRate(g, p)),
+    g.revivalRules?.nexusTleilaxu?.includes(p.id) ? 5 : 0);
+  if (choamBenefit && (n > quote.free || p.revived + n > uncancelableLimit))
+    checks.push('choamRevival');
+  if (!choamBenefit && p.revived + n > uncancelableLimit)
+    checks.push('revivalLimit');
+  const factionCost = choamBenefit ? n - quote.free : quote.normalCost;
+  if (quote.cost < factionCost) checks.push('revivalDiscount');
+  return {
+    player: p.id,
+    kind: 'forces',
+    amount: n,
+    elite,
+    ...quote,
+    ...(ixSuboidBonus ? { ixSuboidBonus } : {}),
+    checks,
+  };
+}
+function revivalPromiseRule<T>(calculate: () => T): T {
+  try { return calculate(); }
+  catch (error) { if (error instanceof RevivalPromiseError) throw new RuleError(error.message); throw error; }
+}
+function revivalPromiseIntegrity(g: Game) {
+  revivalPromiseRule(() => validateRevivalPromises(g.revivalPromises ?? [], g.players.map(player => player.id)));
+}
+/** The current native phase only; a waiting ordered participant still owns a
+ * future opportunity. Basic readiness may reopen, so No lasts to phase close. */
+function revivalOpportunity(g: Game, player: string): boolean {
+  return g.status === 'playing' && g.phase === 4 && revivalPromiseModeSupported(g) &&
+    !g.ready.includes(player) && (!g.revivalOrder || g.revivalOrder.remaining.includes(player));
+}
+function revivalQuestionWindow(g: Game): boolean {
+  return g.status === 'playing' && g.phase === 4 && revivalPromiseModeSupported(g) &&
+    !g.response && !g.decision && !g.phaseOpening && !g.pendingRevival &&
+    !g.pendingKarama && !g.pendingTreacheryDiscard;
+}
+function revivalKeepsLaterPromises(g: Game, p: Player, revival?: PendingRevival): boolean {
+  if (!liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length &&
+    !liveMovementPromises(g.movementPromises ?? [], p.id, g.turn).length) return true;
+  const trial = structuredClone(g), actor = getPlayer(trial, p.id);
+  trial.truthtrance = null;
+  if (revival) {
+    actor.spice -= revival.cost;
+    commitRevivalForcePieces(trial, actor, revival);
+  }
+  // This is the final aggregate: later witnesses cannot invent another ordinary
+  // revival that would bypass this question's typed No or paid-return budget.
+  if (!trial.ready.includes(p.id)) trial.ready.push(p.id);
+  try {
+    const action = { type: 'ready' };
+    reconcileShipmentPromises(trial, { actor: p.id, action, phase: g.phase });
+    reconcileGroundMovementPromises(trial, p.id, action, g.phase);
+    return true;
+  } catch (error) { if (error instanceof RuleError) return false; throw error; }
+}
+/** A final aggregate can be requested together, including Ixian free-Cyborg
+ * selection. The native quote owns prices, typed Tanks, free quota and limits;
+ * no future gift, card draw or foreign decision is invented. */
+function revivalPromiseCompletion(g: Game, p: Player, promises = g.revivalPromises ?? []): Action | null {
+  if (!revivalOpportunity(g, p.id)) return null;
+  if (revivalPromisesSatisfied(promises, p.id, g.turn, { amount: 0, elite: 0 }) &&
+    revivalKeepsLaterPromises(g, p)) return { type: 'ready' };
+  if (revivalPrevented(g, p.id)) return null;
+  const maximum = forceRevivalRemaining(g, p), eliteTanks = p.elites?.tanks ?? 0;
+  for (let amount = 1; amount <= maximum; amount++)
+    for (let elite = Math.max(0, amount - (p.tanks - eliteTanks)); elite <= Math.min(amount, eliteRevivalRemaining(p, g.advanced)); elite++) {
+      if (!revivalPromisesSatisfied(promises, p.id, g.turn, { amount, elite })) continue;
+      const free = forceRevivalQuote(g, p, amount).free;
+      for (let freeElite = p.faction === 'ixians' ? Math.max(0, free - (amount - elite)) : 0;
+        freeElite <= (p.faction === 'ixians' ? Math.min(free, elite) : 0); freeElite++) {
+        const action: Action = { type: 'revive', amount, elite, ...(p.faction === 'ixians' ? { freeElite } : {}) };
+        try {
+          const revival = normalForceRevivalQuote(g, p, action);
+          if (revivalKeepsLaterPromises(g, p, revival)) return action;
+        } catch (error) { if (!(error instanceof RuleError)) throw error; }
+      }
+    }
+  return null;
+}
+function revivalCompatibleLaterPromises(g: Game, p: Player, later: Pick<Partial<Game>, 'shipmentPromises' | 'movementPromises'>): boolean {
+  if (!liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length) return true;
+  const trial = { ...g, ...later };
+  return !!revivalPromiseCompletion(trial, getPlayer(trial, p.id));
+}
+function revivalTruthAnswers(g: Game, p: Player, claim: RevivalClaim): ('yes' | 'no' | 'unknown')[] {
+  if (!revivalQuestionWindow(g) || !revivalOpportunity(g, p.id) || claim.turn !== g.turn) return [];
+  return (['yes', 'no'] as const).filter(answer => !!revivalPromiseCompletion(g, p, [...(g.revivalPromises ?? []),
+    { ...claim, event: 'candidate', player: p.id, asker: g.truthtrance?.queue[0]?.player ?? g.host,
+      answer: answer === 'yes', progress: 0 }]));
+}
+function bindRevivalTruth(g: Game, p: Player, claim: RevivalClaim, answer: boolean, asker: string) {
+  requireRule(revivalTruthAnswers(g, p, claim).includes(answer ? 'yes' : 'no'),
+    'This revival answer no longer has a legal completion.');
+  (g.revivalPromises ??= []).push({ ...claim, event: crypto.randomUUID(), player: p.id, asker, answer, progress: 0 });
+}
+function reconcileRevivalPromises(g: Game, voluntary?: { actor: string; action: Action }) {
+  if (!g.revivalPromises?.some(promise => !promise.fulfilled && !promise.released)) return;
+  revivalPromiseIntegrity(g);
+  if (g.truthtrance || g.response || g.decision || g.phaseOpening || g.pendingRevival ||
+    g.pendingTreacheryDiscard || g.pendingKarama || g.pendingKull || g.pendingRicheseBetrayal) return;
+  const kept: RevivalPromise[] = [];
+  const no = g.revivalPromises.filter(promise => !promise.answer && !promise.fulfilled && !promise.released);
+  for (const promise of g.revivalPromises) {
+    if (promise.fulfilled || promise.released) continue;
+    const same = g.status === 'playing' && g.phase === 4 && g.turn === promise.turn;
+    if (!promise.answer) {
+      if (!same || g.revivalOrder && !g.revivalOrder.remaining.includes(promise.player)) promise.fulfilled = true;
+      continue;
+    }
+    if (!same || !revivalPromiseCompletion(g, getPlayer(g, promise.player), [...no, ...kept, promise])) {
+      requireRule(voluntary?.actor !== promise.player,
+        'You cannot voluntarily evade your Truthtrance revival answer.');
+      promise.released = true;
+      log(g, `${getPlayer(g, promise.player).name} can no longer fulfill the Truthtrance revival answer; that answer is no longer binding.`);
+    } else kept.push(promise);
+  }
+}
+function projectedRevivalPromiseGuide(g: Game, player: string): { action: Action } | null {
+  if (!revivalQuestionWindow(g) || g.truthtrance || !revivalOpportunity(g, player) ||
+    nativeRevivalOrderBlock(g, player)) return null;
+  const promise = liveRevivalPromises(g.revivalPromises ?? [], player, g.turn)[0];
+  if (!promise) return null;
+  const action = revivalPromiseCompletion(g, getPlayer(g, player));
+  return action ? { action: { ...action, revivalPromiseEvent: promise.event } } : null;
+}
+function guardPromisedRevival(g: Game, p: Player, action: Action, revival?: PendingRevival) {
+  const live = liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn);
+  if (action.revivalPromiseEvent !== undefined) requireRule(revivalOpportunity(g, p.id) &&
+    typeof action.revivalPromiseEvent === 'string' && live.some(promise => promise.event === action.revivalPromiseEvent),
+  'This revival commitment guide is stale.');
+  if (!live.length) return;
+  if (!revival) {
+    requireRule(revivalPromisesSatisfied(g.revivalPromises ?? [], p.id, g.turn, { amount: 0, elite: 0 }),
+      'Complete the force returns required by your Truthtrance Yes before finishing Revival.');
+    return;
+  }
+  // Preflight a voluntary request against its actual current invoice. Only the
+  // completed real return below records progress; an opposing stop records none.
+  const trial = structuredClone(g), actor = getPlayer(trial, p.id);
+  trial.truthtrance = null;
+  trial.revivalPromises = revivalPromiseRule(() => recordPromisedRevival(trial.revivalPromises ?? [], p.id,
+    g.turn, { amount: revival.amount!, elite: revival.elite ?? 0 }));
+  // Legacy concurrent Ready does not forbid a later native request. Its No
+  // stays binding to phase close; only the detached completion probe reopens.
+  if (!trial.revivalOrder) trial.ready = trial.ready.filter(player => player !== p.id);
+  actor.spice -= revival.cost;
+  commitRevivalForcePieces(trial, actor, revival);
+  requireRule(!!revivalPromiseCompletion(trial, actor),
+    'This request would prevent you from completing your Truthtrance revival answer.');
 }
 function beginRevival(g: Game, revival: PendingRevival) {
   requireRule(
@@ -34568,6 +34753,7 @@ function normalizeCardNames(g: Game) {
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
   bidPromiseIntegrity(state);
+  revivalPromiseIntegrity(state);
   revivalOrderIntegrity(state);
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
@@ -34671,8 +34857,11 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     );
     return normalizeAutomaticGame(state);
   }
+  if (action.revivalPromiseEvent !== undefined) requireRule(action.type === 'revive' || action.type === 'ready',
+    'This revival commitment guide cannot authorize another action.');
   const g = applyActionInner(state, id, action);
   reconcileBidPromises(g, { actor: id, action });
+  reconcileRevivalPromises(g, { actor: id, action });
   reconcileGroundMovementPromises(g, id, action, state.phase);
   reconcileTraitorTruth(g, id, action);
   harkonnenNexusBetrayalIntegrity(g);
@@ -34795,6 +34984,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   reconcileBattlePromises(g, { actor: id, action });
   reconcileShipmentPromises(g, { actor: id, action, phase: state.phase });
   reconcileBidPromises(g, { actor: id, action });
+  reconcileRevivalPromises(g, { actor: id, action });
   settleAutomaticContinuations(g);
   observeOccupation(g);
   reconcileHomeworldEcazDuke(g);
@@ -34996,6 +35186,7 @@ function settleAutomaticContinuations(g: Game) {
     reconcileBattlePromises(g);
     reconcileShipmentPromises(g);
     reconcileBidPromises(g);
+    reconcileRevivalPromises(g);
     reconcileGroundMovementPromises(g);
     reconcileTraitorTruth(g);
     requireRule(
@@ -35010,6 +35201,7 @@ function settleAutomaticContinuations(g: Game) {
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
   bidPromiseIntegrity(state);
+  revivalPromiseIntegrity(state);
   state = migrateAtomicsTargets(state);
   state = migrateFremenNexusRevival(state);
   harkonnenNexusBetrayalIntegrity(state);
@@ -35094,6 +35286,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   reconcileBattlePromises(g);
   reconcileShipmentPromises(g);
   reconcileBidPromises(g);
+  reconcileRevivalPromises(g);
   reconcileGroundMovementPromises(g);
   reconcileTraitorTruth(g);
   settleAutomaticContinuations(g);
@@ -35339,6 +35532,8 @@ function applyActionInner(
         bindShipment: bindShipmentTruth,
         movementAnswers: movementTruthAnswers,
         bindMovement: bindMovementTruth,
+        revivalAnswers: revivalTruthAnswers,
+        bindRevival: bindRevivalTruth,
         bidAnswers: bidTruthAnswers,
         bindBid: bindBidTruth,
         traitorAnswers: traitorTruthAnswers,
@@ -35350,7 +35545,7 @@ function applyActionInner(
     )
       return g;
   } catch (error) {
-    if (error instanceof TruthError || error instanceof BidPromiseError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof TraitorDecisionError)
+    if (error instanceof TruthError || error instanceof RevivalPromiseError || error instanceof BidPromiseError || error instanceof PlanClaimError || error instanceof MovementClaimError || error instanceof TraitorDecisionError)
       throw new RuleError(error.message);
     throw error;
   }
@@ -38104,49 +38299,9 @@ function applyActionInner(
   if (t === 'revive') {
     requireRule(g.phase === 4, 'Revival is not the current phase.');
     if (execution === 'live') startNativeRevivalOrder(g,id);
-    const n = integer(action.amount, 1, forceRevivalRemaining(g, p), 'Forces');
-    const elite = eliteChoice(n, p.tanks, p.elites?.tanks ?? 0, action.elite);
-    requireRule(
-      elite <= eliteRevivalRemaining(p, g.advanced),
-      'Only one elite force may be revived per turn.',
-    );
-    const availableFree = forceRevivalQuote(g, p, n).free;
-    const freeElite =
-      p.faction === 'ixians'
-        ? integer(
-            action.freeElite ?? Math.min(availableFree, elite),
-            Math.max(0, availableFree - (n - elite)),
-            Math.min(availableFree, elite),
-            'Free cyborg revivals',
-          )
-        : 0;
-    const quote = forceRevivalQuote(g, p, n, elite, freeElite);
-    requireRule(quote.cost <= p.spice, 'Not enough spice for revival.');
-    const ixSuboidBonus = p.faction === 'ixians' ? quoteIxSuboidBonus({
-      enabled: ixHomeworldRevivalEnabled(g, id) && !g.revivalRules?.freeBlocked?.includes(id), amount: n, elite,
-      free: quote.free, freeElite,
-      normalTanks: p.tanks - (p.elites?.tanks ?? 0),
-    }) : 0;
-    const checks: PendingRevival['checks'] = [];
-    const choamBenefit = p.faction === 'choam' && !g.revivalRules?.choamBlocked;
-    const uncancelableLimit = Math.max(
-      g.recruits?.turn === g.turn ? 7 : Math.max(3, freeRevivalRate(g, p)),
-      g.revivalRules?.nexusTleilaxu?.includes(p.id) ? 5 : 0);
-    if (choamBenefit && (n > quote.free || p.revived + n > uncancelableLimit))
-      checks.push('choamRevival');
-    if (!choamBenefit && p.revived + n > uncancelableLimit)
-      checks.push('revivalLimit');
-    const factionCost = choamBenefit ? n - quote.free : quote.normalCost;
-    if (quote.cost < factionCost) checks.push('revivalDiscount');
-    beginRevival(g, {
-      player: id,
-      kind: 'forces',
-      amount: n,
-      elite,
-      ...quote,
-      ...(ixSuboidBonus ? { ixSuboidBonus } : {}),
-      checks,
-    });
+    const revival = normalForceRevivalQuote(g, p, action);
+    if (execution === 'live') guardPromisedRevival(g, p, action, revival);
+    beginRevival(g, revival);
     return g;
   }
   if (t === 'reviveKwisatz' || t === 'reviveLeader') {
@@ -39109,6 +39264,8 @@ function applyActionInner(
     return g;
   }
   if (t === 'ready') {
+    if (g.phase === 4) guardPromisedRevival(g, p, action);
+    else requireRule(action.revivalPromiseEvent === undefined, 'This revival commitment guide is stale.');
     requireRule(
       [1, 2, 4, 7, 8].includes(g.phase) ||
         (g.phase === 0 && g.stormPending !== null),
@@ -39302,6 +39459,11 @@ export function viewGame(state: Game, id: string) {
     }).map(player => player.id) : [],
     truthBidAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
       g.truthtrance.question.kind === 'bid' ? bidTruthAnswers(g, me, g.truthtrance.question) : null,
+    truthRevivalTargets: revivalQuestionWindow(g) ? g.players.filter(player => revivalOpportunity(g, player.id)).map(player => player.id) : [],
+    truthRevivalAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
+      g.truthtrance.question.kind === 'revival' ? revivalTruthAnswers(g, me, g.truthtrance.question) : null,
+    revivalPromises: (g.revivalPromises ?? []).filter(promise => promise.player === id).map(promise => ({ ...promise })),
+    revivalPromiseGuide: projectedRevivalPromiseGuide(g, id),
     bidPromises: projectedBidPromises(g, id),
     bidPromiseGuide: projectedBidPromiseGuide(g, id),
     truthtrance: g.truthtrance ?? null,

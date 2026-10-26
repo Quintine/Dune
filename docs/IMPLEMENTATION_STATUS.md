@@ -1,5 +1,41 @@
 # Dune implementation status
 
+## 26 October 2026 — Truthtrance native force-revival commitments
+
+**Prototyped / Partial.** Cumulative future ordinary native force returns now
+support physical total/normal/elite Yes/No questions in the current Revival
+phase. Actual completion records progress; requests, earlier returns, leaders,
+Ghola and Emperor-funded extras remain separate. Original quotas/costs/Tanks,
+elite limits, responses and ordered ownership remain. Persistent fields,
+private feasible answers and event-bound native guides support humans and all
+four minimal policies. A No threshold applies across split requests; unmet Yes
+retains funding and blocks voluntary Finish. Earlier/later shipment questions
+remain jointly feasible. Basic post-Ready ordinary returns below No stay legal.
+The current-phase/counting interpretation is provisional; broader promises and
+optional compositions remain required. No game-start gate changes.
+
+Root integration and disjoint model/control/native lanes pass **22 files,
+288/288**, types/lint/build and **five native paths**,20 GameTable SSR renders
+and five actual guide callbacks. Original H/A/E sources use53Basic/58Advanced
+actions: E really ships3 for6, loses them to the next actual Storm and enters
+turn2 Revival with4 spice. Nine/eight further actions return3 for1free+4paid,
+including one Advanced physical Sardaukar. Four minimal policies per source
+submit a legal native action. An8-action Advanced No2 path returns1 and finishes.
+
+Native Tleilaxu/Ix47 sources use143 actions and its actually held Karama;
+another19/15 allow/prevent paths keep pending progress0 before either actual
+return/payment or opposing prevention/release. Original33/47 Treachery cards
+remain, with no installed played hand, force/Tanks, purse, clock or promise.
+Seventeen native,10pure,6control and2funding cases retain typed/split/prior
+semantics, two original copies, actual Ghola exclusions, post-Ready Basic No,
+waiting ownership and stale callbacks. An observed older Nexus Fremen fixture
+now waits for its actual native Advanced actor. Frozen v2 report/manifest:
+`/home/quintine/.local/share/dune/checkpoints/20261026-truth-revival-proof-v2/`;
+journeys/HTML: adjacent `20261026-truth-revival-runtime/`.
+No saved-room/D1/server/reset/restart/deployment or assurance campaign.
+Browser/mobile/deployed, full combinations and complete rules remain open.
+[Source and contract](TRUTHTRANCE_REVIVAL_PROMISES.md).
+
 ## 26 October 2026 — Truthtrance ordinary bid commitments
 
 **Prototyped / Partial.** Registered bare native

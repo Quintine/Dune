@@ -1,5 +1,24 @@
 # Rule decision index
 
+## Truthtrance native force-revival commitments — 26 October 2026
+
+Apply general current-turn Truthtrance authority (November2020 FAQ p8; supplied
+Advanced replacement card physical39) to cumulative future ordinary force
+returns during the current native Revival phase. Under standing 14 October
+choose-recommended priority, count completed physical total/normal/elite returns
+after each answer, retaining original free/paid quotas, typed Tanks, prices and
+response ownership. Earlier returns, leaders, Ghola and Emperor-funded extras
+do not satisfy this specifically ordinary-force question.
+
+Current-phase cumulative counting and accepted-order release are provisional
+software compositions, not a dedicated publisher revival ruling. Waiting
+participants may answer; only the actual native actor receives a guide. Basic
+No persists to phase close because readiness can reopen; stamped Advanced No
+ends at the original opportunity close. Own voluntary actions cannot erase Yes;
+completed opposing effects may release only impossible answers. No start gate
+changes; optional modules and broader revival/action claims remain required.
+[Contract and evidence](TRUTHTRANCE_REVIVAL_PROMISES.md).
+
 ## Truthtrance ordinary bid commitments — 26 October 2026
 
 Apply the existing November2020 FAQ p8 current-turn commitment authority to one

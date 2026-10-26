@@ -24,6 +24,7 @@ import {
   liveShipmentPromises,
 } from '@/game/shipment-promises';
 import { ShipmentPromises } from './shipment-promises';
+import { RevivalPromises } from './revival-promises';
 import { BidPromises } from './bid-promises';
 import { HomeworldShipment } from './homeworld-shipment';
 import { HomeworldRevivalDeployment } from './homeworld-revival-deployment';
@@ -2031,6 +2032,7 @@ export function GameTable({
           {g.status === 'playing' && g.phase < 5 && (
             <ShipmentPromises game={g} act={act} busy={busy} />
           )}
+          {g.status === 'playing' && <RevivalPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <BidPromises game={g} send={act} busy={busy} />}
           {g.guildBetrayalReaction ? (
             <NexusGuildBetrayal game={g} act={act} busy={reactionBusy} />

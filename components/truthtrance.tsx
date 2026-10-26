@@ -1,5 +1,7 @@
 'use client';
 import { MovementClaimFields } from './movement-claim-fields';
+import { RevivalClaimFields, revivalClaimInputError } from './revival-claim-fields';
+import type { RevivalClaim } from '@/game/revival-promises';
 import { BidClaimFields, bidClaimInputError } from './bid-claim-fields';
 import type { BidClaim } from '@/game/bid-promises';
 import { TraitorDecisionAnswers } from './traitor-decision-promises';
@@ -55,8 +57,10 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival'
   >('fact');
+  const [revivalSelection, setRevivalSelection] = useState<Pick<RevivalClaim, 'counter' | 'minimum'>>({ counter: 'total', minimum: 1 });
+  const revivalClaim: RevivalClaim = { turn: g.turn, ...revivalSelection };
   const [bidMinimum, setBidMinimum] = useState(1);
   const bidClaim: BidClaim = { turn: g.bidPromiseLot?.turn ?? g.turn,
     lot: g.bidPromiseLot?.lot ?? 1, minimum: bidMinimum };
@@ -98,6 +102,7 @@ export function Truthtrance({
           }
         : kind === 'traitorCall' ? { kind, target, battle: g.battle?.event ?? '', territory: g.battle?.territory ?? '' }
         : kind === 'movement' ? { kind, target, ...movement }
+        : kind === 'revival' ? { kind, target, ...revivalClaim }
         : kind === 'bid' ? { kind, target, ...bidClaim }
         : kind === 'shipment'
           ? {
@@ -205,6 +210,13 @@ export function Truthtrance({
                         )}
                       </div>
                     ))}
+                  </>
+                ) : w.question!.kind === 'revival' ? (
+                  <>
+                    <p className="notice">Yes requires the chosen total of future ordinary force returns while possible. No forbids reaching that total, including split requests. Only completed returns after this answer count. Keep the original revival funding and finish all remaining Yes answers before ending Revival.</p>
+                    {(g.truthRevivalAnswers ?? []).map(answer => <div key={answer}>
+                      {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'I don’t know'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
                   </>
                 ) : w.question!.kind === 'bid' ? (
                   <>
@@ -330,6 +342,7 @@ export function Truthtrance({
                     Verified current facts
                   </option>
                   <option value="movement">Bind ground movement this turn</option>
+                  <option value="revival">Bind ordinary force revivals this phase</option>
                   <option value="bid">Bind a bid in this ordinary lot</option>
                   <option value="traitorCall">Bind this battle’s Traitor declaration</option>
                   <option value="shipment">
@@ -346,7 +359,15 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'bid' ? (
+              {kind === 'revival' ? (
+                <>
+                  <RevivalClaimFields value={revivalClaim} disabled={busy || !g.truthRevivalTargets.includes(target)}
+                    onChange={claim => setRevivalSelection({ counter: claim.counter, minimum: claim.minimum })} />
+                  <p className="fine">Count physical total, normal or elite counters returned by ordinary native Revival after the answer. Smaller requests add together. Earlier returns, Ghola, Emperor-funded extras and other special returns do not count. Current native limits, prices and response choices remain.</p>
+                  {!g.truthRevivalTargets.includes(target) && <p className="notice">Choose a respondent whose native opportunity remains in the current Revival phase and finish pending decisions. Registered native Basic and Advanced tables without optional modules are supported first.</p>}
+                  <p className="notice" aria-label="Public revival question preview">{truthQuestionText(question, leaderName, locationName)}</p>
+                </>
+              ) : kind === 'bid' ? (
                 <>
                   <BidClaimFields value={bidClaim} disabled={busy || !g.bidPromiseLot}
                     onChange={claim => setBidMinimum(claim.minimum)} />
@@ -451,6 +472,7 @@ export function Truthtrance({
                 'Ask publicly',
                 { type: 'truthAsk', question },
                 (kind === 'movement' && (!validMovementClaim(movement) || !g.truthMovementTargets.includes(target))) ||
+                (kind === 'revival' && (!!revivalClaimInputError(revivalClaim) || !g.truthRevivalTargets.includes(target))) ||
                 (kind === 'bid' && (!!bidClaimInputError(bidClaim) || !g.truthBidTargets.includes(target))) ||
                 (kind === 'traitorCall' && !g.truthTraitorTargets.includes(target)) ||
                   (kind === 'mixedShipment' &&

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { applyAction, normalizeAutomaticGame, viewGame, type Game, type Player } from '../game/engine';
 import { createNexusFremenFreeQuotaFixture } from './fixture-nexus-fremen-free-quota';
+import { awaitSpiceBankerIncomeRevivalActor } from './fixture-spice-banker-income';
 
 function pools(player: Player) {
   return { reserves: player.reserves, tanks: player.tanks,
@@ -13,9 +14,10 @@ function pools(player: Player) {
 for (const advanced of [false, true]) {
   void test(`${advanced ? 'Advanced' : 'Basic'} saved exact-three physical receipt adopts its exhausted quota without replaying the actual return`, () => {
     const fixture = createNexusFremenFreeQuotaFixture({ advanced });
-    const before = fixture.game.players.find(player => player.id === fixture.owner)!;
-    const offer = viewGame(fixture.game, fixture.owner).nexusFremenRevival!;
-    const granted = applyAction(fixture.game, fixture.owner,
+    const source = awaitSpiceBankerIncomeRevivalActor(fixture.game, fixture.owner);
+    const before = source.players.find(player => player.id === fixture.owner)!;
+    const offer = viewGame(source, fixture.owner).nexusFremenRevival!;
+    const granted = applyAction(source, fixture.owner,
       { type: 'nexusFremenRevival', event: offer.event });
     const returned = applyAction(granted, fixture.owner, { type: 'revive', amount: 3, elite: 0 });
     const after = returned.players.find(player => player.id === fixture.owner)!;

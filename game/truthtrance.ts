@@ -1,3 +1,4 @@
+import { parseRevivalClaim, revivalClaimText, revivalPromiseModeSupported, type RevivalClaim } from './revival-promises';
 import { parseMovementClaim, movementClaimText, movementPromiseTargetAvailable, MovementClaimError, type MovementClaim } from './movement-promises';
 import { shipmentAvailable } from './shipment-opportunity';
 import type { ShipmentClaim } from './shipment-promises';
@@ -60,6 +61,7 @@ export type TruthFact =
   | { kind: 'spice'; compare: 'eq' | 'gte' | 'lte'; value: number }
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type TruthQuestion =
+  | ({ kind: 'revival'; target: string } & RevivalClaim)
   | ({ kind: 'bid'; target: string } & BidClaim)
   | { kind: 'traitorCall'; target: string; battle: string; territory: string }
   | ({ kind: 'movement'; target: string } & MovementClaim)
@@ -212,6 +214,18 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       g.players.some((p) => p.id === v.target),
     'Ask one other player.',
   );
+  if (v.kind === 'revival') {
+    check(Object.keys(v).sort().join(',') === 'counter,kind,minimum,target,turn',
+      'Supply the current Revival turn, physical counter type, minimum and respondent.');
+    const claim = parseRevivalClaim(v);
+    check(revivalPromiseModeSupported(g) && g.status === 'playing' && g.phase === 4 &&
+      claim.turn === g.turn && !g.ready.includes(v.target as string) &&
+      (!g.revivalOrder || g.revivalOrder.remaining.includes(v.target as string)) &&
+      !g.pendingRevival && !g.response && !g.decision && !g.phaseOpening &&
+      !g.pendingKarama && !g.pendingTreacheryDiscard,
+    'Choose a remaining native Revival opportunity in a supported table and finish pending decisions.');
+    return { kind: 'revival', target: v.target, ...claim };
+  }
   if (v.kind === 'bid') {
     check(Object.keys(v).sort().join(',') === 'kind,lot,minimum,target,turn',
       'Supply the current ordinary lot, turn, bid minimum and respondent.');
@@ -447,6 +461,7 @@ export function truthQuestionText(
   locationName: (id: string) => string,
 ): string {
   if (q.kind === 'freeform') return q.text;
+  if (q.kind === 'revival') return `Will you ${revivalClaimText(q)}?`;
   if (q.kind === 'bid') return `Will you ${bidClaimText(q)}?`;
   if (q.kind === 'traitorCall') return `In this revealed battle in ${locationName(q.territory)}, will you declare the opposing leader a Traitor?`;
   if (q.kind === 'movement') return `Will you ${movementClaimText(q)} before your Shipment and Movement turn ends?`;
@@ -493,6 +508,8 @@ export function resolveTruthAction(
     ) => void;
     movementAnswers?: (g: Game, p: Player, claim: MovementClaim) => TruthAnswer[];
     bindMovement?: (g: Game, p: Player, claim: MovementClaim, answer: boolean, asker: string) => void;
+    revivalAnswers?: (g: Game, p: Player, claim: RevivalClaim) => TruthAnswer[];
+    bindRevival?: (g: Game, p: Player, claim: RevivalClaim, answer: boolean, asker: string) => void;
     bidAnswers?: (g: Game, p: Player, claim: BidClaim) => TruthAnswer[];
     bindBid?: (g: Game, p: Player, claim: BidClaim, answer: boolean, asker: string) => void;
     traitorAnswers?: (g: Game, p: Player) => TruthAnswer[];
@@ -613,6 +630,9 @@ export function resolveTruthAction(
           'Waiting for the Truthtrance holder to ask a question.',
         );
         w.question = parseQuestion(g, p.id, a.question);
+        if (w.question.kind === 'revival')
+          check(effects.revivalAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a respondent with a remaining native Revival opportunity.');
         if (w.question.kind === 'bid')
           check(effects.bidAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a bidder with a remaining ordinary opportunity in this lot.');
@@ -665,6 +685,11 @@ export function resolveTruthAction(
           check(effects.movementAnswers && effects.bindMovement && effects.movementAnswers(g, p, q).includes(a.answer),
             'Choose an answer consistent with legal ground movement and earlier promises.');
           if (a.answer !== 'unknown') effects.bindMovement(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'revival') {
+          check(effects.revivalAnswers && effects.bindRevival && effects.revivalAnswers(g, p, q).includes(a.answer),
+            'Choose an answer consistent with native force revivals and earlier answers.');
+          if (a.answer !== 'unknown') effects.bindRevival(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'bid') {
           check(effects.bidAnswers && effects.bindBid && effects.bidAnswers(g, p, q).includes(a.answer),
