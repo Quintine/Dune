@@ -90,7 +90,7 @@ void test('all profiles retain their card without public hand-space evidence or 
   for (const difficulty of DIFFICULTIES) {
     for (const change of [
       (v: GameView) => {
-        v.richeseGift!.blocked = 'Gift canceled this turn.';
+        v.richeseGift!.blocked = 'Resolve the pending decision first.';
       },
       (v: GameView) => {
         v.richeseGift!.cards = [];
@@ -144,7 +144,7 @@ void test('gift policy uses strict eligible identities and never inspects an all
   }
 });
 
-void test('gift cancellation retains custody without an automatic retry, and Truthtrance and decisions take priority', () => {
+void test('gift cancellation retains custody and profiles retry legally while Truthtrance and decisions take priority', () => {
   for (const difficulty of DIFFICULTIES) {
     const g = fixture();
     const k = g.deck.find((c) => c.effect === 'karama')!;
@@ -163,7 +163,14 @@ void test('gift cancellation retains custody without an automatic retry, and Tru
       true,
     );
     assert.equal(canceled.players[1].hand.length, 0);
-    assert.equal(giftAction(projected(canceled, difficulty)), undefined);
+    const retry = giftAction(projected(reload(canceled), difficulty));
+    assert.ok(retry, difficulty);
+    assert.equal(retry.card, 'richese-karama');
+    const transferred = applyAction(reload(canceled), 'r', retry);
+    assert.equal(transferred.response, null);
+    assert.equal(transferred.players[0].hand.some((c) => c.id === retry.card), false);
+    assert.deepEqual(transferred.players[1].hand.map((c) => c.id), [retry.card]);
+    assert.equal(transferred.discard.some((c) => c.id === retry.card), false);
     const truth = projected(g, difficulty);
     truth.truthtrance = {
       stage: 'priority',

@@ -6,6 +6,27 @@ Initial review 2026-09-06, before runtime gift integration; followed below by an
 
 The publisher's CHOAM & Richese rulebook, p6, permits Richese to give an ally a Richese Treachery Card from Richese's hand at any time when the ally's hand is not full. It is a basic alliance ability, separate from special Karama acquisition and the cache auction. It does not create a cache-to-ally transfer, an exchange requirement, payment, a once-per-turn limit, or another faction's gift power. Canonical inventory recognition is already provided by `richeseCardDefinition` in `game/richese-cards.ts`.
 
+## Canceled gift retry — 27 October 2026
+
+**Prototyped / Partial.** Under the standing selected-interpretation authority,
+the cancellation prevents that one offer, and Richese may offer the retained
+card again in the same phase if the current alliance, capacity, ownership and
+commitments permit it. Each new declaration receives a fresh response and can
+itself be canceled. The Basic gift's any-time wording and the updated physical
+Karama's one-use cancellation support this composition; no gift-specific
+publisher retry ruling has been found. The old `richeseGiftBlocked` field stays
+as unique per-phase cancellation history for compatible saved state and source
+signatures, not a legality limit. The existing private control and legal bot
+selection consume the server's updated card quote. Other interactions and full
+rules acceptance remain open.
+
+Focused validation covers fresh responses and two distinct printed counters,
+parent restoration, unique cancellation history, custody and all four minimal
+profiles. A controlled staged Basic fixture additionally drives five engine
+actions and three actual server-rendered gift-control callbacks through two
+cancellations and eventual transfer. It does not establish native prior
+chronology, browser hydration, mobile or deployed behavior.
+
 Source: [GF9 CHOAM & Richese rules, p6](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf), verified in the official indexed PDF and the publisher-text extraction `/tmp/dune-rules/choam-lelekan-mirror.txt`. The [GF9 FAQ](https://www.gf9games.com/dune/wp-content/uploads/2020/04/Dune-FAQ.pdf), p1, expressly includes alliance abilities under Karama cancellation. Its older phase-duration wording must not override the updated physical Karama card's one-use wording. The R2 p12 Richese cancellation table lists auction, No-Field and Black Market, but does not expressly exempt the gift. Applying the general alliance-cancellation rule to gift is supported composition; no retrieved gift-specific FAQ defines the exact nested-response sequence.
 
 The isolated `game/richese-gift.ts` validates mutual current alliance, canonical physical hand ownership and supplied current capacity. It returns a normalized identity-bound intent and cloned replacement hands. It deliberately does not validate game timing, battle promises, or reserved cards. Those are authoritative engine responsibilities.
@@ -86,11 +107,11 @@ Public response and logs should identify the donor and gift action, not the chos
 
 The exact pending card is reserved against further voluntary spending/removal. The Harkonnen random-hand path rejects extraction of the reserved donor hand before RNG, rather than secretly changing its distribution. Sealed plans, fixed prescience, played-card retention, Black Market stock and accepted replacement cards remain reserved. Gifts preserve winning purchase capacity and committed discard/exchange feasibility. Harkonnen bonus resolution now rechecks capacity instead of silently granting a ninth card. Completed recipient plans and historical private inspections remain unchanged. These changes address the initial hazards above without replacing the underlying source with a blanket ban on gifts during other decisions.
 
-**Cancellation interpretation still unresolved.** The engine records the canceled physical card for the current turn/phase and blocks repeating that same gift until the phase changes. This is a disclosed conservative implementation guard while repeat-use timing awaits a ruling; the source does not establish a once-per-phase limit on all gifts. Other cards are validated independently. It must not be described as a verified printed restriction.
+**Historical cancellation guard, superseded above.** The initial engine blocked the canceled physical card for the current turn/phase pending a repeat-use interpretation. This was an implementation guard, not a verified printed restriction.
 
 **Player controls — Partial.** `components/richese-gift.tsx`, integrated into the private-hand console, gives the owner eligible-card selection, readable `CardRules`, full `CardInspector`, unavailable-card explanations and a single explicit Give button. It adds no confirmation modal or invented recipient-acceptance action. Pending identity is visible only to the two allies; the normal response panel resolves cancellation/allowance. Inspection changes no game state. Busy/blocked state prevents another declaration. Browser acceptance remains pending at this checkpoint.
 
-**AI — Partial.** `game/bots.ts` gives only strict canonical Richese Karama when Bidding exposes a lower ally hand count and Richese needs space in a full own hand. It uses only owner legal choices and public counts, never ally contents; no outside-Bidding card need is inferred from absent counts. All four profiles preserve response/decision/Truthtrance priority and do not retry the canceled card. This deliberate policy does not imply full gift strategy or support for the other nine card effects. Those physical cards can be gifted, but their effect handlers remain unfinished.
+**AI — Partial.** `game/bots.ts` gives only strict canonical Richese Karama when Bidding exposes a lower ally hand count and Richese needs space in a full own hand. It uses only owner legal choices and public counts, never ally contents; no outside-Bidding card need is inferred from absent counts. All four profiles preserve response/decision/Truthtrance priority. The former no-retry behavior is superseded above. This policy does not imply full gift strategy or support for every card interaction.
 
 **Documentation — Partial.** The in-app `richese-gift` topic records five separate facets and links to the collection, acquisition, alliances, Karama and Truthtrance topics. The acquisition topic now points to the integrated gift control while retaining the unfinished Distrans/Nullentropy search boundary. Primary-source and historical audit statements above remain distinguishable from later implementation choices. Full Richese start gates remain closed.
 
@@ -100,6 +121,6 @@ The exact pending card is reserved against further voluntary spending/removal. T
 
 The completed registered suites pass 1,230/1,230 rules/client and 93/93 persisted/API scenarios. TypeScript, lint and production build pass. Gift-specific checks comprise six pure custody, five engine matrix/privacy/recovery cases, eight independent review, four all-profile AI and three production SQLite/API recovery cases. The five engine cases include all ten canonical identities in both Basic and Advanced across all nine phases. The independent stale-alliance regression caught an actual hand overwrite; exact original intent validation now aborts safely before either hand assignment.
 
-Desktop browser QA in synthetic QPNV5XJJ completed an uncontested transfer, reopened a separate contested gift through a fresh invitation tab, and displayed the recipient’s private pending card without adding it to their hand or asking for redundant acceptance. Synthetic role swapping was used only to inspect the recipient interface, not to claim real seat-switch recovery. Mobile, full Richese games and the unanswered same-card cancellation retry remain unverified. Full logs and saved fixture versions are recorded in IMPLEMENTATION_STATUS.md; no expansion gate was removed.
+Desktop browser QA in synthetic QPNV5XJJ completed an uncontested transfer, reopened a separate contested gift through a fresh invitation tab, and displayed the recipient’s private pending card without adding it to their hand or asking for redundant acceptance. Synthetic role swapping was used only to inspect the recipient interface, not to claim real seat-switch recovery. At that checkpoint, mobile, full Richese games and same-card cancellation retry were unverified; the later provisional retry evidence is recorded above. Full logs and saved fixture versions are recorded in IMPLEMENTATION_STATUS.md; no expansion gate was removed.
 
 The final follow-up review also covers the mandatory Harkonnen hand-exchange return: an incoming gift may not consume its reserved target slots. A real take/gift/return fixture checks both blocked-full and permitted-spare-capacity cases, completing after JSON reload with conserved cards. Six additional registered pure Distrans tests contribute to the current full-suite total but do not activate that next card effect.

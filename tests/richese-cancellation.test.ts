@@ -287,7 +287,7 @@ void test('denied gift cancellation does not demand present custody, spare recip
   assert.equal(next.discard.filter((c) => c.id === f.gift.id).length, 1);
   assert.equal(player(next, 'h').hand.length, 9);
 });
-void test('current blocked gifts append once while a prior-phase blocked list is replaced', () => {
+void test('gift cancellation history remains unique on a repeated gift and prior-phase history is replaced', () => {
   const f = gift();
   f.g.richeseGiftBlocked = {
     turn: 2,
@@ -299,6 +299,11 @@ void test('current blocked gifts append once while a prior-phase blocked list is
       (quote(f.g) as { blocked: unknown }).blocked,
     { turn: 2, phase: 5, cards: ['richese-semuta-drug', f.gift.id] },
   );
+  f.g.richeseGiftBlocked.cards.push(f.gift.id);
+  const repeated = quote(f.g);
+  assert.ok(repeated.kind === 'richeseGift');
+  assert.deepEqual(repeated.blocked.cards, ['richese-semuta-drug', f.gift.id]);
+  assert.deepEqual(repeated.resume, f.g.pendingRicheseGift!.resume);
   f.g.richeseGiftBlocked.phase = 4;
   const q = quote(f.g);
   assert.ok(q.kind === 'richeseGift');
@@ -366,7 +371,10 @@ void test('canceled receipts and suspended control corruptions reject before car
       };
     },
     (g) => {
-      g.richeseGiftBlocked = { turn: 2, phase: 5, cards: [source.gift.id] };
+      g.richeseGiftBlocked = { turn: 2, phase: 5, cards: [source.gift.id, source.gift.id] };
+    },
+    (g) => {
+      g.richeseGiftBlocked = { turn: 2, phase: 5, cards: ['not-a-richese-card'] };
     },
   ];
   const random = t.mock.method(crypto, 'getRandomValues', () => {

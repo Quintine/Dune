@@ -53,18 +53,54 @@ void test('pending exact gift is private to its two participants, never leaks ca
   assert.equal(next.log.some(entry => entry.text.includes(card.name) || entry.text.includes(card.id)), false);
   assert.deepEqual(next.players[1].hand, [card]);
 });
-void test('cancellation retains the exact card and parent decision; same-phase retry remains an explicit unresolved guard', () => {
-  const g = fixture(); const card = take(g, 'richese-karama'), k = counter(g);
+void test('a canceled gift can be retried in the same phase, with a fresh counter window and original custody', () => {
+  const g = fixture(); const card = take(g, 'richese-karama'), first = counter(g), second = counter(g);
   const parent = {kind: 'richeseDeclaration' as const, player: 'r'};
   g.decision = parent;
+  const inventory = (state: Game) => [...state.deck, ...state.discard, ...state.richeseCache!, ...state.players.flatMap(p => p.hand)].map(c => c.id).sort();
+  const original = inventory(g);
   const pending = gift(g, card.id);
   assert.equal(pending.decision, null);
-  const next = applyAction(reload(pending), 'o', {type: 'card', mode: 'cancel', card: k.id});
-  assert.deepEqual(next.decision, parent); assert.deepEqual(next.players[0].hand, [card]);
-  assert.deepEqual(next.players[1].hand, []);
-  assert.throws(() => gift(next, card.id), /awaits a ruling/);
-  next.phase = 4; next.decision = null;
-  assert.deepEqual(gift(next, card.id).players[1].hand, [card]);
+  const canceled = applyAction(reload(pending), 'o', {type: 'card', mode: 'cancel', card: first.id});
+  assert.deepEqual(canceled.decision, parent);
+  assert.deepEqual(canceled.players[0].hand, [card]);
+  assert.deepEqual(canceled.players[1].hand, []);
+  assert.equal(canceled.discard.filter(c => c.id === first.id).length, 1);
+  assert.ok(viewGame(canceled, 'r').richeseGift!.cards.some(c => c.id === card.id));
+  const retry = gift(reload(canceled), card.id);
+  assert.equal(retry.response?.kind, 'richeseGift');
+  assert.notEqual(retry.pendingRicheseGift!.event, pending.pendingRicheseGift!.event);
+  assert.deepEqual(retry.players[0].hand, [card]);
+  assert.ok(retry.players[2].hand.some(c => c.id === second.id));
+  assert.deepEqual(inventory(retry), original);
+  const allowed = applyAction(reload(retry), 'o', {type: 'passResponse'});
+  assert.deepEqual(allowed.decision, parent);
+  assert.deepEqual(allowed.players[0].hand, []);
+  assert.deepEqual(allowed.players[1].hand, [card]);
+  assert.ok(allowed.players[2].hand.some(c => c.id === second.id));
+  assert.deepEqual(inventory(allowed), original);
+  assert.throws(() => gift(allowed, card.id));
+});
+void test('repeated same-phase cancellation costs each physical Karama once and allows the original gift afterward', () => {
+  const g = fixture(); const card = take(g, 'richese-distrans'), first = counter(g), second = counter(g);
+  const inventory = (state: Game) => [...state.deck, ...state.discard, ...state.richeseCache!, ...state.players.flatMap(p => p.hand)].map(c => c.id).sort();
+  const original = inventory(g);
+  let current = g;
+  for (const k of [first, second]) {
+    const pending = gift(reload(current), card.id);
+    assert.equal(pending.response?.kind, 'richeseGift');
+    current = applyAction(reload(pending), 'o', {type: 'card', mode: 'cancel', card: k.id});
+    assert.equal(current.phase, g.phase);
+    assert.deepEqual(current.players[0].hand, [card]);
+    assert.deepEqual(current.players[1].hand, []);
+    assert.equal(current.discard.filter(c => c.id === k.id).length, 1);
+    assert.deepEqual(inventory(current), original);
+  }
+  const transferred = gift(reload(current), card.id);
+  assert.deepEqual(transferred.players[0].hand, []);
+  assert.deepEqual(transferred.players[1].hand, [card]);
+  assert.equal(transferred.discard.filter(c => c.id === first.id || c.id === second.id).length, 2);
+  assert.deepEqual(inventory(transferred), original);
 });
 void test('capacity changed during recovery aborts without consuming, discarding or replacing any hand card', () => {
   const g = fixture(); const card = take(g, 'richese-karama'); counter(g);

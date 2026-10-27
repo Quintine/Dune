@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Richese canceled gift retry — 27 October 2026
+
+Provisionally allow a fresh offer of the same retained Richese card in the same
+phase after one gift was canceled, with a new Karama response each time. The
+Basic gift says any time and the updated physical Karama cancels one use; no
+gift-specific publisher retry ruling was found. Revalidate the current alliance,
+custody, capacity and commitments. Retain the legacy unique cancellation list
+as history rather than a repeat-use prohibition. [Source and scope](RICHESE_GIFT_ENGINE_AUDIT.md#canceled-gift-retry--27-october-2026).
+
 ## Emperor Nexus positive short groups — 27 October 2026
 
 Select the provisional positive-only shortage composition under standing

@@ -690,7 +690,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'An ordinary decision, another response or a phase-opening window can be suspended while the gift resolves, then restored with its existing choices and passes. An active Truthtrance question must finish first. A newly received Karama may be used in a restored response that is still open, under the normal response rules.',
       'You cannot give a card committed to a sealed plan, fixed prescience answer, unresolved played-card retention, unsold Black Market lot or accepted replacement. Gifts must preserve binding battle promises and enough resources for committed exchanges. Your ally must retain space for an unsettled auction commitment and the mandatory return from a Harkonnen hand exchange; completed plans and private inspection snapshots do not change when a gift arrives.',
       'The server checks alliance, exact card ownership, capacity and commitments again before transfer. An obsolete pending gift aborts without a partial transfer and restores its interrupted flow. Unrelated players see the gift power, not its private card identity. A pending card cannot also be spent, exchanged or randomly extracted.',
-      'After cancellation, trying the same card again in the same phase is currently blocked pending a ruling on repeated use. This is an explicit implementation guard, not a printed once-per-phase limit on all gifts. Other legally available cards are assessed separately.',
+      'After a Karama cancellation, the same card may be offered again while it remains legal. Each new offer opens a fresh cancellation response. This is a provisional interpretation of the one-use cancellation and the gift’s any-time wording, not a specific published retry ruling.',
       'All four AI profiles conservatively give only the canonical Richese Karama during Bidding to free a full hand when the ally’s public card count is lower and there is room. They do not inspect ally hand contents or infer an unknown need for a card. Pending responses, decisions and Truthtrance take priority.',
       'All ten canonical Richese cards may be transferred when legal, and Karama has its existing card-effect handler. Distrans supports its separate card-transfer effect, Nullentropy Box supports paid private discard search, Ornithopter supports its two movement modes, and Residual Poison supports a random opposing leader death before leader commitment. Portable Snooper supports ordinary and late poison defense. Stone Burner supports a guarded weapon commitment and revealed leader-effect choice. Mirror Weapon copies an opposing revealed weapon in bounded CHOAM/Richese-deck classic-faction battles, with copy-first Tooth/Stone choices; physical-Mirror winner retention even after copied activated Tooth/Artillery is a user-selected interpretation. Juice of Sapho supports bounded Once Around and movement ordering. Semuta Drug has a bounded clean ordinary-discard preview; other discard producers and Sapho timing modes remain unfinished. Desktop gift transfer and fresh-tab pending recovery have been checked in a synthetic table. Mobile, broader interactions and full Richese games remain pending; Richese starts remain disabled.',
     ],
@@ -707,7 +707,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Canonical hand-to-ally transfer, private reservation, Karama cancellation, suspended continuation restoration and commitment/capacity revalidation are integrated in development fixtures. Same-card same-phase retry after cancellation awaits a ruling; complete Richese interactions remain unfinished.',
+          'Canonical hand-to-ally transfer, private reservation, Karama cancellation, suspended continuation restoration and commitment/capacity revalidation are integrated. Reoffering a canceled card is provisionally allowed with a fresh response; complete Richese interactions remain unfinished.',
       },
       {
         area: 'Player controls',
@@ -719,7 +719,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'AI',
         status: 'Partial',
         detail:
-          'All four profiles make a bounded canonical-Karama gift to free a full bidding hand using public ally counts and owner-only legal choices. Other card effects and broader gift strategy are unfinished; canceled gifts are not automatically retried.',
+          'All four profiles make a bounded canonical-Karama gift to free a full bidding hand using public ally counts and owner-only legal choices. They can retry a canceled gift when that same legal condition remains. Other card effects and broader gift strategy are unfinished.',
       },
       {
         area: 'Documentation',

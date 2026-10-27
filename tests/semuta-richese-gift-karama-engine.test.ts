@@ -81,7 +81,12 @@ function prevented(game: Game, f: SemutaRicheseGiftKaramaFixture, claimed: boole
   assert.deepEqual(done.response, f.originalParent.response); assert.deepEqual(done.decision, f.originalParent.decision);
   assert.deepEqual(done.phaseOpening, f.originalParent.phaseOpening);
   assert.deepEqual(done.pendingKarama, f.originalParent.pendingKarama);
-  reject(done, f.donor, f.giftAction);
+  assert.ok(viewGame(done, f.donor).richeseGift?.cards.some(card => card.id === f.gift));
+  const preserved = structuredClone(done);
+  const retry = applyAction(structuredClone(done), f.donor, f.giftAction);
+  assert.equal(retry.response?.kind, 'richeseGift');
+  assert.equal(retry.pendingRicheseGift?.intent.cardId, f.gift);
+  assert.deepEqual(done, preserved);
   return done;
 }
 

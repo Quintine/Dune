@@ -5343,14 +5343,6 @@ function validateRicheseGift(g: Game, owner: Player, cardId: string) {
   const card = owner.hand.find((c) => c.id === cardId)!;
   const reservation = transferCardBlock(g, owner, card);
   requireRule(!reservation, reservation ?? 'This card is already committed.');
-  requireRule(
-    !(
-      g.richeseGiftBlocked?.turn === g.turn &&
-      g.richeseGiftBlocked.phase === g.phase &&
-      g.richeseGiftBlocked.cards.includes(cardId)
-    ),
-    'Retrying this canceled card’s gift in the same phase awaits a ruling.',
-  );
   const resulting = transferRicheseGift(
     owner,
     recipient,

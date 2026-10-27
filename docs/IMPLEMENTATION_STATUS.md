@@ -1,5 +1,22 @@
 # Dune implementation status
 
+## 27 October 2026 — Richese canceled gift retry
+
+Prototype the Basic alliance gift retry under the standing selected-interpretation
+authority: a canceled offer ends, but the retained card may be reoffered in the
+same phase with a fresh response and ordinary legality checks. Preserve the
+legacy unique cancellation history for compatibility. This is a provisional
+composition, not a published gift-specific retry ruling. Complete interaction,
+mobile, deployed and full-mode acceptance remain open.
+[Contract](RICHESE_GIFT_ENGINE_AUDIT.md#canceled-gift-retry--27-october-2026).
+
+Six focused files pass 50/50. A controlled Basic fixture stages its phase,
+alliance, hands and parent decision, then drives five actual engine actions and
+three server-rendered controller callbacks: two distinct physical Karama
+cancellations followed by a successful gift. This is not native prior chronology,
+browser hydration, mobile or deployment evidence. Private runtime evidence is
+`20261027-richese-gift-retry-runtime/run-v1/`.
+
 ## 27 October 2026 — Emperor Nexus positive shortages
 
 Prototype the selected shortage-only composition: Cunning uses the full five

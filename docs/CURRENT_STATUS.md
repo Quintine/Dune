@@ -20,6 +20,19 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Richese canceled gift retry — 27 October. Prototyped / Partial.**
+A canceled card may be offered again in the same phase under a provisional
+one-use interpretation. Each declaration has its own response, and the card,
+ally, capacity and commitments are checked again. Existing cancellation history
+remains compatible and no longer blocks the fresh offer. The private control and
+minimal bot use the same legal-card projection. [Source and boundary](RICHESE_GIFT_ENGINE_AUDIT.md#canceled-gift-retry--27-october-2026).
+
+Six focused files pass 50/50. A controlled Basic fixture exercises five engine
+actions and three actual server-rendered gift-button callbacks: two physical
+Karama cancellations and a successful third offer. The fixture stages its phase,
+alliance, cards and parent decision; it is not an earned game history or a
+browser/mobile/deployed check. Complete Richese modes remain uncertified.
+
 **Emperor Nexus positive shortages — 27 October. Prototyped / Partial.**
 Cunning uses five eligible ordinary counters when possible, otherwise the whole
 positive short battle group. Secret Ally revival takes three when eligible,

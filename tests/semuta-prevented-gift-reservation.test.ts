@@ -89,7 +89,21 @@ function settled(state: Game, f: Source, claimed: boolean) {
   assert.deepEqual(game.phaseOpening, f.originalParent.phaseOpening);
   assert.deepEqual(game.pendingKarama, f.originalParent.pendingKarama);
   assert.ok(player(game, f.observer).hand.some(card => card.id === f.parentCounter));
-  reject(game, f.donor, f.giftAction);
+  if (claimed) {
+    // Claiming spent the selected Semuta, so it cannot be offered again.
+    reject(game, f.donor, f.giftAction);
+  } else {
+    // The prevented card is still held and can be re-offered in this phase.
+    // Fork the state so the original parent-continuation checks remain intact.
+    const before = structuredClone(game);
+    const offered = applyAction(game, f.donor, f.giftAction);
+    assert.deepEqual(game, before);
+    assert.equal(offered.response?.kind, 'richeseGift');
+    assert.equal(offered.pendingRicheseGift?.intent.cardId, f.semuta);
+    assert.ok(player(offered, f.donor).hand.some(card => card.id === f.semuta));
+    assert.ok(player(offered, f.observer).hand.some(card => card.id === f.parentCounter));
+    assert.deepEqual(inventory(offered), f.originalInventory);
+  }
   return game;
 }
 

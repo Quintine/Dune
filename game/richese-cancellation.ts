@@ -437,16 +437,17 @@ function calculate(
         (uniqueStrings(current.cards) &&
           current.cards.every((id) =>
             RICHESE_CARD_DEFINITIONS.some((d) => d.card.id === id),
-          ) &&
-          !current.cards.includes(gift.intent.cardId)),
-      'The canceled gift card was already blocked or its current blocked list is malformed.',
+          )),
+      'The current canceled gift history is malformed.',
     );
     return {
       kind: 'richeseGift',
       blocked: {
         turn: g.turn,
         phase: g.phase,
-        cards: [...(current?.cards ?? []), gift.intent.cardId],
+        cards: current?.cards.includes(gift.intent.cardId)
+          ? [...current.cards]
+          : [...(current?.cards ?? []), gift.intent.cardId],
       },
       resume: structuredClone(gift.resume),
     };
