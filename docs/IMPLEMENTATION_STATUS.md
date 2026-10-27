@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 28 October 2026 — Public human deal records
+
+Two nonallied humans can publish terms, accept or decline an offer, withdraw it
+or agree to release it, without interrupting a native pending decision. Terms
+remain public and player-enforced; a record does not transfer spice or determine
+when a term is impossible. Seven related unit files pass 43 cases, and an
+isolated authenticated HTTP case covers public visibility, consent, release and
+continued play. Multiparty and AI deals, automatic enforcement and deployed
+acceptance remain open. An isolated browser room exercised the lifecycle between
+two controlled seats, with faction labels and persistent result visibility.
+[Scope](PUBLIC_DEALS.md).
+
 ## 28 October 2026 — Basic Ixian auction-group Truthtrance
 
 A player may ask whether a named card appears in the Basic Ixian's recorded

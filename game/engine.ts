@@ -4,6 +4,8 @@ import { createFactionDraft, validateFactionDraft, currentFactionDrafter, choose
   FactionDraftError, type FactionDraft } from './faction-draft';
 import { createFactionSwap, validateFactionSwap, answerFactionSwap, cancelFactionSwap,
   FactionSwapError, type FactionSwap } from './faction-swap';
+import { createPublicDeal, validatePublicDeals, respondPublicDeal, withdrawPublicDeal,
+  releasePublicDeal, PublicDealError, type PublicDeal } from './public-deals';
 import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
 import { victoryFinalTurn, continueVictoryCalendar, VictoryCalendarError } from './victory-calendar';
 import { createVictoryContinuation, validateVictoryContinuation, voteVictoryContinuation,
@@ -1413,6 +1415,8 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  /** Public written agreements. Their prose is honored by players, not parsed. */
+  deals?: PublicDeal[];
   /** A human-to-human lobby offer, pending the recipient's consent. */
   factionSwap?: FactionSwap;
   /** Public prediction-number faction selection, present only while in progress. */
@@ -5795,6 +5799,16 @@ function factionSwapIntegrity(g: Game): void {
   requireRule(g.players.some(player => player.id === g.factionSwap!.from && !player.bot) &&
     g.players.some(player => player.id === g.factionSwap!.to && !player.bot),
   'Faction swap participants must be human seats.');
+}
+function publicDealRule<T>(operation: () => T): T {
+  try { return operation(); }
+  catch (error) {
+    if (error instanceof PublicDealError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function publicDealIntegrity(g: Game): void {
+  if (g.deals !== undefined) publicDealRule(() => validatePublicDeals(g.deals, g.players));
 }
 function assignLobbyFaction(player: Player, chosen: FactionId): void {
   player.faction = chosen;
@@ -40001,6 +40015,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   twoPlayerControllersIntegrity(state);
   factionDraftIntegrity(state);
   factionSwapIntegrity(state);
+  publicDealIntegrity(state);
   if (state.factionSwap) requireRule(
     ['factionSwapRespond', 'factionSwapCancel', 'advanceBots'].includes(action?.type),
     'Resolve the faction swap before changing the lobby.',
@@ -40070,6 +40085,40 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   ambassadorRevivalIncomeIntegrity(state);
   ecazCollectionIntegrity(state);
   ecazAllianceIntegrity(state);
+  if (['dealOffer', 'dealRespond', 'dealWithdraw', 'dealRelease'].includes(action?.type)) {
+    requireRule(state.status === 'playing', 'Public deals require a game in progress.');
+    const player = getPlayer(state, id);
+    requireRule(!player.bot && !player.autopilot, 'Only a human controlling their seat can manage a deal.');
+    const g = structuredClone(state);
+    const deals = g.deals ?? [];
+    if (action.type === 'dealOffer') {
+      requireRule(Object.keys(action).sort().join(',') === 'target,terms,type' &&
+        typeof action.target === 'string' && typeof action.terms === 'string', 'Choose a recipient and write the public terms.');
+      const offer = publicDealRule(() => createPublicDeal(g.players, id, action.target as string,
+        action.terms as string, g.turn, crypto.randomUUID()));
+      requireRule(!deals.some(deal => deal.id === offer.id), 'This deal identifier is already in use.');
+      g.deals = [...deals, offer];
+    } else {
+      const keys = action.type === 'dealRespond' ? 'accept,deal,type' :
+        action.type === 'dealRelease' ? 'agree,deal,type' : 'deal,type';
+      requireRule(Object.keys(action).sort().join(',') === keys && typeof action.deal === 'string',
+        'Choose the current deal action.');
+      const index = deals.findIndex(deal => deal.id === action.deal);
+      requireRule(index >= 0, 'This deal is no longer available.');
+      const current = deals[index];
+      let next: PublicDeal;
+      if (action.type === 'dealRespond') {
+        requireRule(typeof action.accept === 'boolean', 'Choose whether to accept or decline.');
+        next = publicDealRule(() => respondPublicDeal(current, g.players, id, action.accept as boolean));
+      } else if (action.type === 'dealRelease') {
+        requireRule(typeof action.agree === 'boolean', 'Choose whether to request cancellation.');
+        next = publicDealRule(() => releasePublicDeal(current, g.players, id, action.agree as boolean));
+      } else next = publicDealRule(() => withdrawPublicDeal(current, g.players, id));
+      g.deals = deals.map((deal, position) => position === index ? next : deal);
+    }
+    publicDealIntegrity(g);
+    return g;
+  }
   // Seat control is independent of gameplay locks and must preserve their exact continuation.
   if (action?.type === 'setAutopilot') {
     requireRule(
@@ -40627,6 +40676,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   twoPlayerControllersIntegrity(state);
   factionDraftIntegrity(state);
   factionSwapIntegrity(state);
+  publicDealIntegrity(state);
   victoryContinuationIntegrity(state);
   if (state.victoryContinuation) return state;
   bidPromiseIntegrity(state);
@@ -44960,6 +45010,7 @@ export function viewGame(state: Game, id: string, now?: number) {
   twoPlayerControllersIntegrity(state);
   factionDraftIntegrity(state);
   factionSwapIntegrity(state);
+  publicDealIntegrity(state);
   victoryContinuationIntegrity(state);
   revivalOrderIntegrity(state);
   charityOrderIntegrity(state);
@@ -45258,6 +45309,7 @@ export function viewGame(state: Game, id: string, now?: number) {
     version: g.version,
     host: g.host,
     status: g.status,
+    deals: g.deals ?? [],
     factionDraft: g.factionDraft ?? null,
     factionSwap: g.factionSwap ?? null,
     twoPlayerControllers: g.twoPlayerControllers ?? null,

@@ -119,6 +119,7 @@ import { RihaniChoice, RihaniHistory } from './rihani-decipherer';
 import { MentatQuestion, MentatHistory } from './mentat-question';
 import { BureaucratPayment } from './bureaucrat-payment';
 import { Bribes } from './bribes';
+import { PublicDeals } from './public-deals';
 import { SukGraduatePanel } from './suk-graduate';
 import { NullentropyBox, NullentropySearch } from './nullentropy-box';
 import { SemutaReaction } from './semuta-reaction';
@@ -5906,6 +5907,8 @@ export function GameTable({
             : ' · Flips at the next Mentat Pause'}
         </p>
       )}
+      <PublicDeals game={g} act={(action) => { void send(action); }}
+        busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
       {!reactionOwnsControls && <Bribes game={g} act={act} busy={busy} />}
       <TruthHistory game={g} />
       <HarkonnenExchangeInspection game={g} />

@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Public deals — 28 October 2026
+
+The publisher's 2019 rulebook permits public nonallied deals, requires their
+legal terms to be honored, voids impossible parts and permits mutual release.
+The initial two-human written record models offer, acceptance and mutual
+release; compliance with prose and impossibility are player-managed, and spice
+still requires the native bribe action. AI negotiation and multiparty terms
+remain open. [Scope](PUBLIC_DEALS.md).
+
 ## Truthtrance and Basic Ixian auction knowledge — 28 October 2026
 
 The publisher FAQ permits game-related yes/no and compound questions. A named

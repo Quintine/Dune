@@ -23,6 +23,10 @@ places paid bribes in front of the recipient's shield until the next Mentat Paus
 Chat messages and verbal promises do not themselves transfer spice. Emperor
 gifts to allies remain a separate power.
 
+The separate [public deal record](PUBLIC_DEALS.md) can capture a two-human
+offer, acceptance and mutual release. Its written terms do not automatically
+transfer spice or enforce future promises; use this native action to pay.
+
 The server derives the owner's limits from existing uncommitted spice, excluding
 sealed bids, paid support, Banker spending and other reserved costs. Existing
 Truthtrance completion checks further constrain voluntary spending on isolated

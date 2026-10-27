@@ -16,6 +16,17 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Public deal records — 28 October. Prototyped / Partial.** Two nonallied human
+seats can record an offer, acceptance or decline, withdrawal and mutual release,
+including while a native decision is pending. Public terms rely on players to
+honor them; the record does not enforce prose, determine impossibility or pay
+spice. Seven related unit files pass 43 cases; an isolated authenticated HTTP
+case covers public visibility, consent, release and resumed play. AI negotiation,
+multiparty deals, automatic enforcement and deployed acceptance remain open.
+An isolated browser room also exercised offer, acceptance and mutual release
+between two separately authenticated faction seats, with a persistent result.
+[Scope](PUBLIC_DEALS.md).
+
 **Basic Truthtrance and the Ixian auction pool — 28 October. Prototyped /
 Partial.** A named card can be compared with the respondent's recorded inspected
 group in Basic Bidding; the question does not claim the card remains for sale.
