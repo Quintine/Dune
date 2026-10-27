@@ -98,6 +98,7 @@ export function TableTalk({ game }: { game: GameView }) {
       try {
         const result = await requestJson<TalkPage>(url, {
           signal: controller.signal,
+          headers: { 'X-Dune-Seat': game.me },
         });
         if (
           !controller.signal.aborted &&
@@ -129,7 +130,7 @@ export function TableTalk({ game }: { game: GameView }) {
       clearTimeout(timer);
       channelGeneration.current = generation + 1;
     };
-  }, [url, open, refresh]);
+  }, [url, open, refresh, game.me]);
 
   async function older() {
     if (!shownPage.before || olderPending.current) return;
@@ -139,7 +140,9 @@ export function TableTalk({ game }: { game: GameView }) {
     setLoading(true);
     const generation = channelGeneration.current;
     try {
-      const result = await requestJson<TalkPage>(pageUrl(shownPage.before));
+      const result = await requestJson<TalkPage>(pageUrl(shownPage.before), {
+        headers: { 'X-Dune-Seat': game.me },
+      });
       if (generation === channelGeneration.current) {
         setMuted(result.muted === true);
         setPage((current) => ({
@@ -175,7 +178,7 @@ export function TableTalk({ game }: { game: GameView }) {
         endpoint,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-Dune-Seat': game.me },
           body: JSON.stringify(draft),
         },
       );

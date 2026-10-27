@@ -2,7 +2,7 @@
 
 ## Status and authority
 
-**Missing; design contract only.** The [GF9 classic rulebook, printed p. 6](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=6)
+**Prototyped; wider rules and acceptance remain open.** The [GF9 classic rulebook, printed p. 6](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=6)
 offers a two-player setup in which each person plays two factions, with the
 two-player four-stronghold victory requirement. The user-authorized revised
 Advanced source, physical p. 4 (printed p. 2), offers the same choice and
@@ -36,8 +36,8 @@ original interpretation and do not receive invented controller assignments.
 Expose this as an explicit two-player setup option. Let each person create or
 join their first seat and securely add/select their second faction before
 readiness, with clear names and a persistent active-faction indicator. Avoid
-claiming support for the mode until setup, both private faction views, legal
-actions, turn continuation and victory all work together. The existing model
+claiming complete support for the mode until complete games and wider
+interactions are verified. The existing model
 still permits ordinary two-seat play and separate one-faction controllers.
 
 ## Separate controllers from faction seats
@@ -66,13 +66,14 @@ Today `db/schema.ts` makes `seats.token_hash` the primary key;
 `db/rooms.ts` authenticates a token to one `player_id` and `act` rechecks that
 exact unrevoked room/player/token tuple before the versioned action. The normal
 `joinRoom` path returns `alreadySeated` for an authenticated caller. Room API
-routes currently use a single room-scoped HttpOnly cookie. Reusing one token
+routes retain the original room-scoped HttpOnly cookie and use separately
+scoped HttpOnly cookies for added faction seats. Reusing one token
 for two database rows, trusting a caller-supplied seat ID as authorization, or
 projecting both seats' private information into one general view would break
 those existing boundaries.
 
-One workable implementation is an explicit authenticated add-second-seat
-operation that atomically validates the lobby/controller assignment and creates
+The authenticated add-second-seat operation atomically validates the
+lobby/controller assignment and creates
 the second distinct seat credential. Provision separately random, room-scoped
 HttpOnly credentials for both faction seats. A public active-seat selector may
 choose which credential to present, but every API read, action, message,
@@ -93,6 +94,14 @@ revoked seat must not accidentally grant the other seat or an opponent. Keep
 the UI explicit about which faction owns each pending decision. Existing
 autopilot can operate a faction seat only under its existing authorization;
 until full AI refinement, each offered decision needs a minimal legal bot path.
+
+The current prototype requires human seats, permits ordinary existing
+seat-autopilot, and does not yet support accepting a handover into a browser
+already holding a different active seat for the same room. The mode cannot be
+disabled once a secondary faction is added. Recovery replaces an existing
+scoped credential for the recovered seat without overwriting another valid
+legacy seat. Comprehensive recovery, revocation and custody acceptance remain
+open.
 
 ## Integration and evidence
 

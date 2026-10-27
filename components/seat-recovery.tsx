@@ -73,7 +73,7 @@ export function SeatRecoverySetup({
         `/api/rooms/${kit.roomCode}/control`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-Dune-Seat': game.me },
           body: JSON.stringify({
             type: 'setRecoveryKey',
             version: game.version,

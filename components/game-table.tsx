@@ -1602,6 +1602,7 @@ export function GameTable({
           ))}
           {g.status === 'lobby' &&
             g.host === me.id &&
+            !g.twoPlayerControllers &&
             g.players.length < 6 &&
             availableBotFactions.length > 0 && (
               <section className="bot-controls" aria-label="Add an AI player">

@@ -1,3 +1,5 @@
+import { createTwoPlayerControllers, validateTwoPlayerControllersLobby, validateTwoPlayerControllersComplete,
+  addTwoPlayerControlledSeat, TwoPlayerControllersError, type TwoPlayerControllers } from './two-player-controllers';
 import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
 import { victoryFinalTurn, continueVictoryCalendar, VictoryCalendarError } from './victory-calendar';
 import { createVictoryContinuation, validateVictoryContinuation, voteVictoryContinuation,
@@ -1406,6 +1408,8 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  /** Explicit two-human/four-faction setup; absent from ordinary and legacy games. */
+  twoPlayerControllers?: TwoPlayerControllers;
   /** Explicit final turn after an agreed extension; absent means turn ten. */
   victoryFinalTurn?: number;
   /** Agreed addition to the ordinary stronghold win targets. Older games omit it. */
@@ -5675,7 +5679,32 @@ export function createGame(
     aid: {},
   };
 }
-export function joinGame(g: Game, p: Player) {
+function twoPlayerRule<T>(operation: () => T): T {
+  try {
+    return operation();
+  } catch (error) {
+    if (error instanceof TwoPlayerControllersError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+
+/** Reject stale or ambiguous ownership before either projecting or mutating a game. */
+function twoPlayerControllersIntegrity(g: Game): void {
+  if (g.twoPlayerControllers === undefined) return;
+  const seats = g.players.map(player => player.id);
+  twoPlayerRule(() => {
+    if (g.status === 'lobby') validateTwoPlayerControllersLobby(g.twoPlayerControllers, seats);
+    else validateTwoPlayerControllersComplete(g.twoPlayerControllers, seats);
+  });
+  const assigned = g.twoPlayerControllers.controllers.flatMap(controller => controller.seats);
+  requireRule(assigned.length === seats.length && seats.every(seat => assigned.includes(seat)),
+    'Every two-person faction must belong to exactly one controller.');
+  requireRule(g.players.every(player => !player.bot),
+    'Two-person setup requires human faction seats.');
+}
+
+function joinFactionSeat(g: Game, p: Player, controllerId?: string) {
+  twoPlayerControllersIntegrity(g);
   requireRule(g.status === 'lobby', 'This game has already started.');
   requireRule(g.players.length < 6, 'This table has six players.');
   requireRule(!g.players.some((x) => x.id === p.id), 'Already seated.');
@@ -5688,10 +5717,30 @@ export function joinGame(g: Game, p: Player) {
       g.expansions.includes(faction(p.faction).expansion),
     'The host has not enabled that expansion.',
   );
+  let mapping = g.twoPlayerControllers;
+  if (mapping) {
+    requireRule(!p.bot, 'Two-person setup requires human faction seats.');
+    mapping = twoPlayerRule(() => addTwoPlayerControlledSeat(mapping!,
+      [...g.players.map(player => player.id), p.id], controllerId ?? p.id, p.id));
+  } else requireRule(controllerId === undefined, 'Enable two-person setup before adding a second faction.');
   g.players.push(p);
+  if (mapping) g.twoPlayerControllers = mapping;
   g.playerPositions = normalizedPlayerPositions(g);
   g.players.forEach((x) => (x.ready = !!x.bot));
   log(g, `${p.name} joined as ${faction(p.faction).name}.`);
+}
+export function joinGame(g: Game, p: Player) {
+  joinFactionSeat(g, p);
+}
+
+/** The caller must authenticate actorId's distinct seat credential separately. */
+export function joinControlledFaction(g: Game, p: Player, actorId: string) {
+  twoPlayerControllersIntegrity(g);
+  requireRule(g.status === 'lobby' && g.twoPlayerControllers,
+    'Enable two-person setup before adding a second faction.');
+  const controller = g.twoPlayerControllers.controllers.find(entry => entry.seats.includes(actorId));
+  requireRule(controller, 'This faction has no two-person controller.');
+  joinFactionSeat(g, p, controller.id);
 }
 function setMovementDiscardKnowledge(g: Game, knowledge: MovementDiscardKnowledge | undefined) {
   if (knowledge === undefined) delete g.movementDiscardKnowledge;
@@ -10285,13 +10334,17 @@ function requireFreshBaseRuntime(g: Game) {
   // unowned optional components are checked separately; gameplay fields stay fresh.
   const configuration = new Set<keyof Game>(['code', 'version', 'host', 'players', 'playerPositions',
     'advanced', 'expansions', 'log', 'botsPending', 'botNextActionAt', 'techTokens', 'strongholdCards',
-    'homeworlds', 'nexusCards', 'discoveryEnabled', 'leaderSkills', 'ecazTreachery', 'lobbyOptions', 'kullDefaultPolicy']);
+    'homeworlds', 'nexusCards', 'discoveryEnabled', 'leaderSkills', 'ecazTreachery', 'lobbyOptions', 'kullDefaultPolicy',
+    'twoPlayerControllers']);
   const keys = [...new Set([...Object.keys(g), ...Object.keys(fresh)])] as (keyof Game)[];
   requireRule(keys.every(key => configuration.has(key) ||
     JSON.stringify(g[key]) === JSON.stringify(fresh[key])),
   'Starting a base table cannot retain existing game resources, histories or continuations.');
 }
 function start(g: Game, advancedPreview = false): Game {
+  twoPlayerControllersIntegrity(g);
+  if (g.twoPlayerControllers) twoPlayerRule(() =>
+    validateTwoPlayerControllersComplete(g.twoPlayerControllers, g.players.map(player => player.id)));
   requireRule(g.players.length >= 2, 'At least two players are needed.');
   requireRule(
     g.players.every((p) => p.ready),
@@ -39867,6 +39920,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  twoPlayerControllersIntegrity(state);
   victoryContinuationIntegrity(state);
   bidPromiseIntegrity(state);
   phaseBidIntegrity(state);
@@ -40482,6 +40536,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  twoPlayerControllersIntegrity(state);
   victoryContinuationIntegrity(state);
   if (state.victoryContinuation) return state;
   bidPromiseIntegrity(state);
@@ -42808,6 +42863,29 @@ function applyActionInner(
     return g;
   }
   if (g.status === 'lobby') {
+    if (t === 'twoPlayerMode') {
+      requireRule(id === g.host, 'Only the host can change two-person setup.');
+      requireRule(typeof action.enabled === 'boolean' &&
+        Object.keys(action).every(key => key === 'type' || key === 'enabled'),
+      'Choose whether each of two people controls two factions.');
+      if (action.enabled === !!g.twoPlayerControllers) return g;
+      if (action.enabled) {
+        requireRule(g.players.length <= 2 && g.players.every(player => !player.bot),
+          'Enable two-person setup with at most two human faction seats and no AI seats.');
+        const seats = g.players.map(player => player.id);
+        let mapping = createTwoPlayerControllers();
+        for (const seat of seats) mapping = twoPlayerRule(() =>
+          addTwoPlayerControlledSeat(mapping, seats, seat, seat));
+        g.twoPlayerControllers = mapping;
+      } else {
+        requireRule(g.twoPlayerControllers!.controllers.every(controller => controller.seats.length === 1),
+          'Two-person setup cannot be disabled after second faction seats are added.');
+        delete g.twoPlayerControllers;
+      }
+      g.players.forEach(player => (player.ready = false));
+      log(g, `${p.name} ${action.enabled ? 'enabled' : 'disabled'} the provisional two-person, four-faction setup. Human readiness was cleared.`);
+      return g;
+    }
     if (t === 'rules') {
       requireRule(id === g.host, 'Only the host can change the rules mode.');
       requireRule(typeof action.advanced === 'boolean' &&
@@ -44690,6 +44768,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string, now?: number) {
+  twoPlayerControllersIntegrity(state);
   victoryContinuationIntegrity(state);
   revivalOrderIntegrity(state);
   charityOrderIntegrity(state);
@@ -44988,6 +45067,12 @@ export function viewGame(state: Game, id: string, now?: number) {
     version: g.version,
     host: g.host,
     status: g.status,
+    twoPlayerControllers: g.twoPlayerControllers ?? null,
+    controlledFactionSeats: g.twoPlayerControllers
+      ? g.players.filter(player => g.twoPlayerControllers!.controllers.some(controller =>
+          controller.seats.includes(id) && controller.seats.includes(player.id)))
+        .map(player => ({ id: player.id, name: player.name, faction: player.faction }))
+      : [],
     setupStage: g.status === 'setup' ? (g.setupStage ?? null) : null,
     setupPending: setupPending(g),
     leaderSkills: projectedLeaderSkills(g, id),

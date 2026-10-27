@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Two people, two factions each — 27 October 2026
+
+The classic rulebook and the supplied Advanced revision permit two people to
+play two factions each and use a four-stronghold victory target. The prototype
+provisionally keeps those factions independent: their inventories, holdings and
+alliances do not automatically merge. The sources do not explicitly settle
+that composition or all player-count interactions. It is an implementation
+interpretation, not an official ruling; see [scope and limits](TWO_PLAYER_TWO_FACTIONS.md).
+
 ## Juice of Sapho and an already-started Advanced Charity turn — 27 October 2026
 
 Extend the provisional own-turn Last composition to a clean ordered Charity

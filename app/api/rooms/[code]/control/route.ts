@@ -1,6 +1,6 @@
 import { requestOrigin } from '@/lib/request-origin';
+import { authenticateSelectedSeat, selectedSeatId, seatCookie, roomSeatCookies } from '@/lib/selected-seat';
 import {
-  authenticate,
   createSeatHandover,
   revokeSeatHandover,
   claimSeatHandover,
@@ -49,13 +49,7 @@ export async function POST(req: Request) {
         400,
       );
     const input = body as Record<string, unknown>;
-    const token =
-      req.headers
-        .get('cookie')
-        ?.split(';')
-        .map((part) => part.trim())
-        .find((part) => part.startsWith(`dune_${code}=`))
-        ?.split('=')[1] ?? '';
+    const selector = selectedSeatId(req);
     if (
       input.type === 'setSeatAiDelegate' ||
       input.type === 'revokeSeatAiDelegate' ||
@@ -67,7 +61,7 @@ export async function POST(req: Request) {
           'INVALID_CONTROL_REQUEST',
           400,
         );
-      const auth = await authenticate(code, token);
+      const auth = await authenticateSelectedSeat(req, code);
       const result =
         input.type === 'setSeatAiDelegate'
           ? await setSeatAiDelegate(code, auth, input.version, {
@@ -95,7 +89,7 @@ export async function POST(req: Request) {
       input.type === 'createSeatHandover' ||
       input.type === 'revokeSeatHandover'
     ) {
-      const auth = await authenticate(code, token);
+      const auth = await authenticateSelectedSeat(req, code);
       if (input.type === 'createSeatHandover')
         return Response.json(
           await createSeatHandover(code, auth, input.version, {
@@ -120,20 +114,44 @@ export async function POST(req: Request) {
         'INVALID_CONTROL_REQUEST',
         400,
       );
-    if (input.type === 'claimSeatHandover' && token) {
-      let existing;
+    if (typeof input.playerId !== 'string' || !input.playerId || input.playerId.length > 100)
+      throw new SeatControlError('Provide a valid player ID.', 'INVALID_CONTROL_REQUEST', 400);
+    const targetId = input.playerId;
+    if (input.type === 'claimSeatHandover') {
+      // A caller cannot evade the existing-browser restriction by selecting a
+      // nonexistent scoped cookie while retaining another legacy credential.
+      for (const cookie of roomSeatCookies(req, code)) {
+        if (!cookie) continue;
+        let existing;
+        try {
+          existing = await authenticateSelectedSeat(new Request(req.url, { headers: { cookie: `dune_${code}=${cookie}` } }), code);
+        } catch (error) {
+          if (error instanceof RoomEntryError && error.code === 'ROOM_REMOVED' || !(error instanceof RuleError)) throw error;
+        }
+        if (existing && existing.playerId !== targetId)
+          throw new SeatControlError(
+            'This browser already controls another seat in this room. Use a separate browser profile to accept the handover.',
+            'ALREADY_SEATED', 409,
+          );
+      }
+    }
+    if (selector && selector !== targetId)
+      throw new SeatControlError('The selected seat does not match this recovery request.', 'INVALID_CONTROL_REQUEST', 400);
+    // Determine ownership before recovery rotates the old credential.
+    const existingLegacy = seatCookie(req, `dune_${code}`);
+    let legacyOtherSeat = false;
+    if (existingLegacy) {
       try {
-        existing = await authenticate(code, token);
+        legacyOtherSeat = (await authenticateSelectedSeat(new Request(req.url, { headers: { cookie: `dune_${code}=${existingLegacy}` } }), code)).playerId !== targetId;
       } catch (error) {
         if (error instanceof RoomEntryError && error.code === 'ROOM_REMOVED' || !(error instanceof RuleError)) throw error;
       }
-      if (existing && existing.playerId !== input.playerId)
-        throw new SeatControlError(
-          'This browser already controls another seat in this room. Use a separate browser profile to accept the handover.',
-          'ALREADY_SEATED',
-          409,
-        );
     }
+    // A recovery claim may omit the selector. Replace any existing scoped
+    // cookie for its target so that a stale token cannot shadow the new one.
+    const hasTargetCookie = !!seatCookie(req, `dune_${code}_${targetId}`);
+    const cookieName = hasTargetCookie || legacyOtherSeat
+      ? `dune_${code}_${targetId}` : `dune_${code}`;
     const result =
       input.type === 'claimSeatHandover'
         ? await claimSeatHandover(code, {
@@ -160,7 +178,7 @@ export async function POST(req: Request) {
       {
         headers: {
           ...noStore,
-          'Set-Cookie': `dune_${code}=${result.token}; HttpOnly; SameSite=Strict; Path=/api/rooms/${code}; Max-Age=2592000${requestOrigin(req, env.DUNE_PUBLIC_ORIGIN).startsWith('https:') ? '; Secure' : ''}`,
+          'Set-Cookie': `${cookieName}=${result.token}; HttpOnly; SameSite=Strict; Path=/api/rooms/${code}; Max-Age=2592000${requestOrigin(req, env.DUNE_PUBLIC_ORIGIN).startsWith('https:') ? '; Secure' : ''}`,
         },
       },
     );

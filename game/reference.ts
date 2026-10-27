@@ -4439,7 +4439,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Stronghold targets, storm-contested occupation, prediction and final-turn fallback.',
     steps: [
       'Victory is checked when the Mentat pause begins. A faction needs three strongholds, or four when allied or playing a two-player game. Allies combine distinct qualifying strongholds.',
-      'The optional two-person setup with two factions per person is not yet available; ordinary two-seat games use the four-stronghold target.',
+      'In the provisional two-person setup, each person controls two separately played factions and switches between their seats. They are not automatically allied and do not pool holdings unless they form an alliance. Each side needs four strongholds. Ordinary two-seat games also use four.',
       'Ecaz and its reciprocal ally can also win by jointly occupying three strongholds: both factions need non-advisor presence in each, without opposing fighters. The ordinary four-stronghold alliance route remains available. Occupy cancellation does not remove this victory condition. A concealed No-Field supplies public presence; its secret value is not revealed by this check.',
       'The separately marked fresh native Ecaz Homeworld preview has another printed route: native Ecaz must currently have at least seven reserves, the reciprocal alliance must jointly hold one actual uncontested stronghold, and it must occupy worlds of two other native factions. Two Emperor worlds count as one faction. This joins normal winners before a correct BG prediction or final-turn fallback; it adds no ordinary stronghold points.',
       'Opposing forces may survive together in a stronghold covered by storm. That contested stronghold does not count for either side. A sole occupant still counts it even under storm.',
@@ -4459,6 +4459,27 @@ export const RULE_TOPICS: RuleTopic[] = [
       'faction-guild',
       'faction-beneGesserit',
     ],
+  },
+  {
+    id: 'two-person-four-factions',
+    title: 'Two people, two factions each',
+    category: 'Getting started',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'Two people each control two independent faction seats.',
+    steps: [
+      'The host enables the option before adding extra factions. Each person joins one seat and adds a second, then switches active faction to ready and play each seat.',
+      'The provisional interpretation keeps the factions separate and does not automatically ally them. An individual faction or alliance needs four strongholds.',
+      'This prototype requires human seats, cannot be disabled after a second seat is added, and does not yet establish every player-count interaction.',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Two controllers own four independently authenticated seats; the shared victory quote uses the validated controller count. Other player-count rules remain provisional.', evidence: ['game/two-player-controllers.ts', 'game/engine.ts', 'game/victory-progress.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Lobby controls add and select seats, each with its own view and actions; wider accessibility and complete-game acceptance remain open.', evidence: ['components/two-player-controls.tsx', 'app/page.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Existing authorized human-seat autopilot remains available; independent bot seats and strategic calibration for this mode remain unfinished.', evidence: ['game/engine.ts', 'docs/AI_DEVELOPMENT_PLAN.md'] },
+      { area: 'Documentation', status: 'Partial', detail: 'The provisional interpretation, sources and limitations are recorded.', evidence: ['docs/TWO_PLAYER_TWO_FACTIONS.md', 'docs/RULE_DECISIONS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused setup, first-turn, victory, seat selection, action and recovery cases exercise the prototype. Full games, combinations, broader custody and deployed acceptance remain open.', evidence: ['tests/two-player-engine.test.ts', 'tests/two-player-seat-http.test.ts', 'tests/victory-progress.test.ts'] },
+    ],
+    related: ['victory', 'mentat'],
   },
   {
     id: 'fremen-ecaz-endgame',

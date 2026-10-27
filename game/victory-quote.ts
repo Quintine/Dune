@@ -23,6 +23,7 @@ import {
   type StrongholdState,
 } from './stronghold-cards';
 import { ecazHomeworldVictoryProgress, type EcazHomeworldVictoryContext, type EcazHomeworldVictoryProgress } from './ecaz-homeworld-victory';
+import type { TwoPlayerControllers } from './two-player-controllers';
 
 export class VictoryQuoteError extends Error {}
 function requireVictory(
@@ -41,6 +42,7 @@ export type VictoryContext = Omit<BoardContext, 'players'> &
     'turn' | 'phase' | 'status' | 'winner' | 'techTokens' | 'strongholdCards' | 'victoryExtraStrongholds' | 'victoryFinalTurn'
   > & {
     players: readonly (BoardSeat & Pick<Player, 'prediction'>)[];
+    twoPlayerControllers?: TwoPlayerControllers;
   };
 export type VictoryQuote = {
   released: AdvisorRelease[];

@@ -8,7 +8,8 @@ import type { BoardContext, BoardSeat } from '../game/board-resolution-quote';
 import type { Game } from '../game/engine';
 import { createTechTokens, TECH_TOKENS } from '../game/tech-tokens';
 import { MOBILE_STRONGHOLD, MOBILE_LOCATION } from '../game/board';
-type Context = BoardContext & Pick<Game, 'techTokens'>;
+import type { TwoPlayerControllers } from '../game/two-player-controllers';
+type Context = BoardContext & Pick<Game, 'techTokens'> & { twoPlayerControllers?: TwoPlayerControllers };
 const keys = [
   'arrakeen:10',
   'carthag:11',
@@ -93,6 +94,24 @@ void test('unallied target is three except in a two-player game', () => {
   assert.equal(row(g).qualifies, false);
   occupy(g, 'e', keys);
   assert.equal(row(g).qualifies, true);
+});
+void test('two controllers with four factions need four holds without pooling their separate factions', () => {
+  const g = fixture(false);
+  g.players = [...g.players, { id: 'h', faction: 'harkonnen', ally: null, forces: {} }];
+  g.order = [...g.order, 'h'];
+  g.twoPlayerControllers = { version: 1, controllers: [
+    { id: 'e', seats: ['e', 'a'] }, { id: 'x', seats: ['x', 'h'] },
+  ] };
+  occupy(g, 'e', keys.slice(0, 3));
+  occupy(g, 'a', [keys[3]]);
+  assert.equal(row(g).target, 4);
+  assert.deepEqual(row(g).members, ['e']);
+  assert.equal(row(g).qualifies, false);
+  occupy(g, 'a', []);
+  occupy(g, 'e', keys);
+  assert.equal(row(g).qualifies, true);
+  g.twoPlayerControllers.controllers[1].seats.pop();
+  assert.throws(() => strongholdProgress(g), VictoryProgressError);
 });
 void test('technology requires one member to hold all three and never supplies a joint territory', () => {
   const g = fixture();

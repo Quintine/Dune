@@ -16,6 +16,18 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Two people, four factions — 27 October. Prototyped / Partial.** Each person
+can add a separately authenticated second faction and switch its private view
+and actions. Exactly two controllers with two seats each are required to start;
+ordinary victory uses the four-stronghold target. Independent factions and no
+automatic alliance are provisional. Focused setup, victory, UI and isolated
+HTTP cases pass; complete games, player-count interactions, comprehensive
+custody review and deployed acceptance remain open. Human seats are required;
+handover into a browser holding another active room seat remains unsupported.
+[A dedicated isolated browser room](TWO_PLAYER_TWO_FACTIONS.md) also exercised
+adding, switching and independently readying the host's two factions.
+[Scope](TWO_PLAYER_TWO_FACTIONS.md).
+
 **Next: remaining rule functions and native timing.**
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
@@ -25,9 +37,8 @@ clean boundary the claiming player may provisionally pause its own started
 Charity opportunity and resume last, keeping the original claim and payment.
 The related nine-file union, including the repaired v3 Revival controls,
 passes 51 cases and the production build passes; broader combinations and
-deployed acceptance remain open. The optional
-two-human/four-faction setup is separately documented as missing in
-[its implementation contract](TWO_PLAYER_TWO_FACTIONS.md).
+deployed acceptance remain open. The separate optional two-human/four-faction
+setup has since been prototyped above.
 
 **Agreed extra turns and Basic simultaneous victory — 27 October. Prototyped /
 Partial.** The public continuation now covers Basic qualifiers and tied

@@ -14,6 +14,15 @@ npm run dev -- --host 0.0.0.0
 
 Open `http://localhost:3000`. Create a room, share its eight-character invitation, and add human or AI seats. The host can configure Easy, Medium, Hard and Brutal AI opponents. Current calibration demonstrates a substantially weaker Easy policy; it does not yet demonstrate a consistent ordering among the upper three levels.
 
+For the provisional two-person setup, the host enables **Two players, two
+factions each** in the lobby. Each person joins with one faction, then adds a
+second and uses **Active faction** to switch seats. Ready each faction before
+the host starts. The factions are independent unless they form an alliance;
+the ordinary victory target is four strongholds per side. The prototype
+requires human-controlled seats and cannot be disabled after a second faction
+is added. Counts for optional modules and wider interactions remain provisional.
+See [the implementation scope](docs/TWO_PLAYER_TWO_FACTIONS.md).
+
 New ordinary-auction lots show a **ten-second bidding countdown**. Native
 inspection and response decisions hold the clock. At expiry, the server passes
 or submits only a bid required by a binding Truthtrance answer; normal payment

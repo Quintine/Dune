@@ -4,6 +4,7 @@ import {
   normalizeAutomaticGame,
   createGame,
   joinGame,
+  joinControlledFaction,
   newPlayer,
   viewGame,
   synchronizeAuctionClock,
@@ -441,6 +442,65 @@ export async function joinRoom(
     };
   } catch (error) {
     const replay = await replayEntry(entry);
+    if (replay) return replay;
+    await requireUnusedEntryToken(entry);
+    throw error;
+  }
+}
+/** Add a separately authenticated faction under an existing two-person controller. */
+export async function addControlledFaction(
+  code: string, auth: SeatAuth, version: number, name: string, faction: FactionId,
+  entryInput?: unknown,
+): Promise<EntryResult & { token: string }> {
+  const id = crypto.randomUUID();
+  const player = newPlayer(id, name, faction);
+  const entry = await prepareEntry(entryInput, {
+    kind: 'controlled-faction', room: code, actor: auth.playerId, version,
+    name: player.name, faction,
+  });
+  // A receipt is not authority: revalidate the original controller on every replay.
+  async function checkedReplay() {
+    await readSeatView(code, auth);
+    const snapshot = await readRoomSnapshot(code);
+    const controller = snapshot.game.twoPlayerControllers?.controllers.find(c => c.seats.includes(auth.playerId));
+    if (!controller) throw new RuleError('Your seat is not a two-person controller.');
+    const replay = await replayEntry(entry);
+    if (replay && !controller.seats.includes(replay.view.me))
+      throw new RoomEntryError('This room-entry receipt does not belong to your controller.', 'ENTRY_RECEIPT_INVALID');
+    return replay;
+  }
+  try {
+    const replay = await checkedReplay();
+    if (replay) return replay;
+    await requireUnusedEntryToken(entry);
+    const { game: g, control } = await readRoomSnapshot(code);
+    if (control.closed) throw new RoomClosedError();
+    if (control.paused || control.joinLocked)
+      throw new RoomEntryError(
+        control.paused ? 'An administrator paused this room. New players may join after it resumes.' : 'New joins are locked by an administrator.',
+        control.paused ? 'ROOM_PAUSED' : 'ROOM_JOIN_LOCKED',
+      );
+    if (g.version !== version) throw new RoomEntryError('The table changed. Retry the same room-entry request.', 'ENTRY_CONFLICT');
+    joinControlledFaction(g, player, auth.playerId);
+    g.version++;
+    const token = entry?.sessionToken ?? Array.from(crypto.getRandomValues(new Uint8Array(32)), n => n.toString(16).padStart(2, '0')).join('');
+    const tokenHash = entry?.sessionHash ?? await hash(token);
+    const results = await db().batch([
+      db().prepare('UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND (paused = 1 OR join_locked = 1)) AND EXISTS (SELECT 1 FROM seats WHERE room_code = rooms.code AND player_id = ? AND token_hash = ? AND revoked = 0)')
+        .bind(JSON.stringify(g), Date.now(), code, version, auth.playerId, auth.tokenHash),
+      db().prepare('INSERT INTO seats(token_hash,room_code,player_id) SELECT ?,?,? WHERE changes() = 1').bind(tokenHash, code, id),
+      ...(entry ? [db().prepare('INSERT INTO room_entry_receipts(operation_hash,request_hash,session_hash,room_code,player_id) SELECT ?,?,?,?,? WHERE changes() = 1')
+        .bind(entry.operationHash, entry.requestHash, entry.sessionHash, code, id)] : []),
+    ]);
+    if (results[0].meta.changes !== 1) {
+      await requireRoomNotRemoved(code);
+      await requireRoomNotClosed(code);
+      throw new RoomEntryError('The table or your seat changed. Retry the same room-entry request.', 'ENTRY_CONFLICT');
+    }
+    return { token, view: await readSeatView(code, { playerId: id, tokenHash }),
+      ...(entry ? { entryReceipt: { operationId: entry.operationId, replayed: false } } : {}) };
+  } catch (error) {
+    const replay = await checkedReplay();
     if (replay) return replay;
     await requireUnusedEntryToken(entry);
     throw error;

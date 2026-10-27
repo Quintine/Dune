@@ -99,7 +99,7 @@ export function SeatAiDelegation({
         `/api/rooms/${game.code}/control`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-Dune-Seat': game.me },
           body: JSON.stringify(request),
         },
       );

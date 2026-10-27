@@ -1,8 +1,9 @@
 import { requestOrigin } from '@/lib/request-origin';
+import { authenticateSelectedSeat, selectedSeatId, seatCookie } from '@/lib/selected-seat';
 import {
   readSeatView,
-  authenticate,
   joinRoom,
+  addControlledFaction,
   act,
   RoomEntryError,
   needsAutomaticRoomRecovery,
@@ -19,13 +20,6 @@ const codeOf = (req: Request) => {
     throw new RuleError('Enter the eight-character room code.');
   return code;
 };
-const tokenOf = (req: Request, code: string) =>
-  req.headers
-    .get('cookie')
-    ?.split(';')
-    .map((x) => x.trim())
-    .find((x) => x.startsWith(`dune_${code}=`))
-    ?.split('=')[1] ?? '';
 const failure = (e: unknown) =>
   Response.json(
     {
@@ -52,7 +46,7 @@ const failure = (e: unknown) =>
 export async function GET(req: Request) {
   try {
     const code = codeOf(req),
-      id = await authenticate(code, tokenOf(req, code));
+      id = await authenticateSelectedSeat(req, code);
     const view = await readSeatView(code, id);
     // Reconnect resumes persisted automatic effects/acknowledgements and AI work
     // after an interruption. Actual human choices remain engine-owned decisions.
@@ -83,13 +77,13 @@ export async function POST(req: Request) {
     if (!body || typeof body !== 'object' || Array.isArray(body))
       throw new RuleError('The request is invalid.');
     if (body.type === 'join') {
-      const existing = tokenOf(req, code);
+      const existing = selectedSeatId(req) || seatCookie(req, `dune_${code}`);
       let auth: SeatAuth | null = null;
       if (existing) {
         try {
-          auth = await authenticate(code, existing);
+          auth = await authenticateSelectedSeat(req, code);
         } catch (error) {
-          if (error instanceof RoomEntryError && error.code === 'ROOM_REMOVED' || !(error instanceof RuleError)) throw error;
+          if (selectedSeatId(req) || error instanceof RoomEntryError && error.code === 'ROOM_REMOVED' || !(error instanceof RuleError)) throw error;
         }
       }
       if (body.entry === undefined && auth) {
@@ -124,7 +118,19 @@ export async function POST(req: Request) {
         },
       );
     }
-    const id = await authenticate(code, tokenOf(req, code));
+    if (body.type === 'addControlledFaction') {
+      const auth = await authenticateSelectedSeat(req, code);
+      if (!Number.isSafeInteger(body.version) || typeof body.name !== 'string' || typeof body.faction !== 'string')
+        throw new RuleError('Enter your name and faction and provide the current table version.');
+      const r = await addControlledFaction(code, auth, body.version, body.name, body.faction as FactionId, body.entry);
+      return Response.json({ ...r.view, ...(r.entryReceipt ? { entryReceipt: r.entryReceipt } : {}) }, {
+        headers: {
+          'Set-Cookie': `dune_${code}_${r.view.me}=${r.token}; HttpOnly; SameSite=Strict; Path=/api/rooms/${code}; Max-Age=2592000${requestOrigin(req, env.DUNE_PUBLIC_ORIGIN).startsWith('https:') ? '; Secure' : ''}`,
+          'Cache-Control': 'no-store',
+        },
+      });
+    }
+    const id = await authenticateSelectedSeat(req, code);
     if (
       !Number.isSafeInteger(body.version) ||
       !body.action ||

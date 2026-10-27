@@ -9,6 +9,7 @@ import { gameTerritories } from './board';
 import { fighterCount } from './advisors';
 import { TECH_TOKENS } from './tech-tokens';
 import { isDiscoveryLocationId, JACURUTU_SIETCH } from './discoveries';
+import { controllerStrongholdTarget, type TwoPlayerControllers } from './two-player-controllers';
 
 export type StrongholdProgress = {
   player: string;
@@ -45,7 +46,10 @@ export function countsForStrongholdVictory(id: string) {
  * victory, combat resolution, resource mutation or Stronghold Card ownership is
  * considered. Mandatory advisor releases are returned for the caller to commit. */
 export function strongholdProgress(
-  g: BoardContext & Pick<Game, 'techTokens'> & { victoryExtraStrongholds?: number },
+  g: BoardContext & Pick<Game, 'techTokens'> & {
+    victoryExtraStrongholds?: number;
+    twoPlayerControllers?: TwoPlayerControllers;
+  },
 ): { released: AdvisorRelease[]; progress: StrongholdProgress[] } {
   try {
     requireProgress(
@@ -129,7 +133,9 @@ export function strongholdProgress(
         members.some((member) =>
           TECH_TOKENS.every(({ id }) => tech[id].owner === member),
         );
-      const target = (partner || players.length === 2 ? 4 : 3) + extra;
+      const target = controllerStrongholdTarget(
+        players.map((player) => player.id), g.twoPlayerControllers, !!partner,
+      ) + extra;
       return {
         player: id,
         members,

@@ -97,6 +97,18 @@ void test('two seats require four normal holds', () => {
   g.players[0].forces['tueks_sietch:5'] = 1;
   compare(g, ['p0']);
 });
+void test('two people controlling four factions require four holds for a single faction', () => {
+  const g = fixture(['atreides', 'emperor', 'beneGesserit', 'harkonnen'], false);
+  Object.assign(g, { twoPlayerControllers: { version: 1, controllers: [
+    { id: 'p0', seats: ['p0', 'p1'] }, { id: 'p2', seats: ['p2', 'p3'] },
+  ] } });
+  occupy(g, 0, 'arrakeen', 'carthag', 'sietch_tabr');
+  occupy(g, 1, 'tueks_sietch');
+  compare(g, []);
+  occupy(g, 1);
+  g.players[0].forces['tueks_sietch:5'] = 1;
+  compare(g, ['p0']);
+});
 void test('allies combine sole team occupancy at four, including a shared allied stronghold', () => {
   const g = fixture();
   g.players[0].ally = 'p1';

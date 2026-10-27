@@ -1,6 +1,7 @@
 import { env } from 'cloudflare:workers';
 import { requestOrigin } from '@/lib/request-origin';
-import { authenticate, RoomEntryError } from '@/db/rooms';
+import { RoomEntryError } from '@/db/rooms';
+import { authenticateSelectedSeat } from '@/lib/selected-seat';
 import { readTableTalk, sendTableTalk, TableTalkError } from '@/db/table-talk';
 import { RuleError } from '@/game/engine';
 const noStore = { 'Cache-Control': 'no-store' };
@@ -16,14 +17,7 @@ async function handle(req: Request, write: boolean) {
     const code = url.pathname.split('/').at(-2)!.toUpperCase();
     if (!/^[A-Z2-9]{8}$/.test(code))
       throw new TableTalkError('Invalid room code.', 400);
-    const token =
-      req.headers
-        .get('cookie')
-        ?.split(';')
-        .map((part) => part.trim())
-        .find((part) => part.startsWith(`dune_${code}=`))
-        ?.split('=')[1] ?? '';
-    const auth = await authenticate(code, token);
+    const auth = await authenticateSelectedSeat(req, code);
     if (write) {
       const raw = await req.text();
       if (raw.length > 6500)

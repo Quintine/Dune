@@ -1,5 +1,18 @@
 # Dune implementation status
 
+## 27 October 2026 — Two people, four factions
+
+The provisional setup maps two controllers to four independent faction seats,
+with separate credentials, private views and actions, and a shared four-hold
+victory target. Fifty-nine focused offline cases and two isolated HTTP cases
+passed, including setup and initial storm decisions, selected-seat actions and
+scoped-seat recovery. The independent-faction interpretation, player-count
+interactions and broader acceptance remain provisional. Human seats are
+required; handover to a browser already holding a different active room seat is
+not supported. An isolated browser room additionally exercised adding, switching
+and independently readying the host's two factions; it did not cover a second
+human or a complete game. [Scope](TWO_PLAYER_TWO_FACTIONS.md).
+
 ## 27 October 2026 — Advanced Sapho Charity suspension
 
 A player may provisionally pause its own started Charity turn at a clean

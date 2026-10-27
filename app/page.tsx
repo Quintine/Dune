@@ -6,6 +6,8 @@ import { GameTable } from '@/components/game-table';
 import { SeatConfirmation, type SeatConfirmationKind } from '@/components/seat-confirmation';
 import { RoomEntryConfirmation } from '@/components/room-entry-confirmation';
 import { RulesetControls } from '@/components/ruleset-controls';
+import { TwoPlayerControls } from '@/components/two-player-controls';
+import { randomId } from '@/lib/random-id';
 import {
   SeatHandoverSetup,
   SeatHandoverClaim,
@@ -55,6 +57,9 @@ const inviteRejected = (error: unknown) =>
   error instanceof ClientRequestError &&
   error.kind === 'http' &&
   [401, 403, 404, 409].includes(error.status ?? 0);
+
+type TwoPlayerEntry = { room: string; seat: string; bodyText: string };
+const TWO_PLAYER_ENTRY_KEY = 'dune.pending-controlled-faction.v1';
 export default function Home() {
   const activeRoom = useRef<string | null>(null);
   const activeSeat = useRef<string | null>(null);
@@ -96,6 +101,8 @@ export default function Home() {
   const [handoverPending, setHandoverPending] = useState(true);
   const [aiPermissionPending, setAiPermissionPending] = useState(true);
   const [abandonAcknowledged, setAbandonAcknowledged] = useState(false);
+  const [twoPlayerEntry, setTwoPlayerEntry] = useState<TwoPlayerEntry | null>(null);
+  const [twoPlayerEntryProblem, setTwoPlayerEntryProblem] = useState('');
   const f = faction(selected);
   const roomCode = game?.code;
   const roomUnavailable = !!game && removedRoom === game.code;
@@ -110,20 +117,25 @@ export default function Home() {
   // This function is deliberately GET-only, including WebMCP reads and recovery.
   const refresh = useCallback(
     async (room: string, fresh = false): Promise<GameView> => {
-      let pending = reads.current.get(room);
+      const seat = activeSeat.current;
+      const readKey = `${room}:${seat ?? ''}`;
+      let pending = reads.current.get(readKey);
       if (pending && !fresh) return pending;
       // Reconciliation must start after previously issued reads have settled.
       while (pending) {
         await pending.catch(() => {});
-        pending = reads.current.get(room);
+        pending = reads.current.get(readKey);
       }
       const readEpoch = epoch.current;
       const request = requestJson<GameView>(`/api/rooms/${room}`, {
         cache: 'no-store',
+        headers: seat ? { 'X-Dune-Seat': seat } : undefined,
       })
         .then((data) => {
           if (
             activeRoom.current !== room ||
+            activeSeat.current !== seat ||
+            (seat !== null && data.me !== seat) ||
             readEpoch !== epoch.current ||
             (removedRooms.current.has(room) && !fresh) ||
             data.version < (knownVersions.current.get(room) ?? -1)
@@ -163,9 +175,9 @@ export default function Home() {
           return data;
         })
         .finally(() => {
-          reads.current.delete(room);
+          reads.current.delete(readKey);
         });
-      reads.current.set(room, request);
+      reads.current.set(readKey, request);
       return request;
     },
     [],
@@ -216,16 +228,17 @@ export default function Home() {
       try {
         const next = await requestJson<GameView>(`/api/rooms/${room}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-Dune-Seat': seat! },
           body: JSON.stringify({
             version: data.version,
             action: { type: 'advanceBots' },
           }),
         });
+        if (next.me !== seat) throw new ClientRequestError('The server returned a different faction seat.', 'invalid-response');
         if (
           activeRoom.current === room &&
           activeSeat.current === seat &&
-          epoch.current === requestEpoch
+          epoch.current === requestEpoch && next.me === seat
         ) {
           knownVersions.current.set(
             room,
@@ -265,6 +278,22 @@ export default function Home() {
   );
 
   useEffect(() => {
+    try {
+      const saved = window.sessionStorage.getItem(TWO_PLAYER_ENTRY_KEY);
+      if (saved) {
+        const value: unknown = JSON.parse(saved);
+        if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid saved request');
+        const attempt = value as TwoPlayerEntry;
+        const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+        if (Object.keys(attempt).sort().join(',') !== 'bodyText,room,seat' || typeof attempt.room !== 'string' || !/^[A-Z2-9]{8}$/.test(attempt.room) || typeof attempt.seat !== 'string' || !uuid.test(attempt.seat) || typeof attempt.bodyText !== 'string' || attempt.bodyText.length > 4096) throw new Error('Invalid saved request');
+        const body = JSON.parse(attempt.bodyText);
+        if (!body || typeof body !== 'object' || Array.isArray(body) || JSON.stringify(body) !== attempt.bodyText || Object.keys(body).sort().join(',') !== 'entry,faction,name,type,version' || body.type !== 'addControlledFaction' || typeof body.version !== 'number' || !Number.isSafeInteger(body.version) || body.version < 0 || typeof body.name !== 'string' || !body.name.trim() || body.name.length > 32 || !FACTIONS.some((f) => f.id === body.faction) || !body.entry || typeof body.entry !== 'object' || Object.keys(body.entry).sort().join(',') !== 'operationId,sessionToken' || typeof body.entry.operationId !== 'string' || !uuid.test(body.entry.operationId) || typeof body.entry.sessionToken !== 'string' || !/^[0-9a-f]{64}$/.test(body.entry.sessionToken)) throw new Error('Invalid saved request');
+        // oxlint-disable-next-line react/react-compiler -- Restore a private retry record from this tab.
+        setTwoPlayerEntry(attempt);
+      }
+    } catch {
+      setTwoPlayerEntryProblem('The saved second-faction request could not be read safely. It remains in this tab; restore access to its storage before continuing.');
+    }
     // A one-use handover needs its exact receipt before any other seat flow.
     try {
       if (window.sessionStorage.getItem(HANDOVER_CLAIM_STORAGE_KEY) !== null) {
@@ -533,7 +562,7 @@ export default function Home() {
   }
 
   async function send(action: Action) {
-    if (!game || removedRooms.current.has(game.code) || mutationPending.current || recovery.current) return;
+    if (!game || removedRooms.current.has(game.code) || mutationPending.current || recovery.current || twoPlayerEntry || twoPlayerEntryProblem) return;
     if (game.roomControl?.closed) { setNotice('An administrator closed this room. The saved table remains readable; play resumes after reopening.'); return; }
     if (game.roomControl?.paused && !(action.type === 'setAutopilot' && action.difficulty === null)) {
       setNotice('An administrator paused this room. Game decisions will be available when the room resumes.');
@@ -548,13 +577,14 @@ export default function Home() {
     try {
       const data = await requestJson<GameView>(`/api/rooms/${room}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Dune-Seat': seat },
         body: JSON.stringify({ version: game.version, action }),
       });
+      if (data.me !== seat) throw new ClientRequestError('The server returned a different faction seat.', 'invalid-response');
       if (
         activeRoom.current === room &&
         activeSeat.current === seat &&
-        epoch.current === requestEpoch
+        epoch.current === requestEpoch && data.me === seat
       ) {
         knownVersions.current.set(
           room,
@@ -586,6 +616,103 @@ export default function Home() {
       mutationPending.current = false;
       setBusy(false);
     }
+  }
+
+  function switchFaction(seat: string) {
+    if (!game || !game.controlledFactionSeats?.some((owned) => owned.id === seat) ||
+      seat === game.me || mutationPending.current || reconnectPending.current ||
+      recovery.current || handoverPending || aiPermissionPending || claimUncertain ||
+      twoPlayerEntry || twoPlayerEntryProblem || roomUnavailable) return;
+    const room = game.code;
+    ++epoch.current;
+    activeSeat.current = seat;
+    setHandoverPending(true);
+    setAiPermissionPending(true);
+    setGame(null);
+    setRestoring(true);
+    setRestoreFailed(false);
+    setNotice('');
+    void refresh(room, true).catch((error: Error) => {
+      if (activeRoom.current === room && activeSeat.current === seat) {
+        setRestoreFailed(true);
+        setNotice(error.message);
+      }
+    }).finally(() => {
+      if (activeRoom.current === room && activeSeat.current === seat) setRestoring(false);
+    });
+  }
+
+  async function dispatchControlledFaction(attempt: TwoPlayerEntry, firstDispatch: boolean) {
+    if (mutationPending.current || reconnectPending.current || recovery.current || handoverPending || aiPermissionPending || claimUncertain || activeRoom.current !== attempt.room) return;
+    const requestEpoch = epoch.current;
+    mutationPending.current = true;
+    setBusy(true);
+    setNotice('');
+    let responseReceived = false;
+    try {
+      const data = await requestJson<GameView & { entryReceipt?: { operationId: string; replayed: boolean } }>(`/api/rooms/${attempt.room}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Dune-Seat': attempt.seat },
+        body: attempt.bodyText,
+      });
+      responseReceived = true;
+      if (activeRoom.current !== attempt.room || requestEpoch !== epoch.current) return;
+      const body = JSON.parse(attempt.bodyText);
+      if (data.code !== attempt.room || data.me === attempt.seat ||
+        data.entryReceipt?.operationId !== body.entry.operationId || typeof data.entryReceipt?.replayed !== 'boolean' ||
+        !data.players.some((player) => player.id === data.me && player.faction === body.faction))
+        throw new ClientRequestError('The server did not confirm the saved second-faction request.', 'invalid-response');
+      window.sessionStorage.removeItem(TWO_PLAYER_ENTRY_KEY);
+      if (window.sessionStorage.getItem(TWO_PLAYER_ENTRY_KEY) !== null) throw new Error('The saved retry proof could not be removed.');
+      setTwoPlayerEntry(null);
+      ++epoch.current;
+      activeSeat.current = data.me;
+      knownVersions.current.set(attempt.room, Math.max(data.version, knownVersions.current.get(attempt.room) ?? -1));
+      setHandoverPending(true);
+      setAiPermissionPending(true);
+      setGame(data);
+      setNotice('Second faction added. You are now viewing its seat. Switch factions to make each faction ready.');
+    } catch (error) {
+      if (activeRoom.current !== attempt.room || requestEpoch !== epoch.current) return;
+      if (firstDispatch && !responseReceived && !requestMayHaveCompleted(error)) {
+        try {
+          window.sessionStorage.removeItem(TWO_PLAYER_ENTRY_KEY);
+          if (window.sessionStorage.getItem(TWO_PLAYER_ENTRY_KEY) !== null) throw new Error();
+          setTwoPlayerEntry(null);
+        } catch {
+          setTwoPlayerEntryProblem('The rejected request was not sent again, but its saved proof could not be removed. Restore storage access before continuing.');
+        }
+      }
+      setNotice(!firstDispatch || responseReceived || requestMayHaveCompleted(error)
+        ? `${(error as Error).message} The request may have completed. Retry the saved request exactly; it will not be sent again automatically.`
+        : (error as Error).message);
+    } finally {
+      mutationPending.current = false;
+      setBusy(false);
+    }
+  }
+
+  async function addControlledFaction(name: string, factionId: string) {
+    if (!game || twoPlayerEntry || twoPlayerEntryProblem || mutationPending.current || recovery.current || handoverPending || aiPermissionPending || claimUncertain) return;
+    const attempt: TwoPlayerEntry = {
+      room: game.code,
+      seat: game.me,
+      bodyText: JSON.stringify({
+        type: 'addControlledFaction', version: game.version, name, faction: factionId,
+        entry: { operationId: randomId(), sessionToken: Array.from(crypto.getRandomValues(new Uint8Array(32)), (byte) => byte.toString(16).padStart(2, '0')).join('') },
+      }),
+    };
+    try {
+      if (window.sessionStorage.getItem(TWO_PLAYER_ENTRY_KEY) !== null) throw new Error();
+      const text = JSON.stringify(attempt);
+      window.sessionStorage.setItem(TWO_PLAYER_ENTRY_KEY, text);
+      if (window.sessionStorage.getItem(TWO_PLAYER_ENTRY_KEY) !== text) throw new Error();
+    } catch {
+      setTwoPlayerEntryProblem('The second-faction request could not be saved safely. Nothing was sent; restore storage access before continuing.');
+      return;
+    }
+    setTwoPlayerEntry(attempt);
+    await dispatchControlledFaction(attempt, true);
   }
 
   async function reconnect(resumeBots = false) {
@@ -725,10 +852,23 @@ export default function Home() {
         {seatConfirmation && !roomUnavailable && <div className="table-shell">
           <SeatConfirmation kind={seatConfirmation} onContinue={() => setSeatConfirmation(null)} />
         </div>}
+        {!roomUnavailable && <div className="table-shell"><TwoPlayerControls
+          game={game}
+          disabled={busy || needsReconcile || checkingConnection || handoverPending || aiPermissionPending || claimUncertain || !!twoPlayerEntry || !!twoPlayerEntryProblem}
+          pendingEntry={twoPlayerEntry !== null}
+          entryRoom={twoPlayerEntry?.room}
+          entryProblem={twoPlayerEntryProblem}
+          onModeChange={(enabled) => void send({ type: 'twoPlayerMode', enabled })}
+          onSwitch={switchFaction}
+          onAdd={(name, factionId) => void addControlledFaction(name, factionId)}
+          onRetry={() => { if (twoPlayerEntry) void dispatchControlledFaction(twoPlayerEntry, false); }}
+          retryDisabled={busy || needsReconcile || checkingConnection || handoverPending || aiPermissionPending || claimUncertain || !!twoPlayerEntryProblem || twoPlayerEntry?.room !== game.code}
+        /></div>}
         {roomUnavailable ? <main className="table-shell"><RemovedRoomNotice code={game.code} busy={busy || checkingConnection} onRetry={() => void reconnect()} onExit={exitTable} exitDisabled={handoverPending || aiPermissionPending || claimUncertain} /></main> : <GameTable
+          key={`${game.code}:${game.me}`}
           game={game}
           send={send}
-          busy={busy || needsReconcile}
+          busy={busy || needsReconcile || !!twoPlayerEntry || !!twoPlayerEntryProblem}
           onExit={exitTable}
           exitDisabled={handoverPending || aiPermissionPending}
         />}
