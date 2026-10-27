@@ -51,9 +51,9 @@ export function Distrans({
         </p>
         <p className="m-0 text-sm leading-6" aria-label="Provisional Distrans bid timing">
           Provisional bid timing: you may transfer before the first bid or pass
-          on an ordinary auction lot. Once anyone bids or passes, that lot stays
-          blocked while unresolved. Special auctions keep their existing
-          restrictions.
+          on an ordinary, Once Around or normal Black Market lot, or before the
+          first sealed submission in a Silent lot. Once that bidding has begun,
+          the lot stays blocked while unresolved.
         </p>
         <CardInspector card={distrans.card} />
         {choice && (

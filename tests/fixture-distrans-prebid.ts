@@ -58,6 +58,15 @@ export function actDistransPrebid(game: Game, actor: string, action: Action,
  * auction and phase action retains the existing neutral native policy. */
 export function nextDistransPrebidStep(game: Game): DistransPrebidStep {
   if (!game.response && !game.phaseOpening && !game.pendingTreacheryDiscard) {
+    // The real Advanced opening has one current owner at a time. Finish that
+    // owner's optional Charity/Revival opportunity using the public action;
+    // never stage or reorder the persisted phase frame.
+    if (!game.decision && !game.truthtrance && !game.pendingNullentropy) {
+      if (game.phase === 2 && game.charityOrder?.remaining[0])
+        return { actor: game.charityOrder.remaining[0], action: { type: 'ready' } };
+      if (game.phase === 4 && game.revivalOrder?.remaining[0])
+        return { actor: game.revivalOrder.remaining[0], action: { type: 'ready' } };
+    }
     const decision = game.decision;
     if (decision?.kind === 'richeseCache' &&
       game.richeseCache?.some(card => card.id === DISTRANS_PREBID_CARD))

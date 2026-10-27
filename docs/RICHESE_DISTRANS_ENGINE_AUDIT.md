@@ -2,6 +2,31 @@
 
 Audit date: 2026-09-06. Read `docs/RICHESE_ACQUISITION_RULES.md` first. This audit does not activate the card or certify the remaining Richese effects.
 
+## Untouched Richese special lot — 27 October 2026
+
+**Prototyped / Partial.** Extend the selected pre-bid interpretation to an
+actual untouched Once Around or Silent cache or Black Market lot, or a normal
+Black Market lot. Before its
+first accepted bid, pass or sealed submission, the existing Distrans transfer
+may occur without reopening the auction or changing its event, card, eligible
+players, order or commitments. A zero Silent submission and an automatic
+full-hand pass count as the first action and close the window. Current hand
+limits and the original eligible set continue to govern later bids. Already-
+started special lots keep their existing boundary.
+This is a provisional application of the printed during-a-bid exception, not a
+specific publisher ruling. Self-transfer, existing reservations and other
+priority boundaries remain unchanged.
+
+Native public R/G/A/E test sources earn Guild's Distrans through a real cache
+purchase and advance to the original turn-two lot. Basic and Advanced Once
+Around/Silent paths and an Advanced normal Black Market path preserve their
+original lot across the transfer, while the first accepted bidding action
+closes the timing window. Four rendered action-leaf callbacks use real private
+quotes. Separate explicitly controlled, card-conserving capacity supplements
+stage hands before the native declaration to exercise automatic pass/zero and
+preservation of the excluded donor. Stateful selectors, browser/mobile and
+deployed play remain unverified.
+
 ## Future printed-use commitment — 27 October 2026
 
 Whole Truthtrance questions can name actual future printed Distrans use this
@@ -27,9 +52,10 @@ do not change. The existing completed paid-sale allowance remains.
 Bidding, an actual current ordinary card, zero bid, no bidder/passes/contribution
 and no Richese special lot. Current inspection does not consume this window.
 The first accepted bid or pass closes it for that lot; no action resets the
-bid history to permit a transfer. Once Around/Silent unpaid lots, self-transfer,
-Truthtrance, exact physical reservations and pending capacity commitments keep
-their existing restrictions. This does not certify every auction substep.
+bid history to permit a transfer. The Once Around/Silent restriction recorded
+at this historical checkpoint is superseded above. Self-transfer, Truthtrance,
+exact physical reservations and pending capacity commitments keep their
+existing restrictions. This does not certify every auction substep.
 
 The existing action, private projection and selectors remain. Persistent human
 guidance identifies the provisional span. Both outgoing cards and the recipient
@@ -89,7 +115,7 @@ The distinction between an ordinary Treachery effect and a cancellable faction/a
 ## Explicit unresolved guards
 
 1. **Giving the activating Distrans itself.** The give-then-discard wording does not explain self-selection. Do not put the same physical card in both the recipient's hand and the discard, discard a different card, or silently omit the discard. Until clarified, require a separate transferred card and label self-selection unsupported, not a printed prohibition.
-2. **Exact scope of “during a bid.”** The face does not define whether this means one bid declaration or the complete auction of a card. It does not say the entire Bidding phase. The 26 October selected policy above now permits an untouched ordinary lot before its first bid/pass; live normal/Once Around/Silent lots, including unsettled payment, retain the explicit timing boundary. Pre-bid declaration/selection, between-lot windows and post-purchase income are distinct contexts; do not present a blanket phase-3 ban as the official rule. The earlier open question is superseded only by that selected provisional scope.
+2. **Exact scope of “during a bid.”** The face does not define whether this means one bid declaration or the complete auction of a card. It does not say the entire Bidding phase. The selected policies above permit untouched ordinary, Once Around, Silent and normal Black Market lots before their first bidding action; started lots retain their timing boundary. Pre-bid declaration/selection, between-lot windows and post-purchase income are distinct contexts; do not present a blanket phase-3 ban as the official rule.
 3. **Active Truthtrance answer priority.** Existing question/priority resolution prevents changing the queried hand mid-question. No retrieved Distrans-specific rule overrides it. Keep this narrow existing priority boundary, rather than disabling Distrans for every unrelated decision or response.
 4. **Semuta discard reaction — updated 11 October 2026.** The explicit development preview reacts after a clean completed transfer, including during battle. Only the used Distrans is fresh; the privately transferred card is never a Semuta target. Claim or decline cannot repeat the transfer or change a sealed plan. The recipient may itself hold Semuta and claim the used card while keeping the earlier gift. Competing parents retain their separate boundaries; the neutral response and approved full-hand exchange are documented in [the Semuta source/runtime contract](SEMUTA_SOURCE_UPDATE_20260907.md).
 
@@ -159,7 +185,7 @@ Recommended regressions: atomic distinct-card conservation and fresh-version rep
 
 ## Runtime integration checkpoint
 
-The ordinary card action and owner-only projected transfer choices are integrated. Shared exact-card reservations cover saved parent Ix replacements and pending gifts; prospective checks preserve compulsory exchanges and binding donor promises. No new response or recipient confirmation is created. The supported post-payment context uses currentAuctionSale only after the existing code has paid and transferred the purchased card. The 26 October prototype admits untouched ordinary lots; live bids, unpaid special lots and self-transfer remain guarded.
+The ordinary card action and owner-only projected transfer choices are integrated. Shared exact-card reservations cover saved parent Ix replacements and pending gifts; prospective checks preserve compulsory exchanges and binding donor promises. No new response or recipient confirmation is created. The supported post-payment context uses currentAuctionSale only after the existing code has paid and transferred the purchased card. At this historical checkpoint, only untouched ordinary lots were admitted; the later special-lot prototype is described above. Started bids and self-transfer remain guarded.
 
 Six root engine, six independent review, five AI and three real SQLite/API cases pass, in addition to six pure custody cases. Full registered suites pass1,247 rules/client and96 persisted/API tests; TypeScript, lint and production build pass. The real browser gave Shield from a synthetic Harkonnen hand using Distrans while preserving a separate pending Richese gift; fresh-tab recovery did not replay it. Exact logs and fixtures are in IMPLEMENTATION_STATUS.md. Mobile, future Semuta, bid/self-transfer rulings and full Richese games remain incomplete.
 

@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Distrans before Richese special bidding — 27 October 2026
+
+Provisionally extend the existing pre-bid interpretation to an untouched Once
+Around or Silent cache or Black Market lot, or normal Black Market lot. The first bid, pass or sealed
+submission closes the window. Preserve the physical lot, existing eligibility,
+order and commitments; live hand capacity still controls subsequent bidding.
+This is an interpretation of the printed during-a-bid exception, not a
+publisher clarification. [Source and scope](RICHESE_DISTRANS_ENGINE_AUDIT.md#untouched-richese-special-lot--27-october-2026).
+
 ## Richese canceled gift retry — 27 October 2026
 
 Provisionally allow a fresh offer of the same retained Richese card in the same

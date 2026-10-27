@@ -20,6 +20,21 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Distrans before Richese special bidding — 27 October. Prototyped / Partial.**
+An untouched Once Around or Silent cache/Black Market lot or normal Black Market
+lot provisionally allows the existing transfer before the first bid, pass or sealed submission. Preserve
+its original card, eligibility and order; current hand capacity still applies.
+Started lots retain their separate timing boundary.
+[Source and scope](RICHESE_DISTRANS_ENGINE_AUDIT.md#untouched-richese-special-lot--27-october-2026).
+
+Six focused files pass 53/53. Native public R/G/A/E games buy Distrans in an
+earlier cache lot, then exercise Basic/Advanced Once Around and Silent and an
+Advanced normal Black Market lot through actual actions; four server-rendered
+transfer callbacks use the native quote. Four capacity supplements explicitly
+stage conserved cards before the real lot and transfer to verify automatic
+pass/zero and unchanged original eligibility. Stateful selectors, browser,
+mobile, deployment and complete-mode acceptance remain unverified.
+
 **Richese canceled gift retry — 27 October. Prototyped / Partial.**
 A canceled card may be offered again in the same phase under a provisional
 one-use interpretation. Each declaration has its own response, and the card,

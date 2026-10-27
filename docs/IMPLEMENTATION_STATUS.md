@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 27 October 2026 — Distrans before Richese special bidding
+
+Prototype the existing pre-bid timing interpretation for untouched Once Around
+and Silent cache/Black Market lots and normal Black Market lots. The original lot
+and eligible order persist; the first bid, pass or sealed submission closes this
+window. Started lots remain guarded. This composition is provisional, not a new
+publisher clarification. Complete interactions, modes and deployed acceptance
+remain open. [Contract](RICHESE_DISTRANS_ENGINE_AUDIT.md#untouched-richese-special-lot--27-october-2026).
+
+Six focused files pass 53/53. Public R/G/A/E setups select unopened initial
+deals/Spice and scalar lotteries, earn Distrans through a real Guild cache bid,
+and open turn-two Basic/Advanced Once Around/Silent and Advanced normal Black
+Market lots through actual decisions. Four server-rendered transfer callbacks
+apply the native quote. Four additional hand-capacity cases explicitly stage
+conserved cards before the real declaration and transfer; automatic pass/zero
+and original ineligibility remain. This does not exercise stateful selectors,
+browser hydration, mobile, deployment or complete modes.
+
 ## 27 October 2026 — Richese canceled gift retry
 
 Prototype the Basic alliance gift retry under the standing selected-interpretation

@@ -752,7 +752,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     steps: [
       'Any faction holding Distrans may use it. Choose another player whose hand has room and a different Treachery Card from your own hand. The recipient need not be your ally. Transfer that card intact, then discard Distrans into the ordinary discard pile.',
       'Open the Distrans transfer panel in your hand, select the recipient and card, inspect either card, then press Give and discard Distrans. There is no spice payment, purchase bonus, recipient acknowledgement or faction-power Karama response. Other players see the played Distrans, not the transferred card identity.',
-      'The printed exception is during a bid. Provisionally, an untouched ordinary auction lot allows Distrans before its first bid or pass. Opening or inspecting that lot does not start the bid; its dealt cards and bidding order stay the same. Active bids and unpaid special auctions remain guarded, while a completed purchase income response may allow use. Giving Distrans itself remains guarded.',
+      'The printed exception is during a bid. Provisionally, an untouched ordinary, Once Around or normal Black Market lot allows Distrans before its first bid or pass, and a Silent lot allows it before its first sealed submission. Opening or inspecting a lot does not start the bid; its card, eligibility and bidding order stay the same. Started lots remain guarded, while a completed purchase income response may allow use. Giving Distrans itself remains guarded.',
       'Current hand space still controls bidding after a transfer. A full donor can free space; if the active bidder receives its final card, it must pass instead of raising. The existing auction skips full hands without adding a lot or resetting earlier passes.',
       'Distrans resolves in one server action and keeps an existing response, decision or phase opening in place. Active Truthtrance retains priority. Both outgoing cards must be uncommitted; a sealed plan, fixed prescience answer, pending Richese gift or accepted replacement cannot lose its reserved card.',
       'A transfer must preserve binding battle answers, compulsory discards and both sides of a pending Harkonnen hand exchange. The recipient must retain room for its mandatory incoming return. Optional proposals that become unavailable can still finish through their existing decline or no-effect path.',
@@ -772,7 +772,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Synchronous two-card custody, private transfer, normal disposal, reservations and prospective checks are integrated. The provisional untouched ordinary-lot window admits use before its first bid/pass and rechecks live bid capacity. Active bids, unpaid special auctions, competing transactions and self-transfer retain their separate boundaries.',
+          'Synchronous two-card custody, private transfer, normal disposal, reservations and prospective checks are integrated. Provisional untouched ordinary and Richese special-lot windows admit use before the first bid, pass or sealed submission and recheck live bid capacity. Started lots, competing transactions and self-transfer retain their separate boundaries.',
       },
       {
         area: 'Player controls',
@@ -796,7 +796,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Pure timing/custody, existing engine/bot regressions, fourteen genuine Basic/Advanced pre-bid cases and seven controlled rendering/callback cases cover the implemented span. Native sources buy the actual cache card, earn capacities through purchases and complete the same ordinary lot. Full Richese games, browser/mobile/deployed acceptance and final assurance remain due.',
+          'Pure timing/custody and focused native Basic/Advanced special-lot cases exercise real cache purchases, preserved auction order and action-leaf callbacks. A separate capacity supplement stages conserved cards before a real lot; it is not earned hand history. Full Richese games, stateful selectors, browser/mobile/deployed acceptance and final assurance remain due.',
         evidence: [
           'tests/distrans.test.ts',
           'tests/distrans-engine.test.ts',
@@ -805,6 +805,10 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/fixture-distrans-prebid.ts',
           'tests/distrans-prebid-engine.test.ts',
           'tests/distrans-prebid-controls.test.ts',
+          'tests/fixture-distrans-richese-prebid.ts',
+          'tests/distrans-richese-prebid.test.ts',
+          'tests/distrans-richese-controls.test.ts',
+          'tests/distrans-black-market-prebid.test.ts',
           'components/distrans-transfer-action.tsx',
           'tests/distrans-engine-review.test.ts',
           'tests/distrans-bots.test.ts',

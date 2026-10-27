@@ -81,8 +81,8 @@ void test('an entitled untouched ordinary lot keeps the transfer enabled in Basi
   }
 });
 
-void test('live bid, pass-only and special-auction blocks come from the authoritative projection', () => {
-  for (const context of ['live bid', 'pass-only lot', 'special auction']) {
+void test('live bid, pass-only and started special-auction blocks come from the authoritative projection', () => {
+  for (const context of ['live bid', 'pass-only lot', 'started special auction']) {
     const game = projected();
     const reason = `Controlled ${context}: Distrans is unavailable until this lot resolves.`;
     if (context === 'live bid') { game.auction!.bid = 2; game.auction!.bidder = 't'; }
@@ -161,9 +161,9 @@ void test('brief provisional timing guidance stays visible without an extra conf
   for (let render = 0; render < 3; render++) {
     const html = markup(game);
     assert.match(html, /aria-label="Provisional Distrans bid timing"/);
-    assert.match(html, /Provisional bid timing: you may transfer before the first bid or pass on an ordinary auction lot/);
-    assert.match(html, /Once anyone bids or passes, that lot stays blocked while unresolved/);
-    assert.match(html, /Special auctions keep their existing restrictions/);
+    assert.match(html, /Provisional bid timing: you may transfer before the first bid or pass on an ordinary, Once Around or normal Black Market lot/);
+    assert.match(html, /before the first sealed submission in a Silent lot/);
+    assert.match(html, /Once that bidding has begun, the lot stays blocked while unresolved/);
     assert.match(html, /No spice is paid/);
     assert.match(html, /without a recipient confirmation or Karama response/);
     assert.doesNotMatch(html, /Confirm transfer|Accept transfer|Acknowledge|countdown/);
