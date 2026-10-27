@@ -54,6 +54,12 @@ function press(option: Option, busy = false, card = sapho!.id): Action[] {
   SaphoOrderButton({ card, option, busy, act(action) { actions.push(action); } }).props.onClick();
   return actions;
 }
+function pressFinish(game: GameView, busy = false) {
+  const sent: Action[] = [];
+  const button = FinishRevivalTurn({ game, busy, act(action) { sent.push(action); } });
+  button.props.onClick();
+  return { sent, disabled: button.props.disabled };
+}
 
 void test('clean first and last Revival choices use their own labels and preserve completed-turn guidance', () => {
   for (const mode of ['first', 'last'] as const) {
@@ -104,6 +110,38 @@ void test('own started Revival pause explains retained allowances and sends the 
   assert.match(html, /Returned pieces, costs and used revival allowances remain unchanged/);
   assert.deepEqual(press(option), [{ type: 'card', card: sapho!.id, scope: 'revival', event: option.event, mode: 'last' }]);
   assert.deepEqual(press(option, true), []);
+});
+
+void test('actual v3 Revival queue enables the current player and blocks the paused player', () => {
+  const source = createSaphoRevivalOrderFixture({ started: true });
+  let game = structuredClone(source.game);
+  // Transfer the one physical card to the real claimant; no card is created.
+  const donor = game.players.find(player => player.id === source.owner)!;
+  const claimant = game.players.find(player => player.id === source.current)!;
+  const cardIndex = donor.hand.findIndex(card => card.id === source.card);
+  assert.ok(cardIndex >= 0);
+  claimant.hand.push(donor.hand.splice(cardIndex, 1)[0]);
+  const pause = viewGame(game, source.current).saphoOptions.find(option =>
+    option.scope === 'revival' && option.mode === 'last');
+  assert.ok(pause && pause.scope === 'revival' && pause.resumeOwn);
+  game = actSaphoRevivalOrder(game, source.current, press(pause, false, source.card)[0]!);
+  assert.ok(game.revivalOrder && game.revivalOrder.version === 3);
+  let actor = game.revivalOrder.remaining[0];
+  assert.notEqual(actor, source.current);
+  const waiting = viewGame(game, source.current);
+  assert.deepEqual(pressFinish(waiting), { sent: [], disabled: true });
+  while (actor !== source.current) {
+    const active = viewGame(game, actor);
+    assert.match(revival(active), /Current Revival actor:/);
+    const finish = pressFinish(active);
+    assert.deepEqual(finish, { sent: [{ type: 'ready' }], disabled: false });
+    game = actSaphoRevivalOrder(game, actor, finish.sent[0]!);
+    actor = game.revivalOrder?.remaining[0] ?? '';
+    assert.ok(actor);
+  }
+  const resumed = viewGame(game, source.current);
+  assert.deepEqual(pressFinish(resumed), { sent: [{ type: 'ready' }], disabled: false });
+  assert.deepEqual(pressFinish(resumed, true), { sent: [], disabled: true });
 });
 
 void test('Basic unstamped and completed controlled views offer no Revival order button even with stale projected options', () => {

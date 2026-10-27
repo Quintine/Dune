@@ -18,7 +18,7 @@ function unavailableReason(game: GameView) {
   if (game.phase === 2)
     return !game.advanced || !game.charityOrder
       ? 'Charity order changes require an ordered Advanced Charity phase. Basic and an already-opened unstamped phase keep their existing timing.'
-      : 'Choose first or last only among remaining unstarted Charity turns. A player who has claimed finishes their Charity turn unchanged. Completed turns stay finished; already-held positions and committed cards are unavailable.';
+      : 'Change the order of remaining Charity turns. Another player finishes any started turn first. At a clean boundary, you may pause your own started turn and resume it last with your claim unchanged. Completed turns stay finished; already-held positions and committed cards are unavailable.';
   if (game.phase === 4)
     return !game.advanced || !game.revivalOrder
       ? 'Revival order changes require an ordered Advanced Revival phase. Basic and an already-opened unstamped phase keep their existing timing.'
@@ -67,7 +67,7 @@ export function SaphoOrderButton({
       }}
     >
       {option.scope === 'battleAggressor' ? 'Become aggressor and discard Juice of Sapho' :
-        (option.scope === 'movement' || option.scope === 'revival') && option.resumeOwn ? `Resume your ${option.scope} last and discard Juice of Sapho` :
+        (option.scope === 'movement' || option.scope === 'revival' || option.scope === 'charity') && option.resumeOwn ? `Resume your ${option.scope} last and discard Juice of Sapho` :
         `${bidding ? 'Bid' : option.scope === 'battleOrder' ? 'Choose battles' : option.scope === 'extortion' ? 'Take your Extortion choice' : option.scope === 'revival' ? 'Take your Revival turn' : option.scope === 'charity' ? 'Take your Charity turn' : 'Take your movement turn'} ${option.mode} and discard Juice of Sapho`}
     </Button>
   );
@@ -114,7 +114,7 @@ export function JuiceOfSapho({
             const extortion = option.scope === 'extortion';
             const revival = option.scope === 'revival';
             const charity = option.scope === 'charity';
-            const resumeOwn = (option.scope === 'movement' || revival) && option.resumeOwn;
+            const resumeOwn = (option.scope === 'movement' || revival || charity) && option.resumeOwn;
             const afterCurrent = (option.scope === 'movement' || revival || charity) && option.afterCurrent;
             const currentPlayer = afterCurrent
               ? game.players.find(player => player.id === afterCurrent)?.name ?? 'The active player'
@@ -154,7 +154,9 @@ export function JuiceOfSapho({
                 ))}
                 <p>
                   {resumeOwn
-                    ? revival
+                    ? charity
+                      ? 'Pause your started Charity turn and resume it last, after the other remaining players. Your completed claim and its payment remain unchanged. This timing is provisional.'
+                      : revival
                       ? 'Pause your started Revival turn and resume it last, after the other remaining players. Returned pieces, costs and used revival allowances remain unchanged. This timing is provisional.'
                       : 'Pause your started turn and resume it last, after the other remaining players. Shipment and movement already used stay spent; no extra action is granted. This timing is provisional.'
                     : aggressor

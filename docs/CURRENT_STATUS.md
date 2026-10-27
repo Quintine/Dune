@@ -20,6 +20,15 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Advanced Sapho Charity suspension — 27 October. Prototyped / Partial.** At a
+clean boundary the claiming player may provisionally pause its own started
+Charity opportunity and resume last, keeping the original claim and payment.
+The related nine-file union, including the repaired v3 Revival controls,
+passes 51 cases and the production build passes; broader combinations and
+deployed acceptance remain open. The optional
+two-human/four-faction setup is separately documented as missing in
+[its implementation contract](TWO_PLAYER_TWO_FACTIONS.md).
+
 **Agreed extra turns and Basic simultaneous victory — 27 October. Prototyped /
 Partial.** The public continuation now covers Basic qualifiers and tied
 Advanced solos, with a saved final-turn marker for agreements at turn ten and
@@ -42,8 +51,8 @@ Partial.** Sapho can provisionally pause a clean started Revival turn and resume
 it last with spent allowances and legacy order records preserved. Simultaneous
 unallied Advanced qualifiers are ranked by stronghold count before prediction;
 ties, Tech counting and other simultaneous victory sources retain the documented
-provisional composition. The 12-file affected union passes 144 cases. The
-unanimous option to play another turn and broader acceptance remain open.
+provisional composition. The earlier 12-file affected union passed 144 cases;
+the follow-ups above connect the unanimous option, while broader acceptance remains open.
 [Revival](ADVANCED_REVIVAL_ORDER.md) · [Victory](ADVANCED_PREVIEW.md).
 
 **Advanced Sapho own-turn suspension — 27 October. Prototyped / Partial.** The

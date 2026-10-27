@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Juice of Sapho and an already-started Advanced Charity turn — 27 October 2026
+
+Extend the provisional own-turn Last composition to a clean ordered Charity
+boundary. The holder's accepted claim and any payment remain unchanged while
+the same opportunity pauses and resumes last. Other holders still cannot
+displace an already-started actor; pending responses must finish first. The
+printed card does not explain splitting a turn, so this is an online timing
+interpretation, not a publisher clarification. Older order records retain
+their original version. [Scope](ADVANCED_CHARITY_ORDER.md).
+
 ## Advanced simultaneous solo stronghold victories — 27 October 2026
 
 The authorized supplied revision, physical p. 14 (printed p. 12), awards a

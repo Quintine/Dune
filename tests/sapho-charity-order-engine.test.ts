@@ -75,18 +75,22 @@ void test('an actual accepted current Charity claim stays ahead of both Sapho ta
   }
 });
 
-void test('the real Sapho holder cannot split its own started Charity or choose its existing no-op position', () => {
+void test('the real Sapho holder can pause its started Charity but cannot choose a no-op position', () => {
   const f = fixture(); let game = advance(reload(f.game), state => clean(state) && state.charityOrder?.remaining[0] === f.owner);
   assert.equal(game.active, f.owner);
   assert.equal(viewGame(game, f.owner).saphoOptions.some(option => option.scope === 'charity' && option.mode === 'first'), false);
   reject(game, f.owner, { type: 'card', card: f.card, scope: 'charity', event: currentEvent(game), mode: 'first' });
   game = claim(game, f.owner).game;
   assert.equal(player(game, f.owner).charityTurn, game.turn);
-  assert.deepEqual(viewGame(game, f.owner).saphoOptions.filter(option => option.scope === 'charity'), []);
-  for (const mode of ['first', 'last'] as const)
-    reject(game, f.owner, { type: 'card', card: f.card, scope: 'charity', event: currentEvent(game), mode });
-  assert.ok(player(game, f.owner).hand.some(card => card.id === f.card));
-  assert.equal(game.discard.some(card => card.id === f.card), false);
+  reject(game, f.owner, { type: 'card', card: f.card, scope: 'charity', event: currentEvent(game), mode: 'first' });
+  const option = viewGame(game, f.owner).saphoOptions.find(option => option.scope === 'charity' && option.mode === 'last');
+  assert.ok(option && option.scope === 'charity' && option.resumeOwn);
+  const before = player(game, f.owner).spice;
+  game = act(game, f.owner, { type: 'card', card: f.card, scope: 'charity', event: option.event, mode: 'last' });
+  assert.equal(game.charityOrder?.remaining.at(-1), f.owner);
+  assert.equal(player(game, f.owner).spice, before);
+  assert.equal(player(game, f.owner).charityTurn, game.turn);
+  assert.equal(game.discard.filter(card => card.id === f.card).length, 1);
 });
 
 void test('stale, foreign and finished Charity requests reject before cost while an accepted packet disposes Sapho once', () => {

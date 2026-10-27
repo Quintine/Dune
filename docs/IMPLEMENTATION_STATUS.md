@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 27 October 2026 — Advanced Sapho Charity suspension
+
+A player may provisionally pause its own started Charity turn at a clean
+boundary and resume last while retaining its completed claim and payment. The
+queue retains older records, and Semuta claim/pass restores the same paused
+turn. Related v3 Charity and Revival controls now let the actual actor continue;
+nine files pass 51 cases and the production build passes. Wider combinations and
+deployed acceptance remain open. The separate optional
+[two-person, four-faction setup](TWO_PLAYER_TWO_FACTIONS.md) remains missing.
+
 ## 27 October 2026 — Basic agreements and extended victory calendar
 
 The publisher FAQ agreement now applies to multiple qualifying Basic sides,

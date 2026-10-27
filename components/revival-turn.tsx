@@ -10,7 +10,7 @@ type Props = { game: GameView; act: (action: Action) => void; busy: boolean };
 export function revivalTurnOrderBlock(game: GameView): string | null {
   const order = game.revivalOrder;
   if (!game.advanced || !order) return null;
-  if ((order.version !== 1 && order.version !== 2) || order.turn !== game.turn || game.status !== 'playing' || game.phase !== 4)
+  if ((order.version !== 1 && order.version !== 2 && order.version !== 3) || order.turn !== game.turn || game.status !== 'playing' || game.phase !== 4)
     return 'This Revival turn is no longer current.';
   if (!game.players.some(player => player.id === game.me) || !order.original.includes(game.me))
     return 'This seat has no Revival turn in the current order.';

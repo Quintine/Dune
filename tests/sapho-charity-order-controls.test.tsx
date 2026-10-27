@@ -85,6 +85,60 @@ void test('native clean Charity first and last render their scope and submit onl
   }
 });
 
+void test('own started Charity pause displays the retained claim and submits its native action', () => {
+  const source = native(true, true), game = source.game;
+  // Controlled custody: transfer the one physical Sapho to the actual claimant.
+  const donor = saphoCharityOrderPlayer(game, source.owner);
+  const claimant = saphoCharityOrderPlayer(game, source.current);
+  const index = donor.hand.findIndex(card => card.id === source.card);
+  assert.ok(index >= 0);
+  claimant.hand.push(donor.hand.splice(index, 1)[0]);
+  const view = viewGame(game, source.current), option = optionFor(view, 'last');
+  assert.equal(option.resumeOwn, true);
+  const html = panel(view);
+  assert.match(html, /Resume your charity last and discard Juice of Sapho/);
+  assert.match(html, /Your completed claim and its payment remain unchanged/);
+  assert.deepEqual(pressSapho(source.card, option), [{ type: 'card', card: source.card,
+    scope: 'charity', event: option.event, mode: 'last' }]);
+  assert.deepEqual(pressSapho(source.card, option, true), []);
+});
+
+void test('actual v3 Charity queue enables the current player and blocks the paused player', () => {
+  const source = native(true, true);
+  let game = source.game;
+  // The already-paid original Sapho changes hands without creating a card.
+  const donor = saphoCharityOrderPlayer(game, source.owner);
+  const claimant = saphoCharityOrderPlayer(game, source.current);
+  const cardIndex = donor.hand.findIndex(card => card.id === source.card);
+  assert.ok(cardIndex >= 0);
+  claimant.hand.push(donor.hand.splice(cardIndex, 1)[0]);
+  const pause = optionFor(viewGame(game, source.current), 'last');
+  game = actSaphoCharityOrder(game, source.current, pressSapho(source.card, pause)[0]!);
+  assert.ok(game.charityOrder && game.charityOrder.version === 3);
+  const actor = game.charityOrder.remaining[0]; assert.notEqual(actor, source.current);
+  const recipient = game.players.find(player => player.id !== actor)!.id;
+  const purse = saphoCharityOrderPlayer(game, actor).spice;
+  if (purse) game = actSaphoCharityOrder(game, actor, { type: 'bribe', target: recipient, amount: purse });
+  const active = viewGame(game, actor), waiting = viewGame(game, source.current);
+  assert.match(charity(active), /It is your Charity turn/);
+  assert.match(charity(waiting), /Your turn comes later/);
+  assert.deepEqual(pressCharity(waiting, 'charity-claim-submit'), { sent: [], disabled: true });
+  assert.deepEqual(pressCharity(waiting, 'charity-turn-finish'), { sent: [], disabled: true });
+  const claim = pressCharity(active, 'charity-claim-submit');
+  assert.deepEqual(claim, { sent: [{ type: 'charity' }], disabled: false });
+  game = actSaphoCharityOrder(game, actor, claim.sent[0]!);
+  const finish = pressCharity(viewGame(game, actor), 'charity-turn-finish');
+  assert.deepEqual(finish, { sent: [{ type: 'ready' }], disabled: false });
+  game = actSaphoCharityOrder(game, actor, finish.sent[0]!);
+  while (game.charityOrder?.remaining[0] !== source.current) {
+    const current = game.charityOrder?.remaining[0]; assert.ok(current);
+    game = actSaphoCharityOrder(game, current, { type: 'ready' });
+  }
+  const resumed = viewGame(game, source.current);
+  assert.deepEqual(pressCharity(resumed, 'charity-claim-submit'), { sent: [], disabled: true });
+  assert.deepEqual(pressCharity(resumed, 'charity-turn-finish'), { sent: [{ type: 'ready' }], disabled: false });
+});
+
 void test('native claimed current actor stays first while Sapho first or last queues only its later tail', () => {
   for (const mode of ['first', 'last'] as const) {
     const source = native(true, true), game = viewGame(source.game, source.owner), option = optionFor(game, mode);

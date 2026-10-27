@@ -17,7 +17,7 @@ export function CharityClaim(props: Props) {
   const actor = game.me, turn = game.turn, order = game.charityOrder;
   const currentActor = order?.remaining[0];
   const currentName = game.players.find(player => player.id === currentActor)?.name ?? 'the current player';
-  const ownTurn = !order || (order.version === 1 || order.version === 2) && order.turn === turn && order.remaining[0] === actor;
+  const ownTurn = !order || (order.version === 1 || order.version === 2 || order.version === 3) && order.turn === turn && order.remaining[0] === actor;
   const blocked = busy || !!game.truthtrance || !!game.nexusTraitors?.pending || game.charity.incomePending ||
     !!game.response || !!game.decision || !!game.phaseOpening || !!game.automaticContinuationPending ||
     !ownTurn || !!game.charity.orderBlocked;
@@ -26,8 +26,8 @@ export function CharityClaim(props: Props) {
   return (
     <>
       {order && <div className="fine" data-testid="charity-turn-status">
-        <p>{order.version === 2 ? 'Juice of Sapho changed the remaining Charity order. Completed turns stay finished.' : 'Advanced Charity proceeds from the First Player counterclockwise, one player at a time.'}</p>
-        <p>{(order.version !== 1 && order.version !== 2) || order.turn !== turn
+        <p>{order.version === 2 || order.version === 3 ? 'Juice of Sapho changed the remaining Charity order. Completed turns stay finished.' : 'Advanced Charity proceeds from the First Player counterclockwise, one player at a time.'}</p>
+        <p>{(order.version !== 1 && order.version !== 2 && order.version !== 3) || order.turn !== turn
           ? 'This Charity turn order is no longer current.'
           : !currentActor ? 'All Charity turns are complete.'
             : !order.remaining.includes(actor) ? `Your Charity turn is complete. Waiting for ${currentName} to finish Charity.`

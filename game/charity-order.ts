@@ -12,10 +12,13 @@ export type SaphoCharityOrderUse = {
   mode: 'first' | 'last';
   completed: string[];
   started: boolean;
+  /** Version 3 only: the current started player voluntarily paused last. */
+  suspended?: true;
 };
 export type CharityOrder = CharityOrderFields & (
   | { version: 1 }
   | { version: 2; completed: string[]; started: boolean; uses: SaphoCharityOrderUse[] }
+  | { version: 3; completed: string[]; started: boolean; uses: SaphoCharityOrderUse[]; paused: string[] }
 );
 export type CharityOrderContext = {
   turn: number;
@@ -67,21 +70,23 @@ export function createCharityOrder(context: CharityOrderContext): CharityOrder {
 }
 
 function currentStarted(context: CharityOrderContext, frame: CharityOrder): boolean {
-  return frame.version === 2 ? frame.started : !!context.claimed?.includes(frame.remaining[0]);
+  return frame.version !== 1 ? frame.started : !!context.claimed?.includes(frame.remaining[0]);
 }
 function copy(frame: CharityOrder): CharityOrder {
   const fields = { turn: frame.turn, order: [...frame.order], remaining: [...frame.remaining] };
-  return frame.version === 1 ? { version: 1, ...fields } : {
-    version: 2, ...fields, completed: [...frame.completed], started: frame.started,
-    uses: frame.uses.map(use => ({ ...use, completed: [...use.completed] })),
-  };
+  if (frame.version === 1) return { version: 1, ...fields };
+  const rest = { ...fields, completed: [...frame.completed], started: frame.started,
+    uses: frame.uses.map(use => ({ ...use, completed: [...use.completed] })) };
+  return frame.version === 2 ? { version: 2, ...rest } : { version: 3, ...rest, paused: [...frame.paused] };
 }
 
 export function validateCharityOrder(context: CharityOrderContext, frame: CharityOrder): void {
   validateContext(context);
-  requireOrder(record(frame) && (frame.version === 1 || frame.version === 2) &&
+  requireOrder(record(frame) && (frame.version === 1 || frame.version === 2 || frame.version === 3) &&
     Object.keys(frame).sort().join(',') === (frame.version === 1
-      ? 'order,remaining,turn,version' : 'completed,order,remaining,started,turn,uses,version') &&
+      ? 'order,remaining,turn,version' : frame.version === 2
+        ? 'completed,order,remaining,started,turn,uses,version'
+        : 'completed,order,paused,remaining,started,turn,uses,version') &&
     frame.turn === context.turn && ids(frame.order) && ids(frame.remaining),
   'The current Charity order is malformed or belongs to another turn.');
   requireOrder(same(frame.order, context.order), 'Charity must retain its original physical order.');
@@ -91,12 +96,16 @@ export function validateCharityOrder(context: CharityOrderContext, frame: Charit
   else {
     requireOrder(ids(frame.completed) && same(frame.completed, context.ready) && typeof frame.started === 'boolean',
       'Reordered Charity must retain its actual completions and current start.');
-    validateSaphoHistory(frame);
+    if (frame.version === 2) validateSaphoHistory(frame);
+    else validateSuspendedSaphoHistory(frame);
     requireOrder(frame.remaining.length > 0 || !frame.started,
       'Completed Charity cannot retain a started opportunity.');
     if (context.claimed !== undefined) requireOrder(frame.started ===
       !!context.claimed.includes(frame.remaining[0]),
     'The Charity start must match the current native claim receipt.');
+    if (frame.version === 3 && context.claimed !== undefined) requireOrder(
+      frame.paused.every(player => context.claimed!.includes(player)),
+      'Every paused Charity turn must retain its native claim receipt.');
   }
 }
 
@@ -154,27 +163,81 @@ function validateSaphoHistory(frame: Extract<CharityOrder, { version: 2 }>): voi
     'The Charity frame contradicts its Sapho history or unlocks a started opportunity.');
 }
 
+/** Version 3 preserves public order history and a started faction's native
+ * claim while it waits for its original opportunity to resume. */
+function validateSuspendedSaphoHistory(frame: Extract<CharityOrder, { version: 3 }>): void {
+  requireOrder(Array.isArray(frame.uses) && frame.uses.length > 0 && ids(frame.paused),
+    'A suspended Charity turn needs its actual use history and unique paused factions.');
+  let remaining = [...frame.order], completed: string[] = [], started = false, paused: string[] = [];
+  const advance = (next: readonly string[]) => {
+    const advanced = advanceCompleted(remaining, completed, started, next);
+    const count = next.length - completed.length;
+    paused = paused.filter(player => !next.includes(player));
+    remaining = advanced.remaining;
+    completed = advanced.completed;
+    started = count === 0 ? advanced.started : !!remaining.length && paused.includes(remaining[0]);
+  };
+  for (const [index, use] of frame.uses.entries()) {
+    requireOrder(record(use) &&
+      (Object.keys(use).sort().join(',') === 'completed,event,mode,player,started' ||
+       Object.keys(use).sort().join(',') === 'completed,event,mode,player,started,suspended' && use.suspended === true) &&
+      typeof use.event === 'string' && id(use.player) && (use.mode === 'first' || use.mode === 'last') &&
+      ids(use.completed) && typeof use.started === 'boolean',
+    'The saved Sapho Charity use is malformed.');
+    advance(use.completed);
+    requireOrder(!started || use.started, 'A later Sapho use cannot unlock the started Charity opportunity.');
+    requireOrder(!use.started || remaining.length > 0, 'Only a current Charity opportunity can have started.');
+    requireOrder(use.event === eventFor(frame.turn, frame.order, remaining, completed, use.started, index),
+      'The saved Sapho Charity use lost its original public boundary.');
+    if (use.suspended) {
+      requireOrder(use.started && use.player === remaining[0] && use.mode === 'last' && remaining.length > 1,
+        'Only the current started faction can suspend its own Charity turn last.');
+      if (!paused.includes(use.player)) paused.push(use.player);
+      remaining = [...remaining.slice(1), use.player];
+      started = paused.includes(remaining[0]);
+    } else {
+      remaining = reordered(frame.order, remaining, completed, use.started, use);
+      started = use.started || paused.includes(remaining[0]);
+    }
+  }
+  advance(frame.completed);
+  requireOrder(same(frame.remaining, remaining) && same(frame.paused, paused) && (!started || frame.started),
+    'The Charity frame contradicts its Sapho history or loses a suspended opportunity.');
+  requireOrder(frame.uses.some(use => use.suspended === true), 'Version 3 requires an actual suspended Charity turn.');
+}
+
 export function saphoCharityOrderEvent(context: CharityOrderContext, frame: CharityOrder): string {
   validateCharityOrder(context, frame);
   return eventFor(frame.turn, frame.order, frame.remaining, context.ready,
-    currentStarted(context, frame), frame.version === 2 ? frame.uses.length : 0);
+    currentStarted(context, frame), frame.version === 1 ? 0 : frame.uses.length);
 }
 
 export function reorderSaphoCharityOrder(context: CharityOrderContext, frame: CharityOrder, request: {
   event: string; player: string; mode: 'first' | 'last';
-}): { order: CharityOrder; afterCurrent?: string } {
+}): { order: CharityOrder; afterCurrent?: string; suspended?: string } {
   validateCharityOrder(context, frame);
   const event = saphoCharityOrderEvent(context, frame), started = currentStarted(context, frame);
   requireOrder(record(request) && Object.keys(request).sort().join(',') === 'event,mode,player' &&
     request.event === event && id(request.player) && (request.mode === 'first' || request.mode === 'last'),
   'Choose first or last at the current Sapho Charity opportunity.');
-  const remaining = reordered(frame.order, frame.remaining, context.ready, started, request);
-  const order: CharityOrder = { version: 2, turn: frame.turn, order: [...frame.order], remaining,
-    completed: [...context.ready], started,
-    uses: [...(frame.version === 2 ? frame.uses.map(use => ({ ...use, completed: [...use.completed] })) : []),
-      { event, player: request.player, mode: request.mode, completed: [...context.ready], started }] };
+  const suspended = started && request.player === frame.remaining[0];
+  if (suspended) requireOrder(request.mode === 'last' && frame.remaining.length > 1,
+    'A started Charity turn can only be suspended last when another opportunity remains.');
+  const remaining = suspended ? [...frame.remaining.slice(1), request.player]
+    : reordered(frame.order, frame.remaining, context.ready, started, request);
+  const paused = frame.version === 3 ? [...frame.paused] : [];
+  if (suspended && !paused.includes(request.player)) paused.push(request.player);
+  const uses = [...(frame.version === 1 ? [] : frame.uses.map(use => ({ ...use, completed: [...use.completed] }))),
+    { event, player: request.player, mode: request.mode, completed: [...context.ready], started,
+      ...(suspended ? { suspended: true as const } : {}) }];
+  const fields = { turn: frame.turn, order: [...frame.order], remaining,
+    completed: [...context.ready], started: suspended ? paused.includes(remaining[0]) : started || paused.includes(remaining[0]) };
+  const order: CharityOrder = frame.version === 3 || suspended
+    ? { version: 3, ...fields, uses, paused }
+    : { version: 2, ...fields, uses };
   validateCharityOrder(context, order);
-  return { order, ...(started ? { afterCurrent: frame.remaining[0] } : {}) };
+  return { order, ...(suspended ? { suspended: request.player } :
+    started ? { afterCurrent: frame.remaining[0] } : {}) };
 }
 
 export function charityOrderBlock(context: CharityOrderContext, frame: CharityOrder, player: string): string | null {
@@ -205,6 +268,10 @@ export function finishCharityOrder(context: CharityOrderContext, frame: CharityO
   if (frame.version === 1)
     return { version: 1, turn: frame.turn, order: [...frame.order], remaining: frame.remaining.slice(1) };
   const next = { ...copy(frame), remaining: frame.remaining.slice(1), completed: [...frame.completed, player], started: false };
+  if (next.version === 3) {
+    next.paused = next.paused.filter(id => id !== player);
+    next.started = next.remaining.length > 0 && next.paused.includes(next.remaining[0]);
+  }
   validateCharityOrder({ ...context, ready: [...context.ready, player] }, next);
   return next;
 }

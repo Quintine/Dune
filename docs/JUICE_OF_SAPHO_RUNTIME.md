@@ -1,5 +1,28 @@
 # Juice of Sapho: finite ordering implementation
 
+## Own started Advanced Charity turn — 27 October 2026
+
+**Prototyped / Partial.** At a clean boundary in ordered Advanced Charity, the
+current holder may use Juice of Sapho to pause its own started opportunity and
+resume it last among the remaining turns. Its accepted claim and actual payment
+remain in place; the same opportunity resumes without a second claim or refund.
+Pending responses and other preparations must finish before the order changes.
+Another holder cannot displace a different player's started turn and may
+reorder only the later unstarted tail.
+
+The first actual own-started suspension upgrades the order frame to version 3,
+recording the paused player alongside the original public Sapho use history.
+The started marker returns when that player becomes current again. Existing
+version 1 and 2 frames retain their prior format until a qualifying suspension;
+Basic and already-opened unstamped concurrent Charity phases stay unchanged.
+
+The Sapho face permits first or last in an ordered phase or action but does not
+specify suspension of a partially completed Charity opportunity. This is a
+provisional online composition, not a publisher clarification. It supersedes
+the earlier own-started Charity exclusion; wider interactions, full rules and
+browser/deployed acceptance remain open.
+[Native Charity order](ADVANCED_CHARITY_ORDER.md#own-started-sapho-suspension--27-october-2026).
+
 ## Own started Advanced Revival turn — 27 October 2026
 
 **Prototyped / Partial.** At a clean boundary in ordered Advanced Revival, the

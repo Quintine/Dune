@@ -53,16 +53,16 @@ once. The original physical First Player order stays unchanged. No extra claim,
 repeated completed turn, refund or reset is granted. Basic and already-opened
 unstamped concurrent Charity phases have no fabricated ordered scope.
 
-Only an actual accepted `scope: charity` use creates version2 `charityOrder`
+Only an actual accepted `scope: charity` use creates reordered `charityOrder`
 with original order, actual remaining/completed opportunities, current-start
 state and public use history. Untouched version1 frames retain their stored
 shape; native `charityTurn` receipts establish whether the current turn started.
 Once a native claim has been accepted, including a later canceled wealthy BG
-claim, that current player finishes unchanged. Under the standing recommended
-interpretation authority, a different unstarted holder may reorder the later
-tail; first then means first after the started actor. The holder cannot split
-its own started turn. This queued timing is **provisional software composition**,
-not a newly found publisher answer.
+claim, a different unstarted holder may reorder the later tail; first then
+means first after the started actor. The current player finishes unchanged
+unless that same holder voluntarily pauses its own opportunity under the
+separate policy below. This queued timing is **provisional software
+composition**, not a newly found publisher answer.
 
 The persistent panel names the protected actor, explains the later queue and
 keeps one claim per player. Its normal card/scope/event/mode packet carries no
@@ -73,6 +73,31 @@ preview offers the real used card, the queue is committed before that separate
 discard reaction and resumes once, retaining the claim receipts and turn.
 
 Broader optional-module interactions, full-mode and final acceptance remain.
+
+## Own started Sapho suspension — 27 October 2026
+
+At a clean ordered Advanced Charity boundary, the player who has already
+claimed may provisionally discard its own Sapho to pause that same started
+opportunity and resume it last. The accepted native claim, its actual payment,
+the physical First Player order and all completed turns remain unchanged. No
+second Charity claim, payment or extra opportunity is created. Pending
+responses and preparations must finish before this action; another holder
+continues to queue behind the started player rather than displacing them.
+
+The first own-started suspension creates a version3 order frame with the
+paused player and the original public use history. The native claim receipt
+remains authoritative while the player waits and the started marker returns
+on resumption. Untouched version1 and version2 frames retain their stored
+format and history. Existing Basic and unstamped concurrent phases do not gain
+a manufactured order. Controls use the original card, scope, event and mode
+packet; minimal policies receive the same legal option.
+
+The Sapho face permits first/last in a player-ordered phase but does not give
+a partial-turn procedure. The suspension and queue are explicitly provisional
+online timing, not a publisher clarification. They supersede the earlier
+own-started restriction below. Wider interactions, complete-mode and deployed
+acceptance remain open.
+[Sapho scope](JUICE_OF_SAPHO_RUNTIME.md#own-started-advanced-charity-turn--27-october-2026).
 
 
 ## Initial ordered-phase evidence
@@ -105,12 +130,12 @@ final rules/recovery/privacy and deployed acceptance remain due.
 
 ## Sapho focused evidence
 
-Sapho now takes its holder first/last among remaining Advanced Charity turns.
+This earlier evidence covered Sapho first/last among remaining Advanced Charity turns.
 Actual use creates version2 order history; untouched version1 frames retain
 original bytes. An accepted current native claim provisionally protects that
 actor before another holder reorders the later tail. Completed turns, one claim
-per player and physical First Player order remain. Own started turns cannot
-split. Basic/old unstamped concurrent phases have no manufactured scope. The
+per player and physical First Player order remain. It predates the separate
+own-started suspension above. Basic/old unstamped concurrent phases have no manufactured scope. The
 persistent controls name the protected actor, and native claims/Finish follow
 the changed queue. This is provisional retained-current timing, not a new
 publisher ruling. [Source and contract](ADVANCED_CHARITY_ORDER.md#juice-of-sapho--27-october-2026).

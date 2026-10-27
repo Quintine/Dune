@@ -64,7 +64,9 @@ void test('an accepted claim, including canceled BG Charity, locks the current a
   const claimed = context([], ['a']);
   rejects(claimed, frame, () => reorder(claimed, frame, { event: stale, player: 'd', mode: 'first' }));
   rejects(claimed, frame, () => use(claimed, frame, 'a', 'first'));
-  rejects(claimed, frame, () => use(claimed, frame, 'a', 'last'));
+  const paused = use(claimed, frame, 'a', 'last');
+  assert.equal(paused.suspended, 'a');
+  assert.deepEqual(paused.order.remaining, ['b', 'c', 'd', 'a']);
   const first = use(claimed, frame, 'd', 'first');
   assert.equal(first.afterCurrent, 'a');
   assert.deepEqual(first.order.remaining, ['a', 'd', 'b', 'c']);

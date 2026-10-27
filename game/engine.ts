@@ -7706,8 +7706,8 @@ function treacheryDiscardIntegrity(g: Game) {
       catch (error) { if (error instanceof SaphoTruthOrderError) throw new RuleError(error.message); throw error; }
   } else if (continuation?.kind === 'saphoCharityDiscard') {
     const c=continuation,entry=batch.entries[0],frame=g.charityOrder;
-    const latest=frame?.version===2 ? frame.uses.at(-1) : null;
-    requireRule(g.advanced && g.phase===2 && frame?.version===2 &&
+    const latest=frame && frame.version!==1 ? frame.uses.at(-1) : null;
+    requireRule(g.advanced && g.phase===2 && frame && frame.version!==1 &&
       latest?.event===c.event && latest.player===c.player && latest.mode===c.mode &&
       batch.cause==='sapho:charity' && batch.entries.length===1 &&
       entry.publicFace && entry.discardedBy===c.player && entry.card.id===c.card &&
@@ -9052,7 +9052,7 @@ function semutaOfferSupported(
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if (continuation.kind === 'saphoCharityDiscard' &&
-    (!g.advanced || g.phase!==2 || g.charityOrder?.version!==2 ||
+    (!g.advanced || g.phase!==2 || !g.charityOrder || g.charityOrder.version===1 ||
       continuation.resume.response || continuation.resume.decision ||
       continuation.resume.pendingKarama || continuation.resume.phaseOpening ||
       g.response || g.decision || g.pendingRevival)) return false;
@@ -27176,7 +27176,8 @@ function saphoOptions(g: Game, p: Player): SaphoOption[] {
     for (const mode of ['first','last'] as const) {
       try {
         const quote=reorderSaphoCharityOrder(context,g.charityOrder,{event,player:p.id,mode});
-        options.push({scope:'charity',event,mode,...(quote.afterCurrent ? {afterCurrent:quote.afterCurrent} : {})});
+        options.push({scope:'charity',event,mode,...(quote.afterCurrent ? {afterCurrent:quote.afterCurrent} : {}),
+          ...(quote.suspended ? {resumeOwn:true as const} : {})});
       } catch(error) {
         if (!(error instanceof CharityOrderError)) throw error;
       }
@@ -27380,7 +27381,7 @@ function playSapho(g: Game, p: Player, action: Action) {
     const used=discard(g,p,'richese-juice-of-sapho');
     g.charityOrder=quote.order;
     g.active=quote.order.remaining[0] ?? null;
-    log(g,`${p.name} discarded Juice of Sapho to take their remaining Charity turn ${option.mode}.${quote.afterCurrent ? ` Provisional queued order: ${getPlayer(g,quote.afterCurrent).name} finishes the started turn first.` : ''} Completed turns, native claim entitlements and physical First Player order stay unchanged.`,
+    log(g,`${p.name} discarded Juice of Sapho to take their remaining Charity turn ${option.mode}.${quote.suspended ? ' Their started turn pauses provisionally and resumes last with its claim unchanged.' : ''}${quote.afterCurrent ? ` Provisional queued order: ${getPlayer(g,quote.afterCurrent).name} finishes the started turn first.` : ''} Completed turns, native claim entitlements and physical First Player order stay unchanged.`,
       {faction:p.faction,name:'Juice of Sapho'});
     if (g.semutaPreview) {
       const continuation:SaphoCharityDiscardContinuation={kind:'saphoCharityDiscard',player:p.id,card:used.id,
