@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Truthtrance and current battle cancellation — 27 October 2026
+
+For a current native Basic Voice or Prescience response, the provisional
+online question binds the respondent’s own printed Karama cost to that exact
+battle and declaration. Current facts may be combined; arbitrary future-action
+clauses remain outside this response. Another player's cancellation can close
+the source without forcing the respondent. This is an implementation procedure,
+not a separate publisher timing ruling. [Contract](TRUTHTRANCE_TURN_ACTIONS.md#current-voice-and-prescience-cancellation--27-october-2026).
+
 ## Ambassador child arrivals during overlap — 27 October 2026
 
 Provisionally finish a Fremen or Guild Ambassador-created child arrival before

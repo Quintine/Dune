@@ -1007,3 +1007,29 @@ This is local engine/SSR/control evidence. No HTTP/storage boundary, database,
 reset/deletion, server restart or deployed operation changes. Broader card,
 recovery and module combinations and all final assurance/release gates remain
 open.
+
+## Current Voice and Prescience cancellation — 27 October 2026
+
+**Prototyped / Partial.** The publisher FAQ (November 2020, p. 8) permits
+current-turn Yes/No questions; the event-bound cancellation question is this
+implementation's provisional online procedure, not a separate publisher ruling.
+In a supported Basic table with the original Voice or Prescience response open,
+a question can name whether a distinct seated player will spend a physical
+printed Karama to cancel that declaration. Its source binds turn, battle event,
+territory, power and declarer without exposing the respondent's hand. Current
+facts may be combined with this exact response; other future action families
+remain unavailable during this particular response window.
+
+A definite answer preserves the original response and Truthtrance discard.
+Only the actual accepted printed Karama cost counts, before its native
+cancellation continuation. A whole No rejects that use and removes the card
+from the native cancellation quote. A required Yes retains a legal completion:
+passing remains possible while another participant keeps the response open, but
+an own final pass cannot voluntarily close its last opportunity. A different
+player's cancellation may end that opportunity and release an impossible Yes.
+The owner-only guide uses the real quoted card and response; minimal bots use
+the same native guide. Controlled physical-card swaps in the runtime fixture are
+explicitly labelled; no game database, server or saved room is involved.
+
+Advanced, optional overlays, broader response/action combinations and final
+rules, browser and deployed acceptance remain open.

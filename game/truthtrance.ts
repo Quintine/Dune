@@ -4,7 +4,7 @@ import { parseTravelActionClaim, type TravelClaim } from './travel-expression-pr
 import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES,
   turnActionPromiseModeSupported, type TurnActionClaim } from './turn-action-promises';
 import { battlePowerOf, nativeBattlePowerOpportunity } from './battle-power-question';
-import { parseKaramaShipmentSource, windowCardOpportunity } from './window-card-play';
+import { parseKaramaShipmentSource, parseKaramaBattleCancelSource, karamaBattleCancelOpportunity, windowCardOpportunity } from './window-card-play';
 import { parseTraitorActionClaim, type MixedTraitorClaim } from './mixed-traitor-question';
 import { parseBattleActionClaim, MIXED_BATTLE_MAX_NODES, MIXED_BATTLE_MAX_TERMS, MIXED_BATTLE_MAX_DEPTH,
   MIXED_BATTLE_MAX_LEAVES, type MixedBattleClaim } from './mixed-battle-question';
@@ -421,13 +421,16 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
     return { kind: 'bid', target: v.target, ...claim };
   }
   if (v.kind === 'turnActions') {
+    const battleCancel = g.response ? karamaBattleCancelOpportunity(g, v.target as string) : null;
     check(Object.keys(v).sort().join(',') === 'kind,mixed,target,turn' && v.turn === g.turn &&
       turnActionPromiseModeSupported(g) && g.status === 'playing' && Number.isInteger(g.phase) && g.phase >= 0 && g.phase <= 8 &&
-      !g.response && !g.decision && (!g.phaseOpening || !!windowCardOpportunity(g, 'amal')) && !g.pendingTreacheryDiscard && !g.pendingKarama,
+      (!g.response || !!battleCancel) && !g.decision && (!g.phaseOpening || !!windowCardOpportunity(g, 'amal')) && !g.pendingTreacheryDiscard && !g.pendingKarama,
     'Supply the current turn, complete turn-action question and a supported quiet native window.');
     const respondent = g.players.find(player => player.id === v.target)!;
     const mixed = parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent), input => {
       const action = parseTurnActionLeaf(input);
+      if (battleCancel) check(action.kind === 'windowCardPlay' && action.effect === 'karamaBattleCancel' &&
+        action.source === battleCancel.source, 'Ask only about the current printed Karama cancellation in this response.');
       if (action.kind === 'windowCardPlay') {
         const opportunity = windowCardOpportunity(g, action.effect);
         check(opportunity && opportunity.turn === g.turn && opportunity.source === action.source,
@@ -786,6 +789,10 @@ export function truthQuestionText(
   if (q.kind === 'turnActions') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => {
       if (action.kind === 'windowCardPlay') {
+        if (action.effect === 'karamaBattleCancel') {
+          const response = parseKaramaBattleCancelSource(action.source);
+          return `you spend a printed Karama after this answer to cancel ${response?.kind === 'voice' ? 'Voice' : 'Prescience'} in this original battle response`;
+        }
         if (action.effect === 'amal') return 'you play Amal after this answer during this original phase opening, halving available spice before ordinary payments';
         if (action.effect === 'karamaAuction') return 'you spend a printed Karama after this answer on this original ordinary auction lot, by immediate purchase or its winning invoice';
         if (action.effect === 'karamaShipment') {

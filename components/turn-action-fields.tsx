@@ -7,7 +7,7 @@ import type { MixedActionExpression } from '@/game/mixed-action-question';
 import { parseBattleActionClaim } from '@/game/mixed-battle-question';
 import { battlePowerOf, nativeBattlePowerOpportunity, type BattlePowerClaim } from '@/game/battle-power-question';
 import { battleCardLabel, VOICE_KINDS } from '@/game/battle-cards';
-import { WINDOW_CARD_EFFECTS, windowCardOpportunity, type WindowCardEffect } from '@/game/window-card-play';
+import { karamaBattleCancelOpportunity, WINDOW_CARD_EFFECTS, windowCardOpportunity, type WindowCardEffect } from '@/game/window-card-play';
 import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES, type TurnActionLeaf } from '@/game/turn-action-promises';
 import { BattleClaimFields } from './battle-promises';
 import { MixedActionFields, mixedActionInputError, type MixedActionConfig } from './mixed-action-fields';
@@ -51,7 +51,9 @@ const newPowerClaim = (game: GameView, target: string): BattlePowerClaim =>
 const windowRoleNames: Record<WindowCardEffect, string> = { weather: 'Weather Control', atomics: 'Family Atomics', harvester: 'Harvester',
   karamaAuction: 'Spend a printed Karama for this current ordinary lot',
   karamaShipment: 'Spend a printed Karama for the current shipment-price opportunity',
+  karamaBattleCancel: 'Spend a printed Karama to cancel this Voice or Prescience',
   thumper: 'Play Thumper before this turn’s first spice reveal', amal: 'Play Amal in this original phase opening' };
+const battleCancelOpportunity = karamaBattleCancelOpportunity;
 const config: MixedActionConfig<TurnActionLeaf> = {
   prefix: 'turn-action',
   legend: 'Current battle and this-turn action conditions, with optional current facts',
@@ -102,6 +104,10 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     unused native shipment price. The giver may be another player. The price grant counts separately from an actual force shipment;
     it does not require the recipient to ship forces. Other roles, Worthless conversion and recovery alone do not count.
     This condition closes when that original shipment-price opportunity ends.
+    A battle-cancellation Karama condition concerns the actual current Voice or Prescience response in its named battle.
+    Only spending a physical printed Karama to cancel that declaration after this answer counts.
+    Passing, another Karama role, Worthless conversion and a different battle or response do not count.
+    The condition closes when the original response ends; another player&apos;s cancellation can end the opportunity.
     Thumper conditions count an actual accepted future printed play before this turn&apos;s original first spice reveal.
     Earlier plays, disposal, other roles and recovery alone do not count. A later reveal is a different opportunity.
     This condition closes when the actual first spice draw begins.
@@ -121,6 +127,8 @@ const config: MixedActionConfig<TurnActionLeaf> = {
   newAction: () => ({ kind: 'ship', territory: 'carthag', minimum: 1 }),
   parseAction: (input, game, target) => {
     const action = parseTurnActionLeaf(input);
+    if (windowCardOpportunity(game, 'karamaBattleCancel') && (action.kind !== 'windowCardPlay' || action.effect !== 'karamaBattleCancel'))
+      throw new Error('During this response, choose only a printed Karama cancellation of the current Voice or Prescience; current facts may still be combined.');
     if (action.kind === 'payment' && !recipients(game, target).some(recipient => recipient.id === action.recipient))
       throw new Error('Choose a public non-allied recipient for the future ordinary payment.');
     if (action.kind === 'bid' && currentLot(game)?.lot !== action.lot)
@@ -141,16 +149,19 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         throw new Error('Choose this player’s original native Voice or Prescience opportunity in the current battle.');
     }
     if (action.kind === 'windowCardPlay') {
-      const opportunity = windowCardOpportunity(game, action.effect);
+      const opportunity = action.effect === 'karamaBattleCancel' ? battleCancelOpportunity(game, target)
+        : windowCardOpportunity(game, action.effect);
       if (!opportunity || opportunity.turn !== game.turn || action.source !== opportunity.source)
-        throw new Error('Choose the original current native window for this printed role, including the first spice reveal or active shipment price.');
+        throw new Error('Choose an original current native window for this printed role, including an eligible battle response.');
     }
     return action;
   },
   renderAction: ({ value, id, game, target, disabled, onChange }) => {
     const choices = recipients(game, target), leaderChoices = leaders(game, target), lot = currentLot(game), partnerChoices = partners(game, target);
     const currentPower = value.kind === 'battlePower' ? powerOpportunity(game, target, value.claim) : null;
-    const currentWindow = value.kind === 'windowCardPlay' ? windowCardOpportunity(game, value.effect) : null;
+    const currentWindow = value.kind === 'windowCardPlay'
+      ? value.effect === 'karamaBattleCancel' ? battleCancelOpportunity(game, target) : windowCardOpportunity(game, value.effect)
+      : null;
     return <>
       <label htmlFor={`${id}-action`}>Future action</label>
       <select id={`${id}-action`} value={value.kind} disabled={disabled} onChange={event => {
@@ -159,8 +170,9 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         const minimum = 'minimum' in value ? value.minimum : 1;
         if (kind === 'cardPlay') onChange({ kind, effect: 'hajr' });
         if (kind === 'windowCardPlay') {
-          const effect = windowCardOpportunity(game, 'amal') ? 'amal'
-            : WINDOW_CARD_EFFECTS.find(effect => windowCardOpportunity(game, effect)) ?? 'weather';
+          const effect = battleCancelOpportunity(game, target) ? 'karamaBattleCancel'
+            : windowCardOpportunity(game, 'amal') ? 'amal'
+            : WINDOW_CARD_EFFECTS.find(effect => effect !== 'karamaBattleCancel' && windowCardOpportunity(game, effect)) ?? 'weather';
           onChange({ kind, effect, source: windowCardOpportunity(game, effect)?.source ?? '' });
         }
         if (kind === 'battlePower') {
@@ -212,16 +224,19 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         <select id={`${id}-window-effect`} value={WINDOW_CARD_EFFECTS.includes(value.effect) ? value.effect : ''}
           disabled={disabled} aria-invalid={!WINDOW_CARD_EFFECTS.includes(value.effect)} onChange={event => {
             const effect = event.currentTarget.value;
-            if (effect === 'weather' || effect === 'atomics' || effect === 'harvester' || effect === 'karamaAuction' || effect === 'karamaShipment' || effect === 'thumper' || effect === 'amal')
-              onChange({ kind: 'windowCardPlay', effect, source: windowCardOpportunity(game, effect)?.source ?? '' });
+            if (effect === 'weather' || effect === 'atomics' || effect === 'harvester' || effect === 'karamaAuction' || effect === 'karamaShipment' || effect === 'karamaBattleCancel' || effect === 'thumper' || effect === 'amal')
+              onChange({ kind: 'windowCardPlay', effect, source: (effect === 'karamaBattleCancel'
+                ? battleCancelOpportunity(game, target) : windowCardOpportunity(game, effect))?.source ?? '' });
           }}>
           <option value="">Choose a printed role</option>
-          {WINDOW_CARD_EFFECTS.map(effect => <option key={effect} value={effect}>{windowRoleNames[effect]}</option>)}
+          {WINDOW_CARD_EFFECTS.filter(effect => effect !== 'karamaBattleCancel' || !!battleCancelOpportunity(game, target) || value.effect === effect)
+            .map(effect => <option key={effect} value={effect}>{windowRoleNames[effect]}</option>)}
         </select>
         <label htmlFor={`${id}-window-source`}>Original native window</label>
         <select id={`${id}-window-source`} value={currentWindow?.source === value.source ? value.source : ''}
           disabled={disabled} aria-invalid={!currentWindow || currentWindow.source !== value.source} onChange={event => {
-            const opportunity = windowCardOpportunity(game, value.effect);
+            const opportunity = value.effect === 'karamaBattleCancel' ? battleCancelOpportunity(game, target)
+              : windowCardOpportunity(game, value.effect);
             if (event.currentTarget.value === '') onChange({ ...value, source: '' });
             else if (opportunity?.source === event.currentTarget.value) onChange({ ...value, source: opportunity.source });
           }}>
@@ -231,6 +246,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
             : value.effect === 'karamaAuction' ? `Turn ${currentWindow.turn} · Ordinary lot ${game.bidPromiseLot?.lot}`
               : value.effect === 'thumper' ? `Turn ${currentWindow.turn} · Before the original first spice reveal`
               : value.effect === 'amal' ? `Turn ${currentWindow.turn} · Original ${PHASES[game.phase]} opening`
+              : value.effect === 'karamaBattleCancel' ? `Turn ${currentWindow.turn} · ${game.response?.kind === 'voice' ? 'Voice' : 'Prescience'} declared by ${game.players.find(player => player.id === game.response?.owner)?.name ?? game.response?.owner} · ${game.combatLocations.find(location => location.id === game.battle?.territory)?.name ?? game.battle?.territory}`
               : currentWindow.effect === 'karamaShipment' ? `Turn ${currentWindow.turn} · ${game.players.find(player => player.id === currentWindow.recipient)?.name ?? currentWindow.recipient}’s current native shipment price`
               : `Turn ${currentWindow.turn} · Before this Storm movement`}</option>}
         </select>

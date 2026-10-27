@@ -10,7 +10,7 @@ import { gholaForcePreparations } from '@/game/ghola-force-preparation';
 import { richeseCardDefinition } from '@/game/richese-cards';
 import { nativeBattlePowerOpportunity, type NativeBattlePower } from '@/game/battle-power-question';
 import { battleCardLabel, VOICE_KINDS } from '@/game/battle-cards';
-import { WINDOW_CARD_EFFECTS, windowCardNativeEffect, windowCardOpportunity, type WindowCardEffect } from '@/game/window-card-play';
+import { karamaBattleCancelOpportunity, WINDOW_CARD_EFFECTS, windowCardNativeEffect, windowCardOpportunity, type WindowCardEffect } from '@/game/window-card-play';
 import type { TurnActionLeaf } from '@/game/turn-action-promises';
 import type { MixedActionExpression } from '@/game/mixed-action-question';
 import { truthQuestionText, type TruthAnswer } from '@/game/truthtrance';
@@ -27,10 +27,11 @@ const publicBattleContext = (game: GameView) => game.battle && ({
   preparation: game.battle.preparation,
   traitorVoters: game.battle.traitorVoters, traitorSubmitted: game.battle.traitorSubmitted,
 });
-const isWindowEffect = (effect: unknown): effect is Exclude<WindowCardEffect, 'karamaAuction' | 'karamaShipment'> =>
+const isWindowEffect = (effect: unknown): effect is Exclude<WindowCardEffect, 'karamaAuction' | 'karamaShipment' | 'karamaBattleCancel'> =>
   effect === 'weather' || effect === 'atomics' || effect === 'harvester' || effect === 'thumper' || effect === 'amal';
 const windowRoleNames: Record<WindowCardEffect, string> = { weather: 'Weather Control', atomics: 'Family Atomics', harvester: 'Harvester',
-  karamaAuction: 'printed Karama for this ordinary lot', karamaShipment: 'printed Karama for this shipment price', thumper: 'Thumper', amal: 'Amal' };
+  karamaAuction: 'printed Karama for this ordinary lot', karamaShipment: 'printed Karama for this shipment price',
+  karamaBattleCancel: 'printed Karama for this battle response', thumper: 'Thumper', amal: 'Amal' };
 const namesWindow = (mixed: MixedActionExpression<TurnActionLeaf>, effect: WindowCardEffect, source?: string): boolean =>
   mixed.kind === 'action' ? mixed.action.kind === 'windowCardPlay' && mixed.action.effect === effect && (source === undefined || mixed.action.source === source)
     : mixed.kind !== 'fact' && mixed.terms.some(term => namesWindow(term, effect, source));
@@ -102,13 +103,18 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const shipmentRoleNamed = !!windowPromise && !!currentShipmentWindow && namesWindow(windowPromise.mixed, 'karamaShipment', currentShipmentWindow.source);
   const shipmentPriceAction = action.type === 'card' && action.mode === 'shipment';
   const printedShipmentAction = shipmentPriceAction && shipmentRoleNamed;
+  const currentBattleCancelWindow = karamaBattleCancelOpportunity(game, actor);
+  const battleCancelRoleNamed = !!windowPromise && !!currentBattleCancelWindow &&
+    namesWindow(windowPromise.mixed, 'karamaBattleCancel', currentBattleCancelWindow.source);
+  const printedBattleCancelAction = action.type === 'card' && action.mode === 'cancel' && battleCancelRoleNamed;
   const printedInvoiceAction = action.type === 'decision' && action.karama === true && auctionRoleNamed;
   const cardOwner = action.type === 'card' || printedInvoiceAction ? game.players.find(player => player.id === actor) : undefined;
   const heldCard = cardOwner?.hand?.find(card => card.id === action.card);
   const cardSignature = heldCard && JSON.stringify({ id: heldCard.id, kind: heldCard.kind, effect: heldCard.effect });
   const windowEffect = (auctionPurchaseAction || printedInvoiceAction) && heldCard?.effect === windowCardNativeEffect('karamaAuction')
     ? 'karamaAuction' : printedShipmentAction && heldCard?.effect === windowCardNativeEffect('karamaShipment')
-      ? 'karamaShipment' : isWindowEffect(heldCard?.effect) ? heldCard.effect : null;
+      ? 'karamaShipment' : printedBattleCancelAction && heldCard?.effect === windowCardNativeEffect('karamaBattleCancel')
+        ? 'karamaBattleCancel' : isWindowEffect(heldCard?.effect) ? heldCard.effect : null;
   const cardWindow = windowEffect ? windowCardOpportunity(game, windowEffect) : null;
   const earlyWindowReadyAction = action.type === 'ready' && (phase === 0 || phase === 1);
   const publicWindowState = (current: GameView) => JSON.stringify({
@@ -173,6 +179,8 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const flightOwnerSignature = flightNeeded ? flightOwnerSource(game) : null;
   const auctionCards = game.karamaAuctionCards, auctionCardsSignature = JSON.stringify(auctionCards);
   const shipmentCards = game.karamaShipmentCards, shipmentCardsSignature = JSON.stringify(shipmentCards);
+  const battleCancelControls = game.responseControls, battleCancelControlsSignature = JSON.stringify(battleCancelControls);
+  const battleCancelResponse = game.response, battleCancelResponseSignature = JSON.stringify(battleCancelResponse);
   const thumperCards = game.thumperCards, thumperCardsSignature = JSON.stringify(thumperCards);
   const amalCards = game.amalCards, amalCardsSignature = JSON.stringify(amalCards);
   const auctionHandSource = (current: GameView) => {
@@ -237,7 +245,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       ? typeof action.leader === 'string' && (action.leader === 'kwisatz' ? ghola.kwisatz : ghola.leaders.some(leader => leader.id === action.leader))
       : action.elite === undefined ? forceChoices.length === 1 : forceChoices.some(choice => choice.elite === action.elite));
     const windowPacket = Object.keys(action).every(key => ['type', 'card', 'turnActionPromiseEvent', 'turnActionPromisePhase',
-      ...(windowEffect === 'weather' ? ['amount'] : windowEffect === 'karamaAuction' ? ['mode'] : windowEffect === 'karamaShipment' ? ['mode', 'target'] : [])].includes(key)) &&
+      ...(windowEffect === 'weather' ? ['amount'] : windowEffect === 'karamaAuction' || windowEffect === 'karamaBattleCancel' ? ['mode'] : windowEffect === 'karamaShipment' ? ['mode', 'target'] : [])].includes(key)) &&
       (windowEffect !== 'weather' || typeof action.amount === 'number' && Number.isSafeInteger(action.amount) && action.amount >= 0 && action.amount <= 10);
     const printedWindowSource = ownPhysicalCard && !!heldCard && heldCard.kind === 'special' && !!windowEffect && !!cardWindow &&
       heldCard.effect === windowCardNativeEffect(windowEffect) && !!windowPromise &&
@@ -252,6 +260,11 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       phase === 5 && current.active === cardWindow.recipient && action.target === cardWindow.recipient &&
       Array.isArray(current.karamaShipmentCards) && current.karamaShipmentCards === shipmentCards &&
       JSON.stringify(current.karamaShipmentCards) === shipmentCardsSignature && current.karamaShipmentCards.includes(heldCard.id);
+    const nativeBattleCancelCard = windowEffect === 'karamaBattleCancel' && !!heldCard && phase === 6 &&
+      current.response === battleCancelResponse && JSON.stringify(current.response) === battleCancelResponseSignature &&
+      current.responseControls === battleCancelControls && JSON.stringify(current.responseControls) === battleCancelControlsSignature &&
+      current.responseControls?.cancelCards.includes(heldCard.id) &&
+      karamaBattleCancelOpportunity(current, actor, cardWindow?.source)?.source === cardWindow?.source;
     const nativeThumperCard = windowEffect === 'thumper' && !!heldCard && phase === 1 && !current.spiceWindow && !current.nexus &&
       Array.isArray(current.thumperCards) && current.thumperCards === thumperCards &&
       JSON.stringify(current.thumperCards) === thumperCardsSignature && current.thumperCards.includes(heldCard.id);
@@ -264,6 +277,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       (windowEffect === 'karamaAuction' ? action.mode === 'purchase' && nativeAuctionCard && !!me && !current.decision &&
         Number.isSafeInteger(me.handLimit) && Array.isArray(me.hand) && me.hand.length < me.handLimit
         : windowEffect === 'karamaShipment' ? action.mode === 'shipment' && nativeShipmentCard
+          : windowEffect === 'karamaBattleCancel' ? action.mode === 'cancel' && nativeBattleCancelCard
           : windowEffect === 'thumper' ? action.mode === undefined && nativeThumperCard
             : windowEffect === 'amal' ? action.mode === undefined && nativeAmalCard
               : action.mode === undefined && ordinaryCardAvailability(current, heldCard.id, windowEffect === 'weather' ? { amount: action.amount } : undefined)?.available === true);
@@ -310,7 +324,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       !battle.revealed && [battle.attacker, battle.defender].includes(actor) && action.event === battle.event && action.event === residual.event &&
       action.target === residual.target && action.target === (battle.attacker === actor ? battle.defender : battle.attacker) &&
       Object.keys(action).every(key => ['type', 'card', 'event', 'target', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key));
-    const genericCard = ownCard && action.type === 'card' && !auctionPurchaseAction && !printedShipmentAction && quotedBoxCard &&
+    const genericCard = ownCard && action.type === 'card' && !auctionPurchaseAction && !printedShipmentAction && !printedBattleCancelAction && quotedBoxCard &&
       (!boxRoleNamed || heldCard?.effect !== 'nullentropyBox' || printedBox) &&
       (!shipmentPriceAction || (action.target ?? actor) === current.active) &&
       !!heldCard && heldCard.effect !== 'ghola' && heldCard.effect !== 'hajr' && heldCard.effect !== 'distrans' && heldCard.effect !== 'juiceOfSapho' && heldCard.effect !== 'semutaDrug' && heldCard.effect !== 'ornithopter' && heldCard.effect !== 'residualPoison' && !isWindowEffect(heldCard.effect);
@@ -411,10 +425,12 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       Number.isSafeInteger(phase) && phase >= 0 && phase <= 8 && current.phase === phase && current.turn === turn && current.me === actor &&
       current.turnActionGuide === guide && guide.event === event && guide.action === action &&
       action.turnActionPromiseEvent === event && action.turnActionPromisePhase === phase && JSON.stringify(action) === signature && opportunity && movementPacket &&
+      (!printedBattleCancelAction || printedWindow) &&
       current.turnActionPromises.some(promise => promise.event === event && promise.player === actor && promise.turn === turn &&
         !promise.fulfilled && !promise.released) &&
       (!amalReadyAction || openingReady) &&
-      !!me && !me.autopilot && (!current.semutaReaction || nativeSemuta) && (!current.truthtrance || nativeSemuta) && (!current.response || nativeSemuta) &&
+      !!me && !me.autopilot && (!current.semutaReaction || nativeSemuta) && (!current.truthtrance || nativeSemuta) &&
+      (!current.response || nativeSemuta || windowEffect === 'karamaBattleCancel' && printedWindow) &&
       (!current.decision || nativeSemuta || paidBox || invoice || saphoDecision || earlyWindowBox && ownInvoiceSource) &&
       (!current.phaseOpening || nativeSemuta || allowedOpeningAction) && (!current.automaticContinuationPending || nativeSemuta) && !current.roomControl?.paused && !current.roomControl?.closed;
   };
@@ -440,6 +456,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       : `Play Tleilaxu Ghola to return ${amount} physical forces while honoring your whole answer`
     : action.type === 'card' && windowEffect === 'karamaAuction' ? 'Spend a printed Karama to purchase this ordinary lot while honoring your whole answer'
     : action.type === 'card' && windowEffect === 'karamaShipment' ? `Spend a printed Karama to grant ${recipient} this native shipment price while honoring your whole answer`
+    : action.type === 'card' && windowEffect === 'karamaBattleCancel' ? `Spend a printed Karama to cancel this ${game.response?.kind === 'voice' ? 'Voice' : 'Prescience'} while honoring your whole answer`
     : action.type === 'card' && heldCard?.effect === 'nullentropyBox' ? 'Pay 2 spice to activate Nullentropy Box while honoring your whole answer'
     : action.type === 'card' && heldCard?.effect === 'distrans' ? `Give ${distrans?.choices.find(choice => choice.recipient === action.target)?.cards.find(card => card.id === action.give)?.name ?? 'the quoted card'} to ${recipient} with Distrans while honoring your whole answer`
     : action.type === 'card' && heldCard?.effect === 'juiceOfSapho' ? `Play Juice of Sapho: ${action.scope === 'battleAggressor'

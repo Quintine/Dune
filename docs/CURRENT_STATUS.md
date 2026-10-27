@@ -20,6 +20,15 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance battle cancellation — 27 October. Prototyped / Partial.**
+Supported Basic native tables can ask a seated non-owner whether they will
+spend a printed Karama to cancel the current Voice or Prescience. The original
+response remains live through the answer and discard; the real cost, pass,
+other-player cancellation and owner-only guide retain the accepted answer.
+Current facts can be combined with this exact source. Advanced, optional module
+combinations and full rules/deployed acceptance remain open.
+[Scope](TRUTHTRANCE_TURN_ACTIONS.md#current-voice-and-prescience-cancellation--27-october-2026).
+
 **Preview-start guidance correction — 27 October. Integrated / Partial.**
 Setup, selected expansion rule topics and Richese card inspectors now describe
 supported faction starts as unfinished previews instead of claiming that all

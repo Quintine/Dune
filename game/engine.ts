@@ -10,7 +10,7 @@ import { PrintedCardPlayError, printedCardPlayCount, recordPrintedCardPlay,
 import { battlePowerOf, battlePowerMatches, nativeBattlePowerOpportunity,
   type NativeBattlePower, type BattlePowerDeclaration } from './battle-power-question';
 import { WINDOW_CARD_EFFECTS, windowCardNativeEffect, windowCardOpportunity, karamaShipmentOpportunities,
-  parseKaramaShipmentSource, type WindowCardEffect } from './window-card-play';
+  parseKaramaShipmentSource, karamaBattleCancelOpportunity, type WindowCardEffect } from './window-card-play';
 import { TurnActionError, liveTurnActionPromises, turnActionBranches, recordTurnActionPayment,
   recordTurnActionShipment, recordTurnActionMovement, closeTurnActionTransport, closeTurnActionPayments, finishTurnActionTurn,
   validateTurnActionPromises, recordTurnActionBid, closeTurnActionBidding, recordTurnActionRevival, recordTurnActionCardPlay,
@@ -17166,7 +17166,9 @@ function karamaSpendingBlock(g: Game, p: Player, card: Card, purpose?: KullPurpo
   if (card.kind === 'special' && card.effect === 'karama' && policy?.player === p.id &&
     policy.forbidden.some(required =>
       (required.effect === 'karamaAuction' && purpose === 'auction-free-purchase' ||
-        required.effect === 'karamaShipment' && purpose === 'shipment-price') &&
+        required.effect === 'karamaShipment' && purpose === 'shipment-price' ||
+        required.effect === 'karamaBattleCancel' && !!g.response &&
+          purpose === karamaUsePurpose(g, { kind: 'cancel', response: g.response })) &&
       windowCardOpportunity(g, required.effect)?.source === required.source))
     return 'Retain this opportunity without a forbidden printed Karama cost.';
   const kullBlock = kullKaramaBlock(g, p, purpose);
@@ -17225,7 +17227,17 @@ function responseCancelCards(
   // A physically spendable card whose Truthtrance feasibility is not proven
   // remains a possible choice; the authoritative action still checks promises.
   return p.hand
-    .filter((card) => !karamaSpendingBlock(g, p, card, karamaUsePurpose(g, {kind:'cancel', response})))
+    .filter((card) => {
+      if (karamaSpendingBlock(g, p, card, karamaUsePurpose(g, {kind:'cancel', response}))) return false;
+      const window = card.kind === 'special' && card.effect === 'karama' && g.response === response
+        ? karamaBattleCancelOpportunity(g, p.id) : null;
+      if (!window || !g.turnActionPromises) return true;
+      try {
+        // Pure receipt quote: do not simulate the cancellation or its suffix.
+        recordTurnActionWindowCardPlay(g.turnActionPromises, p.id, g.turn, 'karamaBattleCancel', window.source);
+        return true;
+      } catch (error) { if (error instanceof TurnActionError) return false; throw error; }
+    })
     .map((card) => card.id);
 }
 /** The same conversion can be suspended by an independent private interaction. */
@@ -18404,6 +18416,19 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
   }
   if (shipmentWindow && card.kind === 'special' && card.effect === 'karama')
     recordNativeTurnActionWindowCard(g, p.id, 'karamaShipment', shipmentWindow.source);
+  const battleCancel = use.kind === 'cancel' ? karamaBattleCancelOpportunity(g, p.id) : null;
+  if (battleCancel && card.kind === 'special' && card.effect === 'karama')
+    recordNativeTurnActionWindowCard(g, p.id, 'karamaBattleCancel', battleCancel.source);
+  else if (battleCancel && liveTurnActionPromises(g.turnActionPromises ?? [], p.id, g.turn).some(row =>
+    row.windowCards?.karamaBattleCancel?.source === battleCancel.source && !row.windowCards.karamaBattleCancel.closed)) {
+    // A different Karama role ends this exact response without paying the
+    // promised printed cost. Check its closure before any discard reaction.
+    const trial = structuredClone(g);
+    trial.response = null;
+    trial.turnActionPromises = ownTurnActionWindowClosure(trial, p.id, ['karamaBattleCancel']);
+    requireRule(!!turnActionCompletion(trial, p.id),
+      'Retain your promised printed Karama cancellation or another whole-answer completion.');
+  }
   const used = discard(g, p, card.id);
   if (auctionWindow && auctionRows.some(row => row.windowCards?.karamaAuction?.source === auctionWindow))
     guardTurnActionAuctionClosure(g, p.id, auctionRows);
@@ -20156,6 +20181,18 @@ function quotedShipmentKaramaCards(g: Game, player: Player): string[] {
     } catch (error) { if (error instanceof RuleError) return false; throw error; }
   }).map(card => card.id);
 }
+function quotedBattleCancelKaramaCards(g: Game, player: Player): string[] {
+  const response = g.response;
+  if (!response || !karamaBattleCancelOpportunity(g, player.id) || g.truthtrance || g.decision ||
+    g.phaseOpening || g.pendingKarama || g.pendingTreacheryDiscard || g.pendingKull) return [];
+  const use = { kind: 'cancel' as const, response };
+  return player.hand.filter(card => {
+    if (card.kind !== 'special' || card.effect !== 'karama' ||
+      karamaSpendingBlock(g, player, card, karamaUsePurpose(g, use))) return false;
+    try { validateKaramaUse(g, player, use, card); return true; }
+    catch (error) { if (error instanceof RuleError) return false; throw error; }
+  }).map(card => card.id);
+}
 function thumperReadyStartsDraw(g: Game): boolean {
   return !!windowCardOpportunity(g, 'thumper') && !g.truthtrance && !g.phaseOpening && !g.response &&
     !g.decision && !g.pendingTreacheryDiscard && !g.spiceWindow && (!g.nexus || !!g.summonedBeforeBlow);
@@ -20179,6 +20216,10 @@ function quotedAmalReady(g: Game, actor: string): boolean {
 function* nativeWindowCardActions(g: Game, actor: string, effect: WindowCardEffect): Generator<Action> {
   if (!windowCardOpportunity(g, effect)) return;
   const player = getPlayer(g, actor);
+  if (effect === 'karamaBattleCancel') {
+    for (const card of quotedBattleCancelKaramaCards(g, player)) yield { type: 'card', card, mode: 'cancel' };
+    return;
+  }
   if (effect === 'amal') {
     for (const card of quotedAmalCards(g, player)) yield { type: 'card', card };
     return;
@@ -20321,13 +20362,18 @@ function recordNativeTurnActionWindowCard(g: Game, actor: string, effect: Window
 }
 function reconcileTurnActionWindowCards(g: Game) {
   if (!g.turnActionPromises) return;
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  // A completed Truthtrance parks its original response until the physical
+  // discard settles; it has not closed the native cancellation opportunity.
+  const windowGame = continuation?.kind === 'truthtranceDiscard'
+    ? { ...g, response: continuation.resume.response } : g;
   for (const promise of g.turnActionPromises) {
     if (promise.fulfilled || promise.released) continue;
     for (const effect of WINDOW_CARD_EFFECTS) {
       const stage = promise.windowCards?.[effect];
       const foreignInvoice = effect === 'karamaAuction' && g.decision?.kind === 'auctionPayment' &&
         g.decision.player !== promise.player;
-      if (!stage || stage.closed || !foreignInvoice && promise.turn === g.turn && windowCardOpportunity(g, effect, stage.source)?.source === stage.source) continue;
+      if (!stage || stage.closed || !foreignInvoice && promise.turn === g.turn && windowCardOpportunity(windowGame, effect, stage.source)?.source === stage.source) continue;
       g.turnActionPromises = turnActionRule(() => closeTurnActionWindowCardPlay(g.turnActionPromises!,
         promise.player, promise.turn, effect, stage.source));
     }
@@ -20483,10 +20529,12 @@ function guardTurnActionShipmentPriceDelivery(g: Game, shipment: PendingShipment
   trial.turnActionPromises = structuredClone(g.turnActionPromises);
   guardTurnActionShipmentPriceBoundary(trial, shipment.player, original, undefined, receipt);
 }
-function turnActionTargetAvailable(g: Game, _actor: string): boolean {
+function turnActionTargetAvailable(g: Game, actor: string): boolean {
   const context = g.phaseOpening ? { ...g, phaseOpening: null } : g;
-  return turnActionPromiseTurn(g) && !bribeTimingBlock({ ...context, truthtrance: null,
-    inflation: context.inflation?.side === 'double' ? null : context.inflation });
+  const battleCancel = karamaBattleCancelOpportunity(context, actor);
+  return turnActionPromiseTurn(g) && (!g.response || !!battleCancel) &&
+    !bribeTimingBlock({ ...context, truthtrance: null, response: battleCancel ? null : context.response,
+      inflation: context.inflation?.side === 'double' ? null : context.inflation });
 }
 /** Whole native commitments retain the existing Semuta discard continuation.
  * This does not expand the separate legacy bribe or Kull/module envelopes. */
@@ -21264,10 +21312,20 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
   const ownedInvoice = g.decision?.kind === 'auctionPayment' && g.decision.player === player.id;
   const saphoExtortion = g.decision?.kind === 'moritaniExtortion' &&
     saphoOptions(g, player).some(option => option.scope === 'extortion');
-  if (!promise || g.truthtrance || g.response || g.pendingTreacheryDiscard ||
+  const battleCancel = karamaBattleCancelOpportunity(g, player.id);
+  if (!promise || g.truthtrance || g.response && !battleCancel || g.pendingTreacheryDiscard ||
     g.decision && !ownedBox && !ownedInvoice && !saphoExtortion) return null;
   const completion = turnActionCompletion(g, player.id);
   if (!completion) return null;
+  if (battleCancel) {
+    const row = liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn).find(item =>
+      item.windowCards?.karamaBattleCancel && !item.windowCards.karamaBattleCancel.closed &&
+      item.windowCards.karamaBattleCancel.source === battleCancel.source);
+    const action = completion.cardPreparations?.find(item => item.type === 'card' && item.mode === 'cancel' &&
+      quotedBattleCancelKaramaCards(g, player).includes(item.card as string));
+    return row && action ? { event: row.event, action: { ...action,
+      turnActionPromiseEvent: row.event, turnActionPromisePhase: g.phase } } : null;
+  }
   if (g.phaseOpening) {
     const opportunity = windowCardOpportunity(g, 'amal');
     const row = liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn).find(row =>
@@ -40824,6 +40882,18 @@ function applyActionInner(
         !response.passed.includes(id),
         'You have already passed this response window.',
       );
+      const battleCancel = karamaBattleCancelOpportunity(g, id);
+      if (battleCancel && liveTurnActionPromises(g.turnActionPromises ?? [], id, g.turn).some(row =>
+        row.windowCards?.karamaBattleCancel?.source === battleCancel.source && !row.windowCards.karamaBattleCancel.closed)) {
+        const trial = structuredClone(g);
+        trial.response!.passed.push(id);
+        if (!trial.players.some(other => !trial.response!.passed.includes(other.id) &&
+          responseCancelCards(trial, other, trial.response!).length > 0)) {
+          trial.turnActionPromises = ownTurnActionWindowClosure(trial, id, ['karamaBattleCancel']);
+          requireRule(!!turnActionCompletion(trial, id),
+            'Play your promised printed Karama or retain another completion before closing this response.');
+        }
+      }
       response.passed.push(id);
     } else {
       requireRule(

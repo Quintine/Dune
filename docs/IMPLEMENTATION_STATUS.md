@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 27 October 2026 — Truthtrance battle cancellation
+
+Supported Basic native Voice and Prescience responses admit a source-bound
+question about the respondent's physical printed Karama cancellation. The
+question, answer, native card cost, independent pass/cancel and human/AI guide
+are connected; current facts may accompany the exact response condition.
+The online timing is provisional. Other response families, Advanced, optional
+modules and final acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#current-voice-and-prescience-cancellation--27-october-2026).
+
 ## 27 October 2026 — Preview-start guidance correction
 
 Setup, card inspection and selected faction/card rule guides now identify

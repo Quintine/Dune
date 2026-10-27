@@ -1,10 +1,17 @@
 import { harvesterAvailable } from './cards';
 
-export const WINDOW_CARD_EFFECTS = ['weather', 'atomics', 'harvester', 'karamaAuction', 'karamaShipment', 'thumper', 'amal'] as const;
+export const WINDOW_CARD_EFFECTS = ['weather', 'atomics', 'harvester', 'karamaAuction', 'karamaShipment', 'karamaBattleCancel', 'thumper', 'amal'] as const;
 export type WindowCardEffect = typeof WINDOW_CARD_EFFECTS[number];
 export function windowCardNativeEffect(effect: WindowCardEffect): 'weather' | 'atomics' | 'harvester' | 'karama' | 'thumper' | 'amal' {
-  return effect === 'karamaAuction' || effect === 'karamaShipment' ? 'karama' : effect;
+  return effect === 'karamaAuction' || effect === 'karamaShipment' || effect === 'karamaBattleCancel' ? 'karama' : effect;
 }
+export type KaramaBattleCancelSource = {
+  turn: number;
+  battle: string;
+  territory: string;
+  kind: 'voice' | 'prescience';
+  owner: string;
+};
 export type KaramaShipmentOpportunity = { effect: 'karamaShipment'; source: string; turn: number; recipient: string };
 export type KaramaShipmentSource = { turn: number; recipient: string; kind: 'original' } |
   { turn: number; recipient: string; kind: 'cunning'; event: string };
@@ -12,6 +19,7 @@ export type WindowCardOpportunity = { effect: Exclude<WindowCardEffect, 'karamaS
   KaramaShipmentOpportunity;
 export type WindowCardGame = {
   status: string;
+  advanced?: boolean;
   phase: number;
   turn: number;
   shieldWallDestroyed: boolean;
@@ -31,6 +39,8 @@ export type WindowCardGame = {
     harvesterClosed?: boolean;
   } | null;
   response?: unknown;
+  /** Public battle identity; plans and card custody are deliberately omitted. */
+  battle?: { event?: string | null; territory: string; revealed: boolean } | null;
   decision?: unknown;
   phaseOpening?: unknown;
   truthtrance?: unknown;
@@ -66,6 +76,30 @@ export function parseKaramaShipmentSource(source: unknown): KaramaShipmentSource
   if (tuple.length === 4 && tuple[3] === 'original') return { turn: tuple[1], recipient: tuple[2], kind: 'original' };
   return tuple.length === 5 && tuple[3] === 'cunning' && identifier(tuple[4])
     ? { turn: tuple[1], recipient: tuple[2], kind: 'cunning', event: tuple[4] } : null;
+}
+
+/** Decode only the canonical event-bound public response identity. This stays
+ * available after the original response closes for accepted promise receipts. */
+export function parseKaramaBattleCancelSource(source: unknown): KaramaBattleCancelSource | null {
+  if (!identifier(source)) return null;
+  let tuple: unknown;
+  try { tuple = JSON.parse(source); } catch { return null; }
+  if (!Array.isArray(tuple) || tuple.length !== 6 || tuple[0] !== 'karamaBattleCancel' ||
+    !whole(tuple[1]) || tuple[1] < 1 || !identifier(tuple[2]) || !identifier(tuple[3]) ||
+    (tuple[4] !== 'voice' && tuple[4] !== 'prescience') || !identifier(tuple[5]) ||
+    JSON.stringify(tuple) !== source) return null;
+  return { turn: tuple[1], battle: tuple[2], territory: tuple[3], kind: tuple[4], owner: tuple[5] };
+}
+
+/** A battle response is public. The target check deliberately reads no hand,
+ * card reservation, response pass or other private cancellation eligibility. */
+export function karamaBattleCancelOpportunity(game: WindowCardGame, target: string,
+  source?: string): WindowCardOpportunity | null {
+  const window = windowCardOpportunity(game, 'karamaBattleCancel', source);
+  const parsed = window && parseKaramaBattleCancelSource(window.source);
+  if (!parsed || !identifier(target) || !game.players?.some(player => player.id === target) ||
+    target === parsed.owner) return null;
+  return window;
 }
 
 /** Every still-unused original entitlement remains bound through other actors'
@@ -124,6 +158,19 @@ export function karamaShipmentOpportunities(game: WindowCardGame): KaramaShipmen
  * force conditions and chosen effect parameters remain native engine rules. */
 function globalWindowCardOpportunity(game: WindowCardGame, effect: WindowCardEffect): WindowCardOpportunity | null {
   if (game.status !== 'playing' || !whole(game.turn) || game.turn < 1) return null;
+  if (effect === 'karamaBattleCancel') {
+    const battle = game.battle, response = game.response, players = game.players;
+    if (game.advanced !== false || game.phase !== 6 || !battle || !identifier(battle.event) ||
+      !identifier(battle.territory) || battle.revealed !== false || !object(response) ||
+      (response.kind !== 'voice' && response.kind !== 'prescience') || !identifier(response.owner) ||
+      !Array.isArray(players) || !players.length ||
+      !players.every(player => object(player) && identifier(player.id)) ||
+      new Set(players.map(player => player.id)).size !== players.length ||
+      !players.some(player => player.id === response.owner)) return null;
+    return { effect, turn: game.turn, source: JSON.stringify([
+      effect, game.turn, battle.event, battle.territory, response.kind, response.owner,
+    ]) };
+  }
   if (effect === 'amal') {
     if (!whole(game.phase) || game.phase > 8 || game.amalWindowOpen !== undefined && typeof game.amalWindowOpen !== 'boolean' ||
       game.amalWindowOpen === false) return null;
