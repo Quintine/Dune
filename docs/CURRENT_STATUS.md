@@ -20,6 +20,16 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Basic Kull and Truthtrance bribes — 27 October. Prototyped / Partial.**
+The printed Kull preview admits structured ordinary, grouped and mixed bribe
+questions. A pending Kull response suppresses bribe controls and quotes any
+later Charity-funded payment on a detached parent; decline, successful Kull or
+a distinct counter preserves the original Karama outcome and bribe continuation.
+The user-deferred non-CHOAM unfunded-overbid fence remains. Nexus, Advanced,
+other structured promise families and broader acceptance remain separate.
+Thirteen related files pass 140/140; type/lint and build pass.
+[Scope and source](CHOAM_KULL_DESIGN.md#basic-kull-and-truthtrance-bribes--27-october-2026).
+
 **Printed Kull in supported Basic starts — 27 October. Prototyped / Partial.**
 An explicit lobby opt-in enables the printed Kull reaction for fresh Basic
 CHOAM/classic games using both CHOAM and Ix Treachery decks and no optional

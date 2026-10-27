@@ -1,5 +1,15 @@
 # Truthtrance ordinary bribe-payment promises
 
+**27 October Basic Kull follow-up:** the printed Kull preview with native
+CHOAM, classic factions and the CHOAM/Ix decks now admits ordinary, grouped and
+mixed structured bribe questions. Pending Kull responses suppress bribe controls
+while a detached quote preserves a genuinely available future Charity-funded
+payment. The original Kull attempt and bribe ledger continue after decline,
+success or a distinct counter; the quote does not execute either effect. This
+provisional extension retains the user-deferred non-CHOAM unfunded-overbid fence
+and does not extend the other preview profiles or promise families.
+[Current contract](CHOAM_KULL_DESIGN.md#basic-kull-and-truthtrance-bribes--27-october-2026).
+
 **27 October CHOAM follow-up:** the owned automatic opening receipt can fund
 later installments once, independently of one remaining ordinary Charity claim.
 Current payments use current cash. Native counters and opposing claims retain

@@ -2,6 +2,44 @@
 
 Source audit: 2026-09-06; opt-in preview contract updated 30 September 2026. This is an engineering and product-policy record, not a rules-completion claim. The source audit in [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md) remains applicable. The user-approved counter and BG choices supersede the original proposal; publisher-source uncertainty and full expansion gates remain.
 
+## Basic Kull and Truthtrance bribes — 27 October 2026
+
+**Prototyped / Partial.** The printed Kull preview now also supports existing
+structured ordinary bribe-payment questions in its Basic CHOAM/classic roster,
+including grouped and mixed questions that use the same bribe rules. Yes and
+No retain their native cumulative payment meaning, private respondent guidance
+and the original deferred receipt. Other independent Truthtrance commitments
+remain under their existing preview boundaries.
+
+A pending Kull attempt temporarily suppresses ordinary bribe controls. For a
+feasibility quote, the engine considers the suspended parent on a detached copy;
+this allows a genuinely available later Charity claim to fund the original bribe
+without treating the temporary Kull response as impossibility. At the unsettled
+phase-two CHOAM opening, either outcome preserves another faction’s Charity
+entitlement under the existing bank-shortfall policy; the quote does not choose
+which response will actually settle. Decline or a
+distinct eligible counter resumes the original attempt; successful Kull prevents
+it and retains its physical card. Each outcome retains the bribe obligations
+and their private ledger. No actual
+Charity or bribe is paid by the quote, and the real Kull frame is not retired or
+replayed by it.
+
+The [publisher's Basic Kull rule](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf#page=7)
+and the general [Truthtrance current-turn commitment authority](TRUTHTRANCE_BRIBE_PROMISES.md#authority-and-provisional-composition)
+do not prescribe this online continuation, so the composition remains
+provisional. Existing distinct-counter timing and the user-deferred non-CHOAM
+unfunded-overbid fence remain. Nexus Kull, Advanced, revival, bidding, alliance,
+whole-turn compositions and broader combinations are separate; this does not
+certify complete modes, recovery, browser or deployed behavior.
+
+The focused public fixture selects the original unopened Kull, two Karama,
+Truthtrance and Spice positions before native setup. Actual Charity-opening
+responses exercise a previously promised Charity-funded payment through decline,
+success and a distinct counter; two-recipient AND/OR and mixed questions use
+real later payments. A conserved Kull/deck swap is labeled as a controlled
+supplement. Thirteen related files pass 140/140; type/lint and build pass.
+Server-rendered controls do not certify browser or deployed play.
+
 ## Basic public start — 27 October 2026
 
 **Prototyped / Partial.** An explicit lobby opt-in enables the existing printed
@@ -19,8 +57,9 @@ The user-deferred non-CHOAM winning-overbid interaction keeps its existing
 private funding fence; this is an unfinished software boundary, not a printed rule.
 
 The opt-in visibly explains that some existing structured Truthtrance
-commitments, including ordinary bid, alliance, revival, bribe and combined
-turn-action questions, are unavailable in this preview. Its deferred
+commitments, including ordinary bid, alliance, revival and combined
+turn-action questions, remain unavailable in this preview. Structured bribe
+questions are supported as described above. Its deferred
 unfunded non-CHOAM overbid fence is also disclosed before start. The default retains
 the existing non-Kull behavior. Existing games are not upgraded, and other
 factions, optional modules, Advanced starts and Nexus Kull remain under their

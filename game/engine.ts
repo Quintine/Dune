@@ -1542,6 +1542,8 @@ export type Game = {
     form: 'printed' | 'substitution';
     /** New Advanced attempts restrict this effect; absent preserves original phase scope. */
     purpose?: KullPurpose;
+    /** New Basic Kull attempts may bind an existing structured bribe ledger. */
+    bribeReceipt?: true;
     stage: 'offer' | 'counter';
     selection?: { source: 'printed' | 'nexus'; card: string; nexusEvent?: string };
     intent: { kind: 'ordinary'; use: KaramaUse } | { kind: 'special'; use: SpecialKaramaIntent };
@@ -15658,10 +15660,11 @@ function forecastOrdinaryCharity(source: Game, owner: string): Game | null {
   const player = getPlayer(g, owner);
   if (charityQuote(g, player).total <= 0) return null;
   try {
-    if (source.phase < 2 && byFaction(g, 'choam') && g.choamCharity?.turn !== g.turn) {
+    if (source.phase <= 2 && byFaction(g, 'choam') && g.choamCharity?.turn !== g.turn) {
       if (player.faction === 'choam') return null;
       // Another faction's ordinary entitlement survives either CHOAM opening
-      // outcome. Quote the beneficiary only, without choosing that response.
+      // outcome, including the phase-two opening before its response is
+      // settled. Quote the beneficiary only, without choosing that response.
       player.spice += charityQuote(g, player).total; player.charityTurn = g.turn;
       return g;
     }
@@ -15849,7 +15852,11 @@ function reconcileBribePromises(g: Game, voluntary?: { actor: string; action: Ac
   const pending = g.response || g.decision || g.phaseOpening || g.pendingTreacheryDiscard ||
     g.pendingKarama || g.pendingKull || g.pendingRicheseBetrayal;
   if (pending && voluntary) {
-    const future = structuredClone(g); future.truthtrance = null;
+    // Quote after the original Kull response on a detached source. Leaving
+    // its frame installed would dispatch the simulated Charity as a Kull
+    // decision instead of evaluating the payer's real future entitlement.
+    const future = structuredClone(g.pendingKull ? kullSource(g, g.pendingKull) : g);
+    future.truthtrance = null;
     if (future.phaseOpening) projectTurnActionOpeningEnd(future);
     future.response = null; future.decision = null; future.pendingKarama = null; future.pendingTreacheryDiscard = null;
     let affordable = false;
@@ -18076,6 +18083,9 @@ function kullSignature(g: Game, frame: KullFrame): string {
     karamaShipping: source.karamaShipping, spiceWindow: source.spiceWindow,
     spiceResolution: source.spiceResolution, spiceSequence: source.spiceSequence,
     stormResolution: source.stormResolution, worthless: frame.worthless,
+    ...(frame.bribeReceipt ? {bribeReceipt:frame.bribeReceipt,bribePromises:source.bribePromises,
+      bribeExpressionPromises:source.bribeExpressionPromises,bribePromiseSequence:source.bribePromiseSequence,
+      mixedBribeQuestions:source.mixedBribeQuestions} : {}),
   });
 }
 /** Only the verified pre-source printed profile may bind its old held cost. */
@@ -18120,6 +18130,9 @@ function kullIntegrity(g: Game): void {
       return;
     }
     requireRule(g.kullPreview === true, 'This table has not opted into the Kull preview.');
+    requireRule(frame.bribeReceipt === undefined || frame.bribeReceipt === true && !g.advanced &&
+      bribePromiseModeSupported(g) && !!(g.bribePromises?.length || g.bribeExpressionPromises?.length || g.mixedBribeQuestions?.length),
+      'The Kull attempt has lost its original Basic bribe-answer ledger.');
     validateKullAttemptStamp(g, frame, physicalTreacheryCards(g));
     requireRule(Number.isSafeInteger(g.kullSequence) && g.kullSequence! > 0 &&
       frame.event === JSON.stringify(['kull', g.turn, g.phase, g.kullSequence, frame.player, frame.owner]),
@@ -18200,6 +18213,8 @@ function beginKullAttempt(g: Game, p: Player, card: Card, intent: KullFrame['int
     turn: g.turn, phase: g.phase, form: card.kind === 'worthless' ? 'substitution' : 'printed',
     stage: 'offer', intent: structuredClone(intent), resume: structuredClone(resume),
     ...(g.advanced ? { purpose: kullIntentPurpose(g, intent) } : {}),
+    ...(!g.advanced && (g.bribePromises?.length || g.bribeExpressionPromises?.length || g.mixedBribeQuestions?.length)
+      ? { bribeReceipt: true as const } : {}),
     worthless: structuredClone(g.pendingChoamWorthless ?? null), signature: '',
   };
   // Payment dispatch removed this control before entering its native branch.

@@ -1,4 +1,5 @@
 import { nativePromiseScopeSupported, type NativePromiseScope } from './native-promise-scope';
+import { FACTIONS } from './catalog';
 
 export type BribeClaim = { turn: number; recipient: string; minimum: number };
 export type BribePromise = BribeClaim & {
@@ -35,14 +36,29 @@ export function parseBribeClaim(value: unknown): BribeClaim {
   return { turn: input.turn, recipient: input.recipient, minimum: input.minimum };
 }
 
-/** Permission for the existing bare native context, not a game-start gate.
- * The engine retains nonally targets, timing and ordinary payment authority. */
+/** The ordinary, grouped and mixed bribe families share this admission. The
+ * printed Kull extension is deliberately limited to the existing fresh Basic
+ * CHOAM/classic roster; other previews keep their own composition boundaries.
+ * This quote grants no start permission or future unowned funds. */
 export function bribePromiseModeSupported(game: NativePromiseScope & {
   semutaPreview?: unknown; kullPreview?: unknown; nexusKullPreview?: unknown;
-  richeseBetrayalPreview?: unknown;
+  richeseBetrayalPreview?: unknown; guildBetrayalPreview?: unknown;
+  nexusIxianReplacementPreview?: unknown; nexusIxianBetrayalPreview?: unknown;
+  nexusHarkonnenBetrayalPreview?: unknown; moritaniAssassinatePreview?: unknown;
+  mobileStronghold?: unknown;
 }): boolean {
-  return nativePromiseScopeSupported(game) && !game.semutaPreview && !game.kullPreview &&
-    !game.nexusKullPreview && !game.richeseBetrayalPreview;
+  if (!nativePromiseScopeSupported(game) || game.semutaPreview || game.nexusKullPreview ||
+      game.richeseBetrayalPreview) return false;
+  if (!game.kullPreview) return true;
+  return game.kullPreview === true && game.advanced === false && game.expansions.length === 2 &&
+    game.expansions.includes('choam') && game.expansions.includes('ix') &&
+    game.players.some(player => player.faction === 'choam') &&
+    new Set(game.players.map(player => player.faction)).size === game.players.length &&
+    game.players.every(player => player.faction === 'choam' ||
+      FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base')) &&
+    !game.guildBetrayalPreview && !game.nexusIxianReplacementPreview &&
+    !game.nexusIxianBetrayalPreview && !game.nexusHarkonnenBetrayalPreview &&
+    !game.moritaniAssassinatePreview && !game.mobileStronghold;
 }
 
 export function bribeClaimText(claim: BribeClaim, recipientName: (id: string) => string = id => id): string {

@@ -44,7 +44,7 @@ void test('Kull is a host-selected lobby preview and default Basic Truth promise
   assert.equal(lobby.lobbyOptions?.kullPreview,undefined);
   const f = fixture();
   assert.equal(f.setup.kullPreview,true);
-  assert.equal(bribePromiseModeSupported(f.setup),false,'The opt-in explicitly retains the existing partial promise boundary');
+  assert.equal(bribePromiseModeSupported(f.setup),true,'Basic printed Kull now supports the structured bribe family');
   assert.ok(f.actions.some(row => row.actor === f.lobby.host && row.action.type === 'start'));
 });
 

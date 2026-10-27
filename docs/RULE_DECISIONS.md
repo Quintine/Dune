@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Basic Kull and Truthtrance bribes — 27 October 2026
+
+Provisionally combine the printed Basic Kull preview with existing ordinary,
+grouped and mixed structured bribe-payment questions. Suspend bribe controls
+during the original Kull response and use a detached parent only to quote any
+later Charity-funded payment. Decline or a distinct counter resumes the
+original Karama attempt; successful Kull prevents it. All outcomes preserve the
+private bribe obligations. The publisher
+Kull rule and general Truthtrance commitment rule do not prescribe this online
+continuation. The user-deferred non-CHOAM unfunded-overbid fence is unchanged;
+Nexus, Advanced and other promise families remain separate.
+[Source and boundaries](CHOAM_KULL_DESIGN.md#basic-kull-and-truthtrance-bribes--27-october-2026).
+
 ## Printed Kull in supported Basic starts — 27 October 2026
 
 Offer an explicit lobby opt-in for the existing printed Kull response in fresh

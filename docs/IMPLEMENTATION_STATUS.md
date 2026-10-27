@@ -1,5 +1,19 @@
 # Dune implementation status
 
+## 27 October 2026 — Basic Kull and Truthtrance bribes
+
+Admit ordinary, grouped and mixed structured bribe-payment questions in the
+Basic printed Kull preview. Pending Kull suppresses bribe controls while a
+detached parent quote retains a genuinely available future Charity-funded
+payment. The real Kull frame resolves once, and the private bribe ledger
+continues after decline, success or a distinct counter without replaying either action. Existing
+counter timing and the user-deferred non-CHOAM unfunded-overbid fence remain.
+This is a provisional composition; Nexus Kull, Advanced, other promise families,
+full modes, browser and deployed acceptance remain open. Thirteen related files
+pass 140/140; type/lint and build pass. Private proof is
+`20261027-kull-bribe-proof/`.
+[Contract](CHOAM_KULL_DESIGN.md#basic-kull-and-truthtrance-bribes--27-october-2026).
+
 ## 27 October 2026 — Printed Kull in supported Basic starts
 
 Offer an explicit lobby opt-in for the existing printed Kull response in a

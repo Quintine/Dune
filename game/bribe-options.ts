@@ -12,7 +12,7 @@ export interface BribeOptions {
 export function bribeTimingBlock(g: Game): string | null {
   if (g.status !== 'playing') return 'Bribes require a game in progress.';
   if (g.inflation?.side === 'double') return 'Bribes are prohibited while Inflation shows Double.';
-  if (g.pendingTreacheryDiscard || g.pendingNullentropy || g.bureaucratPayments?.pending ||
+  if (g.pendingKull || g.pendingTreacheryDiscard || g.pendingNullentropy || g.bureaucratPayments?.pending ||
       ['name', 'reveal'].includes(g.battle?.mentatQuestion?.stage ?? '') ||
       g.nexusCards?.phase?.stage === 'drawing' || g.truthtrance ||
       g.nexusTraitorExchanges?.some(exchange => exchange.stage === 'return') ||
