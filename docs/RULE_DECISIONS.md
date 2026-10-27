@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Semuta and an already-ready Poison battle — 27 October 2026
+
+In a supported open pre-leader preparation, one prior ready decision does not
+remove the printed Semuta opportunity after another player's Residual Poison
+discard. The existing one-death continuation restores the opponent's ready
+and reopens the Poison player's own ready. This is an online timing composition;
+other inspection and pending-reward boundaries remain separate.
+[Scope](RICHESE_RESIDUAL_POISON_ENGINE_AUDIT.md#semuta-after-a-preparation-ready--27-october-2026).
+
 ## Ecaz Ambassador same-recipient Duke tenure — 27 October 2026
 
 Provisionally let a fresh eligible Ambassador grant change the current

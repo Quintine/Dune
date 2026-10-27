@@ -124,12 +124,17 @@ void test('clean Residual Poison death offers Semuta once before shared battle p
   assert.throws(() => send(claimed, 'e', { type: 'semutaCommit', event }));
 });
 
-void test('an already-ready opponent retains the automatic Residual Poison suffix', () => {
+void test('an already-ready opponent retains readiness through the Residual Poison Semuta offer', () => {
   let g = fixture();
   g.semutaPreview = true;
   hold(g, 'e', 'Semuta Drug');
   g = poison(ready(start(g), 'g'));
-  assert.equal(g.pendingTreacheryDiscard ?? null, null);
+  const event = g.pendingTreacheryDiscard?.batch.event;
+  assert.ok(event);
+  assert.deepEqual(g.battle?.preLeader?.ready, ['g']);
+  assert.equal(g.players[1].leaders.filter(l => l.dead).length, 1);
+  for (const id of ['r', 'g', 'e']) g = send(g, id, { type: 'semutaPass', event });
+  assert.equal(g.pendingTreacheryDiscard, null);
   assert.deepEqual(g.battle?.preLeader?.ready, ['g']);
   assert.equal(g.players[1].leaders.filter(l => l.dead).length, 1);
   assert.equal(g.discard.filter(c => c.id === 'richese-residual-poison').length, 1);

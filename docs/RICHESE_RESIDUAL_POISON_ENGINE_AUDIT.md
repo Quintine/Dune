@@ -1,5 +1,22 @@
 # Residual Poison: source and engine contract
 
+## Semuta after a preparation Ready — 27 October 2026
+
+**Prototyped / Partial.** A legal Residual Poison play still offers its public
+fresh discard to Semuta when one combatant has already marked the current
+pre-leader preparation ready. The signed continuation retains that actual
+ready list, the single selected leader death and the physical card while the
+neutral claim/pass resolves. The opponent's ready remains; the Poison player's
+own earlier ready is reopened after the reaction, matching the native Poison
+suffix. Existing committed-plan, inspection and pending-reward limits remain.
+
+The printed Semuta ability reacts to another player's discard and the Poison
+card is played before leader commitment; neither source imposes an empty
+readiness list. The shared online readiness protocol and nesting remain an
+implementation composition. [Native Basic runtime](../tests/semuta-residual-ready-runtime.test.ts)
+uses actual purchase, shipment and battle, with a conserved staged Semuta card.
+Wider interactions and final/deployed acceptance remain open.
+
 Audit: 2026-09-06. The source findings below informed the bounded runtime integration recorded at the end. Historical hook and proposed-contract sections describe the pre-integration audit; they do not supersede the final checkpoint. Complete expansion compliance remains unverified.
 
 The Advanced Harkonnen exclusion below is superseded by the

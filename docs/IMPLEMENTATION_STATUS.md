@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 27 October 2026 — Semuta after a ready battle preparation
+
+The neutral Semuta opportunity now follows a legal Residual Poison discard
+when one combatant has already readied in the open pre-leader stage. The
+original selected victim and readiness are preserved through claim or pass,
+then the native Poison suffix runs once. Inspected commitments and wider
+combinations remain separate; final and deployed acceptance remain open.
+[Scope](RICHESE_RESIDUAL_POISON_ENGINE_AUDIT.md#semuta-after-a-preparation-ready--27-october-2026).
+
 ## 27 October 2026 — Ecaz same-recipient Duke tenure
 
 A fresh eligible Ecaz Ambassador grant can provisionally convert a current

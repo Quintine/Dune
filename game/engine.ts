@@ -6088,6 +6088,13 @@ function residualPoisonDiscardSignature(g: Game, c: ResidualPoisonDiscardContinu
     })),
   });
 }
+/** An open shared preparation may already have one combatant ready. */
+function residualPoisonPreparationOpen(battle: Battle): boolean {
+  const pre = battle.preLeader;
+  return !!pre && pre.closed === false && typeof battle.event === 'string' && !!battle.event &&
+    pre.event === battle.event && Array.isArray(pre.ready) &&
+    pre.ready.length <= 1 && pre.ready.every(id => id === battle.attacker || id === battle.defender);
+}
 function semutaBattleKaramaResponse(g: Game, response: ResponseWindow): boolean {
   return response.kind === 'capture' || response.kind === 'choamAudit' ||
     response.kind === 'choamBattleIncome' || response.kind === 'ixSubstitution' ||
@@ -7831,8 +7838,7 @@ function treacheryDiscardIntegrity(g: Game) {
       !battle.revealed && !Object.keys(battle.plans).length &&
       [battle.attacker, battle.defender].includes(c.player) &&
       c.target === (battle.attacker === c.player ? battle.defender : battle.attacker) &&
-      battle.preLeader?.event === c.battleEvent && !battle.preLeader.closed &&
-      battle.preLeader.ready.length === 0 &&
+      residualPoisonPreparationOpen(battle) &&
       victim?.dead && !victim.capturedBy &&
       batch.cause === 'residualPoison' && batch.entries.length === 1 &&
       entry.publicFace && entry.discardedBy === c.player &&
@@ -9079,8 +9085,7 @@ function semutaOfferSupported(
       g.pendingWinnerDiscards || g.moritaniRetention ||
       g.pendingIxSubstitution)) return false;
   if (continuation.kind === 'residualPoisonDiscard' &&
-    (!g.battle?.preLeader || g.battle.preLeader.closed ||
-      g.battle.preLeader.ready.length > 0 ||
+    (!g.battle || !residualPoisonPreparationOpen(g.battle) ||
       g.battle.preparation || g.battle.prescience ||
       g.battle.nexusInspection || g.battle.truthPromises?.length ||
       g.pendingAuditor || g.pendingCapture || g.pendingTech ||

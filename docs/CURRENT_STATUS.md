@@ -20,6 +20,13 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Semuta after a ready battle preparation — 27 October. Prototyped / Partial.**
+One prior pre-leader Ready no longer prevents a Semuta offer after a legal
+Residual Poison discard. Claim/pass preserves the actual victim and battle,
+then the original readiness suffix runs once. Inspected commitments and wider
+interactions remain separate; final/deployed acceptance is open.
+[Scope](RICHESE_RESIDUAL_POISON_ENGINE_AUDIT.md#semuta-after-a-preparation-ready--27-october-2026).
+
 **Ecaz same-recipient Duke tenure — 27 October. Prototyped / Partial.** A fresh
 eligible Ambassador can provisionally convert its current recipient's other
 temporary Duke tenure to the ordinary until-battle tenure, preserving the

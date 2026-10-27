@@ -181,15 +181,17 @@ for (const advanced of [false, true]) {
     finishOnce(f, done, victim);
   });
 
-  void test(`${label}: actual opponent readiness permits native Poison but excludes Semuta's clean producer`, () => {
+  void test(`${label}: actual opponent readiness survives the Poison Semuta response`, () => {
     const f = createSemutaHomeworldResidualPoisonFixture(advanced);
     const ready = applyAction(f.game, f.target, { type: 'battlePreparationReady', event: f.event });
     assert.deepEqual(ready.battle?.preLeader?.ready, [f.target]);
     assert.equal(viewGame(ready, f.owner).residualPoison?.blocked, null);
-    const done = disposeSemutaHomeworldResidualPoison(f, ready);
-    const victim = assertNativePoison(f, done, ready);
+    const pending = disposeSemutaHomeworldResidualPoison(f, ready);
+    const victim = assertNativePoison(f, pending, ready);
+    assert.ok(pending.pendingTreacheryDiscard);
+    assert.ok(viewGame(pending, f.holder).semutaReaction);
+    const done = reactSemutaHomeworldChoam(pending, f.holder, false);
     assert.ok(!done.pendingTreacheryDiscard);
-    assert.ok(!viewGame(done, f.holder).semutaReaction);
     assert.deepEqual(done.battle?.preLeader?.ready, [f.target]);
     finishOnce(f, done, victim);
   });
