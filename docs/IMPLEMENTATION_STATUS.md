@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 27 October 2026 — Caladan victory arrival
+
+One actual reserve counter now reaches a won HMS provisionally and resolves
+Advanced Intrusion before original Ambassador/Terror reactions. The original
+victory event survives both owner orders and all six direct Terror effects;
+queued entry completes before battle cleanup resumes. Storm stays unavailable
+conservatively, with no ordinary action, fee or Spiritual shipment source.
+
+Frozen12-file97/97, types/lint/build and twelve controlled runtime programmes
+pass (39 table/12 chooser SSR,12 shared packets;91/32 recorded battle/further
+actions). Actual battles create the grants from explicitly staged sources;
+stateful React handlers/browser/deployed journeys are unclaimed. Six old World
+Face Dance failures were corrected by preserving nativeT2 while A/Guild visitors
+fight, retaining both printed production guards. Failed v1 remains; v2 binds the
+frozen source and final three-document overlay. No saved-game/database/restart
+operation. [Current checkpoint](CURRENT_STATUS.md#current-checkpoint-and-work)
+and [contract/proof](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#victory-placement-and-arrival-reactions--27-october-2026).
+Full modes, nested compositions, final assurance and deployed acceptance remain
+open; this does not certify the full goal.
+
 ## 27 October 2026 — Imperial Ornithopter / Homeworld movement
 
 **Imperial Ornithopter / Homeworld movement — 27 October. Prototyped / Partial.**

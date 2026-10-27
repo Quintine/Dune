@@ -40,6 +40,17 @@ function ReinforcementChoice({ game, act, busy }: Props) {
       <p>
         Add one reserve force at the battle location, or leave it in reserves.
       </p>
+      <p className="fine" aria-label="Caladan arrival rules">
+        This force joins the original surviving winner at the original battle location, including inside
+        the Hidden Mobile Stronghold. Its direct-shipment ban does not block this placement. No spice,
+        shipment, movement or revival allowance is spent, and no Spiritual Advisor opportunity is created.
+        HMS entry is provisional. Storm-sector entry remains unavailable.
+      </p>
+      <p className="fine" aria-label="Provisional Caladan arrival reactions">
+        {game.advanced && 'Advanced Bene Gesserit Intrusion resolves first. '}
+        Provisional arrival classification: eligible Ambassador and Terror reactions then follow their
+        original arrival order.
+      </p>
       <p className="fine" aria-label="Provisional Face Dance order">
         Provisional order: this optional force joins the original victorious
         army before any later Face Dance. If replacement occurs, it returns with
@@ -80,7 +91,7 @@ function ReinforcementChoice({ game, act, busy }: Props) {
           className="game-action"
           disabled={busy || !choice.action}
           onClick={() => {
-            if (choice.action) act(choice.action);
+            if (!busy && choice.action) act(choice.action);
           }}
         >
           Add one reserve force
@@ -89,9 +100,8 @@ function ReinforcementChoice({ game, act, busy }: Props) {
           className="game-action"
           variant="outline"
           disabled={busy || !canAct}
-          onClick={() =>
-            act({ type: 'decision', event: offer.event, decline: true })
-          }
+          onClick={() => { if (!busy && canAct)
+            act({ type: 'decision', event: offer.event, decline: true }); }}
         >
           Leave in reserves
         </Button>

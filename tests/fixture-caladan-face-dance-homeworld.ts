@@ -85,10 +85,14 @@ export function advanceCaladanFaceDanceHomeworld(game: Game, until: (state: Game
   }
   throw Error('The original Homeworld battle did not reach its bounded continuation');
 }
-/** Finish only this battle; retain the original Collection opening. */
+/** Finish this original aftermath only. A declined Face Dance can leave a
+ * further mandatory battle against the noncombatant native Tleilaxu army. */
 export function finishCaladanFaceDanceHomeworld(game: Game, actions: CaladanFaceDanceHomeworldStep[] = []): Game {
+  const event = game.lastBattleContext?.event; assert.ok(event);
   return advanceCaladanFaceDanceHomeworld(game,
-    state => state.phase === 7 && !state.battle && !state.response && !state.decision, actions);
+    state => state.lastBattleContext?.event === event && !state.pendingFaceDance &&
+      state.lastBattleContext.caladanReinforcement?.completed === true &&
+      !state.battle && !state.response && !state.decision && !state.phaseOpening, actions);
 }
 
 /** Genuine original Ix/Homeworld audit setup, then an explicitly CONTROLLED
@@ -126,10 +130,13 @@ export function createCaladanFaceDanceHomeworldFixture(options: { advanced?: boo
   positionVictoryArmy(game, observer, 20, 0);
   positionVictoryArmy(game, tleilaxu, 2, 0);
   positionVictoryInvader(game, atreides, territory, 3);
+  positionVictoryInvader(game, observer, territory, 2);
+  const defender = observer;
   const winner = caladanFaceDanceHomeworldPlayer(game, atreides), native = caladanFaceDanceHomeworldPlayer(game, tleilaxu);
+  const opposing = caladanFaceDanceHomeworldPlayer(game, defender);
   const winnerDisc = [...winner.leaders].filter(leader => !leader.dead && !leader.usedAt)
     .sort((a, b) => b.strength - a.strength)[0];
-  const loserDisc = [...native.leaders].filter(leader => !leader.dead && !leader.usedAt)
+  const loserDisc = [...opposing.leaders].filter(leader => !leader.dead && !leader.usedAt)
     .sort((a, b) => a.strength - b.strength)[0]; assert.ok(winnerDisc && loserDisc && winnerDisc.strength > loserDisc.strength);
   const winnerLeader = winnerDisc.id, loserLeader = loserDisc.id;
   let exchange: { from: string; returned: string; selected: string } | null = null;
@@ -148,14 +155,14 @@ export function createCaladanFaceDanceHomeworldFixture(options: { advanced?: boo
   const controlled = structuredClone(game);
   assert.deepEqual(caladanFaceDanceHomeworldInventory(game), originalInventory);
   assert.deepEqual(caladanFaceDanceHomeworldTraitors(game), originalTraitors);
-  const battleAction: Action = { type: 'chooseBattle', territory, target: tleilaxu };
+  const battleAction: Action = { type: 'chooseBattle', territory, target: defender };
   act(atreides, battleAction); const beforePreparation = structuredClone(game);
   game = advanceCaladanFaceDanceHomeworld(game, state => !!state.battle && !state.response && !state.decision &&
     !state.phaseOpening && !state.battle.preparation && state.battle.preLeader?.closed !== false, actions);
   const beforePlans = structuredClone(game);
   const planSteps: CaladanFaceDanceHomeworldStep[] = [
     { actor: atreides, action: { type: 'battlePlan', leader: winnerLeader, dial: 0, support: 0, weapon: null, defense: null } },
-    { actor: tleilaxu, action: { type: 'battlePlan', leader: loserLeader, dial: 0, support: 0, weapon: null, defense: null } },
+    { actor: defender, action: { type: 'battlePlan', leader: loserLeader, dial: 0, support: 0, weapon: null, defense: null } },
   ];
   for (const step of planSteps) act(step.actor, step.action);
   const revealed = structuredClone(game);
@@ -165,7 +172,9 @@ export function createCaladanFaceDanceHomeworldFixture(options: { advanced?: boo
   assert.equal(caladanFaceDanceHomeworldPlayer(game, atreides).reserves, 6);
   assert.equal(caladanFaceDanceHomeworldArmy(game, atreides), 3);
   assert.equal(caladanFaceDanceHomeworldPlayer(game, atreides).tanks, 0);
-  assert.equal(caladanFaceDanceHomeworldPlayer(game, tleilaxu).tanks, 2);
+  assert.equal(caladanFaceDanceHomeworldPlayer(game, tleilaxu).tanks, 0);
+  assert.equal(caladanFaceDanceHomeworldPlayer(game, tleilaxu).reserves, 2);
+  assert.equal(caladanFaceDanceHomeworldPlayer(game, defender).tanks, 2);
   assert.ok(game.pendingFaceDance && game.pendingFaceDance.identity === winnerLeader);
   const event = game.homeworldVictoryReinforcement!.event;
   const reinforcementAction: Action = { type: 'decision', event, destination, amount: 1 };
@@ -173,17 +182,17 @@ export function createCaladanFaceDanceHomeworldFixture(options: { advanced?: boo
   const faceDanceAction: Action = { type: 'decision', reveal: true, sources: { 'polar_sink:0': 4 } };
   const faceDanceDecline: Action = { type: 'decision', reveal: false };
   return { game, source: structuredClone(game), advanced, atreides, winner: atreides, owner: atreides, tleilaxu,
-    observer, actor: atreides, territory, destination, event, winnerLeader, loserLeader,
+    observer, defender, actor: atreides, territory, destination, event, winnerLeader, loserLeader,
     action: reinforcementAction, reinforcementAction, reinforcementDecline, faceDanceAction, faceDanceDecline,
     battleAction, planSteps, lobby, setup, afterSetup, controlled, exchange, beforePreparation, beforePlans, revealed,
     originalInventory, originalTraitors, originalLeaders, originalPendingFaceDance: structuredClone(game.pendingFaceDance),
     originalPhysical: caladanFaceDanceHomeworldPhysical(game), originalContext: structuredClone(game.lastBattleContext),
     actions, steps: actions, sourceActionCount: actions.length,
     staging: [
-      'Actual original A/G/Tleilaxu Ix47 Homeworld audit setup and logged native setup choices; Basic/Advanced is selected before the original initializer. This unchanged fixture-caladan-victory profile does not enable occupation-preview benefits or a new public start gate.',
-      'CONTROLLED conserved later phase-six position: original dealt cards return to their original deck; A has Caladan6, three visitors on Tleilax and Polar11; Tleilaxu has native2 and Polar18; Guild has native20. The exact original custody quote moves A3 from Caladan9 to the visitor pool. No extra counter, card or disc is created.',
+      'Actual original A/G/Tleilaxu Ix47 Homeworld audit setup and logged native setup choices; Basic/Advanced is selected before the original initializer. Original occupation state/preview flags remain unchanged; no occupied benefit or native-only Face Dance restriction is disabled.',
+      'CONTROLLED conserved later phase-six position: original dealt cards return to their original deck; A has Caladan6, three visitors on Tleilax and Polar11; Tleilaxu has native2 and Polar18; Guild has native18 and two visitors on Tleilax. Exact original custody quotes move A3 from Caladan9 and Guild2 from Junction20 into their visitor pools. Tleilaxu stays a noncombatant native, so A never solely occupies Tleilax. No extra counter, card or disc is created.',
       'CONTROLLED matching Face Dancer availability exchanges one original Traitor identity with its actual reserve/held slot when necessary. All original Traitors/discs stay unique; no replacement or reveal status is installed.',
-      'Actual chooseBattle, preparation/response passes, zero-dial unarmed native-leader plans, outcome readiness and declined Traitor votes create a normal A victory, no A ordinary casualties and Tleilaxu2 Tanks. Stop at the original Caladan choice before native Face Dance. Optional transfer and reveal remain caller-owned.',
+      'Actual A-versus-Guild chooseBattle, preparation/response passes, zero-dial unarmed faction-leader plans and outcome readiness create a normal A victory, no A ordinary casualties and Guild2 Tanks; two visiting combatants have no Homeworld Traitor voters. Native Tleilaxu2 remains, permitting its native Face Dance without occupied-Tleilax immunity. Stop at the original Caladan choice. Declining Face Dance leaves the later A–T battle unresolved rather than claiming Collection.',
     ],
   };
 }

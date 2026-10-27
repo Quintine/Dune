@@ -29,8 +29,9 @@ function source(f: Fixture) {
   assert.equal(player(f.controlled, f.tleilaxu).reserves, 2);
   assert.equal(player(f.controlled, f.tleilaxu).forces['polar_sink:0'], 18);
   assert.equal(player(f.game, f.atreides).reserves, 6); assert.equal(army(f.game, f.atreides), 3);
-  assert.equal(player(f.game, f.atreides).tanks, 0); assert.equal(player(f.game, f.tleilaxu).tanks, 2);
-  assert.equal(player(f.game, f.tleilaxu).reserves, 0); assert.equal(army(f.game, f.tleilaxu), 0);
+  assert.equal(player(f.game, f.atreides).tanks, 0); assert.equal(player(f.game, f.tleilaxu).tanks, 0);
+  assert.equal(player(f.game, f.defender).tanks, 2);
+  assert.equal(player(f.game, f.tleilaxu).reserves, 2); assert.equal(army(f.game, f.tleilaxu), 2);
   assert.equal(f.game.decision?.kind, 'caladanReinforcement'); assert.equal(f.game.battle ?? null, null);
   assert.equal(f.game.pendingFaceDance!.player, f.tleilaxu); assert.equal(f.game.pendingFaceDance!.identity, f.winnerLeader);
   assert.equal(player(f.game, f.atreides).leaders.find(leader => leader.id === f.winnerLeader)!.dead, false);
@@ -56,7 +57,8 @@ function give(f: Fixture, actions: Step[] = []) {
 }
 function completed(game: Game, f: Fixture, actions: Step[] = []) {
   const done = finish(game, actions);
-  assert.equal(done.phase, 7); assert.equal(done.battle ?? null, null); assert.equal(done.decision ?? null, null);
+  assert.equal(done.phase, army(done, f.atreides) > 0 ? 6 : 7);
+  assert.equal(done.battle ?? null, null); assert.equal(done.decision ?? null, null);
   assert.equal(done.pendingFaceDance ?? null, null); assert.equal(viewGame(done, f.atreides).caladanReinforcement, null);
   assert.equal(done.homeworldVictoryReinforcement!.stage, 'complete');
   assert.equal(done.lastBattleContext!.event, f.event); assert.equal(done.lastBattleContext!.winner, f.atreides);
@@ -82,8 +84,8 @@ for (const advanced of [false, true]) {
     game = act(game, f.tleilaxu, f.faceDanceAction, actions);
     assert.equal(player(game, f.atreides).reserves, 9); assert.equal(army(game, f.atreides), 0);
     assert.equal(player(game, f.atreides).forces['polar_sink:0'], 11); assert.equal(player(game, f.atreides).tanks, 0);
-    assert.equal(player(game, f.tleilaxu).reserves, 4); assert.equal(player(game, f.tleilaxu).forces['polar_sink:0'], 14);
-    assert.equal(player(game, f.tleilaxu).tanks, 2);
+    assert.equal(player(game, f.tleilaxu).reserves, 6); assert.equal(player(game, f.tleilaxu).forces['polar_sink:0'], 14);
+    assert.equal(player(game, f.tleilaxu).tanks, 0); assert.equal(player(game, f.defender).tanks, 2);
     const dead = player(game, f.atreides).leaders.find(leader => leader.id === f.winnerLeader)!;
     assert.equal(dead.dead, true); assert.equal(dead.deaths, beforeLeader.deaths + 1);
     assert.equal(player(game, f.tleilaxu).faceDancers!.find(card => card.leader === f.winnerLeader)!.revealed, true);
@@ -91,7 +93,7 @@ for (const advanced of [false, true]) {
     game = completed(game, f, actions);
     assert.equal(actions.filter(step => step.action.reveal === true).length, 1);
     assert.equal(actions.filter(step => step.action.destination === f.destination).length, 1);
-    assert.equal(player(game, f.atreides).reserves, 9); assert.equal(player(game, f.tleilaxu).reserves, 4);
+    assert.equal(player(game, f.atreides).reserves, 9); assert.equal(player(game, f.tleilaxu).reserves, 6);
   });
 
   void test(`${band} controlled native Homeworld victory keeps its fourth visitor when Tleilaxu declines Face Dance`, () => {
@@ -101,7 +103,7 @@ for (const advanced of [false, true]) {
     game = act(game, f.tleilaxu, f.faceDanceDecline, actions); game = completed(game, f, actions);
     assert.deepEqual(game.players, before); assert.deepEqual(game.homeworlds!.custody, custody);
     assert.equal(player(game, f.atreides).reserves, 5); assert.equal(army(game, f.atreides), 4);
-    assert.equal(player(game, f.tleilaxu).reserves, 0); assert.equal(player(game, f.tleilaxu).forces['polar_sink:0'], 18);
+    assert.equal(player(game, f.tleilaxu).reserves, 2); assert.equal(player(game, f.tleilaxu).forces['polar_sink:0'], 18);
     assert.equal(player(game, f.atreides).leaders.find(leader => leader.id === f.winnerLeader)!.dead, false);
     assert.equal(player(game, f.tleilaxu).faceDancers!.find(card => card.leader === f.winnerLeader)!.revealed, false);
   });
@@ -115,8 +117,8 @@ for (const advanced of [false, true]) {
     game = act(game, f.tleilaxu, { ...f.faceDanceAction, sources: { 'polar_sink:0': 3 } });
     game = completed(game, f);
     assert.equal(player(game, f.atreides).reserves, 9); assert.equal(army(game, f.atreides), 0);
-    assert.equal(player(game, f.tleilaxu).reserves, 3); assert.equal(player(game, f.tleilaxu).forces['polar_sink:0'], 15);
-    assert.equal(player(game, f.tleilaxu).tanks, 2);
+    assert.equal(player(game, f.tleilaxu).reserves, 5); assert.equal(player(game, f.tleilaxu).forces['polar_sink:0'], 15);
+    assert.equal(player(game, f.tleilaxu).tanks, 0); assert.equal(player(game, f.defender).tanks, 2);
   });
 
   void test(`${band} controlled Homeworld reinforcement and subsequent Face Dance reject stale, foreign, quantity and live-source over-cap actions`, () => {

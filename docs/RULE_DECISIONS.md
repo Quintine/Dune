@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Caladan victory placement and entry — 27 October 2026
+
+Compose the original Caladan high face's one-counter addition with Advanced
+Intrusion's "enters" trigger (supplied physical28/printed26), before the original
+Ambassador/Terror reactions. It spends no ordinary action or spice and grants
+no Spiritual Advisor shipment source. Under standing recommended-option
+authority, HMS placement is a provisional specific-card exception to E1p9/
+supplied physical34's normal entry route; Terror's ships/moves trigger at
+physical35 requires provisional classification. Keep the ordinary storm-sector
+ban conservatively (physical10); sheltered HMS interior0 remains separate from
+its pointer. Retain population, survivors, occupancy and Homeworld Karama
+immunity. No specific combined publisher ruling was found.
+[Contract](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#victory-placement-and-arrival-reactions--27-october-2026).
+
 ## Physical Ornithopter and Imperial Homeworld movement — 27 October 2026
 
 E3printed10/supplied Advanced physical22/printed20 grant Emperor native Force

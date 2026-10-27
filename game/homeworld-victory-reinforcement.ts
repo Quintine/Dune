@@ -2,11 +2,9 @@ import type { Game } from './engine';
 import {
   gameTerritories,
   location,
-  MOBILE_STRONGHOLD,
   splitLocation,
   validLocation,
 } from './board';
-import { fighterCount } from './advisors';
 import { territoryEntryBlock } from './occupancy';
 import { homeworldContext } from './homeworld-game';
 import {
@@ -17,7 +15,6 @@ import {
 import { homeworldPopulations } from './homeworld-population';
 import { HOMEWORLD_CARDS } from './homeworld-cards';
 import { quoteNativeReserveWithdrawal } from './homeworld-native-reserves';
-import { lowGrummanRevealBlock } from './homeworld-collection';
 
 export type HomeworldVictoryReinforcementContext = Pick<
   Game,
@@ -168,31 +165,12 @@ export function quoteHomeworldVictoryReinforcement(
   }
   if (!Number.isSafeInteger(g.storm) || g.storm < 1 || g.storm > 18)
     invalid('Caladan reinforcement requires the current storm sector.');
-  const bg = g.players.find((seat) => seat.faction === 'beneGesserit');
-  const moritani = g.players.find((seat) => seat.faction === 'moritani');
   quote.destinations = board!.sectors.map((sector) => {
     let blocked: string | null = null;
-    if (board!.id === MOBILE_STRONGHOLD)
+    if (sector === g.storm)
       blocked =
-        'Caladan reinforcement in the Hidden Mobile Stronghold awaits its entry-classification ruling.';
-    if (!blocked && sector === g.storm)
-      blocked =
-        'Caladan reinforcement into a sector in storm awaits its placement-permission ruling.';
+        'You cannot add the Caladan reinforcement to a sector in storm.';
     blocked ??= territoryEntryBlock(g.players, owner.id, board!.id);
-    if (!blocked && g.advanced && bg && fighterCount(bg, board!.id) > 0)
-      blocked =
-        'Intrusion after Caladan reinforcement awaits an entry-classification ruling.';
-    if (
-      !blocked &&
-      moritani &&
-      owner.id !== moritani.ally &&
-      !lowGrummanRevealBlock(g, moritani.id, 1) &&
-      g.moritaniTerror?.tokens.some(
-        (token) => token.status === 'placed' && token.location === board!.id,
-      )
-    )
-      blocked =
-        'Terror after Caladan reinforcement awaits an entry-classification ruling.';
     return {
       id: location(board!.id, sector),
       name: `${board!.name}${sector ? ` · sector ${sector}` : ''}`,

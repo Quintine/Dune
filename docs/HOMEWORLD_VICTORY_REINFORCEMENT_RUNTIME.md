@@ -1,7 +1,8 @@
 # Caladan victory reinforcement runtime
 
 The 10 September checkpoint below is historical. The [26 October before-Face-Dance composition](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#reinforcement-before-face-dance--26-october-2026)
-supersedes its decline-only overlap. Use [current status](CURRENT_STATUS.md)
+supersedes its decline-only overlap; the [27 October arrival contract](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#victory-placement-and-arrival-reactions--27-october-2026)
+supersedes the HMS/Intrusion/Terror destination guards. Use [current status](CURRENT_STATUS.md)
 for present preview admission and proof; this old checkpoint does not certify it.
 
 Development checkpoint, 10 September 2026. This implements the bounded behavior

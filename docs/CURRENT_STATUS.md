@@ -20,6 +20,37 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Caladan victory arrival — 27 October. Prototyped / Partial.**
+The original one-counter reserve addition now reaches a won HMS provisionally,
+resolves Advanced BG Intrusion first, then opens the original Ambassador/Terror
+entry. All six original Terror effects and both owner orders retain the victory
+event; queued reactions finish before the battle suffix resumes. Storm-sector
+entry remains unavailable conservatively. No spice/normal action or Spiritual
+Advisor shipment source is added. HMS/Terror composition remains provisional.
+[Source and contract](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#victory-placement-and-arrival-reactions--27-october-2026).
+
+Frozen **12-file union97/97**, types/lint/build and twelve controlled runtime
+journeys pass:39 GameTable SSR,12 actual chooser SSR and12 shared-adapter packets;
+recorded battle/further actions91/32. These are controlled audit setups with
+staged later armies, purses, original cards, token supply/order and a separate
+contest retaining Battle phase. Actual battle/plan/call packets create each
+victory; no reinforcement/entry/reaction receipt is installed. HMS uses its actual
+Ix setup placement. The stateful chooser keeps its real initial target; no
+React handler, browser/navigation/mobile, native acquisition or deployed claim.
+
+Feedback fixed the storm test's actual sector13, kept a real Karama for the
+preventable BG flip, supplied the actual optional Sabotage gift card and finished
+Ix placement after playing starts. Six old World Face Dance failures exposed an
+invalid controlled source under existing Tleilax occupation immunity. Its repaired
+A3/Guild2 visitor battle retains noncombatant nativeT2, both production guards,
+3/4 replacement from Polar and the later A–T battle on decline. Failed v1 stays
+preserved; v2 verifies the frozen source plus a final three-document overlay.
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-caladan-arrival-proof-v2/`;
+journeys/HTML: adjacent `20261027-caladan-arrival-runtime/run-v1/`.
+Existing server HTTP200 without restart or saved-game/database operation.
+Nested Sneak/Skills/Semuta compositions, full modes and final assurance/deployed
+acceptance remain open; full AI refinement stays deferred.
+
 **Imperial Ornithopter / Homeworld movement — 27 October. Prototyped / Partial.**
 Native Kaitain/Salusa transfers may now be first/second groups alongside ground
 movement or another distinct World group. Actual normal/Sardaukar pools and

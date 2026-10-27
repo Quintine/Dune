@@ -23,6 +23,7 @@ export function terrorEntrySignature(entry: TerrorEntry): string {
     entry.ambassadorEvent ?? null,
     ...(entry.nexusPlacements ? [entry.nexusPlacements] : []),
     ...(entry.revivalArrival === undefined ? [] : [revivalEntryParentTuple(entry.revivalArrival)]),
+    ...(entry.victoryEvent === undefined ? [] : [['caladanVictory', entry.victoryEvent]]),
   ]);
 }
 
@@ -31,13 +32,14 @@ export function terrorSelectionSignature(entry: TerrorEntry): string {
     entry.territory, entry.sector, entry.amount, entry.elite, entry.cause,
     entry.turn, entry.phase, entry.resume, entry.ambassadorEvent ?? null,
     ...(entry.nexusPlacements ? [entry.nexusPlacements] : []),
-    ...(entry.revivalArrival === undefined ? [] : [revivalEntryParentTuple(entry.revivalArrival)])]);
+    ...(entry.revivalArrival === undefined ? [] : [revivalEntryParentTuple(entry.revivalArrival)]),
+    ...(entry.victoryEvent === undefined ? [] : [['caladanVictory', entry.victoryEvent]])]);
 }
 
 /** Older saves without a receipt remain explicit legacy state. Never invent
  * their original entry count from the destination's present occupants. */
 export function validateTerrorEntrySignature(entry: TerrorEntry): void {
-  if (entry.entrySignature === undefined && entry.candidates === undefined && entry.selectionSignature === undefined && entry.nexusPlacements === undefined && entry.revivalArrival === undefined && entry.stage !== 'select') return;
+  if (entry.entrySignature === undefined && entry.candidates === undefined && entry.selectionSignature === undefined && entry.nexusPlacements === undefined && entry.revivalArrival === undefined && entry.victoryEvent === undefined && entry.cause !== 'caladanReinforcement' && entry.stage !== 'select') return;
   if (
     typeof entry.entrySignature !== 'string' ||
     typeof entry.token !== 'string' ||
@@ -72,6 +74,8 @@ export function validateTerrorEntrySignature(entry: TerrorEntry): void {
     entry.phase < 0 ||
     entry.phase > 8 ||
     (entry.revivalArrival !== undefined && !validRevivalEntryParent(entry.revivalArrival)) ||
+    (entry.victoryEvent !== undefined && (typeof entry.victoryEvent !== 'string' || !entry.victoryEvent ||
+      entry.cause !== 'caladanReinforcement' || entry.phase !== 6 || entry.revivalArrival !== undefined)) ||
     (![
       'shipment',
       'movement',
@@ -79,7 +83,8 @@ export function validateTerrorEntrySignature(entry: TerrorEntry): void {
       'advisor',
       'wormRide',
       'ambassador',
-    ].includes(entry.cause) && !(entry.cause === 'homeworldRevival' && entry.revivalArrival !== undefined)) ||
+    ].includes(entry.cause) && !(entry.cause === 'homeworldRevival' && entry.revivalArrival !== undefined) &&
+      !(entry.cause === 'caladanReinforcement' && entry.victoryEvent !== undefined)) ||
     !['none', 'wormRide', 'ambassador'].includes(entry.resume) ||
     (entry.ambassadorEvent !== undefined &&
       (typeof entry.ambassadorEvent !== 'string' || !entry.ambassadorEvent)) ||

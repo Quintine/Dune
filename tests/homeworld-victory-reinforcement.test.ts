@@ -116,7 +116,7 @@ void test('victory on native Caladan is a physical no-op, never a newly created 
   assert.deepEqual(g, before);
 });
 
-void test('permission is territorial; sector choices stay at the original battle and storm/HMS remain explicitly blocked', () => {
+void test('permission is territorial; storm stays unavailable while the separate addition can reach a won HMS', () => {
   const g = fixture();
   const sectors = territory('imperial_basin').sectors;
   g.players[0].forces = { [location('imperial_basin', sectors[0])]: 1 };
@@ -130,19 +130,17 @@ void test('permission is territorial; sector choices stay at the original battle
     HomeworldVictoryReinforcementContext['mobileStronghold']
   >;
   g.players[0].forces = { [location(MOBILE_STRONGHOLD, 0)]: 1 };
-  assert.match(
-    quote(g, victory(MOBILE_STRONGHOLD)).destinations[0].blocked!,
-    /Hidden Mobile Stronghold/,
-  );
+  assert.equal(quote(g, victory(MOBILE_STRONGHOLD)).destinations[0].blocked, null);
+  assert.equal(transfer(g, victory(MOBILE_STRONGHOLD), `${MOBILE_STRONGHOLD}:0`).transfer.players[0].reserves, 5);
 });
 
-void test('actual entry boundaries retain occupancy, BG Intrusion and public low-Grumman count distinctions', () => {
+void test('arrival reactions do not prohibit the original addition; ordinary allied occupancy still does', () => {
   const g = fixture();
   const bg = newPlayer('b', 'BG', 'beneGesserit');
   bg.forces = { 'arrakeen:10': 1 };
   bg.reserves = 19;
   g.players.push(bg);
-  assert.match(quote(g, victory()).destinations[0].blocked!, /Intrusion/);
+  assert.equal(quote(g, victory()).destinations[0].blocked, null);
   g.players.pop();
   const moritani = newPlayer('m', 'Moritani', 'moritani');
   moritani.reserves = 8;
@@ -151,7 +149,7 @@ void test('actual entry boundaries retain occupancy, BG Intrusion and public low
   const token = state.tokens[0];
   state = placeTerror(state, token.id, 'arrakeen', 1);
   g.moritaniTerror = state;
-  assert.match(quote(g, victory()).destinations[0].blocked!, /Terror/);
+  assert.equal(quote(g, victory()).destinations[0].blocked, null);
   moritani.reserves = 7;
   assert.equal(quote(g, victory()).destinations[0].blocked, null);
   g.players[0].ally = 'h';

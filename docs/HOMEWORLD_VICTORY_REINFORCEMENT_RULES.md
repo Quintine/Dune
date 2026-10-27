@@ -66,15 +66,54 @@ Existing Intrusion and fighter/advisor arrival rules still apply. The source
 retains its existing payload shape, allowing an already-open exact child to
 continue without rewriting its parent or creating another reinforcement.
 
-## Unresolved ordering and entry combinations
+## Victory placement and arrival reactions — 27 October 2026
 
 The selected Face Dance order above supersedes the earlier decline-only guard.
 
-Storm-sector placement, Hidden Mobile Stronghold classification, and otherwise
-relevant Intrusion/Terror reactions remain explicit source boundaries.
-Destination guards use public physical presence and token placement, never a
-secret Terror identity. Low Grumman's entering-force minimum still determines
-whether its Terror reaction would be relevant to the one arriving counter.
+The original Caladan face supplies a separate one-counter addition, not an
+ordinary shipment, revival or Force Movement. Under standing recommended-option
+authority, provisionally let this specific grant add to an already-surviving
+victorious army inside HMS. E1p9/supplied Advanced physical34/printed32 bans other
+factions' direct shipments and normally requires Force Movement through the
+pointer territory; this specific card composition is not a publisher exception
+example or a general relaxation of those routes. The sheltered interior0 does
+not inherit the pointer's storm sector. Normal occupancy still applies.
+
+Supplied physical10/printed8 forbids ordinary shipment/movement into storm.
+With no retrieved Caladan exception, retain that destination-sector prohibition
+conservatively. This is an explicit composition, not a quoted Caladan storm rule.
+
+Advanced Intrusion says another faction **enters** (supplied physical28/printed26).
+Place the counter once, offer the relevant BG fighter/advisor decision, then
+process the original Ambassador/Terror arrival. Caladan itself creates no free
+Spiritual Advisor shipment opportunity. Homeworlds remain separate from Arrakis
+territories. Terror's ships/moves trigger (physical35/printed33) requires a
+provisional classification of this addition; its native token effects and
+original public one-counter minimum remain unchanged. The source lane found no
+specific publisher/designer combined-effect ruling. Native Homeworld powers
+retain E3p10 Karama immunity; canceling an independent BG reaction does not
+cancel or refund the reinforcement.
+
+The original victory event binds queued entry, Intrusion and the signed Terror
+receipt. Original Ambassador/Terror overlap uses storm order, and an Ambassador
+opened second retains the same victory history. The reinforcement waits for
+its arrival queue/overlap before resuming battle cleanup. Original ordinary
+receipt/signature bytes remain unchanged when the new event field is absent.
+
+Frozen twelve-file97/97, types/lint/build and twelve controlled engine/GameTable
+SSR programmes pass. Fifteen new engine cases and four chooser cases accompany
+related native/Face Dance/Ambassador/discard regressions. Runtime records39 table
+and12 chooser renders,12 shared-adapter one-force packets and91/32 recorded
+battle/further actions. Controlled setup/positions/cards/token order are explicit;
+actual battles create every original grant. A separate controlled contest prevents
+unrelated Collection income from obscuring arrival outcomes. No stateful React
+handler, browser/navigation/mobile, native acquisition or deployed proof is claimed.
+The first failed batch's new fixtures were repaired; the older native-World
+Face Dance source correction is explained below without weakening production.
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-caladan-arrival-proof-v2/`;
+journeys: adjacent `20261027-caladan-arrival-runtime/run-v1/`.
+Nested Sneak/Skill/Semuta compositions, complete rules and final assurance/browser/
+deployed acceptance remain open. No saved-room/database/restart operation.
 
 The [integration audit](HOMEWORLD_VICTORY_REINFORCEMENT_INTEGRATION.md) maps
 battle cleanup and persistence. The
@@ -88,8 +127,15 @@ Frozen15-file189/189, types/lint/build and sixteen engine/GameTable SSR journeys
 pass. Eight genuine public Basic59/Advanced124-action setup/shipment/battle
 sources keep all47 Treachery and16 original Traitor/Face Dancer identities;
 all give/leave and later reveal/decline combinations use the actual10/11 cap.
-Six separately controlled native-Homeworld sources prove3/4 replacement and
-Caladan9 return with existing occupation-profile bounds intact. Two controlled
+The historical six controlled native-World sources used A-versus-native-T
+combat; current occupied-Tleilax immunity now prohibits their positive reveal.
+The 27 October corrected source instead stages A3/Guild2 visitors with native
+T2 as a third noncombatant. Guild takes the losses; A never earns sole Tleilax
+occupation, and the native-only Face Dance restriction stays intact. Accepted
+replacement takes3/4 original Polar counters, adds them to native T2 and returns
+A to Caladan9. Decline retains the later A–T battle; original-event completion
+does not claim that battle finished. These remain controlled fixture sources,
+not native invasion or acquisition journeys. Two controlled
 Ambassador journeys prove both legal accompaniment after Intrusion and automatic
 Polar conversion, preserving the original victory and leaving the Fremen token
 untouched by advisors. Controlled seams are not original public acquisition proof.

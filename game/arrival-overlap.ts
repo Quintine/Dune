@@ -1,4 +1,5 @@
 import type { Game } from './engine';
+import { caladanOwnsTerrorEntry } from './caladan-arrival';
 import { currentHomeworldRevivalArrival } from './homeworld-revival-return';
 import { validateRevivalArrivalSource, revivalOwnsTerrorEntry, validRevivalEntryParent,
   revivalEntryParentTuple, type RevivalEntryParent } from './revival-terror-entry';
@@ -6,7 +7,8 @@ import { validateRevivalArrivalSource, revivalOwnsTerrorEntry, validRevivalEntry
 type Overlap = NonNullable<Game['pendingArrivalOverlap']> & { revivalArrival?: RevivalEntryParent };
 type TerrorEntry = NonNullable<Game['pendingTerrorEntry']> & { revivalArrival?: RevivalEntryParent };
 type AmbassadorEntry = NonNullable<Game['pendingAmbassador']>;
-type DiscardContext = Parameters<typeof validateRevivalArrivalSource>[0] & Pick<Game, 'pendingArrivalOverlap' | 'order'>;
+type DiscardContext = Parameters<typeof validateRevivalArrivalSource>[0] & Pick<Game, 'pendingArrivalOverlap' | 'order' |
+  'lastBattleContext' | 'homeworldVictoryReinforcement'>;
 
 function sameRevivalSource(left: RevivalEntryParent | undefined, right: RevivalEntryParent | undefined) {
   return validRevivalEntryParent(left) && validRevivalEntryParent(right) &&
@@ -19,7 +21,8 @@ export function arrivalOverlapSignature(record: Overlap): string {
     record.territory, record.sector, record.amount, record.elite, record.cause,
     record.resume, record.ecaz, record.moritani, record.first,
     record.ambassadorToken, record.terrorTokens,
-    ...(record.revivalArrival === undefined ? [] : [revivalEntryParentTuple(record.revivalArrival)])]);
+    ...(record.revivalArrival === undefined ? [] : [revivalEntryParentTuple(record.revivalArrival)]),
+    ...(record.victoryEvent === undefined ? [] : [['caladanVictory', record.victoryEvent]])]);
 }
 
 /** A fresh discard belongs to the active owner of an ordinary or bound revived entry.
@@ -34,6 +37,8 @@ function ordinaryDiscardOverlap(g: DiscardContext, owner: Overlap['first']): Ove
     try {
       validateRevivalArrivalSource(g, overlap.revivalArrival, overlap);
     } catch { return null; }
+  } else if (overlap.cause === 'caladanReinforcement' || overlap.victoryEvent !== undefined) {
+    if (!caladanOwnsTerrorEntry(g, overlap)) return null;
   } else if (g.phase !== 5 ||
     !['shipment', 'movement'].includes(overlap.cause)) return null;
   const ecaz = g.order.indexOf(overlap.ecaz), moritani = g.order.indexOf(overlap.moritani);
@@ -54,6 +59,7 @@ export function overlapOwnsAmbassadorDiscard(g: DiscardContext, entry: Ambassado
     entry.token === overlap.ambassadorToken && entry.entrant === overlap.entrant &&
     entry.territory === overlap.territory && entry.sector === overlap.sector &&
     entry.arrivalCause === overlap.cause && entry.turn === overlap.turn && entry.phase === overlap.phase &&
+    (overlap.victoryEvent === undefined || entry.victoryEvent === overlap.victoryEvent) &&
     (overlap.revivalArrival === undefined || entry.revivalEvent === overlap.revivalArrival.event &&
       !!arrival && sameRevivalSource(overlap.revivalArrival, { event: overlap.revivalArrival.event,
         ...(arrival.spiritual === undefined ? {} : { spiritual: arrival.spiritual }),
@@ -67,6 +73,7 @@ export function overlapOwnsTerrorDiscard(g: DiscardContext, entry: TerrorEntry, 
     entry.territory === overlap.territory && entry.sector === overlap.sector &&
     entry.amount === overlap.amount && entry.elite === overlap.elite &&
     entry.cause === overlap.cause && entry.turn === overlap.turn && entry.phase === overlap.phase &&
+    (overlap.victoryEvent === undefined || entry.victoryEvent === overlap.victoryEvent) &&
     (overlap.revivalArrival === undefined ||
       sameRevivalSource(overlap.revivalArrival, entry.revivalArrival) && revivalOwnsTerrorEntry(g, entry));
 }

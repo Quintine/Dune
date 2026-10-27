@@ -191,6 +191,7 @@ import { ambassadorPhaseAllowed } from './ambassador-phase';
 import { makeHomeworldVictoryReturn, validateHomeworldVictoryReturn, homeworldVictoryOfferSignature,
   homeworldVictoryObligationSignature, type HomeworldVictoryReturn, type HomeworldVictoryObligation } from './homeworld-victory-return';
 import { quoteHomeworldVictoryReinforcement, quoteHomeworldVictoryReinforcementDestination } from './homeworld-victory-reinforcement';
+import { validateCaladanArrivalSource } from './caladan-arrival';
 import { homeworldArrivalSignature, appendHomeworldArrivalAmbassador, completeHomeworldArrivalAmbassador, validateHomeworldArrival } from './homeworld-arrival';
 import {
   quoteHomeworldRevivalDeployment,
@@ -1109,6 +1110,7 @@ export type Decision =
     }
   | {
       kind: 'intrusion';
+      victoryEvent?: string;
       player: string;
       territory: string;
       wormRide?: boolean;
@@ -1193,6 +1195,7 @@ export type ResponseWindow = {
   advisorGatherMove?: { turn: number; move: number; order: MovementOrder };
   discoveryEntry?: DiscoveryEntryArrivalChild;
   advisorAmbassadorEvent?: string;
+  advisorVictoryEvent?: string;
   advisorRevivalEvent?: string;
   advisorRevivalTerror?: RevivalEntryParent['terror'];
   advisorRemaining?: string[];
@@ -2046,6 +2049,7 @@ export type Game = {
   dukeVidal?: DukeState;
   dukeAcquisitionTurn?: number;
   pendingTerrorEntry?: {
+    victoryEvent?: string;
     revivalArrival?: RevivalEntryParent;
     /** Original public arrival, absent only in legacy saves. */
     entrySignature?: string;
@@ -2093,6 +2097,7 @@ export type Game = {
   /** Committed entries whose optional reactions must wait for the arrival's own
    * pending interaction (payment, advisor choice, storm protection). */
   pendingArrivalReaction?: {
+    victoryEvent?: string;
     entrant: string;
     territory: string;
     sector: number;
@@ -2108,6 +2113,7 @@ export type Game = {
   }[] | null;
   /** One committed entry with two independently optional expansion reactions. */
   pendingArrivalOverlap?: {
+    victoryEvent?: string;
     revivalArrival?: RevivalEntryParent;
     event: string;
     signature: string;
@@ -8265,6 +8271,7 @@ function treacheryDiscardIntegrity(g: Game) {
           'advisor',
           'wormRide',
           'homeworldRevival',
+          'caladanReinforcement',
           'ambassador',
         ].includes(entry.cause) &&
         ['none', 'wormRide', 'ambassador'].includes(entry.resume) &&
@@ -8311,7 +8318,7 @@ function treacheryDiscardIntegrity(g: Game) {
           (entry.resume === 'wormRide' || overlapOwnsWormTerror(g,entry)) && g.phase === 1 &&
           g.players.some(player => player.id === entry.entrant && player.faction === 'fremen')
           : entry.resume === 'none' && (entry.cause !== 'homeworldRevival' || !!entry.revivalArrival)) &&
-      ['shipment', 'movement', 'guildTransport', 'advisor', 'wormRide', 'homeworldRevival', 'ambassador'].includes(entry.cause) &&
+      ['shipment', 'movement', 'guildTransport', 'advisor', 'wormRide', 'homeworldRevival', 'caladanReinforcement', 'ambassador'].includes(entry.cause) &&
       entry.entrant !== owner?.id && entry.territory === aftermath.territory &&
       terrorEntryLocationAllowed(g,entry) && validGameLocation(g, entry.territory, entry.sector) &&
       token?.kind === 'atomics' && token.status === 'removed' &&
@@ -21762,6 +21769,8 @@ function arrivalOverlapIntegrity(g: Game) {
     (continuation?.kind === 'terrorDiscard' || continuation?.kind === 'terrorAtomics' ? continuation.entry : null);
   if (record.revivalArrival)
     homeworldRule(() => validateRevivalArrivalSource(g, record.revivalArrival!, record));
+  if (record.victoryEvent !== undefined || record.cause === 'caladanReinforcement')
+    homeworldRule(() => validateCaladanArrivalSource(g, record));
   const active = record.stage === 'first' ? record.first :
     record.first === 'ambassador' ? 'terror' : 'ambassador';
   requireRule(g.status === 'playing' && arrivalOverlapModeSupported(g, record.revivalArrival) &&
@@ -21838,6 +21847,12 @@ function openAmbassadorEntry(
     g.pendingAmbassador.revivalEvent = frame.event;
     homeworldRule(() => appendHomeworldArrivalAmbassador(frame, g.pendingAmbassador!, undefined,
       revivalArrival.spiritual, revivalArrival.terror));
+  } else if (arrivalCause === 'caladanReinforcement') {
+    const frame = g.homeworldVictoryReinforcement!;
+    homeworldRule(() => validateCaladanArrivalSource(g, {victoryEvent:frame?.event, entrant:entrant.id,
+      territory:to, sector, amount:1, elite:0, cause:arrivalCause}));
+    g.pendingAmbassador.victoryEvent = frame.event;
+    appendHomeworldArrivalAmbassador(frame, g.pendingAmbassador);
   }
   log(g, `${owner.name} may trigger the ${faction(token.effect).name} Ambassador because ${entrant.name} entered ${territory(to).name}. The entrant’s remaining actions wait for this opportunity.`);
   return true;
@@ -21864,6 +21879,9 @@ function openTerritoryEntry(
   if (revivalArrival)
     homeworldRule(() => validateRevivalArrivalSource(g, revivalArrival,
       {entrant:entrant.id,territory:to,sector,amount,elite,cause}));
+  const victoryEvent = cause === 'caladanReinforcement' ? g.homeworldVictoryReinforcement?.event : undefined;
+  if (cause === 'caladanReinforcement')
+    homeworldRule(() => validateCaladanArrivalSource(g, {victoryEvent, entrant:entrant.id, territory:to, sector, amount, elite, cause}));
   // The arrival's own interaction (guild payment, advisor choice, storm
   // protection) settles first; the entry then opens from the automatic pass.
   if (g.response || g.decision || g.pendingTerrorEntry || g.pendingAmbassador ||
@@ -21871,6 +21889,7 @@ function openTerritoryEntry(
     (g.pendingArrivalReaction ??= []).push({
       entrant: entrant.id, territory: to, sector, amount, elite, cause, resume,
       turn: g.turn, phase: g.phase,
+      ...(victoryEvent === undefined ? {} : {victoryEvent}),
       ...(revivalArrival ? { revivalArrival } : {}),
     });
     return true;
@@ -21924,6 +21943,7 @@ function openTerritoryEntry(
     entrant: entrant.id, territory: to, sector, amount, elite, cause, resume,
     ecaz: owner.id, moritani: moritani.id, first, stage: 'first',
     ambassadorToken: token.id, terrorTokens: terrorTokens.map(t => t.id),
+    ...(victoryEvent === undefined ? {} : {victoryEvent}),
     ...(revivalArrival ? {revivalArrival:structuredClone(revivalArrival)} : {}),
   };
   overlap.signature = arrivalOverlapSignature(overlap);
@@ -24210,6 +24230,8 @@ function terrorEntryIntegrity(g: Game) {
     if (!entry) continue;
     homeworldRule(() => validateTerrorEntrySignature(entry));
     if (entry.revivalArrival) homeworldRule(() => validateRevivalTerrorEntry(g, entry));
+    if (entry.victoryEvent !== undefined || entry.cause === 'caladanReinforcement')
+      homeworldRule(() => validateCaladanArrivalSource(g, entry));
     if (entry.entrySignature === undefined) continue;
     requireRule(entry.turn === g.turn && entry.phase === g.phase &&
       g.players.some((p) => p.id === entry.entrant && p.faction !== 'moritani') &&
@@ -24288,6 +24310,7 @@ function openTerrorEntry(
     stage: tokens.length > 1 ? 'select' : 'offer',
     resume,
     ...(ambassadorEvent ? { ambassadorEvent } : {}),
+    ...(cause === 'caladanReinforcement' ? {victoryEvent:g.homeworldVictoryReinforcement?.event} : {}),
     ...(revivalArrival ? {revivalArrival:structuredClone(revivalArrival)} : {}),
   };
   if (!TERROR_STRONGHOLDS.includes(to)) {
@@ -26472,6 +26495,7 @@ function finishAdvisorReaction(
     advisorResume?: ResponseWindow['advisorResume'];
     discoveryEntry?: DiscoveryEntryArrivalChild;
     advisorAmbassadorEvent?: string;
+    advisorVictoryEvent?: string;
     advisorRevivalEvent?: string;
     advisorRevivalTerror?: RevivalEntryParent['terror'];
     advisorRemaining?: string[];
@@ -26500,6 +26524,7 @@ function intrusion(
     wormRide?: boolean;
     discoveryEntry?: DiscoveryEntryArrivalChild;
     ambassadorEvent?: string;
+    victoryEvent?: string;
     revivalEvent?: string;
     revivalTerror?: RevivalEntryParent['terror'];
     followup?: { shipment: string; destination: string; revivalEvent?: string; revivalTerror?: RevivalEntryParent['terror'] };
@@ -32170,6 +32195,26 @@ function homeworldVictoryReturnIntegrity(g: Game) {
     g.pendingRicheseGift?.resume, g.pendingRichesePurchaseIncome?.resume,
     continuation && 'resume' in continuation ? continuation.resume : null];
   const decisions = contexts.flatMap((context) => context?.decision?.kind === 'caladanReinforcement' ? [context.decision] : []);
+  const arrivals = g.pendingArrivalReaction?.filter(entry => entry.cause === 'caladanReinforcement' || entry.victoryEvent !== undefined) ?? [];
+  for (const entry of arrivals) homeworldRule(() => validateCaladanArrivalSource(g, entry));
+  const intrusionChoices = contexts.flatMap(context => context?.decision?.kind === 'intrusion' &&
+    context.decision.victoryEvent !== undefined ? [context.decision] : []);
+  const intrusionResponses = [...contexts.map(context => context?.response),
+    g.pendingKarama?.use.kind === 'cancel' ? g.pendingKarama.use.response : undefined]
+    .filter((response): response is ResponseWindow => !!response && response.advisorVictoryEvent !== undefined);
+  for (const choice of intrusionChoices) {
+    requireRule(choice.player === byFaction(g, 'beneGesserit')?.id, 'The Caladan Intrusion belongs to Bene Gesserit.');
+    homeworldRule(() => validateCaladanArrivalSource(g, {victoryEvent:choice.victoryEvent,
+      entrant:frame?.player ?? '', territory:choice.territory, sector:splitLocation(frame?.destination ?? '').sector,
+      amount:1, elite:0, cause:'caladanReinforcement'}));
+  }
+  for (const response of intrusionResponses) {
+    requireRule(response.kind === 'advisorFlip' && response.advisors === true &&
+      response.owner === byFaction(g, 'beneGesserit')?.id, 'The Caladan Intrusion has lost its advisor response.');
+    homeworldRule(() => validateCaladanArrivalSource(g, {victoryEvent:response.advisorVictoryEvent,
+      entrant:frame?.player ?? '', territory:response.location ?? '', sector:splitLocation(frame?.destination ?? '').sector,
+      amount:1, elite:0, cause:'caladanReinforcement'}));
+  }
   requireRule(decisions.every((decision) => frame?.stage === 'choice' && decision.player === frame.player && decision.event === frame.event),
     'The Caladan choice has lost its original victory.');
   if (frame?.stage === 'choice')
@@ -32255,11 +32300,8 @@ function decideHomeworldVictoryReturn(g: Game, p: Player, action: Action) {
   stampHomeworldVictoryStage(g);
   if (quote.selected.territory) {
     place(p, quote.selected.territory, quote.selected.sector!, 1);
+    intrusion(g, p, quote.selected.territory, {victoryEvent:frame.event});
     openTerritoryEntry(g, p, quote.selected.territory, quote.selected.sector!, 1, 0, 'caladanReinforcement');
-    if (g.pendingAmbassador) {
-      g.pendingAmbassador.victoryEvent = frame.event;
-      appendHomeworldArrivalAmbassador(frame, g.pendingAmbassador);
-    }
   }
   log(g, `${p.name} added one force from Caladan reserves to ${quote.selected.name} after winning the battle. The force joins an existing surviving army; no spice or shipment allowance was spent.`,
     { faction: p.faction, name: 'Caladan victory reinforcement' });
@@ -32268,7 +32310,8 @@ function resumeHomeworldVictoryReturn(g: Game) {
   const frame = g.homeworldVictoryReinforcement;
   if (frame?.stage !== 'arrival' || g.pendingTreacheryDiscard || g.pendingNullentropy ||
     g.truthtrance || g.pendingExchange || g.pendingRicheseGift || g.pendingAmbassador ||
-    g.pendingTerrorEntry || g.pendingKarama || g.decision || g.response) return;
+    g.pendingTerrorEntry || g.pendingArrivalOverlap || g.pendingArrivalReaction?.length ||
+    g.pendingKarama || g.decision || g.response) return;
   completeHomeworldVictoryReturn(g);
   finishBattle(g);
 }
@@ -38903,6 +38946,8 @@ function settleAutomaticContinuations(g: Game) {
         !g.pendingTerrorEntry && !g.pendingAmbassador && !g.pendingArrivalOverlap && !g.pendingSpiritualAdvisor) {
       const deferred = g.pendingArrivalReaction.shift()!;
       if (!g.pendingArrivalReaction.length) g.pendingArrivalReaction = null;
+      if (deferred.victoryEvent !== undefined || deferred.cause === 'caladanReinforcement')
+        homeworldRule(() => validateCaladanArrivalSource(g, deferred));
       const entrant = g.players.find(p => p.id === deferred.entrant);
       requireRule(!!entrant, 'The deferred arrival entry has lost its entrant.');
       if (deferred.revivalSneakAdvisor) {
@@ -40872,6 +40917,7 @@ function applyActionInner(
             ? ('wormRide' as const)
             : undefined,
         advisorAmbassadorEvent: decision.ambassadorEvent,
+        advisorVictoryEvent: decision.victoryEvent,
         advisorRevivalEvent: decision.revivalEvent,
         advisorRevivalTerror: decision.revivalTerror,
         discoveryEntry: decision.discoveryEntry,
