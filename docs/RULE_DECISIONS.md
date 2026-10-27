@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Ambassador child arrivals during overlap — 27 October 2026
+
+Provisionally finish a Fremen or Guild Ambassador-created child arrival before
+continuing the original two-owner entry. A hidden Terror token remains eligible
+for the original entrant; a token already consumed by the child is not replayed.
+Queued child Sneak advisor reactions do not replace the original controls.
+This is an implementation ordering, not a publisher priority ruling.
+[Contract](DEFERRED_SHIPMENT_ARRIVAL.md#ambassador-child-arrivals-during-overlap--27-october-2026).
+
 ## Basic native Ambassador/Terror overlap — 27 October 2026
 
 The existing provisional storm-order queue also handles eligible same-entry

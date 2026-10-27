@@ -4,6 +4,44 @@
 exposed an already accepted shipment whose Guild allowance could not finish.
 This continuation repair preserves the existing unfinished arrival-order gates.
 
+## Ambassador child arrivals during overlap — 27 October 2026
+
+**Prototyped / Partial.** When an Ecaz Ambassador and a Moritani Terror token both
+respond to the same eligible Basic arrival, the existing overlap preserves the
+two owners' opportunities in provisional storm order. The extension
+allows the Fremen Ambassador's relocation and the Guild Ambassador's free
+shipment to create their own physical child arrival while the original overlap
+waits. The chosen group, destination and ordinary force restrictions remain
+authoritative; the original entry and any payment are not replayed.
+
+The child resolves its own eligible Terror opportunity before the suspended
+Ambassador returns to the original overlap. If the same Terror token is
+declined on the child, it remains available to an as-yet-unresolved original
+entry. If the child reveals and consumes that token, the original entry cannot
+offer it again. A distinct child token and the original token retain separate
+opportunities; if the original Terror was already resolved first, the child
+only encounters tokens still present. This live-token and child-first sequence
+is an explicit online composition, not a publisher ruling on simultaneous
+priority.
+
+Sneak Attack remains a real child effect: its physical forces and any resulting
+Bene Gesserit accompaniment are preserved, with the follow-up waiting until the
+original overlap's outstanding reaction finishes. The Sneak group can then
+trigger an Ambassador that remains available, including after an original
+entrant declined it. A child Sabotage discard offers the existing Semuta
+response before the same Ambassador continuation.
+Existing advisor eligibility,
+unrelated busy controls, other arrival effects and optional-module boundaries
+remain separate. Complete faction rules, broader interaction, recovery, browser
+and deployed acceptance remain open.
+Frozen changed-path proof passed 108/108 tests in 14 files, type/lint and the
+production build. [Fremen](../tests/overlap-fremen-native-runtime.test.ts),
+[Guild](../tests/guild-overlap-child-runtime.test.ts), [Sneak](../tests/sneak-overlap-child-ambassador.test.ts)
+and [Semuta](../tests/semuta-overlap-child-runtime.test.ts) use real setup and
+actions with explicitly controlled original token selections. Rendered
+[controls](../tests/overlap-fremen-guild-controls.test.tsx) do not certify
+browser or deployed behavior.
+
 ## Basic native faction overlap — 27 October 2026
 
 **Prototyped / Partial.** In bare Basic games with selected native faction
@@ -12,9 +50,10 @@ Ambassador and Terror opportunities through the existing provisional storm
 order. The original move or shipment is committed and paid once; its two
 owners resolve their separately earned opportunities in sequence. The existing
 queue and controls apply; this is not a publisher ruling on simultaneous
-effects. Actual in-flight controls remain authoritative, and nested Fremen or
-Guild Ambassador arrivals and optional-module combinations keep their separate
-boundaries. Complete factions, modes and deployed acceptance remain open.
+effects. Actual in-flight controls remain authoritative. The child-arrival
+follow-up above extends the earlier Fremen and Guild boundary; optional-module
+combinations retain their separate boundaries. Complete factions, modes and
+deployed acceptance remain open.
 The new [runtime fixture](../tests/fixture-basic-native-overlap.ts) uses public
 Basic setup and real shipments with explicitly controlled, native-token
 placements. [Regression cases](../tests/basic-native-overlap-runtime.test.ts)

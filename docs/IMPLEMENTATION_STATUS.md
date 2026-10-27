@@ -1,5 +1,18 @@
 # Dune implementation status
 
+## 27 October 2026 — Ambassador child arrivals during overlap
+
+Fremen relocation and Guild shipment can resolve their native child arrival
+while the original Ambassador/Terror pair remains in its provisional order.
+The child uses the actual token, and the original later opportunity follows
+the token's live state. A child Sneak Attack queues advisor reactions rather
+than replacing the original Terror decision. Wider combinations, complete
+modes and deployed acceptance remain open.
+Frozen changed-path proof passed 108/108 tests in 14 files, type/lint and the
+production build. Real setup and movement use explicitly controlled original
+Ambassador/Terror placements; component checks render the projected controls.
+[Contract](DEFERRED_SHIPMENT_ARRIVAL.md#ambassador-child-arrivals-during-overlap--27-october-2026).
+
 ## 27 October 2026 — Basic native Ambassador/Terror arrivals
 
 The existing ordered same-entry queue admits bare Basic native faction rosters

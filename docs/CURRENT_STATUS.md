@@ -20,12 +20,24 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Fremen and Guild Ambassador child arrivals — 27 October. Prototyped / Partial.**
+In supported bare Basic games, an Ambassador that shares an original entry with Terror may now relocate or
+ship its beneficiary's forces. The child arrival resolves first; a Terror token
+it consumes cannot trigger twice, while a hidden token retains the original
+opportunity. A child Sneak Attack waits to offer its advisor response until the
+original queue finishes. Richese may claim or pass a child Sabotage discard.
+Parent/child priority is provisional; wider module and deployed acceptance
+remain open.
+[Scope](DEFERRED_SHIPMENT_ARRIVAL.md#ambassador-child-arrivals-during-overlap--27-october-2026).
+The frozen batch passed 108/108 tests in 14 files, type/lint and the production
+build. Browser and deployed acceptance remain open.
+
 **Basic native Ambassador/Terror arrivals — 27 October. Prototyped / Partial.**
 Bare Basic games with selected native faction decks can carry one eligible entry
 through both Ecaz Ambassador and Moritani Terror opportunities in the existing
 provisional storm order. Their original payment, entry and continuation happen
-once. Nested Fremen/Guild Ambassador arrivals and optional-module boundaries
-remain separate. Player reference text also corrects outdated claims that
+once. The newer child-arrival follow-up above extends Fremen/Guild effects;
+optional-module boundaries remain separate. Player reference text also corrects outdated claims that
 supported faction previews cannot start.
 [Scope](DEFERRED_SHIPMENT_ARRIVAL.md#basic-native-faction-overlap--27-october-2026).
 The frozen batch passed 76/76 tests in nine files, type/lint and the production

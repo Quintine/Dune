@@ -2156,6 +2156,8 @@ export type Game = {
     /** A committed revival Sneak group waits for the original overlap before BG reactions. */
     revivalSneakAdvisor?: true;
     caladanSneakAdvisor?: true;
+    /** An ordinary Sneak group waits for an existing Ambassador/Terror parent. */
+    nativeSneakAdvisor?: true;
   }[] | null;
   /** One committed entry with two independently optional expansion reactions. */
   pendingArrivalOverlap?: {
@@ -8849,6 +8851,10 @@ function semutaOfferSupported(
   const bgDiscard = continuation.kind === 'bgKaramaCostDiscard' ||
     continuation.kind === 'karamaBgConversionCancelDiscard';
   const ambassadorDiscard = continuation.kind === 'ambassador';
+  const childTerrorDiscard = continuation.kind === 'terrorDiscard' &&
+    !!g.pendingArrivalOverlap && bareBasicSemutaProfile(g) &&
+    g.pendingArrivalOverlap.ambassadorEvent === continuation.entry.ambassadorEvent &&
+    ambassadorTerrorEntryMatches(g, continuation.entry);
   if (ambassadorDiscard &&
     (!bareBasicSemutaProfile(g) || g.phase !== 5 ||
       continuation.entry.stage !== 'cards' || continuation.entry.resume !== 'none' ||
@@ -8987,10 +8993,10 @@ function semutaOfferSupported(
         g.moritaniRetention.stage !== 'choose' || continuation.kind === 'battleResolved')) ||
       g.pendingIxSubstitution)) return false;
   if (continuation.kind === 'terrorDiscard' &&
-    (continuation.entry.resume !== 'none' ||
+    (!childTerrorDiscard && (continuation.entry.resume !== 'none' ||
       (continuation.entry.cause !== 'shipment' && continuation.entry.cause !== 'movement') ||
       (g.pendingArrivalOverlap && (!bareBasicSemutaProfile(g) ||
-        !overlapOwnsTerrorDiscard(g, continuation.entry, continuation.owner))) ||
+        !overlapOwnsTerrorDiscard(g, continuation.entry, continuation.owner)))) ||
       g.pendingChoamMove || g.pendingIxMove ||
       g.pendingFremenMove || g.ornithopter || g.summonedWorm ||
       g.wormRides.length > 0)) return false;
@@ -9178,7 +9184,7 @@ function semutaOfferSupported(
         !g.pendingArrivalOverlap && !g.pendingRevival &&
         !g.ornithopter && !g.ecologicalStorm)) &&
     (richeseGiftDiscard || ambassadorBenefitDiscard || (!g.pendingExchange && (replacementCostDiscard || !g.pendingIxAlly) && !g.pendingNullentropy &&
-      (!g.pendingAmbassador || (advisorDiscard || terminalDiscard) &&
+      (!g.pendingAmbassador || childTerrorDiscard || (advisorDiscard || terminalDiscard) &&
         semutaAdvisorAmbassadorParent(g,continuation.use.response)) &&
       (terrorAllianceDiscard || !g.pendingTerrorEntry))) &&
     (richeseGiftDiscard || noFieldDiscard || continuation.kind === 'karamaShipmentDiscard' ||
@@ -22462,8 +22468,9 @@ function ambassadorEffectBlock(
   beneficiary: Player,
   entrant: Player,
 ): string | null {
-  if (g.pendingArrivalOverlap && (effect === 'fremen' || effect === 'guild'))
-    return 'Finish the overlapping Terror before another Ambassador-created arrival; decline this effect.';
+  if (g.pendingArrivalOverlap && (effect === 'fremen' || effect === 'guild') &&
+      !bareBasicNativeArrivalOverlap(g))
+    return 'This overlapping Ambassador-created arrival is only available in the bare Basic faction preview.';
   if (!implementedAmbassadorEffects.includes(effect))
     return 'This Ambassador effect is still being implemented.';
   if (effect === 'ecaz') {
@@ -22489,13 +22496,15 @@ function ambassadorEffectBlock(
     return 'The entrant has no held Traitor Card to inspect.';
   return null;
 }
-function arrivalOverlapModeSupported(g: Game, revivalArrival?: RevivalEntryParent): boolean {
+function bareBasicNativeArrivalOverlap(g: Game): boolean {
   // Native Basic faction decks share the same ordered arrival queue. A deck
   // selection alone is not an optional phase module or a new arrival effect.
-  if (!g.advanced && selectedPhaseModuleRoster(g) && byFaction(g, 'ecaz') && byFaction(g, 'moritani') &&
+  return !g.advanced && selectedPhaseModuleRoster(g) && !!byFaction(g, 'ecaz') && !!byFaction(g, 'moritani') &&
     !g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.techTokens && !g.strongholdCards &&
-    !g.discoveryEnabled && !g.discoveries && !g.discoveryStash && !g.greatMaker && !g.ecazTreachery)
-    return true;
+    !g.discoveryEnabled && !g.discoveries && !g.discoveryStash && !g.greatMaker && !g.ecazTreachery;
+}
+function arrivalOverlapModeSupported(g: Game, revivalArrival?: RevivalEntryParent): boolean {
+  if (bareBasicNativeArrivalOverlap(g)) return true;
   if (homeworldPhaseModulesProfile(g) && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if (revivalArrival && g.homeworlds && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if (bareBasicSemutaProfile(g) && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
@@ -22555,7 +22564,7 @@ function arrivalOverlapIntegrity(g: Game) {
     record.terrorTokens.every(id => typeof id === 'string' && id.length > 0) &&
     new Set(record.terrorTokens).size === record.terrorTokens.length &&
     (active === 'ambassador'
-      ? !!ambassador && !terror &&
+      ? !!ambassador && (!terror || ambassadorTerrorEntryMatches(g, terror)) &&
         ambassador.event === record.ambassadorEvent &&
         ambassador.owner === record.ecaz &&
         ambassador.entrant === record.entrant &&
@@ -22760,6 +22769,16 @@ function finishAmbassador(g: Game, deferResume = false) {
       'The Ambassador has lost its original overlapping arrival.');
     if (overlap.stage === 'first' && overlap.first === 'ambassador') {
       overlap.stage = 'second';
+      // The Ambassador's child arrival may already have revealed or returned
+      // the same physical Terror token. Do not recreate its original offer.
+      const remaining = g.moritaniTerror?.tokens.some(token =>
+        overlap.terrorTokens.includes(token.id) && token.status === 'placed' &&
+        token.location === overlap.territory);
+      if (!remaining) {
+        log(g, 'The original Terror opportunity ends because its triggered token is no longer in the stronghold.');
+        finishArrivalOverlap(g, overlap);
+        return;
+      }
       requireRule(openTerrorEntry(g, getPlayer(g, overlap.entrant),
         overlap.territory, overlap.sector, overlap.amount, overlap.elite,
         overlap.cause, 'none', undefined, overlap.revivalArrival, overlap.caladanArrival),
@@ -25468,6 +25487,15 @@ function decideTerror(g: Game, p: Player, action: Action) {
         phase:g.phase,revivalArrival,revivalSneakAdvisor:true});
       return;
     }
+    if (amount > 0 && !g.advanced && (g.pendingArrivalOverlap || g.pendingAmbassador || g.pendingTerrorEntry ||
+      g.response || g.decision)) {
+      // The child may have opened the original Terror decision. Let it finish
+      // before offering advisor reactions for this already-committed group.
+      (g.pendingArrivalReaction ??= []).push({entrant:p.id,territory:entry.territory,
+        sector:entry.sector,amount,elite:0,cause:'shipment',resume:'none',turn:g.turn,
+        phase:g.phase,nativeSneakAdvisor:true});
+      return;
+    }
     // The Terror effect is the arrival itself, so the adopted order resolves
     // the committed entry first and then offers the Bene Gesserit reactions
     // the same off-planet reserve entry already uses for ordinary shipments.
@@ -25481,6 +25509,10 @@ function decideTerror(g: Game, p: Player, action: Action) {
           : undefined;
       if (!intrusion(g, p, entry.territory, followup ? { followup } : undefined) && followup)
         g.decision = { kind: 'advisor', player: bg!.id, ...followup };
+      // The committed Sneak group is a separate arrival. If advisor controls
+      // opened, the existing entry queue waits for them before its reactions.
+      if (!g.advanced)
+        openTerritoryEntry(g, p, entry.territory, entry.sector, amount, 0, 'shipment');
     }
   } else if (entry.stage === 'robbery') {
     requireRule(
@@ -39981,6 +40013,17 @@ function settleAutomaticContinuations(g: Game) {
         const followup = bg && bg.id !== entrant!.id && spiritualAdvisorMaximum(g,bg.id) > 0
           ? {shipment:entrant!.id,destination:location(deferred.territory,deferred.sector),...source} : undefined;
         if (!intrusion(g,entrant!,deferred.territory,{...source,...(followup ? {followup} : {})}) && followup)
+          g.decision = {kind:'advisor',player:bg!.id,...followup};
+      }
+      if (deferred.nativeSneakAdvisor) {
+        requireRule(deferred.turn === g.turn && deferred.phase === g.phase &&
+          deferred.cause === 'shipment' && deferred.resume === 'none' &&
+          entrant!.faction === 'moritani' && deferred.amount > 0 && deferred.elite === 0,
+        'The queued Sneak reactions have lost their committed native entry.');
+        const bg = byFaction(g, 'beneGesserit');
+        const followup = bg && bg.id !== entrant!.id && spiritualAdvisorMaximum(g, bg.id) > 0
+          ? {shipment:entrant!.id,destination:location(deferred.territory,deferred.sector)} : undefined;
+        if (!intrusion(g,entrant!,deferred.territory,followup ? {followup} : undefined) && followup)
           g.decision = {kind:'advisor',player:bg!.id,...followup};
       }
       openTerritoryEntry(g, entrant!, deferred.territory, deferred.sector,
