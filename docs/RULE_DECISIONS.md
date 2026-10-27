@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Discovery blow and concealed No-Field — 27 October 2026
+
+Publisher E3physical/printed12 and supplied Advanced physical23/printed21
+destroy old spice and all forces in the printed target. E2FAQ10/supplied
+physical36 B's marker-as-one rule composes provisionally through the distinct
+`discoveryBlow` reveal: cap materialization to actual reserves, then destroy
+the actual whole group.0 invents no casualty. No Fremen/ally worm immunity is
+borrowed. Original new-spice/storm/token placement follows. Separate nested
+territory IDs stay outside the parent target; this is territorial composition,
+not a new published immunity. Targeted GF9/designer search found no specific
+combined ruling, and Discovery is not in the printed mandatory-reveal list.
+Standing recommended-option authority selects this explicit provisional path.
+[Contract](DISCOVERY_PROTOTYPE.md#concealed-no-field-at-a-discovery-blow--27-october-2026).
+
 ## Concealed No-Field Guild transport — 27 October 2026
 
 Under the standing recommended-option policy, compose supplied Advanced

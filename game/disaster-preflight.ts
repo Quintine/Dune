@@ -3,6 +3,7 @@ import type { Game, Player, ResponseWindow } from './engine';
 import { splitLocation, territory, validLocation } from './board';
 import { SPICE_CARDS } from './cards';
 import { revealRicheseNoField } from './richese-no-field';
+import { DISCOVERY_SPICE_CARDS } from './discoveries';
 
 export class DisasterPreflightError extends Error {}
 function requireDisaster(
@@ -31,7 +32,7 @@ function casualtyCustody(
   g: Game,
   p: Player,
   affected: (key: string) => boolean,
-  cause: 'storm' | 'worm',
+  cause: 'storm' | 'worm' | 'discoveryBlow',
 ) {
   let losses = 0,
     eliteLosses = 0;
@@ -172,6 +173,21 @@ export function validateStormCancellation(g: Game, response: ResponseWindow) {
     'The canceled shipment no longer has its declared ordinary and elite cohort.',
   );
   casualtyCustody(g, p, (candidate) => candidate === key, 'storm');
+}
+/** A printed Discovery blow destroys the entire named territory. Native worm
+ * survival and allied protection do not exempt any faction from this effect. */
+export function validateDiscoveryBlow(g: Game, t: string) {
+  requireDisaster(
+    DISCOVERY_SPICE_CARDS.some(card => card.territory === t),
+    'The Discovery spice blow needs a printed Discovery territory.',
+  );
+  for (const p of g.players)
+    casualtyCustody(
+      g,
+      p,
+      (key) => splitLocation(key).territory === t && !!boardKey(key),
+      'discoveryBlow',
+    );
 }
 export function validateWormDevouring(
   g: Game,

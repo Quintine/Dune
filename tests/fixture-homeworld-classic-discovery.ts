@@ -40,6 +40,9 @@ export const homeworldClassicDiscoveryPlayer = (game: Game, actor: string) => {
 /** Public owned continuations only. Storm dials use their original legal range;
  * no phase clock, casualty, hand, balance or signed Discovery frame is staged. */
 export function nextHomeworldClassicDiscoveryStep(game: Game): HomeworldClassicDiscoveryStep {
+  if (game.status === 'playing' && game.phase === 2 && homeworldClassicDiscoveryClean(game) &&
+      game.charityOrder?.remaining.length)
+    return { actor: game.charityOrder.remaining[0], action: { type: 'ready' } };
   if (!game.phaseOpening && !game.response) {
     const decision = game.decision;
     if (decision?.kind === 'homeworldShipmentGuild')

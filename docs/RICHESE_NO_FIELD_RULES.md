@@ -2,6 +2,26 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Discovery spice-blow destruction — 27 October 2026
+
+Publisher E3 physical/printed12 and supplied Advanced physical23/printed21
+destroy existing spice and all forces in the printed Discovery-blow territory.
+Compose the one-force rule (E2 FAQ10/supplied physical36 B) using a distinct
+`discoveryBlow` cause: reveal, materialize only actual available reserves, then
+send the whole affected physical group to Tanks.0 adds no counter. The native
+sequence continues to fresh spice and original face-down token placement.
+
+Discovery is absent from the explicit forced-reveal list. Targeted GF9/designer
+search found no dedicated combined answer, so destructive revelation is an
+explicit provisional interpretation under standing recommended-option authority.
+Do not import ordinary worm protection for Fremen or its ally. Other territories,
+including separately identified revealed nested locations, are outside the
+printed parent target; this is territorial composition, not an additional
+publisher Discovery-immunity ruling. Original storm exclusion for the fresh
+spice and supply-type placement remain. Existing phase Ready/Accept controls
+continue without an extra confirmation; history names the provisional reveal.
+[Discovery source and scope](DISCOVERY_PROTOTYPE.md#concealed-no-field-at-a-discovery-blow--27-october-2026).
+
 ## Concealed Guild cross-shipment and Secret Ally return — 27 October 2026
 
 The supplied Advanced source, physical36/printed34 B, and E2 FAQ printed10

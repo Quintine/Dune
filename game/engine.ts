@@ -435,6 +435,7 @@ import {
   validateStormCancellation,
   validateWormCancellation,
   validateWormDevouring,
+  validateDiscoveryBlow,
   DisasterPreflightError,
 } from './disaster-preflight';
 import {
@@ -4624,7 +4625,7 @@ function revealPlayerNoField(g: Game, p: Player, cause: NoFieldRevealCause) {
   observeOccupation(g);
   log(
     g,
-    `${p.name} revealed the ${result.value} No-Field in ${territory(result.location.territory).name} (${cause === 'alliedSeparation' ? 'allied separation' : cause}) and placed ${result.forces} physical forces from reserves.${result.forces < result.value ? ' Only the remaining reserves could be placed.' : ''}`,
+    `${p.name} revealed the ${result.value} No-Field in ${territory(result.location.territory).name} (${cause === 'alliedSeparation' ? 'allied separation' : cause === 'discoveryBlow' ? 'Discovery spice blow; provisional destructive reveal' : cause}) and placed ${result.forces} physical forces from reserves.${result.forces < result.value ? ' Only the remaining reserves could be placed.' : ''}`,
     { faction: 'richese', name: 'No-Field revealed' },
   );
   return result;
@@ -13375,8 +13376,8 @@ function resolveDiscoveryBlow(g: Game, card: Extract<SpiceCard, {territory:strin
   const printed = DISCOVERY_SPICE_CARDS.find(value => value.discovery === card.discovery)!;
   requireRule(card.territory === printed.territory && card.sector === printed.sector && card.amount === printed.amount,
     'The Discovery spice blow has changed its printed territory, sector or amount.');
-  disasterPreflight(() => validateWormDevouring(g,card.territory,undefined,false));
-  for (const p of g.players) killTerritory(g,p,card.territory);
+  disasterPreflight(() => validateDiscoveryBlow(g,card.territory));
+  for (const p of g.players) killTerritory(g,p,card.territory,Infinity,false,'discoveryBlow');
   for (const key of Object.keys(g.spice)) if (splitLocation(key).territory === card.territory) delete g.spice[key];
   log(g, `A Discovery spice blow destroyed all previous spice and forces in ${territory(card.territory).name}, including Fremen forces. The new spice is placed afterward.`);
   const placement = DISCOVERY_CARD_PLACEMENTS[card.discovery];

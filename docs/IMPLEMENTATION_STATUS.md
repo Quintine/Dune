@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 27 October 2026 — Discovery blow with concealed No-Field
+
+**Discovery blow / No-Field — 27 October. Prototyped / Partial.**
+An original Discovery blow now reveals an affected concealed marker through a
+distinct `discoveryBlow` cause, materializes only available reserves and sends
+the whole actual target group to Tanks.0 creates no counter. Original old-spice
+removal, fresh six subject to storm and separate face-down token placement
+continue. Dedicated preflight imports no Fremen/ally worm immunity. Separate
+territory IDs remain outside the parent target. Forced reveal and nested-target
+composition are explicitly provisional; no specific combined publisher ruling
+is claimed. Existing Ready/Accept controls and minimal policies continue normally.
+[Source and contract](DISCOVERY_PROTOTYPE.md#concealed-no-field-at-a-discovery-blow--27-october-2026).
+
+Frozen **9-file union, 70/70**, types/lint/build and eight original-game
+programmes pass. Public Basic/Advanced R/A/E+CHOAM-deck starts actually opt in
+to Discoveries before readiness/start. Marker0/3/5 costs2 at WindPassNorth17
+before the real turn2 Discovery; each mode's mixed case first ships physical1
+on turn1, then marker5 on turn2 before the turn3 blow. Actual Emperor Polar1
+survives. Native token placement remains at separate PlasticBasin13.
+
+Runtime records24 GameTable SSR and8 actual Ready callbacks, with source/further
+action arrays488/44. Other Ready/Accept and source controls use native packets.
+There is no browser hydration/navigation or clicked-control claim for them.
+No played hand, purse, army, phase, marker, event, spice, token placement or
+casualty is installed. Controlled helper cases separately cover scarce/empty
+reserves, elite validity, numeric capacity, Fremen and separate nested markers;
+no depleted-supply or nested-source native journey is claimed.
+
+The first union exposed an older genuine Homeworld Discovery driver's wrong
+Charity actor; it now follows the actual ordered turn. Type feedback repaired
+two test assertions without changing gameplay. Failed v1/v2 proof is preserved;
+v3 reruns the frozen related source and runtime after repair.
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-discovery-no-field-blow-proof-v3/`;
+journeys/HTML: adjacent `20261027-discovery-no-field-blow-runtime/run-v2/`.
+Only a recorded three-document evidence overlay follows verification. Existing
+server HTTP200, no restart or saved-game/database operation. Broader combinations,
+complete modes and final rules/recovery/privacy/custody/browser/deployed
+acceptance remain open.
+
 ## 27 October 2026 — Concealed No-Field Guild transport
 
 **Concealed No-Field Guild transport — 27 October. Prototyped / Partial.**

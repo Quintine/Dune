@@ -5,6 +5,54 @@ partial rules coverage. It connects physical components, real actions, private
 controls, AI choices and saved continuation. Normal public Discovery and
 Advanced start gates, and the publication gate, remain closed.
 
+## Concealed No-Field at a Discovery blow — 27 October 2026
+
+Publisher E3 physical/printed12 and supplied Advanced physical23/printed21
+destroy existing spice and forces in the Discovery card's printed territory.
+The Fremen exception is part of Great Maker, not this effect. E2 FAQ10 and
+supplied physical36/printed34 B count the concealed No-Field as one for all
+effects, including0. The latter's mandatory revelation list does not explicitly
+include Discovery. A targeted publisher/designer search found no combined ruling.
+
+Under the standing recommended interpretation, reveal through the distinct
+`discoveryBlow` cause, materialize no more than actual reserves, then destroy
+all actual counters in the target.0 creates no invented casualty. This forced
+reveal is provisional. Dedicated preflight validates every affected player;
+Fremen, its ally and ordinary worm protection are not exempt. Original spice
+removal, fresh six subject to storm, physical token type/supply and separate
+placement destination continue once. Nested locations keep their separate
+territory IDs (E3p13); this is the selected territorial composition, not a new
+published immunity. No mode or module gate changes.
+
+Existing Ready/Accept controls and minimal policies advance the normal phase.
+The chronicle names the provisional destructive reveal and actual counters;
+no extra confirmation or new player action is required. The pure model keeps
+token history and reserve caps; the engine owns actual loss and placement.
+[No-Field contract](RICHESE_NO_FIELD_RULES.md#discovery-spice-blow-destruction--27-october-2026).
+
+### Scoped native evidence
+
+Frozen9-file union70/70, types/lint/build and eight original programmes pass.
+Public Basic/Advanced R/A/E+CHOAM starts opt Discoveries in before Ready/start.
+Actual paid marker0/3/5 shipments precede the original later WindPassNorth17
+Discovery. Mixed cases earn physical1 on turn1, then marker5 on turn2 before
+the turn3 blow; all six actual counters die once. Original Emperor Polar1
+survives. Original fresh6 and native face-down placement at separate
+PlasticBasin13 follow; Spice Blow closes into Charity without another reveal.
+
+Runtime records24 GameTable SSR and8 actual Ready callbacks; source/further
+arrays488/44. Other controls use native packets directly. No played hand,
+purse, force, phase, marker/event, spice, placement or casualty is installed.
+Scarce reserves/typed capacity and nested markers are controlled supplements,
+not native depleted/nested journeys. An old genuine Homeworld Discovery driver
+now obeys current Charity order; two test assertions were repaired after type
+feedback. Failed v1/v2 remains preserved; v3 uses one frozen source and then a
+three-document evidence overlay. Existing server HTTP200 without restart or
+saved-game/database operation. Browser hydration/navigation, deployed and final
+full-mode/combined/recovery/privacy/custody acceptance remain open.
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-discovery-no-field-blow-proof-v3/`;
+runtime: adjacent `20261027-discovery-no-field-blow-runtime/run-v2/`.
+
 ## Recommended physical dial and cumulative storm choices — 14 October 2026
 
 Under the user's choose-recommended-option priority, the prototype now selects

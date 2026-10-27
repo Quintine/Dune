@@ -194,6 +194,7 @@ void test('every reveal cause returns capped physical materialization and the ac
     'allyShipment',
     'atomics',
     'alliedSeparation',
+    'discoveryBlow',
   ];
   for (const cause of causes)
     for (const value of [0, 3, 5] as const)
