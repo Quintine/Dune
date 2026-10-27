@@ -2,6 +2,68 @@
 
 Source audit, 9 September 2026. This separates publisher wording, rule composition, and remaining decisions. It does not enable Homeworld games or replace the outstanding Ambassador/Duke revival rulings.
 
+## Salusa Ghola and live Truthtrance promises — 27 October 2026
+
+Before either full plan seals, a current battle promise no longer forbids every
+population-crossing Ghola. Preserve a feasible Yes, whole-No or grouped claim.
+Reject the actor's return if the resulting High support regime makes that
+actor's own promise impossible, including an odd dial with only free double
+stars or a positive support promise with no payable ordinary counter. A rejected
+action consumes no card, force, revival allowance or binding.
+
+The actual physical return and any obsolete inspection renewal occur before
+Truthtrance feasibility. Carry the real Ghola actor/action through that check
+and its printed card disposal. An uncontextual release must not retire the
+actor's promise first. Feasible answers remain fixed; an opposing promise that
+actually becomes impossible follows the existing release policy. No new promise
+parser or battle solver is introduced.
+
+The server quotes each real force group using a detached copy, the native Ghola
+effect/disposal and the existing reachable-plan solver. Current force maxima,
+elite allowance and exact `homeworldRevivalBlocks` use those results. Human
+controls and minimal AI consume the existing shared block adapter; they do not
+reconstruct claim legality or inspect opponents' plans.
+
+The supplied PDF physical39 / printed37 requires Truthtrance compliance while
+possible. [Official November2020 FAQp8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=8)
+permits current-turn and AND/OR questions. Neither separately defines deliberate
+self-impossibility; rejecting the actor's voluntary destruction is the existing
+[product interpretation](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md#where-promises-currently-bind-actions),
+not a new printed Ghola restriction. Full sealed-plan repricing remains an
+unfinished preview boundary. Earlier inspection/promise guards below are dated
+history where superseded by this follow-up.
+
+### Live-promise evidence
+
+Sixteen selected files pass145/145 with types/lint. Native tests use actual
+initial Atreides Truthtrance, priority passes, current battle questions and
+definite answers. They cover feasible Yes2, whole-No1, grouped OR1/2, own
+impossible Yes1 and positive support, later use after completing the original
+promise, and Prescience1 plus TruthYes2 renewal. Exact control-block reasons
+match authoritative rejections and maxima. All four minimal profiles submit
+legal required plans and omit blocked/spent Ghola.
+
+The separate runtime has three original public Advanced E/A/G base33/Homeworld
+prefixes totaling169 actions. A real paid first-battle star loss creates the
+Tanks source; no played resource, phase, inspection, promise or receipt is
+installed. Only unopened initial card/Spice positions and native scalar
+lotteries are selected. Sixteen accepted continuation actions compare feasible
+return, one immutable rejection followed by actual original-plan completion/
+later Ghola, and original inspection renewal while preserving TruthYes2.
+
+Eleven GameTable/two BattlePreparation SSR renders, three existing group-block
+adapter checks and one shared answer-adapter packet connect current controls.
+Stateful Ghola/answer/plan inputs are not operated in a browser. Full seals,
+new played Cunning/Ghola pairs, native-Salusa battle, complete modes, mobile,
+deployed and final recovery/privacy/custody acceptance remain separate.
+No build was repeated for this focused rule change.
+
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-salusa-ghola-truth-proof-v1/`;
+runtime: `20261027-salusa-ghola-truth-runtime/run-v1/` beside it. Frozen tree
+`d713902330ddca9084ab9a2d9e02b239ee7344b2d33d97eb9f040131a5f1c65c`
+contains3354 files. Final prose overlays are limited to this contract, the
+dashboard and implementation log.
+
 ## Salusa Ghola and renewed inspection answers — 27 October 2026
 
 The earlier commitment-free window below now includes completed inspection

@@ -20,6 +20,28 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Salusa Ghola / live Truthtrance — 27 October. Prototyped / Partial.**
+Before either full seal, feasible Yes, whole-No and grouped promises survive the
+actual return. A return that makes the actor's own promise impossible rejects
+without cost or release. Obsolete inspections renew before truth feasibility;
+the real actor context survives effect and card disposal. Exact force-group
+blocks feed current human controls, force maxima and minimal AI. The voluntary
+self-impossibility policy remains an existing product interpretation; full
+sealed-plan timing stays guarded. [Contract](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-live-truthtrance-promises--27-october-2026).
+
+**Sixteen files145/145**, types/lint and three native runtime programmes pass.
+Original public Advanced E/A/G base33/Homeworlds earn a real first-battle star
+loss and use the originally dealt Atreides Truthtrance for actual questions/
+definite answers. Prefixes total169 actions;16 further accepted actions compare
+Yes2 retention, immutable rejected Yes1 then native completion/later Ghola, and
+Prescience1 plus TruthYes2 renewal/completion. One rejection,11 GameTable/two
+BattlePreparation SSR renders,3 group-block adapters and1 answer-adapter packet
+are observed. Tests additionally cover whole-No, grouped OR, positive support
+and all four minimal policies. Stateful Ghola/answer/plan forms are not operated
+in a browser. No full-seal, played Cunning/Ghola, native-Salusa battle, complete
+mode, mobile, deployed or final assurance acceptance is certified. No build was
+repeated for this focused rule change.
+
 **Salusa Ghola inspection renewal — 27 October. Prototyped / Partial.**
 Before either full plan seals, an actual Salusa-crossing Ghola return now keeps
 a feasible inspection answer or reopens an impossible original question. The

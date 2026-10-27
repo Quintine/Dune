@@ -1,5 +1,38 @@
 # Dune implementation status
 
+## 27 October 2026 — Salusa Ghola with live Truthtrance
+
+Before either full seal, preserve feasible Yes/whole-No/grouped promises and
+reject the actor's own impossible return. Carry actual actor/action context
+through inspection renewal, truth feasibility and physical card disposal; the
+own promise cannot be released first. Exact-group native-effect/solver quotes
+drive current force maxima, human controls and minimal AI. The existing
+voluntary-impossibility product interpretation is explicit; full-seal timing
+remains a preview boundary.
+[Contract](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-live-truthtrance-promises--27-october-2026).
+
+Sixteen-file145/145, types/lint and three original public native runtime
+programmes pass. Advanced E/A/G base33/Homeworlds earn the earlier paid star
+loss, receive original Truthtrance and make actual current-battle declarations/
+definite answers. Three prefixes total169 actions;16 accepted continuations
+compare feasible Yes2 return, immutable rejected Yes1 followed by original
+completion/later Ghola, and Prescience1/TruthYes2 renewal/completion. One rejected
+attempt,11 GameTable/two BattlePreparation SSR renders,3 group-block adapters
+and1 answer-adapter packet are observed. Tests additionally cover whole-No,
+OR1/2, paid-support impossibility and all four minimal policies. No played
+resource, phase, inspection, promise or receipt is installed; only unopened
+initial card/Spice positions and native scalar lotteries are selected.
+
+Stateful input/browser operation, full seals, played Cunning/Ghola pairs,
+native-Salusa battle, complete modes, mobile, deployed and final assurance are
+not certified; no build was repeated for this focused rule change. Private
+proof `20261027-salusa-ghola-truth-proof-v1/` and runtime
+`20261027-salusa-ghola-truth-runtime/run-v1/` use the existing private checkpoint
+directory. Frozen tree
+`d713902330ddca9084ab9a2d9e02b239ee7344b2d33d97eb9f040131a5f1c65c`
+contains3354 files; final prose overlays are limited to this log,
+`CURRENT_STATUS.md` and `HOMEWORLD_BENEFITS_RULES.md`.
+
 ## 27 October 2026 — Salusa Ghola inspection renewal
 
 An actual Salusa threshold return before either full plan seals now reuses the

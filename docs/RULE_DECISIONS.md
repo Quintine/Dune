@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Salusa Ghola with binding Truthtrance — 27 October 2026
+
+Remove the blanket live-promise restriction before either full seal. Preserve
+feasible Yes/whole-No/grouped claims and reject a return that deliberately makes
+the actor's own promise impossible. Renew obsolete inspections first, then test
+with the actual Ghola actor/action through effect and physical card disposal;
+do not release that own promise without actor context. Exact-group projections
+share the native effect and existing solver with current controls/minimal AI.
+Compliance-while-possible comes from the supplied physical39/printed37 and
+official FAQp8; voluntary self-impossibility rejection remains the existing
+product interpretation, not a separately printed Ghola rule. Full seals retain
+their preview boundary. [Contract](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-live-truthtrance-promises--27-october-2026).
+
 ## Salusa Ghola inspection renewal — 27 October 2026
 
 Before either full plan is sealed, an actual Salusa-crossing Ghola return may

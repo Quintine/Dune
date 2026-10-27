@@ -75,7 +75,7 @@ function livingLeader(game: Game, actor: string, strongest: boolean) {
  * while unopened; native setup, payments, typed shipments, split movement and
  * the earlier combat casualty create every later resource and battle field. */
 export function createSalusaGholaFixture(options: {
-  firstTerritory?: 'imperial_basin'|'arrakeen'; inspectionDial?: 1|2;
+  firstTerritory?: 'imperial_basin'|'arrakeen'; inspectionDial?: 1|2; truthtrance?: true;
 } = {}) {
   const actor = 'emperor', atreides = 'atreides', guild = 'guild';
   let game = createGame('SALUSAGHOLA',newPlayer(actor,'Emperor','emperor'),true);
@@ -91,9 +91,10 @@ export function createSalusaGholaFixture(options: {
   const setup = structuredClone(game);
   assert.equal(game.status,'setup'); assert.ok(game.players.every(p => p.hand.length === 0));
   const ghola = game.deck.find(c => c.effect === 'ghola');
-  const shield = game.deck.find(c => c.kind === 'shield'), projectile = game.deck.find(c => c.kind === 'projectile');
-  assert.ok(ghola && shield && projectile);
-  const selected = [ghola,shield,projectile], dealOrder = selected.map((card,position) => {
+  const atreidesCard = game.deck.find(c => options.truthtrance ? c.effect === 'truthtrance' : c.kind === 'shield');
+  const projectile = game.deck.find(c => c.kind === 'projectile');
+  assert.ok(ghola && atreidesCard && projectile);
+  const selected = [ghola,atreidesCard,projectile], dealOrder = selected.map((card,position) => {
     const from = game.deck.findIndex(c => c.id === card.id); assert.ok(from >= position);
     [game.deck[position],game.deck[from]] = [game.deck[from],game.deck[position]];
     return {position,from,card:card.id};

@@ -2,7 +2,8 @@
 
 Current follow-up: [Ghola inspection renewal](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-renewed-inspection-answers--27-october-2026)
 can raise Salusa before either full plan seals, retaining feasible answers or
-renewing impossible original fields. Full-seal/promise repricing remains guarded.
+renewing impossible original fields. The [live-promise follow-up](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-live-truthtrance-promises--27-october-2026)
+retains feasible claims and rejects self-impossible returns; full seals remain guarded.
 
 9 September 2026. This extends the native-reserve runtime. Homeworld invasion and live off-planet battle actions remain unavailable; no start gate is opened.
 

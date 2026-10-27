@@ -16,7 +16,7 @@ Ixian winners may exchange surviving Suboids for Cyborgs lost at that same Homew
 
 ## Explicit unfinished interactions
 
-The [replacement source audit](HOMEWORLD_REPLACEMENT_RULES.md) does not resolve the Advanced Emperor’s returned-army allocation between Kaitain and Salusa. That Face Dance return is gated with the same server, AI and interface reason; declining remains available. The Salusa Ghola crossing remains gated after full seals or during active Truthtrance battle promises; [inspection renewal](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-renewed-inspection-answers--27-october-2026) before full seals uses actual current population and the original question. These restrictions are development boundaries, not official prohibitions. Other Homeworld face effects, occupation rights and full interaction coverage are still required.
+The [replacement source audit](HOMEWORLD_REPLACEMENT_RULES.md) does not resolve the Advanced Emperor’s returned-army allocation between Kaitain and Salusa. That Face Dance return is gated with the same server, AI and interface reason; declining remains available. The Salusa Ghola crossing remains gated after a full seal; [live-promise feasibility](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-live-truthtrance-promises--27-october-2026) before seals uses current population, original inspection renewal and actual voluntary actor context. These restrictions are development boundaries, not official prohibitions. Other Homeworld face effects, occupation rights and full interaction coverage are still required.
 
 ## Evidence
 

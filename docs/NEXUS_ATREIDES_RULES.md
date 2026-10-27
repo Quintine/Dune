@@ -73,6 +73,9 @@ The unresolved cases were reported to the coordinator before implementation deci
 The [Salusa Ghola follow-up](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-renewed-inspection-answers--27-october-2026)
 also reuses this native-first ordered renewal before either full plan seals.
 Its actual physical return occurs once; it does not buy another inspection.
+The later [Truthtrance follow-up](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-live-truthtrance-promises--27-october-2026)
+carries the voluntary Ghola actor through the subsequent promise check, so
+retiring an obsolete inspection cannot release that actor's impossible promise.
 
 **Selected provisional composition — 26 October 2026.** The 14 October
 choose-recommended authority supersedes the earlier blanket product refusal.

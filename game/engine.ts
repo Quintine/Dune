@@ -228,6 +228,7 @@ import {
   homeworldLowBonus,
   homeworldSardaukarFreeSupport,
   homeworldSardaukarGholaBlock,
+  homeworldSardaukarGholaCrossing,
   snapshotHomeworldRevival,
   tleilaxuHomeworldFreeIncomeBlocked,
   HomeworldBenefitError,
@@ -28288,7 +28289,8 @@ function playResidualPoison(
   if (b.preLeader && !b.preLeader.closed)
     b.preLeader.ready = b.preLeader.ready.filter((id) => id !== p.id);
 }
-function reconcileChangedBattleInspections(g: Game, cause: string, renewExtraWithNative = false) {
+function reconcileChangedBattleInspections(g: Game, cause: string, renewExtraWithNative = false,
+  voluntary?: { actor: string; action: Action }) {
   const b = g.battle!;
   // Selected provisional priority: preserve an independently feasible native
   // answer first, then require the extra answer to be jointly feasible. This
@@ -28339,7 +28341,7 @@ function reconcileChangedBattleInspections(g: Game, cause: string, renewExtraWit
       log(g, `After ${cause}, the inspected element became impossible. Its owner must answer the same element again; the earlier private observation is retained.`);
     }
   }
-  reconcileBattlePromises(g);
+  reconcileBattlePromises(g, voluntary);
 }
 function residualPoisonView(g: Game, p: Player) {
   const card = p.hand.find(
@@ -28879,6 +28881,30 @@ function gholaLeaders(g: Game, p: Player) {
     native.push(g.dukeVidal!.leader);
   return native;
 }
+/** Probe only this actor's population-crossing force choices on detached
+ * states. Use the real effect, card disposal and existing promise solver;
+ * neither the view nor a bot reconstructs Truthtrance legality. */
+function salusaGholaPromiseBlocks(g: Game, p: Player, cards: readonly string[],
+  maximum: number, eliteRemaining: number) {
+  const blocks: { source: 'ghola'; amount: number; elite: number; reason: string }[] = [];
+  if (!cards.length || !eliteRemaining || !homeworldSardaukarGholaCrossing(g, p.id) ||
+      homeworldSardaukarGholaBlock(g, p.id) ||
+      !g.battle!.truthPromises?.some(promise => promise.player === p.id && !promise.released)) return blocks;
+  for (const action of gholaForcePreparations({ cards: cards.slice(0, 1), tanks: p.tanks,
+    eliteTanks: p.elites?.tanks ?? 0, maxForces: maximum, eliteRemaining })) {
+    if (!action.elite) continue;
+    const trial = structuredClone(g), owner = getPlayer(trial, p.id);
+    try {
+      applyGholaEffect(trial, owner, action);
+      discard(trial, owner, action.card as string);
+      reconcileBattlePromises(trial, { actor: p.id, action });
+    } catch (error) {
+      if (!(error instanceof RuleError)) throw error;
+      blocks.push({ source: 'ghola', amount: Number(action.amount), elite: Number(action.elite), reason: error.message });
+    }
+  }
+  return blocks;
+}
 function gholaOptions(g: Game, p: Player) {
   const cards = p.hand
     .filter(
@@ -28910,15 +28936,25 @@ function gholaOptions(g: Game, p: Player) {
     strength,
   }));
   const kwisatz = !!(g.advanced && p.faction === 'atreides' && p.kwisatz?.dead);
-  const eliteBlock = homeworldSardaukarGholaBlock(g, p.id);
-  const eliteRemaining = eliteBlock ? 0 : Math.min(
+  let eliteBlock = homeworldSardaukarGholaBlock(g, p.id);
+  let eliteRemaining = eliteBlock ? 0 : Math.min(
     p.elites?.tanks ?? 0,
     eliteRevivalRemaining(p, g.advanced),
   );
-  const maxForces = Math.min(
+  let maxForces = Math.min(
     5,
     p.tanks - (p.elites?.tanks ?? 0) + eliteRemaining,
   );
+  const promiseBlocks = salusaGholaPromiseBlocks(g, p, cards, maxForces, eliteRemaining);
+  if (promiseBlocks.length) {
+    const legal = [...gholaForcePreparations({ cards: cards.slice(0, 1), tanks: p.tanks,
+      eliteTanks: p.elites?.tanks ?? 0, maxForces, eliteRemaining })].filter(action =>
+      !promiseBlocks.some(block => block.amount === action.amount && block.elite === action.elite));
+    maxForces = Math.max(0, ...legal.map(action => Number(action.amount)));
+    const eligibleElite = Math.max(0, ...legal.map(action => Number(action.elite)));
+    if (eligibleElite < eliteRemaining) eliteBlock = promiseBlocks[0].reason;
+    eliteRemaining = eligibleElite;
+  }
   const reason = !card
     ? 'No Ghola card is available in your hand.'
     : g.pendingTreacheryDiscard
@@ -28928,7 +28964,7 @@ function gholaOptions(g: Game, p: Player) {
         : timing && !timing.available
           ? timing.reason
           : !leaders.length && !kwisatz && maxForces <= 0
-            ? 'No eligible leader or force is available in your Tanks.'
+            ? eliteBlock ?? 'No eligible leader or force is available in your Tanks.'
             : null;
   return {
     cards,
@@ -29069,6 +29105,7 @@ function playMarketGhola(g: Game, p: Player, action: Action) {
   }
   if (g.response) (g.response as ResponseWindow).intent = g.pendingChoamMarketGhola.event;
   const used = discard(g, p, card.id);
+  reconcileBattlePromises(g, { actor: p.id, action });
   guardTurnActionPrintedCardCost(g, p, used);
   log(g, `${p.name} played ${card.name}. The declared CHOAM sale waits for this revival and its income to finish.`,
     { faction: p.faction, name: 'Ghola revival' });
@@ -29077,7 +29114,7 @@ function playMarketGhola(g: Game, p: Player, action: Action) {
 function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
   requireRule(!revivalPrevented(g, p.id),
     'Tleilaxu prevented this player’s revival, including Ghola, for the remaining Revival Phase.');
-  const salusaWasHigh = homeworldSardaukarFreeSupport(g, p.id);
+  const salusaCrossing = homeworldSardaukarGholaCrossing(g, p.id);
   if (action.leader === 'kwisatz') {
     requireRule(
       g.advanced && p.faction === 'atreides' && p.kwisatz?.dead,
@@ -29143,9 +29180,8 @@ function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
   techIncome(g, 'axlotl', p);
   collectRevivalIncome(g, p, 0, false, true);
   recordNativePrintedCardPlay(g, p.id, 'ghola');
-  if (!salusaWasHigh && homeworldSardaukarFreeSupport(g, p.id) && g.battle &&
-      [g.battle.attacker, g.battle.defender].includes(p.id))
-    reconcileChangedBattleInspections(g, 'the Salusa population increase', true);
+  if (salusaCrossing && homeworldSardaukarFreeSupport(g, p.id))
+    reconcileChangedBattleInspections(g, 'the Salusa population increase', true, { actor: p.id, action });
 }
 /** Search complete legal plans without learning or consulting the opponent's sealed choices. */
 function findLegalBattlePlan(
@@ -32934,6 +32970,10 @@ function projectedHomeworldRevivalReturn(g: Game, player: string) {
 }
 function homeworldRevivalChoiceBlocks(g: Game, p: Player) {
   const blocks: { source: 'normal' | 'ghola'; amount: number; elite: number; reason: string }[] = [];
+  if (p.faction === 'emperor') return salusaGholaPromiseBlocks(g, p,
+    p.hand.filter(card => card.effect === 'ghola' &&
+      !(g as TurnActionCardProbe)._turnActionUnknownCards?.includes(card.id)).map(card => card.id), Math.min(5, p.tanks),
+    Math.min(p.elites?.tanks ?? 0, eliteRevivalRemaining(p, g.advanced)));
   if (!g.homeworlds?.custody || !['fremen', 'tleilaxu'].includes(p.faction)) return blocks;
   for (const source of ['normal', 'ghola'] as const) {
     const maximum = source === 'normal' ? forceRevivalRemaining(g, p) : Math.min(5, p.tanks);
@@ -43191,6 +43231,9 @@ function applyActionInner(
       );
     const removed = g.advanced && c.effect === 'atomics';
     const used = removed ? removeUsedAtomics(g, p, c.id) : discard(g, p, c.id);
+    // Preserve the voluntary actor through the printed Ghola cost, before a
+    // later disposal response can attempt an uncontextual promise release.
+    if (c.effect === 'ghola') reconcileBattlePromises(g, { actor: id, action });
     if (execution === 'live' && (c.effect === 'hajr' || c.effect === 'ghola' || isWindowCardEffect(c.effect)))
       guardTurnActionPrintedCardCost(g, p, used);
     log(

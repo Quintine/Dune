@@ -59,15 +59,12 @@ export function homeworldSardaukarFreeSupport(
   );
 }
 
-/** Current population can change before sealed plans. The caller renews an
- * impossible inspection answer after the return. The remaining preview boundary
- * protects sealed dials/support and binding Truthtrance promises from repricing;
- * it does not freeze population or forbid Ghola for a whole battle.
- * Inspect submission presence, never an opponent's sealed plan contents. */
-export function homeworldSardaukarGholaBlock(
+/** One returned star crosses Salusa's current threshold during its native
+ * player's battle. The caller still owns card timing and actual return count. */
+export function homeworldSardaukarGholaCrossing(
   context: HomeworldBenefitContext & Pick<Game, 'battle'>,
   playerId: string,
-): string | null {
+): boolean {
   if (
     !context.advanced ||
     !context.homeworlds?.custody ||
@@ -75,8 +72,8 @@ export function homeworldSardaukarGholaBlock(
     ![context.battle.attacker, context.battle.defender].includes(playerId) ||
     !context.players.some((p) => p.id === playerId && p.faction === 'emperor')
   )
-    return null;
-  const crossing = homeworldPopulations(
+    return false;
+  return homeworldPopulations(
     homeworldContext(context),
     context.homeworlds.custody,
   ).some(
@@ -85,12 +82,20 @@ export function homeworldSardaukarGholaBlock(
       home.card === 'salusa_secundus' &&
       home.population === 1,
   );
-  if (!crossing) return null;
-  const battle = context.battle;
-  const committed = battle.revealed || Object.keys(battle.plans).length > 0 ||
-    battle.truthPromises?.some((promise) => !promise.released);
+}
+
+/** Current population can change before sealed plans. The caller renews
+ * impossible inspections and enforces voluntary Truthtrance promises after
+ * the physical return. Inspect submission presence, never hidden plan values. */
+export function homeworldSardaukarGholaBlock(
+  context: HomeworldBenefitContext & Pick<Game, 'battle'>,
+  playerId: string,
+): string | null {
+  if (!homeworldSardaukarGholaCrossing(context, playerId)) return null;
+  const battle = context.battle!;
+  const committed = battle.revealed || Object.keys(battle.plans).length > 0;
   return committed
-    ? 'Ghola raising Salusa to high population after a sealed plan or during a binding battle promise is not yet supported. Finish this battle first.'
+    ? 'Ghola raising Salusa to high population after a sealed plan is not yet supported. Finish this battle first.'
     : null;
 }
 
