@@ -20,13 +20,22 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Agreed extra turns and Basic simultaneous victory — 27 October. Prototyped /
+Partial.** The public continuation now covers Basic qualifiers and tied
+Advanced solos, with a saved final-turn marker for agreements at turn ten and
+beyond. The affected 11-file union passes 121 cases and the production build
+passes. A controlled turn-ten position continued through native turn-eleven
+actions to Mentat without a phase jump; it did not exercise a battle. Final-turn
+Fremen timing is provisional, and broader combinations remain open.
+
 **Advanced simultaneous-victory continuation — 27 October. Prototyped /
 Partial.** Qualifying sides including an alliance may unanimously agree to
 another turn and optionally increase ordinary stronghold targets, preserving
 the original Mentat or CHOAM continuation and hidden prediction. Controls and
-minimal bots are connected. The eight-file affected union passes 104 cases and
-the production build passes. Turn-10 extension, equal-solo-only and exceptional
-victory compositions remain open. [Scope](ADVANCED_PREVIEW.md#simultaneous-victories).
+minimal bots are connected. The earlier eight-file affected union passed 104
+cases and the production build passed. The follow-up above extends turn ten and
+equal-solo choices; exceptional victory compositions remain open.
+[Scope](ADVANCED_PREVIEW.md#simultaneous-victories).
 
 **Advanced Revival order and competing winners — 27 October. Prototyped /
 Partial.** Sapho can provisionally pause a clean started Revival turn and resume

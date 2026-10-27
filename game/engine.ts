@@ -1,4 +1,5 @@
 import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
+import { victoryFinalTurn, continueVictoryCalendar, VictoryCalendarError } from './victory-calendar';
 import { createVictoryContinuation, validateVictoryContinuation, voteVictoryContinuation,
   VictoryContinuationError, MAX_VICTORY_EXTRA_STRONGHOLDS, type VictoryContinuation,
   type VictoryContinuationResume } from './victory-continuation';
@@ -1405,6 +1406,8 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  /** Explicit final turn after an agreed extension; absent means turn ten. */
+  victoryFinalTurn?: number;
   /** Agreed addition to the ordinary stronghold win targets. Older games omit it. */
   victoryExtraStrongholds?: number;
   victoryContinuation?: VictoryContinuation | null;
@@ -29135,12 +29138,19 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
 function victoryAgreementRule<T>(calculate: () => T): T {
   try { return calculate(); }
   catch (error) {
-    if (error instanceof VictoryContinuationError) throw new RuleError(error.message);
+    if (error instanceof VictoryContinuationError || error instanceof VictoryCalendarError) throw new RuleError(error.message);
     throw error;
   }
 }
 function victoryAgreementSides(g: Game, quote: VictoryQuote): string[][] {
-  const sides = strongholdProgress(g).progress.filter(row => row.qualifies).map(row => row.members);
+  const rows = strongholdProgress(g).progress.filter(row => row.qualifies);
+  // The printed Advanced solo comparison eliminates lower-scoring qualifiers
+  // before offering the provisional choice to equally ranked solo winners.
+  if (g.advanced && !quote.ecazHomeworld && rows.length > 1 && rows.every(row => row.members.length === 1)) {
+    const most = Math.max(...rows.map(row => row.strongholds.length + Number(row.techStronghold)));
+    return rows.filter(row => row.strongholds.length + Number(row.techStronghold) === most).map(row => row.members);
+  }
+  const sides = rows.map(row => row.members);
   if (quote.ecazHomeworld) sides.push(quote.ecazHomeworld.members);
   return sides;
 }
@@ -29148,7 +29158,7 @@ function victoryContinuationIntegrity(g: Game) {
   const pending = g.victoryContinuation;
   if (!pending) return;
   victoryAgreementRule(() => validateVictoryContinuation(pending));
-  requireRule(g.status === 'playing' && g.advanced && g.phase === 8 && g.turn === pending.turn &&
+  requireRule(g.status === 'playing' && g.phase === 8 && g.turn === pending.turn &&
     !g.winner.length && !g.decision && !g.response,
   'The shared victory agreement must retain its original Mentat opportunity.');
   const expected = victoryAgreementRule(() => createVictoryContinuation({
@@ -29165,10 +29175,10 @@ function victory(g: Game, quote?: VictoryQuote, resume: VictoryContinuationResum
     !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm && !g.pendingAutomaticAdvisorRelocation && !g.pendingAdvisorMatching && !g.pendingAdvisorAmbassadorMatching && !g.pendingAdvisorTransportMatching && !g.pendingAdvisorGatherMatching && !g.pendingSpiritualAdvisor,
     'Resolve mandatory advisor conversions before checking victory.');
   quote ??= currentVictoryQuote(g);
-  if (!skipOffer && g.advanced && g.turn < 10 && g.status === 'playing' && !g.winner.length) {
+  if (!skipOffer && g.status === 'playing' && !g.winner.length) {
     const sides = victoryAgreementSides(g, quote);
     const distinct = new Set(sides.map(side => [...side].sort().join('\u0000')));
-    if (distinct.size >= 2 && sides.some(side => side.length === 2)) {
+    if (distinct.size >= 2) {
       applyAdvisorReleases(g, quote.released);
       g.victoryContinuation = victoryAgreementRule(() => createVictoryContinuation({
         event: crypto.randomUUID(), turn: g.turn, resume, order: g.order, sides,
@@ -29193,7 +29203,7 @@ function victory(g: Game, quote?: VictoryQuote, resume: VictoryContinuationResum
     const homeworld = quote.ecazHomeworld &&
       quote.ecazHomeworld.members.length === g.winner.length &&
       quote.ecazHomeworld.members.every(id => g.winner.includes(id)) ? quote.ecazHomeworld : null;
-    const fremen = !quote.ecazHomeworld && g.turn === 10 && !progress.some((row) => row.qualifies)
+    const fremen = !quote.ecazHomeworld && g.turn === victoryAgreementRule(() => victoryFinalTurn(g)) && !progress.some((row) => row.qualifies)
       ? fremenSpecialVictory(g) : null;
     const fremenWon = fremen?.qualifies && fremen.members.length === g.winner.length &&
       fremen.members.every((id) => g.winner.includes(id));
@@ -29205,7 +29215,7 @@ function victory(g: Game, quote?: VictoryQuote, resume: VictoryContinuationResum
       `${g.winner.map((id) => faction(getPlayer(g, id).faction).name).join(' and ')} won the game.${occupy ? ` Ecaz Occupy: both allies occupy ${occupy.jointlyOccupied.map((id) => territory(id).name).join(', ')} without opposing fighters, meeting the three-stronghold alliance target.` : ''}${homeworld ? ' High Ecaz Homeworld victory: the alliance jointly holds a stronghold and occupies Homeworlds of two other native factions.' : ''}${specialReason}`,
     );
   } else if (g.status === 'finished')
-    log(g, 'The tenth turn ended without a winner.');
+    log(g, 'The final turn ended without a winner.');
   if (quote.strongholds) settleStrongholdOwnership(g, quote.strongholds);
 }
 function cardOf(p: Player, id: string | null) {
@@ -39960,6 +39970,9 @@ export function applyAction(state: Game, id: string, action: Action): Game {
       (action.mode === 'finish' || action.mode === 'continue' || action.mode === 'accept') &&
       (frame.extraStrongholds === null ? action.mode !== 'accept' : action.mode !== 'continue'),
     'Finish the current shared victory agreement before another action.');
+    if (action.mode === 'continue')
+      requireRule(typeof action.extra === 'number' && action.extra <= Math.max(0, 200 - (state.victoryExtraStrongholds ?? 0)),
+        'Choose an increase within the remaining stronghold target limit.');
     const result = victoryAgreementRule(() => voteVictoryContinuation(frame, {
       event: action.event as string, player: id,
       choice: action.mode === 'finish' ? 'finish' : 'continue',
@@ -39973,6 +39986,8 @@ export function applyAction(state: Game, id: string, action: Action): Game {
       else {
         const extra = (g.victoryExtraStrongholds ?? 0) + result.extraStrongholds;
         requireRule(Number.isSafeInteger(extra) && extra <= 200, 'The agreed stronghold target is too large.');
+        const finalTurn = victoryAgreementRule(() => continueVictoryCalendar(g));
+        if (finalTurn !== 10 || g.victoryFinalTurn !== undefined) g.victoryFinalTurn = finalTurn;
         g.victoryExtraStrongholds = extra;
         log(g, `The qualifying participants agreed to continue for another turn${result.extraStrongholds ? ` and increase ordinary stronghold targets by ${result.extraStrongholds}` : ' with unchanged stronghold targets'}.`);
         if (frame.resume === 'advance') completePhase(g);
@@ -45356,6 +45371,7 @@ export function viewGame(state: Game, id: string, now?: number) {
     ecazTreachery: !!g.ecazTreachery,
     discoveryEnabled: g.discoveryEnabled === true,
     turn: g.turn,
+    victoryFinalTurn: victoryAgreementRule(() => victoryFinalTurn(g)),
     phase: g.phase,
     phaseOpening: g.phaseOpening ? { passed: g.phaseOpening.passed } : null,
     storm: g.status === 'lobby' ? STORM_START_SECTOR : g.storm,
@@ -45617,7 +45633,7 @@ export function viewGame(state: Game, id: string, now?: number) {
       voters: [...g.victoryContinuation.voters],
       sides: g.victoryContinuation.sides.map(side => [...side]),
       extra: g.victoryContinuation.extraStrongholds,
-      maxExtra: MAX_VICTORY_EXTRA_STRONGHOLDS,
+      maxExtra: Math.min(MAX_VICTORY_EXTRA_STRONGHOLDS, Math.max(0, 200 - (g.victoryExtraStrongholds ?? 0))),
     } : null,
     decision: g.pendingGuildBetrayal || g.pendingRicheseBetrayal || g.pendingKull?.stage === 'offer' ? null :
       g.decision?.kind === 'capturedLeader' &&

@@ -36,24 +36,30 @@ their stronghold counts and awards the higher count before checking a Bene
 Gesserit prediction. Equal highest counts provisionally share the win; a set of
 all three Tech Tokens counts as one additional stronghold in this comparison.
 Qualifying alliances and the separate Ecaz Homeworld victory retain their
-existing shared-winner treatment. Basic retains its existing behavior.
+existing shared-winner treatment. Basic keeps its shared-win ranking.
 
-The authorized revised rules also permit qualifying players or alliances to
-agree to play another turn and optionally raise the stronghold target. The
-provisional preview offers this on turns 1–9 when at least two distinct sides
-qualify and one is an alliance. Every member of those sides responds in storm
-order. The first may finish or propose another turn with a whole-number target
-increase from zero through 20; each later member accepts that exact proposal or
-finishes. These ordered controls and the input cap are online conventions.
-Finishing resolves the original result and any correct private prediction;
-unanimous acceptance continues without revealing that prediction.
+The publisher FAQ for Basic and the authorized revised rules for Advanced also
+permit qualifying players or alliances to agree to play another full turn and
+optionally raise the stronghold target. The provisional agreement is offered
+when at least two distinct sides qualify in Basic, or when equal highest solo
+qualifiers or other distinct sides qualify in Advanced. Every member of those
+sides responds in storm order. The first may finish or propose another turn
+with a whole-number target increase from zero through 20; each later member
+accepts that exact proposal or finishes. Voter scope, ordered controls and the
+input cap are online conventions. Finishing resolves the original result and
+any correct private prediction; unanimous acceptance continues without revealing
+that prediction.
 
 The increase adds to the ordinary solo and alliance stronghold targets, while
 independent Ecaz joint-occupation and Homeworld special-victory conditions stay
 separate under the provisional interpretation. The original Mentat phase
 continues unless CHOAM's completed end-of-Mentat opportunity was the source,
-in which case the next turn begins. Turn-ten extension, equal-solo-only
-agreements and broader special-victory cases remain unfinished.
+in which case the next turn begins. The final turn defaults to ten; an agreement
+at the current final turn provisionally extends it by one, including a turn-ten
+agreement. The Fremen and Guild final-victory checks move to the agreed final
+turn under this interpretation, even though the supplied Fremen sheet names the
+end of turn ten. Repeated extensions can move the final turn further. Broader
+special-victory cases and full natural extended-turn verification remain open.
 [Source and interpretation](RULE_DECISIONS.md#advanced-simultaneous-solo-stronghold-victories--27-october-2026).
 
 ## Admission and saved behavior

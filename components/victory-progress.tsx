@@ -148,7 +148,7 @@ export function VictoryProgress({
       {fremen && (
         <section className="mt-4 space-y-2 rounded-lg border border-[#a88b60]/40 p-3" aria-label="Fremen final-turn victory">
           <h3>Fremen final-turn victory</h3>
-          <p className="fine">At the end of turn ten, if nobody has a stronghold victory, these conditions let Fremen and its ally win before Guild. A Bene Gesserit prediction cannot replace this special victory.</p>
+          <p className="fine">At the end of the final turn, if nobody has a stronghold victory, these conditions let Fremen and its ally win before Guild. A Bene Gesserit prediction cannot replace this special victory. An agreed extra turn provisionally moves this check to the new final turn.</p>
           <ul className="space-y-2">
             {fremen.sietches.map((site) => (
               <li key={site.territory}>

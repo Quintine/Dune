@@ -1,4 +1,4 @@
-/** Provisional online agreement for the supplied Advanced rule allowing
+/** Provisional online agreement for the Basic FAQ and supplied Advanced rule allowing
  * qualifying players and alliances to continue rather than share victory.
  * Only public qualifiers belong here; a Bene Gesserit prediction is private. */
 export const MAX_VICTORY_EXTRA_STRONGHOLDS = 20;
@@ -61,8 +61,8 @@ function canonicalSides(order: readonly string[], sides: readonly (readonly stri
     if (!unique.some(existing => same(existing, members))) unique.push(members);
   }
   unique.sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]));
-  requireContinuation(unique.length >= 2 && unique.some(side => side.length === 2),
-    'The provisional continuation needs multiple qualifying sides including an alliance.');
+  requireContinuation(unique.length >= 2,
+    'The continuation needs multiple distinct qualifying sides.');
   const members = unique.flat();
   requireContinuation(new Set(members).size === members.length,
     'Qualifying victory sides cannot overlap.');
@@ -77,10 +77,10 @@ export function createVictoryContinuation(input: {
   sides: readonly (readonly string[])[];
 }): VictoryContinuation {
   requireContinuation(record(input) && id(input.event) && Number.isSafeInteger(input.turn) &&
-    input.turn >= 1 && input.turn <= 9 && (input.resume === 'mentat' || input.resume === 'advance') &&
+    input.turn >= 1 && (input.resume === 'mentat' || input.resume === 'advance') &&
     ids(input.order) && input.order.length >= 2 && input.order.length <= 6 &&
     new Set(input.order).size === input.order.length,
-  'The shared victory agreement needs a current turn before turn ten and distinct seated players.');
+  'The shared victory agreement needs a positive safe turn and distinct seated players.');
   const order = [...input.order], sides = canonicalSides(order, input.sides);
   const voters = order.filter(player => sides.some(side => side.includes(player)));
   return { version: 1, event: input.event, turn: input.turn, resume: input.resume,
@@ -91,7 +91,7 @@ export function createVictoryContinuation(input: {
 export function validateVictoryContinuation(frame: VictoryContinuation): void {
   requireContinuation(record(frame) &&
     Object.keys(frame).sort().join(',') === 'accepted,event,extraStrongholds,order,resume,sides,turn,version,voters' &&
-    frame.version === 1 && id(frame.event) && Number.isSafeInteger(frame.turn) && frame.turn >= 1 && frame.turn <= 9 &&
+    frame.version === 1 && id(frame.event) && Number.isSafeInteger(frame.turn) && frame.turn >= 1 &&
     (frame.resume === 'mentat' || frame.resume === 'advance') &&
     ids(frame.order) && frame.order.length >= 2 && frame.order.length <= 6 &&
     new Set(frame.order).size === frame.order.length && ids(frame.voters) && ids(frame.accepted),

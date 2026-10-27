@@ -1149,7 +1149,7 @@ export function GameTable({
             automaticSequence: automaticEvents.reduce((last, entry) => Math.max(last, entry.seq), -1),
           }} />
           <span className="status-dot" />
-          {g.status === 'lobby' ? 'Gathering players' : `Turn ${g.turn} / 10`}
+          {g.status === 'lobby' ? 'Gathering players' : `Turn ${g.turn} / ${g.victoryFinalTurn}`}
           <span className="build-revision" title={buildRevision}>
             Git revision: <code>{buildRevisionLabel}</code>
           </span>

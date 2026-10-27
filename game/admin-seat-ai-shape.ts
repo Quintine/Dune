@@ -191,7 +191,11 @@ const responses = {
 /** Bounded core/continuation shape check, not a complete save or rules certification.
  * Optional modules retain their own engine validators; do not assume fixed inventories. */
 export function adminSeatAiCoreShape(value: unknown): boolean {
-  if (!record(value) || value.schema !== 1 || !count(value.turn) || value.turn < 1 || value.turn > 10 ||
+  if (!record(value) || value.schema !== 1 || !count(value.turn) || value.turn < 1 ||
+      (value.victoryFinalTurn !== undefined &&
+        (!(typeof value.victoryFinalTurn === 'number' && Number.isSafeInteger(value.victoryFinalTurn)) || value.victoryFinalTurn < 10 ||
+          value.victoryFinalTurn < value.turn)) ||
+      (value.turn > 10 && value.victoryFinalTurn === undefined) ||
       !count(value.phase) || value.phase >= PHASES.length || !sector(value.storm) ||
       !Array.isArray(value.players) || value.players.length < 1 || value.players.length > 6 ||
       (['setup', 'playing'].includes(String(value.status)) && value.players.length < 2)) return false;

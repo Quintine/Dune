@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 27 October 2026 — Basic agreements and extended victory calendar
+
+The publisher FAQ agreement now applies to multiple qualifying Basic sides,
+and equal highest Advanced solos can also agree. A saved final-turn marker
+permits an agreed turn eleven and subsequent extensions; the shifted Fremen
+endgame check is provisional. The affected 11-file union passes 121 cases and
+the production build passes. A controlled turn-ten source continued through
+native turn-eleven actions to Mentat; no battle occurred in that smoke. Broader
+combinations and deployed acceptance remain open.
+[Scope](ADVANCED_PREVIEW.md#simultaneous-victories).
+
 ## 27 October 2026 — Advanced simultaneous-victory continuation
 
 Before turn ten, multiple qualifying sides including an alliance may

@@ -132,12 +132,15 @@ void test('zero-increase agreement preserves ordinary targets for the next turn'
   assert.equal(progress.find(row => row.player === 'at')?.target, 4);
 });
 
-void test('Basic, one qualifying side and the turn-ten boundary retain their native victory outcome', () => {
-  for (const options of [{ advanced: false }, { onlyAlliance: true }, { turn: 10 }] as const) {
-    const game = reachMentat(position(options));
-    assert.equal(game.status, 'finished'); assert.ok(game.winner.length > 0);
-    assert.ok(!game.victoryContinuation);
-  }
+void test('Basic multiple qualifiers can agree while one qualifying side still wins directly', () => {
+  const basic = reachMentat(position({ advanced: false }));
+  assert.equal(basic.status, 'playing');
+  assert.ok(basic.victoryContinuation);
+  const settled = act(basic, basic.victoryContinuation.voters[0], 'finish');
+  assert.equal(settled.status, 'finished');
+  const single = reachMentat(position({ onlyAlliance: true }));
+  assert.equal(single.status, 'finished'); assert.ok(single.winner.length > 0);
+  assert.ok(!single.victoryContinuation);
 });
 
 void test('all four minimal bot profiles produce a legal response for the public continuation', () => {

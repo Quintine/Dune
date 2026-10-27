@@ -1,4 +1,5 @@
 import type { Game, Player } from './engine';
+import { victoryFinalTurn, VictoryCalendarError } from './victory-calendar';
 import { FACTIONS } from './catalog';
 import { gameTerritories, validLocation } from './board';
 import { fighterCount } from './advisors';
@@ -37,7 +38,7 @@ const record = (value: unknown): value is Record<string, unknown> =>
 export type VictoryContext = Omit<BoardContext, 'players'> &
   Pick<
     Game,
-    'turn' | 'phase' | 'status' | 'winner' | 'techTokens' | 'strongholdCards' | 'victoryExtraStrongholds'
+    'turn' | 'phase' | 'status' | 'winner' | 'techTokens' | 'strongholdCards' | 'victoryExtraStrongholds' | 'victoryFinalTurn'
   > & {
     players: readonly (BoardSeat & Pick<Player, 'prediction'>)[];
   };
@@ -55,11 +56,16 @@ export type VictoryQuote = {
  * This preserves the existing victory order, including the distinct final-turn
  * Fremen/Guild fallbacks. It does not advance a turn or settle other phase work. */
 export function quoteVictory(g: VictoryContext, ecazContext?: EcazHomeworldVictoryContext): VictoryQuote {
+  let finalTurn: number;
+  try { finalTurn = victoryFinalTurn(g); }
+  catch (error) {
+    if (error instanceof VictoryCalendarError) throw new VictoryQuoteError(error.message);
+    throw error;
+  }
   requireVictory(
     (g.status === 'playing' || g.status === 'finished') &&
       whole(g.turn) &&
       g.turn >= 1 &&
-      g.turn <= 10 &&
       whole(g.phase) &&
       g.phase <= 8 &&
       typeof g.advanced === 'boolean' &&
@@ -197,7 +203,7 @@ export function quoteVictory(g: VictoryContext, ecazContext?: EcazHomeworldVicto
   if (ecazHomeworld) winner = [...new Set([...winner, ...ecazHomeworld.members])];
   if (predicted()) winner = [bg!.id];
   let status = g.status;
-  if (!winner.length && g.turn === 10) {
+  if (!winner.length && g.turn === finalTurn) {
     const fremen = players.find((p) => p.faction === 'fremen');
     const guild = players.find((p) => p.faction === 'guild');
     if (fremen && fremenSpecialVictory(g)?.qualifies)

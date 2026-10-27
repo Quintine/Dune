@@ -23,6 +23,20 @@ void test('allied rows are deduplicated and every qualifying member votes in pub
   validateVictoryContinuation(frame);
 });
 
+void test('distinct solo sides may agree in turn ten and in a later extended turn', () => {
+  for (const turn of [10, 11]) {
+    const frame = createVictoryContinuation({ event: `victory:${turn}`, turn, resume: 'advance',
+      order: ['a', 'b', 'c'], sides: [['c'], ['a']] });
+    assert.deepEqual(frame.sides, [['a'], ['c']]);
+    assert.deepEqual(frame.voters, ['a', 'c']);
+    const first = voteVictoryContinuation(frame, { event: frame.event, player: 'a', choice: 'continue', extraStrongholds: 1 });
+    assert.equal(first.outcome, 'pending');
+    if (first.outcome === 'pending')
+      assert.deepEqual(voteVictoryContinuation(first.frame, { event: frame.event, player: 'c', choice: 'continue' }),
+        { outcome: 'continue', extraStrongholds: 1 });
+  }
+});
+
 for (const extra of [0, 3, MAX_VICTORY_EXTRA_STRONGHOLDS]) void test(
   `the exact shared proposal of ${extra} extra strongholds requires every qualifier's acceptance`, () => {
     const initial = source(), original = structuredClone(initial);
@@ -73,10 +87,10 @@ void test('stale events, non-voters and unauthorized proposal changes reject wit
 
 void test('unsupported source profiles and forged saved receipts are rejected', () => {
   const frame = source(), snapshot = structuredClone(frame);
-  assert.throws(() => createVictoryContinuation({ event: 'turn10', turn: 10, resume: 'mentat',
+  assert.throws(() => createVictoryContinuation({ event: 'invalid', turn: 0, resume: 'mentat',
     order: ['a', 'b', 'c'], sides: [['a', 'b'], ['c']] }), VictoryContinuationError);
-  assert.throws(() => createVictoryContinuation({ event: 'solos', turn: 2, resume: 'mentat',
-    order: ['a', 'b'], sides: [['a'], ['b']] }), VictoryContinuationError);
+  assert.throws(() => createVictoryContinuation({ event: 'single', turn: 2, resume: 'mentat',
+    order: ['a', 'b'], sides: [['a']] }), VictoryContinuationError);
   assert.throws(() => createVictoryContinuation({ event: 'overlap', turn: 2, resume: 'mentat',
     order: ['a', 'b', 'c'], sides: [['a', 'b'], ['b', 'c']] }), VictoryContinuationError);
   for (const forged of [
@@ -84,7 +98,7 @@ void test('unsupported source profiles and forged saved receipts are rejected', 
     { ...frame, accepted: ['c'], extraStrongholds: 0 },
     { ...frame, voters: ['a', 'd'] },
     { ...frame, sides: [['a', 'c'], ['a', 'd']] },
-    { ...frame, turn: 10 },
+    { ...frame, turn: 0 },
     { ...frame, accepted: ['a', 'c', 'd'], extraStrongholds: 0 },
     { ...frame, extra: true },
   ]) assert.throws(() => validateVictoryContinuation(forged as VictoryContinuation), VictoryContinuationError);

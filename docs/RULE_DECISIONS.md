@@ -9,28 +9,41 @@ counts before applying Bene Gesserit prediction. Equal counts provisionally
 share the win. The existing three-Tech-token stronghold equivalent is counted
 as one in this comparison; this composition is provisional. Competition with
 a qualifying alliance or the separate Ecaz Homeworld victory retains the
-existing shared-winner treatment. Basic and recorded winners retain their
-existing behavior.
+existing shared-winner treatment. Basic keeps its shared-win ranking, and
+recorded winners retain their existing result.
 
-The same revision permits qualifying players or alliances to agree to play
-another turn and optionally raise the required stronghold count. In the
-provisional Advanced preview, a public agreement opens on turns 1–9 when at
-least two distinct sides qualify, including an alliance. Qualification is
-determined before a private Bene Gesserit prediction replaces an actual win.
-Every member of the qualifying sides votes in public storm order: the first
-may finish or propose continuation with an integer increase from zero through
-20, and each remaining member accepts that exact proposal or finishes. The
-20-point input cap and sequential proposal procedure are software conventions,
-not printed limits. A finish decision settles the original result, including
-prediction; unanimous acceptance retains play without applying that result.
+The [GF9 November 2020 FAQ, printed p. 1](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=1)
+permits qualifying players or alliances to agree to play another full turn and
+optionally raise the required stronghold count. The supplied Advanced revision,
+physical p. 14 (printed p. 12), contains the same option. In the provisional
+online implementation, Basic opens a public agreement when at least two
+distinct sides qualify; Advanced first ranks unequal unallied qualifiers as
+above, and offers an agreement to equal highest solos or other qualifying
+distinct sides. Qualification is determined before a private Bene Gesserit
+prediction replaces an actual win. Every member of the qualifying sides votes
+in public storm order: the first may finish or propose continuation with an
+integer increase from zero through 20, and each remaining member accepts that
+exact proposal or finishes. The voter scope, 20-point input cap and sequential
+proposal procedure are software conventions, not printed limits. A finish
+decision settles the original result, including prediction; unanimous acceptance
+retains play without applying that result.
 
 An agreed increase adds to the ordinary solo and alliance stronghold targets.
 It does not alter independent Ecaz joint-occupation or Homeworld special-victory
 conditions under this provisional composition. The original Mentat opportunity
-resumes, or the completed CHOAM end-of-Mentat continuation advances once.
-Turn-ten extension, equal-solo-only agreements and broader special-victory
-composition remain unfinished. This does not certify Advanced victory or
-release acceptance. [Preview](ADVANCED_PREVIEW.md#simultaneous-victories).
+resumes, or the completed CHOAM end-of-Mentat continuation advances once. Older
+games without a saved `victoryFinalTurn` retain turn ten as their final turn. A
+unanimous agreement on that final turn provisionally moves it one turn later; a
+further agreement may move it again. An earlier agreement leaves the existing
+final turn unchanged. For this online composition, the Fremen and Guild final
+victory checks move to the agreed final turn. That is provisional: the supplied
+Fremen sheet, physical p. 32 (printed p. 29), names the end of turn ten, while
+the Guild sheet, physical p. 37 (printed p. 34), refers to the end of play.
+Neither source supplies a worked example reconciling that wording with an
+agreed extra turn. Broader special-victory composition and full natural
+extended-turn verification remain unfinished. This does not certify complete
+victory rules or release acceptance.
+[Preview](ADVANCED_PREVIEW.md#simultaneous-victories).
 
 ## Juice of Sapho and an already-started Advanced movement turn — 27 October 2026
 

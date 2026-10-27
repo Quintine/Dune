@@ -55,7 +55,27 @@ void test('equal qualified Advanced solo stronghold counts still share the win',
   g.players[0].forces['hidden_mobile_stronghold:0'] = 1;
   holds(g, 'at', 'sietch_tabr', 'tueks_sietch', 'habbanya_ridge_sietch');
   assert.deepEqual(quoteVictory(g).winner, ['ix', 'at']);
-  assert.deepEqual(actual(g).winner, ['ix', 'at']);
+  const offered = actual(g);
+  assert.ok(offered.victoryContinuation);
+  const settled = applyAction(offered, offered.victoryContinuation.voters[0], {
+    type: 'victoryContinuation', event: offered.victoryContinuation.event, mode: 'finish',
+  });
+  assert.deepEqual(settled.winner, ['ix', 'at']);
+});
+
+void test('equally ranked Advanced solos may unanimously continue instead of sharing victory', () => {
+  const g = position();
+  holds(g, 'ix', 'arrakeen', 'carthag');
+  g.players[0].forces['hidden_mobile_stronghold:0'] = 1;
+  holds(g, 'at', 'sietch_tabr', 'tueks_sietch', 'habbanya_ridge_sietch');
+  let offered = actual(g);
+  assert.deepEqual(offered.victoryContinuation?.voters, ['ix', 'at']);
+  const event = offered.victoryContinuation!.event;
+  offered = applyAction(offered, 'ix', { type: 'victoryContinuation', event, mode: 'continue', extra: 1 });
+  offered = applyAction(offered, 'at', { type: 'victoryContinuation', event, mode: 'accept' });
+  assert.equal(offered.status, 'playing');
+  assert.equal(offered.victoryExtraStrongholds, 1);
+  assert.deepEqual(offered.winner, []);
 });
 
 void test('the complete Tech set is one extra stronghold for comparing qualified solos', () => {
@@ -75,7 +95,12 @@ void test('Basic retains its existing shared-win policy for unequal qualified so
   holds(g, 'at', 'tueks_sietch', 'habbanya_ridge_sietch');
   tech(g, 'at');
   assert.deepEqual(quoteVictory(g).winner, ['ix', 'at']);
-  assert.deepEqual(actual(g).winner, ['ix', 'at']);
+  const offered = actual(g);
+  assert.ok(offered.victoryContinuation);
+  const settled = applyAction(offered, offered.victoryContinuation.voters[0], {
+    type: 'victoryContinuation', event: offered.victoryContinuation.event, mode: 'finish',
+  });
+  assert.deepEqual(settled.winner, ['ix', 'at']);
 });
 
 void test('a qualifying alliance and solo still share an Advanced win regardless of their totals', () => {
