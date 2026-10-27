@@ -376,7 +376,7 @@ void test('already-authenticated old actions and reads are fenced even at the la
     // Deliberately supply the fresh version: version protection alone must not pass this request.
     await assert.rejects(
       rooms.act(code, oldAuth, recovered.view.version, { type: 'ready' }),
-      /Another action/,
+      /Your seat could not be verified\./,
     );
     await assert.rejects(rooms.readSeatView(code, oldAuth), /verified/);
     const newAuth = await rooms.authenticate(code, body.newSessionToken);
@@ -715,7 +715,7 @@ void test('SQLite recovery distinct concurrent claims fence the loser and never 
     );
     await assert.rejects(
       f.rooms.act(f.code, winningAuth, later.view.version, { type: 'ready' }),
-      /Another action/,
+      /Your seat could not be verified\./,
     );
     assert.equal(custodySnapshot(f.sqlite), afterLater);
     assert.equal(
