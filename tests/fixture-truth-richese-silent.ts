@@ -4,12 +4,13 @@ import {
   actTruthtranceRichesePromises as act,
   advanceTruthtranceRichesePromises as advance,
   createTruthtranceRichesePromisesFixture,
+  passTruthRicheseFreshDiscard,
   truthtranceRichesePromisesClean as clean,
   truthtranceRichesePromisesInventory as inventory,
   truthtranceRichesePromisesPlayer as player,
 } from './fixture-truthtrance-richese-promises';
 
-export { act, inventory, player };
+export { act, inventory, player, passTruthRicheseFreshDiscard };
 
 /** Original public Basic/Advanced Richese/Atreides/Emperor setup, genuine
  * Charity prefix and actual first Silent cache declaration. The parent fixture
@@ -45,7 +46,7 @@ export function askTruthRicheseSilent(f: TruthRicheseSilentFixture, minimum = 4,
 export function bindTruthRicheseSilent(f: TruthRicheseSilentFixture, answer: 'yes'|'no', minimum = 4, source = f.game) {
   const asked = askTruthRicheseSilent(f, minimum, source);
   assert.ok(viewGame(asked, f.target).truthRicheseBidAnswers?.includes(answer));
-  return { asked, game:act(asked, f.target, {type:'truthAnswer', answer}) };
+  return { asked, game:passTruthRicheseFreshDiscard(act(asked, f.target, {type:'truthAnswer', answer})) };
 }
 export function rejectTruthRicheseSilent(game: Game, actor: string, action: Action) {
   const before = structuredClone(game);

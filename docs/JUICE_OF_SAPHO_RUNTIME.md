@@ -1,5 +1,33 @@
 # Juice of Sapho: finite ordering implementation
 
+## Truthtrance order in Richese cache auctions — 27 October 2026
+
+**Prototyped / Partial.** The possession-independent public response following
+simultaneous Truthtrance declarations also opens in a clean live Richese cache
+Once Around or Silent lot. It preserves the original offered card, standing bid
+or sealed submissions, bidder order, funding, escrow and aid while the ordered
+questions finish, then returns to the same auction. Silent amounts stay private
+until the native reveal. The response does not inspect who holds Sapho.
+
+In the supported Basic Semuta preview, a fresh-discard claim or pass can suspend
+the question queue after Sapho is used or after a subsequent definite
+Truthtrance answer consumes its card. These new continuations bind the original
+cache event and parent; old receipts without the new marker retain their prior
+signature shape. This does not certify historical recovery or wider combinations.
+
+The FAQ and Sapho face establish their individual rules, but not their relative
+precedence; this combined timing remains provisional. Black Market, Ix lots,
+battle, nested response windows and broader modules remain open. Browser and
+deployed acceptance are also open.
+
+Basic and Advanced runtime fixtures start a native funded cache lot, then use
+explicitly labeled, conserved exchanges for cached Sapho and optional Semuta,
+plus an undealt Truth placed in a vacant hand slot. They do not represent Sapho
+as an earned purchase. Runtime and server-rendered controls exercise Once
+Around and Silent continuations, private sealed views and physical inventory.
+Sixteen related files pass 165/165; type/lint, build and 55/55 isolated local
+HTTP integration tests pass.
+
 ## Truthtrance order in ordinary bidding — 27 October 2026
 
 **Prototyped / Partial.** The public Sapho response after simultaneous
@@ -14,7 +42,7 @@ The physical Sapho cost must retain an earlier whole-turn answer. Detached
 feasibility quotes reserve the actually queued Truth cards; they cannot be
 borrowed as generic Distrans payloads after the live window is temporarily
 removed from a forecast. This is a conservative guarantee, not a new publisher
-ruling. Special auctions, battle, nested response windows and broader modules
+ruling. Other special auctions, battle, nested response windows and broader modules
 remain outside this slice. The FAQ and Sapho face establish the individual
 rules; their relative order remains a provisional implementation choice.
 
@@ -52,8 +80,8 @@ neutral Semuta reaction and suspends the Truth window; claim/pass restores the
 same queued event or proceeds to the first question when the last holder used
 Sapho. The full parent signature, original queue and physical card custody are
 checked without replaying the effect. The original scope excluded live auctions
-and battle; the ordinary-auction extension above now applies. Battle, special
-auctions, active pending responses/preparations and broader Semuta/module
+and battle; the ordinary and cache-auction extensions above now apply. Battle,
+other special auctions, active pending responses/preparations and broader Semuta/module
 profiles remain open rather than treating the restriction as printed rules. Wider repeated-card combinations, browser, deployed and complete-mode
 acceptance remain open.
 

@@ -6,7 +6,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { viewGame, type Action, type Game, type GameView } from '../game/engine';
 import { RicheseBidPromiseGuide } from '../components/richese-bid-promise-panel';
-import { act, inventory, createTruthRicheseSilentFixture, askTruthRicheseSilent } from './fixture-truth-richese-silent';
+import { act, inventory, passTruthRicheseFreshDiscard, createTruthRicheseSilentFixture, askTruthRicheseSilent } from './fixture-truth-richese-silent';
 
 const aliases = registerHooks({
   resolve(specifier, context, next) {
@@ -68,7 +68,7 @@ for (const advanced of [false, true]) void test(
     assert.match(auction(respondent), /Silent auction/);
 
     for (const answer of ['yes', 'no'] as const) {
-      let game = act(asked, f.target, {type:'truthAnswer', answer});
+      let game = passTruthRicheseFreshDiscard(act(asked, f.target, {type:'truthAnswer', answer}));
       const own = viewGame(game, f.target), sent: Action[] = [];
       assert.ok(own.richeseBidPromises.some(row => row.player === f.target && row.answer === (answer === 'yes')));
       assert.ok(own.richeseBidPromiseGuide);

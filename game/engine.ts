@@ -1626,6 +1626,8 @@ export type Game = {
           revision: number;
           mode: 'first' | 'last';
           truth: TruthWindow;
+          /** Present only on new supported Richese cache continuations. */
+          richeseLotEvent?: string;
           resume: NonNullable<Game['pendingNullentropy']>['resume'];
           stateSignature: string;
         }
@@ -1823,6 +1825,8 @@ export type Game = {
           historyIndex: number;
           record: TruthRecord;
           remaining: TruthWindow | null;
+          /** Absent on older saved Truth discard receipts. */
+          richeseLotEvent?: string;
           resume: NonNullable<Game['pendingNullentropy']>['resume'];
           promise:
             | { kind: 'shipment'; index: number; value: ShipmentPromise }
@@ -5911,7 +5915,9 @@ function saphoTruthOrderDiscardSignature(g: Game, c: SaphoTruthOrderDiscardConti
     order:g.order,active:g.active,
     // Older clean-parent receipts omit these fields; only an actual ordinary
     // auction adds a binding to its original lot and pledged funding.
-    ...(g.auction ? {auction:g.auction,aid:g.aid} : {})});
+    ...(g.auction ? {auction:g.auction,aid:g.aid} : {}),
+    ...(c.richeseLotEvent ? {richeseLotEvent:c.richeseLotEvent,richeseAuction:g.richeseAuction,
+      richeseBidding:g.richeseBidding,richeseFunding:g.richeseFunding,richeseCache:g.richeseCache,aid:g.aid} : {})});
 }
 type SaphoMovementDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -7121,6 +7127,8 @@ function truthtranceDiscardSignature(g: Game, next: TruthDiscardContinuation) {
     setupStage: g.setupStage,
     auction: g.auction,
     richeseAuction: g.richeseAuction,
+    ...(next.richeseLotEvent ? {richeseLotEvent:next.richeseLotEvent,richeseBidding:g.richeseBidding,
+      richeseFunding:g.richeseFunding,richeseCache:g.richeseCache,aid:g.aid,richeseBidPromises:g.richeseBidPromises} : {}),
     currentAuctionSale: g.currentAuctionSale,
     ornithopter: g.ornithopter,
     spiceWindow: g.spiceWindow,
@@ -7186,6 +7194,7 @@ function finishTruthtranceAnswer(g: Game) {
     historyIndex,
     record,
     remaining,
+    ...(supportedRicheseTruthLot(g) ? {richeseLotEvent:g.richeseAuction!.event} : {}),
     resume,
     promise,
     parentSignature: '',
@@ -7572,6 +7581,7 @@ function treacheryDiscardIntegrity(g: Game) {
       entry.discardedBy === c.player && entry.card.id === c.card &&
       richeseCardDefinition(entry.card)?.card.effect === 'juiceOfSapho' &&
       !c.resume.response && !c.resume.decision && !c.resume.pendingKarama && !c.resume.phaseOpening &&
+      (!c.richeseLotEvent || supportedRicheseTruthLot(g) && g.richeseAuction?.event === c.richeseLotEvent) &&
       truth && truth.question === null && (truth.stage === 'order' || truth.stage === 'ask') &&
       truth.queue.length > 0 && new Set(truth.queue.map(row => row.card)).size === truth.queue.length &&
       truth.queue.every(row => queuedTruthCardMatches(g.players.find(player => player.id === row.player)?.hand ?? [],row)) &&
@@ -8079,6 +8089,8 @@ function treacheryDiscardIntegrity(g: Game) {
       'The consumed Truthtrance does not match its completed answer history.',
     );
     const remaining = c.remaining;
+    requireRule(!c.richeseLotEvent || supportedRicheseTruthLot(g) && g.richeseAuction?.event === c.richeseLotEvent,
+      'The completed Truthtrance no longer matches its original Richese cache lot.');
     requireRule(
       remaining === null ||
         (remaining &&
@@ -8722,6 +8734,12 @@ function treacheryDiscardIntegrity(g: Game) {
 /** Bounded public single-card reaction after completed effects. Battle cleanup
  * preserves the original winner queue and bounded native retention/rewards without replaying them.
  * Basic ordinary entry discards retain their ordered Ambassador/Terror parent. */
+function supportedRicheseTruthLot(g: Game): boolean {
+  const lot = g.richeseAuction;
+  return g.phase === 3 && !!lot && lot.source === 'cache' &&
+    (lot.method === 'onceAround' || lot.method === 'silent') && !lot.outcome &&
+    !g.currentAuctionSale && !g.auction && !g.ixAuction;
+}
 function semutaOfferSupported(
   g: Game,
   continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -8733,6 +8751,9 @@ function semutaOfferSupported(
   const ordinaryAuctionDiscard = g.phase === 3 && !!g.auction && !g.richeseAuction && !g.currentAuctionSale &&
     (continuation.kind === 'truthtranceDiscard' || continuation.kind === 'distransDiscard' ||
       continuation.kind === 'saphoTruthOrderDiscard');
+  const richeseTruthDiscard = supportedRicheseTruthLot(g) &&
+    (continuation.kind === 'truthtranceDiscard' || continuation.kind === 'saphoTruthOrderDiscard') &&
+    !!continuation.richeseLotEvent && continuation.richeseLotEvent === g.richeseAuction?.event;
   const richeseGiftDiscard = continuation.kind === 'karamaRicheseGiftDiscard';
   const richeseDiscard = richeseGiftDiscard || continuation.kind === 'karamaRicheseAuctionDiscard';
   const auctionAdvantageDiscard = continuation.kind === 'karamaAuctionAdvantageDiscard';
@@ -9062,7 +9083,7 @@ function semutaOfferSupported(
     (advisorDiscard || auctionCostDiscard || bonusDiscard || auctionAdvantageDiscard || richeseGiftDiscard || bgDiscard || continuation.kind === 'specialKaramaDiscard' || continuation.kind === 'saphoAuctionDiscard' ||
       continuation.kind === 'ixAllyCard' ||
       (continuation.kind === 'karamaIncomeDiscard' &&
-        continuation.use.response.kind === 'emperorIncome') || !g.richeseAuction) &&
+        continuation.use.response.kind === 'emperorIncome') || richeseTruthDiscard || !g.richeseAuction) &&
     (richeseGiftDiscard || combatDiscard || alliedTraitorDiscard || occupyDiscard || continuation.kind === 'saphoAggressorDiscard' ||
       bgDiscard ||
       continuation.kind === 'specialKaramaDiscard' ||
@@ -26457,7 +26478,9 @@ function saphoTruthOrderSemutaSupported(g: Game,p: Player,card: string,mode: 'fi
     w.queue = result.queue;
     if (result.done) { delete w.order; w.stage = 'ask'; } else w.order = result.frame;
     const c: SaphoTruthOrderDiscardContinuation = {kind:'saphoTruthOrderDiscard',player:p.id,card:used.id,
-      event,revision,mode,truth:structuredClone(w),resume:{response:trial.response,decision:trial.decision,
+      event,revision,mode,truth:structuredClone(w),
+      ...(supportedRicheseTruthLot(trial) ? {richeseLotEvent:trial.richeseAuction!.event} : {}),
+      resume:{response:trial.response,decision:trial.decision,
         pendingKarama:trial.pendingKarama,phaseOpening:trial.phaseOpening},stateSignature:''};
     trial.truthtrance = null; trial.response = null; trial.decision = null;
     trial.pendingKarama = null; trial.phaseOpening = null;
@@ -26494,7 +26517,9 @@ function playSaphoTruthOrder(g: Game,p: Player,action: Action) {
   if (g.semutaPreview) {
     const c: SaphoTruthOrderDiscardContinuation = {kind:'saphoTruthOrderDiscard',player:p.id,card:used.id,
       event:action.event as string,revision:action.revision as number,mode:action.mode as 'first'|'last',
-      truth:structuredClone(w),resume:{response:g.response,decision:g.decision,pendingKarama:g.pendingKarama,phaseOpening:g.phaseOpening},
+      truth:structuredClone(w),
+      ...(supportedRicheseTruthLot(g) ? {richeseLotEvent:g.richeseAuction!.event} : {}),
+      resume:{response:g.response,decision:g.decision,pendingKarama:g.pendingKarama,phaseOpening:g.phaseOpening},
       stateSignature:''};
     g.truthtrance = null; g.response = null; g.decision = null; g.pendingKarama = null; g.phaseOpening = null;
     const entries = [{card:used,discardedBy:p.id,publicFace:true}];

@@ -1290,9 +1290,12 @@ export function resolveTruthAction(
     // decision to open it never inspects who holds Juice of Sapho.
     const ordinaryLot = g.phase === 3 && !!g.auction?.cards[g.auction.index] &&
       !!g.auction.active && !g.currentAuctionSale && !g.ixAuction;
+    const richeseCacheLot = g.phase === 3 && !!g.richeseAuction && g.richeseAuction.source === 'cache' &&
+      (g.richeseAuction.method === 'onceAround' || g.richeseAuction.method === 'silent') &&
+      !g.richeseAuction.outcome && !g.currentAuctionSale && !g.auction && !g.ixAuction;
     const clean = g.status === 'playing' && g.expansions.includes('choam') && !g.response && !g.decision && !g.phaseOpening &&
       !g.pendingKarama && !g.pendingTreacheryDiscard && !g.pendingNullentropy && (!g.auction || ordinaryLot) &&
-      !g.richeseAuction && !g.battle && !g.pendingRevival && !g.pendingShipment &&
+      (!g.richeseAuction || richeseCacheLot) && !g.battle && !g.pendingRevival && !g.pendingShipment &&
       !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingChoamMove &&
       !g.pendingIxMove && !g.pendingFremenMove && !g.pendingExchange && !g.pendingRicheseGift &&
       !g.karamaShipping && !g.ornithopter && !g.summonedWorm && g.wormRides.length === 0 &&

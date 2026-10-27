@@ -20,13 +20,26 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Sapho Truthtrance order in Richese cache auctions — 27 October. Prototyped / Partial.**
+The public question-order opportunity also opens during a clean Once Around or
+Silent cache lot. The same lot, bidder order, funding and aid continue after the
+questions. In the Basic Semuta preview, a claim or pass can suspend and resume
+both the Sapho discard and a later definite Truthtrance discard. Silent bids
+remain private until the normal reveal. The interaction's precedence remains a
+provisional interpretation; Black Market, Ix lots, battle, nested responses and
+broader combinations remain open. Sixteen related files pass 165/165; type/lint,
+build and 55/55 isolated local HTTP integration tests pass. Browser and deployed
+acceptance remain open.
+[Scope and source](JUICE_OF_SAPHO_RUNTIME.md#truthtrance-order-in-richese-cache-auctions--27-october-2026).
+
 **Sapho Truthtrance order during ordinary bidding — 27 October. Prototyped / Partial.**
 The public question-order opportunity now also interrupts a clean live ordinary
 auction. The original lot, bidder, standing bid, pledge and remaining clock
 resume without replay; a supported Semuta claim/pass retains the same parent.
 A card-cost forecast also protects earlier whole-turn commitments and treats
-queued Truth cards as reserved rather than imaginary transfer payloads. Richese
-special lots, battle and nested parent windows remain open.
+queued Truth cards as reserved rather than imaginary transfer payloads. The
+Richese cache extension is described above; other special lots, battle and nested
+parent windows remain open.
 [Scope and source](JUICE_OF_SAPHO_RUNTIME.md#truthtrance-order-in-ordinary-bidding--27-october-2026).
 
 **Sapho Truthtrance question order — 27 October. Prototyped / Partial.**
@@ -36,7 +49,7 @@ of Sapho to move their whole question group first/last. Physical storm order,
 within-holder card order and the interrupted parent remain unchanged. A supported
 Basic Semuta discard reaction suspends and restores the same window; an earlier
 chosen boundary remains protected if Sapho is recovered and used again. The
-ordinary auction extension above now applies; special auctions, battle,
+auction extensions above now apply; other special auctions, battle,
 pending-parent and broader optional-module compositions remain open.
 Eleven affected files pass 137/137, type/lint and build pass, and 55/55 local
 integration tests pass on a separate verification server. Browser/deployed

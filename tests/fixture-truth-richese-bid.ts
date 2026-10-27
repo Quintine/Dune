@@ -4,12 +4,13 @@ import {
   actTruthtranceRichesePromises as act,
   advanceTruthtranceRichesePromises as advance,
   createTruthtranceRichesePromisesFixture,
+  passTruthRicheseFreshDiscard,
   truthtranceRichesePromisesClean as clean,
   truthtranceRichesePromisesInventory as inventory,
   truthtranceRichesePromisesPlayer as player,
 } from './fixture-truthtrance-richese-promises';
 
-export { act, advance, clean, inventory, player };
+export { act, advance, clean, inventory, player, passTruthRicheseFreshDiscard };
 
 /** Actual public R/A/E Basic or Advanced setup. The parent fixture selects only
  * unopened original deal/Spice positions and native scalar lotteries. Use its
@@ -60,7 +61,7 @@ export function bindTruthRicheseBid(f: TruthRicheseBidFixture, answer: 'yes' | '
   source = f.game, target = f.target) {
   const asked = askTruthRicheseBid(f, target, minimum, source);
   assert.ok(viewGame(asked, target).truthRicheseBidAnswers?.includes(answer));
-  const game = act(asked, target, { type: 'truthAnswer', answer });
+  const game = passTruthRicheseFreshDiscard(act(asked, target, { type: 'truthAnswer', answer }));
   return { game, asked };
 }
 export function rejectTruthRicheseBid(game: Game, actor: string, action: Action) {

@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Sapho Truthtrance order during Richese cache auctions — 27 October 2026
+
+Provisionally apply the simultaneous-question ordering response to a clean
+Once Around or Silent Richese cache lot. Preserve the native lot, opportunities,
+funding and aid while questions and supported Semuta reactions finish, and keep
+Silent amounts private until the normal reveal. The FAQ's storm-order instruction
+and the Sapho face establish the component rules but do not determine their
+precedence. Black Market, Ix lots, battle and nested windows remain separate.
+[Contract](JUICE_OF_SAPHO_RUNTIME.md#truthtrance-order-in-richese-cache-auctions--27-october-2026).
+
 ## Sapho Truthtrance order during ordinary bidding — 27 October 2026
 
 Provisionally extend the existing simultaneous-question ordering response to a

@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 27 October 2026 — Sapho Truthtrance order in Richese cache auctions
+
+Extend the public simultaneous-question ordering opportunity to clean live
+Once Around and Silent Richese cache lots. Preserve the original lot, bidder
+order, standing bid or sealed submissions, funding and aid through the queue;
+Silent amounts remain private until native reveal. In the Basic Semuta preview,
+claim/pass resumes the same parent after a Sapho discard or a later definite
+Truthtrance discard. Newly supported receipts bind the specific lot while older
+receipts retain their existing signature shape. This is a provisional interaction
+between the FAQ's storm-order rule and the inspected Sapho face, not a publisher
+clarification. Fixtures use a native funded cache lot and explicitly labeled,
+conserved cache/hand exchanges and undealt Truth placement; they do not claim
+that Sapho was purchased. Black Market, Ix lots, nested responses, battle, wider
+combinations, browser and deployed acceptance remain open. Sixteen related files
+pass 165/165; type/lint, build and 55/55 isolated local HTTP integration tests
+pass. Private proof is `20261027-sapho-truth-richese-proof-v2/`.
+[Contract](JUICE_OF_SAPHO_RUNTIME.md#truthtrance-order-in-richese-cache-auctions--27-october-2026).
+
 ## 27 October 2026 — Sapho Truthtrance order in ordinary bidding
 
 Permit the possession-independent Truth ordering opportunity in a clean live

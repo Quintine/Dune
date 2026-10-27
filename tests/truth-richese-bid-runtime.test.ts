@@ -4,7 +4,7 @@ import { viewGame } from '../game/engine';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import {
-  act, inventory, player, createTruthRicheseBidFixture, askTruthRicheseBid,
+  act, inventory, player, passTruthRicheseFreshDiscard, createTruthRicheseBidFixture, askTruthRicheseBid,
   bindTruthRicheseBid, rejectTruthRicheseBid as reject,
 } from './fixture-truth-richese-bid';
 
@@ -85,7 +85,7 @@ for (const advanced of [false, true]) {
       const answer = botActions(answerView)[0]; assert.ok(answer, difficulty);
       assert.equal(answer.type, 'truthAnswer');
       assert.ok(['yes', 'no'].includes(String(answer.answer)));
-      const bound = act(structuredClone(asked), f.target, answer);
+      const bound = passTruthRicheseFreshDiscard(act(structuredClone(asked), f.target, answer));
       const bidView = viewGame(bound, f.target);
       bidView.players.find(row => row.id === f.target)!.bot = difficulty;
       const guide = bidView.richeseBidPromiseGuide; assert.ok(guide, difficulty);

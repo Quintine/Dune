@@ -15,6 +15,20 @@ export type TruthtranceRichesePromisesTransition = {
 };
 export const actTruthtranceRichesePromises = actTruthMovement;
 export const truthtranceRichesePromisesClean = truthMovementClean;
+/** Pass the neutral Basic Semuta offer following a completed Truth discard.
+ * This uses real player actions rather than bypassing the continuation. */
+export function passTruthRicheseFreshDiscard(state: Game): Game {
+  let game = state;
+  for (let count = 0; game.pendingTreacheryDiscard?.reaction?.stage === 'offer' && count < game.players.length; count++) {
+    const pending = game.pendingTreacheryDiscard, reaction = pending.reaction!;
+    assert.equal(reaction.stage, 'offer');
+    if (reaction.stage !== 'offer') throw Error('The Semuta response must remain an offer');
+    const actor = game.players.find(row => !reaction.passed.includes(row.id)); assert.ok(actor);
+    game = actTruthtranceRichesePromises(game, actor.id, {type:'semutaPass', event:pending.batch.event});
+  }
+  assert.ok(!game.pendingTreacheryDiscard?.reaction || game.pendingTreacheryDiscard.reaction.stage !== 'offer');
+  return game;
+}
 export const truthtranceRichesePromisesPlayer = (game: Game, actor = 'richese') => truthMovementPlayer(game, actor);
 export function truthtranceRichesePromisesInventory(game: Game) {
   const start = (game.auction?.index ?? 0) + Number(game.currentAuctionSale?.origin === 'normal');

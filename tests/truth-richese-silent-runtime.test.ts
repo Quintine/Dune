@@ -3,7 +3,7 @@ import test from 'node:test';
 import { handLimit, normalizeAutomaticGame, viewGame } from '../game/engine';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
-import { act, inventory, player, createTruthRicheseSilentFixture, askTruthRicheseSilent,
+import { act, inventory, player, passTruthRicheseFreshDiscard, createTruthRicheseSilentFixture, askTruthRicheseSilent,
   bindTruthRicheseSilent, rejectTruthRicheseSilent as reject } from './fixture-truth-richese-silent';
 
 for (const advanced of [false, true]) {
@@ -59,7 +59,7 @@ for (const advanced of [false, true]) {
     assert.equal(viewGame(source, f.target).richeseAuction?.ownBid, null);
     const asked = askTruthRicheseSilent(f, 4, source);
     assert.ok(viewGame(asked, f.target).truthRicheseBidAnswers?.includes('yes'));
-    const bound = act(asked, f.target, {type:'truthAnswer', answer:'yes'});
+    const bound = passTruthRicheseFreshDiscard(act(asked, f.target, {type:'truthAnswer', answer:'yes'}));
     const guide = viewGame(bound, f.target).richeseBidPromiseGuide; assert.ok(guide);
     assert.equal(guide.action.amount, 4);
     const submitted = act(bound, f.target, guide.action);
@@ -84,7 +84,7 @@ for (const advanced of [false, true]) {
       const answer = botActions(answerView)[0]; assert.ok(answer, difficulty);
       assert.equal(answer.type, 'truthAnswer');
       assert.ok(['yes','no'].includes(String(answer.answer)));
-      const bound = act(structuredClone(asked), f.target, answer);
+      const bound = passTruthRicheseFreshDiscard(act(structuredClone(asked), f.target, answer));
       const bidView = viewGame(bound, f.target);
       bidView.players.find(row => row.id === f.target)!.bot = difficulty;
       const guide = bidView.richeseBidPromiseGuide; assert.ok(guide, difficulty);
