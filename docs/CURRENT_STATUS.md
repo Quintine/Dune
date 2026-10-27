@@ -20,6 +20,47 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Imperial Ornithopter / Homeworld movement — 27 October. Prototyped / Partial.**
+Native Kaitain/Salusa transfers may now be first/second groups alongside ground
+movement or another distinct World group. Actual normal/Sardaukar pools and
+original quotas prevent reuse after merging. Fresh flights stamp World-aware
+cohorts; the recorded older-flight inference preserves original board quotas.
+Range3 adds no World route; spending its replacement entitlement on an already
+permitted transfer is explicitly provisional. Native costs/permissions remain.
+Only completed two-group use earns the extra movement credit. One physical card
+is discarded through the appropriate arrival/no-arrival continuation; early end
+and actual later Hajr retain their own accounting. Imperial controls and minimal
+policies share the quoted adapter; full AI refinement remains deferred.
+[Source and contract](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#imperial-homeworld-movement--27-october-2026).
+
+Frozen **12-file union, 109/109**, types/lint/build and seven original programmes
+pass. Public Advanced R/E/A +CHOAM starts enable Homeworlds before Ready/start.
+Emperor actually buys the original cache Ornithopter for1, optionally ships one
+normal from Kaitain to Basin9 for2, and retains actual typed World stocks.
+An original dealt Hajr supplies the separate later move. World/ground in either
+order, two typed World groups, range3 native transfer, early ending and star-first
+movement preserve aggregate reserves/spice and dispose the card once.
+
+Runtime records28 GameTable SSR,14 Imperial panel renders,7 actual Finish
+callbacks and10 shared-adapter World packets; source/further arrays276/21.
+World selectors/count inputs/card buttons were not operated; those actions use
+the shared adapter/native packets. The stateful panels retain their actual zero
+defaults. No browser hydration/navigation or deployed claim. Shared flight rows
+now label World cohorts by name, avoiding Arrakis-sector parsing. No played
+hand, purse, army, World stock, phase, card or progress is installed. Legacy
+inference/replacement-first-group cases are controlled supplements; no old saved
+flight or native World-final Semuta/Skills journey is certified.
+
+Feedback added later legal World-card bot candidates while retaining shipment
+priority, repaired the rejection test's lossless snapshot and type annotations.
+Failed v1/v2 remains preserved; v3 verifies one frozen source then a recorded
+three-document evidence overlay. Proof:
+`/home/quintine/.local/share/dune/checkpoints/20261027-ornithopter-emperor-world-proof-v3/`;
+journeys/HTML: adjacent `20261027-ornithopter-emperor-world-runtime/run-v2/`.
+Existing server HTTP200, no restart or saved-game/database operation. Combined
+interpretations remain provisional. Broader modules, full modes and final
+rules/recovery/privacy/custody/browser/deployed acceptance remain open.
+
 **No-Field free Discovery entry — 27 October. Prototyped / Partial.**
 An owned concealed marker may now enter a newly revealed location at the
 original next-turn opportunity, alone or with separately selected physical

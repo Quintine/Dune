@@ -1,5 +1,70 @@
 # Richese Ornithopter: movement integration audit
 
+## Imperial Homeworld movement — 27 October 2026
+
+E3printed10 permits Advanced Emperor to use its Movement between Kaitain and
+Salusa; supplied Advanced physical22/printed20 explicitly calls it Force
+Movement of any number of own forces. The recorded physical card grants two
+normal movements with different forces. Under standing recommended-option
+authority, provisionally compose them: either group may be an independently
+legal Imperial transfer or ground move, in either order; both may be transfers.
+Normal and Sardaukar cohorts remain distinct across all three stores.
+
+Homeworlds are not territories. Range3 grants no route or range to them; spending
+its replacement entitlement on the independently permitted Imperial transfer is
+a separate explicit provisional composition. Targeted GF9/designer searching
+found no dedicated combined answer. The earlier photographed card contract is
+retained; its old crop was unavailable, so no fresh card-face reread is claimed.
+Native route permission and Homeworld Karama immunity stay (E3p10); no shipment
+or spice cost is added. Moving first retains the native passed-shipment rule.
+
+Fresh Imperial flights stamp `homeworldCohort:true` and snapshot actual typed
+board and native-World custody. Arriving moved counters never increase remaining
+quotas. An older unstamped active flight was created while World transfers were
+blocked; the selected compatibility interpretation treats its then-untouched
+native World pools as unmoved, without rebuilding its recorded board cohort.
+That inference is not historical-save certification. No reserve total creates a
+World force. An uncompleted first attempt needs no cohort until an actual first
+group commits; its current card event may use the native transfer once controls
+are clear.
+
+Both groups completing earns one existing extra-move credit; early ending earns
+none. A later actual Hajr has its own allowance and may reuse moved counters.
+Final World movement uses a distinct `homeworld` discard continuation, binds
+the actual World custody and discards the original card once without an Arrakis
+arrival replay or automatic turn end. Ground-final disposal retains its native
+arrival continuation. The Imperial panel and shared legal AI adapter expose
+both modes/current continuation with provisional guidance and typed maxima.
+Broader modules, native Semuta reaction journeys and full acceptance remain open.
+
+### Scoped native evidence
+
+Frozen12-file union109/109, types/lint/build and seven original programmes pass.
+Public Advanced R/E/A +CHOAM with Homeworld opt-in before Ready/start retains
+printed15 normal Kaitain/5 starred Salusa. Emperor buys original cache card1;
+optional real normal1 shipment2 creates Basin9 army and leaves14/5 native stocks.
+Original Hajr is actually dealt when selected. World→ground, ground→World,
+two typed Worlds, range3 native World, early end, later Hajr and star-first
+World→ground preserve aggregate stocks/spice, actual movement and single discard.
+
+Runtime records28 GameTable SSR,14 Imperial panels,7 actual Finish callbacks and
+10 shared-adapter World packets; source/further arrays276/21. World selectors,
+count inputs and card buttons were not operated; panels use their actual zero
+defaults, with World/ground/Hajr actions applied through adapter/native packets.
+Shared flight quota rows label Worlds by name. No played hand/purse/army/World
+stock/phase/card/progress is installed. Controlled cases separately cover older
+cohort inference, replacement first group and exact typed limits. Existing
+related Semuta paths pass; no native World-final Semuta/Skills or old saved-flight
+journey is claimed. Browser hydration/navigation, deployed and full combined-mode
+acceptance remain open.
+
+Feedback preserved shipment priority while adding later legal World-card bot
+choices, repaired lossless rejection snapshots and type annotations. Failed
+v1/v2 is preserved. V3 uses one frozen source followed by three-document evidence
+prose only. Existing server HTTP200, no restart or saved-game/database operation.
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-ornithopter-emperor-world-proof-v3/`;
+runtime: adjacent `20261027-ornithopter-emperor-world-runtime/run-v2/`.
+
 ## Planetologist movement composition — 26 October 2026
 
 Both physical modes now compose provisionally with either Planetologist

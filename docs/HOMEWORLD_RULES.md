@@ -145,6 +145,17 @@ No saved-room/D1/server, reset/restart, deployment or separate assurance campaig
 SSR/public actions do not certify browser/mobile/deployed acceptance, wider
 module combinations or complete modes; those remain open.
 
+## Physical Ornithopter and Imperial transfers — 27 October 2026
+
+The selected provisional composition now admits native Advanced Emperor
+Kaitain/Salusa Force Movement as either group of the physical card, alongside
+ground movement or another distinct typed World group. Range3 grants no World
+route; its use on an already-permitted native transfer is a separate provisional
+replacement-entitlement interpretation. Exact current and original normal/starred
+pools, native permission, zero spice cost, one movement per actual group and
+single physical discard remain. Early ending earns no extra group credit;
+actual later Hajr is independent. [Source, controls and limits](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#imperial-homeworld-movement--27-october-2026).
+
 ## Clean Homeworlds and phase modules — 26 October 2026
 
 Fresh clean Homeworld starts now use registered classic or selected-family

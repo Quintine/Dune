@@ -5,6 +5,9 @@ import type { Action, GameView } from '@/game/engine';
 import { faction } from '@/game/catalog';
 import { HOMEWORLD_CARDS } from '@/game/homeworld-cards';
 import type { NativeReserveSelections } from '@/game/homeworld-native-reserves';
+import { emperorHomeworldMoveAction } from '@/game/homeworld-options';
+import type { EmperorHomeworldMove } from '@/game/homeworld-emperor-move';
+import { imperialFlightCohort } from '@/game/ornithopter-homeworld';
 import { HomeworldFace } from './homeworld-cards';
 import { EcazPoisonIncome } from './ecaz-poison-income';
 import { Button } from './ui/button';
@@ -148,7 +151,7 @@ export function EmperorHomeworldMovement({
   act: (action: Action) => void;
   busy: boolean;
 }) {
-  const [origin, setOrigin] = useState('homeworld:emperor');
+  const [origin, setOrigin] = useState<EmperorHomeworldMove['origin']>('homeworld:emperor');
   const [normal, setNormal] = useState(0);
   const [elite, setElite] = useState(0);
   const option = g.homeworldMove;
@@ -156,9 +159,22 @@ export function EmperorHomeworldMovement({
   if (!option || !homes || homes.length !== 2) return null;
   const source = homes.find((w) => w.id === origin)!;
   const destination = homes.find((w) => w.id !== origin)!;
-  const available = source.forces[g.me];
+  const active = g.ornithopter?.active;
+  let available = source.forces[g.me];
+  if (active?.mode === 'twoGroups' && active.completed === 1 && active.cohort) {
+    try {
+      const cohort = imperialFlightCohort(active.cohort, active.homeworldCohort === true, homes, g.me);
+      available = { normal: Math.min(available.normal, (cohort.forces[origin] ?? 0) - (cohort.elites[origin] ?? 0)),
+        elite: Math.min(available.elite, cohort.elites[origin] ?? 0) };
+    } catch { available = { normal: 0, elite: 0 }; }
+  }
+  const order: EmperorHomeworldMove = { origin, forces: { normal, elite } };
+  const move = emperorHomeworldMoveAction(g, order);
+  const cardMoves = active ? [] : (['range3', 'twoGroups'] as const).map(mode => ({ mode,
+    action: emperorHomeworldMoveAction(g, order, mode) }));
   const name = (id: string) =>
     id === 'homeworld:emperor' ? 'Kaitain' : 'Salusa Secundus';
+  const disabled = busy || !!option.blocked || !!g.players.find(player => player.id === g.me)?.autopilot;
   const invalid =
     !Number.isSafeInteger(normal) ||
     !Number.isSafeInteger(elite) ||
@@ -177,16 +193,27 @@ export function EmperorHomeworldMovement({
         Costs one movement and no spice. Moving first passes your unused
         shipment.
       </p>
+      {g.ornithopter && <p className="fine">
+        Provisional Ornithopter composition: the native Kaitain–Salusa route and no-spice cost stay unchanged.
+        Range three gives no extra World range or new route. Two groups must use different original typed
+        counters; a World group may be paired with a ground group. Existing shipment history and completed
+        movement stay recorded. {active ? 'The card is already on the table; continue its current flight.'
+          : 'Play the held physical card with the first group.'}
+      </p>}
+      {active && <p className="fine">
+        Ornithopter: {active.completed} group moved · {active.remaining} remaining.
+        Select only original unmoved normal forces or Sardaukar for the next group.
+      </p>}
       {option.blocked && (
         <output className="notice block">{option.blocked}</output>
       )}
-      <fieldset disabled={busy || !!option.blocked} className="space-y-3">
+      <fieldset disabled={disabled} className="space-y-3">
         <label className="block">
           From
           <select
             value={origin}
             onChange={(e) => {
-              setOrigin(e.target.value);
+              setOrigin(e.target.value as EmperorHomeworldMove['origin']);
               setNormal(0);
               setElite(0);
             }}
@@ -227,19 +254,16 @@ export function EmperorHomeworldMovement({
         </p>
         <Button
           className="game-action"
-          disabled={invalid || busy || !!option.blocked}
-          onClick={() =>
-            act({
-              type: 'emperorHomeworldMove',
-              event: option.event,
-              origin,
-              normal,
-              elite,
-            })
-          }
+          disabled={invalid || disabled || !move}
+          onClick={() => { if (!disabled && !invalid && move) act(move); }}
         >
-          Move to {name(destination.id)}
+          {active ? 'Move next Ornithopter group to' : 'Move to'} {name(destination.id)}
         </Button>
+        {!active && g.ornithopter && cardMoves.map(({ mode, action }) => <Button key={mode}
+          className="game-action" disabled={invalid || disabled || !action}
+          onClick={() => { if (!disabled && !invalid && action) act(action); }}>
+          Play Ornithopter ({mode === 'range3' ? 'range three' : 'two groups'}) and move to {name(destination.id)}
+        </Button>)}
       </fieldset>
     </details>
   );

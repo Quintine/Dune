@@ -17,6 +17,9 @@ import {
   quoteNativeReserveWithdrawal,
   type NativeReserveSelections,
 } from './homeworld-native-reserves';
+import { imperialFlightPools, imperialFlightCohort } from './ornithopter-homeworld';
+import { validateCohortSelection, type OrnithopterMode } from './ornithopter';
+import { richeseCardDefinition } from './richese-cards';
 
 /** Reconstitute only the public physical custody accepted by the shared quotes.
  * Private hands, plans, reserve decks and random state are never consulted. */
@@ -150,21 +153,74 @@ export function withNativeShipmentSources(
   }
 }
 
-/** Spend at most one movement restoring a printed high threshold. Salusa has
- * priority; normal-only returns to Kaitain cannot undo its Sardaukar repair. */
-export function emperorHomeworldMoveActions(view: GameView): Action[] {
+/** One exact native World route, optionally declaring or continuing the actual
+ * physical flight. Ornithopter supplies no new route or World range benefit. */
+export function emperorHomeworldMoveAction(
+  view: GameView,
+  order: EmperorHomeworldMove,
+  mode?: OrnithopterMode,
+): Action | null {
   const movement = view.homeworldMove;
+  const me = view.players.find(p => p.id === view.me);
+  const flight = view.ornithopter?.active;
   if (
     !movement ||
     movement.blocked ||
-    movement.remaining <= 0 ||
+    (flight ? flight.remaining <= 0 : movement.remaining <= 0) ||
     !view.advanced ||
     view.status !== 'playing' ||
     view.phase !== 5 ||
     view.active !== view.me ||
-    view.players.find((p) => p.id === view.me)?.faction !== 'emperor'
+    me?.faction !== 'emperor' || view.response || view.decision || view.truthtrance ||
+    view.phaseOpening || view.automaticContinuationPending || view.nexusTraitors?.pending ||
+    view.roomControl?.paused || view.roomControl?.closed
   )
-    return [];
+    return null;
+  const physical = publicCustody(view);
+  if (!physical) return null;
+  let envelope: Partial<Action> = {};
+  if (flight) {
+    const needsCohort = flight.mode === 'twoGroups' && flight.completed === 1;
+    if ((needsCohort && !flight.cohort) || !flight.event || (mode !== undefined && mode !== flight.mode) ||
+        richeseCardDefinition(view.ornithopter!.card)?.card.effect !== 'ornithopter') return null;
+    if (needsCohort) {
+      try {
+        const pools = imperialFlightPools(me.forces, me.elites?.forces ?? {}, physical.worlds, me.id);
+        const cohort = imperialFlightCohort(flight.cohort!, flight.homeworldCohort === true, physical.worlds, me.id);
+        validateCohortSelection(cohort, pools.forces, pools.elites,
+          { [order.origin]: order.forces.normal + order.forces.elite }, { [order.origin]: order.forces.elite });
+      } catch (error) {
+        if (error instanceof RangeError || error instanceof TypeError) return null;
+        throw error;
+      }
+    }
+    envelope = { ornithopterEvent: flight.event };
+  } else if (mode !== undefined) {
+    const card = view.ornithopter;
+    if (!card || card.blocked || !card.modes.some(option => option.mode === mode && !option.blocked) ||
+        !me.hand?.some(held => held.id === card.card.id && richeseCardDefinition(held)?.card.effect === 'ornithopter'))
+      return null;
+    envelope = { movementCard: card.card.id, ornithopter: mode };
+  }
+  try {
+    quoteEmperorHomeworldMove({ ...physical.context, status: view.status, phase: view.phase,
+      currentPlayer: view.active, movesLeft: Math.max(movement.remaining, flight?.remaining ?? 0) },
+    physical.custody, view.me, order);
+    return { type: 'emperorHomeworldMove', event: movement.event, origin: order.origin,
+      normal: order.forces.normal, elite: order.forces.elite, ...envelope };
+  } catch (error) {
+    if (error instanceof EmperorHomeworldMoveError || error instanceof HomeworldCustodyError)
+      return null;
+    throw error;
+  }
+}
+
+/** Keep the ordinary threshold repair first. Actual card candidates merely
+ * supply legal participation; original typed quotas cap a continuing group. */
+export function emperorHomeworldMoveActions(view: GameView): Action[] {
+  if (!view.homeworldMove || view.homeworldMove.blocked || !view.advanced ||
+      view.status !== 'playing' || view.phase !== 5 || view.active !== view.me ||
+      view.players.find(p => p.id === view.me)?.faction !== 'emperor') return [];
   const physical = publicCustody(view);
   if (!physical) return [];
   const kaitain = physical.worlds.find(
@@ -197,35 +253,32 @@ export function emperorHomeworldMoveActions(view: GameView): Action[] {
       origin: 'homeworld:emperor:salusa',
       forces: { normal: kaitainDeficit, elite: 0 },
     };
-  if (!order) return [];
-  try {
-    quoteEmperorHomeworldMove(
-      {
-        ...physical.context,
-        status: view.status,
-        phase: view.phase,
-        currentPlayer: view.active,
-        movesLeft: movement.remaining,
-      },
-      physical.custody,
-      view.me,
-      order,
-    );
-    return [
-      {
-        type: 'emperorHomeworldMove',
-        event: movement.event,
-        origin: order.origin,
-        normal: order.forces.normal,
-        elite: order.forces.elite,
-      },
-    ];
-  } catch (error) {
-    if (
-      error instanceof EmperorHomeworldMoveError ||
-      error instanceof HomeworldCustodyError
-    )
-      return [];
-    throw error;
+  const active = view.ornithopter?.active;
+  const actions: Action[] = [];
+  if (order && !active) {
+    const ordinary = emperorHomeworldMoveAction(view, order);
+    if (ordinary) actions.push(ordinary);
   }
+  if (!view.ornithopter) return actions;
+  const needsCohort = active?.mode === 'twoGroups' && active.completed === 1;
+  let cohort = needsCohort ? active.cohort : undefined;
+  if (needsCohort && !cohort) return actions;
+  if (cohort) cohort = imperialFlightCohort(cohort, active?.homeworldCohort === true, physical.worlds, view.me);
+  const orders: EmperorHomeworldMove[] = [];
+  for (const home of [salusa, kaitain]) {
+    const group = home.forces[view.me];
+    const normal = cohort ? Math.min(group.normal, (cohort.forces[home.id] ?? 0) - (cohort.elites[home.id] ?? 0)) : group.normal;
+    const elite = cohort ? Math.min(group.elite, cohort.elites[home.id] ?? 0) : group.elite;
+    if (order?.origin === home.id) {
+      const capped = { normal: Math.min(order.forces.normal, normal), elite: Math.min(order.forces.elite, elite) };
+      if (capped.normal + capped.elite > 0) orders.push({ origin: order.origin, forces: capped });
+    }
+    if (normal > 0) orders.push({ origin: home.id as EmperorHomeworldMove['origin'], forces: { normal: 1, elite: 0 } });
+    if (elite > 0) orders.push({ origin: home.id as EmperorHomeworldMove['origin'], forces: { normal: 0, elite: 1 } });
+  }
+  for (const candidate of orders) for (const mode of active ? [undefined] : ['range3', 'twoGroups'] as const) {
+    const action = emperorHomeworldMoveAction(view, candidate, mode);
+    if (action && !actions.some(earlier => JSON.stringify(earlier) === JSON.stringify(action))) actions.push(action);
+  }
+  return actions;
 }

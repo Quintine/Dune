@@ -3944,8 +3944,10 @@ function policyActions(g: GameView): Action[] {
     actions.push(...skillCardMoves);
     actions.push(...cardMoves.filter(action => action.sandmaster !== undefined));
     if (reveal && !actions.length) actions.push(reveal);
+    const imperialMoves = emperorHomeworldMoveActions(g);
     if (me.shipped || !actions.some((action) => action.type === 'ship' || action.type === 'homeworldShip'))
-      actions.unshift(...emperorHomeworldMoveActions(g));
+      actions.unshift(...imperialMoves);
+    else actions.push(...imperialMoves.filter(action => action.movementCard !== undefined || action.ornithopterEvent !== undefined));
     const activeCunning = nexusGuildCunningActive(g);
     if (activeCunning?.stage === 'secondShipment' && activeCunning.hajrAvailable &&
       me.hand?.some(card => card.effect === 'hajr') &&

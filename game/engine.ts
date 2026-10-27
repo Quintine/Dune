@@ -496,6 +496,7 @@ import {
   type MovementCohort,
   type OrnithopterMode,
 } from './ornithopter';
+import { imperialFlightPools, imperialFlightCohort } from './ornithopter-homeworld';
 import {
   eligibleNullentropyCards,
   resolveNullentropyBox,
@@ -1805,7 +1806,7 @@ export type Game = {
         }
       | {
           kind: 'ornithopterDiscard';
-          source: 'move' | 'end' | 'cunning';
+          source: 'move' | 'end' | 'cunning' | 'homeworld';
           flight: NonNullable<Game['ornithopter']>;
           movement: CompletedMovement | null;
           resume: NonNullable<Game['pendingNullentropy']>['resume'];
@@ -1873,6 +1874,8 @@ export type Game = {
     startingMove: number;
     completed: number;
     cohort?: MovementCohort;
+    /** Fresh Imperial flights snapshot both native Homeworld pools. */
+    homeworldCohort?: true;
   } | null;
   pendingNullentropy?: {
     event: string;
@@ -7155,6 +7158,8 @@ function ornithopterDiscardSignature(
     source: next.source,
     flight: next.flight,
     movement: next.movement,
+    ...(next.source === 'homeworld' || next.flight.homeworldCohort
+      ? {homeworlds:g.homeworlds?.custody} : {}),
     controls: nullentropyParentSignature(g, next.resume, next.flight.event),
     active: g.active,
     order: g.order,
@@ -8136,8 +8141,8 @@ function treacheryDiscardIntegrity(g: Game) {
         Number.isSafeInteger(flight.completed) &&
         flight.completed >= 0 &&
         owner.moved === flight.startingMove + flight.completed &&
-        ['move', 'end', 'cunning'].includes(c.source) &&
-        (c.source === 'move'
+        ['move', 'end', 'cunning', 'homeworld'].includes(c.source) &&
+        (c.source === 'move' || c.source === 'homeworld'
           ? flight.completed === total
           : flight.completed < total) &&
         batch.cause === `ornithopter:${c.source}` &&
@@ -8184,6 +8189,9 @@ function treacheryDiscardIntegrity(g: Game) {
       'The ended Ornithopter must resume its original Guild Cunning response.');
       validateGuildCunningResponse(g, c.resume.response);
     }
+    if (c.source === 'homeworld') requireRule(owner.faction === 'emperor' && g.advanced &&
+      !!g.homeworlds?.custody && owner.shipped && !g.pendingArrivalOverlap,
+      'The completed Imperial Ornithopter needs its native Homeworld movement.');
     requireRule(
       c.stateSignature === ornithopterDiscardSignature(g, c),
       'The retired Ornithopter no longer matches its saved movement obligations.',
@@ -8743,7 +8751,7 @@ function semutaOfferSupported(
     continuation.kind !== 'winnerMandatoryDiscard' &&
     continuation.kind !== 'battleResolved' &&
     !(continuation.kind === 'ornithopterDiscard' &&
-      (continuation.source === 'end' || continuation.source === 'cunning' ||
+      (continuation.source === 'end' || continuation.source === 'cunning' || continuation.source === 'homeworld' ||
         (continuation.source === 'move' &&
           (!g.players.some(p => p.faction === 'ecaz' || p.faction === 'moritani') ||
             bareBasicSemutaProfile(g)) &&
@@ -18441,8 +18449,6 @@ function emperorHomeworldMoveBlock(g: Game, p: Player): string | null {
     g.battle
   )
     return 'Finish the current interaction before moving between Homeworlds.';
-  if (g.ornithopter)
-    return 'Homeworld transfers during an active Ornithopter card await their movement-group integration.';
   const richese = byFaction(g, 'richese');
   if (
     richese &&
@@ -18516,6 +18522,8 @@ function ornithopterIntegrity(g: Game) {
       flight.completed < (flight.mode === 'twoGroups' ? 2 : 1) &&
       owner.moved === flight.startingMove + flight.completed &&
       richeseCardDefinition(flight.card)?.card.effect === 'ornithopter' &&
+      (flight.homeworldCohort === undefined || flight.homeworldCohort === true &&
+        owner.faction === 'emperor' && g.advanced && !!g.homeworlds?.custody) &&
       ![
         ...g.players.flatMap((p) => p.hand),
         ...g.deck,
@@ -18542,7 +18550,7 @@ function ornithopterIntegrity(g: Game) {
 }
 function finishOrnithopter(
   g: Game,
-  source: 'move' | 'end' | 'cunning',
+  source: 'move' | 'end' | 'cunning' | 'homeworld',
   movement: CompletedMovement | null = null,
 ) {
   const flight = g.ornithopter;
@@ -18589,6 +18597,63 @@ function finishOrnithopter(
     continuation,
   );
 }
+function declareOrnithopterMovement(g: Game, p: Player, action: Action) {
+  const id = p.id;
+  let flight = g.ornithopter?.player === id ? g.ornithopter : null;
+  if (action.movementCard !== undefined) {
+    const mode = action.ornithopter;
+    requireRule(
+      mode === 'range3' || mode === 'twoGroups',
+      'Choose an Ornithopter movement mode.',
+    );
+    const blocked = ornithopterBlock(g, p);
+    requireRule(!blocked, blocked ?? 'Ornithopter cannot be played.');
+    const card = p.hand.find((c) => c.id === action.movementCard);
+    requireRule(
+      card && richeseCardDefinition(card)?.card.effect === 'ornithopter',
+      'Choose the canonical Ornithopter in your hand.',
+    );
+    const reserved = transferCardBlock(g, p, card);
+    requireRule(!reserved, reserved ?? 'The card is committed.');
+    requireRule(
+      action.ornithopterEvent === undefined,
+      'A new card movement cannot name an old event.',
+    );
+    flight = {
+      event: crypto.randomUUID(),
+      player: id,
+      card,
+      turn: g.turn,
+      mode,
+      startingMove: p.moved,
+      completed: 0,
+      ...(p.faction === 'emperor' && g.advanced && g.homeworlds?.custody
+        ? {homeworldCohort:true as const} : {}),
+    };
+    g.ornithopter = flight;
+    p.hand = p.hand.filter((c) => c.id !== card.id);
+    log(
+      g,
+      `${p.name} played Ornithopter: ${mode === 'range3' ? 'one group with a maximum three-territory route' : 'two different groups using normal movement'}. The card remains on the table until its use finishes.`,
+    );
+  } else if (flight)
+    requireRule(
+      action.ornithopterEvent === flight.event,
+      'Use the current Ornithopter movement event.',
+    );
+  else
+    requireRule(
+      action.ornithopterEvent === undefined &&
+        action.ornithopter === undefined,
+      'No matching Ornithopter movement is active.',
+    );
+  return flight;
+}
+function ornithopterMovementPools(g: Game, p: Player) {
+  return p.faction === 'emperor' && g.advanced && g.homeworlds?.custody
+    ? noFieldRule(() => imperialFlightPools(p.forces,p.elites?.forces ?? {},homeworldTable(g)!,p.id))
+    : {forces:p.forces,elites:p.elites?.forces ?? {}};
+}
 function ornithopterView(g: Game, p: Player) {
   const flight = g.ornithopter?.player === p.id ? g.ornithopter : null;
   const card =
@@ -18614,6 +18679,7 @@ function ornithopterView(g: Game, p: Player) {
           completed: flight.completed,
           remaining: (flight.mode === 'twoGroups' ? 2 : 1) - flight.completed,
           cohort: flight.cohort,
+          ...(flight.homeworldCohort ? {homeworldCohort:true as const} : {}),
         }
       : null,
   };
@@ -21227,52 +21293,7 @@ function declareGroundMovement(g: Game, p: Player, action: Action, quoteOnly = f
     player: id, group, eliteGroup, elite, origin, origins, total: n,
     to, sector: s, advisors, wantsFighters, lockedTurn,
   });
-  let flight = g.ornithopter?.player === id ? g.ornithopter : null;
-  if (action.movementCard !== undefined) {
-    const mode = action.ornithopter;
-    requireRule(
-      mode === 'range3' || mode === 'twoGroups',
-      'Choose an Ornithopter movement mode.',
-    );
-    const blocked = ornithopterBlock(g, p);
-    requireRule(!blocked, blocked ?? 'Ornithopter cannot be played.');
-    const card = p.hand.find((c) => c.id === action.movementCard);
-    requireRule(
-      card && richeseCardDefinition(card)?.card.effect === 'ornithopter',
-      'Choose the canonical Ornithopter in your hand.',
-    );
-    const reserved = transferCardBlock(g, p, card);
-    requireRule(!reserved, reserved ?? 'The card is committed.');
-    requireRule(
-      action.ornithopterEvent === undefined,
-      'A new card movement cannot name an old event.',
-    );
-    flight = {
-      event: crypto.randomUUID(),
-      player: id,
-      card,
-      turn: g.turn,
-      mode,
-      startingMove: p.moved,
-      completed: 0,
-    };
-    g.ornithopter = flight;
-    p.hand = p.hand.filter((c) => c.id !== card.id);
-    log(
-      g,
-      `${p.name} played Ornithopter: ${mode === 'range3' ? 'one group with a maximum three-territory route' : 'two different groups using normal movement'}. The card remains on the table until its use finishes.`,
-    );
-  } else if (flight)
-    requireRule(
-      action.ornithopterEvent === flight.event,
-      'Use the current Ornithopter movement event.',
-    );
-  else
-    requireRule(
-      action.ornithopterEvent === undefined &&
-        action.ornithopter === undefined,
-      'No matching Ornithopter movement is active.',
-    );
+  const flight = declareOrnithopterMovement(g,p,action);
   const move: MovementOrder = {
     player: id,
     group,
@@ -21387,11 +21408,11 @@ function commitGroundMovementPieces(g: Game, move: MovementOrder) {
     flight.mode === 'twoGroups' &&
     flight.completed === 0
   ) {
-    const marker = p.noField?.deployed;
+    const marker = p.noField?.deployed, pools = ornithopterMovementPools(g,p);
     flight.cohort = noFieldRule(() =>
       createRemainingCohort(
-        p.forces,
-        p.elites?.forces ?? {},
+        pools.forces,
+        pools.elites,
         Object.fromEntries(group),
         eliteGroup,
         marker && p.noFieldEvent
@@ -42482,7 +42503,7 @@ function applyActionInner(
     requireRule(!blocked, blocked ?? 'Homeworld movement is unavailable.');
     requireRule(
       Object.keys(action).every((key) =>
-        ['type', 'event', 'origin', 'normal', 'elite'].includes(key),
+        ['type', 'event', 'origin', 'normal', 'elite','movementCard','ornithopter','ornithopterEvent'].includes(key),
       ),
       'Choose only the source Homeworld and physical force types.',
     );
@@ -42510,6 +42531,19 @@ function applyActionInner(
         },
       ),
     );
+    const flight = declareOrnithopterMovement(g,p,action);
+    if (flight?.mode === 'twoGroups') {
+      const pools = ornithopterMovementPools(g,p);
+      const selected = {[quote.origin]:quote.forces.normal+quote.forces.elite};
+      const elites = {[quote.origin]:quote.forces.elite};
+      if (flight.completed === 0) {
+        flight.cohort = noFieldRule(() => createRemainingCohort(pools.forces,pools.elites,selected,elites));
+      } else {
+        requireRule(flight.cohort, 'The original unmoved Ornithopter cohort is missing.');
+        const cohort = noFieldRule(() => imperialFlightCohort(flight.cohort!,flight.homeworldCohort === true,homeworldTable(g)!,id));
+        noFieldRule(() => validateCohortSelection(cohort,pools.forces,pools.elites,selected,elites));
+      }
+    }
     g.homeworlds!.custody = quote.state;
     observeOccupation(g);
     finishShipmentPromises(g, p, null);
@@ -42527,8 +42561,15 @@ function applyActionInner(
       .join('; ');
     log(
       g,
-      `${p.name} moved ${quote.forces.normal} normal forces and ${quote.forces.elite} Sardaukar from ${name(quote.origin)} to ${name(quote.destination)}. This spends one movement and no spice; total reserves are unchanged. ${shifts}.`,
+      `${p.name} moved ${quote.forces.normal} normal forces and ${quote.forces.elite} Sardaukar from ${name(quote.origin)} to ${name(quote.destination)}. This spends one movement and no spice; total reserves are unchanged. ${shifts}.${flight ? ' Provisional Ornithopter composition uses the independently permitted Imperial route; the card grants no Homeworld route or range.' : ''}`,
     );
+    if (flight) {
+      flight.completed++;
+      if (flight.completed === (flight.mode === 'twoGroups' ? 2 : 1)) {
+        if (flight.mode === 'twoGroups') p.ornithopterExtraMoves = (p.ornithopterExtraMoves ?? 0) + 1;
+        finishOrnithopter(g,'homeworld');
+      }
+    }
     return g;
   }
   if (t === 'move') {

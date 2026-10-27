@@ -124,6 +124,14 @@ export function OrnithopterMovement({
                 {Object.entries(active.cohort.forces)
                   .filter(([, n]) => n > 0)
                   .map(([key, n]) => {
+                    const imperial = key === 'homeworld:emperor' ? 'Kaitain'
+                      : key === 'homeworld:emperor:salusa' ? 'Salusa Secundus' : null;
+                    if (imperial) return (
+                      <li key={key}>
+                        {imperial}: {n} forces, including {active.cohort!.elites[key] ?? 0} Sardaukar.
+                        {' '}Use the Imperial movement panel for this group.
+                      </li>
+                    );
                     const source = splitLocation(key);
                     return (
                       <li key={key}>

@@ -1,5 +1,20 @@
 # Rule decision index
 
+## Physical Ornithopter and Imperial Homeworld movement — 27 October 2026
+
+E3printed10/supplied Advanced physical22/printed20 grant Emperor native Force
+Movement between Kaitain and Salusa. Under standing recommended-option authority,
+compose it provisionally with the recorded physical card's two normal moves:
+first/second groups may be ground or native World transfers with distinct
+original typed counters. Homeworlds are not territories, so range3 grants no
+World route; spending its replacement entitlement on an independently permitted
+transfer is a separate provisional interpretation. Native Karama immunity and
+cost/allowance rules stay. Completion discards once and earns only the actual
+two-group extra credit. Fresh World-aware cohorts and a scoped older-flight
+inference retain original board quotas. Targeted publisher/designer searching
+found no dedicated combined ruling; no fresh unavailable card-crop inspection
+is claimed. [Contract](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#imperial-homeworld-movement--27-october-2026).
+
 ## Concealed No-Field free Discovery entry — 27 October 2026
 
 E3printed12 and supplied Advanced physical23/printed21 grant a separate
