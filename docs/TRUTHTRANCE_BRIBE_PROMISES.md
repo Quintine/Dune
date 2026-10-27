@@ -1,5 +1,25 @@
 # Truthtrance ordinary bribe-payment promises
 
+## Basic Richese and Semuta — 27 October 2026
+
+**Prototyped / Partial.** Bare Basic Richese tables with the default Semuta
+preview admit scalar, grouped and mixed ordinary bribe questions. After a
+definite answer, the physical Truthtrance's fresh discard can be claimed or
+passed through the existing Semuta opportunity before its original controls
+and any remaining question resume. The answer, exact binding and accepted
+payment order remain attached to that continuation; later native payments,
+not the exchange, fulfill the commitment. Existing player controls and minimal
+legal bots use the same projected question and payment guides.
+
+The [Truthtrance question authority](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md)
+and [Semuta source](SEMUTA_SOURCE_UPDATE_20260907.md) support their respective
+effects. This online nested order is a provisional composition, not a separate
+publisher ruling. Kull plus Semuta, optional modules and broader combinations
+remain outside this slice. The native
+[runtime tests](../tests/truth-bribe-semuta-runtime.test.ts) acquire Semuta
+through its real cache auction and exercise the original question and payment;
+they do not certify complete modes, browser or deployed behavior.
+
 **27 October Basic Kull follow-up:** the printed Kull preview with native
 CHOAM, classic factions and the CHOAM/Ix decks now admits ordinary, grouped and
 mixed structured bribe questions. Pending Kull responses suppress bribe controls

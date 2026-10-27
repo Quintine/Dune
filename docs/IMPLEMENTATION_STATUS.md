@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 27 October 2026 — Basic Semuta and Truthtrance bribes
+
+The bare Basic Richese Semuta profile admits structured scalar, grouped and
+mixed bribe questions. A signed continuation retains the actual answer and
+payment ledger during the fresh Truthtrance discard's Semuta claim or pass.
+The existing native payment controls and minimal bot guides remain in use.
+Kull plus Semuta and broader modules are not included.
+[Scope](TRUTHTRANCE_BRIBE_PROMISES.md#basic-richese-and-semuta--27-october-2026).
+
 ## 27 October 2026 — Emperor special revival and Sardaukar
 
 The Advanced Emperor's special Karama may return up to three physical

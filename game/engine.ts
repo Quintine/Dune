@@ -1853,6 +1853,11 @@ export type Game = {
             | { kind: 'battle'; index: number; value: BattlePromise }
             | { kind: 'traitor'; index: number; value: TraitorDecisionPromise }
             | null;
+          /** New Basic Semuta bribe answers retain their exact native binding. */
+          bribeBinding?:
+            | { kind: 'bribe'; index: number; value: BribePromise }
+            | { kind: 'bribeExpression'; index: number; value: BribeExpressionPromise }
+            | { kind: 'mixedBribe'; index: number; value: NonNullable<Game['mixedBribeQuestions']>[number] };
           parentSignature: string;
         }
       | {
@@ -7141,6 +7146,9 @@ function truthtranceDiscardSignature(g: Game, next: TruthDiscardContinuation) {
     record: next.record,
     remaining: next.remaining,
     promise: next.promise,
+    ...(next.bribeBinding ? { bribeBinding: next.bribeBinding,
+      bribePromises: g.bribePromises, bribeExpressionPromises: g.bribeExpressionPromises,
+      mixedBribeQuestions: g.mixedBribeQuestions, bribePromiseSequence: g.bribePromiseSequence } : {}),
     controls: nullentropyParentSignature(
       g,
       next.resume,
@@ -7250,6 +7258,17 @@ function finishTruthtranceAnswer(g: Game) {
     resume,
     promise,
     parentSignature: '',
+  };
+  // Older saved Truth discard receipts keep their original signature. These
+  // bindings are only created for the newly admitted Basic Semuta questions.
+  if (g.semutaPreview && record.question.kind === 'bribe') continuation.bribeBinding = {
+    kind: 'bribe', index: g.bribePromises!.length - 1, value: structuredClone(g.bribePromises!.at(-1)!),
+  };
+  else if (g.semutaPreview && record.question.kind === 'bribeExpression') continuation.bribeBinding = {
+    kind: 'bribeExpression', index: g.bribeExpressionPromises!.length - 1, value: structuredClone(g.bribeExpressionPromises!.at(-1)!),
+  };
+  else if (g.semutaPreview && record.question.kind === 'mixedBribe') continuation.bribeBinding = {
+    kind: 'mixedBribe', index: g.mixedBribeQuestions!.length - 1, value: structuredClone(g.mixedBribeQuestions!.at(-1)!),
   };
   continuation.parentSignature = truthtranceDiscardSignature(g, continuation);
   stageTreacheryDiscard(
@@ -8220,6 +8239,41 @@ function treacheryDiscardIntegrity(g: Game) {
       !g.battle.plans[q.target];
     const expectedMovement = q.kind === 'movement';
     const expectedTraitor = q.kind === 'traitorCall';
+    const expectedBribe = g.semutaPreview &&
+      (q.kind === 'bribe' || q.kind === 'bribeExpression' || q.kind === 'mixedBribe');
+    if (expectedBribe) {
+      const binding = c.bribeBinding;
+      const actual = binding?.kind === 'bribe' ? g.bribePromises :
+        binding?.kind === 'bribeExpression' ? g.bribeExpressionPromises : g.mixedBribeQuestions;
+      requireRule(binding && binding.kind === q.kind && Array.isArray(actual) &&
+        Number.isSafeInteger(binding.index) && binding.index >= 0 &&
+        binding.index === actual.length - 1 &&
+        JSON.stringify(binding.value) === JSON.stringify(actual[binding.index]) &&
+        binding.value.player === q.target && binding.value.asker === record.asker &&
+        binding.value.answer === (record.answer === 'yes') && binding.value.turn === g.turn,
+      'The completed Truthtrance lost its original bribe answer.');
+      if (binding.kind === 'bribe' && q.kind === 'bribe')
+        requireRule(binding.value.recipient === q.recipient && binding.value.minimum === q.minimum &&
+          binding.value.progress === 0 && !binding.value.fulfilled && !binding.value.released &&
+          g.bribePromiseSequence?.at(-1) === binding.value.event,
+        'The completed Truthtrance bribe differs from its original payment.');
+      else if (binding.kind === 'bribeExpression' && q.kind === 'bribeExpression')
+        requireRule(JSON.stringify(binding.value.claim) === JSON.stringify(q.claim) &&
+          binding.value.progress.length === 0 && !binding.value.fulfilled && !binding.value.released &&
+          g.bribePromiseSequence?.at(-1) === binding.value.event,
+        'The completed Truthtrance bribe expression differs from its original question.');
+      else if (binding.kind === 'mixedBribe' && q.kind === 'mixedBribe') {
+        const residual = g.bribeExpressionPromises?.at(-1);
+        requireRule(JSON.stringify(binding.value.mixed) === JSON.stringify(q.mixed) &&
+          (binding.value.binding ? !!residual && residual.event === binding.value.event &&
+            residual.player === q.target && residual.asker === record.asker &&
+            residual.answer === binding.value.answer && residual.turn === g.turn &&
+            residual.progress.length === 0 && !residual.fulfilled && !residual.released &&
+            g.bribePromiseSequence?.at(-1) === binding.value.event :
+            !g.bribeExpressionPromises?.some(item => item.event === binding.value.event)),
+        'The completed mixed bribe answer no longer matches its payment binding.');
+      }
+    } else requireRule(!c.bribeBinding, 'This Truthtrance answer has no bribe binding.');
     if (expectedShipment || expectedBattle || expectedMovement || expectedTraitor) {
       const actual = expectedTraitor ? g.battle?.traitorDecisionPromises : expectedMovement ? g.movementPromises : expectedShipment
         ? g.shipmentPromises
@@ -8835,6 +8889,9 @@ function semutaOfferSupported(
   const richeseTruthDiscard = supportedRicheseTruthLot(g) &&
     (continuation.kind === 'truthtranceDiscard' || continuation.kind === 'saphoTruthOrderDiscard') &&
     !!continuation.richeseLotEvent && continuation.richeseLotEvent === g.richeseAuction?.event;
+  if (continuation.kind === 'truthtranceDiscard' &&
+    ['bribe', 'bribeExpression', 'mixedBribe'].includes(continuation.record.question.kind) &&
+    (!continuation.bribeBinding || !bareBasicSemutaProfile(g) || !!g.kullPreview)) return false;
   const richeseGiftDiscard = continuation.kind === 'karamaRicheseGiftDiscard';
   const richeseDiscard = richeseGiftDiscard || continuation.kind === 'karamaRicheseAuctionDiscard';
   const auctionAdvantageDiscard = continuation.kind === 'karamaAuctionAdvantageDiscard';

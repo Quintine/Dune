@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Basic Semuta and Truthtrance bribes — 27 October 2026
+
+In the supported bare Basic Richese profile, provisionally resolve the fresh
+Truthtrance discard through Semuta before restoring the original controls.
+Scalar, grouped and mixed bribe answers keep their exact binding and accepted
+payment order; the exchange does not itself pay or settle a bribe. The nested
+online timing is an implementation interpretation, not a separate publisher
+ruling. Kull and optional modules remain outside this slice.
+[Scope and source](TRUTHTRANCE_BRIBE_PROMISES.md#basic-richese-and-semuta--27-october-2026).
+
 ## Emperor special revival and Sardaukar limit — 27 October 2026
 
 The authorized supplied rulebook, physical p. 31 (printed p. 29), exempts

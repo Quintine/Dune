@@ -20,6 +20,14 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Basic Richese Semuta and bribe questions — 27 October. Prototyped / Partial.**
+Structured ordinary, grouped and mixed Truthtrance payment questions are
+available in the bare Basic Richese Semuta profile. Their exact answer and
+payment ledger survive the physical fresh-card claim/pass and continuation.
+Native runtime cases acquire Semuta through its real auction, then exercise
+real questions and payments; Kull plus Semuta, optional modules and final
+acceptance remain separate. [Scope](TRUTHTRANCE_BRIBE_PROMISES.md#basic-richese-and-semuta--27-october-2026).
+
 **Emperor special revival and Sardaukar — 27 October. Prototyped / Partial.**
 The Advanced Emperor's special Karama can return up to three actual Sardaukar
 without consuming the ordinary one-per-turn elite revival allowance. The

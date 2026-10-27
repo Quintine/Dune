@@ -47,8 +47,14 @@ export function bribePromiseModeSupported(game: NativePromiseScope & {
   nexusHarkonnenBetrayalPreview?: unknown; moritaniAssassinatePreview?: unknown;
   mobileStronghold?: unknown;
 }): boolean {
-  if (!nativePromiseScopeSupported(game) || game.semutaPreview || game.nexusKullPreview ||
+  if (!nativePromiseScopeSupported(game) || game.nexusKullPreview ||
       game.richeseBetrayalPreview) return false;
+  if (game.semutaPreview) return game.semutaPreview === true && !game.advanced &&
+    !game.kullPreview && game.expansions.includes('choam') &&
+    game.players.some(player => player.faction === 'richese') &&
+    !game.guildBetrayalPreview && !game.nexusIxianReplacementPreview &&
+    !game.nexusIxianBetrayalPreview && !game.nexusHarkonnenBetrayalPreview &&
+    !game.moritaniAssassinatePreview;
   if (!game.kullPreview) return true;
   return game.kullPreview === true && game.advanced === false && (game.expansions.length === 2 ||
     game.expansions.length === 3 && game.expansions.includes('ecaz')) &&

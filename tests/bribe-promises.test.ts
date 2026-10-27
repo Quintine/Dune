@@ -43,6 +43,14 @@ void test('ordinary bribe scope preserves bare classic and selected native modes
     { ...classic, expansions: ['ix', 'choam', 'ecaz'] },
     { ...classic, advanced: true, expansions: ['ecaz'], players: [{ faction: 'moritani' }, { faction: 'harkonnen' }] },
   ]) assert.equal(bribePromiseModeSupported(game), true);
+  const basicRichese = { advanced: false, expansions: ['choam'], semutaPreview: true,
+    players: [{ faction: 'richese' }, { faction: 'atreides' }, { faction: 'emperor' }] };
+  assert.equal(bribePromiseModeSupported(basicRichese), true);
+  for (const game of [
+    { ...basicRichese, advanced: true }, { ...basicRichese, kullPreview: true },
+    { ...basicRichese, homeworlds: {} }, { ...basicRichese, nexusCards: {} },
+    { ...basicRichese, players: classic.players },
+  ]) assert.equal(bribePromiseModeSupported(game), false);
   for (const option of ['homeworlds', 'nexusCards', 'leaderSkills', 'techTokens', 'strongholdCards',
     'discoveryEnabled', 'discoveries', 'discoveryStash', 'greatMaker', 'ecazTreachery',
     'semutaPreview', 'kullPreview', 'nexusKullPreview', 'richeseBetrayalPreview'] as const)
