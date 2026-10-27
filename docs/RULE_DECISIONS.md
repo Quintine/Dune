@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Printed Kull in supported Basic starts — 27 October 2026
+
+Offer an explicit lobby opt-in for the existing printed Kull response in fresh
+Basic CHOAM/classic starts with the CHOAM and Ix decks and no optional modules.
+The default remains off; the preview visibly discloses unavailable structured
+Truthtrance commitment families and the user-deferred unfunded non-CHOAM winning-overbid
+fence. Retain the selected distinct counter and reserved original attempted
+card. The publisher's Basic rule establishes the reaction, while the nested
+protocol and fence retain their recorded policy status. Nexus fuel, other
+compositions and existing saved games remain under their existing boundaries.
+[Source and boundaries](CHOAM_KULL_DESIGN.md#basic-public-start--27-october-2026).
+
 ## Upcoming Basic Charity Truthtrance — 27 October 2026
 
 Provisionally allow the same Charity question in supported quiet Basic Storm and

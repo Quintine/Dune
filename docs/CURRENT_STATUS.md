@@ -20,6 +20,17 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Printed Kull in supported Basic starts — 27 October. Prototyped / Partial.**
+An explicit lobby opt-in enables the printed Kull reaction for fresh Basic
+CHOAM/classic games using both CHOAM and Ix Treachery decks and no optional
+modules. The preview visibly discloses that some structured Truthtrance
+commitment families are unavailable and that unfunded non-CHOAM Karama-dependent
+overbids remain fenced under the user-deferred ruling. The default retains
+existing behavior; the selection does not add Nexus fuel or retrofit games.
+Other rosters, modules, Advanced starts and broader acceptance remain open.
+Ten related files pass 77/77; type/lint and build pass.
+[Scope and source](CHOAM_KULL_DESIGN.md#basic-public-start--27-october-2026).
+
 **Upcoming Basic Charity Truthtrance — 27 October. Prototyped / Partial.**
 The Charity question also accepts supported quiet Storm and Spice Blow windows
 for the upcoming phase in the same turn. Its private quote uses the known purse

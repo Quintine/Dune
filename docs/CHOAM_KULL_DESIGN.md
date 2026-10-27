@@ -2,6 +2,38 @@
 
 Source audit: 2026-09-06; opt-in preview contract updated 30 September 2026. This is an engineering and product-policy record, not a rules-completion claim. The source audit in [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md) remains applicable. The user-approved counter and BG choices supersede the original proposal; publisher-source uncertainty and full expansion gates remain.
 
+## Basic public start — 27 October 2026
+
+**Prototyped / Partial.** An explicit lobby opt-in enables the existing printed
+Kull response for a fresh Basic start with the CHOAM and Ix Treachery decks,
+native CHOAM plus classic factions, and no optional modules. The default
+remains off; the separate Nexus Kull fuel source is not enabled. The faction's [publisher rulebook, printed page 7](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf#page=7)
+provides the Basic Karama interception; the existing source and selected
+interruption protocol below remain authoritative for this prototype.
+
+The supported path retains the user's distinct eligible Karama counter, with
+the original attempted physical card reserved until the response finishes.
+The previously selected before-conversion policy remains applicable to its
+existing supported Advanced preview, which this Basic start does not extend.
+The user-deferred non-CHOAM winning-overbid interaction keeps its existing
+private funding fence; this is an unfinished software boundary, not a printed rule.
+
+The opt-in visibly explains that some existing structured Truthtrance
+commitments, including ordinary bid, alliance, revival, bribe and combined
+turn-action questions, are unavailable in this preview. Its deferred
+unfunded non-CHOAM overbid fence is also disclosed before start. The default retains
+the existing non-Kull behavior. Existing games are not upgraded, and other
+factions, optional modules, Advanced starts and Nexus Kull remain under their
+separate existing profiles. Broader interactions, full Basic/expansion modes,
+comprehensive assurance, browser and deployed acceptance remain open; this
+does not open a publication gate.
+
+The public-start fixture selects original unopened cards and Spice positions,
+then uses genuine lobby, setup, auction and movement actions. A conserved card
+swap and an unstamped legacy-shape case are labeled controlled supplements.
+Ten related files pass 77/77; type/lint and build pass. Server-rendered controls
+are covered; browser and deployed behavior remain unverified.
+
 ## Advanced effect scope — 18 October 2026
 
 New Advanced attempts use the supplied rulebook’s specific-effect scope;
@@ -78,11 +110,11 @@ The wider publisher cancellation scope across other physical copies or Worthless
 
 ## Opt-in development scope
 
-The explicit `kull` development profile admits Basic or Advanced CHOAM with classic factions, the physical CHOAM and Ix Treachery decks, and **no optional modules**. It does not introduce Ixian/Tleilaxu factions merely because their physical deck is present. Basic uses ordinary printed Karama; Advanced additionally admits BG substitutions and the existing legal special powers of that roster. `initializeKullGameForAudit` opts the newly initialized Game into `kullPreview`; older saved games and ordinary public starts are not retrofitted.
+The explicit `kull` development profile admits Basic or Advanced CHOAM with classic factions, the physical CHOAM and Ix Treachery decks, and **no optional modules**. It does not introduce Ixian/Tleilaxu factions merely because their physical deck is present. Basic uses ordinary printed Karama; Advanced additionally admits BG substitutions and the existing legal special powers of that roster. `initializeKullGameForAudit` opts the newly initialized Game into `kullPreview`; the supported fresh Basic lobby opt-in is described above. Older saved games are not retrofitted.
 
 The separate `nexus-kull` profile admits fresh two-to-six-seat Basic or Advanced native CHOAM plus classic factions, exactly the physical CHOAM/Ix Treachery decks and **Nexus alone**, without physical Sandtrout. `initializeNexusKullGameForAudit` sets `nexusKullPreview` and shared `kullPreview`; it does not retrofit new choices into saved games. Unallied native CHOAM with the actual CHOAM Nexus may choose eligible own canonical Treachery fuel at the pending Karama opportunity. Other expansion factions/modules, Semuta and Richese Betrayal remain excluded; other Nexus previews retain the Kull guard. See the [source/cost boundary](NEXUS_CHOAM_RULES.md#kull-source-cost-and-action-boundary) and [runtime evidence](NEXUS_CHOAM_RUNTIME.md#bounded-nexus-kull-profile).
 
-Both profiles require the visible preview warning and closed public expansion/module gates. The old `kull` profile remains printed-only without Nexus. This bounded Cunning interaction is verified locally, with broader verification **Partial**, not complete CHOAM, full Nexus/expansion certification or deployment evidence. Prior printed-Kull evidence remains scoped to the older preview.
+Both development profiles retain their preview boundaries and visible warnings; the separate supported Basic lobby opt-in is described above. The old `kull` profile remains printed-only without Nexus. This bounded Cunning interaction is verified locally, with broader verification **Partial**, not complete CHOAM, full Nexus/expansion certification or deployment evidence. Prior printed-Kull evidence remains scoped to the older preview.
 
 Ordinary cancellation with a live Truthtrance battle or shipment promise must pass the existing pure `assertKaramaPromiseFeasibility` post-cost proof. An unsupported/unprovable suffix is rejected actor-privately before a Kull offer or cost. Proven supported Voice, Prescience, elite, support and aid cancellation paths remain interruptible; no-obligation paths remain unaffected. This is an incomplete preview composition, **not** a publisher prohibition. Do not publicize an unvalidated attempt, release its promise or speculatively execute random effects merely to prove feasibility.
 
@@ -194,4 +226,4 @@ Preparation includes public-dispatcher timing gates, with CHOAM's existing phase
 
 Ten regression cases in `tests/karama-intents.test.ts` cover all variants, serialization, preparation purity/no random draw, stale timing/custody/resources, copied CHOAM selection, exact declaration binding, deferred Harkonnen randomness, injected execution failure isolation, dispatcher parity and preserved CHOAM exceptions. The full 728-case unit suite and 33 persisted/database cases pass.
 
-The prerequisite alone did not add a pending Kull frame or phase restriction. The later opt-in preview composes these prepared intents with the selected distinct-card/pre-conversion protocol. Full-game, combined-module, deployment and unpayable winning-overbid recovery acceptance are separate; the preview does not reopen public starts.
+The prerequisite alone did not add a pending Kull frame or phase restriction. The later opt-in preview composes these prepared intents with the selected distinct-card/pre-conversion protocol. Full-game, combined-module, deployment and unpayable winning-overbid recovery acceptance are separate; the later bounded Basic lobby opt-in is described above.

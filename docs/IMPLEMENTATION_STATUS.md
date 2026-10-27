@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 27 October 2026 — Printed Kull in supported Basic starts
+
+Offer an explicit lobby opt-in for the existing printed Kull response in a
+fresh Basic start with native CHOAM and classic factions, both CHOAM and Ix
+Treachery decks, and no optional modules. The default remains off because the
+preview currently excludes some structured Truthtrance commitment families;
+the lobby explains that limitation and the user-deferred unfunded non-CHOAM
+Karama winning-overbid fence before start. Preserve the selected distinct eligible
+counter and original attempted-card custody. This does not enable Nexus Kull,
+change old games, or certify other faction/module compositions. The publisher
+Basic rule supports the core reaction; interruption details remain the recorded
+user-selected policy. Full modes, browser, deployed and publication acceptance
+remain open. Ten related files pass 77/77; type/lint and build pass. Private
+proof is `20261027-public-kull-optin-proof-v3/`.
+[Contract](CHOAM_KULL_DESIGN.md#basic-public-start--27-october-2026).
+
 ## 27 October 2026 — Upcoming Basic Charity Truthtrance
 
 Extend the provisional Charity question to supported quiet Basic Storm and Spice

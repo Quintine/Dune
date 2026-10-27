@@ -9997,16 +9997,16 @@ function takeBattleLosses(g: Game, p: Player, t: string, losses: Casualties) {
   return lostCyborgs;
 }
 /** Lobby-only selections whose saved setup shape is created at start. */
-type LobbyOptions = { leaderSkills?: true; ecazTreachery?: true };
+type LobbyOptions = { leaderSkills?: true; ecazTreachery?: true; kullPreview?: true };
 function lobbyOptionsIntegrity(g: Game) {
   const options = g.lobbyOptions;
   if (options === undefined) return;
   requireRule(g.status === 'lobby' && !!options && typeof options === 'object' && !Array.isArray(options) &&
-    Object.entries(options).every(([key, value]) => ['leaderSkills', 'ecazTreachery'].includes(key) && value === true),
+    Object.entries(options).every(([key, value]) => ['leaderSkills', 'ecazTreachery', 'kullPreview'].includes(key) && value === true),
   'Invalid lobby module options.');
 }
 function lobbyModulesSelected(g: Game): boolean {
-  return !!g.lobbyOptions?.leaderSkills || !!g.lobbyOptions?.ecazTreachery ||
+  return !!g.lobbyOptions?.leaderSkills || !!g.lobbyOptions?.ecazTreachery || !!g.lobbyOptions?.kullPreview ||
     !!g.nexusCards || g.discoveryEnabled === true || !!g.homeworlds;
 }
 /** Route a normal start through the existing genuine setup for the selected modules. */
@@ -10014,6 +10014,15 @@ function startModules(state: Game): Game {
   const options = state.lobbyOptions ?? {};
   const g = structuredClone(state);
   delete g.lobbyOptions;
+  if (options.kullPreview) {
+    requireRule(g.advanced === false && g.expansions.length === 2 && g.expansions.includes('choam') &&
+      g.expansions.includes('ix') && !!byFaction(g,'choam') &&
+      g.players.every(player => player.faction === 'choam' || CLASSIC_FACTIONS[player.faction] === true) &&
+      !options.leaderSkills && !options.ecazTreachery && !g.nexusCards && !g.discoveryEnabled &&
+      !g.homeworlds && !g.techTokens && !g.strongholdCards,
+    'Kull preview needs Basic CHOAM and classic factions, CHOAM and Ix decks, and no optional modules.');
+    return initializeKullGameForAudit(g);
+  }
   if (options.ecazTreachery && options.leaderSkills) g.ecazTreachery = true;
   if (options.leaderSkills) return initializeLeaderSkillsGameForAudit(g);
   // Keep this selection visible to its initializer even when another module was
@@ -42295,7 +42304,7 @@ function applyActionInner(
     if (t === 'moduleOption') {
       requireRule(id === g.host, 'Only the host can change optional rules.');
       const option = action.module;
-      requireRule(['leaderSkills', 'ecazTreachery', 'nexusCards', 'discoveries'].includes(option as string) &&
+      requireRule(['leaderSkills', 'ecazTreachery', 'nexusCards', 'discoveries', 'kullPreview'].includes(option as string) &&
         typeof action.enabled === 'boolean' && Object.keys(action).every(key => ['type', 'module', 'enabled'].includes(key)),
       'Choose an optional module to enable or disable.');
       if (option === 'nexusCards') g.nexusCards = action.enabled ? { cards: null, phase: null } : null;
@@ -44614,6 +44623,7 @@ export function viewGame(state: Game, id: string, now?: number) {
     techTokens: g.techTokens ?? null,
     lobbyModules: g.status === 'lobby' ? {
       leaderSkills: !!g.lobbyOptions?.leaderSkills, ecazTreachery: !!g.lobbyOptions?.ecazTreachery,
+      kullPreview: !!g.lobbyOptions?.kullPreview,
       nexusCards: !!g.nexusCards, discoveries: g.discoveryEnabled === true,
     } : null,
     ecazLoyalty: g.ecazLoyalty?.card ? { player: g.ecazLoyalty.player, card: g.ecazLoyalty.card } : null,

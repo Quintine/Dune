@@ -2204,6 +2204,18 @@ export function GameTable({
                 </label>
               ))}
               <label className="checkbox-row">
+                <input type="checkbox" checked={!!g.lobbyModules?.kullPreview}
+                  disabled={busy || g.host !== me.id}
+                  onChange={(e) => act({ type: 'moduleOption', module: 'kullPreview', enabled: e.target.checked })} />
+                Kull Wahad · Basic development preview
+              </label>
+              {g.lobbyModules?.kullPreview && <p className="notice">
+                Requires Basic CHOAM and classic factions, both CHOAM and Ix decks, and no other optional modules.
+                This preview does not support structured Truthtrance questions about bids, bribes, alliances, Revival,
+                or combined turn actions, and it defers unfunded non-CHOAM Karama-dependent bids. It does not represent complete
+                CHOAM rules. Every player must ready again after changing it.
+              </p>}
+              <label className="checkbox-row">
                 <input
                   type="checkbox"
                   checked={!!g.homeworlds}
