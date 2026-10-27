@@ -30,12 +30,15 @@ const plain = (value: unknown): value is Record<string, unknown> =>
   !Array.isArray(value) &&
   [Object.prototype, null].includes(Object.getPrototypeOf(value));
 
-/** The caller validates route permission and actual physical custody. */
-export function quoteNexusGuildSecretShipment(destinationType: string, amount: number) {
+/** Amount is billable units; a selected concealed marker contributes one unit
+ * but no physical counter. The caller validates permission and actual custody. */
+export function quoteNexusGuildSecretShipment(destinationType: string, amount: number, noField = false) {
   requireGuild(['stronghold','sand','rock','polar','reserves','homeworld'].includes(destinationType) &&
-    Number.isSafeInteger(amount) && amount > 0 && amount <= 20,
-    'Guild Secret Ally requires a valid destination and one to twenty physical forces.');
-  return {physicalAmount:amount,cost:guildShipmentCost(destinationType === 'homeworld' ? 'reserves' : destinationType,amount),source:'nexusGuildSecretAlly' as const};
+    typeof noField === 'boolean' && (!noField || destinationType !== 'homeworld') &&
+    Number.isSafeInteger(amount) && amount > 0 && amount <= (noField ? 21 : 20),
+    noField ? 'Guild Secret Ally requires a valid destination, one concealed marker and up to twenty physical forces.'
+      : 'Guild Secret Ally requires a valid destination and one to twenty physical forces.');
+  return {physicalAmount:amount - (noField ? 1 : 0),cost:guildShipmentCost(destinationType === 'homeworld' ? 'reserves' : destinationType,amount),source:'nexusGuildSecretAlly' as const};
 }
 function roster(context: NexusGuildSecretAllyContext) {
   requireGuild(

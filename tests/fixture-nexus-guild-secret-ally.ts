@@ -25,8 +25,11 @@ export type NexusGuildSecretAllyFixtureOptions = Omit<
     'guild'
   >;
 };
-/** Genuine final native setup without Guild. Exchange physical Nexus identities
- * before any declaration; no effect receipt or shipment allowance is staged. */
+/** CONTROLLED historical Movement boundary after genuine setup: the inherited
+ * Richese fixture stages its wallets, reserve pools and phase5 rather than
+ * playing the intervening phases. Retire its old phase2 Charity frame with that
+ * declared jump. Physical Nexus identities are exchanged before declaration;
+ * no transport receipt or completed native Charity opportunity is invented. */
 export function nexusGuildSecretAllyFixture(
   options: NexusGuildSecretAllyFixtureOptions = {},
 ) {
@@ -36,6 +39,8 @@ export function nexusGuildSecretAllyFixture(
       options.opponentFaction ??
       (options.ownerFaction === 'harkonnen' ? 'beneGesserit' : 'harkonnen'),
   });
+  assert.equal(f.g.phase, 5);
+  delete f.g.charityOrder;
   const cards = f.g.nexusCards!.cards!,
     index = cards.deck.indexOf('guild');
   assert.ok(index >= 0);

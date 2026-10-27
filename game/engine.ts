@@ -1345,6 +1345,8 @@ type PendingGuildTransport = {
   /** Fresh board transports retain their actual source stance at foreign arrivals.
    * Absent on declarations recorded before this source cutover. */
   advisorArrivalSource?: string;
+  /** A concealed marker prices as one but is never a physical counter. */
+  noField?: { tokenId: string; event: string; from: string };
 };
 type GuildTransportOrder = Omit<PendingGuildTransport, 'event' | 'signature' | 'fromReserves' | 'permission'>;
 type JunctionTransportDeclaration = {
@@ -11830,7 +11832,7 @@ function guildBetrayalAuthority(g: Game, continuation: GuildBetrayalContinuation
     case 'guildTransport': {
       requireRule(typeof continuation.fromReserves === 'boolean', 'The Guild transport source flag is malformed.');
       const frame = continuation.frame;
-      requireRule(frame && Object.keys(frame).filter(key => key !== 'advisorArrivalSource').sort().join(',') ===
+      requireRule(frame && Object.keys(frame).filter(key => key !== 'advisorArrivalSource' && key !== 'noField').sort().join(',') ===
         'advisors,allyPayment,amount,cost,elite,eliteGroup,group,origin,player,sector,to,turn',
       'The saved Guild transport frame is malformed.');
       const p = getPlayer(g, frame.player);
@@ -35930,11 +35932,12 @@ function finishGuildRateResponse(g: Game, response: ResponseWindow, canceled: bo
   }
 }
 function guildTransportSignature(intent: PendingGuildTransport): string {
-  const fields = [intent.event, intent.turn, intent.player, intent.fromReserves,
+  const fields: unknown[] = [intent.event, intent.turn, intent.player, intent.fromReserves,
     intent.group, intent.eliteGroup, intent.origin, intent.to, intent.sector,
     intent.amount, intent.elite, intent.cost, intent.allyPayment, intent.advisors];
   if (intent.permission !== undefined) fields.push(intent.permission);
   if (intent.advisorArrivalSource !== undefined) fields.push(intent.advisorArrivalSource);
+  if (intent.noField !== undefined) fields.push(intent.noField);
   return JSON.stringify(fields);
 }
 function ordinaryGuildTransportFullCost(g: Game, p: Player, frame: GuildTransportOrder): number | null {
@@ -35971,6 +35974,8 @@ function validateGuildTransportWindow(g: Game, response: ResponseWindow) {
   const intent = g.pendingGuildTransport;
   const guild = byFaction(g, 'guild');
   const shipper = intent && g.players.find(p => p.id === intent.player);
+  const marker = intent?.noField;
+  const deployed = shipper?.noField?.deployed;
   const permission = response.kind === 'guildTransportPermission';
   requireRule(intent && guild && shipper &&
     (permission ? intent.permission === true && response.guildTransportEvent === intent.event
@@ -35988,18 +35993,26 @@ function validateGuildTransportWindow(g: Game, response: ResponseWindow) {
     typeof intent.to === 'string' && intent.to.length > 0 &&
     Number.isSafeInteger(intent.sector) &&
     Number.isSafeInteger(intent.amount) && intent.amount > 0 &&
-    Number.isSafeInteger(intent.elite) && intent.elite >= 0 && intent.elite <= intent.amount &&
+    Number.isSafeInteger(intent.elite) && intent.elite >= 0 && intent.elite <= intent.amount - Number(!!marker) &&
     Number.isSafeInteger(intent.allyPayment) && intent.allyPayment >= 0 &&
     intent.allyPayment <= intent.cost && typeof intent.advisors === 'boolean' &&
     (intent.advisorArrivalSource === undefined || g.advanced && shipper.faction === 'beneGesserit' &&
       !intent.fromReserves && intent.to !== 'reserves' && intent.advisorArrivalSource === intent.origin) &&
+    (marker === undefined || typeof marker === 'object' && marker !== null &&
+      Object.keys(marker).sort().join(',') === 'event,from,tokenId' &&
+      shipper.faction === 'richese' && !intent.fromReserves && !intent.advisors &&
+      typeof marker.tokenId === 'string' && typeof marker.event === 'string' &&
+      typeof marker.from === 'string' && deployed?.tokenId === marker.tokenId &&
+      deployed.controller === shipper.id && shipper.noFieldEvent === marker.event &&
+      location(deployed.location.territory,deployed.location.sector) === marker.from &&
+      deployed.location.territory === intent.origin) &&
     (intent.fromReserves
       ? intent.origin === 'reserves' && shipper.faction === 'fremen' &&
         intent.group.length === 0 && Object.keys(intent.eliteGroup).length === 0 &&
         intent.to !== 'reserves'
-      : intent.group.length > 0 && intent.group.every(([key]) =>
+      : (intent.group.length > 0 || !!marker) && intent.group.every(([key]) =>
         splitLocation(key).territory === intent.origin) &&
-        intent.group.reduce((sum, [, n]) => sum + n, 0) === intent.amount &&
+        intent.group.reduce((sum, [, n]) => sum + n, 0) + Number(!!marker) === intent.amount &&
         Object.keys(intent.eliteGroup).length === intent.group.length &&
         intent.group.every(([key, n]) =>
           Number.isSafeInteger(intent.eliteGroup[key]) &&
@@ -36026,6 +36039,7 @@ function guildTransportOrder(intent: PendingGuildTransport, cost = intent.cost):
     group: intent.group, eliteGroup: intent.eliteGroup, to: intent.to,
     sector: intent.sector, amount: intent.amount, elite: intent.elite,
     cost, allyPayment: intent.allyPayment, advisors: intent.advisors,
+    ...(intent.noField ? {noField:{...intent.noField}} : {}),
     ...(intent.advisorArrivalSource !== undefined ? {advisorArrivalSource:intent.advisorArrivalSource} : {}),
   };
 }
@@ -36093,11 +36107,13 @@ function validateGuildTransportForCommit(
       'The original southern-reserve elite allocation is unavailable.');
   } else {
     const quoted = forceGroup(g, p, { type: 'guildShip',
-      forces: Object.fromEntries(group), eliteForces: eliteGroup });
+      forces: Object.fromEntries(group), eliteForces: eliteGroup,
+      ...(frame.noField ? {noField:frame.noField.tokenId,event:frame.noField.event} : {}) });
     requireRule(JSON.stringify(quoted.group) === JSON.stringify(group) &&
       JSON.stringify(quoted.eliteGroup) === JSON.stringify(eliteGroup) &&
       quoted.origin === origin && quoted.elite === elite && quoted.total === amount &&
-      group.every(([key]) => splitLocation(key).sector !== g.storm),
+      JSON.stringify(quoted.noField) === JSON.stringify(frame.noField) &&
+      quoted.sourceKeys.every(key => splitLocation(key).sector !== g.storm),
       'The original Guild transport force group changed or entered the storm.');
   }
   requireRule((fromReserves || to === 'reserves' || to !== origin) &&
@@ -36111,6 +36127,8 @@ function validateGuildTransportForCommit(
   requireRule(to === 'reserves' || advisors || sourceLock !== g.turn ||
     !g.players.some(other => other.id !== p.id && at(other, to)),
     'New advisors cannot become fighters this turn.');
+  requireRule(!frame.noField || to === 'reserves' || !to.startsWith('homeworld:'),
+    'A concealed No-Field cannot be placed on a Homeworld.');
   if (to !== 'reserves') allowedEntry(g, p, to, sector, false, advisors);
   const halfRate = !!guildSecretEvent || g.karamaShipping?.player === p.id ||
     !(g.guildRateBlocked?.turn === g.turn && g.guildRateBlocked.player === p.id);
@@ -36129,9 +36147,10 @@ function commitGuildTransport(
 ) {
   requireRule(!g.guildBetrayalPreview || !guildSecretEvent,
     'Guild Betrayal native transport does not combine with a Guild Secret Ally producer.');
-  if (!guildSecretEvent) validateGuildTransportForCommit(g, p, frame, fromReserves);
+  if (!guildSecretEvent || frame.noField) validateGuildTransportForCommit(g, p, frame, fromReserves, guildSecretEvent);
   if (!settlement && beginGuildBetrayal(g, {source: 'guildTransport', frame, fromReserves})) return;
   const { origin, group, eliteGroup, to, sector, amount, elite, cost, allyPayment, advisors } = frame;
+  const physicalAmount = amount - Number(!!frame.noField);
   const sourceLock = p.advisors?.[origin]?.lockedTurn;
   const advisorArrival = advisors || (!movementPreparation && !fromReserves && to !== 'reserves' &&
     g.advanced && p.faction === 'beneGesserit' && isAdvisor(p, origin) && !at(p, to) &&
@@ -36157,12 +36176,19 @@ function commitGuildTransport(
     p.reserves -= amount;
     if (p.elites) p.elites.reserves -= elite;
   } else removeGroup(p, group, eliteGroup);
+  if (frame.noField) {
+    const marker = frame.noField;
+    p.noField = noFieldRule(() => to === 'reserves'
+      ? recallRicheseNoField(p.noField!,marker.tokenId)
+      : moveRicheseNoField(p.noField!,marker.tokenId,{territory:to,sector}));
+    p.noFieldEvent = crypto.randomUUID();
+  }
   if (to === 'reserves') {
     // User ruling 7 October 2026: the Nexus Secret Ally reserve return is an
     // authorized native-reserve return, so it deposits into Homeworld custody.
-    addNativeReserves(g, p, amount, elite);
+    if (physicalAmount) addNativeReserves(g, p, physicalAmount, elite);
   } else {
-    place(p, to, sector, amount, elite);
+    if (physicalAmount) place(p, to, sector, physicalAmount, elite);
     if (advisorArrival) {
       const lockedTurn = Math.max(sourceLock ?? 0, p.advisors?.[to]?.lockedTurn ?? 0);
       (p.advisors ??= {})[to] = { ...p.advisors?.[to], ...(lockedTurn ? { lockedTurn } : {}) };
@@ -36180,7 +36206,7 @@ function commitGuildTransport(
   closeAdvisorPreparationOnShipment(g, p.id, 'guildTransport');
   g.karamaShipping = null;
   if (movementPreparation) return;
-  log(g, `${p.name} used Guild transport for ${amount} forces.${guildSecretEvent ? ` Guild Secret Ally is spent; ${cost} spice was paid to the bank. Their ordinary movement remains available.` : ''}`,
+  log(g, `${p.name} used Guild transport for ${physicalAmount} physical forces${frame.noField ? ` and one concealed No-Field. Provisional ${to === 'reserves' ? 'face-down return preserves its last-shipment restriction without materializing forces' : 'cross-shipment preserves concealment and token history'}` : ''}.${guildSecretEvent ? ` Guild Secret Ally is spent; ${cost} spice was paid to the bank. Their ordinary movement remains available.` : ''}`,
     guildSecretEvent
       ? { faction: 'guild', name: 'Secret Ally transport' }
       : { faction: p.faction, name: 'Guild transport' });
@@ -36759,11 +36785,29 @@ function nexusGuildSecretIntegrity(g: Game) {
     const frame = nexusRule(() => JSON.parse(record.frame)) as Record<string,unknown>;
     requireRule(frame && typeof frame === 'object' && frame.guildSecretEvent === record.receipt.event &&
       frame.player === record.receipt.owner && frame.turn === record.receipt.turn &&
-      !frame.nexusEvent && !frame.guildNexusEvent && !frame.noField && !frame.alliedNoField && !frame.source,
+      !frame.nexusEvent && !frame.guildNexusEvent && !frame.alliedNoField && !frame.source &&
+      (!frame.noField || record.kind === 'cross' && record.receipt.owner &&
+        getPlayer(g,record.receipt.owner).faction === 'richese'),
       'Guild Secret Ally has changed its original shipment source.');
+    if (frame.noField) {
+      const marker = frame.noField as Record<string,unknown>;
+      const owner = getPlayer(g,record.receipt.owner);
+      requireRule(marker && typeof marker === 'object' && !Array.isArray(marker) &&
+        Object.keys(marker).sort().join(',') === 'event,from,tokenId' &&
+        typeof marker.tokenId === 'string' && typeof marker.event === 'string' && marker.event.length > 0 &&
+        typeof marker.from === 'string' && marker.from.length > 0 &&
+        owner.noField?.tokens.some(token => token.id === marker.tokenId) &&
+        location(splitLocation(marker.from).territory,splitLocation(marker.from).sector) === marker.from &&
+        splitLocation(marker.from).territory === frame.origin &&
+        Array.isArray(frame.group) && frame.group.every((entry:unknown) => Array.isArray(entry) &&
+          entry.length === 2 && typeof entry[0] === 'string' && Number.isSafeInteger(entry[1]) && entry[1] > 0 &&
+          splitLocation(entry[0]).territory === frame.origin) &&
+        frame.group.reduce((sum:number,entry:[string,number]) => sum + entry[1],0) + 1 === frame.amount,
+        'Guild Secret Ally lost its original concealed marker and physical group.');
+    }
     const destination = record.kind === 'homeworld' ? 'homeworld' :
       record.kind === 'cross' && frame.to === 'reserves' ? 'reserves' : territory(String(record.kind === 'cross' ? frame.to : frame.territory)).type;
-    const quote = nexusRule(() => quoteNexusGuildSecretShipment(destination,frame.amount as number));
+    const quote = nexusRule(() => quoteNexusGuildSecretShipment(destination,frame.amount as number,!!frame.noField));
     requireRule(frame.cost === quote.cost && frame.allyPayment === 0 && Number.isSafeInteger(frame.elite) &&
       Number(frame.elite) >= 0 && Number(frame.elite) <= quote.physicalAmount,
       'Guild Secret Ally has changed its original payment or typed allocation.');
@@ -42296,8 +42340,8 @@ function applyActionInner(
   }
   if (t === 'guildShip') {
     const guildSecretEvent = action.nexus === undefined ? undefined : validateGuildSecretDeclaration(g,id,action.nexus);
-    if (guildSecretEvent) requireRule(Object.keys(action).every(k => ['type','from','forces','eliteForces','amount','elite','territory','sector','allyPayment','nexus'].includes(k)),
-      'Guild Secret Ally cross-shipment needs explicit physical forces.');
+    if (guildSecretEvent) requireRule(Object.keys(action).every(k => ['type','from','forces','eliteForces','amount','elite','territory','sector','allyPayment','nexus',...(action.noField !== undefined ? ['noField','event'] : [])].includes(k)),
+      'Guild Secret Ally cross-shipment needs its selected physical group and optional current No-Field.');
     const homeworldTarget = action.territory ?? 'reserves';
     if (g.homeworlds?.custody && p.faction === 'guild' &&
         (homeworldTarget === 'reserves' || (typeof homeworldTarget === 'string' && homeworldTarget.startsWith('homeworld:')))) {
@@ -42321,10 +42365,6 @@ function applyActionInner(
         : null,
     );
     requireRule(
-      action.noField === undefined,
-      'Guild transport of a concealed No-Field awaits its specific return and custody rules.',
-    );
-    requireRule(
       g.phase === 5 &&
         g.active === id &&
         shipmentAvailable(g,p) &&
@@ -42334,18 +42374,22 @@ function applyActionInner(
     const fromReserves = action.from === 'reserves';
     requireRule(!guildSecretEvent || !fromReserves, 'Use the reserve shipment selector for paid Guild Secret Ally reinforcements.');
     requireRule(
-      !fromReserves || p.faction === 'fremen',
-      'Only allied Fremen may cross-ship from their southern reserves.',
+      !fromReserves || p.faction === 'fremen' && action.noField === undefined,
+      'Only allied Fremen physical reserves may use this source.',
     );
     const {
       group,
       eliteGroup,
       elite,
       origin,
+      noField,
+      sourceKeys,
       total: n,
     } = fromReserves
       ? {
           origin: 'reserves',
+          noField: undefined,
+          sourceKeys: [] as string[],
           group: [] as [string, number][],
           eliteGroup: {} as Record<string, number>,
           elite: eliteChoice(
@@ -42358,7 +42402,7 @@ function applyActionInner(
         }
       : forceGroup(g, p, action);
     requireRule(
-      group.every(([key]) => splitLocation(key).sector !== g.storm),
+      sourceKeys.every(key => splitLocation(key).sector !== g.storm),
       'The source is in storm.',
     );
     const to = stringField(action.territory ?? 'reserves');
@@ -42383,8 +42427,10 @@ function applyActionInner(
       to !== MOBILE_STRONGHOLD || p.faction === 'ixians',
       'Only Ixians may ship directly into the mobile stronghold.',
     );
+    requireRule(!noField || to === 'reserves' || !to.startsWith('homeworld:'),
+      'A concealed No-Field cannot be placed on a Homeworld.');
     if (to !== 'reserves') allowedEntry(g, p, to, sector, false, advisors);
-    const halfRate = g.karamaShipping?.player === id ||
+    const halfRate = !!guildSecretEvent || g.karamaShipping?.player === id ||
       !(g.guildRateBlocked?.turn === g.turn && g.guildRateBlocked.player === id);
     const cost = guildShipmentCost(
       to === 'reserves' ? 'reserves' : territory(to).type, n, halfRate);
@@ -42397,6 +42443,7 @@ function applyActionInner(
     const frame: GuildTransportOrder = {
       turn: g.turn, player: id, origin, group, eliteGroup, to, sector,
       amount: n, elite, cost, allyPayment, advisors,
+      ...(noField ? {noField:{...noField}} : {}),
       ...(advisorArrivalSource !== undefined ? {advisorArrivalSource} : {}),
     };
     if(execution==='live'&&openAdvisorTransportMatching(g,{kind:'guild',frame,fromReserves,...(guildSecretEvent?{secret:guildSecretEvent}:{})}))return g;

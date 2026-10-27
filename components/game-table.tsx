@@ -5144,6 +5144,11 @@ export function GameTable({
                     {!!me.hajrPlays && <p className="fine">{me.hajrPlays} Hajr play{me.hajrPlays === 1 ? '' : 's'} this turn. Each legal play grants one additional movement. A recovered Hajr must return to your hand; Advanced requires a fresh post-move opportunity.</p>}
                     {transportPreview && (
                       <>
+                        {includesNoField && <p className="fine">
+                          Provisional No-Field transport: cross-shipment keeps your marker concealed and prices it as one force.
+                          A permitted Secret Ally return sends it back face down without placing forces or clearing the last-token restriction.
+                          Your ordinary movement remains available.
+                        </p>}
                         <ShipmentQuote
                           id="guild-transport-quote"
                           label={`Guild transport to ${territory(selected).name}`}

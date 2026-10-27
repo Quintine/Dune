@@ -5,6 +5,7 @@ import { splitLocation, validGameLocation } from './board';
 import { botEntryAllowed, guildTransportCost } from './bot-mobility';
 import { shipmentPaymentBounds } from './shipment-price';
 import { quoteAdvisorTransportMatching, AdvisorTransportMatchingError } from './advisor-transport-matching';
+import { guildNoFieldSelection } from './guild-no-field-selection';
 
 /** Preview the submitted Guild transport using only this seat's entitled view.
  * The authoritative action still revalidates the selection when it arrives.
@@ -22,10 +23,27 @@ export function guildTransportQuote(g: GameView, action: Action) {
   if (g.guildTransportCanceled && !nexusAllowed)
     unavailableReasons.push('Karama prevents native Guild cross/return transport for this shipment opportunity.');
   const fromReserves = action.from === 'reserves';
+  const namesNoField = action.noField !== undefined;
+  const noField = namesNoField ? guildNoFieldSelection(g, action) : null;
   let total = 0;
-  let origin: string | undefined;
+  let origin = noField?.location.territory;
   const matchingGroup:Record<string,number>={};
-  let validForces = true;
+  let validForces = !namesNoField || !!noField;
+  if (namesNoField && !noField)
+    unavailableReasons.push('Choose your currently deployed No-Field and its current owner event.');
+  if (namesNoField && (fromReserves || !action.forces ||
+      typeof action.forces !== 'object' || Array.isArray(action.forces))) {
+    validForces = false;
+    unavailableReasons.push('Select the concealed No-Field from its board location with a physical force group, which may be empty.');
+  }
+  if (noField && !fromReserves) {
+    if (!validGameLocation(g, noField.location.territory, noField.location.sector)) {
+      validForces = false;
+      unavailableReasons.push('The current No-Field source location is unavailable.');
+    }
+    if (noField.location.sector === g.storm)
+      unavailableReasons.push('The selected No-Field source sector is in the storm.');
+  }
   const unitSelection = (
     value: unknown,
     available: number,
@@ -58,10 +76,6 @@ export function guildTransportQuote(g: GameView, action: Action) {
       );
     }
   };
-  if (action.noField !== undefined)
-    unavailableReasons.push(
-      'Guild transport of a concealed No-Field is unavailable. Reveal the marker first or use its movement action.',
-    );
   if (fromReserves) {
     if (nexus)
       unavailableReasons.push(
@@ -71,12 +85,13 @@ export function guildTransportQuote(g: GameView, action: Action) {
       unavailableReasons.push(
         'Only allied Fremen may cross-ship southern reserves.',
       );
-    unitSelection(
-      action.amount,
-      p.reserves,
-      p.elites?.reserves ?? 0,
-      action.elite,
-    );
+    if (!namesNoField)
+      unitSelection(
+        action.amount,
+        p.reserves,
+        p.elites?.reserves ?? 0,
+        action.elite,
+      );
   } else {
     const combined = action.forces !== undefined;
     const entries = combined
@@ -113,16 +128,21 @@ export function guildTransportQuote(g: GameView, action: Action) {
         unavailableReasons.push('A selected source sector is in the storm.');
     }
   }
-  if (!validForces || !total)
+  if (total > 20) validForces = false;
+  if (!validForces || (!total && !noField))
     unavailableReasons.push(
       fromReserves
         ? 'Choose a whole number of available southern reserves and a valid elite allocation.'
-        : 'Choose available physical forces and a valid elite allocation from one territory.',
+        : namesNoField
+          ? 'Choose one current concealed marker and zero to twenty available physical forces from its territory.'
+          : 'Choose available physical forces and a valid elite allocation from one territory.',
     );
   const to =
     typeof action.territory === 'string' ? action.territory : 'reserves';
   const sector = action.sector ?? 0;
+  const noFieldWorld = !!noField && !!g.homeworlds?.worlds?.some(world => world.id === to);
   const validDestination =
+    !noFieldWorld &&
     (action.territory == null || typeof action.territory === 'string') &&
     typeof sector === 'number' &&
     Number.isInteger(sector) &&
@@ -132,7 +152,9 @@ export function guildTransportQuote(g: GameView, action: Action) {
   if (to === 'reserves' && p.faction !== 'guild' && !nexusAllowed)
     unavailableReasons.push('Only the Guild may return forces to reserves.');
   if (!validDestination)
-    unavailableReasons.push('Choose a sector belonging to the destination.');
+    unavailableReasons.push(noFieldWorld
+      ? 'A concealed No-Field may cross to an Arrakis location or return behind your shield, not enter a Homeworld.'
+      : 'Choose a sector belonging to the destination.');
   else if (
     to !== 'reserves' &&
     !botEntryAllowed(g, p, to, sector as number, 'guildShip', origin)
@@ -157,12 +179,13 @@ export function guildTransportQuote(g: GameView, action: Action) {
     unavailableReasons.push(
       'Guild transport requires your unused shipment opportunity.',
     );
+  const billable = total + (noField ? 1 : 0);
   const cost =
-    validForces && total > 0 && validDestination
+    validForces && billable > 0 && validDestination
       ? guildTransportCost(
           to,
-          total,
-          g.karamaShipping?.player === g.me || !g.guildRateCanceled,
+          billable,
+          nexusAllowed || g.karamaShipping?.player === g.me || !g.guildRateCanceled,
         )
       : null;
   const ownSpice = p.spice ?? 0;
@@ -200,7 +223,8 @@ export function guildTransportQuote(g: GameView, action: Action) {
     }catch(error){if(!(error instanceof AdvisorTransportMatchingError))throw error;unavailableReasons.push(error.message);}
   }
   return {
-    physicalForces: validForces && total > 0 ? total : undefined,
+    physicalForces: validForces && (total > 0 || noField) ? total : undefined,
+    ...(noField ? { noField: true as const } : {}),
     quote: validShare
       ? {
           cost,

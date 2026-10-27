@@ -2,6 +2,47 @@
 
 Initial primary-source and engine audit, 2026-09-06. The bounded ordinary-reserve cancellation policy below was selected on 2026-09-28 after a targeted publisher-source search found no affordability procedure; the later original audit remains historical evidence for unfinished transport and module combinations.
 
+## Concealed No-Field transport — 27 October 2026
+
+Native allied cross-shipment now accepts an owned concealed Richese marker,
+alone or with same-origin physical counters. The marker contributes one to the
+rounded group price, including value0, without becoming a physical counter.
+Native permission precedes the existing rate response; all-pass pays/delivers
+once. Permission denial leaves original custody/event and shipment unused.
+Rate denial retains the existing full-price/original-split affordability policy;
+an unfunded declaration withdraws without delivery, with the responding card
+still spent. Ordinary Guild allies still have no reserve-return permission.
+
+The real absent-Guild Nexus Secret Ally instead supplies its own cross/return
+grant and Bank-paid rate. Its concealed return provisionally recalls the token
+face down, preserves the next-shipment restriction and deposits only actual
+physical companions. Cross keeps the token concealed. Current token/event and
+the physical group remain bound through the original declaration/continuation.
+Old transport frame signatures keep their original bytes when no marker is
+present. This selected source composition does not settle broader module
+combinations. [Source and scope](RICHESE_NO_FIELD_RULES.md#concealed-guild-cross-shipment-and-secret-ally-return--27-october-2026).
+
+### Scoped native evidence
+
+Frozen15-file union120/120, types/lint/build and eight original-game programmes
+pass. Actual paid tokens, real R/G or A/E alliance consents and a real closing
+Guild Nexus draw create the new sources. Native all-pass, permission denial,
+funded/unfunded rate denial, Secret cross/return and physical1+marker5 return
+retain the original response/payment pipeline.33 GameTable SSR,8 quote renders
+and8 actual Finish callbacks are recorded; transport controls use native packets
+directly, without a clicked-selector or browser claim. Source/further arrays
+are773/36. Separate controlled quote/bot cases cover physical20+marker1.
+
+Feedback repaired actual closing-draw eligibility, the common bot source filter,
+two old explicitly controlled fixtures' stale Charity frame and the signature
+array type. Failed v1/v2 results remain preserved. Final v3 uses one frozen
+source then a three-document evidence overlay; original physical signatures
+retain bytes. Existing server HTTP200, no restart or game/database operation.
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-guild-no-field-transport-proof-v3/`;
+runtime: adjacent `20261027-guild-no-field-transport-runtime/run-v1/`.
+Broader modules, depleted native supply, full modes and final browser/deployed
+and recovery/privacy/custody acceptance remain open.
+
 ## Nullentropy recovery of the price cost — 26 October 2026
 
 Paid Box recovery now shares the existing claimed-cost nonduplication policy:

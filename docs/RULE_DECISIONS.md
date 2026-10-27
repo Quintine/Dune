@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Concealed No-Field Guild transport — 27 October 2026
+
+Under the standing recommended-option policy, compose supplied Advanced
+physical36/printed34 B and E2 FAQ10's marker-as-one rule with native Guild
+allied cross-shipment and the actual absent-Guild Secret Ally cross/return
+grant. Cross preserves concealment; Secret return provisionally recalls face
+down without denomination materialization. Both retain last-shipped identity.
+Bill one marker plus physical companions once; only companions use counter
+removal/deposit. Native permission/rate responses and existing unfunded
+withdrawal remain; ordinary Guild allies still cannot return (November2020
+FAQ9). No marker Homeworld placement is granted. Targeted publisher/designer
+search found no specific combined ruling; broader combinations and final
+acceptance remain open. [Contract](RICHESE_NO_FIELD_RULES.md#concealed-guild-cross-shipment-and-secret-ally-return--27-october-2026).
+
 ## No-Field at allied separation — 27 October 2026
 
 Compose E2 FAQ10/supplied physical36 B's one-force presence with the actual

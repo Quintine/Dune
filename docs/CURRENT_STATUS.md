@@ -20,6 +20,52 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Concealed No-Field Guild transport — 27 October. Prototyped / Partial.**
+Native reciprocal Guild allies can cross-ship their owned concealed Richese
+marker alone or with same-origin counters. Original permission/rate responses,
+full-price repricing and unfunded withdrawal remain. Actual absent-Guild Secret
+Ally can cross or recall it face down, spending its original Nexus once and
+paying the Bank. Both preserve token inventory and last-shipped identity;
+return deposits only physical companions.0 never invents a counter. One marker
+plus physical0..20 prices1..21 once. Ordinary ally return and marker Homeworld
+placement stay unavailable. Persistent provisional guidance and separate quote
+rows explain the marker/count distinction. All four minimal profiles can submit
+legal owned marker routes; full AI refinement remains deferred.
+[Source and contract](RICHESE_NO_FIELD_RULES.md#concealed-guild-cross-shipment-and-secret-ally-return--27-october-2026).
+
+Frozen **15-file union, 120/120**, types/lint/build and eight original-game
+programmes pass. Actual Advanced Richese/Atreides/Guild-or-Emperor +CHOAM-deck
+starts earn paid marker shipments. Native R/G form a real Nexus alliance;
+Secret A/E form a real alliance leaving R unallied, then R draws the original
+unopened preselected Guild Nexus through its actual closing choice. A genuine
+one-counter shipment precedes the later mixed marker shipment. No played hand,
+purse, army, phase, alliance, marker or event is installed in these new sources.
+
+Runtime records 33 GameTable SSR, 8 separate actual quote renders and 8 actual
+GameTable Finish callbacks; source/further action arrays total773/36. Transport
+selectors, declarations, permission/rate/cancel and Nexus controls use native
+packets directly; no clicked transport-control or browser hydration/navigation
+claim. Native all-pass0/5, permission cancel5, funded/unfunded rate cancel3,
+Secret cross0, return5 and mixed1+5 return are exercised. New native tests also
+cover0/3/5, stale/wrong source, the next actual same-token ban and all profiles.
+Controlled quote/bot fixtures separately cover the20+marker maximum.
+
+Feedback repaired the original Secret source's missing real closing-draw
+eligibility, an old common bot filter that rejected the newly legal source,
+two historical controlled fixtures' stale Charity frames and the signature
+array type. The historical adapters are explicitly labelled controlled and do
+not claim native phase traversal. Failed v1/v2 proof remains preserved; v3
+runs the frozen related batch after repair. Existing physical signatures keep
+their bytes when no marker is present.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-guild-no-field-transport-proof-v3/`;
+journeys/HTML: adjacent `20261027-guild-no-field-transport-runtime/run-v1/`.
+All checks use one frozen source followed only by a recorded three-document
+evidence overlay. Existing server HTTP200, no restart or saved-game/database
+operation. Selected conceal/recall composition remains provisional; depleted
+native supplies, broader module combinations, complete modes and final
+rules/recovery/privacy/custody/browser/deployed acceptance remain open.
+
 **No-Field / allied separation — 27 October. Prototyped / Partial.**
 A due allied-separation end now reveals the concealed marker through the
 selected provisional destructive composition, materializes only available

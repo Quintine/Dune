@@ -123,6 +123,7 @@ import { fighterCount, isAdvisor } from './advisors';
 import { quoteAdvisorMatching, AdvisorMatchingError } from './advisor-matching';
 import { quoteAdvisorAmbassadorMatching, AdvisorAmbassadorMatchingError } from './advisor-ambassador-matching';
 import { guildTransportQuote } from './transport-quote';
+import { guildNoFieldTransportActions } from './bot-guild-no-field-transport';
 import { quoteAdvisorGatherMatching, AdvisorGatherMatchingError } from './advisor-gather-matching';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from './combat';
 import { reinforcementsBattleForces } from './reinforcements-homeworld';
@@ -4445,7 +4446,7 @@ export function botActions(g: GameView): Action[] {
   if (shrineTruth) return [shrineTruth];
   const intelligence = tupileIntelligenceActions(g);
   if (intelligence.length) return intelligence;
-  const actions = [...junctionTransportActions(g, rank(g)), ...policyActions(g)].flatMap((action) => {
+  const actions = [...junctionTransportActions(g, rank(g)), ...guildNoFieldTransportActions(g), ...policyActions(g)].flatMap((action) => {
     if (action.type === 'move' && nexusGuildCunningActive(g) && !nexusGuildMovementAvailable(g)) return [];
     if (action.type === 'battlePlan' && g.ecazSpecialKarama?.declared &&
         (action.weapon || action.defense)) return [];

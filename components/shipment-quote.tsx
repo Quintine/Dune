@@ -2,6 +2,7 @@ export type ShipmentQuoteProps = {
   id?: string;
   label?: string;
   physicalForces?: number;
+  noField?: true;
   quote: {
     cost: number;
     normalCost: number;
@@ -22,6 +23,7 @@ export function ShipmentQuote({
   id,
   label = 'Reserve shipment',
   physicalForces,
+  noField,
   quote,
   funding,
   unavailableReasons = [],
@@ -48,7 +50,8 @@ export function ShipmentQuote({
           )
         ) : (
           <p className="m-0 text-sm leading-6">
-            Choose valid forces and funding to see the payment breakdown.
+            {noField ? 'Choose a valid marker, force group and funding to see the payment breakdown.'
+              : 'Choose valid forces and funding to see the payment breakdown.'}
           </p>
         )}
       </div>
@@ -59,6 +62,10 @@ export function ShipmentQuote({
             <dd className="m-0 text-right tabular-nums">{physicalForces}</dd>
           </>
         )}
+        {noField && <>
+          <dt>Concealed No-Field selected</dt>
+          <dd className="m-0 text-right tabular-nums">1 marker</dd>
+        </>}
         <dt>Your available spice</dt>
         <dd className="m-0 text-right tabular-nums">{funding.ownSpice}</dd>
         <dt>Available ally pledge</dt>
@@ -74,6 +81,9 @@ export function ShipmentQuote({
           </>
         )}
       </dl>
+      {noField && <p className="m-0">
+        The concealed marker is billed as one shipment unit. It is excluded from the physical force count.
+      </p>}
       {unavailableReasons.length > 0 && (
         <div>
           <p className="m-0 font-semibold">Shipment unavailable</p>

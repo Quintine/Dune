@@ -2,6 +2,25 @@
 
 Source audit, 10 September 2026. This is a source-backed implementation contract, not certification of the whole card or either expansion module. The broader [Guild audit](NEXUS_GUILD_RULES.md) remains relevant to Cunning and Betrayal.
 
+## Concealed No-Field — 27 October 2026
+
+The selected provisional composition now includes a currently owned concealed
+Richese marker in this card's cross-shipment or own-reserve return. Count one
+marker plus actual companions for price, rounding once; physical0..20 means
+billable1..21. Delivery spends one actual original Nexus and pays the Bank.
+Cross moves the marker without materialization. Return recalls it face down,
+retaining last-shipped identity; no hidden denomination becomes a reserve
+deposit. Only physical companions return as counters. Explicit Homeworld marker
+placement and ordinary Guild ally return remain unavailable.
+
+This composes supplied Advanced physical36/printed34 B and official E2 FAQ10's
+one-force rule with the recorded card grant. Targeted publisher/designer search
+found no dedicated No-Field/Guild answer. The earlier component photograph is
+historical evidence; this checkpoint does not claim a fresh visual reread of
+that image. Existing card admission, source/storm restrictions, ordinary
+shipment allowance and native reserve custody remain. The source contract and
+remaining boundaries are in [No-Field rules](RICHESE_NO_FIELD_RULES.md#concealed-guild-cross-shipment-and-secret-ally-return--27-october-2026).
+
 ## Evidence checked
 
 The original Guild component was visually reread in the [photograph of GF9's twelve Nexus cards](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani), using the existing local inspection copy `/tmp/dune-nexus-cards.jpg`. Its Secret Ally panel grants Guild shipment rates and expressly adds cross-planet shipment or return to the holder's reserves as their shipping action. It applies when Guild is absent. It does not promise all Guild advantages.
@@ -40,6 +59,6 @@ Consume the actual held Nexus atomically with a validated paid declaration, pres
 
 Reuse `guildShipmentCost` for paid cross/return tariffs. Do not price the paid Fremen route through `reserveShipmentCost`, whose native Fremen branch intentionally returns zero. World-to-world pricing needs an explicit quoted rate modifier after route validation; changing the player's faction to Guild would also change custody and permissions. The native `quoteGuildHomeworldShipment` explicitly enforces Guild identity and ordinary Guild counters, so it is not a safe borrowed-return adapter without a separately settled contract.
 
-Generic Karama cannot target an absent native Guild player. That does not establish universal immunity for every borrowed effect. Preserve supported arrival reactions and existing independent Karama payment routing; do not stack two Guild half-rate modifiers into quarter price. Richese concealed No-Field price/transport composition remains its separate documented boundary, without blocking actual physical groups unnecessarily.
+Generic Karama cannot target an absent native Guild player. That does not establish universal immunity for every borrowed effect. Preserve supported arrival reactions and existing independent Karama payment routing; do not stack two Guild half-rate modifiers into quarter price. Richese concealed No-Field cross/return now follows the selected provisional composition above; broader combinations remain separate.
 
 Required runtime evidence includes odd/even prices, all supported route types, typed custody, Fremen free-versus-paid choices and storm behavior, native Ixian HMS access, current-source rejection, actual entry continuations, replay/JSON recovery, private projections and concurrent persistence. This audit changed documentation only.

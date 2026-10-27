@@ -284,7 +284,7 @@ export function revealRicheseNoField(
   };
 }
 
-/** Provisional Ecaz Betrayal composition: return the marker face down, without
+/** Provisional Ecaz Betrayal / authorized Guild-return composition: return face down, without
  * revealing or materializing its denomination. The last-shipment ban remains. */
 export function recallRicheseNoField(previous: RicheseNoField, tokenId: string): RicheseNoField {
   validateRicheseNoField(previous);

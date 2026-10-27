@@ -2,6 +2,41 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Concealed Guild cross-shipment and Secret Ally return — 27 October 2026
+
+The supplied Advanced source, physical36/printed34 B, and E2 FAQ printed10
+count a concealed marker as one force for all effects, including0. Compose
+that rule with Guild cross-shipment: a currently owned marker can travel alone
+or with actual counters from the same territory. It stays concealed, rotates
+its current event once at delivery, retains its physical token inventory and
+last-shipment identity, and consumes the ordinary shipment rather than movement.
+No reserve counter is materialized. This is the selected provisional
+composition; targeted publisher/designer searching found no specific combined
+No-Field/Guild ruling.
+
+Native reciprocal Guild allies retain their separate permission and rate
+responses. Cancellation leaves the marker at its original source with its
+original event; permission denial leaves the shipment unused. Rate cancellation
+reprices the fixed group, with the existing unfunded withdrawal policy. An
+ordinary Guild ally still cannot return to reserves (November2020 FAQ printed9).
+
+An actual absent-Guild Secret Ally card expressly grants cross-shipment or
+return to own reserves. Its original Nexus is spent once at paid commitment;
+payment goes to the Bank. Provisionally, return recalls the concealed token
+face down (`hiddenReturn`) without revealing its denomination or depositing
+its nominal value. The same-token next-shipment ban remains. Only actual
+physical companions are deposited through native reserves. Explicit Homeworld
+marker placement is unavailable; return means recall behind the shield.
+
+Price the marker as one plus0..20 physical counters, rounding the whole group
+once; the billable total may therefore be21. Views and controls display the
+marker separately from physical counters. No hidden denomination/reserve count
+is used to price or propose the transport. The existing movement selector,
+transport buttons and real Secret Ally selection submit the current token/event.
+Broader module combinations and complete-mode acceptance remain open.
+[Guild response contract](GUILD_RATE_KARAMA_RULES.md#concealed-no-field-transport--27-october-2026),
+[Secret Ally contract](NEXUS_GUILD_SECRET_ALLY_RULES.md#concealed-no-field--27-october-2026).
+
 ## Allied separation at a due ending — 27 October 2026
 
 A due Basic/Advanced alliance constraint now accepts normal Finish with an
@@ -355,7 +390,7 @@ This table records the original adapter contract. The implemented subset and cur
 2. **Mixed forces and battle dials.** The FAQ forbids dialing more than reserves in a No-Field battle. Existing ordinary counters are possible, but no retrieved specific answer defines the cap across those counters, multiple sectors, typed units or independent reserve uses. Basic/Advanced ordinary and the selected Advanced Occupy prototype use the explicitly provisional additive pool above. This does not settle that source question or admit Basic mixed coalition/module profiles.
 3. **Full-plan special Karama and structured Truthtrance.** The current prototype distinguishes supplied p27 F's special entire-plan power from p27 C/p36 B ordinary Prescience under the explicit provisional contract above; private reading does not reveal the physical token. No retrieved dedicated combined FAQ adjudicates that distinction or broader promise questions. Structured Truthtrance, public maxima, other-player legal previews and reasoning retain their original entitled boundaries.
 4. **Homeworld use.** R3 recommends Richese in a Homeworld combination but supplies no retrieved No-Field-specific rule defining off-planet hidden custody, one-on-planet versus off-planet coexistence, or homeworld threshold disclosure. General module availability is not an answer to those lifecycle questions. The isolated model represents a single Arrakis marker and does not authorize Homeworld placement.
-5. **Capturing, transferring or returning a concealed marker as a force.** Movement-as-a-force and Gamont's explicit forced reveal do not establish a general conversion for every card or Guild transport-to-reserves. A generic return helper must not erase a hidden token without a source-backed reveal/custody cause. This module exposes no such automatic escape from last-use history.
+5. **Capturing, transferring or returning a concealed marker as a force.** The selected Guild Secret Ally route above now provisionally recalls the marker face down while preserving last-use history. It does not establish a general conversion for every card, ordinary Guild ally return, foreign custody or Homeworld placement. Other return causes retain their own recorded contracts.
 6. **Allied discounts and reserve source.** Ordinary consent, typed allocation and funding are integrated. Guild-recipient and already-active Karama price/payee use the explicitly provisional prototype in both modes. Ordinary Fremen reserves are on-planet and remain ineligible for this off-planet method. See `RICHESE_ALLIED_SHIPMENT_AUDIT.md`.
 7. **Supply orientation.** Concealed denomination is explicit. Hiding unused IDs/values in public JSON is the minimum privacy consequence, not a claim about an otherwise undocumented physical supply layout. The last revealed used face is public until another deployment; historical log knowledge may legitimately remain.
 

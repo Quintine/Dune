@@ -18,8 +18,11 @@ export type NexusGuildCunningFixture = {
   observer: string;
   karama?: string;
 };
-/** Reuse genuine final native Guild setup, then exchange two physical Nexus
- * identities before any Cunning declaration; no grant or progress is invented. */
+/** CONTROLLED historical Movement boundary after genuine Guild setup. The
+ * inherited fixture stages wallets, reserve pools and phase5; retire its old
+ * phase2 Charity frame consistently with that declared jump. Exchange physical
+ * Nexus identities before Cunning; no grant, progress or completed Charity turn
+ * is presented as native history. */
 export function nexusGuildCunningFixture(
   options: Pick<
     NexusRicheseFixtureOptions,
@@ -32,6 +35,8 @@ export function nexusGuildCunningFixture(
   > = {},
 ): NexusGuildCunningFixture {
   const f = nexusRicheseFixture({ ...options, ownerFaction: 'guild' });
+  assert.equal(f.g.phase, 5);
+  delete f.g.charityOrder;
   const cards = f.g.nexusCards!.cards!,
     index = cards.deck.indexOf('guild');
   assert.ok(index >= 0);

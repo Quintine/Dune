@@ -4,6 +4,7 @@ import { nexusRicheseQuote } from './nexus-richese-options';
 import { quoteRicheseHomeworldPair } from './richese-homeworld-shipment';
 import { reserveShipmentCost } from './shipment-price';
 import { territory } from './board';
+import { guildTransportQuote } from './transport-quote';
 
 
 export function botHomeworldShipmentPaymentAllowed(g: GameView, action: Action): boolean {
@@ -31,6 +32,8 @@ export function botHomeworldShipmentPaymentAllowed(g: GameView, action: Action):
     } catch { return false; }
   }
   const guildSource = action.nexus !== undefined && action.nexus === g.nexusGuildSecretAlly?.event;
+  if (guildSource && action.noField !== undefined)
+    return action.type === 'guildShip' && !guildTransportQuote(g, action).unavailableReasons.length;
   const nexusQuote = action.nexus === undefined ? null : guildSource ? nexusGuildSecretAllyQuote(g, to, amount) : nexusRicheseQuote(g, to, amount);
   if (action.nexus !== undefined && (!nexusQuote || (!guildSource && (action.nexus !== g.nexusRichese?.event || action.type !== 'ship')) || action.noField !== undefined)) return false;
   return true;
