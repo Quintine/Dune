@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 27 October 2026 — Basic native Ambassador/Terror arrivals
+
+The existing ordered same-entry queue admits bare Basic native faction rosters
+with selected Ix, CHOAM or Ecaz decks, preserving its existing response and
+nested-arrival boundaries. Stale player-facing faction and selected component
+guidance now describes available starts as unfinished previews. Complete modes,
+broader interactions, browser and deployed acceptance remain open.
+Frozen changed-path proof passed 76/76 tests in nine files, type/lint and the
+production build. Actual native shipments and both reaction orders are covered;
+the fixture explicitly stages the two original supply tokens through helpers.
+[Contract](DEFERRED_SHIPMENT_ARRIVAL.md#basic-native-faction-overlap--27-october-2026).
+
 ## 27 October 2026 — Basic Richese and Kull/Semuta
 
 The printed-Kull opt-in includes native Richese and its existing cache setup.

@@ -20,6 +20,17 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Basic native Ambassador/Terror arrivals — 27 October. Prototyped / Partial.**
+Bare Basic games with selected native faction decks can carry one eligible entry
+through both Ecaz Ambassador and Moritani Terror opportunities in the existing
+provisional storm order. Their original payment, entry and continuation happen
+once. Nested Fremen/Guild Ambassador arrivals and optional-module boundaries
+remain separate. Player reference text also corrects outdated claims that
+supported faction previews cannot start.
+[Scope](DEFERRED_SHIPMENT_ARRIVAL.md#basic-native-faction-overlap--27-october-2026).
+The frozen batch passed 76/76 tests in nine files, type/lint and the production
+build. Complete and deployed acceptance remain open.
+
 **Basic Richese and Kull/Semuta — 27 October. Prototyped / Partial.**
 The printed-Kull opt-in includes native Richese. In supported clean parents,
 successful Kull and a distinct counter open the public Semuta discard reaction

@@ -139,7 +139,7 @@ const phaseDetails = [
     'An allied Fremen player can grant three free force revivals during this phase.',
     'Use the leader selector to choose a dead leader. Revival cycles determine whether it is eligible; strength determines its normal cost.',
     'Ecaz ordinary revival uses a provisional native-identity cohort: five actual Tanks including Duke, or no available native leaders, opens it. Remaining native returns stay legal after another native dies again. Late first deaths do not need to match a global death count; Duke remains independently revivable outside the five native discs.',
-    'In development Ecaz fixtures, finishing Revival opens Ambassador placement after any CHOAM closing market. See Ecaz Ambassadors for the supported placement controls and remaining effects. Full expansion starts remain disabled.',
+    'In development Ecaz fixtures, finishing Revival opens Ambassador placement after any CHOAM closing market. See Ecaz Ambassadors for the supported placement controls and remaining effects. Supported expansion starts are available as unfinished previews.',
   ],
   [
     'At the start of this phase, resolve the Atreides spice foresight response. If allowed, Atreides privately inspects the next card, including when using double spice blow.',
@@ -205,7 +205,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Verification entries identify focused regression suites. Passing those checks does not certify every interaction, browser journey or complete expansion game.',
       'Development stages distinguish Missing functions, working Prototypes, Integrated functions, Verified behavior and Polished presentation. A prototype stage does not certify complete rules coverage; check the stated limits and evidence.',
       'This checklist is being extended across the rules. Features without a checklist still have a topic-level coverage label and are not implicitly complete.',
-      'Choose Rules → Advanced preview when creating a room, or as host in the lobby. After everyone is ready, choose Begin Advanced preview. This unfinished mode supports the six classic factions, with optional Tech Tokens (3+ players) and Stronghold Cards. Expansion starts remain disabled; preview access does not certify complete rules compliance.',
+      'Choose Rules → Advanced preview when creating a room, or as host in the lobby. After everyone is ready, choose Begin Advanced preview. This unfinished mode supports selected expansion factions and supported optional Tech Tokens (3+ players) and Stronghold Cards; combination limits remain. Preview access does not certify complete rules compliance.',
     ],
     related: [
       'setup',
@@ -409,7 +409,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Cards',
     coverage: 'Partial',
     summary:
-      'Inspect ten Richese cards and review the implemented auction flow. Card-effect integration is incomplete and full Richese starts remain disabled.',
+      'Inspect ten Richese cards and review the implemented auction flow. Supported Richese starts are unfinished previews; complete rules and acceptance remain open.',
     steps: [
       'Richese begins with one of each of these ten cards in a separate cache. These cached cards are not part of its hand and are not initially shuffled into the ordinary Treachery deck.',
       'This public reference shows printed identities, not the contents of any player’s current cache or hand. Open an inspector for the full original gameplay explanation. Inspection never plays, acquires or discards a card.',
@@ -423,7 +423,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A bidder whose hand becomes full is automatically passed, or submits zero in an unfinished Silent lot, unless it is the Black Market seller retaining its already-held card. The same current hand rule governs eligibility, commitments and settlement. A full-hand owner’s unbid cache card is still removed automatically. If every ordinary hand is full, normal-pool preparation does not draw and lose unseen cards.',
       'AI supports cache choices and all three offered bidding methods using its own projected information. It currently skips the optional Black Market prelude. A seller in an already offered Black Market lot passes or submits zero.',
       'Karama may prevent the declared cache auction before the ordinary pool is drawn. Cancellation leaves the cache intact and restores its deducted ordinary lot; first/last position does not create another cache offer that round. The independent reduction for a completed Black Market sale remains, including provisional paid retention. An exhausted cache causes no cache deduction. The supplied Advanced source excludes Richese lots from Ixian Technology.',
-      'Juice of Sapho now supports bounded first/last Once Around, movement and remaining battle-choice ordering; see its timing guide for current limits. Richese’s Karama uses the existing generic handler, Distrans supports a separate private hand transfer, Nullentropy Box supports a paid private discard search, Ornithopter supports its two movement modes, and Residual Poison supports a random opposing leader death before leader commitment in development fixtures. Portable Snooper supports ordinary and late poison defense. Stone Burner supports a guarded weapon commitment and revealed leader-effect choice. Mirror Weapon copies opposing revealed attacks, with independent copy-first choices for Tooth and Stone in bounded CHOAM/Richese-deck classic-faction battles. A winning physical Mirror may be kept even after copying activated Tooth or Artillery under the user-selected interpretation, not a publisher clarification. Semuta Drug has a bounded clean public ordinary-discard preview; other discard producers and Sapho timing modes remain unfinished. This does not certify every Karama interaction. Richese expansion starts remain disabled. Each component guide identifies its currently available action. Independent continuation and persisted-room checks pass. Desktop checks confirmed all ten enlarged guides, direct topic links, Once Around payment and restored private Silent bidding. Mobile and full Richese-game verification remain unfinished.',
+      'Juice of Sapho now supports bounded first/last Once Around, movement and remaining battle-choice ordering; see its timing guide for current limits. Richese’s Karama uses the existing generic handler, Distrans supports a separate private hand transfer, Nullentropy Box supports a paid private discard search, Ornithopter supports its two movement modes, and Residual Poison supports a random opposing leader death before leader commitment in development fixtures. Portable Snooper supports ordinary and late poison defense. Stone Burner supports a guarded weapon commitment and revealed leader-effect choice. Mirror Weapon copies opposing revealed attacks, with independent copy-first choices for Tooth and Stone in bounded CHOAM/Richese-deck classic-faction battles. A winning physical Mirror may be kept even after copying activated Tooth or Artillery under the user-selected interpretation, not a publisher clarification. Semuta Drug has a bounded clean public ordinary-discard preview; other discard producers and Sapho timing modes remain unfinished. This does not certify every Karama interaction. Supported Richese starts are unfinished previews. Each component guide identifies its currently available action. Independent continuation and persisted-room checks pass. Desktop checks confirmed all ten enlarged guides, direct topic links, Once Around payment and restored private Silent bidding. Mobile and full Richese-game verification remain unfinished.',
     ],
     related: [
       'choam-modules',
@@ -618,7 +618,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'The private hand panel provides both card selectors and enlarged inspection. It shows the payment recipient and the server’s current availability reason. A reserved auction card cannot be taken from that lot. Spending pledged or already committed funds is not allowed.',
       'Full-hand activation now has a visibly provisional exchange policy: spend the held Karama and acquire one cache card, leaving the final hand within its actual limit. This is not a publisher timing clarification or numerical user ruling. Buying the final cached card is legal under the resolved exhausted-cache auction rule; subsequent Bidding restores the ordinary pool. Reserved cards, over-limit hands and pending commitments remain ineligible.',
       'All four AI profiles can choose the canonical Richese Karama when the projection allows it and enough spice remains. They leave other cache effects to future implementation and give pending responses, decisions and Truthtrance priority.',
-      'Richese ally gifts, Distrans transfer and Nullentropy Box search have their own hand-panel controls and rules topics. These are separate from special Karama purchase and retain their own capacity, timing and private-custody boundaries. Selectable Richese and combined advanced starts remain disabled.',
+      'Richese ally gifts, Distrans transfer and Nullentropy Box search have their own hand-panel controls and rules topics. These are separate from special Karama purchase and retain their own capacity, timing and private-custody boundaries. Richese and supported Advanced combinations can start as unfinished previews; other combinations remain unavailable.',
     ],
     related: [
       'richese-cards',
@@ -693,7 +693,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'The server checks alliance, exact card ownership, capacity and commitments again before transfer. An obsolete pending gift aborts without a partial transfer and restores its interrupted flow. Unrelated players see the gift power, not its private card identity. A pending card cannot also be spent, exchanged or randomly extracted.',
       'After a Karama cancellation, the same card may be offered again while it remains legal. Each new offer opens a fresh cancellation response. This is a provisional interpretation of the one-use cancellation and the gift’s any-time wording, not a specific published retry ruling.',
       'All four AI profiles conservatively give only the canonical Richese Karama during Bidding to free a full hand when the ally’s public card count is lower and there is room. They do not inspect ally hand contents or infer an unknown need for a card. Pending responses, decisions and Truthtrance take priority.',
-      'All ten canonical Richese cards may be transferred when legal, and Karama has its existing card-effect handler. Distrans supports its separate card-transfer effect, Nullentropy Box supports paid private discard search, Ornithopter supports its two movement modes, and Residual Poison supports a random opposing leader death before leader commitment. Portable Snooper supports ordinary and late poison defense. Stone Burner supports a guarded weapon commitment and revealed leader-effect choice. Mirror Weapon copies an opposing revealed weapon in bounded CHOAM/Richese-deck classic-faction battles, with copy-first Tooth/Stone choices; physical-Mirror winner retention even after copied activated Tooth/Artillery is a user-selected interpretation. Juice of Sapho supports bounded Once Around and movement ordering. Semuta Drug has a bounded clean ordinary-discard preview; other discard producers and Sapho timing modes remain unfinished. Desktop gift transfer and fresh-tab pending recovery have been checked in a synthetic table. Mobile, broader interactions and full Richese games remain pending; Richese starts remain disabled.',
+      'All ten canonical Richese cards may be transferred when legal, and Karama has its existing card-effect handler. Distrans supports its separate card-transfer effect, Nullentropy Box supports paid private discard search, Ornithopter supports its two movement modes, and Residual Poison supports a random opposing leader death before leader commitment. Portable Snooper supports ordinary and late poison defense. Stone Burner supports a guarded weapon commitment and revealed leader-effect choice. Mirror Weapon copies an opposing revealed weapon in bounded CHOAM/Richese-deck classic-faction battles, with copy-first Tooth/Stone choices; physical-Mirror winner retention even after copied activated Tooth/Artillery is a user-selected interpretation. Juice of Sapho supports bounded Once Around and movement ordering. Semuta Drug has a bounded clean ordinary-discard preview; other discard producers and Sapho timing modes remain unfinished. Desktop gift transfer and fresh-tab pending recovery have been checked in a synthetic table. Mobile, broader interactions and full Richese-game acceptance remain pending; supported Richese starts are unfinished previews.',
     ],
     related: [
       'richese-cards',
@@ -1697,6 +1697,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'When an eligible entrant reaches the reusable Ecaz token, Ecaz may acquire the available shared Duke for itself or its current reciprocal ally. The token returns to supply and its companions are unchanged. Direct acquisition persists unused until battle use or Moritani acquisition; that shared tenure is provisional. It is distinct from the optional Basic or automatic Advanced new-alliance turn loan. A fresh token entry is required, with no standing transfer action.',
       'Unallied Ecaz may propose an alliance to an unallied entrant. Acceptance activates alliance abilities immediately. Basic then offers an optional Duke loan; Advanced automatically adds an available Duke under supplied PDF p30, without another acknowledgement. The first version releases a surviving loan after one battle, provisionally; an unused living loan is set aside at turn end. Unavailable Duke never prevents consent.',
       'When another eligible faction enters a marked stronghold, Ecaz may trigger its Ambassador for itself or its current ally, or leave it in place. Ecaz itself, its ally, advisors and the faction matching the physical Ambassador do not trigger it. Ordinary shipment and native Guild transport settle their own income, BG Intrusion and accompaniment controls before queued entry, without replaying payment or forces. Actual busy controls and unsupported paired or module combinations remain guarded.',
+      'In supported bare Basic games with Ecaz and Moritani, a single entry that earns both an Ambassador and Terror opportunity retains both in their existing provisional storm order, including when other selected native factions are seated. Finish the first response before the second; the original arrival and payment occur once. Nested Fremen or Guild Ambassador arrivals and other unsupported module interactions remain guarded.',
       'Accompaniment joining retained BG fighters creates a distinct eligible child entry before the original shipper. Declining the child leaves the live token for the original entry; consuming it does not create a token to offer again. Advisors remain exempt. This existing child-first, live-token composition is explicitly provisional, not a publisher priority ruling.',
       'Emperor grants five bank spice. Atreides records the entrant’s current Treachery hand privately for the beneficiary; Harkonnen records one randomly selected held Traitor identity, or Face Dancer identity for a Tleilaxu entrant. These snapshots remain in the recipient’s private inspection history, identify when they were taken, and do not become a live view of later changes. Opening, enlarging or closing them needs no game acknowledgement.',
       'CHOAM lets the beneficiary choose any available hand cards, including none, for three spice each. Ixians require one available card to discard before drawing its replacement. Card controls respect projected reservations. After committing an Ixian exchange, a voluntary interruption must leave a card available for its required discard; a queued Truthtrance counts as already committed. A Bene Gesserit trigger permanently removes its token, then the beneficiary chooses an available effect outside the original supply for this group; unsupported copies remain visibly blocked.',
@@ -2196,7 +2197,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A cyborg in the selected movement group lets that group move two territories. Suboids moving without a cyborg move one. Ornithopters allow three territories regardless of force type. A two-territory cyborg move has a Karama response; if canceled, the army remains in place and can choose a shorter move.',
       'Cyborgs collect three spice each. Suboids collect two, or three with ornithopters. Collection still requires the force to occupy the spice sector, outside the storm.',
       'Ixians have one free force revival, either type. Choose cyborgs-first or suboids-first in the revival form. Each paid cyborg costs three spice, each paid suboid two; a Tleilaxu ally discount rounds the paid total up after halving. The one-per-turn Sardaukar/Fedaykin restriction does not apply to cyborgs.',
-      'Combat and substitution have tested engine, UI and AI support. Cyborg movement, collection and typed revival pricing also have tested support. The mobile stronghold and faction setup/auction technology now have tested support. The complete sector/timing/expansion audit remains unfinished, so expansion starts remain disabled.',
+      'Combat and substitution have tested engine, UI and AI support. Cyborg movement, collection and typed revival pricing also have tested support. The mobile stronghold and faction setup/auction technology now have tested support. The complete sector, timing and expansion audit remains unfinished; supported faction starts are available as previews.',
     ],
     example:
       'Two cyborgs and six suboids dial six: lose two cyborgs (four strength) and four suboids (two strength). The two surviving suboids can replace the two lost cyborgs. Six suboids end in the tanks and two cyborgs remain on the board. In advanced play, the dial needs two spice for those cyborgs.',
@@ -2215,7 +2216,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Face-down leaders can become gholas, preserving their death history. A dead ghola stays associated with the Tleilaxu pool and can be revived again. Returning an existing member with Ghola treachery is distinct from acquiring a new foreign leader.',
       'A living ghola cannot be sold back. After it dies, its original faction may request a private buyback quote through revival commerce, even when all native leaders are unavailable. Tleilaxu may refuse. An accepted return costs the agreed price and uses the requester’s one-leader allowance.',
       'A foreign-ghola revival opens a Karama response before payment or transfer. Cancellation prevents revival of that specific leader for the turn; another eligible dead leader may still be chosen. A separate response governs a paid discount.',
-      'Acquisition, private buybacks, identity and combat control have tested support. Complete timing, captive-pool counting, own-leader returns above a five-member pool, buyback/card exceptions and later leader-skill, homeworld and Ecaz interactions remain in the expansion audit. Expansion starts remain disabled.',
+      'Acquisition, private buybacks, identity and combat control have tested support. Complete timing, captive-pool counting, own-leader returns above a five-member pool, buyback/card exceptions and later leader-skill, homeworld and Ecaz interactions remain in the expansion audit. Supported expansion starts are available as unfinished previews.',
     ],
     related: [
       'tleilaxu-revival',
@@ -2238,7 +2239,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'For early leader revival, request a particular dead leader while at least one native leader remains available. Tleilaxu quote a price, possibly zero, and the requester accepts or withdraws. Only these two players see the request and price. With all native leaders unavailable, ordinary revival rules apply.',
       'An accepted early revival uses the normal one-leader allowance of the requesting faction. Kwisatz Haderach can also be requested. Tleilaxu can revive several of their own dead leaders in a phase, including before all five die.',
       'The server pauses before a larger limit, discount or early revival takes effect. Karama can cancel that benefit. Forces and spice remain unchanged if the return is aborted; a canceled discount is repriced before payment. A separate response governs the payment to Tleilaxu after a successful return.',
-      'Revival commerce and the private controls are tested. Exact cancellation duration, simultaneous card timing, special free-revival effects, foreign gholas and later expansion economy interactions remain in the complete rules audit. Full expansion starts remain disabled.',
+      'Revival commerce and the private controls are tested. Exact cancellation duration, simultaneous card timing, special free-revival effects, foreign gholas and later expansion economy interactions remain in the complete rules audit. Supported expansion starts are available as unfinished previews.',
     ],
     related: [
       'revival',
@@ -2384,7 +2385,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Cards',
     coverage: 'Partial',
     summary:
-      'A poison weapon with an optional attack on both leaders. It is included in the local Ix prototype deck; normal expansion starts remain gated.',
+      'A poison weapon with an optional attack on both leaders. It is included in the local Ix prototype deck; supported expansion starts are available as unfinished previews.',
     steps: [
       'Commit Poison Tooth in your weapon slot. After both plans are revealed, its owner chooses whether to activate it before traitor decisions proceed. Committing the card does not yet activate its poison.',
       'When activated, the tooth attacks both leaders, including its owner’s leader. Chemistry in the defense slot protects that leader. Snooper and Shield Snooper do not protect against the tooth. A Chemistry card used as a weapon supplies no defense.',
@@ -2401,7 +2402,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Cards',
     coverage: 'Partial',
     summary:
-      'An attack on both leaders that suppresses leader strength and bounty. Engine support exists; expansion decks remain unavailable.',
+      'An attack on both leaders that suppresses leader strength and bounty. Engine support exists; the Ix deck is available in supported unfinished expansion previews.',
     steps: [
       'Play Artillery Strike in the weapon slot. It attacks both leaders. Each side protects its own leader with Shield or Shield Snooper. Weirding Way as projectile defense is not a shield and does not protect against this card.',
       'Surviving leaders contribute no battle strength. The implemented battle comparison uses the dials, with the aggressor winning ties; the attached Kwisatz Haderach bonus is also suppressed. The surviving KH token is not killed by Artillery Strike.',
@@ -2418,7 +2419,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Advanced & expansions',
     coverage: 'Partial',
     summary:
-      'Poison Blade, Shield Snooper, Weirding Way and Chemistry have tested combat support. The fourteen-card inventory is assembled; live expansion starts await the remaining rules audit.',
+      'Poison Blade, Shield Snooper, Weirding Way and Chemistry have tested combat support. The fourteen-card inventory is assembled; supported faction starts are available as unfinished previews.',
     steps: [
       'Poison Blade attacks with both projectile and poison. A defense against only one of those types does not save the leader. Shield Snooper defends against both types.',
       'Shield Snooper counts as a shield for a lasgun explosion. Weirding Way used as projectile defense does not count as a shield: it neither stops a lasgun nor causes an explosion.',
@@ -2426,7 +2427,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Voice can name one of these special cards directly or use a matching generic attack or defense type. A prohibition uses the role the card actually plays. For example, forbidding poison weapons still allows Chemistry as poison defense.',
       'Compulsion uses the default role. Requiring a projectile weapon can compel Weirding Way as a weapon. Requiring a projectile defense cannot force a player to turn Weirding Way into that defense. Likewise, requiring a poison weapon cannot force Chemistry out of its default defense role.',
       'Prescience reveals the card occupying the requested slot. With a poison weapon and Weirding Way, a weapon question reveals the poison weapon; a defense question reveals Weirding Way. The other card remains private, and the revealed slot must remain unchanged.',
-      'The local Ix prototype deals the full expansion deck through genuine setup. Poison Tooth and Artillery Strike have their own topics. Complete rules compliance and combined expansion interactions remain unfinished; prototype access does not open normal expansion starts.',
+      'The local Ix prototype deals the full expansion deck through genuine setup. Poison Tooth and Artillery Strike have their own topics. Complete rules compliance and combined expansion interactions remain unfinished; supported faction starts are labelled previews.',
     ],
     related: [
       'battle',
@@ -4148,7 +4149,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Sneak Attack expressly permits its reserve forces to enter despite Aftermath. Its storm and occupancy restrictions still apply.',
       'Beginning on the activation turn, Moritani’s hand limit and its ally’s at activation are each reduced by one. If either hand exceeds its reduced limit on resolution, discard one random card per excess card. The public Aftermath notice identifies the affected players; their individual projected hand limits reflect the penalty.',
       'Under the recommended persistent-target interpretation, later Nexus or Enemy of My Enemy alliances do not move the penalty: Moritani and the ally at detonation remain reduced; a later ally keeps its normal limit. An initially unallied detonation gains no ally target afterward. The notice labels this provisional, not a publisher ruling. Original stored targets migrate without replaying casualties or card discards. Genuine Basic/Advanced later-pact, special-alliance, migration and corruption boundaries pass112/112 in6 related files, with types/lint/build and actual390px controls verified. Broader Atomics compositions and complete modes remain open.',
-      'The Atomics Terror token and Family Atomics Treachery Card are separate components with different effects. Aftermath is not the destroyed Shield Wall. Complete Moritani games and public expansion starts remain unavailable.',
+      'The Atomics Terror token and Family Atomics Treachery Card are separate components with different effects. Aftermath is not the destroyed Shield Wall. Complete Moritani-game acceptance remains open; supported expansion starts are unfinished previews.',
     ],
     related: ['moritani-terror-effects', 'movement', 'card-atomics', 'bidding'],
     checklist: [
@@ -4442,7 +4443,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'When neither Guild nor Fremen is playing and nobody has reached the normal target, compare individual qualifying stronghold counts. Every player tied for the highest count wins. A correct Bene Gesserit prediction can replace this stronghold win.',
       'With tech tokens enabled, owning all three adds one stronghold. One player must hold all three, even in an alliance. If several sides reach their target at the same check, they share a normal win before any correct prediction replaces it.',
       'Stronghold victory progress shows current territories, a complete Tech Token set, Ecaz joint occupation and Fremen final-turn conditions. Basic permits reciprocal Fremen/Ecaz cooccupation at Tabr; supplied Advanced p32 permits both protected sietches. Solitary/nonallied Ecaz still blocks. Public counts do not award victory before the proper checkpoint; Tech Tokens cannot supply joint occupation.',
-      'Other expansion additions to victory remain in development. Advanced preview supports the six classic factions; expansion starts remain disabled.',
+      'Other expansion additions to victory remain in development. Advanced preview supports selected factions and combinations; complete rules acceptance remains open.',
     ],
     example:
       'At the final turn with neither Guild nor Fremen, two players each hold two qualifying strongholds and a third holds one. The two leaders of the count share the win.',
@@ -4569,7 +4570,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Carthag, Habbanya, Sietch Tabr and Tuek’s Sietch retain their existing defense, tie, opposing-dial and played-Worthless contracts. New Richese coverage uses actual No-Field shipment/reveal and native cache acquisition for Stone Burner; mixed No-Field dials/full-plan and unresolved Stone/Poison Tooth cases are not silently enabled.',
       'Shared Ecaz control holds the card at Ecaz; the selected lead gets only its own held advantage. Ecaz-led Arrakeen may bank-fund actual ally-variable support up to two, never fixed free Ecaz strength. Choosing the ally gives no automatically shared card benefit. Original Habbanya tie and Tabr income likewise follow the actual holder-plan.',
       'Native Moritani losing Tuek holder still earns two bank spice per played Worthless card. Original post-loss assassination follows support/card income, retains only printed bounty and one actual private Mentat replacement. Winner cleanup and force losses finish once; normal Traitor revelation forfeits assassination for the game. Native Terror placement remains free.',
-      'Bounded expanded-family evidence includes sixteen rule cases, eleven actual No-Field/Stone/FaceDance program cases, all four legal policies and eighteen unstaged complete paired/mixed2..6 games (11066 accepted actions, no rejections). Human390px Stone kill/Habbanya and two-reserve Face Dance controls complete their native decisions. Save/recovery/privacy/custody assurance follows all rules, not a new prototype gate. Full-card/faction/module/deployed acceptance and public expansion starts remain open.',
+      'Bounded expanded-family evidence includes sixteen rule cases, eleven actual No-Field/Stone/FaceDance program cases, all four legal policies and eighteen unstaged complete paired/mixed2..6 games (11066 accepted actions, no rejections). Human390px Stone kill/Habbanya and two-reserve Face Dance controls complete their native decisions. Save/recovery/privacy/custody assurance follows all rules, not a new prototype gate. Full-card, faction, module and deployed acceptance remain open; supported expansion starts are unfinished previews.',
     ],
     related: ['stronghold-cards', 'mobile-stronghold', 'choam-combat', 'setup', 'implementation-checklist'],
     checklist: [
@@ -4846,7 +4847,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Cards fixed in your sealed battle plan or committed to prescience cannot be cashed in. You must also retain enough spice, committed allied funding or another Karama to honor a current winning auction bid.',
       'Cash-in takes effect immediately and preserves a pending phase opening, revival, response, market sale or allied exchange. If it consumes a card already offered for a market sale or trade, that transaction later pays nothing or moves neither card. In the Kull preview, a declared original or counter cost remains reserved while that transaction is pending.',
       'The battle preparation guide can find a cash-in that funds a promised plan while retaining required cards. Complete the listed preparation before reviewing and sealing the plan. This can combine with Ghola preparation when both remain possible.',
-      'The power is available in all nine playing phases. Finish an active Truthtrance question first. Its precise timing against other simultaneous effects, activation-card payment interpretation and remaining expansion interactions are still under audit; full CHOAM starts remain disabled.',
+      'The power is available in all nine playing phases. Finish an active Truthtrance question first. Its precise timing against other simultaneous effects, activation-card payment interpretation and remaining expansion interactions are still under audit; supported CHOAM starts are unfinished previews.',
     ],
     related: [
       'faction-choam',
@@ -4873,7 +4874,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Once per turn, offer one of your cards to your ally. The ally chooses a card to return or declines. CHOAM then confirms or declines the proposed exchange. Confirmation moves both cards together and spends the turn’s trade; a decline moves neither card.',
       'Only the two allies see the proposed cards. A private exchange does not reveal the rest of either hand. Card counts stay unchanged. If an intervening effect makes a sale or exchange impossible, it pays nothing and returns to the closing decision.',
       'Truthtrance can interrupt these decisions. Complete its question before returning to the sale or trade. Existing end-of-phase tech income and unspent allied escrow settle after the market closes.',
-      'These actions have focused tests. Batch-sale timing, exact Karama scope, ordering among simultaneous end-phase effects and the remaining Worthless special effects still require a combined-expansion audit; CHOAM starts remain disabled.',
+      'These actions have focused tests. Batch-sale timing, exact Karama scope, ordering among simultaneous end-phase effects and the remaining Worthless special effects still require a combined-expansion audit; supported CHOAM starts are unfinished previews.',
     ],
     related: [
       'faction-choam',
@@ -4897,7 +4898,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'At the next Mentat Pause, the token flips automatically. At the following Mentat it is removed permanently. Amal’s phase-opening window resolves before those automatic changes.',
       'Karama can prevent initial placement for this Mentat Pause. The token remains available for a later attempt. Karama cannot stop the mandatory flip or removal. Canceling CHOAM income during Double preserves doubled ordinary payouts from the bank.',
       'Bribes are prohibited whenever the active token shows Double, including immediately after placement. Previously promised bribes still settle at Mentat. Spice Production’s payout is unchanged, and CHOAM’s automatic income alone does not trigger it.',
-      'Lifecycle, response, payment and AI scenarios have focused tests. The exact ordinary one-spice interpretation and interactions with unfinished expansion modules remain under audit; full CHOAM starts are still disabled.',
+      'Lifecycle, response, payment and AI scenarios have focused tests. The exact ordinary one-spice interpretation and interactions with unfinished expansion modules remain under audit; supported CHOAM starts are unfinished previews.',
     ],
     related: [
       'charity',
@@ -4924,7 +4925,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Only CHOAM receives the inspected faces. Its private snapshot survives refresh and the transition out of Battle, and expires at the next battle or turn. It does not track later changes in the opposing hand and needs no confirmation to continue.',
       'The Auditor cannot be captured, acquired as a foreign ghola by Tleilaxu, or receive a leader skill. CHOAM’s own Ghola card can revive it. Supplied Advanced p29 permits ordinary revival each turn even after repeated deaths, for two spice before discounts, using the usual one-leader allowance.',
       'Against Moritani, a surviving actual Auditor2 win can open the distinct Advanced native-CHOAM assassination choice. Conversely its matching held Traitor may target Auditor for printed two when a different CHOAM disc survived. The played Auditor is excluded from its own card, while the uniform private opportunity still permits Continue with no spend. Original Mentat retires a revealed card face up and draws one distinct private replacement.',
-      'The ordinary-cycle first version explicitly excludes Auditor from the five ordinary CHOAM discs: its life or repeated deaths neither delay nor open that cohort. This is a visibly provisional policy, not a publisher clarification or numerical user ruling. Full expansion starts remain disabled.',
+      'The ordinary-cycle first version explicitly excludes Auditor from the five ordinary CHOAM discs: its life or repeated deaths neither delay nor open that cohort. This is a visibly provisional policy, not a publisher clarification or numerical user ruling. Supported expansion starts are available as unfinished previews.',
     ],
     example:
       'CHOAM loses a battle but its Auditor survives. The opponent keeps a played Shield and has one unplayed Crysknife. Only Crysknife is eligible: the opponent can pay one spice to CHOAM or let CHOAM inspect it.',
@@ -4992,7 +4993,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A canceled request within the new allowance uses the new price. If it is too large or cannot be paid, no forces or spice move; choose another request. Completed earlier revivals remain intact.',
       'Fremen may grant their allied CHOAM three free revivals. The free allowance is tracked across requests. Tleilaxu may separately offer its ally half price, rounded up on the total payment; canceling that discount retains CHOAM’s native price if it is still active.',
       'Emperor-funded extra revivals keep their separate allowance and price. Advanced Tleilaxu special Karama can prevent the normal request before either pricing response. Revival payments go to Tleilaxu when present, with a separate income response.',
-      'Force revival has tested support. Auditor’s each-turn return and provisional five-ordinary-disc cycles are described in its topic. Combined-expansion pricing and the complete faction audit remain unfinished; CHOAM starts stay disabled.',
+      'Force revival has tested support. Auditor’s each-turn return and provisional five-ordinary-disc cycles are described in its topic. Combined-expansion pricing and the complete faction audit remain unfinished; supported CHOAM starts are unfinished previews.',
     ],
     related: [
       'revival',
@@ -6615,7 +6616,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     developmentStage: 'Prototyped',
     summary: 'Genuine setup connects selected expansion factions to development tables. Complete faction rules and combined-game acceptance remain unfinished.',
     steps: [
-      'Development setup supports two through six distinct seats from the base factions and selected expansion sets. Expansion selection and optional modules are separate; public expansion starts remain disabled.',
+      'Development setup supports two through six distinct seats from the base factions and selected expansion sets. Expansion selection and optional modules are separate; supported public starts are unfinished previews.',
       'Ecaz places six starting forces in Imperial Basin, allocated among sectors 9, 10 and 11, and keeps fourteen in reserve. Finish Fremen placement first; Bene Gesserit then places its Advanced starting advisor. Moritani places its six forces in an unoccupied territory after all other setup is complete.',
       'Ixians keep their private starting-card selection and physical cyborg/suboid forces. Tleilaxu receives three private Face Dancers. Advanced CHOAM receives its Auditor. Richese has a separate ten-card cache and three private No-Fields. Ecaz and Moritani receive their Ambassador and Terror inventories and share one Duke Vidal disc.',
       'Without Ix, CHOAM adds Poison Tooth and Artillery Strike to the 33-card ordinary deck; Ix or combined decks contain47. Ecaz faction selection adds no cards. Explicit independent variant adds Recruits/Harass/Reinforcements for36/50/38, with classic/paired controls and a separately verified native Advanced Occupy combined-army path.',
@@ -6659,7 +6660,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       steps: [
         ...(id === 'choam-modules'
           ? [
-              'Richese cache and Black Market auction controls are integrated in development fixtures, alongside the ten-card reference collection. Remaining card-effect integration is incomplete and full expansion starts remain disabled; source guards and pending verification are listed in the collection’s five-part checklist.',
+              'Richese cache and Black Market auction controls are integrated in development fixtures, alongside the ten-card reference collection. Remaining card-effect integration is incomplete and supported expansion starts are unfinished previews; source guards and pending verification are listed in the collection’s five-part checklist.',
             ]
           : []),
         ...(id === 'ix-modules'

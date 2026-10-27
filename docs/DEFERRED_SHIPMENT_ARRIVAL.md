@@ -4,6 +4,25 @@
 exposed an already accepted shipment whose Guild allowance could not finish.
 This continuation repair preserves the existing unfinished arrival-order gates.
 
+## Basic native faction overlap — 27 October 2026
+
+**Prototyped / Partial.** In bare Basic games with selected native faction
+decks and both Ecaz and Moritani seated, an eligible arrival may carry both
+Ambassador and Terror opportunities through the existing provisional storm
+order. The original move or shipment is committed and paid once; its two
+owners resolve their separately earned opportunities in sequence. The existing
+queue and controls apply; this is not a publisher ruling on simultaneous
+effects. Actual in-flight controls remain authoritative, and nested Fremen or
+Guild Ambassador arrivals and optional-module combinations keep their separate
+boundaries. Complete factions, modes and deployed acceptance remain open.
+The new [runtime fixture](../tests/fixture-basic-native-overlap.ts) uses public
+Basic setup and real shipments with explicitly controlled, native-token
+placements. [Regression cases](../tests/basic-native-overlap-runtime.test.ts)
+cover both owner orders, Duke acquisition, Robbery and a native Tleilaxu
+entrant. They do not prove every nested arrival or module combination.
+Frozen changed-path proof passed 76/76 tests in nine files, type/lint and the
+production build. Browser, deployed and full-mode acceptance remain open.
+
 ## Native own-arrival continuations — 15 October 2026
 
 Direct native Guild transport now has the same clear owner-view candidate

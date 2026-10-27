@@ -1,5 +1,13 @@
 # Rule decision index
 
+## Basic native Ambassador/Terror overlap — 27 October 2026
+
+The existing provisional storm-order queue also handles eligible same-entry
+Ambassador and Terror reactions in bare Basic selected native-faction tables.
+It does not establish a new publisher priority ruling or enable nested
+Fremen/Guild Ambassador arrivals.
+[Contract](DEFERRED_SHIPMENT_ARRIVAL.md#basic-native-faction-overlap--27-october-2026).
+
 ## Basic Richese and Kull/Semuta — 27 October 2026
 
 Provisionally offer Semuta after the public discard of a successful printed

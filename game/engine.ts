@@ -66,7 +66,7 @@ import { movementShipmentPreparations } from './movement-shipment-preparation';
 import { MovementClaimError, liveMovementPromises, movementEventAllowed, movementPromiseModeSupported, movementPromiseTargetAvailable, settleMovementEvent, finishMovementPromises, validMovementClaim, type MovementClaim, type MovementPromise } from './movement-promises';
 import { findMovementCompletion, type MovementCompletion } from './movement-promise-search';
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
-import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile, selectedFactionStrongholdProfile, selectedIndependentCardsProfile } from './faction-module-profile';
+import { independentDiscoveryProfile, independentNexusProfile, nexusCoreProfile, nativeFactionTechProfile, selectedFactionStrongholdProfile, selectedIndependentCardsProfile, selectedPhaseModuleRoster } from './faction-module-profile';
 import { homeworldOccupationLeaderSkillsProfile, homeworldOccupationModulesProfile, homeworldPhaseModulesProfile } from './homeworld-module-profile';
 import { RevivalPromiseError, revivalPromiseModeSupported, liveRevivalPromises, recordPromisedRevival,
   revivalPromisesSatisfied, validateRevivalPromises, type RevivalClaim, type RevivalPromise } from './revival-promises';
@@ -22490,6 +22490,12 @@ function ambassadorEffectBlock(
   return null;
 }
 function arrivalOverlapModeSupported(g: Game, revivalArrival?: RevivalEntryParent): boolean {
+  // Native Basic faction decks share the same ordered arrival queue. A deck
+  // selection alone is not an optional phase module or a new arrival effect.
+  if (!g.advanced && selectedPhaseModuleRoster(g) && byFaction(g, 'ecaz') && byFaction(g, 'moritani') &&
+    !g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.techTokens && !g.strongholdCards &&
+    !g.discoveryEnabled && !g.discoveries && !g.discoveryStash && !g.greatMaker && !g.ecazTreachery)
+    return true;
   if (homeworldPhaseModulesProfile(g) && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if (revivalArrival && g.homeworlds && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
   if (bareBasicSemutaProfile(g) && byFaction(g, 'ecaz') && byFaction(g, 'moritani')) return true;
@@ -22700,7 +22706,7 @@ function openTerritoryEntry(
     return openAmbassadorEntry(g, owner, token, entrant, to, sector, resume, cause, revivalArrival, caladanArrival);
   requireRule(arrivalOverlapModeSupported(g, revivalArrival) && !g.pendingArrivalOverlap &&
     moritani && g.order.includes(owner.id) && g.order.includes(moritani.id),
-    'Ambassador and Terror overlap still needs a supported classic Ecaz/Moritani table.');
+    'Ambassador and Terror overlap still needs a supported Ecaz/Moritani faction and module table.');
   const first = g.order.indexOf(owner.id) < g.order.indexOf(moritani.id)
     ? 'ambassador' : 'terror';
   const overlap: NonNullable<Game['pendingArrivalOverlap']> = {
