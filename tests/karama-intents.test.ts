@@ -195,7 +195,7 @@ void test('Emperor force revival commits once after serialization and never duri
   executeSpecialKaramaIntent(g, JSON.parse(JSON.stringify(intent)));
   assert.equal(g.players[0].tanks, 2);
   assert.equal(g.players[0].reserves, 18);
-  assert.equal(g.players[0].elites!.revived, 1);
+  assert.equal(g.players[0].elites!.revived, 0);
   assert.equal(g.players[0].specialKaramaUsed, true);
   assert.equal(g.discard.filter((c) => c.id === intent.card).length, 1);
   const after = structuredClone(g);

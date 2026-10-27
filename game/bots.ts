@@ -1703,11 +1703,8 @@ function policyActions(g: GameView): Action[] {
           leader: dead.id,
         },
       ];
-    const elite = Math.min(
-      me.elites?.tanks ?? 0,
-      eliteRevivalRemaining(me, g.advanced),
-    );
-    const amount = Math.min(3, me.tanks - (me.elites?.tanks ?? 0) + elite);
+    const amount = Math.min(3, me.tanks);
+    const elite = Math.min(amount, me.elites?.tanks ?? 0);
     if (amount === 3 || (level === 0 && amount > 0))
       return [
         { type: 'card', mode: 'special', card: specialCard.id, amount, elite },

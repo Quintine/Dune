@@ -48,13 +48,20 @@ void test('native quiet Revival permits any player before a request and spends t
 
 void test('ready, self and empty-Tanks targets do not narrow quiet declaration permission', () => {
   const f = fixture();
-  const ready = act(f.game, f.observer, { type: 'ready' });
-  for (const target of [f.owner, f.observer]) {
-    assert.equal(player(ready, target).tanks, 0);
+  // Advanced Revival is ordered. Finish the actual current seat instead of
+  // assuming that Emperor may finish ahead of the public queue.
+  const first = f.game.revivalOrder?.remaining[0];
+  assert.ok(first);
+  assert.ok(f.game.revivalOrder!.remaining.length > 1);
+  const ready = act(f.game, first, { type: 'ready' });
+  assert.ok(ready.ready.includes(first));
+  for (const target of [f.owner, f.observer]) assert.equal(player(ready, target).tanks, 0);
+  for (const target of new Set([first, f.owner, f.observer])) {
+    const tanks = player(ready, target).tanks;
     const chosen = act(ready, f.owner, { ...f.special, target });
     assert.equal(chosen.revivalPrevention?.player, target);
     assert.deepEqual(chosen.ready, ready.ready);
-    assert.equal(player(chosen, target).tanks, 0);
+    assert.equal(player(chosen, target).tanks, tanks);
   }
 });
 

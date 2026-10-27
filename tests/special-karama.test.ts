@@ -267,7 +267,7 @@ void test('special power usage persists across turns and does not disable ordina
     card: karmas[1].id,
   });
 });
-void test('Emperor special revival is free, separate from normal quota and preserves the one-elite-per-turn limit', () => {
+void test('Emperor special revival is free and separate from the ordinary force and elite quotas', () => {
   const before = stock(fixture());
   before.players[1].revived = 3;
   const spice = before.players[1].spice;
@@ -276,14 +276,16 @@ void test('Emperor special revival is free, separate from normal quota and prese
   assert.equal(g.players[1].reserves, 18);
   assert.equal(g.players[1].elites!.tanks, 1);
   assert.equal(g.players[1].elites!.reserves, 4);
-  assert.equal(g.players[1].elites!.revived, 1);
+  assert.equal(g.players[1].elites!.revived, 0);
   assert.equal(g.players[1].revived, 3);
   assert.equal(g.players[1].spice, spice);
   assert.equal(g.response, null);
   const already = stock(fixture());
   already.players[1].elites!.revived = 1;
-  assert.throws(() => revive(already), /one elite/);
-  assert.equal(already.players[1].specialKaramaUsed, undefined);
+  assert.equal(revive(already).players[1].elites!.revived, 1);
+  const two = revive(already, { amount: 2, elite: 2 });
+  assert.equal(two.players[1].elites!.tanks, 0);
+  assert.equal(two.players[1].elites!.revived, 1);
   assert.equal(
     revive(already, { amount: 3, elite: 0 }).players[1].elites!.revived,
     1,
@@ -313,7 +315,7 @@ void test('Emperor invalid special revivals preserve the card and usage and cann
   for (const extra of [
     { amount: 4 },
     { amount: 0 },
-    { amount: 2, elite: 2 },
+    { amount: 2, elite: 3 },
     { amount: 1, target: 'g' },
   ]) {
     assert.throws(() => revive(g, extra));

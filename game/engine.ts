@@ -39214,10 +39214,6 @@ export function prepareSpecialKaramaIntent(
     }
     const n = integer(action.amount, 1, Math.min(3, p.tanks), 'Forces');
     const elite = eliteChoice(n, p.tanks, p.elites?.tanks ?? 0, action.elite);
-    requireRule(
-      elite <= eliteRevivalRemaining(p, g.advanced),
-      'Only one elite force may be revived per turn.',
-    );
     return { ...base, kind: 'emperorForces', amount: n, elite };
   } else if (p.faction === 'harkonnen') {
     requireRule(
@@ -39578,7 +39574,6 @@ function resolveSpecialKaramaEffect(g: Game, p: Player, card: Card, intent: Spec
       p.tanks -= n;
       if (p.elites) {
         p.elites.tanks -= elite;
-        p.elites.revived += elite;
       }
       log(g, `${p.name} used special Karama to revive ${n} forces for free.`);
     }

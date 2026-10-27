@@ -6327,7 +6327,9 @@ export function GameTable({
                         <>
                           <p className="muted">
                             Once per game: revive up to three forces or one
-                            leader for free.
+                            leader for free. These returns do not use your
+                            ordinary revival allowances, including the normal
+                            one-Sardaukar limit.
                           </p>
                           <label htmlFor={`special-revive-${c.id}`}>
                             Forces to revive
@@ -6346,12 +6348,8 @@ export function GameTable({
                             <EliteCount
                               label="Sardaukar to revive"
                               value={eliteAmount}
-                              max={Math.min(
-                                1,
-                                amount,
-                                me.elites.tanks,
-                                1 - me.elites.revived,
-                              )}
+                              min={Math.max(0, amount - (me.tanks - me.elites.tanks))}
+                              max={Math.min(amount, me.elites.tanks)}
                               onChange={setEliteAmount}
                             />
                           )}
@@ -6365,7 +6363,9 @@ export function GameTable({
                               amount,
                               elite: eliteAmount,
                             },
-                            !me.tanks,
+                            !Number.isSafeInteger(amount) || amount < 1 || amount > Math.min(3, me.tanks) ||
+                              !Number.isSafeInteger(eliteAmount) || eliteAmount < Math.max(0, amount - (me.tanks - (me.elites?.tanks ?? 0))) ||
+                              eliteAmount > Math.min(amount, me.elites?.tanks ?? 0),
                           )}
                           {me.leaders
                             .filter(

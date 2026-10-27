@@ -1,5 +1,20 @@
 # Rule decision index
 
+## Emperor special revival and Sardaukar limit — 27 October 2026
+
+The authorized supplied rulebook, physical p. 31 (printed p. 29), exempts
+the Emperor's special Karama revival from turn revival limits. Physical p. 9
+(printed p. 7) and p. 31 give ordinary Sardaukar a one-per-turn limit. Apply
+the specific exemption to that limit as well: up to three actual Sardaukar may
+return through the special power without spending the ordinary elite allowance.
+This is a source-composition interpretation, not an official GF9 FAQ. Ordinary
+revival, Ghola and allied extra revival retain their existing limits. Existing
+saved counters are not retroactively reclassified.
+The Homeworld Salusa Secundus low-population penalty prohibits free Sardaukar
+revival; its interaction with this special power remains unresolved and is not
+certified by this interpretation.
+[Runtime evidence](../tests/emperor-special-revival-exemption-runtime.test.ts).
+
 ## Sabotage gift overflow — 27 October 2026
 
 Provisionally let a recipient whose hand is full receive Moritani's optional

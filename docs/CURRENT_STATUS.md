@@ -20,6 +20,14 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Emperor special revival and Sardaukar — 27 October. Prototyped / Partial.**
+The Advanced Emperor's special Karama can return up to three actual Sardaukar
+without consuming the ordinary one-per-turn elite revival allowance. The
+special retains its real card cost, Tanks and native reserve routing; ordinary
+and other revival sources keep their separate limits. Existing saved counters
+are not reclassified. Wider combinations and final/deployed acceptance remain
+open. [Source interpretation](RULE_DECISIONS.md#emperor-special-revival-and-sardaukar-limit--27-october-2026).
+
 **Advanced printed Kull lobby selection — 27 October. Prototyped / Partial.**
 The host can explicitly select the existing Advanced printed-Kull preview for
 CHOAM and classic factions with the CHOAM and Ix decks and no optional modules.

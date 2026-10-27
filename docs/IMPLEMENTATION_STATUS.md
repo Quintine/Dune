@@ -1,5 +1,13 @@
 # Dune implementation status
 
+## 27 October 2026 — Emperor special revival and Sardaukar
+
+The Advanced Emperor's special Karama may return up to three physical
+Sardaukar without using the ordinary one-per-turn elite allowance. Native
+Tanks, reserve routing and the one-use card cost remain authoritative; saved
+historical counters are not rewritten. Normal and other revival sources retain
+their own limits. [Source interpretation](RULE_DECISIONS.md#emperor-special-revival-and-sardaukar-limit--27-october-2026).
+
 ## 27 October 2026 — Advanced printed Kull lobby selection
 
 The host can explicitly select the existing Advanced printed-Kull prototype
