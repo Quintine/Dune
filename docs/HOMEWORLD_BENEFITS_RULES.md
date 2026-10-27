@@ -2,7 +2,39 @@
 
 Source audit, 9 September 2026. This separates publisher wording, rule composition, and remaining decisions. It does not enable Homeworld games or replace the outstanding Ambassador/Duke revival rulings.
 
+## Salusa Low and free Sardaukar revival — 27 October 2026
+
+The [GF9 Ecaz and Moritani rulebook, pp. 9–10](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=10)
+gives Salusa's Low penalty as no free Sardaukar revival and says Karama cannot
+affect Homeworld advantages or penalties. The supplied Advanced rulebook,
+physical p. 31 / printed p. 29, exempts Emperor special revival from turn limits,
+but does not exempt it from this separate Homeworld prohibition. Physical p. 39 /
+printed p. 37 makes Ghola's force return free. Applying the Low penalty across
+these sources is a source-composition interpretation, not a specific FAQ.
+
+For fresh Advanced Homeworld actions, the shared rule excludes Sardaukar from
+free normal revival, Ghola, special Emperor Karama and Tleilaxu Ambassador
+returns while the Low penalty applies. Paid normal Sardaukar revival remains
+legal subject to the usual costs, discounts and limits; free ordinary forces and
+eligible leaders remain available. An unused ordinary free allowance is retained
+after a paid star, so a later eligible ordinary return may consume it. Ambassador
+returns use the native reserve destinations: normal forces to Kaitain and
+Sardaukar to Salusa.
+
+Provisionally, an established Low occupation retains its penalty after native
+repopulation until the original qualifying occupation ends. Foreign presence
+without a usable original qualification history is guarded rather than assumed
+to be occupied or unoccupied. Previously accepted unstamped revival receipts and
+special intents retain their original terms; the change does not rewrite saved
+counters. Rule behavior, controls and minimal bots are connected in the current
+prototype; focused integration verification and wider combinations remain due.
+This section supersedes the Low-to-High free Ghola claims in the historical
+sections below; it does not certify complete Homeworlds or release readiness.
+
 ## Salusa Ghola and live Truthtrance promises — 27 October 2026
+
+Historical: free Sardaukar cannot now be returned while the Low penalty applies;
+see the later [Salusa Low decision](#salusa-low-and-free-sardaukar-revival--27-october-2026).
 
 Before either full plan seals, a current battle promise no longer forbids every
 population-crossing Ghola. Preserve a feasible Yes, whole-No or grouped claim.
@@ -66,6 +98,9 @@ dashboard and implementation log.
 
 ## Salusa Ghola and renewed inspection answers — 27 October 2026
 
+Historical: free Sardaukar cannot now be returned while the Low penalty applies;
+see the later [Salusa Low decision](#salusa-low-and-free-sardaukar-revival--27-october-2026).
+
 The earlier commitment-free window below now includes completed inspection
 answers before either full plan is sealed. Commit the actual Ghola return and
 current Salusa High benefit first. Preserve a still-feasible native answer;
@@ -118,6 +153,9 @@ change; complete modes, native-Salusa battle, browser/mobile, deployed and final
 recovery/privacy/custody acceptance remain separate.
 
 ## Salusa Ghola before battle commitments — 27 October 2026
+
+Historical: free Sardaukar cannot now be returned while the Low penalty applies;
+see the later [Salusa Low decision](#salusa-low-and-free-sardaukar-revival--27-october-2026).
 
 Historical first window: inspection restrictions described in this subsection
 are superseded by the renewed-answer follow-up above. Its proof remains dated.

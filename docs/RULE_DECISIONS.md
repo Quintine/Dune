@@ -1,5 +1,23 @@
 # Rule decision index
 
+## Salusa Low and free Sardaukar revival — 27 October 2026
+
+GF9's [Ecaz and Moritani rulebook, pp. 9–10](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=10)
+prohibits free Sardaukar revival while Salusa's Low penalty applies and says
+Karama cannot affect Homeworld advantages or penalties. Apply the ban to normal
+free revival, Ghola, Emperor's special Karama and Tleilaxu Ambassador returns.
+Ordinary paid Sardaukar revival remains available within its own limits; normal
+forces and eligible leaders remain available. The supplied Advanced rulebook's
+special-revival exemption from turn limits does not override this separate ban.
+
+An established Low occupation retains its penalty after native repopulation until
+the qualifying occupation ends; this composition is provisional. A legacy
+foreign presence without the original qualification history is guarded rather
+than classified as an occupation. Preserve previously accepted unstamped revival
+receipts and special intents with their original terms. This supersedes the
+earlier claims below that a free Ghola can raise Low Salusa to High.
+[Contract](HOMEWORLD_BENEFITS_RULES.md#salusa-low-and-free-sardaukar-revival--27-october-2026).
+
 ## Voice naming Portable Snooper — 27 October 2026
 
 The authorized Advanced source permits Voice to name a specific card; the
@@ -67,9 +85,8 @@ return through the special power without spending the ordinary elite allowance.
 This is a source-composition interpretation, not an official GF9 FAQ. Ordinary
 revival, Ghola and allied extra revival retain their existing limits. Existing
 saved counters are not retroactively reclassified.
-The Homeworld Salusa Secundus low-population penalty prohibits free Sardaukar
-revival; its interaction with this special power remains unresolved and is not
-certified by this interpretation.
+The later [Salusa Low decision](#salusa-low-and-free-sardaukar-revival--27-october-2026)
+applies the separate Homeworld ban to this free special power.
 [Runtime evidence](../tests/emperor-special-revival-exemption-runtime.test.ts).
 
 ## Sabotage gift overflow — 27 October 2026
@@ -339,6 +356,9 @@ publisher ruling. [Source and contract](NEXUS_EMPEROR_RULES.md#positive-shortage
 
 ## Salusa Ghola with binding Truthtrance — 27 October 2026
 
+Historical: the later [Salusa Low decision](#salusa-low-and-free-sardaukar-revival--27-october-2026)
+supersedes free Sardaukar returns from Low Salusa.
+
 Remove the blanket live-promise restriction before either full seal. Preserve
 feasible Yes/whole-No/grouped claims and reject a return that deliberately makes
 the actor's own promise impossible. Renew obsolete inspections first, then test
@@ -352,6 +372,9 @@ their preview boundary. [Contract](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-
 
 ## Salusa Ghola inspection renewal — 27 October 2026
 
+Historical: the later [Salusa Low decision](#salusa-low-and-free-sardaukar-revival--27-october-2026)
+supersedes free Sardaukar returns from Low Salusa.
+
 Before either full plan is sealed, an actual Salusa-crossing Ghola return may
 retain a feasible inspection or renew an impossible original field. The supplied
 PDF's outlined impossible-answer Q&A (physical41 / printed39) is an accepted
@@ -363,6 +386,9 @@ the inspection restriction in the earlier window below.
 [Contract](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-renewed-inspection-answers--27-october-2026).
 
 ## Salusa Ghola commitment-free battle window — 27 October 2026
+
+Historical: the later [Salusa Low decision](#salusa-low-and-free-sardaukar-revival--27-october-2026)
+supersedes free Sardaukar returns from Low Salusa.
 
 Remove the whole-battle population-crossing restriction before any sealed plan,
 inspection answer or active battle promise. Actual revival raises current native

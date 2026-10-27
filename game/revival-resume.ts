@@ -1,6 +1,6 @@
 import type { Decision, Game, ResponseWindow } from './engine';
 import type { PendingRevival } from './revival';
-import { forceRevivalRemaining, freeRevivalRemaining } from './revival';
+import { forceRevivalQuote, forceRevivalRemaining, legacyFreeRevivalRemaining } from './revival';
 import {
   continuationCustody,
   RevivalCancellationError,
@@ -26,11 +26,14 @@ export type RevivalResumeContext = Pick<
   | 'advanced'
   | 'expansions'
   | 'homeworlds'
+  | 'homeworldOccupationHistory'
+  | 'homeworldOccupationPreview'
   | 'homeworldRevival'
   | 'players'
   | 'pendingRevival'
   | 'revivalRules'
   | 'freeRevival'
+  | 'recruits'
   | 'emperorExtra'
   | 'techTokens'
   | 'revivalFreeIncome'
@@ -203,6 +206,11 @@ export function quoteRevivalResume(
   );
   if (original.nexusEmperorEvent !== undefined)
     validateNexusEmperorSource(g, original);
+  if (original.salusaFreePolicy !== undefined)
+    requireResume(original.salusaFreePolicy === 1 && original.kind === 'forces' &&
+      p.faction === 'emperor' && g.advanced && !!g.homeworlds?.custody &&
+      !original.emperorExtra && original.nexusEmperorEvent === undefined,
+    'The saved Salusa revival policy does not match its ordinary Emperor source.');
   if (original.kind === 'forces') {
     requireResume(
       count(original.amount) &&
@@ -222,8 +230,9 @@ export function quoteRevivalResume(
     if (g.homeworlds && !original.emperorExtra &&
       original.nexusEmperorEvent === undefined)
       requireResume(
-        original.free ===
-          Math.min(original.amount, freeRevivalRemaining(g, p)),
+        original.free === (original.salusaFreePolicy === 1
+          ? forceRevivalQuote(g, p, original.amount, original.elite ?? 0).free
+          : Math.min(original.amount, legacyFreeRevivalRemaining(g, p))),
         'The saved Homeworld revival free allocation does not match its current eligible group.',
       );
     const elite = original.elite ?? 0;

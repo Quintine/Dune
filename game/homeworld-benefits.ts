@@ -1,6 +1,11 @@
 import type { Game } from './engine';
+import { homeworldForceGroups } from './homeworld-custody';
 import { homeworldContext } from './homeworld-game';
 import { homeworldPopulations } from './homeworld-population';
+import {
+  quoteStableHomeworldOccupation,
+  type StableHomeworldOccupationContext,
+} from './homeworld-stable-occupation';
 
 type HomeworldBenefitContext = Pick<
   Game,
@@ -57,6 +62,43 @@ export function homeworldSardaukarFreeSupport(
       home.card === 'salusa_secundus' &&
       home.side === 'high',
   );
+}
+
+/** The Low Salusa penalty applies to free Sardaukar revival independently of
+ * the revival source and its limits. An established occupation retains that
+ * penalty after native repopulation until the original occupier leaves. */
+export function homeworldSardaukarFreeRevivalBlock(
+  context: HomeworldBenefitContext & StableHomeworldOccupationContext,
+  playerId: string,
+): string | null {
+  if (
+    !context.advanced ||
+    !context.homeworlds?.custody ||
+    !context.players.some((player) => player.id === playerId && player.faction === 'emperor')
+  ) return null;
+
+  const physical = homeworldContext(context);
+  const salusa = homeworldPopulations(physical, context.homeworlds.custody).find(
+    (home) => home.native === playerId && home.card === 'salusa_secundus',
+  );
+  if (!salusa) return null;
+  const penalty = 'Salusa Secundus prohibits free Sardaukar revival while its low-population penalty applies.';
+  if (salusa.side === 'low') return penalty;
+
+  // Older profiles do not have the occupation history needed to distinguish
+  // a retained occupier from an unqualified visitor. Do not infer either.
+  if (!context.homeworldOccupationPreview) {
+    const world = homeworldForceGroups(physical, context.homeworlds.custody).find(
+      (home) => home.id === salusa.location,
+    );
+    if (world && Object.entries(world.forces).some(([id, forces]) =>
+      id !== playerId && forces.normal + forces.elite > 0,
+    )) return 'Salusa occupation eligibility requires the original Homeworld qualification history.';
+    return null;
+  }
+  const occupation = quoteStableHomeworldOccupation(context, 'salusa_secundus');
+  if (occupation.blocked) return occupation.blocked;
+  return occupation.entitlement ? penalty : null;
 }
 
 /** One returned star crosses Salusa's current threshold during its native

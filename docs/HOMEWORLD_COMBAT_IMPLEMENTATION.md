@@ -1,9 +1,9 @@
 # Homeworld combat foundation and Salusa support
 
-Current follow-up: [Ghola inspection renewal](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-renewed-inspection-answers--27-october-2026)
-can raise Salusa before either full plan seals, retaining feasible answers or
-renewing impossible original fields. The [live-promise follow-up](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-live-truthtrance-promises--27-october-2026)
-retains feasible claims and rejects self-impossible returns; full seals remain guarded.
+Current follow-up: the [Salusa Low penalty](HOMEWORLD_BENEFITS_RULES.md#salusa-low-and-free-sardaukar-revival--27-october-2026)
+prohibits free Sardaukar revival, including Ghola. This supersedes the earlier
+Low-to-High free Ghola scenarios and their inspection/promise claims below.
+The retained occupation composition is provisional and wider combinations remain open.
 
 9 September 2026. This extends the native-reserve runtime. Homeworld invasion and live off-planet battle actions remain unavailable; no start gate is opened.
 
@@ -11,7 +11,7 @@ retains feasible claims and rejects self-impossible returns; full seals remain g
 
 In Advanced Homeworld development games, maintaining at least two Sardaukar on Salusa grants free support to the Emperor’s Sardaukar wherever they fight. Normal forces retain their ordinary support costs. The shared combat calculation uses a separate optional elite-support flag, so ordinary Sardaukar Karama can reduce their strength without canceling the Homeworld benefit. Shipping a fourth Sardaukar away from the initial five leaves Salusa low and removes free elite support. Normal reserves transferred there do not replace the named population threshold.
 
-Server plans, typed casualty options, Stone Burner comparisons, the private player view, all four AI policies and the table’s support maximum share this calculation. Saved casualty decisions preserve the relevant force snapshot. Legacy snapshots without the optional flag retain their existing behavior. Salusa’s low free-revival prohibition and occupation penalty remain unfinished.
+Server plans, typed casualty options, Stone Burner comparisons, the private player view, all four AI policies and the table’s support maximum share this calculation. Saved casualty decisions preserve the relevant force snapshot. Legacy snapshots without the optional flag retain their existing behavior. The Low free-revival prohibition is connected; occupation retention and broader interactions remain provisional.
 
 ## Off-planet foundation
 
@@ -22,6 +22,11 @@ The pure battle-resolution quote accepts an explicit native card, face and physi
 These quotes are not yet wired into live off-planet battle discovery, aftermath, force removal, Face Dancers or occupation. The engine must consume the separate native explosion choice before transport opens. See the [integration audit](HOMEWORLD_COMBAT_INTEGRATION_AUDIT.md) and [invasion source audit](HOMEWORLD_INVASION_RULES.md). Current invasion/occupation interpretation questions remain pending.
 
 ## Verification
+
+The following is historical evidence for the original combat checkpoint. Its
+assertion that free Ghola can later return a Sardaukar while Salusa is Low is
+superseded by the current Low penalty; do not treat these counts as verification
+of the new rule.
 
 Focused checks pass 62 combat/Stone Burner cases, 29 battle-resolution cases, nine Homeworld army/discovery cases and eight Salusa engine cases. These groups overlap existing regression coverage and are not a combined full-suite count. The Salusa cases use genuine Advanced setup, typed shipments and actual battle preparation, sealed plans, traitor actions and casualty settlement. They cover high/low transitions, normal support costs, ordinary Karama, JSON restoration, opponent privacy, physical conservation and legal decisions from every AI level.
 

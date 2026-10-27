@@ -4688,10 +4688,14 @@ export function GameTable({
                               )
                             : undefined,
                           g.revival.choamBlocked,
+                          !!g.revival.sardaukarFreeBlock,
                         ).cost
                       }{' '}
                       spice.
                     </p>
+                  )}
+                  {g.revival.sardaukarFreeBlock && (
+                    <p className="fine">{g.revival.sardaukarFreeBlock} Ordinary Sardaukar revival remains available at the displayed paid price.</p>
                   )}
                   {g.revival.auditorCyclePolicy && (
                     <p className="notice">{g.revival.auditorCyclePolicy}</p>
@@ -6331,13 +6335,14 @@ export function GameTable({
                             ordinary revival allowances, including the normal
                             one-Sardaukar limit.
                           </p>
+                          {g.revival.sardaukarFreeBlock && <p className="fine">{g.revival.sardaukarFreeBlock}</p>}
                           <label htmlFor={`special-revive-${c.id}`}>
                             Forces to revive
                             <Input
                               id={`special-revive-${c.id}`}
                               type="number"
                               min={1}
-                              max={Math.min(3, me.tanks)}
+                              max={Math.min(3, me.tanks - (g.revival.sardaukarFreeBlock ? (me.elites?.tanks ?? 0) : 0))}
                               value={amount}
                               onChange={(e) =>
                                 setAmount(Number(e.target.value))
@@ -6349,7 +6354,7 @@ export function GameTable({
                               label="Sardaukar to revive"
                               value={eliteAmount}
                               min={Math.max(0, amount - (me.tanks - me.elites.tanks))}
-                              max={Math.min(amount, me.elites.tanks)}
+                              max={g.revival.sardaukarFreeBlock ? 0 : Math.min(amount, me.elites.tanks)}
                               onChange={setEliteAmount}
                             />
                           )}
@@ -6363,9 +6368,9 @@ export function GameTable({
                               amount,
                               elite: eliteAmount,
                             },
-                            !Number.isSafeInteger(amount) || amount < 1 || amount > Math.min(3, me.tanks) ||
+                            !Number.isSafeInteger(amount) || amount < 1 || amount > Math.min(3, me.tanks - (g.revival.sardaukarFreeBlock ? (me.elites?.tanks ?? 0) : 0)) ||
                               !Number.isSafeInteger(eliteAmount) || eliteAmount < Math.max(0, amount - (me.tanks - (me.elites?.tanks ?? 0))) ||
-                              eliteAmount > Math.min(amount, me.elites?.tanks ?? 0),
+                              eliteAmount > (g.revival.sardaukarFreeBlock ? 0 : Math.min(amount, me.elites?.tanks ?? 0)),
                           )}
                           {me.leaders
                             .filter(

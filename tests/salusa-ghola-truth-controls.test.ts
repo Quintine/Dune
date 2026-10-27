@@ -30,28 +30,27 @@ function ownPromise(game: Game, actor: string) {
 // These are shared control-adapter and minimal-policy checks over the earned
 // native source. No Ghola amount selector or Battle Plan form is operated here;
 // GameTable SSR is covered by the integration owner's separate runtime smoke.
-void test('the exact owned Ghola group remains available when Salusa High preserves the native Yes dial2 promise', () => {
+void test('the exact owned Ghola group is blocked at Low Salusa while the native Yes dial2 remains', () => {
   const f = source('dial2'), game = structuredClone(f.game), view = viewGame(game, f.actor);
   assert.deepEqual(f.action, { type: 'card', card: f.card, amount: 1, elite: 1 });
   assert.deepEqual(ownPromise(game, f.actor).claim, f.claim);
-  assert.equal(homeworldRevivalActionBlock(view, f.action), null);
-  assert.equal(view.ghola.available, true); assert.ok(view.ghola.cards.includes(f.card));
-  assert.equal(view.ghola.maxForces, 1); assert.equal(view.ghola.eliteRemaining, 1);
-  const returned = applyAction(game, f.actor, f.action);
-  assert.equal(returned.battle?.event, game.battle?.event);
-  assert.deepEqual(ownPromise(returned, f.actor).claim, f.claim);
-  assert.equal(ownPromise(returned, f.actor).answer, true);
-  assert.equal(viewGame(returned, f.actor).battle?.ownForces?.eliteFreeSupport, true);
-  assert.equal(returned.discard.filter(card => card.id === f.card).length, 1);
-  assert.equal(returned.players.find(player => player.id === f.actor)!.elites!.tanks, 0);
+  assert.match(homeworldRevivalActionBlock(view, f.action)!, /Salusa.*free Sardaukar/i);
+  assert.equal(view.ghola.available, false); assert.ok(view.ghola.cards.includes(f.card));
+  assert.equal(view.ghola.maxForces, 0); assert.equal(view.ghola.eliteRemaining, 0);
+  const before = structuredClone(game);
+  assert.throws(() => applyAction(game, f.actor, f.action), /Salusa.*free Sardaukar/i);
+  assert.deepEqual(game, before);
+  assert.equal(ownPromise(game, f.actor).answer, true);
+  assert.equal(game.discard.filter(card => card.id === f.card).length, 0);
+  assert.equal(game.players.find(player => player.id === f.actor)!.elites!.tanks, 1);
 });
 
-void test('the selected Ghola group block agrees with native rejection for an odd-dial or paid-support Yes promise', () => {
+void test('the selected Ghola group block agrees with Low Salusa rejection for other Yes promises', () => {
   for (const kind of ['dial1', 'support'] as const) {
     const f = source(kind), game = structuredClone(f.game), view = viewGame(game, f.actor);
     const blocked = homeworldRevivalActionBlock(view, f.action);
     assert.ok(blocked, `${kind}: the actual selected return needs a visible block.`);
-    assert.match(blocked, /Truthtrance|promise/i);
+    assert.match(blocked, /Salusa.*free Sardaukar/i);
     assert.ok(view.homeworldRevivalBlocks?.some(row => row.source === 'ghola' &&
       row.amount === f.action.amount && row.elite === f.action.elite && row.reason === blocked));
     assert.equal(view.ghola.maxForces, 0); assert.equal(view.ghola.eliteRemaining, 0);
@@ -67,23 +66,22 @@ void test('the selected Ghola group block agrees with native rejection for an od
   }
 });
 
-void test('all four minimal profiles omit blocked Ghola and retain legal required plans before and after an allowed return', () => {
+void test('all four minimal profiles omit blocked Ghola and retain legal required plans', () => {
   for (const kind of ['dial1', 'support', 'dial2'] as const) {
     const f = source(kind);
-    const start = kind === 'dial2' ? applyAction(f.game, f.actor, f.action) : f.game;
+    const start = f.game;
     for (const profile of profiles) {
       const game = structuredClone(start), view = viewGame(game, f.actor);
       view.players.find(player => player.id === f.actor)!.bot = profile;
       const actions = botActions(view);
       assert.ok(actions.length, `${kind}/${profile}: current legal participation remains available.`);
       assert.ok(actions.every(action => action.type !== 'card' || action.card !== f.card),
-        `${kind}/${profile}: no blocked or already spent Ghola is offered.`);
+        `${kind}/${profile}: the blocked Ghola is not offered.`);
       const plans = actions.filter(action => action.type === 'battlePlan');
       assert.ok(plans.length, `${kind}/${profile}: the live promise has a legal current plan.`);
       for (const plan of plans) {
         if (kind === 'support') assert.ok(Number(plan.support) >= 1);
         else assert.equal(plan.dial, kind === 'dial1' ? 1 : 2);
-        if (kind === 'dial2') assert.equal(plan.support ?? 0, 0);
         const sealed = applyAction(game, f.actor, plan);
         assert.ok(sealed.battle?.plans[f.actor]);
         assert.equal(ownPromise(sealed, f.actor).answer, true);

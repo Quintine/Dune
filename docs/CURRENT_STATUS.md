@@ -20,6 +20,15 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Salusa low free-revival prohibition — 27 October. Prototyped / Partial.** Apply
+the printed low penalty to ordinary force pricing, Ghola, Emperor special
+Karama and the Tleilaxu Ambassador, preserving normal-force/leader choices,
+paid Sardaukar, native quotas and existing pending receipts. The owner view
+exposes the prohibition and exact price; Ambassador returns use native
+Homeworld custody. The affected 15-file union passed 86 cases and the
+production build passed. Source composition and occupied retention remain
+explicitly documented; wider combinations and deployed acceptance remain open.
+
 **Voice naming Portable Snooper — 27 October. Prototyped / Partial.** Voice
 can name the canonical Portable separately from ordinary Snooper or the generic
 poison-defense category. Native plan and late-defense checks share the same

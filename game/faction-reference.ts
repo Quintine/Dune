@@ -92,7 +92,7 @@ export const FACTION_RULES: Record<
     advanced: [
       'Five Sardaukar forces have a printed battle strength of two each, except against Fremen, where they count as ordinary forces.',
       'Spice support applies per token. A supported Sardaukar contributes two strength; an unsupported Sardaukar contributes one, except when fighting Fremen.',
-      'Once per game during Revival, spend Karama to revive up to three of your own forces or one of your own dead leaders for free. These special returns do not use normal revival allowances, including the ordinary one-Sardaukar limit.',
+      'Once per game during Revival, spend Karama to revive up to three of your own forces or one of your own dead leaders for free. These special returns do not use normal revival allowances, including the ordinary one-Sardaukar limit. With Homeworlds, a low Salusa prohibits free Sardaukar returns; normal forces and eligible leaders remain available.',
       'An elite token counts as one force for ordinary revival. Only one Sardaukar may be ordinarily revived per turn; the Emperor’s special Karama is separate.',
     ],
   },

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import { botActions } from '../game/bots';
 import {
-  createSalusaGholaFixture, playSalusaGholaBattle, actSalusaGhola as act,
+  createSalusaGholaFixture, actSalusaGhola as act,
   advanceSalusaGhola as advance, salusaGholaClean as clean,
   salusaGholaArmy as army, salusaGholaPlayer as p, salusaGholaInventory as inventory,
   type SalusaGholaFixture,
@@ -28,8 +28,8 @@ function leader(game: Game, actor: string, strongest: boolean) {
   choices.sort((a,b) => strongest ? b.strength-a.strength : a.strength-b.strength);
   assert.ok(choices[0]); return choices[0].id;
 }
-function finish(f: SalusaGholaFixture, state: Game) {
-  let game = act(state,f.actor,{type:'battlePlan',leader:leader(state,f.actor,true),dial:2,support:0});
+function finish(f: SalusaGholaFixture, state: Game, dial: 1|2) {
+  let game = act(state,f.actor,{type:'battlePlan',leader:leader(state,f.actor,true),dial,support:0});
   game = act(game,f.opponent,{type:'battlePlan',leader:leader(game,f.opponent,false),dial:0,support:0});
   return advance(game,g => !g.battle && clean(g));
 }
@@ -61,65 +61,54 @@ void test('earned Basin-first source answers real Atreides dial Prescience befor
   assert.deepEqual(inventory(f.game),f.original);
 });
 
-void test('actual Ghola invalidates an impossible old odd dial and requires owned legal reanswer before native plans', () => {
+void test('Low Salusa rejection preserves the original native odd-dial Prescience answer', () => {
   const f = source(1);
-  let game = act(structuredClone(f.game),f.actor,f.action);
-  assert.deepEqual(army(game),{normal:0,elite:2});
+  let game = structuredClone(f.game);
+  reject(game,f.actor,f.action);
+  assert.deepEqual(army(game),{normal:0,elite:1});
   assert.equal(game.battle!.event,f.game.battle!.event);
   assert.equal(game.battle!.prescience!.field,'dial');
   assert.equal(game.battle!.prescience!.player,'atreides');
-  assert.equal(Object.hasOwn(game.battle!.prescience!,'value'),false);
-  assert.equal(game.battle!.preparation?.kind,'prescienceAnswer');
-  assert.equal(game.battle!.preparation?.owner,f.actor);
-  assert.equal(game.battle!.preparation?.beneficiary,'atreides');
-  assert.deepEqual(game.battle!.plans,{});
-  assert.equal(viewGame(game,f.actor).battle!.ownForces!.eliteFreeSupport,true);
-  assert.equal(game.discard.filter(c => c.id === f.card).length,1);
-  assert.equal(p(game).elites!.tanks,0);
-  reject(game,f.actor,{type:'battlePlan',leader:leader(game,f.actor,true),dial:1,support:0});
-  reject(game,f.actor,{type:'prescienceAnswer',value:1});
-  reject(game,f.opponent,{type:'prescienceAnswer',value:2});
-  game = act(game,f.actor,{type:'prescienceAnswer',value:2});
-  assert.equal(game.battle!.prescience!.value,2);
+  assert.equal(game.battle!.prescience!.value,1);
   assert.equal(game.battle!.preparation,undefined);
-  assert.equal(p(game).elites!.tanks,0);
-  game = finish(f,game);
-  assert.equal(game.lastBattleContext!.winner,f.actor);
+  assert.deepEqual(game.battle!.plans,{});
+  assert.equal(viewGame(game,f.actor).battle!.ownForces!.eliteFreeSupport,undefined);
+  assert.equal(game.discard.filter(c => c.id === f.card).length,0);
   assert.equal(p(game).elites!.tanks,1);
-  assert.deepEqual(army(game),{normal:0,elite:2});
-  assert.equal(game.discard.filter(c => c.id === f.card).length,1);
+  reject(game,f.actor,{type:'battlePlan',leader:leader(game,f.actor,true),dial:2,support:0});
+  game = finish(f,game,1);
+  assert.equal(game.lastBattleContext!.winner,f.actor);
+  assert.equal(p(game).elites!.tanks,2);
+  assert.deepEqual(army(game),{normal:0,elite:1});
+  assert.equal(game.discard.filter(c => c.id === f.card).length,0);
   assert.deepEqual(inventory(game),f.original);
 });
 
-void test('actual Ghola retains a still-feasible native dial2 answer and finishes without another inspection', () => {
-  const f = source(2), result = playSalusaGholaBattle(f);
+void test('Low Salusa rejection retains a native dial2 answer and finishes without another inspection', () => {
+  const f = source(2), before = structuredClone(f.game);
   assert.equal(f.game.battle!.prescience!.value,2);
-  assert.equal(result.returned.battle!.prescience!.value,2);
-  assert.equal(result.returned.battle!.preparation,undefined);
-  assert.equal(result.returned.battle!.prescience!.player,'atreides');
-  assert.equal(result.afterPlan.battle!.plans[f.actor].dial,2);
-  assert.equal(result.afterPlan.battle!.plans[f.actor].support,0);
-  assert.equal(result.actions.filter(step => step.action.type === 'prescience' ||
-    step.action.type === 'prescienceAnswer').length,0);
-  assert.equal(result.game.lastBattleContext!.winner,f.actor);
-  assert.equal(result.game.discard.filter(c => c.id === f.card).length,1);
-  assert.deepEqual(inventory(result.game),f.original);
+  reject(before,f.actor,f.action);
+  assert.equal(before.battle!.prescience!.value,2);
+  assert.equal(before.battle!.preparation,undefined);
+  const done = finish(f,before,2);
+  assert.equal(done.lastBattleContext!.winner,f.actor);
+  assert.equal(done.discard.filter(c => c.id === f.card).length,0);
+  assert.deepEqual(inventory(done),f.original);
 });
 
-void test('all four minimal profiles can supply a legal current Salusa Prescience reanswer', () => {
-  const f = source(1), pending = act(structuredClone(f.game),f.actor,f.action);
+void test('all four minimal profiles honor the existing Salusa Prescience answer after rejection', () => {
+  const f = source(1), pending = structuredClone(f.game);
+  reject(pending,f.actor,f.action);
   for (const profile of ['Easy','Medium','Hard','Brutal'] as const) {
     const game = structuredClone(pending), view = viewGame(game,f.actor);
     view.players.find(p => p.id === f.actor)!.bot = profile;
-    const action = botActions(view).find(action => action.type === 'prescienceAnswer');
-    assert.ok(action,`${profile} needs the actual owned reanswer action.`);
-    assert.notEqual(action.value,1);
+    const action = botActions(view).find(action => action.type === 'battlePlan' && action.dial === 1);
+    assert.ok(action,`${profile} needs a legal plan honoring the actual answered dial.`);
     const next = act(game,f.actor,action);
-    assert.equal(next.battle!.prescience!.value,action.value);
-    assert.equal(next.battle!.preparation,undefined);
-    assert.deepEqual(next.battle!.plans,{});
-    assert.equal(next.discard.filter(c => c.id === f.card).length,1);
-    assert.deepEqual(army(next),{normal:0,elite:2});
+    assert.equal(next.battle!.prescience!.value,1);
+    assert.equal(next.battle!.plans[f.actor].dial,1);
+    assert.equal(next.discard.filter(c => c.id === f.card).length,0);
+    assert.deepEqual(army(next),{normal:0,elite:1});
     assert.deepEqual(inventory(next),f.original);
   }
 });

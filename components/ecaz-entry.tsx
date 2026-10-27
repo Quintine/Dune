@@ -299,11 +299,7 @@ export function EcazEntry({
                     onClick={() =>
                       send({
                         forces: count,
-                        elite: Math.min(
-                          entry.revival!.eliteTanks,
-                          Math.max(0, 1 - entry.revival!.eliteRevived),
-                          count,
-                        ),
+                        elite: Math.min(entry.revival!.eliteMaximum, count),
                       })
                     }
                   >
@@ -312,6 +308,7 @@ export function EcazEntry({
                 ))}
               </fieldset>
             )}
+          {entry.revival?.eliteBlock && <p className="fine">{entry.revival.eliteBlock}</p>}
           <Button
             variant="outline"
             className={buttonClass}

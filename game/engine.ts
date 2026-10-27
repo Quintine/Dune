@@ -240,6 +240,7 @@ import { GuildAmbassadorMarkerError, markerDestinations, markerOwner, quoteGuild
   type GuildAmbassadorMarker, type GuildAmbassadorMarkerQuote } from './guild-ambassador-no-field';
 import {
   homeworldLowBonus,
+  homeworldSardaukarFreeRevivalBlock,
   homeworldSardaukarFreeSupport,
   homeworldSardaukarGholaBlock,
   homeworldSardaukarGholaCrossing,
@@ -18372,7 +18373,9 @@ function kullIntegrity(g: Game): void {
         'The interrupted Karama has no proven Truthtrance continuation.');
     } else {
       requireRule(frame.intent?.kind === 'special', 'The Kull attempt has no validated intent.');
-      const prepared = prepareSpecialKaramaIntent(source, frame.owner, specialKaramaAction(frame.intent.use));
+      const original = frame.intent.use;
+      const prepared = prepareSpecialKaramaIntent(source, frame.owner, specialKaramaAction(original),
+        { legacySalusaIntent: original.kind === 'emperorForces' && original.salusaFreePolicy === undefined });
       requireRule(JSON.stringify(prepared) === JSON.stringify(frame.intent.use),
         'The saved special Karama selection has changed.');
     }
@@ -25008,10 +25011,11 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
         throw new RuleError(error.message);
       throw error;
     }
-    p.reserves = quote.after.reserves;
+    const salusaBlock = quote.elite > 0 ? homeworldRule(() => homeworldSardaukarFreeRevivalBlock(g, p.id)) : null;
+    requireRule(!salusaBlock, salusaBlock ?? 'Choose eligible forces for the free Ambassador return.');
+    addNativeReserves(g, p, quote.amount, quote.elite);
     p.tanks = quote.after.tanks;
     if (p.elites) {
-      p.elites.reserves = quote.after.eliteReserves;
       p.elites.tanks = quote.after.eliteTanks;
       p.elites.revived = quote.eliteRevivedNext;
     }
@@ -30016,7 +30020,8 @@ function gholaOptions(g: Game, p: Player) {
     strength,
   }));
   const kwisatz = !!(g.advanced && p.faction === 'atreides' && p.kwisatz?.dead);
-  let eliteBlock = homeworldSardaukarGholaBlock(g, p.id);
+  let eliteBlock = homeworldRule(() => homeworldSardaukarFreeRevivalBlock(g, p.id)) ??
+    homeworldSardaukarGholaBlock(g, p.id);
   let eliteRemaining = eliteBlock ? 0 : Math.min(
     p.elites?.tanks ?? 0,
     eliteRevivalRemaining(p, g.advanced),
@@ -30237,7 +30242,8 @@ function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
       'Forces',
     );
     const elite = eliteChoice(n, p.tanks, p.elites?.tanks ?? 0, action.elite);
-    const eliteBlock = elite > 0 ? homeworldSardaukarGholaBlock(g, p.id) : null;
+    const eliteBlock = elite > 0 ? homeworldRule(() => homeworldSardaukarFreeRevivalBlock(g, p.id)) ??
+      homeworldSardaukarGholaBlock(g, p.id) : null;
     requireRule(!eliteBlock, eliteBlock ?? 'Choose an eligible Ghola return.');
     requireRule(
       elite <= eliteRevivalRemaining(p, g.advanced),
@@ -39042,7 +39048,7 @@ export type SpecialKaramaIntent = {
     }
   | { kind: 'guild'; target: string; shipment: PendingShipment }
   | { kind: 'guildHomeworld'; target: string; shipment: PendingHomeworldShipment }
-  | { kind: 'emperorForces'; amount: number; elite: number }
+  | { kind: 'emperorForces'; amount: number; elite: number; salusaFreePolicy?: 1 }
   | { kind: 'emperorLeader'; leader: string }
   | { kind: 'harkonnen'; target: string; amount: number }
   | { kind: 'ecaz'; event: string }
@@ -39054,6 +39060,7 @@ export function prepareSpecialKaramaIntent(
   g: Game,
   playerId: string,
   action: Action,
+  options: { legacySalusaIntent?: boolean } = {},
 ): SpecialKaramaIntent {
   const p = getPlayer(g, playerId);
   requireRule(action.emperorNexus === undefined || p.faction === 'richese',
@@ -39303,7 +39310,11 @@ export function prepareSpecialKaramaIntent(
     }
     const n = integer(action.amount, 1, Math.min(3, p.tanks), 'Forces');
     const elite = eliteChoice(n, p.tanks, p.elites?.tanks ?? 0, action.elite);
-    return { ...base, kind: 'emperorForces', amount: n, elite };
+    const eliteBlock = elite > 0 && !options.legacySalusaIntent
+      ? homeworldRule(() => homeworldSardaukarFreeRevivalBlock(g, p.id)) : null;
+    requireRule(!eliteBlock, eliteBlock ?? 'Choose eligible forces for the special revival.');
+    return { ...base, kind: 'emperorForces', amount: n, elite,
+      ...(g.homeworlds?.custody && !options.legacySalusaIntent ? { salusaFreePolicy: 1 as const } : {}) };
   } else if (p.faction === 'harkonnen') {
     requireRule(
       g.phase === 3 && !g.pendingExchange,
@@ -39405,6 +39416,7 @@ export function executeSpecialKaramaIntent(
     g,
     intent.owner,
     specialKaramaAction(intent),
+    { legacySalusaIntent: intent.kind === 'emperorForces' && intent.salusaFreePolicy === undefined },
   );
   requireRule(
     prepared.kind === intent.kind,
@@ -45111,10 +45123,17 @@ export function viewGame(state: Game, id: string, now?: number) {
             revival:
               entry.stage === 'revival' && id === entry.beneficiary
                 ? {
-                    maximum: Math.min(4, me.tanks),
+                    maximum: Math.min(4, me.tanks - (me.elites?.tanks ?? 0) +
+                      (homeworldRule(() => homeworldSardaukarFreeRevivalBlock(g, me.id)) ? 0 :
+                        me.faction === 'ixians' ? (me.elites?.tanks ?? 0) :
+                          Math.min(me.elites?.tanks ?? 0, Math.max(0, 1 - (me.elites?.revived ?? 0))))),
                     tanks: me.tanks,
                     eliteTanks: me.elites?.tanks ?? 0,
                     eliteRevived: me.elites?.revived ?? 0,
+                    eliteMaximum: homeworldRule(() => homeworldSardaukarFreeRevivalBlock(g, me.id)) ? 0 :
+                      me.faction === 'ixians' ? (me.elites?.tanks ?? 0) :
+                        Math.min(me.elites?.tanks ?? 0, Math.max(0, 1 - (me.elites?.revived ?? 0))),
+                    eliteBlock: homeworldRule(() => homeworldSardaukarFreeRevivalBlock(g, me.id)),
                     leaders: tleilaxuAmbassadorLeaderChoices(g, me),
                     blocked:
                       ambassadorEffectBlock(
@@ -45576,6 +45595,7 @@ export function viewGame(state: Game, id: string, now?: number) {
       orderBlocked: nativeRevivalOrderBlock(g,id),
       pending: !!g.pendingRevival,
       specialKaramaBlock: null,
+      sardaukarFreeBlock: homeworldRule(() => homeworldSardaukarFreeRevivalBlock(g, me.id)),
       leaders: leaderRevivals.leaders,
       kwisatz: leaderRevivals.kwisatz,
       ...(leaderRevivals.auditorCyclePolicy ? { auditorCyclePolicy: leaderRevivals.auditorCyclePolicy } : {}),

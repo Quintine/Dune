@@ -28,9 +28,12 @@ export type RevivalCancellationContext = Pick<
   | 'turn'
   | 'advanced'
   | 'homeworlds'
+  | 'homeworldOccupationHistory'
+  | 'homeworldOccupationPreview'
   | 'players'
   | 'revivalRules'
   | 'freeRevival'
+  | 'recruits'
   | 'dukeVidal'
   | 'pendingRevival'
   | 'emperorExtra'
@@ -273,9 +276,15 @@ export function quoteRevivalCancellation(
         nonnegative(p.revived),
       'The pending force revival has invalid physical counts.',
     );
+    if (original.salusaFreePolicy !== undefined)
+      requireRevival(original.salusaFreePolicy === 1 && g.advanced &&
+        p.faction === 'emperor' && !!g.homeworlds?.custody && !original.emperorExtra &&
+        original.payer === undefined &&
+        original.free === forceRevivalQuote(g, p, original.amount!, original.elite ?? 0).free,
+      'The pending Salusa revival no longer matches its original free allocation.');
   } else {
     requireRevival(
-      original.free === 0 &&
+      original.salusaFreePolicy === undefined && original.free === 0 &&
         original.amount === undefined &&
         original.elite === undefined &&
         (original.kind === 'kwisatz'

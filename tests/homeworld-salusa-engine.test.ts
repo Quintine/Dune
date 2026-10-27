@@ -16,7 +16,7 @@ import { DIFFICULTIES } from '../game/bot-profiles';
 import { homeworldGameIntegrity } from '../game/homeworld-game';
 import { casualtyOptions, type Casualties } from '../game/combat';
 import { baseDeck } from '../game/cards';
-import { homeworldSardaukarGholaBlock } from '../game/homeworld-benefits';
+import { homeworldSardaukarFreeRevivalBlock } from '../game/homeworld-benefits';
 
 const emperor = (g: Game) => g.players.find((player) => player.id === 'e')!;
 const atreides = (g: Game) => g.players.find((player) => player.id === 'a')!;
@@ -343,34 +343,40 @@ function gholaThresholdBattle(normal = 1) {
   return { g, card: card.id };
 }
 
-void test('Ghola can raise Salusa before battle commitments and the same battle uses current free Sardaukar support', () => {
+void test('Low Salusa prohibits free Sardaukar Ghola before battle commitments', () => {
   const { g: before, card } = gholaThresholdBattle();
-  assert.equal(homeworldSardaukarGholaBlock(before, 'e'), null);
-  assert.equal(viewGame(before, 'e').ghola.eliteRemaining, 1);
-  const done = applyAction(before, 'e', { type: 'card', card, amount: 1, elite: 1 });
-  assert.equal(done.homeworlds!.custody!.salusa!.elite, 2);
-  assert.equal(emperor(done).elites!.tanks, 0);
-  assert.equal(emperor(done).elites!.revived, 1);
-  assert.equal(done.discard.filter((held) => held.id === card).length, 1);
-  assert.equal(viewGame(done, 'e').battle!.ownForces!.eliteFreeSupport, true);
-  assert.equal(viewGame(done, 'e').battle!.ownForces!.elite, 3);
-  assert.equal(emperor(done).spice, 3);
-  const resolved = resolve(done, 6);
+  const reason = homeworldSardaukarFreeRevivalBlock(before, 'e');
+  assert.match(reason!, /prohibits free Sardaukar revival/);
+  assert.equal(viewGame(before, 'e').ghola.eliteBlock, reason);
+  assert.equal(viewGame(before, 'e').ghola.eliteRemaining, 0);
+  const snapshot = structuredClone(before);
+  assert.throws(() => applyAction(before, 'e', { type: 'card', card, amount: 1, elite: 1 }), /prohibits free Sardaukar revival/);
+  assert.deepEqual(before, snapshot);
+  assert.equal(before.discard.filter((held) => held.id === card).length, 0);
+  assert.equal(viewGame(before, 'e').battle!.ownForces!.eliteFreeSupport, undefined);
+  let resolved = resolve(before, 6, 3);
+  if (resolved.decision?.kind === 'battleLosses') {
+    const choice = resolved.decision.options.findIndex(
+      (loss) => loss.normal === 0 && loss.elite === 3,
+    );
+    assert.ok(choice >= 0);
+    resolved = applyAction(reload(resolved), 'e', { type: 'decision', choice });
+  }
   assert.equal(emperor(resolved).forces['arrakeen:10'], 1);
-  assert.equal(emperor(resolved).spice, 5, 'Only automatic Arrakeen collection adds spice.');
-  assert.equal(resolved.homeworlds!.custody!.salusa!.elite, 2);
+  assert.equal(emperor(resolved).spice, 2, 'The paid battle support leaves only automatic Arrakeen collection.');
+  assert.equal(resolved.homeworlds!.custody!.salusa!.elite, 1);
   inventory(resolved);
 });
 
-void test('the remaining Salusa preview guard protects a sealed paid-star plan until its actual battle completes', () => {
+void test('the Low Salusa free revival prohibition remains through a sealed plan and completed battle', () => {
   const { g: before, card } = gholaThresholdBattle();
   const sealed = applyAction(before, 'e', plan(before, 6, 3));
   for (const state of [sealed]) {
     const g = reload(state);
-    const reason = homeworldSardaukarGholaBlock(g, 'e');
+    const reason = homeworldSardaukarFreeRevivalBlock(g, 'e');
     assert.ok(
       reason,
-      'The unresolved Salusa timing combination must have an explicit reason.',
+      'The Low Salusa prohibition must have an explicit reason.',
     );
     const view = viewGame(g, 'e');
     assert.equal(view.ghola.eliteRemaining, 0);
@@ -406,11 +412,13 @@ void test('the remaining Salusa preview guard protects a sealed paid-star plan u
     g = applyAction(reload(g), 'e', { type: 'decision', choice });
   }
   assert.equal(g.battle, null);
-  assert.equal(homeworldSardaukarGholaBlock(g, 'e'), null);
-  assert.equal(viewGame(g, 'e').ghola.eliteRemaining, 1);
-  g = applyAction(reload(g), 'e', { type: 'card', card, amount: 1, elite: 1 });
-  assert.equal(g.homeworlds!.custody!.salusa!.elite, 2);
-  assert.equal(g.discard.filter((held) => held.id === card).length, 1);
+  assert.match(homeworldSardaukarFreeRevivalBlock(g, 'e')!, /prohibits free Sardaukar revival/);
+  assert.equal(viewGame(g, 'e').ghola.eliteRemaining, 0);
+  const finished = structuredClone(g);
+  assert.throws(() => applyAction(g, 'e', { type: 'card', card, amount: 1, elite: 1 }), /prohibits free Sardaukar revival/);
+  assert.deepEqual(g, finished);
+  assert.equal(g.homeworlds!.custody!.salusa!.elite, 1);
+  assert.equal(g.discard.filter((held) => held.id === card).length, 0);
   inventory(g);
 });
 
@@ -455,7 +463,7 @@ void test('the Salusa commitment guard leaves normal-force and eligible-leader G
   }
 });
 
-void test('an opponent-only sealed plan keeps the remaining Salusa timing boundary visible before Emperor submits', () => {
+void test('an opponent-only sealed plan keeps the Low Salusa free revival prohibition visible before Emperor submits', () => {
   const fixture = gholaThresholdBattle();
   const g = applyAction(fixture.g, 'a', {
     type: 'battlePlan', dial: 0, support: 0, leader: atreides(fixture.g).leaders[0].id,
@@ -465,15 +473,15 @@ void test('an opponent-only sealed plan keeps the remaining Salusa timing bounda
   const view = viewGame(g, 'e');
   assert.deepEqual(view.battle!.plans, {});
   assert.equal(view.ghola.eliteRemaining, 0);
-  assert.match(view.ghola.eliteBlock!, /not yet supported/);
+  assert.match(view.ghola.eliteBlock!, /prohibits free Sardaukar revival/);
   const before = structuredClone(g);
   assert.throws(() => applyAction(g, 'e', {
     type: 'card', card: fixture.card, amount: 1, elite: 1,
-  }), /not yet supported/);
+  }), /prohibits free Sardaukar revival/);
   assert.deepEqual(g, before);
 });
 
-void test('Salusa Ghola renews an impossible answered Prescience dial before either full plan is sealed', () => {
+void test('a rejected Low Salusa Ghola leaves an answered Prescience dial binding', () => {
   const fixture = gholaThresholdBattle(0);
   const card = fixture.card;
   let g = fixture.g;
@@ -491,19 +499,16 @@ void test('Salusa Ghola renews an impossible answered Prescience dial before eit
   g = applyAction(g, 'e', { type: 'prescienceAnswer', value: 1 });
   assert.equal(g.battle!.prescience!.value, 1);
   assert.deepEqual(g.battle!.plans, {});
-  assert.equal(viewGame(g, 'e').ghola.eliteBlock, null);
-  g = applyAction(g, 'e', { type: 'card', card, amount: 1, elite: 1 });
+  assert.match(viewGame(g, 'e').ghola.eliteBlock!, /prohibits free Sardaukar revival/);
+  const snapshot = structuredClone(g);
+  assert.throws(() => applyAction(g, 'e', { type: 'card', card, amount: 1, elite: 1 }), /prohibits free Sardaukar revival/);
+  assert.deepEqual(g, snapshot);
   assert.equal(g.battle!.prescience!.field, 'dial');
-  assert.equal(Object.hasOwn(g.battle!.prescience!, 'value'), false);
-  assert.equal(g.battle!.preparation!.kind, 'prescienceAnswer');
-  assert.equal(g.battle!.preparation!.owner, 'e');
-  assert.throws(() => applyAction(g, 'e', plan(g, 2)), /battle plan is not available/);
-  assert.throws(() => applyAction(g, 'e', { type: 'prescienceAnswer', value: 1 }), /legal battle plan/);
-  g = applyAction(g, 'e', { type: 'prescienceAnswer', value: 2 });
-  const done = resolve(g, 2, 0);
+  assert.equal(g.battle!.prescience!.value, 1);
+  assert.throws(() => applyAction(g, 'e', plan(g, 2)), /battle inspection/);
+  const done = resolve(g, 1);
   assert.equal(done.lastBattleContext!.winner, 'e');
-  assert.equal(done.homeworlds!.custody!.salusa!.elite, 2);
-  assert.equal(emperor(done).elites!.tanks, 1);
-  assert.equal(done.discard.filter((held) => held.id === card).length, 1);
+  assert.equal(done.homeworlds!.custody!.salusa!.elite, 1);
+  assert.equal(done.discard.filter((held) => held.id === card).length, 0);
   inventory(done);
 });

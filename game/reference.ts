@@ -102,7 +102,7 @@ export const HELP = {
     'The table pauses before this power resolves. Other factions can use a legal Karama cancellation; everyone can allow the power.',
   ally: 'Set aside spice for an ally’s bids or shipments. You may reclaim unused funds, but a current winning bid must remain funded.',
   prescience:
-    'Only the requested element becomes fixed. Advanced Salusa Ghola may renew an impossible answer before either full plan is sealed; answer that same field again. Other plan elements stay private until reveal.',
+    'Only the requested element becomes fixed. Other plan elements stay private until reveal. Low Salusa prohibits free Sardaukar revival, including Ghola; other legal Ghola choices remain available.',
 };
 
 const phaseDetails = [

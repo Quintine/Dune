@@ -2,7 +2,7 @@ import type { Game, Player } from './engine';
 import type { Leader } from './cards';
 import { faction, type FactionId } from './catalog';
 import { isAuditorLeader } from './choam-auditor';
-import { homeworldLowBonus } from './homeworld-benefits';
+import { homeworldLowBonus, homeworldSardaukarFreeRevivalBlock } from './homeworld-benefits';
 import { recruitsRevivalAllowance } from './recruits';
 import { DUKE_VIDAL_ID } from './duke-vidal';
 import { ecazDukeRevivalBlock, quoteEcazDukeRevival, type EcazDukeRevivalContext } from './ecaz-duke-revival';
@@ -15,6 +15,8 @@ type RevivalRateContext = Pick<
   | 'advanced'
   | 'players'
   | 'homeworlds'
+  | 'homeworldOccupationHistory'
+  | 'homeworldOccupationPreview'
   | 'revivalRules'
   | 'freeRevival'
   | 'turn'
@@ -85,8 +87,10 @@ export function normalForceRevivalLimit(
 export function normalRevivalAllowance(
   g: RevivalRateContext,
   p: Pick<Player, 'id' | 'faction' | 'revived' | 'freeForcesRevived'>,
+  legacySalusaUsage = false,
 ) {
   const currentFreeRate = freeRevivalRate(g, p);
+  const salusaLedger = !legacySalusaUsage && g.advanced && p.faction === 'emperor' && !!g.homeworlds?.custody;
   const native = recruitsRevivalAllowance(g, {
     currentFreeRate,
     currentLimit: Math.max(forceRevivalLimit(g, p), currentFreeRate),
@@ -94,7 +98,7 @@ export function normalRevivalAllowance(
     // A Recruits activation is rejected when this ledger is absent and use is
     // nonzero. The fallback preserves old-room behavior while the card is idle.
     freeAllowanceUsed:
-      g.recruits?.turn === g.turn ? (p.freeForcesRevived ?? p.revived) : p.revived,
+      g.recruits?.turn === g.turn || salusaLedger ? (p.freeForcesRevived ?? p.revived) : p.revived,
     freeRateCap: 20,
   });
   if (g.revivalRules?.nexusFremen?.turn !== g.turn ||
@@ -113,6 +117,13 @@ export function freeRevivalRemaining(
 ) {
   return normalRevivalAllowance(g, p).freeRemaining;
 }
+/** Existing unstamped pending requests retain the earlier allowance calculation. */
+export function legacyFreeRevivalRemaining(
+  g: RevivalRateContext,
+  p: Pick<Player, 'id' | 'faction' | 'revived' | 'freeForcesRevived'>,
+) {
+  return normalRevivalAllowance(g, p, true).freeRemaining;
+}
 export function forceRevivalQuote(
   g: RevivalRateContext,
   p: Pick<Player, 'id' | 'faction' | 'revived' | 'freeForcesRevived'>,
@@ -121,7 +132,8 @@ export function forceRevivalQuote(
   freeElite?: number,
 ) {
   const free = Math.min(amount, freeRevivalRemaining(g, p));
-  return forceRevivalPrice(
+  const salusaPolicy = g.advanced && p.faction === 'emperor' && !!g.homeworlds?.custody;
+  const quote = forceRevivalPrice(
     p.faction,
     amount,
     elite,
@@ -129,7 +141,9 @@ export function forceRevivalQuote(
     !!revivalDiscount(g, p),
     freeElite,
     !!g.revivalRules?.choamBlocked,
+    salusaPolicy && !!homeworldSardaukarFreeRevivalBlock(g, p.id),
   );
+  return { ...quote, ...(salusaPolicy ? { salusaFreePolicy: 1 as const } : {}) };
 }
 
 /** Normal force returns only; Emperor-funded extra revivals and card effects are separate. */
@@ -319,6 +333,9 @@ export type PendingRevival = {
   /** Frozen physical Ix HIGH grant, additional to ordinary allowance. Absent
    * on requests accepted before this effect was implemented. */
   ixSuboidBonus?: number;
+  /** New Emperor Homeworld requests record the Salusa/free-ledger policy.
+   * Its absence preserves already accepted legacy request semantics. */
+  salusaFreePolicy?: 1;
   amount?: number;
   elite?: number;
   leader?: string;
@@ -369,7 +386,10 @@ export function forceRevivalPrice(
   discount: boolean,
   freeElite?: number,
   choamBlocked = false,
+  sardaukarFreeBlocked = false,
 ) {
+  if (faction === 'emperor' && sardaukarFreeBlocked)
+    free = Math.min(free, Math.max(0, amount - elite));
   const freeCyborgs =
     faction === 'ixians' ? (freeElite ?? Math.min(free, elite)) : 0;
   const normalCost = paidForceRevivalCost(

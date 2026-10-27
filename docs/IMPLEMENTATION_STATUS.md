@@ -1,5 +1,18 @@
 # Dune implementation status
 
+## 27 October 2026 — Salusa Low free Sardaukar revival
+
+Advanced Homeworld play applies the Low Salusa penalty across normal free
+revival, Ghola, Emperor's special Karama and Tleilaxu Ambassador returns.
+Ordinary paid Sardaukar remain eligible, and unused free normal allowance stays
+available. Ambassador forces use their native Kaitain and Salusa destinations.
+Controls and minimal bot choices share the same rule. The penalty's retention
+during an established occupation after repopulation is provisional; old accepted
+unstamped receipts keep their original terms. The affected 15-file test union
+passed 86 cases and the production build passed. Broader combinations and
+final/deployed acceptance remain open.
+[Source and superseded Ghola claims](HOMEWORLD_BENEFITS_RULES.md#salusa-low-and-free-sardaukar-revival--27-october-2026).
+
 ## 27 October 2026 — Voice naming Portable Snooper
 
 Voice can name the physical Portable Snooper independently of generic poison

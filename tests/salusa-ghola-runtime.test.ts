@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import { botActions } from '../game/bots';
 import {
-  createSalusaGholaFixture, playSalusaGholaBattle, actSalusaGhola as act,
+  createSalusaGholaFixture, actSalusaGhola as act,
+  advanceSalusaGhola as advance, salusaGholaClean as clean,
   salusaGholaPlayer as p, salusaGholaArmy as army,
   salusaGholaInventory as inventory, type SalusaGholaFixture,
 } from './fixture-salusa-ghola';
@@ -56,58 +57,52 @@ void test('earned public Salusa source has one actual Sardaukar casualty and a l
   assert.match(f.disclosure,/Original public.*No later phase, force, purse, Tank, hand, battle commitment or receipt is installed/);
 });
 
-void test('actual uncommitted-battle Ghola returns the dead Sardaukar to Salusa2 and immediately changes the native support view', () => {
+void test('earned Low Salusa rejects a free Sardaukar Ghola without changing the physical battle or card', () => {
   const f = fixture(), before = structuredClone(f.game);
   reject(before,f.opponent,f.action);
-  const game = act(before,f.actor,f.action), player = p(game);
-  assert.deepEqual(army(game),{normal:0,elite:2});
-  assert.equal(player.tanks,p(before).tanks-1);
-  assert.equal(player.elites!.tanks,p(before).elites!.tanks-1);
-  assert.equal(player.reserves,p(before).reserves+1);
-  assert.equal(player.elites!.reserves,p(before).elites!.reserves+1);
-  assert.equal(player.spice,p(before).spice);
-  assert.deepEqual(player.forces,p(before).forces);
-  assert.deepEqual(player.elites!.forces,p(before).elites!.forces);
-  assert.deepEqual(game.battle!.plans,{});
-  assert.equal(game.battle!.event,before.battle!.event);
-  assert.equal(viewGame(game,f.actor).battle!.ownForces!.eliteFreeSupport,true);
-  assert.equal(viewGame(game,f.actor).battle!.ownForces!.elite,2);
-  assert.equal(game.discard.filter(c => c.id === f.card).length,1);
-  assert.equal(player.hand.some(c => c.id === f.card),false);
+  reject(before,f.actor,f.action);
+  const view = viewGame(before,f.actor);
+  assert.match(view.ghola.eliteBlock!,/Salusa.*free Sardaukar/i);
+  assert.equal(view.ghola.eliteRemaining,0);
+  assert.deepEqual(army(before),{normal:0,elite:1});
+  assert.equal(p(before).elites!.tanks,1);
+  assert.deepEqual(before.battle!.plans,{});
+  assert.equal(view.battle!.ownForces!.eliteFreeSupport,undefined);
+  assert.ok(p(before).hand.some(c => c.id === f.card));
+  assert.equal(before.discard.filter(c => c.id === f.card).length,0);
+  assert.deepEqual(inventory(before),f.original);
+});
+
+void test('native battle continues legally after the Low Salusa Ghola rejection', () => {
+  const f = fixture(); let game = structuredClone(f.game);
   reject(game,f.actor,f.action);
+  const own = p(game,f.actor).leaders.filter(l => !l.dead && !l.usedAt && !l.capturedBy).sort((a,b) => b.strength-a.strength)[0];
+  const enemy = p(game,f.opponent).leaders.filter(l => !l.dead && !l.usedAt && !l.capturedBy).sort((a,b) => a.strength-b.strength)[0];
+  assert.ok(own && enemy);
+  game = act(game,f.actor,{type:'battlePlan',leader:own.id,dial:2,support:0});
+  assert.equal(game.battle!.plans[f.actor].dial,2);
+  game = act(game,f.opponent,{type:'battlePlan',leader:enemy.id,dial:0,support:0});
+  game = advance(game,g => !g.battle && clean(g));
+  assert.equal(game.lastBattleContext!.winner,f.actor);
+  assert.equal(game.lastBattleContext!.territory,f.territory);
+  assert.deepEqual(army(game),{normal:0,elite:1});
+  assert.ok(p(game).hand.some(c => c.id === f.card));
+  assert.equal(game.discard.filter(c => c.id === f.card).length,0);
   assert.deepEqual(inventory(game),f.original);
 });
 
-void test('native plans and calls after Salusa Ghola use zero-spice support and settle actual star casualties', () => {
-  const f = fixture(), result = playSalusaGholaBattle(f);
-  assert.deepEqual(army(result.returned),{normal:0,elite:2});
-  assert.equal(result.afterPlan.battle!.plans[f.actor].support,0);
-  assert.equal(result.afterPlan.battle!.plans[f.actor].dial,2);
-  assert.equal(p(result.afterPlan).spice,p(result.returned).spice);
-  assert.equal(result.game.lastBattleContext!.winner,f.actor);
-  assert.equal(result.game.lastBattleContext!.territory,f.territory);
-  assert.equal(result.game.battle,null);
-  assert.equal(p(result.game).elites!.tanks,1);
-  assert.deepEqual(army(result.game),{normal:0,elite:2});
-  assert.equal(result.actions.filter(s => s.action.type === 'battlePlan').length,2);
-  assert.equal(result.actions.filter(s => s.action.type === 'traitorCall').length,2);
-  assert.equal(result.game.discard.filter(c => c.id === f.card).length,1);
-  assert.deepEqual(inventory(result.game),f.original);
-});
-
-void test('all four minimal policies propose legal native plans after the actual Salusa Ghola return', () => {
-  const f = fixture(), returned = act(structuredClone(f.game),f.actor,f.action);
+void test('all four minimal policies propose legal native plans without a blocked Low Salusa Ghola return', () => {
+  const f = fixture();
   for (const profile of ['Easy','Medium','Hard','Brutal'] as const) {
-    const game = structuredClone(returned), view = viewGame(game,f.actor);
+    const game = structuredClone(f.game), view = viewGame(game,f.actor);
     view.players.find(p => p.id === f.actor)!.bot = profile;
     const plans = botActions(view).filter(action => action.type === 'battlePlan');
     assert.ok(plans.length,`${profile} needs a legal current Battle Plan.`);
     for (const plan of plans) {
-      assert.equal(plan.support ?? 0,0);
       const next = act(game,f.actor,plan);
       assert.ok(next.battle!.plans[f.actor]);
-      assert.deepEqual(army(next),{normal:0,elite:2});
-      assert.equal(next.discard.filter(c => c.id === f.card).length,1);
+      assert.deepEqual(army(next),{normal:0,elite:1});
+      assert.ok(p(next).hand.some(c => c.id === f.card));
       assert.deepEqual(inventory(next),f.original);
     }
   }

@@ -1703,8 +1703,9 @@ function policyActions(g: GameView): Action[] {
           leader: dead.id,
         },
       ];
-    const amount = Math.min(3, me.tanks);
-    const elite = Math.min(amount, me.elites?.tanks ?? 0);
+    const eliteStock = me.elites?.tanks ?? 0;
+    const amount = Math.min(3, me.tanks - (g.revival.sardaukarFreeBlock ? eliteStock : 0));
+    const elite = g.revival.sardaukarFreeBlock ? 0 : Math.min(amount, eliteStock);
     if (amount === 3 || (level === 0 && amount > 0))
       return [
         { type: 'card', mode: 'special', card: specialCard.id, amount, elite },
@@ -2110,10 +2111,7 @@ function policyActions(g: GameView): Action[] {
             : { ...action, decline: true }];
         // Minimal legal participation: return as many Tanks counters as the
         // printed maximum allows, spending the single elite option first.
-        const elite = Math.min(
-          revival.eliteTanks,
-          Math.max(0, 1 - revival.eliteRevived),
-        );
+        const elite = revival.eliteMaximum;
         const forces = Math.min(revival.maximum, revival.tanks);
         return [{ ...action, forces, elite: Math.min(elite, forces) }];
       }
@@ -3455,6 +3453,7 @@ function policyActions(g: GameView): Action[] {
           g.revival.discount,
           undefined,
           g.revival.choamBlocked,
+          !!g.revival.sardaukarFreeBlock,
         );
         if (
           quote.cost === 0 ||
