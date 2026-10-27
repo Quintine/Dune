@@ -5115,6 +5115,8 @@ function savedTransferResponses(g: Game) {
   ];
 }
 function transferCardBlock(g: Game, owner: Player, card: Card, opaqueTransfer = false) {
+  if ((g as TurnActionCardProbe)._turnActionReservedTruthCards?.includes(card.id))
+    return 'A queued Truthtrance cannot fund a later card transfer.';
   if (!opaqueTransfer && (g as TurnActionCardProbe)._turnActionUnknownCards?.includes(card.id))
     return 'An unseen future acquired card cannot fund this completion.';
   if (isPortableSnooper(card) && homeworldSavedDecisions(g).some((d) => d.kind === 'homeworldDefense' && d.player === owner.id))
@@ -5906,7 +5908,10 @@ type SaphoTruthOrderDiscardContinuation = Extract<
 function saphoTruthOrderDiscardSignature(g: Game, c: SaphoTruthOrderDiscardContinuation) {
   return JSON.stringify({player:c.player,card:c.card,event:c.event,revision:c.revision,mode:c.mode,
     truth:c.truth,parent:nullentropyParentSignature(g,c.resume,c.event),turn:g.turn,phase:g.phase,
-    order:g.order,active:g.active});
+    order:g.order,active:g.active,
+    // Older clean-parent receipts omit these fields; only an actual ordinary
+    // auction adds a binding to its original lot and pledged funding.
+    ...(g.auction ? {auction:g.auction,aid:g.aid} : {})});
 }
 type SaphoMovementDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -8726,7 +8731,8 @@ function semutaOfferSupported(
   // existing signed continuation. Semuta itself has no during-bid exception;
   // native Distrans still cannot produce a transfer after that bid starts.
   const ordinaryAuctionDiscard = g.phase === 3 && !!g.auction && !g.richeseAuction && !g.currentAuctionSale &&
-    (continuation.kind === 'truthtranceDiscard' || continuation.kind === 'distransDiscard');
+    (continuation.kind === 'truthtranceDiscard' || continuation.kind === 'distransDiscard' ||
+      continuation.kind === 'saphoTruthOrderDiscard');
   const richeseGiftDiscard = continuation.kind === 'karamaRicheseGiftDiscard';
   const richeseDiscard = richeseGiftDiscard || continuation.kind === 'karamaRicheseAuctionDiscard';
   const auctionAdvantageDiscard = continuation.kind === 'karamaAuctionAdvantageDiscard';
@@ -19646,6 +19652,7 @@ type TurnActionCardProbe = Game & {
   _turnActionCardPolicy?: { player: string; forbidden: PrintedCardEffect[] };
   _turnActionWindowCardPolicy?: { player: string; forbidden: { effect: WindowCardEffect; source: string }[] };
   _turnActionUnknownCards?: string[];
+  _turnActionReservedTruthCards?: string[];
   _turnActionPriceCursor?: { order: string[]; index: number };
   _turnActionShipmentReceipt?: { player: string; event?: { territory: string; amount: number } | null };
   _turnActionThumperForecast?: true;
@@ -20073,6 +20080,19 @@ function guardTurnActionPrintedCardCost(g: Game, player: Player, used: Card) {
   if (!liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn).length) return;
   const trial = structuredClone(g), owner = getPlayer(trial, player.id);
   owner.spice += pendingBattleRevivalIncome(trial, owner);
+  const suspended = g.pendingTreacheryDiscard?.continuation;
+  const queued = g.truthtrance?.stage === 'order' ? g.truthtrance.queue :
+    suspended?.kind === 'saphoTruthOrderDiscard' ? suspended.truth.queue : [];
+  // These physical cards are committed to unresolved questions and cannot be
+  // assumed available for a later guaranteed completion when the overlay is
+  // removed from this detached forecast.
+  if (queued.length) {
+    const probe = trial as TurnActionCardProbe, cards = queued.map(row => row.card);
+    probe._turnActionUnknownCards = [...new Set([...(probe._turnActionUnknownCards ?? []), ...cards])];
+    // Unlike unknown faces, a queued physical Truth cannot even be transferred
+    // opaquely as a generic Distrans payload.
+    probe._turnActionReservedTruthCards = [...new Set([...(probe._turnActionReservedTruthCards ?? []), ...cards])];
+  }
   trial.truthtrance = null; trial.response = null; trial.pendingKarama = null;
   if (used.effect === 'juiceOfSapho' || used.effect === 'distrans') {
     // The effect is committed before its optional used-card claim. The actual
@@ -26425,7 +26445,6 @@ function saphoExtortionDecision(g: Game) {
  * This does not inspect whether anyone holds Semuta; it prevents offering a
  * Sapho action whose mandatory supported reaction cannot be staged. */
 function saphoTruthOrderSemutaSupported(g: Game,p: Player,card: string,mode: 'first'|'last'): boolean {
-  if (!g.semutaPreview) return true;
   const trial = structuredClone(g), actor = getPlayer(trial,p.id), w = trial.truthtrance;
   if (w?.stage !== 'order' || !w.order) return false;
   try {
@@ -26433,6 +26452,8 @@ function saphoTruthOrderSemutaSupported(g: Game,p: Player,card: string,mode: 'fi
     const result = reorderSaphoTruthOrder(w.order,w.queue,{event,revision,player:p.id,mode});
     recordNativePrintedCardPlay(trial,p.id,'juiceOfSapho');
     const used = discard(trial,actor,card);
+    guardTurnActionPrintedCardCost(trial,actor,used);
+    if (!trial.semutaPreview) return true;
     w.queue = result.queue;
     if (result.done) { delete w.order; w.stage = 'ask'; } else w.order = result.frame;
     const c: SaphoTruthOrderDiscardContinuation = {kind:'saphoTruthOrderDiscard',player:p.id,card:used.id,
@@ -40034,7 +40055,12 @@ function applyActionInner(
     ),
     'The card reserved for this Black Market auction cannot be played or queued for another effect.',
   );
-  if (t === 'saphoTruthOrder') { playSaphoTruthOrder(g,p,action); return g; }
+  if (t === 'saphoTruthOrder') {
+    const used = p.hand.find(card => card.id === action.card);
+    playSaphoTruthOrder(g,p,action);
+    if (execution === 'live' && used) guardTurnActionPrintedCardCost(g,p,used);
+    return g;
+  }
   try {
     if (
       resolveTruthAction(g, p, action, {

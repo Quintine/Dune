@@ -1,5 +1,32 @@
 # Juice of Sapho: finite ordering implementation
 
+## Truthtrance order in ordinary bidding — 27 October 2026
+
+**Prototyped / Partial.** The public Sapho response after simultaneous
+Truthtrance declarations now also opens at a clean live ordinary lot. The
+original lot, card, actor, standing bid, pass order and aid remain native.
+A Semuta claim/pass temporarily suspends the question queue and binds that
+original auction and aid ledger in the continuation; the separate trusted clock
+is deliberately not signed or reset. It pauses throughout Truth and Semuta,
+then resumes the same bidder's remaining time once the questions end.
+
+The physical Sapho cost must retain an earlier whole-turn answer. Detached
+feasibility quotes reserve the actually queued Truth cards; they cannot be
+borrowed as generic Distrans payloads after the live window is temporarily
+removed from a forecast. This is a conservative guarantee, not a new publisher
+ruling. Special auctions, battle, nested response windows and broader modules
+remain outside this slice. The FAQ and Sapho face establish the individual
+rules; their relative order remains a provisional implementation choice.
+
+Original Basic/Advanced public setup earns Sapho and reaches an unbid or an
+actual standing-bid lot; labeled conserved physical card swaps give a queued
+holder Truth or Semuta. Controlled-clock cases exercise time spent in ordering,
+Semuta and original questions, followed by the real timeout. A separate labeled
+whole-turn promise test verifies its actual legal Distrans route and rejects
+using the last required card. Thirteen affected files pass 136/136; type/lint,
+build and 55/55 isolated local integration tests pass. Browser and deployed
+acceptance remain open.
+
 ## Simultaneous Truthtrance order — 27 October 2026
 
 **Prototyped / Partial.** The [GF9 November 2020 FAQ p8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=8)
@@ -24,10 +51,10 @@ In the supported bare Basic Semuta preview, the original discard event opens a
 neutral Semuta reaction and suspends the Truth window; claim/pass restores the
 same queued event or proceeds to the first question when the last holder used
 Sapho. The full parent signature, original queue and physical card custody are
-checked without replaying the effect. Initial scope excludes live auction or
-battle, active pending responses/preparations and broader Semuta/module
-profiles; these remain open rather than treating the restriction as printed
-rules. Wider repeated-card combinations, browser, deployed and complete-mode
+checked without replaying the effect. The original scope excluded live auctions
+and battle; the ordinary-auction extension above now applies. Battle, special
+auctions, active pending responses/preparations and broader Semuta/module
+profiles remain open rather than treating the restriction as printed rules. Wider repeated-card combinations, browser, deployed and complete-mode
 acceptance remain open.
 
 Runtime tests use a genuine native Basic/Advanced setup and an earned Sapho,

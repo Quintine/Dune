@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 27 October 2026 — Sapho Truthtrance order in ordinary bidding
+
+Permit the possession-independent Truth ordering opportunity in a clean live
+ordinary auction, preserving its original actor, lot, standing bid, funds and
+native timer. The new Semuta continuation binds the actual auction and aid ledger
+without signing the separate clock, so claim/pass resumes the same queue and the
+clock resumes its remaining budget. Earlier non-auction continuation signatures
+retain their original shape. A shared post-cost forecast now honors accepted
+whole-turn answers and cannot borrow physically queued Truth cards as later
+Distrans payloads. Basic/Advanced auction tests use earned Sapho, real bids,
+and explicitly labeled conserved card swaps. Nested responses, special auctions,
+battle, browser and deployed acceptance remain open. Thirteen affected files
+pass 136/136; type/lint, build and 55/55 local integration tests pass. Private
+proof is `20261027-sapho-truth-auction-proof-v2/`.
+[Contract](JUICE_OF_SAPHO_RUNTIME.md#truthtrance-order-in-ordinary-bidding--27-october-2026).
+
 ## 27 October 2026 — Sapho simultaneous Truthtrance order
 
 A public response window follows storm-order sorting when two or more different

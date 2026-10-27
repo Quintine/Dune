@@ -20,14 +20,24 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Sapho Truthtrance order during ordinary bidding — 27 October. Prototyped / Partial.**
+The public question-order opportunity now also interrupts a clean live ordinary
+auction. The original lot, bidder, standing bid, pledge and remaining clock
+resume without replay; a supported Semuta claim/pass retains the same parent.
+A card-cost forecast also protects earlier whole-turn commitments and treats
+queued Truth cards as reserved rather than imaginary transfer payloads. Richese
+special lots, battle and nested parent windows remain open.
+[Scope and source](JUICE_OF_SAPHO_RUNTIME.md#truthtrance-order-in-ordinary-bidding--27-october-2026).
+
 **Sapho Truthtrance question order — 27 October. Prototyped / Partial.**
 When multiple players declare Truthtrance in a supported clean parent, each
 holder receives a public opportunity to continue or privately use an owned Juice
 of Sapho to move their whole question group first/last. Physical storm order,
 within-holder card order and the interrupted parent remain unchanged. A supported
 Basic Semuta discard reaction suspends and restores the same window; an earlier
-chosen boundary remains protected if Sapho is recovered and used again. Auction,
-battle, pending-parent and broader optional-module compositions remain open.
+chosen boundary remains protected if Sapho is recovered and used again. The
+ordinary auction extension above now applies; special auctions, battle,
+pending-parent and broader optional-module compositions remain open.
 Eleven affected files pass 137/137, type/lint and build pass, and 55/55 local
 integration tests pass on a separate verification server. Browser/deployed
 acceptance remains open.

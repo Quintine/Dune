@@ -1337,6 +1337,12 @@ void test('a queued definite Truthtrance answer offers its card before the next 
   }
   const queue = declared.truthtrance!.queue.map(entry => entry.player);
   assert.equal(queue.length, 2);
+  // The possession-independent Sapho window now precedes the first question.
+  while (declared.truthtrance?.stage === 'order') {
+    const frame: NonNullable<NonNullable<Game['truthtrance']>['order']> = declared.truthtrance.order!;
+    const holder = frame.holders.find(id => !frame.passed.includes(id))!;
+    declared = applyAction(declared, holder, { type: 'truthOrderPass', event: frame.event, revision: frame.revision });
+  }
   const asked = applyAction(declared, queue[0], { type: 'truthAsk',
     question: { kind: 'fact', target: 'e', fact: { kind: 'hand', name: 'Shield' } },
   });

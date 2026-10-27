@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Sapho Truthtrance order during ordinary bidding — 27 October 2026
+
+Provisionally extend the existing simultaneous-question ordering response to a
+clean ordinary auction. Keep the actual lot, actor, standing bid, funding and
+clock budget; the existing Semuta reaction resumes the exact suspended question
+order. Preserve earlier binding answers when spending Sapho. The FAQ and card
+face support the constituent actions but do not decide their precedence. Special
+auctions and nested response windows remain separate.
+[Contract](JUICE_OF_SAPHO_RUNTIME.md#truthtrance-order-in-ordinary-bidding--27-october-2026).
+
 ## Sapho simultaneous Truthtrance order — 27 October 2026
 
 The FAQ orders simultaneous Truthtrance questions by storm order, while the
