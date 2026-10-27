@@ -2821,15 +2821,25 @@ export const RULE_TOPICS: RuleTopic[] = [
     title: 'Family Atomics',
     category: 'Cards',
     coverage: 'Partial',
+    developmentStage: 'Prototyped',
     summary:
       'Destroy the Shield Wall while you have forces on or adjacent to it.',
     steps: [
-      'Play before storm movement. The window remains open after the storm dials are revealed.',
-      'Forces on the wall are destroyed. Arrakeen, Carthag and Imperial Basin lose the wall’s storm protection.',
-      'Storm adjacency and card-interaction edge cases remain under audit.',
+      'Basic keeps its current before-movement Storm window, including before or after distance revelation, and ordinary discard after use.',
+      'Advanced permits play only after the first game turn, once storm movement is calculated and before it moves. You need physical fighters on the Shield Wall or an adjacent territory, with no storm strictly between their sector and the touching Wall sector. Your own sector or the Wall may be in storm. Advisors do not qualify.',
+      'All forces on the Wall are destroyed. Arrakeen, Carthag and Imperial Basin lose its storm protection for the rest of the game. The destroyed Wall remains rock and may still be entered. Ordinary storm casualties follow actual movement, without a retroactive sweep of an unchanged sector.',
+      'Advanced removes the used card from the game. Inspect its public face in Removed from game; it cannot be reshuffled or recovered from discard. Basic retains ordinary discard. Already completed older plays keep their recorded outcome.',
+      'Concealed No-Field qualification and broader card/module interactions remain under audit; this prototype does not certify complete Advanced.',
       'A saved play preserves the destroyed wall and its casualties. Recovery does not require your already-destroyed qualifying forces to remain on the wall.',
     ],
     related: ['storm', 'card-weather'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Advanced timing, direct intervening sectors, physical fighter qualification, Wall casualties and a separate removed-card zone are connected; wider combinations remain.', evidence: ['game/family-atomics.ts', 'game/card-availability.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Shared unavailable reasons and public removed-card inspection retain native card controls.', evidence: ['components/game-table.tsx', 'components/removed-treachery.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Existing minimal Storm confirmation remains legal; required printed-window guides share legality. Optional card strategy remains deferred.', evidence: ['game/bots.ts', 'game/engine.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'Adopted Advanced text, Basic boundary, sector examples and removal are explicit.', evidence: ['docs/FAMILY_ATOMICS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused helper, real turn-two engine and removed-pile sources; full modes, combinations and deployed acceptance remain.', evidence: ['tests/family-atomics.test.ts', 'tests/family-atomics-engine.test.ts', 'tests/removed-treachery.test.tsx'] },
+    ],
   },
   {
     id: 'card-harvester',

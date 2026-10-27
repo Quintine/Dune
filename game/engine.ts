@@ -2503,6 +2503,8 @@ export type Game = {
   ready: string[];
   deck: Card[];
   discard: Card[];
+  /** Public used cards explicitly removed from play, outside discard/recycling. */
+  removedTreachery?: Card[];
   spiceDeck: SpiceCard[];
   spicePeekKnown: boolean;
   spiceDiscard: SpiceCard[][];
@@ -5640,6 +5642,16 @@ function discard(g: Game, p: Player, id: string, role?: Omit<EcazPoisonDiscard, 
   rememberMovementDiscards(g, [{ card: c, discardedBy: p.id, publicFace: false }]);
   p.hand = p.hand.filter((c) => c.id !== id);
   return c;
+}
+function removeUsedAtomics(g: Game, p: Player, id: string) {
+  requireRule(!g.pendingTreacheryDiscard && !g.pendingNullentropy,
+    'Finish the pending card disposal before removing Family Atomics.');
+  requireRule(!giftReserved(g, p.id, id), 'This card is reserved for the pending Richese gift.');
+  const card = p.hand.find(candidate => candidate.id === id);
+  requireRule(g.advanced && card?.effect === 'atomics', 'Remove the played Advanced Family Atomics card.');
+  p.hand = p.hand.filter(candidate => candidate.id !== id);
+  (g.removedTreachery ??= []).push(card);
+  return card;
 }
 function battleDiscardRoles(g: Game, battle: Battle) {
   const players = [getPlayer(g, battle.attacker), getPlayer(g, battle.defender)];
@@ -19327,6 +19339,7 @@ function* nativeWindowCardActions(g: Game, actor: string, effect: WindowCardEffe
   for (const card of player.hand.filter(card => card.effect === windowCardNativeEffect(effect) && !transferCardBlock(g, player, card)))
     for (const amount of effect === 'weather' ? Array.from({ length: 11 }, (_, value) => value) : [undefined]) {
       const availability = ordinaryCardAvailability({ status: g.status, phase: g.phase, turn: g.turn,
+        advanced: g.advanced, storm: g.storm, stormPending: g.stormPending,
         active: g.active, me: actor, shieldWallDestroyed: g.shieldWallDestroyed,
         stormCardWindowOpen: g.stormCardWindowOpen, stormResolution: g.stormResolution,
         spiceWindow: g.spiceWindow, truthtrance: g.truthtrance, response: g.response,
@@ -19493,7 +19506,8 @@ function guardTurnActionPrintedCardCost(g: Game, player: Player, used: Card) {
   // The Ghola effect/cost is complete; forecast beyond its owned interruption
   // without executing or borrowing the original market's pending income.
   if (trial.pendingChoamMarketGhola?.player === player.id) trial.pendingChoamMarketGhola = null;
-  rememberMovementDiscards(trial, [{ card: used, discardedBy: player.id, publicFace: true }]);
+  if (!g.removedTreachery?.some(card => card.id === used.id))
+    rememberMovementDiscards(trial, [{ card: used, discardedBy: player.id, publicFace: true }]);
   requireRule(!!turnActionCompletion(trial, player.id),
     'This printed card play would remove the last legal completion of your whole Truthtrance answer.');
 }
@@ -38277,6 +38291,7 @@ function normalizeCardNames(g: Game) {
   normalizeLegacyCardNames([
     ...g.deck,
     ...g.discard,
+    ...(g.removedTreachery ?? []),
     ...(g.ornithopter ? [g.ornithopter.card] : []),
     ...g.players.flatMap((p) => p.hand),
     ...(g.auction?.cards ?? []),
@@ -42773,6 +42788,9 @@ function applyActionInner(
         status: g.status,
         phase: g.phase,
         turn: g.turn,
+        advanced: g.advanced,
+        storm: g.storm,
+        stormPending: g.stormPending,
         revivalPrevention: g.revivalPrevention,
         active: g.active,
         me: id,
@@ -42850,7 +42868,8 @@ function applyActionInner(
       throw new RuleError(
         'This card’s timing and effect are still being implemented.',
       );
-    const used = discard(g, p, c.id);
+    const removed = g.advanced && c.effect === 'atomics';
+    const used = removed ? removeUsedAtomics(g, p, c.id) : discard(g, p, c.id);
     if (execution === 'live' && (c.effect === 'hajr' || c.effect === 'ghola' || isWindowCardEffect(c.effect)))
       guardTurnActionPrintedCardCost(g, p, used);
     log(
@@ -42862,7 +42881,7 @@ function applyActionInner(
     );
     // Shipment/movement feasibility executes deterministic preparations on private clones.
     // Its internal mode never comes from the submitted action or player state.
-    if (execution === 'live') stageOrdinaryCardDiscard(g, p, used);
+    if (execution === 'live' && !removed) stageOrdinaryCardDiscard(g, p, used);
     return g;
   }
   if (t === 'ready') {
@@ -43607,6 +43626,7 @@ export function viewGame(state: Game, id: string, now?: number) {
     spice: g.spice,
     // Public physical draw piles only; auction pools and private holdings stay separate.
     drawPiles: g.status === 'lobby' ? null : { treachery: g.deck.length, spice: g.spiceDeck.length },
+    removedTreachery: g.removedTreachery ?? [],
     log: g.log,
     nexus: g.nexus,
     summonedWorm: g.summonedWorm

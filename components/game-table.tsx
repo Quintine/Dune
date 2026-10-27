@@ -18,6 +18,7 @@ import { ForceInspector } from './force-inspector';
 import { FactionInspector } from './faction-inspector';
 import { EcazLoyaltyCard } from './ecaz-loyalty';
 import { DrawPiles } from './draw-piles';
+import { RemovedTreachery } from './removed-treachery';
 import { HandBrowser } from './hand-browser';
 import { LobbyBotControls } from './lobby-bot-controls';
 import { AdvancedPreviewNotice, RulesetControls } from './ruleset-controls';
@@ -1692,6 +1693,7 @@ export function GameTable({
         <section className="board-column">
           <SpiceBankerIncome game={g} />
           <DrawPiles piles={g.drawPiles} />
+          <RemovedTreachery cards={g.removedTreachery ?? []} />
           <div className="board-toolbar">
             <span>
               <Wind size={15} />

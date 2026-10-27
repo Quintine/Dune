@@ -20,6 +20,34 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Advanced Family Atomics — 27 October. Prototyped / Partial.**
+Play after turn1 and calculated distance, before movement, from physical
+fighters on/adjacent to the Wall with no strictly intervening storm. Endpoints
+may be stormed; advisors cannot qualify. Native Wall casualties remain. Advanced
+moves the used physical card into public `removedTreachery`, outside discard,
+recycling, Semuta and Box. The persistent public pile supplies normal inspection.
+Basic keeps its current timing/discard procedure; completed old plays are not
+converted. [Source, geometry and remaining scope](FAMILY_ATOMICS.md).
+
+Frozen **10-file union 82/82 plus one changed disposal case**, types/lint/build
+and 5 original-game programmes pass: Advanced Wall, adjacent, Weather0,
+intervening-storm rejection and Basic pre-distance. Actual original setup,
+dials0+0/9+0, paid shipment2 for4 and the complete first turn earn Storm2.
+Runtime records 14 GameTable SSR, 4 removed-pile renders and 4 actual
+configured HandBrowser card-render Play callbacks. Hand selection/navigation
+and browser hydration were not operated. Source/further recorded arrays total
+192/19 across programmes; no played hand/force/purse/phase/Storm/removal
+is installed. Other Weather/Storm packets are applied directly. Nineteen new
+helper/native/display cases and the revised typed-Wall removal case pass.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-family-atomics-proof-v2/`;
+HTML/journeys: adjacent `20261027-family-atomics-runtime/run-v2/`.
+Passed union/disposal/types/lint carry from v1 under identical source bytes;
+v2 repairs only the private hand-renderer capture. The existing server returned
+HTTP200 without restart. No saved-game/database operation. Concealed No-Field
+qualification, wider interactions and final full-mode/recovery/privacy/browser/
+deployed acceptance remain.
+
 **CHOAM total support income — 27 October. Prototyped / Partial.**
 Advanced income now adds eligible support before rounding down once:3+5 yields4
 and3+3 yields3. Original `support - allyPayment` eligibility retains Arrakeen's
@@ -95,12 +123,15 @@ Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-ix-starting-pool-p
 journeys/HTML: adjacent `20261027-ix-starting-pool-runtime/run/`.
 [Source contract](IX_PROTOTYPE.md#advanced-starting-draft-source-cutover--27-october-2026).
 
-**Next source-identified function:** Family Atomics' full timing/sector/removal
-contract (supplied physical39). The revision's stricter requirements remain
-Advanced-only after bounded Basic comparison. Charity Sapho composition remains
-for the interaction pass. These findings are concrete divergences, not a complete
-rules audit. The bounded six-classic-faction pass found connected independent
-functions; optional modules, interactions and final acceptance remain open.
+**Next scope:** individual printed optional card/token effects, using their
+canonical helper/control evidence, before declaring independent rule delivery
+finished. A bounded supplied physical19–24 comparison found Discovery blow
+casualties, occupied-Homeworld immediate sharing, Nexus replacement/redraw/
+recycling and Tech accrual connected; it found no new standalone gap and does
+not certify complete modules. Source-recorded provisional rulings stay pending.
+Charity Sapho and Atomics No-Field qualification remain known interaction work.
+The earlier bounded six-classic-faction pass likewise found connected independent
+functions; complete rules and final acceptance are still unproven.
 
 **Native E3 trained capture — 27 October. Prototyped / Partial.**
 Fresh bare Advanced E3/all14 setups now connect Harkonnen with actual Ecaz

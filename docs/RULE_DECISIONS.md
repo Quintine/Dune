@@ -1,5 +1,16 @@
 # Rule decision index
 
+## Advanced Family Atomics — 27 October 2026
+
+Supplied physical39/printed37 requires play after turn1, after distance
+calculation/before movement, with no intervening storm between qualifying
+physical fighters and the Wall. Endpoints may be stormed; advisors cannot
+qualify. Advanced use removes the physical card outside discard. Basic retains
+its current procedure after the earlier bounded primary comparison found no
+verified Basic card face imposing the full revision. Direct touching-sector
+intervals implement the geometry; concealed No-Field composition remains open.
+No already-completed play is converted. [Source and scope](FAMILY_ATOMICS.md).
+
 ## CHOAM total support rounding — 27 October 2026
 
 Supplied Advanced physical29/printed27 F calls for half the total eligible

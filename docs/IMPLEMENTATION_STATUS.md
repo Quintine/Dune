@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 27 October 2026 — Advanced Family Atomics timing and removal
+
+Prototyped / Partial. Play after turn1 and calculated distance, before movement, from physical
+fighters on/adjacent to the Wall with no strictly intervening storm. Endpoints
+may be stormed; advisors cannot qualify. Native Wall casualties remain. Advanced
+moves the used physical card into public `removedTreachery`, outside discard,
+recycling, Semuta and Box. The persistent public pile supplies normal inspection.
+Basic keeps its current timing/discard procedure; completed old plays are not
+converted. [Source, geometry and remaining scope](FAMILY_ATOMICS.md).
+
+Frozen **10-file union 82/82 plus one changed disposal case**, types/lint/build
+and 5 original-game programmes pass: Advanced Wall, adjacent, Weather0,
+intervening-storm rejection and Basic pre-distance. Actual original setup,
+dials0+0/9+0, paid shipment2 for4 and the complete first turn earn Storm2.
+Runtime records 14 GameTable SSR, 4 removed-pile renders and 4 actual
+configured HandBrowser card-render Play callbacks. Hand selection/navigation
+and browser hydration were not operated. Source/further recorded arrays total
+192/19 across programmes; no played hand/force/purse/phase/Storm/removal
+is installed. Other Weather/Storm packets are applied directly. Nineteen new
+helper/native/display cases and the revised typed-Wall removal case pass.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-family-atomics-proof-v2/`;
+HTML/journeys: adjacent `20261027-family-atomics-runtime/run-v2/`.
+Passed union/disposal/types/lint carry from v1 under identical source bytes;
+v2 repairs only the private hand-renderer capture. The existing server returned
+HTTP200 without restart. No saved-game/database operation. Concealed No-Field
+qualification, wider interactions and final full-mode/recovery/privacy/browser/
+deployed acceptance remain.
+
 ## 27 October 2026 — CHOAM aggregate support rounding
 
 Prototyped / Partial. Advanced income now adds eligible support before rounding down once:3+5 yields4

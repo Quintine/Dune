@@ -115,6 +115,7 @@ function inventory(g: Game) {
   const ids = [
     ...g.deck,
     ...g.discard,
+    ...(g.removedTreachery ?? []),
     ...g.players.flatMap((p) => p.hand),
     ...(g.richeseCache ?? []),
     ...(g.ornithopter ? [g.ornithopter.card] : []),
@@ -281,7 +282,7 @@ void test('a Harvester in the storm records its completed blow without creating 
   assert.equal(done.spiceWindow!.amount, 16);
 });
 
-void test('Family Atomics can recover after killing its own qualifying Wall fighters and all typed opposing groups', () => {
+void test('Advanced Family Atomics removes its card instead of opening a discard after killing all typed Wall groups', () => {
   const g = fixture(0, true, ['emperor', 'fremen', 'atreides']),
     card = hold(g, 'p', 'atomics');
   player(g, 'p').forces = { 'shield_wall:8': 2, 'arrakeen:10': 1 };
@@ -303,9 +304,13 @@ void test('Family Atomics can recover after killing its own qualifying Wall figh
   g.stormPending = 1;
   g.stormMovementSource = createStormSource(g.turn, 'card', g.stormPending);
   g.ready = ['t'];
-  const { pending, done } = play(g, 'p', { type: 'card', card });
-  assert.equal(pending.shieldWallDestroyed, true);
-  assert.deepEqual(pending.ready, []);
+  const original = inventory(g), done = applyAction(g, 'p', { type: 'card', card });
+  assert.equal(done.shieldWallDestroyed, true);
+  assert.deepEqual(done.ready, []);
+  assert.equal(done.pendingTreacheryDiscard ?? null, null);
+  assert.deepEqual(done.removedTreachery?.map(removed => removed.id), [card]);
+  assert.equal(done.discard.some(discarded => discarded.id === card), false);
+  assert.deepEqual(inventory(done), original);
   for (const [id, total, elite] of [
     ['p', 2, 1],
     ['q', 3, 2],
@@ -315,7 +320,6 @@ void test('Family Atomics can recover after killing its own qualifying Wall figh
     assert.equal(player(done, id).elites!.tanks, elite);
   }
   assert.equal(player(done, 'p').forces['arrakeen:10'], 1);
-  assert.deepEqual(done.players, pending.players);
   const after = ready(done);
   assert.equal(player(after, 'p').tanks, 2);
   assert.equal(player(after, 'q').tanks, 3);

@@ -1,5 +1,4 @@
-import { fighterCount } from './advisors';
-import { TERRITORIES } from './board';
+import { familyAtomicsBlock } from './family-atomics';
 import { harvesterAvailable, type Card } from './cards';
 import type { FactionId } from './catalog';
 import { choamSaleGholaTiming } from './choam-market-ghola';
@@ -27,6 +26,7 @@ export type OrdinaryCardPlayer = {
 export type OrdinaryCardState = {
   status: 'lobby' | 'setup' | 'playing' | 'finished';
   phase: number;
+  advanced?: boolean;
   turn?: number;
   revivalPrevention?: { player: string; turn: number } | null;
   active: string | null;
@@ -39,6 +39,8 @@ export type OrdinaryCardState = {
   choamMarket?: { owner: string } | null;
   shieldWallDestroyed: boolean;
   stormCardWindowOpen?: boolean;
+  storm?: number;
+  stormPending?: number | null;
   stormResolution?: unknown;
   spiceWindow?: {
     harvested: boolean;
@@ -142,16 +144,10 @@ export function ordinaryCardAvailability(
         return blocked('Storm movement must be an integer from 0 to 10.');
       break;
     case 'atomics':
-      if (state.shieldWallDestroyed || state.phase !== 0 || state.stormCardWindowOpen === false || state.stormResolution)
-        return blocked('Play Family Atomics before storm movement.');
-      if (
-        !TERRITORIES.some(
-          (t) =>
-            (t.id === 'shield_wall' || t.neighbors.includes('shield_wall')) &&
-            fighterCount(own, t.id) > 0,
-        )
-      )
-        return blocked('You need forces on or adjacent to the Shield Wall.');
+      {
+        const reason = familyAtomicsBlock(state, own);
+        if (reason) return blocked(reason);
+      }
       break;
   }
   return { available: true };
