@@ -1,5 +1,19 @@
 # Dune implementation status
 
+## 27 October 2026 — Native Ecaz/Moritani Kull and movement forecast
+
+The Basic printed-Kull opt-in adds Ecaz and Moritani with all three selected
+expansion decks, using native setup, placement continuations and the existing
+bribe question profile. A ground-movement completion witness can quote a
+possible decline of an owned shipment Karama's Kull interruption; the real
+table retains the response and settles the chosen outcome. Richese/Semuta,
+other optional modules, wider interactions and complete modes remain open.
+The frozen batch passed 101/101 tests across 13 files, type/lint and the
+production build. Native placement, real bribe continuation and movement-cost
+regressions use selected unopened cards and actual phase actions; broader
+interaction and deployed acceptance remain open.
+[Contract](CHOAM_KULL_DESIGN.md#basic-native-ecaz-and-moritani--27-october-2026).
+
 ## 27 October 2026 — Printed Kull with native Ix factions
 
 The Basic Kull opt-in admits native Ixians and Tleilaxu with CHOAM and classic

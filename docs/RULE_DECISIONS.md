@@ -1,5 +1,13 @@
 # Rule decision index
 
+## Basic printed Kull with native Ecaz and Moritani — 27 October 2026
+
+Extend the existing provisional printed-Kull protocol to Ecaz and Moritani
+with their selected deck and the CHOAM and Ix decks. A hypothetical owned
+movement completion may include a decline of its Kull offer; the actual opponent
+retains its independent choice. This is a software composition, not a new
+publisher ruling. [Scope](CHOAM_KULL_DESIGN.md#basic-native-ecaz-and-moritani--27-october-2026).
+
 ## Basic printed Kull with native Ix factions — 27 October 2026
 
 Extend the existing opt-in printed Kull interpretation to native Ixians and

@@ -19,10 +19,13 @@ void test('Basic printed Kull supports the shared bribe family in its declared n
     assert.equal(quote({...basic,kullPreview:false}),true);
     assert.equal(quote({...basic,advanced:true,kullPreview:true}),false);
     assert.equal(quote({...basic,expansions:['choam'],kullPreview:true}),false);
-    assert.equal(quote({...basic,expansions:['choam','ix','ecaz'],kullPreview:true}),false);
+    assert.equal(quote({...basic,expansions:['choam','ix','ecaz'],kullPreview:true}),true);
     assert.equal(quote({...basic,players:[{faction:'emperor'},{faction:'guild'}],kullPreview:true}),false);
     assert.equal(quote({...basic,players:[{faction:'choam'},{faction:'ixians'}],kullPreview:true,mobileStronghold:{}}),true);
     assert.equal(quote({...basic,players:[{faction:'choam'},{faction:'tleilaxu'}],kullPreview:true}),true);
+    assert.equal(quote({...basic,players:[{faction:'choam'},{faction:'ecaz'}],expansions:['choam','ix','ecaz'],kullPreview:true}),true);
+    assert.equal(quote({...basic,players:[{faction:'choam'},{faction:'moritani'}],expansions:['choam','ix','ecaz'],kullPreview:true}),true);
+    assert.equal(quote({...basic,players:[{faction:'choam'},{faction:'ecaz'}],kullPreview:true}),false);
     assert.equal(quote({...basic,players:[{faction:'choam'},{faction:'richese'}],kullPreview:true}),false);
     assert.equal(quote({...basic,players:[{faction:'choam'},{faction:'emperor'},{faction:'emperor'}],kullPreview:true}),false);
     for (const option of ['semutaPreview','nexusKullPreview','richeseBetrayalPreview','guildBetrayalPreview',

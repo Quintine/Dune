@@ -2210,7 +2210,7 @@ export function GameTable({
                 Kull Wahad · Basic development preview
               </label>
               {g.lobbyModules?.kullPreview && <p className="notice">
-                Requires Basic CHOAM with classic factions, Ixians or Tleilaxu, both CHOAM and Ix decks, and no other optional modules.
+                Requires Basic CHOAM with classic factions or Ixian, Tleilaxu, Ecaz or Moritani factions, the CHOAM and Ix decks plus each faction’s deck, and no other optional modules.
                 This preview does not support structured Truthtrance questions about bids, alliances, Revival,
                 or combined turn actions, and it defers unfunded non-CHOAM Karama-dependent bids. It does not represent complete
                 CHOAM rules. Every player must ready again after changing it.

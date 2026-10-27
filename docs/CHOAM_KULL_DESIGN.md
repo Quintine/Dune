@@ -2,6 +2,33 @@
 
 Source audit: 2026-09-06; opt-in preview contract updated 30 September 2026. This is an engineering and product-policy record, not a rules-completion claim. The source audit in [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md) remains applicable. The user-approved counter and BG choices supersede the original proposal; publisher-source uncertainty and full expansion gates remain.
 
+## Basic native Ecaz and Moritani — 27 October 2026
+
+**Prototyped / Partial.** The fresh Basic printed-Kull opt-in admits Ecaz and
+Moritani with their native setup and all three expansion decks. The earlier
+Ixian, Tleilaxu and classic seats remain available; optional modules and the
+Richese/Semuta composition remain separate. Structured bribes remain supported.
+The existing [publisher Basic Kull rule](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf#page=7)
+and selected distinct-counter policy remain unchanged. This roster extension
+does not settle broader interactions or certify a complete mode.
+
+When a ground-movement commitment needs an owned Karama shipment discount,
+the detached feasibility witness can consider CHOAM declining its fresh Kull
+offer. It neither executes nor selects the real reaction. A successful foreign
+Kull may make the route impossible and release the commitment after resolution;
+a decline or distinct counter retains the actual original effect. A distinct
+counter cannot spend the countering player's last feasible ground-movement
+route: the private quote applies its exact card cost and the resumed original
+intent before offering it. Other movement and counter compositions and fully
+integrated acceptance remain open.
+
+Frozen changed-path proof passed 101/101 tests in 13 files, type/lint and the
+production build. [Native Ecaz/Moritani tests](../tests/kull-native-e3-runtime.test.ts)
+exercise actual placements and a Charity-funded bribe; [movement tests](../tests/kull-ground-movement-runtime.test.ts)
+and [counter-cost tests](../tests/kull-ground-movement-counter.test.ts) use
+real public actions with selected unopened cards. This does not establish
+browser, recovery or deployed acceptance.
+
 ## Basic native Ix faction roster — 27 October 2026
 
 **Prototyped / Partial.** The explicit fresh-game Basic printed-Kull opt-in extends

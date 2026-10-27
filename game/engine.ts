@@ -10017,13 +10017,15 @@ function startModules(state: Game): Game {
   const g = structuredClone(state);
   delete g.lobbyOptions;
   if (options.kullPreview) {
-    requireRule(g.advanced === false && g.expansions.length === 2 && g.expansions.includes('choam') &&
+    requireRule(g.advanced === false && (g.expansions.length === 2 ||
+      g.expansions.length === 3 && g.expansions.includes('ecaz')) && g.expansions.includes('choam') &&
       g.expansions.includes('ix') && !!byFaction(g,'choam') &&
       g.players.every(player => player.faction === 'choam' || player.faction === 'ixians' ||
-        player.faction === 'tleilaxu' || CLASSIC_FACTIONS[player.faction] === true) &&
+        player.faction === 'tleilaxu' || g.expansions.includes('ecaz') &&
+        (player.faction === 'ecaz' || player.faction === 'moritani') || CLASSIC_FACTIONS[player.faction] === true) &&
       !options.leaderSkills && !options.ecazTreachery && !g.nexusCards && !g.discoveryEnabled &&
       !g.homeworlds && !g.techTokens && !g.strongholdCards,
-    'Kull preview needs Basic CHOAM, Ixian, Tleilaxu or classic factions, CHOAM and Ix decks, and no optional modules.');
+    'Kull preview needs Basic CHOAM with classic or supported Ix/Ecaz factions, CHOAM and Ix decks, each faction’s deck, and no optional modules.');
     return initializeKullGameForAudit(g);
   }
   if (options.ecazTreachery && options.leaderSkills) g.ecazTreachery = true;
@@ -12394,11 +12396,13 @@ export function initializeSemutaGameForAudit(state: Game, skills = false): Game 
 /** Opt-in printed Kull gameplay with the physical Ix deck, not a public release gate. */
 export function initializeKullGameForAudit(state: Game): Game {
   requireRule(!state.kullPreview && !state.nexusKullPreview && !state.pendingKull && !state.kullRestrictions &&
-    state.expansions.length === 2 && state.expansions.includes('choam') &&
+    (state.expansions.length === 2 || !state.advanced && state.expansions.length === 3 &&
+      state.expansions.includes('ecaz')) && state.expansions.includes('choam') &&
     state.expansions.includes('ix') && state.players.some(p => p.faction === 'choam') &&
     state.players.every(p => p.faction === 'choam' || faction(p.faction).expansion === 'base' ||
-      !state.advanced && (p.faction === 'ixians' || p.faction === 'tleilaxu')),
-  'Kull preview needs a fresh CHOAM, Ixian, Tleilaxu or classic-faction lobby with CHOAM and Ix decks.');
+      !state.advanced && (p.faction === 'ixians' || p.faction === 'tleilaxu' ||
+        state.expansions.includes('ecaz') && (p.faction === 'ecaz' || p.faction === 'moritani'))),
+  'Kull preview needs a fresh CHOAM lobby with supported native factions and selected CHOAM and Ix decks.');
   const g = initializeFactionExpansionsGameForAudit(state);
   g.kullPreview = true;
   return g;
@@ -17912,6 +17916,26 @@ function assertKaramaPromiseFeasibility(
   use: KaramaUse,
   costCard?: Card,
 ): boolean {
+  if (g.pendingKull?.stage === 'counter' && use.kind === 'cancel' &&
+      use.response.kind === 'choamWorthless' && use.response.intent === 'Kull Wahad') {
+    const moves = liveMovementPromises(g.movementPromises ?? [], p.id, g.turn);
+    const expressions = liveMovementExpressionPromises(g.movementExpressionPromises ?? [], p.id, g.turn);
+    if (moves.length || expressions.length) {
+      if (!costCard) return false;
+      const projected = structuredClone(g);
+      const owner = getPlayer(projected, p.id);
+      owner.hand = owner.hand.filter(card => card.id !== costCard.id);
+      // A successful counter resumes the original intent. Quote the actual
+      // resumed parent with this distinct counter already unavailable.
+      try {
+        resumeKullAttempt(projected, false);
+        if (!groundMovementCompletion(projected, p.id, moves, expressions)) return false;
+      } catch (error) {
+        if (error instanceof RuleError) return false;
+        throw error;
+      }
+    }
+  }
   const battlePromises =
     g.battle && !g.battle.revealed && !g.battle.plans[p.id]
       ? (g.battle.truthPromises ?? []).filter(
@@ -19696,6 +19720,12 @@ function recoverableUnsupportedShipment(shipment: PendingShipment) {
  * owned movement reachability; unresolved opposing outcomes are never replayed. */
 function groundMovementProbe(source: Game, actor: string): Game {
   const game = structuredClone(source);
+  // A freshly interrupted owned shipment discount has a possible native
+  // continuation when CHOAM declines Kull. Quote that outcome only in this
+  // detached witness; the live table still waits for the real response.
+  if (game.pendingKull?.stage === 'offer' && game.pendingKull.owner === actor &&
+    game.pendingKull.intent.kind === 'ordinary' && game.pendingKull.intent.use.kind === 'shipment')
+    resumeKullAttempt(game, false);
   projectPendingShipmentKarama(game, actor);
   if (game.phase < 5) {
     if (game.pendingRevival?.player === actor) projectOwnedOrdinaryRevival(game, actor);
@@ -21575,7 +21605,15 @@ function groundMovementCompletionAtMovement(game: Game, actor: string, promises:
       for (const card of player.hand) {
         if (!player.shipped && !state.karamaShipping && canUseAsKaramaRole(state, player, card)) {
           const action: Action = { type: 'card', card: card.id, mode: 'shipment', target: owner };
-          try { yield { game: groundMovementProbe(applyActionInner(state, owner, action, 'movementPreparation'), owner), actions: [action] }; }
+          try {
+            const prepared = applyActionInner(state, owner, action, 'movementPreparation');
+            // This detached witness may assume a newly opened Kull offer is
+            // declined. The real action still waits for CHOAM's decision.
+            if (!state.pendingKull && prepared.pendingKull?.stage === 'offer' &&
+              prepared.pendingKull.owner === owner && prepared.pendingKull.card === card.id)
+              resumeKullAttempt(prepared, false);
+            yield { game: groundMovementProbe(prepared, owner), actions: [action] };
+          }
           catch (error) { if (!(error instanceof RuleError)) throw error; }
         }
         if (card.effect === 'hajr' && hajrAvailable(state, player) && !transferCardBlock(state, player, card)) {

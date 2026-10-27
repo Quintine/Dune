@@ -38,7 +38,7 @@ export function parseBribeClaim(value: unknown): BribeClaim {
 
 /** The ordinary, grouped and mixed bribe families share this admission. The
  * printed Kull extension is deliberately limited to the existing fresh Basic
- * CHOAM, Ixian, Tleilaxu and classic roster; other previews keep their own composition boundaries.
+ * CHOAM, Ixian, Tleilaxu, Ecaz, Moritani and classic roster; other previews keep their own composition boundaries.
  * This quote grants no start permission or future unowned funds. */
 export function bribePromiseModeSupported(game: NativePromiseScope & {
   semutaPreview?: unknown; kullPreview?: unknown; nexusKullPreview?: unknown;
@@ -50,12 +50,14 @@ export function bribePromiseModeSupported(game: NativePromiseScope & {
   if (!nativePromiseScopeSupported(game) || game.semutaPreview || game.nexusKullPreview ||
       game.richeseBetrayalPreview) return false;
   if (!game.kullPreview) return true;
-  return game.kullPreview === true && game.advanced === false && game.expansions.length === 2 &&
+  return game.kullPreview === true && game.advanced === false && (game.expansions.length === 2 ||
+    game.expansions.length === 3 && game.expansions.includes('ecaz')) &&
     game.expansions.includes('choam') && game.expansions.includes('ix') &&
     game.players.some(player => player.faction === 'choam') &&
     new Set(game.players.map(player => player.faction)).size === game.players.length &&
     game.players.every(player => player.faction === 'choam' || player.faction === 'ixians' ||
-      player.faction === 'tleilaxu' ||
+      player.faction === 'tleilaxu' || game.expansions.includes('ecaz') &&
+      (player.faction === 'ecaz' || player.faction === 'moritani') ||
       FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base')) &&
     !game.guildBetrayalPreview && !game.nexusIxianReplacementPreview &&
     !game.nexusIxianBetrayalPreview && !game.nexusHarkonnenBetrayalPreview &&

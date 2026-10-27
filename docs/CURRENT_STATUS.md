@@ -20,6 +20,16 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Printed Kull with native Ecaz/Moritani and movement forecast — 27 October. Prototyped / Partial.**
+The Basic Kull opt-in includes Ecaz and Moritani with their selected deck,
+CHOAM and Ix; existing supported bribe questions remain available. A detached
+ground-movement quote can account for CHOAM declining a newly opened Kull offer
+on a needed Karama shipment discount while the real table awaits its response.
+Richese/Semuta, optional modules, wider interactions and complete modes remain
+open. [Scope](CHOAM_KULL_DESIGN.md#basic-native-ecaz-and-moritani--27-october-2026).
+Frozen changed-path checks passed 101/101 tests in 13 files, type/lint and the
+production build; browser and deployed acceptance remain open.
+
 **Printed Kull with native Ix factions — 27 October. Prototyped / Partial.**
 The Basic printed-Kull lobby opt-in includes Ixians and Tleilaxu alongside
 CHOAM and classic factions with the CHOAM and Ix decks. Existing native setup
