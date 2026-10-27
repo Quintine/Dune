@@ -20,6 +20,20 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance Charity commitment — 27 October. Prototyped / Partial.**
+A current concurrent Basic Charity question can bind whether the target claims
+after answering. A Yes requires an attainable native claim; No prevents a claim
+until the phase closes. Private legal choices and guidance, the ordinary claim
+control and minimal legal AI use the same native entitlement. An event-bound
+guide can quote a real ordinary payment to reach eligibility before claiming,
+including after another player changes the target's funds. Voluntary and
+external loss of opportunity differ. Other future routes and unknown answers
+requiring joint planning remain partial; earlier-phase questions, Advanced,
+wider combinations and deployed acceptance remain open. The general
+FAQ supports current-turn questions; this particular binding procedure remains
+provisional. Fourteen related files pass 187/187; type/lint and build pass.
+[Scope and source](TRUTHTRANCE_CHARITY.md#live-basic-charity--27-october-2026).
+
 **Sapho Truthtrance order in Richese cache auctions — 27 October. Prototyped / Partial.**
 The public question-order opportunity also opens during a clean Once Around or
 Silent cache lot. The same lot, bidder order, funding and aid continue after the

@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 27 October 2026 — Truthtrance Charity commitment
+
+Connect an explicit current Basic Charity claim question to target-only answer
+quotes, a saved binding, real native claim/Ready enforcement, player guidance
+and minimal legal AI. Yes uses the actual claim; No persists until phase close.
+Voluntary loss of an attainable Yes rejects and external impossibility releases
+it. A detached quote can use a native ordinary payment to reach eligibility;
+the event- and turn-bound guide sends the exact bribe or claim without paying
+on the quote. An external funds change retains Yes when this route remains.
+Other preparation, unknown answers and independent action combinations needing
+a joint planner remain partial.
+The source fixture uses original cards, genuine Amal and an actual four-spice
+bribe, with no reassigned wallets. This is provisional, limited to the current
+concurrent Basic phase; Advanced, earlier-phase and wider combinations plus
+browser/deployed acceptance remain open. Fourteen related files pass 187/187;
+type/lint and build pass. The external-income supplement uses a labeled,
+conserved controlled transfer. Private proof is
+`20261027-truth-charity-claim-promise-proof-v2/`.
+[Contract](TRUTHTRANCE_CHARITY.md#live-basic-charity--27-october-2026).
+
 ## 27 October 2026 — Sapho Truthtrance order in Richese cache auctions
 
 Extend the public simultaneous-question ordering opportunity to clean live

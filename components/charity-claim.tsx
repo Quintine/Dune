@@ -21,7 +21,7 @@ export function CharityClaim(props: Props) {
   const blocked = busy || !!game.truthtrance || !!game.nexusTraitors?.pending || game.charity.incomePending ||
     !!game.response || !!game.decision || !!game.phaseOpening || !!game.automaticContinuationPending ||
     !ownTurn || !!game.charity.orderBlocked;
-  const canClaim = !blocked && !me.charityClaimed && game.charity.amount > 0;
+  const canClaim = !blocked && !game.charity.truthBlocked && !me.charityClaimed && game.charity.amount > 0;
   const canFinish = !!order && !blocked;
   return (
     <>
@@ -51,6 +51,7 @@ export function CharityClaim(props: Props) {
         {game.charity.homeworld > 0 &&
           ` Low Homeworld population adds ${game.charity.homeworld} spice directly from the bank${game.charity.multiplier === 2 ? ' after Inflation doubles the bonus' : ''}.`}
       </p>
+      {game.charity.truthBlocked && <p className="notice" data-testid="charity-truth-blocked">{game.charity.truthBlocked}</p>}
       <Button
         data-testid="charity-claim-submit"
         className="game-action"

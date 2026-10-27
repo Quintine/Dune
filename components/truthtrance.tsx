@@ -99,7 +99,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'phaseBid' | 'richeseBid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid' | 'allianceExpression' | 'mixedAlliance' | 'mixedBattlePlan' | 'mixedTraitorCall' | 'travel' | 'turnActions'
+    'fact' | 'freeform' | 'charity' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'phaseBid' | 'richeseBid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid' | 'allianceExpression' | 'mixedAlliance' | 'mixedBattlePlan' | 'mixedTraitorCall' | 'travel' | 'turnActions'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -245,6 +245,7 @@ export function Truthtrance({
         : kind === 'bid' ? { kind, target, ...bidClaim }
         : kind === 'phaseBid' ? { kind, target, ...phaseBidClaim }
         : kind === 'richeseBid' ? { kind, target, turn:g.turn, event:g.richeseAuction?.event ?? '', minimum:bidMinimum }
+        : kind === 'charity' ? { kind, target, turn:g.turn }
         : kind === 'shipment'
           ? {
               kind,
@@ -431,6 +432,13 @@ export function Truthtrance({
                       {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'I don’t know'}`, { type: 'truthAnswer', answer })}
                     </div>)}
                   </>
+                ) : w.question!.kind === 'charity' ? (
+                  <>
+                    <p className="notice">This asks whether you will claim Charity after your answer in this Charity phase. Yes requires a legal claim while it remains possible; No means you cannot claim during this phase. Native eligibility and payment rules still apply.</p>
+                    {(g.truthCharityAnswers ?? []).map(answer => <div key={answer}>
+                      {button(answer === 'unknown' ? 'I don’t know' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
+                  </>
                 ) : w.question!.kind === 'richeseBid' ? (
                   <>
                     <p className="notice">Yes requires a qualifying bid in your one remaining opportunity while possible. No forbids a qualifying bid. Silent amounts remain sealed until all submit; winning still requires payment.</p>
@@ -600,6 +608,7 @@ export function Truthtrance({
                   <option value="leaderRevival">Bind a named leader revival this turn</option>
                   <option value="revival">Bind ordinary force revivals this turn</option>
                   <option value="bid">Bind a bid in this ordinary lot</option>
+                  <option value="charity">Bind a Charity claim this phase</option>
                   <option value="phaseBid">Bind a bid this Bidding phase</option>
                   <option value="richeseBid">Bind a bid in this Richese lot</option>
                   <option value="mixedBid">Combine current facts and ordinary bids</option>
@@ -744,6 +753,12 @@ export function Truthtrance({
                   <p className="fine">Count physical total, normal or elite counters returned by ordinary native Revival after the answer. Smaller requests add together. Earlier returns, Ghola, Emperor-funded extras and other special returns do not count. Current native limits, prices and response choices remain.</p>
                   {!g.truthRevivalTargets.includes(target) && <p className="notice">Choose a respondent whose native Revival opportunity remains this turn and finish pending decisions. Registered native Basic and Advanced tables without optional modules are supported first.</p>}
                   <p className="notice" aria-label="Public revival question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'charity' ? (
+                <>
+                  <p className="fine">Ask whether the selected player will claim Charity after answering during this phase. Earlier claims do not count; native eligibility and payment still apply.</p>
+                  {!g.truthCharityTargets.includes(target) && <p className="notice">Choose a player with a supported remaining Charity opportunity.</p>}
+                  <p className="notice" aria-label="Public Charity question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
               ) : kind === 'richeseBid' ? (
                 <>
@@ -897,6 +912,7 @@ export function Truthtrance({
                 (kind === 'mixedBid' && (!!mixedBidError || !g.truthMixedBidTargets.includes(target))) ||
                 (kind === 'bid' && (!!bidClaimInputError(bidClaim) || !g.truthBidTargets.includes(target))) ||
                 (kind === 'richeseBid' && (!!richeseBidMinimumError(bidMinimum) || !g.richeseAuction || !g.truthRicheseBidTargets.includes(target))) ||
+                (kind === 'charity' && !g.truthCharityTargets.includes(target)) ||
                 (kind === 'phaseBid' && (!!phaseBidClaimInputError(phaseBidClaim) || !g.truthPhaseBidTargets.includes(target))) ||
                 (kind === 'turnActions' && (!!turnActionsError || !g.truthTurnActionTargets.includes(target))) ||
                 (kind === 'travel' && (!!travelError || !g.truthTravelTargets.includes(target))) ||
@@ -921,7 +937,7 @@ export function TruthHistory({ game: g }: { game: GameView }) {
     <details className="notice truthtrance-history">
       <summary>Truthtrance answers · Turn {g.turn}</summary>
       <p className="fine">
-        Supported battle-plan, Nexus-alliance, bid, force/leader and grouped revival, bribe, movement and reserve-shipment
+        Supported Charity, battle-plan, Nexus-alliance, bid, force/leader and grouped revival, bribe, movement and reserve-shipment
         answers are enforced. Current-turn freeform promises remain binding when possible,
         but their automatic enforcement is unfinished.
       </p>

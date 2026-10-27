@@ -1314,6 +1314,7 @@ function policyActions(g: GameView): Action[] {
       ? [{ type: 'decision', event: search.event, card: ordered[0].id }]
       : [];
   }
+  if (g.truthCharityGuide) return [g.truthCharityGuide.action];
   if (g.bribePromiseGuide) return [g.bribePromiseGuide.action];
   if (g.alliancePromiseGuide) return [g.alliancePromiseGuide.action];
   if (g.revivalExpressionPromiseGuide) return [g.revivalExpressionPromiseGuide.action];
@@ -1378,6 +1379,10 @@ function policyActions(g: GameView): Action[] {
       }
       if (w.question.kind === 'bid') {
         const answer = g.truthBidAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
+      if (w.question.kind === 'charity') {
+        const answer = g.truthCharityAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];
       }
       if (w.question.kind === 'richeseBid') {
@@ -3232,6 +3237,7 @@ function policyActions(g: GameView): Action[] {
     g.phase === 2 &&
     !me.charityClaimed &&
     !g.charity.incomePending &&
+    !g.charity.truthBlocked &&
     g.charity.amount > 0
   )
     return [{ type: 'charity' }];

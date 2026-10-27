@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Truthtrance Charity commitment — 27 October 2026
+
+Provisionally bind a question about claiming after the answer in the current
+concurrent Basic Charity phase. Yes may use a quoted native ordinary payment
+to reach the actual claim entitlement; No prohibits claiming until phase close.
+The event- and turn-bound guide retains the exact bribe or claim. Preserve a
+feasible Yes against voluntary abandonment, including after an external funds
+change if the payment route survives, and release it when an external change
+makes every supported route impossible. The general FAQ describes action
+commitments but does not specify this Charity implementation. Other eligibility
+routes, unknown answers needing joint planning, earlier-phase questions and
+Advanced ordering remain separate.
+[Source and boundaries](TRUTHTRANCE_CHARITY.md#live-basic-charity--27-october-2026).
+
 ## Sapho Truthtrance order during Richese cache auctions — 27 October 2026
 
 Provisionally apply the simultaneous-question ordering response to a clean

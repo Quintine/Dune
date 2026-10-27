@@ -1,3 +1,4 @@
+import { liveCharityPromises } from './charity-promises';
 import { createSaphoTruthOrder, passSaphoTruthOrder, SaphoTruthOrderError, type SaphoTruthOrderFrame } from './sapho-truth-order';
 import { parseTravelActionClaim, type TravelClaim } from './travel-expression-promises';
 import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES,
@@ -87,6 +88,7 @@ export type TruthFact =
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type MixedMovementClaim = { turn: number; mixed: MixedActionExpression<MovementClaim> };
 export type TruthQuestion =
+  | { kind: 'charity'; target: string; turn: number }
   | ({ kind: 'turnActions'; target: string } & TurnActionClaim)
   | ({ kind: 'travel'; target: string } & TravelClaim)
   | ({ kind: 'mixedTraitorCall'; target: string } & MixedTraitorClaim)
@@ -259,6 +261,18 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       g.players.some((p) => p.id === v.target),
     'Ask one other player.',
   );
+  // A joint planner for Charity and other future-action questions is not yet
+  // available. Do not bind incompatible action obligations in the interim.
+  if (v.kind !== 'charity' && v.kind !== 'fact' && v.kind !== 'freeform' &&
+      g.charityPromises?.length && liveCharityPromises(g.charityPromises,v.target as string,g.turn).length)
+    throw new TruthError('Finish this player’s current Charity answer before binding another action question.');
+  if (v.kind === 'charity') {
+    check(Object.keys(v).sort().join(',') === 'kind,target,turn' && v.turn === g.turn &&
+      g.status === 'playing' && !g.advanced && g.phase === 2 && !g.charityOrder &&
+      !g.response && !g.decision && !g.phaseOpening && !g.pendingKarama && !g.pendingTreacheryDiscard,
+      'Choose the current quiet Basic Charity phase and its original turn.');
+    return { kind: 'charity', target: v.target as string, turn: g.turn };
+  }
   if (v.kind === 'mixedRevival') {
     check(Object.keys(v).sort().join(',') === 'kind,mixed,target,turn' && v.turn === g.turn &&
       revivalExpressionPromiseModeSupported(g) && g.status === 'playing' && g.phase >= 0 && g.phase <= 4 &&
@@ -738,6 +752,7 @@ export function truthQuestionText(
   playerName: (id: string) => string = id => id,
 ): string {
   if (q.kind === 'freeform') return q.text;
+  if (q.kind === 'charity') return 'Will you claim Charity after this answer during this Charity phase?';
   if (q.kind === 'revivalExpression') return `Will you ${revivalExpressionText(q.claim, id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))} from now until your Revival opportunity ends this turn?`;
   if (q.kind === 'leaderRevival') return `Will you ${leaderRevivalClaimText(q, id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))}?`;
   if (q.kind === 'allianceExpression') return `Is it true that you ${allianceExpressionText(q.claim, playerName)}?`;
@@ -878,6 +893,8 @@ export function resolveTruthAction(
     bindMixedBid?: (g: Game, p: Player, claim: MixedBidClaim, answer: boolean, asker: string) => void;
     bidAnswers?: (g: Game, p: Player, claim: BidClaim) => TruthAnswer[];
     bindBid?: (g: Game, p: Player, claim: BidClaim, answer: boolean, asker: string) => void;
+    charityAnswers?: (g: Game, p: Player, turn: number) => TruthAnswer[];
+    bindCharity?: (g: Game, p: Player, turn: number, answer: boolean, asker: string) => void;
     richeseBidAnswers?: (g: Game, p: Player, claim: RicheseBidClaim) => TruthAnswer[];
     bindRicheseBid?: (g: Game, p: Player, claim: RicheseBidClaim, answer: boolean, asker: string) => void;
     phaseBidAnswers?: (g: Game, p: Player, claim: PhaseBidClaim) => TruthAnswer[];
@@ -1066,6 +1083,9 @@ export function resolveTruthAction(
         if (w.question.kind === 'bid')
           check(effects.bidAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a bidder with a remaining ordinary opportunity in this lot.');
+        if (w.question.kind === 'charity')
+          check(effects.charityAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question.turn).length,
+            'Choose a Charity question compatible with the current native opportunity.');
         if (w.question.kind === 'richeseBid')
           check(effects.richeseBidAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a bidder with a remaining Richese auction opportunity.');
@@ -1201,6 +1221,11 @@ export function resolveTruthAction(
           check(effects.bidAnswers && effects.bindBid && effects.bidAnswers(g, p, q).includes(a.answer),
             'Choose an answer consistent with this lot, your legal bids and earlier answers.');
           if (a.answer !== 'unknown') effects.bindBid(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'charity') {
+          check(effects.charityAnswers && effects.bindCharity && effects.charityAnswers(g, p, q.turn).includes(a.answer),
+            'Choose an answer consistent with this Charity opportunity and earlier answers.');
+          if (a.answer !== 'unknown') effects.bindCharity(g, p, q.turn, a.answer === 'yes', current.player);
         }
         if (q.kind === 'richeseBid') {
           check(effects.richeseBidAnswers && effects.bindRicheseBid && effects.richeseBidAnswers(g, p, q).includes(a.answer),

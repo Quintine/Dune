@@ -1,3 +1,4 @@
+import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
 import { SaphoTruthOrderError, quoteSaphoTruthOrder, reorderSaphoTruthOrder, validateSaphoTruthOrder } from './sapho-truth-order';
 import { RicheseBidPromiseError, richeseBidCompletionRange, richeseBidRequired, recordRicheseBid,
   liveRicheseBidPromises, reconcileRicheseBidPromises, finishRicheseBidLot, validateRicheseBidPromises,
@@ -1395,6 +1396,7 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  charityPromises?: CharityPromise[];
   revivalOrder?: RevivalOrder;
   charityOrder?: CharityOrder;
   pendingAutomaticAdvisorFlips?: AutomaticAdvisorFlipSource[];
@@ -7096,6 +7098,7 @@ function truthtranceDiscardSignature(g: Game, next: TruthDiscardContinuation) {
       `truth:${next.historyIndex}`,
     ),
     history: g.truthHistory,
+    ...(g.charityPromises ? { charityPromises: g.charityPromises } : {}),
     battle: g.battle,
     shipmentPromises: g.shipmentPromises,
     movementPromises: g.movementPromises,
@@ -16145,6 +16148,88 @@ function phaseBidWitnesses(g: Game, p: Player): PhaseBidOpportunity[] {
     if (max > 0) result.push({turn:g.turn,player:p.id,kind:'future',minimum:1,maximum:max});
   }
   return result;
+}
+/** The first structured Charity question covers the live concurrent Basic phase.
+ * A detached native action quotes the real entitlement and payer; it never
+ * commits a payment or opens a response at the table. */
+function charityPromiseRule<T>(run: () => T): T {
+  try { return run(); } catch (error) {
+    if (error instanceof CharityPromiseError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function charityQuestionWindow(g: Game): boolean {
+  return g.status === 'playing' && !g.advanced && g.phase === 2 && !g.charityOrder &&
+    !g.response && !g.decision && !g.phaseOpening && !g.pendingKarama && !g.pendingTreacheryDiscard &&
+    (!byFaction(g, 'choam') || g.choamCharity?.turn === g.turn);
+}
+function charityPromiseCompletion(g: Game, player: string): Action | null {
+  if (!charityQuestionWindow(g) || getPlayer(g,player).charityTurn === g.turn) return null;
+  const trial = structuredClone(g);
+  trial.truthtrance = null;
+  trial.ready = trial.ready.filter(id => id !== player);
+  // Evaluate physical availability independently of this answer's own guard.
+  delete trial.charityPromises;
+  const claim = (source: Game): boolean => {
+    try {
+      const result = applyActionInner(source, player, {type:'charity'}, 'shipmentPreparation');
+      return getPlayer(result,player).charityTurn === result.turn;
+    } catch (error) { if (error instanceof RuleError) return false; throw error; }
+  };
+  if (claim(trial)) return {type:'charity'};
+  // A real ordinary payment may make an otherwise wealthy player eligible.
+  // Quote only the minimum known one-payment route and never invent consent.
+  const actor = getPlayer(trial,player), amount = actor.spice - 1;
+  if (!Number.isSafeInteger(amount) || amount <= 0 || amount > uncommittedSpice(trial,actor)) return null;
+  for (const recipient of trial.players) {
+    if (recipient.id === player || recipient.id === actor.ally) continue;
+    const action: Action = {type:'bribe',target:recipient.id,amount};
+    try {
+      const paid = applyActionInner(trial,player,action,'shipmentPreparation');
+      if (claim(paid)) return action;
+    } catch (error) { if (!(error instanceof RuleError)) throw error; }
+  }
+  return null;
+}
+function charityPromiseCanClaim(g: Game, player: string): boolean {
+  return !!charityPromiseCompletion(g,player);
+}
+function charityTruthAnswers(g: Game, p: Player, turn: number): TruthAnswer[] {
+  if (!charityQuestionWindow(g) || turn !== g.turn || p.charityTurn === turn) return [];
+  if (richeseBidOtherPromises(g,p)) return ['unknown'];
+  return charityPromiseRule(() => charityPromiseAnswers(g.charityPromises ?? [],p.id,turn,charityPromiseCanClaim(g,p.id)));
+}
+function bindCharityTruth(g: Game,p: Player,turn: number,answer: boolean,asker: string): void {
+  requireRule(charityTruthAnswers(g,p,turn).includes(answer ? 'yes' : 'no'),
+    'Choose an answer compatible with your current Charity opportunity.');
+  g.charityPromises = charityPromiseRule(() => bindCharityPromise(g.charityPromises ?? [],p.id,asker,turn,answer,charityPromiseCanClaim(g,p.id)));
+  // A definite new answer reopens a concurrent Basic Ready, not a completed phase.
+  g.ready = g.ready.filter(id => id !== p.id);
+}
+function reconcileCharityTruth(g: Game,voluntary?: {actor:string;action:Action}): void {
+  if (!g.charityPromises?.length || g.truthtrance || g.response || g.decision || g.phaseOpening ||
+      g.pendingKarama || g.pendingTreacheryDiscard) return;
+  let promises: CharityPromise[] = g.charityPromises;
+  const people = new Set(promises.filter(row => !row.fulfilled && !row.released).map(row => row.player));
+  for (const player of people) {
+    const rows: CharityPromise[] = promises.filter(row => row.player === player && !row.fulfilled && !row.released);
+    for (const turn of new Set(rows.map(row => row.turn))) {
+      const open = g.status === 'playing' && !g.advanced && g.phase === 2 && g.turn === turn;
+      const before: CharityPromise[] = promises;
+      promises = charityPromiseRule(() => reconcileCharityPromises(before,player,turn,
+        {phaseOpen:open,canClaim:open && charityPromiseCanClaim(g,player),
+          change:voluntary?.actor === player ? 'voluntary' : 'external'}));
+      if (promises.some((row,index) => row.player === player && row.released && !before[index]?.released))
+        log(g, `${getPlayer(g,player).name} can no longer fulfill the Truthtrance Charity answer; it is no longer binding.`);
+    }
+  }
+  g.charityPromises = promises;
+}
+function projectedCharityTruthGuide(g: Game,player: string): {action:Action} | null {
+  if (g.truthtrance || !charityQuestionWindow(g) || g.ready.includes(player)) return null;
+  const promise = liveCharityPromises(g.charityPromises ?? [],player,g.turn).find(row => row.answer);
+  const action = promise && charityPromiseCompletion(g,player);
+  return action && promise ? {action:{...action,charityPromiseEvent:promise.event,charityPromiseTurn:promise.turn}} : null;
 }
 function richeseBidRule<T>(run: () => T): T {
   try { return run(); } catch (error) { if (error instanceof RicheseBidPromiseError) throw new RuleError(error.message); throw error; }
@@ -39366,6 +39451,12 @@ export function applyAction(state: Game, id: string, action: Action): Game {
       Object.keys(guide.action).every(key => action[key] === guide.action[key]),
     'This phase bid guide is stale or belongs to another auction lot.');
   }
+  if (action.charityPromiseEvent !== undefined || action.charityPromiseTurn !== undefined) {
+    const guide = projectedCharityTruthGuide(state,id);
+    requireRule(guide && Object.keys(action).sort().join(',') === Object.keys(guide.action).sort().join(',') &&
+      Object.keys(guide.action).every(key => action[key] === guide.action[key]),
+      'This Charity promise guide is stale or belongs to another opportunity.');
+  }
   if (action.richeseBidPromiseId !== undefined) {
     const guide = projectedRicheseBidGuide(state,id);
     requireRule(guide && Object.keys(action).sort().join(',') === Object.keys(guide.action).sort().join(',') &&
@@ -39387,6 +39478,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   reconcileBidPromises(g, voluntary);
   reconcilePhaseBids(g, voluntary);
   reconcileRicheseBids(g, voluntary);
+  reconcileCharityTruth(g, voluntary);
   reconcileRevivalPromises(g, voluntary);
   reconcileBribePromises(g, voluntary);
   reconcileGroundMovementPromises(g, promiseActor, action, state.phase);
@@ -39513,6 +39605,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   reconcileBidPromises(g, { actor: id, action });
   reconcilePhaseBids(g, { actor: id, action });
   reconcileRicheseBids(g, { actor: id, action });
+  reconcileCharityTruth(g, { actor: id, action });
   reconcileRevivalPromises(g, { actor: id, action });
   reconcileBribePromises(g, { actor: id, action });
   reconcileAlliancePromises(g, { actor: id, action });
@@ -39732,6 +39825,7 @@ function settleAutomaticContinuations(g: Game) {
     reconcileBidPromises(g);
     reconcilePhaseBids(g);
     reconcileRicheseBids(g);
+    reconcileCharityTruth(g);
     reconcileRevivalPromises(g);
     reconcileBribePromises(g);
     reconcileGroundMovementPromises(g);
@@ -39841,6 +39935,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   reconcileBidPromises(g);
   reconcilePhaseBids(g);
   reconcileRicheseBids(g);
+  reconcileCharityTruth(g);
   reconcileRevivalPromises(g);
   reconcileBribePromises(g);
   reconcileGroundMovementPromises(g);
@@ -40123,6 +40218,8 @@ function applyActionInner(
         bindMixedBid: bindMixedBidTruth,
         bidAnswers: bidTruthAnswers,
         bindBid: bindBidTruth,
+        charityAnswers: charityTruthAnswers,
+        bindCharity: bindCharityTruth,
         richeseBidAnswers: richeseBidTruthAnswers,
         bindRicheseBid: bindRicheseBidTruth,
         phaseBidAnswers: phaseBidTruthAnswers,
@@ -42544,6 +42641,7 @@ function applyActionInner(
       p.charityTurn !== g.turn,
       'Charity may be claimed only once per turn.',
     );
+    if (g.charityPromises) g.charityPromises = charityPromiseRule(() => guardCharityClaim(g.charityPromises!,id,g.turn));
     if (g.charityOrder)
       g.charityOrder = charityOrderRule(() => startCharityOrder(charityOrderContext(g),g.charityOrder!,id));
     p.charityTurn = g.turn;
@@ -43852,6 +43950,7 @@ function applyActionInner(
   }
   if (t === 'ready') {
     if (g.phase === 2) {
+      if (g.charityPromises) charityPromiseRule(() => guardCharityReady(g.charityPromises!,id,g.turn,charityPromiseCanClaim(g,id)));
       const orderBlock = nativeCharityOrderBlock(g, id);
       requireRule(!orderBlock, orderBlock ?? 'Wait for your Charity turn.');
     }
@@ -44129,6 +44228,11 @@ export function viewGame(state: Game, id: string, now?: number) {
     }).map(player => player.id) : [],
     truthBidAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
       g.truthtrance.question.kind === 'bid' ? bidTruthAnswers(g, me, g.truthtrance.question) : null,
+    truthCharityTargets: charityQuestionWindow(g) ? g.players.filter(player => player.charityTurn !== g.turn).map(player => player.id) : [],
+    truthCharityAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
+      g.truthtrance.question.kind === 'charity' ? charityTruthAnswers(g,me,g.truthtrance.question.turn) : null,
+    truthCharityPromises: (g.charityPromises ?? []).filter(row => row.player === id).map(row => ({...row})),
+    truthCharityGuide: projectedCharityTruthGuide(g,id),
     truthRicheseBidTargets: richeseBidWindow(g) ? g.players.filter(player => {
       const lot = g.richeseAuction!;
       return lot.eligible.includes(player.id) && !lot.acted.includes(player.id);
@@ -44832,6 +44936,8 @@ export function viewGame(state: Game, id: string, now?: number) {
         g.choamCharity?.turn === g.turn && g.choamCharity.canceled,
       incomeHomeworld: choamPlayer ? homeworldLowBonus(g, choamPlayer.id) : 0,
       orderBlocked: nativeCharityOrderBlock(g, id),
+      truthBlocked: liveCharityPromises(g.charityPromises ?? [],id,g.turn).some(row => !row.answer)
+        ? 'Your Truthtrance No prevents claiming Charity this phase.' : null,
     },
     charityOrder: g.charityOrder ? structuredClone(g.charityOrder) : null,
     moritaniAssassinate: projectedMoritaniAssassinate(g,id),

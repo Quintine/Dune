@@ -181,6 +181,7 @@ import { ChoamCashIn } from './choam-cash-in';
 import { ChoamMarket } from './choam-market';
 import { BattlePromises } from './battle-promises';
 import { Truthtrance, TruthHistory } from './truthtrance';
+import { TruthCharityPromise } from './truth-charity-promise';
 import {
   forceRevivalPrice,
   eliteRevivalRemaining,
@@ -2077,6 +2078,7 @@ export function GameTable({
           {g.status === 'playing' && g.phase < 5 && (
             <ShipmentPromises game={g} act={act} busy={busy} />
           )}
+          {g.status === 'playing' && <TruthCharityPromise game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <BribePromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <BribeExpressionPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <MixedBribePromises game={g} send={act} busy={busy} />}
@@ -5839,6 +5841,7 @@ export function GameTable({
                   )}
                 </>
               )}
+              {g.phase === 2 && g.truthCharityGuide && <p className="notice">Claim Charity before finishing your Truthtrance Yes.</p>}
               {[1, 2, 4, 7, 8].includes(g.phase) && !(g.phase === 4 && g.revivalOrder) && !(g.phase === 2 && g.charityOrder) &&
                 actionButton(
                   g.ready.includes(me.id)
@@ -5847,7 +5850,7 @@ export function GameTable({
                       ? 'Accept spice blow'
                       : 'Ready for next phase',
                   { type: 'ready' },
-                  g.ready.includes(me.id),
+                  g.ready.includes(me.id) || (g.phase === 2 && !!g.truthCharityGuide),
                 )}
             </>
           )}
