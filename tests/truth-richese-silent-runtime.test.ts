@@ -113,6 +113,15 @@ for (const advanced of [false, true]) for (const answer of ['yes','no'] as const
     }
     assert.deepEqual(inventory(harmed),f.originalCards);
     assert.equal(Object.hasOwn(harmed.richeseAuction!.sealed,f.target),false);
+    // Compare the automatic notice to an actual manual submission from the
+    // same public game state. The original Yes can bid 4; No can submit zero.
+    const manualBefore = bound.log.at(-1)?.seq ?? 0;
+    const manual = act(bound,f.target,{type:'richeseBid',event:f.lot,
+      amount:answer === 'yes' ? 4 : 0,allyPayment:0});
+    const manualNotice = manual.log.find(entry => entry.seq > manualBefore &&
+      entry.text.includes('submitted a sealed bid')); assert.ok(manualNotice);
+    assert.equal(viewGame(manual,f.owner).richeseAuction?.revealedBids,null);
+    assert.deepEqual(inventory(manual),f.originalCards);
     const beforeSequence = harmed.log.at(-1)?.seq ?? 0;
     const settled = normalizeAutomaticGame(harmed);
     const receipt = settled.richeseBidPromises!.find(row => row.player === f.target); assert.ok(receipt);
@@ -123,9 +132,13 @@ for (const advanced of [false, true]) for (const answer of ['yes','no'] as const
     assert.equal(observer.ownBid,null); assert.equal(observer.revealedBids,null);
     assert.ok(observer.submitted.includes(f.target));
     const fresh = settled.log.filter(entry => entry.seq > beforeSequence);
-    assert.ok(fresh.some(entry => entry.text.includes('submitted a sealed bid')));
-    assert.ok(fresh.every(entry => !/revealed together|zero|0 spice|no bid/i.test(`${entry.text} ${entry.automatic?.name ?? ''}`)),
-      'Automatic public notices must not disclose the sealed zero before reveal');
+    const automaticNotice = fresh.find(entry => entry.text.includes('submitted a sealed bid')); assert.ok(automaticNotice);
+    assert.equal(automaticNotice.text,manualNotice.text,
+      'Forced and manual submissions use the same public notice before reveal');
+    assert.ok(!automaticNotice.automatic || automaticNotice.automatic.name === 'Sealed bid',
+      'An optional automatic-action tag must use a neutral name');
+    assert.ok(fresh.every(entry => !/revealed together|zero|0 spice|no bid|full hand|hand became full/i.test(`${entry.text} ${entry.automatic?.name ?? ''}`)),
+      'Automatic public notices and tags must not directly disclose the forced-zero reason before reveal');
     assert.deepEqual(inventory(settled),f.originalCards);
   });
 }

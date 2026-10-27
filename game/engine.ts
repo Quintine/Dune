@@ -18581,8 +18581,10 @@ function finishAutomaticDecision(g: Game): boolean {
       const player = getPlayer(g, full);
       log(
         g,
-        `${player.name} automatically ${lot.method === 'silent' ? 'submitted a sealed bid' : 'passed'} because their hand became full before bidding.`,
-        { faction: player.faction, name: lot.method === 'silent' ? 'Full hand: sealed submission' : 'Full hand: no bid' },
+        lot.method === 'silent'
+          ? `${player.name} submitted a sealed bid; its amount remains concealed until every eligible bidder submits.`
+          : `${player.name} automatically passed because their hand became full before bidding.`,
+        { faction: player.faction, name: lot.method === 'silent' ? 'Sealed bid' : 'Full hand: no bid' },
       );
       if (lot.method === 'silent' && g.richeseAuction.outcome)
         log(

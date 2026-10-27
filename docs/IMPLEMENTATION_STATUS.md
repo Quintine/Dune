@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 27 October 2026 — Silent automatic notice
+
+Use the same public text for forced and manual sealed submissions, and a
+neutral automatic tag, so the notice itself does not identify a full hand or a
+zero bid. Public hand counts can still permit inference. Basic/Advanced cases
+compare real manual and forced events while retaining sealed views, promise
+receipts and conserved physical cards; the full-hand setup is controlled.
+Five focused files pass 54/54; type/lint passed before the intervening test-only
+CI fix. Private reports are `20261027-silent-neutral-notice-proof-v1/` and
+`20261027-silent-neutral-notice-proof-v2/`. No browser or deployment result is claimed.
+
 ## 27 October 2026 — Richese Silent bid Truthtrance
 
 Extend the current public-event bid question to a single sealed Silent

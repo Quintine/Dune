@@ -20,6 +20,13 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Silent automatic submission notice — 27 October.**
+A full hand's forced Silent submission now uses the same public text as a
+manual sealed bid and a neutral animation tag, instead of announcing the
+reason for a forced zero. Public hand counts can still allow inference. The
+existing native reveal and automatic settlement remain unchanged. Five focused
+files pass 54/54; type/lint passed before the intervening test-only CI fix.
+
 **Richese Silent Truthtrance bid — 27 October. Prototyped / Partial.**
 The event-bound Richese question also supports one sealed Silent submission.
 Yes requires a qualifying bid; No permits zero or a lower bid. Feasibility uses

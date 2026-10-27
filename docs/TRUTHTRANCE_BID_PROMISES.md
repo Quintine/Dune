@@ -9,7 +9,8 @@ The answer and guide use only the respondent's actual available funds and aid,
 not other sealed amounts. All eligible submissions retain native escrow and
 reveal simultaneously in original tie order; only the winner pays. When a hand
 becomes full, the native automatic zero releases an impossible Yes or completes
-No. Its public text and action tag do not announce the amount before reveal.
+No. Its public text matches a manual sealed submission and its action tag is neutral. Public hand counts can still allow inference of a forced zero. Five focused
+files pass 54/54; type/lint passed before the intervening test-only CI fix.
 
 The [GF9 November 2020 FAQ p8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=8)
 supports action commitments while possible, but does not supply this specific
