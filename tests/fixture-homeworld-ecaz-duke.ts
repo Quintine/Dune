@@ -66,6 +66,8 @@ export function nextHomeworldEcazDukeStep(game: Game): HomeworldEcazDukeStep | n
     }
   }
   if (!decision && game.status === 'playing') {
+    if (game.phase === 2 && game.charityOrder || game.phase === 4 && game.revivalOrder)
+      return nextStrongholdFactionsNativeStep(game);
     if (game.phase === 0 && game.stormPending === null) {
       const actor = game.stormDialers.find(id => game.stormDials[id] === undefined);
       if (actor) return { actor, action: { type: 'stormDial', amount: game.turn === 1 ? 0 : 1 } };
@@ -104,11 +106,13 @@ function settleNativeBattle(game: Game, plans: Record<string, Plan>, actions: Ho
 /** Genuine two-turn source: paid Dune garrison, deferred real funding, native
  * worm alliance, typed invasion and a real World victory. All physical sources
  * and later Duke battle are earned; only unopened card/Spice orders are chosen. */
-export function createHomeworldEcazDukeFixture(options: { advanced?: boolean; allied?: boolean } = {}) {
+export function createHomeworldEcazDukeFixture(options: { advanced?: boolean; allied?: boolean; harkonnen?: boolean } = {}) {
   const advanced = options.advanced ?? false, allied = options.allied ?? false;
-  const ecaz = 'ecaz', occupier = 'emperor', guild = 'guild', opponent = 'atreides', ally = allied ? guild : null;
+  assert.ok(!options.harkonnen || !allied, 'The native Harkonnen capture source uses the unallied grant.');
+  const ecaz = 'ecaz', occupier = 'emperor', guild = 'guild', opponent = options.harkonnen ? 'harkonnen' : 'atreides', ally = allied ? guild : null;
   let game = createGame('HOMEWORLDECAZDUKE', newPlayer(ecaz, 'Ecaz', 'ecaz'), advanced, ['ecaz']);
-  for (const faction of [occupier, guild, opponent] as const) joinGame(game, newPlayer(faction, faction, faction));
+  for (const faction of [occupier, guild, 'atreides', ...(options.harkonnen ? ['harkonnen'] as const : [])] as const)
+    joinGame(game, newPlayer(faction, faction, faction));
   const initial = structuredClone(game), actions: HomeworldEcazDukeStep[] = [];
   const act = (actor: string, action: Action) => { game = actHomeworldEcazDuke(game, actor, action, actions); };
   const reach = (until: (state: Game) => boolean) => { game = advanceHomeworldEcazDuke(game, until, actions); };
@@ -131,7 +135,10 @@ export function createHomeworldEcazDukeFixture(options: { advanced?: boolean; al
   const projectile = game.deck.find(card => card.kind === 'projectile' && !card.effect),
     snooper = game.deck.find(card => card.kind === 'snooper');
   assert.equal(poisons.length, 2); assert.ok(projectile && snooper);
-  const selected = [snooper, poisons[0], poisons[1], projectile];
+  const harkonnenCards = options.harkonnen ? [game.deck.find(card => card.kind === 'worthless'),
+    game.deck.find(card => card.kind === 'shield')] : [];
+  assert.ok(harkonnenCards.every(Boolean));
+  const selected = [snooper, poisons[0], poisons[1], projectile, ...harkonnenCards.filter(card => !!card)];
   const dealOrder = selected.map((card, position) => {
     const from = game.deck.findIndex(candidate => candidate.id === card.id); assert.ok(from >= position);
     [game.deck[position], game.deck[from]] = [game.deck[from], game.deck[position]];
@@ -162,13 +169,14 @@ export function createHomeworldEcazDukeFixture(options: { advanced?: boolean; al
   assert.equal(homeworldEcazDukePlayer(funding.after, occupier).spice, homeworldEcazDukePlayer(funding.before, occupier).spice);
   assert.equal(homeworldEcazDukePlayer(funding.after, occupier).bribes, homeworldEcazDukePlayer(funding.before, occupier).bribes + 1);
   reach(state => state.turn === 1 && state.phase === 5 && state.active === occupier && homeworldEcazDukeClean(state));
+  const garrisonTerritory = options.harkonnen ? 'sietch_tabr' : 'carthag', garrisonSector = options.harkonnen ? 14 : 11;
   const duneShipment = transition(() => {
     const sources = nativeShipmentSources(viewGame(game, occupier), 2, 0); assert.ok(sources);
-    act(occupier, { type: 'ship', territory: 'carthag', sector: 11, amount: 2, elite: 0, allyPayment: 0,
+    act(occupier, { type: 'ship', territory: garrisonTerritory, sector: garrisonSector, amount: 2, elite: 0, allyPayment: 0,
       homeworldSources: sources });
     reach(state => homeworldEcazDukeClean(state) && !state.pendingShipment);
   });
-  assert.equal(homeworldEcazDukePlayer(game, occupier).forces['carthag:11'], 2);
+  assert.equal(homeworldEcazDukePlayer(game, occupier).forces[`${garrisonTerritory}:${garrisonSector}`], 2);
   reach(state => state.turn === 2 && state.phase === 1 && state.nexus && !state.spiceWindow &&
     !state.spiceResolution && homeworldEcazDukeClean(state));
   const nexus = structuredClone(game);
@@ -176,7 +184,7 @@ export function createHomeworldEcazDukeFixture(options: { advanced?: boolean; al
     if (allied) { act(occupier, { type: 'alliance', target: guild }); act(guild, { type: 'alliance', target: occupier }); }
   });
   assert.equal(homeworldEcazDukePlayer(game, occupier).ally, ally);
-  const secondTerritory = allied ? 'tueks_sietch' : 'carthag', secondSector = allied ? 5 : 11;
+  const secondTerritory = allied ? 'tueks_sietch' : garrisonTerritory, secondSector = allied ? 5 : garrisonSector;
   const recipient = ally ?? occupier, world = 'homeworld:ecaz';
   let invasion: ReturnType<typeof transition> | null = null, secondEntrant: ReturnType<typeof transition> | null = null;
   reach(state => state.turn === 2 && state.phase === 5 && homeworldEcazDukeClean(state));
@@ -238,6 +246,7 @@ export function createHomeworldEcazDukeFixture(options: { advanced?: boolean; al
   assert.deepEqual(game.battle.plans, {}); assert.equal(game.battle.revealed, false);
   assert.deepEqual(homeworldEcazDukeInventory(game), originalInventory);
   return { game, beforePower: structuredClone(game), advanced, allied, occupier, ally, ecaz, guild, opponent,
+    harkonnen:options.harkonnen ?? false,garrisonTerritory,garrisonSector,
     recipient, dukeId: DUKE_VIDAL_ID, world, secondTerritory, secondSector,
     secondLocation: `${secondTerritory}:${secondSector}`,
     poison: { [occupier]: poisons[0].id, [guild]: poisons[1].id }, projectile: projectile.id,
@@ -247,11 +256,13 @@ export function createHomeworldEcazDukeFixture(options: { advanced?: boolean; al
     qualification: structuredClone(qualification), secondBattle,
     actions, sourceActions: actions, sourceActionCount: actions.length,
     staging: [
-      'Actual public Basic or Advanced preview Ecaz/E/G/A enables only Homeworlds, readies and starts. Only original unopened four-card/Spice positions and original scalar lotteries are selected; all33 physical cards and native pools remain.',
-      'Native Ecaz setup places Basin6. G really bribes E one, deferred to Mentat; E really pays to ship two native counters to empty Carthag. Native Storm, auctions, Collection and Mentat run before the actual turn2 worm Nexus.',
+      options.harkonnen ? 'Actual public Basic or Advanced preview Ecaz/E/G/A/H enables only Homeworlds, readies and starts. Original unopened six-card slots include Harkonnen native two-card start; all33 cards and original native armies remain.'
+        : 'Actual public Basic or Advanced preview Ecaz/E/G/A enables only Homeworlds, readies and starts. Only original unopened four-card/Spice positions and original scalar lotteries are selected; all33 physical cards and native pools remain.',
+      `Native Ecaz setup places Basin6. G really bribes E one, deferred to Mentat; E really pays to ship two native counters to empty ${garrisonTerritory}. Native Storm, auctions, Collection and Mentat run before the actual turn2 worm Nexus.`,
       allied ? 'E and G actually form their reciprocal alliance during that real Nexus; no alliance field is installed.'
         : 'The real Nexus is completed without an alliance; the later single eligible Duke recipient needs no manual confirmation.',
-      'E submits a real owner-view typed four-normal invasion of Ecaz World. A separately pays to ship one native counter into the existing E Carthag group or G Tueks group, preserving a real second battle. Native Guild decisions and payments complete normally.',
+      options.harkonnen ? 'E submits the original typed four-normal invasion of Ecaz World. Original Harkonnen ships one native counter into E Sietch Tabr2; original H10 Carthag stays untouched. Native Guild decisions and payments finish before the two actual battles.'
+        : 'E submits a real owner-view typed four-normal invasion of Ecaz World. A separately pays to ship one native counter into the existing E Carthag group or G Tueks group, preserving a real second battle. Native Guild decisions and payments complete normally.',
       'The real World battle uses E native leader5/dial1 (one paid support in Advanced) against Ecaz native leader2/dial0 and its native World bonus. Actual loss/cleanup leaves three E visitors alone, zero Ecaz natives, and the living shared Duke. No force, wallet, custody, leader, clock or occupation receipt is installed.',
       'Stop at the actual next unsealed native Arrakis battle. Unallied source already receives the real automatic self-grant; allied source retains both actual recipient choices before either plan seals.',
     ],

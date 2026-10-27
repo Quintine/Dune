@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Occupied Ecaz grant expiry during captivity — 27 October 2026
+
+Extend the selected provisional one-battle/turn/qualification tenure through
+Harkonnen custody without freeing the captive. Public expiry retires only that
+original grant; actual return rechecks its entitlement and cannot restore an
+ended lease. Preserve actual captor, concealment and physical history. A secret
+execution is not a public expiry signal; use its original public leader snapshot
+until ordinary public deadline/loss. Both native return sites retain this check.
+The occupied face does not expressly name exceptional custody; unlike Ecaz Nexus
+Cunning, it supplies no retrieved liberation ruling. Retain fresh captured/
+concealed/Ghola acquisition guarded conservatively, and keep the user Ecaz-only
+revival override. [Contract](HOMEWORLD_ECAZ_DUKE.md#captive-tenure-and-public-expiry--27-october-2026).
+
 ## Caladan-triggered Sneak Attack child — 27 October 2026
 
 A positive actual Sneak group receives its own off-planet arrival source, after

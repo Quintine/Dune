@@ -260,6 +260,36 @@ export function consumeDuke(state: DukeState): DukeState {
   return released;
 }
 
+/** End only the original occupied-Ecaz lease. Harkonnen still holds the same
+ * disc, and a concealed return keeps its original public leader snapshot. */
+export function retireHomeworldDukeTenure(state: DukeState, turn: number): DukeState {
+  validTurn(turn);
+  const original = state.source === 'homeworldEcaz' ? state :
+    state.captureVisibility?.source === 'homeworldEcaz' ? state.captureVisibility : null;
+  if (!original) return cloneDuke(state);
+  validDisc(state);
+  validUnderlay(state, turn);
+  validUnderlay(original, turn);
+  if (state.leader.capturedBy) validCaptive(state, turn);
+  else if ((state.leader.concealed || state.captureVisibility) && !returnedDukeCapture(state))
+    throw new Error('Duke Vidal lost his original concealed return.');
+  if (state.leader.gholaBy)
+    throw new Error('Occupied Ecaz cannot retire foreign Ghola custody.');
+  const retired = cloneDuke(state);
+  if (retired.source === 'homeworldEcaz') {
+    retired.controller = null;
+    retired.acquiredTurn = null;
+    retired.source = null;
+  }
+  if (retired.captureVisibility?.source === 'homeworldEcaz') {
+    retired.captureVisibility = { controller: null, acquiredTurn: null, source: null };
+  }
+  if (retired.leader.capturedBy) validCaptive(retired, turn);
+  else if ((retired.leader.concealed || retired.captureVisibility) && !returnedDukeCapture(retired))
+    throw new Error('Duke Vidal lost his original concealed return.');
+  return retired;
+}
+
 /**
  * End-turn custody only. Ecaz's ordinary Ambassador acquisition lasts until
  * battle use; Ecaz Nexus Cunning and the Basic Ambassador ally loan last this
@@ -269,8 +299,12 @@ export function consumeDuke(state: DukeState): DukeState {
  */
 export function expireDuke(state: DukeState, turn: number): DukeState {
   validTurn(turn);
+  const homeworld = state.source === 'homeworldEcaz' ? state :
+    state.captureVisibility?.source === 'homeworldEcaz' ? state.captureVisibility : null;
+  if (homeworld && homeworld.acquiredTurn !== null && homeworld.acquiredTurn <= turn)
+    return retireHomeworldDukeTenure(state, turn);
   if (
-    (state.source === 'moritani' || state.source === 'ecazNexus' || state.source === 'ally' || state.source === 'homeworldEcaz') &&
+    (state.source === 'moritani' || state.source === 'ecazNexus' || state.source === 'ally') &&
     state.acquiredTurn !== null &&
     state.acquiredTurn <= turn &&
     !state.leader.dead &&
@@ -294,7 +328,7 @@ export const DUKE_VIDAL_RULES = Object.freeze({
     'Moritani may use Duke Vidal for one battle. An unused living, uncaptured Duke is set aside at the end of the turn; Moritani must qualify again on a later turn to acquire him again.',
     'Karama may prevent Moritani from acquiring Duke Vidal. It does not strip him from Moritani once already controlled and does not cancel his ordinary battle use.',
     'A triggered Ecaz Ambassador may acquire the living Duke outside captured or Ghola custody for Ecaz or its current reciprocal ally. The chosen recipient keeps him until battle use or another rule takes him away, including unused control across turns. This shared tenure is provisional. The separate newly formed alliance can instead grant a loan for the current turn.',
-    'Occupied Ecaz reserves the living Duke for its occupier or reciprocal ally. A sole recipient receives him automatically; an allied occupier chooses at an otherwise quiet boundary before either Battle Plan seals. The provisional grant permits one battle and expires unused at turn end; occupation loss ends its own tenure without restoring an old holder. Only Ecaz may revive him.',
+    'Occupied Ecaz reserves the living Duke for its occupier or reciprocal ally. A sole recipient receives him automatically; an allied occupier chooses at an otherwise quiet boundary before either Battle Plan seals. The provisional grant permits one battle and expires unused at turn end; occupation loss ends its own tenure without restoring an old holder. Only Ecaz may revive him. Captivity does not extend this grant; the captor keeps normal capture rights, and a later return cannot restore an ended grant.',
     'Battle death sends the same disc to the Tanks and preserves its death history. Only Ecaz may revive Duke Vidal, including when using the Ghola Treachery Card. His printed revival price is five spice, distinct from his battle strength of six, and this revival does not require other leaders to be dead.',
     'Ecaz can begin ordinary leader revival when five of its leaders are in the Tanks, counting Duke Vidal, even if it still has another living leader. These special rules do not create an extra native leader or an extra Traitor card.',
   ]),

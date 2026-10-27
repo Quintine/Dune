@@ -1,5 +1,5 @@
 import type { Game } from './engine';
-import { acquireDuke, type DukeState } from './duke-vidal';
+import { acquireDuke, releaseCapturedDuke, retireHomeworldDukeTenure, type DukeState } from './duke-vidal';
 import { HomeworldCustodyError } from './homeworld-custody';
 import {
   quoteStableHomeworldOccupation, type StableHomeworldOccupationContext,
@@ -123,31 +123,52 @@ export function createHomeworldEcazDukeReceipt(g: HomeworldEcazDukeContext, acto
   return { turn: g.turn, qualification: quote.qualification, occupier: actor, recipient };
 }
 
-/** Call at an engine-owned settled boundary, after original battle/arrival
- * parents. Release means set the same disc aside, never restore native tenure.
- * Foreign custody is explicitly pending rather than erased by lease cleanup. */
-export function quoteHomeworldEcazDukeLifecycle(g: HomeworldEcazDukeContext): HomeworldEcazDukeLifecycleQuote {
+/** The original public tenure can outlive actual secret execution. Only its
+ * public snapshot and qualification decide when that tenure ends. */
+function homeworldDukeLifecycle(g: HomeworldEcazDukeContext, custodyBlocked: boolean): HomeworldEcazDukeLifecycleQuote {
   const none: HomeworldEcazDukeLifecycleQuote = { release: false, owner: null, reason: null, blocked: null };
   const duke = g.dukeVidal;
-  if (duke?.source !== HOMEWORLD_ECAZ_DUKE_SOURCE) return none;
+  if (!duke) return none;
+  const tenure = duke.source === HOMEWORLD_ECAZ_DUKE_SOURCE ? duke :
+    duke.captureVisibility?.source === HOMEWORLD_ECAZ_DUKE_SOURCE ? duke.captureVisibility : null;
+  if (!tenure) return none;
   validateHomeworldEcazDukeGrants(g);
   const receipt = g.homeworldEcazDukeGrants?.findLast(receipt =>
-    receipt.turn === duke.acquiredTurn && receipt.recipient === duke.controller);
-  requireGrant(receipt && duke.controller, 'The active occupied Ecaz Duke lost its original grant.');
-  const own = { ...none, owner: duke.controller };
-  if (duke.leader.capturedBy || duke.leader.gholaBy || duke.leader.concealed || duke.captureVisibility)
-    return { ...own, blocked: pendingCustody };
+    receipt.turn === tenure.acquiredTurn && receipt.recipient === tenure.controller);
+  requireGrant(receipt && tenure.controller, 'The active occupied Ecaz Duke lost its original grant.');
+  const own = { ...none, owner: tenure.controller };
   const release = (reason: NonNullable<HomeworldEcazDukeLifecycleQuote['reason']>): HomeworldEcazDukeLifecycleQuote =>
     ({ ...own, release: true, reason });
-  if (duke.leader.dead) return release('dead');
-  if (duke.leader.usedAt) return release('used');
-  if (duke.acquiredTurn !== g.turn) return release('turnEnded');
+  const visibleLeader = duke.leader.concealed ?? duke.leader;
+  if (visibleLeader.dead) return release('dead');
+  if (visibleLeader.usedAt) return release('used');
+  if (tenure.acquiredTurn !== g.turn) return release('turnEnded');
   const occupation = quoteStableHomeworldOccupation(g, 'ecaz');
   if (occupation.blocked) return { ...own, blocked: occupation.blocked };
   const source = occupation.entitlement;
   if (!source) return release('occupationEnded');
   if (source.qualification !== receipt.qualification || source.occupier !== receipt.occupier)
     return release('occupationChanged');
-  if (duke.controller !== source.occupier && duke.controller !== source.ally) return release('recipientChanged');
+  if (tenure.controller !== source.occupier && tenure.controller !== source.ally) return release('recipientChanged');
+  if (custodyBlocked && (duke.leader.capturedBy || duke.leader.gholaBy || duke.leader.concealed || duke.captureVisibility))
+    return { ...own, blocked: pendingCustody };
   return own;
+}
+
+/** Call after original battle/arrival parents. Release retires only the lease;
+ * it never frees a captured disc or changes a concealed public snapshot. */
+export function quoteHomeworldEcazDukeLifecycle(g: HomeworldEcazDukeContext): HomeworldEcazDukeLifecycleQuote {
+  return homeworldDukeLifecycle(g, true);
+}
+
+/** Recheck the original lease at the actual captive return, even when the
+ * ordinary settled-boundary reconciliation is still waiting on its parent. */
+export function releaseCapturedHomeworldDuke(g: HomeworldEcazDukeContext,
+  captor: string, turn = g.turn): DukeState {
+  requireGrant(g.dukeVidal, 'Choose the original captured Duke Vidal.');
+  const current = turn === g.turn ? g : { ...g, turn };
+  const lifecycle = homeworldDukeLifecycle(current, false);
+  requireGrant(!lifecycle.blocked, lifecycle.blocked ?? 'Occupied Ecaz Duke lost its current qualification.');
+  const state = lifecycle.release ? retireHomeworldDukeTenure(g.dukeVidal, turn) : g.dukeVidal;
+  return releaseCapturedDuke(state, captor, turn);
 }

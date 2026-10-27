@@ -20,6 +20,42 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Occupied Ecaz captive-tenure expiry — 27 October. Prototyped / Partial.**
+An original occupied grant now retires at public turn end or entitlement loss
+while Harkonnen keeps the actual captive. Capture, concealment and physical
+history remain; actual return rechecks the original entitlement before restoring
+any tenure. Secret execution uses its original public snapshot until public
+expiry. Both native return sites use that check. Fresh liberation remains guarded
+conservatively, and only Ecaz may revive Duke. The selected lease composition
+remains provisional. [Contract](HOMEWORLD_ECAZ_DUKE.md#captive-tenure-and-public-expiry--27-october-2026).
+
+**12-file union80/80**, types/lint/build and two native runtime branches pass.
+Original public Advanced Ecaz/E/G/A/H uses Homeworlds only: actual E2 Tabr
+garrison, H1 entry, real World occupation/automatic grant, H/E battle without
+Duke, emitted unused-leader lottery and actual Keep/Execute choices. Selected
+unopened six-card/Spice positions and scalar lotteries alone are controlled;
+no played hand/force/purse/clock/occupation/grant/capture receipt is installed.
+
+One139-action selected-captive prefix branches through2 actual GameTable
+callbacks,20 turn-expiry actions and55 later-use actions. The earned Keep
+producer has140 actions. Runtime renders12 GameTable/4 grant panels, checks
+relevant observer/captor views, and uses real later paid E1 entry/captive-Duke
+battle return. The capture notice now shows the shared Duke's actual strength6.
+Two early/current and conserved same-turn-departure release supplements are
+explicit helper contexts; no native departure or all-Hark-leaders-dead campaign
+is claimed. Other shipment/plan/continuation controls use native packets.
+
+Feedback corrected automatic Carthag income and waited for Ecaz's actual ordered
+Revival turn. Private runtime corrections use an unrelated observer and separate
+the selected prefix from the producer's completed Keep branch. V4 carries80
+related tests from v2 and types/lint/build from v3 only after exact-source
+matching, then reruns corrected runtime; final three-document overlay follows.
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-homeworld-ecaz-captive-proof-v4/`;
+journeys/HTML: adjacent `20261027-homeworld-ecaz-captive-runtime/run-v3/`.
+Existing server HTTP200, no restart/saved-game/database operation. Wider source/
+Skill/Nexus interactions, comprehensive custody/privacy/recovery, browser/mobile/
+deployed and full-mode acceptance remain open; full AI refinement stays deferred.
+
 **Caladan Sneak Attack child — 27 October. Prototyped / Partial.**
 A positive actual Moritani reserve group now has its own arrival after both
 owners of the original Caladan entry finish. BG’s free Spiritual opportunity,

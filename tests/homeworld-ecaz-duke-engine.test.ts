@@ -90,10 +90,14 @@ for (const advanced of [false, true]) void test(
     const f = fixture({ advanced, allied: true }); nativeSource(f); assert.ok(f.ally);
     const granted = grant(f, f.ally), battle = playBattle(f, granted.game, { killDuke: true });
     assert.equal(battle.game.dukeVidal?.leader.dead, true); assert.equal(battle.game.dukeVidal?.controller, null);
-    const game = advance(battle.game, state => state.turn === 3 && state.phase === 4 && clean(state));
+    let game = advance(battle.game, state => state.turn === 3 && state.phase === 4 && clean(state));
     assert.equal(game.dukeVidal?.leader.dead, true);
     reject(game, f.ally, { type: 'reviveLeader', leader: f.dukeId }, /Ecaz/i);
     assert.equal(game.dukeVidal?.leader.dead, true);
+    // Preserve the foreign-revival denial above, then wait for Ecaz's actual
+    // ordered Advanced opportunity before making its authorized revival.
+    game = advance(game, state => state.phase === 4 && clean(state) &&
+      (!state.revivalOrder || state.revivalOrder.remaining[0] === f.ecaz));
     const dead = structuredClone(game.dukeVidal!.leader), cash = player(game, f.ecaz).spice;
     const quote = quoteEcazDukeRevival(game, f.ecaz, false);
     assert.equal(quote.cost, 5); assert.ok(cash >= quote.cost, 'Original native Ecaz cash must fund its actual five-spice revival');

@@ -3608,13 +3608,11 @@ export function GameTable({
                   <p className="notice">
                     {leaderName(g.decision.leader)} · strength{' '}
                     {
-                      me.leaders.find(
-                        (l) =>
-                          l.id ===
-                          (g.decision?.kind === 'capturedLeader'
-                            ? g.decision.leader
-                            : ''),
-                      )?.strength
+                      (g.decision.leader === 'duke-vidal'
+                        ? g.dukeVidal?.leader
+                        : g.players.flatMap((seat) => seat.leaders).find(
+                            (leader) => leader.id === (g.decision?.kind === 'capturedLeader' ? g.decision.leader : ''),
+                          ))?.strength
                     }
                   </p>
                   <p className="muted">

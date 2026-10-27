@@ -182,7 +182,8 @@ import { beginHomeworldOccupiedIncome, quoteHomeworldOccupiedIncomeChoice, homew
 import { createOccupiedPercentageState, quoteOccupiedPercentageSource, allocateOccupiedPercentageReceipt, validateOccupiedPercentageState, type OccupiedPercentageState, type OccupiedPercentageSource } from './homeworld-occupied-percentage';
 import { quoteOccupiedBiddingAuthority, requireOccupiedBiddingController, requireOccupiedBiddingBonusRecipient } from './homeworld-occupied-bidding';
 import { quoteStableHomeworldOccupation } from './homeworld-stable-occupation';
-import { quoteHomeworldEcazDuke, createHomeworldEcazDukeReceipt, quoteHomeworldEcazDukeLifecycle, type HomeworldEcazDukeReceipt } from './homeworld-ecaz-duke';
+import { quoteHomeworldEcazDuke, createHomeworldEcazDukeReceipt, quoteHomeworldEcazDukeLifecycle,
+  releaseCapturedHomeworldDuke, type HomeworldEcazDukeReceipt } from './homeworld-ecaz-duke';
 import { createOccupiedTupileState, syncOccupiedTupileLease, quoteOccupiedTupileAuthority, quoteOccupiedTupileCleanup, completeOccupiedTupileCleanup, validateOccupiedTupileState, type OccupiedTupileState } from './homeworld-occupied-tupile';
 import { ecazHomeworldVictoryProgress, type EcazHomeworldVictoryProgress } from './ecaz-homeworld-victory';
 import { quoteGrummanCollection, quoteGrummanCollectionAction } from './grumman-collection';
@@ -565,7 +566,7 @@ import {
   expireDuke,
   dukeController,
   captureDuke,
-  releaseCapturedDuke,
+  retireHomeworldDukeTenure,
   executeCapturedDuke,
   returnedDukeCapture,
   type DukeReleasedCaptureWitness,
@@ -27411,9 +27412,9 @@ function reconcileHomeworldEcazDuke(g: Game) {
   if (g.status !== 'playing' || !g.homeworldOccupationPreview || !byFaction(g, 'ecaz') || homeworldEcazDukeBoundaryBlocked(g)) return;
   const lifecycle = homeworldRule(() => quoteHomeworldEcazDukeLifecycle(g));
   if (lifecycle.blocked) return;
-  if (lifecycle.release && g.dukeVidal?.source === 'homeworldEcaz') {
-    g.dukeVidal = consumeDuke(g.dukeVidal);
-    log(g, `The occupied Ecaz Duke grant ended: ${lifecycle.reason ?? 'its original entitlement ended'}. Duke Vidal is set aside without restoring an earlier controller.`);
+  if (lifecycle.release && g.dukeVidal) {
+    g.dukeVidal = retireHomeworldDukeTenure(g.dukeVidal, g.turn);
+    log(g, `The occupied Ecaz Duke grant ended: ${lifecycle.reason ?? 'its original entitlement ended'}. Its original tenure is retired.`);
   }
   const quote = homeworldRule(() => quoteHomeworldEcazDuke(g));
   const duke = g.dukeVidal;
@@ -28381,7 +28382,7 @@ function returnCaptives(g: Game, captor: Player) {
         returned++;
       }
   if (g.dukeVidal?.leader.capturedBy === captor.id) {
-    g.dukeVidal = releaseCapturedDuke(g.dukeVidal, captor.id, g.turn);
+    g.dukeVidal = homeworldRule(() => releaseCapturedHomeworldDuke(g, captor.id));
     returned++;
   }
   if (returned)
@@ -31431,7 +31432,7 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
     if (l && !l.dead) l.usedAt = b.territory;
     if (l?.capturedBy === p.id) {
       if (l.id === DUKE_VIDAL_ID && g.dukeVidal)
-        g.dukeVidal = releaseCapturedDuke(g.dukeVidal, p.id, g.turn);
+        g.dukeVidal = homeworldRule(() => releaseCapturedHomeworldDuke(g, p.id));
       else {
         delete l.capturedBy;
         delete l.concealed;

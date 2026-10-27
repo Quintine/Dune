@@ -33,6 +33,62 @@ cannot take him back. Living Ecaz Nexus Cunning likewise respects that priority;
 Ecaz's separate resurrection remains distinct. Captured, concealed or foreign
 Ghola custody is explicitly guarded rather than silently removed.
 
+## Captive tenure and public expiry — 27 October 2026
+
+The printed occupied face overrides Ecaz/Moritani Duke acquisition but does not
+expressly name Harkonnen captivity, concealment or foreign Ghola custody. Ecaz
+Nexus Cunning separately names exceptional custody. Targeted primary-source
+review found no specific combined liberation ruling. Retain the existing fresh-
+acquisition guard conservatively, not as a claimed publisher prohibition. The
+explicit user Ecaz-only revival override remains binding.
+
+The existing provisional lease still ends at public turn end, occupation/
+qualification loss or loss of the selected reciprocal ally. Captivity does not
+extend it. Retire the original tenure coherently without moving the actual
+captured disc, changing the captor, erasing concealment/deaths/use or restoring
+an earlier controller. A secret execution keeps its public leader snapshot until
+an ordinary public expiry; private death/use is not an expiry signal. End-turn
+retirement follows the existing turn-end producer even while ordinary settled
+reconciliation is waiting on other parents.
+
+An actual captive return independently rechecks the original receipt/current
+qualification before restoring tenure. This applies to both native return sites:
+all native Harkonnen leaders dead, or the captive's battle use. Still-current
+eligible early return retains its original grant and creates no second receipt;
+ended tenure returns set aside. Other Duke sources keep their existing rules.
+Retirement is a selected provisional tenure composition, not new permission to
+liberate or revive Duke. Public expiry messages stay generic across ordinary,
+held and secret-return cases.
+
+Twelve related files pass80/80, with types/lint/build. Seven controlled helper
+cases and seven new engine cases distinguish pure custody witnesses, actual
+native chronology and helper-only current/departed release contexts. The original
+five-seat public Advanced Ecaz/E/G/A/H source earns real occupation, grant,
+second battle, emitted unused-Duke capture and Keep. E's original paid2 garrison
+uses empty Tabr, H really sends1 there, and Duke stays unused in that battle.
+No played hand/force/purse/clock/occupation/grant/capture receipt is installed;
+only unopened six-card/Spice positions and scalar lotteries are selected.
+Existing four-seat defaults remain; stamped Charity/Revival follows current
+native order. The old revival test now waits for Ecaz's own opportunity.
+
+The runtime takes a139-action selected prefix into actual Keep/Execute callbacks;
+the full Keep producer is140 actions. Twelve table/four grant renders observe
+both actual public expiries, relevant observer/captor views and the native later
+paid E1 entry/captive-Duke battle return (55 actions). Two helper supplements
+are labelled; no played same-turn departure or five-native-Hark-deaths release
+campaign is claimed. Captured choices now display Duke's projected strength6
+rather than looking only in the captor's native roster. No stateful shipment/
+plan controls, browser/hydration/mobile or deployed proof is claimed.
+
+V4 matches the frozen source exactly before carrying v2's80-case union and
+v3's types/lint/build, then reruns the corrected observer/prefix runtime. Final
+three-document evidence overlay follows. Earlier failed records stay preserved.
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-homeworld-ecaz-captive-proof-v4/`;
+journeys/HTML: adjacent `20261027-homeworld-ecaz-captive-runtime/run-v3/`.
+No restart/saved-game/database operation. Wider custody/Skill/Nexus compositions,
+comprehensive final assurance and complete-mode/browser/deployed acceptance remain
+open. This rule delivery is not a capture-resumption/save/privacy assurance sweep.
+
 ## Connected controls and minimal policies
 
 The owner-only `homeworldEcazDuke` view contains original event, projected

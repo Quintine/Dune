@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 27 October 2026 — Occupied Ecaz captive-tenure expiry
+
+Public deadline/entitlement loss retires only the original occupied grant while
+actual captivity, concealment and physical history remain. Both captive-return
+sites recheck entitlement. Secret execution retains its public snapshot until
+ordinary public expiry. Fresh liberation stays guarded; Ecaz-only revival stays.
+The selected lease composition remains provisional. Captured Duke strength6 is
+now displayed from the shared projected disc.
+
+Twelve-file80/80, types/lint/build and native Keep/Execute expiry branches pass.
+One139-action prefix (140 for the complete earned Keep source),2 actual capture
+callbacks,20 expiry/55 later-use actions and12 table/4 grant renders distinguish
+native chronology from2 helper-only release supplements. V4 carries exact-source
+v2 tests/v3 quick+build after private observer/prefix corrections, then repeats
+runtime. Failed records stay preserved; final three-document overlay follows.
+[Current checkpoint](CURRENT_STATUS.md#current-checkpoint-and-work) and
+[contract/proof/limits](HOMEWORLD_ECAZ_DUKE.md#captive-tenure-and-public-expiry--27-october-2026).
+No restart/saved-game/database operation, broad capture/privacy/recovery assurance
+or browser/deployed/full-mode certification. Full AI refinement remains deferred.
+
 ## 27 October 2026 — Caladan Sneak Attack child arrival
 
 A positive actual Sneak group now receives a separate opaque source, after the

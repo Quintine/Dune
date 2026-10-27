@@ -26,6 +26,11 @@ export function HomeworldEcazDuke({
         yourself or your reciprocal ally. The recipient may use him in one
         battle, following the Duke’s ordinary lifecycle. Only Ecaz may revive him.
       </p>
+      <p className="muted">
+        Provisional custody: this benefit does not release a captured Duke.
+        Captivity does not extend the original grant; a later return cannot
+        restore a grant that has ended.
+      </p>
       {blocked !== null && (
         <p className="notice" id="homeworld-ecaz-duke-unavailable">{blocked}</p>
       )}
