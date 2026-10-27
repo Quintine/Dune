@@ -1,6 +1,6 @@
 import type { Action, GameView } from './engine';
 
-/** The owner-only server offer verifies the five-counter army and the
+/** The owner-only server offer verifies the available ordinary army and the
  * feasibility of existing commitments. Preserve its exact battle event. */
 export function nexusSardaukarAction(
   game: GameView,

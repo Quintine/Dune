@@ -69,6 +69,9 @@ export function nexusSardaukarFixture(
     decision: null,
     phaseOpening: null,
   });
+  // The parent fixture explicitly stages Battle rather than playing through
+  // Charity; discard only that earlier phase's ordered fixture frame.
+  delete g.charityOrder;
   g = applyAction(g, owner.id, {
     type: 'chooseBattle',
     territory: 'pasty_mesa',

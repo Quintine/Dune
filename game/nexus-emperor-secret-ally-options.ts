@@ -1,4 +1,5 @@
 import type { Action, GameView } from './engine';
+import { EMPEROR_NEXUS_REVIVALS } from './nexus-emperor-secret-ally';
 
 /** Bind the current private offer without inspecting another player's cards. */
 export function nexusEmperorRevivalAction(
@@ -6,6 +7,7 @@ export function nexusEmperorRevivalAction(
   elite: number,
 ): Action | null {
   const offer = game.nexusEmperorSecretAlly;
+  const amount = offer?.revival.amount ?? EMPEROR_NEXUS_REVIVALS;
   const owner = game.players.find((player) => player.id === game.me);
   if (
     !offer ||
@@ -23,7 +25,10 @@ export function nexusEmperorRevivalAction(
     game.nexusCards.waiting.length ||
     game.nexusTraitors?.pending ||
     offer.revival.blocked ||
+    offer.event !== offer.revival.event ||
+    !Number.isSafeInteger(amount) || amount < 1 || amount > EMPEROR_NEXUS_REVIVALS ||
     !Number.isSafeInteger(elite) ||
+    elite < 0 || elite > amount ||
     !offer.revival.eliteOptions.includes(elite)
   )
     return null;

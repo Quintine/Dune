@@ -101,7 +101,7 @@ void test('Emperor control retains actor, Advanced, unsealed plan and interrupti
     mutate(v);
     assert.equal(nexusSardaukarAction(v, v.nexusSardaukar!.offer!.event), null);
   }
-  for (const options of [{ normal: 4 }, { starred: 1 }]) {
+  for (const options of [{ starred: 1 }]) {
     const v = viewGame(nexusSardaukarFixture(options), 'p');
     const offer = v.nexusSardaukar!.offer!;
     assert.ok(offer.blocked);

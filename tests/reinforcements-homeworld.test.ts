@@ -124,7 +124,10 @@ for (const advanced of [false, true]) for (const role of ['visitor', 'native'] a
     assert.equal(after.tanks, before.tanks + 5, 'Three native fee counters and two real dial casualties, no virtual bonus casualties');
     assert.equal(after.elites!.tanks, before.elites!.tanks);
     assert.equal(after.battleLosses, before.battleLosses + 5);
-    assert.equal(after.spice, before.spice - (advanced ? 2 : 0));
+    if (role === 'visitor') assert.ok(done.log.slice(f.game.log.length).some(entry =>
+      entry.text === `${before.name} received 2 spice from ${f.location}'s occupied bank award.`),
+    'Completing the last visitor battle includes its actual occupied-World Collection award.');
+    assert.equal(after.spice, before.spice - (advanced ? 2 : 0) + (role === 'visitor' ? 2 : 0));
     if (role === 'visitor') {
       assert.deepEqual(combatArmy(done, f.owner, f.location), { normal: 1, elite: 4 });
       assert.equal(after.reserves, before.reserves - 3);

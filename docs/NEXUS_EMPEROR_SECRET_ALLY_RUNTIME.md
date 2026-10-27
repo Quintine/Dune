@@ -1,5 +1,7 @@
 # Emperor Nexus Secret Ally revival and original purchases
 
+Current [positive-shortage follow-up](NEXUS_EMPEROR_RULES.md#positive-shortages--27-october-2026) adds one/two-counter eligible returns while retaining the original full-three paths. The earlier evidence below remains dated.
+
 Updated 14 October 2026. **Prototyped**, with **Partial** rules coverage.
 Revival now uses the independent extra source through original native pending
 continuations and supported Nexus module envelopes. Ordinary bank-auction

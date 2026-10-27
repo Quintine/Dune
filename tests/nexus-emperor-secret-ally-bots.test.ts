@@ -65,7 +65,7 @@ void test('Fremen bot choices preserve real elite limits and unavailable grants 
     assert.equal(nexusEmperorRevivalAction(viewGame(g, owner), 2), null);
     assert.equal(nexusEmperorRevivalAction(viewGame(g, observer), 0), null);
   }
-  const { g, owner } = nexusEmperorSecretAllyFixture({ tanks: 2 });
+  const { g, owner } = nexusEmperorSecretAllyFixture({ tanks: 0 });
   assert.ok(
     !botActions(viewGame(g, owner)).some(
       (action) => action.type === 'nexusEmperorRevive',

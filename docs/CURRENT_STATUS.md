@@ -20,6 +20,28 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Emperor Nexus positive shortages — 27 October. Prototyped / Partial.**
+Cunning uses five eligible ordinary counters when possible, otherwise the whole
+positive short battle group. Secret Ally revival takes three when eligible,
+otherwise all one or two typed-eligible Tanks counters. Zero and chosen underfill
+remain unavailable. Controls name the actual count and persistent provisional
+policy; no publisher shortage clarification was found. Full-grant receipt
+shapes/signatures remain unchanged, while new short sources are explicit.
+[Contract](NEXUS_EMPEROR_RULES.md#positive-shortages--27-october-2026).
+
+**18 files, 130/130**, types/lint/build and five native runtime branches pass.
+Four original public Advanced base33/Nexus sources total 322 actions; 20 accepted
+continuations cover Cunning2/4 allowance, the original Cunning2 Karama-cancel
+branch and Secret Ally1/2 returns. Real first-turn losses, turn-two worms,
+alliances and closing draws earn the sources. Only unopened original card/Spice/
+Nexus positions and native scalar lotteries are selected; no played hand, purse,
+force, Tank, phase, alliance, holding or receipt is installed. Ten GameTable and
+ten controller SSR renders operate five actual controller callbacks. Stateful
+plans/selectors, browser hydration, new short own-World fees, other module pairs,
+full modes, mobile/deployed and final assurance are not certified. Older fixture
+phase/order and occupied-bank Collection expectations are repaired explicitly;
+their controlled positions are not new native chronology. No mode gate opens.
+
 **Salusa Ghola / live Truthtrance — 27 October. Prototyped / Partial.**
 Before either full seal, feasible Yes, whole-No and grouped promises survive the
 actual return. A return that makes the actor's own promise impossible rejects

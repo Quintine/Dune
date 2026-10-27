@@ -77,6 +77,7 @@ export function NexusEmperorSecretAlly({
   if (!eligible) return null;
 
   const options = offer.revival.eliteOptions;
+  const amount = offer.revival.amount ?? 3;
   const elite = options.length === 1
     ? options[0]
     : selectedElite !== null && options.includes(selectedElite)
@@ -88,9 +89,14 @@ export function NexusEmperorSecretAlly({
     <section className="min-w-0 space-y-3" aria-label="Emperor Secret Ally revival">
       <h3 className="font-serif text-xl">Emperor Secret Ally</h3>
       <p className="text-base leading-7">
-        Spend the Emperor Nexus card to request exactly 3 additional forces for free
+        Spend the Emperor Nexus card to request {amount} additional {amount === 1 ? 'force' : 'forces'} for free
         through the normal revival continuation, beyond ordinary force/free allowances.
         Native typed caps and prevention still apply; Recruits does not double this grant.
+      </p>
+      <p className="notice">
+        Provisional short-group policy: return exactly 3 when eligible; otherwise return
+        all 1 or 2 eligible physical forces. This is not publisher clarification.
+        No eligible forces means the card cannot be spent. This grant revives no leader.
       </p>
       {offer.revival.blocked && <p className="notice">{offer.revival.blocked}</p>}
       {offer.revival.policy && <p className="notice">{offer.revival.policy}</p>}
@@ -118,7 +124,7 @@ export function NexusEmperorSecretAlly({
           if (!blocked && action) act(action);
         }}
       >
-        Revive 3 additional forces{elite === null ? '' : ` · ${elite} elite`}
+        {amount > 0 ? `Revive ${amount} additional ${amount === 1 ? 'force' : 'forces'}` : 'No eligible forces to revive'}{elite === null ? '' : ` · ${elite} elite`}
       </Button>
     </section>
   );

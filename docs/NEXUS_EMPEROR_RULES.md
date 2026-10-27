@@ -2,6 +2,73 @@
 
 Primary-source audit, 10 September 2026, with bounded purchase/revival runtime amendments through 14 October. The source contract does not certify the full mode. The [common Nexus rules](NEXUS_CARD_RULES.md) and release gates remain; recommended compositions are not publisher clarification or separately answered numerical rulings.
 
+## Positive shortages — 27 October 2026
+
+Under standing 14 October choose-recommended authority, prototype shortages
+explicitly. Cunning counts `min(5, actual eligible own ordinary battle counters)`
+as temporary Sardaukar; Secret Ally returns `min(3, physically and typed-eligible
+own Tanks counters)`. Use the full printed group when it is available, otherwise
+use every eligible counter. There is no optional smaller selection, zero use,
+leader substitution, invented starred counter or additional ordinary allowance.
+Native elite revival caps and all existing timing/prevention/income still apply.
+
+The original component photograph was freshly retrieved and visually inspected
+again. Its Emperor panels name five and three forces without an up-to qualifier.
+Targeted GF9/designer searches found no shortage clarification; E3 printed11 and
+the supplied PDF physical23 provide general Nexus rules, not a numerical
+exception. This is a provisional product composition, not publisher clarification
+or a newly answered user ruling. Keep that explanation in the actual controls.
+
+New short Cunning receipts carry `shortGroup:true`, with count exactly equal to
+the original one-through-four ordinary pool. Full five-role receipt shape and
+signature stay unchanged. All losses remain ordinary physical counters; own-World
+reserve fees may reduce the retained temporary pool to zero. Cancellation spends
+the Nexus but creates no roles or physical return.
+
+New short revival V2 receipts alone carry `amount:1|2`; absent amount still means
+three for existing V2 and legacy receipts. The count is derived by the server,
+not supplied in the action. The original queued revival validates that exact
+count/free group, returns only those actual pieces and retains ordinary/free
+usage and purse accounting. Existing return/denial and native Homeworld/Tech/
+Tleilaxu continuation rules remain; no new module admission is granted.
+
+### Shortage evidence
+
+The frozen 18-file union passes 130/130 with types/lint and production build.
+New positive Cunning receipts cover one through four and retain original five
+shape/signature bytes. Revival covers physical/typed shortages, no chosen
+underfill, original three/legacy records, denial and current controls. All four
+minimal profiles provide legal short declaration/plan/return actions; no strategy
+or difficulty calibration is claimed.
+
+Four original public Advanced base33/Nexus sources contain 322 source actions.
+E2/E4 real ordinary shipments follow actual turn-two worms, A/G alliances and
+closing draws. One E2 prefix branches into allowance or original opposing
+Karama cancellation; E4 allows. Separate absent-E A/G/H sources earn one/two
+real paid battle casualties, then actual next-turn worms, G/H alliances and
+Emperor draws before Revival. Five branches use 20 accepted continuation actions.
+No played hand, purse, force, Tank, phase, alliance, Nexus holding or receipt is
+installed; only unopened original positions and native scalar lotteries select
+sources. Physical losses and returns remain ordinary counters; revival usage
+ledgers, purse and current queue remain intact.
+
+Ten GameTable/ten controller SSR renders operate five actual Cunning/Secret Ally
+controller callbacks with original action packets. Stateful plan/quantity inputs
+and browser hydration are not operated. No new short own-World fee pairing,
+other module combination, full-mode, mobile/deployed or broad recovery/privacy/
+custody acceptance is certified. Legacy controlled fixture phase jumps now
+discard stale Charity frames only at their declared staging boundaries; natural
+ready/ordinary-revival helpers follow actual ordered actors. The older visitor
+Reinforcements price assertion includes its real occupied-World Collection
+award rather than treating that income as a changed combat cost.
+
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-emperor-nexus-short-proof-v5/`;
+runtime: `20261027-emperor-nexus-short-runtime/run-v2/` beside it. Frozen source
+tree `b606e6af989abcfed0255444dbaf60da00e581a51c4a81502856eed41ded109c`
+contains 3360 files. Final evidence prose overlays are limited to this contract,
+the dashboard and implementation log. Build retains its existing warning scope;
+no deployment, server restart or saved-room/database operation occurred.
+
 ## Authority
 
 - [Photograph of the original twelve GF9 Nexus cards](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani), freshly reinspected at `/tmp/dune-nexus-cards.jpg`.
@@ -356,7 +423,7 @@ The final build retains existing route-classification/chunk-size warnings.
 
 The following material cases remain unresolved; no new question was sent:
 
-- **Short groups:** may Cunning operate with fewer than five eligible ordinary counters, or Secret Ally revive fewer than three when Tanks/typed limits cannot supply three? Neither panel says up to. Do not disguise the question as a silently truncated count.
+- **Short groups:** the numerical publisher question remains unanswered. The [27 October shortage prototype](#positive-shortages--27-october-2026) supplies an explicit positive-only available-count policy under standing authority; it is not a silent up-to reading or publisher clarification.
 - **Wider forced payment:** the normal-auction prototype chooses the full original obligation and refuses missing own funding or an already fully prepaid price. Arbitrary larger transfers and special seller-lot composition remain unimplemented; the printed text is not claimed to answer them.
 - **Special purchases and revival suppression/income:** resolve the concrete boundaries above before connecting broad existing payment/free-revival adapters.
 

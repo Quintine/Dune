@@ -86,6 +86,9 @@ function fixture(salusa: 1 | 2 | 5 = 5) {
     ready: [],
     storm: 18,
   });
+  // This conserved controlled Battle setup skips the actual Charity turns;
+  // their ordered frame does not belong to the newly staged phase.
+  delete g.charityOrder;
   g = applyAction(g, 'p', {
     type: 'chooseBattle',
     territory: 'pasty_mesa',

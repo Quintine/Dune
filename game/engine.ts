@@ -118,7 +118,7 @@ import { quoteEcazInquiry, ecazInquiryAnswer, ecazInquiryHistory, ecazInquirySig
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
 import { quoteEcazBattleLead } from './ecaz-homeworld-lead';
 import { sourceForRicheseCunning, richeseCunningRateMatches, validRicheseCunningRateSource, RicheseCunningRateError, type RicheseCunningRateSource } from './richese-cunning-rate';
-import { EMPEROR_NEXUS_REVIVALS, emperorNexusLegacyRevivalModeSupported, quoteEmperorNexusRevival, createEmperorNexusRevival, settleEmperorNexusRevival, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
+import { emperorNexusRevivalCount, emperorNexusLegacyRevivalModeSupported, quoteEmperorNexusRevival, createEmperorNexusRevival, settleEmperorNexusRevival, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, emperorNexusBankPurchaseModeSupported, emperorNexusSellerPurchaseModeSupported, quoteEmperorNexusSellerPurchase, createEmperorNexusSellerPurchase, emperorNexusAmbassadorPurchaseModeSupported, quoteEmperorNexusAmbassadorPurchase, createEmperorNexusAmbassadorPurchase, quoteEmperorNexusSpecialPurchase, createEmperorNexusSpecialPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
 import { createEmperorPaymentReceipt, validateEmperorPaymentReceipt, emperorPaymentUseBlock, emperorPaymentSourceQuote, requiredEmperorPaymentResponders, emperorPaymentReceiptSignature, type EmperorPaymentReceipt } from './nexus-emperor-payment';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, createFremenNexusRevival, upgradeFremenNexusRevival, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
@@ -3333,15 +3333,16 @@ function playNexusEmperorRevive(g:Game,p:Player,action:Action) {
   const offer = nexusEmperorSecretAllyOffer(g,p.id);
   requireRule(offer && !offer.revival.blocked && action.event === offer.event &&
     Object.keys(action).sort().join(',') === 'elite,event,type' && offer.revival.eliteOptions.includes(action.elite as number),
-    offer?.revival.blocked ?? 'Choose the current Emperor Nexus revival and an eligible exact three-force group.');
+    offer?.revival.blocked ?? 'Choose the current Emperor Nexus revival and its eligible physical force group.');
   const record = nexusRule(() => createEmperorNexusRevival(g, p.id, action.elite as number));
+  const amount = emperorNexusRevivalCount(record);
   g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
   (g.nexusEmperorSecretHistory ??= []).push(record);
   (g.nexusEmperorSecretEvents ??= []).push(record.event);
-  log(g, `${p.name} spent Emperor Nexus Secret Ally to request exactly three additional forces for free through the original revival continuation. Ordinary force/free allowances are unchanged; native Tleilaxu prevention applies under the provisional independent-extra-return policy.`,
+  log(g, `${p.name} spent Emperor Nexus Secret Ally to request ${amount === 3 ? 'exactly three' : amount} additional force${amount === 1 ? '' : 's'} for free through the original revival continuation.${amount < 3 ? ' Provisional shortage policy uses every currently eligible counter.' : ''} Ordinary force/free allowances are unchanged; native Tleilaxu prevention applies under the provisional independent-extra-return policy.`,
     {faction:p.faction,name:'Emperor Nexus revival'});
-  beginRevival(g, { player: p.id, kind: 'forces', amount: EMPEROR_NEXUS_REVIVALS,
-    elite: record.elite, free: EMPEROR_NEXUS_REVIVALS, normalCost: 0, cost: 0,
+  beginRevival(g, { player: p.id, kind: 'forces', amount,
+    elite: record.elite, free: amount, normalCost: 0, cost: 0,
     checks: [], nexusEmperorEvent: record.event });
 }
 function finishNexusEmperorRevival(g: Game, revival: PendingRevival, outcome: 'returned' | 'denied') {
@@ -3351,7 +3352,7 @@ function finishNexusEmperorRevival(g: Game, revival: PendingRevival, outcome: 'r
   const record = history?.[index];
   requireRule(record && 'version' in record && record.version === 2 &&
     record.stage === 'requested' && record.owner === revival.player,
-  'The extra-three revival lost its original consumed Nexus source.');
+  'The additional revival lost its original consumed Nexus source.');
   history![index] = nexusRule(() => settleEmperorNexusRevival(g, record, outcome));
   if (outcome === 'denied')
     log(g, `${getPlayer(g, revival.player).name}'s Emperor Nexus extra return was prevented. The Nexus remains spent; no counters, payment, revival income or Tech activity was granted.`);
@@ -4265,7 +4266,9 @@ function nexusSardaukarIntegrity(g: Game) {
       requireRule(record.stage === 'active' && ['pending','complete'].includes(losses.outcome) &&
         Object.keys(losses).sort().join(',') ===
           ['dial','forces','options','outcome','support',...(fee ? ['reserveFee'] : []),...Object.keys(constraints)].sort().join(',') &&
-        validCombatForces(losses.forces) && (fee ? Number(losses.forces.temporaryElite) >= 2 : losses.forces.temporaryElite === 5) &&
+        validCombatForces(losses.forces) && (fee
+          ? Number(losses.forces.temporaryElite) >= 0 && Number(losses.forces.temporaryElite) < record.receipt.count
+          : losses.forces.temporaryElite === record.receipt.count) &&
         Array.isArray(losses.options) && losses.options.length > 0 &&
         JSON.stringify(losses.options) === JSON.stringify(committedCasualtyOptions(losses.forces,losses.dial,losses.support,losses)),
         'The Nexus Sardaukar casualties have lost their committed force allocation.');
@@ -4315,7 +4318,8 @@ function nexusSardaukarIntegrity(g: Game) {
     if (record.stage !== 'canceled') {
       const p = getPlayer(g, record.receipt.owner), other = getPlayer(g, b!.attacker === p.id ? b!.defender : b!.attacker);
       const forces = combatForces(g, p, b!.territory, other);
-      requireRule(forces.normal >= 5 && forces.elite === 0, 'The Nexus battle no longer has five eligible ordinary forces.');
+      requireRule(forces.normal >= record.receipt.count && forces.elite === 0,
+        'The Nexus battle no longer has its original eligible ordinary role group.');
     }
   }
   for (const response of responses) validateNexusSardaukarResponse(g, response!);
@@ -4335,7 +4339,7 @@ function nexusSardaukarEligibility(g: Game, p: Player): string | null {
   const other = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
   const forces = combatForces(g, p, b.territory, other);
   if (forces.elite) return 'Cunning requires a battle containing none of your actual Sardaukar.';
-  if (forces.normal < 5) return 'Using Emperor Cunning with fewer than five eligible forces awaits a ruling.';
+  if (forces.normal < 1) return 'Cunning needs at least one eligible ordinary force in this battle.';
   return null;
 }
 function projectedNexusSardaukar(g: Game, id: string) {
@@ -4343,9 +4347,15 @@ function projectedNexusSardaukar(g: Game, id: string) {
   const record = currentNexusSardaukar(g);
   const active = record?.stage === 'active';
   const pending = record?.stage === 'pending' ? {event: record.receipt.event, owner: record.receipt.owner} : null;
+  const short: { shortCount?: number } = record?.receipt.shortGroup ? { shortCount: record.receipt.count } : {};
   const p = getPlayer(g,id);
-  if (p.faction !== 'emperor' || g.nexusCards.cards.hands[id] !== 'emperor') return {offer:null,active,pending};
+  if (p.faction !== 'emperor' || g.nexusCards.cards.hands[id] !== 'emperor') return {offer:null,active,pending,...short};
   let blocked = nexusSardaukarEligibility(g,p);
+  if (!blocked) {
+    const b = g.battle!, other = getPlayer(g,b.attacker === p.id ? b.defender : b.attacker);
+    const normal = combatForces(g,p,b.territory,other).normal;
+    if (normal < 5) short.shortCount = normal;
+  }
   if (!blocked && (g.truthtrance || g.response || g.decision || g.phaseOpening || g.pendingKarama ||
     g.pendingTreacheryDiscard || g.pendingNullentropy || pendingNexusTraitors(g) || g.nexusCards.phase?.stage === 'drawing'))
     blocked = 'Finish the current interaction before declaring Nexus Sardaukar.';
@@ -4356,7 +4366,7 @@ function projectedNexusSardaukar(g: Game, id: string) {
     if (!findReachableBattlePlan(trial,getPlayer(trial,id)))
       blocked = 'Sardaukar strength would prevent you from honoring an existing Battle Plan commitment.';
   }
-  return {offer:{event,blocked},active,pending};
+  return {offer:{event,blocked},active,pending,...short};
 }
 function commitNexusSardaukar(g: Game, p: Player, stage: 'pending' | 'active') {
   const blocked = nexusSardaukarEligibility(g,p);
@@ -4375,7 +4385,8 @@ function playNexusSardaukar(g: Game,p: Player,action: Action) {
   requireRule(Object.keys(action).every(key => ['type','event'].includes(key)) && offer && !offer.blocked && action.event === offer.event,
     offer?.blocked ?? 'Choose the current Emperor Cunning opportunity.');
   commitNexusSardaukar(g,p,'pending');
-  log(g,`${p.name} spent Emperor Nexus Cunning to count five ordinary forces as Sardaukar for this battle. Karama may prevent this use. The physical counters remain ordinary forces.`,
+  const count = currentNexusSardaukar(g)!.receipt.count;
+  log(g,`${p.name} spent Emperor Nexus Cunning to count ${count === 5 ? 'five' : count} ordinary force${count === 1 ? '' : 's'} as Sardaukar for this battle.${count < 5 ? ' Provisional shortage policy uses the available group.' : ''} Karama may prevent this use. The physical counters remain ordinary forces.`,
     {faction:p.faction,name:'Nexus Sardaukar declared'});
 }
 function finishNexusSardaukar(g: Game,canceled: boolean) {
@@ -4384,7 +4395,7 @@ function finishNexusSardaukar(g: Game,canceled: boolean) {
   g.nexusSardaukarLast = {event:record.receipt.event,stage:record.stage};
   if (canceled) reconcileChangedBattleInspections(g, 'the canceled Sardaukar enhancement');
   log(g,canceled ? 'Karama prevented Emperor Cunning. These forces remain ordinary in both strength and physical custody; the Nexus card stays spent.'
-    : 'Five ordinary Emperor forces count as Sardaukar in this battle only. They use Sardaukar strength and support, including the Fremen exception, but every casualty remains an ordinary physical counter.',
+    : `${record.receipt.count === 5 ? 'Five' : record.receipt.count} ordinary Emperor force${record.receipt.count === 1 ? '' : 's'} count${record.receipt.count === 1 ? 's' : ''} as Sardaukar in this battle only. They use Sardaukar strength and support, including the Fremen exception, but every casualty remains an ordinary physical counter.`,
     {faction:'emperor',name:canceled ? 'Nexus Sardaukar prevented' : 'Nexus Sardaukar active'});
 }
 

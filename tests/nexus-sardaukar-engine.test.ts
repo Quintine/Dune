@@ -91,7 +91,7 @@ void test('Sardaukar receipt binds the original five-counter battle role without
     assert.throws(() => validateNexusSardaukar(g, bad as typeof receipt));
   }
   assert.throws(() => createNexusSardaukar(g, 'q', 'battle', 'pasty_mesa', 7));
-  assert.throws(() => createNexusSardaukar(g, 'p', 'battle', 'pasty_mesa', 4));
+  assert.throws(() => createNexusSardaukar(g, 'p', 'battle', 'pasty_mesa', 0));
   const changed = g.players.map((p) => ({ id: p.id, faction: p.faction }));
   changed[1].id = 'another-seat';
   assert.throws(() =>
@@ -191,8 +191,8 @@ void test('the completed grant expires before a second battle in the same turn',
   assert.deepEqual(normalizeAutomaticGame(nexusReload(g)), nexusReload(g));
 });
 
-void test('Basic, short groups, actual Sardaukar, foreign actors and stale or repeated declarations reject unchanged', () => {
-  for (const options of [{ advanced: false }, { normal: 4 }, { starred: 1 }]) {
+void test('Basic, actual Sardaukar, foreign actors and stale or repeated declarations reject unchanged', () => {
+  for (const options of [{ advanced: false }, { starred: 1 }]) {
     const g = nexusSardaukarFixture(options);
     assert.ok(viewGame(g, 'p').nexusSardaukar!.offer!.blocked);
     nexusReject(g, 'p', request(g), /Basic|Advanced|five|5|Sardaukar|ruling/i);

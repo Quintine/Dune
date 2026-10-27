@@ -52,7 +52,7 @@ export type NexusEmperorRevival =
       stage?: never;
       after: EmperorNexusPools;
     })
-  | (EmperorNexusRevivalIdentity & { version: 2 } & (
+  | (EmperorNexusRevivalIdentity & { version: 2; amount?: 1 | 2 } & (
       | { stage: 'requested'; after: null }
       | { stage: 'returned' | 'denied'; after: EmperorNexusPools }
     ));
@@ -60,6 +60,11 @@ export type NexusEmperorRevivalRequest = Extract<
   NexusEmperorRevival,
   { version: 2; stage: 'requested' }
 >;
+/** Existing receipts omit the amount and retain their original three-force
+ * signature. Only a new short requested return records one or two. */
+export function emperorNexusRevivalCount(receipt: NexusEmperorRevival): number {
+  return receipt.version === 2 ? receipt.amount ?? EMPEROR_NEXUS_REVIVALS : EMPEROR_NEXUS_REVIVALS;
+}
 export function emperorNexusPools(p: Player): EmperorNexusPools {
   return {
     reserves: p.reserves,
@@ -108,17 +113,29 @@ export function emperorNexusLegacyRevivalModeSupported(g: Game): boolean {
           (!!g.leaderSkills && classicNexusLeaderSkillsProfile(g)))))
   );
 }
-/** A fixed three-counter grant preserves the separate Advanced elite cap. */
+/** Provisional short-group completion: take three whenever eligible; otherwise
+ * take every eligible physical counter, respecting the existing typed cap. */
+export function emperorNexusRevivalAmount(
+  p: Pick<Player, 'tanks' | 'faction' | 'elites'>,
+  advanced: boolean,
+): number {
+  return Math.min(EMPEROR_NEXUS_REVIVALS,
+    p.tanks - (p.elites?.tanks ?? 0) + eliteRevivalRemaining(p, advanced));
+}
+
+/** Choose only the typed composition of the current maximal return. */
 export function emperorNexusRevivalElites(
   p: Player,
   advanced: boolean,
 ): number[] {
+  const amount = emperorNexusRevivalAmount(p, advanced);
+  if (amount <= 0) return [];
   const choices: number[] = [];
-  for (let elite = 0; elite <= 3; elite++)
+  for (let elite = 0; elite <= amount; elite++)
     if (
       elite <= eliteRevivalRemaining(p, advanced) &&
       elite <= (p.elites?.tanks ?? 0) &&
-      3 - elite <= p.tanks - (p.elites?.tanks ?? 0)
+      amount - elite <= p.tanks - (p.elites?.tanks ?? 0)
     )
       choices.push(elite);
   return choices;
@@ -129,6 +146,8 @@ const receiptKeys =
   'advanced,after,before,elite,event,faction,kind,owner,phase,sequence,signature,turn';
 const receiptV2Keys =
   'advanced,after,before,elite,event,faction,kind,owner,phase,sequence,signature,stage,turn,version';
+const receiptV2ShortKeys =
+  'advanced,after,amount,before,elite,event,faction,kind,owner,phase,sequence,signature,stage,turn,version';
 const whole = (n: unknown): n is number =>
   Number.isSafeInteger(n) && (n as number) >= 0;
 function shape(value: unknown, keys: string): boolean {
@@ -149,10 +168,11 @@ function samePools(a: EmperorNexusPools, b: EmperorNexusPools): boolean {
     a[key as keyof EmperorNexusPools] === b[key as keyof EmperorNexusPools]);
 }
 function returnedPools(r: NexusEmperorRevival): EmperorNexusPools {
+  const amount = emperorNexusRevivalCount(r);
   return {
     ...r.before,
-    reserves: r.before.reserves + EMPEROR_NEXUS_REVIVALS,
-    tanks: r.before.tanks - EMPEROR_NEXUS_REVIVALS,
+    reserves: r.before.reserves + amount,
+    tanks: r.before.tanks - amount,
     eliteReserves: r.before.eliteReserves + r.elite,
     eliteTanks: r.before.eliteTanks - r.elite,
     eliteRevived: r.before.eliteRevived + r.elite,
@@ -167,17 +187,19 @@ export function validateEmperorNexusRevival(
 ): void {
   const p = r && g.players.find(p => p.id === r.owner);
   const legacy = shape(r, receiptKeys);
-  if (!p || !(legacy || shape(r, receiptV2Keys)) ||
+  const short = shape(r, receiptV2ShortKeys);
+  const amount = r ? emperorNexusRevivalCount(r) : EMPEROR_NEXUS_REVIVALS;
+  if (!p || !(legacy || shape(r, receiptV2Keys) || short) ||
     r.kind !== 'revival' || r.phase !== 4 ||
     typeof r.owner !== 'string' || !r.owner.trim() ||
     !whole(r.turn) || r.turn < 1 || r.turn > g.turn ||
     r.faction !== p.faction || r.advanced !== g.advanced ||
-    !whole(r.sequence) || !whole(r.elite) || r.elite > EMPEROR_NEXUS_REVIVALS ||
+    !whole(r.sequence) || !whole(r.elite) || r.elite > amount ||
     r.event !== emperorNexusEvent(r.turn, 4, r.owner, r.sequence) ||
     r.signature !== emperorNexusSignature(r) || !validPools(r.before) ||
-    r.before.tanks < EMPEROR_NEXUS_REVIVALS ||
+    r.before.tanks < amount ||
     r.elite > r.before.eliteTanks ||
-    EMPEROR_NEXUS_REVIVALS - r.elite > r.before.tanks - r.before.eliteTanks)
+    amount - r.elite > r.before.tanks - r.before.eliteTanks)
     throw new Error('Emperor Nexus revival has lost its exact original physical return or allowance.');
   if (legacy) {
     if (g.expansions.length ||
@@ -192,6 +214,10 @@ export function validateEmperorNexusRevival(
   }
   const typed = p.faction === 'ixians' || p.faction === 'fremen';
   if (r.version !== 2 ||
+    (short && r.amount !== 1 && r.amount !== 2) ||
+    amount !== emperorNexusRevivalAmount({ faction: r.faction, tanks: r.before.tanks,
+      elites: { reserves: r.before.eliteReserves, tanks: r.before.eliteTanks,
+        revived: r.before.eliteRevived, forces: {} } }, r.advanced) ||
     g.players.some(seat => seat.faction === 'emperor') ||
     (!typed && (r.elite || r.before.eliteTanks || r.before.eliteReserves || r.before.eliteRevived)) ||
     (typed && r.before.eliteReserves + r.before.eliteTanks > (p.faction === 'ixians' ? 7 : 3)) ||
@@ -236,16 +262,18 @@ function revivalModeSupported(g: Game): boolean {
 
 /** Provisional composition, not a publisher clarification or numerical user ruling. */
 const revivalPolicy =
-  'Provisional composed policy: exactly three additional free physical forces from Tanks, beyond ordinary force and free-revival allowances. Native typed caps and Tleilaxu prevention still apply; this is not ordinary free-rate revival, so ordinary free blocking (including LaLaLa) and higher or expanded rates do not reprice it. Recruits does not double this fixed grant. Spend the card on declaration; denial returns no forces and grants no revival income or Tech benefit. No leader, missing-native-Emperor payment, extra Karama response or refund is granted. Actual returns continue through native Tleilaxu, Tech and Homeworld handling.';
+  'Provisional composed policy: return exactly three additional free physical forces from Tanks whenever three are eligible; otherwise return all one or two eligible forces. Zero cannot spend the card. This short-group policy is not publisher clarification. The return is beyond ordinary force and free-revival allowances. Native typed caps and Tleilaxu prevention still apply; this is not ordinary free-rate revival, so ordinary free blocking (including LaLaLa) and higher or expanded rates do not reprice it. Recruits does not double the grant. Spend the card on declaration; denial returns no forces and grants no revival income or Tech benefit. No leader, missing-native-Emperor payment, extra Karama response or refund is granted. Actual returns continue through native Tleilaxu, Tech and Homeworld handling.';
 
 export function quoteEmperorNexusRevival(g: Game, owner: string): {
   event: string;
+  amount: number;
   blocked: string | null;
   eliteOptions: number[];
   policy: string;
 } {
   const p = g.players.find(p => p.id === owner);
   const event = emperorNexusEvent(g.turn, g.phase, owner, g.nexusEmperorSecretHistory?.length ?? 0);
+  const amount = p ? emperorNexusRevivalAmount(p, g.advanced) : 0;
   const eliteOptions = p ? emperorNexusRevivalElites(p, g.advanced) : [];
   let blocked: string | null = null;
   if (!p || g.nexusCards?.cards?.hands[owner] !== 'emperor')
@@ -256,7 +284,7 @@ export function quoteEmperorNexusRevival(g: Game, owner: string): {
   else if (!revivalModeSupported(g))
     blocked = 'Emperor Nexus revival requires an original supported Nexus roster and module profile.';
   else if (g.status !== 'playing' || g.phase !== 4)
-    blocked = 'Use the three-force Emperor Nexus return during Revival.';
+    blocked = 'Use the additional Emperor Nexus return during Revival.';
   else if (g.response || g.decision || g.truthtrance || g.phaseOpening ||
     g.pendingRevival || g.pendingKarama || g.pendingTreacheryDiscard ||
     g.pendingNullentropy || g.pendingExchange || g.pendingRicheseGift ||
@@ -268,8 +296,8 @@ export function quoteEmperorNexusRevival(g: Game, owner: string): {
   else if (revivalPrevented(g, owner))
     blocked = 'Native Tleilaxu prevention blocks this revival.';
   else if (!eliteOptions.length)
-    blocked = 'Emperor Nexus needs exactly three eligible forces in Tanks.';
-  return { event, blocked, eliteOptions, policy: revivalPolicy };
+    blocked = 'Emperor Nexus needs at least one eligible force in Tanks.';
+  return { event, amount, blocked, eliteOptions, policy: revivalPolicy };
 }
 
 /** Pure declaration receipt: the engine commits card custody and the original pending revival. */
@@ -280,12 +308,13 @@ export function createEmperorNexusRevival(
 ): NexusEmperorRevivalRequest {
   const quote = quoteEmperorNexusRevival(g, owner);
   if (quote.blocked || !quote.eliteOptions.includes(elite))
-    throw new Error(quote.blocked ?? 'Choose an eligible exact three-force typed group.');
+    throw new Error(quote.blocked ?? 'Choose an eligible typed group for the current additional return.');
   const p = g.players.find(p => p.id === owner)!;
   const r: NexusEmperorRevivalRequest = {
     kind: 'revival', version: 2, event: quote.event, owner, turn: g.turn, phase: 4,
     sequence: g.nexusEmperorSecretHistory?.length ?? 0,
     faction: p.faction, advanced: g.advanced, elite,
+    ...(quote.amount === 1 || quote.amount === 2 ? { amount: quote.amount } : {}),
     before: emperorNexusPools(p), after: null, stage: 'requested', signature: '',
   };
   r.signature = emperorNexusSignature(r);

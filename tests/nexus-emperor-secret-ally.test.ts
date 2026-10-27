@@ -8,6 +8,7 @@ import {
 } from '../game/engine';
 import {
   emperorNexusPools,
+  emperorNexusRevivalCount,
   emperorNexusSignature,
 } from '../game/nexus-emperor-secret-ally';
 import { forceRevivalRemaining, freeRevivalRemaining } from '../game/revival';
@@ -16,6 +17,16 @@ import {
   emperorNexusPhysical,
 } from './nexus-emperor-secret-ally-fixture';
 import { nexusReject, nexusReload, nexusReady } from './fixture-nexus-cards';
+
+function ownRevival(game: Game, owner: string): Game {
+  for (let n = 0; game.revivalOrder && game.revivalOrder.remaining[0] !== owner && n < game.players.length; n++) {
+    assert.equal(game.phase,4);
+    assert.ok(game.revivalOrder.remaining.includes(owner),'Finish only native turns preceding the still-unfinished owner.');
+    game = normalizeAutomaticGame(applyAction(game,game.revivalOrder.remaining[0],{type:'ready'}));
+  }
+  assert.ok(!game.revivalOrder || game.revivalOrder.remaining[0] === owner);
+  return game;
+}
 
 void test('a later real Ghola return and phase advance preserve historical Nexus proof without replaying its physical grant', () => {
   const f = nexusEmperorSecretAllyFixture();
@@ -77,7 +88,7 @@ for (const advanced of [false, true])
     assert.equal(g.phase, 4);
     assert.equal(g.response, null);
     assert.equal(g.decision, null);
-    const ordinary = applyAction(g, f.owner, {
+    const ordinary = applyAction(ownRevival(g,f.owner), f.owner, {
       type: 'revive',
       amount: 3,
       elite: 0,
@@ -93,7 +104,7 @@ for (const advanced of [false, true])
 
 void test('Emperor additional return still works after the ordinary three-force and free allowances are exhausted', () => {
   const f = nexusEmperorSecretAllyFixture();
-  const paid = applyAction(f.g, f.owner, {
+  const paid = applyAction(ownRevival(f.g,f.owner), f.owner, {
     type: 'revive',
     amount: 3,
     elite: 0,
@@ -123,6 +134,7 @@ void test('Advanced Fedaykin use typed Tanks and share the actual one-per-turn c
     let g: Game;
     if (nexusFirst) {
       g = applyAction(f.g, f.owner, f.action);
+      g = ownRevival(g,f.owner);
       nexusReject(
         g,
         f.owner,
@@ -131,7 +143,7 @@ void test('Advanced Fedaykin use typed Tanks and share the actual one-per-turn c
       );
       g = applyAction(g, f.owner, { type: 'revive', amount: 3, elite: 0 });
     } else {
-      g = applyAction(f.g, f.owner, { type: 'revive', amount: 3, elite: 1 });
+      g = applyAction(ownRevival(f.g,f.owner), f.owner, { type: 'revive', amount: 3, elite: 1 });
       assert.deepEqual(
         viewGame(g, f.owner).nexusEmperorSecretAlly!.revival.eliteOptions,
         [0],
@@ -145,23 +157,44 @@ void test('Advanced Fedaykin use typed Tanks and share the actual one-per-turn c
   }
 });
 
-void test('short total or typed groups are explicitly unavailable without spending a card or fabricating partial forces', () => {
-  for (const options of [
-    { tanks: 2 },
-    { advanced: true, owner: 'p' as const, tanks: 3, eliteTanks: 2 },
+void test('short eligible totals return every available counter while zero and exhausted typed caps remain blocked', () => {
+  for (const entry of [
+    {options:{tanks:1},amount:1,elite:0,choices:[0]},
+    {options:{tanks:2},amount:2,elite:0,choices:[0]},
+    {options:{advanced:true,owner:'p' as const,tanks:3,eliteTanks:2},amount:2,elite:1,choices:[1]},
   ]) {
-    const f = nexusEmperorSecretAllyFixture(options);
-    assert.deepEqual(
-      viewGame(f.g, f.owner).nexusEmperorSecretAlly!.revival.eliteOptions,
-      [],
-    );
-    assert.match(
-      viewGame(f.g, f.owner).nexusEmperorSecretAlly!.revival.blocked!,
-      /exactly three/,
-    );
-    nexusReject(f.g, f.owner, f.action, /exactly three/);
-    assert.equal(f.g.nexusCards!.cards!.hands[f.owner], 'emperor');
+    const f = nexusEmperorSecretAllyFixture(entry.options), before = emperorNexusPools(f.g.players.find(p => p.id === f.owner)!);
+    const physical = emperorNexusPhysical(f.g), quote = viewGame(f.g,f.owner).nexusEmperorSecretAlly!.revival;
+    assert.equal(quote.amount,entry.amount);
+    assert.equal(quote.blocked,null);
+    assert.deepEqual(quote.eliteOptions,entry.choices);
+    const done = applyAction(f.g,f.owner,{...f.action,elite:entry.elite});
+    assert.deepEqual(emperorNexusPools(done.players.find(p => p.id === f.owner)!),{
+      ...before,reserves:before.reserves+entry.amount,tanks:before.tanks-entry.amount,
+      eliteReserves:before.eliteReserves+entry.elite,eliteTanks:before.eliteTanks-entry.elite,
+      eliteRevived:before.eliteRevived+entry.elite,
+    });
+    assert.equal(emperorNexusRevivalCount(done.nexusEmperorSecretHistory!.at(-1)!),entry.amount);
+    assert.equal(done.nexusCards!.cards!.hands[f.owner],null);
+    assert.equal(done.nexusCards!.cards!.discard.filter(card => card === 'emperor').length,1);
+    assert.deepEqual(emperorNexusPhysical(done),physical);
   }
+  const empty = nexusEmperorSecretAllyFixture({tanks:0});
+  assert.equal(viewGame(empty.g,empty.owner).nexusEmperorSecretAlly!.revival.amount,0);
+  assert.deepEqual(viewGame(empty.g,empty.owner).nexusEmperorSecretAlly!.revival.eliteOptions,[]);
+  nexusReject(empty.g,empty.owner,empty.action,/eligible/i);
+  assert.equal(empty.g.nexusCards!.cards!.hands[empty.owner],'emperor');
+
+  const typed = nexusEmperorSecretAllyFixture({advanced:true,owner:'p',tanks:2,eliteTanks:2});
+  const used = applyAction(ownRevival(typed.g,typed.owner),typed.owner,{type:'revive',amount:1,elite:1});
+  const remaining = used.players.find(p => p.id === typed.owner)!;
+  assert.equal(remaining.elites!.tanks,1);
+  assert.equal(remaining.elites!.revived,1);
+  const exhausted = viewGame(used,typed.owner).nexusEmperorSecretAlly!.revival;
+  assert.equal(exhausted.amount,0);
+  assert.deepEqual(exhausted.eliteOptions,[]);
+  nexusReject(used,typed.owner,typed.action,/eligible/i);
+  assert.equal(used.nexusCards!.cards!.hands[typed.owner],'emperor');
 });
 
 void test('only the private absent-Emperor holder gets revival choices; nonholders retain ordinary phase progress', () => {

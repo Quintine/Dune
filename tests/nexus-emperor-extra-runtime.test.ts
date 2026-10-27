@@ -42,6 +42,19 @@ function allow(game: Game, native: string): Game {
   assert.equal(game.decision!.player, native);
   return settleNexusEmperorExtra(applyAction(game, native, { type: 'decision', decline: true }));
 }
+function ownRevival(game: Game, owner: string): Game {
+  for (let n = 0; game.revivalOrder && game.revivalOrder.remaining[0] !== owner && n < game.players.length; n++) {
+    assert.equal(game.phase,4);
+    assert.ok(game.revivalOrder.remaining.includes(owner),'The original owner must still have an unfinished Revival turn.');
+    game = settleNexusEmperorExtra(applyAction(game,game.revivalOrder.remaining[0],{type:'ready'}));
+  }
+  assert.ok(!game.revivalOrder || game.revivalOrder.remaining[0] === owner);
+  return game;
+}
+function ordinaryRevive(game: Game, owner: string, action: Action): Game {
+  assert.equal(action.type,'revive');
+  return applyAction(ownRevival(game,owner),owner,action);
+}
 
 for (const advanced of [false, true]) {
   const band = advanced ? 'Advanced' : 'Basic';
@@ -73,7 +86,7 @@ for (const advanced of [false, true]) {
     const extra = settleNexusEmperorExtra(applyAction(f.game, f.owner, grant(f.game, f.owner)));
     assert.deepEqual(forceRevivalQuote(extra, player(extra, f.owner), 3), quote);
     assert.equal(forceRevivalRemaining(extra, player(extra, f.owner)), 3);
-    const ordinary = settleNexusEmperorExtra(applyAction(extra, f.owner, { type: 'revive', amount: 3 }));
+    const ordinary = settleNexusEmperorExtra(ordinaryRevive(extra, f.owner, { type: 'revive', amount: 3 }));
     const holder = player(ordinary, f.owner);
     assert.equal(holder.reserves, player(f.game, f.owner).reserves + 6);
     assert.equal(holder.tanks, player(f.game, f.owner).tanks - 6);
@@ -88,7 +101,7 @@ for (const advanced of [false, true]) {
     assert.equal(player(next, f.owner).freeForcesRevived, 0);
     receipt(next, 'returned');
     const nextQuote = forceRevivalQuote(next, player(next, f.owner), 2);
-    const later = settleNexusEmperorExtra(applyAction(next, f.owner, { type: 'revive', amount: 2 }));
+    const later = settleNexusEmperorExtra(ordinaryRevive(next, f.owner, { type: 'revive', amount: 2 }));
     assert.equal(player(later, f.owner).tanks, 0);
     assert.equal(player(later, f.owner).spice, player(next, f.owner).spice - nextQuote.cost);
     spent(later, f.owner);
@@ -96,7 +109,7 @@ for (const advanced of [false, true]) {
 
   void test(`${band} three prior ordinary counters do not reduce the independent printed three grant`, () => {
     const f = createNexusEmperorExtraFixture({ advanced });
-    const ordinary = settleNexusEmperorExtra(applyAction(f.game, f.owner, { type: 'revive', amount: 3 }));
+    const ordinary = settleNexusEmperorExtra(ordinaryRevive(f.game, f.owner, { type: 'revive', amount: 3 }));
     assert.equal(forceRevivalRemaining(ordinary, player(ordinary, f.owner)), 0);
     const before = emperorNexusPools(player(ordinary, f.owner));
     const extra = settleNexusEmperorExtra(applyAction(ordinary, f.owner, grant(ordinary, f.owner)));
@@ -110,7 +123,7 @@ for (const advanced of [false, true]) {
 
   void test(`${band} genuine single-E1 Ix counters retain native typed custody and available-count caps`, () => {
     const f = createNexusEmperorExtraFixture({ advanced, profile: 'ixians' });
-    const ordinary = settleNexusEmperorExtra(applyAction(f.game, f.owner, { type: 'revive', amount: 1, elite: 1 }));
+    const ordinary = settleNexusEmperorExtra(ordinaryRevive(f.game, f.owner, { type: 'revive', amount: 1, elite: 1 }));
     const before = player(ordinary, f.owner), beforePools = emperorNexusPools(before);
     assert.equal(before.elites!.tanks, 2);
     rejected(ordinary, f.owner, grant(ordinary, f.owner, 3));
@@ -122,7 +135,7 @@ for (const advanced of [false, true]) {
     assert.equal(player(extra, f.owner).revived, 1);
     assert.equal(player(extra, f.owner).elites!.revived, 3, 'Ix follows its native count cap, not the Advanced Fedaykin cap');
     assert.equal(forceRevivalRemaining(extra, player(extra, f.owner)), 2);
-    const continued = settleNexusEmperorExtra(applyAction(extra, f.owner, { type: 'revive', amount: 1, elite: 0 }));
+    const continued = settleNexusEmperorExtra(ordinaryRevive(extra, f.owner, { type: 'revive', amount: 1, elite: 0 }));
     assert.equal(player(continued, f.owner).revived, 2);
     assert.equal(player(continued, f.owner).tanks, 3);
     receipt(continued, 'returned');
@@ -151,7 +164,7 @@ void test('native Tleilaxu Allow waits for original physical return, awards free
   assert.equal(returned.techTokens!.axlotl.triggeredTurn, returned.turn);
   assert.equal(returned.techTokens!.axlotl.spice, ownedTech(returned.techTokens!, returned.techTokens!.axlotl.owner!).length);
   const tokens = structuredClone(returned.techTokens);
-  const ordinary = allow(applyAction(returned, f.owner, { type: 'revive', amount: 2 }), native);
+  const ordinary = allow(ordinaryRevive(returned, f.owner, { type: 'revive', amount: 2 }), native);
   assert.equal(player(ordinary, native).spice, nativeSpice + 1, 'Later ordinary free returns cannot award a second bank income');
   assert.deepEqual(ordinary.techTokens, tokens, 'The same physical Axlotl token does not accrue twice this turn');
   assert.equal(player(ordinary, f.owner).revived, 2);
@@ -163,7 +176,7 @@ void test('native Tleilaxu Allow waits for original physical return, awards free
 
 void test('native Tleilaxu prior free return earns once; the later extra source does not earn or consume ordinary quota again', () => {
   const f = createNexusEmperorExtraFixture({ advanced: true, profile: 'tleilaxu' });
-  const ordinary = allow(applyAction(f.game, f.owner, { type: 'revive', amount: 2 }), f.partner);
+  const ordinary = allow(ordinaryRevive(f.game, f.owner, { type: 'revive', amount: 2 }), f.partner);
   const nativeSpice = player(ordinary, f.partner).spice, before = emperorNexusPools(player(ordinary, f.owner));
   const declared = applyAction(ordinary, f.owner, grant(ordinary, f.owner));
   receipt(declared, 'requested');
@@ -173,7 +186,7 @@ void test('native Tleilaxu prior free return earns once; the later extra source 
   assert.equal(forceRevivalRemaining(extra, player(extra, f.owner)), 1);
   const price = forceRevivalQuote(extra, player(extra, f.owner), 1);
   assert.equal(price.free, 0);
-  const paid = allow(applyAction(extra, f.owner, { type: 'revive', amount: 1 }), f.partner);
+  const paid = allow(ordinaryRevive(extra, f.owner, { type: 'revive', amount: 1 }), f.partner);
   assert.equal(player(paid, f.owner).spice, player(extra, f.owner).spice - price.cost);
   assert.equal(player(paid, f.partner).spice, nativeSpice + price.cost);
   assert.equal(player(paid, f.owner).revived, 3);
@@ -224,7 +237,7 @@ void test('Basic native Tleilaxu returns the extra source without an Advanced st
   assert.equal(player(extra, f.owner).revived, 0);
   assert.equal(player(extra, f.owner).freeForcesRevived, 0);
   assert.equal(player(extra, f.partner).spice, nativeSpice + 1);
-  const ordinary = settleNexusEmperorExtra(applyAction(extra, f.owner, { type: 'revive', amount: 2 }));
+  const ordinary = settleNexusEmperorExtra(ordinaryRevive(extra, f.owner, { type: 'revive', amount: 2 }));
   assert.equal(player(ordinary, f.partner).spice, nativeSpice + 1);
   assert.equal(player(ordinary, f.owner).revived, 2);
   assert.equal(player(ordinary, f.owner).freeForcesRevived, 2);

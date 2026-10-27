@@ -110,12 +110,14 @@ void test('native typed Tanks determine exact-three choices and Ix Cyborgs are n
   assert.deepEqual(quoteEmperorNexusRevival(fremen, 'owner').eliteOptions, [0]);
   assert.throws(() => createEmperorNexusRevival(fremen, 'owner', 1));
   fremen.players[0].tanks = 3;
-  assert.deepEqual(quoteEmperorNexusRevival(fremen, 'owner').eliteOptions, []);
-  assert.notEqual(quoteEmperorNexusRevival(fremen, 'owner').blocked, null);
+  assert.equal(quoteEmperorNexusRevival(fremen, 'owner').amount, 1);
+  assert.deepEqual(quoteEmperorNexusRevival(fremen, 'owner').eliteOptions, [0]);
+  assert.equal(createEmperorNexusRevival(fremen, 'owner', 0).amount, 1);
   const short = sample();
   short.players[0].tanks = 2;
-  assert.deepEqual(quoteEmperorNexusRevival(short, 'owner').eliteOptions, []);
-  assert.throws(() => createEmperorNexusRevival(short, 'owner', 0));
+  assert.equal(quoteEmperorNexusRevival(short, 'owner').amount, 2);
+  assert.deepEqual(quoteEmperorNexusRevival(short, 'owner').eliteOptions, [0]);
+  assert.equal(createEmperorNexusRevival(short, 'owner', 0).amount, 2);
 });
 
 void test('original native modules allow revival independently of classic purchase admission', () => {

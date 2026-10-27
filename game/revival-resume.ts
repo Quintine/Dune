@@ -13,6 +13,7 @@ import { DUKE_VIDAL_ID } from './duke-vidal';
 import { resolveEcazDukeRevival } from './ecaz-duke-revival';
 import {
   emperorNexusPools,
+  emperorNexusRevivalCount,
   validateEmperorNexusRevival,
 } from './nexus-emperor-secret-ally';
 import { validateNexusCards } from './nexus-cards';
@@ -87,14 +88,15 @@ function validateNexusEmperorSource(
   requireResume(
     typeof event === 'string' && event.length > 0 &&
       Object.keys(pending).every((key) => nexusEmperorPendingKeys[key]) &&
-      pending.kind === 'forces' && pending.amount === 3 &&
+      pending.kind === 'forces' && Number.isSafeInteger(pending.amount) &&
+      pending.amount! >= 1 && pending.amount! <= 3 &&
       Number.isSafeInteger(pending.elite) && pending.elite! >= 0 &&
-      pending.elite! <= 3 && pending.free === 3 &&
+      pending.elite! <= pending.amount! && pending.free === pending.amount &&
       pending.cost === 0 && pending.normalCost === 0 &&
       pending.payer === undefined && pending.emperorExtra === undefined &&
       pending.leader === undefined && Array.isArray(pending.checks) &&
       pending.checks.length === 0,
-    'The Emperor Nexus source needs its original exact-three free request.',
+    'The Emperor Nexus source needs its original physical free-force request.',
   );
   const owner = g.players.find((p) => p.id === pending.player);
   const history = g.nexusEmperorSecretHistory;
@@ -117,6 +119,7 @@ function validateNexusEmperorSource(
     receipt.version === 2 && receipt.stage === 'requested' &&
       receipt.owner === owner.id && receipt.turn === g.turn &&
       receipt.phase === g.phase && receipt.elite === pending.elite &&
+      emperorNexusRevivalCount(receipt) === pending.amount &&
       receipt.after === null &&
       receipt.before && Object.entries(currentPools).every(([key, value]) =>
         receipt.before[key as keyof typeof currentPools] === value) &&

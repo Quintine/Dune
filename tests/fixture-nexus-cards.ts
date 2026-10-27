@@ -68,6 +68,18 @@ export function nexusFixture(
 
 export function nexusReady(state: Game): Game {
   let g = state;
+  // Native ordered phases finish their actual current actor, rather than the
+  // roster order used by legacy simultaneous readiness. Never skip a response.
+  const phase = state.phase;
+  const ordered = () => phase === 2 ? g.charityOrder : phase === 4 ? g.revivalOrder : undefined;
+  if (ordered() && !g.phaseOpening && !g.response && !g.decision && !g.truthtrance) {
+    for (let pass = 0; pass < state.players.length && g.phase === phase && ordered(); pass++) {
+      const owner = ordered()!.remaining[0]; assert.ok(owner);
+      g = applyAction(g, owner, {type:'ready'});
+      if (g.phaseOpening || g.response || g.decision || g.truthtrance) break;
+    }
+    return g;
+  }
   for (const p of state.players)
     if (!g.ready.includes(p.id)) g = applyAction(g, p.id, { type: 'ready' });
   return g;
@@ -95,6 +107,9 @@ export function enterNexusSpice(state: Game, nextTurn = false): Game {
       stormDialers: g.players.slice(0, 2).map((p) => p.id),
       stormDials: {},
     });
+    // This controlled next-turn jump skips the previous Charity phase; its
+    // ordered frame cannot describe the staged new Storm boundary.
+    delete g.charityOrder;
   }
   assert.equal(g.phase, 0);
   for (const id of g.stormDialers)

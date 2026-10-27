@@ -13,7 +13,9 @@ export type NexusSardaukarReceipt = {
   territory: string;
   normal: number;
   elite: 0;
-  count: 5;
+  count: number;
+  /** Explicit provisional shortage composition; absent on original five-role receipts. */
+  shortGroup?: true;
   roster: { id: string; faction: FactionId }[];
   signature: string;
 };
@@ -58,6 +60,7 @@ function signature(receipt: NexusSardaukarReceipt): string {
     receipt.elite,
     receipt.count,
     receipt.roster.map((p) => [p.id, p.faction]),
+    ...(receipt.shortGroup ? ['available-short-group'] : []),
   ]);
 }
 /** Historical evidence does not depend on forces surviving this battle. */
@@ -72,7 +75,9 @@ export function validateNexusSardaukar(
       !Array.isArray(receipt) &&
       [Object.prototype, null].includes(Object.getPrototypeOf(receipt)) &&
       Object.keys(receipt).sort().join(',') ===
-        'battle,count,elite,event,normal,owner,roster,signature,territory,turn,version' &&
+        ['battle','count','elite','event','normal','owner','roster',
+          ...(receipt.shortGroup === true ? ['shortGroup'] : []),
+          'signature','territory','turn','version'].sort().join(',') &&
       receipt.version === 1 &&
       identifier(receipt.battle) &&
       identifier(receipt.territory) &&
@@ -80,10 +85,12 @@ export function validateNexusSardaukar(
       receipt.turn > 0 &&
       receipt.turn <= context.turn &&
       Number.isSafeInteger(receipt.normal) &&
-      receipt.normal >= 5 &&
+      receipt.normal >= 1 &&
       receipt.normal <= 20 &&
       receipt.elite === 0 &&
-      receipt.count === 5 &&
+      (receipt.normal < 5
+        ? receipt.shortGroup === true && receipt.count === receipt.normal
+        : receipt.shortGroup === undefined && receipt.count === 5) &&
       seats.some((p) => p.id === receipt.owner && p.faction === 'emperor') &&
       receipt.event ===
         JSON.stringify([
@@ -94,7 +101,7 @@ export function validateNexusSardaukar(
         ]) &&
       JSON.stringify(receipt.roster) === JSON.stringify(seats) &&
       receipt.signature === signature(receipt),
-    'The Sardaukar Nexus has lost its original battle, five-counter group or owner.',
+    'The Sardaukar Nexus has lost its original battle, physical role group or owner.',
   );
 }
 export function createNexusSardaukar(
@@ -113,7 +120,8 @@ export function createNexusSardaukar(
     territory,
     normal,
     elite: 0,
-    count: 5,
+    count: Math.min(5, normal),
+    ...(normal < 5 ? { shortGroup: true as const } : {}),
     roster: roster(context),
     signature: '',
   };

@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 27 October 2026 — Emperor Nexus positive shortages
+
+Prototype the selected shortage-only composition: Cunning uses the full five
+ordinary counters when available, otherwise the whole positive eligible army;
+Secret Ally revival takes three when eligible, otherwise every one/two eligible
+typed Tanks counters. No chosen underfill, zero use, leader replacement or
+physical starred conversion occurs. Original caps, responses and continuations
+remain. New short receipts are explicit; original full-grant signature/shape
+bytes remain. Controls name the count and provisional source interpretation.
+No dedicated publisher shortage clarification was found.
+[Contract](NEXUS_EMPEROR_RULES.md#positive-shortages--27-october-2026).
+
+Eighteen files pass 130/130, types/lint and production build. Four original
+public Advanced base33/Nexus sources total 322 actions; five branches use 20
+accepted continuations: E2/E4 Cunning allowance, original E2 Karama cancellation
+and absent-E A Secret Ally1/2 returns. Real shipments/battle losses, next-turn
+worms, alliances and closing draws earn every source. Only unopened original
+card/Spice/Nexus positions and scalar lotteries select conditions. Ten GameTable
+and ten controller SSR renders operate five actual controller callbacks. Four
+minimal profiles retain legal participation; stateful plan/quantity inputs and
+browser hydration are not operated.
+
+Older controlled fixtures now align their staged phase frames and natural
+ordered ready/revival actors; their positions are not new native chronology.
+The visitor Reinforcements assertion accounts for the actual occupied-bank
+Collection award. No short own-World fee pairing, broader module/full-mode,
+mobile/deployed or final assurance is certified. No deployment, server restart
+or saved-room/database operation occurred. Private proof
+`20261027-emperor-nexus-short-proof-v5/` and runtime
+`20261027-emperor-nexus-short-runtime/run-v2/` use the existing private checkpoint
+directory. Frozen tree
+`b606e6af989abcfed0255444dbaf60da00e581a51c4a81502856eed41ded109c`
+contains 3360 files; final prose overlays are limited to this log,
+`CURRENT_STATUS.md` and `NEXUS_EMPEROR_RULES.md`.
+
 ## 27 October 2026 — Salusa Ghola with live Truthtrance
 
 Before either full seal, preserve feasible Yes/whole-No/grouped promises and

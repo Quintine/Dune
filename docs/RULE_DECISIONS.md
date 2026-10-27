@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Emperor Nexus positive short groups — 27 October 2026
+
+Select the provisional positive-only shortage composition under standing
+14 October authority. Cunning uses min(5, eligible own ordinary battle pool);
+Secret Ally revival uses min(3, typed-eligible actual Tanks). Use the full printed
+grant whenever possible and all eligible pieces otherwise, with no chosen
+underfill, zero use, leader substitute or physical starred creation. Existing
+typed caps and original continuation/cost/prevention rules remain. New short
+sources are explicit; old full-grant receipt shapes/signatures stay unchanged.
+Fresh inspection confirms neither printed panel says up to, and no dedicated
+primary clarification was found. This is a product interpretation, not a
+publisher ruling. [Source and contract](NEXUS_EMPEROR_RULES.md#positive-shortages--27-october-2026).
+
 ## Salusa Ghola with binding Truthtrance — 27 October 2026
 
 Remove the blanket live-promise restriction before either full seal. Preserve

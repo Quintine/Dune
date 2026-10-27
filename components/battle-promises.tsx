@@ -215,7 +215,7 @@ export function BattlePromises(props: {
               {action.type === 'nexusSuboids'
                 ? 'Use Ixian Cunning to give Suboids full strength without spice support'
                 : action.type === 'nexusSardaukar'
-                  ? 'Declare Emperor Cunning to count five ordinary forces as Sardaukar for this battle'
+                  ? `Declare Emperor Cunning to count ${g.nexusSardaukar?.shortCount ?? 'five'} ordinary forces as Sardaukar for this battle`
                   : action.mode === 'special'
                     ? `Spend Karama and discard ${(action.cards as string[]).map(name).join(', ')} to gain ${(action.cards as string[]).length * 3} spice`
                     : typeof action.leader === 'string'
