@@ -29,6 +29,20 @@ The warning remains visible throughout Advanced play, including older Advanced
 development saves. Games use the existing room save, reconnect and private seat
 system. Basic remains the default.
 
+## Simultaneous victories
+
+When multiple unallied players qualify for ordinary victory, Advanced compares
+their stronghold counts and awards the higher count before checking a Bene
+Gesserit prediction. Equal highest counts provisionally share the win; a set of
+all three Tech Tokens counts as one additional stronghold in this comparison.
+Qualifying alliances and the separate Ecaz Homeworld victory retain their
+existing shared-winner treatment. Basic retains its existing behavior.
+
+The authorized revised rules also permit all qualifying players or alliances to
+agree to play another turn and optionally raise the stronghold target. That
+choice is not yet implemented in the preview, which currently ends in a shared
+win when applicable. [Source and interpretation](RULE_DECISIONS.md#advanced-simultaneous-solo-stronghold-victories--27-october-2026).
+
 ## Admission and saved behavior
 
 Normal room creation already stores `advanced: boolean`; the same request format

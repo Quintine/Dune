@@ -57,7 +57,10 @@ void test('a started current actor locks its entire opportunity while another fa
   assert.notEqual(event(ctx, frame), old);
   rejects(ctx, frame, () => reorder(ctx, frame, { event: old, player: 'd', mode: 'first' }));
   rejects(ctx, frame, () => use(ctx, frame, 'a', 'first'));
-  rejects(ctx, frame, () => use(ctx, frame, 'a', 'last'));
+  const paused = use(ctx, frame, 'a', 'last');
+  assert.equal(paused.suspended, 'a');
+  assert.deepEqual(paused.order.remaining, ['b', 'c', 'd', 'a']);
+  assert.equal(paused.order.started, false);
   const first = use(ctx, frame, 'd', 'first');
   assert.equal(first.afterCurrent, 'a'); assert.equal(first.order.started, true);
   assert.deepEqual(first.order.remaining, ['a', 'd', 'b', 'c']);

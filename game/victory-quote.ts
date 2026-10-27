@@ -179,8 +179,21 @@ export function quoteVictory(g: VictoryContext, ecazContext?: EcazHomeworldVicto
   const predicted = () =>
     bg?.prediction?.turn === g.turn &&
     winner.some((id) => player(id).faction === bg.prediction!.faction);
-  for (const row of progress)
-    if (row.qualifies) winner = [...new Set([...winner, ...row.members])];
+  const qualifying = progress.filter((row) => row.qualifies);
+  // The authorized Advanced rules first compare the holdings of qualifying
+  // unallied players; their general shared-win rule covers ties and any
+  // competition that includes a qualifying alliance. A complete Tech set is
+  // the same additional stronghold used in the ordinary victory threshold.
+  // Keep existing settled winners and the separate Homeworld victory source
+  // intact rather than retroactively ranking a recorded result.
+  const rankSolo = g.advanced && winner.length === 0 && !ecazHomeworld &&
+    qualifying.length > 1 && qualifying.every((row) => row.members.length === 1);
+  const most = rankSolo
+    ? Math.max(...qualifying.map((row) => row.strongholds.length + Number(row.techStronghold)))
+    : null;
+  for (const row of qualifying)
+    if (most === null || row.strongholds.length + Number(row.techStronghold) === most)
+      winner = [...new Set([...winner, ...row.members])];
   if (ecazHomeworld) winner = [...new Set([...winner, ...ecazHomeworld.members])];
   if (predicted()) winner = [bg!.id];
   let status = g.status;

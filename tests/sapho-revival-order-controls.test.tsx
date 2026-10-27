@@ -95,6 +95,17 @@ void test('actual clean and queued callbacks send only the original five action 
   }
 });
 
+void test('own started Revival pause explains retained allowances and sends the native action', () => {
+  const game = projected('last');
+  const option: Option = { scope: 'revival', event: 'controlled-own-revival-event', mode: 'last', resumeOwn: true };
+  game.saphoOptions = [option];
+  const html = panel(game);
+  assert.match(html, /Resume your revival last and discard Juice of Sapho/);
+  assert.match(html, /Returned pieces, costs and used revival allowances remain unchanged/);
+  assert.deepEqual(press(option), [{ type: 'card', card: sapho!.id, scope: 'revival', event: option.event, mode: 'last' }]);
+  assert.deepEqual(press(option, true), []);
+});
+
 void test('Basic unstamped and completed controlled views offer no Revival order button even with stale projected options', () => {
   const basic = projected(); basic.advanced = false; basic.revivalOrder = null;
   const legacy = projected(); legacy.revivalOrder = null;
@@ -113,8 +124,8 @@ void test('Basic unstamped and completed controlled views offer no Revival order
 void test('unavailable ordered Revival guidance keeps completed turns and the current started actor intact', () => {
   const game = projected(); game.saphoOptions = [];
   const html = panel(game);
-  assert.match(html, /only among remaining unstarted Revival turns/);
-  assert.match(html, /A player who has started finishes their Revival choices unchanged/);
+  assert.match(html, /pause your own started turn and resume it last/);
+  assert.match(html, /Another player finishes any started turn first/);
   assert.match(html, /already-held positions and committed cards are unavailable/);
   assert.match(revival(game), /Juice of Sapho may change the remaining order; completed Revival turns stay finished/);
 });

@@ -20,6 +20,15 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Advanced Revival order and competing winners — 27 October. Prototyped /
+Partial.** Sapho can provisionally pause a clean started Revival turn and resume
+it last with spent allowances and legacy order records preserved. Simultaneous
+unallied Advanced qualifiers are ranked by stronghold count before prediction;
+ties, Tech counting and other simultaneous victory sources retain the documented
+provisional composition. The 12-file affected union passes 144 cases. The
+unanimous option to play another turn and broader acceptance remain open.
+[Revival](ADVANCED_REVIVAL_ORDER.md) · [Victory](ADVANCED_PREVIEW.md).
+
 **Advanced Sapho own-turn suspension — 27 October. Prototyped / Partial.** The
 existing clean started Shipment and Movement turn pause now extends to Advanced,
 retaining already-paid actions and the Guild's original choice. Seven related

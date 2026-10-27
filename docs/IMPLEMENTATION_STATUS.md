@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 27 October 2026 — Advanced Revival and simultaneous victory
+
+A clean already-started Advanced Revival can provisionally pause through
+Sapho and resume last without repeating used force or leader allowances.
+Simultaneous unallied Advanced stronghold qualifiers are compared before Bene
+Gesserit prediction; ties and Tech counting use documented provisional
+interpretations. The affected 12-file union passes 144 cases. The unanimous
+choice to continue another turn and broader acceptance remain unfinished.
+[Revival](ADVANCED_REVIVAL_ORDER.md) · [Victory](ADVANCED_PREVIEW.md).
+
 ## 27 October 2026 — Advanced Sapho own-turn suspension
 
 A player can provisionally pause its own already-started Advanced Shipment and

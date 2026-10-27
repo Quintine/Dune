@@ -1,5 +1,23 @@
 # Rule decision index
 
+## Advanced simultaneous solo stronghold victories — 27 October 2026
+
+The authorized supplied revision, physical p. 14 (printed p. 12), awards a
+normal win among multiple qualifying unallied players to the player occupying
+the most strongholds. Advanced victory now compares their ordinary qualifying
+counts before applying Bene Gesserit prediction. Equal counts provisionally
+share the win. The existing three-Tech-token stronghold equivalent is counted
+as one in this comparison; this composition is provisional. Competition with
+a qualifying alliance or the separate Ecaz Homeworld victory retains the
+existing shared-winner treatment. Basic and recorded winners retain their
+existing behavior.
+
+The same revision permits all qualifying players or alliances to agree to play
+another turn and optionally raise the required stronghold count. This choice is
+not yet implemented; automatic shared victory remains the current preview
+behavior. Implementing the solo comparison does not complete Advanced victory
+or release acceptance. [Preview](ADVANCED_PREVIEW.md#simultaneous-victories).
+
 ## Juice of Sapho and an already-started Advanced movement turn — 27 October 2026
 
 Extend the existing provisional clean own-turn Last policy to Advanced

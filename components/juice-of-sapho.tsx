@@ -22,7 +22,7 @@ function unavailableReason(game: GameView) {
   if (game.phase === 4)
     return !game.advanced || !game.revivalOrder
       ? 'Revival order changes require an ordered Advanced Revival phase. Basic and an already-opened unstamped phase keep their existing timing.'
-      : 'Choose first or last only among remaining unstarted Revival turns. A player who has started finishes their Revival choices unchanged. Completed turns stay finished; already-held positions and committed cards are unavailable.';
+      : 'Change the order of remaining Revival turns. Another player finishes any started turn first. At a clean boundary, you may pause your own started turn and resume it last with used allowances unchanged. Completed turns stay finished; already-held positions and committed cards are unavailable.';
   if (game.phase === 8 && game.extortion?.pending)
     return 'Only an unanswered non-Moritani player can change their Extortion choice position. Earlier declines stay finished. Already-held first/last positions and committed cards are unavailable; you may still decline payment when your choice arrives.';
   if (game.phase === 3) {
@@ -67,7 +67,7 @@ export function SaphoOrderButton({
       }}
     >
       {option.scope === 'battleAggressor' ? 'Become aggressor and discard Juice of Sapho' :
-        option.scope === 'movement' && option.resumeOwn ? 'Resume your movement last and discard Juice of Sapho' :
+        (option.scope === 'movement' || option.scope === 'revival') && option.resumeOwn ? `Resume your ${option.scope} last and discard Juice of Sapho` :
         `${bidding ? 'Bid' : option.scope === 'battleOrder' ? 'Choose battles' : option.scope === 'extortion' ? 'Take your Extortion choice' : option.scope === 'revival' ? 'Take your Revival turn' : option.scope === 'charity' ? 'Take your Charity turn' : 'Take your movement turn'} ${option.mode} and discard Juice of Sapho`}
     </Button>
   );
@@ -114,7 +114,7 @@ export function JuiceOfSapho({
             const extortion = option.scope === 'extortion';
             const revival = option.scope === 'revival';
             const charity = option.scope === 'charity';
-            const resumeOwn = option.scope === 'movement' && option.resumeOwn;
+            const resumeOwn = (option.scope === 'movement' || revival) && option.resumeOwn;
             const afterCurrent = (option.scope === 'movement' || revival || charity) && option.afterCurrent;
             const currentPlayer = afterCurrent
               ? game.players.find(player => player.id === afterCurrent)?.name ?? 'The active player'
@@ -154,7 +154,9 @@ export function JuiceOfSapho({
                 ))}
                 <p>
                   {resumeOwn
-                    ? 'Pause your started turn and resume it last, after the other remaining players. Shipment and movement already used stay spent; no extra action is granted. This Basic timing is provisional.'
+                    ? revival
+                      ? 'Pause your started Revival turn and resume it last, after the other remaining players. Returned pieces, costs and used revival allowances remain unchanged. This timing is provisional.'
+                      : 'Pause your started turn and resume it last, after the other remaining players. Shipment and movement already used stay spent; no extra action is granted. This timing is provisional.'
                     : aggressor
                     ? 'Become this battle’s aggressor. You win ordinary ties; a Habbanya Stronghold advantage still takes precedence. The participants, committed plans and later battle choices stay unchanged.'
                     : extortion

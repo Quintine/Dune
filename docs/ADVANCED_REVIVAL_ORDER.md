@@ -65,15 +65,17 @@ At a clean boundary, an owned physical Sapho changes an unfinished opportunity
 to first or last. Existing completed participants, requests, quotas and physical
 First Player order stay. The standing choose-recommended instruction selects
 the same provisional started-tail protocol as movement: a current participant
-who has made a native request finishes unchanged, while another unstarted holder
-may go first behind it or last. Splitting the holder's own started opportunity
-and consuming the card for an unchanged position are rejected.
+who has made a native request finishes unchanged when another unstarted holder
+goes first behind it or last. The later own-started policy below permits the
+current holder to pause its own opportunity. Consuming the card for an unchanged
+position remains rejected.
 
-Actual use upgrades only that phase frame to version2. Public use history binds
-the original turn/order, completed prefix, current remaining queue, started
-participant and revision. Replay advances exact completed opportunities and
-never unlocks a started participant before completion. Native start/finish retain
-that history. Original version1 creation and bytes remain unchanged; no phase
+An ordinary reorder upgrades only that phase frame to version2. Public use
+history binds the original turn/order, completed prefix, current remaining
+queue, started participant and revision. Version2 replay advances exact
+completed opportunities and never unlocks a started participant before
+completion. Native start/finish retain that history. Original version1 creation
+and bytes remain unchanged; no phase
 is converted merely by viewing it. Real recovered-card reuse is allowed when
 the new position changes; no once-per-phase limit is invented.
 
@@ -85,6 +87,29 @@ may move the used card; it cannot replay the queue change or turn completion.
 The human action uses only existing card/scope/event/mode fields. Optional
 `afterCurrent` is display guidance, not submitted authority. Existing minimal
 policies already consume the shared server-derived Sapho options.
+
+## Own-started Sapho suspension — 27 October 2026
+
+At a clean boundary, the current holder may provisionally use its physical
+Sapho to pause its own started Revival opportunity and resume it after the
+other remaining opportunities. Earlier completed returns, paid spice and
+force, elite and leader allowances stay used; no player gains another turn or
+allowance. Unresolved requests or responses must finish first. A no-op position
+cannot consume the card. Another holder still cannot interrupt a started
+player's opportunity.
+
+An actual own-started suspension upgrades the frame to version3 and records
+the paused faction with the public use history. The engine restores its
+started marker when that faction becomes current again. Existing version1/2
+frames keep their format until such a suspension; Basic and already-opened
+concurrent phases gain no ordered turn. This clean-boundary timing is a
+provisional online interpretation of the Sapho face, not a publisher ruling.
+Nested combinations, full-mode and deployed acceptance remain open.
+
+### Earlier first/last evidence — 26 October 2026
+
+The following evidence predates the own-started suspension above and does not
+verify that later path.
 
 Focused evidence uses `tests/sapho-revival-order.test.ts`,
 `tests/fixture-sapho-revival-order.ts`,

@@ -114,7 +114,7 @@ void test('all four minimal profiles propose an accepted native queued Revival o
   }
 });
 
-void test('controlled conserved-card supplement refuses to split the genuine started owner opportunity', () => {
+void test('controlled conserved-card supplement can pause the genuine started owner opportunity', () => {
   const f = fixture({ started: true }), game = structuredClone(f.game);
   // This supplement conserves the actual paid card but does not claim a native
   // transfer to Richese. Its force return and started opportunity remain native.
@@ -122,9 +122,13 @@ void test('controlled conserved-card supplement refuses to split the genuine sta
   player(game, f.current).hand.push(donor.hand.splice(index, 1)[0]);
   assert.equal(game.revivalOrder?.started, true);
   assert.deepEqual(inventory(game), f.originalInventory);
-  assert.deepEqual(viewGame(game, f.current).saphoOptions.filter(option => option.scope === 'revival'), []);
   const borrowed = action(f.game, 'last');
-  reject(game, f.current, borrowed);
+  reject(game, f.current, { ...borrowed, event: 'stale-revival-order-event' });
+  const option = viewGame(game, f.current).saphoOptions.find(option => option.scope === 'revival' && option.mode === 'last');
+  assert.ok(option && option.scope === 'revival' && option.resumeOwn);
+  const paused = act(game, f.current, {type:'card', card:f.card, scope:'revival', mode:'last', event:option.event});
+  assert.equal(paused.revivalOrder?.remaining.at(-1), f.current);
+  assert.equal(player(paused, f.current).revived, 1);
 });
 
 for (const claim of [false, true]) {

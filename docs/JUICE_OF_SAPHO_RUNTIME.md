@@ -1,5 +1,27 @@
 # Juice of Sapho: finite ordering implementation
 
+## Own started Advanced Revival turn — 27 October 2026
+
+**Prototyped / Partial.** At a clean boundary in ordered Advanced Revival, the
+current holder may use Juice of Sapho to pause its own started opportunity and
+place it last among the remaining turns. Its earlier completed returns, paid
+spice, native force and leader allowances and physical pieces remain unchanged.
+The same opportunity resumes, without a second allowance. Pending requests,
+responses and other preparations must finish before the order can change.
+
+The first actual own-started suspension upgrades the order frame to version 3,
+recording the paused player alongside the original public Sapho use history.
+The started marker is restored when that player becomes current again. Existing
+version 1 and 2 frames retain their prior format until an actual qualifying
+suspension. Older concurrent Revival phases and Basic remain unchanged.
+
+The Sapho face permits first or last in an ordered phase or action; it does not
+specify suspension of a partially completed Revival opportunity. This policy is
+a provisional online composition, not an official clarification. It supersedes
+the earlier own-started Revival exclusion below. Nested interactions, full
+rules, browser and deployed acceptance remain open.
+[Native Revival order](ADVANCED_REVIVAL_ORDER.md#own-started-sapho-suspension--27-october-2026).
+
 ## Own started Advanced movement turn — 27 October 2026
 
 **Prototyped / Partial.** The clean-boundary own-turn Last option now extends
@@ -16,8 +38,8 @@ Karama lock. Last is protected behind that Guild opportunity. A Guild player
 may voluntarily suspend its own started turn; another holder cannot displace an
 already granted current Guild turn and may instead reorder the later unstarted
 tail. Physical storm order and completed opportunities do not change. This
-does not extend the rule to splitting Charity, Revival or unfinished nested
-interactions.
+movement rule does not extend to Charity or unfinished nested interactions;
+Revival has the separate provisional suspension described above.
 
 The inspected Sapho face permits first or last in a turn-ordered phase or
 action, but does not state whether or how an already-started combined turn can
@@ -155,8 +177,9 @@ only its later unstarted tail. Completed turns stay complete; native quotas,
 requests and physical First Player order remain. Basic and older concurrent
 phases receive no invented sequence.
 
-Actual card disposal upgrades that phase to validated version2 use history.
-Original version1 frames retain their bytes and native behavior. Current actor,
+The original card disposal implementation upgrades that phase to validated
+version2 use history. The later own-started suspension above upgrades to
+version3. Original version1 frames retain their bytes and native behavior. Current actor,
 completed/remaining opportunities and started state bind the exact event and
 use revision. The opted-in Semuta continuation claims or leaves the physical
 discard before the same queue resumes. A legal recovered card can be used
@@ -419,8 +442,9 @@ mode discussed below.
 Later sections supersede the earlier early-only aggressor, cyclic-auction and
 blanket started-movement exclusions. Queued movement now supports an unstarted
 different holder behind the active turn under the selected provisional policy.
-Other ordered actions, splitting the holder's own started turn and competing
-first/Guild precedence beyond the retained native choice remain unfinished.
+Other ordered actions and competing first/Guild precedence beyond the retained
+native choice remain unfinished. The own-started Movement and Revival policies
+above supersede the earlier blanket split-turn exclusion.
 Reacquiring and replaying Sapho while existing last protection remains is still
 guarded. Silent submission stays simultaneous with its original storm tie order.
 
