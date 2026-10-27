@@ -1,8 +1,10 @@
 import type { Action, GameView } from './engine';
 import type {
   DiscoveryEntryOffer,
+  DiscoveryEntryNoField,
   DiscoveryEntrySource,
 } from './discovery-entry';
+import { splitLocation } from './board';
 
 function entryDecision(game: GameView) {
   const decision = game.decision;
@@ -32,8 +34,9 @@ function whole(value: unknown): value is number {
 function selectedGroups(
   offer: DiscoveryEntryOffer,
   groups: readonly DiscoveryEntrySource[],
+  allowEmpty = false,
 ): DiscoveryEntrySource[] | null {
-  if (!Array.isArray(groups) || !groups.length) return null;
+  if (!Array.isArray(groups) || (!groups.length && !allowEmpty)) return null;
   const selected = groups
     .map((group) => ({ ...group }))
     .sort((a, b) => a.source.localeCompare(b.source));
@@ -61,16 +64,31 @@ function selectedGroups(
 export function discoveryEntryMoveAction(
   game: GameView,
   groups: readonly DiscoveryEntrySource[],
+  noField?: DiscoveryEntryNoField,
 ): Action | null {
   const entry = currentEntry(game);
   if (!entry) return null;
-  const selected = selectedGroups(entry.offer, groups);
+  if (noField !== undefined) {
+    const offered = entry.offer.noField;
+    if (!noField || typeof noField !== 'object' || Array.isArray(noField) ||
+        Object.keys(noField).sort().join(',') !== 'event,source,tokenId' ||
+        typeof noField.tokenId !== 'string' || !noField.tokenId.trim() ||
+        typeof noField.event !== 'string' || !noField.event.trim() ||
+        typeof noField.source !== 'string' ||
+        !offered || noField.tokenId !== offered.tokenId || noField.event !== offered.event ||
+        noField.source !== offered.source) return null;
+    const source = splitLocation(noField.source);
+    if (source.territory !== entry.offer.parent || noField.source !== `${source.territory}:${source.sector}`)
+      return null;
+  }
+  const selected = selectedGroups(entry.offer, groups, noField !== undefined);
   return selected
     ? {
         type: 'decision',
         event: entry.decision.event,
         accept: true,
         groups: selected,
+        ...(noField ? { noField: noField.tokenId, noFieldEvent: noField.event } : {}),
       }
     : null;
 }
@@ -84,11 +102,11 @@ export function discoveryEntryDeclineAction(
     : null;
 }
 
-/** Uses only the current player's projected physical source groups. */
+/** Uses only the current player's projected groups and offered owned marker. */
 export function discoveryEntryBotActions(game: GameView): Action[] {
   const offer = game.discoveryEntry;
   if (!currentEntry(game) || !offer) return [];
-  const move = discoveryEntryMoveAction(game, offer.sources),
+  const move = discoveryEntryMoveAction(game, offer.sources, offer.noField),
     decline = discoveryEntryDeclineAction(game);
   return [move, decline].filter((action): action is Action => action !== null);
 }

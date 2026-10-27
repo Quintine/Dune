@@ -10,6 +10,7 @@ import {
 } from './discoveries';
 import { splitLocation, validGameLocation, type MobileBoard } from './board';
 import { territoryEntryBlock, type OccupancySeat } from './occupancy';
+import type { RicheseNoField } from './richese-no-field';
 
 export class DiscoveryEntryError extends Error {}
 
@@ -29,6 +30,8 @@ export type DiscoveryEntrySeat = OccupancySeat & {
   faction: FactionId;
   forces: Record<string, number>;
   elites?: { forces: Record<string, number> };
+  noField?: RicheseNoField | null;
+  noFieldEvent?: string;
 };
 
 export type DiscoveryEntryContext = Omit<MobileBoard, 'discoveries'> & {
@@ -45,6 +48,12 @@ export type DiscoveryEntrySource = {
   elite: number;
 };
 
+export type DiscoveryEntryNoField = {
+  tokenId: string;
+  event: string;
+  source: string;
+};
+
 export type DiscoveryEntryArrival = {
   event: string;
   token: DiscoveryOpaqueTokenId;
@@ -55,6 +64,7 @@ export type DiscoveryEntryArrival = {
   destinationBefore: number;
   destinationEliteBefore: number;
   groups: DiscoveryEntrySource[];
+  noField?: DiscoveryEntryNoField;
   amount: number;
   elite: number;
   signature: string;
@@ -74,6 +84,7 @@ export type DiscoveryEntryRound = {
 
 export type DiscoveryEntrySelection = {
   groups: readonly DiscoveryEntrySource[];
+  noField?: DiscoveryEntryNoField;
 };
 
 export type DiscoveryEntryOffer = {
@@ -84,6 +95,7 @@ export type DiscoveryEntryOffer = {
   destination: DiscoveryLocationId;
   sector: 0;
   sources: DiscoveryEntrySource[];
+  noField?: DiscoveryEntryNoField;
   blocked: string | null;
   arrival: DiscoveryEntryArrival | null;
 };
@@ -110,6 +122,7 @@ function arrivalPayload(arrival: Omit<DiscoveryEntryArrival, 'signature'>) {
     arrival.groups.map((group) => [group.source, group.normal, group.elite]),
     arrival.amount,
     arrival.elite,
+    ...(arrival.noField ? [[true, arrival.noField.source]] : []),
   ];
 }
 
@@ -161,6 +174,13 @@ function strictSource(value: unknown): value is DiscoveryEntrySource {
   );
 }
 
+function strictNoField(value: unknown): value is DiscoveryEntryNoField {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const marker = value as DiscoveryEntryNoField;
+  return Object.keys(marker).sort().join(',') === 'event,source,tokenId' &&
+    identifier(marker.tokenId) && identifier(marker.event) && identifier(marker.source);
+}
+
 function validateInventory(discoveries: DiscoveryState) {
   try {
     validateDiscoveryState(discoveries);
@@ -181,7 +201,10 @@ function validateArrivalShape(
       typeof arrival === 'object' &&
       !Array.isArray(arrival) &&
       Object.keys(arrival).sort().join(',') ===
-        'amount,destination,destinationBefore,destinationEliteBefore,elite,event,groups,owner,parent,sector,signature,token' &&
+        (Object.hasOwn(arrival, 'noField')
+          ? 'amount,destination,destinationBefore,destinationEliteBefore,elite,event,groups,noField,owner,parent,sector,signature,token'
+          : 'amount,destination,destinationBefore,destinationEliteBefore,elite,event,groups,owner,parent,sector,signature,token') &&
+      (!Object.hasOwn(arrival, 'noField') || strictNoField(arrival.noField)) &&
       arrival.event === `${frame.event}:${frame.cursor}` &&
       arrival.token === current.token &&
       arrival.owner === current.owner &&
@@ -192,7 +215,7 @@ function validateArrivalShape(
       whole(arrival.destinationEliteBefore) &&
       arrival.destinationEliteBefore <= arrival.destinationBefore &&
       Array.isArray(arrival.groups) &&
-      arrival.groups.length > 0 &&
+      (arrival.groups.length > 0 || !!arrival.noField) &&
       arrival.groups.every(strictSource) &&
       arrival.groups.every(
         (group, index) =>
@@ -202,12 +225,12 @@ function validateArrivalShape(
       whole(arrival.amount) &&
       arrival.amount > 0 &&
       whole(arrival.elite) &&
-      arrival.elite <= arrival.amount &&
+      arrival.elite <= arrival.amount - (arrival.noField ? 1 : 0) &&
       arrival.amount ===
         arrival.groups.reduce(
           (sum, group) => sum + group.normal + group.elite,
           0,
-        ) &&
+        ) + (arrival.noField ? 1 : 0) &&
       arrival.elite ===
         arrival.groups.reduce((sum, group) => sum + group.elite, 0) &&
       arrival.signature === discoveryEntryArrivalSignature(arrival),
@@ -267,6 +290,12 @@ export function validateDiscoveryEntryRound(
     const token = g.discoveries.tokens.find(
       (candidate) => candidate.id === frame.arrival!.token,
     )!;
+    const validSource = (key: string) => {
+      const source = splitLocation(key);
+      return key === `${source.territory}:${source.sector}` &&
+        source.territory === frame.arrival!.parent && source.sector !== g.storm &&
+        validGameLocation(g, source.territory, source.sector);
+    };
     const validSources = frame.arrival.groups.every((group) => {
       const source = splitLocation(group.source);
       return (
@@ -275,7 +304,7 @@ export function validateDiscoveryEntryRound(
         source.sector !== g.storm &&
         validGameLocation(g, source.territory, source.sector)
       );
-    });
+    }) && (!frame.arrival.noField || validSource(frame.arrival.noField.source));
     requireEntry(
       token.territory === frame.arrival.parent &&
         token.face === frame.arrival.destination &&
@@ -342,6 +371,18 @@ function sourceOffer(
   return sources.sort((a, b) => a.source.localeCompare(b.source));
 }
 
+/** A current owned marker is independently eligible; its value and reserves
+ * do not supply physical counters or alter this optional relocation. */
+function noFieldOffer(g: DiscoveryEntryContext, player: DiscoveryEntrySeat, parent: string): DiscoveryEntryNoField | undefined {
+  const marker = player.noField?.deployed;
+  if (player.faction !== 'richese' || !marker || marker.controller !== player.id ||
+      !identifier(marker.tokenId) || !identifier(player.noFieldEvent) ||
+      marker.location.territory !== parent || marker.location.sector === g.storm ||
+      !validGameLocation(g, marker.location.territory, marker.location.sector)) return undefined;
+  return { tokenId: marker.tokenId, event: player.noFieldEvent,
+    source: `${marker.location.territory}:${marker.location.sector}` };
+}
+
 function currentOffer(g: DiscoveryEntryContext, frame: DiscoveryEntryRound) {
   const current = step(frame);
   const player = g.players.find((candidate) => candidate.id === current.owner)!;
@@ -391,6 +432,7 @@ export function quoteDiscoveryEntry(
     'This Discovery entry belongs to another player.',
   );
   const sources = sourceOffer(g, player, parent);
+  const noField = noFieldOffer(g, player, parent);
   let blocked: string | null = null;
   try {
     blocked = territoryEntryBlock(g.players, owner, destination);
@@ -399,7 +441,7 @@ export function quoteDiscoveryEntry(
       error instanceof Error ? error.message : 'Invalid Discovery occupancy.',
     );
   }
-  if (!blocked && !sources.length)
+  if (!blocked && !sources.length && !noField)
     blocked =
       'No non-advisor forces outside the storm can enter this location.';
   const base = {
@@ -410,6 +452,7 @@ export function quoteDiscoveryEntry(
     destination,
     sector: 0 as const,
     sources,
+    ...(noField ? { noField: { ...noField } } : {}),
     blocked,
   };
   if (!selection) return { ...base, arrival: null };
@@ -418,12 +461,17 @@ export function quoteDiscoveryEntry(
     selection &&
       typeof selection === 'object' &&
       !Array.isArray(selection) &&
-      Object.keys(selection).join(',') === 'groups' &&
+      Object.keys(selection).sort().join(',') === (Object.hasOwn(selection, 'noField') ? 'groups,noField' : 'groups') &&
+      (!Object.hasOwn(selection, 'noField') || strictNoField(selection.noField)) &&
       Array.isArray(selection.groups) &&
-      selection.groups.length > 0 &&
+      (selection.groups.length > 0 || !!selection.noField) &&
       selection.groups.every(strictSource),
     'Choose explicit positive ordinary and elite source groups.',
   );
+  if (selection.noField)
+    requireEntry(noField && selection.noField.tokenId === noField.tokenId &&
+      selection.noField.event === noField.event && selection.noField.source === noField.source,
+    'Choose the current owned No-Field, event and parent source for this Discovery entry.');
   const groups = selection.groups
     .map((group) => ({ ...group }))
     .sort((a, b) => a.source.localeCompare(b.source));
@@ -459,8 +507,9 @@ export function quoteDiscoveryEntry(
     destinationBefore,
     destinationEliteBefore,
     groups,
-    amount: groups.reduce((sum, group) => sum + group.normal + group.elite, 0),
+    amount: groups.reduce((sum, group) => sum + group.normal + group.elite, 0) + (selection.noField ? 1 : 0),
     elite: groups.reduce((sum, group) => sum + group.elite, 0),
+    ...(selection.noField ? { noField: { ...selection.noField } } : {}),
   };
   const arrival: DiscoveryEntryArrival = {
     ...unsigned,
@@ -501,7 +550,7 @@ export function advanceDiscoveryEntry(
   return next;
 }
 
-/** Sign an accepted source selection before the caller moves physical forces. */
+/** Sign a selection before the caller transfers physical forces and any marker. */
 export function beginDiscoveryEntryArrival(
   g: DiscoveryEntryContext,
   frame: DiscoveryEntryRound,
@@ -518,6 +567,7 @@ export function beginDiscoveryEntryArrival(
     arrival: {
       ...quote.arrival,
       groups: quote.arrival.groups.map((group) => ({ ...group })),
+      ...(quote.arrival.noField ? { noField: { ...quote.arrival.noField } } : {}),
     },
     signature: '',
   };

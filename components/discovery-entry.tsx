@@ -52,6 +52,7 @@ function DiscoveryEntryChoice({ game, act, busy }: Props) {
       ]),
     ),
   );
+  const [moveMarker, setMoveMarker] = useState(!!offer.noField);
   const me = game.players.find((player) => player.id === game.me)!;
   const eliteName = specialForceName(me.faction);
   const groups: DiscoveryEntrySource[] = offer.sources.flatMap((source) => {
@@ -64,7 +65,8 @@ function DiscoveryEntryChoice({ game, act, busy }: Props) {
     (sum, group) => sum + group.normal + group.elite,
     0,
   );
-  const move = discoveryEntryMoveAction(game, groups);
+  const noField = moveMarker ? offer.noField : undefined;
+  const move = discoveryEntryMoveAction(game, groups, noField);
   const decline = discoveryEntryDeclineAction(game);
   const disabled = busy || !!me.autopilot || !!offer.blocked;
 
@@ -85,7 +87,7 @@ function DiscoveryEntryChoice({ game, act, busy }: Props) {
       },
     }));
   };
-  const selectAll = (selected: boolean) =>
+  const selectAll = (selected: boolean) => {
     setCounts(
       Object.fromEntries(
         offer.sources.map((source) => [
@@ -96,6 +98,8 @@ function DiscoveryEntryChoice({ game, act, busy }: Props) {
         ]),
       ),
     );
+    setMoveMarker(selected && !!offer.noField);
+  };
 
   return (
     <section aria-label="Discovery location entry" className="space-y-4">
@@ -113,19 +117,32 @@ function DiscoveryEntryChoice({ game, act, busy }: Props) {
           {offer.blocked}
         </p>
       )}
+      {offer.noField && <div className="space-y-2">
+        <p className="fine">
+          Provisional concealed No-Field entry: move the marker without revealing its value or materializing
+          reserves. Its existing shipment history stays unchanged. This costs no spice and uses no shipment
+          or normal movement.
+        </p>
+        <label className="flex min-h-11 items-center gap-2" htmlFor={`${controlId}-no-field`}>
+          <input id={`${controlId}-no-field`} type="checkbox" checked={moveMarker} disabled={disabled}
+            aria-label="Move concealed No-Field inside" onChange={event => setMoveMarker(event.target.checked)} />
+          Move concealed No-Field from {territory(offer.parent).name}, sector {splitLocation(offer.noField.source).sector}
+        </label>
+        <p aria-live="polite">Selected: {amount} physical {amount === 1 ? 'force' : 'forces'} · {noField ? 1 : 0} concealed marker</p>
+      </div>}
       <div className="flex flex-wrap gap-2">
         <Button
           type="button"
           variant="outline"
-          disabled={disabled || !offer.sources.length}
+          disabled={disabled || (!offer.sources.length && !offer.noField)}
           onClick={() => selectAll(true)}
         >
-          Select all forces
+          {offer.noField ? 'Select all forces and marker' : 'Select all forces'}
         </Button>
         <Button
           type="button"
           variant="outline"
-          disabled={disabled || !offer.sources.length}
+          disabled={disabled || (!offer.sources.length && !offer.noField)}
           onClick={() => selectAll(false)}
         >
           Clear selection
@@ -191,20 +208,21 @@ function DiscoveryEntryChoice({ game, act, busy }: Props) {
           className="game-action"
           disabled={disabled || !move}
           onClick={() => {
-            if (move) act(move);
+            if (!disabled && move) act(move);
           }}
         >
-          Move {amount} {amount === 1 ? 'force' : 'forces'} inside
+          {noField ? `Move ${amount} physical ${amount === 1 ? 'force' : 'forces'} and 1 concealed marker inside`
+            : `Move ${amount} ${amount === 1 ? 'force' : 'forces'} inside`}
         </Button>
         <Button
           className="game-action"
           variant="outline"
           disabled={busy || !!me.autopilot || !decline}
           onClick={() => {
-            if (decline) act(decline);
+            if (!busy && !me.autopilot && decline) act(decline);
           }}
         >
-          Leave forces outside
+          {offer.noField ? 'Leave forces and marker outside' : 'Leave forces outside'}
         </Button>
       </div>
     </section>

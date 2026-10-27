@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Concealed No-Field free Discovery entry — 27 October 2026
+
+E3printed12 and supplied Advanced physical23/printed21 grant a separate
+next-turn-before-Storm move of non-advisor surrounding forces; E3p13 defines
+the location territory. Under standing recommended-option authority, compose
+that independent grant with E2FAQ10/supplied physical36 B's marker-as-one rule.
+An owned concealed marker may enter alone/mixed without materialization,
+spice, shipment or normal movement, preserving last-shipped identity and renewing
+its owner event. Existing storm/occupancy/advisor/order rules remain. No specific
+combined ruling or mandatory free-entry reveal was found; this is provisional,
+not an expansion of ordinary Force Movement timing. Private metadata stays off
+public arrival signatures. [Contract](DISCOVERY_PROTOTYPE.md#concealed-no-field-free-entry--27-october-2026).
+
 ## Discovery blow and concealed No-Field — 27 October 2026
 
 Publisher E3physical/printed12 and supplied Advanced physical23/printed21

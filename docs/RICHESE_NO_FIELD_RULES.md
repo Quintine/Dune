@@ -2,6 +2,29 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Free entry into a revealed Discovery location — 27 October 2026
+
+E3 printed12 and supplied Advanced physical23/printed21 grant a separate move
+before next-turn Storm: any number of non-advisor forces from the surrounding
+territory into the newly revealed location. E3p13 gives that location a separate
+territory. Compose the No-Field one-force rule (E2 FAQ10/supplied physical36 B)
+provisionally: an owned concealed marker can enter alone or with independently
+selected physical groups. No printed free-entry reveal requirement was found.
+Targeted publisher/designer searching found no dedicated combined ruling.
+
+The marker remains concealed, retains token inventory and last-shipped identity,
+and renews its owner event. No reserves materialize; no spice, ordinary shipment
+or movement is consumed. Physical counters and the marker are displayed and
+transferred separately, even for0. Existing source-storm, occupancy, advisor,
+entry-order and arrival-response rules remain. This is the Discovery move grant,
+not a new reading of the ordinary Force Movement window.
+
+Selection binds the current private token/event separately from the Discovery
+decision event. Pending arrivals keep private marker custody on the server;
+public arrival signatures carry only source and marker presence, not token ID,
+event or denomination. Physical-only frames retain their existing signature
+bytes. [Discovery contract](DISCOVERY_PROTOTYPE.md#concealed-no-field-free-entry--27-october-2026).
+
 ## Discovery spice-blow destruction — 27 October 2026
 
 Publisher E3 physical/printed12 and supplied Advanced physical23/printed21

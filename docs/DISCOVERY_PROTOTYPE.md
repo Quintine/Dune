@@ -5,6 +5,56 @@ partial rules coverage. It connects physical components, real actions, private
 controls, AI choices and saved continuation. Normal public Discovery and
 Advanced start gates, and the publication gate, remain closed.
 
+## Concealed No-Field free entry — 27 October 2026
+
+Publisher E3 printed12's independent next-turn entry grant, repeated in supplied
+Advanced physical23/printed21, permits any number of non-advisor forces from
+the surrounding territory before Storm/HMS movement. E3p13 defines the separate
+location territory. E2 FAQ10/supplied physical36 B count a concealed No-Field as
+one, including0. No specific combined answer or free-entry reveal requirement
+was found in targeted publisher/designer research. Marker entry is an explicit
+provisional composition, not an expansion of ordinary Force Movement timing.
+
+The current owner may select the marker alone or alongside exact normal/elite
+physical groups. Quote amount counts counters plus one marker; physical custody
+moves counters only. The marker moves concealed to sector0 and renews its event,
+retaining last-shipped identity and original reserves. It spends no spice,
+shipment or ordinary movement. Decline or physical-only selection leaves it
+unchanged. Existing source-storm/occupancy/advisor restrictions and original
+turn-opening order remain; the grant is not limited to the token's parent sector.
+
+Owner-only offers contain optional `{tokenId,event,source}` metadata. Decision
+packets retain the Discovery `event` and add `noField`/`noFieldEvent` separately.
+Pending arrivals bind that private metadata on the server; public arrival
+signatures include only marker presence/source. Existing child interactions keep
+the effective one-force presence without carrying token identity/owner event.
+Old physical-only signatures retain bytes. The entry panel selects the marker
+separately, gives persistent provisional guidance and uses the same adapter as
+minimal policies. [No-Field scope](RICHESE_NO_FIELD_RULES.md#free-entry-into-a-revealed-discovery-location--27-october-2026).
+
+### Scoped native evidence
+
+Frozen8-file union48/48, types/lint/build and nine original programmes pass.
+Public Basic/Advanced R/A/E+CHOAM sources opt Discoveries in before Ready/start.
+The actual first Hagga blow samples Cistern/Shrine supply at GaraKulon8; paid
+marker2, real Collection inspection/reveal and turn end create original entry.
+Mixed cases earn physical1turn1, marker5turn2 and Collection2 reveal before
+turn3 entry. Marker0/3/5, mixed1+5 and decline preserve reserves/history and actual
+computed ordinary allowances while resuming native Storm.
+
+Runtime records27 GameTable SSR,9 actual chooser renders,8 default-selected
+Move callbacks and1 Leave callback; source/further arrays497/9. Checkbox/number
+changes and browser hydration/navigation were not operated. Other controls use
+native packets. No played hand/purse/army/phase/marker/event/token/reveal or entry
+frame is installed. Controlled cases separately cover source/event/occupancy,
+public signature and physical-byte parity. Native BG reactions, wider modules,
+full modes and final recovery/privacy/custody/deployed acceptance remain open.
+V1's test allowance observation was corrected to actual owner-view computation;
+v2 uses one frozen source, followed by a three-document evidence overlay.
+Existing server HTTP200; no restart or saved-game/database operation.
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-discovery-no-field-entry-proof-v2/`;
+runtime: adjacent `20261027-discovery-no-field-entry-runtime/run-v2/`.
+
 ## Concealed No-Field at a Discovery blow — 27 October 2026
 
 Publisher E3 physical/printed12 and supplied Advanced physical23/printed21
@@ -712,7 +762,8 @@ choice discards any held card back to five.
 No-Field custody now recognizes the five known nested Discovery IDs at sector
 zero. This does not open an unrevealed location: declaration/commitment and
 materialization require the current revealed board. A concealed token is still
-one effective presence, not physical reserves or a source for free entry.
+one effective presence rather than physical reserves. The27October extension
+above separately admits an owned concealed marker to free entry.
 Its original value-zero/three/five reveal materializes only current reserve
 forces, once. The shipment controls label nested sector zero as inside the
 location rather than Polar Sink.

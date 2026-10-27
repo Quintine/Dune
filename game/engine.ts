@@ -13288,6 +13288,17 @@ function discoveryEntryIntegrity(g: Game) {
   requireRule(g.discoveryEnabled && g.discoveries && g.status === 'playing' && g.phase === 0 &&
     frame.stage !== 'complete', 'Discovery entry must finish before the Storm Phase begins.');
   nexusRule(() => validateDiscoveryEntryRound({...g, discoveries:g.discoveries!},frame));
+  if (frame.stage === 'arrival') {
+    const arrival = frame.arrival!, owner = getPlayer(g, arrival.owner), key = `${arrival.destination}:0`;
+    const physical = arrival.amount - Number(!!arrival.noField), marker = arrival.noField;
+    requireRule((owner.forces[key] ?? 0) === arrival.destinationBefore + physical &&
+      (owner.elites?.forces[key] ?? 0) === arrival.destinationEliteBefore + arrival.elite,
+      'The Discovery arrival has lost its transferred ordinary or elite force custody.');
+    if (marker) requireRule(owner.faction === 'richese' && owner.noField?.deployed?.tokenId === marker.tokenId &&
+      owner.noField.deployed.controller === owner.id && owner.noField.deployed.location.territory === arrival.destination &&
+      owner.noField.deployed.location.sector === 0 && !!owner.noFieldEvent && owner.noFieldEvent !== marker.event,
+      'The Discovery arrival has lost its transferred concealed No-Field.');
+  }
   const automatic = g.pendingAutomaticAdvisorRelocation;
   if (automatic?.receipt.kind === 'discovery') {
     requireRule(frame.stage === 'arrival' && !choices.length && !children.length,
@@ -13308,10 +13319,6 @@ function discoveryEntryIntegrity(g: Game) {
       choices[0].event === `${frame.event}:${frame.cursor}`, 'The Discovery entry has lost its owned choice.');
   } else {
     requireRule(!choices.length && children.length === 1, 'The Discovery entry has lost its pending arrival interaction.');
-    const arrival = frame.arrival!, owner = getPlayer(g, arrival.owner), key = `${arrival.destination}:0`;
-    requireRule(owner.forces[key] === arrival.destinationBefore + arrival.amount &&
-      (owner.elites?.forces[key] ?? 0) === arrival.destinationEliteBefore + arrival.elite,
-      'The Discovery arrival has lost its transferred ordinary or elite force custody.');
     for (const child of children) {
       requireRule(child.valid && child.actor === byFaction(g,'beneGesserit')?.id &&
         child.territory === frame.arrival!.destination && child.receipt,
@@ -13346,25 +13353,40 @@ function decideDiscoveryEntry(g: Game, p: Player, action: Action) {
   const frame = g.discoveryEntry;
   requireRule(frame && g.discoveries && typeof action.accept === 'boolean' &&
     action.event === `${frame.event}:${frame.cursor}` &&
-    Object.keys(action).every(key => ['type','event','accept','groups'].includes(key)),
-    'Choose the current Discovery entry and explicit physical force groups.');
+    Object.keys(action).every(key => ['type','event','accept','groups','noField','noFieldEvent'].includes(key)),
+    'Choose the current Discovery entry, physical groups and optional owned No-Field.');
   if (!action.accept) {
-    requireRule(action.groups === undefined, 'Declining Discovery entry must not select forces.');
+    requireRule(action.groups === undefined && action.noField === undefined && action.noFieldEvent === undefined,
+      'Declining Discovery entry must not select forces or a No-Field.');
     g.discoveryEntry = nexusRule(() => advanceDiscoveryEntry({...g,discoveries:g.discoveries!},frame,p.id));
     log(g, `${p.name} declined this optional free Discovery entry.`);
     continueDiscoveryEntry(g);
     return;
   }
+  const marker = action.noField === undefined && action.noFieldEvent === undefined ? undefined : (() => {
+    requireRule(p.noField?.deployed, 'Choose your currently deployed concealed No-Field.');
+    return {tokenId:stringField(action.noField),event:stringField(action.noFieldEvent),
+      source:location(p.noField.deployed.location.territory,p.noField.deployed.location.sector)};
+  })();
   g.discoveryEntry = nexusRule(() => beginDiscoveryEntryArrival({...g,discoveries:g.discoveries!},frame,p.id,
-    {groups:action.groups as DiscoveryEntrySelection['groups']}));
+    {groups:action.groups as DiscoveryEntrySelection['groups'],...(marker?{noField:marker}:{})}));
   const arrival = g.discoveryEntry.arrival!;
+  const physical = arrival.amount - Number(!!arrival.noField);
   const advisors = arrivalAsAdvisor(g,p,arrival.destination,arrival.parent);
   removeGroup(p,arrival.groups.map(group => [group.source,group.normal+group.elite]),
     Object.fromEntries(arrival.groups.map(group => [group.source,group.elite])));
-  place(p,arrival.destination,0,arrival.amount,arrival.elite);
+  if (arrival.noField) {
+    p.noField = noFieldRule(() => moveRicheseNoField(p.noField!,arrival.noField!.tokenId,
+      {territory:arrival.destination,sector:0}));
+    p.noFieldEvent = crypto.randomUUID();
+  }
+  if (physical) place(p,arrival.destination,0,physical,arrival.elite);
   if (advisors) (p.advisors ??= {})[arrival.destination] ??= {};
   else if (p.advisors) delete p.advisors[arrival.destination];
-  log(g, `${p.name} moved ${arrival.amount} ${arrival.amount === 1 ? 'force' : 'forces'}${arrival.elite ? `, including ${arrival.elite} elite ${arrival.elite === 1 ? 'force' : 'forces'},` : ''} from ${territory(arrival.parent).name} into ${territory(arrival.destination).name} before the storm. This one-time Discovery entry spends no spice or normal movement.`);
+  const group = arrival.noField
+    ? `${physical ? `${physical} physical ${physical === 1 ? 'force' : 'forces'} and ` : ''}one concealed No-Field`
+    : `${arrival.amount} ${arrival.amount === 1 ? 'force' : 'forces'}`;
+  log(g, `${p.name} moved ${group}${arrival.elite ? `, including ${arrival.elite} elite ${arrival.elite === 1 ? 'force' : 'forces'},` : ''} from ${territory(arrival.parent).name} into ${territory(arrival.destination).name} before the storm. This one-time Discovery entry spends no spice or normal movement.${arrival.noField ? ' Provisional marker entry preserves concealment, reserves and the last-shipment restriction.' : ''}`);
   const child: DiscoveryEntryArrivalChild = {owner:p.id,territory:arrival.destination,sector:0,
     amount:arrival.amount,elite:arrival.elite,discoveryEntry:arrival.signature};
   if (prepareRelocationAdvisorFlips(g, {kind:'discovery',player:p.id,origin:arrival.parent,

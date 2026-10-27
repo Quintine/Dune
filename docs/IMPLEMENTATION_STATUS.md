@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 27 October 2026 — No-Field free Discovery entry
+
+**No-Field free Discovery entry — 27 October. Prototyped / Partial.**
+An owned concealed marker may now enter a newly revealed location at the
+original next-turn opportunity, alone or with separately selected physical
+counters. It stays concealed, renews its event and retains token inventory,
+last-shipped identity and reserves. No spice, shipment or movement is consumed.
+Current private source/event and ordinary storm/occupancy/advisor rules remain.
+The chooser separates marker and counters, with persistent provisional guidance;
+minimal policies use the same adapter. Old physical-only signatures keep bytes.
+Public arrival signatures carry marker presence/source without its token ID or
+owner event. The combined grant remains explicitly provisional.
+[Source and contract](DISCOVERY_PROTOTYPE.md#concealed-no-field-free-entry--27-october-2026).
+
+Frozen **8-file union, 48/48**, types/lint/build and nine original programmes
+pass. Actual public Basic/Advanced R/A/E+CHOAM starts opt Discoveries in before
+Ready/start. The original Hagga Discovery samples an original Cistern/Shrine
+supply face at GaraKulon8. Paid marker2, actual Collection inspection/reveal,
+Mentat and next-turn entry earn the offer. Mixed cases first ship physical1 on
+turn1, marker5 on turn2, then reveal in Collection2 before turn3 entry.
+
+Runtime records27 GameTable SSR,9 actual chooser SSR,8 actual default-selected
+Move callbacks and1 Leave callback; source/further arrays497/9. Marker0/3/5,
+both modes, mixed1+5 and decline resume native Storm with actual computed action
+allowances unchanged. Checkbox/number-input changes, browser hydration/navigation
+and native BG reaction journeys were not operated. Other source controls use
+native packets. No played hand, purse, army, phase, marker/event, token, reveal
+or entry frame is installed. Controlled cases separately cover stale metadata,
+source/occupancy boundaries and public-signature/legacy-byte composition.
+
+V1 type feedback repaired the test's computed movement-allowance observation;
+v2 repeats frozen checks/runtime using each actual owner view. Failed v1 is
+preserved. Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-discovery-no-field-entry-proof-v2/`;
+journeys/HTML: adjacent `20261027-discovery-no-field-entry-runtime/run-v2/`.
+Only a recorded three-document evidence overlay follows verification. Existing
+server HTTP200, no restart or saved-game/database operation. Broader combinations,
+complete modes and final rules/recovery/privacy/custody/browser/deployed
+acceptance remain open.
+
 ## 27 October 2026 — Discovery blow with concealed No-Field
 
 **Discovery blow / No-Field — 27 October. Prototyped / Partial.**
