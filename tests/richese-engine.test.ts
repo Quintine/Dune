@@ -325,7 +325,7 @@ void test('restored full hands automatically submit zero or remove an unbid cach
   assert.equal(g.players[0].spice, 22);
   assert.equal(g.players[0].hand.length, 4);
   assert.ok(
-    g.log.some((entry) => entry.text.includes('automatically submitted zero')),
+    g.log.some((entry) => entry.text.includes('automatically submitted a sealed bid')),
   );
   let unbid = cache();
   for (const id of ['h', 'e', 'r']) unbid = bid(unbid, id, 0);

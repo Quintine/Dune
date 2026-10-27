@@ -430,7 +430,7 @@ export function Truthtrance({
                   </>
                 ) : w.question!.kind === 'richeseBid' ? (
                   <>
-                    <p className="notice">Yes requires a qualifying bid in your one remaining Once Around opportunity while possible. No forbids a qualifying bid. Winning still requires payment.</p>
+                    <p className="notice">Yes requires a qualifying bid in your one remaining opportunity while possible. No forbids a qualifying bid. Silent amounts remain sealed until all submit; winning still requires payment.</p>
                     {(g.truthRicheseBidAnswers ?? []).map(answer => <div key={answer}>
                       {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'I don’t know'}`, { type: 'truthAnswer', answer })}
                     </div>)}
@@ -598,7 +598,7 @@ export function Truthtrance({
                   <option value="revival">Bind ordinary force revivals this turn</option>
                   <option value="bid">Bind a bid in this ordinary lot</option>
                   <option value="phaseBid">Bind a bid this Bidding phase</option>
-                  <option value="richeseBid">Bind a bid in this Once Around lot</option>
+                  <option value="richeseBid">Bind a bid in this Richese lot</option>
                   <option value="mixedBid">Combine current facts and ordinary bids</option>
                   <option value="traitorCall">Bind this battle’s Traitor declaration</option>
                   <option value="mixedTraitorCall">Combine current facts and this Traitor declaration</option>
@@ -744,9 +744,9 @@ export function Truthtrance({
                 </>
               ) : kind === 'richeseBid' ? (
                 <>
-                  <RicheseBidPromiseFields minimum={bidMinimum} onMinimum={setBidMinimum} disabled={busy || !g.richeseAuction} />
-                  {!g.truthRicheseBidTargets.includes(target) && <p className="notice">Choose a bidder with a remaining Once Around opportunity.</p>}
-                  <p className="notice" aria-label="Public Once Around bid question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
+                  <RicheseBidPromiseFields minimum={bidMinimum} onMinimum={setBidMinimum} disabled={busy || !g.richeseAuction} method={g.richeseAuction?.method === 'silent' ? 'silent' : 'onceAround'} />
+                  {!g.truthRicheseBidTargets.includes(target) && <p className="notice">Choose a bidder with a remaining Richese auction opportunity.</p>}
+                  <p className="notice" aria-label="Public Richese bid question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
               ) : kind === 'phaseBid' ? (
                 <>

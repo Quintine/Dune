@@ -20,6 +20,17 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Richese Silent Truthtrance bid — 27 October. Prototyped / Partial.**
+The event-bound Richese question also supports one sealed Silent submission.
+Yes requires a qualifying bid; No permits zero or a lower bid. Feasibility uses
+only the respondent's unsubmitted opportunity, hand and available funding, not
+other sealed amounts. Forced zero from a full hand releases an impossible Yes
+or completes No; its public notice no longer reveals the zero before reveal.
+Ten focused files pass 85/85 and the build passes. Type/lint passed before the
+final test-only wording correction. Stateful browser and deployed play remain
+unverified.
+[Scope and provisional interpretation](TRUTHTRANCE_BID_PROMISES.md#richese-silent-bid-prototype--27-october-2026).
+
 **Richese Once Around Truthtrance bid — 27 October. Prototyped / Partial.**
 A player can answer a minimum-bid question bound to the current public Once
 Around lot, then use a private guide for the original bid or pass. The real

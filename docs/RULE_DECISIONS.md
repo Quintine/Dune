@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Richese Silent bid Truthtrance — 27 October 2026
+
+Provisionally allow an event-bound minimum for the respondent's single sealed
+Silent bid. Zero declines; other players' concealed amounts are not considered
+when quoting the answer. Keep native funding, escrow, reveal and automatic
+full-hand behavior. The FAQ authorizes current-turn action commitments while
+possible but does not prescribe this sealed-auction implementation. Normal
+Black Market and combined commitments retain separate boundaries. [Contract](TRUTHTRANCE_BID_PROMISES.md#richese-silent-bid-prototype--27-october-2026).
+
 ## Richese Once Around bid Truthtrance — 27 October 2026
 
 Provisionally allow an exact minimum-bid question for the one remaining Once

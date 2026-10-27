@@ -1,5 +1,26 @@
 # Truthtrance ordinary bid commitments
 
+## Richese Silent bid prototype — 27 October 2026
+
+**Prototyped / Partial.** The existing event-bound Richese minimum-bid question
+also applies to the respondent's one unsubmitted Silent bid. A qualifying
+positive sealed bid fulfills Yes; No permits zero or a bid below the threshold.
+The answer and guide use only the respondent's actual available funds and aid,
+not other sealed amounts. All eligible submissions retain native escrow and
+reveal simultaneously in original tie order; only the winner pays. When a hand
+becomes full, the native automatic zero releases an impossible Yes or completes
+No. Its public text and action tag do not announce the amount before reveal.
+
+The [GF9 November 2020 FAQ p8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=8)
+supports action commitments while possible, but does not supply this specific
+sealed-auction procedure. This remains a provisional interpretation. Normal
+Black Market bidding, mixed questions and wider combined promises remain open.
+Native Basic and Advanced R/A/E fixtures exercise original Silent lots, real
+Truth cards, zero, positive bids, reveal and minimal bot guides. Separate
+full-hand cases explicitly stage conserved unopened cards; selector/browser and
+deployed acceptance remain open. Ten focused files pass 85/85 and build passes;
+type/lint passed before the final test-only wording correction.
+
 ## Richese Once Around bid prototype — 27 October 2026
 
 **Prototyped / Partial.** The distinct `{kind:'richeseBid', target, turn, event,

@@ -16082,18 +16082,22 @@ function richeseBidRule<T>(run: () => T): T {
 }
 function richeseBidWindow(g: Game): boolean {
   return bidPromiseModeSupported({ ...g, semutaPreview: undefined }) && g.status === 'playing' && g.phase === 3 &&
-    !!g.richeseAuction && g.richeseAuction.method === 'onceAround' && !g.richeseAuction.outcome &&
+    !!g.richeseAuction && ['onceAround','silent'].includes(g.richeseAuction.method) && !g.richeseAuction.outcome &&
     !g.response && !g.decision && !g.phaseOpening && !g.pendingKarama && !g.pendingTreacheryDiscard;
 }
 function richeseBidOpportunity(g: Game, p: Player): RicheseBidOpportunity | null {
   const lot = g.richeseAuction;
   if (!lot || !richeseBidWindow(g) || !lot.eligible.includes(p.id) || lot.acted.includes(p.id) ||
       !richeseBidFitsHand(lot.source,lot.owner,p.id,p.hand.length,handLimit(p)) ||
-      (p.id === lot.owner && lot.active !== p.id && !lot.bidder) || lot.bid >= Number.MAX_SAFE_INTEGER) return null;
+      (lot.method === 'onceAround' && p.id === lot.owner && lot.active !== p.id && !lot.bidder) ||
+      (lot.method === 'onceAround' && lot.bid >= Number.MAX_SAFE_INTEGER)) return null;
+  // Silent submissions have no visible competing price; quote only the
+  // respondent's own funding and an unsubmitted positive bid.
+  const minimum = lot.method === 'silent' ? 1 : lot.bid + 1;
   const own = uncommittedSpice(g,p) + richeseOwnCommitment(lot,g.richeseFunding ?? {},p.id);
   const max = Math.min(Number.MAX_SAFE_INTEGER,own + (aidFor(g,p)?.amount ?? 0));
-  if (!Number.isSafeInteger(max) || max < lot.bid + 1) return null;
-  return {turn:g.turn,event:lot.event,player:p.id,minimum:lot.bid + 1,maximum:max};
+  if (!Number.isSafeInteger(max) || max < minimum) return null;
+  return {turn:g.turn,event:lot.event,player:p.id,minimum,maximum:max};
 }
 function richeseBidOtherPromises(g: Game, p: Player): boolean {
   return liveShipmentPromises(g.shipmentPromises ?? [],p.id,g.turn).some(row => row.answer) ||
@@ -16129,7 +16133,7 @@ function richeseBidTruthAnswers(g: Game, p: Player, claim: RicheseBidClaim): Tru
 }
 function bindRicheseBidTruth(g: Game,p: Player,claim: RicheseBidClaim,answer: boolean,asker: string) {
   requireRule(richeseBidTruthAnswers(g,p,claim).includes(answer ? 'yes' : 'no'),
-    'Choose an answer compatible with this Once Around bid.');
+    'Choose an answer compatible with this Richese auction bid.');
   (g.richeseBidPromises ??= []).push({...claim,id:crypto.randomUUID(),player:p.id,asker,answer});
 }
 function richeseBidIntegrity(g: Game) {
@@ -16152,10 +16156,11 @@ function reconcileRicheseBids(g: Game,voluntary?: {actor:string;action:Action}) 
 }
 function projectedRicheseBidGuide(g: Game, player: string): {action:Action} | null {
   const lot = g.richeseAuction, p = getPlayer(g,player);
-  if (!lot || lot.active !== player || g.truthtrance || !richeseBidWindow(g)) return null;
+  if (!lot || (lot.method === 'silent' ? Object.hasOwn(lot.sealed,player) : lot.active !== player) ||
+      g.truthtrance || !richeseBidWindow(g)) return null;
   const context = {turn:g.turn,event:lot.event,player}, live = liveRicheseBidPromises(g.richeseBidPromises ?? [],context);
   if (!live.length) return null;
-  if (!richeseBidRequired(live,context)) return {action:{type:'richeseBid',event:lot.event,amount:null,allyPayment:0,richeseBidPromiseId:live[0].id}};
+  if (!richeseBidRequired(live,context)) return {action:{type:'richeseBid',event:lot.event,amount:lot.method === 'silent' ? 0 : null,allyPayment:0,richeseBidPromiseId:live[0].id}};
   const opportunity = richeseBidOpportunity(g,p), range = opportunity && richeseBidCompletionRange(live,opportunity);
   if (!range) return null;
   const own = uncommittedSpice(g,p) + richeseOwnCommitment(lot,g.richeseFunding ?? {},player);
@@ -18550,6 +18555,13 @@ function finishAutomaticDecision(g: Game): boolean {
           ? active.id
           : null;
     if (full) {
+      if ((lot.method === 'onceAround' || lot.method === 'silent') && g.richeseBidPromises?.length) {
+        const context = {turn:g.turn,event:lot.event,player:full};
+        // Capacity loss forces a pass/zero. Release an impossible Yes first,
+        // then settle No against the automatic single declaration.
+        g.richeseBidPromises = richeseBidRule(() => reconcileRicheseBidPromises(g.richeseBidPromises!,context,null,'external'));
+        g.richeseBidPromises = richeseBidRule(() => recordRicheseBid(g.richeseBidPromises!,context,null));
+      }
       g.richeseAuction = submitRicheseBid(
         lot,
         {
@@ -18569,8 +18581,8 @@ function finishAutomaticDecision(g: Game): boolean {
       const player = getPlayer(g, full);
       log(
         g,
-        `${player.name} automatically ${lot.method === 'silent' ? 'submitted zero' : 'passed'} because their hand became full before bidding.`,
-        { faction: player.faction, name: 'Full hand: no bid' },
+        `${player.name} automatically ${lot.method === 'silent' ? 'submitted a sealed bid' : 'passed'} because their hand became full before bidding.`,
+        { faction: player.faction, name: lot.method === 'silent' ? 'Full hand: sealed submission' : 'Full hand: no bid' },
       );
       if (lot.method === 'silent' && g.richeseAuction.outcome)
         log(
@@ -39207,7 +39219,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     const guide = projectedRicheseBidGuide(state,id);
     requireRule(guide && Object.keys(action).sort().join(',') === Object.keys(guide.action).sort().join(',') &&
       Object.keys(guide.action).every(key => action[key] === guide.action[key]),
-    'This Once Around bid guide is stale or belongs to another lot.');
+    'This Richese bid guide is stale or belongs to another lot.');
   }
   const g = applyActionInner(state, id, action);
   if (state.phase === 3 && liveTurnActionPromises(state.turnActionPromises ?? [], id, state.turn).some(row => {
@@ -42432,9 +42444,9 @@ function applyActionInner(
       if (parties.richeseSaleAmount !== undefined)
         checkBureaucratContributors(g,byFaction(g,'emperor')?.id,[{payer:lot.owner,amount:allyPayment}]);
     }
-    if (lot.method === 'onceAround' && g.richeseBidPromises?.length)
+    if ((lot.method === 'onceAround' || lot.method === 'silent') && g.richeseBidPromises?.length)
       g.richeseBidPromises = richeseBidRule(() => recordRicheseBid(g.richeseBidPromises!,
-        {turn:g.turn,event:lot.event,player:p.id},amount));
+        {turn:g.turn,event:lot.event,player:p.id},lot.method === 'silent' && amount === 0 ? null : amount));
     g.richeseAuction = submitRicheseBid(
       lot,
       { event: stringField(action.event), actor: p.id, amount },

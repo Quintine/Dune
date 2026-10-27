@@ -45,8 +45,8 @@ for (const advanced of [false, true]) void test(
     const declared = declareTruthRicheseBid(f, source);
     const asker = viewGame(declared, f.asker);
     assert.ok(asker.truthRicheseBidTargets.includes(f.target));
-    assert.match(truth(asker), /<option value="richeseBid">Bind a bid in this Once Around lot<\/option>/);
-    assert.match(table(asker), /Bind a bid in this Once Around lot/);
+    assert.match(truth(asker), /<option value="richeseBid">Bind a bid in this Richese lot<\/option>/);
+    assert.match(table(asker), /Bind a bid in this Richese lot/);
     // Server rendering does not operate the stateful question selector; the
     // original question is submitted through the real engine fixture.
     const asked = askTruthRicheseBid(f, f.target, 4, source);

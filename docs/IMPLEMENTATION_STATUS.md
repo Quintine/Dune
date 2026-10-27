@@ -1,5 +1,20 @@
 # Dune implementation status
 
+## 27 October 2026 — Richese Silent bid Truthtrance
+
+Extend the current public-event bid question to a single sealed Silent
+submission. Zero is the native decline, not an invented pass; Yes and No use
+only the respondent's own funds, committed aid and unsubmitted opportunity.
+Original escrow, tie order and simultaneous reveal remain native. A forced
+full-hand zero releases an impossible Yes or completes No, and its automatic
+public text and tag now remain amount-neutral until reveal. The general FAQ
+supports turn-action commitments but does not prescribe this specific protocol;
+it remains provisional. Normal Black Market and broader combinations remain
+open. Ten focused files pass 85/85 and build passes; type/lint passed before
+the final test-only wording correction. Private proof records are
+`20261027-richese-silent-truth-proof-v1/` and `20261027-richese-silent-truth-proof-v3/`.
+[Contract](TRUTHTRANCE_BID_PROMISES.md#richese-silent-bid-prototype--27-october-2026).
+
 ## 27 October 2026 — Richese Once Around bid Truthtrance
 
 Connect a separate current-lot minimum-bid question and owner-only receipt and

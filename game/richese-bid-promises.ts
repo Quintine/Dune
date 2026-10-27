@@ -1,4 +1,4 @@
-/** One future declaration in the exact public Richese Once Around lot.
+/** One future declaration in the exact public Richese Once Around or Silent lot.
  * The engine owns native eligibility, timing, hand capacity and funding. */
 export type RicheseBidClaim = { turn: number; event: string; minimum: number };
 export type RicheseBidPromise = RicheseBidClaim & {
@@ -24,7 +24,7 @@ const identifier = (value: unknown): value is string =>
 
 export function parseRicheseBidClaim(value: unknown): RicheseBidClaim {
   if (!value || typeof value !== 'object' || Array.isArray(value))
-    throw new RicheseBidPromiseError('Choose a current Once Around bid question.');
+    throw new RicheseBidPromiseError('Choose a current Once Around or Silent bid question.');
   const input = value as Record<string, unknown>;
   if (!positive(input.turn) || !identifier(input.event) || !positive(input.minimum))
     throw new RicheseBidPromiseError('Choose the current turn, auction event and a positive whole bid minimum.');
@@ -32,7 +32,7 @@ export function parseRicheseBidClaim(value: unknown): RicheseBidClaim {
 }
 
 export function richeseBidClaimText(claim: RicheseBidClaim): string {
-  return `place a bid of at least ${claim.minimum} spice in this Once Around auction`;
+  return `place a bid of at least ${claim.minimum} spice in this Richese auction`;
 }
 
 function checkContext(context: RicheseBidContext): void {
@@ -42,7 +42,7 @@ function checkContext(context: RicheseBidContext): void {
 function checkOpportunity(opportunity: RicheseBidOpportunity): void {
   checkContext(opportunity);
   if (!positive(opportunity.minimum) || !positive(opportunity.maximum) || opportunity.minimum > opportunity.maximum)
-    throw new RicheseBidPromiseError('Retain an actual funded Once Around bid interval.');
+    throw new RicheseBidPromiseError('Retain an actual funded Once Around or Silent bid interval.');
 }
 function sameContext(a: RicheseBidContext, b: RicheseBidContext): boolean {
   return a.turn === b.turn && a.event === b.event && a.player === b.player;
@@ -74,7 +74,7 @@ export function richeseBidRequired(promises: readonly RicheseBidPromise[], conte
 }
 
 /** Call inside the detached engine transaction immediately before its native
- * bid/pass validation. A Once Around actor receives one declaration only; a
+ * bid/pass validation. A Once Around or Silent actor receives one declaration only; a
  * small bid cannot rely on a later turn. The native action owns the actual
  * bid amount, funding, eligibility, hand space and event validity. */
 export function recordRicheseBid<T extends RicheseBidPromise>(promises: readonly T[], context: RicheseBidContext,
@@ -107,7 +107,7 @@ export function reconcileRicheseBidPromises<T extends RicheseBidPromise>(promise
   const range = opportunity ? richeseBidAllowedRange(promises, opportunity) : null;
   const impossible = live.filter(row => row.answer && (!range || row.minimum > range.maximum));
   if (impossible.length && change === 'voluntary')
-    throw new RicheseBidPromiseError('This action would remove your last funded Once Around bid opportunity.');
+    throw new RicheseBidPromiseError('This action would remove your last funded Once Around or Silent bid opportunity.');
   return promises.map(row => impossible.includes(row) ? { ...row, released: true } : row);
 }
 
@@ -128,7 +128,7 @@ export function finishRicheseBidLot<T extends RicheseBidPromise>(promises: reado
 /** The public lot event is intentionally shared by multiple questions. */
 export function validateRicheseBidPromises(promises: readonly RicheseBidPromise[], players: readonly string[]): void {
   if (!Array.isArray(promises) || !Array.isArray(players))
-    throw new RicheseBidPromiseError('The Once Around bid commitment record is invalid.');
+    throw new RicheseBidPromiseError('The Once Around or Silent bid commitment record is invalid.');
   const receipts = new Set<string>();
   for (const row of promises) {
     parseRicheseBidClaim(row);
@@ -136,7 +136,7 @@ export function validateRicheseBidPromises(promises: readonly RicheseBidPromise[
       !players.includes(row.asker) || row.player === row.asker || typeof row.answer !== 'boolean' ||
       (row.fulfilled !== undefined && typeof row.fulfilled !== 'boolean') ||
       (row.released !== undefined && typeof row.released !== 'boolean') || row.fulfilled && row.released)
-      throw new RicheseBidPromiseError('The Once Around commitment lost its receipt, original lot or participants.');
+      throw new RicheseBidPromiseError('The Once Around or Silent commitment lost its receipt, original lot or participants.');
     receipts.add(row.id);
   }
 }

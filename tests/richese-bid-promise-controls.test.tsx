@@ -18,13 +18,13 @@ function edit(props: Parameters<typeof RicheseBidPromiseFields>[0], minimum: num
   assert.ok(input);
   (input.props.onChange as (event: { currentTarget: { valueAsNumber: number } }) => void)({ currentTarget: { valueAsNumber: minimum } });
 }
-function projected(type: 'bid' | 'pass' = 'bid'): { props: RicheseBidPromisePanelProps; sent: Action[] } {
+function projected(type: 'bid' | 'pass' | 'zero' = 'bid'): { props: RicheseBidPromisePanelProps; sent: Action[] } {
   const sent: Action[] = [];
   const props: RicheseBidPromisePanelProps = {
     promises: [{ id: 'receipt-1', turn: 2, event: 'lot-1', minimum: 4, answer: type === 'bid' }],
     guide: { action: { type: 'richeseBid', event: 'lot-1', richeseBidPromiseId: 'receipt-1',
-      amount: type === 'bid' ? 4 : null, allyPayment: 0 } },
-    game: { turn: 2, richeseAuction: { event: 'lot-1' } }, busy: false,
+      amount: type === 'bid' ? 4 : type === 'zero' ? 0 : null, allyPayment: 0 } },
+    game: { turn: 2, richeseAuction: { event: 'lot-1', method: type === 'zero' ? 'silent' : 'onceAround' } }, busy: false,
     act(action) { sent.push(action); },
   };
   return { props, sent };
@@ -84,5 +84,33 @@ void test('guide sends the exact server action and rejects busy, stale or comple
   assert.equal(RicheseBidPromiseGuide(props), null);
   props.promises[0].fulfilled = false;
   props.game.turn = 3;
+  assert.equal(RicheseBidPromiseGuide(props), null);
+});
+
+void test('Silent question and private receipt explain sealed submissions without showing lot or receipt identifiers', () => {
+  const fields = renderToStaticMarkup(createElement(RicheseBidPromiseFields, {
+    minimum: 4, disabled: false, method: 'silent', onMinimum() {},
+  }));
+  assert.match(fields, /Silent auction/);
+  assert.match(fields, /unsubmitted sealed bid/);
+  assert.match(fields, /submitted amounts remain private until bids are revealed/);
+  const { props } = projected('zero');
+  const panel = renderToStaticMarkup(createElement(RicheseBidPromisePanel, props));
+  assert.match(panel, /Your Silent bid promises/);
+  assert.match(panel, /Submit zero spice while honoring your answer/);
+  assert.match(panel, /Your submitted amount remains private until all bids are revealed/);
+  assert.doesNotMatch(panel, /receipt-1|lot-1/);
+});
+
+void test('Silent zero guide submits the exact quoted action and refuses a stale event', () => {
+  const { props, sent } = projected('zero');
+  const button = RicheseBidPromiseGuide(props); assert.ok(button);
+  button.props.onClick();
+  assert.deepEqual(sent, [props.guide!.action]);
+  assert.equal(sent[0].amount, 0);
+  const stale = RicheseBidPromiseGuide(props); assert.ok(stale);
+  props.game.richeseAuction!.event = 'later-lot';
+  stale.props.onClick();
+  assert.equal(sent.length, 1);
   assert.equal(RicheseBidPromiseGuide(props), null);
 });

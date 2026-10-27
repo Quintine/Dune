@@ -28,7 +28,7 @@ void test('claims retain only a safe integer turn, public lot event and positive
     assert.throws(() => parseRicheseBidClaim(value), RicheseBidPromiseError);
   const text = richeseBidClaimText({ turn: 2, event: 'public-lot', minimum: 6 });
   assert.match(text, /bid of at least 6 spice/);
-  assert.match(text, /Once Around/);
+  assert.match(text, /Richese auction/);
   assert.doesNotMatch(text, /win|purchase|public-lot/);
 });
 

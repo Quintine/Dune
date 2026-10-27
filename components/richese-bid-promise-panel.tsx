@@ -15,7 +15,7 @@ export type RicheseBidPromiseReceipt = {
 export type RicheseBidPromisePanelProps = {
   promises: RicheseBidPromiseReceipt[];
   guide: { action: Action } | null;
-  game: { turn: number; richeseAuction: { event: string } | null };
+  game: { turn: number; richeseAuction: { event: string; method?: 'onceAround' | 'silent' | 'normal' } | null };
   act: (action: Action) => void;
   busy: boolean;
 };
@@ -40,7 +40,9 @@ export function RicheseBidPromiseGuide(props: RicheseBidPromisePanelProps) {
     disabled={!canAct()} onClick={() => { if (canAct()) props.act(action); }}>
     {typeof action.amount === 'number' && action.amount > 0
       ? `Bid ${action.amount} spice while honoring your answer`
-      : 'Pass this lot while honoring your answer'}
+      : action.amount === 0
+        ? 'Submit zero spice while honoring your answer'
+        : 'Pass this lot while honoring your answer'}
   </Button>;
 }
 
@@ -49,15 +51,18 @@ export function RicheseBidPromisePanel(props: RicheseBidPromisePanelProps) {
   if (!props.promises.length) return null;
   const waiting = props.promises.some(promise => promise.turn === props.game.turn &&
     promise.event === props.game.richeseAuction?.event && !promise.fulfilled && !promise.released);
-  return <section className="notice space-y-3" aria-label="Your Richese Once Around bid promises">
-    <h3>Your Once Around bid promises</h3>
+  const silent = props.game.richeseAuction?.method === 'silent';
+  const auction = silent ? 'Silent' : 'Once Around';
+  return <section className="notice space-y-3" aria-label={`Your Richese ${auction} bid promises`}>
+    <h3>Your {auction} bid promises</h3>
     <ul>{props.promises.map(promise => <li key={promise.id}>
-      Turn {promise.turn}: You answered {promise.answer ? 'Yes' : 'No'} to bidding at least {promise.minimum} spice in this Once Around lot.
+      Turn {promise.turn}: You answered {promise.answer ? 'Yes' : 'No'} to bidding at least {promise.minimum} spice in this Richese lot.
       {promise.released ? ' Released: this commitment is no longer possible.'
         : promise.fulfilled ? ' Fulfilled: this commitment is complete.' : ' This answer is binding for your remaining opportunity.'}
     </li>)}</ul>
     <p>Yes requires a qualifying bid while possible. No forbids a qualifying bid.
-      The original auction order and payment rules still apply.</p>
+      The original auction and payment rules still apply.
+      {silent && ' Your submitted amount remains private until all bids are revealed.'}</p>
     {waiting && <RicheseBidPromiseGuide {...props} />}
   </section>;
 }
