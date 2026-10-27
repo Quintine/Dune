@@ -63,20 +63,20 @@ for (const advanced of [false, true]) {
   void test(`${band} Ecaz-held Duke may transfer to its ally while same-recipient acquisition remains a no-op refusal`, () => {
     const g = position(advanced); g.dukeVidal = acquireDuke(g.dukeVidal!, 'ec', 1, 'ecaz');
     const oldReason = block(g, 'ec');
-    assert.equal(oldReason, 'Acquiring Duke Vidal when Ecaz already controls him is still being implemented.');
+    assert.equal(oldReason, 'Ecaz already controls Duke Vidal through its Ambassador.');
     assert.throws(() => quote(g, 'ec'), error => error instanceof EcazDukeAcquisitionError && error.reason === 'alreadyControlled');
     const shared = quote(g, 'ec', 'al'); assert.equal(shared.controller, 'al'); assert.equal(shared.source, 'ecaz');
     g.dukeVidal = shared; const before = structuredClone(g);
-    assert.equal(block(g, 'ec', 'al'), 'The chosen beneficiary already controls Duke Vidal.');
+    assert.equal(block(g, 'ec', 'al'), 'The chosen beneficiary already controls Duke Vidal through the Ambassador.');
     assert.throws(() => quote(g, 'ec', 'al'), error => error instanceof EcazDukeAcquisitionError && error.reason === 'alreadyControlled');
     assert.deepEqual(g, before);
     // Public same-controller descriptors do not vary with a private capture or
     // Ghola marker. They confer no permission to transfer that custody.
     g.dukeVidal.leader.capturedBy = 'g';
-    assert.equal(block(g, 'ec', 'al'), 'The chosen beneficiary already controls Duke Vidal.');
+    assert.equal(block(g, 'ec', 'al'), 'The chosen beneficiary already controls Duke Vidal through the Ambassador.');
     rejected(g, 'ec', 'ec');
     delete g.dukeVidal.leader.capturedBy; g.dukeVidal.leader.gholaBy = 'g';
-    assert.equal(block(g, 'ec', 'al'), 'The chosen beneficiary already controls Duke Vidal.');
+    assert.equal(block(g, 'ec', 'al'), 'The chosen beneficiary already controls Duke Vidal through the Ambassador.');
     rejected(g, 'ec', 'ec');
   });
 }

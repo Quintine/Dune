@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Ecaz Ambassador same-recipient Duke tenure — 27 October 2026
+
+Provisionally let a fresh eligible Ambassador grant change the current
+recipient's other temporary tenure to ordinary until-battle Ecaz tenure,
+preserving the one physical disc and its prior use. An existing identical
+ordinary tenure remains redundant. Advanced Harkonnen same-holder cases stay
+uniformly blocked to avoid exposing concealed capture. The printed grant and
+ally-sharing rules do not give a worked example of this composition.
+[Scope](ECAZ_DUKE_ACQUISITION.md#same-recipient-temporary-tenure--27-october-2026).
+
 ## Ixian stronghold route spice choices — 27 October 2026
 
 Provisionally let Ixians choose a whole amount from zero through the existing

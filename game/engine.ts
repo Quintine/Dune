@@ -25122,7 +25122,7 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
       g.dukeVidal = acquiredDuke;
       log(
         g,
-        `${beneficiary.name} acquired Duke Prad Vidal${previous ? ` from ${getPlayer(g, previous).name}` : ''} through the Ecaz Ambassador. ${beneficiary.name} keeps the shared Duke until battle use or another rule takes him away; the entrant’s remaining actions resume.`,
+        `${beneficiary.name} ${previous === beneficiary.id ? 'renewed control of' : 'acquired'} Duke Prad Vidal${previous && previous !== beneficiary.id ? ` from ${getPlayer(g, previous).name}` : ''} through the Ecaz Ambassador. ${beneficiary.name} keeps the shared Duke until battle use or another rule takes him away; the entrant’s remaining actions resume.`,
         { faction: owner.faction, name: 'Ecaz Ambassador — Duke Vidal' },
       );
       finishAmbassador(g);

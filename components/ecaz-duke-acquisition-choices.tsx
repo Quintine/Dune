@@ -41,8 +41,9 @@ export function EcazDukeAcquisitionChoices({
       <p className="m-0 text-sm leading-6" aria-label="Provisional shared Duke tenure">
         Provisional ordinary acquisition: the chosen recipient keeps Duke Vidal
         until battle use, including when unused beyond this turn, unless another
-        rule takes him away. The separate Duke loan after a new alliance lasts
-        for the current turn. Only Ecaz may revive him.
+        rule takes him away. A recipient holding him under a different temporary
+        tenure can renew that control with the Ambassador. The separate Duke
+        loan after a new alliance lasts for the current turn. Only Ecaz may revive him.
       </p>
       {recipients.map((recipient) => {
         const blocked = recipient.blocked;

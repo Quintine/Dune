@@ -192,11 +192,11 @@ void test('pure source/canonical identity/custody checks reject safely, with one
     EcazDukeAcquisitionError,
   );
 });
-void test('same-owner and Advanced Harkonnen cases remain explicitly unfinished without private reason variation', () => {
+void test('redundant same-owner and Advanced Harkonnen cases keep public reasons independent of private custody', () => {
   const own = fixture();
   own.dukeVidal = acquireDuke(own.dukeVidal!, 'ec', 1, 'ecaz');
   const reason = ecazDukeAcquisitionBlock(own, 'ec');
-  assert.match(reason!, /still being implemented/);
+  assert.match(reason!, /already controls Duke Vidal through its Ambassador/);
   own.dukeVidal.leader.capturedBy = 'in';
   assert.equal(ecazDukeAcquisitionBlock(own, 'ec'), reason);
   const hark = fixture('harkonnen', true);

@@ -20,6 +20,14 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Ecaz same-recipient Duke tenure — 27 October. Prototyped / Partial.** A fresh
+eligible Ambassador can provisionally convert its current recipient's other
+temporary Duke tenure to the ordinary until-battle tenure, preserving the
+one physical disc and prior usage. An identical ordinary tenure stays
+redundant; Advanced Harkonnen same-holder cases remain uniformly guarded.
+Full combinations and deployed acceptance remain open.
+[Scope](ECAZ_DUKE_ACQUISITION.md#same-recipient-temporary-tenure--27-october-2026).
+
 **Ixian stronghold route collection choices — 27 October. Prototyped / Partial.**
 Players can provisionally choose the amount collected from each visited
 sector, within the current physical-pile and Ixian-force cap. The original

@@ -11,7 +11,7 @@ export type EcazDukeContext = Omit<Partial<FactionModuleProfile>, 'players'> & {
   players: readonly { id: string; faction: FactionId; ally?: string | null }[];
   dukeVidal?: DukeState;
 };
-type Failure = 'context' | 'custody' | 'table' | 'alreadyControlled';
+type Failure = 'context' | 'custody' | 'table' | 'alreadyControlled' | 'sameHolderTable';
 export class EcazDukeAcquisitionError extends Error {
   constructor(
     message: string,
@@ -32,9 +32,11 @@ const whole = (n: unknown): n is number =>
   Number.isSafeInteger(n) && (n as number) >= 0;
 const tableBlock =
   'Duke Vidal acquisition with Advanced Harkonnen is still being implemented.';
+const sameHolderTableBlock =
+  'Same-holder Duke acquisition with Advanced Harkonnen is not available in this preview.';
 const alreadyBlock =
-  'Acquiring Duke Vidal when Ecaz already controls him is still being implemented.';
-const allyAlreadyBlock = 'The chosen beneficiary already controls Duke Vidal.';
+  'Ecaz already controls Duke Vidal through its Ambassador.';
+const allyAlreadyBlock = 'The chosen beneficiary already controls Duke Vidal through the Ambassador.';
 const unavailable = 'Duke Vidal is unavailable for this acquisition.';
 
 /** Ordinary Ambassador acquisition for Ecaz or its current reciprocal ally.
@@ -91,15 +93,21 @@ export function quoteEcazDukeAcquisition(
       whole(duke.leader.deaths),
     'The shared Duke Vidal disc has invalid physical identity or history.',
   );
+  // Harkonnen may privately capture Duke without changing his public prior
+  // controller. Keep same-holder availability independent of that hidden
+  // custody until a public-safe capture continuation is implemented.
+  requireDuke(duke.controller !== recipientId || !g.advanced ||
+    !g.players.some(player => player.faction === 'harkonnen'),
+  sameHolderTableBlock, 'sameHolderTable');
+  // A direct Ambassador grant is already in force for this recipient. Other
+  // sources may be converted to this until-battle tenure without moving or
+  // recreating the disc. Check public tenure before private custody details.
+  requireDuke(duke.controller !== recipientId || duke.source !== 'ecaz',
+    recipientId === ownerId ? alreadyBlock : allyAlreadyBlock, 'alreadyControlled');
   requireDuke(
     !duke.leader.concealed,
     'Duke Vidal cannot be acquired from unresolved concealed custody.',
   );
-  // This explicit unfinished case is public controller information. Check it
-  // before private capture/ghola details so its projected reason cannot vary
-  // with an undisclosed custody marker.
-  requireDuke(duke.controller !== recipientId,
-    recipientId === ownerId ? alreadyBlock : allyAlreadyBlock, 'alreadyControlled');
   requireDuke(
     duke.controller === null
       ? duke.acquiredTurn === null && duke.source === null
@@ -131,6 +139,7 @@ export function ecazDukeAcquisitionBlock(
   } catch (error) {
     if (error instanceof EcazDukeAcquisitionError) {
       if (error.reason === 'table') return tableBlock;
+      if (error.reason === 'sameHolderTable') return sameHolderTableBlock;
       if (error.reason === 'alreadyControlled')
         return recipientId === ownerId ? alreadyBlock : allyAlreadyBlock;
     }

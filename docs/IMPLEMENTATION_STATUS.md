@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 27 October 2026 — Ecaz same-recipient Duke tenure
+
+A fresh eligible Ecaz Ambassador grant can provisionally convert a current
+recipient's other temporary Duke tenure to the ordinary until-battle tenure,
+without creating a disc or resetting its battle history. Already-ordinary
+tenure remains redundant; Advanced Harkonnen same-holder cases are guarded.
+Full combinations and deployed acceptance remain open.
+[Scope](ECAZ_DUKE_ACQUISITION.md#same-recipient-temporary-tenure--27-october-2026).
+
 ## 27 October 2026 — Ixian stronghold route collection choices
 
 The Hidden Mobile Stronghold's route editor supports provisionally selected
