@@ -343,10 +343,29 @@ function gholaThresholdBattle(normal = 1) {
   return { g, card: card.id };
 }
 
-void test('unsupported Ghola crossing of Salusa during battle rejects before and after a sealed paid-star plan without corrupting the saved decision', () => {
+void test('Ghola can raise Salusa before battle commitments and the same battle uses current free Sardaukar support', () => {
+  const { g: before, card } = gholaThresholdBattle();
+  assert.equal(homeworldSardaukarGholaBlock(before, 'e'), null);
+  assert.equal(viewGame(before, 'e').ghola.eliteRemaining, 1);
+  const done = applyAction(before, 'e', { type: 'card', card, amount: 1, elite: 1 });
+  assert.equal(done.homeworlds!.custody!.salusa!.elite, 2);
+  assert.equal(emperor(done).elites!.tanks, 0);
+  assert.equal(emperor(done).elites!.revived, 1);
+  assert.equal(done.discard.filter((held) => held.id === card).length, 1);
+  assert.equal(viewGame(done, 'e').battle!.ownForces!.eliteFreeSupport, true);
+  assert.equal(viewGame(done, 'e').battle!.ownForces!.elite, 3);
+  assert.equal(emperor(done).spice, 3);
+  const resolved = resolve(done, 6);
+  assert.equal(emperor(resolved).forces['arrakeen:10'], 1);
+  assert.equal(emperor(resolved).spice, 5, 'Only automatic Arrakeen collection adds spice.');
+  assert.equal(resolved.homeworlds!.custody!.salusa!.elite, 2);
+  inventory(resolved);
+});
+
+void test('the remaining Salusa preview guard protects a sealed paid-star plan until its actual battle completes', () => {
   const { g: before, card } = gholaThresholdBattle();
   const sealed = applyAction(before, 'e', plan(before, 6, 3));
-  for (const state of [before, sealed]) {
+  for (const state of [sealed]) {
     const g = reload(state);
     const reason = homeworldSardaukarGholaBlock(g, 'e');
     assert.ok(
@@ -395,9 +414,11 @@ void test('unsupported Ghola crossing of Salusa during battle rejects before and
   inventory(g);
 });
 
-void test('the temporary Salusa threshold gate leaves normal-force and eligible-leader Ghola choices available during battle', () => {
+void test('the Salusa commitment guard leaves normal-force and eligible-leader Ghola choices available during battle', () => {
   for (const kind of ['normal', 'leader'] as const) {
-    const { g: before, card } = gholaThresholdBattle();
+    const fixture = gholaThresholdBattle();
+    const before = applyAction(fixture.g, 'e', plan(fixture.g, 6, 3));
+    const card = fixture.card;
     const player = emperor(before);
     let command: Action;
     let leaderId: string | undefined;
@@ -432,6 +453,24 @@ void test('the temporary Salusa threshold gate leaves normal-force and eligible-
       );
     inventory(done);
   }
+});
+
+void test('an opponent-only sealed plan keeps the remaining Salusa timing boundary visible before Emperor submits', () => {
+  const fixture = gholaThresholdBattle();
+  const g = applyAction(fixture.g, 'a', {
+    type: 'battlePlan', dial: 0, support: 0, leader: atreides(fixture.g).leaders[0].id,
+  });
+  assert.equal(g.battle!.plans.e, undefined);
+  assert.ok(g.battle!.plans.a);
+  const view = viewGame(g, 'e');
+  assert.deepEqual(view.battle!.plans, {});
+  assert.equal(view.ghola.eliteRemaining, 0);
+  assert.match(view.ghola.eliteBlock!, /not yet supported/);
+  const before = structuredClone(g);
+  assert.throws(() => applyAction(g, 'e', {
+    type: 'card', card: fixture.card, amount: 1, elite: 1,
+  }), /not yet supported/);
+  assert.deepEqual(g, before);
 });
 
 void test('Salusa threshold protection also preserves an answered Prescience dial before either full plan is sealed', () => {

@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Salusa Ghola commitment-free battle window — 27 October 2026
+
+Remove the whole-battle population-crossing restriction before any sealed plan,
+inspection answer or active battle promise. Actual revival raises current native
+Salusa population and the existing combat quote uses its new High free support;
+ordinary modal priorities and elite revival limits still apply. Retain the
+post-commitment guard as an unfinished preview boundary, not a publisher ban.
+The authorized PDF allows immediate Ghola/current population and separately
+requires dial/spice-compatible losses; it supplies no general refund, wasted
+support or sealed-plan rewrite. Its identified unofficial impossible-Prescience
+answer update supports a later continuation rather than bypassing those rules.
+[Source and boundary](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-before-battle-commitments--27-october-2026).
+
 ## Occupied Ecaz grant expiry during captivity — 27 October 2026
 
 Extend the selected provisional one-battle/turn/qualification tenure through

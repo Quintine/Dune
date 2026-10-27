@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 27 October 2026 — Commitment-free Salusa Ghola
+
+Remove the whole-battle threshold guard only before either sealed plan,
+inspection answer or active battle promise. A real Sardaukar return raises
+Salusa from one to two and current High free support applies in the same battle;
+the revived piece remains in native reserves. The later timing boundary stays
+explicit and provisional. No refunds, sealed-plan changes or weakened free
+stars are invented. [Source and evidence](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-before-battle-commitments--27-october-2026).
+
+Nine-file78/78, types/lint and a separate native runtime pass. An original public
+Advanced E/A/G base33/Homeworld51-action prefix earns an actual paid-star loss,
+then reaches another live uncommitted battle;5 continuation actions play Ghola,
+seal plans and finish both traitor calls. Eight GameTable SSR renders include
+an actual sealed-plan guard branch. Initial unopened card/Spice positions and
+native scalar lotteries alone are selected; no later played resource, phase,
+hand or battle receipt is installed. Stateful card/plan controls use native
+packets. Four minimal profiles supply legal plans after the real return.
+No build was repeated for the focused rule-helper change; no browser/mobile,
+native-Salusa battle, deployed, complete-mode or final assurance is certified.
+Private proof `20261027-salusa-ghola-proof-v1/` and runtime
+`20261027-salusa-ghola-runtime/run-v1/` are under the existing private checkpoint
+directory. Frozen tree `7d6408588870da018b93bc5a7208d19eb24a4050e023ce9eff3ac3c3227efbba`
+contains3350 files; final evidence overlays are limited to this log,
+`CURRENT_STATUS.md` and `HOMEWORLD_BENEFITS_RULES.md`.
+
 ## 27 October 2026 — Occupied Ecaz captive-tenure expiry
 
 Public deadline/entitlement loss retires only the original occupied grant while

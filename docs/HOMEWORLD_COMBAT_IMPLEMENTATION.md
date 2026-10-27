@@ -1,5 +1,9 @@
 # Homeworld combat foundation and Salusa support
 
+Current follow-up: [commitment-free Ghola](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-before-battle-commitments--27-october-2026)
+can raise Salusa during an ongoing battle. The older whole-battle restriction
+below is superseded only before commitments; later repricing remains guarded.
+
 9 September 2026. This extends the native-reserve runtime. Homeworld invasion and live off-planet battle actions remain unavailable; no start gate is opened.
 
 ## Connected Salusa behavior

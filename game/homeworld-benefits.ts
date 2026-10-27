@@ -1,6 +1,7 @@
 import type { Game } from './engine';
 import { homeworldContext } from './homeworld-game';
 import { homeworldPopulations } from './homeworld-population';
+import { committedPlanElements } from './battle-inspections';
 
 type HomeworldBenefitContext = Pick<
   Game,
@@ -59,9 +60,10 @@ export function homeworldSardaukarFreeSupport(
   );
 }
 
-/** Temporary release boundary: a population-changing return during combat
- * must not invalidate sealed dials/support or earlier binding answers. Use
- * public battle participation, never an opponent's hidden plan contents. */
+/** Current population can change before battle commitments. The remaining
+ * preview boundary protects sealed dials/support and binding answers from
+ * repricing; it does not freeze population or forbid Ghola for a whole battle.
+ * Inspect submission presence, never an opponent's sealed plan contents. */
 export function homeworldSardaukarGholaBlock(
   context: HomeworldBenefitContext & Pick<Game, 'battle'>,
   playerId: string,
@@ -74,7 +76,7 @@ export function homeworldSardaukarGholaBlock(
     !context.players.some((p) => p.id === playerId && p.faction === 'emperor')
   )
     return null;
-  return homeworldPopulations(
+  const crossing = homeworldPopulations(
     homeworldContext(context),
     context.homeworlds.custody,
   ).some(
@@ -82,8 +84,15 @@ export function homeworldSardaukarGholaBlock(
       home.native === playerId &&
       home.card === 'salusa_secundus' &&
       home.population === 1,
-  )
-    ? 'Ghola raising Salusa to high population during the Emperor’s battle awaits its battle-support timing ruling.'
+  );
+  if (!crossing) return null;
+  const battle = context.battle;
+  const committed = battle.revealed || Object.keys(battle.plans).length > 0 ||
+    [battle.attacker, battle.defender].some(
+      (id) => committedPlanElements(battle, id).length > 0,
+    ) || battle.truthPromises?.some((promise) => !promise.released);
+  return committed
+    ? 'Ghola raising Salusa to high population after a battle plan or binding answer is not yet supported. Finish this battle first.'
     : null;
 }
 

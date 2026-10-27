@@ -2,6 +2,58 @@
 
 Source audit, 9 September 2026. This separates publisher wording, rule composition, and remaining decisions. It does not enable Homeworld games or replace the outstanding Ambassador/Duke revival rulings.
 
+## Salusa Ghola before battle commitments — 27 October 2026
+
+An otherwise legal Ghola may return a dead Sardaukar to Salusa during the
+Emperor's battle while no plan is sealed and no inspection answer or active
+Truthtrance battle promise is committed. Returning the actual counter from
+Tanks raises Salusa from one to two; the current High benefit then supplies
+free Sardaukar support in that same battle. It does not add that counter to an
+Arrakis army, spend ordinary revival allowance, waive the once-per-turn elite
+revival limit or bypass a pending response/decision. Existing force controls and
+minimal AI use the same projected elite allowance and combat descriptor.
+
+The user-authorized revised PDF establishes immediate Ghola at any time
+(physical39 / printed37), current population and the native return destination
+(physical22 / printed20), and strength/spice commitments plus matching casualty
+allocation (physical11–12 / printed9–10). Salusa's printed High face supplies
+the free support. No new timing priority is introduced around native modal
+decisions. A native-Salusa return joins that World's actual pool; its connected
+population rules remain current rather than freezing a face for the battle.
+
+**Remaining preview boundary:** once either plan, an inspection answer or an
+active battle promise exists, the population-crossing return remains guarded.
+This is an unfinished continuation, not an official prohibition. The source's
+identified unofficial impossible-Prescience-answer update (physical41 /
+printed39) supports a future explicit update, but does not settle every sealed
+dial/support composition. Do not refund support, reopen sealed plans, allow
+wasted support or weaken free Sardaukar merely to make an old dial legal. Normal
+force and eligible leader targets remain usable under their ordinary gates.
+
+### Focused evidence
+
+Nine selected files pass78/78 with types/lint. The public original Advanced
+E/A/G base33/Homeworld programme takes51 source actions: paid E4-star shipment,
+actual two-star movement and Guild entry create two real battles; a paid first
+win puts one actual star in Tanks. In the later uncommitted battle, five native
+actions play the originally dealt Ghola, submit plans with free star support
+and complete traitor calls. Salusa ends at two, Arrakis receives no revived
+counter and the same physical card is discarded once. All four profiles provide
+legal plans after that return. The previous paid-support and answered-Prescience
+guard cases remain; a new opponent-only sealed case also remains guarded.
+
+The separate native runtime renders eight GameTables before/after return,
+after an actual sealed-plan branch and after completion. This is server
+rendering with native action packets, not stateful Ghola/plan input operation
+or browser hydration. It does not certify native-Salusa battle chronology,
+module combinations, full modes, deployed acceptance or final recovery/privacy/
+custody assurance. No build was repeated for the focused rule-helper change.
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-salusa-ghola-proof-v1/`;
+runtime: `20261027-salusa-ghola-runtime/run-v1/` beside it. Frozen source tree
+`7d6408588870da018b93bc5a7208d19eb24a4050e023ce9eff3ac3c3227efbba`
+contains3350 files. Only this evidence text, the dashboard and implementation
+log are final documentation overlays after those checks.
+
 ## Provisional Low Homeworld revival prevention — 25 October 2026
 
 **Prototyped / Partial.** The earlier target guard against Tleilaxu special

@@ -20,6 +20,27 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Salusa Ghola before battle commitments — 27 October. Prototyped / Partial.**
+An otherwise legal Sardaukar Ghola return can raise Salusa from one to two
+during the Emperor's uncommitted battle. That same battle uses current High
+free support; the returned counter stays at Salusa. Once either plan, an
+inspection answer or an active battle promise is committed, the existing
+preview boundary remains. It is unfinished timing, not an official Ghola ban.
+[Source and remaining boundary](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-before-battle-commitments--27-october-2026).
+
+**Nine files78/78**, types/lint and one native runtime programme pass. The
+original public Advanced E/A/G base33/Homeworld source uses51 actions to earn
+a paid first-battle star casualty and open a second actual uncommitted battle.
+Five further native actions play Ghola, seal both plans and complete both
+traitor calls. Eight GameTable SSR renders check current controls and the
+separate actual sealed-plan guard branch. Only unopened initial cards, land
+Spice positions and scalar lotteries are selected; no later force/purse/hand/
+phase/battle receipt is installed. Stateful Ghola/plan inputs use native
+packets, not operated browser controls. Four profiles retain legal plans after
+the return; no strategy or difficulty calibration is claimed. Native-Salusa
+battle, browser/mobile, deployed and final assurance are not newly certified.
+No build was repeated for this focused rule-helper change.
+
 **Occupied Ecaz captive-tenure expiry — 27 October. Prototyped / Partial.**
 An original occupied grant now retires at public turn end or entitlement loss
 while Harkonnen keeps the actual captive. Capture, concealment and physical
