@@ -20,6 +20,16 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Basic Richese and Kull/Semuta — 27 October. Prototyped / Partial.**
+The printed-Kull opt-in includes native Richese. In supported clean parents,
+successful Kull and a distinct counter open the public Semuta discard reaction
+before their original continuation resumes. Complex nested Kull parents and
+structured bribe questions with Richese remain unavailable, visibly disclosed
+as unfinished; broader rules and deployed acceptance remain open.
+[Scope](CHOAM_KULL_DESIGN.md#basic-richese-and-kullsemuta--27-october-2026).
+Frozen changed-path checks passed 132/132 tests across 14 files, type/lint and
+the production build; browser and deployed acceptance remain open.
+
 **Printed Kull with native Ecaz/Moritani and movement forecast — 27 October. Prototyped / Partial.**
 The Basic Kull opt-in includes Ecaz and Moritani with their selected deck,
 CHOAM and Ix; existing supported bribe questions remain available. A detached

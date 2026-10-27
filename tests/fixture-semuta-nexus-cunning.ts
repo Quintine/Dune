@@ -87,6 +87,13 @@ export function nextSemutaNexusCunningStep(game: Game): SemutaNexusCunningStep {
   if (!game.phaseOpening && !game.response &&
     (game.decision?.kind === 'choamMarket' || game.decision?.kind === 'choamMentat'))
     return { actor: game.decision.player, action: { type: 'decision', done: true } };
+  // Fresh Advanced games use the actual ordered Charity and Revival queues;
+  // the older generic native fixture assumed simultaneous ready actions.
+  if (game.status === 'playing' && !game.phaseOpening && !game.response && !game.decision) {
+    const actor = game.phase === 2 ? game.charityOrder?.remaining[0]
+      : game.phase === 4 ? game.revivalOrder?.remaining[0] : undefined;
+    if (actor) return { actor, action: { type: 'ready' } };
+  }
   return nextRicheseSkillsTechNativeStep(game);
 }
 export function advanceSemutaNexusCunning(

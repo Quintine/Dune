@@ -32,6 +32,7 @@ void test('public host lobby shows the explicitly selected Kull preview and its 
   assert.match(html,/Kull Wahad · Basic development preview/);
   assert.match(html,/does not support structured Truthtrance questions about bids/);
   assert.match(html,/defers unfunded non-CHOAM Karama-dependent bids/);
+  assert.match(html,/When Richese is seated, structured bribe commitments are also unavailable/);
   const off = act(f.lobby,f.lobby.host,{type:'moduleOption',module:'kullPreview',enabled:false});
   const unselected = viewGame(off,off.host);
   assert.equal(unselected.lobbyModules?.kullPreview,false);

@@ -1721,6 +1721,16 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'kullSuccessDiscard' | 'kullCounterDiscard';
+          player: string;
+          card: string;
+          frame: NonNullable<Game['pendingKull']>;
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          declaration?: NonNullable<Game['pendingChoamWorthless']>;
+          use?: Extract<KaramaUse, { kind: 'cancel' }>;
+          stateSignature: string;
+        }
+      | {
           kind: 'bgKaramaCostDiscard';
           player: string;
           card: string;
@@ -6488,6 +6498,32 @@ type KaramaResponseDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'karamaCharityDiscard' | 'karamaInflationDiscard' | 'karamaBgCharityDiscard' | 'karamaBattleDiscard' | 'karamaChoamWorthlessDiscard' | 'karamaEmperorShareDiscard' | 'karamaIncomeDiscard' | 'karamaShipmentDiscard' | 'karamaBgConversionCancelDiscard' | 'karamaRicheseAuctionDiscard' | 'karamaRicheseGiftDiscard' | 'karamaAuctionAdvantageDiscard' | 'karamaTerminalDiscard' | 'karamaMovementDiscard' | 'karamaRevivalDiscard' | 'karamaDisasterDiscard' | 'karamaCombatDiscard' | 'karamaBonusDiscard' | 'karamaNoFieldDiscard' | 'karamaAlliedTraitorDiscard' | 'karamaEcazMoritaniDiscard' | 'karamaMarketDiscard' | 'karamaFremenGrantDiscard' | 'karamaAdvisorFlipDiscard' }
 >;
+type KullSemutaDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'kullSuccessDiscard' | 'kullCounterDiscard' }
+>;
+/** These native parents can be suspended without replaying another physical
+ * transaction. More deeply nested response families retain their own gates. */
+function kullSemutaParentSupported(g: Game): boolean {
+  return !g.truthtrance && !g.battle && !g.pendingRicheseGift && !g.pendingNullentropy &&
+    !g.pendingAmbassador && !g.pendingIxAlly && !g.pendingRevival && !g.pendingShipment &&
+    !g.pendingGuildTransport && !g.pendingHomeworldShipment && !g.pendingTerrorEntry &&
+    !g.pendingEcazPlacement && !g.pendingMoritaniPlacement &&
+    !g.pendingArrivalOverlap && !g.pendingArrivalReaction?.length && !g.pendingExchange &&
+    !g.pendingRichesePurchaseIncome && !g.pendingChoamMarketGhola && !g.currentAuctionSale &&
+    !g.choamMarket && !g.richeseAuction && !g.pendingFremenMove && !g.pendingIxMove &&
+    !g.pendingMobileMove && !g.pendingChoamMove && !g.ornithopter && !g.ecologicalStorm &&
+    !g.summonedWorm && !g.wormRides.length;
+}
+function kullSemutaDiscardSignature(g: Game, c: KullSemutaDiscardContinuation): string {
+  return JSON.stringify({ kind: c.kind, player: c.player, card: c.card, frame: c.frame,
+    resume: c.resume, declaration: c.declaration, use: c.use, turn: g.turn, phase: g.phase,
+    parent: nullentropyParentSignature(g, c.resume, c.frame.event),
+    active: g.active, order: g.order, auction: g.auction, richeseAuction: g.richeseAuction,
+    restrictions: g.kullRestrictions, discard: g.discard.map(card => card.id),
+    players: g.players.map(player => ({id:player.id, hand:player.hand.map(card => card.id),
+      spice:player.spice, reserves:player.reserves, forces:player.forces, tanks:player.tanks})) });
+}
 function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinuation) {
   const battle = c.kind === 'karamaBattleDiscard';
   const worthless = c.kind === 'karamaChoamWorthlessDiscard';
@@ -7462,7 +7498,31 @@ function treacheryDiscardIntegrity(g: Game) {
       'The committed Semuta claim lost its private fresh candidates.');
     } else throw new RuleError('Unknown saved Semuta reaction stage.');
   }
-  if (continuation?.kind === 'nullentropyDiscard') {
+  if (continuation?.kind === 'kullSuccessDiscard' || continuation?.kind === 'kullCounterDiscard') {
+    const c = continuation, entry = batch.entries[0], frame = c.frame;
+    requireRule(g.kullPreview === true && !g.pendingKull &&
+      (c.kind === 'kullSuccessDiscard'
+        ? JSON.stringify(g.pendingChoamWorthless ?? null) === JSON.stringify(frame.worthless ?? null)
+        : !g.pendingChoamWorthless) &&
+      c.stateSignature === kullSemutaDiscardSignature(g, c) &&
+      frame.stage === 'counter' && frame.turn === g.turn && frame.phase === g.phase &&
+      frame.event === JSON.stringify(['kull', g.turn, g.phase, g.kullSequence, frame.player, frame.owner]) &&
+      frame.signature === kullSignature(g, frame) &&
+      getPlayer(g, frame.owner).hand.some(card => card.id === frame.card) &&
+      batch.entries.length === 1 && entry.publicFace && entry.discardedBy === c.player &&
+      entry.card.id === c.card && canonicalKullCard(entry.card) &&
+      (c.kind === 'kullSuccessDiscard'
+        ? c.player === frame.player && frame.selection?.source === 'printed' &&
+          frame.selection.card === c.card && !c.declaration && !c.use &&
+          !!g.kullRestrictions?.some(row => row.player === frame.owner && row.turn === g.turn && row.phase === g.phase)
+        : c.card !== frame.card && entry.card.effect === 'karama' && !!c.declaration &&
+          c.declaration.effect === 'kull' && c.declaration.owner === frame.player &&
+          c.declaration.card === frame.selection?.card && c.use?.kind === 'cancel' &&
+          c.use.response.kind === 'choamWorthless' && c.use.response.intent === 'Kull Wahad' &&
+          c.use.response.owner === frame.player && c.use.response.recipient === frame.owner &&
+          JSON.stringify(c.resume.response) === JSON.stringify(c.use.response)),
+    'The saved Kull discard has lost its original cost or suspended response.');
+  } else if (continuation?.kind === 'nullentropyDiscard') {
     const c = continuation;
     const owner = g.players.find((p) => p.id === c.player);
     const selected =
@@ -8750,6 +8810,11 @@ function semutaOfferSupported(
   continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   entries: FreshDiscardBatch['entries'],
 ) {
+  if (continuation.kind === 'kullSuccessDiscard' || continuation.kind === 'kullCounterDiscard')
+    return g.semutaPreview === true && g.advanced === false && bareBasicSemutaProfile(g) &&
+      !!byFaction(g, 'richese') && kullSemutaParentSupported(g) && entries.length === 1 &&
+      entries[0].publicFace && entries[0].discardedBy === continuation.player &&
+      entries[0].card.id === continuation.card;
   // These completed public costs retain the original ordinary lot through the
   // existing signed continuation. Semuta itself has no during-bid exception;
   // native Distrans still cannot produce a transfer after that bid starts.
@@ -9277,6 +9342,19 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
       { faction: owner.faction, name: 'Semuta Drug' });
   }
   if (preventedGiftBeforeClaim) return;
+  if (next.kind === 'kullSuccessDiscard' || next.kind === 'kullCounterDiscard') {
+    g.response = next.resume.response;
+    g.decision = next.resume.decision;
+    g.pendingKarama = next.resume.pendingKarama;
+    g.phaseOpening = next.resume.phaseOpening;
+    if (next.kind === 'kullCounterDiscard') {
+      requireRule(next.declaration && next.use, 'The Kull counter lost its saved continuation.');
+      g.pendingKull = next.frame;
+      g.pendingChoamWorthless = next.declaration;
+      completeKarama(g, getPlayer(g, next.player), next.use, pending.batch.entries[0].card);
+    }
+    return;
+  }
   if (next.kind === 'winnerMandatoryDiscard') {
     finishWinner(g, getPlayer(g, next.player), next.territory, next.optional);
     return;
@@ -10020,12 +10098,12 @@ function startModules(state: Game): Game {
     requireRule(g.advanced === false && (g.expansions.length === 2 ||
       g.expansions.length === 3 && g.expansions.includes('ecaz')) && g.expansions.includes('choam') &&
       g.expansions.includes('ix') && !!byFaction(g,'choam') &&
-      g.players.every(player => player.faction === 'choam' || player.faction === 'ixians' ||
+      g.players.every(player => player.faction === 'choam' || player.faction === 'richese' || player.faction === 'ixians' ||
         player.faction === 'tleilaxu' || g.expansions.includes('ecaz') &&
         (player.faction === 'ecaz' || player.faction === 'moritani') || CLASSIC_FACTIONS[player.faction] === true) &&
       !options.leaderSkills && !options.ecazTreachery && !g.nexusCards && !g.discoveryEnabled &&
       !g.homeworlds && !g.techTokens && !g.strongholdCards,
-    'Kull preview needs Basic CHOAM with classic or supported Ix/Ecaz factions, CHOAM and Ix decks, each faction’s deck, and no optional modules.');
+    'Kull preview needs Basic CHOAM with supported factions, CHOAM and Ix decks, each faction’s deck, and no optional modules.');
     return initializeKullGameForAudit(g);
   }
   if (options.ecazTreachery && options.leaderSkills) g.ecazTreachery = true;
@@ -12400,10 +12478,10 @@ export function initializeKullGameForAudit(state: Game): Game {
       state.expansions.includes('ecaz')) && state.expansions.includes('choam') &&
     state.expansions.includes('ix') && state.players.some(p => p.faction === 'choam') &&
     state.players.every(p => p.faction === 'choam' || faction(p.faction).expansion === 'base' ||
-      !state.advanced && (p.faction === 'ixians' || p.faction === 'tleilaxu' ||
+      !state.advanced && (p.faction === 'richese' || p.faction === 'ixians' || p.faction === 'tleilaxu' ||
         state.expansions.includes('ecaz') && (p.faction === 'ecaz' || p.faction === 'moritani'))),
   'Kull preview needs a fresh CHOAM lobby with supported native factions and selected CHOAM and Ix decks.');
-  const g = initializeFactionExpansionsGameForAudit(state);
+  const g = initializeFactionExpansionsGame(state, bareBasicSemutaProfile(state));
   g.kullPreview = true;
   return g;
 }
@@ -18070,6 +18148,7 @@ function kullCostPromisesAllow(g: Game, p: Player, card: Card, fuelSource: 'prin
 }
 function kullCostCards(g: Game, p: Player, source: 'printed' | 'nexus' = 'printed'): Card[] {
   const original = g.pendingKull ? kullSource(g, g.pendingKull) : g;
+  if (g.semutaPreview && (!kullSemutaParentSupported(original) || source !== 'printed')) return [];
   if (source === 'nexus' && (!g.nexusKullPreview || p.faction !== 'choam' || p.ally ||
     (g.pendingKull?.selection?.source !== 'nexus' && g.nexusCards?.cards?.hands[p.id] !== 'choam')))
     return [];
@@ -18333,6 +18412,24 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
       return stage && !stage.closed && windowCardOpportunity(g, effect, stage.source)?.source === stage.source;
     });
   })) guardTurnActionPrintedCardCost(g, p, used);
+  if (g.semutaPreview && !g.advanced && g.pendingKull?.stage === 'counter' &&
+      use.kind === 'cancel' && use.response.kind === 'choamWorthless' && use.response.intent === 'Kull Wahad') {
+    const declaration = g.pendingChoamWorthless;
+    requireRule(declaration && kullSemutaParentSupported(kullSource(g, g.pendingKull)),
+      'This Kull counter cannot suspend its current parent for Semuta.');
+    const continuation: KullSemutaDiscardContinuation = {
+      kind: 'kullCounterDiscard', player: p.id, card: used.id,
+      frame: structuredClone(g.pendingKull), declaration: structuredClone(declaration), use,
+      resume: { response: g.response, decision: g.decision,
+        pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
+      stateSignature: '',
+    };
+    g.pendingKull = null; g.pendingChoamWorthless = null;
+    g.response = null; g.decision = null; g.pendingKarama = null; g.phaseOpening = null;
+    continuation.stateSignature = kullSemutaDiscardSignature(g, continuation);
+    stageTreacheryDiscard(g, 'karama:kullCounter', [{card:used, discardedBy:p.id, publicFace:true}], continuation);
+    return;
+  }
   const semutaRoleCost = g.semutaPreview && semutaKaramaRoleCost(g, p.id, card);
   const guildShipmentDiscard = semutaRoleCost &&
     use.kind === 'cancel' && semutaGuildShipmentKaramaResponse(g, use.response);
@@ -35177,12 +35274,24 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
       const used = discard(g, choam, pending.card);
       finishNexusChoam(g,pending,'complete');
       if (pending.effect === 'kull') {
-        const restriction = kullSettledRestriction(g, g.pendingKull!);
+        const frame = structuredClone(g.pendingKull!);
+        const restriction = kullSettledRestriction(g, frame);
         g.kullRestrictions = [...activeKullRestrictions(g.kullRestrictions, g.turn, g.phase),
           restriction];
         log(g, `${getPlayer(g, g.pendingKull!.owner).name} cannot activate ${restriction.purpose
           ? kullPurposeLabel(restriction.purpose) : 'Karama'} for this phase. The attempted card stays held.`);
         resumeKullAttempt(g, true);
+        if (g.semutaPreview && !g.advanced) {
+          const continuation: KullSemutaDiscardContinuation = {
+            kind: 'kullSuccessDiscard', player: choam.id, card: used.id, frame,
+            resume: { response: g.response, decision: g.decision,
+              pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
+            stateSignature: '',
+          };
+          g.response = null; g.decision = null; g.pendingKarama = null; g.phaseOpening = null;
+          continuation.stateSignature = kullSemutaDiscardSignature(g, continuation);
+          stageTreacheryDiscard(g, 'choam:kull', [{card:used, discardedBy:choam.id, publicFace:true}], continuation);
+        }
         return;
       }
       if (pending.effect === 'kulon') {

@@ -1,5 +1,13 @@
 # Rule decision index
 
+## Basic Richese and Kull/Semuta — 27 October 2026
+
+Provisionally offer Semuta after the public discard of a successful printed
+Kull or a distinct Karama counter, before the existing interrupted parent
+continues. Nested online timing remains a software interpretation; unsupported
+complex parents are gated independently of hidden hands.
+[Contract](CHOAM_KULL_DESIGN.md#basic-richese-and-kullsemuta--27-october-2026).
+
 ## Basic printed Kull with native Ecaz and Moritani — 27 October 2026
 
 Extend the existing provisional printed-Kull protocol to Ecaz and Moritani

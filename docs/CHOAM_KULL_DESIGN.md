@@ -2,6 +2,42 @@
 
 Source audit: 2026-09-06; opt-in preview contract updated 30 September 2026. This is an engineering and product-policy record, not a rules-completion claim. The source audit in [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md) remains applicable. The user-approved counter and BG choices supersede the original proposal; publisher-source uncertainty and full expansion gates remain.
 
+## Basic Richese and Kull/Semuta — 27 October 2026
+
+**Prototyped / Partial.** The fresh Basic printed-Kull opt-in includes
+include native Richese, retaining its ordinary cache and Semuta setup. An
+eligible successful Kull discard and an eligible distinct Karama counter
+discard each pass through the existing neutral Semuta claim-or-pass
+opportunity before the exact suspended Kull continuation resumes. The original
+attempted card, response, actor and costs remain bound to that continuation;
+claiming a discard changes its custody, not the outcome of Kull or its counter.
+
+The [publisher's Basic Kull rule, printed page 7](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf#page=7)
+and the existing [Semuta source and interpretation](SEMUTA_SOURCE_UPDATE_20260907.md)
+provide the respective printed effects. Their nested online timing and the
+distinct-card counter remain provisional implementation policies, not a new
+publisher ruling. The user-deferred non-CHOAM unfunded-overbid fence remains.
+
+Complex nested Kull parents are not offered as Kull costs in this preview,
+independently of hidden Semuta ownership. Structured bribe commitments in the Richese
+Semuta envelope remain outside this preview, as do other unconnected
+interactions and optional modules. Their boundaries must be visible before
+starting. This work does not certify complete faction rules, modes, recovery,
+browser or deployed behavior, or open publication gates.
+
+The native fixture acquires Semuta through Richese's real cache auction before
+testing the public discard and its continuation. A separate controlled
+Ornithopter supplement checks that the nested-parent gate does not depend on
+the private Semuta hand. An older Semuta Cunning fixture was also updated to
+follow the actual Advanced Charity and Revival queues; its prior failure was
+reproduced on the preceding commit.
+Frozen changed-path proof passed 132/132 tests in 14 files, type/lint and the
+production build. [Native runtime tests](../tests/kull-richese-semuta-runtime.test.ts)
+cover both discards and [the Worthless parent](../tests/kull-richese-semuta-worthless-parent.test.ts)
+uses a documented controlled physical-card supplement. The nested-window gate
+test uses a controlled Ornithopter; broader browser and deployed behavior remain
+unverified.
+
 ## Basic native Ecaz and Moritani — 27 October 2026
 
 **Prototyped / Partial.** The fresh Basic printed-Kull opt-in admits Ecaz and

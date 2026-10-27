@@ -1,5 +1,18 @@
 # Dune implementation status
 
+## 27 October 2026 — Basic Richese and Kull/Semuta
+
+The printed-Kull opt-in includes native Richese and its existing cache setup.
+In supported clean parent windows, a successful Kull or distinct counter's
+public discard offers Semuta before the original continuation resumes. Complex
+parent windows and structured bribe questions with Richese remain unavailable;
+full modes, wider interactions and deployed acceptance remain open.
+The frozen batch passed 132/132 tests in 14 files, type/lint and the production
+build. The native fixture buys Semuta through the real Richese cache; separate
+controlled supplements cover an earlier Worthless parent and an unsupported
+Ornithopter parent. An older Advanced fixture was updated for its native queues.
+[Contract](CHOAM_KULL_DESIGN.md#basic-richese-and-kullsemuta--27-october-2026).
+
 ## 27 October 2026 — Native Ecaz/Moritani Kull and movement forecast
 
 The Basic printed-Kull opt-in adds Ecaz and Moritani with all three selected
