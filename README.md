@@ -65,7 +65,10 @@ The single physical Hajr can be played again after legitimate
 Advanced still requires a fresh post-movement opportunity.
 Advanced Family Atomics is available after turn1, after storm distance is known
 and before movement, from physical fighters on/adjacent to the Wall with no
-intervening storm. Its used card appears in **Removed from game**. Basic keeps
+intervening storm. A concealed No-Field counts as one for this qualification,
+even0; a marker on the Wall provisionally reveals before its actual forces
+are destroyed. An adjacent marker stays concealed. The used Advanced card
+appears in **Removed from game**. Basic keeps
 its current Storm/discard procedure. See [source and scope](docs/FAMILY_ATOMICS.md).
 After Guild Cunning, either physical Ornithopter mode may provisionally replace
 an earned unused Hajr movement. Cunning itself adds no ordinary move; abandoned

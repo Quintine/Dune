@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Family Atomics and concealed No-Field — 27 October 2026
+
+Publisher E2 FAQ printed10 and supplied physical36 B count the concealed marker
+as one force for all effects, even0. Qualify from its actual public controller/
+location with the existing Basic territory or Advanced direct-sector test;
+never read denomination or reserves for permission. Under the standing recommended
+interpretation, a Wall marker follows the existing destructive `atomics` reveal,
+reserve-capped materialization and native whole-Wall loss. That forced reveal is
+provisional composition, not a specific publisher combined-effect answer.
+Adjacent markers stay concealed until an independent native reveal trigger.
+Existing Advanced removal and Basic discard remain. [Current scope](FAMILY_ATOMICS.md#concealed-no-field--27-october-2026).
+
 ## Sapho in ordered Advanced Charity — 27 October 2026
 
 The printed first/last alternative applies to the supplied rulebook's newly
@@ -21,7 +33,8 @@ physical fighters and the Wall. Endpoints may be stormed; advisors cannot
 qualify. Advanced use removes the physical card outside discard. Basic retains
 its current procedure after the earlier bounded primary comparison found no
 verified Basic card face imposing the full revision. Direct touching-sector
-intervals implement the geometry; concealed No-Field composition remains open.
+intervals implement the geometry. The later No-Field composition above supplies
+marker qualification and provisional destructive revelation.
 No already-completed play is converted. [Source and scope](FAMILY_ATOMICS.md).
 
 ## CHOAM total support rounding — 27 October 2026

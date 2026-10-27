@@ -1,4 +1,5 @@
 import { familyAtomicsBlock } from './family-atomics';
+import type { NoFieldDeployment } from './richese-no-field';
 import { harvesterAvailable, type Card } from './cards';
 import type { FactionId } from './catalog';
 import { choamSaleGholaTiming } from './choam-market-ghola';
@@ -15,6 +16,8 @@ export type OrdinaryCardPlayer = {
   faction: FactionId;
   forces: Record<string, number>;
   advisors?: Record<string, { lockedTurn?: number }>;
+  /** Public effective presence only; no token identity, denomination or reserves. */
+  noField?: { deployed: Pick<NoFieldDeployment, 'controller' | 'location'> | null } | null;
   hand?: readonly Card[];
   movesAllowed?: number;
   moved?: number;

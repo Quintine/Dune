@@ -13,6 +13,10 @@ function player(forces: Record<string, number> = { 'shield_wall:8': 1 },
   extra: Partial<FamilyAtomicsPlayer> = {}): FamilyAtomicsPlayer {
   return { id: 'p', faction: 'atreides', forces, ...extra };
 }
+function concealed(territory = 'shield_wall', sector = 8, controller = 'p') {
+  return { ...player({}, { faction: 'richese' }),
+    noField: { deployed: { controller, location: { territory, sector } } } };
+}
 
 void test('Basic keeps its original pre-movement territory gate without Advanced turn or calculation requirements', () => {
   const basic = { phase: 0, shieldWallDestroyed: false };
@@ -61,14 +65,53 @@ void test('a strictly intervening storm blocks the direct sector route without a
   assert.equal(blocked(state({ storm: 4 }), player({ 'pasty_mesa:5': 1 })), null);
 });
 
-void test('BG advisors and a concealed No-Field marker do not supply Advanced physical fighters', () => {
+void test('BG advisors cannot qualify while ordinary BG fighters remain eligible', () => {
   const advisors = player({ 'shield_wall:8': 2 }, { faction: 'beneGesserit', advisors: { shield_wall: {} } });
-  assert.match(blocked(state(), advisors)!, /physical fighters/);
+  assert.match(blocked(state(), advisors)!, /fighters/);
   assert.match(blocked(state({ advanced: false }), advisors)!, /need forces/);
   assert.equal(blocked(state(), player({ 'shield_wall:8': 2 }, { faction: 'beneGesserit' })), null);
-  const concealed = { ...player({}, { faction: 'richese' }),
+});
+
+void test('an owned concealed No-Field alone counts at the Wall or adjacent sector under the existing geometry', () => {
+  assert.equal(blocked(state({ storm: 8 }), concealed()), null);
+  assert.equal(blocked(state(), concealed('pasty_mesa', 5)), null);
+  assert.equal(blocked(state({ storm: 8 }), concealed('pasty_mesa', 5)), null);
+  assert.match(blocked(state({ storm: 6 }), concealed('pasty_mesa', 5))!, /intervening storm/);
+  assert.match(blocked(state({ storm: 10 }), concealed('imperial_basin', 11))!, /intervening storm/);
+  assert.equal(blocked({ phase: 0, shieldWallDestroyed: false }, concealed()), null);
+  assert.equal(blocked(state({ advanced: false, turn: 1, storm: 6, stormPending: null }),
+    concealed('pasty_mesa', 5)), null, 'Basic retains its original territory-level requirement');
+});
+
+void test('the public controlled marker supplies one presence without consulting hidden value or reserves', () => {
+  const publicOnly = concealed();
+  assert.equal(blocked(state(), publicOnly), null);
+  for (const [value, reserves] of [[0, 0], [3, 1], [5, 20]]) {
+    // Extra private payload is irrelevant to this public marker-as-one quote.
+    const supplemented = { ...publicOnly, reserves,
+      noField: { deployed: { ...publicOnly.noField.deployed, value } } };
+    const before = structuredClone(supplemented);
+    assert.equal(blocked(state(), supplemented), null);
+    assert.equal(blocked(state({ advanced: false }), supplemented), null);
+    assert.deepEqual(supplemented, before);
+  }
+});
+
+void test('an absent, invalid or foreign-controlled marker cannot qualify or hide ordinary eligible fighters', () => {
+  const missingController = { ...player({}, { faction: 'richese' }),
     noField: { deployed: { location: { territory: 'shield_wall', sector: 8 } } } };
-  assert.match(blocked(state(), concealed)!, /physical fighters/);
+  const invalid: FamilyAtomicsPlayer[] = [
+    concealed('shield_wall', 8, 'foreign'), concealed('shield_wall', 8, ''),
+    concealed('shield_wall', 0), concealed('pasty_mesa', 9), concealed('arsunt', 9),
+    player({}), player({}, { noField: null }), player({}, { noField: { deployed: null } }),
+    missingController as unknown as FamilyAtomicsPlayer,
+  ];
+  for (const own of invalid) {
+    assert.match(blocked(state(), own)!, /fighters/);
+    assert.match(blocked(state({ advanced: false }), own)!, /need forces/);
+    assert.equal(blocked(state(), { ...own, forces: { 'shield_wall:8': 1 } }), null);
+    assert.equal(blocked(state({ advanced: false }), { ...own, forces: { 'shield_wall:8': 1 } }), null);
+  }
 });
 
 void test('remote presence, invalid physical locations and nonpositive counters cannot establish the sector source', () => {
@@ -76,7 +119,7 @@ void test('remote presence, invalid physical locations and nonpositive counters 
     { 'shield_wall:8:extra': 1 }, { 'shield_wall:8': 0 }, { 'shield_wall:8': -1 },
     { 'shield_wall:8': Number.NaN }];
   for (const forces of invalidForces)
-    assert.match(blocked(state(), player(forces))!, /physical fighters/);
+    assert.match(blocked(state(), player(forces))!, /fighters/);
 });
 
 void test('one unblocked owned fighter source is enough and quoting never changes state or forces', () => {

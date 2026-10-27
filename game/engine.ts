@@ -42890,6 +42890,7 @@ function applyActionInner(
             faction: p.faction,
             forces: p.forces,
             advisors: p.advisors,
+            noField: p.noField,
             hand: p.hand,
             movesAllowed: movesAllowed(g, p),
             hajrUsed: g.hajr.includes(p.id),
@@ -42943,7 +42944,7 @@ function applyActionInner(
       g.ready = [];
     } else if (c.effect === 'atomics') {
       g.shieldWallDestroyed = true;
-      for (const other of g.players) killTerritory(g, other, 'shield_wall');
+      for (const other of g.players) killTerritory(g, other, 'shield_wall', Infinity, false, 'atomics');
       g.ready = [];
     } else
       throw new RuleError(

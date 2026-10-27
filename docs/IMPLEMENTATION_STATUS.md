@@ -1,5 +1,43 @@
 # Dune implementation status
 
+## 27 October 2026 — Family Atomics and concealed No-Field
+
+Prototyped / Partial. The public controlled marker now supplies one qualifying force, including0,
+through shared native/view/card legality and the unchanged Basic territory or
+Advanced direct-sector test. Hidden denomination/reserves never decide permission.
+Wall destruction now uses the original `atomics` reveal cause: materialize only
+available reserves and send actual Wall forces to Tanks. Adjacent markers stay
+concealed with the same event. Forced destructive reveal is explicit provisional
+source composition; marker-as-one is printed E2 FAQ10/supplied physical36 B.
+Basic timing/discard and Advanced timing/removal remain.
+[Source and remaining scope](FAMILY_ATOMICS.md#concealed-no-field--27-october-2026).
+
+Frozen **8-file union, 66/66**, types/lint/build and six original-game programmes
+pass. Genuine public Richese/Atreides/Emperor +CHOAM-deck setup supplies original
+cards/tokens. Actual marker shipments cost2 without reserve debit; first dials
+0+0 or9+0 and the complete first turn earn actual Storm2. Runtime records
+17 GameTable SSR, 5 public removed-pile renders and 5 actual configured
+HandBrowser card-render Play callbacks. Hand selection/navigation and browser
+hydration were not operated. Recorded source/further arrays total273/25.
+
+Advanced Wall0 reveals without invented losses; Wall5 materializes/dies once;
+adjacent3 stays concealed; Storm10 blocks adjacent0; Basic0 uses its original
+pre-distance timing/discard. An originally dealt Emperor cost with its actual
+paid Basin9 fighter also destroys Richese Wall5. Ten new helper/native cases
+include all0/3/5 values and four legal minimal Storm policies. No played hand,
+marker, purse, army, phase, distance or casualty is installed. Other Storm and
+response packets use native actions directly. A fixture compared the consumed
+shipment-offer event with its committed deployment; that assertion was corrected.
+The native case also caught the missing No-Field field in the dispatcher quote.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-atomics-no-field-proof-v1/`;
+journeys/HTML: adjacent `20261027-atomics-no-field-runtime/run-v1/`.
+All checks use one frozen source, followed only by a recorded three-document
+evidence overlay. The existing server returned HTTP200 without restart. No
+saved-game/database operation. Exhausted-reserve native journeys, broader
+combinations, complete modes and final rules/recovery/privacy/browser/deployed
+acceptance remain due; this does not certify the full goal.
+
 ## 27 October 2026 — Sapho in ordered Advanced Charity
 
 Prototyped / Partial. Sapho now takes its holder first/last among remaining Advanced Charity turns.

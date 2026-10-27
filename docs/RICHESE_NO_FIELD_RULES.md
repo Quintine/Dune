@@ -2,6 +2,21 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Family Atomics qualification and Wall loss — 27 October 2026
+
+The printed one-force-for-all-effects rule, including concealed0, now supplies
+Family Atomics qualification from the marker's public current location. Advanced
+retains its direct intervening-storm geometry and later calculated-distance
+window; Basic retains its territory-level effective-presence gate. Neither the
+quote nor a play from an adjacent territory reveals a token or places forces.
+
+A marker on the Wall follows the selected provisional destructive composition:
+reveal the actual token, materialize no more than actual reserves, then destroy
+all Wall groups once with the native `atomics` cause. Token history and event
+follow the existing reveal path;0 produces no invented counter or casualty.
+This is not a separate publisher combined-effect ruling. See the
+[Family Atomics source and scope](FAMILY_ATOMICS.md#concealed-no-field--27-october-2026).
+
 ## Planetologist two-origin gathering — 26 October 2026
 
 The concealed marker may supply one of exactly two contributing territories,
