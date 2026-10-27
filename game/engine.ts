@@ -191,7 +191,8 @@ import { ambassadorPhaseAllowed } from './ambassador-phase';
 import { makeHomeworldVictoryReturn, validateHomeworldVictoryReturn, homeworldVictoryOfferSignature,
   homeworldVictoryObligationSignature, type HomeworldVictoryReturn, type HomeworldVictoryObligation } from './homeworld-victory-return';
 import { quoteHomeworldVictoryReinforcement, quoteHomeworldVictoryReinforcementDestination } from './homeworld-victory-reinforcement';
-import { validateCaladanArrivalSource } from './caladan-arrival';
+import { validateCaladanArrivalSource, validateCaladanChildArrival, createCaladanSneakReceipt,
+  validateCaladanSneakHistory, type CaladanEntryParent } from './caladan-arrival';
 import { homeworldArrivalSignature, appendHomeworldArrivalAmbassador, completeHomeworldArrivalAmbassador, validateHomeworldArrival } from './homeworld-arrival';
 import {
   quoteHomeworldRevivalDeployment,
@@ -1101,6 +1102,7 @@ export type Decision =
   | { kind: 'nexusEmperorAmbassadorPurchase'; player: string; event: string }
   | {
       kind: 'advisor';
+      caladanArrival?: CaladanEntryParent;
       player: string;
       shipment: string;
       destination?: string;
@@ -1110,6 +1112,7 @@ export type Decision =
     }
   | {
       kind: 'intrusion';
+      caladanArrival?: CaladanEntryParent;
       victoryEvent?: string;
       player: string;
       territory: string;
@@ -1118,7 +1121,7 @@ export type Decision =
       ambassadorEvent?: string;
       revivalEvent?: string;
       revivalTerror?: RevivalEntryParent['terror'];
-      followup?: { shipment: string; destination: string; revivalEvent?: string; revivalTerror?: RevivalEntryParent['terror'] };
+      followup?: { shipment: string; destination: string; caladanArrival?: CaladanEntryParent; revivalEvent?: string; revivalTerror?: RevivalEntryParent['terror'] };
     }
   | { kind: 'advisorBattle'; player: string; territories: string[] }
   | {
@@ -1195,11 +1198,12 @@ export type ResponseWindow = {
   advisorGatherMove?: { turn: number; move: number; order: MovementOrder };
   discoveryEntry?: DiscoveryEntryArrivalChild;
   advisorAmbassadorEvent?: string;
+  advisorCaladanArrival?: CaladanEntryParent;
   advisorVictoryEvent?: string;
   advisorRevivalEvent?: string;
   advisorRevivalTerror?: RevivalEntryParent['terror'];
   advisorRemaining?: string[];
-  advisorFollowup?: { shipment: string; destination: string; revivalEvent?: string; revivalTerror?: RevivalEntryParent['terror'] };
+  advisorFollowup?: { shipment: string; destination: string; caladanArrival?: CaladanEntryParent; revivalEvent?: string; revivalTerror?: RevivalEntryParent['terror'] };
   amount?: number;
   elite?: number;
   recipient?: string;
@@ -2050,6 +2054,7 @@ export type Game = {
   dukeAcquisitionTurn?: number;
   pendingTerrorEntry?: {
     victoryEvent?: string;
+    caladanArrival?: CaladanEntryParent;
     revivalArrival?: RevivalEntryParent;
     /** Original public arrival, absent only in legacy saves. */
     entrySignature?: string;
@@ -2107,13 +2112,16 @@ export type Game = {
     resume: 'none' | 'wormRide';
     turn: number;
     phase: number;
+    caladanArrival?: CaladanEntryParent;
     revivalArrival?: RevivalEntryParent;
     /** A committed revival Sneak group waits for the original overlap before BG reactions. */
     revivalSneakAdvisor?: true;
+    caladanSneakAdvisor?: true;
   }[] | null;
   /** One committed entry with two independently optional expansion reactions. */
   pendingArrivalOverlap?: {
     victoryEvent?: string;
+    caladanArrival?: CaladanEntryParent;
     revivalArrival?: RevivalEntryParent;
     event: string;
     signature: string;
@@ -21767,6 +21775,7 @@ function arrivalOverlapIntegrity(g: Game) {
     (continuation?.kind === 'ambassador' ? continuation.entry : null);
   const terror = g.pendingTerrorEntry ??
     (continuation?.kind === 'terrorDiscard' || continuation?.kind === 'terrorAtomics' ? continuation.entry : null);
+  if (record.caladanArrival) homeworldRule(() => validateCaladanChildArrival(g,record.caladanArrival!,record));
   if (record.revivalArrival)
     homeworldRule(() => validateRevivalArrivalSource(g, record.revivalArrival!, record));
   if (record.victoryEvent !== undefined || record.cause === 'caladanReinforcement')
@@ -21812,6 +21821,7 @@ function arrivalOverlapIntegrity(g: Game) {
         terror.turn === record.turn && terror.phase === record.phase &&
         terror.cause === record.cause &&
         JSON.stringify(terror.revivalArrival) === JSON.stringify(record.revivalArrival) &&
+        JSON.stringify(terror.caladanArrival) === JSON.stringify(record.caladanArrival) &&
         record.terrorTokens.includes(terror.token)),
     'The saved Ambassador/Terror overlap lost its original ordered arrival.');
 }
@@ -21820,6 +21830,7 @@ function openAmbassadorEntry(
   sector: number, resume: 'none' | 'wormRide',
   arrivalCause?: NonNullable<Game['pendingTerrorEntry']>['cause'],
   revivalArrival?: RevivalEntryParent,
+  caladanArrival?: CaladanEntryParent,
 ): boolean {
   g.pendingAmbassador = {
     ...(arrivalCause ? { arrivalCause } : {}),
@@ -21847,6 +21858,13 @@ function openAmbassadorEntry(
     g.pendingAmbassador.revivalEvent = frame.event;
     homeworldRule(() => appendHomeworldArrivalAmbassador(frame, g.pendingAmbassador!, undefined,
       revivalArrival.spiritual, revivalArrival.terror));
+  } else if (caladanArrival) {
+    const frame = g.homeworldVictoryReinforcement!;
+    homeworldRule(() => validateCaladanChildArrival(g, caladanArrival, {entrant:entrant.id,
+      territory:to,sector,amount:caladanArrival.spiritual?.amount ?? caladanArrival.terror.amount,elite:0,
+      cause:arrivalCause ?? ''}));
+    g.pendingAmbassador.victoryEvent = frame.event;
+    appendHomeworldArrivalAmbassador(frame,g.pendingAmbassador,undefined,caladanArrival.spiritual,caladanArrival.terror);
   } else if (arrivalCause === 'caladanReinforcement') {
     const frame = g.homeworldVictoryReinforcement!;
     homeworldRule(() => validateCaladanArrivalSource(g, {victoryEvent:frame?.event, entrant:entrant.id,
@@ -21875,9 +21893,13 @@ function openTerritoryEntry(
   cause: NonNullable<Game['pendingTerrorEntry']>['cause'],
   resume: 'none' | 'wormRide' = 'none',
   revivalArrival?: RevivalEntryParent,
+  caladanArrival?: CaladanEntryParent,
 ) {
   if (revivalArrival)
     homeworldRule(() => validateRevivalArrivalSource(g, revivalArrival,
+      {entrant:entrant.id,territory:to,sector,amount,elite,cause}));
+  if (caladanArrival)
+    homeworldRule(() => validateCaladanChildArrival(g, caladanArrival,
       {entrant:entrant.id,territory:to,sector,amount,elite,cause}));
   const victoryEvent = cause === 'caladanReinforcement' ? g.homeworldVictoryReinforcement?.event : undefined;
   if (cause === 'caladanReinforcement')
@@ -21891,6 +21913,7 @@ function openTerritoryEntry(
       turn: g.turn, phase: g.phase,
       ...(victoryEvent === undefined ? {} : {victoryEvent}),
       ...(revivalArrival ? { revivalArrival } : {}),
+      ...(caladanArrival ? {caladanArrival} : {}),
     });
     return true;
   }
@@ -21921,6 +21944,7 @@ function openTerritoryEntry(
       resume,
       undefined,
       revivalArrival,
+      caladanArrival,
     );
   const moritani = byFaction(g, 'moritani');
   const terrorTokens = moritani &&
@@ -21932,7 +21956,7 @@ function openTerritoryEntry(
   requireRule(!g.response && !g.decision && !g.pendingTerrorEntry && !g.pendingAmbassador,
     'Finish the other arrival reaction before opening this entry.');
   if (!terrorTokens.length)
-    return openAmbassadorEntry(g, owner, token, entrant, to, sector, resume, cause, revivalArrival);
+    return openAmbassadorEntry(g, owner, token, entrant, to, sector, resume, cause, revivalArrival, caladanArrival);
   requireRule(arrivalOverlapModeSupported(g, revivalArrival) && !g.pendingArrivalOverlap &&
     moritani && g.order.includes(owner.id) && g.order.includes(moritani.id),
     'Ambassador and Terror overlap still needs a supported classic Ecaz/Moritani table.');
@@ -21945,13 +21969,14 @@ function openTerritoryEntry(
     ambassadorToken: token.id, terrorTokens: terrorTokens.map(t => t.id),
     ...(victoryEvent === undefined ? {} : {victoryEvent}),
     ...(revivalArrival ? {revivalArrival:structuredClone(revivalArrival)} : {}),
+    ...(caladanArrival ? {caladanArrival:structuredClone(caladanArrival)} : {}),
   };
   overlap.signature = arrivalOverlapSignature(overlap);
   g.pendingArrivalOverlap = overlap;
   log(g, `${owner.name} and ${moritani.name} both have optional reactions to ${entrant.name}'s entry in ${territory(to).name}; ${first === 'ambassador' ? owner.name : moritani.name} acts first in storm order.`);
   if (first === 'terror')
-    return openTerrorEntry(g, entrant, to, sector, amount, elite, cause, 'none', undefined, revivalArrival);
-  openAmbassadorEntry(g, owner, token, entrant, to, sector, 'none', cause, revivalArrival);
+    return openTerrorEntry(g, entrant, to, sector, amount, elite, cause, 'none', undefined, revivalArrival, caladanArrival);
+  openAmbassadorEntry(g, owner, token, entrant, to, sector, 'none', cause, revivalArrival, caladanArrival);
   overlap.ambassadorEvent = g.pendingAmbassador!.event;
   return true;
 }
@@ -21990,7 +22015,7 @@ function finishAmbassador(g: Game, deferResume = false) {
       overlap.stage = 'second';
       requireRule(openTerrorEntry(g, getPlayer(g, overlap.entrant),
         overlap.territory, overlap.sector, overlap.amount, overlap.elite,
-        overlap.cause, 'none', undefined, overlap.revivalArrival),
+        overlap.cause, 'none', undefined, overlap.revivalArrival, overlap.caladanArrival),
       'The originally triggered Terror token is no longer in the stronghold.');
       return;
     }
@@ -24230,6 +24255,7 @@ function terrorEntryIntegrity(g: Game) {
     if (!entry) continue;
     homeworldRule(() => validateTerrorEntrySignature(entry));
     if (entry.revivalArrival) homeworldRule(() => validateRevivalTerrorEntry(g, entry));
+    if (entry.caladanArrival) homeworldRule(() => validateCaladanChildArrival(g,entry.caladanArrival!,entry));
     if (entry.victoryEvent !== undefined || entry.cause === 'caladanReinforcement')
       homeworldRule(() => validateCaladanArrivalSource(g, entry));
     if (entry.entrySignature === undefined) continue;
@@ -24272,9 +24298,13 @@ function openTerrorEntry(
   resume: 'none' | 'wormRide' | 'ambassador' = 'none',
   ambassadorEvent?: string,
   revivalArrival?: RevivalEntryParent,
+  caladanArrival?: CaladanEntryParent,
 ) {
   if (revivalArrival)
     homeworldRule(() => validateRevivalArrivalSource(g, revivalArrival,
+      {entrant:entrant.id,territory:to,sector,amount,elite,cause}));
+  if (caladanArrival)
+    homeworldRule(() => validateCaladanChildArrival(g, caladanArrival,
       {entrant:entrant.id,territory:to,sector,amount,elite,cause}));
   const moritani = byFaction(g, 'moritani');
   const overlap = g.pendingArrivalOverlap;
@@ -24312,6 +24342,7 @@ function openTerrorEntry(
     ...(ambassadorEvent ? { ambassadorEvent } : {}),
     ...(cause === 'caladanReinforcement' ? {victoryEvent:g.homeworldVictoryReinforcement?.event} : {}),
     ...(revivalArrival ? {revivalArrival:structuredClone(revivalArrival)} : {}),
+    ...(caladanArrival ? {caladanArrival:structuredClone(caladanArrival)} : {}),
   };
   if (!TERROR_STRONGHOLDS.includes(to)) {
     const proofs = tokens.map(token => {
@@ -24349,7 +24380,7 @@ function finishTerrorEntry(g: Game) {
         t.location === overlap.territory);
       requireRule(token, 'The originally triggered Ambassador token is no longer present.');
       openAmbassadorEntry(g, getPlayer(g, overlap.ecaz), token,
-        getPlayer(g, overlap.entrant), overlap.territory, overlap.sector, 'none', overlap.cause, overlap.revivalArrival);
+        getPlayer(g, overlap.entrant), overlap.territory, overlap.sector, 'none', overlap.cause, overlap.revivalArrival, overlap.caladanArrival);
       overlap.ambassadorEvent = g.pendingAmbassador!.event;
       return;
     }
@@ -24650,6 +24681,8 @@ function decideTerror(g: Game, p: Player, action: Action) {
       action.sector === undefined || action.sector === entry.sector,
       'Sneak Attack must enter the recorded sector.',
     );
+    const caladan = amount > 0 && (entry.victoryEvent || entry.caladanArrival)
+      ? homeworldRule(() => createCaladanSneakReceipt(g,entry,p.id,amount,crypto.randomUUID())) : undefined;
     if (amount > 0) {
       requireRule(
         !options.blocked,
@@ -24672,7 +24705,14 @@ function decideTerror(g: Game, p: Player, action: Action) {
     const revivalArrival: RevivalEntryParent | undefined = amount > 0 && entry.revivalArrival
       ? {event:entry.revivalArrival.event,terror:{event:entry.entrySignature!,owner:p.id,
         territory:entry.territory,sector:entry.sector,amount,elite:0}} : undefined;
+    if (caladan) (g.homeworldVictoryReinforcement!.terrorArrivals ??= []).push(caladan.receipt);
     finishTerrorEntry(g);
+    if (caladan) {
+      (g.pendingArrivalReaction ??= []).push({entrant:p.id,territory:entry.territory,sector:entry.sector,
+        amount,elite:0,cause:'shipment',resume:'none',turn:g.turn,phase:g.phase,
+        caladanArrival:{event:g.homeworldVictoryReinforcement!.event,terror:caladan.packet},caladanSneakAdvisor:true});
+      return;
+    }
     // Keep the original two-owner opportunity intact before this new group's
     // reactions; never overwrite an Ambassador opened by finishing Terror.
     if (revivalArrival) {
@@ -24815,6 +24855,9 @@ function spiritualParentSignature(g:Game,decision:Extract<Decision,{kind:'adviso
     ? g.pendingAmbassador : g.pendingArrivalReaction??null]);
 }
 function quoteSpiritualOrder(g:Game,decision:Extract<Decision,{kind:'advisor'}>,action:Action){
+  if(decision.caladanArrival) homeworldRule(() => validateCaladanChildArrival(g,decision.caladanArrival!,
+    {entrant:decision.shipment,territory:decision.caladanArrival!.terror.territory,
+      sector:decision.caladanArrival!.terror.sector,amount:decision.caladanArrival!.terror.amount,elite:0,cause:'shipment'}));
   const bg=getPlayer(g,decision.player);
   let order:{player:string;territory:string;sector:number;amount:number;elite:0;advisors:boolean};
   if(decision.ambassadorEvent){
@@ -24846,7 +24889,7 @@ function quoteSpiritualOrder(g:Game,decision:Extract<Decision,{kind:'advisor'}>,
 }
 function spiritualAdvisorChoices(g:Game,id:string){
   const decision=g.decision;
-  if(decision?.kind!=='advisor'||decision.player!==id||(!g.advanced&&!decision.revivalEvent))return null;
+  if(decision?.kind!=='advisor'||decision.player!==id||(!g.advanced&&!decision.revivalEvent&&!decision.caladanArrival))return null;
   const destination=decision.destination?splitLocation(decision.destination).territory:null;
   const choices=[...(g.advanced&&destination?gameTerritories(g).find(t=>t.id===destination)?.sectors.map(sector=>
     ({accompany:true,territory:destination,sector,amount:1}))??[]:[]),
@@ -24868,7 +24911,7 @@ function spiritualAdvisorChoices(g:Game,id:string){
 }
 function spiritualFrameBody(g:Game){
   const frame=g.pendingSpiritualAdvisor;
-  requireRule(frame&&(g.advanced||frame.phase===4&&!!frame.decision.revivalEvent)&&g.status==='playing'&&frame.turn===g.turn&&frame.phase===g.phase&&
+  requireRule(frame&&(g.advanced||frame.phase===4&&!!frame.decision.revivalEvent||!!frame.decision.caladanArrival)&&g.status==='playing'&&frame.turn===g.turn&&frame.phase===g.phase&&
     getPlayer(g,frame.decision.player).faction==='beneGesserit'&&
     frame.signature===JSON.stringify([frame.event,spiritualParentSignature(g,frame.decision)]),
     'Spiritual Advisors lost the original committed foreign shipment.');
@@ -24922,7 +24965,8 @@ function beginSpiritualAdvisor(g:Game,decision:Extract<Decision,{kind:'advisor'}
   const source:SpiritualAdvisorSource={event:frame.event,owner:decision.player,turn:g.turn,phase:g.phase,
     territory:order.territory,sector:order.sector,amount:order.amount,
     ...(g.phase===4&&(decision.revivalEvent||g.pendingAmbassador?.revivalEvent)
-      ?{revivalEvent:decision.revivalEvent??g.pendingAmbassador!.revivalEvent}: {})};
+      ?{revivalEvent:decision.revivalEvent??g.pendingAmbassador!.revivalEvent}: {}),
+    ...(decision.caladanArrival ? {victoryEvent:decision.caladanArrival.event} : {})};
   if(spiritualAdvisorArrival(g,source.owner,source.territory).matching)
     requireRule(!frame.denied.includes(spiritualAdvisorMatchingKey(source)),
       'Matching this free packet here was prevented. Choose another legal packet or decline.');
@@ -25002,7 +25046,8 @@ function completeSpiritualAdvisorArrival(g:Game){
   }else{
     openTerritoryEntry(g,bg,order.territory,order.sector,order.amount,0,'advisor','none',
       frame.source!.revivalEvent ? {event:frame.source!.revivalEvent,spiritual:frame.source,
-        ...(frame.decision.revivalTerror ? {terror:frame.decision.revivalTerror} : {})} : undefined);
+        ...(frame.decision.revivalTerror ? {terror:frame.decision.revivalTerror} : {})} : undefined,
+      frame.decision.caladanArrival ? {...frame.decision.caladanArrival,spiritual:frame.source!} : undefined);
   }
 }
 type TransportMatchingIntent=NonNullable<Game['pendingAdvisorTransportMatching']>['intent'];
@@ -26495,11 +26540,12 @@ function finishAdvisorReaction(
     advisorResume?: ResponseWindow['advisorResume'];
     discoveryEntry?: DiscoveryEntryArrivalChild;
     advisorAmbassadorEvent?: string;
+    advisorCaladanArrival?: CaladanEntryParent;
     advisorVictoryEvent?: string;
     advisorRevivalEvent?: string;
     advisorRevivalTerror?: RevivalEntryParent['terror'];
     advisorRemaining?: string[];
-    advisorFollowup?: { shipment: string; destination: string; revivalEvent?: string; revivalTerror?: RevivalEntryParent['terror'] };
+    advisorFollowup?: { shipment: string; destination: string; caladanArrival?: CaladanEntryParent; revivalEvent?: string; revivalTerror?: RevivalEntryParent['terror'] };
   },
 ) {
   const bg = byFaction(g, 'beneGesserit')!;
@@ -26524,10 +26570,11 @@ function intrusion(
     wormRide?: boolean;
     discoveryEntry?: DiscoveryEntryArrivalChild;
     ambassadorEvent?: string;
+    caladanArrival?: CaladanEntryParent;
     victoryEvent?: string;
     revivalEvent?: string;
     revivalTerror?: RevivalEntryParent['terror'];
-    followup?: { shipment: string; destination: string; revivalEvent?: string; revivalTerror?: RevivalEntryParent['terror'] };
+    followup?: { shipment: string; destination: string; caladanArrival?: CaladanEntryParent; revivalEvent?: string; revivalTerror?: RevivalEntryParent['terror'] };
   } = {},
 ) {
   const bg = byFaction(g, 'beneGesserit');
@@ -32188,6 +32235,7 @@ function homeworldVictoryWitness(frame: HomeworldVictoryReturn) {
 function homeworldVictoryReturnIntegrity(g: Game) {
   homeworldRule(() => validateHomeworldVictoryReturn(g));
   const frame = g.homeworldVictoryReinforcement;
+  homeworldRule(() => validateCaladanSneakHistory(g));
   if (frame?.stage === 'arrival' || frame?.stage === 'complete')
     homeworldRule(() => validateHomeworldArrival(g, frame, 'victoryEvent'));
   const continuation = g.pendingTreacheryDiscard?.continuation;
@@ -32197,6 +32245,31 @@ function homeworldVictoryReturnIntegrity(g: Game) {
   const decisions = contexts.flatMap((context) => context?.decision?.kind === 'caladanReinforcement' ? [context.decision] : []);
   const arrivals = g.pendingArrivalReaction?.filter(entry => entry.cause === 'caladanReinforcement' || entry.victoryEvent !== undefined) ?? [];
   for (const entry of arrivals) homeworldRule(() => validateCaladanArrivalSource(g, entry));
+  for (const entry of g.pendingArrivalReaction??[]) if(entry.caladanArrival)
+    homeworldRule(() => validateCaladanChildArrival(g,entry.caladanArrival!,entry));
+  const childChoices=contexts.flatMap(context => context?.decision &&
+    (context.decision.kind==='advisor'||context.decision.kind==='intrusion') && context.decision.caladanArrival
+      ? [context.decision] : []);
+  const childResponses=[...contexts.map(context=>context?.response),
+    g.pendingKarama?.use.kind==='cancel' ? g.pendingKarama.use.response : undefined]
+    .filter((response):response is ResponseWindow=>!!response?.advisorCaladanArrival);
+  for(const choice of childChoices){
+    const parent=choice.caladanArrival!,packet=parent.terror;
+    requireRule(choice.player===byFaction(g,'beneGesserit')?.id &&
+      (choice.kind==='intrusion' ? choice.territory===packet.territory :
+        choice.shipment===packet.owner && choice.destination===location(packet.territory,packet.sector)),
+      'The Caladan Sneak group has lost its original Bene Gesserit opportunity.');
+    homeworldRule(()=>validateCaladanChildArrival(g,parent,{entrant:packet.owner,territory:packet.territory,
+      sector:packet.sector,amount:packet.amount,elite:0,cause:'shipment'}));
+  }
+  for(const response of childResponses){
+    const parent=response.advisorCaladanArrival!,packet=parent.terror;
+    requireRule(response.kind==='advisorFlip' && response.advisors===true &&
+      response.owner===byFaction(g,'beneGesserit')?.id && response.location===packet.territory,
+      'The Caladan Sneak group has lost its original Intrusion response.');
+    homeworldRule(()=>validateCaladanChildArrival(g,parent,{entrant:packet.owner,territory:packet.territory,
+      sector:packet.sector,amount:packet.amount,elite:0,cause:'shipment'}));
+  }
   const intrusionChoices = contexts.flatMap(context => context?.decision?.kind === 'intrusion' &&
     context.decision.victoryEvent !== undefined ? [context.decision] : []);
   const intrusionResponses = [...contexts.map(context => context?.response),
@@ -38950,6 +39023,15 @@ function settleAutomaticContinuations(g: Game) {
         homeworldRule(() => validateCaladanArrivalSource(g, deferred));
       const entrant = g.players.find(p => p.id === deferred.entrant);
       requireRule(!!entrant, 'The deferred arrival entry has lost its entrant.');
+      if (deferred.caladanArrival) homeworldRule(() => validateCaladanChildArrival(g,deferred.caladanArrival!,deferred));
+      if (deferred.caladanSneakAdvisor) {
+        requireRule(deferred.caladanArrival && !deferred.caladanArrival.spiritual, 'The queued Sneak group lost its original Caladan source.');
+        const bg=byFaction(g,'beneGesserit'), source={caladanArrival:deferred.caladanArrival};
+        const followup=bg && spiritualAdvisorMaximum(g,bg.id)>0
+          ? {shipment:entrant!.id,destination:location(deferred.territory,deferred.sector),...source} : undefined;
+        if(!intrusion(g,entrant!,deferred.territory,{...source,...(followup ? {followup} : {})}) && followup)
+          g.decision={kind:'advisor',player:bg!.id,...followup};
+      }
       if (deferred.revivalSneakAdvisor) {
         requireRule(deferred.revivalArrival?.terror && !deferred.revivalArrival.spiritual &&
           deferred.turn === g.turn && deferred.phase === g.phase,
@@ -38964,7 +39046,7 @@ function settleAutomaticContinuations(g: Game) {
           g.decision = {kind:'advisor',player:bg!.id,...followup};
       }
       openTerritoryEntry(g, entrant!, deferred.territory, deferred.sector,
-        deferred.amount, deferred.elite, deferred.cause, deferred.resume, deferred.revivalArrival);
+        deferred.amount, deferred.elite, deferred.cause, deferred.resume, deferred.revivalArrival, deferred.caladanArrival);
       if (deferred.revivalArrival) resumeHomeworldRevivalReturn(g);
       continue;
     }
@@ -40917,6 +40999,7 @@ function applyActionInner(
             ? ('wormRide' as const)
             : undefined,
         advisorAmbassadorEvent: decision.ambassadorEvent,
+        advisorCaladanArrival: decision.caladanArrival,
         advisorVictoryEvent: decision.victoryEvent,
         advisorRevivalEvent: decision.revivalEvent,
         advisorRevivalTerror: decision.revivalTerror,
@@ -40958,7 +41041,7 @@ function applyActionInner(
         };
       } else movementTurn(g);
     } else if (decision.kind === 'advisor') {
-      if(g.advanced||decision.revivalEvent!==undefined){
+      if(g.advanced||decision.revivalEvent!==undefined||decision.caladanArrival!==undefined){
         requireRule(typeof action.accept==='boolean','Choose the free Spiritual shipment or decline.');
         if(action.accept){
           beginSpiritualAdvisor(g,decision,action);

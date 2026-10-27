@@ -121,6 +121,59 @@ battle cleanup and persistence. The
 implemented flow and verification. No complete Homeworld, Advanced or expansion
 release is claimed.
 
+## Sneak Attack child arrival — 27 October 2026
+
+A positive Sneak Attack spends its actual off-planet reserves once. It is a
+separate committed arrival after the Caladan addition, not a second victory
+reinforcement. Its BG Intrusion/Spiritual opportunity and native entry reactions
+follow the original Ambassador/Terror overlap, so the original second owner is
+not overwritten. A declined Ambassador may react again to the new Moritani group;
+a consumed token remains consumed. Zero places no group and creates no new
+source. Existing native quantity, occupancy, payment and token effects remain.
+
+The source classification follows the existing Sneak off-planet shipment model
+and the printed separate group. Serializing original overlap before that group's
+reactions is an explicit provisional composition, consistent with the Revival
+arrival flow; it is not a retrieved publisher sequencing example. The original
+Caladan HMS/Terror rulings above remain provisional. Caladan itself still grants
+no Spiritual Advisor shipment: only the actual positive Sneak group does.
+
+The new group's public packet uses an opaque UUID. A focused engine-only history
+records the sanitized actual trigger, selected revealed Sneak token and committed
+normal group. Private Terror candidate lists and raw entry signatures are not
+copied into public source packets. Current reaction validation uses that original
+receipt, not a new reserve quote or present inhabitants after accepted effects.
+Older original/Revival signatures stay unchanged without the new parent.
+
+Advanced BG may accompany an eligible destination or select Polar Sink; Basic
+retains its ordinary Polar fallback. Own retained fighters, matching and alone
+conversion retain their separate legality/responses. Preventing free shipping
+or a later conversion never refunds/replays the committed Sneak group. Standard
+owned controls and minimal legal policies use the same projected choices.
+
+Frozen14-file116/116, types/lint/build and twelve controlled engine/GameTable
+SSR programmes pass:56 table renders and8 actual inline advisor callbacks,
+with105/25/41 recorded battle/opening/further actions. Native packets exercise
+original Caladan/Terror/amount and cancellation controls; those stateful
+controls are not operated. The source explicitly stages audit setup, positions,
+purses, original cards/token supply/order and another contest. Actual native
+battle/Caladan/Terror/quantity actions create every victory and child receipt.
+The six controlled source/ledger-surrogate tests separately prove helper/history
+contracts and old phase4/phase6 bytes, not native chronology.
+
+The runtime covers zero/positive, both original owners, a new child Ambassador,
+Advanced away/resident-advisor accompaniment, Basic Polar, shipping prevention,
+Polar conversion allowance/prevention and decline. The combined second-owner/BG/
+child journey preserves the original prompt. No legal initial three-fighting-
+faction stronghold source is invented to claim Intrusion chronology. Source
+feedback repaired the dispatcher-transition assumption, optional test absence
+and two type declarations; failed v1/v2 remains preserved.
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-caladan-sneak-proof-v3/`;
+journeys/HTML: adjacent `20261027-caladan-sneak-runtime/run-v2/`.
+No restart or saved-game/database operation. Browser/hydration/mobile, native
+acquisition, deeper Nexus/Skills/Semuta combinations, native full games and final
+assurance/deployed acceptance remain open.
+
 ## Focused before-Face-Dance evidence — 26 October 2026
 
 Frozen15-file189/189, types/lint/build and sixteen engine/GameTable SSR journeys

@@ -2,6 +2,7 @@ import type { Game } from './engine';
 import type { HomeworldAmbassadorArrival } from './homeworld-arrival';
 import type { HomeworldVictoryWitness } from './homeworld-victory-reinforcement';
 import { HomeworldCustodyError } from './homeworld-custody';
+import type { CaladanSneakReceipt } from './caladan-arrival';
 
 export type HomeworldVictoryReturn = HomeworldVictoryWitness & {
   phase: 6;
@@ -11,6 +12,7 @@ export type HomeworldVictoryReturn = HomeworldVictoryWitness & {
   destination?: string;
   ambassadors?: HomeworldAmbassadorArrival[];
   arrivalSignature?: string;
+  terrorArrivals?: CaladanSneakReceipt[];
 };
 export type HomeworldVictoryObligation = {
   event: string;
@@ -63,7 +65,7 @@ export function validateHomeworldVictoryReturn(g: Pick<Game, 'turn' | 'phase' | 
   if (frame === undefined || frame === null) return;
   if (typeof frame !== 'object' || Array.isArray(frame) ||
     Object.keys(frame).some((key) => !['event', 'turn', 'phase', 'player', 'territory', 'result', 'stage',
-      'signature', 'offer', 'destination', 'ambassadors', 'arrivalSignature'].includes(key)) ||
+      'signature', 'offer', 'destination', 'ambassadors', 'arrivalSignature', 'terrorArrivals'].includes(key)) ||
     !witnessValid(frame) || frame.signature !== originalSignature(frame) || frame.phase !== 6 ||
     !['waiting', 'choice', 'arrival', 'complete'].includes(frame.stage) ||
     !g.homeworlds?.custody ||
@@ -83,8 +85,9 @@ export function validateHomeworldVictoryReturn(g: Pick<Game, 'turn' | 'phase' | 
     offer.blocked !== null && (typeof offer.blocked !== 'string' || !offer.blocked) ||
     offer.signature !== homeworldVictoryOfferSignature(frame, offer))) fail();
   if (frame.stage === 'waiting' || frame.stage === 'choice') {
-    if (frame.destination !== undefined || frame.ambassadors !== undefined || frame.arrivalSignature !== undefined ||
+    if (frame.destination !== undefined || frame.ambassadors !== undefined || frame.arrivalSignature !== undefined || frame.terrorArrivals !== undefined ||
       (frame.stage === 'waiting' ? offer !== undefined : !offer)) fail();
   } else if (typeof frame.destination !== 'string' || !frame.destination || !Array.isArray(frame.ambassadors) ||
     typeof frame.arrivalSignature !== 'string' || (!offer && frame.destination !== 'decline')) fail();
+  if (frame.terrorArrivals !== undefined && !Array.isArray(frame.terrorArrivals)) fail();
 }

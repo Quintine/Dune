@@ -2619,6 +2619,7 @@ export function GameTable({
                   {' '}Allow the arrival or cancel Spiritual Advisors. Canceling prevents the whole declared group.
                   {g.response.spiritualAdvisorSource&&<> Matching or an alone conversion may follow separately. The other faction’s shipment is already committed.</>}
                   {g.response.spiritualAdvisorSource?.revivalEvent&&<> The revived group stays placed; this response does not cancel its revival.</>}
+                  {g.response.spiritualAdvisorSource?.victoryEvent&&<> The Sneak Attack group stays placed; this response does not replay or refund its arrival.</>}
                 </p>
               )}
               {g.response.kind === 'moritaniRetention' &&
@@ -3830,7 +3831,9 @@ export function GameTable({
               ) : g.decision.kind === 'advisor' ? (
                 <>
                   <p className="muted">
-                    {g.decision.revivalEvent
+                    {g.decision.caladanArrival
+                      ? 'Moritani’s Sneak Attack group has arrived from off-planet. You may send'
+                      : g.decision.revivalEvent
                       ? 'Tleilaxu’s free-revived group has arrived from off-planet. You may send'
                       : 'Another faction has shipped from off-planet. You may send'}
                     {' '}

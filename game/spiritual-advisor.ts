@@ -1,6 +1,7 @@
 import { gameTerritories, splitLocation, type MobileBoard } from './board';
 import type { FactionId } from './catalog';
 import type { Game } from './engine';
+import { validCaladanEntryParent, validateCaladanTerrorPacket, type CaladanEntryParent } from './caladan-arrival';
 import { currentHomeworldRevivalArrival } from './homeworld-revival-return';
 import { presenceAt, type ForcePresence } from './force-presence';
 
@@ -13,6 +14,7 @@ export type SpiritualAdvisorSource = {
   sector: number;
   amount: number;
   revivalEvent?: string;
+  victoryEvent?: string;
 };
 
 export type SpiritualAdvisorPlayer = ForcePresence & {
@@ -31,9 +33,10 @@ export type SpiritualAdvisorContext = SpiritualAdvisorBoardContext & MobileBoard
   turn: number;
   phase: number;
   homeworldRevivalReturn?: Pick<NonNullable<Game['homeworldRevivalReturn']>, 'event' | 'turn' | 'phase' | 'stage' | 'destination'>;
-  homeworldVictoryReinforcement?: Pick<NonNullable<Game['homeworldVictoryReinforcement']>, 'event' | 'turn' | 'phase' | 'stage'>;
+  homeworldVictoryReinforcement?: Pick<NonNullable<Game['homeworldVictoryReinforcement']>, 'event' | 'turn' | 'phase' | 'stage'> &
+    Partial<Pick<NonNullable<Game['homeworldVictoryReinforcement']>, 'player' | 'destination' | 'terrorArrivals'>>;
   pendingSpiritualAdvisor?: Pick<NonNullable<Game['pendingSpiritualAdvisor']>, 'event' | 'turn' | 'phase'> & {
-    decision: Pick<NonNullable<Game['pendingSpiritualAdvisor']>['decision'], 'player' | 'destination' | 'ambassadorEvent' | 'revivalEvent'>;
+    decision: Pick<NonNullable<Game['pendingSpiritualAdvisor']>['decision'], 'player' | 'destination' | 'ambassadorEvent' | 'revivalEvent'> & {shipment?:string;caladanArrival?:CaladanEntryParent};
   };
   pendingAmbassador?: Pick<NonNullable<Game['pendingAmbassador']>,
     'event' | 'revivalEvent' | 'victoryEvent' | 'turn' | 'phase' | 'stage' | 'effect' | 'shipmentReceipt'> | null;
@@ -121,7 +124,8 @@ export function spiritualAdvisorMatchingKey(source: SpiritualAdvisorSource): str
 export function validateSpiritualAdvisorSource(ctx: SpiritualAdvisorContext, source: SpiritualAdvisorSource): void {
   requireSpiritual(record(source) &&
     Object.keys(source).sort().join(',') === (source.phase === 4
-      ? 'amount,event,owner,phase,revivalEvent,sector,territory,turn' : 'amount,event,owner,phase,sector,territory,turn') &&
+      ? 'amount,event,owner,phase,revivalEvent,sector,territory,turn' : source.victoryEvent !== undefined
+      ? 'amount,event,owner,phase,sector,territory,turn,victoryEvent' : 'amount,event,owner,phase,sector,territory,turn') &&
     identifier(source.event) && identifier(source.owner) && positive(source.turn) && source.turn === ctx.turn &&
     source.phase === ctx.phase && [1, 3, 4, 5, 6, 8].includes(source.phase) && ctx.status === 'playing' &&
     identifier(source.territory) && Number.isSafeInteger(source.sector) && source.sector >= 0 &&
@@ -131,6 +135,8 @@ export function validateSpiritualAdvisorSource(ctx: SpiritualAdvisorContext, sou
   requireSpiritual(gameTerritories(ctx).some((place) =>
     place.id === source.territory && place.sectors.includes(source.sector)),
   'Spiritual Advisors need their current board destination and sector.');
+  if (source.victoryEvent !== undefined)
+    requireSpiritual(source.phase === 6, 'A Caladan child source belongs only to its original Battle phase.');
   if (source.phase === 6) {
     const parent = ctx.homeworldVictoryReinforcement;
     requireSpiritual(record(parent) && identifier(parent.event) && parent.turn === ctx.turn &&
@@ -138,6 +144,22 @@ export function validateSpiritualAdvisorSource(ctx: SpiritualAdvisorContext, sou
     'Victory Spiritual Advisors need their original current-turn Caladan arrival parent.');
     const frame = ctx.pendingSpiritualAdvisor, ambassador = ctx.pendingAmbassador;
     const decision = frame?.decision;
+    if (decision?.caladanArrival) {
+      const child=decision.caladanArrival;
+      requireSpiritual(record(frame) && frame.event===source.event && frame.turn===ctx.turn && frame.phase===6 &&
+        decision.player===source.owner && decision.ambassadorEvent===undefined && decision.revivalEvent===undefined &&
+        validCaladanEntryParent(child) && child.spiritual===undefined && child.event===parent.event &&
+        source.victoryEvent===parent.event && identifier(parent.player) && identifier(parent.destination) &&
+        decision.shipment===child.terror.owner && decision.destination===`${child.terror.territory}:${child.terror.sector}`,
+        'Victory Spiritual Advisors need their original committed Sneak Attack group.');
+      try { validateCaladanTerrorPacket({turn:ctx.turn,phase:ctx.phase,players:ctx.players,
+        victoryPlayer:parent.player,terrorArrivals:parent.terrorArrivals??[]},child.terror,parent.destination,parent.event); }
+      catch { throw new SpiritualAdvisorError('Victory Spiritual Advisors lost their committed Sneak Attack history.'); }
+      requireSpiritual(source.territory===child.terror.territory || source.territory==='polar_sink',
+        'Victory Spiritual Advisors need the actual Sneak Attack territory or Polar Sink.');
+      return;
+    }
+    requireSpiritual(source.victoryEvent===undefined, 'This Guild Ambassador source does not carry a Sneak Attack grant.');
     requireSpiritual(record(frame) && frame.event === source.event && frame.turn === ctx.turn && frame.phase === 6 &&
       record(decision) && decision.player === source.owner && identifier(decision.ambassadorEvent) &&
       decision.revivalEvent === undefined && record(ambassador) && ambassador.event === decision.ambassadorEvent &&

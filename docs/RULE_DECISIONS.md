@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Caladan-triggered Sneak Attack child — 27 October 2026
+
+A positive actual Sneak group receives its own off-planet arrival source, after
+both owners of the original Caladan entry finish. Under standing recommended-
+option authority, this ordering is provisional composition of the existing
+Sneak/Spiritual entry model, not a specific publisher example. Zero has no new
+source. An unconsumed Ambassador may react to that separate group, while used
+physical tokens and the original single reserve addition remain spent. Basic
+Polar and Advanced accompaniment retain native permissions and independent
+Karama/conversion responses. Public source packets use opaque events; sanitized
+trigger history stays engine-owned. [Contract](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#sneak-attack-child-arrival--27-october-2026).
+
 ## Caladan victory placement and entry — 27 October 2026
 
 Compose the original Caladan high face's one-counter addition with Advanced

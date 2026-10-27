@@ -20,6 +20,43 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Caladan Sneak Attack child — 27 October. Prototyped / Partial.**
+A positive actual Moritani reserve group now has its own arrival after both
+owners of the original Caladan entry finish. BG’s free Spiritual opportunity,
+Basic Polar fallback and Advanced accompaniment retain separate shipping,
+matching/alone-conversion and prevention outcomes. An unconsumed Ambassador may
+react again to the new group. Zero creates no group/source; no original debit,
+victory grant or used token is replayed. Public packets use opaque UUIDs, with
+sanitized actual trigger history kept engine-owned. The ordering composition
+remains provisional. [Contract](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#sneak-attack-child-arrival--27-october-2026).
+
+Frozen **14-file union116/116**, types/lint/build and twelve controlled runtime
+journeys pass:56 GameTable SSR and8 actual inline advisor callbacks; recorded
+battle/opening/further actions105/25/41. Actual battles and subsequent native
+Caladan/Terror/quantity decisions generate the grants from explicitly staged
+Homeworld audit setups, positions, purses, original cards/token supply/order and
+one other contest holding Battle phase. No victory/child receipt is installed.
+Six source tests separately construct signed controlled witnesses/ledger
+surrogates; they prove helper contracts and legacy bytes, not native chronology.
+
+The runtime operates Advanced away/resident-advisor accompaniment, Basic Polar,
+Polar allow/prevent conversion, shipping prevention, decline, both original
+Ambassador orders and a combined second-owner/advisor/child-Ambassador journey.
+Caladan/Moritani amount, hand-card and other reaction controls use native
+packets; those stateful controls are not operated. No browser/hydration/mobile,
+native acquisition, legal initial three-fighter stronghold Intrusion witness or
+broader Nexus/Skills/Semuta/recovery/privacy/custody/deployed certification.
+
+Feedback respected the dispatcher’s cleared decision during actual transition,
+normalized an absent optional test value and repaired two type declarations.
+Failed v1/v2 stays preserved; v3 checks one frozen source plus a final three-doc
+evidence overlay. Proof:
+`/home/quintine/.local/share/dune/checkpoints/20261027-caladan-sneak-proof-v3/`;
+journeys/HTML: adjacent `20261027-caladan-sneak-runtime/run-v2/`.
+Existing server HTTP200, without restart or saved-game/database operation.
+Full modes, remaining interactions and final acceptance remain open; full AI
+refinement stays deferred.
+
 **Caladan victory arrival — 27 October. Prototyped / Partial.**
 The original one-counter reserve addition now reaches a won HMS provisionally,
 resolves Advanced BG Intrusion first, then opens the original Ambassador/Terror

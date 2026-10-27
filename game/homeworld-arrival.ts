@@ -3,6 +3,7 @@ import { location, splitLocation, validLocation } from './board';
 import { HomeworldCustodyError } from './homeworld-custody';
 import type { SpiritualAdvisorSource } from './spiritual-advisor';
 import { validRevivalTerrorPacket, validateRevivalTerrorPacket, type RevivalTerrorPacket } from './revival-terror-entry';
+import { validCaladanEntryParent, validateCaladanTerrorPacket, type CaladanSneakReceipt } from './caladan-arrival';
 
 export type HomeworldAmbassadorArrival = {
   event: string;
@@ -23,11 +24,12 @@ export type HomeworldArrivalFrame = {
   destination?: string;
   ambassadors?: HomeworldAmbassadorArrival[];
   arrivalSignature?: string;
+  terrorArrivals?: CaladanSneakReceipt[];
 };
 export type HomeworldArrivalTag = 'revivalEvent' | 'victoryEvent';
 export type HomeworldArrivalContext = Pick<
   Game,
-  'turn' | 'phase' | 'players' | 'pendingAmbassador'
+  'turn' | 'phase' | 'players' | 'pendingAmbassador' | 'homeworldVictoryReinforcement'
 >;
 function fail(): never {
   throw new HomeworldCustodyError(
@@ -51,19 +53,23 @@ function keys(value: unknown, allowed: string[]): boolean {
 function spiritualSource(
   frame: HomeworldArrivalFrame,
   entry: HomeworldAmbassadorArrival,
-): SpiritualAdvisorSource & { revivalEvent: string } {
-  const source = entry.spiritual as (SpiritualAdvisorSource & { revivalEvent?: string }) | undefined;
-  if (!source || !keys(source, ['event', 'owner', 'turn', 'phase', 'territory', 'sector', 'amount', 'revivalEvent'])) fail();
+): SpiritualAdvisorSource {
+  const source = entry.spiritual;
+  const victory = frame.phase === 6;
+  const tag = victory ? 'victoryEvent' : 'revivalEvent';
+  if (!source || !keys(source, ['event', 'owner', 'turn', 'phase', 'territory', 'sector', 'amount', tag])) fail();
   const destination = splitLocation(frame.destination!);
   const origin = entry.terror?.territory ?? destination.territory;
   if (
-    Object.keys(source).sort().join(',') !== 'amount,event,owner,phase,revivalEvent,sector,territory,turn' ||
+    Object.keys(source).sort().join(',') !== (victory
+      ? 'amount,event,owner,phase,sector,territory,turn,victoryEvent'
+      : 'amount,event,owner,phase,revivalEvent,sector,territory,turn') ||
     !text(source.event) ||
     !text(source.owner) ||
     source.owner !== entry.entrant ||
     source.owner === frame.player ||
-    source.revivalEvent !== frame.event ||
-    frame.phase !== 4 || source.phase !== 4 ||
+    source[tag] !== frame.event ||
+    (victory ? !entry.terror || source.phase !== 6 : frame.phase !== 4 || source.phase !== 4) ||
     source.turn !== frame.turn ||
     !Number.isSafeInteger(source.turn) || source.turn < 1 ||
     !text(source.territory) ||
@@ -75,7 +81,7 @@ function spiritualSource(
     entry.parent !== undefined ||
     entry.destination !== location(source.territory, source.sector)
   ) fail();
-  return source as SpiritualAdvisorSource & { revivalEvent: string };
+  return source;
 }
 
 function terrorPacket(source: RevivalTerrorPacket) {
@@ -87,11 +93,12 @@ function terrorPacket(source: RevivalTerrorPacket) {
 function terrorSource(frame: HomeworldArrivalFrame, entry: HomeworldAmbassadorArrival): RevivalTerrorPacket {
   const source = entry.terror;
   const destination = splitLocation(frame.destination!);
-  if (!validRevivalTerrorPacket(source) || entry.parent !== undefined ||
+  if (!source || !(frame.phase === 6 ? validCaladanEntryParent({ event: frame.event, terror: source }) : validRevivalTerrorPacket(source)) ||
+    entry.parent !== undefined ||
     !validLocation(destination.territory, destination.sector) ||
     (entry.spiritual === undefined && (entry.entrant !== source.owner ||
       entry.destination !== location(source.territory, source.sector)))) fail();
-  return source;
+  return source!;
 }
 
 /** Arrival provenance is fixed separately from the original revival grant. */
@@ -166,7 +173,7 @@ export function homeworldArrivalSignature(
         entry.spiritual.territory,
         entry.spiritual.sector,
         entry.spiritual.amount,
-        spiritualSource(frame, entry).revivalEvent,
+        frame.phase === 6 ? spiritualSource(frame, entry).victoryEvent : spiritualSource(frame, entry).revivalEvent,
       ]]),
       ...(entry.terror === undefined ? [] : [['terror', terrorPacket(entry.terror)]]),
     ]),
@@ -269,16 +276,24 @@ export function validateHomeworldArrival(
     frame.arrivalSignature !== homeworldArrivalSignature(frame) ||
     frame.ambassadors!.some((entry) => {
       if (entry.terror !== undefined) {
-        if (tag !== 'revivalEvent') return true;
-        validateRevivalTerrorPacket({ turn: frame.turn, phase: frame.phase, players: g.players,
-          revivalPlayer: frame.player }, entry.terror, frame.destination!, frame.event);
+        if (tag === 'revivalEvent') {
+          validateRevivalTerrorPacket({ turn: frame.turn, phase: frame.phase, players: g.players,
+            revivalPlayer: frame.player }, entry.terror, frame.destination!, frame.event);
+        } else {
+          validateCaladanTerrorPacket({ turn: frame.turn, phase: frame.phase, players: g.players,
+            victoryPlayer: frame.player, terrorArrivals: frame.terrorArrivals ??
+              (g.homeworldVictoryReinforcement?.event === frame.event ? g.homeworldVictoryReinforcement.terrorArrivals : undefined) ?? [] },
+          entry.terror, frame.destination!, frame.event);
+        }
       }
       if (entry.spiritual !== undefined) {
         const entrants = g.players.filter((seat) => seat.id === entry.entrant);
         const owners = g.players.filter((seat) => seat.id === frame.player);
-        return tag !== 'revivalEvent' || entrants.length !== 1 ||
+        return entrants.length !== 1 ||
           entrants[0].faction !== 'beneGesserit' || owners.length !== 1 ||
-          (entry.terror === undefined && owners[0].faction !== 'tleilaxu');
+          (tag === 'victoryEvent'
+            ? frame.phase !== 6 || entry.terror === undefined || owners[0].faction !== 'atreides'
+            : entry.terror === undefined && owners[0].faction !== 'tleilaxu');
       }
       if (entry.terror !== undefined) {
         return !g.players.some(seat => seat.id === entry.entrant && seat.faction === 'moritani');

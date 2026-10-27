@@ -1,5 +1,24 @@
 # Dune implementation status
 
+## 27 October 2026 — Caladan Sneak Attack child arrival
+
+A positive actual Sneak group now receives a separate opaque source, after the
+original Ambassador/Terror owners finish. Basic Polar/Advanced accompaniment,
+independent shipping and conversion responses, a new eligible Ambassador and
+minimal policies retain the one committed reserve group. Zero creates no source.
+Engine-only sanitized history avoids publishing private Terror candidate lists.
+The adopted source order remains provisional.
+
+Frozen14-file116/116, types/lint/build and twelve controlled runtime programmes
+pass (56 table SSR,8 actual advisor callbacks;105/25/41 battle/opening/further
+actions). Controlled setup and exact native-action boundaries are explicit;
+six signed source witnesses/ledger surrogates are helper evidence. Failed v1/v2
+stays; v3 binds frozen source plus final three-document overlay. Existing server
+HTTP200 without restart/saved-game/database operation. [Current checkpoint](CURRENT_STATUS.md#current-checkpoint-and-work),
+[contract/proof and limits](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md#sneak-attack-child-arrival--27-october-2026).
+No native acquisition, full-mode, broader combination, browser/deployed or final
+assurance certification; full AI refinement remains deferred.
+
 ## 27 October 2026 — Caladan victory arrival
 
 One actual reserve counter now reaches a won HMS provisionally and resolves

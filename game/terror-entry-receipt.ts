@@ -3,6 +3,7 @@ import { TERRITORIES, validLocation } from './board';
 import { HomeworldCustodyError } from './homeworld-custody';
 import { TERROR_STRONGHOLDS } from './moritani-terror';
 import { revivalEntryParentTuple, validRevivalEntryParent } from './revival-terror-entry';
+import { caladanEntryParentTuple, validCaladanEntryParent } from './caladan-arrival';
 
 type TerrorEntry = NonNullable<Game['pendingTerrorEntry']>;
 
@@ -24,6 +25,7 @@ export function terrorEntrySignature(entry: TerrorEntry): string {
     ...(entry.nexusPlacements ? [entry.nexusPlacements] : []),
     ...(entry.revivalArrival === undefined ? [] : [revivalEntryParentTuple(entry.revivalArrival)]),
     ...(entry.victoryEvent === undefined ? [] : [['caladanVictory', entry.victoryEvent]]),
+    ...(entry.caladanArrival === undefined ? [] : [caladanEntryParentTuple(entry.caladanArrival)]),
   ]);
 }
 
@@ -33,13 +35,14 @@ export function terrorSelectionSignature(entry: TerrorEntry): string {
     entry.turn, entry.phase, entry.resume, entry.ambassadorEvent ?? null,
     ...(entry.nexusPlacements ? [entry.nexusPlacements] : []),
     ...(entry.revivalArrival === undefined ? [] : [revivalEntryParentTuple(entry.revivalArrival)]),
-    ...(entry.victoryEvent === undefined ? [] : [['caladanVictory', entry.victoryEvent]])]);
+    ...(entry.victoryEvent === undefined ? [] : [['caladanVictory', entry.victoryEvent]]),
+    ...(entry.caladanArrival === undefined ? [] : [caladanEntryParentTuple(entry.caladanArrival)])]);
 }
 
 /** Older saves without a receipt remain explicit legacy state. Never invent
  * their original entry count from the destination's present occupants. */
 export function validateTerrorEntrySignature(entry: TerrorEntry): void {
-  if (entry.entrySignature === undefined && entry.candidates === undefined && entry.selectionSignature === undefined && entry.nexusPlacements === undefined && entry.revivalArrival === undefined && entry.victoryEvent === undefined && entry.cause !== 'caladanReinforcement' && entry.stage !== 'select') return;
+  if (entry.entrySignature === undefined && entry.candidates === undefined && entry.selectionSignature === undefined && entry.nexusPlacements === undefined && entry.revivalArrival === undefined && entry.caladanArrival === undefined && entry.victoryEvent === undefined && entry.cause !== 'caladanReinforcement' && entry.stage !== 'select') return;
   if (
     typeof entry.entrySignature !== 'string' ||
     typeof entry.token !== 'string' ||
@@ -74,6 +77,8 @@ export function validateTerrorEntrySignature(entry: TerrorEntry): void {
     entry.phase < 0 ||
     entry.phase > 8 ||
     (entry.revivalArrival !== undefined && !validRevivalEntryParent(entry.revivalArrival)) ||
+    (entry.caladanArrival !== undefined && (!validCaladanEntryParent(entry.caladanArrival) ||
+      entry.victoryEvent !== undefined || entry.revivalArrival !== undefined)) ||
     (entry.victoryEvent !== undefined && (typeof entry.victoryEvent !== 'string' || !entry.victoryEvent ||
       entry.cause !== 'caladanReinforcement' || entry.phase !== 6 || entry.revivalArrival !== undefined)) ||
     (![
