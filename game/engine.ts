@@ -10019,10 +10019,11 @@ function startModules(state: Game): Game {
   if (options.kullPreview) {
     requireRule(g.advanced === false && g.expansions.length === 2 && g.expansions.includes('choam') &&
       g.expansions.includes('ix') && !!byFaction(g,'choam') &&
-      g.players.every(player => player.faction === 'choam' || CLASSIC_FACTIONS[player.faction] === true) &&
+      g.players.every(player => player.faction === 'choam' || player.faction === 'ixians' ||
+        player.faction === 'tleilaxu' || CLASSIC_FACTIONS[player.faction] === true) &&
       !options.leaderSkills && !options.ecazTreachery && !g.nexusCards && !g.discoveryEnabled &&
       !g.homeworlds && !g.techTokens && !g.strongholdCards,
-    'Kull preview needs Basic CHOAM and classic factions, CHOAM and Ix decks, and no optional modules.');
+    'Kull preview needs Basic CHOAM, Ixian, Tleilaxu or classic factions, CHOAM and Ix decks, and no optional modules.');
     return initializeKullGameForAudit(g);
   }
   if (options.ecazTreachery && options.leaderSkills) g.ecazTreachery = true;
@@ -12395,8 +12396,9 @@ export function initializeKullGameForAudit(state: Game): Game {
   requireRule(!state.kullPreview && !state.nexusKullPreview && !state.pendingKull && !state.kullRestrictions &&
     state.expansions.length === 2 && state.expansions.includes('choam') &&
     state.expansions.includes('ix') && state.players.some(p => p.faction === 'choam') &&
-    state.players.every(p => p.faction === 'choam' || faction(p.faction).expansion === 'base'),
-  'Kull preview needs a fresh CHOAM and classic-faction lobby with CHOAM and Ix decks.');
+    state.players.every(p => p.faction === 'choam' || faction(p.faction).expansion === 'base' ||
+      !state.advanced && (p.faction === 'ixians' || p.faction === 'tleilaxu')),
+  'Kull preview needs a fresh CHOAM, Ixian, Tleilaxu or classic-faction lobby with CHOAM and Ix decks.');
   const g = initializeFactionExpansionsGameForAudit(state);
   g.kullPreview = true;
   return g;

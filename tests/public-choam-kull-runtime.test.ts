@@ -11,7 +11,7 @@ const held = (g: Game,id: string,card: string) => player(g,id).hand.some(c => c.
 function reject(g: Game,id: string,action: Action) {
   const before = structuredClone(g); assert.throws(() => act(g,id,action)); assert.deepEqual(g,before);
 }
-function createLobby(advanced = false, expansions: string[] = ['choam','ix'], last: 'guild'|'ixians' = 'guild') {
+function createLobby(advanced = false, expansions: string[] = ['choam','ix'], last: 'guild'|'richese' = 'guild') {
   const game = createGame('KULLLOBBY',newPlayer('choam','CHOAM','choam'),advanced,expansions);
   joinGame(game,newPlayer('emperor','Emperor','emperor'));
   joinGame(game,newPlayer(last,last,last));
@@ -52,7 +52,7 @@ void test('incompatible opt-in starts reject without modifying their original lo
   for (const config of [
     {advanced:true,expansions:['choam','ix'],last:'guild' as const,module:false},
     {advanced:false,expansions:['choam'],last:'guild' as const,module:false},
-    {advanced:false,expansions:['choam','ix'],last:'ixians' as const,module:false},
+    {advanced:false,expansions:['choam','ix'],last:'richese' as const,module:false},
     {advanced:false,expansions:['choam','ix'],last:'guild' as const,module:true},
   ]) {
     let g = createLobby(config.advanced,config.expansions,config.last);

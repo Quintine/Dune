@@ -2,6 +2,42 @@
 
 Source audit: 2026-09-06; opt-in preview contract updated 30 September 2026. This is an engineering and product-policy record, not a rules-completion claim. The source audit in [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md) remains applicable. The user-approved counter and BG choices supersede the original proposal; publisher-source uncertainty and full expansion gates remain.
 
+## Basic native Ix faction roster — 27 October 2026
+
+**Prototyped / Partial.** The explicit fresh-game Basic printed-Kull opt-in extends
+to a roster of native CHOAM, Ixians, Tleilaxu and classic factions, with exactly
+the CHOAM and Ix Treachery decks and no optional modules. This roster
+extends the earlier classic-only public start below; it does not change the
+default non-Kull start or retrofit existing games. Nexus Kull and Advanced
+starts retain their separate profiles.
+
+The [publisher's Basic Kull rule, printed page 7](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf#page=7)
+is the authority for preventing Karama plays for the phase. The existing
+different-Karama counter and continuation protocol remain provisional product
+interpretations, not additional publisher rulings. Faction and card interactions
+outside the connected preview remain unfinished.
+
+Retain the current Truthtrance question exclusions and the supported structured
+bribe questions; expanding this roster does not itself admit Revival, bidding,
+alliance or combined turn-action commitments. The user-deferred non-CHOAM
+unfunded winning-overbid fence remains in place and visible as an unfinished
+software boundary, not a printed rule. The preview must continue to explain
+these limits before a fresh start. This extension does not certify a full Basic
+mode, expansion, recovery, browser or deployed behavior, or open a publication
+gate.
+
+The native regression uses real lobby setup and unopened selected card and
+Spice positions for Ixians, Tleilaxu and both together. It exercises ordinary
+shipment Karama, Kull decline, successful prevention, a distinct counter and
+Charity-funded bribe completion. It does not certify all faction interactions.
+Ground-movement-only Truthtrance commitments and their continuation during a
+Kull counter require a separate interaction review; these tests do not prove
+that combination.
+The frozen changed-path batch passed 81/81 tests in 11 files, type/lint and the
+production build. [Runtime and fixture](../tests/kull-native-ix-runtime.test.ts)
+select unopened original cards and a Spice position; they do not establish
+full browser, recovery or deployed acceptance.
+
 ## Basic Kull and Truthtrance bribes — 27 October 2026
 
 **Prototyped / Partial.** The printed Kull preview now also supports existing

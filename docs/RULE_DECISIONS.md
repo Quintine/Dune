@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Basic printed Kull with native Ix factions — 27 October 2026
+
+Extend the existing opt-in printed Kull interpretation to native Ixians and
+Tleilaxu alongside CHOAM and classic factions using both CHOAM and Ix decks.
+The selected distinct-card counter and existing bribe semantics continue; the
+unfunded non-CHOAM overbid fence and other Truthtrance limits are unchanged.
+This provisional software composition is not a new publisher ruling.
+[Contract](CHOAM_KULL_DESIGN.md#basic-native-ix-faction-roster--27-october-2026).
+
 ## Source-bound Karama payment forecast — 27 October 2026
 
 For the provisional future-action completion forecast, assess an owned Karama

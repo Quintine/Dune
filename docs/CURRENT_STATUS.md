@@ -20,6 +20,15 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Printed Kull with native Ix factions — 27 October. Prototyped / Partial.**
+The Basic printed-Kull lobby opt-in includes Ixians and Tleilaxu alongside
+CHOAM and classic factions with the CHOAM and Ix decks. Existing native setup
+and supported bribe questions remain available. Other optional modules,
+Richese, Ecaz and Moritani, and the existing Truthtrance and overbid boundaries
+remain outside this preview. [Scope](CHOAM_KULL_DESIGN.md#basic-native-ix-faction-roster--27-october-2026).
+Frozen changed-path checks passed 81/81 tests across 11 files, type/lint and
+the production build; broader and deployed acceptance remain open.
+
 **Kull and future Karama payment forecasts — 27 October. Prototyped / Partial.**
 The shared early Revival/Shipment preparation now checks a prospective Karama
 payment against the original live Bidding source, including its Kull phase

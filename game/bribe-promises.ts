@@ -38,7 +38,7 @@ export function parseBribeClaim(value: unknown): BribeClaim {
 
 /** The ordinary, grouped and mixed bribe families share this admission. The
  * printed Kull extension is deliberately limited to the existing fresh Basic
- * CHOAM/classic roster; other previews keep their own composition boundaries.
+ * CHOAM, Ixian, Tleilaxu and classic roster; other previews keep their own composition boundaries.
  * This quote grants no start permission or future unowned funds. */
 export function bribePromiseModeSupported(game: NativePromiseScope & {
   semutaPreview?: unknown; kullPreview?: unknown; nexusKullPreview?: unknown;
@@ -54,11 +54,13 @@ export function bribePromiseModeSupported(game: NativePromiseScope & {
     game.expansions.includes('choam') && game.expansions.includes('ix') &&
     game.players.some(player => player.faction === 'choam') &&
     new Set(game.players.map(player => player.faction)).size === game.players.length &&
-    game.players.every(player => player.faction === 'choam' ||
+    game.players.every(player => player.faction === 'choam' || player.faction === 'ixians' ||
+      player.faction === 'tleilaxu' ||
       FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base')) &&
     !game.guildBetrayalPreview && !game.nexusIxianReplacementPreview &&
     !game.nexusIxianBetrayalPreview && !game.nexusHarkonnenBetrayalPreview &&
-    !game.moritaniAssassinatePreview && !game.mobileStronghold;
+    !game.moritaniAssassinatePreview &&
+    (!game.mobileStronghold || game.players.some(player => player.faction === 'ixians'));
 }
 
 export function bribeClaimText(claim: BribeClaim, recipientName: (id: string) => string = id => id): string {

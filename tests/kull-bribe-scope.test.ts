@@ -12,7 +12,7 @@ const basic = {
   players: [{faction:'choam'}, {faction:'emperor'}, {faction:'guild'}],
 };
 
-void test('Basic printed Kull supports the shared bribe family only in its original public envelope', () => {
+void test('Basic printed Kull supports the shared bribe family in its declared native envelope', () => {
   for (const quote of [bribePromiseModeSupported, bribeExpressionPromiseModeSupported]) {
     assert.equal(quote({...basic,kullPreview:true}),true);
     assert.equal(quote({...basic,expansions:['ix','choam'],kullPreview:true}),true);
@@ -21,7 +21,9 @@ void test('Basic printed Kull supports the shared bribe family only in its origi
     assert.equal(quote({...basic,expansions:['choam'],kullPreview:true}),false);
     assert.equal(quote({...basic,expansions:['choam','ix','ecaz'],kullPreview:true}),false);
     assert.equal(quote({...basic,players:[{faction:'emperor'},{faction:'guild'}],kullPreview:true}),false);
-    assert.equal(quote({...basic,players:[{faction:'choam'},{faction:'ixians'}],kullPreview:true}),false);
+    assert.equal(quote({...basic,players:[{faction:'choam'},{faction:'ixians'}],kullPreview:true,mobileStronghold:{}}),true);
+    assert.equal(quote({...basic,players:[{faction:'choam'},{faction:'tleilaxu'}],kullPreview:true}),true);
+    assert.equal(quote({...basic,players:[{faction:'choam'},{faction:'richese'}],kullPreview:true}),false);
     assert.equal(quote({...basic,players:[{faction:'choam'},{faction:'emperor'},{faction:'emperor'}],kullPreview:true}),false);
     for (const option of ['semutaPreview','nexusKullPreview','richeseBetrayalPreview','guildBetrayalPreview',
       'nexusIxianReplacementPreview','nexusIxianBetrayalPreview','nexusHarkonnenBetrayalPreview',

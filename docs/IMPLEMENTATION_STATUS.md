@@ -1,5 +1,19 @@
 # Dune implementation status
 
+## 27 October 2026 — Printed Kull with native Ix factions
+
+The Basic Kull opt-in admits native Ixians and Tleilaxu with CHOAM and classic
+factions using the existing native faction setup and the selected CHOAM and Ix
+decks. Existing ordinary, grouped and mixed bribe questions remain available.
+Other faction rosters, optional modules, Advanced and the existing unsupported
+Truthtrance and unfunded-overbid cases remain separate. This provisional
+extension does not certify a complete mode or deployed behavior.
+Eleven related files passed 81/81 tests, with type/lint and build passing.
+Native lobby/setup tests cover each Ix faction and both together, including
+Charity-funded commitments and the distinct counter. Earlier preview evidence
+and broader acceptance remain separate.
+[Contract](CHOAM_KULL_DESIGN.md#basic-native-ix-faction-roster--27-october-2026).
+
 ## 27 October 2026 — Kull and future Karama payment forecasts
 
 The shared early Revival/Shipment preparation now tests an owned physical
