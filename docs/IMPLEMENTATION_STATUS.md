@@ -1,5 +1,22 @@
 # Dune implementation status
 
+## 27 October 2026 — Phase-wide ordinary bid Truthtrance
+
+Prototype a separate current-turn minimum ordinary-bid Yes/No that persists
+through native lot changes. Keep original physical cards, payments and previous
+lot-bound questions intact. Actual funded sale, remaining original card, hand
+capacity, Harkonnen bonus and earlier current-lot commitments govern the
+provisional future witness; no imaginary opponent bid is counted. The editor,
+private status/guide and minimal legal AI use the same projected action. Special
+auctions, combined future commitments and final acceptance remain open.
+Public Basic and Advanced fixtures exercise original Truth cards and actual
+bidding, including independently funded and conflicting bribes. Separate
+controlled supplements stage conserved resources. Server-rendered controls and
+their engine callback are exercised; stateful browser and deployed play are
+not certified. Twelve focused files pass 224/224; type/lint and build pass.
+The private verification record is `20261027-truth-phase-bid-proof-v2/`.
+[Contract](TRUTHTRANCE_BID_PROMISES.md#phase-wide-ordinary-bid-prototype--27-october-2026).
+
 ## 27 October 2026 — Basic explosion and prior leaders
 
 Extend the Advanced Arrakis prior-leader explosion to Basic under the standing

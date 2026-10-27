@@ -20,6 +20,18 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Phase-wide Truthtrance bid — 27 October. Prototyped / Partial.**
+An owned Yes/No minimum ordinary-bid answer can span the remaining Bidding
+phase instead of expiring with the current lot. Actual accepted bids fulfill
+Yes; No constrains later bids. A later lot is witnessed by a real funded current
+sale, original next card and post-sale capacity/funds, not an imagined rival bid.
+The separate current-lot question remains. Public Basic and Advanced game
+fixtures exercise actual answers, lots, competing promises and settlement;
+server-rendered controls and their engine callback have focused smoke coverage.
+Twelve focused files pass 224/224, and type/lint and build pass. Stateful browser
+interaction, deployed play and complete modes remain unverified.
+[Scope and provisional forecast](TRUTHTRANCE_BID_PROMISES.md#phase-wide-ordinary-bid-prototype--27-october-2026).
+
 **Basic explosion and prior surviving leaders — 27 October. Prototyped / Partial.**
 The Advanced Arrakis prior-leader handling now also applies provisionally in
 Basic: a later actual explosion kills surviving discs from earlier battles in

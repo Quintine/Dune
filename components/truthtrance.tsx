@@ -42,6 +42,7 @@ import type { BribeClaim } from '@/game/bribe-promises';
 import { RevivalClaimFields, revivalClaimInputError } from './revival-claim-fields';
 import type { RevivalClaim } from '@/game/revival-promises';
 import { BidClaimFields, bidClaimInputError } from './bid-claim-fields';
+import { PhaseBidClaimFields, phaseBidClaimInputError } from './phase-bid-claim-fields';
 import type { BidClaim } from '@/game/bid-promises';
 import { TraitorDecisionAnswers } from './traitor-decision-promises';
 import { validMovementClaim, type MovementClaim } from '@/game/movement-promises';
@@ -96,7 +97,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid' | 'allianceExpression' | 'mixedAlliance' | 'mixedBattlePlan' | 'mixedTraitorCall' | 'travel' | 'turnActions'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'phaseBid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid' | 'allianceExpression' | 'mixedAlliance' | 'mixedBattlePlan' | 'mixedTraitorCall' | 'travel' | 'turnActions'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -138,6 +139,7 @@ export function Truthtrance({
   const [bidMinimum, setBidMinimum] = useState(1);
   const bidClaim: BidClaim = { turn: g.bidPromiseLot?.turn ?? g.turn,
     lot: g.bidPromiseLot?.lot ?? 1, minimum: bidMinimum };
+  const phaseBidClaim = {turn:g.turn,minimum:bidMinimum};
   const [movement, setMovement] = useState<MovementClaim>({ territory: 'carthag', minimum: 6 });
   const [movementExpression, setMovementExpression] = useState<MovementExpression>({ kind: 'and', terms: [
     { kind: 'move', territory: 'imperial_basin', minimum: 1 }, { kind: 'move', territory: 'carthag', minimum: 1 },
@@ -239,6 +241,7 @@ export function Truthtrance({
         : kind === 'revival' ? { kind, target, ...revivalClaim }
         : kind === 'mixedBid' ? { kind, target, turn: bidClaim.turn, lot: bidClaim.lot, mixed: mixedBid }
         : kind === 'bid' ? { kind, target, ...bidClaim }
+        : kind === 'phaseBid' ? { kind, target, ...phaseBidClaim }
         : kind === 'shipment'
           ? {
               kind,
@@ -423,6 +426,13 @@ export function Truthtrance({
                       {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'I don’t know'}`, { type: 'truthAnswer', answer })}
                     </div>)}
                   </>
+                ) : w.question!.kind === 'phaseBid' ? (
+                  <>
+                    <p className="notice">Yes requires one qualifying ordinary bid before this turn’s Bidding closes while possible. No forbids all qualifying later bids. A bid does not promise a win; winning still requires payment.</p>
+                    {(g.truthPhaseBidAnswers ?? []).map(answer => <div key={answer}>
+                      {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'I don’t know'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
+                  </>
                 ) : w.question!.kind === 'bid' ? (
                   <>
                     <p className="notice">Yes requires one qualifying bid in this ordinary lot while possible. No forbids qualifying bids until it closes. A bid does not promise a win; winning still requires the original payment. Keep the funding needed by your answer.</p>
@@ -578,6 +588,7 @@ export function Truthtrance({
                   <option value="leaderRevival">Bind a named leader revival this turn</option>
                   <option value="revival">Bind ordinary force revivals this turn</option>
                   <option value="bid">Bind a bid in this ordinary lot</option>
+                  <option value="phaseBid">Bind a bid this Bidding phase</option>
                   <option value="mixedBid">Combine current facts and ordinary bids</option>
                   <option value="traitorCall">Bind this battle’s Traitor declaration</option>
                   <option value="mixedTraitorCall">Combine current facts and this Traitor declaration</option>
@@ -721,6 +732,13 @@ export function Truthtrance({
                   {!g.truthRevivalTargets.includes(target) && <p className="notice">Choose a respondent whose native Revival opportunity remains this turn and finish pending decisions. Registered native Basic and Advanced tables without optional modules are supported first.</p>}
                   <p className="notice" aria-label="Public revival question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
+              ) : kind === 'phaseBid' ? (
+                <>
+                  <PhaseBidClaimFields value={phaseBidClaim} disabled={busy}
+                    onChange={claim => setBidMinimum(claim.minimum)} />
+                  {!g.truthPhaseBidTargets.includes(target) && <p className="notice">Choose a supported current-turn Bidding question and finish pending decisions.</p>}
+                  <p className="notice" aria-label="Public phase bid question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
               ) : kind === 'bid' ? (
                 <>
                   <BidClaimFields value={bidClaim} disabled={busy || !g.bidPromiseLot}
@@ -859,6 +877,7 @@ export function Truthtrance({
                 (kind === 'revival' && (!!revivalClaimInputError(revivalClaim) || !g.truthRevivalTargets.includes(target))) ||
                 (kind === 'mixedBid' && (!!mixedBidError || !g.truthMixedBidTargets.includes(target))) ||
                 (kind === 'bid' && (!!bidClaimInputError(bidClaim) || !g.truthBidTargets.includes(target))) ||
+                (kind === 'phaseBid' && (!!phaseBidClaimInputError(phaseBidClaim) || !g.truthPhaseBidTargets.includes(target))) ||
                 (kind === 'turnActions' && (!!turnActionsError || !g.truthTurnActionTargets.includes(target))) ||
                 (kind === 'travel' && (!!travelError || !g.truthTravelTargets.includes(target))) ||
                 (kind === 'mixedTraitorCall' && (!!mixedTraitorError || !g.truthMixedTraitorTargets.includes(target))) ||

@@ -67,6 +67,10 @@ import { RevivalPromiseError, revivalPromiseModeSupported, liveRevivalPromises, 
   revivalPromisesSatisfied, validateRevivalPromises, type RevivalClaim, type RevivalPromise } from './revival-promises';
 import { BidPromiseError, bidPromiseModeSupported, bidPromiseRange, bidRequired, liveBidPromises,
   recordPromisedBid, validateBidPromises, type BidClaim, type BidOpportunity, type BidPromise } from './bid-promises';
+import { PhaseBidPromiseError, phaseBidPromiseModeSupported, livePhaseBidPromises,
+  phaseBidCompletionRange, recordPhaseBid, reconcilePhaseBidPromises,
+  finishPhaseBidPhase, validatePhaseBidPromises, type PhaseBidClaim, type PhaseBidOpportunity,
+  type PhaseBidPromise } from './turn-bid-promises';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, selectedDeckLeaderSkillsProfile, homeworldLeaderSkillsProfile, independentTreacheryLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeEcazLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3LeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, bribesCloseBeforeNextMentat, maximumBribe, type BribeOptions } from './bribe-options';
@@ -2243,6 +2247,7 @@ export type Game = {
   })[];
   shipmentPromises?: ShipmentPromise[];
   bidPromises?: BidPromise[];
+  phaseBidPromises?: PhaseBidPromise[];
   /** Raw mixed question linked to one private native current-lot obligation. */
   mixedBidQuestions?: (MixedBidClaim & {
     event: string; player: string; asker: string; answer: boolean; binding: boolean;
@@ -15652,17 +15657,23 @@ function bribeTruthAnswers(g: Game, p: Player, claim: BribeClaim): ('yes' | 'no'
   if (!bribeQuestionWindow(g) || claim.turn !== g.turn || claim.recipient === p.id ||
     claim.recipient === p.ally || !g.players.some(player => player.id === claim.recipient)) return [];
   const source = g.phase === 2 && !g.charityOrder ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
-  return (['yes', 'no'] as const).filter(answer => !!bribePromiseCompletion(source, p, [...(g.bribePromises ?? []),
-    { ...claim, event: 'candidate', player: p.id, asker: g.truthtrance?.queue[0]?.player ?? g.host,
-      answer: answer === 'yes', progress: 0 }]));
+  return (['yes', 'no'] as const).filter(answer => {
+    const promises = [...(g.bribePromises ?? []), { ...claim, event: 'candidate', player: p.id,
+      asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes', progress: 0 }];
+    return !!bribePromiseCompletion(source, p, promises) &&
+      phaseBidCompatibleBribeAnswer({ ...source, bribePromises: promises }, p);
+  });
 }
 function bribeExpressionTruthAnswers(g: Game, p: Player, claim: BribeExpressionClaim): ('yes' | 'no' | 'unknown')[] {
   if (!bribeQuestionWindow(g) || claim.turn !== g.turn || bribeExpressionRecipients(claim.claim)
     .some(recipient => recipient === p.id || recipient === p.ally || !g.players.some(player => player.id === recipient))) return [];
   const source = g.phase === 2 && !g.charityOrder ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
-  return (['yes', 'no'] as const).filter(answer => !!bribePromiseCompletion(source, p, g.bribePromises ?? [],
-    [...(g.bribeExpressionPromises ?? []), { ...claim, event: 'candidate', player: p.id,
-      asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes', progress: [] }]));
+  return (['yes', 'no'] as const).filter(answer => {
+    const expressions = [...(g.bribeExpressionPromises ?? []), { ...claim, event: 'candidate', player: p.id,
+      asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes', progress: [] }];
+    return !!bribePromiseCompletion(source, p, g.bribePromises ?? [], expressions) &&
+      phaseBidCompatibleBribeAnswer({ ...source, bribeExpressionPromises: expressions }, p);
+  });
 }
 function reopenBribePayer(g: Game, p: Player, answer: boolean) {
   if (answer && (g.phase === 2 && !g.charityOrder || g.phase === 8 || g.phase === 7 && bribesCloseBeforeNextMentat(g)) && g.ready.includes(p.id)) {
@@ -16021,6 +16032,216 @@ function bidQuestionWindow(g: Game): boolean {
   return !!bidOpportunity(g) && !g.response && !g.decision && !g.phaseOpening && !g.richeseAuction &&
     !g.ixAuction && !g.pendingKarama && !g.pendingTreacheryDiscard;
 }
+/** A future lot is a witness only after a real funded bid has committed the
+ * current lot to sale. An unbid lot ends ordinary Bidding instead of opening
+ * its remaining cards. The source is kept private in the native auction. */
+function phaseBidWitnesses(g: Game, p: Player): PhaseBidOpportunity[] {
+  if (g.status !== 'playing' || !phaseBidPromiseModeSupported(g) || g.phase > 3) return [];
+  const maximum = (spent = 0, spentAid = 0, canUseKarama = true) => {
+    if (canUseKarama && karamaCard(g, p, undefined, 'auction-free-purchase')) return Number.MAX_SAFE_INTEGER;
+    return Math.max(0, uncommittedSpice(g, p) - spent + Math.max(0, (aidFor(g, p)?.amount ?? 0) - spentAid));
+  };
+  if (g.phase < 3) {
+    // No special-auction preparation or future purchase is manufactured.
+    if (byFaction(g, 'ixians') || byFaction(g, 'richese') ||
+      p.hand.length >= handLimit(p) || !(g.deck.length || g.discard.length)) return [];
+    const max = maximum();
+    return max > 0 ? [{turn:g.turn,player:p.id,kind:'future',minimum:1,maximum:max}] : [];
+  }
+  const lot = bidOpportunity(g), auction = g.auction;
+  if (!lot || !auction) return [];
+  const result: PhaseBidOpportunity[] = [];
+  const current = bidPromiseRange(g.bidPromises ?? [], p.id, lot, normalBidMaximum(g, p));
+  if (current) result.push({turn:g.turn,player:p.id,kind:'current',...current});
+  const buyer = auction.bidder ? g.players.find(player => player.id === auction.bidder) : undefined;
+  const paidAid = auction.allyPayment ?? 0;
+  const funded = !!buyer && paidAid >= 0 && paidAid <= auction.bid &&
+    buyer.spice >= auction.bid - paidAid && (aidFor(g,buyer)?.amount ?? 0) >= paidAid;
+  // A native Harkonnen winner may receive a bonus card after the
+  // purchase. Reserve that slot rather than assuming an opponent cancels it.
+  const futureCards = buyer?.id === p.id
+    ? 1 + Number(p.faction === 'harkonnen') : 0;
+  if (buyer && funded && auction.bid > 0 && auction.cards[auction.index + 1] &&
+      p.hand.length + futureCards < handLimit(p)) {
+    // uncommittedSpice already reserves the current winner's own invoice.
+    const spentAid = buyer.id === p.id ? paidAid : 0;
+    const mustSpendKarama = buyer.id === p.id && auction.bid > p.spice + (aidFor(g,p)?.amount ?? 0);
+    const max = maximum(0, spentAid, !mustSpendKarama);
+    if (max > 0) result.push({turn:g.turn,player:p.id,kind:'future',minimum:1,maximum:max});
+  }
+  return result;
+}
+function phaseBidQuestionWindow(g: Game): boolean {
+  return g.status === 'playing' && g.phase >= 0 && g.phase <= 3 && phaseBidPromiseModeSupported(g) &&
+    !g.response && !g.decision && !g.phaseOpening && !g.pendingKarama && !g.pendingTreacheryDiscard &&
+    !g.richeseAuction && !g.ixAuction && !g.currentAuctionSale && (g.phase < 3 || !!bidOpportunity(g));
+}
+function phaseBidHonorsTurnActions(g: Game, p: Player, lot: BidOpportunity, action: Action): boolean {
+  if (!liveTurnActionPromises(g.turnActionPromises ?? [],p.id,g.turn).length) return true;
+  const trial = structuredClone(g);
+  trial.truthtrance = null;
+  try {
+    if (action.type === 'bid') {
+      trial.turnActionPromises = turnActionRule(() => recordTurnActionBid(trial.turnActionPromises!,p.id,g.turn,
+        {lot:lot.lot,source:lot.source,amount:Number(action.amount)}));
+      trial.bidPromises = recordPromisedBid(trial.bidPromises ?? [],p.id,lot,Number(action.amount));
+      trial.auction!.bid = Number(action.amount);
+      trial.auction!.bidder = p.id;
+      trial.auction!.allyPayment = Number(action.allyPayment ?? 0);
+    } else trial.turnActionPromises = turnActionRule(() => closeTurnActionBidding(trial.turnActionPromises!,g.turn,lot.source,p.id));
+    return !!turnActionCompletion(trial,p.id);
+  } catch (error) { if (error instanceof RuleError || error instanceof BidPromiseError) return false; throw error; }
+}
+/** Current witnesses must also satisfy the existing native funding and
+ * current-lot commitments. Future bidding with other financial/transport
+ * promises awaits their combined planner; do not invent those resources. */
+function viablePhaseBidWitnesses(g: Game, p: Player, promises: readonly PhaseBidPromise[]) {
+  const lot = bidOpportunity(g);
+  const live = livePhaseBidPromises(promises,p.id,g.turn);
+  const otherCommitments = liveShipmentPromises(g.shipmentPromises ?? [],p.id,g.turn).some(row => row.answer) ||
+    hasMovementPromises(g,p.id) || liveRevivalPromises(g.revivalPromises ?? [],p.id,g.turn).some(row => row.answer) ||
+    liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [],p.id,g.turn).some(row => row.answer) ||
+    liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [],p.id,g.turn).some(row => row.answer) ||
+    liveTurnActionPromises(g.turnActionPromises ?? [],p.id,g.turn).length > 0;
+  return phaseBidWitnesses(g,p).flatMap(witness => {
+    if (witness.kind === 'future') {
+      if (otherCommitments) return [];
+      if (hasBribePromises(g,p.id,true)) {
+        // Quote only currently funded payments; no future income is invented.
+        // Current-lot combined forecasts remain unsupported.
+        if (lot) return [];
+        const source = structuredClone(g); source.truthtrance = null;
+        const fundedWitnesses: PhaseBidOpportunity[] = [];
+        for (const payments of bribeCompletionCandidates(source.bribePromises ?? [], source.bribeExpressionPromises ?? [], p.id, g.turn)) {
+          const total = payments.reduce((sum, payment) => sum + payment.amount, 0);
+          if (!Number.isSafeInteger(total) || total > uncommittedSpice(source,getPlayer(source,p.id))) continue;
+          for (const seed of ordinaryPaymentSeeds(source, p.id, payments)) {
+            if (seed.actions.some(action => action.type !== 'bribe')) continue;
+            const after = phaseBidWitnesses(seed.game,getPlayer(seed.game,p.id)).find(row => row.kind === 'future');
+            if (after) fundedWitnesses.push(after);
+          }
+        }
+        return fundedWitnesses;
+      }
+      if (lot && bidRequired(g.bidPromises ?? [],p.id,lot)) {
+        // A later lot is viable only after satisfying this lot's existing
+        // obligations. Its actual invoice and extra hand slot remain reserved.
+        const caps: BidPromise[] = live.filter(row => !row.answer).map((row,index) => ({
+          turn:g.turn,lot:lot.lot,minimum:row.minimum,event:`phase-future-cap-${index}`,
+          source:lot.source,player:p.id,asker:row.asker,answer:false,
+        }));
+        const required = bidPromiseCompletion(g,p,[...(g.bidPromises ?? []),...caps]);
+        if (!required || required.type !== 'bid') return [];
+        const trial = structuredClone(g);
+        trial.auction!.bid = Number(required.amount);
+        trial.auction!.bidder = p.id;
+        trial.auction!.allyPayment = Number(required.allyPayment ?? 0);
+        const after = phaseBidWitnesses(trial,getPlayer(trial,p.id)).find(row => row.kind === 'future');
+        return after ? [after] : [];
+      }
+      return [witness];
+    }
+    if (!lot) return [];
+    const bounds: BidPromise[] = live.map((row,index) => ({turn:g.turn,lot:lot.lot,minimum:row.minimum,
+      event:`phase-witness-${index}`,source:lot.source,player:p.id,asker:row.asker,answer:row.answer}));
+    const action = bidPromiseCompletion(g,p,[...(g.bidPromises ?? []),...bounds]);
+    return action && phaseBidHonorsTurnActions(g,p,lot,action) ? [witness] : [];
+  });
+}
+/** A new independent bribe must preserve an already-binding phase Yes.
+ * Before Bidding, reserve currently fundable payment first; current-lot
+ * independent combinations wait for a joint planner. */
+function phaseBidCompatibleBribeAnswer(g: Game, p: Player): boolean {
+  const live = livePhaseBidPromises(g.phaseBidPromises ?? [],p.id,g.turn);
+  if (!live.some(row => row.answer)) return true;
+  if (g.phase === 3 && hasBribePromises(g,p.id,true)) return false;
+  return viablePhaseBidWitnesses(g,p,g.phaseBidPromises ?? [])
+    .some(witness => !!phaseBidCompletionRange(g.phaseBidPromises ?? [],witness));
+}
+function phaseBidRule<T>(run: () => T): T {
+  try { return run(); }
+  catch (error) { if (error instanceof PhaseBidPromiseError) throw new RuleError(error.message); throw error; }
+}
+function phaseBidTruthAnswers(g: Game, p: Player, claim: PhaseBidClaim): TruthAnswer[] {
+  if (!phaseBidQuestionWindow(g) || claim.turn !== g.turn) return [];
+  const base = g.phaseBidPromises ?? [];
+  const answers: TruthAnswer[] = [];
+  for (const answer of [true, false]) {
+    const asker = g.truthtrance?.queue[0]?.player ?? g.players.find(player => player.id !== p.id)?.id ?? g.host;
+    const candidate: PhaseBidPromise = {turn:claim.turn,minimum:claim.minimum,event:'candidate',player:p.id,asker,answer};
+    const all = [...base,candidate];
+    const witnesses = viablePhaseBidWitnesses(g,p,all);
+    const yesPossible = !all.some(row => row.player === p.id && row.turn === g.turn && row.answer && !row.fulfilled && !row.released) ||
+      witnesses.some(witness => !!phaseBidCompletionRange(all,witness));
+    // Existing current-lot Yes commitments must also survive this new No.
+    const lot = bidOpportunity(g);
+    let lotPossible = true;
+    if (lot && bidRequired(g.bidPromises ?? [],p.id,lot)) {
+      const caps: BidPromise[] = all.filter(row => row.player === p.id && row.turn === g.turn && !row.answer &&
+        !row.fulfilled && !row.released).map((row,index) => ({turn:g.turn,lot:lot.lot,minimum:row.minimum,
+        event:`phase-cap-${index}`,source:lot.source,player:p.id,asker:row.asker,answer:false}));
+      const action = bidPromiseCompletion(g,p,[...(g.bidPromises ?? []),...caps]);
+      lotPossible = !!action && phaseBidHonorsTurnActions(g,p,lot,action);
+    }
+    if (yesPossible && lotPossible) answers.push(answer ? 'yes' : 'no');
+  }
+  return answers;
+}
+function bindPhaseBidTruth(g: Game, p: Player, claim: PhaseBidClaim, answer: boolean, asker: string) {
+  requireRule(phaseBidTruthAnswers(g,p,claim).includes(answer ? 'yes' : 'no'),
+    'This phase-wide bid answer no longer has a legal completion.');
+  (g.phaseBidPromises ??= []).push({turn:claim.turn,minimum:claim.minimum,event:crypto.randomUUID(),player:p.id,asker,answer});
+}
+function phaseBidIntegrity(g: Game) {
+  phaseBidRule(() => validatePhaseBidPromises(g.phaseBidPromises ?? [],g.players.map(player => player.id)));
+}
+function reconcilePhaseBids(g: Game, voluntary?: {actor:string;action:Action}) {
+  phaseBidIntegrity(g);
+  if (!g.phaseBidPromises?.length || g.truthtrance || g.response || g.decision || g.phaseOpening ||
+      g.pendingTreacheryDiscard || g.pendingKarama || g.pendingKull || g.pendingRicheseBetrayal) return;
+  for (const player of g.players) {
+    const live = livePhaseBidPromises(g.phaseBidPromises,player.id,g.turn);
+    if (!live.length) continue;
+    const change = voluntary?.actor === player.id ? 'voluntary' : 'external';
+    if (g.phase > 3) g.phaseBidPromises = phaseBidRule(() => finishPhaseBidPhase(g.phaseBidPromises!,player.id,g.turn,change));
+    else {
+      const witnesses = viablePhaseBidWitnesses(g,player,g.phaseBidPromises);
+      // An external event must not release an answer merely because the
+      // combined future-obligation planner is not implemented yet.
+      const unknownFuture = change === 'external' && !witnesses.some(row => row.kind === 'future') &&
+        phaseBidWitnesses(g,player).some(row => row.kind === 'future');
+      if (unknownFuture && live.some(row => row.answer) &&
+          !witnesses.some(row => !!phaseBidCompletionRange(g.phaseBidPromises!,row))) continue;
+      g.phaseBidPromises = phaseBidRule(() => reconcilePhaseBidPromises(g.phaseBidPromises!,player.id,g.turn,witnesses,change));
+    }
+  }
+}
+function projectedPhaseBidPromises(g: Game, player: string) {
+  return (g.phaseBidPromises ?? []).filter(promise => promise.player === player).map(promise => ({...promise}));
+}
+function projectedPhaseBidGuide(g: Game, player: string): {action:Action} | null {
+  const opportunity = bidOpportunity(g), seat = getPlayer(g,player);
+  if (!opportunity || !bidQuestionWindow(g) || g.truthtrance || g.auction?.active !== player) return null;
+  const live = livePhaseBidPromises(g.phaseBidPromises ?? [],player,g.turn);
+  if (!live.length) return null;
+  const required = live.some(promise => promise.answer);
+  let action: Action = {type:'passBid'};
+  if (required || bidRequired(g.bidPromises ?? [],player,opportunity)) {
+    const bounds: BidPromise[] = live.map((promise,index) => ({
+      turn:g.turn,lot:opportunity.lot,minimum:promise.minimum,event:`phase-guide-${index}`,
+      source:opportunity.source,player,asker:promise.asker,answer:promise.answer,
+    }));
+    const bid = bidPromiseCompletion(g,seat,[...(g.bidPromises ?? []),...bounds]);
+    if (bid && phaseBidHonorsTurnActions(g,seat,opportunity,bid)) action = bid;
+    else {
+      const future = viablePhaseBidWitnesses(g,seat,g.phaseBidPromises ?? []).find(witness => witness.kind === 'future' &&
+        !!phaseBidCompletionRange(g.phaseBidPromises ?? [],witness));
+      if (!future || bidRequired(g.bidPromises ?? [],player,opportunity) ||
+          !phaseBidHonorsTurnActions(g,seat,opportunity,action)) return null;
+    }
+  }
+  return {action:{...action,phaseBidPromiseEvent:live[0].event,phaseBidPromiseLot:opportunity.lot}};
+}
 function bidPromiseCompletion(g: Game, p: Player, promises = g.bidPromises ?? []): Action | null {
   const opportunity = bidOpportunity(g);
   if (!opportunity) return null;
@@ -16057,9 +16278,29 @@ function bidTruthAnswers(g: Game, p: Player, claim: BidClaim): ('yes' | 'no' | '
   const opportunity = bidOpportunity(g);
   if (!opportunity || !bidQuestionWindow(g) || claim.turn !== opportunity.turn || claim.lot !== opportunity.lot ||
     !opportunity.eligible.includes(p.id) || opportunity.passed.includes(p.id) || opportunity.bidder === p.id) return [];
-  return (['yes', 'no'] as const).filter(answer => !!bidPromiseCompletion(g, p, [...(g.bidPromises ?? []),
-    { ...claim, event: 'candidate', source: opportunity.source, player: p.id,
-      asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes' }]));
+  return (['yes', 'no'] as const).filter(answer => {
+    const phases = livePhaseBidPromises(g.phaseBidPromises ?? [],p.id,g.turn);
+    const caps: BidPromise[] = phases.filter(row => !row.answer).map((row,index) => ({
+      turn:g.turn,lot:opportunity.lot,minimum:row.minimum,event:`phase-cap-${index}`,
+      source:opportunity.source,player:p.id,asker:row.asker,answer:false,
+    }));
+    const claims: BidPromise[] = [...(g.bidPromises ?? []),...caps,
+      { ...claim, event: 'candidate', source: opportunity.source, player: p.id,
+        asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes' }];
+    const candidateAction = bidPromiseCompletion(g,p,claims);
+    if (!candidateAction || !phaseBidHonorsTurnActions(g,p,opportunity,candidateAction)) return false;
+    const phaseYes = phases.filter(row => row.answer);
+    const trial = structuredClone(g);
+    trial.bidPromises = claims;
+    if (!phaseYes.length || viablePhaseBidWitnesses(trial,getPlayer(trial,p.id),trial.phaseBidPromises ?? []).some(w => w.kind === 'future' &&
+      !!phaseBidCompletionRange(g.phaseBidPromises ?? [],w))) return true;
+    const required: BidPromise[] = phaseYes.map((row,index) => ({
+      turn:g.turn,lot:opportunity.lot,minimum:row.minimum,event:`phase-yes-${index}`,
+      source:opportunity.source,player:p.id,asker:row.asker,answer:true,
+    }));
+    const requiredAction = bidPromiseCompletion(g,p,[...claims,...required]);
+    return !!requiredAction && phaseBidHonorsTurnActions(g,p,opportunity,requiredAction);
+  });
 }
 function bindBidTruth(g: Game, p: Player, claim: BidClaim, answer: boolean, asker: string) {
   const opportunity = bidOpportunity(g);
@@ -16147,6 +16388,8 @@ function projectedBidPromises(g: Game, player: string) {
   }));
 }
 function projectedBidPromiseGuide(g: Game, player: string): { action: Action } | null {
+  // The phase-wide guide combines both sets of live bounds into one packet.
+  if (livePhaseBidPromises(g.phaseBidPromises ?? [],player,g.turn).length) return null;
   const opportunity = bidOpportunity(g);
   if (!opportunity || !bidQuestionWindow(g) || g.truthtrance || g.auction?.active !== player) return null;
   const promise = liveBidPromises(g.bidPromises ?? [], player, opportunity)[0];
@@ -16160,6 +16403,22 @@ function guardPromisedBid(g: Game, p: Player, action: Action, amount?: number) {
   if (action.bidPromiseEvent !== undefined) requireRule(typeof action.bidPromiseEvent === 'string' &&
     live.some(promise => promise.event === action.bidPromiseEvent), 'This bid commitment guide is stale.');
   if (!opportunity) return;
+  const phaseLive = livePhaseBidPromises(g.phaseBidPromises ?? [],p.id,g.turn);
+  if (amount !== undefined && phaseLive.length)
+    g.phaseBidPromises = phaseBidRule(() => recordPhaseBid(g.phaseBidPromises!,p.id,g.turn,amount));
+  if (livePhaseBidPromises(g.phaseBidPromises ?? [],p.id,g.turn).some(promise => promise.answer)) {
+    const trial = structuredClone(g);
+    if (amount !== undefined) {
+      trial.auction!.bid = amount;
+      trial.auction!.bidder = p.id;
+      trial.auction!.allyPayment = normalBidQuote(g,p,amount,action.allyPayment).allyPayment;
+      try { trial.bidPromises = recordPromisedBid(trial.bidPromises ?? [],p.id,opportunity,amount); }
+      catch (error) { if (error instanceof BidPromiseError) throw new RuleError(error.message); throw error; }
+    }
+    const future = viablePhaseBidWitnesses(trial,getPlayer(trial,p.id),trial.phaseBidPromises ?? []).find(witness => witness.kind === 'future' &&
+      !!phaseBidCompletionRange(trial.phaseBidPromises ?? [],witness));
+    requireRule(future, 'Keep a funded later lot or place the bid required by your Truthtrance Yes.');
+  }
   if (g.turnActionPromises) {
     if (amount !== undefined) g.turnActionPromises = turnActionRule(() =>
       recordTurnActionBid(g.turnActionPromises!, p.id, g.turn, {
@@ -20423,6 +20682,20 @@ function turnActionTruthAnswers(g: Game, p: Player, claim: TurnActionClaim): Tru
     if (promise.compiled.kind === 'constant' && promise.compiled.value !== answer) continue;
     const trial = { ...turnActionAnswerSource(g, p.id, !!promise.alliance, !!promise.windowCards, { claim, answer }),
       turnActionPromises: [...(g.turnActionPromises ?? []), promise], travelPromiseOrder: undefined };
+    const phases = livePhaseBidPromises(g.phaseBidPromises ?? [],p.id,g.turn);
+    const lot = bidOpportunity(trial);
+    if (phases.length && lot) {
+      // The combined planner may use this actual lot, never a guessed later
+      // invoice. Encode both phase Yes and No in its existing native quote.
+      const bounds: BidPromise[] = phases.map((row,index) => ({
+        turn:g.turn,lot:lot.lot,minimum:row.minimum,event:`phase-turn-${index}`,
+        source:lot.source,player:p.id,asker:row.asker,answer:row.answer,
+      }));
+      trial.bidPromises = [...(g.bidPromises ?? []),...bounds];
+    } else if (phases.some(row => row.answer) && promise.compiled.kind !== 'constant') {
+      // Future mixed payment/transport composition has no verified planner.
+      continue;
+    }
     if (turnActionCompletion(trial, p.id, answer && promise.alliance ? consent : undefined)) answers.push(answer ? 'yes' : 'no');
   }
   if (!answers.includes('yes') && consent.value) answers.push('unknown');
@@ -38645,6 +38918,7 @@ function normalizeCardNames(g: Game) {
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
   bidPromiseIntegrity(state);
+  phaseBidIntegrity(state);
   revivalPromiseIntegrity(state);
   bribePromiseIntegrity(state);
   alliancePromiseIntegrity(state);
@@ -38811,6 +39085,12 @@ export function applyAction(state: Game, id: string, action: Action): Game {
       Object.keys(guide.action).every(key => action[key] === guide.action[key]),
     'This revival commitment guide is stale or belongs to another native opportunity.');
   }
+  if (action.phaseBidPromiseEvent !== undefined || action.phaseBidPromiseLot !== undefined) {
+    const guide = projectedPhaseBidGuide(state,id);
+    requireRule(guide && Object.keys(action).sort().join(',') === Object.keys(guide.action).sort().join(',') &&
+      Object.keys(guide.action).every(key => action[key] === guide.action[key]),
+    'This phase bid guide is stale or belongs to another auction lot.');
+  }
   const g = applyActionInner(state, id, action);
   if (state.phase === 3 && liveTurnActionPromises(state.turnActionPromises ?? [], id, state.turn).some(row => {
     const stage = row.windowCards?.karamaAuction;
@@ -38824,6 +39104,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   const voluntary = forcedThumperDraw || action.type === 'passResponse' ? undefined : { actor: id, action };
   reconcileTravelPromises(g, promiseActor, action, state.phase);
   reconcileBidPromises(g, voluntary);
+  reconcilePhaseBids(g, voluntary);
   reconcileRevivalPromises(g, voluntary);
   reconcileBribePromises(g, voluntary);
   reconcileGroundMovementPromises(g, promiseActor, action, state.phase);
@@ -38948,6 +39229,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   reconcileBattlePromises(g, { actor: id, action });
   reconcileShipmentPromises(g, { actor: id, action, phase: state.phase });
   reconcileBidPromises(g, { actor: id, action });
+  reconcilePhaseBids(g, { actor: id, action });
   reconcileRevivalPromises(g, { actor: id, action });
   reconcileBribePromises(g, { actor: id, action });
   reconcileAlliancePromises(g, { actor: id, action });
@@ -39165,6 +39447,7 @@ function settleAutomaticContinuations(g: Game) {
     reconcileBattlePromises(g);
     reconcileShipmentPromises(g);
     reconcileBidPromises(g);
+    reconcilePhaseBids(g);
     reconcileRevivalPromises(g);
     reconcileBribePromises(g);
     reconcileGroundMovementPromises(g);
@@ -39182,6 +39465,7 @@ function settleAutomaticContinuations(g: Game) {
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
   bidPromiseIntegrity(state);
+  phaseBidIntegrity(state);
   revivalPromiseIntegrity(state);
   bribePromiseIntegrity(state);
   alliancePromiseIntegrity(state);
@@ -39270,6 +39554,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   reconcileBattlePromises(g);
   reconcileShipmentPromises(g);
   reconcileBidPromises(g);
+  reconcilePhaseBids(g);
   reconcileRevivalPromises(g);
   reconcileBribePromises(g);
   reconcileGroundMovementPromises(g);
@@ -39546,6 +39831,8 @@ function applyActionInner(
         bindMixedBid: bindMixedBidTruth,
         bidAnswers: bidTruthAnswers,
         bindBid: bindBidTruth,
+        phaseBidAnswers: phaseBidTruthAnswers,
+        bindPhaseBid: bindPhaseBidTruth,
         turnActionAnswers: turnActionTruthAnswers,
         bindTurnAction: bindTurnActionTruth,
         travelAnswers: travelTruthAnswers,
@@ -43544,6 +43831,11 @@ export function viewGame(state: Game, id: string, now?: number) {
     }).map(player => player.id) : [],
     truthBidAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
       g.truthtrance.question.kind === 'bid' ? bidTruthAnswers(g, me, g.truthtrance.question) : null,
+    truthPhaseBidTargets: phaseBidQuestionWindow(g) ? g.players.map(player => player.id) : [],
+    truthPhaseBidAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
+      g.truthtrance.question.kind === 'phaseBid' ? phaseBidTruthAnswers(g,me,g.truthtrance.question) : null,
+    phaseBidPromises: projectedPhaseBidPromises(g,id),
+    phaseBidPromiseGuide: projectedPhaseBidGuide(g,id),
     alliancePromiseNexus: (() => { const nexus = allianceOpportunity(g); return nexus ? { turn: nexus.turn } : null; })(),
     truthAllianceTargets: allianceQuestionWindow(g) ? g.players.map(player => player.id) : [],
     truthAllianceAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&

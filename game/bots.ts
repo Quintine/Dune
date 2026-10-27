@@ -1319,6 +1319,7 @@ function policyActions(g: GameView): Action[] {
   if (g.revivalExpressionPromiseGuide) return [g.revivalExpressionPromiseGuide.action];
   if (g.leaderRevivalPromiseGuide) return [g.leaderRevivalPromiseGuide.action];
   if (g.revivalPromiseGuide) return [g.revivalPromiseGuide.action];
+  if (g.phaseBidPromiseGuide) return [g.phaseBidPromiseGuide.action];
   if (g.bidPromiseGuide) return [g.bidPromiseGuide.action];
   if (g.truthtrance) {
     const w = g.truthtrance;
@@ -1373,6 +1374,10 @@ function policyActions(g: GameView): Action[] {
       }
       if (w.question.kind === 'bid') {
         const answer = g.truthBidAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
+      if (w.question.kind === 'phaseBid') {
+        const answer = g.truthPhaseBidAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];
       }
       if (w.question.kind === 'turnActions') {

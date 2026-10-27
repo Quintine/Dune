@@ -43,6 +43,7 @@ import { RevivalPromises } from './revival-promises';
 import { RevivalExpressionPromises } from './revival-expression-promises';
 import { LeaderRevivalPromises } from './leader-revival-promises';
 import { BidPromises } from './bid-promises';
+import { PhaseBidPromises } from './phase-bid-promises';
 import { HomeworldShipment } from './homeworld-shipment';
 import { HomeworldRevivalDeployment } from './homeworld-revival-deployment';
 import { CaladanReinforcement } from './caladan-reinforcement';
@@ -2086,6 +2087,7 @@ export function GameTable({
           {g.status === 'playing' && <LeaderRevivalPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <RevivalPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <BidPromises game={g} send={act} busy={busy} />}
+          {g.status === 'playing' && <PhaseBidPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <MixedBidPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <MixedBattlePromises game={g} />}
           {g.status === 'playing' && <MixedTraitorPromises game={g} />}

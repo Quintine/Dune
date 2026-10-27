@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Phase-wide ordinary bid Truthtrance — 27 October 2026
+
+Prototypically support a current-turn Yes/No minimum ordinary bid across
+multiple Bidding lots. Only actual accepted later declarations count. An unbid
+lot cannot prove another lot will exist; a later witness requires a real funded
+current sale, prepared next card, remaining hand space and funds. The generic
+GF9 Truthtrance FAQ supports action questions and compliance while possible, not
+this specific online forecast. Earlier actions and native payments remain;
+special-auction and combined-future planning stay explicit. [Contract](TRUTHTRANCE_BID_PROMISES.md#phase-wide-ordinary-bid-prototype--27-october-2026).
+
 ## Basic explosion and prior leaders — 27 October 2026
 
 Provisionally extend the existing Advanced Arrakis casualty handling to Basic.

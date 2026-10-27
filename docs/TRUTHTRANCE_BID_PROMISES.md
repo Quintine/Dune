@@ -1,5 +1,44 @@
 # Truthtrance ordinary bid commitments
 
+## Phase-wide ordinary bid prototype — 27 October 2026
+
+**Prototyped / Partial.** A distinct `{kind:'phaseBid', target, turn, minimum}`
+asks whether the respondent will make at least one accepted ordinary bid of
+that size after the answer and before this turn's Bidding ends. It may be asked
+before Bidding or during a quiet ordinary lot on supported native tables. A Yes
+survives lot changes until fulfilled or made impossible; No caps every later
+ordinary bid until actual phase close. The original current-lot question and its
+saved records remain separate. The general FAQ authority below does not contain
+a phase-wide bid worked example, so these online feasibility rules are explicitly
+provisional.
+
+An accepted declaration fulfills Yes even if it later loses; purchases retain
+their real payment. A later lot is not assumed when all players might pass:
+there must already be a funded positive winning bid, a physically prepared next
+card and post-purchase hand space and funding. Possible Basic and Advanced Harkonnen bonus
+draws reserve their hand slot; a cancelable Karama-only overbid is not a funded
+later-lot witness. Existing current-lot answers are considered before forecasting
+the later invoice. Before Bidding, a witness uses current eligible hand space,
+funding and available card count, without inventing a future acquisition. Ixian
+or Richese special-auction preparation is not forecast. Existing transport, revival and aggregate turn commitments retain current-lot
+checks; the future combined planner is not implemented. Before Bidding, an
+independent bribe can be quoted first using currently funded payments, leaving
+only the actual remaining funds for the bid; current-lot independent bribe
+combinations remain limited. Uncertain combinations do not create a fictitious
+later witness or release an answer merely because that planner is absent. Full special-auction, mixed-expression and module coverage
+remains open.
+
+The private panel displays owned answers and a server-quoted current bid/pass;
+its event and public lot ordinal reject stale guided actions. The ordinary
+question control, current answer choices and four minimal bot profiles use the
+same server projections. No extra card, funds, hand slot, auction or payment is
+created. Prior bids do not count. Public Basic and Advanced fixtures exercise original Truth cards, actual bids
+and competing funded and unfunded commitments; additional cases explicitly
+stage conserved resources. Server-rendered controls and their engine callback
+have focused smoke coverage. Stateful browser interaction, full-game,
+recovery and deployed acceptance remain separate. The focused 12-file batch
+passes 224/224; type/lint and the production build pass.
+
 ## Current-lot prototype — 26 October 2026
 
 **Prototyped / Partial.** The question binds one
