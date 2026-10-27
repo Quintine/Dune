@@ -39,6 +39,19 @@ have focused smoke coverage. Stateful browser interaction, full-game,
 recovery and deployed acceptance remain separate. The focused 12-file batch
 passes 224/224; type/lint and the production build pass.
 
+### Admission and external funding correction — 27 October 2026
+
+Later independent shipment, movement, revival and travel answers are checked
+against an existing phase-bid Yes before they are offered. A movement No does
+not itself require a movement or suppress a future bid. When the combined future
+planner cannot prove a positive answer, it may withhold that definite answer;
+this remains a conservative prototype boundary, not a completed planner. An
+external change releases an impossible Yes when a bribe and bid are fully
+quoted, while an unsupported future combination remains unknown. Original
+Basic/Advanced questions and real bids exercise the acceptance path; revival
+and external-loss supplements stage a conserved force or spice transfer. Seven
+focused files pass 88/88; type/lint and build pass.
+
 ## Current-lot prototype — 26 October 2026
 
 **Prototyped / Partial.** The question binds one

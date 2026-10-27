@@ -20,6 +20,17 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Phase-bid admission repair — 27 October. Prototyped / Partial.**
+A displayed shipment, movement, revival or travel answer now preserves an
+existing phase-bid Yes when a known compatible route exists. The unfinished
+combined-future planner can withhold a definite answer; a movement No no longer
+blocks an otherwise funded bid. A proven funding loss after a quoted bribe
+releases only the now-impossible bid answer. Focused cases use original
+Basic/Advanced questions and bidding, with a labeled controlled force or spice
+transfer for the revival and external-loss supplements. Seven focused files
+pass 88/88; type/lint and build pass. Complete interactions and browser/deployed
+acceptance remain open.
+
 **Phase-wide Truthtrance bid — 27 October. Prototyped / Partial.**
 An owned Yes/No minimum ordinary-bid answer can span the remaining Bidding
 phase instead of expiring with the current lot. Actual accepted bids fulfill

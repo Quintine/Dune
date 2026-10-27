@@ -16095,14 +16095,18 @@ function phaseBidHonorsTurnActions(g: Game, p: Player, lot: BidOpportunity, acti
 /** Current witnesses must also satisfy the existing native funding and
  * current-lot commitments. Future bidding with other financial/transport
  * promises awaits their combined planner; do not invent those resources. */
+function phaseBidFuturePlannerUnsupported(g: Game, p: Player): boolean {
+  return liveShipmentPromises(g.shipmentPromises ?? [],p.id,g.turn).some(row => row.answer) ||
+    hasMovementPromises(g,p.id,true) || liveRevivalPromises(g.revivalPromises ?? [],p.id,g.turn).some(row => row.answer) ||
+    liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [],p.id,g.turn).some(row => row.answer) ||
+    liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [],p.id,g.turn).some(row => row.answer) ||
+    liveTurnActionPromises(g.turnActionPromises ?? [],p.id,g.turn).length > 0 ||
+    (!!bidOpportunity(g) && hasBribePromises(g,p.id,true));
+}
 function viablePhaseBidWitnesses(g: Game, p: Player, promises: readonly PhaseBidPromise[]) {
   const lot = bidOpportunity(g);
   const live = livePhaseBidPromises(promises,p.id,g.turn);
-  const otherCommitments = liveShipmentPromises(g.shipmentPromises ?? [],p.id,g.turn).some(row => row.answer) ||
-    hasMovementPromises(g,p.id) || liveRevivalPromises(g.revivalPromises ?? [],p.id,g.turn).some(row => row.answer) ||
-    liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [],p.id,g.turn).some(row => row.answer) ||
-    liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [],p.id,g.turn).some(row => row.answer) ||
-    liveTurnActionPromises(g.turnActionPromises ?? [],p.id,g.turn).length > 0;
+  const otherCommitments = phaseBidFuturePlannerUnsupported(g,p);
   return phaseBidWitnesses(g,p).flatMap(witness => {
     if (witness.kind === 'future') {
       if (otherCommitments) return [];
@@ -16151,12 +16155,20 @@ function viablePhaseBidWitnesses(g: Game, p: Player, promises: readonly PhaseBid
 /** A new independent bribe must preserve an already-binding phase Yes.
  * Before Bidding, reserve currently fundable payment first; current-lot
  * independent combinations wait for a joint planner. */
+/** An independently admitted promise must not make an already-owned phase
+ * bid impossible. If the future joint planner has no witness, a definite
+ * answer is withheld rather than offered and rejected after binding. */
+function phaseBidCompatibleLaterPromises(g: Game, p: Player): boolean {
+  const live = livePhaseBidPromises(g.phaseBidPromises ?? [],p.id,g.turn);
+  if (!live.some(row => row.answer)) return true;
+  return viablePhaseBidWitnesses(g,p,g.phaseBidPromises ?? [])
+    .some(witness => !!phaseBidCompletionRange(g.phaseBidPromises ?? [],witness));
+}
 function phaseBidCompatibleBribeAnswer(g: Game, p: Player): boolean {
   const live = livePhaseBidPromises(g.phaseBidPromises ?? [],p.id,g.turn);
   if (!live.some(row => row.answer)) return true;
   if (g.phase === 3 && hasBribePromises(g,p.id,true)) return false;
-  return viablePhaseBidWitnesses(g,p,g.phaseBidPromises ?? [])
-    .some(witness => !!phaseBidCompletionRange(g.phaseBidPromises ?? [],witness));
+  return phaseBidCompatibleLaterPromises(g,p);
 }
 function phaseBidRule<T>(run: () => T): T {
   try { return run(); }
@@ -16208,7 +16220,8 @@ function reconcilePhaseBids(g: Game, voluntary?: {actor:string;action:Action}) {
       const witnesses = viablePhaseBidWitnesses(g,player,g.phaseBidPromises);
       // An external event must not release an answer merely because the
       // combined future-obligation planner is not implemented yet.
-      const unknownFuture = change === 'external' && !witnesses.some(row => row.kind === 'future') &&
+      const unknownFuture = change === 'external' && phaseBidFuturePlannerUnsupported(g,player) &&
+        !witnesses.some(row => row.kind === 'future') &&
         phaseBidWitnesses(g,player).some(row => row.kind === 'future');
       if (unknownFuture && live.some(row => row.answer) &&
           !witnesses.some(row => !!phaseBidCompletionRange(g.phaseBidPromises!,row))) continue;
@@ -20987,7 +21000,7 @@ function travelTruthAnswers(g: Game, p: Player, claim: TravelClaim): TruthAnswer
     // slot until the real answer binds. The authoritative order stays untouched.
     const trial = { ...answerSource, travelPromises: [...(g.travelPromises ?? []), promise], travelPromiseOrder: undefined };
     const lot = bidOpportunity(trial);
-    if (travelCompletion(trial, p.id) && revivalCompatibleLaterPromises(trial, p, {}) &&
+    if (phaseBidCompatibleLaterPromises(trial,p) && travelCompletion(trial, p.id) && revivalCompatibleLaterPromises(trial, p, {}) &&
       bribeCompatibleLaterPromises(trial, p, {}) &&
       (!lot || !bidRequired(trial.bidPromises ?? [], p.id, lot) || !!bidPromiseCompletion(trial, p)))
       answers.push(answer ? 'yes' : 'no');
@@ -21342,7 +21355,8 @@ function movementTruthAnswers(g: Game, p: Player, claim: MovementClaim): TruthAn
   for (const answer of [true, false]) {
     const promise = { ...claim, turn: g.turn, player: p.id, asker: g.players.find(other => other.id !== p.id)!.id, answer };
     const answerSource = (g.phase === 2 && !g.charityOrder) || (g.phase === 4 && !g.revivalOrder) ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
-    if (groundMovementCompletion(answerSource, p.id, [...live, promise]) &&
+    if (phaseBidCompatibleLaterPromises({ ...answerSource, movementPromises: [...(g.movementPromises ?? []), promise] },p) &&
+      groundMovementCompletion(answerSource, p.id, [...live, promise]) &&
       revivalCompatibleLaterPromises(answerSource, p, { movementPromises: [...(g.movementPromises ?? []), promise] }) &&
       bribeCompatibleLaterPromises(answerSource, p, { movementPromises: [...(g.movementPromises ?? []), promise] }))
       answers.push(answer ? 'yes' : 'no');
@@ -21371,7 +21385,7 @@ function movementExpressionTruthAnswers(g: Game, p: Player, claim: MovementExpre
       asker: g.players.find(other => other.id !== p.id)!.id, answer, progress: [] };
     const expressions = [...(g.movementExpressionPromises ?? []), promise];
     const trial = { ...answerSource, movementExpressionPromises: expressions };
-    if (groundMovementCompletion(trial, p.id) &&
+    if (phaseBidCompatibleLaterPromises(trial,p) && groundMovementCompletion(trial, p.id) &&
       revivalCompatibleLaterPromises(answerSource, p, { movementExpressionPromises: expressions }) &&
       bribeCompatibleLaterPromises(answerSource, p, { movementExpressionPromises: expressions })) answers.push(answer ? 'yes' : 'no');
   }
@@ -30117,7 +30131,8 @@ function shipmentTruthAnswers(
     // Concurrent legacy readiness can reopen; a completed ordered turn cannot.
     const answerSource = (g.phase === 2 && !g.charityOrder) || (g.phase === 4 && !g.revivalOrder)
       ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
-    if (findShipmentCompletion(answerSource, p, promises) &&
+    if (phaseBidCompatibleLaterPromises({ ...answerSource, shipmentPromises: [...(g.shipmentPromises ?? []), promises[promises.length - 1]] },p) &&
+      findShipmentCompletion(answerSource, p, promises) &&
       revivalCompatibleLaterPromises(answerSource, p, { shipmentPromises: [...(g.shipmentPromises ?? []), promises[promises.length - 1]] }) &&
       bribeCompatibleLaterPromises(answerSource, p, { shipmentPromises: [...(g.shipmentPromises ?? []), promises[promises.length - 1]] }))
       answers.push(answer ? 'yes' : 'no');
@@ -33808,7 +33823,8 @@ function revivalTruthAnswers(g: Game, p: Player, claim: RevivalClaim): ('yes' | 
   return (['yes', 'no'] as const).filter(answer => {
     const promises = [...(g.revivalPromises ?? []), { ...claim, event: 'candidate', player: p.id,
       asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes', progress: 0 }];
-    if (!revivalPromiseCompletion(g, p, promises) ||
+    if (!phaseBidCompatibleLaterPromises({ ...g, revivalPromises: promises },p) ||
+      !revivalPromiseCompletion(g, p, promises) ||
       !bribeCompatibleLaterPromises(g, p, { revivalPromises: promises })) return false;
     const lot = bidOpportunity(g);
     // An earlier Bid Yes reserves a future declaration even before it becomes
@@ -33847,7 +33863,8 @@ function leaderRevivalTruthAnswers(g: Game, p: Player, claim: LeaderRevivalClaim
     const promises = [...(g.leaderRevivalPromises ?? []), { ...claim, event: 'candidate', player: p.id,
       asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes' }];
     const trial = { ...g, leaderRevivalPromises: promises };
-    if (!revivalPromiseCompletion(trial, p) || !bribeCompatibleLaterPromises(trial, p, {})) return false;
+    if (!phaseBidCompatibleLaterPromises(trial,p) || !revivalPromiseCompletion(trial, p) ||
+      !bribeCompatibleLaterPromises(trial, p, {})) return false;
     const lot = bidOpportunity(trial);
     return !lot || !bidRequired(trial.bidPromises ?? [], p.id, lot) || !!bidPromiseCompletion(trial, p);
   });
@@ -33871,7 +33888,8 @@ function revivalExpressionTruthAnswers(g: Game, p: Player, claim: RevivalExpress
       asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes',
       progress: { total: 0, normal: 0, elite: 0, leaders: [] } }];
     const trial = { ...g, revivalExpressionPromises: promises };
-    if (!revivalPromiseCompletion(trial, p) || !bribeCompatibleLaterPromises(trial, p, {})) return false;
+    if (!phaseBidCompatibleLaterPromises(trial,p) || !revivalPromiseCompletion(trial, p) ||
+      !bribeCompatibleLaterPromises(trial, p, {})) return false;
     const lot = bidOpportunity(trial);
     return !lot || !bidRequired(trial.bidPromises ?? [], p.id, lot) || !!bidPromiseCompletion(trial, p);
   });

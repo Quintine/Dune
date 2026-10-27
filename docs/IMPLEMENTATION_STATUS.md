@@ -1,5 +1,20 @@
 # Dune implementation status
 
+## 27 October 2026 — Phase-bid admission repair
+
+An independently projected movement, shipment, travel or revival answer now
+checks the existing phase-bid Yes before it binds. An otherwise harmless
+movement No no longer suppresses the later bid witness. For external funding
+changes, preserve an answer only when its combined planner is actually missing;
+a fully quoted unaffordable bribe/bid route releases the impossible Yes.
+Provisional combined-future limitations remain. Native Basic and Advanced
+sources exercise original questions, offered answers and actual bids; the
+revival and external-loss cases label their controlled physical supplements.
+The in-game Fremen–Ecaz guide now matches the existing Basic and Advanced
+Habbanya victory rules. Seven focused files pass 88/88, and type/lint and
+build pass. Browser and deployed play are not newly certified. Private proof is
+`20261027-phase-bid-admission-proof-v1/`.
+
 ## 27 October 2026 — Phase-wide ordinary bid Truthtrance
 
 Prototype a separate current-turn minimum ordinary-bid Yes/No that persists

@@ -4434,11 +4434,11 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Advanced & expansions',
     coverage: 'Partial',
     developmentStage: 'Integrated',
-    summary: 'Allied Ecaz and Fremen may share Sietch Tabr while qualifying for the Fremen special victory.',
+    summary: 'Allied Ecaz and Fremen may share Sietch Tabr, and in Advanced Habbanya Sietch, while qualifying for the Fremen special victory.',
     steps: [
       'At the final-turn victory check, ordinary stronghold victories come first. If none qualifies, Fremen’s special occupation conditions are checked before the Guild fallback. A qualifying Fremen victory includes its ally and is not replaced by a Bene Gesserit prediction.',
       'Ecaz and Fremen must be current reciprocal allies and both have fighters in Sietch Tabr. Their co-occupation does not block the Fremen special condition. Ecaz alone, non-allied Ecaz or another faction’s fighters still block it. Accompanying Bene Gesserit advisors do not count as fighters.',
-      'Habbanya Sietch retains its existing empty-or-Fremen condition; extending the Ecaz exception there is not yet supported. Tuek’s Sietch must contain no Atreides, Harkonnen or Emperor presence, and Advanced play also excludes Richese presence. A concealed No-Field counts without revealing its hidden value.',
+      'In Basic, Habbanya Sietch must be empty or occupied only by Fremen. In Advanced, reciprocal allied Ecaz and Fremen may also share Habbanya Sietch when both have fighters there. Tuek’s Sietch must contain no Atreides, Harkonnen or Emperor presence, and Advanced play also excludes Richese presence. A concealed No-Field counts without revealing its hidden value.',
       'The public victory guide lists the three territories and any blocking factions. It uses the same settled-board facts as automatic victory resolution. No extra confirmation is required; the table chronicle explains a successful special victory.',
     ],
     checklist: [
