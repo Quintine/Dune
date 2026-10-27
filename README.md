@@ -18,7 +18,10 @@ In the lobby, the host may deal random factions or start a prediction-card
 faction draft. Draft picks proceed from the highest drawn number, and the new
 factions are assigned together after every seat chooses. AI seats choose
 automatically. Both methods clear human readiness; direct selection remains
-available. Consensual faction swaps are not yet implemented. See
+available. Human seats can offer a faction swap, which takes effect only when
+the recipient accepts. Pending offers pause other lobby changes and can be
+declined by the recipient or canceled by the proposer. Accepted swaps clear
+human readiness; AI seats cannot participate yet. See
 [faction allocation](docs/FACTION_ALLOCATION.md).
 
 For the provisional two-person setup, the host enables **Two players, two

@@ -367,7 +367,7 @@ export function GameTable({
       : [],
   );
   const reactionBusy =
-    transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot;
+    transportBusy || !!g.factionDraft || !!g.factionSwap || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot;
   const ixianBetrayalOwnsControls = !!g.nexusIxianBetrayalReaction &&
     !g.response && !g.decision && !g.truthtrance && !g.phaseOpening &&
     !g.automaticContinuationPending && !g.nexusCards?.waiting.length && !g.nexusTraitors?.pending;
@@ -1457,7 +1457,7 @@ export function GameTable({
           <SpiceCardInspector card={g.spicePeek} context="Private foresight" />
         </section>
       )}
-      <SeatAutopilot game={g} act={act} busy={transportBusy} />
+      <SeatAutopilot game={g} act={act} busy={transportBusy || !!g.factionDraft || !!g.factionSwap} />
       <DukeVidal game={g} />
       <EcazLoyaltyCard loyalty={g.ecazLoyalty} />
       <MoritaniTerrorSupply game={g} />

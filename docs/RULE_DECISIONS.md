@@ -4,10 +4,11 @@
 
 The supplied revised rulebook, physical p. 4 (printed p. 2), describes random
 faction dealing or descending turn-prediction-number draft order and permits
-swaps. The prototype implements the first two methods in the lobby, retaining
+swaps. The prototype implements these methods in the lobby, retaining
 direct selection and existing start gates. Each faction seat receives its own
 draw in the two-person/four-faction mode; that composition and the automatic
-AI pick are software interpretations. Consensual swaps remain unfinished.
+AI pick are software interpretations. Human seats can exchange factions by
+offer and acceptance; AI participation in swaps remains unfinished.
 [Scope](FACTION_ALLOCATION.md).
 
 ## Advanced Voice and ordinary card names — 28 October 2026

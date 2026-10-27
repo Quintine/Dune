@@ -2,6 +2,8 @@ import { createTwoPlayerControllers, validateTwoPlayerControllersLobby, validate
   addTwoPlayerControlledSeat, TwoPlayerControllersError, type TwoPlayerControllers } from './two-player-controllers';
 import { createFactionDraft, validateFactionDraft, currentFactionDrafter, chooseFaction,
   FactionDraftError, type FactionDraft } from './faction-draft';
+import { createFactionSwap, validateFactionSwap, answerFactionSwap, cancelFactionSwap,
+  FactionSwapError, type FactionSwap } from './faction-swap';
 import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
 import { victoryFinalTurn, continueVictoryCalendar, VictoryCalendarError } from './victory-calendar';
 import { createVictoryContinuation, validateVictoryContinuation, voteVictoryContinuation,
@@ -1411,6 +1413,8 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  /** A human-to-human lobby offer, pending the recipient's consent. */
+  factionSwap?: FactionSwap;
   /** Public prediction-number faction selection, present only while in progress. */
   factionDraft?: FactionDraft;
   /** Explicit two-human/four-faction setup; absent from ordinary and legacy games. */
@@ -5716,6 +5720,7 @@ function twoPlayerControllersIntegrity(g: Game): void {
 function joinFactionSeat(g: Game, p: Player, controllerId?: string) {
   twoPlayerControllersIntegrity(g);
   requireRule(!g.factionDraft, 'Finish or cancel the faction draft before adding a seat.');
+  requireRule(!g.factionSwap, 'Resolve the faction swap before adding a seat.');
   requireRule(g.status === 'lobby', 'This game has already started.');
   requireRule(g.players.length < 6, 'This table has six players.');
   requireRule(!g.players.some((x) => x.id === p.id), 'Already seated.');
@@ -5775,6 +5780,21 @@ function factionDraftIntegrity(g: Game): void {
   requireRule(g.status === 'lobby', 'The faction draft belongs to the lobby.');
   factionDraftRule(() => validateFactionDraft(g.factionDraft, g.players.map(player => player.id), eligibleLobbyFactions(g)));
   requireRule(g.factionDraft.picks.length < g.players.length, 'A completed faction draft must be applied once.');
+}
+function factionSwapRule<T>(operation: () => T): T {
+  try { return operation(); }
+  catch (error) {
+    if (error instanceof FactionSwapError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function factionSwapIntegrity(g: Game): void {
+  if (g.factionSwap === undefined) return;
+  requireRule(g.status === 'lobby' && !g.factionDraft, 'A faction swap belongs to the lobby outside a draft.');
+  factionSwapRule(() => validateFactionSwap(g.factionSwap, g.players));
+  requireRule(g.players.some(player => player.id === g.factionSwap!.from && !player.bot) &&
+    g.players.some(player => player.id === g.factionSwap!.to && !player.bot),
+  'Faction swap participants must be human seats.');
 }
 function assignLobbyFaction(player: Player, chosen: FactionId): void {
   player.faction = chosen;
@@ -39980,6 +40000,11 @@ function normalizeCardNames(g: Game) {
 export function applyAction(state: Game, id: string, action: Action): Game {
   twoPlayerControllersIntegrity(state);
   factionDraftIntegrity(state);
+  factionSwapIntegrity(state);
+  if (state.factionSwap) requireRule(
+    ['factionSwapRespond', 'factionSwapCancel', 'advanceBots'].includes(action?.type),
+    'Resolve the faction swap before changing the lobby.',
+  );
   if (state.factionDraft) requireRule(
     ['factionDraftPick', 'factionDraftCancel', 'advanceBots'].includes(action?.type),
     'Finish or cancel the faction draft before changing the lobby.',
@@ -40601,6 +40626,7 @@ function settleAutomaticContinuations(g: Game) {
 export function normalizeAutomaticGame(state: Game): Game {
   twoPlayerControllersIntegrity(state);
   factionDraftIntegrity(state);
+  factionSwapIntegrity(state);
   victoryContinuationIntegrity(state);
   if (state.victoryContinuation) return state;
   bidPromiseIntegrity(state);
@@ -42927,6 +42953,27 @@ function applyActionInner(
     return g;
   }
   if (g.status === 'lobby') {
+    if (g.factionSwap) {
+      const offer = g.factionSwap;
+      requireRule(action.event === offer.event, 'This faction swap is no longer current.');
+      if (t === 'factionSwapCancel') {
+        requireRule(Object.keys(action).every(key => ['type', 'event'].includes(key)), 'Invalid faction swap cancellation.');
+        factionSwapRule(() => cancelFactionSwap(g.players, offer, id));
+        delete g.factionSwap;
+        log(g, `${p.name} canceled the faction swap offer.`);
+        return g;
+      }
+      requireRule(t === 'factionSwapRespond' && typeof action.accept === 'boolean' &&
+        Object.keys(action).every(key => ['type', 'event', 'accept'].includes(key)), 'Choose whether to accept the faction swap.');
+      const result = factionSwapRule(() => answerFactionSwap(g.players, offer, id, action.accept as boolean));
+      delete g.factionSwap;
+      if (result.accepted) {
+        for (const assignment of result.assignments) assignLobbyFaction(getPlayer(g, assignment.player), assignment.faction);
+        g.players.forEach(player => (player.ready = !!player.bot));
+        log(g, `${p.name} accepted the faction swap. Human readiness was cleared.`);
+      } else log(g, `${p.name} declined the faction swap offer.`);
+      return g;
+    }
     if (g.factionDraft) {
       const draft = g.factionDraft;
       requireRule(action.event === draft.event, 'This faction draft is no longer current.');
@@ -42945,6 +42992,15 @@ function applyActionInner(
       g.factionDraft = factionDraftRule(() => chooseFaction(draft, g.players.map(seat => seat.id), eligibleLobbyFactions(g), id, chosen));
       log(g, `${p.name} selected ${faction(chosen).name} in the faction draft.`);
       continueFactionDraft(g);
+      return g;
+    }
+    if (t === 'factionSwapOffer') {
+      requireRule(Object.keys(action).every(key => ['type', 'target'].includes(key)) &&
+        typeof action.target === 'string' && !p.bot, 'Choose another human seat for the faction swap.');
+      const target = g.players.find(player => player.id === action.target);
+      requireRule(target && !target.bot, 'Choose another human seat for the faction swap.');
+      g.factionSwap = factionSwapRule(() => createFactionSwap(g.players, id, target.id, crypto.randomUUID()));
+      log(g, `${p.name} offered to exchange factions with ${target.name}.`);
       return g;
     }
     if (t === 'factionAllocation') {
@@ -44892,6 +44948,7 @@ function applyActionInner(
 export function viewGame(state: Game, id: string, now?: number) {
   twoPlayerControllersIntegrity(state);
   factionDraftIntegrity(state);
+  factionSwapIntegrity(state);
   victoryContinuationIntegrity(state);
   revivalOrderIntegrity(state);
   charityOrderIntegrity(state);
@@ -45191,6 +45248,7 @@ export function viewGame(state: Game, id: string, now?: number) {
     host: g.host,
     status: g.status,
     factionDraft: g.factionDraft ?? null,
+    factionSwap: g.factionSwap ?? null,
     twoPlayerControllers: g.twoPlayerControllers ?? null,
     controlledFactionSeats: g.twoPlayerControllers
       ? g.players.filter(player => g.twoPlayerControllers!.controllers.some(controller =>

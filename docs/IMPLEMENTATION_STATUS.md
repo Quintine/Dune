@@ -1,5 +1,18 @@
 # Dune implementation status
 
+## 28 October 2026 — Consensual lobby faction swaps
+
+Human seats can offer an exchange, with recipient acceptance or decline and
+proposer cancellation. The offer freezes conflicting lobby changes; on
+acceptance factions and their initial assets change while seat identities,
+credentials, circles and host stay put and human readiness clears. Ten related
+unit files pass 48 cases, and two isolated HTTP cases exercise the existing
+allocation and authenticated swaps including separately controlled seats.
+An isolated browser room exercised offer, seat switching and acceptance, with
+exit available during the offer and readiness reset on acceptance.
+AI swap policy, broader setup combinations and deployed acceptance remain open.
+[Scope](FACTION_ALLOCATION.md).
+
 ## 28 October 2026 — Random faction deal and prediction-number draft
 
 The host can deal enabled factions randomly or start a public descending-number

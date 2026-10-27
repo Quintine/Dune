@@ -32,7 +32,19 @@ four-seat/two-controller draft, seat selection and game start. These do not
 establish complete setup or deployed acceptance. An isolated browser room also
 exercised a random deal and a human/AI draft to completion.
 
-Consensual faction swaps are not implemented yet. A host's random deal is an
-explicit action and direct selection remains available; neither is a substitute
-for a participant-approved swap. Broader player-count interpretations, complete
-setup combinations, saved-game assurance and deployed acceptance remain open.
+Human seats may offer an exchange of their currently assigned factions. The
+recipient accepts or declines and the proposer may cancel; each action is bound
+to the current offer. A pending offer freezes other lobby changes and new seats
+until resolved, but players can switch between their own seats or exit. Only
+acceptance changes the assignments and clears human readiness. Seat IDs,
+credentials, circles and host remain attached to their participants; faction
+leaders and Ixian elites follow the new faction. AI seats cannot offer or
+receive swaps yet. Broader player-count interpretations, AI swap policy,
+complete setup combinations, saved-game assurance and deployed acceptance
+remain open.
+
+For the swap checkpoint, ten related unit files pass 48 cases and two isolated
+HTTP cases exercise allocation and authenticated swaps across independently
+controlled seats. This evidence does not certify every setup combination.
+An isolated browser room also exercised an offer between two controlled seats,
+including switching to accept, cleared readiness and an available exit control.

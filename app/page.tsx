@@ -8,6 +8,7 @@ import { RoomEntryConfirmation } from '@/components/room-entry-confirmation';
 import { RulesetControls } from '@/components/ruleset-controls';
 import { TwoPlayerControls } from '@/components/two-player-controls';
 import { FactionAllocation } from '@/components/faction-allocation';
+import { FactionSwap } from '@/components/faction-swap';
 import { randomId } from '@/lib/random-id';
 import {
   SeatHandoverSetup,
@@ -856,7 +857,7 @@ export default function Home() {
         {!roomUnavailable && <div className="table-shell"><TwoPlayerControls
           game={game}
           disabled={busy || needsReconcile || checkingConnection || handoverPending || aiPermissionPending || claimUncertain || !!twoPlayerEntry || !!twoPlayerEntryProblem}
-          draftLocked={!!game.factionDraft}
+          draftLocked={!!game.factionDraft || !!game.factionSwap}
           pendingEntry={twoPlayerEntry !== null}
           entryRoom={twoPlayerEntry?.room}
           entryProblem={twoPlayerEntryProblem}
@@ -869,12 +870,14 @@ export default function Home() {
           retryDisabled={busy || needsReconcile || checkingConnection || handoverPending || aiPermissionPending || claimUncertain || !!twoPlayerEntryProblem || twoPlayerEntry?.room !== game.code}
         /></div>}
         {!roomUnavailable && <div className="table-shell"><FactionAllocation game={game} send={send}
+          busy={busy || needsReconcile || checkingConnection || handoverPending || aiPermissionPending || claimUncertain || !!twoPlayerEntry || !!twoPlayerEntryProblem || !!game.factionSwap} /></div>}
+        {!roomUnavailable && <div className="table-shell"><FactionSwap game={game} send={send}
           busy={busy || needsReconcile || checkingConnection || handoverPending || aiPermissionPending || claimUncertain || !!twoPlayerEntry || !!twoPlayerEntryProblem} /></div>}
         {roomUnavailable ? <main className="table-shell"><RemovedRoomNotice code={game.code} busy={busy || checkingConnection} onRetry={() => void reconnect()} onExit={exitTable} exitDisabled={handoverPending || aiPermissionPending || claimUncertain} /></main> : <GameTable
           key={`${game.code}:${game.me}`}
           game={game}
           send={send}
-          busy={busy || needsReconcile || !!twoPlayerEntry || !!twoPlayerEntryProblem || !!game.factionDraft}
+          busy={busy || needsReconcile || !!twoPlayerEntry || !!twoPlayerEntryProblem}
           onExit={exitTable}
           exitDisabled={handoverPending || aiPermissionPending}
         />}
