@@ -11,7 +11,7 @@ function unavailableReason(game: GameView) {
   if (game.status !== 'playing')
     return 'Order changes are available during play.';
   if (game.phase === 5)
-    return 'Movement order supports clean combined-turn boundaries and queuing behind a started active turn. The active player finishes unchanged; only later unstarted turns can be reordered. Finish pending interactions and preparations first: Sapho never splits an active combined shipment and movement turn. The Advanced Guild retains its next timing choice; an already granted current Guild turn cannot be displaced, and last remains after the Guild. A Karama-locked privilege stays locked. Completed turns and actual shipment and movement counters stay unchanged. Already-held positions and committed cards remain unavailable.';
+    return 'Movement order supports clean combined-turn boundaries and queuing behind a started active turn. In Basic, your own started turn may be paused at a clean boundary and resumed last, with spent actions retained. Finish pending interactions and preparations first. The Advanced Guild retains its next timing choice; an already granted current Guild turn cannot be displaced, and last remains after the Guild. A Karama-locked privilege stays locked. Completed turns and actual shipment and movement counters stay unchanged. Already-held positions and committed cards remain unavailable.';
   if (game.truthtrance || game.response || game.phaseOpening ||
     (game.decision && !(game.phase === 8 && game.decision.kind === 'moritaniExtortion')))
     return 'Finish the current interaction before changing turn order.';
@@ -67,6 +67,7 @@ export function SaphoOrderButton({
       }}
     >
       {option.scope === 'battleAggressor' ? 'Become aggressor and discard Juice of Sapho' :
+        option.scope === 'movement' && option.resumeOwn ? 'Resume your movement last and discard Juice of Sapho' :
         `${bidding ? 'Bid' : option.scope === 'battleOrder' ? 'Choose battles' : option.scope === 'extortion' ? 'Take your Extortion choice' : option.scope === 'revival' ? 'Take your Revival turn' : option.scope === 'charity' ? 'Take your Charity turn' : 'Take your movement turn'} ${option.mode} and discard Juice of Sapho`}
     </Button>
   );
@@ -113,6 +114,7 @@ export function JuiceOfSapho({
             const extortion = option.scope === 'extortion';
             const revival = option.scope === 'revival';
             const charity = option.scope === 'charity';
+            const resumeOwn = option.scope === 'movement' && option.resumeOwn;
             const afterCurrent = (option.scope === 'movement' || revival || charity) && option.afterCurrent;
             const currentPlayer = afterCurrent
               ? game.players.find(player => player.id === afterCurrent)?.name ?? 'The active player'
@@ -151,7 +153,9 @@ export function JuiceOfSapho({
                   </p>
                 ))}
                 <p>
-                  {aggressor
+                  {resumeOwn
+                    ? 'Pause your started turn and resume it last, after the other remaining players. Shipment and movement already used stay spent; no extra action is granted. This Basic timing is provisional.'
+                    : aggressor
                     ? 'Become this battle’s aggressor. You win ordinary ties; a Habbanya Stronghold advantage still takes precedence. The participants, committed plans and later battle choices stay unchanged.'
                     : extortion
                     ? `Take your Extortion choice ${option.mode} among unanswered players. Earlier declines and Moritani’s five-spice bank collection remain. You may decline instead of paying; the first actual three-spice payment ends all offers.`

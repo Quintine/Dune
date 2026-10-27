@@ -1,5 +1,19 @@
 # Kull Wahad: source limits and Karama interruption design
 
+## Fresh Basic lobby default — 27 October 2026
+
+**Prototyped / Partial.** New lobbies automatically select the existing
+printed-Kull preview when public configuration meets its supported Basic
+CHOAM/Ix profile. The host can explicitly turn it off and restore the non-Kull
+question options. The visible lobby notice retains the incomplete preview and
+overbid limits; readiness resets when the choice changes. Existing saved games
+and lobbies lack the new default marker and retain their former selection. An
+unsupported configuration is not automatically enabled. The prior descriptions
+below of a default-off fresh lobby are superseded for new eligible lobbies.
+The publisher's printed Kull ability is cited in the sections below; enabling
+its existing provisional reaction does not certify complete CHOAM rules.
+[Genuine-start evidence](../tests/kull-default-start-runtime.test.ts).
+
 ## Basic Kull and native Truthtrance questions — 27 October 2026
 
 **Prototyped / Partial.** The existing opt-in Basic printed-Kull profile

@@ -2217,6 +2217,16 @@ export function GameTable({
                 When Richese is seated, structured bid, alliance, Revival and bribe commitments are unavailable,
                 and some Kull reactions may be unavailable in complex response windows.
               </p>}
+              {g.lobbyModules?.kullDefault && <p className="notice">
+                {g.lobbyModules.kullPreview
+                  ? 'Printed Kull is enabled by default for this supported Basic preview. The host can turn it off to retain the broader non-Kull Truthtrance options.'
+                  : 'The host has turned off the printed Kull preview. Broader non-Kull Truthtrance options remain available.'}
+              </p>}
+              {!g.lobbyModules?.kullDefault && !g.lobbyModules?.kullPreview &&
+                g.expansions.includes('choam') && g.expansions.includes('ix') &&
+                g.players.some(player => player.faction === 'choam') && <p className="notice">
+                  Printed Kull is inactive in this lobby. Its preview requires the supported Basic configuration and may need different module selections.
+                </p>}
               <label className="checkbox-row">
                 <input
                   type="checkbox"

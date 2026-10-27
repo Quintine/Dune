@@ -1,5 +1,13 @@
 # Rule decision index
 
+## Juice of Sapho and an already-started Basic turn — 27 October 2026
+
+Provisionally permit the holder to pause its own combined shipment and movement
+turn at a clean Basic boundary and resume that same turn last. Committed actions
+and physical state stay spent; pending or shared preparations are not moved.
+The card supports going last, but the cited source does not specify suspension
+of a partly started turn. [Scope](JUICE_OF_SAPHO_SOURCE_UPDATE.md#basic-own-turn-last--27-october-2026).
+
 ## Truthtrance and ground-movement sector — 27 October 2026
 
 A sector-qualified current-turn question counts a real physical ground group

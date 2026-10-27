@@ -8,6 +8,8 @@ export type SaphoMovementOrderContext = {
   started: readonly string[];
   /** Present only for Advanced Guild timing. */
   guild: { player: string; granted: boolean; locked: boolean } | null;
+  /** Explicit Basic clean-boundary prototype; the engine owns all action state. */
+  allowStartedLast?: boolean;
 };
 export class SaphoMovementOrderError extends Error {
   constructor(message: string) {
@@ -39,6 +41,8 @@ function validate(context: SaphoMovementOrderContext): OrderedOpportunity {
     identifier(context.guild.player) && queue.eligible.includes(context.guild.player) &&
     typeof context.guild.granted === 'boolean' && typeof context.guild.locked === 'boolean',
     'Guild timing must retain its original participant and public grant state.');
+  requireMovement(context.allowStartedLast === undefined || typeof context.allowStartedLast === 'boolean',
+    'The started-turn Sapho scope must be an explicit boolean.');
   return queue;
 }
 function eventFor(queue: OrderedOpportunity): string {
@@ -65,13 +69,28 @@ export function reorderSaphoMovementOrder(context: SaphoMovementOrderContext, re
   event: string;
   player: string;
   mode: 'first' | 'last';
-}): { event: string; afterCurrent: string | null; next: OrderedOpportunity } {
+}): { event: string; afterCurrent: string | null; suspended?: string; next: OrderedOpportunity } {
   return wrap(() => {
     const queue = validate(context), event = eventFor(queue);
     requireMovement(request && request.event === event, 'This Sapho movement opportunity has expired.');
     requireMovement(request.mode === 'first' || request.mode === 'last', 'Choose first or last.');
     requireMovement(identifier(request.player) && queue.remaining.includes(request.player),
       'Only a pending participant may change its movement position.');
+    if (context.started.includes(request.player) && request.player === queue.current &&
+        context.allowStartedLast === true) {
+      requireMovement(context.guild === null, 'The started-turn Sapho preview supports Basic timing only.');
+      requireMovement(request.mode === 'last', 'An already-started turn can only be moved to last.');
+      requireMovement(queue.remaining.length > 1, 'This participant is already last.');
+      // Suspend this same opportunity; never synthesize a completed turn or a
+      // second opportunity. The engine retains its committed action counters.
+      const remaining = [...queue.remaining.slice(1), request.player];
+      const next: OrderedOpportunity = {
+        ...queue, eligible: [...queue.eligible], completed: [...queue.completed], remaining,
+        current: remaining[0], currentStarted: false, protectedLast: request.player,
+      };
+      validateOrderedOpportunity(next);
+      return { event, afterCurrent: null, suspended: request.player, next };
+    }
     requireMovement(!context.started.includes(request.player),
       'Juice of Sapho cannot split a combined turn that has already started.');
     const grantedGuild = context.guild && context.guild.player === queue.current &&

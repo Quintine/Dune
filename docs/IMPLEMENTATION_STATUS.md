@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 27 October 2026 — Basic Kull default and Sapho own-turn last
+
+New eligible Basic CHOAM/Ix lobbies select the existing Kull preview by default;
+hosts can turn it off, and existing saved lobbies keep their previous choice.
+At a clean Basic boundary, a Sapho holder can provisionally pause its own started
+movement turn and resume last without replaying spent actions. Advanced,
+pending/shared preparations, wider combinations and final acceptance remain
+open. [Kull](CHOAM_KULL_DESIGN.md#fresh-basic-lobby-default--27-october-2026);
+[Sapho](JUICE_OF_SAPHO_SOURCE_UPDATE.md#basic-own-turn-last--27-october-2026).
+
 ## 27 October 2026 — Basic Kull with native Truthtrance questions
 
 The supported non-Richese Basic Kull opt-in admits current-lot bidding,

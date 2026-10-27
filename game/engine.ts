@@ -1,4 +1,5 @@
 import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
+import { kullDefaultEligible } from './kull-default-profile';
 import { SaphoTruthOrderError, quoteSaphoTruthOrder, reorderSaphoTruthOrder, validateSaphoTruthOrder } from './sapho-truth-order';
 import { RicheseBidPromiseError, richeseBidCompletionRange, richeseBidRequired, recordRicheseBid,
   liveRicheseBidPromises, reconcileRicheseBidPromises, finishRicheseBidLot, validateRicheseBidPromises,
@@ -2685,6 +2686,8 @@ export type Game = {
   ecazTreachery?: true;
   /** Lobby-only module selections; consumed by the genuine setup at start. */
   lobbyOptions?: LobbyOptions;
+  /** New-lobby policy marker; absent on pre-existing lobbies. */
+  kullDefaultPolicy?: true;
   /** Public, turn-scoped receipt for the discarded Recruits card. */
   recruits?: {
     turn: number;
@@ -5604,6 +5607,7 @@ export function createGame(
     version: 0,
     host: host.id,
     status: 'lobby',
+    kullDefaultPolicy: true,
     advanced,
     expansions: [...new Set(expansions)],
     players: [host],
@@ -10085,13 +10089,21 @@ function takeBattleLosses(g: Game, p: Player, t: string, losses: Casualties) {
   return lostCyborgs;
 }
 /** Lobby-only selections whose saved setup shape is created at start. */
-type LobbyOptions = { leaderSkills?: true; ecazTreachery?: true; kullPreview?: true };
+type LobbyOptions = { leaderSkills?: true; ecazTreachery?: true; kullPreview?: true; kullOptOut?: true };
 function lobbyOptionsIntegrity(g: Game) {
+  requireRule(g.kullDefaultPolicy === undefined || g.kullDefaultPolicy === true, 'Invalid Kull lobby policy.');
   const options = g.lobbyOptions;
   if (options === undefined) return;
   requireRule(g.status === 'lobby' && !!options && typeof options === 'object' && !Array.isArray(options) &&
-    Object.entries(options).every(([key, value]) => ['leaderSkills', 'ecazTreachery', 'kullPreview'].includes(key) && value === true),
+    Object.entries(options).every(([key, value]) => ['leaderSkills', 'ecazTreachery', 'kullPreview', 'kullOptOut'].includes(key) && value === true) &&
+    (!options.kullOptOut || !!g.kullDefaultPolicy && !options.kullPreview),
   'Invalid lobby module options.');
+}
+function lobbyKullDefault(g: Game): boolean {
+  return !!g.kullDefaultPolicy && kullDefaultEligible(g);
+}
+function lobbyKullEnabled(g: Game): boolean {
+  return !!g.lobbyOptions?.kullPreview || lobbyKullDefault(g) && !g.lobbyOptions?.kullOptOut;
 }
 function lobbyModulesSelected(g: Game): boolean {
   return !!g.lobbyOptions?.leaderSkills || !!g.lobbyOptions?.ecazTreachery || !!g.lobbyOptions?.kullPreview ||
@@ -10102,7 +10114,7 @@ function startModules(state: Game): Game {
   const options = state.lobbyOptions ?? {};
   const g = structuredClone(state);
   delete g.lobbyOptions;
-  if (options.kullPreview) {
+  if (lobbyKullEnabled(state)) {
     requireRule(g.advanced === false && (g.expansions.length === 2 ||
       g.expansions.length === 3 && g.expansions.includes('ecaz')) && g.expansions.includes('choam') &&
       g.expansions.includes('ix') && !!byFaction(g,'choam') &&
@@ -10196,7 +10208,7 @@ function requireFreshBaseRuntime(g: Game) {
   // unowned optional components are checked separately; gameplay fields stay fresh.
   const configuration = new Set<keyof Game>(['code', 'version', 'host', 'players', 'playerPositions',
     'advanced', 'expansions', 'log', 'botsPending', 'botNextActionAt', 'techTokens', 'strongholdCards',
-    'homeworlds', 'nexusCards', 'discoveryEnabled', 'leaderSkills', 'ecazTreachery']);
+    'homeworlds', 'nexusCards', 'discoveryEnabled', 'leaderSkills', 'ecazTreachery', 'lobbyOptions', 'kullDefaultPolicy']);
   const keys = [...new Set([...Object.keys(g), ...Object.keys(fresh)])] as (keyof Game)[];
   requireRule(keys.every(key => configuration.has(key) ||
     JSON.stringify(g[key]) === JSON.stringify(fresh[key])),
@@ -11079,6 +11091,9 @@ function finishMandatorySkillVisibility(g: Game) {
 }
 
 function initializeSetup(g: Game, strongholds = !!g.strongholdCards) {
+  // Lobby defaults are selections for a new setup, never active game state.
+  delete g.lobbyOptions;
+  delete g.kullDefaultPolicy;
   const ecaz = byFaction(g, 'ecaz');
   if (ecaz && g.advanced) g.ecazLoyalty = { player: ecaz.id, card: null };
   if (g.discoveryEnabled) g.discoveries = createDiscoveryState(random);
@@ -26803,6 +26818,7 @@ type SaphoOption = {
   mode: 'first' | 'last';
   /** Display only; action submission keeps scope/event/mode. */
   afterCurrent?: string;
+  resumeOwn?: true;
 } | { scope: 'battleAggressor'; event: string; mode: 'aggressor' };
 function saphoCyclicRule<T>(quote: () => T): T {
   try { return quote(); }
@@ -27020,7 +27036,14 @@ function saphoMovementOrderContext(g: Game): SaphoMovementOrderContext | null {
   if (queue.currentStarted && !active.shipped && active.moved===0) return null;
   const guild=g.advanced ? byFaction(g,'guild') : undefined;
   return {queue,started:queue.remaining.filter(id=>saphoMovementStarted(g,getPlayer(g,id))),
-    guild:guild ? {player:guild.id,granted:!!g.guildTimingGranted,locked:!!g.guildTimingLocked} : null};
+    guild:guild ? {player:guild.id,granted:!!g.guildTimingGranted,locked:!!g.guildTimingLocked} : null,
+    // These shared preparations are not yet owned/resumed across another
+    // player's turn. Only a clean Basic physical shipment/move may suspend.
+    allowStartedLast: !g.advanced && !g.karamaShipping && !g.ornithopter && !g.hajr.includes(active.id) &&
+      !(active.faction === 'choam' && g.choamMovement?.turn === g.turn) &&
+      !g.pendingTreacheryDiscard && !g.pendingKull && !g.pendingHomeworldShipment && !g.pendingGuildTransport &&
+      !g.pendingArrivalOverlap && !g.pendingArrivalReaction?.length && !g.pendingAdvisorMatching &&
+      !g.pendingAutomaticAdvisorFlips?.length};
 }
 function saphoMovementRule<T>(calculate: () => T): T {
   try { return calculate(); }
@@ -27123,7 +27146,8 @@ function saphoOptions(g: Game, p: Player): SaphoOption[] {
     try {
       const quote=reorderSaphoMovementOrder(movement,{event:saphoMovementOrderEvent(movement),player:p.id,mode});
       options.push({scope:'movement',event:quote.event,mode,
-        ...(quote.afterCurrent ? {afterCurrent:quote.afterCurrent} : {})});
+        ...(quote.afterCurrent ? {afterCurrent:quote.afterCurrent} : {}),
+        ...(quote.suspended ? {resumeOwn:true as const} : {})});
     } catch(error) {
       if (!(error instanceof SaphoMovementOrderError)) throw error;
     }
@@ -27344,7 +27368,7 @@ function playSapho(g: Game, p: Player, action: Action) {
     const used = discard(g, p, 'richese-juice-of-sapho');
     log(
       g,
-      `${p.name} discarded Juice of Sapho to take the ${option.mode} remaining combined shipment and movement turn${option.mode === 'last' ? ', including after the Spacing Guild' : ''}.${quote.afterCurrent ? ` Provisional queued order: ${getPlayer(g,quote.afterCurrent).name} finishes the current combined turn unchanged; only later unstarted turns reorder.` : ''} Completed turns and physical storm order are unchanged.${option.mode === 'first' && g.advanced && g.movementRemaining.some(id => id !== p.id && getPlayer(g, id).faction === 'guild') ? ' The Guild retains its next legal timing choice and may still take its turn before this reordered turn.' : ''}`,
+      `${p.name} discarded Juice of Sapho to take the ${option.mode} remaining combined shipment and movement turn${option.mode === 'last' ? ', including after the Spacing Guild' : ''}.${quote.suspended ? ' Their started turn pauses provisionally; spent shipment and movement stay spent until it resumes.' : ''}${quote.afterCurrent ? ` Provisional queued order: ${getPlayer(g,quote.afterCurrent).name} finishes the current combined turn unchanged; only later unstarted turns reorder.` : ''} Completed turns and physical storm order are unchanged.${option.mode === 'first' && g.advanced && g.movementRemaining.some(id => id !== p.id && getPlayer(g, id).faction === 'guild') ? ' The Guild retains its next legal timing choice and may still take its turn before this reordered turn.' : ''}`,
       { faction: p.faction, name: 'Juice of Sapho' },
     );
     if (g.semutaPreview) {
@@ -42699,7 +42723,13 @@ function applyActionInner(
         if (action.enabled) g.discoveryEnabled = true; else delete g.discoveryEnabled;
       } else {
         const options: LobbyOptions = { ...g.lobbyOptions };
-        if (action.enabled) options[option as keyof LobbyOptions] = true;
+        if (option === 'kullPreview') {
+          if (action.enabled) {
+            if (lobbyKullDefault(g)) delete options.kullPreview; else options.kullPreview = true;
+            delete options.kullOptOut;
+          }
+          else { delete options.kullPreview; if (g.kullDefaultPolicy) options.kullOptOut = true; }
+        } else if (action.enabled) options[option as keyof LobbyOptions] = true;
         else delete options[option as keyof LobbyOptions];
         if (Object.keys(options).length) g.lobbyOptions = options; else delete g.lobbyOptions;
       }
@@ -45016,7 +45046,7 @@ export function viewGame(state: Game, id: string, now?: number) {
     techTokens: g.techTokens ?? null,
     lobbyModules: g.status === 'lobby' ? {
       leaderSkills: !!g.lobbyOptions?.leaderSkills, ecazTreachery: !!g.lobbyOptions?.ecazTreachery,
-      kullPreview: !!g.lobbyOptions?.kullPreview,
+      kullPreview: lobbyKullEnabled(g), kullDefault: lobbyKullDefault(g),
       nexusCards: !!g.nexusCards, discoveries: g.discoveryEnabled === true,
     } : null,
     ecazLoyalty: g.ecazLoyalty?.card ? { player: g.ecazLoyalty.player, card: g.ecazLoyalty.card } : null,

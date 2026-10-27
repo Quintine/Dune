@@ -103,13 +103,24 @@ void test('clean movement options keep their existing description and exact acti
   }
 });
 
+void test('own-started Basic last explains the paused turn and submits only the native action', () => {
+  const game = projected('last', false, false);
+  game.saphoOptions = [{ scope: 'movement', event: 'started-owner-event', mode: 'last', resumeOwn: true }];
+  const html = panel(game);
+  assert.match(html, /Resume your movement last and discard Juice of Sapho/);
+  assert.match(html, /Pause your started turn and resume it last/);
+  assert.match(html, /Shipment and movement already used stay spent/);
+  assert.deepEqual(press(game.saphoOptions[0]), [{ type: 'card', card: sapho.id,
+    scope: 'movement', event: 'started-owner-event', mode: 'last' }]);
+});
+
 void test('unavailable movement guidance covers clean and queued windows without splitting turns or preparations', () => {
   const game = projected();
   game.saphoOptions = [];
   const html = panel(game);
   assert.match(html, /clean combined-turn boundaries and queuing behind a started active turn/);
   assert.match(html, /Finish pending interactions and preparations first/);
-  assert.match(html, /Sapho never splits an active combined shipment and movement turn/);
+  assert.match(html, /your own started turn may be paused at a clean boundary and resumed last/);
   assert.match(html, /last remains after the Guild/);
   assert.doesNotMatch(html, /Take your movement turn (first|last) and discard/);
   game.players.find(player => player.id === game.me)!.hand = [];

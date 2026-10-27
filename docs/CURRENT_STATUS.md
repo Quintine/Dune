@@ -20,6 +20,16 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Basic Kull default and Sapho own-turn last — 27 October. Prototyped / Partial.**
+New eligible Basic CHOAM/Ix lobbies select the printed Kull preview by default;
+hosts can opt out, and existing lobbies retain their previous selection. At a
+clean Basic boundary, a Sapho holder may provisionally suspend its own started
+movement turn and resume last without replaying spent shipment or movement.
+Richese/whole-turn Kull limits, Advanced Sapho suspension, pending/shared
+preparations, wider interactions and full rules/deployed acceptance remain open.
+[Kull](CHOAM_KULL_DESIGN.md#fresh-basic-lobby-default--27-october-2026);
+[Sapho](JUICE_OF_SAPHO_SOURCE_UPDATE.md#basic-own-turn-last--27-october-2026).
+
 **Basic Kull and Truthtrance bid, Revival and alliance — 27 October. Prototyped / Partial.**
 The existing Basic printed-Kull opt-in without Richese admits supported
 current-lot bid, Revival and ordinary Nexus alliance questions through their

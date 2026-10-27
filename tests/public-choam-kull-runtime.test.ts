@@ -26,7 +26,7 @@ function declare(g: Game,kull: string) {
   return act(g,'choam',{type:'kullDecision',event:reaction.event,source:'printed',card:kull});
 }
 
-void test('Kull is a host-selected lobby preview and default Basic Truth promises retain their existing scope', () => {
+void test('Kull is a host-configurable Basic lobby preview with supported Truth promises', () => {
   let lobby = createLobby();
   assert.equal(lobby.lobbyOptions?.kullPreview,undefined);
   assert.equal(bribePromiseModeSupported(lobby),true);
@@ -34,14 +34,15 @@ void test('Kull is a host-selected lobby preview and default Basic Truth promise
   reject(lobby,'choam',{type:'moduleOption',module:'kullPreview',enabled:'true'});
   reject(lobby,'choam',{type:'moduleOption',module:'kullPreview',enabled:true,other:true});
   const baseline = act(ready(lobby),'choam',{type:'start'});
-  assert.equal(baseline.kullPreview ?? false,false);
+  assert.equal(baseline.kullPreview,true);
   assert.equal(bribePromiseModeSupported(baseline),true);
   lobby = ready(lobby);
   lobby = act(lobby,'choam',{type:'moduleOption',module:'kullPreview',enabled:true});
   assert.ok(lobby.players.every(seat => !seat.ready));
-  assert.equal(lobby.lobbyOptions?.kullPreview,true);
+  assert.equal(lobby.lobbyOptions?.kullPreview,undefined);
   lobby = act(lobby,'choam',{type:'moduleOption',module:'kullPreview',enabled:false});
   assert.equal(lobby.lobbyOptions?.kullPreview,undefined);
+  assert.equal(lobby.lobbyOptions?.kullOptOut,true);
   const f = fixture();
   assert.equal(f.setup.kullPreview,true);
   assert.equal(bribePromiseModeSupported(f.setup),true,'Basic printed Kull now supports the structured bribe family');
@@ -55,8 +56,8 @@ void test('incompatible opt-in starts reject without modifying their original lo
     {advanced:false,expansions:['choam','ix'],last:'guild' as const,module:true},
   ]) {
     let g = createLobby(config.advanced,config.expansions,config.last);
-    g = act(g,'choam',{type:'moduleOption',module:'kullPreview',enabled:true});
     if (config.module) g = act(g,'choam',{type:'moduleOption',module:'leaderSkills',enabled:true});
+    g = act(g,'choam',{type:'moduleOption',module:'kullPreview',enabled:true});
     g = ready(g);
     reject(g,'choam',config.advanced ? {type:'start',advancedPreview:true} : {type:'start'});
   }

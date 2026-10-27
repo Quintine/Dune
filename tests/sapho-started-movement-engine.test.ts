@@ -135,7 +135,7 @@ for (const advanced of [false, true]) {
     assert.deepEqual(inventory(game), f.originalInventory);
   });
 
-  void test(`${label} an actual active Sapho holder cannot split its own already paid combined turn`, () => {
+  if (advanced) void test(`${label} an actual active Sapho holder cannot split its own already paid combined turn`, () => {
     const f = fixture({ advanced });
     let game = advance(structuredClone(f.game), state => clean(state) && state.active === f.owner);
     const proposed = action(game, 'last');

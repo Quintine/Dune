@@ -1,5 +1,19 @@
 # Juice of Sapho: fresh primary-source and ordering review
 
+## Basic own-turn last — 27 October 2026
+
+**Prototyped / Partial.** At a clean Basic boundary after the holder's own
+physical shipment or movement has completed, the holder may provisionally
+suspend the same remaining combined turn and resume it last. The actual spent
+shipment, movement allowance, resources and physical pieces remain committed;
+no turn is completed or replayed. Pending payment, arrival, card and shared
+movement preparations stay outside this initial path. Basic Semuta resolves
+the Sapho discard before the next actor begins. Advanced own-turn suspension
+remains unavailable. This supersedes the older Basic prohibition below; the
+printed face allows last, but the sources cited here do not resolve a partially
+started turn, so the suspension protocol is an implementation interpretation.
+[Real-start evidence](../tests/sapho-self-last-runtime.test.ts).
+
 Reviewed 7 September 2026. Read-only task; no project runtime changes. This supplements `docs/JUICE_OF_SAPHO_ENGINE_AUDIT.md`; it does not convert its unresolved interpretations into official rulings.
 
 ## Evidence checked
