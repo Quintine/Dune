@@ -1,4 +1,5 @@
 import { nativePromiseScopeSupported, type NativePromiseScope } from './native-promise-scope';
+import { bribePromiseModeSupported } from './bribe-promises';
 
 export type BidClaim = { turn: number; lot: number; minimum: number };
 export type BidPromise = BidClaim & {
@@ -31,10 +32,14 @@ export function parseBidClaim(value: unknown): BidClaim {
  * retain their own required future commitment work. Never changes start gates. */
 export function bidPromiseModeSupported(game: NativePromiseScope & {
   semutaPreview?: unknown; kullPreview?: unknown; nexusKullPreview?: unknown;
-  richeseBetrayalPreview?: unknown;
+  richeseBetrayalPreview?: unknown; guildBetrayalPreview?: unknown;
+  nexusIxianReplacementPreview?: unknown; nexusIxianBetrayalPreview?: unknown;
+  nexusHarkonnenBetrayalPreview?: unknown; moritaniAssassinatePreview?: unknown;
+  mobileStronghold?: unknown;
 }): boolean {
-  return nativePromiseScopeSupported(game) && !game.semutaPreview && !game.kullPreview &&
-    !game.nexusKullPreview && !game.richeseBetrayalPreview;
+  return nativePromiseScopeSupported(game) && !game.semutaPreview &&
+    !game.nexusKullPreview && !game.richeseBetrayalPreview &&
+    (!game.kullPreview || bribePromiseModeSupported(game));
 }
 
 export function bidClaimText(claim: BidClaim): string {

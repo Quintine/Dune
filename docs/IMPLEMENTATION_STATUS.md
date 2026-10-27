@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 27 October 2026 — Basic Kull with native Truthtrance questions
+
+The supported non-Richese Basic Kull opt-in admits current-lot bidding,
+Revival and Nexus alliance questions using their existing native controls.
+The pending Kull transaction suspends question controls, and a voluntary
+Karama purchase cannot evade its owner's current-lot Yes. Richese Semuta,
+phase-wide bids, whole-turn answers and broader interactions remain open.
+[Contract](CHOAM_KULL_DESIGN.md#basic-kull-and-native-truthtrance-questions--27-october-2026).
+
 ## 27 October 2026 — Truthtrance ground-movement sector
 
 Future physical-movement conditions may name an exact printed sector.

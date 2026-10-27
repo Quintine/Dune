@@ -15417,7 +15417,7 @@ function allianceOpportunity(g: Game): AllianceOpportunity | null {
 }
 function allianceQuestionWindow(g: Game): boolean {
   return !!allianceOpportunity(g) && !g.spiceWindow && !g.spiceResolution && !g.response &&
-    !g.decision && !g.phaseOpening && !g.pendingTreacheryDiscard && !g.pendingKarama;
+    !g.decision && !g.phaseOpening && !g.pendingTreacheryDiscard && !g.pendingKarama && !g.pendingKull;
 }
 /** The original native reciprocal quote owns identity and pairing legality. */
 function normalNexusAllianceQuote(g: Game, p: Player, target: string | null) {
@@ -16216,7 +16216,7 @@ function bidOpportunity(g: Game): BidOpportunity | null {
 }
 function bidQuestionWindow(g: Game): boolean {
   return !!bidOpportunity(g) && !g.response && !g.decision && !g.phaseOpening && !g.richeseAuction &&
-    !g.ixAuction && !g.pendingKarama && !g.pendingTreacheryDiscard;
+    !g.ixAuction && !g.pendingKarama && !g.pendingTreacheryDiscard && !g.pendingKull;
 }
 /** A future lot is a witness only after a real funded bid has committed the
  * current lot to sale. An unbid lot ends ordinary Bidding instead of opening
@@ -16445,7 +16445,7 @@ function projectedRicheseBidGuide(g: Game, player: string): {action:Action} | nu
 function phaseBidQuestionWindow(g: Game): boolean {
   return g.status === 'playing' && g.phase >= 0 && g.phase <= 3 && phaseBidPromiseModeSupported(g) &&
     !g.response && !g.decision && !g.phaseOpening && !g.pendingKarama && !g.pendingTreacheryDiscard &&
-    !g.richeseAuction && !g.ixAuction && !g.currentAuctionSale && (g.phase < 3 || !!bidOpportunity(g));
+    !g.pendingKull && !g.richeseAuction && !g.ixAuction && !g.currentAuctionSale && (g.phase < 3 || !!bidOpportunity(g));
 }
 function phaseBidHonorsTurnActions(g: Game, p: Player, lot: BidOpportunity, action: Action): boolean {
   if (!liveTurnActionPromises(g.turnActionPromises ?? [],p.id,g.turn).length) return true;
@@ -17681,6 +17681,12 @@ function normalKaramaAuction(
     !payment || a.bidder === p.id,
     'Only the original winning bidder may choose the auction payment.',
   );
+  // A direct purchase closes the lot without placing the promised bid. Check
+  // before opening Kull: a later interruption must not hide the actor's own
+  // voluntary attempt to evade the original Truthtrance answer.
+  const opportunity = !payment && g.kullPreview ? bidOpportunity(g) : null;
+  requireRule(!opportunity || !bidRequired(g.bidPromises ?? [], p.id, opportunity),
+    'Place your promised Truthtrance bid before taking this lot with Karama.');
   requireRule(
     p.hand.length - Number(payment && spendingCard) < handLimit(p),
     'Leave room for the committed Karama auction purchase.',
@@ -34362,7 +34368,7 @@ function revivalOpportunity(g: Game, player: string): boolean {
 function revivalQuestionWindow(g: Game): boolean {
   return g.status === 'playing' && g.phase >= 0 && g.phase <= 4 && revivalPromiseModeSupported(g) &&
     !g.response && !g.decision && !g.phaseOpening && !g.pendingRevival &&
-    !g.pendingKarama && !g.pendingTreacheryDiscard;
+    !g.pendingKarama && !g.pendingTreacheryDiscard && !g.pendingKull;
 }
 function stagePromisedForceReturn(g: Game, p: Player, revival: PendingRevival) {
   const quote = currentRevivalResumeQuote({ ...g, pendingRevival: { ...revival, checks: [] } }, 'finish');
@@ -34713,7 +34719,7 @@ function reconcileRevivalPromises(g: Game, voluntary?: { actor: string; action: 
 function projectedTypedRevivalPromiseGuide(g: Game, player: string, kind: 'forces' | 'leader' | 'expression'): { phase: number; action: Action } | null {
   const ownPayment = g.phase === 3 && !g.response && !g.phaseOpening && g.decision?.kind === 'auctionPayment' && g.decision.player === player;
   if ((!revivalQuestionWindow(g) && !ownPayment) || g.truthtrance || !revivalOpportunity(g, player) ||
-    g.pendingRevival || g.pendingKarama || g.pendingTreacheryDiscard ||
+    g.pendingRevival || g.pendingKarama || g.pendingTreacheryDiscard || g.pendingKull ||
     g.phase === 4 && nativeRevivalOrderBlock(g, player) ||
     g.phase === 2 && nativeCharityOrderBlock(g, player)) return null;
   // The separate bid guide owns a jointly binding Yes declaration. Passing

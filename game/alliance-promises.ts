@@ -1,4 +1,5 @@
 import { nativePromiseScopeSupported, type NativePromiseScope } from './native-promise-scope';
+import { bribePromiseModeSupported } from './bribe-promises';
 import { NexusAllianceError, quoteNexusAlliance } from './nexus-alliance';
 
 export type AllianceClaim = { turn: number; partner: string };
@@ -39,14 +40,16 @@ export function parseAllianceClaim(value: unknown): AllianceClaim {
   return { turn: input.turn, partner: input.partner };
 }
 
-/** This is the original bare native context. An ordinary worm Nexus does not
- * require selecting the optional Nexus Cards module or change a start gate. */
+/** An ordinary worm Nexus does not require the optional Nexus Cards module.
+ * Printed Kull can coexist in its existing supported Basic bribe envelope;
+ * native offers and final membership retain their independent continuation. */
 export function alliancePromiseModeSupported(game: NativePromiseScope & {
   semutaPreview?: unknown; kullPreview?: unknown; nexusKullPreview?: unknown;
   richeseBetrayalPreview?: unknown;
 }): boolean {
-  return nativePromiseScopeSupported(game) && !game.semutaPreview && !game.kullPreview &&
-    !game.nexusKullPreview && !game.richeseBetrayalPreview;
+  return nativePromiseScopeSupported(game) && !game.semutaPreview &&
+    !game.nexusKullPreview && !game.richeseBetrayalPreview &&
+    (!game.kullPreview || bribePromiseModeSupported(game));
 }
 
 export function allianceClaimText(claim: AllianceClaim, partnerName: (id: string) => string = id => id): string {

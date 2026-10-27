@@ -42,7 +42,11 @@ export function parsePhaseBidClaim(value: unknown): PhaseBidClaim {
   return { turn: input.turn, minimum: input.minimum };
 }
 
-export const phaseBidPromiseModeSupported = bidPromiseModeSupported;
+/** A phase-wide Yes can depend on an unopened later lot; its Kull purchase
+ * interruption needs a separate continuation proof from a current-lot Yes. */
+export function phaseBidPromiseModeSupported(game: Parameters<typeof bidPromiseModeSupported>[0]): boolean {
+  return !game.kullPreview && bidPromiseModeSupported(game);
+}
 
 export function phaseBidClaimText(claim: PhaseBidClaim): string {
   return `place a bid of at least ${claim.minimum} spice from now until this turn's Bidding phase closes`;

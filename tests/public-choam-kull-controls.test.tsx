@@ -30,14 +30,14 @@ void test('public host lobby shows the explicitly selected Kull preview and its 
   const f = fixture(), host = viewGame(f.lobby,f.lobby.host), html = table(host);
   assert.equal(host.lobbyModules?.kullPreview,true);
   assert.match(html,/Kull Wahad · Basic development preview/);
-  assert.match(html,/does not support structured Truthtrance questions about bids/);
+  assert.match(html,/does not support phase-wide bid or combined turn-action Truthtrance questions/);
   assert.match(html,/defers unfunded non-CHOAM Karama-dependent bids/);
-  assert.match(html,/When Richese is seated, structured bribe commitments are also unavailable/);
+  assert.match(html,/When Richese is seated, structured bid, alliance, Revival and bribe commitments are unavailable/);
   const off = act(f.lobby,f.lobby.host,{type:'moduleOption',module:'kullPreview',enabled:false});
   const unselected = viewGame(off,off.host);
   assert.equal(unselected.lobbyModules?.kullPreview,false);
   assert.match(table(unselected),/Kull Wahad · Basic development preview/);
-  assert.doesNotMatch(table(unselected),/does not support structured Truthtrance questions about bids/);
+  assert.doesNotMatch(table(unselected),/does not support phase-wide bid or combined turn-action Truthtrance questions/);
   const nonhost = table(viewGame(f.lobby,f.actor));
   assert.match(nonhost,/disabled=""[^>]*type="checkbox"|type="checkbox"[^>]*disabled=""/);
 });

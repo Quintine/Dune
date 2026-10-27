@@ -1,4 +1,5 @@
 import { nativePromiseScopeSupported, type NativePromiseScope } from './native-promise-scope';
+import { bribePromiseModeSupported } from './bribe-promises';
 
 export type RevivalClaim = { turn: number; counter: 'total' | 'normal' | 'elite'; minimum: number };
 export type RevivalPromise = RevivalClaim & {
@@ -32,14 +33,18 @@ export function parseRevivalClaim(value: unknown): RevivalClaim {
   return { turn: input.turn, counter: input.counter, minimum: input.minimum };
 }
 
-/** The original bare native scope is unchanged. Timing, allowance, payment,
- * typed Tanks and actual ordinary-return sources remain the engine's rules. */
+/** The original bare native scope and the supported Basic printed-Kull roster.
+ * Timing, allowance, payment, typed Tanks and actual ordinary-return sources
+ * remain the engine's rules; Richese Semuta and Nexus Kull stay fenced. */
 export function revivalPromiseModeSupported(game: NativePromiseScope & {
   semutaPreview?: unknown; kullPreview?: unknown; nexusKullPreview?: unknown;
-  richeseBetrayalPreview?: unknown;
+  richeseBetrayalPreview?: unknown; guildBetrayalPreview?: unknown;
+  nexusIxianReplacementPreview?: unknown; nexusIxianBetrayalPreview?: unknown;
+  nexusHarkonnenBetrayalPreview?: unknown; moritaniAssassinatePreview?: unknown;
+  mobileStronghold?: unknown;
 }): boolean {
-  return nativePromiseScopeSupported(game) && !game.semutaPreview && !game.kullPreview &&
-    !game.nexusKullPreview && !game.richeseBetrayalPreview;
+  return nativePromiseScopeSupported(game) && !game.semutaPreview && !game.nexusKullPreview &&
+    !game.richeseBetrayalPreview && (!game.kullPreview || bribePromiseModeSupported(game));
 }
 
 export function revivalClaimText(claim: RevivalClaim): string {

@@ -1,5 +1,29 @@
 # Kull Wahad: source limits and Karama interruption design
 
+## Basic Kull and native Truthtrance questions — 27 October 2026
+
+**Prototyped / Partial.** The existing opt-in Basic printed-Kull profile
+without Richese also admits the previously implemented current-lot ordinary
+bid, ordinary Revival and ordinary Nexus alliance question families. The same
+native answer, payment, revival and alliance controls apply. A pending Kull
+offer or counter holds question controls; it does not itself release an answer.
+The original Karama purchase cannot be attempted to evade one's own Yes bid.
+When an opposing purchase is allowed to close the lot, an affected Yes may be
+released; successful Kull leaves the original bid available. A real auction
+payment's interruption can similarly change the funds available for a Revival
+answer; a distinct counter resumes the original payment.
+
+This uses the existing provisional Kull timing, not a new publisher ruling.
+The earlier description below that excludes all three question families is
+superseded for this non-Richese Basic profile. The Richese Semuta envelope,
+phase-wide bid questions, combined turn-action questions, Nexus Kull, Advanced,
+unfunded non-CHOAM overbids and wider combinations remain outside this slice.
+Automatic Kull activation and full rules/deployed acceptance remain open.
+The real-start evidence is in [bid](../tests/kull-bid-runtime.test.ts),
+[Revival](../tests/kull-truth-revival-runtime.test.ts) and
+[alliance](../tests/kull-alliance-runtime.test.ts) tests. The alliance test
+reaches an actual worm Nexus but does not claim a Kull interruption there.
+
 Source audit: 2026-09-06; opt-in preview contract updated 30 September 2026. This is an engineering and product-policy record, not a rules-completion claim. The source audit in [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md) remains applicable. The user-approved counter and BG choices supersede the original proposal; publisher-source uncertainty and full expansion gates remain.
 
 ## Basic Richese and Kull/Semuta — 27 October 2026
