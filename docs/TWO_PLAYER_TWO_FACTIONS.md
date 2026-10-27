@@ -95,10 +95,15 @@ the UI explicit about which faction owns each pending decision. Existing
 autopilot can operate a faction seat only under its existing authorization;
 until full AI refinement, each offered decision needs a minimal legal bot path.
 
-The current prototype requires human seats, permits ordinary existing
-seat-autopilot, and does not yet support accepting a handover into a browser
-already holding a different active seat for the same room. The mode cannot be
-disabled once a secondary faction is added. Recovery replaces an existing
+The prototype supports human controllers, an AI controller with two bot seats,
+and ordinary existing human-seat autopilot. AI factions use independent legal
+policies, not coordinated strategy or calibrated two-faction strength. The host
+can add either AI faction, configure each and remove a bot seat; if the primary
+bot leaves, its remaining bot is promoted to the controller identity. Each
+controller must be entirely human or entirely AI. Accepting a handover into a
+browser already holding a different active seat for the same room remains
+unsupported. The mode cannot be disabled while a secondary faction is present.
+Recovery replaces an existing
 scoped credential for the recovered seat without overwriting another valid
 legacy seat. Comprehensive recovery, revocation and custody acceptance remain
 open.

@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 27 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 28 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable. Advanced, expansion-faction and supported optional-module starts
 are labelled previews; complete rules/publication acceptance remains gated.**
 
@@ -16,6 +16,18 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**AI opponent in the four-faction setup — 28 October. Prototyped / Partial.**
+The host can add two AI faction seats under one AI controller. Existing lobby
+configuration applies separately; removing either bot keeps or promotes the
+remaining seat correctly. Mixed human/AI controller groups are rejected, and
+bot IDs grant no human seat access. Seven related unit files pass 75 cases; an
+isolated HTTP case covers room setup, credential rejection and start. Bots use
+their existing independent legal policies; coordinated strategy, strength
+calibration, complete games and deployed acceptance remain open.
+An isolated browser room also exercised adding both AI seats, removing and
+promoting the original primary, and adding a replacement.
+[Scope](TWO_PLAYER_TWO_FACTIONS.md).
+
 **Truthtrance and Atreides ordinary auction knowledge — 27 October. Prototyped /
 Partial.** A structured fact compares the current successfully inspected
 ordinary auction card with a public printed name. Single/compound controls,
@@ -40,8 +52,9 @@ and actions. Exactly two controllers with two seats each are required to start;
 ordinary victory uses the four-stronghold target. Independent factions and no
 automatic alliance are provisional. Focused setup, victory, UI and isolated
 HTTP cases pass; complete games, player-count interactions, comprehensive
-custody review and deployed acceptance remain open. Human seats are required;
-handover into a browser holding another active room seat remains unsupported.
+custody review and deployed acceptance remain open. The current AI-opponent
+follow-up above adds bot seats. Handover into a browser holding another active
+room seat remains unsupported.
 [A dedicated isolated browser room](TWO_PLAYER_TWO_FACTIONS.md) also exercised
 adding, switching and independently readying the host's two factions.
 [Scope](TWO_PLAYER_TWO_FACTIONS.md).

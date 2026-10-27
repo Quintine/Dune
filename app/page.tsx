@@ -861,6 +861,8 @@ export default function Home() {
           onModeChange={(enabled) => void send({ type: 'twoPlayerMode', enabled })}
           onSwitch={switchFaction}
           onAdd={(name, factionId) => void addControlledFaction(name, factionId)}
+          onAddBot={(faction, difficulty) => void send({ type: 'addBot', faction, difficulty })}
+          onAddControlledBot={(controller, faction, difficulty) => void send({ type: 'addControlledBot', controller, faction, difficulty })}
           onRetry={() => { if (twoPlayerEntry) void dispatchControlledFaction(twoPlayerEntry, false); }}
           retryDisabled={busy || needsReconcile || checkingConnection || handoverPending || aiPermissionPending || claimUncertain || !!twoPlayerEntryProblem || twoPlayerEntry?.room !== game.code}
         /></div>}

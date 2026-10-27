@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 28 October 2026 — AI opponent with two factions
+
+An AI controller can have two distinct bot faction seats in the optional
+two-person setup. Hosts may add, configure and remove each seat, with controller
+promotion after removing its original bot. The game rejects mixed human/AI
+ownership. Seven focused unit files pass 75 cases, including bot-driven setup;
+an isolated HTTP case confirms room setup, start and rejected bot-seat
+impersonation. An isolated browser room exercised adding both bot seats,
+primary removal, promotion and replacement. The bots retain independent legal policies; coordinated strategy,
+strength calibration, full games and deployed acceptance remain open.
+[Scope](TWO_PLAYER_TWO_FACTIONS.md).
+
 ## 27 October 2026 — Truthtrance and Atreides ordinary auction knowledge
 
 A single or compound structured question can compare a named Treachery Card

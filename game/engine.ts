@@ -5699,8 +5699,10 @@ function twoPlayerControllersIntegrity(g: Game): void {
   const assigned = g.twoPlayerControllers.controllers.flatMap(controller => controller.seats);
   requireRule(assigned.length === seats.length && seats.every(seat => assigned.includes(seat)),
     'Every two-person faction must belong to exactly one controller.');
-  requireRule(g.players.every(player => !player.bot),
-    'Two-person setup requires human faction seats.');
+  requireRule(g.twoPlayerControllers.controllers.every(controller => {
+    const group = controller.seats.map(seat => g.players.find(player => player.id === seat)!);
+    return group.every(player => !!player.bot === !!group[0].bot);
+  }), 'A two-person controller cannot mix human and AI faction seats.');
 }
 
 function joinFactionSeat(g: Game, p: Player, controllerId?: string) {
@@ -5719,7 +5721,11 @@ function joinFactionSeat(g: Game, p: Player, controllerId?: string) {
   );
   let mapping = g.twoPlayerControllers;
   if (mapping) {
-    requireRule(!p.bot, 'Two-person setup requires human faction seats.');
+    const owner = mapping.controllers.find(controller => controller.id === controllerId);
+    if (owner) {
+      const primary = g.players.find(player => player.id === owner.id)!;
+      requireRule(!!primary.bot === !!p.bot, 'A two-person controller cannot mix human and AI faction seats.');
+    }
     mapping = twoPlayerRule(() => addTwoPlayerControlledSeat(mapping!,
       [...g.players.map(player => player.id), p.id], controllerId ?? p.id, p.id));
   } else requireRule(controllerId === undefined, 'Enable two-person setup before adding a second faction.');
@@ -5740,6 +5746,8 @@ export function joinControlledFaction(g: Game, p: Player, actorId: string) {
     'Enable two-person setup before adding a second faction.');
   const controller = g.twoPlayerControllers.controllers.find(entry => entry.seats.includes(actorId));
   requireRule(controller, 'This faction has no two-person controller.');
+  requireRule(!p.bot && !getPlayer(g, actorId).bot,
+    'Human faction seats must belong to a human controller.');
   joinFactionSeat(g, p, controller.id);
 }
 function setMovementDiscardKnowledge(g: Game, knowledge: MovementDiscardKnowledge | undefined) {
@@ -42870,8 +42878,8 @@ function applyActionInner(
       'Choose whether each of two people controls two factions.');
       if (action.enabled === !!g.twoPlayerControllers) return g;
       if (action.enabled) {
-        requireRule(g.players.length <= 2 && g.players.every(player => !player.bot),
-          'Enable two-person setup with at most two human faction seats and no AI seats.');
+        requireRule(g.players.length <= 2,
+          'Enable two-person setup with at most two existing faction seats.');
         const seats = g.players.map(player => player.id);
         let mapping = createTwoPlayerControllers();
         for (const seat of seats) mapping = twoPlayerRule(() =>
@@ -42882,7 +42890,7 @@ function applyActionInner(
           'Two-person setup cannot be disabled after second faction seats are added.');
         delete g.twoPlayerControllers;
       }
-      g.players.forEach(player => (player.ready = false));
+      g.players.forEach(player => (player.ready = !!player.bot));
       log(g, `${p.name} ${action.enabled ? 'enabled' : 'disabled'} the provisional two-person, four-faction setup. Human readiness was cleared.`);
       return g;
     }
@@ -43037,9 +43045,9 @@ function applyActionInner(
       g.players.forEach((player) => (player.ready = !!player.bot));
       return g;
     }
-    if (t === 'addBot' || t === 'removeBot') {
+    if (t === 'addBot' || t === 'addControlledBot' || t === 'removeBot') {
       requireRule(id === g.host, 'Only the host can manage AI seats.');
-      if (t === 'addBot') {
+      if (t === 'addBot' || t === 'addControlledBot') {
         const difficulty = stringField(action.difficulty);
         requireRule(
           ['Easy', 'Medium', 'Hard', 'Brutal'].includes(difficulty),
@@ -43052,10 +43060,26 @@ function applyActionInner(
         );
         const bot = newPlayer(crypto.randomUUID(), `${faction(f).name} AI`, f);
         bot.bot = difficulty as NonNullable<Player['bot']>;
-        joinGame(g, bot);
+        if (t === 'addControlledBot') {
+          const controllerId = stringField(action.controller);
+          const controller = g.twoPlayerControllers?.controllers.find(entry => entry.id === controllerId);
+          requireRule(controller && getPlayer(g, controller.id).bot,
+            'Choose an existing AI controller for this second faction.');
+          joinFactionSeat(g, bot, controller.id);
+        } else joinGame(g, bot);
       } else {
         const target = getPlayer(g, stringField(action.target));
         requireRule(target.bot, 'Only an AI seat can be removed here.');
+        if (g.twoPlayerControllers) {
+          const owner = g.twoPlayerControllers.controllers.find(controller => controller.seats.includes(target.id));
+          requireRule(owner, 'The AI faction must belong to a controller.');
+          const seats = owner.seats.filter(seat => seat !== target.id);
+          g.twoPlayerControllers = {
+            version: 1,
+            controllers: g.twoPlayerControllers.controllers.flatMap(controller =>
+              controller.id !== owner.id ? [controller] : seats.length ? [{ id: seats[0], seats }] : []),
+          };
+        }
         g.players = g.players.filter((p) => p.id !== target.id);
         if (g.playerPositions) delete g.playerPositions[target.id];
         g.players.forEach((p) => (p.ready = false));

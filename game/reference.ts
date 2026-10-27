@@ -4472,12 +4472,12 @@ export const RULE_TOPICS: RuleTopic[] = [
     steps: [
       'The host enables the option before adding extra factions. Each person joins one seat and adds a second, then switches active faction to ready and play each seat.',
       'The provisional interpretation keeps the factions separate and does not automatically ally them. An individual faction or alliance needs four strongholds.',
-      'This prototype requires human seats, cannot be disabled after a second seat is added, and does not yet establish every player-count interaction.',
+      'The host can add an AI opponent with two independently configured faction seats. Human and AI seats cannot be mixed within one controller. The mode cannot be disabled while a second faction is present, and not every player-count interaction is established.',
     ],
     checklist: [
       { area: 'Implementation', status: 'Partial', detail: 'Two controllers own four independently authenticated seats; the shared victory quote uses the validated controller count. Other player-count rules remain provisional.', evidence: ['game/two-player-controllers.ts', 'game/engine.ts', 'game/victory-progress.ts'] },
       { area: 'Player controls', status: 'Partial', detail: 'Lobby controls add and select seats, each with its own view and actions; wider accessibility and complete-game acceptance remain open.', evidence: ['components/two-player-controls.tsx', 'app/page.tsx'] },
-      { area: 'AI', status: 'Partial', detail: 'Existing authorized human-seat autopilot remains available; independent bot seats and strategic calibration for this mode remain unfinished.', evidence: ['game/engine.ts', 'docs/AI_DEVELOPMENT_PLAN.md'] },
+      { area: 'AI', status: 'Partial', detail: 'An AI opponent can own two bot faction seats with independent legal policies; coordinated strategy and strength calibration remain unfinished.', evidence: ['game/engine.ts', 'tests/two-player-bot-engine.test.ts', 'docs/AI_DEVELOPMENT_PLAN.md'] },
       { area: 'Documentation', status: 'Partial', detail: 'The provisional interpretation, sources and limitations are recorded.', evidence: ['docs/TWO_PLAYER_TWO_FACTIONS.md', 'docs/RULE_DECISIONS.md'] },
       { area: 'Verification', status: 'Partial', detail: 'Focused setup, first-turn, victory, seat selection, action and recovery cases exercise the prototype. Full games, combinations, broader custody and deployed acceptance remain open.', evidence: ['tests/two-player-engine.test.ts', 'tests/two-player-seat-http.test.ts', 'tests/victory-progress.test.ts'] },
     ],

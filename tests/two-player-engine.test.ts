@@ -46,14 +46,14 @@ void test('two people can independently ready their two physical factions and fi
   assert.equal(game.stormPending, 2);
 });
 
-void test('lobby preserves separate controller seats and refuses incomplete, excess and AI setup', () => {
+void test('lobby preserves separate controller seats and refuses incomplete, excess and mixed ownership', () => {
   let game = createGame('TWOPEOPLE', newPlayer('a', 'A', 'atreides'));
   game = applyAction(game, 'a', { type: 'twoPlayerMode', enabled: true });
   assert.throws(() => joinControlledFaction(game, newPlayer('x', 'X', 'emperor'), 'other'), /controller/);
   joinControlledFaction(game, newPlayer('b', 'B', 'emperor'), 'a');
   assert.throws(() => joinControlledFaction(game, newPlayer('x', 'X', 'guild'), 'b'), /two faction/);
   assert.throws(() => applyAction(game, 'a', { type: 'twoPlayerMode', enabled: false }), /cannot be disabled/);
-  assert.throws(() => applyAction(game, 'a', { type: 'addBot', faction: 'guild', difficulty: 'Easy' }), /human/);
+  assert.throws(() => applyAction(game, 'a', { type: 'addControlledBot', controller: 'a', faction: 'guild', difficulty: 'Easy' }), /AI controller/);
   game = applyAction(game, 'a', { type: 'ready' });
   game = applyAction(game, 'b', { type: 'ready' });
   assert.throws(() => applyAction(game, 'a', { type: 'start' }), /exactly two controllers/);

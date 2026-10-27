@@ -18,9 +18,10 @@ For the provisional two-person setup, the host enables **Two players, two
 factions each** in the lobby. Each person joins with one faction, then adds a
 second and uses **Active faction** to switch seats. Ready each faction before
 the host starts. The factions are independent unless they form an alliance;
-the ordinary victory target is four strongholds per side. The prototype
-requires human-controlled seats and cannot be disabled after a second faction
-is added. Counts for optional modules and wider interactions remain provisional.
+the ordinary victory target is four strongholds per side. The host may add an
+AI opponent and choose its two factions; each uses its own current AI policy
+and difficulty. The mode cannot be disabled while a controller has a second
+faction. Counts for optional modules and wider interactions remain provisional.
 See [the implementation scope](docs/TWO_PLAYER_TWO_FACTIONS.md).
 
 New ordinary-auction lots show a **ten-second bidding countdown**. Native

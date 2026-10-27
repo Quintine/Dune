@@ -1,6 +1,6 @@
 /** Explicit two-person setup: faction seats remain separate physical players.
- * Controller IDs are their original, independently authenticated first seats;
- * this public mapping is not itself a credential or an alliance. */
+ * Controller IDs are their first seats, independently authenticated for humans
+ * and internal for bots; this public mapping is not a credential or alliance. */
 export type TwoPlayerController = {
   id: string;
   seats: string[];
