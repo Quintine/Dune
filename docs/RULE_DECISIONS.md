@@ -1,5 +1,18 @@
 # Rule decision index
 
+## No-Field at allied separation — 27 October 2026
+
+Compose E2 FAQ10/supplied physical36 B's one-force presence with the actual
+Basic/Advanced alliance-loss deadline. Under the standing recommendation
+policy, a due marker follows a **provisional destructive reveal**: native
+`alliedSeparation` cause, original reserve-capped materialization, then the
+ending player's whole shared group to Tanks.0 creates no casualty. The ally
+and existing Basic grace/later deadline, Advanced advisors, Polar and Ecaz
+exceptions stay. This is not a specific publisher combined-effect ruling.
+Normal Finish advances instead of rejecting concealed custody; its public
+warning reveals no denomination/quantity. Other arrivals/transports and broader
+combinations remain separate. [Contract](ALLIED_TRANSIT_RULES.md#concealed-no-field-at-the-separation-deadline--27-october-2026).
+
 ## Family Atomics and concealed No-Field — 27 October 2026
 
 Publisher E2 FAQ printed10 and supplied physical36 B count the concealed marker

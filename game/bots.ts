@@ -3738,7 +3738,7 @@ function policyActions(g: GameView): Action[] {
         const retained =
           level > 0 &&
           g.basicAlliedShipment?.territory !== territory(origin).name &&
-          !g.advancedAllySeparation?.territories.includes(territory(origin).name) &&
+          !(g.advancedAllySeparation ?? g.basicAllySeparation)?.territories.includes(territory(origin).name) &&
           territory(origin).type === 'stronghold' &&
           !isAdvisor(me, origin)
             ? 1
@@ -4454,7 +4454,7 @@ export function botActions(g: GameView): Action[] {
       (sourced.type!=='guildShip'||!g.advisorTransportMatchingDenied?.length||!guildTransportQuote(g,sourced).unavailableReasons.length) ? [sourced] : [];
   });
   const me = g.players.find((p) => p.id === g.me)!;
-  const advancedDepartures = g.advancedAllySeparation?.territories;
+  const advancedDepartures = (g.advancedAllySeparation ?? g.basicAllySeparation)?.territories;
   if ((g.basicAlliedShipment || advancedDepartures?.length) &&
       g.phase === 5 && g.active === me.id && me.shipped && me.moved === 0) {
     // Depart from shared groups before unrelated moves; do not retain a

@@ -5196,7 +5196,7 @@ export function GameTable({
                         {' '}and {g.basicAlliedShipment.elite} special visiting forces to Tanks, not your ally’s forces.
                       </p>
                     )}
-                    <AdvancedAllySeparation quote={g.advancedAllySeparation} />
+                    <AdvancedAllySeparation quote={g.advancedAllySeparation ?? g.basicAllySeparation} basic={!g.advanced} />
                     {g.nexusGuildCunning?.offer && (
                       <section className="notice">
                         <p>Guild Cunning ends your ordinary shipment and movement, then offers one second shipment at normal Guild prices. Only an unused Hajr move can follow it. Provisional card combination: Ornithopter can replace that unused Hajr movement; declaring Cunning abandons any unfinished current card group.</p>
@@ -5215,7 +5215,8 @@ export function GameTable({
                       !nexusGuildSkipShipmentAction(g, guildCunning.event))}
                     {actionButton(guildCunning?.stage === 'secondShipment' ? 'Decline second shipment and finish' :
                       guildCunning ? 'Finish Guild turn' : 'Finish shipment & movement', {type: 'endMovement'}, false,
-                      g.advancedAllySeparation?.territories.length ? 'advanced-ally-separation' : undefined)}
+                      g.advancedAllySeparation?.territories.length ? 'advanced-ally-separation' :
+                        g.basicAllySeparation?.territories.length ? 'basic-ally-separation' : undefined)}
                   </>
                 ) : (
                   <p className="muted">

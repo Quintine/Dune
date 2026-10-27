@@ -72,6 +72,8 @@ function nativeStep(game: Game): Game {
     }
     if (game.phase === 3 && game.auction) return applyAction(game, game.auction.active, {type: 'passBid'});
     if (game.phase === 5) return applyAction(game, game.active!, {type: 'endMovement'});
+    if (game.phase === 2 && game.charityOrder?.remaining[0])
+      return applyAction(game,game.charityOrder.remaining[0],{type:'ready'});
     if (game.phase === 4 && game.revivalOrder?.remaining[0])
       return applyAction(game,game.revivalOrder.remaining[0],{type:'ready'});
     // A native Richese lot can own Bidding without an ordinary auction row.

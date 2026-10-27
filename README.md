@@ -56,6 +56,11 @@ advisors, Polar Sink and native Ecaz coexistence retain their exceptions.
 Basic and an already recorded current Storm keep their existing protocol.
 See [Advanced source boundaries](docs/BASE_ADVANCED_READINESS_20260907.md#authorized-advanced-source-follow-up--1-october-2026)
 and [allied separation](docs/ALLIED_TRANSIT_RULES.md).
+At an allied separation deadline, a concealed No-Field provisionally reveals
+before the ending player's actual shared forces go to Tanks. The persistent
+warning identifies the affected territory; finishing needs no extra confirmation.
+Basic retains its later deadline and new-alliance grace.
+See [separation source and limits](docs/ALLIED_TRANSIT_RULES.md).
 Advanced Hajr is played immediately after a completed Force Movement and its
 required arrival decisions. Basic keeps its broader own-turn timing. The
 [Ornithopter combination](docs/RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#hajr-and-unused-movement-entitlements--18-october-2026)

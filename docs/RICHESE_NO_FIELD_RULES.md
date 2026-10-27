@@ -2,6 +2,18 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Allied separation at a due ending — 27 October 2026
+
+A due Basic/Advanced alliance constraint now accepts normal Finish with an
+original concealed marker. Under the standing recommended-option authority,
+provisionally reveal at the actual deadline, materialize only available reserves,
+then remove the ending player's whole shared group to Tanks.0 creates no force.
+The ally, a marker elsewhere and existing deadline/exemption rules remain.
+The public persistent warning names only the affected territories and the
+presence of a marker; it conveys no hidden denomination or count. This is
+source composition, not a dedicated publisher ruling.
+[Source, native ending and scope](ALLIED_TRANSIT_RULES.md#concealed-no-field-at-the-separation-deadline--27-october-2026).
+
 ## Family Atomics qualification and Wall loss — 27 October 2026
 
 The printed one-force-for-all-effects rule, including concealed0, now supplies

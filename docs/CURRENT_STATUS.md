@@ -20,6 +20,44 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**No-Field / allied separation — 27 October. Prototyped / Partial.**
+A due allied-separation end now reveals the concealed marker through the
+selected provisional destructive composition, materializes only available
+reserves, then sends the ending player's actual shared group to Tanks.0 adds
+no counter. The ally stays unchanged. Basic keeps its later-player deadline
+and formation grace; Advanced keeps per-player timing and advisor/Polar/Ecaz
+exceptions. Normal Finish advances instead of rejecting concealed custody.
+Both modes have a persistent public territory/marker-presence warning, with no
+denomination or quantity and no extra confirmation. Minimal policies reuse the
+same deadline; full AI refinement remains deferred.
+[Source and contract](ALLIED_TRANSIT_RULES.md#concealed-no-field-at-the-separation-deadline--27-october-2026).
+
+Frozen **10-file union, 75/75**, types/lint/build and six original-game programmes
+pass. Actual public Richese/Emperor/Atreides +CHOAM-deck starts, dials4+5,
+marker shipment2 and physical shipment4 create protected Basin9/11 groups.
+An original worm Nexus and two actual alliance consents create co-occupation.
+Advanced0/3/5 and Basic0/5 reach due endings; Basic3 uses the recorded earlier
+turn2 formation prefix. Runtime records 19 GameTable SSR, 6 warning renders
+(5 populated) and 7 actual GameTable Finish callbacks. Source/further recorded
+action arrays total549/19. Other controls use native packets directly. No played
+hand, purse, army, phase, alliance, marker or event is installed. Browser
+hydration/navigation and depleted-reserve native journeys were not operated.
+
+Nine new native/control cases and the expanded pure cause/cap case pass.
+All four existing profiles first choose legal voluntary revelation; the test
+follows actual legal continuation through ending rather than demanding an
+immediate Finish proposal. Quiet source drivers now pass a separate optional
+allied shipment and accept the empty Battle phase's native Collection7. The
+older source fixture also now follows actual Charity order. Failed v1 evidence
+is preserved; v2 reruns the frozen related checks after those source repairs.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-no-field-separation-proof-v2/`;
+journeys/HTML: adjacent `20261027-no-field-separation-runtime/run-v1/`.
+All checks use one frozen source, followed only by a recorded three-document
+evidence overlay. Existing server HTTP200, no restart or saved-game/database
+operation. Extra-card endings, broader combinations, full modes and final
+rules/recovery/privacy/browser/deployed acceptance remain due.
+
 **Family Atomics / No-Field — 27 October. Prototyped / Partial.**
 The public controlled marker now supplies one qualifying force, including0,
 through shared native/view/card legality and the unchanged Basic territory or

@@ -4622,7 +4622,7 @@ function revealPlayerNoField(g: Game, p: Player, cause: NoFieldRevealCause) {
   observeOccupation(g);
   log(
     g,
-    `${p.name} revealed the ${result.value} No-Field in ${territory(result.location.territory).name} (${cause}) and placed ${result.forces} physical forces from reserves.${result.forces < result.value ? ' Only the remaining reserves could be placed.' : ''}`,
+    `${p.name} revealed the ${result.value} No-Field in ${territory(result.location.territory).name} (${cause === 'alliedSeparation' ? 'allied separation' : cause}) and placed ${result.forces} physical forces from reserves.${result.forces < result.value ? ' Only the remaining reserves could be placed.' : ''}`,
     { faction: 'richese', name: 'No-Field revealed' },
   );
   return result;
@@ -21506,13 +21506,8 @@ function alliedSeparationTerritories(g: Game, p: Player) {
     })),
   });
 }
-function requireAlliedSeparationCustody(g: Game, p: Player) {
-  const deployed = p.noField?.deployed;
-  requireRule(!deployed || !alliedSeparationTerritories(g, p).includes(deployed.location.territory),
-    'This removal of a concealed No-Field awaits its specific reveal and casualty rules.');
-}
-function advancedAllySeparationView(g: Game, p: Player): {territories: string[]} | null {
-  if (!g.advanced || g.status !== 'playing' || g.phase !== 5 || g.active !== p.id ||
+function alliedSeparationView(g: Game, p: Player): {territories: string[]; noField?: true} | null {
+  if (g.status !== 'playing' || g.phase !== 5 || g.active !== p.id ||
       g.truthtrance || g.response || g.decision || g.phaseOpening || g.pendingKarama ||
       g.pendingTreacheryDiscard || g.pendingNullentropy || g.pendingExchange ||
       g.pendingRicheseGift || g.pendingRichesePurchaseIncome || g.pendingShipment ||
@@ -21523,8 +21518,11 @@ function advancedAllySeparationView(g: Game, p: Player): {territories: string[]}
       pendingNexusTraitors(g) || g.nexusCards?.phase?.stage === 'drawing' ||
       currentGuildCunning(g, p.id)?.stage === 'pending' ||
       currentGuildCunning(g, p.id)?.stage === 'secondShipment') return null;
-  const territories = alliedSeparationTerritories(g, p).map(id => territory(id).name);
-  return territories.length ? {territories} : null;
+  const places = alliedSeparationTerritories(g, p);
+  const territories = places.map(id => territory(id).name);
+  const marker = p.noField?.deployed;
+  return territories.length ? {territories,
+    ...(marker?.controller === p.id && places.includes(marker.location.territory) ? {noField:true as const} : {})} : null;
 }
 
 function basicAlliedShipmentView(g: Game, p: Player) {
@@ -21580,7 +21578,6 @@ function finishMovementTurn(g: Game, id: string) {
     if (error instanceof MovementClaimError) throw new RuleError(error.message);
     throw error;
   }
-  requireAlliedSeparationCustody(g, p);
   const cunning = currentGuildCunning(g,id);
   if (cunning) { requireRule(cunning.stage !== 'pending' && cunning.shipment?.stage !== 'pending', 'Finish the Guild Cunning response or shipment first.'); cunning.stage = 'completed'; saveGuildCunning(g,cunning); }
   finishBasicAlliedShipment(g, p);
@@ -21602,7 +21599,7 @@ function finishMovementTurn(g: Game, id: string) {
       { faction: 'ecaz', name: 'Occupy' },
     );
   for (const terr of alliedSeparationTerritories(g, p))
-    killTerritory(g, p, terr);
+    killTerritory(g, p, terr, Infinity, false, 'alliedSeparation');
   g.movementRemaining = g.movementRemaining.filter((other) => other !== id);
   if (g.saphoMovementLast?.player === id) g.saphoMovementLast = null;
   movementTurn(g);
@@ -42492,9 +42489,6 @@ function applyActionInner(
       if (g.ornithopter?.player === id) finishOrnithopter(g, 'cunning');
       return g;
     }
-    // Reject unsupported concealed custody before retiring a played movement
-    // card and parking its native ending continuation.
-    requireAlliedSeparationCustody(g, p);
     if (g.ornithopter?.player === id) finishOrnithopter(g, 'end');
     else finishMovementTurn(g, id);
     return g;
@@ -43761,7 +43755,8 @@ export function viewGame(state: Game, id: string, now?: number) {
       g.guildRateBlocked.player === id,
     ...(guildTransportCanceled(g, id) ? { guildTransportCanceled: true as const } : {}),
     stormPending: g.stormPending ?? null,
-    advancedAllySeparation: advancedAllySeparationView(g, me),
+    advancedAllySeparation: g.advanced ? alliedSeparationView(g, me) : null,
+    basicAllySeparation: !g.advanced ? alliedSeparationView(g, me) : null,
     basicAlliedShipment: basicAlliedShipmentView(g, me),
     stormForecast:
       me.faction === 'fremen' && g.stormCardKnown ? g.stormCard : null,

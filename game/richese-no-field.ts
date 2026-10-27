@@ -25,7 +25,8 @@ export type NoFieldRevealCause =
   | 'gamont'
   | 'beforeAlly'
   | 'allyShipment'
-  | 'atomics';
+  | 'atomics'
+  | 'alliedSeparation';
 export type NoFieldReveal = {
   state: RicheseNoField;
   tokenId: string;
@@ -261,6 +262,7 @@ export function revealRicheseNoField(
       'beforeAlly',
       'allyShipment',
       'atomics',
+      'alliedSeparation',
     ].includes(input.cause),
     'Choose a valid No-Field reveal cause.',
   );

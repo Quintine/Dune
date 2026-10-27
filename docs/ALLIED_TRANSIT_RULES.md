@@ -2,6 +2,81 @@
 
 Audit: 7 September 2026. Read-only source and code audit, retained by the coordinating agent. Scope is classic GF9 base rules and the applicable November 2020 FAQ, not tournament or movie-game rules.
 
+## Concealed No-Field at the separation deadline — 27 October 2026
+
+A deployed marker is one force for all effects, including0, under publisher E2
+FAQ printed10 and supplied physical36 B. The supplied Advanced physical15
+constraint sends the ending player's shared forces to Tanks. Basic retains
+its existing later-player deadline and new-alliance grace. Neither source gives
+a dedicated No-Field/alliance-loss worked example.
+
+Under the 14 October recommended-option authority, the selected **provisional
+destructive composition** reveals a due marker using the distinct native
+`alliedSeparation` cause. Materialize only its original available reserves,
+then send the ending player's actual forces in that territory to Tanks. The
+native token history/event rotates once;0 adds no counter and no casualty.
+The ally's pieces stay. A marker elsewhere, a not-yet-due Basic turn, Polar Sink
+and the existing Advanced advisor/native Ecaz exemptions do not reveal or lose
+that marker. No optional loss confirmation is introduced.
+
+The old custody refusal could prevent the current player from finishing; native
+ending now completes the due consequence and advances the original movement
+queue. Printed movement-card continuations use the same final ending function;
+this does not certify their broader combinations. Other rejected actions keep
+their native guards and no completed turn is reevaluated.
+
+Both modes retain an own clean-turn warning based on the original canonical
+quote. Advanced keeps `advancedAllySeparation`; Basic now projects
+`basicAllySeparation`. Each carries only public territory names and optional
+`noField: true`, never denomination, quantity or token identity. If a marker is
+due, the persistent warning explains provisional revelation and loss. The normal
+Finish control refers to that warning and submits the same `endMovement`.
+Minimal policies use that shared deadline when choosing a physical departure;
+full AI strategy and calibration remain deferred.
+
+This connects ending custody, not allied No-Field shipment, special Guild return,
+Homeworld or any previously unsupported arrival. Saved games and recorded
+alliance timing are not rewritten. Wider interactions and full acceptance remain.
+
+### No-Field focused evidence
+
+A due allied-separation end now reveals the concealed marker through the
+selected provisional destructive composition, materializes only available
+reserves, then sends the ending player's actual shared group to Tanks.0 adds
+no counter. The ally stays unchanged. Basic keeps its later-player deadline
+and formation grace; Advanced keeps per-player timing and advisor/Polar/Ecaz
+exceptions. Normal Finish advances instead of rejecting concealed custody.
+Both modes have a persistent public territory/marker-presence warning, with no
+denomination or quantity and no extra confirmation. Minimal policies reuse the
+same deadline; full AI refinement remains deferred.
+[Source and contract](ALLIED_TRANSIT_RULES.md#concealed-no-field-at-the-separation-deadline--27-october-2026).
+
+Frozen **10-file union, 75/75**, types/lint/build and six original-game programmes
+pass. Actual public Richese/Emperor/Atreides +CHOAM-deck starts, dials4+5,
+marker shipment2 and physical shipment4 create protected Basin9/11 groups.
+An original worm Nexus and two actual alliance consents create co-occupation.
+Advanced0/3/5 and Basic0/5 reach due endings; Basic3 uses the recorded earlier
+turn2 formation prefix. Runtime records 19 GameTable SSR, 6 warning renders
+(5 populated) and 7 actual GameTable Finish callbacks. Source/further recorded
+action arrays total549/19. Other controls use native packets directly. No played
+hand, purse, army, phase, alliance, marker or event is installed. Browser
+hydration/navigation and depleted-reserve native journeys were not operated.
+
+Nine new native/control cases and the expanded pure cause/cap case pass.
+All four existing profiles first choose legal voluntary revelation; the test
+follows actual legal continuation through ending rather than demanding an
+immediate Finish proposal. Quiet source drivers now pass a separate optional
+allied shipment and accept the empty Battle phase's native Collection7. The
+older source fixture also now follows actual Charity order. Failed v1 evidence
+is preserved; v2 reruns the frozen related checks after those source repairs.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-no-field-separation-proof-v2/`;
+journeys/HTML: adjacent `20261027-no-field-separation-runtime/run-v1/`.
+All checks use one frozen source, followed only by a recorded three-document
+evidence overlay. Existing server HTTP200, no restart or saved-game/database
+operation. Extra-card endings, broader combinations, full modes and final
+rules/recovery/privacy/browser/deployed acceptance remain due.
+
 ## Advanced ordinary allied shipment follow-up — 8 October 2026
 
 Ordinary physical reserve shipment may now enter an ally's territory on the
@@ -101,8 +176,8 @@ allied reserve entry, without granting new shipments or extra moves,
 altering alliance formation/breaking windows or settling optional arrivals.
 A forced end consequence needs no new loss confirmation; `endMovement`
 remains legal even when no escape is available. Native custody removes the
-ending player's group once, not its ally's group; concealed No-Field removal
-retains its separate custody guard.
+ending player's group once, not its ally's group. The later No-Field follow-up
+above supplies provisional destructive revelation at the same deadline.
 
 The own clean-turn warning uses the canonical engine quote via
 `GameView.advancedAllySeparation: { territories: string[] } | null`.
