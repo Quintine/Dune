@@ -51,7 +51,7 @@ void test('Kull is a host-configurable Basic lobby preview with supported Truth 
 
 void test('incompatible opt-in starts reject without modifying their original lobby', () => {
   for (const config of [
-    {advanced:true,expansions:['choam','ix'],last:'guild' as const,module:false},
+    {advanced:true,expansions:['choam','ix'],last:'guild' as const,module:true},
     {advanced:false,expansions:['choam'],last:'guild' as const,module:false},
     {advanced:false,expansions:['choam','ix'],last:'guild' as const,module:true},
   ]) {

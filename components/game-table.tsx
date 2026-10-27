@@ -1360,6 +1360,7 @@ export function GameTable({
         <p className="notice" role="status">
           Kull Wahad development preview · provisional interception timing, not
           complete CHOAM or certified expansion rules.{' '}
+          {g.advanced && 'Advanced Kull prevents the attempted specific Karama effect; its phase duration is provisional. '}
           <a href="/rules?topic=choam-kull#choam-kull">Preview rules and limits</a>
         </p>
       )}
@@ -2207,15 +2208,21 @@ export function GameTable({
                 <input type="checkbox" checked={!!g.lobbyModules?.kullPreview}
                   disabled={busy || g.host !== me.id}
                   onChange={(e) => act({ type: 'moduleOption', module: 'kullPreview', enabled: e.target.checked })} />
-                Kull Wahad · Basic development preview
+                Kull Wahad · {g.advanced ? 'Advanced' : 'Basic'} development preview
               </label>
               {g.lobbyModules?.kullPreview && <p className="notice">
-                Requires Basic CHOAM with the CHOAM and Ix decks plus each faction’s deck, and no other optional modules.
-                This preview does not support phase-wide bid or combined turn-action Truthtrance questions, and it defers
-                unfunded non-CHOAM Karama-dependent bids. It does not represent complete
-                CHOAM rules. Every player must ready again after changing it.
-                When Richese is seated, structured bid, alliance, Revival and bribe commitments are unavailable,
-                and some Kull reactions may be unavailable in complex response windows.
+                {g.advanced ? <>
+                  Requires Advanced CHOAM with only classic factions, the CHOAM and Ix decks, and no other optional modules.
+                  This preview prevents the attempted specific Karama effect; phase duration is provisional.
+                  Structured bid, alliance, Revival, bribe and combined turn-action questions are unavailable.
+                </> : <>
+                  Requires Basic CHOAM with the CHOAM and Ix decks plus each faction’s deck, and no other optional modules.
+                  Phase-wide bid and combined turn-action Truthtrance questions are unavailable.
+                  When Richese is seated, structured bid, alliance, Revival and bribe commitments are also unavailable,
+                  and some Kull reactions may be unavailable in complex response windows.
+                </>}{' '}
+                Unfunded non-CHOAM Karama-dependent bids remain deferred. This does not represent complete CHOAM rules.
+                Every player must ready again after changing it.
               </p>}
               {g.lobbyModules?.kullDefault && <p className="notice">
                 {g.lobbyModules.kullPreview
@@ -2225,7 +2232,7 @@ export function GameTable({
               {!g.lobbyModules?.kullDefault && !g.lobbyModules?.kullPreview &&
                 g.expansions.includes('choam') && g.expansions.includes('ix') &&
                 g.players.some(player => player.faction === 'choam') && <p className="notice">
-                  Printed Kull is inactive in this lobby. Its preview requires the supported Basic configuration and may need different module selections.
+                  Printed Kull is inactive in this lobby. Its preview requires a supported {g.advanced ? 'Advanced' : 'Basic'} configuration and may need different module selections.
                 </p>}
               <label className="checkbox-row">
                 <input

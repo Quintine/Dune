@@ -11,7 +11,7 @@ export function AdvancedPreviewNotice({
       being completed.{' '}
       {compact
         ? 'Some play may need fixes.'
-        : 'Use the six classic factions; expansion games are not available. Tech Tokens and Stronghold Cards can be enabled in the lobby.'}
+        : 'Classic and supported expansion selections are unfinished previews. Some faction and module combinations are not yet available. Tech Tokens and Stronghold Cards can be selected in the lobby where supported.'}
     </p>
   );
 }

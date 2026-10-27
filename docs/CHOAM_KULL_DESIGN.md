@@ -1,5 +1,22 @@
 # Kull Wahad: source limits and Karama interruption design
 
+## Advanced printed Kull in the lobby — 27 October 2026
+
+**Prototyped / Partial.** The host can explicitly select the existing printed
+Kull initializer in an Advanced preview lobby with native CHOAM, classic
+factions and exactly the CHOAM and Ix decks, without optional modules. The
+normal explicit Advanced-preview start remains required. It uses genuine setup
+and the existing private Kull, Karama and distinct-counter controls; it does
+not retrofit existing games or expand the supported roster. Structured bid,
+alliance, Revival, bribe and combined turn-action questions and unfunded
+non-CHOAM Karama-dependent overbids remain outside this preview.
+
+The authorized supplied rulebook, physical p. 29, specifies the Advanced
+specific-effect restriction. Phase expiry, the before-conversion timing and
+distinct counter remain the separately documented provisional/selected
+procedures. This exposes a first version, not a completed expansion or release
+gate. [Real-lobby evidence](../tests/advanced-kull-lobby-runtime.test.ts).
+
 ## Fresh Basic lobby default — 27 October 2026
 
 **Prototyped / Partial.** New lobbies automatically select the existing

@@ -22,7 +22,7 @@ void test('rules controls identify the unfinished selection before readiness and
   const preview = render(true, true);
   assert.match(preview, /value="advanced" selected=""/);
   assert.match(preview, /Rules and card interactions are still/);
-  assert.match(preview, /six classic factions/);
+  assert.match(preview, /Classic and supported expansion selections are unfinished previews/);
   assert.match(preview, /Changing rules clears player readiness/);
   assert.match(preview, /Switching to Basic removes Stronghold Cards/);
   assert.match(render(true, false), /<select disabled=""/);

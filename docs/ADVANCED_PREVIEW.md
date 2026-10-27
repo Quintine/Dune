@@ -13,6 +13,10 @@ the rules-completion or publication criteria.
    **Discoveries**, **Homeworlds**, **Tech Tokens** (three or more players) or
    **Stronghold Cards**. Supported module/roster combinations use their existing
    setup; unsupported selections reject at start with a reason.
+   With native CHOAM, classic factions and exactly the CHOAM and Ix decks, the
+   host may instead select the unfinished printed-Kull preview without other
+   optional modules. Its effect-specific duration and combination limits are
+   shown in the lobby and remain provisional.
 4. Each human chooses **Ready for Advanced preview**. The host chooses
    **Begin Advanced preview**.
 

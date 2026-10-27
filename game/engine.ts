@@ -1,6 +1,7 @@
 import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
 import { SabotageGiftError, quoteSabotageGift, quoteSabotageGiftDiscard } from './sabotage-gift';
 import { kullDefaultEligible } from './kull-default-profile';
+import { advancedKullLobbyEligible } from './kull-advanced-profile';
 import { SaphoTruthOrderError, quoteSaphoTruthOrder, reorderSaphoTruthOrder, validateSaphoTruthOrder } from './sapho-truth-order';
 import { RicheseBidPromiseError, richeseBidCompletionRange, richeseBidRequired, recordRicheseBid,
   liveRicheseBidPromises, reconcileRicheseBidPromises, finishRicheseBidLot, validateRicheseBidPromises,
@@ -10117,15 +10118,16 @@ function startModules(state: Game): Game {
   const g = structuredClone(state);
   delete g.lobbyOptions;
   if (lobbyKullEnabled(state)) {
-    requireRule(g.advanced === false && (g.expansions.length === 2 ||
+    const supportedBasic = g.advanced === false && (g.expansions.length === 2 ||
       g.expansions.length === 3 && g.expansions.includes('ecaz')) && g.expansions.includes('choam') &&
       g.expansions.includes('ix') && !!byFaction(g,'choam') &&
       g.players.every(player => player.faction === 'choam' || player.faction === 'richese' || player.faction === 'ixians' ||
         player.faction === 'tleilaxu' || g.expansions.includes('ecaz') &&
         (player.faction === 'ecaz' || player.faction === 'moritani') || CLASSIC_FACTIONS[player.faction] === true) &&
       !options.leaderSkills && !options.ecazTreachery && !g.nexusCards && !g.discoveryEnabled &&
-      !g.homeworlds && !g.techTokens && !g.strongholdCards,
-    'Kull preview needs Basic CHOAM with supported factions, CHOAM and Ix decks, each faction’s deck, and no optional modules.');
+      !g.homeworlds && !g.techTokens && !g.strongholdCards;
+    requireRule(supportedBasic || advancedKullLobbyEligible(state),
+      'Kull preview needs CHOAM and Ix decks with no optional modules. Advanced currently supports CHOAM and classic factions only; Basic also supports the selected native expansion factions.');
     return initializeKullGameForAudit(g);
   }
   if (options.ecazTreachery && options.leaderSkills) g.ecazTreachery = true;

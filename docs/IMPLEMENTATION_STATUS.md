@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 27 October 2026 — Advanced printed Kull lobby selection
+
+The host can explicitly select the existing Advanced printed-Kull prototype
+for CHOAM and classic seats with the CHOAM and Ix decks, without optional
+modules. The normal Advanced preview acknowledgement remains required;
+effect-specific restriction and counters use the existing implementation.
+Broader rules and deployed acceptance remain open.
+[Contract](CHOAM_KULL_DESIGN.md#advanced-printed-kull-in-the-lobby--27-october-2026).
+
 ## 27 October 2026 — Sabotage gift at the hand limit
 
 When Moritani gives a card to a full-handed entrant after Sabotage, the

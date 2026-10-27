@@ -20,6 +20,14 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Advanced printed Kull lobby selection — 27 October. Prototyped / Partial.**
+The host can explicitly select the existing Advanced printed-Kull preview for
+CHOAM and classic factions with the CHOAM and Ix decks and no optional modules.
+The Advanced acknowledgement, physical interception and counters remain native;
+effect-specific phase expiry is provisional. Structured-question and overbid
+limits, wider combinations and full rules/deployed acceptance remain open.
+[Scope](CHOAM_KULL_DESIGN.md#advanced-printed-kull-in-the-lobby--27-october-2026).
+
 **Sabotage gift at the hand limit — 27 October. Prototyped / Partial.**
 Moritani can give a card to a full-handed entrant, who provisionally chooses one
 held card to discard before the original entry continues. The private choice,
