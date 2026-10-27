@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 27 October 2026 — Advanced Sapho own-turn suspension
+
+A player can provisionally pause its own already-started Advanced Shipment and
+Movement turn at a clean boundary and resume last without repeating paid
+actions. The Guild retains its native timing choice and can voluntarily pause
+its own turn. The seven-file affected union passes 68 cases and the production
+build passes. Wider combinations and deployed acceptance remain open.
+[Scope](JUICE_OF_SAPHO_RUNTIME.md#own-started-advanced-movement-turn--27-october-2026).
+
 ## 27 October 2026 — Salusa Low free Sardaukar revival
 
 Advanced Homeworld play applies the Low Salusa penalty across normal free

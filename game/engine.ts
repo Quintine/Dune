@@ -27130,8 +27130,8 @@ function saphoMovementOrderContext(g: Game): SaphoMovementOrderContext | null {
   return {queue,started:queue.remaining.filter(id=>saphoMovementStarted(g,getPlayer(g,id))),
     guild:guild ? {player:guild.id,granted:!!g.guildTimingGranted,locked:!!g.guildTimingLocked} : null,
     // These shared preparations are not yet owned/resumed across another
-    // player's turn. Only a clean Basic physical shipment/move may suspend.
-    allowStartedLast: !g.advanced && !g.karamaShipping && !g.ornithopter && !g.hajr.includes(active.id) &&
+    // player's turn. Only a clean physical shipment/move may suspend.
+    allowStartedLast: !g.karamaShipping && !g.ornithopter && !g.hajr.includes(active.id) &&
       !(active.faction === 'choam' && g.choamMovement?.turn === g.turn) &&
       !g.pendingTreacheryDiscard && !g.pendingKull && !g.pendingHomeworldShipment && !g.pendingGuildTransport &&
       !g.pendingArrivalOverlap && !g.pendingArrivalReaction?.length && !g.pendingAdvisorMatching &&

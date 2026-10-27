@@ -120,7 +120,7 @@ void test('unavailable movement guidance covers clean and queued windows without
   const html = panel(game);
   assert.match(html, /clean combined-turn boundaries and queuing behind a started active turn/);
   assert.match(html, /Finish pending interactions and preparations first/);
-  assert.match(html, /your own started turn may be paused at a clean boundary and resumed last/);
+  assert.match(html, /your own started turn may be paused at a clean boundary and resumed last/i);
   assert.match(html, /last remains after the Guild/);
   assert.doesNotMatch(html, /Take your movement turn (first|last) and discard/);
   game.players.find(player => player.id === game.me)!.hand = [];

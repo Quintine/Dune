@@ -135,16 +135,23 @@ for (const advanced of [false, true]) {
     assert.deepEqual(inventory(game), f.originalInventory);
   });
 
-  if (advanced) void test(`${label} an actual active Sapho holder cannot split its own already paid combined turn`, () => {
+  if (advanced) void test(`${label} an actual active Sapho holder may pause its own paid combined turn for last`, () => {
     const f = fixture({ advanced });
     let game = advance(structuredClone(f.game), state => clean(state) && state.active === f.owner);
     const proposed = action(game, 'last');
     game = act(game, f.owner, { type: 'ship', territory: 'polar_sink', sector: 0, amount: 1, elite: 0, allyPayment: 0 });
     game = advance(game, clean);
     assert.equal(game.active, f.owner); assert.equal(player(game, f.owner).shipped, true);
-    assert.equal(viewGame(game, f.owner).saphoOptions.some(option => option.scope === 'movement'), false);
     reject(game, f.owner, proposed);
-    assert.ok(player(game, f.owner).hand.some(card => card.id === f.card));
+    const option = viewGame(game, f.owner).saphoOptions.find(option => option.scope === 'movement' && option.mode === 'last');
+    assert.ok(option && option.scope === 'movement' && option.resumeOwn);
+    const before = structuredClone(player(game, f.owner));
+    game = act(game, f.owner, { type: 'card', card: f.card, scope: 'movement', mode: 'last', event: option.event });
+    assert.deepEqual(game.movementRemaining?.at(-1), f.owner);
+    assert.equal(player(game, f.owner).shipped, before.shipped);
+    assert.equal(player(game, f.owner).reserves, before.reserves);
+    assert.equal(player(game, f.owner).spice, before.spice);
+    assert.equal(game.discard.filter(card => card.id === f.card).length, 1);
   });
 }
 

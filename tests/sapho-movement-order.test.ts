@@ -115,6 +115,53 @@ void test('ordinary Guild timing flags and Basic null timing retain their own la
   assert.equal(reorder(locked, 'holder', 'first').next.current, 'holder');
 });
 
+void test('an Advanced started actor can suspend its own turn to last without consuming Guild timing', () => {
+  for (const guildState of [
+    { player: 'guild', granted: false, locked: false },
+    { player: 'guild', granted: true, locked: false },
+    { player: 'guild', granted: false, locked: true },
+  ]) {
+    const input = { ...context(true), allowStartedLast: true, guild: guildState };
+    const before = structuredClone(input);
+    const quote = reorder(input, 'active', 'last');
+    assert.equal(quote.suspended, 'active');
+    assert.equal(quote.afterCurrent, null);
+    assert.deepEqual(quote.next.remaining, ['later', 'holder', 'guild', 'active']);
+    assert.deepEqual(quote.next.completed, ['done']);
+    assert.equal(quote.next.current, 'later');
+    assert.equal(quote.next.currentStarted, false);
+    assert.equal(quote.next.protectedLast, 'active');
+    assert.equal(quote.next.event, input.queue.event);
+    assert.deepEqual(input, before);
+    reject(input, 'active', 'first');
+    reject(input, 'active', 'last', input.queue.event);
+  }
+});
+
+void test('a started Guild can voluntarily move its granted turn last without creating another opportunity', () => {
+  const input = context(true);
+  input.queue = { ...input.queue, remaining: ['guild', 'active', 'later', 'holder'], current: 'guild' };
+  input.started = ['done', 'guild'];
+  input.guild = { player: 'guild', granted: true, locked: false };
+  input.allowStartedLast = true;
+  const before = structuredClone(input);
+  const quote = reorder(input, 'guild', 'last');
+  assert.equal(quote.suspended, 'guild');
+  assert.deepEqual(quote.next.remaining, ['active', 'later', 'holder', 'guild']);
+  assert.equal(quote.next.protectedLast, 'guild');
+  assert.deepEqual(input, before);
+
+  const alreadyLast: SaphoMovementOrderContext = {
+    ...input,
+    queue: { ...input.queue, remaining: ['guild'], completed: ['done', 'active', 'later', 'holder'] },
+  };
+  reject(alreadyLast, 'guild', 'last');
+  const protectedLast: SaphoMovementOrderContext = {
+    ...input, queue: { ...input.queue, protectedLast: 'holder' },
+  };
+  reject(protectedLast, 'guild', 'last', 'movement:3');
+});
+
 void test('started event binds the base phase, active actor and complete public tail with encoded identities', () => {
   const input = context(true), event = saphoMovementOrderEvent(input);
   assert.equal(saphoMovementOrderEvent(structuredClone(input)), event);

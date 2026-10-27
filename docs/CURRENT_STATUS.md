@@ -20,6 +20,13 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Advanced Sapho own-turn suspension — 27 October. Prototyped / Partial.** The
+existing clean started Shipment and Movement turn pause now extends to Advanced,
+retaining already-paid actions and the Guild's original choice. Seven related
+files pass 68 focused cases, including native Advanced action and separately
+controlled Guild paths; the production build passes. Wider combinations and
+deployed acceptance remain open. [Scope](JUICE_OF_SAPHO_RUNTIME.md#own-started-advanced-movement-turn--27-october-2026).
+
 **Salusa low free-revival prohibition — 27 October. Prototyped / Partial.** Apply
 the printed low penalty to ordinary force pricing, Ghola, Emperor special
 Karama and the Tleilaxu Ambassador, preserving normal-force/leader choices,

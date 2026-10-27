@@ -1,5 +1,19 @@
 # Rule decision index
 
+## Juice of Sapho and an already-started Advanced movement turn — 27 October 2026
+
+Extend the existing provisional clean own-turn Last policy to Advanced
+Shipment and Movement. The holder may suspend its own started turn and resume
+the same opportunity last without repeating already spent shipment, movement,
+costs or pieces. Pending preparations remain excluded. Guild retains its
+native timing and locked privilege; the holder's protected last position stays
+after Guild. A Guild holder may voluntarily suspend its own turn, while a
+different holder cannot displace a granted current Guild turn. The printed
+card does not resolve partial-turn suspension, so this is a provisional online
+interpretation rather than an official clarification. It supersedes earlier
+Advanced own-started restrictions, not the distinct Charity or Revival
+policies. [Scope](JUICE_OF_SAPHO_RUNTIME.md#own-started-advanced-movement-turn--27-october-2026).
+
 ## Salusa Low and free Sardaukar revival — 27 October 2026
 
 GF9's [Ecaz and Moritani rulebook, pp. 9–10](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=10)
@@ -1391,8 +1405,9 @@ retained-current interpretation: an unstarted different Sapho holder may change
 first/last among later unstarted turns at a clean boundary. The started current
 actor finishes normally with original counters/resources; the tail then follows
 the changed priority. Guild keeps its native next-boundary choice and last
-protection remains after Guild. Split-own-turn, unresolved preparations and
-new ordered phases stay unsupported. Queued timing is visibly provisional,
+protection remains after Guild. The later own-started decision above permits a
+holder's voluntary clean-boundary suspension; unresolved preparations and
+other ordered phases stay separate. Queued timing is visibly provisional,
 not a publisher clarification or a separately answered numerical user ruling.
 [Source, native continuation and limits](JUICE_OF_SAPHO_RUNTIME.md#order-after-a-started-combined-turn--25-october-2026).
 
@@ -2747,7 +2762,7 @@ These are unresolved in the cited records. Do not infer an answer from elapsed t
 | Harass / Stone Burner | The earlier keep-gated versus compare-after-withdrawal question is unanswered. Standing choose-recommended provisionally compares counters left after successful withdrawal. Opposing Traitor cancels the return; original fixed Occupy commitment stays. Public preflight considers possible fixed Ecaz withdrawal without hidden custody. Clean Ix priority follows its separate explicitly provisional contract; new physical commitments do not remove other profile/module limits. This is implementation interpretation, not a new publisher ruling or user answer. | [Withdrawal](HARASS_WITHDRAW_RUNTIME.md#provisional-stone-burner-timing--16-october-2026) · [Clean Ix priority](MIRROR_WEAPON_ENGINE_AUDIT.md#clean-selected-ix-composition--16-october-2026) |
 | Stone mixed-force allocation timing | The older timing question remains unanswered by a source. Under 14 October choose-recommended, new original outcome-ambiguous Stone/Mirror battles provisionally commit each ambiguous side's undialed physical total after revealed modes/actual withdrawal and decisive Traitor/explosion branches. Storm-order owners choose privately; every original required value stays sealed until all commit. The eventual winner retains all legal typed casualty choices with the count. Ordinary/invariant and unstamped legacy frames keep their existing path. Publisher physical-count text and supplied Advanced physical12/logical10 casualty timing provide the numerical rules, not this online commitment convention. | [Source, versioned procedure and bounded proof](STONE_BURNER_ENGINE_AUDIT.md#outcome-changing-physical-totals--18-october-2026) |
 | Recruits late accounting and rates | The earlier one/two-further-free question remains unanswered. The prototype preserves paid spice, deducts recorded free usage from the doubled current rate and all returns from the total cap: two-free/one-paid Atreides can take two more free. Clean classic Homeworlds now provisionally recheck native thresholds on separate accepted requests, retaining completed prices/classifications; this is not a numerical user ruling or newly found timing FAQ. Unknown ledgers, pending repricing, later Fremen grants and same-turn replay remain guarded. | [Source alternatives](RECRUITS_RULES.md), [current native runtime](RECRUITS_RUNTIME.md#classic-homeworld-composition--16-october-2026) |
-| Sapho remaining timing | Selected queued timing retains another actor's started combined turn and reorders only later unstarted turns; Guild retains native next-boundary choice. Splitting the holder's own turn and other ordered phases remain open. Queued timing, cyclic duration and shared final battle opportunity are provisional protocols, not publisher rulings. Old battles retain early timing. | [Queued timing](JUICE_OF_SAPHO_RUNTIME.md#order-after-a-started-combined-turn--25-october-2026), [source audit](JUICE_OF_SAPHO_SOURCE_UPDATE.md), [aggressor contract](SAPHO_AGGRESSOR.md) |
+| Sapho remaining timing | Queued timing retains another actor's started combined turn and reorders only later unstarted turns; Guild retains native next-boundary choice. The holder's own Basic or Advanced combined turn can be provisionally suspended at a clean boundary and resumed last. Other ordered-phase suspensions remain open. Queued timing, cyclic duration and shared final battle opportunity are provisional protocols, not publisher rulings. Old battles retain early timing. | [Own-turn scope](JUICE_OF_SAPHO_RUNTIME.md#own-started-advanced-movement-turn--27-october-2026), [queued timing](JUICE_OF_SAPHO_RUNTIME.md#order-after-a-started-combined-turn--25-october-2026), [aggressor contract](SAPHO_AGGRESSOR.md) |
 | Semuta Drug | Full-hand exchange is user-approved; neutral all-seat acknowledgements remain the explicit application policy. Completed Ghola may offer its physical card before the original conditional native Tleilaxu one-spice income, including self-income; claim/pass preserves returned pieces and normal quotas, then resumes the same allow/cancel response once. This admits no unrelated response or market parent. Other producers, nested continuation coverage and full-game acceptance remain unfinished. | [Source update and selected exchange](SEMUTA_SOURCE_UPDATE_20260907.md), [privacy review](SEMUTA_PRIVACY_REVIEW.md) |
 | Leader Skills edge cases | Capture/replacement eligibility, Banker escrow custody, Smuggler modifiers, Mentat empty-hand fallback, late/mirror/numeric Diplomat defenses and simultaneous optional timing remain source gaps. Owned multi-pile Smuggler/Sandmaster allocation and printed alternate/hybrid defense roles now have connected, explicitly interpreted paths. The bounded Diplomat retreat prototype chooses printed/copied strength and surviving-loser retreat before casualties; this is not an official priority clarification. | [Material boundaries and retreat](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation), [Defense limits](DIPLOMAT_DEFENSE.md#evidence-and-remaining-scope) |
 | Smuggler collection strength | The older source check/question produced no numerical answer. Under the later choose-recommended instruction, provisionally cap by copied/printed disc plus declared skill bonuses and KH2, retaining reveal piles and delayed survival settlement. Actual Artillery zeroing voids collection; the base Stunner remains a projectile. Sole own Traitor bypasses weapons, so it retains collection. Printed bounty does not change; this is not a publisher ruling. Other exceptional compositions remain separate. | [Source and explicit policy](LEADER_SKILLS_RULES.md#smuggler-modifier-policy--17-october-2026), [runtime contract](SMUGGLER_BATTLE.md#provisional-modifier-policy--17-october-2026) |

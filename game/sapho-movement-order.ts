@@ -8,7 +8,7 @@ export type SaphoMovementOrderContext = {
   started: readonly string[];
   /** Present only for Advanced Guild timing. */
   guild: { player: string; granted: boolean; locked: boolean } | null;
-  /** Explicit Basic clean-boundary prototype; the engine owns all action state. */
+  /** Explicit clean-boundary prototype; the engine owns all action state. */
   allowStartedLast?: boolean;
 };
 export class SaphoMovementOrderError extends Error {
@@ -78,7 +78,6 @@ export function reorderSaphoMovementOrder(context: SaphoMovementOrderContext, re
       'Only a pending participant may change its movement position.');
     if (context.started.includes(request.player) && request.player === queue.current &&
         context.allowStartedLast === true) {
-      requireMovement(context.guild === null, 'The started-turn Sapho preview supports Basic timing only.');
       requireMovement(request.mode === 'last', 'An already-started turn can only be moved to last.');
       requireMovement(queue.remaining.length > 1, 'This participant is already last.');
       // Suspend this same opportunity; never synthesize a completed turn or a

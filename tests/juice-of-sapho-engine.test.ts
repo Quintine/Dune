@@ -545,7 +545,7 @@ void test('early Guild timing makes the previous penultimate faction actually la
   assert.deepEqual(acted, ['g', 'a', 'e']);
 });
 
-void test('after Guild shipment another holder may queue last while Guild cannot split its own started turn', () => {
+void test('after Guild shipment another holder may queue last or Guild may pause its own started turn', () => {
   for (const holder of ['a', 'g']) {
     let g = movement(holder, true);
     g = applyAction(g, 'g', { type: 'decision', take: true });
@@ -565,7 +565,30 @@ void test('after Guild shipment another holder may queue last while Guild cannot
     );
     const options = viewGame(g, holder).saphoOptions;
     if (holder === 'g') {
-      assert.deepEqual(options, []);
+      const option = options.find(option => option.scope === 'movement' && option.mode === 'last');
+      assert.ok(option && option.scope === 'movement' && option.resumeOwn);
+      const before = reload(g);
+      g = applyAction(reload(g), holder, { type: 'card', card,
+        scope: option.scope, mode: option.mode, event: option.event });
+      assert.equal(g.active, 'a');
+      assert.deepEqual(g.movementRemaining, ['a', 'e', 'g']);
+      assert.equal(g.players[2].shipped, true);
+      assert.equal(g.players[2].reserves, before.players[2].reserves);
+      assert.equal(g.players[2].spice, before.players[2].spice);
+      assert.equal(g.guildTimingGranted, before.guildTimingGranted);
+      assert.equal(g.discard.filter(c => c.id === card).length, 1);
+      const resumed: string[] = [];
+      while (g.phase === 5) {
+        assert.equal(g.decision, null);
+        resumed.push(g.active!);
+        if (g.active === 'g') {
+          assert.equal(g.players[2].shipped, true);
+          reject(g, 'g', { type: 'ship', territory: 'polar_sink', sector: 0, amount: 1 });
+        }
+        g = end(g);
+      }
+      assert.deepEqual(resumed, ['a', 'e', 'g']);
+      assert.equal(g.saphoMovementLast, null);
       continue;
     }
     const option = options.find(option => option.scope === 'movement' && option.mode === 'last');

@@ -1,5 +1,32 @@
 # Juice of Sapho: finite ordering implementation
 
+## Own started Advanced movement turn — 27 October 2026
+
+**Prototyped / Partial.** The clean-boundary own-turn Last option now extends
+the existing Basic policy to Advanced Shipment and Movement. The holder may
+voluntarily suspend its own already-started combined turn and resume that same
+opportunity after the remaining turns. An already completed shipment or move,
+its cost, physical pieces and used movement allowance stay in place; the
+suspended turn is neither completed nor replayed. The card is unavailable if
+the holder is already last or the action cannot meaningfully change the queue.
+Pending responses and preparations still have to finish before this boundary.
+
+The actual Advanced Guild retains its native timing decisions and any existing
+Karama lock. Last is protected behind that Guild opportunity. A Guild player
+may voluntarily suspend its own started turn; another holder cannot displace an
+already granted current Guild turn and may instead reorder the later unstarted
+tail. Physical storm order and completed opportunities do not change. This
+does not extend the rule to splitting Charity, Revival or unfinished nested
+interactions.
+
+The inspected Sapho face permits first or last in a turn-ordered phase or
+action, but does not state whether or how an already-started combined turn can
+be suspended. This is a provisional online timing composition under the
+standing choose-recommended direction, not a publisher clarification. It
+supersedes earlier Advanced-only started-turn exclusions below. Broader
+combinations, complete modes and browser/deployed acceptance remain open.
+[Earlier Basic source boundary](JUICE_OF_SAPHO_SOURCE_UPDATE.md#basic-own-turn-last--27-october-2026).
+
 ## Truthtrance order in Richese cache auctions — 27 October 2026
 
 **Prototyped / Partial.** The possession-independent public response following
@@ -150,11 +177,12 @@ This is visibly provisional online timing, not a new publisher clarification.
 
 An unstarted holder at a clean boundary after another player's actual shipment
 or movement may go first among the tail, or last including after Guild. It
-cannot split its own begun turn, displace an active Guild, replay a completed
-turn, reset shipment/movement counters or intervene during unresolved card,
-arrival, payment or movement preparations. Existing last protection and no-op
-rules remain. Advanced Guild receives its native next-boundary choice; moving
-first in the tail does not consume or suppress that privilege.
+cannot displace an active Guild, replay a completed turn, reset shipment/movement
+counters or intervene during unresolved card, arrival, payment or movement
+preparations. Existing last protection and no-op rules remain. Advanced Guild
+receives its native next-boundary choice; moving first in the tail does not
+consume or suppress that privilege. The separate later own-started policy above
+permits voluntary suspension by the current holder.
 
 The pure [movement-order quote](../game/sapho-movement-order.ts) binds the
 original phase event, current actor and whole remaining public order in the
@@ -166,10 +194,11 @@ physical storm order remain. Semuta's new optional continuation field keeps
 that same current actor through the original discard claim/pass; absent-field
 legacy continuation/signature bytes retain their original path.
 
-This supersedes only the earlier blanket partly-completed-turn exclusion for
-an **unstarted different holder** behind the current actor. No split-turn mode
-or new ordered phase is invented. Wider combinations, full modes and final
-assurance/deployed acceptance remain open.
+This historical scope superseded the earlier blanket partly-completed-turn
+exclusion for an **unstarted different holder** behind the current actor. The
+later own-started Basic and Advanced policies above add a separate voluntary
+clean-boundary suspension; no new ordered phase is invented. Wider combinations,
+full modes and final assurance/deployed acceptance remain open.
 
 Frozen **11 files, 133/133**, types/lint/build and eleven actual engine/
 GameTable SSR/isolated button-callback journeys pass on unchanged source. New

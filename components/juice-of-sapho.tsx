@@ -11,7 +11,7 @@ function unavailableReason(game: GameView) {
   if (game.status !== 'playing')
     return 'Order changes are available during play.';
   if (game.phase === 5)
-    return 'Movement order supports clean combined-turn boundaries and queuing behind a started active turn. In Basic, your own started turn may be paused at a clean boundary and resumed last, with spent actions retained. Finish pending interactions and preparations first. The Advanced Guild retains its next timing choice; an already granted current Guild turn cannot be displaced, and last remains after the Guild. A Karama-locked privilege stays locked. Completed turns and actual shipment and movement counters stay unchanged. Already-held positions and committed cards remain unavailable.';
+    return 'Movement order supports clean combined-turn boundaries and queuing behind a started active turn. Your own started turn may be paused at a clean boundary and resumed last, with spent actions retained. Finish pending interactions and preparations first. The Advanced Guild retains its next timing choice; another player cannot displace an already granted Guild turn, and last remains after the Guild. A Karama-locked privilege stays locked. Completed turns and actual shipment and movement counters stay unchanged. Already-held positions and committed cards remain unavailable.';
   if (game.truthtrance || game.response || game.phaseOpening ||
     (game.decision && !(game.phase === 8 && game.decision.kind === 'moritaniExtortion')))
     return 'Finish the current interaction before changing turn order.';
