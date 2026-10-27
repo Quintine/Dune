@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Source-bound Karama payment forecast — 27 October 2026
+
+For the provisional future-action completion forecast, assess an owned Karama
+as an auction payment at the original live Bidding source. Apply the existing
+phase restriction and native spending guard there rather than checking a
+synthetic later-phase state. This does not alter Kull's selected interruption
+policy or grant Kull/Revival admission. Broader interactions remain open.
+[Contract](TRUTHTRANCE_SHIPMENT_PROMISES.md#source-bound-karama-payment-forecast--27-october-2026).
+
 ## Basic Kull and Truthtrance bribes — 27 October 2026
 
 Provisionally combine the printed Basic Kull preview with existing ordinary,

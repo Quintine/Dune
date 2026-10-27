@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 27 October 2026 — Kull and future Karama payment forecasts
+
+The shared early Revival/Shipment preparation now tests an owned physical
+Karama against the actual current Bidding source and the existing
+`auction-free-purchase` spending guard before including it as a future invoice
+payment. A provisional later-phase witness must not borrow a card blocked by
+Kull for the real phase or blocked by that guard.
+Existing native cash alternatives remain. This corrects a forecast; it neither
+admits Revival questions to the Kull profile nor certifies wider interactions,
+full modes, browser or deployed acceptance.
+Early shipment promises also remain live during the Ix Movement opening, with
+post-action feasibility checked against the upcoming initialized turn.
+Frozen changed-path verification: 90/90 tests across 12 files, type/lint and
+production build passed. The native Kull auction regression uses an actual
+funded bid; the opening tests include a real preceding-turn shipment and
+controlled Amal card transfers.
+[Contract](TRUTHTRANCE_SHIPMENT_PROMISES.md#source-bound-karama-payment-forecast--27-october-2026).
+
 ## 27 October 2026 — Basic Kull and Truthtrance bribes
 
 Admit ordinary, grouped and mixed structured bribe-payment questions in the

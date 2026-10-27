@@ -30097,6 +30097,13 @@ function findReachableBattlePlan(
   }
   return null;
 }
+/** The Ix opening precedes the native Movement initialization, including its
+ * reset of last turn's shipped flag and creation of the movement queue. */
+function pendingShipmentMovementOpening(g: Game): boolean {
+  return g.status === 'playing' && g.phase === 5 && g.phaseOpening?.initialize === true &&
+    g.active === null && (g.movementRemaining == null ||
+      Array.isArray(g.movementRemaining) && g.movementRemaining.length === 0);
+}
 function shipmentPromiseIntegrity(g: Game) {
   try {
     validateSavedTruthtrance(g);
@@ -30141,7 +30148,8 @@ function shipmentPromiseIntegrity(g: Game) {
     if (promise.turn === g.turn && !promise.released && !promise.fulfilled)
       requireRule(
         shipmentPromiseModeSupported(g, promise.player) &&
-          shipmentPromiseTurnAvailable(g, promise.player, shipmentAvailable(g,getPlayer(g,promise.player))),
+          (pendingShipmentMovementOpening(g) ||
+            shipmentPromiseTurnAvailable(g, promise.player, shipmentAvailable(g,getPlayer(g,promise.player)))),
       'The saved shipment promise does not belong to a supported unused shipment opportunity this turn.',
       );
   }
@@ -30187,8 +30195,14 @@ function earlyRevivalCompletionSeeds(initial: Game, source: Game, owner: string)
         native: source.richeseAuction, funding: source.richeseFunding,
         pledge: source.aid[owner]?.amount ?? 0 });
       const cash = funding.normalCash;
+      // The payment belongs to the real Bidding lot, not the detached
+      // Charity/Revival seed. Apply the live Kull restriction and native
+      // spending guard before offering this card as a future payment.
+      const originalOwner = getPlayer(source, owner);
       const alternatives: (string | null)[] = [null, ...(ownBid ? p.hand
-        .filter(card => canUseAsKaramaRole(seed.game, p, card)).map(card => card.id) : [])];
+        .filter(card => canUseAsKaramaRole(seed.game, p, card) &&
+          !karamaSpendingBlock(source, originalOwner, card, 'auction-free-purchase'))
+        .map(card => card.id) : [])];
       for (const card of alternatives) {
         const g = structuredClone(seed.game), beneficiary = getPlayer(g, owner);
         if (beneficiary.spice < funding.nativeCash + (card ? 0 : cash)) continue;
@@ -30295,6 +30309,17 @@ function findShipmentCompletion(
     state.turn,
   ),
 ): ShipmentCompletion | null {
+  if (pendingShipmentMovementOpening(state)) {
+    // Quote the upcoming owned turn after its normal reset. This is detached:
+    // the live opening and its opponents' remaining choices are untouched.
+    const upcoming = structuredClone(state);
+    const player = getPlayer(upcoming, owner.id);
+    resetPlayerMovement(player);
+    upcoming.phaseOpening = null;
+    upcoming.active = owner.id;
+    upcoming.movementRemaining = [owner.id];
+    return findShipmentCompletion(upcoming, player, promises);
+  }
   if (liveTravelPromises(state.travelPromises ?? [], owner.id, state.turn).length)
     return travelCompletion(state, owner.id, undefined, undefined, promises);
   if (

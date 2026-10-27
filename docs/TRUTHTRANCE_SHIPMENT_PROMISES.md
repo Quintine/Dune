@@ -6,6 +6,34 @@ The former Advanced Guild exclusion is superseded by the
 [18 October native Guild composition](#advanced-guild-interception-and-rates--18-october-2026).
 The [24 October waiting-turn follow-up](#same-phase-waiting-respondents--24-october-2026) supersedes the active-only timing boundary. The [earlier Basic phase follow-up](#earlier-basic-phases--24-october-2026) extends current-turn timing before Movement; the [26 October Advanced extension](#earlier-classic-advanced-phases--26-october-2026) adds bare classic Advanced while retaining earlier module fences. The [native-faction follow-up](#native-factions-and-owned-choam-opening--26-october-2026) adds native early scope and owned CHOAM income. Earlier scope descriptions and verification totals remain historical.
 
+## Source-bound Karama payment forecast — 27 October 2026
+
+**Prototyped / Partial.** When the shared early Revival/Shipment preparation
+considers paying an already won ordinary auction with a held Karama, it now
+checks the original current Bidding source for the `auction-free-purchase`
+spending restriction. A Kull phase ban or another native spending restriction
+can make that Karama unavailable even if a detached Charity or Revival seed is
+in a different phase. The forecast retains the actual cash-payment alternative
+and does not discard, pay, or settle the real auction itself.
+
+An existing early shipment promise also remains valid through the Ix Movement
+opening, before that phase initializes its movement queue and resets prior-turn
+flags. A detached upcoming turn checks the owner's post-action resources, so
+playing Amal cannot voluntarily make a positive shipment promise impossible;
+an opposing Amal may instead cause release after its effect settles. The
+opening still does not allow a shipment to be performed early.
+The future-shipment scope test also reflects the previously admitted native
+Richese respondent; its former Semuta exclusion assertion was stale.
+Frozen changed-path proof passed 90/90 tests in 12 files, type/lint and the
+production build. The [Kull regression](../tests/kull-truth-karama-forecast.test.ts)
+uses a real funded auction, and the [opening regressions](../tests/truth-shipment-movement-opening.test.ts)
+include a real prior-turn shipment and explicitly controlled Amal transfers.
+
+This is a conservative correction to the existing provisional owned-stage
+witness, not a publisher clarification or a new action. It does not enable
+Revival promises in the Kull profile; broader preparation paths, interactions,
+complete modes, browser and deployed acceptance remain open.
+
 ## Native factions and owned CHOAM opening — 26 October 2026
 
 **Prototyped / Partial.** Both shipment and

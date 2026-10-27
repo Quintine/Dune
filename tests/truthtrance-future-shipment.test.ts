@@ -66,7 +66,7 @@ function reject(g: Game, actor: string, action: Action) {
   const before = structuredClone(g); assert.throws(() => applyAction(g, actor, action)); assert.deepEqual(g, before);
 }
 
-void test('current-turn target timing distinguishes earlier phases from unused movement turns and evaluates the actual Semuta respondent', () => {
+void test('current-turn target timing distinguishes earlier phases from unused movement turns and admits native Richese', () => {
   const g = fixture();
   assert.equal(shipmentPromiseTurnAvailable(g, 'a', true), true);
   assert.equal(shipmentPromiseTurnAvailable(g, 'p', true), true);
@@ -82,7 +82,7 @@ void test('current-turn target timing distinguishes earlier phases from unused m
   const mode = { ...g, advanced: true, active: 'r', expansions: ['choam'], semutaPreview: true,
     players: [{ id: 'r', faction: 'richese' }, { id: 'p', faction: 'emperor' }] };
   assert.equal(shipmentPromiseModeSupported(mode, 'p'), true);
-  assert.equal(shipmentPromiseModeSupported(mode, 'r'), false);
+  assert.equal(shipmentPromiseModeSupported(mode, 'r'), true);
 });
 
 void test('a waiting promise supplies no early executable action, survives the intervening turn and fulfills only actual later delivery', () => {

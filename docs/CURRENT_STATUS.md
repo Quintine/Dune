@@ -20,6 +20,18 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Kull and future Karama payment forecasts — 27 October. Prototyped / Partial.**
+The shared early Revival/Shipment preparation now checks a prospective Karama
+payment against the original live Bidding source, including its Kull phase
+restriction and the native spending guard. A detached later-phase
+forecast cannot offer a blocked card as an auction payment. This is a bounded
+forecast correction, not a new Kull/Revival admission or complete rules mode.
+Existing early shipment promises also survive the Ix Movement opening while
+retaining voluntary-action feasibility and opposing-effect release.
+The frozen checkpoint passed 90 focused tests across 12 files, type/lint and
+the production build; broader rules and deployed acceptance remain open.
+[Scope and source](TRUTHTRANCE_SHIPMENT_PROMISES.md#source-bound-karama-payment-forecast--27-october-2026).
+
 **Basic Kull and Truthtrance bribes — 27 October. Prototyped / Partial.**
 The printed Kull preview admits structured ordinary, grouped and mixed bribe
 questions. A pending Kull response suppresses bribe controls and quotes any
