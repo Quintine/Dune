@@ -20,6 +20,15 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Sabotage gift at the hand limit — 27 October. Prototyped / Partial.**
+Moritani can give a card to a full-handed entrant, who provisionally chooses one
+held card to discard before the original entry continues. The private choice,
+fresh discard and supported Semuta response share native controls and minimal
+legal bot participation. The exceptional hand was staged with conserved cards
+in runtime evidence. Pre-existing excess hands, broader interactions and full
+rules/deployed acceptance remain open. This procedure is not a publisher ruling.
+[Scope](MORITANI_TERROR_RULES.md#sabotage-gift-to-a-full-hand--27-october-2026).
+
 **Basic Kull default and Sapho own-turn last — 27 October. Prototyped / Partial.**
 New eligible Basic CHOAM/Ix lobbies select the printed Kull preview by default;
 hosts can opt out, and existing lobbies retain their previous selection. At a
@@ -36,8 +45,9 @@ current-lot bid, Revival and ordinary Nexus alliance questions through their
 native controls. A Kull transaction suspends controls while the original action
 resolves; a Karama purchase cannot evade its actor's bid Yes. Richese Semuta,
 phase-wide bid and combined turn-action questions remain excluded, as do
-unfunded non-CHOAM overbids. Automatic Kull activation, wider interactions and
-full rules/deployed acceptance remain open.
+unfunded non-CHOAM overbids. The supported fresh-lobby default is described
+above; wider automatic activation, interactions and full rules/deployed
+acceptance remain open.
 [Scope](CHOAM_KULL_DESIGN.md#basic-kull-and-native-truthtrance-questions--27-october-2026).
 
 **Truthtrance ground-movement sectors — 27 October. Prototyped / Partial.**

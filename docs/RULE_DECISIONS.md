@@ -1,5 +1,13 @@
 # Rule decision index
 
+## Sabotage gift overflow — 27 October 2026
+
+Provisionally let a recipient whose hand is full receive Moritani's optional
+Sabotage gift, then choose one held card to discard. The same entry remains
+pending through that discard and any supported Semuta reaction. The printed
+gift rule does not prescribe overflow; the Stash rule is an analogy, not an
+official ruling on Sabotage. [Scope](MORITANI_TERROR_RULES.md#sabotage-gift-to-a-full-hand--27-october-2026).
+
 ## Juice of Sapho and an already-started Basic turn — 27 October 2026
 
 Provisionally permit the holder to pause its own combined shipment and movement

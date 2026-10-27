@@ -1,5 +1,23 @@
 # Moritani terror rules and components
 
+## Sabotage gift to a full hand — 27 October 2026
+
+**Prototyped / Partial.** Moritani may give the chosen physical card to an
+entrant already at their hand limit after the original Sabotage discard. The
+recipient then privately chooses one card from that overflowing hand, including
+the gift, to discard; supported Semuta reactions resolve before the same
+committed entry resumes. A separately played card that returns the hand to its
+limit also closes the pending choice. Pre-existing hands already over the limit
+remain outside this bounded one-card procedure.
+
+The publisher's [expansion rules, printed p. 6](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=6)
+permit the optional gift but do not prescribe this overflow procedure. The
+Treachery Card Stash on printed p. 13 uses a recipient choice for its own
+overflow; applying a similar choice here is a provisional interpretation, not
+an official Sabotage ruling. The [runtime evidence](../tests/sabotage-gift-overflow-runtime.test.ts)
+uses real setup, entry and discard, with the exceptional full hand supplied by
+a labelled conserved-card staging; broader combinations remain open.
+
 Audit: 2026-09-06. Scope: the six Terror tokens, setup, placement, entry reactions and continuing effects. Initial audit made no runtime edits; see the implementation checkpoint below. This is an implementation contract with explicit evidence limits, not certification that the faction is playable.
 
 ## Native module Atomics — 18 October 2026

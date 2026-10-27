@@ -404,6 +404,22 @@ export function MoritaniPlacement({
   );
 }
 
+/** The card identity is private to the recipient and never part of the public
+ * Terror marker or another seat's controls. */
+export function SabotageGiftDiscardButton({ card, act, disabled }: {
+  card: string | null;
+  act: (action: Action) => void;
+  disabled: boolean;
+}) {
+  return (
+    <Button className="h-auto min-h-11 whitespace-normal motion-reduce:transition-none"
+      disabled={disabled || !card}
+      onClick={() => { if (!disabled && card) act({ type: 'decision', card }); }}>
+      Discard selected card
+    </Button>
+  );
+}
+
 export function MoritaniEntry({
   game,
   act,
@@ -429,6 +445,33 @@ export function MoritaniEntry({
   const disabled = busy || Boolean(game.response) || Boolean(game.truthtrance);
   const controlClass =
     'h-auto min-h-11 whitespace-normal motion-reduce:transition-none';
+
+  // The giver's selection is already committed. Only the entrant sees their
+  // own actual hand and chooses one card to restore their hand limit.
+  if (entry.stage === 'giftDiscard') {
+    if (entry.entrant !== game.me) return null;
+    const hand = me.hand ?? [];
+    const card = hand.find(held => held.id === selectedCard) ?? hand[0];
+    const unavailable = disabled || !!game.phaseOpening || !!game.automaticContinuationPending;
+    return (
+      <section className="notice min-w-0" aria-labelledby={`${formId}-title`}>
+        <h3 id={`${formId}-title`}>Sabotage gift · discard a card</h3>
+        <p className="text-sm leading-6">
+          You received a Treachery card and are over your hand limit. Choose one
+          card from your hand to discard, including the card you just received.
+          This recipient-choice procedure is a provisional interpretation.
+        </p>
+        <label htmlFor={`${formId}-discard`} className="text-sm font-medium">Your card to discard</label>
+        <select id={`${formId}-discard`} className="min-h-11 w-full min-w-0 max-w-full"
+          disabled={unavailable || !hand.length} value={card?.id ?? ''}
+          onChange={(event) => setSelectedCard(event.target.value)}>
+          {!hand.length && <option value="">No available card</option>}
+          {hand.map(held => <option key={held.id} value={held.id}>{held.name}</option>)}
+        </select>
+        <SabotageGiftDiscardButton card={card?.id ?? null} act={act} disabled={unavailable} />
+      </section>
+    );
+  }
 
   // This entrant branch must precede every private kind, definition and token lookup.
   if (entry.stage === 'allianceReply') {
@@ -763,7 +806,7 @@ export function MoritaniEntry({
           <>
             <p className="m-0 text-sm leading-6">
               {giving
-                ? 'Sabotage’s random discard has resolved where possible. You may now give the entrant one of your own cards, or keep your hand.'
+                ? 'Sabotage’s random discard has resolved where possible. You may now give the entrant one of your own cards, or keep your hand. If the gift exceeds their limit, they choose a card to discard under a provisional procedure.'
                 : 'Your Robbery draw exceeded your hand limit. Choose one of your own cards to discard, including the card just drawn.'}
             </p>
             <label htmlFor={`${formId}-card`} className="text-sm font-medium">

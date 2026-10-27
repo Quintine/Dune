@@ -394,18 +394,20 @@ void test('worm entry pauses the remaining ride queue until Terror resolves, the
   rejected(done, 'm', { type: 'decision', decline: true });
 });
 
-void test('Sabotage refuses exceptional recipient overflow but leaves a safe optional pass', () => {
+void test('Sabotage permits a full recipient to discard the gift, or the giver may decline', () => {
   const initial = fixture('sabotage');
   hold(initial, 'm', 1);
   const offered = decide(enter(initial), { reveal: true });
-  // A persisted exceptional hand state must not turn the optional gift into an overflow bypass.
+  // Controlled exceptional hand fill; the same original entry remains pending.
   hold(offered, 'e', 4);
-  rejected(
-    offered,
-    'm',
-    { type: 'decision', card: player(offered, 'm').hand[0].id },
-    /overflow/,
-  );
+  const card = player(offered, 'm').hand[0].id;
+  const gifted = decide(reload(offered), { card });
+  assert.equal(gifted.pendingTerrorEntry?.stage, 'giftDiscard');
+  assert.equal(gifted.decision?.player, 'e');
+  const resolved = applyAction(gifted, 'e', { type: 'decision', card });
+  assert.equal(player(resolved, 'e').hand.length, 4);
+  assert.equal(resolved.pendingTerrorEntry, null);
+  assert.equal(resolved.discard.filter(row => row.id === card).length, 1);
   const passed = decide(offered, { decline: true });
   assert.equal(player(passed, 'e').hand.length, 4);
   assert.equal(player(passed, 'm').hand.length, 1);
@@ -459,6 +461,32 @@ void test('resolved Truthtrance can satisfy Robbery overflow without leaving a s
   assert.equal(g.pendingTerrorEntry, null);
   assert.equal(g.decision, null);
   rejected(g, 'm', { type: 'decision', card: player(g, 'm').hand[0].id });
+});
+
+void test('resolved Truthtrance can satisfy Sabotage gift overflow without leaving a stale choice', () => {
+  const initial = fixture('sabotage');
+  hold(initial, 'm', 1);
+  const offered = decide(enter(initial), { reveal: true });
+  const index = offered.deck.findIndex(card => card.effect === 'truthtrance');
+  assert.ok(index >= 0);
+  const truth = offered.deck.splice(index, 1)[0];
+  player(offered, 'e').hand.push(truth);
+  hold(offered, 'e', 3);
+  let game = decide(offered, { card: player(offered, 'm').hand[0].id });
+  assert.equal(game.pendingTerrorEntry?.stage, 'giftDiscard');
+  game = applyAction(game, 'e', { type: 'card', card: truth.id });
+  while (game.truthtrance?.stage === 'priority') {
+    const id = game.players.find(candidate => !game.truthtrance!.passed.includes(candidate.id))!.id;
+    game = applyAction(game, id, { type: 'truthPass' });
+  }
+  game = applyAction(game, 'e', { type: 'truthAsk', question: {
+    kind: 'fact', target: 'a', fact: { kind: 'hand', name: 'Shield' },
+  } });
+  game = applyAction(reload(game), 'a', { type: 'truthAnswer', answer: 'no' });
+  assert.equal(player(game, 'e').hand.length, 4);
+  assert.equal(game.pendingTerrorEntry, null);
+  assert.equal(game.decision, null);
+  rejected(game, 'e', { type: 'decision', card: player(game, 'e').hand[0].id });
 });
 
 void test('changing a hidden face leaves the entrant projection unchanged before revelation', () => {

@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 27 October 2026 — Sabotage gift at the hand limit
+
+When Moritani gives a card to a full-handed entrant after Sabotage, the
+recipient provisionally chooses one card to discard, including the gift. The
+physical entry waits through the fresh discard and supported Semuta response.
+The exceptional full hand is staged in the runtime fixture; this is not a
+complete faction or combination certification.
+[Contract](MORITANI_TERROR_RULES.md#sabotage-gift-to-a-full-hand--27-october-2026).
+
 ## 27 October 2026 — Basic Kull default and Sapho own-turn last
 
 New eligible Basic CHOAM/Ix lobbies select the existing Kull preview by default;

@@ -1,4 +1,5 @@
 import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
+import { SabotageGiftError, quoteSabotageGift, quoteSabotageGiftDiscard } from './sabotage-gift';
 import { kullDefaultEligible } from './kull-default-profile';
 import { SaphoTruthOrderError, quoteSaphoTruthOrder, reorderSaphoTruthOrder, validateSaphoTruthOrder } from './sapho-truth-order';
 import { RicheseBidPromiseError, richeseBidCompletionRange, richeseBidRequired, recordRicheseBid,
@@ -1863,7 +1864,7 @@ export type Game = {
         }
       | {
           kind: 'terrorDiscard';
-          source: 'sabotage' | 'robberyOverflow';
+          source: 'sabotage' | 'robberyOverflow' | 'sabotageGiftOverflow';
           owner: string;
           entry: NonNullable<Game['pendingTerrorEntry']>;
           discardedHandSize: number;
@@ -2126,6 +2127,7 @@ export type Game = {
       | 'robbery'
       | 'discard'
       | 'gift'
+      | 'giftDiscard'
       | 'sneakAttack'
       | 'allianceResponse'
       | 'allianceReply';
@@ -8397,7 +8399,7 @@ function treacheryDiscardIntegrity(g: Game) {
     );
     if (entry?.cause === 'ambassador') ambassadorRelocationIntegrity(g);
     if (entry?.revivalArrival) homeworldRule(() => validateRevivalTerrorEntry(g, entry));
-    const sabotage = source === 'sabotage';
+    const sabotage = source === 'sabotage' || source === 'sabotageGiftOverflow';
     const discarder = sabotage ? entrant : owner;
     requireRule(
       !g.pendingTerrorEntry &&
@@ -8406,7 +8408,7 @@ function treacheryDiscardIntegrity(g: Game) {
         entry &&
         entry.turn === g.turn &&
         entry.phase === g.phase &&
-        ['sabotage', 'robberyOverflow'].includes(source) &&
+        ['sabotage', 'robberyOverflow', 'sabotageGiftOverflow'].includes(source) &&
         owner?.faction === 'moritani' &&
         entrant &&
         entrant.id !== owner.id &&
@@ -8438,7 +8440,7 @@ function treacheryDiscardIntegrity(g: Game) {
         tokens[0].kind === (sabotage ? 'sabotage' : 'robbery') &&
         tokens[0].status === 'removed' &&
         tokens[0].location === null &&
-        entry.stage === (sabotage ? 'offer' : 'discard') &&
+        entry.stage === (source === 'sabotageGiftOverflow' ? 'giftDiscard' : sabotage ? 'offer' : 'discard') &&
         batch.cause === `terror:${source}` &&
         batch.entries.length === 1 &&
         !batch.entries[0].publicFace &&
@@ -8447,7 +8449,7 @@ function treacheryDiscardIntegrity(g: Game) {
         Number.isSafeInteger(discardedHandSize) &&
         discardedHandSize > 0 &&
         discardedHandSize === discarder.hand.length + 1 &&
-        (sabotage || discardedHandSize > handLimit(owner)),
+        (source === 'sabotage' || discardedHandSize > handLimit(discarder)),
       'The saved Terror discard does not match its consumed entry and hand.',
     );
   } else if (continuation?.kind === 'terrorAtomics') {
@@ -25302,10 +25304,11 @@ function finishTerrorEntry(g: Game) {
 /** The token, random victim/draw, discard and arrival have already committed. */
 function continueTerrorDiscard(
   g: Game,
-  source: 'sabotage' | 'robberyOverflow',
+  source: 'sabotage' | 'robberyOverflow' | 'sabotageGiftOverflow',
 ) {
   const entry = g.pendingTerrorEntry!;
   const owner = byFaction(g, 'moritani')!;
+  if (source === 'sabotageGiftOverflow') { finishTerrorEntry(g); return; }
   const needsChoice =
     source === 'sabotage'
       ? owner.hand.length > 0
@@ -25404,7 +25407,7 @@ function decideTerror(g: Game, p: Player, action: Action) {
     entry &&
       entry.turn === g.turn &&
       entry.phase === g.phase &&
-      (entry.stage === 'allianceReply'
+      (entry.stage === 'allianceReply' || entry.stage === 'giftDiscard'
         ? p.id === entry.entrant
         : p.faction === 'moritani'),
     'This Terror entry opportunity is no longer current.',
@@ -25571,6 +25574,21 @@ function decideTerror(g: Game, p: Player, action: Action) {
     token.status === 'removed',
     'Reveal the Terror token before resolving its effect.',
   );
+  if (entry.stage === 'giftDiscard') {
+    requireRule(token.kind === 'sabotage' && p.id === entrant.id,
+      'Only the Sabotage recipient may resolve their excess card.');
+    const cardId = stringField(action.card);
+    try { quoteSabotageGiftDiscard({ recipientHand: p.hand, cardId, handLimit: handLimit(p) }); }
+    catch (error) { if (error instanceof SabotageGiftError) throw new RuleError(error.message); throw error; }
+    const discardedHandSize = p.hand.length;
+    const card = discard(g, p, cardId);
+    log(g, `${p.name} discarded a card after the Sabotage gift to return to their hand limit.`);
+    g.pendingTerrorEntry = null;
+    stageTreacheryDiscard(g, 'terror:sabotageGiftOverflow',
+      [{ card, discardedBy: p.id, publicFace: false }],
+      { kind: 'terrorDiscard', source: 'sabotageGiftOverflow', owner: owner.id, entry, discardedHandSize });
+    return;
+  }
   if (entry.stage === 'sneakAttack') {
     requireRule(
       token.kind === 'sneakAttack',
@@ -25713,13 +25731,18 @@ function decideTerror(g: Game, p: Player, action: Action) {
     if (action.decline !== true) {
       const card = p.hand.find((c) => c.id === action.card);
       requireRule(card, 'Choose a card from your own hand to give.');
-      requireRule(
-        entrant.hand.length < handLimit(entrant),
-        'This recipient’s exceptional hand overflow is still being implemented. You may decline the gift.',
-      );
-      p.hand = p.hand.filter((c) => c.id !== card.id);
-      entrant.hand.push(card);
+      let gift: ReturnType<typeof quoteSabotageGift<Card>>;
+      try { gift = quoteSabotageGift({ownerHand:p.hand, recipientHand:entrant.hand, cardId:card.id, handLimit:handLimit(entrant)}); }
+      catch (error) { if (error instanceof SabotageGiftError) throw new RuleError(error.message); throw error; }
+      p.hand = gift.ownerHand;
+      entrant.hand = gift.recipientHand;
       log(g, `${p.name} gave ${entrant.name} a Treachery card after Sabotage.`);
+      if (gift.overflow) {
+        entry.stage = 'giftDiscard';
+        g.decision = { kind: 'moritaniTerror', player: entrant.id, entrant: entrant.id, territory: entry.territory };
+        log(g, `${entrant.name} must choose a card to discard after the Sabotage gift. This hand-limit procedure is provisional.`);
+        return;
+      }
     } else log(g, `${p.name} declined the optional Sabotage gift.`);
     finishTerrorEntry(g);
   }
@@ -40084,11 +40107,11 @@ function finishActionContinuations(g: Game) {
   }
   if (
     !g.truthtrance &&
-    g.pendingTerrorEntry?.stage === 'discard' &&
+    (g.pendingTerrorEntry?.stage === 'discard' || g.pendingTerrorEntry?.stage === 'giftDiscard') &&
     g.decision?.kind === 'moritaniTerror'
   ) {
-    const moritani = getPlayer(g, g.decision.player);
-    if (moritani.hand.length <= handLimit(moritani)) {
+    const discarder = getPlayer(g, g.decision.player);
+    if (discarder.hand.length <= handLimit(discarder)) {
       g.decision = null;
       finishTerrorEntry(g);
     }
