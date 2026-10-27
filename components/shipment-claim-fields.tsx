@@ -2,9 +2,11 @@
 import { TERRITORIES } from '@/game/board';
 import { Input } from '@/components/ui/input';
 
-export type ShipmentClauseInput = { territory: string; minimum: number };
+export type ShipmentClauseInput = { territory: string; minimum: number; sector?: number };
 export function invalidShipmentClause(claim: ShipmentClauseInput) {
-  return !Number.isSafeInteger(claim.minimum) || claim.minimum < 1 || claim.minimum > 20;
+  return !Number.isSafeInteger(claim.minimum) || claim.minimum < 1 || claim.minimum > 20 ||
+    claim.sector !== undefined && (!Number.isSafeInteger(claim.sector) ||
+      !TERRITORIES.find(destination => destination.id === claim.territory)?.sectors.includes(claim.sector));
 }
 
 /** Destination and physical minimum shared by flat and nested question builders. */
@@ -13,12 +15,36 @@ export function ShipmentClauseFields({ id, value, onChange }: {
   value: ShipmentClauseInput;
   onChange: (claim: ShipmentClauseInput) => void;
 }) {
+  const printed = TERRITORIES.find(destination => destination.id === value.territory);
+  // Mixed-shipment leaves have their own `kind` and remain on their existing
+  // territory-only parser until that separate question family is integrated.
+  const allowSector = !('kind' in value);
   return <>
     <label htmlFor={`${id}-territory`}>This-turn shipment destination</label>
     <select id={`${id}-territory`} value={value.territory}
-      onChange={event => onChange({ ...value, territory: event.target.value })}>
+      onChange={event => {
+        const next = { ...value, territory: event.target.value };
+        delete next.sector;
+        onChange(next);
+      }}>
       {TERRITORIES.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
     </select>
+    {allowSector && <>
+      <label htmlFor={`${id}-sector`}>Shipment sector</label>
+      <select id={`${id}-sector`} value={value.sector === undefined ? '' : String(value.sector)}
+        aria-invalid={value.sector !== undefined && !printed?.sectors.includes(value.sector)} onChange={event => {
+          const selected = event.currentTarget.value;
+          if (selected === '') {
+            const next = { ...value }; delete next.sector; onChange(next);
+          } else {
+            const sector = Number(selected);
+            if (printed?.sectors.includes(sector)) onChange({ ...value, sector });
+          }
+        }}>
+        <option value="">Any sector in this territory</option>
+        {printed?.sectors.map(sector => <option key={sector} value={sector}>Sector {sector}</option>)}
+      </select>
+    </>}
     <label htmlFor={`${id}-minimum`}>Minimum physical forces from reserves</label>
     <Input id={`${id}-minimum`} type="number" min={1} max={20} step={1} required
       value={Number.isNaN(value.minimum) ? '' : value.minimum}

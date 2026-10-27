@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 27 October 2026 — Truthtrance reserve shipment sector
+
+An optional exact printed sector is part of the existing future reserve
+shipment condition. Combined answers use one native shipment, its physical
+forces and actual payment; private guidance and minimal bot actions use the
+real sector. Sectorless legacy receipts retain their old shape. Broader
+interactions, complete rules and deployed acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#reserve-shipment-sector--27-october-2026).
+
 ## 27 October 2026 — Truthtrance upcoming Basic storm dial
 
 A source-bound current-turn question can bind an eligible Basic player's

@@ -4528,9 +4528,10 @@ export function botActions(g: GameView): Action[] {
       (action.type === 'guildShip' && action.from === 'reserves');
     const shipment = junctionNative
       ? {territory: splitLocation(String(action.destination)).territory,
+          sector: splitLocation(String(action.destination)).sector,
           amount: Object.values(action.sources as Record<string, {normal: number; elite: number}>).reduce((n, source) => n + source.normal + source.elite, 0)}
       : fromReserves
-      ? { territory: String(action.territory), amount: Number(action.amount) }
+      ? { territory: String(action.territory), sector: Number(action.sector), amount: Number(action.amount) }
       : null;
     return promises.every(
       (promise) => matchesShipment(promise, shipment) === promise.answer,

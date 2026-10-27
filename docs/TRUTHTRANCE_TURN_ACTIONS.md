@@ -1057,3 +1057,26 @@ information about the named value but do not publish a sealed dial receipt.
 Current facts and other supported whole-action alternatives keep their existing
 limitations. Advanced later Storm uses its native deck and remains outside this
 Basic question prototype; full rule, browser and deployed acceptance are open.
+
+## Reserve shipment sector — 27 October 2026
+
+**Prototyped / Partial.** The publisher FAQ (November 2020, p. 8) permits
+current-turn Yes/No questions; this structured exact-sector condition applies
+the project's provisional online binding convention. A question may specify a
+printed sector of its destination territory and a physical force minimum, or
+omit the sector to match the whole territory. Multiple sector and territory
+clauses refer to one original future reserve shipment. The native dispatcher
+still decides actual availability, storm, strength, cost and funding.
+
+The planner considers the actual sectors when quoting a legal route and shares
+funding and the shipment interval with other accepted answers. Actual delivery
+records its real destination and sector for sector-aware questions. An older
+sectorless receipt is never assigned an inferred sector, and a legacy
+territory-only question keeps its old receipt shape. A No forbids the whole
+matching condition; Yes and OR retain actual alternative completions. Human
+controls and minimal legal AI use the native projected action. A genuinely
+opposing stop may release an impossible answer under existing rules.
+
+Controlled regressions use genuine Basic setup, physical cards and actual
+storm-safe printed sectors; broader combinations, Advanced, full rules and
+deployed acceptance remain open.

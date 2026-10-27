@@ -20,6 +20,14 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance shipment sectors — 27 October. Prototyped / Partial.**
+A future reserve-shipment condition may name an exact printed sector or the
+whole territory. Sector and territory clauses share the original physical
+shipment and payment, including combined answers and private native guidance.
+Older sectorless receipts keep their existing meaning. Broader combinations,
+complete rules and deployed acceptance remain open.
+[Scope](TRUTHTRANCE_TURN_ACTIONS.md#reserve-shipment-sector--27-october-2026).
+
 **Truthtrance upcoming Basic storm dial — 27 October. Prototyped / Partial.**
 An exact-value condition binds an eligible player's original unsubmitted native
 dial, with the normal first-turn or later range. The same sealed submission

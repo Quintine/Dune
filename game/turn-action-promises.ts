@@ -232,6 +232,8 @@ function actionKey(action: TurnActionLeaf): string {
   if (action.kind === 'leader') return JSON.stringify([action.kind, action.leader]);
   if (action.kind === 'forces') return JSON.stringify([action.kind, action.counter, action.minimum]);
   if (action.kind === 'bid') return JSON.stringify([action.kind, action.lot, action.minimum]);
+  if (action.kind === 'ship' && action.sector !== undefined)
+    return JSON.stringify([action.kind, action.territory, action.minimum, action.sector]);
   return JSON.stringify(action.kind === 'payment' ? [action.kind, action.recipient, action.minimum] :
     [action.kind, action.territory, action.minimum]);
 }
@@ -263,8 +265,11 @@ function readCompiled(value: unknown, originals: ReadonlySet<string>): CompiledM
 }
 
 function validateEvent(event: unknown): asserts event is TravelEvent {
-  check(object(event) && keys(event, 'amount,territory') && printedTerritory(event.territory) && physical(event.amount),
-    'Retain the printed destination and zero to twenty actual physical forces.');
+  check(object(event) && (keys(event, 'amount,territory') || keys(event, 'amount,sector,territory')) &&
+    printedTerritory(event.territory) && physical(event.amount) &&
+    (!('sector' in event) || typeof event.sector === 'number' && Number.isSafeInteger(event.sector) &&
+      TERRITORIES.find(destination => destination.id === event.territory)!.sectors.includes(event.sector)),
+    'Retain the printed destination, any actual printed sector and zero to twenty physical forces.');
 }
 
 function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnActionLeaf> {
@@ -488,7 +493,9 @@ function actionValue(action: TurnActionLeaf, promise: TurnActionPromise): boolea
   if (action.kind === 'payment') return (promise.payments.find(payment =>
     payment.recipient === action.recipient)?.amount ?? 0) >= action.minimum;
   if (action.kind === 'ship') return promise.shipment.event !== null &&
-    promise.shipment.event.territory === action.territory && promise.shipment.event.amount >= action.minimum;
+    promise.shipment.event.territory === action.territory &&
+    (action.sector === undefined || promise.shipment.event.sector === action.sector) &&
+    promise.shipment.event.amount >= action.minimum;
   return (promise.progress.find(entry => entry.territory === action.territory)?.maximum ?? 0) >= action.minimum;
 }
 
@@ -559,7 +566,8 @@ function sameAction(left: TurnActionBranchLeaf, right: TurnActionBranchLeaf): bo
   if (left.kind === 'forces') return right.kind === 'forces' && left.counter === right.counter && left.progress === right.progress;
   if (left.kind === 'bid') return right.kind === 'bid' && left.lot === right.lot && left.source === right.source;
   if (left.kind === 'payment') return right.kind === 'payment' && left.recipient === right.recipient && left.progress === right.progress;
-  return (right.kind === 'ship' || right.kind === 'move') && left.territory === right.territory;
+  return (right.kind === 'ship' || right.kind === 'move') && left.territory === right.territory &&
+    (left.kind !== 'ship' || left.sector === right.sector);
 }
 
 /** Legal values for all signed leaves tied to the same original dial. A caller
@@ -611,8 +619,18 @@ function mergeBranches(left: TurnActionBranchLeaf[], right: TurnActionBranchLeaf
     const no = merged.find(other => sameAction(other, leaf) && !other.answer);
     if (yes && no && 'minimum' in yes && 'minimum' in no &&
       yes.minimum >= no.minimum) return null;
-    if (leaf.kind === 'ship' && leaf.answer && merged.some(other =>
-      other.kind === 'ship' && other.answer && other.territory !== leaf.territory)) return null;
+    if (leaf.kind === 'ship') {
+      if (leaf.answer && merged.some(other => other.kind === 'ship' && other.answer &&
+        (other.territory !== leaf.territory || other.sector !== undefined && leaf.sector !== undefined &&
+          other.sector !== leaf.sector))) return null;
+      // One exact positive shipment necessarily satisfies any broader negative
+      // condition with an equal or lower minimum. A broad positive and exact
+      // negative remain separate: a different sector may still be available.
+      for (const required of merged) if (required.kind === 'ship' && required.answer)
+        for (const excluded of merged) if (excluded.kind === 'ship' && !excluded.answer &&
+          required.territory === excluded.territory && required.minimum >= excluded.minimum &&
+          (excluded.sector === undefined || required.sector !== undefined && required.sector === excluded.sector)) return null;
+    }
   }
   return merged;
 }
@@ -964,8 +982,13 @@ export function recordTurnActionShipment<T extends TurnActionPromise>(promises: 
   for (const promise of liveTurnActionPromises(promises, player, turn)) {
     readPromise(promise);
     if (!promise.shipment.pending) continue;
+    const needsSector = (node: MixedActionExpression<TurnActionLeaf>): boolean => node.kind === 'action'
+      ? node.action.kind === 'ship' && node.action.sector !== undefined
+      : node.kind !== 'fact' && node.terms.some(needsSector);
+    const recorded = event === null ? null : { territory: event.territory, amount: event.amount,
+      ...(needsSector(promise.mixed) && event.sector !== undefined ? { sector: event.sector } : {}) };
     updates.set(promise, settle(promise, { ...promise,
-      shipment: { pending: false, event: event === null ? null : { ...event } } }));
+      shipment: { pending: false, event: recorded } }));
   }
   return promises.map(promise => updates.get(promise) ?? promise);
 }

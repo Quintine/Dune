@@ -1,5 +1,13 @@
 # Rule decision index
 
+## Truthtrance and reserve shipment sector — 27 October 2026
+
+An optional exact sector names the same original reserve-shipment event as
+territory-wide conditions. The actual physical group, destination and payment
+determine the answer. This is a provisional online application of the FAQ's
+current-turn question permission, not a separate publisher timing ruling.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#reserve-shipment-sector--27-october-2026).
+
 ## Truthtrance and the upcoming Basic storm dial — 27 October 2026
 
 A question about an eligible player's future native dial binds their exact

@@ -24,7 +24,10 @@ export function shipmentExpressionInputError(value: ShipmentExpression): string 
       ...('terms' in node && Array.isArray(node.terms) ? { terms: node.terms.map(structure) } : {}),
     };
     if ('constant' in node) return node;
-    return { ...node, territory: 'arrakeen', minimum: 1 };
+    // Keep the real territory for an exact sector so the shared parser checks
+    // their relationship; territory-only draft editing retains its old rules.
+    return { ...node, territory: Object.hasOwn(node, 'sector') && 'territory' in node
+      ? node.territory : 'arrakeen', minimum: 1 };
   };
   try {
     parseShipmentExpression(structure(value), { allowConstants: false });

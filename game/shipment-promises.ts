@@ -4,7 +4,7 @@ import type { TruthAnswer } from './truthtrance';
 import { nativePromiseScopeSupported } from './native-promise-scope';
 
 /** Every shipment leaf describes the same eventual reserve shipment, or its absence. */
-export type ShipmentLeaf = { territory: string; minimum: number };
+export type ShipmentLeaf = { territory: string; minimum: number; sector?: number };
 export type ShipmentExpression =
   | ShipmentLeaf
   | { constant: TruthAnswer }
@@ -12,7 +12,7 @@ export type ShipmentExpression =
 /** Old flat questions and saved promises remain valid without migration. */
 export type ShipmentClaim =
   | (ShipmentLeaf & { claim?: never })
-  | { claim: ShipmentExpression; territory?: never; minimum?: never };
+  | { claim: ShipmentExpression; territory?: never; minimum?: never; sector?: never };
 export const SHIPMENT_EXPRESSION_MAX_DEPTH = 4;
 export const SHIPMENT_EXPRESSION_MAX_LEAVES = 16;
 export class ShipmentClaimError extends Error {}
@@ -37,6 +37,14 @@ function parseLeaf(value: Record<string, unknown>): ShipmentLeaf {
       value.minimum <= 20,
     'Choose a minimum of one to twenty physical forces.',
   );
+  if (Object.hasOwn(value, 'sector')) {
+    check(
+      typeof value.sector === 'number' && Number.isSafeInteger(value.sector) &&
+        TERRITORIES.find((t) => t.id === value.territory)!.sectors.includes(value.sector),
+      'Choose a printed sector of the selected destination territory.',
+    );
+    return { territory: value.territory, minimum: value.minimum, sector: value.sector };
+  }
   return { territory: value.territory, minimum: value.minimum };
 }
 /** Bounded software input, not an additional printed limit on asking questions. */
@@ -77,7 +85,8 @@ export function parseShipmentExpression(
       return { constant: value.constant };
     }
     check(
-      Object.keys(value).sort().join(',') === 'minimum,territory' &&
+      (Object.keys(value).sort().join(',') === 'minimum,territory' ||
+        Object.keys(value).sort().join(',') === 'minimum,sector,territory') &&
         ++leaves <= SHIPMENT_EXPRESSION_MAX_LEAVES,
       'Use at most sixteen reserve-shipment statements; other fact or action types cannot be mixed in.',
     );
@@ -93,7 +102,8 @@ export function parseShipmentClaim(
   check(object(value), 'Choose a valid shipment statement.');
   if (Object.hasOwn(value, 'claim')) {
     check(
-      !Object.hasOwn(value, 'territory') && !Object.hasOwn(value, 'minimum'),
+      !Object.hasOwn(value, 'territory') && !Object.hasOwn(value, 'minimum') &&
+        !Object.hasOwn(value, 'sector'),
       'Choose either a legacy shipment statement or an expression, not both.',
     );
     return { claim: parseShipmentExpression(value.claim, options) };
@@ -120,7 +130,8 @@ export function validShipmentClaim(
 }
 export function shipmentExpressionOf(claim: ShipmentClaim): ShipmentExpression {
   return (
-    claim.claim ?? { territory: claim.territory!, minimum: claim.minimum! }
+    claim.claim ?? { territory: claim.territory!, minimum: claim.minimum!,
+      ...(claim.sector === undefined ? {} : { sector: claim.sector }) }
   );
 }
 export function shipmentClaimDestinations(claim: ShipmentClaim): string[] {
@@ -143,7 +154,7 @@ export function shipmentClaimText(
     );
     return 'op' in expression
       ? `(${expression.terms.map(text).join(expression.op === 'and' ? ' AND ' : ' OR ')})`
-      : `ship at least ${expression.minimum} physical forces from your reserves to ${territory(expression.territory).name}`;
+      : `ship at least ${expression.minimum} physical forces from your reserves to ${territory(expression.territory).name}${expression.sector === undefined ? '' : `, sector ${expression.sector}`}`;
   };
   return text(shipmentExpressionOf(claim));
 }
@@ -212,7 +223,7 @@ export type ShipmentPromise = ShipmentClaim & {
 };
 export function matchesShipment(
   claim: ShipmentClaim,
-  shipment: { territory: string; amount: number } | null,
+  shipment: { territory: string; amount: number; sector?: number } | null,
 ): boolean | null {
   const matches = (expression: ShipmentExpression): boolean | null => {
     if ('constant' in expression)
@@ -231,6 +242,7 @@ export function matchesShipment(
     }
     return !!shipment &&
       shipment.territory === expression.territory &&
+      (expression.sector === undefined || shipment.sector === expression.sector) &&
       shipment.amount >= expression.minimum;
   };
   return matches(shipmentExpressionOf(claim));

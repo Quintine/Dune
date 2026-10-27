@@ -12,9 +12,9 @@ export const TRAVEL_MAX_DEPTH = 4;
 export const TRAVEL_MAX_LEAVES = 16;
 
 /** Shipment leaves all describe one original future reserve-shipment event. */
-export type TravelActionClaim = { kind: 'ship' | 'move'; territory: string; minimum: number };
+export type TravelActionClaim = { kind: 'ship' | 'move'; territory: string; minimum: number; sector?: number };
 export type TravelClaim = { turn: number; mixed: MixedActionExpression<TravelActionClaim> };
-export type TravelEvent = { territory: string; amount: number };
+export type TravelEvent = { territory: string; amount: number; sector?: number };
 export type TravelBranchLeaf = TravelActionClaim & { answer: boolean };
 export type TravelPromise = TravelClaim & {
   event: string;
@@ -55,15 +55,21 @@ const physical = (value: unknown): value is number =>
 const printedTerritory = (value: unknown): value is string =>
   typeof value === 'string' && TERRITORIES.some(destination => destination.id === value);
 
-/** Only original kind/minimum/destination fields cross the question boundary. */
+/** An optional printed sector applies only to the original reserve shipment. */
 export function parseTravelActionClaim(value: unknown): TravelActionClaim {
-  check(object(value) && keys(value, 'kind,minimum,territory') &&
+  check(object(value) && (keys(value, 'kind,minimum,territory') ||
+    value.kind === 'ship' && keys(value, 'kind,minimum,sector,territory')) &&
     (value.kind === 'ship' || value.kind === 'move'),
-  'Choose one reserve shipment or physical ground movement, with only its minimum and printed destination.');
+  'Choose one reserve shipment or physical ground movement, with its minimum and printed destination.');
+  if ('sector' in value) check(value.kind === 'ship' && printedTerritory(value.territory) &&
+    typeof value.sector === 'number' && Number.isSafeInteger(value.sector) &&
+    TERRITORIES.find(destination => destination.id === value.territory)!.sectors.includes(value.sector),
+  'Choose an actual printed sector in the shipment destination.');
   try {
     const claim = value.kind === 'ship' ? parseShipmentClaim(value) : parseMovementClaim(value);
     // parseShipmentClaim receives a flat leaf above, never its expression form.
-    return { kind: value.kind, territory: claim.territory!, minimum: claim.minimum! };
+    return { kind: value.kind, territory: claim.territory!, minimum: claim.minimum!,
+      ...('sector' in value ? { sector: value.sector as number } : {}) };
   } catch (error) {
     if (error instanceof ShipmentClaimError || error instanceof MovementClaimError)
       throw new TravelPromiseError(error.message);
@@ -87,7 +93,7 @@ function storedFact(value: unknown, depth = 0): TruthFact {
 }
 
 function actionKey(action: TravelActionClaim): string {
-  return `${action.kind}:${action.territory}:${action.minimum}`;
+  return `${action.kind}:${action.territory}:${action.minimum}${action.sector === undefined ? '' : `:sector:${action.sector}`}`;
 }
 
 function readCompiled(value: unknown, originals: ReadonlySet<string>): CompiledMixedAction<TravelActionClaim> {
@@ -117,8 +123,11 @@ function readCompiled(value: unknown, originals: ReadonlySet<string>): CompiledM
 }
 
 function validateEvent(event: unknown): asserts event is TravelEvent {
-  check(object(event) && keys(event, 'amount,territory') && printedTerritory(event.territory) && physical(event.amount),
-    'Retain the printed destination and zero to twenty actual physical forces.');
+  check(object(event) && (keys(event, 'amount,territory') || keys(event, 'amount,sector,territory')) &&
+    printedTerritory(event.territory) && physical(event.amount) &&
+    (!('sector' in event) || typeof event.sector === 'number' && Number.isSafeInteger(event.sector) &&
+      TERRITORIES.find(destination => destination.id === event.territory)!.sectors.includes(event.sector)),
+    'Retain the printed destination, any actual printed sector and zero to twenty physical forces.');
 }
 
 function readPromise(promise: TravelPromise): CompiledMixedAction<TravelActionClaim> {
@@ -157,7 +166,8 @@ function readPromise(promise: TravelPromise): CompiledMixedAction<TravelActionCl
 
 function actionValue(action: TravelActionClaim, promise: TravelPromise): boolean {
   if (action.kind === 'ship') return promise.shipment.event !== null &&
-    promise.shipment.event.territory === action.territory && promise.shipment.event.amount >= action.minimum;
+    promise.shipment.event.territory === action.territory && promise.shipment.event.amount >= action.minimum &&
+    (action.sector === undefined || promise.shipment.event.sector === action.sector);
   return (promise.progress.find(entry => entry.territory === action.territory)?.maximum ?? 0) >= action.minimum;
 }
 
@@ -184,15 +194,18 @@ function mergeBranches(left: TravelBranchLeaf[], right: TravelBranchLeaf[]): Tra
   const merged = left.map(leaf => ({ ...leaf }));
   for (const leaf of right) {
     const same = merged.find(other => other.kind === leaf.kind && other.territory === leaf.territory &&
-      other.answer === leaf.answer);
+      other.sector === leaf.sector && other.answer === leaf.answer);
     if (same) same.minimum = leaf.answer ? Math.max(same.minimum, leaf.minimum) : Math.min(same.minimum, leaf.minimum);
     else merged.push({ ...leaf });
-    const yes = merged.find(other => other.kind === leaf.kind && other.territory === leaf.territory && other.answer);
-    const no = merged.find(other => other.kind === leaf.kind && other.territory === leaf.territory && !other.answer);
-    if (yes && no && yes.minimum >= no.minimum) return null;
-    // One reserve shipment cannot have two different printed destinations.
+    // A No rules out a Yes only when every location satisfying the Yes also
+    // satisfies that No. A territory-wide Yes may use another legal sector.
+    for (const yes of merged.filter(other => other.kind === leaf.kind && other.territory === leaf.territory && other.answer))
+      for (const no of merged.filter(other => other.kind === leaf.kind && other.territory === leaf.territory && !other.answer))
+        if (yes.minimum >= no.minimum && (no.sector === undefined || yes.sector === no.sector)) return null;
+    // Every positive shipment leaf describes the same one physical shipment.
     if (leaf.kind === 'ship' && leaf.answer && merged.some(other =>
-      other.kind === 'ship' && other.answer && other.territory !== leaf.territory)) return null;
+      other.kind === 'ship' && other.answer && (other.territory !== leaf.territory ||
+        other.sector !== undefined && leaf.sector !== undefined && other.sector !== leaf.sector))) return null;
   }
   return merged;
 }
@@ -245,8 +258,14 @@ export function recordTravelShipment<T extends TravelPromise>(promises: readonly
   for (const promise of live) {
     readPromise(promise);
     if (!promise.shipment.pending) continue;
-    updates.set(promise, settle(promise, { ...promise,
-      shipment: { pending: false, event: event === null ? null : { ...event } } }));
+    const namesSector = (node: MixedActionExpression<TravelActionClaim>): boolean => node.kind === 'action'
+      ? node.action.kind === 'ship' && node.action.sector !== undefined
+      : node.kind !== 'fact' && node.terms.some(namesSector);
+    // Only a sector-aware question receives the new receipt field. Original
+    // sectorless records keep their original serialized event shape.
+    const receipt = event === null ? null : { territory: event.territory, amount: event.amount,
+      ...(event.sector !== undefined && namesSector(promise.mixed) ? { sector: event.sector } : {}) };
+    updates.set(promise, settle(promise, { ...promise, shipment: { pending: false, event: receipt } }));
   }
   return promises.map(promise => updates.get(promise) ?? promise);
 }

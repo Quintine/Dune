@@ -1,6 +1,7 @@
 'use client';
 
 import type { Action, GameView, Plan } from '@/game/engine';
+import { TERRITORIES } from '@/game/board';
 import { bribeAction } from '@/game/bribe-options';
 import { alliancePromiseModeSupported } from '@/game/alliance-promises';
 import { nativePromiseScopeSupported } from '@/game/native-promise-scope';
@@ -39,6 +40,9 @@ const namesWindow = (mixed: MixedActionExpression<TurnActionLeaf>, effect: Windo
 const namesStormDial = (mixed: MixedActionExpression<TurnActionLeaf>, source: string): boolean =>
   mixed.kind === 'action' ? mixed.action.kind === 'stormDial' && mixed.action.source === source
     : mixed.kind !== 'fact' && mixed.terms.some(term => namesStormDial(term, source));
+const namesSectorShipment = (mixed: MixedActionExpression<TurnActionLeaf>): boolean =>
+  mixed.kind === 'action' ? mixed.action.kind === 'ship' && mixed.action.sector !== undefined
+    : mixed.kind !== 'fact' && mixed.terms.some(namesSectorShipment);
 const namesBoxPlay = (mixed: MixedActionExpression<TurnActionLeaf>): boolean => mixed.kind === 'action'
   ? mixed.action.kind === 'cardPlay' && mixed.action.effect === 'nullentropyBox'
     : mixed.kind !== 'fact' && mixed.terms.some(namesBoxPlay);
@@ -84,6 +88,14 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const box = game.nullentropy, search = box?.search;
   const windowPromise = game.turnActionPromises.find(promise => promise.event === event && promise.player === actor && promise.turn === turn);
   const windowQuestion = windowPromise && JSON.stringify(windowPromise.mixed);
+  const sectorShipmentGuide = action.type === 'ship' && !!windowPromise && namesSectorShipment(windowPromise.mixed);
+  const shipmentSource = (current: GameView) => {
+    const owner = current.players.find(player => player.id === actor);
+    return JSON.stringify({ active: current.active, remaining: current.movementRemaining, storm: current.storm,
+      owner: owner && { reserves: owner.reserves, spice: owner.spice, shipped: owner.shipped },
+      occupants: current.players.map(player => ({ id: player.id, ally: player.ally, forces: player.forces })) });
+  };
+  const shipmentSignature = sectorShipmentGuide ? shipmentSource(game) : null;
   const stormDialSource = action.type === 'stormDial' ? nativeStormDialOpportunity(game, actor) : null;
   const semutaAction = action.type === 'semutaCommit' || action.type === 'semutaSelect' || action.type === 'semutaPass';
   const semuta = semutaAction ? game.semutaReaction : null;
@@ -415,6 +427,13 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       !current.ready.includes(actor) && me.charityClaimed === false && current.charity === charity &&
       charitySource(current) === charitySignature && current.charity.incomePending === false &&
       Number.isSafeInteger(current.charity.amount) && current.charity.amount > 0;
+    const currentSectorShipment = sectorShipmentGuide && !!me && phase === 5 && current.active === actor &&
+      !!windowPromise && current.turnActionPromises.includes(windowPromise) && JSON.stringify(windowPromise.mixed) === windowQuestion &&
+      shipmentSource(current) === shipmentSignature && me.shipped !== true &&
+      typeof action.territory === 'string' && typeof action.sector === 'number' && Number.isSafeInteger(action.sector) &&
+      TERRITORIES.some(territory => territory.id === action.territory && territory.sectors.includes(action.sector as number)) &&
+      typeof action.amount === 'number' && Number.isSafeInteger(action.amount) && action.amount > 0 &&
+      typeof me.reserves === 'number' && action.amount <= me.reserves;
     const currentStormDial = action.type === 'stormDial' && !!stormDialSource && !!windowPromise &&
       current.turnActionPromises.includes(windowPromise) && JSON.stringify(windowPromise.mixed) === windowQuestion &&
       namesStormDial(windowPromise.mixed, stormDialSource.source) &&
@@ -437,7 +456,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       Number.isSafeInteger(phase) && phase >= 0 && phase <= 8 && current.phase === phase && current.turn === turn && current.me === actor &&
       current.turnActionGuide === guide && guide.event === event && guide.action === action &&
       action.turnActionPromiseEvent === event && action.turnActionPromisePhase === phase && JSON.stringify(action) === signature && opportunity && movementPacket &&
-      (!printedBattleCancelAction || printedWindow) &&
+      (!printedBattleCancelAction || printedWindow) && (!sectorShipmentGuide || currentSectorShipment) &&
       current.turnActionPromises.some(promise => promise.event === event && promise.player === actor && promise.turn === turn &&
         !promise.fulfilled && !promise.released) &&
       (!amalReadyAction || openingReady) &&
@@ -600,7 +619,8 @@ export function TurnActionPromises(props: TurnActionProps) {
       Amal conditions count an actual accepted future printed play in this original phase opening.
       Earlier plays, disposal, other roles and recovery alone do not count. The condition closes with this opening.
       Amal halves available cash before ordinary payments become legal; preserve enough remaining cash for any payment condition.
-      Shipment conditions concern one future original reserve shipment. Ground-movement conditions count the maximum physical forces in one actual future move,
+      Shipment conditions concern one future original reserve shipment. An optional exact sector counts only that printed sector of the named territory.
+      Ground-movement conditions count the maximum physical forces in one actual future move,
       never the sum of smaller moves. Earlier shipment and movement do not count.
       Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.
       Shipment and movement close at your own Movement turn end; ordinary payments remain possible until the actual turn ends.

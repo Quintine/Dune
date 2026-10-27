@@ -19959,7 +19959,7 @@ type TurnActionCardProbe = Game & {
   _turnActionUnknownCards?: string[];
   _turnActionReservedTruthCards?: string[];
   _turnActionPriceCursor?: { order: string[]; index: number };
-  _turnActionShipmentReceipt?: { player: string; event?: { territory: string; amount: number } | null };
+  _turnActionShipmentReceipt?: { player: string; event?: { territory: string; amount: number; sector?: number } | null };
   _turnActionThumperForecast?: true;
   _turnActionFreshDiscard?: { batch: FreshDiscardBatch; continuation: TruthDiscardContinuation };
 };
@@ -20492,7 +20492,7 @@ function guardTurnActionAuctionClosure(g: Game, actor: string, original: readonl
  * the owner cannot rely on another faction stopping it. Grant costs instead
  * quote the resulting native rate before its optional conversion/discard suffix. */
 function guardTurnActionShipmentPriceBoundary(g: Game, actor: string, original: readonly TurnActionPromise[],
-  source?: string, shipment?: { territory: string; amount: number } | null) {
+  source?: string, shipment?: { territory: string; amount: number; sector?: number } | null) {
   const relevant = original.filter(row => {
     const stage = row.windowCards?.karamaShipment;
     const identity = stage && parseKaramaShipmentSource(stage.source);
@@ -20508,7 +20508,7 @@ function guardTurnActionShipmentPriceBoundary(g: Game, actor: string, original: 
   for (const row of relevant) trial.turnActionPromises = turnActionRule(() => closeTurnActionWindowCardPlay(
     trial.turnActionPromises ?? [], actor, row.turn, 'karamaShipment', row.windowCards!.karamaShipment!.source));
   if (shipment !== undefined) trial.turnActionPromises = turnActionRule(() => recordTurnActionShipment(
-    trial.turnActionPromises ?? [], actor, g.turn, shipment ? { territory: shipment.territory, amount: shipment.amount } : null));
+    trial.turnActionPromises ?? [], actor, g.turn, shipment ? { territory: shipment.territory, amount: shipment.amount, ...(shipment.sector === undefined ? {} : { sector: shipment.sector }) } : null));
   requireRule(!relevant.some(row => trial.turnActionPromises?.find(next => next.event === row.event)?.released),
     'Play your promised printed Karama or complete its alternative before closing this shipment.');
   requireRule(!!turnActionCompletion(trial, actor), 'Retain a whole Truthtrance completion after this shipment-price opportunity closes.');
@@ -20516,12 +20516,20 @@ function guardTurnActionShipmentPriceBoundary(g: Game, actor: string, original: 
 /** Quote successful native delivery before another faction owns a response.
  * Use its actual fee, forces and canonical shipment receipt, not a second price
  * calculation or an assumption that the Guild will stop the declaration. */
+function shipmentTreeNamesSector(node: TurnActionClaim['mixed'] | TravelClaim['mixed']): boolean {
+  return node.kind === 'action' ? node.action.kind === 'ship' && node.action.sector !== undefined
+    : node.kind !== 'fact' && node.terms.some(shipmentTreeNamesSector);
+}
 function guardTurnActionShipmentPriceDelivery(g: Game, shipment: PendingShipment) {
   const original = liveTurnActionPromises(g.turnActionPromises ?? [], shipment.player, g.turn);
-  if (!original.some(row => {
+  const travel = liveTravelPromises(g.travelPromises ?? [], shipment.player, g.turn);
+  const price = original.some(row => {
     const source = parseKaramaShipmentSource(row.windowCards?.karamaShipment?.source);
     return source?.turn === g.turn && source.recipient === shipment.player;
-  })) return;
+  });
+  const sector = original.some(row => shipmentTreeNamesSector(row.mixed)) ||
+    travel.some(row => shipmentTreeNamesSector(row.mixed));
+  if (!price && !sector) return;
   const trial = structuredClone(g);
   delete trial.turnActionPromises;
   (trial as TurnActionCardProbe)._turnActionShipmentReceipt = { player: shipment.player };
@@ -20529,7 +20537,16 @@ function guardTurnActionShipmentPriceDelivery(g: Game, shipment: PendingShipment
   const receipt = (trial as TurnActionCardProbe)._turnActionShipmentReceipt!.event;
   requireRule(receipt !== undefined, 'Retain the actual native shipment delivery before its counter response.');
   trial.turnActionPromises = structuredClone(g.turnActionPromises);
-  guardTurnActionShipmentPriceBoundary(trial, shipment.player, original, undefined, receipt);
+  if (price) guardTurnActionShipmentPriceBoundary(trial, shipment.player, original, undefined, receipt);
+  if (sector) {
+    trial.turnActionPromises = turnActionRule(() => recordTurnActionShipment(trial.turnActionPromises ?? [],
+      shipment.player, trial.turn, receipt));
+    const completion = liveTurnActionPromises(trial.turnActionPromises, shipment.player, trial.turn).length
+      ? turnActionCompletion(trial, shipment.player)
+      : liveTravelPromises(trial.travelPromises ?? [], shipment.player, trial.turn).length
+        ? travelCompletion(trial, shipment.player) : true;
+    requireRule(!!completion, 'Honor your whole Truthtrance shipment answer before committing this destination and sector.');
+  }
 }
 function turnActionTargetAvailable(g: Game, actor: string): boolean {
   const context = g.phaseOpening ? { ...g, phaseOpening: null } : g;
@@ -20954,7 +20971,7 @@ function turnActionCompletionAfterFreshDiscard(source: Game, actor: string, unkn
       if (leaf.kind === 'payment') trial.bribePromises!.push({ ...metadata,
         recipient: leaf.recipient, minimum: leaf.minimum, progress: leaf.progress });
       else if (leaf.kind === 'ship') trial.shipmentPromises!.push({ ...metadata,
-        territory: leaf.territory, minimum: leaf.minimum });
+        territory: leaf.territory, minimum: leaf.minimum, ...(leaf.sector === undefined ? {} : { sector: leaf.sector }) });
       else if (leaf.kind === 'move') trial.movementPromises!.push({ ...metadata,
         territory: leaf.territory, minimum: leaf.minimum });
       else if (leaf.kind === 'bid') (trial.bidPromises ??= []).push({ ...metadata,
@@ -21518,6 +21535,7 @@ function travelCompletion(source: Game, actor: string,
       shipmentPromises: [...shipments], movementPromises: [...movements], movementExpressionPromises: [...expressions] };
     for (const leaf of leaves) {
       const promise = { territory: leaf.territory, minimum: leaf.minimum, turn: source.turn,
+        ...(leaf.kind === 'ship' && leaf.sector !== undefined ? { sector: leaf.sector } : {}),
         player: actor, asker: source.players.find(player => player.id !== actor)!.id, answer: leaf.answer };
       if (leaf.kind === 'ship') trial.shipmentPromises.push(promise);
       else trial.movementPromises.push(promise);
@@ -30639,14 +30657,8 @@ function findShipmentCompletion(
     if (visited.has(signature)) continue;
     visited.add(signature);
     for (const destination of destinations) for (let amount = 1; amount <= p.reserves; amount++) {
-      if (
-        !promises.every(
-          (p) =>
-            matchesShipment(p, { territory: destination, amount }) === p.answer,
-        )
-      )
-        continue;
       for (const sector of territory(destination).sectors) {
+        if (!promises.every(p => matchesShipment(p, { territory: destination, amount, sector }) === p.answer)) continue;
         const offer = nexusRicheseOffer(g,p.id), guildOffer = nexusGuildSecretAllyOffer(g,p.id);
         for (const nexus of [undefined, ...(offer && !offer.blocked && amount <= offer.maxForces ? [offer.event] : []), ...(guildOffer && !guildOffer.blocked ? [guildOffer.event] : [])]) {
           const guildSecretEvent = nexus && nexus === guildOffer?.event ? nexus : undefined;
@@ -30838,7 +30850,7 @@ function bindShipmentTruth(
 function checkShipmentPromises(
   g: Game,
   p: Player,
-  shipment: { territory: string; amount: number } | null,
+  shipment: { territory: string; amount: number; sector?: number } | null,
 ) {
   requireRule(
     liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).every(
@@ -30852,16 +30864,19 @@ function checkShipmentPromises(
 function finishShipmentPromises(
   g: Game,
   p: Player,
-  shipment: { territory: string; amount: number } | null,
+  shipment: { territory: string; amount: number; sector?: number } | null,
 ) {
   checkShipmentPromises(g, p, shipment);
   const probe = (g as TurnActionCardProbe)._turnActionShipmentReceipt;
   if (probe?.player === p.id && probe.event === undefined)
-    probe.event = shipment ? { territory: shipment.territory, amount: shipment.amount } : null;
+    probe.event = shipment ? { territory: shipment.territory, amount: shipment.amount,
+      ...(shipment.sector === undefined ? {} : { sector: shipment.sector }) } : null;
   if (g.phase === 5 && g.turnActionPromises) g.turnActionPromises = turnActionRule(() =>
-    recordTurnActionShipment(g.turnActionPromises!, p.id, g.turn, shipment ? { territory: shipment.territory, amount: shipment.amount } : null));
+    recordTurnActionShipment(g.turnActionPromises!, p.id, g.turn, shipment ? { territory: shipment.territory, amount: shipment.amount,
+      ...(shipment.sector === undefined ? {} : { sector: shipment.sector }) } : null));
   if (g.phase === 5 && g.travelPromises) g.travelPromises = travelRule(() => recordTravelShipment(g.travelPromises!, p.id, g.turn,
-    shipment ? { territory: shipment.territory, amount: shipment.amount } : null));
+    shipment ? { territory: shipment.territory, amount: shipment.amount,
+      ...(shipment.sector === undefined ? {} : { sector: shipment.sector }) } : null));
   for (const promise of liveShipmentPromises(
     g.shipmentPromises ?? [],
     p.id,
@@ -36339,7 +36354,7 @@ function quoteJunctionDeclaration(g: Game, p: Player, declaration: JunctionTrans
   const arrival = quote.destinationKind === 'arrakis' ? splitLocation(destination) : null;
   const nativeDeparture = quote.originKind === 'homeworld' && quote.sources.every((source) =>
     source.key === `homeworld:${p.faction}` || (p.faction === 'emperor' && source.key === 'homeworld:emperor:salusa'));
-  const promise = nativeDeparture && arrival ? {territory: arrival.territory, amount: quote.amount} : null;
+  const promise = nativeDeparture && arrival ? {territory: arrival.territory, amount: quote.amount, sector: arrival.sector} : null;
   checkShipmentPromises(g, p, promise);
   const sourceLock = quote.originKind === 'arrakis' ? p.advisors?.[quote.origin]?.lockedTurn : undefined;
   const advisors = arrival ? arrivalAsAdvisor(g, p, arrival.territory,
@@ -37253,6 +37268,21 @@ function guildTransportCanceled(g: Game, player: string): boolean {
 }
 function openGuildTransportPermission(g: Game, p: Player, frame: GuildTransportOrder, fromReserves: boolean) {
   validateGuildTransportForCommit(g, p, frame, fromReserves);
+  const whole = liveTurnActionPromises(g.turnActionPromises ?? [], p.id, g.turn);
+  const travel = liveTravelPromises(g.travelPromises ?? [], p.id, g.turn);
+  if (fromReserves && (whole.some(row => shipmentTreeNamesSector(row.mixed)) ||
+      travel.some(row => shipmentTreeNamesSector(row.mixed)))) {
+    // Quote the exact reserve group, sector, funding and native rate before an
+    // opponent owns the permission response. No foreign decision is assumed.
+    const trial = structuredClone(g), owner = getPlayer(trial, p.id);
+    commitGuildTransport(trial, owner, structuredClone(frame), true, undefined, undefined, true);
+    requireRule(owner.shipped, 'Retain the original Guild reserve shipment before its response.');
+    const completion = liveTurnActionPromises(trial.turnActionPromises ?? [], p.id, trial.turn).length
+      ? turnActionCompletion(trial, p.id)
+      : liveTravelPromises(trial.travelPromises ?? [], p.id, trial.turn).length
+        ? travelCompletion(trial, p.id) : true;
+    requireRule(!!completion, 'Honor your whole Truthtrance shipment answer before declaring this Guild destination and sector.');
+  }
   const intent: PendingGuildTransport = {
     ...frame, fromReserves, event: crypto.randomUUID(), signature: '', permission: true,
   };
@@ -37337,7 +37367,7 @@ function validateGuildTransportForCommit(
     'The declared Guild transport price no longer matches its rate.');
   contribution(g, p, cost, allyPayment);
   checkShipmentIncomeFunding(g, p, cost, allyPayment);
-  checkShipmentPromises(g, p, fromReserves ? { territory: to, amount } : null);
+  checkShipmentPromises(g, p, fromReserves ? { territory: to, amount, sector } : null);
 }
 function commitGuildTransport(
   g: Game, p: Player, frame: GuildTransportOrder, fromReserves: boolean,
@@ -37400,7 +37430,7 @@ function commitGuildTransport(
     prepareAutomaticAdvisorFlips(g, p, { player: p.id, origin, to, sector, amount, elite,
       group: Object.fromEntries(group) }, true);
   observeOccupation(g);
-  finishShipmentPromises(g, p, fromReserves ? { territory: to, amount } : null);
+  finishShipmentPromises(g, p, fromReserves ? { territory: to, amount, sector } : null);
   finishGuildCunningShipment(g, p.id, 'guild', frame);
   p.shipped = true;
   closeAdvisorPreparationOnShipment(g, p.id, 'guildTransport');
@@ -37497,9 +37527,9 @@ function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipi
     g,
     getPlayer(g, shipment.player),
     shipment.noField ? (shipment.richesePair
-      ? { territory: shipment.territory, amount: currentRichesePairForces(g, getPlayer(g, shipment.player), shipment.noFieldReserves ?? 0, shipment.richesePair.revealedTokenId).physical }
+      ? { territory: shipment.territory, sector: shipment.sector, amount: currentRichesePairForces(g, getPlayer(g, shipment.player), shipment.noFieldReserves ?? 0, shipment.richesePair.revealedTokenId).physical }
       : shipment.noFieldReserves || shipment.smugglerCompanion
-      ? { territory: shipment.territory, amount: (shipment.noFieldReserves ?? 0) + (shipment.smugglerCompanion ? 1 : 0) }
+      ? { territory: shipment.territory, sector: shipment.sector, amount: (shipment.noFieldReserves ?? 0) + (shipment.smugglerCompanion ? 1 : 0) }
       : null) : shipment.alliedNoField ? null : shipment,
   );
   const {
@@ -43493,7 +43523,7 @@ function applyActionInner(
     requireRule(action.noFieldReserves === undefined || action.noField !== undefined,
       'Paid No-Field reserves accompany a native concealed marker.');
     if (action.noField === undefined) checkShipmentPromises(g, p, {
-      territory: String(action.territory), amount: Number(action.amount),
+      territory: String(action.territory), amount: Number(action.amount), sector: Number(action.sector),
     });
     const to = String(action.territory),
       s = integer(action.sector, 0, 18, 'Sector');
@@ -43597,7 +43627,7 @@ function applyActionInner(
       ...(noField ? { noField } : {}),
     };
     if (noField) checkShipmentPromises(g, p, noFieldGroup!.physical
-      ? { territory: to, amount: noFieldGroup!.physical } : null);
+      ? { territory: to, amount: noFieldGroup!.physical, sector: s } : null);
     if (noField && (g.leaderSkills || noFieldReserves) && !richesePair) {
       shipment.noFieldSkillProof = noFieldSkillProof(shipment);
       validatePhysicalShipment(g, shipment);
@@ -43653,7 +43683,7 @@ function applyActionInner(
       g,
       p,
       action.from === 'reserves'
-        ? { territory: String(action.territory), amount: Number(action.amount) }
+        ? { territory: String(action.territory), amount: Number(action.amount), sector: Number(action.sector) }
         : null,
     );
     requireRule(
