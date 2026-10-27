@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 28 October 2026 — Advanced Voice names for ordinary cards
+
+Advanced Voice can provisionally require or forbid a specific ordinary
+battle-card face while Basic keeps its existing categories. Native and borrowed
+Voice, battle plans, hero availability, structured power controls and legal bot
+responses use the same matcher. Twelve related files pass 168 cases, including
+real Advanced battle actions with conserved-card/alliance staging and borrowed
+Voice; the Basic rejection uses a controlled mode change. Named playable
+Specials, wider combinations, browser and deployed acceptance remain open.
+[Scope](PORTABLE_SNOOPER_ENGINE_AUDIT.md#advanced-voice-names-for-ordinary-cards--28-october-2026).
+
 ## 28 October 2026 — AI opponent with two factions
 
 An AI controller can have two distinct bot faction seats in the optional

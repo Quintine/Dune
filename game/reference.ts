@@ -3241,6 +3241,27 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
   },
   {
+    id: 'advanced-voice-named-cards',
+    title: 'Advanced Voice: naming a battle card',
+    category: 'Advanced & expansions',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'Advanced Voice may require or forbid a particular ordinary battle-card face.',
+    steps: [
+      'In Advanced Voice, choose a category or one named ordinary weapon, defense, Worthless card or Cheap Hero face. Named commands distinguish different cards of the same category; all physical copies of the chosen face match.',
+      'The target must play the named card in a legal slot if required and able, or avoid it if forbidden. If no eligible matching card is held, a requirement does not force another card. Existing special-card commands keep their own behavior.',
+      'Basic retains its existing category choices. Borrowed Voice uses the same Advanced choices; the exact ordinary-name interpretation and wider interactions remain provisional.',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Native and borrowed Voice share a canonical face matcher, role-aware plan validation and Advanced-only command gate; ordinary hero availability and generic commands remain intact.', evidence: ['game/battle-cards.ts', 'game/engine.ts', 'game/nexus-borrowed-voice.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Native and borrowed Voice and structured declaration controls offer named faces in Advanced.', evidence: ['components/battle-preparation.tsx', 'components/turn-action-fields.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'All four profiles use the shared plan matcher; broader strategy and calibration remain unfinished.', evidence: ['game/bots.ts', 'tests/voice-named-card-runtime.test.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'The supplied Advanced source and provisional interpretation are recorded.', evidence: ['docs/PORTABLE_SNOOPER_ENGINE_AUDIT.md', 'docs/RULE_DECISIONS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused matching, real battle/borrowed Voice, controls and minimal bot cases cover the prototype; complete combinations and deployed acceptance remain open.', evidence: ['tests/voice-named-card.test.ts', 'tests/voice-named-card-runtime.test.ts', 'tests/voice-named-card-controls.test.tsx', 'tests/nexus-borrowed-voice-runtime.test.ts'] },
+    ],
+    related: ['card-truthtrance', 'truthtrance-turn-actions'],
+  },
+  {
     id: 'truthtrance-knowledge',
     title: 'Truthtrance: recorded predictions and private forecasts',
     category: 'Cards',

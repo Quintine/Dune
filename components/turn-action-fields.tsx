@@ -6,7 +6,7 @@ import type { GameView } from '@/game/engine';
 import type { MixedActionExpression } from '@/game/mixed-action-question';
 import { parseBattleActionClaim } from '@/game/mixed-battle-question';
 import { battlePowerOf, nativeBattlePowerOpportunity, type BattlePowerClaim } from '@/game/battle-power-question';
-import { battleCardLabel, VOICE_KINDS } from '@/game/battle-cards';
+import { battleCardLabel, voiceChoices } from '@/game/battle-cards';
 import { nativeStormDialOpportunity } from '@/game/storm-dial-question';
 import { karamaBattleCancelOpportunity, WINDOW_CARD_EFFECTS, windowCardOpportunity, type WindowCardEffect } from '@/game/window-card-play';
 import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES, type TurnActionLeaf } from '@/game/turn-action-promises';
@@ -328,13 +328,13 @@ const config: MixedActionConfig<TurnActionLeaf> = {
           </select>
         </> : value.claim.kind === 'voiceCommand' ? <>
           <label htmlFor={`${id}-power-card-type`}>Voice card type</label>
-          <select id={`${id}-power-card-type`} value={VOICE_KINDS.includes(value.claim.cardType) ? value.claim.cardType : ''}
-            disabled={disabled} aria-invalid={!VOICE_KINDS.includes(value.claim.cardType)} onChange={event => {
-              if (value.claim.kind === 'voiceCommand' && (event.currentTarget.value === '' || VOICE_KINDS.includes(event.currentTarget.value)))
+          <select id={`${id}-power-card-type`} value={voiceChoices(game.advanced).includes(value.claim.cardType) ? value.claim.cardType : ''}
+            disabled={disabled} aria-invalid={!voiceChoices(game.advanced).includes(value.claim.cardType)} onChange={event => {
+              if (value.claim.kind === 'voiceCommand' && (event.currentTarget.value === '' || voiceChoices(game.advanced).includes(event.currentTarget.value)))
                 onChange({ ...value, claim: { ...value.claim, cardType: event.currentTarget.value } });
             }}>
             <option value="">Choose a native Voice card type</option>
-            {VOICE_KINDS.map(kind => <option key={kind} value={kind}>{battleCardLabel(kind)}</option>)}
+            {voiceChoices(game.advanced).map(kind => <option key={kind} value={kind}>{battleCardLabel(kind)}</option>)}
           </select>
           <label htmlFor={`${id}-power-must`}>Exact Voice command</label>
           <select id={`${id}-power-must`} value={value.claim.must ? 'must' : 'cannot'} disabled={disabled}

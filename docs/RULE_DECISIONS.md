@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Advanced Voice and ordinary card names — 28 October 2026
+
+The supplied revised Advanced rules, physical p. 28 (printed p. 26), permit a
+specific card or type. Its examples and the publisher's different Basic FAQ
+do not clearly settle every ordinary face. In Advanced only, the prototype
+interprets that language to permit naming an ordinary weapon, defense,
+Worthless card or Cheap Hero face; every copy of that face matches. Basic
+retains its existing categories. This is a provisional Advanced interpretation,
+not a publisher ruling. [Scope](PORTABLE_SNOOPER_ENGINE_AUDIT.md#advanced-voice-names-for-ordinary-cards--28-october-2026).
+
 ## Truthtrance and Atreides ordinary auction knowledge — 27 October 2026
 
 The publisher FAQ permits game-related yes/no and compound questions. A named
@@ -119,8 +129,8 @@ earlier claims below that a free Ghola can raise Low Salusa to High.
 The authorized Advanced source permits Voice to name a specific card; the
 Portable Snooper face also subjects its late defense to Voice. The canonical
 Portable is now a distinct command from the broader poison-defense category,
-in both ordinary plans and late use. Individual ordinary-card names and wider
-combinations remain separate.
+in both ordinary plans and late use. The later Advanced ordinary-name prototype
+above supersedes the earlier absence; wider combinations remain separate.
 [Scope](PORTABLE_SNOOPER_ENGINE_AUDIT.md#named-voice-choice--27-october-2026).
 
 ## Semuta and an already-ready Poison battle — 27 October 2026

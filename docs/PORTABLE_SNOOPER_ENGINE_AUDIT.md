@@ -1,5 +1,26 @@
 # Portable Snooper integration audit
 
+## Advanced Voice names for ordinary cards — 28 October 2026
+
+**Prototyped / Partial.** The user-authorized revised source, physical p. 28
+(printed p. 26), permits Voice to name a specific card or type. Its parenthetic
+examples and the separate publisher FAQ do not independently settle naming
+every ordinary face. The Advanced preview provisionally permits exact named
+ordinary projectile, poison, Lasgun, shield, snooper, Worthless and Cheap
+Hero/Heroine cards. Basic retains its prior category choices. Identical physical
+copies share the printed name; another card in the same category does not
+match. Named hero prohibitions account for any other available hero before
+allowing a leaderless plan. Special-card categories retain their previous
+handling; named playable Specials, wider combinations and final acceptance
+remain open.
+
+Native and borrowed Voice, the saved response, plan matcher, structured power
+controls and the existing four legal bot policies share the same command. Real
+Advanced battle actions use a documented conserved-card/alliance supplement;
+the Basic gate uses a controlled mode change at the Voice boundary. Twelve
+related files pass 168 cases. No human browser or deployed battle has been
+verified for this slice.
+
 ## Named Voice choice — 27 October 2026
 
 **Prototyped / Partial.** Voice can name the canonical Portable Snooper
@@ -16,8 +37,9 @@ Voice to specify a card or card type. The physical Portable face subjects its
 late play to Voice as recorded below. The [runtime cases](../tests/voice-portable-snooper-runtime.test.ts)
 use real battle actions with a documented conserved-card and alliance
 supplement; [control cases](../tests/voice-portable-snooper-controls.test.tsx)
-use a controlled projection. Naming individual ordinary cards and wider
-combinations, browser and deployed acceptance remain open.
+use a controlled projection. The later Advanced ordinary-name prototype above
+supersedes the earlier absence; wider combinations, browser and deployed
+acceptance remain open.
 
 Audit: 2026-09-06. Scope: the canonical card's ordinary defense role, late play and existing battle continuations. The source contract below informed the bounded integration recorded at the end. The current-hook list is historical; the final checkpoint records completed implementation. Full expansion certification remains unverified.
 

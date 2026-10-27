@@ -1,4 +1,4 @@
-import type { Card } from './cards';
+import { treacheryDeck, type Card } from './cards';
 import { richeseCardDefinition } from './richese-cards';
 import {
   resolveBattleWeapons,
@@ -62,6 +62,37 @@ export const VOICE_KINDS = [
   'weirdingWay',
   'chemistry',
 ];
+
+/** Stable, public identifiers for individual ordinary battle card faces.
+ * A name denotes all physical copies of that face, not an opponent's card ID.
+ * Special weapons and defenses retain their existing separate Voice kinds. */
+const namedVoiceKinds = new Set<Card['kind']>([
+  'projectile', 'poison', 'lasgun', 'shield', 'snooper', 'worthless', 'hero',
+]);
+const namedVoiceFaces = treacheryDeck(['ix']).filter(card => namedVoiceKinds.has(card.kind));
+export const VOICE_NAMED_CARDS: readonly string[] = Object.freeze(
+  [...new Set(namedVoiceFaces.map(card => card.name))].sort(),
+);
+const namedVoiceCommands = Object.freeze(VOICE_NAMED_CARDS.map(name => `named:${name}`));
+
+/** The supplied Advanced rules permit a command naming a specific face.
+ * Basic retains its established category choices and saved command values. */
+export function voiceChoices(advanced: boolean): readonly string[] {
+  return advanced ? [...VOICE_KINDS, ...namedVoiceCommands] : VOICE_KINDS;
+}
+
+/** Return the canonical public face for a valid exact-name command. */
+export function voiceNamedCard(kind: string): string | null {
+  if (!kind.startsWith('named:')) return null;
+  const name = kind.slice('named:'.length);
+  return VOICE_NAMED_CARDS.includes(name) ? name : null;
+}
+
+function namedVoiceMatch(card: Card | undefined, kind: string): boolean {
+  const name = voiceNamedCard(kind);
+  return !!name && !!card && card.name === name &&
+    namedVoiceFaces.some(face => face.name === name && face.kind === card.kind);
+}
 export const BATTLE_CARD_HELP: Partial<Record<Card['kind'], string>> = {
   artillery:
     'Kills both leaders unless each is protected by a shield. Surviving leaders add no battle strength, and no leader bounty is paid. Discard after use.',
@@ -139,6 +170,7 @@ function effectiveWeaponKills(
 }
 /** Compulsion considers the card's default role, never forces an alternate role. */
 export function defaultVoiceMatch(card: Card, kind: string) {
+  if (voiceNamedCard(kind)) return namedVoiceMatch(card, kind);
   if (kind === 'portableSnooper') return isPortableSnooper(card);
   if (card.kind === kind) return true;
   return (
@@ -153,6 +185,11 @@ export function playedVoiceMatch(
   slot: 'weapon' | 'defense' | 'leader',
   kind: string,
 ) {
+  if (voiceNamedCard(kind)) {
+    if (!card || !namedVoiceMatch(card, kind)) return false;
+    return slot === 'leader' ? card.kind === 'hero'
+      : slot === 'weapon' ? isWeaponCard(card) : isDefenseCard(card);
+  }
   if (kind === 'portableSnooper') return slot === 'defense' && isPortableSnooper(card);
   return (
     !!card &&
@@ -167,6 +204,8 @@ export function playedVoiceMatch(
 }
 
 export function battleCardLabel(kind: string) {
+  const name = voiceNamedCard(kind);
+  if (name) return `${name} (specific card)`;
   return (
     (
       {

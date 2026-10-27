@@ -790,7 +790,7 @@ function plans(g: GameView): Action[] {
   const voice = b.voice?.target === me.id ? b.voice : null;
   const mayOmitLeader =
     !availableLeaders.length &&
-    (!heroes.length || (voice?.kind === 'hero' && !voice.must));
+    !heroes.some(hero => !(voice && !voice.must && playedVoiceMatch(hero, 'leader', voice.kind)));
   const leaders = [
     ...(mayOmitLeader ? [null] : []),
     ...availableLeaders.map((l) => l.id),

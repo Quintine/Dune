@@ -85,6 +85,22 @@ function fixture(advanced: boolean): NexusBorrowedVoiceFixture {
   return built[key]!;
 }
 
+void test('Advanced borrowed Voice preserves a specifically named ordinary card through its original response', () => {
+  const f = fixture(true);
+  const first = applyAction(reload(f.game), f.atreides,
+    { type: 'nexusBorrowedVoice', event: offer(f.game, f.atreides).event, use: false });
+  const option = offer(first, f.holder);
+  assert.ok(option.choices.some(choice => choice.kind === 'named:Maula Pistol' && choice.must));
+  const declared = applyAction(first, f.holder, {
+    type: 'nexusBorrowedVoice', event: option.event, use: true, kind: 'named:Maula Pistol', must: true,
+  });
+  assert.deepEqual(declared.battle!.voice, { target: f.atreides, kind: 'named:Maula Pistol', must: true });
+  const settled = settledWindow(declared);
+  assert.equal(frame(settled).stage, 'active');
+  assert.equal(settled.battle!.voice?.kind, 'named:Maula Pistol');
+  nexusBorrowedVoiceInventory(settled);
+});
+
 for (const advanced of [false, true]) {
   const band = advanced ? 'Advanced' : 'Basic';
 

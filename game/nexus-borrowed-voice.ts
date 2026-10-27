@@ -1,4 +1,4 @@
-import { VOICE_KINDS } from './battle-cards';
+import { voiceChoices } from './battle-cards';
 import type { Battle } from './engine';
 
 export type NexusBorrowedVoiceFrame = {
@@ -71,7 +71,7 @@ function validateFrame(frame: NexusBorrowedVoiceFrame): void {
       frame.voice && typeof frame.voice === 'object' && !Array.isArray(frame.voice) &&
       Object.keys(frame.voice).sort().join(',') === 'kind,must,target' &&
       frame.voice.target === frame.order[1 - frame.passed.length] &&
-      typeof frame.voice.kind === 'string' && VOICE_KINDS.includes(frame.voice.kind) &&
+      typeof frame.voice.kind === 'string' && voiceChoices(true).includes(frame.voice.kind) &&
       typeof frame.voice.must === 'boolean',
     'Borrowed Voice needs one ordered owner and a canonical opposing command.',
   );

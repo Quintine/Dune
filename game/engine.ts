@@ -698,7 +698,8 @@ import {
   isStoneBurner,
   isMirrorWeapon,
   isPortableSnooper,
-  VOICE_KINDS,
+  voiceChoices,
+  voiceNamedCard,
   defaultVoiceMatch,
   playedVoiceMatch,
 } from './battle-cards';
@@ -965,7 +966,7 @@ export type Battle = {
     field: PlanField;
     value?: string | number | null;
   };
-  voice?: { target: string; kind: Card['kind'] | 'stoneBurner' | 'mirrorWeapon' | 'portableSnooper'; must: boolean };
+  voice?: { target: string; kind: Card['kind'] | 'stoneBurner' | 'mirrorWeapon' | 'portableSnooper' | `named:${string}`; must: boolean };
 };
 export type Auction = {
   /** New ordinary lots use trusted online timing; old open lots stay unstamped. */
@@ -3170,7 +3171,8 @@ function playNexusFremenBetrayal(g: Game, p: Player, action: Action) {
 function quoteVoiceCommand(g: Game, target: string, kind: unknown, must: unknown): NonNullable<Battle['voice']> {
   const occupation = homeworldRule(() => quoteOccupiedHomeworldVoice(g, target));
   requireRule(occupation.status === 'allowed', occupation.blocked ?? 'This target cannot receive the Voice.');
-  requireRule(typeof kind === 'string' && VOICE_KINDS.includes(kind), 'Choose a card type.');
+  requireRule(typeof kind === 'string' && voiceChoices(true).includes(kind), 'Choose a card or card type.');
+  requireRule(g.advanced || !voiceNamedCard(kind), 'Naming an individual card requires Advanced rules.');
   if (kind === 'mirrorWeapon') {
     const blocked = mirrorWeaponModeBlock(g);
     requireRule(!blocked, blocked ?? 'Mirror Weapon is unavailable in this battle configuration.');
@@ -3185,6 +3187,8 @@ function quoteVoiceCommand(g: Game, target: string, kind: unknown, must: unknown
 function nexusBorrowedVoiceIntegrity(g: Game) {
   const b = g.battle, frame = b?.nexusBorrowedVoice;
   if (!b || !frame) return;
+  requireRule(!frame.voice || voiceChoices(g.advanced).includes(frame.voice.kind),
+    'Borrowed Voice cannot name an individual card in Basic rules.');
   requireRule(b.event && g.nexusCards?.cards && !byFaction(g, 'beneGesserit'),
     'Borrowed Voice has lost its absent-faction Nexus module.');
   nexusRule(() => validateNexusBorrowedVoice({
@@ -3221,7 +3225,7 @@ function nexusBorrowedVoiceOffer(g: Game, id: string) {
     g.pendingKarama || g.pendingTreacheryDiscard || g.pendingNullentropy
     ? 'Finish the current response before continuing borrowed Voice.' : null;
   const choices: { kind: NonNullable<Battle['voice']>['kind']; must: boolean }[] = [];
-  if (canUse && occupation.status === 'allowed') for (const kind of VOICE_KINDS) {
+  if (canUse && occupation.status === 'allowed') for (const kind of voiceChoices(g.advanced)) {
     if (kind === 'mirrorWeapon' && mirrorWeaponModeBlock(g)) continue;
     choices.push({ kind: kind as NonNullable<Battle['voice']>['kind'], must: false });
     if (!['stoneBurner', 'mirrorWeapon'].includes(kind) || !stoneCompulsionBlock(g, getPlayer(g, target)))
@@ -3283,7 +3287,7 @@ function nexusBgBetrayalIntegrity(g: Game) {
       g.players.some(p => p.id === record.owner) &&
       g.players.some(p => p.id === record.target && p.faction === 'beneGesserit') &&
       record.voice && typeof record.voice.must === 'boolean' &&
-      VOICE_KINDS.includes(record.voice.kind) &&
+      voiceChoices(g.advanced).includes(record.voice.kind) &&
       g.players.some(p => p.id === record.voice.target) && !events.has(record.event),
       'Bene Gesserit Betrayal has a malformed or repeated Voice receipt.');
     events.add(record.event);
@@ -11210,9 +11214,8 @@ function finishMandatorySkillVisibility(g: Game) {
     const available = controlledLeaders(g, p).filter(
       (l) => !l.dead && (!l.usedAt || l.usedAt === b.territory),
     );
-    const heroAvailable =
-      p.hand.some((c) => c.kind === 'hero') &&
-      !(b.voice?.target === owner && b.voice.kind === 'hero' && !b.voice.must);
+    const heroAvailable = p.hand.some((c) => c.kind === 'hero' &&
+      !(b.voice?.target === owner && !b.voice.must && playedVoiceMatch(c, 'leader', b.voice.kind)));
     if (
       available.length === 1 &&
       available[0].id === assignment.leader &&
@@ -20775,7 +20778,7 @@ function turnActionPowerCompletion(g: Game, actor: string, requirements: readonl
       { declaration: { power, use: false }, action: { type: 'declineBattlePower' } },
     ];
     if (power === 'voice') {
-      for (const kind of ['poison', ...VOICE_KINDS.filter(kind => kind !== 'poison')]) for (const must of [false, true]) {
+      for (const kind of ['poison', ...voiceChoices(g.advanced).filter(kind => kind !== 'poison')]) for (const must of [false, true]) {
         try {
           quoteVoiceCommand(g, source.target, kind, must);
           choices.push({ declaration: { power, use: true, cardType: kind, must }, action: { type: 'voice', kind, must } });
@@ -29854,11 +29857,8 @@ function validatePlan(
   );
   requireRule(
     plan.leader ||
-      (!available.length &&
-        (!p.hand.some((c) => c.kind === 'hero') ||
-          (b.voice?.target === p.id &&
-            !b.voice.must &&
-            b.voice.kind === 'hero'))),
+      (!available.length && !p.hand.some((c) => c.kind === 'hero' &&
+        !(b.voice?.target === p.id && !b.voice.must && playedVoiceMatch(c, 'leader', b.voice.kind)))),
     'You must use an available leader or cheap hero.',
   );
   const w = cardOf(p, plan.weapon),

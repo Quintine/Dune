@@ -16,6 +16,16 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Advanced Voice names for ordinary cards — 28 October. Prototyped / Partial.**
+Native and borrowed Voice can require or forbid an exact ordinary battle-card
+face in Advanced. Generic Voice and Basic choices remain; matching covers
+weapons, defenses, Worthless and Cheap Heroes, including multiple physical
+copies. The ordinary-name interpretation of the supplied source is provisional.
+Twelve related files pass 168 cases, including real Advanced battle actions,
+borrowed Voice, controls and all four existing legal bot profiles. The Basic
+gate uses a controlled mode change; wider combinations, browser and deployed
+acceptance remain open. [Scope](PORTABLE_SNOOPER_ENGINE_AUDIT.md#advanced-voice-names-for-ordinary-cards--28-october-2026).
+
 **AI opponent in the four-faction setup — 28 October. Prototyped / Partial.**
 The host can add two AI faction seats under one AI controller. Existing lobby
 configuration applies separately; removing either bot keeps or promotes the

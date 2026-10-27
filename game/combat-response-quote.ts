@@ -1,5 +1,5 @@
 import { FACTIONS, type FactionId } from './catalog';
-import { VOICE_KINDS } from './battle-cards';
+import { voiceChoices } from './battle-cards';
 import { quoteEcazOccupyBattle, type EcazOccupyBattleProfile } from './ecaz-occupy-battle';
 import { validateNexusBorrowedVoice, type NexusBorrowedVoiceFrame } from './nexus-borrowed-voice';
 
@@ -332,7 +332,7 @@ function calculate(
       record(b.voice) &&
         b.voice.target === opponent &&
         typeof b.voice.kind === 'string' &&
-        VOICE_KINDS.includes(b.voice.kind) &&
+        voiceChoices(input.advanced).includes(b.voice.kind) &&
         typeof b.voice.must === 'boolean',
       'The declared Voice response is malformed or targets the wrong opponent.',
     );

@@ -48,6 +48,9 @@ void test('actual Voice use, exact command and explicit Decline match independen
   assert.equal(battlePowerMatches({ kind: 'voice', use: false }, decline), true);
   assert.equal(battlePowerMatches({ kind: 'voiceCommand', cardType: 'projectile', must: true }, decline), false);
   assert.equal(battlePowerMatches({ kind: 'prescience', use: false }, decline), false);
+  const named: BattlePowerDeclaration = { power: 'voice', use: true, cardType: 'named:Maula Pistol', must: true };
+  assert.equal(battlePowerMatches({ kind: 'voiceCommand', cardType: 'named:Maula Pistol', must: true }, named), true);
+  assert.equal(battlePowerMatches({ kind: 'voiceCommand', cardType: 'projectile', must: true }, named), false);
 });
 
 void test('Prescience predicates refer to use or requested field, never the inspected answer', () => {

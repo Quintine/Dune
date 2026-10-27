@@ -10,7 +10,7 @@ import { ordinaryCardAvailability } from '@/game/card-availability';
 import { gholaForcePreparations } from '@/game/ghola-force-preparation';
 import { richeseCardDefinition } from '@/game/richese-cards';
 import { nativeBattlePowerOpportunity, type NativeBattlePower } from '@/game/battle-power-question';
-import { battleCardLabel, VOICE_KINDS } from '@/game/battle-cards';
+import { battleCardLabel, voiceChoices } from '@/game/battle-cards';
 import { nativeStormDialOpportunity } from '@/game/storm-dial-question';
 import { karamaBattleCancelOpportunity, WINDOW_CARD_EFFECTS, windowCardNativeEffect, windowCardOpportunity, type WindowCardEffect } from '@/game/window-card-play';
 import type { TurnActionLeaf } from '@/game/turn-action-promises';
@@ -409,7 +409,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       JSON.stringify(publicBattleContext(current)) === battleSignature;
     const powerPacket = Object.keys(action).every(key => ['type', 'turnActionPromiseEvent', 'turnActionPromisePhase',
       ...(action.type === 'voice' ? ['kind', 'must'] : action.type === 'prescience' ? ['field'] : [])].includes(key)) &&
-      (action.type === 'voice' ? typeof action.kind === 'string' && VOICE_KINDS.includes(action.kind) && typeof action.must === 'boolean'
+      (action.type === 'voice' ? typeof action.kind === 'string' && voiceChoices(current.advanced).includes(action.kind) && typeof action.must === 'boolean'
         : action.type === 'prescience' ? ['leader', 'weapon', 'defense', 'dial'].includes(String(action.field))
           : action.type === 'declineBattlePower');
     const ownedPower = currentBattle && !!power && !!powerSource && powerSource.ready && powerSource.owner === actor &&

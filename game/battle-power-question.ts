@@ -1,4 +1,4 @@
-import { VOICE_KINDS } from './battle-cards';
+import { voiceChoices } from './battle-cards';
 
 export type NativeBattlePower = 'voice' | 'prescience';
 export type BattlePowerClaim =
@@ -51,7 +51,7 @@ const identifier = (value: unknown): value is string =>
   typeof value === 'string' && value.length > 0 && value === value.trim();
 const keys = (value: Record<string, unknown>, expected: string): boolean =>
   Object.keys(value).sort().join(',') === expected;
-const cardType = (value: unknown): value is string => typeof value === 'string' && VOICE_KINDS.includes(value);
+const cardType = (value: unknown): value is string => typeof value === 'string' && voiceChoices(true).includes(value);
 const field = (value: unknown): value is 'leader' | 'weapon' | 'defense' | 'dial' =>
   value === 'leader' || value === 'weapon' || value === 'defense' || value === 'dial';
 

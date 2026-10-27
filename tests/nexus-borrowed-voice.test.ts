@@ -199,7 +199,7 @@ void test('declarations reject missing/noncanonical commands, nonbooleans and wr
   const frame = createNexusBorrowedVoice(context);
   const invalid: unknown[] = [
     null, undefined, {}, { ...command, target: 'a' }, { ...command, target: 'foreign' },
-    { ...command, kind: 'karama' }, { ...command, kind: 'portableSnooper' },
+    { ...command, kind: 'karama' }, { ...command, kind: 'named:Imaginary Card' },
     { ...command, kind: 'Poison' }, { ...command, kind: null },
     { target: 'd', must: true }, { target: 'd', kind: 'poison' },
     { ...command, must: 'false' }, { ...command, must: 0 },

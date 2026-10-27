@@ -7,7 +7,7 @@ import {
   isStoneBurner,
   isMirrorWeapon,
   isDefenseCard,
-  VOICE_KINDS,
+  voiceChoices,
 } from '@/game/battle-cards';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -150,15 +150,15 @@ export function BattlePreparation({
       <p className="muted">Both combatants continue in attacker order before Prescience or sealed plans. Only an unallied holder may spend the card.</p>
       {offer.blocked && <p className="notice">{offer.blocked}</p>}
       {offer.canUse && <>
-        <label htmlFor="borrowed-voice-kind">Card type
+        <label htmlFor="borrowed-voice-kind">Card or type
           <select id="borrowed-voice-kind" value={kind} onChange={e => setKind(e.target.value)}>
-            {VOICE_KINDS.filter(k => offer.choices.some(choice => choice.kind === k))
+            {voiceChoices(game.advanced).filter(k => offer.choices.some(choice => choice.kind === k))
               .map(k => <option key={k} value={k}>{battleCardLabel(k)}</option>)}
           </select>
         </label>
         <label className="decision-checkbox">
           <input type="checkbox" checked={must} onChange={e => setMust(e.target.checked)} />
-          Require this type (unchecked: forbid)
+          Require this card or type (unchecked: forbid)
         </label>
         <p className="notice">Provisional policy: Karama may cancel the Voice. The Nexus card stays spent.</p>
         <Button className="game-action" disabled={busy || !!offer.blocked || !selected}
@@ -185,13 +185,13 @@ export function BattlePreparation({
         </p>
         {preparation.blocked && <p className="notice">{preparation.blocked}</p>}
         <label htmlFor="voice-kind">
-          Card type
+          Card or type
           <select
             id="voice-kind"
             value={kind}
             onChange={(e) => setKind(e.target.value)}
           >
-            {VOICE_KINDS.filter((name) => name !== 'mirrorWeapon' || !mirrorWeaponModeBlock(game)).map((k) => (
+            {voiceChoices(game.advanced).filter((name) => name !== 'mirrorWeapon' || !mirrorWeaponModeBlock(game)).map((k) => (
               <option key={k} value={k}>
                 {battleCardLabel(k)}
               </option>
@@ -204,7 +204,7 @@ export function BattlePreparation({
             checked={must}
             onChange={(e) => setMust(e.target.checked)}
           />
-          Require this type (unchecked: forbid)
+          Require this card or type (unchecked: forbid)
         </label>
         <Button
           className="game-action"
