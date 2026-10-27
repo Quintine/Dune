@@ -1,3 +1,4 @@
+import { SaphoTruthOrderError, quoteSaphoTruthOrder, reorderSaphoTruthOrder, validateSaphoTruthOrder } from './sapho-truth-order';
 import { RicheseBidPromiseError, richeseBidCompletionRange, richeseBidRequired, recordRicheseBid,
   liveRicheseBidPromises, reconcileRicheseBidPromises, finishRicheseBidLot, validateRicheseBidPromises,
   type RicheseBidClaim, type RicheseBidPromise, type RicheseBidOpportunity } from './richese-bid-promises';
@@ -1614,6 +1615,17 @@ export type Game = {
           recipient: string;
           transferred: string;
           card: string;
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
+          kind: 'saphoTruthOrderDiscard';
+          player: string;
+          card: string;
+          event: string;
+          revision: number;
+          mode: 'first' | 'last';
+          truth: TruthWindow;
           resume: NonNullable<Game['pendingNullentropy']>['resume'];
           stateSignature: string;
         }
@@ -5888,6 +5900,14 @@ function distransDiscardSignature(g: Game, c: DistransDiscardContinuation) {
     recipientHand: recipient.hand.map(card => card.id),
   });
 }
+type SaphoTruthOrderDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'], { kind: 'saphoTruthOrderDiscard' }
+>;
+function saphoTruthOrderDiscardSignature(g: Game, c: SaphoTruthOrderDiscardContinuation) {
+  return JSON.stringify({player:c.player,card:c.card,event:c.event,revision:c.revision,mode:c.mode,
+    truth:c.truth,parent:nullentropyParentSignature(g,c.resume,c.event),turn:g.turn,phase:g.phase,
+    order:g.order,active:g.active});
+}
 type SaphoMovementDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'saphoMovementDiscard' }
@@ -7541,6 +7561,21 @@ function treacheryDiscardIntegrity(g: Game) {
       c.stateSignature === distransDiscardSignature(g, c),
       'The completed private Distrans transfer no longer matches its fresh discard.',
     );
+  } else if (continuation?.kind === 'saphoTruthOrderDiscard') {
+    const c = continuation, entry = batch.entries[0], truth = c.truth;
+    requireRule(batch.cause === 'sapho:truthOrder' && batch.entries.length === 1 && entry.publicFace &&
+      entry.discardedBy === c.player && entry.card.id === c.card &&
+      richeseCardDefinition(entry.card)?.card.effect === 'juiceOfSapho' &&
+      !c.resume.response && !c.resume.decision && !c.resume.pendingKarama && !c.resume.phaseOpening &&
+      truth && truth.question === null && (truth.stage === 'order' || truth.stage === 'ask') &&
+      truth.queue.length > 0 && new Set(truth.queue.map(row => row.card)).size === truth.queue.length &&
+      truth.queue.every(row => queuedTruthCardMatches(g.players.find(player => player.id === row.player)?.hand ?? [],row)) &&
+      (truth.stage !== 'order' || !!truth.order && truth.order.event === c.event &&
+        truth.order.revision === c.revision + 1 && truth.order.passed.includes(c.player)) &&
+      c.stateSignature === saphoTruthOrderDiscardSignature(g,c),
+    'The used Sapho no longer matches its suspended Truthtrance order.');
+    if (truth.stage === 'order') try { validateSaphoTruthOrder(truth.order!,truth.queue); }
+      catch (error) { if (error instanceof SaphoTruthOrderError) throw new RuleError(error.message); throw error; }
   } else if (continuation?.kind === 'saphoCharityDiscard') {
     const c=continuation,entry=batch.entries[0],frame=g.charityOrder;
     const latest=frame?.version===2 ? frame.uses.at(-1) : null;
@@ -8739,6 +8774,7 @@ function semutaOfferSupported(
     continuation.kind !== 'terrorDiscard' &&
     continuation.kind !== 'nexusChoamTrade' &&
     continuation.kind !== 'nexusChoamBetrayal' &&
+    continuation.kind !== 'saphoTruthOrderDiscard' &&
     continuation.kind !== 'saphoMovementDiscard' &&
     continuation.kind !== 'saphoRevivalDiscard' &&
     continuation.kind !== 'saphoCharityDiscard' &&
@@ -9294,6 +9330,12 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.decision = next.resume.decision;
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
+  } else if (next.kind === 'saphoTruthOrderDiscard') {
+    g.response = next.resume.response; g.decision = next.resume.decision;
+    g.pendingKarama = next.resume.pendingKarama; g.phaseOpening = next.resume.phaseOpening;
+    requireRule(next.truth.queue.every(row => queuedTruthCardMatches(g.players.find(player => player.id === row.player)?.hand ?? [],row)),
+      'The pending Truthtrance cards must remain held before the order resumes.');
+    g.truthtrance = next.truth;
   } else if (next.kind === 'saphoCharityDiscard') {
     g.response=next.resume.response;
     g.decision=next.resume.decision;
@@ -26379,6 +26421,67 @@ function saphoExtortionDecision(g: Game) {
     decision?.kind === 'moritaniExtortion' && decision.player === state.queue[state.cursor] &&
     decision.event === extortionEvent(state);
 }
+/** Quote the exact public parent/discard continuation on a detached copy.
+ * This does not inspect whether anyone holds Semuta; it prevents offering a
+ * Sapho action whose mandatory supported reaction cannot be staged. */
+function saphoTruthOrderSemutaSupported(g: Game,p: Player,card: string,mode: 'first'|'last'): boolean {
+  if (!g.semutaPreview) return true;
+  const trial = structuredClone(g), actor = getPlayer(trial,p.id), w = trial.truthtrance;
+  if (w?.stage !== 'order' || !w.order) return false;
+  try {
+    const event = w.order.event, revision = w.order.revision;
+    const result = reorderSaphoTruthOrder(w.order,w.queue,{event,revision,player:p.id,mode});
+    recordNativePrintedCardPlay(trial,p.id,'juiceOfSapho');
+    const used = discard(trial,actor,card);
+    w.queue = result.queue;
+    if (result.done) { delete w.order; w.stage = 'ask'; } else w.order = result.frame;
+    const c: SaphoTruthOrderDiscardContinuation = {kind:'saphoTruthOrderDiscard',player:p.id,card:used.id,
+      event,revision,mode,truth:structuredClone(w),resume:{response:trial.response,decision:trial.decision,
+        pendingKarama:trial.pendingKarama,phaseOpening:trial.phaseOpening},stateSignature:''};
+    trial.truthtrance = null; trial.response = null; trial.decision = null;
+    trial.pendingKarama = null; trial.phaseOpening = null;
+    return semutaOfferSupported(trial,c,[{card:used,discardedBy:p.id,publicFace:true}]);
+  } catch (error) { if (error instanceof RuleError || error instanceof SaphoTruthOrderError) return false; throw error; }
+}
+function saphoTruthOrderChoices(g: Game,p: Player): {card:string;mode:'first'|'last'}[] {
+  const w = g.truthtrance;
+  if (w?.stage !== 'order' || !w.order || (g.semutaPreview && !bareBasicSemutaProfile(g)) ||
+      printedRolePlayBlock(g,p.id,'juiceOfSapho')) return [];
+  const card = p.hand.find(row => row.id === 'richese-juice-of-sapho' && row.effect === 'juiceOfSapho');
+  if (!card || !richeseCardDefinition(card) || p.hand.filter(row => row.id === card.id).length !== 1 ||
+      transferCardBlock(g,p,card) || giftReserved(g,p.id,card.id)) return [];
+  try { return quoteSaphoTruthOrder(w.order,w.queue,p.id).modes
+    .filter(mode => saphoTruthOrderSemutaSupported(g,p,card.id,mode)).map(mode => ({card:card.id,mode})); }
+  catch (error) { if (error instanceof SaphoTruthOrderError) return []; throw error; }
+}
+function playSaphoTruthOrder(g: Game,p: Player,action: Action) {
+  const w = g.truthtrance;
+  requireRule(w?.stage === 'order' && w.order &&
+    Object.keys(action).sort().join(',') === 'card,event,mode,revision,type' &&
+    saphoTruthOrderChoices(g,p).some(choice => choice.card === action.card && choice.mode === action.mode),
+    'This Juice of Sapho ordering choice is unavailable or has expired.');
+  let result;
+  try { result = reorderSaphoTruthOrder(w.order,w.queue,{event:action.event as string,
+    revision:action.revision as number,player:p.id,mode:action.mode as 'first'|'last'}); }
+  catch (error) { if (error instanceof SaphoTruthOrderError) throw new RuleError(error.message); throw error; }
+  recordNativePrintedCardPlay(g,p.id,'juiceOfSapho');
+  const used = discard(g,p,action.card as string);
+  w.queue = result.queue;
+  if (result.done) { delete w.order; w.stage = 'ask'; } else w.order = result.frame;
+  log(g, `${p.name} discarded Juice of Sapho to ask ${String(action.mode)} among the simultaneous Truthtrance holders.`,
+    {faction:p.faction,name:'Juice of Sapho'});
+  if (g.semutaPreview) {
+    const c: SaphoTruthOrderDiscardContinuation = {kind:'saphoTruthOrderDiscard',player:p.id,card:used.id,
+      event:action.event as string,revision:action.revision as number,mode:action.mode as 'first'|'last',
+      truth:structuredClone(w),resume:{response:g.response,decision:g.decision,pendingKarama:g.pendingKarama,phaseOpening:g.phaseOpening},
+      stateSignature:''};
+    g.truthtrance = null; g.response = null; g.decision = null; g.pendingKarama = null; g.phaseOpening = null;
+    const entries = [{card:used,discardedBy:p.id,publicFace:true}];
+    requireRule(semutaOfferSupported(g,c,entries), 'This Sapho discard cannot safely suspend its Semuta reaction in this window.');
+    c.stateSignature = saphoTruthOrderDiscardSignature(g,c);
+    stageTreacheryDiscard(g,'sapho:truthOrder',entries,c);
+  }
+}
 function saphoCleanWindow(g: Game) {
   return (
     g.status === 'playing' &&
@@ -39931,6 +40034,7 @@ function applyActionInner(
     ),
     'The card reserved for this Black Market auction cannot be played or queued for another effect.',
   );
+  if (t === 'saphoTruthOrder') { playSaphoTruthOrder(g,p,action); return g; }
   try {
     if (
       resolveTruthAction(g, p, action, {
@@ -43951,6 +44055,7 @@ export function viewGame(state: Game, id: string, now?: number) {
     truthMixedBattleAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
       g.truthtrance.question.kind === 'mixedBattlePlan' ? mixedBattleTruthAnswers(g, me, g.truthtrance.question) : null,
     mixedBattlePromises: projectedMixedBattlePromises(g, id),
+    saphoTruthOrderChoices: saphoTruthOrderChoices(g,me),
     truthBattleAnswers:
       g.truthtrance?.stage === 'answer' &&
       g.truthtrance.question?.target === id &&

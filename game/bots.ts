@@ -1324,6 +1324,9 @@ function policyActions(g: GameView): Action[] {
   if (g.bidPromiseGuide) return [g.bidPromiseGuide.action];
   if (g.truthtrance) {
     const w = g.truthtrance;
+    if (w.stage === 'order' && w.order)
+      return w.order.holders.includes(me.id) && !w.order.passed.includes(me.id)
+        ? [{type:'truthOrderPass',event:w.order.event,revision:w.order.revision}] : [];
     if (w.stage === 'priority')
       return w.passed.includes(me.id) ? [] : [{ type: 'truthPass' }];
     if (w.stage === 'answer') {

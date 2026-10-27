@@ -1,5 +1,44 @@
 # Juice of Sapho: finite ordering implementation
 
+## Simultaneous Truthtrance order — 27 October 2026
+
+**Prototyped / Partial.** The [GF9 November 2020 FAQ p8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=8)
+orders simultaneous Truthtrances by storm order. The inspected printed Sapho
+face permits first/last in a turn-ordered action; it does not expressly resolve
+their precedence. The combined rule is therefore a provisional interpretation.
+
+After declarations and storm sorting, a public response window opens when at
+least two distinct players queued Truth cards in a supported clean parent. The
+window depends only on public declarations and configured deck, never on who
+holds Sapho. Every holder may continue without changing order. A holder with an
+eligible physical Sapho may instead discard it to move their entire question
+group to the first or last position. No-op modes are unavailable; the opaque
+public event and revision reject stale/duplicate actions. The actual physical
+storm order, same-holder card order and already completed parent state remain.
+An earlier Sapho first/last position is provisionally protected if Semuta
+recovers the card for another unpassed holder; a compatible opposite-end move
+remains available. When all holders respond, the original first question proceeds. Four minimal bot
+profiles can legally pass. Existing saves already asking do not gain a new step.
+
+In the supported bare Basic Semuta preview, the original discard event opens a
+neutral Semuta reaction and suspends the Truth window; claim/pass restores the
+same queued event or proceeds to the first question when the last holder used
+Sapho. The full parent signature, original queue and physical card custody are
+checked without replaying the effect. Initial scope excludes live auction or
+battle, active pending responses/preparations and broader Semuta/module
+profiles; these remain open rather than treating the restriction as printed
+rules. Wider repeated-card combinations, browser, deployed and complete-mode
+acceptance remain open.
+
+Runtime tests use a genuine native Basic/Advanced setup and an earned Sapho,
+then explicitly swap conserved dealt cards to give its holder an original Truth
+card. Basic Semuta claim/pass uses a separately labeled conserved cache/hand
+swap. Server-rendered actual table controls and their callbacks are exercised;
+stateful browser hydration is not. Eleven affected files pass 137/137,
+type/lint and build pass, and 55/55 integration tests pass against a separate
+local verification server.
+
+
 Updated 26 October 2026. **Partial card implementation; full modes and
 publication acceptance remain gated.** The earlier source audit remains the
 printed-evidence baseline. The current-lot prototype below selects an explicit

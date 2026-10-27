@@ -1,3 +1,4 @@
+import { createSaphoTruthOrder, passSaphoTruthOrder, SaphoTruthOrderError, type SaphoTruthOrderFrame } from './sapho-truth-order';
 import { parseTravelActionClaim, type TravelClaim } from './travel-expression-promises';
 import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES,
   turnActionPromiseModeSupported, type TurnActionClaim } from './turn-action-promises';
@@ -126,7 +127,8 @@ export type TruthQueueEntry = {
   source?: 'shrine';
 };
 export type TruthWindow = {
-  stage: 'priority' | 'ask' | 'answer' | 'unknown';
+  stage: 'priority' | 'order' | 'ask' | 'answer' | 'unknown';
+  order?: SaphoTruthOrderFrame;
   queue: TruthQueueEntry[];
   passed: string[];
   question: TruthQuestion | null;
@@ -901,6 +903,19 @@ export function resolveTruthAction(
     cardBlock: (g: Game, p: Player, card: Player['hand'][number]) => string | null;
   },
 ): boolean {
+  if (g.truthtrance?.stage === 'order') {
+    const w = g.truthtrance;
+    check(w.order && a.type === 'truthOrderPass' &&
+      Object.keys(a).sort().join(',') === 'event,revision,type',
+      'Finish the current Truthtrance ordering opportunity.');
+    try {
+      const result = passSaphoTruthOrder(w.order,w.queue,{event:a.event as string,revision:a.revision as number,player:p.id});
+      w.queue = result.queue;
+      if (result.done) { delete w.order; w.stage = 'ask'; }
+      else w.order = result.frame;
+    } catch (error) { if (error instanceof SaphoTruthOrderError) throw new TruthError(error.message); throw error; }
+    return true;
+  }
   const selectedCard =
     a.type === 'card' && typeof a.card === 'string'
       ? p.hand.find((card) => card.id === a.card)
@@ -1271,7 +1286,18 @@ export function resolveTruthAction(
     g.truthtrance.queue.sort(
       (a, b) => order.indexOf(a.player) - order.indexOf(b.player),
     );
-    g.truthtrance.stage = 'ask';
+    // Every committed holder gets the same public response window. The
+    // decision to open it never inspects who holds Juice of Sapho.
+    const clean = g.status === 'playing' && g.expansions.includes('choam') && !g.response && !g.decision && !g.phaseOpening &&
+      !g.pendingKarama && !g.pendingTreacheryDiscard && !g.pendingNullentropy && !g.auction &&
+      !g.richeseAuction && !g.battle && !g.pendingRevival && !g.pendingShipment &&
+      !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingChoamMove &&
+      !g.pendingIxMove && !g.pendingFremenMove && !g.pendingExchange && !g.pendingRicheseGift &&
+      !g.karamaShipping && !g.ornithopter && !g.summonedWorm && g.wormRides.length === 0 &&
+      !g.pendingArrivalOverlap && !g.pendingArrivalReaction?.length;
+    const frame = clean ? createSaphoTruthOrder(g.truthtrance.queue,crypto.randomUUID()) : null;
+    if (frame) { g.truthtrance.order = frame; g.truthtrance.stage = 'order'; }
+    else g.truthtrance.stage = 'ask';
   }
   return true;
 }

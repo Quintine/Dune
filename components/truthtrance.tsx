@@ -1,4 +1,5 @@
 'use client';
+import { SaphoTruthOrder } from './sapho-truth-order';
 import { RicheseBidPromiseFields, richeseBidMinimumError } from './richese-bid-promise-fields';
 
 import { TravelClaimFields, travelClaimInputError } from './travel-claim-fields';
@@ -269,7 +270,9 @@ export function Truthtrance({
         <a href="/rules#card-truthtrance">Question rules</a> · The table
         resumes its previous decision after these questions.
       </p>
-      {w.stage === 'priority' ? (
+      {w.stage === 'order' && w.order ? (
+        <SaphoTruthOrder frame={w.order} me={g.me} choices={g.saphoTruthOrderChoices} act={act} busy={busy} />
+      ) : w.stage === 'priority' ? (
         <>
           <p>
             A Truthtrance has been declared. Declare yours now or pass;

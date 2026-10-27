@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 27 October 2026 — Sapho simultaneous Truthtrance order
+
+A public response window follows storm-order sorting when two or more different
+players declare Truthtrance in a supported clean parent. Every queued holder may
+pass regardless of hand contents. An eligible Sapho holder may discard the real
+card to move their complete group first or last; invalid no-ops, duplicates and
+stale revisions are rejected. Physical storm order and same-holder card order
+are preserved. A Basic Semuta fresh-discard claim or pass restores the suspended
+queue without replaying Sapho; bare native profiles and clean parents are the
+initial scope, with auctions, battles, pending parents and broader modules open.
+The FAQ establishes storm-order Truth resolution, and the inspected Sapho face
+permits first/last turn-ordered actions; their precedence is a provisional
+interpretation, not an explicit publisher ruling. Basic/Advanced native setup
+and an earned Sapho are supplemented by labeled conserved Truth/Semuta swaps.
+Eleven affected files pass 137/137, type/lint and build pass, and an isolated
+server passes 55/55 integration tests. Browser, deployed, full-mode and broad
+combination acceptance remain open. Private proof is
+`20261027-sapho-truth-order-proof-v2/`.
+[Contract](JUICE_OF_SAPHO_RUNTIME.md#simultaneous-truthtrance-order--27-october-2026).
+
 ## 27 October 2026 — Silent automatic notice
 
 Use the same public text for forced and manual sealed submissions, and a

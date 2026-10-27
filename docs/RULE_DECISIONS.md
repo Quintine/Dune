@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Sapho simultaneous Truthtrance order — 27 October 2026
+
+The FAQ orders simultaneous Truthtrance questions by storm order, while the
+inspected Juice of Sapho face permits first/last in a turn-ordered action. The
+interaction has no dedicated publisher clarification. Provisionally offer each
+queued holder a public response before asking, then allow the holder of Sapho
+to move their whole pending group first/last without changing storm order or
+splitting one holder's cards. A previously selected first/last position is
+provisionally protected against a later recovered-card use. Clean parents and supported Semuta continuation
+are the initial scope; auction, battle and pending-parent timing remain open.
+[Contract](JUICE_OF_SAPHO_RUNTIME.md#simultaneous-truthtrance-order--27-october-2026).
+
 ## Richese Silent bid Truthtrance — 27 October 2026
 
 Provisionally allow an event-bound minimum for the respondent's single sealed

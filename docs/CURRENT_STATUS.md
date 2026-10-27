@@ -20,6 +20,19 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Sapho Truthtrance question order — 27 October. Prototyped / Partial.**
+When multiple players declare Truthtrance in a supported clean parent, each
+holder receives a public opportunity to continue or privately use an owned Juice
+of Sapho to move their whole question group first/last. Physical storm order,
+within-holder card order and the interrupted parent remain unchanged. A supported
+Basic Semuta discard reaction suspends and restores the same window; an earlier
+chosen boundary remains protected if Sapho is recovered and used again. Auction,
+battle, pending-parent and broader optional-module compositions remain open.
+Eleven affected files pass 137/137, type/lint and build pass, and 55/55 local
+integration tests pass on a separate verification server. Browser/deployed
+acceptance remains open.
+[Scope and provisional interpretation](JUICE_OF_SAPHO_RUNTIME.md#simultaneous-truthtrance-order--27-october-2026).
+
 **Silent automatic submission notice — 27 October.**
 A full hand's forced Silent submission now uses the same public text as a
 manual sealed bid and a neutral animation tag, instead of announcing the
