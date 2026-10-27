@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 28 October 2026 — Immediate public-deal payments
+
+Two to six human signatories can include an immediate gross spice bribe in a
+public agreement. The final acceptance executes the already-consenting payer's
+native bribe in the same action; failure preserves the outstanding offer. Its
+usual timing, spending limits, deferred receipt and Bureaucrat continuation
+apply. Nine related unit files pass 71 cases; three isolated authenticated HTTP
+cases cover consent, payment and replay. Future obligations, arbitrary prose,
+AI negotiation and deployed acceptance remain open. An isolated browser room
+also confirmed a two-spice debit and deferred recipient receipt.
+[Scope](PUBLIC_DEALS.md).
+
 ## 28 October 2026 — Multiparty public deals
 
 Two to six human seats can agree to public terms. Every recipient must accept,

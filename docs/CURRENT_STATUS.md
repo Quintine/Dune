@@ -16,6 +16,17 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Immediate deal payments — 28 October. Prototyped / Partial.** A public deal can
+include a gross spice payment between signatories. Final unanimous acceptance
+invokes the native bribe action atomically, including its timing, funds, escrow
+and Bureaucrat behavior; failure leaves the offer unaccepted. Earlier records
+retain their shape. Nine related unit files pass 71 cases, including a native
+Bureaucrat continuation; three isolated HTTP cases cover authenticated consent,
+payment, replay and continued play. Future promises, arbitrary prose enforcement,
+AI negotiation and deployed acceptance remain open. An isolated browser room
+also exercised a two-spice offer, acceptance, payer debit and deferred receipt.
+[Scope](PUBLIC_DEALS.md).
+
 **Multiparty public deals — 28 October. Prototyped / Partial.** Two to six human
 seats can record public terms; every recipient must accept, any may decline and
 all parties must agree to release. Existing two-party records and actions retain
@@ -29,9 +40,9 @@ control is covered by a focused component test. [Scope](PUBLIC_DEALS.md).
 
 **Public deal records — 28 October. Prototyped / Partial.** Two nonallied human
 seats can record an offer, acceptance or decline, withdrawal and mutual release,
-including while a native decision is pending. Public terms rely on players to
-honor them; the record does not enforce prose, determine impossibility or pay
-spice. Seven related unit files pass 43 cases; an isolated authenticated HTTP
+including while a native decision is pending. Public prose relies on players to
+honor it; the original text-only record does not enforce terms, determine
+impossibility or pay spice. Seven related unit files pass 43 cases; an isolated authenticated HTTP
 case covers public visibility, consent, release and resumed play. AI negotiation,
 automatic enforcement and deployed acceptance remain open; the multiparty
 follow-up above expands this original two-seat checkpoint.

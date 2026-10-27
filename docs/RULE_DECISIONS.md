@@ -6,9 +6,10 @@ The publisher's 2019 rulebook permits public nonallied deals, requires their
 legal terms to be honored, voids impossible parts and permits mutual release.
 Written records allow two to six human seats to consent and mutually release;
 pairwise nonalliance at offer and acceptance is a conservative provisional
-interpretation, not an explicit publisher ruling on multiparty offers. Prose
-and impossibility are player-managed, and spice still requires the native bribe
-action. AI negotiation and automatic enforcement remain open. [Scope](PUBLIC_DEALS.md).
+interpretation, not an explicit publisher ruling on multiparty offers. A typed
+immediate spice payment executes the native bribe action only after all parties
+consent. Prose and impossibility remain player-managed; AI negotiation and
+enforcement of future promises remain open. [Scope](PUBLIC_DEALS.md).
 
 ## Truthtrance and Basic Ixian auction knowledge — 28 October 2026
 

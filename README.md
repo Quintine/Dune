@@ -30,8 +30,9 @@ accept or decline an offer, and agree to release it. Every party must accept,
 and every pair of parties must be nonallied when the offer is made or accepted.
 Terms are visible to the
 table and rely on players to honor them; the game does not interpret promises
-or determine impossibility. Use **Bribes** separately for an actual spice
-payment. AI negotiation and automatic enforcement remain unfinished. See
+or determine impossibility. An optional immediate spice payment is executed
+using the normal bribe rules when the final participant accepts. AI negotiation
+and enforcement of future promises remain unfinished. See
 [public deals](docs/PUBLIC_DEALS.md).
 
 For the provisional two-person setup, the host enables **Two players, two

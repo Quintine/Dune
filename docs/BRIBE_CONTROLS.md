@@ -24,8 +24,9 @@ Chat messages and verbal promises do not themselves transfer spice. Emperor
 gifts to allies remain a separate power.
 
 The separate [public deal record](PUBLIC_DEALS.md) can capture a two-to-six-human
-offer, unanimous acceptance and mutual release. Its written terms do not automatically
-transfer spice or enforce future promises; use this native action to pay.
+offer, unanimous acceptance and mutual release. Its optional immediate payment
+uses this native action on final acceptance; written terms do not automatically
+transfer spice or enforce future promises.
 
 The server derives the owner's limits from existing uncommitted spice, excluding
 sealed bids, paid support, Banker spending and other reserved costs. Existing

@@ -1,5 +1,11 @@
 /** Public agreements record written terms without parsing or enforcing them.
  * Older two-seat records omit participants and acceptVotes entirely. */
+export type PublicDealPayment = {
+  kind: 'immediateBribe';
+  payer: string;
+  recipient: string;
+  amount: number;
+};
 export type PublicDeal = {
   id: string;
   from: string;
@@ -11,6 +17,8 @@ export type PublicDeal = {
   /** Present together only on the multi-party record format. */
   participants?: string[];
   acceptVotes?: string[];
+  /** Exact gross bribe due when the last participant accepts. */
+  payment?: PublicDealPayment;
 };
 
 export type PublicDealSeat = { id: string; bot?: unknown; ally?: string | null };
@@ -64,6 +72,16 @@ function orderedSubset(votes: readonly string[], parties: readonly string[]): bo
     votes.every((vote, index) => index === 0 || parties.indexOf(votes[index - 1]) < parties.indexOf(vote));
 }
 
+/** Parse one public gross payment term; no funds move until native settlement. */
+export function parsePublicDealPayment(value: unknown, parties: readonly string[]): PublicDealPayment {
+  requireDeal(object(value) && Object.keys(value).sort().join(',') === 'amount,kind,payer,recipient' &&
+    value.kind === 'immediateBribe' && id(value.payer) && id(value.recipient) && value.payer !== value.recipient &&
+    parties.includes(value.payer) && parties.includes(value.recipient) &&
+    typeof value.amount === 'number' && Number.isSafeInteger(value.amount) && value.amount > 0,
+  'Choose a positive whole immediate bribe between two deal participants.');
+  return { kind: 'immediateBribe', payer: value.payer, recipient: value.recipient, amount: value.amount };
+}
+
 /** Validate persisted ledger shape and lifecycle without applying current
  * alliance restrictions retroactively to existing agreements. */
 export function validatePublicDeals(value: unknown, players: readonly PublicDealSeat[]): asserts value is PublicDeal[] {
@@ -71,7 +89,7 @@ export function validatePublicDeals(value: unknown, players: readonly PublicDeal
   requireDeal(Array.isArray(value), 'The public deal ledger is malformed.');
   const ids = new Set<string>();
   for (const deal of value) {
-    const keys = object(deal) ? Object.keys(deal).sort().join(',') : '';
+    const keys = object(deal) ? Object.keys(deal).filter(key => key !== 'payment').sort().join(',') : '';
     const multi = keys === 'acceptVotes,from,id,participants,releaseVotes,status,terms,to,turn';
     requireDeal(object(deal) && (multi || keys === 'from,id,releaseVotes,status,terms,to,turn') &&
       id(deal.id) && id(deal.from) && id(deal.to) && deal.from !== deal.to &&
@@ -100,6 +118,7 @@ export function validatePublicDeals(value: unknown, players: readonly PublicDeal
       parties = [deal.from, deal.to];
       participants(players, parties);
     }
+    if (Object.prototype.hasOwnProperty.call(deal, 'payment')) parsePublicDealPayment(deal.payment, parties);
     const votes = deal.releaseVotes as string[];
     requireDeal(new Set(votes).size === votes.length && votes.every(vote => parties.includes(vote)) &&
       (!multi || orderedSubset(votes, parties)) &&
@@ -121,19 +140,25 @@ function validOffer(players: readonly PublicDealSeat[], actor: string, targets: 
 
 export function createPublicDeal(
   players: readonly PublicDealSeat[], actor: string, target: string, terms: string, turn: number, event: string,
+  payment?: PublicDealPayment,
 ): PublicDeal {
   const text = validOffer(players, actor, [target], terms, turn, event);
-  return { id: event, from: actor, to: target, terms: text, turn, status: 'offered', releaseVotes: [] };
+  const paymentTerm = arguments.length >= 7 ? { payment: parsePublicDealPayment(payment, [actor, target]) } : {};
+  return { id: event, from: actor, to: target, terms: text, turn, status: 'offered', releaseVotes: [],
+    ...paymentTerm };
 }
 
 export function createMultipartyPublicDeal(
   players: readonly PublicDealSeat[], actor: string, targets: readonly string[], terms: string, turn: number, event: string,
+  payment?: PublicDealPayment,
 ): PublicDeal {
   requireDeal(Array.isArray(targets) && targets.length >= 2 && targets.length <= 5,
     'Choose two through five other participants.');
   const text = validOffer(players, actor, targets, terms, turn, event);
+  const paymentTerm = arguments.length >= 7 ? { payment: parsePublicDealPayment(payment, [actor, ...targets]) } : {};
   return { id: event, from: actor, to: targets[0], terms: text, turn, status: 'offered',
-    releaseVotes: [], participants: [actor, ...targets], acceptVotes: [actor] };
+    releaseVotes: [], participants: [actor, ...targets], acceptVotes: [actor],
+    ...paymentTerm };
 }
 
 export function respondPublicDeal(deal: PublicDeal, players: readonly PublicDealSeat[], actor: string, accept: boolean): PublicDeal {

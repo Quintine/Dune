@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   PublicDealError, createPublicDeal, createMultipartyPublicDeal, publicDealAcceptVotes,
-  publicDealParticipants, releasePublicDeal, respondPublicDeal,
+  publicDealParticipants, parsePublicDealPayment, releasePublicDeal, respondPublicDeal,
   validatePublicDeals, withdrawPublicDeal,
 } from '../game/public-deals';
 
@@ -43,6 +43,60 @@ void test('legacy two-party JSON keeps its exact representation and implicit vot
   assert.equal('participants' in released, false);
   validatePublicDeals(JSON.parse(JSON.stringify([pending, { ...active, id: 'legacy-active' },
     { ...released, id: 'legacy-released' }])), players);
+});
+
+void test('an immediate gross bribe is an explicit, immutable term between signatories', () => {
+  const payment = { kind: 'immediateBribe' as const, payer: 'b', recipient: 'a', amount: 5 };
+  const pending = createPublicDeal(players, 'a', 'b', 'Terms', 2, 'payment', payment);
+  const before = structuredClone(pending);
+  assert.deepEqual(pending.payment, payment);
+  payment.amount = 9;
+  assert.deepEqual(pending, before, 'the signed record does not alias the caller’s term');
+  const active = respondPublicDeal(pending, players, 'b', true);
+  assert.deepEqual(active.payment, before.payment);
+  const firstRelease = releasePublicDeal(active, players, 'a', true);
+  const released = releasePublicDeal(firstRelease, players, 'b', true);
+  assert.deepEqual(released.payment, before.payment);
+  validatePublicDeals(JSON.parse(JSON.stringify([pending, { ...active, id: 'active-payment' },
+    { ...released, id: 'released-payment' }])), players);
+  assert.equal('payment' in offer(), false, 'legacy records keep their exact shape');
+});
+
+void test('multiparty payment terms remain bound through partial consent, decline and release', () => {
+  const payment = { kind: 'immediateBribe' as const, payer: 'c', recipient: 'b', amount: 3 };
+  const pending = createMultipartyPublicDeal(players, 'a', ['b', 'c'], 'Terms', 3, 'multi-payment', payment);
+  const partial = respondPublicDeal(pending, players, 'b', true);
+  assert.deepEqual(partial.payment, payment);
+  const declined = respondPublicDeal(partial, players, 'c', false);
+  assert.deepEqual(declined.payment, payment);
+  const withdrawn = withdrawPublicDeal(partial, players, 'a');
+  assert.deepEqual(withdrawn.payment, payment);
+  let active = respondPublicDeal(partial, players, 'c', true);
+  for (const actor of ['a', 'b', 'c']) active = releasePublicDeal(active, players, actor, true);
+  assert.equal(active.status, 'released');
+  assert.deepEqual(active.payment, payment);
+  validatePublicDeals([pending, { ...declined, id: 'declined-payment' },
+    { ...withdrawn, id: 'withdrawn-payment' }, { ...active, id: 'active-payment' }], players);
+});
+
+void test('payment terms reject malformed amounts, fields and nonsignatory parties', () => {
+  const valid = { kind: 'immediateBribe', payer: 'a', recipient: 'b', amount: 5 };
+  for (const term of [
+    null, undefined, {}, [], { ...valid, kind: 'later' }, { ...valid, amount: 0 },
+    { ...valid, amount: -1 }, { ...valid, amount: 1.5 }, { ...valid, amount: Number.MAX_SAFE_INTEGER + 1 },
+    { ...valid, amount: '5' }, { ...valid, payer: 'b' }, { ...valid, payer: 'c' },
+    { ...valid, recipient: 'bot' }, { ...valid, payer: ' a' }, { ...valid, extra: true },
+  ]) {
+    assert.throws(() => parsePublicDealPayment(term, ['a', 'b']), PublicDealError);
+    assert.throws(() => validatePublicDeals([{ ...offer(), payment: term }], players), PublicDealError);
+  }
+  assert.deepEqual(parsePublicDealPayment(valid, ['a', 'b']), valid);
+  assert.throws(() => createPublicDeal(players, 'a', 'b', 'Terms', 1, 'bad', undefined), PublicDealError);
+  assert.throws(() => createMultipartyPublicDeal(players, 'a', ['b', 'c'], 'Terms', 1, 'bad', undefined), PublicDealError);
+  assert.throws(() => createPublicDeal(players, 'a', 'b', 'Terms', 1, 'bad',
+    { kind: 'immediateBribe', payer: 'a', recipient: 'c', amount: 2 }), PublicDealError);
+  assert.throws(() => createMultipartyPublicDeal(players, 'a', ['b', 'c'], 'Terms', 1, 'bad',
+    { kind: 'immediateBribe', payer: 'a', recipient: 'bot', amount: 2 }), PublicDealError);
 });
 
 void test('multiparty deals activate only after every invited human accepts and release unanimously', () => {

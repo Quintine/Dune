@@ -22,10 +22,27 @@ released if participants subsequently become allies. Records remain active
 until unanimously released, even after the players consider terms fulfilled.
 Their text is public to the whole table.
 
-The record itself moves no spice and creates no automatically enforced game
+An optional structured immediate bribe names a payer, recipient and gross spice
+amount, all visible before anyone consents. Both must be distinct signatories.
+On the final acceptance the engine invokes the ordinary bribe action as the
+already-consenting payer, atomically with that acceptance. The payer loses the
+gross amount immediately; a Bureaucrat may divert two spice before the
+recipient's remaining share reaches deferred Mentat supply. No funds are
+reserved during an offer. If timing, available funds, another binding rule or
+the payer's AI control makes payment unavailable, final acceptance fails without
+recording that vote or debiting spice. A pending native Bureaucrat decision
+continues normally; later release of the deal does not reverse a paid bribe.
+Nine related unit files pass 71 cases, including a native Bureaucrat diversion
+and unavailable-payment rollback. Three isolated HTTP cases include an earlier
+consenting payer, final approval by another participant and replay rejection.
+An isolated browser room also exercised a two-spice offer and acceptance,
+showing the payer's debit and recipient's deferred balance. Its roster did not
+include a Bureaucrat.
+
+Free-text terms alone move no spice and create no automatically enforced game
 action. Players remain responsible for honoring valid terms, and an impossible
 part is void under the rules. Existing [bribe controls](BRIBE_CONTROLS.md)
-make actual eligible payments into the recipient's deferred Mentat supply.
+also make actual eligible payments into the recipient's deferred Mentat supply.
 Automatic interpretation, enforcement and impossibility handling,
 AI negotiation and complete multiplayer/deployed acceptance remain
 open. The text interface is an online convention, not a publisher ruling.

@@ -5,7 +5,7 @@ import { createFactionDraft, validateFactionDraft, currentFactionDrafter, choose
 import { createFactionSwap, validateFactionSwap, answerFactionSwap, cancelFactionSwap,
   FactionSwapError, type FactionSwap } from './faction-swap';
 import { createPublicDeal, createMultipartyPublicDeal, validatePublicDeals, respondPublicDeal, withdrawPublicDeal,
-  releasePublicDeal, PublicDealError, type PublicDeal } from './public-deals';
+  releasePublicDeal, PublicDealError, type PublicDeal, type PublicDealPayment } from './public-deals';
 import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
 import { victoryFinalTurn, continueVictoryCalendar, VictoryCalendarError } from './victory-calendar';
 import { createVictoryContinuation, validateVictoryContinuation, voteVictoryContinuation,
@@ -40093,13 +40093,22 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     const deals = g.deals ?? [];
     if (action.type === 'dealOffer') {
       const keys = Object.keys(action).sort().join(',');
-      const single = keys === 'target,terms,type' && typeof action.target === 'string';
-      const multiple = keys === 'targets,terms,type' && Array.isArray(action.targets) &&
+      const single = (keys === 'target,terms,type' || keys === 'payment,target,terms,type') && typeof action.target === 'string';
+      const multiple = (keys === 'targets,terms,type' || keys === 'payment,targets,terms,type') && Array.isArray(action.targets) &&
         action.targets.every(target => typeof target === 'string');
-      requireRule((single || multiple) && typeof action.terms === 'string', 'Choose recipients and write the public terms.');
+      const hasPayment = Object.hasOwn(action, 'payment');
+      requireRule((single || multiple) && typeof action.terms === 'string' &&
+        (!hasPayment || !!action.payment && typeof action.payment === 'object' && !Array.isArray(action.payment)),
+      'Choose recipients and write the public terms.');
+      const payment = hasPayment ? action.payment as PublicDealPayment : undefined;
+      const event = crypto.randomUUID();
       const offer = publicDealRule(() => single
-        ? createPublicDeal(g.players, id, action.target as string, action.terms as string, g.turn, crypto.randomUUID())
-        : createMultipartyPublicDeal(g.players, id, action.targets as string[], action.terms as string, g.turn, crypto.randomUUID()));
+        ? hasPayment
+          ? createPublicDeal(g.players, id, action.target as string, action.terms as string, g.turn, event, payment!)
+          : createPublicDeal(g.players, id, action.target as string, action.terms as string, g.turn, event)
+        : hasPayment
+          ? createMultipartyPublicDeal(g.players, id, action.targets as string[], action.terms as string, g.turn, event, payment!)
+          : createMultipartyPublicDeal(g.players, id, action.targets as string[], action.terms as string, g.turn, event));
       requireRule(!deals.some(deal => deal.id === offer.id), 'This deal identifier is already in use.');
       g.deals = [...deals, offer];
     } else {
@@ -40119,6 +40128,20 @@ export function applyAction(state: Game, id: string, action: Action): Game {
         next = publicDealRule(() => releasePublicDeal(current, g.players, id, action.agree as boolean));
       } else next = publicDealRule(() => withdrawPublicDeal(current, g.players, id));
       g.deals = deals.map((deal, position) => position === index ? next : deal);
+      if (current.status === 'offered' && next.status === 'active' && next.payment) {
+        // The payer consented to these immutable terms. Run the native action
+        // on the same cloned state so a failed payment also rolls back consent.
+        try {
+          requireRule(!getPlayer(g, next.payment.payer).autopilot, 'The payer is not controlling this seat.');
+          return applyAction(g, next.payment.payer, {
+            type: 'bribe', target: next.payment.recipient, amount: next.payment.amount,
+          });
+        } catch (error) {
+          if (error instanceof RuleError)
+            throw new RuleError('The agreed payment could not be completed. Check the bribe timing and ask the payer to review it.');
+          throw error;
+        }
+      }
     }
     publicDealIntegrity(g);
     return g;

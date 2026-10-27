@@ -45,7 +45,8 @@ void test('deal form exposes human non-allied recipients and clearly describes l
   assert.match(html, /Chani · Fremen \(allied with a selected party\)/);
   assert.doesNotMatch(html, /Duncan · Spacing Guild/);
   assert.match(html, /cannot automatically enforce free-text promises/);
-  assert.match(html, /does not automatically transfer spice/);
+  assert.match(html, /free-text terms do not automatically transfer spice/);
+  assert.match(html, /Include an immediate spice payment/);
   assert.match(html, /Do not trade cards, forces, leaders or faction powers/);
   assert.match(html, /maxlength="500"/i);
   assert.match(html, /Alice \(Atreides\) → Basil \(Harkonnen\)/);
@@ -100,6 +101,45 @@ void test('the form keeps the legacy packet for one seat and sends all selected 
   assert.equal(publicDealOfferAction(['b', 'b'], 'Terms'), null);
   assert.equal(publicDealOfferAction(['b'], '  '), null);
   assert.equal(publicDealOfferAction(['b'], 'x'.repeat(501)), null);
+});
+
+void test('an optional gross bribe is bound to two distinct participants', () => {
+  const payment = { kind: 'immediateBribe' as const, payer: 'a', recipient: 'b', amount: 3 };
+  assert.deepEqual(publicDealOfferAction(['b'], ' Terms ', payment, 'a'),
+    { type: 'dealOffer', target: 'b', terms: 'Terms', payment });
+  const thirdPartyPayment = { ...payment, payer: 'b', recipient: 'e' };
+  assert.deepEqual(publicDealOfferAction(['b', 'e'], 'Terms', thirdPartyPayment, 'a'),
+    { type: 'dealOffer', targets: ['b', 'e'], terms: 'Terms', payment: thirdPartyPayment });
+  for (const invalid of [
+    { ...payment, payer: 'outsider' }, { ...payment, recipient: 'outsider' },
+    { ...payment, payer: 'b' }, { ...payment, amount: 0 }, { ...payment, amount: 1.5 },
+    { ...payment, amount: Number.MAX_SAFE_INTEGER + 1 },
+  ]) assert.equal(publicDealOfferAction(['b'], 'Terms', invalid, 'a'), null);
+  assert.equal(publicDealOfferAction(['b'], 'Terms', payment), null);
+});
+
+void test('all players can review the gross payment and only final acceptance is held at a blocked payment window', () => {
+  const payment = { kind: 'immediateBribe' as const, payer: 'b', recipient: 'a', amount: 3 };
+  const multi = { ...offer, participants: ['a', 'b', 'e'], acceptVotes: ['a'], payment };
+  const game = { ...base, players: base.players.map(player =>
+    player.id === 'b' || player.id === 'e' ? { ...player, ally: null } : player),
+  bribeOptions: { blocked: 'Finish the current decision before paying a bribe.', available: 987, incoming: 0, targets: [] },
+  deals: [multi] } as unknown as GameView;
+  const html = render({ ...game, me: 'b' });
+  assert.match(html, /Immediate payment term/);
+  assert.match(html, /Basil \(Harkonnen\) pays 3 spice to Alice \(Atreides\)/);
+  assert.match(html, /payer loses the gross amount immediately/);
+  assert.match(html, /Bureaucrat may divert two spice/);
+  assert.doesNotMatch(html, /987/);
+  const first = actions({ ...game, me: 'b' }, []);
+  assert.equal(first.find(node => node.props.children === 'Accept deal')?.props.disabled, false);
+  const lastGame = { ...game, me: 'e', deals: [{ ...multi, acceptVotes: ['a', 'b'] }] } as unknown as GameView;
+  const last = actions(lastGame, []);
+  assert.equal(last.find(node => node.props.children === 'Accept deal')?.props.disabled, true);
+  assert.equal(last.find(node => node.props.children === 'Decline deal')?.props.disabled, false);
+  assert.match(render(lastGame), /Final acceptance must wait: Finish the current decision before paying a bribe/);
+  const unblocked = { ...lastGame, bribeOptions: { ...lastGame.bribeOptions, blocked: null } } as GameView;
+  assert.equal(actions(unblocked, []).find(node => node.props.children === 'Accept deal')?.props.disabled, false);
 });
 
 void test('multiparty offers expose all pending consent and let an accepted recipient decline', () => {
