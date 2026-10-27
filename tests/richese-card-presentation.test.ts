@@ -28,6 +28,21 @@ void test('presentation does not export source-verification metadata or unverifi
   }
 });
 
+void test('canonical Richese inspectors describe available previews and retain card-specific limits', () => {
+  const sapho = RICHESE_CARD_DEFINITIONS.find(row => row.card.effect === 'juiceOfSapho');
+  const karama = RICHESE_CARD_DEFINITIONS.find(row => row.card.effect === 'karama');
+  assert.ok(sapho && karama);
+  const saphoAvailability = cardPresentation(sapho.card).availability;
+  const karamaAvailability = cardPresentation(karama.card).availability;
+  assert.match(saphoAvailability ?? '', /supported Richese and expansion starts are available as unfinished previews/i);
+  assert.match(saphoAvailability ?? '', /Once Around first or last/);
+  assert.match(saphoAvailability ?? '', /other phase or auction modes remain unfinished/);
+  assert.match(karamaAvailability ?? '', /supported Richese and expansion starts are available as unfinished previews/i);
+  assert.match(karamaAvailability ?? '', /bounded card handlers/);
+  for (const definition of RICHESE_CARD_DEFINITIONS)
+    assert.doesNotMatch(cardPresentation(definition.card).availability ?? '', /expansion starts remain disabled/i);
+});
+
 void test('missing, altered and merely similar Richese identities receive no canonical full guide', () => {
   for (const card of richeseCards()) {
     const impostors: Card[] = [

@@ -1,5 +1,12 @@
 # Dune implementation status
 
+## 27 October 2026 — Preview-start guidance correction
+
+Setup, card inspection and selected faction/card rule guides now identify
+supported expansion starts as unfinished previews. Existing implementation
+limits and full-mode acceptance remain open; this changes presentation only.
+Five focused reference/card tests, type/lint and the production build passed.
+
 ## 27 October 2026 — Ambassador child arrivals during overlap
 
 Fremen relocation and Guild shipment can resolve their native child arrival

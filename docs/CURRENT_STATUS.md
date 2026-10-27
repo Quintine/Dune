@@ -20,6 +20,13 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Preview-start guidance correction — 27 October. Integrated / Partial.**
+Setup, selected expansion rule topics and Richese card inspectors now describe
+supported faction starts as unfinished previews instead of claiming that all
+expansion starts are unavailable. Rule and combination limitations remain; this
+wording change does not certify full modes or deployed behavior. Five focused
+reference/card tests, type/lint and the production build passed.
+
 **Fremen and Guild Ambassador child arrivals — 27 October. Prototyped / Partial.**
 In supported bare Basic games, an Ambassador that shares an original entry with Terror may now relocate or
 ship its beneficiary's forces. The child arrival resolves first; a Terror token

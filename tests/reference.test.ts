@@ -15,3 +15,20 @@ void test('every phase and base faction has a discoverable rule topic with valid
   assert.ok(ids.has('ai-players'));
 });
 
+void test('setup and expansion guides describe available starts as unfinished previews', () => {
+  for (const id of [
+    'setup',
+    'card-amal',
+    'moritani-enemy',
+    'moritani-ally-retention',
+    'choam-gamont',
+    'choam-jubba',
+    'ecaz-modules',
+  ]) {
+    const topic = RULE_TOPICS.find((item) => item.id === id);
+    assert.ok(topic, `missing ${id}`);
+    const guidance = topic.steps.join(' ');
+    assert.match(guidance, /preview/i, id);
+    assert.doesNotMatch(guidance, /(?:expansion|CHOAM|Moritani) (?:faction )?(?:starts|games) remain (?:unavailable|disabled|gated)/i, id);
+  }
+});
