@@ -1,5 +1,13 @@
 # Rule decision index
 
+## Truthtrance and the upcoming Basic storm dial — 27 October 2026
+
+A question about an eligible player's future native dial binds their exact
+submission in the original Basic turn. This is a provisional application of
+the current-turn FAQ permission, distinct from a recorded-dial fact and not
+a separate publisher timing ruling.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#upcoming-basic-storm-dial-choice--27-october-2026).
+
 ## Truthtrance and current battle cancellation — 27 October 2026
 
 For a current native Basic Voice or Prescience response, the provisional

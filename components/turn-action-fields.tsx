@@ -7,6 +7,7 @@ import type { MixedActionExpression } from '@/game/mixed-action-question';
 import { parseBattleActionClaim } from '@/game/mixed-battle-question';
 import { battlePowerOf, nativeBattlePowerOpportunity, type BattlePowerClaim } from '@/game/battle-power-question';
 import { battleCardLabel, VOICE_KINDS } from '@/game/battle-cards';
+import { nativeStormDialOpportunity } from '@/game/storm-dial-question';
 import { karamaBattleCancelOpportunity, WINDOW_CARD_EFFECTS, windowCardOpportunity, type WindowCardEffect } from '@/game/window-card-play';
 import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES, type TurnActionLeaf } from '@/game/turn-action-promises';
 import { BattleClaimFields } from './battle-promises';
@@ -74,6 +75,8 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     An open plan commitment settles when both plans are revealed, not merely when your own plan is sealed.
     Traitor conditions concern one original Reveal or decline declaration in the current revealed battle.
     The declaration counts before a later Karama or betrayal response can prevent its effect.
+    A Storm dial condition names one exact value the respondent will submit in their original current Storm dial.
+    The first Storm allows 0–20; later Basic storms allow 1–3. The other player&apos;s value stays sealed until both dials reveal.
     Native Voice and Prescience conditions concern your original use or explicit decline, exact Voice command,
     or requested Prescience field in this battle. They count before later Karama prevention.
     A requested field is not the opponent&apos;s answer or inspected value. Borrowed Nexus and special powers do not count.
@@ -129,6 +132,8 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     const action = parseTurnActionLeaf(input);
     if (windowCardOpportunity(game, 'karamaBattleCancel') && (action.kind !== 'windowCardPlay' || action.effect !== 'karamaBattleCancel'))
       throw new Error('During this response, choose only a printed Karama cancellation of the current Voice or Prescience; current facts may still be combined.');
+    if (action.kind === 'stormDial' && !nativeStormDialOpportunity(game, target, action.source))
+      throw new Error('Choose the respondent’s still-unsubmitted current Storm dial.');
     if (action.kind === 'payment' && !recipients(game, target).some(recipient => recipient.id === action.recipient))
       throw new Error('Choose a public non-allied recipient for the future ordinary payment.');
     if (action.kind === 'bid' && currentLot(game)?.lot !== action.lot)
@@ -168,6 +173,10 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         const kind = event.currentTarget.value;
         if (kind === value.kind) return;
         const minimum = 'minimum' in value ? value.minimum : 1;
+        if (kind === 'stormDial') {
+          const opportunity = nativeStormDialOpportunity(game, target);
+          onChange({ kind, source: opportunity?.source ?? '', value: opportunity?.min ?? 0 });
+        }
         if (kind === 'cardPlay') onChange({ kind, effect: 'hajr' });
         if (kind === 'windowCardPlay') {
           const effect = battleCancelOpportunity(game, target) ? 'karamaBattleCancel'
@@ -190,6 +199,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         if (kind === 'ship' || kind === 'move') onChange({ kind,
           territory: value.kind === 'ship' || value.kind === 'move' ? value.territory : 'carthag', minimum });
       }}>
+        <option value="stormDial">Submit an exact value in this current Storm dial</option>
         <option value="cardPlay">Use a named printed card role after this answer</option>
         <option value="windowCardPlay">Use a printed card in this original native window or shipment-price opportunity</option>
         <option value="battlePower">Declare native Voice or Prescience in this battle</option>
@@ -203,7 +213,19 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         <option value="ship">Ship from reserves</option>
         <option value="move">Make ground movement</option>
       </select>
-      {value.kind === 'cardPlay' ? <>
+      {value.kind === 'stormDial' ? (() => {
+        const opportunity = nativeStormDialOpportunity(game, target, value.source);
+        return <>
+          <p className="fine">The respondent’s original current Storm dial counts once. Other dials remain sealed until reveal.</p>
+          <label htmlFor={`${id}-storm-dial-value`}>Exact Storm dial value</label>
+          <Input id={`${id}-storm-dial-value`} type="number" min={opportunity?.min ?? (game.turn === 1 ? 0 : 1)}
+            max={opportunity?.max ?? (game.turn === 1 ? 20 : 3)} step={1} required disabled={disabled}
+            value={Number.isFinite(value.value) ? value.value : ''}
+            aria-invalid={!opportunity || !Number.isSafeInteger(value.value) || value.value < opportunity.min || value.value > opportunity.max}
+            onChange={event => onChange({ ...value, value: event.currentTarget.valueAsNumber })} />
+          {!opportunity && <p className="fine">Choose a still-unsubmitted dialer in this current Storm.</p>}
+        </>;
+      })() : value.kind === 'cardPlay' ? <>
         <label htmlFor={`${id}-effect`}>Printed card role after this answer</label>
         <select id={`${id}-effect`} value={value.effect} disabled={disabled}
           aria-invalid={!['hajr', 'ghola', 'nullentropyBox', 'distrans', 'juiceOfSapho', 'semutaDrug', 'ornithopter', 'residualPoison'].includes(value.effect)} onChange={event => {

@@ -1033,3 +1033,27 @@ explicitly labelled; no game database, server or saved room is involved.
 
 Advanced, optional overlays, broader response/action combinations and final
 rules, browser and deployed acceptance remain open.
+
+## Upcoming Basic storm-dial choice — 27 October 2026
+
+**Prototyped / Partial.** The publisher FAQ (November 2020, p. 8) permits
+current-turn Yes/No questions. This event-bound exact future choice is the
+project's provisional online procedure for that permission, not a separately
+printed publisher protocol. It names a current eligible, unsubmitted Basic storm
+dialer, this turn and one legal value: 0–20 on turn one, 1–3 later. The server
+validates the actual original opportunity without reading another player's sealed
+dial. A later turn or already submitted dial is a different or unavailable
+source; an ordinary recorded-dial fact retains its existing separate meaning.
+
+A definite answer binds the entire expression. The actual native submission
+records the value once; a whole Yes must preserve a completion, while a whole No
+cannot make its expression true. Multiple signed conditions and earlier whole
+answers share one physical choice. A player cannot deliberately use their own
+Weather Control to remove a required dial; another player's Weather may end
+that opportunity and release an otherwise impossible answer. The owner-only
+guide and minimal AI consume a legal native value. The other dialer's own input and ordinary simultaneous
+reveal remain native; question and answer can naturally disclose logical
+information about the named value but do not publish a sealed dial receipt.
+Current facts and other supported whole-action alternatives keep their existing
+limitations. Advanced later Storm uses its native deck and remains outside this
+Basic question prototype; full rule, browser and deployed acceptance are open.

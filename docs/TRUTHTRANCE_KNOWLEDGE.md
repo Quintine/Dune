@@ -20,6 +20,8 @@ part of that broad permission; they are not additional printed restrictions.
 - **Submitted storm dial:** compare this respondent's locked value while the
   current Storm phase and its submission remain active. A not-yet-submitted or
   expired dial is unknown; zero is a real first-turn value, not missing data.
+  The separate combined turn-action question can bind an eligible Basic player’s
+  future exact dial; it does not turn an unsubmitted dial into a recorded fact.
 - **Known forecast:** compare the current storm card only for native Advanced
   Fremen when the existing knowledge flag is true. Canceled peeks, unknown cards
   and other factions receive unknown; no new deck lookup or borrowed knowledge

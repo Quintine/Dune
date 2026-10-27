@@ -5,6 +5,7 @@ import { parseTurnActionLeaf, TURN_ACTION_MAX_DEPTH, TURN_ACTION_MAX_LEAVES,
   turnActionPromiseModeSupported, type TurnActionClaim } from './turn-action-promises';
 import { battlePowerOf, nativeBattlePowerOpportunity } from './battle-power-question';
 import { parseKaramaShipmentSource, parseKaramaBattleCancelSource, karamaBattleCancelOpportunity, windowCardOpportunity } from './window-card-play';
+import { nativeStormDialOpportunity } from './storm-dial-question';
 import { parseTraitorActionClaim, type MixedTraitorClaim } from './mixed-traitor-question';
 import { parseBattleActionClaim, MIXED_BATTLE_MAX_NODES, MIXED_BATTLE_MAX_TERMS, MIXED_BATTLE_MAX_DEPTH,
   MIXED_BATTLE_MAX_LEAVES, type MixedBattleClaim } from './mixed-battle-question';
@@ -431,6 +432,11 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       const action = parseTurnActionLeaf(input);
       if (battleCancel) check(action.kind === 'windowCardPlay' && action.effect === 'karamaBattleCancel' &&
         action.source === battleCancel.source, 'Ask only about the current printed Karama cancellation in this response.');
+      if (action.kind === 'stormDial') {
+        const opportunity = nativeStormDialOpportunity(g, respondent.id, action.source);
+        check(opportunity && action.value >= opportunity.min && action.value <= opportunity.max,
+          'Choose this player’s original unsubmitted native storm dial and legal value.');
+      }
       if (action.kind === 'windowCardPlay') {
         const opportunity = windowCardOpportunity(g, action.effect);
         check(opportunity && opportunity.turn === g.turn && opportunity.source === action.source,
@@ -788,6 +794,7 @@ export function truthQuestionText(
   };
   if (q.kind === 'turnActions') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => {
+      if (action.kind === 'stormDial') return `you submit exactly ${action.value} on your original storm dial this turn`;
       if (action.kind === 'windowCardPlay') {
         if (action.effect === 'karamaBattleCancel') {
           const response = parseKaramaBattleCancelSource(action.source);

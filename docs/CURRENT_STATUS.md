@@ -20,6 +20,15 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance upcoming Basic storm dial — 27 October. Prototyped / Partial.**
+An exact-value condition binds an eligible player's original unsubmitted native
+dial, with the normal first-turn or later range. The same sealed submission
+satisfies all accepted whole answers; the owner-only guide and minimal AI use
+legal native choices and the normal reveal is retained. Current facts and
+supported whole-action alternatives remain available. Advanced and wider
+combinations and final rules/deployed acceptance remain open.
+[Scope](TRUTHTRANCE_TURN_ACTIONS.md#upcoming-basic-storm-dial-choice--27-october-2026).
+
 **Truthtrance battle cancellation — 27 October. Prototyped / Partial.**
 Supported Basic native tables can ask a seated non-owner whether they will
 spend a printed Karama to cancel the current Voice or Prescience. The original

@@ -7,6 +7,7 @@ import { AuctionClockError, AUCTION_BID_MS, quoteAuctionClock, viewAuctionClock,
   type AuctionClock, type AuctionClockView } from './auction-clock';
 import { PrintedCardPlayError, printedCardPlayCount, recordPrintedCardPlay,
   type PrintedCardEffect, type PrintedCardPlayCounts } from './printed-card-play';
+import { nativeStormDialOpportunity } from './storm-dial-question';
 import { battlePowerOf, battlePowerMatches, nativeBattlePowerOpportunity,
   type NativeBattlePower, type BattlePowerDeclaration } from './battle-power-question';
 import { WINDOW_CARD_EFFECTS, windowCardNativeEffect, windowCardOpportunity, karamaShipmentOpportunities,
@@ -17,6 +18,7 @@ import { TurnActionError, liveTurnActionPromises, turnActionBranches, recordTurn
   closeTurnActionRevival, settleTurnActionAlliance, recordTurnActionPlan, recordTurnActionTraitor, closeTurnActionCombat,
   recordTurnActionBattlePower, closeTurnActionBattlePower,
   recordTurnActionWindowCardPlay, closeTurnActionWindowCardPlay,
+  recordTurnActionStormDial, closeTurnActionStormDial, turnActionStormDialChoices,
   turnActionPromiseModeSupported, type TurnActionPlanValue, type TurnActionCombat, type TurnActionClaim, type TurnActionPromise, type TurnActionBranchLeaf, type TurnActionPreparation, type TurnActionWindowCards } from './turn-action-promises';
 import { TravelPromiseError, liveTravelPromises, travelBranches, recordTravelShipment, recordTravelMovement,
   finishTravelTurn, validateTravelPromises, type TravelClaim, type TravelPromise, type TravelBranchLeaf } from './travel-expression-promises';
@@ -20759,7 +20761,7 @@ function turnActionAllianceCanClose(g: Game, player: Player): boolean {
     return !!turnActionCompletion(source, player.id);
   } catch (error) { if (error instanceof RuleError) return false; throw error; }
 }
-type TurnActionCompletion = MovementCompletion & { payments: Action[]; paymentsAfterPreparations?: boolean; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[]; battlePlan?: BattleCompletion; traitor?: Action; cardPreparations?: Action[]; battlePower?: Action; freshDiscard?: Action };
+type TurnActionCompletion = MovementCompletion & { stormDial?: Action; payments: Action[]; paymentsAfterPreparations?: boolean; bid?: Action; revival?: RevivalPromisePlan; alliance?: Action[]; battlePlan?: BattleCompletion; traitor?: Action; cardPreparations?: Action[]; battlePower?: Action; freshDiscard?: Action };
 /** Forecast deterministic opening work only. Auction/deck draws and foreign
  * choices stay at the real table; fixed Mentat receipts arrive after Amal. */
 function projectTurnActionOpeningEnd(g: Game) {
@@ -20913,6 +20915,11 @@ function turnActionCompletionAfterFreshDiscard(source: Game, actor: string, unkn
       }
       return null;
     }
+    const dialLeaves = leaves.filter((leaf): leaf is Extract<TurnActionBranchLeaf, { kind: 'stormDial' }> => leaf.kind === 'stormDial');
+    const dialOpportunity = dialLeaves.length ? nativeStormDialOpportunity(source, actor) : null;
+    if (dialLeaves.length && (!dialOpportunity || dialLeaves.some(leaf => leaf.source !== dialOpportunity.source))) return null;
+    const dialValues = dialOpportunity ? turnActionStormDialChoices(dialLeaves, dialOpportunity.source) : [];
+    if (dialOpportunity && !dialValues.length) return null;
     let trial = structuredClone(source);
     trial.truthtrance = null;
     delete trial.turnActionPromises;
@@ -21063,7 +21070,8 @@ function turnActionCompletionAfterFreshDiscard(source: Game, actor: string, unkn
               if (completion) {
                 if (alliancePlan?.uncertain) { unknownConsent!.value = true; continue; }
                 const cardPreparations = [...opening.actions, ...cardSeed.actions];
-                return { ...completion, ...(cardPreparations.length ? { cardPreparations } : {}),
+                return { ...completion, ...(dialOpportunity ? { stormDial: { type: 'stormDial', amount: dialValues[0] } } : {}),
+                  ...(cardPreparations.length ? { cardPreparations } : {}),
                   ...(cardSeed.cardsFirst ? { paymentsAfterPreparations: true } : {}), ...(bid ? { bid } : {}), ...(revival ? { revival } : {}),
                   ...(battlePlan ? { battlePlan } : {}), ...(traitor ? { traitor } : {}),
                   ...(power.action ? { battlePower: power.action } : {}),
@@ -21088,9 +21096,14 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
   const printedCards = new Set<PrintedCardEffect>();
   const powers = new Set<NativeBattlePower>();
   const windowCards: TurnActionWindowCards = {};
+  let stormDialSource: string | undefined;
   const visit = (node: TurnActionClaim['mixed']): void => {
     if (node.kind === 'action') {
       if (node.action.kind === 'bid') bid = true;
+      if (node.action.kind === 'stormDial') {
+        requireRule(!stormDialSource || stormDialSource === node.action.source, 'Retain the same original storm dial.');
+        stormDialSource = node.action.source;
+      }
       if (node.action.kind === 'alliance') alliance = true;
       if (node.action.kind === 'battlePlan') plan = true;
       if (node.action.kind === 'traitorCall') traitor = true;
@@ -21103,6 +21116,8 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
     } else if (node.kind !== 'fact') node.terms.forEach(visit);
   };
   visit(claim.mixed);
+  const dial = stormDialSource ? nativeStormDialOpportunity(g, p.id, stormDialSource) : null;
+  requireRule(!stormDialSource || !!dial, 'Retain your original unsubmitted storm dial.');
   const lot = bid ? bidOpportunity(g) : null;
   requireRule(!bid || !!lot, 'Retain the original current ordinary auction lot.');
   const nexus = alliance ? allianceOpportunity(g) : null;
@@ -21130,6 +21145,7 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
       closed: false, call: null } : null } : undefined;
   let promise: TurnActionPromise = { turn: claim.turn, mixed: structuredClone(claim.mixed), event, player: p.id, asker, answer, compiled,
     ...(Object.keys(windowCards).length ? { windowCards } : {}),
+    ...(dial ? { stormDial: { source: dial.source, closed: false, actual: null } } : {}),
     ...(printedCards.size ? { cardPlays: { hajr: printedCards.has('hajr') ? { played: false, closed: !open } : null,
       ghola: printedCards.has('ghola') ? { played: false, closed: false } : null,
       ...Object.fromEntries([...printedCards].filter(effect => effect !== 'hajr' && effect !== 'ghola')
@@ -21223,6 +21239,21 @@ function bindTurnActionTruth(g: Game, p: Player, claim: TurnActionClaim, answer:
 function reconcileTurnActionPromises(g: Game, actor?: string, action?: Action, sourcePhase = g.phase) {
   reconcileTurnActionCombat(g);
   reconcileTurnActionWindowCards(g);
+  for (const row of g.turnActionPromises ?? []) {
+    if (!row.stormDial || row.stormDial.closed || row.fulfilled || row.released ||
+      nativeStormDialOpportunity(g, row.player, row.stormDial.source)) continue;
+    g.turnActionPromises = turnActionRule(() => closeTurnActionStormDial(g.turnActionPromises!,
+      row.player, row.turn, row.stormDial!.source));
+    const closed = g.turnActionPromises.find(promise => promise.event === row.event);
+    // A source that disappeared cannot satisfy this leaf. Release only when
+    // the whole expression has no remaining branch, even during a pending
+    // discard continuation; alternatives may still be fulfilled later.
+    if (closed && !closed.fulfilled && !closed.released && turnActionRule(() => turnActionBranches(closed).next().done)) {
+      requireRule(actor !== closed.player, 'You cannot voluntarily close your required storm-dial answer.');
+      closed.released = true;
+      log(g, `${getPlayer(g, closed.player).name} can no longer fulfill an accepted Truthtrance commitment; that answer is no longer binding.`);
+    }
+  }
   turnActionRule(() => validateTurnActionPromises(g.turnActionPromises!, g.players.map(player => player.id)));
   for (const p of g.players) {
     for (const turn of new Set(g.turnActionPromises!.filter(promise => promise.player === p.id &&
@@ -21325,6 +21356,13 @@ function projectedTurnActionGuide(g: Game, player: Player): { event: string; act
       quotedBattleCancelKaramaCards(g, player).includes(item.card as string));
     return row && action ? { event: row.event, action: { ...action,
       turnActionPromiseEvent: row.event, turnActionPromisePhase: g.phase } } : null;
+  }
+  if (completion.stormDial && !g.phaseOpening && nativeStormDialOpportunity(g, player.id)) {
+    const row = liveTurnActionPromises(g.turnActionPromises ?? [], player.id, g.turn).find(item =>
+      item.stormDial && !item.stormDial.closed &&
+      nativeStormDialOpportunity(g, player.id, item.stormDial.source));
+    if (row) return { event: row.event, action: { ...completion.stormDial,
+      turnActionPromiseEvent: row.event, turnActionPromisePhase: g.phase } };
   }
   if (g.phaseOpening) {
     const opportunity = windowCardOpportunity(g, 'amal');
@@ -42906,12 +42944,18 @@ function applyActionInner(
       g.stormDials[id] === undefined,
       'Your storm dial is already locked.',
     );
-    g.stormDials[id] = integer(
-      action.amount,
-      g.turn === 1 ? 0 : 1,
-      g.turn === 1 ? 20 : 3,
-      'Storm dial',
-    );
+    const amount = integer(action.amount, g.turn === 1 ? 0 : 1, g.turn === 1 ? 20 : 3, 'Storm dial');
+    const opportunity = nativeStormDialOpportunity(g, id);
+    if (opportunity && liveTurnActionPromises(g.turnActionPromises ?? [], id, g.turn).some(row =>
+      row.stormDial && !row.stormDial.closed && row.stormDial.source === opportunity.source)) {
+      const trial = structuredClone(g);
+      trial.turnActionPromises = turnActionRule(() => recordTurnActionStormDial(trial.turnActionPromises!,
+        id, g.turn, opportunity.source, amount));
+      trial.stormDials[id] = amount;
+      requireRule(!!turnActionCompletion(trial, id), 'Choose a storm dial that preserves your whole Truthtrance answer.');
+      g.turnActionPromises = trial.turnActionPromises;
+    }
+    g.stormDials[id] = amount;
     if (g.stormDialers.every((x) => g.stormDials[x] !== undefined)) {
       g.stormPending = Object.values(g.stormDials).reduce((a, b) => a + b, 0);
       g.stormMovementSource = nexusRule(() => createStormSource(g.turn,'dials',g.stormPending!));

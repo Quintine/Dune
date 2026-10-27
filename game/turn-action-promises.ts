@@ -8,6 +8,7 @@ import { parseBattleActionClaim, type MixedBattleActionClaim } from './mixed-bat
 import { PlanClaimError } from './battle-promises';
 import { PRINTED_CARD_EFFECTS, type PrintedCardEffect } from './printed-card-play';
 import { WINDOW_CARD_EFFECTS, type WindowCardEffect } from './window-card-play';
+import { StormDialQuestionError, parseStormDialClaim, parseStormDialSource, stormDialMatches, type StormDialClaim } from './storm-dial-question';
 import { nativePromiseScopeSupported, type NativePromiseScope } from './native-promise-scope';
 import { BattlePowerQuestionError, battlePowerMatches, battlePowerOf, parseBattlePowerClaim,
   type BattlePowerClaim, type BattlePowerDeclaration, type NativeBattlePower } from './battle-power-question';
@@ -38,7 +39,7 @@ export function turnActionPromiseModeSupported(game: NativePromiseScope & {
     !game.nexusKullPreview && !game.richeseBetrayalPreview;
 }
 
-export type TurnActionLeaf = TravelActionClaim | { kind: 'payment'; recipient: string; minimum: number } |
+export type TurnActionLeaf = TravelActionClaim | StormDialClaim | { kind: 'payment'; recipient: string; minimum: number } |
   { kind: 'bid'; lot: number; minimum: number } | RevivalActionClaim | { kind: 'alliance'; partner: string } |
   { kind: 'battlePlan'; battle: string; territory: string; claim: MixedBattleActionClaim } |
   { kind: 'traitorCall'; battle: string; territory: string; call: boolean } |
@@ -48,6 +49,7 @@ export type TurnActionLeaf = TravelActionClaim | { kind: 'payment'; recipient: s
 export type TurnActionClaim = { turn: number; mixed: MixedActionExpression<TurnActionLeaf> };
 export type TurnActionPayment = { recipient: string; amount: number };
 export type TurnActionBranchLeaf = TravelBranchLeaf |
+  (StormDialClaim & { answer: boolean }) |
   { kind: 'payment'; recipient: string; minimum: number; progress: number; answer: boolean } |
   { kind: 'bid'; lot: number; source: string; minimum: number; answer: boolean } |
   { kind: 'forces'; counter: 'total' | 'normal' | 'elite'; minimum: number; progress: number; answer: boolean } |
@@ -107,6 +109,8 @@ export type TurnActionPromise = TurnActionClaim & {
   /** Accepted printed-role plays after this answer only, never earlier counts. */
   cardPlays?: TurnActionCardPlays;
   windowCards?: TurnActionWindowCards;
+  /** A submitted dial is private to its respondent until the native reveal. */
+  stormDial?: { source: string; closed: boolean; actual: number | null };
 };
 
 export class TurnActionError extends Error {
@@ -156,6 +160,7 @@ function powerMatches(claim: BattlePowerClaim, declaration: BattlePowerDeclarati
 export function parseTurnActionLeaf(value: unknown): TurnActionLeaf {
   check(object(value), 'Choose one future native action, printed-card play or ordinary bribe payment.');
   try {
+    if (value.kind === 'stormDial') return parseStormDialClaim(value);
     if (value.kind === 'windowCardPlay') {
       check(keys(value, 'effect,kind,source') && windowEffect(value.effect) && identifier(value.source),
         'Choose one original phase-opening, Storm, first-reveal, fresh-blow, ordinary-lot or shipment-price printed-card play after this answer.');
@@ -196,7 +201,7 @@ export function parseTurnActionLeaf(value: unknown): TurnActionLeaf {
     return { kind: 'payment', recipient: claim.recipient, minimum: claim.minimum };
   } catch (error) {
     if (error instanceof TravelPromiseError || error instanceof BribePromiseError || error instanceof BidPromiseError ||
-      error instanceof RevivalExpressionPromiseError || error instanceof AlliancePromiseError)
+      error instanceof RevivalExpressionPromiseError || error instanceof AlliancePromiseError || error instanceof StormDialQuestionError)
       throw new TurnActionError(error.message);
     throw error;
   }
@@ -217,6 +222,7 @@ function storedFact(value: unknown, depth = 0): TruthFact {
 }
 
 function actionKey(action: TurnActionLeaf): string {
+  if (action.kind === 'stormDial') return JSON.stringify([action.kind, action.source, action.value]);
   if (action.kind === 'windowCardPlay') return JSON.stringify([action.kind, action.effect, action.source]);
   if (action.kind === 'battlePower') return JSON.stringify([action.kind, action.battle, action.territory, powerKey(action.claim)]);
   if (action.kind === 'cardPlay') return JSON.stringify([action.kind, action.effect]);
@@ -269,6 +275,7 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
   if ('combat' in promise) fields.push('combat');
   if ('cardPlays' in promise) fields.push('cardPlays');
   if ('windowCards' in promise) fields.push('windowCards');
+  if ('stormDial' in promise) fields.push('stormDial');
   check(keys(promise, fields.sort().join(',')) &&
     positive(promise.turn) && identifier(promise.event) && identifier(promise.player) && identifier(promise.asker),
   'Retain the complete original turn-action commitment and its metadata.');
@@ -293,6 +300,7 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
   let hasTraitor = false;
   const cardEffects = new Set<PrintedCardEffect>();
   const windowSources = new Map<WindowCardEffect, Set<string>>();
+  const stormSources = new Set<string>();
   const visit = (node: MixedActionExpression<TurnActionLeaf>): void => {
     if (node.kind === 'action') {
       originals.add(actionKey(node.action));
@@ -306,6 +314,7 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
       if (node.action.kind === 'battlePlan') planClaims.add(planKey(node.action.claim));
       if (node.action.kind === 'traitorCall') hasTraitor = true;
       if (node.action.kind === 'cardPlay') cardEffects.add(node.action.effect);
+      if (node.action.kind === 'stormDial') stormSources.add(node.action.source);
       if (node.action.kind === 'battlePower') powerClaims[battlePowerOf(node.action.claim)].add(powerKey(node.action.claim));
       if (node.action.kind === 'windowCardPlay') {
         const sources = windowSources.get(node.action.effect) ?? new Set<string>();
@@ -322,6 +331,17 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
   check(!hasTraitor || !!promise.combat?.traitor, 'Retain the original private Traitor declaration stage.');
   for (const power of ['voice', 'prescience'] as const) check(!powerClaims[power].size || !!promise.combat?.powers?.[power],
     'Retain the original private native battle-power stage, including folded original clauses.');
+  check(!stormSources.size || !!promise.stormDial, 'Retain the original native storm-dial interval, including folded clauses.');
+  if ('stormDial' in promise) {
+    const stage = promise.stormDial;
+    const source = stage && parseStormDialSource(stage.source);
+    check(object(stage) && keys(stage, 'actual,closed,source') && source && source.turn === promise.turn &&
+      source.player === promise.player && stormSources.size === 1 && stormSources.has(stage.source) &&
+      typeof stage.closed === 'boolean' && (stage.actual === null || typeof stage.actual === 'number' &&
+        Number.isSafeInteger(stage.actual) && stage.actual >= (source.turn === 1 ? 0 : 1) &&
+        stage.actual <= (source.turn === 1 ? 20 : 3)) && (stage.closed || stage.actual === null),
+    'Retain the respondent’s exact original storm source and actual submitted value only after closure.');
+  }
   for (const effect of cardEffects) check(!!promise.cardPlays?.[effect], 'Retain the original future interval for each printed-card play clause.');
   for (const effect of windowSources.keys()) check(!!promise.windowCards?.[effect],
     'Retain the original native window for every printed-card window clause, including folded ones.');
@@ -451,6 +471,8 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
 }
 
 function actionValue(action: TurnActionLeaf, promise: TurnActionPromise): boolean {
+  if (action.kind === 'stormDial') return promise.stormDial?.source === action.source &&
+    promise.stormDial.actual !== null && stormDialMatches(action, promise.stormDial.actual);
   if (action.kind === 'windowCardPlay') return promise.windowCards?.[action.effect]?.played ?? false;
   if (action.kind === 'battlePower') return promise.combat?.powers?.[battlePowerOf(action.claim)]?.values?.find(entry =>
     powerKey(entry.claim) === powerKey(action.claim))?.value ?? false;
@@ -478,6 +500,7 @@ function evaluate(node: CompiledMixedAction<TurnActionLeaf>, promise: TurnAction
 }
 
 function actionClosed(action: TurnActionLeaf, promise: TurnActionPromise): boolean {
+  if (action.kind === 'stormDial') return promise.stormDial!.closed;
   if (action.kind === 'windowCardPlay') return promise.windowCards![action.effect]!.closed;
   if (action.kind === 'battlePower') return promise.combat!.powers![battlePowerOf(action.claim)]!.closed;
   if (action.kind === 'cardPlay') return promise.cardPlays![action.effect]!.closed;
@@ -520,6 +543,7 @@ export function liveTurnActionPromises<T extends TurnActionPromise>(promises: re
 
 function sameAction(left: TurnActionBranchLeaf, right: TurnActionBranchLeaf): boolean {
   if (left.kind !== right.kind) return false;
+  if (left.kind === 'stormDial') return right.kind === 'stormDial' && left.source === right.source && left.value === right.value;
   if (left.kind === 'windowCardPlay') return right.kind === 'windowCardPlay' && left.effect === right.effect && left.source === right.source;
   if (left.kind === 'battlePower') return right.kind === 'battlePower' && left.battle === right.battle &&
     left.territory === right.territory && left.owner === right.owner && left.beneficiary === right.beneficiary &&
@@ -538,6 +562,18 @@ function sameAction(left: TurnActionBranchLeaf, right: TurnActionBranchLeaf): bo
   return (right.kind === 'ship' || right.kind === 'move') && left.territory === right.territory;
 }
 
+/** Legal values for all signed leaves tied to the same original dial. A caller
+ * may combine leaves from several accepted promises before quoting one action. */
+export function turnActionStormDialChoices(leaves: readonly TurnActionBranchLeaf[], source: string): number[] {
+  const decoded = parseStormDialSource(source);
+  if (!decoded) return [];
+  const named = leaves.filter((leaf): leaf is Extract<TurnActionBranchLeaf, { kind: 'stormDial' }> =>
+    leaf.kind === 'stormDial' && leaf.source === source);
+  const min = decoded.turn === 1 ? 0 : 1, max = decoded.turn === 1 ? 20 : 3;
+  return Array.from({ length: max - min + 1 }, (_, index) => index + min)
+    .filter(value => named.every(leaf => (value === leaf.value) === leaf.answer));
+}
+
 /** Called within one record only: payment progress belongs to that interval. */
 function mergeBranches(left: TurnActionBranchLeaf[], right: TurnActionBranchLeaf[]): TurnActionBranchLeaf[] | null {
   const merged = left.map(leaf => ({ ...leaf }));
@@ -547,6 +583,15 @@ function mergeBranches(left: TurnActionBranchLeaf[], right: TurnActionBranchLeaf
         other.territory === leaf.territory && other.beneficiary === leaf.beneficiary && other.target === leaf.target && other.leader === leaf.leader);
       if (prior?.kind === 'traitorCall' && (prior.answer ? prior.call : !prior.call) !== (leaf.answer ? leaf.call : !leaf.call)) return null;
       if (!prior) merged.push({ ...leaf });
+      continue;
+    }
+    if (leaf.kind === 'stormDial') {
+      const prior = merged.find(other => sameAction(other, leaf));
+      if (prior && prior.answer !== leaf.answer) return null;
+      if (leaf.answer && merged.some(other => other.kind === 'stormDial' && other.source === leaf.source &&
+        other.answer && other.value !== leaf.value)) return null;
+      if (!prior) merged.push({ ...leaf });
+      if (!turnActionStormDialChoices(merged, leaf.source).length) return null;
       continue;
     }
     if (leaf.kind === 'leader' || leaf.kind === 'alliance' || leaf.kind === 'battlePlan' || leaf.kind === 'cardPlay' ||
@@ -620,6 +665,41 @@ function settle<T extends TurnActionPromise>(promise: T, update: T): T {
   check(promise.answer || !satisfied, 'This action conflicts with your whole Truthtrance turn-action No answer.');
   return promise.answer && satisfied || !promise.answer && relevantClosed(compiled, update)
     ? { ...update, fulfilled: true } : update;
+}
+
+/** Record one actual sealed native dial against its exact original source.
+ * Closing the stage never publishes its private numeric receipt. */
+export function recordTurnActionStormDial<T extends TurnActionPromise>(promises: readonly T[], player: string,
+  turn: number, source: string, actual: number): T[] {
+  const identity = parseStormDialSource(source);
+  check(identity && identity.turn === turn && identity.player === player,
+    'Retain the original respondent’s storm-dial source.');
+  try { stormDialMatches({ kind: 'stormDial', source, value: actual }, actual); }
+  catch (error) { if (error instanceof StormDialQuestionError) throw new TurnActionError(error.message); throw error; }
+  const updates = new Map<T, T>();
+  for (const promise of liveTurnActionPromises(promises, player, turn)) {
+    readPromise(promise);
+    const stage = promise.stormDial;
+    if (!stage || stage.closed || stage.source !== source) continue;
+    updates.set(promise, settle(promise, { ...promise, stormDial: { ...stage, closed: true, actual } }));
+  }
+  return promises.map(promise => updates.get(promise) ?? promise);
+}
+
+/** Closing without a submission records absence, never a synthetic zero. */
+export function closeTurnActionStormDial<T extends TurnActionPromise>(promises: readonly T[], player: string,
+  turn: number, source: string): T[] {
+  const identity = parseStormDialSource(source);
+  check(identity && identity.turn === turn && identity.player === player,
+    'Retain the original respondent’s storm-dial source.');
+  const updates = new Map<T, T>();
+  for (const promise of liveTurnActionPromises(promises, player, turn)) {
+    readPromise(promise);
+    const stage = promise.stormDial;
+    if (!stage || stage.closed || stage.source !== source) continue;
+    updates.set(promise, settle(promise, { ...promise, stormDial: { ...stage, closed: true } }));
+  }
+  return promises.map(promise => updates.get(promise) ?? promise);
 }
 
 /** Only an accepted printed-role play in this exact original native window
@@ -987,7 +1067,8 @@ export function finishTurnActionTurn<T extends TurnActionPromise>(promises: read
       } } : {}), ...(promise.cardPlays ? { cardPlays: Object.fromEntries(PRINTED_CARD_EFFECTS
         .filter(effect => Object.hasOwn(promise.cardPlays!, effect)).map(effect => [effect, promise.cardPlays![effect]
           ? { ...promise.cardPlays![effect]!, closed: true } : null])) as TurnActionCardPlays } : {}),
-      ...(promise.windowCards ? { windowCards } : {}) };
+      ...(promise.windowCards ? { windowCards } : {}),
+      ...(promise.stormDial ? { stormDial: { ...promise.stormDial, closed: true } } : {}) };
     const unresolvedCombat = promise.combat && (promise.combat.plan && !promise.combat.plan.closed ||
       promise.combat.traitor && !promise.combat.traitor.closed || promise.combat.powers?.voice && !promise.combat.powers.voice.closed ||
       promise.combat.powers?.prescience && !promise.combat.powers.prescience.closed);
@@ -1012,6 +1093,7 @@ export function validateTurnActionPromises(promises: readonly TurnActionPromise[
       (!promise.combat?.powers?.voice || promise.combat.powers.voice.closed) &&
       (!promise.combat?.powers?.prescience || promise.combat.powers.prescience.closed) &&
       WINDOW_CARD_EFFECTS.every(effect => promise.windowCards?.[effect]?.closed ?? true) &&
+      (!promise.stormDial || promise.stormDial.closed) &&
       PRINTED_CARD_EFFECTS.every(effect => promise.cardPlays?.[effect]?.closed ?? true);
     const recipientsValid = (node: MixedActionExpression<TurnActionLeaf>): boolean => node.kind === 'action'
       ? node.action.kind === 'alliance' ? players.includes(node.action.partner) && node.action.partner !== promise.player :

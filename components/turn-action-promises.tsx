@@ -10,6 +10,7 @@ import { gholaForcePreparations } from '@/game/ghola-force-preparation';
 import { richeseCardDefinition } from '@/game/richese-cards';
 import { nativeBattlePowerOpportunity, type NativeBattlePower } from '@/game/battle-power-question';
 import { battleCardLabel, VOICE_KINDS } from '@/game/battle-cards';
+import { nativeStormDialOpportunity } from '@/game/storm-dial-question';
 import { karamaBattleCancelOpportunity, WINDOW_CARD_EFFECTS, windowCardNativeEffect, windowCardOpportunity, type WindowCardEffect } from '@/game/window-card-play';
 import type { TurnActionLeaf } from '@/game/turn-action-promises';
 import type { MixedActionExpression } from '@/game/mixed-action-question';
@@ -35,6 +36,9 @@ const windowRoleNames: Record<WindowCardEffect, string> = { weather: 'Weather Co
 const namesWindow = (mixed: MixedActionExpression<TurnActionLeaf>, effect: WindowCardEffect, source?: string): boolean =>
   mixed.kind === 'action' ? mixed.action.kind === 'windowCardPlay' && mixed.action.effect === effect && (source === undefined || mixed.action.source === source)
     : mixed.kind !== 'fact' && mixed.terms.some(term => namesWindow(term, effect, source));
+const namesStormDial = (mixed: MixedActionExpression<TurnActionLeaf>, source: string): boolean =>
+  mixed.kind === 'action' ? mixed.action.kind === 'stormDial' && mixed.action.source === source
+    : mixed.kind !== 'fact' && mixed.terms.some(term => namesStormDial(term, source));
 const namesBoxPlay = (mixed: MixedActionExpression<TurnActionLeaf>): boolean => mixed.kind === 'action'
   ? mixed.action.kind === 'cardPlay' && mixed.action.effect === 'nullentropyBox'
     : mixed.kind !== 'fact' && mixed.terms.some(namesBoxPlay);
@@ -80,6 +84,7 @@ export function TurnActionGuideButton(props: TurnActionProps) {
   const box = game.nullentropy, search = box?.search;
   const windowPromise = game.turnActionPromises.find(promise => promise.event === event && promise.player === actor && promise.turn === turn);
   const windowQuestion = windowPromise && JSON.stringify(windowPromise.mixed);
+  const stormDialSource = action.type === 'stormDial' ? nativeStormDialOpportunity(game, actor) : null;
   const semutaAction = action.type === 'semutaCommit' || action.type === 'semutaSelect' || action.type === 'semutaPass';
   const semuta = semutaAction ? game.semutaReaction : null;
   const semutaSource = (reaction: GameView['semutaReaction']) => reaction && JSON.stringify({
@@ -410,7 +415,14 @@ export function TurnActionGuideButton(props: TurnActionProps) {
       !current.ready.includes(actor) && me.charityClaimed === false && current.charity === charity &&
       charitySource(current) === charitySignature && current.charity.incomePending === false &&
       Number.isSafeInteger(current.charity.amount) && current.charity.amount > 0;
-    const opportunity = nativeSemuta || printedResidual || printedDistrans || printedSapho || printedBox || openingReady || earlyWindowReady || earlyWindowBox || printedWindow || ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
+    const currentStormDial = action.type === 'stormDial' && !!stormDialSource && !!windowPromise &&
+      current.turnActionPromises.includes(windowPromise) && JSON.stringify(windowPromise.mixed) === windowQuestion &&
+      namesStormDial(windowPromise.mixed, stormDialSource.source) &&
+      nativeStormDialOpportunity(current, actor, stormDialSource.source)?.source === stormDialSource.source &&
+      Object.keys(action).every(key => ['type', 'amount', 'turnActionPromiseEvent', 'turnActionPromisePhase'].includes(key)) &&
+      typeof action.amount === 'number' && Number.isSafeInteger(action.amount) &&
+      action.amount >= stormDialSource.min && action.amount <= stormDialSource.max;
+    const opportunity = currentStormDial || nativeSemuta || printedResidual || printedDistrans || printedSapho || printedBox || openingReady || earlyWindowReady || earlyWindowBox || printedWindow || ownedPower || payment || paidBox || printedHajr || printedGhola || plan || battlePreparation || declaration || nexusWindow && (ownedAlliance || action.type === 'ready') || (phase === 2
       ? charityClaim || !current.ready.includes(actor) && (action.type === 'ready' || genericCard)
       : phase === 3
         ? invoice || nativePass || requiredBid || action.type === 'passBid' && !current.richeseAuction && currentAuction && current.auction?.active === actor
@@ -445,7 +457,8 @@ export function TurnActionGuideButton(props: TurnActionProps) {
     : action.scope === 'movement' ? 'remaining Movement order' : action.scope === 'battleOrder' ? 'remaining battle order'
       : action.scope === 'extortion' ? 'Extortion order' : action.scope === 'revival' ? 'remaining Revival order' : 'the quoted native order';
   const sector = typeof action.sector === 'number' ? `, sector ${action.sector}` : '';
-  const label = action.type === 'bribe' ? `Pay ${amount} spice to ${recipient} while honoring your whole answer`
+  const label = action.type === 'stormDial' ? `Submit Storm dial ${amount} while honoring your whole answer`
+    : action.type === 'bribe' ? `Pay ${amount} spice to ${recipient} while honoring your whole answer`
     : action.type === 'semutaCommit' ? 'Commit Semuta Drug to this fresh discard while honoring your whole answer'
     : action.type === 'semutaSelect' ? `Complete Semuta Drug by claiming ${semuta?.stage === 'select'
       ? semuta.candidates.find(card => card.id === action.card)?.name ?? 'the quoted card' : 'the quoted card'} while honoring your whole answer`

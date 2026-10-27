@@ -1,5 +1,13 @@
 # Dune implementation status
 
+## 27 October 2026 — Truthtrance upcoming Basic storm dial
+
+A source-bound current-turn question can bind an eligible Basic player's
+unsubmitted native storm-dial value. Human and minimal bot guides submit the
+actual legal dial; multiple answers share the same physical choice and normal
+sealed reveal. Advanced and wider combination acceptance remain open.
+[Contract](TRUTHTRANCE_TURN_ACTIONS.md#upcoming-basic-storm-dial-choice--27-october-2026).
+
 ## 27 October 2026 — Truthtrance battle cancellation
 
 Supported Basic native Voice and Prescience responses admit a source-bound
