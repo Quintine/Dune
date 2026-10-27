@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Deal-triggered payment and Advanced Hajr — 28 October 2026
+
+The supplied revised rulebook's Hajr errata, physical p. 39 (printed p. 37),
+requires Hajr immediately after a Force Movement. The existing online timing
+contract closes the window on the owner's next voluntary action. A payment
+automatically triggered by another seat's final acceptance is provisionally
+treated as that seat's action, so it does not close the payer's window. A
+payment initiated by the payer still closes it. This is an online timing
+interpretation, not a publisher clarification. [Scope](PUBLIC_DEALS.md).
+
 ## Public deals — 28 October 2026
 
 The publisher's 2019 rulebook permits public nonallied deals, requires their

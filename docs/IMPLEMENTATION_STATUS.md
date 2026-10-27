@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 28 October 2026 — Advanced Hajr after deal-triggered payment
+
+The immediate bribe caused by another player's final acceptance preserves the
+payer's current Hajr window, while the payer's own voluntary payment or final
+acceptance still closes it. Seven related unit files pass 46 cases, including a
+genuine Advanced movement/recovered Hajr fixture with only payment funding
+staged. This is a provisional online timing interpretation; broader interactions
+and deployed acceptance remain open. [Scope](PUBLIC_DEALS.md).
+
 ## 28 October 2026 — Immediate public-deal payments
 
 Two to six human signatories can include an immediate gross spice bribe in a

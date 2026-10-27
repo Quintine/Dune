@@ -16,6 +16,14 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Advanced Hajr after a deal payment — 28 October. Prototyped / Partial.** A
+previously consented bribe triggered by another seat's final acceptance no
+longer closes the payer's immediate Hajr window; the payer's own voluntary
+bribe or final acceptance still closes it. Seven related unit files pass 46
+cases, including genuine Advanced movement and the actual Hajr play after the
+payment; the payment's funding alone was staged. Broader timing combinations and
+deployed acceptance remain open. [Scope](PUBLIC_DEALS.md).
+
 **Immediate deal payments — 28 October. Prototyped / Partial.** A public deal can
 include a gross spice payment between signatories. Final unanimous acceptance
 invokes the native bribe action atomically, including its timing, funds, escrow

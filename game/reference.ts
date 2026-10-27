@@ -2890,6 +2890,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     summary: 'Make an additional force move during your movement turn.',
     steps: [
       'In Basic, play during your shipment and movement turn. Advanced requires the immediate opportunity after a completed Force Movement and its required arrival decisions, before your next voluntary game action.',
+      'A previously agreed payment triggered by another player accepting a deal does not close your Advanced Hajr opportunity. Your own voluntary bribe or acceptance that triggers your payment closes it.',
       'Make one additional legal group move, using the same or another group. Normal source, range and destination restrictions still apply. A completed Ornithopter group provisionally supplies the Advanced timing opportunity.',
       'Ornithopter replaces one unused movement entitlement, so one Hajr play and a two-group flight permit three group movements. Groups must differ within that flight, while the later Hajr move may reuse them.',
       'The deck contains one physical Hajr. If Nullentropy Box genuinely retrieves it after its discard, you may legally play that same card again for another extra move. This replay is an explicit interpretation because the source establishes no once-per-turn cap. A repeated submission while it is still discarded grants nothing. Advanced still needs a fresh completed-movement opportunity after retrieval; the search supplies no movement.',
@@ -2901,7 +2902,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       {area:'Player controls',status:'Partial',detail:'The existing card selector uses held-card/current timing authority. Persistent table text shows accepted Hajr plays and explains fresh Advanced timing after recovery.',evidence:['game/card-availability.ts','components/game-table.tsx']},
       {area:'AI',status:'Partial',detail:'Four profiles retain a legal third ordinary move after real Basic/Advanced paid Box recovery. Strategic refinement and calibration remain deferred.',evidence:['tests/hajr-replay-engine.test.ts']},
       {area:'Documentation',status:'Partial',detail:'Explains the single physical card, original paid retrieval, repeated legal grant, unchanged Basic timing and fresh Advanced opportunity. Replay remains an explicit source interpretation.',evidence:['docs/RICHESE_ORNITHOPTER_ENGINE_AUDIT.md']},
-      {area:'Verification',status:'Partial',detail:'Frozen12-file102/102, types/lint/build and two original-action/rendered-table programmes pass with eight legal policy proposals. Cunning counts have pure/related regressions, not an original paid-Box Nexus programme. No visual/browser/deployed, complete-mode or comprehensive assurance claim.',evidence:['tests/fixture-hajr-replay.ts','tests/hajr-replay-engine.test.ts','tests/nexus-guild-cunning-counted.test.ts','tests/nexus-guild-cunning-engine.test.ts']},
+      {area:'Verification',status:'Partial',detail:'Native Hajr replay and deal-triggered payment have focused coverage. Cunning counts have pure/related regressions, not an original paid-Box Nexus programme. No visual/browser/deployed, complete-mode or comprehensive assurance claim.',evidence:['tests/fixture-hajr-replay.ts','tests/hajr-replay-engine.test.ts','tests/public-deals-hajr-runtime.test.ts','tests/nexus-guild-cunning-counted.test.ts','tests/nexus-guild-cunning-engine.test.ts']},
     ],
   },
   {

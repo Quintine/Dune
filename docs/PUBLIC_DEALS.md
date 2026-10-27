@@ -32,6 +32,13 @@ reserved during an offer. If timing, available funds, another binding rule or
 the payer's AI control makes payment unavailable, final acceptance fails without
 recording that vote or debiting spice. A pending native Bureaucrat decision
 continues normally; later release of the deal does not reverse a paid bribe.
+In Advanced play, the automatic payment triggered by another seat's final
+acceptance does not close the payer's immediate-after-movement Hajr opportunity.
+If the payer makes the final acceptance, or directly pays a bribe, that payer's
+own voluntary action closes the opportunity. This is a provisional online
+timing interpretation of the supplied revision, physical p. 39 (printed p. 37).
+Seven related unit files pass 46 cases, including genuine Advanced movement and
+Hajr play after another seat's deal acceptance; only payment funding was staged.
 Nine related unit files pass 71 cases, including a native Bureaucrat diversion
 and unavailable-payment rollback. Three isolated HTTP cases include an earlier
 consenting payer, final approval by another participant and replay rejection.

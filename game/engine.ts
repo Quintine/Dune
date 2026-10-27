@@ -40012,6 +40012,11 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  return applyActionWithInitiator(state, id, action, id);
+}
+/** The initiator can differ from the payer only for a previously consented
+ * automatic deal payment; it is never supplied by a client action. */
+function applyActionWithInitiator(state: Game, id: string, action: Action, initiator: string): Game {
   twoPlayerControllersIntegrity(state);
   factionDraftIntegrity(state);
   factionSwapIntegrity(state);
@@ -40133,9 +40138,9 @@ export function applyAction(state: Game, id: string, action: Action): Game {
         // on the same cloned state so a failed payment also rolls back consent.
         try {
           requireRule(!getPlayer(g, next.payment.payer).autopilot, 'The payer is not controlling this seat.');
-          return applyAction(g, next.payment.payer, {
+          return applyActionWithInitiator(g, next.payment.payer, {
             type: 'bribe', target: next.payment.recipient, amount: next.payment.amount,
-          });
+          }, id);
         } catch (error) {
           if (error instanceof RuleError)
             throw new RuleError('The agreed payment could not be completed. Check the bribe timing and ask the payer to review it.');
@@ -40307,7 +40312,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
       Object.keys(guide.action).every(key => action[key] === guide.action[key]),
     'This Richese bid guide is stale or belongs to another lot.');
   }
-  const g = applyActionInner(state, id, action);
+  const g = applyActionInner(state, id, action, 'live', initiator);
   if (state.phase === 3 && liveTurnActionPromises(state.turnActionPromises ?? [], id, state.turn).some(row => {
     const stage = row.windowCards?.karamaAuction;
     return stage && !stage.closed && (windowCardOpportunity(g, 'karamaAuction')?.source !== stage.source ||
@@ -40840,6 +40845,7 @@ function applyActionInner(
   id: string,
   action: Action,
   execution: 'live' | 'shipmentPreparation' | 'movementPreparation' = 'live',
+  initiator = id,
 ): Game {
   tupileSlotsIntegrity(state);
   const tupileBlock = tupileSourceBlock(state);
@@ -40974,7 +40980,7 @@ function applyActionInner(
   }
   // Mandatory movement reactions and other seats' actions do not close the
   // Advanced owner's immediate Hajr opportunity. Its next voluntary action does.
-  if (g.advanced && p.hajrWindow && !g.response && !g.decision && !g.truthtrance &&
+  if (g.advanced && initiator === p.id && p.hajrWindow && !g.response && !g.decision && !g.truthtrance &&
     !g.phaseOpening && !g.pendingTreacheryDiscard && t !== 'advanceBots' &&
     !(t === 'card' && p.hand.some(card => card.id === action.card && card.effect === 'hajr')))
     delete p.hajrWindow;
