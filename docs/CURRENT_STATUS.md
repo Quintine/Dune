@@ -16,6 +16,17 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Hidden Mobile Stronghold passenger collection — 28 October. Prototyped /
+Partial.** Explicit route choices count foreign fighters and one per deployed
+No-Field, excluding advisors; only Ixians receive the spice. The count uses
+public state and does not read the concealed marker value. Omitted selections
+retain the prior Ixian-only automatic limit. Four related unit files pass 17
+cases, including genuine Basic and Advanced movement with conserved staged
+passengers, rejected overcollection and the older default. The control harness
+also exercises projected No-Fields and advisors. The foreign-passenger and
+advisor treatment is provisional; wider combinations and deployed acceptance
+remain open. [Scope](IX_PROTOTYPE.md#hidden-mobile-stronghold-passenger-collection--28-october-2026).
+
 **Advanced Hajr after a deal payment — 28 October. Prototyped / Partial.** A
 previously consented bribe triggered by another seat's final acceptance no
 longer closes the payer's immediate Hajr window; the payer's own voluntary

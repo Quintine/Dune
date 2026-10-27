@@ -6,13 +6,13 @@ import { HelpTip } from './help-tip';
 import {
   GRAPH,
   TERRITORIES,
-  MOBILE_LOCATION,
   mobileRouteDistance,
   splitLocation,
   territory,
 } from '@/game/board';
 import type { Action, GameView } from '@/game/engine';
 import { quoteSandmasterStronghold } from '@/game/sandmaster-movement';
+import { mobileStrongholdCollectionCapacity } from '@/game/mobile-stronghold-collection';
 const label = (key: string) => {
   const loc = splitLocation(key);
   return `${territory(loc.territory).name}${loc.sector ? ` · sector ${loc.sector}` : ''}`;
@@ -56,9 +56,10 @@ export function MobileStronghold({
         return chosen === false ? [] : [typeof chosen === 'string' && keys.includes(chosen) ? chosen : keys[0]];
       }) : [];
   const remaining: Record<string, number> = {};
+  const capacity = mobileStrongholdCollectionCapacity(g.players);
   const collections = route.map((key, index) => {
     const before = remaining[key] ?? Math.max(0, (g.spice[key] ?? 0) - Number(skillPiles.includes(key)));
-    const maximum = Math.min(before, (me.forces[MOBILE_LOCATION] ?? 0) * 2);
+    const maximum = Math.min(before, capacity);
     const editKey = `${index}:${key}`;
     const raw = collectionEdits[editKey];
     const selected = raw === undefined ? maximum : Number(raw);

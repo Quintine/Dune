@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Mobile Stronghold passenger collection — 28 October 2026
+
+The E1 Ixian power permits collection per force in the stronghold without
+explicitly resolving ownership. Count foreign fighters provisionally, crediting
+Ixians alone; exclude advisors based on the supplied Advanced revision's rule
+that advisors have no effect on other factions. A deployed No-Field counts as
+one, unless its controller is an advisor. This is an interpretation, not a
+publisher clarification. [Scope and source pages](IX_PROTOTYPE.md#hidden-mobile-stronghold-passenger-collection--28-october-2026).
+
 ## Deal-triggered payment and Advanced Hajr — 28 October 2026
 
 The supplied revised rulebook's Hajr errata, physical p. 39 (printed p. 37),

@@ -7,6 +7,8 @@ import * as jsxRuntime from 'react/jsx-runtime';
 import ts from 'typescript';
 import * as board from '../game/board';
 import { createGame, newPlayer, viewGame, type Action, type GameView } from '../game/engine';
+import { mobileStrongholdCollectionCapacity } from '../game/mobile-stronghold-collection';
+import { createRicheseNoField, deployRicheseNoField } from '../game/richese-no-field';
 import type { MobileStronghold } from '../components/mobile-stronghold';
 
 type Element = ReactElement<{ children?: ReactNode; [key: string]: unknown }>;
@@ -31,7 +33,7 @@ function fixture() {
     board.territory(board.splitLocation(key).territory).type !== 'stronghold');
   assert.ok(next);
   g.spice = { 'polar_sink:0': 3, [next]: 20 };
-  return { view: viewGame(g, 'i'), next };
+  return { game: g, view: viewGame(g, 'i'), next };
 }
 
 function controller(game: GameView, sandmasterPile?: string, card?: string) {
@@ -53,6 +55,7 @@ function controller(game: GameView, sandmasterPile?: string, card?: string) {
       if (name === '@/components/ui/input') return { Input: 'input' };
       if (name === './help-tip') return { HelpTip: () => null };
       if (name === '@/game/board') return board;
+      if (name === '@/game/mobile-stronghold-collection') return { mobileStrongholdCollectionCapacity };
       if (name === '@/game/sandmaster-movement') return { quoteSandmasterStronghold: () => sandmasterPile
         ? { piles: { [board.splitLocation(sandmasterPile).territory]: [sandmasterPile] } } : null };
       throw new Error(`Unexpected import ${name}`);
@@ -119,4 +122,34 @@ void test('controlled Sandmaster pile is debited before the route input cap', ()
   const action = JSON.parse(JSON.stringify(ui.sent[0])) as Action;
   assert.deepEqual(action.sandmasterPiles, [next]);
   assert.deepEqual(action.collections, [{ location: 'polar_sink:0', amount: 3 }, { location: next, amount: 2 }]);
+});
+
+void test('route capacity includes foreign fighters and a public No-Field, but excludes advisors', () => {
+  for (const tokenId of ['hidden-zero', 'hidden-five']) {
+    const { game, next } = fixture();
+    game.advanced = true;
+    game.players[1].forces = { [board.MOBILE_LOCATION]: 2 };
+    const bg = newPlayer('b', 'Bene Gesserit', 'beneGesserit');
+    bg.forces = { [board.MOBILE_LOCATION]: 4 };
+    bg.advisors = { [board.MOBILE_STRONGHOLD]: {} };
+    const richese = newPlayer('r', 'Richese', 'richese');
+    richese.noField = deployRicheseNoField(
+      createRicheseNoField(['hidden-zero', 'hidden-three', 'hidden-five']),
+      { tokenId, controller: richese.id, location: { territory: board.MOBILE_STRONGHOLD, sector: 0 } },
+    );
+    game.players.push(bg, richese);
+    game.spice[next] = 40;
+    const view = viewGame(game, 'i');
+    const publicMarker = view.players.find(player => player.id === 'r')!.noField;
+    assert.ok(publicMarker?.deployed);
+    assert.equal('private' in publicMarker, false);
+    assert.equal('tokenId' in publicMarker.deployed, false);
+    const ui = controller(view); ui.chooseNext(next);
+    // Six Ixians + two foreign fighters + one No-Field, two spice each.
+    assert.equal(ui.inputs()[1].props.max, 18);
+    assert.equal(ui.inputs()[1].props.value, 18);
+    delete bg.advisors[board.MOBILE_STRONGHOLD];
+    const fighters = controller(viewGame(game, 'i')); fighters.chooseNext(next);
+    assert.equal(fighters.inputs()[1].props.max, 26);
+  }
 });

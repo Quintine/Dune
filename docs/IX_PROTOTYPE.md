@@ -1,5 +1,29 @@
 # Ixians & Tleilaxu functional prototype
 
+## Hidden Mobile Stronghold passenger collection — 28 October 2026
+
+**Prototyped / Partial.** The publisher's E1 rulebook, printed p. 9, permits
+Ixians to collect two spice per force in their stronghold without explicitly
+resolving foreign passengers. This prototype provisionally includes foreign
+fighters, while Ixians alone receive the spice. The supplied Advanced revision,
+physical p. 36 / printed p. 34, treats a deployed No-Field as one force for
+effects including collection; its concealed value is not used. It also says
+advisors have no effect on other factions (physical p. 28 / printed p. 26), so
+advisors are provisionally excluded, including a marker controlled by an
+advisor. These applications are interpretations, not explicit publisher
+clarifications. Normal and special relocation selections use the shared public
+capacity; old actions and pending moves without selections retain their old
+Ixian-only automatic limit. This avoids changing the result of a saved choice.
+
+The shared [capacity helper](../game/mobile-stronghold-collection.ts) reads only
+public positions and stances. [Native movement cases](../tests/mobile-stronghold-passengers-runtime.test.ts)
+exercise Basic and Advanced declarations, a real response, collection and the
+legacy default with conserved staged counters and spice. [Helper cases](../tests/mobile-stronghold-passengers.test.ts)
+cover advisor-controlled and concealed No-Fields; [control cases](../tests/mobile-stronghold-collection-controls.test.tsx)
+exercise projected states in a component harness. Four related files pass 17
+cases; this does not certify every movement interaction or deployed play.
+The production build and `npm run check:quick` also passed for this batch.
+
 ## Hidden Mobile Stronghold route collection choices — 27 October 2026
 
 **Prototyped / Partial.** The printed Ixian power permits optional collection
@@ -7,8 +31,8 @@ when the occupied stronghold moves into, from or through a spice sector, at
 two spice per force in the stronghold. See publisher E1 printed p. 9 and the
 user-authorized revised source physical p. 34 / printed p. 32. The publisher
 does not spell out partial allocations; this preview provisionally permits any
-whole amount up to the live pile and the existing two-per-Ixian-force limit in
-each visited sector. How foreign passengers affect that limit remains open.
+whole amount up to the live pile and the eligible force limit in each visited
+sector. The passenger interpretation and legacy behavior are described above.
 The existing unique-sector route, storm and destination constraints remain.
 
 The controls show starting and subsequent route sectors and permit zero or a

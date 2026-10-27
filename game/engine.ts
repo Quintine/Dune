@@ -12,6 +12,7 @@ import { createVictoryContinuation, validateVictoryContinuation, voteVictoryCont
   VictoryContinuationError, MAX_VICTORY_EXTRA_STRONGHOLDS, type VictoryContinuation,
   type VictoryContinuationResume } from './victory-continuation';
 import { SabotageGiftError, quoteSabotageGift, quoteSabotageGiftDiscard } from './sabotage-gift';
+import { mobileStrongholdCollectionCapacity } from './mobile-stronghold-collection';
 import { kullDefaultEligible } from './kull-default-profile';
 import { advancedKullLobbyEligible } from './kull-advanced-profile';
 import { SaphoTruthOrderError, quoteSaphoTruthOrder, reorderSaphoTruthOrder, validateSaphoTruthOrder } from './sapho-truth-order';
@@ -38076,7 +38077,7 @@ function validateMobileMove(g: Game, p: Player, input: unknown, max: number) {
 type MobileCollection = { location: string; amount: number };
 /** Quote each route occurrence against the remaining physical pile after any
  * Sandmaster collection. Absent selections retain the older automatic route. */
-function quoteMobileCollections(g: Game, p: Player, route: string[], input: unknown,
+function quoteMobileCollections(g: Game, route: string[], input: unknown,
   collect: boolean, skillPiles: readonly string[]): MobileCollection[] | undefined {
   if (input === undefined) return undefined;
   requireRule(Array.isArray(input) && input.length === route.length,
@@ -38090,7 +38091,7 @@ function quoteMobileCollections(g: Game, p: Player, route: string[], input: unkn
     const available = Math.max(0, remaining[key] ?? 0);
     requireRule(Object.keys(item).sort().join(',') === 'amount,location' && item.location === key &&
       typeof item.amount === 'number' && Number.isSafeInteger(item.amount) && item.amount >= 0 &&
-      item.amount <= (collect ? Math.min(available, at(p, MOBILE_STRONGHOLD) * 2) : 0),
+      item.amount <= (collect ? Math.min(available, mobileStrongholdCollectionCapacity(g.players)) : 0),
     'Choose an available spice amount within the stronghold forces’ collection limit for each route sector.');
     remaining[key] = available - item.amount;
     return { location: key, amount: item.amount };
@@ -38108,7 +38109,7 @@ function relocateMobileStronghold(
     : sandmasterLeader(g, p.id)
       ? Object.values(sandmasterCollectionPiles(g, { interior: move.route })).filter(piles => piles.length === 1).map(piles => piles[0])
       : [];
-  const collections = quoteMobileCollections(g, p, move.route, move.collections, move.collect, skillPiles);
+  const collections = quoteMobileCollections(g, move.route, move.collections, move.collect, skillPiles);
   let collected = 0;
   if (move.collect) {
     // User ruling 7 October 2026: passengers remaining inside a relocated HMS
@@ -39405,7 +39406,7 @@ export function prepareSpecialKaramaIntent(
     const route = validateMobileMove(g, p, action.route, 2);
     const sandmasterPiles = nexusRule(() => validateSandmasterStronghold(
       g, p.id, route, action.sandmasterPiles, action.collect !== false));
-    const collections = quoteMobileCollections(g, p, route, action.collections, action.collect !== false, sandmasterPiles);
+    const collections = quoteMobileCollections(g, route, action.collections, action.collect !== false, sandmasterPiles);
     return {
       ...base,
       kind: 'ixians',
@@ -42120,7 +42121,7 @@ function applyActionInner(
         const route = validateMobileMove(g, p, action.route, 3);
         const sandmasterPiles = nexusRule(() => validateSandmasterStronghold(
           g, p.id, route, action.sandmasterPiles, action.collect !== false));
-        const collections = quoteMobileCollections(g, p, route, action.collections, action.collect !== false, sandmasterPiles);
+        const collections = quoteMobileCollections(g, route, action.collections, action.collect !== false, sandmasterPiles);
         g.pendingMobileMove = {
           player: p.id,
           route,
