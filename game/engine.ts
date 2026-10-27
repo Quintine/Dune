@@ -16159,15 +16159,22 @@ function charityPromiseRule<T>(run: () => T): T {
   }
 }
 function charityQuestionWindow(g: Game): boolean {
-  return g.status === 'playing' && !g.advanced && g.phase === 2 && !g.charityOrder &&
+  return g.status === 'playing' && !g.advanced && g.phase >= 0 && g.phase <= 2 && !g.charityOrder &&
     !g.response && !g.decision && !g.phaseOpening && !g.pendingKarama && !g.pendingTreacheryDiscard &&
-    (!byFaction(g, 'choam') || g.choamCharity?.turn === g.turn);
+    (g.phase < 2 || !byFaction(g, 'choam') || g.choamCharity?.turn === g.turn);
 }
 function charityPromiseCompletion(g: Game, player: string): Action | null {
   if (!charityQuestionWindow(g) || getPlayer(g,player).charityTurn === g.turn) return null;
-  const trial = structuredClone(g);
+  // In early phases the action is only a detached witness for the later
+  // Charity opportunity. Never project it as a currently executable guide.
+  const trial = g.phase < 2 ? charityForecastContext(g) : structuredClone(g);
   trial.truthtrance = null;
   trial.ready = trial.ready.filter(id => id !== player);
+  // Either CHOAM opening outcome pays another faction's ordinary claim; use
+  // the existing bank-fallback branch only on this detached quote. Its own
+  // future opening income is uncertain and is handled separately below.
+  if (g.phase < 2 && byFaction(trial,'choam') && trial.choamCharity?.turn !== trial.turn)
+    trial.choamCharity = {turn:trial.turn,canceled:true};
   // Evaluate physical availability independently of this answer's own guard.
   delete trial.charityPromises;
   const claim = (source: Game): boolean => {
@@ -16197,24 +16204,30 @@ function charityPromiseCanClaim(g: Game, player: string): boolean {
 function charityTruthAnswers(g: Game, p: Player, turn: number): TruthAnswer[] {
   if (!charityQuestionWindow(g) || turn !== g.turn || p.charityTurn === turn) return [];
   if (richeseBidOtherPromises(g,p)) return ['unknown'];
+  // CHOAM's own unsettled opening changes its purse and depends on another
+  // player's cancellation. No remains an owned choice; do not invent Yes.
+  if (g.phase < 2 && p.faction === 'choam' && g.choamCharity?.turn !== turn)
+    return ['no','unknown'];
   return charityPromiseRule(() => charityPromiseAnswers(g.charityPromises ?? [],p.id,turn,charityPromiseCanClaim(g,p.id)));
 }
 function bindCharityTruth(g: Game,p: Player,turn: number,answer: boolean,asker: string): void {
   requireRule(charityTruthAnswers(g,p,turn).includes(answer ? 'yes' : 'no'),
     'Choose an answer compatible with your current Charity opportunity.');
   g.charityPromises = charityPromiseRule(() => bindCharityPromise(g.charityPromises ?? [],p.id,asker,turn,answer,charityPromiseCanClaim(g,p.id)));
-  // A definite new answer reopens a concurrent Basic Ready, not a completed phase.
-  g.ready = g.ready.filter(id => id !== p.id);
+  // Only the actual concurrent Charity phase reopens Ready; Storm/Spice
+  // readiness belongs to the original phase and must remain intact.
+  if (g.phase === 2) g.ready = g.ready.filter(id => id !== p.id);
 }
 function reconcileCharityTruth(g: Game,voluntary?: {actor:string;action:Action}): void {
   if (!g.charityPromises?.length || g.truthtrance || g.response || g.decision || g.phaseOpening ||
-      g.pendingKarama || g.pendingTreacheryDiscard) return;
+      g.pendingKarama || g.pendingTreacheryDiscard ||
+      (g.phase === 2 && !!byFaction(g,'choam') && g.choamCharity?.turn !== g.turn)) return;
   let promises: CharityPromise[] = g.charityPromises;
   const people = new Set(promises.filter(row => !row.fulfilled && !row.released).map(row => row.player));
   for (const player of people) {
     const rows: CharityPromise[] = promises.filter(row => row.player === player && !row.fulfilled && !row.released);
     for (const turn of new Set(rows.map(row => row.turn))) {
-      const open = g.status === 'playing' && !g.advanced && g.phase === 2 && g.turn === turn;
+      const open = g.status === 'playing' && !g.advanced && g.phase >= 0 && g.phase <= 2 && g.turn === turn;
       const before: CharityPromise[] = promises;
       promises = charityPromiseRule(() => reconcileCharityPromises(before,player,turn,
         {phaseOpen:open,canClaim:open && charityPromiseCanClaim(g,player),
@@ -16226,7 +16239,7 @@ function reconcileCharityTruth(g: Game,voluntary?: {actor:string;action:Action})
   g.charityPromises = promises;
 }
 function projectedCharityTruthGuide(g: Game,player: string): {action:Action} | null {
-  if (g.truthtrance || !charityQuestionWindow(g) || g.ready.includes(player)) return null;
+  if (g.phase !== 2 || g.truthtrance || !charityQuestionWindow(g) || g.ready.includes(player)) return null;
   const promise = liveCharityPromises(g.charityPromises ?? [],player,g.turn).find(row => row.answer);
   const action = promise && charityPromiseCompletion(g,player);
   return action && promise ? {action:{...action,charityPromiseEvent:promise.event,charityPromiseTurn:promise.turn}} : null;

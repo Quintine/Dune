@@ -20,6 +20,17 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Upcoming Basic Charity Truthtrance — 27 October. Prototyped / Partial.**
+The Charity question also accepts supported quiet Storm and Spice Blow windows
+for the upcoming phase in the same turn. Its private quote uses the known purse
+and a possible native single bribe without inventing later income, blow outcomes
+or other players' decisions. The Yes/No receipt survives intervening phases and
+pending responses; actual claim guidance appears only when Charity opens. Its
+forecast and release policy remain provisional; other preparations, broader
+combinations, Advanced and deployed acceptance remain open. Eleven related files
+pass 155/155; type/lint and build pass.
+[Scope and source](TRUTHTRANCE_CHARITY.md#upcoming-basic-charity--27-october-2026).
+
 **Truthtrance Charity commitment — 27 October. Prototyped / Partial.**
 A current concurrent Basic Charity question can bind whether the target claims
 after answering. A Yes requires an attainable native claim; No prevents a claim
@@ -28,8 +39,8 @@ control and minimal legal AI use the same native entitlement. An event-bound
 guide can quote a real ordinary payment to reach eligibility before claiming,
 including after another player changes the target's funds. Voluntary and
 external loss of opportunity differ. Other future routes and unknown answers
-requiring joint planning remain partial; earlier-phase questions, Advanced,
-wider combinations and deployed acceptance remain open. The general
+requiring joint planning remain partial; the earlier-phase extension is
+described above. Advanced, wider combinations and deployed acceptance remain open. The general
 FAQ supports current-turn questions; this particular binding procedure remains
 provisional. Fourteen related files pass 187/187; type/lint and build pass.
 [Scope and source](TRUTHTRANCE_CHARITY.md#live-basic-charity--27-october-2026).

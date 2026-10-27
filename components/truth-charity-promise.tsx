@@ -10,7 +10,8 @@ type Props = { game: GameView; busy: boolean; send: (action: Action) => void };
 export function TruthCharityPromise({ game, busy, send }: Props) {
   const own = game.truthCharityPromises.filter(promise => promise.turn === game.turn && promise.player === game.me);
   if (!own.length) return null;
-  const guide = game.truthCharityGuide, actor = game.me, turn = game.turn, action = guide?.action;
+  // A later-phase forecast never becomes a current action before Charity opens.
+  const guide = game.phase === 2 ? game.truthCharityGuide : null, actor = game.me, turn = game.turn, action = guide?.action;
   const signature = JSON.stringify(action), event = action?.charityPromiseEvent;
   const canAct = () => {
     const me = game.players.find(player => player.id === actor);
@@ -34,11 +35,12 @@ export function TruthCharityPromise({ game, busy, send }: Props) {
   return <section className="notice space-y-3" aria-label="Your Truthtrance Charity promises" id="charity-promise-guidance">
     <h3>Your Charity promises</h3>
     <ul>{own.map(promise => <li key={promise.event}>
-      You answered {promise.answer ? 'Yes' : 'No'} to claiming Charity in this phase.
+      You answered {promise.answer ? 'Yes' : 'No'} to claiming Charity in this turn’s {game.phase < 2 ? 'upcoming' : game.phase === 2 ? 'current' : 'completed'} Charity phase.
       {' '}{promise.released ? 'Released: this commitment is no longer possible.'
         : promise.fulfilled ? 'Fulfilled: this commitment is complete.' : 'This answer remains binding while possible.'}
     </li>)}</ul>
-    <p>Yes requires an actual eligible claim after the answer; No forbids claiming during the rest of this Charity phase. Earlier claims do not count.</p>
+    <p>Yes requires an actual eligible claim after the answer; No forbids claiming during this Charity phase. Earlier claims do not count.</p>
+    {game.phase < 2 && <p className="fine">Charity has not opened yet. The current turn and its original decisions continue; any claim guide appears only when Charity is available.</p>}
     {guide && action?.type === 'bribe' && <p className="fine">The quoted payment can make you eligible for Charity. You pay immediately; the other player receives the bribe at the start of Mentat Pause.</p>}
     {guide && action && <Button className="game-action min-h-11 whitespace-normal" data-testid="charity-promise-guide"
       disabled={!canAct()} onClick={() => { if (canAct()) send(action); }}>

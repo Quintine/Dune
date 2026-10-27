@@ -1,5 +1,38 @@
 # Truthtrance: Charity claim commitment
 
+## Upcoming Basic Charity — 27 October 2026
+
+**Prototyped / Partial.** The Charity claim question also covers supported quiet
+Basic Storm and Spice Blow windows before the current turn's Charity phase.
+It asks about a claim after the answer, in that upcoming phase. The FAQ's
+current-turn commitment rule supplies the general source; this specific future
+quote and interruption policy is a provisional implementation interpretation.
+
+The private quote uses the respondent's known current purse and, where
+available, a single legal native ordinary bribe as a route to the later claim.
+It does not manufacture future spice, mandatory blow outcomes, CHOAM income or
+cancellation, another player's actions, or other undisclosed preparations.
+A definite receipt survives the intervening native phase transitions. No remains
+binding through the subsequent Charity phase; Yes requires a real eligible claim
+while a supported route remains possible. A pending opening or response is not
+itself proof that the claim has become impossible: reconcile the real outcome
+once the interruption resolves. Voluntary loss of an attainable Yes and an
+external loss retain their distinct treatment.
+
+Before Charity opens, the private status explains that the action is upcoming;
+it does not offer a simulated future claim or bribe as an immediately legal
+control. In the real Charity phase, the existing event- and turn-bound native
+bribe/claim guidance, No restriction, Ready and payment rules continue. Other
+preparation routes, action combinations needing joint planning, pending-window
+compositions and Advanced ordered Charity remain open. This first version does
+not certify complete Truthtrance, modes, browser or deployed play.
+
+The earlier-window tests use original Basic sources with actual Storm and
+post-Amal Spice Blow continuations, plus a real CHOAM opening; an unopened safe
+Spice prefix is selected for the phase-zero case. No wallets or cards are
+reassigned. Eleven related files pass 155/155; type/lint and build pass.
+Server-rendered controls are covered, not browser or deployed acceptance.
+
 ## Live Basic Charity — 27 October 2026
 
 **Prototyped / Partial.** A Truthtrance holder may ask another player whether
@@ -50,7 +83,7 @@ transfer before real Ready, bribe and claim actions. Fourteen related files pass
 187/187; type/lint and build pass. Server-rendered controls are exercised, but
 that is not browser or deployed acceptance.
 
-Questions earlier than the live phase, other preparation or later eligibility
-forecasts, Advanced ordered Charity, broader overlapping promises,
+Other early-phase windows or preparations, later eligibility forecasts,
+Advanced ordered Charity, broader overlapping promises,
 optional-module and pending-response combinations, full games, browser and
 deployed acceptance remain open. No independent joint planner is introduced.

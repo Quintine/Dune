@@ -268,9 +268,9 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
     throw new TruthError('Finish this player’s current Charity answer before binding another action question.');
   if (v.kind === 'charity') {
     check(Object.keys(v).sort().join(',') === 'kind,target,turn' && v.turn === g.turn &&
-      g.status === 'playing' && !g.advanced && g.phase === 2 && !g.charityOrder &&
+      g.status === 'playing' && !g.advanced && g.phase >= 0 && g.phase <= 2 && !g.charityOrder &&
       !g.response && !g.decision && !g.phaseOpening && !g.pendingKarama && !g.pendingTreacheryDiscard,
-      'Choose the current quiet Basic Charity phase and its original turn.');
+      'Choose this turn’s upcoming or current Basic Charity in a quiet window.');
     return { kind: 'charity', target: v.target as string, turn: g.turn };
   }
   if (v.kind === 'mixedRevival') {
@@ -752,7 +752,7 @@ export function truthQuestionText(
   playerName: (id: string) => string = id => id,
 ): string {
   if (q.kind === 'freeform') return q.text;
-  if (q.kind === 'charity') return 'Will you claim Charity after this answer during this Charity phase?';
+  if (q.kind === 'charity') return 'Will you claim Charity after this answer during this turn’s Charity phase?';
   if (q.kind === 'revivalExpression') return `Will you ${revivalExpressionText(q.claim, id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))} from now until your Revival opportunity ends this turn?`;
   if (q.kind === 'leaderRevival') return `Will you ${leaderRevivalClaimText(q, id => id === 'kwisatz' ? 'Kwisatz Haderach' : leaderName(id))}?`;
   if (q.kind === 'allianceExpression') return `Is it true that you ${allianceExpressionText(q.claim, playerName)}?`;

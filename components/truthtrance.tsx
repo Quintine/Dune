@@ -434,7 +434,7 @@ export function Truthtrance({
                   </>
                 ) : w.question!.kind === 'charity' ? (
                   <>
-                    <p className="notice">This asks whether you will claim Charity after your answer in this Charity phase. Yes requires a legal claim while it remains possible; No means you cannot claim during this phase. Native eligibility and payment rules still apply.</p>
+                    <p className="notice">This asks whether you will claim Charity after your answer in the upcoming or current Charity phase. Yes requires a legal claim while it remains possible; No means you cannot claim during that phase. The provisional forecast can include one ordinary payment to reach eligibility. Native eligibility and payment rules still apply, and an unresolved outcome may make an answer unknown.</p>
                     {(g.truthCharityAnswers ?? []).map(answer => <div key={answer}>
                       {button(answer === 'unknown' ? 'I don’t know' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}
                     </div>)}
@@ -608,7 +608,7 @@ export function Truthtrance({
                   <option value="leaderRevival">Bind a named leader revival this turn</option>
                   <option value="revival">Bind ordinary force revivals this turn</option>
                   <option value="bid">Bind a bid in this ordinary lot</option>
-                  <option value="charity">Bind a Charity claim this phase</option>
+                  <option value="charity">Bind a Charity claim this turn</option>
                   <option value="phaseBid">Bind a bid this Bidding phase</option>
                   <option value="richeseBid">Bind a bid in this Richese lot</option>
                   <option value="mixedBid">Combine current facts and ordinary bids</option>
@@ -756,7 +756,7 @@ export function Truthtrance({
                 </>
               ) : kind === 'charity' ? (
                 <>
-                  <p className="fine">Ask whether the selected player will claim Charity after answering during this phase. Earlier claims do not count; native eligibility and payment still apply.</p>
+                  <p className="fine">Ask whether the selected player will claim Charity after answering in the upcoming or current Charity phase. Earlier claims do not count; native eligibility and payment still apply. An unresolved outcome may leave the answer unknown.</p>
                   {!g.truthCharityTargets.includes(target) && <p className="notice">Choose a player with a supported remaining Charity opportunity.</p>}
                   <p className="notice" aria-label="Public Charity question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>

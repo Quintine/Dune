@@ -1,5 +1,20 @@
 # Dune implementation status
 
+## 27 October 2026 — Upcoming Basic Charity Truthtrance
+
+Extend the provisional Charity question to supported quiet Basic Storm and Spice
+Blow windows before the same turn's Charity. Retain a definite receipt through
+intervening phases and suspend impossibility reconciliation across pending
+responses. The private future quote uses the current known purse and one legal
+ordinary payment without inventing mandatory spice, CHOAM or foreign choices;
+the actual claim or payment guide appears only during real Charity. No continues
+to prohibit the actual claim and Yes requires it while a supported route remains.
+Further preparations, overlapping future commitments, Advanced, broader
+combinations, browser and deployed acceptance remain open. Eleven related files
+pass 155/155; type/lint and build pass. Private proof is
+`20261027-truth-charity-early-proof/`.
+[Contract](TRUTHTRANCE_CHARITY.md#upcoming-basic-charity--27-october-2026).
+
 ## 27 October 2026 — Truthtrance Charity commitment
 
 Connect an explicit current Basic Charity claim question to target-only answer
@@ -12,9 +27,9 @@ on the quote. An external funds change retains Yes when this route remains.
 Other preparation, unknown answers and independent action combinations needing
 a joint planner remain partial.
 The source fixture uses original cards, genuine Amal and an actual four-spice
-bribe, with no reassigned wallets. This is provisional, limited to the current
-concurrent Basic phase; Advanced, earlier-phase and wider combinations plus
-browser/deployed acceptance remain open. Fourteen related files pass 187/187;
+bribe, with no reassigned wallets. This checkpoint was limited to the concurrent
+Basic phase; the earlier-phase extension is described above. Advanced, wider
+combinations and browser/deployed acceptance remain open. Fourteen related files pass 187/187;
 type/lint and build pass. The external-income supplement uses a labeled,
 conserved controlled transfer. Private proof is
 `20261027-truth-charity-claim-promise-proof-v2/`.
