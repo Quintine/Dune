@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 27 October 2026 — Truthtrance and Atreides Spice Blow knowledge
+
+A single or compound structured question may ask whether the Spice Card
+currently known to Atreides is a named printed blow, a sandworm or Sandtrout.
+Only its active, uncanceled native peek yields a definite private answer.
+Focused controls, helpers and real Basic/Advanced question flow with all four
+legal bot answers pass 24 cases; the canceled-peek case is staged. General
+freeform enforcement, broader interactions and deployed acceptance remain open.
+[Scope](TRUTHTRANCE_KNOWLEDGE.md#atreides-spice-blow-knowledge--27-october-2026).
+
 ## 27 October 2026 — Two people, four factions
 
 The provisional setup maps two controllers to four independent faction seats,

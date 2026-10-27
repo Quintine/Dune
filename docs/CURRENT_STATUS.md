@@ -16,6 +16,15 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance and Atreides Spice Blow knowledge — 27 October. Prototyped /
+Partial.** A structured question can compare the currently known next Spice
+Card with a printed location, sandworm or Sandtrout. Only Atreides' active,
+uncanceled peek yields a definite answer. Single/compound controls, private
+answer and existing legal bots are connected. Five focused files pass 24 cases,
+including real Basic/Advanced progression through the native peek; a canceled
+peek is staged separately. Arbitrary questions, broader interactions and
+deployed acceptance remain open. [Scope](TRUTHTRANCE_KNOWLEDGE.md#atreides-spice-blow-knowledge--27-october-2026).
+
 **Two people, four factions — 27 October. Prototyped / Partial.** Each person
 can add a separately authenticated second faction and switch its private view
 and actions. Exactly two controllers with two seats each are required to start;

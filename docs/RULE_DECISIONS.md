@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Truthtrance and Atreides Spice Blow knowledge — 27 October 2026
+
+The publisher FAQ permits game-related yes/no and compound questions. The
+structured Spice Card fact reports only an active, successful native Atreides
+peek and does not forecast an unknown card. Matching a Discovery blow by its
+printed territory and treating unavailable knowledge as unknown are bounded
+software interpretations; arbitrary questions remain unfinished.
+[Scope](TRUTHTRANCE_KNOWLEDGE.md#atreides-spice-blow-knowledge--27-october-2026).
+
 ## Two people, two factions each — 27 October 2026
 
 The classic rulebook and the supplied Advanced revision permit two people to

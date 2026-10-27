@@ -2,14 +2,13 @@
 
 import { useId } from 'react';
 import { FACTIONS } from '@/game/catalog';
-import type { TruthFact } from '@/game/truthtrance';
-import { knowledgeFactInputError } from '@/game/truthtrance-knowledge';
+import { territory } from '@/game/board';
+import { knowledgeFactInputError, SPICE_PEEK_VALUES, type KnowledgeFact } from '@/game/truthtrance-knowledge';
 import { Input } from '@/components/ui/input';
 
-type KnowledgeFact = Extract<TruthFact, { kind: 'prediction' | 'stormDial' | 'stormForecast' }>;
-type NumericKnowledgeFact = Exclude<KnowledgeFact, { kind: 'prediction'; field: 'faction' }>;
+type NumericKnowledgeFact = Exclude<KnowledgeFact, { kind: 'prediction'; field: 'faction' } | { kind: 'spicePeek' }>;
 function isNumericKnowledgeFact(fact: KnowledgeFact): fact is NumericKnowledgeFact {
-  return fact.kind !== 'prediction' || fact.field === 'turn';
+  return fact.kind !== 'spicePeek' && (fact.kind !== 'prediction' || fact.field === 'turn');
 }
 
 export function KnowledgeFactFields({
@@ -20,7 +19,7 @@ export function KnowledgeFactFields({
   onChange: (fact: KnowledgeFact) => void;
 }) {
   const id = useId();
-  const isFaction = !isNumericKnowledgeFact(value);
+  const isFaction = value.kind === 'prediction' && value.field === 'faction';
   const numericValue = isNumericKnowledgeFact(value) ? value : null;
   const isTurn = numericValue?.kind === 'prediction' && numericValue.field === 'turn';
   const min = isTurn ? 1 : numericValue?.kind === 'stormForecast' ? 1 : 0;
@@ -28,7 +27,19 @@ export function KnowledgeFactFields({
   const invalid = knowledgeFactInputError(value);
   return (
     <>
-      {isFaction ? (
+      {value.kind === 'spicePeek' ? (
+        <>
+          <label>
+            Next Spice Blow card
+            <select value={value.value} onChange={(event) => onChange({ kind: 'spicePeek', value: event.target.value })}>
+              {SPICE_PEEK_VALUES.map((option) => <option key={option} value={option}>
+                {option === 'worm' ? 'Sandworm' : option === 'sandtrout' ? 'Sandtrout' : territory(option).name}
+              </option>)}
+            </select>
+          </label>
+          <p className="fine">This asks about the card the target currently knows from their private Spice Blow peek. If no card is known, the answer is I don’t know. Only the answer is published.</p>
+        </>
+      ) : isFaction ? (
         <label>
           Predicted faction
           <select

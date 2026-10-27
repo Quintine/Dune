@@ -3242,13 +3242,14 @@ export const RULE_TOPICS: RuleTopic[] = [
   },
   {
     id: 'truthtrance-knowledge',
-    title: 'Truthtrance: recorded predictions and storm knowledge',
+    title: 'Truthtrance: recorded predictions and private forecasts',
     category: 'Cards',
     coverage: 'Partial',
     developmentStage: 'Prototyped',
-    summary: 'Ask about the target’s recorded Bene Gesserit prediction, submitted storm dial or currently known Fremen storm card, with a single fact or an AND/OR combination.',
+    summary: 'Ask about a recorded prediction, submitted storm dial, Fremen forecast or Atreides Spice Blow peek, with a single fact or an AND/OR combination.',
     steps: [
       'Choose a recorded prediction faction, compare its turn, or compare the target’s current submitted storm dial or known Fremen forecast. Exactly, at least and at most are available for numeric facts.',
+      'Ask whether Atreides’ currently known next Spice Card is a sandworm, Sandtrout, or a blow at a named printed territory. If the peek was canceled or is no longer available, the answer is I don’t know.',
       'These questions describe a choice already recorded or information currently known. They do not require anyone to win on a future turn, change a choice, or make the storm move a promised distance.',
       'A missing prediction, an unsubmitted or expired storm dial, or an unknown forecast yields I don’t know. A forecast question never gives another faction the Fremen’s private knowledge.',
       'For a supported Basic dialer who has not submitted, the separate combined turn-action question can ask about their future exact choice; that is a commitment, not a fact about an already sealed dial.',
@@ -3257,11 +3258,11 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
     related: ['card-truthtrance', 'truthtrance-spice', 'privacy'],
     checklist: [
-      { area: 'Implementation', status: 'Partial', detail: 'Stored prediction and entitled current storm knowledge use shared three-valued fact evaluation; no future commitment or unknown deck lookup.', evidence: ['game/truthtrance-knowledge.ts', 'game/truthtrance.ts', 'game/engine.ts'] },
-      { area: 'Player controls', status: 'Partial', detail: 'Four fact choices, numeric comparisons, public faction names, bounded inputs and compound question previews.', evidence: ['components/truthtrance-knowledge.tsx', 'components/truthtrance.tsx'] },
+      { area: 'Implementation', status: 'Partial', detail: 'Stored prediction, entitled storm knowledge and an active Atreides Spice peek use shared three-valued fact evaluation; no future commitment or unentitled deck lookup.', evidence: ['game/truthtrance-knowledge.ts', 'game/truthtrance.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Five fact choices, numeric comparisons, public faction and Spice Card names, bounded inputs and compound question previews.', evidence: ['components/truthtrance-knowledge.tsx', 'components/mixed-shipment-fields.tsx'] },
       { area: 'AI', status: 'Partial', detail: 'All four profiles answer the owner-only verified scalar through the existing Truthtrance flow. Strategic question selection and freeform understanding remain incomplete.', evidence: ['game/bots.ts', 'tests/truthtrance-knowledge.test.ts'] },
       { area: 'Documentation', status: 'Partial', detail: 'Current-knowledge semantics, unknown cases and original FAQ authority are explicit.', evidence: ['docs/TRUTHTRANCE_KNOWLEDGE.md'] },
-      { area: 'Verification', status: 'Partial', detail: 'Focused rules, UI, compound privacy, bots, JSON and production SQLite restoration; broader Truthtrance acceptance remains open.', evidence: ['tests/truthtrance-knowledge.test.ts', 'tests/truthtrance-knowledge-controls.test.tsx', 'tests/truthtrance-knowledge-recovery.test.ts'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused rules, UI, native Atreides peek and all-profile answers; earlier storm cases include JSON and SQLite restoration. Broader Truthtrance acceptance remains open.', evidence: ['tests/truthtrance-knowledge.test.ts', 'tests/truthtrance-knowledge-controls.test.tsx', 'tests/truthtrance-spice-peek-runtime.test.ts', 'tests/truthtrance-knowledge-recovery.test.ts'] },
     ],
   },
   {

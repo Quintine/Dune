@@ -1,10 +1,18 @@
 import { FACTIONS, type FactionId } from './catalog';
+import { SPICE_CARDS } from './cards';
+import { territory } from './board';
 import type { Game, Player } from './engine';
 
 type Comparison = 'eq' | 'gte' | 'lte';
+/** Publicly selectable identities; a territory names a blow, including a
+ * Discovery card at that same printed territory. No deck contents enter here. */
+export const SPICE_PEEK_VALUES: readonly string[] = [
+  'worm', 'sandtrout', ...SPICE_CARDS.map(([id]) => id),
+];
 export type KnowledgeFact =
   | { kind: 'prediction'; field: 'faction'; faction: FactionId }
   | { kind: 'prediction'; field: 'turn'; compare: Comparison; value: number }
+  | { kind: 'spicePeek'; value: string }
   | { kind: 'stormDial' | 'stormForecast'; compare: Comparison; value: number };
 
 /** Only values already chosen or actually known by this respondent. */
@@ -12,16 +20,20 @@ export type TruthKnowledge = {
   prediction: { faction: FactionId; turn: number } | null;
   stormDial: number | null;
   stormForecast: number | null;
+  spicePeek: string | null;
 };
 
 export function isKnowledgeFact(value: unknown): value is KnowledgeFact {
   if (!value || typeof value !== 'object') return false;
   const kind = (value as { kind?: unknown }).kind;
-  return kind === 'prediction' || kind === 'stormDial' || kind === 'stormForecast';
+  return kind === 'prediction' || kind === 'stormDial' || kind === 'stormForecast' || kind === 'spicePeek';
 }
 
 export function knowledgeFactInputError(value: unknown): string | null {
   if (!isKnowledgeFact(value)) return 'Choose a stored prediction, storm dial or known forecast.';
+  if (value.kind === 'spicePeek')
+    return typeof value.value === 'string' && SPICE_PEEK_VALUES.includes(value.value)
+      ? null : 'Choose a printed Spice Blow territory, a sandworm, or Sandtrout.';
   if (value.kind === 'prediction') {
     if (value.field === 'faction')
       return FACTIONS.some((faction) => faction.id === value.faction)
@@ -39,6 +51,7 @@ export function knowledgeFactInputError(value: unknown): string | null {
 export function parseKnowledgeFact(value: unknown): KnowledgeFact {
   const error = knowledgeFactInputError(value);
   if (error || !isKnowledgeFact(value)) throw new Error(error ?? 'Choose a valid private-knowledge question.');
+  if (value.kind === 'spicePeek') return { kind: value.kind, value: value.value };
   if (value.kind === 'prediction' && value.field === 'faction')
     return { kind: value.kind, field: value.field, faction: value.faction };
   if (value.kind === 'prediction')
@@ -47,10 +60,16 @@ export function parseKnowledgeFact(value: unknown): KnowledgeFact {
 }
 
 export function truthKnowledgeOf(
-  g: Pick<Game, 'phase' | 'turn' | 'advanced' | 'stormDials' | 'stormDialers' | 'stormCard' | 'stormCardKnown'>,
+  g: Pick<Game, 'phase' | 'turn' | 'advanced' | 'stormDials' | 'stormDialers' | 'stormCard' | 'stormCardKnown' | 'spicePeekKnown' | 'spiceDeck'>,
   p: Pick<Player, 'id' | 'faction' | 'prediction'>,
 ): TruthKnowledge {
   const dial = g.stormDials[p.id];
+  const peek = g.phase === 5 && p.faction === 'atreides' && g.spicePeekKnown
+    ? g.spiceDeck[0] : undefined;
+  const peekFace = peek && 'worm' in peek && peek.worm === true ? 'worm'
+    : peek && 'sandtrout' in peek && peek.sandtrout === true ? 'sandtrout'
+      : peek && 'territory' in peek && typeof peek.territory === 'string' && SPICE_PEEK_VALUES.includes(peek.territory)
+        ? peek.territory : null;
   return {
     prediction: p.faction === 'beneGesserit' && p.prediction
       ? { ...p.prediction } : null,
@@ -60,6 +79,7 @@ export function truthKnowledgeOf(
     stormForecast: p.faction === 'fremen' && g.advanced && g.stormCardKnown &&
       Number.isSafeInteger(g.stormCard) && g.stormCard! >= 1 && g.stormCard! <= 6
       ? g.stormCard : null,
+    spicePeek: peekFace,
   };
 }
 
@@ -70,6 +90,9 @@ export function knowledgeFactAnswer(
   const error = knowledgeFactInputError(fact);
   if (error) throw new Error(error);
   if (!knowledge) return 'unknown';
+  if (fact.kind === 'spicePeek')
+    return knowledge.spicePeek === null || knowledge.spicePeek === undefined ? 'unknown'
+      : knowledge.spicePeek === fact.value ? 'yes' : 'no';
   if (fact.kind === 'prediction' && fact.field === 'faction')
     return knowledge.prediction === null ? 'unknown'
       : knowledge.prediction.faction === fact.faction ? 'yes' : 'no';
@@ -81,6 +104,11 @@ export function knowledgeFactAnswer(
 }
 
 export function knowledgeFactText(fact: KnowledgeFact): string {
+  if (fact.kind === 'spicePeek') {
+    const face = fact.value === 'worm' ? 'a sandworm' : fact.value === 'sandtrout' ? 'Sandtrout'
+      : `a Spice Blow at ${territory(fact.value).name}`;
+    return `the next Spice Card currently known to you as Atreides is ${face}`;
+  }
   if (fact.kind === 'prediction' && fact.field === 'faction')
     return `your recorded Bene Gesserit prediction names ${FACTIONS.find((f) => f.id === fact.faction)!.name}`;
   const comparison = fact.compare === 'eq' ? 'exactly' : fact.compare === 'gte' ? 'at least' : 'at most';

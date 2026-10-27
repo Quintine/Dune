@@ -1,5 +1,27 @@
 # Truthtrance: recorded predictions and storm knowledge
 
+## Atreides Spice Blow knowledge — 27 October 2026
+
+**Prototyped / Partial.** The structured fact `{kind:'spicePeek', value}` asks
+whether Atreides' currently known next Spice Card is a sandworm, Sandtrout, or
+a blow naming one of the printed territories. A Discovery card at the named
+territory also matches that territory question. Only the native Atreides seat
+with an active, uncanceled Shipment and Movement peek receives a definite
+answer; an unavailable peek, another faction or an empty deck yields unknown.
+This reports existing knowledge rather than granting a forecast, looking at a
+future replacement card or promising a future outcome. Both single and
+compound controls use public face choices; the owner-only scalar, physical
+Truthtrance handling and four legal bot answer paths remain shared.
+
+The existing general [GF9 FAQ p. 8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=8)
+permits game-related yes/no and combined questions. These particular selectors
+and entitlement boundaries are software interpretations, not a new printed
+restriction. Five focused files pass 24 cases; two runtime cases include real
+Basic/Advanced progression to the successful peek, actual asking and answering,
+all four bot profiles, a staged canceled-peek state and physical card custody.
+Full Truthtrance language, broader interactions and deployed acceptance remain
+open.
+
 14 September 2026. **Prototyped**, with **Partial** coverage. This extends the
 existing question flow with four typed predicates; freeform interpretation,
 general future commitments and complete mode acceptance remain unfinished.

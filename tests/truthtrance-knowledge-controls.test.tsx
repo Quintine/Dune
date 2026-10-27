@@ -3,10 +3,13 @@ import assert from 'node:assert/strict';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { KnowledgeFactFields } from '../components/truthtrance-knowledge';
+import { TruthFactFields } from '../components/mixed-shipment-fields';
+import { TruthFactExpressionFields } from '../components/truth-fact-expression-fields';
 import { knowledgeFactInputError } from '../game/truthtrance-knowledge';
+import { createGame, joinGame, newPlayer, viewGame } from '../game/engine';
 import type { TruthFact } from '../game/truthtrance';
 
-function markup(value: Extract<TruthFact, { kind: 'prediction' | 'stormDial' | 'stormForecast' }>) {
+function markup(value: Extract<TruthFact, { kind: 'prediction' | 'stormDial' | 'stormForecast' | 'spicePeek' }>) {
   return renderToStaticMarkup(createElement(KnowledgeFactFields, { value, onChange() {} }));
 }
 
@@ -31,6 +34,30 @@ void test('knowledge controls expose full public faction registry and bounded st
   assert.match(forecast, /value="gte"/);
   assert.match(forecast, /value="lte"/);
   assert.match(forecast, /If no such value is available/);
+});
+
+void test('spice peek controls offer public card identities with private-knowledge guidance', () => {
+  const markupText = markup({ kind: 'spicePeek', value: 'worm' });
+  assert.match(markupText, /value="worm"/);
+  assert.match(markupText, /Sandworm/);
+  assert.match(markupText, /value="sandtrout"/);
+  assert.match(markupText, /value="the_great_flat"/);
+  assert.match(markupText, /private Spice Blow peek/);
+  assert.match(markupText, /Only the answer is published/);
+});
+
+void test('standalone and compound fact editors both expose the spice peek question', () => {
+  const game = createGame('PEEKCONTROLS', newPlayer('a', 'Asker', 'emperor'));
+  joinGame(game, newPlayer('b', 'Target', 'atreides'));
+  const view = viewGame(game, 'a');
+  const fact: TruthFact = { kind: 'spicePeek', value: 'broken_land' };
+  const single = renderToStaticMarkup(createElement(TruthFactFields, { value: fact, game: view, target: 'b', onChange() {} }));
+  assert.match(single, /value="spicePeek" selected/);
+  assert.match(single, /value="broken_land" selected/);
+  const compound: TruthFact = { kind: 'and', terms: [fact, { kind: 'spice', compare: 'gte', value: 3 }] };
+  const grouped = renderToStaticMarkup(createElement(TruthFactExpressionFields, { value: compound, game: view, target: 'b', disabled: false, onChange() {} }));
+  assert.match(grouped, /Known next Spice Blow card/);
+  assert.match(grouped, /value="broken_land" selected/);
 });
 
 void test('knowledge helper rejects invalid stored bounds', () => {
