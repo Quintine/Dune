@@ -20,6 +20,28 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Salusa Ghola inspection renewal — 27 October. Prototyped / Partial.**
+Before either full plan seals, an actual Salusa-crossing Ghola return now keeps
+a feasible inspection answer or reopens an impossible original question. The
+owner must answer before plans continue. The existing native-first Cunning
+renewal protocol is reused without a new field, cost or cancellation. Full
+seals and active Truthtrance battle promises remain guarded. The single-answer
+update follows the authorized PDF's identified unofficial ruling; the paired
+priority remains provisional. [Contract](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-renewed-inspection-answers--27-october-2026).
+
+**Fourteen files115/115**, types/lint and two native runtime programmes pass.
+Original public Advanced E/A/G base33/Homeworlds select an actually offered
+Basin first battle, earn its paid star casualty, then ask and answer actual
+Atreides Prescience in Arrakeen. Two prefixes total104 actions;11 further
+actions distinguish impossible odd1 renewal from feasible2 retention and
+finish both native battles. Nine GameTable/two BattlePreparation SSR renders
+and one shared answer-adapter packet connect guidance and the legal answer.
+All four minimal profiles answer legally. Amount/elite/answer/plan inputs are
+not operated in a browser. An older explicitly staged Residual/Cunning fixture
+now removes its obsolete Charity frame at its controlled Battle boundary.
+No new played Cunning/Ghola pair, full modes, mobile, deployed or final
+assurance is certified. No build was repeated for this focused rule change.
+
 **Salusa Ghola before battle commitments — 27 October. Prototyped / Partial.**
 An otherwise legal Sardaukar Ghola return can raise Salusa from one to two
 during the Emperor's uncommitted battle. That same battle uses current High

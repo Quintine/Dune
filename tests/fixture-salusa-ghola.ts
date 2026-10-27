@@ -74,7 +74,9 @@ function livingLeader(game: Game, actor: string, strongest: boolean) {
 /** Earned public one-turn source. Initial hands/Spice order are selected only
  * while unopened; native setup, payments, typed shipments, split movement and
  * the earlier combat casualty create every later resource and battle field. */
-export function createSalusaGholaFixture() {
+export function createSalusaGholaFixture(options: {
+  firstTerritory?: 'imperial_basin'|'arrakeen'; inspectionDial?: 1|2;
+} = {}) {
   const actor = 'emperor', atreides = 'atreides', guild = 'guild';
   let game = createGame('SALUSAGHOLA',newPlayer(actor,'Emperor','emperor'),true);
   joinGame(game,newPlayer(atreides,'Atreides','atreides'));
@@ -134,7 +136,8 @@ export function createSalusaGholaFixture() {
   }
   assert.ok(movement); assert.equal(game.phase,6);
   reach(g => salusaGholaClean(g) && !g.battle && !!g.active);
-  const beforeFirstBattle = structuredClone(game), firstTerritory = game.active === guild ? 'imperial_basin' : 'arrakeen';
+  const beforeFirstBattle = structuredClone(game), firstTerritory = options.firstTerritory ??
+    (game.active === guild ? 'imperial_basin' : 'arrakeen');
   const firstOpponent = firstTerritory === 'arrakeen' ? atreides : guild;
   const firstChooser = game.active!;
   assert.ok(viewGame(game,firstChooser).battleChoices.some(c => c.territory === firstTerritory));
@@ -159,6 +162,21 @@ export function createSalusaGholaFixture() {
   assert.ok(viewGame(game,chooser).battleChoices.some(c => c.territory === secondTerritory));
   act(chooser,{type:'chooseBattle',territory:secondTerritory,target:chooser === actor ? opponent : actor});
   const preparation = structuredClone(game);
+  let inspection: {beforeDeclaration:Game;declared:Game;beforeAnswer:Game;answered:Game;steps:SalusaGholaStep[]}|null = null;
+  if (options.inspectionDial !== undefined) {
+    assert.equal(opponent,atreides,'An actual native Atreides opponent supplies the requested inspection.');
+    reach(g => salusaGholaClean(g) && g.battle?.preparation?.kind === 'prescience' &&
+      g.battle.preparation.owner === atreides);
+    const beforeDeclaration = structuredClone(game), inspectionAt = actions.length;
+    act(atreides,{type:'prescience',field:'dial'});
+    const declared = structuredClone(game);
+    reach(g => salusaGholaClean(g) && g.battle?.preparation?.kind === 'prescienceAnswer' &&
+      g.battle.preparation.owner === actor);
+    const beforeAnswer = structuredClone(game);
+    act(actor,{type:'prescienceAnswer',value:options.inspectionDial});
+    inspection = {beforeDeclaration,declared,beforeAnswer,answered:structuredClone(game),
+      steps:structuredClone(actions.slice(inspectionAt))};
+  }
   reach(planReady);
   assert.deepEqual(game.battle!.plans,{});
   assert.ok(salusaGholaPlayer(game).hand.some(c => c.id === ghola.id));
@@ -170,8 +188,9 @@ export function createSalusaGholaFixture() {
     territory:secondTerritory,firstTerritory,firstOpponent,firstPlans,
     initial,lobby,setup,beforeDeal,afterSetup,dealOrder,spiceOrder,original,setupActions,
     shipments,movement,beforeFirstBattle,firstPreparation,firstBeforePlans,firstResolution,firstActions,
-    beforeSecondBattle,preparation,actions,sourceActions:actions,sourceCount:actions.length,
-    disclosure:'Original public Advanced E/A/G with Homeworlds enabled before Ready/start, base33 and no optional modules. Only unopened starting cards, two land Spice positions and scalar lotteries selected. Real typed E4stars desert shipment costs8 and leaves Salusa1; real two-star movement creates Arrakeen contest, and real Guild1 shipment creates Basin contest. The first actual E win uses paid support1/dial2 and kills one real Sardaukar. Stop at the other actual live unsealed battle with Ghola held, Salusa1, tanks1star and two fighting stars. No later phase, force, purse, Tank, hand, battle commitment or receipt is installed.'};
+    beforeSecondBattle,preparation,inspection,actions,sourceActions:actions,sourceCount:actions.length,
+    disclosure:'Original public Advanced E/A/G with Homeworlds enabled before Ready/start, base33 and no optional modules. Only unopened starting cards, two land Spice positions and scalar lotteries selected. Real typed E4stars desert shipment costs8 and leaves Salusa1; real two-star movement creates Arrakeen contest, and real Guild1 shipment creates Basin contest. The first actual E win uses paid support1/dial2 and kills one real Sardaukar. Stop at the other actual live unsealed battle with Ghola held, Salusa1, tanks1star and two fighting stars. No later phase, force, purse, Tank, hand, battle commitment or receipt is installed.' +
+      (inspection ? ` Optional actual Atreides native dial Prescience and Emperor answer${options.inspectionDial} are recorded before either plan seals; the preferred first battle is selected only from the actual chooser options.` : '')};
 }
 export type SalusaGholaFixture = ReturnType<typeof createSalusaGholaFixture>;
 

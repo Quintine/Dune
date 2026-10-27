@@ -29077,6 +29077,7 @@ function playMarketGhola(g: Game, p: Player, action: Action) {
 function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
   requireRule(!revivalPrevented(g, p.id),
     'Tleilaxu prevented this player’s revival, including Ghola, for the remaining Revival Phase.');
+  const salusaWasHigh = homeworldSardaukarFreeSupport(g, p.id);
   if (action.leader === 'kwisatz') {
     requireRule(
       g.advanced && p.faction === 'atreides' && p.kwisatz?.dead,
@@ -29142,6 +29143,9 @@ function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
   techIncome(g, 'axlotl', p);
   collectRevivalIncome(g, p, 0, false, true);
   recordNativePrintedCardPlay(g, p.id, 'ghola');
+  if (!salusaWasHigh && homeworldSardaukarFreeSupport(g, p.id) && g.battle &&
+      [g.battle.attacker, g.battle.defender].includes(p.id))
+    reconcileChangedBattleInspections(g, 'the Salusa population increase', true);
 }
 /** Search complete legal plans without learning or consulting the opponent's sealed choices. */
 function findLegalBattlePlan(

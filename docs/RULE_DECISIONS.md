@@ -1,5 +1,17 @@
 # Rule decision index
 
+## Salusa Ghola inspection renewal — 27 October 2026
+
+Before either full plan is sealed, an actual Salusa-crossing Ghola return may
+retain a feasible inspection or renew an impossible original field. The supplied
+PDF's outlined impossible-answer Q&A (physical41 / printed39) is an accepted
+unofficial ruling under user authority; physical3 / printed1 explains its
+marking. Reuse the existing provisional native-first Cunning order and original
+spent record, without new fields, charge or cancellation. Full seals and active
+Truthtrance battle promises remain guarded separately. This supersedes only
+the inspection restriction in the earlier window below.
+[Contract](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-renewed-inspection-answers--27-october-2026).
+
 ## Salusa Ghola commitment-free battle window — 27 October 2026
 
 Remove the whole-battle population-crossing restriction before any sealed plan,

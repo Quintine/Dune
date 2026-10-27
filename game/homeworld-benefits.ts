@@ -1,7 +1,6 @@
 import type { Game } from './engine';
 import { homeworldContext } from './homeworld-game';
 import { homeworldPopulations } from './homeworld-population';
-import { committedPlanElements } from './battle-inspections';
 
 type HomeworldBenefitContext = Pick<
   Game,
@@ -60,9 +59,10 @@ export function homeworldSardaukarFreeSupport(
   );
 }
 
-/** Current population can change before battle commitments. The remaining
- * preview boundary protects sealed dials/support and binding answers from
- * repricing; it does not freeze population or forbid Ghola for a whole battle.
+/** Current population can change before sealed plans. The caller renews an
+ * impossible inspection answer after the return. The remaining preview boundary
+ * protects sealed dials/support and binding Truthtrance promises from repricing;
+ * it does not freeze population or forbid Ghola for a whole battle.
  * Inspect submission presence, never an opponent's sealed plan contents. */
 export function homeworldSardaukarGholaBlock(
   context: HomeworldBenefitContext & Pick<Game, 'battle'>,
@@ -88,11 +88,9 @@ export function homeworldSardaukarGholaBlock(
   if (!crossing) return null;
   const battle = context.battle;
   const committed = battle.revealed || Object.keys(battle.plans).length > 0 ||
-    [battle.attacker, battle.defender].some(
-      (id) => committedPlanElements(battle, id).length > 0,
-    ) || battle.truthPromises?.some((promise) => !promise.released);
+    battle.truthPromises?.some((promise) => !promise.released);
   return committed
-    ? 'Ghola raising Salusa to high population after a battle plan or binding answer is not yet supported. Finish this battle first.'
+    ? 'Ghola raising Salusa to high population after a sealed plan or during a binding battle promise is not yet supported. Finish this battle first.'
     : null;
 }
 

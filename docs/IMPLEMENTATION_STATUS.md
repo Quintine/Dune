@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 27 October 2026 — Salusa Ghola inspection renewal
+
+An actual Salusa threshold return before either full plan seals now reuses the
+existing inspection reconciliation: feasible answers stay fixed, impossible
+original fields require an owned new answer, and Cunning retains its provisional
+native-first order and spent record. No repeated charge/cancellation or new
+field selection occurs. The supplied PDF's outlined impossible-answer ruling
+has user-authorized unofficial provenance. Full seals and active Truthtrance
+battle promises remain explicit preview boundaries.
+[Contract](HOMEWORLD_BENEFITS_RULES.md#salusa-ghola-and-renewed-inspection-answers--27-october-2026).
+
+Fourteen-file115/115 and types/lint pass. Two original public Advanced E/A/G
+base33/Homeworld runtime programmes earn the actual first-battle star loss,
+then actually declare and answer Atreides dial Prescience in Arrakeen. Prefixes
+total104 actions;11 continuations compare odd1 renewal/answer2 with feasible2
+retention and finish actual plans/calls. Nine GameTable/two BattlePreparation
+SSR renders and one shared answer-adapter packet check the current control
+path. Four minimal AI profiles answer legally. Stateful inputs are not operated
+in a browser. An older explicitly controlled Residual/Cunning fixture removes
+its stale Charity frame at its staged Battle boundary. No new played
+Cunning/Ghola pair, complete modes, browser/mobile, deployed or final assurance
+is certified; no build was repeated for this focused rule change.
+
+Private proof `20261027-salusa-ghola-inspection-proof-v2/` and runtime
+`20261027-salusa-ghola-inspection-runtime/run-v1/` use the existing private
+checkpoint directory. Frozen tree
+`1321c432fa0a204e5e8db3406be76b4608dac129409c9395fa77eac2bde1290a`
+contains3351 files; final prose overlays are limited to this log,
+`CURRENT_STATUS.md` and `HOMEWORLD_BENEFITS_RULES.md`.
+
 ## 27 October 2026 — Commitment-free Salusa Ghola
 
 Remove the whole-battle threshold guard only before either sealed plan,

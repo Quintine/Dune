@@ -473,7 +473,7 @@ void test('an opponent-only sealed plan keeps the remaining Salusa timing bounda
   assert.deepEqual(g, before);
 });
 
-void test('Salusa threshold protection also preserves an answered Prescience dial before either full plan is sealed', () => {
+void test('Salusa Ghola renews an impossible answered Prescience dial before either full plan is sealed', () => {
   const fixture = gholaThresholdBattle(0);
   const card = fixture.card;
   let g = fixture.g;
@@ -491,19 +491,19 @@ void test('Salusa threshold protection also preserves an answered Prescience dia
   g = applyAction(g, 'e', { type: 'prescienceAnswer', value: 1 });
   assert.equal(g.battle!.prescience!.value, 1);
   assert.deepEqual(g.battle!.plans, {});
-  const saved = reload(g);
-  const reason = viewGame(saved, 'e').ghola.eliteBlock;
-  assert.ok(reason);
-  assert.throws(
-    () => applyAction(saved, 'e', { type: 'card', card, amount: 1, elite: 1 }),
-    (error) => error instanceof Error && error.message === reason,
-  );
-  assert.deepEqual(saved, g);
-  assert.equal(saved.battle!.prescience!.value, 1);
-  const done = resolve(saved, 1, 0);
+  assert.equal(viewGame(g, 'e').ghola.eliteBlock, null);
+  g = applyAction(g, 'e', { type: 'card', card, amount: 1, elite: 1 });
+  assert.equal(g.battle!.prescience!.field, 'dial');
+  assert.equal(Object.hasOwn(g.battle!.prescience!, 'value'), false);
+  assert.equal(g.battle!.preparation!.kind, 'prescienceAnswer');
+  assert.equal(g.battle!.preparation!.owner, 'e');
+  assert.throws(() => applyAction(g, 'e', plan(g, 2)), /battle plan is not available/);
+  assert.throws(() => applyAction(g, 'e', { type: 'prescienceAnswer', value: 1 }), /legal battle plan/);
+  g = applyAction(g, 'e', { type: 'prescienceAnswer', value: 2 });
+  const done = resolve(g, 2, 0);
   assert.equal(done.lastBattleContext!.winner, 'e');
-  assert.equal(done.homeworlds!.custody!.salusa!.elite, 1);
-  assert.equal(emperor(done).elites!.tanks, 2);
-  assert.equal(done.discard.filter((held) => held.id === card).length, 0);
+  assert.equal(done.homeworlds!.custody!.salusa!.elite, 2);
+  assert.equal(emperor(done).elites!.tanks, 1);
+  assert.equal(done.discard.filter((held) => held.id === card).length, 1);
   inventory(done);
 });

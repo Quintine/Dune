@@ -2,7 +2,63 @@
 
 Source audit, 9 September 2026. This separates publisher wording, rule composition, and remaining decisions. It does not enable Homeworld games or replace the outstanding Ambassador/Duke revival rulings.
 
+## Salusa Ghola and renewed inspection answers — 27 October 2026
+
+The earlier commitment-free window below now includes completed inspection
+answers before either full plan is sealed. Commit the actual Ghola return and
+current Salusa High benefit first. Preserve a still-feasible native answer;
+if it becomes impossible, its owner must answer the same field again before
+plans can be submitted. An odd dial using only now-free double-strength stars
+is such a case. The old value is not made into a sealed plan, refunded or used
+as permission to weaken a star. Normal modal interactions still finish first.
+
+Authority for the update is the supplied PDF physical41 / printed39: its
+outlined impossible-Prescience Q&A requires an updated valid answer before
+reveal. Physical3 / printed1 identifies outlined rulings as unofficial; their
+authority here is the user's adoption of this PDF, not a newly found GF9 FAQ.
+Immediate Ghola remains physical39 / printed37, with no separate exception.
+
+Reuse the existing [native-first inspection renewal](NEXUS_ATREIDES_RULES.md#residual-poison-and-two-inspected-commitments).
+For Cunning, keep a feasible native answer first, then test the extra answer
+jointly. If the native answer is impossible, renew its original field before
+the extra original field. Retain observation history and the spent Nexus
+record; do not charge again, offer another cancellation or choose new fields.
+This multi-answer priority remains a provisional online composition. Full
+sealed plans and active Truthtrance battle promises retain their explicit
+preview guard; this slice does not define their repricing or release.
+
+### Inspection-renewal evidence
+
+Fourteen selected files pass115/115 with types/lint. The actual original public
+Advanced E/A/G base33/Homeworld source can select Basin from the real chooser's
+first-battle alternatives, earn a paid Sardaukar casualty and reach the later
+Arrakeen battle. Actual Atreides declarations, counter-response passes and
+Emperor answers create the initial dial1/2 commitments. No played hand, force,
+purse, clock, inspection answer or battle receipt is installed. Only unopened
+initial card/Spice positions and native scalar lotteries are selected.
+
+The separate runtime uses two prefixes totaling104 actions and11 continuation
+actions. Actual Ghola returns once in each: odd1 requires the owned same-field
+answer2 before actual plans/calls; feasible2 stays fixed without another
+question. Nine GameTable and two BattlePreparation SSR renders plus one actual
+shared UI answer-adapter packet connect the current controls. Stateful input
+operation/browser hydration is not claimed. All four minimal profiles provide
+legal pending answers. Existing Cunning/Residual tests cover the inherited
+protocol; no new played Cunning/Ghola pair is certified. The older explicitly
+controlled resource fixture clears its stale Charity frame when staging Battle.
+
+Private proof: `/home/quintine/.local/share/dune/checkpoints/20261027-salusa-ghola-inspection-proof-v2/`;
+runtime: `20261027-salusa-ghola-inspection-runtime/run-v1/` beside it. Frozen
+tree `1321c432fa0a204e5e8db3406be76b4608dac129409c9395fa77eac2bde1290a`
+contains3351 files. Final evidence overlays are limited to this document, the
+dashboard and implementation log. No build was repeated for this focused rule
+change; complete modes, native-Salusa battle, browser/mobile, deployed and final
+recovery/privacy/custody acceptance remain separate.
+
 ## Salusa Ghola before battle commitments — 27 October 2026
+
+Historical first window: inspection restrictions described in this subsection
+are superseded by the renewed-answer follow-up above. Its proof remains dated.
 
 An otherwise legal Ghola may return a dead Sardaukar to Salusa during the
 Emperor's battle while no plan is sealed and no inspection answer or active

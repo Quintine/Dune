@@ -138,6 +138,8 @@ export function createResidualCunningPriorityFixture(options: { kind?: ResidualC
   residualCunningPriorityPlayer(game, asker).reserves = 15;
   Object.assign(game, { phase: 6, active: asker, order: [asker, target, observer], storm: 18,
     ready: [], response: null, decision: null, phaseOpening: null });
+  // This explicitly controlled Battle position has no live Charity turn.
+  delete game.charityOrder;
   const cards = game.nexusCards!.cards!, index = cards.deck.indexOf('atreides'); assert.ok(index >= 0);
   cards.deck.splice(index, 1); cards.deck.unshift('atreides');
   game.nexusCards!.cards = drawNexusCard(cards, asker, game.players, () => 0);
