@@ -1,4 +1,7 @@
 import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
+import { createVictoryContinuation, validateVictoryContinuation, voteVictoryContinuation,
+  VictoryContinuationError, MAX_VICTORY_EXTRA_STRONGHOLDS, type VictoryContinuation,
+  type VictoryContinuationResume } from './victory-continuation';
 import { SabotageGiftError, quoteSabotageGift, quoteSabotageGiftDiscard } from './sabotage-gift';
 import { kullDefaultEligible } from './kull-default-profile';
 import { advancedKullLobbyEligible } from './kull-advanced-profile';
@@ -1402,6 +1405,9 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  /** Agreed addition to the ordinary stronghold win targets. Older games omit it. */
+  victoryExtraStrongholds?: number;
+  victoryContinuation?: VictoryContinuation | null;
   charityPromises?: CharityPromise[];
   revivalOrder?: RevivalOrder;
   charityOrder?: CharityOrder;
@@ -29126,12 +29132,51 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
   }
 }
 
-function victory(g: Game, quote?: VictoryQuote) {
+function victoryAgreementRule<T>(calculate: () => T): T {
+  try { return calculate(); }
+  catch (error) {
+    if (error instanceof VictoryContinuationError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function victoryAgreementSides(g: Game, quote: VictoryQuote): string[][] {
+  const sides = strongholdProgress(g).progress.filter(row => row.qualifies).map(row => row.members);
+  if (quote.ecazHomeworld) sides.push(quote.ecazHomeworld.members);
+  return sides;
+}
+function victoryContinuationIntegrity(g: Game) {
+  const pending = g.victoryContinuation;
+  if (!pending) return;
+  victoryAgreementRule(() => validateVictoryContinuation(pending));
+  requireRule(g.status === 'playing' && g.advanced && g.phase === 8 && g.turn === pending.turn &&
+    !g.winner.length && !g.decision && !g.response,
+  'The shared victory agreement must retain its original Mentat opportunity.');
+  const expected = victoryAgreementRule(() => createVictoryContinuation({
+    event: pending.event, turn: g.turn, resume: pending.resume, order: g.order,
+    sides: victoryAgreementSides(g, currentVictoryQuote(g)),
+  }));
+  requireRule(JSON.stringify(expected.sides) === JSON.stringify(pending.sides) &&
+    JSON.stringify(expected.voters) === JSON.stringify(pending.voters),
+  'The qualifying sides changed during their shared victory agreement.');
+}
+function victory(g: Game, quote?: VictoryQuote, resume: VictoryContinuationResume = 'mentat', skipOffer = false) {
   requireRule(!g.pendingAutomaticAdvisorFlips?.length && !g.pendingAutomaticAdvisorTransport &&
     !g.pendingAutomaticAdvisorGamont && !g.pendingAutomaticAdvisorBattle && !g.pendingAutomaticAdvisorHomeworldTransport &&
     !g.pendingAutomaticAdvisorFaceDance && !g.pendingAutomaticAdvisorStorm && !g.pendingAutomaticAdvisorRelocation && !g.pendingAdvisorMatching && !g.pendingAdvisorAmbassadorMatching && !g.pendingAdvisorTransportMatching && !g.pendingAdvisorGatherMatching && !g.pendingSpiritualAdvisor,
     'Resolve mandatory advisor conversions before checking victory.');
   quote ??= currentVictoryQuote(g);
+  if (!skipOffer && g.advanced && g.turn < 10 && g.status === 'playing' && !g.winner.length) {
+    const sides = victoryAgreementSides(g, quote);
+    const distinct = new Set(sides.map(side => [...side].sort().join('\u0000')));
+    if (distinct.size >= 2 && sides.some(side => side.length === 2)) {
+      applyAdvisorReleases(g, quote.released);
+      g.victoryContinuation = victoryAgreementRule(() => createVictoryContinuation({
+        event: crypto.randomUUID(), turn: g.turn, resume, order: g.order, sides,
+      }));
+      log(g, 'Multiple sides qualify for victory. Their participants may unanimously agree to another turn and a changed stronghold target.');
+      return;
+    }
+  }
   applyAdvisorReleases(g, quote.released);
   g.winner = quote.winner;
   g.status = quote.status;
@@ -39811,6 +39856,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  victoryContinuationIntegrity(state);
   bidPromiseIntegrity(state);
   phaseBidIntegrity(state);
   richeseBidIntegrity(state);
@@ -39903,6 +39949,35 @@ export function applyAction(state: Game, id: string, action: Action): Game {
         g,
         `${owner.name} enabled ${owner.autopilot} AI control for their seat.`,
       );
+    }
+    return g;
+  }
+  if (state.victoryContinuation) {
+    const frame = state.victoryContinuation;
+    if (action.type === 'advanceBots') return state;
+    requireRule(action.type === 'victoryContinuation' &&
+      Object.keys(action).every(key => ['type','event','mode','extra'].includes(key)) &&
+      (action.mode === 'finish' || action.mode === 'continue' || action.mode === 'accept') &&
+      (frame.extraStrongholds === null ? action.mode !== 'accept' : action.mode !== 'continue'),
+    'Finish the current shared victory agreement before another action.');
+    const result = victoryAgreementRule(() => voteVictoryContinuation(frame, {
+      event: action.event as string, player: id,
+      choice: action.mode === 'finish' ? 'finish' : 'continue',
+      ...(action.extra === undefined ? {} : {extraStrongholds: action.extra as number}),
+    }));
+    const g = structuredClone(state);
+    if (result.outcome === 'pending') g.victoryContinuation = result.frame;
+    else {
+      g.victoryContinuation = null;
+      if (result.outcome === 'finish') victory(g, undefined, frame.resume, true);
+      else {
+        const extra = (g.victoryExtraStrongholds ?? 0) + result.extraStrongholds;
+        requireRule(Number.isSafeInteger(extra) && extra <= 200, 'The agreed stronghold target is too large.');
+        g.victoryExtraStrongholds = extra;
+        log(g, `The qualifying participants agreed to continue for another turn${result.extraStrongholds ? ` and increase ordinary stronghold targets by ${result.extraStrongholds}` : ' with unchanged stronghold targets'}.`);
+        if (frame.resume === 'advance') completePhase(g);
+        return normalizeAutomaticGame(g);
+      }
     }
     return g;
   }
@@ -40177,6 +40252,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   return g;
 }
 function finishActionContinuations(g: Game) {
+  if (g.victoryContinuation) return;
   if (g.pendingNexusHarkonnenBetrayal) return;
   if (g.pendingNexusIxianBetrayal) return;
   if (g.pendingGuildBetrayal) return;
@@ -40248,6 +40324,7 @@ function finishActionContinuations(g: Game) {
     finishMoritaniPlacement(g);
 }
 function settleAutomaticContinuations(g: Game) {
+  if (g.victoryContinuation) return;
   if (g.pendingNexusHarkonnenBetrayal) return;
   if (g.pendingNexusIxianBetrayal) return;
   if (g.pendingNexusIxianReplacement) return;
@@ -40259,6 +40336,7 @@ function settleAutomaticContinuations(g: Game) {
   if (pendingNexusTraitors(g)) return;
   if (g.pendingNullentropy) return;
   for (let iteration = 0; iteration < 128; iteration++) {
+    if (g.victoryContinuation) return;
     if (g.pendingNexusHarkonnenBetrayal) return;
     if (g.pendingNexusIxianBetrayal) return;
     if (g.pendingGuildBetrayal) return;
@@ -40388,6 +40466,8 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  victoryContinuationIntegrity(state);
+  if (state.victoryContinuation) return state;
   bidPromiseIntegrity(state);
   phaseBidIntegrity(state);
   richeseBidIntegrity(state);
@@ -41642,8 +41722,8 @@ function applyActionInner(
         'Finish CHOAM’s Mentat opportunity before checking victory.',
       );
       g.choamMentatPending = false;
-      victory(g);
-      if (g.status === 'playing') completePhase(g);
+      victory(g, undefined, 'advance');
+      if (g.status === 'playing' && !g.victoryContinuation) completePhase(g);
       return g;
     }
     if (decision.kind === 'choamFreeRevival') {
@@ -44594,6 +44674,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string, now?: number) {
+  victoryContinuationIntegrity(state);
   revivalOrderIntegrity(state);
   charityOrderIntegrity(state);
   state = migrateAtomicsTargets(state);
@@ -45530,6 +45611,14 @@ export function viewGame(state: Game, id: string, now?: number) {
           g.moritaniRetention.keep,
         ) ?? null)
       : null,
+    victoryContinuation: g.victoryContinuation ? {
+      event: g.victoryContinuation.event,
+      actor: g.victoryContinuation.voters[g.victoryContinuation.accepted.length],
+      voters: [...g.victoryContinuation.voters],
+      sides: g.victoryContinuation.sides.map(side => [...side]),
+      extra: g.victoryContinuation.extraStrongholds,
+      maxExtra: MAX_VICTORY_EXTRA_STRONGHOLDS,
+    } : null,
     decision: g.pendingGuildBetrayal || g.pendingRicheseBetrayal || g.pendingKull?.stage === 'offer' ? null :
       g.decision?.kind === 'capturedLeader' &&
       !g.leaderSkills?.assignments.some((a) => a.leader === (g.decision as Extract<Decision,{kind:'capturedLeader'}>).leader) &&

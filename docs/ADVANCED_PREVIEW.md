@@ -38,10 +38,23 @@ all three Tech Tokens counts as one additional stronghold in this comparison.
 Qualifying alliances and the separate Ecaz Homeworld victory retain their
 existing shared-winner treatment. Basic retains its existing behavior.
 
-The authorized revised rules also permit all qualifying players or alliances to
-agree to play another turn and optionally raise the stronghold target. That
-choice is not yet implemented in the preview, which currently ends in a shared
-win when applicable. [Source and interpretation](RULE_DECISIONS.md#advanced-simultaneous-solo-stronghold-victories--27-october-2026).
+The authorized revised rules also permit qualifying players or alliances to
+agree to play another turn and optionally raise the stronghold target. The
+provisional preview offers this on turns 1–9 when at least two distinct sides
+qualify and one is an alliance. Every member of those sides responds in storm
+order. The first may finish or propose another turn with a whole-number target
+increase from zero through 20; each later member accepts that exact proposal or
+finishes. These ordered controls and the input cap are online conventions.
+Finishing resolves the original result and any correct private prediction;
+unanimous acceptance continues without revealing that prediction.
+
+The increase adds to the ordinary solo and alliance stronghold targets, while
+independent Ecaz joint-occupation and Homeworld special-victory conditions stay
+separate under the provisional interpretation. The original Mentat phase
+continues unless CHOAM's completed end-of-Mentat opportunity was the source,
+in which case the next turn begins. Turn-ten extension, equal-solo-only
+agreements and broader special-victory cases remain unfinished.
+[Source and interpretation](RULE_DECISIONS.md#advanced-simultaneous-solo-stronghold-victories--27-october-2026).
 
 ## Admission and saved behavior
 

@@ -87,7 +87,12 @@ void test('a qualifying alliance and solo still share an Advanced win regardless
   holds(g, 'ix', 'tueks_sietch', 'habbanya_ridge_sietch');
   g.players[0].forces['hidden_mobile_stronghold:0'] = 1;
   assert.deepEqual(quoteVictory(g).winner, ['ix', 'at', 'em']);
-  assert.deepEqual(actual(g).winner, ['ix', 'at', 'em']);
+  const offered = actual(g);
+  assert.ok(offered.victoryContinuation);
+  const settled = applyAction(offered, offered.victoryContinuation.voters[0], {
+    type: 'victoryContinuation', event: offered.victoryContinuation.event, mode: 'finish',
+  });
+  assert.deepEqual(settled.winner, ['ix', 'at', 'em']);
 });
 
 void test('Bene Gesserit prediction uses the actual higher solo winner, not the lower qualifier', () => {

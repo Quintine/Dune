@@ -15,7 +15,7 @@ export type StrongholdProgress = {
   members: string[];
   strongholds: string[];
   techStronghold: boolean;
-  target: 3 | 4;
+  target: number;
   jointlyOccupied: string[];
   occupyTarget: 3 | null;
   qualifies: boolean;
@@ -45,7 +45,7 @@ export function countsForStrongholdVictory(id: string) {
  * victory, combat resolution, resource mutation or Stronghold Card ownership is
  * considered. Mandatory advisor releases are returned for the caller to commit. */
 export function strongholdProgress(
-  g: BoardContext & Pick<Game, 'techTokens'>,
+  g: BoardContext & Pick<Game, 'techTokens'> & { victoryExtraStrongholds?: number },
 ): { released: AdvisorRelease[]; progress: StrongholdProgress[] } {
   try {
     requireProgress(
@@ -56,6 +56,9 @@ export function strongholdProgress(
         g.players.every((p) => record(p) && record(p.forces)),
       'Victory progress requires a valid public board and seated players.',
     );
+    const extra = g.victoryExtraStrongholds ?? 0;
+    requireProgress(Number.isSafeInteger(extra) && extra >= 0 && extra <= 200,
+      'The agreed extra stronghold target must be a safe nonnegative count.');
     // This validates every ID, faction and reciprocal alliance, even where no
     // stronghold has a force. It does not merge ordinary allies for occupancy.
     ecazOccupancyIdentity(g.players, g.players[0].id, {
@@ -126,7 +129,7 @@ export function strongholdProgress(
         members.some((member) =>
           TECH_TOKENS.every(({ id }) => tech[id].owner === member),
         );
-      const target: 3 | 4 = partner || players.length === 2 ? 4 : 3;
+      const target = (partner || players.length === 2 ? 4 : 3) + extra;
       return {
         player: id,
         members,

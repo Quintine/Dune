@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 27 October 2026 — Advanced simultaneous-victory continuation
+
+Before turn ten, multiple qualifying sides including an alliance may
+provisionally agree to play another turn and optionally increase the ordinary
+stronghold targets. Each qualifying participant accepts the same proposal;
+finishing instead resolves the original victory and prediction. Original
+Mentat and CHOAM continuation are retained. The affected eight-file union
+passes 104 cases and the production build passes. Turn-ten extension,
+equal-solo-only choices and wider combinations remain open.
+[Scope](ADVANCED_PREVIEW.md#simultaneous-victories).
+
 ## 27 October 2026 — Advanced Revival and simultaneous victory
 
 A clean already-started Advanced Revival can provisionally pause through

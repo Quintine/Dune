@@ -152,6 +152,7 @@ import { RoomControlNotice } from './room-control-notice';
 import { TableSounds } from './table-sounds';
 import { EcazSpice } from './ecaz-spice';
 import { VictoryProgress } from './victory-progress';
+import { VictoryContinuation } from './victory-continuation';
 import { tableActionOwner } from '@/game/table-turn';
 import { DukeVidal } from './duke-vidal';
 import { CardInspector, CardRules } from './card-inspector';
@@ -308,7 +309,7 @@ export function GameTable({
     g.combatLocations?.find((place) => place.id === id)?.name ??
     gameTerritories(g).find((place) => place.id === id)?.name ??
     id;
-  const turnOwner = tableActionOwner(g);
+  const turnOwner = g.victoryContinuation?.actor ?? tableActionOwner(g);
   const turnOwnerName = g.players.find((p) => p.id === turnOwner)?.name;
   const setupStage = g.setupStage;
   const setupFremen = g.players.find((p) => p.faction === 'fremen');
@@ -373,7 +374,7 @@ export function GameTable({
   const harkonnenBetrayalOwnsControls = !!g.nexusHarkonnenBetrayalReaction &&
     !g.response && !g.decision && !g.truthtrance && !g.phaseOpening &&
     !g.automaticContinuationPending && !g.nexusCards?.waiting.length && !g.nexusTraitors?.pending;
-  const busy = reactionBusy || !!g.nexusFremenRideBetrayal || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls || harkonnenBetrayalOwnsControls;
+  const busy = reactionBusy || !!g.victoryContinuation || !!g.nexusFremenRideBetrayal || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls || harkonnenBetrayalOwnsControls;
   const reactionOwnsControls = !!g.nexusFremenRideBetrayal || !!g.kullReaction || !!g.kullCounterEvent || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls || harkonnenBetrayalOwnsControls;
   const canSpendKarama = (card: Card, purpose: KullPurpose) =>
     !kullPurposeBlock(g, purpose) && canUseAsKaramaRole(g, me, card);
@@ -6610,6 +6611,7 @@ export function GameTable({
           </div>
         )}
       </section>
+      <VictoryContinuation key={g.victoryContinuation?.event} game={g} act={act} busy={reactionBusy} />
       <VictoryProgress
         progress={g.victoryProgress}
         players={g.players}

@@ -37,7 +37,7 @@ const record = (value: unknown): value is Record<string, unknown> =>
 export type VictoryContext = Omit<BoardContext, 'players'> &
   Pick<
     Game,
-    'turn' | 'phase' | 'status' | 'winner' | 'techTokens' | 'strongholdCards'
+    'turn' | 'phase' | 'status' | 'winner' | 'techTokens' | 'strongholdCards' | 'victoryExtraStrongholds'
   > & {
     players: readonly (BoardSeat & Pick<Player, 'prediction'>)[];
   };

@@ -1236,6 +1236,10 @@ function policyActions(g: GameView): Action[] {
   const level = rank(g);
   if (!(me.bot ?? me.autopilot) || g.status === 'finished') return [];
   if (g.status === 'lobby') return me.ready ? [] : [{ type: 'ready' }];
+  if (g.victoryContinuation)
+    return g.victoryContinuation.actor === me.id
+      ? [{ type: 'victoryContinuation', event: g.victoryContinuation.event, mode: 'finish' }]
+      : [];
   if (g.homeworldTupileBlocked) return [];
   const dukeGrant = g.homeworldEcazDuke;
   if (dukeGrant && dukeGrant.occupier === me.id && !dukeGrant.blocked && dukeGrant.event && dukeGrant.recipients.length)
@@ -4284,6 +4288,9 @@ function botAdvisorMatchingAllowed(g:GameView,action:Action) {
   } catch(error) { if(error instanceof AdvisorMatchingError) return false; throw error; }
 }
 export function botActions(g: GameView): Action[] {
+  if (g.victoryContinuation)
+    return g.status === 'playing' && !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending
+      ? policyActions(g) : [];
   if (g.homeworldTupileBlocked) return [];
   if (g.decision?.kind === 'homeworldTupileCleanup' || g.homeworldTupileCleanup)
     return tupileCleanupActions(g);

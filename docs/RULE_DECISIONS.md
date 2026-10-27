@@ -12,11 +12,25 @@ a qualifying alliance or the separate Ecaz Homeworld victory retains the
 existing shared-winner treatment. Basic and recorded winners retain their
 existing behavior.
 
-The same revision permits all qualifying players or alliances to agree to play
-another turn and optionally raise the required stronghold count. This choice is
-not yet implemented; automatic shared victory remains the current preview
-behavior. Implementing the solo comparison does not complete Advanced victory
-or release acceptance. [Preview](ADVANCED_PREVIEW.md#simultaneous-victories).
+The same revision permits qualifying players or alliances to agree to play
+another turn and optionally raise the required stronghold count. In the
+provisional Advanced preview, a public agreement opens on turns 1–9 when at
+least two distinct sides qualify, including an alliance. Qualification is
+determined before a private Bene Gesserit prediction replaces an actual win.
+Every member of the qualifying sides votes in public storm order: the first
+may finish or propose continuation with an integer increase from zero through
+20, and each remaining member accepts that exact proposal or finishes. The
+20-point input cap and sequential proposal procedure are software conventions,
+not printed limits. A finish decision settles the original result, including
+prediction; unanimous acceptance retains play without applying that result.
+
+An agreed increase adds to the ordinary solo and alliance stronghold targets.
+It does not alter independent Ecaz joint-occupation or Homeworld special-victory
+conditions under this provisional composition. The original Mentat opportunity
+resumes, or the completed CHOAM end-of-Mentat continuation advances once.
+Turn-ten extension, equal-solo-only agreements and broader special-victory
+composition remain unfinished. This does not certify Advanced victory or
+release acceptance. [Preview](ADVANCED_PREVIEW.md#simultaneous-victories).
 
 ## Juice of Sapho and an already-started Advanced movement turn — 27 October 2026
 
