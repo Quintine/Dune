@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 27 October 2026 — Basic Truthtrance storm-dial comparisons
+
+Upcoming original Basic Storm dials support exact, at-least and at-most
+questions. Multiple answers share the real dial's finite legal range, and old
+saved exact questions retain their original shape. Native sealed submission,
+existing player guidance and minimal AI remain connected. Advanced and wider
+combinations, full rules and deployed acceptance remain open.
+[Scope](TRUTHTRANCE_TURN_ACTIONS.md#upcoming-basic-storm-dial-choice--27-october-2026).
+
 ## 27 October 2026 — Basic Semuta and Truthtrance bribes
 
 The bare Basic Richese Semuta profile admits structured scalar, grouped and

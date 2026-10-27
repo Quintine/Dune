@@ -60,6 +60,17 @@ void test('match evaluates only an actual legal submission in the named native r
     assert.throws(() => stormDialMatches(claim(2, 'a', 2), invalid));
 });
 
+void test('threshold comparisons retain the old exact claim shape and native bounds', () => {
+  const old = claim(1, 'a', 5);
+  assert.deepEqual(parseStormDialClaim(old), old);
+  assert.equal(stormDialMatches({ ...old, compare: 'eq' }, 5), true);
+  assert.equal(stormDialMatches({ ...old, compare: 'gte' }, 6), true);
+  assert.equal(stormDialMatches({ ...old, compare: 'gte' }, 4), false);
+  assert.equal(stormDialMatches({ ...old, compare: 'lte' }, 4), true);
+  assert.equal(stormDialMatches({ ...old, compare: 'lte' }, 6), false);
+  assert.throws(() => parseStormDialClaim({ ...old, compare: 'gt' }));
+});
+
 void test('malformed or inconsistent public seat and dialer sets have no opportunity', () => {
   for (const game of [
     { ...first, stormDialers: ['a', 'a'] },

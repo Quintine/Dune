@@ -1,7 +1,11 @@
 /** A future choice names only the actor's original native dial opportunity.
  * The accepted value stays in the normal private storm dial until reveal. */
 export type StormDialSource = { turn: number; player: string };
-export type StormDialClaim = { kind: 'stormDial'; source: string; value: number };
+export type StormDialClaim = {
+  kind: 'stormDial'; source: string; value: number;
+  /** Older saved claims omit this field and retain exact-value meaning. */
+  compare?: 'eq' | 'gte' | 'lte';
+};
 export type StormDialOpportunity = StormDialSource & { source: string; min: number; max: number };
 export type StormDialGame = {
   status: string;
@@ -43,15 +47,20 @@ export function parseStormDialSource(source: unknown): StormDialSource | null {
   return { turn: tuple[1], player: tuple[2] };
 }
 
-/** Parse only an exact future native choice within that turn's real dial range. */
+/** Parse a future native choice within that turn's real dial range. */
 export function parseStormDialClaim(value: unknown): StormDialClaim {
-  check(object(value) && Object.keys(value).sort().join(',') === 'kind,source,value' && value.kind === 'stormDial',
-    'Choose one original storm-dial opportunity and exact value.');
+  check(object(value) &&
+    (Object.keys(value).sort().join(',') === 'kind,source,value' ||
+      Object.keys(value).sort().join(',') === 'compare,kind,source,value') &&
+    value.kind === 'stormDial' &&
+    (!Object.hasOwn(value, 'compare') || value.compare === 'eq' || value.compare === 'gte' || value.compare === 'lte'),
+    'Choose one original storm-dial opportunity and value comparison.');
   const source = parseStormDialSource(value.source);
   check(source && typeof value.value === 'number' && Number.isSafeInteger(value.value) &&
     value.value >= (source.turn === 1 ? 0 : 1) && value.value <= (source.turn === 1 ? 20 : 3),
   'Choose a value within the original turn’s native storm-dial range.');
-  return { kind: 'stormDial', source: value.source as string, value: value.value };
+  return { kind: 'stormDial', source: value.source as string, value: value.value,
+    ...(Object.hasOwn(value, 'compare') ? { compare: value.compare as 'eq' | 'gte' | 'lte' } : {}) };
 }
 
 /** Compare the actual accepted native submission, never an invented default. */
@@ -60,7 +69,8 @@ export function stormDialMatches(claim: StormDialClaim, actual: unknown): boolea
   check(typeof actual === 'number' && Number.isSafeInteger(actual) &&
     actual >= (source.turn === 1 ? 0 : 1) && actual <= (source.turn === 1 ? 20 : 3),
   'Retain the actual native storm-dial submission.');
-  return parsed.value === actual;
+  return parsed.compare === 'gte' ? actual >= parsed.value :
+    parsed.compare === 'lte' ? actual <= parsed.value : actual === parsed.value;
 }
 
 /** Public eligibility only. Reads whether a value is sealed, never that value.

@@ -75,7 +75,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     An open plan commitment settles when both plans are revealed, not merely when your own plan is sealed.
     Traitor conditions concern one original Reveal or decline declaration in the current revealed battle.
     The declaration counts before a later Karama or betrayal response can prevent its effect.
-    A Storm dial condition names one exact value the respondent will submit in their original current Storm dial.
+    A Storm dial condition compares the value the respondent will submit in their original current Storm dial.
     The first Storm allows 0–20; later Basic storms allow 1–3. The other player&apos;s value stays sealed until both dials reveal.
     Native Voice and Prescience conditions concern your original use or explicit decline, exact Voice command,
     or requested Prescience field in this battle. They count before later Karama prevention.
@@ -200,7 +200,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         if (kind === 'ship' || kind === 'move') onChange({ kind,
           territory: value.kind === 'ship' || value.kind === 'move' ? value.territory : 'carthag', minimum });
       }}>
-        <option value="stormDial">Submit an exact value in this current Storm dial</option>
+        <option value="stormDial">Compare your value in this current Storm dial</option>
         <option value="cardPlay">Use a named printed card role after this answer</option>
         <option value="windowCardPlay">Use a printed card in this original native window or shipment-price opportunity</option>
         <option value="battlePower">Declare native Voice or Prescience in this battle</option>
@@ -218,7 +218,18 @@ const config: MixedActionConfig<TurnActionLeaf> = {
         const opportunity = nativeStormDialOpportunity(game, target, value.source);
         return <>
           <p className="fine">The respondent’s original current Storm dial counts once. Other dials remain sealed until reveal.</p>
-          <label htmlFor={`${id}-storm-dial-value`}>Exact Storm dial value</label>
+          <label htmlFor={`${id}-storm-dial-compare`}>Storm dial comparison</label>
+          <select id={`${id}-storm-dial-compare`} value={value.compare ?? 'eq'} disabled={disabled}
+            onChange={event => {
+              const compare = event.currentTarget.value;
+              if (compare === 'eq' || compare === 'gte' || compare === 'lte')
+                onChange({ ...value, compare });
+            }}>
+            <option value="eq">Exactly</option>
+            <option value="gte">At least</option>
+            <option value="lte">At most</option>
+          </select>
+          <label htmlFor={`${id}-storm-dial-value`}>Storm dial value</label>
           <Input id={`${id}-storm-dial-value`} type="number" min={opportunity?.min ?? (game.turn === 1 ? 0 : 1)}
             max={opportunity?.max ?? (game.turn === 1 ? 20 : 3)} step={1} required disabled={disabled}
             value={Number.isFinite(value.value) ? value.value : ''}

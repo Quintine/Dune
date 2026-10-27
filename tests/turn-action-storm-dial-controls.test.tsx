@@ -39,7 +39,13 @@ void test('editor selects the exact original Storm dial and enforces native turn
     assert.notEqual(turnActionInputError(dial(turn, max + 1), game, 'p'), null);
     assert.notEqual(turnActionInputError(dial(turn, min - 1), game, 'p'), null);
     const html = renderToStaticMarkup(createElement(TurnActionFields, { game, value, target: 'p', disabled: false, onChange() {} }));
-    assert.match(html, /Exact Storm dial value/); assert.match(html, /remain sealed/);
+    assert.match(html, /Storm dial comparison/); assert.match(html, /remain sealed/);
+    const dialTree = TurnActionFields({ game, value, target: 'p', disabled: false, onChange(next) { value = next; } });
+    const comparator = elements(dialTree).find(element => element.props.id === 'truth-turn-action-1-storm-dial-compare');
+    assert.ok(comparator);
+    (comparator.props.onChange as (event: { currentTarget: { value: string } }) => void)({ currentTarget: { value: 'gte' } });
+    assert.deepEqual(value, { kind: 'action', action: { kind: 'stormDial', source: JSON.stringify(['stormDial', turn, 'p']), value: min, compare: 'gte' } });
+    assert.equal(turnActionInputError(value, game, 'p'), null);
     game.stormSubmitted = ['p'];
     assert.notEqual(turnActionInputError(value, game, 'p'), null);
   }

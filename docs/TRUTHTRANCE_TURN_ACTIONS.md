@@ -1036,8 +1036,14 @@ rules, browser and deployed acceptance remain open.
 
 ## Upcoming Basic storm-dial choice — 27 October 2026
 
+**Comparison follow-up:** a question may now ask whether the original value is
+exactly, at least or at most its chosen threshold. Multiple conditions share
+the same actual dial; the planner intersects their legal numeric choices.
+Older saved conditions without a comparison retain their exact-value meaning.
+[Runtime evidence](../tests/truth-storm-dial-comparisons-runtime.test.ts).
+
 **Prototyped / Partial.** The publisher FAQ (November 2020, p. 8) permits
-current-turn Yes/No questions. This event-bound exact future choice is the
+current-turn Yes/No questions. This event-bound future choice is the
 project's provisional online procedure for that permission, not a separately
 printed publisher protocol. It names a current eligible, unsubmitted Basic storm
 dialer, this turn and one legal value: 0–20 on turn one, 1–3 later. The server

@@ -20,6 +20,13 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Basic Truthtrance Storm-dial comparisons — 27 October. Prototyped / Partial.**
+The upcoming original Basic dial supports exact, at-least and at-most
+conditions, with multiple answers sharing the native range and older omitted
+comparators remaining exact. Native controls and minimal bot guides use the
+original sealed submission; wider combinations and final/deployed acceptance
+remain open. [Scope](TRUTHTRANCE_TURN_ACTIONS.md#upcoming-basic-storm-dial-choice--27-october-2026).
+
 **Basic Richese Semuta and bribe questions — 27 October. Prototyped / Partial.**
 Structured ordinary, grouped and mixed Truthtrance payment questions are
 available in the bare Basic Richese Semuta profile. Their exact answer and

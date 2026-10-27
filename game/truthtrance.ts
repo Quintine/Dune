@@ -795,7 +795,7 @@ export function truthQuestionText(
   };
   if (q.kind === 'turnActions') return `Is it true that ${mixedActionExpressionText(q.mixed, clause,
     action => {
-      if (action.kind === 'stormDial') return `you submit exactly ${action.value} on your original storm dial this turn`;
+      if (action.kind === 'stormDial') return `you submit ${action.compare === 'gte' ? 'at least' : action.compare === 'lte' ? 'at most' : 'exactly'} ${action.value} on your original storm dial this turn`;
       if (action.kind === 'windowCardPlay') {
         if (action.effect === 'karamaBattleCancel') {
           const response = parseKaramaBattleCancelSource(action.source);

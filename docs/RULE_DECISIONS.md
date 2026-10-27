@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Basic Truthtrance storm-dial comparisons — 27 October 2026
+
+Extend the provisional upcoming-dial question to exact, at-least and at-most
+comparisons. Each answer concerns the same original native dial, using the
+real turn-specific range; old conditions without a comparator remain exact.
+This is an application of the FAQ's general current-turn question permission,
+not a separately printed Storm protocol.
+[Scope](TRUTHTRANCE_TURN_ACTIONS.md#upcoming-basic-storm-dial-choice--27-october-2026).
+
 ## Basic Semuta and Truthtrance bribes — 27 October 2026
 
 In the supported bare Basic Richese profile, provisionally resolve the fresh

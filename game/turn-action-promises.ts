@@ -225,7 +225,8 @@ function storedFact(value: unknown, depth = 0): TruthFact {
 }
 
 function actionKey(action: TurnActionLeaf): string {
-  if (action.kind === 'stormDial') return JSON.stringify([action.kind, action.source, action.value]);
+  if (action.kind === 'stormDial') return JSON.stringify(action.compare && action.compare !== 'eq'
+    ? [action.kind, action.source, action.value, action.compare] : [action.kind, action.source, action.value]);
   if (action.kind === 'windowCardPlay') return JSON.stringify([action.kind, action.effect, action.source]);
   if (action.kind === 'battlePower') return JSON.stringify([action.kind, action.battle, action.territory, powerKey(action.claim)]);
   if (action.kind === 'cardPlay') return JSON.stringify([action.kind, action.effect]);
@@ -576,7 +577,8 @@ export function liveTurnActionPromises<T extends TurnActionPromise>(promises: re
 
 function sameAction(left: TurnActionBranchLeaf, right: TurnActionBranchLeaf): boolean {
   if (left.kind !== right.kind) return false;
-  if (left.kind === 'stormDial') return right.kind === 'stormDial' && left.source === right.source && left.value === right.value;
+  if (left.kind === 'stormDial') return right.kind === 'stormDial' && left.source === right.source &&
+    left.value === right.value && (left.compare ?? 'eq') === (right.compare ?? 'eq');
   if (left.kind === 'windowCardPlay') return right.kind === 'windowCardPlay' && left.effect === right.effect && left.source === right.source;
   if (left.kind === 'battlePower') return right.kind === 'battlePower' && left.battle === right.battle &&
     left.territory === right.territory && left.owner === right.owner && left.beneficiary === right.beneficiary &&
@@ -605,7 +607,8 @@ export function turnActionStormDialChoices(leaves: readonly TurnActionBranchLeaf
     leaf.kind === 'stormDial' && leaf.source === source);
   const min = decoded.turn === 1 ? 0 : 1, max = decoded.turn === 1 ? 20 : 3;
   return Array.from({ length: max - min + 1 }, (_, index) => index + min)
-    .filter(value => named.every(leaf => (value === leaf.value) === leaf.answer));
+    .filter(value => named.every(leaf => stormDialMatches({ kind: 'stormDial', source: leaf.source,
+      value: leaf.value, ...(leaf.compare ? { compare: leaf.compare } : {}) }, value) === leaf.answer));
 }
 
 /** Called within one record only: payment progress belongs to that interval. */
@@ -622,8 +625,6 @@ function mergeBranches(left: TurnActionBranchLeaf[], right: TurnActionBranchLeaf
     if (leaf.kind === 'stormDial') {
       const prior = merged.find(other => sameAction(other, leaf));
       if (prior && prior.answer !== leaf.answer) return null;
-      if (leaf.answer && merged.some(other => other.kind === 'stormDial' && other.source === leaf.source &&
-        other.answer && other.value !== leaf.value)) return null;
       if (!prior) merged.push({ ...leaf });
       if (!turnActionStormDialChoices(merged, leaf.source).length) return null;
       continue;
