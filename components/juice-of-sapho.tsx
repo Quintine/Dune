@@ -15,6 +15,10 @@ function unavailableReason(game: GameView) {
   if (game.truthtrance || game.response || game.phaseOpening ||
     (game.decision && !(game.phase === 8 && game.decision.kind === 'moritaniExtortion')))
     return 'Finish the current interaction before changing turn order.';
+  if (game.phase === 2)
+    return !game.advanced || !game.charityOrder
+      ? 'Charity order changes require an ordered Advanced Charity phase. Basic and an already-opened unstamped phase keep their existing timing.'
+      : 'Choose first or last only among remaining unstarted Charity turns. A player who has claimed finishes their Charity turn unchanged. Completed turns stay finished; already-held positions and committed cards are unavailable.';
   if (game.phase === 4)
     return !game.advanced || !game.revivalOrder
       ? 'Revival order changes require an ordered Advanced Revival phase. Basic and an already-opened unstamped phase keep their existing timing.'
@@ -63,7 +67,7 @@ export function SaphoOrderButton({
       }}
     >
       {option.scope === 'battleAggressor' ? 'Become aggressor and discard Juice of Sapho' :
-        `${bidding ? 'Bid' : option.scope === 'battleOrder' ? 'Choose battles' : option.scope === 'extortion' ? 'Take your Extortion choice' : option.scope === 'revival' ? 'Take your Revival turn' : 'Take your movement turn'} ${option.mode} and discard Juice of Sapho`}
+        `${bidding ? 'Bid' : option.scope === 'battleOrder' ? 'Choose battles' : option.scope === 'extortion' ? 'Take your Extortion choice' : option.scope === 'revival' ? 'Take your Revival turn' : option.scope === 'charity' ? 'Take your Charity turn' : 'Take your movement turn'} ${option.mode} and discard Juice of Sapho`}
     </Button>
   );
 }
@@ -83,9 +87,12 @@ export function JuiceOfSapho({
     (c) => richeseCardDefinition(c)?.card.effect === 'juiceOfSapho',
   );
   if (!card) return null;
-  const options = (game.saphoOptions ?? []).filter(option => option.scope !== 'revival' ||
-    (game.advanced && game.phase === 4 && game.revivalOrder?.remaining.includes(game.me) &&
-      !game.revivalOrder.completed.includes(game.me)));
+  const options = (game.saphoOptions ?? []).filter(option =>
+    option.scope === 'charity'
+      ? game.advanced && game.phase === 2 && !!game.charityOrder?.remaining.includes(game.me)
+      : option.scope !== 'revival' ||
+        (game.advanced && game.phase === 4 && game.revivalOrder?.remaining.includes(game.me) &&
+          !game.revivalOrder.completed.includes(game.me)));
   return (
     <details className="my-4 min-w-0">
       <summary className="min-h-11 cursor-pointer py-3">
@@ -105,7 +112,8 @@ export function JuiceOfSapho({
             const aggressor = option.scope === 'battleAggressor';
             const extortion = option.scope === 'extortion';
             const revival = option.scope === 'revival';
-            const afterCurrent = (option.scope === 'movement' || revival) && option.afterCurrent;
+            const charity = option.scope === 'charity';
+            const afterCurrent = (option.scope === 'movement' || revival || charity) && option.afterCurrent;
             const currentPlayer = afterCurrent
               ? game.players.find(player => player.id === afterCurrent)?.name ?? 'The active player'
               : null;
@@ -114,7 +122,15 @@ export function JuiceOfSapho({
                 key={`${option.scope}-${option.event}-${option.mode}`}
                 className="flex min-w-0 flex-col gap-2"
               >
-                {currentPlayer && (revival ? (
+                {currentPlayer && (charity ? (
+                  <p aria-label="Provisional queued Charity order">
+                    Provisional queued Charity order: {currentPlayer} finishes
+                    the current Charity turn unchanged. Your {option.mode}
+                    {' '}position applies among later unstarted Charity turns.
+                    Completed turns and claims stay finished; each player
+                    still has only one Charity claim.
+                  </p>
+                ) : revival ? (
                   <p aria-label="Provisional queued Revival order">
                     Provisional queued Revival order: {currentPlayer} finishes
                     the current Revival turn unchanged. Your {option.mode}
@@ -145,6 +161,8 @@ export function JuiceOfSapho({
                     ? `Bid ${option.mode} in the current Once Around lot. Each eligible player still has only one bidding opportunity.`
                     : battle
                       ? `Choose your remaining battles ${option.mode}. Completed battles stay resolved. This changes who chooses next, not the aggressor or tie advantage of a battle. Other players may still choose battles against you before your turn.`
+                    : charity
+                      ? `Take the ${option.mode} remaining Charity turn. Completed Charity turns stay finished. Each player still has only one Charity claim; changing order does not grant another claim or reopen completed turns.`
                     : revival
                       ? `Take the ${option.mode} remaining Revival turn. Completed Revival turns stay finished. This changes the remaining order without granting another revival, resetting allowances or returning completed players to the queue.`
                     : `Take the ${option.mode} remaining combined shipment and movement turn. Completed turns stay completed${option.mode === 'last' ? ', and the Guild cannot move behind you' : game.advanced && game.players.some(player => player.faction === 'guild' && player.id !== game.me) ? '. Provisional first priority: the Guild retains its next legal timing choice and may take its turn before yours; a Karama-locked privilege stays locked' : ''}.`}

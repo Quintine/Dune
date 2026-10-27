@@ -5,6 +5,7 @@ import {
   charityOrderBlock as block,
   createCharityOrder as create,
   finishCharityOrder as finish,
+  startCharityOrder as start,
   validateCharityOrder as validate,
   type CharityOrder,
   type CharityOrderContext,
@@ -23,6 +24,9 @@ function rejects(current: CharityOrderContext, frame: CharityOrder, action: () =
 void test('Charity preserves the actual rotated First Player order rather than roster order', () => {
   const current = context(), frame = create(current);
   assert.deepEqual(frame, { version: 1, turn: 3, order: ['c', 'a', 'b'], remaining: ['c', 'a', 'b'] });
+  assert.equal(JSON.stringify(frame), '{"version":1,"turn":3,"order":["c","a","b"],"remaining":["c","a","b"]}');
+  assert.deepEqual(start(current, frame, 'c'), frame);
+  assert.equal(Object.hasOwn(start(current, frame, 'c'), 'started'), false);
   validate(current, frame);
   assert.equal(block(current, frame, 'c'), null);
   assert.match(block(current, frame, 'a')!, /Wait/);
@@ -36,6 +40,7 @@ void test('Charity preserves the actual rotated First Player order rather than r
 void test('only the current seat finishes, consuming the pre-finish prefix before the caller appends ready', () => {
   const current = context(), frame = create(current);
   rejects(current, frame, () => finish(current, frame, 'a'));
+  rejects(current, frame, () => start(current, frame, 'a'));
   rejects(current, frame, () => finish(current, frame, 'foreign'));
   const next = finish(current, frame, 'c');
   assert.deepEqual(next.remaining, ['a', 'b']);
@@ -72,6 +77,7 @@ void test('the native context requires actual unique seats, their permutation an
     { ...base, order: ['c', 'a'] }, { ...base, order: ['c', 'a', 'a'] },
     { ...base, order: ['c', 'a', 'foreign'] }, context(['a']), context(['c', 'b']),
     context(['c', 'c']), context(['c', 'a', 'b', 'foreign']),
+    { ...base, claimed: ['foreign'] }, { ...base, claimed: ['c', 'c'] },
   ]) assert.throws(() => create(current), CharityOrderError);
   for (const current of [null, [], { ...base, players: undefined }, { ...base, order: 'c,a,b' },
     { ...base, ready: undefined }, { ...base, order: Array.from({ length: 3 }) },

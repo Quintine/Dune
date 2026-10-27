@@ -122,7 +122,7 @@ const phaseDetails = [
   [
     'If CHOAM is present, first resolve its income response. CHOAM then pays other factions’ charity; if its income was canceled, charity comes from the bank. Use Claim charity when eligible to bring ordinary available spice to two.',
     'New Advanced Charity follows the First Player counterclockwise. Only the current player may claim or finish; a claim and any cancellation response finish before the player chooses Finish Charity turn. You may finish without claiming. Waiting and completed seats cannot take another Charity turn.',
-    'Basic and already-opened older unstamped Advanced Charity keep concurrent readiness. Mark yourself ready after making your choice. New Truthtrance answers do not reopen completed ordered turns. Sapho first/last composition for the newly ordered phase remains unfinished.',
+    'Basic and already-opened older unstamped Advanced Charity keep concurrent readiness. Mark yourself ready after making your choice. New Truthtrance answers do not reopen completed ordered turns. Owned Sapho changes only remaining Charity order; an accepted current claim provisionally protects that turn before the reordered tail.',
   ],
   [
     'Before each auction, resolve the Atreides foresight response. The card stays hidden until that response is allowed. Cancellation affects this card only.',
@@ -503,10 +503,11 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Between completed battles, choose first or last among remaining battle choosers. The priority lasts for the rest of the Battle phase. You still need a real unresolved battle. Others may choose battles against you before your own turn; last is not immunity. This scope changes the chooser, not each battle’s aggressor or tie advantage.',
       'In a fresh Richese battle, use unreserved Sapho at a clean boundary before both combatants finish final battle actions, including after sealed plans and revealed declarations. Habbanya still precedes ordinary aggressor tie priority. Participants, plans, promises, weapon choices and votes do not swap or replay. Older battles retain their pre-plan opportunity.',
       'During a clean native Extortion payer decision, use Sapho to take your optional choice first/last among unanswered non-Moritani players. Earlier declines, collected bank5 and the one-payment3 limit remain. The next payer event changes even when that player stays next. You may decline instead of paying.',
+      'During ordered Advanced Charity, take your remaining turn first or last, then discard Sapho. An accepted current claim provisionally protects that actor while another holder reorders only later unstarted turns. Each player still claims at most once, completed turns stay closed, and the holder cannot split its own started turn. Physical First Player order is unchanged. Basic and older concurrent phases have no ordered scope.',
       'During ordered Advanced Revival, take your unfinished opportunity first or last, then discard Sapho. If the current player has already begun a native return or negotiation, provisional queued timing lets that player finish unchanged; first means first among the later unstarted turns. You cannot split your own started turn, repeat a completed turn or consume the card for a position you already hold. Basic and older concurrent Revival phases have no ordered scope.',
       'Finish existing shipment, movement, card preparation and pending decisions before changing order. The exact Extortion payer window is a supported exception for its own order only. Your hand panel lists available choices. Reserved cards and positions you already hold cannot be selected.',
       'Completed bids and turns stay completed. Storm order, committed funding and movement counters do not reset. Refreshing preserves the same remaining opportunities and any declared last position.',
-      'In the explicitly opted-in Semuta preview, clean Once Around, movement and ordered-Revival discards pause after their queues reorder; a clean between-battles chooser discard pauses after changing battle priority but before the next chooser acts; an aggressor discard pauses after changing ordinary tie priority. Revival retains its current participant, requests and allowances through claim/pass. Fresh late continuations also bind revealed choices and the public final revision; old continuation bytes remain unchanged. Every seat receives the same neutral offer. Claim or decline moves only the used card or leaves it discarded; each committed queue or unresolved battle continues once. Direct combined late claim/capture proof remains open.',
+      'In the explicitly opted-in Semuta preview, clean Once Around, movement and ordered Charity/Revival discards pause after their queues reorder; a clean between-battles chooser discard pauses after changing battle priority but before the next chooser acts; an aggressor discard pauses after changing ordinary tie priority. Charity/Revival retain their current participant, claims or requests and allowances through Semuta claim/pass. Fresh late continuations also bind revealed choices and the public final revision; old continuation bytes remain unchanged. Every seat receives the same neutral offer. Claim or decline moves only the used card or leaves it discarded; each committed queue or unresolved battle continues once. Direct combined late claim/capture proof remains open.',
       'Both combatants receive the same persistent final battle opportunity after original votes and native late defense, regardless of held cards or result. Finish explicitly; a Sapho priority change clears both finish marks with a fresh event. The second finish closes priority before Stone counts and outcome settlement. This shared online procedure, cyclic lot duration and queued movement timing are provisional conventions. Other phase ordering and splitting your own started combined turn remain unfinished. Silent bids retain simultaneous timing and storm tie order.',
     ],
     example:
@@ -522,13 +523,13 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Finite Once Around, current-lot cyclic bidding, clean/queued movement and ordered Advanced Revival, remaining battle-choice and late aggressor modes are connected. Queued timing retains the started actor; Revival keeps its requests/allowances and separate physical order through exact Semuta disposal. Tail timing is visibly provisional. Other phases and split-own-turn mode remain unfinished.',
+          'Finite Once Around, current-lot cyclic bidding, clean/queued movement and ordered Advanced Charity/Revival, remaining battle-choice and late aggressor modes are connected. Queued timing retains the started actor; Charity/Revival keep native claims or requests/allowances and separate physical order through their Semuta disposal. Tail timing is visibly provisional. Other phases and split-own-turn mode remain unfinished.',
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Owner-only first/last and unresolved-battle aggressor controls retain public priority. Queued movement names the started actor who finishes first, explains provisional tail ordering and sends only original action fields; afterCurrent is display metadata. Final battle/cyclic controls retain their existing scope. Older battles keep early timing.',
+          'Owner-only first/last and unresolved-battle aggressor controls retain public priority. Queued movement and Charity/Revival name the started actor who finishes first, explain provisional tail ordering and sends only original action fields; afterCurrent is display metadata. Final battle/cyclic controls retain their existing scope. Older battles keep early timing.',
       },
       {
         area: 'AI',
@@ -549,6 +550,11 @@ export const RULE_TOPICS: RuleTopic[] = [
           '18 October Extortion:9-file115/115, types/lint/build and six original-action/rendered-table programmes pass. Public Basic/Advanced cache1, placed/revealed Terror, paid entry1, native Mentat placement-before-bank5 and an earlier decline use120/139 source actions. First/payment3 and last/payment3 or all-decline use2–4 continuations, preserving one payment and native token retirement/rotation. Four profiles make eight legal holder/payer proposals and complete. Pure replay/no-op/recovered reuse cases are separate. One deliberate-invalid-mode test cast was repaired; all checks then passed. Prior Guild, aggressor and cyclic evidence remains in linked feature docs. No browser clicks, visual/deployed, direct combined Semuta claim/capture, complete-mode or final-assurance acceptance',
         evidence: [
           'game/sapho-movement-order.ts',
+          'game/charity-order.ts',
+          'tests/sapho-charity-order.test.ts',
+          'tests/fixture-sapho-charity-order.ts',
+          'tests/sapho-charity-order-engine.test.ts',
+          'tests/sapho-charity-order-controls.test.tsx',
           'game/revival-order.ts',
           'tests/sapho-revival-order.test.ts',
           'tests/fixture-sapho-revival-order.ts',
@@ -2596,15 +2602,15 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A claim and its native responses retain the current player. Completing a Karama response does not finish or consume the responder’s own Charity turn.',
       'Waiting and completed seats cannot claim or finish. A new Truthtrance answer cannot reopen a completed ordered turn, while a remaining owned future claim may still support a binding answer.',
       'Basic and already-opened unstamped Advanced phases keep concurrent readiness. Inflation, Homeworld bonuses and CHOAM funding retain their existing calculation and limitations.',
-      'Sapho first/last composition, broader interactions and full Advanced acceptance remain unfinished.',
+      'Owned Juice of Sapho changes the remaining turn order first/last. A current accepted claim provisionally protects that turn before the reordered later queue. Completed turns stay closed and no additional claim is granted. Broader interactions and full Advanced acceptance remain unfinished.',
     ],
     related: ['charity', 'choam-economy', 'bg-charity-karama', 'truthtrance-turn-actions'],
     checklist: [
-      { area: 'Implementation', status: 'Partial', detail: 'Fresh native order, current-only claim/finish and original response/closing lifecycle are connected; Sapho composition remains.', evidence: ['game/charity-order.ts', 'game/engine.ts'] },
+      { area: 'Implementation', status: 'Partial', detail: 'Fresh native order, current-only claim/finish and original response/closing lifecycle are connected. Sapho reorders remaining opportunities with provisional started-current protection and original claim limits.', evidence: ['game/charity-order.ts', 'game/engine.ts'] },
       { area: 'Player controls', status: 'Partial', detail: 'Persistent current/wait/completed status and native claim/finish controls retain funding explanations.', evidence: ['components/charity-claim.tsx', 'components/game-table.tsx'] },
       { area: 'AI', status: 'Partial', detail: 'Existing policies wait for their actual opportunity and use the native claim and finish actions; strategy and calibration remain deferred.', evidence: ['game/bots.ts'] },
       { area: 'Documentation', status: 'Partial', detail: 'Source cutover, Basic/legacy behavior, remaining entitlements and interaction boundaries are explicit.', evidence: ['docs/ADVANCED_CHARITY_ORDER.md'] },
-      { area: 'Verification', status: 'Partial', detail: 'Focused helper, native and control sources; frozen runtime evidence and complete-mode acceptance are separate.', evidence: ['tests/charity-order.test.ts', 'tests/advanced-charity-order-engine.test.ts', 'tests/charity-claim-controls.test.tsx'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused helper, native and control sources; frozen runtime evidence and complete-mode acceptance are separate.', evidence: ['tests/charity-order.test.ts', 'tests/advanced-charity-order-engine.test.ts', 'tests/charity-claim-controls.test.tsx', 'tests/sapho-charity-order.test.ts', 'tests/sapho-charity-order-engine.test.ts', 'tests/sapho-charity-order-controls.test.tsx'] },
     ],
   },
   {

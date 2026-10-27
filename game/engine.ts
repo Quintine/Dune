@@ -44,7 +44,8 @@ import { ordinaryDiscardIncomeMatches } from './ordinary-discard-income';
 import { createRevivalOrder, validateRevivalOrder, revivalOrderBlock, startRevivalOrder,
   saphoRevivalOrderEvent, reorderSaphoRevivalOrder,
   finishRevivalOrder, RevivalOrderError, type RevivalOrder } from './revival-order';
-import { createCharityOrder, validateCharityOrder, charityOrderBlock,
+import { createCharityOrder, validateCharityOrder, charityOrderBlock, startCharityOrder,
+  saphoCharityOrderEvent, reorderSaphoCharityOrder,
   finishCharityOrder, CharityOrderError, type CharityOrder } from './charity-order';
 import { semutaTerminalArrivalSupported } from './semuta-terminal-arrival';
 import { semutaDisasterArrivalSupported } from './semuta-disaster-arrival';
@@ -1605,6 +1606,15 @@ export type Game = {
           previousActive: string;
           /** New queued order retains this already-started combined turn. */
           afterCurrent?: string;
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
+          kind: 'saphoCharityDiscard';
+          player: string;
+          card: string;
+          event: string;
+          mode: 'first' | 'last';
           resume: NonNullable<Game['pendingNullentropy']>['resume'];
           stateSignature: string;
         }
@@ -5852,6 +5862,17 @@ type SaphoExtortionDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'saphoExtortionDiscard' }
 >;
+type SaphoCharityDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'saphoCharityDiscard' }
+>;
+function saphoCharityDiscardSignature(g: Game, c: SaphoCharityDiscardContinuation) {
+  return JSON.stringify({player:c.player,card:c.card,event:c.event,mode:c.mode,
+    parent:nullentropyParentSignature(g,c.resume,c.event),turn:g.turn,phase:g.phase,
+    advanced:g.advanced,order:g.order,charityOrder:g.charityOrder,active:g.active,ready:g.ready,
+    inflation:g.inflation,choamCharity:g.choamCharity,
+    players:g.players.map(p=>({id:p.id,faction:p.faction,spice:p.spice,bribes:p.bribes,charityTurn:p.charityTurn}))});
+}
 type SaphoRevivalDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'saphoRevivalDiscard' }
@@ -7484,6 +7505,18 @@ function treacheryDiscardIntegrity(g: Game) {
       c.stateSignature === distransDiscardSignature(g, c),
       'The completed private Distrans transfer no longer matches its fresh discard.',
     );
+  } else if (continuation?.kind === 'saphoCharityDiscard') {
+    const c=continuation,entry=batch.entries[0],frame=g.charityOrder;
+    const latest=frame?.version===2 ? frame.uses.at(-1) : null;
+    requireRule(g.advanced && g.phase===2 && frame?.version===2 &&
+      latest?.event===c.event && latest.player===c.player && latest.mode===c.mode &&
+      batch.cause==='sapho:charity' && batch.entries.length===1 &&
+      entry.publicFace && entry.discardedBy===c.player && entry.card.id===c.card &&
+      richeseCardDefinition(entry.card)?.card.effect==='juiceOfSapho' &&
+      !c.resume.response && !c.resume.decision && !c.resume.pendingKarama && !c.resume.phaseOpening &&
+      c.stateSignature===saphoCharityDiscardSignature(g,c),
+      'The used Juice of Sapho no longer matches its committed Charity order.');
+    charityOrderIntegrity(g);
   } else if (continuation?.kind === 'saphoRevivalDiscard') {
     const c=continuation,entry=batch.entries[0],frame=g.revivalOrder;
     const latest=frame?.version===2 ? frame.uses.at(-1) : null;
@@ -8668,6 +8701,7 @@ function semutaOfferSupported(
     continuation.kind !== 'nexusChoamBetrayal' &&
     continuation.kind !== 'saphoMovementDiscard' &&
     continuation.kind !== 'saphoRevivalDiscard' &&
+    continuation.kind !== 'saphoCharityDiscard' &&
     continuation.kind !== 'saphoExtortionDiscard' &&
     continuation.kind !== 'saphoAggressorDiscard' &&
     continuation.kind !== 'saphoAuctionDiscard' &&
@@ -8738,6 +8772,7 @@ function semutaOfferSupported(
       continuation.kind !== 'saphoAuctionDiscard' &&
       continuation.kind !== 'saphoMovementDiscard' &&
       continuation.kind !== 'saphoRevivalDiscard' &&
+      continuation.kind !== 'saphoCharityDiscard' &&
       continuation.kind !== 'saphoExtortionDiscard' &&
       continuation.kind !== 'battleResolved' &&
       continuation.kind !== 'winnerMandatoryDiscard' &&
@@ -8754,6 +8789,11 @@ function semutaOfferSupported(
       continuation.kind !== 'karamaBattleDiscard') return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
+  if (continuation.kind === 'saphoCharityDiscard' &&
+    (!g.advanced || g.phase!==2 || g.charityOrder?.version!==2 ||
+      continuation.resume.response || continuation.resume.decision ||
+      continuation.resume.pendingKarama || continuation.resume.phaseOpening ||
+      g.response || g.decision || g.pendingRevival)) return false;
   if (continuation.kind === 'saphoRevivalDiscard' &&
     (!g.advanced || g.phase!==4 || g.revivalOrder?.version!==2 ||
       continuation.resume.response || continuation.resume.decision ||
@@ -9214,6 +9254,12 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.decision = next.resume.decision;
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
+  } else if (next.kind === 'saphoCharityDiscard') {
+    g.response=next.resume.response;
+    g.decision=next.resume.decision;
+    g.pendingKarama=next.resume.pendingKarama;
+    g.phaseOpening=next.resume.phaseOpening;
+    charityOrderIntegrity(g);
   } else if (next.kind === 'saphoRevivalDiscard') {
     g.response=next.resume.response;
     g.decision=next.resume.decision;
@@ -25737,7 +25783,7 @@ function offerMoritaniDuke(g: Game) {
   return true;
 }
 type SaphoOption = {
-  scope: 'onceAround' | 'cyclicAuction' | 'movement' | 'battleOrder' | 'extortion' | 'revival';
+  scope: 'onceAround' | 'cyclicAuction' | 'movement' | 'battleOrder' | 'extortion' | 'revival' | 'charity';
   event: string;
   mode: 'first' | 'last';
   /** Display only; action submission keeps scope/event/mode. */
@@ -25919,6 +25965,18 @@ function saphoOptions(g: Game, p: Player): SaphoOption[] {
   )
     return [];
   const options: SaphoOption[] = [];
+  if (g.phase===2 && g.advanced && g.charityOrder) {
+    const context=charityOrderContext(g);
+    const event=charityOrderRule(()=>saphoCharityOrderEvent(context,g.charityOrder!));
+    for (const mode of ['first','last'] as const) {
+      try {
+        const quote=reorderSaphoCharityOrder(context,g.charityOrder,{event,player:p.id,mode});
+        options.push({scope:'charity',event,mode,...(quote.afterCurrent ? {afterCurrent:quote.afterCurrent} : {})});
+      } catch(error) {
+        if (!(error instanceof CharityOrderError)) throw error;
+      }
+    }
+  }
   if (g.phase===4 && g.advanced && g.revivalOrder) {
     const context=revivalOrderContext(g);
     const event=revivalOrderRule(()=>saphoRevivalOrderEvent(context,g.revivalOrder!));
@@ -26107,6 +26165,26 @@ function playSapho(g: Game, p: Player, action: Action) {
       }
     }
     settleRicheseLot(g);
+  } else if (option.scope === 'charity') {
+    requireRule(g.charityOrder,'The original ordered Charity is no longer available.');
+    const quote=charityOrderRule(()=>reorderSaphoCharityOrder(charityOrderContext(g),g.charityOrder!,
+      {event:option.event,player:p.id,mode:option.mode}));
+    const used=discard(g,p,'richese-juice-of-sapho');
+    g.charityOrder=quote.order;
+    g.active=quote.order.remaining[0] ?? null;
+    log(g,`${p.name} discarded Juice of Sapho to take their remaining Charity turn ${option.mode}.${quote.afterCurrent ? ` Provisional queued order: ${getPlayer(g,quote.afterCurrent).name} finishes the started turn first.` : ''} Completed turns, native claim entitlements and physical First Player order stay unchanged.`,
+      {faction:p.faction,name:'Juice of Sapho'});
+    if (g.semutaPreview) {
+      const continuation:SaphoCharityDiscardContinuation={kind:'saphoCharityDiscard',player:p.id,card:used.id,
+        event:option.event,mode:option.mode,
+        resume:{response:g.response,decision:g.decision,pendingKarama:g.pendingKarama,phaseOpening:g.phaseOpening},
+        stateSignature:''};
+      const entries=[{card:used,discardedBy:p.id,publicFace:true}];
+      if(semutaOfferSupported(g,continuation,entries)) {
+        continuation.stateSignature=saphoCharityDiscardSignature(g,continuation);
+        stageTreacheryDiscard(g,'sapho:charity',entries,continuation);
+      }
+    }
   } else if (option.scope === 'revival') {
     requireRule(g.revivalOrder,'The original ordered Revival is no longer available.');
     const quote=revivalOrderRule(()=>reorderSaphoRevivalOrder(revivalOrderContext(g),g.revivalOrder!,
@@ -26734,7 +26812,8 @@ function revivalOrderContext(g: Game) {
   return {turn:g.turn,order:g.order,ready:g.ready};
 }
 function charityOrderContext(g: Game) {
-  return {turn:g.turn,order:g.order,players:g.players,ready:g.ready};
+  return {turn:g.turn,order:g.order,players:g.players,ready:g.ready,
+    claimed:g.players.filter(p=>p.charityTurn===g.turn).map(p=>p.id)};
 }
 function charityOrderRule<T>(calculate: () => T): T {
   try { return calculate(); }
@@ -41607,6 +41686,8 @@ function applyActionInner(
       p.charityTurn !== g.turn,
       'Charity may be claimed only once per turn.',
     );
+    if (g.charityOrder)
+      g.charityOrder = charityOrderRule(() => startCharityOrder(charityOrderContext(g),g.charityOrder!,id));
     p.charityTurn = g.turn;
     if (advancedBG && p.spice >= 2)
       g.response = {

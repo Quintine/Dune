@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Sapho in ordered Advanced Charity — 27 October 2026
+
+The printed first/last alternative applies to the supplied rulebook's newly
+ordered Advanced Charity phase. Actual use retains physical First Player
+order, completed turns and native once-per-turn claims; Basic/old unstamped
+concurrent phases have no manufactured scope. Use creates version2 history;
+untouched version1 frames retain their bytes. Under the standing recommended
+interpretation authority, an accepted native claim protects the current turn:
+a different holder reorders only later unstarted turns. The holder cannot split
+its own started turn. This retained-current timing is provisional software
+composition, not a new publisher ruling. Existing response/disposal timing
+precedes the next action. [Source and scope](ADVANCED_CHARITY_ORDER.md#juice-of-sapho--27-october-2026).
+
 ## Advanced Family Atomics — 27 October 2026
 
 Supplied physical39/printed37 requires play after turn1, after distance
@@ -30,7 +43,8 @@ Gesserit responses precede completion. Basic/old unstamped phases retain their
 procedure. Completed ordered turns cannot reopen through Truthtrance, while
 remaining owned future entitlements can still supply detached witnesses.
 The claim-then-Finish control is explicit software composition of the optional
-claim and printed order. Sapho composition and broader interactions remain.
+claim and printed order. The later Sapho adapter above supplies first/last;
+broader interactions remain.
 [Source, lifecycle and boundaries](ADVANCED_CHARITY_ORDER.md).
 
 ## Ixian starting draft with Harkonnen — 27 October 2026

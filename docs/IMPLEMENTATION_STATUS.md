@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 27 October 2026 — Sapho in ordered Advanced Charity
+
+Prototyped / Partial. Sapho now takes its holder first/last among remaining Advanced Charity turns.
+Actual use creates version2 order history; untouched version1 frames retain
+original bytes. An accepted current native claim provisionally protects that
+actor before another holder reorders the later tail. Completed turns, one claim
+per player and physical First Player order remain. Own started turns cannot
+split. Basic/old unstamped concurrent phases have no manufactured scope. The
+persistent controls name the protected actor, and native claims/Finish follow
+the changed queue. This is provisional retained-current timing, not a new
+publisher ruling. [Source and contract](ADVANCED_CHARITY_ORDER.md#juice-of-sapho--27-october-2026).
+
+Frozen **12-file union, 108/108**, types/lint/build and four original-game
+Advanced preview programmes pass. Actual original cache auction bid1 buys
+Sapho; the native first turn continues through Storm2 to Charity2. Clean and
+actually claimed current turns exercise both first/last. Runtime records
+12 GameTable SSR, 4 Sapho panels, 8 Charity panels, 4 actual SaphoOrderButton,
+2 claim and 4 Finish callbacks. Source/further action arrays total320/24.
+Actual bribes create poverty; no played hand/purse/phase/queue/claim is installed.
+Other native controls are applied directly, without a clicked-control claim.
+Browser hydration/navigation and deployed acceptance were not operated.
+
+Eighteen new helper/native/control cases pass, including all four minimal
+profiles and Semuta claim/pass. The two Semuta cases inherit an explicitly
+controlled conserved physical-card acquisition, advance forward from actual
+Revival2 to Charity3, then exercise the real disposal continuation. They are
+supplemental composition evidence, not original acquisition proof. The committed
+queue resumes once without another claim or order application. AI strategy and
+calibration stay deferred.
+
+Proof: `/home/quintine/.local/share/dune/checkpoints/20261027-sapho-charity-order-proof-v1/`;
+journeys/HTML: adjacent `20261027-sapho-charity-order-runtime/run-v1/`.
+All checks use the same frozen source; the final evidence prose is a separately
+recorded three-document overlay. The existing server returned HTTP200 without
+restart. No saved-game/database operation. Wider interactions, complete modes
+and final rules/recovery/privacy/browser/deployed acceptance remain.
+
 ## 27 October 2026 — Advanced Family Atomics timing and removal
 
 Prototyped / Partial. Play after turn1 and calculated distance, before movement, from physical
