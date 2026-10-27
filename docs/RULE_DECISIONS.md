@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Ixian stronghold route spice choices — 27 October 2026
+
+Provisionally let Ixians choose a whole amount from zero through the existing
+force-limited available pile in each sector of their stronghold route. Printed
+E1 p. 9 and the authorized revision physical p. 34 allow optional collection;
+they do not prescribe partial amounts or resolve foreign passenger capacity.
+The existing route and per-sector capacity interpretation remains. Sandmaster
+selection precedes the faction collection; legacy all-or-none choices keep
+their saved meaning. [Scope](IX_PROTOTYPE.md#hidden-mobile-stronghold-route-collection-choices--27-october-2026).
+
 ## Basic Truthtrance storm-dial comparisons — 27 October 2026
 
 Extend the provisional upcoming-dial question to exact, at-least and at-most

@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { HelpTip } from './help-tip';
 import {
   GRAPH,
@@ -33,6 +34,7 @@ export function MobileStronghold({
   const [destination, setDestination] = useState('polar_sink:0');
   const [route, setRoute] = useState<string[]>(pointer ? [pointer] : []);
   const [collect, setCollect] = useState(true);
+  const [collectionEdits, setCollectionEdits] = useState<Record<string, string>>({});
   const [skillSelections, setSkillSelections] = useState<Record<string, string | false>>({});
   const max = card ? 2 : 3;
   const current = route.at(-1) ?? '';
@@ -53,17 +55,23 @@ export function MobileStronghold({
         const chosen = skillSelections[id];
         return chosen === false ? [] : [typeof chosen === 'string' && keys.includes(chosen) ? chosen : keys[0]];
       }) : [];
-  let preview = 0;
   const remaining: Record<string, number> = {};
-  for (const key of route) {
+  const collections = route.map((key, index) => {
     const before = remaining[key] ?? Math.max(0, (g.spice[key] ?? 0) - Number(skillPiles.includes(key)));
-    const amount = Math.min(before, (me.forces[MOBILE_LOCATION] ?? 0) * 2);
+    const maximum = Math.min(before, (me.forces[MOBILE_LOCATION] ?? 0) * 2);
+    const editKey = `${index}:${key}`;
+    const raw = collectionEdits[editKey];
+    const selected = raw === undefined ? maximum : Number(raw);
+    const legal = !collect || (raw !== '' && Number.isSafeInteger(selected) && selected >= 0 && selected <= maximum);
+    const amount = collect && legal ? selected : 0;
     remaining[key] = before - amount;
-    preview += amount;
-  }
+    return { location: key, editKey, amount, maximum, raw, legal };
+  });
+  const preview = collections.reduce((total, choice) => total + choice.amount, 0);
   const valid =
     placement ||
     (!blocked && route.length > 1 &&
+      mobileRouteDistance(route) <= max &&
       route.every((key) => splitLocation(key).sector !== g.storm) &&
       territory(splitLocation(current).territory).type !== 'stronghold');
   return (
@@ -84,10 +92,24 @@ export function MobileStronghold({
       {!placement && (
         <>
           <ol>
-            {route.map((key) => (
-              <li key={key}>
-                {label(key)}
-                {g.spice[key] ? ` · ${g.spice[key]} spice` : ''}
+            {collections.map((choice, index) => (
+              <li key={choice.editKey}>
+                <label>
+                  {label(choice.location)} · {index === 0 ? 'starting sector' : `route step ${index}`}
+                  {' '}· collect up to {choice.maximum} spice
+                  <Input
+                    type="number"
+                    min={0}
+                    max={choice.maximum}
+                    step={1}
+                    value={collect ? choice.raw ?? choice.amount : 0}
+                    disabled={busy || !collect}
+                    aria-label={`Spice to collect at ${label(choice.location)}, ${index === 0 ? 'starting sector' : `route step ${index}`}`}
+                    aria-invalid={!choice.legal}
+                    onChange={(event) => setCollectionEdits({ ...collectionEdits, [choice.editKey]: event.target.value })}
+                  />
+                </label>
+                {!choice.legal && <p className="fine">Choose a whole amount from 0 to {choice.maximum}.</p>}
               </li>
             ))}
           </ol>
@@ -160,15 +182,17 @@ export function MobileStronghold({
       )}
       <Button
         className="game-action"
-        disabled={busy || !valid}
+        disabled={busy || !valid || collections.some((choice) => !choice.legal)}
         onClick={() =>
           act(
             placement
               ? { type: 'decision', location: destination }
               : card
                 ? { type: 'card', mode: 'special', card, route, collect,
+                    collections: collections.map(({ location, amount }) => ({ location, amount })),
                     ...(sandmaster ? { sandmasterPiles: skillPiles } : {}) }
                 : { type: 'decision', route, collect,
+                    collections: collections.map(({ location, amount }) => ({ location, amount })),
                     ...(sandmaster ? { sandmasterPiles: skillPiles } : {}) },
           )
         }

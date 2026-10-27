@@ -400,6 +400,24 @@ void test('special Karama relocates at most two territories without spending ord
   assert.equal(g.discard.at(-1)?.id, card.id);
   conserve(g);
 });
+void test('special Karama retains a chosen partial stronghold collection', () => {
+  const g = fixture();
+  g.advanced = true;
+  const card = baseDeck().find((c) => c.effect === 'karama')!;
+  g.players[0].hand = [card];
+  const route = mobileRoutes(g, 2).find((r) => mobileRouteDistance(r) === 2)!;
+  const pile = route.at(-1)!;
+  g.spice[pile] = 5; // Controlled board-spice supplement for this special-use path.
+  const collections = route.map(location => ({ location, amount: location === pile ? 2 : 0 }));
+  const action = { type: 'card', mode: 'special', card: card.id, route, collect: true, collections };
+  const done = applyAction(g, 'i', action);
+  assert.equal(done.mobileStronghold!.location, pile);
+  assert.equal(done.spice[pile], 3);
+  assert.equal(done.players[0].spice, g.players[0].spice + 2);
+  assert.equal(done.players[0].specialKaramaUsed, true);
+  assert.equal(done.discard.at(-1)?.id, card.id);
+  conserve(done);
+});
 void test('all AI levels select legal placement and relocation using private projections', () => {
   for (const difficulty of DIFFICULTIES) {
     let g = nextStorm();

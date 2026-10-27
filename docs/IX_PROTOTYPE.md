@@ -1,5 +1,28 @@
 # Ixians & Tleilaxu functional prototype
 
+## Hidden Mobile Stronghold route collection choices — 27 October 2026
+
+**Prototyped / Partial.** The printed Ixian power permits optional collection
+when the occupied stronghold moves into, from or through a spice sector, at
+two spice per force in the stronghold. See publisher E1 printed p. 9 and the
+user-authorized revised source physical p. 34 / printed p. 32. The publisher
+does not spell out partial allocations; this preview provisionally permits any
+whole amount up to the live pile and the existing two-per-Ixian-force limit in
+each visited sector. How foreign passengers affect that limit remains open.
+The existing unique-sector route, storm and destination constraints remain.
+
+The controls show starting and subsequent route sectors and permit zero or a
+partial amount. Sandmaster deductions, if selected, occur first. A cancelable
+ordinary declaration retains the selected amounts through the real response;
+Advanced special Karama uses the same selector and two-territory limit. Legacy
+actions and saved pending moves without choices retain their previous automatic
+maximum or no-collection behavior. AI may continue using that legal default.
+[Runtime tests](../tests/mobile-stronghold-collection-runtime.test.ts) use a
+native source and explicitly conserved staging for the two-pile examples;
+[control tests](../tests/mobile-stronghold-collection-controls.test.tsx) use
+a controlled component harness, not a browser. Wider route interpretations,
+other combinations and deployed acceptance remain open.
+
 ## Advanced starting draft source cutover — 27 October 2026
 
 **Prototyped / Partial.** The user-authorized Advanced revision, physical34 /

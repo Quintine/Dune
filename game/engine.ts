@@ -2341,6 +2341,7 @@ export type Game = {
     player: string;
     route: string[];
     collect: boolean;
+    collections?: MobileCollection[];
     sandmasterPiles?: string[];
   } | null;
   revivalRules?: RevivalRules;
@@ -37858,9 +37859,32 @@ function validateMobileMove(g: Game, p: Player, input: unknown, max: number) {
   );
   return route;
 }
+type MobileCollection = { location: string; amount: number };
+/** Quote each route occurrence against the remaining physical pile after any
+ * Sandmaster collection. Absent selections retain the older automatic route. */
+function quoteMobileCollections(g: Game, p: Player, route: string[], input: unknown,
+  collect: boolean, skillPiles: readonly string[]): MobileCollection[] | undefined {
+  if (input === undefined) return undefined;
+  requireRule(Array.isArray(input) && input.length === route.length,
+    'Choose a spice amount for every sector in the stronghold route.');
+  const remaining = { ...g.spice };
+  for (const pile of skillPiles) remaining[pile] = (remaining[pile] ?? 0) - 1;
+  return input.map((entry: unknown, index: number) => {
+    requireRule(entry && typeof entry === 'object' && !Array.isArray(entry),
+      'Choose a valid spice amount for each route sector.');
+    const item = entry as Record<string, unknown>, key = route[index];
+    const available = Math.max(0, remaining[key] ?? 0);
+    requireRule(Object.keys(item).sort().join(',') === 'amount,location' && item.location === key &&
+      typeof item.amount === 'number' && Number.isSafeInteger(item.amount) && item.amount >= 0 &&
+      item.amount <= (collect ? Math.min(available, at(p, MOBILE_STRONGHOLD) * 2) : 0),
+    'Choose an available spice amount within the stronghold forces’ collection limit for each route sector.');
+    remaining[key] = available - item.amount;
+    return { location: key, amount: item.amount };
+  });
+}
 function relocateMobileStronghold(
   g: Game,
-  move: { player: string; route: string[]; collect: boolean; sandmasterPiles?: string[] },
+  move: { player: string; route: string[]; collect: boolean; collections?: MobileCollection[]; sandmasterPiles?: string[] },
 ) {
   const p = getPlayer(g, move.player);
   const blocked = homeworldRule(() => homeworldMobileStrongholdMovementBlock(g, p.id));
@@ -37870,6 +37894,7 @@ function relocateMobileStronghold(
     : sandmasterLeader(g, p.id)
       ? Object.values(sandmasterCollectionPiles(g, { interior: move.route })).filter(piles => piles.length === 1).map(piles => piles[0])
       : [];
+  const collections = quoteMobileCollections(g, p, move.route, move.collections, move.collect, skillPiles);
   let collected = 0;
   if (move.collect) {
     // User ruling 7 October 2026: passengers remaining inside a relocated HMS
@@ -37887,8 +37912,8 @@ function relocateMobileStronghold(
           { faction: p.faction, name: 'Sandmaster collection' },
         );
       }
-    for (const key of move.route) {
-      const amount = Math.min(g.spice[key] ?? 0, at(p, MOBILE_STRONGHOLD) * 2);
+    for (const [index, key] of move.route.entries()) {
+      const amount = collections ? collections[index].amount : Math.min(g.spice[key] ?? 0, at(p, MOBILE_STRONGHOLD) * 2);
       if (amount) {
         g.spice[key] -= amount;
         p.spice += amount;
@@ -39002,7 +39027,7 @@ export type SpecialKaramaIntent = {
 } & (
   | { kind: 'choam'; cards: string[] }
   | { kind: 'richese'; acquire: string; nexusEvent?: string }
-  | { kind: 'ixians'; route: string[]; collect: boolean; sandmasterPiles?: string[] }
+  | { kind: 'ixians'; route: string[]; collect: boolean; collections?: MobileCollection[]; sandmasterPiles?: string[] }
   | { kind: 'tleilaxu'; target: string; revival: PendingRevival | null }
   | { kind: 'fremen'; territory: string }
   | {
@@ -39165,11 +39190,13 @@ export function prepareSpecialKaramaIntent(
     const route = validateMobileMove(g, p, action.route, 2);
     const sandmasterPiles = nexusRule(() => validateSandmasterStronghold(
       g, p.id, route, action.sandmasterPiles, action.collect !== false));
+    const collections = quoteMobileCollections(g, p, route, action.collections, action.collect !== false, sandmasterPiles);
     return {
       ...base,
       kind: 'ixians',
       route: [...route],
       collect: action.collect !== false,
+      ...(collections !== undefined ? { collections } : {}),
       ...(action.sandmasterPiles !== undefined ? { sandmasterPiles } : {}),
     };
   } else if (p.faction === 'tleilaxu') {
@@ -39320,6 +39347,7 @@ function specialKaramaAction(intent: SpecialKaramaIntent): Action {
       return { ...action, cards: [...intent.cards] };
     case 'ixians':
       return { ...action, route: [...intent.route], collect: intent.collect,
+        ...(intent.collections !== undefined ? { collections: intent.collections.map(item => ({ ...item })) } : {}),
         ...(intent.sandmasterPiles !== undefined ? { sandmasterPiles: [...intent.sandmasterPiles] } : {}) };
     case 'tleilaxu':
     case 'atreides':
@@ -39520,6 +39548,7 @@ function resolveSpecialKaramaEffect(g: Game, p: Player, card: Card, intent: Spec
       player: p.id,
       route,
       collect: intent.collect,
+      ...(intent.collections !== undefined ? { collections: intent.collections } : {}),
       ...(intent.sandmasterPiles !== undefined ? { sandmasterPiles: intent.sandmasterPiles } : {}),
     });
   } else if (intent.kind === 'tleilaxu') {
@@ -41748,10 +41777,12 @@ function applyActionInner(
         const route = validateMobileMove(g, p, action.route, 3);
         const sandmasterPiles = nexusRule(() => validateSandmasterStronghold(
           g, p.id, route, action.sandmasterPiles, action.collect !== false));
+        const collections = quoteMobileCollections(g, p, route, action.collections, action.collect !== false, sandmasterPiles);
         g.pendingMobileMove = {
           player: p.id,
           route,
           collect: action.collect !== false,
+          ...(collections !== undefined ? { collections } : {}),
           ...(action.sandmasterPiles !== undefined ? { sandmasterPiles } : {}),
         };
         g.response = {
@@ -45117,6 +45148,7 @@ export function viewGame(state: Game, id: string, now?: number) {
       ? {
           route: g.pendingMobileMove.route,
           collect: g.pendingMobileMove.collect,
+          collections: g.pendingMobileMove.collections,
           sandmasterPiles: g.pendingMobileMove.sandmasterPiles,
         }
       : null,

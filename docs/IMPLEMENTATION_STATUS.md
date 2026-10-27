@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 27 October 2026 — Ixian stronghold route collection choices
+
+The Hidden Mobile Stronghold's route editor supports provisionally selected
+amounts in each visited sector, with native force/pile limits and Sandmaster
+deductions. Normal cancellation and Advanced special Karama retain the chosen
+amounts. Older omitted choices retain automatic maximum or no collection;
+the minimal bots may use that legal default. Foreign-passenger interpretation,
+broader interactions and final/deployed acceptance remain open.
+[Scope](IX_PROTOTYPE.md#hidden-mobile-stronghold-route-collection-choices--27-october-2026).
+
 ## 27 October 2026 — Basic Truthtrance storm-dial comparisons
 
 Upcoming original Basic Storm dials support exact, at-least and at-most

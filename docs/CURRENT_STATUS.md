@@ -20,6 +20,14 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Ixian stronghold route collection choices — 27 October. Prototyped / Partial.**
+Players can provisionally choose the amount collected from each visited
+sector, within the current physical-pile and Ixian-force cap. The original
+cancelable move and Advanced special Karama retain the choices; Sandmaster
+deductions come first. Missing choice packets keep legacy all-or-none behavior.
+Foreign-passenger capacity, wider combinations and final/deployed acceptance
+remain open. [Scope](IX_PROTOTYPE.md#hidden-mobile-stronghold-route-collection-choices--27-october-2026).
+
 **Basic Truthtrance Storm-dial comparisons — 27 October. Prototyped / Partial.**
 The upcoming original Basic dial supports exact, at-least and at-most
 conditions, with multiple answers sharing the native range and older omitted

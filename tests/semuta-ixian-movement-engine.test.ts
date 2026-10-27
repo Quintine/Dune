@@ -52,7 +52,12 @@ function nativeSource(f: SemutaIxianMovementFixture) {
   assert.deepEqual(inventory(f.game), f.originalInventory);
 }
 function open(f: SemutaIxianMovementFixture) {
-  const game = act(structuredClone(f.game), f.spender, f.action), pending = game.pendingTreacheryDiscard; assert.ok(pending);
+  let game = act(structuredClone(f.game), f.spender, f.action);
+  if (game.pendingKull?.stage === 'offer') {
+    const frame = game.pendingKull;
+    game = act(game, frame.player, { type: 'kullDecision', event: frame.event, decline: true });
+  }
+  const pending = game.pendingTreacheryDiscard; assert.ok(pending);
   assert.equal(pending.continuation.kind, 'karamaMovementDiscard');
   if (pending.continuation.kind !== 'karamaMovementDiscard') throw Error('Expected the exact movement cancellation cost');
   assert.deepEqual(pending.continuation.use.response, f.game.response);
