@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 28 October 2026 — Random faction deal and prediction-number draft
+
+The host can deal enabled factions randomly or start a public descending-number
+draft, with automatic legal bot picks and all human choices applied together.
+Seat identity and existing start gates remain. Nine related unit files pass 43
+cases; four isolated HTTP cases include two controllers selecting for four
+separately authenticated faction seats and starting the game. Consensual swaps,
+wider combinations and deployed acceptance remain open. An isolated browser
+room also exercised random dealing and a human/AI draft to completion.
+[Scope](FACTION_ALLOCATION.md).
+
 ## 28 October 2026 — Advanced Voice names for ordinary cards
 
 Advanced Voice can provisionally require or forbid a specific ordinary

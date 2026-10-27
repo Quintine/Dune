@@ -1,5 +1,7 @@
 import { createTwoPlayerControllers, validateTwoPlayerControllersLobby, validateTwoPlayerControllersComplete,
   addTwoPlayerControlledSeat, TwoPlayerControllersError, type TwoPlayerControllers } from './two-player-controllers';
+import { createFactionDraft, validateFactionDraft, currentFactionDrafter, chooseFaction,
+  FactionDraftError, type FactionDraft } from './faction-draft';
 import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
 import { victoryFinalTurn, continueVictoryCalendar, VictoryCalendarError } from './victory-calendar';
 import { createVictoryContinuation, validateVictoryContinuation, voteVictoryContinuation,
@@ -1409,6 +1411,8 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  /** Public prediction-number faction selection, present only while in progress. */
+  factionDraft?: FactionDraft;
   /** Explicit two-human/four-faction setup; absent from ordinary and legacy games. */
   twoPlayerControllers?: TwoPlayerControllers;
   /** Explicit final turn after an agreed extension; absent means turn ten. */
@@ -5711,6 +5715,7 @@ function twoPlayerControllersIntegrity(g: Game): void {
 
 function joinFactionSeat(g: Game, p: Player, controllerId?: string) {
   twoPlayerControllersIntegrity(g);
+  requireRule(!g.factionDraft, 'Finish or cancel the faction draft before adding a seat.');
   requireRule(g.status === 'lobby', 'This game has already started.');
   requireRule(g.players.length < 6, 'This table has six players.');
   requireRule(!g.players.some((x) => x.id === p.id), 'Already seated.');
@@ -5753,6 +5758,51 @@ export function joinControlledFaction(g: Game, p: Player, actorId: string) {
   requireRule(!p.bot && !getPlayer(g, actorId).bot,
     'Human faction seats must belong to a human controller.');
   joinFactionSeat(g, p, controller.id);
+}
+function factionDraftRule<T>(operation: () => T): T {
+  try { return operation(); }
+  catch (error) {
+    if (error instanceof FactionDraftError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function eligibleLobbyFactions(g: Game): FactionId[] {
+  return FACTIONS.filter(entry => entry.expansion === 'base' || g.expansions.includes(entry.expansion))
+    .map(entry => entry.id);
+}
+function factionDraftIntegrity(g: Game): void {
+  if (g.factionDraft === undefined) return;
+  requireRule(g.status === 'lobby', 'The faction draft belongs to the lobby.');
+  factionDraftRule(() => validateFactionDraft(g.factionDraft, g.players.map(player => player.id), eligibleLobbyFactions(g)));
+  requireRule(g.factionDraft.picks.length < g.players.length, 'A completed faction draft must be applied once.');
+}
+function assignLobbyFaction(player: Player, chosen: FactionId): void {
+  player.faction = chosen;
+  if (player.bot) player.name = `${faction(chosen).name} AI`;
+  player.elites = chosen === 'ixians' ? { reserves: 7, tanks: 0, forces: {}, revived: 0 } : undefined;
+  player.leaders = leaders(chosen);
+}
+/** Bot draft choices are made immediately: online bot workers are not armed in
+ * the lobby. Each choice uses a currently available faction and the real order. */
+function continueFactionDraft(g: Game): void {
+  while (g.factionDraft) {
+    const draft = g.factionDraft;
+    const actor = factionDraftRule(() => currentFactionDrafter(draft));
+    if (!actor) {
+      for (const pick of draft.picks) assignLobbyFaction(getPlayer(g, pick.player), pick.faction);
+      delete g.factionDraft;
+      g.players.forEach(player => (player.ready = !!player.bot));
+      log(g, 'Faction draft completed. The selected factions are assigned and human readiness was cleared.');
+      return;
+    }
+    const player = getPlayer(g, actor);
+    if (!player.bot) return;
+    const available = eligibleLobbyFactions(g).filter(f => !draft.picks.some(pick => pick.faction === f));
+    const chosen = available.includes(player.faction) ? player.faction : available[0];
+    requireRule(chosen, 'The AI drafter has no enabled faction available.');
+    g.factionDraft = factionDraftRule(() => chooseFaction(draft, g.players.map(seat => seat.id), eligibleLobbyFactions(g), actor, chosen));
+    log(g, `${player.name} selected ${faction(chosen).name} in the faction draft.`);
+  }
 }
 function setMovementDiscardKnowledge(g: Game, knowledge: MovementDiscardKnowledge | undefined) {
   if (knowledge === undefined) delete g.movementDiscardKnowledge;
@@ -39929,6 +39979,11 @@ function normalizeCardNames(g: Game) {
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
   twoPlayerControllersIntegrity(state);
+  factionDraftIntegrity(state);
+  if (state.factionDraft) requireRule(
+    ['factionDraftPick', 'factionDraftCancel', 'advanceBots'].includes(action?.type),
+    'Finish or cancel the faction draft before changing the lobby.',
+  );
   victoryContinuationIntegrity(state);
   bidPromiseIntegrity(state);
   phaseBidIntegrity(state);
@@ -40545,6 +40600,7 @@ function settleAutomaticContinuations(g: Game) {
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
   twoPlayerControllersIntegrity(state);
+  factionDraftIntegrity(state);
   victoryContinuationIntegrity(state);
   if (state.victoryContinuation) return state;
   bidPromiseIntegrity(state);
@@ -42871,6 +42927,48 @@ function applyActionInner(
     return g;
   }
   if (g.status === 'lobby') {
+    if (g.factionDraft) {
+      const draft = g.factionDraft;
+      requireRule(action.event === draft.event, 'This faction draft is no longer current.');
+      if (t === 'factionDraftCancel') {
+        requireRule(id === g.host && Object.keys(action).every(key => ['type', 'event'].includes(key)),
+          'Only the host can cancel the current faction draft.');
+        delete g.factionDraft;
+        g.players.forEach(player => (player.ready = !!player.bot));
+        log(g, `${p.name} canceled the faction draft; previous factions remain assigned.`);
+        return g;
+      }
+      requireRule(t === 'factionDraftPick' && Object.keys(action).every(key => ['type', 'event', 'faction'].includes(key)),
+        'Choose the current faction draft action.');
+      requireRule(!p.bot, 'AI faction choices are made automatically.');
+      const chosen = stringField(action.faction) as FactionId;
+      g.factionDraft = factionDraftRule(() => chooseFaction(draft, g.players.map(seat => seat.id), eligibleLobbyFactions(g), id, chosen));
+      log(g, `${p.name} selected ${faction(chosen).name} in the faction draft.`);
+      continueFactionDraft(g);
+      return g;
+    }
+    if (t === 'factionAllocation') {
+      requireRule(id === g.host && Object.keys(action).every(key => ['type', 'mode'].includes(key)) &&
+        (action.mode === 'random' || action.mode === 'draft'),
+      'Only the host can choose a random deal or prediction-number faction draft.');
+      requireRule(g.players.length >= 2, 'At least two seated factions are needed for faction allocation.');
+      const seats = g.players.map(player => player.id);
+      const eligible = eligibleLobbyFactions(g);
+      requireRule(eligible.length >= seats.length, 'Not enough enabled factions are available.');
+      if (action.mode === 'random') {
+        const dealt = shuffle(eligible).slice(0, seats.length);
+        g.players.forEach((player, index) => assignLobbyFaction(player, dealt[index]));
+        g.players.forEach(player => (player.ready = !!player.bot));
+        log(g, `${p.name} dealt random factions. Human readiness was cleared.`);
+      } else {
+        const cards = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).slice(0, seats.length);
+        g.factionDraft = factionDraftRule(() => createFactionDraft(seats, cards, crypto.randomUUID()));
+        g.players.forEach(player => (player.ready = !!player.bot));
+        log(g, `${p.name} started a faction draft in descending prediction-card order.`);
+        continueFactionDraft(g);
+      }
+      return g;
+    }
     if (t === 'twoPlayerMode') {
       requireRule(id === g.host, 'Only the host can change two-person setup.');
       requireRule(typeof action.enabled === 'boolean' &&
@@ -44793,6 +44891,7 @@ function applyActionInner(
 }
 export function viewGame(state: Game, id: string, now?: number) {
   twoPlayerControllersIntegrity(state);
+  factionDraftIntegrity(state);
   victoryContinuationIntegrity(state);
   revivalOrderIntegrity(state);
   charityOrderIntegrity(state);
@@ -45091,6 +45190,7 @@ export function viewGame(state: Game, id: string, now?: number) {
     version: g.version,
     host: g.host,
     status: g.status,
+    factionDraft: g.factionDraft ?? null,
     twoPlayerControllers: g.twoPlayerControllers ?? null,
     controlledFactionSeats: g.twoPlayerControllers
       ? g.players.filter(player => g.twoPlayerControllers!.controllers.some(controller =>

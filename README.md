@@ -14,6 +14,13 @@ npm run dev -- --host 0.0.0.0
 
 Open `http://localhost:3000`. Create a room, share its eight-character invitation, and add human or AI seats. The host can configure Easy, Medium, Hard and Brutal AI opponents. Current calibration demonstrates a substantially weaker Easy policy; it does not yet demonstrate a consistent ordering among the upper three levels.
 
+In the lobby, the host may deal random factions or start a prediction-card
+faction draft. Draft picks proceed from the highest drawn number, and the new
+factions are assigned together after every seat chooses. AI seats choose
+automatically. Both methods clear human readiness; direct selection remains
+available. Consensual faction swaps are not yet implemented. See
+[faction allocation](docs/FACTION_ALLOCATION.md).
+
 For the provisional two-person setup, the host enables **Two players, two
 factions each** in the lobby. Each person joins with one faction, then adds a
 second and uses **Active faction** to switch seats. Ready each faction before

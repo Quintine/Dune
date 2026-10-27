@@ -2446,6 +2446,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Create a room, invite rivals with its code, and complete each faction’s starting choices.',
     steps: [
       'Each player chooses a distinct faction and an unoccupied player circle, then marks Ready. The six circles appear around the map and determine storm order. Changing your circle resets readiness. The host starts when everyone is ready.',
+      'The host may instead deal random enabled factions or draw distinct prediction numbers for a faction draft. The highest number picks first; choices apply together after all seats pick. AI seats choose automatically and human readiness clears. Consensual faction swaps are not yet available.',
       'After positions are fixed, Bene Gesserit seals a secret prediction of a faction and turn. No traitor or Treachery Cards have been dealt yet. Other players wait for this choice; if Bene Gesserit is absent, the table continues automatically.',
       'Each player receives four private traitor choices and keeps one. Harkonnen keeps all four automatically. Every remaining selection must finish before starting spice and forces are placed. Your starting Treachery hand is still empty.',
       'Starting spice and fixed forces are then placed. Fremen distributes ten forces among Sietch Tabr, False Wall South and False Wall West, choosing their printed sectors. Basic Bene Gesserit starts with one fighter in Polar Sink. In Advanced setup, Bene Gesserit instead chooses a printed territory and sector after Fremen placement; its advisor becomes a fighter when alone.',
@@ -2459,7 +2460,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Base setup enforces prediction, traitors, forces and automatic dealing in order, with private choices and preserved saved tables. Advanced starting advisors and elite forces share the same setup logic. The normal lobby now starts selected expansions and the Leader Skills, Ecaz Treachery Card, Nexus, Discovery, Homeworld, Tech and Stronghold modules through their existing genuine setups as labelled previews; unsupported combinations still reject at start. Fresh native Ecaz/classic World games retain ordinary Arrakis Occupy, with or without supported Skills.',
+          'Lobby random faction dealing and prediction-number drafting retain seat identities and clear readiness; consensual swaps remain unfinished. Base setup enforces prediction, traitors, forces and automatic dealing in order, with private choices and preserved saved tables. Advanced starting advisors and elite forces share the same setup logic. The normal lobby starts selected expansions and optional modules through existing genuine setups as labelled previews; unsupported combinations still reject at start.',
       },
       {
         area: 'Player controls',

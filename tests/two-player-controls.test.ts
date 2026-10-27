@@ -53,6 +53,17 @@ void test('an unresolved request stays visible with an explicit retry', () => {
   assert.match(html, /<select[^>]*disabled/);
 });
 
+void test('a faction draft keeps the owned-seat switch usable while locking lobby changes', () => {
+  const html = renderToStaticMarkup(createElement(TwoPlayerControls, {
+    game: base, disabled: false, draftLocked: true, pendingEntry: false,
+    entryRoom: base.code, entryProblem: '', retryDisabled: false,
+    onModeChange: noop, onSwitch: noop, onAdd: noop, onRetry: noop,
+    onAddBot: noop, onAddControlledBot: noop,
+  }));
+  assert.match(html, /Active faction<select(?![^>]*disabled)/);
+  assert.match(html, /type="checkbox"[^>]*disabled/);
+});
+
 void test('host may add a computer opponent when the second controller slot is empty', () => {
   const game = {
     ...base,

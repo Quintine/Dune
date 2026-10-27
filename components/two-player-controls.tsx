@@ -8,11 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export function TwoPlayerControls({
-  game, disabled, pendingEntry, entryRoom, entryProblem, retryDisabled,
+  game, disabled, draftLocked = false, pendingEntry, entryRoom, entryProblem, retryDisabled,
   onModeChange, onSwitch, onAdd, onRetry, onAddBot, onAddControlledBot,
 }: {
   game: GameView;
   disabled: boolean;
+  draftLocked?: boolean;
   pendingEntry: boolean;
   entryRoom?: string;
   entryProblem: string;
@@ -29,6 +30,7 @@ export function TwoPlayerControls({
   const [botChoice, setBotChoice] = useState('');
   const [botDifficulty, setBotDifficulty] = useState<Difficulty>('Medium');
   const mode = game.twoPlayerControllers;
+  const lobbyLocked = disabled || draftLocked;
   const controlled = game.controlledFactionSeats ?? [];
   const modeLocked = !!mode?.controllers.some((controller) => controller.seats.length > 1);
   const botController = mode?.controllers.find((controller) =>
@@ -46,7 +48,7 @@ export function TwoPlayerControls({
     <section className="notice" aria-label="Two-player faction controls">
       {game.status === 'lobby' && game.host === game.me && (
         <label className="checkbox-row">
-          <input type="checkbox" checked={!!mode} disabled={disabled || modeLocked} onChange={(event) => onModeChange(event.target.checked)} />
+          <input type="checkbox" checked={!!mode} disabled={lobbyLocked || modeLocked} onChange={(event) => onModeChange(event.target.checked)} />
           Two players, two factions each
         </label>
       )}
@@ -72,33 +74,33 @@ export function TwoPlayerControls({
         </label>}
         {game.status === 'lobby' && controlled.length === 1 && <form onSubmit={(event) => {
           event.preventDefault();
-          if (choice && name.trim() && available.some((item) => item.id === choice)) onAdd(name.trim(), choice);
+          if (!lobbyLocked && choice && name.trim() && available.some((item) => item.id === choice)) onAdd(name.trim(), choice);
         }}>
           <h3>Add your second faction</h3>
           <label htmlFor="second-faction-seat-name">Seat name</label>
-          <Input id="second-faction-seat-name" value={name} maxLength={32} disabled={disabled} onChange={(event) => setName(event.target.value)} />
-          <label>Faction <select value={choice} disabled={disabled} onChange={(event) => setChoice(event.target.value)}>
+          <Input id="second-faction-seat-name" value={name} maxLength={32} disabled={lobbyLocked} onChange={(event) => setName(event.target.value)} />
+          <label>Faction <select value={choice} disabled={lobbyLocked} onChange={(event) => setChoice(event.target.value)}>
             <option value="">Choose a faction</option>
             {available.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
           </select></label>
-          <Button type="submit" disabled={disabled || !name.trim() || !available.some((item) => item.id === choice)}>Add second faction</Button>
+          <Button type="submit" disabled={lobbyLocked || !name.trim() || !available.some((item) => item.id === choice)}>Add second faction</Button>
         </form>}
         {showBotForm && <form onSubmit={(event) => {
           event.preventDefault();
-          if (disabled || !available.some((item) => item.id === botChoice)) return;
+          if (lobbyLocked || !available.some((item) => item.id === botChoice)) return;
           if (botController) onAddControlledBot(botController.id, botChoice, botDifficulty);
           else if (canAddBotController) onAddBot(botChoice, botDifficulty);
         }}>
           <h3>{botController ? 'Add the AI player’s second faction' : 'Add an AI player'}</h3>
           <p className="fine">The AI plays each faction independently. Choose a difficulty for this faction; its settings can be changed in the lobby.</p>
-          <label>AI faction <select value={botChoice} disabled={disabled} onChange={(event) => setBotChoice(event.target.value)}>
+          <label>AI faction <select value={botChoice} disabled={lobbyLocked} onChange={(event) => setBotChoice(event.target.value)}>
             <option value="">Choose a faction</option>
             {available.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
           </select></label>
-          <label>AI difficulty <select value={botDifficulty} disabled={disabled} onChange={(event) => setBotDifficulty(event.target.value as Difficulty)}>
+          <label>AI difficulty <select value={botDifficulty} disabled={lobbyLocked} onChange={(event) => setBotDifficulty(event.target.value as Difficulty)}>
             {DIFFICULTIES.map((difficulty) => <option key={difficulty} value={difficulty}>{difficulty}</option>)}
           </select></label>
-          <Button type="submit" disabled={disabled || !available.some((item) => item.id === botChoice)}>{botController ? 'Add AI second faction' : 'Add AI player'}</Button>
+          <Button type="submit" disabled={lobbyLocked || !available.some((item) => item.id === botChoice)}>{botController ? 'Add AI second faction' : 'Add AI player'}</Button>
         </form>}
       </>}
       {pendingEntry && <div>
