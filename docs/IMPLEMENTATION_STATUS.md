@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 27 October 2026 — Richese Once Around bid Truthtrance
+
+Connect a separate current-lot minimum-bid question and owner-only receipt and
+guide to the original public Once Around event. The bidder acts only once;
+existing order, physical cards, hand space, current funds and ally pledge stay
+native. External impossibility releases a Yes, and a waiting Richese owner
+cannot rely on a hypothetical earlier bid. Basic's native Semuta preview is
+permitted but its other discard combinations remain uncertified. Simultaneous
+Silent bids, Normal Black Market bidding, broader modules and a joint future
+planner remain open. Basic/Advanced original setup sources exercise physical
+Truth cards, native bidding, four minimal bot profiles and stale-guide rejection;
+an Advanced conflicting-bribe supplement explicitly stages one original card.
+Ten focused files pass 120/120, with type/lint and build. Server-rendered
+controls and guide callbacks are exercised; stateful browser, full-mode and
+deployed acceptance remain open. Private proof is
+`20261027-richese-truth-bid-proof-v1/`.
+[Contract](TRUTHTRANCE_BID_PROMISES.md#richese-once-around-bid-prototype--27-october-2026).
+
 ## 27 October 2026 — Phase-bid admission repair
 
 An independently projected movement, shipment, travel or revival answer now

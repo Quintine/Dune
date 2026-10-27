@@ -1,5 +1,16 @@
 # Rule decision index
 
+## Richese Once Around bid Truthtrance — 27 October 2026
+
+Provisionally allow an exact minimum-bid question for the one remaining Once
+Around declaration, bound to its public event. An accepted bid fulfills Yes;
+No caps the single bid and permits passing. No future rival bid is assumed for
+the owner's final opportunity. Preserve native funding, hand limits and actual
+settlement; an opposing raise can release an impossible answer. The general GF9
+FAQ supports current-turn commitments while possible but does not prescribe
+this specific special-auction procedure. Independent combination forecasts and
+other auction methods remain open. [Contract](TRUTHTRANCE_BID_PROMISES.md#richese-once-around-bid-prototype--27-october-2026).
+
 ## Phase-wide ordinary bid Truthtrance — 27 October 2026
 
 Prototypically support a current-turn Yes/No minimum ordinary bid across

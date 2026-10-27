@@ -1,4 +1,5 @@
 'use client';
+import { RicheseBidPromisePanel } from './richese-bid-promise-panel';
 import { TravelPromises } from './travel-promises';
 import { TurnActionPromises } from './turn-action-promises';
 import { MixedTraitorPromises } from './mixed-traitor-promises';
@@ -4332,12 +4333,15 @@ export function GameTable({
               )}
               {g.phase === 2 && <CharityClaim game={g} act={act} busy={busy} />}
               {g.phase === 3 && g.richeseAuction && (
+                <>
+                <RicheseBidPromisePanel promises={g.richeseBidPromises} guide={g.richeseBidPromiseGuide} game={g} act={act} busy={busy} />
                 <RicheseAuctionLot
                   key={`${g.richeseAuction.event}-${g.me}`}
                   game={g}
                   act={act}
                   busy={busy}
                 />
+                </>
               )}
               {g.phase === 3 && !g.richeseAuction && g.auction && (
                 <>

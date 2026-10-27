@@ -20,6 +20,17 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Richese Once Around Truthtrance bid — 27 October. Prototyped / Partial.**
+A player can answer a minimum-bid question bound to the current public Once
+Around lot, then use a private guide for the original bid or pass. The real
+single opportunity, eligible order, current hand and native funds remain
+binding; a waiting Richese owner is not assumed to get a turn after all pass.
+An opposing raise can release an impossible Yes. Independent financial answers
+are conservatively limited until a joint planner exists. Ten focused files pass
+120/120; type/lint and build pass. Server-rendered controls and guide callbacks
+are exercised, but stateful selector and browser/deployed play are unverified.
+[Scope and source](TRUTHTRANCE_BID_PROMISES.md#richese-once-around-bid-prototype--27-october-2026).
+
 **Phase-bid admission repair — 27 October. Prototyped / Partial.**
 A displayed shipment, movement, revival or travel answer now preserves an
 existing phase-bid Yes when a known compatible route exists. The unfinished

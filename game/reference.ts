@@ -3652,13 +3652,14 @@ export const RULE_TOPICS: RuleTopic[] = [
   },
   {
     id: 'truthtrance-bid',
-    title: 'Truthtrance: ordinary bid commitments',
+    title: 'Truthtrance: bidding commitments',
     category: 'Cards',
     coverage: 'Partial',
     developmentStage: 'Prototyped',
-    summary: 'Bind one future minimum ordinary bid in the current lot or remaining Bidding phase, preserving native funding, payment and turn order.',
+    summary: 'Bind a minimum bid in an ordinary lot, the remaining ordinary Bidding phase, or one Richese Once Around lot, preserving native funding and order.',
     steps: [
-      'Choose Bind a bid in this ordinary lot, another remaining eligible bidder and a positive whole spice minimum. The turn and lot are fixed. Registered native Basic and Advanced tables without optional modules are supported first; special auctions and broader compositions remain unfinished.',
+      'Choose Bind a bid in this ordinary lot, another remaining eligible bidder and a positive whole spice minimum. The turn and lot are fixed. Registered native Basic and Advanced tables without optional modules are supported first; broader compositions remain unfinished.',
+      'In a quiet Richese Once Around auction, choose Bind a bid in this Once Around lot to bind the respondent’s one remaining bid or pass. A waiting Richese owner cannot promise Yes until an actual bid ensures an owner turn. Current hand space, funds and pledged aid remain required; an opposing raise can release an impossible Yes. Silent and Normal special auctions remain outside this prototype.',
       'Alternatively choose Bind a bid this Bidding phase. Yes requires one qualifying accepted ordinary bid after the answer and before Bidding closes; No forbids qualifying later ordinary bids across lots. Earlier bids do not count, and a bid does not promise a win.',
       'The phase-wide guide may wait for a later lot only when the existing funded sale, prepared next card and post-sale space and funds support it. An unbid lot, hypothetical rival raise, cancelable unfunded overbid or Harkonnen bonus slot is not invented as a future opportunity. Before Bidding, current funding and available card count provide a provisional forecast; special auction preparation and combined future commitments remain limited.',
       'Yes requires one new accepted bid at or above the minimum while possible. An earlier bid does not count. A pass or lower bid cannot rely on another player raising later. No forbids every later qualifying bid until this lot closes.',

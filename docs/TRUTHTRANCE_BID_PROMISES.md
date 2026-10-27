@@ -1,5 +1,35 @@
 # Truthtrance ordinary bid commitments
 
+## Richese Once Around bid prototype — 27 October 2026
+
+**Prototyped / Partial.** The distinct `{kind:'richeseBid', target, turn, event,
+minimum}` question binds the current public Once Around lot, not its private
+card identity. The original physical Truth card, one bid or pass, bid order,
+capacity, currently available spice, pledged ally funding and native winner's
+payment remain unchanged. An accepted qualifying bid fulfills Yes even if it
+loses; No excludes qualifying declarations. The last-acting Richese owner gets
+no opportunity if all other bidders pass, so Yes is not forecast without an
+existing positive bid. A real opposing raise or loss of funds can release an
+impossible Yes; the respondent cannot deliberately abandon it.
+
+The public question editor, private answer, own receipt, event-bound guide and
+four minimal legal bot profiles are connected. Existing positive independent
+financial/transport commitments restrict admission in both answer orders until
+a combined planner is implemented. Silent and normal special auctions, mixed
+expressions, optional module combinations, broad Semuta discard interactions,
+complete modes and browser/deployed acceptance remain open. Basic's native
+Semuta preview may enter the quiet lot path, without certifying its combinations.
+
+The [GF9 November 2020 FAQ p8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=8)
+supports current-turn action questions and compliance while possible but does
+not prescribe this Once Around procedure. The online opportunity and release
+policy is a provisional software interpretation, not a dedicated publisher
+ruling. Native Basic/Advanced R/A/E starting deals and auction actions exercise
+answers, costs, lot continuation, rival raises and minimal bots. A separate
+Advanced bribe conflict uses a labeled card-conserving supplement. Server-rendered
+controls and guide callbacks are exercised, without operating the stateful
+selector. Ten focused files pass 120/120; type/lint and build pass.
+
 ## Phase-wide ordinary bid prototype — 27 October 2026
 
 **Prototyped / Partial.** A distinct `{kind:'phaseBid', target, turn, minimum}`

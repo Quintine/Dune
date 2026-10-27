@@ -71,6 +71,7 @@ import { parseNoFieldValueFact, noFieldValueFactMatches, noFieldValueFactText, t
 import { parseFaceDancerFact, faceDancerFactMatches, faceDancerFactText, type FaceDancerFact } from './truthtrance-face-dancer';
 import { parseBidClaim, bidClaimText, bidPromiseModeSupported, type BidClaim } from './bid-promises';
 import { parsePhaseBidClaim, phaseBidClaimText, phaseBidPromiseModeSupported, type PhaseBidClaim } from './turn-bid-promises';
+import { parseRicheseBidClaim, richeseBidClaimText, type RicheseBidClaim } from './richese-bid-promises';
 
 export type TruthFact =
   | KnowledgeFact
@@ -104,6 +105,7 @@ export type TruthQuestion =
   | ({ kind: 'revival'; target: string } & RevivalClaim)
   | ({ kind: 'bid'; target: string } & BidClaim)
   | ({ kind: 'phaseBid'; target: string } & PhaseBidClaim)
+  | ({ kind: 'richeseBid'; target: string } & RicheseBidClaim)
   | { kind: 'traitorCall'; target: string; battle: string; territory: string }
   | ({ kind: 'movement'; target: string } & MovementClaim)
   | ({ kind: 'shipment'; target: string } & ShipmentClaim)
@@ -355,6 +357,16 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       !g.pendingKarama && !g.pendingTreacheryDiscard,
     'Choose a remaining native Revival opportunity this turn in a supported table and finish pending decisions.');
     return { kind: 'revival', target: v.target, ...claim };
+  }
+  if (v.kind === 'richeseBid') {
+    check(Object.keys(v).sort().join(',') === 'event,kind,minimum,target,turn',
+      'Choose the current Once Around lot and bid minimum.');
+    const claim = parseRicheseBidClaim(v), lot = g.richeseAuction;
+    check(bidPromiseModeSupported({ ...g, semutaPreview: undefined }) && g.status === 'playing' && g.phase === 3 && lot &&
+      lot.method === 'onceAround' && !lot.outcome && lot.event === claim.event && claim.turn === g.turn &&
+      !g.response && !g.decision && !g.phaseOpening && !g.pendingKarama && !g.pendingTreacheryDiscard,
+      'Choose a quiet supported Once Around auction and its current public event.');
+    return { kind: 'richeseBid', target: v.target, ...claim };
   }
   if (v.kind === 'phaseBid') {
     check(Object.keys(v).sort().join(',') === 'kind,minimum,target,turn',
@@ -733,6 +745,7 @@ export function truthQuestionText(
   if (q.kind === 'revival') return `Will you ${revivalClaimText(q)}?`;
   if (q.kind === 'bid') return `Will you ${bidClaimText(q)}?`;
   if (q.kind === 'phaseBid') return `Will you ${phaseBidClaimText(q)}?`;
+  if (q.kind === 'richeseBid') return `Will you ${richeseBidClaimText(q)}?`;
   if (q.kind === 'traitorCall') return `In this revealed battle in ${locationName(q.territory)}, will you declare the opposing leader a Traitor?`;
   if (q.kind === 'movementExpression') return `Will you ${movementExpressionText(q.claim)} before your Shipment and Movement turn ends?`;
   if (q.kind === 'movement') return `Will you ${movementClaimText(q)} before your Shipment and Movement turn ends?`;
@@ -863,6 +876,8 @@ export function resolveTruthAction(
     bindMixedBid?: (g: Game, p: Player, claim: MixedBidClaim, answer: boolean, asker: string) => void;
     bidAnswers?: (g: Game, p: Player, claim: BidClaim) => TruthAnswer[];
     bindBid?: (g: Game, p: Player, claim: BidClaim, answer: boolean, asker: string) => void;
+    richeseBidAnswers?: (g: Game, p: Player, claim: RicheseBidClaim) => TruthAnswer[];
+    bindRicheseBid?: (g: Game, p: Player, claim: RicheseBidClaim, answer: boolean, asker: string) => void;
     phaseBidAnswers?: (g: Game, p: Player, claim: PhaseBidClaim) => TruthAnswer[];
     bindPhaseBid?: (g: Game, p: Player, claim: PhaseBidClaim, answer: boolean, asker: string) => void;
     travelAnswers?: (g: Game, p: Player, claim: TravelClaim) => TruthAnswer[];
@@ -1036,6 +1051,9 @@ export function resolveTruthAction(
         if (w.question.kind === 'bid')
           check(effects.bidAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a bidder with a remaining ordinary opportunity in this lot.');
+        if (w.question.kind === 'richeseBid')
+          check(effects.richeseBidAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a bidder with a remaining Once Around opportunity.');
         if (w.question.kind === 'phaseBid')
           check(effects.phaseBidAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a phase bid question compatible with supported native opportunities and earlier answers.');
@@ -1168,6 +1186,11 @@ export function resolveTruthAction(
           check(effects.bidAnswers && effects.bindBid && effects.bidAnswers(g, p, q).includes(a.answer),
             'Choose an answer consistent with this lot, your legal bids and earlier answers.');
           if (a.answer !== 'unknown') effects.bindBid(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'richeseBid') {
+          check(effects.richeseBidAnswers && effects.bindRicheseBid && effects.richeseBidAnswers(g, p, q).includes(a.answer),
+            'Choose an answer consistent with this Once Around lot and your legal bid.');
+          if (a.answer !== 'unknown') effects.bindRicheseBid(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'phaseBid') {
           check(effects.phaseBidAnswers && effects.bindPhaseBid && effects.phaseBidAnswers(g, p, q).includes(a.answer),
