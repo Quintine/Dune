@@ -42,6 +42,11 @@ void test('only the canonical persisted Portable identity gains the poison-defen
   assert.ok(defaultVoiceMatch(portable, 'snooper'));
   assert.ok(playedVoiceMatch(portable, 'defense', 'snooper'));
   assert.equal(playedVoiceMatch(portable, 'weapon', 'snooper'), false);
+  assert.ok(defaultVoiceMatch(portable, 'portableSnooper'));
+  assert.ok(playedVoiceMatch(portable, 'defense', 'portableSnooper'));
+  assert.equal(playedVoiceMatch(portable, 'weapon', 'portableSnooper'), false);
+  assert.equal(defaultVoiceMatch(get('snooper'), 'portableSnooper'), false);
+  assert.equal(defaultVoiceMatch({ ...portable, id: 'forged' }, 'portableSnooper'), false);
 });
 void test('Portable stops ordinary poison and weapon Chemistry but no Tooth, Lasgun, projectile or Artillery', () => {
   for (const kind of ['poison', 'chemistry'] as const)

@@ -958,7 +958,7 @@ export type Battle = {
     field: PlanField;
     value?: string | number | null;
   };
-  voice?: { target: string; kind: Card['kind'] | 'stoneBurner' | 'mirrorWeapon'; must: boolean };
+  voice?: { target: string; kind: Card['kind'] | 'stoneBurner' | 'mirrorWeapon' | 'portableSnooper'; must: boolean };
 };
 export type Auction = {
   /** New ordinary lots use trusted online timing; old open lots stay unstamped. */

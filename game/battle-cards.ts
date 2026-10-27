@@ -47,6 +47,7 @@ export const DEFENSE_KINDS = [
 export const VOICE_KINDS = [
   'stoneBurner',
   'mirrorWeapon',
+  'portableSnooper',
   'poison',
   'projectile',
   'lasgun',
@@ -138,6 +139,7 @@ function effectiveWeaponKills(
 }
 /** Compulsion considers the card's default role, never forces an alternate role. */
 export function defaultVoiceMatch(card: Card, kind: string) {
+  if (kind === 'portableSnooper') return isPortableSnooper(card);
   if (card.kind === kind) return true;
   return (
     isPortableSnooper(card) ||
@@ -151,6 +153,7 @@ export function playedVoiceMatch(
   slot: 'weapon' | 'defense' | 'leader',
   kind: string,
 ) {
+  if (kind === 'portableSnooper') return slot === 'defense' && isPortableSnooper(card);
   return (
     !!card &&
     (card.kind === kind ||
@@ -178,6 +181,7 @@ export function battleCardLabel(kind: string) {
         hero: 'Cheap Hero',
         shield: 'Projectile defense',
         snooper: 'Poison defense',
+        portableSnooper: 'Portable Snooper',
         projectile: 'Projectile weapon',
         poison: 'Poison weapon',
         lasgun: 'Lasgun',

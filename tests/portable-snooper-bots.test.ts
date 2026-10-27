@@ -225,12 +225,19 @@ void test('late defense uses public revealed threats without opponent hand infer
         ),
       );
     }
-    const traitor = view(g, difficulty);
-    traitor.players[0].traitors = ['guild-0'];
-    assert.deepEqual(botActions(traitor)[0], {
+    // Build the authoritative traitor before revealing, so the server's
+    // projected call choices agree with the bot's actual held card.
+    const traitorGame = fixture();
+    traitorGame.players[0].traitors = ['guild-0'];
+    const revealedTraitor = reveal(traitorGame);
+    const traitor = view(revealedTraitor, difficulty);
+    assert.ok(traitor.battle!.traitorCallChoices?.includes(true));
+    const traitorAction = botActions(traitor)[0];
+    assert.deepEqual(traitorAction, {
       type: 'traitorCall',
       call: true,
     });
+    assert.doesNotThrow(() => applyAction(revealedTraitor, 'p', traitorAction));
   }
 });
 

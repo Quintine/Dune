@@ -93,6 +93,15 @@ function finish(g: Game) {
   for (const id of ['r', 'g'])
     if (g.battle?.traitorCalls[id] === undefined)
       g = send(g, id, { type: 'traitorCall', call: false });
+  // Fresh Richese battles retain their shared final Sapho opportunity after
+  // traitor declarations. Finish that actual native window before asserting
+  // outcomes or winner/loser card-cleanup decisions.
+  while (g.battle?.outcomeWindow && !g.battle.outcomeWindow.closed) {
+    const window = g.battle.outcomeWindow;
+    const actor = [window.attacker, window.defender].find(id => !window.ready.includes(id));
+    assert.ok(actor, 'The final battle window retains an unfinished combatant');
+    g = send(g, actor, { type: 'battleOutcomeReady', event: window.event });
+  }
   return g;
 }
 function cleanup(g: Game) {

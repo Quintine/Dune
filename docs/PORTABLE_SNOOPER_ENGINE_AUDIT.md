@@ -1,5 +1,24 @@
 # Portable Snooper integration audit
 
+## Named Voice choice — 27 October 2026
+
+**Prototyped / Partial.** Voice can name the canonical Portable Snooper
+separately from the broader poison-defense category. A specific requirement
+is satisfied by the actual card in the original defense plan when the player
+can comply; a prohibition blocks it in both the original plan and its printed
+late-defense window. Ordinary Snooper remains distinct. Generic poison-defense
+Voice continues to include both cards. Existing native and borrowed Voice
+controls use the shared choice and matcher; saved earlier commands retain their
+meaning.
+
+The user-authorized revised rulebook physical p. 28 / printed p. 26 permits
+Voice to specify a card or card type. The physical Portable face subjects its
+late play to Voice as recorded below. The [runtime cases](../tests/voice-portable-snooper-runtime.test.ts)
+use real battle actions with a documented conserved-card and alliance
+supplement; [control cases](../tests/voice-portable-snooper-controls.test.tsx)
+use a controlled projection. Naming individual ordinary cards and wider
+combinations, browser and deployed acceptance remain open.
+
 Audit: 2026-09-06. Scope: the canonical card's ordinary defense role, late play and existing battle continuations. The source contract below informed the bounded integration recorded at the end. The current-hook list is historical; the final checkpoint records completed implementation. Full expansion certification remains unverified.
 
 ## Primary evidence

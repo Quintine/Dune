@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Voice naming Portable Snooper — 27 October 2026
+
+The authorized Advanced source permits Voice to name a specific card; the
+Portable Snooper face also subjects its late defense to Voice. The canonical
+Portable is now a distinct command from the broader poison-defense category,
+in both ordinary plans and late use. Individual ordinary-card names and wider
+combinations remain separate.
+[Scope](PORTABLE_SNOOPER_ENGINE_AUDIT.md#named-voice-choice--27-october-2026).
+
 ## Semuta and an already-ready Poison battle — 27 October 2026
 
 In a supported open pre-leader preparation, one prior ready decision does not

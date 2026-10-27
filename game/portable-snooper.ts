@@ -21,6 +21,8 @@ export function portableSnooperPlanBlock(
   if (weapon && defense)
     return 'Portable Snooper cannot follow a weapon and Worthless card or another two-card plan.';
   if (voice && !voice.must && playedVoiceMatch(card, 'defense', voice.kind))
-    return 'The Bene Gesserit Voice forbids this poison defense.';
+    return voice.kind === 'portableSnooper'
+      ? 'The Bene Gesserit Voice forbids Portable Snooper.'
+      : 'The Bene Gesserit Voice forbids this poison defense.';
   return null;
 }

@@ -20,6 +20,13 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Voice naming Portable Snooper — 27 October. Prototyped / Partial.** Voice
+can name the canonical Portable separately from ordinary Snooper or the generic
+poison-defense category. Native plan and late-defense checks share the same
+physical-card matcher; existing controls and minimal bots remain connected.
+Individual ordinary-card names, wider combinations and final/deployed
+acceptance remain open. [Scope](PORTABLE_SNOOPER_ENGINE_AUDIT.md#named-voice-choice--27-october-2026).
+
 **Semuta after a ready battle preparation — 27 October. Prototyped / Partial.**
 One prior pre-leader Ready no longer prevents a Semuta offer after a legal
 Residual Poison discard. Claim/pass preserves the actual victim and battle,

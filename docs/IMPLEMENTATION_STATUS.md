@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 27 October 2026 — Voice naming Portable Snooper
+
+Voice can name the physical Portable Snooper independently of generic poison
+defense. Ordinary plan requirements, prohibitions and the late-defense check
+share the canonical matcher; normal Snooper stays distinct. Existing controls
+and minimal bot plans use the shared choice. Individual ordinary-card names,
+wider interactions and final/deployed acceptance remain open.
+[Scope](PORTABLE_SNOOPER_ENGINE_AUDIT.md#named-voice-choice--27-october-2026).
+
 ## 27 October 2026 — Semuta after a ready battle preparation
 
 The neutral Semuta opportunity now follows a legal Residual Poison discard
