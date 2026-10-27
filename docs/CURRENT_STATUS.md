@@ -20,12 +20,27 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Basic explosion and prior surviving leaders — 27 October. Prototyped / Partial.**
+The Advanced Arrakis prior-leader handling now also applies provisionally in
+Basic: a later actual explosion kills surviving discs from earlier battles in
+that territory. The Basic source composition and its uncertainty are recorded
+in the [contract](EFFECTIVE_BATTLE_WEAPONS.md#basic-explosion-and-prior-leaders--27-october-2026).
+
+A public Basic Emperor/Atreides/Guild game uses real entry and two successive
+battles to check prior and current leaders. An Advanced E3 supplement begins
+with earned Duke acquisition but explicitly stages the later battle position
+and cards: a set-aside Duke survives, while a Duke in the current plan dies.
+Kwisatz's prior location remains unresolved; browser and deployed play are not
+certified.
+Eleven selected files pass 173/173 and type/lint checks pass. No build, browser,
+mobile or deployed verification was performed for this focused rules change.
+
 **Advanced explosion and prior surviving leaders — 27 October. Prototyped / Partial.**
 On Arrakis, an actual Lasgun–Shield explosion now also kills still-present
 living leader discs left by earlier battles in that territory, without repeating
 current leader deaths or awarding bounty. Traitor precedence and captured /
-concealed exclusions remain. Basic, Homeworld, shared Duke, Kwisatz and special
-custody interpretations are separate. [Source and scope](EFFECTIVE_BATTLE_WEAPONS.md#earlier-leaders-in-an-advanced-explosion--27-october-2026).
+concealed exclusions remain. The later Basic interpretation is recorded above;
+Homeworld, shared Duke, Kwisatz and special custody remain separate. [Source and scope](EFFECTIVE_BATTLE_WEAPONS.md#earlier-leaders-in-an-advanced-explosion--27-october-2026).
 
 An original Advanced Emperor/Atreides/Guild setup reaches two real battles in
 Imperial Basin: both surviving discs from the first battle die in the second

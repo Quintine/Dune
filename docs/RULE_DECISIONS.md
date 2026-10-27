@@ -1,5 +1,16 @@
 # Rule decision index
 
+## Basic explosion and prior leaders — 27 October 2026
+
+Provisionally extend the existing Advanced Arrakis casualty handling to Basic.
+The [publisher base rulebook, p11](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf)
+keeps surviving leaders in their battle territory; a separately indexed
+transcription attributes territory-wide leader destruction to the physical
+Lasgun card. The latter has not been independently confirmed from the card face,
+so this composition is an explicit interpretation, not a publisher ruling.
+Captured and concealed leaders, shared Duke, Homeworlds and Kwisatz retain their
+separate boundaries. [Source and scope](EFFECTIVE_BATTLE_WEAPONS.md#basic-explosion-and-prior-leaders--27-october-2026).
+
 ## Earlier leaders in an Advanced Arrakis explosion — 27 October 2026
 
 Apply the supplied Advanced rulebook physical11/printed9: surviving leaders
@@ -7,8 +18,8 @@ remain in their battle territory and suffer a subsequent territory-wide
 Lasgun–Shield explosion. An actual Arrakis explosion kills each still-present
 living prior-used roster disc once; Traitors retain precedence and no bounty is
 added. Earlier stamps on captured or concealed discs do not prove present
-location. Basic, Homeworld, shared Duke, Kwisatz and exceptional custody remain
-separate. [Source and scope](EFFECTIVE_BATTLE_WEAPONS.md#earlier-leaders-in-an-advanced-explosion--27-october-2026).
+location. Homeworld, shared Duke, Kwisatz and exceptional custody remain
+separate; the later Basic interpretation is recorded above. [Source and scope](EFFECTIVE_BATTLE_WEAPONS.md#earlier-leaders-in-an-advanced-explosion--27-october-2026).
 
 ## Distrans before Richese special bidding — 27 October 2026
 

@@ -1,5 +1,34 @@
 # Physical cards and effective battle weapons
 
+## Basic explosion and prior leaders — 27 October 2026
+
+**Prototyped / Partial.** Under the standing selected-interpretation authority,
+apply the same prior-leader Arrakis explosion handling to Basic. The [GF9 base
+rulebook, p11](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf)
+places surviving leaders in their territory until battles finish. A
+[separately indexed transcription](https://boardgamegeek.com/thread/2542307/lasgun-shield-explosion-do-leaders-who-previously)
+attributes destruction of all leaders in the battle territory to the 2019
+physical Lasgun card, but its actual face was not independently inspected.
+This Basic composition is provisional and is not an official clarification.
+Current and earlier leaders die once; a successful Traitor prevents the explosion
+and no leader bounty is awarded. Existing custody exclusions remain.
+
+The supplied Advanced source physical30/printed28 returns a surviving
+Ambassador Duke next to the board after his battle, so his `usedAt` stamp alone
+does not locate that shared disc in a later explosion. The Advanced Kwisatz
+`usedAt` marker establishes a per-turn territory limit, but no retrieved primary
+source establishes where the separate marker stays after its battle. Its
+current-plan explosion behavior remains; a later explosion is not inferred from
+the stamp. Homeworld and exceptional custody boundaries remain open.
+
+A native public Basic game uses actual entry, two battles and both previous
+surviving discs; its unopened card/Spice order and scalar lotteries are selected.
+The Duke supplement earns his original acquisition but explicitly stages later
+battle state and conserved cards. These checks do not establish broad custody,
+full-mode or deployed acceptance.
+Eleven related files pass 173/173 with type checking and lint; the first
+verification attempt caught an unused import before the full passing rerun.
+
 ## Earlier leaders in an Advanced explosion — 27 October 2026
 
 **Prototyped / Partial.** The user-authorized revised rulebook physical p11 /
@@ -13,9 +42,9 @@ discs are excluded because their earlier stamp alone does not establish current
 physical presence. No bounty is added. Actual Traitor outcomes retain precedence
 and do not explode. Existing dead-leader Skill cleanup runs normally.
 
-The separate shared Duke and Kwisatz marker, Homeworld explosions, Basic source
-cutover and exceptional custody interactions remain outside this slice; this
-does not certify complete modes or change their existing policy.
+The separate shared Duke and Kwisatz marker, Homeworld explosions, and
+exceptional custody interactions remain outside that slice; the later provisional
+Basic policy is recorded above. This does not certify complete modes.
 
 The focused native regression uses an original Advanced Emperor/Atreides/Guild
 setup, paid shipments and movement to earn two successive Imperial Basin battles.

@@ -1,5 +1,24 @@
 # Dune implementation status
 
+## 27 October 2026 — Basic explosion and prior leaders
+
+Extend the Advanced Arrakis prior-leader explosion to Basic under the standing
+selected-interpretation authority. Base GF9 rules leave surviving discs in their
+territory, and a separately indexed card transcription supports territory-wide
+leader deaths. The card face has not been independently confirmed; the Basic
+composition is provisional. Shared Duke, Kwisatz, Homeworld and exceptional
+custody remain separate. [Contract](EFFECTIVE_BATTLE_WEAPONS.md#basic-explosion-and-prior-leaders--27-october-2026).
+
+An original public Basic Emperor/Atreides/Guild sequence reaches two real
+battles after actual shipments and movement; only unopened initial cards and
+Spice positions plus scalar lotteries are selected. A separate Advanced E3
+supplement uses an earned Duke acquisition, then explicitly stages conserved
+cards and later battle state to check the set-aside and current-plan cases. No
+browser or deployment result is claimed.
+Eleven focused files pass 173/173 and types/lint pass. The private proof is
+`20261027-basic-explosion-leaders-proof-v2/`; the first attempt stopped at an
+unused test import, which was removed before the complete second run.
+
 ## 27 October 2026 — Advanced explosion and prior leaders
 
 Use the user-authorized Advanced rulebook physical11/printed9 to include living

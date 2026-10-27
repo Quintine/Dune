@@ -11,13 +11,14 @@ function livingLeader(g: Game, id: string, strongest: boolean, excluded?: string
     (!l.usedAt || l.usedAt === 'imperial_basin')).sort((a,b) => strongest ? b.strength-a.strength : a.strength-b.strength);
   assert.ok(leaders[0]); return leaders[0].id;
 }
-/** Real public Advanced E/A/G source: three actual forces meet in Imperial
+/** Real public E/A/G source: three actual forces meet in Imperial
  * Basin; the first battle's surviving leader discs then remain in that same
  * territory while the two remaining armies fight. Only the unopened three-card
  * starting deal, two unopened land Spice positions and scalar lotteries are
  * selected; no played forces, leaders, wallet, battle or clock is assigned. */
-export function createBattleTerritoryExplosionFixture() {
-  let game = createGame('TERRITORYEXPLOSION', newPlayer('emperor','Emperor','emperor'), true);
+export function createBattleTerritoryExplosionFixture(options: { advanced?: boolean } = {}) {
+  const advanced = options.advanced ?? true;
+  let game = createGame('TERRITORYEXPLOSION', newPlayer('emperor','Emperor','emperor'), advanced);
   joinGame(game,newPlayer('atreides','Atreides','atreides'));
   joinGame(game,newPlayer('guild','Guild','guild'));
   const actions: SalusaGholaStep[] = [];
@@ -25,7 +26,7 @@ export function createBattleTerritoryExplosionFixture() {
   const reach = (until: (g: Game) => boolean) => { game = advanceSalusaGhola(game,until,actions); };
   for (const p of game.players) act(p.id,{type:'ready'});
   const lobby = structuredClone(game);
-  act(game.host,{type:'start',advancedPreview:true});
+  act(game.host,advanced ? {type:'start',advancedPreview:true} : {type:'start'});
   const setup = structuredClone(game);
   assert.equal(game.status,'setup'); assert.ok(game.players.every(p => p.hand.length === 0));
   const shield = game.deck.find(c => c.kind === 'shield');

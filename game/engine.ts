@@ -31339,7 +31339,7 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
     // Surviving discs from earlier battles remain in their Arrakis territory
     // through the Battle phase. Captives have changed custody and do not use
     // their old battle-location stamp as proof of physical presence.
-    if (g.advanced && !b.territory.startsWith('homeworld:')) {
+    if (!b.territory.startsWith('homeworld:')) {
       let previousLeaders = 0;
       for (const owner of g.players)
         for (const leader of owner.leaders)
