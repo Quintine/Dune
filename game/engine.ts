@@ -31336,6 +31336,21 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
     observeOccupation(g);
     dead(al);
     dead(dl);
+    // Surviving discs from earlier battles remain in their Arrakis territory
+    // through the Battle phase. Captives have changed custody and do not use
+    // their old battle-location stamp as proof of physical presence.
+    if (g.advanced && !b.territory.startsWith('homeworld:')) {
+      let previousLeaders = 0;
+      for (const owner of g.players)
+        for (const leader of owner.leaders)
+          if (!leader.dead && !leader.capturedBy && !leader.concealed &&
+              leader.usedAt === b.territory) {
+            dead(leader);
+            previousLeaders++;
+          }
+      if (previousLeaders)
+        log(g, `${previousLeaders} surviving leader disc${previousLeaders === 1 ? '' : 's'} from earlier battles in this territory ${previousLeaders === 1 ? 'was' : 'were'} also killed by the explosion.`);
+    }
     for (const [p, plan] of [
       [a, ap],
       [d, dp],

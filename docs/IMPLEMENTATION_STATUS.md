@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 27 October 2026 — Advanced explosion and prior leaders
+
+Use the user-authorized Advanced rulebook physical11/printed9 to include living
+prior-used roster leaders still in an Arrakis territory in an actual
+Lasgun–Shield explosion. Current plan discs are killed once, Traitors retain
+precedence, no bounty is added, and captured/concealed prior discs remain outside
+this location inference. Basic, Homeworld, shared Duke, Kwisatz and special
+custody boundaries remain open. [Contract](EFFECTIVE_BATTLE_WEAPONS.md#earlier-leaders-in-an-advanced-explosion--27-october-2026).
+
+The native Advanced Emperor/Atreides/Guild regression reaches two actual
+Imperial Basin battles, using paid shipments and ground movement. It selects
+unopened starting cards, Spice positions and native scalar lotteries; it does
+not install played leaders or armies. Separate controlled staged-history tests
+cover noncombatants, other territory, dead leaders, Traitor precedence and a
+concealed captive. Complete modes, browser and deployment remain unverified.
+Eight selected files pass 162/162 and types/lint pass. A historical controlled
+Ghola fixture clears the Revival order at its explicit phase jump; its original
+elite-limit assertions remain. Private proof is
+`20261027-advanced-explosion-leaders-proof-v2/`.
+
 ## 27 October 2026 — Distrans before Richese special bidding
 
 Prototype the existing pre-bid timing interpretation for untouched Once Around

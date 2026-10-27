@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Earlier leaders in an Advanced Arrakis explosion — 27 October 2026
+
+Apply the supplied Advanced rulebook physical11/printed9: surviving leaders
+remain in their battle territory and suffer a subsequent territory-wide
+Lasgun–Shield explosion. An actual Arrakis explosion kills each still-present
+living prior-used roster disc once; Traitors retain precedence and no bounty is
+added. Earlier stamps on captured or concealed discs do not prove present
+location. Basic, Homeworld, shared Duke, Kwisatz and exceptional custody remain
+separate. [Source and scope](EFFECTIVE_BATTLE_WEAPONS.md#earlier-leaders-in-an-advanced-explosion--27-october-2026).
+
 ## Distrans before Richese special bidding — 27 October 2026
 
 Provisionally extend the existing pre-bid interpretation to an untouched Once

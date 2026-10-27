@@ -1,5 +1,32 @@
 # Physical cards and effective battle weapons
 
+## Earlier leaders in an Advanced explosion — 27 October 2026
+
+**Prototyped / Partial.** The user-authorized revised rulebook physical p11 /
+printed p9 leaves surviving leader discs in their battle territory and makes
+them subject to later territory-wide effects, explicitly including a
+Lasgun–Shield explosion. In an Advanced Arrakis battle that actually explodes,
+living prior-used player leaders at that territory die once alongside the two
+current plan leaders, including prior losing leaders. Prior-used native and
+foreign-ghola roster discs follow the same location marker; captive or concealed
+discs are excluded because their earlier stamp alone does not establish current
+physical presence. No bounty is added. Actual Traitor outcomes retain precedence
+and do not explode. Existing dead-leader Skill cleanup runs normally.
+
+The separate shared Duke and Kwisatz marker, Homeworld explosions, Basic source
+cutover and exceptional custody interactions remain outside this slice; this
+does not certify complete modes or change their existing policy.
+
+The focused native regression uses an original Advanced Emperor/Atreides/Guild
+setup, paid shipments and movement to earn two successive Imperial Basin battles.
+The prior winner's and loser's surviving discs are checked before the second
+explosion. Additional controlled staged histories cover other territories,
+already-dead leaders, current-leader deduplication, mutual Traitors and a
+concealed captive. Neither fixture establishes full mode or deployed acceptance.
+Eight related files pass 162/162, with type checking and lint. One older
+controlled Ghola test clears the phase-owned Revival frame before its direct
+Mentat jump; it retains its original elite-limit assertions.
+
 The 7 September foundation now feeds a bounded, playable Mirror Weapon battle path (28 September 2026). The historical focused test counts below predate that integration.
 
 ## Contract and integration

@@ -2221,6 +2221,9 @@ void test('Ghola and normal revival share the elite limit for the entire turn, n
   );
   g = applyAction(g, 'p0', { type: 'revive', amount: 2, elite: 0 });
   conservation(g);
+  // This controlled fixture jumps directly past Revival to Mentat. Retire the
+  // phase-owned ordering frame that ordinary phase completion would clear.
+  delete g.revivalOrder;
   g.phase = 8;
   g.ready = [];
   g = readyAll(g);

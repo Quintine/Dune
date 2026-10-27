@@ -20,6 +20,22 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Advanced explosion and prior surviving leaders — 27 October. Prototyped / Partial.**
+On Arrakis, an actual Lasgun–Shield explosion now also kills still-present
+living leader discs left by earlier battles in that territory, without repeating
+current leader deaths or awarding bounty. Traitor precedence and captured /
+concealed exclusions remain. Basic, Homeworld, shared Duke, Kwisatz and special
+custody interpretations are separate. [Source and scope](EFFECTIVE_BATTLE_WEAPONS.md#earlier-leaders-in-an-advanced-explosion--27-october-2026).
+
+An original Advanced Emperor/Atreides/Guild setup reaches two real battles in
+Imperial Basin: both surviving discs from the first battle die in the second
+explosion, together with the two newly selected leaders. Separate controlled
+leader-history cases cover other territories, prior deaths, Traitor precedence
+and concealed captive custody. No browser, deployed or complete-mode claim.
+Eight focused files pass 162/162 and type/lint checks pass. The older controlled
+Ghola/Revival test now clears its phase-owned ordering frame when explicitly
+skipping to Mentat; its elite-limit assertions are unchanged.
+
 **Distrans before Richese special bidding — 27 October. Prototyped / Partial.**
 An untouched Once Around or Silent cache/Black Market lot or normal Black Market
 lot provisionally allows the existing transfer before the first bid, pass or sealed submission. Preserve
