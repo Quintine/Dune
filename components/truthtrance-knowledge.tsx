@@ -7,9 +7,9 @@ import { knowledgeFactInputError, SPICE_PEEK_VALUES, type KnowledgeFact } from '
 import { TRUTH_CARD_NAMES } from '@/game/truthtrance-card-names';
 import { Input } from '@/components/ui/input';
 
-type NumericKnowledgeFact = Exclude<KnowledgeFact, { kind: 'prediction'; field: 'faction' } | { kind: 'spicePeek' } | { kind: 'auctionPeek' }>;
+type NumericKnowledgeFact = Exclude<KnowledgeFact, { kind: 'prediction'; field: 'faction' } | { kind: 'spicePeek' } | { kind: 'auctionPeek' } | { kind: 'ixPoolPeek' }>;
 function isNumericKnowledgeFact(fact: KnowledgeFact): fact is NumericKnowledgeFact {
-  return fact.kind !== 'spicePeek' && fact.kind !== 'auctionPeek' && (fact.kind !== 'prediction' || fact.field === 'turn');
+  return fact.kind !== 'spicePeek' && fact.kind !== 'auctionPeek' && fact.kind !== 'ixPoolPeek' && (fact.kind !== 'prediction' || fact.field === 'turn');
 }
 
 export function KnowledgeFactFields({
@@ -28,7 +28,17 @@ export function KnowledgeFactFields({
   const invalid = knowledgeFactInputError(value);
   return (
     <>
-      {value.kind === 'auctionPeek' ? (
+      {value.kind === 'ixPoolPeek' ? (
+        <>
+          <label>
+            Recorded Ixian inspected auction pool includes
+            <select value={value.name} onChange={(event) => onChange({ kind: 'ixPoolPeek', name: event.target.value })}>
+              {TRUTH_CARD_NAMES.map((name) => <option key={name} value={name}>{name}</option>)}
+            </select>
+          </label>
+          <p className="fine">In Basic Bidding, this asks whether the named card is in the Ixian’s recorded inspected auction pool. If that knowledge is unavailable, the answer is I don’t know. Only the answer is published; the pool itself remains private.</p>
+        </>
+      ) : value.kind === 'auctionPeek' ? (
         <>
           <label>
             Inspected auction card

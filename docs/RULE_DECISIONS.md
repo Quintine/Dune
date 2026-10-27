@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Truthtrance and Basic Ixian auction knowledge — 28 October 2026
+
+The publisher FAQ permits game-related yes/no and compound questions. A named
+card may be compared with the Basic Ixian's recorded inspected auction group
+during the same Bidding phase and turn. The group is not an assertion about
+remaining unsold lots. Missing, canceled or unauthorized inspection yields an
+unknown answer; Advanced and borrowed Homeworld inspection remain separate.
+This selector is a bounded software interpretation, not a printed restriction.
+[Scope](TRUTHTRANCE_KNOWLEDGE.md#basic-ixian-auction-knowledge--28-october-2026).
+
 ## Faction allocation before setup — 28 October 2026
 
 The supplied revised rulebook, physical p. 4 (printed p. 2), describes random

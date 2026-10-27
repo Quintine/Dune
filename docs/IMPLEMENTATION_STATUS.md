@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 28 October 2026 — Basic Ixian auction-group Truthtrance
+
+A player may ask whether a named card appears in the Basic Ixian's recorded
+inspected auction group. Single and compound controls use public card names;
+only the eligible respondent sees the verified answer before replying. Missing, canceled, stale and
+unauthorized knowledge returns unknown. Eight focused unit files pass 27 cases,
+including actual Basic inspection and legal responses across all bot profiles.
+Advanced, borrowed inspection, broader questions and deployed acceptance remain
+open. [Scope](TRUTHTRANCE_KNOWLEDGE.md#basic-ixian-auction-knowledge--28-october-2026).
+
 ## 28 October 2026 — Human-to-AI faction swaps
 
 Humans can exchange with AI faction seats, which automatically accept under a

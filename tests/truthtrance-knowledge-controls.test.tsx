@@ -9,7 +9,7 @@ import { knowledgeFactInputError } from '../game/truthtrance-knowledge';
 import { createGame, joinGame, newPlayer, viewGame } from '../game/engine';
 import type { TruthFact } from '../game/truthtrance';
 
-function markup(value: Extract<TruthFact, { kind: 'prediction' | 'stormDial' | 'stormForecast' | 'spicePeek' | 'auctionPeek' }>) {
+function markup(value: Extract<TruthFact, { kind: 'prediction' | 'stormDial' | 'stormForecast' | 'spicePeek' | 'auctionPeek' | 'ixPoolPeek' }>) {
   return renderToStaticMarkup(createElement(KnowledgeFactFields, { value, onChange() {} }));
 }
 
@@ -34,6 +34,24 @@ void test('knowledge controls expose full public faction registry and bounded st
   assert.match(forecast, /value="gte"/);
   assert.match(forecast, /value="lte"/);
   assert.match(forecast, /If no such value is available/);
+});
+
+void test('recorded Ixian pool selector appears in standalone and compound facts', () => {
+  const game = createGame('IXPOOLCONTROLS', newPlayer('a', 'Asker', 'emperor'), false, ['ix']);
+  joinGame(game, newPlayer('b', 'Target', 'ixians'));
+  const view = viewGame(game, 'a');
+  const fact: TruthFact = { kind: 'ixPoolPeek', name: 'Shield' };
+  const single = renderToStaticMarkup(createElement(TruthFactFields, { value: fact, game: view, target: 'b', onChange() {} }));
+  assert.match(single, /value="ixPoolPeek" selected/);
+  assert.match(single, /Recorded Ixian inspected auction pool includes/);
+  assert.match(single, /value="Shield" selected/);
+  assert.match(single, /pool itself remains private/);
+  assert.match(single, /In Basic Bidding/);
+  assert.match(single, /If that knowledge is unavailable/);
+  const compound: TruthFact = { kind: 'or', terms: [fact, { kind: 'spice', compare: 'gte', value: 3 }] };
+  const grouped = renderToStaticMarkup(createElement(TruthFactExpressionFields, { value: compound, game: view, target: 'b', disabled: false, onChange() {} }));
+  assert.match(grouped, /Recorded Ixian inspected auction pool includes/);
+  assert.match(grouped, /value="Shield" selected/);
 });
 
 void test('auction peek selector is available in single and compound current-fact questions', () => {

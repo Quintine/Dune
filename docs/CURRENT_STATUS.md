@@ -16,6 +16,15 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Basic Truthtrance and the Ixian auction pool — 28 October. Prototyped /
+Partial.** A named card can be compared with the respondent's recorded inspected
+group in Basic Bidding; the question does not claim the card remains for sale.
+Current phase and turn, native Ixian authority and matching controller are
+required. Unavailable or canceled inspection yields unknown. Eight related unit
+files pass 27 cases, including genuine native inspection, questions, private
+answers and all four legal bot profiles. Advanced, borrowed inspection, broader
+questions and deployed acceptance remain open. [Scope](TRUTHTRANCE_KNOWLEDGE.md#basic-ixian-auction-knowledge--28-october-2026).
+
 **Human-to-AI faction swaps — 28 October. Prototyped / Partial.** A human may
 exchange factions with an AI seat, which accepts immediately under a provisional
 policy. The action resets human readiness and preserves seats, controller mapping,

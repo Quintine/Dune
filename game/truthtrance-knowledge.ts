@@ -15,6 +15,7 @@ export type KnowledgeFact =
   | { kind: 'prediction'; field: 'turn'; compare: Comparison; value: number }
   | { kind: 'spicePeek'; value: string }
   | { kind: 'auctionPeek'; name: string }
+  | { kind: 'ixPoolPeek'; name: string }
   | { kind: 'stormDial' | 'stormForecast'; compare: Comparison; value: number };
 
 /** Only values already chosen or actually known by this respondent. */
@@ -24,17 +25,19 @@ export type TruthKnowledge = {
   stormForecast: number | null;
   spicePeek: string | null;
   auctionPeek: string | null;
+  /** The authorized respondent's recorded Ixian group, not remaining lots. */
+  ixPoolPeek?: readonly string[] | null;
 };
 
 export function isKnowledgeFact(value: unknown): value is KnowledgeFact {
   if (!value || typeof value !== 'object') return false;
   const kind = (value as { kind?: unknown }).kind;
-  return kind === 'prediction' || kind === 'stormDial' || kind === 'stormForecast' || kind === 'spicePeek' || kind === 'auctionPeek';
+  return kind === 'prediction' || kind === 'stormDial' || kind === 'stormForecast' || kind === 'spicePeek' || kind === 'auctionPeek' || kind === 'ixPoolPeek';
 }
 
 export function knowledgeFactInputError(value: unknown): string | null {
   if (!isKnowledgeFact(value)) return 'Choose a stored prediction, storm dial or known forecast.';
-  if (value.kind === 'auctionPeek')
+  if (value.kind === 'auctionPeek' || value.kind === 'ixPoolPeek')
     return typeof value.name === 'string' && TRUTH_CARD_NAMES.includes(value.name)
       ? null : 'Choose a known Treachery Card name.';
   if (value.kind === 'spicePeek')
@@ -57,7 +60,7 @@ export function knowledgeFactInputError(value: unknown): string | null {
 export function parseKnowledgeFact(value: unknown): KnowledgeFact {
   const error = knowledgeFactInputError(value);
   if (error || !isKnowledgeFact(value)) throw new Error(error ?? 'Choose a valid private-knowledge question.');
-  if (value.kind === 'auctionPeek') return { kind: value.kind, name: value.name };
+  if (value.kind === 'auctionPeek' || value.kind === 'ixPoolPeek') return { kind: value.kind, name: value.name };
   if (value.kind === 'spicePeek') return { kind: value.kind, value: value.value };
   if (value.kind === 'prediction' && value.field === 'faction')
     return { kind: value.kind, field: value.field, faction: value.faction };
@@ -67,7 +70,7 @@ export function parseKnowledgeFact(value: unknown): KnowledgeFact {
 }
 
 export function truthKnowledgeOf(
-  g: Pick<Game, 'phase' | 'turn' | 'advanced' | 'stormDials' | 'stormDialers' | 'stormCard' | 'stormCardKnown' | 'spicePeekKnown' | 'spiceDeck' | 'auction' | 'richeseAuction' | 'ixAuction'>,
+  g: Pick<Game, 'phase' | 'turn' | 'advanced' | 'stormDials' | 'stormDialers' | 'stormCard' | 'stormCardKnown' | 'spicePeekKnown' | 'spiceDeck' | 'auction' | 'richeseAuction' | 'ixAuction' | 'ixAuctionKnown' | 'homeworldOccupationPreview'>,
   p: Pick<Player, 'id' | 'faction' | 'prediction'>,
 ): TruthKnowledge {
   const dial = g.stormDials[p.id];
@@ -77,6 +80,14 @@ export function truthKnowledgeOf(
   // The private lot is read only after the same inspection entitlement used by
   // the ordinary auction view has resolved successfully for this faction.
   const lotName = lot?.peekKnown ? lot.cards[lot.index]?.name : undefined;
+  // Basic native Ixians may answer from their own successful inspection. The
+  // record describes a known group, not the currently unsold auction cards.
+  const ixKnown = g.phase === 3 && !g.advanced && p.faction === 'ixians'
+    ? g.ixAuctionKnown : null;
+  const ixPool = ixKnown && ixKnown.turn === g.turn &&
+    (ixKnown.controller === undefined || ixKnown.controller === p.id) &&
+    (!g.homeworldOccupationPreview || ixKnown.controller === p.id)
+    ? ixKnown.cards.map(card => card.name) : null;
   const peekFace = peek && 'worm' in peek && peek.worm === true ? 'worm'
     : peek && 'sandtrout' in peek && peek.sandtrout === true ? 'sandtrout'
       : peek && 'territory' in peek && typeof peek.territory === 'string' && SPICE_PEEK_VALUES.includes(peek.territory)
@@ -92,6 +103,7 @@ export function truthKnowledgeOf(
       ? g.stormCard : null,
     spicePeek: peekFace,
     auctionPeek: typeof lotName === 'string' && lotName.length > 0 ? lotName : null,
+    ixPoolPeek: ixPool,
   };
 }
 
@@ -105,6 +117,9 @@ export function knowledgeFactAnswer(
   if (fact.kind === 'auctionPeek')
     return knowledge.auctionPeek == null ? 'unknown'
       : knowledge.auctionPeek === fact.name ? 'yes' : 'no';
+  if (fact.kind === 'ixPoolPeek')
+    return knowledge.ixPoolPeek == null ? 'unknown'
+      : knowledge.ixPoolPeek.includes(fact.name) ? 'yes' : 'no';
   if (fact.kind === 'spicePeek')
     return knowledge.spicePeek === null || knowledge.spicePeek === undefined ? 'unknown'
       : knowledge.spicePeek === fact.value ? 'yes' : 'no';
@@ -121,6 +136,8 @@ export function knowledgeFactAnswer(
 export function knowledgeFactText(fact: KnowledgeFact): string {
   if (fact.kind === 'auctionPeek')
     return `the current auction card you inspected as Atreides is ${fact.name}`;
+  if (fact.kind === 'ixPoolPeek')
+    return `your recorded Ixian auction group includes ${fact.name}`;
   if (fact.kind === 'spicePeek') {
     const face = fact.value === 'worm' ? 'a sandworm' : fact.value === 'sandtrout' ? 'Sandtrout'
       : `a Spice Blow at ${territory(fact.value).name}`;

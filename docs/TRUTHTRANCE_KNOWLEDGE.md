@@ -1,5 +1,24 @@
 # Truthtrance: recorded predictions and storm knowledge
 
+## Basic Ixian auction knowledge — 28 October 2026
+
+**Prototyped / Partial.** The structured fact `{kind:'ixPoolPeek', name}`
+asks whether a named printed Treachery Card is in the Basic Ixian's recorded
+inspected auction group. The group records cards retained after Ixians returned
+one to the deck; it is not the current unsold lots, and retains cards sold
+afterward. The current Bidding phase and turn, native Ixian seat and matching
+recorded controller are required. A canceled, absent, stale or unauthorized
+inspection yields unknown. Other factions do not receive the group; the target
+alone sees the verified scalar, and the normal answer publishes the response.
+
+The [GF9 FAQ p. 8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=8)
+permits game-related yes/no and compound questions. This selector and its
+boundary are a software interpretation, not a printed restriction. Advanced
+Technology and borrowed Homeworld inspection are separate and remain open.
+Eight related unit files pass 27 cases, including a genuine Basic inspection,
+private questions and all-profile responses. Missing and aged observations are
+explicitly staged; broader combinations and deployed acceptance remain open.
+
 ## Atreides ordinary auction knowledge — 27 October 2026
 
 **Prototyped / Partial.** The structured fact `{kind:'auctionPeek', name}` asks
