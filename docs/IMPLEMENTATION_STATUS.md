@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 28 October 2026 — Multiparty public deals
+
+Two to six human seats can agree to public terms. Every recipient must accept,
+and all participants must agree to release; an outstanding offer may still be
+declined or withdrawn. Existing two-party records and actions retain their
+original format. Four focused unit files pass 28 cases; two isolated HTTP cases
+cover authenticated two- and three-party flows and continued play. Pairwise
+nonalliance is provisional; prose enforcement, AI and deployed acceptance remain
+open. An isolated browser room exercised three-party acceptance and release;
+the later allied-acceptance control has focused component coverage.
+[Scope](PUBLIC_DEALS.md).
+
 ## 28 October 2026 — Public human deal records
 
 Two nonallied humans can publish terms, accept or decline an offer, withdraw it

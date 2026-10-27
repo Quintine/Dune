@@ -25,11 +25,13 @@ to swap with an AI seat, which currently accepts immediately. Accepted swaps
 clear human readiness. See
 [faction allocation](docs/FACTION_ALLOCATION.md).
 
-During play, **Public deals** lets two nonallied human seats record terms,
-accept or decline an offer, and agree to release it. Terms are visible to the
+During play, **Public deals** lets two to six human seats record terms,
+accept or decline an offer, and agree to release it. Every party must accept,
+and every pair of parties must be nonallied when the offer is made or accepted.
+Terms are visible to the
 table and rely on players to honor them; the game does not interpret promises
 or determine impossibility. Use **Bribes** separately for an actual spice
-payment. AI and multiparty deals remain unfinished. See
+payment. AI negotiation and automatic enforcement remain unfinished. See
 [public deals](docs/PUBLIC_DEALS.md).
 
 For the provisional two-person setup, the host enables **Two players, two

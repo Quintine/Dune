@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createElement, isValidElement, type ReactElement, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { PublicDealList, PublicDeals } from '../components/public-deals';
+import { PublicDealList, PublicDeals, publicDealOfferAction } from '../components/public-deals';
 import type { Action, GameView } from '../game/engine';
 
 type Element = ReactElement<{ children?: ReactNode; [key: string]: unknown }>;
@@ -42,7 +42,7 @@ void test('deal form exposes human non-allied recipients and clearly describes l
   assert.match(html, /Public deals/);
   assert.match(html, /Basil · Harkonnen/);
   assert.match(html, /Emperor · Emperor/);
-  assert.doesNotMatch(html, /Chani · Fremen/);
+  assert.match(html, /Chani · Fremen \(allied with a selected party\)/);
   assert.doesNotMatch(html, /Duncan · Spacing Guild/);
   assert.match(html, /cannot automatically enforce free-text promises/);
   assert.match(html, /does not automatically transfer spice/);
@@ -90,7 +90,66 @@ void test('either party can request, agree to, or withdraw mutual release', () =
   ]);
   const html = render(requested);
   assert.match(html, /Release requested by Alice/);
-  assert.match(html, /Both parties must agree/);
+  assert.match(html, /All parties must agree/);
+});
+
+void test('the form keeps the legacy packet for one seat and sends all selected seats for multiparty offers', () => {
+  assert.deepEqual(publicDealOfferAction(['b'], '  Terms  '), { type: 'dealOffer', target: 'b', terms: 'Terms' });
+  assert.deepEqual(publicDealOfferAction(['b', 'e'], 'Terms'), { type: 'dealOffer', targets: ['b', 'e'], terms: 'Terms' });
+  assert.equal(publicDealOfferAction([], 'Terms'), null);
+  assert.equal(publicDealOfferAction(['b', 'b'], 'Terms'), null);
+  assert.equal(publicDealOfferAction(['b'], '  '), null);
+  assert.equal(publicDealOfferAction(['b'], 'x'.repeat(501)), null);
+});
+
+void test('multiparty offers expose all pending consent and let an accepted recipient decline', () => {
+  const multi = {
+    ...offer, participants: ['a', 'b', 'e'], acceptVotes: ['a', 'b'],
+  };
+  const game = { ...base, players: base.players.map(player =>
+    player.id === 'b' || player.id === 'e' ? { ...player, ally: null } : player), deals: [multi] } as unknown as GameView;
+  const html = render(game);
+  assert.match(html, /Alice \(Atreides\) → Basil \(Harkonnen\), Emperor \(Emperor\)/);
+  assert.match(html, /Accepted by Alice \(Atreides\), Basil \(Harkonnen\)/);
+  assert.match(html, /Waiting for Emperor \(Emperor\)/);
+  const calls: Action[] = [];
+  const accepted = actions({ ...game, me: 'b' }, calls);
+  assert.equal(accepted.length, 1);
+  click(accepted, 'Decline deal');
+  assert.doesNotMatch(render({ ...game, me: 'b' }), /your response requested/);
+  const waiting = { ...game, me: 'e' };
+  assert.match(render(waiting), /your response requested/);
+  click(actions(waiting, calls), 'Accept deal');
+  assert.deepEqual(calls, [
+    { type: 'dealRespond', deal: 'deal-1', accept: false },
+    { type: 'dealRespond', deal: 'deal-1', accept: true },
+  ]);
+  assert.equal(actions({ ...game, me: 'c' }, calls).length, 0);
+});
+
+void test('an offer remains declinable when new alliances make acceptance unavailable', () => {
+  const multi = { ...offer, participants: ['a', 'b', 'e'], acceptVotes: ['a'] };
+  const game = { ...base, me: 'e', deals: [multi] } as unknown as GameView;
+  const choices = actions(game, []);
+  assert.equal(choices.find(node => node.props.children === 'Accept deal')?.props.disabled, true);
+  assert.equal(choices.find(node => node.props.children === 'Decline deal')?.props.disabled, false);
+  assert.match(render(game), /Acceptance is unavailable while any participants are allied/);
+});
+
+void test('all multiparty signatories participate in mutual release', () => {
+  const multi = {
+    ...offer, participants: ['a', 'b', 'e'], acceptVotes: ['a', 'b', 'e'],
+    status: 'active', releaseVotes: ['a', 'b'],
+  };
+  const game = { ...base, deals: [multi] } as unknown as GameView;
+  const calls: Action[] = [];
+  assert.match(render({ ...game, me: 'e' }), /your response requested/);
+  click(actions({ ...game, me: 'e' }, calls), 'Agree to release deal');
+  click(actions({ ...game, me: 'b' }, calls), 'Withdraw release request');
+  assert.deepEqual(calls, [
+    { type: 'dealRelease', deal: 'deal-1', agree: true },
+    { type: 'dealRelease', deal: 'deal-1', agree: false },
+  ]);
 });
 
 void test('all statuses and public text remain readable without treating text as markup', () => {

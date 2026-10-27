@@ -4,7 +4,7 @@ import { createFactionDraft, validateFactionDraft, currentFactionDrafter, choose
   FactionDraftError, type FactionDraft } from './faction-draft';
 import { createFactionSwap, validateFactionSwap, answerFactionSwap, cancelFactionSwap,
   FactionSwapError, type FactionSwap } from './faction-swap';
-import { createPublicDeal, validatePublicDeals, respondPublicDeal, withdrawPublicDeal,
+import { createPublicDeal, createMultipartyPublicDeal, validatePublicDeals, respondPublicDeal, withdrawPublicDeal,
   releasePublicDeal, PublicDealError, type PublicDeal } from './public-deals';
 import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
 import { victoryFinalTurn, continueVictoryCalendar, VictoryCalendarError } from './victory-calendar';
@@ -40092,10 +40092,14 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     const g = structuredClone(state);
     const deals = g.deals ?? [];
     if (action.type === 'dealOffer') {
-      requireRule(Object.keys(action).sort().join(',') === 'target,terms,type' &&
-        typeof action.target === 'string' && typeof action.terms === 'string', 'Choose a recipient and write the public terms.');
-      const offer = publicDealRule(() => createPublicDeal(g.players, id, action.target as string,
-        action.terms as string, g.turn, crypto.randomUUID()));
+      const keys = Object.keys(action).sort().join(',');
+      const single = keys === 'target,terms,type' && typeof action.target === 'string';
+      const multiple = keys === 'targets,terms,type' && Array.isArray(action.targets) &&
+        action.targets.every(target => typeof target === 'string');
+      requireRule((single || multiple) && typeof action.terms === 'string', 'Choose recipients and write the public terms.');
+      const offer = publicDealRule(() => single
+        ? createPublicDeal(g.players, id, action.target as string, action.terms as string, g.turn, crypto.randomUUID())
+        : createMultipartyPublicDeal(g.players, id, action.targets as string[], action.terms as string, g.turn, crypto.randomUUID()));
       requireRule(!deals.some(deal => deal.id === offer.id), 'This deal identifier is already in use.');
       g.deals = [...deals, offer];
     } else {

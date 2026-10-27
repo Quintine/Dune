@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
-  PublicDealError, createPublicDeal, releasePublicDeal, respondPublicDeal,
+  PublicDealError, createPublicDeal, createMultipartyPublicDeal, publicDealAcceptVotes,
+  publicDealParticipants, releasePublicDeal, respondPublicDeal,
   validatePublicDeals, withdrawPublicDeal,
 } from '../game/public-deals';
 
@@ -24,6 +25,113 @@ void test('an explicit offer and recipient response preserve input and do not fo
   assert.deepEqual(players, before);
   validatePublicDeals([pending, { ...active, id: 'event-2' }], players);
   assert.throws(() => respondPublicDeal(active, players, 'b', true), PublicDealError);
+});
+
+void test('legacy two-party JSON keeps its exact representation and implicit votes', () => {
+  const pending = JSON.parse(JSON.stringify(offer()));
+  const before = JSON.stringify(pending);
+  validatePublicDeals([pending], players);
+  assert.deepEqual(publicDealParticipants(pending), ['a', 'b']);
+  assert.deepEqual(publicDealAcceptVotes(pending), ['a']);
+  assert.equal(JSON.stringify(pending), before);
+  const active = respondPublicDeal(pending, players, 'b', true);
+  assert.deepEqual(publicDealAcceptVotes(active), ['a', 'b']);
+  assert.equal('participants' in active, false);
+  assert.equal('acceptVotes' in active, false);
+  const released = releasePublicDeal(releasePublicDeal(active, players, 'b', true), players, 'a', true);
+  assert.deepEqual(released.releaseVotes, ['b', 'a']);
+  assert.equal('participants' in released, false);
+  validatePublicDeals(JSON.parse(JSON.stringify([pending, { ...active, id: 'legacy-active' },
+    { ...released, id: 'legacy-released' }])), players);
+});
+
+void test('multiparty deals activate only after every invited human accepts and release unanimously', () => {
+  const seats = [...players, { id: 'd', ally: null }, { id: 'e', ally: null }];
+  const initial = createMultipartyPublicDeal(seats, 'a', ['b', 'c', 'd'], '  No raids this turn. ', 3, 'multi-1');
+  assert.deepEqual(initial, { id: 'multi-1', from: 'a', to: 'b', terms: 'No raids this turn.', turn: 3,
+    status: 'offered', releaseVotes: [], participants: ['a', 'b', 'c', 'd'], acceptVotes: ['a'] });
+  const first = respondPublicDeal(initial, seats, 'd', true);
+  assert.equal(first.status, 'offered');
+  assert.deepEqual(first.acceptVotes, ['a', 'd']);
+  assert.deepEqual(initial.acceptVotes, ['a']);
+  assert.throws(() => respondPublicDeal(first, seats, 'd', true), PublicDealError);
+  assert.throws(() => respondPublicDeal(first, seats, 'a', true), PublicDealError);
+  assert.throws(() => respondPublicDeal(first, seats, 'e', true), PublicDealError);
+  const next = respondPublicDeal(first, seats, 'b', true);
+  assert.deepEqual(next.acceptVotes, ['a', 'b', 'd']);
+  const active = respondPublicDeal(next, seats, 'c', true);
+  assert.equal(active.status, 'active');
+  assert.deepEqual(publicDealAcceptVotes(active), ['a', 'b', 'c', 'd']);
+  let current = releasePublicDeal(active, seats, 'd', true);
+  current = releasePublicDeal(current, seats, 'a', true);
+  assert.deepEqual(current.releaseVotes, ['a', 'd']);
+  current = releasePublicDeal(current, seats, 'd', false);
+  assert.deepEqual(current.releaseVotes, ['a']);
+  for (const actor of ['c', 'b']) current = releasePublicDeal(current, seats, actor, true);
+  assert.equal(current.status, 'active');
+  current = releasePublicDeal(current, seats, 'd', true);
+  assert.equal(current.status, 'released');
+  assert.deepEqual(current.releaseVotes, ['a', 'b', 'c', 'd']);
+  validatePublicDeals([initial, { ...active, id: 'multi-active' }, { ...current, id: 'multi-released' }], seats);
+});
+
+void test('a recipient can decline after accepting and a proposer can withdraw a partial offer', () => {
+  const initial = createMultipartyPublicDeal(players, 'a', ['b', 'c'], 'terms', 2, 'decline');
+  const accepted = respondPublicDeal(initial, players, 'b', true);
+  const declined = respondPublicDeal(accepted, players, 'b', false);
+  const withdrawn = withdrawPublicDeal(accepted, players, 'a');
+  assert.equal(declined.status, 'declined');
+  assert.equal(withdrawn.status, 'withdrawn');
+  assert.deepEqual(declined.acceptVotes, ['a', 'b']);
+  assert.deepEqual(withdrawn.acceptVotes, ['a', 'b']);
+  assert.throws(() => respondPublicDeal(declined, players, 'c', true), PublicDealError);
+  validatePublicDeals([{ ...declined, id: 'declined' }, withdrawn], players);
+});
+
+void test('a six-seat deal requires all five responses and all six release votes', () => {
+  const seats = ['a', 'b', 'c', 'd', 'e', 'f'].map(id => ({ id, ally: null }));
+  let deal = createMultipartyPublicDeal(seats, 'a', ['b', 'c', 'd', 'e', 'f'], 'Terms', 1, 'six');
+  for (const actor of ['b', 'c', 'd', 'e']) deal = respondPublicDeal(deal, seats, actor, true);
+  assert.equal(deal.status, 'offered');
+  deal = respondPublicDeal(deal, seats, 'f', true);
+  assert.equal(deal.status, 'active');
+  for (const actor of ['a', 'b', 'c', 'd', 'e']) deal = releasePublicDeal(deal, seats, actor, true);
+  assert.equal(deal.status, 'active');
+  deal = releasePublicDeal(deal, seats, 'f', true);
+  assert.equal(deal.status, 'released');
+  validatePublicDeals([deal], seats);
+});
+
+void test('a new alliance between any invitees blocks acceptance but not decline or mutual release', () => {
+  const initial = createMultipartyPublicDeal(players, 'a', ['b', 'c'], 'terms', 2, 'alliance');
+  const allied = players.map(player => player.id === 'b' ? { ...player, ally: 'c' } : player);
+  assert.throws(() => createMultipartyPublicDeal(allied, 'a', ['b', 'c'], 'terms', 2, 'bad'), PublicDealError);
+  assert.throws(() => respondPublicDeal(initial, allied, 'b', true), PublicDealError);
+  assert.equal(respondPublicDeal(initial, allied, 'b', false).status, 'declined');
+  let active = respondPublicDeal(respondPublicDeal(initial, players, 'b', true), players, 'c', true);
+  for (const actor of ['b', 'a', 'c']) active = releasePublicDeal(active, allied, actor, true);
+  assert.equal(active.status, 'released');
+});
+
+void test('multiparty shape rejects duplicate, noncanonical and impossible lifecycle votes', () => {
+  const initial = createMultipartyPublicDeal(players, 'a', ['b', 'c'], 'terms', 2, 'shape');
+  for (const targets of [['b'], ['b', 'b'], ['a', 'b'], ['b', 'bot'], ['b', 'missing'],
+    ['a', 'b', 'c', 'bot', 'missing', 'extra']])
+    assert.throws(() => createMultipartyPublicDeal(players, 'a', targets, 'terms', 2, 'invalid'), PublicDealError);
+  for (const invalid of [
+    { ...initial, participants: ['a', 'c', 'b'] },
+    { ...initial, participants: ['a', 'b', 'b'] },
+    { ...initial, acceptVotes: ['b'] },
+    { ...initial, acceptVotes: ['a', 'c', 'b'] },
+    { ...initial, acceptVotes: ['a', 'b', 'b'] },
+    { ...initial, acceptVotes: ['a', 'b', 'c'] },
+    { ...initial, status: 'active', acceptVotes: ['a', 'b'] },
+    { ...initial, status: 'active', acceptVotes: ['a', 'b', 'c'], releaseVotes: ['c', 'b'] },
+    { ...initial, status: 'released', acceptVotes: ['a', 'b', 'c'], releaseVotes: ['a', 'b'] },
+    { ...initial, releaseVotes: ['a'] },
+    { ...initial, acceptVotes: undefined },
+    { ...initial, extra: true },
+  ]) assert.throws(() => validatePublicDeals([invalid], players), PublicDealError);
 });
 
 void test('decline and withdrawal require their respective participant and are terminal', () => {

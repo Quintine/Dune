@@ -1,5 +1,5 @@
-/** A public agreement between two human seats. Terms are recorded, not parsed
- * or automatically enforced by the game engine. */
+/** Public agreements record written terms without parsing or enforcing them.
+ * Older two-seat records omit participants and acceptVotes entirely. */
 export type PublicDeal = {
   id: string;
   from: string;
@@ -8,6 +8,9 @@ export type PublicDeal = {
   turn: number;
   status: 'offered' | 'active' | 'declined' | 'withdrawn' | 'released';
   releaseVotes: string[];
+  /** Present together only on the multi-party record format. */
+  participants?: string[];
+  acceptVotes?: string[];
 };
 
 export type PublicDealSeat = { id: string; bot?: unknown; ally?: string | null };
@@ -33,26 +36,44 @@ function roster(players: readonly PublicDealSeat[]): void {
     new Set(players.map(player => player.id)).size === players.length,
   'A deal requires distinct seated players.');
 }
-function participants(players: readonly PublicDealSeat[], from: string, to: string): [PublicDealSeat, PublicDealSeat] {
-  const proposer = players.find(player => player.id === from);
-  const recipient = players.find(player => player.id === to);
-  requireDeal(proposer && recipient && proposer !== recipient && !proposer.bot && !recipient.bot,
-    'A deal requires two different human seats.');
-  return [proposer, recipient];
+function participants(players: readonly PublicDealSeat[], ids: readonly string[]): PublicDealSeat[] {
+  const seats = ids.map(seat => players.find(player => player.id === seat));
+  requireDeal(ids.length >= 2 && ids.length <= 6 && ids.every(id) &&
+    new Set(ids).size === ids.length && seats.every(seat => seat && !seat.bot),
+  'A deal requires distinct human seats.');
+  return seats as PublicDealSeat[];
 }
-function notAllied(from: PublicDealSeat, to: PublicDealSeat): void {
-  requireDeal(from.ally !== to.id && to.ally !== from.id,
-    'This deal is available only between seats that are not already allied.');
+function notAllied(seats: readonly PublicDealSeat[]): void {
+  requireDeal(seats.every((seat, index) => seats.slice(index + 1).every(other =>
+    seat.ally !== other.id && other.ally !== seat.id)),
+  'A deal is available only between seats that are not allied with each other.');
 }
 
-/** Validate the persisted public ledger without imposing current alliance state
- * on earlier offers or active agreements. */
+/** These accessors do not rewrite legacy two-party saves. Call after validation. */
+export function publicDealParticipants(deal: PublicDeal): string[] {
+  return deal.participants ? [...deal.participants] : [deal.from, deal.to];
+}
+export function publicDealAcceptVotes(deal: PublicDeal): string[] {
+  if (deal.acceptVotes) return [...deal.acceptVotes];
+  return deal.status === 'active' || deal.status === 'released'
+    ? [deal.from, deal.to] : [deal.from];
+}
+function orderedSubset(votes: readonly string[], parties: readonly string[]): boolean {
+  return new Set(votes).size === votes.length &&
+    votes.every(vote => parties.includes(vote)) &&
+    votes.every((vote, index) => index === 0 || parties.indexOf(votes[index - 1]) < parties.indexOf(vote));
+}
+
+/** Validate persisted ledger shape and lifecycle without applying current
+ * alliance restrictions retroactively to existing agreements. */
 export function validatePublicDeals(value: unknown, players: readonly PublicDealSeat[]): asserts value is PublicDeal[] {
   roster(players);
   requireDeal(Array.isArray(value), 'The public deal ledger is malformed.');
   const ids = new Set<string>();
   for (const deal of value) {
-    requireDeal(object(deal) && Object.keys(deal).sort().join(',') === 'from,id,releaseVotes,status,terms,to,turn' &&
+    const keys = object(deal) ? Object.keys(deal).sort().join(',') : '';
+    const multi = keys === 'acceptVotes,from,id,participants,releaseVotes,status,terms,to,turn';
+    requireDeal(object(deal) && (multi || keys === 'from,id,releaseVotes,status,terms,to,turn') &&
       id(deal.id) && id(deal.from) && id(deal.to) && deal.from !== deal.to &&
       typeof deal.terms === 'string' && deal.terms.length > 0 && deal.terms.length <= 500 && deal.terms === deal.terms.trim() &&
       Number.isSafeInteger(deal.turn) && (deal.turn as number) > 0 &&
@@ -61,33 +82,72 @@ export function validatePublicDeals(value: unknown, players: readonly PublicDeal
     'A public deal is malformed.');
     requireDeal(!ids.has(deal.id), 'Public deal IDs must be unique.');
     ids.add(deal.id);
-    participants(players, deal.from, deal.to);
+
+    let parties: string[];
+    if (multi) {
+      requireDeal(Array.isArray(deal.participants) && deal.participants.length >= 3 &&
+        deal.participants.length <= 6 && deal.participants.every(id) &&
+        deal.participants[0] === deal.from && deal.participants[1] === deal.to &&
+        Array.isArray(deal.acceptVotes) && deal.acceptVotes.every(id), 'The public deal participants are malformed.');
+      parties = deal.participants;
+      participants(players, parties);
+      const accepts = deal.acceptVotes as string[];
+      requireDeal(accepts[0] === deal.from && orderedSubset(accepts, parties) &&
+        (deal.status === 'active' || deal.status === 'released'
+          ? accepts.length === parties.length : accepts.length < parties.length),
+      'The public deal has invalid acceptance votes.');
+    } else {
+      parties = [deal.from, deal.to];
+      participants(players, parties);
+    }
     const votes = deal.releaseVotes as string[];
-    requireDeal(new Set(votes).size === votes.length && votes.every(vote => vote === deal.from || vote === deal.to) &&
-      (deal.status === 'active' ? votes.length <= 1 : deal.status === 'released' ? votes.length === 2 : votes.length === 0),
+    requireDeal(new Set(votes).size === votes.length && votes.every(vote => parties.includes(vote)) &&
+      (!multi || orderedSubset(votes, parties)) &&
+      (deal.status === 'active' ? votes.length < parties.length :
+        deal.status === 'released' ? votes.length === parties.length : votes.length === 0),
     'The public deal has invalid release votes.');
   }
+}
+
+function validOffer(players: readonly PublicDealSeat[], actor: string, targets: readonly string[], terms: string, turn: number, event: string): string {
+  roster(players);
+  requireDeal(id(actor) && id(event) && Number.isSafeInteger(turn) && turn > 0,
+    'Choose a current public deal and seated participants.');
+  requireDeal(typeof terms === 'string' && terms.trim().length > 0 && terms.trim().length <= 500,
+    'Write deal terms between 1 and 500 characters.');
+  notAllied(participants(players, [actor, ...targets]));
+  return terms.trim();
 }
 
 export function createPublicDeal(
   players: readonly PublicDealSeat[], actor: string, target: string, terms: string, turn: number, event: string,
 ): PublicDeal {
-  roster(players);
-  requireDeal(id(actor) && id(target) && actor !== target && id(event) && Number.isSafeInteger(turn) && turn > 0,
-    'Choose a current public deal and two different seats.');
-  requireDeal(typeof terms === 'string' && terms.trim().length > 0 && terms.trim().length <= 500,
-    'Write deal terms between 1 and 500 characters.');
-  const [from, to] = participants(players, actor, target);
-  notAllied(from, to);
-  return { id: event, from: actor, to: target, terms: terms.trim(), turn, status: 'offered', releaseVotes: [] };
+  const text = validOffer(players, actor, [target], terms, turn, event);
+  return { id: event, from: actor, to: target, terms: text, turn, status: 'offered', releaseVotes: [] };
+}
+
+export function createMultipartyPublicDeal(
+  players: readonly PublicDealSeat[], actor: string, targets: readonly string[], terms: string, turn: number, event: string,
+): PublicDeal {
+  requireDeal(Array.isArray(targets) && targets.length >= 2 && targets.length <= 5,
+    'Choose two through five other participants.');
+  const text = validOffer(players, actor, targets, terms, turn, event);
+  return { id: event, from: actor, to: targets[0], terms: text, turn, status: 'offered',
+    releaseVotes: [], participants: [actor, ...targets], acceptVotes: [actor] };
 }
 
 export function respondPublicDeal(deal: PublicDeal, players: readonly PublicDealSeat[], actor: string, accept: boolean): PublicDeal {
   validatePublicDeals([deal], players);
-  requireDeal(deal.status === 'offered' && actor === deal.to && typeof accept === 'boolean',
-    'Only the recipient may accept or decline an outstanding deal.');
-  if (accept) notAllied(...participants(players, deal.from, deal.to));
-  return { ...deal, status: accept ? 'active' : 'declined', releaseVotes: [] };
+  const parties = publicDealParticipants(deal);
+  requireDeal(deal.status === 'offered' && actor !== deal.from && parties.includes(actor) && typeof accept === 'boolean',
+    'Only an invited recipient may accept or decline an outstanding deal.');
+  if (!accept) return { ...deal, status: 'declined', releaseVotes: [] };
+  notAllied(participants(players, parties));
+  if (!deal.participants) return { ...deal, status: 'active', releaseVotes: [] };
+  const alreadyAccepted = publicDealAcceptVotes(deal);
+  requireDeal(!alreadyAccepted.includes(actor), 'This participant already accepted the offer.');
+  const accepts = parties.filter(seat => seat === actor || alreadyAccepted.includes(seat));
+  return { ...deal, acceptVotes: accepts, status: accepts.length === parties.length ? 'active' : 'offered', releaseVotes: [] };
 }
 
 export function withdrawPublicDeal(deal: PublicDeal, players: readonly PublicDealSeat[], actor: string): PublicDeal {
@@ -97,13 +157,14 @@ export function withdrawPublicDeal(deal: PublicDeal, players: readonly PublicDea
   return { ...deal, status: 'withdrawn', releaseVotes: [] };
 }
 
-/** Each participant can vote to release an active deal or withdraw their vote.
- * Both votes release it permanently, even if the players later become allies. */
+/** All participants must agree to release; either may withdraw a pending vote. */
 export function releasePublicDeal(deal: PublicDeal, players: readonly PublicDealSeat[], actor: string, agree: boolean): PublicDeal {
   validatePublicDeals([deal], players);
-  requireDeal(deal.status === 'active' && (actor === deal.from || actor === deal.to) && typeof agree === 'boolean',
+  const parties = publicDealParticipants(deal);
+  requireDeal(deal.status === 'active' && parties.includes(actor) && typeof agree === 'boolean',
     'Only a participant may change a release vote on an active deal.');
-  const votes = deal.releaseVotes.filter(vote => vote !== actor);
+  let votes = deal.releaseVotes.filter(vote => vote !== actor);
   if (agree) votes.push(actor);
-  return { ...deal, status: votes.length === 2 ? 'released' : 'active', releaseVotes: votes };
+  if (deal.participants) votes = parties.filter(seat => votes.includes(seat));
+  return { ...deal, status: votes.length === parties.length ? 'released' : 'active', releaseVotes: votes };
 }

@@ -16,13 +16,25 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Multiparty public deals — 28 October. Prototyped / Partial.** Two to six human
+seats can record public terms; every recipient must accept, any may decline and
+all parties must agree to release. Existing two-party records and actions retain
+their shape. Pairwise nonalliance at offer and acceptance is provisional. Four
+related unit files pass 28 cases, and two isolated HTTP cases cover two- and
+three-party consent, independent seat access and continued play. Prose remains
+player-managed; AI negotiation, automatic enforcement and deployed acceptance
+remain open. An isolated browser room exercised three-party acceptance and
+unanimous release using four human faction seats; the later allied-acceptance
+control is covered by a focused component test. [Scope](PUBLIC_DEALS.md).
+
 **Public deal records — 28 October. Prototyped / Partial.** Two nonallied human
 seats can record an offer, acceptance or decline, withdrawal and mutual release,
 including while a native decision is pending. Public terms rely on players to
 honor them; the record does not enforce prose, determine impossibility or pay
 spice. Seven related unit files pass 43 cases; an isolated authenticated HTTP
 case covers public visibility, consent, release and resumed play. AI negotiation,
-multiparty deals, automatic enforcement and deployed acceptance remain open.
+automatic enforcement and deployed acceptance remain open; the multiparty
+follow-up above expands this original two-seat checkpoint.
 An isolated browser room also exercised offer, acceptance and mutual release
 between two separately authenticated faction seats, with a persistent result.
 [Scope](PUBLIC_DEALS.md).
